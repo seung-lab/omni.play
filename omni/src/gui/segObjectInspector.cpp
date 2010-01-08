@@ -4,7 +4,9 @@
 SegObjectInspector::SegObjectInspector(QWidget *parent) 
 : QWidget(parent) 
 { 
-    setupUi(this); 
+    setupUi(this);
+    SegmentationID = -1;
+    SegmentID = -1;
 }
 
 void SegObjectInspector::setSegmentationID( const OmId segmenID )

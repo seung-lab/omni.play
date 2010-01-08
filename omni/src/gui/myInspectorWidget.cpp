@@ -485,6 +485,10 @@ void MyInspectorWidget::showDataSrcContextMenu( const QPoint& menuPoint )
 		break;
 	case SEGMENTATION:
 		showSegmentationContextMenu( menuPoint );
+		if( isThereASegmentationSelected() ){
+			SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
+			populateSegmentElementsListWidget( sdw );	
+		}
 		break;
 	}
 }
@@ -804,6 +808,10 @@ void MyInspectorWidget::SegmentSelectionChangeEvent(OmSegmentEvent *event)
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 {
 	const OmId segmentationID = event->GetModifiedSegmentationId();
+	if( !OmVolume::IsSegmentationValid( segmentationID ) ){
+		return;
+	}
+
 	OmSegmentation &r_segmentation = OmVolume::GetSegmentation( segmentationID );
 	
 	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
