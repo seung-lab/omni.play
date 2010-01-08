@@ -47,13 +47,13 @@ public:
 	
 	
 	//viewbox state
-	static void SetViewSliceMin(ViewType, Vector2<float>);
+	static void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);
 	static Vector2<float> GetViewSliceMin(ViewType);
 	
-	static void SetViewSliceMax(ViewType, Vector2<float>);
+	static void SetViewSliceMax(ViewType, Vector2<float>, bool postEvent = true);
 	static Vector2<float> GetViewSliceMax(ViewType);
 	
-	static void SetViewSliceDepth(ViewType, float);
+	static void SetViewSliceDepth(ViewType, float, bool postEvent = true);
 	static float GetViewSliceDepth(ViewType);
 	
 	static void SetZoomLevel(Vector2<int>);

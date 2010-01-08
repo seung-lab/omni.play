@@ -169,7 +169,7 @@ OmStateManager::FlushState() {
  *	Set/Get minimum coordiante of view slice.
  */
 void 
-OmStateManager::SetViewSliceMin(ViewType plane, Vector2<float> point) {
+OmStateManager::SetViewSliceMin(ViewType plane, Vector2<float> point, bool postEvent) {
 	switch(plane) {
 		case XY_VIEW:
 			Instance()->mXYSlice[0] = point.x;
@@ -187,7 +187,8 @@ OmStateManager::SetViewSliceMin(ViewType plane, Vector2<float> point) {
 			assert(false);
 	}
 	
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
+	if (postEvent)
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
 }
 
 Vector2<float> 
@@ -211,7 +212,7 @@ OmStateManager::GetViewSliceMin(ViewType plane) {
  *	Set/Get maximum coordiante of view slice.
  */
 void 
-OmStateManager::SetViewSliceMax(ViewType plane, Vector2<float> point) {
+OmStateManager::SetViewSliceMax(ViewType plane, Vector2<float> point, bool postEvent) {
 	switch(plane) {
 		case XY_VIEW:
 			Instance()->mXYSlice[2] = point.x;
@@ -229,7 +230,8 @@ OmStateManager::SetViewSliceMax(ViewType plane, Vector2<float> point) {
 			assert(false);
 	}
 	
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
+	if (postEvent)
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
 }
 
 Vector2<float> 
@@ -254,7 +256,7 @@ OmStateManager::GetViewSliceMax(ViewType plane) {
  *	Set/Get depth of view slice.
  */
 void 
-OmStateManager::SetViewSliceDepth(ViewType plane, float depth) {
+OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent) {
 	switch(plane) {
 		case XY_VIEW:
 			Instance()->mXYSlice[4] = depth;
@@ -269,7 +271,8 @@ OmStateManager::SetViewSliceDepth(ViewType plane, float depth) {
 			assert(false);
 	}
 	
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
+	if (postEvent)
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
 }
 
 float 
@@ -329,7 +332,8 @@ OmStateManager::SetPanDistance(ViewType plane, Vector2<int> pan, bool postEvent)
 			assert(false);
 	}
 	
-	if (postEvent) OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
+	if (postEvent)
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
 }
 
 Vector2<int> 

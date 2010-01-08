@@ -1553,19 +1553,19 @@ void OmView2d::GlobalDepthFix (float howMuch)
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
 	int dataDepth = data_coord.z;
 	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
-	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, space_coord.z);
+	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, space_coord.z, false);
 
 	depth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW)*howMuch;
 	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
 	dataDepth = data_coord.z;
 	space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
-	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, space_coord.z);
+	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, space_coord.z), false;
 
 	depth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW)*howMuch;
 	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
 	dataDepth = data_coord.z;
 	space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
-	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, space_coord.z);
+	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, space_coord.z, false);
 }
 
 
