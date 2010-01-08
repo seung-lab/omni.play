@@ -27,7 +27,12 @@ OmSegment::OmSegment(OmId omId)
 	mName = printf2str(256, "segment%05d", omId);
 	
 	//initially random color
-	mColor.randomize();
+	do {
+		mColor.randomize();
+	} while ((mColor.x * 255 > 255 && mColor.y * 255 > 255 && mColor.z * 255 > 255) &&
+		 (mColor.x * 255 < 55 && mColor.y * 255 < 55 && mColor.z * 255 < 55));
+
+	mColor.x /=2; mColor.y /=2; mColor.z /=2;
 }
 
 

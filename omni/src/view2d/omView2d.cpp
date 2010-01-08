@@ -234,20 +234,7 @@ void OmView2d::resizeGL(int width, int height)
 	mTotalViewport.width = width;
 	mTotalViewport.height = height;
 	
-	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	
-	Vector2i minCoord = Vector2i(mTotalViewport.lowerLeftX + translateVector.x, mTotalViewport.lowerLeftY + translateVector.y);
-	SpaceCoord minSpaceCoord = DataToSpaceCoord(DataCoord(minCoord.x, minCoord.y, 0));
-	Vector2i maxCoord = Vector2i(mTotalViewport.width + translateVector.x, mTotalViewport.height + translateVector.y);
-	SpaceCoord maxSpaceCoord = DataToSpaceCoord(DataCoord(maxCoord.x, maxCoord.y, 0));
-	
-	if(mViewType == YZ_VIEW) {
-		OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.y, maxSpaceCoord.x));
-	}
-	else {
-		OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.x, maxSpaceCoord.y));
-	}
+	SetViewSliceOnPan ();
 } 
 
 /*
@@ -364,6 +351,7 @@ void OmView2d::paintEvent(QPaintEvent *event)
 
         painter.end();
 
+	SetViewSliceOnPan ();
 }
 
 QImage OmView2d::safePaintEvent(QPaintEvent *event)
@@ -713,21 +701,31 @@ void OmView2d::mouseMoveEvent(QMouseEvent *event) {
 
                         	OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x - drag.x, current_pan.y - drag.y));
 
-                        	SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(5, 0, 0));
+				SetViewSliceOnPan ();
+
+#if 0
+                        	SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(drag.x, drag.y, 0));
                         	if(mViewType == YZ_VIEW) {
                                 	Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-                                	OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x, slicemin.y - panSpaceCoord.x));
+                                	OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x - panSpaceCoord.y, slicemin.y - panSpaceCoord.x));
 
                                 	Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-                                	OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x, slicemax.y - panSpaceCoord.x));
+                                	OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x - panSpaceCoord.y, slicemax.y - panSpaceCoord.x));
                         	}
                         	else {
+
+
                                 	Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-                                	OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x - panSpaceCoord.x, slicemin.y));
+                                	OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x - panSpaceCoord.x, slicemin.y - panSpaceCoord.y));
 
                                 	Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-                                	OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x - panSpaceCoord.x, slicemax.y));
+                                	OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x - panSpaceCoord.x, slicemax.y - panSpaceCoord.y));
+
+					cout << "miny, pscy" << slicemin.y << ", " << panSpaceCoord.y << endl;
+					cout << "minx, pscx" << slicemin.x << ", " << panSpaceCoord.x << endl;
+					cout << "dragx:dragy == " << drag.x << ":" << drag.y << endl;
                         	}
+#endif
 				clickPoint.x = event->x();
 				clickPoint.y = event->y();
 #endif
@@ -970,13 +968,12 @@ void OmView2d::NavigationModeMouseDoubleClick(QMouseEvent *event) {
 			//select new segment, deselect current segments
 			OmIds select_segment_ids;
 			select_segment_ids.insert(theId);
-			(new OmSegmentSelectAction(seg, select_segment_ids, r_segmentation.GetSelectedSegmentIds()))->Run();	
+			(new OmSegmentSelectAction(seg, select_segment_ids, r_segmentation.GetSelectedSegmentIds()))->Run();
+			
 		} else {
 			//set state of 
 			(new OmSegmentSelectAction(seg, theId, new_segment_select_state))->Run();
 		}
-
-		
 		Refresh ();
 		mTextures.clear ();
 		myUpdate ();
@@ -1550,6 +1547,27 @@ void OmView2d::bresenhamLineDraw(const DataCoord &first, const DataCoord &second
 }
 
 
+void OmView2d::GlobalDepthFix (float howMuch)
+{
+	float depth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW)*howMuch;
+	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
+	int dataDepth = data_coord.z;
+	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
+	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, space_coord.z);
+
+	depth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW)*howMuch;
+	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
+	dataDepth = data_coord.z;
+	space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
+	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, space_coord.z);
+
+	depth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW)*howMuch;
+	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
+	dataDepth = data_coord.z;
+	space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
+	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, space_coord.z);
+}
+
 
 #pragma mark 
 #pragma mark KeyEvent Methods
@@ -1561,105 +1579,96 @@ void OmView2d::wheelEvent ( QWheelEvent * event ) {
 	
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 15;
+	
+	
+	if(numSteps >= 0) {
+		// ZOOMING IN
 		
-	// if control key is held down, move through stack
-	// TODO: refactor out of keypress (purcaro)
-	bool move_through_stack = event->modifiers() & Qt::ControlModifier;
-	if( move_through_stack ) {
+		Vector2<int> current_zoom = OmStateManager::Instance()->GetZoomLevel();
+		
+		if(!mLevelLock && (current_zoom.y >= 10) && (current_zoom.x > 0)) {
+			// need to move to previous mip level
+			OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x - 1, 6));
 
-		// MOVE UP THE STACK, CLOSER TO VIEWER
-		if(numSteps >= 0) {
-
-			float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-			DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-			
-			int mViewDepth = data_coord.z;
-			
-			SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth + 1));
-			
-			OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
-		} else {
-			// MOVE DOWN THE STACK, FARTHER FROM VIEWER
-			float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-			DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-			
-			int mViewDepth = data_coord.z;
-			
-			SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth - 1));
-			
-			OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);			
+			GlobalDepthFix (2.0);
 		}
-	} else {
+		else 
+			OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x, current_zoom.y + (1 * numSteps)));
 
-		if(numSteps >= 0) {
-			// ZOOMING IN
-			
-			Vector2<int> current_zoom = OmStateManager::Instance()->GetZoomLevel();
-			
-			if(!mLevelLock && (current_zoom.y >= 10) && (current_zoom.x > 0)) {
-				// need to move to previous mip level
-				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x - 1, 6));
-				
-				float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType)*2;
-				DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-				int mViewDepth = data_coord.z;
-				SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth));
-				OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
-			}
-               		else if(current_zoom.y > 1) {
-                       		int zoom = current_zoom.y - (1 * (-1 * numSteps));
-                       		if (zoom < 1) zoom = 1;
- 
-                       		OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x, zoom));
-               		}
+		PanOnZoom (current_zoom);
+	}
+	else {
+		// ZOOMING OUT
+		
+		Vector2<int> current_zoom = OmStateManager::Instance()->GetZoomLevel();
+		
+		if(!mLevelLock && (current_zoom.y <= 6) && (current_zoom.x < mRootLevel)) {
+			// need to move to next mip level
+			OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x + 1, 10));
 
-			PanOnZoom (current_zoom);
+			GlobalDepthFix (0.5);
 		}
-		else {
-			// ZOOMING OUT
-			
-			Vector2<int> current_zoom = OmStateManager::Instance()->GetZoomLevel();
-			
-			if(!mLevelLock && (current_zoom.y <= 6) && (current_zoom.x < mRootLevel)) {
-				// need to move to next mip level
-				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x + 1, 10));
-				
-				float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType)/2;
-				DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-				int mViewDepth = data_coord.z;
-				SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth));
-				OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
-			}
-			
-			else if(current_zoom.y > 1)
-				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x, current_zoom.y - (1 * (-1 * numSteps))));
-			
-			PanOnZoom (current_zoom);
+		
+		else if(current_zoom.y > 1) {
+			int zoom = current_zoom.y - (1 * (-1 * numSteps));
+			if (zoom < 1) zoom = 1;
+
+			OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x, zoom));
 		}
+
+		PanOnZoom (current_zoom);
 	}
 	
 	event->accept();
 	
 }
 
+void OmView2d::SetViewSliceOnPan () {
+        Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+        Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+
+        float pl = pow(2, zoomMipVector.x);
+	float scaleFactor = zoomMipVector.y / 10.0;
+
+
+        Vector2i minCoord = Vector2i(mTotalViewport.lowerLeftX - translateVector.x*pl, mTotalViewport.lowerLeftY - translateVector.y*pl);
+        SpaceCoord minSpaceCoord = DataToSpaceCoord(DataCoord(minCoord.x, minCoord.y, 0));
+        Vector2i maxCoord = Vector2i(mTotalViewport.width / scaleFactor * pl - translateVector.x*pl, mTotalViewport.height / scaleFactor * pl - translateVector.y*pl);
+        SpaceCoord maxSpaceCoord = DataToSpaceCoord(DataCoord(maxCoord.x, maxCoord.y, 0));
+
+        if(mViewType == YZ_VIEW) {
+                OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.y, maxSpaceCoord.x));
+                OmStateManager::SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.y, minSpaceCoord.x));
+        }
+        else {
+                OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.x, maxSpaceCoord.y));
+                OmStateManager::SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.x, minSpaceCoord.y));
+        }
+}
+
+
 void OmView2d::PanOnZoom(Vector2<int> current_zoom, bool postEvent) {
 
 	// Update the pan so view stays centered.
-	Vector2<int> pro_zoom = OmStateManager::Instance()->GetZoomLevel();
-	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
-	int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
+	ViewType vts[] = {XY_VIEW, YZ_VIEW, XZ_VIEW};
 
-	//mTotalViewport.height
+	for (int i = 0; i < 3; i++) {
+		Vector2<int> pro_zoom = OmStateManager::Instance()->GetZoomLevel();
+		int widthTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).x;
+		int heightTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).y;
 
-	if (pro_zoom.x > current_zoom.x) {
-		widthTranslate = widthTranslate / 2;
-		heightTranslate = heightTranslate / 2;
-	} else if (pro_zoom.x < current_zoom.x) {
-		widthTranslate = widthTranslate * 2;
-		heightTranslate = heightTranslate * 2;
+		if (pro_zoom.x > current_zoom.x) {
+			widthTranslate = widthTranslate / 2;
+			heightTranslate = heightTranslate / 2;
+		} else if (pro_zoom.x < current_zoom.x) {
+			widthTranslate = widthTranslate * 2;
+			heightTranslate = heightTranslate * 2;
+		}
+
+       		OmStateManager::Instance()->SetPanDistance(vts[i], Vector2<int>(widthTranslate, heightTranslate), postEvent);
 	}
 
-       	OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(widthTranslate, heightTranslate), postEvent);
+	SetViewSliceOnPan ();
 }
 
 void OmView2d::keyPressEvent(QKeyEvent *event) {
@@ -1765,6 +1774,8 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			
 			if(!mLevelLock && (current_zoom.y == 6) && (current_zoom.x < mRootLevel)) {
 				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x + 1, 10));
+
+				GlobalDepthFix (0.5);
 			}
 			
 			else if(current_zoom.y > 1)
@@ -1780,6 +1791,7 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			
 			if(!mLevelLock && (current_zoom.y == 10) && (current_zoom.x > 0)) {
 				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x - 1, 6));
+				GlobalDepthFix (2.0);
 			}
 			else
 				OmStateManager::Instance()->SetZoomLevel(Vector2<int>(current_zoom.x, current_zoom.y + 1));
@@ -1792,22 +1804,8 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			Vector2<int> current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
 			
 			OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x + 5, current_pan.y));
-			
-			SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(5, 0, 0));
-			if(mViewType == YZ_VIEW) {
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x, slicemin.y - panSpaceCoord.x));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x, slicemax.y - panSpaceCoord.x));
-			}
-			else {
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x - panSpaceCoord.x, slicemin.y));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x - panSpaceCoord.x, slicemax.y));
-			}
+
+			SetViewSliceOnPan ();
 			
 		}
 			break;
@@ -1817,25 +1815,7 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			
 			OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x - 5, current_pan.y));
 			
-			SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(5, 0, 0));
-			if(mViewType == YZ_VIEW) {
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x, slicemin.y + panSpaceCoord.x));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x, slicemax.y + panSpaceCoord.x));
-			}
-			else {
-				
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x + panSpaceCoord.x, slicemin.y));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x + panSpaceCoord.x, slicemax.y));
-			}
-			
-			// myUpdate();
-			
+			SetViewSliceOnPan ();
 		}
 			break;
 		case Qt::Key_Up:
@@ -1844,27 +1824,7 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			
 			OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x, current_pan.y + 5));
 			
-			SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(5, 0, 0));
-			if(mViewType == YZ_VIEW) {
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x - panSpaceCoord.x, slicemin.y));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x - panSpaceCoord.x, slicemax.y));
-			}
-			else {
-				
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x, slicemin.y - panSpaceCoord.x));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x, slicemax.y - panSpaceCoord.x));
-			}
-			
-			
-			// widthTranslate = widthTranslate + 5;
-			// myUpdate();
-			
+			SetViewSliceOnPan ();
 		}
 			break;
 		case Qt::Key_Down:
@@ -1873,27 +1833,7 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			
 			OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x, current_pan.y - 5));
 			
-			SpaceCoord panSpaceCoord = DataToSpaceCoord(DataCoord(5, 0, 0));
-			if(mViewType == YZ_VIEW) {
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x + panSpaceCoord.x, slicemin.y));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x + panSpaceCoord.x, slicemax.y));
-			}
-			else {
-				
-				Vector2<float> slicemin = OmStateManager::Instance()->GetViewSliceMin(mViewType);
-				OmStateManager::Instance()->SetViewSliceMin(mViewType, Vector2<float>(slicemin.x, slicemin.y + panSpaceCoord.x));
-				
-				Vector2<float> slicemax = OmStateManager::Instance()->GetViewSliceMax(mViewType);
-				OmStateManager::Instance()->SetViewSliceMax(mViewType, Vector2<float>(slicemax.x, slicemax.y + panSpaceCoord.x));
-			}
-			
-			
-			// widthTranslate = widthTranslate + 5;
-			// myUpdate();
-			
+			SetViewSliceOnPan ();
 		}
 			break;
 		case Qt::Key_W:
@@ -2499,11 +2439,17 @@ int OmView2d::GetDepth(const OmTileCoord &key, OmMipVolume *vol) {
         }
 }
 
+static int clamp (int c) 
+{
+	if (c > 255) return 255;
+	return c;
+}
 OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, const OmTileCoord &key, void **rData)
 {
         DOUT("OmTile::setMyColorMap(imageData)");
 
         OmIds found_ids;
+	bool entered;
 
         DataBbox data_bbox = mCache->mVolume->MipCoordToDataBbox(mCache->TileToMipCoord(key), 0);
         int my_depth = GetDepth(key, mCache->mVolume);
@@ -2513,7 +2459,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<
 
         int ctr = 0;
         int newctr = 0;
-	int lastid = -1;
+	SEGMENT_DATA_TYPE lastid = 0;
 
         OmSegmentation &current_seg = OmVolume::GetSegmentation(segid);
 
@@ -2539,15 +2485,15 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<
                                         newcolor = qRgba(0,0,0,255);
                                 } else {
 
-                                        //found_ids.insert(id);
-
                                         // cout << "asking for color now" << endl;
                                         const Vector3<float> &color = OmVolume::GetSegmentation(segid).GetSegment(id).GetColor();
 
-                                        if(current_seg.IsSegmentSelected(id))
-                                                newcolor = qRgba(255,255,0,255);
+                                        if(current_seg.IsSegmentSelected(id)) {
+						
+                                                newcolor = qRgba(clamp (color.x * 255*2.75), clamp(color.y * 255*2.75), clamp(color.z * 255*2.75), 100);
+						entered = true;
 
-                                        else
+                                        } else
                                                 newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
 
                                         data[ctr] = newcolor.red();
@@ -2569,10 +2515,10 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<
                                 data[ctr+3] = 255;
                         }
                 } else {
-                        data[ctr] = newcolor.red();
-                        data[ctr+1] = newcolor.green();
-                        data[ctr+2] = newcolor.blue();
-                        data[ctr+3] = 255;
+                	data[ctr] = newcolor.red();
+                       	data[ctr+1] = newcolor.green();
+                       	data[ctr+2] = newcolor.blue();
+                       	data[ctr+3] = 255;
                 }
                 newctr = newctr + 1;
                 ctr = ctr+4;

@@ -69,6 +69,8 @@ public:
 	OmMipVolume *mVolume;
 	OmSegmentation *mSeg;
 	QGLPixelBuffer *  pbuffer;
+
+	
 	
 protected:
 	void initializeGL();
@@ -77,6 +79,8 @@ protected:
         DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
 
 	void PanOnZoom(Vector2<int> current_zoom, bool postEvent = true);	// Helper for zooming.
+	void SetViewSliceOnPan ();						// Helper for panning.
+	void GlobalDepthFix (float howMuch);					// Helper for zooming.
 
 	
 

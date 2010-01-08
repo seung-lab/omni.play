@@ -251,6 +251,11 @@ void OmTile::setMergeChannels(unsigned char *imageData, unsigned char *secondIma
 }
 
 
+int clamp (int c)
+{
+        if (c > 255) return 255;
+        return c;
+}
 
 OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, const OmTileCoord &key, void **rData)
 {
@@ -271,7 +276,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, con
 
         map<SEGMENT_DATA_TYPE,QColor> speedTable;
 	QColor newcolor;
-	int lastid = -1;
+	SEGMENT_DATA_TYPE lastid = 0;
 	
 	// looping through each value of imageData, which is strictly dims.x * dims.y big, no extra because of cast to SEGMENT_DATA_TYPE
 	for (int i = 0 ; i < dims.x * dims.y ; i++) {
@@ -298,7 +303,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, con
 					const Vector3<float> &color = OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
 			
 					if(current_seg.IsSegmentSelected(id))
-						newcolor = qRgba(255,255,0,255);
+                                                newcolor = qRgba(clamp (color.x * 255*2.5), clamp(color.y * 255*2.5), clamp(color.z * 255*2.5), 100);
 				
 					else	
 						newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);

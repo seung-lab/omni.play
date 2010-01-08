@@ -43,7 +43,7 @@ void drawSlice(ViewType plane, Vector2<float> min, Vector2<float> max, float dep
  */
 void
 OmViewBoxWidget::Draw() {
-	cout << "in OmViewBoxWidget::Draw()" << endl;
+	//cout << "in OmViewBoxWidget::Draw()" << endl;
 	
 	//push attrs
 	glPushAttrib( GL_ALL_ATTRIB_BITS );
