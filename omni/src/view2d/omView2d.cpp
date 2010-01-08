@@ -1577,10 +1577,26 @@ void OmView2d::GlobalDepthFix (float howMuch)
 void OmView2d::wheelEvent ( QWheelEvent * event ) {
 	DOUT("OmView2d::wheelEvent -- " << mViewType);
 	
-	int numDegrees = event->delta() / 8;
-	int numSteps = numDegrees / 15;
+	const int numDegrees = event->delta() / 8;
+	const int numSteps   = numDegrees / 15;
 	
-	
+	const bool move_through_stack = event->modifiers() & Qt::ControlModifier;
+
+	if( move_through_stack ) {
+		if(numSteps >= 0) {
+			MoveUpStackCloserToViewer();
+		} else {
+			MoveDownStackFartherFromViewer();
+		}
+	} else {
+		MouseWheelZoom( numSteps );
+	}
+
+	event->accept();	
+}
+
+void OmView2d::MouseWheelZoom( const int numSteps )
+{
 	if(numSteps >= 0) {
 		// ZOOMING IN
 		
@@ -1618,9 +1634,6 @@ void OmView2d::wheelEvent ( QWheelEvent * event ) {
 
 		PanOnZoom (current_zoom);
 	}
-	
-	event->accept();
-	
 }
 
 void OmView2d::SetViewSliceOnPan () {
@@ -1838,36 +1851,15 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 			break;
 		case Qt::Key_W:
 		case Qt::Key_PageUp:
-			// MOVE UP THE STACK, CLOSER TO VIEWER
 		{
-			float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-			DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-			
-			int mViewDepth = data_coord.z;
-			
-			SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth + 1));
-			
-			OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
-			//			OmStateManager::Instance()->SetViewSliceDepth(mViewType, mDepth + 0.005);
-			
-			
-			// myUpdate();
+			MoveUpStackCloserToViewer();
 			
 		}
 			break;
 		case Qt::Key_S:
 		case Qt::Key_PageDown:
-			// MOVE DOWN THE STACK, FARTHER FROM VIEWER
 		{
-			float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-			DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-			
-			int mViewDepth = data_coord.z;
-			
-			SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, mViewDepth - 1));
-			
-			OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
-			
+			MoveDownStackFartherFromViewer();			
 		}
 			break;
 
@@ -1877,6 +1869,29 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
 }
 
 
+void OmView2d::MoveUpStackCloserToViewer()
+{
+	const float Depth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
+	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, Depth));
+			
+	const int ViewDepth = data_coord.z;
+			
+	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, ViewDepth + 1));
+			
+	OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
+}
+
+void OmView2d::MoveDownStackFartherFromViewer()
+{
+	const float Depth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
+	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, Depth));
+			
+	const int ViewDepth = data_coord.z;
+			
+	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, ViewDepth - 1));
+			
+	OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
+}
 
 #pragma mark 
 #pragma mark OmEvent Methods

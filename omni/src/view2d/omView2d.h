@@ -284,6 +284,10 @@ private:
 	
 	bool drawComplete;
 	bool sentTexture;
+
+	void MoveUpStackCloserToViewer();
+	void MoveDownStackFartherFromViewer();
+	void MouseWheelZoom( const int numSteps );
 	
 //	friend class OmView2dUi;
 	// friend class OmSelectionWidget;
