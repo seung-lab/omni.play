@@ -1,0 +1,49 @@
+
+#include "omTextureID.h"
+#include "omThreadedCachingTile.h"
+#include "system/omGarbage.h"
+
+#define DEBUG 0
+
+
+
+OmTextureID::OmTextureID(const OmTileCoord &tileCoord, const GLuint &texID, const int &size, const int x, const int y,  const OmIds &containedIds, OmThreadedCachingTile *cache, void * texture, int flags)
+: OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds), texture(texture), flags(flags), x(x), y(y) {
+	DOUT("OmTextureID::OmTextureID()");	
+
+	UpdateSize( mem_size );
+}
+
+
+OmTextureID::~OmTextureID() {
+	DOUT("OmTextureID::~OmTextureID()");
+	
+	//glDeleteTextures( 1, &textureID);
+	//Attempt a safe delete of the gl texture id.
+	OmGarbage::asOmTextureId (textureID);
+
+	//remove object size from cache
+	UpdateSize( - mem_size);
+}
+
+const bool OmTextureID::FindId(OmId f_id) {
+	
+	return (mIdSet.find(f_id) != mIdSet.end());
+} 
+
+
+#pragma mark 
+#pragma mark ostream
+/////////////////////////////////
+///////		 ostream
+
+ostream& operator<<(ostream &out, const OmTextureID &tid) {
+
+	out << "Texture ID: " << tid.GetTextureID() << "\n";
+	out << "Size in Memory: " << tid.GetSize() << "\n";
+	out << "Tile Coordinate Level: " << tid.GetCoordinate().Level << "\n";
+	out << "Tile Coordinate: " << tid.GetCoordinate().Coordinate << endl;
+}
+
+
+
