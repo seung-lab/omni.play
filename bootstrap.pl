@@ -9,6 +9,9 @@ my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $omniPath    = $basePath.'/omni';
 
+# Create build path if it doesn't exist yet.
+print `mkdir $buildPath` if (!-e $buildPath);
+
 sub vtk {
     my $baseFileName = "vtk-5.4.2";
     printTitle( $baseFileName );
