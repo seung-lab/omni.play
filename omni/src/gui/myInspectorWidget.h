@@ -101,6 +101,7 @@ private slots:
 	void addToSplitterDataSource( QTreeWidgetItem * current, const int column );
 
 	void rebuildSegmentList( const OmId segmentationID );
+	void doDataSrcContextMenuVolAdd( QAction *act );
 
 private:
     
@@ -133,6 +134,10 @@ private:
 	SegmentationHelper* segmenHelper;
 	ChannelHelper* channelHelper;
 
+	QMenu* makeDataSrcContextMenu( QTreeWidget* parent  );
+	void addChannelToVolume();
+	void addSegmentationToVolume();
+
 	// keep local hash of segmentation --> segments to maintain 
 	//  GUI state information about which segments are selected
 	QHash<OmId, QHash<OmId, SegmentDataWrapper> > hashOfSementationsAndSegments;
@@ -141,8 +146,12 @@ private:
 	QAction *xyAct;
 	QAction *xzAct;
 	QAction *yzAct;
+
+	QAction *addChannelAct;
+	QAction *addSegmentationAct;
 	
 	QMenu *contextMenu;
+	QMenu *contextMenuDataSrc;
 
 	SegInspector *segInspectorWidget;
 	ChanInspector *channelInspectorWidget;

@@ -459,6 +459,19 @@ void MyInspectorWidget::showSegmentationContextMenu( const QPoint& menuPoint )
 	contextMenu->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
 }
 
+QMenu* MyInspectorWidget::makeDataSrcContextMenu( QTreeWidget* parent  )
+{
+	addChannelAct = new QAction(tr("Add Channel"), parent );
+			
+	addSegmentationAct = new QAction(tr("Add Segmentation"), parent );
+			
+	contextMenuDataSrc = new QMenu( parent );
+	contextMenuDataSrc->addAction( addChannelAct );
+	contextMenuDataSrc->addAction( addSegmentationAct );
+
+	return contextMenuDataSrc;
+}
+
 QMenu* MyInspectorWidget::makeContextMenuBase( const QPoint& menuPoint, QTreeWidget* parent  )
 {
 	xyAct = new QAction(tr("&View XY"), parent );
@@ -478,10 +491,41 @@ QMenu* MyInspectorWidget::makeContextMenuBase( const QPoint& menuPoint, QTreeWid
 	return contextMenu;
 }
 
+
+void  MyInspectorWidget::addChannelToVolume()
+{
+	OmChannel& added_channel = OmVolume::AddChannel();
+	addToVolume(&added_channel, CHANNEL);
+}
+
+void  MyInspectorWidget::addSegmentationToVolume()
+{
+	OmSegmentation& added_segmentation = OmVolume::AddSegmentation();
+	addToVolume(&added_segmentation, SEGMENTATION);
+}
+
+void MyInspectorWidget::doDataSrcContextMenuVolAdd( QAction *act )
+{
+  	if(act == addChannelAct ) {
+		addChannelToVolume();
+	} else if(act == addSegmentationAct ) {
+		addSegmentationToVolume();
+	} else {
+		throw OmFormatException("could not match QAction type...\n");
+	}
+}
+
+
 void MyInspectorWidget::showDataSrcContextMenu( const QPoint& menuPoint )
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt( menuPoint );
 	if( !dataSrcItem ){ // right click occured in "white space" of widget (not on actual item, like channel1, etc)
+		connect( makeDataSrcContextMenu( dataSrcListWidget ), 
+			    SIGNAL(triggered(QAction *)), 
+			    this, 
+			    SLOT(doDataSrcContextMenuVolAdd(QAction *)));
+		
+		contextMenuDataSrc->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
 		return; 
 	}
 	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
