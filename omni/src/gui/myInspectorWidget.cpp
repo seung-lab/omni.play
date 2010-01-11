@@ -54,19 +54,19 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	channelHelper = new ChannelHelper(this);
 
 	resize(448, 640);
-	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+	QSizePolicy mSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	mSizePolicy.setHorizontalStretch(0);
 	mSizePolicy.setVerticalStretch(0);
 	mSizePolicy.setHeightForWidth(sizePolicy().hasHeightForWidth());
 	setSizePolicy(mSizePolicy);
 
 	splitter = new QSplitter(this);
+	splitter->setOrientation(Qt::Horizontal);
 	QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	sizePolicy1.setHorizontalStretch(0);
 	sizePolicy1.setVerticalStretch(0);
 	sizePolicy1.setHeightForWidth(splitter->sizePolicy().hasHeightForWidth());
 	splitter->setSizePolicy(sizePolicy1);
-	splitter->setOrientation(Qt::Horizontal);
 
 	QWidget *layoutWidget = new QWidget(splitter);
 	splitter->addWidget( layoutWidget );
@@ -131,7 +131,7 @@ QTreeWidget* MyInspectorWidget::setupDataSrcList()
 	sizePolicy3.setVerticalStretch(0);
 	sizePolicy3.setHeightForWidth( dataSrcListWidget->sizePolicy().hasHeightForWidth());
 	dataSrcListWidget->setSizePolicy( sizePolicy3 );
-	
+
 	populateDataSrcListWidget();
 	
 	// left click to open inspectors
@@ -191,7 +191,7 @@ Qt::CheckState MyInspectorWidget::getCheckState( const bool enabled )
 void MyInspectorWidget::setRowFlagsAndCheckState( QTreeWidgetItem *row, Qt::CheckState checkState )
 {
 	row->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
-	row->setCheckState( 0, checkState );
+	row->setCheckState( ENABLED_COL, checkState );
 }
 
 void MyInspectorWidget::populateDataSrcListWidget()
@@ -202,10 +202,10 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		DataWrapperFactory dwf = DataWrapperFactory( CHANNEL, channID );
 		ChannelDataWrapper cdw = dwf.getChannelDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem( dataSrcListWidget );
-		row->setText( 1, cdw.getName() );
-		row->setText( 2, QString( "%1").arg(cdw.getID() ));
-		row->setData( 3, Qt::UserRole, qVariantFromValue( dwf ) );
-		row->setText( 4, cdw.getNote() );
+		row->setText( NAME_COL, cdw.getName() );
+		row->setText( ID_COL, QString( "%1").arg(cdw.getID() ));
+		row->setText( NOTE_COL, cdw.getNote() );
+		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( dwf ) );
 		setRowFlagsAndCheckState( row, getCheckState( cdw.isEnabled() ) );
 	}
 
@@ -213,15 +213,15 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		DataWrapperFactory dwf = DataWrapperFactory( SEGMENTATION, segmenID );
 		SegmentationDataWrapper sdw = dwf.getSegmentationDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem( dataSrcListWidget );
-		row->setText( 1, sdw.getName() );
-		row->setText( 2, QString( "%1").arg(sdw.getID() ));
-		row->setData( 3, Qt::UserRole, qVariantFromValue( dwf ) );
-		row->setText( 4, sdw.getNote() );
+		row->setText( NAME_COL, sdw.getName() );
+		row->setText( ID_COL, QString( "%1").arg(sdw.getID() ));
+		row->setText( NOTE_COL, sdw.getNote() );
+		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( dwf ) );
 		setRowFlagsAndCheckState( row, getCheckState( sdw.isEnabled() ) );
 	}
 
 	dataSrcListWidget->update();
-	for( int i = 0; i < 4; i++ ){
+	for( int i = 0; i <= MAX_COL_TO_DISPLAY; i++ ){
 		dataSrcListWidget->resizeColumnToContents(i);
 	}
 }
@@ -253,10 +253,10 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 
 	foreach( SegmentDataWrapper seg, segs ){
 		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
-		row->setText( 1, seg.getName() );
-		row->setText( 2, QString("%1").arg(seg.getID() ));
-		row->setData( 3, Qt::UserRole, qVariantFromValue( seg ) );
-		row->setText( 4, seg.getNote() );
+		row->setText( NAME_COL, seg.getName() );
+		row->setText( ID_COL, QString("%1").arg(seg.getID() ));
+		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( seg ) );
+		row->setText( NOTE_COL, seg.getNote() );
 		setRowFlagsAndCheckState( row, getCheckState( seg.isCheckedOff() ) );
 		row->setSelected( seg.isSelected() );
 	}
@@ -268,7 +268,7 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 		    this, SLOT( addToSplitterDataElementSegment(QTreeWidgetItem *, int )));
 
 	dataElementsWidget->update();
-	for( int i = 0; i < 4; i++ ){
+	for( int i = 0; i < MAX_COL_TO_DISPLAY; i++ ){
 		dataElementsWidget->resizeColumnToContents(i);
 	}
 }
@@ -371,7 +371,7 @@ void MyInspectorWidget::addSegmentationToSplitter( SegmentationDataWrapper data 
 
 void MyInspectorWidget::addToSplitterDataElementSegment( QTreeWidgetItem * current, const int column )
 {
-	QVariant result  = current->data( 3, Qt::UserRole );
+	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
 	SegmentDataWrapper sdw = result.value< SegmentDataWrapper >(); 
 
 	const OmId item_id = sdw.getID();
@@ -400,7 +400,7 @@ void MyInspectorWidget::addToSplitterDataElementSegment( QTreeWidgetItem * curre
 
 void MyInspectorWidget::addToSplitterDataElementFilter( QTreeWidgetItem * current, const int column )
 {
-	QVariant result  = current->data( 3, Qt::UserRole );
+	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
 	FilterDataWrapper fdw = result.value< FilterDataWrapper >(); 
 
 	const OmId item_id = fdw.getID();
@@ -430,7 +430,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter( QTreeWidgetItem * curren
 
 void MyInspectorWidget::addToSplitterDataSource( QTreeWidgetItem * current, const int column )
 {
-	QVariant result  = current->data( 3, Qt::UserRole );
+	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf = result.value< DataWrapperFactory >(); 
 
 	switch( dwf.getType()){
@@ -537,7 +537,7 @@ void MyInspectorWidget::showDataSrcContextMenu( const QPoint& menuPoint )
 		contextMenuDataSrc->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
 		return; 
 	}
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf = result.value< DataWrapperFactory >(); 
 
 	switch( dwf.getType() ){
@@ -576,7 +576,7 @@ void MyInspectorWidget::selectChannelView(QAction *act)
 ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel()
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
 	return dwf.getChannelDataWrapper();
 }
@@ -588,7 +588,7 @@ bool MyInspectorWidget::isThereASegmentationSelected()
 		return false;
 	}
 
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf = result.value< DataWrapperFactory >(); 
 
 	if( SEGMENTATION == dwf.getType() ) {
@@ -604,7 +604,7 @@ SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
 		return NULL;
 	}
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
 	return dwf.getSegmentationDataWrapper();
 }
@@ -625,7 +625,7 @@ void MyInspectorWidget::addToVolume(OmManageableObject *item, ObjectType item_ty
 void MyInspectorWidget::addFilter()
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
 	OmId item_id  = dwf.getChannelDataWrapper().getID();
 
@@ -638,7 +638,7 @@ void MyInspectorWidget::addFilter()
 void MyInspectorWidget::addSegment()
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( 3, Qt::UserRole );
+	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
 	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
 	SegmentationDataWrapper sdw = dwf.getSegmentationDataWrapper();
 	OmId item_id  = sdw.getID();
@@ -819,7 +819,7 @@ void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 void MyInspectorWidget::setFilAlpha(int alpha)
 {
 	QTreeWidgetItem *dataElementItem = dataElementsWidget->currentItem();
-	QVariant result  = dataElementItem->data( 3, Qt::UserRole );
+	QVariant result  = dataElementItem->data( USER_DATA_COL, Qt::UserRole );
 	FilterDataWrapper fdw = result.value< FilterDataWrapper >(); 
 	OmId item_id = fdw.getID();
 	OmId channelID = fdw.getChannelID();

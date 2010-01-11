@@ -78,6 +78,14 @@ signals:
 	
 	
 protected:
+	
+	static const int ENABLED_COL   = 0;
+	static const int NAME_COL      = 1;
+	static const int ID_COL        = 2;
+	static const int NOTE_COL      = 3;
+	static const int USER_DATA_COL = 4;
+	static const int MAX_COL_TO_DISPLAY = 3;
+
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
 	void SegmentSelectionChangeEvent(OmSegmentEvent *event);
 	
