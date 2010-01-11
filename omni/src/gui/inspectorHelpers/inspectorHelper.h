@@ -1,12 +1,21 @@
 #ifndef INSPECTOR_HELPER_INSPECTOR_HELPER
 #define INSPECTOR_HELPER_INSPECTOR_HELPER
 
-class InspectorHelper {
- public:
-	InspectorHelper( QWidget* parent );
+#include "../dataWrappers.h"
 
- private:
-	QWidget* parent;
+#include <QWidget>
+
+class MyInspectorWidget;
+
+template <class T>
+class InspectorHelper : public QWidget {
+ public:
+	InspectorHelper( MyInspectorWidget* parent ){
+		mParent = parent;
+	}
+
+ protected:
+	MyInspectorWidget* mParent;
 };
 
 #endif

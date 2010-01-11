@@ -26,6 +26,9 @@ SET(omGuiApp_MOC_HDRS
 ../view2d/omView2d.h
 ../view2d/domView2d.h
 
+inspectorHelpers/segmentationHelper.h
+inspectorHelpers/channelHelper.h
+
 # ui_segInspector.h
   segInspector.h
 
@@ -75,6 +78,9 @@ ADD_EXECUTABLE(omGuiApp
         preferences3d.cpp
 	preferences2d.cpp
 	myInspectorWidget.cpp
+	inspectorHelpers/inspectorHelper.cpp
+	inspectorHelpers/segmentationHelper.cpp
+	inspectorHelpers/channelHelper.cpp
 	${omGuiApp_MOC_SRCS}
 	${omGuiApp_RCC_SRCS}
 )

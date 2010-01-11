@@ -1,10 +1,25 @@
-#ifndef INSPECTOR_HELPER_CHANNEL_HELPER
-#define INSPECTOR_HELPER_CHANNEL_HELPER
+#ifndef _HELPER_CHANNEL_HELPER
+#define _HELPER_CHANNEL_HELPER
 
-class ChannelHelper : InspectorHelper {
+#include "../ui_chanInspector.h"
+#include "../chanInspector.h"
+
+#include "inspectorHelper.h"
+
+class ChannelHelper : public InspectorHelper<ChannelDataWrapper> {
+
+ Q_OBJECT
 
  public:
-	ChannelHelper( QWidget* parent );
+	ChannelHelper( MyInspectorWidget* parent );
+	void addToSplitter( ChannelDataWrapper data );
+
+ private:
+	ChanInspector *channelInspectorWidget;
+	void populateChannelInspector(OmId c_id);
+
 };
 
 #endif
+
+

@@ -15,6 +15,8 @@
 #include "system/events/omSegmentEvent.h"
 
 #include "dataWrappers.h"
+#include "inspectorHelpers/segmentationHelper.h"
+#include "inspectorHelpers/channelHelper.h"
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -52,8 +54,11 @@ class OmManageableObject;
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener
 { 
     Q_OBJECT 
-	
-public: 
+	    
+  public: 
+	friend class SegmentationHelper;
+	friend class ChannelHelper;
+
     MyInspectorWidget(QWidget *parent = 0); 
     ~MyInspectorWidget();	
 	
@@ -125,6 +130,9 @@ private:
 	Qt::CheckState getCheckState( const bool enabled );
 	void setRowFlagsAndCheckState( QTreeWidgetItem *row, Qt::CheckState checkState );
 
+	SegmentationHelper* segmenHelper;
+	ChannelHelper* channelHelper;
+
 	// keep local hash of segmentation --> segments to maintain 
 	//  GUI state information about which segments are selected
 	QHash<OmId, QHash<OmId, SegmentDataWrapper> > hashOfSementationsAndSegments;
@@ -135,10 +143,10 @@ private:
 	QAction *yzAct;
 	
 	QMenu *contextMenu;
-	
+
 	SegInspector *segInspectorWidget;
-	VolumeInspector *volumeInspectorWidget;
 	ChanInspector *channelInspectorWidget;
+	VolumeInspector *volumeInspectorWidget;
 	SegObjectInspector *segObjectInspectorWidget;
 	FilObjectInspector *filObjectInspectorWidget;
 	
