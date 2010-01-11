@@ -25,7 +25,9 @@ sub vtk {
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/VTK/CMakeCache.txt`;
 
     print "manually run: (cd $buildPath/VTK; ccmake . && make -j5 && make install)\n";
-    print "(make sure to set debug flags!\n";
+    print "(make sure to set debug flags!)\n";
+    print "\npress enter when vtk build is done :";
+    $_ = <STDIN>;
 }
 
 sub nukeBuildFolder {
@@ -179,8 +181,53 @@ sub smallLibraries {
     hdf5();
 }
 
-#smallLibraries();
-#boost();
-#vtk();
-#qt();
-omni();
+sub menu {
+    my $answer = -1;
+
+    print "bootstrap.pl menu:\n";
+    print "0 -- exit\n";
+    print "1 -- Build small libs\n";
+    print "2 -- Build boost\n";
+    print "3 -- Build vtk\n";
+    print "4 -- Build qt\n";
+    print "5 -- Setup omni build\n";
+    print "6 -- [Do 1 through 5]\n\n";
+    
+    while( 1 ){
+	print "Please make selection: ";
+	$answer = <STDIN>;
+
+	if( $answer =~ /^\d$/ ) {
+	    if( ($answer > -1) and ($answer < 7)){
+		runMenuEntry( $answer );
+		exit();
+	    }
+	}
+    }
+}
+
+sub runMenuEntry {
+    my $entry = $_[0];
+
+    if( 0 == $entry ){
+	exit();
+    }elsif( 1 == $entry ){
+	smallLibraries();
+    }elsif( 2 == $entry ){
+	boost();
+    }elsif( 3 == $entry ){
+	vtk();
+    }elsif( 4 == $entry ){
+	qt();
+    }elsif( 5 == $entry ){
+	omni();
+    }elsif( 6 == $entry ){
+	smallLibraries();
+	boost();
+	vtk();
+	qt();
+	omni();
+    }
+}
+
+menu();

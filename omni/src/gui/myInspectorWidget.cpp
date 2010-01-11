@@ -1,3 +1,4 @@
+
 #include <QtGui> 
 #include "myInspectorWidget.h" 
 
@@ -81,8 +82,9 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	// data elements: segments, filters, etc (and search widgets)
 	//	verticalLayout->addWidget( setupDataElementList() );
 	dataElementsTabs = new QTabWidget();
-	dataElementsTabs->addTab( setupDataElementList(), "All" );
 	verticalLayout->addWidget( dataElementsTabs );
+	dataElementsTabs->addTab( setupDataElementList(), "All" );
+
 	//	verticalLayout->addLayout( setupSearchStuff() );
 
 	// setup main grid layout
