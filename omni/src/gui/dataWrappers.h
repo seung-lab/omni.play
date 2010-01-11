@@ -35,6 +35,7 @@ class ChannelDataWrapper : public DataWrapper
  public:
 	ChannelDataWrapper(){}
 	ChannelDataWrapper( const OmId mID );
+	QString getNote();
 };
 
 class SegmentationDataWrapper : public DataWrapper 
@@ -43,6 +44,7 @@ class SegmentationDataWrapper : public DataWrapper
 	SegmentationDataWrapper(){}
 	SegmentationDataWrapper( const OmId mID );
 	QHash< OmId, SegmentDataWrapper > getAllSegmentIDsAndNames();
+	QString getNote();
 };
 
 class SegmentDataWrapper : public DataWrapper 
@@ -58,6 +60,7 @@ class SegmentDataWrapper : public DataWrapper
 	void setSelected( const bool isSelected );
 	bool isCheckedOff();
 	void setCheckedOff( const bool isCheckedOff );
+	QString getNote();
  private:
 	OmId mSegmentationID;
 	bool mSelected;

@@ -54,14 +54,14 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	channelHelper = new ChannelHelper(this);
 
 	resize(448, 640);
-	QSizePolicy mSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	mSizePolicy.setHorizontalStretch(0);
 	mSizePolicy.setVerticalStretch(0);
 	mSizePolicy.setHeightForWidth(sizePolicy().hasHeightForWidth());
 	setSizePolicy(mSizePolicy);
 
 	splitter = new QSplitter(this);
-	QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	sizePolicy1.setHorizontalStretch(0);
 	sizePolicy1.setVerticalStretch(0);
 	sizePolicy1.setHeightForWidth(splitter->sizePolicy().hasHeightForWidth());
@@ -111,7 +111,7 @@ QTreeWidget* MyInspectorWidget::setupDataElementList()
 
      dataElementsWidget->setColumnCount(3);
      QStringList headers;
-     headers << tr("enabled") << tr("Name") << tr("ID");
+     headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
      dataElementsWidget->setHeaderLabels(headers);
 
 	return dataElementsWidget;
@@ -123,7 +123,7 @@ QTreeWidget* MyInspectorWidget::setupDataSrcList()
 	dataSrcListWidget->setAlternatingRowColors( true );
      dataSrcListWidget->setColumnCount(3);
      QStringList headers;
-     headers << tr("enabled") << tr("Name") << tr("ID");
+     headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
      dataSrcListWidget->setHeaderLabels(headers);
 
 	QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -205,6 +205,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		row->setText( 1, cdw.getName() );
 		row->setText( 2, QString( "%1").arg(cdw.getID() ));
 		row->setData( 3, Qt::UserRole, qVariantFromValue( dwf ) );
+		row->setText( 4, cdw.getNote() );
 		setRowFlagsAndCheckState( row, getCheckState( cdw.isEnabled() ) );
 	}
 
@@ -215,10 +216,14 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		row->setText( 1, sdw.getName() );
 		row->setText( 2, QString( "%1").arg(sdw.getID() ));
 		row->setData( 3, Qt::UserRole, qVariantFromValue( dwf ) );
+		row->setText( 4, sdw.getNote() );
 		setRowFlagsAndCheckState( row, getCheckState( sdw.isEnabled() ) );
 	}
 
 	dataSrcListWidget->update();
+	for( int i = 0; i < 4; i++ ){
+		dataSrcListWidget->resizeColumnToContents(i);
+	}
 }
 
 void MyInspectorWidget::rebuildSegmentList( const OmId segmentationID )
@@ -249,8 +254,9 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 	foreach( SegmentDataWrapper seg, segs ){
 		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
 		row->setText( 1, seg.getName() );
-		row->setText( 2, QString( "%1").arg(seg.getID() ));
+		row->setText( 2, QString("%1").arg(seg.getID() ));
 		row->setData( 3, Qt::UserRole, qVariantFromValue( seg ) );
+		row->setText( 4, seg.getNote() );
 		setRowFlagsAndCheckState( row, getCheckState( seg.isCheckedOff() ) );
 		row->setSelected( seg.isSelected() );
 	}
@@ -262,6 +268,9 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 		    this, SLOT( addToSplitterDataElementSegment(QTreeWidgetItem *, int )));
 
 	dataElementsWidget->update();
+	for( int i = 0; i < 4; i++ ){
+		dataElementsWidget->resizeColumnToContents(i);
+	}
 }
 
 void MyInspectorWidget::populateChannelElementsListWidget( ChannelDataWrapper cdw )

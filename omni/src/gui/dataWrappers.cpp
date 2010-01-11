@@ -21,6 +21,13 @@ ChannelDataWrapper::ChannelDataWrapper( const OmId ID )
 	mEnabled = OmVolume::IsChannelEnabled( mID );
 }
 
+QString ChannelDataWrapper::getNote()
+{
+	const string& str = OmVolume::GetChannel( mID ).GetNote();
+	return QString::fromStdString( str );
+}
+
+
 SegmentationDataWrapper::SegmentationDataWrapper( const OmId ID )
 	: DataWrapper( ID, SEGMENTATION )
 {
@@ -46,6 +53,13 @@ QHash< OmId, SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNa
 
 	return segs;
 }
+
+QString SegmentationDataWrapper::getNote()
+{
+	const string& str = OmVolume::GetSegmentation(mID).GetNote();
+	return QString::fromStdString( str );
+}
+
 
 SegmentDataWrapper::SegmentDataWrapper( const OmId segmentationID, 
 								const OmId ID,
@@ -78,6 +92,12 @@ bool SegmentDataWrapper::isCheckedOff()
 void SegmentDataWrapper::setCheckedOff( const bool isCheckedOff )
 {
 	mChecked = isCheckedOff;
+}
+
+QString SegmentDataWrapper::getNote()
+{
+	const string& str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
+	return QString::fromStdString( str );
 }
 
 
