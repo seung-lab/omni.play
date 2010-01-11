@@ -76,7 +76,10 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	verticalLayout->addWidget( setupDataSrcList() );
 
 	// data elements: segments, filters, etc (and search widgets)
-	verticalLayout->addWidget( setupDataElementList() );
+	//	verticalLayout->addWidget( setupDataElementList() );
+	dataElementsTabs = new QTabWidget();
+	dataElementsTabs->addTab( setupDataElementList(), "All" );
+	verticalLayout->addWidget( dataElementsTabs );
 	//	verticalLayout->addLayout( setupSearchStuff() );
 
 	// setup main grid layout

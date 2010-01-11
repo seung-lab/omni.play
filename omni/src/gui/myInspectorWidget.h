@@ -114,6 +114,7 @@ private:
 	bool isThereASegmentationSelected();
 
 	QTreeWidget *dataElementsWidget;
+	QTabWidget *dataElementsTabs;
 	void populateSegmentElementsListWidget( SegmentationDataWrapper data );
 	void populateChannelElementsListWidget( ChannelDataWrapper data );
 	QTreeWidget* setupVolumeList( QWidget *layoutWidget );
