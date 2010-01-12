@@ -1,33 +1,52 @@
 #!/usr/bin/perl
 
+# NOTE: build process will be done "out-of-source". 
+#  (from vtk): "When your build generates files, they have to go somewhere. 
+#   An in-source build puts them in your source tree. 
+#   An out-of-source build puts them in a completely separate directory, 
+#   so that your source tree is unchanged."
+# This allows us to untar only once, but build multiple times--much faster
+#  on older computers!
+
 use strict;
 
 my $basePath = `pwd`;
 chomp $basePath;
 my $buildPath   = $basePath.'/external/builds';
+my $srcPath     = $basePath.'/external/srcs';
 my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $omniPath    = $basePath.'/omni';
 
+my $globalMakeOptions = " -j5 ";
+
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
 
+# Create srcs path if it doesn't exist yet.
+print `mkdir $srcPath` if (!-e $srcPath);
+
 sub vtk {
     my $baseFileName = "vtk-5.4.2";
-    printTitle( $baseFileName );
-    nukeBuildFolder(   "VTK" );
-    nukeLibraryFolder( "VTK" );
-    untar(      $baseFileName );
+    prepare( $baseFileName );
 
     # Work around for a bug in the VTK tar ball.
-    `chmod 600 $buildPath/VTK/Utilities/vtktiff/tif_fax3sm.c`;
+    `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
     
-    `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/VTK/CMakeCache.txt`;
+    `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
 
-    print "manually run: (cd $buildPath/VTK; ccmake . && make -j5 && make install)\n";
+    print "manually run: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make -j5 && make install)\n";
     print "(make sure to set debug flags!)\n";
     print "\npress enter when vtk build is done :";
     $_ = <STDIN>;
+}
+
+sub setupBuildFolder {
+    my $baseFileName = $_[0];
+
+    print "==> creating new build folder...";
+    `mkdir $buildPath/$baseFileName` if (!-e "$buildPath/$baseFileName" );
+    print "done\n";
 }
 
 sub nukeBuildFolder {
@@ -49,8 +68,19 @@ sub nukeLibraryFolder {
 sub untar {
     my $baseFileName = $_[0];
 
-    print "==> untarring...";
-    `tar -zxf $tarballPath/$baseFileName.tar.gz -C $buildPath/`;
+    if (-e "$srcPath/$baseFileName" ){
+	print "==> skipping untar\n";
+	return;
+    }
+
+    my $tarOptions = " -C $srcPath/ ";
+    if( $baseFileName =~ /^vtk/ ) {
+	`mkdir -p $srcPath/$baseFileName/`;
+	$tarOptions = " -C $srcPath/$baseFileName/ --strip-components=1";
+    }
+
+    print "==> untarring to external/srcs/...";
+    `tar -zxf $tarballPath/$baseFileName.tar.gz $tarOptions`;
     print "done\n";
 }
 
@@ -62,6 +92,7 @@ sub prepare {
     nukeBuildFolder(   $baseFileName );
     nukeLibraryFolder( $libFolderName );
     untar(             $baseFileName );
+    setupBuildFolder(  $baseFileName );
 }
 
 sub build {
@@ -69,20 +100,59 @@ sub build {
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
 
+    chdir( "$buildPath/$baseFileName" );
+
+    # TODO: check return values; die if something went wrong...
+    configure(   $baseFileName, $libFolderName, $buildOptions );
+    make();
+    makeInstall();
+
+    chdir( $basePath );
+}
+
+sub buildInSourceFolder {
+    my $baseFileName  = $_[0];
+    my $libFolderName = $_[1];
+    my $buildOptions  = $_[2];
+
+    chdir( "$srcPath/$baseFileName" );
+
+    # TODO: check return values; die if something went wrong...
+    configure(   $baseFileName, $libFolderName, $buildOptions );
+    make();
+    makeInstall();
+
+    chdir( $basePath );
+}
+
+sub configure {
+    my $baseFileName  = $_[0];
+    my $libFolderName = $_[1];
+    my $buildOptions  = $_[2];
+    
+    my $cmd = "$srcPath/$baseFileName/configure --prefix=$libPath/$libFolderName $buildOptions;";  
+    if( "Qt" eq $libFolderName ){
+	$cmd = 'echo "yes" | '.$cmd;
+    }
     print "==> running configure...";
-    print "(cd $buildPath/$baseFileName; ./configure --prefix=$libPath/$libFolderName $buildOptions; )\n";
-    print `(cd $buildPath/$baseFileName; ./configure --prefix=$libPath/$libFolderName $buildOptions; )`;
+    print "($cmd)\n";
+    print `($cmd)`;
     print "done with configure\n\n";
+}
 
-    # TODO: check return value; die if something went wrong...
+sub make {
+    my $cmd = "make $globalMakeOptions";
     print "==> running make...";
-    print "(cd $buildPath/$baseFileName; make -j5)\n";
-    print `(cd $buildPath/$baseFileName; make -j5)`;
+    print "($cmd)\n";
+    print `($cmd)`;
     print "done with make\n\n";
+}
 
+sub makeInstall {
+    my $cmd = "make install";
     print "==> running make install...";
-    print "(cd $buildPath/$baseFileName; make install)\n";
-    print `(cd $buildPath/$baseFileName; make install)`;
+    print "($cmd)\n";
+    print `($cmd)`;
     print "done with make install\n";
 }
 
@@ -103,16 +173,21 @@ sub boost {
     my $baseFileName = "boost_1_38_0";
     prepare( $baseFileName, "Boost" );
 
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $buildPath/$baseFileName/tools/build/v2/user-config.jam`;
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $buildPath/$baseFileName/user-config.jam`;
+    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/tools/build/v2/user-config.jam`;
+    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/user-config.jam`;
 
     # as of Dec 2009, these are the portions of boost we appear to be using:
     # headers:   timer, shared_ptr, tuple, algorithm
     # libraries: filesystem, mpi, regex, serialization
     # to see all the boost libraries that can be built, do
     # ..../boost_1_38_0/configure --show-libraries
+    
+    # boost uses its own build folder; just symlink it to ours for consistency...
+    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
+    `rm -rf $boostLocalBuildFolder`;
+    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
 
-    build( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization" );
+    buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization" );
 }
 
 sub libpng {
@@ -137,10 +212,8 @@ sub hdf5 {
 
 sub qt {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
-    prepare( $baseFileName, "Qt" );
-
-    print "(cd $buildPath/$baseFileName; ./configure --prefix=$libPath/Qt -opensource -static -no-glib -make libs; make -j5 && make install)\n";
-    print `(cd $buildPath/$baseFileName; echo "yes" | ./configure --prefix=$libPath/Qt -opensource -static -no-glib -make libs; make -j5 && make install)`;
+    # '-make libs' option only builds libs, shrinking installed size by 2 GB
+    prepareAndBuild( $baseFileName, "Qt", "-opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus " );
 }
 
 sub omni {
@@ -188,8 +261,8 @@ sub menu {
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
     print "2 -- Build boost\n";
-    print "3 -- Build vtk\n";
-    print "4 -- Build qt\n";
+    print "3 -- Build qt\n";
+    print "4 -- Build vtk\n";
     print "5 -- Setup omni build\n";
     print "6 -- [Do 1 through 5]\n\n";
     
@@ -216,16 +289,16 @@ sub runMenuEntry {
     }elsif( 2 == $entry ){
 	boost();
     }elsif( 3 == $entry ){
-	vtk();
-    }elsif( 4 == $entry ){
 	qt();
+    }elsif( 4 == $entry ){
+	vtk();
     }elsif( 5 == $entry ){
 	omni();
     }elsif( 6 == $entry ){
 	smallLibraries();
 	boost();
-	vtk();
 	qt();
+	vtk();
 	omni();
     }
 }
