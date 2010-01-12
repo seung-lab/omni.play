@@ -1,0 +1,4317 @@
+
+CMakeFiles/CompilerIdC/CMakeCCompilerId.c,1362
+# define ID_VOID_MAIN6,98
+# define COMPILER_ID 10,176
+# define COMPILER_ID 13,234
+# define COMPILER_ID 16,293
+# define COMPILER_ID 19,350
+# define COMPILER_ID 22,404
+# define COMPILER_ID 25,453
+# define COMPILER_ID 28,508
+# define COMPILER_ID 31,563
+# define COMPILER_ID 34,615
+# define COMPILER_ID 37,667
+# define COMPILER_ID 42,862
+# define COMPILER_ID 53,1170
+# define COMPILER_ID 56,1232
+# define COMPILER_ID 62,1453
+# define COMPILER_ID 65,1526
+# define COMPILER_ID 68,1582
+char* info_compiler 76,1881
+# define PLATFORM_ID 80,2046
+# define PLATFORM_ID 83,2102
+# define PLATFORM_ID 86,2160
+# define PLATFORM_ID 89,2215
+# define PLATFORM_ID 92,2308
+# define PLATFORM_ID 95,2389
+# define PLATFORM_ID 98,2468
+# define PLATFORM_ID 101,2548
+# define PLATFORM_ID 104,2617
+# define PLATFORM_ID 107,2743
+# define PLATFORM_ID 110,2829
+# define PLATFORM_ID 113,2901
+# define PLATFORM_ID 116,2992
+# define PLATFORM_ID 119,3067
+# define PLATFORM_ID 122,3159
+# define PLATFORM_ID 125,3236
+# define PLATFORM_ID 128,3334
+# define PLATFORM_ID 131,3391
+# define PLATFORM_ID 134,3448
+# define PLATFORM_ID 137,3518
+# define PLATFORM_ID 140,3590
+# define PLATFORM_ID 143,3680
+# define PLATFORM_ID 146,3778
+# define PLATFORM_ID 149,3871
+# define PLATFORM_ID 152,3930
+char* info_platform 160,4229
+void main(166,4393
+int main(168,4414
+
+CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp,1311
+# define COMPILER_ID 9,263
+# define COMPILER_ID 12,344
+# define COMPILER_ID 15,402
+# define COMPILER_ID 18,461
+# define COMPILER_ID 21,519
+# define COMPILER_ID 24,574
+# define COMPILER_ID 27,625
+# define COMPILER_ID 30,682
+# define COMPILER_ID 33,737
+# define COMPILER_ID 36,789
+# define COMPILER_ID 39,841
+# define COMPILER_ID 44,1036
+# define COMPILER_ID 47,1098
+# define COMPILER_ID 53,1319
+# define COMPILER_ID 56,1392
+# define COMPILER_ID 59,1448
+char* info_compiler 67,1747
+# define PLATFORM_ID 71,1912
+# define PLATFORM_ID 74,1968
+# define PLATFORM_ID 77,2026
+# define PLATFORM_ID 80,2081
+# define PLATFORM_ID 83,2174
+# define PLATFORM_ID 86,2255
+# define PLATFORM_ID 89,2334
+# define PLATFORM_ID 92,2414
+# define PLATFORM_ID 95,2483
+# define PLATFORM_ID 98,2609
+# define PLATFORM_ID 101,2695
+# define PLATFORM_ID 104,2767
+# define PLATFORM_ID 107,2858
+# define PLATFORM_ID 110,2933
+# define PLATFORM_ID 113,3025
+# define PLATFORM_ID 116,3102
+# define PLATFORM_ID 119,3200
+# define PLATFORM_ID 122,3257
+# define PLATFORM_ID 125,3314
+# define PLATFORM_ID 128,3384
+# define PLATFORM_ID 131,3456
+# define PLATFORM_ID 134,3546
+# define PLATFORM_ID 137,3644
+# define PLATFORM_ID 140,3737
+# define PLATFORM_ID 143,3796
+char* info_platform 151,4095
+int main(156,4239
+
+include/vmmlib/axisAlignedBoundingBox.h,2247
+#define __VMML__AXIS_ALIGNED_BOUNDING_BOX__H__2,47
+class AxisAlignedBoundingBox13,195
+    inline bool contains(24,639
+	friend std::ostream& operator << AxisAlignedBoundingBox::operator <<55,1945
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox80,2461
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox88,2587
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox99,2900
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox110,3237
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox119,3457
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(AxisAlignedBoundingBox131,3715
+inline bool AxisAlignedBoundingBox< T >::contains(contains143,3947
+inline bool AxisAlignedBoundingBox< T >::contains(contains160,4423
+inline bool AxisAlignedBoundingBox< T >::contains(contains175,4805
+inline bool AxisAlignedBoundingBox< T >::containsIn2d(containsIn2d188,5096
+inline void AxisAlignedBoundingBox< T >::set(set203,5380
+inline void AxisAlignedBoundingBox< T >::set(set214,5568
+inline void AxisAlignedBoundingBox< T >::setMin(setMin225,5782
+inline void AxisAlignedBoundingBox< T >::setMax(setMax233,5908
+inline const Vector3< T >& AxisAlignedBoundingBox< T >::getMin(getMin241,6034
+inline const Vector3< T >& AxisAlignedBoundingBox< T >::getMax(getMax249,6157
+AxisAlignedBoundingBox< T >::getCenter(getCenter258,6291
+AxisAlignedBoundingBox< T >::getPosVertex(getPosVertex269,6466
+AxisAlignedBoundingBox< T >::getNegVertex(getNegVertex284,6758
+AxisAlignedBoundingBox< T >::getNearestVertex(getNearestVertex300,7052
+AxisAlignedBoundingBox< T >::getDimensions(getDimensions319,7471
+AxisAlignedBoundingBox< T >::getUnitDimensions(getUnitDimensions325,7595
+AxisAlignedBoundingBox< T >::merge(merge334,7737
+AxisAlignedBoundingBox< T >::intersect(intersect372,8577
+AxisAlignedBoundingBox< T >::offset(offset414,9448
+AxisAlignedBoundingBox< T >::setEmpty(setEmpty424,9595
+AxisAlignedBoundingBox< T >::isEmpty(isEmpty433,9710
+AxisAlignedBoundingBox< T >::setDirty(setDirty442,9818
+AxisAlignedBoundingBox< T >::isDirty(isDirty451,9933
+typedef AxisAlignedBoundingBox< float > Aabbf;458,10004
+
+include/vmmlib/details.hpp,1825
+#define __VMML__DETAILS__HPP__2,31
+namespace vmml5,80
+namespace detailsvmml::details8,98
+  typedef U type;vmml::details::type20,296
+template< size_t M,24,319
+struct is_square25,350
+	enum { value is_square::value27,369
+	enum { value = M is_square::M27,369
+	enum { value = M == N is_square::N27,369
+template< size_t M,31,400
+template< size_t M, size_t N,31,400
+template< size_t M, size_t N, size_t Mwanted,31,400
+struct is_of_size32,463
+	enum { value is_of_size::value34,483
+	enum { value = ( M is_of_size::M34,483
+	enum { value = ( M == Mwanted is_of_size::Mwanted34,483
+	enum { value = ( M == Mwanted && N is_of_size::N34,483
+	enum { value = ( M == Mwanted && N == Nwanted is_of_size::Nwanted34,483
+template< size_t Mreq,38,540
+struct has_M_components39,574
+    enum{ value has_M_components::value41,600
+    enum{ value = ( Mreq has_M_components::Mreq41,600
+    enum{ value = ( Mreq == M has_M_components::M41,600
+template< size_t Mreq,44,639
+struct has_M_or_more_components45,673
+    enum{ value has_M_or_more_components::value47,707
+    enum{ value = ( Mreq has_M_or_more_components::Mreq47,707
+    enum{ value = ( Mreq <= M has_M_or_more_components::M47,707
+template< size_t M,51,747
+template< size_t M, size_t N,51,747
+matrix_is_square(53,802
+template< size_t M,60,922
+template< size_t M, size_t N,60,922
+matrix_is_3x3(62,977
+template< size_t M,69,1101
+template< size_t M, size_t N,69,1101
+matrix_is_4x4(71,1156
+template< size_t Mreq,77,1279
+template< size_t Mreq, size_t M,77,1279
+number_of_parameters_must_be_M(79,1337
+template< size_t Mreq,85,1480
+template< size_t Mreq, size_t M,85,1480
+number_of_parameters_must_be_at_least_M(87,1538
+getSine(97,1782
+getSine(104,1886
+getCosine(112,2010
+getCosine(119,2116
+getSquareRoot(127,2242
+getSquareRoot(136,2339
+
+include/vmmlib/exception.hpp,489
+#define __VMMLIB__EXCEPTION__HPP__2,35
+#define VMMLIB_HERE 12,188
+#define VMMLIB_ERROR(15,278
+#define VMMLIB_ERROR(17,352
+namespace vmml21,419
+struct except_herevmml::except_here24,437
+    except_here(vmml::except_here::except_here26,458
+error_noexcept(33,633
+class exception 44,849
+    exception(exception::exception47,899
+    virtual ~exception(exception::~exception52,1024
+    virtual const char* what(exception::what54,1066
+    exception(exception::exception70,1428
+
+include/vmmlib/frustum.h,832
+#define __VMML__FRUSTUM__H__10,152
+class Frustum19,242
+    Matrix4< T > computeMatrix(53,1177
+    friend std::ostream& operator << Frustum::operator <<60,1472
+typedef Frustum< float >  Frustumf;82,2223
+typedef Frustum< double > Frustumd;83,2259
+typedef Frustum< float >  frustumf;85,2296
+typedef Frustum< double > frustumd;86,2332
+namespace vmml93,2444
+Frustum< T >::Frustum(vmml::Frustum102,2589
+Frustum<T>::Frustum(vmml::Frustum108,2643
+Frustum< T >::Frustum(vmml::Frustum121,2944
+Frustum< T >::Frustum(Frustum136,3398
+Frustum< T >::~Frustum(~Frustum151,3852
+Frustum< T >::set(set158,3911
+Frustum<T>::adjustNear(adjustNear174,4332
+Frustum<T>::setPerspective(setPerspective192,4644
+Matrix4<T> Frustum<T>::computeMatrix(computeMatrix207,5001
+Frustum< T >::computeOrthoMatrix(computeOrthoMatrix239,5785
+
+include/vmmlib/frustum.hpp,825
+#define __VMML__FRUSTUM__HPP__10,154
+namespace vmml16,236
+class frustumvmml::frustum20,275
+    friend std::ostream& operator << vmml::frustum::operator <<61,1515
+typedef frustum< float >  Frustumf;84,2276
+typedef frustum< double > Frustumd;85,2312
+typedef frustum< float >  frustumf;87,2349
+typedef frustum< double > frustumd;88,2385
+namespace vmml96,2477
+frustum< T >::frustum(vmml::frustum105,2622
+frustum<T>::frustum(vmml::frustum111,2676
+frustum< T >::frustum(vmml::frustum124,2977
+frustum< T >::frustum(frustum139,3431
+frustum< T >::~frustum(~frustum154,3885
+frustum< T >::set(set161,3944
+frustum<T>::adjustNear(adjustNear177,4365
+frustum<T>::setPerspective(setPerspective195,4677
+frustum<T>::computeMatrix(computeMatrix211,5052
+frustum< T >::computeOrthoMatrix(computeOrthoMatrix243,5794
+
+include/vmmlib/frustumCuller.h,312
+#define __VMML__FRUSTUM_CULLER__H__10,159
+class FrustumCuller25,454
+    FrustumCuller(29,503
+    ~FrustumCuller(30,584
+    Visibility testSphere(33,661
+	const Vector4< T > & getNearPlane(38,893
+typedef FrustumCuller< float >  FrustumCullerf;50,1173
+typedef FrustumCuller< double > FrustumCullerd;51,1221
+
+include/vmmlib/frustumCuller.hpp,548
+#define __VMML__FRUSTUM_CULLER__HPP__10,161
+namespace vmml18,312
+class frustumCullervmml::frustumCuller23,404
+    frustumCuller(vmml::frustumCuller::frustumCuller27,453
+    ~frustumCuller(vmml::frustumCuller::~frustumCuller28,534
+typedef frustumCuller< float >  FrustumCullerf;46,971
+typedef frustumCuller< double > FrustumCullerd;47,1019
+namespace vmml56,1124
+void frustumCuller< T >::setup(vmml::setup64,1322
+frustumCuller< T >::_normalizePlane(_normalizePlane93,2165
+Visibility frustumCuller< T >::testSphere(testSphere106,2474
+
+include/vmmlib/helperFunctions.h,136
+#define __VMML__HELPER_FUNCTIONS__H__2,38
+inline T max(40,624
+inline T squared(48,718
+inline T pythag(59,889
+inline T sign(72,1127
+
+include/vmmlib/jacobiSolver.h,42
+#define __VMML__JACOBI_SOLVER__H__18,395
+
+include/vmmlib/jacobiSolver.hpp,115
+#define __VMML__JACOBI_SOLVER__HPP__18,397
+namespace vmml25,502
+bool solveJacobi3x3(vmml::solveJacobi3x343,976
+
+include/vmmlib/lapack.hpp,42
+#define __VMML__VMMLIB_LAPACK__HPP__2,37
+
+include/vmmlib/lapack_includes.hpp,44
+#define __VMML__LAPACK_INCLUDES__HPP__2,39
+
+include/vmmlib/lapack_linear_least_squares.hpp,1729
+#define __VMML__VMMLIB_LAPACK_LINEAR_LEAST_SQUARES__HPP__2,58
+namespace vmml23,386
+namespace lapackvmml::lapack31,536
+struct llsq_params_xgelsvmml::lapack::llsq_params_xgels43,634
+    friend std::ostream& operator << vmml::lapack::llsq_params_xgels::operator <<57,1243
+llsq_call_xgels(84,1942
+llsq_call_xgels(91,2088
+llsq_call_xgels(110,2355
+template< size_t M,129,2602
+template< size_t M, size_t N,129,2602
+struct linear_least_squares_xgels130,2651
+    const lapack::llsq_params_xgels< float_t >& get_params(linear_least_squares_xgels::get_params140,2906
+    matrix< M, N, float_t >& get_factorized_A(linear_least_squares_xgels::get_factorized_A142,2982
+template< size_t M,154,3169
+template< size_t M, size_t N,154,3169
+linear_least_squares_xgels< M, N, float_t >::compute(compute156,3223
+template< size_t M,190,3856
+template< size_t M, size_t N,190,3856
+linear_least_squares_xgels(192,3951
+template< size_t M,216,4349
+template< size_t M, size_t N,216,4349
+~linear_least_squares_xgels(218,4444
+struct llsq_params_xgesv232,4559
+    friend std::ostream& operator << llsq_params_xgesv::operator <<243,5011
+llsq_call_xgesv(267,5586
+llsq_call_xgesv(275,5733
+llsq_call_xgesv(293,5953
+template< size_t M,308,6150
+template< size_t M, size_t N,308,6150
+struct linear_least_squares_xgesv309,6199
+    const lapack::llsq_params_xgesv< float_t >& get_params(linear_least_squares_xgesv::get_params320,6462
+template< size_t M,327,6630
+template< size_t M, size_t N,327,6630
+compute(330,6730
+template< size_t M,351,7161
+template< size_t M, size_t N,351,7161
+linear_least_squares_xgesv(353,7256
+template< size_t M,365,7395
+template< size_t M, size_t N,365,7395
+~linear_least_squares_xgesv(367,7490
+
+include/vmmlib/lapack_svd.hpp,979
+#define __VMML__VMMLIB_LAPACK_SVD__HPP__2,41
+namespace vmml13,267
+namespace lapackvmml::lapack16,285
+struct svd_paramsvmml::lapack::svd_params26,467
+    friend std::ostream& operator << vmml::lapack::svd_params::operator <<43,839
+svd_call(73,1651
+svd_call(81,1784
+svd_call(106,2163
+template< size_t M,131,2543
+template< size_t M, size_t N,131,2543
+struct lapack_svd132,2592
+    const lapack::svd_params< float_t >& get_params(lapack_svd::get_params153,3080
+template< size_t M,158,3179
+template< size_t M, size_t N,158,3179
+lapack_svd< M, N, float_t >::lapack_svd(lapack_svd159,3228
+template< size_t M,187,3700
+template< size_t M, size_t N,187,3700
+lapack_svd< M, N, float_t >::~lapack_svd(~lapack_svd188,3749
+template< size_t M,195,3821
+template< size_t M, size_t N,195,3821
+lapack_svd< M, N, float_t >::compute(compute197,3875
+template< size_t M,227,4520
+template< size_t M, size_t N,227,4520
+lapack_svd< M, N, float_t >::compute(compute229,4574
+
+include/vmmlib/lapack_types.hpp,235
+#define __VMML__LAPACK_TYPES__HPP__2,36
+namespace vmml7,106
+namespace lapackvmml::lapack10,124
+typedef __CLPK_integer  lapack_int;vmml::lapack::lapack_int15,162
+typedef ssize_t         lapack_int;vmml::lapack::lapack_int19,206
+
+include/vmmlib/linear_least_squares.hpp,490
+#define __VMML__LINEAR_LEAST_SQUARES__HPP__2,44
+namespace vmml7,144
+struct linear_least_squaresvmml::linear_least_squares15,307
+solve(vmml::linear_least_squares::solve20,475
+template< size_t number_of_data_points,68,1706
+template< size_t number_of_data_points, size_t number_of_unknowns,68,1706
+solve_using_qr_decomposition(70,1843
+template< size_t number_of_data_points,98,2493
+template< size_t number_of_data_points, size_t number_of_unknowns,98,2493
+solve_using_svd(100,2630
+
+include/vmmlib/matrix.hpp,10722
+#define __VMML__MATRIX__HPP__2,30
+namespace vmml16,337
+	typedef matrix< M, N, float_t > mat;vmml::mat24,488
+	struct row_accessorvmml::row_accessor251,9143
+		row_accessor(vmml::row_accessor::row_accessor253,9167
+		private: row_accessor(vmml::row_accessor::row_accessor275,9712
+    friend std::ostream& operator << vmml::operator <<288,10122
+typedef matrix< 3, 3, float >   mat3f;336,11473
+typedef matrix< 3, 3, double >  mat3d;337,11512
+typedef matrix< 4, 4, float >   mat4f;338,11551
+typedef matrix< 4, 4, double >  mat4d;339,11590
+template< size_t M,349,11798
+template< size_t M, size_t N,349,11798
+matrix< M, N, float_t >::IDENTITY_FUNCTOR;IDENTITY_FUNCTOR351,11896
+template< size_t M,353,11940
+template< size_t M, size_t N,353,11940
+matrix< M, N, float_t >::ZERO_FUNCTOR;ZERO_FUNCTOR355,12034
+template< size_t M,357,12074
+template< size_t M, size_t N,357,12074
+template< size_t M,361,12210
+template< size_t M, size_t N,361,12210
+template< size_t M,366,12339
+template< size_t M, size_t N,366,12339
+matrix< M, N, float_t >::matrix(matrix367,12388
+template< size_t M,374,12479
+template< size_t M, size_t N,374,12479
+matrix< M, N, float_t >::matrix(matrix375,12528
+template< size_t M,382,12649
+template< size_t M, size_t N,382,12649
+matrix< M, N, float_t >::at(at384,12714
+template< size_t M,395,12984
+template< size_t M, size_t N,395,12984
+matrix< M, N, float_t >::at(at397,13055
+template< size_t M,407,13330
+template< size_t M, size_t N,407,13330
+matrix< M, N, float_t >::operator()(operator()409,13395
+template< size_t M,416,13508
+template< size_t M, size_t N,416,13508
+matrix< M, N, float_t >::operator()(operator()418,13579
+template< size_t M,425,13703
+template< size_t M, size_t N,425,13703
+matrix< M, N, float_t >::matrix(matrix426,13752
+template< size_t M,432,13793
+template< size_t M, size_t N,432,13793
+matrix< M, N, float_t >::matrix(matrix433,13842
+template< size_t M,440,13922
+template< size_t M, size_t N,440,13922
+operator==(operator==443,14002
+template< size_t M,456,14199
+template< size_t M, size_t N,456,14199
+operator!=(operator!=459,14279
+template< size_t M,466,14371
+template< size_t M, size_t N,466,14371
+isEqualTo(469,14451
+template< size_t M,487,15017
+template< size_t M, size_t N,487,15017
+matrix< M, N, float_t >::operator=(operator=489,15071
+template< size_t M,506,15558
+template< size_t M, size_t N,506,15558
+matrix< M, N, float_t >::operator=(operator=508,15612
+template< size_t M,515,15727
+template< size_t M, size_t N,515,15727
+matrix< M, N, float_t >::operator=(operator=517,15781
+template< size_t M,527,16043
+template< size_t M, size_t N,527,16043
+matrix< M, N, float_t >::multiply(multiply530,16118
+template< size_t M,552,16653
+template< size_t M, size_t N,552,16653
+matrix< M, N, float_t >::operator*(operator*554,16726
+template< size_t M,567,17093
+template< size_t M, size_t N,567,17093
+matrix< M, N, float_t >::operator*(operator*570,17187
+template< size_t M,580,17407
+template< size_t M, size_t N,580,17407
+matrix< M, N, float_t >::operator*=(operator*=582,17461
+template< size_t M,591,17611
+template< size_t M, size_t N,591,17611
+matrix< M, N, float_t >::operator*(operator*593,17684
+template< size_t M,609,18035
+template< size_t M, size_t N,609,18035
+matrix< M, N, float_t >::operator*=(operator*=611,18089
+template< size_t M,624,18348
+template< size_t M, size_t N,624,18348
+operator*(627,18444
+template< size_t M,649,19006
+template< size_t M, size_t N,649,19006
+operator*(652,19104
+template< size_t M,683,20007
+template< size_t M, size_t N,683,20007
+matrix< M, N, float_t >::operator-(operator-685,20087
+template< size_t M,692,20158
+template< size_t M, size_t N,692,20158
+matrix< M, N, float_t >::negate(negate694,20231
+template< size_t M,703,20353
+template< size_t M, size_t N,703,20353
+matrix< M, N, float_t >::tensor(tensor705,20408
+template< size_t M,718,20710
+template< size_t M, size_t N,718,20710
+matrix< M, N, float_t >::tensor(tensor720,20765
+template< size_t M,747,21481
+template< size_t M, size_t N,747,21481
+transposeTo(750,21561
+template< size_t M,763,21835
+template< size_t M, size_t N,763,21835
+matrix< M, N, float_t >::getTransposed(getTransposed765,21908
+template< size_t M,774,22044
+template< size_t M, size_t N,774,22044
+copyFrom1DimCArray(777,22124
+template< size_t M,796,22577
+template< size_t M, size_t N,796,22577
+copyFrom1DimCArray(800,22696
+template< size_t M,826,23407
+template< size_t M, size_t N,826,23407
+getColumn(829,23504
+template< size_t M,838,23632
+template< size_t M, size_t N,838,23632
+getColumn(841,23712
+template< size_t M,853,24020
+template< size_t M, size_t N,853,24020
+setColumn(856,24100
+template< size_t M,868,24408
+template< size_t M, size_t N,868,24408
+getColumn(871,24488
+template< size_t M,890,25020
+template< size_t M, size_t N,890,25020
+setColumn(893,25100
+template< size_t M,913,25577
+template< size_t M, size_t N,913,25577
+getRow(916,25674
+template< size_t M,924,25778
+template< size_t M, size_t N,924,25778
+getRow(927,25858
+template< size_t M,942,26190
+template< size_t M, size_t N,942,26190
+setRow(945,26270
+template< size_t M,960,26603
+template< size_t M, size_t N,960,26603
+getRow(963,26683
+template< size_t M,978,27021
+template< size_t M, size_t N,978,27021
+setRow(981,27101
+template< size_t M,1021,27929
+template< size_t M, size_t N,1021,27929
+getM(1024,28011
+template< size_t M,1031,28045
+template< size_t M, size_t N,1031,28045
+getN(1034,28127
+template< size_t M,1041,28163
+template< size_t M, size_t N,1041,28163
+getNumberOfRows(1044,28245
+template< size_t M,1051,28290
+template< size_t M, size_t N,1051,28290
+getNumberOfColumns(1054,28372
+template< size_t M,1061,28422
+template< size_t M, size_t N,1061,28422
+fill(1064,28502
+template< size_t M,1081,28976
+template< size_t M, size_t N,1081,28976
+matrix< M, N, float_t >::set(set1083,29030
+template< size_t M,1096,29470
+template< size_t M, size_t N,1096,29470
+matrix< M, N, float_t >::set(set1098,29524
+template< size_t M,1122,29997
+template< size_t M, size_t N,1122,29997
+matrix< M, N, float_t >::set(set1124,30051
+template< size_t M,1148,30658
+template< size_t M, size_t N,1148,30658
+matrix< M, N, float_t >::set(set1150,30712
+template< size_t M,1183,31557
+template< size_t M, size_t N,1183,31557
+identity(1186,31637
+template< size_t M,1192,31703
+template< size_t M, size_t N,1192,31703
+zero(1195,31783
+template< size_t M,1201,31841
+template< size_t M, size_t N,1201,31841
+operator=(operator=1204,31921
+template< size_t M,1217,32144
+template< size_t M, size_t N,1217,32144
+operator+(1220,32251
+template< size_t M,1229,32390
+template< size_t M, size_t N,1229,32390
+operator+=(operator+=1232,32470
+template< size_t M,1245,32716
+template< size_t M, size_t N,1245,32716
+operator-(1248,32823
+template< size_t M,1257,32962
+template< size_t M, size_t N,1257,32962
+operator-=(operator-=1260,33042
+template< size_t M,1273,33288
+template< size_t M, size_t N,1273,33288
+template< size_t P,1274,33337
+directSum(1277,33399
+template< size_t M,1302,33996
+template< size_t M, size_t N,1302,33996
+template< size_t P,1303,34045
+directSum(1306,34135
+template< size_t M,1314,34277
+template< size_t M, size_t N,1314,34277
+template< size_t Mret,1315,34326
+matrix< M, N, float_t >::getSubMatrix(getSubMatrix1317,34393
+template< size_t M,1327,34586
+template< size_t M, size_t N,1327,34586
+template< size_t Mret,1328,34635
+matrix< M, N, float_t >::getSubMatrix(getSubMatrix1330,34677
+template< size_t M,1345,35028
+template< size_t M, size_t N,1345,35028
+template< size_t Mret,1346,35077
+setSubMatrix(1349,35145
+template< size_t M,1364,35501
+template< size_t M, size_t N,1364,35501
+matrix< M, N, float_t >::getDeterminant(getDeterminant1366,35565
+matrix< 2, 2, float >::getDeterminant(getDeterminant1381,35950
+matrix< 2, 2, double >::getDeterminant(getDeterminant1393,36205
+matrix< 3, 3, float >::getDeterminant(getDeterminant1407,36466
+matrix< 3, 3, double >::getDeterminant(getDeterminant1422,36835
+template< size_t M,1436,37183
+template< size_t M, size_t N,1436,37183
+matrix< M, N, float_t >::getAdjugate(getAdjugate1438,37244
+matrix< 2, 2, float >::getAdjugate(getAdjugate1452,37618
+matrix< 2, 2, double >::getAdjugate(getAdjugate1469,37963
+template< size_t M,1484,38291
+template< size_t M, size_t N,1484,38291
+getCofactors(1487,38378
+template< size_t M,1505,38779
+template< size_t M, size_t N,1505,38779
+matrix< M, N, float_t >::getInverse(getInverse1507,38840
+matrix< 2, 2, float >::getInverse(getInverse1522,39251
+matrix< 2, 2, double >::getInverse(getInverse1542,39670
+matrix< 3, 3, float >::getInverse(getInverse1563,40094
+matrix< 3, 3, double >::getInverse(getInverse1604,41643
+matrix< 4, 4, float >::getInverse(getInverse1645,43197
+matrix< 4, 4, double >::getInverse(getInverse1703,46293
+template< size_t M,1759,49427
+template< size_t M, size_t N,1759,49427
+getMinor(1762,49517
+template< size_t M,1798,50299
+template< size_t M, size_t N,1798,50299
+isPositiveDefinite(1801,50379
+template< size_t M,1832,51131
+template< size_t M, size_t N,1832,51131
+rotate(1835,51211
+template< size_t M,1876,52867
+template< size_t M, size_t N,1876,52867
+rotateX(1879,52947
+template< size_t M,1924,54316
+template< size_t M, size_t N,1924,54316
+rotateY(1927,54396
+template< size_t M,1971,55795
+template< size_t M, size_t N,1971,55795
+rotateZ(1974,55875
+template< size_t M,2019,57257
+template< size_t M, size_t N,2019,57257
+preRotateX(2022,57337
+template< size_t M,2055,58417
+template< size_t M, size_t N,2055,58417
+preRotateY(2058,58497
+template< size_t M,2091,59581
+template< size_t M, size_t N,2091,59581
+preRotateZ(2094,59661
+template< size_t M,2127,60739
+template< size_t M, size_t N,2127,60739
+scale(2130,60819
+template< size_t M,2153,61376
+template< size_t M, size_t N,2153,61376
+scale(2156,61456
+template< size_t M,2179,61956
+template< size_t M, size_t N,2179,61956
+scale(2182,62043
+template< size_t M,2189,62121
+template< size_t M, size_t N,2189,62121
+scaleTranslation(2192,62201
+template< size_t M,2206,62530
+template< size_t M, size_t N,2206,62530
+scaleTranslation(2209,62617
+template< size_t M,2216,62717
+template< size_t M, size_t N,2216,62717
+setTranslation(2219,62797
+template< size_t M,2233,63123
+template< size_t M, size_t N,2233,63123
+setTranslation(2236,63203
+template< size_t M,2250,63523
+template< size_t M, size_t N,2250,63523
+setTranslation(2253,63610
+template< size_t M,2260,63704
+template< size_t M, size_t N,2260,63704
+getTranslation(2263,63800
+template< size_t M,2282,64362
+template< size_t M, size_t N,2282,64362
+getString(2285,64442
+
+include/vmmlib/matrix3.h,2612
+#define __VMML__MATRIX3__H__17,386
+class Matrix345,764
+    inline Vector3< T > getColumn(102,2902
+    friend std::ostream& operator << Matrix3::operator <<147,4889
+typedef Matrix3< float >  Matrix3f;178,5901
+typedef Matrix3< double > Matrix3d;179,5937
+typedef Matrix3< float >  mat3f;181,5974
+typedef Matrix3< double > mat3d;182,6007
+Matrix3< T >::Matrix3(Matrix3202,6309
+Matrix3< T >::Matrix3(Matrix3208,6363
+Matrix3< T >::Matrix3(Matrix3216,6487
+Matrix3< T >::Matrix3(Matrix3235,6820
+Matrix3< T >::Matrix3(Matrix3250,7297
+Matrix3< T >::Matrix3(Matrix3282,7925
+Matrix3< T >::Matrix3(Matrix3292,8177
+const Matrix3< T >& Matrix3< T >::operator= operator=302,8430
+const Matrix3< T >& Matrix3< T >::operator= operator=314,8605
+const Matrix3< T >& Matrix3< T >::operator= operator=324,8789
+const Matrix3< T >& Matrix3< T >::operator= operator=341,9313
+bool Matrix3< T >::operator== operator==357,9813
+inline bool Matrix3< T >::operator!= operator!=370,10035
+void Matrix3< T >::set(set378,10169
+void Matrix3< T >::set(set386,10292
+void Matrix3< T >::set(set396,10538
+void Matrix3< T >::set(set406,10785
+Matrix3< T >::set(set428,11324
+Matrix3< T >::set(set443,11778
+Vector3< T > Matrix3< T >::getColumn(getColumn467,12231
+Vector3< T > Matrix3< T >::getRow(getRow478,12571
+inline const T& Matrix3< T >::getElement(getElement487,12805
+void Matrix3< T >::setColumn(setColumn495,12945
+void Matrix3< T >::setRow(setRow505,13152
+inline void Matrix3< T >::setElement(setElement515,13332
+Matrix3< T > Matrix3< T >::operator+ operator+523,13478
+Matrix3< T > Matrix3< T >::operator- operator-534,13708
+Matrix3< T > Matrix3< T >::operator* operator*545,13938
+Matrix3< T > Matrix3< T >::operator* operator*567,14499
+Matrix3< T >& Matrix3< T >::operator+= operator+=578,14712
+Matrix3< T >& Matrix3< T >::operator-= operator-=588,14892
+Matrix3< T >& Matrix3< T >::operator*= operator*=598,15072
+Matrix3< T >& Matrix3< T >::operator*= operator*=621,15643
+Vector3< T > Matrix3< T >::operator* operator*631,15835
+Matrix3< T > Matrix3< T >::getTransposed(getTransposed641,16168
+inline T Matrix3< T >::det(det659,16562
+T Matrix3< T >::getDeterminant(getDeterminant667,16657
+bool Matrix3< T >::isPositiveDefinite(isPositiveDefinite678,16937
+Matrix3< T >  Matrix3< T >::getInverse(getInverse693,17248
+bool Matrix3< T >::getInverse(getInverse703,17432
+void Matrix3< T >::tensor(tensor740,18518
+Matrix3< T > Matrix3< T >::operator-(operator-750,18725
+Matrix3< T > Matrix3< T >::negate(negate760,18874
+Matrix3< T >::getString(getString773,19165
+
+include/vmmlib/matrix4.h,4212
+#define __VMML__MATRIX4__H__19,390
+class Matrix448,891
+    const T& getElement(132,3964
+    Vector3< T > operator*operator161,5221
+    Matrix4 negate(171,5677
+    friend std::ostream& operator << Matrix4::operator <<222,7764
+typedef Matrix4< float >  Matrix4f;260,9097
+typedef Matrix4< double > Matrix4d;261,9133
+typedef Matrix4< float >  mat4f;263,9170
+typedef Matrix4< double > mat4d;264,9203
+namespace vmml278,9449
+Matrix4< T >::Matrix4(vmml::Matrix4291,9806
+Matrix4< T >::Matrix4(vmml::Matrix4297,9860
+Matrix4< T >::Matrix4(vmml::Matrix4322,10368
+Matrix4< T >::Matrix4(Matrix4331,10512
+Matrix4< T >::Matrix4(Matrix4340,10682
+const T& Matrix4< T >::getElement(getElement365,11250
+void Matrix4< T >::setElement(setElement373,11384
+Matrix4< T >::Matrix4(Matrix4382,11556
+Matrix4< T >::Matrix4(Matrix4392,11815
+const Matrix4< T >& Matrix4< T >::operator= operator=402,12075
+const Matrix4< T >& Matrix4< T >::operator= operator=412,12268
+bool Matrix4< T >::operator== operator==436,13223
+inline bool Matrix4< T >::operator!= operator!=449,13445
+void Matrix4< T >::set(set457,13578
+void Matrix4< T >::set(set465,13702
+void Matrix4< T >::set(set475,13952
+void Matrix4< T >::set(set485,14203
+Matrix4< T >::set(set515,14888
+Matrix4< T >::set(set530,15344
+Vector4< T > Matrix4< T >::getColumn(getColumn553,15797
+Vector4< T > Matrix4< T >::getRow(getRow562,16017
+void Matrix4< T >::setColumn(setColumn571,16256
+void Matrix4< T >::setRow(setRow583,16585
+void Matrix4< T >::setColumn(setColumn595,16872
+void Matrix4< T >::setRow(setRow606,17168
+Matrix4< T > Matrix4< T >::operator+ operator+617,17428
+Matrix4< T > Matrix4< T >::operator- operator-628,17656
+Matrix4< T > Matrix4< T >::operator* operator*639,17883
+Matrix4< T > Matrix4< T >::operator* operator*669,18964
+Matrix4< T >& Matrix4< T >::operator+= operator+=680,19172
+Matrix4< T >& Matrix4< T >::operator-= operator-=690,19358
+Matrix4< T >& Matrix4< T >::operator*= operator*=700,19540
+Matrix4< T >& Matrix4< T >::operator*= operator*=731,20894
+Vector4< T > Matrix4< T >::operator* operator*742,21092
+Vector3< T > Matrix4< T >::operator* operator*753,21560
+Matrix4< T > Matrix4< T >::getTransposed(getTransposed765,22039
+inline T Matrix4< T >::det(det777,22280
+T Matrix4< T >::getDeterminant(getDeterminant785,22375
+inline Matrix4< T > Matrix4< T >::getAdjoint(getAdjoint796,22634
+Matrix4< T > Matrix4< T >::getAdjugate(getAdjugate804,22743
+Matrix4< T > Matrix4< T >::getInverse(getInverse851,24537
+bool Matrix4< T >::getInverse(getInverse861,24727
+Matrix4<T>::rotate(rotate927,27557
+void Matrix4<T>::rotateX(rotateX963,28633
+inline void Matrix4<float>::rotateX(rotateX989,29144
+void Matrix4<T>::rotateY(rotateY1015,29706
+inline void Matrix4<float>::rotateY(rotateY1041,30219
+void Matrix4<T>::rotateZ(rotateZ1067,30773
+inline void Matrix4<float>::rotateZ(rotateZ1093,31298
+void Matrix4<T>::preRotateX(preRotateX1119,31864
+inline void Matrix4<float>::preRotateX(preRotateX1144,32365
+void Matrix4<T>::preRotateY(preRotateY1170,32962
+inline void Matrix4<float>::preRotateY(preRotateY1196,33526
+void Matrix4<T>::preRotateZ(preRotateZ1222,34131
+inline void Matrix4<float>::preRotateZ(preRotateZ1248,34695
+void Matrix4<T>::scale(scale1274,35300
+void Matrix4<T>::scale(scale1293,35609
+void Matrix4<T>::scale(scale1312,35976
+void Matrix4<T>::scaleTranslation(scaleTranslation1331,36359
+void Matrix4<T>::scaleTranslation(scaleTranslation1341,36519
+void Matrix4<T>::setTranslation(setTranslation1351,36688
+void Matrix4<T>::setTranslation(setTranslation1361,36862
+void Matrix4<T>::setTranslation(setTranslation1371,37013
+Matrix4< T >::getTranslation(getTranslation1382,37182
+void Matrix4< T >::tensor(tensor1391,37303
+void Matrix4< T >::tensor(tensor1408,37629
+T Matrix4< T >::getMinor(getMinor1420,37844
+T Matrix4< T >::getMinor(getMinor1443,38474
+Matrix4< T > Matrix4< T >::operator-(operator-1456,38936
+Matrix4< T > Matrix4< T >::negate(negate1466,39085
+Matrix4< T >::set3x3SubMatrix(set3x3SubMatrix1478,39258
+Matrix4< T >::get3x3SubMatrix(get3x3SubMatrix1494,39660
+Matrix4< T >::getString(getString1509,40136
+
+include/vmmlib/matrix_functors.hpp,438
+#define __VMML__MATRIX_FUNCTORS__HPP__2,39
+namespace vmml4,79
+struct matrix_functorvmml::matrix_functor8,127
+    virtual void operator()(vmml::matrix_functor::operator()10,151
+    virtual ~matrix_functor(vmml::matrix_functor::~matrix_functor13,218
+struct set_to_identity 17,286
+    virtual void operator()(set_to_identity::operator()19,347
+struct set_to_zero 35,727
+    virtual void operator()(set_to_zero::operator()37,784
+
+include/vmmlib/qr_decomposition.hpp,138
+#define __VMML__QR_DECOMPOSITION__HPP__2,40
+namespace vmml18,342
+void qr_decompose_gram_schmidt(vmml::qr_decompose_gram_schmidt22,409
+
+include/vmmlib/quaternion.h,3963
+#define _Quaternion_H_9,94
+#define QUATERNION_DEBUG 25,360
+#define QUATERNION_TRACE_EPSILON 27,388
+class Quaternion33,469
+	const T& operator[operator86,1930
+	friend std::ostream& operator << Quaternion::operator <<168,4893
+typedef Quaternion<float>  Quaternionf;190,5534
+typedef Quaternion<double> Quaterniond;191,5574
+Quaternion< T >::Quaternion(Quaternion211,6098
+Quaternion< T >::Quaternion(Quaternion215,6156
+Quaternion< T >::Quaternion(Quaternion223,6257
+Quaternion< T >::Quaternion(Quaternion231,6391
+Quaternion< T >::Quaternion(Quaternion240,6541
+Quaternion< T >::Quaternion(Quaternion250,6696
+Quaternion< T >::Quaternion(Quaternion296,8035
+Quaternion< T >::Quaternion(Quaternion306,8350
+Quaternion< T >::~Quaternion(~Quaternion316,8666
+void Quaternion< T >::set(set320,8725
+void Quaternion< T >::set(set329,8842
+void Quaternion< T >::set(set339,9155
+const Quaternion< T >& Quaternion< T >::operator=(operator=349,9469
+const Quaternion< T >& Quaternion < T >::operator=(operator=359,9602
+bool Quaternion< T >::operator==(operator==369,9760
+bool Quaternion< T >::operator!=(operator!=375,9892
+bool Quaternion< T >::operator==(operator==381,10023
+bool Quaternion< T >::operator!=(operator!=387,10172
+bool Quaternion< T >::isAkin(isAkin393,10321
+Quaternion< T > Quaternion< T >::conjug(conjug416,10929
+T Quaternion< T >::abs(abs422,11078
+T Quaternion< T >::absSquared(absSquared429,11197
+Quaternion< T > Quaternion< T >::invert(invert438,11319
+T Quaternion< T >::normalise(normalise447,11492
+T Quaternion< T >::normalise(normalise462,11709
+T Quaternion< T >::normalize(normalize481,11986
+T Quaternion< T >::normalize(normalize498,12205
+Quaternion< T > Quaternion< T >::operator+(operator+515,12512
+Quaternion< T > Quaternion< T >::operator-(operator-521,12667
+Quaternion< T > Quaternion< T >::operator*(operator*527,12822
+Quaternion< T > Quaternion< T >::operator/(operator/533,12990
+const Quaternion< T >& Quaternion< T >::operator+=(operator+=541,13188
+const Quaternion< T >& Quaternion< T >::operator-=(operator-=548,13346
+const Quaternion< T >& Quaternion< T >::operator*=(operator*=555,13486
+const Quaternion< T >& Quaternion< T >::operator/=(operator/=565,13654
+Quaternion< T > Quaternion< T >::operator+(operator+578,13890
+Quaternion< T > Quaternion< T >::operator-(operator-584,14045
+Quaternion< T > Quaternion< T >::operator*(operator*590,14200
+const Quaternion< T >& Quaternion< T >::operator+=(operator+=599,14463
+const Quaternion< T >& Quaternion< T >::operator-=(operator-=608,14616
+const Quaternion< T >& Quaternion< T >::operator*=(operator*=617,14769
+Quaternion< T > Quaternion< T >::operator+(operator+632,15110
+Quaternion< T > Quaternion< T >::operator-(operator-638,15274
+Quaternion< T > Quaternion< T >::operator*(operator*645,15468
+Quaternion< T > Quaternion< T >::operator-(operator-654,15780
+const Quaternion< T >& Quaternion< T >::operator+=(operator+=661,15900
+const Quaternion< T >& Quaternion< T >::operator-=(operator-=671,16068
+const Quaternion< T >& Quaternion< T >::operator*=(operator*=682,16264
+Vector3< T > Quaternion< T >::cross(cross697,16668
+Quaternion< T > Quaternion< T >::cross(cross705,16975
+void Quaternion< T >:: cross(715,17633
+T Quaternion< T >::dot(dot728,18193
+T Quaternion< T >::dot(dot734,18326
+void Quaternion< T >::normal(normal740,18487
+Quaternion< T > Quaternion< T >::normal(normal754,18888
+Quaternion< T > Quaternion< T >::rotate(rotate767,19369
+Quaternion< T > Quaternion< T >::rotatex(rotatex777,19640
+Quaternion< T > Quaternion< T >::rotatey(rotatey786,19882
+Quaternion< T > Quaternion< T >::rotatez(rotatez795,20124
+T Quaternion< T >::getMinComponent(getMinComponent804,20367
+T Quaternion< T >::getMaxComponent(getMaxComponent813,20515
+Matrix3< T > Quaternion< T >::getRotationMatrix(getRotationMatrix822,20663
+Quaternion< T > Quaternion< T >::slerp slerp843,21150
+
+include/vmmlib/quaternion.hpp,4069
+#define __VMML__QUATERNION__HPP__11,154
+#define QUATERNION_TRACE_EPSILON 31,505
+namespace vmml33,544
+class quaternionvmml::quaternion37,592
+	friend std::ostream& operator << vmml::quaternion::operator <<171,5201
+typedef quaternion< float >  quaternionf;207,6138
+typedef quaternion< double > quaterniond;208,6180
+quaternion< float_t >::quaternion(quaternion230,6804
+quaternion< float_t >::quaternion(quaternion238,6909
+quaternion< float_t >::quaternion(quaternion249,7086
+quaternion< float_t >::quaternion(quaternion262,7284
+quaternion< float_t >::quaternion(quaternion272,7458
+quaternion< float_t >::quaternion(quaternion279,7598
+fromRotationMatrix(290,7791
+quaternion< float_t >::zero(zero366,9668
+quaternion< float_t >::identity(identity375,9796
+quaternion< float_t >::set(set384,9932
+quaternion< float_t >::copyFrom1DimCArray(copyFrom1DimCArray396,10095
+quaternion< float_t >::operator=(operator=405,10253
+quaternion < float_t >::operator=(operator=414,10395
+quaternion< float_t >::operator==(operator==424,10573
+bool quaternion< float_t >::operator!=(operator!=432,10728
+quaternion< float_t >::operator==(operator==441,10893
+quaternion< float_t >::operator!=(operator!=455,11114
+quaternion< float_t >::isAkin(isAkin464,11252
+quaternion< float_t >::x(x479,11576
+quaternion< float_t >::x(x488,11685
+quaternion< float_t >::y(y497,11794
+quaternion< float_t >::y(y506,11903
+quaternion< float_t >::z(z515,12012
+quaternion< float_t >::z(z524,12121
+quaternion< float_t >::w(w533,12230
+quaternion< float_t >::w(w542,12339
+quaternion< float_t >::at(at551,12448
+quaternion< float_t >::at(at567,12722
+quaternion< float_t >::operator()(operator()600,13261
+quaternion< float_t >::operator()(operator()609,13395
+void quaternion< float_t >::conjugate(conjugate617,13512
+quaternion< float_t > quaternion< float_t >::getConjugate(getConjugate627,13638
+quaternion< float_t >::abs(abs636,13806
+float_t quaternion< float_t >::absSquared(absSquared644,13926
+quaternion< float_t > quaternion< float_t >::getInverse(getInverse652,14068
+float_t quaternion< float_t >::normalize(normalize665,14287
+quaternion< float_t >::getNormalized(getNormalized679,14522
+quaternion< float_t >::operator+(operator+694,14797
+quaternion< float_t >::operator-(operator-703,15003
+quaternion< float_t >::operator*(operator*713,15239
+quaternion< float_t >::operator*=(operator*=725,15445
+quaternion< float_t >::operator-(operator-772,17041
+quaternion< float_t >::operator+=(operator+=781,17170
+quaternion< float_t >::operator-=(operator-=793,17409
+quaternion< float_t >::operator*(operator*809,17705
+quaternion< float_t >::operator/(operator/818,17881
+quaternion< float_t >::operator*=(operator*=832,18139
+quaternion< float_t >::operator/=(operator/=844,18303
+quaternion< float_t >::operator+(operator+859,18572
+quaternion< float_t >::operator-(operator-868,18755
+quaternion< float_t >::operator*(operator*877,18938
+quaternion< float_t >::operator+=(operator+=889,19212
+quaternion< float_t >::operator-=(operator-=900,19374
+quaternion< float_t >::operator*=(operator*=912,19551
+vector< 3, float_t > quaternion< float_t >::cross(cross929,19917
+float_t quaternion< float_t >::dot(dot943,20258
+float_t quaternion< float_t >::dot(dot949,20415
+void quaternion< float_t >::normal(normal955,20606
+quaternion< float_t > quaternion< float_t >::normal(normal969,21061
+quaternion< float_t >::rotate(rotate984,21607
+quaternion< float_t > quaternion< float_t >::rotatex(rotatex994,21913
+quaternion< float_t > quaternion< float_t >::rotatey(rotatey1003,22205
+quaternion< float_t > quaternion< float_t >::rotatez(rotatez1012,22497
+float_t quaternion< float_t >::getMinComponent(getMinComponent1021,22790
+float_t quaternion< float_t >::getMaxComponent(getMaxComponent1030,22962
+quaternion< float_t >::getRotationMatrix(getRotationMatrix1042,23160
+quaternion< float_t >::getRotationMatrix(getRotationMatrix1054,23358
+quaternion< float_t > quaternion< float_t >::slerp slerp1082,24055
+
+include/vmmlib/serialization.h,36
+#define VMML_SERIALIZATION_H12,247
+
+include/vmmlib/stringUtils.h,237
+#define __VMMLIB_STRING_UTILS__H__2,35
+namespace vmml9,147
+inline double toDouble(28,369
+inline bool toString(45,753
+inline bool fromString(65,1193
+inline void toLower(75,1386
+inline std::string& trim(88,1597
+void split(125,2346
+
+include/vmmlib/stringUtils.hpp,248
+#define __VMMLIB_STRING_UTILS__HPP__2,37
+namespace vmml15,240
+namespace stringUtilvmml::stringUtil18,258
+toInt(vmml::stringUtil::toInt22,295
+toDouble(30,387
+toString(48,769
+fromString(69,1209
+toLower(80,1402
+trim(94,1621
+split(132,2355
+
+include/vmmlib/svd.h,55
+#define __VMML__SINGULAR_VALUE_DECOMPOSITION__H__2,50
+
+include/vmmlib/svd.hpp,122
+#define __VMML__SINGULAR_VALUE_DECOMPOSITION__HPP__2,52
+namespace vmml11,228
+void svdecompose(vmml::svdecompose23,614
+
+include/vmmlib/vector.hpp,6704
+#define __VMML__VECTOR__HPP__2,30
+namespace vmml12,218
+    friend std::ostream& operator << vmml::operator <<173,6470
+template< size_t M,212,7363
+operator* 214,7430
+template< size_t M,220,7531
+dot(222,7585
+template< size_t M,233,7823
+cross(235,7890
+template< size_t M,241,7991
+normalize(243,8058
+typedef vector< 2, float >  vec2f;251,8156
+typedef vector< 2, double > vec2d;252,8191
+typedef vector< 3, float >  vec3f;253,8226
+typedef vector< 3, double > vec3d;254,8261
+typedef vector< 4, float >  vec4d;255,8296
+typedef vector< 4, double > vec4d;256,8331
+template< size_t M,260,8376
+vector< M, float_t >::vector(vector261,8415
+template< size_t M,272,8550
+vector< M, float_t >::vector(vector273,8589
+template< size_t M,282,8766
+vector< M, float_t >::vector(vector283,8805
+template< size_t M,294,9014
+vector< M, float_t >::vector(vector295,9053
+template< size_t M,308,9298
+vector< M, float_t >::set(set310,9342
+template< size_t M,321,9474
+vector< M, float_t >::set(set323,9518
+template< size_t M,332,9674
+vector< M, float_t >::set(set334,9718
+template< size_t M,343,9892
+vector< M, float_t >::set(set345,9936
+template< size_t M,356,10142
+vector< M, float_t >::set(set358,10186
+template< size_t M,370,10427
+vector< M, float_t >::operator()(operator()372,10482
+template< size_t M,379,10559
+vector< M, float_t >::operator()(operator()381,10620
+template< size_t M,388,10703
+vector< M, float_t >::at(at390,10758
+template< size_t M,403,10978
+vector< M, float_t >::at(at405,11039
+template< size_t M,418,11265
+template< size_t M,427,11400
+template< size_t M,436,11547
+vector< M, float_t >::operator*(operator*438,11607
+template< size_t M,450,11863
+vector< M, float_t >::operator/(operator/452,11923
+template< size_t M,464,12179
+vector< M, float_t >::operator+(operator+466,12239
+template< size_t M,478,12495
+vector< M, float_t >::operator-(operator-480,12555
+template< size_t M,493,12812
+vector< M, float_t >::operator*=(operator*=495,12856
+template< size_t M,505,13035
+vector< M, float_t >::operator/=(operator/=507,13079
+template< size_t M,517,13258
+vector< M, float_t >::operator+=(operator+=519,13302
+template< size_t M,529,13481
+vector< M, float_t >::operator-=(operator-=531,13525
+template< size_t M,541,13704
+vector< M, float_t >::operator*(operator*543,13764
+template< size_t M,555,13994
+vector< M, float_t >::operator/(operator/557,14054
+template< size_t M,569,14284
+vector< M, float_t >::operator+(operator+571,14344
+template< size_t M,583,14574
+vector< M, float_t >::operator-(operator-585,14634
+template< size_t M,598,14865
+vector< M, float_t >::operator*=(operator*=600,14909
+template< size_t M,610,15062
+vector< M, float_t >::operator/=(operator/=612,15106
+template< size_t M,622,15259
+vector< M, float_t >::operator+=(operator+=624,15303
+template< size_t M,634,15456
+vector< M, float_t >::operator-=(operator-=636,15500
+template< size_t M,646,15653
+vector< M, float_t >::operator-(operator-648,15713
+template< size_t M,660,15906
+vector< M, float_t >::invert(invert662,15950
+template< size_t M,672,16090
+vector< M, float_t >::x(x674,16145
+template< size_t M,682,16287
+vector< M, float_t >::y(y684,16342
+template< size_t M,692,16484
+vector< M, float_t >::z(z694,16539
+template< size_t M,702,16681
+vector< M, float_t >::w(w704,16736
+template< size_t M,712,16878
+vector< M, float_t >::x(x714,16939
+template< size_t M,722,17087
+vector< M, float_t >::y(y724,17148
+template< size_t M,732,17296
+vector< M, float_t >::z(z734,17357
+template< size_t M,742,17505
+vector< M, float_t >::w(w744,17566
+template< size_t M,753,17769
+vector< M, float_t >::cross(cross755,17836
+template< size_t M,765,18050
+cross(768,18117
+template< size_t M,779,18434
+vector< M, float_t >::dot(dot781,18488
+template< size_t M,792,18710
+vector< M, float_t >::normalize(normalize794,18761
+template< size_t M,802,18887
+vector< M, float_t >::getNormalized(getNormalized804,18947
+template< size_t M,813,19068
+vector< M, float_t >::norm(norm815,19122
+template< size_t M,822,19216
+vector< M, float_t >::normSquared(normSquared824,19270
+template< size_t M,836,19460
+vector< M, float_t >::length(length838,19514
+template< size_t M,845,19577
+vector< M, float_t >::lengthSquared(lengthSquared847,19631
+template< size_t M,854,19708
+vector< M, float_t >::distance(distance856,19762
+template< size_t M,863,19899
+vector< M, float_t >::distanceSquared(distanceSquared865,19953
+template< size_t M,874,20130
+vector< M, float_t >::computeNormal(computeNormal876,20174
+template< size_t M,892,20472
+vector< M, float_t >::computeNormal(computeNormal894,20532
+template< size_t M,907,20784
+projectPointOntoSphere(910,20874
+template< size_t M,925,21313
+getDistanceToSphere(928,21390
+template< size_t M,939,21721
+vector< M, float_t >::getSphereCenter(getSphereCenter941,21789
+template< size_t M,950,22015
+vector< M, float_t >::getSphereCenter(getSphereCenter952,22089
+template< size_t M,961,22315
+vector< M, float_t >::getDistanceToPlane(getDistanceToPlane963,22369
+template< size_t M,974,22708
+vector< M, float_t >::projectPointOntoPlane(projectPointOntoPlane976,22768
+template< size_t M,986,23100
+vector< M, float_t >::operator==(operator==988,23144
+template< size_t M,999,23374
+vector< M, float_t >::operator!=(operator!=1001,23418
+template< size_t M,1007,23540
+isEqualTo(1010,23607
+template< size_t M,1026,23986
+vector< M, float_t >::operator=(operator=1028,24053
+template< size_t M,1036,24171
+vector< M, float_t >::operator=(operator=1038,24218
+template< size_t M,1050,24403
+vector< M, float_t >::operator=(operator=1052,24470
+template< size_t M,1061,24687
+vector< M, float_t >::operator=(operator=1064,24766
+template< size_t M,1074,24981
+vector< M, float_t >::copyFrom1DimCArray(copyFrom1DimCArray1076,25025
+template< size_t M,1083,25152
+vector< M, float_t >::copyFrom1DimCArray(copyFrom1DimCArray1086,25235
+template< size_t M,1096,25445
+vector< M, float_t >::getM(getM1098,25491
+template< size_t M,1105,25547
+vector< M, float_t >::getSmallestComponentIndex(getSmallestComponentIndex1107,25593
+template< size_t M,1120,25870
+vector< M, float_t >::getLargestComponentIndex(getLargestComponentIndex1122,25916
+template< size_t M,1135,26188
+vector< M, float_t >::getSmallestComponent(getSmallestComponent1137,26236
+template< size_t M,1144,26334
+vector< M, float_t >::getSmallestComponent(getSmallestComponent1146,26388
+template< size_t M,1153,26492
+vector< M, float_t >::getLargestComponent(getLargestComponent1155,26540
+template< size_t M,1162,26636
+vector< M, float_t >::getLargestComponent(getLargestComponent1164,26690
+
+include/vmmlib/vector2.h,3734
+#define __VMML__VECTOR2__H__11,175
+class Vector229,438
+    const T& operator[operator79,1991
+	friend std::ostream& operator << Vector2::operator <<149,4546
+    typedef T*                      iterator;Vector2::iterator163,5013
+    typedef const T*                const_iterator;Vector2::const_iterator164,5059
+    iterator begin(Vector2::begin166,5112
+    const_iterator begin(Vector2::begin167,5163
+    iterator end(Vector2::end168,5215
+    const_iterator end(Vector2::end169,5270
+typedef Vector2< unsigned char >    Vector2ub;176,5380
+typedef Vector2< int >              Vector2i;177,5427
+typedef Vector2< float >            Vector2f;178,5473
+typedef Vector2< double >           Vector2d;179,5519
+typedef Vector2< unsigned char >    vec2ub;181,5570
+typedef Vector2< int >              vec2i;182,5614
+typedef Vector2< float >            vec2f;183,5657
+typedef Vector2< double >           vec2d;184,5700
+namespace vmml191,5805
+Vector2< T >::Vector2(vmml::Vector2200,5929
+Vector2< T >::Vector2(vmml::Vector2206,5986
+Vector2< T >::Vector2(vmml::Vector2214,6075
+Vector2< T >::Vector2(vmml::Vector2222,6175
+Vector2< T >::Vector2(Vector2232,6419
+Vector2< T >::Vector2(Vector2242,6687
+Vector2< T >::~Vector2(~Vector2250,6837
+void Vector2< T >::set(set256,6893
+void Vector2< T >::set(set265,6989
+void Vector2< T >::set(set275,7234
+Vector2< T >::set(set290,7739
+Vector2< T >::set(set305,8193
+const Vector2< T >& Vector2< T >::operator=(operator=325,8569
+const Vector2< T >& Vector2< T >::operator=(operator=334,8689
+const Vector2< T >& Vector2< T >::operator=(operator=345,8859
+T  Vector2< T >::length(length373,9442
+inline float Vector2< float >::length(length379,9532
+T  Vector2< T >::lengthSquared(lengthSquared387,9651
+T  Vector2< T >::normalise(normalise395,9752
+T  Vector2< T >::normalise(normalise408,9921
+T  Vector2< T >::normalize(normalize423,10158
+T  Vector2< T >::normalize(normalize436,10327
+Vector2< T > Vector2< T >::getNormalized(getNormalized451,10562
+void Vector2< T >::scale(scale461,10704
+Vector2< T > Vector2< T >::operator+(operator+469,10811
+Vector2< T > Vector2< T >::operator-(operator-477,10940
+Vector2< T > Vector2< T >::operator*(operator*485,11069
+Vector2< T > Vector2< T >::operator/(operator/493,11197
+const Vector2< T >& Vector2< T >::operator+=(operator+=503,11364
+const Vector2< T >& Vector2< T >::operator-=(operator-=513,11497
+const Vector2< T >& Vector2< T >::operator*=(operator*=523,11630
+const Vector2< T >& Vector2< T >::operator/=(operator/=533,11763
+Vector2< T > Vector2< T >::operator+(operator+545,11943
+Vector2< T > Vector2< T >::operator-(operator-553,12081
+Vector2< T > Vector2< T >::operator*(operator*561,12219
+Vector2< T > Vector2< T >::operator/(operator/569,12358
+Vector2< T > Vector2< T >::operator-(operator-577,12497
+const Vector2< T >& Vector2< T >::operator+=(operator+=585,12606
+const Vector2< T >& Vector2< T >::operator-=(operator-=595,12755
+const Vector2< T >& Vector2< T >::operator*=(operator*=605,12903
+const Vector2< T >& Vector2< T >::operator/=(operator/=615,13051
+bool Vector2< T >::operator==(operator==625,13199
+bool Vector2< T >::operator!=(operator!=633,13327
+Vector2< T >::smaller(smaller644,13570
+Vector2< T >::smaller(smaller657,13790
+Vector2< T >::greater(greater666,13967
+Vector2< T >::greater(greater679,14187
+void Vector2< T >::invert(invert687,14350
+T Vector2< T >::getMaxComponent(getMaxComponent696,14438
+T Vector2< T >::getMinComponent(getMinComponent704,14540
+T Vector2< T >::getArea(getArea712,14643
+Vector2< T >::clamp(clamp720,14729
+Vector2< T >::randomize(randomize738,15009
+Vector2< T >::getString(getString750,15277
+
+include/vmmlib/vector3.h,4719
+#define __VMML__VECTOR3__H__18,389
+class Vector338,727
+    const T& operator[operator94,2464
+    friend std::ostream& operator << Vector3::operator <<186,5758
+    typedef T*                      iterator;Vector3::iterator202,6274
+    typedef const T*                const_iterator;Vector3::const_iterator203,6320
+    iterator begin(Vector3::begin205,6373
+    const_iterator begin(Vector3::begin206,6425
+    iterator end(Vector3::end207,6478
+    const_iterator end(Vector3::end208,6534
+typedef Vector3< float >            Vector3f;218,6689
+typedef Vector3< double >           Vector3d;219,6735
+typedef Vector3< int >              Vector3i;220,6781
+typedef Vector3< unsigned char >    Vector3ub;221,6827
+typedef Vector3< float >            vec3f;223,6879
+typedef Vector3< double >           vec3d;224,6922
+typedef Vector3< int >              vec3i;225,6965
+typedef Vector3< unsigned char >    vec3ub;226,7008
+namespace vmml235,7193
+Vector3< T >::Vector3(vmml::Vector3246,7399
+Vector3< T >::Vector3(vmml::Vector3250,7454
+Vector3< T >::Vector3(vmml::Vector3257,7554
+Vector3< T >::Vector3(vmml::Vector3266,7680
+Vector3< T >::Vector3(Vector3277,7860
+Vector3< T >::Vector3(Vector3287,8022
+Vector3< T >::Vector3(Vector3296,8213
+Vector3< T >::Vector3(Vector3307,8497
+Vector3< T >::~Vector3(~Vector3318,8782
+void Vector3< T >::set(set324,8838
+void Vector3< T >::set(set334,8953
+void Vector3< T >::set(set345,9238
+Vector3< T >::set(set360,9782
+Vector3< T >::set(set375,10236
+const Vector3< T >& Vector3< T >::operator=(operator=395,10613
+const Vector3< T >& Vector3< T >::operator=(operator=404,10737
+const Vector3< T >& Vector3< T >::operator=(operator=416,10928
+T  Vector3< T >::length(length446,11542
+inline float Vector3< float >::length(length452,11633
+T  Vector3< T >::lengthSquared(lengthSquared460,11752
+Vector3< T >::distance(distance469,11864
+Vector3< T >::distanceSquared(distanceSquared478,11989
+T  Vector3< T >::normalise(normalise486,12125
+T  Vector3< T >::normalise(normalise495,12269
+T  Vector3< T >::normalize(normalize503,12374
+T  Vector3< T >::normalize(normalize520,12638
+Vector3< T > Vector3< T >::getNormalized(getNormalized537,12939
+void Vector3< T >::scale(scale547,13081
+Vector3< T > Vector3< T >::operator+(operator+555,13188
+Vector3< T > Vector3< T >::operator-(operator-563,13324
+Vector3< T > Vector3< T >::operator*(operator*571,13459
+inline Vector3< T > Vector3< T >::operator/(operator/579,13594
+inline Vector3< float > Vector3< float >::operator/(operator/587,13718
+inline Vector3< double > Vector3< double >::operator/(operator/597,13899
+const Vector3< T >& Vector3< T >::operator+=(operator+=607,14093
+const Vector3< T >& Vector3< T >::operator-=(operator-=618,14239
+const Vector3< T >& Vector3< T >::operator*=(operator*=629,14385
+inline const Vector3< T >& Vector3< T >::operator/=(operator/=640,14530
+inline const Vector3< float >& Vector3< float >::operator/=(operator/=650,14670
+inline const Vector3< double >& Vector3< double >::operator/=(operator/=662,14842
+Vector3< T > Vector3< T >::operator+(operator+676,15057
+Vector3< T > Vector3< T >::operator-(operator-684,15212
+Vector3< T > Vector3< T >::operator*(operator*692,15367
+Vector3< T > Vector3< T >::operator/(operator/700,15523
+Vector3< T > Vector3< T >::operator-(operator-708,15679
+const Vector3< T >& Vector3< T >::operator+=(operator+=716,15792
+const Vector3< T >& Vector3< T >::operator-=(operator-=727,15964
+const Vector3< T >& Vector3< T >::operator*=(operator*=738,16135
+const Vector3< T >& Vector3< T >::operator/=(operator/=749,16306
+Vector3< T >::smaller(smaller761,16491
+Vector3< T >::smaller(smaller777,16760
+Vector3< T >::greater(greater786,16943
+Vector3< T >::greater(greater802,17212
+Vector3< T > Vector3< T >::cross(cross811,17427
+void Vector3< T >::cross(cross822,17699
+T Vector3< T >::dot(dot832,17905
+T Vector3< T >::dot(dot840,18033
+bool Vector3< T >::operator<(operator<848,18220
+bool Vector3< T >::operator==(operator==858,18411
+Vector3< T >::operator!=(operator!=867,18564
+Vector3< T >::isAkin(isAkin876,18711
+Vector3< float >::isAkin(isAkin889,18939
+Vector3< T >::clamp(clamp901,19182
+void Vector3< T >::invert(invert923,19541
+void Vector3< T >::normal(normal934,19663
+Vector3< T > Vector3< T >::normal(normal951,20045
+Vector3< T > Vector3< T >::rotate(rotate963,20274
+inline Vector3< float > Vector3< float >::rotate(rotate989,21184
+T Vector3< T >::getMaxComponent(getMaxComponent1016,22180
+T Vector3< T >::getMinComponent(getMinComponent1027,22318
+Vector3< T >::randomize(randomize1038,22461
+Vector3< T >::getString(getString1051,22762
+
+include/vmmlib/vector4.h,4746
+#define __VMML__VECTOR4__H__18,389
+class Vector437,672
+    const T& operator[operator110,2834
+    friend std::ostream& operator << Vector4::operator <<188,5493
+    typedef T*                      iterator;Vector4::iterator212,6540
+    typedef const T*                const_iterator;Vector4::const_iterator213,6586
+    iterator begin(Vector4::begin215,6639
+    const_iterator begin(Vector4::begin216,6692
+    iterator end(Vector4::end217,6746
+    const_iterator end(Vector4::end218,6803
+typedef Vector4< float >            Vector4f;225,6915
+typedef Vector4< double >           Vector4d;226,6961
+typedef Vector4< int >              Vector4i;227,7007
+typedef Vector4< unsigned char >    Vector4ub;228,7053
+typedef Vector4< float >            vec4f;230,7101
+typedef Vector4< double >           vec4d;231,7144
+typedef Vector4< int >              vec4i;232,7187
+typedef Vector4< unsigned char >    vec4ub;233,7230
+namespace vmml243,7411
+Vector4< T >::Vector4(vmml::Vector4252,7534
+Vector4< T >::Vector4(vmml::Vector4258,7591
+Vector4< T >::Vector4(vmml::Vector4268,7717
+Vector4< T >::Vector4(vmml::Vector4279,7902
+Vector4< T >::Vector4(Vector4291,8226
+Vector4< T >::Vector4(Vector4303,8551
+Vector4< T >::Vector4(Vector4314,8734
+Vector4< T >::~Vector4(~Vector4324,8971
+void Vector4< T >::set(set330,9027
+void Vector4< T >::set(set341,9160
+void Vector4< T >::set(set353,9486
+Vector4< T >::set(set366,9818
+Vector4< T >::set(set382,10216
+Vector4< T >::set(set397,10670
+const Vector4< T >& Vector4< T >::operator=(operator=417,11048
+const Vector4< T >& Vector4< T >::operator=(operator=426,11178
+const Vector4< T >& Vector4< T >::operator=(operator=436,11355
+const Vector4< T >& Vector4< T >::operator=(operator=449,11557
+T  Vector4< T >::length(length479,12195
+inline float Vector4< float >::length(length485,12285
+T  Vector4< T >::lengthSquared(lengthSquared493,12404
+T Vector4< T >::normalise(normalise501,12521
+T Vector4< T >::normalize(normalize509,12604
+Vector4< T > Vector4< T >::getNormalized(getNormalized526,12822
+void Vector4< T >::normalizePlane(normalizePlane536,12965
+inline void Vector4< float >::normalizePlane(normalizePlane547,13138
+Vector4< T >::getNormalizedVector3(getNormalizedVector3559,13354
+Vector4< T > Vector4< T >::operator+(operator+568,13559
+Vector4< T > Vector4< T >::operator-(operator-576,13707
+Vector4< T > Vector4< T >::operator*(operator*584,13855
+inline Vector4< T > Vector4< T >::operator/(operator/592,14002
+inline Vector4< float > Vector4< float >::operator/(operator/600,14143
+inline Vector4< double > Vector4< double >::operator/(operator/610,14348
+Vector4< T > Vector4< T >::operator-(operator-620,14567
+const Vector4< T >& Vector4< T >::operator+=(operator+=628,14684
+const Vector4< T >& Vector4< T >::operator-=(operator-=640,14847
+const Vector4< T >& Vector4< T >::operator*=(operator*=652,15010
+inline const Vector4< T >& Vector4< T >::operator/=(operator/=664,15172
+inline const Vector4< float >& Vector4< float >::operator/=(operator/=676,15330
+inline const Vector4< double >& Vector4< double >::operator/=(operator/=689,15521
+Vector4< T > Vector4< T >::operator+(operator+703,15755
+Vector4< T > Vector4< T >::operator-(operator-711,15917
+Vector4< T > Vector4< T >::operator*(operator*719,16078
+Vector4< T > Vector4< T >::operator/(operator/727,16240
+const Vector4< T >& Vector4< T >::operator+=(operator+=735,16402
+const Vector4< T >& Vector4< T >::operator-=(operator-=747,16585
+const Vector4< T >& Vector4< T >::operator*=(operator*=759,16767
+const Vector4< T >& Vector4< T >::operator/=(operator/=771,16949
+T Vector4< T >::dot(dot782,17130
+bool Vector4< T >::operator==(operator==790,17266
+bool Vector4< T >::operator!=(operator!=798,17423
+bool Vector4< T >::isAkin(isAkin806,17579
+Vector4< T >::clamp(clamp819,17844
+Vector4< T >::smaller(smaller848,18304
+Vector4< T >::smaller(smaller866,18615
+Vector4< T >::greater(greater875,18800
+Vector4< T >::greater(greater893,19111
+inline bool Vector4< float >::isAkin(isAkin900,19269
+void Vector4< T >::invert(invert912,19548
+T Vector4< T >::getMaxComponent(getMaxComponent923,19661
+T Vector4< T >::getMinComponent(getMinComponent934,19824
+Vector4< T >::projectPointOntoSphere(projectPointOntoSphere946,20007
+Vector4< T >::getDistanceToSphere(getDistanceToSphere956,20260
+Vector4< T >::getSphereCenter(getSphereCenter965,20507
+Vector4< T >::getSphereCenter(getSphereCenter974,20649
+Vector4< T >::projectPointOntoPlane(projectPointOntoPlane983,20796
+Vector4< T >::getDistanceToPlane(getDistanceToPlane993,21046
+Vector4< T >::randomize(randomize1003,21274
+Vector4< T >::getString(getString1017,21608
+
+include/vmmlib/visibility.h,144
+#define __VMML__VISIBILITY__H__2,32
+enum Visibility7,83
+    VISIBILITY_NONE 9,101
+    VISIBILITY_PARTIAL 10,130
+    VISIBILITY_FULL 11,159
+
+include/vmmlib/visibility.hpp,288
+#define __VMML__VISIBILITY__HPP__2,34
+namespace vmml4,69
+enum Visibilityvmml::Visibility7,87
+    VISIBILITY_NONE vmml::Visibility::VISIBILITY_NONE9,105
+    VISIBILITY_PARTIAL vmml::Visibility::VISIBILITY_PARTIAL10,134
+    VISIBILITY_FULL vmml::Visibility::VISIBILITY_FULL11,163
+
+include/vmmlib/vmmlib.h,35
+#define __VMML__VMMLIB__H__19,389
+
+include/vmmlib/vmmlib.hpp,37
+#define __VMML__VMMLIB__HPP__19,391
+
+include/vmmlib/vmmlib_config.hpp,129
+#define __VMML__VMMLIB_CONFIG__HPP__2,37
+        #define VMMLIB_SAFE_ACCESSORS7,124
+    #define VMMLIB_THROW_EXCEPTIONS10,174
+
+lib/strnatcmp.cpp,192
+nat_isdigit(44,1570
+nat_isspace(51,1658
+nat_toupper(58,1751
+compare_right(66,1833
+compare_left(96,2528
+static int strnatcmp0(117,2974
+int strnatcmp(170,4042
+int strnatcasecmp(176,4194
+
+lib/strnatcmp.h,31
+typedef char nat_char;28,1153
+
+src/_template_/example.cpp,20
+#define DEBUG 4,23
+
+src/_template_/example.h,76
+#define EXAMPLE_H2,18
+class Example 10,52
+private:Example::private14,78
+
+src/_template_/main.cpp,15
+int main(6,75
+
+src/_template_/singleton.cpp,198
+#define DEBUG 5,29
+OmTagManager* OmTagManager::mspInstance 10,72
+OmTagManager::OmTagManager(22,240
+OmTagManager::~OmTagManager(26,277
+OmTagManager::Instance(34,333
+OmTagManager::Delete(43,455
+
+src/_template_/singleton.h,89
+#define OM_TAG_MANAGER_H2,25
+class OmTagManager 13,127
+OmTagManager::serialize(55,801
+
+src/common/omBoost.h,49
+#define OM_THREADS_H9,119
+isMutexLocked(18,180
+
+src/common/omGl.cpp,385
+#define OM_GL_UTILITY_H9,122
+#define SELEC_BUFF_SIZE 15,186
+static GLuint selectBuf[selectBuf16,214
+#define PICKING_WINDOW_DIM 32,481
+startPicking(36,565
+stopPicking(63,1217
+processHits(89,1646
+unprojectPixel(143,2776
+pushGlState(179,3598
+popGlState(188,3757
+drawBox(204,4002
+omglWireCube(247,4904
+omglSolidCube(253,4973
+glDrawAxis(268,5157
+glDrawPositiveAxis(300,5933
+
+src/common/omGl.h,430
+#define OM_GL_H9,114
+#define GL_GLEXT_PROTOTYPES11,131
+#define CHECK_OPENGL_ERROR(30,502
+static const float OMGL_WHITE[OMGL_WHITE44,762
+static const float OMGL_BLACK[OMGL_BLACK45,808
+static const float OMGL_RED[OMGL_RED46,854
+static const float OMGL_GREEN[OMGL_GREEN47,898
+static const float OMGL_BLUE[OMGL_BLUE48,944
+inline void glTranslatefv(55,1013
+inline void glScalefv(59,1093
+inline void glColor3fva(63,1165
+
+src/common/omSerialization.h,239
+#define OM_SERIALIZATION_H10,115
+#define OM_ARCHIVE_IN_CLASS 15,146
+#define OM_ARCHIVE_OUT_CLASS 16,206
+#define GENERATE_ELEMENT_SERIALIZE(56,1136
+#define GENERATE_TUPLE_SERIALIZE(59,1256
+archive_read(91,1983
+archive_write(104,2188
+
+src/common/omStd.cpp,512
+#define ERROR_IGNORE 8,101
+#define ERROR_CONTINUE 9,124
+#define ERROR_ABORT 10,149
+static void processError(13,201
+void Info(32,618
+void Warning(38,767
+void Error(44,920
+void Severe(50,1069
+#define N 93,2834
+#define M 94,2848
+#define MATRIX_A 95,2862
+#define UPPER_MASK 96,2918
+#define LOWER_MASK 97,2982
+static unsigned long mt[mt99,3046
+static int mti=100,3112
+static void init_genrand(102,3205
+unsigned long genrand_int32(115,3674
+float genrand_real1(152,4582
+float genrand_real2(158,4750
+
+src/common/omStd.h,2102
+#define OM_STD_H10,172
+using std::min;18,271
+using std::max;19,287
+using std::swap;20,303
+using std::sort;21,320
+using std::cout;26,379
+using std::endl;27,396
+using std::ostream;28,413
+using std::map;31,449
+using std::set;36,500
+using std::string;39,535
+using std::ostringstream;42,574
+using std::vector;45,619
+#define powf 50,691
+#define sinf 51,708
+#define cosf 52,725
+#define tanf 53,742
+#define asinf 54,759
+#define acosf 55,778
+#define atanf 56,797
+#define atan2f 57,816
+#define logf 58,837
+#define log10f 59,854
+#define expf 60,875
+#define sqrtf 61,892
+typedef __signed char int8_t;68,1032
+typedef unsigned char uint8_t;69,1062
+typedef short int16_t;70,1093
+typedef unsigned short uint16_t;71,1116
+typedef int int32_t;72,1149
+typedef unsigned int uint32_t;73,1170
+typedef unsigned int u_int;77,1270
+typedef unsigned long u_long;78,1298
+#define MAX_FNAME_SIZE	83,1351
+#define BYTES_PER_MB 84,1378
+#undef M_PI87,1420
+#define M_PI	89,1439
+#define INV_PI	90,1478
+#define INV_TWOPI	91,1519
+#define INFINITY	93,1579
+#define EPSILON 95,1612
+#define VERSION 96,1635
+#define PRINTF_FUNC 102,1736
+#define PRINTF_FUNC105,1813
+#define DEPRECATED(108,1853
+#define Assert(128,2260
+#define Assert(130,2297
+#define DOUT(137,2464
+#define MIN(142,2583
+#define MAX(149,2721
+#define ROUNDDOWN(158,2960
+#define ROUNDUP(164,3126
+inline float Lerp(174,3302
+inline float Clamp(177,3386
+inline int Clamp(182,3524
+inline int Mod(187,3654
+inline float Radians(194,3768
+inline float Degrees(197,3839
+inline float Log2(200,3910
+inline int Log2Int(204,4009
+#define _doublemagicroundeps	208,4106
+inline bool IsPowerOf2(212,4208
+inline uint32_t RoundUpPow2(215,4270
+#define _doublemagicroundeps	227,4496
+inline int Round2Int(229,4589
+#define _doublemagic	231,4640
+inline int Float2Int(239,4866
+inline int Floor2Int(247,5049
+inline int Ceil2Int(254,5187
+inline bool Quadratic(273,5514
+inline float SmoothStep(288,5932
+inline float ExponentialAverage(292,6087
+inline string i2str(300,6245
+inline void printf2str(309,6391
+inline string printf2str(323,6872
+
+src/common/omThreads.h,49
+#define OM_THREADS_H9,119
+isMutexLocked(18,180
+
+src/common/omUtility.h,109
+#define OM_UTILITY_H9,109
+setIntersection(17,181
+setDifference(36,658
+setUnion(54,1036
+setPrint(69,1383
+
+src/common/omVtk.h,80
+#define OM_VTK_H2,17
+bytesToVtkScalarType(16,163
+vtkScalarTypeToBytes(32,341
+
+src/gui/chanInspector.cpp,515
+#define DEBUG 10,152
+ChanInspector::ChanInspector(12,169
+void ChanInspector::setId(21,329
+void ChanInspector::on_nameEdit_editingFinished(26,390
+void ChanInspector::on_browseButton_clicked(31,515
+void ChanInspector::on_exportButton_clicked(54,1175
+void ChanInspector::on_patternEdit_editingFinished(66,1511
+void ChanInspector::on_patternEdit_textChanged(72,1658
+void intermediate_build_call(91,2265
+void ChanInspector::on_buildButton_clicked(99,2463
+void ChanInspector::on_notesEdit_textChanged(122,3258
+
+src/gui/chanInspector.h,57
+#define CHANINSPECTOR_H2,24
+class ChanInspector 10,166
+
+src/gui/dataWrappers.cpp,566
+DataWrapperFactory::DataWrapperFactory(3,27
+ChannelDataWrapper::ChannelDataWrapper(16,303
+SegmentationDataWrapper::SegmentationDataWrapper(24,542
+QHash< OmId, SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames(32,813
+SegmentDataWrapper::SegmentDataWrapper(50,1279
+bool SegmentDataWrapper::isSelected(63,1636
+void SegmentDataWrapper::setSelected(68,1698
+bool SegmentDataWrapper::isCheckedOff(73,1790
+void SegmentDataWrapper::setCheckedOff(78,1853
+QString SegmentDataWrapper::getNote(83,1950
+FilterDataWrapper::FilterDataWrapper(89,1995
+
+src/gui/dataWrappers.h,1246
+#define DATA_WRAPPERS2,22
+class DataWrapper14,235
+	DataWrapper(DataWrapper::DataWrapper18,265
+	DataWrapper(DataWrapper::DataWrapper19,282
+	OmId getID(DataWrapper::getID22,364
+     QString getName(DataWrapper::getName23,403
+	ObjectType getType(DataWrapper::getType24,446
+	bool isEnabled(DataWrapper::isEnabled25,485
+class ChannelDataWrapper 33,605
+	ChannelDataWrapper(ChannelDataWrapper::ChannelDataWrapper36,663
+class SegmentationDataWrapper 40,730
+	SegmentationDataWrapper(SegmentationDataWrapper::SegmentationDataWrapper43,793
+class SegmentDataWrapper 48,933
+	SegmentDataWrapper(SegmentDataWrapper::SegmentDataWrapper51,991
+	OmId getSegmentationID(SegmentDataWrapper::getSegmentationID56,1137
+class FilterDataWrapper 68,1414
+	FilterDataWrapper(FilterDataWrapper::FilterDataWrapper71,1471
+	OmId getChannelID(FilterDataWrapper::getChannelID73,1532
+class DataWrapperFactory 79,1608
+	DataWrapperFactory(DataWrapperFactory::DataWrapperFactory82,1645
+	ObjectType         getType(DataWrapperFactory::getType84,1738
+	SegmentationDataWrapper getSegmentationDataWrapper(DataWrapperFactory::getSegmentationDataWrapper86,1800
+	ChannelDataWrapper getChannelDataWrapper(DataWrapperFactory::getChannelDataWrapper87,1874
+
+src/gui/filObjectInspector.cpp,45
+FilObjectInspector::FilObjectInspector(4,52
+
+src/gui/filObjectInspector.h,115
+#define FILOBJECTINSPECTOR_H2,29
+class FilObjectInspector 7,116
+	private slots:FilObjectInspector::slots15,267
+
+src/gui/glview.cpp,1185
+#define DEBUG 11,168
+GLview::GLview(13,185
+void GLview::setView(75,1356
+string GLview::getView(81,1426
+void GLview::setIDs(85,1471
+void GLview::setMipVolume(97,1582
+void GLview::getVolumeProperties(149,3021
+void GLview::initializeGL(155,3066
+void GLview::extract_data(182,3791
+void GLview::extract_data(187,3846
+void GLview::extract_data_initial(418,12286
+int GLview::setTexture(661,20766
+void GLview::resizeGL(717,22486
+void GLview::paintEvent(799,24784
+void GLview::draw(889,26832
+void GLview::mousePressEvent(1008,30743
+void GLview::mouseReleaseEvent(1017,30890
+void GLview::mouseMoveEvent(1032,31150
+void GLview::keyPressEvent(1065,31812
+bool GLview::check_depth(1109,32566
+void GLview::view_zoom(1114,32693
+void GLview::view_scrub(1188,35742
+void GLview::view_pan(1217,36202
+void GLview::animate_cursors(1242,36820
+void GLview::view_set_cursor(1247,36858
+void GLview::update_xy_line(1268,37251
+void GLview::update_xz_line(1287,37680
+void GLview::update_yz_line(1309,38117
+void GLview::update_viewport(1333,38556
+DataBbox GLview::merge_bounding_boxes(1345,39042
+DataBbox GLview::merge_bounding_boxes(1384,40110
+void GLview::setMyColorMap(1437,41536
+
+src/gui/glview.h,183
+#define GLVIEW_H 2,17
+using boost::shared_ptr;20,291
+using boost::tuple;23,361
+class GLview 27,402
+		struct rect GLview::rect90,2085
+		struct the_view GLview::the_view95,2141
+
+src/gui/inspectorHelpers/channelHelper.cpp,131
+ChannelHelper::ChannelHelper(5,63
+void ChannelHelper::addToSplitter(11,177
+void ChannelHelper::populateChannelInspector(39,1027
+
+src/gui/inspectorHelpers/channelHelper.h,63
+#define _HELPER_CHANNEL_HELPER2,31
+class ChannelHelper 9,157
+
+src/gui/inspectorHelpers/inspectorHelper.h,135
+#define INSPECTOR_HELPER_INSPECTOR_HELPER2,42
+class InspectorHelper 11,180
+	InspectorHelper(InspectorHelper::InspectorHelper13,230
+
+src/gui/inspectorHelpers/inspectorSearch.h,30
+#define INSPECTOR_SEARCH2,25
+
+src/gui/inspectorHelpers/segmentationHelper.cpp,156
+SegmentationHelper::SegmentationHelper(5,68
+void SegmentationHelper::addToSplitter(10,195
+void SegmentationHelper::populateSegmentationInspector(41,1480
+
+src/gui/inspectorHelpers/segmentationHelper.h,82
+#define INSPECTOR_HELPER_SEGMENTATION_HELPER2,45
+class SegmentationHelper 9,181
+
+src/gui/main.cpp,73
+GGOCTFPointer GGOCTFunction 8,128
+int firsttime 9,161
+int main(38,724
+
+src/gui/mainwindow.cpp,2194
+using boost::shared_ptr;38,879
+using boost::tuple;45,1070
+#define DEBUG 47,1091
+MainWindow::MainWindow(51,1148
+void MainWindow::newProject(109,2611
+void MainWindow::addChannelToVolume(179,4560
+void MainWindow::addSegmentationToVolume(196,4847
+void MainWindow::buildAll(213,5163
+void channel_build(278,6992
+void seg_build(284,7149
+void mesh_build(288,7231
+bool MainWindow::closeProjectIfOpen(295,7462
+void MainWindow::openRecentFile(323,7931
+void MainWindow::openProject(339,8146
+void MainWindow::openProject(365,8661
+void MainWindow::openProject(377,8916
+void MainWindow::closeProject(426,10545
+bool MainWindow::saveProject(436,10670
+void MainWindow::openInspector(451,10912
+void MainWindow::openUndoView(489,11996
+void MainWindow::open3dView(517,12546
+void MainWindow::openChannelView(552,13260
+void MainWindow::openSegmentationView(592,14259
+void MainWindow::ChangeModeNavigation(627,15239
+void MainWindow::ChangeModeEdit(652,15734
+void MainWindow::ChangeToolZoom(675,16139
+void MainWindow::ChangeToolPan(701,16612
+void MainWindow::ChangeToolAdd(727,17084
+void MainWindow::ChangeToolSubtract(756,17676
+void MainWindow::ChangeToolSelect(784,18220
+void MainWindow::updateComboBoxes(812,18796
+void MainWindow::updateKeyShortcuts(831,19282
+void MainWindow::changeSelection(861,20095
+bool MainWindow::eventFilter(909,21452
+void MainWindow::closeEvent(914,21519
+void MainWindow::SegmentObjectModificationEvent(942,21995
+void MainWindow::SegmentEditSelectionChangeEvent(966,22398
+void MainWindow::SystemModeChangeEvent(1013,23594
+void MainWindow::AlertNotifyEvent(1035,23919
+void MainWindow::ProgressShow(1066,24622
+void MainWindow::ProgressHide(1109,25764
+void MainWindow::ProgressRangeEvent(1129,26182
+void MainWindow::ProgressValueEvent(1163,26939
+void MainWindow::ProgressIncrementEvent(1185,27379
+void MainWindow::updateStatusBar(1216,28059
+void MainWindow::createActions(1221,28101
+void MainWindow::createMenus(1340,33222
+void MainWindow::createToolBars(1375,34186
+void MainWindow::createStatusBar(1413,35325
+void MainWindow::createDockWindows(1418,35408
+bool MainWindow::checkForSave(1438,35878
+void MainWindow::spawnErrorDialog(1478,36647
+
+src/gui/mainwindow.h,51
+#define MAINWINDOW_H2,21
+class MainWindow 46,775
+
+src/gui/myInspectorWidget.cpp,2791
+#define DEBUG 49,1086
+MyInspectorWidget::MyInspectorWidget(51,1103
+QTreeWidget* MyInspectorWidget::setupDataElementList(106,3005
+QTreeWidget* MyInspectorWidget::setupDataSrcList(120,3466
+QTreeWidget* MyInspectorWidget::setupVolumeList(149,4546
+MyInspectorWidget::~MyInspectorWidget(177,5727
+Qt::CheckState MyInspectorWidget::getCheckState(182,5791
+void MyInspectorWidget::setRowFlagsAndCheckState(191,5941
+void MyInspectorWidget::populateDataSrcListWidget(197,6191
+void MyInspectorWidget::rebuildSegmentList(224,7275
+void MyInspectorWidget::populateSegmentElementsListWidget(235,7596
+void MyInspectorWidget::populateChannelElementsListWidget(267,8812
+void MyInspectorWidget::addPreferencesToSplitter(272,8931
+void MyInspectorWidget::addChannelToSplitter(302,9875
+void MyInspectorWidget::addSegmentationToSplitter(329,10639
+void MyInspectorWidget::addToSplitterDataElementSegment(363,11646
+void MyInspectorWidget::addToSplitterDataElementFilter(392,12654
+void MyInspectorWidget::addToSplitterDataSource(422,13744
+void MyInspectorWidget::showChannelContextMenu(442,14361
+void MyInspectorWidget::showSegmentationContextMenu(452,14663
+QMenu* MyInspectorWidget::makeDataSrcContextMenu(462,14975
+QMenu* MyInspectorWidget::makeContextMenuBase(475,15362
+void  MyInspectorWidget::addChannelToVolume(495,15911
+void  MyInspectorWidget::addSegmentationToVolume(501,16053
+void MyInspectorWidget::doDataSrcContextMenuVolAdd(507,16225
+void MyInspectorWidget::showDataSrcContextMenu(519,16500
+ViewType MyInspectorWidget::getViewType(548,17463
+void MyInspectorWidget::selectChannelView(561,17732
+ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel(567,17918
+bool MyInspectorWidget::isThereASegmentationSelected(575,18219
+SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation(592,18620
+void MyInspectorWidget::selectSegmentationView(603,18994
+void MyInspectorWidget::addToVolume(611,19279
+void MyInspectorWidget::addFilter(616,19398
+void MyInspectorWidget::addSegment(629,19811
+void MyInspectorWidget::refreshWidgetData(642,20262
+void MyInspectorWidget::sourceEditChangedChan(648,20386
+void MyInspectorWidget::sourceEditChangedSeg(666,20990
+void MyInspectorWidget::nameEditChanged(686,21601
+void MyInspectorWidget::populateChannelInspector(704,22388
+void MyInspectorWidget::populateSegmentationInspector(737,23732
+void MyInspectorWidget::populateFilterObjectInspector(765,24969
+void MyInspectorWidget::populateSegmentObjectInspector(777,25507
+void MyInspectorWidget::setFilAlpha(810,26667
+void MyInspectorWidget::setSegObjColor(821,27083
+void MyInspectorWidget::addChildrenToSegmentation(850,27945
+void MyInspectorWidget::SegmentSelectionChangeEvent(855,28123
+void MyInspectorWidget::SegmentObjectModificationEvent(860,28271
+
+src/gui/myInspectorWidget.h,66
+#define MYINSPECTORWIDGET_H2,28
+class MyInspectorWidget 54,1119
+
+src/gui/preferences2d.cpp,465
+#define DEBUG 14,326
+Preferences2d::Preferences2d(16,344
+void Preferences2d::on_volEdit_editingFinished(55,1869
+void Preferences2d::on_tileEdit_editingFinished(64,2145
+void Preferences2d::on_depthEdit_editingFinished(71,2328
+void Preferences2d::on_sideEdit_editingFinished(76,2478
+void Preferences2d::on_mipEdit_editingFinished(81,2626
+void Preferences2d::on_transparencySlider_valueChanged(87,2771
+void Preferences2d::on_infoCheckBox_stateChanged(97,3051
+
+src/gui/preferences2d.h,56
+#define PREFERENCES2D_H2,24
+class Preferences2d 7,101
+
+src/gui/preferences3d.cpp,908
+#define DEBUG 13,286
+Preferences3d::Preferences3d(15,303
+void Preferences3d::on_antiAliasingCheckBox_stateChanged(59,2573
+void Preferences3d::on_bgColorPicker_clicked(67,2820
+void Preferences3d::on_highlightCheckBox_stateChanged(86,3326
+void Preferences3d::on_highlightColorPicker_clicked(93,3570
+void Preferences3d::on_transparentCheckBox_stateChanged(111,4094
+void Preferences3d::on_fovSlider_valueChanged(118,4347
+void Preferences3d::on_nearplaneSlider_valueChanged(125,4569
+void Preferences3d::on_farplaneSlider_valueChanged(132,4810
+void Preferences3d::on_axisCheckBox_stateChanged(139,5048
+void Preferences3d::on_chunksCheckBox_stateChanged(146,5274
+void Preferences3d::on_infoCheckBox_stateChanged(153,5512
+void Preferences3d::on_focusCheckBox_stateChanged(160,5738
+void Preferences3d::on_styleComboBox_currentIndexChanged(167,5967
+void Preferences3d::alphaSliderValueChanged(174,6206
+
+src/gui/preferences3d.h,56
+#define PREFERENCES3D_H2,24
+class Preferences3d 7,101
+
+src/gui/preferencesMesh.cpp,209
+PreferencesMesh::PreferencesMesh(10,205
+void PreferencesMesh::on_tdpSlider_valueChanged(25,708
+void PreferencesMesh::on_pasSlider_valueChanged(33,929
+void PreferencesMesh::on_nsSlider_valueChanged(40,1154
+
+src/gui/preferencesMesh.h,60
+#define PREFERENCESMESH_H2,26
+class PreferencesMesh 7,107
+
+src/gui/recentFileList.cpp,521
+RecentFileList::RecentFileList(16,441
+RecentFileList::~RecentFileList(20,479
+QStringList RecentFileList::getRecentFiles(24,518
+int RecentFileList::getMaxNumberOfRecentlyUsedFilesToDisplay(34,731
+int RecentFileList::getNumberOfFilesToShow(39,835
+void RecentFileList::addFile(52,1093
+void RecentFileList::updateRecentFilesMenu(66,1421
+QString RecentFileList::getRecentlyUsedFilesName(78,1772
+void RecentFileList::loadRecentlyUsedFilesListFromFS(88,2069
+void RecentFileList::writeRecentlyUsedFileListToFS(114,2700
+
+src/gui/recentFileList.h,102
+#define RECENT_FILE_LIST_H2,27
+enum { MAX_NUMBER_OF_RECENT_FILES 9,157
+class RecentFileList 11,199
+
+src/gui/segInspector.cpp,518
+#define DEBUG 10,151
+SegInspector::SegInspector(12,168
+void SegInspector::setId(21,324
+void SegInspector::on_nameEdit_editingFinished(26,384
+void SegInspector::on_browseButton_clicked(31,513
+void SegInspector::on_exportButton_clicked(52,1174
+void SegInspector::on_patternEdit_editingFinished(64,1514
+void SegInspector::on_patternEdit_textChanged(69,1664
+void build_image(87,2191
+void build_mesh(92,2297
+void SegInspector::on_buildButton_clicked(97,2399
+void SegInspector::on_notesEdit_textChanged(131,3445
+
+src/gui/segInspector.h,54
+#define SEGINSPECTOR_H2,23
+class SegInspector 9,167
+
+src/gui/segObjectInspector.cpp,239
+SegObjectInspector::SegObjectInspector(4,52
+void SegObjectInspector::setSegmentationID(12,198
+OmId SegObjectInspector::getSegmentationID(17,297
+void SegObjectInspector::setSegmentID(22,371
+OmId SegObjectInspector::getSegmentID(27,454
+
+src/gui/segObjectInspector.h,66
+#define SEGOBJECTINSPECTOR_H2,29
+class SegObjectInspector 9,151
+
+src/gui/segglview.cpp,1322
+#define DEBUG 9,146
+SegGLview::SegGLview(11,163
+void SegGLview::setView(73,1373
+string SegGLview::getView(79,1446
+void SegGLview::setIDs(83,1494
+void SegGLview::setMipVolume(93,1612
+void SegGLview::getVolumeProperties(139,2918
+void SegGLview::initializeGL(145,2966
+void SegGLview::extract_data(184,3945
+void SegGLview::extract_data(189,4003
+void SegGLview::extract_data_initial(542,17420
+int SegGLview::setTexture(900,30887
+int SegGLview::setSegTexture(941,32134
+void SegGLview::resizeGL(980,33296
+void SegGLview::paintEvent(1062,35599
+void SegGLview::draw(1152,37646
+void SegGLview::mousePressEvent(1332,44022
+void SegGLview::mouseReleaseEvent(1341,44172
+void SegGLview::mouseMoveEvent(1356,44435
+void SegGLview::keyPressEvent(1389,45103
+bool SegGLview::check_depth(1433,45863
+void SegGLview::view_zoom(1438,45994
+void SegGLview::view_scrub(1512,49045
+void SegGLview::view_pan(1541,49506
+void SegGLview::animate_cursors(1566,50127
+void SegGLview::view_set_cursor(1571,50168
+void SegGLview::update_xy_line(1592,50564
+void SegGLview::update_xz_line(1611,50997
+void SegGLview::update_yz_line(1633,51437
+void SegGLview::update_viewport(1657,51880
+DataBbox SegGLview::merge_bounding_boxes(1669,52369
+DataBbox SegGLview::merge_bounding_boxes(1708,53440
+void SegGLview::setMyColorMap(1761,54869
+
+src/gui/segglview.h,195
+#define SEGGLVIEW_H 2,20
+using boost::shared_ptr;20,297
+using boost::tuple;23,367
+class SegGLview 29,447
+		struct rect SegGLview::rect81,1999
+		struct the_view SegGLview::the_view86,2055
+
+src/gui/ui_chanInspector.h,232
+#define UI_CHANINSPECTOR_H11,427
+class Ui_chanInspector34,982
+    void setupUi(68,1950
+    void retranslateUi(Ui_chanInspector::retranslateUi225,8216
+namespace Ui 253,10160
+    class chanInspector:Ui::chanInspector254,10175
+
+src/gui/ui_filObjectInspector.h,255
+#define UI_FILOBJECTINSPECTOR_H11,436
+class Ui_filObjectInspector30,878
+    void setupUi(50,1364
+    void retranslateUi(Ui_filObjectInspector::retranslateUi136,4586
+namespace Ui 155,5583
+    class filObjectInspector:Ui::filObjectInspector156,5598
+
+src/gui/ui_preferences2d.h,232
+#define UI_PREFERENCES2D_H11,427
+class Ui_preferences2d31,888
+    void setupUi(66,1868
+    void retranslateUi(Ui_preferences2d::retranslateUi219,7781
+namespace Ui 260,10211
+    class preferences2d:Ui::preferences2d261,10226
+
+src/gui/ui_preferences3d.h,233
+#define UI_PREFERENCES3D_H11,427
+class Ui_preferences3d30,859
+    void setupUi(74,2136
+    void retranslateUi(Ui_preferences3d::retranslateUi308,11275
+namespace Ui 344,13985
+    class preferences3d:Ui::preferences3d345,14000
+
+src/gui/ui_preferencesMesh.h,240
+#define UI_PREFERENCESMESH_H11,431
+class Ui_preferencesMesh27,782
+    void setupUi(49,1340
+    void retranslateUi(Ui_preferencesMesh::retranslateUi171,5753
+namespace Ui 186,6523
+    class preferencesMesh:Ui::preferencesMesh187,6538
+
+src/gui/ui_segInspector.h,228
+#define UI_SEGINSPECTOR_H11,424
+class Ui_segInspector36,1031
+    void setupUi(78,2228
+    void retranslateUi(Ui_segInspector::retranslateUi256,9354
+namespace Ui 284,11330
+    class segInspector:Ui::segInspector285,11345
+
+src/gui/ui_segObjectInspector.h,255
+#define UI_SEGOBJECTINSPECTOR_H11,436
+class Ui_segObjectInspector29,853
+    void setupUi(48,1313
+    void retranslateUi(Ui_segObjectInspector::retranslateUi130,4331
+namespace Ui 147,5295
+    class segObjectInspector:Ui::segObjectInspector148,5310
+
+src/gui/ui_volumeInspector.h,243
+#define UI_VOLUMEINSPECTOR_H11,430
+class Ui_volumeInspector34,980
+    void setupUi(73,2022
+    void retranslateUi(Ui_volumeInspector::retranslateUi274,10130
+namespace Ui 318,13336
+    class volumeInspector:Ui::volumeInspector319,13351
+
+src/gui/volumeInspector.cpp,519
+VolumeInspector::VolumeInspector(14,276
+void VolumeInspector::on_nameEdit_editingFinished(60,2187
+void VolumeInspector::on_scaleEdit_editingFinished(66,2309
+void VolumeInspector::on_resolutionEdit_editingFinished(81,2744
+void VolumeInspector::on_extentEdit_editingFinished(96,3180
+void VolumeInspector::on_notesEdit_textChanged(122,4134
+void VolumeInspector::on_sizeSlider_valueChanged(129,4263
+void VolumeInspector::on_ramSlider_valueChanged(136,4420
+void VolumeInspector::on_vramSlider_valueChanged(147,4823
+
+src/gui/volumeInspector.h,60
+#define VOLUMEINSPECTOR_H2,26
+class VolumeInspector 7,107
+
+src/mesh/main.cpp,15
+int main(7,28
+
+src/mesh/omMeshTypes.h,67
+#define OM_MESH_TYPES_H2,24
+static const GLuint NULL_VBO_ID 8,77
+
+src/mesh/omMesher.cpp,401
+#define DEBUG 33,686
+OmMeshSource::OmMeshSource(51,990
+OmMeshSource::~OmMeshSource(57,1065
+OmMeshSource::Load(68,1247
+OmMeshSource::Copy(85,1649
+OmMesher::OmMesher(115,2016
+OmMesher::~OmMesher(125,2187
+OmMesher::InitMeshingPipeline(137,2433
+OmMesher::ExtractMesh(185,4134
+OmMesher::BuildMeshFromPolyData(203,4490
+uint32_t numStripsInStripCellArray(308,7997
+srcToDestBboxTransform(332,8488
+
+src/mesh/omMesher.h,105
+#define OM_MESHER_H2,20
+using namespace vmml;17,358
+class OmMeshSource 42,705
+class OmMesher 68,1163
+
+src/mesh/omMipChunkMesher.cpp,463
+#define DEBUG 36,748
+OmMipChunkMesher* OmMipChunkMesher::mspInstance 46,908
+OmMipChunkMesher::OmMipChunkMesher(59,1089
+OmMipChunkMesher::~OmMipChunkMesher(74,1382
+OmMipChunkMesher::Instance(81,1494
+OmMipChunkMesher::Delete(90,1624
+OmMipChunkMesher::BuildChunkMeshes(110,1847
+OmMipChunkMesher::BuildChunkMeshesThreaded(117,2138
+OmMipChunkMesher::GetNextSegmentValueToMesh(168,3505
+OmMipChunkMesher::BuildMeshesLoop(189,3960
+init_meshing_thread(248,5373
+
+src/mesh/omMipChunkMesher.h,95
+#define OM_MIP_CHUNK_MESHER_H2,30
+using namespace vmml;18,408
+class OmMipChunkMesher 32,555
+
+src/mesh/omMipMesh.cpp,445
+#define DEBUG 15,270
+static const char* MIP_MESH_FILE_NAME 18,288
+OmMipMesh::OmMipMesh(34,543
+OmMipMesh::~OmMipMesh(53,962
+OmMipMesh::Load(96,1647
+OmMipMesh::Save(144,2939
+OmMipMesh::GetFileName(186,4076
+OmMipMesh::GetDirectoryPath(194,4254
+OmMipMesh::IsEmptyMesh(213,4715
+OmMipMesh::IsVbo(226,4878
+OmMipMesh::CreateVbo(232,4994
+OmMipMesh::DeleteVbo(271,6102
+OmMipMesh::Draw(296,6568
+operator<<(361,8211
+GLuint createVbo(395,8939
+
+src/mesh/omMipMesh.h,111
+#define OM_MIP_SEGMENT_MESH_H2,30
+class OmMipMesh 26,496
+OmMipMesh::save(106,2138
+OmMipMesh::load(129,2545
+
+src/mesh/omMipMeshCoord.cpp,354
+OmMipMeshCoord::OmMipMeshCoord(7,33
+OmMipMeshCoord::OmMipMeshCoord(13,125
+OmMipMeshCoord::OmMipMeshCoord(19,288
+OmMipMeshCoord::operator=(OmMipMeshCoord::operator=36,653
+OmMipMeshCoord::operator==(OmMipMeshCoord::operator==42,783
+OmMipMeshCoord::operator!=(OmMipMeshCoord::operator!=47,930
+OmMipMeshCoord::operator<(53,1108
+operator<<(62,1311
+
+src/mesh/omMipMeshCoord.h,124
+#define OM_MIP_MESH_COORD_H2,28
+using boost::tuple;17,288
+class OmMipMeshCoord 20,310
+OmMipMeshCoord::serialize(61,1157
+
+src/mesh/omMipMeshManager.cpp,623
+#define DEBUG 24,426
+OmMipMeshManager::OmMipMeshManager(36,569
+OmMipMeshManager::~OmMipMeshManager(49,878
+OmMipMeshManager::GetDirectoryPath(70,1205
+OmMipMeshManager::SetDirectoryPath(75,1283
+OmMipMeshManager::AllocMesh(92,1489
+OmMipMeshManager::GetMesh(100,1640
+OmMipMeshManager::UncacheMesh(107,1742
+OmMipMeshManager::IsMeshDataBuilt(115,1844
+OmMipMeshManager::SetMeshDataBuilt(120,1914
+OmMipMeshManager::BuildChunkMeshes(137,2104
+OmMipMeshManager::HandleCacheMiss(158,2484
+OmMipMeshManager::HandleFetchUpdate(183,3182
+OmMipMeshManager::InitializeFetchThread(191,3355
+OmMipMeshManager::DrawMeshes(215,3732
+
+src/mesh/omMipMeshManager.h,225
+#define OM_MIP_MESH_MANAGER_H2,30
+typedef OmThreadedCache< OmMipMeshCoord,16,191
+typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;16,191
+class OmMipMeshManager 26,365
+OmMipMeshManager::serialize(93,1621
+
+src/segment/actions/edit/omEditSelectionSetAction.cpp,211
+#define DEBUG 7,79
+OmEditSelectionSetAction::OmEditSelectionSetAction(18,249
+OmEditSelectionSetAction::Action(39,631
+OmEditSelectionSetAction::UndoAction(44,742
+OmEditSelectionSetAction::Description(50,867
+
+src/segment/actions/edit/omEditSelectionSetAction.h,83
+#define OM_EDIT_SELECTION_SET_ACTION_H2,39
+class OmEditSelectionSetAction 15,160
+
+src/segment/actions/segment/omSegmentMergeAction.cpp,196
+#define DEBUG 9,139
+OmSegmentMergeAction::OmSegmentMergeAction(26,529
+OmSegmentMergeAction::Action(67,1686
+OmSegmentMergeAction::UndoAction(94,2372
+OmSegmentMergeAction::Description(115,2987
+
+src/segment/actions/segment/omSegmentMergeAction.h,74
+#define OM_SEGMENT_MERGE_ACTION_H2,34
+class OmSegmentMergeAction 16,219
+
+src/segment/actions/segment/omSegmentSelectAction.cpp,352
+#define DEBUG 13,252
+OmSegmentSelectAction::OmSegmentSelectAction(25,405
+OmSegmentSelectAction::OmSegmentSelectAction(36,704
+OmSegmentSelectAction::OmSegmentSelectAction(47,966
+OmSegmentSelectAction::Initialize(59,1182
+OmSegmentSelectAction::Action(91,1976
+OmSegmentSelectAction::UndoAction(114,2803
+OmSegmentSelectAction::Description(133,3496
+
+src/segment/actions/segment/omSegmentSelectAction.h,76
+#define OM_SEGMENT_SELECT_ACTION_H2,35
+class OmSegmentSelectAction 14,151
+
+src/segment/actions/segment/omSegmentSelectionAction.cpp,217
+#define DEBUG 12,221
+OmSegmentSelectionAction::OmSegmentSelectionAction(23,387
+OmSegmentSelectionAction::Action(64,1300
+OmSegmentSelectionAction::UndoAction(81,1822
+OmSegmentSelectionAction::Description(103,2480
+
+src/segment/actions/segment/omSegmentSelectionAction.h,82
+#define OM_SEGMENT_SELECTION_ACTION_H2,38
+class OmSegmentSelectionAction 13,156
+
+src/segment/actions/segment/omSegmentStateAction.cpp,289
+#define DEBUG 12,217
+OmSegmentStateAction::OmSegmentStateAction(24,368
+OmSegmentStateAction::OmSegmentStateAction(30,566
+OmSegmentStateAction::Initialize(43,763
+OmSegmentStateAction::Action(74,1415
+OmSegmentStateAction::UndoAction(91,1974
+OmSegmentStateAction::Description(108,2562
+
+src/segment/actions/segment/omSegmentStateAction.h,74
+#define OM_SEGMENT_STATE_ACTION_H2,34
+class OmSegmentStateAction 14,149
+
+src/segment/actions/voxel/omVoxelSelectionAction.cpp,202
+#define DEBUG 7,77
+OmVoxelSelectionAction::OmVoxelSelectionAction(18,243
+OmVoxelSelectionAction::Action(42,725
+OmVoxelSelectionAction::UndoAction(54,990
+OmVoxelSelectionAction::Description(65,1264
+
+src/segment/actions/voxel/omVoxelSelectionAction.h,78
+#define OM_VOXEL_SELECTION_ACTION_H2,36
+class OmVoxelSelectionAction 14,153
+
+src/segment/actions/voxel/omVoxelSelectionSetAction.cpp,225
+#define DEBUG 9,145
+OmEditSelectionApplyAction::OmEditSelectionApplyAction(21,320
+OmEditSelectionApplyAction::Action(51,1136
+OmEditSelectionApplyAction::UndoAction(73,1693
+OmEditSelectionApplyAction::Description(97,2325
+
+src/segment/actions/voxel/omVoxelSelectionSetAction.h,87
+#define OM_APPLY_EDIT_SELECTION_ACTION_H2,41
+class OmEditSelectionApplyAction 15,250
+
+src/segment/actions/voxel/omVoxelSetAction.cpp,177
+#define DEBUG 12,245
+OmVoxelSetAction::OmVoxelSetAction(29,594
+OmVoxelSetAction::Action(74,1473
+OmVoxelSetAction::UndoAction(88,1819
+OmVoxelSetAction::Description(101,2173
+
+src/segment/actions/voxel/omVoxelSetAction.h,66
+#define OM_VOXEL_SET_ACTION_H2,30
+class OmVoxelSetAction 16,211
+
+src/segment/actions/voxel/omVoxelSetConnectedAction.cpp,288
+#define DEBUG 10,179
+OmVoxelSetConnectedAction::OmVoxelSetConnectedAction(22,334
+OmVoxelSetConnectedAction::AddConnectedNeighborsToList(82,1705
+OmVoxelSetConnectedAction::Action(115,2589
+OmVoxelSetConnectedAction::UndoAction(149,3271
+OmVoxelSetConnectedAction::Description(155,3342
+
+src/segment/actions/voxel/omVoxelSetConnectedAction.h,109
+#define OM_VOXEL_SET_CONNECTED_ACTION_H2,40
+using std::list;18,248
+class OmVoxelSetConnectedAction 25,292
+
+src/segment/actions/voxel/omVoxelSetValueAction.cpp,256
+#define DEBUG 12,250
+OmVoxelSetValueAction::OmVoxelSetValueAction(24,415
+OmVoxelSetValueAction::OmVoxelSetValueAction(43,889
+OmVoxelSetValueAction::Action(79,1588
+OmVoxelSetValueAction::UndoAction(102,2240
+OmVoxelSetValueAction::Description(124,2855
+
+src/segment/actions/voxel/omVoxelSetValueAction.h,77
+#define OM_VOXEL_SET_VALUE_ACTION_H2,36
+class OmVoxelSetValueAction 16,223
+
+src/segment/main.cpp,15
+int main(6,75
+
+src/segment/omSegment.cpp,223
+#define DEBUG 9,163
+OmSegment::OmSegment(20,302
+OmSegment::OmSegment(23,330
+OmSegment::GetColor(47,868
+OmSegment::SetColor(52,923
+void OmSegment::Join 62,1021
+OmSegment::ApplyColor(82,1289
+OmSegment::Print(109,1814
+
+src/segment/omSegment.h,108
+#define OM_SEGMENT_H2,21
+using namespace vmml;16,277
+class OmSegment 19,301
+OmSegment::serialize(60,965
+
+src/segment/omSegmentContextMenu.cpp,852
+#define DEBUG 15,432
+OmSegmentContextMenu::Refresh(42,797
+OmSegmentContextMenu::AddSelectionNames(104,1794
+OmSegmentContextMenu::AddSelectionAction(127,2263
+OmSegmentContextMenu::AddDisableActions(155,2819
+OmSegmentContextMenu::AddEditSelectionAction(184,3576
+OmSegmentContextMenu::AddMergeAction(196,3739
+OmSegmentContextMenu::AddVoxelAction(207,3886
+OmSegmentContextMenu::Select(228,4152
+OmSegmentContextMenu::Unselect(233,4265
+OmSegmentContextMenu::UnselectOthers(238,4381
+OmSegmentContextMenu::Disable(254,4735
+OmSegmentContextMenu::Enable(258,4848
+OmSegmentContextMenu::DisableSelected(264,4961
+OmSegmentContextMenu::DisableUnselected(269,5188
+OmSegmentContextMenu::EnableAll(281,5590
+OmSegmentContextMenu::SetEditSelection(292,5814
+OmSegmentContextMenu::MergeSegments(298,5935
+OmSegmentContextMenu::SetConnectedVoxels(305,6038
+
+src/segment/omSegmentContextMenu.h,74
+#define OM_SEGMENT_CONTEXT_MENU_H2,34
+class OmSegmentContextMenu 15,138
+
+src/segment/omSegmentDataMap.cpp,448
+#define DEBUG 4,32
+OmSegmentDataMap::IsValueMappedToSegmentId(23,280
+OmSegmentDataMap::GetUnMappedValue(29,412
+OmSegmentDataMap::GetSegmentIdMappedToValue(55,793
+OmSegmentDataMap::GetValuesMappedToSegmentId(61,923
+OmSegmentDataMap::MapValueToSegmentId(71,1081
+OmSegmentDataMap::MapValuesToSegmentId(80,1259
+OmSegmentDataMap::UnMapValuesToSegmentId(100,1727
+OmSegmentDataMap::UnMapSegmentId(123,2155
+OmSegmentDataMap::UnMapValues(143,2521
+
+src/segment/omSegmentDataMap.h,103
+#define OM_SEGMENT_DATA_MAP_H2,30
+class OmSegmentDataMap 18,243
+OmSegmentDataMap::serialize(67,1190
+
+src/segment/omSegmentEditor.cpp,654
+#define DEBUG 10,174
+OmSegmentEditor* OmSegmentEditor::mspInstance 15,217
+OmSegmentEditor::OmSegmentEditor(27,391
+OmSegmentEditor::~OmSegmentEditor(32,493
+OmSegmentEditor::Instance(40,558
+OmSegmentEditor::Delete(49,686
+OmSegmentEditor::SetEditSelection(67,890
+OmSegmentEditor::GetEditSelection(76,1150
+OmSegmentEditor::GetSelectedVoxels(105,1743
+OmSegmentEditor::SetSelectedVoxels(110,1828
+OmSegmentEditor::ClearSelectedVoxels(115,1944
+OmSegmentEditor::SetSelectedVoxelState(121,2033
+OmSegmentEditor::GetSelectedVoxelState(129,2243
+OmSegmentEditor::SpaceCoordToEditSelectionVoxel(146,2473
+OmSegmentEditor::DrawEditSelectionVoxels(166,2845
+
+src/segment/omSegmentEditor.h,63
+#define OM_SEGMENT_EDITOR_H2,28
+class OmSegmentEditor 14,165
+
+src/segment/omSegmentManager.cpp,1496
+#define DEBUG 12,208
+OmSegmentManager::OmSegmentManager(22,349
+OmSegmentManager::GetSegment(36,580
+OmSegmentManager::AddSegment(41,675
+OmSegmentManager::AddSegment(60,1138
+OmSegmentManager::AddSegments(76,1532
+void OmSegmentManager::JoinSegments 94,2023
+OmSegmentManager::RemoveSegment(100,2092
+OmSegmentManager::IsSegmentValid(106,2181
+OmSegmentManager::GetValidSegmentIds(111,2300
+OmSegmentManager::IsSegmentEnabled(116,2396
+OmSegmentManager::SetSegmentEnabled(121,2497
+OmSegmentManager::GetEnabledSegmentIds(127,2664
+OmSegmentManager::IsSegmentSelected(132,2764
+OmSegmentManager::SetSegmentSelected(137,2867
+OmSegmentManager::SetAllSegmentsSelected(143,3029
+OmSegmentManager::GetSelectedSegmentIds(150,3193
+OmSegmentManager::SegmentSize(155,3299
+OmSegmentManager::SegmentCall(160,3381
+OmSegmentManager::IsValueMappedToSegmentId(176,3599
+OmSegmentManager::GetSegmentIdMappedToValue(181,3737
+OmSegmentManager::GetValuesMappedToSegmentId(186,3887
+OmSegmentManager::MapValueToSegmentId(192,4008
+OmSegmentManager::MapValuesToSegmentId(197,4146
+OmSegmentManager::UnMapValuesToSegmentId(202,4298
+OmSegmentManager::ConvertSegmentIdsToDataValues(217,4600
+OmSegmentManager::RefreshCachedSegmentDataValues(235,5065
+OmSegmentManager::GetEnabledSegmentDataValues(251,5559
+OmSegmentManager::GetSelectedSegmentDataValues(258,5739
+OmSegmentManager::GetUnselectedSegmentDataValues(265,5923
+OmSegmentManager::GetDirectoryPath(299,6229
+OmSegmentManager::SetDirectoryPath(304,6301
+
+src/segment/omSegmentManager.h,103
+#define OM_SEGMENT_MANAGER_H2,29
+class OmSegmentManager 36,650
+OmSegmentManager::serialize(129,2866
+
+src/segment/omSegmentTypes.h,327
+#define OM_SEGMENT_TYPES_H2,27
+static const OmId NULL_SEGMENT_ID 15,186
+#define SEGMENT_DATA_BYTES_PER_SAMPLE 19,267
+#define SEGMENT_DATA_SAMPLES_PER_PIXEL 20,307
+typedef unsigned int SEGMENT_DATA_TYPE;22,349
+typedef set< SEGMENT_DATA_TYPE > SegmentDataSet;23,389
+static const SEGMENT_DATA_TYPE NULL_SEGMENT_DATA 25,439
+
+src/system/events/omAlertEvent.cpp,84
+#define DEBUG 4,28
+OmAlertEvent::OmAlertEvent(9,48
+OmAlertEvent::Dispatch(24,283
+
+src/system/events/omAlertEvent.h,378
+#define OM_ALERT_EVENT_CLASS_H2,31
+using namespace vmml;17,230
+class OmAlertEvent 24,276
+	string GetText(OmAlertEvent::GetText37,574
+	string GetMoreText(OmAlertEvent::GetMoreText38,610
+class OmAlertEventListener 54,741
+	OmAlertEventListener(OmAlertEventListener::OmAlertEventListener57,806
+	virtual void AlertNotifyEvent(OmAlertEventListener::AlertNotifyEvent59,876
+
+src/system/events/omPreferenceEvent.cpp,99
+#define DEBUG 4,33
+OmPreferenceEvent::OmPreferenceEvent(9,53
+OmPreferenceEvent::Dispatch(22,226
+
+src/system/events/omPreferenceEvent.h,348
+#define OM_PREFERENCE_EVENT_H2,30
+class OmPreferenceEvent 15,173
+	int GetPreference(OmPreferenceEvent::GetPreference27,475
+class OmPreferenceEventListener 35,555
+	OmPreferenceEventListener(OmPreferenceEventListener::OmPreferenceEventListener38,625
+	virtual void PreferenceChangeEvent(OmPreferenceEventListener::PreferenceChangeEvent40,704
+
+src/system/events/omProgressEvent.cpp,258
+#define DEBUG 4,31
+bool OmProgressEvent::mWasCanceled 7,49
+OmProgressEvent::OmProgressEvent(10,95
+OmProgressEvent::OmProgressEvent(15,179
+OmProgressEvent::OmProgressEvent(21,306
+OmProgressEvent::OmProgressEvent(30,485
+OmProgressEvent::Dispatch(44,715
+
+src/system/events/omProgressEvent.h,939
+#define OM_PROGRESS_EVENT_H2,28
+class OmProgressEvent 15,169
+	string GetText(OmProgressEvent::GetText33,918
+	int GetMinimum(OmProgressEvent::GetMinimum34,954
+	int GetMaximum(OmProgressEvent::GetMaximum35,993
+	int GetValue(OmProgressEvent::GetValue36,1032
+	static void SetWasCanceled(OmProgressEvent::SetWasCanceled38,1068
+	static bool GetWasCanceled(OmProgressEvent::GetWasCanceled39,1134
+class OmProgressEventListener 50,1286
+	OmProgressEventListener(OmProgressEventListener::OmProgressEventListener53,1354
+	virtual void ProgressShow(OmProgressEventListener::ProgressShow55,1429
+	virtual void ProgressHide(OmProgressEventListener::ProgressHide56,1485
+	virtual void ProgressRangeEvent(OmProgressEventListener::ProgressRangeEvent58,1543
+	virtual void ProgressValueEvent(OmProgressEventListener::ProgressValueEvent59,1605
+	virtual void ProgressIncrementEvent(OmProgressEventListener::ProgressIncrementEvent60,1667
+
+src/system/events/omSegmentEvent.cpp,264
+#define DEBUG 4,30
+OmSegmentEvent::OmSegmentEvent(9,50
+OmSegmentEvent::OmSegmentEvent(14,133
+OmSegmentEvent::OmSegmentEvent(20,310
+OmSegmentEvent::GetModifiedSegmentationId(29,499
+OmSegmentEvent::GetModifiedSegmentIds(35,588
+OmSegmentEvent::Dispatch(47,710
+
+src/system/events/omSegmentEvent.h,822
+#define OM_SEGMENT_EVENT_CLASS_H2,33
+using namespace vmml;16,271
+class OmSegmentEvent 22,320
+class OmSegmentEventListener 56,1275
+	OmSegmentEventListener(OmSegmentEventListener::OmSegmentEventListener59,1342
+	virtual void SegmentObjectModificationEvent(OmSegmentEventListener::SegmentObjectModificationEvent63,1541
+	virtual void SegmentDataModificationEvent(OmSegmentEventListener::SegmentDataModificationEvent67,1723
+	virtual void SegmentEditSelectionChangeEvent(OmSegmentEventListener::SegmentEditSelectionChangeEvent70,1829
+	virtual void SegmentStateChangeEvent(OmSegmentEventListener::SegmentStateChangeEvent75,1934
+	virtual void SegmentActionEvent(OmSegmentEventListener::SegmentActionEvent78,2032
+	virtual void SegmentSelectionChangeEvent(OmSegmentEventListener::SegmentSelectionChangeEvent81,2133
+
+src/system/events/omSystemModeEvent.cpp,99
+#define DEBUG 4,33
+OmSystemModeEvent::OmSystemModeEvent(9,53
+OmSystemModeEvent::Dispatch(22,197
+
+src/system/events/omSystemModeEvent.h,318
+#define OM_SYSTEM_MODE_EVENT_H2,31
+using namespace vmml;12,170
+class OmSystemModeEvent 17,224
+class OmSystemModeEventListener 32,516
+	OmSystemModeEventListener(OmSystemModeEventListener::OmSystemModeEventListener35,586
+	virtual void SystemModeChangeEvent(OmSystemModeEventListener::SystemModeChangeEvent37,666
+
+src/system/events/omToolModeEvent.cpp,93
+#define DEBUG 4,31
+OmToolModeEvent::OmToolModeEvent(9,51
+OmToolModeEvent::Dispatch(22,191
+
+src/system/events/omToolModeEvent.h,300
+#define OM_TOOL_MODE_EVENT_H2,29
+using namespace vmml;12,166
+class OmToolModeEvent 17,220
+class OmToolModeEventListener 32,504
+	OmToolModeEventListener(OmToolModeEventListener::OmToolModeEventListener35,572
+	virtual void ToolModeChangeEvent(OmToolModeEventListener::ToolModeChangeEvent37,648
+
+src/system/events/omView3dEvent.cpp,87
+#define DEBUG 5,64
+OmView3dEvent::OmView3dEvent(9,83
+OmView3dEvent::Dispatch(21,216
+
+src/system/events/omView3dEvent.h,362
+#define OM_VIEW_3D_EVENT_CLASS_H2,33
+class OmView3dEvent 18,199
+class OmView3dEventListener 39,572
+	OmView3dEventListener(OmView3dEventListener::OmView3dEventListener42,637
+	virtual void View3dRedrawEvent(OmView3dEventListener::View3dRedrawEvent46,765
+	virtual void View3dUpdatePreferencesEvent(OmView3dEventListener::View3dUpdatePreferencesEvent47,824
+
+src/system/events/omViewEvent.cpp,82
+#define DEBUG 5,28
+OmViewEvent::OmViewEvent(12,94
+OmViewEvent::Dispatch(23,221
+
+src/system/events/omViewEvent.h,520
+#define OM_VIEW_EVENT_CLASS_H2,30
+using namespace vmml;17,233
+class OmViewEvent 24,279
+class OmViewEventListener 51,798
+	OmViewEventListener(OmViewEventListener::OmViewEventListener54,862
+	virtual void ViewBoxChangeEvent(OmViewEventListener::ViewBoxChangeEvent56,930
+	virtual void ViewCenterChangeEvent(OmViewEventListener::ViewCenterChangeEvent57,988
+	virtual void ViewPosChangeEvent(OmViewEventListener::ViewPosChangeEvent58,1049
+	virtual void ViewRedrawEvent(OmViewEventListener::ViewRedrawEvent60,1109
+
+src/system/events/omVoxelEvent.cpp,226
+#define DEBUG 4,28
+OmVoxelEvent::OmVoxelEvent(9,48
+OmVoxelEvent::OmVoxelEvent(14,127
+OmVoxelEvent::OmVoxelEvent(20,265
+OmVoxelEvent::GetSegmentationId(30,412
+OmVoxelEvent::GetVoxels(35,502
+OmVoxelEvent::Dispatch(47,606
+
+src/system/events/omVoxelEvent.h,395
+#define OM_VOXEL_EVENT_H2,25
+using namespace vmml;16,255
+class OmVoxelEvent 22,304
+class OmVoxelEventListener 48,968
+	OmVoxelEventListener(OmVoxelEventListener::OmVoxelEventListener51,1033
+	virtual void VoxelModificationEvent(OmVoxelEventListener::VoxelModificationEvent55,1200
+	virtual void VoxelSelectionModificationEvent(OmVoxelEventListener::VoxelSelectionModificationEvent58,1306
+
+src/system/main.cpp,17
+int main(52,691
+
+src/system/omAction.cpp,175
+#define DEBUG 9,138
+OmAction::OmAction(20,274
+OmAction::SetValid(30,379
+OmAction::SetUndoable(35,438
+OmAction::Run(46,617
+OmAction::redo(76,1052
+OmAction::undo(82,1094
+
+src/system/omAction.h,48
+#define OM_ACTION_H2,20
+class OmAction 13,107
+
+src/system/omCacheBase.h,198
+#define OM_CACHE_BASE_H2,24
+class OmCacheBase 16,397
+	OmCacheBase(OmCacheBase::OmCacheBase20,441
+	~OmCacheBase(OmCacheBase::~OmCacheBase27,605
+	void UpdateSize(OmCacheBase::UpdateSize33,698
+
+src/system/omCacheManager.cpp,471
+#define DEBUG 8,134
+OmCacheManager* OmCacheManager::mspInstance 13,177
+OmCacheManager::OmCacheManager(25,349
+OmCacheManager::~OmCacheManager(39,813
+OmCacheManager::Instance(47,875
+OmCacheManager::Delete(56,1001
+OmCacheManager::PreferenceChangeEvent(74,1277
+OmCacheManager::AddCache(106,2049
+OmCacheManager::RemoveCache(117,2359
+OmCacheManager::UpdateCacheSize(129,2654
+OmCacheManager::UpdateCacheSizeInternal(139,2874
+OmCacheManager::CleanCacheGroup(172,3673
+
+src/system/omCacheManager.h,343
+#define OM_CACHE_MANAGER_H2,27
+enum OmCacheGroup 22,298
+	RAM_CACHE_GROUP OmCacheGroup::RAM_CACHE_GROUP23,318
+	VRAM_CACHE_GROUPOmCacheGroup::VRAM_CACHE_GROUP24,340
+struct CacheGroupProperties 28,363
+	CacheGroupProperties(CacheGroupProperties::CacheGroupProperties29,393
+class OmCacheManager 44,589
+OmCacheManager::serialize(104,1858
+
+src/system/omCacheableBase.h,174
+#define OM_CACHEABLE_BASE_H2,28
+class OmCacheableBase 14,287
+	OmCacheableBase(OmCacheableBase::OmCacheableBase16,319
+	void UpdateSize(OmCacheableBase::UpdateSize24,438
+
+src/system/omEvent.cpp,103
+#define DEBUG 5,51
+OmEventListener::OmEventListener(17,188
+OmEventListener::~OmEventListener(25,417
+
+src/system/omEvent.h,538
+#define OM_EVENTS_H2,20
+enum OmEventClass 13,157
+enum OmEventClass { OM_VIEW_EVENT_CLASS 13,157
+					OM_SEGMENT_EVENT_CLASS 14,205
+					OM_VIEW_3D_EVENT_CLASS 15,241
+					OM_SYSTEM_MODE_EVENT_CLASS 16,277
+					OM_TOOL_MODE_EVENT_CLASS 17,317
+					OM_PROGRESS_EVENT_CLASS 18,355
+					OM_PREFERENCE_EVENT_CLASS 19,392
+					OM_VOXEL_EVENT_CLASS 20,431
+					OM_ALERT_EVENT_CLASS 21,465
+class OmEvent 28,529
+	OmEvent(OmEvent::OmEvent35,664
+class OmEventListener 43,772
+	OmEventListener(OmEventListener::OmEventListener56,1069
+
+src/system/omEventManager.cpp,500
+#define DEBUG 8,124
+OmEventManager* OmEventManager::mspInstance 12,166
+OmEventManager::OmEventManager(16,231
+OmEventManager* OmEventManager::Instance(22,292
+OmEventManager::Delete(33,438
+OmEventManager::event(40,533
+OmEventManager::AddEventListener(74,1410
+OmEventManager::RemoveEventListener(80,1563
+OmEventManager::AddListener(86,1754
+OmEventManager::RemoveListener(92,1899
+OmEventManager::SendEvent(109,2271
+OmEventManager::PostEvent(121,2597
+OmEventManager::FlushPostEvents(128,2801
+
+src/system/omEventManager.h,238
+#define OM_EVENT_MANAGER_H2,27
+typedef set< OmEventListener* > EventListenerSet;18,357
+typedef map< OmEventClass,19,407
+typedef map< OmEventClass, EventListenerSet > EventClassToEventListenerSetMap;19,407
+class OmEventManager 22,488
+
+src/system/omException.cpp,291
+string OmExceptTypeStrings[OmExceptTypeStrings6,29
+OmException::OmException(21,281
+OmException::GetName(33,442
+OmException::GetMessage(38,500
+OmException::GetType(43,564
+OmException::Parse(52,637
+OmException::Log(65,854
+string exceptTypeToString(73,962
+string execptString(79,1043
+
+src/system/omException.h,684
+#define OMEXCEPTION_H30,578
+OmExceptType 37,655
+OmExceptType {  EXCEPT_NOTE 37,655
+				EXCEPT_INFO,39,736
+				EXCEPT_WARNING,41,807
+				EXCEPT_ERROR,43,880
+				EXCEPT_SEVERE 45,933
+#define PARSE_EXCEPTION(51,1037
+#define EXCEPT_STR_SIZE 59,1199
+class OmException 61,1229
+class OmAccessException 87,1698
+	OmAccessException(OmAccessException::OmAccessException89,1753
+class OmFormatException 93,1850
+	OmFormatException(OmFormatException::OmFormatException95,1905
+class OmIoException 99,2002
+	OmIoException(OmIoException::OmIoException101,2053
+class OmModificationException 105,2140
+	OmModificationException(OmModificationException::OmModificationException107,2201
+
+src/system/omFilter.cpp,322
+#define DEBUG 12,269
+OmFilter::OmFilter 23,406
+OmFilter::OmFilter(36,662
+OmFilter::OmFilter(42,729
+void OmFilter::SetAlpha 54,910
+double OmFilter::GetAlpha 59,971
+OmThreadedCachingTile * OmFilter::GetCache 64,1021
+void OmFilter::SetSegmentation 83,1548
+void OmFilter::SetChannel 95,1746
+OmFilter::Print(131,2256
+
+src/system/omFilter.h,208
+#define OM_FILTER_H2,20
+using namespace vmml;16,292
+class OmFilter 19,316
+	OmId GetSegmentation OmFilter::GetSegmentation29,460
+	OmId GetChannel OmFilter::GetChannel33,538
+OmFilter::serialize(68,1138
+
+src/system/omFilterManager.cpp,247
+#define DEBUG 7,80
+OmFilterManager::OmFilterManager(17,219
+OmFilterManager::AddFilter(28,379
+OmFilter& OmFilterManager::GetFilter(36,486
+const set<OmId>& OmFilterManager::GetValidFilterIds(41,576
+bool OmFilterManager::IsFilterEnabled(46,680
+
+src/system/omFilterManager.h,98
+#define OM_FILTER_MANAGER_H2,28
+class OmFilterManager 17,204
+OmFilterManager::serialize(59,838
+
+src/system/omGarbage.cpp,412
+#define DEBUG 12,237
+OmGarbage* OmGarbage::mspInstance 16,279
+OmGarbage::OmGarbage(27,430
+OmGarbage::~OmGarbage(30,459
+OmGarbage::Instance(38,505
+OmGarbage::Delete(48,678
+void OmGarbage::asOmTextureId 57,835
+void OmGarbage::Lock 65,1011
+vector <GLuint>& OmGarbage::LockTextures 70,1101
+void OmGarbage::Unlock 76,1225
+void OmGarbage::UnlockTextures 80,1318
+void OmGarbage::safeCleanTextureIds 86,1393
+
+src/system/omGarbage.h,79
+#define OM_GARBAGE_H2,21
+using namespace vmml;29,645
+class OmGarbage 35,672
+
+src/system/omGenericManager.h,1454
+#define OM_GENERIC_MANAGER_H2,29
+class OmGenericManager 18,336
+OmGenericManager<T>::OmGenericManager(OmGenericManager82,1868
+OmGenericManager<T>::~OmGenericManager(~OmGenericManager92,2063
+OmGenericManager<T>::Get(Get108,2385
+OmGenericManager<T>::Add(Add131,2898
+OmGenericManager<T>::Set(Set167,3610
+OmGenericManager<T>::Remove(Remove199,4206
+OmGenericManager<T>::Size(Size224,4675
+OmGenericManager<T>::IsValid(IsValid242,4904
+OmGenericManager<T>::GetValidIds(GetValidIds252,5090
+OmGenericManager<T>::CallValid(CallValid259,5182
+OmGenericManager<T>::CallValid(CallValid266,5311
+OmGenericManager<T>::IsEnabled(IsEnabled285,5580
+OmGenericManager<T>::SetEnabled(SetEnabled298,5838
+OmGenericManager<T>::SetAllEnabled(SetAllEnabled314,6115
+OmGenericManager<T>::GetEnabledIds(GetEnabledIds326,6316
+OmGenericManager<T>::CallEnabled(CallEnabled333,6412
+OmGenericManager<T>::CallEnabled(CallEnabled340,6545
+OmGenericManager<T>::IsSelected(IsSelected361,6823
+OmGenericManager<T>::SetSelected(SetSelected374,7086
+OmGenericManager<T>::SetAllSelected(SetAllSelected391,7373
+OmGenericManager<T>::GetSelectedIds(GetSelectedIds404,7579
+OmGenericManager<T>::CallSelected(CallSelected413,7679
+OmGenericManager<T>::CallSelected(CallSelected420,7814
+OmGenericManager<T>::Apply(Apply446,8129
+OmGenericManager<T>::Call(Call476,8761
+OmGenericManager<T>::Call(Call489,8986
+OmGenericManager<T>::serialize(serialize517,9340
+
+src/system/omKeyManager.cpp,469
+#define DEBUG 8,52
+OmKeyManager* OmKeyManager::mspInstance 13,95
+OmKeyManager::OmKeyManager(25,259
+OmKeyManager::~OmKeyManager(29,296
+OmKeyManager::Instance(36,351
+OmKeyManager::Delete(45,473
+OmKeyManager::MapKeySequence(63,679
+OmKeyManager::MapKeySequence(78,1076
+OmKeyManager::MapKeySequence(88,1343
+OmKeyManager::MapKeySequence(101,1660
+OmKeyManager::LookupKeySequence(125,2100
+OmKeyManager::OmToQKeySequence(154,2820
+OmKeyManager::SetDefaults(178,3228
+
+src/system/omKeyManager.h,1065
+#define OM_KEY_MANAGER_H2,25
+enum OmKeySequence 19,198
+	OmKeySeq_Unknown OmKeySequence::OmKeySeq_Unknown20,219
+	OmKeySeq_Open,OmKeySequence::OmKeySeq_Open23,266
+	OmKeySeq_Save,OmKeySequence::OmKeySeq_Save24,282
+	OmKeySeq_Undo,OmKeySequence::OmKeySeq_Undo25,298
+	OmKeySeq_Redo,OmKeySequence::OmKeySeq_Redo26,314
+	OmKeySeq_Navigation_Mode,OmKeySequence::OmKeySeq_Navigation_Mode30,352
+	OmKeySeq_Edit_Mode,OmKeySequence::OmKeySeq_Edit_Mode31,379
+	OmKeySeq_Focus_Select,OmKeySequence::OmKeySeq_Focus_Select35,414
+	OmKeySeq_Focus_Select_Append,OmKeySequence::OmKeySeq_Focus_Select_Append36,438
+	OmKeySeq_Focus_X_Inc,OmKeySequence::OmKeySeq_Focus_X_Inc38,471
+	OmKeySeq_Focus_X_Dec,OmKeySequence::OmKeySeq_Focus_X_Dec39,494
+	OmKeySeq_Focus_Y_Inc,OmKeySequence::OmKeySeq_Focus_Y_Inc40,517
+	OmKeySeq_Focus_Y_Dec,OmKeySequence::OmKeySeq_Focus_Y_Dec41,540
+	OmKeySeq_Focus_Z_Inc,OmKeySequence::OmKeySeq_Focus_Z_Inc42,563
+	OmKeySeq_Focus_Z_DecOmKeySequence::OmKeySeq_Focus_Z_Dec43,586
+class OmKeyManager 52,618
+OmKeyManager::serialize(111,1816
+
+src/system/omManageableObject.h,672
+#define OM_MANAGEABLE_OBJECT_H2,31
+class OmManageableObject 16,239
+	OmManageableObject(OmManageableObject::OmManageableObject18,274
+	OmManageableObject(OmManageableObject::OmManageableObject20,302
+	OmId GetId(OmManageableObject::GetId25,363
+	const string& GetName(OmManageableObject::GetName27,395
+	void SetName(OmManageableObject::SetName28,444
+	const string& GetNote(OmManageableObject::GetNote30,497
+	void SetNote(OmManageableObject::SetNote31,546
+	const bool IsLocked(OmManageableObject::IsLocked33,600
+	void SetLocked(OmManageableObject::SetLocked34,651
+	virtual void Print(OmManageableObject::Print36,713
+OmManageableObject::serialize(62,1134
+
+src/system/omPreferenceDefinitions.cpp,342
+void omSetDefaultAllPreferences(11,187
+void omSetDefaultCommonPreferences(30,646
+void omSetDefaultGuiPreferences(35,691
+void omSetDefaultMeshPreferences(52,1370
+void omSetDefaultSegmentPreferences(61,1669
+void omSetDefaultSystemPreferences(66,1785
+void omSetDefaultView2dPreferences(72,1973
+void omSetDefaultView3dPreferences(83,2448
+
+src/system/omPreferenceDefinitions.h,1720
+#define OM_PREFERENCES_DEFINITIONS_H2,37
+	OM_PREF_GUI_VIEWBOX_MOVE_RIGHT_STR 27,530
+	OM_PREF_GUI_VIEWBOX_MOVE_LEFT_STR,28,576
+	OM_PREF_GUI_VIEWBOX_MOVE_UP_STR,29,615
+	OM_PREF_GUI_VIEWBOX_MOVE_DOWN_STR,30,653
+	OM_PREF_GUI_VIEWBOX_ZOOM_IN_STR,32,693
+	OM_PREF_GUI_VIEWBOX_ZOOM_OUT_STR,33,731
+	OM_PREF_GUI_VIEW_CENTER_FORWARD_STR,35,770
+	OM_PREF_GUI_VIEW_CENTER_BACKWARD_STR,36,811
+	OM_PREF_GUI_UNDO_STR,38,853
+	OM_PREF_GUI_REDO_STR,39,882
+	OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT 43,922
+	OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT,44,969
+	OM_PREF_MESH_REDUCTION_PERCENT_FLT,45,1012
+	OM_PREF_MESH_NUM_MESHING_THREADS_INT,46,1050
+	OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT 51,1114
+	OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT,52,1164
+	OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT 56,1223
+	OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT,57,1267
+	OM_PREF_VIEW2D_SHOW_INFO_BOOL,58,1303
+	OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT,59,1335
+	OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT,60,1373
+	OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT,61,1410
+	OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT,62,1449
+	OM_PREF_VIEW3D_ANTIALIASING_BOOL 71,1510
+	OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F,72,1554
+	OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT,73,1595
+	OM_PREF_VIEW3D_CAMERA_FOV_FLT,74,1636
+	OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT,75,1672
+	OM_PREF_VIEW3D_FOCUS_STYLE_INT,76,1713
+	OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F,77,1750
+	OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL,78,1790
+	OM_PREF_VIEW3D_SHOW_AXIS_BOOL,79,1832
+	OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL,80,1868
+	OM_PREF_VIEW3D_SHOW_INFO_BOOL,81,1910
+	OM_PREF_VIEW3D_SHOW_FOCUS_BOOL,82,1946
+	OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL,83,1983
+	OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT,84,2021
+	OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL85,2062
+
+src/system/omPreferences.cpp,1026
+#define DEBUG 7,96
+OmPreferences* OmPreferences::mspInstance 12,139
+OmPreferences::OmPreferences(24,309
+OmPreferences::~OmPreferences(28,348
+OmPreferences::Instance(36,407
+OmPreferences::Delete(45,531
+OmPreferences::ValidPreference(61,730
+OmPreferences::GetItem(67,847
+OmPreferences::SetItem(88,1447
+OmPreferences::RefreshPreference(97,1705
+OmPreferences::GetString(122,2132
+OmPreferences::SetString(127,2239
+OmPreferences::Get(136,2413
+OmPreferences::Set(141,2497
+OmPreferences::Set(146,2586
+OmPreferences::GetFloat(157,2681
+OmPreferences::SetFloat(162,2784
+OmPreferences::Get(171,2953
+OmPreferences::Set(176,3036
+OmPreferences::GetInteger(187,3128
+OmPreferences::SetInteger(192,3237
+OmPreferences::Get(201,3410
+OmPreferences::Set(206,3493
+OmPreferences::GetBoolean(219,3588
+OmPreferences::SetBoolean(224,3697
+OmPreferences::Get(233,3871
+OmPreferences::Set(238,3955
+OmPreferences::GetVector3f(247,4058
+OmPreferences::SetVector3f(252,4170
+OmPreferences::Get(261,4353
+OmPreferences::Set(266,4442
+
+src/system/omPreferences.h,550
+#define OM_PREFERENCES_H2,25
+using namespace vmml;14,244
+class OmPrefItem 20,331
+	enum OmPrefItemType OmPrefItem::OmPrefItemType22,352
+		BOOLEAN_TYPE,OmPrefItem::OmPrefItemType::BOOLEAN_TYPE23,375
+		INTEGER_TYPE,OmPrefItem::OmPrefItemType::INTEGER_TYPE24,391
+		FLOAT_TYPE,OmPrefItem::OmPrefItemType::FLOAT_TYPE25,407
+		STRING_TYPE,OmPrefItem::OmPrefItemType::STRING_TYPE26,421
+		VECTOR3F_TYPEOmPrefItem::OmPrefItemType::VECTOR3F_TYPE27,436
+class OmPreferences 55,795
+OmPrefItem::serialize(136,2652
+OmPreferences::serialize(170,3135
+
+src/system/omProject.cpp,567
+#define DEBUG 23,524
+static const string PROJECT_ARCHIVE_NAME 26,542
+OmProject* OmProject::mspInstance 30,626
+OmProject::OmProject(41,777
+OmProject::~OmProject(45,853
+OmProject::Instance(53,899
+OmProject::Delete(62,1015
+OmProject::GetFileName(83,1220
+OmProject::SetFileName(88,1287
+OmProject::GetDirectoryPath(93,1383
+OmProject::SetDirectoryPath(98,1460
+OmProject::GetTempDirectoryPath(104,1560
+OmProject::New(119,1763
+OmProject::Save(154,2558
+OmProject::SaveAs(176,2894
+OmProject::Commit(198,3472
+OmProject::Load(211,3645
+OmProject::Close(239,4242
+
+src/system/omProject.h,159
+#define OM_PROJECT_H2,21
+using namespace vmml;25,583
+typedef int (*GGOCTFPointer)GGOCTFPointer29,608
+class OmProject 32,683
+OmProject::serialize(94,1841
+
+src/system/omProjectData.cpp,707
+#define DEBUG 15,239
+OmProjectData* OmProjectData::mspInstance 20,282
+OmProjectData::OmProjectData(31,449
+OmProjectData::~OmProjectData(35,501
+OmProjectData::Instance(43,560
+OmProjectData::Delete(52,684
+OmProjectData::GetFilePath(70,896
+OmProjectData::Create(76,1003
+OmProjectData::Open(91,1252
+OmProjectData::Close(98,1402
+OmProjectData::Flush(107,1558
+bool OmProjectData::IsOpen(115,1658
+OmProjectData::GroupExists(131,1850
+OmProjectData::GroupDelete(137,1986
+OmProjectData::DataExists(145,2117
+OmProjectData::CreateImageData(155,2266
+OmProjectData::ReadImageData(166,2676
+OmProjectData::WriteImageData(173,2894
+OmProjectData::ReadRawData(182,3149
+OmProjectData::WriteRawData(188,3306
+
+src/system/omProjectData.h,132
+#define OM_PROJECT_DATA_H2,26
+class OmProjectData 23,274
+OmProjectData::ArchiveRead(81,1625
+OmProjectData::ArchiveWrite(89,1794
+
+src/system/omSnapshot.cpp,53
+#define DEBUG 12,271
+OmSnapshot::OmSnapshot 22,411
+
+src/system/omSnapshot.h,81
+#define OM_SNAPSHOT_H2,22
+using namespace vmml;17,316
+class OmSnapshot 20,340
+
+src/system/omStateManager.cpp,1617
+#define DEBUG 20,333
+OmStateManager* OmStateManager::mspInstance 25,376
+OmStateManager::OmStateManager(37,548
+OmStateManager::~OmStateManager(57,896
+OmStateManager::Instance(82,1175
+OmStateManager::Delete(94,1329
+OmStateManager::GetProjectFileName(119,1564
+OmStateManager::SetProjectFileName(124,1650
+OmStateManager::GetProjectDirectoryPath(129,1763
+OmStateManager::SetProjectDirectoryPath(134,1859
+OmStateManager::SetViewSliceMin(172,2370
+OmStateManager::GetViewSliceMin(195,2926
+OmStateManager::SetViewSliceMax(215,3293
+OmStateManager::GetViewSliceMax(238,3849
+OmStateManager::SetViewSliceDepth(259,4204
+OmStateManager::GetViewSliceDepth(279,4624
+OmStateManager::SetZoomLevel(299,4919
+OmStateManager::GetZoomLevel(306,5094
+OmStateManager::SetPanDistance(317,5202
+OmStateManager::GetPanDistance(340,5727
+OmStateManager::SetSliceState(363,6143
+OmStateManager::SetViewSliceDataFormat(389,6631
+OmStateManager::SetViewSlice(406,7271
+OmStateManager::GetSystemMode(460,8414
+OmStateManager::SetSystemMode(466,8491
+OmStateManager::GetToolMode(492,8908
+OmStateManager::SetToolMode(498,8981
+OmStateManager::GetUndoStack(520,9386
+OmStateManager::PushUndoCommand(531,9554
+OmStateManager::ClearUndoStack(536,9644
+static QGLWidget * sharedwidget=543,9711
+OmStateManager::CreatePrimaryView3dWidget(555,9922
+OmStateManager::GetPrimaryView3dWidget(567,10258
+OmStateManager::GetSharedView3dContext(580,10579
+OmStateManager::MakeContextCurrent(609,11403
+OmStateManager::GetSharedView2dContext(618,11597
+OmStateManager::GetTransparencyAlpha(654,12516
+OmStateManager::SetTransparencyAlpha(659,12606
+
+src/system/omStateManager.h,982
+#define OM_STATE_MANAGER_H2,27
+using namespace vmml;19,517
+enum OmSlicePlane 29,617
+enum OmSlicePlane { SLICE_XY_PLANE,OmSlicePlane::SLICE_XY_PLANE29,617
+enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE,OmSlicePlane::SLICE_XZ_PLANE29,617
+enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE OmSlicePlane::SLICE_YZ_PLANE29,617
+enum OmSystemMode 30,687
+enum OmSystemMode { NAVIGATION_SYSTEM_MODE,OmSystemMode::NAVIGATION_SYSTEM_MODE30,687
+enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE OmSystemMode::EDIT_SYSTEM_MODE30,687
+enum OmToolMode 31,751
+enum OmToolMode { ZOOM_MODE,OmToolMode::ZOOM_MODE31,751
+enum OmToolMode { ZOOM_MODE, ADD_VOXEL_MODE,OmToolMode::ADD_VOXEL_MODE31,751
+enum OmToolMode { ZOOM_MODE, ADD_VOXEL_MODE, SUBTRACT_VOXEL_MODE,OmToolMode::SUBTRACT_VOXEL_MODE31,751
+enum OmToolMode { ZOOM_MODE, ADD_VOXEL_MODE, SUBTRACT_VOXEL_MODE, SELECT_VOXEL_MODE OmToolMode::SELECT_VOXEL_MODE31,751
+class OmStateManager 34,841
+
+src/system/omSystemTypes.h,742
+#define OM_SYSTEM_TYPES_H2,26
+typedef uint32_t OmId;16,190
+typedef set< OmId > OmIds;17,213
+const static OmId NULL_OM_ID 19,241
+typedef unsigned int OmBitfield;22,288
+enum ViewType 26,332
+enum ViewType { XY_VIEW,26,332
+enum ViewType { XY_VIEW, XZ_VIEW,26,332
+enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW,26,332
+enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW, ALL 26,332
+enum ObjectType 29,393
+enum ObjectType { VOLUME,29,393
+enum ObjectType { VOLUME, CHANNEL,29,393
+enum ObjectType { VOLUME, CHANNEL, SEGMENTATION,29,393
+enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT,29,393
+enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE,29,393
+enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER 29,393
+
+src/system/omTagManager.cpp,325
+#define DEBUG 5,29
+OmTagManager* OmTagManager::mspInstance 10,72
+OmTagManager::OmTagManager(22,240
+OmTagManager::~OmTagManager(26,277
+OmTagManager::Instance(34,333
+OmTagManager::Delete(43,455
+OmTagManager::GetTag(59,656
+OmTagManager::AddTag(64,725
+OmTagManager::RemoveTag(70,793
+OmTagManager::GetValidTagIds(75,867
+
+src/system/omTagManager.h,131
+#define OM_TAG_MANAGER_H2,25
+typedef OmManageableObject OmTag;20,361
+class OmTagManager 23,397
+OmTagManager::serialize(72,1270
+
+src/system/omThreadedCache.h,2105
+#define OM_THREADED_CACHE_H2,28
+using boost::shared_ptr;24,773
+using std::list;27,815
+#define OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK 32,853
+#define OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS 33,906
+#define OM_THREADED_CACHE_DEBUG 35,961
+template < typename T,39,1029
+template < typename T,43,1131
+class OmThreadedCache 44,1169
+	virtual void HandleFetchUpdate(OmThreadedCache::HandleFetchUpdate64,1691
+template < typename T,126,3113
+OmThreadedCache<T,U>::OmThreadedCache(OmThreadedCache127,3151
+template < typename T,161,3995
+OmThreadedCache<T,U>::~OmThreadedCache(~OmThreadedCache162,4033
+template < typename T,193,4602
+OmThreadedCache<T,U>::Get(Get195,4656
+template < typename T,278,6966
+OmThreadedCache<T,U>::Add(Add280,7010
+template < typename T,324,7967
+OmThreadedCache<T,U>::Remove(Remove326,8011
+template < typename T,363,8855
+OmThreadedCache<T,U>::RemoveOldest(RemoveOldest365,8899
+template < typename T,431,10437
+OmThreadedCache<T,U>::Contains(Contains433,10481
+template < typename T,450,10800
+OmThreadedCache<T,U>::Call(Call452,10843
+template < typename T,479,11322
+OmThreadedCache<T,U>::Clear(Clear481,11365
+template < typename T,500,11595
+OmThreadedCache<T,U>::SetFetchUpdateInterval(SetFetchUpdateInterval502,11638
+template < typename T,506,11738
+OmThreadedCache<T,U>::GetFetchUpdateInterval(GetFetchUpdateInterval508,11782
+template < typename T,512,11865
+OmThreadedCache<T,U>::SetFetchUpdateClearsFetchStack(SetFetchUpdateClearsFetchStack514,11908
+template < typename T,518,12012
+OmThreadedCache<T,U>::GetFetchUpdateClearsFetchStack(GetFetchUpdateClearsFetchStack520,12055
+template < typename T,539,12248
+OmThreadedCache<T,U>::IsFetchStackEmpty(IsFetchStackEmpty541,12291
+template < typename T,557,12681
+OmThreadedCache<T,U>::FetchLoop(FetchLoop559,12724
+template < typename T,659,15734
+OmThreadedCache<T,U>::FetchUpdateCheck(FetchUpdateCheck661,15779
+template < typename T,689,16389
+OmThreadedCache<T,U>::InitializeFetchThread(InitializeFetchThread691,16434
+template < typename T,712,16718
+start_cache_fetch_thread(714,16769
+
+src/utility/biMap.h,341
+#define BI_MAP_H2,17
+template < typename T,14,140
+class BiMap 15,178
+	size_t count(BiMap::count18,201
+	size_t count(BiMap::count22,269
+	void unmap(BiMap::unmap45,685
+	void unmap(BiMap::unmap55,891
+	void map(BiMap::map68,1125
+	void map(BiMap::map73,1220
+template< typename T,103,1719
+BiMap<T,U>::serialize(serialize106,1792
+
+src/utility/biSetMap.h,363
+#define BI_SET_MAP_H2,21
+using std::set;13,184
+template < typename T,17,203
+class biSetMap 18,241
+	size_t size(biSetMap::size30,390
+	size_t count(biSetMap::count35,442
+	size_t count(biSetMap::count39,506
+	void insert(biSetMap::insert43,567
+	void insert(biSetMap::insert48,656
+	void erase(biSetMap::erase58,882
+	void erase(biSetMap::erase76,1225
+
+src/utility/main.cpp,44
+int main(26,457
+void sample_write(95,1832
+
+src/utility/omHdf5.cpp,796
+#define DEBUG 14,256
+om_hdf5_file_create(24,363
+om_hdf5_file_open(39,760
+om_hdf5_file_close(49,953
+om_hdf5_group_exists(66,1178
+om_hdf5_group_create(87,1657
+om_hdf5_group_delete(98,1996
+om_hdf5_group_create_tree(111,2268
+om_hdf5_dataset_exists(139,2834
+om_hdf5_dataset_delete(161,3323
+om_hdf5_dataset_delete_create_tree(172,3600
+om_hdf5_dataset_raw_create(205,4432
+om_hdf5_dataset_raw_create_tree_overwrite(240,5788
+om_hdf5_dataset_raw_read(253,6073
+om_hdf5_dataset_image_get_dims(317,7871
+om_hdf5_dataset_image_create(361,9233
+om_hdf5_dataset_image_create_tree_overwrite(422,11731
+om_hdf5_dataset_image_read(438,12186
+om_hdf5_dataset_image_read_trim(506,15034
+om_hdf5_dataset_image_write(557,16824
+om_hdf5_dataset_image_write_trim(646,20221
+om_hdf5_bytesToHdf5Id(699,21986
+
+src/utility/omHdf5.h,114
+#define OM_MDF5_H2,18
+using namespace vmml;15,176
+om_hdf5_archive_read(76,2199
+om_hdf5_archive_write(103,2715
+
+src/utility/omImageDataIo.cpp,1212
+#define DEBUG 47,819
+static const char* HDF5_DEFAULT_DATASET_NAME 51,838
+om_imagedata_parse_image_type(69,1076
+om_imagedata_get_reader(106,1737
+om_imagedata_get_reader(145,2527
+om_imagedata_get_writer(154,2732
+om_imagedata_get_writer(177,3118
+om_imagedata_read(194,3364
+om_imagedata_read_vtk(215,3972
+om_imagedata_read_hdf5(299,6555
+om_imagedata_write(326,7242
+om_imagedata_write_vtk(346,7753
+om_imagedata_write_hdf5(416,9595
+om_imagedata_write_hdf5(421,9829
+om_imagedata_get_dims(536,12484
+om_imagedata_get_dims_vtk(558,12983
+om_imagedata_get_dims_hdf5(595,13875
+getVtkExtentFromAxisAlignedBoundingBox(631,14509
+setAxisAlignedBoundingBoxFromVtkExtent(641,14793
+printImageData(649,15043
+clearImageData(682,15690
+allocImageData(698,16051
+createBlankImageData(711,16387
+copyImageData(727,16784
+copyImageData(793,18841
+copyIntersectedImageDataFromOffset(882,21831
+appendImageDataPairs(933,23194
+om_imagedata_regex_match_dir_contents(972,24025
+string_natural_comparison(1031,25330
+om_imagedata_regex_match_dir_contents_sorted(1041,25582
+om_imagedata_create_symlink_dir(1102,27214
+om_imagedata_remove_symlink_dir(1147,28470
+makeFilePath(1176,29052
+countMatchesInDirectory(1205,29784
+
+src/utility/omImageDataIo.h,617
+#define OM_IMAGE_IO_H2,22
+using namespace vmml;15,182
+namespace bfs=19,292
+using std::list;22,342
+enum ImageType 24,360
+enum ImageType { TIFF_TYPE,ImageType::TIFF_TYPE24,360
+enum ImageType { TIFF_TYPE, JPEG_TYPE,ImageType::JPEG_TYPE24,360
+enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE,ImageType::PNG_TYPE24,360
+enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE,ImageType::VTK_TYPE24,360
+enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE,ImageType::HDF5_TYPE24,360
+enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE ImageType::NONE_TYPE24,360
+
+src/utility/setUtilities.h,109
+#define OM_UTILITY_H9,109
+setIntersection(17,188
+setDifference(40,762
+setUnion(61,1179
+setPrint(79,1561
+
+src/utility/stackSet.h,304
+#define STACK_SET_H2,20
+class StackSet 21,391
+	void push(StackSet::push25,418
+	void pop(StackSet::pop37,733
+	T& top(StackSet::top44,834
+	void clear(StackSet::clear48,875
+	unsigned int count(StackSet::count53,930
+	unsigned int size(StackSet::size57,1007
+	bool empty(StackSet::empty61,1065
+
+src/view2d/dmainwindow.cpp,306
+MainWindow::MainWindow(21,444
+void MainWindow::open(136,3690
+void MainWindow::about(141,3721
+void MainWindow::createActions(152,4038
+void MainWindow::createMenus(176,4855
+void MainWindow::createToolBars(194,5262
+void MainWindow::createStatusBar(204,5434
+void MainWindow::createDockWindows(209,5514
+
+src/view2d/dmainwindow.h,51
+#define MAINWINDOW_H2,21
+class MainWindow 17,220
+
+src/view2d/domView2d.cpp,3080
+#define DEBUG 34,766
+class myQGLWidget:myQGLWidget36,783
+myQGLWidget::myQGLWidget 43,888
+void myQGLWidget::initializeGL(47,950
+void myQGLWidget::paintGL(55,1153
+static myQGLWidget * h=63,1332
+DataBbox SpaceToDataBbox(65,1362
+SpaceBbox DataToSpaceBbox(71,1564
+DataCoord SpaceToDataCoord(77,1768
+SpaceCoord DataToSpaceCoord(83,1974
+void DOMNIView2d::ViewBoxChangeEvent(90,2189
+void DOMNIView2d::ViewPosChangeEvent(96,2392
+void DOMNIView2d::ViewCenterChangeEvent(103,2596
+void DOMNIView2d::ViewRedrawEvent(111,2819
+void DOMNIView2d::EditModeMousePressed(117,2991
+void DOMNIView2d::EditModeMouseRelease(194,5565
+void DOMNIView2d::EditModeMouseMove(266,8078
+void DOMNIView2d::resizeEvent 345,10631
+void DOMNIView2d::mousePressEvent(359,11077
+void DOMNIView2d::mouseReleaseEvent(379,11701
+void DOMNIView2d::mouseMoveEvent(397,12245
+void DOMNIView2d::keyPressEvent(511,16444
+void DOMNIView2d::wheelEvent 671,23075
+void DOMNIView2d::paintCrosshairs(723,25065
+bool OMNIView2dUpdatePlan::operator!=(OMNIView2dUpdatePlan::operator!=735,25361
+bool OMNIView2dUpdatePlan::operator==(OMNIView2dUpdatePlan::operator==739,25465
+OMNIView2dUpdatePlan::OMNIView2dUpdatePlan(743,25570
+OMNIView2dUpdatePlan DOMNIView2d::constructPlan 747,25620
+QImage DOMNIView2d::paintTextures 830,28541
+void showElapsed(856,29292
+void DOMNIView2d::paintEvent(867,29636
+DOMNIView2d::DOMNIView2d(894,30303
+DOmView2d::DOmView2d(939,31994
+void DOmView2d::initializeGL(1035,34846
+void DOmView2d::resizeEvent 1058,35538
+void DOmView2d::resizeGL(1066,35683
+void DOmView2d::paintEvent(1113,37543
+void DOmView2d::mousePressEvent(1253,41439
+void DOmView2d::mouseReleaseEvent(1276,41843
+void DOmView2d::mouseMoveEvent(1296,42210
+void DOmView2d::mouseDoubleClickEvent(1412,46409
+void DOmView2d::NavigationModeMouseDoubleClick(1474,48317
+void DOmView2d::EditModeMousePressed(1547,50758
+void DOmView2d::EditModeMouseRelease(1626,53340
+void DOmView2d::EditModeMouseMove(1699,55850
+void DOmView2d::EditModeMouseDoubleClick(1775,58396
+void DOmView2d::EditModeKeyPress(1781,58547
+void DOmView2d::bresenhamLineDraw(1787,58649
+void DOmView2d::wheelEvent 1942,62944
+void DOmView2d::keyPressEvent(1995,64945
+void DOmView2d::PreferenceChangeEvent(2162,71680
+void DOmView2d::SegmentObjectModificationEvent(2215,72859
+void DOmView2d::SegmentDataModificationEvent(2231,73310
+void DOmView2d::SegmentEditSelectionChangeEvent(2246,73737
+void DOmView2d::VoxelModificationEvent(2272,74444
+void DOmView2d::SystemModeChangeEvent(2303,75338
+void DOmView2d::ViewBoxChangeEvent(2331,75853
+void DOmView2d::ViewPosChangeEvent(2338,76027
+void DOmView2d::ViewCenterChangeEvent(2347,76204
+void DOmView2d::ViewRedrawEvent(2360,76433
+void DOmView2d::Draw(2376,76679
+void DOmView2d::SendFrameBuffer(2790,89582
+void DOmView2d::InitializeCache(2854,91131
+void DOmView2d::DrawCursors(3100,97621
+DataBbox DOmView2d::SpaceToDataBbox(3189,101063
+SpaceBbox DOmView2d::DataToSpaceBbox(3205,101430
+DataCoord DOmView2d::SpaceToDataCoord(3221,101798
+SpaceCoord DOmView2d::DataToSpaceCoord(3239,102182
+
+src/view2d/domView2d.h,173
+#define DOM_QT_VIEW_2D_H 2,25
+using namespace vmml;22,509
+using boost::tuple;25,576
+class OMNIView2dUpdatePlan37,746
+class DOMNIView2d 49,973
+class DOmView2d 124,2760
+
+src/view2d/main.cpp,17
+int main(25,404
+
+src/view2d/mainwindow.cpp,306
+MainWindow::MainWindow(21,442
+void MainWindow::open(136,3682
+void MainWindow::about(141,3713
+void MainWindow::createActions(152,4030
+void MainWindow::createMenus(176,4848
+void MainWindow::createToolBars(194,5255
+void MainWindow::createStatusBar(204,5427
+void MainWindow::createDockWindows(209,5507
+
+src/view2d/mainwindow.h,51
+#define MAINWINDOW_H2,21
+class MainWindow 17,219
+
+src/view2d/omCachingTile.cpp,299
+#define DEBUG 4,29
+shared_ptr<OmTextureID> OmCachingTile::GetTextureID(7,47
+void OmCachingTile::StoreTextureID(13,270
+OmTextureID* OmCachingTile::HandleCacheMiss(17,400
+void OmCachingTile::ClearCache(25,658
+void OmCachingTile::setSecondMipVolume(29,724
+void OmCachingTile::subImageTex(35,907
+
+src/view2d/omCachingTile.h,330
+#define OM_CACHING_TILE_H2,26
+using boost::tuple;18,365
+typedef OmThreadedCache< OmTileCoord,21,439
+typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDCache;21,439
+class OmCachingTile 24,509
+	OmCachingTile(OmCachingTile::OmCachingTile27,584
+	bool checkSecondMipVolume(OmCachingTile::checkSecondMipVolume41,1121
+
+src/view2d/omCamera2d.cpp,996
+#define DEBUG 7,51
+static const float INITIAL_DISTANCE 12,140
+OmCamera::OmCamera(29,504
+OmCamera::GetViewport(63,1156
+OmCamera::SetViewport(69,1217
+OmCamera::ApplyViewport(75,1313
+OmCamera::GetPerspective(86,1491
+OmCamera::SetPerspective(91,1556
+OmCamera::ApplyPerspective(101,1712
+OmCamera::ApplyReshape(129,2357
+void OmCamera::ResetModelview(152,2706
+OmCamera::UpdateModelview(187,3563
+OmCamera::ApplyModelview(197,3734
+OmCamera::GetPosition(221,4018
+OmCamera::GetFocus(230,4139
+OmCamera::SetFocus(235,4210
+OmCamera::GetDistance(244,4324
+OmCamera::SetDistance(250,4463
+OmCamera::GetOrbitRotation(260,4679
+OmCamera::SetOrbitRotation(265,4743
+OmCamera::GetLookAtRotation(274,4942
+OmCamera::SetLookAtRotation(279,5008
+OmCamera::GetModelViewMatrix(292,5225
+OmCamera::GetProjectionMatrix(298,5317
+OmCamera::GetProjModelViewMatrix(303,5402
+OmCamera::DrawFocusAxis(321,5590
+OmCamera::MovementStart(353,6102
+OmCamera::MovementUpdate(379,6512
+OmCamera::MovementEnd(405,6858
+
+src/view2d/omCamera2d.h,409
+#define OM_GL_CAMERA_H2,23
+using namespace vmml;14,176
+enum CameraMovementType 19,224
+	CAMERA_NONE,CameraMovementType::CAMERA_NONE20,251
+	CAMERA_PAN,CameraMovementType::CAMERA_PAN21,266
+	CAMERA_ZOOM,CameraMovementType::CAMERA_ZOOM22,280
+	CAMERA_ORBIT_ROTATE,CameraMovementType::CAMERA_ORBIT_ROTATE23,295
+	CAMERA_LOOKAT_ROTATE CameraMovementType::CAMERA_LOOKAT_ROTATE24,318
+class OmCamera 29,347
+
+src/view2d/omCameraMovement.cpp,220
+OmCameraArcBall::Click(20,250
+OmCameraArcBall::Drag(39,595
+OmCameraArcBall::MapPointToSphere(91,1785
+OmCameraPan::Click(143,3019
+OmCameraPan::Drag(151,3140
+OmCameraZoom::Click(206,4661
+OmCameraZoom::Drag(214,4837
+
+src/view2d/omCameraMovement.h,393
+#define OM_CAMERA_MOVEMENT_H2,29
+using namespace vmml;12,157
+class OmCameraMovement 18,199
+	OmCameraMovement(OmCameraMovement::OmCameraMovement20,232
+class OmCameraArcBall 33,483
+	OmCameraArcBall(OmCameraArcBall::OmCameraArcBall36,542
+class OmCameraPan 54,934
+	OmCameraPan(OmCameraPan::OmCameraPan57,990
+class OmCameraZoom 71,1217
+	OmCameraZoom(OmCameraZoom::OmCameraZoom74,1273
+
+src/view2d/omTextureID.cpp,154
+#define DEBUG 6,92
+OmTextureID::OmTextureID(10,111
+OmTextureID::~OmTextureID(18,538
+const bool OmTextureID::FindId(29,794
+ostream& operator<<(40,978
+
+src/view2d/omTextureID.h,591
+#define OM_TEXTURE_ID_H2,24
+#define OMTILE_FIXME	27,742
+#define OMTILE_NEEDTEXTUREBUILT 28,766
+#define OMTILE_COORDINVALID 29,800
+#define OMTILE_GOOD	30,834
+#define OMTILE_NEEDCOLORMAP 31,857
+using boost::tuple;35,934
+class OmTextureID 50,1166
+	const GLuint GetTextureID(OmTextureID::GetTextureID57,1486
+	const int GetSize(OmTextureID::GetSize58,1543
+	const OmTileCoord& GetCoordinate(OmTextureID::GetCoordinate59,1591
+	const OmIds GetIds(OmTextureID::GetIds61,1663
+	class OmTexureIDSafeDelete:OmTextureID::OmTexureIDSafeDelete66,1746
+private:OmTextureID::private98,2435
+
+src/view2d/omThreadedCachingTile.cpp,808
+#define DEBUG 16,288
+OmThreadedCachingTile::OmThreadedCachingTile(18,305
+OmThreadedCachingTile::~OmThreadedCachingTile(32,811
+shared_ptr<OmTextureID> OmThreadedCachingTile::GetTextureID(37,955
+shared_ptr<OmTextureID> OmThreadedCachingTile::GetTextureIDDownMip(45,1395
+void OmThreadedCachingTile::StoreTextureID(74,2312
+void OmThreadedCachingTile::Remove(79,2494
+OmTextureID* OmThreadedCachingTile::HandleCacheMiss(84,2646
+void OmThreadedCachingTile::SetContinuousUpdate(97,3171
+OmThreadedCachingTile::InitializeFetchThread(103,3327
+OmThreadedCachingTile::HandleFetchUpdate(115,3682
+void OmThreadedCachingTile::setSecondMipVolume(131,4053
+void OmThreadedCachingTile::subImageTex(138,4348
+void OmThreadedCachingTile::subFullImageTex(143,4569
+void OmThreadedCachingTile::SetMaxCacheSize(148,4768
+
+src/view2d/omThreadedCachingTile.h,512
+#define OM_CACHING_TILE_H2,26
+using boost::tuple;21,398
+typedef OmThreadedCache< OmTileCoord,24,420
+typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDThreadedCache;24,420
+class OmThreadedCachingTile 29,517
+	bool checkSecondMipVolume(OmThreadedCachingTile::checkSecondMipVolume49,1317
+class OmCachingThreadedCachingTile70,1869
+	OmCachingThreadedCachingTile OmCachingThreadedCachingTile::OmCachingThreadedCachingTile73,1914
+	static void Refresh OmCachingThreadedCachingTile::Refresh106,2717
+
+src/view2d/omTile.cpp,526
+#define DEBUG 20,353
+OmTile::OmTile(22,370
+OmTile::~OmTile(39,672
+void OmTile::AddOverlay(43,723
+void OmTile::SetNewAlpha(50,936
+OmTextureID* OmTile::BindToTextureID(54,998
+void* OmTile::GetImageData(125,3390
+OmMipChunkCoord OmTile::TileToMipCoord(163,4415
+int OmTile::GetDepth(172,4631
+void OmTile::setMergeChannels(189,5014
+int clamp 254,6663
+OmIds OmTile::setMyColorMap(260,6737
+OmIds OmTile::setMyColorMap(344,9432
+void OmTile::ReplaceFullTextureRegion(448,12514
+void OmTile::ReplaceTextureRegion(670,19750
+
+src/view2d/omTile.h,132
+#define OM_TILE_H2,18
+using namespace vmml;18,277
+using boost::tuple;28,469
+using boost::shared_ptr;31,522
+class OmTile 37,606
+
+src/view2d/omTileCoord.cpp,280
+OmTileCoord::OmTileCoord(7,30
+OmTileCoord::OmTileCoord(13,104
+OmTileCoord::operator=(OmTileCoord::operator=26,234
+OmTileCoord::operator==(OmTileCoord::operator==32,344
+OmTileCoord::operator!=(OmTileCoord::operator!=37,471
+OmTileCoord::operator<(43,629
+operator<<(52,796
+
+src/view2d/omTileCoord.h,143
+#define OM_TILE_COORD_H2,24
+using namespace vmml;21,499
+using boost::tuple;26,600
+class OmTileCoord 29,622
+OmTileCoord::serialize(69,1328
+
+src/view2d/omView2d.cpp,3002
+#define DEBUG 35,882
+static QGLWidget * sharedwidget=37,899
+OmView2d::OmView2d(42,974
+OmView2d::~OmView2d(179,5299
+void OmView2d::initializeGL(192,5587
+void OmView2d::resizeEvent 214,6249
+void OmView2d::resizeGL(224,6408
+void OmView2d::paintEvent(243,6835
+QImage OmView2d::safePaintEvent(357,11358
+void OmView2d::mousePressEvent(430,13244
+void OmView2d::Refresh 457,13698
+void OmView2d::PickToolGetColor(462,13749
+void OmView2d::PickToolAddToSelection 476,14141
+DataCoord OmView2d::BrushToolOTGDC(488,14553
+static bool BrushTool8[BrushTool8515,15270
+static bool BrushTool32[BrushTool32532,15552
+void OmView2d::BrushToolApplyPaint(574,17774
+void OmView2d::mouseReleaseEvent(659,20350
+void OmView2d::mouseMoveEvent(680,20700
+void OmView2d::mouseDoubleClickEvent(817,26047
+void OmView2d::NavigationModeMouseDoubleClick(887,28132
+void OmView2d::EditModeMousePressed(988,31358
+void OmView2d::FillToolFill 1079,34197
+void OmView2d::EditModeMouseRelease(1132,35697
+void OmView2d::EditModeMouseMove(1286,41755
+void OmView2d::EditModeMouseDoubleClick(1372,44451
+void OmView2d::EditModeKeyPress(1376,44558
+void OmView2d::bresenhamLineDraw(1381,44616
+void OmView2d::GlobalDepthFix 1550,49786
+void OmView2d::wheelEvent 1577,50868
+void OmView2d::MouseWheelZoom(1598,51333
+void OmView2d::SetViewSliceOnPan 1639,52445
+void OmView2d::PanOnZoom(1663,53748
+void OmView2d::keyPressEvent(1687,54566
+void OmView2d::MoveUpStackCloserToViewer(1872,59248
+void OmView2d::MoveDownStackFartherFromViewer(1884,59641
+void OmView2d::PreferenceChangeEvent(1901,60143
+void OmView2d::SegmentObjectModificationEvent(1958,61684
+void OmView2d::SegmentDataModificationEvent(1981,62326
+void OmView2d::SegmentEditSelectionChangeEvent(1994,62707
+void OmView2d::VoxelModificationEvent(2022,63471
+void OmView2d::SystemModeChangeEvent(2052,64346
+void OmView2d::ViewBoxChangeEvent(2077,64813
+void OmView2d::ViewPosChangeEvent(2082,64941
+void OmView2d::ViewCenterChangeEvent(2089,65072
+void OmView2d::ViewRedrawEvent(2101,65304
+void OmView2d::myUpdate 2111,65430
+void OmView2d::DrawFromFilter(2202,68486
+void OmView2d::DrawFromCache(2221,68854
+void OmView2d::safeTexture(2254,70154
+void OmView2d::safeDraw 2300,72284
+DataCoord OmView2d::ToDataCoord 2357,74403
+void OmView2d::Draw(2375,75037
+Drawable::Drawable 2411,76170
+Drawable::Drawable 2418,76502
+void OmTextureIDUpdate(2424,76697
+int OmView2d::GetDepth(2440,77242
+static int clamp 2457,77724
+OmIds OmView2d::setMyColorMap(2462,77791
+void* OmView2d::GetImageData(2552,81474
+void OmView2d::myBindToTextureID(2574,82313
+void OmView2d::PreDraw(2628,85325
+#define d(2679,86743
+void OmView2d::Draw(2729,89320
+void OmView2d::SendFrameBuffer(2748,89969
+void OmView2d::InitializeCache(2798,91273
+void OmView2d::DrawCursors(3045,98200
+DataBbox OmView2d::SpaceToDataBbox(3117,101084
+SpaceBbox OmView2d::DataToSpaceBbox(3133,101450
+DataCoord OmView2d::SpaceToDataCoord(3149,101817
+SpaceCoord OmView2d::DataToSpaceCoord(3167,102200
+
+src/view2d/omView2d.h,133
+#define OM_QT_VIEW_2D_H 2,24
+using namespace vmml;29,666
+using boost::tuple;32,733
+class Drawable 42,874
+class OmView2d 54,1248
+
+src/view2d/omView2dWidget.h,117
+#define OM_VIEW_2D_WIDGET_H2,28
+class OmView2dWidget 13,233
+	OmView2dWidget(OmView2dWidget::OmView2dWidget16,265
+
+src/view3d/main.cpp,18
+int main(44,1885
+
+src/view3d/mainwindow.cpp,308
+MainWindow::MainWindow(262,5977
+void MainWindow::open(338,7051
+void MainWindow::about(343,7083
+void MainWindow::createActions(354,7400
+void MainWindow::createMenus(378,8218
+void MainWindow::createToolBars(396,8625
+void MainWindow::createStatusBar(406,8797
+void MainWindow::createDockWindows(411,8877
+
+src/view3d/mainwindow.h,51
+#define MAINWINDOW_H2,21
+class MainWindow 17,219
+
+src/view3d/omCamera.cpp,996
+#define DEBUG 7,51
+static const float INITIAL_DISTANCE 12,140
+OmCamera::OmCamera(29,504
+OmCamera::GetViewport(63,1156
+OmCamera::SetViewport(69,1217
+OmCamera::ApplyViewport(75,1313
+OmCamera::GetPerspective(86,1491
+OmCamera::SetPerspective(91,1556
+OmCamera::ApplyPerspective(101,1712
+OmCamera::ApplyReshape(129,2357
+void OmCamera::ResetModelview(152,2706
+OmCamera::UpdateModelview(187,3563
+OmCamera::ApplyModelview(197,3734
+OmCamera::GetPosition(221,4018
+OmCamera::GetFocus(230,4139
+OmCamera::SetFocus(235,4210
+OmCamera::GetDistance(244,4324
+OmCamera::SetDistance(250,4463
+OmCamera::GetOrbitRotation(260,4679
+OmCamera::SetOrbitRotation(265,4743
+OmCamera::GetLookAtRotation(274,4942
+OmCamera::SetLookAtRotation(279,5008
+OmCamera::GetModelViewMatrix(292,5225
+OmCamera::GetProjectionMatrix(298,5317
+OmCamera::GetProjModelViewMatrix(303,5402
+OmCamera::DrawFocusAxis(321,5590
+OmCamera::MovementStart(353,6102
+OmCamera::MovementUpdate(379,6512
+OmCamera::MovementEnd(405,6858
+
+src/view3d/omCamera.h,409
+#define OM_GL_CAMERA_H2,23
+using namespace vmml;14,176
+enum CameraMovementType 19,224
+	CAMERA_NONE,CameraMovementType::CAMERA_NONE20,251
+	CAMERA_PAN,CameraMovementType::CAMERA_PAN21,266
+	CAMERA_ZOOM,CameraMovementType::CAMERA_ZOOM22,280
+	CAMERA_ORBIT_ROTATE,CameraMovementType::CAMERA_ORBIT_ROTATE23,295
+	CAMERA_LOOKAT_ROTATE CameraMovementType::CAMERA_LOOKAT_ROTATE24,318
+class OmCamera 29,347
+
+src/view3d/omCameraMovement.cpp,220
+OmCameraArcBall::Click(20,250
+OmCameraArcBall::Drag(39,595
+OmCameraArcBall::MapPointToSphere(91,1785
+OmCameraPan::Click(143,3019
+OmCameraPan::Drag(151,3140
+OmCameraZoom::Click(206,4661
+OmCameraZoom::Drag(214,4837
+
+src/view3d/omCameraMovement.h,393
+#define OM_CAMERA_MOVEMENT_H2,29
+using namespace vmml;12,157
+class OmCameraMovement 18,199
+	OmCameraMovement(OmCameraMovement::OmCameraMovement20,232
+class OmCameraArcBall 33,483
+	OmCameraArcBall(OmCameraArcBall::OmCameraArcBall36,542
+class OmCameraPan 54,934
+	OmCameraPan(OmCameraPan::OmCameraPan57,990
+class OmCameraZoom 71,1217
+	OmCameraZoom(OmCameraZoom::OmCameraZoom74,1273
+
+src/view3d/omView3d.cpp,1451
+#define DEBUG 25,585
+enum View3dWidgetIds 29,604
+	VIEW3D_WIDGET_ID_SELECTION View3dWidgetIds::VIEW3D_WIDGET_ID_SELECTION30,627
+	VIEW3D_WIDGET_ID_VIEWBOX,View3dWidgetIds::VIEW3D_WIDGET_ID_VIEWBOX31,660
+	VIEW3D_WIDGET_ID_INFO,View3dWidgetIds::VIEW3D_WIDGET_ID_INFO32,687
+	VIEW3D_WIDGET_ID_CHUNK_EXTENTView3dWidgetIds::VIEW3D_WIDGET_ID_CHUNK_EXTENT33,711
+OmView3d::OmView3d(57,1027
+OmView3d::GetCamera(88,1742
+void OmView3d::initializeGL(104,1899
+void OmView3d::resizeGL(161,3734
+void OmView3d::paintGL(169,3871
+OmView3d::mousePressEvent(185,4129
+void OmView3d::mouseReleaseEvent(193,4244
+OmView3d::mouseMoveEvent(198,4340
+OmView3d::mouseDoubleClickEvent(203,4427
+OmView3d::keyPressEvent(208,4528
+OmView3d::PreferenceChangeEvent(227,4801
+OmView3d::SegmentObjectModificationEvent(262,5558
+OmView3d::VoxelModificationEvent(267,5645
+OmView3d::SegmentDataModificationEvent(272,5723
+OmView3d::SystemModeChangeEvent(277,5810
+OmView3d::ViewBoxChangeEvent(283,5892
+OmView3d::View3dRedrawEvent(288,5967
+OmView3d::View3dUpdatePreferencesEvent(293,6040
+OmView3d::PickPoint(319,6332
+OmView3d::UnprojectPoint(366,7453
+OmView3d::UpdateEnabledWidgets(397,7948
+OmView3d::Draw(437,8901
+OmView3d::DrawVolumes(504,10536
+OmView3d::DrawEditSelectionVoxels(519,10890
+OmView3d::SetBackgroundColor(548,11348
+OmView3d::SetCameraPerspective(554,11531
+OmView3d::SetBlending(571,11935
+OmView3d::DrawWidgets(585,12136
+void initLights(609,12430
+
+src/view3d/omView3d.h,78
+#define OM_VIEW3D_H 2,20
+using namespace vmml;24,499
+class OmView3d 34,567
+
+src/view3d/omView3dUi.cpp,1224
+#define DEBUG 18,416
+OmView3dUi::OmView3dUi(29,552
+OmView3dUi::MousePressed(43,733
+OmView3dUi::MouseRelease(56,985
+OmView3dUi::MouseMove(69,1236
+OmView3dUi::MouseDoubleClick(86,1548
+OmView3dUi::KeyPress(100,1813
+OmView3dUi::NavigationModeMousePressed(121,2174
+OmView3dUi::NavigationModeMouseRelease(144,2640
+OmView3dUi::NavigationModeMouseMove(149,2742
+OmView3dUi::NavigationModeMouseDoubleClick(158,2946
+OmView3dUi::NavigationModeKeyPress(163,3061
+OmView3dUi::EditModeMousePressed(202,3790
+OmView3dUi::EditModeMouseRelease(228,4320
+OmView3dUi::EditModeMouseMove(238,4516
+OmView3dUi::EditModeMouseDoubleClick(253,4772
+OmView3dUi::EditModeKeyPress(259,4882
+OmView3dUi::CameraMovementMouseStart(294,5431
+OmView3dUi::CameraMovementMouseEnd(319,6219
+OmView3dUi::CameraMovementMouseUpdate(326,6379
+OmView3dUi::PickSegmentMouse(348,6682
+OmView3dUi::PickVoxel(429,8468
+OmView3dUi::PickVoxelMouse(443,8756
+OmView3dUi::PickVoxelCameraFocus(526,10696
+OmView3dUi::SegmentSelectToggleMouse(560,11382
+OmView3dUi::VoxelEditMouse(603,12620
+OmView3dUi::VoxelSelectToggleMouse(621,12926
+OmView3dUi::VoxelSelectToggleKey(645,13561
+OmView3dUi::VoxelSetMouse(661,13950
+OmView3dUi::ShowSegmentContextMenu(718,15241
+
+src/view3d/omView3dUi.h,53
+#define OM_VIEW3D_UI_H2,23
+class OmView3dUi 20,250
+
+src/view3d/omView3dWidget.h,117
+#define OM_VIEW_3D_WIDGET_H2,28
+class OmView3dWidget 14,234
+	OmView3dWidget(OmView3dWidget::OmView3dWidget17,266
+
+src/view3d/widgets/omChunkExtentWidget.cpp,154
+#define DEBUG 12,157
+static const float TEXT_COLOR[TEXT_COLOR15,175
+OmChunkExtentWidget::OmChunkExtentWidget(32,429
+OmChunkExtentWidget::Draw(54,750
+
+src/view3d/widgets/omChunkExtentWidget.h,117
+#define OM_CHUNK_EXTENT_WIDGET_H2,33
+class OmChunkExtentWidget 12,118
+private:OmChunkExtentWidget::private18,243
+
+src/view3d/widgets/omInfoWidget.cpp,173
+#define DEBUG 11,149
+static const float TEXT_COLOR[TEXT_COLOR14,167
+OmInfoWidget::OmInfoWidget(32,552
+OmInfoWidget::Draw(51,849
+OmInfoWidget::RenderCameraText(68,1228
+
+src/view3d/widgets/omInfoWidget.h,57
+#define OM_INFO_WIDGET_H2,25
+class OmInfoWidget 13,119
+
+src/view3d/widgets/omSelectionWidget.cpp,148
+#define DEBUG 12,155
+static const float TEXT_COLOR[TEXT_COLOR15,173
+OmSelectionWidget::OmSelectionWidget(32,427
+OmSelectionWidget::Draw(53,743
+
+src/view3d/widgets/omSelectionWidget.h,110
+#define OM_SELECTION_WIDGET_H2,30
+class OmSelectionWidget 12,112
+private:OmSelectionWidget::private18,233
+
+src/view3d/widgets/omViewBoxWidget.cpp,396
+#define DEBUG 11,157
+enum OmViewBoxPlane 14,175
+enum OmViewBoxPlane { XY_PLANE,OmViewBoxPlane::XY_PLANE14,175
+enum OmViewBoxPlane { XY_PLANE, XZ_PLANE,OmViewBoxPlane::XZ_PLANE14,175
+enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE OmViewBoxPlane::YZ_PLANE14,175
+static const int RECT_WIREFRAME_LINE_WIDTH 15,229
+OmViewBoxWidget::Draw(45,922
+drawRectangle(84,2192
+drawSlice(100,2534
+
+src/view3d/widgets/omViewBoxWidget.h,163
+#define OM_VIEW_BOX_WIDGET_H2,29
+class OmViewBoxWidget 12,110
+	OmViewBoxWidget(OmViewBoxWidget::OmViewBoxWidget15,167
+private:OmViewBoxWidget::private18,256
+
+src/view3d/widgets/omVolumeAxisWidget.cpp,148
+#define DEBUG 12,157
+static const float TEXT_COLOR[TEXT_COLOR15,175
+OmSelectionWidget::OmSelectionWidget(32,429
+OmSelectionWidget::Draw(53,745
+
+src/view3d/widgets/omVolumeAxisWidget.h,110
+#define OM_SELECTION_WIDGET_H2,30
+class OmSelectionWidget 12,112
+private:OmSelectionWidget::private18,233
+
+src/volume/main.cpp,74
+using boost::shared_ptr;16,248
+int main(28,474
+build_mip_volume(54,858
+
+src/volume/omChannel.cpp,340
+#define DEBUG 10,156
+OmChannel::OmChannel(15,176
+OmChannel::SetHue(55,802
+OmChannel::GetHue(60,881
+OmChannel::IsVolumeDataBuilt(77,1029
+OmChannel::BuildVolumeData(82,1084
+OmChannel::AddFilter(90,1169
+OmChannel::GetFilter(95,1250
+OmChannel::GetValidFilterIds(100,1347
+OmChannel::IsFilterEnabled(105,1440
+OmChannel::Print(119,1640
+
+src/volume/omChannel.h,120
+#define OM_CHANNEL_H2,21
+class OmChannel 20,367
+	OmChannel(OmChannel::OmChannel23,442
+OmChannel::serialize(73,1298
+
+src/volume/omDataVolume.cpp,449
+#define DEBUG 14,274
+OmDataVolume::OmDataVolume(27,421
+OmDataVolume::~OmDataVolume(33,535
+OmDataVolume::GetDimensions(48,769
+OmDataVolume::SetBytesPerSample(53,851
+OmDataVolume::GetBytesPerSample(58,954
+OmDataVolume::SetOpen(64,1025
+OmDataVolume::IsOpen(77,1209
+OmDataVolume::IsDirty(82,1266
+OmDataVolume::Open(100,1504
+OmDataVolume::Flush(111,1687
+OmDataVolume::Close(121,1828
+OmDataVolume::ContainsVoxel(175,2787
+operator<<(191,2981
+
+src/volume/omDataVolume.h,143
+#define OM_DATA_VOLUME_H2,25
+using namespace vmml;18,375
+using std::list;21,414
+class OmDataVolume 24,433
+OmDataVolume::serialize(84,1681
+
+src/volume/omDrawOptions.h,824
+#define OM_DRAW_OPTIONS_H2,26
+#define DRAWOP_RENDERMODE_MASK	10,201
+#define DRAWOP_RENDERMODE_SELECTION	11,246
+#define DRAWOP_RENDERMODE_RENDER	12,295
+#define DRAWOP_DRAW_MASK	15,343
+#define DRAWOP_DRAW_VOLUME_AXIS	16,383
+#define DRAWOP_DRAW_CHUNK_EXTENT	17,429
+#define DRAWOP_DRAW_WIDGETS	18,475
+#define DRAWOP_LEVEL_MASK	21,520
+#define DRAWOP_LEVEL_SEGMENT	22,561
+#define DRAWOP_LEVEL_CHUNKS	23,604
+#define DRAWOP_LEVEL_VOLUME	24,647
+#define DRAWOP_LEVEL_ALL	25,690
+#define DRAWOP_SEGMENT_FILTER_MASK	28,790
+#define DRAWOP_SEGMENT_FILTER_SELECTED	29,838
+#define DRAWOP_SEGMENT_FILTER_UNSELECTED	30,889
+#define DRAWOP_SEGMENT_COLOR_MASK	33,943
+#define DRAWOP_SEGMENT_COLOR_TRANSPARENT	34,990
+#define DRAWOP_SEGMENT_COLOR_HIGHLIGHT	35,1042
+#define OMGL_NAME_MESH	43,1125
+#define OMGL_NAME_VOXEL	44,1150
+
+src/volume/omMipChunk.cpp,1478
+#define DEBUG 25,529
+static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR 28,547
+OmMipChunk::OmMipChunk(42,874
+OmMipChunk::~OmMipChunk(62,1292
+OmMipChunk::InitChunk(82,1737
+OmMipChunk::Open(129,2794
+OmMipChunk::OpenForWrite(145,2975
+OmMipChunk::Flush(171,3669
+OmMipChunk::Close(191,3916
+OmMipChunk::GetExtent(224,4537
+OmMipChunk::IsDirty(237,4696
+OmMipChunk::IsVolumeDataDirty(242,4785
+OmMipChunk::IsMetaDataDirty(247,4860
+OmMipChunk::ReadVolumeData(261,5066
+OmMipChunk::WriteVolumeData(283,5743
+OmMipChunk::ReadMetaData(298,6136
+OmMipChunk::WriteMetaData(311,6450
+OmMipChunk::GetModifiedVoxelValues(331,6851
+OmMipChunk::ClearModifiedVoxelValues(336,6934
+OmMipChunk::SetVoxelValue(353,7213
+OmMipChunk::GetVoxelValue(396,8269
+OmMipChunk::SetImageData(426,8938
+OmMipChunk::GetLevel(469,9784
+OmMipChunk::IsRoot(474,9851
+OmMipChunk::IsLeaf(480,9963
+OmMipChunk::GetCoordinate(486,10052
+OmMipChunk::GetParentCoordinate(491,10132
+OmMipChunk::GetChildrenCoordinates(496,10222
+OmMipChunk::GetNormExtent(511,10428
+OmMipChunk::GetClippedNormExtent(517,10506
+OmMipChunk::GetDirectDataValues(537,10825
+OmMipChunk::GetIndirectDataValues(547,11128
+OmMipChunk::RefreshDirectDataValues(557,11369
+OmMipChunk::RefreshIndirectDataValues(624,13575
+OmMipChunk::ExtractSliceExtent(669,14705
+OmMipChunk::ExtractDataSlice(717,16212
+OmMipChunk::GetMeshImageData(787,17905
+OmMipChunk::DrawCheck(900,20971
+OmMipChunk::DrawClippedExtent(921,21471
+operator<<(962,22210
+
+src/volume/omMipChunk.h,325
+#define OM_MIP_CHUNK_H2,23
+using namespace vmml;23,704
+enum OmDataVolumePlane 26,728
+enum OmDataVolumePlane { VOL_XY_PLANE,26,728
+enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE,26,728
+enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE 26,728
+class OmMipChunk 33,861
+OmMipChunk::serialize(163,3851
+
+src/volume/omMipChunkCoord.cpp,619
+OmMipChunkCoord::OmMipChunkCoord(17,209
+OmMipChunkCoord::OmMipChunkCoord(22,296
+OmMipChunkCoord::OmMipChunkCoord(26,414
+OmMipChunkCoord::IsLeaf(41,635
+OmMipChunkCoord::ParentCoord(56,888
+OmMipChunkCoord::PrimarySiblingCoord(72,1276
+OmMipChunkCoord::SiblingCoords(85,1568
+OmMipChunkCoord::PrimaryChildCoord(118,2471
+OmMipChunkCoord::ChildrenCoords(130,2706
+OmMipChunkCoord::operator=(OmMipChunkCoord::operator=152,3003
+OmMipChunkCoord::operator==(OmMipChunkCoord::operator==158,3121
+OmMipChunkCoord::operator!=(OmMipChunkCoord::operator!=164,3260
+OmMipChunkCoord::operator<(188,3730
+operator<<(197,3904
+
+src/volume/omMipChunkCoord.h,160
+#define OM_MIP_CHUNK_COORD_H2,29
+using namespace vmml;20,534
+class OmMipChunkCoord 24,559
+OmMipChunkCoord::get(73,1669
+OmMipChunkCoord::serialize(100,2026
+
+src/volume/omMipVolume.cpp,2460
+#define DEBUG 19,440
+static const char* MIP_VOLUME_FILENAME 22,458
+static const string MIP_CHUNK_META_DATA_FILE_NAME 23,513
+OmMipVolume::OmMipVolume(33,696
+OmMipVolume::~OmMipVolume(50,1007
+OmMipVolume::Flush(75,1370
+OmMipVolume::SetFilename(93,1678
+OmMipVolume::GetFilename(98,1757
+OmMipVolume::GetDirectoryPath(103,1817
+OmMipVolume::SetDirectoryPath(108,1884
+OmMipVolume::MipLevelInternalDataPath(117,2028
+OmMipVolume::MipChunkMetaDataPath(125,2209
+OmMipVolume::GetSourceDirectoryPath(150,2764
+OmMipVolume::SetSourceDirectoryPath(155,2843
+OmMipVolume::GetSourceFilenameRegex(161,2988
+OmMipVolume::SetSourceFilenameRegex(166,3068
+OmMipVolume::UpdateSourceFilenameRegexMatches(176,3271
+OmMipVolume::GetSourceFilenameRegexMatches(196,3859
+OmMipVolume::IsSourceValid(206,4058
+OmMipVolume::GetExtent(226,4323
+OmMipVolume::GetChunkDimension(231,4393
+OmMipVolume::GetChunkDimensions(236,4484
+OmMipVolume::SetSubsampleMode(242,4615
+OmMipVolume::GetSubsampleMode(247,4711
+OmMipVolume::SetChunksStoreMetaData(253,4779
+OmMipVolume::GetChunksStoreMetaData(258,4868
+OmMipVolume::IsBuilt(263,4946
+OmMipVolume::IsBuilding(268,5017
+OmMipVolume::SetBuildState(273,5094
+OmMipVolume::UpdateMipProperties(282,5221
+OmMipVolume::GetRootMipLevel(320,6134
+OmMipVolume::UpdateRootLevel(330,6260
+OmMipVolume::MipLevelDataDimensions(350,6820
+OmMipVolume::MipLevelDimensionsInMipChunks(370,7315
+OmMipVolume::MipChunksInMipLevel(381,7682
+OmMipVolume::MipChunksInVolume(390,7920
+OmMipVolume::DataToMipCoord(413,8296
+OmMipVolume::NormToMipCoord(424,8619
+OmMipVolume::MipCoordToDataBbox(434,8868
+OmMipVolume::MipCoordToNormBbox(458,9647
+OmMipVolume::RootMipChunkCoordinate(476,9976
+OmMipVolume::ContainsMipChunkCoord(485,10164
+OmMipVolume::ValidMipChunkCoordChildren(508,10693
+OmMipVolume::GetChunk(545,11616
+OmMipVolume::StoreChunk(560,11970
+OmMipVolume::HandleCacheMiss(572,12274
+OmMipVolume::GetVoxelValue(593,12599
+OmMipVolume::SetVoxelValue(608,12990
+OmMipVolume::AllocInternalData(644,13779
+OmMipVolume::DeleteInternalData(673,14668
+OmMipVolume::Build(695,15011
+OmMipVolume::BuildVolume(741,15807
+OmMipVolume::BuildChunk(784,17009
+OmMipVolume::BuildChunkAndParents(831,18310
+OmMipVolume::BuildEditedLeafChunks(853,18713
+OmMipVolume::ImportSourceData(890,19384
+OmMipVolume::ExportInternalData(972,22097
+OmMipVolume::SubsampleImageData(1035,23664
+OmMipVolume::CalculateAverage(1122,26686
+OmMipVolume::CalculateMode(1135,26911
+
+src/volume/omMipVolume.h,1139
+#define OM_MIP_VOLUME_H2,25
+using namespace vmml;25,549
+using boost::shared_ptr;28,604
+using std::list;31,646
+enum SubsampleMode 37,730
+enum SubsampleMode { SUBSAMPLE_MEAN,SubsampleMode::SUBSAMPLE_MEAN37,730
+enum SubsampleMode { SUBSAMPLE_MEAN, SUBSAMPLE_MODE,SubsampleMode::SUBSAMPLE_MODE37,730
+enum SubsampleMode { SUBSAMPLE_MEAN, SUBSAMPLE_MODE, SUBSAMPLE_RANDOM,SubsampleMode::SUBSAMPLE_RANDOM37,730
+enum SubsampleMode { SUBSAMPLE_MEAN, SUBSAMPLE_MODE, SUBSAMPLE_RANDOM, SUBSAMPLE_NONE SubsampleMode::SUBSAMPLE_NONE37,730
+enum MipVolumeBuildState 40,838
+enum MipVolumeBuildState { MIPVOL_UNBUILT,MipVolumeBuildState::MIPVOL_UNBUILT40,838
+enum MipVolumeBuildState { MIPVOL_UNBUILT, MIPVOL_BUILT,MipVolumeBuildState::MIPVOL_BUILT40,838
+enum MipVolumeBuildState { MIPVOL_UNBUILT, MIPVOL_BUILT, MIPVOL_BUILDING MipVolumeBuildState::MIPVOL_BUILDING40,838
+typedef OmThreadedCache< OmMipChunkCoord,43,937
+typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;43,937
+class OmMipVolume 47,1018
+	virtual void ExportDataFilter(OmMipVolume::ExportDataFilter144,3471
+OmMipVolume::serialize(205,5060
+
+src/volume/omSegmentation.cpp,1842
+#define DEBUG 23,515
+OmSegmentation::OmSegmentation(36,654
+OmSegmentation::OmSegmentation(42,853
+OmSegmentation::SetDirectoryPath(79,1610
+OmSegmentation::GetSegmentIdMappedToValue(105,1994
+OmSegmentation::GetValuesMappedToSegmentId(113,2222
+OmSegmentation::GetValueMappedToSegmentId(121,2420
+OmSegmentation::MapValuesToSegmentId(138,2879
+OmSegmentation::UnMapValuesToSegmentId(144,3022
+OmSegmentation::SetVoxelValue(163,3335
+OmSegmentation::GetVoxelSegmentId(183,3805
+OmSegmentation::SetVoxelSegmentId(194,4093
+OmSegmentation::IsVolumeDataBuilt(216,4371
+OmSegmentation::BuildVolumeData(221,4449
+OmSegmentation::IsMeshDataBuilt(246,5050
+OmSegmentation::BuildMeshData(255,5198
+OmSegmentation::BuildMeshDataInternal(277,5886
+OmSegmentation::BuildChunk(314,6873
+OmSegmentation::RebuildChunk(370,8521
+OmSegmentation::ExportDataFilter(413,9519
+OmSegmentation::SystemModeChangeEvent(453,10492
+OmSegmentation::GetSegment(475,10840
+OmSegmentation::AddSegment(480,10933
+OmSegmentation::RemoveSegment(485,11011
+OmSegmentation::IsSegmentValid(490,11097
+OmSegmentation::GetValidSegmentIds(495,11208
+OmSegmentation::IsSegmentEnabled(500,11302
+OmSegmentation::SetSegmentEnabled(505,11401
+OmSegmentation::GetEnabledSegmentIds(510,11527
+OmSegmentation::IsSegmentSelected(515,11625
+OmSegmentation::SetSegmentSelected(520,11726
+OmSegmentation::SetAllSegmentsSelected(525,11846
+OmSegmentation::GetSelectedSegmentIds(530,11969
+OmSegmentation::GetEnabledSegmentDataValues(546,12225
+OmSegmentation::GetSelectedSegmentDataValues(551,12353
+OmSegmentation::GetUnselectedSegmentDataValues(557,12484
+OmSegmentation::Draw(580,12954
+OmSegmentation::DrawChunkRecursive(626,14275
+OmSegmentation::DrawChunk(695,16441
+OmSegmentation::DrawChunkMeshes(735,17788
+OmSegmentation::DrawChunkVoxels(745,18068
+OmSegmentation::Print(789,19019
+
+src/volume/omSegmentation.h,179
+#define OM_SEGMENTATION_H2,26
+using namespace vmml;23,464
+class OmSegmentation 34,579
+	void DrawMeshes(OmSegmentation::DrawMeshes104,2818
+OmSegmentation::serialize(145,3607
+
+src/volume/omVolume.cpp,1500
+#define DEBUG 9,116
+OmVolume* OmVolume::mspInstance 12,157
+OmVolume::OmVolume(23,303
+OmVolume::~OmVolume(28,361
+OmVolume::Initialize(34,426
+OmVolume::Instance(51,723
+OmVolume::Delete(61,866
+OmVolume::GetScale(97,1197
+OmVolume::SetScale(104,1370
+OmVolume::NormToSpaceCoord(139,2202
+OmVolume::SpaceToNormCoord(144,2313
+OmVolume::SpaceToNormBbox(150,2433
+OmVolume::NormToSpaceBbox(155,2624
+OmVolume::DataToNormCoord(166,3042
+OmVolume::NormToDataCoord(178,3464
+OmVolume::DataToNormBbox(191,3838
+OmVolume::NormToDataBbox(202,4109
+OmVolume::GetDataExtent(231,4690
+OmVolume::SetDataExtent(236,4760
+OmVolume::GetDataDimensions(243,4875
+OmVolume::SetDataDimensions(248,4993
+OmVolume::GetDataResolution(254,5134
+OmVolume::SetDataResolution(259,5212
+OmVolume::GetChunkDimension(269,5481
+OmVolume::SetChunkDimension(274,5553
+OmVolume::GetChannel(288,5760
+OmVolume::AddChannel(293,5852
+OmVolume::RemoveChannel(299,5964
+OmVolume::IsChannelValid(304,6049
+OmVolume::GetValidChannelIds(309,6154
+OmVolume::IsChannelEnabled(314,6247
+OmVolume::SetChannelEnabled(319,6345
+OmVolume::GetSegmentation(332,6602
+OmVolume::AddSegmentation(338,6773
+OmVolume::RemoveSegmentation(344,6910
+OmVolume::IsSegmentationValid(350,7006
+OmVolume::GetValidSegmentationIds(355,7121
+OmVolume::IsSegmentationEnabled(361,7225
+OmVolume::SetSegmentationEnabled(366,7333
+OmVolume::GetSelectedSegmentIDs(371,7477
+OmVolume::Draw(416,8543
+OmVolume::DrawEditSelectionVoxels(447,9314
+OmVolume::Print(470,9638
+
+src/volume/omVolume.h,138
+#define OM_VOLUME_H2,20
+using namespace vmml;26,500
+struct SegmentIDhelper 33,565
+class OmVolume 40,688
+OmVolume::serialize(144,3605
+
+src/volume/omVolumeCuller.cpp,493
+#define DEBUG 8,81
+OmVolumeCuller::OmVolumeCuller(25,225
+OmVolumeCuller::CheckDrawOption(55,732
+OmVolumeCuller::MaskDrawOptions(60,835
+OmVolumeCuller::GetDrawOptions(65,935
+OmVolumeCuller::GetPosition(71,1019
+OmVolumeCuller::GetFocus(76,1098
+OmVolumeCuller::GetTransformedCuller(92,1283
+OmVolumeCuller::TransformCuller(99,1543
+OmVolumeCuller::TestChunk(123,1921
+OmVolumeCuller::VisibilityTestNormBbox(128,2052
+OmVolumeCuller::Draw(163,2643
+OmVolumeCuller::ExtractFrustum(213,3685
+
+src/volume/omVolumeCuller.h,93
+#define OM_MIP_CHUNK_CULLER_H2,30
+using namespace vmml;13,466
+class OmVolumeCuller 24,600
+
+src/volume/omVolumeTypes.h,354
+#define OM_VOLUME_TYPES_H8,114
+typedef vmml::Vector3<int> DataCoord;18,219
+typedef vmml::Vector3<float> NormCoord;19,257
+typedef vmml::Vector3<float> SpaceCoord;20,297
+typedef vmml::AxisAlignedBoundingBox<int> DataBbox;22,339
+typedef vmml::AxisAlignedBoundingBox<float> NormBbox;23,391
+typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;24,445
+
+src/voxel/omMipSegmentDataCoord.h,591
+#define OM_MIP_SEGMENT_DATA_COORD_H2,36
+using boost::tuple;20,492
+class OmMipSegmentDataCoord 23,514
+	OmMipSegmentDataCoord(OmMipSegmentDataCoord::OmMipSegmentDataCoord25,552
+	OmMipSegmentDataCoord(OmMipSegmentDataCoord::OmMipSegmentDataCoord30,639
+OmMipSegmentDataCoord::operator=(OmMipSegmentDataCoord::operator=70,1479
+OmMipSegmentDataCoord::operator==(OmMipSegmentDataCoord::operator==77,1630
+OmMipSegmentDataCoord::operator!=(OmMipSegmentDataCoord::operator!=83,1798
+OmMipSegmentDataCoord::operator<(90,1997
+operator<<(108,2310
+OmMipSegmentDataCoord::serialize(126,2621
+
+src/voxel/omMipVoxelation.cpp,251
+#define DEBUG 8,134
+OmMipVoxelation::OmMipVoxelation(20,271
+OmMipVoxelation::~OmMipVoxelation(28,467
+OmMipVoxelation::GetSegmentDataValue(41,638
+OmMipVoxelation::AddVoxel(54,825
+OmMipVoxelation::RemoveVoxel(60,900
+OmMipVoxelation::Draw(72,1077
+
+src/voxel/omMipVoxelation.h,92
+#define OM_MIP_VOXELATION_H2,28
+using namespace vmml;17,273
+class OmMipVoxelation 25,353
+
+src/voxel/omMipVoxelationCoord.cpp,354
+OmMipMeshCoord::OmMipMeshCoord(7,33
+OmMipMeshCoord::OmMipMeshCoord(13,125
+OmMipMeshCoord::OmMipMeshCoord(19,288
+OmMipMeshCoord::operator=(OmMipMeshCoord::operator=36,653
+OmMipMeshCoord::operator==(OmMipMeshCoord::operator==42,783
+OmMipMeshCoord::operator!=(OmMipMeshCoord::operator!=47,930
+OmMipMeshCoord::operator<(53,1108
+operator<<(62,1311
+
+src/voxel/omMipVoxelationManager.cpp,643
+#define DEBUG 21,396
+OmMipVoxelationManager::OmMipVoxelationManager(33,551
+OmMipVoxelationManager::~OmMipVoxelationManager(44,868
+OmMipVoxelationManager::GetVoxelation(70,1187
+OmMipVoxelationManager::ContainsVoxelation(75,1312
+OmMipVoxelationManager::RemoveVoxelation(80,1448
+OmMipVoxelationManager::IsBoundaryVoxel(105,1960
+OmMipVoxelationManager::CreateMipVoxelation(151,3041
+OmMipVoxelationManager::RefreshNeighboringVoxels(197,4376
+OmMipVoxelationManager::UpdateVoxel(239,5695
+OmMipVoxelationManager::HandleCacheMiss(290,7103
+OmMipVoxelationManager::HandleFetchUpdate(297,7288
+OmMipVoxelationManager::DrawVoxelations(316,7563
+
+src/voxel/omMipVoxelationManager.h,226
+#define OM_MIP_VOXELATION_MANAGER_H2,36
+typedef OmThreadedCache< OmMipSegmentDataCoord,20,261
+typedef OmThreadedCache< OmMipSegmentDataCoord, OmMipVoxelation > MipVoxelationCache;20,261
+class OmMipVoxelationManager 24,350
+
+src/gui/inspectorHelpers/inspectorHelper.cpp,0
