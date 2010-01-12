@@ -30,7 +30,8 @@ om_hdf5_file_create(const char* fpath) {
 	herr_t ret = H5Fclose(file_id);
 	
 	//throw on error
-	if(ret < 0) assert(false && "Could not close HDF5 file.");
+	if(ret < 0) 
+		throw OmIoException("Could not close HDF5 file.");
 }
 
 
@@ -39,7 +40,8 @@ hid_t
 om_hdf5_file_open(const char* fpath) {
 	hid_t file_id = H5Fopen(fpath, H5F_ACC_RDWR, H5P_DEFAULT);
 	
-	if(file_id < 0) assert(false && "Could not open HDF5 file.");
+	if(file_id < 0) 
+	throw OmIoException("Could not open HDF5 file.");
 	
 	return file_id;
 }
@@ -49,7 +51,8 @@ void
 om_hdf5_file_close(hid_t fileId) {
 	herr_t ret = H5Fclose(fileId);
 
-	if(ret < 0) assert(false && "Could not close HDF5 file.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 file.");
 }
 
 
@@ -77,7 +80,8 @@ om_hdf5_group_exists(hid_t fileId, const char* name) {
 	
 	//Closes the specified dataset. 
 	herr_t status = H5Gclose(group_id);
-	if(status < 0) assert(false && "Could not close HDF5 group.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 group.");
 	
 	return true;
 }
@@ -87,10 +91,12 @@ void
 om_hdf5_group_create(hid_t fileId, const char* name) {
 	//Creates a new empty group and links it into the file. 
 	hid_t group_id = H5Gcreate(fileId, name, 0);
-	if(group_id < 0) assert(false && "Could not create HDF5 group.");
+	if(group_id < 0) 
+	throw OmIoException("Could not create HDF5 group.");
 	
 	herr_t status = H5Gclose(group_id);
-	if(status < 0) assert(false && "Could not close HDF5 group.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 group.");
 }
 
 
@@ -99,7 +105,8 @@ om_hdf5_group_delete(hid_t fileId, const char* name) {
 
 	//Closes the specified group. 
 	herr_t err = H5Gunlink( fileId, name);
-	if(err < 0) assert(false && "Could not unlink HDF5 group.");
+	if(err < 0) 
+	throw OmIoException("Could not unlink HDF5 group.");
 }
 
 
@@ -150,7 +157,8 @@ om_hdf5_dataset_exists(hid_t fileId, const char* name) {
 	
 	//Closes the specified dataset. 
 	herr_t ret = H5Dclose(dataset_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 	return true;
 }
@@ -163,7 +171,8 @@ om_hdf5_dataset_delete(hid_t fileId, const char* name) {
 	//Removes the link to an object from a group. 
 	//herr_t H5Gunlink(hid_t loc_id, const char *name  ) 
 	herr_t err = H5Gunlink(fileId, name);
-	if(err < 0) assert(false && "Could not unlink HDF5 dataset.");
+	if(err < 0) 
+	throw OmIoException("Could not unlink HDF5 dataset.");
 	
 }
 
@@ -211,27 +220,32 @@ om_hdf5_dataset_raw_create(hid_t fileId, const char* name, int size, const void*
 	hsize_t dim = size;
 	hsize_t max = dim ? dim : H5S_UNLIMITED;
 	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
-	if(dataspace_id < 0) assert(false && "Could not create HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not create HDF5 dataspace.");
 	
 	//Creates a dataset at the specified location. 
 	//hid_t H5Dcreate(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t create_plist_id  ) 
 	hid_t dataset_id = H5Dcreate(fileId, name, H5T_NATIVE_UCHAR, dataspace_id, H5P_DEFAULT);
-	if(dataset_id < 0) assert(false && "Could not create HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not create HDF5 dataset.");
 	
 	//if given data, then write it into new dataset
 	if(NULL != data) {
 		status = H5Dwrite(dataset_id, H5T_NATIVE_UCHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
-		if(status < 0) assert(false && "Could copy data into HDF5 dataset.");
+		if(status < 0) 
+	throw OmIoException("Could copy data into HDF5 dataset.");
 	}
 	
 	//Closes the specified dataset. 
 	status = H5Dclose(dataset_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataset.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	status = H5Sclose(dataspace_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 }
 
 
@@ -257,12 +271,14 @@ om_hdf5_dataset_raw_read(hid_t fileId, const char* name, int* size) {
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen(fileId, name);
 	if(dataset_id < 0) cout << name << endl;
-	if(dataset_id < 0) assert(false && "Could not open HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not open HDF5 dataset.");
 	
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if(dataspace_id < 0) assert(false && "Could not get HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not get HDF5 dataspace.");
 	
 	//Returns the amount of storage required for a dataset. 
 	//hsize_t H5Dget_storage_size(hid_t dataset_id  ) 
@@ -271,22 +287,26 @@ om_hdf5_dataset_raw_read(hid_t fileId, const char* name, int* size) {
 	
 	//Allocate memory to read into
 	void *dataset_data = malloc(dataset_size);
-	if(NULL == dataset_data) assert(false && "Could not allocate memory to read HDF5 dataset.");
+	if(NULL == dataset_data) 
+	throw OmIoException("Could not allocate memory to read HDF5 dataset.");
 	
 	//Reads raw data from a dataset into a buffer. 
 	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
 	status = H5Dread(dataset_id, H5T_NATIVE_UCHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
-	if(status < 0) assert(false && "Could not read HDF5 dataset.");
+	if(status < 0) 
+	throw OmIoException("Could not read HDF5 dataset.");
 	
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	status = H5Sclose(dataspace_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 	
 	//Closes the specified dataset. 
 	//herr_t H5Dclose(hid_t dataset_id  ) 
 	status = H5Dclose(dataset_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataset.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 	return dataset_data;
 }
@@ -320,35 +340,42 @@ om_hdf5_dataset_image_get_dims(hid_t fileId, const char* name) {
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen(fileId, name);
 	if(dataset_id < 0) cout << name << endl;
-	if(dataset_id < 0) assert(false && "Could not open HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not open HDF5 dataset.");
 	
 	
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if(dataspace_id < 0) assert(false && "Could not get HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not get HDF5 dataspace.");
 	
 	
 	//Determines the dimensionality of a dataspace. 
 	int rank = H5Sget_simple_extent_ndims(dataspace_id);
-	if(rank < 0) assert(false && "Could not determine rank of HDF5 dataspace.");
-	if(rank != 3) assert(false && "HDF5 dataspace not of rank 3.");
+	if(rank < 0) 
+	throw OmIoException("Could not determine rank of HDF5 dataspace.");
+	if(rank != 3) 
+	throw OmIoException("HDF5 dataspace not of rank 3.");
 	
 	
 	//Retrieves dataspace dimension size and maximum size.
 	Vector3<hsize_t> dims;
 	Vector3<hsize_t> maxdims;
 	rank = H5Sget_simple_extent_dims(dataspace_id, dims.array, maxdims.array);
-	if(rank < 0) assert(false && "Could not determine dimensions of HDF5 dataspace.");
+	if(rank < 0) 
+	throw OmIoException("Could not determine dimensions of HDF5 dataspace.");
 	
 	
 	//Releases and terminates access to a dataspace.  
 	status = H5Sclose(dataspace_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 	
 	
 	//Closes the specified dataset. 
 	status = H5Dclose(dataset_id);
-	if(status < 0) assert(false && "Could not close HDF5 dataset.");
+	if(status < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 	//flip from hdf5 version
 	return Vector3<int>(dims.z, dims.y, dims.x);
@@ -362,14 +389,16 @@ om_hdf5_dataset_image_create(hid_t fileId, const char* name, Vector3<int> dataDi
 	//Creates a new property as an instance of a property list class.
 	//hid_t H5Pcreate(hid_t cls_id  ) 
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
-	if(plist_id < 0) assert(false && "Could not create HDF5 property list.");
+	if(plist_id < 0) 
+	throw OmIoException("Could not create HDF5 property list.");
 	
 	//Sets the size of the chunks used to store a chunked layout dataset. 
 	//herr_t H5Pset_chunk(hid_t plist, int ndims, const hsize_t * dim  ) 
 	int rank = 3;
 	Vector3<hsize_t> flipped_chunk_dim(chunkDims.z, chunkDims.y, chunkDims.x);
 	herr_t ret = H5Pset_chunk(plist_id, rank, flipped_chunk_dim.array);
-	if(ret < 0) assert(false && "Could not set HDF5 chunk size.");
+	if(ret < 0) 
+	throw OmIoException("Could not set HDF5 chunk size.");
 	
 	//data dims
 	Vector3<hsize_t>flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
@@ -389,30 +418,35 @@ om_hdf5_dataset_image_create(hid_t fileId, const char* name, Vector3<int> dataDi
 	//Creates a new simple dataspace and opens it for access. 
 	//hid_t H5Screate_simple(int rank, const hsize_t * dims, const hsize_t * maxdims  ) 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
-	if(dataspace_id < 0) assert(false && "Could not create HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not create HDF5 dataspace.");
 	
 	//Creates a dataset at the specified location. 
 	//hid_t H5Dcreate(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t create_plist_id  ) 
 	hid_t type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
 	hid_t dataset_id = H5Dcreate(fileId, name, type_id, dataspace_id, plist_id);
-	if(dataset_id < 0) assert(false && "Could not create HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not create HDF5 dataset.");
 	
 	
 	//Terminates access to a property list. 
 	ret = H5Pclose(plist_id);
-	if(ret < 0) assert(false && "Could not close HDF5 property list.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 property list.");
 	
 	
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	ret = H5Sclose(dataspace_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 	
 	
 	//Closes the specified dataset. 
 	//herr_t H5Dclose(hid_t dataset_id  ) 
 	ret = H5Dclose(dataset_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 }
 
@@ -439,12 +473,14 @@ om_hdf5_dataset_image_read(hid_t fileId, const char* name, DataBbox extent, int 
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen(fileId, name);
-	if(dataset_id < 0) assert(false && "Could not open HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not open HDF5 dataset.");
 	
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if(dataspace_id < 0) assert(false && "Could not get HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not get HDF5 dataspace.");
 	
 	
 	//create start, stride, count, block
@@ -461,13 +497,15 @@ om_hdf5_dataset_image_read(hid_t fileId, const char* name, DataBbox extent, int 
 	//Selects a hyperslab region to add to the current selected region. 
 	//herr_t H5Sselect_hyperslab(hid_t space_id, H5S_seloper_t op, const hsize_t *start, const hsize_t *stride, const hsize_t *count, const hsize_t *block  ) 
 	herr_t ret = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array, block_flipped.array);
-	if(ret < 0) assert(false && "Could not select HDF5 hyperslab.");
+	if(ret < 0) 
+	throw OmIoException("Could not select HDF5 hyperslab.");
 	
 	
 	//Creates a new simple dataspace and opens it for access. 
 	//hid_t H5Screate_simple(int rank, const hsize_t * dims, const hsize_t * maxdims  ) 
 	hid_t mem_dataspace_id = H5Screate_simple(3, block.array, NULL);
-	if(mem_dataspace_id < 0) assert(false && "Could not create scratch HDF5 dataspace to read data into.");
+	if(mem_dataspace_id < 0) 
+	throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 	
 	
 	//setup image data
@@ -478,22 +516,26 @@ om_hdf5_dataset_image_read(hid_t fileId, const char* name, DataBbox extent, int 
 	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
 	hid_t mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
 	ret = H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT, imageData->GetScalarPointer());
-	if(ret < 0) assert(false && "Could not read HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not read HDF5 dataset.");
 	
 	
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	ret = H5Sclose(mem_dataspace_id);
-	if(ret < 0) assert(false && "Could not close HDF5 scratch dataspace.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 scratch dataspace.");
 	
 	ret = H5Sclose(dataspace_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 	
 	
 	//Closes the specified dataset. 
 	//herr_t H5Dclose(hid_t dataset_id  ) 
 	ret = H5Dclose(dataset_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 	return imageData;
 }
@@ -562,7 +604,8 @@ om_hdf5_dataset_image_write(hid_t fileId, const char* name, DataBbox extent, int
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen(fileId, name);
-	if(dataset_id < 0) assert(false && "Could not open HDF5 dataset.");
+	if(dataset_id < 0) 
+	throw OmIoException("Could not open HDF5 dataset.");
 
 	
 	//Returns an identifier for a copy of the datatype for a dataset. 
@@ -576,7 +619,8 @@ om_hdf5_dataset_image_write(hid_t fileId, const char* name, DataBbox extent, int
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if(dataspace_id < 0) assert(false && "Could not get HDF5 dataspace.");
+	if(dataspace_id < 0) 
+	throw OmIoException("Could not get HDF5 dataspace.");
 	
 
 	//create start, stride, count, block
@@ -593,13 +637,15 @@ om_hdf5_dataset_image_write(hid_t fileId, const char* name, DataBbox extent, int
 	//Selects a hyperslab region to add to the current selected region. 
 	//herr_t H5Sselect_hyperslab(hid_t space_id, H5S_seloper_t op, const hsize_t *start, const hsize_t *stride, const hsize_t *count, const hsize_t *block  ) 
 	herr_t ret = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array, block_flipped.array);
-	if(ret < 0) assert(false && "Could not select HDF5 hyperslab.");
+	if(ret < 0) 
+	throw OmIoException("Could not select HDF5 hyperslab.");
 	
 	
 	//Creates a new simple dataspace and opens it for access. 
 	//hid_t H5Screate_simple(int rank, const hsize_t * dims, const hsize_t * maxdims  ) 
 	hid_t mem_dataspace_id = H5Screate_simple(3, block.array, block.array);
-	if(mem_dataspace_id < 0) assert(false && "Could not create scratch HDF5 dataspace to read data into.");
+	if(mem_dataspace_id < 0) 
+	throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 	
 	
 	//setup image data
@@ -620,23 +666,27 @@ om_hdf5_dataset_image_write(hid_t fileId, const char* name, DataBbox extent, int
 	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
 	mem_type_id = om_hdf5_bytesToHdf5Id(imageData->GetScalarSize());
 	ret = H5Dwrite(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT, image_data_scalar_pointer);
-	if(ret < 0) assert(false && "Could not read HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not read HDF5 dataset.");
 	
 	
 doclose:
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	ret = H5Sclose(mem_dataspace_id);
-	if(ret < 0) assert(false && "Could not close HDF5 scratch dataspace.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 scratch dataspace.");
 	
 	ret = H5Sclose(dataspace_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataspace.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataspace.");
 	
 	
 	//Closes the specified dataset. 
 	//herr_t H5Dclose(hid_t dataset_id  ) 
 	ret = H5Dclose(dataset_id);
-	if(ret < 0) assert(false && "Could not close HDF5 dataset.");
+	if(ret < 0) 
+	throw OmIoException("Could not close HDF5 dataset.");
 	
 }
 
@@ -713,24 +763,29 @@ om_hdf5_bytesToHdf5Id(int bytes) {
  //Create dataspace for attribute
  hsize_t dims = 1;
  hid_t attr_dataspace_id = H5Screate_simple(1, &dims, NULL);
- if(attr_dataspace_id < 0) assert(false && "Could not create HDF5 attribute dataspace.");
+ if(attr_dataspace_id < 0) 
+	throw OmIoException("Could not create HDF5 attribute dataspace.");
  
  //Creates a dataset as an attribute of another group, dataset, or named datatype. 
  //hid_t H5Acreate(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t create_plist  ) 
  hid_t attr_id = H5Acreate(dataset_id, "size", H5T_NATIVE_UINT, attr_dataspace_id, H5P_DEFAULT );
- if(attr_id < 0) assert(false && "Could not create HDF5 attribute.");
+ if(attr_id < 0) 
+	throw OmIoException("Could not create HDF5 attribute.");
  
  // Write attribute data
  herr_t status = H5Awrite(attr_id, H5T_NATIVE_INT, &size);
- if(status < 0) assert(false && "Could not write to HDF5 attribute.");
+ if(status < 0) 
+	throw OmIoException("Could not write to HDF5 attribute.");
  
  // Close the attribute
  status = H5Aclose(attr_id);
- if(status < 0) assert(false && "Could not close HDF5 attribute.");
+ if(status < 0) 
+	throw OmIoException("Could not close HDF5 attribute.");
  
  // Close attribute dataspace
  status = H5Sclose(attr_dataspace_id);
- if(status < 0) assert(false && "Could not close HDF5 attribute dataspace.");
+ if(status < 0) 
+	throw OmIoException("Could not close HDF5 attribute dataspace.");
  */
 
 
