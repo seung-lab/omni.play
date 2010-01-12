@@ -37,6 +37,7 @@
 
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
+#include "system/events/omViewEvent.h"
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
@@ -220,10 +221,11 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		setRowFlagsAndCheckState( row, getCheckState( sdw.isEnabled() ) );
 	}
 
-	dataSrcListWidget->update();
 	for( int i = 0; i <= MAX_COL_TO_DISPLAY; i++ ){
 		dataSrcListWidget->resizeColumnToContents(i);
 	}
+
+	dataSrcListWidget->update();
 }
 
 void MyInspectorWidget::rebuildSegmentList( const OmId segmentationID )
@@ -267,41 +269,42 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 	connect( dataElementsWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
 		    this, SLOT( addToSplitterDataElementSegment(QTreeWidgetItem *, int )));
 
-	dataElementsWidget->update();
 	for( int i = 0; i < MAX_COL_TO_DISPLAY; i++ ){
 		dataElementsWidget->resizeColumnToContents(i);
 	}
+
+	dataElementsWidget->update();
 }
 
 void MyInspectorWidget::populateChannelElementsListWidget( ChannelDataWrapper cdw )
 {
 	dataElementsWidget->clear();
-	/*
+	
 	const OmId segmenID = cdw.getID();
 
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
-	foreach( SegmentDataWrapper seg, segs ){
+	foreach( FilterDataWrapper filter, cdw.getAllFilterIDsAndNames() ){
 		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
-		row->setText( NAME_COL, seg.getName() );
-		row->setText( ID_COL, QString("%1").arg(seg.getID() ));
-		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( seg ) );
-		row->setText( NOTE_COL, seg.getNote() );
-		setRowFlagsAndCheckState( row, getCheckState( seg.isCheckedOff() ) );
-		row->setSelected( seg.isSelected() );
+		row->setText( NAME_COL, filter.getName() );
+		row->setText( ID_COL, QString("%1").arg(filter.getID() ));
+		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( filter ) );
+		//row->setText( NOTE_COL, filter.getNote() );
+		setRowFlagsAndCheckState( row, getCheckState( true ) );
+		//row->setSelected( seg.isSelected() );
 	}
 	
 	dataElementsWidget->selectionModel()->blockSignals(false);
 		
 	dataElementsWidget->disconnect( SIGNAL( itemClicked( QTreeWidgetItem *, int )) );
 	connect( dataElementsWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
-		    this, SLOT( addToSplitterDataElementSegment(QTreeWidgetItem *, int )));
+		    this, SLOT( addToSplitterDataElementFilter(QTreeWidgetItem *, int )));
 
 	dataElementsWidget->update();
 	for( int i = 0; i < MAX_COL_TO_DISPLAY; i++ ){
 		dataElementsWidget->resizeColumnToContents(i);
-		}*/
+	}
 }
 
 void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem *item, const int column )
@@ -338,6 +341,8 @@ void MyInspectorWidget::addChannelToSplitter( ChannelDataWrapper data )
 {
 	const OmId item_id = data.getID();
 
+	cout << "addChannelToSplitter: value is: " << item_id << endl;
+
 	QWidget* my_widget = splitter->widget(1);
 
 	if((current_object != CHANNEL) || (preferencesActivated)) {
@@ -346,8 +351,9 @@ void MyInspectorWidget::addChannelToSplitter( ChannelDataWrapper data )
 		delete my_widget;	
 		
 		channelInspectorWidget = new ChanInspector( item_id, splitter);
+
 		connect( channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
-			    this, SLOT(addFilter()));
+			    this, SLOT(addFilter( )));
 		
 		if(!(first_access)) {
 			splitter->setSizes(my_sizes);
@@ -356,6 +362,8 @@ void MyInspectorWidget::addChannelToSplitter( ChannelDataWrapper data )
 
 	channelInspectorWidget->setId(item_id);
 	populateChannelInspector(item_id);
+	channelInspectorWidget->setChannelID( item_id );
+
 	connect( channelInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
 		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	current_object = CHANNEL;
@@ -389,6 +397,7 @@ void MyInspectorWidget::addSegmentationToSplitter( SegmentationDataWrapper data 
 
 	segInspectorWidget->setId(item_id);
 	populateSegmentationInspector(item_id);
+	segInspectorWidget->setSegmentationID( item_id );
 			
 	connect( segInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
 		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
@@ -416,6 +425,9 @@ void MyInspectorWidget::addToSplitterDataElementSegment( QTreeWidgetItem * curre
 
 	populateSegmentObjectInspector( sdw.getSegmentationID(), item_id);
 			
+	segObjectInspectorWidget->setSegmentationID( sdw.getSegmentationID() );
+	segObjectInspectorWidget->setSegmentID( item_id );
+
 	connect( segObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
 		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	current_object = SEGMENT;
@@ -443,6 +455,9 @@ void MyInspectorWidget::addToSplitterDataElementFilter( QTreeWidgetItem * curren
 	}
 
 	populateFilterObjectInspector( fdw.getChannelID(), item_id);
+
+	filObjectInspectorWidget->setChannelID(  fdw.getChannelID() );
+	filObjectInspectorWidget->setFilterID( item_id );
 
 	connect( filObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
 		    this, SLOT(sourceEditChangedChan()), Qt::DirectConnection);
@@ -650,28 +665,30 @@ void MyInspectorWidget::addToVolume(OmManageableObject *item, ObjectType item_ty
 
 void MyInspectorWidget::addFilter()
 {
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
-	OmId item_id  = dwf.getChannelDataWrapper().getID();
+	ChannelDataWrapper cdw( channelInspectorWidget->getId() );
 
-	OmFilter& added_filter = OmVolume::GetChannel(item_id).AddFilter();
+	OmFilter& added_filter = OmVolume::GetChannel( cdw.getID() ).AddFilter();
 
-	// TODO: fixme (purcaro)
+	cout << "filter id is: " <<  added_filter.GetId() << endl;
+
+	channelInspectorWidget->setFilterID( added_filter.GetId() );
+
+	cout << "filter id NOW is : " << channelInspectorWidget->getFilterID() << endl;
+
 	populateDataSrcListWidget();
+	populateChannelElementsListWidget( cdw );
 }
 
 void MyInspectorWidget::addSegment()
 {
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperFactory dwf   = result.value< DataWrapperFactory >(); 
-	SegmentationDataWrapper sdw = dwf.getSegmentationDataWrapper();
-	OmId item_id  = sdw.getID();
+	SegmentationDataWrapper sdw( segInspectorWidget->getSegmentationID() );
 	
-	OmSegment& added_segment = OmVolume::GetSegmentation(item_id).AddSegment();
+	OmSegment& added_segment = OmVolume::GetSegmentation( sdw.getID() ).AddSegment();
 
-	populateSegmentElementsListWidget( sdw );
+	hashOfSementationsAndSegments.remove(  sdw.getID() );
+	populateDataSrcListWidget();
+	
+	populateSegmentElementsListWidget( sdw );	
 }
 
 void MyInspectorWidget::refreshWidgetData()
@@ -682,40 +699,22 @@ void MyInspectorWidget::refreshWidgetData()
 
 void MyInspectorWidget::sourceEditChangedChan()
 {
-	cout << "FIXME: purcaro: sourceEditChangedChan\n";
-	/*
-	QString s;
-	QVariant v_item_id = proxyModel->data(view->currentIndex(), Qt::UserRole + 1);
-	OmId item_id =  v_item_id.value<OmId>();
-
-	// need ID of parent segmentation and parent volume
-	QVariant v_parent_id = proxyModel->data(view->currentIndex().parent(), Qt::UserRole + 1);
-	OmId my_parent_id = v_parent_id.value<OmId>();
-
-	s = filObjectInspectorWidget->nameEdit->text();
-	cout << s.toInt() << endl;
-	OmVolume::GetChannel(my_parent_id).GetFilter(current_filter).SetChannel (s.toInt());
-	*/
+	ChannelDataWrapper cdw( filObjectInspectorWidget->getChannelID() );
+	
+	const OmId segmenID = filObjectInspectorWidget->nameEdit->text().toInt();
+	
+	const OmId filterID = filObjectInspectorWidget->getFilterID();
+	OmVolume::GetChannel( cdw.getID() ).GetFilter( filterID ).SetChannel( segmenID );
 }
 
 void MyInspectorWidget::sourceEditChangedSeg()
 {
-	cout << "FIXME: purcaro: sourceEditChangedSeg\n";
-	/*
-
-	QString s;
-	QVariant v_item_id = proxyModel->data(view->currentIndex(), Qt::UserRole + 1);
-	OmId item_id =  v_item_id.value<OmId>();
-
-	// need ID of parent segmentation and parent volume
-	QVariant v_parent_id = proxyModel->data(view->currentIndex().parent(), Qt::UserRole + 1);
-	OmId my_parent_id = v_parent_id.value<OmId>();
-
-	s = filObjectInspectorWidget->nameEdit_2->text();
-	cout << s.toInt() << endl;
-
-	OmVolume::GetChannel(my_parent_id).GetFilter(current_filter).SetSegmentation (s.toInt());
-	*/
+	ChannelDataWrapper cdw( filObjectInspectorWidget->getChannelID() );
+	
+	const OmId segmenID = filObjectInspectorWidget->nameEdit_2->text().toInt();
+	
+	const OmId filterID = filObjectInspectorWidget->getFilterID();
+	OmVolume::GetChannel( cdw.getID() ).GetFilter( filterID ).SetSegmentation( segmenID );
 }
 
 void MyInspectorWidget::nameEditChanged()
@@ -851,6 +850,7 @@ void MyInspectorWidget::setFilAlpha(int alpha)
 	OmId channelID = fdw.getChannelID();
 	
 	OmVolume::GetChannel( channelID ).GetFilter( current_filter ).SetAlpha ((double) alpha / 100.00);
+	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 void MyInspectorWidget::setSegObjColor()

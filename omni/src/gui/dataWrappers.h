@@ -10,7 +10,7 @@
 #include <QHash>
 
 class SegmentDataWrapper;
-
+class FilterDataWrapper;
 class DataWrapper
 {
  public:
@@ -35,7 +35,7 @@ class ChannelDataWrapper : public DataWrapper
  public:
 	ChannelDataWrapper(){}
 	ChannelDataWrapper( const OmId mID );
-	//	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
+	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
 	QString getNote();
 };
 

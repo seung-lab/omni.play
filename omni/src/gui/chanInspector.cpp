@@ -123,3 +123,23 @@ void ChanInspector::on_notesEdit_textChanged()
 {
 	OmVolume::GetChannel(my_id).SetNote(notesEdit->toPlainText().toStdString());
 }
+
+void ChanInspector::setChannelID( const OmId channID )
+{
+	ChannelID = channID;
+}
+
+OmId ChanInspector::getChannelID()
+{
+	return ChannelID;
+}
+
+void ChanInspector::setFilterID( const OmId filterID )
+{
+	FilterID = filterID;
+}
+
+OmId ChanInspector::getFilterID()
+{
+	return FilterID;
+}

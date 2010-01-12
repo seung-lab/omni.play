@@ -15,10 +15,17 @@ public:
     ChanInspector(OmId chan_id, QWidget *parent = 0);
 	
 	void setId(OmId new_id);
+	const OmId getId(){ return my_id; }
 	QString raiseFileDialog();
 	
 	void intermediate_build_call(OmChannel *current_channel);
 	
+    void setChannelID( const OmId );
+    OmId getChannelID();
+    void setFilterID( const OmId );
+    OmId getFilterID();
+	
+
 	private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
@@ -30,6 +37,8 @@ public:
 	
 private:
 	OmId my_id;
-
+	OmId ChannelID;
+	OmId FilterID;
+	
 }; 
 #endif

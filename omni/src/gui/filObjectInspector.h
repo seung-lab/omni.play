@@ -3,6 +3,7 @@
 
 #include <QWidget> 
 #include "ui_filObjectInspector.h" 
+#include "system/omSystemTypes.h"
 
 class FilObjectInspector : public QWidget, public Ui::filObjectInspector
 { 
@@ -11,8 +12,13 @@ class FilObjectInspector : public QWidget, public Ui::filObjectInspector
 public: 
     FilObjectInspector(QWidget *parent = 0); 
 	
+    void setChannelID( const OmId );
+    OmId getChannelID();
+    void setFilterID( const OmId );
+    OmId getFilterID();
 	
-	private slots: 
-
+    private: 
+	OmId ChannelID;
+	OmId FilterID;
 }; 
 #endif

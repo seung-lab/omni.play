@@ -132,3 +132,24 @@ void SegInspector::on_notesEdit_textChanged()
 {
 	OmVolume::GetSegmentation(my_id).SetNote(notesEdit->toPlainText().toStdString());
 }
+
+
+void SegInspector::setSegmentationID( const OmId segmenID )
+{
+	SegmentationID = segmenID;
+}
+
+OmId SegInspector::getSegmentationID()
+{
+	return SegmentationID;
+}
+
+void SegInspector::setSegmentID( const OmId segID )
+{
+	SegmentID = segID;
+}
+
+OmId SegInspector::getSegmentID()
+{
+	return SegmentID;
+}
