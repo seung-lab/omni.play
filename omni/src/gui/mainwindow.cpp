@@ -75,11 +75,11 @@ MainWindow::MainWindow()
 		createToolBars();
 		createStatusBar();
 		
-		//		connect(editAct, SIGNAL(toggled(bool)), selectSegmentationBox, SLOT(setEnabled(bool)));
-// 		connect(editAct, SIGNAL(toggled(bool)), selectSegmentBox, SLOT(setEnabled(bool)));
-//		connect(editAct, SIGNAL(toggled(bool)), editColorButton, SLOT(setEnabled(bool)));
+		connect(editAct, SIGNAL(toggled(bool)), selectSegmentationBox, SLOT(setEnabled(bool)));
+ 		//connect(editAct, SIGNAL(toggled(bool)), selectSegmentBox, SLOT(setEnabled(bool)));
+		connect(editAct, SIGNAL(toggled(bool)), editColorButton, SLOT(setEnabled(bool)));
 		
-//		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
+		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
 		
 		setWindowTitle(tr("Omni"));
 		resize(1000,800);
@@ -411,7 +411,7 @@ void MainWindow::openProject( QString fname, QString dpath )
 		
 		createDockWindows();
 		
-		//navigateAct->trigger();
+		navigateAct->trigger();
 		
 		selectSegmentationBox->setEnabled(false);
 		//selectSegmentBox->setEnabled(false);
@@ -1512,11 +1512,11 @@ void MainWindow::createToolbarActionsNew()
 	toolbarZoomAct->setCheckable(true);
 
 	toolbarBrushAct     = new QAction(tr("&Brush"), this);
-	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Select Mode"));
+	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Add Mode"));
 
 	toolbarBrushAct->setCheckable(true);
 
-	toolbarEraserAct    = new QAction(tr("&Erase"), this);
+	toolbarEraserAct    = new QAction(tr("&Eraser"), this);
 	toolbarEraserAct->setStatusTip(tr("Switches to Voxel Subtraction Mode"));
 
 	toolbarEraserAct->setCheckable(true);
@@ -1526,13 +1526,8 @@ void MainWindow::createToolbarActionsNew()
 
 	toolbarFillAct->setCheckable(true);
 
-	toolbarJoinAct      = new QAction(tr("&Join"), this);
-	toolbarJoinAct->setStatusTip(tr("Switches to Join Mode"));
-
-	toolbarJoinAct->setCheckable(true);
-
 	toolbarVoxelizeAct  = new QAction(tr("&Voxelize"), this);
-	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Addition Mode"));
+	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Mode"));
 
 	toolbarVoxelizeAct->setCheckable(true);
 }
@@ -1615,7 +1610,7 @@ void MainWindow::resetTools()
 	resetViewTools();
 	resetModifyTools( false );
 
-	toolbarSelectAct->setChecked( true );
+	toolbarPanAct->setChecked( true );
 
 	switch( OmSystemMode::GetSystemMode() ){
 	case( VIEW_SYSTEM_MODE ):
