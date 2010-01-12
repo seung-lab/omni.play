@@ -139,8 +139,8 @@ sub qt {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
     prepare( $baseFileName, "Qt" );
 
-    print "(cd $buildPath/$baseFileName; ./configure --prefix=$libPath/Qt -opensource -static -no-glib; make -j5 && make install)\n";
-    print `(cd $buildPath/$baseFileName; echo "yes" | ./configure --prefix=$libPath/Qt -opensource -static -no-glib; make -j5 && make install)`;
+    print "(cd $buildPath/$baseFileName; ./configure --prefix=$libPath/Qt -opensource -static -no-glib -make libs; make -j5 && make install)\n";
+    print `(cd $buildPath/$baseFileName; echo "yes" | ./configure --prefix=$libPath/Qt -opensource -static -no-glib -make libs; make -j5 && make install)`;
 }
 
 sub omni {
