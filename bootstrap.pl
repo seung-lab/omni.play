@@ -213,7 +213,7 @@ sub hdf5 {
 sub qt {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
     # '-make libs' option only builds libs, shrinking installed size by 2 GB
-    prepareAndBuild( $baseFileName, "Qt", "-opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus " );
+    prepareAndBuild( $baseFileName, "Qt", "-opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub omni {
