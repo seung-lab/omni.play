@@ -117,6 +117,19 @@ class MainWindow
 		void changeSelection(int segmentIndex);
 		
 		void spawnErrorDialog(OmException &e);
+
+
+		void ChangeModeModify(bool checked);
+		void toolbarSelect(bool checked);
+		void toolbarCrosshair(bool checked);
+		void toolbarPan(bool checked);
+		void toolbarZoom(bool checked);
+		void toolbarBrush(bool checked);
+		void toolbarEraser(bool checked);
+		void toolbarFill(bool checked);
+		void toolbarJoin(bool checked);
+		void toolbarVoxelize(bool checked);
+
 				
 	private:
 		void createActions();
@@ -150,15 +163,10 @@ class MainWindow
 		QAction *navigateAct;
 		QAction *editAct;
 		
-		QAction *zoomAct;
-		QAction *panAct;
 		
 		QAction *editAddAct;
 		QAction *editSubtractAct;
 		QAction *editSelectAct;
-		
-		QAction *undoAct;
-		QAction *redoAct;
 		
 		QComboBox *selectSegmentationBox;
 		//		QComboBox *selectSegmentBox;
@@ -195,6 +203,25 @@ class MainWindow
 		QColor selected_color;
 
 		RecentFileList recentFiles;
+
+		// new toolbar
+		void createToolbarActions();
+		void createToolbarActionsNew();
+		void createToolBarsNew();
+		QAction *modifyAct;
+		QAction * toolbarSelectAct;
+		QAction * toolbarCrosshairAct;
+		QAction * toolbarPanAct;
+		QAction * toolbarZoomAct;
+		QAction * toolbarBrushAct;
+		QAction * toolbarEraserAct;
+		QAction * toolbarFillAct;
+		QAction * toolbarJoinAct;
+		QAction * toolbarVoxelizeAct;
+
+		QAction *panAct;
+		QAction *zoomAct;
+
 	};
 
 #endif

@@ -35,7 +35,25 @@ SegmentationDataWrapper::SegmentationDataWrapper( const OmId ID )
 	mName = QString::fromStdString( segmen.GetName() );
 	mEnabled = OmVolume::IsSegmentationEnabled( mID );
 }
+/*
+QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames()
+{
+	QHash< OmId, FilterDataWrapper > filters;
 
+	OmChannel &chann = OmVolume::GetChannel( mID );
+	
+	foreach( OmId filterID, chann.GetValidFilterIds() ) {
+		FilterDataWrapper filter( mID, 
+							 filterID,
+							 QString::fromStdString( chann.GetFilter(filterID).GetName()),
+							 chann.IsFilterEnabled( filterID )
+							 );
+		filters[ filterID ] = filter;
+	}
+
+	return filters;
+}
+*/
 QHash< OmId, SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames()
 {
 	QHash< OmId, SegmentDataWrapper > segs;
@@ -71,6 +89,7 @@ SegmentDataWrapper::SegmentDataWrapper( const OmId segmentationID,
 	mEnabled  = enabled;
 	mChecked  = mEnabled; // always initially check-off segment if it is enabled
 	mSelected = false;
+	cout << "SegmentDataWrapper: sementation ID is: " << segmentationID << "; segment id is " << mID << endl;
 }
 
 
@@ -101,7 +120,11 @@ QString SegmentDataWrapper::getNote()
 }
 
 
-FilterDataWrapper::FilterDataWrapper( const OmId ID )
-	: DataWrapper( ID, FILTER )
+FilterDataWrapper::FilterDataWrapper(  const OmId channelID,
+				    const OmId mID,
+				    const QString name,
+							    const bool enabled )
+	: DataWrapper( mID, FILTER ), mChannelID( channelID )
 {
+    	mEnabled  = enabled;
 }

@@ -276,6 +276,32 @@ void MyInspectorWidget::populateSegmentElementsListWidget( SegmentationDataWrapp
 void MyInspectorWidget::populateChannelElementsListWidget( ChannelDataWrapper cdw )
 {
 	dataElementsWidget->clear();
+	/*
+	const OmId segmenID = cdw.getID();
+
+	dataElementsWidget->selectionModel()->blockSignals(true);
+	dataElementsWidget->selectionModel()->clearSelection();
+
+	foreach( SegmentDataWrapper seg, segs ){
+		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
+		row->setText( NAME_COL, seg.getName() );
+		row->setText( ID_COL, QString("%1").arg(seg.getID() ));
+		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( seg ) );
+		row->setText( NOTE_COL, seg.getNote() );
+		setRowFlagsAndCheckState( row, getCheckState( seg.isCheckedOff() ) );
+		row->setSelected( seg.isSelected() );
+	}
+	
+	dataElementsWidget->selectionModel()->blockSignals(false);
+		
+	dataElementsWidget->disconnect( SIGNAL( itemClicked( QTreeWidgetItem *, int )) );
+	connect( dataElementsWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
+		    this, SLOT( addToSplitterDataElementSegment(QTreeWidgetItem *, int )));
+
+	dataElementsWidget->update();
+	for( int i = 0; i < MAX_COL_TO_DISPLAY; i++ ){
+		dataElementsWidget->resizeColumnToContents(i);
+		}*/
 }
 
 void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem *item, const int column )
@@ -876,7 +902,11 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 	OmSegmentation &r_segmentation = OmVolume::GetSegmentation( segmentationID );
 	
 	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
-	
+
+	if( !hashOfSementationsAndSegments.contains( segmentationID ) ){
+		SegmentationDataWrapper sdw( segmentationID );
+		hashOfSementationsAndSegments[ segmentationID ] = sdw.getAllSegmentIDsAndNames();
+	} 
 	QHash<OmId, SegmentDataWrapper> segs = hashOfSementationsAndSegments[ segmentationID ];
 
 	foreach( OmId segID, selection_changed_segmentIDs ){

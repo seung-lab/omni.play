@@ -35,6 +35,7 @@ class ChannelDataWrapper : public DataWrapper
  public:
 	ChannelDataWrapper(){}
 	ChannelDataWrapper( const OmId mID );
+	//	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
 	QString getNote();
 };
 
@@ -71,8 +72,12 @@ class FilterDataWrapper : public DataWrapper
 {
  public:
 	FilterDataWrapper(){}
-	FilterDataWrapper( const OmId mID );
+	FilterDataWrapper( const OmId channelID,
+				    const OmId mID,
+				    const QString name,
+				    const bool enabled );
 	OmId getChannelID(){ return mChannelID; }
+	QString getNote();
  private:
 	OmId mChannelID;
 };

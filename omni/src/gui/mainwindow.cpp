@@ -71,14 +71,15 @@ MainWindow::MainWindow()
 		
 		createActions();
 		createMenus();
+		//		createToolBarsNew();
 		createToolBars();
 		createStatusBar();
 		
-		connect(editAct, SIGNAL(toggled(bool)), selectSegmentationBox, SLOT(setEnabled(bool)));
+		//		connect(editAct, SIGNAL(toggled(bool)), selectSegmentationBox, SLOT(setEnabled(bool)));
 // 		connect(editAct, SIGNAL(toggled(bool)), selectSegmentBox, SLOT(setEnabled(bool)));
-		connect(editAct, SIGNAL(toggled(bool)), editColorButton, SLOT(setEnabled(bool)));
+//		connect(editAct, SIGNAL(toggled(bool)), editColorButton, SLOT(setEnabled(bool)));
 		
-		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
+//		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
 		
 		setWindowTitle(tr("Omni"));
 		resize(1000,800);
@@ -156,7 +157,7 @@ void MainWindow::newProject()
 		
 		createDockWindows();
 		
-		navigateAct->trigger();
+		//navigateAct->trigger();
 		
 		selectSegmentationBox->setEnabled(false);
 		//		selectSegmentBox->setEnabled(false);
@@ -410,7 +411,7 @@ void MainWindow::openProject( QString fname, QString dpath )
 		
 		createDockWindows();
 		
-		navigateAct->trigger();
+		//navigateAct->trigger();
 		
 		selectSegmentationBox->setEnabled(false);
 		//selectSegmentBox->setEnabled(false);
@@ -843,9 +844,6 @@ void MainWindow::updateKeyShortcuts()
 		
 		string undoString = OmPreferences::GetString(OM_PREF_GUI_UNDO_STR);
 		string redoString = OmPreferences::GetString(OM_PREF_GUI_REDO_STR);
-		
-		undoAct->setShortcut(QKeySequence::fromString(QString::fromStdString(undoString)));
-		redoAct->setShortcut(QKeySequence::fromString(QString::fromStdString(redoString)));
 		
 	}
 	
@@ -1284,7 +1282,13 @@ void MainWindow::createActions()
 	open3DAct->setStatusTip(tr("Opens the 3D view"));
 	connect(open3DAct, SIGNAL(triggered()), this, SLOT(open3dView()));
 
-	
+	createToolbarActions();
+	//createToolbarActionsNew();
+}
+
+
+void MainWindow::createToolbarActions()
+{
 	// Toolbar Actions
 	navigateAct = new QAction(QIcon(":/images/pointer.png"),tr("&Navigation Mode"), this);
 	// resource location: :/images/cut.png
@@ -1326,15 +1330,6 @@ void MainWindow::createActions()
 	connect(editSelectAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolSelect(bool)));
 	editSelectAct->setCheckable(true);
 	
-	
-	undoAct = new QAction(QIcon(":/images/edit-undo.png"),tr("&Undo"), this);
-	undoAct->setStatusTip(tr("Undo"));
-	connect(undoAct, SIGNAL(triggered()), OmStateManager::GetUndoStack(), SLOT(undo()));
-	
-	redoAct = new QAction(QIcon(":/images/edit-redo.png"),tr("&Redo"), this);
-	redoAct->setStatusTip(tr("Redo"));
-	connect(redoAct, SIGNAL(triggered()), OmStateManager::GetUndoStack(), SLOT(redo()));
-	
 }
 
 void MainWindow::createMenus()
@@ -1353,8 +1348,6 @@ void MainWindow::createMenus()
 	fileMenu->addAction(quitAct);
 	
 	editMenu = menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(undoAct);
-	editMenu->addAction(redoAct);
 
 	projectMenu = menuBar()->addMenu(tr("&Project"));
 	projectMenu->addAction(addChannelAct);
@@ -1371,6 +1364,7 @@ void MainWindow::createMenus()
 	
 	
 }
+
 
 void MainWindow::createToolBars()
 {
@@ -1405,8 +1399,6 @@ void MainWindow::createToolBars()
 	toolToolBar->addWidget(editColorButton);
 	
 	editToolBar = addToolBar(tr("Edit"));
-	editToolBar->addAction(undoAct);
-	editToolBar->addAction(redoAct);
 
 }
 
@@ -1491,3 +1483,170 @@ void MainWindow::spawnErrorDialog(OmException &e)
 	QString errorMessage = type + ": " + name + ". " + msg;
 	exceptionMessage->showMessage(errorMessage);
 }
+
+void MainWindow::createToolbarActionsNew()
+{
+	modifyAct = new QAction(tr("&Modify Mode"), this);
+	modifyAct->setStatusTip(tr("Switches to Modify Mode"));
+	connect(modifyAct, SIGNAL(triggered(bool)), this, SLOT(ChangeModeModify(bool)));
+	modifyAct->setCheckable(true);
+
+	toolbarSelectAct    = new QAction(tr("&Select"), this);
+	toolbarSelectAct->setStatusTip(tr("Switches to Object Selection Mode"));
+
+	toolbarSelectAct->setCheckable(true);
+
+	toolbarCrosshairAct = new QAction(tr("&Crosshair"), this);
+	toolbarCrosshairAct->setStatusTip(tr("Switches on Crosshairs"));
+
+	toolbarCrosshairAct->setCheckable(true);
+
+	toolbarPanAct       = new QAction(tr("&Pan"), this);
+	toolbarPanAct->setStatusTip(tr("Switches to Pan Mode"));
+
+	toolbarPanAct->setCheckable(true);
+
+	toolbarZoomAct      = new QAction(tr("&Zoom"), this);
+	toolbarZoomAct->setStatusTip(tr("Switches to Zoom Mode"));
+
+	toolbarZoomAct->setCheckable(true);
+
+	toolbarBrushAct     = new QAction(tr("&Brush"), this);
+	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Select Mode"));
+
+	toolbarBrushAct->setCheckable(true);
+
+	toolbarEraserAct    = new QAction(tr("&Erase"), this);
+	toolbarEraserAct->setStatusTip(tr("Switches to Voxel Subtraction Mode"));
+
+	toolbarEraserAct->setCheckable(true);
+
+	toolbarFillAct      = new QAction(tr("&Fill"), this);
+	toolbarFillAct->setStatusTip(tr("Switches to Fill Mode"));
+
+	toolbarFillAct->setCheckable(true);
+
+	toolbarJoinAct      = new QAction(tr("&Join"), this);
+	toolbarJoinAct->setStatusTip(tr("Switches to Join Mode"));
+
+	toolbarJoinAct->setCheckable(true);
+
+	toolbarVoxelizeAct  = new QAction(tr("&Voxelize"), this);
+	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Addition Mode"));
+
+	toolbarVoxelizeAct->setCheckable(true);
+}
+
+void MainWindow::createToolBarsNew()
+{
+	
+	selectSegmentationBox = new QComboBox();
+	selectSegmentationBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	
+	editColorButton = new QPushButton();
+	editColorButton->setMaximumWidth(50);
+	
+	fileToolBar = addToolBar(tr("File"));
+	fileToolBar->addAction(saveAct);
+
+	systemToolBar = addToolBar(tr("Mode"));
+	systemToolBar->addAction(modifyAct);
+	
+	navigateToolBar = addToolBar(tr("Navigate"));
+	navigateToolBar->addAction(toolbarSelectAct);
+	navigateToolBar->addAction(toolbarCrosshairAct);
+	navigateToolBar->addAction(toolbarPanAct);
+	navigateToolBar->addAction(toolbarZoomAct);
+	
+	toolToolBar = addToolBar(tr("Tools"));
+	toolToolBar->addAction(toolbarBrushAct);
+	toolToolBar->addAction(toolbarEraserAct);
+	toolToolBar->addAction(toolbarFillAct);
+	toolToolBar->addAction(toolbarJoinAct);
+	toolToolBar->addAction(toolbarVoxelizeAct);
+
+	toolToolBar->addWidget(selectSegmentationBox);
+	toolToolBar->addWidget(editColorButton);
+}
+
+void MainWindow::ChangeModeModify(const bool checked)
+{
+	try {
+		if(checked) {
+			//			editSelectAct->setChecked(false);
+		}			
+		OmStateManager::SetSystemMode( MODIFY_SYSTEM_MODE );
+		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+	} catch (OmException &e) {
+		spawnErrorDialog(e);
+	}
+}
+
+void MainWindow::toolbarSelect(const bool checked)
+{
+}
+void MainWindow::toolbarCrosshair(const bool checked)
+{
+}
+void MainWindow::toolbarPan(const bool checked)
+{
+}
+void MainWindow::toolbarZoom(const bool checked)
+{
+}
+void MainWindow::toolbarBrush(const bool checked)
+{
+}
+void MainWindow::toolbarEraser(const bool checked)
+{
+}
+void MainWindow::toolbarFill(const bool checked)
+{
+}
+void MainWindow::toolbarJoin(const bool checked)
+{
+}
+void MainWindow::toolbarVoxelize(const bool checked)
+{
+}
+/*
+void MainWindow::resetTools()
+{
+	resetViewTools();
+	resetModifyTools( false );
+
+	toolbarSelectAct->setChecked( true );
+
+	switch( OmSystemMode::GetSystemMode() ){
+	case( VIEW_SYSTEM_MODE ):
+		break;
+	case( MODIFY_SYSTEM_MODE ):
+		resetModifyTools( true );
+		break;
+	default:
+	}
+}
+
+void MainWindow::resetTool( QAction* tool, const bool enabled )
+{
+	tool->setChecked(false);
+	tool->setEnabled(enabled);
+}
+
+void MainWindow::resetViewTools()
+{
+	resetTool( toolbarSelectAct,    true );
+	resetTool( toolbarCrosshairAct, true );
+	resetTool( toolbarPanAct,       true );
+	resetTool( toolbarZoomAct,      true );
+}
+
+void MainWindow::resetModifyTools( const bool enabled )
+{
+	resetTool( toolbarBrushAct,  enabled );
+	resetTool( toolbarEraserAct, enabled );
+	resetTool( toolbarFillAct,   enabled );
+	resetTool( toolbarJoinAct,   enabled );
+	resetTool( toolbarVoxelizeAct, enabled );
+}
+*/
