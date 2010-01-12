@@ -28,7 +28,7 @@ print `mkdir $srcPath` if (!-e $srcPath);
 
 sub vtk {
     my $baseFileName = "vtk-5.4.2";
-    prepare( $baseFileName );
+    prepare( $baseFileName, "VTK" );
 
     # Work around for a bug in the VTK tar ball.
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
