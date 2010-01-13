@@ -787,7 +787,8 @@ OMNIView2dUpdatePlan DOMNIView2d::constructPlan ()
 
 	DataCoord dc = DataCoord (chunkx, chunky, chunkz);
 	OmMipChunkCoord cc = mVolume->NormToMipCoord (OmVolume::SpaceToNormCoord (DataToSpaceCoord (dc)), curzoom.x);
-	shared_ptr<OmMipChunk> chunk = mVolume->GetChunk (cc);
+	shared_ptr<OmMipChunk> chunk = shared_ptr<OmMipChunk>();
+	mVolume->GetChunk (chunk, cc);
 	Vector2<int> sliceDims;
 
 
@@ -2491,7 +2492,8 @@ void DOmView2d::Draw()
 			
 			// PULLING FROM THE CACHE
 			DOUT("requested tilecoord = " << mTileCoord);
-			shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+			shared_ptr<OmTextureID> gotten_id = shared_ptr<OmTextureID>();
+			mCache->GetTextureID(gotten_id, mTileCoord);
 			
 			
 			if(gotten_id) {
@@ -2953,7 +2955,8 @@ void DOmView2d::InitializeCache()
 			
 			OmTileCoord mTileCoord = OmTileCoord(1, this_space_coord);	
 			
-			shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+			shared_ptr<OmTextureID> gotten_id = shared_ptr<OmTextureID>();
+			mCache->GetTextureID(gotten_id, mTileCoord);
 			
 			if(gotten_id) {
 				
@@ -3046,7 +3049,8 @@ void DOmView2d::InitializeCache()
 				
 				OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);	
 				
-				shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+				shared_ptr<OmTextureID> gotten_id = shared_ptr<OmTextureID>();
+				mCache->GetTextureID(gotten_id, mTileCoord);
 				
 				if(gotten_id) {
 					
@@ -3071,7 +3075,8 @@ void DOmView2d::InitializeCache()
 										mCache->Remove(mTileCoord);
 										//DOUT("after release");
 										// DELETED THIS TEXTURE ID AND FORCED RELOAD
-										shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+										shared_ptr<OmTextureID> gotten_id = shared_ptr<OmTextureID>();
+										mCache->GetTextureID(gotten_id, mTileCoord);
 										
 										break;
 									}

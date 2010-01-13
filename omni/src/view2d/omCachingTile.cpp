@@ -4,10 +4,11 @@
 #define DEBUG 0
 
 
-shared_ptr<OmTextureID> OmCachingTile::GetTextureID(const OmTileCoord &tileCoord) {
+void OmCachingTile::GetTextureID(shared_ptr<OmTextureID> &p_value,const OmTileCoord &tileCoord) {
 	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
 	
-	return TextureIDCache::Get(tileCoord);
+        TextureIDCache::Get(p_value, tileCoord);
+	return;
 }
 
 void OmCachingTile::StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID) {

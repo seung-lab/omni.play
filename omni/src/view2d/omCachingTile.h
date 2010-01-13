@@ -30,7 +30,7 @@ public:
 	}
 	
 	// texture ID
-	virtual shared_ptr<OmTextureID> GetTextureID(const OmTileCoord &tileCoord);
+         virtual void GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord);
 	void StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID);
 	
 	//cache actions

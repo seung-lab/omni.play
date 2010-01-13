@@ -49,7 +49,7 @@ public:
 	
 	
 	//value accessors
-	shared_ptr<U> Get(const T &key, bool blocking = false, bool exist = false);
+	void Get(shared_ptr<U> &p_value,const T &key, bool blocking = false, bool exist = false);
 	void Add(const T &key, U *value);
 	void Remove(const T &key);
 	bool RemoveOldest();
@@ -191,14 +191,14 @@ OmThreadedCache<T,U>::~OmThreadedCache() {
  *	note: blocking chace does not switch threads
  */
 template < typename T,  typename U  > 
-shared_ptr<U> 
-OmThreadedCache<T,U>::Get(const T &key, bool blocking, bool exists) {
+void 
+  OmThreadedCache<T,U>::Get(shared_ptr<U> &p_value,const T &key, bool blocking, bool exists) {
 	
 	//std::cerr << "OmThreadedCache::" << __FUNCTION__ << endl;
 	//return pointer
-	shared_ptr<U> p_value = shared_ptr<U>();
+
 	
-	if (!blocking) {
+	/*	if (!blocking) {
 		if (!mCachedValuesMap.count(key)) {
                 //if not already in stack and not currently being fetched
                 	if( (0 == mFetchStack.count(key)) && (0 == mCurrentlyFetching.count(key)) ) {
@@ -215,11 +215,10 @@ OmThreadedCache<T,U>::Get(const T &key, bool blocking, bool exists) {
 				return p_value;
 			}
 		}
-	}
+		}*/
 
 	//lock cache
 	pthread_mutex_lock(&mCacheMutex);
-
 	
 	//check cache
 	if(mCachedValuesMap.count(key)) {
@@ -260,7 +259,7 @@ OmThreadedCache<T,U>::Get(const T &key, bool blocking, bool exists) {
 	pthread_mutex_unlock(&mCacheMutex);
 	
 	//return cached value or NULL if miss
-	return p_value;
+	return;
 }
 
 
@@ -305,13 +304,11 @@ OmThreadedCache<T,U>::Add(const T &key, U *value) {
 	//add to access list
 	mKeyAccessList.push_front(key);
 	
+	old_value.reset();
+
 	//unlock
 	pthread_mutex_unlock(&mCacheMutex);
 	
-	
-	//destroy old value outside of lock 
-	//(in case calling the destructor causes a cleanup which would cause deadlock)
-	old_value.reset();
 }
 
 
@@ -345,12 +342,11 @@ OmThreadedCache<T,U>::Remove(const T &key) {
 	mCachedValuesMap.erase(key);
 	mKeyAccessList.remove(key);
 	
+	old_value.reset();
+
 	//unlock
 	pthread_mutex_unlock(&mCacheMutex);
 	
-	//destroy old value outside of lock 
-	//(in case calling the destructor causes a cleanup which would cause deadlock)
-	old_value.reset();
 }
 
 
@@ -412,12 +408,11 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	}
 
 	
+	old_value.reset();
+
 	//unlock
 	pthread_mutex_unlock(&mCacheMutex);
 	
-	//destroy old value outside of lock 
-	//(in case calling the destructor causes a cleanup which would cause deadlock)
-	old_value.reset();
 	
 	return true;
 }

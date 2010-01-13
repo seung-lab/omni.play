@@ -291,7 +291,8 @@ OmSegmentation::BuildMeshDataInternal() {
 					OmMipChunkCoord chunk_coord(level, x, y, z);
 						
 					//get built chunk (hold shared pointer whild building)
-					shared_ptr< OmMipChunk > p_chunk = GetChunk(chunk_coord);
+					shared_ptr< OmMipChunk > p_chunk  = shared_ptr<OmMipChunk>();
+					GetChunk(p_chunk, chunk_coord);
 					//build all segment meshes in chunk
 				
 					p_chunk->Open ();
@@ -318,7 +319,8 @@ OmSegmentation::BuildChunk(const OmMipChunkCoord &mipCoord) {
 	OmMipVolume::BuildChunk(mipCoord);
 	
 	//get pointer to chunk
-	shared_ptr< OmMipChunk > p_chunk = GetChunk(mipCoord);
+	shared_ptr< OmMipChunk > p_chunk  = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, mipCoord);
 	
 	//analyze entire chunk segmentation data
 	p_chunk->RefreshDirectDataValues();
@@ -338,7 +340,8 @@ OmSegmentation::BuildChunk(const OmMipChunkCoord &mipCoord) {
 	//rebuild mesh data only if entire volume data has been built as well
 	if(IsVolumeDataBuilt() && IsMeshDataBuilt()) {
 		//get pointer to chunk
-		shared_ptr< OmMipChunk > p_chunk = GetChunk(mipCoord);
+		shared_ptr< OmMipChunk > p_chunk  = shared_ptr<OmMipChunk>();
+		GetChunk(p_chunk, mipCoord);
 		
 		//get modified values
 		const SegmentDataSet &rModifiedValues = p_chunk->GetModifiedVoxelValues();
@@ -375,7 +378,8 @@ OmSegmentation::RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataS
 	//rebuild mesh data only if entire volume data has been built
 	if(IsVolumeDataBuilt()) {
 		//get pointer to chunk
-		shared_ptr< OmMipChunk > p_chunk = GetChunk(mipCoord);
+		shared_ptr< OmMipChunk > p_chunk = shared_ptr<OmMipChunk>();
+		GetChunk(p_chunk, mipCoord);
 		//build mesh
 		mMipMeshManager.BuildChunkMeshes(*p_chunk, rModifiedValues);
 	}
@@ -626,7 +630,8 @@ void
 OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord &chunkCoord, const SegmentDataSet &rRelvDataVals, bool testVis,
 								   const OmVolumeCuller &rCuller) {	
 	//get pointer to chunk
-	shared_ptr<OmMipChunk> p_chunk = GetChunk(chunkCoord);
+	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, chunkCoord);
 
 	//TEST FOR CHUNK VISIBILITY IF NECESSARY
 	if(testVis) {
@@ -696,7 +701,8 @@ OmSegmentation::DrawChunk(const OmMipChunkCoord &chunkCoord, const SegmentDataSe
 	DOUT("OmSegmentation::DrawChunk: " << chunkCoord);
 	
 	//get pointer to chunk
-	shared_ptr<OmMipChunk> p_chunk = GetChunk(chunkCoord);
+	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, chunkCoord);
 	
 	//draw extent
 	if(rCuller.CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {

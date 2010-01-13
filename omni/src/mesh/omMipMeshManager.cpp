@@ -96,9 +96,10 @@ OmMipMeshManager::AllocMesh(const OmMipMeshCoord &coord) {
 /*
  *	Get mesh from cache.
  */
-shared_ptr<OmMipMesh>
-OmMipMeshManager::GetMesh(const OmMipMeshCoord &coord) {
-	return MipMeshCache::Get(coord);
+void
+OmMipMeshManager::GetMesh(shared_ptr<OmMipMesh> &p_value, const OmMipMeshCoord &coord) {
+        MipMeshCache::Get(p_value, coord);
+	return;
 }
 
 
@@ -222,7 +223,8 @@ OmMipMeshManager::DrawMeshes(OmSegmentManager &rSegMgr,
 	for( itr = rRelvDataVals.begin(); itr != rRelvDataVals.end(); itr++ ) {
 		
 		//get pointer to mesh
-		shared_ptr<OmMipMesh> p_mesh = GetMesh( OmMipMeshCoord( mipCoord, *itr) );
+	        shared_ptr<OmMipMesh> p_mesh = shared_ptr<OmMipMesh>();
+		GetMesh( p_mesh, OmMipMeshCoord( mipCoord, *itr) );
 		
 		//if null pointer then skip to next mesh
 		if(NULL == p_mesh.get()) continue;

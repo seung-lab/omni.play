@@ -126,18 +126,7 @@ OmView3dUi::NavigationModeMousePressed(QMouseEvent *event) {
 		return;
 	}
 	
-	
-	//otherwise check for modifiers
-	switch( event->modifiers() & ( Qt::ControlModifier | Qt::MetaModifier ) ) {
-		case Qt::ControlModifier:
-			CameraMovementMouseStart(event);
-			return;
-			
-		case Qt::MetaModifier:
-			ShowSegmentContextMenu(event);
-			return;
-	}
-	
+	CameraMovementMouseStart(event);
 }
 
 void 
@@ -147,11 +136,7 @@ OmView3dUi::NavigationModeMouseRelease(QMouseEvent *event) {
 
 void 
 OmView3dUi::NavigationModeMouseMove(QMouseEvent *event) {
-	switch( event->modifiers() & ( Qt::ControlModifier ) ) {
-		case Qt::ControlModifier:
-			CameraMovementMouseUpdate(event);
-			return;
-	}
+	CameraMovementMouseUpdate(event);
 }
 
 void 
@@ -210,7 +195,7 @@ OmView3dUi::EditModeMousePressed(QMouseEvent *event) {
 	//otherwise check modifiers
 	switch( event->modifiers() & (Qt::ControlModifier | Qt::MetaModifier )) {
 		case Qt::ControlModifier:
-			CameraMovementMouseStart(event);
+			VoxelEditMouse(event, false);
 			return;
 			
 		case Qt::MetaModifier:
@@ -218,7 +203,7 @@ OmView3dUi::EditModeMousePressed(QMouseEvent *event) {
 			return;
 			
 		default:
-			VoxelEditMouse(event, false);
+			CameraMovementMouseStart(event);
 			return;
 	}
 	
@@ -227,11 +212,14 @@ OmView3dUi::EditModeMousePressed(QMouseEvent *event) {
 void 
 OmView3dUi::EditModeMouseRelease(QMouseEvent *event) {
 
+	CameraMovementMouseEnd(event);
+#if 0
 	switch( event->modifiers() & (Qt::ControlModifier)) {
 		case Qt::ControlModifier:
 			CameraMovementMouseEnd(event);
 			return;
 	}
+#endif
 }
 
 void 
@@ -239,11 +227,11 @@ OmView3dUi::EditModeMouseMove(QMouseEvent *event) {
 
 	switch( event->modifiers() & (Qt::ControlModifier) ) {
 		case Qt::ControlModifier:
-			CameraMovementMouseUpdate(event);
+			VoxelEditMouse(event, true);
 			return;
 			
 		default:
-			VoxelEditMouse(event, true);
+			CameraMovementMouseUpdate(event);
 			return;
 	}
 }

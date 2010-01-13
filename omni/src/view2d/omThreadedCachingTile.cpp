@@ -34,22 +34,23 @@ OmThreadedCachingTile::~OmThreadedCachingTile() {
 	//if(mFetchThreadContext) delete mFetchThreadContext;
 }
 
-shared_ptr<OmTextureID> OmThreadedCachingTile::GetTextureID(const OmTileCoord &tileCoord, bool block) {
+void OmThreadedCachingTile::GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block) {
 	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
 	//std::cerr << __FUNCTION__ << endl;
-	return TextureIDThreadedCache::Get(tileCoord, block);
+        TextureIDThreadedCache::Get(p_value, tileCoord, block);
+	return;
 }
 
 // Called at the highest miplevel will force the entire octree into memory so an initial
 // calling at a medium mip level might be a good idea...
-shared_ptr<OmTextureID> OmThreadedCachingTile::GetTextureIDDownMip(const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord) {
+        void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr<OmTextureID> &p_value,const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord) {
 	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
 	//std::cerr << __FUNCTION__ << endl;
 
 	
 	if (rootLevel == tileCoord.Level) {	// Short curcuit because already low as mip level goes.
 		retCoord = tileCoord;
-		return GetTextureID (tileCoord);
+		GetTextureID(p_value, tileCoord);
 	}
 
 	OmTileCoord mipTileCoord = tileCoord;
@@ -58,16 +59,18 @@ shared_ptr<OmTextureID> OmThreadedCachingTile::GetTextureIDDownMip(const OmTileC
 		//cout << "Looking for tile for" << mipTileCoord.Level << endl;
 		// Try directly below current level.
 		mipTileCoord.Level += 1;
-		shared_ptr<OmTextureID>id = TextureIDThreadedCache::Get(mipTileCoord);
-		if (id) {
+		//shared_ptr<OmTextureID> id;
+		TextureIDThreadedCache::Get(p_value, mipTileCoord);
+		if (p_value) {
 			//cout << "tile " << mipTileCoord.Level << " found" << endl;
 			retCoord = mipTileCoord;
-			return id;
+			return;
 		}
 	}
 
 	retCoord = tileCoord;
-	return TextureIDThreadedCache::Get(tileCoord);
+	TextureIDThreadedCache::Get(p_value, tileCoord);
+	return;
 }
 
 

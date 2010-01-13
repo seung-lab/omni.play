@@ -113,7 +113,6 @@ OmGenericManager<T>::Get(OmId omId) {
 		//if(add) return Add(omId);
 		//else throw
 		cout << "OmGenericManager<T>::Get: " <<  i2str(omId) << endl;
-		assert (false && "Cannot get object with id");
 		throw OmAccessException("Cannot get object with id: " + i2str(omId)); 
 	}
 	

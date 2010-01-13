@@ -66,9 +66,12 @@ OmMipVoxelationManager::~OmMipVoxelationManager() {
 /////////////////////////////////
 ///////		 Voxelation Accessors
 
-shared_ptr<OmMipVoxelation>
-OmMipVoxelationManager::GetVoxelation(const OmMipSegmentDataCoord &coord ) {
-	return MipVoxelationCache::Get(coord);
+void
+OmMipVoxelationManager::GetVoxelation(shared_ptr<OmMipVoxelation> &p_value, const OmMipSegmentDataCoord &coord ) {
+        
+        //shared_ptr<OmMipVoxelation> p_value = shared_ptr<OmMipVoxelation>();
+        MipVoxelationCache::Get(p_value, coord);
+        return;
 }
 
 bool
@@ -251,7 +254,8 @@ OmMipVoxelationManager::UpdateVoxel(const DataCoord &rVox,
 	//if old value  is voxelated
 	if(ContainsVoxelation(old_mip_data_coord)) {
 		//get voxelation
-		shared_ptr<OmMipVoxelation> p_voxelation = GetVoxelation(old_mip_data_coord);
+	        shared_ptr<OmMipVoxelation> p_voxelation;
+	        GetVoxelation(p_voxelation, old_mip_data_coord);
 		//refresh to add neighbor boundary voxels
 		RefreshNeighboringVoxels(rVox, *p_voxelation);
 	}
@@ -262,7 +266,8 @@ OmMipVoxelationManager::UpdateVoxel(const DataCoord &rVox,
 	//if old value  is voxelated
 	if(ContainsVoxelation(new_mip_data_coord)) {
 		//get voxelation
-		shared_ptr<OmMipVoxelation> p_voxelation = GetVoxelation(new_mip_data_coord);
+	        shared_ptr<OmMipVoxelation> p_voxelation;
+                GetVoxelation(p_voxelation, new_mip_data_coord);
 		//refresh to remove non-boundary neighbors
 		RefreshNeighboringVoxels(rVox, *p_voxelation);
 	}
@@ -330,7 +335,8 @@ OmMipVoxelationManager::DrawVoxelations(OmSegmentManager &rSegMgr,
 	for( itr = rRelvDataVals.begin(); itr != rRelvDataVals.end(); itr++ ) {
 		
 		//get pointer to mesh
-		shared_ptr<OmMipVoxelation> p_voxelation = GetVoxelation( OmMipSegmentDataCoord( mipCoord, *itr) );
+	        shared_ptr<OmMipVoxelation> p_voxelation;
+	        GetVoxelation(p_voxelation, OmMipSegmentDataCoord( mipCoord, *itr) );
 		
 		//if null pointer, then not in cache so skip to next mesh
 		if(NULL == p_voxelation.get()) continue;

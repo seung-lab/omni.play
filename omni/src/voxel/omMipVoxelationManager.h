@@ -10,7 +10,7 @@
 #include "voxel/omMipVoxelation.h"
 #include "system/omThreadedCache.h"
 #include "common/omStd.h"
-
+//#include "volume/omMipVolume.h"
 
 class OmMipSegmentDataCoord;
 class OmSegmentManager;
@@ -28,7 +28,7 @@ public:
 	~OmMipVoxelationManager();
 	
 	//accessors
-	shared_ptr<OmMipVoxelation> GetVoxelation(const OmMipSegmentDataCoord & );
+	void GetVoxelation(shared_ptr<OmMipVoxelation> &p_value, const OmMipSegmentDataCoord & );
 	bool ContainsVoxelation(const OmMipSegmentDataCoord & );
 	void RemoveVoxelation(const OmMipSegmentDataCoord & );
 	
@@ -44,8 +44,8 @@ public:
 private:
 	OmMipVoxelation* HandleCacheMiss(const OmMipSegmentDataCoord &);
 	void HandleFetchUpdate();
-
 	OmMipVolume * const mpMipVolume;
+
 };
 
 

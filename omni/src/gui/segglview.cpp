@@ -274,7 +274,8 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -308,10 +309,12 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>();
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 
 						
 						int actual_depth = (desired_depth + i) % seg_tileLength;
@@ -367,7 +370,8 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -402,10 +406,12 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;
@@ -459,7 +465,8 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 						
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;
@@ -491,8 +498,10 @@ void SegGLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;
@@ -629,7 +638,8 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -663,10 +673,12 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						
 						
 						int actual_depth = (desired_depth + i) % seg_tileLength;
@@ -722,7 +734,8 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -757,10 +770,12 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>(); 
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>(); 
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;
@@ -814,7 +829,8 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						channel->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 						
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;
@@ -846,8 +862,10 @@ void SegGLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = segmentation->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
-						shared_ptr<OmMipChunk> my_c_chunk = channel->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OnMipChunk>();
+						segmentation->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_c_chunk = shared_ptr<OnMipChunk>();
+						channel->GetChunk(my_c_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 						
 						
 						int actual_depth = (desired_depth + i) % channel_tileLength;

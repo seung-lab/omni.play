@@ -118,7 +118,7 @@ public:
 	
 	
 	
-	shared_ptr<OmMipChunk> GetChunk(const OmMipChunkCoord &rMipCoord, bool block=true);
+	void GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
 	
 	

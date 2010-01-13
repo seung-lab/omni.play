@@ -39,7 +39,7 @@ public:
 	
 	//meshing
 	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
-	shared_ptr<OmMipMesh> GetMesh(const OmMipMeshCoord &coord );
+	void GetMesh(shared_ptr<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
 	
 	//building

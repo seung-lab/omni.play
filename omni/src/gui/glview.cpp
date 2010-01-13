@@ -266,7 +266,8 @@ void GLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -321,7 +322,8 @@ void GLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -373,7 +375,8 @@ void GLview::extract_data(int desired_depth)
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 						
 						
 						int actual_depth = (desired_depth + i) % tileLength;
@@ -504,7 +507,8 @@ void GLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, y, end_mipcoord.get<3>())));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -559,7 +563,8 @@ void GLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
+						shared_ptr<OmMipChunk> my_chunk = shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, x, end_mipcoord.get<2>(), y)));
 						//				cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
 						//				cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 						
@@ -611,7 +616,8 @@ void GLview::extract_data_initial()
 						if(DEBUG)
 							cout << "mastermap does not contain " << (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						
-						shared_ptr<OmMipChunk> my_chunk = mipvol->GetChunk((OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
+						shared_ptr<OmMipChunk> my_chunk =shared_ptr<OmMipChunk>();
+						mipvol->GetChunk(my_chunk, (OmMipChunkCoord(mylevel, end_mipcoord.get<1>(), y, x)));
 						
 						
 						int actual_depth = (desired_depth + i) % tileLength;

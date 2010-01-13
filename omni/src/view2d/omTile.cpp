@@ -127,7 +127,8 @@ void* OmTile::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMi
 	
 	//DOUT("INSIDE HDF5 ERROR");
 	
-	shared_ptr<OmMipChunk> my_chunk = vol->GetChunk(TileToMipCoord(key));
+        shared_ptr<OmMipChunk> my_chunk;
+        vol->GetChunk(my_chunk, TileToMipCoord(key));
 	//DOUT("after hdf5 error?");
 	int mDepth = GetDepth(key, vol);
 	

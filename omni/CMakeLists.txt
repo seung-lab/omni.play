@@ -15,7 +15,7 @@ MESSAGE("Build Script 5/8/09")
 
 
 #### external library directory ####
-SET(OM_EXT_LIBS_DIR "/Users/purcaro/0code/external/libs")
+SET(OM_EXT_LIBS_DIR "/Users/mwimer/omni1/external/libs")
 
 
 

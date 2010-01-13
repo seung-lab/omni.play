@@ -35,8 +35,8 @@ public:
 	
 	
 	// texture ID
-	virtual shared_ptr<OmTextureID> GetTextureID(const OmTileCoord &tileCoord, bool block = true);
-	shared_ptr<OmTextureID> GetTextureIDDownMip (const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
+	virtual void GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
+	void GetTextureIDDownMip(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
 	void StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID);
 	
 	//cache actions

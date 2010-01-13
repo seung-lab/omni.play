@@ -541,15 +541,16 @@ OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmM
  *	NOTE: DO NOT DELETE the data volume returned as a shared pointer
  *			this is taken care of by the cache system.
  */
-shared_ptr<OmMipChunk> 
-OmMipVolume::GetChunk(const OmMipChunkCoord &rMipCoord, bool block) {
+void
+OmMipVolume::GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block) {
 	DOUT("OmMipVolume::GetChunk: " << rMipCoord);
 	//assert(ContainsMipChunkCoord(rMipCoord));
 	
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 	
-	return MipChunkThreadedCache::Get(rMipCoord, block);
+	MipChunkThreadedCache::Get(p_value, rMipCoord, block);
+	return;
 }
 
 
@@ -599,7 +600,8 @@ OmMipVolume::GetVoxelValue(const DataCoord &vox) {
 	//find mip_coord and offset
 	OmMipChunkCoord leaf_mip_coord = DataToMipCoord(vox, 0);	
 	//get chunk
-	shared_ptr<OmMipChunk> p_chunk = GetChunk(leaf_mip_coord);
+	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, leaf_mip_coord);
 	//get voxel data
 	return p_chunk->GetVoxelValue(vox);
 }
@@ -613,7 +615,8 @@ OmMipVolume::SetVoxelValue(const DataCoord &vox, uint32_t val) {
 	//find mip_coord and offset
 	OmMipChunkCoord leaf_mip_coord = DataToMipCoord(vox, 0);
 	//get chunk
-	shared_ptr<OmMipChunk> p_chunk = GetChunk(leaf_mip_coord);
+	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, leaf_mip_coord);
 	//get voxel data
 	p_chunk->SetVoxelValue(vox, val);
 	//note the chunk has been edited
@@ -788,7 +791,8 @@ OmMipVolume::BuildChunk(const OmMipChunkCoord &rMipCoord) {
 	if(rMipCoord.IsLeaf()) return;
 	
 	//otherwise chunk is a parent, so get pointer to chunk
-	shared_ptr<OmMipChunk> p_chunk = GetChunk(rMipCoord);
+	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
 	string source_data_path = MipLevelInternalDataPath(rMipCoord.Level - 1);
@@ -856,7 +860,8 @@ OmMipVolume::BuildEditedLeafChunks() {
 	set< OmMipChunkCoord >::iterator itr;
 	for(itr = mEditedLeafChunks.begin(); itr != mEditedLeafChunks.end(); itr++) {
 		//get pointer to chunk
-		shared_ptr<OmMipChunk> p_chunk = GetChunk(*itr);
+		shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
+		GetChunk(p_chunk, *itr);
 		
 		//rebuild ancestors
 		BuildChunkAndParents(*itr);

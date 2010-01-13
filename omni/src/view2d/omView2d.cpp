@@ -2378,7 +2378,7 @@ void OmView2d::Draw(int mip)
         DOUT("OmView2d::Draw() -- " << mViewType);
 
         Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-#if 0
+#if 1
 	//cout << "mip: " << mip << endl;
 	if (mip) {
         	Vector2f zoom = zoomMipVector;
@@ -2552,20 +2552,21 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<
 void* OmView2d::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol) {
 
 	//cout << "in OmView2d::GetImageData" << endl;
-        shared_ptr<OmMipChunk> my_chunk = vol->GetChunk(mCache->TileToMipCoord(key));
+        shared_ptr<OmMipChunk> my_chunk;
+	vol->GetChunk(my_chunk, mCache->TileToMipCoord(key));
         int depth = GetDepth(key, vol);
         int realDepth = depth % (vol->GetChunkDimension());
 
 
         void* void_data = NULL;
         if (mViewType == XY_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, true);
+                void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, false);
         }
         else if (mViewType == XZ_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, true);
+                void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, false);
         }
         else if (mViewType == YZ_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, true);
+                void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
         }
         return void_data;
 }
@@ -2589,7 +2590,10 @@ void OmView2d::myBindToTextureID(shared_ptr<OmTextureID> gotten_id) {
                         Vector2<int> tile_dims;
                         vData = GetImageData(gotten_id->mTileCoordinate, tile_dims, mCache->mVolume);
 
-			//cout << "vData: "  << vData << endl;
+			if (!vData)
+				return;
+
+			cout << "vData: "  << vData << endl;
                         if (mCache->mVolType == CHANNEL) {
                                 OmIds myIdSet;
                                 OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
@@ -2691,10 +2695,12 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 #endif
 
 		for (int x = xval; x < (mTotalViewport.width * (1.0/zoomFactor)) ; x = x + tileLength,xMipChunk = xMipChunk + tl) {
+#if 0
                         DataCoord this_data_coord = ToDataCoord (xMipChunk, yMipChunk, mDataDepth);;
                         SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
                         OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);
-                        shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+                        shared_ptr<OmTextureID> gotten_id;
+			mCache->GetTextureID(gotten_id, mTileCoord);
 
                         //cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
 
@@ -2721,6 +2727,58 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
                         } else {
                                 //cout << "not gotton " << mTileCoord << endl;
                                 mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
+                        }
+#endif
+
+                        DataCoord this_data_coord = ToDataCoord (xMipChunk, yMipChunk, mDataDepth);;
+                        SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+                        OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);        
+                        NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
+                        OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
+
+                        shared_ptr<OmMipChunk> my_chunk;
+                        shared_ptr<OmTextureID> gotten_id = shared_ptr<OmTextureID>();
+                        if (mCache->mVolume->ContainsMipChunkCoord (coord)) {
+                                mCache->mVolume->GetChunk (my_chunk, coord);
+                                if (my_chunk->IsOpen ()) {
+                                        mCache->GetTextureID(gotten_id, mTileCoord);
+                                } else {
+                                        mCache->GetTextureID(gotten_id, mTileCoord, false);
+                                        cout << "Not Open" << endl;
+                                }
+                        }
+
+                        
+                        //cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
+
+                        mTileCount++;
+                        //if (mTileCount > 38000) return;       // Failsafe hack added by MW.
+
+                        if(gotten_id) {
+                                gotten_id->mVolType = mCache->mVolType;
+                                if(gotten_id->GetTextureID() == 0) {
+                                        cout << "no id..." << endl;
+                                        if (NULL == gotten_id->texture) {
+                                                myBindToTextureID (gotten_id);
+                                                if (gotten_id->texture) {
+                                                        safeTexture (gotten_id);
+                                                        cout << "made texture on the fly..." << endl;
+                                                }
+                                        } else {
+                                                cout << "got here...." << endl;
+                                                safeTexture (gotten_id);
+                                        }
+                                }
+
+                                if(gotten_id->GetTextureID() != 0) {
+                                        cout << "texture is valid! : " << gotten_id->GetTextureID() << endl;
+                                        mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor, gotten_id));
+                                } else
+                                        cout << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
+
+                        } else {
+                                cout << "not gotton " << mTileCoord << endl;
+                                //mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
                         }
 		}
 	}
@@ -2884,7 +2942,8 @@ void OmView2d::InitializeCache()
 			
 			OmTileCoord mTileCoord = OmTileCoord(1, this_space_coord);	
 			
-			shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+			shared_ptr<OmTextureID> gotten_id;
+			mCache->GetTextureID(gotten_id, mTileCoord);
 			
 			if(gotten_id) {
 				
@@ -2986,7 +3045,8 @@ void OmView2d::InitializeCache()
 				
 				OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);	
 				
-				shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+				shared_ptr<OmTextureID> gotten_id;
+				mCache->GetTextureID(gotten_id, mTileCoord);
 				
 				if(gotten_id) {
 					
@@ -3014,7 +3074,8 @@ void OmView2d::InitializeCache()
 										mCache->Remove(mTileCoord);
 										//DOUT("after release");
 										// DELETED THIS TEXTURE ID AND FORCED RELOAD
-										shared_ptr<OmTextureID> gotten_id = mCache->GetTextureID(mTileCoord);
+										shared_ptr<OmTextureID> gotten_id;
+										mCache->GetTextureID(gotten_id, mTileCoord);
 										
 										break;
 									}

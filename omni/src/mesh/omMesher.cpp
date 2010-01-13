@@ -145,6 +145,7 @@ OmMesher::InitMeshingPipeline() {
 	//vtkDecimatePro *mpDecimation = vtkDecimatePro::New();
 	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput() );
 	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
+	cout << "target_reduction: " << target_reduction << endl;
 	mpDecimation->SetTargetReduction(target_reduction);
 	
 	

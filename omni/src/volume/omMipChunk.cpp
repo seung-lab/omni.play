@@ -639,7 +639,8 @@ OmMipChunk::RefreshIndirectDataValues() {
 	set<OmMipChunkCoord>::iterator itr;
 	for(itr = mChildrenCoordinates.begin(); itr != mChildrenCoordinates.end(); itr++) {
 		//get child
-		shared_ptr< OmMipChunk > p_child_chunk = mpMipVolume->GetChunk(*itr);
+	  shared_ptr< OmMipChunk > p_child_chunk = shared_ptr< OmMipChunk >();
+	  mpMipVolume->GetChunk(p_child_chunk, *itr);
 		const SegmentDataSet& r_child_indirect_data_values = p_child_chunk->GetIndirectDataValues();
 		
 		//insert spatially contained children
@@ -817,7 +818,8 @@ OmMipChunk::GetMeshImageData() {
 				if(!mpMipVolume->ContainsMipChunkCoord(mip_coord)) continue;
 				
 				//else get chunk
-				shared_ptr<OmMipChunk> p_chunk = mpMipVolume->GetChunk(mip_coord);
+				shared_ptr<OmMipChunk> p_chunk;
+				mpMipVolume->GetChunk(p_chunk, mip_coord);
 
 				p_chunk->Open ();
 				
