@@ -341,8 +341,6 @@ void MyInspectorWidget::addChannelToSplitter( ChannelDataWrapper data )
 {
 	const OmId item_id = data.getID();
 
-	cout << "addChannelToSplitter: value is: " << item_id << endl;
-
 	QWidget* my_widget = splitter->widget(1);
 
 	if((current_object != CHANNEL) || (preferencesActivated)) {
@@ -669,11 +667,7 @@ void MyInspectorWidget::addFilter()
 
 	OmFilter& added_filter = OmVolume::GetChannel( cdw.getID() ).AddFilter();
 
-	cout << "filter id is: " <<  added_filter.GetId() << endl;
-
 	channelInspectorWidget->setFilterID( added_filter.GetId() );
-
-	cout << "filter id NOW is : " << channelInspectorWidget->getFilterID() << endl;
 
 	populateDataSrcListWidget();
 	populateChannelElementsListWidget( cdw );
@@ -737,9 +731,6 @@ void MyInspectorWidget::nameEditChanged()
 
 void MyInspectorWidget::populateChannelInspector(OmId c_id)
 {
-	if(DEBUG)
-		cout << "populating channel inspector" << endl;
-	
 	OmChannel &current_channel = OmVolume::GetChannel(c_id);
 	
 	const string &my_name = current_channel.GetName();
@@ -801,7 +792,6 @@ void MyInspectorWidget::populateFilterObjectInspector(OmId s_id, OmId obj_id)
 	OmFilter &filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
 	current_filter = obj_id;
 
-	//cout << "s_id: "  << s_id << " obj_id: "  << obj_id << "alpha*100: " << filter.GetAlpha()*100 << endl;
 	filObjectInspectorWidget->alphaSlider->setValue (filter.GetAlpha() * 100);
 	filObjectInspectorWidget->nameEdit->setText (QString::number (filter.GetChannel()));
 	filObjectInspectorWidget->nameEdit_2->setText (QString::number (filter.GetSegmentation()));
@@ -830,7 +820,6 @@ void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 	segObjectInspectorWidget->labelsEdit->setMinimumWidth(200);	
 	
 	const Vector3<float> &color = current_obj.GetColor();
-	//	cout << "color = " << color << endl;
 	
 	QPixmap *pixm = new QPixmap(40,30);
 	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);

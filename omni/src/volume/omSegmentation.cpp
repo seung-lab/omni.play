@@ -36,7 +36,7 @@ using namespace vmml;
 OmSegmentation::OmSegmentation()
 : mMipVoxelationManager(this) {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
-	cout << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
+	//	cout << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
 }
 
 OmSegmentation::OmSegmentation(OmId id) 
