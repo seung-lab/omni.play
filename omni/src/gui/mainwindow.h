@@ -9,7 +9,7 @@
 
 #include "common/omStd.h"
 #include "system/omGenericManager.h"
-
+#include "system/omStateManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omAlertEvent.h"
@@ -127,7 +127,6 @@ class MainWindow
 		void toolbarBrush(bool checked);
 		void toolbarEraser(bool checked);
 		void toolbarFill(bool checked);
-		void toolbarJoin(bool checked);
 		void toolbarVoxelize(bool checked);
 
 				
@@ -216,12 +215,15 @@ class MainWindow
 		QAction * toolbarBrushAct;
 		QAction * toolbarEraserAct;
 		QAction * toolbarFillAct;
-		QAction * toolbarJoinAct;
 		QAction * toolbarVoxelizeAct;
 
 		QAction *panAct;
 		QAction *zoomAct;
-
+		void resetTool( QAction* tool, const bool enabled );
+		void resetTools( const OmSystemMode sys_mode );
+		void resetViewTools();
+		void resetModifyTools( const bool enabled );
+		void setupToolbarInitially();
 	};
 
 #endif

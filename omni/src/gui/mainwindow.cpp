@@ -25,7 +25,6 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
-#include "system/omStateManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omToolModeEvent.h"
@@ -71,16 +70,12 @@ MainWindow::MainWindow()
 		
 		createActions();
 		createMenus();
-		//		createToolBarsNew();
-		createToolBars();
+		createToolBarsNew();
+		//createToolBars();
 		createStatusBar();
 		
-		connect(editAct, SIGNAL(toggled(bool)), selectSegmentationBox, SLOT(setEnabled(bool)));
- 		//connect(editAct, SIGNAL(toggled(bool)), selectSegmentBox, SLOT(setEnabled(bool)));
-		connect(editAct, SIGNAL(toggled(bool)), editColorButton, SLOT(setEnabled(bool)));
-		
 		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
-		
+
 		setWindowTitle(tr("Omni"));
 		resize(1000,800);
 		
@@ -93,12 +88,8 @@ MainWindow::MainWindow()
 		// statusBar()->addWidget(prog_bar);
 
 		recentFiles.loadRecentlyUsedFilesListFromFS();
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 	
@@ -157,22 +148,13 @@ void MainWindow::newProject()
 		
 		createDockWindows();
 		
-		//navigateAct->trigger();
-		
-		selectSegmentationBox->setEnabled(false);
-		//		selectSegmentBox->setEnabled(false);
-		editColorButton->setEnabled(false);
+		setupToolbarInitially();
 
 		setWindowTitle(tr("Omni - ") + fname );
 		
 		openInspector();
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -410,15 +392,12 @@ void MainWindow::openProject( QString fname, QString dpath )
 		OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2<int>(0, 0));
 		
 		createDockWindows();
-		
-		navigateAct->trigger();
-		
-		selectSegmentationBox->setEnabled(false);
-		//selectSegmentBox->setEnabled(false);
-		editColorButton->setEnabled(false);
+
+		setupToolbarInitially();
 
 		setWindowTitle(tr("Omni - ") + fname );
 		openInspector();
+
 	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
@@ -468,8 +447,10 @@ void MainWindow::openInspector()
 		addDockWidget(Qt::TopDockWidgetArea, dock);
 		windowMenu->addAction(dock->toggleViewAction());
 		
+		// TODO: fixme! (purcaro)
 		connect(omniInspector, SIGNAL(treeDataChanged()), 
 			this, SLOT(updateComboBoxes()));
+
 		connect(omniInspector, SIGNAL(addChannel()), 
 			this, SLOT(addChannelToVolume()));
 		connect(omniInspector, SIGNAL(addSegmentation()), 
@@ -505,12 +486,7 @@ void MainWindow::openUndoView()
 		
 		undoView->setStack(OmStateManager::GetUndoStack());
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -540,12 +516,7 @@ void MainWindow::open3dView()
 			//		DOUT("omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
 		}
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -579,12 +550,7 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 			
 		dock->setAttribute(Qt::WA_DeleteOnClose);
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 	
@@ -639,12 +605,7 @@ void MainWindow::ChangeModeNavigation(bool checked)
 			OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 			
 		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -663,12 +624,7 @@ void MainWindow::ChangeModeEdit(bool checked)
 			OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 		}
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -689,12 +645,7 @@ void MainWindow::ChangeToolZoom(bool checked)
 			
 		}
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -714,12 +665,7 @@ void MainWindow::ChangeToolPan(bool checked)
 			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 			
 		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 	
@@ -744,12 +690,7 @@ void MainWindow::ChangeToolAdd(bool checked)
 			
 		}
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -771,12 +712,7 @@ void MainWindow::ChangeToolSubtract(bool checked)
 			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 			
 		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 	
@@ -800,12 +736,7 @@ void MainWindow::ChangeToolSelect(bool checked)
 			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 			
 		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}	
 }
@@ -813,10 +744,7 @@ void MainWindow::ChangeToolSelect(bool checked)
 void MainWindow::updateComboBoxes()
 { 
 	try {
-		
-		DOUT("MainWIndow::updateComboBoxes()");
 		selectSegmentationBox->clear();
-		//		selectSegmentBox->clear();
 		editColorButton->setIcon(QIcon());
 
 		foreach( SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs() ) {
@@ -845,12 +773,7 @@ void MainWindow::updateKeyShortcuts()
 		string undoString = OmPreferences::GetString(OM_PREF_GUI_UNDO_STR);
 		string redoString = OmPreferences::GetString(OM_PREF_GUI_REDO_STR);
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -865,9 +788,6 @@ void MainWindow::changeSelection(int segmentIndex)
 		SegmentIDhelper segH = result.value< SegmentIDhelper >();
 		OmId seg_id = segH.segmentationID;
 		OmId obj_id = segH.segmentID;
-		
-		// OmId obj_id = selectSegmentBox->itemData(segmentIndex).toInt();
-		// OmId seg_id = selectSegmentationBox->itemData(selectSegmentationBox->currentIndex()).toInt();
 		
 		if((obj_id != 0) && (seg_id != 0)) {
 			
@@ -894,12 +814,7 @@ void MainWindow::changeSelection(int segmentIndex)
 		else if (obj_id == 0)
 			editColorButton->setIcon(QIcon());
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -925,12 +840,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//if(undoView)
 			//delete undoView;
 		// OmProject::Close();
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 	
@@ -940,72 +850,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent *event)
 {
 	try {
-		
-		DOUT("MainWindow::SegmentObjectModificationEvent");
-		// DOUT("segment ID = " << event->mSegmentId);
-		
-		if(OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE)
-		{
-			{
-				updateComboBoxes();
-			}
-		}
-		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+		updateComboBoxes();
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
 
 void MainWindow::SegmentEditSelectionChangeEvent(OmSegmentEvent *event)
 {
-	try {
-		
-		DOUT("MainWindow::SegmentEditSelectionChangeEvent");
-		// DOUT("segment ID = " << event->mSegmentId);
-		
-		if(! iSentIt) {
-			
-			if(OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE)
-			{
-				DOUT("in sdit system mode");
-				OmId segmentation;
-				OmId segment;
-				if(OmSegmentEditor::GetEditSelection(segmentation, segment)) {
-					
-					int segmentationIndex = selectSegmentationBox->findData(segmentation);
-					// TODO: fix me! (purcaro)
-					//					int segmentIndex = selectSegmentBox->findData(segment);
-					
-					//DOUT("segmentationIndex = " << segmentationIndex << " segmentIndex = " << segmentIndex);
-					
-// 					if((segmentationIndex != -1) && (segmentIndex != -1)) {
-// 						selectSegmentationBox->setCurrentIndex(segmentationIndex);
-// 						//						selectSegmentBox->setCurrentIndex(segmentIndex);
-// 					}
-					//selectSegmentationBox->itemData(selectSegmentationBox->currentIndex()).toInt();
-					
-				}
-				
-			}
-			
-			iSentIt = false;
-		}
-		else
-			DOUT("i sent it!");
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
-		spawnErrorDialog(e);
-	}
-	
 }
 
 void MainWindow::SystemModeChangeEvent(OmSystemModeEvent *event)
@@ -1013,19 +865,8 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent *event)
 	DOUT("MainWindow::AlertNotifyEvent");
 	
 	try {
-		
-		
-		if(OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE)
-		{
-			updateComboBoxes();
-			
-		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+		updateComboBoxes();
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1051,12 +892,7 @@ void MainWindow::AlertNotifyEvent(OmAlertEvent *event)
 				// should never be reached
 				break;
 		}
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1094,12 +930,7 @@ void MainWindow::ProgressShow(OmProgressEvent *event)
 		prog_dialog.setValue(event->GetValue());
 		OmProgressEvent::SetWasCanceled(false);
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1114,12 +945,7 @@ void MainWindow::ProgressHide(OmProgressEvent *event)
 		//cout << "max: " << event->GetMaximum() << endl;
 		//cout << "val: " << event->GetValue() << endl;
 		prog_dialog.reset();
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1149,12 +975,7 @@ void MainWindow::ProgressRangeEvent(OmProgressEvent *event)
 		
 		prog_dialog.setRange(event->GetMinimum(), event->GetMaximum());
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1171,12 +992,7 @@ void MainWindow::ProgressValueEvent(OmProgressEvent *event)
 		//update value
 		prog_dialog.setValue(event->GetValue());
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1198,12 +1014,7 @@ void MainWindow::ProgressIncrementEvent(OmProgressEvent *event)
 		//update value
 		prog_dialog.setValue(prog_dialog.value() + 1);
 		
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1282,8 +1093,8 @@ void MainWindow::createActions()
 	open3DAct->setStatusTip(tr("Opens the 3D view"));
 	connect(open3DAct, SIGNAL(triggered()), this, SLOT(open3dView()));
 
-	createToolbarActions();
-	//createToolbarActionsNew();
+	//	createToolbarActions();
+	createToolbarActionsNew();
 }
 
 
@@ -1457,12 +1268,7 @@ bool MainWindow::checkForSave()
 		
 		
 		return true;
-	}
-	
-	catch (OmException &e) {
-		// DOUT( "Unknown exception!");
-		// abort();
-		
+	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1493,42 +1299,50 @@ void MainWindow::createToolbarActionsNew()
 
 	toolbarSelectAct    = new QAction(tr("&Select"), this);
 	toolbarSelectAct->setStatusTip(tr("Switches to Object Selection Mode"));
-
+	connect( toolbarSelectAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarSelect(bool)));
 	toolbarSelectAct->setCheckable(true);
 
 	toolbarCrosshairAct = new QAction(tr("&Crosshair"), this);
 	toolbarCrosshairAct->setStatusTip(tr("Switches on Crosshairs"));
-
+	connect( toolbarCrosshairAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarCrosshair(bool)));
 	toolbarCrosshairAct->setCheckable(true);
 
 	toolbarPanAct       = new QAction(tr("&Pan"), this);
 	toolbarPanAct->setStatusTip(tr("Switches to Pan Mode"));
-
+	connect( toolbarPanAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarPan(bool)));
 	toolbarPanAct->setCheckable(true);
 
 	toolbarZoomAct      = new QAction(tr("&Zoom"), this);
 	toolbarZoomAct->setStatusTip(tr("Switches to Zoom Mode"));
-
+	connect( toolbarZoomAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarZoom(bool)));
 	toolbarZoomAct->setCheckable(true);
 
 	toolbarBrushAct     = new QAction(tr("&Brush"), this);
 	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Add Mode"));
-
+	connect( toolbarBrushAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarBrush(bool)));
 	toolbarBrushAct->setCheckable(true);
 
 	toolbarEraserAct    = new QAction(tr("&Eraser"), this);
 	toolbarEraserAct->setStatusTip(tr("Switches to Voxel Subtraction Mode"));
-
+	connect( toolbarEraserAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarEraser(bool)));
 	toolbarEraserAct->setCheckable(true);
 
 	toolbarFillAct      = new QAction(tr("&Fill"), this);
 	toolbarFillAct->setStatusTip(tr("Switches to Fill Mode"));
-
+	connect( toolbarFillAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarFill(bool)));
 	toolbarFillAct->setCheckable(true);
 
 	toolbarVoxelizeAct  = new QAction(tr("&Voxelize"), this);
 	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Mode"));
-
+	connect( toolbarVoxelizeAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarVoxelize(bool)));
 	toolbarVoxelizeAct->setCheckable(true);
 }
 
@@ -1557,20 +1371,33 @@ void MainWindow::createToolBarsNew()
 	toolToolBar->addAction(toolbarBrushAct);
 	toolToolBar->addAction(toolbarEraserAct);
 	toolToolBar->addAction(toolbarFillAct);
-	toolToolBar->addAction(toolbarJoinAct);
 	toolToolBar->addAction(toolbarVoxelizeAct);
 
 	toolToolBar->addWidget(selectSegmentationBox);
 	toolToolBar->addWidget(editColorButton);
 }
 
+
+void MainWindow::setupToolbarInitially()
+{
+	resetTools( NAVIGATION_SYSTEM_MODE );
+
+	OmStateManager::SetSystemMode( NAVIGATION_SYSTEM_MODE );
+	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));	
+}
+
+
 void MainWindow::ChangeModeModify(const bool checked)
 {
 	try {
 		if(checked) {
-			//			editSelectAct->setChecked(false);
-		}			
-		OmStateManager::SetSystemMode( MODIFY_SYSTEM_MODE );
+			OmStateManager::SetSystemMode( EDIT_SYSTEM_MODE );
+			resetTools( EDIT_SYSTEM_MODE );
+		} else {
+			OmStateManager::SetSystemMode( NAVIGATION_SYSTEM_MODE );
+			resetTools( NAVIGATION_SYSTEM_MODE );
+		}
+
 		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 	} catch (OmException &e) {
 		spawnErrorDialog(e);
@@ -1579,46 +1406,93 @@ void MainWindow::ChangeModeModify(const bool checked)
 
 void MainWindow::toolbarSelect(const bool checked)
 {
+	if( checked ){
+		resetViewTools();
+		toolbarSelectAct->setChecked(true);
+		OmStateManager::SetToolMode(SELECT_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarCrosshair(const bool checked)
 {
+	if( checked ){
+		resetViewTools();
+		toolbarCrosshairAct->setChecked(true);
+		OmStateManager::SetToolMode(CROSSHAIR_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarPan(const bool checked)
 {
+	if( checked ){
+		resetViewTools();
+		toolbarPanAct->setChecked(true);
+		OmStateManager::SetToolMode(PAN_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarZoom(const bool checked)
 {
+	if( checked ){
+		resetViewTools();
+		toolbarZoomAct->setChecked(true);
+		OmStateManager::SetToolMode(ZOOM_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
+// modify tools
 void MainWindow::toolbarBrush(const bool checked)
 {
+	if( checked ){
+		resetModifyTools(true);
+		toolbarBrushAct->setChecked(true);
+		OmStateManager::SetToolMode(ADD_VOXEL_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarEraser(const bool checked)
 {
+	if( checked ){
+		resetModifyTools(true);
+		toolbarEraserAct->setChecked(true);
+		OmStateManager::SetToolMode(SUBTRACT_VOXEL_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarFill(const bool checked)
 {
-}
-void MainWindow::toolbarJoin(const bool checked)
-{
+	if( checked ){
+		resetModifyTools(true);
+		toolbarFillAct->setChecked(true);
+		OmStateManager::SetToolMode(SELECT_VOXEL_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
 void MainWindow::toolbarVoxelize(const bool checked)
 {
+	if( checked ){
+		resetModifyTools(true);
+		toolbarVoxelizeAct->setChecked(true);
+		OmStateManager::SetToolMode(VOXELIZE_MODE);
+		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	}
 }
-/*
-void MainWindow::resetTools()
+
+void MainWindow::resetTools( const OmSystemMode sys_mode )
 {
 	resetViewTools();
 	resetModifyTools( false );
 
 	toolbarPanAct->setChecked( true );
 
-	switch( OmSystemMode::GetSystemMode() ){
-	case( VIEW_SYSTEM_MODE ):
+	switch( sys_mode ){
+	case( NAVIGATION_SYSTEM_MODE ):
 		break;
-	case( MODIFY_SYSTEM_MODE ):
+	case( EDIT_SYSTEM_MODE ):
 		resetModifyTools( true );
 		break;
 	default:
+		break;
 	}
 }
 
@@ -1641,7 +1515,6 @@ void MainWindow::resetModifyTools( const bool enabled )
 	resetTool( toolbarBrushAct,  enabled );
 	resetTool( toolbarEraserAct, enabled );
 	resetTool( toolbarFillAct,   enabled );
-	resetTool( toolbarJoinAct,   enabled );
 	resetTool( toolbarVoxelizeAct, enabled );
 }
-*/
+
