@@ -231,14 +231,14 @@ END
     `echo "$cmakeSettings" > $omniPath/CMakeCache.txt`;
     `rm -rf $omniPath/CMakeFiles`;
 
-    updateFile( "$omniPath/CMakeLists.txt.template", "$omniPath/CMakeLists.txt" );
+    updateCMakeListsFile();
 }
 
-sub updateFile {
-    my $inFileName = $_[0];
-    my $outFileName = $_[1];
+sub updateCMakeListsFile {
+    my $inFileName  = "$omniPath/CMakeLists.txt.template";
+    my $outFileName = "$omniPath/CMakeLists.txt";
 
-    open IN_FILE, "<", $inFileName or die $!;
+    open IN_FILE,  "<", $inFileName  or die $!;
     open OUT_FILE, ">", $outFileName or die $!;
 
     while (my $line = <IN_FILE>) { 
@@ -251,7 +251,6 @@ sub updateFile {
     
     close OUT_FILE;
     close IN_FILE;
-
 }
 
 sub checkBashRC {
