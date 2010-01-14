@@ -288,6 +288,7 @@ private:
 	void MoveUpStackCloserToViewer();
 	void MoveDownStackFartherFromViewer();
 	void MouseWheelZoom( const int numSteps );
+	void setBrushToolDiameter();
 	
 //	friend class OmView2dUi;
 	// friend class OmSelectionWidget;

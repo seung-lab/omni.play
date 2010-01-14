@@ -1690,6 +1690,35 @@ void OmView2d::PanOnZoom(Vector2<int> current_zoom, bool postEvent) {
 	SetViewSliceOnPan ();
 }
 
+void OmView2d::setBrushToolDiameter()
+{
+	if (1 == mBrushToolDiameter) {
+		mBrushToolDiameter = 2;
+	} else if (2 == mBrushToolDiameter) {
+		mBrushToolDiameter = 8;
+	} else if (8 == mBrushToolDiameter) {
+		mBrushToolDiameter = 32;		
+	} else if (32 == mBrushToolDiameter) {
+		mBrushToolDiameter = 1;		
+	}
+
+	/*
+	if (1 == mBrushToolDiameter) {
+		mBrushToolDiameter = 2;
+	} else if (2 == mBrushToolDiameter) {
+		mBrushToolDiameter = 4;
+	} else if (4 == mBrushToolDiameter) {
+		mBrushToolDiameter = 8;
+	} else if (8 == mBrushToolDiameter) {
+		mBrushToolDiameter = 16;		
+	} else if (16 == mBrushToolDiameter) {
+		mBrushToolDiameter = 32;		
+	} else if (32 == mBrushToolDiameter) {
+		mBrushToolDiameter = 1;		
+	}
+	*/
+}
+
 void OmView2d::keyPressEvent(QKeyEvent *event) {
 	DOUT("OmView2d::keyPressEvent -- " << mViewType);
 	
@@ -1707,15 +1736,7 @@ void OmView2d::keyPressEvent(QKeyEvent *event) {
                         break;
 		case Qt::Key_P:
 		{
-        		if (1 == mBrushToolDiameter) {
-                		mBrushToolDiameter = 2;
-        		} else if (2 == mBrushToolDiameter) {
-				mBrushToolDiameter = 8;
-			} else if (8 == mBrushToolDiameter) {
-				mBrushToolDiameter = 32;		
-			} else if (32 == mBrushToolDiameter) {
-				mBrushToolDiameter = 1;		
-			}
+			setBrushToolDiameter();
 			myUpdate ();
 		}
 			break;
