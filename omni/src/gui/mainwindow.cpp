@@ -71,7 +71,6 @@ MainWindow::MainWindow()
 		createActions();
 		createMenus();
 		createToolBarsNew();
-		//createToolBars();
 		createStatusBar();
 		
 		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
@@ -591,156 +590,6 @@ void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewTy
 	}
 }
 
-void MainWindow::ChangeModeNavigation(bool checked)
-{
-	try {
-		
-		if(checked) {
-			editAct->setChecked(false);
-			editAddAct->setChecked(false);
-			editSubtractAct->setChecked(false);
-			editSelectAct->setChecked(false);
-			
-			OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
-			OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-			
-		}
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-
-void MainWindow::ChangeModeEdit(bool checked)
-{
-	try {
-		
-		if(checked) {
-			navigateAct->setChecked(false);
-			
-			editAddAct->trigger();
-			
-			OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
-			OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-		}
-		
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::ChangeToolZoom(bool checked)
-{
-	try {
-		
-		if(checked) {
-			
-			editAddAct->setChecked(false);
-			editSubtractAct->setChecked(false);
-			editSelectAct->setChecked(false);
-			panAct->setChecked(false);
-			
-			OmStateManager::SetToolMode(ZOOM_MODE);
-			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-			
-		}
-		
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::ChangeToolPan(bool checked)
-{
-	try {
-		
-		if(checked) {
-			
-			editAddAct->setChecked(false);
-			editSubtractAct->setChecked(false);
-			editSelectAct->setChecked(false);
-			zoomAct->setChecked(false);
-			
-			OmStateManager::SetToolMode(ZOOM_MODE);
-			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-			
-		}
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-	
-}
-
-void MainWindow::ChangeToolAdd(bool checked)
-{
-	try {
-		
-		if(checked) {
-			
-			navigateAct->setChecked(false);
-			editAct->setChecked(true);
-			zoomAct->setChecked(false);
-			panAct->setChecked(false);
-			editSubtractAct->setChecked(false);
-			editSelectAct->setChecked(false);
-			
-			OmStateManager::SetToolMode(ADD_VOXEL_MODE);
-			//cout << "set tool mode add voxel mode" << endl;
-			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-			
-		}
-		
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::ChangeToolSubtract(bool checked)
-{ 
-	try {
-		
-		if(checked) {
-			
-			navigateAct->setChecked(false);
-			editAct->setChecked(true);
-			zoomAct->setChecked(false);
-			panAct->setChecked(false);
-			editAddAct->setChecked(false);
-			editSelectAct->setChecked(false);
-			
-			OmStateManager::SetToolMode(SUBTRACT_VOXEL_MODE);
-			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-			
-		}
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-	
-}
-
-void MainWindow::ChangeToolSelect(bool checked)
-{
-	try {
-		
-		if(checked) {
-			
-			navigateAct->setChecked(false);
-			editAct->setChecked(true);
-			zoomAct->setChecked(false);
-			panAct->setChecked(false);
-			editAddAct->setChecked(false);
-			editSubtractAct->setChecked(false);
-			editSelectAct->setChecked(true);
-			
-			OmStateManager::SetToolMode(SELECT_VOXEL_MODE);
-			OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-			
-		}
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}	
-}
-
 void MainWindow::updateComboBoxes()
 { 
 	try {
@@ -1098,51 +947,6 @@ void MainWindow::createActions()
 }
 
 
-void MainWindow::createToolbarActions()
-{
-	// Toolbar Actions
-	navigateAct = new QAction(QIcon(":/images/pointer.png"),tr("&Navigation Mode"), this);
-	// resource location: :/images/cut.png
-	navigateAct->setStatusTip(tr("Switches to Navigation Mode"));
-	connect(navigateAct, SIGNAL(triggered(bool)), this, SLOT(ChangeModeNavigation(bool)));
-	navigateAct->setCheckable(true);
-	
-	editAct = new QAction(QIcon(":/images/cut.png"),tr("&Edit Mode"), this);
-	editAct->setStatusTip(tr("Switches to Edit Mode"));
-	connect(editAct, SIGNAL(triggered(bool)), this, SLOT(ChangeModeEdit(bool)));
-	editAct->setCheckable(true);
-	
-	
-	zoomAct = new QAction(QIcon(":/images/system-search.png"),tr("&Zoom Mode"), this);
-	zoomAct->setStatusTip(tr("Switches to Zoom Mode"));
-	connect(zoomAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolZoom(bool)));
-	zoomAct->setCheckable(true);
-	
-	
-	panAct = new QAction(QIcon(":/images/view-pan.png"),tr("&Pan Mode"), this);
-	panAct->setStatusTip(tr("Switches to Pan Mode"));
-	connect(panAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolPan(bool)));
-	panAct->setCheckable(true);
-	
-	// list-add.png
-	editAddAct = new QAction(QIcon(":/images/list-add.png"),tr("Edit &Addition Mode"), this);
-	editAddAct->setStatusTip(tr("Switches to Voxel Addition Mode"));
-	connect(editAddAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolAdd(bool)));
-	editAddAct->setCheckable(true);
-	
-	
-	editSubtractAct = new QAction(QIcon(":/images/list-remove.png"),tr("Edit &Subtraction Mode"), this);
-	editSubtractAct->setStatusTip(tr("Switches to Voxel Subtraction Mode"));	
-	connect(editSubtractAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolSubtract(bool)));
-	editSubtractAct->setCheckable(true);
-	
-	editSelectAct = new QAction(QIcon(":/images/voxel-select.png"),tr("Edit &Selection Mode"), this);
-	editSelectAct->setStatusTip(tr("Switches to Voxel Select Mode"));	
-	connect(editSelectAct, SIGNAL(triggered(bool)), this, SLOT(ChangeToolSelect(bool)));
-	editSelectAct->setCheckable(true);
-	
-}
-
 void MainWindow::createMenus()
 {
 	fileMenu = menuBar()->addMenu(tr("&File"));
@@ -1174,43 +978,6 @@ void MainWindow::createMenus()
 	windowMenu->addAction(open3DAct);
 	
 	
-}
-
-
-void MainWindow::createToolBars()
-{
-	
-	selectSegmentationBox = new QComboBox();
-	selectSegmentationBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	
-// 	selectSegmentBox = new QComboBox();
-//	selectSegmentBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	
-	editColorButton = new QPushButton();
-	editColorButton->setMaximumWidth(50);
-	
-	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->addAction(saveAct);
-
-	systemToolBar = addToolBar(tr("Mode"));
-	systemToolBar->addAction(navigateAct);
-	systemToolBar->addAction(editAct);
-	
-	navigateToolBar = addToolBar(tr("Navigate"));
-	navigateToolBar->addAction(zoomAct);
-	navigateToolBar->addAction(panAct);
-	
-	toolToolBar = addToolBar(tr("Tools"));
-	// will listen for selection change events and update accordingly
-	toolToolBar->addAction(editAddAct);
-	toolToolBar->addAction(editSubtractAct);
-	toolToolBar->addAction(editSelectAct);
-	toolToolBar->addWidget(selectSegmentationBox);
-//	toolToolBar->addWidget(selectSegmentBox);
-	toolToolBar->addWidget(editColorButton);
-	
-	editToolBar = addToolBar(tr("Edit"));
-
 }
 
 void MainWindow::createStatusBar()

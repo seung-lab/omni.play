@@ -94,14 +94,6 @@ class MainWindow
 		
 		void openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype);
 		void openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
-
-		void ChangeModeNavigation(bool checked);
-		void ChangeModeEdit(bool checked);
-		void ChangeToolZoom(bool checked);
-		void ChangeToolPan(bool checked);
-		void ChangeToolAdd(bool checked);
-		void ChangeToolSubtract(bool checked);
-		void ChangeToolSelect(bool checked);
 		
 		void addChannelToVolume();
 		void addSegmentationToVolume();
@@ -159,17 +151,7 @@ class MainWindow
 		QAction *closeAct;
 		QAction *quitAct;
 		
-		QAction *navigateAct;
-		QAction *editAct;
-		
-		
-		QAction *editAddAct;
-		QAction *editSubtractAct;
-		QAction *editSelectAct;
-		
 		QComboBox *selectSegmentationBox;
-		//		QComboBox *selectSegmentBox;
-		
 		QPushButton *editColorButton;
 		
 		QAction *addChannelAct;
@@ -204,7 +186,6 @@ class MainWindow
 		RecentFileList recentFiles;
 
 		// new toolbar
-		void createToolbarActions();
 		void createToolbarActionsNew();
 		void createToolBarsNew();
 		QAction *modifyAct;
