@@ -230,6 +230,28 @@ END
 
     `echo "$cmakeSettings" > $omniPath/CMakeCache.txt`;
     `rm -rf $omniPath/CMakeFiles`;
+
+    updateFile( "$omniPath/CMakeLists.txt.template", "$omniPath/CMakeLists.txt" );
+}
+
+sub updateFile {
+    my $inFileName = $_[0];
+    my $outFileName = $_[1];
+
+    open IN_FILE, "<", $inFileName or die $!;
+    open OUT_FILE, ">", $outFileName or die $!;
+
+    while (my $line = <IN_FILE>) { 
+	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
+	    print OUT_FILE "SET(OM_EXT_LIBS_DIR \"$libPath\")\n";
+	} else {
+	    print OUT_FILE $line;
+	}
+    }
+    
+    close OUT_FILE;
+    close IN_FILE;
+
 }
 
 sub checkBashRC {
