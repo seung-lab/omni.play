@@ -968,11 +968,17 @@ void OmView2d::NavigationModeMouseDoubleClick(QMouseEvent *event) {
 			//select new segment, deselect current segments
 			OmIds select_segment_ids;
 			select_segment_ids.insert(theId);
-			(new OmSegmentSelectAction(seg, select_segment_ids, r_segmentation.GetSelectedSegmentIds()))->Run();
+			(new OmSegmentSelectAction(seg, 
+								  select_segment_ids, 
+								  r_segmentation.GetSelectedSegmentIds(),
+								  theId ))->Run();
 			
 		} else {
 			//set state of 
-			(new OmSegmentSelectAction(seg, theId, new_segment_select_state))->Run();
+			(new OmSegmentSelectAction(seg, 
+								  theId, 
+								  new_segment_select_state,
+								  theId ))->Run();
 		}
 		Refresh ();
 		mTextures.clear ();

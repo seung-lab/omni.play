@@ -64,15 +64,15 @@ QT4_WRAP_CPP(OM_VIEW3D_MOC_SRCS
 # create an executable file named "qtproject" from
 # the source files in the variable "qtproject_SRCS".
 # add_executable(qtproject ${qtproject_SRCS})
-ADD_EXECUTABLE(omView3dApp 
-	main.cpp 
-	mainwindow.cpp 
-	${OM_VIEW3D_MOC_SRCS})
+#ADD_EXECUTABLE(omView3dApp 
+#	main.cpp 
+#	mainwindow.cpp 
+#	${OM_VIEW3D_MOC_SRCS})
 
 # link the "qtproject" target against the Qt
 # libraries. which libraries exactly, is defined by
 # the "include(${QT_USE_FILE})" line above, which
 # sets up this variable.
-target_link_libraries(omView3dApp
-	omView3d 
-)
+#target_link_libraries(omView3dApp
+#	omView3d 
+#)

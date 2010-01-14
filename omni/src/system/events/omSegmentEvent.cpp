@@ -23,6 +23,15 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId, const OmI
 	mSegmentIds = segIds;
 }
 
+OmSegmentEvent::OmSegmentEvent(QEvent::Type type, 
+						 OmId segmentationId, 
+						 const OmIds &segIds,
+						 const OmId segmentJustSelectedID) 
+: OmEvent(type, CLASS)  { 
+	mSegmentationId = segmentationId;
+	mSegmentIds = segIds;
+	mSegmentJustSelectedID = segmentJustSelectedID;
+}
 
 
 OmId 
@@ -36,7 +45,9 @@ OmSegmentEvent::GetModifiedSegmentIds() {
 	return mSegmentIds;
 }
 
-
+const OmId OmSegmentEvent::GetSegmentJustSelectedID() {
+	return mSegmentJustSelectedID;
+}
 
 
 /*

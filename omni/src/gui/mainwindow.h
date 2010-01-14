@@ -63,7 +63,6 @@ class MainWindow
 		void openProject( QString fileName, QString pathName );
 		
 	protected: 
-		bool eventFilter(QObject *target, QEvent *event);
 		void closeEvent(QCloseEvent *event); 
 		
 		void SegmentObjectModificationEvent(OmSegmentEvent *event);
@@ -102,8 +101,6 @@ class MainWindow
 		
 		void updateStatusBar(); 
 		
-		void updateComboBoxes();
-		
 		void updateKeyShortcuts();
 		
 		void changeSelection(int segmentIndex);
@@ -120,7 +117,8 @@ class MainWindow
 		void toolbarEraser(bool checked);
 		void toolbarFill(bool checked);
 		void toolbarVoxelize(bool checked);
-
+		void updateComboBoxes( const OmId segmentationID = 0, 
+						   const OmId segmentJustSelectedID = 0 );
 				
 	private:
 		void createActions();
@@ -186,8 +184,10 @@ class MainWindow
 		RecentFileList recentFiles;
 
 		// new toolbar
-		void createToolbarActionsNew();
-		void createToolBarsNew();
+		void createToolbar();
+		void createToolbarActions();
+		void addToolbars();
+		void setupSegmentationBoxes();
 		QAction *modifyAct;
 		QAction * toolbarSelectAct;
 		QAction * toolbarCrosshairAct;
@@ -205,6 +205,7 @@ class MainWindow
 		void resetViewTools();
 		void resetModifyTools( const bool enabled );
 		void setupToolbarInitially();
+
 	};
 
 #endif

@@ -70,11 +70,9 @@ MainWindow::MainWindow()
 		
 		createActions();
 		createMenus();
-		createToolBarsNew();
+		createToolbar();
 		createStatusBar();
 		
-		connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
-
 		setWindowTitle(tr("Omni"));
 		resize(1000,800);
 		
@@ -590,22 +588,6 @@ void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewTy
 	}
 }
 
-void MainWindow::updateComboBoxes()
-{ 
-	try {
-		selectSegmentationBox->clear();
-		editColorButton->setIcon(QIcon());
-
-		foreach( SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs() ) {
-			QString comboBoxRowStr = segH.segmentationName + "--" + segH.segmentName;
-			selectSegmentationBox->addItem( comboBoxRowStr, qVariantFromValue( segH ) );
-		}
-
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
 void MainWindow::updateKeyShortcuts()
 {
 	try {
@@ -627,52 +609,6 @@ void MainWindow::updateKeyShortcuts()
 	}
 }
 
-
-void MainWindow::changeSelection(int segmentIndex)
-{
-	DOUT("MainWindow::ChangeSelection");
-	try {
-		
-		QVariant result = selectSegmentationBox->itemData(selectSegmentationBox->currentIndex());
-		SegmentIDhelper segH = result.value< SegmentIDhelper >();
-		OmId seg_id = segH.segmentationID;
-		OmId obj_id = segH.segmentID;
-		
-		if((obj_id != 0) && (seg_id != 0)) {
-			
-			iSentIt = true;
-			OmSegmentEditor::SetEditSelection(seg_id, obj_id);
-			iSentIt = false;
-			// FIRE EVENT
-
-			OmSegment &current_obj = OmVolume::GetSegmentation(seg_id).GetSegment(obj_id);
-			const Vector3<float> &color = current_obj.GetColor();
-			
-			QPixmap *pixm = new QPixmap(40,30);
-			QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
-			pixm->fill(newcolor);
-			
-			editColorButton->setIcon(QIcon(*pixm));
-			
-			selected_color = newcolor;
-
-			// TODO: why is this commented out? (purcaro)
-			// iSentIt = true;
-			// OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_SELECTION_CHANGE));
-		}
-		else if (obj_id == 0)
-			editColorButton->setIcon(QIcon());
-		
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-bool MainWindow::eventFilter(QObject *target, QEvent *event)
-{
-}
-
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	try {
@@ -693,31 +629,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		spawnErrorDialog(e);
 	}
 	
-}
-
-
-void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent *event)
-{
-	try {
-		updateComboBoxes();
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::SegmentEditSelectionChangeEvent(OmSegmentEvent *event)
-{
-}
-
-void MainWindow::SystemModeChangeEvent(OmSystemModeEvent *event)
-{
-	DOUT("MainWindow::AlertNotifyEvent");
-	
-	try {
-		updateComboBoxes();
-	} catch (OmException &e) {
-		spawnErrorDialog(e);
-	}
 }
 
 void MainWindow::AlertNotifyEvent(OmAlertEvent *event)
@@ -941,9 +852,6 @@ void MainWindow::createActions()
 	open3DAct->setShortcut(tr("Ctrl+3"));
 	open3DAct->setStatusTip(tr("Opens the 3D view"));
 	connect(open3DAct, SIGNAL(triggered()), this, SLOT(open3dView()));
-
-	//	createToolbarActions();
-	createToolbarActionsNew();
 }
 
 
@@ -975,9 +883,7 @@ void MainWindow::createMenus()
 	toolMenu->addAction(openUndoViewAct);
 	
 	windowMenu = menuBar()->addMenu(tr("&Window"));
-	windowMenu->addAction(open3DAct);
-	
-	
+	windowMenu->addAction(open3DAct);	
 }
 
 void MainWindow::createStatusBar()
@@ -1008,15 +914,12 @@ void MainWindow::createDockWindows()
 bool MainWindow::checkForSave()
 {
 	try {
-		
 		QMessageBox msgBox;
 		msgBox.setText("Do you want to save your current project?");
-		// msgBox.setInformativeText("Do you want to save the project?");
 		msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 		msgBox.setDefaultButton(QMessageBox::Save);
-		int ret = msgBox.exec();
 		
-		
+		const int ret = msgBox.exec();
 		switch (ret) {
 			case QMessageBox::Save:
 				OmProject::Save();
@@ -1031,10 +934,8 @@ bool MainWindow::checkForSave()
 				// should never be reached
 				break;
 		}
-		
-		
-		
 		return true;
+
 	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}
@@ -1042,24 +943,27 @@ bool MainWindow::checkForSave()
 
 void MainWindow::spawnErrorDialog(OmException &e)
 {
-	DOUT("MainWindow::spawnErrorDialog");
-	/*
-	 const string& GetName();
-	 const string& GetMessage();
-	 OmExceptType GetType();
-	 */
-	
 	QString type = QString::fromStdString(e.GetType());
 	QString name = QString::fromStdString(e.GetName());
-	QString msg = QString::fromStdString(e.GetMessage());
+	QString msg  = QString::fromStdString(e.GetMessage());
 	
 	QString errorMessage = type + ": " + name + ". " + msg;
 	exceptionMessage->showMessage(errorMessage);
 }
 
-void MainWindow::createToolbarActionsNew()
+////////////////////////////////////////////////////////////
+// Toolbars
+////////////////////////////////////////////////////////////
+void MainWindow::createToolbar()
 {
-	modifyAct = new QAction(tr("&Modify Mode"), this);
+	createToolbarActions();
+	addToolbars();
+	setupSegmentationBoxes();
+}
+
+void MainWindow::createToolbarActions()
+{
+	modifyAct           = new QAction(tr("&Modify Mode"), this);
 	modifyAct->setStatusTip(tr("Switches to Modify Mode"));
 	connect(modifyAct, SIGNAL(triggered(bool)), this, SLOT(ChangeModeModify(bool)));
 	modifyAct->setCheckable(true);
@@ -1113,14 +1017,8 @@ void MainWindow::createToolbarActionsNew()
 	toolbarVoxelizeAct->setCheckable(true);
 }
 
-void MainWindow::createToolBarsNew()
+void MainWindow::addToolbars()
 {
-	
-	selectSegmentationBox = new QComboBox();
-	selectSegmentationBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	
-	editColorButton = new QPushButton();
-	editColorButton->setMaximumWidth(50);
 	
 	fileToolBar = addToolBar(tr("File"));
 	fileToolBar->addAction(saveAct);
@@ -1138,10 +1036,7 @@ void MainWindow::createToolBarsNew()
 	toolToolBar->addAction(toolbarBrushAct);
 	toolToolBar->addAction(toolbarEraserAct);
 	toolToolBar->addAction(toolbarFillAct);
-	toolToolBar->addAction(toolbarVoxelizeAct);
-
-	toolToolBar->addWidget(selectSegmentationBox);
-	toolToolBar->addWidget(editColorButton);
+	toolToolBar->addAction(toolbarVoxelizeAct);		
 }
 
 
@@ -1171,6 +1066,7 @@ void MainWindow::ChangeModeModify(const bool checked)
 	}
 }
 
+// view tools
 void MainWindow::toolbarSelect(const bool checked)
 {
 	if( checked ){
@@ -1285,3 +1181,109 @@ void MainWindow::resetModifyTools( const bool enabled )
 	resetTool( toolbarVoxelizeAct, enabled );
 }
 
+////////////////////////////////////////////////////////////
+// Segmentation Combo Box in Toolbar
+
+void MainWindow::setupSegmentationBoxes()
+{
+	selectSegmentationBox = new QComboBox();
+	selectSegmentationBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	toolToolBar->addWidget(selectSegmentationBox);
+	
+	editColorButton = new QPushButton();
+	editColorButton->setMaximumWidth(50);
+	toolToolBar->addWidget(editColorButton);
+
+	connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), 
+		   this, SLOT(changeSelection(int)));
+}
+
+void MainWindow::updateComboBoxes( const OmId segmentationID, const OmId segmentJustSelectedID )
+{ 
+	try {
+		cout << "updateComboBoxes: segmen: " << segmentationID << ", segment selected: " << segmentJustSelectedID << endl;
+
+		selectSegmentationBox->clear();
+		editColorButton->setIcon(QIcon());
+
+		int indexToSet = 0;
+		int counter    = 0;
+		foreach( SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs() ) {
+			QString comboBoxRowStr = segH.segmentationName + "--" + segH.segmentName;
+			selectSegmentationBox->addItem( comboBoxRowStr, qVariantFromValue( segH ) );
+			if( segmentationID == segH.segmentationID ) {
+				if( segmentJustSelectedID == segH.segmentID ) {
+					indexToSet = counter;
+				}
+			}
+			counter++;
+		}
+		selectSegmentationBox->setCurrentIndex( indexToSet );
+
+	} catch (OmException &e) {
+		spawnErrorDialog(e);
+	}
+}
+
+void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent *event)
+{
+	try {
+		const OmId segmentationID        = event->GetModifiedSegmentationId();
+		const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
+		updateComboBoxes( segmentationID, segmentJustSelectedID );
+	} catch (OmException &e) {
+		spawnErrorDialog(e);
+	}
+}
+
+void MainWindow::SegmentEditSelectionChangeEvent(OmSegmentEvent *event)
+{
+}
+
+void MainWindow::SystemModeChangeEvent(OmSystemModeEvent *event)
+{
+	try {
+		updateComboBoxes();
+	} catch (OmException &e) {
+		spawnErrorDialog(e);
+	}
+}
+
+void MainWindow::changeSelection(int segmentIndex)
+{
+	try {
+		
+		QVariant result = selectSegmentationBox->itemData(selectSegmentationBox->currentIndex());
+		SegmentIDhelper segH = result.value< SegmentIDhelper >();
+		OmId seg_id = segH.segmentationID;
+		OmId obj_id = segH.segmentID;
+		
+		if((obj_id != 0) && (seg_id != 0)) {
+			
+			iSentIt = true;
+			OmSegmentEditor::SetEditSelection(seg_id, obj_id);
+			iSentIt = false;
+			// FIRE EVENT
+
+			OmSegment &current_obj = OmVolume::GetSegmentation(seg_id).GetSegment(obj_id);
+			const Vector3<float> &color = current_obj.GetColor();
+			
+			QPixmap *pixm = new QPixmap(40,30);
+			QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
+			pixm->fill(newcolor);
+			
+			editColorButton->setIcon(QIcon(*pixm));
+			
+			selected_color = newcolor;
+
+			// TODO: why is this commented out? (purcaro)
+			// iSentIt = true;
+			// OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_SELECTION_CHANGE));
+		}
+		else if (obj_id == 0)
+			editColorButton->setIcon(QIcon());
+		
+	} catch (OmException &e) {
+		spawnErrorDialog(e);
+	}
+}

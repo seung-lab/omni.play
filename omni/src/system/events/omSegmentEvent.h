@@ -25,6 +25,7 @@ public:
 	OmSegmentEvent(QEvent::Type type);	
 	OmSegmentEvent(QEvent::Type type, OmId, OmId );
 	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &);
+	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId );
 	void Dispatch(OmEventListener *);
 	
 	//class
@@ -44,11 +45,13 @@ public:
 	
 	OmId GetModifiedSegmentationId();
 	const OmIds& GetModifiedSegmentIds();
-	
+	const OmId GetSegmentJustSelectedID();
+
 private:
-	OmId mSegmentationId;
+	OmId  mSegmentationId;
 	OmIds mSegmentIds;
-	//DataCoord mVoxel;
+	OmId  mSegmentJustSelectedID;
+
 };
 
 

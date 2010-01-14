@@ -38,11 +38,11 @@ TARGET_LINK_LIBRARIES( omVolume
 ## EXECUTABLE ##
 
 #specify executable
-ADD_EXECUTABLE( omVolumeApp
-	main.cpp
-)
+#ADD_EXECUTABLE( omVolumeApp
+#	main.cpp
+#)
 
 
-TARGET_LINK_LIBRARIES( omVolumeApp
-	omVolume
-)
+#TARGET_LINK_LIBRARIES( omVolumeApp
+#	omVolume
+#)

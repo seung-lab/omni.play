@@ -31,11 +31,11 @@ TARGET_LINK_LIBRARIES( omUtility
 # EXECUTABLE
 
 #specify executable
-ADD_EXECUTABLE( omUtilityApp
-	main.cpp
-)
+#ADD_EXECUTABLE( omUtilityApp
+#	main.cpp
+#)
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES( omUtilityApp 
-	omUtility
-)
+#TARGET_LINK_LIBRARIES( omUtilityApp 
+#	omUtility
+#)

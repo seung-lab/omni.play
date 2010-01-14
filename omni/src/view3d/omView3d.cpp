@@ -482,7 +482,7 @@ OmView3d::Draw(OmBitfield cullerOptions) {
 	
 	
 
-	cout << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
+	//cout << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
 	if(cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}

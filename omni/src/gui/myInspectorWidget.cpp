@@ -887,10 +887,10 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 	if( !OmVolume::IsSegmentationValid( segmentationID ) ){
 		return;
 	}
-
 	OmSegmentation &r_segmentation = OmVolume::GetSegmentation( segmentationID );
 	
 	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
+	const OmId segmentJustSelectedID   = event->GetSegmentJustSelectedID();
 
 	if( !hashOfSementationsAndSegments.contains( segmentationID ) ){
 		SegmentationDataWrapper sdw( segmentationID );
@@ -906,6 +906,7 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 					
 	hashOfSementationsAndSegments[ segmentationID ] = segs;
 
+	// TODO: this is wrong; switch to corrent segmentation and segment list instead 
 	if( isThereASegmentationSelected() ){
 		SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
 		populateSegmentElementsListWidget( sdw );	

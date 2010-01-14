@@ -75,11 +75,11 @@ TARGET_LINK_LIBRARIES( omSegment
 ## EXECUTABLE ##
 
 #specify executable
-ADD_EXECUTABLE(omSegmentApp
-	main.cpp
-)
+#ADD_EXECUTABLE(omSegmentApp
+#	main.cpp
+#)
 
 
-TARGET_LINK_LIBRARIES( omSegmentApp
-	omSegment
-)
+#TARGET_LINK_LIBRARIES( omSegmentApp
+#	omSegment
+#)

@@ -14,12 +14,16 @@
 class OmSegmentSelectAction : public OmAction {
 
 public:
-	OmSegmentSelectAction(OmId segmentationId, OmId segmentId, bool state);
-	OmSegmentSelectAction(OmId segmentationId, const OmIds &segmentIds, bool state);
-	OmSegmentSelectAction(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds);
+	OmSegmentSelectAction(OmId segmentationId, OmId segmentId, bool state, 
+					  OmId segmentJustSelected = 0);
+	OmSegmentSelectAction(OmId segmentationId, const OmIds &segmentIds, bool state, 
+					  OmId segmentJustSelected = 0);
+	OmSegmentSelectAction(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds, 
+					  OmId segmentJustSelected = 0);
 	
 private:
-	void Initialize(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds);
+	void Initialize(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds,
+				 const OmId segmentJustSelected = 0 );
 	void Action();
 	void UndoAction();
 	string Description();
@@ -29,6 +33,8 @@ private:
 	OmIds mSelectIds;
 	OmIds mUnselectIds;
 	
+	OmId mSegmentJustSelectedID;
+
 	bool mNewState;
 	map< OmId, bool > mPrevSegmentStates;
 };

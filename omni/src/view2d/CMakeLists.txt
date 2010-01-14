@@ -65,25 +65,25 @@ QT4_WRAP_CPP(DOM_VIEW2D_MOC_SRCS
 				${DOM_VIEW2D_MOC_HDRS})
 
 #specify executable
-ADD_EXECUTABLE(omView2dApp
-	main.cpp
-	mainwindow.cpp 
-	${OM_VIEW2D_MOC_SRCS})
+#ADD_EXECUTABLE(omView2dApp
+#	main.cpp
+#	mainwindow.cpp 
+#	${OM_VIEW2D_MOC_SRCS})
 
 #specify executable
-ADD_EXECUTABLE(domView2dApp
-	main.cpp
-	dmainwindow.cpp 
-	${DOM_VIEW2D_MOC_SRCS})
+#ADD_EXECUTABLE(domView2dApp
+#	main.cpp
+#	dmainwindow.cpp 
+#	${DOM_VIEW2D_MOC_SRCS})
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES(
-	omView2dApp 
-	omView2d
-)
+#TARGET_LINK_LIBRARIES(
+#	omView2dApp 
+#	omView2d
+#)
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES(
-	domView2dApp 
-	domView2d
-)
+#TARGET_LINK_LIBRARIES(
+#	domView2dApp 
+#	domView2d
+#)

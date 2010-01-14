@@ -34,11 +34,11 @@ TARGET_LINK_LIBRARIES( omMesh
 # EXECUTABLE
 
 #specify executable
-ADD_EXECUTABLE(omMeshApp
-	main.cpp
-)
+#ADD_EXECUTABLE(omMeshApp
+#	main.cpp
+#)
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES( omMeshApp 
-	omMesh
-)
+#TARGET_LINK_LIBRARIES( omMeshApp 
+#	omMesh
+#)
