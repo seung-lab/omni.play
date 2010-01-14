@@ -876,11 +876,6 @@ void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 	cout << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
 }
 
-void MyInspectorWidget::SegmentSelectionChangeEvent(OmSegmentEvent *event)
-{
-	cout << " MyInspectorWidget::SegmentSelectionChangeEvent" << endl;
-}
-
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 {
 	const OmId segmentationID = event->GetModifiedSegmentationId();
@@ -907,6 +902,7 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 	hashOfSementationsAndSegments[ segmentationID ] = segs;
 
 	// TODO: this is wrong; switch to corrent segmentation and segment list instead 
+	// TODO: also, jump to right segmentation list...
 	if( isThereASegmentationSelected() ){
 		SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
 		populateSegmentElementsListWidget( sdw );	

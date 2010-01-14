@@ -87,7 +87,6 @@ protected:
 	static const int MAX_COL_TO_DISPLAY = 3;
 
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SegmentSelectionChangeEvent(OmSegmentEvent *event);
 	
 private slots:
 	void addFilter ();
