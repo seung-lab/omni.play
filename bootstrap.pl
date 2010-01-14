@@ -238,8 +238,8 @@ sub updateCMakeListsFile {
     my $inFileName  = "$omniPath/CMakeLists.txt.template";
     my $outFileName = "$omniPath/CMakeLists.txt";
 
-    open IN_FILE,  "<", $inFileName  or die $!;
-    open OUT_FILE, ">", $outFileName or die $!;
+    open IN_FILE,  "<", $inFileName  or die "could not read $inFileName";
+    open OUT_FILE, ">", $outFileName or die "could not read $outFileName";;
 
     while (my $line = <IN_FILE>) { 
 	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
@@ -253,8 +253,27 @@ sub updateCMakeListsFile {
     close IN_FILE;
 }
 
+#TODO: do something smarter than just check if variable exists
 sub checkBashRC {
-    # TODO!
+    my $bashrcPath =  $ENV{ HOME }."/.bashrc";
+    my @settings   = ( "BOOST_ROOT", "QTDIR", "EXPAT_INCLUDE", "EXPAT_LIBPATH" );
+    my $found_setting = 0;
+    
+    open IN_FILE,  "<", $bashrcPath  or die "could not read $bashrcPath";
+    while (my $line = <IN_FILE>) { 
+	foreach (@settings ){
+	    my $setting = $_;
+	    if( $line =~ m!$setting! ) {
+		$found_setting += 1;
+	    }
+	}
+    } 
+    
+    close IN_FILE;
+    
+    if( 4 != $found_setting ){
+	die "please update your ~/.bashrc file\n";
+    }
 }
 
 sub printTitle {
@@ -324,4 +343,9 @@ sub runMenuEntry {
     }
 }
 
-menu();
+sub checkEnvAndRunMenu {
+    checkBashRC();
+    menu();
+}
+
+checkEnvAndRunMenu();
