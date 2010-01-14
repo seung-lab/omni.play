@@ -189,14 +189,14 @@ class MainWindow
 		void addToolbars();
 		void setupSegmentationBoxes();
 		QAction *modifyAct;
-		QAction * toolbarSelectAct;
-		QAction * toolbarCrosshairAct;
-		QAction * toolbarPanAct;
-		QAction * toolbarZoomAct;
-		QAction * toolbarBrushAct;
-		QAction * toolbarEraserAct;
-		QAction * toolbarFillAct;
-		QAction * toolbarVoxelizeAct;
+		QAction *toolbarSelectAct;
+		QAction *toolbarCrosshairAct;
+		QAction *toolbarPanAct;
+		QAction *toolbarZoomAct;
+		QAction *toolbarBrushAct;
+		QAction *toolbarEraserAct;
+		QAction *toolbarFillAct;
+		QAction *toolbarVoxelizeAct;
 
 		QAction *panAct;
 		QAction *zoomAct;
@@ -205,7 +205,7 @@ class MainWindow
 		void resetViewTools();
 		void resetModifyTools( const bool enabled );
 		void setupToolbarInitially();
-
+		void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode);
 	};
 
 #endif
