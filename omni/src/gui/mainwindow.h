@@ -205,7 +205,8 @@ class MainWindow
 		void resetViewTools();
 		void resetModifyTools( const bool enabled );
 		void setupToolbarInitially();
-		void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode);
+		void toolbarViewToolChange(const bool checked, QAction * tool, const OmToolMode mode );
+		void toolbarModifyToolChange(const bool checked, QAction * tool, const OmToolMode mode );
 	};
 
 #endif
