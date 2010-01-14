@@ -1201,8 +1201,6 @@ void MainWindow::setupSegmentationBoxes()
 void MainWindow::updateComboBoxes( const OmId segmentationID, const OmId segmentJustSelectedID )
 { 
 	try {
-		cout << "updateComboBoxes: segmen: " << segmentationID << ", segment selected: " << segmentJustSelectedID << endl;
-
 		selectSegmentationBox->clear();
 		editColorButton->setIcon(QIcon());
 
@@ -1211,6 +1209,9 @@ void MainWindow::updateComboBoxes( const OmId segmentationID, const OmId segment
 		foreach( SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs() ) {
 			QString comboBoxRowStr = segH.segmentationName + "--" + segH.segmentName;
 			selectSegmentationBox->addItem( comboBoxRowStr, qVariantFromValue( segH ) );
+
+			// if we get none-zero segmenetation and segment IDs, select the segment 
+			//  (in the correct segmentation) as the currently active combo box item
 			if( segmentationID == segH.segmentationID ) {
 				if( segmentJustSelectedID == segH.segmentID ) {
 					indexToSet = counter;
