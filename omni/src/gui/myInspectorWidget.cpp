@@ -55,7 +55,7 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	channelHelper = new ChannelHelper(this);
 
 	resize(448, 640);
-	QSizePolicy mSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	mSizePolicy.setHorizontalStretch(0);
 	mSizePolicy.setVerticalStretch(0);
 	mSizePolicy.setHeightForWidth(sizePolicy().hasHeightForWidth());
