@@ -102,7 +102,6 @@ sub build {
 
     chdir( "$buildPath/$baseFileName" );
 
-    # TODO: check return values; die if something went wrong...
     configure(   $baseFileName, $libFolderName, $buildOptions );
     make();
     makeInstall();
@@ -117,7 +116,6 @@ sub buildInSourceFolder {
 
     chdir( "$srcPath/$baseFileName" );
 
-    # TODO: check return values; die if something went wrong...
     configure(   $baseFileName, $libFolderName, $buildOptions );
     make();
     makeInstall();
@@ -136,6 +134,7 @@ sub configure {
     }
     print "==> running configure...";
     print "($cmd)\n";
+    # TODO: check return values; die if something went wrong...
     print `($cmd)`;
     print "done with configure\n\n";
 }
@@ -144,6 +143,7 @@ sub make {
     my $cmd = "make $globalMakeOptions";
     print "==> running make...";
     print "($cmd)\n";
+    # TODO: check return values; die if something went wrong...
     print `($cmd)`;
     print "done with make\n\n";
 }
@@ -152,6 +152,7 @@ sub makeInstall {
     my $cmd = "make install";
     print "==> running make install...";
     print "($cmd)\n";
+    # TODO: check return values; die if something went wrong...
     print `($cmd)`;
     print "done with make install\n";
 }
@@ -212,7 +213,6 @@ sub hdf5 {
 
 sub qt {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
-    # '-make libs' option only builds libs, shrinking installed size by 2 GB
     prepareAndBuild( $baseFileName, "Qt", "-opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
@@ -295,8 +295,6 @@ sub smallLibraries {
 }
 
 sub menu {
-    my $answer = -1;
-
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
@@ -305,13 +303,14 @@ sub menu {
     print "4 -- Build vtk\n";
     print "5 -- Setup omni build\n";
     print "6 -- [Do 1 through 5]\n\n";
-    
+    my $max_answer = 6;
+
     while( 1 ){
 	print "Please make selection: ";
-	$answer = <STDIN>;
+	my $answer = <STDIN>;
 
 	if( $answer =~ /^\d$/ ) {
-	    if( ($answer > -1) and ($answer < 7)){
+	    if( ($answer > -1) and ($answer < (1+$max_answer))){
 		runMenuEntry( $answer );
 		exit();
 	    }
@@ -323,7 +322,7 @@ sub runMenuEntry {
     my $entry = $_[0];
 
     if( 0 == $entry ){
-	exit();
+	return();
     }elsif( 1 == $entry ){
 	smallLibraries();
     }elsif( 2 == $entry ){
