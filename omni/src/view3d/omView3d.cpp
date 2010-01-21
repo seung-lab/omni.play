@@ -615,6 +615,11 @@ void initLights()
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
+
+    float specReflection[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
+
+    glMateriali(GL_FRONT, GL_SHININESS, 96);
 	
     // position the light
     float lightPos[4] = {0, 0, 1000, 1};		// positional light
