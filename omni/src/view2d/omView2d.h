@@ -136,7 +136,6 @@ protected:
 	void ViewRedrawEvent(OmViewEvent *event);
 	
 	//draw methods
-	void InitializeCache();
 	void Draw(int mip=true);
 	void Draw(vector <Drawable*> &textures);
 	void safeTexture(shared_ptr<OmTextureID> gotten_id);
@@ -200,7 +199,6 @@ private:
 	// void EditModeMouseDoubleClick(QMouseEvent *event);
 	
 	//edit mode
-	void EditModeMousePressed(QMouseEvent *event);
 	void EditModeMouseRelease(QMouseEvent *event);
 	void EditModeMouseMove(QMouseEvent *event);
 	void EditModeMouseDoubleClick(QMouseEvent *event);
@@ -228,7 +226,6 @@ private:
 
 	bool iSentIt;
 	bool mScribbling;
-	bool mFilling;
 	
 	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
 	DataCoord lastDataPoint;
@@ -289,10 +286,26 @@ private:
 	void MoveDownStackFartherFromViewer();
 	void MouseWheelZoom( const int numSteps );
 	void setBrushToolDiameter();
-	
-//	friend class OmView2dUi;
-	// friend class OmSelectionWidget;
-	// friend class OmChunkExtentWidget;
+
+	void EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent *event);
+	void EditMode_MouseRelease_LeftButton_Filling(QMouseEvent *event);
+	void mouseMove_NavMode_CamMoving(QMouseEvent *event);
+	void mouseMove_NavMode_DrawInfo(QMouseEvent *event);	
+	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
+	void mouseDoubleClickEvent_SetDepth(QMouseEvent *event);
+	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event);
+	DataCoord getMouseClickpointGlobalDataCoord( QMouseEvent *event);
+
+	void mouseNavModeLeftButton(QMouseEvent *event);
+	void mouseEditModeLeftButton(QMouseEvent *event);
+	void mouseSelectSegment(QMouseEvent *event);
+	void mouseSetCrosshair(QMouseEvent *event);
+	void mouseZoomIn();
+	void mouseZoomOut();
+	void mouseZoom(QMouseEvent *event);
+	bool amInFillMode();
+
+
 };
 
 #endif 

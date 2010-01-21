@@ -1066,20 +1066,22 @@ void MainWindow::ChangeModeModify(const bool checked)
 	}
 }
 
-void MainWindow::toolbarViewToolChange(const bool checked, QAction * tool, const OmToolMode mode  )
+void MainWindow::toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode  )
 {
 	if( checked ){
 		resetViewTools();
-		tool->setChecked(true);
-		OmStateManager::SetToolMode(mode);
-		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-	}
-}
-
-void MainWindow::toolbarModifyToolChange(const bool checked, QAction * tool, const OmToolMode mode  )
-{
-	if( checked ){
-		resetModifyTools( true );
+		
+		switch( OmStateManager::GetSystemMode() ){
+		case( NAVIGATION_SYSTEM_MODE ):
+			resetModifyTools( false);
+			break;
+		case( EDIT_SYSTEM_MODE ):
+			resetModifyTools( true );		
+			break;
+		default:
+			break;
+		}
+		
 		tool->setChecked(true);
 		OmStateManager::SetToolMode(mode);
 		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
@@ -1089,48 +1091,46 @@ void MainWindow::toolbarModifyToolChange(const bool checked, QAction * tool, con
 // view tools
 void MainWindow::toolbarSelect(const bool checked)
 {
-	toolbarViewToolChange( checked, toolbarSelectAct, SELECT_MODE);
+	toolbarToolChange( checked, toolbarSelectAct, SELECT_MODE);
 }
 void MainWindow::toolbarCrosshair(const bool checked)
 {
-	toolbarViewToolChange( checked, toolbarCrosshairAct, CROSSHAIR_MODE );
+	toolbarToolChange( checked, toolbarCrosshairAct, CROSSHAIR_MODE );
 }
 void MainWindow::toolbarPan(const bool checked)
 {
-	toolbarViewToolChange( checked, toolbarPanAct, PAN_MODE);
+	toolbarToolChange( checked, toolbarPanAct, PAN_MODE);
 }
 void MainWindow::toolbarZoom(const bool checked)
 {
-	toolbarViewToolChange( checked, toolbarZoomAct, ZOOM_MODE);
+	toolbarToolChange( checked, toolbarZoomAct, ZOOM_MODE);
 }
 
 // modify tools
 void MainWindow::toolbarBrush(const bool checked)
 {
-	toolbarModifyToolChange( checked, toolbarBrushAct, ADD_VOXEL_MODE);
+	toolbarToolChange( checked, toolbarBrushAct, ADD_VOXEL_MODE);
 }
 void MainWindow::toolbarEraser(const bool checked)
 {
-	toolbarModifyToolChange( checked, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
+	toolbarToolChange( checked, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
 }
 void MainWindow::toolbarFill(const bool checked)
 {
-	toolbarModifyToolChange( checked, toolbarFillAct, SELECT_VOXEL_MODE);
+	toolbarToolChange( checked, toolbarFillAct, SELECT_VOXEL_MODE);
 }
 void MainWindow::toolbarVoxelize(const bool checked)
 {
-	toolbarModifyToolChange( checked, toolbarVoxelizeAct, VOXELIZE_MODE);
+	toolbarToolChange( checked, toolbarVoxelizeAct, VOXELIZE_MODE);
 }
 
 void MainWindow::resetTools( const OmSystemMode sys_mode )
 {
-	resetViewTools();
-	resetModifyTools( false );
-
-	toolbarPanAct->setChecked( true );
-
 	switch( sys_mode ){
 	case( NAVIGATION_SYSTEM_MODE ):
+		resetModifyTools( false );
+		toolbarPanAct->setChecked( true );
+		OmStateManager::SetToolMode( PAN_MODE );
 		break;
 	case( EDIT_SYSTEM_MODE ):
 		resetModifyTools( true );
