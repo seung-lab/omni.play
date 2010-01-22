@@ -46,8 +46,8 @@ protected:
 	int mSavedDelta;
 	bool mDelayDelta;
 	
-private:
 	OmCacheGroup mCacheGroup;
+private:
 };
 
 
