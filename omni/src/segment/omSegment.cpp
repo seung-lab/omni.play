@@ -23,7 +23,7 @@ OmSegment::OmSegment() {
 OmSegment::OmSegment(OmId omId) 
 : OmManageableObject(omId) {
 	
-//	mName = "segment" + i2str(omId);
+
 	mName = printf2str(256, "segment%05d", omId);
 	
 	//initially random color

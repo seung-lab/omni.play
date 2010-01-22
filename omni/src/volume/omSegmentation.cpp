@@ -43,7 +43,9 @@ OmSegmentation::OmSegmentation(OmId id)
 : OmManageableObject(id), mMipVoxelationManager(this) {
 	
 	//set manageable object name
-	SetName("segmentation" + i2str(id));
+        char idchar[25];
+	snprintf(idchar,sizeof(idchar),"%i",id);
+	SetName("segmentation" + string(idchar));
 	
 	//set permenant directory name
 	SetDirectoryPath(string("segmentations/") + GetName() + string("/"));

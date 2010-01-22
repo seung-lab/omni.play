@@ -112,8 +112,9 @@ OmGenericManager<T>::Get(OmId omId) {
 		//if allowed to add
 		//if(add) return Add(omId);
 		//else throw
-		cout << "OmGenericManager<T>::Get: " <<  i2str(omId) << endl;
-		throw OmAccessException("Cannot get object with id: " + i2str(omId)); 
+	        char omIdchar[25];
+		snprintf(omIdchar,sizeof(omIdchar),"%i",omId);
+		throw OmAccessException("Cannot get object with id: " + string(omIdchar)); 
 	}
 	
 	//else return ref to volume
@@ -140,7 +141,9 @@ OmGenericManager<T>::Add(OmId omId) {
 		if(mMap.count(omId) != 0) {
 			//if ignoring duplicates
 			//if(ignore) return Get(omId);
-			throw OmAccessException("Object with given id already exists: " + i2str(omId)); 
+		        char omIdchar[25];
+		        snprintf(omIdchar,sizeof(omIdchar),"%i",omId);
+			throw OmAccessException("Object with given id already exists: " + string(omIdchar)); 
 		}
 	}
 	
@@ -170,7 +173,9 @@ OmGenericManager<T>::Set(OmId omId, T* pObject) {
 	} else {
 		//make sure given id is available
 		if(mMap.count(omId) != 0) {
-			throw OmAccessException("Object with given id already exists: " + i2str(omId)); 
+	                char omIdchar[25];
+		        snprintf(omIdchar,sizeof(omIdchar),"%i",omId);		        
+			throw OmAccessException("Object with given id already exists: " + string(omIdchar)); 
 		}
 	}
 	

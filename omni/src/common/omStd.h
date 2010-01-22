@@ -296,13 +296,6 @@ inline float ExponentialAverage(float avg,
 
 
 
-/*bwarne*/
-inline string i2str(uint32_t i) {
-	ostringstream ss;	
-	ss << i;
-	return ss.str();
-}
-
 /*
  *	Use vsprintf to format a variable argument string.
  */

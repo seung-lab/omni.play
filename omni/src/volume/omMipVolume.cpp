@@ -115,7 +115,9 @@ OmMipVolume::SetDirectoryPath(const string &dpath) {
  */
 string
 OmMipVolume::MipLevelInternalDataPath(int level) {
-	return mDirectoryPath + i2str(level) + string("/") + mFilename;
+        char levelchar[25];
+        snprintf(levelchar,sizeof(levelchar),"%i",level);
+	return mDirectoryPath + string(levelchar) + string("/") + mFilename;
 }
 
 /*

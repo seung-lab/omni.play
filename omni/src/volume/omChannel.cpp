@@ -16,7 +16,9 @@ OmChannel::OmChannel(OmId id)
 : OmManageableObject(id) {
 
 	//set manageable object name
-	SetName("channel" + i2str(id));
+        char idchar[25];
+	snprintf(idchar,sizeof(idchar),"%i",(int)id);
+	SetName("channel" + string(idchar));
 
 	//set permenant directory name
 	SetDirectoryPath(string("channels/") + GetName() + string("/"));
