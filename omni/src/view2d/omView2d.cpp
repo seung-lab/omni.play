@@ -1362,6 +1362,21 @@ void OmView2d::SetViewSliceOnPan () {
         }
 }
 
+void OmView2d::PanOnZoomSelf (Vector2<int> current_zoom)
+{
+	Vector2<int> pro_zoom = OmStateManager::Instance()->GetZoomLevel();
+	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
+	int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
+
+	if (pro_zoom.x > current_zoom.x) {
+		widthTranslate = widthTranslate / 2;
+		heightTranslate = heightTranslate / 2;
+	} else if (pro_zoom.x < current_zoom.x) {
+		widthTranslate = widthTranslate * 2;
+		heightTranslate = heightTranslate * 2;
+	}
+       	OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(widthTranslate, heightTranslate), false);
+}
 
 void OmView2d::PanOnZoom(Vector2<int> current_zoom, bool postEvent) {
 
@@ -2106,13 +2121,12 @@ void OmView2d::Draw(int mip)
 	if (mip) {
         	Vector2f zoom = zoomMipVector;
         	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+
+		//int lvl = zoomMipVector.x - (howslow);
 		int lvl = zoomMipVector.x + 2;
-		if (lvl > mRootLevel) lvl = mRootLevel;
 
-		lvl = mRootLevel;
-
-        	for (int i = lvl; i > zoomMipVector.x; i--) {
-                	PanOnZoom (zoom, false);
+        	for (int i = mRootLevel; i > lvl; i--) {
+                	PanOnZoomSelf (zoom);
                 	zoom.x = i;
                 	zoom.y = zoomMipVector.y*(1+i-zoomMipVector.x);
 
@@ -2122,7 +2136,6 @@ void OmView2d::Draw(int mip)
                 	//cout << "zoom: " << zoom << endl;
         	}
         	OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int> (translateVector.x, translateVector.y), false);
-
 	}
 #endif
 
@@ -2283,13 +2296,13 @@ void* OmView2d::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, Om
 
         void* void_data = NULL;
         if (mViewType == XY_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, false);
+                void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, true);
         }
         else if (mViewType == XZ_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, false);
+                void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, true);
         }
         else if (mViewType == YZ_VIEW) {
-                void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
+                void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, true);
         }
         return void_data;
 }
@@ -2376,6 +2389,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			break;
 	}
 
+	bool complete = true;
 	int xMipChunk;
 	int yMipChunk;
 	int xval;
@@ -2418,40 +2432,6 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 #endif
 
 		for (int x = xval; x < (mTotalViewport.width * (1.0/zoomFactor)) ; x = x + tileLength,xMipChunk = xMipChunk + tl) {
-#if 0
-                        DataCoord this_data_coord = ToDataCoord (xMipChunk, yMipChunk, mDataDepth);;
-                        SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);
-                        shared_ptr<OmTextureID> gotten_id;
-			mCache->GetTextureID(gotten_id, mTileCoord);
-
-                        //cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
-
-                        mTileCount++;
-                        //if (mTileCount > 38000) return;       // Failsafe hack added by MW.
-
-                        if(gotten_id) {
-                                if(gotten_id->GetTextureID() == 0) {
-                                        if (NULL == gotten_id->texture) {
-                                                myBindToTextureID (gotten_id);
-                                                if (gotten_id->texture) {
-                                                        safeTexture (gotten_id);
-                                                }
-                                        } else {
-                                                //cout << "got here...." << endl;
-                                                safeTexture (gotten_id);
-                                        }
-                                }
-
-                                if(gotten_id->GetTextureID() != 0) {
-                                        //cout << "texture is valid! : " << gotten_id->GetTextureID() << endl;
-                                        mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor, gotten_id));
-                                }
-                        } else {
-                                //cout << "not gotton " << mTileCoord << endl;
-                                mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
-                        }
-#endif
 
                         DataCoord this_data_coord = ToDataCoord (xMipChunk, yMipChunk, mDataDepth);;
                         SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
@@ -2467,44 +2447,51 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
                                         mCache->GetTextureID(gotten_id, mTileCoord);
                                 } else {
                                         mCache->GetTextureID(gotten_id, mTileCoord, false);
-                                        cout << "Not Open" << endl;
+                                        //cout << "Not Open" << endl;
                                 }
-                        }
 
                         
-                        //cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
+                        	//cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
 
-                        mTileCount++;
-                        //if (mTileCount > 38000) return;       // Failsafe hack added by MW.
+                        	mTileCount++;
+                        	//if (mTileCount > 38000) return;       // Failsafe hack added by MW.
 
-                        if(gotten_id) {
-                                gotten_id->mVolType = mCache->mVolType;
-                                if(gotten_id->GetTextureID() == 0) {
-                                        cout << "no id..." << endl;
-                                        if (NULL == gotten_id->texture) {
-                                                myBindToTextureID (gotten_id);
-                                                if (gotten_id->texture) {
-                                                        safeTexture (gotten_id);
-                                                        cout << "made texture on the fly..." << endl;
-                                                }
-                                        } else {
-                                                cout << "got here...." << endl;
-                                                safeTexture (gotten_id);
-                                        }
-                                }
+                        	if(gotten_id) {
+                                	gotten_id->mVolType = mCache->mVolType;
+                                	if(gotten_id->GetTextureID() == 0) {
+                                        	//cout << "no id..." << gotten_id->texture << endl;
+                                        	if (NULL == gotten_id->texture) {
+                                                	myBindToTextureID (gotten_id);
+                                                	if (gotten_id->texture) {
+                                                        	safeTexture (gotten_id);
+                                                        	//cout << "made texture on the fly..." << endl;
+                                                	} else {
+								gotten_id = shared_ptr<OmTextureID>();
+								mCache->Remove (mTileCoord);
+								complete = false;
+							}
+                                        	} else {
+                                                	//cout << "got here...." << endl;
+                                                	safeTexture (gotten_id);
+                                        	}
+                                	}
 
-                                if(gotten_id->GetTextureID() != 0) {
-                                        cout << "texture is valid! : " << gotten_id->GetTextureID() << endl;
-                                        mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor, gotten_id));
-                                } else
-                                        cout << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
+                                	if(gotten_id && gotten_id->GetTextureID() != 0) {
+                                        	//cout << "texture is valid! : " << gotten_id->GetTextureID() << endl;
+                                        	mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor, gotten_id));
+                                	} else {
+                                        	//cout << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
+					}
 
-                        } else {
-                                cout << "not gotton " << mTileCoord << endl;
-                                //mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
+                        	} else {
+                                	//cout << "not gotton " << mTileCoord << endl;
+                                	//mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
+                        	}
                         }
 		}
 	}
+	if (!complete) 
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 void OmView2d::Draw(vector <Drawable*> &textures)
