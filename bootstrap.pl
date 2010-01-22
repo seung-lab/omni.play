@@ -361,3 +361,8 @@ sub checkCmdLineArgs {
 }
 
 checkCmdLineArgs();
+
+sub gcc {
+    # just in case...
+    # ../gcc-4.3.4/configure --prefix=/Users/purcaro/bin/gcc-4.3.4 --enable-languages=c,c++ --disable-nls
+}
