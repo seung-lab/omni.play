@@ -104,6 +104,7 @@ public:
 	
 	
 private:
+	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 	
 	//mip volume this chunk belongs to

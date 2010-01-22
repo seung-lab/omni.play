@@ -172,11 +172,14 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	delete_dirty = false;
 	
 	iSentIt = false;
+
+	OmCachingThreadedCachingTile::Refresh ();
 } 
 
 
 OmView2d::~OmView2d()
 {
+	OmCachingThreadedCachingTile::Refresh ();
 }
 
 
@@ -226,6 +229,8 @@ void OmView2d::resizeGL(int width, int height)
 	
 	delete pbuffer;
         pbuffer = new QGLPixelBuffer(QSize (width, height), QGLFormat::defaultFormat(), sharedwidget);
+
+	OmCachingThreadedCachingTile::Refresh ();
 
 	
 	mTotalViewport.lowerLeftX = 0;
