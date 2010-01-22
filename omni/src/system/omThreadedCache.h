@@ -197,48 +197,35 @@ void
 	//std::cerr << "OmThreadedCache::" << __FUNCTION__ << endl;
 	//return pointer
 
+  OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 	
-	/*	if (!blocking) {
-		if (!mCachedValuesMap.count(key)) {
-                //if not already in stack and not currently being fetched
-                	if( (0 == mFetchStack.count(key)) && (0 == mCurrentlyFetching.count(key)) ) {
-                        	if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): threaded fetch" << endl;
-                        	//push to top of stack
-	
-				pthread_mutex_lock(&mCacheMutex);
-                        	mFetchStack.push(key);
-				pthread_mutex_unlock(&mCacheMutex);
-	
-                        	//signal fetch thread
-                        	pthread_cond_signal(&mFetchThreadCv);
-	
-				return p_value;
-			}
-		}
-		}*/
-
 	//lock cache
 	pthread_mutex_lock(&mCacheMutex);
 	
 	//check cache
 	if(mCachedValuesMap.count(key)) {
-		if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): found key" << endl;
-		
 		//if in cache, return get value pointer
 		p_value = mCachedValuesMap[key];
 		
+		//cout << "value was in cache: " << p_value << endl;
 	} else if(blocking) {
+		//unlock cache
+		pthread_mutex_unlock(&mCacheMutex);
+
 		//if blocking cache
 		if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): blocking fetch" << endl;
+		shared_ptr<U> tmp = shared_ptr<U>(HandleCacheMiss(key));
+
+		//lock cache
+		pthread_mutex_lock(&mCacheMutex);
 
 		//add to cache map
-		mCachedValuesMap[key] = shared_ptr<U>(HandleCacheMiss(key));
+		mCachedValuesMap[key] = tmp;
 		//add to access list
 		mKeyAccessList.push_front(key);
 		
 		//get pointer
 		p_value = mCachedValuesMap[key];
-
 		
 	} else {
 		//not in cache so return null pointer
@@ -360,6 +347,8 @@ template < typename T,  typename U  >
 bool
 OmThreadedCache<T,U>::RemoveOldest() {
 	
+	cout << " removing oldest..." << endl;
+
 	//so as to destroy value outside of mutex
 	shared_ptr<U> old_value;
 	
@@ -375,6 +364,7 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	
 	//assert(mKeyAccessList.size());
 	
+	//cout << "mKeyAccessList.size(): " << mKeyAccessList.size() << endl;
 	if (mKeyAccessList.size()) {
 		//get oldest key
 		T& r_oldest_key = mKeyAccessList.back();
@@ -397,14 +387,16 @@ OmThreadedCache<T,U>::RemoveOldest() {
 		//get ref to old value
 		old_value = mCachedValuesMap[r_oldest_key];
 
-		//cout << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
-		//cout << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
+		cout << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
+		cout << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
+		cout << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
 		assert(r_oldest_key == mKeyAccessList.back());
 	
-		//remove oldest from access list
-		mKeyAccessList.pop_back();
 		//then remove oldest from cache
 		mCachedValuesMap.erase(r_oldest_key);
+
+		//remove oldest from access list
+		mKeyAccessList.pop_back();
 	}
 
 	
@@ -448,22 +440,20 @@ OmThreadedCache<T,U>::Call( void (U::*fxn)() , bool lock) {
 	
 	//lock
 
+	pthread_mutex_lock(&mCacheMutex);
 	
 	//call on all values of cache map
 	typename map< T, shared_ptr< U > >::iterator it;
 	for( it=mCachedValuesMap.begin(); it != mCachedValuesMap.end(); it++ ) {
 
-		////pthread_mutex_lock(&mCacheMutex);
-		mDelayDelta = true;
+		//mDelayDelta = true;
 		(*(it->second).*fxn)();
 		//mDelayDelta = false;
-		//pthread_mutex_unlock(&mCacheMutex);
 
 		//(*(it->second)).UpdateSize(0);
 	}
 	
-
-	
+	pthread_mutex_unlock(&mCacheMutex);
 }
 
 
@@ -543,7 +533,6 @@ OmThreadedCache<T,U>::IsFetchStackEmpty() {
 
 
 
-
 /*
  *	This loop is only performed by the Fetch Thread.  It waits on the
  *	conditional variable triggered by the main thread when a new element
@@ -580,7 +569,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 		mFetchThreadCalledClean = false;
 		mFetchThreadQueuing = true;
 		
-		while(!IsFetchStackEmpty()) {
+		while (!IsFetchStackEmpty ()) {
 
 			//if destructing, break loop
 			if(mKillingFetchThread) break;
@@ -601,28 +590,14 @@ OmThreadedCache<T,U>::FetchLoop() {
 			U* fetch_value = NULL;
 			
 			//any exception causes cache to skip
-			try {
-				//expensive cache miss call, may cause UpdateSize to Clean
-				if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): fetch" << endl;
-				fetch_value = HandleCacheMiss(fetch_key);
-				if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): got fetched" << endl;
-			} catch (...) {			
-				if(OM_THREADED_CACHE_DEBUG) cout << "Caught bad fetch: " << fetch_key << endl;
-				//skip to next
-				mCurrentlyFetching.clear();
-				continue;
-			}
+			fetch_value = HandleCacheMiss(fetch_key);
 			
-			
-			//add new key to cache
-			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): add to cache" << endl;
 			pthread_mutex_lock(&mCacheMutex);
 			//add to cache map
 			mCachedValuesMap[fetch_key] = shared_ptr<U>(fetch_value);
 			//add to access list
 			mKeyAccessList.push_front(fetch_key);
 			pthread_mutex_unlock(&mCacheMutex);
-			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): done add to cache" << endl;
 			
 			
 			//key has been fetched, so remove from currently fetching
@@ -630,7 +605,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 			
 			//send update if needed
 			if(FetchUpdateCheck()) HandleFetchUpdate();
-		}
+		} 
 	
 		
 		//out of while loop

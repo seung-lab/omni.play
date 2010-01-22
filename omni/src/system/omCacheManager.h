@@ -1,3 +1,4 @@
+
 #ifndef OM_CACHE_MANAGER_H
 #define OM_CACHE_MANAGER_H
 
@@ -35,6 +36,7 @@ struct CacheGroupProperties {
 	//current size and max size in bytes
 	unsigned long Size;
 	unsigned long MaxSize;
+	pthread_t mRemoveThread;
 	set< OmCacheBase* > CacheSet;
 };
 
@@ -55,6 +57,9 @@ public:
 	
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
 	void CleanCacheGroup(OmCacheGroup group);
+	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);
+
+	static void * CleanOne (void* in);		// Threaded function.
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -67,18 +72,23 @@ protected:
 	//event handling
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
 	
-	
+        int mSavedDelta;
+        bool mDelayDelta;
+
 private:
 	//singleton
 	static OmCacheManager* mspInstance;
 		
 	//properties map
 	pthread_mutex_t mCacheMapMutex;
+	pthread_mutex_t mRealCacheMapMutex;
 	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
+	map< OmCacheGroup, CacheGroupProperties > mRemoveCacheMap;
 	
 	//cleaning
 	float mTargetRatio;
 	bool mCurrentlyCleaning;
+	int mThreadCount;
 	
 	friend class boost::serialization::access;
 	template<class Archive>
