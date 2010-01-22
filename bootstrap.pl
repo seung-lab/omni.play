@@ -244,6 +244,10 @@ sub updateCMakeListsFile {
     while (my $line = <IN_FILE>) { 
 	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
 	    print OUT_FILE "SET(OM_EXT_LIBS_DIR \"$libPath\")\n";
+	} elsif ( $line =~ /^SET\(BOOST_VERS_EXT/ ) {
+	    my $fName = `ls $libPath/Boost/lib/libboost_system*38.a`;
+	    ( my $boost_ver ) = ($fName =~/.*(gcc.*)\.a/);
+	    print OUT_FILE "SET(BOOST_VERS_EXT \"$boost_ver\")\n";
 	} else {
 	    print OUT_FILE $line;
 	}
@@ -347,4 +351,13 @@ sub checkEnvAndRunMenu {
     menu();
 }
 
-checkEnvAndRunMenu();
+sub checkCmdLineArgs {
+    if ( 1 == @ARGV ) {
+	runMenuEntry( @ARGV[0] );
+    }
+    else {
+	checkEnvAndRunMenu();
+    }
+}
+
+checkCmdLineArgs();
