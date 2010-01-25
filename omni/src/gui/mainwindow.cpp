@@ -11,7 +11,6 @@
 #include "recentFileList.h"
 
 #include "view2d/omView2d.h"
-#include "view2d/domView2d.h"
 #include "view3d/omView3d.h"
 #include "system/omProject.h"
 #include "volume/omChannel.h"

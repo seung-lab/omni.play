@@ -14,16 +14,28 @@
 class OmSegmentSelectAction : public OmAction {
 
 public:
-	OmSegmentSelectAction(OmId segmentationId, OmId segmentId, bool state, 
-					  OmId segmentJustSelected = 0);
-	OmSegmentSelectAction(OmId segmentationId, const OmIds &segmentIds, bool state, 
-					  OmId segmentJustSelected = 0);
-	OmSegmentSelectAction(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds, 
-					  OmId segmentJustSelected = 0);
+	OmSegmentSelectAction(OmId segmentationId, 
+					  OmId segmentId, 
+					  bool state, 
+					  OmId segmentJustSelected = 0,
+					  void* userData = NULL );
+	OmSegmentSelectAction(OmId segmentationId, 
+					  const OmIds &segmentIds, 
+					  bool state, 
+					  OmId segmentJustSelected = 0,
+					  void* userData = NULL );
+	OmSegmentSelectAction(OmId segmentationId, 
+					  const OmIds &selectIds, 
+					  const OmIds &unselectIds, 
+					  OmId segmentJustSelected = 0,
+					  void* userData = NULL );
 	
 private:
-	void Initialize(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds,
-				 const OmId segmentJustSelected = 0 );
+	void Initialize(OmId segmentationId, 
+				 const OmIds &selectIds, 
+				 const OmIds &unselectIds,
+				 const OmId segmentJustSelected = 0,
+				 void* userData = NULL );
 	void Action();
 	void UndoAction();
 	string Description();

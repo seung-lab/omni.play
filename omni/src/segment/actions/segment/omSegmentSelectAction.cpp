@@ -22,33 +22,42 @@
 ///////
 
 
-OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, OmId segmentId, bool state, 
-									const OmId segmentJustSelected ) {
+OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, 
+									OmId segmentId, 
+									const bool state, 
+									const OmId segmentJustSelected,
+									void* userData ) {
 	OmIds segment_set, empty_set;
 	segment_set.insert(segmentId);
 	
 	if(state) {
-		Initialize(segmentationId, segment_set, empty_set, segmentJustSelected);
+		Initialize(segmentationId, segment_set, empty_set, segmentJustSelected, userData );
 	} else {
-		Initialize(segmentationId, empty_set, segment_set, segmentJustSelected);	
+		Initialize(segmentationId, empty_set, segment_set, segmentJustSelected, userData );	
 	}
 }
 
-OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, const OmIds &segmentIds, bool state, 
-									const OmId segmentJustSelected ) {
+OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, 
+									const OmIds &segmentIds, 
+									const bool state, 
+									const OmId segmentJustSelected,
+									void* userData  ) {
 	OmIds empty_set;
 	
 	if(state) {
-		Initialize(segmentationId, segmentIds, empty_set, segmentJustSelected);
+		Initialize(segmentationId, segmentIds, empty_set, segmentJustSelected, userData);
 	} else {
-		Initialize(segmentationId, empty_set, segmentIds, segmentJustSelected);	
+		Initialize(segmentationId, empty_set, segmentIds, segmentJustSelected, userData);	
 	}
 }
 
 
-OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds, 
-									const OmId segmentJustSelected ) {
-	Initialize(segmentationId, selectIds, unselectIds, segmentJustSelected);
+OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, 
+									const OmIds &selectIds, 
+									const OmIds &unselectIds, 
+									const OmId segmentJustSelected,
+									void* userData  ) {
+	Initialize(segmentationId, selectIds, unselectIds, segmentJustSelected, userData);
 }
 
 
@@ -59,8 +68,11 @@ OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId, const OmIds &s
  *	Initialize action data
  */
 void
-OmSegmentSelectAction::Initialize(OmId segmentationId, const OmIds &selectIds, const OmIds &unselectIds, 
-									const OmId segmentJustSelected ) {
+OmSegmentSelectAction::Initialize(OmId segmentationId, 
+						    const OmIds &selectIds, 
+						    const OmIds &unselectIds, 
+						    const OmId segmentJustSelected,
+						    void* userData  ) {
 	
 	mSegmentJustSelectedID = segmentJustSelected;
 

@@ -909,3 +909,6 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
 	}
 }
 
+
+//	(new OmVoxelSetValueAction(segmentation_id, picked_voxel, data_value))->Run();
+ 

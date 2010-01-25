@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QFileInfo>
 
 #include <iostream>
 using namespace std;
@@ -51,7 +52,9 @@ int RecentFileList::getNumberOfFilesToShow()
 
 void RecentFileList::addFile( QString fileName, QString pathName )
 {
-	QString fnpn =  pathName + fileName;
+	QString rel_fnpn =  pathName + fileName;
+	QFileInfo fInfo(rel_fnpn);
+	QString fnpn = fInfo.absoluteFilePath();
 
 	// remove duplicate file name
 	if( recentFiles.contains( fnpn ) ){

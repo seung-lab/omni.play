@@ -74,10 +74,6 @@ OmSegmentEvent::Dispatch(OmEventListener *pListener) {
 		case OmSegmentEvent::SEGMENT_EDIT_SELECTION_CHANGE:
 			p_cast_listener->SegmentEditSelectionChangeEvent( this );
 			return;
-
-		case OmSegmentEvent::SEGMENT_SELECTION_CHANGE:
-			p_cast_listener->SegmentSelectionChangeEvent( this );
-			return;
 			
 		default:
 			assert(false);

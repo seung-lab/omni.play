@@ -24,7 +24,6 @@ SET(omGuiApp_MOC_HDRS
   glview.h
 ../view3d/omView3d.h
 ../view2d/omView2d.h
-../view2d/domView2d.h
 
 inspectorHelpers/segmentationHelper.h
 inspectorHelpers/channelHelper.h
@@ -101,6 +100,5 @@ TARGET_LINK_LIBRARIES(omGuiApp
 	omSegment
 	omView3d
 	omView2d
-	domView2d
 	${OM_QT_LIBS}
 )

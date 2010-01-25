@@ -26,22 +26,16 @@ public:
 	OmSegmentEvent(QEvent::Type type, OmId, OmId );
 	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &);
 	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId );
+	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId, void* user_data );
 	void Dispatch(OmEventListener *);
 	
 	//class
 	static const OmEventClass CLASS  = OM_SEGMENT_EVENT_CLASS;
+
 	//events
-
-
-	static const QEvent::Type SEGMENT_ACTION = (QEvent::Type) (CLASS);
-	static const QEvent::Type SEGMENT_SELECTION_CHANGE = (QEvent::Type) (CLASS + 4);
-	static const QEvent::Type SEGMENT_STATE_CHANGE = (QEvent::Type) (CLASS + 5);
-
-	
 	static const QEvent::Type SEGMENT_OBJECT_MODIFICATION = (QEvent::Type) (CLASS + 1);
 	static const QEvent::Type SEGMENT_DATA_MODIFICATION = (QEvent::Type) (CLASS + 2);
 	static const QEvent::Type SEGMENT_EDIT_SELECTION_CHANGE = (QEvent::Type) (CLASS + 3);
-	
 	
 	OmId GetModifiedSegmentationId();
 	const OmIds& GetModifiedSegmentIds();
@@ -71,19 +65,6 @@ public:
 	
 	//change segment edit selection
 	virtual void SegmentEditSelectionChangeEvent(OmSegmentEvent *event) { };
-	
-
-	
-	//enable/disable segment
-	virtual void SegmentStateChangeEvent(OmSegmentEvent *event) { }; //remove
-	
-	//undo/redo actions
-	virtual void SegmentActionEvent(OmSegmentEvent *event) { }; // remove
-	
-	//change segment selection
-	virtual void SegmentSelectionChangeEvent(OmSegmentEvent *event) { }; //remove
-	
-	
 };
 
 
