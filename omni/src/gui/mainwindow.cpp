@@ -992,6 +992,12 @@ void MainWindow::createToolbarActions()
 		    this, SLOT(toolbarZoom(bool)));
 	toolbarZoomAct->setCheckable(true);
 
+	toolbarVoxelizeAct  = new QAction(tr("&Voxelizer"), this);
+	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Mode"));
+	connect( toolbarVoxelizeAct, SIGNAL(triggered(bool)), 
+		    this, SLOT(toolbarVoxelize(bool)));
+	toolbarVoxelizeAct->setCheckable(true);
+
 	toolbarBrushAct     = new QAction(tr("&Brush"), this);
 	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Add Mode"));
 	connect( toolbarBrushAct, SIGNAL(triggered(bool)), 
@@ -1009,17 +1015,10 @@ void MainWindow::createToolbarActions()
 	connect( toolbarFillAct, SIGNAL(triggered(bool)), 
 		    this, SLOT(toolbarFill(bool)));
 	toolbarFillAct->setCheckable(true);
-
-	toolbarVoxelizeAct  = new QAction(tr("&Voxelize"), this);
-	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Mode"));
-	connect( toolbarVoxelizeAct, SIGNAL(triggered(bool)), 
-		    this, SLOT(toolbarVoxelize(bool)));
-	toolbarVoxelizeAct->setCheckable(true);
 }
 
 void MainWindow::addToolbars()
 {
-	
 	fileToolBar = addToolBar(tr("File"));
 	fileToolBar->addAction(saveAct);
 
@@ -1031,12 +1030,12 @@ void MainWindow::addToolbars()
 	navigateToolBar->addAction(toolbarCrosshairAct);
 	navigateToolBar->addAction(toolbarPanAct);
 	navigateToolBar->addAction(toolbarZoomAct);
+	navigateToolBar->addAction(toolbarVoxelizeAct);		
 	
 	toolToolBar = addToolBar(tr("Tools"));
 	toolToolBar->addAction(toolbarBrushAct);
 	toolToolBar->addAction(toolbarEraserAct);
 	toolToolBar->addAction(toolbarFillAct);
-	toolToolBar->addAction(toolbarVoxelizeAct);		
 }
 
 
@@ -1105,6 +1104,10 @@ void MainWindow::toolbarZoom(const bool checked)
 {
 	toolbarToolChange( checked, toolbarZoomAct, ZOOM_MODE);
 }
+void MainWindow::toolbarVoxelize(const bool checked)
+{
+	toolbarToolChange( checked, toolbarVoxelizeAct, VOXELIZE_MODE);
+}
 
 // modify tools
 void MainWindow::toolbarBrush(const bool checked)
@@ -1118,10 +1121,6 @@ void MainWindow::toolbarEraser(const bool checked)
 void MainWindow::toolbarFill(const bool checked)
 {
 	toolbarToolChange( checked, toolbarFillAct, SELECT_VOXEL_MODE);
-}
-void MainWindow::toolbarVoxelize(const bool checked)
-{
-	toolbarToolChange( checked, toolbarVoxelizeAct, VOXELIZE_MODE);
 }
 
 void MainWindow::resetTools( const OmSystemMode sys_mode )
@@ -1152,6 +1151,7 @@ void MainWindow::resetViewTools()
 	resetTool( toolbarCrosshairAct, true );
 	resetTool( toolbarPanAct,       true );
 	resetTool( toolbarZoomAct,      true );
+	resetTool( toolbarVoxelizeAct,  true );
 }
 
 void MainWindow::resetModifyTools( const bool enabled )
@@ -1159,7 +1159,6 @@ void MainWindow::resetModifyTools( const bool enabled )
 	resetTool( toolbarBrushAct,  enabled );
 	resetTool( toolbarEraserAct, enabled );
 	resetTool( toolbarFillAct,   enabled );
-	resetTool( toolbarVoxelizeAct, enabled );
 }
 
 ////////////////////////////////////////////////////////////
