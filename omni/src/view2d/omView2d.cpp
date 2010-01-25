@@ -639,115 +639,6 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE 
 	}
 }
 
-
-void OmView2d::mouseReleaseEvent(QMouseEvent *event) {
-	
-	switch(OmStateManager::GetSystemMode()) {
-		case NAVIGATION_SYSTEM_MODE:
-			cameraMoving = false;
-
-			PickToolGetColor (event);
-
-			break;
-			
-		case EDIT_SYSTEM_MODE: {
-			EditModeMouseRelease(event);
-		}
-			break;
-	}
-	
-	// signal ViewBoxChangeEvent
-}
-
-void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent *event) {
-
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	Vector2<int> current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2<int> drag = Vector2<int>((clickPoint.x - event->x()), clickPoint.y - event->y());
-	//cout << "pan, dragx, dragy, " << current_pan << ", " << drag.x << ", " << drag.y << endl;
-				
-	mDragX += drag.x / (zoomMipVector.y/10.);
-	mDragY += drag.y / (zoomMipVector.y/10.);
-	drag.x = mDragX;
-	drag.y = mDragY;
-	mDragX = mDragX - drag.x;
-	mDragY = mDragY - drag.y;
-
-	OmStateManager::Instance()->SetPanDistance(mViewType, Vector2<int>(current_pan.x - drag.x, current_pan.y - drag.y));
-
-	SetViewSliceOnPan ();
-
-	clickPoint.x = event->x();
-	clickPoint.y = event->y();
-	
-}
-
-void OmView2d::mouseMove_NavMode_DrawInfo(QMouseEvent *event) {
-	Vector2f clickPoint = Vector2f(event->x(), event->y());
-				
-	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
-	int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
-	float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-				
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	float scaleFactor = (zoomMipVector.y / 10.0);
-				
-	Vector2f localClickPoint = Vector2f((clickPoint.x / scaleFactor) - widthTranslate, (clickPoint.y / scaleFactor) - heightTranslate);
-				
-	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-				
-	int mViewDepth = data_coord.z;
-				
-	switch(mViewType) {
-	case XY_VIEW: {
-		DataCoord dataClickPoint = DataCoord(localClickPoint.x, localClickPoint.y, mViewDepth);
-						
-						
-		if (mVolumeType == SEGMENTATION) {
-			OmSegmentation &current_seg = OmVolume::GetSegmentation(mImageId);
-			mSegmentID = current_seg.GetVoxelSegmentId(dataClickPoint);
-			if(mSegmentID)
-				mSegmentValue = current_seg.GetValueMappedToSegmentId(mSegmentID);
-			else
-				mSegmentValue = 0;
-			// DOUT("segment ID = " << mSegmentID);
-		}
-	}
-		break;
-	case XZ_VIEW: {
-		DataCoord dataClickPoint = DataCoord(localClickPoint.x, mViewDepth, localClickPoint.y);
-						
-						
-		if (mVolumeType == SEGMENTATION) {
-			OmSegmentation &current_seg = OmVolume::GetSegmentation(mImageId);
-			mSegmentID = current_seg.GetVoxelSegmentId(dataClickPoint);
-			if(mSegmentID)
-				mSegmentValue = current_seg.GetValueMappedToSegmentId(mSegmentID);
-			else
-				mSegmentValue = 0;
-			// DOUT("segment ID = " << mSegmentID);
-		}
-	}
-		break;
-	case YZ_VIEW: {
-		DataCoord dataClickPoint = DataCoord(mViewDepth, localClickPoint.y, localClickPoint.x);
-						
-						
-		if (mVolumeType == SEGMENTATION) {
-			OmSegmentation &current_seg = OmVolume::GetSegmentation(mImageId);
-			mSegmentID = current_seg.GetVoxelSegmentId(dataClickPoint);
-			if(mSegmentID)
-				mSegmentValue = current_seg.GetValueMappedToSegmentId(mSegmentID);
-			else
-				mSegmentValue = 0;
-			// DOUT("segment ID = " << mSegmentID);
-		}
-	}
-	}
-	informationUpdated = true;
-}
-			
-
 void OmView2d::mouseDoubleClickEvent(QMouseEvent *event) { 
 	
 	switch(OmStateManager::GetSystemMode()) {
@@ -797,7 +688,9 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent *event) {
 	
 } 
 
-DataCoord OmView2d::getMouseClickpointLocalDataCoord( QMouseEvent *event){
+// XY_VIEW is the default viewType 
+// (different newTypes only used by mouseMove_NavMode_DrawInfo(...) for some reason??? (purcaro)
+DataCoord OmView2d::getMouseClickpointLocalDataCoord( QMouseEvent *event, const ViewType viewType ){
 
 	Vector2f clickPoint = Vector2f(event->x(), event->y());
 
@@ -814,7 +707,18 @@ DataCoord OmView2d::getMouseClickpointLocalDataCoord( QMouseEvent *event){
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
 	const int viewDepth = data_coord.z;
 		
-	DataCoord dataClickPoint = DataCoord(localClickPoint.x, localClickPoint.y, viewDepth);
+	DataCoord dataClickPoint;
+	switch(viewType) {
+	case XY_VIEW: 
+		dataClickPoint = DataCoord(localClickPoint.x, localClickPoint.y, viewDepth);
+		break;
+	case XZ_VIEW: 
+		dataClickPoint = DataCoord(localClickPoint.x, viewDepth, localClickPoint.y);
+		break;
+	case YZ_VIEW:
+		dataClickPoint = DataCoord(viewDepth, localClickPoint.y, localClickPoint.x);
+		break;
+	}
 	
 	return dataClickPoint;
 }
@@ -839,10 +743,6 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord( QMouseEvent *event) {
 	}
 
 	return globalDataClickPoint;
-}
-
-void OmView2d::NavigationModeMouseDoubleClick(QMouseEvent *event) {
-
 }
 
 void OmView2d::mouseSelectSegment(QMouseEvent *event) {
@@ -2726,19 +2626,14 @@ void OmView2d::mouseNavModeLeftButton(QMouseEvent *event) {
 		mouseZoom( event );
 		break;
 	case ADD_VOXEL_MODE:
-
 		break;
 	case SUBTRACT_VOXEL_MODE:
-
 		break;
 	case SELECT_VOXEL_MODE: // aka "fill"
-		
 		break;
 	case VOXELIZE_MODE:
-
 		break;
 	default:
-		
 		break;
 	}
 }
@@ -2808,7 +2703,6 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent *event) {
 }
 
 void OmView2d::mouseMoveEvent(QMouseEvent *event) {
-	myPrint( QString( __FUNCTION__ ) );
 
 	// http://qt.nokia.com/doc/4.5/qt.html#MouseButton-enum
 	if ( event->buttons() != Qt::LeftButton) {
@@ -2820,7 +2714,7 @@ void OmView2d::mouseMoveEvent(QMouseEvent *event) {
 	switch(OmStateManager::GetSystemMode()) {
 		case NAVIGATION_SYSTEM_MODE: 
 			if(cameraMoving) {
-				if( PAN_MODE ==  OmStateManager::GetToolMode() ) {
+				if( PAN_MODE == OmStateManager::GetToolMode() ) {
 					mouseMove_NavMode_CamMoving(event);
 				}
 			} else if(drawInformation) {
@@ -2893,4 +2787,62 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent *event) {
 		
 		myUpdate();
 }
+
+
+void OmView2d::mouseReleaseEvent(QMouseEvent *event) {
+	myPrint( QString( __FUNCTION__ ) );
+
+	switch(OmStateManager::GetSystemMode()) {
+		case NAVIGATION_SYSTEM_MODE:
+			cameraMoving = false;
+			PickToolGetColor (event);
+			break;
+		case EDIT_SYSTEM_MODE:
+			EditModeMouseRelease(event);
+			break;
+	}
+}
+
+void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent *event) {
+	myPrint( QString( __FUNCTION__ ) );
+
+	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2<int> current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2<int> drag = Vector2<int>((clickPoint.x - event->x()), clickPoint.y - event->y());
+				
+	mDragX += drag.x / (zoomMipVector.y/10.);
+	mDragY += drag.y / (zoomMipVector.y/10.);
+	drag.x = mDragX;
+	drag.y = mDragY;
+	mDragX = mDragX - drag.x;
+	mDragY = mDragY - drag.y;
+
+	OmStateManager::Instance()->SetPanDistance(mViewType, 
+									   Vector2<int>(current_pan.x - drag.x, 
+												 current_pan.y - drag.y));
+	SetViewSliceOnPan ();
+
+	clickPoint.x = event->x();
+	clickPoint.y = event->y();	
+}
+
+// what does this do? (purcaro)
+void OmView2d::mouseMove_NavMode_DrawInfo(QMouseEvent *event) {
+	myPrint( QString( __FUNCTION__ ) );
+				
+	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord( event, mViewType );
+
+	if( SEGMENTATION == mVolumeType ) {
+		OmSegmentation &current_seg = OmVolume::GetSegmentation(mImageId);
+		mSegmentID = current_seg.GetVoxelSegmentId(dataClickPoint);
+
+		if(mSegmentID)
+			mSegmentValue = current_seg.GetValueMappedToSegmentId(mSegmentID);
+		else
+			mSegmentValue = 0;
+	}	
+
+	informationUpdated = true;
+}
+			
 

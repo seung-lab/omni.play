@@ -295,7 +295,7 @@ private:
 	void mouseMove_NavMode_DrawInfo(QMouseEvent *event);	
 	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
 	void mouseDoubleClickEvent_SetDepth(QMouseEvent *event);
-	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event);
+	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event, const ViewType viewType = XY_VIEW );
 	DataCoord getMouseClickpointGlobalDataCoord( QMouseEvent *event);
 
 	void mouseNavModeLeftButton(QMouseEvent *event);
