@@ -4,6 +4,7 @@
 #include "events/omSegmentEvent.h"
 
 #include <qapplication.h>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
@@ -39,7 +40,7 @@ OmEventManager::Delete() {
 bool 
 OmEventManager::event(QEvent *event) {
 
-	DOUT("OmEventManager::event(QEvent *event)");
+	//debug("genone","OmEventManager::event(QEvent *event)\n");
 	
 	//ensure we have an OmEvent object (or else the next step will pretty much crash)
 	QEvent::Type eventType = event->type();
@@ -119,7 +120,7 @@ OmEventManager::SendEvent(OmEvent &event) {
  */
 void 
 OmEventManager::PostEvent(OmEvent* event) {
-	DOUT("OmEventManager::PostEvent(OmEvent* event): " << event->ChildClass << " : " << event->type() );
+
 	QCoreApplication::postEvent(Instance(), event);
 }
 

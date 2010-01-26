@@ -18,6 +18,7 @@
 #include <vtkImageData.h>
 
 #include <vmmlib/vmmlib.h>
+#include "system/omDebug.h"
 using namespace vmml;
 
 #define DEBUG 0
@@ -293,13 +294,13 @@ OmSegmentation::BuildMeshDataInternal() {
 					OmMipChunkCoord chunk_coord(level, x, y, z);
 						
 					//get built chunk (hold shared pointer whild building)
-					shared_ptr< OmMipChunk > p_chunk  = shared_ptr<OmMipChunk>();
+					shared_ptr< OmMipChunk > p_chunk = shared_ptr<OmMipChunk>();
 					GetChunk(p_chunk, chunk_coord);
 					//build all segment meshes in chunk
 				
 					p_chunk->Open ();
 
-					mMipMeshManager.BuildChunkMeshes(*p_chunk, p_chunk->GetDirectDataValues());
+					mMipMeshManager.BuildChunkMeshes(p_chunk, p_chunk->GetDirectDataValues());
 					
 					//update progress
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
@@ -355,7 +356,7 @@ OmSegmentation::BuildChunk(const OmMipChunkCoord &mipCoord) {
 		}
 		
 		//build mesh
-		mMipMeshManager.BuildChunkMeshes(*p_chunk, rModifiedValues);
+		mMipMeshManager.BuildChunkMeshes(p_chunk, rModifiedValues);
 		
 		//remove mesh from cache to force it to reload
 		SegmentDataSet::iterator itr;
@@ -383,7 +384,7 @@ OmSegmentation::RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataS
 		shared_ptr< OmMipChunk > p_chunk = shared_ptr<OmMipChunk>();
 		GetChunk(p_chunk, mipCoord);
 		//build mesh
-		mMipMeshManager.BuildChunkMeshes(*p_chunk, rModifiedValues);
+		mMipMeshManager.BuildChunkMeshes(p_chunk, rModifiedValues);
 	}
 
 	//remove mesh from cache to force it to reload
@@ -700,8 +701,7 @@ OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord &chunkCoord, const Segm
  */
 void 
 OmSegmentation::DrawChunk(const OmMipChunkCoord &chunkCoord, const SegmentDataSet &rRelvDataVals, const OmVolumeCuller &rCuller) {
-	DOUT("OmSegmentation::DrawChunk: " << chunkCoord);
-	
+
 	//get pointer to chunk
 	shared_ptr<OmMipChunk> p_chunk = shared_ptr<OmMipChunk>();
 	GetChunk(p_chunk, chunkCoord);

@@ -6,6 +6,7 @@
 
 #include <QThread>
 #include <qtconcurrentrun.h>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
@@ -85,18 +86,18 @@ void SegInspector::on_patternEdit_textChanged()
 
 
 void build_image(OmSegmentation *current_seg) {
-	DOUT("build image");
+	//debug("genone","build image");
 	current_seg->BuildVolumeData();
 }
 
 void build_mesh(OmSegmentation *current_seg) {
-	DOUT("build mesh");
+	//debug("genone","build mesh");
 	current_seg->BuildMeshData();
 }
 
 void SegInspector::on_buildButton_clicked()
 {
-	DOUT("SegInspector::on_buildButton_clicked");
+	//debug("genone","SegInspector::on_buildButton_clicked");
 	
 	// check current selection in buildComboBox
 	QString cur_text = buildComboBox->currentText();

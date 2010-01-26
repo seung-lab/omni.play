@@ -17,6 +17,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "system/omDebug.h"
 namespace bfs=boost::filesystem;
 
 
@@ -130,10 +131,10 @@ OmProject::New(string dpath, string fname) {
 	//	throw OmIoException("Could not create project directory.");
 	
 	string fpath = GetDirectoryPath() + GetFileName();
-	DOUT("OmProject::New: " << fpath);
+	//debug("genone","OmProject::New: %s \n", fpath.data());
 	
 	//create and open data
-	DOUT("OmProject::New: creating");
+	//debug("genone","OmProject::New: creating");
 	OmProjectData::Create();
 	OmProjectData::Open();
 	
@@ -142,10 +143,10 @@ OmProject::New(string dpath, string fname) {
 	OmKeyManager::SetDefaults();
 	
 	//save project
-	DOUT("OmProject::New: save");
+	//debug("genone","OmProject::New: save\n");
 	Save();
 
-	DOUT("OmProject::New: flushing");
+	//debug("genone","OmProject::New: flushing\n");
 	OmProjectData::Flush();
 }
 
@@ -163,7 +164,7 @@ OmProject::Save() {
 	}
 
 	string fpath = GetDirectoryPath() + GetFileName();
-	DOUT("OmProject::Save: " << fpath);
+	//debug("genone","OmProject::Save: %s\n", fpath.data());
 	
 	//store archive
 	OmProjectData::ArchiveWrite< OmProject >(PROJECT_ARCHIVE_NAME, Instance());
@@ -186,7 +187,7 @@ OmProject::SaveAs(string dpath, string fname) {
 	
 	string fpath = GetDirectoryPath() + GetFileName();
 	
-	DOUT("OmProject::SaveAs: " << fpath);
+	//debug("genone","OmProject::SaveAs: %s\n", fpath.data());
 	
 	//store archive to new file
 	OmProjectData::ArchiveWrite< OmProject >(PROJECT_ARCHIVE_NAME, Instance());
@@ -215,7 +216,7 @@ OmProject::Load(string dpath, string fname) {
 	
 	//form full pathname
 	string fpath = dpath + fname;
-	DOUT("OmProject::Load: " << fpath);
+	//debug("genone","OmProject::Load: %s\n", fpath.data());
 	
 	//check path validity
 	if(!bfs::exists(bfs::path(fpath))) 

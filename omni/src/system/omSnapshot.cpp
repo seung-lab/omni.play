@@ -8,6 +8,7 @@
 #include "volume/omVolume.h"
 #include "view2d/omThreadedCachingTile.h"
 #include "view2d/omView2d.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

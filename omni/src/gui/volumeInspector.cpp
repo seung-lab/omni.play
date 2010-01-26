@@ -9,6 +9,7 @@
 #include "system/omPreferenceDefinitions.h"
 
 #include <vmmlib/vmmlib.h>
+#include "system/omDebug.h"
 using namespace vmml;
 
 VolumeInspector::VolumeInspector(QWidget *parent) 
@@ -107,9 +108,9 @@ void VolumeInspector::on_extentEdit_editingFinished()
 	QString min_z = extent.section(" ", 2,2);
 	//min_z.chop(1);
 	
-	//	DOUT("min_x = " << min_x);
-	//		DOUT("min_y = " << min_x);
-	//		DOUT("min_z = " << min_x);
+	//	//debug("genone","min_x = " << min_x);
+	//		//debug("genone","min_y = " << min_x);
+	//		//debug("genone","min_z = " << min_x);
 	
 	Vector3i data_extent = Vector3i(min_x.toInt(), min_y.toInt(), min_z.toInt());
 	

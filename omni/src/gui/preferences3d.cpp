@@ -8,6 +8,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
+#include "system/omDebug.h"
 using namespace vmml;
 
 #define DEBUG 0
@@ -173,7 +174,7 @@ void Preferences3d::on_styleComboBox_currentIndexChanged()
 
 void Preferences3d::alphaSliderValueChanged(int val)
 {
-	DOUT("slider value changed = " << val);
+	//debug("genone","slider value changed = %i\n", val);
 	transparencySliderLabel->setNum(val / (50.0));
 	
 	OmPreferences::SetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT, (val / (50.0)));

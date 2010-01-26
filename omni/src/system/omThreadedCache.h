@@ -1,26 +1,16 @@
 #ifndef OM_THREADED_CACHE_H
 #define OM_THREADED_CACHE_H
 
-/*
- *	A templated non-blocking threaded cache system that retains most recently used objects.
- *
- *	This modifies the GenericCache by having a second thread specifically tasked to fetch
- *	values from disk.  Keys are built up by the main thread in a double-ended queue which
- *	allows the specific fetching prioritization can be specified as either FIFO or LIFO.
- *
- *	Care must be taken so that calls to parent methods don't contain overridden virtual 
- *	methods that would result in double locking in the child.
- *
- *	Brett Warne - bwarne@mit.edu - 3/12/09
- */
 
 #include "omCacheBase.h"
 
 #include "utility/stackSet.h"
 #include "system/omException.h"
 #include "common/omThreads.h"
-
+#include "system/omDebug.h"
 #include <boost/shared_ptr.hpp>
+#include <sys/wait.h>
+
 using boost::shared_ptr;
 
 #include <list>
@@ -38,8 +28,19 @@ using std::list;
 //fetch thread caller prototype
 template < typename T,  typename U  > void* start_cache_fetch_thread(void*);
 
+/**
+ *	A templated non-blocking threaded cache system that retains most recently used objects.
+ *
+ *	This modifies the GenericCache by having a second thread specifically tasked to fetch
+ *	values from disk.  Keys are built up by the main thread in a double-ended queue which
+ *	allows the specific fetching prioritization can be specified as either FIFO or LIFO.
+ *
+ *	Care must be taken so that calls to parent methods don't contain overridden virtual 
+ *	methods that would result in double locking in the child.
+ *
+ *	Brett Warne - bwarne@mit.edu - 3/12/09
+ */
 
-//templated key, value
 template < typename T,  typename U  >
 class OmThreadedCache : public OmCacheBase {
 		
@@ -120,6 +121,7 @@ private:
 ///////		 OmThreadedCache
 
 
+
 /*
  *	Constructor initializes and starts the fetch thread.
  */
@@ -148,6 +150,10 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 	
 	//create thread
 	pthread_create(&mFetchThread, NULL, start_cache_fetch_thread<T,U>, (void *)this);
+     debug("thread","OmThreadedCache<T,U>::OmThreadedCache(constructor)->Thread Created\n");
+     int st;
+     wait(&st);
+
 	//wait for fetch thread
 	while(!mFetchThreadAlive) { }
 }
@@ -160,7 +166,7 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
  */
 template < typename T,  typename U  >
 OmThreadedCache<T,U>::~OmThreadedCache() {
-	if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::~OmThreadedCache()" << endl;
+	debug("cache","OmThreadedCache<T,U>::~OmThreadedCache()");
 	
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
@@ -253,7 +259,7 @@ void
 
 
 
-/*
+/**
  *	Add key value pair to cache.
  *
  *	Although Add does not increase the size of the cache, it does
@@ -347,7 +353,7 @@ template < typename T,  typename U  >
 bool
 OmThreadedCache<T,U>::RemoveOldest() {
 	
-	cout << " removing oldest..." << endl;
+	debug("cache"," removing oldest...");
 
 	//so as to destroy value outside of mutex
 	shared_ptr<U> old_value;
@@ -387,9 +393,9 @@ OmThreadedCache<T,U>::RemoveOldest() {
 		//get ref to old value
 		old_value = mCachedValuesMap[r_oldest_key];
 
-		cout << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
-		cout << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
-		cout << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
+		//cout << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
+		//cout << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
+		//cout << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
 		assert(r_oldest_key == mKeyAccessList.back());
 	
 		//then remove oldest from cache
@@ -684,6 +690,7 @@ inline void*
 start_cache_fetch_thread(void* arg)
 {
 	OmThreadedCache<T,U> *cache = (OmThreadedCache<T,U> *) arg;
+     //debug("thread","Cache Type = %s
 	cache->FetchLoop();
 	return 0;
 }

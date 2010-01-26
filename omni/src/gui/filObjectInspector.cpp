@@ -1,5 +1,6 @@
 #include <QtGui> 
 #include "filObjectInspector.h" 
+#include "system/omDebug.h"
 
 FilObjectInspector::FilObjectInspector(QWidget *parent) 
 : QWidget(parent) 

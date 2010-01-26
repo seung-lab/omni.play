@@ -6,6 +6,7 @@
 
 #include <QThread>
 #include <qtconcurrentrun.h>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
@@ -89,7 +90,7 @@ void ChanInspector::on_patternEdit_textChanged()
 
 
 void intermediate_build_call(OmChannel *current_channel) {
-	DOUT("intermediate build call");
+	//debug("genone","intermediate build call");
 	
 	// OmChannel &current_channel = OmVolume::GetChannel(my_id);
 	current_channel->BuildVolumeData();
@@ -98,7 +99,7 @@ void intermediate_build_call(OmChannel *current_channel) {
 
 void ChanInspector::on_buildButton_clicked()
 {	
-	DOUT("ChanInspector::on_buildButton_clicked");
+	//debug("genone","ChanInspector::on_buildButton_clicked");
 	// OmVolume::GetChannel(my_id).BuildVolumeData();
 	
 	/*

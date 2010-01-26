@@ -18,6 +18,7 @@
 
 #include <vtkImageData.h>
 #include <QGLContext>
+#include "system/omDebug.h"
 
 
 
@@ -135,7 +136,7 @@ OmMipMeshManager::SetMeshDataBuilt(bool status) {
 
 
 void 
-OmMipMeshManager::BuildChunkMeshes(OmMipChunk& rMipChunk, const SegmentDataSet &rMeshVals ) {
+OmMipMeshManager::BuildChunkMeshes(shared_ptr<OmMipChunk> rMipChunk, const SegmentDataSet &rMeshVals ) {
 	OmMipChunkMesher::BuildChunkMeshes(this, rMipChunk, rMeshVals);
 }
 
@@ -157,32 +158,32 @@ OmMipMeshManager::BuildChunkMeshes(OmMipChunk& rMipChunk, const SegmentDataSet &
  */
 OmMipMesh* 
 OmMipMeshManager::HandleCacheMiss(const OmMipMeshCoord &coord) {
-	DOUT("OmMipMeshManager::HandleCacheMiss: " << coord);
+
 	
-//	DOUT("OmMipMeshManager::HandleCacheMiss: set context");
+//	//debug("genone","OmMipMeshManager::HandleCacheMiss: set context");
 //	OmStateManager::MakeContextCurrent(mFetchThreadContext);
 	
 	//create mesh with this segment manager as cache
-	DOUT("OmMipMeshManager::HandleCacheMiss: new mesh");
+	//debug("genone","OmMipMeshManager::HandleCacheMiss: new mesh\n");
 	OmMipMesh *mesh = AllocMesh(coord);
 	
 	//load data from disk
-	DOUT("OmMipMeshManager::HandleCacheMiss: loading mesh from disk");
+	//debug("genone","OmMipMeshManager::HandleCacheMiss: loading mesh from disk");
 	mesh->Load();
 	
 	//upload vbo
-	DOUT("OmMipMeshManager::HandleCacheMiss: creating vbo");
+	//debug("genone","OmMipMeshManager::HandleCacheMiss: creating vbo");
 	//mesh->CreateVbo();
 	
 	//return mesh to cache
-	DOUT("OmMipMeshManager::HandleCacheMiss: returning mesh");
+	//debug("genone","OmMipMeshManager::HandleCacheMiss: returning mesh");
 	return mesh;
 }
 
 
 void 
 OmMipMeshManager::HandleFetchUpdate() {
-	DOUT("OmMipMeshManager::FetchUpdate: send redraw");
+	//debug("genone","OmMipMeshManager::FetchUpdate: send redraw");
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
@@ -190,7 +191,7 @@ OmMipMeshManager::HandleFetchUpdate() {
 
 bool
 OmMipMeshManager::InitializeFetchThread() {
-	DOUT("OmMipMeshManager::HandleCacheMiss: set context");
+	//debug("genone","OmMipMeshManager::HandleCacheMiss: set context");
 
 	//aquire and set shared context
 	//mFetchThreadContext = OmStateManager::GetSharedView3dContext();

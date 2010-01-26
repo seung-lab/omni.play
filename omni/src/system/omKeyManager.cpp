@@ -3,6 +3,7 @@
 
 
 #include <QKeyEvent>
+#include "system/omDebug.h"
 
 
 #define DEBUG 0

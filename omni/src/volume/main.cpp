@@ -21,6 +21,7 @@ using boost::shared_ptr;
 namespace bfs=boost::filesystem;
 
 #include <QApplication>
+#include "system/omDebug.h"
 
 void build_mip_volume(string dpath, string regex);
 

@@ -8,6 +8,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "system/omDebug.h"
 namespace bfs=boost::filesystem;
 
 
@@ -25,13 +26,13 @@ namespace bfs=boost::filesystem;
 
 
 OmDataVolume::OmDataVolume() {
-	DOUT("OmDataVolume::OmDataVolume()");
+	//debug("genone","OmDataVolume::OmDataVolume()");
 	mBytesPerSample = -1;
 	mIsOpen = false;
 }
 
 OmDataVolume::~OmDataVolume() {
-	DOUT("OmDataVolume::~OmDataVolume()");
+	//debug("genone","OmDataVolume::~OmDataVolume()");
 	Close();	
 }
 
@@ -98,7 +99,7 @@ OmDataVolume::IsDirty() const {
  */
 void
 OmDataVolume::Open() {	
-	DOUT("OmDataVolume::Open()");
+	//debug("genone","OmDataVolume::Open()");
 	SetOpen(true);
 }
 
@@ -109,7 +110,7 @@ OmDataVolume::Open() {
  */
 void
 OmDataVolume::Flush() {	
-	DOUT("OmDataVolume::Flush()");
+	//debug("genone","OmDataVolume::Flush()");
 	assert(false);
 }
 
@@ -119,7 +120,7 @@ OmDataVolume::Flush() {
  */
 void 
 OmDataVolume::Close() {
-	DOUT("OmDataVolume::Close()");
+	//debug("genone","OmDataVolume::Close()");
 	
 	//ignore if already closed
 	if(!IsOpen()) return;
@@ -142,7 +143,7 @@ OmDataVolume::Close() {
 /*
 vtkImageData* 
 OmDataVolume::Read(const DataBbox &dataExtentBbox, int bytesPerSample) { 
-	DOUT("OmDataVolume::Read(dataExtentBbox, bytesPerSample)");
+	//debug("genone","OmDataVolume::Read(dataExtentBbox, bytesPerSample)");
 	assert(false);
 }
 */
@@ -155,7 +156,7 @@ OmDataVolume::Read(const DataBbox &dataExtentBbox, int bytesPerSample) {
 /*
 void 
 OmDataVolume::Write(const DataBbox &dataExtentBbox, int bytesPerSample) { 
-	DOUT("OmDataVolume::Write(dataExtentBbox, bytesPerSample)");
+	//debug("genone","OmDataVolume::Write(dataExtentBbox, bytesPerSample)");
 	assert(false);
 }
 */

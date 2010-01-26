@@ -2,6 +2,7 @@
 #include "omPreferences.h"
 #include "omEventManager.h"
 #include "events/omPreferenceEvent.h"
+#include "system/omDebug.h"
 
 
 #define DEBUG 0

@@ -41,6 +41,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
+#include "system/omDebug.h"
 using namespace vmml;
 
 Q_DECLARE_METATYPE( DataWrapperFactory );
@@ -309,7 +310,7 @@ void MyInspectorWidget::populateChannelElementsListWidget( ChannelDataWrapper cd
 
 void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem *item, const int column )
 {
-	DOUT("addToSplitterPreferences");
+	//debug("genone","addToSplitterPreferences");
 	
 	QWidget* my_widget = splitter->widget(1);
 	QString text = item->text(0);
@@ -741,7 +742,7 @@ void MyInspectorWidget::populateChannelInspector(OmId c_id)
 	channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
 	channelInspectorWidget->directoryEdit->setMinimumWidth(200);
 	
-	DOUT("SOURCE DIRECTORY PATH = " << my_directory);
+	////debug("genone","SOURCE DIRECTORY PATH = " << my_directory);
 	
 	const string &my_pattern = current_channel.GetSourceFilenameRegex();
 	channelInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
@@ -844,7 +845,7 @@ void MyInspectorWidget::setFilAlpha(int alpha)
 
 void MyInspectorWidget::setSegObjColor()
 {	
-	DOUT("MyInspectorWidget::QColorDialog::getColor()");
+	//debug("genone","MyInspectorWidget::QColorDialog::getColor()");
 	
 	QColor color = QColorDialog::getColor(current_color, this);
 	if (color.isValid()) {

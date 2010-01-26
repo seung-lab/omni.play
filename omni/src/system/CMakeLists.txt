@@ -33,6 +33,7 @@ SET(OM_SYSTEM_LIB_SRCS
 	omFilter.cpp
 	omFilterManager.cpp
 	omGarbage.cpp
+	omDebug.cpp
 #	omSnapshot.cpp
 	
 	${OM_SYSTEM_EVENTS_SRCS}

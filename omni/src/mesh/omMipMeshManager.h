@@ -43,7 +43,7 @@ public:
 	void UncacheMesh(const OmMipMeshCoord &coord );
 	
 	//building
-	void BuildChunkMeshes(OmMipChunk& chunk, const SegmentDataSet &);
+	void BuildChunkMeshes(shared_ptr<OmMipChunk> chunk, const SegmentDataSet &);
 
 	
 	//drawing

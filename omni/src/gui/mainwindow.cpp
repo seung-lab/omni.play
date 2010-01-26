@@ -40,6 +40,7 @@ using boost::shared_ptr;
 namespace bfs=boost::filesystem;
 
 #include <boost/tuple/tuple_comparison.hpp>
+#include "system/omDebug.h"
 using boost::tuple;
 
 #define DEBUG 0
@@ -107,7 +108,7 @@ void MainWindow::newProject()
 		if(fileName == NULL)
 			return;
 		
-		DOUT("New Project");
+		//debug("genone","New Project");
 		QString fname = fileName.section('/', -1);
 		QString dpath = fileName.remove(fname);
 		
@@ -203,7 +204,7 @@ void MainWindow::buildAll()
 		set<OmId>::iterator chan_it;
 		for( chan_it=channelIDs.begin(); chan_it != channelIDs.end(); chan_it++ ) {
 			OmChannel &current_channel = OmVolume::GetChannel(*chan_it);
-			DOUT("building channel");
+			//debug("genone","building channel");
 			//			prog_bar->setValue(ctr);
 			//			progress.setValue(ctr);
 			
@@ -226,7 +227,7 @@ void MainWindow::buildAll()
 		for( seg_it=segmentationIDs.begin(); seg_it != segmentationIDs.end(); seg_it++ ) {
 		  
 		  	OmSegmentation &current_seg = OmVolume::GetSegmentation(*seg_it);
-			DOUT("building segmentation");
+			//debug("genone","building segmentation");
 			
 			//			prog_bar->setValue(ctr);
 			//			progress.setValue(ctr);
@@ -468,7 +469,7 @@ void MainWindow::openUndoView()
 {
 	try {
 		
-		DOUT("opening undo history");
+		//debug("genone","opening undo history");
 		undoView = new QUndoView();
 		
 		QDockWidget *dock = new QDockWidget(tr("History"), this);
@@ -491,11 +492,11 @@ void MainWindow::open3dView()
 {
 	try {
 		
-		DOUT("MainWindow::open3dView()");
+		//debug("genone","MainWindow::open3dView()");
 		
 		if(	isProjectOpen ) {
 			
-			DOUT("opening 3d view");
+			//debug("genone","opening 3d view");
 			qtView3d = new OmView3d();
 			
 			
@@ -509,7 +510,7 @@ void MainWindow::open3dView()
 			windowMenu->addAction(dock->toggleViewAction());
 			
 			dock->setAttribute(Qt::WA_DeleteOnClose);
-			//		DOUT("omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
+			//		//debug("genone","omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
 		}
 		
 	} catch (OmException &e) {
@@ -521,7 +522,7 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 { 
 	try {
 		
-		DOUT("MainWindow::openChannelView()");
+		//debug("genone","MainWindow::openChannelView()");
 
 		string name = OmVolume::GetChannel(chan_id).GetName();
 		QString qname = QString::fromStdString(name);
@@ -556,7 +557,7 @@ void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewTy
 {
 	try {
 		
-		DOUT("MainWindow::openSegmentationView()");
+		//debug("genone","MainWindow::openSegmentationView()");
 			
 #pragma mark <TODO: Fix this overlay> 
 		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, secondary_id);
@@ -632,7 +633,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::AlertNotifyEvent(OmAlertEvent *event)
 {
-	DOUT("MainWindow::AlertNotifyEvent");
+	//debug("genone","MainWindow::AlertNotifyEvent");
 	
 	try {
 		QMessageBox msgBox;
@@ -669,7 +670,7 @@ void MainWindow::ProgressShow(OmProgressEvent *event)
 		 int GetMaximum() { return mMaximum; }
 		 int GetValue() { return mValue; }
 		 */
-		DOUT("MainWindow::ProgressShow");
+		//debug("genone","MainWindow::ProgressShow");
 		
 		
 //		prog_dialog = new QProgressDialog(QString::fromStdString(event->GetText()),
@@ -699,7 +700,7 @@ void MainWindow::ProgressHide(OmProgressEvent *event)
 	try {
 		
 		//prog_dialog->cancel();
-		DOUT("MainWindow::ProgressHide");
+		//debug("genone","MainWindow::ProgressHide");
 		//cout << "min: " << event->GetMinimum() << endl;
 		//cout << "max: " << event->GetMaximum() << endl;
 		//cout << "val: " << event->GetValue() << endl;
@@ -727,7 +728,7 @@ void MainWindow::ProgressRangeEvent(OmProgressEvent *event)
 		 progress.setValue(numFiles);
 		 */
 		
-		DOUT("ProgressRangeEvent");
+		//debug("genone","ProgressRangeEvent");
 		//cout << "min: " << event->GetMinimum() << endl;
 		//cout << "max: " << event->GetMaximum() << endl;
 		//cout << "val: " << event->GetValue() << endl;
@@ -742,7 +743,7 @@ void MainWindow::ProgressValueEvent(OmProgressEvent *event)
 {
 	try {
 		
-		DOUT("ProgressValueEvent");
+		//debug("genone","ProgressValueEvent");
 		
 		//check for cancel
 		OmProgressEvent::SetWasCanceled(prog_dialog.wasCanceled());
@@ -759,7 +760,7 @@ void MainWindow::ProgressIncrementEvent(OmProgressEvent *event)
 {
 	try {
 		
-		DOUT("ProgressIncrementEvent");
+		//debug("genone","ProgressIncrementEvent");
 		//cout << "min: " << event->GetMinimum() << endl;
 		//cout << "max: " << event->GetMaximum() << endl;
 		//cout << "val: " << event->GetValue() << endl;

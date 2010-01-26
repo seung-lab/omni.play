@@ -19,6 +19,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "system/omDebug.h"
 namespace bfs=boost::filesystem;
 
 
@@ -42,7 +43,7 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 OmMipChunk::OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume)
 : OmCacheableBase( dynamic_cast<OmCacheBase*>(pMipVolume) ) , mpMipVolume(pMipVolume) {
 	
-	DOUT("OmMipChunk::OmMipChunk()");	
+	//debug("genone","OmMipChunk::OmMipChunk()");	
 	
 	//init chunk properties
 	InitChunk(rMipCoord);
@@ -60,7 +61,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume
 
 
 OmMipChunk::~OmMipChunk() {
-	DOUT("OmMipChunk::~OmMipChunk()");
+	//debug("genone","OmMipChunk::~OmMipChunk()");
 
 	//since parent destructor is called after this child destructor, we need to call
 	//child Close() here, or else child Close() won't be called (since child won't exist)
@@ -127,7 +128,7 @@ OmMipChunk::InitChunk(const OmMipChunkCoord &rMipCoord) {
  */
 void 
 OmMipChunk::Open() {
-	DOUT("OmMipChunk::Open()");
+	//debug("genone","OmMipChunk::Open()");
 	
 	//ignore if already open
 	if(IsOpen()) return;
@@ -143,7 +144,7 @@ OmMipChunk::Open() {
 
 void
 OmMipChunk::OpenForWrite() {
-        DOUT("OmMipChunk::OpenForWrite()");
+        //debug("genone","OmMipChunk::OpenForWrite()");
 
         //ignore if already open
         if(IsOpen()) return;
@@ -169,7 +170,7 @@ OmMipChunk::OpenForWrite() {
  */
 void 
 OmMipChunk::Flush() {
-	DOUT( "OmMipChunk::Flush()" );
+	//debug("genone", "OmMipChunk::Flush()\n" );
 	
 	//only write if dirty
 	if(IsVolumeDataDirty()) {	
@@ -189,7 +190,7 @@ OmMipChunk::Flush() {
  */
 void 
 OmMipChunk::Close() {
-	DOUT("OmMipChunk::Close()");
+	//debug("genone","OmMipChunk::Close()\n");
 	
 	//ignore if already closed
 	if(!IsOpen()) return;
@@ -297,7 +298,7 @@ OmMipChunk::WriteVolumeData() {
 void 
 OmMipChunk::ReadMetaData() {
 	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	DOUT("OmMipChunk::ReadMetaData: " << fpath);
+	//debug("genone","OmMipChunk::ReadMetaData: %s \n", fpath.data());
 	
 	//read archive if it exists
 	if(OmProjectData::DataExists(fpath))
@@ -310,7 +311,7 @@ OmMipChunk::ReadMetaData() {
 void 
 OmMipChunk::WriteMetaData() {
 	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	DOUT("OmMipChunk::WriteMetaData: " << fpath);
+	//debug("genone","OmMipChunk::WriteMetaData:  %s \n", fpath.data());
 	
 	//store archive
 	OmProjectData::ArchiveWrite< OmMipChunk >(fpath, this);
@@ -716,7 +717,7 @@ OmMipChunk::ExtractSliceExtent(OmDataVolumePlane plane, int coord) {
  */
 void* 
 OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast) {
-	DOUT("OmMipChunk::ExtractDataSlice()");
+	//debug("genone","OmMipChunk::ExtractDataSlice()\n");
 	
 	if (!IsOpen() && fast) 	// If we want to extract fast leave fast if not open.
 		return NULL;

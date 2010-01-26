@@ -10,6 +10,7 @@
 
 #include "omGl.h"
 #include "omStd.h"
+#include "system/omDebug.h"
 
 
 #define SELEC_BUFF_SIZE 256

@@ -4,6 +4,7 @@
 
 #include "segment/omSegmentEditor.h"
 #include "common/omGl.h"
+#include "system/omDebug.h"
 
 
 #define DEBUG 0
@@ -21,12 +22,12 @@ OmVolume* OmVolume::mspInstance = 0;
 
 
 OmVolume::OmVolume() {
-	DOUT("OmVolume::OmVolume()");
+	//debug("genone","OmVolume::OmVolume()");
 }
 
 
 OmVolume::~OmVolume() {
-	DOUT("OmVolume::~OmVolume()");
+	//debug("genone","OmVolume::~OmVolume()");
 }
 
 

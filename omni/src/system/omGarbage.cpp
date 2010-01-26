@@ -6,6 +6,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "system/omDebug.h"
 namespace bfs=boost::filesystem;
 
 

@@ -8,6 +8,7 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string_regex.hpp>
+#include "system/omDebug.h"
 namespace bfa=boost::algorithm;
 
 
@@ -454,7 +455,7 @@ om_hdf5_dataset_image_create(hid_t fileId, const char* name, Vector3<int> dataDi
 
 void 
 om_hdf5_dataset_image_create_tree_overwrite(hid_t fileId, const char* name, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample, bool unlimited) {
-	DOUT("om_hdf5_dataset_image_create_tree_overwrite: " << name);
+	//debug("genone","om_hdf5_dataset_image_create_tree_overwrite: %s \n", name);
 
 	//create tree and delete old data if exists
 	om_hdf5_dataset_delete_create_tree(fileId, name);

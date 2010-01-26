@@ -4,6 +4,7 @@
 
 #include "voxel/omMipSegmentDataCoord.h"
 #include "common/omGl.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

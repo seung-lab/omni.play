@@ -40,6 +40,7 @@
  #include "mainwindow.h"
 
 #include "common/omGl.h"
+#include "system/omDebug.h"
 
 int main(int argc, char *argv[])
  {	 

@@ -41,6 +41,7 @@ namespace bfs=boost::filesystem;
 
 
 #include <hdf5.h>
+#include "system/omDebug.h"
 
 
 
@@ -213,7 +214,7 @@ om_imagedata_read(string dpath, list<string> &fnames, const DataBbox srcExtentBb
 
 vtkImageData* 
 om_imagedata_read_vtk( string dpath, list<string> &fnames, const DataBbox srcExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample) {
-	DOUT("om_imagedata_read_vtk");
+	//debug("genone","om_imagedata_read_vtk");
 	
 	//alloc dynamic image data
 	vtkImageData *data = vtkImageData::New();
@@ -345,7 +346,7 @@ om_imagedata_write(vtkImageData *data, string dpath, string fpattern, const Data
 void 
 om_imagedata_write_vtk(vtkImageData *data, string dpath, string fpattern, const DataBbox dataExtentBbox, int bytesPerSample) {
 	
-	DOUT("Write");
+	//debug("genone","Write");
 	
 	//convert to vtk extent
 	int vtk_extent[6];

@@ -1,6 +1,7 @@
 
 #include "omPreferenceDefinitions.h"
 #include "omPreferences.h"
+#include "system/omDebug.h"
 
 
 #pragma mark 

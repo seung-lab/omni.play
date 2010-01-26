@@ -1,4 +1,5 @@
 #include "dataWrappers.h"
+#include "system/omDebug.h"
 
 DataWrapperFactory::DataWrapperFactory( const ObjectType obj_type, const OmId obj_id )
 	: mType( obj_type )

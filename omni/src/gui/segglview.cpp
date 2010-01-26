@@ -5,6 +5,7 @@
 #include "system/omException.h"
 
 #include <QPainter>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

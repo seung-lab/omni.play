@@ -10,6 +10,7 @@
 #include "system/events/omView3dEvent.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0;
 
@@ -85,7 +86,7 @@ void Preferences2d::on_mipEdit_editingFinished() {
 }
 
 void Preferences2d::on_transparencySlider_valueChanged(int val) {
-//	DOUT("slider value changed = " << val);
+//	//debug("genone","slider value changed = " << val);
 	
 	transparencySliderLabel->setNum(val / (50.0));
 	

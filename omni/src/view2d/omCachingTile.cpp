@@ -1,11 +1,12 @@
 
 #include "omCachingTile.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
 
 void OmCachingTile::GetTextureID(shared_ptr<OmTextureID> &p_value,const OmTileCoord &tileCoord) {
-	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
+	// //debug("genone","OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
 	
         TextureIDCache::Get(p_value, tileCoord);
 	return;
@@ -16,7 +17,7 @@ void OmCachingTile::StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* te
 }
 
 OmTextureID* OmCachingTile::HandleCacheMiss(const OmTileCoord &key) {
-	DOUT("OmCachingTile::HandleCacheMiss: " << key.Level << " " << key.Coordinate);
+
 	
 	return BindToTextureID(key);
 	// OmTile: OmTextureID* BindToTextureID(const OmTileCoordinate &key);

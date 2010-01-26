@@ -9,6 +9,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "system/omDebug.h"
 namespace bfs=boost::filesystem;
 
 
@@ -74,7 +75,7 @@ OmProjectData::GetFilePath() {
 
 void 
 OmProjectData::Create() {
-	DOUT("OmProjectData::Create()");
+	//debug("genone","OmProjectData::Create()");
 
 	string fpath = GetFilePath();
 	
@@ -89,14 +90,14 @@ OmProjectData::Create() {
 
 void 
 OmProjectData::Open() {
-	DOUT("OmProjectData::Open()");
+	//debug("genone","OmProjectData::Open()");
 	assert(!IsOpen());
 	Instance()->mFileId = om_hdf5_file_open(GetFilePath().c_str());
 }
 
 void 
 OmProjectData::Close() {
-	DOUT("OmProjectData::Close()");
+	//debug("genone","OmProjectData::Close()");
 	assert(IsOpen());
 
 	om_hdf5_file_close(Instance()->mFileId);
@@ -105,7 +106,7 @@ OmProjectData::Close() {
 
 void 
 OmProjectData::Flush() {
-	DOUT("OmProjectData::Flush()");
+	//debug("genone","OmProjectData::Flush()");
 	assert(IsOpen());
 	Close();
 	Open();

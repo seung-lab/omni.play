@@ -4,6 +4,7 @@
 #include "system/omFilter.h"
 #include "system/omProject.h"
 #include <dlfcn.h>
+#include "system/omDebug.h"
 
 GGOCTFPointer GGOCTFunction = 0;
 int firsttime (int argc, char *argv[]) 

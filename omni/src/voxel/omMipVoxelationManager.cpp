@@ -14,6 +14,7 @@
 #include "system/events/omView3dEvent.h"
 
 #include "common/omThreads.h"
+#include "system/omDebug.h"
 
 
 
@@ -153,7 +154,7 @@ OmMipVoxelationManager::IsBoundaryVoxel( const DataCoord &rDataCoord ) {
 OmMipVoxelation*
 OmMipVoxelationManager::CreateMipVoxelation(const OmMipSegmentDataCoord &coord) {
 	
-	DOUT("OmMipChunkVoxels::VoxelateValue");
+	//debug("genone","OmMipChunkVoxels::VoxelateValue");
 	
 	//alloc a new voxelation with this cache
 	OmMipVoxelation *p_voxelation = new OmMipVoxelation(coord, this);
@@ -293,7 +294,7 @@ OmMipVoxelationManager::UpdateVoxel(const DataCoord &rVox,
  */
 OmMipVoxelation* 
 OmMipVoxelationManager::HandleCacheMiss(const OmMipSegmentDataCoord &coord) {
-	DOUT("OmMipVoxelationManager::HandleCacheMiss: " << coord);
+	//debug("genone","OmMipVoxelationManager::HandleCacheMiss: ");
 	return CreateMipVoxelation(coord);
 }
 
@@ -301,7 +302,7 @@ OmMipVoxelationManager::HandleCacheMiss(const OmMipSegmentDataCoord &coord) {
 void 
 OmMipVoxelationManager::HandleFetchUpdate() {
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));	
-	DOUT("OmMipVoxelationManager::FetchUpdate: redraw sent");
+	//debug("genone","OmMipVoxelationManager::FetchUpdate: redraw sent");
 }
 
 

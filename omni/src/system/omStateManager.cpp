@@ -15,6 +15,7 @@
 //view3d context
 #include <QtOpenGL/qgl.h>
 #include <QtOpenGL/QGLFormat>
+#include "system/omDebug.h"
 
 
 #define DEBUG 0
@@ -387,7 +388,7 @@ OmStateManager::SetSliceState(OmSlicePlane plane, bool enabled) {
  */
 void 
 OmStateManager::SetViewSliceDataFormat(int bytesPerSample, int samplesPerPixel) {
-	DOUT("OmStateManager::SetViewSliceDataFormat");
+	//debug("genone","OmStateManager::SetViewSliceDataFormat");
 	
 	SetViewSlice(SLICE_XY_PLANE, Vector3<int>::ZERO, NULL);
 	SetViewSlice(SLICE_YZ_PLANE, Vector3<int>::ZERO, NULL);
@@ -404,7 +405,7 @@ OmStateManager::SetViewSliceDataFormat(int bytesPerSample, int samplesPerPixel) 
  */
 void 
 OmStateManager::SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *p_data) {
-	DOUT("OmStateManager::SetViewSlice");
+	//debug("genone","OmStateManager::SetViewSlice");
 
 	//get size of image data
 	unsigned int data_size = Instance()->mViewSliceBytesPerSample * dim.x * dim.y * dim.z;

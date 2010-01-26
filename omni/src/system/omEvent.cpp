@@ -1,6 +1,7 @@
 
 #include "omEvent.h"
 #include "omEventManager.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

@@ -6,6 +6,7 @@
 #include "system/events/omProgressEvent.h"
 
 #include "system/omFilter.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

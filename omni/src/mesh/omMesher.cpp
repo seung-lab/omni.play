@@ -19,6 +19,7 @@
 #include <vtkMarchingCubes.h>
 #include <vtkDiscreteMarchingCubes.h>
 #include <vtkThreshold.h>
+#include "system/omDebug.h"
 #import <vtkCleanPolyData.h>
 #import <vtkSmoothPolyDataFilter.h>
 #import <vtkPolyDataNormals.h>
@@ -65,19 +66,20 @@ OmMeshSource::~OmMeshSource() {
 
 //load mesh data from chunk - expensive
 void 
-OmMeshSource::Load( OmMipChunk &chunk ) {
+OmMeshSource::Load(shared_ptr<OmMipChunk> chunk) {
 	
 	//delete image data if already loaded
 	if(pImageData != NULL) pImageData->Delete();
 	
 	//get new data
-	pImageData = chunk.GetMeshImageData();
+	pImageData = chunk->GetMeshImageData();
 	if (NULL == pImageData) {
 		cout << "Crash inc..." << endl;
 	}
-	MipCoord = chunk.GetCoordinate();
-	SrcBbox = chunk.GetExtent();
-	DstBbox = chunk.GetNormExtent();
+	MipCoord = chunk->GetCoordinate();
+	SrcBbox = chunk->GetExtent();
+	DstBbox = chunk->GetNormExtent();
+     mChunk = chunk;
 }	
 
 //copy from another mesh source - cheaper
@@ -212,20 +214,20 @@ OmMesher::BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh) {
 	
 	vtkFloatArray* p_normal_data_array = vtkFloatArray::New();
 	p_normal_data_array->DeepCopy(pPolyData->GetPointData()->GetNormals());
-	DOUT("OmMipChunkMesher::BuildMeshFromPolyData: convert to floats");
+	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: convert to floats");
 	
 	//get strip cells properties
 	vtkCellArray *p_strip_cells_array = pPolyData->GetStrips();
 	uint32_t num_strips = numStripsInStripCellArray(p_strip_cells_array);
 	uint32_t strip_cells_array_size = p_strip_cells_array->GetNumberOfConnectivityEntries();
 	vtkIdType *p_strip_cells_array_data = p_strip_cells_array->GetPointer();
-	DOUT("OmMipChunkMesher::BuildMeshFromPolyData: get strip props");
+	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: get strip props");
 	
 	//create aliases to mesh data
 	uint32_t* &r_mesh_strip_offset_size_data = pMesh->mpStripOffsetSizeData;
 	GLuint* &r_mesh_vert_indicies = pMesh->mpVertexIndexData;
 	GLfloat* &r_mesh_vert_data = pMesh->mpVertexData;
-	DOUT("OmMipChunkMesher::BuildMeshFromPolyData: mesh alias");
+	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: mesh alias");
 	
 	//setup and alloc mesh memory
 	pMesh->mStripCount = num_strips;
@@ -239,7 +241,7 @@ OmMesher::BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh) {
 	uint32_t vert_count = p_points_data_array->GetNumberOfTuples();
 	pMesh->mVertexCount = vert_count;
 	r_mesh_vert_data = new GLfloat[6 * vert_count];
-	DOUT("OmMipChunkMesher:: allocd mesh memory")
+	//debug("genone","OmMipChunkMesher:: allocd mesh memory");
 	
 	
 	//copy interleved position and normal data
@@ -247,7 +249,7 @@ OmMesher::BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh) {
 		p_points_data_array->GetTupleValue(idx, &r_mesh_vert_data[6*idx]);
 		p_normal_data_array->GetTupleValue(idx, &r_mesh_vert_data[6*idx + 3]);
 	}
-	DOUT("OmMipChunkMesher:: got vertex data")
+	//debug("genone","OmMipChunkMesher:: got vertex data");
 	
 	//store strip geom index offset and geom size data and geom indicies
 	uint32_t strip_idx = 0;
@@ -276,7 +278,7 @@ OmMesher::BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh) {
 		strip_idx++;
 	}
 	
-	DOUT("OmMipChunkMesher:: strips: " << num_strips );
+	//debug("genone","OmMipChunkMesher:: strips: %i \n", num_strips );
 	
 	
 	//delete float array

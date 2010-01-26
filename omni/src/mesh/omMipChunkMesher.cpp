@@ -22,6 +22,7 @@
 #include <vtkMarchingCubes.h>
 #include <vtkDiscreteMarchingCubes.h>
 #include <vtkThreshold.h>
+#include "system/omDebug.h"
 #import <vtkCleanPolyData.h>
 #import <vtkSmoothPolyDataFilter.h>
 #import <vtkPolyDataNormals.h>
@@ -57,7 +58,7 @@ OmMipChunkMesher* OmMipChunkMesher::mspInstance = 0;
 
 
 OmMipChunkMesher::OmMipChunkMesher() {
-	DOUT("OmMipChunkMesher::OmMipChunkMesher()")
+	//debug("genone","OmMipChunkMesher::OmMipChunkMesher()");
 	
 	//init thread count
 	mMeshThreadCount = 0;
@@ -72,7 +73,7 @@ OmMipChunkMesher::OmMipChunkMesher() {
 
 
 OmMipChunkMesher::~OmMipChunkMesher() {
-	DOUT("OmMipChunkMesher::~OmMipChunkMesher()");
+	//debug("genone","OmMipChunkMesher::~OmMipChunkMesher()");
 }
 
 
@@ -107,20 +108,23 @@ OmMipChunkMesher::Delete() {
 
 
 void 
-OmMipChunkMesher::BuildChunkMeshes(OmMipMeshManager *pMipMeshManager, OmMipChunk& chunk, const SegmentDataSet &rMeshVals) {
-	cout << "OmMipChunkMesher::BuildChunkMeshes: " << chunk.GetCoordinate() << endl;
+OmMipChunkMesher::BuildChunkMeshes(OmMipMeshManager *pMipMeshManager, shared_ptr <OmMipChunk> chunk, const SegmentDataSet &rMeshVals) {
+     debug("mesher","OmMipChunkMesher::BuildChunkMeshes: (x,y,z):%i,%i,%i\n",
+           chunk.get()->GetCoordinate().get<1>(),
+           chunk.get()->GetCoordinate().get<2>(),
+           chunk.get()->GetCoordinate().get<3>());
 	
 	Instance()->BuildChunkMeshesThreaded(pMipMeshManager, chunk, rMeshVals);
 }
 
 void 
-OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, OmMipChunk& chunk, const SegmentDataSet &rMeshVals) {
+OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, shared_ptr<OmMipChunk> chunk, const SegmentDataSet &rMeshVals) {
 	
 	//set manager
 	mpMipMeshManager = pMipMeshManager;
 	
 	//get num of threads
-	int num_threads = 2;
+	int num_threads = 5;
 	
 	
 	//SET CURRENT DATA
@@ -132,23 +136,29 @@ OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, Om
 	mpCurrentMeshSource = new OmMeshSource();
 	mpCurrentMeshSource->Load(chunk);
 	//current chunk
-	mCurrentMipCoord = chunk.GetCoordinate();
+	mCurrentMipCoord = chunk.get()->GetCoordinate();
 	
 
-	cout << "Should have chunk loaded now: " << mpCurrentMeshSource << endl;
+	debug("mesher","Should have chunk loaded now: ");
 	
 	
 	//lock thread mutex to prevent created threads from starting
 	pthread_mutex_lock(&mMeshThreadMutex);
-	
+     //lock thread creation with OmCacheManagerLock to prevent deletion
+	//OmCacheManager::Instance()->LockCacheMap();
+
 	//create all meshing threads
 	pthread_t meshing_threads[num_threads];
 	for(int i=0; i<num_threads; ++i) {
 		pthread_create(&meshing_threads[i], NULL, init_meshing_thread, (void *)this);
+          debug("thread","OmMipChunkMesher::BuildChunkMeshesThreaded->Thread Created"); 
 	}
 	
 	//free mutex and with for signal
 	pthread_cond_wait(&mMeshThreadCv, &mMeshThreadMutex);
+
+
+
 	//all threads must be dead, so free mutex and return
 	pthread_mutex_unlock(&mMeshThreadMutex);
 	
@@ -198,7 +208,7 @@ OmMipChunkMesher::BuildMeshesLoop() {
 	
 	//get thread index, and inc count
 	thread_index = mMeshThreadCount++;
-	DOUT("OmMipChunkMesher::BuildMeshesLoop(): " << pthread_self() << " " << thread_index << endl);
+	debug("mesher","OmMipChunkMesher::BuildMeshesLoop(): %p %i \n", pthread_self(), thread_index);
 	
 	pthread_mutex_unlock(&mMeshThreadMutex);
 	

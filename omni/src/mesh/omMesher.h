@@ -11,10 +11,12 @@
 #include "volume/omMipChunkCoord.h"
 #include "segment/omSegmentTypes.h"
 #include "system/omSystemTypes.h"
-
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
+
 
 #include <vtkImageData.h>
 
@@ -46,7 +48,7 @@ public:
 	~OmMeshSource();
 	
 	//load mesh data from chunk - expensive
-	void Load( OmMipChunk &chunk );
+	void Load( shared_ptr<OmMipChunk> chunk );
 	
 	//copy from another mesh source - cheaper
 	void Copy( OmMeshSource &source );
@@ -57,6 +59,7 @@ public:
 	AxisAlignedBoundingBox<float> DstBbox;
 	
 protected:
+     shared_ptr<OmMipChunk> mChunk;
 	OmMeshSource(OmMeshSource &);
 	OmMeshSource& operator= (const OmMeshSource &);
 };

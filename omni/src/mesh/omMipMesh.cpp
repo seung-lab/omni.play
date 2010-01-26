@@ -10,6 +10,7 @@
 namespace bfs=boost::filesystem;
 
 #include <fstream>
+#include "system/omDebug.h"
 
 
 #define DEBUG 0
@@ -97,11 +98,11 @@ OmMipMesh::Load() {
 	//string fpath = GetDirectoryPath() + GetFileName();
 	//cout << "OmMipMesh::Load: " << fpath << endl;
 	
-	DOUT("OmMipMesh::Load: " << GetDirectoryPath());
+	//debug("genone","OmMipMesh::Load: %s \n", GetDirectoryPath().data());
 	//if(!bfs::exists(bfs::path(fpath))) 
 	//	throw OmIoException("File not found:" + fpath);
 	
-	//DOUT("OmMipMesh::Load: mesh found on disk");
+	////debug("genone","OmMipMesh::Load: mesh found on disk");
 	
 	//read in archive
 	//archive_read< OmMipMesh >(fpath, this);
@@ -136,14 +137,14 @@ OmMipMesh::Load() {
 	mVertexCount = size / ( 6 * sizeof(GLfloat) );
 
 	
-	DOUT("OmMipMesh::Load: got mesh from disk");
+	//debug("genone","OmMipMesh::Load: got mesh from disk\n");
 }
 
 
 void 
 OmMipMesh::Save() {
 	//string fpath = GetDirectoryPath() + GetFileName();
-	DOUT("OmMipMesh::Save: " << GetDirectoryPath());
+	//debug("genone","OmMipMesh::Save: %s\n", GetDirectoryPath().data());
 	
 	//create all intermediate directories
 	//bfs::create_directories(bfs::path(GetDirectoryPath()));
@@ -230,7 +231,7 @@ OmMipMesh::IsVbo() {
 
 void 
 OmMipMesh::CreateVbo() {
-	DOUT("OmMipMesh::CreateVbo()");
+	//debug("genone","OmMipMesh::CreateVbo()\n");
 	
 	//ignore empty meshes
 	if(IsEmptyMesh()) return;
@@ -240,18 +241,18 @@ OmMipMesh::CreateVbo() {
 	
 	//create the VBO for the vertex data
 	//2 (pos/norm) * 3 (x/y/z) * sizeof(GLfloat)
-	DOUT("OmMipMesh::CreateVbo(): vertex data");
+	//debug("genone","OmMipMesh::CreateVbo(): vertex data");
 	int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
 	mVertexDataVboId = createVbo(mpVertexData, vertex_data_size,
 								 GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 
 	//create VBO for the vertex index data
-	DOUT("OmMipMesh::CreateVbo(): vertex index data");
+	//debug("genone","OmMipMesh::CreateVbo(): vertex index data\n");
 	int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
 	mVertexIndexDataVboId = createVbo(mpVertexIndexData, vertex_index_data_size,
 									  GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 	
-	DOUT("OmMipMesh::CreateVbo(): delete local");
+	//debug("genone","OmMipMesh::CreateVbo(): delete local\n");
 	//delete local data
 	delete [] mpVertexData;
 	mpVertexData = NULL;
@@ -259,11 +260,11 @@ OmMipMesh::CreateVbo() {
 	delete [] mpVertexIndexData;
 	mpVertexIndexData = NULL;
 	
-	DOUT("OmMipMesh::CreateVbo(): update size");
+	//debug("genone","OmMipMesh::CreateVbo(): update size\n");
 	//update cache
 	UpdateSize(vertex_data_size + vertex_index_data_size);
 	
-	DOUT("OmMipMesh::CreateVbo: done");
+	//debug("genone","OmMipMesh::CreateVbo: done\n");
 }
 
 
@@ -301,7 +302,7 @@ OmMipMesh::Draw() {
 	//if(!IsVbo()) assert(false);
 	if(!IsVbo()) CreateVbo();
 	
-	DOUT("OmMipMesh::Draw()");
+	//debug("genone","OmMipMesh::Draw()");
 	
 	////bind VBOs so gl*Pointer() operations are offset instead of real pointers
 	//bind vertex data VBO
@@ -394,7 +395,7 @@ operator<<(ostream &out, const OmMipMesh &m) {
  */
 GLuint createVbo(const void* data, int dataSize, GLenum target, GLenum usage)
 {
-	DOUT("createVbo()");
+	//debug("genone","createVbo()\n");
 	
 	// 0 is reserved, glGenBuffersARB() will return non-zero id if success
 	GLuint id = NULL_VBO_ID;  

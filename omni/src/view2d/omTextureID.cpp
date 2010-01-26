@@ -2,6 +2,7 @@
 #include "omTextureID.h"
 #include "omThreadedCachingTile.h"
 #include "system/omGarbage.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
@@ -9,14 +10,14 @@
 
 OmTextureID::OmTextureID(const OmTileCoord &tileCoord, const GLuint &texID, const int &size, const int x, const int y,  const OmIds &containedIds, OmThreadedCachingTile *cache, void * texture, int flags)
 : OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds), texture(texture), flags(flags), x(x), y(y) {
-	DOUT("OmTextureID::OmTextureID()");	
+	//debug("genone","OmTextureID::OmTextureID()");	
 
 	UpdateSize( mem_size );
 }
 
 
 OmTextureID::~OmTextureID() {
-	DOUT("OmTextureID::~OmTextureID()");
+	//debug("genone","OmTextureID::~OmTextureID()");
 	
 	//glDeleteTextures( 1, &textureID);
 	//Attempt a safe delete of the gl texture id.

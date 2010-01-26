@@ -5,6 +5,7 @@
 #include "system/events/omView3dEvent.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
+#include "system/omDebug.h"
 
 
 PreferencesMesh::PreferencesMesh(QWidget *parent) 

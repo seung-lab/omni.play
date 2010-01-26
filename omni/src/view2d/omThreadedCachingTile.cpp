@@ -11,6 +11,7 @@
 
 #include <QColor>
 #include <QGLContext>
+#include "system/omDebug.h"
 
 
 #define DEBUG 0
@@ -35,8 +36,7 @@ OmThreadedCachingTile::~OmThreadedCachingTile() {
 }
 
 void OmThreadedCachingTile::GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block) {
-	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
-	//std::cerr << __FUNCTION__ << endl;
+
         TextureIDThreadedCache::Get(p_value, tileCoord, block);
 	return;
 }
@@ -44,7 +44,7 @@ void OmThreadedCachingTile::GetTextureID(shared_ptr<OmTextureID> &p_value, const
 // Called at the highest miplevel will force the entire octree into memory so an initial
 // calling at a medium mip level might be a good idea...
         void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr<OmTextureID> &p_value,const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord) {
-	// DOUT("OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
+	// //debug("genone","OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
 	//std::cerr << __FUNCTION__ << endl;
 
 	
@@ -86,13 +86,13 @@ void OmThreadedCachingTile::Remove(const OmTileCoord &tileCoord) {
 
 OmTextureID* OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord &key) {
 	//std::cerr << __FUNCTION__ << endl;
-	DOUT("OmThreadedCachingTile::HandleCacheMiss: " << key.Level << " " << key.Coordinate);
+	//debug("genone","OmThreadedCachingTile::HandleCacheMiss: %i\n ",key.Level);
 	
-//	DOUT("OmThreadedCachingTile::HandleCacheMiss: set context");
+//	//debug("genone","OmThreadedCachingTile::HandleCacheMiss: set context");
 //	OmStateManager::MakeContextCurrent(mFetchThreadContext);
 	
 	//return mesh to cache
-	DOUT("OmThreadedCachingTile::HandleCacheMiss: returning texture");	
+	//debug("genone","OmThreadedCachingTile::HandleCacheMiss: returning texture");	
 	return BindToTextureID(key);
 	// OmTile: OmTextureID* BindToTextureID(const OmTileCoord &key);
 }
@@ -105,7 +105,7 @@ void OmThreadedCachingTile::SetContinuousUpdate(bool setUpdate) {
 bool
 OmThreadedCachingTile::InitializeFetchThread() {
 	//std::cerr << __FUNCTION__ << endl;
-	DOUT("OmThreadedCachingTile::InitializeFetchThread: set context");
+	//debug("genone","OmThreadedCachingTile::InitializeFetchThread: set context\n");
 	
 	//aquire and set shared context
 	//mFetchThreadContext = OmStateManager::GetSharedView2dContext(mShareContext);
@@ -122,7 +122,7 @@ OmThreadedCachingTile::HandleFetchUpdate() {
 	
 	//std::cerr << "ENDING " << __FUNCTION__ << endl;
 
-	DOUT("OmMipMeshManager::FetchUpdate: redraw sent");
+	//debug("genone","OmMipMeshManager::FetchUpdate: redraw sent\n");
 }
 
 
@@ -134,7 +134,7 @@ OmThreadedCachingTile::HandleFetchUpdate() {
 void OmThreadedCachingTile::setSecondMipVolume(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol) {
 	//std::cerr << __FUNCTION__ << endl;
 	isSecondMipVolume = true;
-	//DOUT("secondvol is enabled = " << secondvol->GetCacheMaxSize());
+	////debug("genone","secondvol is enabled = " << secondvol->GetCacheMaxSize());
 	AddOverlay(secondtype, second_id, secondvol);
 }
 

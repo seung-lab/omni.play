@@ -48,7 +48,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 : QWidget(parent)
 {	
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget ();
-	DOUT("OmView2d::OmView2d -- " << viewtype);
+	//debug("genone","OmView2d::OmView2d -- " << viewtype);
 	
 	mViewType = viewtype;
 	mVolumeType = voltype;
@@ -112,7 +112,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		if(mSecondId && mThirdId) {
 			OmChannel &second_channel = OmVolume::GetChannel(mSecondId);
 			OmChannel &third_channel = OmVolume::GetChannel(mThirdId);
-			DOUT("THERE ARE THREE IDS");
+			//debug("genone","THERE ARE THREE IDS");
 			mCache->setSecondMipVolume(CHANNEL, mSecondId, &second_channel);
 		}
 		
@@ -200,8 +200,8 @@ void OmView2d::initializeGL()
 {	
 	// IMPORTANT: To cooperate fully with QPainter, we defer matrix stack operations and attribute initialization until
 	// the widget needs to be myUpdated.
-	DOUT("OmView2d::initializeGL	" << "(" << size().width() << ", " << size().height() << ")");
-	DOUT("viewtype = " << mViewType);
+	//debug("genone","OmView2d::initializeGL	" << "(" << size().width() << ", " << size().height() << ")");
+	//debug("genone","viewtype = " << mViewType);
 	
 	mTotalViewport.lowerLeftX = 0;
 	mTotalViewport.lowerLeftY = 0;
@@ -230,7 +230,7 @@ void OmView2d::resizeEvent (QResizeEvent * event)
  */
 void OmView2d::resizeGL(int width, int height)
 { 
-	DOUT("OmView2d::resizeGL(" << width << ", " << height << ")");
+	//debug("genone","OmView2d::resizeGL(" << width << ", " << height << ")");
 	
 	delete pbuffer;
         pbuffer = new QGLPixelBuffer(QSize (width, height), QGLFormat::defaultFormat(), sharedwidget);
@@ -365,8 +365,8 @@ void OmView2d::paintEvent(QPaintEvent *event)
 
 QImage OmView2d::safePaintEvent(QPaintEvent *event)
 { 	
-	DOUT("OmView2d::paintEvent -- " << mViewType);
-	//	DOUT("mTotalViewport = " << mTotalViewport);
+	//debug("genone","OmView2d::paintEvent -- " << mViewType);
+	//	//debug("genone","mTotalViewport = " << mTotalViewport);
 
 	mTextures.clear ();
 	
@@ -1189,7 +1189,7 @@ void OmView2d::GlobalDepthFix (float howMuch)
 ///////		 KeyEvent Methods
 
 void OmView2d::wheelEvent ( QWheelEvent * event ) {
-	DOUT("OmView2d::wheelEvent -- " << mViewType);
+	//debug("genone","OmView2d::wheelEvent -- " << mViewType);
 	
 	const int numDegrees = event->delta() / 8;
 	const int numSteps   = numDegrees / 15;
@@ -1343,7 +1343,7 @@ void OmView2d::setBrushToolDiameter()
 }
 
 void OmView2d::keyPressEvent(QKeyEvent *event) {
-	DOUT("OmView2d::keyPressEvent -- " << mViewType);
+	//debug("genone","OmView2d::keyPressEvent -- " << mViewType);
 	
 	
 	switch (event->key()) {
@@ -1560,7 +1560,7 @@ void OmView2d::PreferenceChangeEvent(OmPreferenceEvent *event) {
 		case OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT:
 		{
 			mCache->SetNewAlpha(OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
-			//DOUT("New alpha = " << OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
+			////debug("genone","New alpha = " << OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
 			
 			//mCache->ClearCache();
 			
@@ -1608,12 +1608,12 @@ void OmView2d::SegmentObjectModificationEvent(OmSegmentEvent *event) {
 	//add/remove segment, change state, change selection
 	//valid methods: GetModifiedSegmentIds()
 	
-	DOUT("OmView2d::SegmentObjectModificationEvent");
+	//debug("genone","OmView2d::SegmentObjectModificationEvent");
 	
 	//	OmIds::iterator itr;
 	//	OmIds mod_ids = event->GetModifiedSegmentIds();
 	//	for(itr = mod_ids.begin(); itr != mod_ids.end(); itr++) {
-	//		DOUT("modified id: " << *itr);
+	//		//debug("genone","modified id: " << *itr);
 	//	}
 	
 	if((mVolumeType == SEGMENTATION) && (event->GetModifiedSegmentationId() == mImageId)) {
@@ -1631,7 +1631,7 @@ void OmView2d::SegmentDataModificationEvent(OmSegmentEvent *event) {
 	//voxels of a segment have changed
 	//valid methods: GetModifiedSegmentIds()
 	
-	DOUT("OmView2d::SegmentDataModificationEvent");
+	//debug("genone","OmView2d::SegmentDataModificationEvent");
 	
 	if((mVolumeType == SEGMENTATION) && (event->GetModifiedSegmentationId() == mImageId)) {
 		modified_Ids = event->GetModifiedSegmentIds();
@@ -1643,7 +1643,7 @@ void OmView2d::SegmentDataModificationEvent(OmSegmentEvent *event) {
 void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent *event) {
 	//change segment edit selection
 	
-	DOUT("OmView2d::SegmentEditSelectionChangeEvent");
+	//debug("genone","OmView2d::SegmentEditSelectionChangeEvent");
 	
 	if(mVolumeType == SEGMENTATION) {
 		//		modified_Ids = event->GetModifiedSegmentIds();
@@ -1661,7 +1661,7 @@ void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent *event) {
 				
 				const Vector3<float> &color = OmVolume::GetSegmentation(mentationEditId).GetSegment(mentEditId).GetColor();
 				
-				//DOUT("SETTING EDIT COLOR");
+				////debug("genone","SETTING EDIT COLOR");
 				editColor = qRgba(color.x * 255, color.y * 255, color.z * 255, 255);
 			}
 		}
@@ -1672,11 +1672,11 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent *event) {
 	//voxels in a segmentation have been modified
 	//valid methods: GetSegmentationId(), GetVoxels()
 	
-	DOUT("OmView2d::VoxelModificationEvent() ---" << mViewType);
+	//debug("genone","OmView2d::VoxelModificationEvent() ---" << mViewType);
 	
 	// cout << "voxel modification event" << endl;
-	DOUT("event segmentation id = " << event->GetSegmentationId());
-	DOUT("iSentIt = " << iSentIt);
+	//debug("genone","event segmentation id = " << event->GetSegmentationId());
+	//debug("genone","iSentIt = " << iSentIt);
 	//modifiedCoords.clear();
 	// cout << "event segmentation id: " << event->GetSegmentationId() << endl;
 	if((mVolumeType == SEGMENTATION) && (event->GetSegmentationId() == mImageId)) {
@@ -1688,7 +1688,7 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent *event) {
 		set<DataCoord>::iterator itr;
 		
 		for(itr = modVoxels.begin(); itr != modVoxels.end(); itr++) {
-			DOUT("data coord = " << *itr);
+			//debug("genone","data coord = " << *itr);
 			modifiedCoords.insert(*itr);
 			
 		}
@@ -1699,7 +1699,7 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent *event) {
 
 
 void OmView2d::SystemModeChangeEvent(OmSystemModeEvent *event) {
-	DOUT("OmView2d::SystemModeChangeEvent");
+	//debug("genone","OmView2d::SystemModeChangeEvent");
 	
 	if(mVolumeType == SEGMENTATION) {
 		modified_Ids = OmVolume::GetSegmentation(mImageId).GetSelectedSegmentIds();
@@ -1724,7 +1724,7 @@ void OmView2d::SystemModeChangeEvent(OmSystemModeEvent *event) {
 ///////		 ViewEvent Methods
 
 void OmView2d::ViewBoxChangeEvent(OmViewEvent *event) {
-	DOUT("OmView2d::ViewBoxChangeEvent -- " << mViewType);
+	//debug("genone","OmView2d::ViewBoxChangeEvent -- " << mViewType);
 	myUpdate();
 }
 
@@ -2008,7 +2008,7 @@ DataCoord OmView2d::ToDataCoord (int xMipChunk, int yMipChunk, int mDataDepth)
 void OmView2d::Draw(int mip)
 {
         drawComplete = true;
-        DOUT("OmView2d::Draw() -- " << mViewType);
+        //debug("genone","OmView2d::Draw() -- " << mViewType);
 
         Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 #if 1
@@ -2092,7 +2092,7 @@ static int clamp (int c)
 }
 OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, const OmTileCoord &key, void **rData)
 {
-        DOUT("OmTile::setMyColorMap(imageData)");
+        //debug("genone","OmTile::setMyColorMap(imageData)");
 
         OmIds found_ids;
 	bool entered;
@@ -2263,7 +2263,7 @@ void OmView2d::myBindToTextureID(shared_ptr<OmTextureID> gotten_id) {
 void OmView2d::PreDraw(Vector2i zoomMipVector)
 {
 	drawComplete = true;
-	DOUT("OmView2d::Draw() -- " << mViewType);
+	//debug("genone","OmView2d::Draw() -- " << mViewType);
 	
         //zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 

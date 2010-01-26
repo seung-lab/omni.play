@@ -16,12 +16,13 @@
 
 #include "omTextureID.h"
 #include "omTileCoord.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
 OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol) {
 	
-	DOUT("OmTile::OmTile()");
+	//debug("genone","OmTile::OmTile()");
 	
 	view_type = viewtype;
 	vol_type = voltype;
@@ -37,11 +38,11 @@ OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume
 
 
 OmTile::~OmTile() {
-	DOUT("OmTile::~OmTile()");
+	//debug("genone","OmTile::~OmTile()");
 }
 
 void OmTile::AddOverlay(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol) {
-	DOUT("OmTile::AddOverlay()");
+	//debug("genone","OmTile::AddOverlay()");
 	background_type = secondtype;
 	backgroundID = second_id;
 	mBackgroundVolume = secondvol;
@@ -125,11 +126,11 @@ OmTextureID* OmTile::BindToTextureID(const OmTileCoord &key) {
 void* OmTile::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol) {
 	//TODO: pull more data out when chunk is open
 	
-	//DOUT("INSIDE HDF5 ERROR");
+	////debug("genone","INSIDE HDF5 ERROR");
 	
         shared_ptr<OmMipChunk> my_chunk;
         vol->GetChunk(my_chunk, TileToMipCoord(key));
-	//DOUT("after hdf5 error?");
+	////debug("genone","after hdf5 error?");
 	int mDepth = GetDepth(key, vol);
 	
 	my_chunk->Open ();
@@ -139,11 +140,11 @@ void* OmTile::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMi
 	int realDepth = mDepth % (vol->GetChunkDimension());
 	
 	
-	//DOUT("INSIDE DEPTH ERROR");
+	////debug("genone","INSIDE DEPTH ERROR");
 	void* void_data = NULL;
 	if (view_type == XY_VIEW) {
-		//DOUT("realdepth: " << realDepth);
-		//DOUT("mipcoord: " << TileToMipCoord(key));
+		////debug("genone","realdepth: " << realDepth);
+		////debug("genone","mipcoord: " << TileToMipCoord(key));
 		void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, false);
 	}
 	else if (view_type == XZ_VIEW) {
@@ -153,7 +154,7 @@ void* OmTile::GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMi
 		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
 	}
 	
-	//DOUT("after depth error?");
+	////debug("genone","after depth error?");
 	
 	// unsigned char* data = (unsigned char*)void_data;
 	
@@ -189,7 +190,7 @@ int OmTile::GetDepth(const OmTileCoord &key, OmMipVolume *vol) {
 
 void OmTile::setMergeChannels(unsigned char *imageData, unsigned char *secondImageData, Vector2<int> dims, Vector2<int> second_dims, const OmTileCoord &key)
 {
-	DOUT("OmTile::setMergeChannels()");
+	//debug("genone","OmTile::setMergeChannels()");
 	// imageData is channel data if there is a background volume
 	
 	DataBbox data_bbox = mVolume->MipCoordToDataBbox(TileToMipCoord(key), 0);
@@ -260,7 +261,7 @@ int clamp (int c)
 
 OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, const OmTileCoord &key, void **rData)
 {
-	DOUT("OmTile::setMyColorMap(imageData)");
+	//debug("genone","OmTile::setMyColorMap(imageData)");
 	
 	OmIds found_ids;
 	
@@ -344,7 +345,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, con
 
 OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, unsigned char *secondImageData, Vector2<int> dims, Vector2<int> second_dims, const OmTileCoord &key)
 {
-	//	DOUT("OmTile::setMyColorMap(imageData, secondImageData)");
+	//	//debug("genone","OmTile::setMyColorMap(imageData, secondImageData)");
 	// secondImageData is channel data if there is a background volume
 	
 	OmIds found_ids;
@@ -367,7 +368,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, unsigned char *secondI
 		OmId id = current_seg.GetSegmentIdMappedToValue((SEGMENT_DATA_TYPE) imageData[i]);
 		
 		// cout << "gotten segment id mapped to value" << endl;
-		// DOUT("ID ID ID = " << id);
+		// //debug("genone","ID ID ID = " << id);
 		QColor newcolor;
 		if(id == 0) {
 			data[ctr] = secondImageData[i];
@@ -447,7 +448,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE *imageData, unsigned char *secondI
 }
 
 void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord firstCoord, int tl) {
-	DOUT("OmTile::ReplaceFullTextureRegion()");
+	//debug("genone","OmTile::ReplaceFullTextureRegion()");
 	
 	GLuint texture = texID->GetTextureID();
 	//glBindTexture (GL_TEXTURE_2D, texture);
@@ -484,14 +485,14 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 			switch(view_type) {
 				case XY_VIEW: {
 					
-					//DOUT("datacoord = " << DataCoord(x, y, firstCoord.z));
+					////debug("genone","datacoord = " << DataCoord(x, y, firstCoord.z));
 					bg_voxel_value = mBackgroundVolume->GetVoxelValue(DataCoord(x, y, firstCoord.z));
 					fg_voxel_value = mVolume->GetVoxelValue(DataCoord(x, y, firstCoord.z));
 
 				}
 					break;
 				case XZ_VIEW: {
-					//DOUT("datacoord = " << DataCoord(x, firstCoord.z, y));
+					////debug("genone","datacoord = " << DataCoord(x, firstCoord.z, y));
 					bg_voxel_value = mBackgroundVolume->GetVoxelValue(DataCoord(x, firstCoord.z, y));
 					fg_voxel_value = mVolume->GetVoxelValue(DataCoord(x, firstCoord.z, y));
 
@@ -499,8 +500,8 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 					break;
 			}
 			
-//			DOUT("BG VOXEL VALUE = " << bg_voxel_value);
-//			DOUT("FG VOXEL VALUE = " << fg_voxel_value);
+//			//debug("genone","BG VOXEL VALUE = " << bg_voxel_value);
+//			//debug("genone","FG VOXEL VALUE = " << fg_voxel_value);
 			
 			// okay so IF fg is 0, then all bg
 			// if fg != 0, then mix
@@ -560,7 +561,7 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 			int xcoord = (x % tl);
 			int ycoord = (y % tl);
 			
-			// DOUT("x, y: = " << xcoord << ", " << ycoord);
+			// //debug("genone","x, y: = " << xcoord << ", " << ycoord);
 			
 			//glTexSubImage2D (GL_TEXTURE_2D, 0, xcoord, ycoord, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			
@@ -588,13 +589,13 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 				uint32_t bg_voxel_value;
 				SEGMENT_DATA_TYPE fg_voxel_value;
 				
-				// DOUT("datacoord = " << DataCoord(firstCoord.z, y, x));
+				// //debug("genone","datacoord = " << DataCoord(firstCoord.z, y, x));
 
 				bg_voxel_value = mBackgroundVolume->GetVoxelValue(DataCoord(firstCoord.z, y, x));
 				fg_voxel_value = mVolume->GetVoxelValue(DataCoord(firstCoord.z, y, x));
 				
-				//			DOUT("BG VOXEL VALUE = " << bg_voxel_value);
-				//			DOUT("FG VOXEL VALUE = " << fg_voxel_value);
+				//			//debug("genone","BG VOXEL VALUE = " << bg_voxel_value);
+				//			//debug("genone","FG VOXEL VALUE = " << fg_voxel_value);
 				
 				// okay so IF fg is 0, then all bg
 				// if fg != 0, then mix
@@ -654,7 +655,7 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 				int xcoord = (x % tl);
 				int ycoord = (y % tl);
 				
-				// DOUT("x, y: = " << xcoord << ", " << ycoord);
+				// //debug("genone","x, y: = " << xcoord << ", " << ycoord);
 				
 				//glTexSubImage2D (GL_TEXTURE_2D, 0, ycoord, xcoord, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
 				
@@ -669,12 +670,12 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord 
 }
 
 void OmTile::ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl) {
-	DOUT("OmTile::ReplaceTextureRegion()");
+	//debug("genone","OmTile::ReplaceTextureRegion()");
 	GLuint texture = texID->GetTextureID();
 	
 	//glBindTexture (GL_TEXTURE_2D, texture);
 	
-	//	DOUT("current texture = " << texture);
+	//	//debug("genone","current texture = " << texture);
 	
 	// so instead of relying on the color, i want to have *data be filled with the appropriate value from channel
 	
@@ -783,7 +784,7 @@ void OmTile::ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< 
 			int xcoord = ((*itr).x % tl);
 			int ycoord = ((*itr).y % tl);
 			
-			DOUT("x, y: = " << xcoord << ", " << ycoord);
+			//debug("genone","x, y: = %i, %i",xcoord,ycoord);
 			
 			//glTexSubImage2D (GL_TEXTURE_2D, 0, xcoord, ycoord, dim, dim, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			

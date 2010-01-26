@@ -1,5 +1,6 @@
 #include <QtGui> 
 #include "segObjectInspector.h" 
+#include "system/omDebug.h"
 
 SegObjectInspector::SegObjectInspector(QWidget *parent) 
 : QWidget(parent) 

@@ -8,6 +8,7 @@
 #include "utility/setUtilities.h"
 
 #include <vtkImageData.h>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 

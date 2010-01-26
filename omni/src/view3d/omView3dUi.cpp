@@ -13,6 +13,7 @@
 
 #include "system/omStateManager.h"
 #include "system/omKeyManager.h"
+#include "system/omDebug.h"
 
 
 #define DEBUG 0
@@ -369,7 +370,7 @@ OmView3dUi::PickSegmentMouse(QMouseEvent *event, bool drag, OmId &segmentationId
 	//otherwise vaild segment
 	segmentationId = result[0];
 	segmentId = result[1];
-	DOUT("OmView3dUi::PickSegmentMouse" << result[1] << endl);	
+	//debug("genone","OmView3dUi::PickSegmentMouse %i \n",result[1]);	
 	
 	//if valid pointer, then store pick name
 	if(type != NULL) {

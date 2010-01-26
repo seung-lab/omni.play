@@ -15,6 +15,7 @@
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
@@ -33,7 +34,7 @@ static const string MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 OmMipVolume::OmMipVolume()
 : MipChunkThreadedCache(RAM_CACHE_GROUP) {
 	
-	DOUT("OmMipVolume::OmMipVolume()");
+	//debug("genone","OmMipVolume::OmMipVolume()");
 
 	//init
 	SetFilename(MIP_VOLUME_FILENAME);
@@ -48,7 +49,7 @@ OmMipVolume::OmMipVolume()
 
 
 OmMipVolume::~OmMipVolume() {
-	DOUT("OmMipVolume::~OmMipVolume()");
+	//debug("genone","OmMipVolume::~OmMipVolume()");
 	
 	//flush edits
 	Flush();
@@ -545,8 +546,7 @@ OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmM
  */
 void
 OmMipVolume::GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block) {
-	DOUT("OmMipVolume::GetChunk: " << rMipCoord);
-	//assert(ContainsMipChunkCoord(rMipCoord));
+	
 	
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
@@ -561,7 +561,7 @@ OmMipVolume::GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rM
  */
 void 
 OmMipVolume::StoreChunk(const OmMipChunkCoord &rMipCoord, OmMipChunk *pMipChunk) {
-	DOUT("OmMipVolume::StoreChunk: " << rMipCoord);
+
 	assert(ContainsMipChunkCoord(rMipCoord));
 
 	MipChunkThreadedCache::Add(rMipCoord, pMipChunk);
@@ -573,7 +573,7 @@ OmMipVolume::StoreChunk(const OmMipChunkCoord &rMipCoord, OmMipChunk *pMipChunk)
  */
 OmMipChunk* 
 OmMipVolume::HandleCacheMiss(const OmMipChunkCoord &rMipCoord) {
-	DOUT("OmMipVolume::HandleCacheMiss: " << rMipCoord);
+
 	assert(ContainsMipChunkCoord(rMipCoord));
 
 	return new OmMipChunk(rMipCoord, this);
@@ -650,7 +650,7 @@ OmMipVolume::AllocInternalData() {
 	
 	//for all levels, alloc image data
 	for(int i=0; i <= GetRootMipLevel(); i++) {
-		DOUT("OmMipVolume::AllocInternalData()");
+		//debug("genone","OmMipVolume::AllocInternalData()\n");
 		
 		//get dim of mip level volume
 		Vector3<int> data_dims = MipLevelDataDimensions(i);
@@ -663,7 +663,7 @@ OmMipVolume::AllocInternalData() {
 		//alloc image data
 		string mip_volume_level_path = MipLevelInternalDataPath(i);
 		
-		DOUT("OmMipVolume::AllocInternalData: " << mip_volume_level_path);
+		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
 		OmProjectData::CreateImageData(mip_volume_level_path, rounded_data_dims, 
 									   GetChunkDimensions(), GetBytesPerSample());
 	}
@@ -676,7 +676,7 @@ OmMipVolume::AllocInternalData() {
  */
 void
 OmMipVolume::DeleteInternalData() {
-	DOUT("OmMipVolume::DeleteInternalData()");
+	//debug("genone","OmMipVolume::DeleteInternalData()\n");
 	
 	if(OmProjectData::GroupExists(mDirectoryPath)) {
 		OmProjectData::GroupDelete(mDirectoryPath);
@@ -698,7 +698,7 @@ OmMipVolume::DeleteInternalData() {
  */
 void 
 OmMipVolume::Build() {	
-	DOUT("OmMipVolume::Build: starting build"); 
+	//debug("genone","OmMipVolume::Build: starting build"); 
 	
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
@@ -787,7 +787,7 @@ OmMipVolume::BuildVolume() {
  */
 void
 OmMipVolume::BuildChunk(const OmMipChunkCoord &rMipCoord) {
-	DOUT("OmMipVolume::BuildChunk()");
+	//debug("genone","OmMipVolume::BuildChunk()\n");
 	
 	//leaf chunks are skipped since no children to build from
 	if(rMipCoord.IsLeaf()) return;
@@ -895,7 +895,7 @@ OmMipVolume::BuildEditedLeafChunks() {
  */
 bool
 OmMipVolume::ImportSourceData() {
-	DOUT("OmMipVolume::ImportSourceData()");
+	//debug("genone","OmMipVolume::ImportSourceData()");
 	
 	//init progress bar
 	int prog_count = 0;

@@ -5,6 +5,7 @@
 #include "common/omGl.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
+#include "system/omDebug.h"
 
 #define DEBUG 0
 
