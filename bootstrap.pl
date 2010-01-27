@@ -179,7 +179,7 @@ sub boost {
 
     # as of Dec 2009, these are the portions of boost we appear to be using:
     # headers:   timer, shared_ptr, tuple, algorithm
-    # libraries: filesystem, mpi, regex, serialization
+    # libraries: filesystem, mpi, regex, serialization, thread (for # of processors)
     # to see all the boost libraries that can be built, do
     # ..../boost_1_38_0/configure --show-libraries
     
@@ -188,7 +188,7 @@ sub boost {
     `rm -rf $boostLocalBuildFolder`;
     `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
 
-    buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization" );
+    buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization,thread" );
 }
 
 sub libpng {
