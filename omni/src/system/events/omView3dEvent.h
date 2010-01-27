@@ -6,18 +6,21 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
+
+
 #include <common/omStd.h>
 #include "system/omEvent.h"
+
 
 /*
  *	View Event
  */
-class OmView3dEvent:public OmEvent {
+class OmView3dEvent : public OmEvent {
 
- public:
+public:
 	OmView3dEvent(QEvent::Type type);
 	void Dispatch(OmEventListener *);
-
+	
 	//class
 	static const OmEventClass CLASS = OM_VIEW_3D_EVENT_CLASS;
 	//events
@@ -25,20 +28,25 @@ class OmView3dEvent:public OmEvent {
 	static const QEvent::Type UPDATE_PREFERENCES = (QEvent::Type) (CLASS + 1);
 };
 
+
+
+
+
+
 /*
  *	View Event Listener
  */
-class OmView3dEventListener:public OmEventListener {
+class OmView3dEventListener : public OmEventListener {
 
- public:
-	OmView3dEventListener():OmEventListener(OmView3dEvent::CLASS) {
+public:	
+	OmView3dEventListener() : OmEventListener(OmView3dEvent::CLASS) {
 		//cout << "OmView3dEventListener()" << this << endl;
 	};
-
-	virtual void View3dRedrawEvent(OmView3dEvent * event) {
-	};
-	virtual void View3dUpdatePreferencesEvent(OmView3dEvent * event) {
-	};
+	
+	virtual void View3dRedrawEvent(OmView3dEvent *event) { };
+	virtual void View3dUpdatePreferencesEvent(OmView3dEvent *event) { };
 };
+
+
 
 #endif

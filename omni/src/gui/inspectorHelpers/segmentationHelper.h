@@ -6,14 +6,16 @@
 
 #include "inspectorHelper.h"
 
-class SegmentationHelper:public InspectorHelper < SegmentationDataWrapper > {
+class SegmentationHelper : public InspectorHelper<SegmentationDataWrapper> {
 
- Q_OBJECT public:
-	SegmentationHelper(MyInspectorWidget * parent);
-	void addToSplitter(SegmentationDataWrapper data);
+ Q_OBJECT
+
+ public:
+	SegmentationHelper( MyInspectorWidget* parent );
+	void addToSplitter( SegmentationDataWrapper data );
 
  private:
-	 SegInspector * segInspectorWidget;
+	SegInspector *segInspectorWidget;
 	void populateSegmentationInspector(OmId s_id);
 };
 

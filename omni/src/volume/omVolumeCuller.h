@@ -17,42 +17,48 @@ using namespace vmml;
 
 #include "system/omSystemTypes.h"
 
+
+
 class OmMipChunk;
 
 class OmVolumeCuller {
 
- public:
-	OmVolumeCuller(const Matrix4f & projmodelview,
-		       const NormCoord & pos, const NormCoord & focus, OmBitfield options);
-
+public:
+	OmVolumeCuller(const Matrix4f& projmodelview, 
+					 const NormCoord& pos, const NormCoord& focus, 
+					 OmBitfield options);
+	
 	//accessors
 	bool CheckDrawOption(OmBitfield option) const;
 	OmBitfield MaskDrawOptions(OmBitfield mask) const;
 	OmBitfield GetDrawOptions() const;
-
-	const NormCoord & GetPosition() const;
-	const NormCoord & GetFocus() const;
-
+	
+	const NormCoord& GetPosition() const;
+	const NormCoord& GetFocus() const;
+	
 	//transform
-	OmVolumeCuller GetTransformed(const Matrix4f &, const Matrix4f &) const;
-	OmVolumeCuller GetTransformedCuller(const Matrix4f &, const Matrix4f &) const;
-	void TransformCuller(const Matrix4f & mat, const Matrix4f & matInv);
+	OmVolumeCuller GetTransformed(const Matrix4f&, const Matrix4f&) const;
+	OmVolumeCuller GetTransformedCuller(const Matrix4f&, const Matrix4f&) const;
+	void TransformCuller(const Matrix4f& mat, const Matrix4f& matInv);
 
 	//tests
 	Visibility TestChunk(const OmMipChunk &) const;
 	Visibility VisibilityTestNormBbox(const NormBbox &) const;
-
+	
+	
 	//temp
 	void Draw();
 	void ExtractFrustum();
-
- private:
-	 Matrix4f mProjModelView;
+	
+private:
+	Matrix4f mProjModelView;
 	NormCoord mPosition;
 	NormCoord mFocus;
 	OmBitfield mOptionBits;
-
+	
 	FrustumCullerf mFrustumCuller;
 };
+
+
 
 #endif

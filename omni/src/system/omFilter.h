@@ -15,56 +15,63 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-class OmFilter:public OmManageableObject {
 
- public:
+class OmFilter : public OmManageableObject {
+
+public:
 	OmFilter(OmId);
 	OmFilter();
-
+	
 	//accessors
 	void SetAlpha(double);
 	double GetAlpha();
 
-	OmId GetSegmentation() {
+	OmId GetSegmentation () {
 		return mSeg;
-	} void SetSegmentation(OmId id);
-	OmId GetChannel() {
+	}
+	void SetSegmentation (OmId id);
+	OmId GetChannel () {
 		return mChannel;
 	}
-	void SetChannel(OmId id);
+	void SetChannel (OmId id);
 
-	OmFilter(OmId segid, OmId chanid, OmId filterid);
-
-	OmThreadedCachingTile *GetCache(ViewType);
-
+	OmFilter (OmId segid, OmId chanid, OmId filterid);
+	
+	OmThreadedCachingTile * GetCache (ViewType);
+	
 	void Print();
-
- private:
+	
+private:
 	//data members
 	double mAlpha;
-	OmThreadedCachingTile *mCache;
+	OmThreadedCachingTile * mCache;
 	OmId mChannel;
 	OmId mSeg;
-
+	
 	friend class boost::serialization::access;
-	template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
+
 
 BOOST_CLASS_VERSION(OmFilter, 0)
 
-template < class Archive > void
- OmFilter::serialize(Archive & ar, const unsigned int file_version)
-{
-	ar & boost::serialization::base_object < OmManageableObject > (*this);
-
+template<class Archive>
+void 
+OmFilter::serialize(Archive & ar, const unsigned int file_version) {
+	ar & boost::serialization::base_object<OmManageableObject>(*this);
+	
 	ar & mAlpha;
 	ar & mChannel;
 	ar & mSeg;
 }
+
 
 #endif

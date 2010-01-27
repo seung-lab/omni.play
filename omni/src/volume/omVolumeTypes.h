@@ -7,17 +7,20 @@
 #ifndef OM_VOLUME_TYPES_H
 #define OM_VOLUME_TYPES_H
 
+
 #include "common/omStd.h"
 
 #include <vmmlib/vmmlib.h>
 
-//coordinate frames
-typedef vmml::Vector3 < int >DataCoord;
-typedef vmml::Vector3 < float >NormCoord;
-typedef vmml::Vector3 < float >SpaceCoord;
 
-typedef vmml::AxisAlignedBoundingBox < int >DataBbox;
-typedef vmml::AxisAlignedBoundingBox < float >NormBbox;
-typedef vmml::AxisAlignedBoundingBox < float >SpaceBbox;
+
+//coordinate frames
+typedef vmml::Vector3<int> DataCoord;
+typedef vmml::Vector3<float> NormCoord;
+typedef vmml::Vector3<float> SpaceCoord;
+
+typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
+typedef vmml::AxisAlignedBoundingBox<float> NormBbox;
+typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
 
 #endif

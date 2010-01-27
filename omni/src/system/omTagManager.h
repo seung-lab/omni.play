@@ -15,51 +15,64 @@
 #include "common/omStd.h"
 #include "common/omSerialization.h"
 
+
 //a tag is just a manageable object
 typedef OmManageableObject OmTag;
 
+
 class OmTagManager {
 
- public:
-
-	static OmTagManager *Instance();
+public:
+	
+	static OmTagManager* Instance();
 	static void Delete();
-
+	
 	//tag management
-	 OmTag & GetTag(OmId id);
-	 OmTag & AddTag(OmId id = NULL_OM_ID);
+	OmTag& GetTag(OmId id);
+	OmTag& AddTag(OmId id = NULL_OM_ID);
 	void RemoveTag(OmId id);
-	const OmIds & GetValidTagIds();
-
- protected:
+	const OmIds& GetValidTagIds();
+	
+protected:
 	// singleton constructor, copy constructor, assignment operator protected
-	 OmTagManager();
+	OmTagManager();
 	~OmTagManager();
-	 OmTagManager(const OmTagManager &);
-	 OmTagManager & operator=(const OmTagManager &);
+	OmTagManager(const OmTagManager&);
+	OmTagManager& operator= (const OmTagManager&);
 
- private:
+	
+private:
 	//singleton
-	static OmTagManager *mspInstance;
-
+	static OmTagManager* mspInstance;
+	
 	//generic tag manager
-	 OmGenericManager < OmTag > mManager;
-
+	OmGenericManager< OmTag > mManager;
+	
 	friend class boost::serialization::access;
-	 template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark
+
+
+
+
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
+
 
 BOOST_CLASS_VERSION(OmTagManager, 0)
 
-template < class Archive > void
- OmTagManager::serialize(Archive & ar, const unsigned int file_version)
-{
+template<class Archive>
+void 
+OmTagManager::serialize(Archive & ar, const unsigned int file_version) {
 	ar & mManager;
 }
+
+
 
 #endif

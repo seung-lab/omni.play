@@ -12,22 +12,25 @@
 #include "volume/omVolumeTypes.h"
 #include "segment/omSegmentTypes.h"
 
-class OmSegmentMergeAction:public OmAction {
 
- public:
+class OmSegmentMergeAction : public OmAction {
+
+public:
 	OmSegmentMergeAction(OmId mergeSegmentationId);
-
- private:
+	
+private:	
 	void Action();
 	void UndoAction();
 	string Description();
-
+	
 	OmId mMergeSegmentationId;
 	OmId mDestinationSegmentId;
-
-	 map < OmId, SegmentDataSet > mPrevSegmentIdToValueMap;
+	
+	map< OmId, SegmentDataSet > mPrevSegmentIdToValueMap;
 	SegmentDataSet mMergedDataSet;
 
 };
+
+
 
 #endif

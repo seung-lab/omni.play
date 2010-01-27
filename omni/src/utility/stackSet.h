@@ -12,52 +12,61 @@
  *	Brett Warne - bwarne@mit.edu - 4/12/09
  */
 
+
 #include <set>
 #include <deque>
 
-template < typename T > class StackSet {
 
- public:
+template < typename T >
+class StackSet {
 
-	void push(const T & value) {
+public:
+
+	void push(const T &value) {
 		//std::cout << value << std::endl;
 		//std::cout << "count" << std::endl;
-		if (mSet.count(value))
-			return;
-
+		if(mSet.count(value)) return;
+	
 		//std::cout << "insert" << std::endl;
 		mSet.insert(value);
 		//std::cout << "push_back" << std::endl;
 		mDeque.push_back(value);
 		//std::cout << "done" << std::endl;
 	}
-
+		
 	void pop() {
-		if (!mDeque.size())
-			return;
-
+		if(!mDeque.size()) return;
+		
 		mSet.erase(mDeque.back());
 		mDeque.pop_back();
 	}
-
-	T & top() {
+	
+	T& top() {
 		return mDeque.back();
 	}
-
+	
 	void clear() {
 		mSet.clear();
 		mDeque.clear();
 	}
-
-	unsigned int count(const T & value) const {
+	
+	unsigned int count(const T &value) const {
 		return mSet.count(value);
-	} unsigned int size() const {
+	}
+	
+	unsigned int size() const {
 		return mDeque.size();
-	} bool empty() const {
+	}
+	
+	bool empty() const {
 		return mDeque.empty();
- } private:
-	 std::set < T > mSet;
-	std::deque < T > mDeque;
+	}
+
+private:
+	std::set<T> mSet;
+	std::deque<T> mDeque;
 };
+
+
 
 #endif

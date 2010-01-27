@@ -11,6 +11,8 @@
  * 	Matt Wimer mwimer@mit.edu 10/21/09
  */
 
+
+
 #include "omPreferences.h"
 #include "omStateManager.h"
 #include "omKeyManager.h"
@@ -26,40 +28,57 @@
 
 using namespace vmml;
 
+
+
+
+
 class OmGarbage {
 
- public:
-
-	static OmGarbage *Instance();
+public:
+	
+	static OmGarbage* Instance();
 	static void Delete();
+	
 
 	static void asOmTextureId(GLuint);
-	static void safeCleanTextureIds();
+	static void safeCleanTextureIds ();
+	
+	static void Lock ();
+	static vector<GLuint>& LockTextures ();
+	static void Unlock ();
+	static void UnlockTextures ();
 
-	static void Lock();
-	static vector < GLuint > &LockTextures();
-	static void Unlock();
-	static void UnlockTextures();
-
- protected:
+	
+protected:
 	// singleton constructor, copy constructor, assignment operator protected
-	 OmGarbage();
+	OmGarbage();
 	~OmGarbage();
-	 OmGarbage(const OmGarbage &);
-	 OmGarbage & operator=(const OmGarbage &);
+	OmGarbage(const OmGarbage&);
+	OmGarbage& operator= (const OmGarbage&);
 
- private:
+	
+private:
 	//singleton
-	static OmGarbage *mspInstance;
+	static OmGarbage* mspInstance;
+	
 
 	//garbage
-	 vector < GLuint > mTextures;
+	vector <GLuint> mTextures;
 	pthread_mutex_t mTextureMutex;
 };
 
-#pragma mark
+
+
+
+
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
+
+
+
 
 #endif

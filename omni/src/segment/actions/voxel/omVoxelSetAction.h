@@ -12,19 +12,24 @@
 #include "volume/omVolumeTypes.h"
 #include "system/omSystemTypes.h"
 
-class OmVoxelSetAction:public OmAction {
 
- public:
-	OmVoxelSetAction(DataCoord & voxel);
+class OmVoxelSetAction : public OmAction {
 
- private:
+public:
+	OmVoxelSetAction(DataCoord &voxel);
+
+	
+private:
 	void Action();
 	void UndoAction();
 	string Description();
-
+	
+	
 	OmId mSegmentationId, mSegmentId;
 	DataCoord mVoxel;
 	SEGMENT_DATA_TYPE mPrevDataValue, mDataValue;
 };
+
+
 
 #endif

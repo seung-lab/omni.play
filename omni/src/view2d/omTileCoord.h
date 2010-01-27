@@ -20,40 +20,54 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
+
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 using boost::tuple;
 
+
 class OmTileCoord {
-
- public:
+	
+public:
 	OmTileCoord();
-	OmTileCoord(int, const SpaceCoord &);
+	OmTileCoord( int, const SpaceCoord & );
+	
+	void operator=( const OmTileCoord& rhs );
+	bool operator==( const OmTileCoord& rhs ) const;
+	bool operator!=( const OmTileCoord& rhs ) const;
+	bool operator<( const OmTileCoord& rhs ) const;
 
-	void operator=(const OmTileCoord & rhs);
-	bool operator==(const OmTileCoord & rhs) const;
-	bool operator!=(const OmTileCoord & rhs) const;
-	bool operator<(const OmTileCoord & rhs) const;
-
+	
+		
 	int Level;
 	SpaceCoord Coordinate;
-
-	friend ostream & operator<<(ostream & out, const OmTileCoord & in);
-
+	
+	
+	friend ostream& operator<<(ostream &out, const OmTileCoord &in);
+	
 	friend class boost::serialization::access;
-	template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark
+
+
+
+
+
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
 
 BOOST_CLASS_VERSION(OmTileCoord, 0)
 
-template < class Archive > void OmTileCoord::serialize(Archive & ar, const unsigned int file_version)
-{
-
+template<class Archive>
+void 
+OmTileCoord::serialize(Archive & ar, const unsigned int file_version) {
+	
 	ar & Level;
 	ar & Coordinate;
 }

@@ -14,37 +14,41 @@ class OmView3d;
 
 class QGLWidget;
 
-class MainWindow:public QMainWindow {
- Q_OBJECT public:
-	MainWindow();
-
-	private slots: void open();
-	void about();
-
- private:
-	void createActions();
-	void createMenus();
-	void createToolBars();
-	void createStatusBar();
-	void createDockWindows();
-
-	QGLWidget *imageGLWidget;
-
-	// REPLACE THIS WITH YOUR IMPLEMENTATION
-	OmView3d *qtView3d;
-
-	QFrame *loadingDock;
-
-	QMenu *fileMenu;
-	QMenu *editMenu;
-	QMenu *viewMenu;
-	QMenu *helpMenu;
-	QToolBar *fileToolBar;
-	QToolBar *editToolBar;
-	QAction *openAct;
-	QAction *aboutAct;
-	QAction *aboutQtAct;
-	QAction *quitAct;
-};
+class MainWindow : public QMainWindow
+	{
+		Q_OBJECT
+		
+	public:
+		MainWindow();
+		
+		private slots:
+		void open();
+		void about();
+		
+	private:
+		void createActions();
+		void createMenus();
+		void createToolBars();
+		void createStatusBar();
+		void createDockWindows();
+		
+		QGLWidget *imageGLWidget;
+		
+		// REPLACE THIS WITH YOUR IMPLEMENTATION
+		OmView3d *qtView3d;
+		
+		QFrame *loadingDock;
+		
+		QMenu *fileMenu;
+		QMenu *editMenu;
+		QMenu *viewMenu;
+		QMenu *helpMenu;
+		QToolBar *fileToolBar;
+		QToolBar *editToolBar;
+		QAction *openAct;
+		QAction *aboutAct;
+		QAction *aboutQtAct;
+		QAction *quitAct;
+	};
 
 #endif

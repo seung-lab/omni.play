@@ -9,6 +9,8 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
+
+
 #include "omPreferences.h"
 #include "omStateManager.h"
 #include "omKeyManager.h"
@@ -22,22 +24,25 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
+
+
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
+
 
 class OmProject {
 
- public:
-
-	static OmProject *Instance();
+public:
+	
+	static OmProject* Instance();
 	static void Delete();
-
+	
 	//project properties
-	static const string & GetFileName();
+	static const string& GetFileName();
 	static void SetFileName(const string &);
-	static const string & GetDirectoryPath();
+	static const string& GetDirectoryPath();
 	static void SetDirectoryPath(const string &);
 	static string GetTempDirectoryPath();
-
+	
 	//project IO
 	static void New(string dpath, string fname);
 	static void Save();
@@ -45,42 +50,56 @@ class OmProject {
 	static void Commit();
 	static void Load(string dpath, string fname);
 	static void Close();
-
- protected:
+	
+	
+protected:
 	// singleton constructor, copy constructor, assignment operator protected
-	 OmProject();
+	OmProject();
 	~OmProject();
-	 OmProject(const OmProject &);
-	 OmProject & operator=(const OmProject &);
+	OmProject(const OmProject&);
+	OmProject& operator= (const OmProject&);
 
- private:
+	
+private:
 	//singleton
-	static OmProject *mspInstance;
-
+	static OmProject* mspInstance;
+	
 	//project
 	string mFileName;
 	string mDirectoryPath;
-
+		
+	
+	
 	friend class boost::serialization::access;
-	 template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark
+
+
+
+
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
+
 
 BOOST_CLASS_VERSION(OmProject, 0)
 
-template < class Archive > void
- OmProject::serialize(Archive & ar, const unsigned int file_version)
-{
+template<class Archive>
+void 
+OmProject::serialize(Archive & ar, const unsigned int file_version) {
 
 	ar & *OmPreferences::Instance();
 	ar & *OmKeyManager::Instance();
 	ar & *OmTagManager::Instance();
 	ar & *OmVolume::Instance();
-
+	
 }
+
+
 
 #endif

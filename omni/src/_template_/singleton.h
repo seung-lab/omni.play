@@ -8,39 +8,54 @@
 #include "common/omStd.h"
 #include "common/omSerialization.h"
 
+
+
 class OmTagManager {
 
- public:
-
-	static OmTagManager *Instance();
+public:
+	
+	static OmTagManager* Instance();
 	static void Delete();
+	
 
- protected:
+protected:
 	// singleton constructor, copy constructor, assignment operator protected
-	 OmTagManager();
+	OmTagManager();
 	~OmTagManager();
-	 OmTagManager(const OmTagManager &);
-	 OmTagManager & operator=(const OmTagManager &);
+	OmTagManager(const OmTagManager&);
+	OmTagManager& operator= (const OmTagManager&);
 
- private:
+	
+private:
 	//singleton
-	static OmTagManager *mspInstance;
-
+	static OmTagManager* mspInstance;
+		
+	
 	friend class boost::serialization::access;
-	 template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark
+
+
+
+
+
+
+#pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
-///////          Serialization
+///////		 Serialization
+
 
 BOOST_CLASS_VERSION(OmTagManager, 0)
 
-template < class Archive > void
- OmTagManager::serialize(Archive & ar, const unsigned int file_version)
-{
+template<class Archive>
+void 
+OmTagManager::serialize(Archive & ar, const unsigned int file_version) {
 
 }
+
+
 
 #endif

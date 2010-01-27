@@ -81,7 +81,8 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	void SegmentObjectModificationEvent(OmSegmentEvent * event);
 
-	private slots: void addFilter();
+ private slots: 
+        void addFilter();
 	void addPreferencesToSplitter(QTreeWidgetItem * item, const int column);
 	void addSegment();
 	void nameEditChanged();

@@ -6,16 +6,20 @@
 
 #include "inspectorHelper.h"
 
-class ChannelHelper:public InspectorHelper < ChannelDataWrapper > {
+class ChannelHelper : public InspectorHelper<ChannelDataWrapper> {
 
- Q_OBJECT public:
-	ChannelHelper(MyInspectorWidget * parent);
-	void addToSplitter(ChannelDataWrapper data);
+ Q_OBJECT
+
+ public:
+	ChannelHelper( MyInspectorWidget* parent );
+	void addToSplitter( ChannelDataWrapper data );
 
  private:
-	 ChanInspector * channelInspectorWidget;
+	ChanInspector *channelInspectorWidget;
 	void populateChannelInspector(OmId c_id);
 
 };
 
 #endif
+
+
