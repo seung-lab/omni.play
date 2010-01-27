@@ -10,25 +10,22 @@
 
 #include "omCacheBase.h"
 
-
 class OmCacheableBase {
-public:
-	OmCacheableBase( OmCacheBase *cache ) 
-	: mCache(cache) { }
-	
-protected:
-	
+ public:
+	OmCacheableBase(OmCacheBase * cache)
+	:mCache(cache) {
+ } protected:
+
 	/*
-	 *	Update the size of the cache.
+	 *      Update the size of the cache.
 	 */
 	void UpdateSize(int delta) {
-		if(mCache) mCache->UpdateSize(delta);
+		if (mCache)
+			mCache->UpdateSize(delta);
 	}
-	
-private:
+
+ private:
 	OmCacheBase * const mCache;
 };
-
-
 
 #endif

@@ -8,17 +8,15 @@
 
 #include "view3d/omView3dWidget.h"
 
+class OmViewBoxWidget:public OmView3dWidget {
 
-class OmViewBoxWidget : public OmView3dWidget {
-
-public:
-	OmViewBoxWidget(OmView3d *view3d) : OmView3dWidget(view3d) { };
+ public:
+	OmViewBoxWidget(OmView3d * view3d):OmView3dWidget(view3d) {
+	};
 	virtual void Draw();
-	
-private:
+
+ private:
 
 };
-
-
 
 #endif

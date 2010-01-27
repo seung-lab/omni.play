@@ -8,8 +8,7 @@
 // TODO: make into preference (purcaro)
 enum { MAX_NUMBER_OF_RECENT_FILES = 5 };
 
-class RecentFileList 
-{
+class RecentFileList {
  public:
 	RecentFileList();
 	~RecentFileList();
@@ -17,12 +16,12 @@ class RecentFileList
 	// QActions instantiated in mainwindow.cpp
 	QAction *recentFileActs[MAX_NUMBER_OF_RECENT_FILES];
 
-	void addFile(  QString fileName, QString pathName );
+	void addFile(QString fileName, QString pathName);
 	void loadRecentlyUsedFilesListFromFS();
 	int getMaxNumberOfRecentlyUsedFilesToDisplay();
 
  private:
-	QStringList getRecentFiles();
+	 QStringList getRecentFiles();
 	int getNumberOfFilesToShow();
 	QStringList recentFiles;
 	void updateRecentFilesMenu();

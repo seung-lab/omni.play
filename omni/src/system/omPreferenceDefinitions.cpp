@@ -3,13 +3,13 @@
 #include "omPreferences.h"
 #include "system/omDebug.h"
 
-
-#pragma mark 
+#pragma mark
 #pragma mark All Default Preferences
 /////////////////////////////////
-///////		 All Default Preferences
+///////          All Default Preferences
 
-void omSetDefaultAllPreferences() {
+void omSetDefaultAllPreferences()
+{
 	//set all library default prefs
 	omSetDefaultCommonPreferences();
 	omSetDefaultGuiPreferences();
@@ -20,56 +20,55 @@ void omSetDefaultAllPreferences() {
 	omSetDefaultView3dPreferences();
 }
 
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Individual Library Default Preferences
 /////////////////////////////////
-///////		 Individual Library Default Preferences
+///////          Individual Library Default Preferences
 
-void omSetDefaultCommonPreferences() {
-	
+void omSetDefaultCommonPreferences()
+{
+
 }
 
-
-void omSetDefaultGuiPreferences() {
+void omSetDefaultGuiPreferences()
+{
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_MOVE_RIGHT_STR, "Right");
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_MOVE_LEFT_STR, "Left");
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_MOVE_UP_STR, "Up");
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_MOVE_DOWN_STR, "Down");
-	
+
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_ZOOM_IN_STR, "Ctrl+Plus");
 	OmPreferences::Set(OM_PREF_GUI_VIEWBOX_ZOOM_OUT_STR, "Ctrl+Minus");
-	
+
 	OmPreferences::Set(OM_PREF_GUI_VIEW_CENTER_FORWARD_STR, "Ctrl+]");
 	OmPreferences::Set(OM_PREF_GUI_VIEW_CENTER_BACKWARD_STR, "Ctrl+[");
-	
+
 	OmPreferences::Set(OM_PREF_GUI_UNDO_STR, "Ctrl+Z");
 	OmPreferences::Set(OM_PREF_GUI_REDO_STR, "Ctrl+Y");
 }
 
-void omSetDefaultMeshPreferences() {
+void omSetDefaultMeshPreferences()
+{
 
 	OmPreferences::Set(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, 50);
 	OmPreferences::Set(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, 30.0f);
 	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 0.15f);
-	OmPreferences::Set(OM_PREF_MESH_NUM_MESHING_THREADS_INT, 2 );
+	OmPreferences::Set(OM_PREF_MESH_NUM_MESHING_THREADS_INT, 2);
 }
 
-
-void omSetDefaultSegmentPreferences() {
+void omSetDefaultSegmentPreferences()
+{
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);
 }
 
-
-void omSetDefaultSystemPreferences() {
+void omSetDefaultSystemPreferences()
+{
 	OmPreferences::Set(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT, 256.0f);
 	OmPreferences::Set(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, 128.0f);
 }
 
-
-void omSetDefaultView2dPreferences() {
+void omSetDefaultView2dPreferences()
+{
 	OmPreferences::Set(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT, 500);
 	OmPreferences::Set(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT, 300);
 	OmPreferences::Set(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT, 20);
@@ -79,8 +78,8 @@ void omSetDefaultView2dPreferences() {
 	OmPreferences::Set(OM_PREF_VIEW2D_SHOW_INFO_BOOL, false);
 }
 
-
-void omSetDefaultView3dPreferences() {
+void omSetDefaultView3dPreferences()
+{
 
 	OmPreferences::Set(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F, Vector3f::ZERO);
 	OmPreferences::Set(OM_PREF_VIEW3D_FOCUS_STYLE_INT, 1);
@@ -88,13 +87,13 @@ void omSetDefaultView3dPreferences() {
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_AXIS_BOOL, false);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL, true);
-	
+
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_INFO_BOOL, false);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_FOCUS_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT, 0.2f);
 	OmPreferences::Set(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL, false);
-	
+
 	OmPreferences::Set(OM_PREF_VIEW3D_ANTIALIASING_BOOL, false);
 	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FOV_FLT, 60.0f);
 	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, 1.0f);

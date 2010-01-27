@@ -1,15 +1,14 @@
-#include <QtGui> 
-#include "filObjectInspector.h" 
+#include <QtGui>
+#include "filObjectInspector.h"
 #include "system/omDebug.h"
 
-FilObjectInspector::FilObjectInspector(QWidget *parent) 
-: QWidget(parent) 
-{ 
-    setupUi(this); 
+FilObjectInspector::FilObjectInspector(QWidget * parent)
+ : QWidget(parent)
+{
+	setupUi(this);
 }
 
-
-void FilObjectInspector::setChannelID( const OmId channID )
+void FilObjectInspector::setChannelID(const OmId channID)
 {
 	ChannelID = channID;
 }
@@ -19,7 +18,7 @@ OmId FilObjectInspector::getChannelID()
 	return ChannelID;
 }
 
-void FilObjectInspector::setFilterID( const OmId filterID )
+void FilObjectInspector::setFilterID(const OmId filterID)
 {
 	FilterID = filterID;
 }

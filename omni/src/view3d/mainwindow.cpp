@@ -14,12 +14,10 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 #include <fstream>
 #include "system/omDebug.h"
-
-
 
 /*
 
@@ -63,9 +61,6 @@ void create_test() {
 	OmProject::Save();
 	
 }
-
-
-
 
 void create_rabbit() {
 	
@@ -121,10 +116,6 @@ void create_rabbit() {
 	
 }
 
-
-
-
-
 void create_0219() {
 	string fpattern = "data.%d.tif";
 	string small_0219_raw = "../../../data/0219_small/raw/tif/";
@@ -155,10 +146,6 @@ void create_0219() {
 	cout << "done" << endl;
 }
 
-
-
-
-
 void create_raw_0219() {
 	string fpattern = "data.%d.tif";
 	string small_0219_raw = "../../../data/0219_small/raw/tif/";
@@ -178,7 +165,6 @@ void create_raw_0219() {
 	 OmChannel &r_channel = OmVolume::AddChannel();
 	 r_channel.SetSourceDirectoryPath(marvin_0219_raw);
 
-
 	 cout << endl;
 	 cout << "build channel volume" << endl;
 	 r_channel.BuildVolumeData();
@@ -194,20 +180,6 @@ void create_raw_0219() {
 	r_segmentation.BuildVolumeData();
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void time_build(string dpath, string fname, string srcdpath) {
 	
@@ -253,36 +225,24 @@ void time_build(string dpath, string fname, string srcdpath) {
 
 */
 
-
-
-
-
-
-
-
 MainWindow::MainWindow()
 {
-	
-	
+
 	loadingDock = new QFrame;
 	loadingDock->setFrameStyle(QFrame::Box | QFrame::Raised);
-	
+
 	// NO CENTRAL WIDGET for now
 	// setCentralWidget(loadingDock);
-	
+
 	QGridLayout *dockLayout = new QGridLayout;
-	
-	
+
 	loadingDock->setLayout(dockLayout);
-	
-	
-	
-	
+
 	string dpath = "/Users/bwarne/MIT/School_Work_08-09/MEng/workspace/trunk_02_06_09/bin/";
 	string fname = "proj.omni";
 	string srcdpath = "/Users/bwarne/MIT/School_Work_08-09/MEng/data/rabbit_small/seg1/tif/";
-	
-	if(!bfs::exists(bfs::path(dpath+fname))) {
+
+	if (!bfs::exists(bfs::path(dpath + fname))) {
 		OmProject::New(dpath, fname);
 
 		//create_raw_0219();
@@ -290,87 +250,63 @@ MainWindow::MainWindow()
 		//create_0219();
 		//time_build(dpath, fname, srcdpath);
 		//create_test();
-		
+
 		OmProject::Save();
 
 	} else {
-		
+
 		cout << "project already exists" << endl;
 		OmProject::Load(dpath, fname);
 	}
-	
 
 	cout << "done" << endl;
 
-	
-	
-	
-	
-	
-	
-	
 	qtView3d = new OmView3d;
-	
+
 	//continue with qt setup
 	createActions();
 	createMenus();
 	createToolBars();
 	createStatusBar();
 	createDockWindows();
-	
+
 	setWindowTitle(tr("Dock Widgets"));
-	resize(640,480);
+	resize(640, 480);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void MainWindow::open()
 {
-		
+
 }
 
 void MainWindow::about()
 {
 	/*
-	 QMessageBox::about(this, tr("About Dock Widgets"),
-	 tr("The <b>Dock Widgets</b> example demonstrates how to "
-	 "use Qt's dock widgets. You can enter your own text, "
-	 "click a customer to add a customer name and "
-	 "address, and click standard paragraphs to add them."));
+	   QMessageBox::about(this, tr("About Dock Widgets"),
+	   tr("The <b>Dock Widgets</b> example demonstrates how to "
+	   "use Qt's dock widgets. You can enter your own text, "
+	   "click a customer to add a customer name and "
+	   "address, and click standard paragraphs to add them."));
 	 */
 }
 
 void MainWindow::createActions()
 {
-	
-	
+
 	openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
 	openAct->setShortcut(tr("Ctrl+O"));
 	openAct->setStatusTip(tr("Open a new channel"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
-	
-	
+
 	quitAct = new QAction(tr("&Quit"), this);
 	quitAct->setShortcut(tr("Ctrl+Q"));
 	quitAct->setStatusTip(tr("Quit the application"));
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
-	
+
 	aboutAct = new QAction(tr("&About"), this);
 	aboutAct->setStatusTip(tr("Show the application's About box"));
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-	
+
 	aboutQtAct = new QAction(tr("About &Qt"), this);
 	aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
 	connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -382,13 +318,13 @@ void MainWindow::createMenus()
 	fileMenu->addAction(openAct);
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
-	
+
 	editMenu = menuBar()->addMenu(tr("&Edit"));
-	
+
 	viewMenu = menuBar()->addMenu(tr("&View"));
-	
+
 	menuBar()->addSeparator();
-	
+
 	helpMenu = menuBar()->addMenu(tr("&Help"));
 	helpMenu->addAction(aboutAct);
 	helpMenu->addAction(aboutQtAct);
@@ -397,10 +333,10 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
 	/*
-     fileToolBar = addToolBar(tr("File"));
-	 fileToolBar->addAction(openAct);
-	 
-     editToolBar = addToolBar(tr("Edit"));
+	   fileToolBar = addToolBar(tr("File"));
+	   fileToolBar->addAction(openAct);
+
+	   editToolBar = addToolBar(tr("Edit"));
 	 */
 }
 
@@ -413,14 +349,13 @@ void MainWindow::createDockWindows()
 {
 	QDockWidget *dock = new QDockWidget(tr("3D View"), this);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	
+
 	// REPLACE TETRAHEDRON WITH YOUR CODE
 	qtView3d->setParent(dock);
 	dock->setWidget(qtView3d);
 
 	addDockWidget(Qt::TopDockWidgetArea, dock);
 	viewMenu->addAction(dock->toggleViewAction());
-	
-	
+
 	setDockNestingEnabled(true);
 }

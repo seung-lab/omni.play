@@ -17,38 +17,34 @@
 #include <boost/tuple/tuple_comparison.hpp>
 using boost::tuple;
 
-// typedef tuple<int, SpaceCoord> OmTileCoordinate;	
-typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDCache;
+// typedef tuple<int, SpaceCoord> OmTileCoordinate;     
+typedef OmThreadedCache < OmTileCoord, OmTextureID > TextureIDCache;
 
+class OmCachingTile:public OmTile, protected TextureIDCache {
 
-class OmCachingTile : public OmTile, protected TextureIDCache {
-	
-public:	
-	OmCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol)
-	: TextureIDCache(RAM_CACHE_GROUP), OmTile(viewtype, voltype, image_id, vol) {
+ public:
+	OmCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol)
+	:TextureIDCache(RAM_CACHE_GROUP), OmTile(viewtype, voltype, image_id, vol) {
 		isSecondMipVolume = false;
 	}
-	
-	// texture ID
-         virtual void GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord);
-	void StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID);
-	
+	// texture ID virtual void GetTextureID(shared_ptr < OmTextureID > &p_value, const OmTileCoord & tileCoord);
+	void StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID);
+
 	//cache actions
 	void ClearCache();
-	
+
 	// setting second OmMipVolume for overlay
-	void setSecondMipVolume(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);
-	bool checkSecondMipVolume() { return isSecondMipVolume; }
-	
-	void subImageTex(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
+	void setSecondMipVolume(ObjectType secondtype, OmId second_id, OmMipVolume * secondvol);
+	bool checkSecondMipVolume() {
+		return isSecondMipVolume;
+	}
 
+	void subImageTex(shared_ptr < OmTextureID > &texID, int dim, set < DataCoord > &vox, QColor & color, int tl);
 
-private:
-	OmTextureID* HandleCacheMiss(const OmTileCoord &key);
+ private:
+	OmTextureID * HandleCacheMiss(const OmTileCoord & key);
 	bool isSecondMipVolume;
-	
-	
-};
 
+};
 
 #endif

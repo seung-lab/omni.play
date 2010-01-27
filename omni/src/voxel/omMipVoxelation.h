@@ -16,33 +16,28 @@
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
 
-
 class OmMipVoxelation;
 class OmMipVoxelationManager;
 
+class OmMipVoxelation:protected OmCacheableBase {
 
-
-class OmMipVoxelation : protected OmCacheableBase {
-
-public:
-	OmMipVoxelation(const OmMipSegmentDataCoord &mipSegDataCoord, OmMipVoxelationManager *cache);
+ public:
+	OmMipVoxelation(const OmMipSegmentDataCoord & mipSegDataCoord, OmMipVoxelationManager * cache);
 	~OmMipVoxelation();
-	
+
 	//accessors
 	SEGMENT_DATA_TYPE GetSegmentDataValue();
-	
+
 	//voxel
 	void AddVoxel(DataCoord &);
 	void RemoveVoxel(DataCoord &);
 
 	//draw
 	void Draw();
-	
-private:
-	OmMipSegmentDataCoord mCoordinate;
-	set< DataCoord > mVoxels;
+
+ private:
+	 OmMipSegmentDataCoord mCoordinate;
+	 set < DataCoord > mVoxels;
 };
-
-
 
 #endif

@@ -7,15 +7,14 @@
 
 class MyInspectorWidget;
 
-template <class T>
-class InspectorHelper : public QWidget {
+ template < class T > class InspectorHelper:public QWidget {
  public:
-	InspectorHelper( MyInspectorWidget* parent ){
+	InspectorHelper(MyInspectorWidget * parent) {
 		mParent = parent;
 	}
 
  protected:
-	MyInspectorWidget* mParent;
+	MyInspectorWidget * mParent;
 };
 
 #endif

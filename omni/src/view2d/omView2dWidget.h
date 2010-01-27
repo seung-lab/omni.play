@@ -12,14 +12,13 @@ class OmView2d;
 
 class OmView2dWidget {
 
-public:
-	OmView2dWidget(OmView2d *view2d) : mView2d(view2d) { };
+ public:
+	OmView2dWidget(OmView2d * view2d):mView2d(view2d) {
+	};
 	virtual void Draw() = 0;
-	
-protected:
+
+ protected:
 	OmView2d * const mView2d;
 };
-
-
 
 #endif

@@ -35,18 +35,18 @@
  **
  ****************************************************************************/
 
- #include <QApplication>
- 
- #include "mainwindow.h"
+#include <QApplication>
+
+#include "mainwindow.h"
 
 #include "common/omGl.h"
 #include "system/omDebug.h"
 
 int main(int argc, char *argv[])
- {	 
-     QApplication app(argc, argv);
-     // Q_INIT_RESOURCE(dockwidgets);
-     MainWindow mainWin;
-     mainWin.show();
-     return app.exec();
- }
+{
+	QApplication app(argc, argv);
+	// Q_INIT_RESOURCE(dockwidgets);
+	MainWindow mainWin;
+	mainWin.show();
+	return app.exec();
+}

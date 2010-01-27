@@ -9,13 +9,11 @@
  *	Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
-
 #include "omCacheManager.h"
-
 
 class OmCacheBase {
 
-public:
+ public:
 	//constructor
 	OmCacheBase(OmCacheGroup group) {
 		mDelayDelta = false;
@@ -23,33 +21,29 @@ public:
 		mCacheGroup = group;
 		OmCacheManager::AddCache(mCacheGroup, this);
 	}
-	//destructor
-	~OmCacheBase() {
+	//destructor ~OmCacheBase() {
 		OmCacheManager::AddCache(mCacheGroup, this);
 	}
-	
-	
+
 	//update group size
 	void UpdateSize(int delta) {
 		if (!mDelayDelta) {
-			OmCacheManager::UpdateCacheSize(mCacheGroup, delta+mSavedDelta);
+			OmCacheManager::UpdateCacheSize(mCacheGroup, delta + mSavedDelta);
 			mSavedDelta = 0;
 		} else {
 			mSavedDelta += delta;
 		}
 	}
-	
+
 	//remove single element from cache
 	virtual bool RemoveOldest() = 0;
 
-protected:
+ protected:
 	int mSavedDelta;
 	bool mDelayDelta;
-	
+
 	OmCacheGroup mCacheGroup;
-private:
+ private:
 };
-
-
 
 #endif

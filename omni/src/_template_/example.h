@@ -6,15 +6,12 @@
  *
  */
 
-
 class Example {
 
-public:
+ public:
 
-private:
+ private:
 
 };
-
-
 
 #endif

@@ -2,55 +2,44 @@
 #include "omTileCoord.h"
 #include "system/omDebug.h"
 
-
-
-
-OmTileCoord::OmTileCoord() {
+OmTileCoord::OmTileCoord()
+{
 	Level = -1;
 	Coordinate = SpaceCoord();
 }
 
+OmTileCoord::OmTileCoord(int mLevel, const SpaceCoord & pSpaceCoord)
+:Level(mLevel), Coordinate(pSpaceCoord)
+{
 
-OmTileCoord::OmTileCoord(int mLevel, const SpaceCoord &pSpaceCoord)
-: Level(mLevel), Coordinate(pSpaceCoord) {
-		
 }
 
-
-
-
-
-
-
-
-void 
-OmTileCoord::operator=( const OmTileCoord& rhs ) {
+void OmTileCoord::operator=(const OmTileCoord & rhs)
+{
 	Level = rhs.Level;
 	Coordinate = rhs.Coordinate;
 }
 
-bool 
-OmTileCoord::operator==( const OmTileCoord& rhs ) const {
+bool OmTileCoord::operator==(const OmTileCoord & rhs) const const
+{
 	return Level == rhs.Level && Coordinate == rhs.Coordinate;
 }
 
-bool 
-OmTileCoord::operator!=( const OmTileCoord& rhs ) const {
+bool OmTileCoord::operator!=(const OmTileCoord & rhs) constconst
+{
 	return Level != rhs.Level || Coordinate != rhs.Coordinate;
 }
 
 /* comparitor for key usage */
-bool 
-OmTileCoord::operator<( const OmTileCoord& rhs ) const 
-{ 
-	if(Level != rhs.Level) return (Level <  rhs.Level);
+bool OmTileCoord::operator<(const OmTileCoord & rhs) constconst
+{
+	if (Level != rhs.Level)
+		return (Level < rhs.Level);
 	return (Coordinate < rhs.Coordinate);
-}	
+}
 
-
-
-ostream& 
-operator<<(ostream &out, const OmTileCoord &in) {
+ostream & operator<<(ostream & out, const OmTileCoord & in)
+{
 	out << "[ " << in.Level;
 	out << " ( " << in.Coordinate.x << " " << in.Coordinate.y << " " << in.Coordinate.z << " ) ]";
 }

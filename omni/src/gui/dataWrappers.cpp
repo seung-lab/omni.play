@@ -4,56 +4,55 @@
 /*******************************************
  ****** Data Wrapper Container
  *******************************************/
-DataWrapperContainer::DataWrapperContainer( const ObjectType obj_type, const OmId obj_id )
+DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId obj_id)
 {
 	mType = obj_type;
-	switch( obj_type ){
+	switch (obj_type) {
 	case CHANNEL:
-		cDW = ChannelDataWrapper( obj_id );
+		cDW = ChannelDataWrapper(obj_id);
 		break;
 	case SEGMENTATION:
-		segmenDW = SegmentationDataWrapper( obj_id );
+		segmenDW = SegmentationDataWrapper(obj_id);
 		break;
 	}
 }
 
-DataWrapperContainer::DataWrapperContainer( SegmentationDataWrapper sdw )
+DataWrapperContainer::DataWrapperContainer(SegmentationDataWrapper sdw)
 {
 	mType = SEGMENTATION;
 	segmenDW = sdw;
 }
 
-
 /*******************************************
  ****** Channels
  *******************************************/
-ChannelDataWrapper::ChannelDataWrapper( const OmId ID )
-	: DataWrapper( ID, CHANNEL )
+ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
+:DataWrapper(ID, CHANNEL)
 {
-	OmChannel& chann = OmVolume::GetChannel( mID );
-	mName = QString::fromStdString( chann.GetName() );
-	mEnabled = OmVolume::IsChannelEnabled( mID );
+	OmChannel & chann = OmVolume::GetChannel(mID);
+	mName = QString::fromStdString(chann.GetName());
+	mEnabled = OmVolume::IsChannelEnabled(mID);
 }
 
 QString ChannelDataWrapper::getNote()
 {
-	const string& str = OmVolume::GetChannel( mID ).GetNote();
-	return QString::fromStdString( str );
+	const string & str = OmVolume::GetChannel(mID).GetNote();
+	return QString::fromStdString(str);
 }
 
-QHash< OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
+QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 {
-	QHash< OmId, FilterDataWrapper > filters;
+	QHash < OmId, FilterDataWrapper > filters;
 
-	OmChannel &chann = OmVolume::GetChannel( mID );
-	
-	foreach( OmId filterID, chann.GetValidFilterIds() ) {
-		FilterDataWrapper filter( mID, 
-							 filterID,
-							 QString::fromStdString( chann.GetFilter(filterID).GetName()),
-							 chann.IsFilterEnabled( filterID )
-							 );
-		filters[ filterID ] = filter;
+	OmChannel & chann = OmVolume::GetChannel(mID);
+
+	foreach(OmId filterID, chann.GetValidFilterIds()) {
+		FilterDataWrapper filter(mID,
+					 filterID,
+					 QString::fromStdString(chann.GetFilter(filterID).GetName()),
+					 chann.IsFilterEnabled(filterID)
+		    );
+		filters[filterID] = filter;
 	}
 
 	return filters;
@@ -62,89 +61,86 @@ QHash< OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 /*******************************************
  ****** Segmentations
  *******************************************/
-SegmentationDataWrapper::SegmentationDataWrapper( const OmId ID )
-	: DataWrapper( ID, SEGMENTATION )
+SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
+ : DataWrapper(ID, SEGMENTATION)
 {
-	OmSegmentation& segmen = OmVolume::GetSegmentation( mID );
-	mName = QString::fromStdString( segmen.GetName() );
-	mEnabled = OmVolume::IsSegmentationEnabled( mID );
+	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
+	mName = QString::fromStdString(segmen.GetName());
+	mEnabled = OmVolume::IsSegmentationEnabled(mID);
 }
 
-QHash< OmId, SegmentDataWrapper > 
-SegmentationDataWrapper::getAllSegmentIDsAndNames()
+QHash < OmId, SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames()
 {
-	QHash< OmId, SegmentDataWrapper > segs;
+	QHash < OmId, SegmentDataWrapper > segs;
 
-	OmSegmentation &segmen = OmVolume::GetSegmentation( mID );
-	
-	foreach( OmId segID, segmen.GetValidSegmentIds() ) {
-		SegmentDataWrapper seg( mID, segID );
-		segs[ segID ] = seg;
+	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
+
+	foreach(OmId segID, segmen.GetValidSegmentIds()) {
+		SegmentDataWrapper seg(mID, segID);
+		segs[segID] = seg;
 	}
 
 	return segs;
 }
 
-QString 
-SegmentationDataWrapper::getNote()
+QString SegmentationDataWrapper::getNote()
 {
-	const string& str = OmVolume::GetSegmentation(mID).GetNote();
-	return QString::fromStdString( str );
+	const string & str = OmVolume::GetSegmentation(mID).GetNote();
+	return QString::fromStdString(str);
 }
 
 /*******************************************
  ****** Segments
  *******************************************/
-SegmentDataWrapper::SegmentDataWrapper( const OmId segmentationID, 
-								const OmId segmentID )
-	:  DataWrapper( segmentID, SEGMENT )
+SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId segmentID)
+ : DataWrapper(segmentID, SEGMENT)
 {
 	mSegmentationID = segmentationID;
-	mName     = QString::fromStdString( OmVolume::GetSegmentation(mSegmentationID).GetSegment(segmentID).GetName());
+	mName = QString::fromStdString(OmVolume::GetSegmentation(mSegmentationID).GetSegment(segmentID).GetName());
 }
-
 
 bool SegmentDataWrapper::isSelected()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentSelected( mID);
+	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
 }
-void SegmentDataWrapper::setSelected( const bool isSelected )
+
+void SegmentDataWrapper::setSelected(const bool isSelected)
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected );
+	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
 }
+
 void SegmentDataWrapper::toggleSelected()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected() );
+	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
 }
 
 bool SegmentDataWrapper::isEnabled()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentEnabled( mID);
+	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
 }
+
 void SegmentDataWrapper::toggleEnabled()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled() );
+	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
 }
 
 QString SegmentDataWrapper::getNote()
 {
-	const string& str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
-	return QString::fromStdString( str );
+	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
+	return QString::fromStdString(str);
 }
 
 QString SegmentDataWrapper::getIDstr()
 {
-	return QString("%1").arg( getID() );
+	return QString("%1").arg(getID());
 }
+
 /*******************************************
  ****** Filters
  *******************************************/
-FilterDataWrapper::FilterDataWrapper(  const OmId channelID,
-				    const OmId mID,
-				    const QString name,
-							    const bool enabled )
-	: DataWrapper( mID, FILTER ), mChannelID( channelID )
+FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId mID, const QString name, const bool enabled)
+ : DataWrapper(mID, FILTER), mChannelID(channelID)
 {
 	mName = name;
-    	mEnabled  = enabled;
+	mEnabled = enabled;
 }

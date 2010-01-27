@@ -10,29 +10,26 @@
 
 #include "volume/omVolumeTypes.h"
 
+class OmVoxelSelectionAction:public OmAction {
 
-class OmVoxelSelectionAction : public OmAction {
+ public:
+	OmVoxelSelectionAction(const DataCoord & voxel, bool state, bool append);
 
-public:
-	OmVoxelSelectionAction(const DataCoord &voxel, bool state, bool append);
-	
-private:	
+ private:
 	void Action();
 	void UndoAction();
 	string Description();
-	
+
 	DataCoord mVoxel;
-	
+
 	bool mNewState;
 	bool mOldState;
 	bool mAppend;
 
 	//set< DataCoord > mVoxels;
-	map< DataCoord, bool > mVoxelsToPrevStateMap;
-	set< DataCoord > mPrevSelectedVoxels;
+	 map < DataCoord, bool > mVoxelsToPrevStateMap;
+	 set < DataCoord > mPrevSelectedVoxels;
 
 };
-
-
 
 #endif

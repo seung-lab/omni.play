@@ -10,20 +10,14 @@
 
 #include <pthread.h>
 
-
-
-
-
-inline bool 
-isMutexLocked(pthread_mutex_t *pMutex) {
-	if(0 == pthread_mutex_trylock(pMutex)) {
+inline bool isMutexLocked(pthread_mutex_t * pMutex)
+{
+	if (0 == pthread_mutex_trylock(pMutex)) {
 		//got lock, so release
 		pthread_mutex_unlock(pMutex);
 		return false;
-	} else 
+	} else
 		return true;
 }
-
-
 
 #endif

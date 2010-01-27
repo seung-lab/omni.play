@@ -19,89 +19,72 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-
-
 class OmMipChunkCoord {
 
-public:
+ public:
 	OmMipChunkCoord();
-	OmMipChunkCoord( int, const DataCoord &);
-	OmMipChunkCoord( int level, int, int, int );
-	
+	OmMipChunkCoord(int, const DataCoord &);
+	 OmMipChunkCoord(int level, int, int, int);
 
 	//property
 	bool IsLeaf() const;
-	
+
 	//family coordinate methods
-	OmMipChunkCoord	ParentCoord() const;
+	OmMipChunkCoord ParentCoord() const;
 	OmMipChunkCoord PrimarySiblingCoord() const;
-	void SiblingCoords(OmMipChunkCoord *pSiblings) const;
+	void SiblingCoords(OmMipChunkCoord * pSiblings) const;
 	OmMipChunkCoord PrimaryChildCoord() const;
-	void ChildrenCoords(OmMipChunkCoord *pChildren) const;
-	
+	void ChildrenCoords(OmMipChunkCoord * pChildren) const;
+
 	//access
-	template< size_t M > int get() const;
-	
+	 template < size_t M > int get() const;
+
 	//operators
-	void operator=( const OmMipChunkCoord& rhs );
-	bool operator==( const OmMipChunkCoord& rhs ) const;
-	bool operator!=( const OmMipChunkCoord& rhs ) const;
-	bool operator<( const OmMipChunkCoord& rhs ) const;
-	
-	
+	void operator=(const OmMipChunkCoord & rhs);
+	bool operator==(const OmMipChunkCoord & rhs) const;
+	bool operator!=(const OmMipChunkCoord & rhs) const;
+	bool operator<(const OmMipChunkCoord & rhs) const;
+
 	int Level;
 	DataCoord Coordinate;
-	
-	
-	friend ostream& operator<<(ostream &out, const OmMipChunkCoord &in);
-	
+
+	friend ostream & operator<<(ostream & out, const OmMipChunkCoord & in);
+
 	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
-	
-	
+	 template < class Archive > void serialize(Archive & ar, const unsigned int file_version);
+
 	static const OmMipChunkCoord NULL_COORD;
 };
 
-
-
-
-
 /* backwards support for previous Om Mip Coordinate type */
-template< size_t M >
-int
-OmMipChunkCoord::get() const {
-	
-	switch(M) {
-		case 0:
-			return Level;
-		case 1:
-			return Coordinate.x;
-		case 2:
-			return Coordinate.y;
-		case 3:
-			return Coordinate.z;
+template < size_t M > int
+ OmMipChunkCoord::get() const const
+{
+
+	switch (M) {
+	case 0:
+		return Level;
+	case 1:
+		return Coordinate.x;
+	case 2:
+		return Coordinate.y;
+	case 3:
+		return Coordinate.z;
 	}
-	
+
 }
 
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Serialization
 /////////////////////////////////
-///////		 Serialization
+///////          Serialization
 
 BOOST_CLASS_VERSION(OmMipChunkCoord, 0)
 
-template<class Archive>
-void 
-OmMipChunkCoord::serialize(Archive & ar, const unsigned int file_version) {
+template < class Archive > void OmMipChunkCoord::serialize(Archive & ar, const unsigned int file_version)
+{
 	ar & Level;
 	ar & Coordinate;
 }
-
-
 
 #endif

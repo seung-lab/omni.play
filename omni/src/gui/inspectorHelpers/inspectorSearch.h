@@ -1,12 +1,11 @@
 #ifndef INSPECTOR_SEARCH
 #define INSPECTOR_SEARCH
 
-
-	/*	
-	//	QHBoxLayout* setupSearchStuff();
-	void filterEnabledObjects();
-	void filterDisabledObjects();
-	*/
+	/*      
+	   //   QHBoxLayout* setupSearchStuff();
+	   void filterEnabledObjects();
+	   void filterDisabledObjects();
+	 */
 
 /*
 private slots:
@@ -16,7 +15,6 @@ private slots:
 	void filterUnlocked();
 	void filterLocked();
 	*/
-
 
 /*
 QHBoxLayout* MyInspectorWidget::setupSearchStuff()
@@ -58,7 +56,6 @@ QHBoxLayout* MyInspectorWidget::setupSearchStuff()
 	return horizontalLayout;
 }
 */
-
 
 /*
 void MyInspectorWidget::filterEnabled(const QString & text)
@@ -125,6 +122,5 @@ void MyInspectorWidget::filterSearch(const QString & text)
 	proxyModel->setFilterKeyColumn(0);
 }
 */
-
 
 #endif

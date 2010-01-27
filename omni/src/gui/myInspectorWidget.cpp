@@ -1,6 +1,6 @@
 
-#include <QtGui> 
-#include "myInspectorWidget.h" 
+#include <QtGui>
+#include "myInspectorWidget.h"
 
 #include "ui_segInspector.h"
 #include "segInspector.h"
@@ -45,15 +45,15 @@
 #include "system/omDebug.h"
 using namespace vmml;
 
-Q_DECLARE_METATYPE( DataWrapperContainer );
-Q_DECLARE_METATYPE( SegmentDataWrapper );
-Q_DECLARE_METATYPE( FilterDataWrapper );
+Q_DECLARE_METATYPE(DataWrapperContainer);
+Q_DECLARE_METATYPE(SegmentDataWrapper);
+Q_DECLARE_METATYPE(FilterDataWrapper);
 
 #define DEBUG 0
 
-MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
-{ 
-	segmenHelper  = new SegmentationHelper(this);
+ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
+{
+	segmenHelper = new SegmentationHelper(this);
 	channelHelper = new ChannelHelper(this);
 
 	resize(448, 640);
@@ -72,30 +72,29 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	splitter->setSizePolicy(sizePolicy1);
 
 	QWidget *layoutWidget = new QWidget(splitter);
-	splitter->addWidget( layoutWidget );
-	QVBoxLayout *verticalLayout = new QVBoxLayout( layoutWidget );
+	splitter->addWidget(layoutWidget);
+	QVBoxLayout *verticalLayout = new QVBoxLayout(layoutWidget);
 	verticalLayout->setContentsMargins(0, 0, 0, 0);
 
 	// Volumes/Preferences (2D view, Mesh, etc..)
-	verticalLayout->addWidget( setupVolumeList( layoutWidget ) );
+	verticalLayout->addWidget(setupVolumeList(layoutWidget));
 
 	// data source list (Channel, Segmentation, etc)
-	verticalLayout->addWidget( setupDataSrcList() );
+	verticalLayout->addWidget(setupDataSrcList());
 
 	// data elements: segments, filters, etc (and search widgets)
-	//	verticalLayout->addWidget( setupDataElementList() );
+	//      verticalLayout->addWidget( setupDataElementList() );
 	dataElementsTabs = new QTabWidget();
-	verticalLayout->addWidget( dataElementsTabs );
-	dataElementsTabs->addTab( setupDataElementList(), "All" );
+	verticalLayout->addWidget(dataElementsTabs);
+	dataElementsTabs->addTab(setupDataElementList(), "All");
 
-	//	verticalLayout->addLayout( setupSearchStuff() );
+	//      verticalLayout->addLayout( setupSearchStuff() );
 
 	// setup main grid layout
 	QVBoxLayout *verticalLayout_2 = new QVBoxLayout();
 	verticalLayout_2->addWidget(splitter);
-	QGridLayout *gridLayout       = new QGridLayout(this);
+	QGridLayout *gridLayout = new QGridLayout(this);
 	gridLayout->addLayout(verticalLayout_2, 0, 0, 1, 1);
-
 
 	currentDataSrc = DataWrapperContainer();
 
@@ -108,63 +107,63 @@ MyInspectorWidget::MyInspectorWidget(QWidget *parent) : QWidget(parent)
 	QMetaObject::connectSlotsByName(this);
 }
 
-QTreeWidget* MyInspectorWidget::setupDataElementList()
+QTreeWidget *MyInspectorWidget::setupDataElementList()
 {
 	dataElementsWidget = new QTreeWidget(this);
-	dataElementsWidget->setSelectionMode( QAbstractItemView::ExtendedSelection );
-	dataElementsWidget->setAlternatingRowColors( true );
+	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	dataElementsWidget->setAlternatingRowColors(true);
 
-     dataElementsWidget->setColumnCount(3);
-     QStringList headers;
-     headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
-     dataElementsWidget->setHeaderLabels(headers);
+	dataElementsWidget->setColumnCount(3);
+	QStringList headers;
+	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
+	dataElementsWidget->setHeaderLabels(headers);
 
 	return dataElementsWidget;
 }
 
-QTreeWidget* MyInspectorWidget::setupDataSrcList()
+QTreeWidget *MyInspectorWidget::setupDataSrcList()
 {
 	dataSrcListWidget = new QTreeWidget(this);
-	dataSrcListWidget->setAlternatingRowColors( false );
-     dataSrcListWidget->setColumnCount(3);
-     QStringList headers;
-     headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
-     dataSrcListWidget->setHeaderLabels(headers);
+	dataSrcListWidget->setAlternatingRowColors(false);
+	dataSrcListWidget->setColumnCount(3);
+	QStringList headers;
+	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
+	dataSrcListWidget->setHeaderLabels(headers);
 
 	QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Minimum);
 	sizePolicy3.setHorizontalStretch(0);
 	sizePolicy3.setVerticalStretch(0);
-	sizePolicy3.setHeightForWidth( dataSrcListWidget->sizePolicy().hasHeightForWidth());
-	dataSrcListWidget->setSizePolicy( sizePolicy3 );
+	sizePolicy3.setHeightForWidth(dataSrcListWidget->sizePolicy().hasHeightForWidth());
+	dataSrcListWidget->setSizePolicy(sizePolicy3);
 
 	populateDataSrcListWidget();
-	
+
 	// left click to open inspectors
-	connect( dataSrcListWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
-		    this, SLOT( addToSplitterDataSource(QTreeWidgetItem *, int )));
+	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+		this, SLOT(addToSplitterDataSource(QTreeWidgetItem *, int)));
 
 	// context menu setup
-	dataSrcListWidget->setContextMenuPolicy( Qt::CustomContextMenu );
-	connect( dataSrcListWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
-		this, SLOT(showDataSrcContextMenu(const QPoint&)));
+	dataSrcListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(dataSrcListWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
+		this, SLOT(showDataSrcContextMenu(const QPoint &)));
 
 	return dataSrcListWidget;
 }
 
-QTreeWidget* MyInspectorWidget::setupVolumeList( QWidget *layoutWidget )
+QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
 {
-	QTreeWidget *volumeListWidget = new QTreeWidget( layoutWidget );
+	QTreeWidget *volumeListWidget = new QTreeWidget(layoutWidget);
 	volumeListWidget->setMaximumSize(QSize(16777215, 75));
 	volumeListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	volumeListWidget->setHeaderHidden( true );
+	volumeListWidget->setHeaderHidden(true);
 
-	QTreeWidgetItem* volItem = new QTreeWidgetItem(volumeListWidget);
-	volItem->setText(0, "Volume" );
-	QTreeWidgetItem* view2dItem = new QTreeWidgetItem(volumeListWidget);
-	view2dItem->setText(0, "2D View" );
-	QTreeWidgetItem* view3dItem = new QTreeWidgetItem(volumeListWidget);
-	view3dItem->setText(0, "3D View" );
-	QTreeWidgetItem* meshItem = new QTreeWidgetItem(volumeListWidget);
+	QTreeWidgetItem *volItem = new QTreeWidgetItem(volumeListWidget);
+	volItem->setText(0, "Volume");
+	QTreeWidgetItem *view2dItem = new QTreeWidgetItem(volumeListWidget);
+	view2dItem->setText(0, "2D View");
+	QTreeWidgetItem *view3dItem = new QTreeWidgetItem(volumeListWidget);
+	view3dItem->setText(0, "3D View");
+	QTreeWidgetItem *meshItem = new QTreeWidgetItem(volumeListWidget);
 	meshItem->setText(0, "Mesh");
 
 	QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -173,8 +172,8 @@ QTreeWidget* MyInspectorWidget::setupVolumeList( QWidget *layoutWidget )
 	sizePolicy2.setHeightForWidth(volumeListWidget->sizePolicy().hasHeightForWidth());
 	volumeListWidget->setSizePolicy(sizePolicy2);
 
-	connect(volumeListWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )  ),
-		   this, SLOT(addPreferencesToSplitter( QTreeWidgetItem *, int)));
+	connect(volumeListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+		this, SLOT(addPreferencesToSplitter(QTreeWidgetItem *, int)));
 
 	return volumeListWidget;
 }
@@ -184,261 +183,258 @@ MyInspectorWidget::~MyInspectorWidget()
 	delete(splitter);
 }
 
-Qt::CheckState MyInspectorWidget::getCheckState( const bool enabled )
+Qt::CheckState MyInspectorWidget::getCheckState(const bool enabled)
 {
-	if( enabled ){
+	if (enabled) {
 		return Qt::Checked;
 	} else {
 		return Qt::Unchecked;
 	}
 }
 
-void MyInspectorWidget::setRowFlagsAndCheckState( QTreeWidgetItem *row, Qt::CheckState checkState )
+void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
-	row->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
-	row->setCheckState( ENABLED_COL, checkState );
+	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+	row->setCheckState(ENABLED_COL, checkState);
 }
 
 void MyInspectorWidget::populateDataSrcListWidget()
 {
 	dataSrcListWidget->clear();
-	
-	foreach( OmId channID, OmVolume::GetValidChannelIds() ){
-		DataWrapperContainer dwc = DataWrapperContainer( CHANNEL, channID );
+
+	foreach(OmId channID, OmVolume::GetValidChannelIds()) {
+		DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
 		ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
-		QTreeWidgetItem *row = new QTreeWidgetItem( dataSrcListWidget );
-		row->setText( NAME_COL, cdw.getName() );
-		row->setText( ID_COL, QString( "%1").arg(cdw.getID() ));
-		row->setText( NOTE_COL, cdw.getNote() );
-		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( dwc ) );
-		setRowFlagsAndCheckState( row, getCheckState( cdw.isEnabled() ) );
+		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
+		row->setText(NAME_COL, cdw.getName());
+		row->setText(ID_COL, QString("%1").arg(cdw.getID()));
+		row->setText(NOTE_COL, cdw.getNote());
+		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
+		setRowFlagsAndCheckState(row, getCheckState(cdw.isEnabled()));
 	}
 
-	foreach( OmId segmenID, OmVolume::GetValidSegmentationIds() ){
-		DataWrapperContainer dwc = DataWrapperContainer( SEGMENTATION, segmenID );
+	foreach(OmId segmenID, OmVolume::GetValidSegmentationIds()) {
+		DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
 		SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
-		QTreeWidgetItem *row = new QTreeWidgetItem( dataSrcListWidget );
-		row->setText( NAME_COL, sdw.getName() );
-		row->setText( ID_COL, QString( "%1").arg(sdw.getID() ));
-		row->setText( NOTE_COL, sdw.getNote() );
-		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( dwc ) );
-		setRowFlagsAndCheckState( row, getCheckState( sdw.isEnabled() ) );
+		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
+		row->setText(NAME_COL, sdw.getName());
+		row->setText(ID_COL, QString("%1").arg(sdw.getID()));
+		row->setText(NOTE_COL, sdw.getNote());
+		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
+		setRowFlagsAndCheckState(row, getCheckState(sdw.isEnabled()));
 	}
 
-	autoResizeColumnWidths( dataSrcListWidget );
+	autoResizeColumnWidths(dataSrcListWidget);
 
 	dataSrcListWidget->update();
 }
 
-void MyInspectorWidget::populateChannelElementsListWidget( ChannelDataWrapper cdw )
+void MyInspectorWidget::populateChannelElementsListWidget(ChannelDataWrapper cdw)
 {
 	dataElementsWidget->clear();
-	
+
 	const OmId segmenID = cdw.getID();
 
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
-	foreach( FilterDataWrapper filter, cdw.getAllFilterIDsAndNames() ){
-		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
-		row->setText( NAME_COL, filter.getName() );
-		row->setText( ID_COL, QString("%1").arg(filter.getID() ));
-		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( filter ) );
+	foreach(FilterDataWrapper filter, cdw.getAllFilterIDsAndNames()) {
+		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
+		row->setText(NAME_COL, filter.getName());
+		row->setText(ID_COL, QString("%1").arg(filter.getID()));
+		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(filter));
 		//row->setText( NOTE_COL, filter.getNote() );
-		setRowFlagsAndCheckState( row, getCheckState( true ) );
+		setRowFlagsAndCheckState(row, getCheckState(true));
 		//row->setSelected( seg.isSelected() );
 	}
-	
-	dataElementsWidget->selectionModel()->blockSignals(false);
-		
-	dataElementsWidget->disconnect( SIGNAL( itemClicked( QTreeWidgetItem *, int )) );
-	connect( dataElementsWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
-		    this, SLOT( addToSplitterDataElementFilter(QTreeWidgetItem *, int )));
 
-	autoResizeColumnWidths( dataElementsWidget );
+	dataElementsWidget->selectionModel()->blockSignals(false);
+
+	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
+	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+		this, SLOT(addToSplitterDataElementFilter(QTreeWidgetItem *, int)));
+
+	autoResizeColumnWidths(dataElementsWidget);
 
 	dataElementsWidget->update();
 }
 
-void MyInspectorWidget::autoResizeColumnWidths( QTreeWidget* widget ){
-	for( int i = 0; i <= MAX_COL_TO_DISPLAY; i++ ){
+void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget)
+{
+	for (int i = 0; i <= MAX_COL_TO_DISPLAY; i++) {
 		widget->resizeColumnToContents(i);
-	}	
+	}
 }
 
-void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem *item, const int column )
+void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem * item, const int column)
 {
 	//debug("genone","addToSplitterPreferences");
-	
-	QWidget* my_widget = splitter->widget(1);
+
+	QWidget *my_widget = splitter->widget(1);
 	QString text = item->text(0);
 
-	QList<int> my_sizes = splitter->sizes();
+	QList < int >my_sizes = splitter->sizes();
 	delete my_widget;
-	
+
 	if (text == "Volume") {
 		volumeInspectorWidget = new VolumeInspector(splitter);
 		connect(volumeInspectorWidget->addChannelButton, SIGNAL(clicked()), this, SIGNAL(addChannel()));
-		connect(volumeInspectorWidget->addSegmentationButton, SIGNAL(clicked()), this, SIGNAL(addSegmentation()));
-	} else if (text == "2D View") {		
+		connect(volumeInspectorWidget->addSegmentationButton, SIGNAL(clicked()), this,
+			SIGNAL(addSegmentation()));
+	} else if (text == "2D View") {
 		preferences2dWidget = new Preferences2d(splitter);
-	} else if (text == "3D View") {		
+	} else if (text == "3D View") {
 		preferences3dWidget = new Preferences3d(splitter);
-	} else if (text == "Mesh") {		
+	} else if (text == "Mesh") {
 		preferencesMeshWidget = new PreferencesMesh(splitter);
 	}
-	
-	if(!(first_access)) {
+
+	if (!(first_access)) {
 		splitter->setSizes(my_sizes);
 	}
-	
+
 	first_access = false;
 	preferencesActivated = true;
 }
 
-void MyInspectorWidget::addChannelToSplitter( ChannelDataWrapper data )
+void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 {
 	const OmId item_id = data.getID();
 
-	QWidget* my_widget = splitter->widget(1);
+	QWidget *my_widget = splitter->widget(1);
 
-	if((current_object != CHANNEL) || (preferencesActivated)) {
-		
-		QList<int> my_sizes = splitter->sizes();
-		delete my_widget;	
-		
-		channelInspectorWidget = new ChanInspector( item_id, splitter);
+	if ((current_object != CHANNEL) || (preferencesActivated)) {
 
-		connect( channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
-			    this, SLOT(addFilter( )));
-		
-		if(!(first_access)) {
+		QList < int >my_sizes = splitter->sizes();
+		delete my_widget;
+
+		channelInspectorWidget = new ChanInspector(item_id, splitter);
+
+		connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), this, SLOT(addFilter()));
+
+		if (!(first_access)) {
 			splitter->setSizes(my_sizes);
 		}
 	}
 
 	channelInspectorWidget->setId(item_id);
 	populateChannelInspector(item_id);
-	channelInspectorWidget->setChannelID( item_id );
+	channelInspectorWidget->setChannelID(item_id);
 
-	connect( channelInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
-		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
+	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	current_object = CHANNEL;
 }
 
-void MyInspectorWidget::addSegmentationToSplitter( SegmentationDataWrapper data )
+void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
 {
 	const OmId item_id = data.getID();
 
-	QWidget* my_widget = splitter->widget(1);
+	QWidget *my_widget = splitter->widget(1);
 
-	if((current_object != SEGMENTATION) || (preferencesActivated)) {
-		
-		QList<int> my_sizes = splitter->sizes();
-		delete my_widget;	
-		
+	if ((current_object != SEGMENTATION) || (preferencesActivated)) {
+
+		QList < int >my_sizes = splitter->sizes();
+		delete my_widget;
+
 		segInspectorWidget = new SegInspector(item_id, splitter);
-		
-		//		connect( segInspectorWidget, SIGNAL(meshBuilt(OmId)), 
-		//			    this, SLOT(addChildrenToSegmentation(OmId)));
 
-		connect( segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
-			    this, SLOT(rebuildSegmentList(OmId)));
-		
-		connect( segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
-			    this, SLOT(addSegment()));
-		
-		if(!(first_access))
+		//              connect( segInspectorWidget, SIGNAL(meshBuilt(OmId)), 
+		//                          this, SLOT(addChildrenToSegmentation(OmId)));
+
+		connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
+
+		connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
+
+		if (!(first_access))
 			splitter->setSizes(my_sizes);
 	}
 
 	segInspectorWidget->setId(item_id);
 	populateSegmentationInspector(item_id);
-	segInspectorWidget->setSegmentationID( item_id );
-			
-	connect( segInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
-		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
+	segInspectorWidget->setSegmentationID(item_id);
+
+	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	current_object = SEGMENTATION;
 }
 
-void MyInspectorWidget::addToSplitterDataElementSegment( QTreeWidgetItem * current, const int column )
+void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
 {
-	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
-	SegmentDataWrapper sdw = result.value< SegmentDataWrapper >(); 
+	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
 	const OmId item_id = sdw.getID();
-	QWidget* my_widget = splitter->widget(1);
+	QWidget *my_widget = splitter->widget(1);
 
-	if((current_object != SEGMENT) || (preferencesActivated)) {
-		QList<int> my_sizes = splitter->sizes();
+	if ((current_object != SEGMENT) || (preferencesActivated)) {
+		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
 		segObjectInspectorWidget = new SegObjectInspector(splitter);
 		segObjectInspectorWidget->nameEdit_2->setReadOnly(true);
-		connect( segObjectInspectorWidget->colorButton, SIGNAL(clicked()), 
-			    this, SLOT(setSegObjColor()));
-		if(!(first_access))
+		connect(segObjectInspectorWidget->colorButton, SIGNAL(clicked()), this, SLOT(setSegObjColor()));
+		if (!(first_access))
 			splitter->setSizes(my_sizes);
 	}
 
-	populateSegmentObjectInspector( sdw.getSegmentationID(), item_id);
-			
-	segObjectInspectorWidget->setSegmentationID( sdw.getSegmentationID() );
-	segObjectInspectorWidget->setSegmentID( item_id );
+	populateSegmentObjectInspector(sdw.getSegmentationID(), item_id);
 
-	connect( segObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
-		    this, SLOT(nameEditChanged()), Qt::DirectConnection);
+	segObjectInspectorWidget->setSegmentationID(sdw.getSegmentationID());
+	segObjectInspectorWidget->setSegmentID(item_id);
+
+	connect(segObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	current_object = SEGMENT;
 
 	first_access = false;
 	preferencesActivated = false;
 }
 
-void MyInspectorWidget::addToSplitterDataElementFilter( QTreeWidgetItem * current, const int column )
+void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
 {
-	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
-	FilterDataWrapper fdw = result.value< FilterDataWrapper >(); 
+	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
 
 	const OmId item_id = fdw.getID();
-	QWidget* my_widget = splitter->widget(1);
+	QWidget *my_widget = splitter->widget(1);
 
-	if((current_object != FILTER) || (preferencesActivated)) {
-		QList<int> my_sizes = splitter->sizes();
+	if ((current_object != FILTER) || (preferencesActivated)) {
+		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
 		filObjectInspectorWidget = new FilObjectInspector(splitter);
-		connect( filObjectInspectorWidget->alphaSlider, SIGNAL(valueChanged(int)), 
-			    this, SLOT(setFilAlpha(int)));
-		if(!(first_access))
+		connect(filObjectInspectorWidget->alphaSlider, SIGNAL(valueChanged(int)), this, SLOT(setFilAlpha(int)));
+		if (!(first_access))
 			splitter->setSizes(my_sizes);
 	}
 
-	populateFilterObjectInspector( fdw.getChannelID(), item_id);
+	populateFilterObjectInspector(fdw.getChannelID(), item_id);
 
-	filObjectInspectorWidget->setChannelID(  fdw.getChannelID() );
-	filObjectInspectorWidget->setFilterID( item_id );
+	filObjectInspectorWidget->setChannelID(fdw.getChannelID());
+	filObjectInspectorWidget->setFilterID(item_id);
 
-	connect( filObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()), 
-		    this, SLOT(sourceEditChangedChan()), Qt::DirectConnection);
-	connect( filObjectInspectorWidget->nameEdit_2, SIGNAL(editingFinished()), 
-		    this, SLOT(sourceEditChangedSeg()), Qt::DirectConnection);
+	connect(filObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(sourceEditChangedChan()), Qt::DirectConnection);
+	connect(filObjectInspectorWidget->nameEdit_2, SIGNAL(editingFinished()),
+		this, SLOT(sourceEditChangedSeg()), Qt::DirectConnection);
 	current_object = FILTER;
 
 	first_access = false;
 	preferencesActivated = false;
 }
 
-void MyInspectorWidget::addToSplitterDataSource( QTreeWidgetItem * current, const int column )
+void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
 {
-	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperContainer dwc = result.value< DataWrapperContainer >(); 
+	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 
-	switch( dwc.getType()){
+	switch (dwc.getType()) {
 	case CHANNEL:
-		addChannelToSplitter( dwc.getChannelDataWrapper() );
-		populateChannelElementsListWidget( dwc.getChannelDataWrapper() );
+		addChannelToSplitter(dwc.getChannelDataWrapper());
+		populateChannelElementsListWidget(dwc.getChannelDataWrapper());
 		break;
 	case SEGMENTATION:
-		addSegmentationToSplitter( dwc.getSegmentationDataWrapper() );
-		makeSegmentationActive(    dwc.getSegmentationDataWrapper() );
+		addSegmentationToSplitter(dwc.getSegmentationDataWrapper());
+		makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
 
@@ -446,51 +442,47 @@ void MyInspectorWidget::addToSplitterDataSource( QTreeWidgetItem * current, cons
 	preferencesActivated = false;
 }
 
-void MyInspectorWidget::showChannelContextMenu( const QPoint& menuPoint )
+void MyInspectorWidget::showChannelContextMenu(const QPoint & menuPoint)
 {
-	connect( makeContextMenuBase( menuPoint, dataSrcListWidget ), 
-		    SIGNAL(triggered(QAction *)), 
-		    this, 
-		    SLOT(selectChannelView(QAction *)));
+	connect(makeContextMenuBase(menuPoint, dataSrcListWidget),
+		SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
 
-	contextMenu->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
+	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
 }
 
-void MyInspectorWidget::showSegmentationContextMenu( const QPoint& menuPoint )
+void MyInspectorWidget::showSegmentationContextMenu(const QPoint & menuPoint)
 {
-	connect( makeContextMenuBase( menuPoint, dataSrcListWidget ), 
-		    SIGNAL(triggered(QAction *)), 
-		    this, 
-		    SLOT(selectSegmentationView(QAction *)));
+	connect(makeContextMenuBase(menuPoint, dataSrcListWidget),
+		SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
 
-	contextMenu->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
+	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
 }
 
-QMenu* MyInspectorWidget::makeDataSrcContextMenu( QTreeWidget* parent  )
+QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
 {
-	addChannelAct = new QAction(tr("Add Channel"), parent );
-			
-	addSegmentationAct = new QAction(tr("Add Segmentation"), parent );
-			
-	contextMenuDataSrc = new QMenu( parent );
-	contextMenuDataSrc->addAction( addChannelAct );
-	contextMenuDataSrc->addAction( addSegmentationAct );
+	addChannelAct = new QAction(tr("Add Channel"), parent);
+
+	addSegmentationAct = new QAction(tr("Add Segmentation"), parent);
+
+	contextMenuDataSrc = new QMenu(parent);
+	contextMenuDataSrc->addAction(addChannelAct);
+	contextMenuDataSrc->addAction(addSegmentationAct);
 
 	return contextMenuDataSrc;
 }
 
-QMenu* MyInspectorWidget::makeContextMenuBase( const QPoint& menuPoint, QTreeWidget* parent  )
+QMenu *MyInspectorWidget::makeContextMenuBase(const QPoint & menuPoint, QTreeWidget * parent)
 {
-	xyAct = new QAction(tr("&View XY"), parent );
+	xyAct = new QAction(tr("&View XY"), parent);
 	xyAct->setStatusTip(tr("Opens the XY view"));
-			
-	xzAct = new QAction(tr("&View XZ"), parent );
+
+	xzAct = new QAction(tr("&View XZ"), parent);
 	xzAct->setStatusTip(tr("Opens the XZ view"));
-			
-	yzAct = new QAction(tr("&View YZ"), parent );
+
+	yzAct = new QAction(tr("&View YZ"), parent);
 	yzAct->setStatusTip(tr("Opens the YZ view"));
-			
-	contextMenu = new QMenu( parent );
+
+	contextMenu = new QMenu(parent);
 	contextMenu->addAction(xyAct);
 	contextMenu->addAction(xzAct);
 	contextMenu->addAction(yzAct);
@@ -498,62 +490,58 @@ QMenu* MyInspectorWidget::makeContextMenuBase( const QPoint& menuPoint, QTreeWid
 	return contextMenu;
 }
 
-
-void  MyInspectorWidget::addChannelToVolume()
+void MyInspectorWidget::addChannelToVolume()
 {
-	OmChannel& added_channel = OmVolume::AddChannel();
+	OmChannel & added_channel = OmVolume::AddChannel();
 	addToVolume(&added_channel, CHANNEL);
 }
 
-void  MyInspectorWidget::addSegmentationToVolume()
+void MyInspectorWidget::addSegmentationToVolume()
 {
-	OmSegmentation& added_segmentation = OmVolume::AddSegmentation();
+	OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
 	addToVolume(&added_segmentation, SEGMENTATION);
 }
 
-void MyInspectorWidget::doDataSrcContextMenuVolAdd( QAction *act )
+void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 {
-  	if(act == addChannelAct ) {
+	if (act == addChannelAct) {
 		addChannelToVolume();
-	} else if(act == addSegmentationAct ) {
+	} else if (act == addSegmentationAct) {
 		addSegmentationToVolume();
 	} else {
 		throw OmFormatException("could not match QAction type...\n");
 	}
 }
 
-
-void MyInspectorWidget::showDataSrcContextMenu( const QPoint& menuPoint )
+void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
 {
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt( menuPoint );
-	if( !dataSrcItem ){ // right click occured in "white space" of widget (not on actual item, like channel1, etc)
-		connect( makeDataSrcContextMenu( dataSrcListWidget ), 
-			    SIGNAL(triggered(QAction *)), 
-			    this, 
-			    SLOT(doDataSrcContextMenuVolAdd(QAction *)));
-		
-		contextMenuDataSrc->exec( dataSrcListWidget->mapToGlobal(menuPoint) );
-		return; 
-	}
-	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperContainer dwc = result.value< DataWrapperContainer >(); 
+	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt(menuPoint);
+	if (!dataSrcItem) {	// right click occured in "white space" of widget (not on actual item, like channel1, etc)
+		connect(makeDataSrcContextMenu(dataSrcListWidget),
+			SIGNAL(triggered(QAction *)), this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
 
-	switch( dwc.getType() ){
+		contextMenuDataSrc->exec(dataSrcListWidget->mapToGlobal(menuPoint));
+		return;
+	}
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+
+	switch (dwc.getType()) {
 	case CHANNEL:
-		showChannelContextMenu( menuPoint );
+		showChannelContextMenu(menuPoint);
 		break;
 	case SEGMENTATION:
-		showSegmentationContextMenu( menuPoint );
-		makeSegmentationActive( dwc.getSegmentationDataWrapper() );
+		showSegmentationContextMenu(menuPoint);
+		makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
 }
 
-ViewType MyInspectorWidget::getViewType( QAction *act )
+ViewType MyInspectorWidget::getViewType(QAction * act)
 {
-  	if(act == xyAct) {
+	if (act == xyAct) {
 		return XY_VIEW;
-	} else if(act == xzAct) {
+	} else if (act == xzAct) {
 		return XZ_VIEW;
 	} else if (act == yzAct) {
 		return YZ_VIEW;
@@ -562,228 +550,228 @@ ViewType MyInspectorWidget::getViewType( QAction *act )
 	}
 }
 
-void MyInspectorWidget::selectChannelView(QAction *act)
+void MyInspectorWidget::selectChannelView(QAction * act)
 {
-	OmId primary_id  = getCurrentlySelectedChannel().getID();
-	emit triggerChannelView( primary_id, 0, 0, getViewType( act ) );
+	OmId primary_id = getCurrentlySelectedChannel().getID();
+	emit triggerChannelView(primary_id, 0, 0, getViewType(act));
 }
 
 ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel()
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperContainer dwc   = result.value< DataWrapperContainer >(); 
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 	return dwc.getChannelDataWrapper();
 }
 
-void MyInspectorWidget::selectSegmentationView(QAction *act)
+void MyInspectorWidget::selectSegmentationView(QAction * act)
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result  = dataSrcItem->data( USER_DATA_COL, Qt::UserRole );
-	DataWrapperContainer dwc  = result.value< DataWrapperContainer >(); 
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 	SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
-	makeSegmentationActive( sdw );
+	makeSegmentationActive(sdw);
 
 	const OmId segmentationID = sdw.getID();
-	emit triggerSegmentationView( segmentationID, 0, getViewType( act ) );
+	emit triggerSegmentationView(segmentationID, 0, getViewType(act));
 }
 
 // called from mainwindow after segmentation or channel added
 // "refresh datasrc list"
-void MyInspectorWidget::addToVolume(OmManageableObject *item, ObjectType item_type)
+void MyInspectorWidget::addToVolume(OmManageableObject * item, ObjectType item_type)
 {
 	populateDataSrcListWidget();
 }
 
 void MyInspectorWidget::addFilter()
 {
-	ChannelDataWrapper cdw( channelInspectorWidget->getId() );
+	ChannelDataWrapper cdw(channelInspectorWidget->getId());
 
-	OmFilter& added_filter = OmVolume::GetChannel( cdw.getID() ).AddFilter();
+	OmFilter & added_filter = OmVolume::GetChannel(cdw.getID()).AddFilter();
 
-	channelInspectorWidget->setFilterID( added_filter.GetId() );
+	channelInspectorWidget->setFilterID(added_filter.GetId());
 
 	populateDataSrcListWidget();
-	populateChannelElementsListWidget( cdw );
+	populateChannelElementsListWidget(cdw);
 }
 
 void MyInspectorWidget::sourceEditChangedChan()
 {
-	ChannelDataWrapper cdw( filObjectInspectorWidget->getChannelID() );
-	
+	ChannelDataWrapper cdw(filObjectInspectorWidget->getChannelID());
+
 	const OmId segmenID = filObjectInspectorWidget->nameEdit->text().toInt();
-	
+
 	const OmId filterID = filObjectInspectorWidget->getFilterID();
-	OmVolume::GetChannel( cdw.getID() ).GetFilter( filterID ).SetChannel( segmenID );
+	OmVolume::GetChannel(cdw.getID()).GetFilter(filterID).SetChannel(segmenID);
 }
 
 void MyInspectorWidget::sourceEditChangedSeg()
 {
-	ChannelDataWrapper cdw( filObjectInspectorWidget->getChannelID() );
-	
+	ChannelDataWrapper cdw(filObjectInspectorWidget->getChannelID());
+
 	const OmId segmenID = filObjectInspectorWidget->nameEdit_2->text().toInt();
-	
+
 	const OmId filterID = filObjectInspectorWidget->getFilterID();
-	OmVolume::GetChannel( cdw.getID() ).GetFilter( filterID ).SetSegmentation( segmenID );
+	OmVolume::GetChannel(cdw.getID()).GetFilter(filterID).SetSegmentation(segmenID);
 }
 
 void MyInspectorWidget::nameEditChanged()
 {
 	cout << "FIXME: purcaro: sourceEditChangedSeg\n";
 	/*
-	QVariant result = proxyModel->data(view->currentIndex(), Qt::UserRole);
-	int item_type = result.value<int>();
-	
-	if(item_type == CHANNEL)
-		proxyModel->setData(view->currentIndex(), QVariant(channelInspectorWidget->nameEdit->text()), Qt::EditRole);
-	else if(item_type == SEGMENTATION)
-		proxyModel->setData(view->currentIndex(), QVariant(segInspectorWidget->nameEdit->text()), Qt::EditRole);
-	else if(item_type == SEGMENT)
-		proxyModel->setData(view->currentIndex(), QVariant(segObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
-	else if(FILTER == item_type)
-		proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
-	*/	
+	   QVariant result = proxyModel->data(view->currentIndex(), Qt::UserRole);
+	   int item_type = result.value<int>();
+
+	   if(item_type == CHANNEL)
+	   proxyModel->setData(view->currentIndex(), QVariant(channelInspectorWidget->nameEdit->text()), Qt::EditRole);
+	   else if(item_type == SEGMENTATION)
+	   proxyModel->setData(view->currentIndex(), QVariant(segInspectorWidget->nameEdit->text()), Qt::EditRole);
+	   else if(item_type == SEGMENT)
+	   proxyModel->setData(view->currentIndex(), QVariant(segObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
+	   else if(FILTER == item_type)
+	   proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
+	 */
 }
 
 void MyInspectorWidget::populateChannelInspector(OmId c_id)
 {
-	OmChannel &current_channel = OmVolume::GetChannel(c_id);
-	
-	const string &my_name = current_channel.GetName();
+	OmChannel & current_channel = OmVolume::GetChannel(c_id);
+
+	const string & my_name = current_channel.GetName();
 	channelInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
 	channelInspectorWidget->nameEdit->setMinimumWidth(200);
-	
-	const string &my_directory = current_channel.GetSourceDirectoryPath();
+
+	const string & my_directory = current_channel.GetSourceDirectoryPath();
 	channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
 	channelInspectorWidget->directoryEdit->setMinimumWidth(200);
-	
+
 	////debug("genone","SOURCE DIRECTORY PATH = " << my_directory);
-	
-	const string &my_pattern = current_channel.GetSourceFilenameRegex();
+
+	const string & my_pattern = current_channel.GetSourceFilenameRegex();
 	channelInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
 	channelInspectorWidget->patternEdit->setMinimumWidth(200);
-	
+
 	channelInspectorWidget->listWidget->clear();
-	list<string>::const_iterator match_it;
-	const list<string> &matches = OmVolume::GetChannel(c_id).GetSourceFilenameRegexMatches();
-	
-	for(match_it = matches.begin(); match_it != matches.end(); ++match_it) {
+	list < string >::const_iterator match_it;
+	const list < string > &matches = OmVolume::GetChannel(c_id).GetSourceFilenameRegexMatches();
+
+	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 		channelInspectorWidget->listWidget->addItem(QString::fromStdString(*match_it));
 	}
-	
-	const string &my_notes = current_channel.GetNote();
+
+	const string & my_notes = current_channel.GetNote();
 	channelInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
 }
 
 void MyInspectorWidget::populateSegmentationInspector(OmId s_id)
 {
-	OmSegmentation &current_segmentation = OmVolume::GetSegmentation(s_id);
-	
-	const string &my_name = current_segmentation.GetName();
+	OmSegmentation & current_segmentation = OmVolume::GetSegmentation(s_id);
+
+	const string & my_name = current_segmentation.GetName();
 	segInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
 	segInspectorWidget->nameEdit->setMinimumWidth(200);
-	
-	const string &my_directory = current_segmentation.GetSourceDirectoryPath();
+
+	const string & my_directory = current_segmentation.GetSourceDirectoryPath();
 	segInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
 	segInspectorWidget->directoryEdit->setMinimumWidth(200);
-		
-	const string &my_pattern = current_segmentation.GetSourceFilenameRegex();
+
+	const string & my_pattern = current_segmentation.GetSourceFilenameRegex();
 	segInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
 	segInspectorWidget->patternEdit->setMinimumWidth(200);
-	
-	const string &my_notes = current_segmentation.GetNote();
+
+	const string & my_notes = current_segmentation.GetNote();
 	segInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-	
+
 	segInspectorWidget->listWidget->clear();
 
-	list<string>::const_iterator match_it;
-	const list<string> &matches = OmVolume::GetSegmentation(s_id).GetSourceFilenameRegexMatches();
-	for(match_it = matches.begin(); match_it != matches.end(); ++match_it) {
+	list < string >::const_iterator match_it;
+	const list < string > &matches = OmVolume::GetSegmentation(s_id).GetSourceFilenameRegexMatches();
+	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 		segInspectorWidget->listWidget->addItem(QString::fromStdString(*match_it));
 	}
 }
 
 void MyInspectorWidget::populateFilterObjectInspector(OmId s_id, OmId obj_id)
 {
-	OmFilter &filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
+	OmFilter & filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
 
-	filObjectInspectorWidget->alphaSlider->setValue (filter.GetAlpha() * 100);
-	filObjectInspectorWidget->nameEdit->setText (QString::number (filter.GetChannel()));
-	filObjectInspectorWidget->nameEdit_2->setText (QString::number (filter.GetSegmentation()));
+	filObjectInspectorWidget->alphaSlider->setValue(filter.GetAlpha() * 100);
+	filObjectInspectorWidget->nameEdit->setText(QString::number(filter.GetChannel()));
+	filObjectInspectorWidget->nameEdit_2->setText(QString::number(filter.GetSegmentation()));
 }
 
 void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 {
-	segObjectInspectorWidget->setSegmentID( obj_id );
-	segObjectInspectorWidget->setSegmentationID( s_id );
+	segObjectInspectorWidget->setSegmentID(obj_id);
+	segObjectInspectorWidget->setSegmentationID(s_id);
 
-	OmSegment &current_obj = OmVolume::GetSegmentation(s_id).GetSegment(obj_id);
-	
-	const string &my_name = current_obj.GetName();
+	OmSegment & current_obj = OmVolume::GetSegmentation(s_id).GetSegment(obj_id);
+
+	const string & my_name = current_obj.GetName();
 	segObjectInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
 	segObjectInspectorWidget->nameEdit->setMinimumWidth(200);
-	
+
 	OmId my_id = current_obj.GetId();
 	QString str;
 	segObjectInspectorWidget->nameEdit_2->setText(str.setNum(my_id));
 	segObjectInspectorWidget->nameEdit_2->setMinimumWidth(200);
-	
-	const string &my_notes = current_obj.GetNote();
+
+	const string & my_notes = current_obj.GetNote();
 	segObjectInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-	
-	segObjectInspectorWidget->labelsEdit->setMinimumWidth(200);	
-	
-	const Vector3<float> &color = current_obj.GetColor();
-	
-	QPixmap *pixm = new QPixmap(40,30);
+
+	segObjectInspectorWidget->labelsEdit->setMinimumWidth(200);
+
+	const Vector3 < float >&color = current_obj.GetColor();
+
+	QPixmap *pixm = new QPixmap(40, 30);
 	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
 	pixm->fill(newcolor);
-	
+
 	segObjectInspectorWidget->colorButton->setIcon(QIcon(*pixm));
-	
+
 	current_color = newcolor;
 }
 
 void MyInspectorWidget::setFilAlpha(int alpha)
 {
 	QTreeWidgetItem *dataElementItem = dataElementsWidget->currentItem();
-	QVariant result  = dataElementItem->data( USER_DATA_COL, Qt::UserRole );
-	FilterDataWrapper fdw = result.value< FilterDataWrapper >(); 
+	QVariant result = dataElementItem->data(USER_DATA_COL, Qt::UserRole);
+	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
 	const OmId filterID = fdw.getID();
 	const OmId channelID = fdw.getChannelID();
-	
-	OmVolume::GetChannel( channelID ).GetFilter( filterID ).SetAlpha ((double) alpha / 100.00);
+
+	OmVolume::GetChannel(channelID).GetFilter(filterID).SetAlpha((double)alpha / 100.00);
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 void MyInspectorWidget::setSegObjColor()
-{	
+{
 	//debug("genone","MyInspectorWidget::QColorDialog::getColor()");
-	
+
 	QColor color = QColorDialog::getColor(current_color, this);
-	if(!color.isValid()) {
+	if (!color.isValid()) {
 		return;
 	}
 
-	QPixmap *pixm = new QPixmap(40,30);
+	QPixmap *pixm = new QPixmap(40, 30);
 	pixm->fill(color);
-		
+
 	segObjectInspectorWidget->colorButton->setIcon(QIcon(*pixm));
-		
+
 	segObjectInspectorWidget->colorButton->update();
 	current_color = color;
-		
+
 	// set the color
-		
+
 	const OmId item_id = segObjectInspectorWidget->getSegmentID();
 	const OmId segmentationID = segObjectInspectorWidget->getSegmentationID();
 
-	OmSegment &current_obj = OmVolume::GetSegmentation(segmentationID).GetSegment(item_id);
+	OmSegment & current_obj = OmVolume::GetSegmentation(segmentationID).GetSegment(item_id);
 
-	Vector3<float> color_vector( color.redF(), color.greenF(), color.blueF());
+	Vector3 < float >color_vector(color.redF(), color.greenF(), color.blueF());
 	current_obj.SetColor(color_vector);
-		
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));	
+
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
@@ -791,54 +779,54 @@ void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 	cout << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
 }
 
-void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent *event)
+void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
-	if( event->getUserData() != NULL ){
+	if (event->getUserData() != NULL) {
 		return;
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
-	if( !OmVolume::IsSegmentationValid( segmentationID ) ){
+	if (!OmVolume::IsSegmentationValid(segmentationID)) {
 		return;
 	}
 
 	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
-	const OmId segmentJustSelectedID   = event->GetSegmentJustSelectedID();
+	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
 
-	makeSegmentationActive( segmentationID, segmentJustSelectedID );
+	makeSegmentationActive(segmentationID, segmentJustSelectedID);
 }
 
-void MyInspectorWidget::makeSegmentationActive( const OmId segmentationID ) 
+void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID)
 {
-	currentDataSrc = DataWrapperContainer( SEGMENTATION, segmentationID );
-	populateSegmentElementsListWidget();
-}
-void MyInspectorWidget::makeSegmentationActive( SegmentationDataWrapper sdw ) 
-{
-	currentDataSrc = DataWrapperContainer( sdw );
+	currentDataSrc = DataWrapperContainer(SEGMENTATION, segmentationID);
 	populateSegmentElementsListWidget();
 }
 
-void MyInspectorWidget::makeSegmentationActive( const OmId segmentationID, 
-									   const OmId segmentJustSelectedID ) 
+void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw)
 {
-	currentDataSrc = DataWrapperContainer( SEGMENTATION, segmentationID );
-	populateSegmentElementsListWidget( true, segmentJustSelectedID );
+	currentDataSrc = DataWrapperContainer(sdw);
+	populateSegmentElementsListWidget();
 }
-void MyInspectorWidget::makeSegmentationActive( SegmentationDataWrapper sdw, 
-									   const OmId segmentJustSelectedID ) 
+
+void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
-	currentDataSrc = DataWrapperContainer( sdw );
-	populateSegmentElementsListWidget( true, segmentJustSelectedID );
+	currentDataSrc = DataWrapperContainer(SEGMENTATION, segmentationID);
+	populateSegmentElementsListWidget(true, segmentJustSelectedID);
+}
+
+void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
+{
+	currentDataSrc = DataWrapperContainer(sdw);
+	populateSegmentElementsListWidget(true, segmentJustSelectedID);
 }
 
 void MyInspectorWidget::addSegment()
 {
-	const OmId segmentationID = segInspectorWidget->getSegmentationID();	
-	OmSegment& added_segment = OmVolume::GetSegmentation( segmentationID ).AddSegment();
-	rebuildSegmentList( segmentationID );
+	const OmId segmentationID = segInspectorWidget->getSegmentationID();
+	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
+	rebuildSegmentList(segmentationID);
 }
 
 void MyInspectorWidget::refreshWidgetData()
@@ -847,15 +835,16 @@ void MyInspectorWidget::refreshWidgetData()
 	populateSegmentElementsListWidget();
 }
 
-void MyInspectorWidget::rebuildSegmentList( const OmId segmentationID )
+void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID)
 {
 	populateDataSrcListWidget();
 
-	hashOfSementationsAndSegments.remove( segmentationID );
-	makeSegmentationActive( segmentationID );
+	hashOfSementationsAndSegments.remove(segmentationID);
+	makeSegmentationActive(segmentationID);
 }
 
-void MyInspectorWidget::populateSegmentElementsListWidget( const bool doScrollToSelectedSegment, const OmId segmentJustSelectedID )
+void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+							  const OmId segmentJustSelectedID)
 {
 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
 
@@ -863,101 +852,96 @@ void MyInspectorWidget::populateSegmentElementsListWidget( const bool doScrollTo
 
 	const OmId segmenID = sdw.getID();
 
-	if( !hashOfSementationsAndSegments.contains( segmenID ) ){
-		hashOfSementationsAndSegments[ segmenID ] = sdw.getAllSegmentIDsAndNames();
-	} 
+	if (!hashOfSementationsAndSegments.contains(segmenID)) {
+		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
+	}
 	// TODO: use .value(), not hash []
-	QHash<OmId, SegmentDataWrapper> segs = hashOfSementationsAndSegments[ segmenID ];
+	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments[segmenID];
 
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	foreach( SegmentDataWrapper seg, segs ){
-		QTreeWidgetItem *row = new QTreeWidgetItem( dataElementsWidget );
-		row->setText( NAME_COL, seg.getName()  );
-		row->setText( ID_COL,   seg.getIDstr() );
-		row->setData( USER_DATA_COL, Qt::UserRole, qVariantFromValue( seg ) );
-		row->setText( NOTE_COL, seg.getNote() );
-		setRowFlagsAndCheckState( row, getCheckState( seg.isEnabled() ) );
-		row->setSelected( seg.isSelected() );
-		if( doScrollToSelectedSegment && 
-		    seg.getID() == segmentJustSelectedID ) {
+	foreach(SegmentDataWrapper seg, segs) {
+		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
+		row->setText(NAME_COL, seg.getName());
+		row->setText(ID_COL, seg.getIDstr());
+		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(seg));
+		row->setText(NOTE_COL, seg.getNote());
+		setRowFlagsAndCheckState(row, getCheckState(seg.isEnabled()));
+		row->setSelected(seg.isSelected());
+		if (doScrollToSelectedSegment && seg.getID() == segmentJustSelectedID) {
 			rowToJumpTo = row;
 		}
 	}
-	
-	dataElementsWidget->selectionModel()->blockSignals(false);
-		
-	dataElementsWidget->disconnect( SIGNAL( itemClicked( QTreeWidgetItem *, int )) );
-	connect( dataElementsWidget, SIGNAL( itemClicked( QTreeWidgetItem *, int )),
-		    this, SLOT( leftClickOnSegment(QTreeWidgetItem *, int )));
 
-	autoResizeColumnWidths( dataElementsWidget );
+	dataElementsWidget->selectionModel()->blockSignals(false);
+
+	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
+	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
+
+	autoResizeColumnWidths(dataElementsWidget);
 
 	dataElementsWidget->update();
 
-	if( doScrollToSelectedSegment && 
-	    rowToJumpTo != NULL ) {
-		dataElementsWidget->scrollToItem( rowToJumpTo, QAbstractItemView::PositionAtCenter );
+	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
+		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
 	}
 }
 
-void MyInspectorWidget::leftClickOnSegment( QTreeWidgetItem * current, const int column )
+void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int column)
 {
-	addToSplitterDataElementSegment( current, column );
+	addToSplitterDataElementSegment(current, column);
 
-	QVariant result  = current->data( USER_DATA_COL, Qt::UserRole );
-	SegmentDataWrapper sdw = result.value< SegmentDataWrapper >(); 
+	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
-	if( 0 == column ) {
+	if (0 == column) {
 		sdw.toggleEnabled();
-		sendSegmentChangeEvent( sdw, true );
+		sendSegmentChangeEvent(sdw, true);
 	} else {
 		sdw.toggleSelected();
-		
-		if( QApplication::keyboardModifiers() & Qt::ControlModifier ){
-			sendSegmentChangeEvent( sdw, true );
-		} else if  (QApplication::keyboardModifiers() & Qt::ShiftModifier ) {
-			
-			OmSegmentation& segmentation = OmVolume::GetSegmentation( sdw.getSegmentationID() );
-			segmentation.SetAllSegmentsSelected( false );
 
-			foreach( QTreeWidgetItem* item, dataElementsWidget->selectedItems() ){
-				QVariant result  = item->data( USER_DATA_COL, Qt::UserRole );
-				SegmentDataWrapper item_sdw = result.value< SegmentDataWrapper >(); 
-				item_sdw.setSelected( true );
+		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+			sendSegmentChangeEvent(sdw, true);
+		} else if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+
+			OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
+			segmentation.SetAllSegmentsSelected(false);
+
+			foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
+				QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
+				SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
+				item_sdw.setSelected(true);
 			}
-			sendSegmentChangeEvent( sdw, true );
+			sendSegmentChangeEvent(sdw, true);
 		} else {
-			sendSegmentChangeEvent( sdw, false );
+			sendSegmentChangeEvent(sdw, false);
 		}
 
 	}
 }
 
-void MyInspectorWidget::sendSegmentChangeEvent( SegmentDataWrapper sdw, const bool augment_selection )
+void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
 {
-	const OmId segmentationID    = sdw.getSegmentationID();
-	const OmId segmentID         = sdw.getID();
-	OmSegmentation& segmentation = OmVolume::GetSegmentation( segmentationID );
+	const OmId segmentationID = sdw.getSegmentationID();
+	const OmId segmentID = sdw.getID();
+	OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
 
 	OmIds selected_segment_ids;
 	OmIds un_selected_segment_ids;
 
-	if( augment_selection ) {
+	if (augment_selection) {
 		selected_segment_ids = segmentation.GetSelectedSegmentIds();
 	} else {
-		selected_segment_ids.insert( segmentID );
+		selected_segment_ids.insert(segmentID);
 		un_selected_segment_ids = segmentation.GetSelectedSegmentIds();
-		un_selected_segment_ids.erase( segmentID );
+		un_selected_segment_ids.erase(segmentID);
 	}
-	
-	(new OmSegmentSelectAction(segmentationID, 
-						  selected_segment_ids,
-						  un_selected_segment_ids, 
-						  segmentID,
-						  this ))->Run();
+
+	(new OmSegmentSelectAction(segmentationID,
+				   selected_segment_ids, un_selected_segment_ids, segmentID, this))->Run();
 
 }

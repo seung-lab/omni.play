@@ -9,18 +9,15 @@
 #include "view3d/omView3dWidget.h"
 #include <QFont>
 
+class OmInfoWidget:public OmView3dWidget {
 
-class OmInfoWidget : public OmView3dWidget {
-
-public:
-	OmInfoWidget(OmView3d *view3d);
+ public:
+	OmInfoWidget(OmView3d * view3d);
 	virtual void Draw();
-	
+
 	void RenderCameraText(int x, int y);
-private:
-	QFont mFont;
+ private:
+	 QFont mFont;
 };
-
-
 
 #endif

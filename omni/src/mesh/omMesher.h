@@ -17,9 +17,7 @@ using boost::shared_ptr;
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
 
-
 #include <vtkImageData.h>
-
 
 class OmMipMesh;
 class OmMipMeshManager;
@@ -37,52 +35,44 @@ class vtkPolyDataNormals;
 class vtkStripper;
 class vtkPolyData;
 
-
-
-
-
 class OmMeshSource {
-	
-public:
+
+ public:
 	OmMeshSource();
 	~OmMeshSource();
-	
+
 	//load mesh data from chunk - expensive
-	void Load( shared_ptr<OmMipChunk> chunk );
-	
+	void Load(shared_ptr < OmMipChunk > chunk);
+
 	//copy from another mesh source - cheaper
-	void Copy( OmMeshSource &source );
-	
+	void Copy(OmMeshSource & source);
+
 	vtkImageData *pImageData;
 	OmMipChunkCoord MipCoord;
-	AxisAlignedBoundingBox<int> SrcBbox;
-	AxisAlignedBoundingBox<float> DstBbox;
-	
-protected:
-     shared_ptr<OmMipChunk> mChunk;
+	AxisAlignedBoundingBox < int >SrcBbox;
+	AxisAlignedBoundingBox < float >DstBbox;
+
+ protected:
+	shared_ptr < OmMipChunk > mChunk;
 	OmMeshSource(OmMeshSource &);
-	OmMeshSource& operator= (const OmMeshSource &);
+	OmMeshSource & operator=(const OmMeshSource &);
 };
 
-
-
-
-
 class OmMesher {
-	
-public:
-	OmMesher( OmMeshSource & );
+
+ public:
+	OmMesher(OmMeshSource &);
 	~OmMesher();
-	
+
 	void InitMeshingPipeline();
-	void ExtractMesh(OmMipMesh*, SEGMENT_DATA_TYPE);
-	
-private:
-	void BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh);
-	
+	void ExtractMesh(OmMipMesh *, SEGMENT_DATA_TYPE);
+
+ private:
+	void BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh);
+
 	//source
 	OmMeshSource mMeshSource;
-	
+
 	//vtk pipeline
 	vtkDiscreteMarchingCubes *mpDiscreteMarchingCubes;
 	vtkQuadricDecimation *mpDecimation;
@@ -92,7 +82,5 @@ private:
 	vtkPolyDataNormals *mpPolyDataNormals;
 	vtkStripper *mpStripper;
 };
-
-
 
 #endif

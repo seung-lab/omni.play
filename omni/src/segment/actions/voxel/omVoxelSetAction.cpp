@@ -11,13 +11,11 @@
 
 #define DEBUG 0
 
-
-
 #pragma mark -
 #pragma mark OmVoxelSetAction Class
 /////////////////////////////////
 ///////
-///////		 OmVoxelSetAction Class
+///////          OmVoxelSetAction Class
 ///////
 
 /*
@@ -26,68 +24,62 @@
  *	Only call in ADD_VOXEL_MODE or SUBTRACT_VOXEL_MODE.
  */
 
-OmVoxelSetAction::OmVoxelSetAction(DataCoord &voxel)
-: mVoxel(voxel) {
+OmVoxelSetAction::OmVoxelSetAction(DataCoord & voxel)
+ : mVoxel(voxel)
+{
 
 	//store current selection
 	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(mSegmentationId, mSegmentId);
 
 	//if edit selection not valid
-	if(!valid_edit_selection) {
+	if (!valid_edit_selection) {
 		OmAction::SetValid(false);
 		return;
 	}
-	
 	//get segmentation
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-	
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+
 	//get current voxel value
 	mPrevDataValue = r_segmentation.GetVoxelValue(mVoxel);
-	
+
 	//switch on tool mode
-	switch(OmStateManager::GetToolMode()) {
-		case ADD_VOXEL_MODE:
-			mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
-			break;
-			
-		case SUBTRACT_VOXEL_MODE:
-			mDataValue = NULL_SEGMENT_DATA;
-			break;
-			
-		default:
-			assert(false);
+	switch (OmStateManager::GetToolMode()) {
+	case ADD_VOXEL_MODE:
+		mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
+		break;
+
+	case SUBTRACT_VOXEL_MODE:
+		mDataValue = NULL_SEGMENT_DATA;
+		break;
+
+	default:
+		assert(false);
 	}
 
 }
 
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Action Methods
 /////////////////////////////////
-///////		 Action Methods
+///////          Action Methods
 
-
-void 
-OmVoxelSetAction::Action() {
+void
+ OmVoxelSetAction::Action()
+{
 	//set voxel
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-	
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+
 	//set voxel to stored segment id
 	r_segmentation.SetVoxelValue(mVoxel, mDataValue);
-	
+
 	//post modification
 	OmEventManager::PostEvent(new OmVoxelEvent(OmVoxelEvent::VOXEL_MODIFICATION, mSegmentationId, mVoxel));
 }
 
-
-
-void 
-OmVoxelSetAction::UndoAction()	{ 
+void OmVoxelSetAction::UndoAction()
+{
 	//set voxel
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
 
 	//set voxel to stored segment id
 	r_segmentation.SetVoxelValue(mVoxel, mPrevDataValue);
@@ -96,17 +88,16 @@ OmVoxelSetAction::UndoAction()	{
 	OmEventManager::PostEvent(new OmVoxelEvent(OmVoxelEvent::VOXEL_MODIFICATION, mSegmentationId, mVoxel));
 }
 
+string OmVoxelSetAction::Description()
+{
 
-string 
-OmVoxelSetAction::Description() {
-
-	if(NULL_SEGMENT_DATA == mDataValue) {
+	if (NULL_SEGMENT_DATA == mDataValue) {
 		return "Remove Voxel";
 	} else {
 		//get segmentation
-		OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-		OmSegment &r_segment = r_segmentation.GetSegment(mSegmentId);
-		
+		OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+		OmSegment & r_segment = r_segmentation.GetSegment(mSegmentId);
+
 		return string("Set Voxel To ") + r_segment.GetName();
 	}
 }

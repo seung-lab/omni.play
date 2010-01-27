@@ -6,27 +6,22 @@
  *
  */
 
-
 #include "volume/omVolumeTypes.h"
 #include "system/omSystemTypes.h"
 #include "common/omStd.h"
 
-
 class OmEditSelectionApplyAction {
 
-public:
+ public:
 	OmEditSelectionApplyAction();
 
-private:
+ private:
 	void Action();
 	void UndoAction();
 	string Description();
 
-
 	OmId mSegmentationId, mSegmentId;
-	map< DataCoord, OmId > mVoxelMap;
+	 map < DataCoord, OmId > mVoxelMap;
 };
-
-
 
 #endif

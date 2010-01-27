@@ -15,45 +15,42 @@
 
 #include "omEvent.h"
 
-typedef set< OmEventListener* > EventListenerSet;
-typedef map< OmEventClass, EventListenerSet > EventClassToEventListenerSetMap;
+typedef set < OmEventListener * >EventListenerSet;
+typedef map < OmEventClass, EventListenerSet > EventClassToEventListenerSetMap;
 
+class OmEventManager:public QObject {
 
-class OmEventManager : public QObject {
-
-public:
-	static OmEventManager* Instance();
+ public:
+	static OmEventManager *Instance();
 	static void Delete();
-	
-	//qtevent handler
-	bool event(QEvent *event);	//customEvent
-	
-	//EventListener accessors
-	void AddEventListener(OmEventClass, OmEventListener*);
-	void RemoveEventListener(OmEventClass, OmEventListener*);
-	//static accessors
-	static void AddListener(OmEventClass, OmEventListener*);
-	static void RemoveListener(OmEventClass, OmEventListener*);
-	
-	//event accessors
-	static bool SendEvent(OmEvent&);
-	static void PostEvent(OmEvent*);
-	static void FlushPostEvents();
-	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
-	OmEventManager();
-	OmEventManager(const OmEventManager&);
-	OmEventManager& operator= (const OmEventManager&);
 
-private:
+	//qtevent handler
+	bool event(QEvent * event);	//customEvent
+
+	//EventListener accessors
+	void AddEventListener(OmEventClass, OmEventListener *);
+	void RemoveEventListener(OmEventClass, OmEventListener *);
+	//static accessors
+	static void AddListener(OmEventClass, OmEventListener *);
+	static void RemoveListener(OmEventClass, OmEventListener *);
+
+	//event accessors
+	static bool SendEvent(OmEvent &);
+	static void PostEvent(OmEvent *);
+	static void FlushPostEvents();
+
+ protected:
+	// singleton constructor, copy constructor, assignment operator protected
+	 OmEventManager();
+	 OmEventManager(const OmEventManager &);
+	 OmEventManager & operator=(const OmEventManager &);
+
+ private:
 	//singleton
-	static OmEventManager* mspInstance;
-	
+	static OmEventManager *mspInstance;
+
 	//map events
 	EventClassToEventListenerSetMap mEventClassToListernsMap;
 };
-
-
 
 #endif

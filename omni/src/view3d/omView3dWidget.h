@@ -7,20 +7,18 @@
  *	Can call a View3d event if the widget needs to be redrawn.
  */
 
-
 class OmCamera;
 class OmView3d;
 
 class OmView3dWidget {
 
-public:
-	OmView3dWidget(OmView3d *view3d) : mView3d(view3d) { };
+ public:
+	OmView3dWidget(OmView3d * view3d):mView3d(view3d) {
+	};
 	virtual void Draw() = 0;
-	
-protected:
+
+ protected:
 	OmView3d * const mView3d;
 };
-
-
 
 #endif

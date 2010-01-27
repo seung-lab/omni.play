@@ -8,26 +8,20 @@
 
 #include "system/omAction.h"
 
-
 #include "system/omSystemTypes.h"
 
+class OmEditSelectionSetAction:public OmAction {
 
-class OmEditSelectionSetAction : public OmAction {
-
-public:
+ public:
 	OmEditSelectionSetAction(OmId segmentationId, OmId segmentId);
 
-	
-private:
+ private:
 	void Action();
 	void UndoAction();
 	string Description();
-	
-	
+
 	OmId mSegmentationId, mSegmentId;
 	OmId mOldSegmentationId, mOldSegmentId;
 };
-
-
 
 #endif

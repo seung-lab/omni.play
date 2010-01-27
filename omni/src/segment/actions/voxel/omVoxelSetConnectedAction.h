@@ -12,39 +12,32 @@
 #include "volume/omVolumeTypes.h"
 #include "system/omSystemTypes.h"
 
-
-
 #include <list>
 using std::list;
 
-
 class OmSegmentation;
 
+class OmVoxelSetConnectedAction:public OmAction {
 
-
-class OmVoxelSetConnectedAction : public OmAction {
-
-public:
+ public:
 	OmVoxelSetConnectedAction();
 
-	
-private:
+ private:
 	void Action();
 	void UndoAction();
 	string Description();
-	
+
 	//dest segment id
 	OmId mSegmentationId, mSegmentId;
 	//dest voxel value
 	SEGMENT_DATA_TYPE mDataValue;
-	
+
 	//source voxel
 	DataCoord mSeedVoxel;
 	OmId mSeedSegmentId;
-	
-	void AddConnectedNeighborsToList(OmSegmentation &rSegmentation, const DataCoord &srcVox, list< DataCoord >& todoList);
+
+	void AddConnectedNeighborsToList(OmSegmentation & rSegmentation, const DataCoord & srcVox,
+					 list < DataCoord > &todoList);
 };
-
-
 
 #endif

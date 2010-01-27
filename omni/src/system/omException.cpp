@@ -1,15 +1,13 @@
 
-
 #include "omException.h"
 #include "system/omDebug.h"
 
-
-string OmExceptTypeStrings[] = { "Note", 
-								 "Information",
-								 "Warning",
-								 "Error",
-								 "Critical Error"};
-
+string OmExceptTypeStrings[] = { "Note",
+	"Information",
+	"Warning",
+	"Error",
+	"Critical Error"
+};
 
 /*
  * Utility Methods
@@ -17,40 +15,30 @@ string OmExceptTypeStrings[] = { "Note",
 string exceptTypeToString(OmExceptType t);
 string execptString(const char *format, ...);
 
+OmException::OmException(const string & name, OmExceptType type, const string & msg)
+:mName(name), mType(type), mMessage(msg)
+{
 
-
-OmException::OmException(const string &name, OmExceptType type, const string &msg)
-	: mName(name), mType(type), mMessage(msg) {
-
-	Log();	
+	Log();
 }
 
-
-
-
-
-
-const string& 
-OmException::GetName() {
+const string & OmException::GetName()
+{
 	return mName;
 }
 
-const string& 
-OmException::GetMessage() {
+const string & OmException::GetMessage()
+{
 	return mMessage;
 }
 
-const string& 
-OmException::GetType() {
+const string & OmException::GetType()
+{
 	return OmExceptTypeStrings[mType];
 }
 
-
-
-
-
-void
-OmException::Parse(const char *format, va_list args) {
+void OmException::Parse(const char *format, va_list args)
+{
 
 	//parse message
 	char error_buf[EXCEPT_STR_SIZE];
@@ -61,24 +49,18 @@ OmException::Parse(const char *format, va_list args) {
 	Log();
 }
 
-
-void
-OmException::Log() {
+void OmException::Log()
+{
 	cout << mName << " " << exceptTypeToString(mType) << ": " << mMessage << endl;
 }
 
-
-
-
-
-string exceptTypeToString(OmExceptType t) {
+string exceptTypeToString(OmExceptType t)
+{
 	return OmExceptTypeStrings[t];
 }
 
-
-
-string execptString(const char *format, ...) 
-{ 
+string execptString(const char *format, ...)
+{
 	char error_buf[EXCEPT_STR_SIZE];
 
 	va_list args;
@@ -86,7 +68,5 @@ string execptString(const char *format, ...)
 	vsnprintf(error_buf, sizeof(error_buf), format, args);
 	va_end(args);
 
-   return string(error_buf); 
+	return string(error_buf);
 }
-
-

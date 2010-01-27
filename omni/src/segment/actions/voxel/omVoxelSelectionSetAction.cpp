@@ -5,95 +5,88 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
-
 #define DEBUG 0
-
-
 
 #pragma mark -
 #pragma mark OmEditSelectionApplyAction Class
 /////////////////////////////////
 ///////
-///////		 OmEditSelectionApplyAction Class
+///////          OmEditSelectionApplyAction Class
 ///////
 
-
-OmEditSelectionApplyAction::OmEditSelectionApplyAction() {
+OmEditSelectionApplyAction::OmEditSelectionApplyAction()
+{
 	//store current volume and segmentation
 	OmSegmentEditor::GetEditSelection(mSegmentationId, mSegmentId);
-	
+
 	//get segmentation
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-	
-	
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+
 	//map current voxel selection to current ids (for undo)
-	const set< DataCoord > &r_selected_voxels = OmSegmentEditor::GetSelectedVoxels();
-	
+	const set < DataCoord > &r_selected_voxels = OmSegmentEditor::GetSelectedVoxels();
+
 	//for all selected voxels, map voxel to id
-	set< DataCoord >::iterator itr;
-	for(itr = r_selected_voxels.begin(); itr != r_selected_voxels.end(); itr++) {
+	set < DataCoord >::iterator itr;
+	for (itr = r_selected_voxels.begin(); itr != r_selected_voxels.end(); itr++) {
 		//get segment id value
 		OmId segment_id = r_segmentation.GetVoxelSegmentId(*itr);
 		//map voxel
 		mVoxelMap[*itr] = segment_id;
 	}
-	
+
 }
 
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Action Methods
 /////////////////////////////////
-///////		 Action Methods
+///////          Action Methods
 
-void 
-OmEditSelectionApplyAction::Action() {
-	
+void
+ OmEditSelectionApplyAction::Action()
+{
+
 	//get segmentation
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-	
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+
 	//for all voxels in the map, set value to mSegmentId
-	map< DataCoord, OmId >::iterator itr;
-	for(itr = mVoxelMap.begin(); itr != mVoxelMap.end(); itr++) {
-		
+	map < DataCoord, OmId >::iterator itr;
+	for (itr = mVoxelMap.begin(); itr != mVoxelMap.end(); itr++) {
+
 		//get ref to voxel
-		const DataCoord &r_voxel = (*itr).first;
-		
+		const DataCoord & r_voxel = (*itr).first;
+
 		//set voxel to stored segment id
 		r_segmentation.SetVoxelSegmentId(r_voxel, mSegmentId);
-		
+
 		//voxel is unselected
 		OmSegmentEditor::SetSelectedVoxelState(r_voxel, false);
 	}
 }
 
-
-void 
-OmEditSelectionApplyAction::UndoAction() {
+void OmEditSelectionApplyAction::UndoAction()
+{
 	//to undo, apply mapped value to each voxel key in the map
-	
+
 	//get segmentation
-	OmSegmentation &r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-	
+	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+
 	//for all voxels in the map, set value to mSegmentId
-	map< DataCoord, OmId >::iterator itr;
-	for(itr = mVoxelMap.begin(); itr != mVoxelMap.end(); itr++) {
-		
+	map < DataCoord, OmId >::iterator itr;
+	for (itr = mVoxelMap.begin(); itr != mVoxelMap.end(); itr++) {
+
 		//get ref to voxel
-		const DataCoord &r_voxel = (*itr).first;
-		
+		const DataCoord & r_voxel = (*itr).first;
+
 		//set voxel to stored segment id
 		r_segmentation.SetVoxelSegmentId(r_voxel, mVoxelMap[r_voxel]);
-		
+
 		//voxel is reselected
 		OmSegmentEditor::SetSelectedVoxelState(r_voxel, true);
 	}
-	
+
 }
 
-
-string 
-OmEditSelectionApplyAction::Description() {
+string OmEditSelectionApplyAction::Description()
+{
 	return "Apply Edit Selection";
 }

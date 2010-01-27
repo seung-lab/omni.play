@@ -6,103 +6,77 @@
 #include "common/omGl.h"
 #include "system/omDebug.h"
 
-
 #define DEBUG 0
 
 //init instance pointer
-OmVolume* OmVolume::mspInstance = 0;
-
+OmVolume *OmVolume::mspInstance = 0;
 
 #pragma mark -
 #pragma mark OmVolume
 /////////////////////////////////
 ///////
-///////		OmVolume
+///////         OmVolume
 ///////
 
-
-OmVolume::OmVolume() {
+OmVolume::OmVolume()
+{
 	//debug("genone","OmVolume::OmVolume()");
 }
 
-
-OmVolume::~OmVolume() {
+OmVolume::~OmVolume()
+{
 	//debug("genone","OmVolume::~OmVolume()");
 }
 
-
 void
-OmVolume::Initialize() {
-	mNormToSpaceMat = Matrix4<float>::IDENTITY;
-	mNormToSpaceInvMat = Matrix4<float>::IDENTITY;
-		 
+ OmVolume::Initialize()
+{
+	mNormToSpaceMat = Matrix4 < float >::IDENTITY;
+	mNormToSpaceInvMat = Matrix4 < float >::IDENTITY;
+
 	//defaults
 	SetChunkDimension(128);
 	SetDataDimensions(Vector3i(128, 128, 128));
-	SetScale(Vector3i(10,10,10));
-	
+	SetScale(Vector3i(10, 10, 10));
+
 	//temp
 	mDataResolution = Vector3i::ZERO;
 }
 
-
-
-
-OmVolume* 
-OmVolume::Instance() {
-	if(NULL == mspInstance) {
+OmVolume *OmVolume::Instance()
+{
+	if (NULL == mspInstance) {
 		mspInstance = new OmVolume;
 		mspInstance->Initialize();
 	}
 	return mspInstance;
 }
 
-
-void 
-OmVolume::Delete() {
-	if(mspInstance) delete mspInstance;
+void OmVolume::Delete()
+{
+	if (mspInstance)
+		delete mspInstance;
 	mspInstance = NULL;
 }
 
-
-
-
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Accessor Methods
 /////////////////////////////////
-///////		 Accessor Methods
+///////          Accessor Methods
 
-
-
-
-
-
-
-
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Transform Methods
 /////////////////////////////////
-///////		 Transform Methods
+///////          Transform Methods
 
-Vector3<float>
-OmVolume::GetScale() {
-	return Vector3<float>(Instance()->mNormToSpaceMat.m00, 
-						  Instance()->mNormToSpaceMat.m11, 
-						  Instance()->mNormToSpaceMat.m22);
+Vector3 < float > OmVolume::GetScale()
+{
+	return Vector3 < float >(Instance()->mNormToSpaceMat.m00,
+				 Instance()->mNormToSpaceMat.m11, Instance()->mNormToSpaceMat.m22);
 }
 
-bool 
-OmVolume::SetScale(const Vector3<float> &scale) {
+bool OmVolume::SetScale(const Vector3 < float >&scale)
+{
 	//set scale
 	Instance()->mNormToSpaceMat.m[0][0] = scale.x;
 	Instance()->mNormToSpaceMat.m[1][1] = scale.y;
@@ -126,362 +100,309 @@ OmVolume::SetTranslation(const Vector3<float> &trans) {
 }
 */
 
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Coordinate Frame Methods
 /////////////////////////////////
-///////		 Coordinate Frame Methods
+///////          Coordinate Frame Methods
 
-SpaceCoord 
-OmVolume::NormToSpaceCoord(const NormCoord &norm) {
-	return Instance()->mNormToSpaceMat * norm; 
+SpaceCoord OmVolume::NormToSpaceCoord(const NormCoord & norm)
+{
+	return Instance()->mNormToSpaceMat * norm;
 }
 
-NormCoord 
-OmVolume::SpaceToNormCoord(const SpaceCoord &spatial) {
-	return Instance()->mNormToSpaceInvMat * spatial; 
+NormCoord OmVolume::SpaceToNormCoord(const SpaceCoord & spatial)
+{
+	return Instance()->mNormToSpaceInvMat * spatial;
 }
 
-
-NormBbox
-OmVolume::SpaceToNormBbox(const AxisAlignedBoundingBox<float> &spacialBbox) {
-	return NormBbox( SpaceToNormCoord(spacialBbox.getMin()),  SpaceToNormCoord(spacialBbox.getMax()));
+NormBbox OmVolume::SpaceToNormBbox(const AxisAlignedBoundingBox < float >&spacialBbox)
+{
+	return NormBbox(SpaceToNormCoord(spacialBbox.getMin()), SpaceToNormCoord(spacialBbox.getMax()));
 }
 
-SpaceBbox
-OmVolume::NormToSpaceBbox(const NormBbox &normBbox) {
-	return SpaceBbox( NormToSpaceCoord(normBbox.getMin()),  NormToSpaceCoord(normBbox.getMax()));
+SpaceBbox OmVolume::NormToSpaceBbox(const NormBbox & normBbox)
+{
+	return SpaceBbox(NormToSpaceCoord(normBbox.getMin()), NormToSpaceCoord(normBbox.getMax()));
 }
-
 
 /*
  *	Converts DataCoord to NormCoord based on source extent of data volume.
  *	NormCoords are used for relative location information and not absolute data access.
  *	centered : causes normalized coordinates to represent center of rectangular pixel.
  */
-NormCoord 
-OmVolume::DataToNormCoord(const DataCoord &data, bool centered) {
-	
-	const DataBbox &extent = GetDataExtent();
-	Vector3<float> scale = extent.getMax() - extent.getMin() + Vector3<int>::ONE;
-	Vector3<float> offset = centered ? Vector3<float>(0.5f, 0.5f, 0.5f) : Vector3<float>::ZERO;
-	return NormCoord( (offset + data) / scale );
+NormCoord OmVolume::DataToNormCoord(const DataCoord & data, bool centered)
+{
+
+	const DataBbox & extent = GetDataExtent();
+	Vector3 < float >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3 < float >offset = centered ? Vector3 < float >(0.5f, 0.5f, 0.5f) : Vector3 < float >::ZERO;
+	return NormCoord((offset + data) / scale);
 }
 
 /*
  *	Returns rectangular pixel that contains given normalized coordinate.
  */
-DataCoord 
-OmVolume::NormToDataCoord(const NormCoord &norm) {
-	
-	const DataBbox &extent = GetDataExtent();
-	Vector3<int> scale = extent.getMax() - extent.getMin() + Vector3<int>::ONE;
-	return DataCoord( floor( norm.x * scale.x), floor( norm.y * scale.y), floor( norm.z * scale.z)); 
+DataCoord OmVolume::NormToDataCoord(const NormCoord & norm)
+{
+
+	const DataBbox & extent = GetDataExtent();
+	Vector3 < int >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	return DataCoord(floor(norm.x * scale.x), floor(norm.y * scale.y), floor(norm.z * scale.z));
 }
-
-
 
 /*
  *	Returns normalized bbox that encloses rectangular pixels in given data bbox.
  */
-NormBbox 
-OmVolume::DataToNormBbox(const DataBbox &dataBbox) {
-	
-	return NormBbox( DataToNormCoord(dataBbox.getMin(), false),
-					DataToNormCoord(dataBbox.getMax() + Vector3<int>::ONE, false));
-}
+NormBbox OmVolume::DataToNormBbox(const DataBbox & dataBbox)
+{
 
+	return NormBbox(DataToNormCoord(dataBbox.getMin(), false),
+			DataToNormCoord(dataBbox.getMax() + Vector3 < int >::ONE, false));
+}
 
 /*
  *	Returns data bbox contained by given normalized bounding box.
  */
-DataBbox 
-OmVolume::NormToDataBbox(const NormBbox &normBbox) {
-	
-	const DataBbox &extent = GetDataExtent();
-	Vector3<float> normalized_pixel_dim = Vector3<float>::ONE / (extent.getMax() - extent.getMin() + Vector3<float>::ONE);
-	
+DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
+{
+
+	const DataBbox & extent = GetDataExtent();
+	Vector3 < float >normalized_pixel_dim =
+	    Vector3 < float >::ONE / (extent.getMax() - extent.getMin() + Vector3 < float >::ONE);
+
 	NormCoord extent_min = normBbox.getMin() + normalized_pixel_dim * 0.5f;
 	NormCoord extent_max = normBbox.getMax() - normalized_pixel_dim * 0.5f;
-	
-	return DataBbox( NormToDataCoord(extent_min), NormToDataCoord(extent_max) );
+
+	return DataBbox(NormToDataCoord(extent_min), NormToDataCoord(extent_max));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Data Properties
 /////////////////////////////////
-///////		 Data Properties
+///////          Data Properties
 
-const DataBbox&
-OmVolume::GetDataExtent() {
+const DataBbox & OmVolume::GetDataExtent()
+{
 	return Instance()->mDataExtent;
 }
 
-void 
-OmVolume::SetDataExtent(const DataBbox& extent) {
+void OmVolume::SetDataExtent(const DataBbox & extent)
+{
 	assert(false);
 	Instance()->mDataExtent = extent;
 }
 
-
-Vector3i 
-OmVolume::GetDataDimensions() {
+Vector3i OmVolume::GetDataDimensions()
+{
 	return GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3i::ONE;
 }
 
-void 
-OmVolume::SetDataDimensions(const Vector3i& dim) {
-	Instance()->mDataExtent = DataBbox( Vector3i::ZERO, dim - Vector3i::ONE );
+void OmVolume::SetDataDimensions(const Vector3i & dim)
+{
+	Instance()->mDataExtent = DataBbox(Vector3i::ZERO, dim - Vector3i::ONE);
 }
 
-
-Vector3f 
-OmVolume::GetDataResolution() {
+Vector3f OmVolume::GetDataResolution()
+{
 	return Instance()->mDataResolution;
 }
 
-bool 
-OmVolume::SetDataResolution(const Vector3f& res) {
+bool OmVolume::SetDataResolution(const Vector3f & res)
+{
 	Instance()->mDataResolution = res;
-	
+
 	//update scale
-	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3<int>::ONE;
-	return SetScale( Instance()->mDataResolution * data_dims);
+	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3 < int >::ONE;
+	return SetScale(Instance()->mDataResolution * data_dims);
 }
 
-
-int 
-OmVolume::GetChunkDimension() {
+int OmVolume::GetChunkDimension()
+{
 	return Instance()->mChunkDim;
 }
 
-void 
-OmVolume::SetChunkDimension(int dim) {
+void OmVolume::SetChunkDimension(int dim)
+{
 	Instance()->mChunkDim = dim;
 }
 
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Channel Manager Methods
 /////////////////////////////////
-///////		 Channel Manager Method
+///////          Channel Manager Method
 
-OmChannel& 
-OmVolume::GetChannel(OmId id) {
+OmChannel & OmVolume::GetChannel(OmId id)
+{
 	return Instance()->mChannelManager.Get(id);
 }
 
-OmChannel& 
-OmVolume::AddChannel() {
-	OmChannel& r_channel = Instance()->mChannelManager.Add();
+OmChannel & OmVolume::AddChannel()
+{
+	OmChannel & r_channel = Instance()->mChannelManager.Add();
 	return r_channel;
 }
 
-void 
-OmVolume::RemoveChannel(OmId id) {
+void OmVolume::RemoveChannel(OmId id)
+{
 	Instance()->mChannelManager.Remove(id);
 }
 
-bool 
-OmVolume::IsChannelValid(OmId id) {
+bool OmVolume::IsChannelValid(OmId id)
+{
 	return Instance()->mChannelManager.IsValid(id);
 }
 
-const set<OmId>&
-OmVolume::GetValidChannelIds() {
+const set < OmId > & OmVolume::GetValidChannelIds()
+{
 	return Instance()->mChannelManager.GetValidIds();
 }
 
-bool 
-OmVolume::IsChannelEnabled(OmId id) {
+bool OmVolume::IsChannelEnabled(OmId id)
+{
 	return Instance()->mChannelManager.IsEnabled(id);
 }
 
-void 
-OmVolume::SetChannelEnabled(OmId id, bool enable) {
+void OmVolume::SetChannelEnabled(OmId id, bool enable)
+{
 	Instance()->mChannelManager.SetEnabled(id, enable);
 }
 
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Segmentation Manager Methods
 /////////////////////////////////
-///////		 Segmentation Manager Method
+///////          Segmentation Manager Method
 
-OmSegmentation& 
-OmVolume::GetSegmentation(OmId id) {
+OmSegmentation & OmVolume::GetSegmentation(OmId id)
+{
 	Instance()->mSegmentationManager.Get(id).SetBytesPerSample(4);
 	return Instance()->mSegmentationManager.Get(id);
 }
 
-OmSegmentation& 
-OmVolume::AddSegmentation() {
-	OmSegmentation& r_segmentation = Instance()->mSegmentationManager.Add();
+OmSegmentation & OmVolume::AddSegmentation()
+{
+	OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
 	return r_segmentation;
 }
 
-void 
-OmVolume::RemoveSegmentation(OmId id) {
+void OmVolume::RemoveSegmentation(OmId id)
+{
 	Instance()->mSegmentationManager.Remove(id);
 }
 
-
-bool 
-OmVolume::IsSegmentationValid(OmId id) {
+bool OmVolume::IsSegmentationValid(OmId id)
+{
 	return Instance()->mSegmentationManager.IsValid(id);
 }
 
-const set<OmId>&
-OmVolume::GetValidSegmentationIds() {
+const set < OmId > & OmVolume::GetValidSegmentationIds()
+{
 	return Instance()->mSegmentationManager.GetValidIds();
 }
 
-
-bool 
-OmVolume::IsSegmentationEnabled(OmId id) {
+bool OmVolume::IsSegmentationEnabled(OmId id)
+{
 	return Instance()->mSegmentationManager.IsEnabled(id);
 }
 
-void 
-OmVolume::SetSegmentationEnabled(OmId id, bool enable) {
+void OmVolume::SetSegmentationEnabled(OmId id, bool enable)
+{
 	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
 
-QList< SegmentIDhelper > 
-OmVolume::GetSelectedSegmentIDs() {
+QList < SegmentIDhelper > OmVolume::GetSelectedSegmentIDs()
+{
 
-	QList< SegmentIDhelper > segmentationsAndSegments;
+	QList < SegmentIDhelper > segmentationsAndSegments;
 
-	foreach( OmId seg_it, OmVolume::GetValidSegmentationIds() ) {
-		
+	foreach(OmId seg_it, OmVolume::GetValidSegmentationIds()) {
+
 		/*
-		if( !OmVolume::IsSegmentationEnabled(seg_it) ) {
-			continue;
-		}
-		*/
+		   if( !OmVolume::IsSegmentationEnabled(seg_it) ) {
+		   continue;
+		   }
+		 */
 
-		OmSegmentation &current_seg = OmVolume::GetSegmentation(seg_it);
-		
-		foreach( OmId obj_it, current_seg.GetSelectedSegmentIds() ) {
-			
+		OmSegmentation & current_seg = OmVolume::GetSegmentation(seg_it);
+
+		foreach(OmId obj_it, current_seg.GetSelectedSegmentIds()) {
+
 			/*
-			if( !OmVolume::GetSegmentation(seg_it).IsSegmentEnabled(obj_it) ) {
-				continue;
-			}
-			*/
+			   if( !OmVolume::GetSegmentation(seg_it).IsSegmentEnabled(obj_it) ) {
+			   continue;
+			   }
+			 */
 
 			SegmentIDhelper seg;
-			seg.segmentationID   = seg_it;
-			seg.segmentationName = QString::fromStdString( current_seg.GetName() );
-			seg.segmentID        = obj_it;
-			seg.segmentName      = QString::fromStdString( current_seg.GetSegment(obj_it).GetName() );
-			segmentationsAndSegments.append( seg );
-		}					
+			seg.segmentationID = seg_it;
+			seg.segmentationName = QString::fromStdString(current_seg.GetName());
+			seg.segmentID = obj_it;
+			seg.segmentName = QString::fromStdString(current_seg.GetSegment(obj_it).GetName());
+			segmentationsAndSegments.append(seg);
+		}
 	}
 
 	return segmentationsAndSegments;
 }
 
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Draw Methods
 /////////////////////////////////
-///////		 Draw Method
+///////          Draw Method
 
 /*
  *	Draw 3d components of the volume.  Call segmentation manager to draw each 
  *	segmentation in the volume using a transformed volume culler.
  */
-void 
-OmVolume::Draw(const OmVolumeCuller &rCuller) {
+void OmVolume::Draw(const OmVolumeCuller & rCuller)
+{
 	//transform to normal frame
 	glPushMatrix();
-	glMultMatrixf( Instance()->mNormToSpaceMat.ml );
-	
+	glMultMatrixf(Instance()->mNormToSpaceMat.ml);
+
 	//draw volume axis
-	if(rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
+	if (rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
 		glDrawPositiveAxis();
 	}
-	
 	//return if no chunk level drawing
-	if(!rCuller.CheckDrawOption(DRAWOP_LEVEL_CHUNKS)) {
+	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_CHUNKS)) {
 		glPopMatrix();
 		return;
 	}
-	
 	//form culler for this volume and call draw on all volumes
-	OmVolumeCuller volume_culler = rCuller.GetTransformedCuller(Instance()->mNormToSpaceMat, Instance()->mNormToSpaceInvMat);
-	Instance()->mSegmentationManager.CallEnabled< const OmVolumeCuller & >( &OmSegmentation::Draw, volume_culler );
-	
+	OmVolumeCuller volume_culler =
+	    rCuller.GetTransformedCuller(Instance()->mNormToSpaceMat, Instance()->mNormToSpaceInvMat);
+	Instance()->mSegmentationManager.CallEnabled < const OmVolumeCuller & >(&OmSegmentation::Draw, volume_culler);
+
 	//pop matrix
 	glPopMatrix();
 }
-
-
-
 
 /*
  *	Draw voxels that have been selected for editing.
  */
-void 
-OmVolume::DrawEditSelectionVoxels() {
+void OmVolume::DrawEditSelectionVoxels()
+{
 	//transform to normal frame
 	glPushMatrix();
-	glMultMatrixf( Instance()->mNormToSpaceMat.ml );
+	glMultMatrixf(Instance()->mNormToSpaceMat.ml);
 
 	OmSegmentEditor::DrawEditSelectionVoxels();
-	
+
 	//pop matrix
 	glPopMatrix();
 }
 
-
-
-
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Print Methods
 /////////////////////////////////
-///////		Print Method
+///////         Print Method
 
-void
-OmVolume::Print() {
-	
+void OmVolume::Print()
+{
+
 	cout << "   Channels:" << endl;
-	mChannelManager.CallValid( &OmChannel::Print );
-	
+	mChannelManager.CallValid(&OmChannel::Print);
+
 	cout << "   Segmentations:" << endl;
-	mSegmentationManager.CallValid( &OmSegmentation::Print );
+	mSegmentationManager.CallValid(&OmSegmentation::Print);
 }
-
-
-
-
-

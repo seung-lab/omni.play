@@ -15,56 +15,50 @@
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 #include <QApplication>
 #include "system/omDebug.h"
 
 void build_mip_volume(string dpath, string regex);
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
-	
-	switch(argc) {
-		case 3:
-			cout << argv[1] << " " << argv[2] << endl;
-			break;
-			
-		default:
-			cout << argc << endl;
-			cout << "Usage:" << endl;
-			cout << argv[0] << " [directory] [regex]" << endl;
-			return 0;
+
+	switch (argc) {
+	case 3:
+		cout << argv[1] << " " << argv[2] << endl;
+		break;
+
+	default:
+		cout << argc << endl;
+		cout << "Usage:" << endl;
+		cout << argv[0] << " [directory] [regex]" << endl;
+		return 0;
 	}
 
 	string dpath(argv[1]);
 	string regex(argv[2]);
 
-
 	build_mip_volume(dpath, regex);
 }
 
+void build_mip_volume(string dpath, string regex)
+{
 
-
-void 
-build_mip_volume(string dpath, string regex) {
-	
 	OmProject::New("./", "project.omni");
-	
-	
-	OmMipVolume &r_channel = OmVolume::AddChannel();
+
+	OmMipVolume & r_channel = OmVolume::AddChannel();
 	r_channel.SetSourceDirectoryPath(dpath);
 	r_channel.SetSourceFilenameRegex(regex);
-	
+
 	cout << "source files found: " << r_channel.GetSourceFilenameRegexMatches().size() << endl;
-	
+
 	r_channel.Build();
-	
+
 	OmProject::Save();
 	OmProject::Close();
 }
@@ -127,5 +121,3 @@ int main(int argc, char* argv[])
 	
 }
 */
-
-

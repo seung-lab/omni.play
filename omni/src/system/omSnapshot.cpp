@@ -12,37 +12,28 @@
 
 #define DEBUG 0
 
-
-
 #pragma mark -
 #pragma mark OmSnapshot Class
 /////////////////////////////////
 ///////
-///////		OmSnapshot Class
+///////         OmSnapshot Class
 ///////
-OmSnapshot::OmSnapshot (QImage &m)
+OmSnapshot::OmSnapshot(QImage & m)
 {
 	//q_atomic_increment(&mCount);
 }
 
-
-#pragma mark 
+#pragma mark
 #pragma mark Accessor Methods
 /////////////////////////////////
-///////		Accessor Methods
+///////         Accessor Methods
 
-
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Example Methods
 /////////////////////////////////
-///////		Example Methods
+///////         Example Methods
 
-
-
-#pragma mark 
+#pragma mark
 #pragma mark Print Methods
 /////////////////////////////////
-///////		 Print Methods
-
+///////          Print Methods

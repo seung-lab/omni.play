@@ -1,8 +1,6 @@
 #ifndef OM_MIP_CHUNK_MESHER_H
 #define OM_MIP_CHUNK_MESHER_H
 
-
-
 #include "segment/omSegmentTypes.h"
 #include "volume/omMipChunkCoord.h"
 #include "system/omSystemTypes.h"
@@ -31,42 +29,39 @@ class vtkImageData;
 
 class OmMipChunkMesher {
 
-public:
-	static OmMipChunkMesher* Instance();
+ public:
+	static OmMipChunkMesher *Instance();
 	static void Delete();
-	
-	
-	static void BuildChunkMeshes(OmMipMeshManager *pMipMeshManager, shared_ptr<OmMipChunk> chunk, const SegmentDataSet &);
-	void BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, shared_ptr<OmMipChunk> chunk,  const SegmentDataSet &);
+
+	static void BuildChunkMeshes(OmMipMeshManager * pMipMeshManager, shared_ptr < OmMipChunk > chunk,
+				     const SegmentDataSet &);
+	void BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManager, shared_ptr < OmMipChunk > chunk,
+				      const SegmentDataSet &);
 	SEGMENT_DATA_TYPE GetNextSegmentValueToMesh();
 	void BuildMeshesLoop();
-	
-protected:
+
+ protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmMipChunkMesher();
 	~OmMipChunkMesher();
-	OmMipChunkMesher(const OmMipChunkMesher&);
-	OmMipChunkMesher& operator= (const OmMipChunkMesher&);
-	
-	
-private:
+	OmMipChunkMesher(const OmMipChunkMesher &);
+	OmMipChunkMesher & operator=(const OmMipChunkMesher &);
+
+ private:
 	//singleton
-	static OmMipChunkMesher* mspInstance;
-	
-	
+	static OmMipChunkMesher *mspInstance;
+
 	//mesh building
 	pthread_mutex_t mMeshThreadMutex;
 	pthread_cond_t mMeshThreadCv;
 	int mMeshThreadCount;
-	
+
 	//current data
 	OmMipMeshManager *mpMipMeshManager;
-	
+
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 	SegmentDataSet mCurrentSegmentDataSet;
 };
-
-
 
 #endif

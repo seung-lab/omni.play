@@ -16,14 +16,12 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-
 class OmSnapshot {
 
-public:
-	OmSnapshot (QImage&);
-private:
-	static int const mCount=0;
+ public:
+	OmSnapshot(QImage &);
+ private:
+	static int const mCount = 0;
 };
-
 
 #endif
