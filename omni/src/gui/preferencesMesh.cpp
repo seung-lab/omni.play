@@ -9,93 +9,75 @@
 
 PreferencesMesh::PreferencesMesh(QWidget * parent)
  : QWidget(parent)
-{				/*
-				   this->resize(550, 379);
-				   QGroupBox* groupBox = new QGroupBox(this);
-				   groupBox->setTitle("Mesh Options");
+{
+	QVBoxLayout* overallContainer = new QVBoxLayout( this );
 
-				   QVBoxLayout* vbox = new QVBoxLayout(groupBox);
+	QGroupBox* groupBox = new QGroupBox(this);
+	groupBox->setTitle("Mesh Options");
+	overallContainer->addWidget( groupBox );
 
-				   QHBoxLayout* horizontalLayout_3 = new QHBoxLayout();
-				   QLabel* tdpLabel = new QLabel(groupBox);
-				   tdpLabel->setText("Target Decimation Percentage:");
-				   tdpSliderLabel = new QLabel(groupBox);
-				   tdpSliderLabel->setMinimumSize(QSize(20, 0));
-				   tdpSliderLabel->setMaximumSize(QSize(20, 16777215));
-				   horizontalLayout_3->addWidget(tdpLabel);
-				   horizontalLayout_3->addWidget(tdpSliderLabel);
+	QGridLayout *grid = new QGridLayout( this );
+	groupBox->setLayout( grid );
 
-				   vbox->addLayout(horizontalLayout_3);
+	// "Target Decimation Percentage
+	QLabel* tdpLabel = new QLabel(groupBox);
+	tdpLabel->setText("Target Decimation Percentage:");
+	tdpSliderLabel = new QLabel(groupBox);
+	tdpSliderLabel->setMinimumSize(QSize(20, 0));
+	tdpSliderLabel->setMaximumSize(QSize(20, 16777215));
 
-				   tdpSlider = new QSlider(groupBox);
-				   tdpSlider->setMaximum(100);
-				   tdpSlider->setOrientation(Qt::Horizontal);
-				   tdpSlider->setTickPosition(QSlider::TicksBelow);
-				   tdpSlider->setTickInterval(10);
+	grid->addWidget(tdpLabel, 0, 0 );
+	grid->addWidget(tdpSliderLabel, 0, 1);
 
-				   gridLayout->addWidget(tdpSlider, 1, 0, 1, 1);
+	tdpSlider = new QSlider(groupBox);
+	tdpSlider->setMaximum(100);
+	tdpSlider->setOrientation(Qt::Horizontal);
+	tdpSlider->setTickPosition(QSlider::TicksBelow);
+	tdpSlider->setTickInterval(10);
 
-				   QHBoxLayout* horizontalLayout_2 = new QHBoxLayout();
-				   QLabel* pasLabel = new QLabel(groupBox);
-				   pasLabel->setText("Preserved Angle Sharpness:");
+	grid->addWidget(tdpSlider, 1, 0 );
 
-				   horizontalLayout_2->addWidget(pasLabel);
 
-				   pasSliderLabel = new QLabel(groupBox);
-				   pasSliderLabel->setObjectName(QString::fromUtf8("pasSliderLabel"));
-				   pasSliderLabel->setMinimumSize(QSize(20, 0));
-				   pasSliderLabel->setMaximumSize(QSize(20, 16777215));
+	// Preserved Angle Sharpness
+	QLabel* pasLabel = new QLabel(groupBox);
+	pasLabel->setText("Preserved Angle Sharpness:");
+	pasSliderLabel = new QLabel(groupBox);
+	pasSliderLabel->setMinimumSize(QSize(20, 0));
+	pasSliderLabel->setMaximumSize(QSize(20, 16777215));
 
-				   horizontalLayout_2->addWidget(pasSliderLabel);
+	grid->addWidget(pasLabel, 2, 0 );
+	grid->addWidget(pasSliderLabel, 2, 1 );
 
-				   gridLayout->addLayout(horizontalLayout_2, 2, 0, 1, 1);
+	pasSlider = new QSlider(groupBox);
+	pasSlider->setObjectName(QString::fromUtf8("pasSlider"));
+	pasSlider->setMaximum(90);
+	pasSlider->setOrientation(Qt::Horizontal);
+	pasSlider->setTickPosition(QSlider::TicksBelow);
+	pasSlider->setTickInterval(10);
 
-				   pasSlider = new QSlider(groupBox);
-				   pasSlider->setObjectName(QString::fromUtf8("pasSlider"));
-				   pasSlider->setMaximum(90);
-				   pasSlider->setOrientation(Qt::Horizontal);
-				   pasSlider->setTickPosition(QSlider::TicksBelow);
-				   pasSlider->setTickInterval(10);
+	grid->addWidget(pasSlider, 3, 0 );
 
-				   gridLayout->addWidget(pasSlider, 3, 0, 1, 1);
 
-				   QHBoxLayout*  horizontalLayout = new QHBoxLayout();
-				   QLabel* nsLabel = new QLabel(groupBox);
-				   nsLabel->setText("Normal Smoothness:");
+	// Normal Smoothness
+	QLabel* nsLabel = new QLabel(groupBox);
+	nsLabel->setText("Normal Smoothness:");
+	nsSliderLabel = new QLabel(groupBox);
+	nsSliderLabel->setMinimumSize(QSize(20, 0));
+	nsSliderLabel->setMaximumSize(QSize(20, 16777215));
 
-				   horizontalLayout->addWidget(nsLabel);
+	grid->addWidget(nsLabel, 4, 0 );
+	grid->addWidget(nsSliderLabel, 4, 1 );
 
-				   nsSliderLabel = new QLabel(groupBox);
-				   nsSliderLabel->setMinimumSize(QSize(20, 0));
-				   nsSliderLabel->setMaximumSize(QSize(20, 16777215));
+	nsSlider = new QSlider(groupBox);
+	nsSlider->setMaximum(100);
+	nsSlider->setOrientation(Qt::Horizontal);
+	nsSlider->setTickPosition(QSlider::TicksBelow);
+	nsSlider->setTickInterval(10);
 
-				   horizontalLayout->addWidget(nsSliderLabel);
-
-				   gridLayout->addLayout(horizontalLayout, 4, 0, 1, 1);
-
-				   nsSlider = new QSlider(groupBox);
-				   nsSlider->setMaximum(100);
-				   nsSlider->setOrientation(Qt::Horizontal);
-				   nsSlider->setTickPosition(QSlider::TicksBelow);
-				   nsSlider->setTickInterval(10);
-
-				   gridLayout->addWidget(nsSlider, 5, 0, 1, 1);
-
-				   tdpLabel->raise();
-				   tdpSlider->raise();
-				   pasLabel->raise();
-				   pasSliderLabel->raise();
-				   pasSlider->raise();
-				   nsLabel->raise();
-				   nsSliderLabel->raise();
-				   nsSlider->raise();
-				   tdpSliderLabel->raise();
-
-				   gridLayout_2->addWidget(groupBox, 0, 0, 1, 1);
-				 */
+	grid->addWidget(nsSlider, 5, 0);
 
 	connect(tdpSlider, SIGNAL(valueChanged(int)), this, SLOT(on_tdpSlider_valueChanged()));
-	connect(nsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_pasSlider_valueChanged()));
+	connect(nsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_nsSlider_valueChanged()));
 	connect(pasSlider, SIGNAL(valueChanged(int)), this, SLOT(on_pasSlider_valueChanged()));
 
 	tdpSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT)));
