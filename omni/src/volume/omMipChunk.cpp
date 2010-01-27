@@ -210,6 +210,7 @@ OmMipChunk::Close() {
 	
 	//delete image data
 	mpImageData->Delete();
+	cout << "mpImageData: " << mpImageData << endl;
 	mpImageData = NULL;
 }
 

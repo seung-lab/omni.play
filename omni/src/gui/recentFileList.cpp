@@ -94,15 +94,16 @@ void RecentFileList::loadRecentlyUsedFilesListFromFS()
 	QString fname = getRecentlyUsedFilesName();
 	
 	if( !QFile::exists( fname ) ) {
-		cout << "could not find most recently-used files list at \"" 
-			<< qPrintable(getRecentlyUsedFilesName()) << "\"\n";
+		// Silently ignore this failure. MW 2010-01-8
+		// cout << "could not find most recently-used files list at \"" 
+		// 	<< qPrintable(getRecentlyUsedFilesName()) << "\"\n";
 		return;
 	}
 	
 	QFile file( fname );
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-		cout << "could not read most recently-used files list at \"" 
-			<< qPrintable( getRecentlyUsedFilesName()) << "\"\n";
+		// cout << "could not read most recently-used files list at \"" 
+		//	<< qPrintable( getRecentlyUsedFilesName()) << "\"\n";
 		return;
 	}
 	
@@ -119,8 +120,8 @@ void RecentFileList::writeRecentlyUsedFileListToFS()
 {
 	QFile file( getRecentlyUsedFilesName() );
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-		cout << "could not write most recently-used files list at \"" 
-			<< qPrintable( getRecentlyUsedFilesName() ) << "\"\n";
+		// cout << "could not write most recently-used files list at \"" 
+		//	<< qPrintable( getRecentlyUsedFilesName() ) << "\"\n";
 		return;
 	}
 	

@@ -33,6 +33,7 @@
 
 #import <vtkDecimatePro.h>
 
+#include <sys/wait.h>
 
 #define DEBUG 0
 
@@ -99,7 +100,6 @@ OmMipChunkMesher::Delete() {
 
 
 
-
 #pragma mark 
 #pragma mark Threaded Chunk Meshing
 /////////////////////////////////
@@ -110,11 +110,13 @@ OmMipChunkMesher::Delete() {
 void 
 OmMipChunkMesher::BuildChunkMeshes(OmMipMeshManager *pMipMeshManager, shared_ptr <OmMipChunk> chunk, const SegmentDataSet &rMeshVals) {
      debug("mesher","OmMipChunkMesher::BuildChunkMeshes: (x,y,z):%i,%i,%i\n",
-           chunk.get()->GetCoordinate().get<1>(),
-           chunk.get()->GetCoordinate().get<2>(),
-           chunk.get()->GetCoordinate().get<3>());
+           chunk->GetCoordinate().get<1>(),
+           chunk->GetCoordinate().get<2>(),
+           chunk->GetCoordinate().get<3>());
 	
+
 	Instance()->BuildChunkMeshesThreaded(pMipMeshManager, chunk, rMeshVals);
+
 }
 
 void 
@@ -124,8 +126,8 @@ OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, sh
 	mpMipMeshManager = pMipMeshManager;
 	
 	//get num of threads
-	int num_threads = 5;
-	
+	int num_threads = 15;
+
 	
 	//SET CURRENT DATA
 	//make meshing data available to threads
@@ -136,32 +138,34 @@ OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, sh
 	mpCurrentMeshSource = new OmMeshSource();
 	mpCurrentMeshSource->Load(chunk);
 	//current chunk
-	mCurrentMipCoord = chunk.get()->GetCoordinate();
+	mCurrentMipCoord = chunk->GetCoordinate();
+	chunk->Open ();
 	
 
 	debug("mesher","Should have chunk loaded now: ");
 	
+//#define OM_SINGLE_THREADED_MESHER
+#ifdef OM_SINGLE_THREADED_MESHER
+	init_meshing_thread ((void *)this);
+#else
 	
 	//lock thread mutex to prevent created threads from starting
 	pthread_mutex_lock(&mMeshThreadMutex);
-     //lock thread creation with OmCacheManagerLock to prevent deletion
-	//OmCacheManager::Instance()->LockCacheMap();
 
 	//create all meshing threads
 	pthread_t meshing_threads[num_threads];
 	for(int i=0; i<num_threads; ++i) {
 		pthread_create(&meshing_threads[i], NULL, init_meshing_thread, (void *)this);
-          debug("thread","OmMipChunkMesher::BuildChunkMeshesThreaded->Thread Created"); 
+          	debug("thread","OmMipChunkMesher::BuildChunkMeshesThreaded->Thread Created"); 
 	}
 	
 	//free mutex and with for signal
 	pthread_cond_wait(&mMeshThreadCv, &mMeshThreadMutex);
 
-
-
 	//all threads must be dead, so free mutex and return
 	pthread_mutex_unlock(&mMeshThreadMutex);
-	
+
+#endif
 
 	delete mpCurrentMeshSource;
 	mpCurrentMeshSource = NULL;
@@ -200,6 +204,7 @@ OmMipChunkMesher::BuildMeshesLoop() {
 	
 	//init thread index
 	int thread_index = -1;
+	bool dosignal = false;
 	
 	pthread_mutex_lock(&mMeshThreadMutex);
 	
@@ -243,10 +248,16 @@ OmMipChunkMesher::BuildMeshesLoop() {
 	//no more seg values avail, dec thread count
 	pthread_mutex_lock(&mMeshThreadMutex);
 	mMeshThreadCount--;
+	cout << "mMeshThreadCount: " << mMeshThreadCount << endl;
+	if(0 == mMeshThreadCount)
+		dosignal = true;
 	pthread_mutex_unlock(&mMeshThreadMutex);
 	
 	//if last thread, then signal
-	if(0 == mMeshThreadCount) pthread_cond_signal(&mMeshThreadCv);
+	if(dosignal) {
+		cout << "mMeshThreadCount is 0 so ... signaling" << endl;
+	 	pthread_cond_signal(&mMeshThreadCv);
+	}
 }
 
 
@@ -261,7 +272,9 @@ init_meshing_thread(void* arg) {
 	OmMipChunkMesher *p_manager = (OmMipChunkMesher*) arg;
 	p_manager->BuildMeshesLoop();
 	
+#ifdef OM_SINGLE_THREADED_MESHER
 	pthread_exit(NULL);
+#endif
 }
 
 

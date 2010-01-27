@@ -296,11 +296,13 @@ OmSegmentation::BuildMeshDataInternal() {
 					//get built chunk (hold shared pointer whild building)
 					shared_ptr< OmMipChunk > p_chunk = shared_ptr<OmMipChunk>();
 					GetChunk(p_chunk, chunk_coord);
+
 					//build all segment meshes in chunk
-				
 					p_chunk->Open ();
 
 					mMipMeshManager.BuildChunkMeshes(p_chunk, p_chunk->GetDirectDataValues());
+
+					p_chunk->Close ();
 					
 					//update progress
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));

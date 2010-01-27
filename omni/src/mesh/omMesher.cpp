@@ -73,13 +73,14 @@ OmMeshSource::Load(shared_ptr<OmMipChunk> chunk) {
 	
 	//get new data
 	pImageData = chunk->GetMeshImageData();
+
 	if (NULL == pImageData) {
 		cout << "Crash inc..." << endl;
 	}
 	MipCoord = chunk->GetCoordinate();
 	SrcBbox = chunk->GetExtent();
 	DstBbox = chunk->GetNormExtent();
-     mChunk = chunk;
+	mChunk = chunk;
 }	
 
 //copy from another mesh source - cheaper

@@ -1513,3 +1513,35 @@ omGuiApp: /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:90: void om_hdf5_group
 #14 0x00000000007a9190 in MainWindow::addSegmentationToVolume (this=0x7fffb41033f0)
     at /Users/mwimer/omni1/omni/src/gui/mainwindow.cpp:203
 
+
+Mesher crash:
+
+[Thread 0x9cbfdb90 (LWP 27649) exited]
+ removing oldest...
+ref count2
+OmThreadedCache<T,U>::RemoveOldest(): access list size: 6
+OmThreadedCache<T,U>::RemoveOldest(): map size: 6
+mpImageData: 0xac17d828
+OmMipChunkMesher::BuildChunkMeshes: [ 0 ( 7 1 0 ) ]
+[Thread 0x9c0ffb90 (LWP 27650) exited]
+Should have chunk loaded now: 0xa7d601d0
+[New Thread 0xa41ffb90 (LWP 27651)]
+[New Thread 0x9b8feb90 (LWP 27652)]
+target_reduction: 0.15
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x9b8feb90 (LWP 27652)]
+0x08d6ce0f in vtkDataObject::DeepCopy (this=0xac17d828, src=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataObject.cxx:922
+922       vtkFieldData *srcFieldData = src->GetFieldData();
+(gdb) bt
+#0  0x08d6ce0f in vtkDataObject::DeepCopy (this=0xac17d828, src=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataObject.cxx:922
+#1  0x08d76117 in vtkDataSet::DeepCopy (this=0xac17d828, dataObject=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataSet.cxx:356
+#2  0x08d91926 in vtkImageData::DeepCopy (this=0xac17d828, dataObject=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkImageData.cxx:1992
+#3  0x08c90cd9 in OmMeshSource::Copy (this=0x9b8fe2fc, source=@0xa7d601d0) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:94
+#4  0x08c90e16 in OmMesher (this=0x9b8fe2fc, meshSource=@0xa7d601d0) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:118
+#5  0x08c8fb6a in OmMipChunkMesher::BuildMeshesLoop (this=0x9643980) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:198
+#6  0x08c8fcf3 in init_meshing_thread (arg=0x9643980) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:253
+#7  0xb7cfc4fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#8  0xb7b05e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+(gdb)
+
