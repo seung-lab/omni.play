@@ -62,7 +62,7 @@ QT4_WRAP_CPP(omGuiApp_MOC_SRCS ${omGuiApp_MOC_HDRS})
 
 # create an executable file named "qtproject" from
 # the source files in the variable "qtproject_SRCS".
-ADD_EXECUTABLE(omGuiApp 
+ADD_EXECUTABLE(omni
 	main.cpp
 	mainwindow.cpp
 	recentFileList.cpp
@@ -92,7 +92,7 @@ ADD_EXECUTABLE(omGuiApp
 
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES(omGuiApp
+TARGET_LINK_LIBRARIES(omni
 
 	omCommon
 	omVolume

@@ -10,7 +10,7 @@
 
 PreferencesMesh::PreferencesMesh(QWidget *parent) 
 : QWidget(parent) 
-{ 
+{ /*
     this->resize(550, 379);
     QGroupBox* groupBox = new QGroupBox(this);
     groupBox->setTitle("Mesh Options");
@@ -94,7 +94,7 @@ PreferencesMesh::PreferencesMesh(QWidget *parent)
     tdpSliderLabel->raise();
 
     gridLayout_2->addWidget(groupBox, 0, 0, 1, 1);
-
+  */
 
     connect(tdpSlider, SIGNAL(valueChanged(int)), 
 		  this, SLOT( on_tdpSlider_valueChanged() ) );
