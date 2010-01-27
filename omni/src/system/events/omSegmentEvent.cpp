@@ -3,34 +3,30 @@
 
 #define DEBUG 0
 
-
-
-
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type) 
 : OmEvent(type, CLASS)  { 
-	
-}
-
-OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId, OmId segId) 
-: OmEvent(type, CLASS)  { 
-	mSegmentationId = segmentationId;
-	mSegmentIds.insert(segId);
+	mSegmentJustSelectedID = -1;
+	mUserData = NULL;
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId, const OmIds &segIds) 
 : OmEvent(type, CLASS)  { 
 	mSegmentationId = segmentationId;
 	mSegmentIds = segIds;
+	mSegmentJustSelectedID = -1;
+	mUserData = NULL;
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type, 
 						 OmId segmentationId, 
 						 const OmIds &segIds,
-						 const OmId segmentJustSelectedID) 
+						 const OmId segmentJustSelectedID,
+						 void* user_data) 
 : OmEvent(type, CLASS)  { 
 	mSegmentationId = segmentationId;
 	mSegmentIds = segIds;
 	mSegmentJustSelectedID = segmentJustSelectedID;
+	mUserData = user_data;
 }
 
 
@@ -49,6 +45,10 @@ const OmId OmSegmentEvent::GetSegmentJustSelectedID() {
 	return mSegmentJustSelectedID;
 }
 
+void* 
+OmSegmentEvent::getUserData(){
+	return mUserData;
+}
 
 /*
  *	Dispatch event based on event type.

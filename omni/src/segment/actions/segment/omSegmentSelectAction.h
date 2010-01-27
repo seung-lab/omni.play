@@ -46,6 +46,7 @@ private:
 	OmIds mUnselectIds;
 	
 	OmId mSegmentJustSelectedID;
+	void* mUserData;
 
 	bool mNewState;
 	map< OmId, bool > mPrevSegmentStates;

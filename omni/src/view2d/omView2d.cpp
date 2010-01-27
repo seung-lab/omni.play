@@ -747,25 +747,20 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord( QMouseEvent *event) {
 
 void OmView2d::mouseSelectSegment(QMouseEvent *event) {
 
-	//augment if shift pressed
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
-	
-	// get ids
+
 	int pick_object_type;
 	
 	// find segment selected
-	//////
-	
 	DataCoord dataClickPoint = getMouseClickpointGlobalDataCoord( event );
 
-
 	OmId theId;
-	OmId seg;
+	OmId segmentationID;
 	bool found = false;
 	if (mVolumeType == SEGMENTATION) {
 		found = true;
 		OmSegmentation &current_seg = OmVolume::GetSegmentation (mImageId);
-		seg = mImageId;
+		segmentationID = mImageId;
 		theId = current_seg.GetVoxelSegmentId(dataClickPoint);
 	} else {
 		OmChannel &current_channel = OmVolume::GetChannel(mImageId);
@@ -776,8 +771,8 @@ void OmView2d::mouseSelectSegment(QMouseEvent *event) {
 			OmFilter &filter = current_channel.GetFilter(*obj_it);
 			if (filter.GetSegmentation ()) {
 				found = true;
-				seg = filter.GetSegmentation ();
-				OmSegmentation &current_seg = OmVolume::GetSegmentation(seg);
+				segmentationID = filter.GetSegmentation ();
+				OmSegmentation &current_seg = OmVolume::GetSegmentation(segmentationID);
 				theId = current_seg.GetVoxelSegmentId(dataClickPoint);
 				break;
 			}
@@ -787,32 +782,25 @@ void OmView2d::mouseSelectSegment(QMouseEvent *event) {
 		return;
 	}
 
-	OmSegmentation &current_seg = OmVolume::GetSegmentation (seg);
-	
-	// cout << "omSegmentID = " << mSegmentID << endl;
-	//cout << "theID = " << theId << endl;
-	if(current_seg.IsSegmentValid(theId)) {
+	OmSegmentation& segmentation = OmVolume::GetSegmentation(segmentationID);
+
+	if( segmentation.IsSegmentValid( theId )) {
 		
-		//get segment state
-		bool new_segment_select_state = !(OmVolume::GetSegmentation( seg ).IsSegmentSelected( theId ));
+		const bool curSegmentNotYetMarkedAsSelected = !( segmentation.IsSegmentSelected( theId ));
 		
-		//if not augmenting slection and selecting segment
-		if(!augment_selection && new_segment_select_state) {
-			//get current selection
-			OmSegmentation &r_segmentation = OmVolume::GetSegmentation(seg);
-			//select new segment, deselect current segments
+		// if not augmenting slection and selecting segment, then 
+		//  select new segment, and deselect current segment(s)
+		if( !augment_selection && curSegmentNotYetMarkedAsSelected ) {
 			OmIds select_segment_ids;
 			select_segment_ids.insert(theId);
-			(new OmSegmentSelectAction(seg, 
+			(new OmSegmentSelectAction(segmentationID, 
 								  select_segment_ids, 
-								  r_segmentation.GetSelectedSegmentIds(),
+								  segmentation.GetSelectedSegmentIds(),
 								  theId ))->Run();
-			
 		} else {
-			//set state of 
-			(new OmSegmentSelectAction(seg, 
+			(new OmSegmentSelectAction(segmentationID, 
 								  theId, 
-								  new_segment_select_state,
+								  curSegmentNotYetMarkedAsSelected,
 								  theId ))->Run();
 		}
 		Refresh ();

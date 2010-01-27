@@ -53,19 +53,18 @@ class SegmentDataWrapper : public DataWrapper
  public:
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
-					const OmId mID,
-					const QString name,
-					const bool enabled );
+					const OmId segmentID );
 	OmId getSegmentationID(){ return mSegmentationID; }
+	
 	bool isSelected();
+	void toggleSelected();
 	void setSelected( const bool isSelected );
-	bool isCheckedOff();
-	void setCheckedOff( const bool isCheckedOff );
+	bool isEnabled();
+	void toggleEnabled();
 	QString getNote();
+	QString getIDstr();
  private:
 	OmId mSegmentationID;
-	bool mSelected;
-	bool mChecked;
 };
 
 class FilterDataWrapper : public DataWrapper 
@@ -83,12 +82,13 @@ class FilterDataWrapper : public DataWrapper
 };
 
 
-class DataWrapperFactory 
+class DataWrapperContainer 
 {
  public:
-	DataWrapperFactory(){}
-	DataWrapperFactory( const ObjectType obj_type, const OmId obj_id );
-	ObjectType         getType()              { return mType; }
+	DataWrapperContainer(){}
+	DataWrapperContainer( const ObjectType obj_type, const OmId obj_id );
+	DataWrapperContainer( SegmentationDataWrapper sdw );
+	ObjectType getType(){ return mType; }
 
 	SegmentationDataWrapper getSegmentationDataWrapper(){ return segmenDW; }
 	ChannelDataWrapper getChannelDataWrapper(){ return cDW; }

@@ -76,7 +76,6 @@ signals:
 	void triggerChannelView(OmId chan_id, OmId second_chan_id, OmId third_chan_id, ViewType vtype);
 	void triggerSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
 	
-	
 protected:
 	
 	static const int ENABLED_COL   = 0;
@@ -109,6 +108,7 @@ private slots:
 
 	void rebuildSegmentList( const OmId segmentationID );
 	void doDataSrcContextMenuVolAdd( QAction *act );
+	void leftClickOnSegment( QTreeWidgetItem * current, const int column );
 
 private:
     
@@ -128,13 +128,12 @@ private:
 
 	QTreeWidget *dataElementsWidget;
 	QTabWidget *dataElementsTabs;
-	void populateSegmentElementsListWidget( SegmentationDataWrapper data );
+	void populateSegmentElementsListWidget( const bool doScrollToSelectedSegment = false, const OmId segmentJustSelectedID = 0 );
 	void populateChannelElementsListWidget( ChannelDataWrapper data );
 	QTreeWidget* setupVolumeList( QWidget *layoutWidget );
 	QTreeWidget* setupDataElementList();
 	QTreeWidget* setupDataSrcList();
-	ChannelDataWrapper getCurrentlySelectedChannel();
-	SegmentationDataWrapper getCurrentlySelectedSegmentation();
+	ChannelDataWrapper getCurrentlySelectedChannel(); // TODO: fixme (purcaro)
 	Qt::CheckState getCheckState( const bool enabled );
 	void setRowFlagsAndCheckState( QTreeWidgetItem *row, Qt::CheckState checkState );
 
@@ -144,6 +143,13 @@ private:
 	QMenu* makeDataSrcContextMenu( QTreeWidget* parent  );
 	void addChannelToVolume();
 	void addSegmentationToVolume();
+	void autoResizeColumnWidths( QTreeWidget* widget );
+	void makeSegmentationActive( const OmId segmentationID );
+	void makeSegmentationActive( SegmentationDataWrapper sdw );
+	void makeSegmentationActive( const OmId segmentationID, const OmId segmentJustSelectedID );
+	void makeSegmentationActive( SegmentationDataWrapper sdw, const OmId segmentJustSelectedID );
+	void sendSegmentChangeEvent( SegmentDataWrapper sdw, const bool augment_selection );
+	DataWrapperContainer currentDataSrc;
 
 	// keep local hash of segmentation --> segments to maintain 
 	//  GUI state information about which segments are selected
@@ -176,7 +182,6 @@ private:
 	void populateFilterObjectInspector(OmId s_id, OmId obj_id);
 	
 	QColor current_color;
-	OmId current_filter;
 
 	int current_object;
 	bool preferencesActivated;

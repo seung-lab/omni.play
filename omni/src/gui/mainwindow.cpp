@@ -1184,7 +1184,7 @@ void MainWindow::updateComboBoxes( const OmId segmentationID, const OmId segment
 		selectSegmentationBox->clear();
 		editColorButton->setIcon(QIcon());
 
-		int indexToSet = 0;
+		int indexToSet = -1;
 		int counter    = 0;
 		foreach( SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs() ) {
 			QString comboBoxRowStr = segH.segmentationName + "--" + segH.segmentName;
@@ -1199,8 +1199,10 @@ void MainWindow::updateComboBoxes( const OmId segmentationID, const OmId segment
 			}
 			counter++;
 		}
-		selectSegmentationBox->setCurrentIndex( indexToSet );
-
+		if( indexToSet != -1 ){
+			selectSegmentationBox->setCurrentIndex( indexToSet );
+		}
+		selectSegmentationBox->update();
 	} catch (OmException &e) {
 		spawnErrorDialog(e);
 	}

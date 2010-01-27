@@ -375,17 +375,21 @@ OmVolume::GetSelectedSegmentIDs() {
 
 	foreach( OmId seg_it, OmVolume::GetValidSegmentationIds() ) {
 		
+		/*
 		if( !OmVolume::IsSegmentationEnabled(seg_it) ) {
 			continue;
 		}
+		*/
 
 		OmSegmentation &current_seg = OmVolume::GetSegmentation(seg_it);
 		
 		foreach( OmId obj_it, current_seg.GetSelectedSegmentIds() ) {
 			
+			/*
 			if( !OmVolume::GetSegmentation(seg_it).IsSegmentEnabled(obj_it) ) {
 				continue;
 			}
+			*/
 
 			SegmentIDhelper seg;
 			seg.segmentationID   = seg_it;
