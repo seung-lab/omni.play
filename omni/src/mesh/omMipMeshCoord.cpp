@@ -31,18 +31,18 @@ void
 	DataValue = rhs.DataValue;
 }
 
-bool OmMipMeshCoord::operator==(const OmMipMeshCoord & rhs) const const
+bool OmMipMeshCoord::operator==(const OmMipMeshCoord & rhs) const
 {
 	return MipChunkCoord == rhs.MipChunkCoord && DataValue == rhs.DataValue;
 }
 
-bool OmMipMeshCoord::operator!=(const OmMipMeshCoord & rhs) constconst
+bool OmMipMeshCoord::operator!=(const OmMipMeshCoord & rhs) const
 {
 	return MipChunkCoord != rhs.MipChunkCoord || DataValue != rhs.DataValue;
 }
 
 /* comparitor for key usage */
-bool OmMipMeshCoord::operator<(const OmMipMeshCoord & rhs) constconst
+bool OmMipMeshCoord::operator<(const OmMipMeshCoord & rhs) const
 {
 	if (MipChunkCoord != rhs.MipChunkCoord)
 		return (MipChunkCoord < rhs.MipChunkCoord);

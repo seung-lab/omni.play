@@ -213,17 +213,17 @@ const DataBbox & OmMipChunk::GetExtent()
 /////////////////////////////////
 ///////          Dirty Methods
 
-bool OmMipChunk::IsDirty() constconst
+bool OmMipChunk::IsDirty() const
 {
 	return IsVolumeDataDirty() || IsMetaDataDirty();
 }
 
-bool OmMipChunk::IsVolumeDataDirty() constconst
+bool OmMipChunk::IsVolumeDataDirty() const
 {
 	return mVolumeDataDirty;
 }
 
-bool OmMipChunk::IsMetaDataDirty() constconst
+bool OmMipChunk::IsMetaDataDirty() const
 {
 	return mpMipVolume->GetChunksStoreMetaData() && mMetaDataDirty;
 }
@@ -298,7 +298,7 @@ void OmMipChunk::WriteMetaData()
 /////////////////////////////////
 ///////          MetaData Accessors
 
-const SegmentDataSet & OmMipChunk::GetModifiedVoxelValues() const const
+const SegmentDataSet & OmMipChunk::GetModifiedVoxelValues() const
 {
 	return mModifiedVoxelValues;
 }
@@ -421,18 +421,18 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 /////////////////////////////////
 ///////          Mip Accessors
 
-int OmMipChunk::GetLevel() const const
+int OmMipChunk::GetLevel() const
 {
 	return mCoordinate.Level;
 }
 
-bool OmMipChunk::IsRoot() constconst
+bool OmMipChunk::IsRoot() const
 {
 	//if parent is null
 	return mParentCoord == OmMipChunkCoord::NULL_COORD;
 }
 
-bool OmMipChunk::IsLeaf() constconst
+bool OmMipChunk::IsLeaf() const
 {
 	return mCoordinate.Level == 0;
 }
@@ -457,12 +457,12 @@ const set < OmMipChunkCoord > & OmMipChunk::GetChildrenCoordinates()
 /////////////////////////////////
 ///////          Property Accessors
 
-const NormBbox & OmMipChunk::GetNormExtent() const const
+const NormBbox & OmMipChunk::GetNormExtent() const
 {
 	return mNormExtent;
 }
 
-const NormBbox & OmMipChunk::GetClippedNormExtent() const const
+const NormBbox & OmMipChunk::GetClippedNormExtent() const
 {
 	return mClippedNormExtent;
 }
@@ -476,7 +476,7 @@ const NormBbox & OmMipChunk::GetClippedNormExtent() const const
  *	Returns reference to set of all values directly contained by
  *	the image data of this MipChunk
  */
-const SegmentDataSet & OmMipChunk::GetDirectDataValues() const const
+const SegmentDataSet & OmMipChunk::GetDirectDataValues() const
 {
 	return mDirectlyContainedDataValuesSet;
 }
@@ -486,7 +486,7 @@ const SegmentDataSet & OmMipChunk::GetDirectDataValues() const const
  *	by the bounds of this MipChunk.  That is all the direcly contained
  *	values of the children of this MipChunk.
  */
-const SegmentDataSet & OmMipChunk::GetIndirectDataValues() const const
+const SegmentDataSet & OmMipChunk::GetIndirectDataValues() const
 {
 	return mIndirectlyContainedDataValuesSet;
 }

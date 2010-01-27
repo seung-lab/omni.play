@@ -102,7 +102,7 @@ void OmSegmentManager::RemoveSegment(OmId id)
 	mGenericSegmentManager.Remove(id);
 }
 
-bool OmSegmentManager::IsSegmentValid(OmId omId) const const
+bool OmSegmentManager::IsSegmentValid(OmId omId) const
 {
 	return mGenericSegmentManager.IsValid(omId);
 }

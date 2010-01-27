@@ -399,8 +399,8 @@ QImage OmView2d::safePaintEvent(QPaintEvent * event)
 			const set < OmId > objectIDs = current_channel.GetValidFilterIds();
 			set < OmId >::iterator obj_it;
 
-			for (obj_it = objectIDs.begin(); obj_it != objectIDs.end(); obj_it++) {
-				OmFilter & filter = current_channel.GetFilter(*obj_it);
+        		for( obj_it=objectIDs.begin(); obj_it != objectIDs.end(); obj_it++ ) {
+        			OmFilter2d &filter = current_channel.GetFilter(*obj_it);
 
 				alpha = filter.GetAlpha();
 				glEnable(GL_BLEND);	// enable blending for transparency
@@ -768,9 +768,9 @@ void OmView2d::mouseSelectSegment(QMouseEvent * event)
 		const set < OmId > objectIDs = current_channel.GetValidFilterIds();
 		set < OmId >::iterator obj_it;
 
-		for (obj_it = objectIDs.begin(); obj_it != objectIDs.end(); obj_it++) {
-			OmFilter & filter = current_channel.GetFilter(*obj_it);
-			if (filter.GetSegmentation()) {
+		for( obj_it=objectIDs.begin(); obj_it != objectIDs.end(); obj_it++ ) {
+			OmFilter2d &filter = current_channel.GetFilter(*obj_it);
+			if (filter.GetSegmentation ()) {
 				found = true;
 				segmentationID = filter.GetSegmentation();
 				OmSegmentation & current_seg = OmVolume::GetSegmentation(segmentationID);
@@ -1399,10 +1399,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 				const set < OmId > objectIDs = current_channel.GetValidFilterIds();
 				set < OmId >::iterator obj_it;
 
-				for (obj_it = objectIDs.begin(); obj_it != objectIDs.end(); obj_it++) {
-					OmFilter & filter = current_channel.GetFilter(*obj_it);
-					seg = filter.GetSegmentation();
-					if (seg) {
+                		for( obj_it=objectIDs.begin(); obj_it != objectIDs.end(); obj_it++ ) {
+                        		OmFilter2d &filter = current_channel.GetFilter(*obj_it);
+                        		seg = filter.GetSegmentation ();
+                        		if (seg) {
 						domerge = true;
 						break;
 					}
@@ -1857,8 +1857,8 @@ void OmView2d::myUpdate()
 #pragma mark
 #pragma mark Draw Methods
 /////////////////////////////////
-///////          Draw Methods
-void OmView2d::DrawFromFilter(OmFilter & filter)
+///////		 Draw Methods
+void OmView2d::DrawFromFilter(OmFilter2d &filter)
 {
 	OmThreadedCachingTile *cache = filter.GetCache(mViewType);
 	if (!cache)

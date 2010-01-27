@@ -587,7 +587,7 @@ void MyInspectorWidget::addFilter()
 {
 	ChannelDataWrapper cdw(channelInspectorWidget->getId());
 
-	OmFilter & added_filter = OmVolume::GetChannel(cdw.getID()).AddFilter();
+	OmFilter2d & added_filter = OmVolume::GetChannel(cdw.getID()).AddFilter();
 
 	channelInspectorWidget->setFilterID(added_filter.GetId());
 
@@ -693,7 +693,7 @@ void MyInspectorWidget::populateSegmentationInspector(OmId s_id)
 
 void MyInspectorWidget::populateFilterObjectInspector(OmId s_id, OmId obj_id)
 {
-	OmFilter & filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
+	OmFilter2d & filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
 
 	filObjectInspectorWidget->alphaSlider->setValue(filter.GetAlpha() * 100);
 	filObjectInspectorWidget->nameEdit->setText(QString::number(filter.GetChannel()));

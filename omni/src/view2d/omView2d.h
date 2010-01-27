@@ -17,7 +17,7 @@
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter.h"
+#include "system/omFilter2d.h"
 
 #include "volume/omVolumeTypes.h"
 #include "volume/omSegmentation.h"
@@ -145,7 +145,7 @@ protected:
 	void PreDraw(Vector2i);
 
 
-	void DrawFromFilter (OmFilter&);
+	void DrawFromFilter (OmFilter2d&);
 	void DrawFromCache();
 
 

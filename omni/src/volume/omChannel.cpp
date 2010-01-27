@@ -5,7 +5,7 @@
 #include "system/omEventManager.h"
 #include "system/events/omProgressEvent.h"
 
-#include "system/omFilter.h"
+#include "system/omFilter2d.h"
 #include "system/omDebug.h"
 
 #define DEBUG 0
@@ -73,24 +73,26 @@ void OmChannel::BuildVolumeData()
 	OmMipVolume::Build();
 }
 
-OmFilter & OmChannel::AddFilter()
-{
-	return mFilterManager.AddFilter();
+
+
+OmFilter2d&
+OmChannel::AddFilter() {
+        return mFilter2dManager.AddFilter();
 }
 
-OmFilter & OmChannel::GetFilter(OmId id)
-{
-	return mFilterManager.GetFilter(id);
+OmFilter2d&
+OmChannel::GetFilter(OmId id) {
+        return mFilter2dManager.GetFilter(id);
 }
 
 const set < OmId > & OmChannel::GetValidFilterIds()
 {
-	return mFilterManager.GetValidFilterIds();
+	return mFilter2dManager.GetValidFilterIds();
 }
 
 bool OmChannel::IsFilterEnabled(OmId id)
 {
-	return mFilterManager.IsFilterEnabled(id);
+	return mFilter2dManager.IsFilterEnabled(id);
 }
 
 #pragma mark

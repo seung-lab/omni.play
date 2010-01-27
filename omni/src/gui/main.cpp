@@ -1,7 +1,7 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "system/omFilter.h"
+#include "system/omFilter2d.h"
 #include "system/omProject.h"
 #include <dlfcn.h>
 #include "system/omDebug.h"

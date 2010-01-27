@@ -33,9 +33,9 @@ struct CacheGroupProperties {
 		MaxSize = 0;
 	}
 	
-	//current size and max size in bytes
-	unsigned long Size;
 	unsigned long MaxSize;
+        //current size and max size in bytes
+        unsigned long Size;
 	pthread_t mRemoveThread;
 	set< OmCacheBase* > CacheSet;
 };

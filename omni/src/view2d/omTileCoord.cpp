@@ -20,18 +20,18 @@ void OmTileCoord::operator=(const OmTileCoord & rhs)
 	Coordinate = rhs.Coordinate;
 }
 
-bool OmTileCoord::operator==(const OmTileCoord & rhs) const const
+bool OmTileCoord::operator==(const OmTileCoord & rhs) const
 {
 	return Level == rhs.Level && Coordinate == rhs.Coordinate;
 }
 
-bool OmTileCoord::operator!=(const OmTileCoord & rhs) constconst
+bool OmTileCoord::operator!=(const OmTileCoord & rhs) const
 {
 	return Level != rhs.Level || Coordinate != rhs.Coordinate;
 }
 
 /* comparitor for key usage */
-bool OmTileCoord::operator<(const OmTileCoord & rhs) constconst
+bool OmTileCoord::operator<(const OmTileCoord & rhs) const
 {
 	if (Level != rhs.Level)
 		return (Level < rhs.Level);

@@ -32,27 +32,27 @@ OmVolumeCuller::GetCullingOption() const {
 	return mOption;
 }
  */
-bool OmVolumeCuller::CheckDrawOption(OmBitfield option) const const
+bool OmVolumeCuller::CheckDrawOption(OmBitfield option) const
 {
 	return mOptionBits & option;
 }
 
-OmBitfield OmVolumeCuller::MaskDrawOptions(OmBitfield mask) const const
+OmBitfield OmVolumeCuller::MaskDrawOptions(OmBitfield mask) const
 {
 	return mOptionBits & mask;
 }
 
-OmBitfield OmVolumeCuller::GetDrawOptions() constconst
+OmBitfield OmVolumeCuller::GetDrawOptions() const
 {
 	return mOptionBits;
 }
 
-const NormCoord & OmVolumeCuller::GetPosition() const const
+const NormCoord & OmVolumeCuller::GetPosition() const
 {
 	return mPosition;
 }
 
-const NormCoord & OmVolumeCuller::GetFocus() const const
+const NormCoord & OmVolumeCuller::GetFocus() const
 {
 	return mFocus;
 }
@@ -62,7 +62,7 @@ const NormCoord & OmVolumeCuller::GetFocus() const const
 /////////////////////////////////
 ///////          Transform Methods
 
-OmVolumeCuller OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, const Matrix4f & matInv) constconst
+OmVolumeCuller OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, const Matrix4f & matInv) const
 {
 	//compiler should optimize to alloc directly to return address
 	return OmVolumeCuller(mProjModelView * mat, matInv * mPosition, matInv * mFocus, mOptionBits);
@@ -83,12 +83,12 @@ void OmVolumeCuller::TransformCuller(const Matrix4f & mat, const Matrix4f & matI
 /////////////////////////////////
 ///////          Frustum Test Methods
 
-Visibility OmVolumeCuller::TestChunk(const OmMipChunk & rChunk) const const
+Visibility OmVolumeCuller::TestChunk(const OmMipChunk & rChunk) const
 {
 	return mFrustumCuller.testAabb(rChunk.GetNormExtent());
 }
 
-Visibility OmVolumeCuller::VisibilityTestNormBbox(const NormBbox & bbox) constconst
+Visibility OmVolumeCuller::VisibilityTestNormBbox(const NormBbox & bbox) const
 {
 	return mFrustumCuller.testAabb(bbox);
 }

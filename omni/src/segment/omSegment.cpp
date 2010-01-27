@@ -42,7 +42,7 @@ OmSegment::OmSegment(OmId omId)
 /////////////////////////////////
 ///////         Accessor Methods
 
-const Vector3 < float >& OmSegment::GetColor() const const
+const Vector3 < float >& OmSegment::GetColor() const
 {
 	return mColor;
 }

@@ -12,8 +12,8 @@
 
 #include "system/omManageableObject.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter.h"
-#include "system/omFilterManager.h"
+#include "system/omFilter2d.h"
+#include "system/omFilter2dManager.h"
 #include "common/omStd.h"
 
 
@@ -32,8 +32,8 @@ public:
 	void BuildVolumeData();
 	
 	void Print();
-	OmFilter& AddFilter();
-	OmFilter& GetFilter(OmId id);
+	OmFilter2d& AddFilter();
+	OmFilter2d& GetFilter(OmId id);
 	const set<OmId>& GetValidFilterIds();
 	bool IsFilterEnabled(OmId id);
 
@@ -47,7 +47,7 @@ protected:
 	
 private:
 	Vector3f mHueColor;
-	OmFilterManager mFilterManager;
+	OmFilter2dManager mFilter2dManager;
 	
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -73,7 +73,7 @@ void
 OmChannel::serialize(Archive & ar, const unsigned int file_version) {
 	ar & boost::serialization::base_object<OmMipVolume>(*this);
 	ar & boost::serialization::base_object<OmManageableObject>(*this);
-	ar & mFilterManager;
+	ar & mFilter2dManager;
 }
 
 

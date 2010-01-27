@@ -30,7 +30,7 @@ OmMipChunkCoord::OmMipChunkCoord(int level, int x, int y, int z)
 /////////////////////////////////
 ///////          Property
 
-bool OmMipChunkCoord::IsLeaf() constconst
+bool OmMipChunkCoord::IsLeaf() const
 {
 	return 0 == Level;
 }
@@ -41,7 +41,7 @@ bool OmMipChunkCoord::IsLeaf() constconst
 ///////          Family Coordinates
 
 /* Parent coordiante containing this coordinate as a child */
-OmMipChunkCoord OmMipChunkCoord::ParentCoord() constconst
+OmMipChunkCoord OmMipChunkCoord::ParentCoord() const
 {
 	//get primary coordinate of octal containing given coordinate
 	OmMipChunkCoord primary_coord = PrimarySiblingCoord();
@@ -52,7 +52,7 @@ OmMipChunkCoord OmMipChunkCoord::ParentCoord() constconst
 }
 
 /* Primary coordinate in the sibling octal */
-OmMipChunkCoord OmMipChunkCoord::PrimarySiblingCoord() constconst
+OmMipChunkCoord OmMipChunkCoord::PrimarySiblingCoord() const
 {
 
 	int prim_x = ROUNDDOWN(Coordinate.x, 2);
@@ -64,7 +64,7 @@ OmMipChunkCoord OmMipChunkCoord::PrimarySiblingCoord() constconst
 }
 
 /* Array of sibling coordinates in octal */
-void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const const
+void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 {
 
 	//return null coordinates if coord is null
@@ -94,14 +94,14 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const const
 }
 
 /* Primary child coordinate of octal children */
-OmMipChunkCoord OmMipChunkCoord::PrimaryChildCoord() constconst
+OmMipChunkCoord OmMipChunkCoord::PrimaryChildCoord() const
 {
 
 	//return primary child (prev level, double coordinates)
 	return OmMipChunkCoord(Level - 1, Coordinate.x * 2, Coordinate.y * 2, Coordinate.z * 2);
 }
 
-void OmMipChunkCoord::ChildrenCoords(OmMipChunkCoord * pChildren) const const
+void OmMipChunkCoord::ChildrenCoords(OmMipChunkCoord * pChildren) const
 {
 	//get primary child
 	OmMipChunkCoord primary_child = PrimaryChildCoord();
@@ -120,12 +120,12 @@ void OmMipChunkCoord::operator=(const OmMipChunkCoord & rhs)
 	Coordinate = rhs.Coordinate;
 }
 
-bool OmMipChunkCoord::operator==(const OmMipChunkCoord & rhs) const const
+bool OmMipChunkCoord::operator==(const OmMipChunkCoord & rhs) const
 {
 	return (Level == rhs.Level && Coordinate == rhs.Coordinate);
 }
 
-bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) constconst
+bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) const
 {
 	//cout << Level << endl;
 	//cout << rhs.Level << endl;
@@ -147,7 +147,7 @@ bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) constconst
 }
 
 /* comparitor for stl key usage */
-bool OmMipChunkCoord::operator<(const OmMipChunkCoord & rhs) constconst
+bool OmMipChunkCoord::operator<(const OmMipChunkCoord & rhs) const
 {
 	if (Level != rhs.Level)
 		return (Level < rhs.Level);

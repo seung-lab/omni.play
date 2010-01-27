@@ -30,10 +30,11 @@ SET(OM_SYSTEM_LIB_SRCS
 	omProjectData.cpp
 	omStateManager.cpp
 	omTagManager.cpp
-	omFilter.cpp
-	omFilterManager.cpp
+	omFilter2d.cpp
+	omFilter2dManager.cpp
 	omGarbage.cpp
 	omDebug.cpp
+#	omViewList.cpp
 #	omSnapshot.cpp
 	
 	${OM_SYSTEM_EVENTS_SRCS}

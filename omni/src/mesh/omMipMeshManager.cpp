@@ -56,7 +56,7 @@ OmMipMeshManager::~OmMipMeshManager()
 /*
  *	MipMeshCache is in same directory as parent SegmentManager.
  */
-const string & OmMipMeshManager::GetDirectoryPath() const const
+const string & OmMipMeshManager::GetDirectoryPath() const
 {
 	return mDirectoryPath;
 }

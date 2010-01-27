@@ -63,12 +63,12 @@ void OmDataVolume::SetOpen(bool state)
 /////////////////////////////////
 ///////          State Accessor Methods
 
-bool OmDataVolume::IsOpen() constconst
+bool OmDataVolume::IsOpen() const
 {
 	return mIsOpen;
 }
 
-bool OmDataVolume::IsDirty() constconst
+bool OmDataVolume::IsDirty() const
 {
 	assert(false);
 	return false;

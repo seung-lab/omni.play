@@ -45,7 +45,7 @@ OmCamera::OmCamera()
  * Specifies the affine transformation of x and y from 
  * normalized device coordinates to	window coordinates
  */
-Vector4 < int > OmCamera::GetViewport() const const
+Vector4 < int > OmCamera::GetViewport() const
 {
 	return mViewport;
 }
@@ -64,7 +64,7 @@ void OmCamera::ApplyViewport()
 /*
  *	Set the camera perspective
  */
-Vector4 < float > OmCamera::GetPerspective() const const
+Vector4 < float > OmCamera::GetPerspective() const
 {
 	return mPerspective;
 }
@@ -228,17 +228,17 @@ void OmCamera::SetLookAtRotation(const Quaternionf & rRotation)
 	UpdateModelview();
 }
 
-const Matrix4 < float >& OmCamera::GetModelViewMatrix() const const
+const Matrix4 < float >& OmCamera::GetModelViewMatrix() const
 {
 	return mModelViewMatrix;
 }
 
-const Matrix4 < float >& OmCamera::GetProjectionMatrix() const const
+const Matrix4 < float >& OmCamera::GetProjectionMatrix() const
 {
 	return mProjectionMatrix;
 }
 
-Matrix4 < float > OmCamera::GetProjModelViewMatrix() const const
+Matrix4 < float > OmCamera::GetProjModelViewMatrix() const
 {
 	return mProjectionMatrix * mModelViewMatrix;
 }

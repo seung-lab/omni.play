@@ -15,6 +15,7 @@
 #include "omStateManager.h"
 #include "omKeyManager.h"
 #include "omTagManager.h"
+//#include "omViewList.h"
 #include "volume/omVolume.h"
 
 #include "common/omStd.h"
@@ -67,8 +68,7 @@ private:
 	//project
 	string mFileName;
 	string mDirectoryPath;
-		
-	
+
 	
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -87,7 +87,7 @@ private:
 ///////		 Serialization
 
 
-BOOST_CLASS_VERSION(OmProject, 0)
+BOOST_CLASS_VERSION(OmProject, 1)
 
 template<class Archive>
 void 
@@ -97,7 +97,14 @@ OmProject::serialize(Archive & ar, const unsigned int file_version) {
 	ar & *OmKeyManager::Instance();
 	ar & *OmTagManager::Instance();
 	ar & *OmVolume::Instance();
-	
+
+/*
+	if (file_version > 0 ) {
+		ar & *OmViewList::Instance();
+	}
+		//ar & *OmColormaps::Instance();
+	ar & *OmGroups::Instance();
+*/
 }
 
 
