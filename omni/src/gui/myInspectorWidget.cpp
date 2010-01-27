@@ -2,8 +2,8 @@
 #include <QtGui> 
 #include "myInspectorWidget.h" 
 
-#include"ui_segInspector.h"
-#include"segInspector.h"
+#include "ui_segInspector.h"
+#include "segInspector.h"
 
 #include "ui_volumeInspector.h"
 #include "volumeInspector.h"
@@ -23,7 +23,6 @@
 #include "ui_preferences2d.h"
 #include "preferences2d.h"
 
-#include "ui_preferencesMesh.h"
 #include "preferencesMesh.h"
 
 #include "volume/omVolumeTypes.h"

@@ -57,6 +57,7 @@ public:
 	
 	bool IsSegmentEnabled(OmId id);
 	void SetSegmentEnabled(OmId id, bool enable);
+	void SetAllSegmentsEnabled(bool selected);
 	const OmIds& GetEnabledSegmentIds();
 	
 	bool IsSegmentSelected(OmId id);

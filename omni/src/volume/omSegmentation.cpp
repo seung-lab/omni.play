@@ -273,6 +273,10 @@ OmSegmentation::BuildMeshData() {
 	
 	//hide progress bar
 	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+
+	// disable all segments by default
+	SetAllSegmentsSelected( false );
+	SetAllSegmentsEnabled( false );
 }
 
 
@@ -533,6 +537,11 @@ OmSegmentation::SetSegmentSelected(OmId id, bool selected) {
 void
 OmSegmentation::SetAllSegmentsSelected(bool selected) {
 	mSegmentManager.SetAllSegmentsSelected(selected);
+}
+
+void
+OmSegmentation::SetAllSegmentsEnabled(bool enabled) {
+	mSegmentManager.SetAllSegmentsEnabled(enabled);
 }
 
 const OmIds&

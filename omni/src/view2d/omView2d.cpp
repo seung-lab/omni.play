@@ -1768,9 +1768,9 @@ void OmView2d::myUpdate () {
 
 		mTextures.clear ();
 
-		int xMipChunk, xSave=-1;
-		int yMipChunk, ySave=-1;
-		int zMipChunk, zSave=-1;
+		int xMipChunk, xSave = -1;
+		int yMipChunk, ySave = -1;
+		int zMipChunk, zSave = -1;
 		int step = 1;
 		for (int x = mBrushToolMinX; x <= mBrushToolMaxX; x = x + step) {
 			for (int y = mBrushToolMinY; y <= mBrushToolMaxY; y = y + step) {

@@ -146,6 +146,12 @@ OmSegmentManager::SetAllSegmentsSelected(bool selected) {
 	mGenericSegmentManager.SetAllSelected(selected);
 }
 
+void 
+OmSegmentManager::SetAllSegmentsEnabled(bool selected) {
+	mCachedSegmentDataValuesDirty = true;
+	mGenericSegmentManager.SetAllEnabled(selected);
+}
+
 
 const OmIds&
 OmSegmentManager::GetSelectedSegmentIds() {

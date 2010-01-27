@@ -125,9 +125,8 @@ OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager *pMipMeshManager, sh
 	//set manager
 	mpMipMeshManager = pMipMeshManager;
 	
-	//get num of threads
-	int num_threads = 15;
-
+	const int num_threads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
+	debug("mesher","------> Number of threads: %d\n", num_threads );
 	
 	//SET CURRENT DATA
 	//make meshing data available to threads
