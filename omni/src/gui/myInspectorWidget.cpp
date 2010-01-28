@@ -446,20 +446,20 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const
 	preferencesActivated = false;
 }
 
-void MyInspectorWidget::showChannelContextMenu(const QPoint & menuPoint)
+void MyInspectorWidget::showChannelContextMenu()
 {
 	connect(makeContextMenuBase(dataSrcListWidget),
 		SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
 
-	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
+	contextMenu->exec(QCursor::pos());
 }
 
-void MyInspectorWidget::showSegmentationContextMenu(const QPoint & menuPoint)
+void MyInspectorWidget::showSegmentationContextMenu()
 {
 	connect(makeContextMenuBase(dataSrcListWidget),
 		SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
 
-	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
+	contextMenu->exec(QCursor::pos());
 }
 
 QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
@@ -527,15 +527,27 @@ void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
 		contextMenuDataSrc->exec(dataSrcListWidget->mapToGlobal(menuPoint));
 		return;
 	}
+	doShowDataSrcContextMenu( dataSrcItem );
+}
+
+void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
+{
+	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+		doShowDataSrcContextMenu( current );
+	}
+}
+
+void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
+{
 	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
 	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 
 	switch (dwc.getType()) {
 	case CHANNEL:
-		showChannelContextMenu(menuPoint);
+		showChannelContextMenu();
 		break;
 	case SEGMENTATION:
-		showSegmentationContextMenu(menuPoint);
+		showSegmentationContextMenu();
 		makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
@@ -948,30 +960,4 @@ void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const boo
 	(new OmSegmentSelectAction(segmentationID,
 				   selected_segment_ids, un_selected_segment_ids, segmentID, this))->Run();
 
-}
-
-void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
-{
-	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-
-		QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-		DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-
-		switch (dwc.getType()) {
-		case CHANNEL:
-			connect(makeContextMenuBase(dataSrcListWidget),
-				SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
-			
-			contextMenu->exec(QCursor::pos());
-			break;
-		case SEGMENTATION:
-			connect(makeContextMenuBase(dataSrcListWidget),
-				SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
-			
-			contextMenu->exec(QCursor::pos());
-
-			makeSegmentationActive(dwc.getSegmentationDataWrapper());
-			break;
-		}
-	}
 }

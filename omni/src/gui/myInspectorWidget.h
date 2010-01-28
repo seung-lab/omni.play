@@ -116,8 +116,9 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	void addChannelToSplitter(ChannelDataWrapper data);
 	void addSegmentationToSplitter(SegmentationDataWrapper data);
 
-	void showChannelContextMenu(const QPoint & menuPoint);
-	void showSegmentationContextMenu(const QPoint & menuPoint);
+	void showChannelContextMenu();
+	void showSegmentationContextMenu();
+	void doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem );
 	QMenu *makeContextMenuBase(QTreeWidget * parent);
 	bool isThereASegmentationSelected();
 
