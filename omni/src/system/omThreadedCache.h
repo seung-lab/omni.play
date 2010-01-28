@@ -9,7 +9,6 @@
 #include "common/omThreads.h"
 #include "system/omDebug.h"
 #include <boost/shared_ptr.hpp>
-#include <sys/wait.h>
 
 using boost::shared_ptr;
 
@@ -150,9 +149,7 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 	
 	//create thread
 	pthread_create(&mFetchThread, NULL, start_cache_fetch_thread<T,U>, (void *)this);
-     debug("thread","OmThreadedCache<T,U>::OmThreadedCache(constructor)->Thread Created\n");
-     int st;
-     wait(&st);
+     	debug("thread","OmThreadedCache<T,U>::OmThreadedCache(constructor)->Thread Created\n");
 
 	//wait for fetch thread
 	while(!mFetchThreadAlive) { }
