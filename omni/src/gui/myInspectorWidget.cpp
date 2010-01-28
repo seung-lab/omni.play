@@ -224,6 +224,10 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		setRowFlagsAndCheckState(row, getCheckState(sdw.isEnabled()));
 	}
 
+	dataSrcListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
+	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *, int)));
+
 	autoResizeColumnWidths(dataSrcListWidget);
 
 	dataSrcListWidget->update();
@@ -444,7 +448,7 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const
 
 void MyInspectorWidget::showChannelContextMenu(const QPoint & menuPoint)
 {
-	connect(makeContextMenuBase(menuPoint, dataSrcListWidget),
+	connect(makeContextMenuBase(dataSrcListWidget),
 		SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
 
 	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
@@ -452,7 +456,7 @@ void MyInspectorWidget::showChannelContextMenu(const QPoint & menuPoint)
 
 void MyInspectorWidget::showSegmentationContextMenu(const QPoint & menuPoint)
 {
-	connect(makeContextMenuBase(menuPoint, dataSrcListWidget),
+	connect(makeContextMenuBase(dataSrcListWidget),
 		SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
 
 	contextMenu->exec(dataSrcListWidget->mapToGlobal(menuPoint));
@@ -471,7 +475,7 @@ QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
 	return contextMenuDataSrc;
 }
 
-QMenu *MyInspectorWidget::makeContextMenuBase(const QPoint & menuPoint, QTreeWidget * parent)
+QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
 {
 	xyAct = new QAction(tr("&View XY"), parent);
 	xyAct->setStatusTip(tr("Opens the XY view"));
@@ -944,4 +948,30 @@ void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const boo
 	(new OmSegmentSelectAction(segmentationID,
 				   selected_segment_ids, un_selected_segment_ids, segmentID, this))->Run();
 
+}
+
+void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
+{
+	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+
+		QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+		DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+
+		switch (dwc.getType()) {
+		case CHANNEL:
+			connect(makeContextMenuBase(dataSrcListWidget),
+				SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
+			
+			contextMenu->exec(QCursor::pos());
+			break;
+		case SEGMENTATION:
+			connect(makeContextMenuBase(dataSrcListWidget),
+				SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
+			
+			contextMenu->exec(QCursor::pos());
+
+			makeSegmentationActive(dwc.getSegmentationDataWrapper());
+			break;
+		}
+	}
 }

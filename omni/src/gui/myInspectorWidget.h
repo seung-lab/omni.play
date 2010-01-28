@@ -91,6 +91,7 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	void addChildrenToSegmentation(OmId seg_id);
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
+	void leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column);
 
 	void selectChannelView(QAction * act);
 	void selectSegmentationView(QAction * act);
@@ -117,7 +118,7 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	void showChannelContextMenu(const QPoint & menuPoint);
 	void showSegmentationContextMenu(const QPoint & menuPoint);
-	QMenu *makeContextMenuBase(const QPoint & menuPoint, QTreeWidget * parent);
+	QMenu *makeContextMenuBase(QTreeWidget * parent);
 	bool isThereASegmentationSelected();
 
 	QTreeWidget *dataElementsWidget;
