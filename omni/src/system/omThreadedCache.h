@@ -200,7 +200,7 @@ void
 	//std::cerr << "OmThreadedCache::" << __FUNCTION__ << endl;
 	//return pointer
 
-  OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
+  	OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 	
 	//lock cache
 	pthread_mutex_lock(&mCacheMutex);
@@ -238,6 +238,18 @@ void
 		if( (0 == mFetchStack.count(key)) && (0 == mCurrentlyFetching.count(key)) ) {
 			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): threaded fetch" << endl;
 			//push to top of stack
+			if (mFetchStack.size () > 20 ) {
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+				mFetchStack.pop ();
+			}
 			mFetchStack.push(key);
 			//signal fetch thread
 			pthread_cond_signal(&mFetchThreadCv);
