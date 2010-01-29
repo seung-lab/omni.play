@@ -104,7 +104,7 @@ public:
 	}
 
 	static void Refresh () {
-		cout << "refershing...." << endl;
+		//cout << "refershing...." << endl;
 		delete new OmCachingThreadedCachingTile ((ViewType)0, (ObjectType)0, (OmId)0, NULL, NULL);
 	}
 
