@@ -16,6 +16,7 @@ PreferencesMesh::PreferencesMesh(QWidget * parent)
 	overallContainer->addWidget( groupBox );
 
 	QGridLayout *grid = new QGridLayout( this );
+	groupBox->setLayout( grid );
 
 	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->addWidget( makeDecimationBox(), 1, 0 );

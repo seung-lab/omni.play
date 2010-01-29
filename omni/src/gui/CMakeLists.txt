@@ -21,7 +21,6 @@ set(QT_USE_QTOPENGL TRUE)
 
 SET(omGuiApp_MOC_HDRS
   mainwindow.h
-  glview.h
 ../view3d/omView3d.h
 ../view2d/omView2d.h
 
@@ -67,7 +66,6 @@ ADD_EXECUTABLE(omni
 	mainwindow.cpp
 	recentFileList.cpp
 	dataWrappers.cpp
-	glview.cpp
 	segInspector.cpp
 	volumeInspector.cpp
 	chanInspector.cpp
