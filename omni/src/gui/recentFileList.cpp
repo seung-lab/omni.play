@@ -82,7 +82,7 @@ QString RecentFileList::getRecentlyUsedFilesName()
 {
 	char *homeStr = getenv("HOME");
 	if (NULL == homeStr) {	//TODO: is there a better way to handle this error?
-		cout << "could not get HOME folder path\n";
+		//debug("FIXME", << "could not get HOME folder path\n";
 		return QString("");
 	}
 	return QString(homeStr) + "/.omni/recentlyOpenedFiles.txt";
@@ -94,14 +94,14 @@ void RecentFileList::loadRecentlyUsedFilesListFromFS()
 
 	if (!QFile::exists(fname)) {
 		// Silently ignore this failure. MW 2010-01-8
-		// cout << "could not find most recently-used files list at \"" 
+		// //debug("FIXME", << "could not find most recently-used files list at \"" 
 		//      << qPrintable(getRecentlyUsedFilesName()) << "\"\n";
 		return;
 	}
 
 	QFile file(fname);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		// cout << "could not read most recently-used files list at \"" 
+		// //debug("FIXME", << "could not read most recently-used files list at \"" 
 		//      << qPrintable( getRecentlyUsedFilesName()) << "\"\n";
 		return;
 	}
@@ -119,7 +119,7 @@ void RecentFileList::writeRecentlyUsedFileListToFS()
 {
 	QFile file(getRecentlyUsedFilesName());
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		// cout << "could not write most recently-used files list at \"" 
+		// //debug("FIXME", << "could not write most recently-used files list at \"" 
 		//      << qPrintable( getRecentlyUsedFilesName() ) << "\"\n";
 		return;
 	}

@@ -127,13 +127,13 @@ bool OmMipChunkCoord::operator==(const OmMipChunkCoord & rhs) const
 
 bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) const
 {
-	//cout << Level << endl;
-	//cout << rhs.Level << endl;
-	//cout << Coordinate << endl;
-	//cout << rhs.Coordinate << endl;
+	//debug("FIXME", << Level << endl;
+	//debug("FIXME", << rhs.Level << endl;
+	//debug("FIXME", << Coordinate << endl;
+	//debug("FIXME", << rhs.Coordinate << endl;
 
-	//cout << "+" << Level;
-	//cout << "-" << rhs.Level;
+	//debug("FIXME", << "+" << Level;
+	//debug("FIXME", << "-" << rhs.Level;
 	/*
 	   if( Level != rhs.Level )
 	   return true;

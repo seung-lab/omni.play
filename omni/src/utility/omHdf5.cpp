@@ -165,8 +165,8 @@ void om_hdf5_dataset_delete_create_tree(hid_t fileId, const char *name)
 		//split into group path and name
 		string group_path(name_str, 0, pos_last_slash);
 		//string file_name(name_str, pos_last_slash + 1, name_str.size());
-		//cout << "group:" << group_path << endl;
-		//cout << "file:" <<  file_name << endl;
+		//debug("FIXME", << "group:" << group_path << endl;
+		//debug("FIXME", << "file:" <<  file_name << endl;
 
 		//create group tree
 		om_hdf5_group_create_tree(fileId, group_path.c_str());
@@ -237,8 +237,7 @@ void *om_hdf5_dataset_raw_read(hid_t fileId, const char *name, int *size)
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen(fileId, name);
-	if (dataset_id < 0)
-		cout << name << endl;
+	//if (dataset_id < 0) debug("FIXME", << name << endl;
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -291,8 +290,8 @@ Vector3 < int > om_hdf5_dataset_image_get_dims(hid_t fileId, const char *name)
 
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen(fileId, name);
-	if (dataset_id < 0)
-		cout << name << endl;
+	//if (dataset_id < 0)
+		//debug("FIXME", << name << endl;
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -361,8 +360,8 @@ om_hdf5_dataset_image_create(hid_t fileId, const char *name, Vector3 < int >data
 	Vector3 < hsize_t > flipped_max_data_dims =
 	    unlimited ? Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED,
 					     H5S_UNLIMITED) : Vector3 < hsize_t > (dataDims.z, dataDims.y, dataDims.x);
-	//cout << dataDims << endl;
-	//cout << chunkDims << endl;
+	//debug("FIXME", << dataDims << endl;
+	//debug("FIXME", << chunkDims << endl;
 
 	//Creates a new simple dataspace and opens it for access. 
 	//hid_t H5Screate_simple(int rank, const hsize_t * dims, const hsize_t * maxdims  ) 
@@ -656,8 +655,8 @@ om_hdf5_dataset_image_write_trim(hid_t fileId, const char *name, DataBbox dataEx
 	DataBbox dataextent_norm_intersect_extent = intersect_extent;
 	dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
 
-	cout << intersect_norm_intersect_extent << endl;
-	cout << dataextent_norm_intersect_extent << endl;
+	//debug("FIXME", << intersect_norm_intersect_extent << endl;
+	//debug("FIXME", << dataextent_norm_intersect_extent << endl;
 
 	//copy data
 	copyImageData(p_intersect_data, intersect_norm_intersect_extent,	//copy to extent of intersection

@@ -45,18 +45,18 @@ void create_test() {
 	r_segmentation1.SetSourceFilenameRegex(regex);
 	
 	
-	cout << endl;
-	cout << "build segmentation volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation volume" << endl;
 	r_segmentation1.BuildVolumeData();
 	
 	
-	cout << endl;
-	cout << "build segmentation mesh" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation mesh" << endl;
 	r_segmentation1.BuildMeshData();
-	cout << "done" << endl;
+	//debug("FIXME", << "done" << endl;
 	
 		
-	cout << "saving project" << endl;
+	//debug("FIXME", << "saving project" << endl;
 	//OmProject::SaveAs("./", filename);
 	OmProject::Save();
 	
@@ -87,8 +87,8 @@ void create_rabbit() {
 	 r_channel.SetSourceDirectoryPath(rabbit_small_raw1);
 	 r_channel.SetSourceFilenameRegex(regex);
 	
-	cout << endl;
-	cout << "build channel volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build channel volume" << endl;
 	 r_channel.BuildVolumeData();
 	 r_channel.ClearCache();
 	 
@@ -98,19 +98,19 @@ void create_rabbit() {
 	r_segmentation1.SetSourceFilenameRegex(regex);
 	
 	
-	cout << endl;
-	cout << "build segmentation volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation volume" << endl;
 	r_segmentation1.BuildVolumeData();
 	
 	
-	cout << endl;
-	cout << "build segmentation mesh" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation mesh" << endl;
 	r_segmentation1.BuildMeshData();
-	cout << "done" << endl;
+	//debug("FIXME", << "done" << endl;
 	
 
 	
-	cout << "saving project" << endl;
+	//debug("FIXME", << "saving project" << endl;
 	//OmProject::SaveAs("./", filename);
 	OmProject::Save();
 	
@@ -135,15 +135,15 @@ void create_0219() {
 	OmSegmentation &r_segmentation = OmVolume::AddSegmentation();
 	r_segmentation.SetSourceDirectoryPath(marvin_0219_seg);
 	
-	cout << endl;
-	cout << "build segmentation volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation volume" << endl;
 	r_segmentation.BuildVolumeData();
 	
 	
-	cout << endl;
-	cout << "build segmentation mesh" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation mesh" << endl;
 	r_segmentation.BuildMeshData();
-	cout << "done" << endl;
+	//debug("FIXME", << "done" << endl;
 }
 
 void create_raw_0219() {
@@ -165,8 +165,8 @@ void create_raw_0219() {
 	 OmChannel &r_channel = OmVolume::AddChannel();
 	 r_channel.SetSourceDirectoryPath(marvin_0219_raw);
 
-	 cout << endl;
-	 cout << "build channel volume" << endl;
+	 //debug("FIXME", << endl;
+	 //debug("FIXME", << "build channel volume" << endl;
 	 r_channel.BuildVolumeData();
 	 r_channel.ClearCache();
 	
@@ -175,8 +175,8 @@ void create_raw_0219() {
 	r_segmentation.SetSourceDirectoryPath(marvin_0219_seg);
 
 	
-	cout << endl;
-	cout << "build segmentation volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation volume" << endl;
 	r_segmentation.BuildVolumeData();
 	
 }
@@ -190,13 +190,13 @@ void time_build(string dpath, string fname, string srcdpath) {
 	r_segmentation.SetSourceDirectoryPath(srcdpath);
 	r_segmentation.SetSourceFilenameRegex(".*tif");
 	OmVolume::SetDataDimensions(r_segmentation.GetSourceDataVolume().GetDataDimensions());
-	cout << r_segmentation.GetSourceDataVolume().GetDataDimensions() << endl;
+	//debug("FIXME", << r_segmentation.GetSourceDataVolume().GetDataDimensions() << endl;
 	
 	fprintf(stderr, "--------------------------------------\n");
-	cout << "segmentation: " << srcdpath << endl;
+	//debug("FIXME", << "segmentation: " << srcdpath << endl;
 	fprintf(stderr, "segmentation: %s\n", srcdpath.c_str());
-	cout << endl;
-	cout << "build segmentation volume" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation volume" << endl;
 	
 	
 	time(&start_time);
@@ -210,8 +210,8 @@ void time_build(string dpath, string fname, string srcdpath) {
 	
 	
 	
-	cout << endl;
-	cout << "build segmentation mesh" << endl;
+	//debug("FIXME", << endl;
+	//debug("FIXME", << "build segmentation mesh" << endl;
 	
 	time(&start_time);
 	r_segmentation.BuildMeshData();
@@ -255,11 +255,11 @@ MainWindow::MainWindow()
 
 	} else {
 
-		cout << "project already exists" << endl;
+		//debug("FIXME", << "project already exists" << endl;
 		OmProject::Load(dpath, fname);
 	}
 
-	cout << "done" << endl;
+	//debug("FIXME", << "done" << endl;
 
 	qtView3d = new OmView3d;
 

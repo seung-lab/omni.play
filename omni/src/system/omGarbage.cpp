@@ -80,7 +80,7 @@ void OmGarbage::safeCleanTextureIds()
 {
 	OmGarbage::Instance()->Lock();
 
-	//cout  << "freeing... " << OmGarbage::Instance()->mTextures.size()<< endl;
+	//debug("FIXME",  << "freeing... " << OmGarbage::Instance()->mTextures.size()<< endl;
 
 	glDeleteTextures(OmGarbage::Instance()->mTextures.size(), &OmGarbage::Instance()->mTextures[0]);
 	OmGarbage::Instance()->mTextures.clear();

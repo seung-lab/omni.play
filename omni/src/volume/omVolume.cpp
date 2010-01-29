@@ -400,9 +400,9 @@ void OmVolume::DrawEditSelectionVoxels()
 void OmVolume::Print()
 {
 
-	cout << "   Channels:" << endl;
+	//debug("FIXME", << "   Channels:" << endl;
 	mChannelManager.CallValid(&OmChannel::Print);
 
-	cout << "   Segmentations:" << endl;
+	//debug("FIXME", << "   Segmentations:" << endl;
 	mSegmentationManager.CallValid(&OmSegmentation::Print);
 }

@@ -33,7 +33,7 @@ OmSegmentation::OmSegmentation()
  : mMipVoxelationManager(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
-	//      cout << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
+	//      //debug("FIXME", << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -50,7 +50,7 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	//segmenations has SEGMENT_DATA_BYTES_PER_SAMPLE bytes per sample
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
-	cout << "Setting BPP to " << SEGMENT_DATA_BYTES_PER_SAMPLE << endl;
+	//debug("FIXME", << "Setting BPP to " << SEGMENT_DATA_BYTES_PER_SAMPLE << endl;
 
 	//subsample segmentation data using mode
 	SetSubsampleMode(SUBSAMPLE_NONE);
@@ -102,7 +102,7 @@ const SegmentDataSet & OmSegmentation::GetValuesMappedToSegmentId(OmId omId)
  */
 SEGMENT_DATA_TYPE OmSegmentation::GetValueMappedToSegmentId(OmId omId)
 {
-	//cout << "OmSegmentation::GetValueMappedToSegmentId: " << omId << endl;
+	//debug("FIXME", << "OmSegmentation::GetValueMappedToSegmentId: " << omId << endl;
 
 	if (IsSegmentValid(omId)) {
 		//if valid return first in set
@@ -110,7 +110,7 @@ SEGMENT_DATA_TYPE OmSegmentation::GetValueMappedToSegmentId(OmId omId)
 		assert(r_data_set.size());
 		return *(r_data_set.begin());
 	} else {
-		cout << "OmSegmentation::GetValueMappedToSegmentId: invalid segment id: " << omId << endl;
+		//debug("FIXME", << "OmSegmentation::GetValueMappedToSegmentId: invalid segment id: " << omId << endl;
 		assert(false);
 	}
 
@@ -137,7 +137,7 @@ void OmSegmentation::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & va
 void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
 {
 
-	//cout << "OmSegmentation::SetVoxelValue: " << rVox << " , " << val << endl;
+	//debug("FIXME", << "OmSegmentation::SetVoxelValue: " << rVox << " , " << val << endl;
 
 	//get old value
 	uint32_t old_val = GetVoxelValue(rVox);
@@ -273,7 +273,7 @@ void OmSegmentation::BuildMeshDataInternal()
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 {
-	cout << "OmSegmentation::BuildChunk(): " << mipCoord << endl;
+	//debug("FIXME", << "OmSegmentation::BuildChunk(): " << mipCoord << endl;
 
 	//build chunk volume data
 	OmMipVolume::BuildChunk(mipCoord);
@@ -290,7 +290,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	if (p_chunk->IsRoot()) {
 		//get root spatial segs
 		const SegmentDataSet & r_root_indirect_data_values = p_chunk->GetIndirectDataValues();
-		//cout << "ROOT SEGMENTS:" << r_root_indirect_data_values.size() << endl;
+		//debug("FIXME", << "ROOT SEGMENTS:" << r_root_indirect_data_values.size() << endl;
 
 		//add to manager if data isn't already mapped
 		mSegmentManager.AddSegments(r_root_indirect_data_values);
@@ -307,7 +307,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 
 		//return if no values modified
 		if (rModifiedValues.size() == 0) {
-			cout << "OmSegmentation::BuildChunk: no modified values to mesh" << endl;
+			//debug("FIXME", << "OmSegmentation::BuildChunk: no modified values to mesh" << endl;
 			return;
 		}
 		//build mesh
@@ -697,10 +697,10 @@ void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const Seg
 
 void OmSegmentation::Print()
 {
-	cout << "\t" << mName << " (" << mId << ")" << endl;
+	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
 
 	if (mSegmentManager.SegmentSize()) {
-		cout << "\t   Segments:" << endl;
+		//debug("FIXME", << "\t   Segments:" << endl;
 		mSegmentManager.SegmentCall(&OmSegment::Print);
 	}
 }

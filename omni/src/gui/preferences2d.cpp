@@ -28,13 +28,13 @@ Preferences2d::Preferences2d(QWidget * parent)
 	infoCheckBox->blockSignals(true);
 
 	volEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT)));
-	cout << "after set 'vol cache size' edit" << endl;
+	//debug("FIXME", << "after set 'vol cache size' edit" << endl;
 
 	tileEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT)));
-	cout << "after set 'tile cache size' edit" << endl;
+	//debug("FIXME", << "after set 'tile cache size' edit" << endl;
 
 	depthEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT)));
-	cout << "after set 'depth cache size' edit" << endl;
+	//debug("FIXME", << "after set 'depth cache size' edit" << endl;
 
 	sideEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT)));
 	mipEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT)));

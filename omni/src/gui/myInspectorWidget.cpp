@@ -631,7 +631,7 @@ void MyInspectorWidget::sourceEditChangedSeg()
 
 void MyInspectorWidget::nameEditChanged()
 {
-	cout << "FIXME: purcaro: sourceEditChangedSeg\n";
+	//debug("FIXME", << "FIXME: purcaro: sourceEditChangedSeg\n";
 	/*
 	   QVariant result = proxyModel->data(view->currentIndex(), Qt::UserRole);
 	   int item_type = result.value<int>();
@@ -790,7 +790,7 @@ void MyInspectorWidget::setSegObjColor()
 
 void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 {
-	cout << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
+	//debug("FIXME", << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
 }
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)

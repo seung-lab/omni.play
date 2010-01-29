@@ -60,13 +60,13 @@ void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr < OmTextureID > &p_va
 	OmTileCoord mipTileCoord = tileCoord;
 
 	while (rootLevel >= mipTileCoord.Level) {
-		//cout << "Looking for tile for" << mipTileCoord.Level << endl;
+		//debug("FIXME", << "Looking for tile for" << mipTileCoord.Level << endl;
 		// Try directly below current level.
 		mipTileCoord.Level += 1;
 		//shared_ptr<OmTextureID> id;
 		TextureIDThreadedCache::Get(p_value, mipTileCoord);
 		if (p_value) {
-			//cout << "tile " << mipTileCoord.Level << " found" << endl;
+			//debug("FIXME", << "tile " << mipTileCoord.Level << " found" << endl;
 			retCoord = mipTileCoord;
 			return;
 		}

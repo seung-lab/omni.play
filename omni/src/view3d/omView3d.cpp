@@ -139,7 +139,7 @@ void OmView3d::resizeGL(int width, int height)
 void OmView3d::paintGL()
 {
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_RENDERMODE_RENDER | DRAWOP_DRAW_WIDGETS);
-	cout << "Done THREE D drawing" << endl;
+	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
 
 #pragma mark
@@ -282,7 +282,7 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < int >&rNamesVec)
 
 	//if hits < 0, then buffer overflow
 	if (hits < 0) {
-		cout << "OmView3d::PickPoint: hit buffer overflow" << endl;
+		//debug("FIXME", << "OmView3d::PickPoint: hit buffer overflow" << endl;
 		return false;
 	}
 	//if no hits, success
@@ -403,7 +403,7 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 		DrawEditSelectionVoxels();
 	}
 
-	//cout << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
+	//debug("FIXME", << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
 	if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}
@@ -521,7 +521,7 @@ void initLights()
 /*
  int OmView3d::faceAtPosition(const QPoint&pos) 
  { 
- cout << "face at" << endl;
+ //debug("FIXME", << "face at" << endl;
  
  const int MaxSize = 512; 
  GLuint buffer[MaxSize]; 

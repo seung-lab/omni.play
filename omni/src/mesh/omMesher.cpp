@@ -70,7 +70,7 @@ void
 	pImageData = chunk->GetMeshImageData();
 
 	if (NULL == pImageData) {
-		cout << "Crash inc..." << endl;
+		//debug("FIXME", << "Crash inc..." << endl;
 	}
 	MipCoord = chunk->GetCoordinate();
 	SrcBbox = chunk->GetExtent();
@@ -132,7 +132,7 @@ void
 	//vtkDecimatePro *mpDecimation = vtkDecimatePro::New();
 	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
 	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
-	cout << "target_reduction: " << target_reduction << endl;
+	//debug("FIXME", << "target_reduction: " << target_reduction << endl;
 	mpDecimation->SetTargetReduction(target_reduction);
 
 	//form transform to norm extent

@@ -74,7 +74,7 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
 			void *vData = NULL;
 
 			vData = GetImageData(key, tile_dims, mVolume);
-			//cout << "mBytesPerSample: " << mBytesPerSample << endl;;
+			//debug("FIXME", << "mBytesPerSample: " << mBytesPerSample << endl;;
 
 			Vector2 < int >tile_bg_dims;
 			void *vBGData = NULL;
@@ -103,16 +103,16 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
 						vDataFake[i] << 8;
-						//cout << " "  << (int)((unsigned char*)(vData))[i];
+						//debug("FIXME", << " "  << (int)((unsigned char*)(vData))[i];
 					}
-					cout << endl;
+					//debug("FIXME", << endl;
 					free(vData);
 					vData = (void *)vDataFake;
 				}
 				void *out = NULL;
-				//cout << "in: vData: " << vData << ". " << out << endl;
+				//debug("FIXME", << "in: vData: " << vData << ". " << out << endl;
 				OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
-				//cout << "out: vData: " << out << endl;
+				//debug("FIXME", << "out: vData: " << out << endl;
 				vData = out;
 #else
 				OmIds myIdSet;
@@ -124,7 +124,7 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
 			return textureID;
 		}
 	}
-	// cout << "MIP COORD IS INVALID" << endl;
+	// //debug("FIXME", << "MIP COORD IS INVALID" << endl;
 	OmIds myIdSet;
 	OmTextureID *textureID = new OmTextureID(key, 0, 0, 0, 0, myIdSet, NULL, NULL, OMTILE_COORDINVALID);
 	//glDisable (GL_TEXTURE_2D); /* disable texture mapping */ 
@@ -223,13 +223,13 @@ void OmTile::setMergeChannels(unsigned char *imageData, unsigned char *secondIma
 		x_min = my_depth;
 		x_max = my_depth;
 	}
-	//      cout << "IMAGE DATA: " << endl;
+	//      //debug("FIXME", << "IMAGE DATA: " << endl;
 	//      for(int i = 0 ; i < 100 ; i++)
-	//              cout << (unsigned int) imageData[i] << endl;
+	//              //debug("FIXME", << (unsigned int) imageData[i] << endl;
 	//      
-	//      cout << "SECOND DATA: " << endl;
+	//      //debug("FIXME", << "SECOND DATA: " << endl;
 	//      for(int i = 0 ; i < 100 ; i++)
-	//              cout << (unsigned int) secondImageData[i] << endl;
+	//              //debug("FIXME", << (unsigned int) secondImageData[i] << endl;
 
 	for (int z = z_min; z <= z_max; z++) {
 		for (int y = y_min; y <= y_max; y++) {
@@ -285,7 +285,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 		if (tmpid != lastid) {
 			if (speedTable.end() == it) {
 
-				//cout << "gotten segment id mapped to value" << endl;
+				//debug("FIXME", << "gotten segment id mapped to value" << endl;
 
 				OmId id = current_seg.GetSegmentIdMappedToValue(tmpid);
 				if (id == 0) {
@@ -298,7 +298,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 
 					found_ids.insert(id);
 
-					// cout << "asking for color now" << endl;
+					// //debug("FIXME", << "asking for color now" << endl;
 					const Vector3 < float >&color =
 					    OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
 
@@ -317,9 +317,9 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 				}
 
 				speedTable[tmpid] = newcolor;
-				//cout << " adding to speed table" << endl;
+				//debug("FIXME", << " adding to speed table" << endl;
 			} else {
-				//cout << " using speed table" << endl;
+				//debug("FIXME", << " using speed table" << endl;
 				newcolor = (*it).second;
 				data[ctr] = newcolor.red();
 				data[ctr + 1] = newcolor.green();
@@ -336,7 +336,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 		ctr = ctr + 4;
 		lastid = tmpid;
 	}
-	// cout << "going to make it the texture now" << endl;
+	// //debug("FIXME", << "going to make it the texture now" << endl;
 	*rData = data;
 
 	return found_ids;
@@ -352,8 +352,8 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, unsigned char *second
 
 	unsigned char *data = new unsigned char[dims.x * dims.y * 4];
 
-	//      cout << "SEG DIMS = " << dims << endl;
-	//      cout << "CHAN DIMS = " << second_dims << endl;
+	//      //debug("FIXME", << "SEG DIMS = " << dims << endl;
+	//      //debug("FIXME", << "CHAN DIMS = " << second_dims << endl;
 
 	int ctr = 0;
 	int newctr = 0;
@@ -364,7 +364,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, unsigned char *second
 
 		OmId id = current_seg.GetSegmentIdMappedToValue((SEGMENT_DATA_TYPE) imageData[i]);
 
-		// cout << "gotten segment id mapped to value" << endl;
+		// //debug("FIXME", << "gotten segment id mapped to value" << endl;
 		// //debug("genone","ID ID ID = " << id);
 		QColor newcolor;
 		if (id == 0) {
@@ -433,7 +433,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, unsigned char *second
 		ctr = ctr + 4;
 
 	}
-	// cout << "going to make texture now" << endl;
+	// //debug("FIXME", << "going to make texture now" << endl;
 
 	//glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, dims.x, dims.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
@@ -450,8 +450,8 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr < OmTextureID > &texID, DataCoo
 
 	unsigned char *data = new unsigned char[tl * tl * 4];
 
-	//      cout << "SEG DIMS = " << dims << endl;
-	//      cout << "CHAN DIMS = " << second_dims << endl;
+	//      //debug("FIXME", << "SEG DIMS = " << dims << endl;
+	//      //debug("FIXME", << "CHAN DIMS = " << second_dims << endl;
 
 	int ctr = 0;
 	int newctr = 0;
@@ -691,7 +691,7 @@ void OmTile::ReplaceFullTextureRegion(shared_ptr < OmTextureID > &texID, DataCoo
 			}
 		}
 	}
-	// cout << "going to make texture now" << endl;
+	// //debug("FIXME", << "going to make texture now" << endl;
 
 	// glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, dims.x, dims.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
@@ -731,7 +731,7 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, int dim, se
 			switch (view_type) {
 			case XY_VIEW:{
 					orthoVox = DataCoord(vox.x, vox.y, vox.z);
-					//                                      cout << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
+					//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
 				}
 				break;
 			case XZ_VIEW:{
@@ -746,12 +746,12 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, int dim, se
 				break;
 			}
 
-			cout << "orthoVox = " << orthoVox << " ----- view = " << view_type << endl;
+			//debug("FIXME", << "orthoVox = " << orthoVox << " ----- view = " << view_type << endl;
 			// OmId id = current_seg.GetSegmentIdMappedToValue((SEGMENT_DATA_TYPE)
 			uint32_t bg_voxel_value = mBackgroundVolume->GetVoxelValue(orthoVox);
 			SEGMENT_DATA_TYPE fg_voxel_value = mVolume->GetVoxelValue(orthoVox);
-			cout << "BG VOXEL VALUE = " << bg_voxel_value << endl;
-			cout << "FG VOXEL VALUE = " << fg_voxel_value << endl;
+			//debug("FIXME", << "BG VOXEL VALUE = " << bg_voxel_value << endl;
+			//debug("FIXME", << "FG VOXEL VALUE = " << fg_voxel_value << endl;
 
 			// okay so IF fg is 0, then all bg
 			// if fg != 0, then mix

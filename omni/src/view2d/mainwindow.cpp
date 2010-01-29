@@ -86,13 +86,13 @@ MainWindow::MainWindow()
 ////            OmStateManager::SetViewBbox(bbox);
 ////            OmStateManager::SetViewCenter(Vector3f(5,5,5));
 //              
-//              cout << "saving project" << endl;
+//              //debug("FIXME", << "saving project" << endl;
 //              //save_volume_manager(*OmVolumeManager::Instance(), filename);
 //              //OmProject::SaveAs("./", filename);
 //              OmProject::Save();
 //      }
 
-	cout << "load project" << endl;
+	//debug("FIXME", << "load project" << endl;
 	OmProject::Load("./", filename);
 
 //      SpaceBbox bbox = OmStateManager::GetViewBbox();

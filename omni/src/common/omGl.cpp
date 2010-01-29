@@ -107,14 +107,14 @@ void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 	*ppNamesRet = (int *)ptrNames;
 
 	//unsigned int depth = *(ptrNames-2);
-	//cout << "selection buf: " << (float)depth/ (unsigned int)(-1) << endl;
+	//debug("FIXME", << "selection buf: " << (float)depth/ (unsigned int)(-1) << endl;
 	//unsigned int max = -1;
-	//cout << depth/max;
+	//debug("FIXME", << depth/max;
 
 	//PRINT NAMES OF CLOSEST
 	/*
-	   cout << "num hits: " << hits << endl;
-	   cout << "num names: " << numberOfNames << endl;
+	   //debug("FIXME", << "num hits: " << hits << endl;
+	   //debug("FIXME", << "num names: " << numberOfNames << endl;
 	   for (j = 0; j < numberOfNames; j++,ptr++) {
 	   printf ("%d ", *ptr);
 	   }

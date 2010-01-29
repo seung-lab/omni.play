@@ -126,7 +126,7 @@ void OmVolumeCuller::Draw()
 
 	const Vector4f *planes = mFrustumCuller.getPlanes();
 
-	//cout << "center: " << mPosition << endl;
+	//debug("FIXME", << "center: " << mPosition << endl;
 
 	for (int plane_idx = 0; plane_idx < 6; ++plane_idx) {
 
@@ -139,19 +139,19 @@ void OmVolumeCuller::Draw()
 			glVertex3fv(p.array);
 		}
 
-		cout << "plane " << plane_idx << " : " << planes[plane_idx] << endl;
+		//debug("FIXME", << "plane " << plane_idx << " : " << planes[plane_idx] << endl;
 
 		/*
 		   p = planes[plane_idx].projectPointOntoPlane( mPosition );
-		   cout << "plane " << plane_idx << " : " << p << endl;
+		   //debug("FIXME", << "plane " << plane_idx << " : " << p << endl;
 		   glVertex3fv( p.array);
 		 */
 	}
 
 	glEnd();
 
-	//cout << mProjection << endl;
-	//cout << mModelview << endl;
+	//debug("FIXME", << mProjection << endl;
+	//debug("FIXME", << mModelview << endl;
 }
 
 /*
@@ -273,6 +273,6 @@ void OmVolumeCuller::ExtractFrustum()
 
 	for (int i = 0; i < 6; ++i) {
 		Vector4f plane(frustum[i]);
-		cout << plane << endl;
+		//debug("FIXME", << plane << endl;
 	}
 }

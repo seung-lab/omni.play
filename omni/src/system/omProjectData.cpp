@@ -135,7 +135,7 @@ void OmProjectData::CreateImageData(string & path, Vector3 < int >dataDims, Vect
 	om_hdf5_dataset_image_create_tree_overwrite(Instance()->mFileId, path.c_str(),
 						    dataDims, chunkDims, bytesPerSample);
 
-	//cout << "OmProjectData::CreateImageData: " << om_hdf5_dataset_image_get_dims(Instance()->mFileId, path.c_str()) << endl;
+	//debug("FIXME", << "OmProjectData::CreateImageData: " << om_hdf5_dataset_image_get_dims(Instance()->mFileId, path.c_str()) << endl;
 }
 
 vtkImageData *OmProjectData::ReadImageData(string & path, const DataBbox & extent, int bytesPerSample)

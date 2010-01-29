@@ -37,7 +37,7 @@ static QGLWidget *sharedwidget = NULL;
 
 static void myPrint(const QString str)
 {
-	//      cout << "in..." << qPrintable( str ) << endl;
+	//      //debug("FIXME", << "in..." << qPrintable( str ) << endl;
 }
 
 /*
@@ -139,14 +139,14 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		mRootLevel = current_seg.GetRootMipLevel();
 	}
 
-	//cout << "conversion = " << endl;
+	//debug("FIXME", << "conversion = " << endl;
 	DataCoord test = DataCoord(0, 0, 0);
 	SpaceCoord test2 = DataToSpaceCoord(test);
-	//cout << "0 ---> " << test2.z << endl;
+	//debug("FIXME", << "0 ---> " << test2.z << endl;
 
 	test = DataCoord(0, 0, 1);
 	test2 = DataToSpaceCoord(test);
-	//cout << "1 ---> " << test2.z << endl;
+	//debug("FIXME", << "1 ---> " << test2.z << endl;
 
 	cameraMoving = false;
 
@@ -202,13 +202,13 @@ void OmView2d::initializeGL()
 	mTotalViewport.width = size().width();
 	mTotalViewport.height = size().height();
 
-	// cout << "mtotalviewport = " << mTotalViewport << endl;
+	// //debug("FIXME", << "mtotalviewport = " << mTotalViewport << endl;
 
 	mNearClip = -1;
 	mFarClip = 1;
 	mZoomLevel = 0;
 
-	// cout << "mTotalViewport = " << mTotalViewport << endl;
+	// //debug("FIXME", << "mTotalViewport = " << mTotalViewport << endl;
 	// InitializeCache();
 }
 
@@ -255,7 +255,7 @@ void OmView2d::paintEvent(QPaintEvent * event)
 	if (mEmitMovie) {
 		QString file = QString("omniss-%1.png").arg(mSlide);
 		if (!mImage.save(file, "png")) ;
-		cout << "failed to make slide " << mSlide << ": " << file.toStdString() << endl;
+		//debug("FIXME", << "failed to make slide " << mSlide << ": " << file.toStdString() << endl;
 		mSlide++;
 	}
 
@@ -407,7 +407,7 @@ QImage OmView2d::safePaintEvent(QPaintEvent * event)
 				glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
 				glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
 
-				//cout << filter.GetName() << " in alpha: " << alpha << " " << alpha*255 << endl;
+				//debug("FIXME", << filter.GetName() << " in alpha: " << alpha << " " << alpha*255 << endl;
 				DrawFromFilter(filter);
 				glDisable(GL_BLEND);	// enable blending for transparency
 			}
@@ -445,7 +445,7 @@ void OmView2d::PickToolGetColor(QMouseEvent * event)
 	b = qBlue(mImage.pixel(event->pos()));
 	a = qAlpha(mImage.pixel(event->pos()));
 
-	//cout  << "p,r,g,b: " << p << ", " << r << ", " << g << ", " << b << endl;
+	//debug("FIXME",  << "p,r,g,b: " << p << ", " << r << ", " << g << ", " << b << endl;
 	// FIXME: Need to add to hud.
 }
 
@@ -576,7 +576,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE 
 	if (1 == mBrushToolDiameter) {
 		//(new OmVoxelSetValueAction(segid, gDC, seg))->Run();
 		if (segid != 1 && segid != 0) {
-			cout << segid << " is the seg id" << endl;
+			//debug("FIXME", << segid << " is the seg id" << endl;
 		}
 		mEditedSegmentation = segid;
 		mCurrentSegmentId = seg;
@@ -824,7 +824,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, SEGMENT_DATA_TYPE fc, SEGME
 		return;
 	depth++;
 
-	//cout << gCP << " filling... in " << segid << " with fc of " << fc << "  and bc of " << bc <<  " at " << depth << endl;
+	//debug("FIXME", << gCP << " filling... in " << segid << " with fc of " << fc << "  and bc of " << bc <<  " at " << depth << endl;
 
 	if (segid != fc && segid == bc) {
 
@@ -1018,9 +1018,9 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		break;
 	}
 
-	//cout << "first data coord = " << first << endl;
-	//cout << "second data coord = " << second << endl;
-	//cout << endl;
+	//debug("FIXME", << "first data coord = " << first << endl;
+	//debug("FIXME", << "second data coord = " << second << endl;
+	//debug("FIXME", << endl;
 
 	float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
@@ -1059,7 +1059,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	switch (mViewType) {
 	case XY_VIEW:{
 			globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-			//                                      cout << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
+			//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
 		}
 		break;
 	case XZ_VIEW:{
@@ -1071,14 +1071,14 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		}
 		break;
 	}
-	//cout << "global click point: " << globalDC << endl;
+	//debug("FIXME", << "global click point: " << globalDC << endl;
 
 	if (!doselection)
 		BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 	else
 		PickToolAddToSelection(segmentation_id, globalDC);
 
-	// cout << "insert: " << DataCoord(x0, y0, 0) << endl;
+	// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 
 	int lastx = x0 - mBrushToolDiameter / 4;
 	int lasty = y0 - mBrushToolDiameter / 4;
@@ -1100,7 +1100,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			switch (mViewType) {
 			case XY_VIEW:{
 					globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-					//                                      cout << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
+					//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
 				}
 				break;
 			case XZ_VIEW:{
@@ -1112,7 +1112,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 				}
 				break;
 			}
-			//cout << "global click point: " << globalDC << endl;
+			//debug("FIXME", << "global click point: " << globalDC << endl;
 
 			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
@@ -1123,7 +1123,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 				else
 					PickToolAddToSelection(segmentation_id, globalDC);
 			}
-			// cout << "insert: " << DataCoord(x0, y0, 0) << endl;
+			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
 	} else {
 		int fraction = dx - (dy >> 1);
@@ -1143,7 +1143,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			switch (mViewType) {
 			case XY_VIEW:{
 					globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-					//                                      cout << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
+					//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
 				}
 				break;
 			case XZ_VIEW:{
@@ -1155,7 +1155,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 				}
 				break;
 			}
-			//cout << "global click point: " << globalDC << endl;
+			//debug("FIXME", << "global click point: " << globalDC << endl;
 
 			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
@@ -1166,7 +1166,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 				else
 					PickToolAddToSelection(segmentation_id, globalDC);
 			}
-			// cout << "insert: " << DataCoord(x0, y0, 0) << endl;
+			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
 	}
 
@@ -1702,11 +1702,11 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 
 	//debug("genone","OmView2d::VoxelModificationEvent() ---" << mViewType);
 
-	// cout << "voxel modification event" << endl;
+	// //debug("FIXME", << "voxel modification event" << endl;
 	//debug("genone","event segmentation id = " << event->GetSegmentationId());
 	//debug("genone","iSentIt = " << iSentIt);
 	//modifiedCoords.clear();
-	// cout << "event segmentation id: " << event->GetSegmentationId() << endl;
+	// //debug("FIXME", << "event segmentation id: " << event->GetSegmentationId() << endl;
 	if ((mVolumeType == SEGMENTATION) && (event->GetSegmentationId() == mImageId)) {
 
 		set < DataCoord > modVoxels = event->GetVoxels();
@@ -1788,12 +1788,12 @@ void OmView2d::myUpdate()
 			delete fastCache;
 
 #if 0
-		cout << "enter" << endl;
-		cout << "mBrushToolMinX " << mBrushToolMinX << endl;
-		cout << "mBrushToolMinY " << mBrushToolMinY << endl;
-		cout << "mBrushToolMinZ " << mBrushToolMinZ << endl;
-		cout << "mBrushToolMaxZ " << mBrushToolMaxZ << endl;
-		cout << "enter" << endl;
+		//debug("FIXME", << "enter" << endl;
+		//debug("FIXME", << "mBrushToolMinX " << mBrushToolMinX << endl;
+		//debug("FIXME", << "mBrushToolMinY " << mBrushToolMinY << endl;
+		//debug("FIXME", << "mBrushToolMinZ " << mBrushToolMinZ << endl;
+		//debug("FIXME", << "mBrushToolMaxZ " << mBrushToolMaxZ << endl;
+		//debug("FIXME", << "enter" << endl;
 #endif
 
 		mTextures.clear();
@@ -1827,10 +1827,10 @@ void OmView2d::myUpdate()
 						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);
 
 						cache->Remove(tileCoord);
-						//cout << tileCoord << endl;
-						//cout << "here " << endl;
+						//debug("FIXME", << tileCoord << endl;
+						//debug("FIXME", << "here " << endl;
 					}
-					//cout << " x,y,z a:" << x << ", "  << y << ", " << z << endl;
+					//debug("FIXME", << " x,y,z a:" << x << ", "  << y << ", " << z << endl;
 
 					xSave = xMipChunk;
 					ySave = yMipChunk;
@@ -1838,7 +1838,7 @@ void OmView2d::myUpdate()
 				}
 			}
 		}
-		//cout << "exit" << endl;
+		//debug("FIXME", << "exit" << endl;
 	} else if (mDoRefresh) {
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
@@ -1934,7 +1934,7 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 			free(gotten_id->texture);
 		gotten_id->texture = NULL;
 
-		//cout << "texture " << gotten_id->GetTextureID() << " was built" << endl;
+		//debug("FIXME", << "texture " << gotten_id->GetTextureID() << " was built" << endl;
 
 	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->flags) {
 		GLuint texture;
@@ -1947,9 +1947,9 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-		//cout << "texture " << (int)((unsigned char*)gotten_id->texture)[0] << endl;
-		//cout << "x " << gotten_id->x << endl;
-		//cout << "y " << gotten_id->y << endl;
+		//debug("FIXME", << "texture " << (int)((unsigned char*)gotten_id->texture)[0] << endl;
+		//debug("FIXME", << "x " << gotten_id->x << endl;
+		//debug("FIXME", << "y " << gotten_id->y << endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, gotten_id->x, gotten_id->y, 0, GL_LUMINANCE,
 			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->texture));
 
@@ -2042,7 +2042,7 @@ void OmView2d::Draw(int mip)
 
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 #if 1
-	//cout << "mip: " << mip << endl;
+	//debug("FIXME", << "mip: " << mip << endl;
 	if (mip) {
 		Vector2f zoom = zoomMipVector;
 		Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
@@ -2062,7 +2062,7 @@ void OmView2d::Draw(int mip)
 								   false);
 
 			PreDraw(zoom);
-			//cout << "zoom: " << zoom << endl;
+			//debug("FIXME", << "zoom: " << zoom << endl;
 		}
 		OmStateManager::Instance()->SetPanDistance(mViewType,
 							   Vector2 < int >(translateVector.x, translateVector.y),
@@ -2080,8 +2080,8 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 :x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor), gotten_id(gotten_id)
 {
 	mGood = true;
-	//cout << x << ", " << y << endl;
-	//cout << gotten_id->GetTextureID () << endl;
+	//debug("FIXME", << x << ", " << y << endl;
+	//debug("FIXME", << gotten_id->GetTextureID () << endl;
 }
 
 Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
@@ -2093,7 +2093,7 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord tileCoord, const GLuint texID,
 		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)
 {
-	//cout << "in OmTextureIDUpdate" << endl;
+	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
 
 	gotten_id->mTileCoordinate = tileCoord;
 	gotten_id->textureID = texID;
@@ -2163,7 +2163,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 		if (tmpid != lastid) {
 			if (!speedTable.contains(tmpid)) {
 
-				//cout << "gotten segment id mapped to value" << endl;
+				//debug("FIXME", << "gotten segment id mapped to value" << endl;
 
 				OmId id = current_seg.GetSegmentIdMappedToValue(tmpid);
 				if (id == 0) {
@@ -2174,7 +2174,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 					newcolor = qRgba(0, 0, 0, 255);
 				} else {
 
-					// cout << "asking for color now" << endl;
+					// //debug("FIXME", << "asking for color now" << endl;
 					const Vector3 < float >&color =
 					    OmVolume::GetSegmentation(segid).GetSegment(id).GetColor();
 
@@ -2196,10 +2196,10 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 				}
 
 				speedTable[tmpid] = newcolor;
-				//cout << " adding to speed table" << endl;
+				//debug("FIXME", << " adding to speed table" << endl;
 
 			} else {
-				//cout << " using speed table" << endl;
+				//debug("FIXME", << " using speed table" << endl;
 				newcolor = speedTable.value(tmpid);
 				data[ctr] = newcolor.red();
 				data[ctr + 1] = newcolor.green();
@@ -2217,7 +2217,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 		lastid = tmpid;
 	}
 
-	// cout << "going to make it the texture now" << endl;
+	// //debug("FIXME", << "going to make it the texture now" << endl;
 	*rData = data;
 
 	return found_ids;
@@ -2226,7 +2226,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 void *OmView2d::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, OmMipVolume * vol)
 {
 
-	//cout << "in OmView2d::GetImageData" << endl;
+	//debug("FIXME", << "in OmView2d::GetImageData" << endl;
 	shared_ptr < OmMipChunk > my_chunk;
 	vol->GetChunk(my_chunk, mCache->TileToMipCoord(key));
 	int depth = GetDepth(key, vol);
@@ -2249,7 +2249,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 	int BPS = mCache->mVolume->GetBytesPerSample();
 	OmMipChunkCoord coord = mCache->TileToMipCoord(gotten_id->mTileCoordinate);
 
-	//cout << "tile coord: "  << gotten_id->mTileCoordinate << endl;
+	//debug("FIXME", << "tile coord: "  << gotten_id->mTileCoordinate << endl;
 
 	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
 
@@ -2265,14 +2265,14 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 			if (!vData)
 				return;
 
-			//cout << "vData: "  << vData << endl;
+			//debug("FIXME", << "vData: "  << vData << endl;
 			if (mCache->mVolType == CHANNEL) {
 				OmIds myIdSet;
 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
 				if (1 == BPS) {
-					cout << "1 bps !!!!!!!!!!!!!!!!!\n" << endl;
+					//debug("FIXME", << "1 bps !!!!!!!!!!!!!!!!!\n" << endl;
 					uint32_t *vDataFake;
 					vDataFake =
 					    (uint32_t *) malloc((tile_dims.x * tile_dims.y) *
@@ -2280,28 +2280,28 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
 						vDataFake[i] << 8;
-						//cout << " "  << (int)((unsigned char*)(vData))[i];
+						//debug("FIXME", << " "  << (int)((unsigned char*)(vData))[i];
 					}
-					cout << endl;
+					//debug("FIXME", << endl;
 					free(vData);
 					vData = (void *)vDataFake;
 				}
 				OmIds myIdSet;
 				void *out = NULL;
-				//cout << "in: vData: " << vData << ". " << out << endl;
+				//debug("FIXME", << "in: vData: " << vData << ". " << out << endl;
 				myIdSet =
 				    setMyColorMap(mCurrentSegmentation, ((SEGMENT_DATA_TYPE *) vData), tile_dims,
 						  gotten_id->mTileCoordinate, &out);
-				//cout << "out: vData: " << out << endl;
+				//debug("FIXME", << "out: vData: " << out << endl;
 				vData = out;
 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDCOLORMAP);
 			}
 		}
-		//cout << "VALID " << gotten_id->mTileCoordinate << " vData: " << vData << endl;
+		//debug("FIXME", << "VALID " << gotten_id->mTileCoordinate << " vData: " << vData << endl;
 	}
 	//else
-	//cout << "MIP COORD IS INVALID" << gotten_id->mTileCoordinate << endl;
+	//debug("FIXME", << "MIP COORD IS INVALID" << gotten_id->mTileCoordinate << endl;
 }
 
 void OmView2d::PreDraw(Vector2i zoomMipVector)
@@ -2358,17 +2358,17 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 #if 0
 #define d(x) " "
-		cout << d(" tl: ") << tl;
-		cout << d(" pl: ") << pl;
-		//cout << d(" x: ") << x;
-		cout << d(" y: ") << y;
-		//cout << d(" xval: ") << xval;
-		cout << d(" yval: ") << yval;
-		//cout << d(" translateVector.x: ") << translateVector.x;
-		cout << d(" translateVector.y: ") << translateVector.y;
-		//cout << d(" xMipChunk: ") << xMipChunk << endl;
-		cout << d(" yMipChunk: ") << yMipChunk;
-		cout << d(" y-thing: ") << (mTotalViewport.height * (1.0 / zoomFactor)) << endl;
+		//debug("FIXME", << d(" tl: ") << tl;
+		//debug("FIXME", << d(" pl: ") << pl;
+		//debug("FIXME", << d(" x: ") << x;
+		//debug("FIXME", << d(" y: ") << y;
+		//debug("FIXME", << d(" xval: ") << xval;
+		//debug("FIXME", << d(" yval: ") << yval;
+		//debug("FIXME", << d(" translateVector.x: ") << translateVector.x;
+		//debug("FIXME", << d(" translateVector.y: ") << translateVector.y;
+		//debug("FIXME", << d(" xMipChunk: ") << xMipChunk << endl;
+		//debug("FIXME", << d(" yMipChunk: ") << yMipChunk;
+		//debug("FIXME", << d(" y-thing: ") << (mTotalViewport.height * (1.0 / zoomFactor)) << endl;
 #endif
 
 		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor));
@@ -2388,10 +2388,10 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 					mCache->GetTextureID(gotten_id, mTileCoord);
 				} else {
 					mCache->GetTextureID(gotten_id, mTileCoord, false);
-					//cout << "Not Open" << endl;
+					//debug("FIXME", << "Not Open" << endl;
 				}
 
-				//cout << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
+				//debug("FIXME", << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
 
 				mTileCount++;
 				//if (mTileCount > 38000) return;       // Failsafe hack added by MW.
@@ -2399,35 +2399,35 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 				if (gotten_id) {
 					gotten_id->mVolType = mCache->mVolType;
 					if (gotten_id->GetTextureID() == 0) {
-						//cout << "no id..." << gotten_id->texture << endl;
+						//debug("FIXME", << "no id..." << gotten_id->texture << endl;
 						if (NULL == gotten_id->texture) {
 							myBindToTextureID(gotten_id);
 							if (gotten_id->texture) {
 								safeTexture(gotten_id);
-								//cout << "made texture on the fly..." << endl;
+								//debug("FIXME", << "made texture on the fly..." << endl;
 							} else {
 								gotten_id = shared_ptr < OmTextureID > ();
 								mCache->Remove(mTileCoord);
 								complete = false;
 							}
 						} else {
-							//cout << "got here...." << endl;
+							//debug("FIXME", << "got here...." << endl;
 							safeTexture(gotten_id);
 						}
 					}
 
 					if (gotten_id && gotten_id->GetTextureID() != 0) {
-						//cout << "texture is valid! : " << gotten_id->GetTextureID() << endl;
+						//debug("FIXME", << "texture is valid! : " << gotten_id->GetTextureID() << endl;
 						mTextures.
 						    push_back(new
 							      Drawable(x, y, tileLength, mTileCoord, zoomFactor,
 								       gotten_id));
 					} else {
-						//cout << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
+						//debug("FIXME", << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
 					}
 
 				} else {
-					//cout << "not gotton " << mTileCoord << endl;
+					//debug("FIXME", << "not gotton " << mTileCoord << endl;
 					//mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
 				}
 			}
@@ -2449,7 +2449,7 @@ void OmView2d::Draw(vector < Drawable * >&textures)
 				d->gotten_id = shared_ptr < OmTextureID > ();
 				d->mGood = false;
 				mCache->Remove(coord);
-				//cout << "x: " << d->x << " y: " << d->y << endl;
+				//debug("FIXME", << "x: " << d->x << " y: " << d->y << endl;
 			}
 		} else {
 			// Find a mip map that can be drawn in for now...TODO.

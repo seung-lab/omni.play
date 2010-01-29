@@ -128,5 +128,5 @@ void OmFilter::SetChannel(OmId id)
 
 void OmFilter::Print()
 {
-	cout << "\t\t" << mName << " (" << mId << ")" << endl;
+	//debug("FIXME", << "\t\t" << mName << " (" << mId << ")" << endl;
 }

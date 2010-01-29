@@ -142,12 +142,12 @@ void OmView3dUi::NavigationModeKeyPress(QKeyEvent * event)
 
 	switch (OmKeyManager::LookupKeySequence(event)) {
 	case OmKeySeq_Edit_Mode:
-		cout << "OmView3d::keyPressEvent: EDIT_SYSTEM_MODE" << endl;
+		//debug("FIXME", << "OmView3d::keyPressEvent: EDIT_SYSTEM_MODE" << endl;
 		OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
 		break;
 
 	case OmKeySeq_Navigation_Mode:
-		cout << "OmView3d::keyPressEvent: NAVIGATION_SYSTEM_MODE" << endl;
+		//debug("FIXME", << "OmView3d::keyPressEvent: NAVIGATION_SYSTEM_MODE" << endl;
 		OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
 		break;
 

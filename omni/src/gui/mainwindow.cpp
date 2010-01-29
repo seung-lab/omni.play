@@ -700,9 +700,9 @@ void MainWindow::ProgressHide(OmProgressEvent * event)
 
 		//prog_dialog->cancel();
 		//debug("genone","MainWindow::ProgressHide");
-		//cout << "min: " << event->GetMinimum() << endl;
-		//cout << "max: " << event->GetMaximum() << endl;
-		//cout << "val: " << event->GetValue() << endl;
+		//debug("FIXME", << "min: " << event->GetMinimum() << endl;
+		//debug("FIXME", << "max: " << event->GetMaximum() << endl;
+		//debug("FIXME", << "val: " << event->GetValue() << endl;
 		prog_dialog.reset();
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -728,9 +728,9 @@ void MainWindow::ProgressRangeEvent(OmProgressEvent * event)
 		 */
 
 		//debug("genone","ProgressRangeEvent");
-		//cout << "min: " << event->GetMinimum() << endl;
-		//cout << "max: " << event->GetMaximum() << endl;
-		//cout << "val: " << event->GetValue() << endl;
+		//debug("FIXME", << "min: " << event->GetMinimum() << endl;
+		//debug("FIXME", << "max: " << event->GetMaximum() << endl;
+		//debug("FIXME", << "val: " << event->GetValue() << endl;
 
 		prog_dialog.setRange(event->GetMinimum(), event->GetMaximum());
 
@@ -764,9 +764,9 @@ void MainWindow::ProgressIncrementEvent(OmProgressEvent * event)
 	try {
 
 		//debug("genone","ProgressIncrementEvent");
-		//cout << "min: " << event->GetMinimum() << endl;
-		//cout << "max: " << event->GetMaximum() << endl;
-		//cout << "val: " << event->GetValue() << endl;
+		//debug("FIXME", << "min: " << event->GetMinimum() << endl;
+		//debug("FIXME", << "max: " << event->GetMaximum() << endl;
+		//debug("FIXME", << "val: " << event->GetValue() << endl;
 		//      int val = prog_bar->value();
 		//      prog_bar->setValue(val + 1);
 

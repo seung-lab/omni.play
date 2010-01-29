@@ -61,7 +61,7 @@ void OmSegment::Join(OmId segid)
 	OmId myid = GetId();
 
 	if (myid != segid) {
-		cout << segid << " is now parent id" << endl;
+		//debug("FIXME", << segid << " is now parent id" << endl;
 		mJoinId = segid;
 	}
 }
@@ -94,5 +94,5 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 
 void OmSegment::Print()
 {
-	cout << "\t\t" << mName << " (" << mId << ")" << endl;
+	//debug("FIXME", << "\t\t" << mName << " (" << mId << ")" << endl;
 }

@@ -102,5 +102,5 @@ bool OmChannel::IsFilterEnabled(OmId id)
 
 void OmChannel::Print()
 {
-	cout << "\t" << mName << " (" << mId << ")" << endl;
+	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
 }

@@ -264,7 +264,7 @@ void OmMipVolume::UpdateMipProperties()
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
-			cout << "OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS" << endl;
+			//debug("FIXME", << "OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS" << endl;
 
 			//update volume dimensions
 			OmVolume::SetDataDimensions(source_dims);
@@ -547,7 +547,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 	//note the chunk has been edited
 	mEditedLeafChunks.insert(leaf_mip_coord);
 
-	// cout << "OmMipVolume::SetVoxelValue done" << endl;
+	// //debug("FIXME", << "OmMipVolume::SetVoxelValue done" << endl;
 }
 
 #pragma mark
@@ -621,7 +621,7 @@ void OmMipVolume::Build()
 
 	//if source data valid
 	if (!IsSourceValid()) {
-		cout << "OmMipVolume::Build: blank build complete " << endl;
+		//debug("FIXME", << "OmMipVolume::Build: blank build complete " << endl;
 		SetBuildState(MIPVOL_BUILT);
 		return;
 	}
@@ -639,7 +639,7 @@ void OmMipVolume::Build()
 	}
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
-	cout << "OmMipVolume::Build: build complete " << endl;
+	//debug("FIXME", << "OmMipVolume::Build: build complete " << endl;
 }
 
 /*
@@ -647,7 +647,7 @@ void OmMipVolume::Build()
  */
 bool OmMipVolume::BuildVolume()
 {
-	cout << "OmMipVolume::BuildVolume()" << endl;
+	//debug("FIXME", << "OmMipVolume::BuildVolume()" << endl;
 	//init progress bar
 	int prog_count = 0;
 	OmEventManager::
@@ -812,7 +812,7 @@ bool OmMipVolume::ImportSourceData()
 				//get chunk data bbox
 				OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
 				DataBbox chunk_data_bbox = MipCoordToDataBbox(chunk_coord, 0);
-				//cout << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
+				//debug("FIXME", << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
 
 				//read chunk image data from source
 				vtkImageData *p_img_data =
@@ -843,7 +843,7 @@ bool OmMipVolume::ImportSourceData()
 /*
 void
 OmMipVolume::ImportSourceDataSlice() {
-	cout << "OmMipVolume::ImportSourceData()" << endl;
+	//debug("FIXME", << "OmMipVolume::ImportSourceData()" << endl;
 	
 	//dim of leaf coords
 	//Vector3<int> leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
@@ -858,7 +858,7 @@ OmMipVolume::ImportSourceDataSlice() {
 		DataCoord max = DataCoord(leaf_data_dims.x-1,leaf_data_dims.y-1,z);
 		
 		DataBbox chunk_data_bbox = DataBbox(min, max);
-		cout << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
+		//debug("FIXME", << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
 		
 		//read chunk image data from source
 		vtkImageData* p_img_data = om_imagedata_read(GetSourceDirectoryPath(), mSourceFilenameRegexMatches, 
@@ -879,7 +879,7 @@ OmMipVolume::ImportSourceDataSlice() {
  */
 void OmMipVolume::ExportInternalData(string dpath, string fname)
 {
-	cout << "OmMipVolume::Export()" << endl;
+	//debug("FIXME", << "OmMipVolume::Export()" << endl;
 
 	//get leaf data extent
 	DataBbox leaf_data_extent = GetExtent();
@@ -906,7 +906,7 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 				ExportDataFilter(p_chunk_img_data);
 
 				//write to hdf5 file
-				cout << "OmMipVolume::Export:" << chunk_data_bbox << endl;
+				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
 				om_imagedata_write_hdf5(p_chunk_img_data, dpath, fname, leaf_data_extent,
 							chunk_data_bbox, GetBytesPerSample());
 
@@ -929,7 +929,7 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
  */
 template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageData * srcData, int subsampleMode)
 {
-	//cout << "OmMipVolume::SubsampleImageData" << endl;
+	//debug("FIXME", << "OmMipVolume::SubsampleImageData" << endl;
 
 	//get image data dimensions
 	Vector3 < int >src_dims;
@@ -938,7 +938,7 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 	int num_scalar_components = srcData->GetNumberOfScalarComponents();
 
 	//assert proper dims
-	//cout << "OmMipVolume::SubsampleImageData: " << src_dims << endl;
+	//debug("FIXME", << "OmMipVolume::SubsampleImageData: " << src_dims << endl;
 	assert((src_dims.x == src_dims.y) && (src_dims.y == src_dims.z));
 	assert(src_dims.x % 2 == 0);
 

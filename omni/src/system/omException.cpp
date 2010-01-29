@@ -51,7 +51,7 @@ void OmException::Parse(const char *format, va_list args)
 
 void OmException::Log()
 {
-	cout << mName << " " << exceptTypeToString(mType) << ": " << mMessage << endl;
+	//debug("FIXME", << mName << " " << exceptTypeToString(mType) << ": " << mMessage << endl;
 }
 
 string exceptTypeToString(OmExceptType t)

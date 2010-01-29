@@ -55,7 +55,7 @@ const OmPrefItem & OmPreferences::GetItem(const int key, const OmPrefItem::OmPre
 {
 	//check key exists
 	if (!ValidPreference(key)) {
-		cout << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
+		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
 		assert(false);
 	}
 	//get item
@@ -63,8 +63,8 @@ const OmPrefItem & OmPreferences::GetItem(const int key, const OmPrefItem::OmPre
 
 	//check item type
 	if (item.mType != type) {
-		cout << "OmPreferences::GetItem: Preference key: " << key << " has unexpected type." << endl;
-		cout << "OmPreferences::GetItem: Expected key type: " << type << " but found: " << item.mType << endl;
+		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " has unexpected type." << endl;
+		//debug("FIXME", << "OmPreferences::GetItem: Expected key type: " << type << " but found: " << item.mType << endl;
 		assert(false);
 	}
 
@@ -83,7 +83,7 @@ void OmPreferences::RefreshPreference(const int key)
 {
 	//check key exists
 	if (!ValidPreference(key)) {
-		cout << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
+		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
 		assert(false);
 	}
 	//get item

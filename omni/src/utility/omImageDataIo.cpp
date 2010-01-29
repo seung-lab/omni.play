@@ -118,7 +118,7 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 
 	//read from lowerleft (since it writes from lower left)
 	reader->SetFileLowerLeft(1);
-	//cout << reader->GetFileLowerLeft() << endl;
+	//debug("FIXME", << reader->GetFileLowerLeft() << endl;
 	return reader;
 }
 
@@ -246,9 +246,9 @@ vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const
 	extent_translator->SetOutput(data);
 	extent_translator->Update();
 
-	//      cout << "UPDATE" << endl;
-	//      cout << dpath << vtk_file_pattern << endl;
-	//cout << "om_imagedata_read" << data->GetScalarSize() << endl;
+	//      //debug("FIXME", << "UPDATE" << endl;
+	//      //debug("FIXME", << dpath << vtk_file_pattern << endl;
+	//debug("FIXME", << "om_imagedata_read" << data->GetScalarSize() << endl;
 
 	//delete all but image
 	p_reader->Delete();
@@ -455,9 +455,9 @@ om_imagedata_get_dims_vtk(string dpath, string fpattern) {
 	//get sample information
 	//mSourceBytesPerSample = mImageData->GetScalarSize();
 	
-	//cout << mSourceDataExtent << endl;
-	//cout << mSamplesPerVoxel << endl;
-	//cout << mBytesPerSample << endl;
+	//debug("FIXME", << mSourceDataExtent << endl;
+	//debug("FIXME", << mSamplesPerVoxel << endl;
+	//debug("FIXME", << mBytesPerSample << endl;
 	
 	//delete image and reader
 	data->Delete();
@@ -529,9 +529,9 @@ Vector3 < int > om_imagedata_get_dims_vtk(string dpath, const list < string > &f
 	//get sample information
 	//mSourceBytesPerSample = mImageData->GetScalarSize();
 
-	//cout << mSourceDataExtent << endl;
-	//cout << mSamplesPerVoxel << endl;
-	//cout << mBytesPerSample << endl;
+	//debug("FIXME", << mSourceDataExtent << endl;
+	//debug("FIXME", << mSamplesPerVoxel << endl;
+	//debug("FIXME", << mBytesPerSample << endl;
 
 	//delete image and reader
 	data->Delete();
@@ -596,22 +596,22 @@ void printImageData(vtkImageData * data)
 			for (int x = extent[0]; x <= extent[1]; ++x) {
 
 				if (num_components == 1) {
-					cout << data->GetScalarComponentAsFloat(x, y, z, 0) << " ";
+					//debug("FIXME", << data->GetScalarComponentAsFloat(x, y, z, 0) << " ";
 				} else {
-					cout << "( ";
-					for (int i = 0; i < num_components; ++i)
-						cout << data->GetScalarComponentAsFloat(x, y, z, i) << " ";
-					cout << ")";
+					//debug("FIXME", << "( ";
+					//for (int i = 0; i < num_components; ++i)
+						//debug("FIXME", << data->GetScalarComponentAsFloat(x, y, z, i) << " ";
+					//debug("FIXME", << ")";
 				}
 
 			}
 
 			//end of x line
-			cout << endl;
+			//debug("FIXME", << endl;
 		}
 
 		//end of y sheet
-		cout << endl;
+		//debug("FIXME", << endl;
 	}
 }
 
@@ -672,10 +672,10 @@ void *copyImageData(vtkImageData * srcData, const DataBbox & srcCopyBbox)
 	int bytes_per_pixel = scalar_size * num_scalar_components;
 
 	//assert that src can contain copy extent
-	//cout << srcCopyBbox << endl;
+	//debug("FIXME", << srcCopyBbox << endl;
 	//DataBbox temp;
 	//setAxisAlignedBoundingBoxFromVtkExtent(src_data_extent, temp);
-	//cout << temp << endl;
+	//debug("FIXME", << temp << endl;
 	assert((src_copy_extent[1] <= src_data_extent[1]) &&
 	       (src_copy_extent[3] <= src_data_extent[3]) && (src_copy_extent[5] <= src_data_extent[5]));
 
@@ -818,9 +818,9 @@ void copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * s
 	src_intersection.offset(-srcOffset);
 
 	/*
-	   cout << "copyIntersectedImageDataFromOffset:" << endl;
-	   cout << dst_intersection << endl;
-	   cout << src_intersection << endl;
+	   //debug("FIXME", << "copyIntersectedImageDataFromOffset:" << endl;
+	   //debug("FIXME", << dst_intersection << endl;
+	   //debug("FIXME", << src_intersection << endl;
 	 */
 
 	//copy intersected data
@@ -881,7 +881,7 @@ void om_imagedata_regex_match_dir_contents(string dpath, string regexStr, list <
 	try {
 		re.assign(regexStr);
 	} catch(boost::regex_error & e) {
-		cout << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
+		//debug("FIXME", << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
 		return;
 	}
 
@@ -890,7 +890,7 @@ void om_imagedata_regex_match_dir_contents(string dpath, string regexStr, list <
 
 	//if does not exist or not a directory
 	if (!bfs::exists(dpath_bfs) || !bfs::is_directory(dpath_bfs)) {
-		//cout << "om_imagedata_regex_contents: source directory does not exist" << endl;
+		//debug("FIXME", << "om_imagedata_regex_contents: source directory does not exist" << endl;
 		return;
 	}
 	//for all contents
@@ -949,7 +949,7 @@ void om_imagedata_regex_match_dir_contents_sorted(string dpath, string regexStr,
 	try {
 		re.assign(regexStr);
 	} catch(boost::regex_error & e) {
-		cout << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
+		//debug("FIXME", << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
 		return;
 	}
 
@@ -958,7 +958,7 @@ void om_imagedata_regex_match_dir_contents_sorted(string dpath, string regexStr,
 
 	//if does not exist or not a directory
 	if (!bfs::exists(dpath_bfs) || !bfs::is_directory(dpath_bfs)) {
-		cout << "om_imagedata_regex_match_dir_contents_sorted: source directory does not exist" << endl;
+		//debug("FIXME", << "om_imagedata_regex_match_dir_contents_sorted: source directory does not exist" << endl;
 		return;
 	}
 	//create a set that sorts by natrual string comparison
@@ -1007,7 +1007,7 @@ void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list 
 
 	//create output directory
 	if (!bfs::create_directories(bfs::path(symlinkDpath))) {
-		cout << "om_imagedata_create_symlink_dir: could not create temp dirctory" << endl;
+		//debug("FIXME", << "om_imagedata_create_symlink_dir: could not create temp dirctory" << endl;
 		assert(false);
 	}
 	//for all filenames in the list
@@ -1021,7 +1021,7 @@ void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list 
 
 		//check real path exists
 		if (!bfs::exists(bfs::path(src_fpath))) {
-			cout << "om_imagedata_create_symlink_dir: source not found " << src_fpath << endl;
+			//debug("FIXME", << "om_imagedata_create_symlink_dir: source not found " << src_fpath << endl;
 			assert(false);
 		}
 		//make symlink path
@@ -1030,7 +1030,7 @@ void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list 
 		//create symlink from symlink_path to src_path
 		create_symlink(bfs::path(src_fpath), bfs::path(symlink_fpath));
 		if (!bfs::exists(bfs::path(symlink_fpath))) {
-			cout << "om_imagedata_create_symlink_dir: could not create symlink: " << symlink_fpath << endl;
+			//debug("FIXME", << "om_imagedata_create_symlink_dir: could not create symlink: " << symlink_fpath << endl;
 			assert(false);
 		}
 	}
@@ -1044,7 +1044,7 @@ void om_imagedata_remove_symlink_dir(string symlink_dpath)
 
 		//attemp to remove temp directory
 		if (!bfs::remove_all(bfs::path(symlink_dpath))) {
-			cout << "om_imagedata_remove_symlink_dir: could not remove temp dirctory" << endl;
+			//debug("FIXME", << "om_imagedata_remove_symlink_dir: could not remove temp dirctory" << endl;
 			assert(false);
 		}
 

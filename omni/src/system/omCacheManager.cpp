@@ -69,7 +69,7 @@ void OmCacheManager::Delete()
  */
 void OmCacheManager::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
-	cout << "OmCacheManager::PreferenceChangeEvent" << endl;
+	//debug("FIXME", << "OmCacheManager::PreferenceChangeEvent" << endl;
 	switch (event->GetPreference()) {
 
 	case OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT:
@@ -192,7 +192,7 @@ void *OmCacheManager::CleanOne(void *in)
 {
 	OmCacheBase *base = (OmCacheBase *) in;
 
-	cout << "in......................................: " << base << endl;
+	//debug("FIXME", << "in......................................: " << base << endl;
 	base->RemoveOldest();
 	pthread_mutex_lock(&Instance()->mCacheMapMutex);
 	Instance()->mThreadCount--;

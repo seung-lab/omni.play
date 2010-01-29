@@ -96,26 +96,26 @@ void GLview::setMipVolume(OmMipVolume & vol, OmId chan_id)
 	mipvol = &vol;
 	channel_id = chan_id;
 	hasbeenset = true;
-	cout << "hasbeenset: " << hasbeenset << endl;
+	//debug("FIXME", << "hasbeenset: " << hasbeenset << endl;
 
 	tileLength = mipvol->GetChunkDimension();
-	cout << "tile length: " << tileLength << endl;
+	//debug("FIXME", << "tile length: " << tileLength << endl;
 
 	//      volume_extent = mipvol->GetDataExtent();
 	volume_extent = mipvol->GetExtent();
-	cout << "volume extent: " << volume_extent << endl;
+	//debug("FIXME", << "volume extent: " << volume_extent << endl;
 
 	max_level = (mipvol->GetRootMipLevel()) - 1;
-	cout << "max level: " << max_level << endl;
+	//debug("FIXME", << "max level: " << max_level << endl;
 
 	//      mipvol->ExtractDataProperties(mSamplesPerVoxel, mBytesPerSample);
-	//      cout << "extracted data properties: " << endl;
+	//      //debug("FIXME", << "extracted data properties: " << endl;
 
 	//all data has 1 sample per voxel
 	mSamplesPerVoxel = 1;
 	mBytesPerSample = mipvol->GetBytesPerSample();
 
-	cout << "mipvolume set" << endl;
+	//debug("FIXME", << "mipvolume set" << endl;
 
 	if (ortho == "xy") {
 		xz_pos_start = Vector2 < int >(-100, 0);
@@ -155,22 +155,22 @@ void GLview::initializeGL()
 	view->screen.h = size().height();
 
 	// use width and height to calculate center
-	if (DEBUG)
-		cout << "view->screen.w: " << view->screen.w << "     view->screen.h" << view->screen.h << endl;
+	
+		//debug("FIXME", << "view->screen.w: " << view->screen.w << "     view->screen.h" << view->screen.h << endl;
 
 	int center_w = (view->screen.w) / 2;
 	int center_h = (view->screen.h) / 2;
 
-	if (DEBUG)
-		cout << "half view->screen.w: " << center_w << "     view->screen.h: " << center_h << endl;
+	
+		//debug("FIXME", << "half view->screen.w: " << center_w << "     view->screen.h: " << center_h << endl;
 
 	view->shadow_camera = view->screen;
 	update_viewport();
 
 	// Have omMipVolume *mipVol
 	// get omMipChunk (0,0,0,0)
-	if (DEBUG)
-		cout << "hasbeenset: " << hasbeenset << endl;
+	
+		//debug("FIXME", << "hasbeenset: " << hasbeenset << endl;
 
 	extract_data_initial();
 }
@@ -182,7 +182,7 @@ void GLview::extract_data()
 
 void GLview::extract_data(int desired_depth)
 {
-	//      cout << "CALLING EXTRACT_DATA WITH DEPTH = " << desired_depth << "AND ORTHO = " << ortho << endl;
+	//      //debug("FIXME", << "CALLING EXTRACT_DATA WITH DEPTH = " << desired_depth << "AND ORTHO = " << ortho << endl;
 	// viewport_bbox tells us current viewport
 	// so, let's extract all the MipCoords that are contained within the current viewport
 
@@ -214,10 +214,10 @@ void GLview::extract_data(int desired_depth)
 	data_to_retrieve = merge_bounding_boxes(flat_data);
 	if (DEBUG) {
 
-		cout << "LEVEL = " << level << endl;
-		cout << "viewport = " << viewport_bbox << endl;
-		cout << "flat_data = " << flat_data << endl;
-		cout << "data_to_retrieve = " << data_to_retrieve << endl;
+		//debug("FIXME", << "LEVEL = " << level << endl;
+		//debug("FIXME", << "viewport = " << viewport_bbox << endl;
+		//debug("FIXME", << "flat_data = " << flat_data << endl;
+		//debug("FIXME", << "data_to_retrieve = " << data_to_retrieve << endl;
 	}
 
 	DataBbox adjusted_data_to_retrieve;
@@ -243,26 +243,27 @@ void GLview::extract_data(int desired_depth)
 										 data_to_retrieve.getMax().y,
 										 data_to_retrieve.getMax().x));
 
-	if (DEBUG)
-		cout << "adjusted_data_to_retrieve = " << adjusted_data_to_retrieve << endl;
+	
+		//debug("FIXME", << "adjusted_data_to_retrieve = " << adjusted_data_to_retrieve << endl;
 
 	// STEP 5.  Figure out start and finish OmMipChunkCoords.
+
 	OmMipChunkCoord start_mipcoord;
 	OmMipChunkCoord end_mipcoord;
 
 	int mylevel;
+
 	if (level < 0)
 		mylevel = 0;
 	else if (level == 0)
 		mylevel = level;
-	else
-		mylevel = 0;
+	else mylevel = 0;
 
 	start_mipcoord = mipvol->DataToMipCoord(adjusted_data_to_retrieve.getMin(), mylevel);
 	end_mipcoord = mipvol->DataToMipCoord(adjusted_data_to_retrieve.getMax(), mylevel);
 
-	if (DEBUG)
-		cout << "find mipcoords " << start_mipcoord << " -----> " << end_mipcoord << endl;
+	
+		//debug("FIXME", << "find mipcoords " << start_mipcoord << " -----> " << end_mipcoord << endl;
 
 	// STEP 5.  Check if slices are already in mastermap, if not then load them in
 	if (ortho == "xy") {
@@ -273,21 +274,21 @@ void GLview::extract_data(int desired_depth)
 				for (int i = 0; i <= 0; i++) {
 
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//(OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
 								 (OmMipChunkCoord
 								  (mylevel, x, y, end_mipcoord.get < 3 > ())));
-						//                              cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
-						//                              cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
+						//                              //debug("FIXME", << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
+						//                              //debug("FIXME", << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 
 						int actual_depth = (desired_depth + i) % tileLength;
 
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -301,25 +302,25 @@ void GLview::extract_data(int desired_depth)
 							       OmMipChunkCoord(mylevel, x, y,
 									       end_mipcoord.get < 3 > ()),
 							       desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "inserted " <<
+							//(OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
 					}
 
-					else if (DEBUG) {
+					else  {
 
-						cout << "DEPTH DEPTH DEPTH ORTHO = " << desired_depth +
-						    i << " " << ortho << endl;
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						//debug("FIXME", << "DEPTH DEPTH DEPTH ORTHO = " << desired_depth +
+						//i << " " << ortho << endl;
+						//debug("FIXME", << "mastermap does contain " <<
+						//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 					}
 				}
 
@@ -335,21 +336,21 @@ void GLview::extract_data(int desired_depth)
 				for (int i = 0; i <= 0; i++) {
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
 
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
 								 (OmMipChunkCoord
 								  (mylevel, x, end_mipcoord.get < 2 > (), y)));
-						//                              cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
-						//                              cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
+						//                              //debug("FIXME", << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
+						//                              //debug("FIXME", << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 
 						int actual_depth = (desired_depth + i) % tileLength;
 
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -362,22 +363,14 @@ void GLview::extract_data(int desired_depth)
 						    setTexture(data, tile_dims,
 							       OmMipChunkCoord(mylevel, x, end_mipcoord.get < 2 > (),
 									       y), desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
-						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
-
-					} else if (DEBUG)
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
-
+					}	
 				}
 			}
 		}
@@ -390,9 +383,9 @@ void GLview::extract_data(int desired_depth)
 				for (int i = 0; i <= 0; i++) {
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
 
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
@@ -400,8 +393,8 @@ void GLview::extract_data(int desired_depth)
 								  (mylevel, end_mipcoord.get < 1 > (), y, x)));
 
 						int actual_depth = (desired_depth + i) % tileLength;
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -414,21 +407,20 @@ void GLview::extract_data(int desired_depth)
 						    setTexture(data, tile_dims,
 							       OmMipChunkCoord(mylevel, end_mipcoord.get < 1 > (), y,
 									       x), desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+							
+							//debug("FIXME", << "inserted " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
-
-					} else if (DEBUG)
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+					} //else
+						//debug("FIXME", << "mastermap does contain " <<
+						//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 				}
 			}
@@ -472,7 +464,7 @@ void GLview::extract_data_initial()
 
 	//              double fake_level = i * 1.0;    
 	//              
-	//              cout << "level: " << fake_level << endl;
+	//              //debug("FIXME", << "level: " << fake_level << endl;
 
 	// STEP 1.  Figure out new bounding box for data retrieval
 	DataBbox data_to_retrieve;
@@ -480,12 +472,12 @@ void GLview::extract_data_initial()
 	//              data_to_retrieve = merge_bounding_boxes(flat_data);
 	//      else
 	data_to_retrieve = merge_bounding_boxes(flat_data);
-	if (DEBUG) {
+	 {
 
-		cout << "LEVEL = " << level << endl;
-		cout << "viewport = " << viewport_bbox << endl;
-		cout << "flat_data = " << flat_data << endl;
-		cout << "data_to_retrieve = " << data_to_retrieve << endl;
+		//debug("FIXME", << "LEVEL = " << level << endl;
+		//debug("FIXME", << "viewport = " << viewport_bbox << endl;
+		//debug("FIXME", << "flat_data = " << flat_data << endl;
+		//debug("FIXME", << "data_to_retrieve = " << data_to_retrieve << endl;
 	}
 
 	DataBbox adjusted_data_to_retrieve;
@@ -511,8 +503,8 @@ void GLview::extract_data_initial()
 										 data_to_retrieve.getMax().y,
 										 data_to_retrieve.getMax().x));
 
-	if (DEBUG)
-		cout << "adjusted_data_to_retrieve = " << adjusted_data_to_retrieve << endl;
+	
+		//debug("FIXME", << "adjusted_data_to_retrieve = " << adjusted_data_to_retrieve << endl;
 
 	// STEP 5.  Figure out start and finish OmMipChunkCoords.
 	OmMipChunkCoord start_mipcoord;
@@ -529,8 +521,8 @@ void GLview::extract_data_initial()
 	start_mipcoord = mipvol->DataToMipCoord(adjusted_data_to_retrieve.getMin(), mylevel);
 	end_mipcoord = mipvol->DataToMipCoord(adjusted_data_to_retrieve.getMax(), mylevel);
 
-	if (DEBUG)
-		cout << "find mipcoords " << start_mipcoord << " -----> " << end_mipcoord << endl;
+	
+		//debug("FIXME", << "find mipcoords " << start_mipcoord << " -----> " << end_mipcoord << endl;
 
 	// STEP 5.  Check if slices are already in mastermap, if not then load them in
 	if (ortho == "xy") {
@@ -541,21 +533,21 @@ void GLview::extract_data_initial()
 				for (int i = 0; i <= 0; i++) {
 
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
 								 (OmMipChunkCoord
 								  (mylevel, x, y, end_mipcoord.get < 3 > ())));
-						//                              cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
-						//                              cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
+						//                              //debug("FIXME", << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
+						//                              //debug("FIXME", << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 
 						int actual_depth = (desired_depth + i) % tileLength;
 
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -569,24 +561,24 @@ void GLview::extract_data_initial()
 							       OmMipChunkCoord(mylevel, x, y,
 									       end_mipcoord.get < 3 > ()),
 							       desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "inserted " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
 					}
 
-					else if (DEBUG) {
+					else  {
 
-						cout << "DEPTH DEPTH DEPTH = " << desired_depth + i << endl;
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						//debug("FIXME", << "DEPTH DEPTH DEPTH = " << desired_depth + i << endl;
+						//debug("FIXME", << "mastermap does contain " <<
+						//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 					}
 				}
 
@@ -602,21 +594,21 @@ void GLview::extract_data_initial()
 				for (int i = 0; i <= 0; i++) {
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
 
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
 								 (OmMipChunkCoord
 								  (mylevel, x, end_mipcoord.get < 2 > (), y)));
-						//                              cout << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
-						//                              cout << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
+						//                              //debug("FIXME", << "self coord of the chunk: " << my_chunk->mSelfCoord << endl;
+						//                              //debug("FIXME", << "location: " << mipvol->ChunkDirectoryPath(mip_coord) << endl;
 
 						int actual_depth = (desired_depth + i) % tileLength;
 
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -629,21 +621,21 @@ void GLview::extract_data_initial()
 						    setTexture(data, tile_dims,
 							       OmMipChunkCoord(mylevel, x, end_mipcoord.get < 2 > (),
 									       y), desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "inserted " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
 
-					} else if (DEBUG)
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+					} //else 
+						//debug("FIXME", << "mastermap does contain " <<
+						//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 				}
 			}
@@ -657,9 +649,9 @@ void GLview::extract_data_initial()
 				for (int i = 0; i <= 0; i++) {
 					if (!(mastermap.contains(OmMipChunkCoord(level, x, y, desired_depth + i)))) {
 
-						if (DEBUG)
-							cout << "mastermap does not contain " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "mastermap does not contain " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 						shared_ptr < OmMipChunk > my_chunk = shared_ptr < OmMipChunk > ();
 						mipvol->GetChunk(my_chunk,
@@ -667,8 +659,8 @@ void GLview::extract_data_initial()
 								  (mylevel, end_mipcoord.get < 1 > (), y, x)));
 
 						int actual_depth = (desired_depth + i) % tileLength;
-						if (DEBUG)
-							cout << "actual_depth = " << actual_depth << endl;
+						
+							//debug("FIXME", << "actual_depth = " << actual_depth << endl;
 
 						Vector2 < int >tile_dims;
 						void *void_data;
@@ -682,21 +674,21 @@ void GLview::extract_data_initial()
 							       (OmMipChunkCoord
 								(mylevel, end_mipcoord.get < 1 > (), y, x)),
 							       desired_depth + i);
-						if (DEBUG)
-							cout << "tile dims: " << tile_dims << endl;
+						
+							//debug("FIXME", << "tile dims: " << tile_dims << endl;
 						delete data;
 
 						mastermap.insert((OmMipChunkCoord(level, x, y, desired_depth + i)),
 								 tex_num);
 
-						if (DEBUG)
-							cout << "inserted " <<
-							    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+						
+							//debug("FIXME", << "inserted " <<
+							//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 						//                              mastermap.insert(tex_num, OmMipChunkCoord(mip_coord.get<0>(), mip_coord.get<1>(), mip_coord.get<2>(), depth));                          
 
-					} else if (DEBUG)
-						cout << "mastermap does contain " <<
-						    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
+					} //else 
+						//debug("FIXME", << "mastermap does contain " <<
+						//    (OmMipChunkCoord(level, x, y, desired_depth + i)) << endl;
 
 				}
 			}
@@ -742,8 +734,8 @@ int GLview::setTexture(unsigned char *imageData, Vector2 < int >dims, const OmMi
 		setMyColorMap(imageData, dims, mipCoord, depth);
 		//glTexImage2D (GL_TEXTURE_2D, 0, GL_LUMINANCE, dims.x, dims.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, imageData);
 	}
-	if (DEBUG)
-		cout << "texture set. id = " << texture << endl;
+	
+		//debug("FIXME", << "texture set. id = " << texture << endl;
 
 	if (ortho == "yz") {
 		glMatrixMode(GL_TEXTURE);
@@ -761,8 +753,8 @@ int GLview::setTexture(unsigned char *imageData, Vector2 < int >dims, const OmMi
 	//      
 	//      Tile &the_tile = i.value();
 	//      the_tile.texname = texture;     
-	//      cout << "image source: " << the_tile.source << endl;
-	//      cout << "texture name: " << texture << endl;
+	//      //debug("FIXME", << "image source: " << the_tile.source << endl;
+	//      //debug("FIXME", << "texture name: " << texture << endl;
 }
 
 void GLview::resizeGL(int width, int height)
@@ -817,7 +809,7 @@ void GLview::resizeGL(int width, int height)
 //      
 //      
 //      if(DEBUG)
-//              cout << "DEPTH = " << depth << endl;
+//              //debug("FIXME", << "DEPTH = " << depth << endl;
 //      
 //      
 //      glMatrixMode(GL_MODELVIEW);
@@ -831,16 +823,16 @@ void GLview::resizeGL(int width, int height)
 //      glLoadIdentity();
 //      glOrtho(0, view->screen.w, 0, view->screen.h, near, far);
 //      
-//      //      cout << "view->screen: (" << view->screen.x << ", " << view->screen.y << ")   "  << "w: " << view->screen.w << "   h: " << view->screen.h << endl;
-//      //      cout << "view->camera: (" << view->world_camera.x << ", " << view->world_camera.y << ")   "  << "w: " << view->world_camera.w << "   h: " << view->world_camera.h << endl;
+//      //      //debug("FIXME", << "view->screen: (" << view->screen.x << ", " << view->screen.y << ")   "  << "w: " << view->screen.w << "   h: " << view->screen.h << endl;
+//      //      //debug("FIXME", << "view->camera: (" << view->world_camera.x << ", " << view->world_camera.y << ")   "  << "w: " << view->world_camera.w << "   h: " << view->world_camera.h << endl;
 //      
 //      if(DEBUG) {
 //              
-//              cout << "level = " << level << endl;
-//              cout << "depth = " << depth << endl;
+//              //debug("FIXME", << "level = " << level << endl;
+//              //debug("FIXME", << "depth = " << depth << endl;
 //      }
 //      
-//      //      cout << "viewport = " << viewport_bbox << endl;
+//      //      //debug("FIXME", << "viewport = " << viewport_bbox << endl;
 //
 //      extract_data();
 //}
@@ -861,14 +853,14 @@ void GLview::paintEvent(QPaintEvent * event)
 		view->world_camera.y,	/* top */
 		near, far);
 
-	if (DEBUG)
-		cout << "DEPTH = " << depth << endl;
+	
+		//debug("FIXME", << "DEPTH = " << depth << endl;
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//      cout << "ORTHO: " << ortho << endl;
-	//      cout << "viewport: " << viewport_bbox << endl;
+	//      //debug("FIXME", << "ORTHO: " << ortho << endl;
+	//      //debug("FIXME", << "viewport: " << viewport_bbox << endl;
 	//      
 
 	extract_data();
@@ -880,15 +872,15 @@ void GLview::paintEvent(QPaintEvent * event)
 	glLoadIdentity();
 	glOrtho(0, view->screen.w, 0, view->screen.h, near, far);
 
-	//      cout << "view->screen: (" << view->screen.x << ", " << view->screen.y << ")   "  << "w: " << view->screen.w << "   h: " << view->screen.h << endl;
-	//      cout << "view->camera: (" << view->world_camera.x << ", " << view->world_camera.y << ")   "  << "w: " << view->world_camera.w << "   h: " << view->world_camera.h << endl;
+	//      //debug("FIXME", << "view->screen: (" << view->screen.x << ", " << view->screen.y << ")   "  << "w: " << view->screen.w << "   h: " << view->screen.h << endl;
+	//      //debug("FIXME", << "view->camera: (" << view->world_camera.x << ", " << view->world_camera.y << ")   "  << "w: " << view->world_camera.w << "   h: " << view->world_camera.h << endl;
 
-	if (DEBUG) {
+	 {
 
-		cout << "level = " << level << endl;
-		cout << "depth = " << depth << endl;
+		//debug("FIXME", << "level = " << level << endl;
+		//debug("FIXME", << "depth = " << depth << endl;
 	}
-	//      cout << "viewport = " << viewport_bbox << endl;
+	//      //debug("FIXME", << "viewport = " << viewport_bbox << endl;
 
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
@@ -980,15 +972,15 @@ void GLview::draw()
 		i.next();
 
 		if (i.key().get < 0 > () == level) {
-			// cout << i.key() << ": " << i.value() << endl;
+			// //debug("FIXME", << i.key() << ": " << i.value() << endl;
 
 			//                              glBlendFunc (GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 			glBindTexture(GL_TEXTURE_2D, i.value());
 			glBegin(GL_QUADS);
 
-			//      cout << "tile width: " << the_tile.width << endl;
-			//      cout << "tile height: " << the_tile.height << endl;
+			//      //debug("FIXME", << "tile width: " << the_tile.width << endl;
+			//      //debug("FIXME", << "tile height: " << the_tile.height << endl;
 
 			//t.get<N>()
 			// know coordinates are (0,0,0,1)
@@ -1180,9 +1172,9 @@ void GLview::view_zoom(int future_level)
 
 		level = level + future_level;
 
-		if (DEBUG)
-			cout << "view->camera: (" << view->shadow_camera.x << ", " << view->shadow_camera.
-			    y << ")   " << "w: " << view->shadow_camera.w << "   h: " << view->shadow_camera.h << endl;
+		
+			//debug("FIXME", << "view->camera: (" << view->shadow_camera.x << ", " << view->shadow_camera.
+			//    y << ")   " << "w: " << view->shadow_camera.w << "   h: " << view->shadow_camera.h << endl;
 
 	} else if ((level + future_level) < level) {
 		// ZOOMING IN
@@ -1202,9 +1194,9 @@ void GLview::view_zoom(int future_level)
 
 		level = level + future_level;
 
-		if (DEBUG)
-			cout << "view->camera: (" << view->shadow_camera.x << ", " << view->shadow_camera.
-			    y << ")   " << "w: " << view->shadow_camera.w << "   h: " << view->shadow_camera.h << endl;
+		
+			//debug("FIXME", << "view->camera: (" << view->shadow_camera.x << ", " << view->shadow_camera.
+			//    y << ")   " << "w: " << view->shadow_camera.w << "   h: " << view->shadow_camera.h << endl;
 
 	}
 
@@ -1221,7 +1213,7 @@ void GLview::view_zoom(int future_level)
 
 void GLview::view_scrub(int future_depth)
 {
-	//      cout << "depth + " << future_depth << " in " << ortho << " VIEW" << endl;
+	//      //debug("FIXME", << "depth + " << future_depth << " in " << ortho << " VIEW" << endl;
 
 	if (future_depth == 1) {
 		near = near - 2;
@@ -1413,8 +1405,8 @@ DataBbox GLview::merge_bounding_boxes(DataBbox desired_data)
 
 DataBbox GLview::merge_bounding_boxes(DataBbox desired_data, double desired_level)
 {
-	if (DEBUG)
-		cout << "merging bounding boxes" << endl;
+	
+		//debug("FIXME", << "merging bounding boxes" << endl;
 
 	DataBbox scaled_viewport;
 
@@ -1462,14 +1454,14 @@ DataBbox GLview::merge_bounding_boxes(DataBbox desired_data, double desired_leve
 void GLview::setMyColorMap(unsigned char *imageData, Vector2 < int >dims, const OmMipChunkCoord & mipCoord, int depth)
 {
 	DataBbox data_bbox = mipvol->MipCoordToDataBbox(mipCoord, 0);
-	//      cout << "mip coord = " << mipCoord << endl;
-	//      cout << "data bbox = " << data_bbox << endl;
+	//      //debug("FIXME", << "mip coord = " << mipCoord << endl;
+	//      //debug("FIXME", << "data bbox = " << data_bbox << endl;
 	int my_depth = depth;
 
 	unsigned char *data = new unsigned char[dims.x * dims.y * 4];
 
-	//      cout << "LENGTH of data = " << dims.x*dims.y*4 << endl;
-	//      cout << "SIZE of data_bbox = " << data_bbox.getDimensions() << endl;
+	//      //debug("FIXME", << "LENGTH of data = " << dims.x*dims.y*4 << endl;
+	//      //debug("FIXME", << "SIZE of data_bbox = " << data_bbox.getDimensions() << endl;
 	////////// just a try: need data coords
 	// so for each coord in the DataBbox
 	int ctr = 0;
@@ -1496,20 +1488,20 @@ void GLview::setMyColorMap(unsigned char *imageData, Vector2 < int >dims, const 
 		for (int y = y_min; y <= y_max; y++) {
 			for (int x = x_min; x <= x_max; x++) {
 
-				//                              cout << "volume_id = " << volume_id << endl;
-				//                              cout << "seg_id = " << my_id << endl;
+				//                              //debug("FIXME", << "volume_id = " << volume_id << endl;
+				//                              //debug("FIXME", << "seg_id = " << my_id << endl;
 				OmSegmentation & current_seg = OmVolume::GetSegmentation(segmentation_id);
-				//                              cout << "before error" << endl;
-				//                              cout << "vector = " << Vector3<int>(x,y,z) << endl;
+				//                              //debug("FIXME", << "before error" << endl;
+				//                              //debug("FIXME", << "vector = " << Vector3<int>(x,y,z) << endl;
 				uint32_t id = current_seg.GetVoxelSegmentId(DataCoord(x, y, z));
-				//                              cout << "seg object id = " << id << endl;
+				//                              //debug("FIXME", << "seg object id = " << id << endl;
 				QColor newcolor;
 				if (id == 0) {
 
 					// newcolor = qRgba(0,0,0,0);
 
 					if (mSamplesPerVoxel == 1) {
-						// cout << "msamplesPerVoxel == 1" << endl;
+						// //debug("FIXME", << "msamplesPerVoxel == 1" << endl;
 
 						data[ctr] = (unsigned int)imageData[newctr];
 						data[ctr + 1] = (unsigned int)imageData[newctr];
@@ -1518,7 +1510,7 @@ void GLview::setMyColorMap(unsigned char *imageData, Vector2 < int >dims, const 
 
 						//                                              glTexImage2D (GL_TEXTURE_2D, 0, GL_LUMINANCE, dims.x, dims.y, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, imageData);
 					} else if (mSamplesPerVoxel == 3) {
-						// cout << "msamplesPerVoxel == 3" << endl;
+						// //debug("FIXME", << "msamplesPerVoxel == 3" << endl;
 						data[ctr] = imageData[ctr];
 						data[ctr + 1] = imageData[ctr + 1];
 						data[ctr + 2] = imageData[ctr + 2];

@@ -141,7 +141,7 @@ void OmMipChunk::OpenForWrite()
 	//read from project data
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
 	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-	//cout << "BPS: " << GetBytesPerSample() << endl;
+	//debug("FIXME", << "BPS: " << GetBytesPerSample() << endl;
 
 	//set this image data
 	SetImageData(data);
@@ -194,7 +194,7 @@ void OmMipChunk::Close()
 
 	//delete image data
 	mpImageData->Delete();
-	cout << "mpImageData: " << mpImageData << endl;
+	//debug("FIXME", << "mpImageData: " << mpImageData << endl;
 	mpImageData = NULL;
 }
 
@@ -245,7 +245,7 @@ void OmMipChunk::ReadVolumeData()
 	}
 
 	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-	//cout << "BPS: " << GetBytesPerSample() << endl;
+	//debug("FIXME", << "BPS: " << GetBytesPerSample() << endl;
 
 	//set this image data
 	SetImageData(data);
@@ -318,7 +318,7 @@ void OmMipChunk::ClearModifiedVoxelValues()
  */
 void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
-	//cout << "in OmMipChunk::SetVoxelValue" << endl;
+	//debug("FIXME", << "in OmMipChunk::SetVoxelValue" << endl;
 
 	//assert valid
 	assert(ContainsVoxel(voxel));
@@ -347,7 +347,7 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 		break;
 	default:
 		//assert(false && ""What?! Data must be 1 or 4 bytes large");
-		cout << "What?! Data must be 1 or 4 bytes large, not " << mBytesPerSample << endl;
+		//debug("FIXME", << "What?! Data must be 1 or 4 bytes large, not " << mBytesPerSample << endl;
 		break;
 	}
 
@@ -710,7 +710,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
  */
 vtkImageData *OmMipChunk::GetMeshImageData()
 {
-	//cout << "OmMipChunk::GetMeshImageData: " << mCoordinate << endl;
+	//debug("FIXME", << "OmMipChunk::GetMeshImageData: " << mCoordinate << endl;
 
 	DataCoord data_dims;
 	mpImageData->GetDimensions(data_dims.array);
@@ -867,8 +867,8 @@ ostream & operator<<(ostream & out, const OmMipChunk & mc)
 
 	out << (OmDataVolume &) mc;
 
-	cout << "Root: " << mc.IsRoot() << "\n";
-	cout << "Leaf: " << mc.IsLeaf() << "\n";
+	//debug("FIXME", << "Root: " << mc.IsRoot() << "\n";
+	//debug("FIXME", << "Leaf: " << mc.IsLeaf() << "\n";
 	out << "Normalized Extent: " << mc.mNormExtent << "\n";
 
 	return out;

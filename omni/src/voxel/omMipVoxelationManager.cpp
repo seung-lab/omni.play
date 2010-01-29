@@ -172,7 +172,7 @@ OmMipVoxelation *OmMipVoxelationManager::CreateMipVoxelation(const OmMipSegmentD
 void OmMipVoxelationManager::RefreshNeighboringVoxels(const DataCoord & rVox, OmMipVoxelation & rVoxelation)
 {
 
-	//cout << "OmMipVoxelationManager::RefreshNeighboringVoxels:" << rVox << endl;
+	//debug("FIXME", << "OmMipVoxelationManager::RefreshNeighboringVoxels:" << rVox << endl;
 
 	DataCoord neighbor_coord;
 	for (int z = -1; z <= 1; ++z)
@@ -194,7 +194,7 @@ void OmMipVoxelationManager::RefreshNeighboringVoxels(const DataCoord & rVox, Om
 
 				//if boundary voxel
 				if (IsBoundaryVoxel(neighbor_coord)) {
-					//cout << "OmMipVoxelationManager::RefreshNeighboringVoxels: " << neighbor_coord << " is boundary" << endl;
+					//debug("FIXME", << "OmMipVoxelationManager::RefreshNeighboringVoxels: " << neighbor_coord << " is boundary" << endl;
 					//add to voxelation
 					rVoxelation.AddVoxel(neighbor_coord);
 				}
@@ -215,7 +215,7 @@ void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
 					 const SEGMENT_DATA_TYPE old_val, const SEGMENT_DATA_TYPE new_val)
 {
 
-	//cout << "OmMipVoxelationManager::UpdateVoxel: " << rVox << " old: " << old_val << " new:" << new_val << endl;
+	//debug("FIXME", << "OmMipVoxelationManager::UpdateVoxel: " << rVox << " old: " << old_val << " new:" << new_val << endl;
 
 	//determine which leaf mip chunk the voxel is in
 	OmMipChunkCoord mip_chunk_coord = mpMipVolume->DataToMipCoord(rVox, 0);

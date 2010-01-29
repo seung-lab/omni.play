@@ -207,7 +207,7 @@ void OmMipChunkMesher::BuildMeshesLoop()
 
 		//get mesh coordiante
 		OmMipMeshCoord mesh_coord = OmMipMeshCoord(mCurrentMipCoord, segment_value);
-		//cout << "OmMipChunkMesher::BuildMeshesLoop(): thread: " << thread_index << " mesh: " << mesh_coord << endl;
+		//debug("FIXME", << "OmMipChunkMesher::BuildMeshesLoop(): thread: " << thread_index << " mesh: " << mesh_coord << endl;
 
 		//get alloc'd mesh
 		OmMipMesh *p_mesh = mpMipMeshManager->AllocMesh(mesh_coord);
@@ -225,14 +225,14 @@ void OmMipChunkMesher::BuildMeshesLoop()
 	//no more seg values avail, dec thread count
 	pthread_mutex_lock(&mMeshThreadMutex);
 	mMeshThreadCount--;
-	cout << "mMeshThreadCount: " << mMeshThreadCount << endl;
+	//debug("FIXME", << "mMeshThreadCount: " << mMeshThreadCount << endl;
 	if (0 == mMeshThreadCount)
 		dosignal = true;
 	pthread_mutex_unlock(&mMeshThreadMutex);
 
 	//if last thread, then signal
 	if (dosignal) {
-		cout << "mMeshThreadCount is 0 so ... signaling" << endl;
+		//debug("FIXME", << "mMeshThreadCount is 0 so ... signaling" << endl;
 		pthread_cond_signal(&mMeshThreadCv);
 	}
 }

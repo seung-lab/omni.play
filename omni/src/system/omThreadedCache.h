@@ -21,7 +21,7 @@ using std::list;
 #define OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK 0
 #define OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS 0.5f
 
-#define OM_THREADED_CACHE_DEBUG 0
+#define OM_THREADED_CACH_DEBUG 0
 
 
 //fetch thread caller prototype
@@ -128,7 +128,7 @@ template < typename T,  typename U  >
 OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 : OmCacheBase(group) { 
 	
-	//	cout << " OmThreadedCache()" << endl;
+	//	debug("FIXME", << " OmThreadedCache()" << endl;
 	
 	//fetch prefs
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
@@ -210,13 +210,13 @@ void
 		//if in cache, return get value pointer
 		p_value = mCachedValuesMap[key];
 		
-		//cout << "value was in cache: " << p_value << endl;
+		//debug("FIXME", << "value was in cache: " << p_value << endl;
 	} else if(blocking) {
 		//unlock cache
 		pthread_mutex_unlock(&mCacheMutex);
 
 		//if blocking cache
-		if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): blocking fetch" << endl;
+		//debug("FIXME", << "OmThreadedCache<T,U>::Get(): blocking fetch" << endl;
 		shared_ptr<U> tmp = shared_ptr<U>(HandleCacheMiss(key));
 
 		//lock cache
@@ -236,7 +236,7 @@ void
 		
 		//if not already in stack and not currently being fetched
 		if( (0 == mFetchStack.count(key)) && (0 == mCurrentlyFetching.count(key)) ) {
-			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::Get(): threaded fetch" << endl;
+			// debug("FIXME", << "OmThreadedCache<T,U>::Get(): threaded fetch" << endl;
 			//push to top of stack
 			if (mFetchStack.size () > 20 ) {
 				mFetchStack.pop ();
@@ -379,7 +379,7 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	
 	//assert(mKeyAccessList.size());
 	
-	//cout << "mKeyAccessList.size(): " << mKeyAccessList.size() << endl;
+	//debug("FIXME", << "mKeyAccessList.size(): " << mKeyAccessList.size() << endl;
 	if (mKeyAccessList.size()) {
 		//get oldest key
 		T& r_oldest_key = mKeyAccessList.back();
@@ -402,9 +402,9 @@ OmThreadedCache<T,U>::RemoveOldest() {
 		//get ref to old value
 		old_value = mCachedValuesMap[r_oldest_key];
 
-		//cout << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
-		//cout << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
-		//cout << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
+		//debug("FIXME", << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
+		//debug("FIXME", << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
+		//debug("FIXME", << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
 		assert(r_oldest_key == mKeyAccessList.back());
 	
 		//then remove oldest from cache
@@ -572,9 +572,9 @@ OmThreadedCache<T,U>::FetchLoop() {
 		if(mKillingFetchThread) break;
 		
 		//free mutex and wait for signal
-		if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): sleeping " << endl;
+		// debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): sleeping " << endl;
 		pthread_cond_wait(&mFetchThreadCv, &mFetchThreadMutex);
-		if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): awake " << endl;
+		// debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): awake " << endl;
 		//lock mutex and continue
 		
 		//if destructing, kill thread
@@ -590,7 +590,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 			if(mKillingFetchThread) break;
 			
 			//get and pop next in queue
-			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): lock mutex" << endl;
+			//debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): lock mutex" << endl;
 			pthread_mutex_lock(&mCacheMutex);
 			
 			//fetch stack still non-empty since fetch update could not yet have cleared it
@@ -599,7 +599,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 			mCurrentlyFetching.insert(fetch_key);
 			
 			pthread_mutex_unlock(&mCacheMutex);
-			if(OM_THREADED_CACHE_DEBUG) cout << "OmThreadedCache<T,U>::FetchLoop(): unlock mutex" << endl;
+			// debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): unlock mutex" << endl;
 			
 			//init returned pointer from cache miss call
 			U* fetch_value = NULL;
