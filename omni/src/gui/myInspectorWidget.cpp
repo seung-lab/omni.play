@@ -912,6 +912,8 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
+	// TODO: make sure list of modified segments is correct....
+
 	if (0 == column) {
 		sdw.toggleEnabled();
 		sendSegmentChangeEvent(sdw, true);

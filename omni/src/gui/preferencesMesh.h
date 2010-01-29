@@ -14,20 +14,25 @@ public:
 	void on_tdpSlider_valueChanged();	// OM_PREF_MESH_REDUCTION_PERCENT_FLT
 	void on_pasSlider_valueChanged();	// OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT
 	void on_nsSlider_valueChanged();	// OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT
+	void on_numThreads_Slider_valueChanged(); // OM_PREF_MESH_NUM_MESHING_THREADS_INT
 
  private:
+	QGroupBox* makeSmoothnessBox();	
 	QSlider *tdpSlider;
-	QSlider *pasSlider;
-	QSlider *nsSlider;
-	QLineEdit *number_of_threads;
-
 	QLabel *tdpSliderLabel;
+
+	QGroupBox* makeSharpnessBox();
+	QSlider *pasSlider;
 	QLabel *pasSliderLabel;
+
+	QGroupBox* makeDecimationBox();
+	QSlider *nsSlider;
         QLabel *nsSliderLabel;
 
 	QGroupBox* makeNumberOfThreadsBox();
-	QGroupBox* makeDecimationBox();
-	QGroupBox* makeSharpnessBox();
-	QGroupBox* makeSmoothnessBox();
+	QSlider *numThreadsSlider;
+        QLabel  *numThreadsSliderLabel;	
+
+	QGroupBox* makeBoxGeneric( QLabel** label, QSlider** slider, QString title );
 }; 
 #endif

@@ -5,6 +5,7 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omDebug.h"
+#include "system/omNumCores.h"
 
 PreferencesMesh::PreferencesMesh(QWidget * parent)
  : QWidget(parent)
@@ -15,7 +16,6 @@ PreferencesMesh::PreferencesMesh(QWidget * parent)
 	overallContainer->addWidget( groupBox );
 
 	QGridLayout *grid = new QGridLayout( this );
-	groupBox->setLayout( grid );
 
 	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->addWidget( makeDecimationBox(), 1, 0 );
@@ -25,30 +25,41 @@ PreferencesMesh::PreferencesMesh(QWidget * parent)
 
 QGroupBox* PreferencesMesh::makeNumberOfThreadsBox()
 {
-	QGroupBox* groupBox = new QGroupBox("Number of Meshing Threads");
+	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
+
+	numThreadsSlider->setMaximum( 2 * (int)OmNumCores::get_num_cores() );
+
+	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
+	numThreadsSlider->setValue(OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT));
+	numThreadsSliderLabel->setNum(numThreadsSlider->value());
+
+	return groupBox;
+}
+
+QGroupBox* PreferencesMesh::makeBoxGeneric( QLabel** label, QSlider** slider, QString title )
+{
+	QGroupBox* groupBox = new QGroupBox(title);
 	QVBoxLayout* vbox = new QVBoxLayout;
 	groupBox->setLayout( vbox );
+
+	(*label) = new QLabel(groupBox);
+	(*label)->setMinimumSize(QSize(20, 0));
+	(*label)->setMaximumSize(QSize(20, 16777215));
+	vbox->addWidget((*label));
+
+	(*slider) = new QSlider(groupBox);
+	(*slider)->setMaximum(100);
+	(*slider)->setOrientation(Qt::Horizontal);
+	(*slider)->setTickPosition(QSlider::TicksBelow);
+	(*slider)->setTickInterval(10);
+	vbox->addWidget((*slider));
 
 	return groupBox;
 }
 
 QGroupBox* PreferencesMesh::makeSmoothnessBox()
 {
-	QGroupBox* groupBox = new QGroupBox("Normal Smoothness");
-	QVBoxLayout* vbox = new QVBoxLayout;
-	groupBox->setLayout( vbox );
-
-	nsSliderLabel = new QLabel(groupBox);
-	nsSliderLabel->setMinimumSize(QSize(20, 0));
-	nsSliderLabel->setMaximumSize(QSize(20, 16777215));
-	vbox->addWidget(nsSliderLabel);
-
-	nsSlider = new QSlider(groupBox);
-	nsSlider->setMaximum(100);
-	nsSlider->setOrientation(Qt::Horizontal);
-	nsSlider->setTickPosition(QSlider::TicksBelow);
-	nsSlider->setTickInterval(10);
-	vbox->addWidget(nsSlider);
+	QGroupBox* groupBox = makeBoxGeneric( &nsSliderLabel, &nsSlider, "Normal Smoothness");
 
 	connect(nsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_nsSlider_valueChanged()));
 	nsSlider->setValue(OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT));
@@ -59,21 +70,7 @@ QGroupBox* PreferencesMesh::makeSmoothnessBox()
 
 QGroupBox* PreferencesMesh::makeSharpnessBox()
 {
-	QGroupBox* groupBox = new QGroupBox("Preserved Angle Sharpness");
-	QVBoxLayout* vbox = new QVBoxLayout;
-	groupBox->setLayout( vbox );
-
-	pasSliderLabel = new QLabel(groupBox);
-	pasSliderLabel->setMinimumSize(QSize(20, 0));
-	pasSliderLabel->setMaximumSize(QSize(20, 16777215));
-	vbox->addWidget(pasSliderLabel);
-
-	pasSlider = new QSlider(groupBox);
-	pasSlider->setMaximum(90);
-	pasSlider->setOrientation(Qt::Horizontal);
-	pasSlider->setTickPosition(QSlider::TicksBelow);
-	pasSlider->setTickInterval(10);
-	vbox->addWidget(pasSlider);
+	QGroupBox* groupBox = makeBoxGeneric( &pasSliderLabel, &pasSlider, "Preserved Angle Sharpness");
 
 	connect(pasSlider, SIGNAL(valueChanged(int)), this, SLOT(on_pasSlider_valueChanged()));
 	pasSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT)));
@@ -83,21 +80,7 @@ QGroupBox* PreferencesMesh::makeSharpnessBox()
 }
 QGroupBox* PreferencesMesh::makeDecimationBox()
 {
-	QGroupBox* groupBox = new QGroupBox("Target Decimation Percentage");
-	QVBoxLayout* vbox = new QVBoxLayout;
-	groupBox->setLayout( vbox );
-
-	tdpSliderLabel = new QLabel(groupBox);
-	tdpSliderLabel->setMinimumSize(QSize(20, 0));
-	tdpSliderLabel->setMaximumSize(QSize(20, 16777215));
-	vbox->addWidget(tdpSliderLabel);
-
-	tdpSlider = new QSlider;
-	tdpSlider->setMaximum(100);
-	tdpSlider->setOrientation(Qt::Horizontal);
-	tdpSlider->setTickPosition(QSlider::TicksBelow);
-	tdpSlider->setTickInterval(10);
-	vbox->addWidget(tdpSlider);
+	QGroupBox* groupBox = makeBoxGeneric( &tdpSliderLabel, &tdpSlider, "Target Decimation Percentage");
 
 	connect(tdpSlider, SIGNAL(valueChanged(int)), this, SLOT(on_tdpSlider_valueChanged()));
 	tdpSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT)));
@@ -124,5 +107,12 @@ void PreferencesMesh::on_nsSlider_valueChanged()
 {
 	nsSliderLabel->setNum(nsSlider->value());
 	OmPreferences::SetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, nsSlider->value());
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+}
+
+void PreferencesMesh::on_numThreads_Slider_valueChanged()
+{
+	numThreadsSliderLabel->setNum(numThreadsSlider->value());
+	OmPreferences::SetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT, numThreadsSlider->value());
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }

@@ -9,41 +9,27 @@ SET(OM_VERSION_MAJOR 0)
 SET(OM_VERSION_MINOR 2)
 SET(OM_VERSION_PATCH 0)
 
-
 MESSAGE("Omni ${OM_VERSION_MAJOR}.${OM_VERSION_MINOR}.${OM_VERSION_PATCH}")
 MESSAGE("Build Script 5/8/09")
-
 
 #### external library directory ####
 SET(OM_EXT_LIBS_DIR "/Users/mwimer/omni1/external/libs")
 
-
-
-
 #### external library locations ####
 MESSAGE("Using external library directory: ${OM_EXT_LIBS_DIR}")
 
-
 #set lib versions
 SET(VTK_VERSION "5.4")
-#SET(BOOST_VERS_EXT "xgcc40-mt-1_37")
-#SET(BOOST_VERS_EXT "xgcc40-mt-1_37")
 SET(BOOST_VERS_EXT "gcc43-mt-1_38")
-
-
 
 #set library dirs
 #QTDIR and BOOST_ROOT set in .bashrc file - see README.txt
-
 SET(VTK_DIR "${OM_EXT_LIBS_DIR}/VTK/lib/vtk-${VTK_VERSION}")
 SET(HDF5_DIR "${OM_EXT_LIBS_DIR}/HDF5")
 SET(FREETYPE_DIR "${OM_EXT_LIBS_DIR}/FreeType")
 SET(FONTCONFIG_DIR "${OM_EXT_LIBS_DIR}/Fontconfig")
 SET(PNG_DIR "${OM_EXT_LIBS_DIR}/libpng")
-
-
-
-
+SET(TIFF_DIR "${OM_EXT_LIBS_DIR}/libtiff")
 
 
 #### build preferences ####
@@ -54,15 +40,10 @@ INCLUDE_DIRECTORIES(
 	${PROJECT_SOURCE_DIR}/lib
 )
 
-
 SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin" 
 	CACHE INTERNAL "set executable location" )
 
-
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules")
-
-
-
 
 
 #### attach packages ####
@@ -81,7 +62,6 @@ FIND_PACKAGE(Boost)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
 
-
 # attach hdf5
 FIND_PACKAGE(HDF5)
 INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
@@ -95,10 +75,7 @@ INCLUDE(FindThreads REQUIRED)
 
 # attach image libraries
 INCLUDE(FindPNG REQUIRED)
-
-
-
-
+INCLUDE(FindTIFF REQUIRED)
 
 
 #### compatability ####
@@ -113,6 +90,7 @@ SET(OM_BOOST_LIBS
 	$ENV{BOOST_ROOT}/lib/libboost_filesystem-${BOOST_VERS_EXT}.a
 	$ENV{BOOST_ROOT}/lib/libboost_regex-${BOOST_VERS_EXT}.a
 	$ENV{BOOST_ROOT}/lib/libboost_serialization-${BOOST_VERS_EXT}.a
+	$ENV{BOOST_ROOT}/lib/libboost_thread-${BOOST_VERS_EXT}.a
 )
 
 
@@ -156,6 +134,7 @@ if( UNIX AND NOT APPLE )
 		/usr/lib/librt.so
 		${ZLIB_LIBRARIES}
 		${PNG_LIBRARIES}
+		${TIFF_LIBRARIES}
 		${EXPAT_LIBRARIES}
 
 		$ENV{QTDIR}/lib/libQtOpenGL.a

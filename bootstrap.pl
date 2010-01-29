@@ -18,7 +18,7 @@ my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $omniPath    = $basePath.'/omni';
 
-my $globalMakeOptions = " -j5 ";
+my $globalMakeOptions = " -j15 ";
 
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
@@ -195,6 +195,10 @@ sub libpng {
     prepareAndBuild( "libpng-1.2.39", "libpng" );
 }
 
+sub libtiff {
+    prepareAndBuild( "tiff-3.8.2", "libtiff" );
+}
+
 sub freetype {
     prepareAndBuild( "freetype-2.3.9", "FreeType" );
 }
@@ -208,12 +212,12 @@ sub expat {
 }
 
 sub hdf5 {
-    prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no" );
+    prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
 }
 
 sub qt {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
-    prepareAndBuild( $baseFileName, "Qt", "-opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub omni {
@@ -226,6 +230,16 @@ DESIRED_QT_VERSION:STRING=4
 Boost_INCLUDE_DIR:PATH=$libPath/Boost/include/boost-1_38/
 Boost_LIBRARY_DIRS:FILEPATH=$libPath/Boost/
 Boost_USE_MULTITHREADED:BOOL=ON
+
+TIFF_INCLUDE_DIR:PATH=$libPath/libtiff/include
+TIFF_LIBRARY:PATH=$libPath/libtiff/lib/libtiff.a
+
+EXPAT_INCLUDE_DIR:PATH=$libPath/expat/include
+EXPAT_LIBRARY:PATH=$libPath/expat/lib/libexpat.a
+
+PNG_INCLUDE_DIR:PATH=$libPath/libpng/include
+PNG_LIBRARY:PATH=$libPath/libpng/lib/libpng.a
+
 END
 
     `echo "$cmakeSettings" > $omniPath/CMakeCache.txt`;
@@ -306,8 +320,11 @@ sub menu {
     print "3 -- Build qt\n";
     print "4 -- Build vtk\n";
     print "5 -- Setup omni build\n";
-    print "6 -- [Do 1 through 5]\n\n";
-    my $max_answer = 6;
+    print "6 -- [Do 1 through 5]\n";
+    print "7 -- libtiff\n";
+    print "8 -- hdf5\n\n";
+
+    my $max_answer = 8;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -343,6 +360,10 @@ sub runMenuEntry {
 	qt();
 	vtk();
 	omni();
+    }elsif( 7 == $entry ){
+	libtiff();
+    }elsif( 8 == $entry ){
+	hdf5();
     }
 }
 

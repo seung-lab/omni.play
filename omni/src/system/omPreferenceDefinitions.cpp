@@ -2,6 +2,7 @@
 #include "omPreferenceDefinitions.h"
 #include "omPreferences.h"
 #include "system/omDebug.h"
+#include "system/omNumCores.h"
 
 #pragma mark
 #pragma mark All Default Preferences
@@ -53,7 +54,13 @@ void omSetDefaultMeshPreferences()
 	OmPreferences::Set(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, 50);
 	OmPreferences::Set(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, 30.0f);
 	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 0.15f);
-	OmPreferences::Set(OM_PREF_MESH_NUM_MESHING_THREADS_INT, 2);
+			   
+	const int numCoresRaw = (int)OmNumCores::get_num_cores();
+	int numCores = numCoresRaw - 1;
+	if( 1 == numCoresRaw ){
+		numCores = 1;
+	}
+	OmPreferences::Set(OM_PREF_MESH_NUM_MESHING_THREADS_INT, numCores );
 }
 
 void omSetDefaultSegmentPreferences()
