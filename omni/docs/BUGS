@@ -1545,3 +1545,50 @@ Program received signal SIGSEGV, Segmentation fault.
 #8  0xb7b05e5e in clone () from /lib/tls/i686/cmov/libc.so.6
 (gdb)
 
+
+Clicking on segments in the list or the 2d viewer causes the dialog to appear because of the excpetion.
+OmAccessException Warning: Cannot get object with id: 46
+omni: /home/matt/omni1/omni/src/gui/mainwindow.cpp:944: void MainWindow::spawnErrorDialog(OmException&): Assertion `0' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0xb6e66ae0 (LWP 10743)]
+0xb7f44410 in __kernel_vsyscall ()
+(gdb) bt
+#0  0xb7f44410 in __kernel_vsyscall ()
+#1  0xb79cd085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79cea01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb79c610e in __assert_fail () from /lib/tls/i686/cmov/libc.so.6
+#4  0x083a64ca in MainWindow::spawnErrorDialog (this=0xbf82d0a8, e=@0x98bb8b0) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:944
+#5  0x083a67c2 in MainWindow::changeSelection (this=0xbf82d0a8, segmentIndex=-1) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1261
+#6  0x083dd9e9 in MainWindow::qt_metacall (this=0xbf82d0a8, _c=QMetaObject::InvokeMetaMethod, _id=15, _a=0xbf82c73c)
+    at /home/matt/omni1/omni/inst/gui/moc_mainwindow.cxx:138
+#7  0x08ba0e24 in QMetaObject::activate ()
+#8  0x08ba1502 in QMetaObject::activate ()
+#9  0x087c6ca3 in QComboBox::currentIndexChanged ()
+#10 0x087c9134 in QComboBoxPrivate::_q_emitCurrentIndexChanged ()
+#11 0x087cea6d in QComboBoxPrivate::_q_rowsRemoved ()
+#12 0x087d027f in QComboBox::qt_metacall ()
+#13 0x08ba0e24 in QMetaObject::activate ()
+#14 0x08ba1502 in QMetaObject::activate ()
+#15 0x08bd37ef in QAbstractItemModel::rowsRemoved ()
+#16 0x08b8aae7 in QAbstractItemModel::endRemoveRows ()
+#17 0x0894da33 in QStandardItemModelPrivate::rowsRemoved ()
+#18 0x0894e067 in QStandardItem::removeRows ()
+#19 0x0894ecf5 in QStandardItemModel::removeRows ()
+#20 0x087c6fc4 in QComboBox::clear ()
+#21 0x083a67e4 in MainWindow::updateComboBoxes (this=0xbf82d0a8, segmentationID=1, segmentJustSelectedID=66) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1179
+#22 0x083a6b2f in MainWindow::SegmentObjectModificationEvent (this=0xbf82d0a8, event=0x98bb590) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1212
+#23 0x0845e3fb in OmSegmentEvent::Dispatch (this=0x98bb590, pListener=0xbf82d0bc) at /home/matt/omni1/omni/src/system/events/omSegmentEvent.cpp:67
+#24 0x08409a6f in OmEventManager::event (this=0x95c7638, event=0x98bb590) at /home/matt/omni1/omni/src/system/omEventManager.cpp:60
+#25 0x084d69cf in QApplicationPrivate::notify_helper ()
+#26 0x084db40f in QApplication::notify ()
+#27 0x08b8cc7b in QCoreApplication::notifyInternal ()
+#28 0x08b8da50 in QCoreApplicationPrivate::sendPostedEvents ()
+#29 0x08bb1a5a in QEventDispatcherUNIX::processEvents ()
+#30 0x0855cfcd in QEventDispatcherX11::processEvents ()
+#31 0x08b8bcdd in QEventLoop::processEvents ()
+#32 0x08b8c12d in QEventLoop::exec ()
+#33 0x08b8dd88 in QCoreApplication::exec ()
+#34 0x084d5e27 in QApplication::exec ()
+#35 0x083a457c in main (argc=1, argv=0xbf82d274) at /home/matt/omni1/omni/src/gui/main.cpp:49
+
