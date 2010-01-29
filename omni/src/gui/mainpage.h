@@ -10,5 +10,8 @@
  *  \n\n\n
  *
  *  The requirements for this software can be found at: http://gliamac.mit.edu/doxygen/omni/Requirements.pdf \n
- *  Archived versions can be found at:  http://gliamac.mit.edu/doxygen/omni/archives  
+ *  Archived versions can be found at: \htmlonly <A HREF="http://gliamac.mit.edu/doxygen/omni/archives" TARGET="_blank">
+ *  http://gliamac.mit.edu/doxygen/omni/archives </A> \endhtmlonly 
+ */
+  
  */
