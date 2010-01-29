@@ -138,10 +138,6 @@ QTreeWidget *MyInspectorWidget::setupDataSrcList()
 
 	populateDataSrcListWidget();
 
-	// left click to open inspectors
-	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(addToSplitterDataSource(QTreeWidgetItem *, int)));
-
 	// context menu setup
 	dataSrcListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(dataSrcListWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
@@ -534,6 +530,8 @@ void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, con
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		doShowDataSrcContextMenu( current );
+	} else {
+		addToSplitterDataSource(current, column );
 	}
 }
 
