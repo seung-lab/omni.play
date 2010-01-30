@@ -941,6 +941,9 @@ bool MainWindow::checkForSave()
 
 void MainWindow::spawnErrorDialog(OmException & e)
 {
+	// FIXME Some things being displayed should actually crashes?
+	// For debugging, turn this on. 
+	// assert (0);
 	QString type = QString::fromStdString(e.GetType());
 	QString name = QString::fromStdString(e.GetName());
 	QString msg = QString::fromStdString(e.GetMessage());
@@ -1257,6 +1260,7 @@ void MainWindow::changeSelection(int segmentIndex)
 
 	}
 	catch(OmException & e) {
-		spawnErrorDialog(e);
+		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
+		//spawnErrorDialog(e);
 	}
 }
