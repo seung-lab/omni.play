@@ -19,7 +19,7 @@
 #define OM_TESTRUN         0	// Gen One's Old Debugs
 #define OM_MUTEX           0	// pthread_mutexes - all mutexes noted
 #define OM_MESHER          1
-#define OM_GENONE          0
+#define OM_GENONE          1
 #define OM_THREAD          1
 //*********************************************************************** 
 //***********************************************************************
