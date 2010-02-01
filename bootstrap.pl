@@ -35,7 +35,9 @@ sub vtk {
     
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
 
-    print "manually run: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make -j5 && make install)\n";
+    `patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
+
+    print "manually run: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
     print "(make sure to set debug flags!)\n";
     print "\npress enter when vtk build is done :";
     $_ = <STDIN>;
