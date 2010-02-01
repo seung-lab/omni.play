@@ -171,6 +171,11 @@ void OmView3d::mouseDoubleClickEvent(QMouseEvent * event)
 	mView3dUi.MouseDoubleClick(event);
 }
 
+void OmView3d::mouseWheelEvent(QWheelEvent * event)
+{
+	mView3dUi.MouseWheel(event);
+}
+
 void OmView3d::keyPressEvent(QKeyEvent * event)
 {
 	mView3dUi.KeyPress(event);

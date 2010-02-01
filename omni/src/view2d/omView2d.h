@@ -273,9 +273,7 @@ private:
 	
 	int mRootLevel;
 	
-	bool drawInformation;
 	bool firstPaintEvent;
-	bool informationUpdated;
 	
 	int depthCache;
 	int sidesCache;
@@ -292,7 +290,6 @@ private:
 	void EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent *event);
 	void EditMode_MouseRelease_LeftButton_Filling(QMouseEvent *event);
 	void mouseMove_NavMode_CamMoving(QMouseEvent *event);
-	void mouseMove_NavMode_DrawInfo(QMouseEvent *event);	
 	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
 	void mouseDoubleClickEvent_SetDepth(QMouseEvent *event);
 	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event, const ViewType viewType = XY_VIEW );
@@ -306,7 +303,7 @@ private:
 	void mouseZoomOut();
 	void mouseZoom(QMouseEvent *event);
 	bool amInFillMode();
-
+	bool doDisplayInformation();
 
 };
 

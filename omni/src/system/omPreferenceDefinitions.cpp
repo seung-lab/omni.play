@@ -82,7 +82,7 @@ void omSetDefaultView2dPreferences()
 	OmPreferences::Set(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT, 5);
 	OmPreferences::Set(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT, 1);
 	OmPreferences::Set(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT, 0.5f);
-	OmPreferences::Set(OM_PREF_VIEW2D_SHOW_INFO_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW2D_SHOW_INFO_BOOL, true);
 }
 
 void omSetDefaultView3dPreferences()

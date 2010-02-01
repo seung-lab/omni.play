@@ -28,6 +28,7 @@ public:
 	void MouseRelease(QMouseEvent *event);
 	void MouseMove(QMouseEvent *event);
 	void MouseDoubleClick(QMouseEvent *event);
+	void MouseWheel(QWheelEvent *event);
 	void KeyPress(QKeyEvent *event);
 	
 	//navigation mode
@@ -35,6 +36,7 @@ public:
 	void NavigationModeMouseRelease(QMouseEvent *event);
 	void NavigationModeMouseMove(QMouseEvent *event);
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
+	void NavigationModeMouseWheel(QWheelEvent *event);
 	void NavigationModeKeyPress(QKeyEvent *event);
 	
 	//edit mode
@@ -42,6 +44,7 @@ public:
 	void EditModeMouseRelease(QMouseEvent *event);
 	void EditModeMouseMove(QMouseEvent *event);
 	void EditModeMouseDoubleClick(QMouseEvent *event);
+	void EditModeMouseWheel(QWheelEvent *event);
 	void EditModeKeyPress(QKeyEvent *event);
 	
 	
@@ -49,7 +52,7 @@ public:
 	void CameraMovementMouseStart(QMouseEvent *event);
 	void CameraMovementMouseEnd(QMouseEvent *event);
 	void CameraMovementMouseUpdate(QMouseEvent *event);
-	
+	void CameraMovementMouseWheel(QWheelEvent *event);
 	
 	//segment picking
 	bool PickSegmentMouse(QMouseEvent *event, bool drag, OmId &segmentationId, OmId &segmentId, int *pickName = NULL);

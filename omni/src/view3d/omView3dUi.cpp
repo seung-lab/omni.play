@@ -92,6 +92,19 @@ void OmView3dUi::MouseDoubleClick(QMouseEvent * event)
 	}
 }
 
+void OmView3dUi::MouseWheel(QWheelEvent * event)
+{
+	switch (OmStateManager::GetSystemMode()) {
+	case NAVIGATION_SYSTEM_MODE:
+		NavigationModeMouseWheel(event);
+		break;
+
+	case EDIT_SYSTEM_MODE:
+		EditModeMouseWheel(event);
+		break;
+	}
+}
+
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
@@ -135,6 +148,11 @@ void OmView3dUi::NavigationModeMouseMove(QMouseEvent * event)
 void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
 {
 	SegmentSelectToggleMouse(event, false);
+}
+
+void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
+{
+	CameraMovementMouseWheel(event);
 }
 
 void OmView3dUi::NavigationModeKeyPress(QKeyEvent * event)
@@ -225,6 +243,12 @@ void OmView3dUi::EditModeMouseDoubleClick(QMouseEvent * event)
 	SegmentSelectToggleMouse(event, false);
 }
 
+void OmView3dUi::EditModeMouseWheel(QWheelEvent * event)
+{
+	CameraMovementMouseWheel(event);
+}
+
+
 void OmView3dUi::EditModeKeyPress(QKeyEvent * event)
 {
 
@@ -286,6 +310,12 @@ void OmView3dUi::CameraMovementMouseUpdate(QMouseEvent * event)
 	Vector2f point = Vector2f(event->x(), event->y());
 	mpView3d->mCamera.MovementUpdate(point);
 	mpView3d->updateGL();
+}
+
+void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
+{
+	Vector2f point = Vector2f(event->x(), event->y());
+	//	mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
 }
 
 #pragma mark

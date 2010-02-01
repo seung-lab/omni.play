@@ -1,12 +1,12 @@
 #ifndef SEGINSPECTOR_H
 #define SEGINSPECTOR_H
 
+#include <QtGui>
 #include <QWidget> 
-#include "ui_segInspector.h" 
 #include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
 
-class SegInspector : public QWidget, public Ui::segInspector
+class SegInspector : public QWidget
 { 
     Q_OBJECT 
 	
@@ -23,7 +23,16 @@ public:
 	OmId getSegmentationID();
 	void setSegmentID( const OmId segID );
 	OmId getSegmentID();
-	
+
+	QLineEdit * nameEdit;
+	QLabel *directoryLabel;
+	QListWidget* listWidget;
+	QLineEdit *patternEdit;
+	QComboBox *buildComboBox;
+	QPlainTextEdit *notesEdit;
+	QLineEdit *directoryEdit ;
+	QPushButton *addSegmentButton;
+
  private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
@@ -42,5 +51,6 @@ public:
 	OmId my_id;
 	OmId SegmentationID;
 	OmId SegmentID;
+
 }; 
 #endif

@@ -147,20 +147,8 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 
 	cameraMoving = false;
 
-	drawInformation = OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
-	informationUpdated = false;
-
-	//      widthTranslate = 0;
-	//      heightTranslate = 0;
-	//      
-	//      scaleFactor = 1;
-
 	mSegmentID = 0;
 	mSegmentValue = 0;
-
-	//bwarne: cache size now a property of the cache manager, not the volume
-	//OmVolume::SetImageCacheMaxSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT) * BYTES_PER_MB);
-	//      mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 
 	sentTexture = false;
 
@@ -256,34 +244,6 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		mSlide++;
 	}
 
-	// Painting the text at the bottom and around the sides
-	if (drawInformation && 0) {
-
-		painter.fillRect(QRect(10, mTotalViewport.height - 70, 250, 40), QColor(0, 0, 0, 200));
-		painter.setPen(QColor(255, 255, 255, 200));
-		painter.setFont(QFont("Helvetica", 12, QFont::Bold, true));
-
-		int zlevel = OmStateManager::Instance()->GetZoomLevel().x;
-
-		float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-		DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-		int mViewDepth = data_coord.z;
-
-		if (mVolumeType == SEGMENTATION)
-			painter.drawText(QRect(10, mTotalViewport.height - 65, 250, 30),
-					 (Qt::AlignLeft | Qt::TextWordWrap),
-					 QString("Mip Level: %1    Depth: %2 \nSegment ID: %3    Value: %4").arg(zlevel)
-					 .arg(mViewDepth)
-					 .arg(mSegmentID)
-					 .arg(mSegmentValue));
-		else
-			painter.drawText(QRect(10, mTotalViewport.height - 65, 250, 30),
-					 (Qt::AlignLeft | Qt::TextWordWrap),
-					 QString("Mip Level: %1    Depth: %2").arg(zlevel).arg(mViewDepth));
-
-		informationUpdated = false;
-	}
-
 	QPen the_pen;
 	switch (mViewType) {
 	case XY_VIEW:
@@ -318,7 +278,7 @@ void OmView2d::paintEvent(QPaintEvent * event)
 	} else if (!drawComplete)
 		sentTexture = false;
 
-	if (1) {
+	if (doDisplayInformation()) {
 		QString str = QString("MIP Level Locked (Press L to unlock.)");
 		if (mLevelLock)
 			painter.drawText(QPoint(0, mTotalViewport.height - 80), str);
@@ -645,6 +605,7 @@ void OmView2d::mouseDoubleClickEvent(QMouseEvent * event)
 	}
 }
 
+// FIXME: what is going on here? why does it work??
 void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 {
 
@@ -652,7 +613,6 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 
 	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
 	int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
-	float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
 
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	float scaleFactor = (zoomMipVector.y / 10.0);
@@ -1568,50 +1528,27 @@ void OmView2d::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
 
 	switch (event->GetPreference()) {
-
+		
 	case OM_PREF_VIEW2D_SHOW_INFO_BOOL:
-		{
-			drawInformation = OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
-			myUpdate();
-		}
+		myUpdate();
 		break;
 	case OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT:
-		{
-			mCache->SetNewAlpha(OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
-			////debug("genone","New alpha = " << OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
-
-			//mCache->ClearCache();
-
-			myUpdate();
-		}
+		mCache->SetNewAlpha(OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
+		myUpdate();
 		break;
 	case OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT:
-		{
-			//bwarne: cache size now a property of the cache manager, not the volume
-			//OmVolume::SetImageCacheMaxSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT) * BYTES_PER_MB);
-		}
 		break;
 	case OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT:
-		{
-			//bwarne: cache size now a property of the cache manager, not the volume
-			//mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
-			myUpdate();
-		}
+		myUpdate();
 		break;
 	case OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT:
-		{
-			depthCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT);
-		}
+		depthCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT);
 		break;
 	case OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT:
-		{
-			sidesCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT);
-		}
+		sidesCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT);
 		break;
 	case OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT:
-		{
-			mipCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT);
-		}
+		mipCache = OmPreferences::GetInteger(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT);
 		break;
 	default:
 		return;
@@ -2772,8 +2709,6 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 				if (PAN_MODE == OmStateManager::GetToolMode()) {
 					mouseMove_NavMode_CamMoving(event);
 				}
-			} else if (drawInformation) {
-				mouseMove_NavMode_DrawInfo(event);
 			}
 			break;
 		case EDIT_SYSTEM_MODE:
@@ -2879,21 +2814,7 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	clickPoint.y = event->y();
 }
 
-// what does this do? (purcaro)
-void OmView2d::mouseMove_NavMode_DrawInfo(QMouseEvent * event)
+bool OmView2d::doDisplayInformation()
 {
-
-	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event, mViewType);
-
-	if (SEGMENTATION == mVolumeType) {
-		OmSegmentation & current_seg = OmVolume::GetSegmentation(mImageId);
-		mSegmentID = current_seg.GetVoxelSegmentId(dataClickPoint);
-
-		if (mSegmentID)
-			mSegmentValue = current_seg.GetValueMappedToSegmentId(mSegmentID);
-		else
-			mSegmentValue = 0;
-	}
-
-	informationUpdated = true;
+	return OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
 }

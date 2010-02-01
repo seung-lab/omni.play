@@ -15,13 +15,13 @@ PreferencesMesh::PreferencesMesh(QWidget * parent)
 	QGroupBox* groupBox = new QGroupBox("Mesh Options");
 	overallContainer->addWidget( groupBox );
 
-	QGridLayout *grid = new QGridLayout( this );
-	groupBox->setLayout( grid );
+	QGridLayout *grid = new QGridLayout( groupBox );
 
 	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->addWidget( makeDecimationBox(), 1, 0 );
 	grid->addWidget( makeSharpnessBox(), 2, 0 );
 	grid->addWidget( makeSmoothnessBox(), 3, 0 );
+	grid->setRowStretch( 4, 1 );
 }
 
 QGroupBox* PreferencesMesh::makeNumberOfThreadsBox()

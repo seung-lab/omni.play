@@ -56,7 +56,6 @@ public:
     QHBoxLayout *horizontalLayout;
     QComboBox *buildComboBox;
     QPushButton *buildButton;
-    QPushButton *safeBuildButton;
     QPushButton *exportButton;
     QSpacerItem *horizontalSpacer_2;
     QGroupBox *groupBox_3;
@@ -167,11 +166,6 @@ public:
         buildButton->setEnabled(true);
         horizontalLayout->addWidget(buildButton);
 
-        safeBuildButton = new QPushButton(groupBox_2);
-        safeBuildButton->setObjectName(QString::fromUtf8("safeBuildButton"));
-        safeBuildButton->setEnabled(true);
-        horizontalLayout->addWidget(safeBuildButton);
-
         addFilterButton = new QPushButton(groupBox_2);
         addFilterButton->setObjectName(QString::fromUtf8("addFilterButton"));
         horizontalLayout->addWidget(addFilterButton);
@@ -225,26 +219,25 @@ public:
     void retranslateUi(QWidget *chanInspector)
     {
         chanInspector->setWindowTitle(QString());
-        groupBox->setTitle(QApplication::translate("chanInspector", "Source Properties", 0, QApplication::UnicodeUTF8));
-        nameLabel->setText(QApplication::translate("chanInspector", "Name:", 0, QApplication::UnicodeUTF8));
+        groupBox->setTitle("Source Properties");
+        nameLabel->setText("Name:");
         nameEdit->setText(QString());
-        directoryLabel->setText(QApplication::translate("chanInspector", "Directory:", 0, QApplication::UnicodeUTF8));
-        browseButton->setText(QApplication::translate("chanInspector", "Browse", 0, QApplication::UnicodeUTF8));
+        directoryLabel->setText("Directory:");
+        browseButton->setText("Browse");
 #ifndef QT_NO_TOOLTIP
-        patternLabel->setToolTip(QApplication::translate("chanInspector", "(i.e. data.%d.tif)", 0, QApplication::UnicodeUTF8));
+        patternLabel->setToolTip("(i.e. data.%d.tif)");
 #endif // QT_NO_TOOLTIP
-        patternLabel->setText(QApplication::translate("chanInspector", "Regex:", 0, QApplication::UnicodeUTF8));
-        groupBox_2->setTitle(QApplication::translate("chanInspector", "Channel Properties", 0, QApplication::UnicodeUTF8));
+        patternLabel->setText("Regex:");
+        groupBox_2->setTitle("Channel Properties");
         buildComboBox->clear();
         buildComboBox->insertItems(0, QStringList()
-         << QApplication::translate("chanInspector", "Data", 0, QApplication::UnicodeUTF8)
+         << "Data"
         );
-        buildButton->setText(QApplication::translate("chanInspector", "Build", 0, QApplication::UnicodeUTF8));
-        safeBuildButton->setText(QApplication::translate("chanInspector", "Safe Build", 0, QApplication::UnicodeUTF8));
-        addFilterButton->setText(QApplication::translate("chanInspector", "Add Filter", 0, QApplication::UnicodeUTF8));
-        exportButton->setText(QApplication::translate("chanInspector", "Export", 0, QApplication::UnicodeUTF8));
-        groupBox_3->setTitle(QApplication::translate("chanInspector", "Notes", 0, QApplication::UnicodeUTF8));
-        toolButton->setText(QApplication::translate("chanInspector", "...", 0, QApplication::UnicodeUTF8));
+        buildButton->setText("Build");
+        addFilterButton->setText("Add Filter");
+        exportButton->setText("Export");
+        groupBox_3->setTitle("Notes");
+        toolButton->setText("...");
         Q_UNUSED(chanInspector);
     } // retranslateUi
 

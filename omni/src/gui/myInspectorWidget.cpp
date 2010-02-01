@@ -2,7 +2,6 @@
 #include <QtGui>
 #include "myInspectorWidget.h"
 
-#include "ui_segInspector.h"
 #include "segInspector.h"
 
 #include "ui_volumeInspector.h"

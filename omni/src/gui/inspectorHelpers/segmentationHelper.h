@@ -1,7 +1,6 @@
 #ifndef INSPECTOR_HELPER_SEGMENTATION_HELPER
 #define INSPECTOR_HELPER_SEGMENTATION_HELPER
 
-#include"../ui_segInspector.h"
 #include"../segInspector.h"
 
 #include "inspectorHelper.h"
