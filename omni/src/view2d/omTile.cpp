@@ -307,8 +307,10 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 						    qRgba(clamp(color.x * 255 * 2.5), clamp(color.y * 255 * 2.5),
 							  clamp(color.z * 255 * 2.5), 100);
 
-					else
-						newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+					else {
+						//newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+						newcolor = qRgba(0, 0, 0, 255);
+					}
 
 					data[ctr] = newcolor.red();
 					data[ctr + 1] = newcolor.green();

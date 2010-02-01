@@ -27,11 +27,13 @@
 #include "segment/omSegmentEditor.h"
 
 #include "common/omGl.h"
+#include <limits.h>
 
 #include <QPainter>
 #include <QGLFramebufferObject>
 
 #define DEBUG 0
+
 
 static QGLWidget *sharedwidget = NULL;
 
@@ -61,9 +63,9 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	mBrushToolMaxX = 0;
 	mBrushToolMaxY = 0;
 	mBrushToolMaxZ = 0;
-	mBrushToolMinX = MAXINT;
-	mBrushToolMinY = MAXINT;
-	mBrushToolMinZ = MAXINT;
+	mBrushToolMinX = INT_MAX;
+	mBrushToolMinY = INT_MAX;
+	mBrushToolMinZ = INT_MAX;
 	mEmitMovie = false;
 	mSlide = 0;
 	mDoRefresh = false;
@@ -219,10 +221,11 @@ void OmView2d::resizeGL(int width, int height)
 {
 	//debug("genone","OmView2d::resizeGL(" << width << ", " << height << ")");
 
+	OmCachingThreadedCachingTile::Refresh();
+
 	delete pbuffer;
 	pbuffer = new QGLPixelBuffer(QSize(width, height), QGLFormat::defaultFormat(), sharedwidget);
 
-	OmCachingThreadedCachingTile::Refresh();
 
 	mTotalViewport.lowerLeftX = 0;
 	mTotalViewport.lowerLeftY = 0;
@@ -2177,8 +2180,10 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 							  clamp(color.z * 255 * 2.75), 100);
 						entered = true;
 
-					} else
-						newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+					} else {
+						//newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+						newcolor = qRgba(0, 0, 0, 255);
+					}
 
 					data[ctr] = newcolor.red();
 					data[ctr + 1] = newcolor.green();
