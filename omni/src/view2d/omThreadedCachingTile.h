@@ -1,11 +1,6 @@
 #ifndef OM_CACHING_TILE_H
 #define OM_CACHING_TILE_H
 
-/*
- *	A Tile extended to support caching of TextureIDs with the GenericCache interface.
- *
- *	Rachel Shearer - rshearer@mit.edu
- */
 
 #include "omTile.h"
 #include "omTextureID.h"
@@ -26,6 +21,12 @@ typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDThreadedCache;
 class QGLContext;
 
 
+/**
+ *	A Tile extended to support caching of TextureIDs with the GenericCache interface.
+ *
+ *	Rachel Shearer - rshearer@mit.edu
+ */
+
 class OmThreadedCachingTile : public OmTile, public TextureIDThreadedCache {
 	
 public:	
@@ -41,7 +42,8 @@ public:
 	
 	//cache actions
 	void Remove(const OmTileCoord &tileCoord);
-//	void ClearCache();
+
+	//void ClearCache();
 	void SetContinuousUpdate(bool);
 	
 	// setting second OmMipVolume for overlay
@@ -72,9 +74,15 @@ class OmCachingThreadedCachingTile
 public:
 	OmCachingThreadedCachingTile (ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, const QGLContext *shareContext)
 	{
+
 		static vector<OmCachingThreadedCachingTile*> caches;
 
 		if (NULL == vol) {
+	
+			for (int i = 0; i < caches.size(); i++) {
+				delete caches[i]->mCache;
+			}
+
 			caches.clear ();
 			mDelete = true;
 			return;
@@ -101,10 +109,12 @@ public:
 			mCache = new OmThreadedCachingTile (viewtype, voltype, image_id, vol, shareContext);
 			caches.push_back (this);
 		}
+
+
 	}
 
 	static void Refresh () {
-		//cout << "refershing...." << endl;
+
 		delete new OmCachingThreadedCachingTile ((ViewType)0, (ObjectType)0, (OmId)0, NULL, NULL);
 	}
 
