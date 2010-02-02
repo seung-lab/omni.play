@@ -1,15 +1,17 @@
 RELEASING OMNI
 
-ALPHA RELEASE CYCLE
-A build of the tree that excludes the following file(s) and/or directorie(s) is to be built standalone:
+perl bootstrap.pl 10
+
+ALPHA RELEASE TARGET
+A have a single command to build an executable version of the tree that excludes the following file(s) and/or directorie(s):
 secret
 
 
-BETA RELEASE CYCLE
-Correctly built builds of both the linux and macos builds must be built and released from identical alpha quality code for the code to be considered beta.
+BETA RELEASE TARGET
+Correctly built builds for both the linux and macos platforms must be built and released from identical alpha quality code for the code to be considered beta.
 
 
-1.0 RELEASE CYCLE
+1.0 RELEASE TARGET
 The fully reenterant builds of beta quality code must be built and released for the following platforms:
 Linux x86
 Linux AMD(x)64
