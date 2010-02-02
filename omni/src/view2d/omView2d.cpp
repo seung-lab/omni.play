@@ -1779,9 +1779,9 @@ void OmView2d::myUpdate()
 	mBrushToolMaxX = 0;
 	mBrushToolMaxY = 0;
 	mBrushToolMaxZ = 0;
-	mBrushToolMinX = MAXINT;
-	mBrushToolMinY = MAXINT;
-	mBrushToolMinZ = MAXINT;
+	mBrushToolMinX = INT_MAX;
+	mBrushToolMinY = INT_MAX;
+	mBrushToolMinZ = INT_MAX;
 
 	update();
 }
