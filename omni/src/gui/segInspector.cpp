@@ -27,7 +27,6 @@ SegInspector::SegInspector(OmId seg_id, QWidget * parent)
 
 QGroupBox* SegInspector::makeNotesBox()
 {
-	// Notes group box
 	QGroupBox* notesBox = new QGroupBox("Notes");
 
 	QGridLayout *gridNotes = new QGridLayout( notesBox );
@@ -41,7 +40,6 @@ QGroupBox* SegInspector::makeNotesBox()
 
 QGroupBox* SegInspector::makeToolsBox()
 {
-	// Tools group box
 	QGroupBox* segmentBox = new QGroupBox("Tools");
 
 	QGridLayout *gridSegment = new QGridLayout( segmentBox );
@@ -56,7 +54,6 @@ QGroupBox* SegInspector::makeToolsBox()
 
 QGroupBox* SegInspector::makeActionsBox()
 {
-	// Actions group box
 	QGroupBox* actionsBox = new QGroupBox("Actions");
 
 	QGridLayout *gridAction = new QGridLayout( actionsBox );
@@ -87,14 +84,13 @@ QGroupBox* SegInspector::makeActionsBox()
 	QPushButton *exportButton = new QPushButton(actionsBox);
         exportButton->setObjectName(QString::fromUtf8("exportButton"));
         exportButton->setText("Export");
-        gridAction->addWidget(exportButton, 2, 0);
+        gridAction->addWidget(exportButton, 2, 0, 1, 2 );
 
 	return actionsBox;
 }
 
 QGroupBox* SegInspector::makeSourcesBox()
 {
-	// Source group box
 	QGroupBox* sourceBox = new QGroupBox("Source");
 
 	QGridLayout *grid = new QGridLayout( sourceBox );
@@ -127,9 +123,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 	QLabel *patternLabel = new QLabel(sourceBox);
         patternLabel->setObjectName(QString::fromUtf8("patternLabel"));
         patternLabel->setText("Pattern:");
-#ifndef QT_NO_TOOLTIP
         patternLabel->setToolTip("(i.e. data.%d.tif)");
-#endif // QT_NO_TOOLTIP
         grid->addWidget(patternLabel, 3, 0);
 
 	patternEdit = new QLineEdit(sourceBox);
@@ -214,20 +208,16 @@ void SegInspector::on_patternEdit_textChanged()
 
 void build_image(OmSegmentation * current_seg)
 {
-	//debug("genone","build image");
 	current_seg->BuildVolumeData();
 }
 
 void build_mesh(OmSegmentation * current_seg)
 {
-	//debug("genone","build mesh");
 	current_seg->BuildMeshData();
 }
 
 void SegInspector::on_buildButton_clicked()
 {
-	//debug("genone","SegInspector::on_buildButton_clicked");
-
 	// check current selection in buildComboBox
 	QString cur_text = buildComboBox->currentText();
 
