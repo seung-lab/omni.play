@@ -10,17 +10,92 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
-
-#define DEBUG 0
-
 SegInspector::SegInspector(OmId seg_id, QWidget * parent)
  : QWidget(parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
+	overallContainer->addWidget(makeSourcesBox());
+	overallContainer->addWidget(makeActionsBox());
+	overallContainer->addWidget(makeToolsBox());
+	overallContainer->addWidget(makeNotesBox());
 
+        QMetaObject::connectSlotsByName(this);
+
+	my_id = seg_id;
+	directoryEdit->setReadOnly(true);
+}
+
+QGroupBox* SegInspector::makeNotesBox()
+{
+	// Notes group box
+	QGroupBox* notesBox = new QGroupBox("Notes");
+
+	QGridLayout *gridNotes = new QGridLayout( notesBox );
+
+	notesEdit = new QPlainTextEdit(notesBox);
+        notesEdit->setObjectName(QString::fromUtf8("notesEdit"));
+        gridNotes->addWidget(notesEdit, 0, 1);
+
+	return notesBox;
+}
+
+QGroupBox* SegInspector::makeToolsBox()
+{
+	// Tools group box
+	QGroupBox* segmentBox = new QGroupBox("Tools");
+
+	QGridLayout *gridSegment = new QGridLayout( segmentBox );
+
+	addSegmentButton = new QPushButton(segmentBox);
+        addSegmentButton->setObjectName(QString::fromUtf8("addSegmentButton"));
+        addSegmentButton->setText("Add Segment");
+        gridSegment->addWidget(addSegmentButton, 0, 0);
+
+	return segmentBox;
+}
+
+QGroupBox* SegInspector::makeActionsBox()
+{
+	// Actions group box
+	QGroupBox* actionsBox = new QGroupBox("Actions");
+
+	QGridLayout *gridAction = new QGridLayout( actionsBox );
+
+	QLabel *labelNumThreadsText = new QLabel(actionsBox);
+	labelNumThreadsText->setText("number of meshing threads: ");
+	gridAction->addWidget( labelNumThreadsText, 0, 0 );
+	QLabel *labelNumThreadsNum = new QLabel(actionsBox);
+	labelNumThreadsNum->setNum( OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT ));
+	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
+
+	buildComboBox = new QComboBox(actionsBox);
+        buildComboBox->setObjectName(QString::fromUtf8("buildComboBox"));
+        buildComboBox->clear();
+        buildComboBox->insertItems(0, QStringList()
+         << "Data"
+         << "Mesh"
+         << "Data & Mesh"
+        );
+        gridAction->addWidget(buildComboBox, 1, 0);
+
+	QPushButton *buildButton = new QPushButton(actionsBox);
+        buildButton->setObjectName(QString::fromUtf8("buildButton"));
+        buildButton->setEnabled(true);
+        buildButton->setText("Build");
+        gridAction->addWidget(buildButton, 1, 1);
+
+	QPushButton *exportButton = new QPushButton(actionsBox);
+        exportButton->setObjectName(QString::fromUtf8("exportButton"));
+        exportButton->setText("Export");
+        gridAction->addWidget(exportButton, 2, 0);
+
+	return actionsBox;
+}
+
+QGroupBox* SegInspector::makeSourcesBox()
+{
 	// Source group box
 	QGroupBox* sourceBox = new QGroupBox("Source");
-	overallContainer->addWidget( sourceBox );
 
 	QGridLayout *grid = new QGridLayout( sourceBox );
 
@@ -71,69 +146,7 @@ SegInspector::SegInspector(OmId seg_id, QWidget * parent)
         listWidget->setMaximumSize(QSize(16777215, 85));
         grid->addWidget(listWidget, 4, 1 );
 
-
-	// Actions group box
-	QGroupBox* actionsBox = new QGroupBox("Actions");
-	overallContainer->addWidget( actionsBox );
-
-	QGridLayout *gridAction = new QGridLayout( actionsBox );
-
-	QLabel *labelNumThreadsText = new QLabel(actionsBox);
-	labelNumThreadsText->setText("number of meshing threads: ");
-	gridAction->addWidget( labelNumThreadsText, 0, 0 );
-	QLabel *labelNumThreadsNum = new QLabel(actionsBox);
-	labelNumThreadsNum->setNum( OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT ));
-	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
-
-	buildComboBox = new QComboBox(actionsBox);
-        buildComboBox->setObjectName(QString::fromUtf8("buildComboBox"));
-        buildComboBox->clear();
-        buildComboBox->insertItems(0, QStringList()
-         << "Data"
-         << "Mesh"
-         << "Data & Mesh"
-        );
-        gridAction->addWidget(buildComboBox, 1, 0);
-
-	QPushButton *buildButton = new QPushButton(actionsBox);
-        buildButton->setObjectName(QString::fromUtf8("buildButton"));
-        buildButton->setEnabled(true);
-        buildButton->setText("Build");
-        gridAction->addWidget(buildButton, 1, 1);
-
-	QPushButton *exportButton = new QPushButton(actionsBox);
-        exportButton->setObjectName(QString::fromUtf8("exportButton"));
-        exportButton->setText("Export");
-        gridAction->addWidget(exportButton, 2, 0);
-
-
-	// Tools group box
-	QGroupBox* segmentBox = new QGroupBox("Tools");
-	overallContainer->addWidget( segmentBox );
-
-	QGridLayout *gridSegment = new QGridLayout( segmentBox );
-
-	addSegmentButton = new QPushButton(segmentBox);
-        addSegmentButton->setObjectName(QString::fromUtf8("addSegmentButton"));
-        addSegmentButton->setText("Add Segment");
-        gridSegment->addWidget(addSegmentButton, 0, 0);
-
-
-	// Notes group box
-	QGroupBox* notesBox = new QGroupBox("Notes");
-	overallContainer->addWidget( notesBox );
-
-	QGridLayout *gridNotes = new QGridLayout( notesBox );
-
-	notesEdit = new QPlainTextEdit(notesBox);
-        notesEdit->setObjectName(QString::fromUtf8("notesEdit"));
-        gridNotes->addWidget(notesEdit, 0, 1);
-
-     
-        QMetaObject::connectSlotsByName(this);
-
-	my_id = seg_id;
-	directoryEdit->setReadOnly(true);
+	return sourceBox;
 }
 
 void SegInspector::setId(OmId new_id)

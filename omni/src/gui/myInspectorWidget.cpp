@@ -19,7 +19,6 @@
 #include "ui_preferences3d.h"
 #include "preferences3d.h"
 
-#include "ui_preferences2d.h"
 #include "preferences2d.h"
 
 #include "preferencesMesh.h"

@@ -41,8 +41,7 @@ public:
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
-	
-	
+		
  signals:
 	void meshBuilt(OmId seg_id);
 	void segmentationBuilt( OmId segmen_id );
@@ -52,5 +51,9 @@ public:
 	OmId SegmentationID;
 	OmId SegmentID;
 
+	QGroupBox* makeActionsBox();
+	QGroupBox* makeSourcesBox();
+	QGroupBox* makeToolsBox();
+	QGroupBox* makeNotesBox();
 }; 
 #endif
