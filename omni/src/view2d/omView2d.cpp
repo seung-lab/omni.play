@@ -27,7 +27,6 @@
 #include "segment/omSegmentEditor.h"
 
 #include "common/omGl.h"
-#include <limits.h>
 
 #include <QPainter>
 #include <QGLFramebufferObject>
