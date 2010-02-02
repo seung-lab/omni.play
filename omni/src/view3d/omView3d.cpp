@@ -181,6 +181,11 @@ void OmView3d::keyPressEvent(QKeyEvent * event)
 	mView3dUi.KeyPress(event);
 }
 
+void OmView3d::wheelEvent ( QWheelEvent * event )
+{
+	mouseWheelEvent(event);
+}
+
 #pragma mark
 #pragma mark Omni Event
 /////////////////////////////////

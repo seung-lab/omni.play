@@ -183,6 +183,7 @@ void OmCameraPan::Drag(const Vector2 < float >&point)
 
 void OmCameraZoom::Click(const Vector2 < float >&point)
 {
+	//debug("view3d", "zooming: click: x=%f, y=%f\n", point.x, point.y);
 	mOldViewMatrix = mpCamera->GetModelViewMatrix();
 	mStartDistance = mpCamera->GetDistance();
 	mStartPoint = point;
@@ -190,7 +191,7 @@ void OmCameraZoom::Click(const Vector2 < float >&point)
 
 void OmCameraZoom::Drag(const Vector2 < float >&point)
 {
-
+	//debug("view3d", "zooming: drag: x=%f, y=%f\n", point.x, point.y);
 	const Vector4 < int >&r_viewport = mpCamera->mViewport;
 	int sy = mStartPoint[1] - r_viewport[1];
 	int cy = point.y - r_viewport[1];

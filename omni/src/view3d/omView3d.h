@@ -59,8 +59,9 @@ class OmView3d : public QGLWidget,
 		void mouseMoveEvent(QMouseEvent *event);
 		void mouseDoubleClickEvent(QMouseEvent *event);
 		void mouseWheelEvent(QWheelEvent * event);
+		void wheelEvent(QWheelEvent * event );
 		void keyPressEvent (QKeyEvent *);
-		
+
 		//omni events
 		void SegmentObjectModificationEvent(OmSegmentEvent *event);
 		void VoxelModificationEvent(OmVoxelEvent *event);

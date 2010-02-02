@@ -314,8 +314,21 @@ void OmView3dUi::CameraMovementMouseUpdate(QMouseEvent * event)
 
 void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 {
+	//debug("view3d", "in %s...\n", __FUNCTION__ );
 	Vector2f point = Vector2f(event->x(), event->y());
-	//	mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
+	mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
+
+	// fake mouse drag
+	// TODO: make mouse zoom speed a preference
+	const int numDegrees = event->delta() / 8;
+	const int numSteps = numDegrees / 15;
+	if (numSteps >= 0) {
+		point.y -= 30.f;
+	} else {
+		point.y += 30.f;		
+	}
+	mpView3d->mCamera.MovementUpdate(point);
+	mpView3d->updateGL();
 }
 
 #pragma mark
