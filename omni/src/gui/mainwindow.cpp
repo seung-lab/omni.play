@@ -84,8 +84,7 @@ MainWindow::MainWindow()
 
 		recentFiles.loadRecentlyUsedFilesListFromFS();
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 
@@ -167,8 +166,7 @@ void MainWindow::addChannelToVolume()
 		if (omniInspector) {
 			omniInspector->addToVolume(&added_channel, CHANNEL);
 		}
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -185,8 +183,7 @@ void MainWindow::addSegmentationToVolume()
 		if (omniInspector) {
 			omniInspector->addToVolume(&added_segmentation, SEGMENTATION);
 		}
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -251,8 +248,7 @@ void MainWindow::buildAll()
 		if (omniInspector) {
 			omniInspector->refreshWidgetData();
 		}
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -338,8 +334,7 @@ void MainWindow::openProject()
 
 		//open project at fpath
 		openProject(fileNameAndPath);
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -458,8 +453,7 @@ void MainWindow::openInspector()
 
 		dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -511,8 +505,7 @@ void MainWindow::open3dView()
 			//              //debug("genone","omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
 		}
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -546,8 +539,7 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 
 		dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 
@@ -582,8 +574,7 @@ void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewTy
 
 		dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -624,8 +615,7 @@ void MainWindow::closeEvent(QCloseEvent * event)
 		//if(undoView)
 		//delete undoView;
 		// OmProject::Close();
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 
@@ -652,8 +642,7 @@ void MainWindow::AlertNotifyEvent(OmAlertEvent * event)
 			// should never be reached
 			break;
 		}
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -753,8 +742,7 @@ void MainWindow::ProgressValueEvent(OmProgressEvent * event)
 		//update value
 		prog_dialog.setValue(event->GetValue());
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -778,8 +766,7 @@ void MainWindow::ProgressIncrementEvent(OmProgressEvent * event)
 		//update value
 		prog_dialog.setValue(prog_dialog.value() + 1);
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -933,8 +920,7 @@ bool MainWindow::checkForSave()
 		}
 		return true;
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1051,8 +1037,7 @@ void MainWindow::ChangeModeModify(const bool checked)
 		}
 
 		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1200,8 +1185,7 @@ void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJ
 			selectSegmentationBox->setCurrentIndex(indexToSet);
 		}
 		selectSegmentationBox->update();
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
@@ -1258,8 +1242,7 @@ void MainWindow::changeSelection(int segmentIndex)
 		} else if (obj_id == 0)
 			editColorButton->setIcon(QIcon());
 
-	}
-	catch(OmException & e) {
+	} catch(OmException & e) {
 		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
 		//spawnErrorDialog(e);
 	}

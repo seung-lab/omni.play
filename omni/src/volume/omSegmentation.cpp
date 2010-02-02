@@ -231,6 +231,7 @@ void OmSegmentation::BuildMeshData()
 	// disable all segments by default
 	SetAllSegmentsSelected(false);
 	SetAllSegmentsEnabled(false);
+
 	printf("done building mesh\n");
 }
 
