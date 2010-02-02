@@ -1,5 +1,4 @@
 #include "omView2d.h"
-#include <values.h>
 
 #include "omCachingTile.h"
 //#include "omThreadedCachingTile.h"
