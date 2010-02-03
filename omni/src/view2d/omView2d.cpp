@@ -2003,6 +2003,7 @@ void OmView2d::Draw(int mip)
 	PreDraw(zoomMipVector);
 
 	Draw(mTextures);
+	mTextures.clear ();
 }
 
 Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor,
@@ -2021,7 +2022,7 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 }
 Drawable::~Drawable ()
 {
-	debug ("genone", "freeing?\n");
+	//debug ("genone", "freeing?\n");
 	gotten_id = shared_ptr < OmTextureID > ();
 }
 
@@ -2029,6 +2030,10 @@ void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord t
 		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)
 {
 	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
+
+	if (gotten_id->texture) {
+		free (gotten_id->texture);
+	}
 
 	gotten_id->mTileCoordinate = tileCoord;
 	gotten_id->textureID = texID;
@@ -2219,7 +2224,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
 				if (1 == BPS) {
-					//debug("FIXME", << "1 bps !!!!!!!!!!!!!!!!!\n" << endl;
+					debug("genone", "1 bps !!!!!!!!!!!!!!!!!\n");
 					uint32_t *vDataFake;
 					vDataFake =
 					    (uint32_t *) malloc((tile_dims.x * tile_dims.y) *
@@ -2391,7 +2396,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		//debug ("genone", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
-		// debug ("genone", "complete in predraw\n");
+		//debug ("genone", "complete in predraw\n");
 	}
 }
 
@@ -2401,6 +2406,7 @@ void OmView2d::Draw(vector < Drawable * >&textures)
 		Drawable *d = *it;
 		if (d->mGood) {
 			safeDraw(d->zoomFactor, d->x, d->y, d->tileLength, d->gotten_id);
+			delete (d);
 			if (0 && SEGMENTATION == d->gotten_id->mVolType
 			    && OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
 				OmTileCoord coord = d->gotten_id->mTileCoordinate;

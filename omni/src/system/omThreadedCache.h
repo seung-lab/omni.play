@@ -352,7 +352,7 @@ OmThreadedCache<T,U>::Remove(const T &key) {
 template < typename T,  typename U  > 
 bool
 OmThreadedCache<T,U>::RemoveOldest() {
-	
+ 	bool retTrue = false;	
 	debug("cache"," removing oldest...");
 
 	//so as to destroy value outside of mutex
@@ -403,20 +403,18 @@ OmThreadedCache<T,U>::RemoveOldest() {
 
 		//remove oldest from access list
 		mKeyAccessList.pop_back();
+		retTrue = true;
 	}
 
 	
-	if (old_value) {
-		debug ("thread", "removing null value\n");
+	if (old_value) 
 		old_value.reset();
-	}
 
 
 	//unlock
 	pthread_mutex_unlock(&mCacheMutex);
 	
-	
-	return true;
+	return retTrue;
 }
 
 
@@ -580,6 +578,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 		mFetchThreadQueuing = true;
 		
 		while (!IsFetchStackEmpty ()) {
+
 
 			//if destructing, break loop
 			if(mKillingFetchThread) break;

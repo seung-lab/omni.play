@@ -20,7 +20,8 @@ void OmCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * 
 OmTextureID *OmCachingTile::HandleCacheMiss(const OmTileCoord & key)
 {
 
-	return BindToTextureID(key);
+	// FIXME!!!
+	return BindToTextureID(key, NULL);
 	// OmTile: OmTextureID* BindToTextureID(const OmTileCoordinate &key);
 }
 

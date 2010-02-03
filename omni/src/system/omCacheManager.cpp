@@ -152,6 +152,8 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 
 	//compute target size for group
 	uint32_t target_size = mTargetRatio * mCacheMap[group].MaxSize;
+	//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i, %i\n",
+	//		  target_size, mTargetRatio, group, mCacheMap[group].MaxSize, mCacheMap[group].Size);
 
 	//get caches in group
 	set < OmCacheBase * >&cache_set = mCacheMap[group].CacheSet;
@@ -161,7 +163,8 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 	//call event for every listener in the set
 	set < OmCacheBase * >::iterator itr;
 	//loop through set
-	for (int count = 0; count < 50; count++) {
+	//while (target_size) {
+	for (int count = 0; count < 2; count++) {
 		for (itr = cache_set.begin(); itr != cache_set.end(); ++itr) {
 
 			//return if target reached
@@ -171,11 +174,16 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 			//remove element from cache
 			bool removed = (*itr)->RemoveOldest();
 
+			//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i\n",
+			// 		target_size, mTargetRatio, group, mCacheMap[group].MaxSize);
+
 			//if successfully removed
 			if (removed) {
+				//debug ("thread", "removed\n");
 				//record element was removed from cache
 				p_last_successful_remove_cache = *itr;
 			} else {
+				//debug ("thread", "not removed\n");
 				//check if we have looped unsuccessfully
 				if (p_last_successful_remove_cache == *itr)
 					goto end_cleaning_group;

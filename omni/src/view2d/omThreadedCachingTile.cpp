@@ -99,7 +99,7 @@ OmTextureID *OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord & key)
 
 	//return mesh to cache
 	//debug("genone","OmThreadedCachingTile::HandleCacheMiss: returning texture");  
-	return BindToTextureID(key);
+	return BindToTextureID(key, this);
 	// OmTile: OmTextureID* BindToTextureID(const OmTileCoord &key);
 }
 

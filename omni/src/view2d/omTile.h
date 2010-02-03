@@ -21,6 +21,7 @@ using namespace vmml;
 
 #include "system/omSystemTypes.h"
 #include "volume/omVolumeTypes.h"
+#include "system/omCacheBase.h"
 
 #include <QColor>
 
@@ -33,6 +34,7 @@ using boost::shared_ptr;
 class OmMipVolume;
 class OmTextureID;
 class OmTileCoord;
+class OmThreadedCachingTile;
 
 class OmTile {
 
@@ -40,7 +42,7 @@ public:
 	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol);
 	~OmTile();
 	
-	OmTextureID* BindToTextureID(const OmTileCoord &key);
+	OmTextureID* BindToTextureID(const OmTileCoord &key, OmThreadedCachingTile* cache);
 	// int BindToTextureID(const OmTileCoordinate &key);
 	
 	void AddOverlay(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);

@@ -55,7 +55,7 @@ void OmTile::SetNewAlpha(float newval)
 	mAlpha = newval;
 }
 
-OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
+OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
 {
 	//std::cerr << "entering " << __FUNCTION__ << endl;
 
@@ -91,7 +91,7 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
 
 				textureID =
 				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, NULL, vData, OMTILE_NEEDTEXTUREBUILT);
+						    myIdSet, cache, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
 #if 0
 				if (1 == mBytesPerSample) {
@@ -119,7 +119,7 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key)
 #endif
 				textureID =
 				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, NULL, vData, OMTILE_NEEDCOLORMAP);
+						    myIdSet, cache, vData, OMTILE_NEEDCOLORMAP);
 			}
 			return textureID;
 		}
