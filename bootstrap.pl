@@ -16,6 +16,7 @@ my $buildPath   = $basePath.'/external/builds';
 my $srcPath     = $basePath.'/external/srcs';
 my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
+my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
 my $globalMakeOptions = " -j15 ";
@@ -27,8 +28,8 @@ print `mkdir $buildPath` if (!-e $buildPath);
 print `mkdir $srcPath` if (!-e $srcPath);
 
 sub genscripts {
-    `rm $basePath/buildomni.sh`;
-    open (SCRIPT, ">", "$basePath/buildomni.sh") or die $!;
+    #`rm $scriptPath/buildomni.sh`;
+    open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
 
     my $script = "
 export QTDIR=$libPath/Qt
@@ -37,25 +38,25 @@ export EXPAT_INCLUDE=$libPath/expat/lib/
 export EXPAT_LIBPATH=$libPath/expat/include/
 cd $basePath/omni
 cmake .
-make
+make $globalMakeOptions
 ";
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $basePath/buildomni.sh`;
+    `chmod +x $scriptPath/buildomni.sh`;
 
 
-    `rm $basePath/buildvtk.sh`;
-    open (SCRIPT, ">", "$basePath/buildvtk.sh") or die $!;
+    #`rm $scriptPath/buildvtk.sh`;
+    open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
 
     my $script = "
 cd $buildPath/vtk-5.4.2
 cmake $srcPath/vtk-5.4.2
-make
+make $globalMakeOptions
 make install    
 ";
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $basePath/buildvtk.sh`;
+    `chmod +x $scriptPath/buildvtk.sh`;
 }
 
 sub vtk {
@@ -76,7 +77,7 @@ sub vtk {
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
     print "runing: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
-    `sh $basePath/buildvtk.sh`;
+    `sh $scriptPath/buildvtk.sh`;
 }
 
 sub setupBuildFolder {
@@ -287,7 +288,7 @@ END
 
     updateCMakeListsFile();
 
-    `sh $basePath/buildomni.sh`;
+    `sh $scriptPath/buildomni.sh`;
 }
 
 sub updateCMakeListsFile {
