@@ -320,13 +320,7 @@ my $max_answer = 10;
 
 # This is the official release option
 sub release {
-	runMenuEntry (1);
-	runMenuEntry (2);
-	runMenuEntry (3);
-	runMenuEntry (4);
 	runMenuEntry (5);
-	runMenuEntry (6);
-	runMenuEntry (7);
 
 	# Do release specific work now.
 
