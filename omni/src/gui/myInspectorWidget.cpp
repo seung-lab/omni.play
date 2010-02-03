@@ -96,7 +96,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 
 	current_object = 99;
 	first_access = true;
-	iSentIt = false;
 	preferencesActivated = false;
 
 	// what does this do? (purcaro)
@@ -403,6 +402,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 			splitter->setSizes(my_sizes);
 	}
 
+	filObjectInspectorWidget->blockSignals(true);
 	populateFilterObjectInspector(fdw.getChannelID(), item_id);
 
 	filObjectInspectorWidget->setChannelID(fdw.getChannelID());
@@ -416,6 +416,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 
 	first_access = false;
 	preferencesActivated = false;
+	filObjectInspectorWidget->blockSignals(false);
 }
 
 void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
@@ -744,20 +745,18 @@ void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 
 void MyInspectorWidget::setFilAlpha(int alpha)
 {
-	QTreeWidgetItem *dataElementItem = dataElementsWidget->currentItem();
-	QVariant result = dataElementItem->data(USER_DATA_COL, Qt::UserRole);
-	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
-	const OmId filterID = fdw.getID();
-	const OmId channelID = fdw.getChannelID();
+	const OmId filterID =  filObjectInspectorWidget->getFilterID();
+	const OmId channelID = filObjectInspectorWidget->getChannelID();
 
-	OmVolume::GetChannel(channelID).GetFilter(filterID).SetAlpha((double)alpha / 100.00);
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	try {
+		OmVolume::GetChannel(channelID).GetFilter(filterID).SetAlpha((double)alpha / 100.00);
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	} catch(...) {
+	}
 }
 
 void MyInspectorWidget::setSegObjColor()
 {
-	//debug("genone","MyInspectorWidget::QColorDialog::getColor()");
-
 	QColor color = QColorDialog::getColor(current_color, this);
 	if (!color.isValid()) {
 		return;
@@ -793,9 +792,11 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
-	if (this == event->getUserData()) {
-		printf("in MyInspectorWidget:%s...; i sent it!\n", __FUNCTION__);
+	if (this == event->getSender()) {
+		//debug("gui", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 		return;
+	} else {
+		//debug("gui", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
@@ -857,6 +858,7 @@ void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID)
 void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
+	//debug("gui", "in %s\n", __FUNCTION__);
 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
 
 	dataElementsWidget->clear();
@@ -914,6 +916,7 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 	if (0 == column) {
 		sdw.toggleEnabled();
 		sendSegmentChangeEvent(sdw, true);
+		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {
 		sdw.toggleSelected();
 
@@ -955,6 +958,10 @@ void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const boo
 	}
 
 	(new OmSegmentSelectAction(segmentationID,
-				   selected_segment_ids, un_selected_segment_ids, segmentID, this))->Run();
+				   selected_segment_ids, 
+				   un_selected_segment_ids, 
+				   segmentID, 
+				   this,
+				   "myInspectorWidget"))->Run();
 
 }

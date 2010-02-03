@@ -329,6 +329,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 	}
 	mpView3d->mCamera.MovementUpdate(point);
 	mpView3d->updateGL();
+	mpView3d->mCamera.MovementEnd(point);
 }
 
 #pragma mark

@@ -71,6 +71,7 @@ void OmChannel::BuildVolumeData()
 {
 	//build volume
 	OmMipVolume::Build();
+	printf("done building channel data\n");
 }
 
 

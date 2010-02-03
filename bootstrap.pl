@@ -28,10 +28,13 @@ print `mkdir $buildPath` if (!-e $buildPath);
 print `mkdir $srcPath` if (!-e $srcPath);
 
 sub genscripts {
-    #`rm $scriptPath/buildomni.sh`;
+    genOmniScript();
+}
+
+sub genOmniScript {
     open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
 
-    my $script = "
+    my $script = <<END;
 export QTDIR=$libPath/Qt
 export BOOST_ROOT=$libPath/Boost
 export EXPAT_INCLUDE=$libPath/expat/lib/
@@ -39,30 +42,30 @@ export EXPAT_LIBPATH=$libPath/expat/include/
 cd $basePath/omni
 cmake .
 make $globalMakeOptions
-";
+END
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $scriptPath/buildomni.sh`;
+}
 
-
-    #`rm $scriptPath/buildvtk.sh`;
+sub genVTKscript {
+    my $baseFileName = $_[0];
     open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
 
-    my $script = "
-cd $buildPath/vtk-5.4.2
-cmake $srcPath/vtk-5.4.2
+    my $script = <<END
+cd $buildPath/$baseFileName
+cmake $srcPath/$baseFileName
 make $globalMakeOptions
 make install    
-";
+END
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $scriptPath/buildvtk.sh`;
 }
 
 sub vtk {
-    genscripts();
-
     my $baseFileName = "vtk-5.4.2";
+    genVTKscript( $baseFileName );
     prepare( $baseFileName, "VTK" );
 
     # Work around for a bug in the VTK tar ball.
@@ -136,6 +139,18 @@ sub prepare {
     my $libFolderName = $_[1];
 
     printTitle(        $baseFileName );
+    nukeBuildFolder(   $baseFileName );
+    nukeLibraryFolder( $libFolderName );
+    untar(             $baseFileName );
+    setupBuildFolder(  $baseFileName );
+}
+
+sub prepareNukeSrcsFolder {
+    my $baseFileName  = $_[0];
+    my $libFolderName = $_[1];
+
+    printTitle(        $baseFileName );
+    nukeSrcsFolder(    $baseFileName );
     nukeBuildFolder(   $baseFileName );
     nukeLibraryFolder( $libFolderName );
     untar(             $baseFileName );
@@ -242,9 +257,8 @@ sub libpng {
     prepareAndBuild( "libpng-1.2.39", "libpng" );
 }
 
-sub libtiff {
-    nukeSrcsFolder( "tiff-3.8.2" );
-    prepare( "tiff-3.8.2", "libtiff" );
+sub libtiff { 
+    prepareNukeSrcsFolder( "tiff-3.8.2", "libtiff" );
     buildInSourceFolder( "tiff-3.8.2", "libtiff", "--without-jpeg" );
 }
 
@@ -270,7 +284,7 @@ sub qt {
 }
 
 sub omni {
-    genscripts ();
+    genOmniScript();
 
     my $cmakeSettings = <<END;
 CMAKE_BUILD_TYPE:STRING=Debug
@@ -342,14 +356,16 @@ sub smallLibraries {
     hdf5();
 }
 
-my $max_answer = 10;
-
 # This is the official release option
 sub release {
 	my $version = "1.0";
 
-	runMenuEntry (6);
-	runMenuEntry (7);
+	smallLibraries();
+	boost();
+	qt();
+	vtk();
+	libtiff();
+	omni();
 
 	# Do release specific work now.
 
@@ -357,8 +373,10 @@ sub release {
 	`rm -rf omni/secret`;
 
 	# FIXME: Need to tar up the right files
-	print `tar -zcvf omni1-release-bin-$version.tar.gz omni/bin/omni`;
+	print `tar -zcvf Omni1-release-bin-$version.tar.gz omni/bin/omni`;
 }
+
+my $max_answer = 10;
 
 sub menu {
     print "bootstrap.pl menu:\n";
@@ -373,7 +391,6 @@ sub menu {
     print "8 -- hdf5\n";
     print "9 -- Generate scripts\n";
     print "10-- release\n\n";
-
 
     while( 1 ){
 	print "Please make selection: ";
@@ -423,16 +440,12 @@ sub runMenuEntry {
 
 }
 
-sub checkEnvAndRunMenu {
-    menu();
-}
-
 sub checkCmdLineArgs {
     if ( 1 == @ARGV ) {
 	runMenuEntry( @ARGV[0] );
     }
     else {
-	checkEnvAndRunMenu();
+	menu();
     }
 }
 

@@ -33,11 +33,6 @@
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
 
-class QTreeView;
-class InspectorTreeView;
-class TreeProxyModel;
-class TreeModel;
-
 class SegInspector;
 class VolumeInspector;
 class ChanInspector;
@@ -46,8 +41,6 @@ class SegObjectInspector;
 class PreferencesMesh;
 class Preferences2d;
 class Preferences3d;
-
-class OmManageableObject;
 
 class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
  Q_OBJECT public:
@@ -184,7 +177,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	bool preferencesActivated;
 
 	bool first_access;
-	bool iSentIt;
 
 	ViewType getViewType(QAction * act);
 };

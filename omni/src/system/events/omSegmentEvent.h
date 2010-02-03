@@ -24,7 +24,7 @@ class OmSegmentEvent : public OmEvent {
  public:
 	OmSegmentEvent(QEvent::Type type);	
 	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &);
-	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId, void* user_data = NULL );
+	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId, void* sender, string comment );
 	void Dispatch(OmEventListener *);
 	
 	//class
@@ -38,13 +38,15 @@ class OmSegmentEvent : public OmEvent {
 	OmId GetModifiedSegmentationId();
 	const OmIds& GetModifiedSegmentIds();
 	const OmId GetSegmentJustSelectedID();
-	void* getUserData();
+	void* getSender();
+	string getComment();
 
  private:
 	OmId  mSegmentationId;
 	OmIds mSegmentIds;
 	OmId  mSegmentJustSelectedID;
-	void* mUserData;
+	void* mSender;
+	string mComment;
 
 };
 

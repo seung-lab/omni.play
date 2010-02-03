@@ -473,9 +473,10 @@ template < typename T,  typename U >
 void
 OmThreadedCache<T,U>::Clear() {
 	
+	//FIXME: this is all broken! must be, at least, mutex protected...
 	//while map contains values
-	while(mCachedValuesMap.size()) 
-		RemoveOldest();
+	//while(mCachedValuesMap.size()) 
+	//	RemoveOldest();
 }
 
 

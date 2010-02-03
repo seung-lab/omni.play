@@ -15,27 +15,29 @@ class OmSegmentSelectAction : public OmAction {
 
 public:
 	OmSegmentSelectAction(OmId segmentationId, 
-					  OmId segmentId, 
-					  bool state, 
-					  OmId segmentJustSelected = 0,
-					  void* userData = NULL );
+			      OmId segmentId, 
+			      bool state, 
+			      OmId segmentJustSelected = 0);
+
 	OmSegmentSelectAction(OmId segmentationId, 
-					  const OmIds &segmentIds, 
-					  bool state, 
-					  OmId segmentJustSelected = 0,
-					  void* userData = NULL );
+			      const OmIds &segmentIds, 
+			      bool state, 
+			      OmId segmentJustSelected = 0);
+
 	OmSegmentSelectAction(OmId segmentationId, 
-					  const OmIds &selectIds, 
-					  const OmIds &unselectIds, 
-					  OmId segmentJustSelected = 0,
-					  void* userData = NULL );
+			      const OmIds &selectIds, 
+			      const OmIds &unselectIds, 
+			      OmId segmentJustSelected = 0,
+			      void* sender = 0,
+			      string comment = "");
 	
 private:
 	void Initialize(OmId segmentationId, 
-				 const OmIds &selectIds, 
-				 const OmIds &unselectIds,
-				 const OmId segmentJustSelected = 0,
-				 void* userData = NULL );
+			const OmIds &selectIds, 
+			const OmIds &unselectIds,
+			const OmId segmentJustSelected = 0,
+			void* sender = NULL,
+			string comment = "" );
 	void Action();
 	void UndoAction();
 	string Description();
@@ -46,7 +48,8 @@ private:
 	OmIds mUnselectIds;
 	
 	OmId mSegmentJustSelectedID;
-	void* mUserData;
+	void* mSender;
+	string mComment;
 
 	bool mNewState;
 	map< OmId, bool > mPrevSegmentStates;

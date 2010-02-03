@@ -194,6 +194,8 @@ void OmSegmentation::BuildVolumeData()
 
 	//seg change event
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+
+	printf("done building segmentation data\n");
 }
 
 /*

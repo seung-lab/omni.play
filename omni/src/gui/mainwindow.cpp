@@ -534,10 +534,6 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype)
 {
 	try {
-
-		//debug("genone","MainWindow::openSegmentationView()");
-
-#pragma mark <TODO: Fix this overlay>
 		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, secondary_id);
 
 		string name = OmVolume::GetSegmentation(primary_id).GetName();
@@ -1151,6 +1147,7 @@ void MainWindow::setupSegmentationBoxes()
 void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
 	try {
+		selectSegmentationBox->blockSignals(true);
 		selectSegmentationBox->clear();
 		editColorButton->setIcon(QIcon());
 
@@ -1173,6 +1170,7 @@ void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJ
 			selectSegmentationBox->setCurrentIndex(indexToSet);
 		}
 		selectSegmentationBox->update();
+		selectSegmentationBox->blockSignals(false);
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -1181,8 +1179,8 @@ void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJ
 void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	try {
-		if(event->getUserData() == this) {
-			printf("in mainwindow:%s...; i sent it!\n", __FUNCTION__);
+		if(event->getSender() == this) {
+			//debug("gui", "%s...; skipping since i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 			return;
 		}
 
@@ -1205,12 +1203,12 @@ void MainWindow::changeSelection(int segmentIndex)
 		const OmId segmentID = segH.getID();
 
 		if( !OmVolume::IsSegmentationValid( segmentationID ) ){
-			printf("\nmainwindow: invalid segmentation found; ID is %d\n", segmentationID );
+			debug("gui", "invalid segmentation found; ID is %d\n", segmentationID );
 			return;
 		}
 		OmSegmentation& segmentation = OmVolume::GetSegmentation(segmentationID);
 		if( !segmentation.IsSegmentValid( segmentID ) ){
-			printf("invalid segment found; ID is %d\n", segmentID );
+			debug("gui", "invalid segment found; ID is %d\n", segmentID );
 			return;
 		}
 		
@@ -1229,7 +1227,10 @@ void MainWindow::changeSelection(int segmentIndex)
 		selected_segment_ids.insert(segmentID);
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 							     segmentationID,
-							     selected_segment_ids, segmentID, this));
+							     selected_segment_ids, 
+							     segmentID, 
+							     this,
+							     "mainwindow"));
 	} catch(OmException & e) {
 		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
 		spawnErrorDialog(e);
