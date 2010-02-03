@@ -2384,10 +2384,11 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		}
 	}
 	if (!complete) {
-		debug ("genone", "not complete yet in predraw\n");
+		//debug ("genone", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} else
-		debug ("genone", "complete in predraw\n");
+	} else {
+		// debug ("genone", "complete in predraw\n");
+	}
 }
 
 void OmView2d::Draw(vector < Drawable * >&textures)
