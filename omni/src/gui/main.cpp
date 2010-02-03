@@ -5,8 +5,6 @@
 #include "system/omProject.h"
 #include <dlfcn.h>
 #include "system/omDebug.h"
-#include "system/omNumCores.h"
-#include <stdio.h>
 
 GGOCTFPointer GGOCTFunction = 0;
 int firsttime(int argc, char *argv[])
@@ -35,25 +33,19 @@ int firsttime(int argc, char *argv[])
 	return app.exec();
 }
 
-void checkNumCoresFound()
-{
-	printf("found %d cores\n", OmNumCores::get_num_cores() );
-}
-
 int main(int argc, char *argv[])
 {
 	//    return firsttime (argc, argv);
-
-	checkNumCoresFound();
-	 
+	int fileArgIndex = parseAnythingYouCan(argc, argv);
 	QApplication app(argc, argv);
 	Q_INIT_RESOURCE(resources);
 	MainWindow mainWin;
 	mainWin.show();
 
-	if (argc > 1) {
-		mainWin.openProject(argv[1]);
+	if (fileArgIndex) {
+		mainWin.openProject(argv[fileArgIndex]);
 	}
 
 	return app.exec();
 }
+
