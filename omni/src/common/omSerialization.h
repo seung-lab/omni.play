@@ -1,26 +1,28 @@
-
 /*
  *	Standard Serialization Headers
  *
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-
 #ifndef OM_SERIALIZATION_H
 #define OM_SERIALIZATION_H
 
-
-
-
+#if 0
 #define OM_ARCHIVE_IN_CLASS boost::archive::binary_iarchive
 #define OM_ARCHIVE_OUT_CLASS boost::archive::binary_oarchive
-
-
-//archives
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#elsif 0
+#define OM_ARCHIVE_IN_CLASS  boost::archive::xml_iarchive
+#define OM_ARCHIVE_OUT_CLASS boost::archive::xml_oarchive
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#else
+#define OM_ARCHIVE_IN_CLASS  boost::archive::text_iarchive
+#define OM_ARCHIVE_OUT_CLASS boost::archive::text_oarchive
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#endif
 
 //utilties
 #include <boost/serialization/base_object.hpp>
@@ -32,13 +34,6 @@
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/map.hpp>
-
-
-
-
-
-
-
 
 /*
  * Serialize Boost::tuple

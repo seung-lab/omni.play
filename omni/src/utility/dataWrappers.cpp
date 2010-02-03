@@ -99,6 +99,11 @@ SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId seg
 	mName = QString::fromStdString(OmVolume::GetSegmentation(mSegmentationID).GetSegment(segmentID).GetName());
 }
 
+QString SegmentDataWrapper::getSegmentationName()
+{
+	return QString::fromStdString(OmVolume::GetSegmentation(mSegmentationID).GetName());
+}
+
 bool SegmentDataWrapper::isSelected()
 {
 	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);

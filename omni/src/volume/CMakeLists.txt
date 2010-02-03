@@ -12,6 +12,7 @@ SET(OM_VOLUME_LIB_SRCS
 	omMipVolume.cpp
 	omSegmentation.cpp
 	omVolume.cpp
+	../utility/dataWrappers.cpp
 )
 
 

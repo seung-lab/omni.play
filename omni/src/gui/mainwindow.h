@@ -6,8 +6,16 @@
 #include <QProgressDialog>
 #include <QThread>
 #include <qtconcurrentrun.h>
+#include <QList>
+#include <QMultiMap>
+#include <QUndoStack>
+#include <QUndoView>
+#include <QComboBox>
+#include <QErrorMessage>
 
 #include "common/omStd.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 #include "system/omGenericManager.h"
 #include "system/omStateManager.h"
 #include "system/events/omSegmentEvent.h"
@@ -17,31 +25,9 @@
 
 #include "gui/recentFileList.h"
 
-class QAction;
-class QMenu;
-class QFrame;
-class QUndoStack;
-class QUndoView;
-
-class QErrorMessage;
-
-// the 2D viewing widget
 class OmView2d;
-class DOmView2d;
-
-// the 3D viewing widget
 class OmView3d;
-
-// the Omni Inspector
 class MyInspectorWidget;
-
-class TreeModel;
-
-class QPushButton;
-class QComboBox;
-
-class OmChannel;
-class OmSegmentation;
 
 class MainWindow 
 : public QMainWindow, 	
@@ -58,7 +44,6 @@ class MainWindow
 		void seg_build(OmSegmentation *current_seg);
 		void mesh_build(OmSegmentation *current_seg, QFuture<void> &last_future);		
 		
-		//open project at path
 		void openProject( QString fileNameAndPath );
 		void openProject( QString fileName, QString pathName );
 		
@@ -66,9 +51,6 @@ class MainWindow
 		void closeEvent(QCloseEvent *event); 
 		
 		void SegmentObjectModificationEvent(OmSegmentEvent *event);
-		void SegmentEditSelectionChangeEvent(OmSegmentEvent *event);
-		
-		void SystemModeChangeEvent(OmSystemModeEvent *event);
 		
 		void AlertNotifyEvent(OmAlertEvent *event);
 		
@@ -167,11 +149,8 @@ class MainWindow
 		QProgressDialog prog_dialog;
 		bool editsMade;
 		
-		bool iSentIt;
-		
 		OmView3d *qtView3d;
 		OmView2d *qtView2d;
-		DOmView2d *myView2d;
 		
 		MyInspectorWidget *omniInspector;
 		QUndoView *undoView;
@@ -179,8 +158,6 @@ class MainWindow
 		bool isProjectOpen;
 		bool closeProjectIfOpen();
 		
-		QColor selected_color;
-
 		RecentFileList recentFiles;
 
 		// new toolbar

@@ -309,34 +309,15 @@ void OmVolume::SetSegmentationEnabled(OmId id, bool enable)
 	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
 
-QList < SegmentIDhelper > OmVolume::GetSelectedSegmentIDs()
+QList < SegmentDataWrapper > OmVolume::GetSelectedSegmentIDs()
 {
+	QList < SegmentDataWrapper > segmentationsAndSegments;
 
-	QList < SegmentIDhelper > segmentationsAndSegments;
+	foreach(OmId segmentationID, OmVolume::GetValidSegmentationIds()) {
+		OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
 
-	foreach(OmId seg_it, OmVolume::GetValidSegmentationIds()) {
-
-		/*
-		   if( !OmVolume::IsSegmentationEnabled(seg_it) ) {
-		   continue;
-		   }
-		 */
-
-		OmSegmentation & current_seg = OmVolume::GetSegmentation(seg_it);
-
-		foreach(OmId obj_it, current_seg.GetSelectedSegmentIds()) {
-
-			/*
-			   if( !OmVolume::GetSegmentation(seg_it).IsSegmentEnabled(obj_it) ) {
-			   continue;
-			   }
-			 */
-
-			SegmentIDhelper seg;
-			seg.segmentationID = seg_it;
-			seg.segmentationName = QString::fromStdString(current_seg.GetName());
-			seg.segmentID = obj_it;
-			seg.segmentName = QString::fromStdString(current_seg.GetSegment(obj_it).GetName());
+		foreach(OmId segmentID, segmentation.GetSelectedSegmentIds()) {
+			SegmentDataWrapper seg( segmentationID, segmentID);
 			segmentationsAndSegments.append(seg);
 		}
 	}

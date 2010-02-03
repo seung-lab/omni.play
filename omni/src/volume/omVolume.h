@@ -8,8 +8,6 @@
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-
-
 #include "omVolumeTypes.h"
 #include "omChannel.h"
 #include "omSegmentation.h"
@@ -19,23 +17,15 @@
 #include "system/omManageableObject.h"
 #include "common/omGl.h"
 #include "common/omStd.h"
-
+#include "utility/dataWrappers.h"
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-
-
 class OmChannel;
 class OmVolumeCuller;
-
-struct SegmentIDhelper {
-	OmId    segmentationID;
-	QString segmentationName;
-	OmId    segmentID;
-	QString segmentName;
-};
+class SegmentDataWrapper;
 
 class OmVolume : public OmManageableObject {
 
@@ -84,12 +74,11 @@ public:
 	static const set<OmId>& GetValidSegmentationIds();
 	static bool IsSegmentationEnabled(OmId id);
 	static void SetSegmentationEnabled(OmId id, bool enable);
-	static QList< SegmentIDhelper > GetSelectedSegmentIDs();
+	static QList< SegmentDataWrapper > GetSelectedSegmentIDs();
 	
 	//drawing
 	static void Draw(const OmVolumeCuller &);
 	static void DrawEditSelectionVoxels();
-	
 	
 	void Print();
 	
@@ -127,11 +116,6 @@ private:
 	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-
-
-
-
-
 #pragma mark 
 #pragma mark Serialization
 /////////////////////////////////
@@ -153,8 +137,4 @@ OmVolume::serialize(Archive & ar, const unsigned int file_version) {
 	ar & mSegmentationManager;
 }
 
-
-
-
 #endif
-

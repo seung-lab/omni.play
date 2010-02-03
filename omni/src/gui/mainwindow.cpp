@@ -1,29 +1,18 @@
-#include <QList>
-#include <QMultiMap>
-#include <QUndoStack>
-#include <QUndoView>
+#include "myInspectorWidget.h"
+#include "mainwindow.h"
+#include "recentFileList.h"
 
 #include "view2d/omTile.h"
 #include "view2d/omCachingTile.h"
 #include "view2d/omTextureID.h"
-
-#include "mainwindow.h"
-#include "recentFileList.h"
-
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
 #include "system/omProject.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
-
-#include "myInspectorWidget.h"
-
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
-
+#include "utility/dataWrappers.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-
 #include "system/omEventManager.h"
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omToolModeEvent.h"
@@ -43,9 +32,7 @@ namespace bfs = boost::filesystem;
 #include "system/omDebug.h"
 using boost::tuple;
 
-#define DEBUG 0
-
-Q_DECLARE_METATYPE(SegmentIDhelper);
+Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 MainWindow::MainWindow()
  : prog_dialog(this)
@@ -78,7 +65,6 @@ MainWindow::MainWindow()
 		omniInspector = NULL;
 		undoView = NULL;
 
-		iSentIt = false;
 		// prog_bar = new QProgressBar(statusBar());
 		// statusBar()->addWidget(prog_bar);
 
@@ -929,13 +915,14 @@ void MainWindow::spawnErrorDialog(OmException & e)
 {
 	// FIXME Some things being displayed should actually crashes?
 	// For debugging, turn this on. 
-	// assert (0);
+	//assert (0);
 	QString type = QString::fromStdString(e.GetType());
 	QString name = QString::fromStdString(e.GetName());
 	QString msg = QString::fromStdString(e.GetMessage());
 
 	QString errorMessage = type + ": " + name + ". " + msg;
 	exceptionMessage->showMessage(errorMessage);
+	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
 }
 
 ////////////////////////////////////////////////////////////
@@ -1157,7 +1144,8 @@ void MainWindow::setupSegmentationBoxes()
 	editColorButton->setMaximumWidth(50);
 	toolToolBar->addWidget(editColorButton);
 
-	connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSelection(int)));
+	connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), 
+		this, SLOT(changeSelection(int)));
 }
 
 void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJustSelectedID)
@@ -1168,14 +1156,14 @@ void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJ
 
 		int indexToSet = -1;
 		int counter = 0;
-		foreach(SegmentIDhelper segH, OmVolume::GetSelectedSegmentIDs()) {
-			QString comboBoxRowStr = segH.segmentationName + "--" + segH.segmentName;
+		foreach( SegmentDataWrapper segH, OmVolume::GetSelectedSegmentIDs()) {
+			QString comboBoxRowStr = segH.getSegmentationName() + "--" + segH.getName();
 			selectSegmentationBox->addItem(comboBoxRowStr, qVariantFromValue(segH));
 
 			// if we get none-zero segmenetation and segment IDs, select the segment 
 			//  (in the correct segmentation) as the currently active combo box item
-			if (segmentationID == segH.segmentationID) {
-				if (segmentJustSelectedID == segH.segmentID) {
+			if (segmentationID == segH.getSegmentationID()) {
+				if (segmentJustSelectedID == segH.getID()) {
 					indexToSet = counter;
 				}
 			}
@@ -1193,6 +1181,11 @@ void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJ
 void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	try {
+		if(event->getUserData() == this) {
+			printf("in mainwindow:%s...; i sent it!\n", __FUNCTION__);
+			return;
+		}
+
 		const OmId segmentationID = event->GetModifiedSegmentationId();
 		const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
 		updateComboBoxes(segmentationID, segmentJustSelectedID);
@@ -1201,49 +1194,44 @@ void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent * event)
 	}
 }
 
-void MainWindow::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
-{
-}
-
-void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
-{
-}
-
 void MainWindow::changeSelection(int segmentIndex)
 {
 	try {
+		editColorButton->setIcon(QIcon());
 
 		QVariant result = selectSegmentationBox->itemData(selectSegmentationBox->currentIndex());
-		SegmentIDhelper segH = result.value < SegmentIDhelper > ();
-		OmId seg_id = segH.segmentationID;
-		OmId obj_id = segH.segmentID;
+		SegmentDataWrapper segH = result.value < SegmentDataWrapper > ();
+		const OmId segmentationID = segH.getSegmentationID();
+		const OmId segmentID = segH.getID();
 
-		if ((obj_id != 0) && (seg_id != 0)) {
+		if( !OmVolume::IsSegmentationValid( segmentationID ) ){
+			printf("\nmainwindow: invalid segmentation found; ID is %d\n", segmentationID );
+			return;
+		}
+		OmSegmentation& segmentation = OmVolume::GetSegmentation(segmentationID);
+		if( !segmentation.IsSegmentValid( segmentID ) ){
+			printf("invalid segment found; ID is %d\n", segmentID );
+			return;
+		}
+		
+		OmSegmentEditor::SetEditSelection(segmentationID, segmentID);
 
-			iSentIt = true;
-			OmSegmentEditor::SetEditSelection(seg_id, obj_id);
-			iSentIt = false;
-			// FIRE EVENT
-
-			OmSegment & current_obj = OmVolume::GetSegmentation(seg_id).GetSegment(obj_id);
-			const Vector3 < float >&color = current_obj.GetColor();
-
-			QPixmap *pixm = new QPixmap(40, 30);
-			QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
-			pixm->fill(newcolor);
-
-			editColorButton->setIcon(QIcon(*pixm));
-
-			selected_color = newcolor;
-
-			// TODO: why is this commented out? (purcaro)
-			// iSentIt = true;
-			// OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_SELECTION_CHANGE));
-		} else if (obj_id == 0)
-			editColorButton->setIcon(QIcon());
-
+		OmSegment& segment = segmentation.GetSegment(segmentID);
+		const Vector3 < float >&color = segment.GetColor();
+		
+		QPixmap *pixm = new QPixmap(40, 30);
+		QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
+		pixm->fill(newcolor);
+		
+		editColorButton->setIcon(QIcon(*pixm));
+		
+		OmIds selected_segment_ids;
+		selected_segment_ids.insert(segmentID);
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
+							     segmentationID,
+							     selected_segment_ids, segmentID, this));
 	} catch(OmException & e) {
 		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
-		//spawnErrorDialog(e);
+		spawnErrorDialog(e);
 	}
 }

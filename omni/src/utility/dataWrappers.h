@@ -11,6 +11,7 @@
 
 class SegmentDataWrapper;
 class FilterDataWrapper;
+
 class DataWrapper
 {
  public:
@@ -20,7 +21,7 @@ class DataWrapper
 		: mID(ID), mType(Type) {}
 
 	OmId getID()     {    return mID;   }
-     QString getName(){    return mName; }
+	QString getName(){    return mName; }
 	ObjectType getType(){ return mType; }
 	bool isEnabled()    { return mEnabled; }
  protected:
@@ -53,8 +54,9 @@ class SegmentDataWrapper : public DataWrapper
  public:
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
-					const OmId segmentID );
+			    const OmId segmentID );
 	OmId getSegmentationID(){ return mSegmentationID; }
+	QString getSegmentationName();
 	
 	bool isSelected();
 	void toggleSelected();
@@ -72,9 +74,9 @@ class FilterDataWrapper : public DataWrapper
  public:
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
-				    const OmId mID,
-				    const QString name,
-				    const bool enabled );
+			   const OmId mID,
+			   const QString name,
+			   const bool enabled );
 	OmId getChannelID(){ return mChannelID; }
 	QString getNote();
  private:

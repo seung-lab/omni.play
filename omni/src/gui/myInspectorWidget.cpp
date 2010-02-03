@@ -47,9 +47,7 @@ Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
-#define DEBUG 0
-
- MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
+MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 {
 	segmenHelper = new SegmentationHelper(this);
 	channelHelper = new ChannelHelper(this);
@@ -795,7 +793,8 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
-	if (event->getUserData() != NULL) {
+	if (this == event->getUserData()) {
+		printf("in MyInspectorWidget:%s...; i sent it!\n", __FUNCTION__);
 		return;
 	}
 

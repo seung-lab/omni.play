@@ -14,7 +14,7 @@
 
 #include "system/events/omSegmentEvent.h"
 
-#include "dataWrappers.h"
+#include "utility/dataWrappers.h"
 #include "inspectorHelpers/segmentationHelper.h"
 #include "inspectorHelpers/channelHelper.h"
 

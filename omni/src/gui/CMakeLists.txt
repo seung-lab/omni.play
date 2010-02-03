@@ -65,7 +65,7 @@ ADD_EXECUTABLE(omni
 	main.cpp
 	mainwindow.cpp
 	recentFileList.cpp
-	dataWrappers.cpp
+	../utility/dataWrappers.cpp
 	segInspector.cpp
 	volumeInspector.cpp
 	chanInspector.cpp

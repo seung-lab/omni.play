@@ -1,7 +1,7 @@
 #ifndef INSPECTOR_HELPER_INSPECTOR_HELPER
 #define INSPECTOR_HELPER_INSPECTOR_HELPER
 
-#include "../dataWrappers.h"
+#include "utility/dataWrappers.h"
 
 #include <QWidget>
 
