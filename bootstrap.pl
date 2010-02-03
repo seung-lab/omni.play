@@ -88,6 +88,14 @@ sub setupBuildFolder {
     print "done\n";
 }
 
+sub nukeSrcsFolder {
+    my $baseFileName = $_[0];
+
+    print "==> removing old srcs folder...";
+    `rm -rf $srcPath/$baseFileName`;
+    print "done\n";
+}
+
 sub nukeBuildFolder {
     my $baseFileName = $_[0];
 
@@ -235,7 +243,9 @@ sub libpng {
 }
 
 sub libtiff {
-    prepareAndBuild( "tiff-3.8.2", "libtiff" );
+    nukeSrcsFolder( "tiff-3.8.2" );
+    prepare( "tiff-3.8.2", "libtiff" );
+    buildInSourceFolder( "tiff-3.8.2", "libtiff", "--without-jpeg" );
 }
 
 sub freetype {
