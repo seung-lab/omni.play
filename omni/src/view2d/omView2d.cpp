@@ -1860,8 +1860,10 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 
 		gotten_id->flags = OMTILE_GOOD;
 		gotten_id->textureID = texture;
-		if (gotten_id->texture)
+		if (gotten_id->texture) {
+			debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 			free(gotten_id->texture);
+		}
 		gotten_id->texture = NULL;
 
 		//debug("FIXME", << "texture " << gotten_id->GetTextureID() << " was built" << endl;
@@ -1886,8 +1888,10 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 		gotten_id->flags = OMTILE_GOOD;
 		gotten_id->textureID = texture;
 
-		if (gotten_id->texture)
+		if (gotten_id->texture) {
+			debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 			free(gotten_id->texture);
+		}
 		gotten_id->texture = NULL;
 	}
 }
@@ -2032,8 +2036,10 @@ void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord t
 	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
 
 	if (gotten_id->texture) {
+		debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 		free (gotten_id->texture);
 	}
+	debug ("genone", "updating texture: %x to be %x\n", gotten_id->texture, texture);
 
 	gotten_id->mTileCoordinate = tileCoord;
 	gotten_id->textureID = texID;
@@ -2167,7 +2173,8 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 		lastid = tmpid;
 	}
 
-	// //debug("FIXME", << "going to make it the texture now" << endl;
+	free (imageData);
+
 	*rData = data;
 
 	return found_ids;
@@ -2190,6 +2197,7 @@ void *OmView2d::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims,
 	} else if (mViewType == YZ_VIEW) {
 		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, true);
 	}
+	debug ("genone", "allocating texture %x\n", void_data);
 	return void_data;
 }
 
@@ -2220,6 +2228,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 			//debug("FIXME", << "vData: "  << vData << endl;
 			if (mCache->mVolType == CHANNEL) {
 				OmIds myIdSet;
+				debug("genone", "CALL1 %x\n", vData);
 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
@@ -2246,14 +2255,16 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 						  gotten_id->mTileCoordinate, &out);
 				//debug("FIXME", << "out: vData: " << out << endl;
 				vData = out;
+				debug("genone", "CALL2 %x\n", vData);
 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDCOLORMAP);
 			}
+			debug("genone", "ELSE %x\n", vData);
 		}
-		//debug("FIXME", << "VALID " << gotten_id->mTileCoordinate << " vData: " << vData << endl;
+		debug("genone", "VALID\n");
+	} else {
+		debug("genone", "MIP COORD IS INVALID\n");
 	}
-	//else
-	//debug("FIXME", << "MIP COORD IS INVALID" << gotten_id->mTileCoordinate << endl;
 }
 
 void OmView2d::PreDraw(Vector2i zoomMipVector)
