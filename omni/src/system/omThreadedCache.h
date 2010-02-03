@@ -371,7 +371,7 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	//assert(mKeyAccessList.size());
 	
 	//debug("FIXME", << "mKeyAccessList.size(): " << mKeyAccessList.size() << endl;
-	if (mKeyAccessList.size()) {
+	if (mKeyAccessList.size() > 20) {
 		//get oldest key
 		T& r_oldest_key = mKeyAccessList.back();
 	

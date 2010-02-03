@@ -79,16 +79,7 @@ public:
 		static vector<OmCachingThreadedCachingTile*> caches;
 
 		if (NULL == vol) {
-	
-			for (int i = 0; i < caches.size(); i++) {
-				delete caches[i]->mCache;
-			}
-
-			caches.clear ();
 			mDelete = true;
-
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-
 			return;
 		}
 
@@ -117,9 +108,16 @@ public:
 
 	}
 
+	static unsigned int Freshen (bool freshen) {
+		static unsigned int freshness = 0;
+		if (freshen) {
+			freshness++;
+		}
+		return freshness;
+	}
 	static void Refresh () {
-
-		delete new OmCachingThreadedCachingTile ((ViewType)0, (ObjectType)0, (OmId)0, NULL, NULL);
+		Freshen (true);
+		//delete new OmCachingThreadedCachingTile ((ViewType)0, (ObjectType)0, (OmId)0, NULL, NULL);
 	}
 
 	bool mDelete;

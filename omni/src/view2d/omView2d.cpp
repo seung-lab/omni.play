@@ -1754,7 +1754,7 @@ void OmView2d::myUpdate()
 						DataCoord this_data_coord =
 						    ToDataCoord(xMipChunk, yMipChunk, zMipChunk);
 						SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION);
+						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen (false));
 
 						cache->Remove(tileCoord);
 						//debug("FIXME", << tileCoord << endl;
@@ -2086,7 +2086,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
                 doValidate = false;
         }
 
-        debug ("genone", "key volume type, real: %i\n", key.mVolType, mVolumeType);
+        //debug ("genone", "key volume type, real: %i\n", key.mVolType, mVolumeType);
 
 
 	QHash < SEGMENT_DATA_TYPE, QColor > speedTable;
@@ -2320,7 +2320,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType);
+			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
 			NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 

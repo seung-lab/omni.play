@@ -13,19 +13,21 @@ texture(texture), flags(flags), x(x), y(y)
 {
 	//debug("genone","OmTextureID::OmTextureID()"); 
 
-	UpdateSize(mem_size);
+	//UpdateSize(mem_size);
+	UpdateSize(128 * 128 * 4);
 }
 
 OmTextureID::~OmTextureID()
 {
-	//debug("genone","OmTextureID::~OmTextureID()");
+	debug("genone","OmTextureID::~OmTextureID(%i)\n", textureID);
 
 	//glDeleteTextures( 1, &textureID);
 	//Attempt a safe delete of the gl texture id.
 	OmGarbage::asOmTextureId(textureID);
 
 	//remove object size from cache
-	UpdateSize(-mem_size);
+	//UpdateSize(-mem_size);
+	UpdateSize(-128 * 128 * 4);
 }
 
 const bool OmTextureID::FindId(OmId f_id)
