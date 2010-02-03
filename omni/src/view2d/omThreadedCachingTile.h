@@ -117,7 +117,7 @@ public:
 	}
 	static void Refresh () {
 		Freshen (true);
-		//delete new OmCachingThreadedCachingTile ((ViewType)0, (ObjectType)0, (OmId)0, NULL, NULL);
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	}
 
 	bool mDelete;

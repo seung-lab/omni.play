@@ -2019,6 +2019,11 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 {
 	mGood = false;
 }
+Drawable::~Drawable ()
+{
+	debug ("genone", "freeing?\n");
+	gotten_id = shared_ptr < OmTextureID > ();
+}
 
 void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord tileCoord, const GLuint texID,
 		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)
@@ -2034,7 +2039,6 @@ void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord t
 	gotten_id->x = x;
 	gotten_id->y = y;
 
-	//gotten_id->UpdateSize(size);
 }
 
 int OmView2d::GetDepth(const OmTileCoord & key, OmMipVolume * vol)

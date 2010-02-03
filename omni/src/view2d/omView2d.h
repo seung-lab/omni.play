@@ -48,6 +48,7 @@ public:
 	bool mGood;
         Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor, shared_ptr<OmTextureID> gotten_id);
         Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor);
+	~Drawable ();
 };
 
 

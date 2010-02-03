@@ -356,7 +356,7 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	debug("cache"," removing oldest...");
 
 	//so as to destroy value outside of mutex
-	shared_ptr<U> old_value;
+	shared_ptr<U> old_value = shared_ptr<U> ();
 	
 	//lock cache and add
 	pthread_mutex_lock(&mCacheMutex);
@@ -406,7 +406,11 @@ OmThreadedCache<T,U>::RemoveOldest() {
 	}
 
 	
-	old_value.reset();
+	if (old_value) {
+		debug ("thread", "removing null value\n");
+		old_value.reset();
+	}
+
 
 	//unlock
 	pthread_mutex_unlock(&mCacheMutex);
