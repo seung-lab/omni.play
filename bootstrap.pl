@@ -52,7 +52,7 @@ sub genVTKscript {
     my $baseFileName = $_[0];
     open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
 
-    my $script = <<END
+    my $script = <<END;
 cd $buildPath/$baseFileName
 cmake $srcPath/$baseFileName
 make $globalMakeOptions
