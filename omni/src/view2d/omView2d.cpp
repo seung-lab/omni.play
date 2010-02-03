@@ -2359,6 +2359,8 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 							//debug("FIXME", << "got here...." << endl;
 							safeTexture(gotten_id);
 						} else {
+							gotten_id = shared_ptr < OmTextureID > ();
+							mCache->Remove(mTileCoord);
 							mCache->GetTextureID(gotten_id, mTileCoord, false);
 							complete = false;
 						}
