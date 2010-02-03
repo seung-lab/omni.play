@@ -1754,7 +1754,7 @@ void OmView2d::myUpdate()
 						DataCoord this_data_coord =
 						    ToDataCoord(xMipChunk, yMipChunk, zMipChunk);
 						SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);
+						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION);
 
 						cache->Remove(tileCoord);
 						//debug("FIXME", << tileCoord << endl;
@@ -2081,6 +2081,13 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 	SEGMENT_DATA_TYPE lastid = 0;
 
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(segid);
+	bool doValidate = current_seg.GetSelectedSegmentDataValues ().size ();
+        if (SEGMENTATION == key.mVolType) {
+                doValidate = false;
+        }
+
+        debug ("genone", "key volume type, real: %i\n", key.mVolType, mVolumeType);
+
 
 	QHash < SEGMENT_DATA_TYPE, QColor > speedTable;
 	QColor newcolor;
@@ -2116,8 +2123,10 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 						entered = true;
 
 					} else {
-						//newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
-						newcolor = qRgba(0, 0, 0, 255);
+						if (doValidate) 
+							newcolor = qRgba(0, 0, 0, 255);
+						else
+							newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
 					}
 
 					data[ctr] = newcolor.red();
@@ -2194,8 +2203,10 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 			Vector2 < int >tile_dims;
 			vData = GetImageData(gotten_id->mTileCoordinate, tile_dims, mCache->mVolume);
 
-			if (!vData)
+			if (!vData) {
+				assert (0);
 				return;
+			}
 
 			//debug("FIXME", << "vData: "  << vData << endl;
 			if (mCache->mVolType == CHANNEL) {
@@ -2308,7 +2319,8 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord);
+			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
+			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType);
 			NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 
@@ -2332,7 +2344,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 					gotten_id->mVolType = mCache->mVolType;
 					if (gotten_id->GetTextureID() == 0) {
 						//debug("FIXME", << "no id..." << gotten_id->texture << endl;
-						if (NULL == gotten_id->texture) {
+						if (NULL == gotten_id->texture && my_chunk->IsOpen()) {
 							myBindToTextureID(gotten_id);
 							if (gotten_id->texture) {
 								safeTexture(gotten_id);
@@ -2340,11 +2352,15 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 							} else {
 								gotten_id = shared_ptr < OmTextureID > ();
 								mCache->Remove(mTileCoord);
+								mCache->GetTextureID(gotten_id, mTileCoord, false);
 								complete = false;
 							}
-						} else {
+						} else if (gotten_id->texture) {
 							//debug("FIXME", << "got here...." << endl;
 							safeTexture(gotten_id);
+						} else {
+							mCache->GetTextureID(gotten_id, mTileCoord, false);
+							complete = false;
 						}
 					}
 
@@ -2365,8 +2381,11 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			}
 		}
 	}
-	if (!complete)
+	if (!complete) {
+		debug ("genone", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	} else
+		debug ("genone", "complete in predraw\n");
 }
 
 void OmView2d::Draw(vector < Drawable * >&textures)

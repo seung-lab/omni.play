@@ -161,7 +161,7 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 	//call event for every listener in the set
 	set < OmCacheBase * >::iterator itr;
 	//loop through set
-	while (true) {
+	for (int count = 0; count < 50; count++) {
 		for (itr = cache_set.begin(); itr != cache_set.end(); ++itr) {
 
 			//return if target reached

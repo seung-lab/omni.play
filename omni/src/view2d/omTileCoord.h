@@ -30,7 +30,7 @@ class OmTileCoord {
 	
 public:
 	OmTileCoord();
-	OmTileCoord( int, const SpaceCoord & );
+	OmTileCoord( int, const SpaceCoord & , int);
 	
 	void operator=( const OmTileCoord& rhs );
 	bool operator==( const OmTileCoord& rhs ) const;
@@ -41,6 +41,7 @@ public:
 		
 	int Level;
 	SpaceCoord Coordinate;
+	int mVolType;
 	
 	
 	friend ostream& operator<<(ostream &out, const OmTileCoord &in);

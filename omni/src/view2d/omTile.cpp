@@ -271,7 +271,13 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 	int ctr = 0;
 	int newctr = 0;
 
+	//debug ("genone", "key volume type: %i\n", key.mVolType);
+
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
+	bool doValidate = current_seg.GetSelectedSegmentDataValues ().size ();
+	if (SEGMENTATION == key.mVolType) {
+		doValidate = false;	
+	}
 
 	map < SEGMENT_DATA_TYPE, QColor > speedTable;
 	QColor newcolor;
@@ -308,8 +314,10 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 							  clamp(color.z * 255 * 2.5), 100);
 
 					else {
-						//newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
-						newcolor = qRgba(0, 0, 0, 255);
+						if (doValidate)
+							newcolor = qRgba(0, 0, 0, 255);
+						else
+							newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
 					}
 
 					data[ctr] = newcolor.red();

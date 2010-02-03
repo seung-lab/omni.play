@@ -128,7 +128,7 @@ template < typename T,  typename U  >
 OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 : OmCacheBase(group) { 
 	
-	//	debug("FIXME", << " OmThreadedCache()" << endl;
+	debug("thread", " ::OmThreadedCache(initFetch=%i)\n", initFetch);
 	
 	//fetch prefs
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
@@ -168,7 +168,7 @@ OmThreadedCache<T,U>::~OmThreadedCache() {
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
 	pthread_cond_signal(&mFetchThreadCv);
-	
+
 	//spin until done killing
 	while(mFetchThreadAlive) { }
 }
@@ -238,17 +238,8 @@ void
 		if( (0 == mFetchStack.count(key)) && (0 == mCurrentlyFetching.count(key)) ) {
 			// debug("FIXME", << "OmThreadedCache<T,U>::Get(): threaded fetch" << endl;
 			//push to top of stack
-			if (mFetchStack.size () > 20 ) {
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
-				mFetchStack.pop ();
+			if (mFetchStack.size () > 200 ) {
+				mFetchStack.clear ();
 			}
 			mFetchStack.push(key);
 			//signal fetch thread
@@ -560,7 +551,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 	mFetchThreadAlive = true;
 	
 	//if calling init fetch thread method, wait until successfully called overriden function in child
-	while(mInitializeFetchThread && !InitializeFetchThread()) { }
+	while(!mKillingFetchThread && mInitializeFetchThread && !InitializeFetchThread()) { }
 	
 	//initially lock mutex
 	pthread_mutex_lock(&mFetchThreadMutex);
@@ -633,6 +624,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 	//alert main thread that fetch is good as dead
 	mFetchThreadAlive = false;	
 	//die
+	debug ("thread", "THREAD EXITED\n");
 	pthread_exit(NULL);
 }
 
