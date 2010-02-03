@@ -5,7 +5,8 @@
 #include "omTile.h"
 #include "omTextureID.h"
 #include "system/omThreadedCache.h"
-
+#include "system/omEventManager.h"
+#include "system/events/omViewEvent.h"
 
 #include "common/omStd.h"
 #include "omTileCoord.h"
@@ -85,6 +86,9 @@ public:
 
 			caches.clear ();
 			mDelete = true;
+
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+
 			return;
 		}
 
