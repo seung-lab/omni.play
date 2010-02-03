@@ -33,7 +33,8 @@ OmMipVolume::OmMipVolume()
  : MipChunkThreadedCache(RAM_CACHE_GROUP)
 {
 
-	//debug("genone","OmMipVolume::OmMipVolume()");
+	/** Set The Name of the Cache */
+        SetCacheName("OmMipVolume");
 
 	//init
 	SetFilename(MIP_VOLUME_FILENAME);

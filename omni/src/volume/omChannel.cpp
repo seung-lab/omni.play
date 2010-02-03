@@ -36,6 +36,9 @@ OmChannel::OmChannel(OmId id)
 
 	//build blank data
 	BuildVolumeData();
+
+	/** Set The Name of the Cache */
+        SetCacheName("OmChannel");
 }
 
 #pragma mark

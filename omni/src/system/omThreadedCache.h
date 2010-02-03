@@ -70,6 +70,9 @@ public:
 	void SetFetchUpdateClearsFetchStack(bool);
 	bool GetFetchUpdateClearsFetchStack();
 	
+	/**Name function for debugging */
+	void SetCacheName(const char* name);
+	void GetCacheName(char* name);
 	
 protected:
 	virtual U* HandleCacheMiss(const T &key) = 0;
@@ -108,6 +111,10 @@ private:
 	//fetch update prefs
 	float mFetchUpdateInterval;
 	bool mFetchUpdateClearsStack;
+
+	/** name/descriptor of Cache for debugging */
+	char mCacheName[40];
+	long threadSelf;
 };
 
 
@@ -128,8 +135,7 @@ template < typename T,  typename U  >
 OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 : OmCacheBase(group) { 
 	
-	debug("thread", " ::OmThreadedCache(initFetch=%i)\n", initFetch);
-	
+
 	//fetch prefs
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
@@ -147,9 +153,13 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 	pthread_mutex_init(&mFetchThreadMutex, NULL);
 	pthread_cond_init(&mFetchThreadCv, NULL);
 	
+	//set name to "blank"
+	SetCacheName("blank");
+
 	//create thread
+	
 	pthread_create(&mFetchThread, NULL, start_cache_fetch_thread<T,U>, (void *)this);
-     	debug("thread","OmThreadedCache<T,U>::OmThreadedCache(constructor)->Thread Created\n");
+     	
 
 	//wait for fetch thread
 	while(!mFetchThreadAlive) { }
@@ -158,12 +168,13 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 
 
 
-/*
+/**
  *	Destructor ensures fetch thread is dead before destructing cache.
  */
 template < typename T,  typename U  >
 OmThreadedCache<T,U>::~OmThreadedCache() {
-	debug("cache","OmThreadedCache<T,U>::~OmThreadedCache()");
+
+	debug("destroy","%s Cache %p being destroyed . . .\n",mCacheName,threadSelf);
 	
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
@@ -550,6 +561,12 @@ OmThreadedCache<T,U>::IsFetchStackEmpty() {
 template < typename T,  typename U  >
 void
 OmThreadedCache<T,U>::FetchLoop() {
+
+	//set some variables
+	threadSelf = pthread_self();
+	bool checked = false;
+
+
 	//alive and well
 	mFetchThreadAlive = true;
 	
@@ -561,6 +578,16 @@ OmThreadedCache<T,U>::FetchLoop() {
 	
 	//forever loop
 	while(true) {
+
+		//check if name has been set  . . . if so print it
+		while(!checked){
+			pthread_mutex_lock(&mCacheMutex);
+			if (strcmp(mCacheName,"blank")){
+				debug("thread","%s cache thread # %p has started fetch loop\n",mCacheName,threadSelf);
+				checked=true;
+			}
+			pthread_mutex_unlock(&mCacheMutex);
+		}
 		
 		//if destructing, kill thread
 		if(mKillingFetchThread) break;
@@ -628,7 +655,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 	//alert main thread that fetch is good as dead
 	mFetchThreadAlive = false;	
 	//die
-	debug ("thread", "THREAD EXITED\n");
+	debug("thread","%s cache thread # %p is out of fetch loop . . . should die soon.\n",mCacheName,threadSelf);
 	pthread_exit(NULL);
 }
 
@@ -671,6 +698,25 @@ template < typename T,  typename U  >
 bool 
 OmThreadedCache<T,U>::InitializeFetchThread() { 
 	return false;
+}
+
+
+template < typename T,  typename U  > 
+void
+OmThreadedCache<T,U>::SetCacheName( const char* name) {
+        pthread_mutex_lock(&mCacheMutex);
+	strncpy (mCacheName,name,40);
+	pthread_mutex_unlock(&mCacheMutex);
+	return;
+}
+
+template < typename T,  typename U  > 
+void
+OmThreadedCache<T,U>::GetCacheName(char * result) {
+	pthread_mutex_lock(&mCacheMutex);
+	strncpy (result, mCacheName, 40);
+	pthread_mutex_unlock(&mCacheMutex);
+	return;
 }
 
 

@@ -27,6 +27,9 @@ public:
 	OmCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol)
 	: TextureIDCache(RAM_CACHE_GROUP), OmTile(viewtype, voltype, image_id, vol) {
 		isSecondMipVolume = false;
+
+		/** Set The Name of the Cache */
+		SetCacheName("OmCachingTile");
 	}
 	
 	// texture ID

@@ -29,6 +29,10 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mShareContext = shareContext;
 	mVolType = voltype;
 	mImageId = image_id;
+
+	/** Set The Name of the Cache */
+        SetCacheName("OmThreadedCachingTile");
+
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()

@@ -34,6 +34,8 @@ OmMipVoxelationManager::OmMipVoxelationManager(OmMipVolume * pMipVolume)
 	//flushes fetch stack so it doesn't waste time fetching old requests
 	SetFetchUpdateClearsFetchStack(false);
 
+	/** Set The Name of the Cache */
+        SetCacheName("OmMipVoxelationManager");
 }
 
 OmMipVoxelationManager::~OmMipVoxelationManager()

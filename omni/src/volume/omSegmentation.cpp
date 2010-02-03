@@ -33,7 +33,9 @@ OmSegmentation::OmSegmentation()
  : mMipVoxelationManager(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
-	//      //debug("FIXME", << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
+
+	/** Set The Name of the Cache */
+        SetCacheName("OmMipMeshManager");
 }
 
 OmSegmentation::OmSegmentation(OmId id)

@@ -32,7 +32,6 @@
 OmMipMeshManager::OmMipMeshManager()
  : MipMeshCache(VRAM_CACHE_GROUP, true)
 {
-
 	//set cache properties
 	SetFetchUpdateInterval(0.5f);
 	//flushes fetch stack so it doesn't waste time fetching old requests
@@ -40,6 +39,9 @@ OmMipMeshManager::OmMipMeshManager()
 
 	//mesh data initially not built
 	mMeshDataBuilt = false;
+
+	/** Set The Name of the Cache */
+        SetCacheName("OmMipMeshManager");
 }
 
 OmMipMeshManager::~OmMipMeshManager()
