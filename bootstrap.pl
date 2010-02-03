@@ -316,6 +316,25 @@ sub smallLibraries {
     hdf5();
 }
 
+my $max_answer = 10;
+
+# This is the official release option
+sub release {
+	runMenuEntry (1);
+	runMenuEntry (2);
+	runMenuEntry (3);
+	runMenuEntry (4);
+	runMenuEntry (5);
+	runMenuEntry (6);
+	runMenuEntry (7);
+
+	# Do release specific work now.
+
+	# Cleanup any leftover cryptographic keys.
+	`rm -rf omni/secret`;
+	`touch omni/secret`;
+}
+
 sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
@@ -326,15 +345,18 @@ sub menu {
     print "5 -- Setup omni build\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- libtiff\n";
-    print "8 -- hdf5\n\n";
+    print "8 -- hdf5\n";
+    print "9 -- \n";
+    print "10-- release\n\n";
 
-    my $max_answer = 8;
 
     while( 1 ){
 	print "Please make selection: ";
 	my $answer = <STDIN>;
 
-	if( $answer =~ /^\d$/ ) {
+	print "$answer\n";
+
+	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
 		runMenuEntry( $answer );
 		exit();
@@ -368,7 +390,12 @@ sub runMenuEntry {
 	libtiff();
     }elsif( 8 == $entry ){
 	hdf5();
+    }elsif( 9 == $entry ){
+	#macos();
+    }elsif( 10 == $entry ){
+        release ();
     }
+
 }
 
 sub checkEnvAndRunMenu {
