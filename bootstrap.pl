@@ -26,7 +26,41 @@ print `mkdir $buildPath` if (!-e $buildPath);
 # Create srcs path if it doesn't exist yet.
 print `mkdir $srcPath` if (!-e $srcPath);
 
+sub genscripts {
+    `rm $basePath/buildomni.sh`;
+    open (SCRIPT, ">", "$basePath/buildomni.sh") or die $!;
+
+    my $script = "
+export QTDIR=$libPath/Qt
+export BOOST_ROOT=$libPath/Boost
+export EXPAT_INCLUDE=$libPath/expat/lib/
+export EXPAT_LIBPATH=$libPath/expat/include/
+cd $basePath/omni
+cmake .
+make
+";
+    print SCRIPT $script;
+    close SCRIPT;
+    `chmod +x $basePath/buildomni.sh`;
+
+
+    `rm $basePath/buildvtk.sh`;
+    open (SCRIPT, ">", "$basePath/buildvtk.sh") or die $!;
+
+    my $script = "
+cd $buildPath/vtk-5.4.2
+cmake $srcPath/vtk-5.4.2
+make
+make install    
+";
+    print SCRIPT $script;
+    close SCRIPT;
+    `chmod +x $basePath/buildvtk.sh`;
+}
+
 sub vtk {
+    genscripts();
+
     my $baseFileName = "vtk-5.4.2";
     prepare( $baseFileName, "VTK" );
 
@@ -36,13 +70,13 @@ sub vtk {
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
     #`echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
-    print "manually run: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
-    print "(make sure to set debug flags!)\n";
-    print "\npress enter when vtk build is done :";
-    $_ = <STDIN>;
+    print "runing: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
+    `sh $basePath/buildvtk.sh`;
 }
 
 sub setupBuildFolder {
@@ -225,6 +259,8 @@ sub qt {
 }
 
 sub omni {
+    genscripts ();
+
     my $cmakeSettings = <<END;
 CMAKE_BUILD_TYPE:STRING=Debug
 CMAKE_INSTALL_PREFIX:STRING=$buildPath
@@ -250,6 +286,8 @@ END
     `rm -rf $omniPath/CMakeFiles`;
 
     updateCMakeListsFile();
+
+    `sh $basePath/buildomni.sh`;
 }
 
 sub updateCMakeListsFile {
@@ -275,29 +313,6 @@ sub updateCMakeListsFile {
     close IN_FILE;
 }
 
-#TODO: do something smarter than just check if variable exists
-sub checkBashRC {
-    my $bashrcPath =  $ENV{ HOME }."/.bashrc";
-    my @settings   = ( "BOOST_ROOT", "QTDIR", "EXPAT_INCLUDE", "EXPAT_LIBPATH" );
-    my $found_setting = 0;
-    
-    open IN_FILE,  "<", $bashrcPath  or die "could not read $bashrcPath";
-    while (my $line = <IN_FILE>) { 
-	foreach (@settings ){
-	    my $setting = $_;
-	    if( $line =~ m!$setting! ) {
-		$found_setting += 1;
-	    }
-	}
-    } 
-    
-    close IN_FILE;
-    
-    if( 4 != $found_setting ){
-	die "please update your ~/.bashrc file\n";
-    }
-}
-
 sub printTitle {
     my $title = $_[0];
     printLine();
@@ -320,6 +335,8 @@ my $max_answer = 10;
 
 # This is the official release option
 sub release {
+	my $version = "1.0";
+
 	runMenuEntry (6);
 	runMenuEntry (7);
 
@@ -327,7 +344,9 @@ sub release {
 
 	# Cleanup any leftover cryptographic keys.
 	`rm -rf omni/secret`;
-	`touch omni/secret`;
+
+	# FIXME: Need to tar up the right files
+	print `tar -zcvf omni1-release-bin-$version.tar.gz omni/bin/omni`;
 }
 
 sub menu {
@@ -337,11 +356,11 @@ sub menu {
     print "2 -- Build boost\n";
     print "3 -- Build qt\n";
     print "4 -- Build vtk\n";
-    print "5 -- Setup omni build\n";
+    print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- libtiff\n";
     print "8 -- hdf5\n";
-    print "9 -- \n";
+    print "9 -- Generate scripts\n";
     print "10-- release\n\n";
 
 
@@ -386,7 +405,7 @@ sub runMenuEntry {
     }elsif( 8 == $entry ){
 	hdf5();
     }elsif( 9 == $entry ){
-	#macos();
+	genscripts();
     }elsif( 10 == $entry ){
         release ();
     }
@@ -394,7 +413,6 @@ sub runMenuEntry {
 }
 
 sub checkEnvAndRunMenu {
-    checkBashRC();
     menu();
 }
 
