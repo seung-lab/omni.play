@@ -93,6 +93,10 @@ const set < OmId > & OmChannel::GetValidFilterIds()
 {
 	return mFilter2dManager.GetValidFilterIds();
 }
+bool OmChannel::IsFilterValid(const OmId id)
+{
+	return mFilter2dManager.IsFilterValid(id);
+}
 
 bool OmChannel::IsFilterEnabled(OmId id)
 {

@@ -36,7 +36,7 @@ public:
 	OmFilter2d& GetFilter(OmId id);
 	const set<OmId>& GetValidFilterIds();
 	bool IsFilterEnabled(OmId id);
-
+	bool IsFilterValid(const OmId id);
 
 
 	

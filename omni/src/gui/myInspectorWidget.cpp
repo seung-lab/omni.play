@@ -745,13 +745,15 @@ void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 
 void MyInspectorWidget::setFilAlpha(int alpha)
 {
-	const OmId filterID =  filObjectInspectorWidget->getFilterID();
 	const OmId channelID = filObjectInspectorWidget->getChannelID();
+	const OmId filterID =  filObjectInspectorWidget->getFilterID();
 
-	try {
-		OmVolume::GetChannel(channelID).GetFilter(filterID).SetAlpha((double)alpha / 100.00);
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} catch(...) {
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel(channelID);
+		if( channel.IsFilterValid( filterID ) ){
+			channel.GetFilter(filterID).SetAlpha((double)alpha / 100.00);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
 	}
 }
 

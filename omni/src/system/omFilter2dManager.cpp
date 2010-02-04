@@ -47,7 +47,10 @@ bool OmFilter2dManager::IsFilterEnabled(OmId id)
 {
 	return mGenericFilterManager.IsEnabled(id);
 }
-
+bool OmFilter2dManager::IsFilterValid(OmId id)
+{
+	return mGenericFilterManager.IsValid(id);
+}
 
 
 
