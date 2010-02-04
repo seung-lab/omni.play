@@ -27,10 +27,6 @@ print `mkdir $buildPath` if (!-e $buildPath);
 # Create srcs path if it doesn't exist yet.
 print `mkdir $srcPath` if (!-e $srcPath);
 
-sub genscripts {
-    genOmniScript();
-}
-
 sub genOmniScript {
     open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
 
@@ -354,6 +350,7 @@ sub smallLibraries {
     fontconfig();
     expat();
     hdf5();
+    libtiff();
 }
 
 # This is the official release option
@@ -364,7 +361,6 @@ sub release {
 	boost();
 	qt();
 	vtk();
-	libtiff();
 	omni();
 
 	# Do release specific work now.
@@ -376,9 +372,9 @@ sub release {
 	print `tar -zcvf Omni1-release-bin-$version.tar.gz omni/bin/omni`;
 }
 
-my $max_answer = 10;
-
 sub menu {
+    my $max_answer = 9;
+
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
@@ -387,10 +383,9 @@ sub menu {
     print "4 -- Build vtk\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
-    print "7 -- libtiff\n";
-    print "8 -- hdf5\n";
-    print "9 -- Generate scripts\n";
-    print "10-- release\n\n";
+    print "7 -- Build one of the small libraries...\n";
+    print "8 -- Generate OMNI build script\n";
+    print "9-- release\n\n";
 
     while( 1 ){
 	print "Please make selection: ";
@@ -429,15 +424,59 @@ sub runMenuEntry {
 	vtk();
 	omni();
     }elsif( 7 == $entry ){
-	libtiff();
+	smallLibraryMenu();
     }elsif( 8 == $entry ){
-	hdf5();
+	genOmniScript();
     }elsif( 9 == $entry ){
-	genscripts();
-    }elsif( 10 == $entry ){
         release ();
     }
+}
 
+sub smallLibraryMenu() {
+    my $max_answer = 6;
+
+    print "build small library menu:\n";
+    print "0 -- exit\n";
+    print "1 -- Build expat\n";
+    print "2 -- Build fontconfig\n";
+    print "3 -- Build freetype\n";
+    print "4 -- Build hdf5\n";
+    print "5 -- Build libpng\n";
+    print "6 -- Build libtiff\n\n";
+
+    while( 1 ){
+	print "Please make selection: ";
+	my $answer = <STDIN>;
+
+	print "$answer\n";
+
+	if( $answer =~ /^\d+$/ ) {
+	    if( ($answer > -1) and ($answer < (1+$max_answer))){
+		runSmallLibraryMenuEntry( $answer );
+		exit();
+	    }
+	}
+    }
+}
+
+sub runSmallLibraryMenuEntry {
+    my $entry = $_[0];
+
+    if( 0 == $entry ){
+        return();
+    }elsif( 1 == $entry ){
+        expat();
+    }elsif( 2 == $entry ){
+        fontconfig();
+    }elsif( 3 == $entry ){
+        freetype();
+    }elsif( 4 == $entry ){
+        hdf5();
+    }elsif( 5 == $entry ){
+        libpng();
+    }elsif( 6 == $entry ){
+        libtiff();
+    }
 }
 
 sub checkCmdLineArgs {
