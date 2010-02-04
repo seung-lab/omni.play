@@ -114,7 +114,7 @@ private:
 
 	/** name/descriptor of Cache for debugging */
 	char mCacheName[40];
-	long threadSelf;
+	void * threadSelf;
 };
 
 
