@@ -59,7 +59,7 @@ public:
 	AxisAlignedBoundingBox<float> DstBbox;
 	
 protected:
-     shared_ptr<OmMipChunk> mChunk;
+        shared_ptr<OmMipChunk> mChunk;
 	OmMeshSource(OmMeshSource &);
 	OmMeshSource& operator= (const OmMeshSource &);
 };

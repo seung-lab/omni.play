@@ -119,6 +119,7 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	//load current mesh source
 	mpCurrentMeshSource = new OmMeshSource();
 	mpCurrentMeshSource->Load(chunk);
+	mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 	//current chunk
 	mCurrentMipCoord = chunk->GetCoordinate();
 	chunk->Open();

@@ -194,7 +194,7 @@ void OmMipChunk::Close()
 
 	//delete image data
 	mpImageData->Delete();
-	//debug("FIXME", << "mpImageData: " << mpImageData << endl;
+	debug("genone", "freeing mpImageData: %i\n", mpImageData);
 	mpImageData = NULL;
 }
 
@@ -747,14 +747,19 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				p_chunk->Open();
 
 				//get pointer to image data
-				vtkImageData *p_src_data = p_chunk->mpImageData;
+				//vtkImageData *p_src_data = p_chunk->mpImageData;
+
+				debug ("genone", "got %i\n", p_chunk->mpImageData);
 
 				//get dim size
 				int chunk_dim = mpMipVolume->GetChunkDimension();
 
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
-				copyIntersectedImageDataFromOffset(p_mesh_data, p_src_data, offset);
+				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
+
+				p_chunk = shared_ptr < OmMipChunk > ();
+				mpMipVolume->Remove (mip_coord);
 			}
 
 	return p_mesh_data;

@@ -50,28 +50,18 @@ OmMeshSource::OmMeshSource()
 //delete image data
 OmMeshSource::~OmMeshSource()
 {
+	debug ("mesher1", "OmMeshSource::~OmMeshSource %i\n", pImageData);
+
 	//delete image data if loaded
 	if (pImageData != NULL)
 		pImageData->Delete();
-
-	pImageData = NULL;
 }
 
 //load mesh data from chunk - expensive
 void
  OmMeshSource::Load(shared_ptr < OmMipChunk > chunk)
 {
-
-	//delete image data if already loaded
-	if (pImageData != NULL)
-		pImageData->Delete();
-
-	//get new data
-	pImageData = chunk->GetMeshImageData();
-
-	if (NULL == pImageData) {
-		//debug("FIXME", << "Crash inc..." << endl;
-	}
+	debug ("mesher1", "OmMeshSource::Load\n");
 	MipCoord = chunk->GetCoordinate();
 	SrcBbox = chunk->GetExtent();
 	DstBbox = chunk->GetNormExtent();
@@ -81,15 +71,19 @@ void
 //copy from another mesh source - cheaper
 void OmMeshSource::Copy(OmMeshSource & source)
 {
-
 	//copy values
 	MipCoord = source.MipCoord;
 	SrcBbox = source.SrcBbox;
 	DstBbox = source.DstBbox;
-
-	pImageData = vtkImageData::New();
-	pImageData->DeepCopy(source.pImageData);
+	source.mChunk->Open ();
+	pImageData = source.mChunk->GetMeshImageData();
+	debug ("mesher1", "OmMeshSource::Copy %i\n", pImageData);
 	pImageData->Update();
+}
+
+OmMeshSource& OmMeshSource::operator= (const OmMeshSource & foo)
+{
+	assert (0);
 }
 
 #pragma mark -
@@ -101,7 +95,7 @@ void OmMeshSource::Copy(OmMeshSource & source)
 
 OmMesher::OmMesher(OmMeshSource & meshSource)
 {
-
+	//debug ("mesher1", "OmMesher::OmMesher\n");
 	//copy source
 	mMeshSource.Copy(meshSource);
 
@@ -119,6 +113,7 @@ OmMesher::~OmMesher()
 	mpPolyDataNormals->Delete();
 	mpStripper->Delete();
 }
+
 
 void
  OmMesher::InitMeshingPipeline()
