@@ -71,6 +71,8 @@ sub vtk {
     #`echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "VTK_USE_RENDERING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "VTK_USE_VIEWS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
