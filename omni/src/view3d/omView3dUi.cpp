@@ -147,7 +147,7 @@ void OmView3dUi::NavigationModeMouseMove(QMouseEvent * event)
 
 void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
 {
-	SegmentSelectToggleMouse(event, false);
+	//SegmentSelectToggleMouse(event, false);
 }
 
 void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)

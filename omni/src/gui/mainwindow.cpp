@@ -174,75 +174,8 @@ void MainWindow::addSegmentationToVolume()
 	}
 }
 
-void MainWindow::buildAll()
-{
-	try {
-		if (!isProjectOpen) {
-			return;
-		}
-
-		const set < OmId > channelIDs = OmVolume::GetValidChannelIds();
-		const set < OmId > segmentationIDs = OmVolume::GetValidSegmentationIds();
-
-		QFuture < void >finalChanFuture;
-		set < OmId >::iterator chan_it;
-		for (chan_it = channelIDs.begin(); chan_it != channelIDs.end(); chan_it++) {
-			OmChannel & current_channel = OmVolume::GetChannel(*chan_it);
-			//debug("genone","building channel");
-			//                      prog_bar->setValue(ctr);
-			//                      progress.setValue(ctr);
-
-			//                      if (progress.wasCanceled())
-			//                              return;
-
-			extern void channel_build(OmChannel * current_channel);
-			QFuture < void >chanFuture = QtConcurrent::run(channel_build, &current_channel);
-			finalChanFuture = chanFuture;
-			// current_channel.BuildVolumeData();
-
-			//                      future.waitForFinished();
-		}
-
-		finalChanFuture.waitForFinished();
-
-		set < OmId >::iterator seg_it;
-
-		QFuture < void >finalFuture;
-		for (seg_it = segmentationIDs.begin(); seg_it != segmentationIDs.end(); seg_it++) {
-
-			OmSegmentation & current_seg = OmVolume::GetSegmentation(*seg_it);
-			//debug("genone","building segmentation");
-
-			//                      prog_bar->setValue(ctr);
-			//                      progress.setValue(ctr);
-			//
-			//                      if (progress.wasCanceled())
-			//                              return;
-			extern void seg_build(OmSegmentation * current_seg);
-			extern void mesh_build(OmSegmentation * current_seg, QFuture < void >&last_future);
-
-			QFuture < void >segFuture = QtConcurrent::run(seg_build, &current_seg);
-			QFuture < void >meshFuture = QtConcurrent::run(mesh_build, &current_seg, segFuture);
-			finalFuture = meshFuture;
-		}
-
-		//              statusBar()->removeWidget(prog_bar);
-		//              delete prog_bar;
-
-		finalFuture.waitForFinished();
-
-		if (omniInspector) {
-			omniInspector->refreshWidgetData();
-		}
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
 void channel_build(OmChannel * current_channel)
 {
-	//      if(last_future.isRunning())
-	//              last_future.waitForFinished();
 	current_channel->BuildVolumeData();
 }
 
@@ -253,8 +186,6 @@ void seg_build(OmSegmentation * current_seg)
 
 void mesh_build(OmSegmentation * current_seg, QFuture < void >&last_future)
 {
-	if (last_future.isRunning())
-		last_future.waitForFinished();
 	current_seg->BuildMeshData();
 }
 
@@ -427,8 +358,6 @@ void MainWindow::openInspector()
 		windowMenu->addAction(dock->toggleViewAction());
 
 		// TODO: fixme! (purcaro)
-		connect(omniInspector, SIGNAL(treeDataChanged()), this, SLOT(updateComboBoxes()));
-
 		connect(omniInspector, SIGNAL(addChannel()), this, SLOT(addChannelToVolume()));
 		connect(omniInspector, SIGNAL(addSegmentation()), this, SLOT(addSegmentationToVolume()));
 
@@ -803,10 +732,6 @@ void MainWindow::createActions()
 	addSegmentationAct->setStatusTip(tr("Adds a volume to the current project"));
 	connect(addSegmentationAct, SIGNAL(triggered()), this, SLOT(addSegmentationToVolume()));
 
-	buildAllAct = new QAction(tr("&Build All"), this);
-	buildAllAct->setStatusTip(tr("Builds all channels and segmentations"));
-	connect(buildAllAct, SIGNAL(triggered()), this, SLOT(buildAll()));
-
 	// Tools
 	openOmniInspector = new QAction(tr("&Inspector"), this);
 	openOmniInspector->setShortcut(tr("Ctrl+I"));
@@ -844,7 +769,6 @@ void MainWindow::createMenus()
 	projectMenu = menuBar()->addMenu(tr("&Project"));
 	projectMenu->addAction(addChannelAct);
 	projectMenu->addAction(addSegmentationAct);
-	projectMenu->addAction(buildAllAct);
 
 	toolMenu = menuBar()->addMenu(tr("&Tools"));
 	toolMenu->addAction(openOmniInspector);

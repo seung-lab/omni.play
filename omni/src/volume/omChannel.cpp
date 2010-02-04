@@ -7,6 +7,7 @@
 
 #include "system/omFilter2d.h"
 #include "system/omDebug.h"
+#include "system/omProject.h"
 
 #define DEBUG 0
 
@@ -74,6 +75,7 @@ void OmChannel::BuildVolumeData()
 {
 	//build volume
 	OmMipVolume::Build();
+	OmProject::Save();
 	printf("done building channel data\n");
 }
 

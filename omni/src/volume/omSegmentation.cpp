@@ -8,6 +8,7 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
+#include "system/omProject.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -236,6 +237,7 @@ void OmSegmentation::BuildMeshData()
 	SetAllSegmentsSelected(false);
 	SetAllSegmentsEnabled(false);
 
+	OmProject::Save();
 	printf("done building mesh\n");
 }
 

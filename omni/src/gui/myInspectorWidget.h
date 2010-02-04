@@ -56,7 +56,7 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	void refreshWidgetData();
 
-	 signals: void treeDataChanged();
+ signals: 
 	void addChannel();
 	void addSegmentation();
 
@@ -139,6 +139,7 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
 	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
 	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
+	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
 	DataWrapperContainer currentDataSrc;
 
 	// keep local hash of segmentation --> segments to maintain 

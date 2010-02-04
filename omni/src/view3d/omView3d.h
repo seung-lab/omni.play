@@ -26,11 +26,6 @@ using namespace vmml;
 #include <QGLWidget>
 #include <QtGui> 
 
-
-
-
-
-
 class OmView3d : public QGLWidget, 
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener, 

@@ -840,7 +840,7 @@ void MyInspectorWidget::addSegment()
 {
 	const OmId segmentationID = segInspectorWidget->getSegmentationID();
 	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
-	rebuildSegmentList(segmentationID);
+	rebuildSegmentList(segmentationID, added_segment.GetId());
 }
 
 void MyInspectorWidget::refreshWidgetData()
@@ -857,26 +857,31 @@ void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID)
 	makeSegmentationActive(segmentationID);
 }
 
+void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
+					   const OmId segmentJustAddedID)
+{
+	populateDataSrcListWidget();
+
+	hashOfSementationsAndSegments.remove(segmentationID);
+	makeSegmentationActive(segmentationID, segmentJustAddedID );
+}
+
 void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
-	//debug("gui", "in %s\n", __FUNCTION__);
 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
-
-	dataElementsWidget->clear();
-
 	const OmId segmenID = sdw.getID();
 
 	if (!hashOfSementationsAndSegments.contains(segmenID)) {
 		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
 	}
-	// TODO: use .value(), not hash []
-	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments[segmenID];
 
+	dataElementsWidget->clear();
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
+	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
 
 	foreach(SegmentDataWrapper seg, segs) {
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
@@ -892,14 +897,13 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 	}
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
+	dataElementsWidget->update();
 
 	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
 
 	autoResizeColumnWidths(dataElementsWidget);
-
-	dataElementsWidget->update();
 
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
@@ -965,5 +969,15 @@ void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const boo
 				   segmentID, 
 				   this,
 				   "myInspectorWidget"))->Run();
-
 }
+
+/*
+	switch (event->key()) {
+	case Qt::Key_Up:
+		debug("gui", "hi key up\n");
+		break;
+	case Qt::Key_Down:
+		debug("gui", "hi key down\n");
+		break;
+	}	
+*/

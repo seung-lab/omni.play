@@ -71,24 +71,18 @@ class MainWindow
 		void openInspector();
 		void openUndoView();
 		
-		void open3dView();
-		
+		void open3dView();		
 		void openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype);
 		void openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
 		
 		void addChannelToVolume();
 		void addSegmentationToVolume();
 		
-		void buildAll();
-		
-		void updateStatusBar(); 
-		
-		void updateKeyShortcuts();
-		
+		void updateStatusBar(); 	
+		void updateKeyShortcuts();		
 		void changeSelection(int segmentIndex);
 		
 		void spawnErrorDialog(OmException &e);
-
 
 		void ChangeModeModify(bool checked);
 		void toolbarSelect(bool checked);
@@ -100,7 +94,7 @@ class MainWindow
 		void toolbarFill(bool checked);
 		void toolbarVoxelize(bool checked);
 		void updateComboBoxes( const OmId segmentationID = 0, 
-						   const OmId segmentJustSelectedID = 0 );
+				       const OmId segmentJustSelectedID = 0 );
 				
 	private:
 		void createActions();
@@ -136,7 +130,6 @@ class MainWindow
 		
 		QAction *addChannelAct;
 		QAction *addSegmentationAct;
-		QAction *buildAllAct;
 		
 		QAction *openOmniInspector;
 		QAction *openUndoViewAct;
