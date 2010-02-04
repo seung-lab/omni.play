@@ -384,8 +384,8 @@ sub menu {
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
-    print "8 -- Generate OMNI build script\n";
-    print "9-- release\n\n";
+    print "8 -- Generate scripts\n";
+    print "9 -- Build and tar release!\n\n";
 
     while( 1 ){
 	print "Please make selection: ";
@@ -428,7 +428,7 @@ sub runMenuEntry {
     }elsif( 8 == $entry ){
 	genOmniScript();
     }elsif( 9 == $entry ){
-        release ();
+        release();
     }
 }
 
