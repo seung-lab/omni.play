@@ -20,7 +20,7 @@ texture(texture), flags(flags), x(x), y(y)
 
 OmTextureID::~OmTextureID()
 {
-	debug("genone","OmTextureID::~OmTextureID(%i)\n", textureID);
+	//debug("genone","OmTextureID::~OmTextureID(%i)\n", textureID);
 
 	//glDeleteTextures( 1, &textureID);
 	//Attempt a safe delete of the gl texture id.
