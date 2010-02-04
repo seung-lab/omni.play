@@ -1,6 +1,6 @@
 /** @mainpage
- *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer 
- *  @note . . . others may have contributed . . . 
+ *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer, Michael Purcaro, Clay Didier 
+ * 
  *
  *  \n\n
  *  \image html Screenshot.png "Omni is an application for visualizing, editing, and skeletonizing images of the brain." 
