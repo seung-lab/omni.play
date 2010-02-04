@@ -9,13 +9,6 @@ char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
 
 
-//***********************************************************************
-// TODO Convert to command line switches ---> get rid of #defs
-//      - Make this a singleton class
-//      - Include a ParseArg function
-//      - Include a Default Settings Section
-//      - Command Line input will override default
-//***********************************************************************
 
 void debug(const char *category, const char *format, ...)
 {
@@ -100,23 +93,24 @@ int parseEnvironment()
 	if (inputString != NULL){
 		if(inputString[0] == '-') {
 			if (!strncmp(inputString,"--debug=",8)){
-					debugParseArg(&inputString[8],OM_DEBUG_ADD); 
+				if (-1==debugParseArg(&inputString[8],OM_DEBUG_ADD)) return -1; 
 			} else {
 				if (!strncmp(inputString,"-d ",3)){
-						debugParseArg(&inputString[3],OM_DEBUG_ADD);
+					if (-1==debugParseArg(&inputString[3],OM_DEBUG_ADD)) return -1;
 			        } else {
 					if (!strncmp(inputString,"-d",2)){ 
-							debugParseArg(&inputString[2],OM_DEBUG_ADD);
+						if (-1==debugParseArg(&inputString[2],OM_DEBUG_ADD)) return -1;
 					} else {
 						printf("Format error in the environment variable OMNI_DEBUG\n");
 						printf("The format should is the same as it is for the command line\n");
 						printf("The Omni program will resume as if the OMNI_DEBUG\n");
 						printf("environment variable was never set . . . \n");
+						debugCategoryNumber=0;
 						return 0;
 					}
 				}
 			 }
-		} else debugParseArg(inputString,OM_DEBUG_ADD);
+		} else if (-1==debugParseArg(inputString,OM_DEBUG_ADD)) return -1;
 		return 1;
 	} else return 0;
 }
@@ -133,39 +127,39 @@ int parseArgs(int argc, char *argv[])
 					if(strlen(argv[i]) > 2){
 						if(!strncmp(argv[i],"-debug",6)){
 							usage();
-							return -1;
+							return -2;
 						} else {
-							debugParseArg(&argv[i][2],OM_DEBUG_ADD);
+							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_ADD)) return -1;
 						}
-					} else debugParseArg(argv[i+1],OM_DEBUG_ADD);
+						} else if(-1==debugParseArg(argv[i+1],OM_DEBUG_ADD)) return -1;
 					break;
 				case 'n':
 					if(strlen(argv[i]) > 2){
 						if(!strncmp(argv[i],"-nodebug",8)){
 							usage();
-							return -1;
+							return -2;
 						} else {
-							debugParseArg(&argv[i][2],OM_DEBUG_REMOVE);
+							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_REMOVE)) return -1;
 						}
-					} else debugParseArg(argv[i+1],OM_DEBUG_REMOVE);
+					} else if (-1==debugParseArg(argv[i+1],OM_DEBUG_REMOVE)) return -1;
 					break;
 				case '-':
 					if(!strncmp(argv[i],"--debug=",8)){
-						debugParseArg(&argv[i][8],OM_DEBUG_ADD);
+						if (-1==debugParseArg(&argv[i][8],OM_DEBUG_ADD)) return -1;
 					} else {
 						if(!strncmp(argv[i],"--nodebug=",10)){
-							debugParseArg(&argv[i][10],OM_DEBUG_REMOVE);
+							if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)) return -1;
 						} else {
 							printf("Unrecognized option %s.\n\n",argv[i]);
 						        usage();
-							return -1;	
+							return -2;	
 						}
 					}
 					break;
 				default:
 					printf("Unrecognized option %s.\n\n",argv[i]);
 					usage();
-					return -1;
+					return -2;
 			}
 			i++;
 		} else {
@@ -179,7 +173,24 @@ int parseAnythingYouCan(int argc, char *argv[])
 {	
 	int result,fileArgIndex;
 	result   = parseEnvironment();
+
+	if (result==-1){
+		printf("\nA category string in your $OMNI_DEBUG environment \n");
+		printf("variable is longer than the maximum length of\n");
+		printf("%i characters.\n",OM_DEBUG_STRING_SIZE);
+		printf("The Omni program will resume as if the OMNI_DEBUG\n");
+		printf("environment variable was never set . . . \n\n");
+		debugCategoryNumber=0;
+	}
+
 	fileArgIndex = parseArgs(argc, argv);
+
+	if (fileArgIndex==-1){
+		printf("\nA category string in your command line \n");
+		printf("is longer than the maximum length of\n");
+		printf("%i characters.\n",OM_DEBUG_STRING_SIZE);
+		printf(" . . . exiting . . . \n\n");
+	}
 	return fileArgIndex;
 }
 void
@@ -189,8 +200,8 @@ usage(void)
 	printf("   --debug=<category>    Add <category> to the list of strings which\n"); 
 	printf("                         are used to determine what debug output is\n");
 	printf("                         acceptable.\n");
-	printf("   -d <category>         Same as --debug=<category>");
-	printf("   -d<category>          Same as --debug=<category>");
+	printf("   -d <category>         Same as --debug=<category>\n");
+	printf("   -d<category>          Same as --debug=<category>\n");
 	printf("   --nodebug=<category>  Remove<category> from the list of strings which\n"); 
 	printf("                         are used to determine what debug output is\n");
 	printf("                         acceptable.\n");

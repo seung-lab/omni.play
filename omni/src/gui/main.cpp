@@ -37,12 +37,15 @@ int main(int argc, char *argv[])
 {
 	//    return firsttime (argc, argv);
 	int fileArgIndex = parseAnythingYouCan(argc, argv);
+	if (fileArgIndex<0) return 0;
 	QApplication app(argc, argv);
 	Q_INIT_RESOURCE(resources);
 	MainWindow mainWin;
 	mainWin.show();
 
-	if (fileArgIndex) {
+
+
+	if (fileArgIndex>0) {
 		mainWin.openProject(argv[fileArgIndex]);
 	}
 
