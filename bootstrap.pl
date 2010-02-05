@@ -51,7 +51,7 @@ sub genVTKscript {
     my $script = <<END;
 cd $buildPath/$baseFileName
 cmake $srcPath/$baseFileName
-make $globalMakeOptions
+make -k
 make install    
 END
     print SCRIPT $script;
@@ -68,7 +68,7 @@ sub vtk {
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
     
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    #`echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    #`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;

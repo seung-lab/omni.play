@@ -249,7 +249,7 @@ void OmMipChunk::ReadVolumeData()
 	}
 
 	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-	//debug("FIXME", << "BPS: " << GetBytesPerSample() << endl;
+	debug("mipchunk", "data: %i, refcount of:%i\n", data, data->GetReferenceCount ());
 
 	//set this image data
 	SetImageData(data);
