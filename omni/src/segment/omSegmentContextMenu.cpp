@@ -53,10 +53,10 @@ void
 	AddSelectionAction();
 
 	//-------------
-	addSeparator();
+	//addSeparator();
 
 	//DISABLE
-	AddDisableActions();
+	//AddDisableActions();
 
 	//SELECT ALL
 	//AddAllSelectionAction();
@@ -115,12 +115,12 @@ void OmSegmentContextMenu::AddSelectionAction()
 
 	//if segment is already selected
 	if (is_segment_selected) {
-		addAction(QString("Unselect Segment"), this, SLOT(Unselect()));
+		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
 	} else {
 		addAction(QString("Select Segment"), this, SLOT(Select()));
 	}
 
-	addAction(QString("Select All"));
+	//	addAction(QString("Select All"));
 }
 
 /*

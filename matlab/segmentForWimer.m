@@ -1,8 +1,9 @@
 function segmentForWimer( dust_seg_threshold )
 
-    paths.data    = '/Users/purcaro/im_histeq_for_Wimer.mat';
-    paths.root    = '/Users/purcaro/auto_segmentation';
-    [ paths, conn, im ] = loadMegavoxel( paths );
+    paths.root    = '/home/omni/data/auto_segmentation/full';
+    
+        paths.project = fullfile( paths.root,    'full' );
+%    [ paths, conn, im ] = loadMegavoxel( paths );
 %   [ paths, conn, im ] = load10Megavoxel( paths );
     
     paths.tiffs   = fullfile( paths.project, 'tiffs' );
@@ -11,22 +12,22 @@ function segmentForWimer( dust_seg_threshold )
     diary( paths.diary );
     diary on;
 
-    print_img_info( conn );
+%     print_img_info( conn );
     
 %     thresholds = [.3:.05:.95 .97 .98 .99];
     thresholds = [ .95 ];
-    seg_imgs = run_auto_segmentation( conn, thresholds );
+%     seg_imgs = run_auto_segmentation( conn, thresholds );
     
-    if ~exist('dust_seg_threshold', 'var') || isempty( dust_seg_threshold )
-        dust_seg_threshold = 200;
-    end
-    thres_seg_img = threshold_segment( seg_imgs{ 95 }, dust_seg_threshold );
+%     if ~exist('dust_seg_threshold', 'var') || isempty( dust_seg_threshold )
+         dust_seg_threshold = 400;
+%     end
+%     thres_seg_img = threshold_segment( seg_imgs{ 95 }, dust_seg_threshold );
 
     fprintf('writing images...');
     writeRawTiffs( paths, im );
     writeAvgConnGraphTiffs( paths, conn );
-    writeSegTiffs( paths, seg_imgs{ 95 } );
-    writeThresSegTiffs( paths, thres_seg_img, dust_seg_threshold );
+%     writeSegTiffs( paths, seg_imgs );
+    writeThresSegTiffs( paths, seg_img, dust_seg_threshold );
     
     fprintf('done\n');
     diary off;
@@ -61,7 +62,7 @@ function seg_imgs = run_auto_segmentation( conn, thresholds, seg_threshold )
 
         tic;
         fprintf('Running marker-based watershed %g ...', threshold);
-        seg_imgs{ threshold*100 } = markerWatershed( conn, mknhood2(1), seg, seg==0, 0.5 );
+        si
         fprintf(' done. ');
         toc
     end

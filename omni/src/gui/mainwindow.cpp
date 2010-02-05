@@ -1190,7 +1190,5 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 	case VOXELIZE_MODE:
 		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
 		break;
-	default:
-		break;
 	}
 }

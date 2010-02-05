@@ -97,7 +97,7 @@ public:
 	
 	//drawing
 	void Draw(const OmVolumeCuller &);
-	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &);
+	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &, const int numSegments);
 	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, const OmVolumeCuller &rCuller);
 	void DrawChunkMeshes( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );

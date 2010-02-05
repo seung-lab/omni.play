@@ -541,7 +541,7 @@ void OmSegmentation::Draw(const OmVolumeCuller & rCuller)
 	glPushName(GetId());
 
 	//draw relevant data values starting from root chunk
-	DrawChunkRecursive(RootMipChunkCoordinate(), *p_relv_data_vals, true, rCuller);
+	DrawChunkRecursive(RootMipChunkCoordinate(), *p_relv_data_vals, true, rCuller, p_relv_data_vals->size() );
 
 	//pop seg name
 	glPopName();
@@ -553,7 +553,8 @@ void OmSegmentation::Draw(const OmVolumeCuller & rCuller)
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
 void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, const SegmentDataSet & rRelvDataVals,
-					bool testVis, const OmVolumeCuller & rCuller)
+					bool testVis, const OmVolumeCuller & rCuller,
+					const int numSegments )
 {
 	//get pointer to chunk
 	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
@@ -580,9 +581,10 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 		}
 	}
 
+	
 	//TEST IF CHUNK SHOULD BE DRAWN
 	//if chunk satisfies draw criteria
-	if (p_chunk->DrawCheck(rCuller)) {
+	if ( numSegments > 5 && p_chunk->DrawCheck(rCuller) ) {
 		//intersect enabled segments with data contained segments
 		SegmentDataSet direct_relevant_data_set;
 		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
@@ -599,12 +601,25 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 		return;
 	}
 
+	if( !(numSegments > 5) ) {
+		SegmentDataSet direct_relevant_data_set;
+		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
+						       direct_relevant_data_set);
+
+		//return if empty
+		if (direct_relevant_data_set.size() == 0)
+			return;
+
+		//draw data_relevent_segments in this chunk
+		DrawChunk(chunkCoord, direct_relevant_data_set, rCuller);
+	} 
+
 	////ELSE BREAK DOWN INTO CHILDREN
 	//intersect enabled segments with spactially contained segments
 	SegmentDataSet indirect_relevant_data_set;
 	setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetIndirectDataValues(),
-					       indirect_relevant_data_set);
-
+						       indirect_relevant_data_set);
+	
 	//return if empty
 	if (indirect_relevant_data_set.size() == 0)
 		return;
@@ -613,7 +628,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 	set < OmMipChunkCoord >::iterator itr;
 	for (itr = p_chunk->GetChildrenCoordinates().begin(); itr != p_chunk->GetChildrenCoordinates().end(); itr++) {
 		//draw child with only relevant segments enabled
-		DrawChunkRecursive(*itr, indirect_relevant_data_set, testVis, rCuller);
+		DrawChunkRecursive(*itr, indirect_relevant_data_set, testVis, rCuller, numSegments);
 	}
 
 }
