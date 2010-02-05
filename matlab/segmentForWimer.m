@@ -62,7 +62,7 @@ function seg_imgs = run_auto_segmentation( conn, thresholds, seg_threshold )
 
         tic;
         fprintf('Running marker-based watershed %g ...', threshold);
-        si
+        seg_imgs{ threshold*100 } = markerWatershed( conn, mknhood2(1), seg, seg==0, 0.5 );
         fprintf(' done. ');
         toc
     end

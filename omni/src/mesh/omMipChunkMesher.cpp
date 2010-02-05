@@ -105,6 +105,9 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 						const SegmentDataSet & rMeshVals)
 {
 
+	//lock thread mutex to prevent created threads from starting
+	pthread_mutex_lock(&mMeshThreadMutex);
+
 	assert (chunk);
 
 	//set manager
@@ -134,8 +137,6 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	init_meshing_thread((void *)this);
 #else
 
-	//lock thread mutex to prevent created threads from starting
-	pthread_mutex_lock(&mMeshThreadMutex);
 
 	//create all meshing threads
 	pthread_t meshing_threads[num_threads];
@@ -147,15 +148,18 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	//free mutex and with for signal
 	pthread_cond_wait(&mMeshThreadCv, &mMeshThreadMutex);
 
+	mMeshThreadCount = 0;
+
+	delete mpCurrentMeshSource;
+	mpCurrentMeshSource = NULL;
+
 	//all threads must be dead, so free mutex and return
 	pthread_mutex_unlock(&mMeshThreadMutex);
 
 #endif
 
-	delete mpCurrentMeshSource;
-	mpCurrentMeshSource = NULL;
 
-	//assert (0);
+	//	assert (0);
 
 	return;
 }
@@ -200,7 +204,9 @@ void OmMipChunkMesher::BuildMeshesLoop()
 	assert (mpCurrentMeshSource);
 
 	//get thread index, and inc count
-	thread_index = mMeshThreadCount++;
+	thread_index = mMeshThreadCount;
+	debug("gui", "mMeshThreadCount is %d\n", mMeshThreadCount);
+
 	debug("mesher", "OmMipChunkMesher::BuildMeshesLoop(): %p %i \n", pthread_self(), thread_index);
 
 	pthread_mutex_unlock(&mMeshThreadMutex);
@@ -234,15 +240,15 @@ void OmMipChunkMesher::BuildMeshesLoop()
 
 	//no more seg values avail, dec thread count
 	pthread_mutex_lock(&mMeshThreadMutex);
-	mMeshThreadCount--;
+	mMeshThreadCount++;
 	//debug("FIXME", << "mMeshThreadCount: " << mMeshThreadCount << endl;
-	if (0 == mMeshThreadCount)
+	if ( OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT) == mMeshThreadCount)
 		dosignal = true;
 	pthread_mutex_unlock(&mMeshThreadMutex);
 
 	//if last thread, then signal
 	if (dosignal) {
-		//debug("FIXME", << "mMeshThreadCount is 0 so ... signaling" << endl;
+		debug("gui", "mMeshThreadCount is 0 so ... signaling\n");
 		pthread_cond_signal(&mMeshThreadCv);
 	}
 }

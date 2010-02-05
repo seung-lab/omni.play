@@ -275,6 +275,8 @@ void OmMipChunk::WriteVolumeData()
 
 void OmMipChunk::ReadMetaData()
 {
+	//	return;
+
 	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
 	//debug("genone","OmMipChunk::ReadMetaData: %s \n", fpath.data());
 
