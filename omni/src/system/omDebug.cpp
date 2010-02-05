@@ -65,7 +65,6 @@ void debugAddCategory(char *category,int length)
 	}
 	if (!exists){
 		strncpy(debugCategoryArray[debugCategoryNumber++],category,OM_DEBUG_STRING_SIZE);
-		debugCategoryNumber++;
 	}
 }
 
@@ -73,14 +72,14 @@ void debugRemoveCategory(char *category, int length)
 {
         int i,j;
 	bool exists=false;
-	for (i=0;i<debugCategoryNumber;i++){
+	for (i=0;!exists&&(i<debugCategoryNumber);i++){
 		if (!strncmp(category,debugCategoryArray[i],length)){
 			exists=true;
 		}
 	}
 	if (exists){
 		debugCategoryNumber--;
-		for (j=i;j<debugCategoryNumber;j++){
+		for (j=i-1;j<debugCategoryNumber;j++){
 			strncpy(debugCategoryArray[j],debugCategoryArray[j+1],OM_DEBUG_STRING_SIZE);
 		}
 		debugRemoveCategory(category, length);
@@ -131,7 +130,7 @@ int parseArgs(int argc, char *argv[])
 						} else {
 							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_ADD)) return -1;
 						}
-						} else if(-1==debugParseArg(argv[i+1],OM_DEBUG_ADD)) return -1;
+					} else 	if(-1==debugParseArg(argv[++i],OM_DEBUG_ADD)) return -1;
 					break;
 				case 'n':
 					if(strlen(argv[i]) > 2){
@@ -141,7 +140,7 @@ int parseArgs(int argc, char *argv[])
 						} else {
 							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_REMOVE)) return -1;
 						}
-					} else if (-1==debugParseArg(argv[i+1],OM_DEBUG_REMOVE)) return -1;
+					} else if (-1==debugParseArg(argv[++i],OM_DEBUG_REMOVE)) return -1;
 					break;
 				case '-':
 					if(!strncmp(argv[i],"--debug=",8)){
@@ -161,7 +160,7 @@ int parseArgs(int argc, char *argv[])
 					usage();
 					return -2;
 			}
-			i++;
+			
 		} else {
 			if (!fileArgIndex) fileArgIndex=i;
 		}
