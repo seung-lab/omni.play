@@ -2738,6 +2738,7 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 			if (cameraMoving) {
 				if (PAN_MODE == OmStateManager::GetToolMode()) {
 					mouseMove_NavMode_CamMoving(event);
+					OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 				}
 			}
 			break;

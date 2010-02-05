@@ -1163,6 +1163,8 @@ void MainWindow::changeSelection(int segmentIndex)
 
 void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 {
+	debug("gui", "hi from %s\n", __FUNCTION__);
+
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_MODE:
 		toolbarToolChange(true, toolbarSelectAct, SELECT_MODE); 
@@ -1191,5 +1193,4 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 	default:
 		break;
 	}
-
 }
