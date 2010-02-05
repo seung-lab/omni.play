@@ -121,14 +121,15 @@ void
 	//create marching cubes
 	mpDiscreteMarchingCubes = vtkDiscreteMarchingCubes::New();
 	mpDiscreteMarchingCubes->SetInput(mMeshSource.pImageData);
+	mpDiscreteMarchingCubes->GetOutput()->ReleaseDataFlagOn();
 
 	// decimate clean poly
 	mpDecimation = vtkQuadricDecimation::New();
-	//vtkDecimatePro *mpDecimation = vtkDecimatePro::New();
 	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
 	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
 	//debug("FIXME", << "target_reduction: " << target_reduction << endl;
 	mpDecimation->SetTargetReduction(target_reduction);
+	mpDecimation->GetOutput()->ReleaseDataFlagOn();
 
 	//form transform to norm extent
 	mpTransform = vtkTransform::New();
@@ -138,12 +139,14 @@ void
 	mpTransformPolyDataFilter = vtkTransformPolyDataFilter::New();
 	mpTransformPolyDataFilter->SetInput(mpDecimation->GetOutput());
 	mpTransformPolyDataFilter->SetTransform(mpTransform);
+	mpTransformPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 
 	//smooth poly
 	mpSmoothPolyDataFilter = vtkSmoothPolyDataFilter::New();
 	mpSmoothPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
 	int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
 	mpSmoothPolyDataFilter->SetNumberOfIterations(num_smoothing_iters);	//smooth geometry
+	mpSmoothPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 
 	//form normals
 	mpPolyDataNormals = vtkPolyDataNormals::New();
@@ -155,6 +158,7 @@ void
 	//strip poly
 	mpStripper = vtkStripper::New();
 	mpStripper->SetInputConnection(mpPolyDataNormals->GetOutputPort());
+	mpStripper->GetOutput()->ReleaseDataFlagOn();
 }
 
 void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
@@ -166,6 +170,7 @@ void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
 
 	//get poly from stripper
 	vtkPolyData *p_poly_data = mpStripper->GetOutput();
+	p_poly_data->Squeeze();
 	p_poly_data->Update();
 
 	//make mesh from poly data
@@ -246,9 +251,8 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 		strip_idx++;
 	}
 
-	//debug("genone","OmMipChunkMesher:: strips: %i \n", num_strips );
-
-	//delete float array
+	debug("mesher1","OmMipChunkMesher:: strips ref: %i \n", p_strip_cells_array->GetReferenceCount());
+	//p_strip_cells_array->Delete();
 	p_points_data_array->Delete();
 	p_normal_data_array->Delete();
 }

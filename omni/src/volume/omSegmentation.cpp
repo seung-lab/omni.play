@@ -265,12 +265,17 @@ void OmSegmentation::BuildMeshDataInternal()
 					//build all segment meshes in chunk
 					p_chunk->Open();
 
+					debug ("mesher1", "here\n");
+
 					mMipMeshManager.BuildChunkMeshes(p_chunk, p_chunk->GetDirectDataValues());
 
+					
 					p_chunk->Close();
 
 					//update progress
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
+	                                p_chunk = shared_ptr < OmMipChunk > ();
+                                	Remove (chunk_coord);
 				}
 	}
 }

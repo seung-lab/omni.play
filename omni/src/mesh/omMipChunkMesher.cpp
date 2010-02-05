@@ -152,6 +152,8 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	delete mpCurrentMeshSource;
 	mpCurrentMeshSource = NULL;
 
+	//assert (0);
+
 	return;
 }
 
@@ -208,7 +210,7 @@ void OmMipChunkMesher::BuildMeshesLoop()
 
 		//get mesh coordiante
 		OmMipMeshCoord mesh_coord = OmMipMeshCoord(mCurrentMipCoord, segment_value);
-		//debug("FIXME", << "OmMipChunkMesher::BuildMeshesLoop(): thread: " << thread_index << " mesh: " << mesh_coord << endl;
+		debug("mesher1", "OmMipChunkMesher::BuildMeshesLoop(): thread:(%i) \n", thread_index);
 
 		//get alloc'd mesh
 		OmMipMesh *p_mesh = mpMipMeshManager->AllocMesh(mesh_coord);
@@ -245,7 +247,8 @@ void *init_meshing_thread(void *arg)
 	OmMipChunkMesher *p_manager = (OmMipChunkMesher *) arg;
 	p_manager->BuildMeshesLoop();
 
-#ifdef OM_SINGLE_THREADED_MESHER
+
+#ifndef OM_SINGLE_THREADED_MESHER
 	pthread_exit(NULL);
 #endif
 }

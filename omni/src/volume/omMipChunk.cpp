@@ -51,6 +51,8 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	}
 	//update cache size
 	UpdateSize(sizeof(OmMipChunk));
+
+	mpImageData = NULL;
 }
 
 OmMipChunk::~OmMipChunk()
@@ -123,6 +125,8 @@ void OmMipChunk::Open()
 	//read volume data
 	ReadVolumeData();
 
+	debug("mipchunk", "read in mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+
 	//set open
 	SetOpen(true);
 }
@@ -193,8 +197,8 @@ void OmMipChunk::Close()
 	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 
 	//delete image data
+	debug("mipchunk", "freeing mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
 	mpImageData->Delete();
-	debug("genone", "freeing mpImageData: %i\n", mpImageData);
 	mpImageData = NULL;
 }
 
@@ -400,6 +404,10 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 
 	//close if already open
 	//if(IsOpen()) Close();
+
+	if (mpImageData) {
+		mpImageData->Delete ();
+	}
 
 	//set this image data to given
 	mpImageData = pImageData;
@@ -745,6 +753,9 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				mpMipVolume->GetChunk(p_chunk, mip_coord);
 
 				p_chunk->Open();
+
+				debug("mipchunk", "got mpImageData: %i, rc:%i\n", p_chunk->mpImageData, p_chunk->mpImageData->GetReferenceCount());
+
 
 				//get pointer to image data
 				//vtkImageData *p_src_data = p_chunk->mpImageData;

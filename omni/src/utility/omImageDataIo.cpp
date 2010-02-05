@@ -632,11 +632,19 @@ vtkImageData *allocImageData(Vector3 < int >dims, int bytesPerSample)
 {
 	//alloc data
 	vtkImageData *data = vtkImageData::New();
+	debug ("mesher1", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
 	data->SetDimensions(dims.x, dims.y, dims.z);
+	debug ("mesher1", "1rc ==  %i\n", data->GetReferenceCount());
 	data->SetScalarType(bytesToVtkScalarType(bytesPerSample));
+	debug ("mesher1", "2rc ==  %i\n", data->GetReferenceCount());
 	data->SetNumberOfScalarComponents(1);
+	debug ("mesher1", "3rc ==  %i\n", data->GetReferenceCount());
 	data->AllocateScalars();
+	debug ("mesher1", "4rc ==  %i\n", data->GetReferenceCount());
 	data->Update();
+	debug ("mesher1", "5rc ==  %i\n", data->GetReferenceCount());
+
+	data->ReleaseDataFlagOn();
 
 	return data;
 }

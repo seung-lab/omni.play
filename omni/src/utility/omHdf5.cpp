@@ -526,6 +526,7 @@ vtkImageData *om_hdf5_dataset_image_read_trim(hid_t fileId, const char *name, Da
 	//delete read intersect data
 	intersect_image_data->Delete();
 
+	debug ("mesher1", "filled_read_data: %p, %i\n", filled_read_data, filled_read_data->GetReferenceCount());
 	return filled_read_data;
 }
 
