@@ -133,7 +133,11 @@ OmMipMesh *OmMipMeshManager::HandleCacheMiss(const OmMipMeshCoord & coord)
 
 	//load data from disk
 	//debug("genone","OmMipMeshManager::HandleCacheMiss: loading mesh from disk");
-	mesh->Load();
+	try {
+		mesh->Load();
+	} catch (...) {
+	}
+
 
 	//upload vbo
 	//debug("genone","OmMipMeshManager::HandleCacheMiss: creating vbo");

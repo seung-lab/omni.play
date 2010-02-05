@@ -105,6 +105,8 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 						const SegmentDataSet & rMeshVals)
 {
 
+	assert (chunk);
+
 	//set manager
 	mpMipMeshManager = pMipMeshManager;
 
@@ -118,6 +120,7 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	mCurrentSegmentDataSet.erase(NULL_SEGMENT_DATA);
 	//load current mesh source
 	mpCurrentMeshSource = new OmMeshSource();
+	assert (mpCurrentMeshSource);
 	mpCurrentMeshSource->Load(chunk);
 	mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 	//current chunk
@@ -186,11 +189,15 @@ void OmMipChunkMesher::BuildMeshesLoop()
 	//init thread index
 	int thread_index = -1;
 	bool dosignal = false;
+	assert (mpCurrentMeshSource);
 
 	pthread_mutex_lock(&mMeshThreadMutex);
 
+	assert (mpCurrentMeshSource);
 	//init mesher
 	OmMesher mesher(*mpCurrentMeshSource);
+
+	assert (mpCurrentMeshSource);
 
 	//get thread index, and inc count
 	thread_index = mMeshThreadCount++;
@@ -245,6 +252,7 @@ void *init_meshing_thread(void *arg)
 
 	//cast into manager
 	OmMipChunkMesher *p_manager = (OmMipChunkMesher *) arg;
+	assert (p_manager->mpCurrentMeshSource);
 	p_manager->BuildMeshesLoop();
 
 

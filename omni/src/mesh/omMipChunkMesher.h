@@ -41,6 +41,8 @@ public:
 	SEGMENT_DATA_TYPE GetNextSegmentValueToMesh();
 	void BuildMeshesLoop();
 	
+	OmMeshSource *mpCurrentMeshSource;
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmMipChunkMesher();
@@ -62,7 +64,6 @@ private:
 	//current data
 	OmMipMeshManager *mpMipMeshManager;
 	
-	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 	SegmentDataSet mCurrentSegmentDataSet;
 };

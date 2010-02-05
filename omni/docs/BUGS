@@ -1592,3 +1592,43 @@ Program received signal SIGABRT, Aborted.
 #34 0x084d5e27 in QApplication::exec ()
 #35 0x083a457c in main (argc=1, argv=0xbf82d274) at /home/matt/omni1/omni/src/gui/main.cpp:49
 
+
+Display of object causes crash if mesh doesn't exist on disk:
+
+[Thread 0xb4eaeb90 (LWP 6204) exited]
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 3064986512.  Back trace follows.
+  #000: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5D.c line 1169 in H5Dopen(): not found
+    major(15): Dataset interface
+    minor(48): Object not found
+  #001: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5G.c line 1783 in H5G_find(): object not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #002: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gtraverse.c line 397 in H5G_namei(): component not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #003: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gstab.c line 161 in H5G_stab_find(): not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+terminate called after throwing an instance of 'OmIoException'
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0xb6affb90 (LWP 6199)]
+0xb7f18410 in __kernel_vsyscall ()
+(gdb) BT
+#0  0xb7f18410 in __kernel_vsyscall ()
+#1  0xb79e5085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79e6a01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb7bd0480 in __gnu_cxx::__verbose_terminate_handler () from /usr/lib/libstdc++.so.6
+#4  0xb7bcdd05 in ?? () from /usr/lib/libstdc++.so.6
+#5  0xb7bcdd42 in std::terminate () from /usr/lib/libstdc++.so.6
+#6  0xb7bcde6a in __cxa_throw () from /usr/lib/libstdc++.so.6
+#7  0x08c5dd3e in om_hdf5_dataset_raw_read (fileId=67108865, name=0xadf2d25c "segmentations/segmentation1/0/0_4_0/mesh/9937/metamesh.dat", size=0x0)
+    at /home/matt/omni1/omni/src/utility/omHdf5.cpp:242
+#8  0x0844a85e in OmProjectData::ReadRawData (path=@0xb6aff2b4, size=0x0) at /home/matt/omni1/omni/src/system/omProjectData.cpp:157
+#9  0x08c4bed0 in OmMipMesh::Load (this=0xaf68dda0) at /home/matt/omni1/omni/src/mesh/omMipMesh.cpp:105
+#10 0x08c4c574 in OmMipMeshManager::HandleCacheMiss (this=0x96f9950, coord=@0xb6aff354) at /home/matt/omni1/omni/src/mesh/omMipMeshManager.cpp:136
+#11 0x08c51f82 in OmThreadedCache<OmMipMeshCoord, OmMipMesh>::FetchLoop (this=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:630
+#12 0x08c521c5 in start_cache_fetch_thread<OmMipMeshCoord, OmMipMesh> (arg=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:745
+#13 0xb7c874fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#14 0xb7a90e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+
