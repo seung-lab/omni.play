@@ -563,7 +563,7 @@ void
 OmThreadedCache<T,U>::FetchLoop() {
 
 	//set some variables
-	threadSelf = pthread_self();
+	threadSelf = (void*)pthread_self();
 	bool checked = false;
 
 
