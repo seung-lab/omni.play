@@ -1,13 +1,14 @@
+
 #include "omView2d.h"
 
 #include "omCachingTile.h"
-//#include "omThreadedCachingTile.h"
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
 #include "system/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
+#include "system/events/omView3dEvent.h"
 #include "system/omGarbage.h"
 
 #include "segment/omSegment.h"
@@ -16,7 +17,6 @@
 
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-//#include "segment/actions/voxel/omVoxelSetAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/actions/segment/omSegmentMergeAction.h"
 
@@ -1171,6 +1171,8 @@ void OmView2d::wheelEvent(QWheelEvent * event)
 	}
 
 	event->accept();
+
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 void OmView2d::MouseWheelZoom(const int numSteps)
@@ -2630,9 +2632,12 @@ void OmView2d::mouseNavModeLeftButton(QMouseEvent * event)
 		break;
 	case CROSSHAIR_MODE:
 		mouseSetCrosshair(event);
+		OmStateManager::SetToolMode(PAN_MODE);
+		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 		break;
 	case ZOOM_MODE:
 		mouseZoom(event);
+		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 		break;
 	case ADD_VOXEL_MODE:
 		break;
@@ -2672,10 +2677,13 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		break;
 	case CROSSHAIR_MODE:
 		mouseSetCrosshair(event);
+		OmStateManager::SetToolMode(PAN_MODE);
+		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 		return;
 		break;
 	case ZOOM_MODE:
 		mouseZoom(event);
+		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 		return;
 		break;
 	case ADD_VOXEL_MODE:

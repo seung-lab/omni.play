@@ -146,8 +146,7 @@ OmMipMesh *OmMipMeshManager::HandleCacheMiss(const OmMipMeshCoord & coord)
 
 void OmMipMeshManager::HandleFetchUpdate()
 {
-	//debug("genone","OmMipMeshManager::FetchUpdate: send redraw");
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW_CACHE));
 }
 
 bool OmMipMeshManager::InitializeFetchThread()
@@ -170,6 +169,7 @@ void OmMipMeshManager::DrawMeshes(OmSegmentManager & rSegMgr,
 				  const OmBitfield & drawOps,
 				  const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals)
 {
+	//debug("view3d", "in %s, about to draw %d chunks\n", __FUNCTION__, rRelvDataVals.size() );
 
 	//for all relevent data values in chunk
 	SegmentDataSet::iterator itr;

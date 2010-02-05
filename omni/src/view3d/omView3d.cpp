@@ -21,8 +21,6 @@
 #include "common/omGl.h"
 #include "system/omDebug.h"
 
-#define DEBUG 0
-
 enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 1,
 	VIEW3D_WIDGET_ID_VIEWBOX,
@@ -41,13 +39,14 @@ void initLights();
 //////////      OmView3d Class
 //////////
 
+unsigned int myBackoff;
+
 /*
  *	Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget * parent)
  : QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), mView3dUi(this)
 {
-
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
 
@@ -59,10 +58,21 @@ OmView3d::OmView3d(QWidget * parent)
 
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
+
+	myBackoff = 1;
 }
 
-#pragma mark
-#pragma mark Accessor Methods
+
+static void resetBackoff ()
+{
+	myBackoff = 1;
+}
+
+static void increaseBackoff ()
+{
+	myBackoff = myBackoff + 1;
+}
+
 /////////////////////////////////
 ///////          Accessor Methods
 
@@ -149,6 +159,7 @@ void OmView3d::paintGL()
 
 void OmView3d::mousePressEvent(QMouseEvent * event)
 {
+	resetBackoff();
 	try {
 		mView3dUi.MousePressed(event);
 	} catch(...) {
@@ -158,31 +169,37 @@ void OmView3d::mousePressEvent(QMouseEvent * event)
 
 void OmView3d::mouseReleaseEvent(QMouseEvent * event)
 {
+	resetBackoff();
 	mView3dUi.MouseRelease(event);
 }
 
 void OmView3d::mouseMoveEvent(QMouseEvent * event)
 {
+	resetBackoff();
 	mView3dUi.MouseMove(event);
 }
 
 void OmView3d::mouseDoubleClickEvent(QMouseEvent * event)
 {
+	resetBackoff();
 	mView3dUi.MouseDoubleClick(event);
 }
 
 void OmView3d::mouseWheelEvent(QWheelEvent * event)
 {
+	resetBackoff();
 	mView3dUi.MouseWheel(event);
 }
 
 void OmView3d::keyPressEvent(QKeyEvent * event)
 {
+	resetBackoff();
 	mView3dUi.KeyPress(event);
 }
 
 void OmView3d::wheelEvent ( QWheelEvent * event )
 {
+	resetBackoff();
 	mouseWheelEvent(event);
 }
 
@@ -232,32 +249,44 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 
 void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
+	resetBackoff();
 	updateGL();
 }
 
 void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
 {
+	resetBackoff();
 	updateGL();
 }
 
 void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
 {
+	resetBackoff();
 	updateGL();
 }
 
 void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
 {
+	resetBackoff();
 	updateGL();
 }
 
 void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
 {
+	resetBackoff();
 	updateGL();
 }
 
 void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
 {
+	resetBackoff();
 	updateGL();
+}
+
+void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
+{
+	updateGL();
+	increaseBackoff ();
 }
 
 void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)

@@ -26,6 +26,10 @@ void
 		p_cast_listener->View3dRedrawEvent(this);
 		return;
 
+	case OmView3dEvent::REDRAW_CACHE:
+		p_cast_listener->View3dRedrawEventFromCache(this);
+		return;
+
 	case OmView3dEvent::UPDATE_PREFERENCES:
 		//p_cast_listener->View3dUpdatePreferencesEvent( this );
 		return;

@@ -974,7 +974,7 @@ void MainWindow::toolbarToolChange(const bool checked, QAction * tool, const OmT
 // view tools
 void MainWindow::toolbarSelect(const bool checked)
 {
-	toolbarToolChange(checked, toolbarSelectAct, SELECT_MODE);
+	toolbarToolChange(checked, toolbarSelectAct, SELECT_MODE); 
 }
 
 void MainWindow::toolbarCrosshair(const bool checked)
@@ -1159,4 +1159,37 @@ void MainWindow::changeSelection(int segmentIndex)
 		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
 		spawnErrorDialog(e);
 	}
+}
+
+void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
+{
+	switch (OmStateManager::GetToolMode()) {
+	case SELECT_MODE:
+		toolbarToolChange(true, toolbarSelectAct, SELECT_MODE); 
+		break;
+	case PAN_MODE:
+		toolbarToolChange(true, toolbarPanAct, PAN_MODE);
+		break;
+	case CROSSHAIR_MODE:
+		toolbarToolChange(true, toolbarCrosshairAct, CROSSHAIR_MODE);
+		break;
+	case ZOOM_MODE:
+		toolbarToolChange(true, toolbarZoomAct, ZOOM_MODE);
+		break;
+	case ADD_VOXEL_MODE:
+		toolbarToolChange(true, toolbarBrushAct, ADD_VOXEL_MODE);
+		break;
+	case SUBTRACT_VOXEL_MODE:
+		toolbarToolChange(true, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
+		break;
+	case SELECT_VOXEL_MODE:
+		toolbarToolChange(true, toolbarFillAct, SELECT_VOXEL_MODE);
+		break;
+	case VOXELIZE_MODE:
+		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
+		break;
+	default:
+		break;
+	}
+
 }

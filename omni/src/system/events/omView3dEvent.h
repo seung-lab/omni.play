@@ -26,6 +26,7 @@ public:
 	//events
 	static const QEvent::Type REDRAW = (QEvent::Type) (CLASS);
 	static const QEvent::Type UPDATE_PREFERENCES = (QEvent::Type) (CLASS + 1);
+	static const QEvent::Type REDRAW_CACHE = (QEvent::Type) (CLASS + 2);
 };
 
 
@@ -40,10 +41,10 @@ class OmView3dEventListener : public OmEventListener {
 
 public:	
 	OmView3dEventListener() : OmEventListener(OmView3dEvent::CLASS) {
-		//cout << "OmView3dEventListener()" << this << endl;
 	};
 	
 	virtual void View3dRedrawEvent(OmView3dEvent *event) { };
+	virtual void View3dRedrawEventFromCache(OmView3dEvent *event) { };
 	virtual void View3dUpdatePreferencesEvent(OmView3dEvent *event) { };
 };
 

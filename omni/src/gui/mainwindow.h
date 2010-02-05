@@ -51,7 +51,7 @@ class MainWindow
 		void closeEvent(QCloseEvent *event); 
 		
 		void SegmentObjectModificationEvent(OmSegmentEvent *event);
-		
+		void SystemModeChangeEvent(OmSystemModeEvent * event);		
 		void AlertNotifyEvent(OmAlertEvent *event);
 		
 		void ProgressShow(OmProgressEvent *event);

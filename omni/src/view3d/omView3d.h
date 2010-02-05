@@ -1,8 +1,6 @@
 #ifndef OM_VIEW3D_H
 #define OM_VIEW3D_H 
 
-
-
 #include "omCamera.h"
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
@@ -40,8 +38,6 @@ class OmView3d : public QGLWidget,
 		OmView3d(QWidget *parent = NULL);
 		OmCamera& GetCamera();
 		
-		
-		
 	protected:
 		//gl events
 		void initializeGL();
@@ -66,6 +62,7 @@ class OmView3d : public QGLWidget,
 		void ViewBoxChangeEvent(OmViewEvent *event);
 		//void ViewCenterChangeEvent(OmViewEvent *event);
 		void View3dRedrawEvent(OmView3dEvent *event);
+		void View3dRedrawEventFromCache(OmView3dEvent * event);
 		void View3dUpdatePreferencesEvent(OmView3dEvent *event);
 		
 		
@@ -80,8 +77,6 @@ class OmView3d : public QGLWidget,
 		//gl actions
 		bool PickPoint(Vector2<int> point, vector<int> &names);
 		bool UnprojectPoint(Vector2i point2d, Vector3f &point3d, float depth_scale_factor = 1.0f);
-		
-
 		//draw methods
 		void Draw(OmBitfield option);
 		void DrawVolumes(OmBitfield option);
