@@ -744,6 +744,8 @@ void OmView2d::mouseSelectSegment(QMouseEvent * event)
 
 	if (segmentation.IsSegmentValid(theId)) {
 
+		OmSegmentEditor::SetEditSelection(segmentationID, theId);
+
 		const bool curSegmentNotYetMarkedAsSelected = !(segmentation.IsSegmentSelected(theId));
 
 		// if not augmenting slection and selecting segment, then 
@@ -927,7 +929,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 void OmView2d::EditModeMouseMove(QMouseEvent * event)
 {
 	// KEEP PAINTING
-	//debug ("genone", "scribbling? %i!\n", mScribbling);
+	debug ("genone", "scribbling? %i!\n", mScribbling);
 
 	
 	if (PAN_MODE == OmStateManager::GetToolMode()) {
@@ -2654,7 +2656,7 @@ void OmView2d::mouseNavModeLeftButton(QMouseEvent * event)
 
 void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 {
-	//debug ("genone", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
+	debug ("genone", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
 	bool doselection = false;
 	bool dosubtract = false;
 	mScribbling = true;
@@ -2715,6 +2717,8 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		} else {
 			PickToolAddToSelection(segmentation_id, globalDataClickPoint);
 		}
+	} else {
+		debug("genone", "No segment_id in edit selection\n");
 	}
 
 	lastDataPoint = getMouseClickpointLocalDataCoord(event);;
