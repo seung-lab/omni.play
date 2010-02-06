@@ -21,6 +21,8 @@ my $omniPath    = $basePath.'/omni';
 
 my $globalMakeOptions = " -j15 ";
 
+my $uname = `uname`;
+
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
 
@@ -28,6 +30,7 @@ print `mkdir $buildPath` if (!-e $buildPath);
 print `mkdir $srcPath` if (!-e $srcPath);
 
 sub genOmniScript {
+    my $darwin_magic = "x" if ($uname =~ /Darwin/);
     open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
 
     my $script = <<END;
@@ -35,6 +38,7 @@ export QTDIR=$libPath/Qt
 export BOOST_ROOT=$libPath/Boost
 export EXPAT_INCLUDE=$libPath/expat/lib/
 export EXPAT_LIBPATH=$libPath/expat/include/
+export DARWIN_MAGIC=$darwin_magic
 cd $basePath/omni
 cmake .
 make $globalMakeOptions
@@ -68,7 +72,7 @@ sub vtk {
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
     
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    #`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt` if ($uname =~ /Darwin/);
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
@@ -324,7 +328,7 @@ sub updateCMakeListsFile {
 	} elsif ( $line =~ /^SET\(BOOST_VERS_EXT/ ) {
 	    my $fName = `ls $libPath/Boost/lib/libboost_system*38.a`;
 	    ( my $boost_ver ) = ($fName =~/.*(gcc.*)\.a/);
-	    print OUT_FILE "SET(BOOST_VERS_EXT \"$boost_ver\")\n";
+	    print OUT_FILE "SET(BOOST_VERS_EXT \"\$ENV\{DARWIN_MAGIC\}$boost_ver\")\n";
 	} else {
 	    print OUT_FILE $line;
 	}
