@@ -869,6 +869,7 @@ void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
 void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
+	int count = 0;
 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
 	const OmId segmenID = sdw.getID();
 
@@ -884,6 +885,9 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
 
 	foreach(SegmentDataWrapper seg, segs) {
+		count++;
+		if (count > 5000) break;
+		debug ("crashing", "Crashing here %i\n", count);
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
 		row->setText(ID_COL, seg.getIDstr());

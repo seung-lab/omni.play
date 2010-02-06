@@ -933,7 +933,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 void OmView2d::EditModeMouseMove(QMouseEvent * event)
 {
 	// KEEP PAINTING
-	debug ("genone", "scribbling? %i!\n", mScribbling);
+	//debug ("genone", "scribbling? %i!\n", mScribbling);
 
 	
 	if (PAN_MODE == OmStateManager::GetToolMode()) {
@@ -1855,7 +1855,7 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 		}
 		gotten_id->texture = NULL;
 
-		//debug("FIXME", << "texture " << gotten_id->GetTextureID() << " was built" << endl;
+		debug("genone", "texture = %i\n", gotten_id->GetTextureID());
 
 	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->flags) {
 		GLuint texture;
@@ -1977,6 +1977,7 @@ void OmView2d::Draw(int mip)
 			PanOnZoomSelf(zoom);
 			zoom.x = i;
 			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
+			debug("genone","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
 								   Vector2 <
@@ -2069,7 +2070,7 @@ static int clamp(int c)
 OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, const OmTileCoord & key,
 			      void **rData)
 {
-	//debug("genone","OmTile::setMyColorMap(imageData)");
+	debug("genone","OmTile::setMyColorMap(imageData=%i)\n", imageData);
 
 	OmIds found_ids;
 	bool entered;
@@ -2101,10 +2102,12 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 	for (int i = 0; i < dims.x * dims.y; i++) {
 		SEGMENT_DATA_TYPE tmpid = (SEGMENT_DATA_TYPE) imageData[i];
 
+		//if (0 != tmpid) debug("genone", "gotten segment id %i\n", tmpid);
+
 		if (tmpid != lastid) {
 			if (!speedTable.contains(tmpid)) {
 
-				//debug("FIXME", << "gotten segment id mapped to value" << endl;
+				//debug("genone", "gotten segment id %i mapped to value\n", tmpid);
 
 				OmId id = current_seg.GetSegmentIdMappedToValue(tmpid);
 				if (id == 0) {
@@ -2127,10 +2130,12 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 						entered = true;
 
 					} else {
-						if (doValidate) 
+						if (doValidate)  {
 							newcolor = qRgba(0, 0, 0, 255);
-						else
+						} else {
+							//debug ("genone", "validate functionality not used\n");
 							newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+						}
 					}
 
 					data[ctr] = newcolor.red();
@@ -2259,7 +2264,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 void OmView2d::PreDraw(Vector2i zoomMipVector)
 {
 	drawComplete = true;
-	//debug("genone","OmView2d::Draw() -- " << mViewType);
+	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
 
 	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
@@ -2290,6 +2295,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	int tl = tileLength * pow(2, zoomMipVector.x);
 
 	if (translateVector.y < 0) {
+		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
 		yMipChunk = ((abs(translateVector.y) / tl)) * tl * pl;
 		yval = (-1 * (abs(translateVector.y) % tl));
 	} else {
@@ -2301,6 +2307,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
 		if (translateVector.x < 0) {
+			//debug ("genone", "((abs(translateVector.x) / tl)) * tl * pl = %i\n", ((abs(translateVector.x) / tl)) * tl * pl);
 			xMipChunk = ((abs(translateVector.x) / tl)) * tl * pl;
 			xval = (-1 * (abs(translateVector.x) % tl));
 		} else {
@@ -2309,18 +2316,17 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		}
 
 #if 0
-#define d(x) " "
-		//debug("FIXME", << d(" tl: ") << tl;
-		//debug("FIXME", << d(" pl: ") << pl;
-		//debug("FIXME", << d(" x: ") << x;
-		//debug("FIXME", << d(" y: ") << y;
-		//debug("FIXME", << d(" xval: ") << xval;
-		//debug("FIXME", << d(" yval: ") << yval;
-		//debug("FIXME", << d(" translateVector.x: ") << translateVector.x;
-		//debug("FIXME", << d(" translateVector.y: ") << translateVector.y;
-		//debug("FIXME", << d(" xMipChunk: ") << xMipChunk << endl;
-		//debug("FIXME", << d(" yMipChunk: ") << yMipChunk;
-		//debug("FIXME", << d(" y-thing: ") << (mTotalViewport.height * (1.0 / zoomFactor)) << endl;
+		debug("genone", "tl = %i\n", tl);
+		debug("genone", "pl = %i\n", pl);
+		//debug("genone", "x = %i\n", x);
+		debug("genone", "y = %i\n", y);
+		debug("genone", "xval = %i\n", xval);
+		debug("genone", "yval = %i\n", yval);
+		debug("genone", "translateVector.x = %i\n", translateVector.x);
+		debug("genone", "translateVector.y = %i\n", translateVector.y);
+		debug("genone", "xMipChunk = %i\n", xMipChunk);
+		debug("genone", "yMipChunk = %i\n", yMipChunk);
+		debug("genone", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
 #endif
 
 		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor));

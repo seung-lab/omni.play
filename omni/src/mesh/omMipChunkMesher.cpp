@@ -116,6 +116,8 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	const int num_threads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
 	debug("mesher", "------> Number of threads: %d\n", num_threads);
 
+	chunk->Open();
+
 	//SET CURRENT DATA
 	//make meshing data available to threads
 	mCurrentSegmentDataSet = rMeshVals;	//chunk.GetDirectDataValues();
@@ -128,7 +130,7 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 	//current chunk
 	mCurrentMipCoord = chunk->GetCoordinate();
-	chunk->Open();
+
 
 	debug("mesher", "Should have chunk loaded now: ");
 
@@ -158,10 +160,7 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 
 #endif
 
-
-	//	assert (0);
-
-	return;
+	chunk->Close();
 }
 
 /*
