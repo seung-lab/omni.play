@@ -49,6 +49,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	if (mpMipVolume->GetChunksStoreMetaData()) {
 		ReadMetaData();
 	}
+
 	//update cache size
 	UpdateSize(sizeof(OmMipChunk));
 

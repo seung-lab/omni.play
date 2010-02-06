@@ -205,7 +205,7 @@ void OmMipChunkMesher::BuildMeshesLoop()
 
 	//get thread index, and inc count
 	thread_index = mMeshThreadCount;
-	debug("gui", "mMeshThreadCount is %d\n", mMeshThreadCount);
+	//debug("gui", "mMeshThreadCount is %d\n", mMeshThreadCount);
 
 	debug("mesher", "OmMipChunkMesher::BuildMeshesLoop(): %p %i \n", pthread_self(), thread_index);
 
@@ -248,7 +248,7 @@ void OmMipChunkMesher::BuildMeshesLoop()
 
 	//if last thread, then signal
 	if (dosignal) {
-		debug("gui", "mMeshThreadCount is 0 so ... signaling\n");
+		//debug("gui", "mMeshThreadCount is 0 so ... signaling\n");
 		pthread_cond_signal(&mMeshThreadCv);
 	}
 }

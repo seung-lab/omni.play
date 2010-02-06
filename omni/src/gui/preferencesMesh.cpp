@@ -28,6 +28,7 @@ QGroupBox* PreferencesMesh::makeNumberOfThreadsBox()
 {
 	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
 
+	numThreadsSlider->setMinimum( 1 );
 	numThreadsSlider->setMaximum( 2 * (int)OmNumCores::get_num_cores() );
 
 	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
