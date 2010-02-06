@@ -2,8 +2,6 @@
 #include "omView2d.h"
 
 #include "omCachingTile.h"
-#include "omThreadedCachingTile.h"
-
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
@@ -45,7 +43,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
  : QWidget(parent)
 {
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget();
-	debug("view2d","OmView2d::OmView2d() \n");
+	//debug("genone","OmView2d::OmView2d -- " << viewtype);
 
 	mViewType = viewtype;
 	mVolumeType = voltype;
@@ -90,19 +88,17 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	// set the cache up
 	assert((mVolumeType == CHANNEL) || (mVolumeType == SEGMENTATION));
 
-	
-
 	if (mVolumeType == CHANNEL) {
 		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
 		mVolume = &current_channel;
 
 		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_channel);
-		//OmCachingThreadedCachingTile *fastCache =
-		//    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
-	
-		//if (fastCache->mDelete)
-		//	delete fastCache;
-		mCache = new OmThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
+		OmCachingThreadedCachingTile *fastCache =
+		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
+		mCache = fastCache->mCache;
+		if (fastCache->mDelete)
+			delete fastCache;
+
 		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 
 		mCache->SetContinuousUpdate(false);
@@ -120,13 +116,13 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		mVolume = &current_seg;
 		mSeg = &current_seg;
 
-		//         mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_seg);
-		//OmCachingThreadedCachingTile *fastCache =
-		//    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
-		//mCache = fastCache->mCache;
-		//if (fastCache->mDelete)
-		//	delete fastCache;
-		mCache = new OmThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
+		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_seg);
+		OmCachingThreadedCachingTile *fastCache =
+		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
+		mCache = fastCache->mCache;
+		if (fastCache->mDelete)
+			delete fastCache;
+
 		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 		mCache->SetContinuousUpdate(false);
 
@@ -162,15 +158,12 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 
 	iSentIt = false;
 
-	Refresh();
+	OmCachingThreadedCachingTile::Refresh();
 }
 
 OmView2d::~OmView2d()
 {
-	debug("view2d","OmView2d::~OmView2d() \n");
-	OmCacheManager::Instance()->Refresh();
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	delete mCache;
+	OmCachingThreadedCachingTile::Refresh();
 }
 
 #pragma mark
@@ -182,7 +175,6 @@ OmView2d::~OmView2d()
 // More importantly this function is called before "make current" calls.
 void OmView2d::initializeGL()
 {
-	debug("view2d","OmView2d::initializeGL() \n");
 	// IMPORTANT: To cooperate fully with QPainter, we defer matrix stack operations and attribute initialization until
 	// the widget needs to be myUpdated.
 	//debug("genone","OmView2d::initializeGL        " << "(" << size().width() << ", " << size().height() << ")");
@@ -204,7 +196,6 @@ void OmView2d::initializeGL()
 
 void OmView2d::resizeEvent(QResizeEvent * event)
 {
-	debug("view2d","OmView2d::resizeEvent() \n");
 	resizeGL(event->size().width(), event->size().height());
 	myUpdate();
 }
@@ -214,10 +205,9 @@ void OmView2d::resizeEvent(QResizeEvent * event)
  */
 void OmView2d::resizeGL(int width, int height)
 {
-	debug("view2d","OmView2d::resizeGL() \n");
 	//debug("genone","OmView2d::resizeGL(" << width << ", " << height << ")");
 
-	OmCacheManager::Instance()->Refresh();
+	OmCachingThreadedCachingTile::Refresh();
 
 	delete pbuffer;
 	pbuffer = new QGLPixelBuffer(QSize(width, height), QGLFormat::defaultFormat(), sharedwidget);
@@ -236,7 +226,6 @@ void OmView2d::resizeGL(int width, int height)
  */
 void OmView2d::paintEvent(QPaintEvent * event)
 {
-	debug("view2d","OmView2d::paintEvent \n");
 	boost::timer t;
 	float zoomFactor = OmStateManager::Instance()->GetZoomLevel().y / 10.0;
 
@@ -329,7 +318,6 @@ void OmView2d::paintEvent(QPaintEvent * event)
 
 QImage OmView2d::safePaintEvent(QPaintEvent * event)
 {
-	debug("view2d","OmView2d::safePaintEvent \n");
 	//debug("genone","OmView2d::paintEvent -- " << mViewType);
 	//      //debug("genone","mTotalViewport = " << mTotalViewport);
 
@@ -407,7 +395,6 @@ void OmView2d::Refresh()
 
 void OmView2d::PickToolGetColor(QMouseEvent * event)
 {
-	debug("view2d","OmView2d::PickToolGetColor \n");
 	QRgb p;
 	int r, g, b, a;
 
@@ -1280,7 +1267,7 @@ void OmView2d::PanOnZoomSelf(Vector2 < int >current_zoom)
 
 void OmView2d::PanOnZoom(Vector2 < int >current_zoom, bool postEvent)
 {
-	debug("view2d","OmView2d::PanOnZoom() \n");
+
 	// Update the pan so view stays centered.
 	ViewType vts[] = { XY_VIEW, YZ_VIEW, XZ_VIEW };
 
@@ -1580,10 +1567,10 @@ void OmView2d::PreferenceChangeEvent(OmPreferenceEvent * event)
 
 void OmView2d::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
-	debug("view2d","OmView2d::SegmentObjectModificationEvent() \n");
 	//add/remove segment, change state, change selection
 	//valid methods: GetModifiedSegmentIds()
 
+	debug("genone","OmView2d::SegmentObjectModificationEvent\n");
 
 	Refresh ();
 	myUpdate();
@@ -1594,14 +1581,14 @@ void OmView2d::SegmentDataModificationEvent(OmSegmentEvent * event)
 	//voxels of a segment have changed
 	//valid methods: GetModifiedSegmentIds()
 
-	debug("view2d","OmView2d::SegmentDataModificationEvent\n");
+	debug("genone","OmView2d::SegmentDataModificationEvent\n");
 }
 
 void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
 {
 	//change segment edit selection
 
-	debug("view2d","OmView2d::SegmentEditSelectionChangeEvent\n");
+	debug("genone","OmView2d::SegmentEditSelectionChangeEvent\n");
 
 	if (mVolumeType == SEGMENTATION) {
 		//              modified_Ids = event->GetModifiedSegmentIds();
@@ -1703,7 +1690,6 @@ void OmView2d::ViewRedrawEvent(OmViewEvent * event)
 void OmView2d::myUpdate()
 {
 
-	debug("view2d","OmView2d::myUpdate()\n");
 	if (mEditedSegmentation) {
 		(new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
 		mUpdateCoordsSet.clear();
@@ -1714,13 +1700,11 @@ void OmView2d::myUpdate()
 		int tileLength = OmVolume::GetSegmentation(mEditedSegmentation).GetChunkDimension();
 		OmSegmentation & current_seg = OmVolume::GetSegmentation(mEditedSegmentation);
 
-		//mCache->Clear();
-
-		//OmCachingThreadedCachingTile *fastCache =
-		//    new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL);
-		//OmThreadedCachingTile *cache = fastCache->mCache;
-		//if (fastCache->mDelete)
-		//	delete fastCache;
+		OmCachingThreadedCachingTile *fastCache =
+		    new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL);
+		OmThreadedCachingTile *cache = fastCache->mCache;
+		if (fastCache->mDelete)
+			delete fastCache;
 
 #if 0
 		//debug("FIXME", << "enter" << endl;
@@ -1759,9 +1743,9 @@ void OmView2d::myUpdate()
 						DataCoord this_data_coord =
 						    ToDataCoord(xMipChunk, yMipChunk, zMipChunk);
 						SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCacheManager::Instance()->Freshen (false));
+						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen (false));
 
-						mCache->Remove(tileCoord);
+						cache->Remove(tileCoord);
 						//debug("FIXME", << tileCoord << endl;
 						//debug("FIXME", << "here " << endl;
 					}
@@ -1775,7 +1759,7 @@ void OmView2d::myUpdate()
 		}
 		//debug("FIXME", << "exit" << endl;
 	} else if (mDoRefresh) {
-		OmCacheManager::Instance()->Refresh();
+		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
 
@@ -1795,10 +1779,8 @@ void OmView2d::myUpdate()
 ///////		 Draw Methods
 void OmView2d::DrawFromFilter(OmFilter2d &filter)
 {
-
-	debug("view2d","OmView2d::DrawFromFilter()\n");
 	OmThreadedCachingTile *cache = filter.GetCache(mViewType);
-	if (!mCache)
+	if (!cache)
 		return;
 
 	OmThreadedCachingTile *sCache = mCache;
@@ -1815,20 +1797,18 @@ void OmView2d::DrawFromFilter(OmFilter2d &filter)
 
 void OmView2d::DrawFromCache()
 {
-
-	debug("view2d","OmView2d::DrawFromCache()\n");
 	if (mVolumeType == CHANNEL) {
 		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
 		mVolume = &current_channel;
 
-		//OmCachingThreadedCachingTile *fastCache =
-		//    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL);
-		//mCache = fastCache->mCache;
-		//if (fastCache->mDelete)
-		//	delete fastCache;
+		OmCachingThreadedCachingTile *fastCache =
+		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL);
+		mCache = fastCache->mCache;
+		if (fastCache->mDelete)
+			delete fastCache;
 
-			//mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
-			//mCache->SetContinuousUpdate(false);
+		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
+		mCache->SetContinuousUpdate(false);
 
 		Draw(true);
 	} else {
@@ -1836,14 +1816,14 @@ void OmView2d::DrawFromCache()
 		OmSegmentation & current_seg = OmVolume::GetSegmentation(mImageId);
 		mVolume = &current_seg;
 
-		//OmCachingThreadedCachingTile *fastCache =
-		//    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL);
-		//mCache = fastCache->mCache;
-		//if (fastCache->mDelete)
-		//	delete fastCache;
+		OmCachingThreadedCachingTile *fastCache =
+		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL);
+		mCache = fastCache->mCache;
+		if (fastCache->mDelete)
+			delete fastCache;
 
-		//mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
-		//mCache->SetContinuousUpdate(false);
+		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
+		mCache->SetContinuousUpdate(false);
 		Draw(false);
 	}
 
@@ -1853,7 +1833,6 @@ extern GGOCTFPointer GGOCTFunction;
 
 void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 {
-	debug("view2d","OmView2d::safeTexture()\n");
 	if (OMTILE_NEEDCOLORMAP == gotten_id->flags) {
 		GLuint texture;
 		glGenTextures(1, &texture);
@@ -1871,7 +1850,7 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 		gotten_id->flags = OMTILE_GOOD;
 		gotten_id->textureID = texture;
 		if (gotten_id->texture) {
-			debug ("cache", "freeing texture: %x\n", gotten_id->texture);
+			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 			free(gotten_id->texture);
 		}
 		gotten_id->texture = NULL;
@@ -1899,7 +1878,7 @@ void OmView2d::safeTexture(shared_ptr < OmTextureID > gotten_id)
 		gotten_id->textureID = texture;
 
 		if (gotten_id->texture) {
-			debug ("cache", "freeing texture: %x\n", gotten_id->texture);
+			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 			free(gotten_id->texture);
 		}
 		gotten_id->texture = NULL;
@@ -2032,12 +2011,11 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
 :x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor)
 {
-	debug ("view2d", "Drawable::Drawable()\n");
 	mGood = false;
 }
 Drawable::~Drawable ()
 {
-	debug ("view2d", "Drawable::~Drawable()\n");
+	//debug ("genone", "freeing?\n");
 	gotten_id = shared_ptr < OmTextureID > ();
 }
 
@@ -2047,7 +2025,7 @@ void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord t
 	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
 
 	if (gotten_id->texture) {
-		debug ("cache", "freeing texture: %x\n", gotten_id->texture);
+		//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
 		free (gotten_id->texture);
 	}
 	//debug ("genone", "updating texture: %x to be %x\n", gotten_id->texture, texture);
@@ -2293,7 +2271,6 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	int mDataDepth = data_coord.z;
 
 	int tileLength;
-	while (mCache==NULL){}
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmVolume::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -2352,7 +2329,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCacheManager::Instance()->Freshen(false));
+			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
 			NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 
