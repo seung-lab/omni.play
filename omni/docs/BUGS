@@ -1632,3 +1632,65 @@ Program received signal SIGABRT, Aborted.
 #13 0xb7c874fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
 #14 0xb7a90e5e in clone () from /lib/tls/i686/cmov/libc.so.6
 
+
+Closing the project:
+
+ERROR: In /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx, line 141
+vtkUnsignedIntArray (0x486e02a0): Unable to allocate 262144 elements of size 4 bytes.
+
+
+#0  0xb7f2f410 in __kernel_vsyscall ()
+#1  0xb79fc085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79fda01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0x08f56bc2 in vtkDataArrayTemplate<unsigned int>::Allocate (this=0x486e02a0, sz=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:144
+#4  0x08f5515f in vtkDataArrayTemplate<unsigned int>::SetNumberOfValues (this=0x486e02a0, number=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:848
+#5  0x08f551a9 in vtkDataArrayTemplate<unsigned int>::SetNumberOfTuples (this=0x486e02a0, number=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:404
+#6  0x08d76962 in vtkImageData::AllocateScalars (this=0x43dc1af0) at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Filtering/vtkImageData.cxx:1581
+#7  0x08c6448c in allocImageData (dims=@0xbff8ec50, bytesPerSample=4) at /home/matt/omni.stable/omni/src/utility/omImageDataIo.cpp:642
+#8  0x08c5a33b in om_hdf5_dataset_image_read (fileId=67108869, name=0xb0a47514 "segmentations/segmentation1/0/volume.dat", extent=@0xbff8ed48, bytesPerSample=4)
+    at /home/matt/omni.stable/omni/src/utility/omHdf5.cpp:452
+#9  0x08c5c984 in om_hdf5_dataset_image_read_trim (fileId=67108869, name=0xb0a47514 "segmentations/segmentation1/0/volume.dat", dataExtent=@0xbff8edf8,
+    bytesPerSample=4) at /home/matt/omni.stable/omni/src/utility/omHdf5.cpp:496
+#10 0x084498d3 in OmProjectData::ReadImageData (path=@0xbff8ee4c, extent=@0xaa4db2e0, bytesPerSample=4)
+    at /home/matt/omni.stable/omni/src/system/omProjectData.cpp:144
+#11 0x083f0213 in OmMipChunk::OpenForWrite (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:147
+#12 0x083f0290 in OmMipChunk::WriteVolumeData (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:265
+#13 0x083f04fa in OmMipChunk::Flush (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:166
+#14 0x083df704 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x96cff3c, fxn=&virtual table offset 16, lock=false)
+    at /home/matt/omni.stable/omni/src/system/omThreadedCache.h:540
+#15 0x083d894b in OmMipVolume::Flush (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omMipVolume.cpp:77
+#16 0x083db54f in ~OmMipVolume (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omMipVolume.cpp:55
+#17 0x083e7147 in ~OmSegmentation (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omSegmentation.h:34
+#18 0x083ec967 in ~OmGenericManager (this=0xb5a839a4) at /home/matt/omni.stable/omni/src/system/omGenericManager.h:97
+#19 0x083e7ea1 in ~OmVolume (this=0xb5a83880) at /home/matt/omni.stable/omni/src/volume/omVolume.cpp:29
+#20 0x083e8194 in OmVolume::Delete () at /home/matt/omni.stable/omni/src/volume/omVolume.cpp:58
+#21 0x084039a1 in OmProject::Close () at /home/matt/omni.stable/omni/src/system/omProject.cpp:216
+#22 0x083a9da4 in MainWindow::closeProjectIfOpen (this=0xbff9105c) at /home/matt/omni.stable/omni/src/gui/mainwindow.cpp:213
+#23 0x083aa338 in MainWindow::newProject (this=0xbff9105c) at /home/matt/omni.stable/omni/src/gui/mainwindow.cpp:86
+#24 0x083d0de8 in MainWindow::qt_metacall (this=0xbff9105c, _c=QMetaObject::InvokeMetaMethod, _id=0, _a=0xbff8f28c)
+    at /home/matt/omni.stable/omni/inst/gui/moc_mainwindow.cxx:120
+#25 0x08b95374 in QMetaObject::activate ()
+#26 0x08b957f0 in QMetaObject::activate ()
+#27 0x084c4831 in QAction::triggered ()
+#28 0x084c52af in QAction::activate ()
+#29 0x08812804 in QMenuPrivate::activateCausedStack ()
+#30 0x08819333 in QMenuPrivate::activateAction ()
+#31 0x0881b6bf in QMenu::mouseReleaseEvent ()
+#32 0x08517ace in QWidget::event ()
+#33 0x088171af in QMenu::event ()
+#34 0x084caf1f in QApplicationPrivate::notify_helper ()
+#35 0x084d02a1 in QApplication::notify ()
+#36 0x08b811cb in QCoreApplication::notifyInternal ()
+#37 0x084cf5ef in QApplicationPrivate::sendMouseEvent ()
+#38 0x0852d011 in QETWidget::translateMouseEvent ()
+#39 0x0852ba3d in QApplication::x11ProcessEvent ()
+#40 0x0855148b in QEventDispatcherX11::processEvents ()
+#41 0x08b8022d in QEventLoop::processEvents ()
+#42 0x08b8067d in QEventLoop::exec ()
+#43 0x08b822d8 in QCoreApplication::exec ()
+#44 0x084ca377 in QApplication::exec ()
+#45 0x083a2d9d in main (argc=2, argv=0xbff91214) at /home/matt/omni.stable/omni/src/gui/main.cpp:52
+
