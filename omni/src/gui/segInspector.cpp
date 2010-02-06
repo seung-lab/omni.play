@@ -10,6 +10,8 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
+#include <boost/progress.hpp>
+
 SegInspector::SegInspector(OmId seg_id, QWidget * parent)
  : QWidget(parent)
 {
@@ -71,7 +73,7 @@ QGroupBox* SegInspector::makeActionsBox()
         buildComboBox->insertItems(0, QStringList()
          << "Data"
          << "Mesh"
-         << "Data & Mesh"
+				   //         << "Data & Mesh"
         );
         gridAction->addWidget(buildComboBox, 1, 0);
 
@@ -208,12 +210,20 @@ void SegInspector::on_patternEdit_textChanged()
 
 void build_image(OmSegmentation * current_seg)
 {
+	printf("starting segmentation data build...\n");
+	boost::timer* timer = new boost::timer();
 	current_seg->BuildVolumeData();
+	const double timeToMeshSecs = timer->elapsed();
+	printf("segmentation data build performed in %g (secs?)\n", timeToMeshSecs);
 }
 
 void build_mesh(OmSegmentation * current_seg)
 {
+	printf("starting segmentation mesh build...\n");
+	boost::timer* timer = new boost::timer();
 	current_seg->BuildMeshData();
+	const double timeToMeshSecs = timer->elapsed();
+	printf("segmentation mesh build performed in %g (secs?)\n", timeToMeshSecs);
 }
 
 void SegInspector::on_buildButton_clicked()
@@ -232,10 +242,11 @@ void SegInspector::on_buildButton_clicked()
 		emit segmentationBuilt(my_id);
 	} else if (cur_text == QString("Mesh")) {
 		//      OmVolume::GetSegmentation(my_id).BuildMeshData();
-
 		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
 		//              emit meshBuilt(my_id);
-	} else if (cur_text == QString("Data & Mesh")) {
+	} 
+	/*
+	else if (cur_text == QString("Data & Mesh")) {
 		QFuture < void >f1 = QtConcurrent::run(build_image, &current_seg);
 		f1.waitForFinished();
 		QFuture < void >f2 = QtConcurrent::run(build_mesh, &current_seg);
@@ -243,6 +254,7 @@ void SegInspector::on_buildButton_clicked()
 		emit segmentationBuilt(my_id);
 
 	}
+	*/
 }
 
 void SegInspector::on_notesEdit_textChanged()

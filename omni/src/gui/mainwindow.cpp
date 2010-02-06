@@ -174,21 +174,6 @@ void MainWindow::addSegmentationToVolume()
 	}
 }
 
-void channel_build(OmChannel * current_channel)
-{
-	current_channel->BuildVolumeData();
-}
-
-void seg_build(OmSegmentation * current_seg)
-{
-	current_seg->BuildVolumeData();
-}
-
-void mesh_build(OmSegmentation * current_seg, QFuture < void >&last_future)
-{
-	current_seg->BuildMeshData();
-}
-
 /* returns false if New/Open action is cancelled by user */
 bool MainWindow::closeProjectIfOpen()
 {

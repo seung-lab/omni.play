@@ -1,15 +1,16 @@
 function doit( conn )
-
+    dbstop if error
+    
     paths.root    = '/home/omni/data/auto_segmentation/';
     paths.project = fullfile( paths.root,    'full' );
     makeDir( paths.project );
     paths.tiffs   = fullfile( paths.project, 'tiffs' );
     makeDir( paths.tiffs );
 
-    threshold = 0.97;
+    threshold = 0.95;
     fprintf('Running connected components at threshold %g ...', threshold );
     tic;
-    [ seg, cmpSz ] = connectedComponents( conn>threshold ); 
+    [ seg, cmpSz ] = connectedComponents( conn>threshold, '', 10 ); 
     fprintf(' done. ');
     toc
 
@@ -28,7 +29,7 @@ function doit( conn )
     fprintf(' done. ');
     toc
         
-    save(sprintf('run_%d_%d.mat', seg_threshold*100, dust_seg_threshold));
+    save(sprintf('full_run_%d_%d.mat', threshold*100, dust_seg_threshold));
     
     writeThresSegTiffs( paths, seg_imgs, dust_seg_threshold, threshold ); 
     

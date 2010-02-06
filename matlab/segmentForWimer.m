@@ -1,9 +1,9 @@
 function segmentForWimer( dust_seg_threshold )
 
-    paths.data    = '/Users/purcaro/im_histeq_for_Wimer.mat';
-    paths.root    = '/Users/purcaro/auto_segmentation';
-    [ paths, conn, im ] = loadMegavoxel( paths );
-%   [ paths, conn, im ] = load10Megavoxel( paths );
+    paths.data    = '/home/omni/data/auto_segmentation/im_histeq_for_Wimer.mat';
+    paths.root    = '/home/omni/data/auto_segmentation/';
+%    [ paths, conn, im ] = loadMegavoxel( paths );
+   [ paths, conn, im ] = load10Megavoxel( paths );
     
     paths.tiffs   = fullfile( paths.project, 'tiffs' );
     makeDir( paths.tiffs );
@@ -15,7 +15,7 @@ function segmentForWimer( dust_seg_threshold )
     
 %     thresholds = [.3:.05:.95 .97 .98 .99];
     thresholds = [ .95 ];
-    seg_imgs = run_auto_segmentation( conn, thresholds );
+    seg_imgs = run_auto_segmentation( conn, thresholds, 10 );
     
     if ~exist('dust_seg_threshold', 'var') || isempty( dust_seg_threshold )
         dust_seg_threshold = 200;
@@ -30,7 +30,7 @@ function segmentForWimer( dust_seg_threshold )
     
     fprintf('done\n');
     diary off;
-end
+
 
 function print_img_info( img )
     x = size(img,1);
@@ -51,7 +51,7 @@ function seg_imgs = run_auto_segmentation( conn, thresholds, seg_threshold )
         
         tic;
         fprintf('Running connected components at threshold %g ...', threshold );
-        if ~exist('seg_threshold', 'var') || empty( seg_threshold )
+        if ~exist('seg_threshold', 'var')
             [ seg, cmpSz ] = connectedComponents( conn>threshold );    
         else
             [ seg, cmpSz ] = connectedComponents( conn>threshold, '', seg_threshold );
@@ -237,4 +237,6 @@ end
 
 function printLine()
     fprintf('----------------\n');
+end
+
 end

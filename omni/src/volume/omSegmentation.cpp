@@ -198,6 +198,10 @@ void OmSegmentation::BuildVolumeData()
 	//seg change event
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 
+	// disable all segments by default
+	SetAllSegmentsSelected(false);
+	SetAllSegmentsEnabled(false);
+
 	printf("done building segmentation data\n");
 }
 
@@ -233,12 +237,7 @@ void OmSegmentation::BuildMeshData()
 	//hide progress bar
 	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 
-	// disable all segments by default
-	SetAllSegmentsSelected(false);
-	SetAllSegmentsEnabled(false);
-
 	OmProject::Save();
-	printf("done building mesh\n");
 }
 
 void OmSegmentation::BuildMeshDataInternal()

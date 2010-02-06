@@ -143,11 +143,11 @@ void OmProject::Save()
 	}
 
 	string fpath = GetDirectoryPath() + GetFileName();
-	//debug("genone","OmProject::Save: %s\n", fpath.data());
 
 	//store archive
 	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
 	OmProjectData::Flush();
+	printf("saved project %s\n", fpath.c_str());
 }
 
 void OmProject::SaveAs(string dpath, string fname)
