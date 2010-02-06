@@ -176,7 +176,7 @@ public:
         ramSlider = new QSlider(groupBox_4);
         ramSlider->setObjectName(QString::fromUtf8("ramSlider"));
         ramSlider->setMinimum(100);
-        ramSlider->setMaximum(1000);
+        ramSlider->setMaximum(10000);
         ramSlider->setSingleStep(1);
         ramSlider->setOrientation(Qt::Horizontal);
         ramSlider->setTickPosition(QSlider::TicksBelow);
@@ -191,7 +191,7 @@ public:
         vramSlider = new QSlider(groupBox_4);
         vramSlider->setObjectName(QString::fromUtf8("vramSlider"));
         vramSlider->setMinimum(100);
-        vramSlider->setMaximum(1000);
+        vramSlider->setMaximum(10000);
         vramSlider->setSingleStep(1);
         vramSlider->setOrientation(Qt::Horizontal);
         vramSlider->setTickPosition(QSlider::TicksBelow);
