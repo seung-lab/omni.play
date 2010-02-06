@@ -261,15 +261,10 @@ void OmSegmentation::BuildMeshDataInternal()
 					shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
 					GetChunk(p_chunk, chunk_coord);
 
-					//build all segment meshes in chunk
-					p_chunk->Open();
-
-					debug ("mesher1", "here\n");
-
-					mMipMeshManager.BuildChunkMeshes(p_chunk, p_chunk->GetDirectDataValues());
-
-					
-					p_chunk->Close();
+					const SegmentDataSet & rMeshVals = p_chunk->GetDirectDataValues();
+					if( 0 != rMeshVals.size() ){
+						mMipMeshManager.BuildChunkMeshes(p_chunk, rMeshVals );
+					}
 
 					//update progress
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
@@ -588,7 +583,8 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 	
 	//TEST IF CHUNK SHOULD BE DRAWN
 	//if chunk satisfies draw criteria
-	if ( numSegments > 5 && p_chunk->DrawCheck(rCuller) ) {
+	//	if ( numSegments > 5 && p_chunk->DrawCheck(rCuller) ) {
+	if ( p_chunk->DrawCheck(rCuller) ) {
 		//intersect enabled segments with data contained segments
 		SegmentDataSet direct_relevant_data_set;
 		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
@@ -604,7 +600,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 		//done with chunk
 		return;
 	}
-
+	/*
 	if( !(numSegments > 5) ) {
 		SegmentDataSet direct_relevant_data_set;
 		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
@@ -617,7 +613,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 		//draw data_relevent_segments in this chunk
 		DrawChunk(chunkCoord, direct_relevant_data_set, rCuller);
 	} 
-
+	*/
 	////ELSE BREAK DOWN INTO CHILDREN
 	//intersect enabled segments with spactially contained segments
 	SegmentDataSet indirect_relevant_data_set;
