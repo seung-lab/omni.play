@@ -32,6 +32,10 @@ OmCacheManager::OmCacheManager()
 	mSavedDelta = 0;
 	mThreadCount = 0;
 
+	//variables related to OmView2d's
+	freshness=0;
+	freshen=false;
+	
 	//refresh prefs to call event listener
 	mCacheMap[RAM_CACHE_GROUP].MaxSize =
 	    OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
@@ -141,6 +145,8 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 
 }
 
+
+
 #pragma mark
 #pragma mark Cleaning Methods
 /////////////////////////////////
@@ -174,8 +180,8 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 			//remove element from cache
 			bool removed = (*itr)->RemoveOldest();
 
-			//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i\n",
-			// 		target_size, mTargetRatio, group, mCacheMap[group].MaxSize);
+			debug ("cache","mCacheMap[group].Size:%i > target_size:%i ",mCacheMap[group].Size,target_size);
+			debug("cache","= mTargetRatio:%f * mCacheMap[%i].MaxSize = %i\n", mTargetRatio, group, mCacheMap[group].MaxSize);
 
 			//if successfully removed
 			if (removed) {
@@ -205,4 +211,20 @@ void *OmCacheManager::CleanOne(void *in)
 	pthread_mutex_lock(&Instance()->mCacheMapMutex);
 	Instance()->mThreadCount--;
 	pthread_mutex_unlock(&Instance()->mCacheMapMutex);
+}
+
+unsigned int
+OmCacheManager::Freshen(bool freshen)
+{
+	if (freshen) {
+		freshness++;
+	}
+	return freshness;
+}
+
+void
+OmCacheManager::Refresh() 
+{
+	Freshen (true);
+
 }

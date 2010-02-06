@@ -48,6 +48,7 @@ OmFilter2d::OmFilter2d(OmId omId)
 	mAlpha = 0.0;
 	mSeg = 0;
 	mChannel = 0;
+	mCacheInitialized = false;
 }
 
 
@@ -63,19 +64,22 @@ double OmFilter2d::GetAlpha ()
 
 OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype)
 {
-	OmCachingThreadedCachingTile *fastCache = NULL;
-	if (mSeg) {
-		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmVolume::GetSegmentation(mSeg), NULL);
-	} else if (mChannel) {
-		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmVolume::GetChannel(mChannel), NULL);
+	if (!mCacheInitialized){
+		OmThreadedCachingTile *fastCache = NULL;
+		if (mSeg) {
+			fastCache = new OmThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmVolume::GetSegmentation(mSeg), NULL);
+			mCacheInitialized=true;
+		} else if (mChannel) {
+			fastCache = new OmThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmVolume::GetChannel(mChannel), NULL);
+			mCacheInitialized=true;
+		}
+
+		if (fastCache) {
+			mCache = fastCache;
+			//if (fastCache->mDelete) delete fastCache;
+		} else
+			return NULL;
 	}
-
-	if (fastCache) {
-		mCache = fastCache->mCache;
-		if (fastCache->mDelete) delete fastCache;
-	} else
-		return NULL;
-
 	return mCache;
 }
 

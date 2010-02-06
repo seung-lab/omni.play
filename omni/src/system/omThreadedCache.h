@@ -53,6 +53,7 @@ public:
 	void Add(const T &key, U *value);
 	void Remove(const T &key);
 	bool RemoveOldest();
+	bool RemoveOldestForcibly();
 	bool Contains(const T &key);
 	void Call(void (U::*fxn)() , bool lock = true);
 	void Clear();
@@ -81,6 +82,7 @@ protected:
 private:
 	//key, shared pointer value cache
 	map< T, shared_ptr< U > > mCachedValuesMap;
+
 	//least recently accessed at head of list
 	list< T > mKeyAccessList;
 	
@@ -92,13 +94,14 @@ private:
 	bool mInitializeFetchThread;
 	bool mKillingFetchThread;		//note that fetch thread needs to die
 	bool mFetchThreadQueuing;	//note if fetch thread is currently looping through queue
-								//Clean() should be ignored while queuing so queue doesn't wipe
-								//away it's own work
+				        //Clean() should be ignored while queuing so queue doesn't wipe
+	bool mSomeoneElseCalledClear;   //away it's own work
 	bool mFetchThreadCalledClean;
 	
 
 	//mutex for cache
 	pthread_mutex_t mCacheMutex;
+	pthread_mutex_t mClearMutex;
 
 	//fetch thread
 	pthread_t mFetchThread;
@@ -148,6 +151,7 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 	
 	//cache mutex
 	pthread_mutex_init(&mCacheMutex, NULL);
+	pthread_mutex_init(&mClearMutex, NULL);
 
 	//fetch thread
 	pthread_mutex_init(&mFetchThreadMutex, NULL);
@@ -157,7 +161,6 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 	SetCacheName("blank");
 
 	//create thread
-	
 	pthread_create(&mFetchThread, NULL, start_cache_fetch_thread<T,U>, (void *)this);
      	
 
@@ -174,7 +177,7 @@ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 template < typename T,  typename U  >
 OmThreadedCache<T,U>::~OmThreadedCache() {
 
-	debug("destroy","%s Cache %p being destroyed . . .\n",mCacheName,threadSelf);
+	debug("destroy","%s Cache threadid: %p being destroyed . . .\n",mCacheName,threadSelf);
 	
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
@@ -364,7 +367,7 @@ template < typename T,  typename U  >
 bool
 OmThreadedCache<T,U>::RemoveOldest() {
  	bool retTrue = false;	
-	debug("cache"," removing oldest...");
+	debug("cache"," removing oldest...\n");
 
 	//so as to destroy value outside of mutex
 	shared_ptr<U> old_value = shared_ptr<U> ();
@@ -416,6 +419,74 @@ OmThreadedCache<T,U>::RemoveOldest() {
 		mKeyAccessList.pop_back();
 		retTrue = true;
 	}
+
+	
+	if (old_value) 
+		old_value.reset();
+
+
+	//unlock
+	pthread_mutex_unlock(&mCacheMutex);
+	
+	return retTrue;
+}
+
+template < typename T,  typename U  > 
+bool
+OmThreadedCache<T,U>::RemoveOldestForcibly() {
+ 	bool retTrue = false;	
+	debug("cache"," removing oldest...forcibly...\n");
+
+	//so as to destroy value outside of mutex
+	shared_ptr<U> old_value = shared_ptr<U> ();
+	
+	//lock cache and add
+	pthread_mutex_lock(&mCacheMutex);
+	
+	//return if no values in cache
+	if(!mCachedValuesMap.size()) {
+		//unlock
+		pthread_mutex_unlock(&mCacheMutex);
+		return false;
+	}
+	
+	//assert(mKeyAccessList.size());
+	
+	//debug("FIXME", << "mKeyAccessList.size(): " << mKeyAccessList.size() << endl;
+
+		//get oldest key
+		T& r_oldest_key = mKeyAccessList.back();
+	
+		//check if already in use
+		if(mCachedValuesMap[r_oldest_key].use_count() > 1) {
+			//in use, so move key to front of access list so that
+			//we try to remove other keys first
+		
+			//pop oldest key
+			mKeyAccessList.pop_back();
+			//place oldest key at front
+			mKeyAccessList.push_front(r_oldest_key);
+		
+			//unlock
+			pthread_mutex_unlock(&mCacheMutex);
+			return false;
+		}
+	
+		//get ref to old value
+		old_value = mCachedValuesMap[r_oldest_key];
+
+		//debug("FIXME", << "ref count" << (mCachedValuesMap[r_oldest_key].use_count()) << endl;
+		//debug("FIXME", << "OmThreadedCache<T,U>::RemoveOldest(): access list size: " << mKeyAccessList.size() << endl;
+		//debug("FIXME", << "OmThreadedCache<T,U>::RemoveOldest(): map size: " << mCachedValuesMap.size() << endl;
+		assert(r_oldest_key == mKeyAccessList.back());
+	
+		//then remove oldest from cache
+		mCachedValuesMap.erase(r_oldest_key);
+
+		//remove oldest from access list
+		mKeyAccessList.pop_back();
+		retTrue = true;
+
 
 	
 	if (old_value) 
@@ -485,9 +556,10 @@ void
 OmThreadedCache<T,U>::Clear() {
 	
 	//FIXME: this is all broken! must be, at least, mutex protected...
-	//while map contains values
-	//while(mCachedValuesMap.size()) 
-	//	RemoveOldest();
+	pthread_mutex_lock(&mClearMutex);
+	mSomeoneElseCalledClear=true;
+	pthread_mutex_unlock(&mClearMutex);
+	pthread_cond_signal(&mFetchThreadCv);
 }
 
 
@@ -592,11 +664,21 @@ OmThreadedCache<T,U>::FetchLoop() {
 		//if destructing, kill thread
 		if(mKillingFetchThread) break;
 		
-		//free mutex and wait for signal
-		// debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): sleeping " << endl;
+
+	        //wait for signal
 		pthread_cond_wait(&mFetchThreadCv, &mFetchThreadMutex);
-		// debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): awake " << endl;
+		
 		//lock mutex and continue
+		pthread_mutex_lock(&mClearMutex);
+		//if clearing then clear . . .
+		if(mSomeoneElseCalledClear){
+			//while map contains values
+			while(mCachedValuesMap.size()) 
+			RemoveOldestForcibly();
+			mSomeoneElseCalledClear=false;
+		}			
+		//unlock mutex and continue
+		pthread_mutex_unlock(&mClearMutex);
 		
 		//if destructing, kill thread
 		if(mKillingFetchThread) break;
@@ -613,6 +695,7 @@ OmThreadedCache<T,U>::FetchLoop() {
 			
 			//get and pop next in queue
 			//debug("FIXME", << "OmThreadedCache<T,U>::FetchLoop(): lock mutex" << endl;
+			//lock
 			pthread_mutex_lock(&mCacheMutex);
 			
 			//fetch stack still non-empty since fetch update could not yet have cleared it
@@ -639,7 +722,8 @@ OmThreadedCache<T,U>::FetchLoop() {
 			
 			//key has been fetched, so remove from currently fetching
 			mCurrentlyFetching.clear();
-			
+					
+
 			//send update if needed
 			if(FetchUpdateCheck()) HandleFetchUpdate();
 		} 

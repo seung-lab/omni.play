@@ -60,6 +60,11 @@ public:
 	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);
 
 	static void * CleanOne (void* in);		// Threaded function.
+
+	/** A function that annotates New Tile Events */
+	void Refresh();
+	/** A function that annotates and returns info on New Tile Events */
+	unsigned int Freshen(bool freshen); 
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -93,6 +98,11 @@ private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int file_version);
+
+	//variables related to View2d's
+	int freshness;
+	bool freshen;
+
 };
 
 

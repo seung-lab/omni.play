@@ -1,7 +1,7 @@
 #ifndef OM_CACHE_BASE_H
 #define OM_CACHE_BASE_H
 
-/*
+/**
  *	Base class of all caches (GenericCache and ThreadedCache).  Base class allows
  *	for the CacheManager to organize caches into groups which can be emptied all at once.
  *	UpdateSize() method forwards the update to the manager with appropriate group information.
@@ -25,7 +25,7 @@ public:
 	}
 	//destructor
 	~OmCacheBase() {
-		OmCacheManager::AddCache(mCacheGroup, this);
+		OmCacheManager::RemoveCache(mCacheGroup, this);
 	}
 	
 	
