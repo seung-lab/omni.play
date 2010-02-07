@@ -159,7 +159,7 @@ void OmView3d::paintGL()
 
 void OmView3d::mousePressEvent(QMouseEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	try {
 		mView3dUi.MousePressed(event);
 	} catch(...) {
@@ -169,37 +169,37 @@ void OmView3d::mousePressEvent(QMouseEvent * event)
 
 void OmView3d::mouseReleaseEvent(QMouseEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	mView3dUi.MouseRelease(event);
 }
 
 void OmView3d::mouseMoveEvent(QMouseEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	mView3dUi.MouseMove(event);
 }
 
 void OmView3d::mouseDoubleClickEvent(QMouseEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	mView3dUi.MouseDoubleClick(event);
 }
 
 void OmView3d::mouseWheelEvent(QWheelEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	mView3dUi.MouseWheel(event);
 }
 
 void OmView3d::keyPressEvent(QKeyEvent * event)
 {
-	//	resetBackoff();
+	resetBackoff();
 	mView3dUi.KeyPress(event);
 }
 
 void OmView3d::wheelEvent ( QWheelEvent * event )
 {
-	//	resetBackoff();
+	resetBackoff();
 	mouseWheelEvent(event);
 }
 
