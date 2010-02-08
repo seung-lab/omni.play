@@ -625,8 +625,9 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 	float newDepthX = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.x)).z;
 	float newDepthY = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.y)).z;
 
-	debug ("view2d", "event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
-
+	debug ("view2d", "click event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
+	debug ("view2d", "newDepth x,y,z (%f, %f,)\n", newDepthX, newDepthY);
+	debug ("view2d", "scaleFactor*newDepth x,y (%f, %f, %f)\n", newDepthX*scaleFactor, newDepthY*scaleFactor);
 	switch (mViewType) {
 	case XY_VIEW:{
 			OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, newDepthX);
@@ -1686,6 +1687,7 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	float fdepth;
 	int realydepth, realxdepth;
 
+
 	fdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
         data_coord = SpaceToDataCoord(SpaceCoord(0, 0, fdepth));
         int xdepth = data_coord.z;
@@ -1698,7 +1700,7 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, fdepth));
 	int zdepth = data_coord.z;
 
-	debug ("view2d", "depth x,y,z (%i, %i, %i)\n", xdepth, ydepth, zdepth);
+	debug ("view2d", "view: %i  depth x,y,z (%i, %i, %i)\n", mViewType,xdepth, ydepth, zdepth);
 	
 
 	if (YZ_VIEW == mViewType) {
@@ -1714,9 +1716,17 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 
         // Update the pan so view stays centered.
         Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+        float scaleFactor = (zoomMipVector.y / 10.);
+	debug("view2d","view: %i  scaleFactor: %f \n",mViewType,scaleFactor);
         Vector2 <int > current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
-        int shiftx = (mTotalViewport.width/2-realxdepth-current_pan.x)/ (zoomMipVector.y / 10.);;
-        int shifty = ( mTotalViewport.height/2-realydepth-current_pan.y)/ (zoomMipVector.y / 10.);;
+        int shiftx = (int)((float)(mTotalViewport.width/2/scaleFactor-realxdepth-current_pan.x));
+	int shifty = (int)((float) (mTotalViewport.height/2/scaleFactor-realydepth-current_pan.y));
+	debug("view2d","view: %i mTotalViewport.width: %i  (w=mTotalViewport.width/2): %i \n",mViewType,mTotalViewport.width,mTotalViewport.width/2);
+	debug("view2d","view: %i  (w-current_pan.x)/sf: %i realxdepth: %i  \n", mViewType,(int)((float)( mTotalViewport.width/2-current_pan.x)/ scaleFactor),realxdepth);
+	debug("view2d","view: %i realydepth %i \n",mViewType,realydepth);
+	debug("view2d","view: %i  (h-current_pan.y)/sf: %i realydepth: %i  \n", mViewType,(int)((float)( mTotalViewport.height/2-current_pan.y)/ scaleFactor),realydepth);
+	debug("view2d","view: %i  current_pan.x: %i   shiftx: %i  \n", mViewType,current_pan.x,shiftx);
+	debug("view2d","view: %i  current_pan.y: %i   shifty: %i  \n", mViewType,current_pan.y,shifty);
         OmStateManager::Instance()->SetPanDistance(mViewType,
                                                    Vector2 < int >(current_pan.x + shiftx, current_pan.y + shifty));
 
@@ -2895,7 +2905,7 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	OmStateManager::Instance()->SetPanDistance(mViewType,
 						   Vector2 < int >(current_pan.x - drag.x, current_pan.y - drag.y));
 	SetViewSliceOnPan();
-
+        debug("view2d","current_pan.x: %i   current_pan.y  %i \n",current_pan.x,current_pan.y);
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
 }
