@@ -1,0 +1,13 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>images/cut.png</file>
+<file>images/edit-redo.png</file>
+<file>images/edit-undo.png</file>
+<file>images/list-add.png</file>
+<file>images/list-remove.png</file>
+<file>images/pointer.png</file>
+<file>images/system-search.png</file>
+<file>images/view-pan.png</file>
+<file>images/voxel-select.png</file>
+</qresource>
+</RCC>

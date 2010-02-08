@@ -1,0 +1,21 @@
+RELEASING OMNI
+
+perl bootstrap.pl 10
+
+ALPHA RELEASE TARGET
+A have a single command to build an executable version of the tree that excludes the following file(s) and/or directorie(s):
+secret
+
+
+BETA RELEASE TARGET
+Correctly built builds for both the linux and macos platforms must be built and released from identical alpha quality code for the code to be considered beta.
+
+
+1.0 RELEASE TARGET
+The fully reenterant builds of beta quality code must be built and released for the following platforms:
+Linux x86
+Linux AMD(x)64
+Macos
+Win32
+
+

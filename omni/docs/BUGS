@@ -1,0 +1,1696 @@
+* Output to stdout should be restricted, and not be written to during batch
+  activities such as building segmentation data.
+* Progress window for building segmentaion should be titled something other
+  than "omGuiApp". 
+* makecurrent deadlock (FIXED: Aug 18th, 2009)
+* Flicking of the 2d view. (FIXED: Aug 19th, 2009)
+* Memory leak: (need data from Brett)
+* The 2d viewer needs to have its own way of changing to edit mode. Currently, it 
+  requires using the 3d viewer to enter edit mode. (Control+E in 3d viewer toggles
+  edit mode.)
+
+Date: 7/23/09
+Summary: malloc_error appears to occur occasionally during the call to OmView2d?::SendFrameBuffer()
+Severity: moderate
+Description: Possibly double deleting memory. I'm not sure that the call to 'delete imgData;' is necessary as the QImage is deleted with 'delete img;' previously.
+Steps: Build a channel volume. Drive down the stack of images. Error should appear in console.
+Backtrace:
+
+omGuiApp(17216,0xa008c720) malloc: *** error for object 0x1c8f2000: pointer being freed was not allocated
+*** set a breakpoint in malloc_error_break to debug
+
+Breakpoint 1, 0x9037c4a9 in malloc_error_break ()
+(gdb) bt
+#0  0x9037c4a9 in malloc_error_break ()
+#1  0x90377497 in szone_error ()
+#2  0x902a1523 in szone_free ()
+#3  0x902a138d in free ()
+#4  0x000df370 in OmView2d::SendFrameBuffer ()
+#5  0x000e9a3f in OmView2d::paintEvent ()
+#6  0x0033913e in QWidget::event ()
+#7  0x00246793 in QGLWidget::event ()
+#8  0x002edb6f in QApplicationPrivate::notify_helper ()
+#9  0x002f49ac in QApplication::notify ()
+#10 0x001f2122 in QCoreApplication::notifyInternal ()
+#11 0x002959d0 in QWidgetPrivate::qt_widget_event ()
+#12 0x9386011d in DispatchEventToHandlers ()
+#13 0x9385f55b in SendEventToEventTargetInternal ()
+#14 0x9385f3c0 in SendEventToEventTargetWithOptions ()
+#15 0x93882dcd in HIView::SendDraw ()
+#16 0x938828a6 in HIView::RecursiveDrawComposited ()
+#17 0x93882a0f in HIView::RecursiveDrawComposited ()
+#18 0x93882a0f in HIView::RecursiveDrawComposited ()
+#19 0x93882a0f in HIView::RecursiveDrawComposited ()
+#20 0x93882a0f in HIView::RecursiveDrawComposited ()
+#21 0x93881cac in HIView::DrawComposited ()
+#22 0x938819bf in HIView::Draw ()
+#23 0x9388190f in HIView::Render ()
+#24 0x93889d47 in FlushWindowObject ()
+#25 0x9388975e in FlushAllBuffers ()
+#26 0x91dae942 in __CFRunLoopDoObservers ()
+#27 0x91dafb72 in CFRunLoopRunSpecific ()
+#28 0x91db0c78 in CFRunLoopRunInMode ()
+#29 0x9388828c in RunCurrentEventLoopInMode ()
+#30 0x93887fde in ReceiveNextEventCommon ()
+#31 0x939cb357 in ReceiveNextEvent ()
+#32 0x0029a679 in QEventDispatcherMac::processEvents ()
+#33 0x001f1811 in QEventLoop::processEvents ()
+#34 0x001f19bd in QEventLoop::exec ()
+#35 0x001f56be in QCoreApplication::exec ()
+#36 0x00006812 in main ()
+
+
+
+Date: 7/17/09
+Summary: HDF5 Error during viewing images
+Severity: critical
+Description: While viewing and navigating through an image stack on the lab computer using bwarne/omni/builds/mac/omGuiApp, OMNI crashes with an HDF5 error
+Steps: Build data of a channel and a segmentation. Open 2d views of the channel and segmentation and segmentation overlay. During viewing or navigation the program crashes out.
+Backtrace:
+
+MainWindow::openSegmentationView()
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.8 thread 2957426688.  Back trace follows.
+  #000: H5D.c line 1169 in H5Dopen(): not found
+    major(15): Dataset interface
+    minor(48): Object not found
+  #001: H5G.c line 1783 in H5G_find(): object not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #002: H5Gtraverse.c line 397 in H5G_namei(): component not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #003: H5Gstab.c line 161 in H5G_stab_find(): not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #004: H5Gnode.c line 852 in H5G_node_cmp3(): unable to protect symbol name
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #005: H5HL.c line 821 in H5HL_protect(): unable to load heap
+    major(11): Heap layer
+    minor(40): Unable to load metadata into cache
+  #006: H5AC.c line 764 in H5AC_protect(): H5C_protect() failed.
+    major(08): Meta data cache layer
+    minor(46): Unable to protect metadata
+  #007: H5C.c line 2974 in H5C_protect(): can't load entry
+    major(08): Meta data cache layer
+    minor(40): Unable to load metadata into cache
+  #008: H5C.c line 3914 in H5C_load_entry(): unable to load entry
+    major(08): Meta data cache layer
+    minor(40): Unable to load metadata into cache
+  #009: H5HL.c line 271 in H5HL_load(): unable to read heap data
+    major(11): Heap layer
+    minor(40): Unable to load metadata into cache
+  #010: H5F.c line 3303 in H5F_block_read(): file read failed
+    major(05): Low-level I/O layer
+    minor(24): Read failed
+  #011: H5FD.c line 3161 in H5FD_read(): driver read request failed
+    major(22): Virtual File Layer
+    minor(24): Read failed
+  #012: H5FDsec2.c line 705 in H5FD_sec2_read(): addr overflow
+    major(01): Function arguments
+    minor(27): Address overflowed
+segmentations/segmentation1/0/0_0_0/metachunk.dat
+Assertion failed: (false && "Could not open HDF5 dataset."), function om_hdf5_dataset_raw_read, file /Users/bwarne/MIT/School_Work_08-09/MEng/workspace/trunk_02_06_09/src/utility/omHdf5.cpp, line 260.
+
+Program received signal SIGABRT, Aborted.
+0x9296e286 in mach_msg_trap ()
+(gdb) bt
+#0  0x9296e286 in mach_msg_trap ()
+#1  0x92975a7c in mach_msg ()
+#2  0x90306531 in _CGSFindWindow ()
+#3  0x90306381 in CGSFindWindowAndOwner ()
+#4  0x92fd06c0 in FindPlatformWindow ()
+#5  0x92fcff79 in FindWindowCommon ()
+#6  0x92fcfe39 in FindWindowOfClass ()
+#7  0x92fcfe01 in FindWindow ()
+#8  0x92fcfdab in FindWindowAndPartFromMouseEvent ()
+#9  0x92fc1eee in ToolboxEventDispatcherHandler ()
+#10 0x92f944d6 in DispatchEventToHandlers ()
+#11 0x92f9355b in SendEventToEventTargetInternal ()
+#12 0x92fafeac in SendEventToEventTarget ()
+#13 0x002a2134 in QEventDispatcherMac::processEvents ()
+#14 0x001f91a1 in QEventLoop::processEvents ()
+#15 0x001f934d in QEventLoop::exec ()
+#16 0x001fd04e in QCoreApplication::exec ()
+#17 0x00006b22 in main ()
+
+
+
+
+Date: 7/15/09
+Summary: Crash on 3D View Pop-up Window Close
+Severity: moderate
+Description: After opening a 3D View pop-up window, the program crashes when the user attempts to close it.
+Steps: Build data and mesh of a segmentation. Open the 3d View and drag out of main window to turn it into a pop-up window. Clicking the close button results in a application crash.
+Backtrace:
+
+Program received signal EXC_BAD_ACCESS, Could not access memory.
+Reason: KERN_INVALID_ADDRESS at address: 0x69736f5c
+0x001f9c36 in QCoreApplication::notifyInternal ()
+(gdb) bt
+#0  0x001f9c36 in QCoreApplication::notifyInternal ()
+#1  0x0028a94b in qt_mac_send_posted_gl_updates ()
+#2  0x0029ca8e in QWidgetPrivate::qt_widget_event ()
+#3  0x9386011d in DispatchEventToHandlers ()
+#4  0x9385f55b in SendEventToEventTargetInternal ()
+#5  0x9385f3c0 in SendEventToEventTargetWithOptions ()
+#6  0x93882dcd in HIView::SendDraw ()
+#7  0x938828a6 in HIView::RecursiveDrawComposited ()
+#8  0x93882a0f in HIView::RecursiveDrawComposited ()
+#9  0x93882a0f in HIView::RecursiveDrawComposited ()
+#10 0x93881cac in HIView::DrawComposited ()
+#11 0x938819bf in HIView::Draw ()
+#12 0x9388190f in HIView::Render ()
+#13 0x93889d47 in FlushWindowObject ()
+#14 0x9388cf8c in _FlushWindow ()
+#15 0x938e44a7 in PostActivateEvent ()
+#16 0x938e3ef7 in HiliteAndActivateWindow ()
+#17 0x93939cf9 in PostWindowActivateEvent ()
+#18 0x93939caf in ActivateWindow ()
+#19 0x0029ae80 in QWidget::activateWindow ()
+#20 0x0028ed2a in QApplicationPrivate::globalEventProcessor ()
+#21 0x9386011d in DispatchEventToHandlers ()
+#22 0x9385f55b in SendEventToEventTargetInternal ()
+#23 0x9385f3c0 in SendEventToEventTargetWithOptions ()
+#24 0x9388dd34 in ToolboxEventDispatcherHandler ()
+#25 0x938604d6 in DispatchEventToHandlers ()
+#26 0x9385f55b in SendEventToEventTargetInternal ()
+#27 0x9387beac in SendEventToEventTarget ()
+#28 0x002a22d4 in QEventDispatcherMac::processEvents ()
+#29 0x001f9341 in QEventLoop::processEvents ()
+#30 0x001f94ed in QEventLoop::exec ()
+#31 0x001fd1ee in QCoreApplication::exec ()
+#32 0x00006ff2 in main ()
+
+
+in OmProjectData::ReadImageData
+*** glibc detected *** /Users/mwimer/code6/omni/bin/omGuiApp: free(): invalid next size (normal): 0x0000000002d149c0 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f0aecd9bcb8]
+/lib/libc.so.6(cfree+0x76)[0x7f0aecd9e276]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN9__gnu_cxx13new_allocatorISt10_List_nodeI15OmMipChunkCoordEE10deallocateEPS3_m+0x22)[0x647156]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZNSt10_List_baseI15OmMipChunkCoordSaIS0_EE11_M_put_nodeEPSt10_List_nodeIS0_E+0x2a)[0x647182]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZNSt4listI15OmMipChunkCoordSaIS0_EE8_M_eraseESt14_List_iteratorIS0_E+0x5e)[0x6471e2]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZNSt4listI15OmMipChunkCoordSaIS0_EE5eraseESt14_List_iteratorIS0_E+0x32)[0x6472e4]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN14OmGenericCacheI15OmMipChunkCoord10OmMipChunkE5CleanEb+0x171)[0x648a1d]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN14OmGenericCacheI15OmMipChunkCoord10OmMipChunkE10UpdateSizeEi+0x58)[0x646998]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN17OmCacheableObjectI15OmMipChunkCoord10OmMipChunkE10UpdateSizeEi+0x3d)[0x66719d]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN10OmMipChunk12SetImageDataEP12vtkImageData+0x53)[0x6653ed]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN10OmMipChunk4OpenEv+0x9a)[0x665638]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN12OmDataVolume16ExtractDataSliceE17OmDataVolumePlaneiRN4vmml7Vector2IiEE+0x47)[0x64b687]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN6OmTile12GetImageDataERK11OmTileCoordRN4vmml7Vector2IiEEP18OmCachingMipVolume+0x23d)[0x6fafa7]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN6OmTile15BindToTextureIDERK11OmTileCoord+0x10e)[0x6fb304]
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN21OmThreadedCachingTile15HandleCacheMissERK11OmTileCoord+0x39)[0x6fc5cb]
+------------------------------------------2-------------------------------------------
+------------------------------------------3-------------------------------------------
+/Users/mwimer/code6/omni/bin/omGuiApp(_ZN22OmGenericThreadedCacheI11OmTileCoord11OmTextureIDE9FetchLoopEv+0x174)[0x7034a0]
+/Users/mwimer/code6/omni/bin/omGuiApp(_Z17init_fetch_threadI11OmTileCoord11OmTextureIDEPvS2_+0x22)[0x703694]
+/lib/libpthread.so.0[0x7f0af30fc3ba]
+/lib/libc.so.6(clone+0x6d)[0x7f0aece09fcd]
+======= Memory map: ========
+00400000-013c8000 r-xp 00000000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
+015c8000-01602000 r--p 00fc8000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
+01602000-0160c000 rw-p 01002000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
+0160c000-01614000 rw-p 0160c000 00:00 0 
+02b18000-0e729000 rw-p 02b18000 00:00 0                                  [heap]
+40c81000-40d01000 rw-p 00000000 00:0f 730                                /dev/zero
+40f5e000-40f60000 rwxp 00000000 00:0f 730                                /dev/zero
+41b3f000-41bbf000 rw-p 00000000 00:0f 730                                /dev/zero
+41cce000-41d4e000 rw-p 00000000 00:0f 730                                /dev/zero
+7f0ab4000000-7f0ab66d3000 rw-p 7f0ab4000000 00:00 0 
+7f0ab66d3000-7f0ab8000000 ---p 7f0ab66d3000 00:00 0 
+7f0abc000000-7f0abff76000 rw-p 7f0abc000000 00:00 0 
+7f0abff76000-7f0ac0000000 ---p 7f0abff76000 00:00 0 
+7f0ac0000000-7f0ac4000000 rw-p 7f0ac0000000 00:00 0 
+7f0ac4000000-7f0ac7cd7000 rw-p 7f0ac4000000 00:00 0 
+7f0ac7cd7000-7f0ac8000000 ---p 7f0ac7cd7000 00:00 0 
+7f0ac8000000-7f0acc000000 rw-p 7f0ac8000000 00:00 0 
+7f0acc000000-7f0acfef0000 rw-p 7f0acc000000 00:00 0 
+7f0acfef0000-7f0ad0000000 ---p 7f0acfef0000 00:00 0 
+7f0ad0000000-7f0ad3f18000 rw-p 7f0ad0000000 00:00 0 
+7f0ad3f18000-7f0ad4000000 ---p 7f0ad3f18000 00:00 0 
+7f0ad4000000-7f0ad7ef0000 rw-p 7f0ad4000000 00:00 0 
+7f0ad7ef0000-7f0ad8000000 ---p 7f0ad7ef0000 00:00 0 
+7f0ad8000000-7f0adbfca000 rw-p 7f0ad8000000 00:00 0 
+7f0adbfca000-7f0adc000000 ---p 7f0adbfca000 00:00 0 
+7f0ade3f5000-7f0ade3f6000 ---p 7f0ade3f5000 00:00 0 
+7f0ade3f6000-7f0adebf6000 rwxp 7f0ade3f6000 00:00 0 
+7f0ae0000000-7f0ae3e25000 rw-p 7f0ae0000000 00:00 0 
+7f0ae3e25000-7f0ae4000000 ---p 7f0ae3e25000 00:00 0 
+7f0ae427a000-7f0ae467a000 rw-s 75a39f000 00:0f 8152                      /dev/nvidia0
+7f0ae467a000-7f0ae477a000 rw-s 606421000 00:0f 8152                      /dev/nvidia0
+7f0ae477a000-7f0ae47ba000 rw-s 3dd070000 00:0f 8152                      /dev/nvidia0
+7f0ae47da000-7f0ae47fb000 rw-s 00000000 00:09 14548992                   /SYSV00000000 (deleted)
+7f0ae47fb000-7f0ae47fc000 rw-p 7f0ae47fb000 00:00 0 
+7f0ae47fc000-7f0ae480b000 r--p 00000000 08:02 41573                      /usr/share/fonts/truetype/ttf-bitstream-vera/VeraBd.ttf
+7f0ae480b000-7f0ae480c000 ---p 7f0ae480b000 00:00 0 
+7f0ae480c000-7f0ae500c000 rwxp 7f0ae480c000 00:00 0 
+7f0ae500c000-7f0ae500d000 ---p 7f0ae500c000 00:00 0 
+7f0ae500d000-7f0ae580d000 rwxp 7f0ae500d000 00:00 0 
+7f0ae580d000-7f0ae5810000 r-xp 00000000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f0ae5810000-7f0ae5a0f000 ---p 00003000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f0ae5a0f000-7f0ae5a10000 rw-p 00002000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f0ae5a10000-7f0ae5a12000 r-xp 00000000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f0ae5a12000-7f0ae5c11000 ---p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f0ae5c11000-7f0ae5c12000 r--p 00001000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f0ae5c12000-7f0ae5c13000 rw-p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f0ae5c13000-7f0ae5c1a000 r-xp 00000000 08:02 9673                       /usr/lib/libkrb5support.so.0.1
+7f0ae5c1a000-7f0ae5e1900
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f0ae500b950 (LWP 5242)]
+0x00007f0aecd56fb5 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f0aecd56fb5 in raise () from /lib/libc.so.6
+#1  0x00007f0aecd58bc3 in abort () from /lib/libc.so.6
+#2  0x00007f0aecd96228 in ?? () from /lib/libc.so.6
+#3  0x00007f0aecd9bcb8 in ?? () from /lib/libc.so.6
+#4  0x00007f0aecd9e276 in free () from /lib/libc.so.6
+#5  0x0000000000647156 in __gnu_cxx::new_allocator<std::_List_node<OmMipChunkCoord> >::deallocate ()
+#6  0x0000000000647182 in std::_List_base<OmMipChunkCoord, std::allocator<OmMipChunkCoord> >::_M_put_node ()
+#7  0x00000000006471e2 in std::list<OmMipChunkCoord, std::allocator<OmMipChunkCoord> >::_M_erase ()
+#8  0x00000000006472e4 in std::list<OmMipChunkCoord, std::allocator<OmMipChunkCoord> >::erase ()
+#9  0x0000000000648a1d in OmGenericCache<OmMipChunkCoord, OmMipChunk>::Clean ()
+#10 0x0000000000646998 in OmGenericCache<OmMipChunkCoord, OmMipChunk>::UpdateSize ()
+#11 0x000000000066719d in OmCacheableObject<OmMipChunkCoord, OmMipChunk>::UpdateSize ()
+#12 0x00000000006653ed in OmMipChunk::SetImageData ()
+#13 0x0000000000665638 in OmMipChunk::Open ()
+#14 0x000000000064b687 in OmDataVolume::ExtractDataSlice ()
+#15 0x00000000006fafa7 in OmTile::GetImageData ()
+#16 0x00000000006fb304 in OmTile::BindToTextureID ()
+#17 0x00000000006fc5cb in OmThreadedCachingTile::HandleCacheMiss ()
+#18 0x00000000007034a0 in OmGenericThreadedCache<OmTileCoord, OmTextureID>::FetchLoop ()
+#19 0x0000000000703694 in init_fetch_thread<OmTileCoord, OmTextureID> ()
+#20 0x00007f0af30fc3ba in start_thread () from /lib/libpthread.so.0
+#21 0x00007f0aece09fcd in clone () from /lib/libc.so.6
+#22 0x0000000000000000 in ?? ()
+
+This Backtrace shows the crash we are trying to solve. As once can see from the backtrace, a thread other than
+the mainthread is calling into opengl via the qt interface. This causes a racecondition that leads to a crash because of
+the corrupted x11/gl state created by the context switches being switched out from under threads.
+#0  0x00007ff7da537095 in raise () from /lib/libc.so.6
+#1  0x00007ff7da538af0 in abort () from /lib/libc.so.6
+#2  0x00007ff7da5302df in __assert_fail () from /lib/libc.so.6
+#3  0x00007ff7dbae617d in _XGetXCBBuffer () from /usr/lib/libX11.so.6
+#4  0x00007ff7dbae7343 in _XSend () from /usr/lib/libX11.so.6
+#5  0x00007ff7dbad5520 in XQueryExtension () from /usr/lib/libX11.so.6
+#6  0x00007ff7dbaca2d4 in XInitExtension () from /usr/lib/libX11.so.6
+#7  0x00007ff7db89bc09 in XextAddDisplay () from /usr/lib/libXext.so.6
+#8  0x00007ff7dcd6f155 in ?? () from /usr/lib/libGL.so.1
+#9  0x00007ff7dcd4660f in ?? () from /usr/lib/libGL.so.1
+#10 0x00007ff7dcd3b038 in glXCreateContext () from /usr/lib/libGL.so.1
+#11 0x00000000008a4b2b in QGLContext::chooseContext ()
+#12 0x0000000000875d87 in QGLContext::create ()
+#13 0x00000000008a2e2f in QGLWidget::setContext ()
+#14 0x0000000000873312 in QGLWidgetPrivate::initContext ()
+#15 0x00000000008a41da in QGLWidgetPrivate::init ()
+#16 0x0000000000874687 in QGLWidget::QGLWidget ()
+#17 0x00000000008a3d75 in QGLExtensions::init ()
+#18 0x00000000008732ca in QGLWidgetPrivate::initContext ()
+#19 0x00000000008a41da in QGLWidgetPrivate::init ()
+#20 0x0000000000874687 in QGLWidget::QGLWidget ()
+#21 0x000000000082fc78 in OmStateManager::CreatePrimaryView3dWidget () at /Users/mwimer/code9/omni/src/system/omStateManager.cpp:552
+#22 0x000000000082fd3e in OmStateManager::GetSharedView3dContext () at /Users/mwimer/code9/omni/src/system/omStateManager.cpp:580
+#23 0x0000000000fd0123 in OmMipMeshManager::InitializeFetchThread (this=0x1ca7408) at /Users/mwimer/code9/omni/src/mesh/omMipMeshManager.cpp:195
+#24 0x0000000000fd5a49 in OmThreadedCache<OmMipMeshCoord, OmMipMesh>::FetchLoop (this=0x1ca7408)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:536
+#25 0x0000000000fd5d35 in start_cache_fetch_thread<OmMipMeshCoord, OmMipMesh> (arg=0x1ca7408)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:689
+#26 0x00007ff7db46f3f7 in start_thread () from /lib/libpthread.so.0
+#27 0x00007ff7da5dcb3d in clone () from /lib/libc.so.6
+#28 0x0000000000000000 in ?? ()
+
+
+On closing a project this assert fails because that appears to be a flush of the data happening in a race with a close of an OmProject.
+One possible reason is the OmSegmentation does not unregister for the SytemModeEvent event change event though the image data and file
+are already closed.
+#0  0x00007f07736c1095 in raise () from /lib/libc.so.6
+#1  0x00007f07736c2af0 in abort () from /lib/libc.so.6
+#2  0x00007f07736ba2df in __assert_fail () from /lib/libc.so.6
+#3  0x0000000000fe31cd in om_hdf5_dataset_image_get_dims (fileId=67108869, name=0x1cf00d8 "segmentations/segmentation1/0/volume.dat")
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:323
+#4  0x0000000000fe3385 in om_hdf5_dataset_image_write_trim (fileId=67108869, name=0x1cf00d8 "segmentations/segmentation1/0/volume.dat", 
+    dataExtent=@0x7fff7e056cb0, bytesPerSample=1, pImageData=0x7f076800e640) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:643
+#5  0x000000000082fc9d in OmProjectData::WriteImageData (path=@0x7fff7e056d10, extent=@0x1fc081c, bytesPerSample=1, data=0x7f076800e640)
+    at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
+#6  0x00000000007bf9d3 in OmMipChunk::WriteVolumeData (this=0x1fc0790) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:256
+#7  0x00000000007bfc86 in OmMipChunk::Flush (this=0x1fc0790) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#8  0x00000000007d37ff in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x1caa3c0, fxn=&virtual table offset 32)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:440
+#9  0x00000000007ce370 in OmMipVolume::Flush (this=0x1caa3b0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:80
+#10 0x00000000007d7018 in OmSegmentation::SystemModeChangeEvent (this=0x1caa3b0, event=0x1cedd00)
+    at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:454
+#11 0x0000000000834747 in OmSystemModeEvent::Dispatch (this=0x1cedd00, pListener=0x1caa600)
+    at /Users/mwimer/code9/omni/src/system/events/omSystemModeEvent.cpp:31
+#12 0x00000000007e45cd in OmEventManager::event (this=0x1cad920, event=0x1cedd00) at /Users/mwimer/code9/omni/src/system/omEventManager.cpp:55
+#13 0x00000000008b65ff in QApplicationPrivate::notify_helper ()
+#14 0x00000000008bae05 in QApplication::notify ()
+#15 0x0000000000f10344 in QCoreApplication::notifyInternal ()
+#16 0x0000000000f11358 in QCoreApplicationPrivate::sendPostedEvents ()
+#17 0x000000000093927f in QEventDispatcherX11::processEvents ()
+#18 0x0000000000f0f585 in QEventLoop::processEvents ()
+#19 0x0000000000f0f936 in QEventLoop::exec ()
+#20 0x0000000000f1164b in QCoreApplication::exec ()
+#21 0x0000000000776a11 in main (argc=1, argv=0x7fff7e0578d8) at /Users/mwimer/code9/omni/src/gui/main.cpp:20
+
+Possible corruption of a pointer value.
+#0  0x00007f39fd635095 in raise () from /lib/libc.so.6
+#1  0x00007f39fd636af0 in abort () from /lib/libc.so.6
+#2  0x00007f39fd62e2df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000007ce64e in OmMipVolume::GetVoxelValue (this=0x1c8e610, vox=@0x7fff07fcc010) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:595
+#4  0x00000000007d8340 in OmSegmentation::GetVoxelSegmentId (this=0x1c8e610, vox=@0x7fff07fcc010)
+    at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:183
+#5  0x00000000008552d9 in OmView2d::mouseMoveEvent (this=0x1cc3130, event=0x7fff07fcc940) at /Users/mwimer/code9/omni/src/view2d/omView2d.cpp:505
+#6  0x0000000000900336 in QWidget::event ()
+#7  0x0000000000875af1 in QGLWidget::event ()
+#8  0x00000000008b65ff in QApplicationPrivate::notify_helper ()
+#9  0x00000000008bb509 in QApplication::notify ()
+#10 0x0000000000f10344 in QCoreApplication::notifyInternal ()
+#11 0x00000000008ba8b3 in QApplicationPrivate::sendMouseEvent ()
+#12 0x0000000000916ee6 in QETWidget::translateMouseEvent ()
+#13 0x0000000000915665 in QApplication::x11ProcessEvent ()
+#14 0x0000000000939362 in QEventDispatcherX11::processEvents ()
+#15 0x0000000000f0f585 in QEventLoop::processEvents ()
+#16 0x0000000000f0f936 in QEventLoop::exec ()
+#17 0x0000000000f1164b in QCoreApplication::exec ()
+#18 0x0000000000776a11 in main (argc=1, argv=0x7fff07fce848) at /Users/mwimer/code9/omni/src/gui/main.cpp:20
+
+
+Looks like a call of extractslice is producing a close, flush and a write of the image data.
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1123891536.  Back trace follows.
+  #000: H5Dio.c line 697 in H5Dwrite(): can't write data
+    major(15): Dataset interface
+    minor(25): Write failed
+  #001: H5Dio.c line 1068 in H5D_write(): can't write data
+    major(15): Dataset interface
+    minor(25): Write failed
+  #002: H5Dio.c line 2114 in H5D_chunk_write(): optimized write failed
+    major(15): Dataset interface
+    minor(25): Write failed
+  #003: H5Dselect.c line 655 in H5D_select_write(): write error
+    major(14): Dataspace interface
+    minor(25): Write failed
+  #004: H5Distore.c line 2168 in H5D_istore_writevv(): unable to write raw data to file
+    major(05): Low-level I/O layer
+    minor(25): Write failed
+  #005: H5Dcontig.c line 854 in H5D_contig_writevv(): block write failed
+    major(05): Low-level I/O layer
+    minor(25): Write failed
+  #006: H5F.c line 3362 in H5F_block_write(): file write failed
+    major(05): Low-level I/O layer
+    minor(25): Write failed
+  #007: H5FD.c line 3484 in H5FD_write(): driver write request failed
+    major(22): Virtual File Layer
+    minor(25): Write failed
+  #008: H5FDsec2.c line 805 in H5FD_sec2_write(): file write failed
+    major(05): Low-level I/O layer
+    minor(25): Write failed
+  #009: H5FDsec2.c line 805 in H5FD_sec2_write(): Bad address
+    major(03): Internal HDF5 error
+    minor(87): System error message
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:618: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `false && "Could not read HDF5 dataset."' failed.
+
+#0  0x00007f6b48453095 in raise () from /lib/libc.so.6
+#1  0x00007f6b48454af0 in abort () from /lib/libc.so.6
+#2  0x00007f6b4844c2df in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001014dfc in om_hdf5_dataset_image_write (fileId=67108864, name=0x1d39498 "channels/channel1/2/volume.dat", extent=@0x42fd2a70, bytesPerSample=1, imageData=0x7f6b3c0b3160) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:618
+#4  0x0000000001015ac2 in om_hdf5_dataset_image_write_trim (fileId=67108864, name=0x1d39498 "channels/channel1/2/volume.dat", dataExtent=@0x42fd2b50, bytesPerSample=1, pImageData=0x7f6b3c0b3160) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:650
+#5  0x000000000085e5f5 in OmProjectData::WriteImageData (path=@0x42fd2bb0, extent=@0x7f6b3c0b226c, bytesPerSample=1, data=0x7f6b3c0b3160) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
+#6  0x00000000007e580f in OmMipChunk::WriteVolumeData (this=0x7f6b3c0b21e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:256
+#7  0x00000000007e5ac2 in OmMipChunk::Flush (this=0x7f6b3c0b21e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#8  0x00000000007e59f7 in OmMipChunk::Close (this=0x7f6b3c0b21e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:175
+#9  0x00000000007e5300 in OmMipChunk::SetImageData (this=0x7f6b3c0b21e0, pImageData=0x7f6b3c0d9a50) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:400
+#10 0x00000000007e58dc in OmMipChunk::ReadVolumeData (this=0x7f6b3c0b21e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:247
+#11 0x00000000007e592e in OmMipChunk::Open (this=0x7f6b3c0b21e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:136
+#12 0x00000000007e4dbd in OmMipChunk::ExtractDataSlice (this=0x7f6b3c0b21e0, plane=VOL_YZ_PLANE, offset=107, sliceDims=@0x42fd2fd0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:662
+#13 0x000000000089492d in OmTile::GetImageData (this=0x28507a0, key=@0x42fd3090, sliceDims=@0x42fd2fd0, vol=0x1da2010) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:164
+#14 0x0000000000894a7b in OmTile::BindToTextureID (this=0x28507a0, key=@0x42fd3090) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:70
+#15 0x000000000087e102 in OmThreadedCachingTile::HandleCacheMiss (this=0x2850600, key=@0x42fd3090) at /Users/mwimer/code9/omni/src/view2d/omThreadedCachingTile.cpp:62
+#16 0x00000000008839ac in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (this=0x2850600) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:584
+#17 0x0000000000883b33 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (arg=0x2850600) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:689
+#18 0x00007f6b4938b3f7 in start_thread () from /lib/libpthread.so.0
+#19 0x00007f6b484f8b3d in clone () from /lib/libc.so.6
+#20 0x0000000000000000 in ?? ()
+(gdb) 
+
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:571: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `H5Tget_size(dataset_type_id) == bytesPerSample' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x439ab950 (LWP 23858)]
+0x00007f9f69cb6095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f9f69cb6095 in raise () from /lib/libc.so.6
+#1  0x00007f9f69cb7af0 in abort () from /lib/libc.so.6
+#2  0x00007f9f69caf2df in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001014a01 in om_hdf5_dataset_image_write (fileId=67108864, name=0x7f9f6168b1f8 "segmentations/segmentation1/2/volume.dat", extent=@0x439aaa70, bytesPerSample=1, imageData=0x7f9f61687690) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:571
+#4  0x0000000001015932 in om_hdf5_dataset_image_write_trim (fileId=67108864, name=0x7f9f6168b1f8 "segmentations/segmentation1/2/volume.dat", dataExtent=@0x439aab50, bytesPerSample=1, pImageData=0x7f9f61687690) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:650
+#5  0x000000000085e5c1 in OmProjectData::WriteImageData (path=@0x439aabb0, extent=@0x7f9f618dcb0c, bytesPerSample=1, data=0x7f9f61687690) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
+#6  0x00000000007e5803 in OmMipChunk::WriteVolumeData (this=0x7f9f618dca80) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:256
+#7  0x00000000007e5ab6 in OmMipChunk::Flush (this=0x7f9f618dca80) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#8  0x00000000007e59eb in OmMipChunk::Close (this=0x7f9f618dca80) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:175
+#9  0x00000000007e5300 in OmMipChunk::SetImageData (this=0x7f9f618dca80, pImageData=0x1d526f0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:400
+#10 0x00000000007e58d0 in OmMipChunk::ReadVolumeData (this=0x7f9f618dca80) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:247
+#11 0x00000000007e5922 in OmMipChunk::Open (this=0x7f9f618dca80) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:136
+#12 0x00000000007e4dbd in OmMipChunk::ExtractDataSlice (this=0x7f9f618dca80, plane=VOL_XZ_PLANE, offset=71, sliceDims=@0x439aafd0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:662
+#13 0x0000000000894773 in OmTile::GetImageData (this=0x22b6590, key=@0x439ab090, sliceDims=@0x439aafd0, vol=0x1ced160) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:161
+#14 0x00000000008948ef in OmTile::BindToTextureID (this=0x22b6590, key=@0x439ab090) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:70
+#15 0x000000000087e0ce in OmThreadedCachingTile::HandleCacheMiss (this=0x22b63f0, key=@0x439ab090) at /Users/mwimer/code9/omni/src/view2d/omThreadedCachingTile.cpp:62
+#16 0x0000000000883978 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (this=0x22b63f0) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:584
+#17 0x0000000000883aff in start_cache_fetch_thread<OmTileCoord, OmTextureID> (arg=0x22b63f0) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:689
+#18 0x00007f9f6abee3f7 in start_thread () from /lib/libpthread.so.0
+#19 0x00007f9f69d5bb3d in clone () from /lib/libc.so.6
+#20 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+
+Here we have a mouse double click event asking for a voxel's segment id but to do so has to call into the asking for the value of a sigle voxel. Not only is this not likely to be fast,
+it seems that the OmMipVolume code doesn't like being asked about a voxel this time. Its unclear if this means we need to rethink this per-voxel inspection technique, or fix it so it,
+works? My gut says fix it.
+omGuiApp: /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:595: virtual uint32_t OmMipVolume::GetVoxelValue(const DataCoord&): Assertion `OmDataVolume::ContainsVoxel(vox)' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f27efc7a730 (LWP 14971)]
+0x00007f27ed4d3095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f27ed4d3095 in raise () from /lib/libc.so.6
+#1  0x00007f27ed4d4af0 in abort () from /lib/libc.so.6
+#2  0x00007f27ed4cc2df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000007f447e in OmMipVolume::GetVoxelValue (this=0x25e9150, vox=@0x7ffff7e69ef0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:595
+#4  0x00000000007fe148 in OmSegmentation::GetVoxelSegmentId (this=0x25e9150, vox=@0x7ffff7e69ef0) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:183
+#5  0x000000000088b0a9 in OmView2d::NavigationModeMouseDoubleClick (this=0x1d4e6d0, event=0x7ffff7e6a790) at /Users/mwimer/code9/omni/src/view2d/omView2d.cpp:695
+#6  0x000000000088b68e in OmView2d::mouseDoubleClickEvent (this=0x1d4e6d0, event=0x7ffff7e6a790) at /Users/mwimer/code9/omni/src/view2d/omView2d.cpp:616
+#7  0x0000000000932a0d in QWidget::event ()
+#8  0x00000000008e8cef in QApplicationPrivate::notify_helper ()
+#9  0x00000000008edbf9 in QApplication::notify ()
+#10 0x0000000000f42a34 in QCoreApplication::notifyInternal ()
+#11 0x00000000008ecfa3 in QApplicationPrivate::sendMouseEvent ()
+#12 0x00000000009495d6 in QETWidget::translateMouseEvent ()
+#13 0x00000000009481c5 in QApplication::x11ProcessEvent ()
+#14 0x000000000096ba52 in QEventDispatcherX11::processEvents ()
+#15 0x0000000000f41c75 in QEventLoop::processEvents ()
+#16 0x0000000000f42026 in QEventLoop::exec ()
+#17 0x0000000000f43d3b in QCoreApplication::exec ()
+#18 0x0000000000798c83 in main (argc=1, argv=0x7ffff7e6c6f8) at /Users/mwimer/code9/omni/src/gui/main.cpp:38
+(gdb) 
+
+Here it is again: 32bitx86 linux.
+omGuiApp: /home/matt/code9/omni/src/volume/omMipVolume.cpp:595: virtual uint32_t OmMipVolume::GetVoxelValue(const DataCoord&): Assertion `OmDataVolume::ContainsVoxel(vox)' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0xb6e8dae0 (LWP 24122)]
+0xb7f6a410 in __kernel_vsyscall ()
+(gdb) bt
+#0  0xb7f6a410 in __kernel_vsyscall ()
+#1  0xb79f4085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79f5a01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb79ed10e in __assert_fail () from /lib/tls/i686/cmov/libc.so.6
+#4  0x083f59d0 in OmMipVolume::GetVoxelValue (this=0x96f7678, vox=@0xbffeea88) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:595
+#5  0x08400175 in OmSegmentation::GetVoxelSegmentId (this=0x96f7678, vox=@0xbffeea88) at /home/matt/code9/omni/src/volume/omSegmentation.cpp:183
+#6  0x0848360d in OmView2d::NavigationModeMouseDoubleClick (this=0x9735610, event=0xbffef0dc) at /home/matt/code9/omni/src/view2d/omView2d.cpp:696
+#7  0x08483bda in OmView2d::mouseDoubleClickEvent (this=0x9735610, event=0xbffef0dc) at /home/matt/code9/omni/src/view2d/omView2d.cpp:617
+#8  0x08532a29 in QWidget::event ()
+#9  0x084e256f in QApplicationPrivate::notify_helper ()
+#10 0x084e781c in QApplication::notify ()
+#11 0x08bc075b in QCoreApplication::notifyInternal ()
+#12 0x084e6c6f in QApplicationPrivate::sendMouseEvent ()
+#13 0x08549d7a in QETWidget::translateMouseEvent ()
+#14 0x0854853d in QApplication::x11ProcessEvent ()
+#15 0x0856e0fb in QEventDispatcherX11::processEvents ()
+#16 0x08bbf78d in QEventLoop::processEvents ()
+#17 0x08bbfbdd in QEventLoop::exec ()
+#18 0x08bc1a88 in QCoreApplication::exec ()
+#19 0x084e2097 in QApplication::exec ()
+#20 0x083a01ef in main (argc=1, argv=0xbfff09f4) at /home/matt/code9/omni/src/gui/main.cpp:38
+(gdb)
+
+
+omGuiApp: /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:533: void OmMipChunk::RefreshDirectDataValues(): Assertion `mpImageData->GetScalarSize() == 4' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x45912950 (LWP 4210)]
+0x00007f9c4d861095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f9c4d861095 in raise () from /lib/libc.so.6
+#1  0x00007f9c4d862af0 in abort () from /lib/libc.so.6
+#2  0x00007f9c4d85a2df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000007e48a1 in OmMipChunk::RefreshDirectDataValues (this=0x20f46e0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:533
+#4  0x00000000007fda12 in OmSegmentation::BuildChunk (this=0x1cedd50, mipCoord=@0x45911f80) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:320
+#5  0x00000000007f2b9f in OmMipVolume::BuildVolume (this=0x1cedd50) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:758
+#6  0x00000000007f3de9 in OmMipVolume::Build (this=0x1cedd50) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:722
+#7  0x00000000007fd790 in OmSegmentation::BuildVolumeData (this=0x1cedd50) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:227
+#8  0x00000000007b24af in build_image (current_seg=0x1cedd50) at /Users/mwimer/code9/omni/src/gui/segInspector.cpp:89
+#9  0x00000000007a3066 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x23949f0)
+    at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#10 0x00000000007a4053 in QtConcurrent::RunFunctionTask<void>::run (this=0x23949f0) at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#11 0x0000000000e7eead in QThreadPoolThread::run ()
+#12 0x0000000000e86735 in QThreadPrivate::start ()
+#13 0x00007f9c4e7993f7 in start_thread () from /lib/libpthread.so.0
+#14 0x00007f9c4d906b3d in clone () from /lib/libc.so.6
+#15 0x0000000000000000 in ?? ()
+(gdb) 
+
+Crash when trying to build meshes as well as data for a segmentation.
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x432dd950 (LWP 23467)]
+0x00000000010f5ea2 in vtkDataObject::DeepCopy (this=0x2863960, src=0x0) at /Users/mwimer/code9/external/VTK/Filtering/vtkDataObject.cxx:922
+922	  vtkFieldData *srcFieldData = src->GetFieldData();
+(gdb) bt
+#0  0x00000000010f5ea2 in vtkDataObject::DeepCopy (this=0x2863960, src=0x0) at /Users/mwimer/code9/external/VTK/Filtering/vtkDataObject.cxx:922
+#1  0x00000000010ffba3 in vtkDataSet::DeepCopy (this=0x2863960, dataObject=0x0) at /Users/mwimer/code9/external/VTK/Filtering/vtkDataSet.cxx:356
+#2  0x000000000111dc62 in vtkImageData::DeepCopy (this=0x2863960, dataObject=0x0) at /Users/mwimer/code9/external/VTK/Filtering/vtkImageData.cxx:1992
+#3  0x000000000100bc12 in OmMeshSource::Copy (this=0x432dcff0, source=@0x2863800) at /Users/mwimer/code9/omni/src/mesh/omMesher.cpp:89
+#4  0x000000000100bd3f in OmMesher (this=0x432dcff0, meshSource=@0x2863800) at /Users/mwimer/code9/omni/src/mesh/omMesher.cpp:113
+#5  0x000000000100a8bf in OmMipChunkMesher::BuildMeshesLoop (this=0x2842c50) at /Users/mwimer/code9/omni/src/mesh/omMipChunkMesher.cpp:195
+#6  0x000000000100aa53 in init_meshing_thread (arg=0x2842c50) at /Users/mwimer/code9/omni/src/mesh/omMipChunkMesher.cpp:250
+#7  0x00007f6b89d003f7 in start_thread () from /lib/libpthread.so.0
+#8  0x00007f6b88e6db3d in clone () from /lib/libc.so.6
+#9  0x0000000000000000 in ?? ()
+(gdb) 
+
+
+omGuiApp: /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:252: void OmMipChunk::WriteVolumeData(): Assertion `IsOpen()' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x43301950 (LWP 23774)]
+0x00007fb9880ac095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007fb9880ac095 in raise () from /lib/libc.so.6
+#1  0x00007fb9880adaf0 in abort () from /lib/libc.so.6
+#2  0x00007fb9880a52df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000007e5974 in OmMipChunk::WriteVolumeData (this=0x7fb970a87da0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:252
+#4  0x00000000007e5c82 in OmMipChunk::Flush (this=0x7fb970a87da0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#5  0x00000000007f97d3 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x1ebd490, fxn=&virtual table offset 32) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:440
+#6  0x00000000007f436c in OmMipVolume::Flush (this=0x1ebd480) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:80
+#7  0x00000000007f2e6d in OmMipVolume::BuildVolume (this=0x1ebd480) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:769
+#8  0x00000000007f3fd5 in OmMipVolume::Build (this=0x1ebd480) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:722
+#9  0x00000000007fd97c in OmSegmentation::BuildVolumeData (this=0x1ebd480) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:227
+#10 0x00000000007b24af in build_image (current_seg=0x1ebd480) at /Users/mwimer/code9/omni/src/gui/segInspector.cpp:89
+#11 0x00000000007a3066 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x1f425c0)
+    at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#12 0x00000000007a4053 in QtConcurrent::RunFunctionTask<void>::run (this=0x1f425c0) at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#13 0x0000000000e7e2bd in QThreadPoolThread::run ()
+#14 0x0000000000e85b45 in QThreadPrivate::start ()
+#15 0x00007fb988fe43f7 in start_thread () from /lib/libpthread.so.0
+#16 0x00007fb988151b3d in clone () from /lib/libc.so.6
+#17 0x0000000000000000 in ?? ()
+(gdb) 
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1136429392.  Back trace follows.
+  #000: H5G.c line 196 in H5Gcreate(): not a location
+    major(01): Function arguments
+    minor(03): Inappropriate type
+  #001: H5G.c line 1876 in H5G_loc(): invalid file ID
+    major(01): Function arguments
+    minor(05): Bad value
+  #002: H5I.c line 1257 in H5I_find_id(): invalid ID
+    major(07): Atom layer
+    minor(32): Unable to find atom information (already closed?)
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:90: void om_hdf5_group_create(hid_t, const char*): Assertion `false && "Could not create HDF5 group."' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x43bc8950 (LWP 30014)]
+0x00007f75afd1c095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f75afd1c095 in raise () from /lib/libc.so.6
+#1  0x00007f75afd1daf0 in abort () from /lib/libc.so.6
+#2  0x00007f75afd152df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000010160e6 in om_hdf5_group_create (fileId=67108864, name=0x7f759482f618 "segmentations/") at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:90
+#4  0x000000000101628e in om_hdf5_group_create_tree (fileId=67108864, name=0x7f759481d768 "segmentations/segmentation1/0/0_0_0/mesh/55800") at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:122
+#5  0x0000000001016414 in om_hdf5_dataset_delete_create_tree (fileId=67108864, name=0x7f75948269f8 "segmentations/segmentation1/0/0_0_0/mesh/55800/metamesh.dat")
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:186
+#6  0x0000000001016560 in om_hdf5_dataset_raw_create_tree_overwrite (fileId=67108864, name=0x7f75948269f8 "segmentations/segmentation1/0/0_0_0/mesh/55800/metamesh.dat", size=1, data=0x43bc7faf)
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:243
+#7  0x000000000085e9a7 in OmProjectData::WriteRawData (path=@0x43bc7f90, size=1, data=0x43bc7faf) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:190
+#8  0x000000000100d206 in OmMipMesh::Save (this=0x7f7594826750) at /Users/mwimer/code9/omni/src/mesh/omMipMesh.cpp:160
+#9  0x000000000100ac35 in OmMipChunkMesher::BuildMeshesLoop (this=0x69395d0) at /Users/mwimer/code9/omni/src/mesh/omMipChunkMesher.cpp:227
+#10 0x000000000100ad3f in init_meshing_thread (arg=0x69395d0) at /Users/mwimer/code9/omni/src/mesh/omMipChunkMesher.cpp:252
+#11 0x00007f75b0c543f7 in start_thread () from /lib/libpthread.so.0
+#12 0x00007f75afdc1b3d in clone () from /lib/libc.so.6
+#13 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+Died building the second segmenation after trying to view it.
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x57e41950 (LWP 7295)]
+0x00000000007e50e3 in OmMipChunk::RefreshDirectDataValues (this=0x7f0f05c48e50) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:545
+545					if(NULL_SEGMENT_DATA != *p_scalar_data) {
+(gdb) bt
+#0  0x00000000007e50e3 in OmMipChunk::RefreshDirectDataValues (this=0x7f0f05c48e50) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:545
+#1  0x00000000007fe52e in OmSegmentation::BuildChunk (this=0x1e666c0, mipCoord=@0x57e40f80) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:320
+#2  0x00000000007f3a1d in OmMipVolume::BuildVolume (this=0x1e666c0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:758
+#3  0x00000000007f4c67 in OmMipVolume::Build (this=0x1e666c0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:722
+#4  0x00000000007fe2ac in OmSegmentation::BuildVolumeData (this=0x1e666c0) at /Users/mwimer/code9/omni/src/volume/omSegmentation.cpp:227
+#5  0x00000000007b28af in build_image (current_seg=0x1e666c0) at /Users/mwimer/code9/omni/src/gui/segInspector.cpp:89
+#6  0x00000000007a3466 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x7f0f0c02bf50)
+    at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#7  0x00000000007a4453 in QtConcurrent::RunFunctionTask<void>::run (this=0x7f0f0c02bf50) at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#8  0x0000000000e7eb8d in QThreadPoolThread::run ()
+#9  0x0000000000e86415 in QThreadPrivate::start ()
+#10 0x00007f0f18ea13f7 in start_thread () from /lib/libpthread.so.0
+#11 0x00007f0f1800eb3d in clone () from /lib/libc.so.6
+#12 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `H5Tget_size(dataset_type_id) == bytesPerSample' failed.
+[Thread 0x46574950 (LWP 26155) exited]
+[Thread 0x46d75950 (LWP 26156) exited]
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f1932b7d730 (LWP 26141)]
+0x00007f19303d6095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f19303d6095 in raise () from /lib/libc.so.6
+#1  0x00007f19303d7af0 in abort () from /lib/libc.so.6
+#2  0x00007f19303cf2df in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001012c45 in om_hdf5_dataset_image_write (fileId=67108865, name=0x2cd3d68 "segmentations/segmentation1/0/volume.dat", extent=@0x7fff3ad6a680, bytesPerSample=1, imageData=0x7f192403da30)
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573
+#4  0x0000000001013b66 in om_hdf5_dataset_image_write_trim (fileId=67108865, name=0x2cd3d68 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff3ad6a760, bytesPerSample=1, 
+    pImageData=0x7f192403da30) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:656
+#5  0x000000000085d2bd in OmProjectData::WriteImageData (path=@0x7fff3ad6a7c0, extent=@0x7f192403bd2c, bytesPerSample=1, data=0x7f192403da30) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
+#6  0x00000000007e44da in OmMipChunk::WriteVolumeData (this=0x7f192403bca0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:258
+#7  0x00000000007e478e in OmMipChunk::Flush (this=0x7f192403bca0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#8  0x00000000007f8303 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x1e51f30, fxn=&virtual table offset 32) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:440
+#9  0x00000000007f1492 in OmMipVolume::Flush (this=0x1e51f20) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:80
+#10 0x00000000007f3d89 in ~OmMipVolume (this=0x1e51f20) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:54
+#11 0x00000000007fe939 in ~OmSegmentation (this=0x1e51f20) at /Users/mwimer/code9/omni/src/volume/omSegmentation.h:34
+#12 0x0000000000804015 in ~OmGenericManager (this=0x1dab0e8) at /Users/mwimer/code9/omni/src/system/omGenericManager.h:97
+#13 0x00000000007ff6cb in ~OmVolume (this=0x1daaf50) at /Users/mwimer/code9/omni/src/volume/omVolume.cpp:31
+#14 0x00000000007ff9f5 in OmVolume::Delete () at /Users/mwimer/code9/omni/src/volume/omVolume.cpp:63
+#15 0x00000000008104ae in OmProject::Close () at /Users/mwimer/code9/omni/src/system/omProject.cpp:222
+#16 0x0000000000810a15 in OmProject::New (dpath=@0x7fff3ad6abe0, fname=@0x7fff3ad6abd0) at /Users/mwimer/code9/omni/src/system/omProject.cpp:112
+#17 0x000000000079f832 in MainWindow::newProject (this=0x7fff3ad6d2c0) at /Users/mwimer/code9/omni/src/gui/mainwindow.cpp:156
+#18 0x00000000007d8daf in MainWindow::qt_metacall (this=0x7fff3ad6d2c0, _c=QMetaObject::InvokeMetaMethod, _id=0, _a=0x7fff3ad6ae00) at /Users/mwimer/code9/omni/inst/gui/moc_mainwindow.cxx:112
+#19 0x0000000000f5438a in QMetaObject::activate ()
+#20 0x00000000008df927 in QAction::triggered ()
+#21 0x00000000008e00f0 in QAction::activate ()
+#22 0x0000000000bffbaa in QMenuPrivate::activateCausedStack ()
+#23 0x0000000000c06001 in QMenuPrivate::activateAction ()
+#24 0x000000000092fea4 in QWidget::event ()
+#25 0x0000000000c040f1 in QMenu::event ()
+#26 0x00000000008e619f in QApplicationPrivate::notify_helper ()
+#27 0x00000000008eb0a9 in QApplication::notify ()
+#28 0x0000000000f3fee4 in QCoreApplication::notifyInternal ()
+#29 0x00000000008ea453 in QApplicationPrivate::sendMouseEvent ()
+#30 0x0000000000946c4b in QETWidget::translateMouseEvent ()
+#31 0x0000000000945675 in QApplication::x11ProcessEvent ()
+#32 0x0000000000968f02 in QEventDispatcherX11::processEvents ()
+#33 0x0000000000f3f125 in QEventLoop::processEvents ()
+#34 0x0000000000f3f4d6 in QEventLoop::exec ()
+#35 0x0000000000f411eb in QCoreApplication::exec ()
+#36 0x0000000000797163 in main (argc=1, argv=0x7fff3ad6d5e8) at /Users/mwimer/code9/omni/src/gui/main.cpp:38
+
+omGuiApp: /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:550: boost::shared_ptr<OmMipChunk> OmMipVolume::GetChunk(const OmMipChunkCoord&): Assertion `mBuildState != MIPVOL_UNBUILT' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x42aca950 (LWP 26249)]
+0x00007fb0246b6095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007fb0246b6095 in raise () from /lib/libc.so.6
+#1  0x00007fb0246b7af0 in abort () from /lib/libc.so.6
+#2  0x00007fb0246af2df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000007f1355 in OmMipVolume::GetChunk (this=0x7fb0181652a0, rMipCoord=@0x42ac9e00) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:550
+#4  0x0000000000891d1b in OmTile::GetImageData (this=0x7fb0188afa50, key=@0x42aca090, sliceDims=@0x42ac9fd0, vol=0x7fb0181652a0) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:151
+#5  0x0000000000891f1e in OmTile::BindToTextureID (this=0x7fb0188afa50, key=@0x42aca090) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:70
+#6  0x000000000087cdac in OmThreadedCachingTile::HandleCacheMiss (this=0x7fb0188af8b0, key=@0x42aca090) at /Users/mwimer/code9/omni/src/view2d/omThreadedCachingTile.cpp:62
+#7  0x000000000088261e in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (this=0x7fb0188af8b0) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:584
+#8  0x00000000008827a5 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (arg=0x7fb0188af8b0) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:689
+#9  0x00007fb0255ee3f7 in start_thread () from /lib/libpthread.so.0
+#10 0x00007fb02475bb3d in clone () from /lib/libc.so.6
+#11 0x0000000000000000 in ?? ()
+(gdb) 
+
+OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1110378832.  Back trace follows.
+  #000: H5Dio.c line 601 in H5Dread(): can't read data
+    major(15): Dataset interface
+    minor(24): Read failed
+  #001: H5Dio.c line 848 in H5D_read(): unable to convert between src and dest data types
+    major(15): Dataset interface
+    minor(02): Feature is unsupported
+  #002: H5T.c line 3984 in H5T_path_find(): no appropriate function for conversion path
+    major(13): Datatype interface
+    minor(29): Unable to initialize object
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:481: vtkImageData* om_hdf5_dataset_image_read(hid_t, const char*, DataBbox, int): Assertion `false && "Could not read HDF5 dataset."' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x422f0950 (LWP 28212)]
+0x00007fb0e125a095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007fb0e125a095 in raise () from /lib/libc.so.6
+#1  0x00007fb0e125baf0 in abort () from /lib/libc.so.6
+#2  0x00007fb0e12532df in __assert_fail () from /lib/libc.so.6
+#3  0x00000000010132bf in om_hdf5_dataset_image_read (fileId=67108869, name=0x166b2be "main", extent=@0x422efc40, bytesPerSample=1)
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:481
+#4  0x0000000001014007 in om_hdf5_dataset_image_read_trim (fileId=67108869, name=0x166b2be "main", dataExtent=@0x422efd40, bytesPerSample=1)
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:516
+#5  0x000000000101b705 in om_imagedata_read_hdf5 (dpath=@0x422efe60, fnames=@0x1f48520, srcExtentBbox=@0x422efe00, dataExtentBbox=@0x422efde0, 
+    bytesPerSample=1) at /Users/mwimer/code9/omni/src/utility/omImageDataIo.cpp:309
+#6  0x000000000101c7f1 in om_imagedata_read (dpath=@0x422eff90, fnames=@0x1f48520, srcExtentBbox=@0x422eff30, dataExtentBbox=@0x422eff10, 
+    bytesPerSample=1) at /Users/mwimer/code9/omni/src/utility/omImageDataIo.cpp:206
+#7  0x00000000007f2aca in OmMipVolume::ImportSourceData (this=0x1f48350) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:912
+#8  0x00000000007f2e3e in OmMipVolume::Build (this=0x1f48350) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:716
+#9  0x00000000007df7c5 in OmChannel::BuildVolumeData (this=0x1f48350) at /Users/mwimer/code9/omni/src/volume/omChannel.cpp:84
+#10 0x00000000007ba337 in intermediate_build_call (current_channel=0x1f48350) at /Users/mwimer/code9/omni/src/gui/chanInspector.cpp:95
+#11 0x00000000007a1566 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmChannel*), OmChannel*>::runFunctor (this=0x1f580d0)
+    at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#12 0x00000000007a2533 in QtConcurrent::RunFunctionTask<void>::run (this=0x1f580d0)
+    at /Users/mwimer/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#13 0x0000000000e7bfcd in QThreadPoolThread::run ()
+#14 0x0000000000e83855 in QThreadPrivate::start ()
+#15 0x00007fb0e21923f7 in start_thread () from /lib/libpthread.so.0
+#16 0x00007fb0e12ffb3d in clone () from /lib/libc.so.6
+#17 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `H5Tget_size(dataset_type_id) == bytesPerSample' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f73437d9730 (LWP 3523)]
+0x00007f7341032095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f7341032095 in raise () from /lib/libc.so.6
+#1  0x00007f7341033af0 in abort () from /lib/libc.so.6
+#2  0x00007f734102b2df in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001012575 in om_hdf5_dataset_image_write (fileId=67108864, name=0x2574c48 "segmentations/segmentation1/0/volume.dat", extent=@0x7fff4b9c82e0, bytesPerSample=1, imageData=0x7f73343a0490)
+    at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573
+#4  0x0000000001013496 in om_hdf5_dataset_image_write_trim (fileId=67108864, name=0x2574c48 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff4b9c83c0, bytesPerSample=1, 
+    pImageData=0x7f73343a0490) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:656
+#5  0x000000000085d2bd in OmProjectData::WriteImageData (path=@0x7fff4b9c8420, extent=@0x1d2d7ac, bytesPerSample=1, data=0x7f73343a0490) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
+#6  0x00000000007e44da in OmMipChunk::WriteVolumeData (this=0x1d2d720) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:258
+#7  0x00000000007e478e in OmMipChunk::Flush (this=0x1d2d720) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:153
+#8  0x00000000007f8303 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x7f73341987c0, fxn=&virtual table offset 32) at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:440
+#9  0x00000000007f1492 in OmMipVolume::Flush (this=0x7f73341987b0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:80
+#10 0x00000000007f3d89 in ~OmMipVolume (this=0x7f73341987b0) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:54
+#11 0x00000000007fe939 in ~OmSegmentation (this=0x7f73341987b0) at /Users/mwimer/code9/omni/src/volume/omSegmentation.h:34
+#12 0x0000000000804015 in ~OmGenericManager (this=0x7f73340e1968) at /Users/mwimer/code9/omni/src/system/omGenericManager.h:97
+#13 0x00000000007ff6cb in ~OmVolume (this=0x7f73340e17d0) at /Users/mwimer/code9/omni/src/volume/omVolume.cpp:31
+#14 0x00000000007ff9f5 in OmVolume::Delete () at /Users/mwimer/code9/omni/src/volume/omVolume.cpp:63
+#15 0x00000000008104ae in OmProject::Close () at /Users/mwimer/code9/omni/src/system/omProject.cpp:222
+#16 0x0000000000810a15 in OmProject::New (dpath=@0x7fff4b9c8840, fname=@0x7fff4b9c8830) at /Users/mwimer/code9/omni/src/system/omProject.cpp:112
+#17 0x000000000079f832 in MainWindow::newProject (this=0x7fff4b9caf20) at /Users/mwimer/code9/omni/src/gui/mainwindow.cpp:156
+#18 0x00000000007d8daf in MainWindow::qt_metacall (this=0x7fff4b9caf20, _c=QMetaObject::InvokeMetaMethod, _id=0, _a=0x7fff4b9c8a60) at /Users/mwimer/code9/omni/inst/gui/moc_mainwindow.cxx:112
+#19 0x0000000000f53cba in QMetaObject::activate ()
+#20 0x00000000008df257 in QAction::triggered ()
+#21 0x00000000008dfa20 in QAction::activate ()
+#22 0x0000000000bff4da in QMenuPrivate::activateCausedStack ()
+#23 0x0000000000c05931 in QMenuPrivate::activateAction ()
+#24 0x000000000092f7d4 in QWidget::event ()
+#25 0x0000000000c03a21 in QMenu::event ()
+#26 0x00000000008e5acf in QApplicationPrivate::notify_helper ()
+#27 0x00000000008ea9d9 in QApplication::notify ()
+#28 0x0000000000f3f814 in QCoreApplication::notifyInternal ()
+#29 0x00000000008e9d83 in QApplicationPrivate::sendMouseEvent ()
+#30 0x000000000094657b in QETWidget::translateMouseEvent ()
+#31 0x0000000000944fa5 in QApplication::x11ProcessEvent ()
+#32 0x0000000000968832 in QEventDispatcherX11::processEvents ()
+#33 0x0000000000f3ea55 in QEventLoop::processEvents ()
+#34 0x0000000000f3ee06 in QEventLoop::exec ()
+#35 0x0000000000f40b1b in QCoreApplication::exec ()
+#36 0x0000000000797163 in main (argc=1, argv=0x7fff4b9cb248) at /Users/mwimer/code9/omni/src/gui/main.cpp:38
+(gdb) 
+
+
+(gdb) bt
+#0  0x00007f4e122d0095 in raise () from /lib/libc.so.6
+#1  0x00007f4e122d1af0 in abort () from /lib/libc.so.6
+#2  0x00007f4e1230aa7b in ?? () from /lib/libc.so.6
+#3  0x00007f4e1231208a in ?? () from /lib/libc.so.6
+#4  0x00007f4e12315c1c in free () from /lib/libc.so.6
+#5  0x00000000007e0f81 in __gnu_cxx::new_allocator<std::_Rb_tree_node<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::deallocate (
+    this=0x7f4e080e3500, __p=0x7f4e080e3508)
+    at /usr/include/c++/4.2/ext/new_allocator.h:97
+#6  0x00000000007e0fa9 in std::_Rb_tree<OmMipChunkCoord, std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> >, std::_Select1st<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > >, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::_M_put_node (this=0x7f4e080e3500, __p=0x7f4e080e3508)
+    at /usr/include/c++/4.2/bits/stl_tree.h:371
+#7  0x00000000007e104c in std::_Rb_tree<OmMipChunkCoord, std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> >, std::_Select1st<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > >, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::_M_destroy_node (this=0x7f4e080e3500, __p=0x7f4e080e3508)
+    at /usr/include/c++/4.2/bits/stl_tree.h:401
+#8  0x00000000007e1ee2 in std::_Rb_tree<OmMipChunkCoord, std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> >, std::_Select1st<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > >, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::erase (this=0x7f4e080e3500, __position={_M_node = 0x7f4e080e3508})
+    at /usr/include/c++/4.2/bits/stl_tree.h:1248
+#9  0x00000000007e1f85 in std::_Rb_tree<OmMipChunkCoord, std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> >, std::_Select1st<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > >, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::erase (this=0x7f4e080e3500, __first={_M_node = 0x6c1e870}, __last=
+      {_M_node = 0x7684520}) at /usr/include/c++/4.2/bits/stl_tree.h:1340
+#10 0x00000000007e1feb in std::_Rb_tree<OmMipChunkCoord, std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> >, std::_Select1st<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > >, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::erase (this=0x7f4e080e3500, __x=@0x1ed1050)
+    at /usr/include/c++/4.2/bits/stl_tree.h:1274
+#11 0x00000000007e201d in std::map<OmMipChunkCoord, boost::shared_ptr<OmMipChunk>, std::less<OmMipChunkCoord>, std::allocator<std::pair<OmMipChunkCoord const, boost::shared_ptr<OmMipChunk> > > >::erase (this=0x7f4e080e3500, __x=@0x1ed1050)
+    at /usr/include/c++/4.2/bits/stl_map.h:469
+#12 0x00000000007e2187 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::RemoveOldest (this=0x7f4e080e34f0)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:392
+#13 0x0000000000805f1c in OmCacheManager::CleanCacheGroup (
+    this=0x7f4e080e3810, group=RAM_CACHE_GROUP)
+    at /Users/mwimer/code9/omni/src/system/omCacheManager.cpp:192
+#14 0x0000000000806519 in OmCacheManager::UpdateCacheSizeInternal (
+    this=0x7f4e080e3810, group=RAM_CACHE_GROUP, delta=2936012)
+---Type <return> to continue, or q <return> to quit---
+
+    at /Users/mwimer/code9/omni/src/system/omCacheManager.cpp:152
+#15 0x0000000000806541 in OmCacheManager::UpdateCacheSize (
+    group=RAM_CACHE_GROUP, delta=2936012)
+    at /Users/mwimer/code9/omni/src/system/omCacheManager.cpp:130
+#16 0x00000000007ec35e in OmCacheBase::UpdateSize (this=0x7f4e080e34f0, 
+    delta=2936012) at /Users/mwimer/code9/omni/src/system/omCacheBase.h:32
+#17 0x00000000007ec38a in OmCacheableBase::UpdateSize (this=0x7f4e0b532b60, 
+    delta=2936012) at /Users/mwimer/code9/omni/src/system/omCacheableBase.h:25
+#18 0x00000000007e4133 in OmMipChunk::SetImageData (this=0x7f4e0b532b50, 
+    pImageData=0x7f4e03a68ce0)
+    at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:416
+#19 0x00000000007e4678 in OmMipChunk::ReadVolumeData (this=0x7f4e0b532b50)
+    at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:247
+#20 0x00000000007e46ca in OmMipChunk::Open (this=0x7f4e0b532b50)
+    at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:136
+#21 0x00000000007e3b89 in OmMipChunk::ExtractDataSlice (this=0x7f4e0b532b50, 
+    plane=VOL_XY_PLANE, offset=0, sliceDims=@0x41d3dfd0)
+    at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:686
+#22 0x00000000008917a5 in OmTile::GetImageData (this=0x7f4e081ef920, 
+    key=@0x41d3e090, sliceDims=@0x41d3dfd0, vol=0x7f4e080e34e0)
+    at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:164
+#23 0x0000000000891926 in OmTile::BindToTextureID (this=0x7f4e081ef920, 
+    key=@0x41d3e090) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:70
+#24 0x000000000087ce7c in OmThreadedCachingTile::HandleCacheMiss (
+    this=0x7f4e081ef780, key=@0x41d3e090)
+    at /Users/mwimer/code9/omni/src/view2d/omThreadedCachingTile.cpp:62
+#25 0x00000000008826ee in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop
+    (this=0x7f4e081ef780)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:584
+#26 0x0000000000882875 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (
+    arg=0x7f4e081ef780)
+    at /Users/mwimer/code9/omni/src/system/omThreadedCache.h:689
+#27 0x00007f4e132083f7 in start_thread () from /lib/libpthread.so.0
+#28 0x00007f4e12375b3d in clone () from /lib/libc.so.6
+#29 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+Not sure which id caused this:
+
+OmAccessException Warning: Cannot get object with id: 1
+Qt has caught an exception thrown from an event handler. Throwing
+exceptions from an event handler is not supported in Qt. You must
+reimplement QApplication::notify() and catch all exceptions there.
+
+terminate called after throwing an instance of 'OmAccessException'
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7ff2905b1730 (LWP 22926)]
+0x00007ff28de0b095 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007ff28de0b095 in raise () from /lib/libc.so.6
+#1  0x00007ff28de0caf0 in abort () from /lib/libc.so.6
+#2  0x00007ff28e40f0e4 in __gnu_cxx::__verbose_terminate_handler () from /usr/lib/libstdc++.so.6
+#3  0x00007ff28e40d076 in ?? () from /usr/lib/libstdc++.so.6
+#4  0x00007ff28e40d0a3 in std::terminate () from /usr/lib/libstdc++.so.6
+#5  0x00007ff28e40d121 in __cxa_rethrow () from /usr/lib/libstdc++.so.6
+#6  0x0000000000f42361 in QEventLoop::exec ()
+#7  0x0000000000f43f9b in QCoreApplication::exec ()
+#8  0x0000000000798863 in firsttime (argc=1, argv=0x7fff987a2028) at /Users/mwimer/code9/omni/src/gui/main.cpp:43
+#9  0x0000000000798909 in main (argc=1, argv=0x7fff987a2028) at /Users/mwimer/code9/omni/src/gui/main.cpp:10
+(gdb) 
+
+
+
+Closing the app with the 2dview open:
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1086769488.  Back trace follows.
+  #000: H5S.c line 476 in H5Sclose(): not a data space
+    major(01): Function arguments
+    minor(03): Inappropriate type
+  #001: H5I.c line 1257 in H5I_find_id(): invalid ID
+    major(07): Atom layer
+    minor(32): Unable to find atom information (already closed?)
+omGuiApp: /Users/mwimer/code10/omni/src/utility/omHdf5.cpp:487: vtkImageData* om_hdf5_dataset_image_read(hid_t, const char*, DataBbox, int): Assertion `false && "Could not close HDF5 scratch dataspace."' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x40c6c950 (LWP 11059)]
+0x00007f05a654a015 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f05a654a015 in raise () from /lib/libc.so.6
+#1  0x00007f05a654bb83 in abort () from /lib/libc.so.6
+#2  0x00007f05a6542d89 in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001020f0c in om_hdf5_dataset_image_read ()
+#4  0x0000000001021dae in om_hdf5_dataset_image_read_trim ()
+#5  0x0000000000868686 in OmProjectData::ReadImageData ()
+#6  0x00000000007edd0d in OmMipChunk::ReadVolumeData ()
+#7  0x00000000007edd82 in OmMipChunk::Open ()
+#8  0x00000000007ed192 in OmMipChunk::ExtractDataSlice ()
+#9  0x00000000008a263b in OmTile::GetImageData ()
+#10 0x00000000008a27c8 in OmTile::BindToTextureID ()
+#11 0x000000000088791a in OmThreadedCachingTile::HandleCacheMiss ()
+#12 0x000000000088d610 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop ()
+#13 0x000000000088d7f0 in start_cache_fetch_thread<OmTileCoord, OmTextureID> ()
+#14 0x00007f05a74a23ea in start_thread () from /lib/libpthread.so.0
+#15 0x00007f05a65fdcbd in clone () from /lib/libc.so.6
+#16 0x0000000000000000 in ?? ()
+
+
+Freeing the cache in the gui thread isn't safe.
+
+#0  0x084728e1 in OmThreadedCache (this=0xbf6508d8, group=VRAM_CACHE_GROUP, initFetch=true)
+    at /home/matt/code9/omni/src/system/omThreadedCache.h:152
+#1  0x0846d969 in OmThreadedCachingTile (this=0xbf6508d8, viewtype=XY_VIEW, voltype=CHANNEL, image_id=1, vol=0x0, shareContext=0x0)
+    at /home/matt/code9/omni/src/view2d/omThreadedCachingTile.cpp:19
+#2  0x08453cfe in OmCachingThreadedCachingTile (this=0xbf633748, viewtype=XY_VIEW, voltype=CHANNEL, image_id=1, vol=0x0, shareContext=0x0)
+    at /home/matt/code9/omni/src/view2d/omThreadedCachingTile.h:99
+#3  0x0847d12a in OmView2d::NavigationModeMouseDoubleClick (this=0x966a3f0, event=0xbfa763cc) at /home/matt/code9/omni/src/view2d/omView2d.cpp:976
+#4  0x0847dd14 in OmView2d::mouseDoubleClickEvent (this=0x966a3f0, event=0xbfa763cc) at /home/matt/code9/omni/src/view2d/omView2d.cpp:846
+#5  0x0852e449 in QWidget::event ()
+#6  0x084ddf8f in QApplicationPrivate::notify_helper ()
+#7  0x084e323c in QApplication::notify ()
+#8  0x08bbc17b in QCoreApplication::notifyInternal ()
+#9  0x084e268f in QApplicationPrivate::sendMouseEvent ()
+#10 0x0854579a in QETWidget::translateMouseEvent ()
+#11 0x08543f5d in QApplication::x11ProcessEvent ()
+#12 0x08569b1b in QEventDispatcherX11::processEvents ()
+#13 0x08bbb1ad in QEventLoop::processEvents ()
+#14 0x08bbb5fd in QEventLoop::exec ()
+#15 0x08bbd4a8 in QCoreApplication::exec ()
+#16 0x084ddab7 in QApplication::exec ()
+#17 0x08396485 in firsttime (argc=1, argv=0xbfa77cd4) at /home/matt/code9/omni/src/gui/main.cpp:42
+#18 0x08396532 in main (argc=Cannot access memory at address 0xffffffd4
+) at /home/matt/code9/omni/src/gui/main.cpp:11
+(gdb)
+
+
+Building a segmenation:
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0xb3c55b90 (LWP 11735)]
+0xb7f3d410 in __kernel_vsyscall ()
+(gdb) bt
+#0  0xb7f3d410 in __kernel_vsyscall ()
+#1  0xb7c6f589 in __lll_lock_wait () from /lib/tls/i686/cmov/libpthread.so.0
+#2  0xb7c6aba6 in _L_lock_95 () from /lib/tls/i686/cmov/libpthread.so.0
+#3  0xb7c6a58a in pthread_mutex_lock () from /lib/tls/i686/cmov/libpthread.so.0
+#4  0x083ddde8 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::RemoveOldest (this=0x969aa84) at /home/matt/code9/omni/src/system/omThreadedCache.h:350
+#5  0x083ff6cf in OmCacheManager::CleanCacheGroup (this=0x9574050, group=RAM_CACHE_GROUP) at /home/matt/code9/omni/src/system/omCacheManager.cpp:192
+#6  0x083ffbd4 in OmCacheManager::UpdateCacheSizeInternal (this=0x9574050, group=RAM_CACHE_GROUP, delta=183500) at /home/matt/code9/omni/src/system/omCacheManager.cpp:152
+#7  0x083ffbfb in OmCacheManager::UpdateCacheSize (group=RAM_CACHE_GROUP, delta=183500) at /home/matt/code9/omni/src/system/omCacheManager.cpp:130
+#8  0x083e7269 in OmCacheBase::UpdateSize (this=0x969aa84, delta=183500) at /home/matt/code9/omni/src/system/omCacheBase.h:32
+#9  0x083e728f in OmCacheableBase::UpdateSize (this=0xae290d14, delta=183500) at /home/matt/code9/omni/src/system/omCacheableBase.h:25
+#10 0x083dfd2d in OmMipChunk::SetImageData (this=0xae290d08, pImageData=0xa11caf28) at /home/matt/code9/omni/src/volume/omMipChunk.cpp:424
+#11 0x083e02d7 in OmMipChunk::ReadVolumeData (this=0xae290d08) at /home/matt/code9/omni/src/volume/omMipChunk.cpp:248
+#12 0x083e0330 in OmMipChunk::Open (this=0xae290d08) at /home/matt/code9/omni/src/volume/omMipChunk.cpp:136
+#13 0x083e017f in OmMipChunk::WriteVolumeData (this=0xae290d08) at /home/matt/code9/omni/src/volume/omMipChunk.cpp:258
+#14 0x083e04cc in OmMipChunk::Flush (this=0xae290d08) at /home/matt/code9/omni/src/volume/omMipChunk.cpp:153
+#15 0x083f1dea in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x969aa84, fxn=&virtual table offset 16) at /home/matt/code9/omni/src/system/omThreadedCache.h:436
+#16 0x083eb641 in OmMipVolume::Flush (this=0x969aa78) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:80
+#17 0x083ebf7c in OmMipVolume::BuildVolume (this=0x969aa78) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:771
+#18 0x083eddaf in OmMipVolume::Build (this=0x969aa78) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:724
+#19 0x083f638a in OmSegmentation::BuildVolumeData (this=0x969aa78) at /home/matt/code9/omni/src/volume/omSegmentation.cpp:228
+#20 0x083af1a5 in build_image (current_seg=0x969aa78) at /home/matt/code9/omni/src/gui/segInspector.cpp:89
+#21 0x0839fdc5 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x9672e90)
+    at /home/matt/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#22 0x083a0dbc in QtConcurrent::RunFunctionTask<void>::run (this=0x9672e90) at /home/matt/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#23 0x08aee576 in QThreadPoolThread::run ()
+#24 0x08af6bc2 in QThreadPrivate::start ()
+#25 0xb7c684fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#26 0xb793de5e in clone () from /lib/tls/i686/cmov/libc.so.6
+(gdb) step
+Single stepping until exit from function __kernel_vsyscall,
+which has no line number information.
+
+
+Segmentation fault.
+[Switching to Thread 0xb3c36b90 (LWP 2688)]
+0x08d40b12 in vtkTIFFReader::ReadImageInternal (this=0x968af70, outPtr=0xb31fa008, outExt=0xb3c35948) at /home/matt/code9/external/VTK/IO/vtkTIFFReader.cxx:1663
+1663              *(fimage  ) = red;//red;
+(gdb) bt
+#0  0x08d40b12 in vtkTIFFReader::ReadImageInternal (this=0x968af70, outPtr=0xb31fa008, outExt=0xb3c35948) at /home/matt/code9/external/VTK/IO/vtkTIFFReader.cxx:1663
+#1  0x08d450bd in vtkTIFFReaderUpdate2<unsigned short> (self=0x968af70, outPtr=0xb31fa008, outExt=0xb3c35948) at /home/matt/code9/external/VTK/IO/vtkTIFFReader.cxx:527
+#2  0x08d451fb in vtkTIFFReaderUpdate<unsigned short> (self=0x968af70, data=0x9678740, outPtr=0xaf8fa008) at /home/matt/code9/external/VTK/IO/vtkTIFFReader.cxx:574
+#3  0x08d42549 in vtkTIFFReader::ExecuteData (this=0x968af70, output=0x9678740) at /home/matt/code9/external/VTK/IO/vtkTIFFReader.cxx:607
+#4  0x08d7c898 in vtkImageAlgorithm::RequestData (this=0x968af70, request=0x96fd390, outputVector=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkImageAlgorithm.cxx:78
+#5  0x08d7c760 in vtkImageAlgorithm::ProcessRequest (this=0x968af70, request=0x96fd390, inputVector=0x0, outputVector=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkImageAlgorithm.cxx:95
+#6  0x08d6cbee in vtkExecutive::CallAlgorithm (this=0x968b600, request=0x96fd390, direction=1, inInfo=0x0, outInfo=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:748
+#7  0x08d67936 in vtkDemandDrivenPipeline::ExecuteData (this=0x968b600, request=0x96fd390, inInfo=0x0, outInfo=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:508
+#8  0x08d6b9ad in vtkDemandDrivenPipeline::ProcessRequest (this=0x968b600, request=0x96fd390, inInfoVec=0x0, outInfoVec=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:280
+#9  0x08df0549 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x968b600, request=0x96fd390, inInfoVec=0x0, outInfoVec=0x968b668)
+    at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#10 0x08d6ef71 in vtkExecutive::ForwardUpstream (this=0x967a988, request=0x96fd390) at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:645
+#11 0x08d6b90f in vtkDemandDrivenPipeline::ProcessRequest (this=0x967a988, request=0x96fd390, inInfoVec=0x967aa48, outInfoVec=0x967a9f0)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#12 0x08df0549 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x967a988, request=0x96fd390, inInfoVec=0x967aa48, outInfoVec=0x967a9f0)
+    at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#13 0x08d6ef71 in vtkExecutive::ForwardUpstream (this=0x96634b8, request=0x96fd390) at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:645
+#14 0x08d6b90f in vtkDemandDrivenPipeline::ProcessRequest (this=0x96634b8, request=0x96fd390, inInfoVec=0x96635d0, outInfoVec=0x9663520)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#15 0x08df0549 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x96634b8, request=0x96fd390, inInfoVec=0x96635d0, outInfoVec=0x9663520)
+    at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#16 0x08d6ef71 in vtkExecutive::ForwardUpstream (this=0x96658d0, request=0x96fd390) at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:645
+#17 0x08d6b90f in vtkDemandDrivenPipeline::ProcessRequest (this=0x96658d0, request=0x96fd390, inInfoVec=0x96659e8, outInfoVec=0x9665938)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#18 0x08df0549 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x96658d0, request=0x96fd390, inInfoVec=0x96659e8, outInfoVec=0x9665938)
+    at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#19 0x08d6ef71 in vtkExecutive::ForwardUpstream (this=0x9667518, request=0x96fd390) at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:645
+#20 0x08d6b90f in vtkDemandDrivenPipeline::ProcessRequest (this=0x9667518, request=0x96fd390, inInfoVec=0x96fa948, outInfoVec=0x9667580)
+    at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#21 0x08df0549 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x9667518, request=0x96fd390, inInfoVec=0x96fa948, outInfoVec=0x9667580)
+    at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#22 0x08d6b4b2 in vtkDemandDrivenPipeline::UpdateData (this=0x9667518, outputPort=0) at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:450
+#23 0x08def205 in vtkStreamingDemandDrivenPipeline::Update (this=0x9667518, port=0) at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:234
+#24 0x08d6d625 in vtkExecutive::Update (this=0x9667518) at /home/matt/code9/external/VTK/Filtering/vtkExecutive.cxx:316
+#25 0x08d69ab1 in vtkDemandDrivenPipeline::Update (this=0x9667518) at /home/matt/code9/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:313
+#26 0x08de78a3 in vtkStreamingDemandDrivenPipeline::Update (this=0x9667518) at /home/matt/code9/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:214
+#27 0x08d4779d in vtkAlgorithm::Update (this=0x9665b10) at /home/matt/code9/external/VTK/Filtering/vtkAlgorithm.cxx:1156
+#28 0x08c9bed9 in om_imagedata_read_vtk (dpath=@0xb3c361bc, fnames=@0x96167fc, srcExtentBbox=@0xb3c36168, dataExtentBbox=@0xb3c3614c, bytesPerSample=4)
+    at /home/matt/code9/omni/src/utility/omImageDataIo.cpp:279
+#29 0x08c9c0a5 in om_imagedata_read (dpath=@0xb3c362a8, fnames=@0x96167fc, srcExtentBbox=@0xb3c36268, dataExtentBbox=@0xb3c3624c, bytesPerSample=4)
+    at /home/matt/code9/omni/src/utility/omImageDataIo.cpp:203
+#30 0x083ed5ee in OmMipVolume::ImportSourceData (this=0x96166e8) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:914
+#31 0x083edd7d in OmMipVolume::Build (this=0x96166e8) at /home/matt/code9/omni/src/volume/omMipVolume.cpp:718
+#32 0x083f638a in OmSegmentation::BuildVolumeData (this=0x96166e8) at /home/matt/code9/omni/src/volume/omSegmentation.cpp:228
+#33 0x083af1a5 in build_image (current_seg=0x96166e8) at /home/matt/code9/omni/src/gui/segInspector.cpp:89
+#34 0x0839fdc5 in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x967b760)
+    at /home/matt/code9/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+---Type <return> to continue, or q <return> to quit---
+#35 0x083a0dbc in QtConcurrent::RunFunctionTask<void>::run (this=0x967b760) at /home/matt/code9/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#36 0x08aee576 in QThreadPoolThread::run ()
+#37 0x08af6bc2 in QThreadPrivate::start ()
+#38 0xb7c494fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#39 0xb791ee5e in clone () from /lib/tls/i686/cmov/libc.so.6
+(gdb)
+
+
+Looks like clearing the cache will cause a deadlock...
+
+0x00007f1f311ecb04 in __lll_lock_wait () from /lib/libpthread.so.0
+(gdb) bt
+#0  0x00007f1f311ecb04 in __lll_lock_wait () from /lib/libpthread.so.0
+#1  0x00007f1f311e81a0 in _L_lock_102 () from /lib/libpthread.so.0
+#2  0x00007f1f311e7aae in pthread_mutex_lock () from /lib/libpthread.so.0
+#3  0x00000000007ee60e in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::RemoveOldest (this=0x29eabf0)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:351
+#4  0x000000000081308a in OmCacheManager::CleanCacheGroup (this=0x29eaf10, group=RAM_CACHE_GROUP)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:192
+#5  0x00000000008136c5 in OmCacheManager::UpdateCacheSizeInternal (this=0x29eaf10, group=RAM_CACHE_GROUP, delta=368)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:152
+#6  0x00000000008136ed in OmCacheManager::UpdateCacheSize (group=RAM_CACHE_GROUP, delta=368)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:130
+#7  0x00000000007f8bec in OmCacheBase::UpdateSize (this=0x29eabf0, delta=368) at /Users/mwimer/code10/omni/src/system/omCacheBase.h:32
+#8  0x00000000007f8c18 in OmCacheableBase::UpdateSize (this=0x7f1f1c05b8b0, delta=368)
+    at /Users/mwimer/code10/omni/src/system/omCacheableBase.h:25
+#9  0x00000000007f1bf0 in OmMipChunk (this=0x7f1f1c05b8a0, rMipCoord=@0x7fff68be44b0, pMipVolume=0x29eabe0)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:56
+#10 0x00000000007feb1b in OmMipVolume::HandleCacheMiss (this=0x29eabe0, rMipCoord=@0x7fff68be44b0)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:576
+#11 0x0000000000807b96 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Get (this=0x29eabf0, key=@0x7fff68be44b0, blocking=true, exists=false)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:216
+#12 0x00000000007fd9d5 in OmMipVolume::GetChunk (this=0x29eabe0, rMipCoord=@0x7fff68be44b0)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:552
+#13 0x00000000008936ab in OmView2d::PreDraw (this=0x2996820, zoomMipVector=
+      {{{x = 1757300192, y = 32767}, {min = 1757300192, max = 32767}, xy = {1757300192, 32767}, array = {1757300192, 32767}}, static ZERO = <optimized out>}) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2685
+#14 0x0000000000894131 in OmView2d::Draw (this=0x2996820) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2395
+#15 0x00000000008945c0 in OmView2d::DrawFromCache (this=0x2996820) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2247
+#16 0x000000000089d91f in OmView2d::safePaintEvent (this=0x2996820, event=0x7fff68be5200)
+    at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:401
+#17 0x000000000089db79 in OmView2d::paintEvent (this=0x2996820, event=0x7fff68be5200) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:259
+#18 0x0000000000943f59 in QWidget::event ()
+#19 0x00000000008fa24f in QApplicationPrivate::notify_helper ()
+#20 0x00000000008fea55 in QApplication::notify ()
+#21 0x0000000000f53724 in QCoreApplication::notifyInternal ()
+#22 0x000000000093f0b4 in QWidgetPrivate::drawWidget ()
+#23 0x000000000093f81c in QWidgetPrivate::paintSiblingsRecursive ()
+#24 0x000000000093f1a2 in QWidgetPrivate::drawWidget ()
+#25 0x000000000093f81c in QWidgetPrivate::paintSiblingsRecursive ()
+#26 0x000000000093f1a2 in QWidgetPrivate::drawWidget ()
+#27 0x0000000000a68664 in QWidgetBackingStore::sync ()
+#28 0x0000000000937456 in QWidgetPrivate::syncBackingStore ()
+#29 0x0000000000943d45 in QWidget::event ()
+#30 0x0000000000bf88c1 in QMainWindow::event ()
+#31 0x00000000008fa24f in QApplicationPrivate::notify_helper ()
+#32 0x00000000008fea55 in QApplication::notify ()
+#33 0x0000000000f53724 in QCoreApplication::notifyInternal ()
+#34 0x0000000000f54738 in QCoreApplicationPrivate::sendPostedEvents ()
+#35 0x0000000000f774e0 in QEventDispatcherUNIX::processEvents ()
+#36 0x000000000097d046 in QEventDispatcherX11::processEvents ()
+#37 0x0000000000f52965 in QEventLoop::processEvents ()
+#38 0x0000000000f52d16 in QEventLoop::exec ()
+#39 0x0000000000f54a2b in QCoreApplication::exec ()
+#40 0x000000000079d606 in firsttime (argc=1, argv=0x7fff68be6b98) at /Users/mwimer/code10/omni/src/gui/main.cpp:41
+#41 0x000000000079d6c6 in main (argc=1, argv=0x7fff68be6b98) at /Users/mwimer/code10/omni/src/gui/main.cpp:11
+(gdb) 
+
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7fdea9c69730 (LWP 30319)]
+0x00007fdea814bb04 in __lll_lock_wait () from /lib/libpthread.so.0
+(gdb) bt
+#0  0x00007fdea814bb04 in __lll_lock_wait () from /lib/libpthread.so.0
+#1  0x00007fdea81471a0 in _L_lock_102 () from /lib/libpthread.so.0
+#2  0x00007fdea8146aae in pthread_mutex_lock () from /lib/libpthread.so.0
+#3  0x0000000000807b2e in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Get (this=0x7fde9c1955f0, key=@0x7fffda390050, blocking=true, exists=false)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:199
+#4  0x00000000007fd9d5 in OmMipVolume::GetChunk (this=0x7fde9c1955e0, rMipCoord=@0x7fffda390050)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:552
+#5  0x00000000008936c6 in OmView2d::PreDraw (this=0x7fde9c105300, zoomMipVector=
+      {{{x = -633798272, y = 32767}, {min = -633798272, max = 32767}, xy = {-633798272, 32767}, array = {-633798272, 32767}}, static ZERO = <optimized out>}) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2697
+#6  0x0000000000894141 in OmView2d::Draw (this=0x7fde9c105300) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2404
+#7  0x00000000008945e8 in OmView2d::DrawFromCache (this=0x7fde9c105300) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:2255
+#8  0x000000000089d99e in OmView2d::safePaintEvent (this=0x7fde9c105300, event=0x7fffda390da0)
+    at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:404
+#9  0x000000000089dbf9 in OmView2d::paintEvent (this=0x7fde9c105300, event=0x7fffda390da0) at /Users/mwimer/code10/omni/src/view2d/omView2d.cpp:260
+#10 0x0000000000943fe9 in QWidget::event ()
+#11 0x00000000008fa2df in QApplicationPrivate::notify_helper ()
+#12 0x00000000008feae5 in QApplication::notify ()
+#13 0x0000000000f537b4 in QCoreApplication::notifyInternal ()
+#14 0x000000000093f144 in QWidgetPrivate::drawWidget ()
+#15 0x000000000093f8ac in QWidgetPrivate::paintSiblingsRecursive ()
+#16 0x000000000093f232 in QWidgetPrivate::drawWidget ()
+#17 0x000000000093f8ac in QWidgetPrivate::paintSiblingsRecursive ()
+#18 0x000000000093f232 in QWidgetPrivate::drawWidget ()
+#19 0x0000000000a686f4 in QWidgetBackingStore::sync ()
+#20 0x00000000009374e6 in QWidgetPrivate::syncBackingStore ()
+#21 0x0000000000943dd5 in QWidget::event ()
+#22 0x0000000000bf8951 in QMainWindow::event ()
+#23 0x00000000008fa2df in QApplicationPrivate::notify_helper ()
+#24 0x00000000008feae5 in QApplication::notify ()
+#25 0x0000000000f537b4 in QCoreApplication::notifyInternal ()
+#26 0x0000000000f547c8 in QCoreApplicationPrivate::sendPostedEvents ()
+#27 0x0000000000f77570 in QEventDispatcherUNIX::processEvents ()
+#28 0x000000000097d0d6 in QEventDispatcherX11::processEvents ()
+#29 0x0000000000f529f5 in QEventLoop::processEvents ()
+#30 0x0000000000f52da6 in QEventLoop::exec ()
+#31 0x0000000000f54abb in QCoreApplication::exec ()
+#32 0x000000000079d606 in firsttime (argc=1, argv=0x7fffda392738) at /Users/mwimer/code10/omni/src/gui/main.cpp:41
+#33 0x000000000079d6c6 in main (argc=1, argv=0x7fffda392738) at /Users/mwimer/code10/omni/src/gui/main.cpp:11
+(gdb) q
+
+
+looks like memory corruption:
+
+#0  0x00007f97718b55c4 in std::_Rb_tree_rotate_right () from /usr/lib/libstdc++.so.6
+#1  0x00007f97718b5751 in std::_Rb_tree_insert_and_rebalance () from /usr/lib/libstdc++.so.6
+#2  0x000000000085c222 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_ (this=0x203da20, __x=0x8a19c50, 
+    __p=0x8a19c50, __v=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_tree.h:854
+#3  0x000000000087bd91 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_unique_ (this=0x203da20, 
+    __position={_M_node = 0x8a19c50}, __v=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_tree.h:1204
+#4  0x000000000087bf78 in std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::insert (this=0x203da20, __position={_M_node = 0x8a19c50}, __x=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_map.h:496
+#5  0x000000000087c01e in std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::operator[] (this=0x203da20, __k=@0x43f96be4) at /usr/include/c++/4.3/bits/stl_map.h:419
+#6  0x000000000087ad50 in OmSegmentDataMap::GetSegmentIdMappedToValue (this=0x203da20, value=3064700059)
+    at /Users/mwimer/code10/omni/src/segment/omSegmentDataMap.cpp:56
+#7  0x0000000000877356 in OmSegmentManager::GetSegmentIdMappedToValue (this=0x203d950, value=3064700059)
+    at /Users/mwimer/code10/omni/src/segment/omSegmentManager.cpp:182
+#8  0x0000000000809d4c in OmSegmentation::GetSegmentIdMappedToValue (this=0x203d6f0, value=3064700059)
+    at /Users/mwimer/code10/omni/src/volume/omSegmentation.cpp:106
+#9  0x00000000008a77c0 in OmTile::setMyColorMap (this=0x200f900, imageData=0x8ac6840, dims=
+      {{{x = 1140420448, y = 0}, {min = 1140420448, max = 0}, xy = {1140420448, 0}, array = {1140420448, 0}}, static ZERO = <optimized out>}, 
+    key=@0x43f97070, rData=0x43f96f70) at /Users/mwimer/code10/omni/src/view2d/omTile.cpp:277
+#10 0x00000000008a8486 in OmTile::BindToTextureID (this=0x200f900, key=@0x43f97070) at /Users/mwimer/code10/omni/src/view2d/omTile.cpp:107
+#11 0x000000000088a662 in OmThreadedCachingTile::HandleCacheMiss (this=0x200f760, key=@0x43f97070)
+    at /Users/mwimer/code10/omni/src/view2d/omThreadedCachingTile.cpp:92
+#12 0x0000000000890348 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (this=0x200f760)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:584
+#13 0x0000000000890528 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (arg=0x200f760)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:689
+#14 0x00007f97722473ea in start_thread () from /lib/libpthread.so.0
+#15 0x00007f97713a2cbd in clone () from /lib/libc.so.6
+#16 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+BUILDING:
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x42a69950 (LWP 25107)]
+0x00007febcd0cab04 in __lll_lock_wait () from /lib/libpthread.so.0
+(gdb) bt
+#0  0x00007febcd0cab04 in __lll_lock_wait () from /lib/libpthread.so.0
+#1  0x00007febcd0c61a0 in _L_lock_102 () from /lib/libpthread.so.0
+#2  0x00007febcd0c5aae in pthread_mutex_lock () from /lib/libpthread.so.0
+#3  0x00000000007ee60e in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::RemoveOldest (this=0x2d4d420)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:351
+#4  0x000000000081307a in OmCacheManager::CleanCacheGroup (this=0x2ada670, 
+    group=RAM_CACHE_GROUP)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:193
+#5  0x00000000008136b5 in OmCacheManager::UpdateCacheSizeInternal (
+    this=0x2ada670, group=RAM_CACHE_GROUP, delta=11744051)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:152
+#6  0x00000000008136dd in OmCacheManager::UpdateCacheSize (
+    group=RAM_CACHE_GROUP, delta=11744051)
+    at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:130
+#7  0x00000000007f8bdc in OmCacheBase::UpdateSize (this=0x2d4d420, 
+    delta=11744051) at /Users/mwimer/code10/omni/src/system/omCacheBase.h:32
+#8  0x00000000007f8c08 in OmCacheableBase::UpdateSize (this=0x7febac801a50, 
+    delta=11744051)
+    at /Users/mwimer/code10/omni/src/system/omCacheableBase.h:25
+#9  0x00000000007f04b2 in OmMipChunk::SetImageData (this=0x7febac801a40, 
+    pImageData=0x7febc3082970)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:424
+---Type <return> to continue, or q <return> to quit---
+#10 0x00000000007f0a4e in OmMipChunk::ReadVolumeData (this=0x7febac801a40)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:248
+#11 0x00000000007f0ab2 in OmMipChunk::Open (this=0x7febac801a40)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:136
+#12 0x00000000007f091d in OmMipChunk::WriteVolumeData (this=0x7febac801a40)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:258
+#13 0x00000000007f0c46 in OmMipChunk::Flush (this=0x7febac801a40)
+    at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:153
+#14 0x00000000008062fd in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (
+    this=0x2d4d420, fxn=&virtual table offset 32)
+    at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:440
+#15 0x00000000007fdaf6 in OmMipVolume::Flush (this=0x2d4d410)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:80
+#16 0x00000000007fe457 in OmMipVolume::BuildVolume (this=0x2d4d410)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:771
+#17 0x00000000007fff13 in OmMipVolume::Build (this=0x2d4d410)
+    at /Users/mwimer/code10/omni/src/volume/omMipVolume.cpp:724
+#18 0x0000000000809420 in OmSegmentation::BuildVolumeData (this=0x2d4d410)
+    at /Users/mwimer/code10/omni/src/volume/omSegmentation.cpp:228
+#19 0x00000000007b918a in build_image (current_seg=0x2d4d410)
+    at /Users/mwimer/code10/omni/src/gui/segInspector.cpp:89
+#20 0x00000000007a88ac in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x2d54cd0)
+---Type <return> to continue, or q <return> to quit---
+    at /Users/mwimer/code10/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#21 0x00000000007a997b in QtConcurrent::RunFunctionTask<void>::run (
+    this=0x2d54cd0)
+    at /Users/mwimer/code10/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#22 0x0000000000e8f8bd in QThreadPoolThread::run ()
+#23 0x0000000000e97145 in QThreadPrivate::start ()
+#24 0x00007febcd0c43ea in start_thread () from /lib/libpthread.so.0
+#25 0x00007febcc21fcbd in clone () from /lib/libc.so.6
+#26 0x0000000000000000 in ?? ()
+(gdb) 
+
+
+More building bugs:
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0xb4413b90 (LWP 23965)]
+0x08d415d2 in vtkTIFFReader::ReadImageInternal (this=0x9672438, outPtr=0xb3a4f008, outExt=0xb4412948) at /home/matt/code12/external/VTK/IO/vtkTIFFReader.cxx:1663
+1663              *(fimage  ) = red;//red;
+(gdb) bt
+#0  0x08d415d2 in vtkTIFFReader::ReadImageInternal (this=0x9672438, outPtr=0xb3a4f008, outExt=0xb4412948) at /home/matt/code12/external/VTK/IO/vtkTIFFReader.cxx:1663
+#1  0x08d45b7d in vtkTIFFReaderUpdate2<unsigned short> (self=0x9672438, outPtr=0xb3a4f008, outExt=0xb4412948) at /home/matt/code12/external/VTK/IO/vtkTIFFReader.cxx:527
+#2  0x08d45cbb in vtkTIFFReaderUpdate<unsigned short> (self=0x9672438, data=0x9670840, outPtr=0xb36bf008) at /home/matt/code12/external/VTK/IO/vtkTIFFReader.cxx:574
+#3  0x08d43009 in vtkTIFFReader::ExecuteData (this=0x9672438, output=0x9670840) at /home/matt/code12/external/VTK/IO/vtkTIFFReader.cxx:607
+#4  0x08d7d358 in vtkImageAlgorithm::RequestData (this=0x9672438, request=0x96f5128, outputVector=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkImageAlgorithm.cxx:78
+#5  0x08d7d220 in vtkImageAlgorithm::ProcessRequest (this=0x9672438, request=0x96f5128, inputVector=0x0, outputVector=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkImageAlgorithm.cxx:95
+#6  0x08d6d6ae in vtkExecutive::CallAlgorithm (this=0x9673fa8, request=0x96f5128, direction=1, inInfo=0x0, outInfo=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:748
+#7  0x08d683f6 in vtkDemandDrivenPipeline::ExecuteData (this=0x9673fa8, request=0x96f5128, inInfo=0x0, outInfo=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:508
+#8  0x08d6c46d in vtkDemandDrivenPipeline::ProcessRequest (this=0x9673fa8, request=0x96f5128, inInfoVec=0x0, outInfoVec=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:280
+#9  0x08df1009 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x9673fa8, request=0x96f5128, inInfoVec=0x0, outInfoVec=0x9674010) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#10 0x08d6fa31 in vtkExecutive::ForwardUpstream (this=0x96f6da8, request=0x96f5128) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:645
+#11 0x08d6c3cf in vtkDemandDrivenPipeline::ProcessRequest (this=0x96f6da8, request=0x96f5128, inInfoVec=0x96f7ab0, outInfoVec=0x96f6e10) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#12 0x08df1009 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x96f6da8, request=0x96f5128, inInfoVec=0x96f7ab0, outInfoVec=0x96f6e10) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#13 0x08d6fa31 in vtkExecutive::ForwardUpstream (this=0x967ae50, request=0x96f5128) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:645
+#14 0x08d6c3cf in vtkDemandDrivenPipeline::ProcessRequest (this=0x967ae50, request=0x96f5128, inInfoVec=0x967af38, outInfoVec=0x967aeb8) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#15 0x08df1009 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x967ae50, request=0x96f5128, inInfoVec=0x967af38, outInfoVec=0x967aeb8) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#16 0x08d6fa31 in vtkExecutive::ForwardUpstream (this=0x97090a0, request=0x96f5128) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:645
+#17 0x08d6c3cf in vtkDemandDrivenPipeline::ProcessRequest (this=0x97090a0, request=0x96f5128, inInfoVec=0x966cdd0, outInfoVec=0x9709108) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#18 0x08df1009 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x97090a0, request=0x96f5128, inInfoVec=0x966cdd0, outInfoVec=0x9709108) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#19 0x08d6fa31 in vtkExecutive::ForwardUpstream (this=0x9718c00, request=0x96f5128) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:645
+#20 0x08d6c3cf in vtkDemandDrivenPipeline::ProcessRequest (this=0x9718c00, request=0x96f5128, inInfoVec=0x9718d18, outInfoVec=0x9718c68) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:266
+#21 0x08df1009 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x9718c00, request=0x96f5128, inInfoVec=0x9718d18, outInfoVec=0x9718c68) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#22 0x08d6bf72 in vtkDemandDrivenPipeline::UpdateData (this=0x9718c00, outputPort=0) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:450
+#23 0x08defcc5 in vtkStreamingDemandDrivenPipeline::Update (this=0x9718c00, port=0) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:234
+#24 0x08d6e0e5 in vtkExecutive::Update (this=0x9718c00) at /home/matt/code12/external/VTK/Filtering/vtkExecutive.cxx:316
+#25 0x08d6a571 in vtkDemandDrivenPipeline::Update (this=0x9718c00) at /home/matt/code12/external/VTK/Filtering/vtkDemandDrivenPipeline.cxx:313
+#26 0x08de8363 in vtkStreamingDemandDrivenPipeline::Update (this=0x9718c00) at /home/matt/code12/external/VTK/Filtering/vtkStreamingDemandDrivenPipeline.cxx:214
+#27 0x08d4825d in vtkAlgorithm::Update (this=0x966cef8) at /home/matt/code12/external/VTK/Filtering/vtkAlgorithm.cxx:1156
+#28 0x08c9c997 in om_imagedata_read_vtk (dpath=@0xb44131bc, fnames=@0x9615e94, srcExtentBbox=@0xb4413168, dataExtentBbox=@0xb441314c, bytesPerSample=4) at /home/matt/code12/omni/src/utility/omImageDataIo.cpp:279
+#29 0x08c9cb63 in om_imagedata_read (dpath=@0xb44132a8, fnames=@0x9615e94, srcExtentBbox=@0xb4413268, dataExtentBbox=@0xb441324c, bytesPerSample=4) at /home/matt/code12/omni/src/utility/omImageDataIo.cpp:203
+#30 0x083eda84 in OmMipVolume::ImportSourceData (this=0x9615d78) at /home/matt/code12/omni/src/volume/omMipVolume.cpp:914
+#31 0x083ee21b in OmMipVolume::Build (this=0x9615d78) at /home/matt/code12/omni/src/volume/omMipVolume.cpp:718
+#32 0x083f68fe in OmSegmentation::BuildVolumeData (this=0x9615d78) at /home/matt/code12/omni/src/volume/omSegmentation.cpp:228
+#33 0x083af57d in build_image (current_seg=0x9615d78) at /home/matt/code12/omni/src/gui/segInspector.cpp:89
+#34 0x083a016d in QtConcurrent::VoidStoredFunctorCall1<void, void (*)(OmSegmentation*), OmSegmentation*>::runFunctor (this=0x9714af0) at /home/matt/code12/external/libs/Qt/include/QtCore/qtconcurrentstoredfunctioncall.h:284
+#35 0x083a1164 in QtConcurrent::RunFunctionTask<void>::run (this=0x9714af0) at /home/matt/code12/external/libs/Qt/include/QtCore/qtconcurrentrunbase.h:120
+#36 0x08aeef06 in QThreadPoolThread::run ()
+#37 0x08af7552 in QThreadPrivate::start ()
+#38 0xb7c2e4fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#39 0xb7903e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+
+
+Infinite loop when the zoomfactor goes below 0 somehow.
+
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7f43b8e02730 (LWP 8701)]
+0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75, 
+    other=@0x7fff78627ac0)
+    at /Users/mwimer/code11/omni/include/vmmlib/matrix4.h:753
+753	Vector3< T > Matrix4< T >::operator* (const Vector3< T >& other) const
+(gdb) bt
+#0  0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75, 
+    other=@0x7fff78627ac0)
+    at /Users/mwimer/code11/omni/include/vmmlib/matrix4.h:753
+#1  0x000000000080dd82 in OmVolume::SpaceToNormCoord (spatial=@0x7f43a69d4f30)
+    at /Users/mwimer/code11/omni/src/volume/omVolume.cpp:146
+#2  0x00000000008a6e86 in OmTile::TileToMipCoord (this=0x7f43a8404fc8, 
+    key=@0x7f43a69d4f2c) at /Users/mwimer/code11/omni/src/view2d/omTile.cpp:166
+#3  0x0000000000892a0c in OmView2d::myBindToTextureID (this=0x7f43a83ebe80, 
+    gotten_id={px = 0x7fff78627d80, pn = {pi_ = 0x7f43a83ebe80}})
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2578
+#4  0x0000000000893c9d in OmView2d::PreDraw (this=0x7f43a83ebe80, 
+    zoomMipVector=
+      {{{x = 2019720848, y = 32767}, {min = 2019720848, max = 32767}, xy = {2019720848, 32767}, array = {2019720848, 32767}}, static ZERO = <optimized out>})
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2708
+#5  0x000000000089462f in OmView2d::Draw (this=0x7f43a83ebe80, mip=1)
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2414
+#6  0x0000000000894803 in OmView2d::DrawFromCache (this=0x7f43a83ebe80)
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2242
+#7  0x000000000089dcec in OmView2d::safePaintEvent (this=0x7f43a83ebe80, 
+    event=0x7fff78628ad0)
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:405
+#8  0x000000000089df47 in OmView2d::paintEvent (this=0x7f43a83ebe80, 
+---Type <return> to continue, or q <return> to quit---
+    event=0x7fff78628ad0)
+    at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:261
+#9  0x0000000000944779 in QWidget::event ()
+#10 0x00000000008faa6f in QApplicationPrivate::notify_helper ()
+#11 0x00000000008ff275 in QApplication::notify ()
+#12 0x0000000000f53f34 in QCoreApplication::notifyInternal ()
+#13 0x000000000093f8d4 in QWidgetPrivate::drawWidget ()
+#14 0x000000000094003c in QWidgetPrivate::paintSiblingsRecursive ()
+#15 0x000000000093f9c2 in QWidgetPrivate::drawWidget ()
+#16 0x000000000094003c in QWidgetPrivate::paintSiblingsRecursive ()
+#17 0x000000000093f9c2 in QWidgetPrivate::drawWidget ()
+#18 0x0000000000a68e84 in QWidgetBackingStore::sync ()
+
+
+Saving the meshes crashes:
+
+#0  0x00007f1f44833015 in raise () from /lib/libc.so.6
+#1  0x00007f1f44834b83 in abort () from /lib/libc.so.6
+#2  0x00007f1f4482bd89 in __assert_fail () from /lib/libc.so.6
+#3  0x0000000001029486 in om_hdf5_group_create (fileId=67108864, 
+    name=0x7f1f38eef418 "segmentations/")
+    at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:90
+#4  0x0000000001029624 in om_hdf5_group_create_tree (fileId=67108864, 
+    name=0x7f1f383ab9d8 "segmentations/segmentation1/1/0_0_0/mesh/134")
+    at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:122
+#5  0x00000000010297f6 in om_hdf5_dataset_delete_create_tree (fileId=67108864, 
+    name=0x7f1f385ba348 "segmentations/segmentation1/1/0_0_0/mesh/134/metamesh.dat") at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:186
+#6  0x0000000001029974 in om_hdf5_dataset_raw_create_tree_overwrite (
+    fileId=67108864, 
+    name=0x7f1f385ba348 "segmentations/segmentation1/1/0_0_0/mesh/134/metamesh.dat", size=1, data=0x498c3f8f)
+    at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:243
+#7  0x000000000086be71 in OmProjectData::WriteRawData (path=@0x498c3f70, 
+    size=1, data=0x498c3f8f)
+    at /Users/mwimer/code11/omni/src/system/omProjectData.cpp:190
+#8  0x000000000101f91c in OmMipMesh::Save (this=0x3ae97d0)
+    at /Users/mwimer/code11/omni/src/mesh/omMipMesh.cpp:160
+#9  0x000000000101d421 in OmMipChunkMesher::BuildMeshesLoop (this=0x2e024b0)
+    at /Users/mwimer/code11/omni/src/mesh/omMipChunkMesher.cpp:227
+#10 0x000000000101d554 in init_meshing_thread (arg=0x2e024b0)
+    at /Users/mwimer/code11/omni/src/mesh/omMipChunkMesher.cpp:252
+#11 0x00007f1f4578b3ea in start_thread () from /lib/libpthread.so.0
+#12 0x00007f1f448e6cbd in clone () from /lib/libc.so.6
+#13 0x0000000000000000 in ?? ()
+
+
+
+While building meshes.
+OmMipChunkMesher::BuildChunkMeshes: [ 0 ( 0 3 0 ) ]
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x697c9b90 (LWP 31256)]
+0x08cafd9e in vtkImageData::SafeDownCast (o=0x8dc1b508) at /home/matt/omni1/external/builds/VTK/Filtering/vtkImageData.h:40
+40        vtkTypeRevisionMacro(vtkImageData,vtkDataSet);
+(gdb) bt
+#0  0x08cafd9e in vtkImageData::SafeDownCast (o=0x8dc1b508) at /home/matt/omni1/external/builds/VTK/Filtering/vtkImageData.h:40
+#1  0x08d8a795 in vtkImageData::DeepCopy (this=0xa161c78, dataObject=0x8dc1b508) at /home/matt/omni1/external/builds/VTK/Filtering/vtkImageData.cxx:1984
+#2  0x08c8caa1 in OmMeshSource::Copy (this=0x697c92fc, source=@0x88800870) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:94
+#3  0x08c8cbde in OmMesher (this=0x697c92fc, meshSource=@0x88800870) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:118
+#4  0x08c8b97a in OmMipChunkMesher::BuildMeshesLoop (this=0x9172a728) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:197
+#5  0x08c8bb03 in init_meshing_thread (arg=0x9172a728) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:252
+#6  0xb7d044fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#7  0xb7b0de5e in clone () from /lib/tls/i686/cmov/libc.so.6
+
+
+When in 3d move slecting disable unslected from the menu.
+
+
+OmGenericManager<T>::Get: 538595792
+omGuiApp: /Users/mwimer/omni1/omni/src/system/omGenericManager.h:116: T& OmGenericManager<T>::Get(OmId) [with T = OmSegmentation]: Assertion `false && "Cannot get object with id"' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7ff2016c3730 (LWP 3015)]
+0x00007ff1fec48015 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007ff1fec48015 in raise () from /lib/libc.so.6
+#1  0x00007ff1fec49b83 in abort () from /lib/libc.so.6
+#2  0x00007ff1fec40d89 in __assert_fail () from /lib/libc.so.6
+#3  0x000000000080c4e9 in OmGenericManager<OmSegmentation>::Get (this=0x2242a78, omId=538595792)
+    at /Users/mwimer/omni1/omni/src/system/omGenericManager.h:116
+#4  0x000000000080648f in OmVolume::GetSegmentation (id=538595792) at /Users/mwimer/omni1/omni/src/volume/omVolume.cpp:333
+#5  0x00000000007af0af in SegmentDataWrapper::getNote (this=0x7fff201a5040) at /Users/mwimer/omni1/omni/src/gui/dataWrappers.cpp:99
+#6  0x00000000007d9019 in MyInspectorWidget::populateSegmentElementsListWidget (this=0x21cb2f0, sdw=
+        {<DataWrapper> = {mID = 538595824, mName = {static null = {<No data fields>}, static shared_null = {ref = {_q_value = 1364}, alloc = 0, size = 0, data = 0x1cd3dda, clean = 0, simpletext = 0, righttoleft = 0, asciiCache = 0, capacity = 0, reserved = 0, array = {0}}, static shared_empty = {ref = {_q_value = 2313}, alloc = 0, size = 0, data = 0x1cd3dfa, clean = 0, simpletext = 0, righttoleft = 0, asciiCache = 0, capacity = 0, reserved = 0, array = {0}}, d = 0x21cb2f0, static codecForCStrings = 0x0}, mType = 538595568, mEnabled = 255}, <No data fields>}) at /Users/mwimer/omni1/omni/src/gui/myInspectorWidget.cpp:259
+#7  0x00000000007d955c in MyInspectorWidget::SegmentObjectModificationEvent (this=0x21cb2f0, event=0x7cfd3f0)
+    at /Users/mwimer/omni1/omni/src/gui/myInspectorWidget.cpp:892
+#8  0x000000000086c614 in OmSegmentEvent::Dispatch (this=0x7cfd3f0, pListener=0x21cb318)
+    at /Users/mwimer/omni1/omni/src/system/events/omSegmentEvent.cpp:56
+#9  0x000000000081004b in OmEventManager::event (this=0x2172650, event=0x7cfd3f0)
+    at /Users/mwimer/omni1/omni/src/system/omEventManager.cpp:61
+#10 0x00000000008f6f6d in QApplicationPrivate::notify_helper ()
+#11 0x00000000008ff0ca in QApplication::notify ()
+#12 0x0000000000f673dc in QCoreApplication::notifyInternal ()
+#13 0x0000000000f67fa7 in QCoreApplicationPrivate::sendPostedEvents ()
+#14 0x000000000098257d in QEventDispatcherX11::processEvents ()
+#15 0x0000000000f65cc2 in QEventLoop::processEvents ()
+#16 0x0000000000f66094 in QEventLoop::exec ()
+#17 0x0000000000f6826b in QCoreApplication::exec ()
+#18 0x000000000079fb1c in main (argc=1, argv=0x7fff201a5f98) at /Users/mwimer/omni1/omni/src/gui/main.cpp:51
+(gdb) 
+
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 139842165839664.  Back trace follows.
+  #000: H5G.c line 202 in H5Gcreate(): unable to create group
+    major(10): Symbol table layer
+    minor(29): Unable to initialize object
+  #001: H5G.c line 1329 in H5G_create(): can't insert group
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+  #002: H5G.c line 1733 in H5G_insert(): already exists
+    major(10): Symbol table layer
+    minor(49): Object already exists
+  #003: H5Gtraverse.c line 414 in H5G_namei(): unable to insert name
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+  #004: H5Gstab.c line 214 in H5G_stab_insert(): unable to insert entry
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+  #005: H5B.c line 597 in H5B_insert(): unable to insert key
+    major(09): B-tree layer
+    minor(29): Unable to initialize object
+  #006: H5B.c line 1003 in H5B_insert_helper(): can't insert leaf node
+    major(09): B-tree layer
+    minor(53): Unable to insert object
+  #007: H5Gnode.c line 1068 in H5G_node_insert(): symbol is already present in symbol table
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+omGuiApp: /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:90: void om_hdf5_group_create(hid_t, const char*): Assertion `false && "Could not create HDF5 group."' failed.
+
+#0  0x00007f2f87f6e015 in raise () from /lib/libc.so.6
+#1  0x00007f2f87f6fb83 in abort () from /lib/libc.so.6
+#2  0x00007f2f87f66d89 in __assert_fail () from /lib/libc.so.6
+#3  0x000000000103fb95 in om_hdf5_group_create (fileId=67108864, name=0x2ffca58 "segmentations/")
+    at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:90
+#4  0x000000000103fd33 in om_hdf5_group_create_tree (fileId=67108864, name=0x2fe78a8 "segmentations/segmentation1/0")
+    at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:122
+#5  0x000000000103ff05 in om_hdf5_dataset_delete_create_tree (fileId=67108864, 
+    name=0x2f94bd8 "segmentations/segmentation1/0/volume.dat") at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:186
+#6  0x000000000103ffbd in om_hdf5_dataset_image_create_tree_overwrite (fileId=67108864, 
+    name=0x2f94bd8 "segmentations/segmentation1/0/volume.dat", dataDims=
+      {{{x = -1274017424, y = 32767, z = 49892312}, {r = -1274017424, g = 32767, b = 49892312}, xyz = {-1274017424, 32767, 49892312}, rgb = {-1274017424, 32767, 49892312}, array = {-1274017424, 32767, 49892312}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, chunkDims=
+      {{{x = -1274017440, y = 32767, z = -1274017424}, {r = -1274017440, g = 32767, b = -1274017424}, xyz = {-1274017440, 32767, -1274017424}, rgb = {-1274017440, 32767, -1274017424}, array = {-1274017440, 32767, -1274017424}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, bytesPerSample=4, unlimited=false) at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:426
+#7  0x00000000008651ac in OmProjectData::CreateImageData (path=@0x7fffb4100a20, dataDims=
+      {{{x = -1274017312, y = 32767, z = -1274017248}, {r = -1274017312, g = 32767, b = -1274017248}, xyz = {-1274017312, 32767, -1274017248}, rgb = {-1274017312, 32767, -1274017248}, array = {-1274017312, 32767, -1274017248}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, chunkDims=
+      {{{x = -1274017296, y = 32767, z = -1274017312}, {r = -1274017296, g = 32767, b = -1274017312}, xyz = {-1274017296, 32767, -1274017312}, rgb = {-1274017296, 32767, -1274017312}, array = {-1274017296, 32767, -1274017312}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, bytesPerSample=4) at /Users/mwimer/omni1/omni/src/system/omProjectData.cpp:159
+#8  0x00000000007f946a in OmMipVolume::AllocInternalData (this=0x3128fb0) at /Users/mwimer/omni1/omni/src/volume/omMipVolume.cpp:663
+#9  0x00000000007f9609 in OmMipVolume::Build (this=0x3128fb0) at /Users/mwimer/omni1/omni/src/volume/omMipVolume.cpp:708
+#10 0x0000000000802c5a in OmSegmentation::BuildVolumeData (this=0x3128fb0) at /Users/mwimer/omni1/omni/src/volume/omSegmentation.cpp:228
+#11 0x0000000000803ab7 in OmSegmentation (this=0x3128fb0, id=1) at /Users/mwimer/omni1/omni/src/volume/omSegmentation.cpp:62
+#12 0x000000000080c7c0 in OmGenericManager<OmSegmentation>::Add (this=0x2f704b8, omId=1)
+    at /Users/mwimer/omni1/omni/src/system/omGenericManager.h:149
+#13 0x0000000000806466 in OmVolume::AddSegmentation () at /Users/mwimer/omni1/omni/src/volume/omVolume.cpp:339
+#14 0x00000000007a9190 in MainWindow::addSegmentationToVolume (this=0x7fffb41033f0)
+    at /Users/mwimer/omni1/omni/src/gui/mainwindow.cpp:203
+
+
+Mesher crash:
+
+[Thread 0x9cbfdb90 (LWP 27649) exited]
+ removing oldest...
+ref count2
+OmThreadedCache<T,U>::RemoveOldest(): access list size: 6
+OmThreadedCache<T,U>::RemoveOldest(): map size: 6
+mpImageData: 0xac17d828
+OmMipChunkMesher::BuildChunkMeshes: [ 0 ( 7 1 0 ) ]
+[Thread 0x9c0ffb90 (LWP 27650) exited]
+Should have chunk loaded now: 0xa7d601d0
+[New Thread 0xa41ffb90 (LWP 27651)]
+[New Thread 0x9b8feb90 (LWP 27652)]
+target_reduction: 0.15
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x9b8feb90 (LWP 27652)]
+0x08d6ce0f in vtkDataObject::DeepCopy (this=0xac17d828, src=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataObject.cxx:922
+922       vtkFieldData *srcFieldData = src->GetFieldData();
+(gdb) bt
+#0  0x08d6ce0f in vtkDataObject::DeepCopy (this=0xac17d828, src=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataObject.cxx:922
+#1  0x08d76117 in vtkDataSet::DeepCopy (this=0xac17d828, dataObject=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkDataSet.cxx:356
+#2  0x08d91926 in vtkImageData::DeepCopy (this=0xac17d828, dataObject=0x0) at /home/matt/omni1/external/builds/VTK/Filtering/vtkImageData.cxx:1992
+#3  0x08c90cd9 in OmMeshSource::Copy (this=0x9b8fe2fc, source=@0xa7d601d0) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:94
+#4  0x08c90e16 in OmMesher (this=0x9b8fe2fc, meshSource=@0xa7d601d0) at /home/matt/omni1/omni/src/mesh/omMesher.cpp:118
+#5  0x08c8fb6a in OmMipChunkMesher::BuildMeshesLoop (this=0x9643980) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:198
+#6  0x08c8fcf3 in init_meshing_thread (arg=0x9643980) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:253
+#7  0xb7cfc4fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#8  0xb7b05e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+(gdb)
+
+
+Clicking on segments in the list or the 2d viewer causes the dialog to appear because of the excpetion.
+OmAccessException Warning: Cannot get object with id: 46
+omni: /home/matt/omni1/omni/src/gui/mainwindow.cpp:944: void MainWindow::spawnErrorDialog(OmException&): Assertion `0' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0xb6e66ae0 (LWP 10743)]
+0xb7f44410 in __kernel_vsyscall ()
+(gdb) bt
+#0  0xb7f44410 in __kernel_vsyscall ()
+#1  0xb79cd085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79cea01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb79c610e in __assert_fail () from /lib/tls/i686/cmov/libc.so.6
+#4  0x083a64ca in MainWindow::spawnErrorDialog (this=0xbf82d0a8, e=@0x98bb8b0) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:944
+#5  0x083a67c2 in MainWindow::changeSelection (this=0xbf82d0a8, segmentIndex=-1) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1261
+#6  0x083dd9e9 in MainWindow::qt_metacall (this=0xbf82d0a8, _c=QMetaObject::InvokeMetaMethod, _id=15, _a=0xbf82c73c)
+    at /home/matt/omni1/omni/inst/gui/moc_mainwindow.cxx:138
+#7  0x08ba0e24 in QMetaObject::activate ()
+#8  0x08ba1502 in QMetaObject::activate ()
+#9  0x087c6ca3 in QComboBox::currentIndexChanged ()
+#10 0x087c9134 in QComboBoxPrivate::_q_emitCurrentIndexChanged ()
+#11 0x087cea6d in QComboBoxPrivate::_q_rowsRemoved ()
+#12 0x087d027f in QComboBox::qt_metacall ()
+#13 0x08ba0e24 in QMetaObject::activate ()
+#14 0x08ba1502 in QMetaObject::activate ()
+#15 0x08bd37ef in QAbstractItemModel::rowsRemoved ()
+#16 0x08b8aae7 in QAbstractItemModel::endRemoveRows ()
+#17 0x0894da33 in QStandardItemModelPrivate::rowsRemoved ()
+#18 0x0894e067 in QStandardItem::removeRows ()
+#19 0x0894ecf5 in QStandardItemModel::removeRows ()
+#20 0x087c6fc4 in QComboBox::clear ()
+#21 0x083a67e4 in MainWindow::updateComboBoxes (this=0xbf82d0a8, segmentationID=1, segmentJustSelectedID=66) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1179
+#22 0x083a6b2f in MainWindow::SegmentObjectModificationEvent (this=0xbf82d0a8, event=0x98bb590) at /home/matt/omni1/omni/src/gui/mainwindow.cpp:1212
+#23 0x0845e3fb in OmSegmentEvent::Dispatch (this=0x98bb590, pListener=0xbf82d0bc) at /home/matt/omni1/omni/src/system/events/omSegmentEvent.cpp:67
+#24 0x08409a6f in OmEventManager::event (this=0x95c7638, event=0x98bb590) at /home/matt/omni1/omni/src/system/omEventManager.cpp:60
+#25 0x084d69cf in QApplicationPrivate::notify_helper ()
+#26 0x084db40f in QApplication::notify ()
+#27 0x08b8cc7b in QCoreApplication::notifyInternal ()
+#28 0x08b8da50 in QCoreApplicationPrivate::sendPostedEvents ()
+#29 0x08bb1a5a in QEventDispatcherUNIX::processEvents ()
+#30 0x0855cfcd in QEventDispatcherX11::processEvents ()
+#31 0x08b8bcdd in QEventLoop::processEvents ()
+#32 0x08b8c12d in QEventLoop::exec ()
+#33 0x08b8dd88 in QCoreApplication::exec ()
+#34 0x084d5e27 in QApplication::exec ()
+#35 0x083a457c in main (argc=1, argv=0xbf82d274) at /home/matt/omni1/omni/src/gui/main.cpp:49
+
+
+Display of object causes crash if mesh doesn't exist on disk:
+
+[Thread 0xb4eaeb90 (LWP 6204) exited]
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 3064986512.  Back trace follows.
+  #000: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5D.c line 1169 in H5Dopen(): not found
+    major(15): Dataset interface
+    minor(48): Object not found
+  #001: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5G.c line 1783 in H5G_find(): object not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #002: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gtraverse.c line 397 in H5G_namei(): component not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+  #003: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gstab.c line 161 in H5G_stab_find(): not found
+    major(10): Symbol table layer
+    minor(48): Object not found
+terminate called after throwing an instance of 'OmIoException'
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0xb6affb90 (LWP 6199)]
+0xb7f18410 in __kernel_vsyscall ()
+(gdb) BT
+#0  0xb7f18410 in __kernel_vsyscall ()
+#1  0xb79e5085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79e6a01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb7bd0480 in __gnu_cxx::__verbose_terminate_handler () from /usr/lib/libstdc++.so.6
+#4  0xb7bcdd05 in ?? () from /usr/lib/libstdc++.so.6
+#5  0xb7bcdd42 in std::terminate () from /usr/lib/libstdc++.so.6
+#6  0xb7bcde6a in __cxa_throw () from /usr/lib/libstdc++.so.6
+#7  0x08c5dd3e in om_hdf5_dataset_raw_read (fileId=67108865, name=0xadf2d25c "segmentations/segmentation1/0/0_4_0/mesh/9937/metamesh.dat", size=0x0)
+    at /home/matt/omni1/omni/src/utility/omHdf5.cpp:242
+#8  0x0844a85e in OmProjectData::ReadRawData (path=@0xb6aff2b4, size=0x0) at /home/matt/omni1/omni/src/system/omProjectData.cpp:157
+#9  0x08c4bed0 in OmMipMesh::Load (this=0xaf68dda0) at /home/matt/omni1/omni/src/mesh/omMipMesh.cpp:105
+#10 0x08c4c574 in OmMipMeshManager::HandleCacheMiss (this=0x96f9950, coord=@0xb6aff354) at /home/matt/omni1/omni/src/mesh/omMipMeshManager.cpp:136
+#11 0x08c51f82 in OmThreadedCache<OmMipMeshCoord, OmMipMesh>::FetchLoop (this=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:630
+#12 0x08c521c5 in start_cache_fetch_thread<OmMipMeshCoord, OmMipMesh> (arg=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:745
+#13 0xb7c874fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#14 0xb7a90e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+
+
+Closing the project:
+
+ERROR: In /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx, line 141
+vtkUnsignedIntArray (0x486e02a0): Unable to allocate 262144 elements of size 4 bytes.
+
+
+#0  0xb7f2f410 in __kernel_vsyscall ()
+#1  0xb79fc085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79fda01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0x08f56bc2 in vtkDataArrayTemplate<unsigned int>::Allocate (this=0x486e02a0, sz=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:144
+#4  0x08f5515f in vtkDataArrayTemplate<unsigned int>::SetNumberOfValues (this=0x486e02a0, number=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:848
+#5  0x08f551a9 in vtkDataArrayTemplate<unsigned int>::SetNumberOfTuples (this=0x486e02a0, number=262144)
+    at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:404
+#6  0x08d76962 in vtkImageData::AllocateScalars (this=0x43dc1af0) at /home/matt/omni.stable/external/srcs/vtk-5.4.2/Filtering/vtkImageData.cxx:1581
+#7  0x08c6448c in allocImageData (dims=@0xbff8ec50, bytesPerSample=4) at /home/matt/omni.stable/omni/src/utility/omImageDataIo.cpp:642
+#8  0x08c5a33b in om_hdf5_dataset_image_read (fileId=67108869, name=0xb0a47514 "segmentations/segmentation1/0/volume.dat", extent=@0xbff8ed48, bytesPerSample=4)
+    at /home/matt/omni.stable/omni/src/utility/omHdf5.cpp:452
+#9  0x08c5c984 in om_hdf5_dataset_image_read_trim (fileId=67108869, name=0xb0a47514 "segmentations/segmentation1/0/volume.dat", dataExtent=@0xbff8edf8,
+    bytesPerSample=4) at /home/matt/omni.stable/omni/src/utility/omHdf5.cpp:496
+#10 0x084498d3 in OmProjectData::ReadImageData (path=@0xbff8ee4c, extent=@0xaa4db2e0, bytesPerSample=4)
+    at /home/matt/omni.stable/omni/src/system/omProjectData.cpp:144
+#11 0x083f0213 in OmMipChunk::OpenForWrite (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:147
+#12 0x083f0290 in OmMipChunk::WriteVolumeData (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:265
+#13 0x083f04fa in OmMipChunk::Flush (this=0xaa4db290) at /home/matt/omni.stable/omni/src/volume/omMipChunk.cpp:166
+#14 0x083df704 in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Call (this=0x96cff3c, fxn=&virtual table offset 16, lock=false)
+    at /home/matt/omni.stable/omni/src/system/omThreadedCache.h:540
+#15 0x083d894b in OmMipVolume::Flush (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omMipVolume.cpp:77
+#16 0x083db54f in ~OmMipVolume (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omMipVolume.cpp:55
+#17 0x083e7147 in ~OmSegmentation (this=0x96cff30) at /home/matt/omni.stable/omni/src/volume/omSegmentation.h:34
+#18 0x083ec967 in ~OmGenericManager (this=0xb5a839a4) at /home/matt/omni.stable/omni/src/system/omGenericManager.h:97
+#19 0x083e7ea1 in ~OmVolume (this=0xb5a83880) at /home/matt/omni.stable/omni/src/volume/omVolume.cpp:29
+#20 0x083e8194 in OmVolume::Delete () at /home/matt/omni.stable/omni/src/volume/omVolume.cpp:58
+#21 0x084039a1 in OmProject::Close () at /home/matt/omni.stable/omni/src/system/omProject.cpp:216
+#22 0x083a9da4 in MainWindow::closeProjectIfOpen (this=0xbff9105c) at /home/matt/omni.stable/omni/src/gui/mainwindow.cpp:213
+#23 0x083aa338 in MainWindow::newProject (this=0xbff9105c) at /home/matt/omni.stable/omni/src/gui/mainwindow.cpp:86
+#24 0x083d0de8 in MainWindow::qt_metacall (this=0xbff9105c, _c=QMetaObject::InvokeMetaMethod, _id=0, _a=0xbff8f28c)
+    at /home/matt/omni.stable/omni/inst/gui/moc_mainwindow.cxx:120
+#25 0x08b95374 in QMetaObject::activate ()
+#26 0x08b957f0 in QMetaObject::activate ()
+#27 0x084c4831 in QAction::triggered ()
+#28 0x084c52af in QAction::activate ()
+#29 0x08812804 in QMenuPrivate::activateCausedStack ()
+#30 0x08819333 in QMenuPrivate::activateAction ()
+#31 0x0881b6bf in QMenu::mouseReleaseEvent ()
+#32 0x08517ace in QWidget::event ()
+#33 0x088171af in QMenu::event ()
+#34 0x084caf1f in QApplicationPrivate::notify_helper ()
+#35 0x084d02a1 in QApplication::notify ()
+#36 0x08b811cb in QCoreApplication::notifyInternal ()
+#37 0x084cf5ef in QApplicationPrivate::sendMouseEvent ()
+#38 0x0852d011 in QETWidget::translateMouseEvent ()
+#39 0x0852ba3d in QApplication::x11ProcessEvent ()
+#40 0x0855148b in QEventDispatcherX11::processEvents ()
+#41 0x08b8022d in QEventLoop::processEvents ()
+#42 0x08b8067d in QEventLoop::exec ()
+#43 0x08b822d8 in QCoreApplication::exec ()
+#44 0x084ca377 in QApplication::exec ()
+#45 0x083a2d9d in main (argc=2, argv=0xbff91214) at /home/matt/omni.stable/omni/src/gui/main.cpp:52
+

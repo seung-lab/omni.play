@@ -1,0 +1,1999 @@
+Index: matlab/segmentForWimer.m
+===================================================================
+--- matlab/segmentForWimer.m	(.../trunk)	(revision 433)
++++ matlab/segmentForWimer.m	(.../branches/stable-00/trunk)	(revision 433)
+@@ -1,9 +1,8 @@
+ function segmentForWimer( dust_seg_threshold )
+ 
+-    paths.root    = '/home/omni/data/auto_segmentation/full';
+-    
+-        paths.project = fullfile( paths.root,    'full' );
+-%    [ paths, conn, im ] = loadMegavoxel( paths );
++    paths.data    = '/Users/purcaro/im_histeq_for_Wimer.mat';
++    paths.root    = '/Users/purcaro/auto_segmentation';
++    [ paths, conn, im ] = loadMegavoxel( paths );
+ %   [ paths, conn, im ] = load10Megavoxel( paths );
+     
+     paths.tiffs   = fullfile( paths.project, 'tiffs' );
+@@ -12,22 +11,22 @@
+     diary( paths.diary );
+     diary on;
+ 
+-%     print_img_info( conn );
++    print_img_info( conn );
+     
+ %     thresholds = [.3:.05:.95 .97 .98 .99];
+     thresholds = [ .95 ];
+-%     seg_imgs = run_auto_segmentation( conn, thresholds );
++    seg_imgs = run_auto_segmentation( conn, thresholds );
+     
+-%     if ~exist('dust_seg_threshold', 'var') || isempty( dust_seg_threshold )
+-         dust_seg_threshold = 400;
+-%     end
+-%     thres_seg_img = threshold_segment( seg_imgs{ 95 }, dust_seg_threshold );
++    if ~exist('dust_seg_threshold', 'var') || isempty( dust_seg_threshold )
++        dust_seg_threshold = 200;
++    end
++    thres_seg_img = threshold_segment( seg_imgs{ 95 }, dust_seg_threshold );
+ 
+     fprintf('writing images...');
+     writeRawTiffs( paths, im );
+     writeAvgConnGraphTiffs( paths, conn );
+-%     writeSegTiffs( paths, seg_imgs );
+-    writeThresSegTiffs( paths, seg_img, dust_seg_threshold );
++    writeSegTiffs( paths, seg_imgs{ 95 } );
++    writeThresSegTiffs( paths, thres_seg_img, dust_seg_threshold );
+     
+     fprintf('done\n');
+     diary off;
+@@ -62,7 +61,7 @@
+ 
+         tic;
+         fprintf('Running marker-based watershed %g ...', threshold);
+-        si
++        seg_imgs{ threshold*100 } = markerWatershed( conn, mknhood2(1), seg, seg==0, 0.5 );
+         fprintf(' done. ');
+         toc
+     end
+Index: omni/src/view2d/omThreadedCachingTile.cpp
+===================================================================
+--- omni/src/view2d/omThreadedCachingTile.cpp	(.../trunk)	(revision 433)
++++ omni/src/view2d/omThreadedCachingTile.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -29,10 +29,6 @@
+ 	mShareContext = shareContext;
+ 	mVolType = voltype;
+ 	mImageId = image_id;
+-
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmThreadedCachingTile");
+-
+ }
+ 
+ OmThreadedCachingTile::~OmThreadedCachingTile()
+Index: omni/src/view2d/omTextureID.cpp
+===================================================================
+--- omni/src/view2d/omTextureID.cpp	(.../trunk)	(revision 433)
++++ omni/src/view2d/omTextureID.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -20,7 +20,7 @@
+ 
+ OmTextureID::~OmTextureID()
+ {
+-	//debug("genone","OmTextureID::~OmTextureID(%i)\n", textureID);
++	debug("genone","OmTextureID::~OmTextureID(%i)\n", textureID);
+ 
+ 	//glDeleteTextures( 1, &textureID);
+ 	//Attempt a safe delete of the gl texture id.
+Index: omni/src/view2d/omCachingTile.h
+===================================================================
+--- omni/src/view2d/omCachingTile.h	(.../trunk)	(revision 433)
++++ omni/src/view2d/omCachingTile.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -27,9 +27,6 @@
+ 	OmCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol)
+ 	: TextureIDCache(RAM_CACHE_GROUP), OmTile(viewtype, voltype, image_id, vol) {
+ 		isSecondMipVolume = false;
+-
+-		/** Set The Name of the Cache */
+-		SetCacheName("OmCachingTile");
+ 	}
+ 	
+ 	// texture ID
+Index: omni/src/view2d/omView2d.cpp
+===================================================================
+--- omni/src/view2d/omView2d.cpp	(.../trunk)	(revision 433)
++++ omni/src/view2d/omView2d.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -1,14 +1,13 @@
+-
+ #include "omView2d.h"
+ 
+ #include "omCachingTile.h"
++//#include "omThreadedCachingTile.h"
+ #include "omTextureID.h"
+ 
+ #include "system/omStateManager.h"
+ #include "system/omProject.h"
+ #include "system/omSystemTypes.h"
+ #include "system/omEventManager.h"
+-#include "system/events/omView3dEvent.h"
+ #include "system/omGarbage.h"
+ 
+ #include "segment/omSegment.h"
+@@ -17,6 +16,7 @@
+ 
+ #include "segment/actions/segment/omSegmentSelectionAction.h"
+ #include "segment/actions/segment/omSegmentSelectAction.h"
++//#include "segment/actions/voxel/omVoxelSetAction.h"
+ #include "segment/actions/voxel/omVoxelSetValueAction.h"
+ #include "segment/actions/segment/omSegmentMergeAction.h"
+ 
+@@ -744,8 +744,6 @@
+ 
+ 	if (segmentation.IsSegmentValid(theId)) {
+ 
+-		OmSegmentEditor::SetEditSelection(segmentationID, theId);
+-
+ 		const bool curSegmentNotYetMarkedAsSelected = !(segmentation.IsSegmentSelected(theId));
+ 
+ 		// if not augmenting slection and selecting segment, then 
+@@ -929,7 +927,7 @@
+ void OmView2d::EditModeMouseMove(QMouseEvent * event)
+ {
+ 	// KEEP PAINTING
+-	debug ("genone", "scribbling? %i!\n", mScribbling);
++	//debug ("genone", "scribbling? %i!\n", mScribbling);
+ 
+ 	
+ 	if (PAN_MODE == OmStateManager::GetToolMode()) {
+@@ -1173,8 +1171,6 @@
+ 	}
+ 
+ 	event->accept();
+-
+-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+ }
+ 
+ void OmView2d::MouseWheelZoom(const int numSteps)
+@@ -1566,10 +1562,23 @@
+ 	//add/remove segment, change state, change selection
+ 	//valid methods: GetModifiedSegmentIds()
+ 
+-	debug("genone","OmView2d::SegmentObjectModificationEvent\n");
++	//debug("genone","OmView2d::SegmentObjectModificationEvent");
+ 
+-	Refresh ();
+-	myUpdate();
++	//      OmIds::iterator itr;
++	//      OmIds mod_ids = event->GetModifiedSegmentIds();
++	//      for(itr = mod_ids.begin(); itr != mod_ids.end(); itr++) {
++	//              //debug("genone","modified id: " << *itr);
++	//      }
++
++	if ((mVolumeType == SEGMENTATION) && (event->GetModifiedSegmentationId() == mImageId)) {
++		// mCache->ClearCache();
++		modified_Ids = event->GetModifiedSegmentIds();
++		delete_dirty = true;
++
++		// GetSelectedVoxels
++
++		myUpdate();
++	}
+ }
+ 
+ void OmView2d::SegmentDataModificationEvent(OmSegmentEvent * event)
+@@ -1577,14 +1586,20 @@
+ 	//voxels of a segment have changed
+ 	//valid methods: GetModifiedSegmentIds()
+ 
+-	debug("genone","OmView2d::SegmentDataModificationEvent\n");
++	//debug("genone","OmView2d::SegmentDataModificationEvent");
++
++	if ((mVolumeType == SEGMENTATION) && (event->GetModifiedSegmentationId() == mImageId)) {
++		modified_Ids = event->GetModifiedSegmentIds();
++		delete_dirty = true;
++		myUpdate();
++	}
+ }
+ 
+ void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
+ {
+ 	//change segment edit selection
+ 
+-	debug("genone","OmView2d::SegmentEditSelectionChangeEvent\n");
++	//debug("genone","OmView2d::SegmentEditSelectionChangeEvent");
+ 
+ 	if (mVolumeType == SEGMENTATION) {
+ 		//              modified_Ids = event->GetModifiedSegmentIds();
+@@ -1846,7 +1861,7 @@
+ 		gotten_id->flags = OMTILE_GOOD;
+ 		gotten_id->textureID = texture;
+ 		if (gotten_id->texture) {
+-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
++			debug ("genone", "freeing texture: %x\n", gotten_id->texture);
+ 			free(gotten_id->texture);
+ 		}
+ 		gotten_id->texture = NULL;
+@@ -1874,7 +1889,7 @@
+ 		gotten_id->textureID = texture;
+ 
+ 		if (gotten_id->texture) {
+-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
++			debug ("genone", "freeing texture: %x\n", gotten_id->texture);
+ 			free(gotten_id->texture);
+ 		}
+ 		gotten_id->texture = NULL;
+@@ -2021,10 +2036,10 @@
+ 	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
+ 
+ 	if (gotten_id->texture) {
+-		//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
++		debug ("genone", "freeing texture: %x\n", gotten_id->texture);
+ 		free (gotten_id->texture);
+ 	}
+-	//debug ("genone", "updating texture: %x to be %x\n", gotten_id->texture, texture);
++	debug ("genone", "updating texture: %x to be %x\n", gotten_id->texture, texture);
+ 
+ 	gotten_id->mTileCoordinate = tileCoord;
+ 	gotten_id->textureID = texID;
+@@ -2182,7 +2197,7 @@
+ 	} else if (mViewType == YZ_VIEW) {
+ 		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, true);
+ 	}
+-	//debug ("genone", "allocating texture %x\n", void_data);
++	debug ("genone", "allocating texture %x\n", void_data);
+ 	return void_data;
+ }
+ 
+@@ -2213,12 +2228,12 @@
+ 			//debug("FIXME", << "vData: "  << vData << endl;
+ 			if (mCache->mVolType == CHANNEL) {
+ 				OmIds myIdSet;
+-				//debug("genone", "CALL1 %x\n", vData);
++				debug("genone", "CALL1 %x\n", vData);
+ 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
+ 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
+ 			} else {
+ 				if (1 == BPS) {
+-					//debug("genone", "1 bps !!!!!!!!!!!!!!!!!\n");
++					debug("genone", "1 bps !!!!!!!!!!!!!!!!!\n");
+ 					uint32_t *vDataFake;
+ 					vDataFake =
+ 					    (uint32_t *) malloc((tile_dims.x * tile_dims.y) *
+@@ -2240,15 +2255,15 @@
+ 						  gotten_id->mTileCoordinate, &out);
+ 				//debug("FIXME", << "out: vData: " << out << endl;
+ 				vData = out;
+-				//debug("genone", "CALL2 %x\n", vData);
++				debug("genone", "CALL2 %x\n", vData);
+ 				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
+ 						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDCOLORMAP);
+ 			}
+-			//debug("genone", "ELSE %x\n", vData);
++			debug("genone", "ELSE %x\n", vData);
+ 		}
+-		//debug("genone", "VALID\n");
++		debug("genone", "VALID\n");
+ 	} else {
+-		//debug("genone", "MIP COORD IS INVALID\n");
++		debug("genone", "MIP COORD IS INVALID\n");
+ 	}
+ }
+ 
+@@ -2634,12 +2649,9 @@
+ 		break;
+ 	case CROSSHAIR_MODE:
+ 		mouseSetCrosshair(event);
+-		OmStateManager::SetToolMode(PAN_MODE);
+-		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+ 		break;
+ 	case ZOOM_MODE:
+ 		mouseZoom(event);
+-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+ 		break;
+ 	case ADD_VOXEL_MODE:
+ 		break;
+@@ -2656,7 +2668,7 @@
+ 
+ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
+ {
+-	debug ("genone", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
++	//debug ("genone", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
+ 	bool doselection = false;
+ 	bool dosubtract = false;
+ 	mScribbling = true;
+@@ -2679,13 +2691,10 @@
+ 		break;
+ 	case CROSSHAIR_MODE:
+ 		mouseSetCrosshair(event);
+-		OmStateManager::SetToolMode(PAN_MODE);
+-		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+ 		return;
+ 		break;
+ 	case ZOOM_MODE:
+ 		mouseZoom(event);
+-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+ 		return;
+ 		break;
+ 	case ADD_VOXEL_MODE:
+@@ -2717,8 +2726,6 @@
+ 		} else {
+ 			PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+ 		}
+-	} else {
+-		debug("genone", "No segment_id in edit selection\n");
+ 	}
+ 
+ 	lastDataPoint = getMouseClickpointLocalDataCoord(event);;
+@@ -2742,7 +2749,6 @@
+ 			if (cameraMoving) {
+ 				if (PAN_MODE == OmStateManager::GetToolMode()) {
+ 					mouseMove_NavMode_CamMoving(event);
+-					OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+ 				}
+ 			}
+ 			break;
+Index: omni/src/view3d/omView3d.h
+===================================================================
+--- omni/src/view3d/omView3d.h	(.../trunk)	(revision 433)
++++ omni/src/view3d/omView3d.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -1,6 +1,8 @@
+ #ifndef OM_VIEW3D_H
+ #define OM_VIEW3D_H 
+ 
++
++
+ #include "omCamera.h"
+ #include "omView3dWidget.h"
+ #include "omView3dUi.h"
+@@ -24,6 +26,11 @@
+ #include <QGLWidget>
+ #include <QtGui> 
+ 
++
++
++
++
++
+ class OmView3d : public QGLWidget, 
+ 	public OmPreferenceEventListener,
+ 	public OmSegmentEventListener, 
+@@ -38,6 +45,8 @@
+ 		OmView3d(QWidget *parent = NULL);
+ 		OmCamera& GetCamera();
+ 		
++		
++		
+ 	protected:
+ 		//gl events
+ 		void initializeGL();
+@@ -62,7 +71,6 @@
+ 		void ViewBoxChangeEvent(OmViewEvent *event);
+ 		//void ViewCenterChangeEvent(OmViewEvent *event);
+ 		void View3dRedrawEvent(OmView3dEvent *event);
+-		void View3dRedrawEventFromCache(OmView3dEvent * event);
+ 		void View3dUpdatePreferencesEvent(OmView3dEvent *event);
+ 		
+ 		
+@@ -77,6 +85,8 @@
+ 		//gl actions
+ 		bool PickPoint(Vector2<int> point, vector<int> &names);
+ 		bool UnprojectPoint(Vector2i point2d, Vector3f &point3d, float depth_scale_factor = 1.0f);
++		
++
+ 		//draw methods
+ 		void Draw(OmBitfield option);
+ 		void DrawVolumes(OmBitfield option);
+Index: omni/src/view3d/omView3dUi.cpp
+===================================================================
+--- omni/src/view3d/omView3dUi.cpp	(.../trunk)	(revision 433)
++++ omni/src/view3d/omView3dUi.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -147,7 +147,7 @@
+ 
+ void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
+ {
+-	//SegmentSelectToggleMouse(event, false);
++	SegmentSelectToggleMouse(event, false);
+ }
+ 
+ void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
+Index: omni/src/view3d/omView3d.cpp
+===================================================================
+--- omni/src/view3d/omView3d.cpp	(.../trunk)	(revision 433)
++++ omni/src/view3d/omView3d.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -21,6 +21,8 @@
+ #include "common/omGl.h"
+ #include "system/omDebug.h"
+ 
++#define DEBUG 0
++
+ enum View3dWidgetIds {
+ 	VIEW3D_WIDGET_ID_SELECTION = 1,
+ 	VIEW3D_WIDGET_ID_VIEWBOX,
+@@ -39,14 +41,13 @@
+ //////////      OmView3d Class
+ //////////
+ 
+-unsigned int myBackoff;
+-
+ /*
+  *	Constructs View3d widget that shares with the primary widget.
+  */
+ OmView3d::OmView3d(QWidget * parent)
+  : QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), mView3dUi(this)
+ {
++
+ 	//set keyboard policy
+ 	setFocusPolicy(Qt::ClickFocus);
+ 
+@@ -58,21 +59,10 @@
+ 
+ 	//update enabled state of widgets
+ 	UpdateEnabledWidgets();
+-
+-	myBackoff = 1;
+ }
+ 
+-
+-static void resetBackoff ()
+-{
+-	myBackoff = 1;
+-}
+-
+-static void increaseBackoff ()
+-{
+-	myBackoff++;
+-}
+-
++#pragma mark
++#pragma mark Accessor Methods
+ /////////////////////////////////
+ ///////          Accessor Methods
+ 
+@@ -159,7 +149,6 @@
+ 
+ void OmView3d::mousePressEvent(QMouseEvent * event)
+ {
+-	//	resetBackoff();
+ 	try {
+ 		mView3dUi.MousePressed(event);
+ 	} catch(...) {
+@@ -169,37 +158,31 @@
+ 
+ void OmView3d::mouseReleaseEvent(QMouseEvent * event)
+ {
+-	//	resetBackoff();
+ 	mView3dUi.MouseRelease(event);
+ }
+ 
+ void OmView3d::mouseMoveEvent(QMouseEvent * event)
+ {
+-	//	resetBackoff();
+ 	mView3dUi.MouseMove(event);
+ }
+ 
+ void OmView3d::mouseDoubleClickEvent(QMouseEvent * event)
+ {
+-	//	resetBackoff();
+ 	mView3dUi.MouseDoubleClick(event);
+ }
+ 
+ void OmView3d::mouseWheelEvent(QWheelEvent * event)
+ {
+-	//	resetBackoff();
+ 	mView3dUi.MouseWheel(event);
+ }
+ 
+ void OmView3d::keyPressEvent(QKeyEvent * event)
+ {
+-	//	resetBackoff();
+ 	mView3dUi.KeyPress(event);
+ }
+ 
+ void OmView3d::wheelEvent ( QWheelEvent * event )
+ {
+-	//	resetBackoff();
+ 	mouseWheelEvent(event);
+ }
+ 
+@@ -249,46 +232,34 @@
+ 
+ void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+ void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+ void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+ void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+ void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+ void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
+ {
+-	resetBackoff();
+ 	updateGL();
+ }
+ 
+-void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
+-{
+-	updateGL();
+-	increaseBackoff ();
+-}
+-
+ void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
+ {
+ 	//UpdateEnabledWidgets();
+Index: omni/src/segment/omSegmentContextMenu.cpp
+===================================================================
+--- omni/src/segment/omSegmentContextMenu.cpp	(.../trunk)	(revision 433)
++++ omni/src/segment/omSegmentContextMenu.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -53,10 +53,10 @@
+ 	AddSelectionAction();
+ 
+ 	//-------------
+-	//addSeparator();
++	addSeparator();
+ 
+ 	//DISABLE
+-	//AddDisableActions();
++	AddDisableActions();
+ 
+ 	//SELECT ALL
+ 	//AddAllSelectionAction();
+@@ -115,12 +115,12 @@
+ 
+ 	//if segment is already selected
+ 	if (is_segment_selected) {
+-		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
++		addAction(QString("Unselect Segment"), this, SLOT(Unselect()));
+ 	} else {
+ 		addAction(QString("Select Segment"), this, SLOT(Select()));
+ 	}
+ 
+-	//	addAction(QString("Select All"));
++	addAction(QString("Select All"));
+ }
+ 
+ /*
+Index: omni/src/utility/omImageDataIo.cpp
+===================================================================
+--- omni/src/utility/omImageDataIo.cpp	(.../trunk)	(revision 433)
++++ omni/src/utility/omImageDataIo.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -632,20 +632,12 @@
+ {
+ 	//alloc data
+ 	vtkImageData *data = vtkImageData::New();
+-	debug ("mesher1", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
+ 	data->SetDimensions(dims.x, dims.y, dims.z);
+-	debug ("mesher1", "1rc ==  %i\n", data->GetReferenceCount());
+ 	data->SetScalarType(bytesToVtkScalarType(bytesPerSample));
+-	debug ("mesher1", "2rc ==  %i\n", data->GetReferenceCount());
+ 	data->SetNumberOfScalarComponents(1);
+-	debug ("mesher1", "3rc ==  %i\n", data->GetReferenceCount());
+ 	data->AllocateScalars();
+-	debug ("mesher1", "4rc ==  %i\n", data->GetReferenceCount());
+ 	data->Update();
+-	debug ("mesher1", "5rc ==  %i\n", data->GetReferenceCount());
+ 
+-	data->ReleaseDataFlagOn();
+-
+ 	return data;
+ }
+ 
+Index: omni/src/utility/omHdf5.cpp
+===================================================================
+--- omni/src/utility/omHdf5.cpp	(.../trunk)	(revision 433)
++++ omni/src/utility/omHdf5.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -526,7 +526,6 @@
+ 	//delete read intersect data
+ 	intersect_image_data->Delete();
+ 
+-	debug ("mesher1", "filled_read_data: %p, %i\n", filled_read_data, filled_read_data->GetReferenceCount());
+ 	return filled_read_data;
+ }
+ 
+Index: omni/src/gui/myInspectorWidget.cpp
+===================================================================
+--- omni/src/gui/myInspectorWidget.cpp	(.../trunk)	(revision 433)
++++ omni/src/gui/myInspectorWidget.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -745,15 +745,13 @@
+ 
+ void MyInspectorWidget::setFilAlpha(int alpha)
+ {
+-	const OmId channelID = filObjectInspectorWidget->getChannelID();
+ 	const OmId filterID =  filObjectInspectorWidget->getFilterID();
++	const OmId channelID = filObjectInspectorWidget->getChannelID();
+ 
+-	if( OmVolume::IsChannelValid( channelID ) ){
+-		OmChannel& channel = OmVolume::GetChannel(channelID);
+-		if( channel.IsFilterValid( filterID ) ){
+-			channel.GetFilter(filterID).SetAlpha((double)alpha / 100.00);
+-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+- 		}
++	try {
++		OmVolume::GetChannel(channelID).GetFilter(filterID).SetAlpha((double)alpha / 100.00);
++		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
++	} catch(...) {
+ 	}
+ }
+ 
+@@ -840,7 +838,7 @@
+ {
+ 	const OmId segmentationID = segInspectorWidget->getSegmentationID();
+ 	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
+-	rebuildSegmentList(segmentationID, added_segment.GetId());
++	rebuildSegmentList(segmentationID);
+ }
+ 
+ void MyInspectorWidget::refreshWidgetData()
+@@ -857,31 +855,26 @@
+ 	makeSegmentationActive(segmentationID);
+ }
+ 
+-void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
+-					   const OmId segmentJustAddedID)
+-{
+-	populateDataSrcListWidget();
+-
+-	hashOfSementationsAndSegments.remove(segmentationID);
+-	makeSegmentationActive(segmentationID, segmentJustAddedID );
+-}
+-
+ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+ 							  const OmId segmentJustSelectedID)
+ {
++	//debug("gui", "in %s\n", __FUNCTION__);
+ 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
++
++	dataElementsWidget->clear();
++
+ 	const OmId segmenID = sdw.getID();
+ 
+ 	if (!hashOfSementationsAndSegments.contains(segmenID)) {
+ 		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
+ 	}
++	// TODO: use .value(), not hash []
++	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments[segmenID];
+ 
+-	dataElementsWidget->clear();
+ 	dataElementsWidget->selectionModel()->blockSignals(true);
+ 	dataElementsWidget->selectionModel()->clearSelection();
+ 
+ 	QTreeWidgetItem *rowToJumpTo = NULL;
+-	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
+ 
+ 	foreach(SegmentDataWrapper seg, segs) {
+ 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
+@@ -897,7 +890,6 @@
+ 	}
+ 
+ 	dataElementsWidget->selectionModel()->blockSignals(false);
+-	dataElementsWidget->update();
+ 
+ 	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
+ 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+@@ -905,6 +897,8 @@
+ 
+ 	autoResizeColumnWidths(dataElementsWidget);
+ 
++	dataElementsWidget->update();
++
+ 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
+ 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
+ 	}
+@@ -969,15 +963,5 @@
+ 				   segmentID, 
+ 				   this,
+ 				   "myInspectorWidget"))->Run();
+-}
+ 
+-/*
+-	switch (event->key()) {
+-	case Qt::Key_Up:
+-		debug("gui", "hi key up\n");
+-		break;
+-	case Qt::Key_Down:
+-		debug("gui", "hi key down\n");
+-		break;
+-	}	
+-*/
++}
+Index: omni/src/gui/mainwindow.h
+===================================================================
+--- omni/src/gui/mainwindow.h	(.../trunk)	(revision 433)
++++ omni/src/gui/mainwindow.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -51,7 +51,7 @@
+ 		void closeEvent(QCloseEvent *event); 
+ 		
+ 		void SegmentObjectModificationEvent(OmSegmentEvent *event);
+-		void SystemModeChangeEvent(OmSystemModeEvent * event);		
++		
+ 		void AlertNotifyEvent(OmAlertEvent *event);
+ 		
+ 		void ProgressShow(OmProgressEvent *event);
+@@ -71,19 +71,25 @@
+ 		void openInspector();
+ 		void openUndoView();
+ 		
+-		void open3dView();		
++		void open3dView();
++		
+ 		void openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype);
+ 		void openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
+ 		
+ 		void addChannelToVolume();
+ 		void addSegmentationToVolume();
+ 		
+-		void updateStatusBar(); 	
+-		void updateKeyShortcuts();		
++		void buildAll();
++		
++		void updateStatusBar(); 
++		
++		void updateKeyShortcuts();
++		
+ 		void changeSelection(int segmentIndex);
+ 		
+ 		void spawnErrorDialog(OmException &e);
+ 
++
+ 		void ChangeModeModify(bool checked);
+ 		void toolbarSelect(bool checked);
+ 		void toolbarCrosshair(bool checked);
+@@ -94,7 +100,7 @@
+ 		void toolbarFill(bool checked);
+ 		void toolbarVoxelize(bool checked);
+ 		void updateComboBoxes( const OmId segmentationID = 0, 
+-				       const OmId segmentJustSelectedID = 0 );
++						   const OmId segmentJustSelectedID = 0 );
+ 				
+ 	private:
+ 		void createActions();
+@@ -130,6 +136,7 @@
+ 		
+ 		QAction *addChannelAct;
+ 		QAction *addSegmentationAct;
++		QAction *buildAllAct;
+ 		
+ 		QAction *openOmniInspector;
+ 		QAction *openUndoViewAct;
+Index: omni/src/gui/main.cpp
+===================================================================
+--- omni/src/gui/main.cpp	(.../trunk)	(revision 433)
++++ omni/src/gui/main.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -37,15 +37,12 @@
+ {
+ 	//    return firsttime (argc, argv);
+ 	int fileArgIndex = parseAnythingYouCan(argc, argv);
+-	if (fileArgIndex<0) return 0;
+ 	QApplication app(argc, argv);
+ 	Q_INIT_RESOURCE(resources);
+ 	MainWindow mainWin;
+ 	mainWin.show();
+ 
+-
+-
+-	if (fileArgIndex>0) {
++	if (fileArgIndex) {
+ 		mainWin.openProject(argv[fileArgIndex]);
+ 	}
+ 
+Index: omni/src/gui/mainwindow.cpp
+===================================================================
+--- omni/src/gui/mainwindow.cpp	(.../trunk)	(revision 433)
++++ omni/src/gui/mainwindow.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -174,8 +174,75 @@
+ 	}
+ }
+ 
++void MainWindow::buildAll()
++{
++	try {
++		if (!isProjectOpen) {
++			return;
++		}
++
++		const set < OmId > channelIDs = OmVolume::GetValidChannelIds();
++		const set < OmId > segmentationIDs = OmVolume::GetValidSegmentationIds();
++
++		QFuture < void >finalChanFuture;
++		set < OmId >::iterator chan_it;
++		for (chan_it = channelIDs.begin(); chan_it != channelIDs.end(); chan_it++) {
++			OmChannel & current_channel = OmVolume::GetChannel(*chan_it);
++			//debug("genone","building channel");
++			//                      prog_bar->setValue(ctr);
++			//                      progress.setValue(ctr);
++
++			//                      if (progress.wasCanceled())
++			//                              return;
++
++			extern void channel_build(OmChannel * current_channel);
++			QFuture < void >chanFuture = QtConcurrent::run(channel_build, &current_channel);
++			finalChanFuture = chanFuture;
++			// current_channel.BuildVolumeData();
++
++			//                      future.waitForFinished();
++		}
++
++		finalChanFuture.waitForFinished();
++
++		set < OmId >::iterator seg_it;
++
++		QFuture < void >finalFuture;
++		for (seg_it = segmentationIDs.begin(); seg_it != segmentationIDs.end(); seg_it++) {
++
++			OmSegmentation & current_seg = OmVolume::GetSegmentation(*seg_it);
++			//debug("genone","building segmentation");
++
++			//                      prog_bar->setValue(ctr);
++			//                      progress.setValue(ctr);
++			//
++			//                      if (progress.wasCanceled())
++			//                              return;
++			extern void seg_build(OmSegmentation * current_seg);
++			extern void mesh_build(OmSegmentation * current_seg, QFuture < void >&last_future);
++
++			QFuture < void >segFuture = QtConcurrent::run(seg_build, &current_seg);
++			QFuture < void >meshFuture = QtConcurrent::run(mesh_build, &current_seg, segFuture);
++			finalFuture = meshFuture;
++		}
++
++		//              statusBar()->removeWidget(prog_bar);
++		//              delete prog_bar;
++
++		finalFuture.waitForFinished();
++
++		if (omniInspector) {
++			omniInspector->refreshWidgetData();
++		}
++	} catch(OmException & e) {
++		spawnErrorDialog(e);
++	}
++}
++
+ void channel_build(OmChannel * current_channel)
+ {
++	//      if(last_future.isRunning())
++	//              last_future.waitForFinished();
+ 	current_channel->BuildVolumeData();
+ }
+ 
+@@ -186,6 +253,8 @@
+ 
+ void mesh_build(OmSegmentation * current_seg, QFuture < void >&last_future)
+ {
++	if (last_future.isRunning())
++		last_future.waitForFinished();
+ 	current_seg->BuildMeshData();
+ }
+ 
+@@ -358,6 +427,8 @@
+ 		windowMenu->addAction(dock->toggleViewAction());
+ 
+ 		// TODO: fixme! (purcaro)
++		connect(omniInspector, SIGNAL(treeDataChanged()), this, SLOT(updateComboBoxes()));
++
+ 		connect(omniInspector, SIGNAL(addChannel()), this, SLOT(addChannelToVolume()));
+ 		connect(omniInspector, SIGNAL(addSegmentation()), this, SLOT(addSegmentationToVolume()));
+ 
+@@ -732,6 +803,10 @@
+ 	addSegmentationAct->setStatusTip(tr("Adds a volume to the current project"));
+ 	connect(addSegmentationAct, SIGNAL(triggered()), this, SLOT(addSegmentationToVolume()));
+ 
++	buildAllAct = new QAction(tr("&Build All"), this);
++	buildAllAct->setStatusTip(tr("Builds all channels and segmentations"));
++	connect(buildAllAct, SIGNAL(triggered()), this, SLOT(buildAll()));
++
+ 	// Tools
+ 	openOmniInspector = new QAction(tr("&Inspector"), this);
+ 	openOmniInspector->setShortcut(tr("Ctrl+I"));
+@@ -769,6 +844,7 @@
+ 	projectMenu = menuBar()->addMenu(tr("&Project"));
+ 	projectMenu->addAction(addChannelAct);
+ 	projectMenu->addAction(addSegmentationAct);
++	projectMenu->addAction(buildAllAct);
+ 
+ 	toolMenu = menuBar()->addMenu(tr("&Tools"));
+ 	toolMenu->addAction(openOmniInspector);
+@@ -974,7 +1050,7 @@
+ // view tools
+ void MainWindow::toolbarSelect(const bool checked)
+ {
+-	toolbarToolChange(checked, toolbarSelectAct, SELECT_MODE); 
++	toolbarToolChange(checked, toolbarSelectAct, SELECT_MODE);
+ }
+ 
+ void MainWindow::toolbarCrosshair(const bool checked)
+@@ -1160,35 +1236,3 @@
+ 		spawnErrorDialog(e);
+ 	}
+ }
+-
+-void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
+-{
+-	debug("gui", "hi from %s\n", __FUNCTION__);
+-
+-	switch (OmStateManager::GetToolMode()) {
+-	case SELECT_MODE:
+-		toolbarToolChange(true, toolbarSelectAct, SELECT_MODE); 
+-		break;
+-	case PAN_MODE:
+-		toolbarToolChange(true, toolbarPanAct, PAN_MODE);
+-		break;
+-	case CROSSHAIR_MODE:
+-		toolbarToolChange(true, toolbarCrosshairAct, CROSSHAIR_MODE);
+-		break;
+-	case ZOOM_MODE:
+-		toolbarToolChange(true, toolbarZoomAct, ZOOM_MODE);
+-		break;
+-	case ADD_VOXEL_MODE:
+-		toolbarToolChange(true, toolbarBrushAct, ADD_VOXEL_MODE);
+-		break;
+-	case SUBTRACT_VOXEL_MODE:
+-		toolbarToolChange(true, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
+-		break;
+-	case SELECT_VOXEL_MODE:
+-		toolbarToolChange(true, toolbarFillAct, SELECT_VOXEL_MODE);
+-		break;
+-	case VOXELIZE_MODE:
+-		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
+-		break;
+-	}
+-}
+Index: omni/src/gui/myInspectorWidget.h
+===================================================================
+--- omni/src/gui/myInspectorWidget.h	(.../trunk)	(revision 433)
++++ omni/src/gui/myInspectorWidget.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -56,7 +56,7 @@
+ 
+ 	void refreshWidgetData();
+ 
+- signals: 
++	 signals: void treeDataChanged();
+ 	void addChannel();
+ 	void addSegmentation();
+ 
+@@ -139,7 +139,6 @@
+ 	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
+ 	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
+ 	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
+-	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
+ 	DataWrapperContainer currentDataSrc;
+ 
+ 	// keep local hash of segmentation --> segments to maintain 
+Index: omni/src/gui/mainpage.h
+===================================================================
+--- omni/src/gui/mainpage.h	(.../trunk)	(revision 433)
++++ omni/src/gui/mainpage.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -1,6 +1,6 @@
+ /** @mainpage
+- *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer, Michael Purcaro, Clay Didier 
+- * 
++ *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer 
++ *  @note . . . others may have contributed . . . 
+  *
+  *  \n\n
+  *  \image html Screenshot.png "Omni is an application for visualizing, editing, and skeletonizing images of the brain." 
+Index: omni/src/system/omThreadedCache.h
+===================================================================
+--- omni/src/system/omThreadedCache.h	(.../trunk)	(revision 433)
++++ omni/src/system/omThreadedCache.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -70,9 +70,6 @@
+ 	void SetFetchUpdateClearsFetchStack(bool);
+ 	bool GetFetchUpdateClearsFetchStack();
+ 	
+-	/**Name function for debugging */
+-	void SetCacheName(const char* name);
+-	void GetCacheName(char* name);
+ 	
+ protected:
+ 	virtual U* HandleCacheMiss(const T &key) = 0;
+@@ -111,10 +108,6 @@
+ 	//fetch update prefs
+ 	float mFetchUpdateInterval;
+ 	bool mFetchUpdateClearsStack;
+-
+-	/** name/descriptor of Cache for debugging */
+-	char mCacheName[40];
+-	void * threadSelf;
+ };
+ 
+ 
+@@ -135,7 +128,8 @@
+ OmThreadedCache<T,U>::OmThreadedCache(OmCacheGroup group, bool initFetch)
+ : OmCacheBase(group) { 
+ 	
+-
++	debug("thread", " ::OmThreadedCache(initFetch=%i)\n", initFetch);
++	
+ 	//fetch prefs
+ 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
+ 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
+@@ -153,13 +147,9 @@
+ 	pthread_mutex_init(&mFetchThreadMutex, NULL);
+ 	pthread_cond_init(&mFetchThreadCv, NULL);
+ 	
+-	//set name to "blank"
+-	SetCacheName("blank");
+-
+ 	//create thread
+-	
+ 	pthread_create(&mFetchThread, NULL, start_cache_fetch_thread<T,U>, (void *)this);
+-     	
++     	debug("thread","OmThreadedCache<T,U>::OmThreadedCache(constructor)->Thread Created\n");
+ 
+ 	//wait for fetch thread
+ 	while(!mFetchThreadAlive) { }
+@@ -168,13 +158,12 @@
+ 
+ 
+ 
+-/**
++/*
+  *	Destructor ensures fetch thread is dead before destructing cache.
+  */
+ template < typename T,  typename U  >
+ OmThreadedCache<T,U>::~OmThreadedCache() {
+-
+-	debug("destroy","%s Cache %p being destroyed . . .\n",mCacheName,threadSelf);
++	debug("cache","OmThreadedCache<T,U>::~OmThreadedCache()");
+ 	
+ 	//send signal to kill fetch thread
+ 	mKillingFetchThread = true;
+@@ -561,12 +550,6 @@
+ template < typename T,  typename U  >
+ void
+ OmThreadedCache<T,U>::FetchLoop() {
+-
+-	//set some variables
+-	threadSelf = (void*)pthread_self();
+-	bool checked = false;
+-
+-
+ 	//alive and well
+ 	mFetchThreadAlive = true;
+ 	
+@@ -578,16 +561,6 @@
+ 	
+ 	//forever loop
+ 	while(true) {
+-
+-		//check if name has been set  . . . if so print it
+-		while(!checked){
+-			pthread_mutex_lock(&mCacheMutex);
+-			if (strcmp(mCacheName,"blank")){
+-				debug("thread","%s cache thread # %p has started fetch loop\n",mCacheName,threadSelf);
+-				checked=true;
+-			}
+-			pthread_mutex_unlock(&mCacheMutex);
+-		}
+ 		
+ 		//if destructing, kill thread
+ 		if(mKillingFetchThread) break;
+@@ -655,7 +628,7 @@
+ 	//alert main thread that fetch is good as dead
+ 	mFetchThreadAlive = false;	
+ 	//die
+-	debug("thread","%s cache thread # %p is out of fetch loop . . . should die soon.\n",mCacheName,threadSelf);
++	debug ("thread", "THREAD EXITED\n");
+ 	pthread_exit(NULL);
+ }
+ 
+@@ -701,32 +674,13 @@
+ }
+ 
+ 
+-template < typename T,  typename U  > 
+-void
+-OmThreadedCache<T,U>::SetCacheName( const char* name) {
+-        pthread_mutex_lock(&mCacheMutex);
+-	strncpy (mCacheName,name,40);
+-	pthread_mutex_unlock(&mCacheMutex);
+-	return;
+-}
+ 
+-template < typename T,  typename U  > 
+-void
+-OmThreadedCache<T,U>::GetCacheName(char * result) {
+-	pthread_mutex_lock(&mCacheMutex);
+-	strncpy (result, mCacheName, 40);
+-	pthread_mutex_unlock(&mCacheMutex);
+-	return;
+-}
+ 
+ 
+ 
+ 
+ 
+ 
+-
+-
+-
+ #pragma mark 
+ #pragma mark Fetch Loop Initializer
+ /////////////////////////////////
+Index: omni/src/system/omFilter2dManager.h
+===================================================================
+--- omni/src/system/omFilter2dManager.h	(.../trunk)	(revision 433)
++++ omni/src/system/omFilter2dManager.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -24,8 +24,8 @@
+ 	OmFilter2d& GetFilter(OmId id);
+ 	const set<OmId>& GetValidFilterIds();
+ 	bool IsFilterEnabled(OmId id);
+-	bool IsFilterValid(OmId id);
+ 
++
+ 	
+ 	//properties?
+ 	//data map?
+Index: omni/src/system/omDebug.cpp
+===================================================================
+--- omni/src/system/omDebug.cpp	(.../trunk)	(revision 433)
++++ omni/src/system/omDebug.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -9,6 +9,13 @@
+ int debugCategoryNumber;
+ 
+ 
++//***********************************************************************
++// TODO Convert to command line switches ---> get rid of #defs
++//      - Make this a singleton class
++//      - Include a ParseArg function
++//      - Include a Default Settings Section
++//      - Command Line input will override default
++//***********************************************************************
+ 
+ void debug(const char *category, const char *format, ...)
+ {
+@@ -93,24 +100,23 @@
+ 	if (inputString != NULL){
+ 		if(inputString[0] == '-') {
+ 			if (!strncmp(inputString,"--debug=",8)){
+-				if (-1==debugParseArg(&inputString[8],OM_DEBUG_ADD)) return -1; 
++					debugParseArg(&inputString[8],OM_DEBUG_ADD); 
+ 			} else {
+ 				if (!strncmp(inputString,"-d ",3)){
+-					if (-1==debugParseArg(&inputString[3],OM_DEBUG_ADD)) return -1;
++						debugParseArg(&inputString[3],OM_DEBUG_ADD);
+ 			        } else {
+ 					if (!strncmp(inputString,"-d",2)){ 
+-						if (-1==debugParseArg(&inputString[2],OM_DEBUG_ADD)) return -1;
++							debugParseArg(&inputString[2],OM_DEBUG_ADD);
+ 					} else {
+ 						printf("Format error in the environment variable OMNI_DEBUG\n");
+ 						printf("The format should is the same as it is for the command line\n");
+ 						printf("The Omni program will resume as if the OMNI_DEBUG\n");
+ 						printf("environment variable was never set . . . \n");
+-						debugCategoryNumber=0;
+ 						return 0;
+ 					}
+ 				}
+ 			 }
+-		} else if (-1==debugParseArg(inputString,OM_DEBUG_ADD)) return -1;
++		} else debugParseArg(inputString,OM_DEBUG_ADD);
+ 		return 1;
+ 	} else return 0;
+ }
+@@ -127,39 +133,39 @@
+ 					if(strlen(argv[i]) > 2){
+ 						if(!strncmp(argv[i],"-debug",6)){
+ 							usage();
+-							return -2;
++							return -1;
+ 						} else {
+-							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_ADD)) return -1;
++							debugParseArg(&argv[i][2],OM_DEBUG_ADD);
+ 						}
+-						} else if(-1==debugParseArg(argv[i+1],OM_DEBUG_ADD)) return -1;
++					} else debugParseArg(argv[i+1],OM_DEBUG_ADD);
+ 					break;
+ 				case 'n':
+ 					if(strlen(argv[i]) > 2){
+ 						if(!strncmp(argv[i],"-nodebug",8)){
+ 							usage();
+-							return -2;
++							return -1;
+ 						} else {
+-							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_REMOVE)) return -1;
++							debugParseArg(&argv[i][2],OM_DEBUG_REMOVE);
+ 						}
+-					} else if (-1==debugParseArg(argv[i+1],OM_DEBUG_REMOVE)) return -1;
++					} else debugParseArg(argv[i+1],OM_DEBUG_REMOVE);
+ 					break;
+ 				case '-':
+ 					if(!strncmp(argv[i],"--debug=",8)){
+-						if (-1==debugParseArg(&argv[i][8],OM_DEBUG_ADD)) return -1;
++						debugParseArg(&argv[i][8],OM_DEBUG_ADD);
+ 					} else {
+ 						if(!strncmp(argv[i],"--nodebug=",10)){
+-							if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)) return -1;
++							debugParseArg(&argv[i][10],OM_DEBUG_REMOVE);
+ 						} else {
+ 							printf("Unrecognized option %s.\n\n",argv[i]);
+ 						        usage();
+-							return -2;	
++							return -1;	
+ 						}
+ 					}
+ 					break;
+ 				default:
+ 					printf("Unrecognized option %s.\n\n",argv[i]);
+ 					usage();
+-					return -2;
++					return -1;
+ 			}
+ 			i++;
+ 		} else {
+@@ -173,24 +179,7 @@
+ {	
+ 	int result,fileArgIndex;
+ 	result   = parseEnvironment();
+-
+-	if (result==-1){
+-		printf("\nA category string in your $OMNI_DEBUG environment \n");
+-		printf("variable is longer than the maximum length of\n");
+-		printf("%i characters.\n",OM_DEBUG_STRING_SIZE);
+-		printf("The Omni program will resume as if the OMNI_DEBUG\n");
+-		printf("environment variable was never set . . . \n\n");
+-		debugCategoryNumber=0;
+-	}
+-
+ 	fileArgIndex = parseArgs(argc, argv);
+-
+-	if (fileArgIndex==-1){
+-		printf("\nA category string in your command line \n");
+-		printf("is longer than the maximum length of\n");
+-		printf("%i characters.\n",OM_DEBUG_STRING_SIZE);
+-		printf(" . . . exiting . . . \n\n");
+-	}
+ 	return fileArgIndex;
+ }
+ void
+@@ -200,8 +189,8 @@
+ 	printf("   --debug=<category>    Add <category> to the list of strings which\n"); 
+ 	printf("                         are used to determine what debug output is\n");
+ 	printf("                         acceptable.\n");
+-	printf("   -d <category>         Same as --debug=<category>\n");
+-	printf("   -d<category>          Same as --debug=<category>\n");
++	printf("   -d <category>         Same as --debug=<category>");
++	printf("   -d<category>          Same as --debug=<category>");
+ 	printf("   --nodebug=<category>  Remove<category> from the list of strings which\n"); 
+ 	printf("                         are used to determine what debug output is\n");
+ 	printf("                         acceptable.\n");
+Index: omni/src/system/events/omView3dEvent.cpp
+===================================================================
+--- omni/src/system/events/omView3dEvent.cpp	(.../trunk)	(revision 433)
++++ omni/src/system/events/omView3dEvent.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -26,10 +26,6 @@
+ 		p_cast_listener->View3dRedrawEvent(this);
+ 		return;
+ 
+-	case OmView3dEvent::REDRAW_CACHE:
+-		p_cast_listener->View3dRedrawEventFromCache(this);
+-		return;
+-
+ 	case OmView3dEvent::UPDATE_PREFERENCES:
+ 		//p_cast_listener->View3dUpdatePreferencesEvent( this );
+ 		return;
+Index: omni/src/system/events/omView3dEvent.h
+===================================================================
+--- omni/src/system/events/omView3dEvent.h	(.../trunk)	(revision 433)
++++ omni/src/system/events/omView3dEvent.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -26,7 +26,6 @@
+ 	//events
+ 	static const QEvent::Type REDRAW = (QEvent::Type) (CLASS);
+ 	static const QEvent::Type UPDATE_PREFERENCES = (QEvent::Type) (CLASS + 1);
+-	static const QEvent::Type REDRAW_CACHE = (QEvent::Type) (CLASS + 2);
+ };
+ 
+ 
+@@ -41,10 +40,10 @@
+ 
+ public:	
+ 	OmView3dEventListener() : OmEventListener(OmView3dEvent::CLASS) {
++		//cout << "OmView3dEventListener()" << this << endl;
+ 	};
+ 	
+ 	virtual void View3dRedrawEvent(OmView3dEvent *event) { };
+-	virtual void View3dRedrawEventFromCache(OmView3dEvent *event) { };
+ 	virtual void View3dUpdatePreferencesEvent(OmView3dEvent *event) { };
+ };
+ 
+Index: omni/src/system/omFilter2dManager.cpp
+===================================================================
+--- omni/src/system/omFilter2dManager.cpp	(.../trunk)	(revision 433)
++++ omni/src/system/omFilter2dManager.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -47,14 +47,11 @@
+ {
+ 	return mGenericFilterManager.IsEnabled(id);
+ }
+-bool OmFilter2dManager::IsFilterValid(OmId id)
+-{
+-	return mGenericFilterManager.IsValid(id);
+-}
+ 
+ 
+ 
+ 
++
+ #pragma mark 
+ #pragma mark DataMap Methods
+ /////////////////////////////////
+Index: omni/src/volume/omSegmentation.h
+===================================================================
+--- omni/src/volume/omSegmentation.h	(.../trunk)	(revision 433)
++++ omni/src/volume/omSegmentation.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -97,7 +97,7 @@
+ 	
+ 	//drawing
+ 	void Draw(const OmVolumeCuller &);
+-	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &, const int numSegments);
++	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &);
+ 	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, const OmVolumeCuller &rCuller);
+ 	void DrawChunkMeshes( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
+ 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
+Index: omni/src/volume/omChannel.cpp
+===================================================================
+--- omni/src/volume/omChannel.cpp	(.../trunk)	(revision 433)
++++ omni/src/volume/omChannel.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -7,7 +7,6 @@
+ 
+ #include "system/omFilter2d.h"
+ #include "system/omDebug.h"
+-#include "system/omProject.h"
+ 
+ #define DEBUG 0
+ 
+@@ -37,9 +36,6 @@
+ 
+ 	//build blank data
+ 	BuildVolumeData();
+-
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmChannel");
+ }
+ 
+ #pragma mark
+@@ -75,7 +71,6 @@
+ {
+ 	//build volume
+ 	OmMipVolume::Build();
+-	OmProject::Save();
+ 	printf("done building channel data\n");
+ }
+ 
+@@ -95,10 +90,6 @@
+ {
+ 	return mFilter2dManager.GetValidFilterIds();
+ }
+-bool OmChannel::IsFilterValid(const OmId id)
+-{
+-	return mFilter2dManager.IsFilterValid(id);
+-}
+ 
+ bool OmChannel::IsFilterEnabled(OmId id)
+ {
+Index: omni/src/volume/omMipVolume.cpp
+===================================================================
+--- omni/src/volume/omMipVolume.cpp	(.../trunk)	(revision 433)
++++ omni/src/volume/omMipVolume.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -33,8 +33,7 @@
+  : MipChunkThreadedCache(RAM_CACHE_GROUP)
+ {
+ 
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmMipVolume");
++	//debug("genone","OmMipVolume::OmMipVolume()");
+ 
+ 	//init
+ 	SetFilename(MIP_VOLUME_FILENAME);
+Index: omni/src/volume/omChannel.h
+===================================================================
+--- omni/src/volume/omChannel.h	(.../trunk)	(revision 433)
++++ omni/src/volume/omChannel.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -36,9 +36,9 @@
+ 	OmFilter2d& GetFilter(OmId id);
+ 	const set<OmId>& GetValidFilterIds();
+ 	bool IsFilterEnabled(OmId id);
+-	bool IsFilterValid(const OmId id);
+ 
+ 
++
+ 	
+ protected:
+ 	//protected copy constructor and assignment operator to prevent copy
+Index: omni/src/volume/omMipChunk.cpp
+===================================================================
+--- omni/src/volume/omMipChunk.cpp	(.../trunk)	(revision 433)
++++ omni/src/volume/omMipChunk.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -51,8 +51,6 @@
+ 	}
+ 	//update cache size
+ 	UpdateSize(sizeof(OmMipChunk));
+-
+-	mpImageData = NULL;
+ }
+ 
+ OmMipChunk::~OmMipChunk()
+@@ -125,8 +123,6 @@
+ 	//read volume data
+ 	ReadVolumeData();
+ 
+-	debug("mipchunk", "read in mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+-
+ 	//set open
+ 	SetOpen(true);
+ }
+@@ -197,8 +193,8 @@
+ 	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
+ 
+ 	//delete image data
+-	debug("mipchunk", "freeing mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+ 	mpImageData->Delete();
++	//debug("FIXME", << "mpImageData: " << mpImageData << endl;
+ 	mpImageData = NULL;
+ }
+ 
+@@ -405,10 +401,6 @@
+ 	//close if already open
+ 	//if(IsOpen()) Close();
+ 
+-	if (mpImageData) {
+-		mpImageData->Delete ();
+-	}
+-
+ 	//set this image data to given
+ 	mpImageData = pImageData;
+ 
+@@ -754,23 +746,15 @@
+ 
+ 				p_chunk->Open();
+ 
+-				debug("mipchunk", "got mpImageData: %i, rc:%i\n", p_chunk->mpImageData, p_chunk->mpImageData->GetReferenceCount());
+-
+-
+ 				//get pointer to image data
+-				//vtkImageData *p_src_data = p_chunk->mpImageData;
++				vtkImageData *p_src_data = p_chunk->mpImageData;
+ 
+-				debug ("genone", "got %i\n", p_chunk->mpImageData);
+-
+ 				//get dim size
+ 				int chunk_dim = mpMipVolume->GetChunkDimension();
+ 
+ 				//copy intersected data from src to mesh
+ 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
+-				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
+-
+-				p_chunk = shared_ptr < OmMipChunk > ();
+-				mpMipVolume->Remove (mip_coord);
++				copyIntersectedImageDataFromOffset(p_mesh_data, p_src_data, offset);
+ 			}
+ 
+ 	return p_mesh_data;
+@@ -828,7 +812,6 @@
+  *	or if we should continue refining so as to draw children.
+  */
+ 
+-extern unsigned int myBackoff;
+ bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
+ {
+ 	//draw if leaf
+@@ -843,8 +826,7 @@
+ 	float distance = (mNormExtent.getMax() - mNormExtent.getCenter()).length();
+ 
+ 	//if distance too large, just draw it - else keep breaking it down
+-	//debug("view3d", "backoff: %d\n", myBackoff );
+-	return (camera_to_center > distance / myBackoff );
++	return (camera_to_center > distance);
+ }
+ 
+ void OmMipChunk::DrawClippedExtent()
+Index: omni/src/volume/omSegmentation.cpp
+===================================================================
+--- omni/src/volume/omSegmentation.cpp	(.../trunk)	(revision 433)
++++ omni/src/volume/omSegmentation.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -8,7 +8,6 @@
+ #include "system/omProjectData.h"
+ #include "system/omStateManager.h"
+ #include "system/omEventManager.h"
+-#include "system/omProject.h"
+ #include "system/events/omProgressEvent.h"
+ #include "system/events/omView3dEvent.h"
+ #include "system/events/omSegmentEvent.h"
+@@ -34,9 +33,7 @@
+  : mMipVoxelationManager(this)
+ {
+ 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
+-
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmMipMeshManager");
++	//      //debug("FIXME", << "In OmSegmentation::OmSegmentation() " << GetBytesPerSample() << endl;
+ }
+ 
+ OmSegmentation::OmSegmentation(OmId id)
+@@ -237,7 +234,6 @@
+ 	SetAllSegmentsSelected(false);
+ 	SetAllSegmentsEnabled(false);
+ 
+-	OmProject::Save();
+ 	printf("done building mesh\n");
+ }
+ 
+@@ -265,17 +261,12 @@
+ 					//build all segment meshes in chunk
+ 					p_chunk->Open();
+ 
+-					debug ("mesher1", "here\n");
+-
+ 					mMipMeshManager.BuildChunkMeshes(p_chunk, p_chunk->GetDirectDataValues());
+ 
+-					
+ 					p_chunk->Close();
+ 
+ 					//update progress
+ 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
+-	                                p_chunk = shared_ptr < OmMipChunk > ();
+-                                	Remove (chunk_coord);
+ 				}
+ 	}
+ }
+@@ -546,7 +537,7 @@
+ 	glPushName(GetId());
+ 
+ 	//draw relevant data values starting from root chunk
+-	DrawChunkRecursive(RootMipChunkCoordinate(), *p_relv_data_vals, true, rCuller, p_relv_data_vals->size() );
++	DrawChunkRecursive(RootMipChunkCoordinate(), *p_relv_data_vals, true, rCuller);
+ 
+ 	//pop seg name
+ 	glPopName();
+@@ -558,8 +549,7 @@
+  *	MipChunk is either drawn or the recursive draw process is called on its children.
+  */
+ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, const SegmentDataSet & rRelvDataVals,
+-					bool testVis, const OmVolumeCuller & rCuller,
+-					const int numSegments )
++					bool testVis, const OmVolumeCuller & rCuller)
+ {
+ 	//get pointer to chunk
+ 	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+@@ -586,10 +576,9 @@
+ 		}
+ 	}
+ 
+-	
+ 	//TEST IF CHUNK SHOULD BE DRAWN
+ 	//if chunk satisfies draw criteria
+-	if ( numSegments > 5 && p_chunk->DrawCheck(rCuller) ) {
++	if (p_chunk->DrawCheck(rCuller)) {
+ 		//intersect enabled segments with data contained segments
+ 		SegmentDataSet direct_relevant_data_set;
+ 		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
+@@ -606,25 +595,12 @@
+ 		return;
+ 	}
+ 
+-	if( !(numSegments > 5) ) {
+-		SegmentDataSet direct_relevant_data_set;
+-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
+-						       direct_relevant_data_set);
+-
+-		//return if empty
+-		if (direct_relevant_data_set.size() == 0)
+-			return;
+-
+-		//draw data_relevent_segments in this chunk
+-		DrawChunk(chunkCoord, direct_relevant_data_set, rCuller);
+-	} 
+-
+ 	////ELSE BREAK DOWN INTO CHILDREN
+ 	//intersect enabled segments with spactially contained segments
+ 	SegmentDataSet indirect_relevant_data_set;
+ 	setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetIndirectDataValues(),
+-						       indirect_relevant_data_set);
+-	
++					       indirect_relevant_data_set);
++
+ 	//return if empty
+ 	if (indirect_relevant_data_set.size() == 0)
+ 		return;
+@@ -633,7 +609,7 @@
+ 	set < OmMipChunkCoord >::iterator itr;
+ 	for (itr = p_chunk->GetChildrenCoordinates().begin(); itr != p_chunk->GetChildrenCoordinates().end(); itr++) {
+ 		//draw child with only relevant segments enabled
+-		DrawChunkRecursive(*itr, indirect_relevant_data_set, testVis, rCuller, numSegments);
++		DrawChunkRecursive(*itr, indirect_relevant_data_set, testVis, rCuller);
+ 	}
+ 
+ }
+Index: omni/src/mesh/omMipChunkMesher.cpp
+===================================================================
+--- omni/src/mesh/omMipChunkMesher.cpp	(.../trunk)	(revision 433)
++++ omni/src/mesh/omMipChunkMesher.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -105,8 +105,6 @@
+ 						const SegmentDataSet & rMeshVals)
+ {
+ 
+-	assert (chunk);
+-
+ 	//set manager
+ 	mpMipMeshManager = pMipMeshManager;
+ 
+@@ -120,9 +118,7 @@
+ 	mCurrentSegmentDataSet.erase(NULL_SEGMENT_DATA);
+ 	//load current mesh source
+ 	mpCurrentMeshSource = new OmMeshSource();
+-	assert (mpCurrentMeshSource);
+ 	mpCurrentMeshSource->Load(chunk);
+-	mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
+ 	//current chunk
+ 	mCurrentMipCoord = chunk->GetCoordinate();
+ 	chunk->Open();
+@@ -155,8 +151,6 @@
+ 	delete mpCurrentMeshSource;
+ 	mpCurrentMeshSource = NULL;
+ 
+-	//assert (0);
+-
+ 	return;
+ }
+ 
+@@ -189,16 +183,12 @@
+ 	//init thread index
+ 	int thread_index = -1;
+ 	bool dosignal = false;
+-	assert (mpCurrentMeshSource);
+ 
+ 	pthread_mutex_lock(&mMeshThreadMutex);
+ 
+-	assert (mpCurrentMeshSource);
+ 	//init mesher
+ 	OmMesher mesher(*mpCurrentMeshSource);
+ 
+-	assert (mpCurrentMeshSource);
+-
+ 	//get thread index, and inc count
+ 	thread_index = mMeshThreadCount++;
+ 	debug("mesher", "OmMipChunkMesher::BuildMeshesLoop(): %p %i \n", pthread_self(), thread_index);
+@@ -217,7 +207,7 @@
+ 
+ 		//get mesh coordiante
+ 		OmMipMeshCoord mesh_coord = OmMipMeshCoord(mCurrentMipCoord, segment_value);
+-		debug("mesher1", "OmMipChunkMesher::BuildMeshesLoop(): thread:(%i) \n", thread_index);
++		//debug("FIXME", << "OmMipChunkMesher::BuildMeshesLoop(): thread: " << thread_index << " mesh: " << mesh_coord << endl;
+ 
+ 		//get alloc'd mesh
+ 		OmMipMesh *p_mesh = mpMipMeshManager->AllocMesh(mesh_coord);
+@@ -252,11 +242,9 @@
+ 
+ 	//cast into manager
+ 	OmMipChunkMesher *p_manager = (OmMipChunkMesher *) arg;
+-	assert (p_manager->mpCurrentMeshSource);
+ 	p_manager->BuildMeshesLoop();
+ 
+-
+-#ifndef OM_SINGLE_THREADED_MESHER
++#ifdef OM_SINGLE_THREADED_MESHER
+ 	pthread_exit(NULL);
+ #endif
+ }
+Index: omni/src/mesh/omMesher.cpp
+===================================================================
+--- omni/src/mesh/omMesher.cpp	(.../trunk)	(revision 433)
++++ omni/src/mesh/omMesher.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -50,18 +50,28 @@
+ //delete image data
+ OmMeshSource::~OmMeshSource()
+ {
+-	debug ("mesher1", "OmMeshSource::~OmMeshSource %i\n", pImageData);
+-
+ 	//delete image data if loaded
+ 	if (pImageData != NULL)
+ 		pImageData->Delete();
++
++	pImageData = NULL;
+ }
+ 
+ //load mesh data from chunk - expensive
+ void
+  OmMeshSource::Load(shared_ptr < OmMipChunk > chunk)
+ {
+-	debug ("mesher1", "OmMeshSource::Load\n");
++
++	//delete image data if already loaded
++	if (pImageData != NULL)
++		pImageData->Delete();
++
++	//get new data
++	pImageData = chunk->GetMeshImageData();
++
++	if (NULL == pImageData) {
++		//debug("FIXME", << "Crash inc..." << endl;
++	}
+ 	MipCoord = chunk->GetCoordinate();
+ 	SrcBbox = chunk->GetExtent();
+ 	DstBbox = chunk->GetNormExtent();
+@@ -71,21 +81,17 @@
+ //copy from another mesh source - cheaper
+ void OmMeshSource::Copy(OmMeshSource & source)
+ {
++
+ 	//copy values
+ 	MipCoord = source.MipCoord;
+ 	SrcBbox = source.SrcBbox;
+ 	DstBbox = source.DstBbox;
+-	source.mChunk->Open ();
+-	pImageData = source.mChunk->GetMeshImageData();
+-	debug ("mesher1", "OmMeshSource::Copy %i\n", pImageData);
++
++	pImageData = vtkImageData::New();
++	pImageData->DeepCopy(source.pImageData);
+ 	pImageData->Update();
+ }
+ 
+-OmMeshSource& OmMeshSource::operator= (const OmMeshSource & foo)
+-{
+-	assert (0);
+-}
+-
+ #pragma mark -
+ #pragma mark OmMesher
+ /////////////////////////////////
+@@ -95,7 +101,7 @@
+ 
+ OmMesher::OmMesher(OmMeshSource & meshSource)
+ {
+-	//debug ("mesher1", "OmMesher::OmMesher\n");
++
+ 	//copy source
+ 	mMeshSource.Copy(meshSource);
+ 
+@@ -114,22 +120,20 @@
+ 	mpStripper->Delete();
+ }
+ 
+-
+ void
+  OmMesher::InitMeshingPipeline()
+ {
+ 	//create marching cubes
+ 	mpDiscreteMarchingCubes = vtkDiscreteMarchingCubes::New();
+ 	mpDiscreteMarchingCubes->SetInput(mMeshSource.pImageData);
+-	mpDiscreteMarchingCubes->GetOutput()->ReleaseDataFlagOn();
+ 
+ 	// decimate clean poly
+ 	mpDecimation = vtkQuadricDecimation::New();
++	//vtkDecimatePro *mpDecimation = vtkDecimatePro::New();
+ 	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
+ 	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
+ 	//debug("FIXME", << "target_reduction: " << target_reduction << endl;
+ 	mpDecimation->SetTargetReduction(target_reduction);
+-	mpDecimation->GetOutput()->ReleaseDataFlagOn();
+ 
+ 	//form transform to norm extent
+ 	mpTransform = vtkTransform::New();
+@@ -139,14 +143,12 @@
+ 	mpTransformPolyDataFilter = vtkTransformPolyDataFilter::New();
+ 	mpTransformPolyDataFilter->SetInput(mpDecimation->GetOutput());
+ 	mpTransformPolyDataFilter->SetTransform(mpTransform);
+-	mpTransformPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
+ 
+ 	//smooth poly
+ 	mpSmoothPolyDataFilter = vtkSmoothPolyDataFilter::New();
+ 	mpSmoothPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
+ 	int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
+ 	mpSmoothPolyDataFilter->SetNumberOfIterations(num_smoothing_iters);	//smooth geometry
+-	mpSmoothPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
+ 
+ 	//form normals
+ 	mpPolyDataNormals = vtkPolyDataNormals::New();
+@@ -158,7 +160,6 @@
+ 	//strip poly
+ 	mpStripper = vtkStripper::New();
+ 	mpStripper->SetInputConnection(mpPolyDataNormals->GetOutputPort());
+-	mpStripper->GetOutput()->ReleaseDataFlagOn();
+ }
+ 
+ void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
+@@ -170,7 +171,6 @@
+ 
+ 	//get poly from stripper
+ 	vtkPolyData *p_poly_data = mpStripper->GetOutput();
+-	p_poly_data->Squeeze();
+ 	p_poly_data->Update();
+ 
+ 	//make mesh from poly data
+@@ -251,8 +251,9 @@
+ 		strip_idx++;
+ 	}
+ 
+-	debug("mesher1","OmMipChunkMesher:: strips ref: %i \n", p_strip_cells_array->GetReferenceCount());
+-	//p_strip_cells_array->Delete();
++	//debug("genone","OmMipChunkMesher:: strips: %i \n", num_strips );
++
++	//delete float array
+ 	p_points_data_array->Delete();
+ 	p_normal_data_array->Delete();
+ }
+Index: omni/src/mesh/omMipChunkMesher.h
+===================================================================
+--- omni/src/mesh/omMipChunkMesher.h	(.../trunk)	(revision 433)
++++ omni/src/mesh/omMipChunkMesher.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -41,8 +41,6 @@
+ 	SEGMENT_DATA_TYPE GetNextSegmentValueToMesh();
+ 	void BuildMeshesLoop();
+ 	
+-	OmMeshSource *mpCurrentMeshSource;
+-
+ protected:
+ 	// singleton constructor, copy constructor, assignment operator protected
+ 	OmMipChunkMesher();
+@@ -64,6 +62,7 @@
+ 	//current data
+ 	OmMipMeshManager *mpMipMeshManager;
+ 	
++	OmMeshSource *mpCurrentMeshSource;
+ 	OmMipChunkCoord mCurrentMipCoord;
+ 	SegmentDataSet mCurrentSegmentDataSet;
+ };
+Index: omni/src/mesh/omMesher.h
+===================================================================
+--- omni/src/mesh/omMesher.h	(.../trunk)	(revision 433)
++++ omni/src/mesh/omMesher.h	(.../branches/stable-00/trunk)	(revision 433)
+@@ -59,7 +59,7 @@
+ 	AxisAlignedBoundingBox<float> DstBbox;
+ 	
+ protected:
+-        shared_ptr<OmMipChunk> mChunk;
++     shared_ptr<OmMipChunk> mChunk;
+ 	OmMeshSource(OmMeshSource &);
+ 	OmMeshSource& operator= (const OmMeshSource &);
+ };
+Index: omni/src/mesh/omMipMeshManager.cpp
+===================================================================
+--- omni/src/mesh/omMipMeshManager.cpp	(.../trunk)	(revision 433)
++++ omni/src/mesh/omMipMeshManager.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -32,6 +32,7 @@
+ OmMipMeshManager::OmMipMeshManager()
+  : MipMeshCache(VRAM_CACHE_GROUP, true)
+ {
++
+ 	//set cache properties
+ 	SetFetchUpdateInterval(0.5f);
+ 	//flushes fetch stack so it doesn't waste time fetching old requests
+@@ -39,9 +40,6 @@
+ 
+ 	//mesh data initially not built
+ 	mMeshDataBuilt = false;
+-
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmMipMeshManager");
+ }
+ 
+ OmMipMeshManager::~OmMipMeshManager()
+@@ -133,12 +131,8 @@
+ 
+ 	//load data from disk
+ 	//debug("genone","OmMipMeshManager::HandleCacheMiss: loading mesh from disk");
+-	try {
+-		mesh->Load();
+-	} catch (...) {
+-	}
++	mesh->Load();
+ 
+-
+ 	//upload vbo
+ 	//debug("genone","OmMipMeshManager::HandleCacheMiss: creating vbo");
+ 	//mesh->CreateVbo();
+@@ -150,7 +144,8 @@
+ 
+ void OmMipMeshManager::HandleFetchUpdate()
+ {
+-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW_CACHE));
++	//debug("genone","OmMipMeshManager::FetchUpdate: send redraw");
++	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+ }
+ 
+ bool OmMipMeshManager::InitializeFetchThread()
+@@ -173,7 +168,6 @@
+ 				  const OmBitfield & drawOps,
+ 				  const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals)
+ {
+-	//debug("view3d", "in %s, about to draw %d chunks\n", __FUNCTION__, rRelvDataVals.size() );
+ 
+ 	//for all relevent data values in chunk
+ 	SegmentDataSet::iterator itr;
+Index: omni/src/voxel/omMipVoxelationManager.cpp
+===================================================================
+--- omni/src/voxel/omMipVoxelationManager.cpp	(.../trunk)	(revision 433)
++++ omni/src/voxel/omMipVoxelationManager.cpp	(.../branches/stable-00/trunk)	(revision 433)
+@@ -34,8 +34,6 @@
+ 	//flushes fetch stack so it doesn't waste time fetching old requests
+ 	SetFetchUpdateClearsFetchStack(false);
+ 
+-	/** Set The Name of the Cache */
+-        SetCacheName("OmMipVoxelationManager");
+ }
+ 
+ OmMipVoxelationManager::~OmMipVoxelationManager()
+Index: omni/docs/BUGS
+===================================================================
+--- omni/docs/BUGS	(.../trunk)	(revision 433)
++++ omni/docs/BUGS	(.../branches/stable-00/trunk)	(revision 433)
+@@ -1592,43 +1592,3 @@
+ #34 0x084d5e27 in QApplication::exec ()
+ #35 0x083a457c in main (argc=1, argv=0xbf82d274) at /home/matt/omni1/omni/src/gui/main.cpp:49
+ 
+-
+-Display of object causes crash if mesh doesn't exist on disk:
+-
+-[Thread 0xb4eaeb90 (LWP 6204) exited]
+-HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 3064986512.  Back trace follows.
+-  #000: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5D.c line 1169 in H5Dopen(): not found
+-    major(15): Dataset interface
+-    minor(48): Object not found
+-  #001: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5G.c line 1783 in H5G_find(): object not found
+-    major(10): Symbol table layer
+-    minor(48): Object not found
+-  #002: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gtraverse.c line 397 in H5G_namei(): component not found
+-    major(10): Symbol table layer
+-    minor(48): Object not found
+-  #003: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gstab.c line 161 in H5G_stab_find(): not found
+-    major(10): Symbol table layer
+-    minor(48): Object not found
+-terminate called after throwing an instance of 'OmIoException'
+-
+-Program received signal SIGABRT, Aborted.
+-[Switching to Thread 0xb6affb90 (LWP 6199)]
+-0xb7f18410 in __kernel_vsyscall ()
+-(gdb) BT
+-#0  0xb7f18410 in __kernel_vsyscall ()
+-#1  0xb79e5085 in raise () from /lib/tls/i686/cmov/libc.so.6
+-#2  0xb79e6a01 in abort () from /lib/tls/i686/cmov/libc.so.6
+-#3  0xb7bd0480 in __gnu_cxx::__verbose_terminate_handler () from /usr/lib/libstdc++.so.6
+-#4  0xb7bcdd05 in ?? () from /usr/lib/libstdc++.so.6
+-#5  0xb7bcdd42 in std::terminate () from /usr/lib/libstdc++.so.6
+-#6  0xb7bcde6a in __cxa_throw () from /usr/lib/libstdc++.so.6
+-#7  0x08c5dd3e in om_hdf5_dataset_raw_read (fileId=67108865, name=0xadf2d25c "segmentations/segmentation1/0/0_4_0/mesh/9937/metamesh.dat", size=0x0)
+-    at /home/matt/omni1/omni/src/utility/omHdf5.cpp:242
+-#8  0x0844a85e in OmProjectData::ReadRawData (path=@0xb6aff2b4, size=0x0) at /home/matt/omni1/omni/src/system/omProjectData.cpp:157
+-#9  0x08c4bed0 in OmMipMesh::Load (this=0xaf68dda0) at /home/matt/omni1/omni/src/mesh/omMipMesh.cpp:105
+-#10 0x08c4c574 in OmMipMeshManager::HandleCacheMiss (this=0x96f9950, coord=@0xb6aff354) at /home/matt/omni1/omni/src/mesh/omMipMeshManager.cpp:136
+-#11 0x08c51f82 in OmThreadedCache<OmMipMeshCoord, OmMipMesh>::FetchLoop (this=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:630
+-#12 0x08c521c5 in start_cache_fetch_thread<OmMipMeshCoord, OmMipMesh> (arg=0x96f9950) at /home/matt/omni1/omni/src/system/omThreadedCache.h:745
+-#13 0xb7c874fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+-#14 0xb7a90e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+-
+Index: omni/docs/svn.odt
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: omni/docs/doxygen/Doxyfile
+===================================================================
+--- omni/docs/doxygen/Doxyfile	(.../trunk)	(revision 433)
++++ omni/docs/doxygen/Doxyfile	(.../branches/stable-00/trunk)	(revision 433)
+@@ -31,7 +31,7 @@
+ # This could be handy for archiving the generated documentation or 
+ # if some version control system is used.
+ 
+-PROJECT_NUMBER        = Revision: 416
++PROJECT_NUMBER        = Revision: 358
+ 
+ # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
+ # base path where the generated documentation will be put. 

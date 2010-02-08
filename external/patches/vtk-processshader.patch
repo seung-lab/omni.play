@@ -1,0 +1,5 @@
+87c87,88
+<     while ( vtksys::SystemTools::GetLineFromStream(ifs, line) )
+---
+>     //while ( vtksys::SystemTools::GetLineFromStream(ifs, line) )
+>     while ( 0 )
