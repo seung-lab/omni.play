@@ -683,8 +683,11 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 
 	//get segment
 	OmId segmentation_id, segment_id;
-	if (!PickSegmentMouse(event, false, segmentation_id, segment_id))
+	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
+		mpView3d->updateGL();
 		return;
+	}
+	mpView3d->updateGL();
 
 	//refersh context menu and display
 	mSegmentContextMenu.Refresh(segmentation_id, segment_id);
