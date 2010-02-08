@@ -1,7 +1,7 @@
 function doit( conn )
     dbstop if error
     
-    paths.root    = '/home/omni/data/auto_segmentation/';
+    paths.root    = '/home/omni/data/e2006/new_neural_net/';
     paths.project = fullfile( paths.root,    'full' );
     makeDir( paths.project );
     paths.tiffs   = fullfile( paths.project, 'tiffs' );

@@ -73,7 +73,7 @@ QGroupBox* SegInspector::makeActionsBox()
         buildComboBox->insertItems(0, QStringList()
          << "Data"
          << "Mesh"
-				   //         << "Data & Mesh"
+	 << "Data & Mesh"
         );
         gridAction->addWidget(buildComboBox, 1, 0);
 
@@ -226,6 +226,12 @@ void build_mesh(OmSegmentation * current_seg)
 	printf("segmentation mesh build performed in %g (secs?)\n", timeToMeshSecs);
 }
 
+void build_image_and_mesh( OmSegmentation * current_seg )
+{
+	build_image(current_seg);
+	build_mesh(current_seg);
+}
+
 void SegInspector::on_buildButton_clicked()
 {
 	// check current selection in buildComboBox
@@ -233,6 +239,7 @@ void SegInspector::on_buildButton_clicked()
 
 	extern void build_image(OmSegmentation * current_seg);
 	extern void build_mesh(OmSegmentation * current_seg);
+	extern void build_image_and_mesh(OmSegmentation * current_seg);
 
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(my_id);
 
@@ -244,17 +251,11 @@ void SegInspector::on_buildButton_clicked()
 		//      OmVolume::GetSegmentation(my_id).BuildMeshData();
 		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
 		//              emit meshBuilt(my_id);
-	} 
-	/*
-	else if (cur_text == QString("Data & Mesh")) {
-		QFuture < void >f1 = QtConcurrent::run(build_image, &current_seg);
-		f1.waitForFinished();
-		QFuture < void >f2 = QtConcurrent::run(build_mesh, &current_seg);
-		//              emit meshBuilt(my_id);
+	} else if (cur_text == QString("Data & Mesh")) {
+		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
 		emit segmentationBuilt(my_id);
-
 	}
-	*/
+	
 }
 
 void SegInspector::on_notesEdit_textChanged()
