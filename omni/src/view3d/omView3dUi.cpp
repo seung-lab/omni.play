@@ -720,39 +720,52 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
 {
 	//extract event properties
-	Vector2i point2d(event->x(), event->y());
+	Vector2i point2dorig(event->x(), event->y());
+	int nnn[5][2] = {{0,0},{1,0},{0,1},{-1,0},{0,-1}};
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
 	vector < int >result;
-	bool valid_pick = mpView3d->PickPoint(point2d, result);
-
-	//if valid and return count
-	if (!valid_pick || (result.size() != 3))
-		return false;
-
-	if (!OmVolume::IsSegmentationValid(result[0]))
-		return false;
-	if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
-		return false;
+	int i = 0;
+	while (i < 5) {
+		Vector2i point2d;
+		point2d.x = point2dorig.x+nnn[i][0];
+		point2d.y = point2dorig.y+nnn[i][1];
+		i++;
 	
-	//unproject to point3d
-	Vector3f point3d;
-	if (!mpView3d->UnprojectPoint(point2d, point3d))
-		return false;
+		bool valid_pick = mpView3d->PickPoint(point2d, result);
 
-	//define depth scale factor
-	float z_depth_scale = 1.0f;
+		//if valid and return count
+		if (!valid_pick || (result.size() != 3))
+			continue;
 
-	//normalized vector from camera to unprojected point
-	Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
-	cam_to_point.normalize();
-	Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
+		if (!OmVolume::IsSegmentationValid(result[0]))
+			continue;
+		if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+			continue;
+	
+		//unproject to point3d
+		Vector3f point3d;
 
-	//get voxel at point3d
-	NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
-	DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+		if (!mpView3d->UnprojectPoint(point2d, point3d))
+			continue;
 
-	//return success with voxel
-	rVoxel = voxel;
-	return true;
+		//define depth scale factor
+		float z_depth_scale = 1.0f;
+
+		//normalized vector from camera to unprojected point
+		Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
+		cam_to_point.normalize();
+		Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
+
+		//get voxel at point3d
+		NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
+		DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+
+		//return success with voxel
+		rVoxel = voxel;
+		mpView3d->updateGL();
+		return true;
+	}
+	mpView3d->updateGL();
+	return false;
 }
