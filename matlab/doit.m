@@ -1,4 +1,4 @@
-function doit( conn )
+function doit( conn, seg_imgs, cmpSz )
     dbstop if error
     
     paths.root    = '/home/omni/data/e2006/new_neural_net/';
@@ -7,18 +7,18 @@ function doit( conn )
     paths.tiffs   = fullfile( paths.project, 'tiffs' );
     makeDir( paths.tiffs );
 
-    threshold = 0.95;
-    fprintf('Running connected components at threshold %g ...', threshold );
-    tic;
-    [ seg, cmpSz ] = connectedComponents( conn>threshold, '', 10 ); 
-    fprintf(' done. ');
-    toc
-
-    fprintf('Running marker-based watershed %g ...', threshold);
-    tic;
-    seg_imgs = markerWatershed( conn, mknhood2(1), seg, seg==0, 0.5 );
-    fprintf(' done. ');
-    toc
+    threshold = 0.97;
+%     fprintf('Running connected components at threshold %g ...', threshold );
+%     tic;
+%     [ seg, cmpSz ] = connectedComponents( conn>threshold, '', 10 ); 
+%     fprintf(' done. ');
+%     toc
+% 
+%     fprintf('Running marker-based watershed %g ...', threshold);
+%     tic;
+%     seg_imgs = markerWatershed( conn, mknhood2(1), seg, seg==0, 0.5 );
+%     fprintf(' done. ');
+%     toc
     
     dust_seg_threshold = 400;
     max_seg_number = find(cmpSz>dust_seg_threshold, 1, 'last' );

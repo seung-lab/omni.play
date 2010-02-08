@@ -90,6 +90,9 @@ private:
 	bool mPrevSelectionState;
 	DataCoord mPrevMouseSelectVoxel;
 	OmId mPrevSegmentationId, mPrevSegmentId;
+
+	void crosshair(QMouseEvent * event);
+	bool PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
 	
 };
 

@@ -625,6 +625,8 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 	float newDepthX = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.x)).z;
 	float newDepthY = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.y)).z;
 
+	debug ("view2d", "event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
+
 	switch (mViewType) {
 	case XY_VIEW:{
 			OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, newDepthX);
@@ -643,6 +645,7 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 		break;
 	}
 
+	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 }
 
 // XY_VIEW is the default viewType 
@@ -1679,6 +1682,44 @@ void OmView2d::ViewPosChangeEvent(OmViewEvent * event)
 
 void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 {
+        DataCoord data_coord;
+	float fdepth;
+	int realydepth, realxdepth;
+
+	fdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+        data_coord = SpaceToDataCoord(SpaceCoord(0, 0, fdepth));
+        int xdepth = data_coord.z;
+
+	fdepth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, fdepth));
+	int ydepth = data_coord.z;
+
+	fdepth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+	data_coord = SpaceToDataCoord(SpaceCoord(0, 0, fdepth));
+	int zdepth = data_coord.z;
+
+	debug ("view2d", "depth x,y,z (%i, %i, %i)\n", xdepth, ydepth, zdepth);
+	
+
+	if (YZ_VIEW == mViewType) {
+		realxdepth = zdepth;
+		realydepth = ydepth;
+	} else if (XZ_VIEW == mViewType) {
+		realxdepth = xdepth;
+		realydepth = zdepth;
+	} else if (XY_VIEW == mViewType) {
+		realxdepth = xdepth;
+		realydepth = ydepth;
+	}
+
+        // Update the pan so view stays centered.
+        Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+        Vector2 <int > current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+        int shiftx = (mTotalViewport.width/2-realxdepth-current_pan.x)/ (zoomMipVector.y / 10.);;
+        int shifty = ( mTotalViewport.height/2-realydepth-current_pan.y)/ (zoomMipVector.y / 10.);;
+        OmStateManager::Instance()->SetPanDistance(mViewType,
+                                                   Vector2 < int >(current_pan.x + shiftx, current_pan.y + shifty));
+
 	myUpdate();
 }
 

@@ -132,7 +132,12 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 		return;
 	}
 
-	CameraMovementMouseStart(event);
+	bool control_modifier = event->modifiers() & Qt::ControlModifier;
+	if (event->buttons() & Qt::LeftButton && control_modifier) {
+		crosshair(event);
+	} else {
+		CameraMovementMouseStart(event);
+	}
 }
 
 void OmView3dUi::NavigationModeMouseRelease(QMouseEvent * event)
@@ -280,6 +285,7 @@ void OmView3dUi::CameraMovementMouseStart(QMouseEvent * event)
 	//get point and modifier
 	Vector2f point = Vector2f(event->x(), event->y());
 	bool shift_modifier = event->modifiers() & Qt::ShiftModifier;
+	bool control_modifier = event->modifiers() & Qt::ControlModifier;
 
 	//left w/o shift moves rotate
 	if (event->buttons() & Qt::LeftButton && !shift_modifier) {
@@ -296,7 +302,7 @@ void OmView3dUi::CameraMovementMouseStart(QMouseEvent * event)
 		//right button zooms
 	} else if (event->buttons() & Qt::RightButton) {
 		mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
-	}
+	} 
 }
 
 void OmView3dUi::CameraMovementMouseEnd(QMouseEvent * event)
@@ -683,4 +689,70 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 	//refersh context menu and display
 	mSegmentContextMenu.Refresh(segmentation_id, segment_id);
 	mSegmentContextMenu.exec(event->globalPos());
+}
+
+void OmView3dUi::crosshair(QMouseEvent * event)
+{
+	//debug("view3d", "hi from %s\n", __FUNCTION__);
+
+	DataCoord voxel;
+	if (!PickVoxelMouseCrosshair(event, voxel)){
+		return;
+	}
+
+	debug("view3d", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
+
+	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
+
+	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	/*
+	debug("view3d", "coordinate is now (%d, %d, %d)\n", 
+	      picked_voxel.x,
+	      picked_voxel.y,
+	      picked_voxel.z
+	      );
+	*/
+}
+
+bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
+{
+	//extract event properties
+	Vector2i point2d(event->x(), event->y());
+
+	//pick point causes localized redraw (but all depth info stored in selection buffer)
+	vector < int >result;
+	bool valid_pick = mpView3d->PickPoint(point2d, result);
+
+	//if valid and return count
+	if (!valid_pick || (result.size() != 3))
+		return false;
+
+	if (!OmVolume::IsSegmentationValid(result[0]))
+		return false;
+	if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+		return false;
+	
+	//unproject to point3d
+	Vector3f point3d;
+	if (!mpView3d->UnprojectPoint(point2d, point3d))
+		return false;
+
+	//define depth scale factor
+	float z_depth_scale = 1.0f;
+
+	//normalized vector from camera to unprojected point
+	Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
+	cam_to_point.normalize();
+	Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
+
+	//get voxel at point3d
+	NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
+	DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+
+	//return success with voxel
+	rVoxel = voxel;
+	return true;
 }
