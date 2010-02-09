@@ -4,7 +4,6 @@
 
 #include "segInspector.h"
 
-#include "ui_volumeInspector.h"
 #include "volumeInspector.h"
 
 #include "ui_chanInspector.h"
