@@ -292,7 +292,7 @@ private:
 	void EditMode_MouseRelease_LeftButton_Filling(QMouseEvent *event);
 	void mouseMove_NavMode_CamMoving(QMouseEvent *event);
 	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
-	void mouseDoubleClickEvent_SetDepth(QMouseEvent *event);
+	void SetDepth(QMouseEvent *event);
 	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event, const ViewType viewType = XY_VIEW );
 	DataCoord getMouseClickpointGlobalDataCoord( QMouseEvent *event);
 
@@ -305,7 +305,6 @@ private:
 	void mouseZoom(QMouseEvent *event);
 	bool amInFillMode();
 	bool doDisplayInformation();
-
 };
 
 #endif 
