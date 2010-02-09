@@ -1,18 +1,19 @@
 #ifndef VOLUMEINSPECTOR_H
 #define VOLUMEINSPECTOR_H
 
+#include <QtGui>
 #include <QWidget> 
-#include "ui_volumeInspector.h" 
 
-class VolumeInspector : public QWidget, public Ui::volumeInspector
+class VolumeInspector : public QWidget
 { 
     Q_OBJECT 
 	
 public: 
-    VolumeInspector(QWidget *parent = 0); 
-	
-	
-	private slots: 
+	VolumeInspector(QWidget *parent = 0); 
+	QPushButton *addChannelButton;
+	QPushButton *addSegmentationButton;
+		
+private slots: 
 	void on_nameEdit_editingFinished();
 	void on_scaleEdit_editingFinished();
 	void on_resolutionEdit_editingFinished();
@@ -23,5 +24,27 @@ public:
 	
 	void on_ramSlider_valueChanged();
 	void on_vramSlider_valueChanged();
+
+ private:
+	QLabel* sizeLabel;
+	QLabel* ramSizeLabel;
+	QLabel* vramLabel;
+	QLabel* vramSizeLabel;
+	QLineEdit *nameEdit;
+	QLineEdit *scaleEdit;
+	QLineEdit *resolutionEdit;
+	QLineEdit *extentEdit;
+	QSlider *sizeSlider;
+	QSlider *ramSlider;
+	QSlider *vramSlider;
+	QPlainTextEdit *notesEdit;
+
+	QGroupBox* makeNotesBox();
+	QGroupBox* makeAddDataBox();
+	QGroupBox* makeCachePropBox();
+	QGroupBox* makeVolPropBox();
+	QGroupBox* makeSrcPropBox();
+	void init_values();
+
 }; 
 #endif
