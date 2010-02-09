@@ -696,12 +696,14 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 
 void OmView3dUi::crosshair(QMouseEvent * event)
 {
-	//debug("view3d", "hi from %s\n", __FUNCTION__);
+	debug("view3d", "hi from %s\n", __FUNCTION__);
 
 	DataCoord voxel;
 	if (!PickVoxelMouseCrosshair(event, voxel)){
+		mpView3d->updateGL();
 		return;
 	}
+	mpView3d->updateGL();
 
 	debug("view3d", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
 
@@ -711,64 +713,50 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-	/*
+	
 	debug("view3d", "coordinate is now (%d, %d, %d)\n", 
 	      picked_voxel.x,
 	      picked_voxel.y,
 	      picked_voxel.z
 	      );
-	*/
 }
 
 bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
 {
-	//extract event properties
-	Vector2i point2dorig(event->x(), event->y());
-	int nnn[5][2] = {{0,0},{1,0},{0,1},{-1,0},{0,-1}};
+        //extract event properties
+        Vector2i point2d(event->x(), event->y());
 
-	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	vector < int >result;
-	int i = 0;
-	while (i < 5) {
-		Vector2i point2d;
-		point2d.x = point2dorig.x+nnn[i][0];
-		point2d.y = point2dorig.y+nnn[i][1];
-		i++;
-	
-		bool valid_pick = mpView3d->PickPoint(point2d, result);
+        //pick point causes localized redraw (but all depth info stored in selection buffer)
+        vector < int >result;
+        bool valid_pick = mpView3d->PickPoint(point2d, result);
 
-		//if valid and return count
-		if (!valid_pick || (result.size() != 3))
-			continue;
+        //if valid and return count
+        if (!valid_pick || (result.size() != 3))
+                return false;
 
-		if (!OmVolume::IsSegmentationValid(result[0]))
-			continue;
-		if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
-			continue;
-	
-		//unproject to point3d
-		Vector3f point3d;
+        if (!OmVolume::IsSegmentationValid(result[0]))
+                return false;
+        if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+                return false;
 
-		if (!mpView3d->UnprojectPoint(point2d, point3d))
-			continue;
+        //unproject to point3d
+        Vector3f point3d;
+        if (!mpView3d->UnprojectPoint(point2d, point3d))
+                return false;
 
-		//define depth scale factor
-		float z_depth_scale = 1.0f;
+        //define depth scale factor
+        float z_depth_scale = 1.0f;
 
-		//normalized vector from camera to unprojected point
-		Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
-		cam_to_point.normalize();
-		Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
+        //normalized vector from camera to unprojected point
+        Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
+        cam_to_point.normalize();
+        Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
 
-		//get voxel at point3d
-		NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
-		DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+        //get voxel at point3d
+        NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
+        DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
 
-		//return success with voxel
-		rVoxel = voxel;
-		mpView3d->updateGL();
-		return true;
-	}
-	mpView3d->updateGL();
-	return false;
+        //return success with voxel
+        rVoxel = voxel;
+        return true;
 }

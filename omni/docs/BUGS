@@ -1694,3 +1694,55 @@ vtkUnsignedIntArray (0x486e02a0): Unable to allocate 262144 elements of size 4 b
 #44 0x084ca377 in QApplication::exec ()
 #45 0x083a2d9d in main (argc=2, argv=0xbff91214) at /home/matt/omni.stable/omni/src/gui/main.cpp:52
 
+
+When rebuilding meshes:
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 2120493968.  Back trace follows.
+  #000: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5D.c line 1114 in H5Dcreate(): unable to create dataset
+    major(15): Dataset interface
+    minor(29): Unable to initialize object
+  #001: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5D.c line 2264 in H5D_create(): unable to name dataset
+    major(15): Dataset interface
+    minor(29): Unable to initialize object
+  #002: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5G.c line 1733 in H5G_insert(): already exists
+    major(10): Symbol table layer
+    minor(49): Object already exists
+  #003: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gtraverse.c line 414 in H5G_namei(): unable to insert name
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+  #004: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gstab.c line 214 in H5G_stab_insert(): unable to insert entry
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+  #005: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5B.c line 597 in H5B_insert(): unable to insert key
+    major(09): B-tree layer
+    minor(29): Unable to initialize object
+  #006: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5B.c line 1003 in H5B_insert_helper(): can't insert leaf node
+    major(09): B-tree layer
+    minor(53): Unable to insert object
+  #007: /home/matt/omni1/external/srcs/hdf5-1.6.9/src/H5Gnode.c line 1068 in H5G_node_insert(): symbol is already present in symbol table
+    major(10): Symbol table layer
+    minor(53): Unable to insert object
+terminate called after throwing an instance of 'OmIoException'
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7e642b90 (LWP 9589)]
+0xb7f08410 in __kernel_vsyscall ()
+(gdb) bt
+#0  0xb7f08410 in __kernel_vsyscall ()
+#1  0xb79d5085 in raise () from /lib/tls/i686/cmov/libc.so.6
+#2  0xb79d6a01 in abort () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb7bc0480 in __gnu_cxx::__verbose_terminate_handler () from /usr/lib/libstdc++.so.6
+#4  0xb7bbdd05 in ?? () from /usr/lib/libstdc++.so.6
+#5  0xb7bbdd42 in std::terminate () from /usr/lib/libstdc++.so.6
+#6  0xb7bbde6a in __cxa_throw () from /usr/lib/libstdc++.so.6
+#7  0x08c5ae8f in om_hdf5_dataset_raw_create (fileId=67108868, name=0xab2df86c "segmentations/segmentation1/0/6_3_0/mesh/25272/metamesh.dat", size=1,
+    data=0x7e6422a3) at /home/matt/omni1/omni/src/utility/omHdf5.cpp:203
+#8  0x08c5e27e in om_hdf5_dataset_raw_create_tree_overwrite (fileId=67108868, name=0xab2df86c "segmentations/segmentation1/0/6_3_0/mesh/25272/metamesh.dat",
+    size=1, data=0x7e6422a3) at /home/matt/omni1/omni/src/utility/omHdf5.cpp:230
+#9  0x08448b0d in OmProjectData::WriteRawData (path=@0x7e642278, size=1, data=0x7e6422a3) at /home/matt/omni1/omni/src/system/omProjectData.cpp:163
+#10 0x08c4afca in OmMipMesh::Save (this=0xaaa2b80) at /home/matt/omni1/omni/src/mesh/omMipMesh.cpp:148
+#11 0x08c48978 in OmMipChunkMesher::BuildMeshesLoop (this=0x9780d18) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:234
+#12 0x08c48b7c in init_meshing_thread (arg=0x9780d18) at /home/matt/omni1/omni/src/mesh/omMipChunkMesher.cpp:261
+#13 0xb7c774fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#14 0xb7a80e5e in clone () from /lib/tls/i686/cmov/libc.so.6
+

@@ -595,22 +595,17 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE 
 
 void OmView2d::mouseDoubleClickEvent(QMouseEvent * event)
 {
-
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
-
 		break;
 	case EDIT_SYSTEM_MODE:
-		//              EditModeMouseDoubleClick(event);
-		//              mouseDoubleClickEvent_SetDepth( event );
 		break;
 	}
 }
 
 // FIXME: what is going on here? why does it work??
-void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
+void OmView2d::SetDepth(QMouseEvent * event)
 {
-
 	Vector2f clickPoint = Vector2f(event->x(), event->y());
 
 	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
@@ -653,7 +648,6 @@ void OmView2d::mouseDoubleClickEvent_SetDepth(QMouseEvent * event)
 // (different newTypes only used by mouseMove_NavMode_DrawInfo(...) for some reason??? (purcaro)
 DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event, const ViewType viewType)
 {
-
 	Vector2f clickPoint = Vector2f(event->x(), event->y());
 
 	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
@@ -688,7 +682,6 @@ DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event, const 
 
 DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 {
-
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
 
 	// okay, dataClickPoint is flat, only valid in XY ortho view.  
@@ -950,7 +943,6 @@ void OmView2d::EditModeMouseMove(QMouseEvent * event)
 
 void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second)
 {
-
 	//store current selection
 	OmId segmentation_id, segment_id;
 	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
@@ -1714,6 +1706,7 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 		realydepth = ydepth;
 	}
 
+	// TODO: zoom factors other than 1 don't seem to work
         // Update the pan so view stays centered.
         Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
         float scaleFactor = (zoomMipVector.y / 10.);
@@ -1731,6 +1724,7 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
                                                    Vector2 < int >(current_pan.x + shiftx, current_pan.y + shifty));
 
 	myUpdate();
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 void OmView2d::ViewRedrawEvent(OmViewEvent * event)
@@ -2012,16 +2006,12 @@ DataCoord OmView2d::ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth)
 void OmView2d::Draw(int mip)
 {
 	drawComplete = true;
-	//debug("genone","OmView2d::Draw() -- " << mViewType);
 
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-#if 1
-	//debug("FIXME", << "mip: " << mip << endl;
 	if (mip) {
 		Vector2f zoom = zoomMipVector;
 		Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 
-		//int lvl = zoomMipVector.x - (howslow);
 		int lvl = zoomMipVector.x + 2;
 
 		for (int i = mRootLevel; i > lvl; i--) {
@@ -2037,13 +2027,11 @@ void OmView2d::Draw(int mip)
 								   false);
 
 			PreDraw(zoom);
-			//debug("FIXME", << "zoom: " << zoom << endl;
 		}
 		OmStateManager::Instance()->SetPanDistance(mViewType,
 							   Vector2 < int >(translateVector.x, translateVector.y),
 							   false);
 	}
-#endif
 
 	PreDraw(zoomMipVector);
 
@@ -2056,8 +2044,6 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 :x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor), gotten_id(gotten_id)
 {
 	mGood = true;
-	//debug("FIXME", << x << ", " << y << endl;
-	//debug("FIXME", << gotten_id->GetTextureID () << endl;
 }
 
 Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
@@ -2090,12 +2076,10 @@ void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord t
 	gotten_id->texture = texture;
 	gotten_id->x = x;
 	gotten_id->y = y;
-
 }
 
 int OmView2d::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 {
-
 	// find depth
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
@@ -2227,7 +2211,6 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 
 void *OmView2d::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, OmMipVolume * vol)
 {
-
 	//debug("FIXME", << "in OmView2d::GetImageData" << endl;
 	shared_ptr < OmMipChunk > my_chunk;
 	vol->GetChunk(my_chunk, mCache->TileToMipCoord(key));
@@ -2558,68 +2541,25 @@ void OmView2d::DrawCursors()
 
 DataBbox OmView2d::SpaceToDataBbox(const SpaceBbox & spacebox)
 {
-	DataBbox new_data_box;
-
-	switch (mVolumeType) {
-	case CHANNEL:
-		new_data_box = OmVolume::NormToDataBbox(OmVolume::SpaceToNormBbox(spacebox));
-		break;
-	case SEGMENTATION:
-		new_data_box = OmVolume::NormToDataBbox(OmVolume::SpaceToNormBbox(spacebox));
-		break;
-
-	}
-
+	DataBbox new_data_box = OmVolume::NormToDataBbox(OmVolume::SpaceToNormBbox(spacebox));
 	return new_data_box;
 }
 
 SpaceBbox OmView2d::DataToSpaceBbox(const DataBbox & databox)
 {
-	SpaceBbox new_space_box;
-
-	switch (mVolumeType) {
-	case CHANNEL:
-		new_space_box = OmVolume::NormToSpaceBbox(OmVolume::DataToNormBbox(databox));
-		break;
-	case SEGMENTATION:
-		new_space_box = OmVolume::NormToSpaceBbox(OmVolume::DataToNormBbox(databox));
-		break;
-	}
-
+	SpaceBbox new_space_box = OmVolume::NormToSpaceBbox(OmVolume::DataToNormBbox(databox));
 	return new_space_box;
 }
 
 DataCoord OmView2d::SpaceToDataCoord(const SpaceCoord & spacec)
 {
-
-	DataCoord new_data_center;
-
-	switch (mVolumeType) {
-	case CHANNEL:
-		new_data_center = OmVolume::NormToDataCoord(OmVolume::SpaceToNormCoord(spacec));
-		break;
-	case SEGMENTATION:
-		new_data_center = OmVolume::NormToDataCoord(OmVolume::SpaceToNormCoord(spacec));
-		break;
-
-	}
-
+	DataCoord new_data_center = OmVolume::NormToDataCoord(OmVolume::SpaceToNormCoord(spacec));
 	return new_data_center;
 }
 
 SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
 {
-	SpaceCoord new_space_center;
-
-	switch (mVolumeType) {
-	case CHANNEL:
-		new_space_center = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(datac));
-		break;
-	case SEGMENTATION:
-		new_space_center = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(datac));
-		break;
-
-	}
+	SpaceCoord new_space_center = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(datac));
 	return new_space_center;
 }
 
@@ -2629,8 +2569,10 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 	mTextures.clear();
 	myUpdate();
 
-	// TODO: is this the best way to update crosshairs?
-	mouseDoubleClickEvent_SetDepth(event);
+	SetDepth(event);
+
+	OmStateManager::SetToolMode(PAN_MODE);
+	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 }
 
 void OmView2d::mousePressEvent(QMouseEvent * event)
@@ -2642,7 +2584,12 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 			clickPoint.y = event->y();
 
 			if (event->button() == Qt::LeftButton) {
-				mouseNavModeLeftButton(event);
+				const bool crosshair = event->modifiers() & Qt::ControlModifier;
+				if( crosshair ){
+					mouseSetCrosshair(event);
+				} else {
+					mouseNavModeLeftButton(event);
+				}
 			} else if (event->button() == Qt::RightButton) {
 				mouseSelectSegment(event);
 			}
@@ -2653,7 +2600,12 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 
 		case EDIT_SYSTEM_MODE: {
 			if (event->button() == Qt::LeftButton) {
-				mouseEditModeLeftButton(event);
+				const bool crosshair = event->modifiers() & Qt::ControlModifier;
+				if( crosshair ){
+					mouseSetCrosshair(event);
+				} else {
+					mouseEditModeLeftButton(event);
+				}
 			} else if (event->button() == Qt::RightButton) {
 				mouseSelectSegment(event);
 			}
@@ -2665,7 +2617,6 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 void OmView2d::mouseZoomIn()
 {
 	MouseWheelZoom(15);
-
 }
 
 void OmView2d::mouseZoomOut()
@@ -2695,8 +2646,6 @@ void OmView2d::mouseNavModeLeftButton(QMouseEvent * event)
 		break;
 	case CROSSHAIR_MODE:
 		mouseSetCrosshair(event);
-		OmStateManager::SetToolMode(PAN_MODE);
-		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 		break;
 	case ZOOM_MODE:
 		mouseZoom(event);
@@ -2722,7 +2671,6 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 	bool dosubtract = false;
 	mScribbling = true;
 	
-
 	SEGMENT_DATA_TYPE data_value;
 
 	switch (OmStateManager::GetToolMode()) {
@@ -2740,8 +2688,6 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		break;
 	case CROSSHAIR_MODE:
 		mouseSetCrosshair(event);
-		OmStateManager::SetToolMode(PAN_MODE);
-		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 		return;
 		break;
 	case ZOOM_MODE:
@@ -2818,14 +2764,12 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 
 bool OmView2d::amInFillMode()
 {
-
 	// FIXME
 	return false;
 }
 
 void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 {
-
 	bool doselection = false;
 
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
@@ -2876,7 +2820,6 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 {
-
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
 		cameraMoving = false;
@@ -2890,7 +2833,6 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 
 void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 {
-
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
 	Vector2 < int >drag = Vector2 < int >((clickPoint.x - event->x()), clickPoint.y - event->y());
