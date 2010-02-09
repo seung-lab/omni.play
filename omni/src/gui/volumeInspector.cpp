@@ -34,7 +34,7 @@ VolumeInspector::VolumeInspector(QWidget * parent)
 
 QGroupBox* VolumeInspector::makeNotesBox()
 {
-	QGroupBox* groupBox = new QGroupBox("Add Data");
+	QGroupBox* groupBox = new QGroupBox("Notes");
 	QVBoxLayout* vbox = new QVBoxLayout();
 	groupBox->setLayout( vbox );
 
