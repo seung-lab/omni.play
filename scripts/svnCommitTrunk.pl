@@ -42,4 +42,4 @@ print "done\n";
 `svn commit -F $tmpLogFileName`;
 `cd ~/.omni.Staging.shadow`; #cd to .omni.Stating.shadow
 `svnmerge.py merge`;
-`svn commit -m $commit_msg`;
+`svn commit -F $tmpLogFileName`;
