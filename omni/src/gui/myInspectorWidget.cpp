@@ -4,23 +4,14 @@
 
 #include "segInspector.h"
 
-#include "volumeInspector.h"
-
 #include "ui_chanInspector.h"
 #include "chanInspector.h"
 
 #include "ui_segObjectInspector.h"
 #include "segObjectInspector.h"
-
 #include "ui_filObjectInspector.h"
 #include "filObjectInspector.h"
 
-#include "ui_preferences3d.h"
-#include "preferences3d.h"
-
-#include "preferences2d.h"
-
-#include "preferencesMesh.h"
 
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
@@ -95,7 +86,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 
 	current_object = 99;
 	first_access = true;
-	preferencesActivated = false;
 
 	// what does this do? (purcaro)
 	QMetaObject::connectSlotsByName(this);
@@ -147,23 +137,11 @@ QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
 	volumeListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	volumeListWidget->setHeaderHidden(true);
 
-	QTreeWidgetItem *volItem = new QTreeWidgetItem(volumeListWidget);
-	volItem->setText(0, "Volume");
-	QTreeWidgetItem *view2dItem = new QTreeWidgetItem(volumeListWidget);
-	view2dItem->setText(0, "2D View");
-	QTreeWidgetItem *view3dItem = new QTreeWidgetItem(volumeListWidget);
-	view3dItem->setText(0, "3D View");
-	QTreeWidgetItem *meshItem = new QTreeWidgetItem(volumeListWidget);
-	meshItem->setText(0, "Mesh");
-
 	QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
 	sizePolicy2.setHorizontalStretch(0);
 	sizePolicy2.setVerticalStretch(0);
 	sizePolicy2.setHeightForWidth(volumeListWidget->sizePolicy().hasHeightForWidth());
 	volumeListWidget->setSizePolicy(sizePolicy2);
-
-	connect(volumeListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(addPreferencesToSplitter(QTreeWidgetItem *, int)));
 
 	return volumeListWidget;
 }
@@ -260,36 +238,6 @@ void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget)
 	}
 }
 
-void MyInspectorWidget::addPreferencesToSplitter(QTreeWidgetItem * item, const int column)
-{
-	//debug("genone","addToSplitterPreferences");
-
-	QWidget *my_widget = splitter->widget(1);
-	QString text = item->text(0);
-
-	QList < int >my_sizes = splitter->sizes();
-	delete my_widget;
-
-	if (text == "Volume") {
-		volumeInspectorWidget = new VolumeInspector(splitter);
-		connect(volumeInspectorWidget->addChannelButton, SIGNAL(clicked()), this, SIGNAL(addChannel()));
-		connect(volumeInspectorWidget->addSegmentationButton, SIGNAL(clicked()), this,
-			SIGNAL(addSegmentation()));
-	} else if (text == "2D View") {
-		preferences2dWidget = new Preferences2d(splitter);
-	} else if (text == "3D View") {
-		preferences3dWidget = new Preferences3d(splitter);
-	} else if (text == "Mesh") {
-		preferencesMeshWidget = new PreferencesMesh(splitter);
-	}
-
-	if (!(first_access)) {
-		splitter->setSizes(my_sizes);
-	}
-
-	first_access = false;
-	preferencesActivated = true;
-}
 
 void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 {
@@ -297,7 +245,7 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 
 	QWidget *my_widget = splitter->widget(1);
 
-	if ((current_object != CHANNEL) || (preferencesActivated)) {
+	if (current_object != CHANNEL) {
 
 		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
@@ -326,15 +274,12 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
 
 	QWidget *my_widget = splitter->widget(1);
 
-	if ((current_object != SEGMENTATION) || (preferencesActivated)) {
+	if (current_object != SEGMENTATION ) {
 
 		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
 
 		segInspectorWidget = new SegInspector(item_id, splitter);
-
-		//              connect( segInspectorWidget, SIGNAL(meshBuilt(OmId)), 
-		//                          this, SLOT(addChildrenToSegmentation(OmId)));
 
 		connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
 
@@ -361,7 +306,7 @@ void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * curren
 	const OmId item_id = sdw.getID();
 	QWidget *my_widget = splitter->widget(1);
 
-	if ((current_object != SEGMENT) || (preferencesActivated)) {
+	if (current_object != SEGMENT){
 		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
 		segObjectInspectorWidget = new SegObjectInspector(splitter);
@@ -381,7 +326,6 @@ void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * curren
 	current_object = SEGMENT;
 
 	first_access = false;
-	preferencesActivated = false;
 }
 
 void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
@@ -392,7 +336,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 	const OmId item_id = fdw.getID();
 	QWidget *my_widget = splitter->widget(1);
 
-	if ((current_object != FILTER) || (preferencesActivated)) {
+	if (current_object != FILTER) {
 		QList < int >my_sizes = splitter->sizes();
 		delete my_widget;
 		filObjectInspectorWidget = new FilObjectInspector(splitter);
@@ -401,7 +345,6 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 			splitter->setSizes(my_sizes);
 	}
 
-	filObjectInspectorWidget->blockSignals(true);
 	populateFilterObjectInspector(fdw.getChannelID(), item_id);
 
 	filObjectInspectorWidget->setChannelID(fdw.getChannelID());
@@ -414,8 +357,6 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 	current_object = FILTER;
 
 	first_access = false;
-	preferencesActivated = false;
-	filObjectInspectorWidget->blockSignals(false);
 }
 
 void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
@@ -435,7 +376,6 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const
 	}
 
 	first_access = false;
-	preferencesActivated = false;
 }
 
 void MyInspectorWidget::showChannelContextMenu()
@@ -945,7 +885,6 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 		} else {
 			sendSegmentChangeEvent(sdw, false);
 		}
-
 	}
 }
 

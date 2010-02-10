@@ -20,34 +20,21 @@ set(QT_USE_QTOPENGL TRUE)
 # <<#include "header.moc">> in your files
 
 SET(omGuiApp_MOC_HDRS
-  mainwindow.h
-../view3d/omView3d.h
-../view2d/omView2d.h
-
-inspectorHelpers/segmentationHelper.h
-inspectorHelpers/channelHelper.h
-
-# ui_segInspector.h
-  segInspector.h
-
-#  ui_volumeInspector.h
-  volumeInspector.h
-
-#  ui_chanInspector.h
-  chanInspector.h
-
-#  ui_segObjectInspector.h
-  segObjectInspector.h
-
-  filObjectInspector.h
-
-  preferencesMesh.h
-
-  preferences3d.h
-
-  preferences2d.h
-
-  myInspectorWidget.h
+	mainwindow.h
+	../view3d/omView3d.h
+	../view2d/omView2d.h
+	inspectorHelpers/segmentationHelper.h
+	inspectorHelpers/channelHelper.h
+	segInspector.h
+	volumeInspector.h
+	chanInspector.h
+	segObjectInspector.h
+	filObjectInspector.h
+	preferencesMesh.h
+	preferences3d.h
+	preferences2d.h
+	preferences.h
+	myInspectorWidget.h
 )
 
 SET(omGuiApp_RCCS resources.qrc)
@@ -78,6 +65,7 @@ ADD_EXECUTABLE(omni
 	inspectorHelpers/inspectorHelper.cpp
 	inspectorHelpers/segmentationHelper.cpp
 	inspectorHelpers/channelHelper.cpp
+	preferences.cpp
 	${omGuiApp_MOC_SRCS}
 	${omGuiApp_RCC_SRCS}
 )

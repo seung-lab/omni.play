@@ -76,7 +76,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
  private slots: 
         void addFilter();
-	void addPreferencesToSplitter(QTreeWidgetItem * item, const int column);
 	void addSegment();
 	void nameEditChanged();
 	void setSegObjColor();
@@ -163,10 +162,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	SegObjectInspector *segObjectInspectorWidget;
 	FilObjectInspector *filObjectInspectorWidget;
 
-	Preferences2d *preferences2dWidget;
-	Preferences3d *preferences3dWidget;
-	PreferencesMesh *preferencesMeshWidget;
-
 	void populateChannelInspector(OmId c_id);
 	void populateSegmentationInspector(OmId s_id);
 	void populateSegmentObjectInspector(OmId s_id, OmId obj_id);
@@ -175,7 +170,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	QColor current_color;
 
 	int current_object;
-	bool preferencesActivated;
 
 	bool first_access;
 

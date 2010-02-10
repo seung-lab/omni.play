@@ -24,7 +24,7 @@ VolumeInspector::VolumeInspector(QWidget * parent)
 	grid->addWidget( makeSrcPropBox(), 0, 0 );
 	grid->addWidget( makeVolPropBox(), 1, 0 );
 	grid->addWidget( makeCachePropBox(), 2, 0 );
-	grid->addWidget( makeAddDataBox(), 3, 0 );
+	//grid->addWidget( makeAddDataBox(), 3, 0 );
 	grid->addWidget( makeNotesBox(), 4, 0 );
 	grid->setRowStretch( 5, 1 );
 
@@ -45,6 +45,7 @@ QGroupBox* VolumeInspector::makeNotesBox()
 	return groupBox;
 }
 
+/*
 QGroupBox* VolumeInspector::makeAddDataBox()
 {
 	QGroupBox* groupBox = new QGroupBox("Add Data");
@@ -63,7 +64,7 @@ QGroupBox* VolumeInspector::makeAddDataBox()
 
 	return groupBox;
 }
-
+*/
 QGroupBox* VolumeInspector::makeCachePropBox()
 {
 	QGroupBox* groupBox = new QGroupBox("Cache Properties");

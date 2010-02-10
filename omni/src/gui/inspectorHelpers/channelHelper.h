@@ -12,12 +12,6 @@ class ChannelHelper : public InspectorHelper<ChannelDataWrapper> {
 
  public:
 	ChannelHelper( MyInspectorWidget* parent );
-	void addToSplitter( ChannelDataWrapper data );
-
- private:
-	ChanInspector *channelInspectorWidget;
-	void populateChannelInspector(OmId c_id);
-
 };
 
 #endif
