@@ -21,13 +21,13 @@ print "changes:\n";
 print $diff_add;
 print $diff_sub;
 
-print "\nplease enter commit message (don't screw up!):  ";
+print "\n\nplease enter commit message (don't screw up!):  ";
 my $commit_msg = <STDIN>;
 
 $commit_msg = $commit_msg."\n".$diff_add."\n".$diff_sub;
 
 print "intended commit msg:\n".$commit_msg;
-print "is this ok? control-c to cancel; enter to continue";
+print "\nis this ok? control-c to cancel; enter to continue";
 my $ans = <STDIN>;
 
 my $tmpLogFileName = $staging_folder."/tmpLogMsg.txt";
@@ -40,8 +40,11 @@ print "updating src in current folder...";
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
-`cd ~/.omni.Staging.shadow`; #cd to .omni.Stating.shadow
-print `~/.omni.Staging.shadow/external/svnmerge.py merge`;
+`cd $staging_folder`;
+print `$staging_folder/external/svnmerge.py merge`;
+
+print "merging into Staging complete; commit the changes? (enter to continue)";
+$ans = <STDIN>;
 `svn commit -F $tmpLogFileName`;
 
 print "Done\n";
