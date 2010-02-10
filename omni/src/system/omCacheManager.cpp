@@ -25,7 +25,7 @@ OmCacheManager::OmCacheManager()
 	pthread_mutex_init(&mRealCacheMapMutex, NULL);
 
 	//init vars
-	mTargetRatio = 0.25;
+	mTargetRatio = 0.75;
 	mCurrentlyCleaning = false;
 
 	mDelayDelta = false;
