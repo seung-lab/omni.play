@@ -100,6 +100,7 @@ OmMesher::OmMesher(OmMeshSource & meshSource)
 	mMeshSource.Copy(meshSource);
 
 	mUseWindowedSinc = true;
+	mUseWindowedSinc = sizeof (void*) == 4;
 	
 	//init pipeline (uses source for transform)
 	InitMeshingPipeline();

@@ -2298,7 +2298,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 void OmView2d::PreDraw(Vector2i zoomMipVector)
 {
 	drawComplete = true;
-	unsigned ing freshness = 0;
+	unsigned int freshness = 0;
 	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
 
 	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
@@ -2317,7 +2317,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		break;
 	case SEGMENTATION:
 		tileLength = OmVolume::GetSegmentation(mCache->mImageId).GetChunkDimension();
-		freshness = OmCachingThreadedCachingTile::Freshen(false));
+		freshness = OmCachingThreadedCachingTile::Freshen(false);
 		break;
 	}
 
