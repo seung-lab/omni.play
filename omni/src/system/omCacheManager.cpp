@@ -145,15 +145,18 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 #pragma mark Cleaning Methods
 /////////////////////////////////
 ///////          Cleaning Methods
-
+extern unsigned int myBackoff;
 void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
 	pthread_mutex_lock(&mCacheMapMutex);
 
+
+	float backoffMagic = (1.0 - mTargetRatio) - ((1.0 - mTargetRatio) / myBackoff);
 	//compute target size for group
-	uint32_t target_size = mTargetRatio * mCacheMap[group].MaxSize;
-	//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i, %i\n",
-	//		  target_size, mTargetRatio, group, mCacheMap[group].MaxSize, mCacheMap[group].Size);
+
+	uint32_t target_size = (mTargetRatio+backoffMagic) * mCacheMap[group].MaxSize;
+	debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i, %i\n",
+			  target_size, mTargetRatio, group, mCacheMap[group].MaxSize, mCacheMap[group].Size);
 
 	//get caches in group
 	set < OmCacheBase * >&cache_set = mCacheMap[group].CacheSet;
