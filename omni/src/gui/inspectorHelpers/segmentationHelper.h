@@ -11,11 +11,7 @@ class SegmentationHelper : public InspectorHelper<SegmentationDataWrapper> {
 
  public:
 	SegmentationHelper( MyInspectorWidget* parent );
-	void addToSplitter( SegmentationDataWrapper data );
 
- private:
-	SegInspector *segInspectorWidget;
-	void populateSegmentationInspector(OmId s_id);
 };
 
 #endif

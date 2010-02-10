@@ -75,6 +75,7 @@ class MainWindow
 		void openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype);
 		void openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
 		
+		void showEditPreferencesDialog();
 		void addChannelToVolume();
 		void addSegmentationToVolume();
 		
@@ -128,6 +129,8 @@ class MainWindow
 		QComboBox *selectSegmentationBox;
 		QPushButton *editColorButton;
 		
+		QAction *editPreferencesAct;
+
 		QAction *addChannelAct;
 		QAction *addSegmentationAct;
 		

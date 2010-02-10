@@ -19,6 +19,7 @@
 #include "system/omSystemTypes.h"
 #include "segment/omSegmentEditor.h"
 
+#include "preferences.h"
 #include "system/omException.h"
 
 #include <boost/shared_ptr.hpp>
@@ -138,6 +139,18 @@ void MainWindow::newProject()
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
+}
+
+void MainWindow::showEditPreferencesDialog()
+{
+	if (!isProjectOpen) {
+		return;
+	}
+	
+	Preferences* preferences = new Preferences(this);
+	preferences->show();
+	preferences->raise();
+	preferences->activateWindow();
 }
 
 void MainWindow::addChannelToVolume()
@@ -706,6 +719,10 @@ void MainWindow::createActions()
 	quitAct->setStatusTip(tr("Quit the application"));
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
 
+	// Edit
+	editPreferencesAct = new QAction(tr("&Project Preferences"), this);
+	connect(editPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditPreferencesDialog()));
+
 	// Project
 	addChannelAct = new QAction(tr("Add &Channel"), this);
 	addChannelAct->setShortcut(tr("Ctrl+Shift+C"));
@@ -750,6 +767,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(quitAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(editPreferencesAct);
 
 	projectMenu = menuBar()->addMenu(tr("&Project"));
 	projectMenu->addAction(addChannelAct);

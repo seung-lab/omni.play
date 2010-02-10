@@ -40,7 +40,7 @@ private slots:
 	QPlainTextEdit *notesEdit;
 
 	QGroupBox* makeNotesBox();
-	QGroupBox* makeAddDataBox();
+	//	QGroupBox* makeAddDataBox();
 	QGroupBox* makeCachePropBox();
 	QGroupBox* makeVolPropBox();
 	QGroupBox* makeSrcPropBox();
