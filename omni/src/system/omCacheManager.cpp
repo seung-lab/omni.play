@@ -151,7 +151,7 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 	pthread_mutex_lock(&mCacheMapMutex);
 
 
-	float backoffMagic = (1.0 - mTargetRatio) - ((1.0 - mTargetRatio) / myBackoff);
+	float backoffMagic = (1.0 - mTargetRatio) - ((1.0 - mTargetRatio) / myBackoff+1.0);
 	//compute target size for group
 
 	uint32_t target_size = (mTargetRatio+backoffMagic) * mCacheMap[group].MaxSize;
