@@ -3,7 +3,7 @@
 use strict;
 
 my $src="TRUNK---------->";
-my $dest="\nSTAGING (shadow)---------->";
+my $dest="STAGING (shadow)---------->";
 my $staging_folder = "$ENV{HOME}/.omni.staging.shadow/";
 my $prefixMessgeForShadowSVNcmmit = "automerge from trunk: ";
 my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
@@ -59,7 +59,6 @@ writeTempFile( $prefixMessgeForShadowSVNcmmit.$commit_msg );
 
 print "$dest merging into staging complete; committing...\n";
 print `svn commit -F $tmpLogFileName $staging_folder`;
-print "done\n";
 
 `rm $tmpLogFileName`;
 
