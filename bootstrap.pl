@@ -67,7 +67,7 @@ END
 sub vtk {
     my $baseFileName = "vtk-5.4.2";
     genVTKscript( $baseFileName );
-    prepare( $baseFileName, "VTK" );
+    prepareNukeSrcsFolder( $baseFileName, "VTK" );
 
     # Work around for a bug in the VTK tar ball.
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
@@ -235,6 +235,19 @@ sub prepareAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
+sub prepareNukeSrcsAndBuild {
+    my $baseFileName  = $_[0];
+    my $libFolderName = $_[1];
+
+    my $buildOptions = "";
+    if( scalar(@_) > 2 ) {
+	$buildOptions = $_[2];
+    }
+
+    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
+    build(   $baseFileName, $libFolderName, $buildOptions );
+}
+
 sub boost {
     my $baseFileName = "boost_1_38_0";
     prepare( $baseFileName, "Boost" );
@@ -270,7 +283,7 @@ sub freetype {
 }
 
 sub fontconfig {
-    prepareAndBuild( "fontconfig-2.7.1", "Fontconfig" );
+    prepareNukeSrcsAndBuild( "fontconfig-2.7.1", "Fontconfig" );
 }
 
 sub expat {
@@ -287,6 +300,7 @@ sub qt {
 }
 
 sub omni {
+    printTitle("omni");
     genOmniScript();
 
     my $cmakeSettings = <<END;

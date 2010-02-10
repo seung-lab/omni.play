@@ -11,9 +11,12 @@ class Preferences : public QDialog
 public:
 	Preferences(QWidget *parent = 0);
 
+private slots:
+	void closeDialog();
+	
 private:
 	QTabWidget *tabs;
-	QDialogButtonBox *closeButton;
+	QPushButton *closeButton;
 
 };
 

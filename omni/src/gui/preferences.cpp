@@ -13,9 +13,17 @@ Preferences::Preferences(QWidget *parent) : QDialog(parent)
      tabs->addTab(new Preferences3d(this), "3D View");
      tabs->addTab(new PreferencesMesh(this), "Mesh");
 
+     closeButton = new QPushButton("&Close");
+     connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
      
-     QVBoxLayout *mainLayout = new QVBoxLayout;
-     //     mainLayout->addWidget(buttonBox);
+     QVBoxLayout *mainLayout = new QVBoxLayout();
+     mainLayout->addWidget(closeButton);
      mainLayout->addWidget(tabs);
      setLayout(mainLayout);
+     setWindowTitle(tr("Project Preferences"));
+}
+
+void Preferences::closeDialog()
+{
+	QDialog::done(0);
 }
