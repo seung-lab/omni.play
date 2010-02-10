@@ -59,13 +59,7 @@ print "$dest merging from trunk...\n";
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
 print "done\n";
 
-print "$dest merging into staging complete; commit the changes?\n";
-print "\tnote: not commiting the changes will leave the shadow folder in an inconsistent state\n";
-print "(enter to continue): ";
-$ans = <STDIN>;
-print "OK\n";
-
-print "$dest: committing...\n";
+print "$dest merging into staging complete; committing...";
 print `svn commit -F $tmpLogFileName $staging_folder`;
 print "done\n";
 
