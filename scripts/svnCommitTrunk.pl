@@ -7,7 +7,7 @@ my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
 if( !-d $staging_folder ) {
    # if svnInfo contains svn_ssh, complain/die to run 
    #    svn co file:///gaba/svn/netgpu/omni/staging/trunk ~/.omni.Stating.shadow
-    print "failure! get your shadow .omni folder this way:";
+    print "failure! get your shadow .omni folder this way:\n";
     print  "svn co file:///gaba/svn/netgpu/omni/staging/trunk ~/.omni.Staging.shadow\n";
     die;
 }
@@ -43,3 +43,5 @@ print "done\n";
 `cd ~/.omni.Staging.shadow`; #cd to .omni.Stating.shadow
 `svnmerge.py merge`;
 `svn commit -F $tmpLogFileName`;
+
+print "Done\n";
