@@ -3,6 +3,7 @@
 use strict;
 
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
+print $staging_folder;
 
 if( !-d $staging_folder ) {
    # if svnInfo contains svn_ssh, complain/die to run 
