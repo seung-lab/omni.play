@@ -2,6 +2,9 @@
 
 use strict;
 
+my $src="TRUNKG---------->";
+my $dest="STAGING---------->";
+
 my $pwd = `pwd`;
 
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
@@ -33,23 +36,36 @@ print "\nis this ok? control-c to cancel; enter to continue";
 my $ans = <STDIN>;
 
 my $tmpLogFileName = $staging_folder."/tmpLogMsg.txt";
-open OUT_FILE, ">", $tmpLogFileName or die "could not read $tmpLogFileName";
+open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
 print OUT_FILE $commit_msg;
 close OUT_FILE;
 
-print "updating src in current folder...";
+print "$src: updating src in current folder...";
 `svn up`; 
 print "done\n";
 
+print "$src: committing to repository...";
 `svn commit -F $tmpLogFileName`;
+print "done\n";
 
+print "$dest: updating...";
 `svn up $staging_folder`;
+print "done\n";
+
+print "$dest: merging from trunk...";
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
+print "done\n";
 
-print "merging into Staging complete; commit the changes? (enter to continue)";
+print "$dest: merging into Staging complete; commit the changes? (enter to continue)";
 $ans = <STDIN>;
-`svn commit -F $tmpLogFileName $staging_folder/`;
+print "OK\n";
 
-print "Done\n";
+print "dest: committing...";
+print `svn commit -F $tmpLogFileName $staging_folder/`;
+print "done\n";
+
+`rm $tmpLogFileName`;
+
+print "\nAll Done\n";
 
 chdir($pwd);
