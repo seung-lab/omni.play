@@ -73,16 +73,20 @@ void OmSegment::Join(OmId segid)
 
 void OmSegment::ApplyColor(const OmBitfield & drawOps)
 {
+	Vector3<float> hyperColor = mColor;
+	hyperColor.x *= 2.;
+	hyperColor.y *= 2.;
+	hyperColor.z *= 2.;
 
 	//check coloring options
 	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
 		glColor3fv(OmPreferences::GetVector3f(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
 
 	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
-		glColor3fva(mColor.array, OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+		glColor3fva(hyperColor.array, OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else {
-		glColor3fv(mColor.array);
+		glColor3fv(hyperColor.array);
 	}
 
 }
