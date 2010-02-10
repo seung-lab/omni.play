@@ -3,7 +3,7 @@
 use strict;
 
 my $src="TRUNK---------->";
-my $dest="STAGING---------->";
+my $dest="STAGING (shadow)---------->";
 
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow/";
 
@@ -44,6 +44,11 @@ print "done\n";
 
 print "$src committing to repository...\n";
 print `svn commit -F $tmpLogFileName`;
+print "done\n";
+
+print "$dest reverting any local changes...\n";
+print `svn revert $staging_folder`;
+print `svn revert -R $staging_folder/*`;
 print "done\n";
 
 print "$dest updating...\n";
