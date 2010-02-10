@@ -268,8 +268,6 @@ void OmSegmentation::BuildMeshDataInternal()
 
 					//update progress
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
-	                                p_chunk = shared_ptr < OmMipChunk > ();
-                                	Remove (chunk_coord);
 				}
 	}
 }
