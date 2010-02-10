@@ -28,7 +28,7 @@
 OmMipVoxelationManager::OmMipVoxelationManager(OmMipVolume * pMipVolume)
  : MipVoxelationCache(VRAM_CACHE_GROUP, false), mpMipVolume(pMipVolume)
 {
-
+	debug("genone", "OmMipVoxelationManager::OmMipVoxelationManager\n");
 	//set cache properties
 	SetFetchUpdateInterval(0.5f);
 	//flushes fetch stack so it doesn't waste time fetching old requests
@@ -130,7 +130,7 @@ bool OmMipVoxelationManager::IsBoundaryVoxel(const DataCoord & rDataCoord)
 OmMipVoxelation *OmMipVoxelationManager::CreateMipVoxelation(const OmMipSegmentDataCoord & coord)
 {
 
-	//debug("genone","OmMipChunkVoxels::VoxelateValue");
+	debug("genone","OmMipVoxelationManager::CreateMipVoxelation\n");
 
 	//alloc a new voxelation with this cache
 	OmMipVoxelation *p_voxelation = new OmMipVoxelation(coord, this);
