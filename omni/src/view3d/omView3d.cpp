@@ -40,6 +40,7 @@ void initLights();
 //////////
 
 unsigned int myBackoff;
+static int secretBackoff = 0;
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
@@ -66,11 +67,16 @@ OmView3d::OmView3d(QWidget * parent)
 static void resetBackoff ()
 {
 	myBackoff = 1;
+	secretBackoff = 0;
 }
 
 static void increaseBackoff ()
 {
-	myBackoff++;
+	secretBackoff++;
+	if (secretBackoff > 5) {
+		myBackoff++;
+		secretBackoff = 0;
+	}
 }
 
 /////////////////////////////////
