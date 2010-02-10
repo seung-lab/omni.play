@@ -4,22 +4,20 @@ use strict;
 
 my $src="TRUNK---------->";
 my $dest="STAGING (shadow)---------->";
-my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow/";
+my $staging_folder = "$ENV{HOME}/.omni.staging.shadow/";
 my $prefixMessgeForShadowSVNcmmit = "automerge from trunk: ";
 my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
 
 sub writeTempFile{
-    my $baseFileName = $_[0];
+    my $str = $_[0];
     open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
-    print OUT_FILE $baseFileName;
+    print OUT_FILE $str;
     close OUT_FILE;
 }
 
 if( !-d $staging_folder ) {
-   # if svnInfo contains svn_ssh, complain/die to run 
-   #    svn co file:///gaba/svn/netgpu/omni/staging/trunk ~/.omni.Stating.shadow
     print "failure! get your shadow .omni folder this way:\n";
-    print  "svn co file:///gaba/svn/netgpu/omni/staging/trunk ~/.omni.Staging.shadow\n";
+    print  "\tsvn co file:///gaba/svn/netgpu/omni/staging/trunk $staging_folder\n";
     die;
 }
 
@@ -30,7 +28,7 @@ my $diff = `svn status | grep -v '\?'`;
 print "$src changes:\n";
 print $diff;
 
-print "$src please enter commit message (don't screw up!): ";
+print "$src please enter commit message: ";
 my $commit_msg = <STDIN>;
 
 $commit_msg = $commit_msg.$diff;
@@ -70,5 +68,5 @@ print "done\n";
 
 `rm $tmpLogFileName`;
 
+print "****************************\n";
 print "\nAll Done\n";
-
