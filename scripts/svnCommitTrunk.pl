@@ -59,7 +59,7 @@ print "$dest merging from trunk...\n";
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
 print "done\n";
 
-print "$dest merging into staging complete; committing...";
+print "$dest merging into staging complete; committing...\n";
 print `svn commit -F $tmpLogFileName $staging_folder`;
 print "done\n";
 
