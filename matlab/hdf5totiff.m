@@ -30,14 +30,12 @@ for blk = 1:1:input_size(3)
     
 %     inout_block = mean (g_block, 4);
      
-    imwrite( g_block(:,:,:,1), fullfile( path.affinityGraph1, sprintf('ag--1--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
-    imwrite( g_block(:,:,:,2), fullfile( path.affinityGraph2, sprintf('ag--2--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
-    imwrite( g_block(:,:,:,3), fullfile( path.affinityGraph3, sprintf('ag--3--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
+    scaled = uint8(255*g_block);
+    imwrite( scaled(:,:,:,1), fullfile( path.affinityGraph1, sprintf('ag--1--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
+    imwrite( scaled(:,:,:,2), fullfile( path.affinityGraph2, sprintf('ag--2--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
+    imwrite( scaled(:,:,:,3), fullfile( path.affinityGraph3, sprintf('ag--3--%03d.tif',blk)), 'TIFF', 'Compression', 'none');
     
-    if mod(blk,50)
-       fprintf('\n'); 
-    end
-    fprintf(1, '.');
+    fprintf('%d of %d\n', blk, input_size(3) ); 
 end
 
 H5D.close(input_datasetID);

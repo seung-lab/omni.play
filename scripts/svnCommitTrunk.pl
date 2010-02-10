@@ -2,6 +2,8 @@
 
 use strict;
 
+my $pwd = `pwd`;
+
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
 
 if( !-d $staging_folder ) {
@@ -21,13 +23,13 @@ print "changes:\n";
 print $diff_add;
 print $diff_sub;
 
-print "\nplease enter commit message (don't screw up!):  ";
+print "\n\nplease enter commit message (don't screw up!):  ";
 my $commit_msg = <STDIN>;
 
-$commit_msg = $commit_msg."\n".$diff_add."\n".$diff_sub;
+$commit_msg = $commit_msg.$diff_add.$diff_sub;
 
 print "intended commit msg:\n".$commit_msg;
-print "is this ok? control-c to cancel; enter to continue";
+print "\nis this ok? control-c to cancel; enter to continue";
 my $ans = <STDIN>;
 
 my $tmpLogFileName = $staging_folder."/tmpLogMsg.txt";
@@ -40,8 +42,14 @@ print "updating src in current folder...";
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
-`cd ~/.omni.Staging.shadow`; #cd to .omni.Stating.shadow
-print `~/.omni.Staging.shadow/external/svnmerge.py merge`;
-`svn commit -F $tmpLogFileName`;
+
+`svn up $staging_folder`;
+print `$staging_folder/external/svnmerge.py merge $staging_folder`;
+
+print "merging into Staging complete; commit the changes? (enter to continue)";
+$ans = <STDIN>;
+`svn commit -F $tmpLogFileName $staging_folder/`;
 
 print "Done\n";
+
+chdir($pwd);
