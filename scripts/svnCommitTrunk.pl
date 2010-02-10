@@ -5,7 +5,7 @@ use strict;
 my $src="TRUNK---------->";
 my $dest="STAGING---------->";
 
-my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
+my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow/";
 
 if( !-d $staging_folder ) {
    # if svnInfo contains svn_ssh, complain/die to run 
@@ -33,7 +33,7 @@ print "$src intended commit msg:\n".$commit_msg;
 print "$src is this ok? (control-c to cancel; enter to continue): ";
 my $ans = <STDIN>;
 
-my $tmpLogFileName = $staging_folder."/tmpLogMsg.txt";
+my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
 open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
 print OUT_FILE $commit_msg;
 close OUT_FILE;
@@ -59,7 +59,7 @@ $ans = <STDIN>;
 print "OK\n";
 
 print "$dest: committing...\n";
-print `svn commit -F $tmpLogFileName $staging_folder/`;
+print `svn commit -F $tmpLogFileName $staging_folder`;
 print "done\n";
 
 `rm $tmpLogFileName`;
