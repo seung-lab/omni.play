@@ -42,11 +42,13 @@ print "updating src in current folder...";
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
+
+`svn up $staging_folder`;
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
 
 print "merging into Staging complete; commit the changes? (enter to continue)";
 $ans = <STDIN>;
-`svn commit -F $tmpLogFileName $staging_folder`;
+`svn commit -F $tmpLogFileName $staging_folder/`;
 
 print "Done\n";
 
