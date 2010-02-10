@@ -2,8 +2,9 @@
 
 use strict;
 
+my $pwd = `pwd`;
+
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow";
-print $staging_folder;
 
 if( !-d $staging_folder ) {
    # if svnInfo contains svn_ssh, complain/die to run 
@@ -41,7 +42,7 @@ print "updating src in current folder...";
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
-`cd $staging_folder`;
+chdir($staging_folder);
 print `$staging_folder/external/svnmerge.py merge`;
 
 print "merging into Staging complete; commit the changes? (enter to continue)";
@@ -49,3 +50,5 @@ $ans = <STDIN>;
 `svn commit -F $tmpLogFileName`;
 
 print "Done\n";
+
+chdir($pwd);
