@@ -4,7 +4,6 @@ use strict;
 
 my $src="TRUNK---------->";
 my $dest="STAGING (shadow)---------->";
-
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow/";
 
 if( !-d $staging_folder ) {
@@ -17,17 +16,15 @@ if( !-d $staging_folder ) {
 
 #test `svn info` to make sure it is trunk; if not, complain/exit
 
-my $diff_add = `svn diff | grep '^+++'`;
-my $diff_sub = `svn diff | grep '^\-\-\-'`;
+my $diff = `svn status | grep -v '\?'`;
 
 print "$src changes:\n";
-print $diff_add;
-print $diff_sub;
+print $diff;
 
 print "$src please enter commit message (don't screw up!): ";
 my $commit_msg = <STDIN>;
 
-$commit_msg = $commit_msg.$diff_add.$diff_sub;
+$commit_msg = $commit_msg.$diff;
 
 print "$src intended commit msg:\n".$commit_msg;
 print "$src is this ok? (control-c to cancel; enter to continue): ";
