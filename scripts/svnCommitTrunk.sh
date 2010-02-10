@@ -3,7 +3,7 @@
 cd ~/omni.trunk
 svn up
 svn commit
-cd ~omni.Staging
+cd ~/omni.Staging
 svnmerge.py merge
 svn commit
 cd ~/omni.trunk
