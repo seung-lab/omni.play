@@ -99,6 +99,8 @@ OmMesher::OmMesher(OmMeshSource & meshSource)
 	//copy source
 	mMeshSource.Copy(meshSource);
 
+	mUseWindowedSinc = true;
+	
 	//init pipeline (uses source for transform)
 	InitMeshingPipeline();
 }
@@ -109,7 +111,11 @@ OmMesher::~OmMesher()
 	mpDecimation->Delete();
 	mpTransform->Delete();
 	mpTransformPolyDataFilter->Delete();
-	mpSmoothPolyDataFilter->Delete();
+	if (mUseWindowedSinc) {
+		mpWindowedSincPolyDataFilter->Delete();
+	} else {
+		mpSmoothPolyDataFilter->Delete();
+	}
 	mpPolyDataNormals->Delete();
 	mpStripper->Delete();
 }
@@ -128,7 +134,11 @@ void
 	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
 	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
 	//debug("FIXME", << "target_reduction: " << target_reduction << endl;
-	mpDecimation->SetTargetReduction(target_reduction);
+	if (mUseWindowedSinc) {
+		mpDecimation->SetTargetReduction(.07);
+	} else {
+		mpDecimation->SetTargetReduction(target_reduction);
+	}
 	mpDecimation->GetOutput()->ReleaseDataFlagOn();
 
 	//form transform to norm extent
@@ -141,19 +151,33 @@ void
 	mpTransformPolyDataFilter->SetTransform(mpTransform);
 	mpTransformPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 
-	//smooth poly
-	mpSmoothPolyDataFilter = vtkSmoothPolyDataFilter::New();
-	mpSmoothPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
-	int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
-	mpSmoothPolyDataFilter->SetNumberOfIterations(num_smoothing_iters);	//smooth geometry
-	mpSmoothPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
-
-	//form normals
-	mpPolyDataNormals = vtkPolyDataNormals::New();
-	mpPolyDataNormals->SetInputConnection(mpSmoothPolyDataFilter->GetOutputPort());
-	//mpPolyDataNormals->SplittingOff();
-	double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
-	mpPolyDataNormals->SetFeatureAngle(preserved_feature_angle);	//give appearance of smoothing
+	if (mUseWindowedSinc) {
+		//sinc smooth poly
+		mpWindowedSincPolyDataFilter = vtkWindowedSincPolyDataFilter::New();
+		mpWindowedSincPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
+		int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
+		mpWindowedSincPolyDataFilter->SetNumberOfIterations(12);	//smooth geometry
+		mpWindowedSincPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
+		//form normals
+		mpPolyDataNormals = vtkPolyDataNormals::New();
+		mpPolyDataNormals->SetInputConnection(mpWindowedSincPolyDataFilter->GetOutputPort());
+		//mpPolyDataNormals->SplittingOff();
+		double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
+		mpPolyDataNormals->SetFeatureAngle(preserved_feature_angle);	//give appearance of smoothing
+	} else {
+		//smooth poly
+		mpSmoothPolyDataFilter = vtkSmoothPolyDataFilter::New();
+		mpSmoothPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
+		int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
+		mpSmoothPolyDataFilter->SetNumberOfIterations(num_smoothing_iters);	//smooth geometry
+		mpSmoothPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
+		//form normals
+		mpPolyDataNormals = vtkPolyDataNormals::New();
+		mpPolyDataNormals->SetInputConnection(mpSmoothPolyDataFilter->GetOutputPort());
+		//mpPolyDataNormals->SplittingOff();
+		double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
+		mpPolyDataNormals->SetFeatureAngle(preserved_feature_angle);	//give appearance of smoothing
+	}
 
 	//strip poly
 	mpStripper = vtkStripper::New();
