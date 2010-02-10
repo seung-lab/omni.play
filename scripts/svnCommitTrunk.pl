@@ -5,6 +5,15 @@ use strict;
 my $src="TRUNK---------->";
 my $dest="STAGING (shadow)---------->";
 my $staging_folder = "$ENV{HOME}/.omni.Staging.shadow/";
+my $prefixMessgeForShadowSVNcmmit = "automerge from trunk: ";
+my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
+
+sub writeTempFile{
+    my $baseFileName = $_[0];
+    open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
+    print OUT_FILE $baseFileName;
+    close OUT_FILE;
+}
 
 if( !-d $staging_folder ) {
    # if svnInfo contains svn_ssh, complain/die to run 
@@ -30,10 +39,7 @@ print "$src intended commit msg:\n".$commit_msg;
 print "$src is this ok? (control-c to cancel; enter to continue): ";
 my $ans = <STDIN>;
 
-my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
-open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
-print OUT_FILE $commit_msg;
-close OUT_FILE;
+writeTempFile( $commit_msg );
 
 print "$src updating src in current folder...\n";
 print `svn up`; 
@@ -55,6 +61,8 @@ print "done\n";
 print "$dest merging from trunk...\n";
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
 print "done\n";
+
+writeTempFile( $prefixMessgeForShadowSVNcmmit.$commit_msg );
 
 print "$dest merging into staging complete; committing...\n";
 print `svn commit -F $tmpLogFileName $staging_folder`;
