@@ -26,7 +26,7 @@ print $diff_sub;
 print "\n\nplease enter commit message (don't screw up!):  ";
 my $commit_msg = <STDIN>;
 
-$commit_msg = $commit_msg."\n".$diff_add."\n".$diff_sub;
+$commit_msg = $commit_msg.$diff_add.$diff_sub;
 
 print "intended commit msg:\n".$commit_msg;
 print "\nis this ok? control-c to cancel; enter to continue";
@@ -42,12 +42,11 @@ print "updating src in current folder...";
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
-chdir($staging_folder);
-print `$staging_folder/external/svnmerge.py merge`;
+print `$staging_folder/external/svnmerge.py merge $staging_folder`;
 
 print "merging into Staging complete; commit the changes? (enter to continue)";
 $ans = <STDIN>;
-`svn commit -F $tmpLogFileName`;
+`svn commit -F $tmpLogFileName $staging_folder`;
 
 print "Done\n";
 
