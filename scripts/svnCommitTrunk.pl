@@ -3,7 +3,7 @@
 use strict;
 
 my $src="TRUNK---------->";
-my $dest="STAGING (shadow)---------->";
+my $dest="\nSTAGING (shadow)---------->";
 my $staging_folder = "$ENV{HOME}/.omni.staging.shadow/";
 my $prefixMessgeForShadowSVNcmmit = "automerge from trunk: ";
 my $tmpLogFileName = $staging_folder."tmpLogMsg.txt";
@@ -41,24 +41,19 @@ writeTempFile( $commit_msg );
 
 print "$src updating src in current folder...\n";
 print `svn up`; 
-print "done\n";
 
 print "$src committing to repository...\n";
 print `svn commit -F $tmpLogFileName`;
-print "done\n";
 
 print "$dest reverting any local changes...\n";
 print `svn revert $staging_folder`;
 print `svn revert -R $staging_folder/*`;
-print "done\n";
 
 print "$dest updating...\n";
 print `svn up $staging_folder`;
-print "done\n";
 
 print "$dest merging from trunk...\n";
 print `$staging_folder/external/svnmerge.py merge $staging_folder`;
-print "done\n";
 
 writeTempFile( $prefixMessgeForShadowSVNcmmit.$commit_msg );
 
