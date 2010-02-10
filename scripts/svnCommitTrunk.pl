@@ -69,4 +69,4 @@ print "done\n";
 `rm $tmpLogFileName`;
 
 print "****************************\n";
-print "\nAll Done\n";
+print "All Done\n";
