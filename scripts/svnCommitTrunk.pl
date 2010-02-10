@@ -35,13 +35,25 @@ open OUT_FILE, ">", $tmpLogFileName or die "could not read $tmpLogFileName";
 print OUT_FILE $commit_msg;
 close OUT_FILE;
 
+my $svnssh = `svn info | grep svn+ssh`;
+my $password ="";
+if (length $svnssh) {
+	system('stty','-echo');
+	chop($password=<STDIN>);
+	system('stty','echo'); 
+}
+
 print "updating src in current folder...";
 `svn up`; 
 print "done\n";
 
 `svn commit -F $tmpLogFileName`;
 `cd ~/.omni.Staging.shadow`; #cd to .omni.Stating.shadow
-`~/.omni.Staging.shadow/external/svnmerge.py merge`;
+if (length $svnssh) {
+	`~/.omni.Staging.shadow/external/svnmerge.py -p $password merge`;
+} else {
+	`~/.omni.Staging.shadow/external/svnmerge.py merge`;
+}
 `svn commit -F $tmpLogFileName`;
 
 print "Done\n";
