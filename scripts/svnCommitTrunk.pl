@@ -40,16 +40,16 @@ open OUT_FILE, ">", $tmpLogFileName or die "could not open $tmpLogFileName";
 print OUT_FILE $commit_msg;
 close OUT_FILE;
 
-print "$src updating src in current folder...";
-`svn up`; 
+print "$src updating src in current folder...\n";
+print `svn up`; 
 print "done\n";
 
-print "$src committing to repository...";
-`svn commit -F $tmpLogFileName`;
+print "$src committing to repository...\n";
+print `svn commit -F $tmpLogFileName`;
 print "done\n";
 
-print "$dest updating...";
-`svn up $staging_folder`;
+print "$dest updating...\n";
+print `svn up $staging_folder`;
 print "done\n";
 
 print "$dest merging from trunk...\n";
