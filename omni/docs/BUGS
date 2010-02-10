@@ -1808,3 +1808,46 @@ $1 = -994403744
 (gdb)
 
 
+
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1178777920.  Back trace follows.omni: /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:248: void OmMipChunk::ReadVolumeData(): Assertion `0' failed.
+
+  #000: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5D.c line 1163 in H5Dopen(): not a location
+    major(01): Function arguments
+    minor(03): Inappropriate type
+  #001: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5G.c line 1876 in H5G_loc(): invalid file ID
+    major(01): Function arguments
+    minor(05): Bad value
+  #002: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5I.c line 1257 in H5I_find_id(): invalid ID
+    major(07): Atom layer
+    minor(32): Unable to find atom information (already closed?)
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x47b29940 (LWP 26706)]
+0x0000003545230265 in raise () from /lib64/libc.so.6
+(gdb) bt
+#0  0x0000003545230265 in raise () from /lib64/libc.so.6
+#1  0x0000003545231d10 in abort () from /lib64/libc.so.6
+#2  0x00000035452296e6 in __assert_fail () from /lib64/libc.so.6
+#3  0x00000000007a8bc0 in OmMipChunk::ReadVolumeData (this=0x2aaab6449500)
+    at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:248
+#4  0x00000000007a8c86 in OmMipChunk::Open (this=0x2aaab6449500)
+    at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:127
+#5  0x000000000084bf3c in OmTile::GetImageData (this=0x4419b78, 
+    key=@0x47b29040, sliceDims=@0x47b28f50, vol=0x5dd6840)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:145
+#6  0x000000000084c08b in OmTile::BindToTextureID (this=0x4419b78, 
+    key=@0x47b29040, cache=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:76
+#7  0x000000000082fde2 in OmThreadedCachingTile::HandleCacheMiss (
+    this=0x44199a0, key=@0x47b29040)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omThreadedCachingTile.cpp:106
+#8  0x00000000008363d3 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop
+    (this=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/system/omThreadedCache.h:630
+#9  0x000000000083662b in start_cache_fetch_thread<OmTileCoord, OmTextureID> (
+    arg=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/system/omThreadedCache.h:745
+#10 0x0000003545e06617 in start_thread () from /lib64/libpthread.so.0
+---Type <return> to continue, or q <return> to quit---
+#11 0x00000035452d3c2d in clone () from /lib64/libc.so.6
