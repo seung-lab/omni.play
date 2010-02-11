@@ -667,10 +667,10 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
 	if (this == event->getSender()) {
-		//debug("gui", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("gui", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 		return;
 	} else {
-		//debug("gui", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("gui", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
