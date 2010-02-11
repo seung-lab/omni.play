@@ -1,24 +1,42 @@
 #ifndef FILOBJECTINSPECTOR_H
 #define FILOBJECTINSPECTOR_H
 
+#include <QtGui>
 #include <QWidget> 
-#include "ui_filObjectInspector.h" 
+#include "system/omProject.h"
 #include "system/omSystemTypes.h"
+#include "utility/dataWrappers.h"
 
-class FilObjectInspector : public QWidget, public Ui::filObjectInspector
+class FilObjectInspector : public QWidget
 { 
     Q_OBJECT 
 	
 public: 
-    FilObjectInspector(QWidget *parent = 0); 
-	
-    void setChannelID( const OmId );
-    OmId getChannelID();
-    void setFilterID( const OmId );
-    OmId getFilterID();
-	
-    private: 
-	OmId ChannelID;
-	OmId FilterID;
+    FilObjectInspector(QWidget *parent, const FilterDataWrapper & fdw); 
+
+private slots:
+    void sourceEditChangedChan();
+    void sourceEditChangedSeg();
+    void setFilAlpha(int);
+    void saveFilterAlphaValue();
+
+private: 
+    QSlider *alphaSlider;
+
+    OmId mChannelID;
+    OmId mFilterID;
+    FilterDataWrapper mFDW;
+
+    QLineEdit *chanEdit;
+    QLineEdit *segEdit;
+    QLineEdit *tagsEdit;
+    QPlainTextEdit *notesEdit;
+
+    QGroupBox* makeFilterOptionsBox();
+    QGroupBox* makeNotesBox();
+
+    void set_initial_values();
+    int getSegmentationIDtoFilter();
+    int getChannelIDtoFilter();
 }; 
 #endif

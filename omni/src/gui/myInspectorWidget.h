@@ -55,7 +55,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	void addSegment();
 	void nameEditChanged();
 	void setSegObjColor();
-	void setFilAlpha(int);
 	void addChildrenToSegmentation(OmId seg_id);
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
@@ -63,8 +62,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	void selectChannelView(QAction * act);
 	void selectSegmentationView(QAction * act);
-	void sourceEditChangedChan();
-	void sourceEditChangedSeg();
 	void addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column);
 	void addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column);
 	void addToSplitterDataSource(QTreeWidgetItem * current, const int column);
@@ -140,7 +137,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	void populateChannelInspector(OmId c_id);
 	void populateSegmentationInspector(OmId s_id);
 	void populateSegmentObjectInspector(OmId s_id, OmId obj_id);
-	void populateFilterObjectInspector(OmId s_id, OmId obj_id);
 
 	QColor current_color;
 

@@ -5,6 +5,7 @@
 #include "segment/omSegmentEditor.h"
 #include "common/omGl.h"
 #include "system/omDebug.h"
+#include "system/omProject.h"
 
 #define DEBUG 0
 
@@ -239,12 +240,14 @@ OmChannel & OmVolume::GetChannel(OmId id)
 OmChannel & OmVolume::AddChannel()
 {
 	OmChannel & r_channel = Instance()->mChannelManager.Add();
+	OmProject::Save();
 	return r_channel;
 }
 
 void OmVolume::RemoveChannel(OmId id)
 {
 	Instance()->mChannelManager.Remove(id);
+	OmProject::Save();
 }
 
 bool OmVolume::IsChannelValid(OmId id)
@@ -281,12 +284,14 @@ OmSegmentation & OmVolume::GetSegmentation(OmId id)
 OmSegmentation & OmVolume::AddSegmentation()
 {
 	OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
+	OmProject::Save();
 	return r_segmentation;
 }
 
 void OmVolume::RemoveSegmentation(OmId id)
 {
 	Instance()->mSegmentationManager.Remove(id);
+	OmProject::Save();
 }
 
 bool OmVolume::IsSegmentationValid(OmId id)

@@ -418,7 +418,9 @@ OmSegment & OmSegmentation::GetSegment(OmId id)
 
 OmSegment & OmSegmentation::AddSegment()
 {
-	return mSegmentManager.AddSegment();
+	OmSegment& segment = mSegmentManager.AddSegment();
+	OmProject::Save();
+	return segment;
 }
 
 void OmSegmentation::RemoveSegment(OmId id)
