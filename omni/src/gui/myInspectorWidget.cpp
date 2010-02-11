@@ -42,7 +42,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 	segmenHelper = new SegmentationHelper(this);
 	channelHelper = new ChannelHelper(this);
 
-	resize(448, 640);
 	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	mSizePolicy.setHorizontalStretch(0);
 	mSizePolicy.setVerticalStretch(0);
@@ -51,11 +50,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 
 	splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Horizontal);
-	QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	sizePolicy1.setHorizontalStretch(0);
-	sizePolicy1.setVerticalStretch(0);
-	sizePolicy1.setHeightForWidth(splitter->sizePolicy().hasHeightForWidth());
-	splitter->setSizePolicy(sizePolicy1);
 
 	QWidget *layoutWidget = new QWidget(splitter);
 	splitter->addWidget(layoutWidget);
@@ -808,7 +802,6 @@ void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
 void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
-	int count = 0;
 	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
 	const OmId segmenID = sdw.getID();
 
@@ -823,9 +816,12 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 	QTreeWidgetItem *rowToJumpTo = NULL;
 	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
 
+	int count = 0;
 	foreach(SegmentDataWrapper seg, segs) {
-		//count++;
-		//if (count > 5000) break;
+		count++;
+		if (count > 60000){
+			break;
+		}
 		debug ("crashing", "Crashing here %i\n", count);
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
