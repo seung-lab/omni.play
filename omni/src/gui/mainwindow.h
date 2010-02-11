@@ -25,7 +25,7 @@
 #include "system/events/omSystemModeEvent.h"
 
 #include "gui/recentFileList.h"
-#include "gui/preferences.h"
+#include "gui/preferences/preferences.h"
 
 class OmView2d;
 class OmView3d;

@@ -11,8 +11,6 @@
 #include "filObjectInspector.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
-#include "inspectorHelpers/segmentationHelper.h"
-#include "inspectorHelpers/channelHelper.h"
 
 class SegInspector;
 class ChanInspector;
@@ -20,9 +18,6 @@ class SegObjectInspector;
 
 class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
  Q_OBJECT public:
-	friend class SegmentationHelper;
-	friend class ChannelHelper;
-
 	 MyInspectorWidget(QWidget * parent = 0);
 	~MyInspectorWidget();
 
@@ -98,9 +93,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	ChannelDataWrapper getCurrentlySelectedChannel();
 	 Qt::CheckState getCheckState(const bool enabled);
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
-
-	SegmentationHelper *segmenHelper;
-	ChannelHelper *channelHelper;
 
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
 	void addChannelToVolume();

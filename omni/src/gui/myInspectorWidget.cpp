@@ -38,9 +38,6 @@ Q_DECLARE_METATYPE(FilterDataWrapper);
 
 MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 {
-	segmenHelper = new SegmentationHelper(this);
-	channelHelper = new ChannelHelper(this);
-
 	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	mSizePolicy.setHorizontalStretch(0);
 	mSizePolicy.setVerticalStretch(0);
