@@ -19,6 +19,7 @@ using namespace vmml;
 
 
 #include <vtkImageData.h>
+#include <vtkWindowedSincPolyDataFilter.h>
 
 
 class OmMipMesh;
@@ -36,6 +37,7 @@ class vtkSmoothPolyDataFilter;
 class vtkPolyDataNormals;
 class vtkStripper;
 class vtkPolyData;
+class vtkWindowedSincPolyDataFilter;
 
 
 
@@ -91,6 +93,9 @@ private:
 	vtkSmoothPolyDataFilter *mpSmoothPolyDataFilter;
 	vtkPolyDataNormals *mpPolyDataNormals;
 	vtkStripper *mpStripper;
+
+	bool mUseWindowedSinc;
+	vtkWindowedSincPolyDataFilter *mpWindowedSincPolyDataFilter;
 };
 
 

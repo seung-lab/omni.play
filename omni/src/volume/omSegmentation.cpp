@@ -498,6 +498,12 @@ const SegmentDataSet & OmSegmentation::GetUnselectedSegmentDataValues()
 	return mSegmentManager.GetUnselectedSegmentDataValues();
 }
 
+const SegmentDataSet & OmSegmentation::GetVoxelizedSegmentDataValues()
+{
+	static SegmentDataSet empty;
+	return empty;
+}
+
 #pragma mark
 #pragma mark Draw
 /////////////////////////////////
@@ -639,6 +645,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, cons
 void OmSegmentation::DrawChunk(const OmMipChunkCoord & chunkCoord, const SegmentDataSet & rRelvDataVals,
 			       const OmVolumeCuller & rCuller)
 {
+	//debug ("genone", "OmSegmentation::DrawChunk\n");
 
 	//get pointer to chunk
 	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
@@ -652,17 +659,31 @@ void OmSegmentation::DrawChunk(const OmMipChunkCoord & chunkCoord, const Segment
 	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_SEGMENT)) {
 		return;
 	}
+
+	//debug ("genone", "OmSegmentation::DrawChunk (isleaf=%i)\n", p_chunk->IsLeaf());
+
 	//if editing and chunk is leaf
-	if ((OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) && p_chunk->IsLeaf()) {
+	if ((OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) && p_chunk->IsLeaf()
+						&& GetVoxelizedSegmentDataValues().size()) {
 		//then draw selected as voxels
 		SegmentDataSet selected_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, GetSelectedSegmentDataValues(),
+		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, GetVoxelizedSegmentDataValues(),
 						       selected_relevant_data_set);
 		DrawChunkVoxels(chunkCoord, selected_relevant_data_set, rCuller.GetDrawOptions());
 
+		SegmentDataSet theRest;
+		SegmentDataSet::iterator itr;
+		for (itr = rRelvDataVals.begin(); !(itr == rRelvDataVals.end()); itr++) {
+			if (GetVoxelizedSegmentDataValues().end() ==
+						GetVoxelizedSegmentDataValues().find (*itr)) {
+				theRest.insert (*itr);
+			}
+		}
+		
+
 		//draw un-selected as meshes
 		SegmentDataSet unselected_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, GetUnselectedSegmentDataValues(),
+		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, theRest,
 						       unselected_relevant_data_set);
 		DrawChunkMeshes(chunkCoord, unselected_relevant_data_set, rCuller.GetDrawOptions());
 
@@ -687,6 +708,7 @@ void OmSegmentation::DrawChunkMeshes(const OmMipChunkCoord & mipCoord, const Seg
 void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals,
 				     const OmBitfield & drawOps)
 {
+	//debug ("genone", "OmSegmentation::DrawChunkVoxels\n");
 	mMipVoxelationManager.DrawVoxelations(mSegmentManager, mipCoord, rRelvDataVals, drawOps);
 }
 

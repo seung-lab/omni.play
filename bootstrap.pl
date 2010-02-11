@@ -82,7 +82,7 @@ sub vtk {
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
-    print "runing: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
+    print "running: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
     `sh $scriptPath/buildvtk.sh`;
 }
 
@@ -506,8 +506,11 @@ sub runSmallLibraryMenuEntry {
 sub checkCmdLineArgs {
     if ( 1 == @ARGV ) {
 	runMenuEntry( @ARGV[0] );
-    }
-    else {
+    } elsif (2 == @ARGV ) {
+	$globalMakeOptions =  " -j@ARGV[1] ";
+	print "changed global make options to \"$globalMakeOptions\"\n";
+	menu();
+    } else {
 	menu();
     }
 }

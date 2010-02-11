@@ -1746,3 +1746,108 @@ Program received signal SIGABRT, Aborted.
 #13 0xb7c774fb in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
 #14 0xb7a80e5e in clone () from /lib/tls/i686/cmov/libc.so.6
 
+omni: /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkGarbageCollector.cxx:699:void vtkGarbageCollectorImpl::CollectComponent(vtkGarbageCollectorImpl::ComponentType*): Assertion `(*e)->Object->GetReferenceCount() == 1' failed.
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f44b1dfa950 (LWP 21987)]
+0x00007f44c486efb5 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f44c486efb5 in raise () from /lib/libc.so.6
+#1  0x00007f44c4870bc3 in abort () from /lib/libc.so.6
+#2  0x00007f44c4867f09 in __assert_fail () from /lib/libc.so.6
+#3  0x000000000129a989 in vtkGarbageCollectorImpl::CollectComponent (
+    this=0x7f44b1df99e0, c=0x7f44b4613be0)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkGarbageCollector.cxx:699
+#4  0x000000000129b3a4 in vtkGarbageCollectorImpl::CollectInternal (
+    this=0x7f44b1df99e0, root=0x6c77e60)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkGarbageCollector.cxx:474
+#5  0x000000000129c68d in vtkGarbageCollector::Collect (root=0x6c77e60)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkGarbageCollector.cxx:902
+#6  0x00000000012eec3b in vtkObjectBase::UnRegisterInternal (this=0x6c77e60, check=1)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkObjectBase.cxx:268
+#7  0x00000000012eca2d in vtkObject::UnRegisterInternal (this=0x6c77e60, o=0x0,
+    check=1) at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkObject.cxx:885
+#8  0x0000000001118ab9 in vtkDataObject::UnRegister (this=0x6c77e60, o=0x0)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Filtering/vtkDataObject.cxx:804
+#9  0x00000000012eea47 in vtkObjectBase::Delete (this=0x6c77e60)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkObjectBase.cxx:117
+#10 0x00000000007f3a99 in OmMipChunk::SetImageData (this=0x3bb68c0,
+    pImageData=0x7f44b460b6a0)
+    at /Users/didier/staging/omni/src/volume/omMipChunk.cpp:412
+#11 0x00000000007f3fe1 in OmMipChunk::ReadVolumeData (this=0x3bb68c0)
+    at /Users/didier/staging/omni/src/volume/omMipChunk.cpp:256
+#12 0x00000000007f4044 in OmMipChunk::Open (this=0x3bb68c0)
+    at /Users/didier/staging/omni/src/volume/omMipChunk.cpp:127
+#13 0x00000000008968b0 in OmTile::GetImageData (this=0x3fa5ef8, key=@0x7f44b1df9fe0,
+    sliceDims=@0x7f44b1df9f30, vol=0x3a12b30)
+    at /Users/didier/staging/omni/src/view2d/omTile.cpp:145
+#14 0x00000000008969ff in OmTile::BindToTextureID (this=0x3fa5ef8,
+    key=@0x7f44b1df9fe0, cache=0x3fa5d20)
+    at /Users/didier/staging/omni/src/view2d/omTile.cpp:76
+#15 0x000000000087ab62 in OmThreadedCachingTile::HandleCacheMiss (this=0x3fa5d20,
+    key=@0x7f44b1df9fe0)
+    at /Users/didier/staging/omni/src/view2d/omThreadedCachingTile.cpp:106
+#16 0x000000000088106d in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (
+    this=0x3fa5d20) at /Users/didier/staging/omni/src/system/omThreadedCache.h:630
+#17 0x00000000008812c5 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (
+    arg=0x3fa5d20) at /Users/didier/staging/omni/src/system/omThreadedCache.h:745
+#18 0x00007f44c57c93ba in start_thread () from /lib/libpthread.so.0
+#19 0x00007f44c4921fcd in clone () from /lib/libc.so.6
+#20 0x0000000000000000 in ?? ()
+(gdb) up
+#1  0x00007f44c4870bc3 in abort () from /lib/libc.so.6
+(gdb) up
+#2  0x00007f44c4867f09 in __assert_fail () from /lib/libc.so.6
+(gdb) up
+#3  0x000000000129a989 in vtkGarbageCollectorImpl::CollectComponent (
+    this=0x7f44b1df99e0, c=0x7f44b4613be0)
+    at /Users/didier/branch/external/srcs/vtk-5.4.2/Common/vtkGarbageCollector.cxx:699
+699         assert((*e)->Object->GetReferenceCount() == 1);
+(gdb) p (*e)->Object->GetReferenceCount()
+$1 = -994403744
+(gdb)
+
+
+
+
+HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1178777920.  Back trace follows.omni: /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:248: void OmMipChunk::ReadVolumeData(): Assertion `0' failed.
+
+  #000: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5D.c line 1163 in H5Dopen(): not a location
+    major(01): Function arguments
+    minor(03): Inappropriate type
+  #001: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5G.c line 1876 in H5G_loc(): invalid file ID
+    major(01): Function arguments
+    minor(05): Bad value
+  #002: /Users/purcaro/omni.trunk/external/srcs/hdf5-1.6.9/src/H5I.c line 1257 in H5I_find_id(): invalid ID
+    major(07): Atom layer
+    minor(32): Unable to find atom information (already closed?)
+
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x47b29940 (LWP 26706)]
+0x0000003545230265 in raise () from /lib64/libc.so.6
+(gdb) bt
+#0  0x0000003545230265 in raise () from /lib64/libc.so.6
+#1  0x0000003545231d10 in abort () from /lib64/libc.so.6
+#2  0x00000035452296e6 in __assert_fail () from /lib64/libc.so.6
+#3  0x00000000007a8bc0 in OmMipChunk::ReadVolumeData (this=0x2aaab6449500)
+    at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:248
+#4  0x00000000007a8c86 in OmMipChunk::Open (this=0x2aaab6449500)
+    at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:127
+#5  0x000000000084bf3c in OmTile::GetImageData (this=0x4419b78, 
+    key=@0x47b29040, sliceDims=@0x47b28f50, vol=0x5dd6840)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:145
+#6  0x000000000084c08b in OmTile::BindToTextureID (this=0x4419b78, 
+    key=@0x47b29040, cache=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:76
+#7  0x000000000082fde2 in OmThreadedCachingTile::HandleCacheMiss (
+    this=0x44199a0, key=@0x47b29040)
+    at /Users/purcaro/omni.trunk/omni/src/view2d/omThreadedCachingTile.cpp:106
+#8  0x00000000008363d3 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop
+    (this=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/system/omThreadedCache.h:630
+#9  0x000000000083662b in start_cache_fetch_thread<OmTileCoord, OmTextureID> (
+    arg=0x44199a0)
+    at /Users/purcaro/omni.trunk/omni/src/system/omThreadedCache.h:745
+#10 0x0000003545e06617 in start_thread () from /lib64/libpthread.so.0
+---Type <return> to continue, or q <return> to quit---
+#11 0x00000035452d3c2d in clone () from /lib64/libc.so.6

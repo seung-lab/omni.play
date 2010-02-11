@@ -93,6 +93,7 @@ public:
 	const SegmentDataSet& GetEnabledSegmentDataValues();
 	const SegmentDataSet& GetSelectedSegmentDataValues();
 	const SegmentDataSet& GetUnselectedSegmentDataValues();
+	const SegmentDataSet& GetVoxelizedSegmentDataValues();
 	
 	
 	//drawing

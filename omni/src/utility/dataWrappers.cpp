@@ -6,13 +6,17 @@
  *******************************************/
 DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId obj_id)
 {
+	mIsValidContainer = false;
+
 	mType = obj_type;
 	switch (obj_type) {
 	case CHANNEL:
 		cDW = ChannelDataWrapper(obj_id);
+		mIsValidContainer = true;
 		break;
 	case SEGMENTATION:
 		segmenDW = SegmentationDataWrapper(obj_id);
+		mIsValidContainer = true;
 		break;
 	}
 }
@@ -21,6 +25,12 @@ DataWrapperContainer::DataWrapperContainer(SegmentationDataWrapper sdw)
 {
 	mType = SEGMENTATION;
 	segmenDW = sdw;
+	mIsValidContainer = true;
+}
+
+bool DataWrapperContainer::isValidContainer()
+{
+	return mIsValidContainer;
 }
 
 /*******************************************

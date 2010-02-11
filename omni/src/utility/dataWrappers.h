@@ -95,10 +95,13 @@ class DataWrapperContainer
 
 	SegmentationDataWrapper getSegmentationDataWrapper(){ return segmenDW; }
 	ChannelDataWrapper getChannelDataWrapper(){ return cDW; }
+
+	bool isValidContainer();
  private:
 	SegmentationDataWrapper segmenDW;
 	ChannelDataWrapper cDW;
-	ObjectType mType;	
+	ObjectType mType;
+	bool mIsValidContainer;
 };
 
 
