@@ -27,6 +27,7 @@ SET(omGuiApp_MOC_HDRS
 	chanInspector.h
 	segObjectInspector.h
 	filObjectInspector.h
+	inspectorProperties.h
 	preferences/preferencesMesh.h
 	preferences/preferences3d.h
 	preferences/preferences2d.h
@@ -55,6 +56,7 @@ ADD_EXECUTABLE(omni
 	chanInspector.cpp
 	segObjectInspector.cpp
 	filObjectInspector.cpp
+	inspectorProperties.cpp
         preferences/preferencesMesh.cpp
         preferences/preferences3d.cpp
 	preferences/preferences2d.cpp
