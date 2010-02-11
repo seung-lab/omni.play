@@ -150,6 +150,18 @@ Qt::CheckState MyInspectorWidget::getCheckState(const bool enabled)
 	}
 }
 
+bool MyInspectorWidget::getBoolState(const Qt::CheckState state)
+{
+	switch(state ) {
+	case Qt::Unchecked:
+		return false;
+	case Qt::PartiallyChecked:
+	case Qt::Checked:
+		return true;
+	}
+}
+
+
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -803,7 +815,8 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 	// TODO: make sure list of modified segments is correct....
 
 	if (0 == column) {
-		sdw.toggleEnabled();
+		bool isChecked = getBoolState( current->checkState( ENABLED_COL ) );
+		sdw.setEnabled(isChecked);
 		sendSegmentChangeEvent(sdw, true);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {

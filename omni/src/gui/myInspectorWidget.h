@@ -92,7 +92,8 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	QTreeWidget *setupDataElementList();
 	QTreeWidget *setupDataSrcList();
 	ChannelDataWrapper getCurrentlySelectedChannel();
-	 Qt::CheckState getCheckState(const bool enabled);
+	Qt::CheckState getCheckState(const bool enabled);
+	bool getBoolState(const Qt::CheckState state);
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
