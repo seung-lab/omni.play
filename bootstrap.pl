@@ -82,7 +82,7 @@ sub vtk {
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
-    print "runing: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
+    print "running: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
     `sh $scriptPath/buildvtk.sh`;
 }
 
