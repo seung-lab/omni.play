@@ -1,0 +1,45 @@
+on ubuntu, omni needs:
+
+ libxrender-dev 
+'libxext-dev
+freeglut3-dev
+
+apt-get install freetype
+apt-get install g++
+apt-get install freetype
+apt-get install libfreetype6-dev
+apt-get install libxml2
+apt-get install libxml2-dev
+apt-get install cmake
+apt-get install mesa-common-dev
+apt-get install emacs
+apt-get install libxt-dev
+
+
+
+
+
+building subversion:
+
+==================================================================
+WARNING: skipping the build of mod_dav_svn
+         try using --with-apxs
+==================================================================
+configure: checking sqlite library
+amalgamation not found at no
+configure: WARNING: no suitable sqlite found in no
+
+An appropriate version of sqlite could not be found.  We recommmend
+3.6.13, but require at least 3.4.0.
+Please either install a newer sqlite on this system
+
+or
+
+get the sqlite 3.6.13 amalgamation from:
+    http://www.sqlite.org/sqlite-amalgamation-3.6.13.tar.gz
+unpack the archive using tar/gunzip and copy sqlite3.c from the
+resulting directory to:
+/home/purcaro/tmp.local/subversion-1.6.9/sqlite-amalgamation/sqlite3.c
+This file also ships as part of the subversion-deps distribution.
+
+configure: error: Subversion requires SQLite
