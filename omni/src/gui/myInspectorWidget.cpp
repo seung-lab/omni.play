@@ -815,12 +815,13 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 	// TODO: make sure list of modified segments is correct....
 
 	if (0 == column) {
-		bool isChecked = getBoolState( current->checkState( ENABLED_COL ) );
+		const bool isChecked = getBoolState( current->checkState( ENABLED_COL ) );
 		sdw.setEnabled(isChecked);
-		sendSegmentChangeEvent(sdw, true);
+		sendSegmentChangeEvent(sdw, false);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {
-		sdw.toggleSelected();
+		const bool isSelected  = current->isSelected();
+		sdw.setSelected( isSelected );
 
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 			sendSegmentChangeEvent(sdw, true);
