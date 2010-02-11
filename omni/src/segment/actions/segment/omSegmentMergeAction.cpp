@@ -82,11 +82,17 @@ void
 	//for all elements in the map
 	char buffer[255];
 	snprintf (buffer, 254, "Set to %i", mDestinationSegmentId);
+	char merged_into_buffer[255];
+	snprintf (merged_into_buffer, 254, "Merged into me");
 	for (itr = mPrevSegmentIdToValueMap.begin(); itr != mPrevSegmentIdToValueMap.end(); itr++) {
 		const OmId & r_segment_id = itr->first;
 		const SegmentDataSet & r_data_set = itr->second;
 		OmSegment & seg = r_segmentation.GetSegment (itr->first);
-		seg.SetNote (buffer);
+		if( seg.GetId() == mDestinationSegmentId ){
+			seg.SetNote (merged_into_buffer);
+		} else {
+			seg.SetNote (buffer);
+		}
 		debug ("segment", "seg's id = %i\n", seg.GetId());
 	}
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
