@@ -23,17 +23,15 @@ SET(omGuiApp_MOC_HDRS
 	mainwindow.h
 	../view3d/omView3d.h
 	../view2d/omView2d.h
-	inspectorHelpers/segmentationHelper.h
-	inspectorHelpers/channelHelper.h
 	segInspector.h
-	volumeInspector.h
 	chanInspector.h
 	segObjectInspector.h
 	filObjectInspector.h
-	preferencesMesh.h
-	preferences3d.h
-	preferences2d.h
-	preferences.h
+	preferences/preferencesMesh.h
+	preferences/preferences3d.h
+	preferences/preferences2d.h
+	preferences/preferences.h
+	preferences/volumeInspector.h
 	myInspectorWidget.h
 )
 
@@ -54,18 +52,15 @@ ADD_EXECUTABLE(omni
 	recentFileList.cpp
 	../utility/dataWrappers.cpp
 	segInspector.cpp
-	volumeInspector.cpp
 	chanInspector.cpp
 	segObjectInspector.cpp
 	filObjectInspector.cpp
-        preferencesMesh.cpp
-        preferences3d.cpp
-	preferences2d.cpp
+        preferences/preferencesMesh.cpp
+        preferences/preferences3d.cpp
+	preferences/preferences2d.cpp
+	preferences/preferences.cpp
+	preferences/volumeInspector.cpp
 	myInspectorWidget.cpp
-	inspectorHelpers/inspectorHelper.cpp
-	inspectorHelpers/segmentationHelper.cpp
-	inspectorHelpers/channelHelper.cpp
-	preferences.cpp
 	${omGuiApp_MOC_SRCS}
 	${omGuiApp_RCC_SRCS}
 )
