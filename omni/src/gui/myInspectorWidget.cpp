@@ -778,7 +778,6 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 		if (count > 60000){
 			break;
 		}
-		debug ("crashing", "Crashing here %i\n", count);
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
 		row->setText(ID_COL, seg.getIDstr());
@@ -820,27 +819,51 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 		sendSegmentChangeEvent(sdw, false);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {
-		const bool isSelected  = current->isSelected();
-		sdw.setSelected( isSelected );
-
-		if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-			sendSegmentChangeEvent(sdw, true);
-		} else if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-
-			OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
-			segmentation.SetAllSegmentsSelected(false);
-
-			foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
-				QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
-				SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-				item_sdw.setSelected(true);
-			}
-			sendSegmentChangeEvent(sdw, true);
-		} else {
-			sendSegmentChangeEvent(sdw, false);
+		OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
+		segmentation.SetAllSegmentsSelected(false);
+		
+		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
+			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
+			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
+			item_sdw.setSelected(true);
 		}
+		sendSegmentChangeEvent(sdw, true);
 	}
 }
+
+/*
+
+ protected:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
+
+void MyInspectorWidget::mousePressEvent(QMouseEvent *event)
+{
+	debug("guimouse", "mouse start\n");
+}
+
+void MyInspectorWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	debug("guimouse", "mouse move\n");
+}
+
+void MyInspectorWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+	debug("guimouse", "mouse release\n");
+}
+*/
+/*
+        switch (event->key()) {
+        case Qt::Key_Up:
+                debug("gui", "hi key up\n");
+                break;
+        case Qt::Key_Down:
+                debug("gui", "hi key down\n");
+                break;
+        }       
+*/
 
 void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
 {
@@ -866,14 +889,3 @@ void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const boo
 				   this,
 				   "myInspectorWidget"))->Run();
 }
-
-/*
-	switch (event->key()) {
-	case Qt::Key_Up:
-		debug("gui", "hi key up\n");
-		break;
-	case Qt::Key_Down:
-		debug("gui", "hi key down\n");
-		break;
-	}	
-*/
