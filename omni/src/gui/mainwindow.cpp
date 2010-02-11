@@ -19,7 +19,6 @@
 #include "system/omSystemTypes.h"
 #include "segment/omSegmentEditor.h"
 
-#include "preferences.h"
 #include "system/omException.h"
 
 #include <boost/shared_ptr.hpp>
@@ -61,6 +60,8 @@ MainWindow::MainWindow()
 
 		setWindowTitle(tr("Omni"));
 		resize(1000, 800);
+
+		preferences = NULL;
 
 		isProjectOpen = false;
 		omniInspector = NULL;
@@ -147,7 +148,13 @@ void MainWindow::showEditPreferencesDialog()
 		return;
 	}
 	
-	Preferences* preferences = new Preferences(this);
+	if (preferences) {
+		preferences->close();
+		delete preferences;
+		preferences = NULL;
+	} 
+
+	preferences = new Preferences(this);
 	preferences->show();
 	preferences->raise();
 	preferences->activateWindow();
@@ -206,6 +213,12 @@ bool MainWindow::closeProjectIfOpen()
 	while (dockwidget != 0) {
 		delete dockwidget;
 		dockwidget = this->findChild < QDockWidget * >();
+	}
+
+	if (preferences) {
+		preferences->close();
+		delete preferences;
+		preferences = NULL;
 	}
 
 	OmProject::Close();

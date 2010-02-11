@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QErrorMessage>
 
+
 #include "common/omStd.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -24,6 +25,7 @@
 #include "system/events/omSystemModeEvent.h"
 
 #include "gui/recentFileList.h"
+#include "gui/preferences.h"
 
 class OmView2d;
 class OmView3d;
@@ -179,6 +181,8 @@ class MainWindow
 		void resetModifyTools( const bool enabled );
 		void setupToolbarInitially();
 		void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode );
+
+		Preferences* preferences;
 	};
 
 #endif

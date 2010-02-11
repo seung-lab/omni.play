@@ -23,19 +23,19 @@ for sliceNum = 1:numSlices
     % get this block of the component file
     block_begin_coords=[1 1 sliceNum];
     block_end_coords=[input_size(1) input_size(2) sliceNum];
-    data=get_hdf5(input_datasetID, input_dataspaceID, [block_begin_coords 1], [block_end_coords 3]);
+    data = get_hdf5(input_datasetID, input_dataspaceID, [block_begin_coords 1], [block_end_coords 3]);
 
-    data_min = min( data(:));
-    data_max = max( data(:));
-    if( data_min < 0 || data_max > 1 )
-        fprintf('min: %f, max: %f\n', data_min, data_max);
-    end
+%     data_min = min( data(:));
+%     data_max = max( data(:));
+%     if( data_min < 0 || data_max > 1 )
+%         fprintf('min: %f, max: %f\n', data_min, data_max);
+%     end
     
-%     scaled_block = uint8(255*g_block);
-%     fname = fullfile( path.affinityGraph1, sprintf('channel--%03d.tif', sliceNum));
-%     imwrite( scaled_block, fname, 'TIFF', 'Compression', 'none');
+     scaled_block = data;
+     fname = fullfile( path.channelPath, sprintf('channel--%03d.tif', sliceNum));
+     imwrite( scaled_block, fname, 'TIFF', 'Compression', 'none');
     
-%     fprintf('%d of %d\n', sliceNum, numSlices );
+     fprintf('%d of %d\n', sliceNum, numSlices );
 end
 
 H5D.close(input_datasetID);

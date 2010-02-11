@@ -1,46 +1,22 @@
 #ifndef MYINSPECTORWIDGET_H
 #define MYINSPECTORWIDGET_H
 
+#include <QtCore/QVariant>
+#include <QtGui>
 #include <QWidget>
-//#include "ui_myInspectorWidget.h" 
-
-#include <QtGui/QSplitter>
-#include <QtGui/QItemSelection>
 
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"
 #include "system/omFilter.h"
 #include "filObjectInspector.h"
-
 #include "system/events/omSegmentEvent.h"
-
 #include "utility/dataWrappers.h"
 #include "inspectorHelpers/segmentationHelper.h"
 #include "inspectorHelpers/channelHelper.h"
 
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QComboBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QSplitter>
-#include <QtGui/QTreeView>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
-
 class SegInspector;
-class VolumeInspector;
 class ChanInspector;
 class SegObjectInspector;
-
-class PreferencesMesh;
-class Preferences2d;
-class Preferences3d;
 
 class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
  Q_OBJECT public:
@@ -122,7 +98,7 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 	QTreeWidget *setupVolumeList(QWidget * layoutWidget);
 	QTreeWidget *setupDataElementList();
 	QTreeWidget *setupDataSrcList();
-	ChannelDataWrapper getCurrentlySelectedChannel();	// TODO: fixme (purcaro)
+	ChannelDataWrapper getCurrentlySelectedChannel();
 	 Qt::CheckState getCheckState(const bool enabled);
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
@@ -158,7 +134,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	SegInspector *segInspectorWidget;
 	ChanInspector *channelInspectorWidget;
-	VolumeInspector *volumeInspectorWidget;
 	SegObjectInspector *segObjectInspectorWidget;
 	FilObjectInspector *filObjectInspectorWidget;
 
