@@ -518,3 +518,11 @@ sub gcc {
     # just in case...
     # ../gcc-4.3.4/configure --prefix=/Users/purcaro/bin/gcc-4.3.4 --enable-languages=c,c++ --disable-nls
 }
+
+sub subversion {
+    # just in case...
+    # in srcs folder:
+    # svn co http://svn.apache.org/repos/asf/apr/apr/branches/1.2.x apr
+    # svn co http://svn.apache.org/repos/asf/apr/apr-util/branches/1.2.x apr-util
+
+}
