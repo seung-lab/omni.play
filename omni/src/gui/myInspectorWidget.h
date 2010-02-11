@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QWidget>
 
+#include "gui/inspectorProperties.h"
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"
 #include "system/omFilter.h"
