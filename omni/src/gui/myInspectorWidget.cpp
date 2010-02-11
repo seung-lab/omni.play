@@ -1,4 +1,3 @@
-
 #include <QtGui>
 #include "myInspectorWidget.h"
 
@@ -9,12 +8,12 @@
 
 #include "ui_segObjectInspector.h"
 #include "segObjectInspector.h"
-#include "ui_filObjectInspector.h"
-#include "filObjectInspector.h"
 
+#include "filObjectInspector.h"
 
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
+#include "system/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omVolume.h"
@@ -327,29 +326,15 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
 
-	const OmId item_id = fdw.getID();
 	QWidget *my_widget = splitter->widget(1);
-
-	if (current_object != FILTER) {
-		QList < int >my_sizes = splitter->sizes();
-		delete my_widget;
-		filObjectInspectorWidget = new FilObjectInspector(splitter);
-		connect(filObjectInspectorWidget->alphaSlider, SIGNAL(valueChanged(int)), this, SLOT(setFilAlpha(int)));
-		if (!(first_access))
-			splitter->setSizes(my_sizes);
+	QList < int >my_sizes = splitter->sizes();
+	delete my_widget;
+	filObjectInspectorWidget = new FilObjectInspector(splitter, fdw);
+	if (!(first_access)) {
+		splitter->setSizes(my_sizes);
 	}
 
-	populateFilterObjectInspector(fdw.getChannelID(), item_id);
-
-	filObjectInspectorWidget->setChannelID(fdw.getChannelID());
-	filObjectInspectorWidget->setFilterID(item_id);
-
-	connect(filObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-		this, SLOT(sourceEditChangedChan()), Qt::DirectConnection);
-	connect(filObjectInspectorWidget->nameEdit_2, SIGNAL(editingFinished()),
-		this, SLOT(sourceEditChangedSeg()), Qt::DirectConnection);
 	current_object = FILTER;
-
 	first_access = false;
 }
 
@@ -539,29 +524,9 @@ void MyInspectorWidget::addFilter()
 	populateChannelElementsListWidget(cdw);
 }
 
-void MyInspectorWidget::sourceEditChangedChan()
-{
-	ChannelDataWrapper cdw(filObjectInspectorWidget->getChannelID());
-
-	const OmId segmenID = filObjectInspectorWidget->nameEdit->text().toInt();
-
-	const OmId filterID = filObjectInspectorWidget->getFilterID();
-	OmVolume::GetChannel(cdw.getID()).GetFilter(filterID).SetChannel(segmenID);
-}
-
-void MyInspectorWidget::sourceEditChangedSeg()
-{
-	ChannelDataWrapper cdw(filObjectInspectorWidget->getChannelID());
-
-	const OmId segmenID = filObjectInspectorWidget->nameEdit_2->text().toInt();
-
-	const OmId filterID = filObjectInspectorWidget->getFilterID();
-	OmVolume::GetChannel(cdw.getID()).GetFilter(filterID).SetSegmentation(segmenID);
-}
-
 void MyInspectorWidget::nameEditChanged()
 {
-	//debug("FIXME", << "FIXME: purcaro: sourceEditChangedSeg\n";
+	printf("FIXME: purcaro: sourceEditChangedSeg\n");
 	/*
 	   QVariant result = proxyModel->data(view->currentIndex(), Qt::UserRole);
 	   int item_type = result.value<int>();
@@ -635,15 +600,6 @@ void MyInspectorWidget::populateSegmentationInspector(OmId s_id)
 	}
 }
 
-void MyInspectorWidget::populateFilterObjectInspector(OmId s_id, OmId obj_id)
-{
-	OmFilter2d & filter = OmVolume::GetChannel(s_id).GetFilter(obj_id);
-
-	filObjectInspectorWidget->alphaSlider->setValue(filter.GetAlpha() * 100);
-	filObjectInspectorWidget->nameEdit->setText(QString::number(filter.GetChannel()));
-	filObjectInspectorWidget->nameEdit_2->setText(QString::number(filter.GetSegmentation()));
-}
-
 void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 {
 	segObjectInspectorWidget->setSegmentID(obj_id);
@@ -674,20 +630,6 @@ void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
 	segObjectInspectorWidget->colorButton->setIcon(QIcon(*pixm));
 
 	current_color = newcolor;
-}
-
-void MyInspectorWidget::setFilAlpha(int alpha)
-{
-	const OmId channelID = filObjectInspectorWidget->getChannelID();
-	const OmId filterID =  filObjectInspectorWidget->getFilterID();
-
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel(channelID);
-		if( channel.IsFilterValid( filterID ) ){
-			channel.GetFilter(filterID).SetAlpha((double)alpha / 100.00);
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
- 		}
-	}
 }
 
 void MyInspectorWidget::setSegObjColor()

@@ -31,8 +31,6 @@ OmFilter2dManager::AddFilter() {
 	return r_filter;
 }
 
-
-
 OmFilter2d& OmFilter2dManager::GetFilter(OmId id)
 {
 	return mGenericFilterManager.Get(id);

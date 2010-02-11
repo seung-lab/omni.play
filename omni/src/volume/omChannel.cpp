@@ -73,21 +73,18 @@ bool OmChannel::IsVolumeDataBuilt()
 
 void OmChannel::BuildVolumeData()
 {
-	//build volume
 	OmMipVolume::Build();
 	OmProject::Save();
 	printf("done building channel data\n");
 }
 
-
-
-OmFilter2d&
-OmChannel::AddFilter() {
-        return mFilter2dManager.AddFilter();
+OmFilter2d& OmChannel::AddFilter() {
+	OmFilter2d& filter = mFilter2dManager.AddFilter();
+	OmProject::Save();
+        return filter;
 }
 
-OmFilter2d&
-OmChannel::GetFilter(OmId id) {
+OmFilter2d& OmChannel::GetFilter(OmId id) {
         return mFilter2dManager.GetFilter(id);
 }
 
@@ -95,6 +92,7 @@ const set < OmId > & OmChannel::GetValidFilterIds()
 {
 	return mFilter2dManager.GetValidFilterIds();
 }
+
 bool OmChannel::IsFilterValid(const OmId id)
 {
 	return mFilter2dManager.IsFilterValid(id);
