@@ -62,6 +62,7 @@ class SegmentDataWrapper : public DataWrapper
 	void toggleSelected();
 	void setSelected( const bool isSelected );
 	bool isEnabled();
+	void setEnabled(const bool);
 	void toggleEnabled();
 	QString getNote();
 	QString getIDstr();

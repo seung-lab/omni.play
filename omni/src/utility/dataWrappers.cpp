@@ -129,6 +129,11 @@ void SegmentDataWrapper::toggleEnabled()
 	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
 }
 
+void SegmentDataWrapper::setEnabled(const bool enabled)
+{
+	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
+}
+
 QString SegmentDataWrapper::getNote()
 {
 	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
