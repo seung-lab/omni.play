@@ -2565,6 +2565,36 @@ SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
 	return new_space_center;
 }
 
+SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
+{
+	
+}
+
+ScreenCoord OmView2d::SpaceToScreenCoord(const SpaceCoord & spacec)
+{
+	
+}
+
+ScreenCoord OmView2d::DataToScreenCoord(const DataCoord & datac)
+{
+	
+}
+
+DataCoord OmView2d::ScreenToDataCoord(const ScreenCoord & screenc)
+{
+	
+}
+
+ScreenCoord OmView2d::NormToScreenCoord(const SpaceCoord & normc)
+{
+	
+}
+
+NormCoord OmView2d::ScreenToNormCoord(const ScreenCoord & screenc)
+{
+	
+}
+
 void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 {
 	Refresh();
