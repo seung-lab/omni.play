@@ -205,7 +205,7 @@ void VolumeInspector::init_values()
 	const string & my_notes = (*OmVolume::Instance()).GetNote();
 	notesEdit->setPlainText(QString::fromStdString(my_notes));
 
-	Vector3 < float >scale = OmVolume::GetScale();
+	Vector3 < float >scale = OmVolume::GetUserScale();
 	scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
 			   QString::number(scale.z) + "]");
 
@@ -244,7 +244,7 @@ void VolumeInspector::on_scaleEdit_editingFinished()
 	QString z = scale.section(" ", 2, 2);
 
 	Vector3 < float >scale_vec = Vector3 < float >(x.toFloat(), y.toFloat(), z.toFloat());
-	OmVolume::Instance()->SetScale(scale_vec);
+	OmVolume::Instance()->SetUserScale(scale_vec);
 }
 
 void VolumeInspector::on_resolutionEdit_editingFinished()
