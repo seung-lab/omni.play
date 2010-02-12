@@ -149,7 +149,10 @@ QString SegmentDataWrapper::getNote()
 	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
 	return QString::fromStdString(str);
 }
-
+void SegmentDataWrapper::setNote(QString str)
+{
+	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetNote(qPrintable(str));
+}
 QString SegmentDataWrapper::getIDstr()
 {
 	return QString("%1").arg(getID());

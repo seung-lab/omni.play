@@ -65,6 +65,7 @@ class SegmentDataWrapper : public DataWrapper
 	void setEnabled(const bool);
 	void toggleEnabled();
 	QString getNote();
+	void setNote(QString str);
 	QString getIDstr();
  private:
 	OmId mSegmentationID;
