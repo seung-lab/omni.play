@@ -180,6 +180,26 @@ void SegmentDataWrapper::setName( const QString& str )
 	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetName( str.toStdString() );
 }
 
+QString SegmentDataWrapper::getDataValuesForSegment()
+{
+	const SegmentDataSet & data_set = OmVolume::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
+	
+	if( data_set.size() == 0 ){
+		return "";
+	}
+
+	QString str;
+	unsigned int counter = 0;
+	OmIds::iterator itr;
+	for( itr = data_set.begin(); itr != data_set.end(); itr++ ){
+		counter++;
+		str += QString::number( *itr );
+		if( counter < data_set.size() ){
+			str += ", ";
+		}
+	}
+	return str;
+}
 /*******************************************
  ****** Filters
  *******************************************/
