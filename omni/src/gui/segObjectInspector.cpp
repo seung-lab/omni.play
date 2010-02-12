@@ -44,7 +44,7 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	dataValuesLabel->setText( "Data values: " + sdw.getDataValuesForSegment() );
+	dataValuesList->setText( sdw.getDataValuesForSegment() );
 }
 
 void SegObjectInspector::nameEditChanged()
@@ -117,9 +117,14 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	colorButton->setObjectName(QString::fromUtf8("colorButton"));
 	grid->addWidget(colorButton, 3, 1);
 
-	dataValuesLabel = new QLabel(sourceBox);
-	dataValuesLabel->setObjectName(QString::fromUtf8("colorLabel"));
-        grid->addWidget(dataValuesLabel, 4, 0);
+	QLabel* dataValuesLabel = new QLabel(sourceBox);
+	dataValuesLabel->setObjectName(QString::fromUtf8("dataValuesLabel"));
+	dataValuesLabel->setText( "Data values:" );
+        grid->addWidget(dataValuesLabel, 4, 0, 1, 1);
+
+	dataValuesList = new QLabel(sourceBox);
+	dataValuesList->setObjectName(QString::fromUtf8("dataValuesList"));
+        grid->addWidget(dataValuesList, 4, 1, 1, 1);
 
 	return sourceBox;
 }

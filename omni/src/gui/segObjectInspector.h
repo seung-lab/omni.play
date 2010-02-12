@@ -27,7 +27,7 @@ private:
 	QLineEdit *tagsEdit;
 	QPushButton *colorButton;
 	QPlainTextEdit *notesEdit;
-	QLabel* dataValuesLabel;
+	QLabel* dataValuesList;
 
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeNotesBox();

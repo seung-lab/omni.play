@@ -196,10 +196,14 @@ QString SegmentDataWrapper::getDataValuesForSegment()
 		str += QString::number( *itr );
 		if( counter < data_set.size() ){
 			str += ", ";
+			if( counter > 0 && counter % 8 == 0 ){
+				str += "\n";
+			}
 		}
 	}
 	return str;
 }
+
 /*******************************************
  ****** Filters
  *******************************************/
