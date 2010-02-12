@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # NOTE: build process will be done "out-of-source". 
 #  (from vtk): "When your build generates files, they have to go somewhere. 
