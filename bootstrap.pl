@@ -505,9 +505,9 @@ sub runSmallLibraryMenuEntry {
 
 sub checkCmdLineArgs {
     if ( 1 == @ARGV ) {
-	runMenuEntry( @ARGV[0] );
+	runMenuEntry( $ARGV[0] );
     } elsif (2 == @ARGV ) {
-	$globalMakeOptions =  " -j@ARGV[1] ";
+	$globalMakeOptions =  " -j$ARGV[1] ";
 	print "changed global make options to \"$globalMakeOptions\"\n";
 	menu();
     } else {
