@@ -1,27 +1,35 @@
 #ifndef SEGOBJECTINSPECTOR_H
 #define SEGOBJECTINSPECTOR_H
 
+#include <QtGui>
 #include <QWidget> 
-#include "ui_segObjectInspector.h" 
 #include "system/omSystemTypes.h"
+#include "utility/dataWrappers.h"
 
-
-class SegObjectInspector : public QWidget, public Ui::segObjectInspector
+class SegObjectInspector : public QWidget
 { 
     Q_OBJECT 
 	
 public: 
-    SegObjectInspector(QWidget *parent = 0); 
-
-    void setSegmentationID( const OmId segmenID );
-    OmId getSegmentationID();
-    void setSegmentID( const OmId segID );
-    OmId getSegmentID();
+	SegObjectInspector(SegmentDataWrapper incoming_sdw, QWidget* parent);
 	
-    private slots: 
+private slots: 
+	void setSegObjColor();
+	void nameEditChanged();
 
-    private:
-    OmId SegmentationID;
-    OmId SegmentID;
+private:
+	SegmentDataWrapper sdw;
+
+	QColor current_color;
+
+	QLineEdit *nameEdit;
+	QLineEdit *segmentIDEdit;
+	QLineEdit *tagsEdit;
+	QPushButton *colorButton;
+	QPlainTextEdit *notesEdit;
+
+	QGroupBox* makeSourcesBox();
+	QGroupBox* makeNotesBox();
+	void set_initial_values();
 }; 
 #endif

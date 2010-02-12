@@ -47,6 +47,7 @@ class SegmentationDataWrapper : public DataWrapper
 	SegmentationDataWrapper( const OmId mID );
 	QHash< OmId, SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
+	unsigned int getNumberOfSegments();
 };
 
 class SegmentDataWrapper : public DataWrapper 
@@ -67,6 +68,9 @@ class SegmentDataWrapper : public DataWrapper
 	QString getNote();
 	void setNote(QString str);
 	QString getIDstr();
+	const Vector3 < float >& getColor();
+	void setColor(const Vector3 < float >& color);
+	void setName( const QString& str );
  private:
 	OmId mSegmentationID;
 };

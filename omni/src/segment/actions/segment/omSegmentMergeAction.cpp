@@ -23,7 +23,6 @@
  */
 OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 {
-
 	//segmentation where selected segements will be merged
 	mMergeSegmentationId = mergeSegmentationId;
 
@@ -37,6 +36,11 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 		//mapped values
 		const SegmentDataSet & r_data_set = r_segmentation.GetValuesMappedToSegmentId(*itr);
 
+		OmIds::iterator data_set_itr;
+		for( data_set_itr = r_data_set.begin(); data_set_itr != r_data_set.end(); data_set_itr++ ){
+			debug("join", "for selectedSegment %d, data_set (length %d), value %d\n", (*itr), r_data_set.size(), (*data_set_itr));
+		}
+
 		//map set of values to segment id
 		mPrevSegmentIdToValueMap[*itr] = r_data_set;
 
@@ -44,7 +48,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 		mMergedDataSet.insert(r_data_set.begin(), r_data_set.end());
 	}
 
-	//prompt user for destination segment
+	//TODO: prompt user for destination segment?
 	mDestinationSegmentId = *(r_selected_segments.begin());
 
 }
@@ -61,12 +65,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 void
  OmSegmentMergeAction::Action()
 {
-	bool found = false;
-	OmId base;
-
-	//get merging segmentation
 	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mMergeSegmentationId);
-
 
 	//for all elements in the map
 	map < OmId, SegmentDataSet >::iterator itr;
@@ -75,9 +74,9 @@ void
 		const SegmentDataSet & r_data_set = itr->second;
 		r_segmentation.UnMapValuesToSegmentId(r_segment_id, r_data_set);
 	}
+
 	//map all data to destination id
 	r_segmentation.MapValuesToSegmentId(mDestinationSegmentId, mMergedDataSet);
-
 
 	//for all elements in the map
 	char buffer[255];

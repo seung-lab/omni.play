@@ -202,6 +202,7 @@ void OmSegmentation::BuildVolumeData()
 	SetAllSegmentsSelected(false);
 	SetAllSegmentsEnabled(false);
 
+	OmProject::Save();
 	printf("done building segmentation data\n");
 }
 

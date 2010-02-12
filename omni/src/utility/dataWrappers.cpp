@@ -99,6 +99,11 @@ QString SegmentationDataWrapper::getNote()
 	return QString::fromStdString(str);
 }
 
+unsigned int SegmentationDataWrapper::getNumberOfSegments()
+{
+	return OmVolume::GetSegmentation(mID).GetValidSegmentIds().size();
+}
+
 /*******************************************
  ****** Segments
  *******************************************/
@@ -149,13 +154,30 @@ QString SegmentDataWrapper::getNote()
 	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
 	return QString::fromStdString(str);
 }
+
 void SegmentDataWrapper::setNote(QString str)
 {
 	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetNote(qPrintable(str));
 }
+
 QString SegmentDataWrapper::getIDstr()
 {
 	return QString("%1").arg(getID());
+}
+
+const Vector3 < float >& SegmentDataWrapper::getColor()
+{
+	return OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetColor();
+}
+
+void SegmentDataWrapper::setColor(const Vector3 < float >& color)
+{
+	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetColor( color );
+}
+
+void SegmentDataWrapper::setName( const QString& str )
+{
+	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetName( str.toStdString() );
 }
 
 /*******************************************
