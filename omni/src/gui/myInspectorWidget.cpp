@@ -424,6 +424,7 @@ void MyInspectorWidget::addSegmentationToVolume()
 {
 	OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
 	addToVolume(&added_segmentation, SEGMENTATION);
+	makeSegmentationActive(added_segmentation.GetId());
 }
 
 void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
@@ -772,12 +773,23 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 	QTreeWidgetItem *rowToJumpTo = NULL;
 	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
 
+	//OmSegmentation& segmentation = OmVolume::GetSegmentation( sdw.getID() );
+
 	int count = 0;
 	foreach(SegmentDataWrapper seg, segs) {
 		count++;
 		if (count > 60000){
 			break;
 		}
+		/*
+		SegmentDataSet mapped;
+		segmentation.MapValuesToSegmentId( seg.getID(), mapped );
+		QString new_note("");
+		foreach( SEGMENT_DATA_TYPE mapped_seg, mapped ){
+			new_note += QString::number(mapped_seg) + ", ";
+		}
+		seg.setNote( new_note );
+		*/
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
 		row->setText(ID_COL, seg.getIDstr());
