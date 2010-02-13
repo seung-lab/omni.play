@@ -28,6 +28,7 @@ private:
 	QPushButton *colorButton;
 	QPlainTextEdit *notesEdit;
 	QLabel* dataValuesList;
+	QLabel* origDataValueList;
 
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeNotesBox();

@@ -50,9 +50,7 @@ const Vector3 < float >& OmSegment::GetColor() const
 void OmSegment::SetColor(const Vector3 < float >&rColor)
 {
 	if (mJoinId) {
-
 	}
-
 	mColor = rColor;
 }
 
@@ -64,6 +62,17 @@ void OmSegment::Join(OmId segid)
 		//debug("FIXME", << segid << " is now parent id" << endl;
 		mJoinId = segid;
 	}
+}
+
+void OmSegment::set_original_mapped_data_value(const SEGMENT_DATA_TYPE value )
+{
+	original_mapped_data_value = value;
+}
+
+
+SEGMENT_DATA_TYPE OmSegment::get_original_mapped_data_value()
+{
+	return original_mapped_data_value;
 }
 
 #pragma mark
@@ -89,14 +98,4 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		glColor3fv(hyperColor.array);
 	}
 
-}
-
-#pragma mark
-#pragma mark Print Methods
-/////////////////////////////////
-///////          Print Methods
-
-void OmSegment::Print()
-{
-	//debug("FIXME", << "\t\t" << mName << " (" << mId << ")" << endl;
 }

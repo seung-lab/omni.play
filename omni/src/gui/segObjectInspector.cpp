@@ -45,6 +45,7 @@ void SegObjectInspector::set_initial_values()
 	current_color = newcolor;
 
 	dataValuesList->setText( sdw.getDataValuesForSegment() );
+	origDataValueList->setText( sdw.get_original_mapped_data_value() );
 }
 
 void SegObjectInspector::nameEditChanged()
@@ -117,14 +118,23 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	colorButton->setObjectName(QString::fromUtf8("colorButton"));
 	grid->addWidget(colorButton, 3, 1);
 
+	QLabel* origDataValueLabel = new QLabel(sourceBox);
+	origDataValueLabel->setObjectName(QString::fromUtf8("origDataValueLabel"));
+	origDataValueLabel->setText( "Original Data value:" );
+        grid->addWidget(origDataValueLabel, 4, 0);
+
+	origDataValueList = new QLabel(sourceBox);
+	origDataValueList->setObjectName(QString::fromUtf8("origDataValueList"));
+        grid->addWidget(origDataValueList, 4, 1);
+
 	QLabel* dataValuesLabel = new QLabel(sourceBox);
 	dataValuesLabel->setObjectName(QString::fromUtf8("dataValuesLabel"));
 	dataValuesLabel->setText( "Data values:" );
-        grid->addWidget(dataValuesLabel, 4, 0, 1, 1);
+        grid->addWidget(dataValuesLabel, 5, 0);
 
 	dataValuesList = new QLabel(sourceBox);
 	dataValuesList->setObjectName(QString::fromUtf8("dataValuesList"));
-        grid->addWidget(dataValuesList, 4, 1, 1, 1);
+        grid->addWidget(dataValuesList, 5, 1);
 
 	return sourceBox;
 }

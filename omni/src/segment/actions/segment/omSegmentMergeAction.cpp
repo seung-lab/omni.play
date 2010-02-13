@@ -1,4 +1,3 @@
-
 #include "omSegmentMergeAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -36,10 +35,15 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 		//mapped values
 		const SegmentDataSet & r_data_set = r_segmentation.GetValuesMappedToSegmentId(*itr);
 
-		OmIds::iterator data_set_itr;
-		for( data_set_itr = r_data_set.begin(); data_set_itr != r_data_set.end(); data_set_itr++ ){
-			debug("join", "for selectedSegment %d, data_set (length %d), value %d\n", (*itr), r_data_set.size(), (*data_set_itr));
+		OmSegment& segment = r_segmentation.GetSegment(*itr);
+		if( 0 == segment.get_original_mapped_data_value() ) {
+			if( 1 == r_data_set.size() ){
+				OmIds::iterator value_iter;
+				value_iter = r_data_set.begin();
+				segment.set_original_mapped_data_value( *value_iter);
+			}
 		}
+		    
 
 		//map set of values to segment id
 		mPrevSegmentIdToValueMap[*itr] = r_data_set;

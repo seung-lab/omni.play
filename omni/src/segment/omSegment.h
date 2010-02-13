@@ -28,17 +28,16 @@ public:
 	
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
-
 	void Join (OmId segid);
-	
-	void Print();
-	
-	
+
+	void set_original_mapped_data_value(const SEGMENT_DATA_TYPE value );
+	SEGMENT_DATA_TYPE get_original_mapped_data_value();
 	
 private:
 	//data members
 	Vector3<float> mColor;
 	OmId mJoinId;
+	SEGMENT_DATA_TYPE original_mapped_data_value;
 	
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -53,7 +52,7 @@ private:
 ///////		 Serialization
 
 
-BOOST_CLASS_VERSION(OmSegment, 1)
+BOOST_CLASS_VERSION(OmSegment, 2)
 
 template<class Archive>
 void 
@@ -63,9 +62,12 @@ OmSegment::serialize(Archive & ar, const unsigned int file_version) {
 	if (file_version > 0) {
 		ar & mJoinId;
 	}
+	if (file_version > 1) {
+		ar & original_mapped_data_value;
+	}
 	ar & mColor;
-
 }
+
 
 
 #endif
