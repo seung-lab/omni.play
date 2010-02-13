@@ -330,6 +330,7 @@ END
     updateCMakeListsFile();
 
     `sh $scriptPath/buildomni.sh`;
+    print "done\n";
 }
 
 sub updateCMakeListsFile {
