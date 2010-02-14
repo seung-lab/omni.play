@@ -53,10 +53,15 @@ sub genVTKscript {
     my $baseFileName = $_[0];
     open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
 
+    my $makeOps = $globalMakeOptions;
+    if ( isMac() ){
+	$makeOps = " -k ";
+    }
+    
     my $script = <<END;
 cd $buildPath/$baseFileName
 cmake $srcPath/$baseFileName
-make -k
+make $makeOps
 make install    
 END
     print SCRIPT $script;
