@@ -52,6 +52,7 @@ ADD_EXECUTABLE(omni
 	mainwindow.cpp
 	recentFileList.cpp
 	../utility/dataWrappers.cpp
+	../system/omAnimate.cpp
 	segInspector.cpp
 	chanInspector.cpp
 	segObjectInspector.cpp
