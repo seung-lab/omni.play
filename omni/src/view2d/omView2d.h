@@ -23,6 +23,7 @@
 #include "volume/omSegmentation.h"
 
 #include "common/omStd.h"
+#include "system/omAnimate.h"
 
 
 #include <vmmlib/vmmlib.h>
@@ -167,6 +168,7 @@ protected:
 
 
 private:
+	OmAnimate * mAnimation;
 	OmId mEditedSegmentation;
 	bool mMIP;
         unsigned int mSlide;
