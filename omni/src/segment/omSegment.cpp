@@ -23,6 +23,7 @@ OmSegment::OmSegment()
 OmSegment::OmSegment(OmId omId)
  : OmManageableObject(omId)
 {
+	original_mapped_data_value = 0;
 
 	mName = printf2str(256, "segment%05d", omId);
 
