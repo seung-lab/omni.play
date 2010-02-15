@@ -19,7 +19,7 @@ my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
-my $globalMakeOptions = " -j15 ";
+my $globalMakeOptions = "";
 
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
@@ -509,14 +509,41 @@ sub runSmallLibraryMenuEntry {
     }
 }
 
+sub numberOfCores {
+    
+    my $numCores = 2;
+    if (-e "/proc/cpuinfo") {
+	$numCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
+    }
+
+    if( $numCores < 2 ){
+	$numCores = 2;
+    }
+
+    return $numCores-1;
+}
+
+sub setupParallelBuildOption {
+
+    my $numCores = numberOfCores();
+    if( scalar(@_) > 0 ) {
+	$numCores = $_[0];
+    }
+
+    $globalMakeOptions =  " -j$numCores ";
+
+    print "number of parallel builds: $numCores\n";
+}
+
 sub checkCmdLineArgs {
     if ( 1 == @ARGV ) {
+	setupParallelBuildOption();
 	runMenuEntry( $ARGV[0] );
     } elsif (2 == @ARGV ) {
-	$globalMakeOptions =  " -j$ARGV[1] ";
-	print "changed global make options to \"$globalMakeOptions\"\n";
+	setupParallelBuildOption( $ARGV[1] );
 	menu();
     } else {
+	setupParallelBuildOption();
 	menu();
     }
 }
