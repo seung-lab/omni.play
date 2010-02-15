@@ -15,7 +15,6 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-
 class OmSegment : public OmManageableObject {
 
 public:
@@ -28,8 +27,6 @@ public:
 	
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
-	void Join (OmId segid);
-
 	void set_original_mapped_data_value(const SEGMENT_DATA_TYPE value );
 	SEGMENT_DATA_TYPE get_original_mapped_data_value();
 	
@@ -44,13 +41,8 @@ private:
 	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
-
 
 BOOST_CLASS_VERSION(OmSegment, 2)
 
@@ -67,7 +59,5 @@ OmSegment::serialize(Archive & ar, const unsigned int file_version) {
 	}
 	ar & mColor;
 }
-
-
 
 #endif

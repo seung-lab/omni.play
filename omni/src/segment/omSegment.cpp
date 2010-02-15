@@ -37,8 +37,6 @@ OmSegment::OmSegment(OmId omId)
 	mColor.z /= 2;
 }
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////         Accessor Methods
 
@@ -49,19 +47,7 @@ const Vector3 < float >& OmSegment::GetColor() const
 
 void OmSegment::SetColor(const Vector3 < float >&rColor)
 {
-	if (mJoinId) {
-	}
 	mColor = rColor;
-}
-
-void OmSegment::Join(OmId segid)
-{
-	OmId myid = GetId();
-
-	if (myid != segid) {
-		//debug("FIXME", << segid << " is now parent id" << endl;
-		mJoinId = segid;
-	}
 }
 
 void OmSegment::set_original_mapped_data_value(const SEGMENT_DATA_TYPE value )
@@ -75,8 +61,6 @@ SEGMENT_DATA_TYPE OmSegment::get_original_mapped_data_value()
 	return original_mapped_data_value;
 }
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////         Example Methods
 
