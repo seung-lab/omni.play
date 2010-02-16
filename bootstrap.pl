@@ -346,7 +346,7 @@ sub updateCMakeListsFile {
     my $outFileName = "$omniPath/CMakeLists.txt";
 
     open IN_FILE,  "<", $inFileName  or die "could not read $inFileName";
-    open OUT_FILE, ">", $outFileName or die "could not read $outFileName";;
+    open OUT_FILE, ">", $outFileName or die "could not write $outFileName";;
 
     while (my $line = <IN_FILE>) { 
 	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
