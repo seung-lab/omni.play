@@ -90,8 +90,10 @@ sub vtk {
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
-    print "running: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
-    `sh $vtkScriptFile`;
+    my $cmd = "sh $vtkScriptFile";
+    print "running: ($cmd)\n";
+    `$cmd`;
+    print "done\n";
 }
 
 sub setupBuildFolder {
@@ -303,7 +305,21 @@ sub hdf5 {
 }
 
 sub qt {
+    qt45();
+}
+
+sub qt45 {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
+    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+}
+
+sub qt46 {
+    # new qt buidls has several messages:
+    # requires zlib; 
+    # suggests --no-excpetion to reduce gcc-induced memory footprint increases
+    # disable postgres/sqlite
+    # debug not enabled?
+    my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
     prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
@@ -337,7 +353,9 @@ END
 
     updateCMakeListsFile();
 
-    `sh $omniScriptFile`;
+    my $cmd = "sh $omniScriptFile";
+    print "running: ($cmd)\n";
+    `$cmd`;
     print "done\n";
 }
 
@@ -536,11 +554,6 @@ sub setupParallelBuildOption {
     $globalMakeOptions =  " -j$numCores ";
 
     print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $numCores\n";
-}
-
-sub qt46 {
-    my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub experimentalMenu {
