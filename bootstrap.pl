@@ -19,6 +19,9 @@ my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
+my $omniScriptFile = $scriptPath.'/buildomni.sh';
+my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
+
 my $globalMakeOptions = "";
 
 # Create build path if it doesn't exist yet.
@@ -33,7 +36,7 @@ sub isMac {
 }
 
 sub genOmniScript {
-    open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
+    open (SCRIPT, ">", $omniScriptFile) or die $!;
 
     my $script = <<END;
 export QTDIR=$libPath/Qt
@@ -46,12 +49,12 @@ make $globalMakeOptions
 END
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $scriptPath/buildomni.sh`;
+    `chmod +x $omniScriptFile`;
 }
 
 sub genVTKscript {
     my $baseFileName = $_[0];
-    open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
+    open (SCRIPT, ">", $vtkScriptFile) or die $!;
 
     my $makeOps = $globalMakeOptions;
     if ( isMac() ){
@@ -66,7 +69,7 @@ make install
 END
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $scriptPath/buildvtk.sh`;
+    `chmod +x $vtkScriptFile`;
 }
 
 sub vtk {
@@ -88,7 +91,7 @@ sub vtk {
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
     print "running: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
-    `sh $scriptPath/buildvtk.sh`;
+    `sh $vtkScriptFile`;
 }
 
 sub setupBuildFolder {
@@ -334,7 +337,7 @@ END
 
     updateCMakeListsFile();
 
-    `sh $scriptPath/buildomni.sh`;
+    `sh $omniScriptFile`;
     print "done\n";
 }
 
@@ -403,7 +406,7 @@ sub release {
 }
 
 sub menu {
-    my $max_answer = 9;
+    my $max_answer = 10;
 
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
@@ -415,13 +418,12 @@ sub menu {
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
     print "8 -- Generate scripts\n";
-    print "9 -- Build and tar release!\n\n";
+    print "9 -- Build and tar release!\n";
+    print "10 -- Experimental builds...\n\n";
 
     while( 1 ){
 	print "Please make selection: ";
 	my $answer = <STDIN>;
-
-	print "$answer\n";
 
 	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
@@ -459,7 +461,10 @@ sub runMenuEntry {
 	genOmniScript();
     }elsif( 9 == $entry ){
         release();
+    }elsif( 10 == $entry ){
+        experimentalMenu();
     }
+
 }
 
 sub smallLibraryMenu() {
@@ -477,8 +482,6 @@ sub smallLibraryMenu() {
     while( 1 ){
 	print "Please make selection: ";
 	my $answer = <STDIN>;
-
-	print "$answer\n";
 
 	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
@@ -532,7 +535,45 @@ sub setupParallelBuildOption {
 
     $globalMakeOptions =  " -j$numCores ";
 
-    print "number of parallel builds: $numCores\n";
+    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $numCores\n";
+}
+
+sub qt46 {
+    my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
+    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+}
+
+sub experimentalMenu {
+    my $max_answer = 1;
+
+    print "experimental build menu:\n";
+    print "0 -- exit\n";
+    print "1 -- Build QT 4.6.2\n\n";
+#    print "2 -- Build boost\n";
+
+    while( 1 ){
+	print "Please make selection: ";
+	my $answer = <STDIN>;
+
+	if( $answer =~ /^\d+$/ ) {
+	    if( ($answer > -1) and ($answer < (1+$max_answer))){
+		runExperimentalMenuEntry( $answer );
+		exit();
+	    }
+	}
+    }
+}
+
+sub runExperimentalMenuEntry {
+    my $entry = $_[0];
+
+    if( 0 == $entry ){
+        return();
+    }elsif( 1 == $entry ){
+	qt46();
+    }elsif( 2 == $entry ){
+        boost142();
+    }
 }
 
 sub checkCmdLineArgs {
