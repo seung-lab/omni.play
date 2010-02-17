@@ -8,7 +8,7 @@
 #include "system/omPreferenceDefinitions.h"
 
 #include <vmmlib/vmmlib.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 VolumeInspector::VolumeInspector(QWidget * parent)

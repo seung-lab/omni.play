@@ -13,7 +13,7 @@
 
 #include "system/omStateManager.h"
 #include "system/omKeyManager.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

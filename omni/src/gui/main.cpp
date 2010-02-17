@@ -1,10 +1,10 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "system/omFilter2d.h"
-#include "system/omProject.h"
+#include "volume/omFilter2d.h"
+#include "project/omProject.h"
 #include <dlfcn.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 #include <QTextStream>
 #include "volume/omVolume.h"
 
@@ -90,11 +90,14 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	// args.headlessCMD is "--headless=WhateverYouPass"
+
 	if( args.runHeadless ){
 		printf("running headless...\n");
 		if ( args.fileArgIndex > 0 ) {
 			QString fname = QString::fromStdString( argv[ args.fileArgIndex ] );			
 			runHeadless( fname );
+			// runHeadless( args.headlessCMD );
 		} else {
 			runHeadless( "");
 		}

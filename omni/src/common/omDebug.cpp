@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
@@ -151,6 +151,15 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 					}
 				} else if (-1==debugParseArg(argv[++i],OM_DEBUG_REMOVE)) {
 					fileArgIndex = -1;
+					break;
+				}
+			} else if ( 'p' ==  argv[i][0] ){
+				//ignore process id passed from osx
+				if(!strncmp(argv[i],"-psn",4)) {
+					// do nothing
+				} else {
+					usage();
+					fileArgIndex = -2;
 					break;
 				}
 			} else if ( '-' ==  argv[i][0] ){

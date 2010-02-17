@@ -5,7 +5,7 @@
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"

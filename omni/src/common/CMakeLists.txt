@@ -1,15 +1,9 @@
 
 
-#specify include files
-INCLUDE_DIRECTORIES(
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/src
-)
-
-
-
 #specify sources
 SET(OM_COMMON_SRCS
+	omDebug.cpp
+	omException.cpp
 	omGl.cpp
 	omStd.cpp
 )
@@ -22,9 +16,6 @@ ADD_LIBRARY(omCommon
 
 
 TARGET_LINK_LIBRARIES( omCommon
-	${OM_VTK_LIBS}
-	${OM_BOOST_LIBS}
-
 	${GLUT_LIBRARY} 
 	${OPENGL_LIBRARIES}
 )

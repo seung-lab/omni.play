@@ -13,7 +13,7 @@
 
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter.h"
+#include "volume/omFilter.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 

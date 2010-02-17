@@ -8,7 +8,7 @@
 
 
 #include "common/omStd.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "common/omSerialization.h"
 #include "omSystemTypes.h"
 

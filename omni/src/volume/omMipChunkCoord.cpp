@@ -1,6 +1,6 @@
 
 #include "omMipChunkCoord.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 const OmMipChunkCoord OmMipChunkCoord::NULL_COORD(-1, -1, -1, -1);
 

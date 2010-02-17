@@ -259,8 +259,8 @@ sub prepareNukeSrcsAndBuild {
 }
 
 sub boost {
-    boost138();
-#    boost142();
+#    boost138();
+    boost142();
 }
 
 sub boost138 {
@@ -294,14 +294,14 @@ sub boost142 {
     `rm -rf $boostLocalBuildFolder`;
     `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
 
-    my $cmd = "./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
     print "configuring ($cmd)\n"; 
-    `(cd $srcPath/$baseFileName; $cmd)`;
+    `($cmd)`;
     print "done\n";
 
-    $cmd = "./bjam install";
+    $cmd = "cd $srcPath/$baseFileName; ./bjam install";
     print "building and installing ($cmd)\n";
-    `(cd $srcPath/$baseFileName; $cmd)`;
+    `($cmd)`;
     print "done\n";
 }
 
@@ -331,7 +331,7 @@ sub hdf5 {
 }
 
 sub qt {
-    qt45();
+    qt46();
 }
 
 sub qt45 {

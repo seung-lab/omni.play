@@ -6,6 +6,8 @@
 SET(OM_VOLUME_LIB_SRCS
 	omChannel.cpp
 	omDataVolume.cpp
+	omFilter2d.cpp
+	omFilter2dManager.cpp
 	omMipChunk.cpp
 	omMipChunkCoord.cpp
 	omVolumeCuller.cpp
@@ -29,6 +31,7 @@ TARGET_LINK_LIBRARIES( omVolume
 	omSegment
 	omMesh
 	omVoxel
+	omView2d
 )
 
 

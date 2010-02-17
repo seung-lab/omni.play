@@ -4,7 +4,7 @@
 #include "system/omEventManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/omStateManager.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

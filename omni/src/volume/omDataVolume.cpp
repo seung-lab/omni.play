@@ -2,13 +2,13 @@
 #include "omDataVolume.h"
 
 #include "common/omVtk.h"
-#include "system/omException.h"
-#include "system/omProject.h"
+#include "common/omException.h"
+#include "project/omProject.h"
 #include "utility/omImageDataIo.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 namespace bfs = boost::filesystem;
 
 #define DEBUG 0

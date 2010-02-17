@@ -3,7 +3,7 @@
 
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omVolume.h"
@@ -19,7 +19,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 Q_DECLARE_METATYPE(DataWrapperContainer);

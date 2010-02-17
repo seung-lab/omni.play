@@ -16,7 +16,7 @@
 namespace bfs = boost::filesystem;
 
 #include <fstream>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 MainWindow::MainWindow()
 {

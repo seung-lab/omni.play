@@ -5,14 +5,9 @@
  *	Matt Wimer mwimer@mit.edu Oct13, 2009
  */
 
-
-
-
-#include "system/omFilter2d.h"
+#include "volume/omFilter2d.h"
 #include "system/omGenericManager.h"
 #include "common/omStd.h"
-
-
 
 class OmFilter2dManager {
 

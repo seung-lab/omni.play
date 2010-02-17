@@ -8,7 +8,7 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -18,7 +18,7 @@
 #include <vtkImageData.h>
 
 #include <vmmlib/vmmlib.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 #define DEBUG 0

@@ -4,7 +4,7 @@
 #include "omVolume.h"
 
 #include "system/omSystemTypes.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "system/omProjectData.h"
 #include "system/omEventManager.h"
 #include "system/events/omProgressEvent.h"
@@ -15,7 +15,7 @@
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

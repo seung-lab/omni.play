@@ -2,7 +2,7 @@
 #define DATA_WRAPPERS
 
 #include "system/omSystemTypes.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 

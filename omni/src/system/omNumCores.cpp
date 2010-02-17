@@ -1,6 +1,6 @@
 #include <boost/thread.hpp>
 #include "omNumCores.h"
-#include "omDebug.h"
+#include "common/omDebug.h"
 
 unsigned int OmNumCores::get_num_cores()
 {

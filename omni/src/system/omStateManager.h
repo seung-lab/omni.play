@@ -109,6 +109,9 @@ public:
 	static float GetTransparencyAlpha();
 	static void SetTransparencyAlpha(float);
 	
+	static unsigned int getMyBackoff();
+	static void setMyBackoff( unsigned int val );
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmStateManager();
@@ -158,7 +161,8 @@ private:
 	
 	//transparency
 	float TRANSPARANCY_ALPHA;
-	
+
+	unsigned int myBackoff;
 	
 	/*
 	friend class boost::serialization::access;

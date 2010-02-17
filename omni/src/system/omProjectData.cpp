@@ -1,14 +1,15 @@
 
 #include "omProjectData.h"
 
-#include "omProject.h"
-#include "omException.h"
 #include "omPreferenceDefinitions.h"
+
+#include "common/omDebug.h"
+#include "common/omException.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include "system/omDebug.h"
 namespace bfs = boost::filesystem;
+
 
 #define DEBUG 0
 
@@ -54,7 +55,7 @@ void OmProjectData::Delete()
 
 string OmProjectData::GetFilePath()
 {
-	return OmProject::GetDirectoryPath() + OmProject::GetFileName();
+	return GetDirectoryPath() + GetFileName();
 }
 
 void OmProjectData::Create()
@@ -99,6 +100,48 @@ bool OmProjectData::IsOpen()
 {
 	return (Instance()->mFileId >= 0);
 }
+
+
+
+
+
+#pragma mark
+#pragma mark Project
+/////////////////////////////////
+///////          Project
+
+//project
+const string & OmProjectData::GetFileName()
+{
+	return Instance()->mFileName;
+}
+
+void OmProjectData::SetFileName(const string & fname)
+{
+	Instance()->mFileName = fname;
+}
+
+const string & OmProjectData::GetDirectoryPath()
+{
+	return Instance()->mDirectoryPath;
+}
+
+void OmProjectData::SetDirectoryPath(const string & dpath)
+{
+	Instance()->mDirectoryPath = dpath;
+}
+
+string OmProjectData::GetTempDirectoryPath()
+{
+	string dpath = GetDirectoryPath();
+	return dpath + "temp/";
+}
+
+
+
+
+
+
 
 #pragma mark
 #pragma mark ProjectData IO

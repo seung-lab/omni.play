@@ -1,11 +1,10 @@
-
 #include "omVolume.h"
 #include "omVolumeCuller.h"
 
 #include "segment/omSegmentEditor.h"
 #include "common/omGl.h"
-#include "system/omDebug.h"
-#include "system/omProject.h"
+#include "common/omDebug.h"
+#include "project/omProject.h"
 
 #define DEBUG 0
 

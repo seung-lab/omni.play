@@ -1,14 +1,14 @@
 
 #include "omHdf5.h"
 #include "omImageDataIo.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "common/omVtk.h"
 
 #include <vtkImageData.h>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string_regex.hpp>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 namespace bfa = boost::algorithm;
 
 #define DEBUG 0

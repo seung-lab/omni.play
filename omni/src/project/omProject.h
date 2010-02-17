@@ -11,11 +11,10 @@
 
 
 
-#include "omPreferences.h"
-#include "omStateManager.h"
-#include "omKeyManager.h"
-#include "omTagManager.h"
-//#include "omViewList.h"
+#include "system/omPreferences.h"
+#include "system/omStateManager.h"
+#include "system/omKeyManager.h"
+#include "system/omTagManager.h"
 #include "volume/omVolume.h"
 
 #include "common/omStd.h"

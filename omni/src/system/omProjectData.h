@@ -37,6 +37,13 @@ public:
 	static bool IsOpen();
 
 	
+	//project properties
+	static const string& GetFileName();
+	static void SetFileName(const string &);
+	static const string& GetDirectoryPath();
+	static void SetDirectoryPath(const string &);
+	static string GetTempDirectoryPath();
+	
 	
 	//groups
 	static bool GroupExists(string &path);
@@ -72,6 +79,10 @@ private:
 	static OmProjectData* mspInstance;
 	
 	hid_t mFileId;
+	
+	//project
+	string mFileName;
+	string mDirectoryPath;
 };
 
 

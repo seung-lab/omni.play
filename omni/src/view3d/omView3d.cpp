@@ -12,14 +12,14 @@
 
 #include "system/omKeyManager.h"
 #include "system/omStateManager.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
 #include "common/omGl.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 1,
@@ -39,7 +39,6 @@ void initLights();
 //////////      OmView3d Class
 //////////
 
-unsigned int myBackoff;
 static int secretBackoff = 0;
 
 /*
@@ -60,13 +59,13 @@ OmView3d::OmView3d(QWidget * parent)
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
 
-	myBackoff = 1;
+	OmStateManager::setMyBackoff( 1 );
 }
 
 
 static void resetBackoff ()
 {
-	myBackoff = 1;
+	OmStateManager::setMyBackoff( 1 );
 	secretBackoff = 0;
 }
 
@@ -74,7 +73,7 @@ static void increaseBackoff ()
 {
 	secretBackoff++;
 	if (secretBackoff > 5) {
-		myBackoff++;
+		OmStateManager::setMyBackoff( OmStateManager::getMyBackoff() + 1 );
 		secretBackoff = 0;
 	}
 }

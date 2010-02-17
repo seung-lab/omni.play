@@ -5,7 +5,7 @@
 #include <QFileInfo>
 
 #include <iostream>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace std;
 
 /********************************************

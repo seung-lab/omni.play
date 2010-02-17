@@ -4,7 +4,7 @@
 #include <qthread.h>
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 class OmAnimate: public QThread
 {

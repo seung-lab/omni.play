@@ -17,7 +17,7 @@
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter2d.h"
+#include "volume/omFilter2d.h"
 
 #include "volume/omVolumeTypes.h"
 #include "volume/omSegmentation.h"

@@ -22,18 +22,13 @@ SET(OM_SYSTEM_LIB_SRCS
 	omCacheManager.cpp
 	omEvent.cpp
 	omEventManager.cpp
-	omException.cpp
 	omKeyManager.cpp
 	omPreferenceDefinitions.cpp
 	omPreferences.cpp
-	omProject.cpp
 	omProjectData.cpp
 	omStateManager.cpp
 	omTagManager.cpp
-	omFilter2d.cpp
-	omFilter2dManager.cpp
 	omGarbage.cpp
-	omDebug.cpp
 #	omViewList.cpp
 #	omSnapshot.cpp
 	omNumCores.cpp
@@ -51,9 +46,8 @@ ADD_LIBRARY(omSystem
 TARGET_LINK_LIBRARIES(omSystem
 	omCommon
 	omUtility
-	omVolume
-	-lpthread
 	${OM_QT_LIBS}
+	-lpthread
 )
 
 
@@ -65,9 +59,9 @@ TARGET_LINK_LIBRARIES(omSystem
 ## EXECUTABLE ##
 
 #specify executable
-#ADD_EXECUTABLE( omSystemApp
-#	main.cpp
-#)
-#TARGET_LINK_LIBRARIES( omSystemApp
-#	omSystem
-#)
+ADD_EXECUTABLE( omSystemApp
+	main.cpp
+)
+TARGET_LINK_LIBRARIES( omSystemApp
+	omSystem
+)

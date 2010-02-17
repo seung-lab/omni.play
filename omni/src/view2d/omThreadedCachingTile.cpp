@@ -11,7 +11,7 @@
 
 #include <QColor>
 #include <QGLContext>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

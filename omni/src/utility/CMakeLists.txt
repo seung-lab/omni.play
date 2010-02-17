@@ -7,17 +7,24 @@ SET(OM_UTILITY_LIB_SRCS
 )
 
 #create static library
-ADD_LIBRARY(omUtility 
+ADD_LIBRARY(omUtility
 	${OM_UTILITY_LIB_SRCS}
 )
 
+
 TARGET_LINK_LIBRARIES( omUtility
 	omCommon
-	omSystem
 	omLibrary
-	omView2d
-	${HDF5_LIBRARY}
+	${OM_VTK_LIBS}
+	${OM_HDF5_LIBS}
+	${OM_BOOST_LIBS}
 )
+
+
+
+#	omSystem
+#	omLibrary
+#	omView2d
 
 
 # EXECUTABLE

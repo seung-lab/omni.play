@@ -1,6 +1,6 @@
 
 #include "omMipMesh.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 int main(int argc, char *argv[])
 {

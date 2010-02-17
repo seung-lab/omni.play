@@ -1,12 +1,13 @@
 
 #include "omGarbage.h"
-#include "omException.h"
 #include "omPreferenceDefinitions.h"
 #include "omCacheManager.h"
 
+#include "common/omException.h"
+#include "common/omDebug.h"
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include "system/omDebug.h"
 namespace bfs = boost::filesystem;
 
 #define DEBUG 0

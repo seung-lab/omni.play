@@ -21,7 +21,7 @@
 #include <vtkMarchingCubes.h>
 #include <vtkDiscreteMarchingCubes.h>
 #include <vtkThreshold.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 #import <vtkCleanPolyData.h>
 #import <vtkSmoothPolyDataFilter.h>
 #import <vtkPolyDataNormals.h>

@@ -1,5 +1,5 @@
 #include "filObjectInspector.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper & fdw )
  : QWidget(parent)

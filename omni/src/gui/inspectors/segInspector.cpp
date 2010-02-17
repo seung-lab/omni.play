@@ -5,7 +5,7 @@
 
 #include <QThread>
 #include <qtconcurrentrun.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"

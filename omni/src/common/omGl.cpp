@@ -10,7 +10,7 @@
 
 #include "omGl.h"
 #include "omStd.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define SELEC_BUFF_SIZE 256
 static GLuint selectBuf[SELEC_BUFF_SIZE];

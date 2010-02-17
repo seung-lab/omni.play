@@ -5,9 +5,9 @@
 #include "system/omEventManager.h"
 #include "system/events/omProgressEvent.h"
 
-#include "system/omFilter2d.h"
-#include "system/omDebug.h"
-#include "system/omProject.h"
+#include "volume/omFilter2d.h"
+#include "common/omDebug.h"
+#include "project/omProject.h"
 
 #define DEBUG 0
 

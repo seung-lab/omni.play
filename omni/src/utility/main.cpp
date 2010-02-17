@@ -17,7 +17,7 @@ using namespace vmml;
 #include <vtkImageData.h>
 
 #include <hdf5.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 void sample_write();
 

@@ -1,5 +1,5 @@
 #include "segObjectInspector.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"

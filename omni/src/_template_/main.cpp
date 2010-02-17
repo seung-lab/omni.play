@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace std;
 
 int main(int argc, char *argv[])
