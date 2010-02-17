@@ -9,6 +9,7 @@
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
 #include "common/omSerialization.h"
+#include "system/omGarbage.h"
 
 
 #include <vmmlib/vmmlib.h>
@@ -16,6 +17,18 @@ using namespace vmml;
 
 
 #include <hdf5.h>
+
+#define HDF5LOCK() 									\
+	OmGarbage::Lock(); 							\
+	try { 
+
+#define HDF5UNLOCK() 								\
+	} catch (OmException e) { 						\
+		OmGarbage::Unlock(); 						\
+		throw (e);							\
+	}									\
+	OmGarbage::Unlock();
+
 
 class vtkImageData;
 
