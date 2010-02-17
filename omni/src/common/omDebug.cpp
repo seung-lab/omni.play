@@ -137,7 +137,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 					fileArgIndex = -1;
 					break;
 				}
-			} else if ( 'n' == argv[i][0] ){
+			} else if ( 'n' == argv[i][1] ){
 				if(strlen(argv[i]) > 2){
 					if(!strncmp(argv[i],"-nodebug",8)){
 						usage();
@@ -153,7 +153,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 					fileArgIndex = -1;
 					break;
 				}
-			} else if ( 'p' ==  argv[i][0] ){
+			} else if ( 'p' ==  argv[i][1] ){
 				//ignore process id passed from osx
 				if(!strncmp(argv[i],"-psn",4)) {
 					// do nothing
@@ -162,7 +162,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 					fileArgIndex = -2;
 					break;
 				}
-			} else if ( '-' ==  argv[i][0] ){
+			} else if ( '-' ==  argv[i][1] ){
 				if(!strncmp(argv[i],"--debug=",8)){
 					if (-1==debugParseArg(&argv[i][8],OM_DEBUG_ADD)){
 						fileArgIndex = -1;
