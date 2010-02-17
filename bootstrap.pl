@@ -259,8 +259,14 @@ sub prepareNukeSrcsAndBuild {
 }
 
 sub boost {
+    boost138();
+#    boost142();
+}
+
+sub boost138 {
     my $baseFileName = "boost_1_38_0";
-    prepare( $baseFileName, "Boost" );
+    my $libFolderName = "Boost";
+    prepare( $baseFileName, $libFolderName );
 
     `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/tools/build/v2/user-config.jam`;
     `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/user-config.jam`;
@@ -277,6 +283,26 @@ sub boost {
     `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
 
     buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization,thread" );
+}
+
+sub boost142 {
+    my $baseFileName = "boost_1_42_0";
+    my $libFolderName = "Boost";
+    prepare( $baseFileName, $libFolderName );
+
+    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
+    `rm -rf $boostLocalBuildFolder`;
+    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
+
+    my $cmd = "./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
+    print "configuring ($cmd)\n"; 
+    `(cd $srcPath/$baseFileName; $cmd)`;
+    print "done\n";
+
+    $cmd = "./bjam install";
+    print "building and installing ($cmd)\n";
+    `(cd $srcPath/$baseFileName; $cmd)`;
+    print "done\n";
 }
 
 sub libpng {
@@ -332,10 +358,6 @@ CMAKE_BUILD_TYPE:STRING=Debug
 CMAKE_INSTALL_PREFIX:STRING=$buildPath
 QT_QMAKE_EXECUTABLE:STRING=$libPath/Qt/bin/qmake
 DESIRED_QT_VERSION:STRING=4
-
-Boost_INCLUDE_DIR:PATH=$libPath/Boost/include/boost-1_38/
-Boost_LIBRARY_DIRS:FILEPATH=$libPath/Boost/
-Boost_USE_MULTITHREADED:BOOL=ON
 
 TIFF_INCLUDE_DIR:PATH=$libPath/libtiff/include
 TIFF_LIBRARY:PATH=$libPath/libtiff/lib/libtiff.a
@@ -424,8 +446,6 @@ sub release {
 }
 
 sub menu {
-    my $max_answer = 10;
-
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
@@ -438,6 +458,7 @@ sub menu {
     print "8 -- Generate scripts\n";
     print "9 -- Build and tar release!\n";
     print "10 -- Experimental builds...\n\n";
+    my $max_answer = 10;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -482,12 +503,9 @@ sub runMenuEntry {
     }elsif( 10 == $entry ){
         experimentalMenu();
     }
-
 }
 
 sub smallLibraryMenu() {
-    my $max_answer = 6;
-
     print "build small library menu:\n";
     print "0 -- exit\n";
     print "1 -- Build expat\n";
@@ -496,6 +514,7 @@ sub smallLibraryMenu() {
     print "4 -- Build hdf5\n";
     print "5 -- Build libpng\n";
     print "6 -- Build libtiff\n\n";
+    my $max_answer = 6;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -557,12 +576,11 @@ sub setupParallelBuildOption {
 }
 
 sub experimentalMenu {
-    my $max_answer = 1;
-
     print "experimental build menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build QT 4.6.2\n\n";
-#    print "2 -- Build boost\n";
+    print "1 -- Build QT 4.6.2\n";
+    print "2 -- Build boost 1.42\n\n";
+    my $max_answer = 2;
 
     while( 1 ){
 	print "Please make selection: ";
