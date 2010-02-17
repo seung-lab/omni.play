@@ -45,8 +45,7 @@ void
 	SetUserScale(Vector3i(1, 1, 1));
 	SetScale(Vector3i(10, 10, 10));
 
-	//temp
-	mDataResolution = Vector3i::ZERO;
+	mDataResolution = Vector3i::ONE;
 }
 
 OmVolume *OmVolume::Instance()
