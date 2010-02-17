@@ -8,8 +8,6 @@
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
 
-
-
 void debug(const char *category, const char *format, ...)
 {
 	int i;
@@ -114,61 +112,91 @@ int parseEnvironment()
 	} else return 0;
 }
 
-int parseArgs(int argc, char *argv[])
+CmdLineArgs parseArgs(int argc, char *argv[])
 {
 	int i;
 	int fileArgIndex=0;
+	bool runHeadless = false;
+	QString headlessCMD="";
 
 	for(i=1; i<argc; i++) {
 		if(argv[i][0] == '-') {
-			switch(argv[i][1]) {
-				case 'd':
-					if(strlen(argv[i]) > 2){
-						if(!strncmp(argv[i],"-debug",6)){
-							usage();
-							return -2;
-						} else {
-							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_ADD)) return -1;
-						}
-					} else 	if(-1==debugParseArg(argv[++i],OM_DEBUG_ADD)) return -1;
-					break;
-				case 'n':
-					if(strlen(argv[i]) > 2){
-						if(!strncmp(argv[i],"-nodebug",8)){
-							usage();
-							return -2;
-						} else {
-							if(-1==debugParseArg(&argv[i][2],OM_DEBUG_REMOVE)) return -1;
-						}
-					} else if (-1==debugParseArg(argv[++i],OM_DEBUG_REMOVE)) return -1;
-					break;
-				case '-':
-					if(!strncmp(argv[i],"--debug=",8)){
-						if (-1==debugParseArg(&argv[i][8],OM_DEBUG_ADD)) return -1;
+			if( 'd' == argv[i][1]){
+				if(strlen(argv[i]) > 2){
+					if(!strncmp(argv[i],"-debug",6)){
+						usage();
+						fileArgIndex = -2;
+						break;
 					} else {
-						if(!strncmp(argv[i],"--nodebug=",10)){
-							if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)) return -1;
-						} else {
-							printf("Unrecognized option %s.\n\n",argv[i]);
-						        usage();
-							return -2;	
+						if(-1==debugParseArg(&argv[i][2],OM_DEBUG_ADD)){
+							fileArgIndex = -1;
+							break;
 						}
 					}
+				} else 	if(-1==debugParseArg(argv[++i],OM_DEBUG_ADD)){
+					fileArgIndex = -1;
 					break;
-				default:
-					printf("Unrecognized option %s.\n\n",argv[i]);
-					usage();
-					return -2;
+				}
+			} else if ( 'n' == argv[i][0] ){
+				if(strlen(argv[i]) > 2){
+					if(!strncmp(argv[i],"-nodebug",8)){
+						usage();
+						fileArgIndex = -2;
+						break;
+					} else {
+						if( -1==debugParseArg(&argv[i][2],OM_DEBUG_REMOVE)){
+							fileArgIndex = -1;
+							break;
+						}
+					}
+				} else if (-1==debugParseArg(argv[++i],OM_DEBUG_REMOVE)) {
+					fileArgIndex = -1;
+					break;
+				}
+			} else if ( '-' ==  argv[i][0] ){
+				if(!strncmp(argv[i],"--debug=",8)){
+					if (-1==debugParseArg(&argv[i][8],OM_DEBUG_ADD)){
+						fileArgIndex = -1;
+						break;
+					}
+				} else {
+					if(!strncmp(argv[i],"--nodebug=",10)){
+						if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)){
+							fileArgIndex = -1;
+							break;
+						}
+					} else if(!strncmp(argv[i],"--headless",10)){
+						runHeadless = true;
+						headlessCMD = QString::fromStdString( argv[i] );
+					} else {
+						printf("Unrecognized option %s.\n\n",argv[i]);
+						usage();
+						fileArgIndex = -2;
+						break;
+					}
+				}
+			} else {
+				printf("Unrecognized option %s.\n\n",argv[i]);
+				usage();
+				fileArgIndex = -2;
+				break;
 			}
 			
 		} else {
-			if (!fileArgIndex) fileArgIndex=i;
+			if (!fileArgIndex){
+				fileArgIndex=i;
+			}
 		}
 	}
-	return fileArgIndex;
+
+	CmdLineArgs args;
+	args.fileArgIndex = fileArgIndex;
+	args.runHeadless  = runHeadless;
+	args.headlessCMD  = headlessCMD;
+	return args;
 }
 
-int parseAnythingYouCan(int argc, char *argv[])
+CmdLineArgs parseAnythingYouCan(int argc, char *argv[])
 {	
 	int result,fileArgIndex;
 	result   = parseEnvironment();
@@ -182,18 +210,18 @@ int parseAnythingYouCan(int argc, char *argv[])
 		debugCategoryNumber=0;
 	}
 
-	fileArgIndex = parseArgs(argc, argv);
+	CmdLineArgs args = parseArgs(argc, argv);
 
-	if (fileArgIndex==-1){
+	if ( -1 == args.fileArgIndex ){
 		printf("\nA category string in your command line \n");
 		printf("is longer than the maximum length of\n");
 		printf("%i characters.\n",OM_DEBUG_STRING_SIZE);
 		printf(" . . . exiting . . . \n\n");
 	}
-	return fileArgIndex;
+	return args;
 }
-void
-usage(void) 
+
+void usage() 
 {
 	printf("Usage: omni [OPTION] [FILE]\n\nOptions:\n"); 
 	printf("   --debug=<category>    Add <category> to the list of strings which\n"); 

@@ -36,7 +36,7 @@ OmProject *OmProject::mspInstance = 0;
 
 OmProject::OmProject()
 {
-	OmStateManager::CreatePrimaryView3dWidget();
+	//	OmStateManager::CreatePrimaryView3dWidget();
 }
 
 OmProject::~OmProject()
