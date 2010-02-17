@@ -1,15 +1,6 @@
 #include <QtGui>
 #include "myInspectorWidget.h"
 
-#include "segInspector.h"
-
-#include "ui_chanInspector.h"
-#include "chanInspector.h"
-
-#include "segObjectInspector.h"
-
-#include "filObjectInspector.h"
-
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
 #include "system/omProject.h"
@@ -159,7 +150,6 @@ bool MyInspectorWidget::getBoolState(const Qt::CheckState state)
 	}
 }
 
-
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -237,7 +227,6 @@ void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget)
 		widget->resizeColumnToContents(i);
 	}
 }
-
 
 void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 {

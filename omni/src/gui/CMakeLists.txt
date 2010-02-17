@@ -23,10 +23,10 @@ SET(omGuiApp_MOC_HDRS
 	mainwindow.h
 	../view3d/omView3d.h
 	../view2d/omView2d.h
-	segInspector.h
-	chanInspector.h
-	segObjectInspector.h
-	filObjectInspector.h
+	inspectors/segInspector.h
+	inspectors/chanInspector.h
+	inspectors/segObjectInspector.h
+	inspectors/filObjectInspector.h
 	inspectorProperties.h
 	preferences/preferencesMesh.h
 	preferences/preferences3d.h
@@ -53,10 +53,10 @@ ADD_EXECUTABLE(omni
 	recentFileList.cpp
 	../utility/dataWrappers.cpp
 	../system/omAnimate.cpp
-	segInspector.cpp
-	chanInspector.cpp
-	segObjectInspector.cpp
-	filObjectInspector.cpp
+	inspectors/segInspector.cpp
+	inspectors/chanInspector.cpp
+	inspectors/segObjectInspector.cpp
+	inspectors/filObjectInspector.cpp
 	inspectorProperties.cpp
         preferences/preferencesMesh.cpp
         preferences/preferences3d.cpp
