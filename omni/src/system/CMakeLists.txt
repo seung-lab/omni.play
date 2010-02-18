@@ -37,7 +37,6 @@ SET(OM_SYSTEM_LIB_SRCS
 #	omViewList.cpp
 #	omSnapshot.cpp
 	omNumCores.cpp
-	omAnimate.cpp
 	
 	${OM_SYSTEM_EVENTS_SRCS}
 )
