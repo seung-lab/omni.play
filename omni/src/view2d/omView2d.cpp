@@ -614,12 +614,13 @@ void OmView2d::SetDepth(QMouseEvent * event)
 
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	float scaleFactor = (zoomMipVector.y / 10.0);
+	float mipScaleFactor = pow(2,(zoomMipVector.x));
 
 	Vector2f localClickPoint =
 	    Vector2f((clickPoint.x / scaleFactor) - widthTranslate, (clickPoint.y / scaleFactor) - heightTranslate);
 
-	float newDepthX = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.x)).z;
-	float newDepthY = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.y)).z;
+	float newDepthX = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.x)).z*mipScaleFactor;
+	float newDepthY = DataToSpaceCoord(SpaceCoord(0, 0, localClickPoint.y)).z*mipScaleFactor;
 
 	debug ("view2d", "click event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
 	debug ("view2d", "newDepth x,y,z (%f, %f,)\n", newDepthX, newDepthY);
@@ -2496,15 +2497,16 @@ void OmView2d::DrawCursors()
 
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	float scaleFactor = (zoomMipVector.y / 10.0);
+	float mipScaleFactor = pow(2,zoomMipVector.x);
 
 	// convert mCenter to data coordinates
 	SpaceCoord YZslice = SpaceCoord(0, 0, OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW));
 	SpaceCoord XZslice = SpaceCoord(0, 0, OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW));
 	SpaceCoord XYslice = SpaceCoord(0, 0, OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW));
 
-	int YZslice_depth = SpaceToDataCoord(YZslice).z;
-	int XZslice_depth = SpaceToDataCoord(XZslice).z;
-	int XYslice_depth = SpaceToDataCoord(XYslice).z;
+	int YZslice_depth = SpaceToDataCoord(YZslice).z/mipScaleFactor;
+	int XZslice_depth = SpaceToDataCoord(XZslice).z/mipScaleFactor;
+	int XYslice_depth = SpaceToDataCoord(XYslice).z/mipScaleFactor;
 
 	//mView3dWidgetManager.CallEnabled( &OmView3dWidget::Draw )
 	glDisable(GL_BLEND);
