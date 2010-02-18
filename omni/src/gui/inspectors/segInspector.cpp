@@ -250,6 +250,23 @@ void build_image_and_mesh( OmSegmentation * current_seg )
 	build_mesh(current_seg);
 }
 
+
+QString& GetScriptCmd (QString arg)
+{
+	static QString cmd;
+
+	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
+	debug ("meshinator", "%s\n", qPrintable (omniPath));
+	QString cmdPath = omniPath; 
+
+	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
+	cmd = cmdPath;
+	cmd += "/scripts/cluster/headnodemesher.pl " + arg;
+
+	return cmd;
+}
+
+
 void SegInspector::on_buildButton_clicked()
 {
 	// check current selection in buildComboBox
@@ -279,7 +296,8 @@ void SegInspector::on_buildButton_clicked()
 		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
 		current_seg.BuildMeshDataPlan( fnpnPlan );
 
-		QString script = "find .";
+		QString script = GetScriptCmd (fnpnPlan);
+		debug ("meshinator", "%s\n", qPrintable (script));
 		if (mMeshinatorProc) {
 			delete mMeshinatorProc;
 		}
