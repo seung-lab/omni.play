@@ -50,18 +50,12 @@ TARGET_LINK_LIBRARIES(omSystem
 	-lpthread
 )
 
-
-
-
-
-
-
 ## EXECUTABLE ##
 
 #specify executable
-ADD_EXECUTABLE( omSystemApp
-	main.cpp
-)
-TARGET_LINK_LIBRARIES( omSystemApp
-	omSystem
-)
+#ADD_EXECUTABLE( omSystemApp
+#	main.cpp
+#)
+#TARGET_LINK_LIBRARIES( omSystemApp
+#	omSystem
+#)

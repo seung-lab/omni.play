@@ -108,7 +108,7 @@ public:
 	void DrawMeshes( const OmBitfield &, const OmMipChunkCoord &, const SegmentDataSet & ) { }
 	
 	void Print();
-	
+	OmMipMeshManager mMipMeshManager;	
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy
@@ -122,7 +122,7 @@ private:
 	
 	//managers
 	OmSegmentManager mSegmentManager;
-	OmMipMeshManager mMipMeshManager;
+
 	OmMipVoxelationManager mMipVoxelationManager;
 	
 

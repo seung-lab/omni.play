@@ -6,7 +6,7 @@
 #include <QThread>
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
-
+#include "system/omProjectData.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
@@ -74,6 +74,7 @@ QGroupBox* SegInspector::makeActionsBox()
          << "Data"
          << "Mesh"
 	 << "Data & Mesh"
+         << "Meshinator"
         );
         gridAction->addWidget(buildComboBox, 1, 0);
 
@@ -254,6 +255,17 @@ void SegInspector::on_buildButton_clicked()
 	} else if (cur_text == QString("Data & Mesh")) {
 		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
 		emit segmentationBuilt(my_id);
+	} else if( "Meshinator" == cur_text ){
+
+		QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
+		QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
+		QString rel_fnpn = pathName + fileName;
+		QFileInfo fInfo(rel_fnpn);
+		QString fnpnProject = fInfo.absoluteFilePath();
+		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
+		current_seg.BuildMeshDataPlan( fnpnPlan );
+
+		
 	}
 	
 }

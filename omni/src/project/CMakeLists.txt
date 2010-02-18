@@ -25,13 +25,13 @@ TARGET_LINK_LIBRARIES( omProject
 
 # EXECUTABLE
 #specify executable
-ADD_EXECUTABLE( omProjectApp
-	main.cpp
-)
+#ADD_EXECUTABLE( omProjectApp
+#	main.cpp
+#)
 
 #link binaries targets against libraries
-TARGET_LINK_LIBRARIES( omProjectApp 
-	omProject
-)
+#TARGET_LINK_LIBRARIES( omProjectApp 
+#	omProject
+#)
 
 
