@@ -87,6 +87,7 @@ void processHeadlessLine( QString line, QString fName )
 		printf("done\n");
 	} else if( "meshdone" == line ) {
 		OmVolume::GetSegmentation( SegmentationID ).mMipMeshManager.SetMeshDataBuilt(true);
+		OmProject::Save();
 	} else if( line.startsWith("seg") ) {
 		QStringList args = line.split(':');
 		SegmentationID = getNum( args[1] );
