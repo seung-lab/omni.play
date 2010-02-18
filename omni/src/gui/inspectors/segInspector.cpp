@@ -259,18 +259,15 @@ void SegInspector::on_buildButton_clicked()
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(my_id);
 
 	if (cur_text == QString("Data")) {
-		//OmVolume::GetSegmentation(my_id).BuildVolumeData();
 		QFuture < void >future = QtConcurrent::run(build_image, &current_seg);
 		emit segmentationBuilt(my_id);
 	} else if (cur_text == QString("Mesh")) {
-		//      OmVolume::GetSegmentation(my_id).BuildMeshData();
 		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
 		//              emit meshBuilt(my_id);
 	} else if (cur_text == QString("Data & Mesh")) {
 		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
 		emit segmentationBuilt(my_id);
 	} else if( "Meshinator" == cur_text ){
-
 		QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
 		QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
 		QString rel_fnpn = pathName + fileName;
@@ -278,10 +275,7 @@ void SegInspector::on_buildButton_clicked()
 		QString fnpnProject = fInfo.absoluteFilePath();
 		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
 		current_seg.BuildMeshDataPlan( fnpnPlan );
-
-		
 	}
-	
 }
 
 void SegInspector::on_notesEdit_textChanged()

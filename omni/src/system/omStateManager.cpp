@@ -123,8 +123,6 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 	return Instance()->omniExecPathAbsolute;
 }
 
-#pragma mark
-#pragma mark Project State
 /////////////////////////////////
 ///////          Project State
 
@@ -138,8 +136,6 @@ OmStateManager::FlushState() {
 }
 */
 
-#pragma mark
-#pragma mark View Event
 /////////////////////////////////
 ///////          View Event
 
