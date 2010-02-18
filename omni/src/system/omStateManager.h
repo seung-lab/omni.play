@@ -14,6 +14,8 @@
 #include "common/omSerialization.h"
 #include "common/omStd.h"
 
+#include <QString>
+
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
 using namespace vmml;
@@ -112,6 +114,9 @@ public:
 	static unsigned int getMyBackoff();
 	static void setMyBackoff( unsigned int val );
 
+	static void setOmniExecutableAbsolutePath( QString abs_path );
+	static QString getOmniExecutableAbsolutePath();
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmStateManager();
@@ -163,7 +168,8 @@ private:
 	float TRANSPARANCY_ALPHA;
 
 	unsigned int myBackoff;
-	
+
+	QString omniExecPathAbsolute;
 	/*
 	friend class boost::serialization::access;
 	template<class Archive>

@@ -15,10 +15,13 @@
 SegInspector::SegInspector(OmId seg_id, QWidget * parent)
  : QWidget(parent)
 {
+	sdw = SegmentationDataWrapper( seg_id );
+
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
 	overallContainer->addWidget(makeActionsBox());
 	overallContainer->addWidget(makeToolsBox());
+	overallContainer->addWidget(makeStatsBox());
 	overallContainer->addWidget(makeNotesBox());
 
         QMetaObject::connectSlotsByName(this);
@@ -27,10 +30,24 @@ SegInspector::SegInspector(OmId seg_id, QWidget * parent)
 	directoryEdit->setReadOnly(true);
 }
 
+QGroupBox* SegInspector::makeStatsBox()
+{
+	QGroupBox* statsBox = new QGroupBox("Stats");
+	QGridLayout *grid = new QGridLayout( statsBox );
+
+	QLabel *labelNumSegments = new QLabel(statsBox);
+	labelNumSegments->setText("number of segments:");
+	grid->addWidget( labelNumSegments, 0, 0 );
+	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
+	labelNumSegmentsNum->setText( QString::number( sdw.getNumberOfSegments() ) );
+	grid->addWidget( labelNumSegmentsNum, 0, 1 );
+
+	return statsBox;
+}
+
 QGroupBox* SegInspector::makeNotesBox()
 {
 	QGroupBox* notesBox = new QGroupBox("Notes");
-
 	QGridLayout *gridNotes = new QGridLayout( notesBox );
 
 	notesEdit = new QPlainTextEdit(notesBox);
@@ -43,7 +60,6 @@ QGroupBox* SegInspector::makeNotesBox()
 QGroupBox* SegInspector::makeToolsBox()
 {
 	QGroupBox* segmentBox = new QGroupBox("Tools");
-
 	QGridLayout *gridSegment = new QGridLayout( segmentBox );
 
 	addSegmentButton = new QPushButton(segmentBox);
@@ -57,7 +73,6 @@ QGroupBox* SegInspector::makeToolsBox()
 QGroupBox* SegInspector::makeActionsBox()
 {
 	QGroupBox* actionsBox = new QGroupBox("Actions");
-
 	QGridLayout *gridAction = new QGridLayout( actionsBox );
 
 	QLabel *labelNumThreadsText = new QLabel(actionsBox);
@@ -95,7 +110,6 @@ QGroupBox* SegInspector::makeActionsBox()
 QGroupBox* SegInspector::makeSourcesBox()
 {
 	QGroupBox* sourceBox = new QGroupBox("Source");
-
 	QGridLayout *grid = new QGridLayout( sourceBox );
 
 	QLabel *nameLabel = new QLabel(sourceBox);

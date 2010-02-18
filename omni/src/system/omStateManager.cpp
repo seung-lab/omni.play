@@ -111,7 +111,16 @@ const string & OmStateManager::GetProjectDirectoryPath()
 void OmStateManager::SetProjectDirectoryPath(const string & dpath)
 {
 	Instance()->mProjectDirectoryPath = dpath;
+}
 
+void OmStateManager::setOmniExecutableAbsolutePath( QString abs_path ) 
+{
+	Instance()->omniExecPathAbsolute = abs_path;
+}
+
+QString OmStateManager::getOmniExecutableAbsolutePath() 
+{
+	return Instance()->omniExecPathAbsolute;
 }
 
 #pragma mark

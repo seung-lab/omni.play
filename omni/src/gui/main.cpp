@@ -1,13 +1,16 @@
 #include <QApplication>
 
+#include <dlfcn.h>
+
+#include <QTextStream>
+#include <QFile>
+#include <QFileInfo>
+
 #include "mainwindow.h"
 #include "volume/omFilter2d.h"
 #include "project/omProject.h"
-#include <dlfcn.h>
-#include "common/omDebug.h"
-#include <QTextStream>
-#include <QFile>
 #include "volume/omVolume.h"
+#include "common/omDebug.h"
 
 OmId SegmentationID = 0;
 
@@ -86,6 +89,10 @@ void processHeadlessLine( QString line, QString fName )
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
 		printf("done\n");
 	} else if( "meshdone" == line ) {
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
 		OmVolume::GetSegmentation( SegmentationID ).mMipMeshManager.SetMeshDataBuilt(true);
 		OmProject::Save();
 	} else if( line.startsWith("seg") ) {
@@ -93,7 +100,9 @@ void processHeadlessLine( QString line, QString fName )
 		SegmentationID = getNum( args[1] );
 		if( SegmentationID > 0 ){
 			printf("segmentationID set to %d\n", SegmentationID );
-		} 
+		} else {
+			printf("invalid segmentation\n");
+		}
 	} else if( line.startsWith("open") ){
 		openProject( fName );
 	
@@ -147,6 +156,16 @@ void runHeadless( QString headlessCMD, QString fName )
 	}
 }
 
+void setOmniExecutablePath( QString rel_fnpn )
+{
+	printf("got %s\n", qPrintable( rel_fnpn ) );
+
+	QFileInfo fInfo(rel_fnpn);
+	QString fnpn = fInfo.absoluteFilePath();
+
+	OmStateManager::setOmniExecutableAbsolutePath( fnpn );
+}
+
 int main(int argc, char *argv[])
 {
 	//    return firsttime (argc, argv);
@@ -158,12 +177,13 @@ int main(int argc, char *argv[])
 
 	QString fName = "";
 	if ( args.fileArgIndex > 0 ) {
-		fName = QString::fromStdString( argv[ args.fileArgIndex ] );			
+		fName = QString::fromStdString( argv[ args.fileArgIndex ] );
 	}
 
 	if( args.runHeadless ){
 		runHeadless( args.headlessCMD, fName );
 	} else {
+		setOmniExecutablePath( QString( argv[0] ) );
 		QApplication app(argc, argv);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;

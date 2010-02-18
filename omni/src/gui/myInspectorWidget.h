@@ -9,7 +9,7 @@
 #include "inspectors/chanInspector.h"
 #include "inspectors/segObjectInspector.h"
 #include "inspectors/filObjectInspector.h"
-#include "inspectorProperties.h"
+#include "inspectors/inspectorProperties.h"
 
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"

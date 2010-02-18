@@ -5,6 +5,7 @@
 #include <QWidget> 
 #include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
 
 class SegInspector : public QWidget
 { 
@@ -51,9 +52,12 @@ public:
 	OmId SegmentationID;
 	OmId SegmentID;
 
+	SegmentationDataWrapper sdw;
+
 	QGroupBox* makeActionsBox();
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeToolsBox();
 	QGroupBox* makeNotesBox();
+	QGroupBox* makeStatsBox();
 }; 
 #endif
