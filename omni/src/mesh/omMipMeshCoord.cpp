@@ -1,6 +1,6 @@
 
 #include "omMipMeshCoord.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 OmMipMeshCoord::OmMipMeshCoord()
 {

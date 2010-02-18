@@ -1,6 +1,6 @@
 
 #include "omTileCoord.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 OmTileCoord::OmTileCoord()
 {

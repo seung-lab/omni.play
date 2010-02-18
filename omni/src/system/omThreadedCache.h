@@ -5,9 +5,9 @@
 #include "omCacheBase.h"
 
 #include "utility/stackSet.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "common/omThreads.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 #include <boost/shared_ptr.hpp>
 
 using boost::shared_ptr;

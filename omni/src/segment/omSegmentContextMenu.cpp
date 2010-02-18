@@ -11,7 +11,7 @@
 #include "volume/omSegmentation.h"
 
 #include "utility/setUtilities.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

@@ -1,5 +1,5 @@
 #include "dataWrappers.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 /*******************************************
  ****** Data Wrapper Container
@@ -99,6 +99,11 @@ QString SegmentationDataWrapper::getNote()
 	return QString::fromStdString(str);
 }
 
+unsigned int SegmentationDataWrapper::getNumberOfSegments()
+{
+	return OmVolume::GetSegmentation(mID).GetValidSegmentIds().size();
+}
+
 /*******************************************
  ****** Segments
  *******************************************/
@@ -149,13 +154,67 @@ QString SegmentDataWrapper::getNote()
 	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
 	return QString::fromStdString(str);
 }
+
 void SegmentDataWrapper::setNote(QString str)
 {
 	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetNote(qPrintable(str));
 }
+
 QString SegmentDataWrapper::getIDstr()
 {
 	return QString("%1").arg(getID());
+}
+
+const Vector3 < float >& SegmentDataWrapper::getColor()
+{
+	return OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetColor();
+}
+
+void SegmentDataWrapper::setColor(const Vector3 < float >& color)
+{
+	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetColor( color );
+}
+
+void SegmentDataWrapper::setName( const QString& str )
+{
+	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetName( str.toStdString() );
+}
+
+QString SegmentDataWrapper::getDataValuesForSegment()
+{
+	const SegmentDataSet & data_set = OmVolume::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
+	
+	if( data_set.size() == 0 ){
+		return "";
+	}
+
+	QString str;
+	unsigned int counter = 0;
+	OmIds::iterator itr;
+	for( itr = data_set.begin(); itr != data_set.end(); itr++ ){
+		counter++;
+		str += QString::number( *itr );
+		if( counter < data_set.size() ){
+			str += ", ";
+			if( counter > 0 && counter % 8 == 0 ){
+				str += "\n";
+			}
+		}
+	}
+	return str;
+}
+
+QString SegmentDataWrapper::get_original_mapped_data_value()
+{
+	
+	const SEGMENT_DATA_TYPE value = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).get_original_mapped_data_value();
+	if( 0 == value ){
+		return "<not set>";
+	} else {
+		return QString::number( value );
+	}
+	
+	//	return QString::number( OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).get_original_mapped_data_value() );
 }
 
 /*******************************************

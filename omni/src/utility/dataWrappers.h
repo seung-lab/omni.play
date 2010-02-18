@@ -2,7 +2,7 @@
 #define DATA_WRAPPERS
 
 #include "system/omSystemTypes.h"
-#include "system/omException.h"
+#include "common/omException.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 
@@ -47,6 +47,7 @@ class SegmentationDataWrapper : public DataWrapper
 	SegmentationDataWrapper( const OmId mID );
 	QHash< OmId, SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
+	unsigned int getNumberOfSegments();
 };
 
 class SegmentDataWrapper : public DataWrapper 
@@ -67,6 +68,11 @@ class SegmentDataWrapper : public DataWrapper
 	QString getNote();
 	void setNote(QString str);
 	QString getIDstr();
+	const Vector3 < float >& getColor();
+	void setColor(const Vector3 < float >& color);
+	void setName( const QString& str );
+	QString getDataValuesForSegment();
+	QString get_original_mapped_data_value();
  private:
 	OmId mSegmentationID;
 };

@@ -5,7 +5,7 @@
 #include "common/omGl.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 
@@ -23,6 +23,7 @@ OmSegment::OmSegment()
 OmSegment::OmSegment(OmId omId)
  : OmManageableObject(omId)
 {
+	original_mapped_data_value = 0;
 
 	mName = printf2str(256, "segment%05d", omId);
 
@@ -37,8 +38,6 @@ OmSegment::OmSegment(OmId omId)
 	mColor.z /= 2;
 }
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////         Accessor Methods
 
@@ -49,25 +48,20 @@ const Vector3 < float >& OmSegment::GetColor() const
 
 void OmSegment::SetColor(const Vector3 < float >&rColor)
 {
-	if (mJoinId) {
-
-	}
-
 	mColor = rColor;
 }
 
-void OmSegment::Join(OmId segid)
+void OmSegment::set_original_mapped_data_value(const SEGMENT_DATA_TYPE value )
 {
-	OmId myid = GetId();
-
-	if (myid != segid) {
-		//debug("FIXME", << segid << " is now parent id" << endl;
-		mJoinId = segid;
-	}
+	original_mapped_data_value = value;
 }
 
-#pragma mark
-#pragma mark Example Methods
+
+SEGMENT_DATA_TYPE OmSegment::get_original_mapped_data_value()
+{
+	return original_mapped_data_value;
+}
+
 /////////////////////////////////
 ///////         Example Methods
 
@@ -89,14 +83,4 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		glColor3fv(hyperColor.array);
 	}
 
-}
-
-#pragma mark
-#pragma mark Print Methods
-/////////////////////////////////
-///////          Print Methods
-
-void OmSegment::Print()
-{
-	//debug("FIXME", << "\t\t" << mName << " (" << mId << ")" << endl;
 }

@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QWidget> 
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 

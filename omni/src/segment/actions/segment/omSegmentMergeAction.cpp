@@ -1,4 +1,3 @@
-
 #include "omSegmentMergeAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -23,7 +22,6 @@
  */
 OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 {
-
 	//segmentation where selected segements will be merged
 	mMergeSegmentationId = mergeSegmentationId;
 
@@ -37,6 +35,16 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 		//mapped values
 		const SegmentDataSet & r_data_set = r_segmentation.GetValuesMappedToSegmentId(*itr);
 
+		OmSegment& segment = r_segmentation.GetSegment(*itr);
+		if( 0 == segment.get_original_mapped_data_value() ) {
+			if( 1 == r_data_set.size() ){
+				OmIds::iterator value_iter;
+				value_iter = r_data_set.begin();
+				segment.set_original_mapped_data_value( *value_iter);
+			}
+		}
+		    
+
 		//map set of values to segment id
 		mPrevSegmentIdToValueMap[*itr] = r_data_set;
 
@@ -44,7 +52,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 		mMergedDataSet.insert(r_data_set.begin(), r_data_set.end());
 	}
 
-	//prompt user for destination segment
+	//TODO: prompt user for destination segment?
 	mDestinationSegmentId = *(r_selected_segments.begin());
 
 }
@@ -61,12 +69,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 void
  OmSegmentMergeAction::Action()
 {
-	bool found = false;
-	OmId base;
-
-	//get merging segmentation
 	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mMergeSegmentationId);
-
 
 	//for all elements in the map
 	map < OmId, SegmentDataSet >::iterator itr;
@@ -75,9 +78,9 @@ void
 		const SegmentDataSet & r_data_set = itr->second;
 		r_segmentation.UnMapValuesToSegmentId(r_segment_id, r_data_set);
 	}
+
 	//map all data to destination id
 	r_segmentation.MapValuesToSegmentId(mDestinationSegmentId, mMergedDataSet);
-
 
 	//for all elements in the map
 	char buffer[255];

@@ -1,8 +1,6 @@
-
 #include "omStateManager.h"
-
 #include "omEventManager.h"
-#include "omProject.h"
+#include "project/omProject.h"
 #include "events/omViewEvent.h"
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
@@ -14,7 +12,7 @@
 //view3d context
 #include <QtOpenGL/qgl.h>
 #include <QtOpenGL/QGLFormat>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 
@@ -573,3 +571,15 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 {
 	Instance()->TRANSPARANCY_ALPHA = alpha;
 }
+
+
+unsigned int OmStateManager::getMyBackoff()
+{
+	return Instance()->myBackoff;
+}
+
+void OmStateManager::setMyBackoff( unsigned int val)
+{
+	Instance()->myBackoff = val;
+}
+

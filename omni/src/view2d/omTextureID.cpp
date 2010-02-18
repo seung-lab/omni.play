@@ -2,7 +2,7 @@
 #include "omTextureID.h"
 #include "omThreadedCachingTile.h"
 #include "system/omGarbage.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

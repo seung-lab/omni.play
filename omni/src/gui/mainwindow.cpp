@@ -7,7 +7,7 @@
 #include "view2d/omTextureID.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 #include "utility/dataWrappers.h"
@@ -19,7 +19,7 @@
 #include "system/omSystemTypes.h"
 #include "segment/omSegmentEditor.h"
 
-#include "system/omException.h"
+#include "common/omException.h"
 
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
@@ -29,7 +29,7 @@ using boost::shared_ptr;
 namespace bfs = boost::filesystem;
 
 #include <boost/tuple/tuple_comparison.hpp>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using boost::tuple;
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);

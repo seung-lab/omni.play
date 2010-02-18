@@ -1,24 +1,26 @@
 
 #include "omProject.h"
-#include "omException.h"
-#include "omPreferenceDefinitions.h"
+#include "system/omPreferenceDefinitions.h"
 
 #include "volume/omVolume.h"
 #include "mesh/omMipChunkMesher.h"
 #include "segment/omSegmentEditor.h"
-#include "omCacheManager.h"
-#include "omEventManager.h"
-#include "omGarbage.h"
-#include "omKeyManager.h"
-#include "omPreferences.h"
-#include "omStateManager.h"
-#include "omTagManager.h"
-#include "omProjectData.h"
+#include "system/omCacheManager.h"
+#include "system/omEventManager.h"
+#include "system/omGarbage.h"
+#include "system/omKeyManager.h"
+#include "system/omPreferences.h"
+#include "system/omStateManager.h"
+#include "system/omTagManager.h"
+#include "system/omProjectData.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include "system/omDebug.h"
 namespace bfs = boost::filesystem;
+
+#include "common/omDebug.h"
+#include "common/omException.h"
+
 
 #define DEBUG 0
 
@@ -36,7 +38,6 @@ OmProject *OmProject::mspInstance = 0;
 
 OmProject::OmProject()
 {
-	OmStateManager::CreatePrimaryView3dWidget();
 }
 
 OmProject::~OmProject()
@@ -59,37 +60,8 @@ void OmProject::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Project
-/////////////////////////////////
-///////          Project
 
-//project
-const string & OmProject::GetFileName()
-{
-	return Instance()->mFileName;
-}
 
-void OmProject::SetFileName(const string & fname)
-{
-	Instance()->mFileName = fname;
-}
-
-const string & OmProject::GetDirectoryPath()
-{
-	return Instance()->mDirectoryPath;
-}
-
-void OmProject::SetDirectoryPath(const string & dpath)
-{
-	Instance()->mDirectoryPath = dpath;
-}
-
-string OmProject::GetTempDirectoryPath()
-{
-	string dpath = GetDirectoryPath();
-	return dpath + "temp/";
-}
 
 #pragma mark
 #pragma mark Project IO
@@ -104,14 +76,14 @@ void OmProject::New(string dpath, string fname)
 		Close();
 
 	//store paths
-	Instance()->mFileName = fname;
-	Instance()->mDirectoryPath = dpath;
+	OmProjectData::SetFileName(fname);
+	OmProjectData::SetDirectoryPath(dpath);
 
 	//create all intermediate directories
 	//if(!bfs::create_directories(bfs::path(GetDirectoryPath())))
 	//      throw OmIoException("Could not create project directory.");
 
-	string fpath = GetDirectoryPath() + GetFileName();
+	//string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
 	//debug("genone","OmProject::New: %s \n", fpath.data());
 
 	//create and open data
@@ -142,7 +114,7 @@ void OmProject::Save()
 		return;
 	}
 
-	string fpath = GetDirectoryPath() + GetFileName();
+	string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
 
 	//store archive
 	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
@@ -154,15 +126,15 @@ void OmProject::SaveAs(string dpath, string fname)
 {
 
 	//copy h5 file and write project file to it
-	string current_fpath = GetDirectoryPath() + GetFileName();
+	string current_fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
 	string new_fpath = dpath + fname;
 	bfs::copy_file(current_fpath, new_fpath);
 
 	//make new file the current project
-	Instance()->mFileName = fname;
-	Instance()->mDirectoryPath = dpath;
+	OmProjectData::SetFileName(fname);
+	OmProjectData::SetDirectoryPath(dpath);
 
-	string fpath = GetDirectoryPath() + GetFileName();
+	string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
 
 	//debug("genone","OmProject::SaveAs: %s\n", fpath.data());
 
@@ -198,8 +170,8 @@ void OmProject::Load(string dpath, string fname)
 		throw OmIoException("Project file not found:" + fpath);
 
 	//valid path so store
-	Instance()->mFileName = fname;
-	Instance()->mDirectoryPath = dpath;
+	OmProjectData::SetFileName(fname);
+	OmProjectData::SetDirectoryPath(dpath);
 
 	//open project data
 	OmProjectData::Open();

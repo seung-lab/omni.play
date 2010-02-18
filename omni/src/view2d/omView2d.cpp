@@ -5,7 +5,7 @@
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
@@ -71,6 +71,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	mDragY = 0;
 	mMIP = false;
 	mScribbling = false;
+	mAnimation = NULL;
 
 	setFocusPolicy(Qt::ClickFocus);	// necessary for receiving keyboard events
 	setMouseTracking(true);	// necessary for mouse-centered zooming
@@ -1321,6 +1322,16 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 	//debug("genone","OmView2d::keyPressEvent -- " << mViewType);
 
 	switch (event->key()) {
+	case Qt::Key_A:
+		{
+			if (mAnimation) {
+				mAnimation->safeTerminate ();
+				mAnimation = NULL;
+			} else {
+				mAnimation = new OmAnimate (1);
+				mAnimation->start ();
+			}
+		}
 	case Qt::Key_D:
 		{
 			mMIP = !mMIP;

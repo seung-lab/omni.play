@@ -5,11 +5,15 @@
 #include <QtGui>
 #include <QWidget>
 
-#include "gui/inspectorProperties.h"
+#include "inspectors/segInspector.h"
+#include "inspectors/chanInspector.h"
+#include "inspectors/segObjectInspector.h"
+#include "inspectors/filObjectInspector.h"
+#include "inspectorProperties.h"
+
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter.h"
-#include "filObjectInspector.h"
+#include "volume/omFilter.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 
@@ -17,8 +21,10 @@ class SegInspector;
 class ChanInspector;
 class SegObjectInspector;
 
-class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
- Q_OBJECT public:
+class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
+ Q_OBJECT 
+ 
+ public:
 	 MyInspectorWidget(QWidget * parent = 0);
 	~MyInspectorWidget();
 
@@ -50,7 +56,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
         void addFilter();
 	void addSegment();
 	void nameEditChanged();
-	void setSegObjColor();
 	void addChildrenToSegmentation(OmId seg_id);
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
@@ -130,11 +135,6 @@ class MyInspectorWidget:public QWidget, public OmSegmentEventListener {
 
 	void populateChannelInspector(OmId c_id);
 	void populateSegmentationInspector(OmId s_id);
-	void populateSegmentObjectInspector(OmId s_id, OmId obj_id);
-
-	QColor current_color;
-
-	int current_object;
 
 	bool first_access;
 

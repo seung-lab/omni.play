@@ -36,6 +36,8 @@ public:
 	//transform methods
 	static Vector3<float> GetScale();
 	static bool SetScale(const Vector3<float> &vec);
+	static Vector3<float> GetUserScale();
+	static bool SetUserScale(const Vector3<float> &vec);
 	
 	//data properties
 	static const DataBbox& GetDataExtent();
@@ -98,6 +100,8 @@ private:
 	static OmVolume* mspInstance;
 	
 	//transforms from normailzed unit cube external spatial coverage
+	Matrix4<float> mSpaceToUserMat;
+	Matrix4<float> mSpaceToUserInvMat;
 	Matrix4<float> mNormToSpaceMat;
 	Matrix4<float> mNormToSpaceInvMat;
 
@@ -128,10 +132,14 @@ void
 OmVolume::serialize(Archive & ar, const unsigned int file_version) {
 	
 	//volume props
+
 	ar & mNormToSpaceMat & mNormToSpaceInvMat;
 	ar & mDataExtent & mDataResolution;
 	ar & mChunkDim;
-	
+
+	// TODO This should be serialized someday
+	//ar & mSpaceToUserMat & mSpaceToUserInvMat	
+
 	//managers
 	ar & mChannelManager;
 	ar & mSegmentationManager;

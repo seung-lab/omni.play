@@ -14,7 +14,7 @@
 #include "system/events/omView3dEvent.h"
 
 #include "common/omThreads.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

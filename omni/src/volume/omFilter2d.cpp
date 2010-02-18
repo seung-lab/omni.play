@@ -1,5 +1,5 @@
 
-#include "system/omFilter.h"
+#include "volume/omFilter.h"
 
 #include "volume/omDrawOptions.h"
 #include "common/omGl.h"

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # NOTE: build process will be done "out-of-source". 
 #  (from vtk): "When your build generates files, they have to go somewhere. 
@@ -19,7 +19,10 @@ my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
-my $globalMakeOptions = " -j15 ";
+my $omniScriptFile = $scriptPath.'/buildomni.sh';
+my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
+
+my $globalMakeOptions = "";
 
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
@@ -33,7 +36,7 @@ sub isMac {
 }
 
 sub genOmniScript {
-    open (SCRIPT, ">", "$scriptPath/buildomni.sh") or die $!;
+    open (SCRIPT, ">", $omniScriptFile) or die $!;
 
     my $script = <<END;
 export QTDIR=$libPath/Qt
@@ -46,22 +49,27 @@ make $globalMakeOptions
 END
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $scriptPath/buildomni.sh`;
+    `chmod +x $omniScriptFile`;
 }
 
 sub genVTKscript {
     my $baseFileName = $_[0];
-    open (SCRIPT, ">", "$scriptPath/buildvtk.sh") or die $!;
+    open (SCRIPT, ">", $vtkScriptFile) or die $!;
 
+    my $makeOps = $globalMakeOptions;
+    if ( isMac() ){
+	$makeOps = " -k ";
+    }
+    
     my $script = <<END;
 cd $buildPath/$baseFileName
 cmake $srcPath/$baseFileName
-make -k
+make $makeOps
 make install    
 END
     print SCRIPT $script;
     close SCRIPT;
-    `chmod +x $scriptPath/buildvtk.sh`;
+    `chmod +x $vtkScriptFile`;
 }
 
 sub vtk {
@@ -82,8 +90,10 @@ sub vtk {
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
 
-    print "running: (cd $buildPath/$baseFileName; ccmake $srcPath/$baseFileName && make && make install)\n";
-    `sh $scriptPath/buildvtk.sh`;
+    my $cmd = "sh $vtkScriptFile";
+    print "running: ($cmd)\n";
+    `$cmd`;
+    print "done\n";
 }
 
 sub setupBuildFolder {
@@ -249,8 +259,14 @@ sub prepareNukeSrcsAndBuild {
 }
 
 sub boost {
+#    boost138();
+    boost142();
+}
+
+sub boost138 {
     my $baseFileName = "boost_1_38_0";
-    prepare( $baseFileName, "Boost" );
+    my $libFolderName = "Boost";
+    prepare( $baseFileName, $libFolderName );
 
     `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/tools/build/v2/user-config.jam`;
     `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/user-config.jam`;
@@ -267,6 +283,26 @@ sub boost {
     `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
 
     buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization,thread" );
+}
+
+sub boost142 {
+    my $baseFileName = "boost_1_42_0";
+    my $libFolderName = "Boost";
+    prepare( $baseFileName, $libFolderName );
+
+    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
+    `rm -rf $boostLocalBuildFolder`;
+    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
+
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
+    print "configuring ($cmd)\n"; 
+    `($cmd)`;
+    print "done\n";
+
+    $cmd = "cd $srcPath/$baseFileName; ./bjam install";
+    print "building and installing ($cmd)\n";
+    `($cmd)`;
+    print "done\n";
 }
 
 sub libpng {
@@ -295,7 +331,21 @@ sub hdf5 {
 }
 
 sub qt {
+    qt46();
+}
+
+sub qt45 {
     my $baseFileName = "qt-all-opensource-src-4.5.2";
+    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+}
+
+sub qt46 {
+    # new qt buidls has several messages:
+    # requires zlib; 
+    # suggests --no-excpetion to reduce gcc-induced memory footprint increases
+    # disable postgres/sqlite
+    # debug not enabled?
+    my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
     prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
@@ -308,10 +358,6 @@ CMAKE_BUILD_TYPE:STRING=Debug
 CMAKE_INSTALL_PREFIX:STRING=$buildPath
 QT_QMAKE_EXECUTABLE:STRING=$libPath/Qt/bin/qmake
 DESIRED_QT_VERSION:STRING=4
-
-Boost_INCLUDE_DIR:PATH=$libPath/Boost/include/boost-1_38/
-Boost_LIBRARY_DIRS:FILEPATH=$libPath/Boost/
-Boost_USE_MULTITHREADED:BOOL=ON
 
 TIFF_INCLUDE_DIR:PATH=$libPath/libtiff/include
 TIFF_LIBRARY:PATH=$libPath/libtiff/lib/libtiff.a
@@ -329,7 +375,10 @@ END
 
     updateCMakeListsFile();
 
-    `sh $scriptPath/buildomni.sh`;
+    my $cmd = "sh $omniScriptFile";
+    print "running: ($cmd)\n";
+    `$cmd`;
+    print "done\n";
 }
 
 sub updateCMakeListsFile {
@@ -337,7 +386,7 @@ sub updateCMakeListsFile {
     my $outFileName = "$omniPath/CMakeLists.txt";
 
     open IN_FILE,  "<", $inFileName  or die "could not read $inFileName";
-    open OUT_FILE, ">", $outFileName or die "could not read $outFileName";;
+    open OUT_FILE, ">", $outFileName or die "could not write $outFileName";;
 
     while (my $line = <IN_FILE>) { 
 	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
@@ -397,8 +446,6 @@ sub release {
 }
 
 sub menu {
-    my $max_answer = 9;
-
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
@@ -409,13 +456,13 @@ sub menu {
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
     print "8 -- Generate scripts\n";
-    print "9 -- Build and tar release!\n\n";
+    print "9 -- Build and tar release!\n";
+    print "10 -- Experimental builds...\n\n";
+    my $max_answer = 10;
 
     while( 1 ){
 	print "Please make selection: ";
 	my $answer = <STDIN>;
-
-	print "$answer\n";
 
 	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
@@ -453,12 +500,12 @@ sub runMenuEntry {
 	genOmniScript();
     }elsif( 9 == $entry ){
         release();
+    }elsif( 10 == $entry ){
+        experimentalMenu();
     }
 }
 
 sub smallLibraryMenu() {
-    my $max_answer = 6;
-
     print "build small library menu:\n";
     print "0 -- exit\n";
     print "1 -- Build expat\n";
@@ -467,12 +514,11 @@ sub smallLibraryMenu() {
     print "4 -- Build hdf5\n";
     print "5 -- Build libpng\n";
     print "6 -- Build libtiff\n\n";
+    my $max_answer = 6;
 
     while( 1 ){
 	print "Please make selection: ";
 	my $answer = <STDIN>;
-
-	print "$answer\n";
 
 	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
@@ -503,14 +549,73 @@ sub runSmallLibraryMenuEntry {
     }
 }
 
+sub numberOfCores {
+    
+    my $numCores = 2;
+    if (-e "/proc/cpuinfo") {
+	$numCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
+    }
+
+    if( $numCores < 2 ){
+	$numCores = 2;
+    }
+
+    return $numCores-1;
+}
+
+sub setupParallelBuildOption {
+
+    my $numCores = numberOfCores();
+    if( scalar(@_) > 0 ) {
+	$numCores = $_[0];
+    }
+
+    $globalMakeOptions =  " -j$numCores ";
+
+    print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $numCores\n";
+}
+
+sub experimentalMenu {
+    print "experimental build menu:\n";
+    print "0 -- exit\n";
+    print "1 -- Build QT 4.6.2\n";
+    print "2 -- Build boost 1.42\n\n";
+    my $max_answer = 2;
+
+    while( 1 ){
+	print "Please make selection: ";
+	my $answer = <STDIN>;
+
+	if( $answer =~ /^\d+$/ ) {
+	    if( ($answer > -1) and ($answer < (1+$max_answer))){
+		runExperimentalMenuEntry( $answer );
+		exit();
+	    }
+	}
+    }
+}
+
+sub runExperimentalMenuEntry {
+    my $entry = $_[0];
+
+    if( 0 == $entry ){
+        return();
+    }elsif( 1 == $entry ){
+	qt46();
+    }elsif( 2 == $entry ){
+        boost142();
+    }
+}
+
 sub checkCmdLineArgs {
     if ( 1 == @ARGV ) {
-	runMenuEntry( @ARGV[0] );
+	setupParallelBuildOption();
+	runMenuEntry( $ARGV[0] );
     } elsif (2 == @ARGV ) {
-	$globalMakeOptions =  " -j@ARGV[1] ";
-	print "changed global make options to \"$globalMakeOptions\"\n";
+	setupParallelBuildOption( $ARGV[1] );
 	menu();
     } else {
+	setupParallelBuildOption();
 	menu();
     }
 }

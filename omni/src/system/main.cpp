@@ -8,7 +8,7 @@
 
 #include "common/omSerialization.h"
 #include "common/omStd.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 /*
 class A : public OmCacheableBase {

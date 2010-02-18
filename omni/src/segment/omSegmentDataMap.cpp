@@ -1,6 +1,6 @@
 
 #include "omSegmentDataMap.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 
@@ -83,8 +83,6 @@ void OmSegmentDataMap::MapValuesToSegmentId(OmId omId, const SegmentDataSet & va
 
 void OmSegmentDataMap::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & values)
 {
-
-	//for each data value
 	SegmentDataSet::iterator itr;
 	for (itr = values.begin(); itr != values.end(); itr++) {
 
@@ -94,7 +92,6 @@ void OmSegmentDataMap::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & 
 		//unmap each data value to omId
 		mDataValueToId.erase(*itr);
 	}
-
 }
 
 /*

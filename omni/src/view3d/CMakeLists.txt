@@ -1,7 +1,3 @@
-
-
-
-
 ## LIBRARY ##
 
 # widget sources
@@ -35,13 +31,6 @@ TARGET_LINK_LIBRARIES( omView3d
 	omVolume
 	omSegment
 )
-
-
-
-
-
-
-
 
 ## EXECUTABLE ##
 

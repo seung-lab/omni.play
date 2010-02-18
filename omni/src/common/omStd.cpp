@@ -3,7 +3,7 @@
 
 // Error Reporting Includes
 #include <stdarg.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 // Error Reporting Definitions
 #define ERROR_IGNORE 0

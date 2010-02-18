@@ -1,7 +1,7 @@
 
 #include "omImageDataIo.h"
 
-#include "system/omException.h"
+#include "common/omException.h"
 #include "utility/omHdf5.h"
 #include "common/omVtk.h"
 
@@ -37,7 +37,7 @@ namespace bfs = boost::filesystem;
 #include <strnatcmp.h>
 
 #include <hdf5.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

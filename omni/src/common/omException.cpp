@@ -1,6 +1,5 @@
-
 #include "omException.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 string OmExceptTypeStrings[] = { "Note",
 	"Information",

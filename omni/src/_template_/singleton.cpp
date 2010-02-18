@@ -1,6 +1,6 @@
 
 #include "omTagManager.h"
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 
 #define DEBUG 0
 

@@ -8,7 +8,7 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -18,7 +18,9 @@
 #include <vtkImageData.h>
 
 #include <vmmlib/vmmlib.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
+#include <QFile>
+#include <QTextStream>
 using namespace vmml;
 
 #define DEBUG 0
@@ -202,6 +204,7 @@ void OmSegmentation::BuildVolumeData()
 	SetAllSegmentsSelected(false);
 	SetAllSegmentsEnabled(false);
 
+	OmProject::Save();
 	printf("done building segmentation data\n");
 }
 
@@ -239,6 +242,57 @@ void OmSegmentation::BuildMeshData()
 
 	OmProject::Save();
 }
+
+/*
+ * Produce the plan file.
+ */
+void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
+{
+        if (!IsVolumeDataBuilt())
+                throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
+                                        GetName());
+
+    	QFile file(planFile);
+    	//QFile file("file.txt");
+    	if ( !file.open(QIODevice::WriteOnly)) {
+		throw (false && "couldn't open the plan file, check to make sure you have write permission");
+	}
+        QTextStream stream(&file);
+
+        //for each level
+        for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+                //dim of leaf coords
+                Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+
+                //for all coords of level
+                for (int z = 0; z < mip_coord_dims.z; ++z) {
+                        for (int y = 0; y < mip_coord_dims.y; ++y) {
+                                for (int x = 0; x < mip_coord_dims.x; ++x) {
+					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
+                                }
+			}
+		}
+        }
+        file.close();
+}
+
+
+/*
+ * Build the meshes for a single chunk.
+ */
+void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z)
+{
+	OmMipChunkCoord chunk_coord(level, x, y, z);
+	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+	GetChunk(p_chunk, chunk_coord);
+
+	const SegmentDataSet & rMeshVals = p_chunk->GetDirectDataValues();
+        if( 0 != rMeshVals.size() ){
+        	mMipMeshManager.BuildChunkMeshes(p_chunk, rMeshVals );
+        }
+}
+
 
 void OmSegmentation::BuildMeshDataInternal()
 {

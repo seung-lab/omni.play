@@ -47,7 +47,6 @@ public:
 	static vector<GLuint>& LockTextures ();
 	static void Unlock ();
 	static void UnlockTextures ();
-
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected

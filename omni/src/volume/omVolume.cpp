@@ -1,11 +1,10 @@
-
 #include "omVolume.h"
 #include "omVolumeCuller.h"
 
 #include "segment/omSegmentEditor.h"
 #include "common/omGl.h"
-#include "system/omDebug.h"
-#include "system/omProject.h"
+#include "common/omDebug.h"
+#include "project/omProject.h"
 
 #define DEBUG 0
 
@@ -35,13 +34,17 @@ void
 	mNormToSpaceMat = Matrix4 < float >::IDENTITY;
 	mNormToSpaceInvMat = Matrix4 < float >::IDENTITY;
 
+	mSpaceToUserMat = Matrix4 < float >::IDENTITY;
+	mSpaceToUserInvMat = Matrix4 < float >::IDENTITY;
+
 	//defaults
 	SetChunkDimension(128);
 	SetDataDimensions(Vector3i(128, 128, 128));
+
+	SetUserScale(Vector3i(1, 1, 1));
 	SetScale(Vector3i(10, 10, 10));
 
-	//temp
-	mDataResolution = Vector3i::ZERO;
+	mDataResolution = Vector3i::ONE;
 }
 
 OmVolume *OmVolume::Instance()
@@ -72,8 +75,11 @@ void OmVolume::Delete()
 
 Vector3 < float > OmVolume::GetScale()
 {
-	return Vector3 < float >(Instance()->mNormToSpaceMat.m00,
-				 Instance()->mNormToSpaceMat.m11, Instance()->mNormToSpaceMat.m22);
+	return Vector3 < float >(
+	       Instance()->mSpaceToUserMat.m00 * Instance()->mNormToSpaceMat.m00,
+	       Instance()->mSpaceToUserMat.m11 * Instance()->mNormToSpaceMat.m11,
+	       Instance()->mSpaceToUserMat.m22 * Instance()->mNormToSpaceMat.m22);
+
 }
 
 bool OmVolume::SetScale(const Vector3 < float >&scale)
@@ -86,6 +92,22 @@ bool OmVolume::SetScale(const Vector3 < float >&scale)
 	return Instance()->mNormToSpaceMat.getInverse(Instance()->mNormToSpaceInvMat);
 }
 
+Vector3 < float > OmVolume::GetUserScale()
+{
+	return Vector3 < float >(Instance()->mSpaceToUserMat.m00,
+				 Instance()->mSpaceToUserMat.m11,
+				 Instance()->mSpaceToUserMat.m22);
+}
+
+bool OmVolume::SetUserScale(const Vector3 < float >&scale)
+{
+	//set scale
+	Instance()->mSpaceToUserMat.m[0][0] = scale.x;
+	Instance()->mSpaceToUserMat.m[1][1] = scale.y;
+	Instance()->mSpaceToUserMat.m[2][2] = scale.z;
+	//set inverse and return if invertable
+	return Instance()->mSpaceToUserMat.getInverse(Instance()->mSpaceToUserInvMat);
+}
 /*
 Vector3<float>
 OmVolume::GetTranslation() {

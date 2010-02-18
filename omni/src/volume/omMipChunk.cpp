@@ -18,7 +18,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 namespace bfs = boost::filesystem;
 
 #define DEBUG 0
@@ -831,7 +831,6 @@ DataBbox sliceDataBbox(const DataBbox &bbox, OmDataVolumePlane plane, int depth)
  *	or if we should continue refining so as to draw children.
  */
 
-extern unsigned int myBackoff;
 bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
 {
 	//draw if leaf
@@ -847,7 +846,7 @@ bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
 
 	//if distance too large, just draw it - else keep breaking it down
 	//debug("view3d", "backoff: %d\n", myBackoff );
-	return (camera_to_center > distance / myBackoff );
+	return (camera_to_center > distance / OmStateManager::getMyBackoff() );
 }
 
 void OmMipChunk::DrawClippedExtent()

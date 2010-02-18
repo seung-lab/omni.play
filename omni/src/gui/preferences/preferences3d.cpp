@@ -8,7 +8,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 #define DEBUG 0

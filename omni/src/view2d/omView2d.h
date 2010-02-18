@@ -17,12 +17,13 @@
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter2d.h"
+#include "volume/omFilter2d.h"
 
 #include "volume/omVolumeTypes.h"
 #include "volume/omSegmentation.h"
 
 #include "common/omStd.h"
+#include "system/omAnimate.h"
 
 
 #include <vmmlib/vmmlib.h>
@@ -167,6 +168,7 @@ protected:
 
 
 private:
+	OmAnimate * mAnimation;
 	OmId mEditedSegmentation;
 	bool mMIP;
         unsigned int mSlide;

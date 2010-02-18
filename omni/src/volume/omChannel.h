@@ -12,8 +12,8 @@
 
 #include "system/omManageableObject.h"
 #include "system/omSystemTypes.h"
-#include "system/omFilter2d.h"
-#include "system/omFilter2dManager.h"
+#include "volume/omFilter2d.h"
+#include "volume/omFilter2dManager.h"
 #include "common/omStd.h"
 
 

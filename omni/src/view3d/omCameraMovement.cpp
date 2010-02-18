@@ -3,7 +3,7 @@
 #include "omCamera.h"
 
 #include <vmmlib/vmmlib.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 #pragma mark -

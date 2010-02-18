@@ -1,19 +1,9 @@
 #include <QtGui>
 #include "myInspectorWidget.h"
 
-#include "segInspector.h"
-
-#include "ui_chanInspector.h"
-#include "chanInspector.h"
-
-#include "ui_segObjectInspector.h"
-#include "segObjectInspector.h"
-
-#include "filObjectInspector.h"
-
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
-#include "system/omProject.h"
+#include "project/omProject.h"
 #include "system/omSystemTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omVolume.h"
@@ -29,7 +19,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
 using namespace vmml;
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
@@ -74,7 +64,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 
 	currentDataSrc = DataWrapperContainer();
 
-	current_object = 99;
 	first_access = true;
 
 	// what does this do? (purcaro)
@@ -161,7 +150,6 @@ bool MyInspectorWidget::getBoolState(const Qt::CheckState state)
 	}
 }
 
-
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -240,25 +228,20 @@ void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget)
 	}
 }
 
-
 void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 {
 	const OmId item_id = data.getID();
 
 	QWidget *my_widget = splitter->widget(1);
-
-	if (current_object != CHANNEL) {
-
-		QList < int >my_sizes = splitter->sizes();
-		delete my_widget;
-
-		channelInspectorWidget = new ChanInspector(item_id, splitter);
-
-		connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), this, SLOT(addFilter()));
-
-		if (!(first_access)) {
-			splitter->setSizes(my_sizes);
-		}
+	
+	QList < int >my_sizes = splitter->sizes();
+	delete my_widget;
+	channelInspectorWidget = new ChanInspector(item_id, splitter);
+	
+	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), this, SLOT(addFilter()));
+	
+	if (!(first_access)) {
+		splitter->setSizes(my_sizes);
 	}
 
 	channelInspectorWidget->setId(item_id);
@@ -267,7 +250,6 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 
 	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-	current_object = CHANNEL;
 }
 
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
@@ -276,20 +258,17 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
 
 	QWidget *my_widget = splitter->widget(1);
 
-	if (current_object != SEGMENTATION ) {
-
-		QList < int >my_sizes = splitter->sizes();
-		delete my_widget;
-
-		segInspectorWidget = new SegInspector(item_id, splitter);
-
-		connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
-
-		connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
-
-		if (!(first_access))
-			splitter->setSizes(my_sizes);
-	}
+	QList < int >my_sizes = splitter->sizes();
+	delete my_widget;
+	
+	segInspectorWidget = new SegInspector(item_id, splitter);
+	
+	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
+	
+	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
+	
+	if (!(first_access))
+		splitter->setSizes(my_sizes);
 
 	segInspectorWidget->setId(item_id);
 	populateSegmentationInspector(item_id);
@@ -297,7 +276,6 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
 
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-	current_object = SEGMENTATION;
 }
 
 void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
@@ -305,27 +283,13 @@ void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * curren
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
-	const OmId item_id = sdw.getID();
 	QWidget *my_widget = splitter->widget(1);
-
-	if (current_object != SEGMENT){
-		QList < int >my_sizes = splitter->sizes();
-		delete my_widget;
-		segObjectInspectorWidget = new SegObjectInspector(splitter);
-		segObjectInspectorWidget->nameEdit_2->setReadOnly(true);
-		connect(segObjectInspectorWidget->colorButton, SIGNAL(clicked()), this, SLOT(setSegObjColor()));
-		if (!(first_access))
-			splitter->setSizes(my_sizes);
+	QList < int >my_sizes = splitter->sizes();
+	delete my_widget;
+	segObjectInspectorWidget = new SegObjectInspector(sdw, splitter);
+	if (!(first_access)) {
+		splitter->setSizes(my_sizes);
 	}
-
-	populateSegmentObjectInspector(sdw.getSegmentationID(), item_id);
-
-	segObjectInspectorWidget->setSegmentationID(sdw.getSegmentationID());
-	segObjectInspectorWidget->setSegmentID(item_id);
-
-	connect(segObjectInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-	current_object = SEGMENT;
 
 	first_access = false;
 }
@@ -343,7 +307,6 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 		splitter->setSizes(my_sizes);
 	}
 
-	current_object = FILTER;
 	first_access = false;
 }
 
@@ -610,66 +573,6 @@ void MyInspectorWidget::populateSegmentationInspector(OmId s_id)
 	}
 }
 
-void MyInspectorWidget::populateSegmentObjectInspector(OmId s_id, OmId obj_id)
-{
-	segObjectInspectorWidget->setSegmentID(obj_id);
-	segObjectInspectorWidget->setSegmentationID(s_id);
-
-	OmSegment & current_obj = OmVolume::GetSegmentation(s_id).GetSegment(obj_id);
-
-	const string & my_name = current_obj.GetName();
-	segObjectInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
-	segObjectInspectorWidget->nameEdit->setMinimumWidth(200);
-
-	OmId my_id = current_obj.GetId();
-	QString str;
-	segObjectInspectorWidget->nameEdit_2->setText(str.setNum(my_id));
-	segObjectInspectorWidget->nameEdit_2->setMinimumWidth(200);
-
-	const string & my_notes = current_obj.GetNote();
-	segObjectInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-
-	segObjectInspectorWidget->labelsEdit->setMinimumWidth(200);
-
-	const Vector3 < float >&color = current_obj.GetColor();
-
-	QPixmap *pixm = new QPixmap(40, 30);
-	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
-	pixm->fill(newcolor);
-
-	segObjectInspectorWidget->colorButton->setIcon(QIcon(*pixm));
-
-	current_color = newcolor;
-}
-
-void MyInspectorWidget::setSegObjColor()
-{
-	QColor color = QColorDialog::getColor(current_color, this);
-	if (!color.isValid()) {
-		return;
-	}
-
-	QPixmap *pixm = new QPixmap(40, 30);
-	pixm->fill(color);
-
-	segObjectInspectorWidget->colorButton->setIcon(QIcon(*pixm));
-
-	segObjectInspectorWidget->colorButton->update();
-	current_color = color;
-
-	// set the color
-
-	const OmId item_id = segObjectInspectorWidget->getSegmentID();
-	const OmId segmentationID = segObjectInspectorWidget->getSegmentationID();
-
-	OmSegment & current_obj = OmVolume::GetSegmentation(segmentationID).GetSegment(item_id);
-
-	Vector3 < float >color_vector(color.redF(), color.greenF(), color.blueF());
-	current_obj.SetColor(color_vector);
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-}
-
 void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 {
 	//debug("FIXME", << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
@@ -764,6 +667,12 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 
 	if (!hashOfSementationsAndSegments.contains(segmenID)) {
 		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
+	} else {
+		const unsigned int num_segs_from_hash = hashOfSementationsAndSegments.value(segmenID).size();
+		const unsigned int num_segs_from_core = sdw.getNumberOfSegments();
+		if( num_segs_from_hash != num_segs_from_core ){
+			hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
+		}
 	}
 
 	dataElementsWidget->clear();

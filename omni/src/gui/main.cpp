@@ -1,10 +1,15 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "system/omFilter2d.h"
-#include "system/omProject.h"
+#include "volume/omFilter2d.h"
+#include "project/omProject.h"
 #include <dlfcn.h>
-#include "system/omDebug.h"
+#include "common/omDebug.h"
+#include <QTextStream>
+#include <QFile>
+#include "volume/omVolume.h"
+
+OmId SegmentationID = 0;
 
 GGOCTFPointer GGOCTFunction = 0;
 int firsttime(int argc, char *argv[])
@@ -33,22 +38,142 @@ int firsttime(int argc, char *argv[])
 	return app.exec();
 }
 
+void openProject( QString fName )
+{
+	QString fname = fName.section('/', -1);
+	QString dpath = fName.remove(fname);
+	
+	try {
+		OmProject::Load(dpath.toStdString(), fname.toStdString());
+		printf("opened project\n");
+	} catch(...) {
+		printf("could not open project \"%s\"\n", qPrintable( fName ));
+	}
+}
+
+unsigned int getNum( QString arg )
+{
+	bool ok;
+	unsigned int ret = arg.toUInt(&ok, 10); 
+	if( ok ){
+		return ret;
+	} else {
+		printf("could not parse to unsigned int \"%s\"\n", qPrintable(arg) );
+		return 0;
+	}
+}
+
+void processHeadlessLine( QString line, QString fName )
+{
+	if( line == "q" || line == "quit" ){
+		printf("exiting...\n");
+		exit(0);
+	} else if( "mesh" == line ) {
+		if( SegmentationID > 0 ){
+			printf("running mesh on segmentation %d\n", SegmentationID);
+			OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
+		}
+	} else if( line.startsWith("meshchunk") ) {
+		// format: meshchunk:segmentationID:mipLevel:x,y,z
+		QStringList args = line.split(':');
+		SegmentationID = getNum( args[1] );
+		unsigned int mipLevel = getNum( args[2] );
+		QStringList coords = args[3].split(',');
+		unsigned int x = getNum( coords[0] );
+		unsigned int y = getNum( coords[1] );
+		unsigned int z = getNum( coords[2] );
+		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
+		printf("done\n");
+	} else if( "meshdone" == line ) {
+		OmVolume::GetSegmentation( SegmentationID ).mMipMeshManager.SetMeshDataBuilt(true);
+		OmProject::Save();
+	} else if( line.startsWith("seg") ) {
+		QStringList args = line.split(':');
+		SegmentationID = getNum( args[1] );
+		if( SegmentationID > 0 ){
+			printf("segmentationID set to %d\n", SegmentationID );
+		} 
+	} else if( line.startsWith("open") ){
+		openProject( fName );
+	
+	} else {
+		printf("could not parse \"%s\"\n", qPrintable(line) );
+	}
+}
+
+void runInteractive( QString fName )
+{
+	QTextStream stream(stdin);
+	QString line;
+	do {
+		line = stream.readLine();
+		processHeadlessLine( line, fName );
+	} while (!line.isNull());
+}
+
+void runHeadless( QString headlessCMD, QString fName )
+{	
+
+	if( fName != "" ){
+		openProject( fName );
+	}
+
+	if( "--headless" == headlessCMD ){
+		runInteractive( fName );
+	} else {
+		QString planFileName = headlessCMD;
+		planFileName.replace("--headless=", "");
+
+		if (!QFile::exists( planFileName )) {
+			printf("could not open plan file \"%s\"\n", qPrintable(planFileName));
+			exit(1);
+		}
+		
+		QFile file(planFileName);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			printf("could not read plan file \"%s\"\n", qPrintable(planFileName));
+			exit(1);
+		}
+		
+		QTextStream in(&file);
+		while (!in.atEnd()) {
+			QString line = in.readLine();
+			processHeadlessLine( line, fName );
+		}
+
+		processHeadlessLine( "meshdone", fName );
+		OmProject::Save();
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	//    return firsttime (argc, argv);
-	int fileArgIndex = parseAnythingYouCan(argc, argv);
-	if (fileArgIndex<0) return 0;
-	QApplication app(argc, argv);
-	Q_INIT_RESOURCE(resources);
-	MainWindow mainWin;
-	mainWin.show();
 
-
-
-	if (fileArgIndex>0) {
-		mainWin.openProject(argv[fileArgIndex]);
+	CmdLineArgs args = parseAnythingYouCan(argc, argv);
+	if ( args.fileArgIndex < 0){
+		return 0;
 	}
 
-	return app.exec();
+	QString fName = "";
+	if ( args.fileArgIndex > 0 ) {
+		fName = QString::fromStdString( argv[ args.fileArgIndex ] );			
+	}
+
+	if( args.runHeadless ){
+		runHeadless( args.headlessCMD, fName );
+	} else {
+		QApplication app(argc, argv);
+		Q_INIT_RESOURCE(resources);
+		MainWindow mainWin;
+		mainWin.show();
+		
+		if ( args.fileArgIndex > 0 ) {
+			mainWin.openProject( fName );
+		}
+		
+		return app.exec();
+	}
 }
 
