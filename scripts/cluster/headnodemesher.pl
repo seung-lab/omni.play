@@ -109,7 +109,13 @@ $projectFile =~ s/\.plan$//;
 sub runNode 
 {
     my $cmd = $_[0];
-    print $cmd."\n";
+
+    my $start = time();
+    print "node $node: starting meshing...\n"; 
+    #`$cmd`;
+    my $end = time();
+    my $timeSecs = ($end - $start);
+    print "node $node: done meshing (".$timeSecs." seconds)\n";
 }
 
 my @threads;
@@ -126,3 +132,5 @@ for (my $i = 0; $i < $cmdCount; $i++) {
 foreach my $thread (@threads){ 
     $thread->join;
 }
+
+print "done!!\n";
