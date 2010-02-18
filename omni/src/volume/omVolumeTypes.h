@@ -18,6 +18,7 @@
 typedef vmml::Vector3<int> DataCoord;
 typedef vmml::Vector3<float> NormCoord;
 typedef vmml::Vector3<float> SpaceCoord;
+typedef vmml::Vector2<int> ScreenCoord;
 
 typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
 typedef vmml::AxisAlignedBoundingBox<float> NormBbox;

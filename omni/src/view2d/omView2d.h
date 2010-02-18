@@ -197,6 +197,13 @@ private:
 	
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
+
+	SpaceCoord ScreenToSpaceCoord(const ScreenCoord &screenc);
+	ScreenCoord SpaceToScreenCoord(const SpaceCoord &spacec);
+	ScreenCoord DataToScreenCoord(const DataCoord &datac);
+	DataCoord ScreenToDataCoord(const ScreenCoord &screenc);
+	ScreenCoord NormToScreenCoord(const NormCoord &normc);
+	NormCoord ScreenToNormCoord(const ScreenCoord &screenc);
 	
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 	// void EditModeMouseDoubleClick(QMouseEvent *event);
