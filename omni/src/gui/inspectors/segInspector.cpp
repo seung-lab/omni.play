@@ -28,6 +28,9 @@ SegInspector::SegInspector(OmId seg_id, QWidget * parent)
 
 	my_id = seg_id;
 	directoryEdit->setReadOnly(true);
+
+	mMeshinatorProc = NULL;
+	mMeshinatorDialog = NULL;
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -275,6 +278,20 @@ void SegInspector::on_buildButton_clicked()
 		QString fnpnProject = fInfo.absoluteFilePath();
 		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
 		current_seg.BuildMeshDataPlan( fnpnPlan );
+
+		QString script = "find .";
+		if (mMeshinatorProc) {
+			delete mMeshinatorProc;
+		}
+		mMeshinatorProc = new QProcess ();
+		mMeshinatorProc->start(script);
+
+		if (mMeshinatorDialog) {
+			delete mMeshinatorDialog;
+		}
+		mMeshinatorDialog = new QDialog ();
+		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
+		mMeshinatorDialog->exec ();
 	}
 }
 

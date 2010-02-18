@@ -58,6 +58,9 @@ public:
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeToolsBox();
 	QGroupBox* makeNotesBox();
+
+	QProcess* mMeshinatorProc;
+	QDialog* mMeshinatorDialog;
 	QGroupBox* makeStatsBox();
 }; 
 #endif
