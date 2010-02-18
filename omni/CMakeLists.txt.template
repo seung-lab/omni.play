@@ -25,6 +25,11 @@ SET(VTK_VERSION "5.4")
 #BOOST_ROOT set in .bashrc file - see README.txt
 SET(VTK_DIR "${OM_EXT_LIBS_DIR}/VTK/lib/vtk-${VTK_VERSION}")
 SET(HDF5_DIR "${OM_EXT_LIBS_DIR}/HDF5")
+SET(FREETYPE_DIR "${OM_EXT_LIBS_DIR}/FreeType")
+SET(FONTCONFIG_DIR "${OM_EXT_LIBS_DIR}/Fontconfig")
+SET(PNG_DIR "${OM_EXT_LIBS_DIR}/libpng")
+SET(TIFF_DIR "${OM_EXT_LIBS_DIR}/libtiff")
+
 
 
 #### build preferences ####
@@ -88,8 +93,17 @@ SET(OM_BOOST_LIBS
 	${Boost_LIBRARIES}
 )
 
+INCLUDE(FindPNG REQUIRED)
+INCLUDE(FindEXPAT REQUIRED)
 SET(OM_QT_LIBS
 	${QT_LIBRARIES} 
+	${PNG_LIBRARIES}
+        ${FONTCONFIG_DIR}/lib/libfontconfig.a
+	${FREETYPE_DIR}/lib/libfreetype.a
+	${EXPAT_LIBRARIES}
+	${X11_Xrender_LIB}
+	${X11_LIBRARIES}
+	-lrt
 )
 
 #MESSAGE( ${HDF5_LIBRARY} )
