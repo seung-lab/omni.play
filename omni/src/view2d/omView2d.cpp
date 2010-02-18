@@ -1130,6 +1130,8 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 void OmView2d::GlobalDepthFix(float howMuch)
 {
+
+#if 0
 	float depth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW) * howMuch;
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, depth));
 	int dataDepth = data_coord.z;
@@ -1147,6 +1149,9 @@ void OmView2d::GlobalDepthFix(float howMuch)
 	dataDepth = data_coord.z;
 	space_coord = DataToSpaceCoord(DataCoord(0, 0, dataDepth));
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, space_coord.z, false);
+
+#endif
+
 }
 
 #pragma mark
@@ -1189,7 +1194,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 			// need to move to previous mip level
 			OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(current_zoom.x - 1, 6));
 
-			GlobalDepthFix(2.0);
+			
 		} else
 			OmStateManager::Instance()->SetZoomLevel(Vector2 <
 								 int >(current_zoom.x,
@@ -1205,7 +1210,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 			// need to move to next mip level
 			OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(current_zoom.x + 1, 10));
 
-			GlobalDepthFix(0.5);
+			
 		}
 
 		else if (current_zoom.y > 1) {
@@ -1423,8 +1428,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 			if (!mLevelLock && (current_zoom.y == 6) && (current_zoom.x < mRootLevel)) {
 				OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(current_zoom.x + 1, 10));
 
-				GlobalDepthFix(0.5);
-			}
+				}
 
 			else if (current_zoom.y > 1)
 				OmStateManager::Instance()->SetZoomLevel(Vector2 <
@@ -1440,7 +1444,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 			if (!mLevelLock && (current_zoom.y == 10) && (current_zoom.x > 0)) {
 				OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(current_zoom.x - 1, 6));
-				GlobalDepthFix(2.0);
+				
 			} else
 				OmStateManager::Instance()->SetZoomLevel(Vector2 <
 									 int >(current_zoom.x, current_zoom.y + 1));
@@ -2094,16 +2098,18 @@ int OmView2d::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 	// find depth
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
-
+	Vector2f mZoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	float factor=pow(2,mZoomMipVector.x);
 	if (mViewType == XY_VIEW) {
-		return dataCoord.z;
+		return (int)(dataCoord.z/factor);
 	}
 	if (mViewType == XZ_VIEW) {
-		return dataCoord.y;
+		return (int)(dataCoord.y/factor);
 	}
 	if (mViewType == YZ_VIEW) {
-		return dataCoord.x;
+		return (int)(dataCoord.x/factor);
 	}
+
 }
 
 static int clamp(int c)
