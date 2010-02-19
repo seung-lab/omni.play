@@ -4,9 +4,18 @@
 #include <stdarg.h>
 #include <string.h>
 #include "common/omDebug.h"
+#include <QImage>                                                     
+#include <QPainter>                                                  
+#include <QDialog>                                              
+#include <QLabel>                                                     
+#include <QPixmap>                                                    
+#include <QWidget>                                                     
+#include <QGridLayout>                                                    
+#include <QMessageBox>     
 
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
+bool ViewerIsEnabled;
 
 void debug(const char *category, const char *format, ...)
 {
@@ -245,3 +254,34 @@ void usage()
 	printf("   -n<category>          Same as --nodebug=<category>\n\n");
 }
 
+bool ToggleShowMeAnImageEnabler()
+{
+        ViewerIsEnabled=!ViewerIsEnabled;
+        return ViewerIsEnabled;
+}
+
+
+void ShowMeAnImage(char *        data_buffer,
+                int     dx,
+                int     dy)
+{
+        if (ViewerIsEnabled){
+                QImage image((uchar*)data_buffer,dx,dy,QImage::Format_Indexed8);
+                for (int ii=0;ii<255;ii++) {image.setColor(ii,qRgb(ii,ii,ii));}
+
+                QDialog* dialog = new QDialog(NULL,Qt::Popup);
+                QGridLayout* gridLayout = new QGridLayout(dialog);
+                QPixmap pixmap;
+                QLabel *label = new QLabel();
+                gridLayout->addWidget(label);
+
+                label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+                label->setScaledContents(true);
+
+                dialog->resize(dx+30,dy+30);
+                label->setPixmap(QPixmap::fromImage(image));
+
+                dialog->exec();
+                return;
+        }
+}

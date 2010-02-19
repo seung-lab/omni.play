@@ -37,6 +37,12 @@ void usage();
 #define pthread_mutex_unlock(x) debug("mutex","unlocking enter: %p (line:fun) %i:%s \n",x,__LINE__, __FUNCTION__);\
         pthread_mutex_unlock(x);\
         debug("mutex","unlocking exit: %p (line:fun) %i:%s \n",x,__LINE__, __FUNCTION__);
+
+
+bool ToggleShowMeAnImageEnabler();
+void ShowMeAnImage(char *data_buffer, int dx, int dy);
+
+
 #endif
 
 
