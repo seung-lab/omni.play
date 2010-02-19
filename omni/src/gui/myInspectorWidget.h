@@ -134,7 +134,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	FilObjectInspector *filObjectInspectorWidget;
 
 	void populateChannelInspector(OmId c_id);
-	void populateSegmentationInspector(OmId s_id);
+	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	bool first_access;
 

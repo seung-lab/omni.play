@@ -12,10 +12,10 @@
 
 #include <boost/progress.hpp>
 
-SegInspector::SegInspector(OmId seg_id, QWidget * parent)
+SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
  : QWidget(parent)
 {
-	sdw = SegmentationDataWrapper( seg_id );
+	sdw = incoming_sdw;
 
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
@@ -24,10 +24,10 @@ SegInspector::SegInspector(OmId seg_id, QWidget * parent)
 	overallContainer->addWidget(makeStatsBox());
 	overallContainer->addWidget(makeNotesBox());
 
-        QMetaObject::connectSlotsByName(this);
-
-	my_id = seg_id;
+	populateSegmentationInspector();
 	directoryEdit->setReadOnly(true);
+
+        QMetaObject::connectSlotsByName(this);
 
 	mMeshinatorProc = NULL;
 	mMeshinatorDialog = NULL;
@@ -177,14 +177,9 @@ QGroupBox* SegInspector::makeSourcesBox()
 	return sourceBox;
 }
 
-void SegInspector::setId(OmId new_id)
-{
-	my_id = new_id;
-}
-
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(my_id).SetName(nameEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetName(nameEdit->text().toStdString());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -196,11 +191,11 @@ void SegInspector::on_browseButton_clicked()
 			dir += QString("/");
 		directoryEdit->setText(dir);
 
-		OmVolume::GetSegmentation(my_id).SetSourceDirectoryPath(dir.toStdString());
+		OmVolume::GetSegmentation(sdw.getID()).SetSourceDirectoryPath(dir.toStdString());
 
 		listWidget->clear();
 		list < string >::const_iterator match_it;
-		const list < string > &matches = OmVolume::GetSegmentation(my_id).GetSourceFilenameRegexMatches();
+		const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
 
 		for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 			listWidget->addItem(QString::fromStdString(*match_it));
@@ -217,21 +212,21 @@ void SegInspector::on_exportButton_clicked()
 	QString fname = fileName.section('/', -1);
 	QString dpath = fileName.remove(fname);
 
-	OmVolume::GetSegmentation(my_id).ExportInternalData(dpath.toStdString(), fname.toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(dpath.toStdString(), fname.toStdString());
 }
 
 void SegInspector::on_patternEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(my_id).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
 }
 
 void SegInspector::on_patternEdit_textChanged()
 {
-	OmVolume::GetSegmentation(my_id).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
 
 	listWidget->clear();
 	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetSegmentation(my_id).GetSourceFilenameRegexMatches();
+	const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
 
 	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 		listWidget->addItem(QString::fromStdString(*match_it));
@@ -290,17 +285,17 @@ void SegInspector::on_buildButton_clicked()
 	extern void build_mesh(OmSegmentation * current_seg);
 	extern void build_image_and_mesh(OmSegmentation * current_seg);
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(my_id);
+	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
 	if (cur_text == QString("Data")) {
 		QFuture < void >future = QtConcurrent::run(build_image, &current_seg);
-		emit segmentationBuilt(my_id);
+		emit segmentationBuilt(sdw.getID());
 	} else if (cur_text == QString("Mesh")) {
 		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
-		//              emit meshBuilt(my_id);
+		//              emit meshBuilt(sdw.getID());
 	} else if (cur_text == QString("Data & Mesh")) {
 		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
-		emit segmentationBuilt(my_id);
+		emit segmentationBuilt(sdw.getID());
 	} else if( "Meshinator" == cur_text ){
 		QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
 		QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
@@ -329,25 +324,40 @@ void SegInspector::on_buildButton_clicked()
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetSegmentation(my_id).SetNote(notesEdit->toPlainText().toStdString());
-}
-
-void SegInspector::setSegmentationID(const OmId segmenID)
-{
-	SegmentationID = segmenID;
+	OmVolume::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
 }
 
 OmId SegInspector::getSegmentationID()
 {
-	return SegmentationID;
+	return sdw.getID();
 }
 
-void SegInspector::setSegmentID(const OmId segID)
+void SegInspector::populateSegmentationInspector()
 {
-	SegmentID = segID;
-}
+	const OmId s_id = sdw.getID();
 
-OmId SegInspector::getSegmentID()
-{
-	return SegmentID;
+	OmSegmentation & current_segmentation = OmVolume::GetSegmentation(s_id);
+
+	const string & my_name = current_segmentation.GetName();
+	nameEdit->setText(QString::fromStdString(my_name));
+	nameEdit->setMinimumWidth(200);
+
+	const string & my_directory = current_segmentation.GetSourceDirectoryPath();
+	directoryEdit->setText(QString::fromStdString(my_directory));
+	directoryEdit->setMinimumWidth(200);
+
+	const string & my_pattern = current_segmentation.GetSourceFilenameRegex();
+	patternEdit->setText(QString::fromStdString(my_pattern));
+	patternEdit->setMinimumWidth(200);
+
+	const string & my_notes = current_segmentation.GetNote();
+	notesEdit->setPlainText(QString::fromStdString(my_notes));
+
+	listWidget->clear();
+
+	list < string >::const_iterator match_it;
+	const list < string > &matches = OmVolume::GetSegmentation(s_id).GetSourceFilenameRegexMatches();
+	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
+		listWidget->addItem(QString::fromStdString(*match_it));
+	}
 }

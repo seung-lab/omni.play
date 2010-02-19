@@ -67,11 +67,13 @@ unsigned int getNum( QString arg )
 	}
 }
 
-void processHeadlessLine( QString line, QString fName )
+void processLine( QString line, QString fName )
 {
 	if( line == "q" || line == "quit" ){
 		printf("exiting...\n");
 		exit(0);
+	} else if( "save" == line ) {
+		OmProject::Save();
 	} else if( "mesh" == line ) {
 		if( SegmentationID > 0 ){
 			printf("running mesh on segmentation %d\n", SegmentationID);
@@ -121,8 +123,28 @@ void runInteractive( QString fName )
 	QString line;
 	do {
 		line = stream.readLine();
-		processHeadlessLine( line, fName );
+		processLine( line, fName );
 	} while (!line.isNull());
+}
+
+void runScript( const QString scriptFileName, QString fName )
+{
+	if (!QFile::exists( scriptFileName )) {
+		printf("could not open plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+		
+	QFile file(scriptFileName);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		printf("could not read plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+		
+	QTextStream in(&file);
+	while (!in.atEnd()) {
+		QString line = in.readLine();
+		processLine( line, fName );
+	}
 }
 
 void runHeadless( QString headlessCMD, QString fName )
@@ -138,25 +160,7 @@ void runHeadless( QString headlessCMD, QString fName )
 		QString planFileName = headlessCMD;
 		planFileName.replace("--headless=", "");
 
-		if (!QFile::exists( planFileName )) {
-			printf("could not open plan file \"%s\"\n", qPrintable(planFileName));
-			exit(1);
-		}
-		
-		QFile file(planFileName);
-		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			printf("could not read plan file \"%s\"\n", qPrintable(planFileName));
-			exit(1);
-		}
-		
-		QTextStream in(&file);
-		while (!in.atEnd()) {
-			QString line = in.readLine();
-			processHeadlessLine( line, fName );
-		}
-
-		processHeadlessLine( "meshdone", fName );
-		OmProject::Save();
+		runScript( planFileName, fName );
 	}
 }
 
