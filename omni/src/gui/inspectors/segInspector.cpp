@@ -334,30 +334,20 @@ OmId SegInspector::getSegmentationID()
 
 void SegInspector::populateSegmentationInspector()
 {
-	const OmId s_id = sdw.getID();
-
-	OmSegmentation & current_segmentation = OmVolume::GetSegmentation(s_id);
-
-	const string & my_name = current_segmentation.GetName();
-	nameEdit->setText(QString::fromStdString(my_name));
+	nameEdit->setText( sdw.getName() );
 	nameEdit->setMinimumWidth(200);
 
-	const string & my_directory = current_segmentation.GetSourceDirectoryPath();
-	directoryEdit->setText(QString::fromStdString(my_directory));
+	directoryEdit->setText( sdw.GetSourceDirectoryPath() );
 	directoryEdit->setMinimumWidth(200);
 
-	const string & my_pattern = current_segmentation.GetSourceFilenameRegex();
-	patternEdit->setText(QString::fromStdString(my_pattern));
+	patternEdit->setText( sdw.GetSourceFilenameRegex() );
 	patternEdit->setMinimumWidth(200);
 
-	const string & my_notes = current_segmentation.GetNote();
-	notesEdit->setPlainText(QString::fromStdString(my_notes));
+	notesEdit->setPlainText( sdw.getNote() );
 
 	listWidget->clear();
 
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetSegmentation(s_id).GetSourceFilenameRegexMatches();
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		listWidget->addItem(QString::fromStdString(*match_it));
+	foreach( string matchStr, sdw.GetSourceFilenameRegexMatches() ){
+		listWidget->addItem( QString::fromStdString( matchStr ) );
 	}
 }
