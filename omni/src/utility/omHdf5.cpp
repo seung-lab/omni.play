@@ -354,7 +354,6 @@ HDF5LOCK();
 	status = H5Dclose(dataset_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 	//flip from hdf5 version
 	return Vector3 < int >(dims.z, dims.y, dims.x);
@@ -511,7 +510,6 @@ HDF5LOCK();
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 	return imageData;
 }
