@@ -42,7 +42,21 @@ QGroupBox* SegInspector::makeStatsBox()
 	labelNumSegments->setText("number of segments:");
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
-	labelNumSegmentsNum->setText( QString::number( sdw.getNumberOfSegments() ) );
+	QString numSegs = QString::number( sdw.getNumberOfSegments() );
+
+	QString commaNumSegs;
+	QString::iterator i;
+	int counter = 0;
+	for (i = numSegs.end()-1; i != numSegs.begin()-1; i-- ){
+		counter++;
+		commaNumSegs.prepend( (*i) );
+		if( 0 == ( counter % 3 ) && 
+		    counter != numSegs.size() ){
+			commaNumSegs.prepend(',');
+		}
+	}
+
+	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
 
 	return statsBox;
