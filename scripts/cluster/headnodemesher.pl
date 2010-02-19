@@ -109,10 +109,11 @@ $projectFile =~ s/\.plan$//;
 sub runNode 
 {
     my $cmd = $_[0];
+    my $node = $_[1];
 
     my $start = time();
     print "node $node: starting meshing...\n"; 
-    #`$cmd`;
+    `$cmd`;
     my $end = time();
     my $timeSecs = ($end - $start);
     print "node $node: done meshing (".$timeSecs." seconds)\n";
@@ -125,7 +126,7 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $outFileName = "chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
     my $fNameAndPath = $dir . $outFileName;
     my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile ";
-    my $thr = new Thread \&runNode, $cmd;
+    my $thr = new Thread \&runNode, $cmd, $node;
     push(@threads, $thr);
 }
 
