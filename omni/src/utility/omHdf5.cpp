@@ -20,7 +20,6 @@ namespace bfa = boost::algorithm;
 
 void om_hdf5_file_create(const char *fpath)
 {
-HDF5LOCK();
 	//Creates HDF5 files. 
 	//hid_t H5Fcreate(const char *name, unsigned flags, hid_t create_id, hid_t access_id  ) 
 	hid_t file_id = H5Fcreate(fpath, H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
@@ -31,29 +30,35 @@ HDF5LOCK();
 	//throw on error
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 file.");
-HDF5UNLOCK();
+}
+
+hid_t om_hdf5_file_open_with_lock(const char *fpath)
+{
+        hid_t file_id;
+        file_id = H5Fopen(fpath, H5F_ACC_RDWR, H5P_DEFAULT);
+        if (file_id < 0) {
+		std::cerr << "Could not open HDF5 file " << fpath << endl;
+                throw OmIoException("Could not open HDF5 file.");
+	}
+        return file_id;
+
 }
 
 hid_t om_hdf5_file_open(const char *fpath)
 {
-	hid_t file_id;
-HDF5LOCK();
-	file_id = H5Fopen(fpath, H5F_ACC_RDWR, H5P_DEFAULT);
-
-	if (file_id < 0)
-		throw OmIoException("Could not open HDF5 file.");
-HDF5UNLOCK();
-	return file_id;
+	assert (0);
 }
 
-void om_hdf5_file_close(hid_t fileId)
+void om_hdf5_file_close_with_lock (hid_t fileId)
 {
-HDF5LOCK();
-	herr_t ret = H5Fclose(fileId);
+        herr_t ret = H5Fclose(fileId);
+        if (ret < 0)
+                throw OmIoException("Could not close HDF5 file.");
+}
 
-	if (ret < 0)
-		throw OmIoException("Could not close HDF5 file.");
-HDF5UNLOCK();
+void om_hdf5_file_close(char * fileName)
+{
+	assert (0);
 }
 
 #pragma mark
@@ -61,7 +66,7 @@ HDF5UNLOCK();
 /////////////////////////////////
 ///////          Group
 
-bool om_hdf5_group_exists(hid_t fileId, const char *name)
+bool om_hdf5_group_exists_with_lock(hid_t fileId, const char *name)
 {
 	hid_t group_id;
 
@@ -82,7 +87,16 @@ bool om_hdf5_group_exists(hid_t fileId, const char *name)
 	return true;
 }
 
-void om_hdf5_group_create(hid_t fileId, const char *name)
+bool om_hdf5_group_exists (char * fileName, const char * name)
+{
+	bool exists;
+HDF5LOCK();
+	exists = om_hdf5_group_exists_with_lock (fileId, name);
+HDF5UNLOCK();
+	return exists;
+}
+
+void om_hdf5_group_create(char * fileName, const char *name)
 {
 HDF5LOCK();
 	//Creates a new empty group and links it into the file. 
@@ -97,7 +111,21 @@ HDF5LOCK();
 HDF5UNLOCK();
 }
 
-void om_hdf5_group_delete(hid_t fileId, const char *name)
+void om_hdf5_group_create_with_lock(hid_t fileId, const char *name)
+{
+        //Creates a new empty group and links it into the file.
+        hid_t group_id = H5Gcreate(fileId, name, 0);
+        if (group_id < 0)
+                throw OmIoException("Could not create HDF5 group.");
+
+        herr_t status = H5Gclose(group_id);
+        if (status < 0)
+                throw OmIoException("Could not close HDF5 group.");
+        H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+}
+
+
+void om_hdf5_group_delete(char * fileName, const char *name)
 {
 HDF5LOCK();
 	//Closes the specified group. 
@@ -111,8 +139,9 @@ HDF5UNLOCK();
 /*
  *	Creates nested group tree.  Ignores already existing groups.
  */
-void om_hdf5_group_create_tree(hid_t fileId, const char *name)
+void om_hdf5_group_create_tree(char * fileName, const char *name)
 {
+HDF5LOCK();
 	vector < string > name_split_vec;
 	bfa::split(name_split_vec, name, bfa::is_any_of("/"));
 
@@ -121,10 +150,26 @@ void om_hdf5_group_create_tree(hid_t fileId, const char *name)
 		//add split
 		name_rejoin_str.append(name_split_vec[i]).append("/");
 		//create if group does not exist
-		if (!om_hdf5_group_exists(fileId, name_rejoin_str.c_str())) {
-			om_hdf5_group_create(fileId, name_rejoin_str.c_str());
+		if (!om_hdf5_group_exists_with_lock(fileId, name_rejoin_str.c_str())) {
+			om_hdf5_group_create_with_lock(fileId, name_rejoin_str.c_str());
 		}
 	}
+HDF5UNLOCK();
+}
+void om_hdf5_group_create_tree_with_lock(hid_t fileId, const char *name)
+{
+        vector < string > name_split_vec;
+        bfa::split(name_split_vec, name, bfa::is_any_of("/"));
+
+        string name_rejoin_str;
+        for (int i = 0; i < name_split_vec.size(); ++i) {
+                //add split
+                name_rejoin_str.append(name_split_vec[i]).append("/");
+                //create if group does not exist
+                if (!om_hdf5_group_exists_with_lock(fileId, name_rejoin_str.c_str())) {
+                        om_hdf5_group_create_with_lock(fileId, name_rejoin_str.c_str());
+                }
+        }
 }
 
 #pragma mark
@@ -132,7 +177,7 @@ void om_hdf5_group_create_tree(hid_t fileId, const char *name)
 /////////////////////////////////
 ///////          Dataset
 
-bool do_om_hdf5_dataset_exists(hid_t fileId, const char *name)
+bool om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *name)
 {
 	hid_t dataset_id;
 
@@ -152,17 +197,17 @@ bool do_om_hdf5_dataset_exists(hid_t fileId, const char *name)
 
 	return true;
 }
-bool om_hdf5_dataset_exists(hid_t fileId, const char *name)
+
+bool om_hdf5_dataset_exists(char * fileName, const char *name)
 {
 	bool exists;
 HDF5LOCK();
-	exists = do_om_hdf5_dataset_exists (fileId, name);
+	exists = om_hdf5_dataset_exists_with_lock (fileId, name);
 HDF5UNLOCK();
 	return exists;
 }
 
-
-void om_hdf5_dataset_delete(hid_t fileId, const char *name)
+void om_hdf5_dataset_delete(char * fileName, const char *name)
 {
 HDF5LOCK();
 
@@ -175,28 +220,45 @@ HDF5LOCK();
 HDF5UNLOCK();
 }
 
-void om_hdf5_dataset_delete_create_tree(hid_t fileId, const char *name)
+void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name)
 {
-	//get position of last slash
-	string name_str(name);
-	size_t pos_last_slash = name_str.find_last_of(string("/"));
+        //Removes the link to an object from a group.
+        //herr_t H5Gunlink(hid_t loc_id, const char *name  )
+        herr_t err = H5Gunlink(fileId, name);
+        if (err < 0)
+                throw OmIoException("Could not unlink HDF5 dataset.");
+        H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+}
 
-	//if there was a slash
-	if ((string::npos != pos_last_slash) && (pos_last_slash > 0)) {
-		//split into group path and name
-		string group_path(name_str, 0, pos_last_slash);
-		//string file_name(name_str, pos_last_slash + 1, name_str.size());
-		//debug("FIXME", << "group:" << group_path << endl;
-		//debug("FIXME", << "file:" <<  file_name << endl;
 
-		//create group tree
-		om_hdf5_group_create_tree(fileId, group_path.c_str());
-	}
-	//if data already exists, delete it
-	if (om_hdf5_dataset_exists(fileId, name)) {
-		om_hdf5_dataset_delete(fileId, name);
-	}
+void om_hdf5_dataset_delete_create_tree_with_lock(hid_t fileId, const char *name)
+{
+        //get position of last slash
+        string name_str(name);
+        size_t pos_last_slash = name_str.find_last_of(string("/"));
 
+        //if there was a slash
+        if ((string::npos != pos_last_slash) && (pos_last_slash > 0)) {
+                //split into group path and name
+                string group_path(name_str, 0, pos_last_slash);
+                //string file_name(name_str, pos_last_slash + 1, name_str.size());
+                //debug("FIXME", << "group:" << group_path << endl;
+                //debug("FIXME", << "file:" <<  file_name << endl;
+
+                //create group tree
+                om_hdf5_group_create_tree_with_lock(fileId, group_path.c_str());
+        }
+        //if data already exists, delete it
+        if (om_hdf5_dataset_exists_with_lock(fileId, name)) {
+                om_hdf5_dataset_delete_with_lock(fileId, name);
+        }
+
+}
+void om_hdf5_dataset_delete_create_tree(char * fileName, const char *name)
+{
+HDF5LOCK();
+	om_hdf5_dataset_delete_create_tree_with_lock (fileId, name);
+HDF5UNLOCK();
 }
 
 #pragma mark
@@ -204,9 +266,8 @@ void om_hdf5_dataset_delete_create_tree(hid_t fileId, const char *name)
 /////////////////////////////////
 ///////          Raw Data
 
-void om_hdf5_dataset_raw_create(hid_t fileId, const char *name, int size, const void *data)
+void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data)
 {
-HDF5LOCK();
 	herr_t status;
 
 	//Creates a new simple dataspace and opens it for access. 
@@ -241,21 +302,26 @@ HDF5LOCK();
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataspace.");
 	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+}
+void om_hdf5_dataset_raw_create(char * fileName, const char *name, int size, const void *data)
+{
+	HDF5LOCK();
+	om_hdf5_dataset_raw_create_with_lock (fileId, name, size, data);
+	HDF5UNLOCK();
+}
+
+void om_hdf5_dataset_raw_create_tree_overwrite(char * fileName, const char *name, int size, const void *data)
+{
+HDF5LOCK();
+	//create tree and delete old data if exists
+	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
+
+	//create data
+	om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 HDF5UNLOCK();
 }
 
-
-void om_hdf5_dataset_raw_create_tree_overwrite(hid_t fileId, const char *name, int size, const void *data)
-{
-
-	//create tree and delete old data if exists
-	om_hdf5_dataset_delete_create_tree(fileId, name);
-
-	//create data
-	om_hdf5_dataset_raw_create(fileId, name, size, data);
-}
-
-void *om_hdf5_dataset_raw_read(hid_t fileId, const char *name, int *size)
+void *om_hdf5_dataset_raw_read(char * fileName, const char *name, int *size)
 {
 	void *dataset_data;
 HDF5LOCK();
@@ -313,7 +379,7 @@ HDF5UNLOCK();
 /////////////////////////////////
 ///////          ImageIo
 
-Vector3 < int > om_hdf5_dataset_image_get_dims(hid_t fileId, const char *name)
+Vector3 < int > om_hdf5_dataset_image_get_dims(char * fileName, const char *name)
 {
 	Vector3 < hsize_t > dims;
 
@@ -360,10 +426,9 @@ HDF5UNLOCK();
 }
 
 void
-om_hdf5_dataset_image_create(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
+om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
 			     int bytesPerSample, bool unlimited)
 {
-HDF5LOCK();
 	//Creates a new property as an instance of a property list class.
 	//hid_t H5Pcreate(hid_t cls_id  ) 
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
@@ -425,23 +490,32 @@ HDF5LOCK();
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+}
+void
+om_hdf5_dataset_image_create(char * fileName, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
+			     int bytesPerSample, bool unlimited)
+{
+HDF5LOCK();
+	om_hdf5_dataset_image_create_with_lock (fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
 HDF5UNLOCK();
 }
 
 void
-om_hdf5_dataset_image_create_tree_overwrite(hid_t fileId, const char *name, Vector3 < int >dataDims,
+om_hdf5_dataset_image_create_tree_overwrite(char * fileName, const char *name, Vector3 < int >dataDims,
 					    Vector3 < int >chunkDims, int bytesPerSample, bool unlimited)
 {
+HDF5LOCK();
 	//debug("genone","om_hdf5_dataset_image_create_tree_overwrite: %s \n", name);
 
 	//create tree and delete old data if exists
-	om_hdf5_dataset_delete_create_tree(fileId, name);
+	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
 
 	//create data
-	om_hdf5_dataset_image_create(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+HDF5UNLOCK();
 }
 
-vtkImageData *om_hdf5_dataset_image_read(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
+vtkImageData *om_hdf5_dataset_image_read(char * fileName, const char *name, DataBbox extent, int bytesPerSample)
 {
 	vtkImageData *imageData;
 HDF5LOCK();
@@ -517,18 +591,18 @@ HDF5UNLOCK();
 /*
  *	Trims the read to data within the extent of the dataset.  Buffers the rest with zeros.
  */
-vtkImageData *om_hdf5_dataset_image_read_trim(hid_t fileId, const char *name, DataBbox dataExtent, int bytesPerSample)
+vtkImageData *om_hdf5_dataset_image_read_trim(char * fileName, const char *name, DataBbox dataExtent, int bytesPerSample)
 {
 
 	//get dims
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(fileId, name);
+	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(fileName, name);
 
 	//create extent
 	DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
 
 	//if data extent contains given extent, just read from data
 	if (dataset_extent.contains(dataExtent)) {
-		return om_hdf5_dataset_image_read(fileId, name, dataExtent, bytesPerSample);
+		return om_hdf5_dataset_image_read(fileName, name, dataExtent, bytesPerSample);
 	}
 	//intersect with given extent
 	DataBbox intersect_extent = dataset_extent;
@@ -540,7 +614,7 @@ vtkImageData *om_hdf5_dataset_image_read_trim(hid_t fileId, const char *name, Da
 	}
 	//else merge intersection and read data
 	//read intersection from source
-	vtkImageData *intersect_image_data = om_hdf5_dataset_image_read(fileId, name, intersect_extent, bytesPerSample);
+	vtkImageData *intersect_image_data = om_hdf5_dataset_image_read(fileName, name, intersect_extent, bytesPerSample);
 
 	//create blanks data
 	vtkImageData *filled_read_data = createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
@@ -566,7 +640,7 @@ vtkImageData *om_hdf5_dataset_image_read_trim(hid_t fileId, const char *name, Da
 }
 
 void
-om_hdf5_dataset_image_write(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,
+om_hdf5_dataset_image_write(char * fileName, const char *name, DataBbox extent, int bytesPerSample,
 			    vtkImageData * imageData)
 {
 HDF5LOCK();
@@ -658,19 +732,19 @@ HDF5UNLOCK();
 }
 
 void
-om_hdf5_dataset_image_write_trim(hid_t fileId, const char *name, DataBbox dataExtent, int bytesPerSample,
+om_hdf5_dataset_image_write_trim(char * fileName, const char *name, DataBbox dataExtent, int bytesPerSample,
 				 vtkImageData * pImageData)
 {
 
 	//get dims
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(fileId, name);
+	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(fileName, name);
 
 	//create extent
 	DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
 
 	//if data extent contains given extent, just write data
 	if (dataset_extent.contains(dataExtent)) {
-		om_hdf5_dataset_image_write(fileId, name, dataExtent, bytesPerSample, pImageData);
+		om_hdf5_dataset_image_write(fileName, name, dataExtent, bytesPerSample, pImageData);
 		return;
 	}
 	//intersect with given extent
@@ -701,7 +775,7 @@ om_hdf5_dataset_image_write_trim(hid_t fileId, const char *name, DataBbox dataEx
 		      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
 
 	//write intersection
-	om_hdf5_dataset_image_write(fileId, name, intersect_extent, bytesPerSample, p_intersect_data);
+	om_hdf5_dataset_image_write(fileName, name, intersect_extent, bytesPerSample, p_intersect_data);
 
 	//delete temp intersect data
 	p_intersect_data->Delete();

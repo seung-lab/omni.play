@@ -270,13 +270,8 @@ vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, cons
 
 	string fpath = dpath + fnames.front();
 
-	//open file
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
-	//write image data
 	vtkImageData *data =
-	    om_hdf5_dataset_image_read_trim(file_id, HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample);
-	//close file
-	om_hdf5_file_close(file_id);
+	    om_hdf5_dataset_image_read_trim((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample);
 
 	return data;
 }
@@ -389,23 +384,14 @@ om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, cons
 
 		//create file
 		om_hdf5_file_create(fpath.c_str());
-		//open
-		hid_t file_id = om_hdf5_file_open(fpath.c_str());
 
 		//create image file
 		Vector3 < int >dest_dims = dstExtentBbox.getUnitDimensions();
-		om_hdf5_dataset_image_create_tree_overwrite(file_id, HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims,
+		om_hdf5_dataset_image_create_tree_overwrite((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims,
 							    bytesPerSample, true);
-
-		//close file
-		om_hdf5_file_close(file_id);
 	}
-	//open file
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
 	//write image data
-	om_hdf5_dataset_image_write_trim(file_id, HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
-	//close file
-	om_hdf5_file_close(file_id);
+	om_hdf5_dataset_image_write_trim((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
 }
 
 #pragma mark -
@@ -471,13 +457,9 @@ om_imagedata_get_dims_hdf5(string dpath, string fpattern) {
 
 	//get fileid
 	string fpath = dpath + fpattern;
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
 	
 	//get dims of image
-	Vector3<int> dims = om_hdf5_dataset_image_get_dims(file_id, HDF5_DEFAULT_DATASET_NAME);
-	
-	//close file
-	om_hdf5_file_close(file_id);
+	Vector3<int> dims = om_hdf5_dataset_image_get_dims((char*) fpath.c_str(), HDF5_DEFAULT_DATASET_NAME);
 	
 	return dims;
 }
@@ -548,13 +530,9 @@ Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &
 
 	//get fileid
 	string fpath = dpath + fnames.front();
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
 
 	//get dims of image
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(file_id, HDF5_DEFAULT_DATASET_NAME);
-
-	//close file
-	om_hdf5_file_close(file_id);
+	Vector3 < int >dims = om_hdf5_dataset_image_get_dims((char*) fpath.c_str(), HDF5_DEFAULT_DATASET_NAME);
 
 	return dims;
 }

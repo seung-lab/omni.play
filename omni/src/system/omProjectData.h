@@ -34,8 +34,7 @@ public:
 	static void Close();
 	static void Flush();
 	
-	static bool IsOpen();
-
+	static bool IsOpen() {return Instance()->mIsOpen;}
 	
 	//project properties
 	static const string& GetFileName();
@@ -43,6 +42,7 @@ public:
 	static const string& GetDirectoryPath();
 	static void SetDirectoryPath(const string &);
 	static string GetTempDirectoryPath();
+	static char * GetFileNameCStr ();
 	
 	
 	//groups
@@ -78,11 +78,11 @@ private:
 	//singleton
 	static OmProjectData* mspInstance;
 	
-	hid_t mFileId;
-	
 	//project
 	string mFileName;
+	string mFileNameFull;
 	string mDirectoryPath;
+	bool mIsOpen;
 };
 
 
@@ -91,7 +91,7 @@ template< class T >
 void 
 OmProjectData::ArchiveRead(const string &path, T* t) {
 	assert(IsOpen());
-	om_hdf5_archive_read<T>(Instance()->mFileId, path.c_str(), t);
+	om_hdf5_archive_read<T>(Instance()->GetFileNameCStr(), path.c_str(), t);
 }
 
 
@@ -99,7 +99,7 @@ template< class T >
 void 
 OmProjectData::ArchiveWrite(const string &path, T* t) {
 	assert(IsOpen());
-	om_hdf5_archive_write<T>(Instance()->mFileId, path.c_str(), t);
+	om_hdf5_archive_write<T>(Instance()->GetFileNameCStr(), path.c_str(), t);
 }
 
 
