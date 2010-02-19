@@ -125,7 +125,8 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $node = $meshCommandHostInput[$i];
     my $outFileName = "chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
     my $fNameAndPath = $dir . $outFileName;
-    my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile ";
+    my $logFile = $outFileName + ".log";
+    my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile > $logFile";
     my $thr = new Thread \&runNode, $cmd, $node;
     push(@threads, $thr);
 }

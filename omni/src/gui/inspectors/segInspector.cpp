@@ -293,7 +293,7 @@ void SegInspector::on_buildButton_clicked()
 		QString rel_fnpn = pathName + fileName;
 		QFileInfo fInfo(rel_fnpn);
 		QString fnpnProject = fInfo.absoluteFilePath();
-		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
+		QString fnpnPlan = fnpnProject + ".plan";
 		current_seg.BuildMeshDataPlan( fnpnPlan );
 
 		QString script = GetScriptCmd (fnpnPlan);

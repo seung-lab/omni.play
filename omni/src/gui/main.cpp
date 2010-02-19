@@ -158,8 +158,6 @@ void runHeadless( QString headlessCMD, QString fName )
 
 void setOmniExecutablePath( QString rel_fnpn )
 {
-	printf("got %s\n", qPrintable( rel_fnpn ) );
-
 	QFileInfo fInfo(rel_fnpn);
 	QString fnpn = fInfo.absoluteFilePath();
 
