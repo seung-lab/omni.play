@@ -2584,34 +2584,74 @@ SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
 	return new_space_center;
 }
 
-SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
+Vector2i OmView2d::ScreenToPanShift(Vector2i screenshift)
 {
-	
+	//This bad boy may need some tweaking . . . 
+	Vector2i zoomLevel = OmStateManager::Instance()->GetZoomLevel();
+	float factor = pow(2,zoomLevel.x);
+	float zoomScale = zoomLevel.y;
+	float panx = ((float)screenshift.x)/zoomScale*10.0;
+	float pany = ((float)screenshift.y)/zoomScale*10.0;
+	return Vector2i((int) panx, (int) pany);
 }
 
-ScreenCoord OmView2d::SpaceToScreenCoord(const SpaceCoord & spacec)
+SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & screenc)
 {
-	
+	return DataToSpaceCoord(ScreenToDataCoord(viewType, screenc));
 }
 
-ScreenCoord OmView2d::DataToScreenCoord(const DataCoord & datac)
+ScreenCoord OmView2d::SpaceToScreenCoord(ViewType viewType, const SpaceCoord & spacec)
 {
-	
+	return DataToScreenCoord(viewType, SpaceToDataCoord(spacec));
 }
 
-DataCoord OmView2d::ScreenToDataCoord(const ScreenCoord & screenc)
+ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & datac)
 {
-	
+	Vector2i mPanDistance = OmStateManager::Instance()->GetPanDistance(viewType);                  
+        Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel(); 
+	Vector3f mScale = OmVolume::Instance()->GetScale();
+	Vector2i result;
+	float factor = pow(2,mZoomLevel.x);
+	float zoomScale = mZoomLevel.y;
+	debug ("cross", "factor: %f \n", factor);
+	debug ("cross", "zoomScale: %f \n", zoomScale);
+	debug ("cross", "mScale.(x,y,z):  (%f,%f,%f) \n",mScale.x,mScale.y,mScale.z);
+
+	switch(viewType){
+	case XY_VIEW:
+		result.x = (int)((float)(datac.x/factor+mPanDistance.x)*zoomScale/10.0);
+		result.y = (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale/10.0);  
+		break;
+	case XZ_VIEW:
+                result.x = (int)((float)(datac.x/factor+mPanDistance.x)*zoomScale/10.0);        
+		result.y = (int)((float)(datac.z/factor+mPanDistance.y)*zoomScale/10.0);
+		break;
+	case YZ_VIEW:
+		result.x = (int)((float)(datac.z/factor+mPanDistance.x)*zoomScale/10.0);       
+	        result.y = (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale/10.0);
+		break;
+	default:
+		assert(0);
+		break;
+	}
+	return result;
+		
+ }
+
+DataCoord OmView2d::ScreenToDataCoord(ViewType viewType, const ScreenCoord & screenc)
+{                                                                  
+        // TODO: fill this in
+	// It's the opposite of the one above
 }
 
-ScreenCoord OmView2d::NormToScreenCoord(const SpaceCoord & normc)
+ScreenCoord OmView2d::NormToScreenCoord(ViewType viewType, const NormCoord & normc)
 {
-	
+	//return DataToScreenCoord(NormToDataCoord(normc)); 
 }
 
-NormCoord OmView2d::ScreenToNormCoord(const ScreenCoord & screenc)
+NormCoord OmView2d::ScreenToNormCoord(ViewType viewType, const ScreenCoord & screenc)
 {
-	
+	//return DataToNormCoord(ScreenToDataCoord(screenc));  
 }
 
 void OmView2d::mouseSetCrosshair(QMouseEvent * event)
