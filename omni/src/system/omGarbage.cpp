@@ -112,7 +112,7 @@ void OmGarbage::safeCleanTextureIds()
 /* 
  * Almost all this code is ganked from liblockfile for use with locking over nfs.
  */
-static struct utsname uts;
+struct utsname uts;
 
 /*
  *      See if the directory where is certain file is in

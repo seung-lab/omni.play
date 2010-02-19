@@ -11,10 +11,32 @@
 #include "common/omDebug.h"
 namespace bfa = boost::algorithm;
 
-#define DEBUG 0
+bool gHdf5Flag = false;
 
-#pragma mark
-#pragma mark File
+
+#define HDF5LOCK() 								\
+	OmGarbage::Hdf5Lock();							\
+	hid_t fileId;		\
+bool opened = false;							\
+	try { 									\
+	gHdf5Flag = true;\
+	std::cout << "opening ..." << fileName << endl; \
+	fileId = om_hdf5_file_open_with_lock (fileName);	\
+	opened = true;
+
+#define HDF5UNLOCK() 								\
+	} catch (...) { 						\
+	  std::cerr  << "exception on: " << uts.nodename << ", at: " << __FUNCTION__ << "  " << __LINE__ << endl; \
+	  if(opened) om_hdf5_file_close_with_lock (fileId);		\
+                gHdf5Flag = false; \
+		OmGarbage::Hdf5Unlock(); 					\
+		throw new OmIoException("died while locked!\n");	\
+	}									\
+	om_hdf5_file_close_with_lock (fileId);					\
+	OmGarbage::Hdf5Unlock();
+
+
+
 /////////////////////////////////
 ///////          File
 
@@ -34,19 +56,28 @@ void om_hdf5_file_create(const char *fpath)
 
 hid_t om_hdf5_file_open_with_lock(const char *fpath)
 {
-        hid_t file_id;
-        file_id = H5Fopen(fpath, H5F_ACC_RDWR, H5P_DEFAULT);
-        if (file_id < 0) {
+        if (!gHdf5Flag) assert (0);
+
+	hid_t file_id;
+	for( int i=0; i < 55; i++ ){
+	  
+		try {
+			file_id = H5Fopen(fpath, H5F_ACC_RDWR, H5P_DEFAULT);
+		} catch(...){}
+
+		if( i > 0 ){
+			break;
+		}
+	}
+	
+	if (file_id < 0) {
 		std::cerr << "Could not open HDF5 file " << fpath << endl;
+		std::cerr  << "exception at: " << __FUNCTION__ << "  " << __LINE__ << endl; 
+
                 throw OmIoException("Could not open HDF5 file.");
 	}
         return file_id;
 
-}
-
-hid_t om_hdf5_file_open(const char *fpath)
-{
-	assert (0);
 }
 
 void om_hdf5_file_close_with_lock (hid_t fileId)

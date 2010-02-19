@@ -6,6 +6,7 @@
 #include <QThread>
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
+#include "project/omProject.h"
 #include "system/omProjectData.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -319,6 +320,9 @@ void SegInspector::on_buildButton_clicked()
 		mMeshinatorDialog = new QDialog ();
 		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
 		mMeshinatorDialog->exec ();
+
+		current_seg.mMipMeshManager.SetMeshDataBuilt(true);
+		OmProject::Save();
 	}
 }
 

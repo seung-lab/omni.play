@@ -11,6 +11,8 @@
 #include "common/omSerialization.h"
 #include "system/omGarbage.h"
 
+extern struct utsname uts;
+#include <sys/utsname.h>
 
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
@@ -18,31 +20,10 @@ using namespace vmml;
 
 #include <hdf5.h>
 
-#define HDF5LOCK() 								\
-	OmGarbage::Hdf5Lock();							\
-	hid_t fileId;								\
-	std::cerr << fileName;							\
-	try { 									\
-		fileId = om_hdf5_file_open_with_lock (fileName);		\
-		std::cerr << "  with id of" << fileId << endl;
-		
-
-#define HDF5UNLOCK() 								\
-	} catch (OmException e) { 						\
-		assert (0);							\
-		om_hdf5_file_close_with_lock (fileId);				\
-		OmGarbage::Hdf5Unlock(); 					\
-		throw (e);							\
-	}									\
-	om_hdf5_file_close_with_lock (fileId);					\
-	OmGarbage::Hdf5Unlock();
-
-
 class vtkImageData;
 
 //file
 void om_hdf5_file_create(const char* fpath);
-hid_t om_hdf5_file_open(const char* fpath);
 void om_hdf5_file_close(char * fileName);
 
 
@@ -51,8 +32,7 @@ hid_t om_hdf5_file_open_with_lock(const char *fpath);
 void om_hdf5_file_close_with_lock (hid_t fileId);
 void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);
 void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data);
-void
-om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
+void om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
                              int bytesPerSample, bool unlimited);
 
 

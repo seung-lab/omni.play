@@ -115,7 +115,7 @@ sub runNode
     my $start = time();
     print "node $node: starting meshing...\n"; 
     my $result = `$cmd`;
-    print $cmd."\n";
+    #print $cmd."\n";
 
     open OUT_FILE, ">", $logFile or die "could not write $logFile";
     print OUT_FILE $result;
@@ -133,9 +133,10 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
     my $fNameAndPath = $outFileName;
     my $logFile = $outFileName . ".log";
-    my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile";
+    my $lockFile = $outFileName . ".lock";
+    my $cmd = "ssh $node sleep 1 && link $projectFile $lockFile && stat -t $lockFile && /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
+    # my $cmd = "ssh $node link $projectFile $lockFile && /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
     my $thr = new Thread \&runNode, $cmd, $node, $logFile;
-    sleep(100);
     push(@threads, $thr);
 }
 
