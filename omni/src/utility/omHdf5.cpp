@@ -93,6 +93,7 @@ HDF5LOCK();
 	herr_t status = H5Gclose(group_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 group.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -103,6 +104,7 @@ HDF5LOCK();
 	herr_t err = H5Gunlink(fileId, name);
 	if (err < 0)
 		throw OmIoException("Could not unlink HDF5 group.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -152,9 +154,11 @@ bool do_om_hdf5_dataset_exists(hid_t fileId, const char *name)
 }
 bool om_hdf5_dataset_exists(hid_t fileId, const char *name)
 {
+	bool exists;
 HDF5LOCK();
-	return do_om_hdf5_dataset_exists (fileId, name);
+	exists = do_om_hdf5_dataset_exists (fileId, name);
 HDF5UNLOCK();
+	return exists;
 }
 
 
@@ -167,6 +171,7 @@ HDF5LOCK();
 	herr_t err = H5Gunlink(fileId, name);
 	if (err < 0)
 		throw OmIoException("Could not unlink HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -235,6 +240,7 @@ HDF5LOCK();
 	status = H5Sclose(dataspace_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataspace.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -296,6 +302,7 @@ HDF5LOCK();
 	status = H5Dclose(dataset_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 
 	return dataset_data;
@@ -347,6 +354,7 @@ HDF5LOCK();
 	status = H5Dclose(dataset_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 	//flip from hdf5 version
 	return Vector3 < int >(dims.z, dims.y, dims.x);
@@ -417,6 +425,7 @@ HDF5LOCK();
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -502,6 +511,7 @@ HDF5LOCK();
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 	return imageData;
 }
@@ -645,6 +655,7 @@ HDF5LOCK();
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
