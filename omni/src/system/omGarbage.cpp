@@ -248,6 +248,9 @@ int fakecreat(const char *file, mode_t mode)
 
 void OmGarbage::Hdf5Lock ()
 {
+	//OmGarbage::Instance()->Lock ();
+	//return;
+
 	int hdf5Fd;
 	do {
 		hdf5Fd = fakecreat (qPrintable (OmGarbage::Instance()->mHdf5Lock), O_CREAT|O_EXCL);
@@ -258,5 +261,8 @@ void OmGarbage::Hdf5Lock ()
 
 void OmGarbage::Hdf5Unlock ()
 {
+	//OmGarbage::Instance()->Unlock ();
+	//return;
+
 	unlink (qPrintable (OmGarbage::Instance()->mHdf5Lock));
 }

@@ -27,7 +27,7 @@ using namespace vmml;
 		OmGarbage::Hdf5Unlock(); 					\
 		throw (e);							\
 	}									\
-	OmGarbage::Unlock();
+	OmGarbage::Hdf5Unlock();
 
 
 class vtkImageData;
