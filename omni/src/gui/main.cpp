@@ -103,6 +103,9 @@ void processHeadlessLine( QString line, QString fName )
 		} else {
 			printf("invalid segmentation\n");
 		}
+	} else if( line.startsWith("openFile") ){
+		QStringList args = line.split(':');
+		openProject( args[1] );
 	} else if( line.startsWith("open") ){
 		openProject( fName );
 	
