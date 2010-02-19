@@ -18,13 +18,13 @@ using namespace vmml;
 
 #include <hdf5.h>
 
-#define HDF5LOCK() 									\
-	OmGarbage::Lock(); 							\
+#define HDF5LOCK() 								\
+	OmGarbage::Hdf5Lock();							\
 	try { 
 
 #define HDF5UNLOCK() 								\
 	} catch (OmException e) { 						\
-		OmGarbage::Unlock(); 						\
+		OmGarbage::Hdf5Unlock(); 					\
 		throw (e);							\
 	}									\
 	OmGarbage::Unlock();
