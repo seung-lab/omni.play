@@ -346,7 +346,7 @@ sub qt46 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+    prepareAndBuild( $baseFileName, "Qt", "-debug -opensource -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub omni {

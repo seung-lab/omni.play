@@ -6,6 +6,7 @@
 #include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
+#include "mutexServer.h"
 
 class SegInspector : public QWidget
 { 
@@ -54,5 +55,10 @@ public:
 
 	QProcess* mMeshinatorProc;
 	QDialog* mMeshinatorDialog;
+
+	MutexServer* mutexServer;
+	void startMutexServer();
+	void stopMutexServer();
+
 }; 
 #endif

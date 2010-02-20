@@ -32,6 +32,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget 
 
 	mMeshinatorProc = NULL;
 	mMeshinatorDialog = NULL;
+	mutexServer = NULL;
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -311,6 +312,9 @@ void SegInspector::on_buildButton_clicked()
 		if (mMeshinatorProc) {
 			delete mMeshinatorProc;
 		}
+		
+		startMutexServer();
+
 		mMeshinatorProc = new QProcess ();
 		mMeshinatorProc->start(script);
 
@@ -321,6 +325,7 @@ void SegInspector::on_buildButton_clicked()
 		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
 		mMeshinatorDialog->exec ();
 
+		stopMutexServer();
 		current_seg.mMipMeshManager.SetMeshDataBuilt(true);
 		OmProject::Save();
 	}
@@ -354,4 +359,16 @@ void SegInspector::populateSegmentationInspector()
 	foreach( string matchStr, sdw.GetSourceFilenameRegexMatches() ){
 		listWidget->addItem( QString::fromStdString( matchStr ) );
 	}
+}
+
+void SegInspector::startMutexServer()
+{
+	mutexServer = new MutexServer();
+	mutexServer->start();
+}
+
+void SegInspector::stopMutexServer()
+{
+	mutexServer->quit();
+	delete mutexServer;
 }

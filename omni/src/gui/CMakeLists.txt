@@ -14,6 +14,7 @@ SET( OMGUI_SRCS
 	inspectors/segObjectInspector.cpp
 	inspectors/filObjectInspector.cpp
 	inspectors/inspectorProperties.cpp
+	inspectors/mutexServer.cpp
 
         preferences/preferencesMesh.cpp
         preferences/preferences3d.cpp
