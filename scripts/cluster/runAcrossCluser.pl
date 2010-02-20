@@ -2,6 +2,7 @@
 
 use strict;
 use Cwd 'abs_path';
+use File::Basename;
 use Thread;
 
 my $cmd = $ARGV[0];
@@ -33,7 +34,8 @@ sub runNode
     }
 }
 
-open IN_FILE,  "<", "hosts"  or die "could not read hosts";
+(my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
+open IN_FILE,  "<", "$path/hosts"  or die "could not read hosts";
 
 my @threads;
 while (my $line = <IN_FILE>) {
