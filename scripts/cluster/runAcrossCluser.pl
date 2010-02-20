@@ -1,14 +1,24 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Cwd 'abs_path';
 use Thread;
 
-my $cmd = $ARGV[0];
+my $cmd = abs_path( $ARGV[0] );
+
+if( $cmd =~ m/\.pl$/ ){
+    $cmd = "perl " . $cmd;
+}
 
 sub runNode 
 {
     my $node = $_[0];
-    print "about to do".$cmd;
+    my $start = time();
+    print "node $node: running command...\n"; 
+    `ssh $node $cmd &> /dev/null`; 
+    my $end = time();
+    my $timeSecs = ($end - $start);
+    print "node $node: done (".$timeSecs." seconds)\n";
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";
