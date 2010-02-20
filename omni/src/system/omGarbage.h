@@ -26,6 +26,8 @@
 #include <vmmlib/serialization.h>
 #include <pthread.h>
 #include <QString>
+#include <QtNetwork/QTcpSocket>
+
 
 using namespace vmml;
 
@@ -50,6 +52,7 @@ public:
 	static void Hdf5Unlock ();
 	static void Unlock ();
 	static void UnlockTextures ();
+	static bool Parallel (bool);
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -69,6 +72,8 @@ private:
 	pthread_mutex_t mTextureMutex;
 
 	QString mHdf5Lock;
+	QTcpSocket * mSocket;
+	bool mParallel;
 };
 
 

@@ -10,13 +10,14 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <QFileInfo>
+#include <QtNetwork/QTcpSocket>
+
 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
-
 
 
 namespace bfs = boost::filesystem;
@@ -35,6 +36,7 @@ OmGarbage *OmGarbage::mspInstance = 0;
 
 OmGarbage::OmGarbage()
 {
+	mParallel = false;
 }
 
 OmGarbage::~OmGarbage()
@@ -245,24 +247,37 @@ int fakecreat(const char *file, mode_t mode)
         return fakeopen(file, O_CREAT|O_WRONLY|O_TRUNC, mode);
 }
 
+bool OmGarbage::Parallel (bool setParallelIfTrue)
+{
+	if (setParallelIfTrue) {
+		OmGarbage::Instance()->Lock ();
+		Instance()->mParallel = true;
+		OmGarbage::Instance()->Unlock ();
+	}
+
+	return Instance()->mParallel;
+}
 
 void OmGarbage::Hdf5Lock ()
 {
-	//OmGarbage::Instance()->Lock ();
-	//return;
+	if (!Instance()->Parallel(false)) {
+		OmGarbage::Instance()->Lock ();
+	} else {
+		OmGarbage::Instance()->mSocket = new QTcpSocket ();
+		OmGarbage::Instance()->mSocket->connectToHost("brainiac", 8989);
+ 		OmGarbage::Instance()->mSocket->waitForConnected(-1);
+	}
 
-	int hdf5Fd;
-	do {
-		hdf5Fd = fakecreat (qPrintable (OmGarbage::Instance()->mHdf5Lock), O_CREAT|O_EXCL);
-	} while (-1 == hdf5Fd);
-	close (hdf5Fd);
+	return;
 }
 
 
 void OmGarbage::Hdf5Unlock ()
 {
-	//OmGarbage::Instance()->Unlock ();
-	//return;
-
-	unlink (qPrintable (OmGarbage::Instance()->mHdf5Lock));
+	if (!Instance()->Parallel(false)) {
+		OmGarbage::Instance()->Unlock ();
+	} else {
+		OmGarbage::Instance()->mSocket->close ();
+		delete OmGarbage::Instance()->mSocket;
+	}
 }
