@@ -16,21 +16,21 @@ bool gHdf5Flag = false;
 
 #define HDF5LOCK() 								\
 	OmGarbage::Hdf5Lock();							\
-	hid_t fileId;		\
-bool opened = false;							\
+	hid_t fileId;								\
+bool opened = false;								\
 	try { 									\
-	gHdf5Flag = true;\
-	std::cout << "opening ..." << fileName << endl; \
-	fileId = om_hdf5_file_open_with_lock (fileName);	\
-	opened = true;
+		gHdf5Flag = true;						\
+		//std::cout << "opening ..." << fileName << endl; 		\
+		fileId = om_hdf5_file_open_with_lock (fileName);		\
+		opened = true;
 
 #define HDF5UNLOCK() 								\
-	} catch (...) { 						\
+	} catch (...) { 							\
 	  std::cerr  << "exception on: " << uts.nodename << ", at: " << __FUNCTION__ << "  " << __LINE__ << endl; \
-	  if(opened) om_hdf5_file_close_with_lock (fileId);		\
-                gHdf5Flag = false; \
+	  if(opened) om_hdf5_file_close_with_lock (fileId);			\
+                gHdf5Flag = false; 						\
 		OmGarbage::Hdf5Unlock(); 					\
-		throw new OmIoException("died while locked!\n");	\
+		throw new OmIoException("died while locked!\n");		\
 	}									\
 	om_hdf5_file_close_with_lock (fileId);					\
 	OmGarbage::Hdf5Unlock();
