@@ -4,21 +4,33 @@ use strict;
 use Cwd 'abs_path';
 use Thread;
 
-my $cmd = abs_path( $ARGV[0] );
-
-if( $cmd =~ m/\.pl$/ ){
-    $cmd = "perl " . $cmd;
+my $cmd = $ARGV[0];
+my $cmdIsFile = 0;
+if (-e $cmd) {
+    $cmdIsFile = 1;
+    $cmd = abs_path( $cmd );
+    if( $cmd =~ m/\.pl$/ ){
+	$cmd = "perl " . $cmd;
+    }
+    $cmd = "$cmd &> /dev/null";
 }
 
 sub runNode 
 {
     my $node = $_[0];
-    my $start = time();
-    print "node $node: running command...\n"; 
-    `ssh $node $cmd &> /dev/null`; 
-    my $end = time();
-    my $timeSecs = ($end - $start);
-    print "node $node: done (".$timeSecs." seconds)\n";
+
+    if( $cmdIsFile ) {
+	my $start = time();
+	print "node $node: running command...\n"; 
+	`ssh $node $cmd`; 
+	my $end = time();
+	my $timeSecs = ($end - $start);
+	print "node $node: done (".$timeSecs." seconds)\n";
+    } else {
+	my $result = `ssh $node $cmd`;
+	chomp($result);
+	print "node $node: cmd output was \"$result\"\n";
+    }
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";
