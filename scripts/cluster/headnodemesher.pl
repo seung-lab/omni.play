@@ -6,6 +6,8 @@ use File::Basename;
 use POSIX;
 use Thread;
 
+$SIG{INT} = \&killAllOmnis;
+
 my $numMeshProcessesPerHost = 2;
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
@@ -26,35 +28,31 @@ my $cmdCount = 0;
 my @meshCommandChunkInputs;
 my @meshCommandHostInput;
 
-sub byHost {
-    my $chunksPerHost = ceil( $chunkCount / $hostCount );
-    
-    print "$chunkCount chunks with chunksPerHost = $chunksPerHost\n";
-    print "$hostCount is hostCount\n";
-    
-    my $count = 0;
-    my $chunkBatch;
-    $cmdCount = 0;
-    my $nodeCount = 0;
-    while ($count < $chunkCount) {
-	my $chunk = $chunks[$count];
-	$chunkBatch .= $chunk;
-	$count++;
-	if (0 eq $count % $chunksPerHost) {
-	    $meshCommandChunkInputs[$cmdCount] = $chunkBatch;
-	    $meshCommandHostInput[$cmdCount] = $hostList[ $nodeCount ];
-	    $nodeCount++;
-	    chop $meshCommandHostInput[$cmdCount];
-	    $cmdCount++;
-	    $chunkBatch = "";
-	}
+
+sub killOmniOnNode {
+    my $node = $_[0];
+    `ssh ${node} killall -9 omni`;
+}
+
+sub killAllOmnis {
+    open IN_FILE,  "<", "hosts"  or die "could not read hosts";
+
+    my @threads;
+    while (my $line = <IN_FILE>) {
+	chomp( $line );
+	my $thr = new Thread \&runNode, $line;
+	push(@threads, $thr);
     }
+    close IN_FILE;
 
-    if ($chunkBatch ne "") {
-	print $chunkBatch;
-	$meshCommandChunkInputs[$cmdCount-1] .= $chunkBatch;
-    }    
+    foreach my $thread (@threads){ 
+	$thread->join;
+    }
+}
 
+sub byHost {
+    $numMeshProcessesPerHost = 1;
+    byHostAndProcess();
 }
 
 sub byHostAndProcess 
@@ -106,8 +104,7 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     close OUT_FILE;
 }
 
-sub runNode 
-{
+sub runNode {
     my $cmd = $_[0];
     my $node = $_[1];
     my $logFile = $_[2];
@@ -135,7 +132,6 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $logFile = $outFileName . ".log";
     my $lockFile = $outFileName . ".lock";
     my $cmd = "ssh $node sleep 1 && link $projectFile $lockFile && stat -t $lockFile && /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
-    # my $cmd = "ssh $node link $projectFile $lockFile && /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
     my $thr = new Thread \&runNode, $cmd, $node, $logFile;
     push(@threads, $thr);
 }
