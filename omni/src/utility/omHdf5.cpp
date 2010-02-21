@@ -20,7 +20,6 @@ bool gHdf5Flag = false;
 bool opened = false;								\
 	try { 									\
 		gHdf5Flag = true;						\
-		//std::cout << "opening ..." << fileName << endl; 		\
 		fileId = om_hdf5_file_open_with_lock (fileName);		\
 		opened = true;
 
