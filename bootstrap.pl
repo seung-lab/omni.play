@@ -263,36 +263,10 @@ sub boost {
     boost142();
 }
 
-sub boost138 {
-    my $baseFileName = "boost_1_38_0";
-    my $libFolderName = "Boost";
-    prepare( $baseFileName, $libFolderName );
-
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/tools/build/v2/user-config.jam`;
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/user-config.jam`;
-
-    # as of Dec 2009, these are the portions of boost we appear to be using:
-    # headers:   timer, shared_ptr, tuple, algorithm
-    # libraries: filesystem, mpi, regex, serialization, thread (for # of processors)
-    # to see all the boost libraries that can be built, do
-    # ..../boost_1_38_0/configure --show-libraries
-    
-    # boost uses its own build folder; just symlink it to ours for consistency...
-    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
-    `rm -rf $boostLocalBuildFolder`;
-    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
-
-    buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization,thread" );
-}
-
 sub boost142 {
     my $baseFileName = "boost_1_42_0";
     my $libFolderName = "Boost";
-    prepare( $baseFileName, $libFolderName );
-
-    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
-    `rm -rf $boostLocalBuildFolder`;
-    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
+    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
 
     my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
     print "configuring ($cmd)\n"; 
