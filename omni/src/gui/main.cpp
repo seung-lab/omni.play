@@ -11,6 +11,7 @@
 #include "project/omProject.h"
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
+#include "system/omGarbage.h"
 
 OmId SegmentationID = 0;
 
@@ -107,7 +108,8 @@ void processLine( QString line, QString fName )
 		openProject( args[1] );
 	} else if( line.startsWith("open") ){
 		openProject( fName );
-	
+	} else if( line.startsWith("parallel") ){
+		OmGarbage::Parallel(true);
 	} else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
