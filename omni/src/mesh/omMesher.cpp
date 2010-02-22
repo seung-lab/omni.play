@@ -50,7 +50,7 @@ OmMeshSource::OmMeshSource()
 //delete image data
 OmMeshSource::~OmMeshSource()
 {
-	debug ("mesher1", "OmMeshSource::~OmMeshSource %i\n", pImageData);
+	debug ("mesher1", "OmMeshSource::~OmMeshSource\n");
 
 	//delete image data if loaded
 	if (pImageData != NULL)

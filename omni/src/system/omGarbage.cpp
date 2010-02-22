@@ -50,12 +50,14 @@ OmGarbage *OmGarbage::Instance()
 		mspInstance = new OmGarbage;
 	}
 
+	/*
 	QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
 	QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
 	QString rel_fnpn = pathName + fileName;
 	QFileInfo fInfo(rel_fnpn);
 	QString fnpnProject = fInfo.absoluteFilePath();
 	mspInstance->mHdf5Lock = fnpnProject + ".lock";
+	*/
 
 	pthread_mutex_init(&mspInstance->mTextureMutex, NULL);
 	return mspInstance;

@@ -7,27 +7,22 @@
  *	Brett Warne - bwarne@mit.edu - 3/30/09
  */
 
-
-
 #include "volume/omVolumeTypes.h"
 #include "utility/omHdf5.h"
 #include "common/omStd.h"
 
-
-#include <hdf5.h>
-
+#include <vmmlib/vmmlib.h>
+using namespace vmml;
 
 class vtkImageData;
 
-
 class OmProjectData {
-
 public:
-	
+	static void instantiateProjectData( QString fileNameAndPath );	
 	static OmProjectData* Instance();
 	static void Delete();
 	
-	static string GetFilePath();
+	static QString getFileNameAndPath();
 	
 	static void Create();
 	static void Open();
@@ -35,16 +30,7 @@ public:
 	static void Flush();
 	
 	static bool IsOpen() {return Instance()->mIsOpen;}
-	
-	//project properties
-	static const string& GetFileName();
-	static void SetFileName(const string &);
-	static const string& GetDirectoryPath();
-	static void SetDirectoryPath(const string &);
-	static string GetTempDirectoryPath();
-	static char * GetFileNameCStr ();
-	
-	
+
 	//groups
 	static bool GroupExists(string &path);
 	static void GroupDelete(string &path);
@@ -65,43 +51,65 @@ public:
 	template< class T > static void ArchiveRead(const string &path, T* t);
 	template< class T > static void ArchiveWrite(const string &path, T* t);
 	
-	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmProjectData();
 	~OmProjectData();
 	OmProjectData(const OmProjectData&);
 	OmProjectData& operator= (const OmProjectData&);
-
 	
 private:
 	//singleton
 	static OmProjectData* mspInstance;
-	
-	//project
-	string mFileName;
-	string mFileNameFull;
-	string mDirectoryPath;
+
 	bool mIsOpen;
+
+	OmHdf5* hdfFile;
 };
 
+template< class T > 
+void 
+OmProjectData::ArchiveRead(const string &name, T* t) {
+	assert(IsOpen());
 
+	bool dataExists = Instance()->hdfFile->dataset_exists( name);
+	assert( dataExists );
+	
+	//read dataset
+	int size;
+	char* p_data = (char*) Instance()->hdfFile->dataset_raw_read(name, &size);
+	
+	//create string stream to read from
+	std::stringstream sstream;
+	sstream.write( p_data, size );
+	
+	//read from stream
+	OM_ARCHIVE_IN_CLASS ia(sstream);
+	ia >> *t;
+	
+	//delete read data
+	delete p_data;
+}
 
 template< class T > 
 void 
-OmProjectData::ArchiveRead(const string &path, T* t) {
+OmProjectData::ArchiveWrite(const string &name, T* t) {
 	assert(IsOpen());
-	om_hdf5_archive_read<T>(Instance()->GetFileNameCStr(), path.c_str(), t);
+
+	//create string stream to write to
+	std::stringstream sstream;
+	
+	//archive data
+	OM_ARCHIVE_OUT_CLASS oa(sstream);
+	oa << *t;
+
+	//generate string
+	string str = sstream.str();
+	
+	//write dataset
+	Instance()->hdfFile->dataset_raw_create_tree_overwrite( name, str.size(), str.c_str());
+
+	printf("saved project file \"%s\", at path \"%s\"\n", qPrintable(getFileNameAndPath()), name.c_str() );
 }
-
-
-template< class T > 
-void 
-OmProjectData::ArchiveWrite(const string &path, T* t) {
-	assert(IsOpen());
-	om_hdf5_archive_write<T>(Instance()->GetFileNameCStr(), path.c_str(), t);
-}
-
-
 
 #endif

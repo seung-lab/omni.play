@@ -2,7 +2,7 @@
 #include "omImageDataIo.h"
 
 #include "common/omException.h"
-#include "utility/omHdf5.h"
+#include "utility/omHdf5helpers.h"
 #include "common/omVtk.h"
 
 #include <vtk_tiff.h>

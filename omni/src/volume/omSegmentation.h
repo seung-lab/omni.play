@@ -64,7 +64,8 @@ public:
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z);
 	void BuildMeshDataInternal();
-	
+	void BuildMeshDataInternalNew();	
+
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
 	

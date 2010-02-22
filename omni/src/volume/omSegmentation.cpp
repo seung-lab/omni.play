@@ -3,6 +3,7 @@
 #include "omVolume.h"
 #include "omMipChunk.h"
 #include "omVolumeCuller.h"
+#include "mesh/meshingManager.h"
 
 #include "segment/omSegmentEditor.h"
 #include "system/omProjectData.h"
@@ -235,6 +236,7 @@ void OmSegmentation::BuildMeshData()
 	BuildMeshDataInternal();
 
 	//all chunks have been meshed
+	// TODO: FIXME: reenable!!!!!!!!!!!!!!!!!!!!! (purcaro)
 	mMipMeshManager.SetMeshDataBuilt(true);
 
 	//hide progress bar
@@ -324,6 +326,28 @@ void OmSegmentation::BuildMeshDataInternal()
 					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
 				}
 	}
+}
+
+
+void OmSegmentation::BuildMeshDataInternalNew()
+{
+	MeshingManager* meshingMan = new MeshingManager( GetId() );
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+
+		for (int z = 0; z < mip_coord_dims.z; ++z) {
+			for (int y = 0; y < mip_coord_dims.y; ++y) {
+				for (int x = 0; x < mip_coord_dims.x; ++x) {
+					OmMipChunkCoord chunk_coord(level, x, y, z);
+					meshingMan->addToQueue( chunk_coord );
+				}
+			}
+		}
+	}
+	
+	meshingMan->start();
 }
 
 /*

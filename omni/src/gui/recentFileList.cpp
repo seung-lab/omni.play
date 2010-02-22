@@ -50,9 +50,8 @@ int RecentFileList::getNumberOfFilesToShow()
 	}
 }
 
-void RecentFileList::addFile(QString fileName, QString pathName)
+void RecentFileList::addFile(QString rel_fnpn)
 {
-	QString rel_fnpn = pathName + fileName;
 	QFileInfo fInfo(rel_fnpn);
 	QString fnpn = fInfo.absoluteFilePath();
 

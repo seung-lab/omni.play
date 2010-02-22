@@ -43,15 +43,11 @@ int firsttime(int argc, char *argv[])
 
 void openProject( QString fName )
 {
-        QString orig_fName = fName;
-	QString fname = fName.section('/', -1);
-	QString dpath = fName.remove(fname);
-	
 	try {
-		OmProject::Load(dpath.toStdString(), fname.toStdString());
+		OmProject::Load( fName );
 		printf("opened project\n");
 	} catch(...) {
-	        printf("error while loading project \"%s\"\n", qPrintable( orig_fName ));
+	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
 	}
 }
 

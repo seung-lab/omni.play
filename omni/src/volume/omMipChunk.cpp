@@ -276,14 +276,14 @@ void OmMipChunk::WriteVolumeData()
 
 void OmMipChunk::ReadMetaData()
 {
-	//	return;
+	// TODO: must we do this? (purcaro)
 
 	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	//debug("genone","OmMipChunk::ReadMetaData: %s \n", fpath.data());
 
 	//read archive if it exists
-	if (OmProjectData::DataExists(fpath))
+	if (OmProjectData::DataExists(fpath)) {
 		OmProjectData::ArchiveRead < OmMipChunk > (fpath, this);
+	}
 
 	//otherwise, no metadata to read in
 }
@@ -291,9 +291,7 @@ void OmMipChunk::ReadMetaData()
 void OmMipChunk::WriteMetaData()
 {
 	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	//debug("genone","OmMipChunk::WriteMetaData:  %s \n", fpath.data());
 
-	//store archive
 	OmProjectData::ArchiveWrite < OmMipChunk > (fpath, this);
 
 	//meta data clean

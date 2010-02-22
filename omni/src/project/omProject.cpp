@@ -14,6 +14,8 @@
 #include "system/omTagManager.h"
 #include "system/omProjectData.h"
 
+#include <QFile>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 namespace bfs = boost::filesystem;
@@ -68,26 +70,9 @@ void OmProject::Delete()
 /////////////////////////////////
 ///////          Project IO
 
-void OmProject::New(string dpath, string fname)
+void OmProject::New( QString fileNameAndPath )
 {
-
-	//delete previous project
-	if (OmProjectData::IsOpen())
-		Close();
-
-	//store paths
-	OmProjectData::SetFileName(fname);
-	OmProjectData::SetDirectoryPath(dpath);
-
-	//create all intermediate directories
-	//if(!bfs::create_directories(bfs::path(GetDirectoryPath())))
-	//      throw OmIoException("Could not create project directory.");
-
-	//string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
-	//debug("genone","OmProject::New: %s \n", fpath.data());
-
-	//create and open data
-	//debug("genone","OmProject::New: creating");
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Create();
 	OmProjectData::Open();
 
@@ -114,31 +99,7 @@ void OmProject::Save()
 		return;
 	}
 
-	string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
-
 	//store archive
-	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
-	OmProjectData::Flush();
-	printf("saved project %s\n", fpath.c_str());
-}
-
-void OmProject::SaveAs(string dpath, string fname)
-{
-
-	//copy h5 file and write project file to it
-	string current_fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
-	string new_fpath = dpath + fname;
-	bfs::copy_file(current_fpath, new_fpath);
-
-	//make new file the current project
-	OmProjectData::SetFileName(fname);
-	OmProjectData::SetDirectoryPath(dpath);
-
-	string fpath = OmProjectData::GetDirectoryPath() + OmProjectData::GetFileName();
-
-	//debug("genone","OmProject::SaveAs: %s\n", fpath.data());
-
-	//store archive to new file
 	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
 	OmProjectData::Flush();
 }
@@ -149,34 +110,17 @@ void OmProject::Commit()
 	OmStateManager::ClearUndoStack();
 }
 
-/*
- *	Load project file from disk.
- *	dpath: 'usr/bwarne/project/'
- *	fname: 'project.omni'
- */
-void OmProject::Load(string dpath, string fname)
+void OmProject::Load( QString fileNameAndPath )
 {
+	QFile projectFile( fileNameAndPath );
+	if( !projectFile.exists() ){
+		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
+		throw OmIoException( qPrintable( err ));
+	}
+	
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 
-	//close prev project if one is open
-	if (OmProjectData::IsOpen())
-		OmProjectData::Close();
-
-	//form full pathname
-	string fpath = dpath + fname;
-	//debug("genone","OmProject::Load: %s\n", fpath.data());
-
-	//check path validity
-	if (!bfs::exists(bfs::path(fpath)))
-		throw OmIoException("Project file not found:" + fpath);
-
-	//valid path so store
-	OmProjectData::SetFileName(fname);
-	OmProjectData::SetDirectoryPath(dpath);
-
-	//open project data
 	OmProjectData::Open();
-
-	//read archive
 	OmProjectData::ArchiveRead < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
 }
 

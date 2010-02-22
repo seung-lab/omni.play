@@ -299,9 +299,7 @@ void SegInspector::on_buildButton_clicked()
 		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
 		emit segmentationBuilt(sdw.getID());
 	} else if( "Meshinator" == cur_text ){
-		QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
-		QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
-		QString rel_fnpn = pathName + fileName;
+		QString rel_fnpn = OmProjectData::getFileNameAndPath();
 		QFileInfo fInfo(rel_fnpn);
 		QString fnpnProject = fInfo.absoluteFilePath();
 		QString fnpnPlan = fnpnProject + ".plan";

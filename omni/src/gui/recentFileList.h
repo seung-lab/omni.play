@@ -17,7 +17,7 @@ class RecentFileList
 	// QActions instantiated in mainwindow.cpp
 	QAction *recentFileActs[MAX_NUMBER_OF_RECENT_FILES];
 
-	void addFile(  QString fileName, QString pathName );
+	void addFile( QString rel_fnpn );
 	void loadRecentlyUsedFilesListFromFS();
 	int getMaxNumberOfRecentlyUsedFilesToDisplay();
 

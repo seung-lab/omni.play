@@ -94,18 +94,14 @@ void MainWindow::newProject()
 		if (fileName == NULL)
 			return;
 
-		//debug("genone","New Project");
-		QString fname = fileName.section('/', -1);
-		QString dpath = fileName.remove(fname);
+		if (!fileName.endsWith(".omni")) {
+			fileName.append(".omni");
+		}
 
-		if (!fname.endsWith(".omni"))
-			fname.append(".omni");
+		OmProject::New( fileName );
+		recentFiles.addFile( fileName );
 
-		OmProject::New(dpath.toStdString(), fname.toStdString());
-
-		recentFiles.addFile(fname, dpath);
-
-		setWindowTitle(tr("Omni - ") + fname);
+		setWindowTitle(tr("Omni - ") + fileName);
 
 		isProjectOpen = true;
 
@@ -132,8 +128,6 @@ void MainWindow::newProject()
 		createDockWindows();
 
 		setupToolbarInitially();
-
-		setWindowTitle(tr("Omni - ") + fname);
 
 		openInspector();
 
@@ -270,26 +264,14 @@ void MainWindow::openProject()
 void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
-		QString fname = fileNameAndPath.section('/', -1);
-		QString dpath = fileNameAndPath.remove(fname);
-		openProject(fname, dpath);
-
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::openProject(QString fname, QString dpath)
-{
-	try {
 
 		try {
-			OmProject::Load(dpath.toStdString(), fname.toStdString());
+			OmProject::Load( fileNameAndPath );
 		} catch(...) {
 			throw OmIoException("error during load of OmProject object");
 		}
 
-		recentFiles.addFile(fname, dpath);
+		recentFiles.addFile( fileNameAndPath );
 
 		isProjectOpen = true;
 
@@ -317,7 +299,7 @@ void MainWindow::openProject(QString fname, QString dpath)
 
 		setupToolbarInitially();
 
-		setWindowTitle(tr("Omni - ") + fname);
+		setWindowTitle(tr("Omni - ") + fileNameAndPath );
 		openInspector();
 
 	} catch(OmException & e) {

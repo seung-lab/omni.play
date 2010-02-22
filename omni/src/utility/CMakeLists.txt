@@ -3,6 +3,7 @@
 #specify sources
 SET(OM_UTILITY_LIB_SRCS
 	omHdf5.cpp
+	omHdf5helpers.cpp
 	omImageDataIo.cpp
 )
 
@@ -11,7 +12,6 @@ ADD_LIBRARY(omUtility
 	${OM_UTILITY_LIB_SRCS}
 )
 
-
 TARGET_LINK_LIBRARIES( omUtility
 	omCommon
 	omLibrary
@@ -19,13 +19,6 @@ TARGET_LINK_LIBRARIES( omUtility
 	${OM_HDF5_LIBS}
 	${OM_BOOST_LIBS}
 )
-
-
-
-#	omSystem
-#	omLibrary
-#	omView2d
-
 
 # EXECUTABLE
 
