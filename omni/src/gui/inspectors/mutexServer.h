@@ -1,23 +1,45 @@
 #ifndef MUTEX_SERVER_H
 #define MUTEX_SERVER_H
 
-#include <qthread.h>
+#include <QThread>
+#include <QSemaphore>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 
-class MutexServer: public QThread
+class MutexServerWorkerThread : public QThread
 {
+        Q_OBJECT
 public:
-	MutexServer();
+        MutexServerWorkerThread (QTcpSocket *clientConnection, QSemaphore * fileLock);
+public slots:
+        void releaseLock ();
+        void handleRequest ();
+private:
+        QSemaphore * mFileLock;
+        QTcpSocket * mClientConnection;
+};
+
+
+class MutexServer : public QObject
+{
+	Q_OBJECT
+public:
+	MutexServer(QString, int);
 
 	void safeTerminate ();
-        virtual void run();
-
+        void run();
+	void start () { run(); }
+	void quit () { };
+private slots:
+	void dealWithClient();
 private:
 	QTcpServer* tcpServer;
 	bool mTerminate;
-	
-	void dealWithClient();
+
+	QString mHost;
+	int mPort;
+
+	QSemaphore * fileLock;
 };
 
 #endif

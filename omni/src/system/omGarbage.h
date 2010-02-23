@@ -52,7 +52,8 @@ public:
 	static void Hdf5Unlock ();
 	static void Unlock ();
 	static void UnlockTextures ();
-	static bool Parallel (bool);
+	static void SetParallel (QString host, int port);
+	static bool GetParallel ();
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -74,6 +75,8 @@ private:
 	QString mHdf5Lock;
 	QTcpSocket * mSocket;
 	bool mParallel;
+	QString mHost;
+	int mPort;
 };
 
 

@@ -40,6 +40,7 @@ SET( OMGUI_MOC_HDRS
 	inspectors/segObjectInspector.h
 	inspectors/filObjectInspector.h
 	inspectors/inspectorProperties.h
+	inspectors/mutexServer.h
 
 	preferences/preferencesMesh.h
 	preferences/preferences3d.h

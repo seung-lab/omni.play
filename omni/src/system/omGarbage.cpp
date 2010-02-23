@@ -249,25 +249,32 @@ int fakecreat(const char *file, mode_t mode)
         return fakeopen(file, O_CREAT|O_WRONLY|O_TRUNC, mode);
 }
 
-bool OmGarbage::Parallel (bool setParallelIfTrue)
+void OmGarbage::SetParallel (QString host, int port)
 {
-	if (setParallelIfTrue) {
-		OmGarbage::Instance()->Lock ();
-		Instance()->mParallel = true;
-		OmGarbage::Instance()->Unlock ();
-	}
+	OmGarbage::Instance()->Lock();
 
+	Instance()->mParallel = true;
+	Instance()->mHost = host;
+	Instance()->mPort = port;
+	
+	OmGarbage::Instance()->Unlock();
+}
+bool OmGarbage::GetParallel ()
+{
 	return Instance()->mParallel;
 }
 
 void OmGarbage::Hdf5Lock ()
 {
-	if (!Instance()->Parallel(false)) {
+	if (!Instance()->GetParallel()) {
 		OmGarbage::Instance()->Lock ();
 	} else {
+		char buff;
 		OmGarbage::Instance()->mSocket = new QTcpSocket ();
-		OmGarbage::Instance()->mSocket->connectToHost("brainiac", 8989);
+		OmGarbage::Instance()->mSocket->connectToHost(OmGarbage::Instance()->mHost, OmGarbage::Instance()->mPort);
  		OmGarbage::Instance()->mSocket->waitForConnected(-1);
+		OmGarbage::Instance()->mSocket->putChar ('L');
+		OmGarbage::Instance()->mSocket->getChar (&buff);
 	}
 
 	return;
@@ -276,7 +283,7 @@ void OmGarbage::Hdf5Lock ()
 
 void OmGarbage::Hdf5Unlock ()
 {
-	if (!Instance()->Parallel(false)) {
+	if (!Instance()->GetParallel()) {
 		OmGarbage::Instance()->Unlock ();
 	} else {
 		OmGarbage::Instance()->mSocket->close ();

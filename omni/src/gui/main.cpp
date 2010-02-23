@@ -12,10 +12,14 @@
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
 #include "system/omGarbage.h"
+#include "gui/inspectors/mutexServer.h"
 
 OmId SegmentationID = 0;
 
 GGOCTFPointer GGOCTFunction = 0;
+int argc_global;
+char **argv_global;
+
 int firsttime(int argc, char *argv[])
 {
 	switch (argc) {
@@ -109,7 +113,16 @@ void processLine( QString line, QString fName )
 	} else if( line.startsWith("open") ){
 		openProject( fName );
 	} else if( line.startsWith("parallel") ){
-		OmGarbage::Parallel(true);
+		QStringList args = line.split(':');
+		OmGarbage::SetParallel(args[1], getNum(args[2]));
+	} else if( line.startsWith("serve") ){
+		QStringList args = line.split(':');
+		QCoreApplication app(argc_global, argv_global);
+
+		MutexServer * server = new MutexServer (args[1], getNum(args[2]));
+		server->start ();
+		
+		app.exec ();
 	} else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
@@ -172,6 +185,8 @@ void setOmniExecutablePath( QString rel_fnpn )
 
 int main(int argc, char *argv[])
 {
+	argc_global = argc;
+	argv_global = argv;
 	//    return firsttime (argc, argv);
 
 	CmdLineArgs args = parseAnythingYouCan(argc, argv);

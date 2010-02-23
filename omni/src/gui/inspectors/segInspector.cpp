@@ -361,7 +361,7 @@ void SegInspector::populateSegmentationInspector()
 
 void SegInspector::startMutexServer()
 {
-	mutexServer = new MutexServer();
+	mutexServer = new MutexServer("brianiac", 8989);
 	mutexServer->start();
 }
 
