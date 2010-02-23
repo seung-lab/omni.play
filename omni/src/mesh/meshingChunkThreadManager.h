@@ -2,7 +2,9 @@
 #define MESHING_CHUNK_THREAD_MANAGER_H
 
 #include "meshingManager.h"
+#include "meshingChunkThread.h"
 #include "omMesher.h"
+#include <QMutex>
 
 class MeshingChunkThreadManager : public QThread
 {
@@ -10,16 +12,19 @@ class MeshingChunkThreadManager : public QThread
 	MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord );
 	void run();
 
-	SegmentDataSet mCurrentSegmentDataSet;
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 
- private:
-	MeshingManager* mMeshManager;
-	OmMipChunkCoord mCoord;
+	QQueue< SEGMENT_DATA_TYPE > valuesToMesh;
+	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
 
 	QSemaphore* num_values_done;
-	QSemaphore* num_value_threads_active;
+	QMutex * mutex;
+
+	MeshingManager* mMeshManager;
+
+ private:
+	OmMipChunkCoord mCoord;
 
 };
 

@@ -19,14 +19,16 @@ class MeshingManager : public QThread
 	OmId getSegmentationID() { return mSegmentationID; }
 
 	QSemaphore* num_chunks_done; // indicates when meshManager is done
-
+	QSemaphore* num_chunk_threads_active; // limit number of chunks being worked on at once
 	QSemaphore* num_worker_threads_active; // limit total number of threads running VTK meshing pipeline
 	
  private:
 	const OmId mSegmentationID;
 	QQueue< OmMipChunkCoord > mChunkCoords;
 
-	QSemaphore* num_chunk_threads_active; // limit number of chunks being worked on at once
+
+	int getMaxAllowedNumberOfActiveChunks();
+	int getMaxAllowedNumberOfWorkerThreads();
 };
 
 #endif

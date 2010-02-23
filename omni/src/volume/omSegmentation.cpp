@@ -234,9 +234,9 @@ void OmSegmentation::BuildMeshData()
 
 	//build all levels
 	BuildMeshDataInternal();
+	//BuildMeshDataInternalNew();
 
 	//all chunks have been meshed
-	// TODO: FIXME: reenable!!!!!!!!!!!!!!!!!!!!! (purcaro)
 	mMipMeshManager.SetMeshDataBuilt(true);
 
 	//hide progress bar
@@ -348,6 +348,7 @@ void OmSegmentation::BuildMeshDataInternalNew()
 	}
 	
 	meshingMan->start();
+	meshingMan->wait();
 }
 
 /*

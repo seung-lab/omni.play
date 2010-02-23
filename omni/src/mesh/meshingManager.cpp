@@ -1,5 +1,8 @@
 #include "meshingManager.h"
 #include "meshingChunkThreadManager.h"
+
+#include "system/omGarbage.h"
+#include "system/omNumCores.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
@@ -13,12 +16,33 @@ void MeshingManager::addToQueue( const OmMipChunkCoord coord )
 	mChunkCoords.enqueue( coord );
 }
 
+int MeshingManager::getMaxAllowedNumberOfActiveChunks()
+{
+	// OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT
+	return 5;
+}
+
+int MeshingManager::getMaxAllowedNumberOfWorkerThreads()
+{
+	if (OmGarbage::GetParallel()) {
+		const int numCoresRaw = (int)OmNumCores::get_num_cores();
+		int numCores = numCoresRaw - 1;
+		if( 1 == numCoresRaw ){
+			numCores = 1;
+		}
+		return numCores;
+	} else {
+		return OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
+	}
+}
+
 void MeshingManager::run()
 {
 	const int numChunksToProcess = mChunkCoords.size();
-	const int maxNumChunkThreadManagers = 5; // OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT
+	printf("going to process %d chunks...\n", numChunksToProcess );
+	const int maxNumChunkThreadManagers = getMaxAllowedNumberOfActiveChunks();
 
-	const int maxNumberWorkerThreads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
+	const int maxNumberWorkerThreads = getMaxAllowedNumberOfWorkerThreads();
 
 	num_chunks_done = new QSemaphore(0);
 	num_chunk_threads_active = new QSemaphore( maxNumChunkThreadManagers );

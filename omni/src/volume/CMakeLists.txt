@@ -15,6 +15,7 @@ SET(OM_VOLUME_LIB_SRCS
 	../utility/dataWrappers.cpp
 	../mesh/meshingManager.cpp
 	../mesh/meshingChunkThreadManager.cpp
+	../mesh/meshingChunkThread.cpp
 )
 
 
