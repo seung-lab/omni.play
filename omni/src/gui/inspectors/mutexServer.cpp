@@ -12,8 +12,6 @@ MutexServer::MutexServer(QString host, int port)
 	mTerminate = false;
 	mHost = host;
 	mPort = port;
-
-	fileLock = new QSemaphore (1);
 }
 
 void MutexServer::safeTerminate ()
@@ -50,20 +48,13 @@ void MutexServer::run ()
           		printf("ERROR on accept");
      		bzero(buffer,256);
      		n = write(newsockfd,"l",1);
-     		if (n < 0) printf("ERROR writing to socket");
+     		if (n < 0)
+			printf("ERROR writing to socket\n");
 
      		n = read(newsockfd,buffer,255);	// Locked
-     		if (n < 0) printf("ERROR reading from socket");
+     		//if (n < 0) printf("ERROR reading from socket");
      		//printf("Here is the message: %s\n",buffer);
 		close (newsockfd);		// Closing means they are done with lock.
 	}
-}
-
-void MutexServer::dealWithClient()
-{
-	
-	printf ("getting connection request...\n");
-	QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-
 }
 

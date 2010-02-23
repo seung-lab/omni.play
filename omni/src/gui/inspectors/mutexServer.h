@@ -2,11 +2,11 @@
 #define MUTEX_SERVER_H
 
 #include <QThread>
-#include <QSemaphore>
+#include <QMutex>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 
-class MutexServer : public QObject
+class MutexServer : public QThread
 {
 	Q_OBJECT
 public:
@@ -14,10 +14,6 @@ public:
 
 	void safeTerminate ();
         void run();
-	void start () { run(); }
-	void quit () { };
-private slots:
-	void dealWithClient();
 private:
 	QTcpServer* tcpServer;
 	bool mTerminate;
@@ -25,7 +21,7 @@ private:
 	QString mHost;
 	int mPort;
 
-	QSemaphore * fileLock;
+	QMutex * fileLock;
 };
 
 #endif
