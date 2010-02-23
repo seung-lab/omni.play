@@ -31,7 +31,7 @@ public:
 	~OmMipMesh();
 	
 	void Load();
-	void Save();
+	void Save(bool bulk=false);
 	
 	string GetFileName();
 	string GetDirectoryPath();

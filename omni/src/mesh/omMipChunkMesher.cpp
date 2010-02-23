@@ -121,7 +121,7 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 		if( 1 == numCoresRaw ){
 			numCores = 1;
 		}
-		num_threads = numCores;
+		num_threads = 2;
 	} else {
 		num_threads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
 	}

@@ -28,7 +28,7 @@ void om_hdf5_file_close(string fileName);
 
 
 //group
-hid_t om_hdf5_file_open_with_lock(const char *fpath);
+hid_t om_hdf5_file_open_with_lock(string fpath);
 void om_hdf5_file_close_with_lock (hid_t fileId);
 void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);
 void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data);
@@ -60,6 +60,7 @@ Vector3<int> om_hdf5_dataset_image_get_dims(string fileName, const char* name);
 
 void om_hdf5_dataset_image_create(string fileName, const char* name, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample, bool unlimited = false);
 void om_hdf5_dataset_image_create_tree_overwrite(string fileName, const char* name, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample, bool unlimited = false);
+void om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char *name, int size, const void *data);
 
 vtkImageData* om_hdf5_dataset_image_read(string fileName, const char* name, DataBbox extent, int bytesPerSample);
 vtkImageData* om_hdf5_dataset_image_read_trim(string fileName, const char* name, DataBbox dataExtent, int bytesPerSample);

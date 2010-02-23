@@ -35,7 +35,7 @@ void MeshingChunkThread::run()
 		mesher.ExtractMesh(p_mesh, segment_value);
 
 		//save mesh
-		p_mesh->Save();
+		p_mesh->Save(true);
 
 		//delete mesh
 		delete p_mesh;		

@@ -128,7 +128,7 @@ void
 	//debug("genone","OmMipMesh::Load: got mesh from disk\n");
 }
 
-void OmMipMesh::Save()
+void OmMipMesh::Save(bool bulk)
 {
 	//string fpath = GetDirectoryPath() + GetFileName();
 	//debug("genone","OmMipMesh::Save: %s\n", GetDirectoryPath().data());
@@ -154,17 +154,17 @@ void OmMipMesh::Save()
 	//write strip offset/size data
 	fpath = GetDirectoryPath() + "stripoffset.dat";
 	size = 2 * mStripCount * sizeof(uint32_t);
-	OmProjectData::WriteRawData(fpath, size, mpStripOffsetSizeData);
+	OmProjectData::WriteRawData(fpath, size, mpStripOffsetSizeData, bulk);
 
 	//write vertex offset data
 	fpath = GetDirectoryPath() + "vertexoffset.dat";
 	size = mVertexIndexCount * sizeof(GLuint);
-	OmProjectData::WriteRawData(fpath, size, mpVertexIndexData);
+	OmProjectData::WriteRawData(fpath, size, mpVertexIndexData, bulk);
 
 	//write strip offset/size data
 	fpath = GetDirectoryPath() + "vertex.dat";
 	size = 6 * mVertexCount * sizeof(GLfloat);
-	OmProjectData::WriteRawData(fpath, size, mpVertexData);
+	OmProjectData::WriteRawData(fpath, size, mpVertexData, bulk);
 }
 
 string OmMipMesh::GetFileName()

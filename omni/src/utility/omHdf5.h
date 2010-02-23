@@ -2,6 +2,7 @@
 #define OM_HDF_H
 
 #include <QString>
+#include <QQueue>
 #include <string>
 using std::string;
 
@@ -9,6 +10,15 @@ using std::string;
 #include "omHdf5helpers.h"
 
 class vtkImageData;
+
+class OmHdf5DataSet {
+public:
+	OmHdf5DataSet (string inname, int insize, const void* indata) : name(inname), size(insize), data(indata) {}
+
+	string name;
+	int size;
+	const void* data;
+};
 
 class OmHdf5 
 {
@@ -32,10 +42,13 @@ class OmHdf5
 	void dataset_image_write_trim( string name, DataBbox dataExtent, 
 					      int bytesPerSample, vtkImageData *pImageData);
 	void* dataset_raw_read( string name, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( string name, int size, const void* data);
+	void dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk=false);
+
+	void flush ();
 
  private:
 	QString m_fileNameAndPath;
+	QQueue <OmHdf5DataSet*> mQueue;
 };
 
 #endif

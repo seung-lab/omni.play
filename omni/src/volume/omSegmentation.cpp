@@ -291,6 +291,8 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z)
 	meshingMan->addToQueue( chunk_coord );
 	meshingMan->start();
 	meshingMan->wait();
+
+	OmProjectData::flush();
 }
 
 

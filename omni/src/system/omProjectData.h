@@ -45,11 +45,13 @@ public:
 	
 	//raw data io
 	static void* ReadRawData(string &path, int* size = NULL);
-	static void WriteRawData(string &path, int size, const void* data);
+	static void WriteRawData(string &path, int size, const void* data, bool bulk=false);
 	
 	//archive io
 	template< class T > static void ArchiveRead(const string &path, T* t);
 	template< class T > static void ArchiveWrite(const string &path, T* t);
+
+	static void flush ();
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected

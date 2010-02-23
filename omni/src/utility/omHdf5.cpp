@@ -60,8 +60,24 @@ void* OmHdf5::dataset_raw_read( string name, int* size)
 	return om_hdf5_dataset_raw_read(getFileNameAndPathCstr(), name.c_str(), size);
 }
 
-void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data)
+void OmHdf5::flush ()
 {
-	om_hdf5_dataset_raw_create_tree_overwrite(getFileNameAndPathCstr(), name.c_str(), size, data);
+	OmGarbage::Hdf5Lock ();
+	hid_t fileId = om_hdf5_file_open_with_lock (getFileNameAndPathCstr());
+	while (mQueue.size()) {
+		OmHdf5DataSet * dataSet = mQueue.dequeue();
+		om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, dataSet->name.c_str(), dataSet->size, dataSet->data);
+	}
+	om_hdf5_file_close_with_lock (fileId);
+	OmGarbage::Hdf5Unlock ();
+}
+
+void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk)
+{
+	if (bulk) {
+		mQueue.enqueue (new OmHdf5DataSet (name, size, data));
+	} else {
+		om_hdf5_dataset_raw_create_tree_overwrite(getFileNameAndPathCstr(), name.c_str(), size, data);
+	}
 }
 

@@ -337,10 +337,18 @@ void om_hdf5_dataset_raw_create_tree_overwrite(string fileName, const char *name
 HDF5LOCK();
 	//create tree and delete old data if exists
 	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
-
 	//create data
 	om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 HDF5UNLOCK();
+}
+
+void om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char *name, int size, const void *data)
+{
+	//create tree and delete old data if exists
+	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
+
+	//create data
+	om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 }
 
 void *om_hdf5_dataset_raw_read(string fileName, const char *name, int *size)
