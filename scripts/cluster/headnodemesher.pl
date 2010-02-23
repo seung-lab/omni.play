@@ -8,11 +8,12 @@ use Thread;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $numMeshProcessesPerHost = 2;
+my $numMeshProcessesPerHost = 8;
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
 my $meshinatorHome = $path;
 my $meshinatorHosts = "$meshinatorHome/hosts";
+my $meshinatorOmni = "$meshinatorHome/../../omni/bin/omni";
 
 open HOSTS, "$meshinatorHosts" or die "could not find $meshinatorHosts";
 my @hostList = <HOSTS>;
@@ -80,6 +81,12 @@ sub byHostAndProcess
 	}
     }
     if ($chunkBatch ne "") {
+	my @marginals = split (/\n/, $chunkBatch);
+	my $margcount = 0;
+	foreach my $marg (@marginals) {
+	   $meshCommandChunkInputs[$margcount % $cmdCount] .= "$marg\n";
+	   $margcount++;
+	}
 	$meshCommandChunkInputs[$cmdCount-1] .= $chunkBatch;
     }
 }
@@ -105,8 +112,10 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     close OUT_FILE;
 }
 
-print "proceed to run on cluster? :";
-my $answer = <STDIN>;
+if (-t STDIN) {
+    print "proceed to run on cluster? :";
+    my $answer = <STDIN>;
+}
 
 sub runNode {
     my $cmd = $_[0];
@@ -135,7 +144,7 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $fNameAndPath = $outFileName;
     my $logFile = $outFileName . ".log";
     my $lockFile = $outFileName . ".lock";
-    my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
+    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
     my $thr = new Thread \&runNode, $cmd, $node, $logFile;
     push(@threads, $thr);
 }
