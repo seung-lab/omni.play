@@ -32,11 +32,11 @@ my @meshCommandHostInput;
 
 sub killOmniOnNode {
     my $node = $_[0];
-    `ssh ${node} killall -9 omni`;
+    `ssh $node killall -9 omni`;
 }
 
 sub killAllOmnis {
-    open IN_FILE,  "<", "hosts"  or die "could not read hosts";
+    open IN_FILE, "$meshinatorHosts" or die "could not find $meshinatorHosts";
 
     my @threads;
     while (my $line = <IN_FILE>) {
