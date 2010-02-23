@@ -145,7 +145,7 @@ void OmMipMesh::Save(bool bulk)
 	//write meta data
 	fpath = GetDirectoryPath() + "metamesh.dat";
 	char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
-	OmProjectData::WriteRawData(fpath, 1, &meta);
+	OmProjectData::WriteRawData(fpath, 1, &meta, bulk);
 
 	//if meta is zero then skip mesh
 	if (!meta)
