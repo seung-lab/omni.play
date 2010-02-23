@@ -1,4 +1,5 @@
 #include "mutexServer.h"
+#include "common/omDebug.h"
 #include <QCoreApplication>
 
 #include <stdio.h>
@@ -54,6 +55,7 @@ void MutexServer::run ()
      		n = read(newsockfd,buffer,255);	// Locked
      		//if (n < 0) printf("ERROR reading from socket");
      		//printf("Here is the message: %s\n",buffer);
+     		debug ("mutexServer", "Got lock back\n");
 		close (newsockfd);		// Closing means they are done with lock.
 	}
 }

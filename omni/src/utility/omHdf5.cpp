@@ -67,6 +67,7 @@ void OmHdf5::flush ()
 	while (mQueue.size()) {
 		OmHdf5DataSet * dataSet = mQueue.dequeue();
 		om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, dataSet->name.c_str(), dataSet->size, dataSet->data);
+		debug ("hdf5bulk", "Qequeued and wrote to %s\n", dataSet->name.c_str());
 	}
 	om_hdf5_file_close_with_lock (fileId);
 	OmGarbage::Hdf5Unlock ();
@@ -75,7 +76,9 @@ void OmHdf5::flush ()
 void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk)
 {
 	if (bulk) {
+		OmGarbage::Hdf5Lock ();
 		mQueue.enqueue (new OmHdf5DataSet (name, size, data));
+		OmGarbage::Hdf5Unlock ();
 	} else {
 		om_hdf5_dataset_raw_create_tree_overwrite(getFileNameAndPathCstr(), name.c_str(), size, data);
 	}

@@ -1,5 +1,6 @@
 #include "meshingChunkThread.h"
 #include "meshingChunkThreadManager.h"
+#include "system/omGarbage.h"
 
 MeshingChunkThread::MeshingChunkThread( MeshingChunkThreadManager* chunkMan )
 {
@@ -35,7 +36,7 @@ void MeshingChunkThread::run()
 		mesher.ExtractMesh(p_mesh, segment_value);
 
 		//save mesh
-		p_mesh->Save(true);
+		p_mesh->Save(OmGarbage::GetParallel());
 
 		//delete mesh
 		delete p_mesh;		
