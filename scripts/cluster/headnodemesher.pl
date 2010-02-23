@@ -105,6 +105,9 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     close OUT_FILE;
 }
 
+print "proceed to run on cluster? :";
+my $answer = <STDIN>;
+
 sub runNode {
     my $cmd = $_[0];
     my $node = $_[1];
@@ -132,7 +135,7 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $fNameAndPath = $outFileName;
     my $logFile = $outFileName . ".log";
     my $lockFile = $outFileName . ".lock";
-    my $cmd = "ssh $node sleep 1 && link $projectFile $lockFile && stat -t $lockFile && /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
+    my $cmd = "ssh $node /home/purcaro/omni.staging/omni/bin/omni --headless=$fNameAndPath $projectFile && echo success";
     my $thr = new Thread \&runNode, $cmd, $node, $logFile;
     push(@threads, $thr);
 }
