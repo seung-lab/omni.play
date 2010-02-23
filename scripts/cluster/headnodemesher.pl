@@ -100,7 +100,7 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $num = $i;
     my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
     open OUT_FILE, ">", $outFileName or die "could not write $outFileName";
-    print OUT_FILE "parallel\n";
+    print OUT_FILE "parallel:192.168.3.254:8989\n";
     print OUT_FILE $meshCommandChunkInputs[$i];
     close OUT_FILE;
 }

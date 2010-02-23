@@ -92,6 +92,14 @@ void processLine( QString line, QString fName )
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
 		printf("done\n");
+	} else if( "meshplan" == line ) {
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
+		QString planFile = fName + ".plan";
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
+		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( "meshdone" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");
