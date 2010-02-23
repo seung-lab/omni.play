@@ -6,20 +6,6 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 
-class MutexServerWorkerThread : public QThread
-{
-        Q_OBJECT
-public:
-        MutexServerWorkerThread (QTcpSocket *clientConnection, QSemaphore * fileLock);
-public slots:
-        void releaseLock ();
-        void handleRequest ();
-private:
-        QSemaphore * mFileLock;
-        QTcpSocket * mClientConnection;
-};
-
-
 class MutexServer : public QObject
 {
 	Q_OBJECT

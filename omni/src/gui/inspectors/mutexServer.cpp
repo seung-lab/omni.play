@@ -1,36 +1,11 @@
 #include "mutexServer.h"
 #include <QCoreApplication>
 
+#include <stdio.h>
+#include <sys/types.h> 
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-MutexServerWorkerThread::MutexServerWorkerThread (QTcpSocket *clientConnection, QSemaphore * fileLock)
-{
-	mClientConnection = clientConnection;
-	mFileLock = fileLock;
-	connect(clientConnection, SIGNAL(readyRead()), this, SLOT(handleRequest()));
-	connect(clientConnection, SIGNAL(disconnected()),
-		this, SLOT(releaseLock()));
-}
-void MutexServerWorkerThread::releaseLock()
-{
-	printf ("releasing lock...\n");
-	mFileLock->release(1);
-	mClientConnection->deleteLater();
-	quit ();
-}
-void MutexServerWorkerThread::handleRequest ()
-{
-	char dummy;
-	mClientConnection->getChar(&dummy);
-	printf ("got request...\n");
-	if ('L' == dummy) {
-		printf ("getting lock...\n");
-		mFileLock->acquire(1);
-		printf ("lock was assigned\n");
-		char lock = 'l';
-		mClientConnection->putChar(lock);
-		mClientConnection->flush ();
-	}
-}
 
 MutexServer::MutexServer(QString host, int port)
 {
@@ -48,15 +23,39 @@ void MutexServer::safeTerminate ()
 
 void MutexServer::run ()
 {
-	tcpServer = new QTcpServer(this);
+     	int sockfd, newsockfd, portno;
+     	char buffer[256];
+     	struct sockaddr_in serv_addr, cli_addr;
+     	int n;
+	socklen_t clilen;
+     	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+     	if (sockfd < 0) 
+        		printf("ERROR opening socket");
+     	bzero((char *) &serv_addr, sizeof(serv_addr));
+     	portno = mPort;
+     	serv_addr.sin_family = AF_INET;
+     	serv_addr.sin_addr.s_addr = INADDR_ANY;
+     	serv_addr.sin_port = htons(portno);
+     	if (bind(sockfd, (struct sockaddr *) &serv_addr,
+              		sizeof(serv_addr)) < 0) 
+              		printf("ERROR on binding");
+     	listen(sockfd,5);
+     	clilen = sizeof(cli_addr);
 
-	QObject::connect(tcpServer, SIGNAL(newConnection()), 
-		this, SLOT(dealWithClient()));
+	while (1) {
+     		newsockfd = accept(sockfd, 
+                 		(struct sockaddr *) &cli_addr, 
+                 		&clilen);
+     		if (newsockfd < 0) 
+          		printf("ERROR on accept");
+     		bzero(buffer,256);
+     		n = write(newsockfd,"l",1);
+     		if (n < 0) printf("ERROR writing to socket");
 
-	//if (!tcpServer->listen( QHostAddress(mHost), mPort)) {
-	if (!tcpServer->listen( QHostAddress::LocalHost, mPort)) {
-		printf("could not listen!\n");
-		return;
+     		n = read(newsockfd,buffer,255);	// Locked
+     		if (n < 0) printf("ERROR reading from socket");
+     		//printf("Here is the message: %s\n",buffer);
+		close (newsockfd);		// Closing means they are done with lock.
 	}
 }
 
@@ -66,6 +65,5 @@ void MutexServer::dealWithClient()
 	printf ("getting connection request...\n");
 	QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
 
-	(new MutexServerWorkerThread (clientConnection, fileLock))->start();
 }
 

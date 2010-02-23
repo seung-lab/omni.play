@@ -269,12 +269,17 @@ void OmGarbage::Hdf5Lock ()
 	if (!Instance()->GetParallel()) {
 		OmGarbage::Instance()->Lock ();
 	} else {
-		char buff;
-		OmGarbage::Instance()->mSocket = new QTcpSocket ();
-		OmGarbage::Instance()->mSocket->connectToHost(OmGarbage::Instance()->mHost, OmGarbage::Instance()->mPort);
- 		OmGarbage::Instance()->mSocket->waitForConnected(-1);
-		OmGarbage::Instance()->mSocket->putChar ('L');
-		OmGarbage::Instance()->mSocket->getChar (&buff);
+		do {
+			char buff;
+			OmGarbage::Instance()->mSocket = new QTcpSocket ();
+			OmGarbage::Instance()->mSocket->connectToHost(OmGarbage::Instance()->mHost, OmGarbage::Instance()->mPort);
+ 			OmGarbage::Instance()->mSocket->waitForConnected(-1);
+			OmGarbage::Instance()->mSocket->getChar (&buff);
+
+			if ('l' == buff) break;
+			
+			delete OmGarbage::Instance()->mSocket;
+		} while (true);
 	}
 
 	return;
