@@ -18,6 +18,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
 
 
 namespace bfs = boost::filesystem;
@@ -267,18 +272,45 @@ bool OmGarbage::GetParallel ()
 void OmGarbage::Hdf5Lock ()
 {
 	if (!Instance()->GetParallel()) {
-		OmGarbage::Instance()->Lock ();
+		OmGarbage::Instance()->Lock();
 	} else {
 		do {
-			char buff;
-			OmGarbage::Instance()->mSocket = new QTcpSocket ();
-			OmGarbage::Instance()->mSocket->connectToHost(OmGarbage::Instance()->mHost, OmGarbage::Instance()->mPort);
- 			OmGarbage::Instance()->mSocket->waitForConnected(-1);
-			OmGarbage::Instance()->mSocket->getChar (&buff);
+			OmGarbage::Instance()->Lock();
+    			int sockfd, portno, n;
+    			struct sockaddr_in serv_addr;
+    			struct hostent *server;
 
-			if ('l' == buff) break;
-			
-			delete OmGarbage::Instance()->mSocket;
+    			portno = Instance()->mPort;
+    			sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    			if (sockfd < 0) 
+        			printf("ERROR opening socket");
+    			server = gethostbyname(qPrintable (Instance()->mHost));
+    			if (server == NULL) {
+        			fprintf(stderr,"ERROR, no such host\n");
+        			exit(0);
+    			}
+    			bzero((char *) &serv_addr, sizeof(serv_addr));
+    			serv_addr.sin_family = AF_INET;
+    			bcopy((char *)server->h_addr, 
+         			(char *)&serv_addr.sin_addr.s_addr,
+         			server->h_length);
+    			serv_addr.sin_port = htons(portno);
+    			if (connect(sockfd,(const struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0) 
+        			printf("ERROR connecting");
+
+    			char buf = '\0';
+    			n = read(sockfd,&buf,1);
+    			if (n < 0) 
+         			printf("ERROR reading from socket");
+			OmGarbage::Instance()->Unlock();
+
+			if ('l' == buf) {
+				Instance()->mSocketFD = sockfd;
+				break;
+			}
+
+			close(sockfd);
+
 		} while (true);
 	}
 
@@ -291,7 +323,6 @@ void OmGarbage::Hdf5Unlock ()
 	if (!Instance()->GetParallel()) {
 		OmGarbage::Instance()->Unlock ();
 	} else {
-		OmGarbage::Instance()->mSocket->close ();
-		delete OmGarbage::Instance()->mSocket;
+		close(OmGarbage::Instance()->mSocketFD);
 	}
 }

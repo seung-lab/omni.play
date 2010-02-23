@@ -77,6 +77,7 @@ private:
 	bool mParallel;
 	QString mHost;
 	int mPort;
+	int mSocketFD;
 };
 
 
