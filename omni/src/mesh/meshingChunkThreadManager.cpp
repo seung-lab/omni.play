@@ -27,29 +27,32 @@ void MeshingChunkThreadManager::run()
 	shared_ptr < OmMipChunk > chunk = shared_ptr < OmMipChunk > ();
 	OmVolume::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
 
-	num_values_done = new QSemaphore(0);
-	
 	foreach( SEGMENT_DATA_TYPE value, chunk->GetDirectDataValues() ) {
+		if( NULL_SEGMENT_DATA == value ){
+			continue;
+		}
 		valuesToMesh.enqueue( value );
 	}
 
-	if( !valuesToMesh.empty() ) {
+	const int totalNumValuesToMesh = valuesToMesh.size();
+
+	if( totalNumValuesToMesh > 0 ){
 		chunk->Open();
 
 		mpCurrentMeshSource = new OmMeshSource();
 		mpCurrentMeshSource->Load(chunk);
 		mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
-
 		mCurrentMipCoord = chunk->GetCoordinate();
 
 		int num_threads_to_use = 5;
+		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){
 			mMeshManager->num_worker_threads_active->acquire(1);
 			MeshingChunkThread* thread = new MeshingChunkThread(this);
 			thread->start();
 		}
 
-		num_values_done->acquire( valuesToMesh.size() );
+		num_threads_done->acquire( num_threads_to_use  );
 
 		delete mpCurrentMeshSource;
 		mpCurrentMeshSource = NULL;

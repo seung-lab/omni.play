@@ -233,8 +233,8 @@ void OmSegmentation::BuildMeshData()
 	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, progress_bar_str, 0, num_chunks_in_build));
 
 	//build all levels
-	BuildMeshDataInternal();
-	//BuildMeshDataInternalNew();
+	//BuildMeshDataInternal();
+	BuildMeshDataInternalNew();
 
 	//all chunks have been meshed
 	mMipMeshManager.SetMeshDataBuilt(true);
@@ -331,7 +331,7 @@ void OmSegmentation::BuildMeshDataInternal()
 
 void OmSegmentation::BuildMeshDataInternalNew()
 {
-	MeshingManager* meshingMan = new MeshingManager( GetId() );
+	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 

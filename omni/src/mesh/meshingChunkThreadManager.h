@@ -18,7 +18,7 @@ class MeshingChunkThreadManager : public QThread
 	QQueue< SEGMENT_DATA_TYPE > valuesToMesh;
 	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
 
-	QSemaphore* num_values_done;
+	QSemaphore* num_threads_done;
 	QMutex * mutex;
 
 	MeshingManager* mMeshManager;

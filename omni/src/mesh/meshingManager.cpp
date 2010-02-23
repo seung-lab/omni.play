@@ -6,9 +6,11 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
-MeshingManager::MeshingManager( const OmId segmentationID )
+MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager )
 	: mSegmentationID(segmentationID)
 {
+	mMipMeshManager = mipMeshManager;
+	assert(mMipMeshManager);
 }
 
 void MeshingManager::addToQueue( const OmMipChunkCoord coord )
