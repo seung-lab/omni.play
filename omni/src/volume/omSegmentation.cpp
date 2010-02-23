@@ -285,14 +285,12 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
  */
 void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z)
 {
+	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 	OmMipChunkCoord chunk_coord(level, x, y, z);
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
-	GetChunk(p_chunk, chunk_coord);
 
-	const SegmentDataSet & rMeshVals = p_chunk->GetDirectDataValues();
-        if( 0 != rMeshVals.size() ){
-        	mMipMeshManager.BuildChunkMeshes(p_chunk, rMeshVals );
-        }
+	meshingMan->addToQueue( chunk_coord );
+	meshingMan->start();
+	meshingMan->wait();
 }
 
 

@@ -40,11 +40,17 @@ void MeshingChunkThreadManager::run()
 		chunk->Open();
 
 		mpCurrentMeshSource = new OmMeshSource();
+		assert (mpCurrentMeshSource);
 		mpCurrentMeshSource->Load(chunk);
 		mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 		mCurrentMipCoord = chunk->GetCoordinate();
 
-		int num_threads_to_use = 5;
+		int num_threads_to_use = 2;
+		if( totalNumValuesToMesh < 50 ){
+			num_threads_to_use = 1;
+		} else {
+			printf("have %d values to mesh (lot!)\n", totalNumValuesToMesh );
+		}
 		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){
 			mMeshManager->num_worker_threads_active->acquire(1);

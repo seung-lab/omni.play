@@ -21,7 +21,9 @@ void MeshingManager::addToQueue( const OmMipChunkCoord coord )
 int MeshingManager::getMaxAllowedNumberOfActiveChunks()
 {
 	// OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT
-	return 5;
+	//	return 5;
+
+	return getMaxAllowedNumberOfWorkerThreads();
 }
 
 int MeshingManager::getMaxAllowedNumberOfWorkerThreads()

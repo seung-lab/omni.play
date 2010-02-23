@@ -10,7 +10,9 @@ void MeshingChunkThread::run()
 {
 	mChunkMan->mutex->lock();
 	OmMeshSource *mpCurrentMeshSource = mChunkMan->mpCurrentMeshSource;
+	assert (mpCurrentMeshSource);
 	OmMesher mesher(*mpCurrentMeshSource);
+	assert (mpCurrentMeshSource);
 	mChunkMan->mutex->unlock();
 
 	//loop for each available segment value
@@ -39,6 +41,6 @@ void MeshingChunkThread::run()
 		delete p_mesh;		
 	}
 
-	mChunkMan->num_threads_done->release(1);
 	mChunkMan->mMeshManager->num_worker_threads_active->release(1);
+	mChunkMan->num_threads_done->release(1);
 }
