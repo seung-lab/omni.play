@@ -8,7 +8,7 @@ use Thread;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $numMeshProcessesPerHost = 8;
+my $numMeshProcessesPerHost = 1000;
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
 my $meshinatorHome = $path;
@@ -121,7 +121,8 @@ sub runNode {
     my $cmd = $_[0];
     my $node = $_[1];
     my $logFile = $_[2];
-
+    my $fNameAndPath = $_[3];
+    
     my $start = time();
     print "node $node: starting meshing...\n"; 
     my $result = `$cmd`;
@@ -133,7 +134,9 @@ sub runNode {
 
     my $end = time();
     my $timeSecs = ($end - $start);
-    print "node $node: done meshing (".$timeSecs." seconds)\n";
+    my $chunkCoord = `tail -n 1 $fNameAndPath`;
+    chomp( $chunkCoord );
+    print "node $node: done meshing $chunkCoord (".$timeSecs." seconds)\n";
 }
 
 my @threads;
@@ -143,9 +146,8 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
     my $fNameAndPath = $outFileName;
     my $logFile = $outFileName . ".log";
-    my $lockFile = $outFileName . ".lock";
     my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
-    my $thr = new Thread \&runNode, $cmd, $node, $logFile;
+    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath;
     push(@threads, $thr);
 }
 
