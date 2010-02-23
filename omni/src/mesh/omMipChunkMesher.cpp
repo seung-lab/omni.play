@@ -1,4 +1,5 @@
-
+#include "system/omGarbage.h"
+#include "system/omNumCores.h"
 #include "omMipChunkMesher.h"
 #include "omMipMesh.h"
 #include "omMipMeshManager.h"
@@ -113,8 +114,19 @@ void OmMipChunkMesher::BuildChunkMeshesThreaded(OmMipMeshManager * pMipMeshManag
 	//set manager
 	mpMipMeshManager = pMipMeshManager;
 
-	const int num_threads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
-	debug("mesher", "------> Number of threads: %d\n", num_threads);
+	int num_threads;
+	if (OmGarbage::GetParallel()) {
+		const int numCoresRaw = (int)OmNumCores::get_num_cores();
+		int numCores = numCoresRaw - 1;
+		if( 1 == numCoresRaw ){
+			numCores = 1;
+		}
+		num_threads = numCores;
+	} else {
+		num_threads = OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
+	}
+	//printf("------> Max number of threads for meshing: %d\n", num_threads);
+	//debug("mesher", "------> Number of threads: %d\n", num_threads);
 
 	chunk->Open();
 
