@@ -13,10 +13,8 @@ sub runNode
 {
     my $node = $_[0];
     my $uptime = `ssh ${node} uptime | cut -f15 -d\\ `;
-    print $uptime;
-
-   print $node;
-   exit(0);
+    print "$node\n";
+    exit(0);
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";
