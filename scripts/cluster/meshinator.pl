@@ -8,7 +8,9 @@ use Thread;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $numMeshProcessesPerHost = 1; # Set to magic number 1. Don't change.
+my $howMany = 0;
+
+my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
 my $meshinatorHome = $path;
@@ -29,32 +31,150 @@ my $cmdCount = 0;
 my @meshCommandChunkInputs;
 my @meshCommandHostInput;
 
-`cd $meshinatorHome; ./`;
 
 sub killAllOmnis {
-	`cd $meshinatorHome; ./killAllOmni.pl&`;
+    `cd $meshinatorHome; ./killAllOmni.pl&`;
+    exit(0);
 }
 
-my $planFile = $argv[1];
-my $template = "ssh node onmi headless commandfile parallel project love";
+sub byHost {
+    $numMeshProcessesPerHost = 1;
+    byHostAndProcess();
+}
 
-do {
-	my $ssh = "ssh ";
-	my $node = getCurentNode();
-	my $omni = getOmniPath();
-	my $headless = "--headless ";
+sub byHostAndProcess 
+{
+    my $maxProcs = $hostCount * $numMeshProcessesPerHost;
+    my $chunksPerProccess = 1;
+    
+    print "$chunkCount chunks with chunksPerProccess = $chunksPerProccess\n";
+    print "$hostCount is hostCount\n";
+    
+    my $count = 0;
+    my $chunkBatch;
+    $cmdCount = 0;
+    while ($count < $chunkCount) {
+	my $chunk = $chunks[$count];
+	$chunkBatch .= $chunk;
+	$count++;
+	if (0 eq $count % $chunksPerProccess) {
+	    $meshCommandChunkInputs[$cmdCount] = $chunkBatch;
+	    $meshCommandHostInput[$cmdCount] = $hostList[$cmdCount % $hostCount];
+	    chop $meshCommandHostInput[$cmdCount];
+	    $cmdCount++;
+	    $chunkBatch = "";
+	}
+    }
+    if ($chunkBatch ne "") {
+	my @marginals = split (/\n/, $chunkBatch);
+	my $margcount = 0;
+	foreach my $marg (@marginals) {
+	   $meshCommandChunkInputs[$margcount % $cmdCount] .= "$marg\n";
+	   $margcount++;
+	}
+	$meshCommandChunkInputs[$cmdCount-1] .= $chunkBatch;
+    }
+}
 
-	if (!peekAheadForPendingCommand())
-		done();
+#byHost();
+byHostAndProcess();
 
-	my $commandFile = getNextCommandAsFile();
-	my $parallel = "";
-	my $project = GetProjectFileFromPlanFile($planFile);
-	my $love = getLoveFromProject($love);
+($name, $path, $suffix) = fileparse( abs_path( $ARGV[0] ) );
+my $dir = $path;
+my $projectFile = $path . $name;
+$projectFile =~ s/\.plan$//;
 
-	projectLove($template);
+`rm -rf $dir/chunk_lists`;
+`mkdir -p $dir/chunk_lists/`;
 
-} while (getNextNode());
+print "cmdCount = $cmdCount\n";
+for (my $i = 0; $i < $cmdCount; $i++) {
+    my $num = $i;
+    my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
+    open OUT_FILE, ">", $outFileName or die "could not write $outFileName";
+    print OUT_FILE "parallel:192.168.3.254:8989\n";
+    print OUT_FILE $meshCommandChunkInputs[$i];
+    close OUT_FILE;
+}
 
-printf "done!!\n";
+sub getIdlest()
+{
+    my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn`;
+    my $uptime;
+    my $idleNode;
 
+    ($uptime, $idleNode) = split (" ", $cmdOut);
+    return $idleNode;
+}
+print "Current idle node is " . getIdlest() . "\n";
+
+if (-t STDIN) {
+    print "proceed to run on cluster? :";
+    my $answer = <STDIN>;
+    chomp ($answer);
+    exit (0) if (uc ($answer) ne "Y");
+}
+
+sub runNode {
+    my $cmd = $_[0];
+    my $node = $_[1];
+    my $logFile = $_[2];
+    my $fNameAndPath = $_[3];
+    
+    my $start = time();
+    print "node $node: starting meshing...\n"; 
+    $howMany++;
+    my $result = `$cmd`;
+    #print $cmd."\n";
+
+    open OUT_FILE, ">", $logFile or die "could not write $logFile";
+    print OUT_FILE $result;
+    close OUT_FILE;
+
+    my $end = time();
+    my $timeSecs = ($end - $start);
+    my $chunkCoord = `tail -n 1 $fNameAndPath`;
+    chomp( $chunkCoord );
+    print "node $node: done meshing $chunkCoord (".$timeSecs." seconds)\n";
+
+    $howMany--;
+}
+
+my $countBackoff = 0;
+my $backoff = 0;
+my @threads;
+for (my $i = 0; $i < $cmdCount; $i++) {
+    my $num = $i;
+    my $node = $meshCommandHostInput[$i];
+    my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
+    my $fNameAndPath = $outFileName;
+    my $logFile = $outFileName . ".log";
+
+    if ($backoff) {
+    	$node = getIdlest();
+    	chomp ($node);
+    	if ("" eq $node) {
+        	sleep(10);
+        	next;
+    	}
+    }
+    $countBackoff++;
+    if ($howMany > 10) {
+       $backoff = 1;
+    }
+	
+    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
+    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath;
+    if ($backoff) {
+        sleep(5);
+    }
+
+    push(@threads, $thr);
+    $howMany++;
+}
+
+foreach my $thread (@threads){ 
+    $thread->join;
+}
+
+print "done!!\n";

@@ -1,23 +1,27 @@
 #!/usr/bin/perl -w
 
 use strict;
-
+use Cwd 'abs_path';
+use File::Basename;
+use POSIX;
 use Thread;
 
-my $flag = "";
-if (-t STDIN) {
-}
+select STDOUT; $| = 1;
+
+(my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
+my $home = $path;
+my $hosts = "$home/hosts";
 
 
 sub runNode 
 {
     my $node = $_[0];
     my $uptime = `ssh ${node} uptime | cut -f15 -d\\ `;
-    print "$node\n";
-    exit(0);
+    chop($uptime); chop($uptime);
+    print "$uptime $node\n";
 }
 
-open IN_FILE,  "<", "hosts"  or die "could not read hosts";
+open IN_FILE,  "<", "$hosts"  or die "could not read hosts";
 
 my @threads;
 while (my $line = <IN_FILE>) {
