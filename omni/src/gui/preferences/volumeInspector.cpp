@@ -121,6 +121,17 @@ QGroupBox* VolumeInspector::makeVolPropBox()
 	QGridLayout* gridLayout = new QGridLayout;
 	groupBox->setLayout( gridLayout );
 
+	QLabel* dimLabel = new QLabel(groupBox);
+        dimLabel->setObjectName(QString("dimLabel"));
+	dimLabel->setText("Size:");
+	gridLayout->addWidget(dimLabel, 0, 0, 1, 1);
+
+	dimSizeLabel = new QLabel(groupBox);
+        dimSizeLabel->setObjectName(QString("dimSizeLabel"));
+	SizeLabelUpdate();
+	gridLayout->addWidget(dimSizeLabel, 0, 1, 1, 1);
+
+#if 0
 	QLabel* scaleLabel = new QLabel(groupBox);
         scaleLabel->setObjectName(QString("scaleLabel"));
 	scaleLabel->setText("Scale:");
@@ -129,7 +140,7 @@ QGroupBox* VolumeInspector::makeVolPropBox()
 	scaleEdit = new QLineEdit(groupBox);
         scaleEdit->setObjectName(QString("scaleEdit"));
 	gridLayout->addWidget(scaleEdit, 0, 1, 1, 1);
-       
+#endif       
 
         QLabel* resolutionLabel = new QLabel(groupBox);
         resolutionLabel->setObjectName(QString("resolutionLabel"));
@@ -142,23 +153,42 @@ QGroupBox* VolumeInspector::makeVolPropBox()
 	resolutionEdit->setToolTip("X,Y,Z");
         gridLayout->addWidget(resolutionEdit, 1, 1, 1, 1);
 
+        QLabel* unitLabel = new QLabel(groupBox);
+        unitLabel->setObjectName(QString("unitLabel"));
+	unitLabel->setToolTip("X, Y, Z");
+        unitLabel->setText("Resolution Units:");
+        gridLayout->addWidget(unitLabel, 2, 0, 1, 1);
+
+        unitList = new QComboBox(groupBox);
+        unitList->setObjectName(QString("unitList"));
+	unitList->setToolTip("X,Y,Z");
+	QChar unit[3];
+	// add angstrom symbol
+	unit[0]=8491;
+	unitList->addItem(QString(unit,1));
+	unitList->addItem(QString("nm"));
+	// add greek letter 'mu' and letter 'm'
+	unit[0]=956;
+	unit[1]=109;
+	unitList->addItem(QString(unit,2));
+        gridLayout->addWidget(unitList, 2, 1, 1, 1);
 
         QLabel* extentLabel = new QLabel(groupBox);
         extentLabel->setObjectName(QString("extentLabel"));
         extentLabel->setToolTip("(in pixels)");
         extentLabel->setText("Data Extent:");
-        gridLayout->addWidget(extentLabel, 2, 0, 1, 1);
+        gridLayout->addWidget(extentLabel, 3, 0, 1, 1);
 
         extentEdit = new QLineEdit(groupBox);
         extentEdit->setObjectName(QString("extentEdit"));
-        gridLayout->addWidget(extentEdit, 2, 1, 1, 1);
+        gridLayout->addWidget(extentEdit, 3, 1, 1, 1);
 
 
 	QLabel* lengthLabel = new QLabel(groupBox);
         lengthLabel->setObjectName(QString("lengthLabel"));
         lengthLabel->setToolTip("(in pixels)");
         lengthLabel->setText("Chunk Size:");
-        gridLayout->addWidget(lengthLabel, 3, 0, 1, 1);
+        gridLayout->addWidget(lengthLabel, 4, 0, 1, 1);
 
         sizeSlider = new QSlider(groupBox);
         sizeSlider->setObjectName(QString("sizeSlider"));
@@ -167,12 +197,12 @@ QGroupBox* VolumeInspector::makeVolPropBox()
         sizeSlider->setSingleStep(1);
         sizeSlider->setOrientation(Qt::Horizontal);
         sizeSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(sizeSlider, 3, 1, 1, 1);
+        gridLayout->addWidget(sizeSlider, 4, 1, 1, 1);
 
         sizeLabel = new QLabel(groupBox);
         sizeLabel->setObjectName(QString("sizeLabel"));
 	sizeLabel->setText("size");
-	gridLayout->addWidget(sizeLabel, 4, 1, 1, 1);
+	gridLayout->addWidget(sizeLabel, 5, 1, 1, 1);
 
 	return groupBox;
 }
@@ -205,9 +235,9 @@ void VolumeInspector::init_values()
 	const string & my_notes = (*OmVolume::Instance()).GetNote();
 	notesEdit->setPlainText(QString::fromStdString(my_notes));
 
-	Vector3 < float >scale = OmVolume::GetUserScale();
-	scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
-			   QString::number(scale.z) + "]");
+	//Vector3 < float >scale = OmVolume::GetUserScale();
+	//scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
+	//	   QString::number(scale.z) + "]");
 
 	Vector3 < float >res = OmVolume::GetDataResolution();
 	resolutionEdit->setText("[" + QString::number(res.x) + " " + QString::number(res.y) + " " +
@@ -259,6 +289,7 @@ void VolumeInspector::on_resolutionEdit_editingFinished()
 
 	Vector3 < float >res_vec = Vector3 < float >(x.toFloat(), y.toFloat(), z.toFloat());
 	OmVolume::Instance()->SetDataResolution(res_vec);
+	SizeLabelUpdate();
 }
 
 void VolumeInspector::on_extentEdit_editingFinished()
@@ -274,6 +305,12 @@ void VolumeInspector::on_extentEdit_editingFinished()
 	Vector3i data_extent = Vector3i(min_x.toInt(), min_y.toInt(), min_z.toInt());
 
 	OmVolume::Instance()->SetDataDimensions(data_extent);
+}
+
+void VolumeInspector::on_unitList_activated()
+{
+	OmVolume::SetUnit(unitList->currentText());
+	SizeLabelUpdate();
 }
 
 void VolumeInspector::on_notesEdit_textChanged()
@@ -298,3 +335,23 @@ void VolumeInspector::on_vramSlider_valueChanged()
 	OmPreferences::SetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, (vramSlider->value() * 1.0));
 	vramSizeLabel->setNum(vramSlider->value());
 }
+
+void VolumeInspector::SizeLabelUpdate()
+{
+	Vector3i dataExtent = OmVolume::GetDataDimensions();
+	Vector3f dataResolution = OmVolume::GetDataResolution();
+	Vector3f spaceExtent = OmVolume::GetScale();
+	QString unit = OmVolume::GetUnit();
+
+	QString messageString = QString::number(spaceExtent.x);
+	messageString.append(" x ");
+	messageString.append(QString::number(spaceExtent.y));
+	messageString.append(" x ");
+	messageString.append(QString::number(spaceExtent.z));
+	messageString.append(" ");
+	messageString.append(unit);
+
+	dimSizeLabel->setText(messageString);
+	return;
+}
+	

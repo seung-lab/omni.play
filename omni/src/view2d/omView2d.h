@@ -23,7 +23,6 @@
 #include "volume/omSegmentation.h"
 
 #include "common/omStd.h"
-#include "system/omAnimate.h"
 
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
@@ -41,7 +40,8 @@ class OmTileCoord;
 
 class Drawable {
 public:
-        int x, y, tileLength;
+        int x, y;
+	int tileLength;
 	float zoomFactor;
         shared_ptr<OmTextureID> gotten_id;
 	OmTileCoord tileCoord;
@@ -167,7 +167,6 @@ protected:
 
 
 private:
-	OmAnimate * mAnimation;
 	OmId mEditedSegmentation;
 	bool mMIP;
         unsigned int mSlide;
@@ -181,6 +180,7 @@ private:
 	int mBrushToolDiameter;
 	OmId mCurrentSegmentation;
 	QImage mImage;
+	QPainter painter;
 	bool mLevelLock;
 	bool mNewDraw;
 	vector <Drawable*> mTextures;

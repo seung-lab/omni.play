@@ -62,14 +62,14 @@ int stopPicking()
 	//restore proj matrix
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+
 
 	//ensure all picking rendering complete
 	glFlush();
 
 	//return to rendering mode and count hits
 	hits = glRenderMode(GL_RENDER);
-
+	glMatrixMode(GL_MODELVIEW);
 	return hits;
 }
 
