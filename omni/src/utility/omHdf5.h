@@ -8,6 +8,7 @@ using std::string;
 
 #include "volume/omVolumeTypes.h"
 #include "omHdf5LowLevel.h"
+#include "omHdf5Helpers.h"
 
 class vtkImageData;
 

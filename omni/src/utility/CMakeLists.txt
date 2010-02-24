@@ -3,7 +3,7 @@
 #specify sources
 SET(OM_UTILITY_LIB_SRCS
 	omHdf5.cpp
-	#omHdf5helpers.cpp
+	omHdf5Helpers.cpp
 	omHdf5LowLevel.cpp
 	omImageDataIo.cpp
 )
