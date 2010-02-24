@@ -63,18 +63,27 @@ void* OmHdf5::dataset_raw_read( string name, int* size)
 
 void OmHdf5::flush ()
 {
-	OmGarbage::Hdf5Lock ();
-	OmGarbage::Lock ();
-	hid_t fileId = om_hdf5_file_open_with_lock (getFileNameAndPathCstr());
-	while (mQueue.size()) {
-		OmHdf5DataSet * dataSet = mQueue.dequeue();
-		om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, dataSet->name.c_str(), dataSet->size, dataSet->data);
-		debug ("hdf5bulk", "Qequeued and wrote to %s, size %i\n", dataSet->name.c_str(), dataSet->size);
-		free ((void*)dataSet->data);
-	}
-	om_hdf5_file_close_with_lock (fileId);
-	OmGarbage::Unlock ();
-	OmGarbage::Hdf5Unlock ();
+	int magicNumberOmega = (1024 * 1024 * 8);
+	do {
+		OmGarbage::Hdf5Lock ();
+		OmGarbage::Lock ();
+		hid_t fileId = om_hdf5_file_open_with_lock (getFileNameAndPathCstr());
+		int sizeOut = 0;
+		while (mQueue.size()) {
+			OmHdf5DataSet * dataSet = mQueue.dequeue();
+			om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, dataSet->name.c_str(), dataSet->size, dataSet->data);
+			debug ("hdf5bulk", "Qequeued and wrote to %s, size %i\n", dataSet->name.c_str(), dataSet->size);
+			free ((void*)dataSet->data);
+			sizeOut += dataSet->size;
+			if (sizeOut > magicNumberOmega) {
+				debug ("hdf5bulk", "Omega!\n");
+				break;
+			}
+		}
+		om_hdf5_file_close_with_lock(fileId);
+		OmGarbage::Unlock();
+		OmGarbage::Hdf5Unlock();
+	} while (mQueue.size());
 }
 
 void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk)
