@@ -6,7 +6,6 @@
  *
  */
 
-
 #include "omMipMesh.h"
 #include "omMipMeshCoord.h"
 
@@ -15,17 +14,15 @@
 
 typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
 
-
 class OmMipChunk;
 class OmMipChunkCoord;
 class OmMeshSource;
 class OmSegmentManager;
 class QGLContext;
 
-
 class OmMipMeshManager : public MipMeshCache {
 
-public:
+ public:
 	OmMipMeshManager();
 	~OmMipMeshManager();
 	
@@ -36,7 +33,6 @@ public:
 	bool IsMeshDataBuilt();
 	void SetMeshDataBuilt(bool);
 	
-	
 	//meshing
 	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
 	void GetMesh(shared_ptr<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
@@ -44,13 +40,11 @@ public:
 	
 	//drawing
 	void DrawMeshes(OmSegmentManager &rSegMgr,
-					const OmBitfield &drawOps,
-					const OmMipChunkCoord &mipCoord,
-					const SegmentDataSet &rRelvDataVals );
-	
-	
-	
-private:
+			const OmBitfield &drawOps,
+			const OmMipChunkCoord &mipCoord,
+			const SegmentDataSet &rRelvDataVals );
+		
+ private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 	void HandleFetchUpdate();
 	bool InitializeFetchThread();
@@ -61,26 +55,13 @@ private:
 	//gl context to load mesh vbos
 	QGLContext* mFetchThreadContext;
 
-
-	
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+		void serialize(Archive & ar, const unsigned int file_version);
 };
 
-
-
-
-
-
-
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
-
 
 BOOST_CLASS_VERSION(OmMipMeshManager, 0)
 
@@ -91,8 +72,5 @@ OmMipMeshManager::serialize(Archive & ar, const unsigned int file_version) {
 	ar & mDirectoryPath;
 	ar & mMeshDataBuilt;
 }
-
-
-
 
 #endif

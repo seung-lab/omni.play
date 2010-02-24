@@ -76,6 +76,10 @@ void MeshingChunkThreadManager::run()
 
 		num_threads_done->acquire( num_threads_to_use  );
 
+		if( 0 != valuesToMesh.size() ){
+			mMeshManager->addToFailedQueue( mCoord );
+		}
+
 		delete mpCurrentMeshSource;
 		mpCurrentMeshSource = NULL;
 
@@ -84,6 +88,5 @@ void MeshingChunkThreadManager::run()
 
 	mMeshManager->num_chunks_done->release(1);
 	mMeshManager->num_chunk_threads_active->release(1);
-	printf("finished meashing chunk %d, %d, %d, %d\n", mCoord.Level, mCoord.Coordinate.x, 
-	       mCoord.Coordinate.y, mCoord.Coordinate.z );
+	printf("finished meashing chunk %s\n", qPrintable( mCoord.getCoordsAsString()));
 }

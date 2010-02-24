@@ -48,6 +48,11 @@ int MeshingManager::getMaxAllowedNumberOfWorkerThreads()
 	}
 }
 
+void MeshingManager::addToFailedQueue( OmMipChunkCoord coord )
+{
+	mFailedChunkCoords.enqueue( coord );
+}
+
 void MeshingManager::run()
 {
 	const int numChunksToProcess = mChunkCoords.size();
@@ -70,4 +75,11 @@ void MeshingManager::run()
 	delete num_chunks_done;
 	delete num_chunk_threads_active;
 	delete num_worker_threads_active;
+
+	if( 0 != mFailedChunkCoords.size() ){
+		printf("meshingManager ERROR: the following chunks failed to fully mesh:\n");
+		foreach( OmMipChunkCoord coord, mFailedChunkCoords ) {
+			printf("failed to mesh chunk %s\n", qPrintable( coord.getCoordsAsString() ) );
+		}
+	}
 }

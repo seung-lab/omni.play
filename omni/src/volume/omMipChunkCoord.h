@@ -10,6 +10,8 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
+#include <QString>
+
 #include "omVolumeTypes.h"
 
 #include "common/omStd.h"
@@ -19,15 +21,14 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
-
-
 class OmMipChunkCoord {
 
 public:
 	OmMipChunkCoord();
 	OmMipChunkCoord( int, const DataCoord &);
 	OmMipChunkCoord( int level, int, int, int );
-	
+
+	QString getCoordsAsString();
 
 	//property
 	bool IsLeaf() const;
@@ -48,10 +49,8 @@ public:
 	bool operator!=( const OmMipChunkCoord& rhs ) const;
 	bool operator<( const OmMipChunkCoord& rhs ) const;
 	
-	
 	int Level;
 	DataCoord Coordinate;
-	
 	
 	friend ostream& operator<<(ostream &out, const OmMipChunkCoord &in);
 	
@@ -59,13 +58,8 @@ public:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int file_version);
 	
-	
 	static const OmMipChunkCoord NULL_COORD;
 };
-
-
-
-
 
 /* backwards support for previous Om Mip Coordinate type */
 template< size_t M >
@@ -85,11 +79,6 @@ OmMipChunkCoord::get() const {
 	
 }
 
-
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 
@@ -101,7 +90,5 @@ OmMipChunkCoord::serialize(Archive & ar, const unsigned int file_version) {
 	ar & Level;
 	ar & Coordinate;
 }
-
-
 
 #endif

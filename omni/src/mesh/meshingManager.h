@@ -29,9 +29,12 @@ class MeshingManager : public QThread
 
 	void setToOnlyMeshModifiedValues();
 	bool shouldIonlyMeshModifiedValues();
+
+	void addToFailedQueue( OmMipChunkCoord coord );
  private:
 	const OmId mSegmentationID;
 	QQueue< OmMipChunkCoord > mChunkCoords;
+	QQueue< OmMipChunkCoord > mFailedChunkCoords;
 	bool onlyMeshModifiedValues;
 };
 
