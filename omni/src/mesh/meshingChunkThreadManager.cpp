@@ -54,6 +54,8 @@ void MeshingChunkThreadManager::run()
 			if (num_threads_to_use > 10) 
 				num_threads_to_use = 10;
 		}
+		num_threads_to_use = 4;
+
 		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){
 			mMeshManager->num_worker_threads_active->acquire(1);
