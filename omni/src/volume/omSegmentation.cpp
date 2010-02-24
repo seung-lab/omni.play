@@ -383,10 +383,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const Segmen
 		meshingMan->wait();
 	}
 
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
-	GetChunk(p_chunk, mipCoord);
-	const SegmentDataSet & rModifiedValues = p_chunk->GetModifiedVoxelVal
-
 	//remove mesh from cache to force it to reload
 	SegmentDataSet::iterator itr;
 	for (itr = rModifiedValues.begin(); itr != rModifiedValues.end(); itr++) {

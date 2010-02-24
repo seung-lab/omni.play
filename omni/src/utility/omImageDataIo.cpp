@@ -748,7 +748,9 @@ copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
 
 	//get scalar pointers
 	char *src_data_ptr = static_cast < char *>(srcData->GetScalarPointerForExtent(src_copy_extent));
+	assert( src_data_ptr );
 	char *dst_data_ptr = static_cast < char *>(dstData->GetScalarPointerForExtent(dst_copy_extent));
+	assert( dst_data_ptr );
 
 	//loop over all slices, rows, and pixels
 	for (int z = 0; z < copy_bbox_dim.z; z++) {
