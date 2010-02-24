@@ -13,6 +13,7 @@ class MeshingChunkThread : public QThread
 
  private:
 	MeshingChunkThreadManager* mChunkMan;
+	void doMeshStuff();
 };
 
 #endif

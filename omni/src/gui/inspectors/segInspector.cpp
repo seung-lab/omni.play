@@ -249,10 +249,15 @@ void build_image(OmSegmentation * current_seg)
 void build_mesh(OmSegmentation * current_seg)
 {
 	printf("starting segmentation mesh build...\n");
-	boost::timer* timer = new boost::timer();
+	time_t start;
+	time_t end;
+	double dif;
+	
+	time (&start);
 	current_seg->BuildMeshData();
-	const double timeToMeshSecs = timer->elapsed();
-	printf("segmentation mesh build performed in %g (secs?)\n", timeToMeshSecs);
+	time (&end);
+	dif = difftime (end,start);
+	printf("segmentation mesh build performed in (%.2lf secs)\n", dif );
 }
 
 void build_image_and_mesh( OmSegmentation * current_seg )

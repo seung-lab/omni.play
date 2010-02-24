@@ -24,14 +24,12 @@ class MeshingManager : public QThread
 	QSemaphore* num_worker_threads_active; // limit total number of threads running VTK meshing pipeline
 	
 	OmMipMeshManager * mMipMeshManager;
+	int getMaxAllowedNumberOfActiveChunks();
+	int getMaxAllowedNumberOfWorkerThreads();
 
  private:
 	const OmId mSegmentationID;
 	QQueue< OmMipChunkCoord > mChunkCoords;
-
-
-	int getMaxAllowedNumberOfActiveChunks();
-	int getMaxAllowedNumberOfWorkerThreads();
 };
 
 #endif

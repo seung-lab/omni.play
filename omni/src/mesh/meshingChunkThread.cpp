@@ -9,6 +9,17 @@ MeshingChunkThread::MeshingChunkThread( MeshingChunkThreadManager* chunkMan )
 
 void MeshingChunkThread::run()
 {
+	try {
+		doMeshStuff();
+	} catch (...){
+	}
+
+	mChunkMan->mMeshManager->num_worker_threads_active->release(1);
+	mChunkMan->num_threads_done->release(1);
+}
+
+void MeshingChunkThread::doMeshStuff()
+{		
 	mChunkMan->mutex->lock();
 	OmMeshSource *mpCurrentMeshSource = mChunkMan->mpCurrentMeshSource;
 	assert (mpCurrentMeshSource);
@@ -41,7 +52,4 @@ void MeshingChunkThread::run()
 		//delete mesh
 		delete p_mesh;		
 	}
-
-	mChunkMan->mMeshManager->num_worker_threads_active->release(1);
-	mChunkMan->num_threads_done->release(1);
 }

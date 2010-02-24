@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QFile>
 #include <QFileInfo>
+#include <QTime>
+#include <time.h>
 
 #include "mainwindow.h"
 #include "volume/omFilter2d.h"
@@ -76,10 +78,22 @@ void processLine( QString line, QString fName )
 	} else if( "save" == line ) {
 		OmProject::Save();
 	} else if( "mesh" == line ) {
-		if( SegmentationID > 0 ){
-			printf("running mesh on segmentation %d\n", SegmentationID);
-			OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
-		}
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
+
+		printf("running mesh on segmentation %d\n", SegmentationID);
+		time_t start;
+		time_t end;
+		double dif;
+
+		time (&start);
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
+		time (&end);
+		dif = difftime (end,start);
+		printf("meshing done (%.2lf secs)\n", dif );
+
 	} else if( line.startsWith("meshchunk") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');

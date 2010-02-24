@@ -35,6 +35,7 @@ void MeshingChunkThreadManager::run()
 	}
 
 	const int totalNumValuesToMesh = valuesToMesh.size();
+	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
 
 	if( totalNumValuesToMesh > 0 ){
 		chunk->Open();
@@ -45,16 +46,13 @@ void MeshingChunkThreadManager::run()
 		mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 		mCurrentMipCoord = chunk->GetCoordinate();
 
-		int num_threads_to_use = 2;
-		if( totalNumValuesToMesh < 50 ){
-			num_threads_to_use = 1;
-		} else {
-			printf("have %d values to mesh (lot!)\n", totalNumValuesToMesh );
+		int num_threads_to_use = 1;
+		if( totalNumValuesToMesh > 50 ){
 			num_threads_to_use = totalNumValuesToMesh / 50.0 + 1;
-			if (num_threads_to_use > 10) 
-				num_threads_to_use = 10;
+			if (num_threads_to_use > maxNumWorkerThreads ) {
+				num_threads_to_use = maxNumWorkerThreads;
+			}
 		}
-		num_threads_to_use = 4;
 
 		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){
