@@ -4,11 +4,13 @@ use strict;
 use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
+
+my $howMany = 0;
 use Thread;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $howMany = 0;
+my $maxThreadsToCreate = 80;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -123,7 +125,6 @@ sub runNode {
     
     my $start = time();
     print "node $node: starting meshing...\n"; 
-    $howMany++;
     my $result = `$cmd`;
     #print $cmd."\n";
 
@@ -137,7 +138,10 @@ sub runNode {
     chomp( $chunkCoord );
     print "node $node: done meshing $chunkCoord (".$timeSecs." seconds)\n";
 
+    lock($howMany);
     $howMany--;
+
+    print "Now have $howMany\n";
 }
 
 my $countBackoff = 0;
@@ -150,27 +154,24 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     my $fNameAndPath = $outFileName;
     my $logFile = $outFileName . ".log";
 
-    if ($backoff) {
-    	$node = getIdlest();
-    	chomp ($node);
-    	if ("" eq $node) {
-        	sleep(10);
-        	next;
-    	}
-    }
+
     $countBackoff++;
-    if ($howMany > 10) {
-       $backoff = 1;
-    }
+    lock($howMany);
+    if ($howMany < $maxThreadsToCreate) {
 	
-    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
-    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath;
-    if ($backoff) {
-        sleep(5);
+        if ($countBackoff > $maxThreadsToCreate) {
+            $node = getIdlest();
+            print "Sending command to idle node $node.\n";
+        }
+    	my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
+    	my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath;
+    	push(@threads, $thr);
+    	$howMany++;
+    } else {
+        print "Have $howMany threads busy, going to sleep...\n";
+        sleep(1);
     }
 
-    push(@threads, $thr);
-    $howMany++;
 }
 
 foreach my $thread (@threads){ 
