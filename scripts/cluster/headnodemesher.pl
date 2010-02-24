@@ -100,7 +100,7 @@ my $projectFile = $path . $name;
 $projectFile =~ s/\.plan$//;
 
 `mkdir -p $dir/chunk_lists`;
-`rm -f $dir/chunk_lists/*`;
+`rm -rf $dir/chunk_lists`;
 
 print "cmdCount = $cmdCount\n";
 for (my $i = 0; $i < $cmdCount; $i++) {
