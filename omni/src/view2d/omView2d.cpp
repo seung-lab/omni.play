@@ -2347,7 +2347,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 	if (translateVector.y < 0) {
 		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
-		yMipChunk = abs(translateVector.y) * pl;
+		yMipChunk = ((abs(translateVector.y) /tl)) * tl * pl;
 		yval = (-1 * (abs(translateVector.y) % tl));
 	} else {
 		yMipChunk = 0;
