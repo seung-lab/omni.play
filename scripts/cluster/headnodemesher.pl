@@ -8,7 +8,7 @@ use Thread;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $numMeshProcessesPerHost = 1000;
+my $numMeshProcessesPerHost = 1;
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
 my $meshinatorHome = $path;
@@ -115,6 +115,8 @@ for (my $i = 0; $i < $cmdCount; $i++) {
 if (-t STDIN) {
     print "proceed to run on cluster? :";
     my $answer = <STDIN>;
+    chomp ($answer);
+    exit (0) if (uc ($answer) ne "Y");
 }
 
 sub runNode {
