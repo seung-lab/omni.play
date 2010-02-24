@@ -149,6 +149,22 @@ void MainWindow::showEditPreferencesDialog()
 	} 
 
 	preferences = new Preferences(this);
+	preferences->showProjectPreferences();
+	preferences->show();
+	preferences->raise();
+	preferences->activateWindow();
+}
+
+void MainWindow::showEditLocalPreferencesDialog()
+{
+	if (preferences) {
+		preferences->close();
+		delete preferences;
+		preferences = NULL;
+	} 
+
+	preferences = new Preferences(this);
+	preferences->showLocalPreferences();
 	preferences->show();
 	preferences->raise();
 	preferences->activateWindow();
@@ -715,6 +731,9 @@ void MainWindow::createActions()
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit
+	editLocalPreferencesAct = new QAction(tr("&Local Preferences"), this);
+	connect(editLocalPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditLocalPreferencesDialog()));
+
 	editPreferencesAct = new QAction(tr("&Project Preferences"), this);
 	connect(editPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditPreferencesDialog()));
 
@@ -762,6 +781,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(quitAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(editLocalPreferencesAct);
 	editMenu->addAction(editPreferencesAct);
 
 	projectMenu = menuBar()->addMenu(tr("&Project"));

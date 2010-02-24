@@ -78,6 +78,7 @@ class MainWindow
 		void openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
 		
 		void showEditPreferencesDialog();
+		void showEditLocalPreferencesDialog();
 		void addChannelToVolume();
 		void addSegmentationToVolume();
 		
@@ -133,6 +134,7 @@ class MainWindow
 		QPushButton *editColorButton;
 		
 		QAction *editPreferencesAct;
+		QAction *editLocalPreferencesAct;
 
 		QAction *addChannelAct;
 		QAction *addSegmentationAct;

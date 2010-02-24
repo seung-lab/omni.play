@@ -10,6 +10,8 @@ class Preferences : public QDialog
 
 public:
 	Preferences(QWidget *parent = 0);
+	void showProjectPreferences();
+	void showLocalPreferences();
 
 private slots:
 	void closeDialog();
