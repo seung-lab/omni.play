@@ -1,5 +1,5 @@
-#ifndef OM_MDF5_H
-#define OM_MDF5_H
+#ifndef OM_MDF5_LOW_LEVEL_H
+#define OM_MDF5_LOW_LEVEL_H
 
 /*
  *

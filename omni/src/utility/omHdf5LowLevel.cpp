@@ -67,7 +67,6 @@ hid_t om_hdf5_file_open_with_lock(string fpath)
                 throw OmIoException("Could not open HDF5 file.");
 	}
         return file_id;
-
 }
 
 void om_hdf5_file_close_with_lock (hid_t fileId)
