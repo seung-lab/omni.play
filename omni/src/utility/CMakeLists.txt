@@ -7,6 +7,7 @@ SET(OM_UTILITY_LIB_SRCS
 	omHdf5LowLevel.cpp
 	omImageDataIo.cpp
 	omLocalConfiguration.cpp
+	omNumCores.cpp
 )
 
 #create static library

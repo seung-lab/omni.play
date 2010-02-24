@@ -2,9 +2,7 @@
 #include "meshingChunkThreadManager.h"
 
 #include "system/omGarbage.h"
-#include "system/omNumCores.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
+#include "utility/omLocalConfiguration.h"
 
 MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager )
 	: mSegmentationID(segmentationID)
@@ -36,16 +34,7 @@ int MeshingManager::getMaxAllowedNumberOfActiveChunks()
 
 int MeshingManager::getMaxAllowedNumberOfWorkerThreads()
 {
-	if (OmGarbage::GetParallel()) {
-		const int numCoresRaw = (int)OmNumCores::get_num_cores();
-		int numCores = numCoresRaw - 1;
-		if( 1 == numCoresRaw ){
-			numCores = 1;
-		}
-		return numCores;
-	} else {
-		return OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT);
-	}
+	return OmLocalConfiguration::numAllowedWorkerThreads();
 }
 
 void MeshingManager::addToFailedQueue( OmMipChunkCoord coord )

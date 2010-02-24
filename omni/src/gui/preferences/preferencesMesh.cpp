@@ -5,7 +5,6 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
-#include "system/omNumCores.h"
 
 PreferencesMesh::PreferencesMesh(QWidget * parent)
  : QWidget(parent)
@@ -17,25 +16,10 @@ PreferencesMesh::PreferencesMesh(QWidget * parent)
 
 	QGridLayout *grid = new QGridLayout( groupBox );
 
-	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->addWidget( makeDecimationBox(), 1, 0 );
 	grid->addWidget( makeSharpnessBox(), 2, 0 );
 	grid->addWidget( makeSmoothnessBox(), 3, 0 );
 	grid->setRowStretch( 4, 1 );
-}
-
-QGroupBox* PreferencesMesh::makeNumberOfThreadsBox()
-{
-	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
-
-	numThreadsSlider->setMinimum( 1 );
-	numThreadsSlider->setMaximum( 2 * (int)OmNumCores::get_num_cores() );
-
-	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
-	numThreadsSlider->setValue(OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT));
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-
-	return groupBox;
 }
 
 QGroupBox* PreferencesMesh::makeBoxGeneric( QLabel** label, QSlider** slider, QString title )
@@ -109,12 +93,5 @@ void PreferencesMesh::on_nsSlider_valueChanged()
 {
 	nsSliderLabel->setNum(nsSlider->value());
 	OmPreferences::SetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, nsSlider->value());
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
-
-void PreferencesMesh::on_numThreads_Slider_valueChanged()
-{
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-	OmPreferences::SetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT, numThreadsSlider->value());
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }

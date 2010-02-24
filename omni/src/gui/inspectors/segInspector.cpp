@@ -7,9 +7,8 @@
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
 #include "project/omProject.h"
+#include "utility/omLocalConfiguration.h"
 #include "system/omProjectData.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
 
 #include <boost/progress.hpp>
 
@@ -98,7 +97,7 @@ QGroupBox* SegInspector::makeActionsBox()
 	labelNumThreadsText->setText("number of meshing threads: ");
 	gridAction->addWidget( labelNumThreadsText, 0, 0 );
 	QLabel *labelNumThreadsNum = new QLabel(actionsBox);
-	labelNumThreadsNum->setNum( OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT ));
+	labelNumThreadsNum->setNum( OmLocalConfiguration::numAllowedWorkerThreads());
 	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
 
 	buildComboBox = new QComboBox(actionsBox);

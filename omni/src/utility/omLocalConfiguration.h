@@ -6,7 +6,10 @@ class OmLocalConfiguration {
 public:
 	static OmLocalConfiguration* Instance();
 	static void Delete();
-	
+
+	static int get_num_cores();
+	static int numAllowedWorkerThreads();
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmLocalConfiguration();

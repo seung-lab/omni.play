@@ -1,6 +1,6 @@
 #include "localPreferences.h"
 #include "common/omDebug.h"
-#include "system/omNumCores.h"
+#include "utility/omLocalConfiguration.h"
 
 LocalPreferences::LocalPreferences(QWidget * parent)
  : QWidget(parent)
@@ -14,20 +14,6 @@ LocalPreferences::LocalPreferences(QWidget * parent)
 
 	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->setRowStretch( 4, 1 );
-}
-
-QGroupBox* LocalPreferences::makeNumberOfThreadsBox()
-{
-	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
-
-	numThreadsSlider->setMinimum( 1 );
-	numThreadsSlider->setMaximum( 2 * (int)OmNumCores::get_num_cores() );
-
-	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
-	//numThreadsSlider->setValue(OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT));
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-
-	return groupBox;
 }
 
 QGroupBox* LocalPreferences::makeBoxGeneric( QLabel** label, QSlider** slider, QString title )
@@ -51,6 +37,20 @@ QGroupBox* LocalPreferences::makeBoxGeneric( QLabel** label, QSlider** slider, Q
 	return groupBox;
 }
 
+
+QGroupBox* LocalPreferences::makeNumberOfThreadsBox()
+{
+	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
+
+	numThreadsSlider->setMinimum( 1 );
+	numThreadsSlider->setMaximum( 2 * OmLocalConfiguration::get_num_cores() );
+
+	numThreadsSlider->setValue( OmLocalConfiguration::numAllowedWorkerThreads() );
+	numThreadsSliderLabel->setNum(numThreadsSlider->value());
+	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
+
+	return groupBox;
+}
 
 void LocalPreferences::on_numThreads_Slider_valueChanged()
 {
