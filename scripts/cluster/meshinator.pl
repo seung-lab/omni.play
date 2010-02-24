@@ -5,12 +5,16 @@ use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
 
-use Thread;
+use Thread qw(async);
+use Thread::Queue;
+
+my $DataQueue = new Thread::Queue; 
 my $howMany = 0;
+
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 80;
+my $maxThreadsToCreate = 300;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -47,7 +51,7 @@ sub byHost {
 sub byHostAndProcess 
 {
     my $maxProcs = $hostCount * $numMeshProcessesPerHost;
-    my $chunksPerProccess = 1;
+    my $chunksPerProccess = 3;
     
     print "$chunkCount chunks with chunksPerProccess = $chunksPerProccess\n";
     print "$hostCount is hostCount\n";
@@ -101,10 +105,10 @@ for (my $i = 0; $i < $cmdCount; $i++) {
 
 sub getIdlest()
 {
-    my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn`;
+    my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | tail -n1`;
     my $uptime;
     my $idleNode;
-
+ 
     ($uptime, $idleNode) = split (" ", $cmdOut);
     return $idleNode;
 }
@@ -122,6 +126,7 @@ sub runNode {
     my $node = $_[1];
     my $logFile = $_[2];
     my $fNameAndPath = $_[3];
+    my $lockFile = $_[4];
     
     my $start = time();
     print "node $node: starting meshing...\n"; 
@@ -138,44 +143,54 @@ sub runNode {
     chomp( $chunkCoord );
     print "node $node: done meshing $chunkCoord (".$timeSecs." seconds)\n";
 
-    lock($howMany);
-    $howMany--;
-
-    print "Now have $howMany\n";
+    print `rm $lockFile`;
 }
 
-my $countBackoff = 0;
-my $backoff = 0;
-my @threads;
-for (my $i = 0; $i < $cmdCount; $i++) {
-    my $num = $i;
-    my $node = $meshCommandHostInput[$i];
-    my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
-    my $fNameAndPath = $outFileName;
-    my $logFile = $outFileName . ".log";
-
-
-    $countBackoff++;
-    lock($howMany);
-    if ($howMany < $maxThreadsToCreate) {
-	
-        if ($countBackoff > $maxThreadsToCreate) {
-            $node = getIdlest();
-            print "Sending command to idle node $node.\n";
+sub meshinator {
+    my $countBackoff = 0;
+    my $backoff = 0;
+    my @threads;
+    for (my $i = 0; $i < $cmdCount;) {
+        my $num = $i;
+        my $node = $meshCommandHostInput[$i];
+        my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
+        my $fNameAndPath = $outFileName;
+        my $logFile = $outFileName . ".log";
+        my $lockFile;
+    
+        my $j;
+        my $found = 0;
+        for ($j = 0; $j < $maxThreadsToCreate; $j++) {
+           $lockFile = "$dir/$j.lock";
+           if (!-e $lockFile) {
+              `touch $lockFile`;
+              print "$lockFile free\n";
+              $found = 1;
+              last;
+           }
         }
-    	my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
-    	my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath;
-    	push(@threads, $thr);
-    	$howMany++;
-    } else {
-        print "Have $howMany threads busy, going to sleep...\n";
-        sleep(1);
+    
+        if ($found) {
+            $countBackoff++;
+	    
+            if ($countBackoff > $maxThreadsToCreate) {
+                $node = getIdlest();
+                print "Sending command to idle node $node.\n";
+            }
+    	    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
+    	    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
+    	    push(@threads, $thr);
+            $i++;
+        } else {
+            print "Threads are busy, going to sleep...\n";
+            sleep(1);
+        }
     }
-
+    foreach my $thread (@threads){ 
+        $thread->join;
+    }
 }
 
-foreach my $thread (@threads){ 
-    $thread->join;
-}
+meshinator();
 
 print "done!!\n";
