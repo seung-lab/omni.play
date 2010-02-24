@@ -187,8 +187,8 @@ sub meshinator {
     	    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
     	    push(@threads, $thr);
             $i++;
+            print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out.\n";
         } else {
-            print "Threads are busy, going to sleep...\n";
             sleep(1) if (0 == $i % 5);
         }
     }
