@@ -29,14 +29,10 @@ my $cmdCount = 0;
 my @meshCommandChunkInputs;
 my @meshCommandHostInput;
 
-
-sub killOmniOnNode {
-    my $node = $_[0];
-    `ssh $node killall -9 omni`;
-}
+`cd $meshinatorHome; ./`;
 
 sub killAllOmnis {
-	`cd $meshinatorHome; ./killAllOmni.pl`;
+	`cd $meshinatorHome; ./killAllOmni.pl&`;
 }
 
 sub byHost {

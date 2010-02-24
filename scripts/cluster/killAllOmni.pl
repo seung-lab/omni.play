@@ -21,7 +21,7 @@ sub runNode
 {
     my $node = $_[0];
     `ssh ${node} killall $flag omni`;
-    `ps -elf | grep omni`;
+    `ssh ${node} ps -elf | grep omni`;
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";
