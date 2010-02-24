@@ -2,7 +2,6 @@
 
 #specify sources
 SET(OM_MESH_LIB_SRCS
-	omMipChunkMesher.cpp
 	omMesher.cpp
 	omMipMesh.cpp
 	omMipMeshManager.cpp

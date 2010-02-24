@@ -1,7 +1,6 @@
 
 #include "omMipMeshManager.h"
 
-#include "omMipChunkMesher.h"
 #include "omMipMesh.h"
 
 #include "segment/omSegmentTypes.h"
@@ -102,18 +101,6 @@ void OmMipMeshManager::SetMeshDataBuilt(bool status)
 	mMeshDataBuilt = status;
 }
 
-#pragma mark
-#pragma mark Build Meshes
-/////////////////////////////////
-///////          Build Meshes
-
-void OmMipMeshManager::BuildChunkMeshes(shared_ptr < OmMipChunk > rMipChunk, const SegmentDataSet & rMeshVals)
-{
-	OmMipChunkMesher::BuildChunkMeshes(this, rMipChunk, rMeshVals);
-}
-
-#pragma mark
-#pragma mark Cache Handles
 /////////////////////////////////
 ///////          Cache Handles
 

@@ -11,6 +11,7 @@ MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mi
 {
 	mMipMeshManager = mipMeshManager;
 	assert(mMipMeshManager);
+	onlyMeshModifiedValues = false;
 }
 
 void MeshingManager::addToQueue( const OmMipChunkCoord coord )
@@ -18,11 +19,18 @@ void MeshingManager::addToQueue( const OmMipChunkCoord coord )
 	mChunkCoords.enqueue( coord );
 }
 
+void MeshingManager::setToOnlyMeshModifiedValues()
+{
+	onlyMeshModifiedValues = true;
+}
+
+bool MeshingManager::shouldIonlyMeshModifiedValues()
+{
+	return onlyMeshModifiedValues;
+}
+
 int MeshingManager::getMaxAllowedNumberOfActiveChunks()
 {
-	// OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT
-	//	return 5;
-
 	return getMaxAllowedNumberOfWorkerThreads();
 }
 

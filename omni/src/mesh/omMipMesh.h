@@ -69,9 +69,6 @@ private:
 	
 	// ostream
 	friend ostream& operator<<(ostream &out, const OmMipMesh &m);	
-	
-	
-	friend class OmMipChunkMesher;
 	friend class OmMesher;
 
 	//split serialization to allocate dynamic arrays

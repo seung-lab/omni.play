@@ -1,9 +1,7 @@
-
 #include "omProject.h"
 #include "system/omPreferenceDefinitions.h"
 
 #include "volume/omVolume.h"
-#include "mesh/omMipChunkMesher.h"
 #include "segment/omSegmentEditor.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
@@ -131,7 +129,6 @@ void OmProject::Close()
 	//volume depends on the following so it must be deleted first
 	OmVolume::Delete();
 
-	OmMipChunkMesher::Delete();
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();
 	OmEventManager::Delete();

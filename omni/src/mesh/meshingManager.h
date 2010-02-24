@@ -27,9 +27,12 @@ class MeshingManager : public QThread
 	int getMaxAllowedNumberOfActiveChunks();
 	int getMaxAllowedNumberOfWorkerThreads();
 
+	void setToOnlyMeshModifiedValues();
+	bool shouldIonlyMeshModifiedValues();
  private:
 	const OmId mSegmentationID;
 	QQueue< OmMipChunkCoord > mChunkCoords;
+	bool onlyMeshModifiedValues;
 };
 
 #endif

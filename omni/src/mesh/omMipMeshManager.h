@@ -42,10 +42,6 @@ public:
 	void GetMesh(shared_ptr<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
 	
-	//building
-	void BuildChunkMeshes(shared_ptr<OmMipChunk> chunk, const SegmentDataSet &);
-
-	
 	//drawing
 	void DrawMeshes(OmSegmentManager &rSegMgr,
 					const OmBitfield &drawOps,

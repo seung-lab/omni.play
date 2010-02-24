@@ -1,6 +1,7 @@
 #include "meshingChunkThreadManager.h"
 #include "common/omDebug.h"
 #include "volume/omVolume.h"
+#include "segment/omSegmentTypes.h"
 
 MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord ) 
 {
@@ -21,18 +22,30 @@ SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 	return valuesToMesh.dequeue();
 }
 
+void MeshingChunkThreadManager::setupValuesToMesh( shared_ptr < OmMipChunk > chunk )
+{
+	SegmentDataSet values;
+
+	if( mMeshManager->shouldIonlyMeshModifiedValues() ){
+		values = chunk->GetModifiedVoxelValues();
+	} else {
+		values = chunk->GetDirectDataValues();
+	}
+
+	foreach( SEGMENT_DATA_TYPE value, values ) {
+		if( NULL_SEGMENT_DATA == value ){
+			continue;
+		}
+		valuesToMesh.enqueue( value );
+	}
+}
 
 void MeshingChunkThreadManager::run()
 {
 	shared_ptr < OmMipChunk > chunk = shared_ptr < OmMipChunk > ();
 	OmVolume::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
 
-	foreach( SEGMENT_DATA_TYPE value, chunk->GetDirectDataValues() ) {
-		if( NULL_SEGMENT_DATA == value ){
-			continue;
-		}
-		valuesToMesh.enqueue( value );
-	}
+	setupValuesToMesh( chunk );
 
 	const int totalNumValuesToMesh = valuesToMesh.size();
 	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
