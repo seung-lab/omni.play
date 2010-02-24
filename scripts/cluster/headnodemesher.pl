@@ -36,19 +36,7 @@ sub killOmniOnNode {
 }
 
 sub killAllOmnis {
-    open IN_FILE, "$meshinatorHosts" or die "could not find $meshinatorHosts";
-
-    my @threads;
-    while (my $line = <IN_FILE>) {
-	chomp( $line );
-	my $thr = new Thread \&runNode, $line;
-	push(@threads, $thr);
-    }
-    close IN_FILE;
-
-    foreach my $thread (@threads){ 
-	$thread->join;
-    }
+	`cd $meshinatorHome; ./killAllOmni.pl`;
 }
 
 sub byHost {
@@ -99,8 +87,8 @@ my $dir = $path;
 my $projectFile = $path . $name;
 $projectFile =~ s/\.plan$//;
 
-`mkdir -p $dir/chunk_lists`;
 `rm -rf $dir/chunk_lists`;
+`mkdir -p $dir/chunk_lists/`;
 
 print "cmdCount = $cmdCount\n";
 for (my $i = 0; $i < $cmdCount; $i++) {
