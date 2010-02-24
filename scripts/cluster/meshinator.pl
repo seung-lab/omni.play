@@ -5,8 +5,8 @@ use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
 
-my $howMany = 0;
 use Thread;
+my $howMany = 0;
 
 $SIG{INT} = \&killAllOmnis;
 
