@@ -102,14 +102,20 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     print OUT_FILE $meshCommandChunkInputs[$i];
     close OUT_FILE;
 }
-
+my @idleHosts;
 sub getIdlest()
 {
-    my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | tail -n1`;
+    if (!scalar @idleHosts) {
+       my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | tail -n10`;
+       @idleHosts = split (/\n/, $cmdOut);
+    }
+
+    my $theOne = pop @idleHosts;
+
     my $uptime;
     my $idleNode;
  
-    ($uptime, $idleNode) = split (" ", $cmdOut);
+    ($uptime, $idleNode) = split (" ", $theOne);
     return $idleNode;
 }
 print "Current idle node is " . getIdlest() . "\n";
@@ -183,7 +189,7 @@ sub meshinator {
             $i++;
         } else {
             print "Threads are busy, going to sleep...\n";
-            sleep(1);
+            sleep(1) if (0 == $i % 5);
         }
     }
     foreach my $thread (@threads){ 
