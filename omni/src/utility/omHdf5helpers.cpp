@@ -128,7 +128,7 @@ HDF5LOCK();
 	herr_t status = H5Gclose(group_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 group.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -142,7 +142,7 @@ void om_hdf5_group_create_with_lock(hid_t fileId, const char *name)
         herr_t status = H5Gclose(group_id);
         if (status < 0)
                 throw OmIoException("Could not close HDF5 group.");
-        H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+        //H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 
 
@@ -238,7 +238,7 @@ HDF5LOCK();
 	herr_t err = H5Gunlink(fileId, name);
 	if (err < 0)
 		throw OmIoException("Could not unlink HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 
@@ -249,7 +249,7 @@ void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name)
         herr_t err = H5Gunlink(fileId, name);
         if (err < 0)
                 throw OmIoException("Could not unlink HDF5 dataset.");
-        H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+        //H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 
 
@@ -323,7 +323,7 @@ void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int si
 	status = H5Sclose(dataspace_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataspace.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 void om_hdf5_dataset_raw_create(string fileName, const char *name, int size, const void *data)
 {
@@ -391,7 +391,7 @@ HDF5LOCK();
 	status = H5Dclose(dataset_id);
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 
 	return dataset_data;
@@ -493,7 +493,7 @@ om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 <
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 void
 om_hdf5_dataset_image_create(string fileName, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims,
@@ -728,7 +728,7 @@ HDF5LOCK();
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	H5Fflush (fileId, H5F_SCOPE_GLOBAL);
+	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 HDF5UNLOCK();
 }
 

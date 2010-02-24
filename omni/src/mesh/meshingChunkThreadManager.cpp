@@ -50,6 +50,9 @@ void MeshingChunkThreadManager::run()
 			num_threads_to_use = 1;
 		} else {
 			printf("have %d values to mesh (lot!)\n", totalNumValuesToMesh );
+			num_threads_to_use = totalNumValuesToMesh / 50.0 + 1;
+			if (num_threads_to_use > 10) 
+				num_threads_to_use = 10;
 		}
 		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){

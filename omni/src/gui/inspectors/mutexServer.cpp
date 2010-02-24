@@ -52,6 +52,7 @@ void MutexServer::run ()
      		if (n < 0)
 			printf("ERROR writing to socket\n");
 
+     		debug ("mutexServer", "giving up lock\n");
      		n = read(newsockfd,buffer,255);	// Locked
      		//if (n < 0) printf("ERROR reading from socket");
      		//printf("Here is the message: %s\n",buffer);
