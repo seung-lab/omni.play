@@ -4,10 +4,24 @@ use strict;
 
 use Thread;
 
+my $flag = "";
+if (-t STDIN) {
+    print "press enter to killall omni, or 9 to force release of all locks\n";
+    my $answer = <STDIN>;
+    chomp ($answer);
+    if ($answer eq "9") {
+        print "press enter to killall -9 omni, this is your final warning, corruption of the omni file is likely.\n";
+        $flag = "-9";
+        $answer = <STDIN> if ($answer eq "9");
+    }
+}
+
+
 sub runNode 
 {
     my $node = $_[0];
-    `ssh ${node} killall -9 omni`;
+    `ssh ${node} killall $flag omni`;
+    `ps -elf | grep omni`;
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";
