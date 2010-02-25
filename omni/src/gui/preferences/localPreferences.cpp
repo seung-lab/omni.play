@@ -13,33 +13,22 @@ LocalPreferences::LocalPreferences(QWidget * parent)
 	QGridLayout *grid = new QGridLayout( groupBox );
 	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
 	grid->addWidget( makeCachePropBox(), 1, 0 );
+	grid->setRowStretch( 4, 1 );
 	init_cache_prop_values();
 
-	grid->setRowStretch( 4, 1 );
+	connect(numThreadsSlider, SIGNAL(valueChanged(int)), 
+		this, SLOT(on_numThreadsSlider_valueChanged()));
+	connect(ramSlider, SIGNAL(valueChanged(int)), 
+		this, SLOT( on_ramSlider_valueChanged()));
+	connect(vramSlider, SIGNAL(valueChanged(int)), 
+		this, SLOT(on_vramSlider_valueChanged()));
 
-        QMetaObject::connectSlotsByName(this);
-
-}
-
-QGroupBox* LocalPreferences::makeBoxGeneric( QLabel** label, QSlider** slider, QString title )
-{
-	QGroupBox* groupBox = new QGroupBox(title);
-	QVBoxLayout* vbox = new QVBoxLayout;
-	groupBox->setLayout( vbox );
-
-	(*label) = new QLabel(groupBox);
-	(*label)->setMinimumSize(QSize(20, 0));
-	(*label)->setMaximumSize(QSize(20, 16777215));
-	vbox->addWidget((*label));
-
-	(*slider) = new QSlider(groupBox);
-	(*slider)->setMaximum(100);
-	(*slider)->setOrientation(Qt::Horizontal);
-	(*slider)->setTickPosition(QSlider::TicksBelow);
-	(*slider)->setTickInterval(10);
-	vbox->addWidget((*slider));
-
-	return groupBox;
+	connect(numThreadsSlider, SIGNAL(sliderReleased()), 
+		this, SLOT(on_numThreadsSlider_sliderReleased()));
+	connect(ramSlider, SIGNAL(sliderReleased()), 
+		this, SLOT( on_ramSlider_sliderReleased()));
+	connect(vramSlider, SIGNAL(sliderReleased()), 
+		this, SLOT(on_vramSlider_sliderReleased()));
 }
 
 QGroupBox* LocalPreferences::makeCachePropBox()
@@ -94,40 +83,70 @@ QGroupBox* LocalPreferences::makeCachePropBox()
 
 void LocalPreferences::init_cache_prop_values()
 {
-	ramSlider->setValue( OmLocalPreferences::getRamCacheSize());
-	ramSizeLabel->setNum( OmLocalPreferences::getRamCacheSize());
+	const unsigned int ramSize = OmLocalPreferences::getRamCacheSize();
+	ramSlider->setValue( ramSize );
+	ramSizeLabel->setText( QString::number( ramSize ));
 
-	vramSlider->setValue(OmLocalPreferences::getVRamCacheSize());
-	vramSizeLabel->setNum(OmLocalPreferences::getVRamCacheSize());
+	const unsigned int vramSize = OmLocalPreferences::getVRamCacheSize();
+	vramSlider->setValue( vramSize );
+	vramSizeLabel->setText( QString::number( vramSize ) );
 }
 
 void LocalPreferences::on_ramSlider_valueChanged()
 {
-	OmLocalPreferences::setRamCacheSize( ramSlider->value() );
 	ramSizeLabel->setNum(ramSlider->value());
 }
 
 void LocalPreferences::on_vramSlider_valueChanged()
 {
-	OmLocalPreferences::setVRamCacheSize( vramSlider->value() );
 	vramSizeLabel->setNum(vramSlider->value());
+}
+
+void LocalPreferences::on_ramSlider_sliderReleased()
+{
+	ramSizeLabel->setNum(ramSlider->value());
+	OmLocalPreferences::setRamCacheSize( ramSlider->value() );
+}
+
+void LocalPreferences::on_vramSlider_sliderReleased()
+{
+	vramSizeLabel->setNum(vramSlider->value());
+	OmLocalPreferences::setVRamCacheSize( vramSlider->value() );
 }
 
 QGroupBox* LocalPreferences::makeNumberOfThreadsBox()
 {
-	QGroupBox* groupBox = makeBoxGeneric( &numThreadsSliderLabel, &numThreadsSlider, "Number of Meshing Threads");
+	QGroupBox* groupBox = new QGroupBox("Number of Meshing Threads");
+	QVBoxLayout* vbox = new QVBoxLayout;
+	groupBox->setLayout( vbox );
+
+	numThreadsSliderLabel = new QLabel(groupBox);
+	numThreadsSliderLabel->setMinimumSize(QSize(20, 0));
+	numThreadsSliderLabel->setMaximumSize(QSize(20, 16777215));
+	vbox->addWidget(numThreadsSliderLabel);
+
+	numThreadsSlider = new QSlider(groupBox);
+	numThreadsSlider->setMaximum(100);
+	numThreadsSlider->setOrientation(Qt::Horizontal);
+	numThreadsSlider->setTickPosition(QSlider::TicksBelow);
+	numThreadsSlider->setTickInterval(10);
+	vbox->addWidget(numThreadsSlider);
 
 	numThreadsSlider->setMinimum( 1 );
 	numThreadsSlider->setMaximum( 2 * OmLocalPreferences::get_num_cores() );
 
 	numThreadsSlider->setValue( OmLocalPreferences::numAllowedWorkerThreads() );
 	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-	connect(numThreadsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_numThreads_Slider_valueChanged()));
 
 	return groupBox;
 }
 
-void LocalPreferences::on_numThreads_Slider_valueChanged()
+void LocalPreferences::on_numThreadsSlider_valueChanged()
+{
+	numThreadsSliderLabel->setNum(numThreadsSlider->value());
+}
+
+void LocalPreferences::on_numThreadsSlider_sliderReleased()
 {
 	numThreadsSliderLabel->setNum(numThreadsSlider->value());
 	OmLocalPreferences::setNumAllowedWorkerThreads( numThreadsSlider->value() );

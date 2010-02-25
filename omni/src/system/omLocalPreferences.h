@@ -2,6 +2,7 @@
 #define OM_LOCAL_CONFIGURATION_H
 
 #include <QString>
+#include "utility/localPrefFiles.h"
 
 class OmLocalPreferences {
 
@@ -13,10 +14,10 @@ public:
 	static int numAllowedWorkerThreads();
 	static void setNumAllowedWorkerThreads(int);
 
-	static int getRamCacheSize();
-	static void setRamCacheSize(const int);
-	static int getVRamCacheSize();
-	static void setVRamCacheSize(const int);
+	static unsigned int getRamCacheSize();
+	static void setRamCacheSize(const unsigned int);
+	static unsigned int getVRamCacheSize();
+	static void setVRamCacheSize(const unsigned int);
 
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -31,7 +32,8 @@ private:
 
 	static void writeSetting( QString settingName, const int value );
 	static int readSetting( QString settingName );
-
+	static bool settingExists( QString settingName );
+	LocalPrefFiles* localPrefFiles;
 };
 
 #endif

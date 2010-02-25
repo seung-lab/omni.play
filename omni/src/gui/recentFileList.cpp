@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include "common/omDebug.h"
-using namespace std;
 
 /********************************************
 /* helper class to track recently created/opened files

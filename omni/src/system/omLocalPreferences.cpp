@@ -1,7 +1,7 @@
 #include "omLocalPreferences.h"
 #include "stddef.h"
 #include <stdio.h>
-#include "utility/omNumCores.h"
+#include "utility/omSystemInformation.h"
 #include "system/omCacheManager.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
@@ -18,7 +18,8 @@ OmLocalPreferences *OmLocalPreferences::Instance()
 {
 	if (NULL == mspInstance) {
 		mspInstance = new OmLocalPreferences;
-	}
+		mspInstance->localPrefFiles = new LocalPrefFiles();
+	}	
 	return mspInstance;
 }
 
@@ -32,7 +33,7 @@ void OmLocalPreferences::Delete()
 
 int OmLocalPreferences::get_num_cores()
 {
-	return (int)OmNumCores::get_num_cores();
+	return (int)OmSystemInformation::get_num_cores();
 }
 
 int OmLocalPreferences::numAllowedWorkerThreads()
@@ -50,23 +51,31 @@ void OmLocalPreferences::setNumAllowedWorkerThreads( const int numThreads )
 	printf("fix me!\n");
 }
 
-int OmLocalPreferences::getRamCacheSize()
+unsigned int OmLocalPreferences::getRamCacheSize()
 {
-	return readSetting("ram");
+	if( settingExists( "ram" ) ){
+		return readSetting("ram");
+	} 
+		
+	return OmSystemInformation::get_total_system_memory_megs() / 3.0;
 }
 
-void OmLocalPreferences::setRamCacheSize(int size)
+void OmLocalPreferences::setRamCacheSize(unsigned int size)
 {
 	writeSetting("ram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
-int OmLocalPreferences::getVRamCacheSize()
+unsigned int OmLocalPreferences::getVRamCacheSize()
 {
-	return readSetting("vram");
+	if( settingExists( "vram" ) ){
+		return readSetting("vram");
+	} 
+		
+	return OmSystemInformation::get_total_system_memory_megs() / 4.0;
 }
 
-void OmLocalPreferences::setVRamCacheSize(int size)
+void OmLocalPreferences::setVRamCacheSize(unsigned int size)
 {
 	writeSetting("vram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
@@ -79,6 +88,12 @@ void OmLocalPreferences::writeSetting( QString settingName, const int value )
 
 int OmLocalPreferences::readSetting( QString settingName )
 {
+
 	printf("fix me!: defaulting to %d for setting \"%s\"\n", 10000, qPrintable(settingName) );
 	return 10000;
+}
+
+bool OmLocalPreferences::settingExists( QString settingName )
+{
+	return Instance()->localPrefFiles->checkIfSettingExists( settingName );
 }
