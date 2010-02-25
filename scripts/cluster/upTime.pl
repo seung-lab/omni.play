@@ -23,7 +23,7 @@ my $hosts = "$home/hosts";
 sub runNode 
 {
     my $node = $_[0];
-    my $uptime = `ssh ${node} uptime | cut -f15 -d\\ `;
+    my $uptime = `rsh ${node} uptime | cut -f15 -d\\ `;
     chop($uptime); chop($uptime);
     print "$uptime $node\n" if ("" ne $uptime);
 }
