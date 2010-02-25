@@ -1,9 +1,6 @@
 #include "localPreferences.h"
 #include "common/omDebug.h"
-#include "common/omLocalPreferences.h"
-#include "system/omEventManager.h"
-#include "system/events/omPreferenceEvent.h"
-#include "system/omPreferenceDefinitions.h"
+#include "system/omLocalPreferences.h"
 
 LocalPreferences::LocalPreferences(QWidget * parent)
  : QWidget(parent)
@@ -108,14 +105,12 @@ void LocalPreferences::on_ramSlider_valueChanged()
 {
 	OmLocalPreferences::setRamCacheSize( ramSlider->value() );
 	ramSizeLabel->setNum(ramSlider->value());
-	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, CACHE_SIZE_PREFERENCES));
 }
 
 void LocalPreferences::on_vramSlider_valueChanged()
 {
 	OmLocalPreferences::setVRamCacheSize( vramSlider->value() );
 	vramSizeLabel->setNum(vramSlider->value());
-	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, CACHE_SIZE_PREFERENCES ));
 }
 
 QGroupBox* LocalPreferences::makeNumberOfThreadsBox()

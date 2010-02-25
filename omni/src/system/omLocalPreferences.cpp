@@ -2,6 +2,7 @@
 #include "stddef.h"
 #include <stdio.h>
 #include "utility/omNumCores.h"
+#include "system/omCacheManager.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
@@ -18,7 +19,6 @@ OmLocalPreferences *OmLocalPreferences::Instance()
 	if (NULL == mspInstance) {
 		mspInstance = new OmLocalPreferences;
 	}
-
 	return mspInstance;
 }
 
@@ -58,6 +58,7 @@ int OmLocalPreferences::getRamCacheSize()
 void OmLocalPreferences::setRamCacheSize(int size)
 {
 	writeSetting("ram", size);
+	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
 int OmLocalPreferences::getVRamCacheSize()
@@ -68,6 +69,7 @@ int OmLocalPreferences::getVRamCacheSize()
 void OmLocalPreferences::setVRamCacheSize(int size)
 {
 	writeSetting("vram", size);
+	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
 void OmLocalPreferences::writeSetting( QString settingName, const int value )

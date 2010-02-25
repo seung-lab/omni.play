@@ -5,7 +5,7 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
-#include "common/omLocalPreferences.h"
+#include "system/omLocalPreferences.h"
 
 #define DEBUG 0
 
@@ -33,11 +33,7 @@ OmCacheManager::OmCacheManager()
 	mSavedDelta = 0;
 	mThreadCount = 0;
 
-	//refresh prefs to call event listener
-	mCacheMap[RAM_CACHE_GROUP].MaxSize =
-	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);
-	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-	    OmLocalPreferences::getVRamCacheSize() * float (BYTES_PER_MB);
+	doUpdateCacheSizeFromLocalPrefs();
 }
 
 OmCacheManager::~OmCacheManager()
@@ -59,15 +55,12 @@ void OmCacheManager::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Event Listener Methods
-/////////////////////////////////
-///////          Event Listener Methods
+void OmCacheManager::UpdateCacheSizeFromLocalPrefs()
+{
+	Instance()->doUpdateCacheSizeFromLocalPrefs();
+}
 
-/*
- *	Preferences listener for cache group size changes.
- */
-void OmCacheManager::PreferenceChangeEvent(OmPreferenceEvent * event)
+void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
 {
 	mCacheMap[RAM_CACHE_GROUP].MaxSize =
 	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);

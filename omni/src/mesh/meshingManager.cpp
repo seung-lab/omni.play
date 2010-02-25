@@ -2,7 +2,7 @@
 #include "meshingChunkThreadManager.h"
 
 #include "system/omGarbage.h"
-#include "common/omLocalPreferences.h"
+#include "system/omLocalPreferences.h"
 
 MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager )
 	: mSegmentationID(segmentationID)

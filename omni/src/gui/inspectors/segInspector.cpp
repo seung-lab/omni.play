@@ -7,7 +7,7 @@
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
 #include "project/omProject.h"
-#include "common/omLocalPreferences.h"
+#include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 
 #include <boost/progress.hpp>
