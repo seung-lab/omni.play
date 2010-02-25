@@ -182,7 +182,7 @@ sub meshinator {
            $lockFile = "/tmp/$whoami.meshinator.$j.lock";
            if (!-e $lockFile) {
               `touch $lockFile`;
-              print "$lockFile free\n";
+              #print "$lockFile free\n";
               $found = 1;
               last;
            }
@@ -194,7 +194,7 @@ sub meshinator {
             #if ($countBackoff > $maxThreadsToCreate) {
             if (1) {
                 $node = getIdlest();
-                print "Sending command to idle node $node.\n";
+                #print "Sending command to idle node $node.\n";
                 next if ($node eq "");
             }
 	    $connectcount{$node}++;
@@ -214,11 +214,15 @@ sub meshinator {
             sleep(1);
         }
     }
-    foreach my $thread (@threads){ 
-        $thread->join;
-    }
 }
 
 meshinator();
+
+while(1) {
+  my $locks = `ls -a /tmp/$whoami.meshinator.*lock | wc -l`;
+  chomp($locks);
+  last if ($locks <= 1);
+  sleep(1);
+}
 
 print "done!!\n";
