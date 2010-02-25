@@ -14,6 +14,7 @@ chomp $whoami;
 $SIG{INT} = \&killAllOmnis;
 
 my $maxThreadsToCreate = 300;
+my $minThreadsToCreate = 30;
 my $initialPound = 50;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
@@ -120,7 +121,9 @@ sub getIdlest()
     my $idleNode;
  
     ($uptime, $idleNode) = split (" ", $theOne);
-    return $idleNode;
+    chop($uptime);
+    return $idleNode if ($uptime ne "" && $uptime < 4);
+    return "";
 }
 print "Current idle node is " . getIdlest() . "\n";
 
@@ -178,6 +181,10 @@ sub meshinator {
     
         my $j;
         my $found = 0;
+       
+        # As we get closer to the end, we need to make less threads.
+        $maxThreadsToCreate = $cmdCount - ($i + $maxThreadsToCreate);
+        $maxThreadsToCreate = $minThreadsToCreate if ($maxThreadsToCreate < $minThreadsToCreate);
         for ($j = 0; $j < $maxThreadsToCreate; $j++) {
            $lockFile = "/tmp/$whoami.meshinator.$j.lock";
            if (!-e $lockFile) {
@@ -207,7 +214,7 @@ sub meshinator {
 
             my $timeSecs = (time() - $start);
             print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . 
-		"% farmed out in $timeSecs seconds ($connectcount{$node}).\n";
+		"% farmed out in $timeSecs seconds.\n";
             #sleep(1) if ($countBackoff > $initialPound && !($countBackoff > $initialPound *2) );
         } else {
             #print "no lock free?\n";

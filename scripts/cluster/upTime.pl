@@ -24,8 +24,9 @@ my $hosts = "$home/hosts";
 sub runNode 
 {
     my $node = $_[0];
-    my $uptime = `rsh ${node} uptime | cut -f15 -d\\ `;
-    chop($uptime); chop($uptime);
+    my $uptime = `rsh ${node} uptime`;
+    my @upsplit = split (/ /, $uptime);
+    $uptime = $upsplit[scalar(@upsplit) - 2];
     print "$uptime $node\n" if ("" ne $uptime);
 }
 
