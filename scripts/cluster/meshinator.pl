@@ -13,7 +13,8 @@ chomp $whoami;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 3000;
+my $maxThreadsToCreate = 300;
+my $initialPound = 50;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -164,6 +165,8 @@ sub meshinator {
     my $countBackoff = 0;
     my $backoff = 0;
     my @threads;
+    my $start = time();
+
     for (my $i = 0; $i < $cmdCount;) {
         my $num = $i;
         my $node = $meshCommandHostInput[$i];
@@ -192,7 +195,7 @@ sub meshinator {
             if (1) {
                 $node = getIdlest();
                 print "Sending command to idle node $node.\n";
-                exit(0) if ($node eq "");
+                next if ($node eq "");
             }
     	    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
     	    runNode ($cmd, $node, $logFile, $fNameAndPath, $lockFile);
@@ -200,10 +203,14 @@ sub meshinator {
     	    #my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
     	    #push(@threads, $thr);
             $i++;
-            print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out.\n";
-            sleep(1);
+
+            my $timeSecs = (time() - $start);
+            print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . 
+		"% farmed out in $timeSecs seconds.\n";
+            #sleep(1) if ($countBackoff > $initialPound && !($countBackoff > $initialPound *2) );
         } else {
             #print "no lock free?\n";
+            sleep(1);
         }
     }
     foreach my $thread (@threads){ 

@@ -8,7 +8,7 @@ use Thread;
 
 select STDOUT; $| = 1;
 #$SIG{ALRM} = \&exitUptime;
-alarm 1;
+alarm 5;
 
 sub exitUptime
 {
@@ -25,7 +25,7 @@ sub runNode
     my $node = $_[0];
     my $uptime = `ssh ${node} uptime | cut -f15 -d\\ `;
     chop($uptime); chop($uptime);
-    print "$uptime $node\n";
+    print "$uptime $node\n" if ("" ne $uptime);
 }
 
 open IN_FILE,  "<", "$hosts"  or die "could not read hosts";
