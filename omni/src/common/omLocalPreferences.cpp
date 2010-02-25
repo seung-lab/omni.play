@@ -1,5 +1,6 @@
 #include "omLocalPreferences.h"
 #include "stddef.h"
+#include <stdio.h>
 #include "utility/omNumCores.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
