@@ -14,10 +14,10 @@ public:
 	static int numAllowedWorkerThreads();
 	static void setNumAllowedWorkerThreads(int);
 
-	static unsigned int getRamCacheSize();
-	static void setRamCacheSize(const unsigned int);
-	static unsigned int getVRamCacheSize();
-	static void setVRamCacheSize(const unsigned int);
+	static unsigned int getRamCacheSizeMB();
+	static void setRamCacheSizeMB(const unsigned int);
+	static unsigned int getVRamCacheSizeMB();
+	static void setVRamCacheSizeMB(const unsigned int);
 	static bool getStickyCrosshairMode();
 	static void setStickyCrosshairMode(bool sticky);
 

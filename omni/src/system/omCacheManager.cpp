@@ -63,15 +63,11 @@ void OmCacheManager::UpdateCacheSizeFromLocalPrefs()
 void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
 {
 	mCacheMap[RAM_CACHE_GROUP].MaxSize =
-	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);
+	    OmLocalPreferences::getRamCacheSizeMB() * float (BYTES_PER_MB);
 	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-	    OmLocalPreferences::getVRamCacheSize() * float (BYTES_PER_MB);
-
-	printf("omCacheManager: updated cache settings\n");
+	    OmLocalPreferences::getVRamCacheSizeMB() * float (BYTES_PER_MB);
 }
 
-#pragma mark
-#pragma mark Accessors Methods
 /////////////////////////////////
 ///////          Accessors Methods
 

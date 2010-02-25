@@ -4,7 +4,6 @@
 OmHdf5::OmHdf5( QString fileNameAndPath )
 {
 	m_fileNameAndPath = fileNameAndPath;
-	printf("set hdf5 file name to: \"%s\"\n", qPrintable( fileNameAndPath ) );
 }
 
 QString OmHdf5::getFileNameAndPath()

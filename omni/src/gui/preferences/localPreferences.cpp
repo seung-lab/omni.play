@@ -6,10 +6,6 @@ LocalPreferences::LocalPreferences(QWidget * parent)
  : QWidget(parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
-
-
-
-
 	overallContainer->addWidget( makeNumberOfThreadsBox());
 	overallContainer->addWidget( makeCachePropBox());
 	overallContainer->insertStretch( 4, 1 );
@@ -82,11 +78,11 @@ QGroupBox* LocalPreferences::makeCachePropBox()
 
 void LocalPreferences::init_cache_prop_values()
 {
-	const unsigned int ramSize = OmLocalPreferences::getRamCacheSize();
+	const unsigned int ramSize = OmLocalPreferences::getRamCacheSizeMB();
 	ramSlider->setValue( ramSize );
 	ramSizeLabel->setText( QString::number( ramSize ));
 
-	const unsigned int vramSize = OmLocalPreferences::getVRamCacheSize();
+	const unsigned int vramSize = OmLocalPreferences::getVRamCacheSizeMB();
 	vramSlider->setValue( vramSize );
 	vramSizeLabel->setText( QString::number( vramSize ) );
 }
@@ -104,13 +100,13 @@ void LocalPreferences::on_vramSlider_valueChanged()
 void LocalPreferences::on_ramSlider_sliderReleased()
 {
 	ramSizeLabel->setNum(ramSlider->value());
-	OmLocalPreferences::setRamCacheSize( ramSlider->value() );
+	OmLocalPreferences::setRamCacheSizeMB( ramSlider->value() );
 }
 
 void LocalPreferences::on_vramSlider_sliderReleased()
 {
 	vramSizeLabel->setNum(vramSlider->value());
-	OmLocalPreferences::setVRamCacheSize( vramSlider->value() );
+	OmLocalPreferences::setVRamCacheSizeMB( vramSlider->value() );
 }
 
 QGroupBox* LocalPreferences::makeNumberOfThreadsBox()

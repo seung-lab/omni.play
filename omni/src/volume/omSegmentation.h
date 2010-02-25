@@ -62,7 +62,7 @@ public:
 	bool IsMeshDataBuilt();
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
-	void BuildMeshChunk(int level, int x, int y, int z);
+	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
 	void BuildMeshDataInternal();	
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);

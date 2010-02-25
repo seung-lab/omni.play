@@ -37,6 +37,8 @@ int OmLocalPreferences::get_num_cores()
 	return (int)OmSystemInformation::get_num_cores();
 }
 
+/////////////////////////////
+// max number of mesh worker threads
 int OmLocalPreferences::numAllowedWorkerThreads()
 {
 	const int numCoresRaw = get_num_cores();
@@ -53,18 +55,36 @@ void OmLocalPreferences::setNumAllowedWorkerThreads( const int numThreads )
 	writeSettingInt( "numThreads", numThreads );
 }
 
-unsigned int OmLocalPreferences::getRamCacheSize()
+/////////////////////////////
+// RAM size
+unsigned int OmLocalPreferences::getRamCacheSizeMB()
 {
 	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 3.0;
 	return readSettingUInt( "ram", defaultRet );
 }
 
-void OmLocalPreferences::setRamCacheSize(unsigned int size)
+void OmLocalPreferences::setRamCacheSizeMB(unsigned int size)
 {
 	writeSettingUInt("ram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
+/////////////////////////////
+// VRAM size
+unsigned int OmLocalPreferences::getVRamCacheSizeMB()
+{
+	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 4.0;
+	return readSettingUInt( "vram", defaultRet );
+}
+
+void OmLocalPreferences::setVRamCacheSizeMB(const unsigned int size)
+{
+	writeSettingUInt("vram", size);
+	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+}
+
+/////////////////////////////
+// sticky cross-hair mode
 bool OmLocalPreferences::getStickyCrosshairMode()
 {
 	if (Instance()->stickyCrosshairMode==NULL){
@@ -81,21 +101,24 @@ void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
 		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
 	} 
 	Instance()->stickyCrosshairMode[0] = sticky;
-	writeSettingInt("stickyCrosshairMode", sticky);
+	writeSettingUInt("stickyCrosshairMode", sticky);
 }
 
-unsigned int OmLocalPreferences::getVRamCacheSize()
+/////////////////////////////
+// recently-used files
+QStringList OmLocalPreferences::getRecentlyUsedFilesNames()
 {
-	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 4.0;
-	return readSettingUInt( "vram", defaultRet );
+	QStringList empty;
+	return readSettingQStringList( "recentlyOpenedFiles", empty );
 }
 
-void OmLocalPreferences::setVRamCacheSize(const unsigned int size)
+void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
 {
-	writeSettingUInt("vram", size);
-	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+	Instance()->localPrefFiles->writeSettingQStringList( "recentlyOpenedFiles", values );
 }
 
+/////////////////////////////
+// data accessors
 void OmLocalPreferences::writeSettingUInt( QString setting, const unsigned int value )
 {
 	Instance()->localPrefFiles->writeSettingUInt( setting, value );
@@ -150,13 +173,3 @@ QStringList OmLocalPreferences::readSettingQStringList( QString setting, QString
 	}
 }
 
-QStringList OmLocalPreferences::getRecentlyUsedFilesNames()
-{
-	QStringList empty;
-	return readSettingQStringList( "recentlyOpenedFiles", empty );
-}
-
-void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
-{
-	Instance()->localPrefFiles->writeSettingQStringList( "recentlyOpenedFiles", values );
-}

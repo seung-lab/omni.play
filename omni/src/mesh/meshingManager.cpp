@@ -10,6 +10,12 @@ MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mi
 	mMipMeshManager = mipMeshManager;
 	assert(mMipMeshManager);
 	onlyMeshModifiedValues = false;
+	numThreadOverride = 0;
+}
+
+void MeshingManager::setNumThreads( const int numThreads )
+{	
+	numThreadOverride = numThreads;
 }
 
 void MeshingManager::addToQueue( const OmMipChunkCoord coord )
@@ -34,6 +40,10 @@ int MeshingManager::getMaxAllowedNumberOfActiveChunks()
 
 int MeshingManager::getMaxAllowedNumberOfWorkerThreads()
 {
+	if( numThreadOverride > 0 ){
+		return numThreadOverride;
+	}
+
 	return OmLocalPreferences::numAllowedWorkerThreads();
 }
 

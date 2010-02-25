@@ -51,8 +51,9 @@ int firsttime(int argc, char *argv[])
 void openProject( QString fName )
 {
 	try {
+		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
 		OmProject::Load( fName );
-		printf("opened project\n");
+		printf("opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
 	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
 	}
@@ -72,6 +73,10 @@ unsigned int getNum( QString arg )
 
 void processLine( QString line, QString fName )
 {
+	time_t start;
+	time_t end;
+	double dif;
+
 	if( line == "q" || line == "quit" ){
 		printf("exiting...\n");
 		exit(0);
@@ -84,9 +89,7 @@ void processLine( QString line, QString fName )
 		} 
 
 		printf("running mesh on segmentation %d\n", SegmentationID);
-		time_t start;
-		time_t end;
-		double dif;
+
 
 		time (&start);
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
@@ -103,13 +106,15 @@ void processLine( QString line, QString fName )
 		unsigned int x = getNum( coords[0] );
 		unsigned int y = getNum( coords[1] );
 		unsigned int z = getNum( coords[2] );
+		
+		int numThreads=0;
+		if( 5 == args.size() ){
+			numThreads = getNum( args[4] );
+			printf("over-road edfault number of threads...\n");
+		}
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
-		time_t start;
-		time_t end;
-		double dif;
-
 		time (&start);
-		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
 		time (&end);
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );

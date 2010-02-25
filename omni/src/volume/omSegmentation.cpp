@@ -281,12 +281,15 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
 /**
  * Build the meshes for a single chunk.
  */
-void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z)
+void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThreads )
 {
 	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 	OmMipChunkCoord chunk_coord(level, x, y, z);
 
 	meshingMan->addToQueue( chunk_coord );
+	if( numThreads > 0 ){
+		meshingMan->setNumThreads( numThreads );
+	}
 	meshingMan->start();
 	meshingMan->wait();
 

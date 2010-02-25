@@ -51,6 +51,10 @@ void MeshingChunkThreadManager::run()
 	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
 
 	if( totalNumValuesToMesh > 0 ){
+		if( totalNumValuesToMesh > 50000 ){
+			printf("warning: meshing a chunk with %d values...\n", totalNumValuesToMesh );
+		}
+
 		chunk->Open();
 
 		mpCurrentMeshSource = new OmMeshSource();

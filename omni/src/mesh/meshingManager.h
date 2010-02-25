@@ -15,6 +15,7 @@ class MeshingManager : public QThread
  public:
 	MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager );
 	void addToQueue( const OmMipChunkCoord coord );
+	void setNumThreads( const int numThreads );
 	void run();
 
 	OmId getSegmentationID() { return mSegmentationID; }
@@ -36,6 +37,7 @@ class MeshingManager : public QThread
 	QQueue< OmMipChunkCoord > mChunkCoords;
 	QQueue< OmMipChunkCoord > mFailedChunkCoords;
 	bool onlyMeshModifiedValues;
+	int numThreadOverride;
 };
 
 #endif
