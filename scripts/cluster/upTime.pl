@@ -5,10 +5,11 @@ use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
 use Thread;
+use List::Util qw(shuffle);
 
 select STDOUT; $| = 1;
 #$SIG{ALRM} = \&exitUptime;
-alarm 5;
+alarm 2;
 
 sub exitUptime
 {
@@ -31,8 +32,13 @@ sub runNode
 open IN_FILE,  "<", "$hosts"  or die "could not read hosts";
 
 my @threads;
+my @lines;
 while (my $line = <IN_FILE>) {
     chomp( $line );
+    push(@lines, $line);
+}
+@lines = shuffle @lines;
+while (my $line = pop @lines) {
     my $thr = new Thread \&runNode, $line;
     push(@threads, $thr);
 }
