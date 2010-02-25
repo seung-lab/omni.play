@@ -16,7 +16,7 @@ chomp $whoami;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 3000;
+my $maxThreadsToCreate = 300;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -53,7 +53,7 @@ sub byHost {
 sub byHostAndProcess 
 {
     my $maxProcs = $hostCount * $numMeshProcessesPerHost;
-    my $chunksPerProccess = 3;
+    my $chunksPerProccess = 1;
     
     print "$chunkCount chunks with chunksPerProccess = $chunksPerProccess\n";
     print "$hostCount is hostCount\n";
@@ -94,6 +94,7 @@ $projectFile =~ s/\.plan$//;
 
 `rm -rf $dir/chunk_lists`;
 `mkdir -p $dir/chunk_lists/`;
+`rm /tmp/$whoami.meshinator.*.lock`;
 
 print "cmdCount = $cmdCount\n";
 for (my $i = 0; $i < $cmdCount; $i++) {
@@ -128,6 +129,9 @@ if (-t STDIN) {
     chomp ($answer);
     exit (0) if (uc ($answer) ne "Y");
 }
+sub doNothing
+{
+}
 
 sub runNode {
     my $cmd = $_[0];
@@ -135,7 +139,10 @@ sub runNode {
     my $logFile = $_[2];
     my $fNameAndPath = $_[3];
     my $lockFile = $_[4];
-    
+    my $pid = fork(); 
+    return if ($pid);
+
+    $SIG{INT} = \&doNothing;
     my $start = time();
     print "node $node: starting meshing...\n"; 
     my $result = `$cmd`;
@@ -181,9 +188,10 @@ sub meshinator {
             $countBackoff++;
 	    
             #if ($countBackoff > $maxThreadsToCreate) {
-            if ($countBackoff > $maxThreadsToCreate) {
+            if (1) {
                 $node = getIdlest();
                 print "Sending command to idle node $node.\n";
+                exit(0) if ($node eq "");
             }
     	    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
     	    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
