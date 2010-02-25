@@ -5,10 +5,7 @@ use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
 
-use Thread qw(async);
-use Thread::Queue;
 
-my $DataQueue = new Thread::Queue; 
 my $howMany = 0;
 my $whoami = `whoami`;
 chomp $whoami;
@@ -16,7 +13,7 @@ chomp $whoami;
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 300;
+my $maxThreadsToCreate = 3000;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -41,6 +38,8 @@ my @meshCommandHostInput;
 
 
 sub killAllOmnis {
+    exit(0) if (!-e "/tmp/$whoami.meshinator.kill.lock");
+    `rm /tmp/$whoami.meshinator.kill.lock`;
     `cd $meshinatorHome; ./killAllOmni.pl&`;
     exit(0);
 }
@@ -95,6 +94,7 @@ $projectFile =~ s/\.plan$//;
 `rm -rf $dir/chunk_lists`;
 `mkdir -p $dir/chunk_lists/`;
 `rm /tmp/$whoami.meshinator.*.lock`;
+`touch /tmp/$whoami.meshinator.kill.lock`;
 
 print "cmdCount = $cmdCount\n";
 for (my $i = 0; $i < $cmdCount; $i++) {
@@ -157,6 +157,7 @@ sub runNode {
     print "node $node: done meshing (".$timeSecs." seconds)\n";
 
     print `rm $lockFile`;
+    exit(0);
 }
 
 sub meshinator {
@@ -194,12 +195,15 @@ sub meshinator {
                 exit(0) if ($node eq "");
             }
     	    my $cmd = "ssh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
-    	    my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
-    	    push(@threads, $thr);
+    	    runNode ($cmd, $node, $logFile, $fNameAndPath, $lockFile);
+
+    	    #my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;
+    	    #push(@threads, $thr);
             $i++;
             print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out.\n";
+            sleep(1);
         } else {
-            print "no lock free?";
+            #print "no lock free?\n";
         }
     }
     foreach my $thread (@threads){ 
