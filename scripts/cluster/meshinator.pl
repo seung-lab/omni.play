@@ -10,11 +10,13 @@ use Thread::Queue;
 
 my $DataQueue = new Thread::Queue; 
 my $howMany = 0;
+my $whoami = `whoami`;
+chomp $whoami;
 
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 300;
+my $maxThreadsToCreate = 3000;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -106,7 +108,7 @@ my @idleHosts;
 sub getIdlest()
 {
     if (!scalar @idleHosts) {
-       my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | tail -n10`;
+       my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | grep -v Alarm | tail -n10`;
        @idleHosts = split (/\n/, $cmdOut);
     }
 
@@ -161,13 +163,14 @@ sub meshinator {
         my $node = $meshCommandHostInput[$i];
         my $outFileName = "$dir/chunk_lists/"."chunks--".$meshCommandHostInput[$i].".$num.txt";
         my $fNameAndPath = $outFileName;
-        my $logFile = $outFileName . ".log";
+        my $logFile = "/tmp/log.$whoami.meshinator.command.$i.log";
+
         my $lockFile;
     
         my $j;
         my $found = 0;
         for ($j = 0; $j < $maxThreadsToCreate; $j++) {
-           $lockFile = "$dir/$j.lock";
+           $lockFile = "/tmp/$whoami.meshinator.$j.lock";
            if (!-e $lockFile) {
               `touch $lockFile`;
               print "$lockFile free\n";
@@ -179,6 +182,7 @@ sub meshinator {
         if ($found) {
             $countBackoff++;
 	    
+            #if ($countBackoff > $maxThreadsToCreate) {
             if ($countBackoff > $maxThreadsToCreate) {
                 $node = getIdlest();
                 print "Sending command to idle node $node.\n";
@@ -189,7 +193,7 @@ sub meshinator {
             $i++;
             print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out.\n";
         } else {
-            sleep(1) if (0 == $i % 5);
+            print "no lock free?";
         }
     }
     foreach my $thread (@threads){ 

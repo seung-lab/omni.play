@@ -7,11 +7,18 @@ use POSIX;
 use Thread;
 
 select STDOUT; $| = 1;
+#$SIG{ALRM} = \&exitUptime;
+alarm 1;
+
+sub exitUptime
+{
+  print "exiting...";
+  exit(0);
+}
 
 (my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
 my $home = $path;
 my $hosts = "$home/hosts";
-
 
 sub runNode 
 {
