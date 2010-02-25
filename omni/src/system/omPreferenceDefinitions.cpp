@@ -15,7 +15,6 @@ void omSetDefaultAllPreferences()
 	omSetDefaultGuiPreferences();
 	omSetDefaultMeshPreferences();
 	omSetDefaultSegmentPreferences();
-	omSetDefaultSystemPreferences();
 	omSetDefaultView2dPreferences();
 	omSetDefaultView3dPreferences();
 }
@@ -59,12 +58,6 @@ void omSetDefaultSegmentPreferences()
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);
 }
 
-void omSetDefaultSystemPreferences()
-{
-	OmPreferences::Set(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT, 256.0f);
-	OmPreferences::Set(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, 128.0f);
-}
-
 void omSetDefaultView2dPreferences()
 {
 	OmPreferences::Set(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT, 500);
@@ -78,7 +71,6 @@ void omSetDefaultView2dPreferences()
 
 void omSetDefaultView3dPreferences()
 {
-
 	OmPreferences::Set(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F, Vector3f::ZERO);
 	OmPreferences::Set(OM_PREF_VIEW3D_FOCUS_STYLE_INT, 1);
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);

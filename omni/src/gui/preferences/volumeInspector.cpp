@@ -23,8 +23,6 @@ VolumeInspector::VolumeInspector(QWidget * parent)
 
 	grid->addWidget( makeSrcPropBox(), 0, 0 );
 	grid->addWidget( makeVolPropBox(), 1, 0 );
-	grid->addWidget( makeCachePropBox(), 2, 0 );
-	//grid->addWidget( makeAddDataBox(), 3, 0 );
 	grid->addWidget( makeNotesBox(), 4, 0 );
 	grid->setRowStretch( 5, 1 );
 
@@ -42,76 +40,6 @@ QGroupBox* VolumeInspector::makeNotesBox()
         notesEdit->setObjectName(QString("notesEdit"));
 	vbox->addWidget(notesEdit);
  
-	return groupBox;
-}
-
-/*
-QGroupBox* VolumeInspector::makeAddDataBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Add Data");
-	QVBoxLayout* vbox = new QVBoxLayout();
-	groupBox->setLayout( vbox );
-
-        addChannelButton = new QPushButton(groupBox);
-        addChannelButton->setObjectName(QString("addChannelButton"));
-	addChannelButton->setText("Add Channel");
-        vbox->addWidget(addChannelButton);
-
-        addSegmentationButton = new QPushButton(groupBox);
-        addSegmentationButton->setObjectName(QString("addSegmen"));
-        addSegmentationButton->setText("Add Segmentation");
-	vbox->addWidget(addSegmentationButton);
-
-	return groupBox;
-}
-*/
-QGroupBox* VolumeInspector::makeCachePropBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Cache Properties");
-	QGridLayout* gridLayout = new QGridLayout;
-	groupBox->setLayout( gridLayout );
-
-        QLabel* ramLabel = new QLabel(groupBox);
-        ramLabel->setObjectName(QString("ramLabel"));
-        ramLabel->setToolTip("(MB)");
-        ramLabel->setText("RAM Cache");
-        gridLayout->addWidget(ramLabel, 0, 0, 1, 1);
-
-        ramSlider = new QSlider(groupBox);
-        ramSlider->setObjectName(QString("ramSlider"));
-        ramSlider->setMinimum(100);
-        ramSlider->setMaximum(10000);
-        ramSlider->setSingleStep(1);
-        ramSlider->setOrientation(Qt::Horizontal);
-        ramSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(ramSlider, 0, 1, 1, 1);
-
-        ramSizeLabel = new QLabel(groupBox);
-        ramSizeLabel->setObjectName(QString("ramSizeLabel"));
-	ramSizeLabel->setText("size");
-        gridLayout->addWidget(ramSizeLabel, 1, 1, 1, 1);
-
-
-        vramSizeLabel = new QLabel(groupBox);
-        vramSizeLabel->setObjectName(QString("vramSizeLabel"));
-        vramSizeLabel->setText("size");
-        gridLayout->addWidget(vramSizeLabel, 3, 1, 1, 1);
-
-	vramSlider = new QSlider(groupBox);
-        vramSlider->setObjectName(QString("vramSlider"));
-        vramSlider->setMinimum(100);
-        vramSlider->setMaximum(10000);
-        vramSlider->setSingleStep(1);
-        vramSlider->setOrientation(Qt::Horizontal);
-        vramSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(vramSlider, 2, 1, 1, 1);
-
-        vramLabel = new QLabel(groupBox);
-        vramLabel->setObjectName(QString("vramLabel"));
-	vramLabel->setToolTip("(MB)");
-	vramLabel->setText("VRAM Cache");
-        gridLayout->addWidget(vramLabel, 2, 0, 1, 1);
-
 	return groupBox;
 }
 
@@ -250,12 +178,6 @@ void VolumeInspector::init_values()
 	int my_chunk_size = OmVolume::GetChunkDimension();
 	sizeSlider->setSliderPosition(my_chunk_size / 2);
 	sizeLabel->setNum(my_chunk_size);
-
-	ramSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT)));
-	ramSizeLabel->setNum(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT)));
-
-	vramSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT)));
-	vramSizeLabel->setNum(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT)));
 }
 
 void VolumeInspector::on_nameEdit_editingFinished()
@@ -324,18 +246,6 @@ void VolumeInspector::on_sizeSlider_valueChanged()
 	OmVolume::SetChunkDimension(sizeSlider->value() * 2);
 }
 
-void VolumeInspector::on_ramSlider_valueChanged()
-{
-	OmPreferences::SetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT, (ramSlider->value() * 1.0));
-	ramSizeLabel->setNum(ramSlider->value());
-}
-
-void VolumeInspector::on_vramSlider_valueChanged()
-{
-	OmPreferences::SetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, (vramSlider->value() * 1.0));
-	vramSizeLabel->setNum(vramSlider->value());
-}
-
 void VolumeInspector::SizeLabelUpdate()
 {
 	Vector3i dataExtent = OmVolume::GetDataDimensions();
@@ -354,4 +264,3 @@ void VolumeInspector::SizeLabelUpdate()
 	dimSizeLabel->setText(messageString);
 	return;
 }
-	

@@ -2,7 +2,7 @@
 #include "meshingChunkThreadManager.h"
 
 #include "system/omGarbage.h"
-#include "utility/omLocalConfiguration.h"
+#include "common/omLocalPreferences.h"
 
 MeshingManager::MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager )
 	: mSegmentationID(segmentationID)
@@ -34,7 +34,7 @@ int MeshingManager::getMaxAllowedNumberOfActiveChunks()
 
 int MeshingManager::getMaxAllowedNumberOfWorkerThreads()
 {
-	return OmLocalConfiguration::numAllowedWorkerThreads();
+	return OmLocalPreferences::numAllowedWorkerThreads();
 }
 
 void MeshingManager::addToFailedQueue( OmMipChunkCoord coord )

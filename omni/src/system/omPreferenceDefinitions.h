@@ -36,18 +36,16 @@ enum {
 	OM_PREF_GUI_UNDO_STR,						
 	OM_PREF_GUI_REDO_STR,						
 
-	
 	//MESH
 	OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT = 200,		
 	OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT,		
 	OM_PREF_MESH_REDUCTION_PERCENT_FLT,	
 	
 	//SEGMENT
-	
-	//SYSTEM
-	OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT = 400,
-	OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT,
 	       
+	//SYSTEM
+	CACHE_SIZE_PREFERENCES = 400,
+
 	//VIEW2D
 	OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT = 500,
 	OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT,
@@ -83,7 +81,6 @@ void omSetDefaultCommonPreferences();
 void omSetDefaultGuiPreferences();
 void omSetDefaultMeshPreferences();
 void omSetDefaultSegmentPreferences();
-void omSetDefaultSystemPreferences();
 void omSetDefaultView2dPreferences();
 void omSetDefaultView3dPreferences();
 

@@ -5,6 +5,7 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
+#include "common/omLocalPreferences.h"
 
 #define DEBUG 0
 
@@ -34,14 +35,13 @@ OmCacheManager::OmCacheManager()
 
 	//refresh prefs to call event listener
 	mCacheMap[RAM_CACHE_GROUP].MaxSize =
-	    OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
+	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);
 	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-	    OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
+	    OmLocalPreferences::getVRamCacheSize() * float (BYTES_PER_MB);
 }
 
 OmCacheManager::~OmCacheManager()
 {
-
 }
 
 OmCacheManager *OmCacheManager::Instance()
@@ -69,23 +69,10 @@ void OmCacheManager::Delete()
  */
 void OmCacheManager::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
-	//debug("FIXME", << "OmCacheManager::PreferenceChangeEvent" << endl;
-	switch (event->GetPreference()) {
-
-	case OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT:
-		mCacheMap[RAM_CACHE_GROUP].MaxSize =
-		    OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
-		break;
-
-	case OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT:
-		mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-		    OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
-		break;
-
-	default:
-		return;
-	}
-
+	mCacheMap[RAM_CACHE_GROUP].MaxSize =
+	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);
+	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
+	    OmLocalPreferences::getVRamCacheSize() * float (BYTES_PER_MB);
 }
 
 #pragma mark

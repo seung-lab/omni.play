@@ -6,6 +6,7 @@ SET(OM_COMMON_SRCS
 	omException.cpp
 	omGl.cpp
 	omStd.cpp
+	omLocalPreferences.cpp
 )
 
 
