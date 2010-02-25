@@ -26,7 +26,20 @@ sub runNode
     my $node = $_[0];
     my $uptime = `rsh ${node} uptime`;
     my @upsplit = split (/ /, $uptime);
+    return if (!scalar(@upsplit));
+
     $uptime = $upsplit[scalar(@upsplit) - 2];
+    my $magic = reverse($node);
+    chop($magic);
+    chop($magic);
+    $magic = reverse($magic);
+    if ($magic > 15) {
+      $magic = .5;
+    } else {
+      $magic = 1;
+    }
+    chop($uptime);
+    $uptime *= $magic;
     print "$uptime $node\n" if ("" ne $uptime);
 }
 
