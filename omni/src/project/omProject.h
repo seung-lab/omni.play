@@ -62,8 +62,8 @@ private:
 	static OmProject* mspInstance;
 	
 	//project
-	string mFileName;
-	string mDirectoryPath;
+	QString mFileName;
+	QString mDirectoryPath;
 
 	
 	friend class boost::serialization::access;

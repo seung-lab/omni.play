@@ -104,8 +104,14 @@ void processLine( QString line, QString fName )
 		unsigned int y = getNum( coords[1] );
 		unsigned int z = getNum( coords[2] );
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
+		time_t start;
+		time_t end;
+		double dif;
+
+		time (&start);
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
-		printf("done\n");
+		dif = difftime (end,start);
+		printf("meshing done (%.2lf secs)\n", dif );
 	} else if( "meshplan" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");

@@ -13,6 +13,7 @@
 #include "system/omProjectData.h"
 
 #include <QFile>
+#include <QFileInfo>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -70,6 +71,10 @@ void OmProject::Delete()
 
 void OmProject::New( QString fileNameAndPath )
 {
+	QFileInfo fileInfo( fileNameAndPath );
+	Instance()->mFileName = fileInfo.fileName();
+	Instance()->mDirectoryPath = fileInfo.filePath();
+
 	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Create();
 	OmProjectData::Open();
@@ -110,6 +115,10 @@ void OmProject::Commit()
 
 void OmProject::Load( QString fileNameAndPath )
 {
+	QFileInfo fileInfo( fileNameAndPath );
+	Instance()->mFileName = fileInfo.fileName();
+	Instance()->mDirectoryPath = fileInfo.filePath();
+
 	QFile projectFile( fileNameAndPath );
 	if( !projectFile.exists() ){
 		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
