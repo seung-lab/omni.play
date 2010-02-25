@@ -30,9 +30,10 @@ private:
 	//singleton
 	static OmLocalPreferences* mspInstance;
 
-	static void writeSetting( QString settingName, const int value );
-	static int readSetting( QString settingName );
-	static bool settingExists( QString settingName );
+	static void writeSetting( QString setting, const int value );
+	static unsigned int readSettingUInt( QString setting, const unsigned int defaultRet );
+	static bool settingExists( QString setting );
+
 	LocalPrefFiles* localPrefFiles;
 };
 
