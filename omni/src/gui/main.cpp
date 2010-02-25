@@ -110,6 +110,7 @@ void processLine( QString line, QString fName )
 
 		time (&start);
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
+		time (&end);
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );
 	} else if( "meshplan" == line ) {
