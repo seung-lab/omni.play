@@ -1519,28 +1519,49 @@ void quicky()
 
 void OmView2d::MoveUpStackCloserToViewer()
 {
-	quicky();
-	const float Depth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, Depth));
 
-	const int ViewDepth = data_coord.z;
-
-	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, ViewDepth + 1));
-
-	OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
+	SpaceCoord unit = DataToSpaceCoord(DataCoord(1,1,1));
+	SpaceCoord depth;
+	switch (mViewType){                                                                                           
+        case XY_VIEW:                                                                                              
+                depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+                depth.z+= unit.z;                                                            
+                OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW,depth.z);
+                break;                                                                                     
+        case XZ_VIEW:                                                                                              
+                depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);                     
+                depth.y+= unit.y;
+		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW,depth.y);     
+                break;                 
+        case YZ_VIEW:                                                                        
+                depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);          
+                depth.x+= unit.x;
+		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW,depth.x);  
+		break;
+        }    
 }
 
 void OmView2d::MoveDownStackFartherFromViewer()
 {
-	quicky();
-	const float Depth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, Depth));
-
-	const int ViewDepth = data_coord.z;
-
-	SpaceCoord space_coord = DataToSpaceCoord(DataCoord(0, 0, ViewDepth - 1));
-
-	OmStateManager::Instance()->SetViewSliceDepth(mViewType, space_coord.z);
+	SpaceCoord unit = DataToSpaceCoord(DataCoord(1,1,1));                                    
+        SpaceCoord depth;                                                                                 
+        switch (mViewType){                                                               
+        case XY_VIEW:                                                                     
+                depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+                depth.z-= unit.z; 
+      		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW,depth.z);   
+                break;  
+        case XZ_VIEW:                                                                                        
+                depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);                                      
+                depth.y-= unit.y;                                                                                 
+		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW,depth.y);                                 
+                break;                                   
+        case YZ_VIEW:                                                                                        
+                depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);                         
+                depth.x-= unit.x;                                                                             
+		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW,depth.x);                          
+                break;                                                                                       
+        }              
 }
 
 #pragma mark

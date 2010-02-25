@@ -120,6 +120,7 @@ void OmProject::Load( QString fileNameAndPath )
 
 	OmProjectData::Open();
 	OmProjectData::ArchiveRead < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
+	OmVolume::CheckDataResolution();
 }
 
 void OmProject::Close()

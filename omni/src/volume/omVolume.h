@@ -46,6 +46,7 @@ public:
 	static void SetDataDimensions(const Vector3i& dim);
 	static Vector3f GetDataResolution();
 	static bool SetDataResolution(const Vector3f& res);
+	static void CheckDataResolution();
 	static Vector2f GetStretchValues(ViewType plane);
 	static void SetStretchValues();
 	static int GetChunkDimension();

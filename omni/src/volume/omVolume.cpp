@@ -44,7 +44,7 @@ void
 	SetUserScale(Vector3i(1, 1, 1));
 	SetScale(Vector3i(10, 10, 10));
 
-	mDataResolution = Vector3i::ONE;
+	mDataResolution = Vector3f::ONE;
 	SetStretchValues();
 }
 
@@ -251,6 +251,14 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 	return SetScale(Instance()->mDataResolution * data_dims);
 }
 
+void OmVolume::CheckDataResolution()
+{
+	Vector3f res=Instance()->mDataResolution;
+	if ((res != Vector3i::ONE)&&(res != Vector3i::ZERO)){
+		Instance()->SetDataResolution( res);
+	}
+}	
+		
 int OmVolume::GetChunkDimension()
 {
 	return Instance()->mChunkDim;
