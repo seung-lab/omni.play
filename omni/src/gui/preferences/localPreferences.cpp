@@ -19,6 +19,9 @@ LocalPreferences::LocalPreferences(QWidget * parent)
 	init_cache_prop_values();
 
 	grid->setRowStretch( 4, 1 );
+
+        QMetaObject::connectSlotsByName(this);
+
 }
 
 QGroupBox* LocalPreferences::makeBoxGeneric( QLabel** label, QSlider** slider, QString title )

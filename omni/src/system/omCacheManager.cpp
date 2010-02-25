@@ -73,6 +73,8 @@ void OmCacheManager::PreferenceChangeEvent(OmPreferenceEvent * event)
 	    OmLocalPreferences::getRamCacheSize() * float (BYTES_PER_MB);
 	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
 	    OmLocalPreferences::getVRamCacheSize() * float (BYTES_PER_MB);
+
+	printf("omCacheManager: updated cache settings\n");
 }
 
 #pragma mark
