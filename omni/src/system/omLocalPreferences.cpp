@@ -19,6 +19,7 @@ OmLocalPreferences *OmLocalPreferences::Instance()
 	if (NULL == mspInstance) {
 		mspInstance = new OmLocalPreferences;
 		mspInstance->localPrefFiles = new LocalPrefFiles();
+		mspInstance->stickyCrosshairMode=NULL;
 	}	
 	return mspInstance;
 }
@@ -62,6 +63,25 @@ void OmLocalPreferences::setRamCacheSize(unsigned int size)
 {
 	writeSettingUInt("ram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+}
+
+bool OmLocalPreferences::getStickyCrosshairMode()
+{
+	if (Instance()->stickyCrosshairMode==NULL){
+		int defaultRet = 1;
+		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
+		Instance()->stickyCrosshairMode[0] = (bool) readSettingUInt( "stickyCrosshairMode", defaultRet );
+	} 
+	return Instance()->stickyCrosshairMode[0];		
+}
+
+void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
+{
+	if (Instance()->stickyCrosshairMode==NULL){
+		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
+	} 
+	Instance()->stickyCrosshairMode[0] = sticky;
+	writeSettingInt("stickyCrosshairMode", sticky);
 }
 
 unsigned int OmLocalPreferences::getVRamCacheSize()

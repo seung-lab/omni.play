@@ -7,13 +7,12 @@ LocalPreferences::LocalPreferences(QWidget * parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
 
-	QGroupBox* groupBox = new QGroupBox("Settings");
-	overallContainer->addWidget( groupBox );
 
-	QGridLayout *grid = new QGridLayout( groupBox );
-	grid->addWidget( makeNumberOfThreadsBox(), 0, 0 );
-	grid->addWidget( makeCachePropBox(), 1, 0 );
-	grid->setRowStretch( 4, 1 );
+
+
+	overallContainer->addWidget( makeNumberOfThreadsBox());
+	overallContainer->addWidget( makeCachePropBox());
+	overallContainer->insertStretch( 4, 1 );
 	init_cache_prop_values();
 
 	connect(numThreadsSlider, SIGNAL(valueChanged(int)), 

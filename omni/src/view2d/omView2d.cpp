@@ -22,7 +22,7 @@
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-
+#include "system/omLocalPreferences.h"
 #include "segment/omSegmentEditor.h"
 
 #include "common/omGl.h"
@@ -1494,13 +1494,18 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 	case Qt::Key_PageUp:
 		{
 			MoveUpStackCloserToViewer();
-
+			if (OmLocalPreferences::getStickyCrosshairMode()){
+				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+			}
 		}
 		break;
 	case Qt::Key_S:
 	case Qt::Key_PageDown:
 		{
 			MoveDownStackFartherFromViewer();
+			if (OmLocalPreferences::getStickyCrosshairMode()){
+				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+			}
 		}
 		break;
 
@@ -2948,11 +2953,27 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 
 	mDragX += drag.x / (zoomMipVector.y / 10.);
 	mDragY += drag.y / (zoomMipVector.y / 10.);
+
+
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		SpaceCoord depth;
+		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		ScreenCoord screenc=SpaceToScreenCoord(mViewType, depth);
+		screenc+=drag;
+		depth = ScreenToSpaceCoord(mViewType, screenc);
+		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
+		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
+		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	} else {
+	
+		
 	drag.x = mDragX;
 	drag.y = mDragY;
 	mDragX = mDragX - drag.x;
 	mDragY = mDragY - drag.y;
-
 	OmStateManager::Instance()->SetPanDistance(mViewType,
 						   Vector2 < int >(current_pan.x - drag.x, current_pan.y - drag.y));
 	SetViewSliceOnPan();
@@ -2967,6 +2988,7 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	DataCoord crosshairdata = SpaceToDataCoord(mDepthCoord);
 	debug("cross","crosshairdata.(x,y,z): (%i,%i,%i)\n",crosshairdata.x,crosshairdata.y,crosshairdata.z);
 	debug("cross","crosshair.x: %i   crosshair.y  %i  \n",crosshairCoord.x,crosshairCoord.y);
+	}
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
 }

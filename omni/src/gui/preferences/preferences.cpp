@@ -4,6 +4,7 @@
 #include "preferences2d.h"
 #include "preferencesMesh.h"
 #include "localPreferences.h"
+#include "localPreferences2d.h"
 
 Preferences::Preferences(QWidget *parent) : QDialog(parent)
 {
@@ -12,7 +13,8 @@ Preferences::Preferences(QWidget *parent) : QDialog(parent)
 void Preferences::showLocalPreferences()
 {
      tabs = new QTabWidget;
-     tabs->addTab(new LocalPreferences(this), "Settings" );
+     tabs->addTab(new LocalPreferences(this), "System" );
+     tabs->addTab(new LocalPreferences2d(this), "2D View" );
 
      closeButton = new QPushButton("&Close");
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));

@@ -890,11 +890,6 @@ void MainWindow::createToolbarActions()
 	connect(toolbarCrosshairAct, SIGNAL(triggered(bool)), this, SLOT(toolbarCrosshair(bool)));
 	toolbarCrosshairAct->setCheckable(true);
 
-	toolbarStickyCrosshairAct = new QAction(tr("&Sticky Crosshair"), this);
-	toolbarStickyCrosshairAct->setStatusTip(tr("Switches on Sticky Crosshairs"));
-	connect(toolbarStickyCrosshairAct, SIGNAL(triggered(bool)), this, SLOT(toolbarStickyCrosshair(bool)));
-	toolbarStickyCrosshairAct->setCheckable(true);
-
 	toolbarPanAct = new QAction(tr("&Pan"), this);
 	toolbarPanAct->setStatusTip(tr("Switches to Pan Mode"));
 	connect(toolbarPanAct, SIGNAL(triggered(bool)), this, SLOT(toolbarPan(bool)));
@@ -937,7 +932,6 @@ void MainWindow::addToolbars()
 	navigateToolBar = addToolBar(tr("Navigate"));
 	navigateToolBar->addAction(toolbarSelectAct);
 	navigateToolBar->addAction(toolbarCrosshairAct);
-	navigateToolBar->addAction(toolbarStickyCrosshairAct);
 	navigateToolBar->addAction(toolbarPanAct);
 	navigateToolBar->addAction(toolbarZoomAct);
 	navigateToolBar->addAction(toolbarVoxelizeAct);
@@ -1006,11 +1000,6 @@ void MainWindow::toolbarCrosshair(const bool checked)
 	toolbarToolChange(checked, toolbarCrosshairAct, CROSSHAIR_MODE);
 }
 
-void MainWindow::toolbarStickyCrosshair(const bool checked)
-{
-	toolbarToolChange(checked, toolbarStickyCrosshairAct, STICKY_CROSSHAIR_MODE);
-}
-
 void MainWindow::toolbarPan(const bool checked)
 {
 	toolbarToolChange(checked, toolbarPanAct, PAN_MODE);
@@ -1068,7 +1057,6 @@ void MainWindow::resetViewTools()
 {
 	resetTool(toolbarSelectAct, true);
 	resetTool(toolbarCrosshairAct, true);
-	resetTool(toolbarStickyCrosshairAct, true);
 	resetTool(toolbarPanAct, true);
 	resetTool(toolbarZoomAct, true);
 	resetTool(toolbarVoxelizeAct, true);
@@ -1204,9 +1192,6 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 		break;
 	case CROSSHAIR_MODE:
 		toolbarToolChange(true, toolbarCrosshairAct, CROSSHAIR_MODE);
-		break;
-	case STICKY_CROSSHAIR_MODE:
-		toolbarToolChange(true, toolbarStickyCrosshairAct, STICKY_CROSSHAIR_MODE);
 		break;
 	case ZOOM_MODE:
 		toolbarToolChange(true, toolbarZoomAct, ZOOM_MODE);

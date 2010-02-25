@@ -91,7 +91,6 @@ class MainWindow
 		void ChangeModeModify(bool checked);
 		void toolbarSelect(bool checked);
 		void toolbarCrosshair(bool checked);
-		void toolbarStickyCrosshair(const bool checked);
 		void toolbarPan(bool checked);
 		void toolbarZoom(bool checked);
 		void toolbarBrush(bool checked);

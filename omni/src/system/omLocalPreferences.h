@@ -18,6 +18,8 @@ public:
 	static void setRamCacheSize(const unsigned int);
 	static unsigned int getVRamCacheSize();
 	static void setVRamCacheSize(const unsigned int);
+	static bool getStickyCrosshairMode();
+	static void setStickyCrosshairMode(bool sticky);
 
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
@@ -42,6 +44,7 @@ private:
 	
 	static bool settingExists( QString setting );
 
+	bool * stickyCrosshairMode;
 	LocalPrefFiles* localPrefFiles;
 };
 

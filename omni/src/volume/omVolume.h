@@ -114,7 +114,7 @@ private:
 	DataBbox mDataExtent;
 	Vector3f mDataResolution;	//units per voxel
 	Vector3f mDataStretchValues;
-	int mChunkDim;
+int mChunkDim;
 	QString unitString;
 	
 	//data managers

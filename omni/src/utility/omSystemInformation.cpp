@@ -9,7 +9,7 @@ unsigned int OmSystemInformation::get_num_cores()
 
 	if( boost_num_cores < 1  ||
 	    boost_num_cores > 32 ){
-		printf("boost did not find correct number of cores (found %d)...\n, boost_num_cores");
+		printf("boost did not find correct number of cores (found %d)...\n", boost_num_cores);
 		return 2;
 	}
 
