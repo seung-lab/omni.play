@@ -43,12 +43,13 @@ int OmLocalPreferences::numAllowedWorkerThreads()
 	if( 1 == numCoresRaw ){
 		numCores = 1;
 	}
-	return numCores;
+
+	return readSettingInt( "numThreads", numCores );
 }
 
 void OmLocalPreferences::setNumAllowedWorkerThreads( const int numThreads )
 {
-	printf("fix me!\n");
+	writeSettingInt( "numThreads", numThreads );
 }
 
 unsigned int OmLocalPreferences::getRamCacheSize()
@@ -59,7 +60,7 @@ unsigned int OmLocalPreferences::getRamCacheSize()
 
 void OmLocalPreferences::setRamCacheSize(unsigned int size)
 {
-	writeSetting("ram", size);
+	writeSettingUInt("ram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
@@ -69,15 +70,20 @@ unsigned int OmLocalPreferences::getVRamCacheSize()
 	return readSettingUInt( "vram", defaultRet );
 }
 
-void OmLocalPreferences::setVRamCacheSize(unsigned int size)
+void OmLocalPreferences::setVRamCacheSize(const unsigned int size)
 {
-	writeSetting("vram", size);
+	writeSettingUInt("vram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 }
 
-void OmLocalPreferences::writeSetting( QString setting, const int value )
+void OmLocalPreferences::writeSettingUInt( QString setting, const unsigned int value )
 {
-	printf("fix me!\n");
+	Instance()->localPrefFiles->writeSettingUInt( setting, value );
+}
+
+void OmLocalPreferences::writeSettingInt( QString setting, const int value )
+{
+	Instance()->localPrefFiles->writeSettingInt( setting, value );
 }
 
 unsigned int OmLocalPreferences::readSettingUInt( QString setting, const unsigned int defaultRet )
@@ -88,6 +94,19 @@ unsigned int OmLocalPreferences::readSettingUInt( QString setting, const unsigne
 
 	try{
 		return Instance()->localPrefFiles->readSettingUInt( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+int OmLocalPreferences::readSettingInt( QString setting, const int defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingInt( setting  );
 	} catch (...) {
 		return defaultRet;
 	}

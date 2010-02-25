@@ -30,13 +30,13 @@ void LocalPrefFiles::setupPrefFolder()
 		prefFolder = dir;
 	} else {
 		printf("could not make folder %s\n", qPrintable(omniFolderPath));
-		assert(0);
+		throw new OmIoException( "could not create .omni" );
 	}
 }
 
 QString LocalPrefFiles::getFileName( QString setting )
 {
-	return QString("%s.txt").arg(setting);
+	return prefFolder.filePath( setting + QString(".txt") );
 }
 
 bool LocalPrefFiles::checkIfSettingExists( QString setting )
@@ -63,6 +63,23 @@ QStringList LocalPrefFiles::readFile( QString setting )
 	return lines;
 }
 
+int LocalPrefFiles::readSettingInt( QString setting )
+{
+	QStringList lines = readFile( setting );
+	if( 0 == lines.size() ){
+		throw new OmIoException( "no preference found" );
+	}
+
+	bool ok;
+	uint ret = lines[0].toInt(&ok, 10);
+
+	if(!ok){
+		throw new OmIoException( "could not parse preference" );
+	}
+	
+	return ret;
+}
+
 unsigned int LocalPrefFiles::readSettingUInt( QString setting )
 {
 	QStringList lines = readFile( setting );
@@ -78,4 +95,26 @@ unsigned int LocalPrefFiles::readSettingUInt( QString setting )
 	}
 	
 	return ret;
+}
+
+void LocalPrefFiles::writeSettingUInt( QString setting, const unsigned int value )
+{
+	QFile file(getFileName( setting ) );
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		throw new OmIoException( "could not write file" );
+	}
+
+	QTextStream out(&file);
+	out << QString::number( value );
+}
+
+void LocalPrefFiles::writeSettingInt( QString setting, const int value )
+{
+	QFile file(getFileName( setting ) );
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		throw new OmIoException( "could not write file" );
+	}
+
+	QTextStream out(&file);
+	out << QString::number( value );
 }
