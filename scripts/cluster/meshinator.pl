@@ -147,9 +147,7 @@ sub runNode {
 
     my $end = time();
     my $timeSecs = ($end - $start);
-    my $chunkCoord = `tail -n 1 $fNameAndPath`;
-    chomp( $chunkCoord );
-    print "node $node: done meshing $chunkCoord (".$timeSecs." seconds)\n";
+    print "node $node: done meshing (".$timeSecs." seconds)\n";
 
     print `rm $lockFile`;
 }
