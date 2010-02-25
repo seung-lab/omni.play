@@ -2017,3 +2017,36 @@ $2 = {static null = {<No data fields>}, static shared_null = {ref = {_q_value = 
       _q_value = 6}, alloc = 0, size = 0, data = 0x1d0bcba, clean = 0, simpletext = 0,
     righttoleft = 0, asciiCache = 0, capacity = 0, reserved = 0, array = {0}},
   d = 0x7f13b424dd10, static codecForCStrings = 0x0}
+
+
+
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+    srcCopyBbox=@0x7fffef28ac40)
+    at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
+653             srcData->GetExtent(src_data_extent);
+(gdb) bt
+#0  0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+    srcCopyBbox=@0x7fffef28ac40)
+    at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
+#1  0x00000000007c6ca2 in OmMipChunk::ExtractDataSlice (this=0x1b739fa0, 
+    plane=VOL_XY_PLANE, offset=35, sliceDims=@0x7fffef28adf0, fast=true)
+    at /Users/purcaro/omni.staging/omni/src/volume/omMipChunk.cpp:707
+#2  0x0000000000802432 in OmView2d::GetImageData (this=0x1b79a470, 
+    key=@0x1b73a19c, sliceDims=@0x7fffef28adf0, vol=0x1b638290)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2244
+#3  0x0000000000802f74 in OmView2d::myBindToTextureID (this=0x1b79a470, 
+    gotten_id={px = 0x7fffef28b080, pn = {pi_ = 0x1b79a470}})
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2271
+#4  0x00000000008045df in OmView2d::PreDraw (this=0x1b79a470, zoomMipVector=
+      {{{x = -282545632, y = 32767}, {min = -282545632, max = 32767}, xy = {-282545632, 32767}, array = {-282545632, 32767}}, static ZERO = <optimized out>})
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2444
+#5  0x000000000080524e in OmView2d::Draw (this=0x1b79a470, mip=0)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2056
+#6  0x000000000080554d in OmView2d::DrawFromCache (this=0x1b79a470)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:1890
+#7  0x000000000080c128 in OmView2d::safePaintEvent (this=0x1b79a470, 
+    event=0x7fffef28c280)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:376
+---Type <return> to continue, or q <return> to quit---
