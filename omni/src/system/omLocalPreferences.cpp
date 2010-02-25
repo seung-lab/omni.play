@@ -116,3 +116,27 @@ bool OmLocalPreferences::settingExists( QString setting )
 {
 	return Instance()->localPrefFiles->checkIfSettingExists( setting );
 }
+
+QStringList OmLocalPreferences::readSettingQStringList( QString setting, QStringList defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingQStringList( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+QStringList OmLocalPreferences::getRecentlyUsedFilesNames()
+{
+	QStringList empty;
+	return readSettingQStringList( "recentlyOpenedFiles", empty );
+}
+
+void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
+{
+	Instance()->localPrefFiles->writeSettingQStringList( "recentlyOpenedFiles", values );
+}

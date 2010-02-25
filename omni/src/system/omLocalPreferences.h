@@ -19,6 +19,9 @@ public:
 	static unsigned int getVRamCacheSize();
 	static void setVRamCacheSize(const unsigned int);
 
+	static QStringList getRecentlyUsedFilesNames();
+	static void setRecentlyUsedFilesNames( QStringList values);
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmLocalPreferences();
@@ -32,8 +35,11 @@ private:
 
 	static void writeSettingInt( QString setting, const int value );
 	static void writeSettingUInt( QString setting, const unsigned int value );
+
 	static unsigned int readSettingUInt( QString setting, const unsigned int defaultRet );
 	static int readSettingInt( QString setting, const int defaultRet );
+	static QStringList readSettingQStringList( QString setting, QStringList defaultRet );
+	
 	static bool settingExists( QString setting );
 
 	LocalPrefFiles* localPrefFiles;

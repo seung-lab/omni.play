@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "common/omDebug.h"
+#include "system/omLocalPreferences.h"
 
 /********************************************
 /* helper class to track recently created/opened files
@@ -54,11 +55,7 @@ void RecentFileList::addFile(QString rel_fnpn)
 	QFileInfo fInfo(rel_fnpn);
 	QString fnpn = fInfo.absoluteFilePath();
 
-	// remove duplicate file name
-	if (recentFiles.contains(fnpn)) {
-		recentFiles.removeAt(recentFiles.indexOf(fnpn));
-	}
-
+	recentFiles.removeAll( fnpn );
 	recentFiles.prepend(fnpn);
 	writeRecentlyUsedFileListToFS();
 	updateRecentFilesMenu();
@@ -76,38 +73,12 @@ void RecentFileList::updateRecentFilesMenu()
 	}
 }
 
-QString RecentFileList::getRecentlyUsedFilesName()
-{
-	char *homeStr = getenv("HOME");
-	if (NULL == homeStr) {	//TODO: is there a better way to handle this error?
-		//debug("FIXME", << "could not get HOME folder path\n";
-		return QString("");
-	}
-	return QString(homeStr) + "/.omni/recentlyOpenedFiles.txt";
-}
-
 void RecentFileList::loadRecentlyUsedFilesListFromFS()
 {
-	QString fname = getRecentlyUsedFilesName();
+	QStringList allFiles = OmLocalPreferences::getRecentlyUsedFilesNames();
 
-	if (!QFile::exists(fname)) {
-		// Silently ignore this failure. MW 2010-01-8
-		// //debug("FIXME", << "could not find most recently-used files list at \"" 
-		//      << qPrintable(getRecentlyUsedFilesName()) << "\"\n";
-		return;
-	}
-
-	QFile file(fname);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		// //debug("FIXME", << "could not read most recently-used files list at \"" 
-		//      << qPrintable( getRecentlyUsedFilesName()) << "\"\n";
-		return;
-	}
-
-	QTextStream in(&file);
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		recentFiles.append(line);
+	for (int i = 0; i < allFiles.size(); i++) {
+		recentFiles.append( allFiles.at(i) );
 	}
 
 	updateRecentFilesMenu();
@@ -115,15 +86,5 @@ void RecentFileList::loadRecentlyUsedFilesListFromFS()
 
 void RecentFileList::writeRecentlyUsedFileListToFS()
 {
-	QFile file(getRecentlyUsedFilesName());
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		// //debug("FIXME", << "could not write most recently-used files list at \"" 
-		//      << qPrintable( getRecentlyUsedFilesName() ) << "\"\n";
-		return;
-	}
-
-	QTextStream out(&file);
-	for (int i = 0; i < getNumberOfFilesToShow(); i++) {
-		out << recentFiles.at(i) << endl;
-	}
+	OmLocalPreferences::setRecentlyUsedFilesNames( recentFiles );
 }

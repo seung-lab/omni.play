@@ -26,7 +26,6 @@ class RecentFileList
 	int getNumberOfFilesToShow();
 	QStringList recentFiles;
 	void updateRecentFilesMenu();
-	QString getRecentlyUsedFilesName();
 	void writeRecentlyUsedFileListToFS();
 };
 

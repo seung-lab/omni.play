@@ -118,3 +118,21 @@ void LocalPrefFiles::writeSettingInt( QString setting, const int value )
 	QTextStream out(&file);
 	out << QString::number( value );
 }
+
+QStringList LocalPrefFiles::readSettingQStringList( QString setting )
+{
+	return readFile( setting );
+}
+
+void LocalPrefFiles::writeSettingQStringList( QString setting, QStringList values )
+{
+	QFile file(getFileName( setting ) );
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		throw new OmIoException( "could not write file" );
+	}
+
+	QTextStream out(&file);
+	for (int i = 0; i < values.size(); i++) {
+		out << values.at(i) << endl;
+	}
+}
