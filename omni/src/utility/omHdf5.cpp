@@ -87,6 +87,7 @@ void OmHdf5::flush ()
 
 void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk)
 {
+	if (!size) return;
 	if (bulk) {
 		OmGarbage::Lock ();
 		void * copy = malloc (size);
