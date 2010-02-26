@@ -28,7 +28,7 @@ sub runNode
     my @upsplit = split (/ /, $uptime);
     return if (!scalar(@upsplit));
 
-    $uptime = $upsplit[scalar(@upsplit) - 2];
+    $uptime = $upsplit[scalar(@upsplit) - 3];
     my $magic = reverse($node);
     chop($magic);
     chop($magic);

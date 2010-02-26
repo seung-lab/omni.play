@@ -8,14 +8,14 @@ use POSIX;
 
 my $howMany = 0;
 my $whoami = `whoami`;
-chomp $whoami;
+chomp($whoami);
 
 
 $SIG{INT} = \&killAllOmnis;
 
-my $maxThreadsToCreate = 300;
+my $maxThreadsToCreate = 800;
 my $minThreadsToCreate = 30;
-my $initialPound = 50;
+my $initialPound = 30;
 
 my $numMeshProcessesPerHost = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -95,7 +95,7 @@ $projectFile =~ s/\.plan$//;
 
 `rm -rf $dir/chunk_lists`;
 `mkdir -p $dir/chunk_lists/`;
-`rm /tmp/$whoami.meshinator.*.lock`;
+`rm /tmp/$whoami.meshinator*`;
 `touch /tmp/$whoami.meshinator.kill.lock`;
 
 print "cmdCount = $cmdCount\n";
@@ -107,25 +107,35 @@ for (my $i = 0; $i < $cmdCount; $i++) {
     print OUT_FILE $meshCommandChunkInputs[$i];
     close OUT_FILE;
 }
-my @idleHosts;
-sub getIdlest()
+my @idleHosts=();
+sub getIdlest
 {
+    my $backoff = $_[0];
+    my $cmdOut;
     if (!scalar @idleHosts) {
-       my $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | grep -v Alarm | tail -n10`;
+       $cmdOut = `$meshinatorHome/upTime.pl | sort -rn | grep -v Alarm | tail -n10`;
+       chop($cmdOut);
+       #print "$cmdOut\n";
        @idleHosts = split (/\n/, $cmdOut);
     }
 
     my $theOne = pop @idleHosts;
+    #print "theone = $theOne\n";
 
     my $uptime;
     my $idleNode;
  
-    ($uptime, $idleNode) = split (" ", $theOne);
-    chop($uptime);
-    return $idleNode if ($uptime ne "" && $uptime < 4);
-    return "";
+    ($uptime, $idleNode) = split (/ /, $theOne);
+
+    if ($backoff < $initialPound) {
+        return $idleNode if ($uptime ne "" && $uptime < 1);
+        return "";
+    } else {
+        return $idleNode if ($uptime ne "" && $uptime < 4);
+        return "";
+    }
 }
-print "Current idle node is " . getIdlest() . "\n";
+print "Current idle node is " . getIdlest(1) . "\n";
 
 if (-t STDIN) {
     print "proceed to run on cluster? :";
@@ -169,6 +179,9 @@ sub meshinator {
     my $backoff = 0;
     my @threads;
     my $start = time();
+    my $useLastOne = 0;
+    my $lastOne = "";
+    my $threadsToCreate = $maxThreadsToCreate;
 
     for (my $i = 0; $i < $cmdCount;) {
         my $num = $i;
@@ -183,9 +196,8 @@ sub meshinator {
         my $found = 0;
        
         # As we get closer to the end, we need to make less threads.
-        $maxThreadsToCreate = $cmdCount - ($i + $maxThreadsToCreate);
-        $maxThreadsToCreate = $minThreadsToCreate if ($maxThreadsToCreate < $minThreadsToCreate);
-        for ($j = 0; $j < $maxThreadsToCreate; $j++) {
+        $threadsToCreate = $maxThreadsToCreate if ($threadsToCreate > $maxThreadsToCreate);
+        for ($j = 0; $j < $threadsToCreate; $j++) {
            $lockFile = "/tmp/$whoami.meshinator.$j.lock";
            if (!-e $lockFile) {
               `touch $lockFile`;
@@ -199,10 +211,16 @@ sub meshinator {
             $countBackoff++;
 	    
             #if ($countBackoff > $maxThreadsToCreate) {
-            if (1) {
-                $node = getIdlest();
+            if (!$useLastOne) {
+                $node = getIdlest($i);
+                $useLastOne = 0;
+                $lastOne = $node;
                 #print "Sending command to idle node $node.\n";
+                `rm  $lockFile` if ($node eq "");
                 next if ($node eq "");
+            } else {
+                $useLastOne--;
+                $node = $lastOne;
             }
 	    $connectcount{$node}++;
     	    my $cmd = "rsh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
@@ -213,9 +231,12 @@ sub meshinator {
             $i++;
 
             my $timeSecs = (time() - $start);
-            print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . 
-		"% farmed out in $timeSecs seconds.\n";
-            #sleep(1) if ($countBackoff > $initialPound && !($countBackoff > $initialPound *2) );
+            #if (0 == $i % $initialPound) {
+	       print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out in $timeSecs seconds.\n";
+            #}
+            if ($i < $initialPound) {
+                sleep($initialPound - $i);
+            }
         } else {
             #print "no lock free?\n";
             sleep(1);
