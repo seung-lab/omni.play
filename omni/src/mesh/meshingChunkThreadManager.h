@@ -26,6 +26,7 @@ class MeshingChunkThreadManager : public QThread
  private:
 	OmMipChunkCoord mCoord;
 	void setupValuesToMesh( shared_ptr < OmMipChunk > chunk );
+	int numberOfThreadsToUseForThisChunk( const int totalNumValuesToMesh );
 };
 
 #endif

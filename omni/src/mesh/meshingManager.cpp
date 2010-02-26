@@ -18,6 +18,11 @@ void MeshingManager::setNumThreads( const int numThreads )
 	numThreadOverride = numThreads;
 }
 
+int MeshingManager::getNumThreadOverride() 
+{ 
+	return numThreadOverride; 
+}
+
 void MeshingManager::addToQueue( const OmMipChunkCoord coord )
 {
 	mChunkCoords.enqueue( coord );

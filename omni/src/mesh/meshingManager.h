@@ -16,12 +16,13 @@ class MeshingManager : public QThread
 	MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager );
 	void addToQueue( const OmMipChunkCoord coord );
 	void setNumThreads( const int numThreads );
+	int getNumThreadOverride();
 	void run();
 
 	OmId getSegmentationID() { return mSegmentationID; }
 
 	QSemaphore* num_chunks_done; // indicates when meshManager is done
-	QSemaphore* num_chunk_threads_active; // limit number of chunks being worked on at once
+	QSemaphore* num_chunk_threads_active; // number of chunks being worked on at once
 	QSemaphore* num_worker_threads_active; // limit total number of threads running VTK meshing pipeline
 	
 	OmMipMeshManager * mMipMeshManager;

@@ -40,6 +40,25 @@ void MeshingChunkThreadManager::setupValuesToMesh( shared_ptr < OmMipChunk > chu
 	}
 }
 
+int MeshingChunkThreadManager::numberOfThreadsToUseForThisChunk( const int totalNumValuesToMesh )
+{
+	const int numThreadOverride = mMeshManager->getNumThreadOverride();
+	if (numThreadOverride > 0 ){
+		return numThreadOverride;
+	}
+
+	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
+	int num_threads_to_use = 1;
+	if( totalNumValuesToMesh > 50 ){
+		num_threads_to_use = totalNumValuesToMesh / 50.0 + 1;
+		if (num_threads_to_use > maxNumWorkerThreads ) {
+			num_threads_to_use = maxNumWorkerThreads;
+		}
+	}
+
+	return num_threads_to_use;
+}
+
 void MeshingChunkThreadManager::run()
 {
 	shared_ptr < OmMipChunk > chunk = shared_ptr < OmMipChunk > ();
@@ -48,7 +67,6 @@ void MeshingChunkThreadManager::run()
 	setupValuesToMesh( chunk );
 
 	const int totalNumValuesToMesh = valuesToMesh.size();
-	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
 
 	if( totalNumValuesToMesh > 0 ){
 		if( totalNumValuesToMesh > 50000 ){
@@ -63,13 +81,7 @@ void MeshingChunkThreadManager::run()
 		mpCurrentMeshSource->Copy(*mpCurrentMeshSource);
 		mCurrentMipCoord = chunk->GetCoordinate();
 
-		int num_threads_to_use = 1;
-		if( totalNumValuesToMesh > 50 ){
-			num_threads_to_use = totalNumValuesToMesh / 50.0 + 1;
-			if (num_threads_to_use > maxNumWorkerThreads ) {
-				num_threads_to_use = maxNumWorkerThreads;
-			}
-		}
+		int num_threads_to_use = numberOfThreadsToUseForThisChunk( totalNumValuesToMesh );
 
 		num_threads_done = new QSemaphore(0);
 		for( int i = 0; i < num_threads_to_use; i++ ){
