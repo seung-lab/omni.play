@@ -15,7 +15,7 @@ class MeshingChunkThreadManager : public QThread
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 
-	QQueue< SEGMENT_DATA_TYPE > valuesToMesh;
+
 	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
 
 	QSemaphore* num_threads_done;
@@ -24,9 +24,12 @@ class MeshingChunkThreadManager : public QThread
 	MeshingManager* mMeshManager;
 
  private:
+	SegmentDataSet valuesToMesh;
 	OmMipChunkCoord mCoord;
 	void setupValuesToMesh( shared_ptr < OmMipChunk > chunk );
 	int numberOfThreadsToUseForThisChunk( const int totalNumValuesToMesh );
+	unsigned int totalNumValuesToMesh;
+	void getDataAndSpawnWorkerThread( shared_ptr < OmMipChunk > chunk );
 };
 
 #endif
