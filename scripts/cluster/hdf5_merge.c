@@ -122,7 +122,8 @@ int main (int argc, char *argv[])
       {
         fprintf (stderr, "ERROR: Cannot open HDF5 input file '%s' !\n\n",
                  argv[i + 1]);
-        return (-1);
+        //return (-1);
+        continue;
       }
     }
 
@@ -152,13 +153,17 @@ int main (int argc, char *argv[])
     printf ("\n  Merging objects from input file '%s' into output file '%s'\n",
             argv[i + 1], argv[argc-1]);
     pathname = "";
-    CHECK_ERROR (H5Giterate (infiles[i], "/", NULL, CopyObject, &outfile));
+    if (infiles[i] > 0) {
+      CHECK_ERROR (H5Giterate (infiles[i], "/", NULL, CopyObject, &outfile));
+    }
   }
 
   /* finally, close all open files */
   for (i = 0; i < argc - 2; i++)
   {
-    CHECK_ERROR (H5Fclose (infiles[i]));
+    if (infiles[i] < 0) {
+      CHECK_ERROR (H5Fclose (infiles[i]));
+    }
   }
   CHECK_ERROR (H5Fclose (outfile));
   free (infiles);
