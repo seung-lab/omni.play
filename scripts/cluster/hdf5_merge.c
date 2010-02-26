@@ -161,7 +161,7 @@ int main (int argc, char *argv[])
   /* finally, close all open files */
   for (i = 0; i < argc - 2; i++)
   {
-    if (infiles[i] < 0) {
+    if (infiles[i] > 0) {
       CHECK_ERROR (H5Fclose (infiles[i]));
     }
   }
@@ -226,6 +226,7 @@ static herr_t CopyObject (hid_t from,
                           void *_to)
 {
   int i;
+  int dontCreate = 0;
   hid_t to, datatype, dataspace;
   H5G_stat_t objectinfo;
   char *current_pathname;
@@ -245,7 +246,8 @@ static herr_t CopyObject (hid_t from,
   {
     printf ("   object '%s/%s' will not be copied (already exists)\n",
             pathname, objectname);
-    return (0);
+    dontCreate = 1;
+    //return (0);
   }
 
   /* build the full pathname for the current to object to process */
@@ -261,7 +263,7 @@ static herr_t CopyObject (hid_t from,
     printf ("   copying group '%s'\n", pathname);
 
     CHECK_ERROR (from = H5Gopen (from, objectname));
-    CHECK_ERROR (to = H5Gcreate (to, objectname, 0));
+    if (!dontCreate) CHECK_ERROR (to = H5Gcreate (to, objectname, 0));
     /* iterate over all objects in the (first) input file */
     CHECK_ERROR (H5Giterate (from, ".", NULL, CopyObject, &to));
     CHECK_ERROR (H5Aiterate (from, NULL, CopyAttribute, &to));
