@@ -264,6 +264,7 @@ static herr_t CopyObject (hid_t from,
 
     CHECK_ERROR (from = H5Gopen (from, objectname));
     if (!dontCreate) CHECK_ERROR (to = H5Gcreate (to, objectname, 0));
+    else CHECK_ERROR ( to = H5Gopen (to, objectname));
     /* iterate over all objects in the (first) input file */
     CHECK_ERROR (H5Giterate (from, ".", NULL, CopyObject, &to));
     CHECK_ERROR (H5Aiterate (from, NULL, CopyAttribute, &to));
@@ -277,8 +278,10 @@ static herr_t CopyObject (hid_t from,
     CHECK_ERROR (from = H5Dopen (from, objectname));
     CHECK_ERROR (datatype = H5Dget_type (from));
     CHECK_ERROR (dataspace = H5Dget_space (from));
+
     CHECK_ERROR (to = H5Dcreate (to, objectname, datatype, dataspace,
                                  H5P_DEFAULT));
+
     objectsize = H5Sget_select_npoints (dataspace) * H5Tget_size (datatype);
     if (objectsize > 0)
     {
