@@ -1,0 +1,1 @@
+gcc hdf5_merge.c -I /home/mwimer/staging/external/libs/HDF5/include/ -L /home/mwimer/staging/external/libs/HDF5/lib -lhdf5 -lm -lrt -lpthread -lz -o hdf5_merge
