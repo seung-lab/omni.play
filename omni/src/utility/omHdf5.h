@@ -9,24 +9,16 @@ using std::string;
 #include "volume/omVolumeTypes.h"
 #include "omHdf5LowLevel.h"
 #include "omHdf5Helpers.h"
+#include "omHdf5Dataset.h"
 
 class vtkImageData;
-
-class OmHdf5DataSet {
-public:
-	OmHdf5DataSet (string inname, int insize, const void* indata) : name(inname), size(insize), data(indata) {}
-
-	string name;
-	int size;
-	const void* data;
-};
 
 class OmHdf5 
 {
  public:
 	OmHdf5( QString fileNameAndPath );
 
-	string getFileNameAndPathCstr();
+	string getFileNameAndPathString();
 	QString getFileNameAndPath();
 
 	void create();

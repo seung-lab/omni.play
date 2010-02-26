@@ -11,53 +11,53 @@ QString OmHdf5::getFileNameAndPath()
 	return m_fileNameAndPath;
 }
 
-string OmHdf5::getFileNameAndPathCstr()
+string OmHdf5::getFileNameAndPathString()
 {
 	return m_fileNameAndPath.toStdString();
 }
 
 void OmHdf5::create()
 {
-	om_hdf5_file_create( getFileNameAndPathCstr() );
+	om_hdf5_file_create( getFileNameAndPathString() );
 }
 
 bool OmHdf5::group_exists( string name )
 {
-	return om_hdf5_group_exists(getFileNameAndPathCstr(), name.c_str());
+	return om_hdf5_group_exists(getFileNameAndPathString(), name.c_str());
 }
 
 void OmHdf5::group_delete( string name )
 {
-	om_hdf5_group_delete(getFileNameAndPathCstr(), name.c_str());
+	om_hdf5_group_delete(getFileNameAndPathString(), name.c_str());
 }
 
 bool OmHdf5::dataset_exists( string name )
 {
-	return om_hdf5_dataset_exists(getFileNameAndPathCstr(), name.c_str());
+	return om_hdf5_dataset_exists(getFileNameAndPathString(), name.c_str());
 }
 
 void OmHdf5::dataset_image_create_tree_overwrite( string & name, Vector3 < int >dataDims, 
 						  Vector3 < int >chunkDims, int bytesPerSample) 
 {
-	om_hdf5_dataset_image_create_tree_overwrite(getFileNameAndPathCstr(), name.c_str(), 
+	om_hdf5_dataset_image_create_tree_overwrite(getFileNameAndPathString(), name.c_str(), 
 						    dataDims, chunkDims, bytesPerSample );
 }
 
 vtkImageData* OmHdf5::dataset_image_read_trim( string name, DataBbox dataExtent, int bytesPerSample)
 {
-	return om_hdf5_dataset_image_read_trim(getFileNameAndPathCstr(), name.c_str(), dataExtent, bytesPerSample);
+	return om_hdf5_dataset_image_read_trim(getFileNameAndPathString(), name.c_str(), dataExtent, bytesPerSample);
 }
 
 void OmHdf5::dataset_image_write_trim( string name, DataBbox dataExtent, 
 				       int bytesPerSample, vtkImageData *pImageData)
 {
-	om_hdf5_dataset_image_write_trim(getFileNameAndPathCstr(), name.c_str(), 
+	om_hdf5_dataset_image_write_trim(getFileNameAndPathString(), name.c_str(), 
 					 dataExtent, bytesPerSample, pImageData);
 }
 
 void* OmHdf5::dataset_raw_read( string name, int* size)
 {
-	return om_hdf5_dataset_raw_read(getFileNameAndPathCstr(), name.c_str(), size);
+	return om_hdf5_dataset_raw_read(getFileNameAndPathString(), name.c_str(), size);
 }
 
 void OmHdf5::flush ()
@@ -66,7 +66,7 @@ void OmHdf5::flush ()
 	do {
 		OmGarbage::Hdf5Lock ();
 		OmGarbage::Lock ();
-		hid_t fileId = om_hdf5_file_open_with_lock (getFileNameAndPathCstr());
+		hid_t fileId = om_hdf5_file_open_with_lock (getFileNameAndPathString());
 		int sizeOut = 0;
 		while (mQueue.size()) {
 			OmHdf5DataSet * dataSet = mQueue.dequeue();
@@ -95,7 +95,7 @@ void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const voi
 		mQueue.enqueue (new OmHdf5DataSet (name, size, copy));
 		OmGarbage::Unlock ();
 	} else {
-		om_hdf5_dataset_raw_create_tree_overwrite(getFileNameAndPathCstr(), name.c_str(), size, data);
+		om_hdf5_dataset_raw_create_tree_overwrite(getFileNameAndPathString(), name.c_str(), size, data);
 	}
 }
 
