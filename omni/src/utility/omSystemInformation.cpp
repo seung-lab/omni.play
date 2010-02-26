@@ -2,6 +2,7 @@
 #include "omSystemInformation.h"
 #include "common/omDebug.h"
 #include <sys/sysinfo.h>
+#include <stdio.h>
 
 unsigned int OmSystemInformation::get_num_cores()
 {

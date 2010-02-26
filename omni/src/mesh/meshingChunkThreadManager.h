@@ -12,16 +12,12 @@ class MeshingChunkThreadManager : public QThread
 	MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord );
 	void run();
 
+	QMutex * mutex;
+	MeshingManager* mMeshManager;
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 
-
 	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
-
-	QSemaphore* num_threads_done;
-	QMutex * mutex;
-
-	MeshingManager* mMeshManager;
 
  private:
 	SegmentDataSet valuesToMesh;

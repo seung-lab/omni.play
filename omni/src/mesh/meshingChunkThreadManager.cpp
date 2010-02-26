@@ -11,7 +11,6 @@ MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManage
 
 	mutex = new QMutex();
 }
-
 SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 {
 	QMutexLocker locker( mutex );
@@ -74,9 +73,10 @@ void MeshingChunkThreadManager::run()
 		getDataAndSpawnWorkerThread( chunk );
         }
 
-	mMeshManager->num_chunks_done->release(1);
+	chunk = shared_ptr < OmMipChunk > ();
+
 	mMeshManager->num_chunk_threads_active->release(1);
-	//	printf("finished meashing chunk %s\n", qPrintable( mCoord.getCoordsAsString()));
+	printf("finished meashing chunk %s\n", qPrintable( mCoord.getCoordsAsString()));
 }
 
 void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipChunk > chunk )
@@ -90,15 +90,19 @@ void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipC
 	mCurrentMipCoord = chunk->GetCoordinate();
 
 	int num_threads_to_use = numberOfThreadsToUseForThisChunk( totalNumValuesToMesh );
-
-	num_threads_done = new QSemaphore(0);
+	
+	QQueue<MeshingChunkThread*> threads;
 	for( int i = 0; i < num_threads_to_use; i++ ){
 		mMeshManager->num_worker_threads_active->acquire(1);
-		MeshingChunkThread* thread = new MeshingChunkThread(this);
+		MeshingChunkThread* thread = new MeshingChunkThread(this, i);
+		threads.enqueue(thread);
 		thread->start();
 	}
 
-	num_threads_done->acquire( num_threads_to_use  );
+	foreach(MeshingChunkThread* thread, threads){
+		thread->wait();
+		delete(thread);
+	}
 
 	if( 0 != valuesToMesh.size() ){
 		mMeshManager->addToFailedQueue( mCoord );
@@ -106,6 +110,4 @@ void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipC
 
 	delete mpCurrentMeshSource;
 	mpCurrentMeshSource = NULL;
-
-	chunk = shared_ptr < OmMipChunk > ();
 }

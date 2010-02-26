@@ -27,7 +27,7 @@ OmMipChunkCoord::OmMipChunkCoord(int level, int x, int y, int z)
 
 QString OmMipChunkCoord::getCoordsAsString()
 {
-	QString ret = QString("%d:%d,%d,%d").arg(Level).arg(Coordinate.x).arg(Coordinate.y).arg(Coordinate.z);
+	QString ret = QString("%1:%2,%3,%4").arg(Level).arg(Coordinate.x).arg(Coordinate.y).arg(Coordinate.z);
 	return ret;
 }
 

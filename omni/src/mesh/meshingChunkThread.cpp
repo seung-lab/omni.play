@@ -2,7 +2,8 @@
 #include "meshingChunkThreadManager.h"
 #include "system/omGarbage.h"
 
-MeshingChunkThread::MeshingChunkThread( MeshingChunkThreadManager* chunkMan )
+MeshingChunkThread::MeshingChunkThread( MeshingChunkThreadManager* chunkMan, const int threadNum ) 
+	: m_threadNum(threadNum)
 {
 	mChunkMan = chunkMan;
 }
@@ -15,7 +16,6 @@ void MeshingChunkThread::run()
 	}
 
 	mChunkMan->mMeshManager->num_worker_threads_active->release(1);
-	mChunkMan->num_threads_done->release(1);
 }
 
 void MeshingChunkThread::doMeshStuff()

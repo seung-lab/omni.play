@@ -61,22 +61,26 @@ void MeshingManager::run()
 {
 	const int numChunksToProcess = mChunkCoords.size();
 	printf("going to process %d chunks...\n", numChunksToProcess );
+
 	const int maxNumChunkThreadManagers = getMaxAllowedNumberOfActiveChunks();
 	const int maxNumberWorkerThreads = getMaxAllowedNumberOfWorkerThreads();
 
-	num_chunks_done = new QSemaphore(0);
 	num_chunk_threads_active = new QSemaphore( maxNumChunkThreadManagers );
 	num_worker_threads_active = new QSemaphore( maxNumberWorkerThreads );
 
+	QQueue<MeshingChunkThreadManager*> chunkThreads;
 	foreach( OmMipChunkCoord coord, mChunkCoords ) {
 		num_chunk_threads_active->acquire(1);
 		MeshingChunkThreadManager * chunkThread = new MeshingChunkThreadManager( this, coord );
+		chunkThreads.enqueue(chunkThread);
 		chunkThread->start();
         }
 	
-	num_chunks_done->acquire( numChunksToProcess );
+	foreach(MeshingChunkThreadManager* thread, chunkThreads){
+		thread->wait();
+		delete(thread);
+	}
 
-	delete num_chunks_done;
 	delete num_chunk_threads_active;
 	delete num_worker_threads_active;
 
