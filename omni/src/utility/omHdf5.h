@@ -8,7 +8,7 @@
 using std::string;
 
 #include "volume/omVolumeTypes.h"
-#include "omHdf5LowLevelWrappers.h"
+#include "omHdf5LowLevelWrappersAlwaysClose.h"
 #include "omHdf5Helpers.h"
 #include "omHdf5Dataset.h"
 
@@ -17,7 +17,8 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath );
+	OmHdf5( QString fileNameAndPath, const bool keepOpen = false );
+	~OmHdf5();
 
 	string getFileNameAndPathString();
 	QString getFileNameAndPath();
@@ -46,7 +47,7 @@ class OmHdf5
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex * fileLock;
-	OmHdf5LowLevelWrappers hdfLowLevelWrap;
+	OmHdf5LowLevelWrappersBase * hdfLowLevelWrap;
 };
 
 #endif

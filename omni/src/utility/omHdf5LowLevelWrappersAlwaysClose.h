@@ -1,11 +1,13 @@
-#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_H
-#define OM_MDF5_LOW_LEVEL_WRAPPERS_H
+#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_ALWAYS_CLOSE_H
+#define OM_MDF5_LOW_LEVEL_WRAPPERS_ALWAYS_CLOSE_H
 
-#include "utility/omHdf5LowLevel.h"
+#include "utility/omHdf5LowLevelWrappersBase.h"
 
-class OmHdf5LowLevelWrappers
+class OmHdf5LowLevelWrappersAlwaysClose : public OmHdf5LowLevelWrappersBase
 {
  public:
+	OmHdf5LowLevelWrappersAlwaysClose();
+
 	//file
 	void file_create(string fpath);
 	
