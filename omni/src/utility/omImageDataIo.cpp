@@ -1,9 +1,9 @@
-
 #include "omImageDataIo.h"
-
 #include "common/omException.h"
-#include "utility/omHdf5LowLevel.h"
+#include "utility/omHdf5.h"
 #include "common/omVtk.h"
+
+#include <QFile>
 
 #include <vtk_tiff.h>
 
@@ -41,7 +41,7 @@ namespace bfs = boost::filesystem;
 
 #define DEBUG 0
 
-static const char *HDF5_DEFAULT_DATASET_NAME = "main";
+static string HDF5_DEFAULT_DATASET_NAME = "main";
 
 #pragma mark -
 #pragma mark ImageType Methods
@@ -264,15 +264,14 @@ vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const
 vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, const DataBbox srcExtentBbox,
 				     const DataBbox dataExtentBbox, int bytesPerSample)
 {
-
 	//assert only one hdf5 file specified
 	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
 
-	string fpath = dpath + fnames.front();
+	OmHdf5 hdfImportFile( QString::fromStdString( dpath + fnames.front() ));
 
-	vtkImageData *data =
-	    om_hdf5_dataset_image_read_trim((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample);
-
+	vtkImageData *data = hdfImportFile.dataset_image_read_trim(HDF5_DEFAULT_DATASET_NAME, 
+								   dataExtentBbox, 
+								   bytesPerSample);
 	return data;
 }
 
@@ -302,8 +301,7 @@ om_imagedata_write(vtkImageData * data, string dpath, string fpattern, const Dat
 	}
 }
 
-void
-om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
+void om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
 		       int bytesPerSample)
 {
 
@@ -373,98 +371,26 @@ om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, cons
 	om_imagedata_write_hdf5(data, dpath, fpattern, dataExtentBbox, dataExtentBbox, bytesPerSample);
 }
 
-void
-om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dstExtentBbox,
-			const DataBbox dataExtentBbox, int bytesPerSample)
+void om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample)
 {
-
-	//create file if needed
-	string fpath = dpath + fpattern;
-	if (!bfs::exists(bfs::path(fpath))) {
-
-		//create file
-		om_hdf5_file_create(fpath.c_str());
-
-		//create image file
+	QString exportDataFileName = QString::fromStdString( dpath + fpattern);
+	OmHdf5 hdfExport( exportDataFileName );
+	
+	if( !QFile::exists(exportDataFileName) ){
+		hdfExport.create();
 		Vector3 < int >dest_dims = dstExtentBbox.getUnitDimensions();
-		om_hdf5_dataset_image_create_tree_overwrite((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims,
-							    bytesPerSample, true);
+		
+		hdfExport.dataset_image_create_tree_overwrite(HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims, bytesPerSample, true);
 	}
+	
 	//write image data
-	om_hdf5_dataset_image_write_trim((char*)fpath.c_str(), HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
+	hdfExport.dataset_image_write_trim(HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
 }
 
 #pragma mark -
 #pragma mark Dimensions Functions
 /////////////////////////////////
 ///////          Dimensions Functions
-
-/*
-Vector3<int> 
-om_imagedata_get_dims(string dpath, string fpattern) {
-	
-	switch(om_imagedata_parse_image_type(fpattern)) {
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-			return om_imagedata_get_dims_vtk(dpath, fpattern);
-			
-		case HDF5_TYPE:
-			return om_imagedata_get_dims_hdf5(dpath, fpattern);
-			
-		default:
-			assert(false && "Unknown file format");
-	}
-}
-
-Vector3<int> 
-om_imagedata_get_dims_vtk(string dpath, string fpattern) {
-	////use vtk to determine properties
-	vtkImageData *data = vtkImageData::New();
-	
-	//convert to vtk "%s/FilePattern" format
-	string vtk_file_pattern = "%s" + fpattern;
-	
-	//set reader props
-	vtkImageReader2 *reader = om_imagedata_get_reader(fpattern);
-	reader->SetFilePrefix(dpath.c_str());
-	reader->SetFilePattern(vtk_file_pattern.c_str());
-	reader->SetOutput(data);
-	reader->Update();
-	
-	//get dim information
-	Vector3<int> src_dims;
-	data->GetDimensions(src_dims.array);
-	src_dims.z = countMatchesInDirectory(dpath, fpattern);
-
-	//get sample information
-	//mSourceBytesPerSample = mImageData->GetScalarSize();
-	
-	//debug("FIXME", << mSourceDataExtent << endl;
-	//debug("FIXME", << mSamplesPerVoxel << endl;
-	//debug("FIXME", << mBytesPerSample << endl;
-	
-	//delete image and reader
-	data->Delete();
-	reader->Delete();
-	
-	return src_dims;
-}
-
-Vector3<int> 
-om_imagedata_get_dims_hdf5(string dpath, string fpattern) {
-
-	//get fileid
-	string fpath = dpath + fpattern;
-	
-	//get dims of image
-	Vector3<int> dims = om_hdf5_dataset_image_get_dims((char*) fpath.c_str(), HDF5_DEFAULT_DATASET_NAME);
-	
-	return dims;
-}
-*/
-
 Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fnames)
 {
 
@@ -524,15 +450,12 @@ Vector3 < int > om_imagedata_get_dims_vtk(string dpath, const list < string > &f
 
 Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &fnames)
 {
-
-	//assert only one hdf5 file specified
 	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
 
-	//get fileid
-	string fpath = dpath + fnames.front();
+	OmHdf5 hdfExport( QString::fromStdString( dpath + fnames.front() ) );
 
 	//get dims of image
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims((char*) fpath.c_str(), HDF5_DEFAULT_DATASET_NAME);
+	Vector3 < int >dims = hdfExport.dataset_image_get_dims( HDF5_DEFAULT_DATASET_NAME);
 
 	return dims;
 }

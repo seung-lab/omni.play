@@ -17,21 +17,18 @@
 
 #include <boost/serialization/split_free.hpp>
 
-
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
 
-
 class OmMipMesh : protected OmCacheableBase {
 
 public:
-	//OmMipMesh() : CacheableMesh(NULL), mSegmentManager(NULL) { };
 	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *pMipMeshManager);
 	~OmMipMesh();
 	
 	void Load();
-	void Save(bool bulk=false);
+	void Save();
 	
 	string GetFileName();
 	string GetDirectoryPath();
@@ -47,21 +44,18 @@ public:
 private:
 	OmMipMeshCoord mMeshCoordinate;
 	OmMipMeshManager * const mpMipMeshManager;
-	
-	
+		
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
-	uint32_t *mpStripOffsetSizeData;	//dim = 2 * mStripCount
+	uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount
 	
 	// offsets for vectors in geometry data (specifies geometry)
 	uint32_t mVertexIndexCount; 
-	GLuint *mpVertexIndexData;			//dim = mVertexIndexCount 
-										//with 2 bytes check 65K limit
+	GLuint *mpVertexIndexData; //dim = mVertexIndexCount with 2 bytes check 65K limit
 	
 	// interleved vertex and normal data (raw data)
 	uint32_t mVertexCount;
-	GLfloat *mpVertexData;				//dim = 6 * mVertexCount
-										// 4 bytes
+	GLfloat *mpVertexData;	//dim = 6 * mVertexCount 4 bytes
 	
 	GLuint mVertexDataVboId;
 	GLuint mVertexIndexDataVboId;
@@ -83,20 +77,11 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
-
-
-
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 
 
 BOOST_CLASS_VERSION(OmMipMesh, 0)
-
-
 
 template<class Archive>
 void 
@@ -117,9 +102,6 @@ OmMipMesh::save(Archive & ar, const unsigned int version) const
 	for(int i=0; i<6*mVertexCount; ++i)
 		ar & mpVertexData[i];
 }
-
-
-
 
 template<class Archive>
 void 
@@ -145,8 +127,5 @@ OmMipMesh::load(Archive & ar, const unsigned int version)
 	for(int i=0; i<6*mVertexCount; ++i)
 		ar & mpVertexData[i];
 }
-
-
-
 
 #endif

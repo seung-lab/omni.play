@@ -1,13 +1,14 @@
 #ifndef OM_HDF_H
 #define OM_HDF_H
 
+#include <QMutex>
 #include <QString>
 #include <QQueue>
 #include <string>
 using std::string;
 
 #include "volume/omVolumeTypes.h"
-#include "omHdf5LowLevel.h"
+#include "omHdf5LowLevelWrappers.h"
 #include "omHdf5Helpers.h"
 #include "omHdf5Dataset.h"
 
@@ -29,19 +30,22 @@ class OmHdf5
 	bool dataset_exists( string name );
 
 	void dataset_image_create_tree_overwrite( string & path, Vector3 < int >dataDims, 
-						  Vector3 < int >chunkDims, int bytesPerSample);
+						  Vector3 < int >chunkDims, int bytesPerSample, bool unlimited  = false);
 	vtkImageData* dataset_image_read_trim( string name, DataBbox dataExtent, int bytesPerSample);
 
 	void dataset_image_write_trim( string name, DataBbox dataExtent, 
 					      int bytesPerSample, vtkImageData *pImageData);
 	void* dataset_raw_read( string name, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( string name, int size, const void* data, bool bulk=false);
+	void dataset_raw_create_tree_overwrite( string name, int size, const void* data);
+	Vector3 < int > dataset_image_get_dims(string name );
 
 	void flush ();
 
  private:
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
+	QMutex * fileLock;
+	OmHdf5LowLevelWrappers hdfLowLevelWrap;
 };
 
 #endif

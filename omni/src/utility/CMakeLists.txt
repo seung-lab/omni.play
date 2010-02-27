@@ -6,6 +6,7 @@ SET(OM_UTILITY_LIB_SRCS
 	omHdf5Dataset.cpp
 	omHdf5Helpers.cpp
 	omHdf5LowLevel.cpp
+	omHdf5LowLevelWrappers.cpp
 	omImageDataIo.cpp
 	omSystemInformation.cpp
 	localPrefFiles.cpp

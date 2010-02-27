@@ -123,13 +123,9 @@ void *OmProjectData::ReadRawData(string & path, int *size)
 	return Instance()->hdfFile->dataset_raw_read( path, size);
 }
 
-void OmProjectData::WriteRawData(string & path, int size, const void *data, bool bulk)
+void OmProjectData::WriteRawData(string & path, int size, const void *data)
 {
-	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, size, data, bulk);
+	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, size, data);
 }
 
-void OmProjectData::flush()
-{
-	Instance()->hdfFile->flush();
-}
 

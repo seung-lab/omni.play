@@ -293,7 +293,6 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThrea
 	meshingMan->start();
 	meshingMan->wait();
 	delete(meshingMan);
-	OmProjectData::flush();
 }
 
 void OmSegmentation::BuildMeshDataInternal()
