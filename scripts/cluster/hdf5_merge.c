@@ -260,7 +260,7 @@ static herr_t CopyObject (hid_t from,
   CHECK_ERROR (H5Gget_objinfo (from, objectname, 0, &objectinfo));
   if (objectinfo.type == H5G_GROUP)
   {
-    printf ("   copying group '%s'\n", pathname);
+    //printf ("   copying group '%s'\n", pathname);
 
     CHECK_ERROR (from = H5Gopen (from, objectname));
     if (!dontCreate) CHECK_ERROR (to = H5Gcreate (to, objectname, 0));
@@ -273,7 +273,7 @@ static herr_t CopyObject (hid_t from,
   }
   else if (objectinfo.type == H5G_DATASET)
   {
-    printf ("   copying dataset '%s'\n", pathname);
+    //printf ("   copying dataset '%s'\n", pathname);
 
     CHECK_ERROR (from = H5Dopen (from, objectname));
     CHECK_ERROR (datatype = H5Dget_type (from));
