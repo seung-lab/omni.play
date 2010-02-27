@@ -19,7 +19,6 @@
 	hdfLowLevel.om_hdf5_file_close_with_lock (fileId);			
 
 OmHdf5LowLevelWrappersAlwaysClose::OmHdf5LowLevelWrappersAlwaysClose()
-	:OmHdf5LowLevelWrappersBase()
 {
 }
 

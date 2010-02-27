@@ -47,7 +47,7 @@ class OmHdf5
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex * fileLock;
-	OmHdf5LowLevelWrappersBase * hdfLowLevelWrap;
+	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
 };
 
 #endif

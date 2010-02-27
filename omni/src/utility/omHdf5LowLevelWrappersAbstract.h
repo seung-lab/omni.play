@@ -1,9 +1,9 @@
-#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_BASE_H
-#define OM_MDF5_LOW_LEVEL_WRAPPERS_BASE_H
+#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_ABSTRACT_H
+#define OM_MDF5_LOW_LEVEL_WRAPPERS_ABSTRACT_H
 
 #include "utility/omHdf5LowLevel.h"
 
-class OmHdf5LowLevelWrappersBase
+class OmHdf5LowLevelWrappersAbstract
 {
  public:
 	//file
