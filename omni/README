@@ -18,4 +18,8 @@ Linux AMD(x)64
 Macos
 Win32
 
-
+STAGING CLUSTER MESHING
+PREP) ./runAcrossCluser.pl "rm /tmp/meshinat*"
+MESH) ./staging/scripts/cluster/meshinator.pl rabit.omni.plan
+GATHER) ./gatherMeshinator.pl
+REDUCE) find ~/n0* -name '*meshina*' -exec ./hdf5_merge {} ~/rabit.omni \;

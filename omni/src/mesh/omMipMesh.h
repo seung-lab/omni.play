@@ -14,6 +14,7 @@
 #include "common/omGl.h"
 #include "common/omSerialization.h"
 #include "system/omCacheableBase.h"
+#include "utility/omHdf5.h"
 
 #include <boost/serialization/split_free.hpp>
 
@@ -32,6 +33,7 @@ public:
 	
 	string GetFileName();
 	string GetDirectoryPath();
+	string GetLocalPathForHd5fChunk();
 	
 	bool IsVbo();
 	void CreateVbo();
@@ -40,8 +42,21 @@ public:
 	bool IsEmptyMesh();
 	
 	void Draw();
+        void setSegmentationID(OmId sid)
+        {
+                mSegmentationID = sid;
+        }
+ 
+        OmId getSegmentationID()
+        {
+                return mSegmentationID;
+        }
+ 
+
 	
 private:
+	OmId mSegmentationID;
+	OmHdf5 * mHdf5File;
 	OmMipMeshCoord mMeshCoordinate;
 	OmMipMeshManager * const mpMipMeshManager;
 		

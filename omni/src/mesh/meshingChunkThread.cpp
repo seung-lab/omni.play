@@ -41,6 +41,7 @@ void MeshingChunkThread::doMeshStuff()
 
 		//get alloc'd mesh
 		OmMipMesh *p_mesh = mChunkMan->mMeshManager->mMipMeshManager->AllocMesh( mesh_coord);
+		p_mesh->setSegmentationID(mChunkMan->mMeshManager->getSegmentationID());
 
 		//build mesh data using thread's mesh source and seg value
 		mesher.ExtractMesh(p_mesh, segment_value);

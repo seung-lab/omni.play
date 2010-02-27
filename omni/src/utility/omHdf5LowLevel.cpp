@@ -4,6 +4,7 @@
 #include "common/omVtk.h"
 
 #include <vtkImageData.h>
+#include <QFile>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string_regex.hpp>
@@ -14,8 +15,13 @@ namespace bfa = boost::algorithm;
 ///////          File
 void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 {
-	hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
-	om_hdf5_file_close_with_lock (fileId);
+        QFile file(QString(fpath.c_str()));
+        if(!file.exists()){
+		H5E_BEGIN_TRY {
+			hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
+			om_hdf5_file_close_with_lock (fileId);
+		} H5E_END_TRY
+        }
 }
 
 hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)

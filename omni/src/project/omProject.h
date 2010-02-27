@@ -37,7 +37,7 @@ public:
 	static void Delete();
 	
 	//project properties
-	static const string& GetFileName();
+	static QString GetFileName() {return Instance()->mFileName;}
 	static const string& GetDirectoryPath();
 	static string GetTempDirectoryPath();
 	

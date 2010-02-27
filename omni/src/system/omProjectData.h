@@ -30,6 +30,8 @@ public:
 	static void Flush();
 	
 	static bool IsOpen() {return Instance()->mIsOpen;}
+	static OmHdf5* GetHdf5File () {return Instance()->hdfFile;}
+
 
 	//groups
 	static bool GroupExists(string &path);
