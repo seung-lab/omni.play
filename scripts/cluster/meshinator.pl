@@ -13,6 +13,7 @@ chomp($whoami);
 
 $SIG{INT} = \&killAllOmnis;
 
+my $slowLogon = 0;
 my $maxThreadsToCreate = 800;
 my $minThreadsToCreate = 30;
 my $initialPound = 30;
@@ -235,7 +236,7 @@ sub meshinator {
 	       print "[$i of $cmdCount] " . ($i/$cmdCount * 100) . "% farmed out in $timeSecs seconds.\n";
             #}
             if ($i < $initialPound) {
-                sleep($initialPound - $i);
+                sleep($initialPound - $i) if ($slowLogon);
             }
         } else {
             #print "no lock free?\n";

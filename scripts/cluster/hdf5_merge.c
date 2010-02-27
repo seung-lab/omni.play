@@ -122,8 +122,7 @@ int main (int argc, char *argv[])
       {
         fprintf (stderr, "ERROR: Cannot open HDF5 input file '%s' !\n\n",
                  argv[i + 1]);
-        //return (-1);
-        continue;
+        return (-1);
       }
     }
 
@@ -153,17 +152,13 @@ int main (int argc, char *argv[])
     printf ("\n  Merging objects from input file '%s' into output file '%s'\n",
             argv[i + 1], argv[argc-1]);
     pathname = "";
-    if (infiles[i] > 0) {
-      CHECK_ERROR (H5Giterate (infiles[i], "/", NULL, CopyObject, &outfile));
-    }
+    CHECK_ERROR (H5Giterate (infiles[i], "/", NULL, CopyObject, &outfile));
   }
 
   /* finally, close all open files */
   for (i = 0; i < argc - 2; i++)
   {
-    if (infiles[i] > 0) {
-      CHECK_ERROR (H5Fclose (infiles[i]));
-    }
+    CHECK_ERROR (H5Fclose (infiles[i]));
   }
   CHECK_ERROR (H5Fclose (outfile));
   free (infiles);
@@ -226,7 +221,6 @@ static herr_t CopyObject (hid_t from,
                           void *_to)
 {
   int i;
-  int dontCreate = 0;
   hid_t to, datatype, dataspace;
   H5G_stat_t objectinfo;
   char *current_pathname;
@@ -238,6 +232,7 @@ static herr_t CopyObject (hid_t from,
   to = *(hid_t *) _to;
 
   /* check whether an object by that name already exists */
+#if 0
   H5E_BEGIN_TRY
   {
     i = H5Gget_objinfo (to, objectname, 0, &objectinfo) >= 0;
@@ -246,9 +241,9 @@ static herr_t CopyObject (hid_t from,
   {
     printf ("   object '%s/%s' will not be copied (already exists)\n",
             pathname, objectname);
-    dontCreate = 1;
-    //return (0);
+    return (0);
   }
+#endif
 
   /* build the full pathname for the current to object to process */
   current_pathname = pathname;
@@ -260,11 +255,16 @@ static herr_t CopyObject (hid_t from,
   CHECK_ERROR (H5Gget_objinfo (from, objectname, 0, &objectinfo));
   if (objectinfo.type == H5G_GROUP)
   {
-    //printf ("   copying group '%s'\n", pathname);
+    //printf ("   opening group '%s'\n", objectname);
 
     CHECK_ERROR (from = H5Gopen (from, objectname));
-    if (!dontCreate) CHECK_ERROR (to = H5Gcreate (to, objectname, 0));
-    else CHECK_ERROR ( to = H5Gopen (to, objectname));
+
+    H5E_BEGIN_TRY
+    {
+      i = H5Gcreate (to, objectname, 0);
+    } H5E_END_TRY
+    CHECK_ERROR (to = H5Gopen (to, objectname));
+
     /* iterate over all objects in the (first) input file */
     CHECK_ERROR (H5Giterate (from, ".", NULL, CopyObject, &to));
     CHECK_ERROR (H5Aiterate (from, NULL, CopyAttribute, &to));
@@ -278,10 +278,13 @@ static herr_t CopyObject (hid_t from,
     CHECK_ERROR (from = H5Dopen (from, objectname));
     CHECK_ERROR (datatype = H5Dget_type (from));
     CHECK_ERROR (dataspace = H5Dget_space (from));
-
+    H5E_BEGIN_TRY
+    {
+      i = H5Gunlink(to, objectname);
+    } H5E_END_TRY
     CHECK_ERROR (to = H5Dcreate (to, objectname, datatype, dataspace,
                                  H5P_DEFAULT));
-
+    //CHECK_ERROR (to = H5Dopen (to, objectname));
     objectsize = H5Sget_select_npoints (dataspace) * H5Tget_size (datatype);
     if (objectsize > 0)
     {
@@ -294,6 +297,7 @@ static herr_t CopyObject (hid_t from,
       }
       CHECK_ERROR (H5Dread (from, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT,
                             data));
+      
       CHECK_ERROR (H5Dwrite (to, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT,data));
       free (data);
     }

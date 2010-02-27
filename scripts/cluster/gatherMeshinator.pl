@@ -8,7 +8,7 @@ sub runNode
 {
     my $node = $_[0];
     `mkdir -p /home/mwimer/${node}/`;
-    print "`ssh ${node} cp /tmp/meshinator* /home/mwimer/${node}/`";
+    print "gathering with: `ssh ${node} cp /tmp/meshinator* /home/mwimer/${node}/`\n";
     `ssh ${node} cp /tmp/meshinator* /home/mwimer/${node}/`;
 }
 
