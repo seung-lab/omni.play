@@ -36,14 +36,14 @@ class OmHdf5LowLevel
 	void om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char* name, int size, const void* data);
 	void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data);
 
-	//imageIo
+	//image I/O
 	Vector3 < int > om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
 	void om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited);
 
  private:
 	hid_t om_hdf5_bytesToHdf5Id(int bytes);
 
-	//imageIo
+	//image I/O private
 	vtkImageData * om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
 	void om_hdf5_dataset_image_write_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  vtkImageData * imageData);
 
@@ -51,7 +51,7 @@ class OmHdf5LowLevel
 	void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);
 	void om_hdf5_group_create_tree_with_lock(hid_t fileId, const char *name);
 
-	//data set
+	//data set private
 	void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name);
 };
 #endif
