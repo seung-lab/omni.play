@@ -42,6 +42,7 @@ class OmHdf5LowLevel
 
  private:
 	hid_t om_hdf5_bytesToHdf5Id(int bytes);
+	void printfDatasetCacheSize( const hid_t dataset_id );
 
 	//image I/O private
 	vtkImageData * om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
