@@ -23,7 +23,6 @@ QString OmHdf5::getFileNameAndPath()
 
 string OmHdf5::getFileNameAndPathString()
 {
-	debug ("meshercrash", "%p\n", &m_fileNameAndPath.toStdString());
 	debug ("meshercrash", "%s\n", m_fileNameAndPath.toStdString().c_str());
 	return m_fileNameAndPath.toStdString();
 }
