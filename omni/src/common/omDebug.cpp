@@ -17,6 +17,17 @@ char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
 bool ViewerIsEnabled;
 
+bool isDebugCategoryEnabled( const char *category )
+{
+	int i;
+	for (i=0;i<debugCategoryNumber;i++){
+		if (!strncmp(category,debugCategoryArray[i], OM_DEBUG_STRING_SIZE)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void debug(const char *category, const char *format, ...)
 {
 	int i;

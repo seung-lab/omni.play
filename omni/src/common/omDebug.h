@@ -20,6 +20,7 @@ enum {OM_DEBUG_REMOVE,OM_DEBUG_ADD};
  * A function designed for selecting and customizing debug statements to stdout
  */
 
+bool isDebugCategoryEnabled( const char *category );
 void debug(const char *category, const char *format, ...);
 void debugInit();
 int  debugParseArg(char *stringInput,int action);
