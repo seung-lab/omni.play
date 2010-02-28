@@ -30,20 +30,14 @@ static const string PROJECT_ARCHIVE_NAME = "project.dat";
 //init instance pointer
 OmProject *OmProject::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmProject
 /////////////////////////////////
-///////
 ///////          OmProject
-///////
-
 OmProject::OmProject()
 {
 }
 
 OmProject::~OmProject()
 {
-
 }
 
 OmProject *OmProject::Instance()
@@ -61,14 +55,8 @@ void OmProject::Delete()
 	mspInstance = NULL;
 }
 
-
-
-
-#pragma mark
-#pragma mark Project IO
 /////////////////////////////////
 ///////          Project IO
-
 void OmProject::New( QString fileNameAndPath )
 {
 	QFileInfo fileInfo( fileNameAndPath );
@@ -83,26 +71,17 @@ void OmProject::New( QString fileNameAndPath )
 	omSetDefaultAllPreferences();
 	OmKeyManager::SetDefaults();
 
-	//save project
-	//debug("genone","OmProject::New: save\n");
 	Save();
 
-	//debug("genone","OmProject::New: flushing\n");
 	OmProjectData::Flush();
 }
 
 void OmProject::Save()
 {
-
 	if (!OmProjectData::IsOpen()) {
 		return;
 	}
 
-	if (!OmProjectData::IsOpen()) {
-		return;
-	}
-
-	//store archive
 	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
 	OmProjectData::Flush();
 }
