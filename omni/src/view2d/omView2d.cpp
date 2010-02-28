@@ -32,7 +32,6 @@
 
 #define DEBUG 0
 
-
 static QGLWidget *sharedwidget = NULL;
 
 /*
@@ -635,7 +634,7 @@ DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event, const 
 	float depth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
 
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-        float pl = pow(2, zoomMipVector.x);
+        float pl = OMPOW(2, zoomMipVector.x);
 	float scaleFactor = (zoomMipVector.y / 10.0);
 
 	Vector2f localClickPoint = Vector2f((clickPoint.x / scaleFactor*pl) - widthTranslate*pl,
@@ -1210,7 +1209,7 @@ void OmView2d::SetViewSliceOnPan()
 	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
-	float pl = pow(2, zoomMipVector.x);
+	float pl = OMPOW(2, zoomMipVector.x);
 	float scaleFactor = zoomMipVector.y / 10.0;
 
 	Vector2i minCoord =
@@ -2104,7 +2103,7 @@ int OmView2d::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
 	Vector2f mZoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	float factor=pow(2,mZoomMipVector.x);
+	float factor=OMPOW(2,mZoomMipVector.x);
 
 	if (mViewType == XY_VIEW) {
 		return (int)(dataCoord.z/factor);
@@ -2368,8 +2367,8 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	int yval;
 	Vector2f stretch = OmVolume::GetStretchValues(mViewType);
 
-	int pl = pow(2, zoomMipVector.x);
-	int tl = tileLength * pow(2, zoomMipVector.x);
+	int pl = OMPOW(2, zoomMipVector.x);
+	int tl = tileLength * OMPOW(2, zoomMipVector.x);
 
 	if (translateVector.y < 0) {
 		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
@@ -2585,7 +2584,7 @@ Vector2i OmView2d::ScreenToPanShift(Vector2i screenshift)
 {
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);
 	Vector2i zoomLevel = OmStateManager::Instance()->GetZoomLevel();
-	float factor = pow(2,zoomLevel.x);
+	float factor = OMPOW(2,zoomLevel.x);
 	float zoomScale = zoomLevel.y;
 	float panx = ((float)screenshift.x)/zoomScale/stretch.x*10.0;
 	float pany = ((float)screenshift.y)/zoomScale/stretch.y*10.0;
@@ -2609,7 +2608,7 @@ ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & dat
 	Vector3f mScale = OmVolume::Instance()->GetScale();
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);
 	Vector2i result;
-	float factor = pow(2,mZoomLevel.x);
+	float factor = OMPOW(2,mZoomLevel.x);
 	float zoomScale = mZoomLevel.y;
 	//debug ("cross", "factor: %f \n", factor);
 	//debug ("cross", "zoomScale: %f \n", zoomScale);
@@ -2642,7 +2641,7 @@ DataCoord OmView2d::ScreenToDataCoord(ViewType viewType, const ScreenCoord & scr
         Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();          Vector3f mScale = OmVolume::Instance()->GetScale();                
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);                  
         Vector3i result;
-        float factor = pow(2,mZoomLevel.x);                                                             
+        float factor = OMPOW(2,mZoomLevel.x);                                                             
         float zoomScale = mZoomLevel.y;                                                                 
         switch(mViewType){                                                                              
         case XY_VIEW:                                                                                   

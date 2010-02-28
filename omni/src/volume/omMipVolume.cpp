@@ -10,6 +10,7 @@
 #include "system/events/omProgressEvent.h"
 #include "system/events/omAlertEvent.h"
 #include "common/omVtk.h"
+#include "common/omStd.h"
 #include "utility/omImageDataIo.h"
 
 #include <vtkImageData.h>
@@ -322,7 +323,7 @@ Vector3 < int > OmMipVolume::MipLevelDataDimensions(int level)
 	Vector3 < float >source_dims = source_extent.getUnitDimensions();
 
 	//dims in fraction of pixels
-	Vector3 < float >mip_level_dims = source_dims / pow(2, level);
+	Vector3 < float >mip_level_dims = source_dims / OMPOW(2, level);
 
 	return Vector3 < int >(ceil(mip_level_dims.x), ceil(mip_level_dims.y), ceil(mip_level_dims.z));
 }
@@ -368,7 +369,7 @@ int OmMipVolume::MipChunksInVolume()
  */
 OmMipChunkCoord OmMipVolume::DataToMipCoord(const DataCoord & dataCoord, int level)
 {
-	int data_dim = pow(2, level) * GetChunkDimension();
+	int data_dim = OMPOW(2, level) * GetChunkDimension();
 
 	return OmMipChunkCoord(level,
 			       floor(float (dataCoord.x) / data_dim),
@@ -386,8 +387,8 @@ OmMipChunkCoord OmMipVolume::NormToMipCoord(const NormCoord & normCoord, int lev
 DataBbox OmMipVolume::MipCoordToDataBbox(const OmMipChunkCoord & rMipCoord, int newLevel)
 {
 
-	int old_level_factor = pow(2, rMipCoord.Level);
-	int new_level_factor = pow(2, newLevel);
+	int old_level_factor = OMPOW(2, rMipCoord.Level);
+	int new_level_factor = OMPOW(2, newLevel);
 
 	//convert to leaf level dimensions
 	int leaf_dim = GetChunkDimension() * old_level_factor;

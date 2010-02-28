@@ -10,6 +10,9 @@
 #define ERROR_CONTINUE 1
 #define ERROR_ABORT 2
 
+#define OMPOW(base,expon) (int)pow((double) base, (double)expon)
+
+
 // Error Reporting Functions
 static void processError(const char *format, va_list args, const char *message, int disposition)
 {
