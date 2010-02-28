@@ -4,12 +4,12 @@ OmHdf5Path::OmHdf5Path()
 {
 }
 
-void OmHdf5Path::setPath( string str )
+void OmHdf5Path::setPath( std::string str )
 {
 	mPath = QString::fromStdString(str);
 }
 
-string OmHdf5Path::getString()
+std::string OmHdf5Path::getString()
 {
 	return mPath.toStdString();
 }

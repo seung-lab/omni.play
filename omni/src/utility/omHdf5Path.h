@@ -3,14 +3,13 @@
 
 #include <QString>
 #include <string>
-using namespace std;
 
 class OmHdf5Path 
 {
  public:
 	OmHdf5Path();
-	void setPath( string str );
-	string getString();
+	void setPath( std::string str );
+	std::string getString();
 
  private:
 	QString mPath;
