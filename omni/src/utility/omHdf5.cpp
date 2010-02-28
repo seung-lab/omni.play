@@ -27,16 +27,16 @@ string OmHdf5::getFileNameAndPathString()
 void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 {
 	if( autoOpenAndClose ){
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose();
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose(getFileNameAndPathString());
 	} else {
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose();
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString());
 	}
 }
 
 void OmHdf5::resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->close( getFileNameAndPathString() );
+	hdfLowLevelWrap->close();
 	delete(hdfLowLevelWrap);
 	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
 }
@@ -44,38 +44,38 @@ void OmHdf5::resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 // hdf5 wrappers -- no locking
 void OmHdf5::create()
 {
-	hdfLowLevelWrap->file_create( getFileNameAndPathString() );
+	hdfLowLevelWrap->file_create();
 }
 
 // hdf5 wrappers -- with locking
 void OmHdf5::open()
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->open(getFileNameAndPathString());
+	hdfLowLevelWrap->open();
 }
 
 void OmHdf5::close()
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->close(getFileNameAndPathString());
+	hdfLowLevelWrap->close();
 }
 
 bool OmHdf5::group_exists( string name )
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->group_exists_with_lock(getFileNameAndPathString(), name.c_str());
+	return hdfLowLevelWrap->group_exists_with_lock(name.c_str());
 }
 
 void OmHdf5::group_delete( string name )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->group_delete_with_lock(getFileNameAndPathString(), name.c_str());
+	hdfLowLevelWrap->group_delete_with_lock(name.c_str());
 }
 
 bool OmHdf5::dataset_exists( string name )
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_exists_with_lock(getFileNameAndPathString(), name.c_str());
+	return hdfLowLevelWrap->dataset_exists_with_lock(name.c_str());
 }
 
 void OmHdf5::dataset_image_create_tree_overwrite( string & name, Vector3 < int >dataDims, 
@@ -83,27 +83,26 @@ void OmHdf5::dataset_image_create_tree_overwrite( string & name, Vector3 < int >
 						  bool unlimited ) 
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock(getFileNameAndPathString(), name.c_str(), dataDims, chunkDims, bytesPerSample, unlimited );
+	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock(name.c_str(), dataDims, chunkDims, bytesPerSample, unlimited );
 }
 
 vtkImageData* OmHdf5::dataset_image_read_trim( string name, DataBbox dataExtent, int bytesPerSample)
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_image_read_trim_with_lock(getFileNameAndPathString(), name.c_str(), dataExtent, bytesPerSample);
+	return hdfLowLevelWrap->dataset_image_read_trim_with_lock(name.c_str(), dataExtent, bytesPerSample);
 }
 
 void OmHdf5::dataset_image_write_trim( string name, DataBbox dataExtent, 
 				       int bytesPerSample, vtkImageData *pImageData)
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_write_trim_with_lock(getFileNameAndPathString(), name.c_str(), 
-					 dataExtent, bytesPerSample, pImageData);
+	hdfLowLevelWrap->dataset_image_write_trim_with_lock(name.c_str(), dataExtent, bytesPerSample, pImageData);
 }
 
 void* OmHdf5::dataset_raw_read( string name, int* size)
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_raw_read_with_lock(getFileNameAndPathString(), name.c_str(), size);
+	return hdfLowLevelWrap->dataset_raw_read_with_lock(name.c_str(), size);
 }
 
 void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data)
@@ -113,11 +112,11 @@ void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const voi
 	}
 	
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock(getFileNameAndPathString(), name.c_str(), size, data);
+	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock(name.c_str(), size, data);
 }
 
 Vector3 < int > OmHdf5::dataset_image_get_dims( string name )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_get_dims_with_lock(getFileNameAndPathString(), name.c_str());
+	hdfLowLevelWrap->dataset_image_get_dims_with_lock(name.c_str());
 }

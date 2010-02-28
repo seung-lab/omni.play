@@ -18,7 +18,7 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose = false );
+	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose = true );
 	~OmHdf5();
 
 	string getFileNameAndPathString();

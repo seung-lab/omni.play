@@ -23,7 +23,7 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 		mspInstance = new OmProjectData;
 	}
 
-	Instance()->hdfFile = new OmHdf5( fileNameAndPath );
+	Instance()->hdfFile = new OmHdf5( fileNameAndPath, false );
 }
 
 OmProjectData::~OmProjectData()
