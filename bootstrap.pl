@@ -304,6 +304,10 @@ sub hdf5 {
     prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
 }
 
+sub hdf5_18 {
+    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --with-default-api-version=v16" );
+}
+
 sub qt {
     qt46();
 }
@@ -552,9 +556,9 @@ sub setupParallelBuildOption {
 sub experimentalMenu {
     print "experimental build menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build QT 4.6.2\n";
-    print "2 -- Build boost 1.42\n\n";
-    my $max_answer = 2;
+    print "1 -- Build HDF 1.8.4p1\n";
+    print "\n";
+    my $max_answer = 1;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -575,9 +579,7 @@ sub runExperimentalMenuEntry {
     if( 0 == $entry ){
         return();
     }elsif( 1 == $entry ){
-	qt46();
-    }elsif( 2 == $entry ){
-        boost142();
+	hdf5_18();
     }
 }
 
@@ -595,16 +597,3 @@ sub checkCmdLineArgs {
 }
 
 checkCmdLineArgs();
-
-sub gcc {
-    # just in case...
-    # ../gcc-4.3.4/configure --prefix=/Users/purcaro/bin/gcc-4.3.4 --enable-languages=c,c++ --disable-nls
-}
-
-sub subversion {
-    # just in case...
-    # in srcs folder:
-    # svn co http://svn.apache.org/repos/asf/apr/apr/branches/1.2.x apr
-    # svn co http://svn.apache.org/repos/asf/apr/apr-util/branches/1.2.x apr-util
-
-}
