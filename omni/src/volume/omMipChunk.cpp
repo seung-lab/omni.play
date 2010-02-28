@@ -54,6 +54,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	UpdateSize(sizeof(OmMipChunk));
 
 	mpImageData = NULL;
+	mOpenLock = new QMutex();
 }
 
 OmMipChunk::~OmMipChunk()
@@ -117,11 +118,12 @@ void
  */
 void OmMipChunk::Open()
 {
-	//debug("genone","OmMipChunk::Open()");
+        QMutexLocker locker(mOpenLock);
 
 	//ignore if already open
 	if (IsOpen())
 		return;
+
 
 	//read volume data
 	ReadVolumeData();
@@ -198,7 +200,8 @@ void OmMipChunk::Close()
 	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 
 	//delete image data
-	debug("mipchunk", "freeing mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+	debug("mipchunk", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+	debug("meshercrash", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
 	mpImageData->Delete();
 	mpImageData = NULL;
 }
@@ -720,6 +723,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
 vtkImageData *OmMipChunk::GetMeshImageData()
 {
 	//debug("FIXME", << "OmMipChunk::GetMeshImageData: " << mCoordinate << endl;
+	Open ();
 
 	DataCoord data_dims;
 	mpImageData->GetDimensions(data_dims.array);
@@ -770,8 +774,8 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 
-				p_chunk = shared_ptr < OmMipChunk > ();
-				mpMipVolume->Remove (mip_coord);
+				//p_chunk = shared_ptr < OmMipChunk > ();
+				//mpMipVolume->Remove (mip_coord);
 			}
 
 	return p_mesh_data;

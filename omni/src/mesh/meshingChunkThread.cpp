@@ -12,6 +12,7 @@ void MeshingChunkThread::run()
 	try {
 		doMeshStuff();
 	} catch (...){
+		std::cerr << "Mesher failure" << endl;
 	}
 
 	mChunkMan->mMeshManager->num_worker_threads_active->release(1);

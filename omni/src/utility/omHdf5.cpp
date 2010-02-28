@@ -1,4 +1,5 @@
 #include "omHdf5.h"
+#include "common/omDebug.h"
 #include <stdlib.h>
 
 OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose )
@@ -10,6 +11,7 @@ OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose )
 
 OmHdf5::~OmHdf5()
 {
+	debug ("meshercrash", "deleting %p %s\n", this, qPrintable(m_fileNameAndPath));
 	delete hdfLowLevelWrap;
 }
 
@@ -21,6 +23,8 @@ QString OmHdf5::getFileNameAndPath()
 
 string OmHdf5::getFileNameAndPathString()
 {
+	debug ("meshercrash", "%p\n", &m_fileNameAndPath.toStdString());
+	debug ("meshercrash", "%s\n", m_fileNameAndPath.toStdString().c_str());
 	return m_fileNameAndPath.toStdString();
 }
 
@@ -111,6 +115,7 @@ void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const voi
 		return;
 	}
 	
+	debug ("meshercrash", "%p, %s, %i, %p\n", this, name.c_str(), size, data);
 	QMutexLocker locker(fileLock);
 	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock(name.c_str(), size, data);
 }
