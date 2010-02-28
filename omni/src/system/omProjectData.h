@@ -34,24 +34,24 @@ public:
 	static OmHdf5* GetHdf5File () {return Instance()->hdfFile;}
 
 	//groups
-	static bool GroupExists(string &path);
-	static void GroupDelete(string &path);
+	static bool GroupExists(OmHdf5Path path);
+	static void GroupDelete(OmHdf5Path path);
 	
 	//data set
-	static bool DataExists(string &path);
+	static bool DataExists(OmHdf5Path path);
 	
 	//image data io
-	static void CreateImageData(string &path, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample);
-	static vtkImageData* ReadImageData(string &path, const DataBbox &extent, int bytesPerSample);
-	static void WriteImageData(string &path, const DataBbox &extent, int bytesPerSample, vtkImageData *data);
-	
+	static void CreateImageData(OmHdf5Path path, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample);
+	static vtkImageData* ReadImageData(OmHdf5Path path, const DataBbox &extent, int bytesPerSample);
+	static void WriteImageData(OmHdf5Path path, const DataBbox &extent, int bytesPerSample, vtkImageData *data);
+
 	//raw data io
-	static void* ReadRawData(string &path, int* size = NULL);
-	static void WriteRawData(string &path, int size, const void* data);
+	static void* ReadRawData(OmHdf5Path path, int* size = NULL);
+	static void WriteRawData(OmHdf5Path path, int size, const void* data);
 	
 	//archive io
-	template< class T > static void ArchiveRead(const string &path, T* t);
-	template< class T > static void ArchiveWrite(const string &path, T* t);
+	template< class T > static void ArchiveRead(const OmHdf5Path path, T* t);
+	template< class T > static void ArchiveWrite(const OmHdf5Path path, T* t);
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -71,15 +71,15 @@ private:
 
 template< class T > 
 void 
-OmProjectData::ArchiveRead(const string &name, T* t) {
+OmProjectData::ArchiveRead( OmHdf5Path path, T* t) {
 	assert(IsOpen());
 
-	bool dataExists = Instance()->hdfFile->dataset_exists( name);
+	bool dataExists = Instance()->hdfFile->dataset_exists( path );
 	assert( dataExists );
 	
 	//read dataset
 	int size;
-	char* p_data = (char*) Instance()->hdfFile->dataset_raw_read(name, &size);
+	char* p_data = (char*) Instance()->hdfFile->dataset_raw_read(path, &size);
 	
 	//create string stream to read from
 	std::stringstream sstream;
@@ -95,7 +95,7 @@ OmProjectData::ArchiveRead(const string &name, T* t) {
 
 template< class T > 
 void 
-OmProjectData::ArchiveWrite(const string &name, T* t) {
+OmProjectData::ArchiveWrite( OmHdf5Path path, T* t) {
 	assert(IsOpen());
 
 	//create string stream to write to
@@ -109,9 +109,9 @@ OmProjectData::ArchiveWrite(const string &name, T* t) {
 	string str = sstream.str();
 	
 	//write dataset
-	Instance()->hdfFile->dataset_raw_create_tree_overwrite( name, str.size(), str.c_str());
+	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, str.size(), str.c_str());
 
-	printf("saved project file \"%s\", at path \"%s\"\n", qPrintable(getFileNameAndPath()), name.c_str() );
+	printf("saved project file \"%s\", at path \"%s\"\n", qPrintable(getFileNameAndPath()), path.getString().c_str() );
 }
 
 #endif

@@ -27,6 +27,7 @@ string OmHdf5::getFileNameAndPathString()
 	return m_fileNameAndPath.toStdString();
 }
 
+// set whether HDF file should be kept opened, or automatically closed, between calls into the file
 void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 {
 	if( autoOpenAndClose ){
@@ -63,64 +64,64 @@ void OmHdf5::close()
 	hdfLowLevelWrap->close();
 }
 
-bool OmHdf5::group_exists( string name )
+bool OmHdf5::group_exists( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->group_exists_with_lock(name.c_str());
+	return hdfLowLevelWrap->group_exists_with_lock( path );
 }
 
-void OmHdf5::group_delete( string name )
+void OmHdf5::group_delete( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->group_delete_with_lock(name.c_str());
+	hdfLowLevelWrap->group_delete_with_lock( path );
 }
 
-bool OmHdf5::dataset_exists( string name )
+bool OmHdf5::dataset_exists( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_exists_with_lock(name.c_str());
+	return hdfLowLevelWrap->dataset_exists_with_lock( path );
 }
 
-void OmHdf5::dataset_image_create_tree_overwrite( string & name, Vector3 < int >dataDims, 
+void OmHdf5::dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3 < int >dataDims, 
 						  Vector3 < int >chunkDims, int bytesPerSample,
 						  bool unlimited ) 
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock(name.c_str(), dataDims, chunkDims, bytesPerSample, unlimited );
+	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, bytesPerSample, unlimited );
 }
 
-vtkImageData* OmHdf5::dataset_image_read_trim( string name, DataBbox dataExtent, int bytesPerSample)
+vtkImageData* OmHdf5::dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_image_read_trim_with_lock(name.c_str(), dataExtent, bytesPerSample);
+	return hdfLowLevelWrap->dataset_image_read_trim_with_lock( path, dataExtent, bytesPerSample);
 }
 
-void OmHdf5::dataset_image_write_trim( string name, DataBbox dataExtent, 
+void OmHdf5::dataset_image_write_trim( OmHdf5Path path, DataBbox dataExtent, 
 				       int bytesPerSample, vtkImageData *pImageData)
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_write_trim_with_lock(name.c_str(), dataExtent, bytesPerSample, pImageData);
+	hdfLowLevelWrap->dataset_image_write_trim_with_lock( path, dataExtent, bytesPerSample, pImageData);
 }
 
-void* OmHdf5::dataset_raw_read( string name, int* size)
+void* OmHdf5::dataset_raw_read( OmHdf5Path path, int* size)
 {
 	QMutexLocker locker(fileLock);
-	return hdfLowLevelWrap->dataset_raw_read_with_lock(name.c_str(), size);
+	return hdfLowLevelWrap->dataset_raw_read_with_lock( path, size);
 }
 
-void OmHdf5::dataset_raw_create_tree_overwrite( string name, int size, const void* data)
+void OmHdf5::dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data)
 {
 	if (!size){
 		return;
 	}
 	
-	debug ("meshercrash", "%p, %s, %i, %p\n", this, name.c_str(), size, data);
+	debug ("meshercrash", "%p, %s, %i, %p\n", this, path.getString().c_str(), size, data);
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock(name.c_str(), size, data);
+	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock( path, size, data);
 }
 
-Vector3 < int > OmHdf5::dataset_image_get_dims( string name )
+Vector3 < int > OmHdf5::dataset_image_get_dims( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_get_dims_with_lock(name.c_str());
+	hdfLowLevelWrap->dataset_image_get_dims_with_lock( path );
 }

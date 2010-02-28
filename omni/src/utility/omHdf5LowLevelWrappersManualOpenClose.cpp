@@ -3,6 +3,8 @@
 #include "common/omDebug.h"
 
 #define HDF5_WRAP() 								\
+	string pathStr = path.getString();                                      \
+	const char * name = pathStr.c_str();                                    \
 	if(!opened) {                                                           \
                 throw OmIoException("HDF5 file was not open");                  \
 	}
@@ -44,7 +46,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::file_create()
 
 /////////////////////////////////
 ///////          Group
-bool OmHdf5LowLevelWrappersManualOpenClose::group_exists_with_lock(const char *name)
+bool OmHdf5LowLevelWrappersManualOpenClose::group_exists_with_lock(OmHdf5Path path)
 {
 	bool exists;
 	HDF5_WRAP();
@@ -53,7 +55,7 @@ bool OmHdf5LowLevelWrappersManualOpenClose::group_exists_with_lock(const char *n
 	return exists;
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::group_delete_with_lock(const char *name)
+void OmHdf5LowLevelWrappersManualOpenClose::group_delete_with_lock(OmHdf5Path path)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_group_delete_with_lock(fileId, name);
@@ -63,7 +65,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::group_delete_with_lock(const char *n
 /////////////////////////////////
 ///////          Dataset
 
-bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(const char *name)
+bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(OmHdf5Path path)
 {
 	bool exists;
 	HDF5_WRAP();
@@ -72,7 +74,7 @@ bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(const char 
 	return exists;
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(const char *name, Vector3 < int >dataDims,
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3 < int >dataDims,
 					    Vector3 < int >chunkDims, int bytesPerSample, bool unlimited)
 {
 	HDF5_WRAP();
@@ -81,7 +83,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_
 	HDF5_UNWRAP();
 }
 
-vtkImageData * OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_with_lock(const char *name, DataBbox dataExtent, int bytesPerSample)
+vtkImageData * OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_with_lock(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
 {
 	vtkImageData * ret;
 	HDF5_WRAP();
@@ -90,7 +92,7 @@ vtkImageData * OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_wi
 	return ret;
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(const char *name, DataBbox dataExtent, int bytesPerSample,
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample,
 				 vtkImageData * pImageData)
 {
 	HDF5_WRAP();
@@ -98,7 +100,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(c
 	HDF5_UNWRAP();
 }
 
-void * OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(const char *name, int *size)
+void * OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(OmHdf5Path path, int *size)
 {
 	void * ret;
 	HDF5_WRAP();
@@ -107,14 +109,14 @@ void * OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(const c
 	return ret;
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_with_lock(const char *name, int size, const void *data)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_with_lock(OmHdf5Path path, int size, const void *data)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 	HDF5_UNWRAP();
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_with_lock(const char* name, int size, const void* data)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_with_lock(OmHdf5Path path, int size, const void* data)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, name, size, data);
@@ -122,7 +124,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_wi
 }
 
 //imageIo
-Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_with_lock(const char *name)
+Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_with_lock(OmHdf5Path path)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_image_get_dims_with_lock(fileId, name);

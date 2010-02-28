@@ -575,7 +575,9 @@ void OmMipVolume::AllocInternalData()
 								   ROUNDUP(data_dims.z, GetChunkDimension()));
 
 		//alloc image data
-		string mip_volume_level_path = MipLevelInternalDataPath(i);
+		
+		OmHdf5Path mip_volume_level_path;
+		mip_volume_level_path.setPath( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
 		OmProjectData::CreateImageData(mip_volume_level_path, rounded_data_dims,
@@ -591,8 +593,10 @@ void OmMipVolume::DeleteInternalData()
 {
 	//debug("genone","OmMipVolume::DeleteInternalData()\n");
 
-	if (OmProjectData::GroupExists(mDirectoryPath)) {
-		OmProjectData::GroupDelete(mDirectoryPath);
+	OmHdf5Path path;
+	path.setPath( mDirectoryPath );
+	if (OmProjectData::GroupExists(path)) {
+		OmProjectData::GroupDelete(path);
 	}
 }
 
@@ -707,7 +711,8 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	string source_data_path = MipLevelInternalDataPath(rMipCoord.Level - 1);
+	OmHdf5Path source_data_path;
+	source_data_path.setPath( MipLevelInternalDataPath(rMipCoord.Level - 1) );
 	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
 	//read and get pointer to data
@@ -803,7 +808,8 @@ bool OmMipVolume::ImportSourceData()
 				      MipChunksInMipLevel(0)));
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	string leaf_volume_path = MipLevelInternalDataPath(0);
+	OmHdf5Path leaf_volume_path;
+	leaf_volume_path.setPath( MipLevelInternalDataPath(0) );
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z)
@@ -887,7 +893,8 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	string mip_volume_path = MipLevelInternalDataPath(0);
+	OmHdf5Path mip_volume_path;
+	mip_volume_path.setPath( MipLevelInternalDataPath(0) );
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z)

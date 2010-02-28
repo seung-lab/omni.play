@@ -8,10 +8,11 @@
 using std::string;
 
 #include "volume/omVolumeTypes.h"
-#include "omHdf5LowLevelWrappersAutoOpenClose.h"
-#include "omHdf5LowLevelWrappersManualOpenClose.h"
-#include "omHdf5Helpers.h"
-#include "omHdf5Dataset.h"
+#include "utility/omHdf5LowLevelWrappersAutoOpenClose.h"
+#include "utility/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "utility/omHdf5Helpers.h"
+#include "utility/omHdf5Dataset.h"
+#include "utility/omHdf5Path.h"
 
 class vtkImageData;
 
@@ -31,21 +32,21 @@ class OmHdf5
 	void create();
 
 	//group
-	bool group_exists( string name );
-	void group_delete( string name );
+	bool group_exists( OmHdf5Path path );
+	void group_delete( OmHdf5Path path );
 
 	//data set
-	bool dataset_exists( string name );
+	bool dataset_exists( OmHdf5Path path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(string name );
-	void dataset_image_create_tree_overwrite( string & path, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited  = false);
-	vtkImageData* dataset_image_read_trim( string name, DataBbox dataExtent, int bytesPerSample);
-	void dataset_image_write_trim( string name, DataBbox dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
+	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited  = false);
+	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
+	void dataset_image_write_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, vtkImageData *pImageData);
 
 	//data set raw
-	void* dataset_raw_read( string name, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( string name, int size, const void* data);
+	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);
+	void dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data);
 
  private:
 	QString m_fileNameAndPath;

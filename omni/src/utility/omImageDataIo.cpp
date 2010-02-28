@@ -1,6 +1,7 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
 #include "utility/omHdf5.h"
+#include "utility/omHdf5Helpers.h"
 #include "common/omVtk.h"
 
 #include <QFile>
@@ -41,10 +42,6 @@ namespace bfs = boost::filesystem;
 
 #define DEBUG 0
 
-static string HDF5_DEFAULT_DATASET_NAME = "main";
-
-#pragma mark -
-#pragma mark ImageType Methods
 /////////////////////////////////
 ///////          ImageType Methods
 
@@ -269,7 +266,7 @@ vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, cons
 
 	OmHdf5 hdfImportFile( QString::fromStdString( dpath + fnames.front() ));
 
-	vtkImageData *data = hdfImportFile.dataset_image_read_trim(HDF5_DEFAULT_DATASET_NAME, 
+	vtkImageData *data = hdfImportFile.dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
 								   dataExtentBbox, 
 								   bytesPerSample);
 	return data;
@@ -380,11 +377,13 @@ void om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern,
 		hdfExport.create();
 		Vector3 < int >dest_dims = dstExtentBbox.getUnitDimensions();
 		
-		hdfExport.dataset_image_create_tree_overwrite(HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims, bytesPerSample, true);
+		hdfExport.dataset_image_create_tree_overwrite( OmHdf5Helpers::getDefaultDatasetName(), 
+							       dest_dims, dest_dims, bytesPerSample, true);
 	}
 	
 	//write image data
-	hdfExport.dataset_image_write_trim(HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
+	hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+					   dataExtentBbox, bytesPerSample, data);
 }
 
 #pragma mark -
@@ -455,18 +454,13 @@ Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &
 	OmHdf5 hdfExport( QString::fromStdString( dpath + fnames.front() ) );
 
 	//get dims of image
-	Vector3 < int >dims = hdfExport.dataset_image_get_dims( HDF5_DEFAULT_DATASET_NAME);
+	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
 
 	return dims;
 }
 
-#pragma mark -
-#pragma mark vtkImageData Utility Functions
 /////////////////////////////////
-///////
 ///////          vtkImageData Utility Functions
-///////
-
 void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >&aabb, int extent[])
 {
 	extent[0] = aabb.getMin().x;
@@ -506,12 +500,8 @@ void printImageData(vtkImageData * data)
 				}
 
 			}
-
-			//end of x line
 			//debug("FIXME", << endl;
 		}
-
-		//end of y sheet
 		//debug("FIXME", << endl;
 	}
 }
@@ -820,21 +810,6 @@ void om_imagedata_regex_match_dir_contents(string dpath, string regexStr, list <
 	}
 }
 
-/*
- 
- //if extension not yet set
- if(0 == ext.size()) {
- ext = bfs::path(fname).extension();
- } else {
- //ext must match
- if(ext != bfs::path(fname).extension()) {
- //else clear matches and return
- rMatchFnames.clear();
- return;
- }
- }
- */
-
 bool string_natural_comparison(const string & lhs, const string & rhs)
 {
 	return strnatcmp(lhs.c_str(), rhs.c_str()) < 0;
@@ -944,22 +919,16 @@ void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list 
 
 void om_imagedata_remove_symlink_dir(string symlink_dpath)
 {
-
 	//if temp directory exists
 	if (bfs::exists(bfs::path(symlink_dpath))) {
-
 		//attemp to remove temp directory
 		if (!bfs::remove_all(bfs::path(symlink_dpath))) {
 			//debug("FIXME", << "om_imagedata_remove_symlink_dir: could not remove temp dirctory" << endl;
 			assert(false);
 		}
-
 	}
-
 }
 
-#pragma mark -
-#pragma mark Utility Functions
 /////////////////////////////////
 ///////
 ///////         Utility Functions

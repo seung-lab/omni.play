@@ -136,24 +136,18 @@ void OmMipChunk::Open()
 
 void OmMipChunk::OpenForWrite()
 {
-	//debug("genone","OmMipChunk::OpenForWrite()");
-
-	//ignore if already open
-	if (IsOpen())
+	if (IsOpen()) {
 		return;
+	}
 
-	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
-
-	//read from project data
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-	//debug("FIXME", << "BPS: " << GetBytesPerSample() << endl;
+	vtkImageData *data = OmProjectData::ReadImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
-	//set this image data
 	SetImageData(data);
 
-	//set open
 	SetOpen(true);
 }
 
@@ -244,7 +238,8 @@ bool OmMipChunk::IsMetaDataDirty() const
 void OmMipChunk::ReadVolumeData()
 {
 	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
 	//read from project data
 	if (!OmProjectData::DataExists(mip_level_vol_path)) {
@@ -265,15 +260,17 @@ void OmMipChunk::ReadVolumeData()
 
 void OmMipChunk::WriteVolumeData()
 {
-	if (!IsOpen())
+	if (!IsOpen()) {
 		OpenForWrite();
-	//assert(IsOpen());
-	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
-	//write to project data
-	if (mpImageData)
-		OmProjectData::WriteImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
-	//data clean
+	}
+
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+
+	if (mpImageData) {
+		OmProjectData::WriteImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
+	}
+
 	mVolumeDataDirty = false;
 }
 
@@ -281,11 +278,12 @@ void OmMipChunk::ReadMetaData()
 {
 	// TODO: must we do this? (purcaro)
 
-	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
+	OmHdf5Path dat_file_path;
+	dat_file_path.setPath( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
 
 	//read archive if it exists
-	if (OmProjectData::DataExists(fpath)) {
-		OmProjectData::ArchiveRead < OmMipChunk > (fpath, this);
+	if (OmProjectData::DataExists(dat_file_path)) {
+		OmProjectData::ArchiveRead < OmMipChunk > (dat_file_path, this);
 	}
 
 	//otherwise, no metadata to read in
@@ -293,16 +291,14 @@ void OmMipChunk::ReadMetaData()
 
 void OmMipChunk::WriteMetaData()
 {
-	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
+	OmHdf5Path dat_file_path;
+	dat_file_path.setPath(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
-	OmProjectData::ArchiveWrite < OmMipChunk > (fpath, this);
+	OmProjectData::ArchiveWrite < OmMipChunk > (dat_file_path, this);
 
-	//meta data clean
 	mMetaDataDirty = false;
 }
 
-#pragma mark
-#pragma mark MetaData Accessors
 /////////////////////////////////
 ///////          MetaData Accessors
 
@@ -316,8 +312,6 @@ void OmMipChunk::ClearModifiedVoxelValues()
 	mModifiedVoxelValues.clear();
 }
 
-#pragma mark
-#pragma mark Data Accessors
 /////////////////////////////////
 ///////          Data Accessors
 

@@ -25,8 +25,6 @@ namespace bfs = boost::filesystem;
 
 #define DEBUG 0
 
-static const string PROJECT_ARCHIVE_NAME = "project.dat";
-
 //init instance pointer
 OmProject *OmProject::mspInstance = 0;
 
@@ -82,7 +80,7 @@ void OmProject::Save()
 		return;
 	}
 
-	OmProjectData::ArchiveWrite < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
+	OmProjectData::ArchiveWrite < OmProject > (OmHdf5Helpers::getProjectArchiveName(), Instance());
 	OmProjectData::Flush();
 }
 
@@ -107,7 +105,7 @@ void OmProject::Load( QString fileNameAndPath )
 	OmProjectData::instantiateProjectData( fileNameAndPath );
 
 	OmProjectData::Open();
-	OmProjectData::ArchiveRead < OmProject > (PROJECT_ARCHIVE_NAME, Instance());
+	OmProjectData::ArchiveRead < OmProject > (OmHdf5Helpers::getProjectArchiveName(), Instance());
 	OmVolume::CheckDataResolution();
 }
 

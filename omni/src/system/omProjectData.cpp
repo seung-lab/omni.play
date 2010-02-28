@@ -91,46 +91,46 @@ void OmProjectData::Flush()
 
 //groups
 
-bool OmProjectData::GroupExists(string & path)
+bool OmProjectData::GroupExists(OmHdf5Path path)
 {
 	return Instance()->hdfFile->group_exists( path );
 }
 
-void OmProjectData::GroupDelete(string & path)
+void OmProjectData::GroupDelete(OmHdf5Path path)
 {
 	Instance()->hdfFile->group_delete( path );
 }
 
-bool OmProjectData::DataExists(string & path)
+bool OmProjectData::DataExists(OmHdf5Path path)
 {
 	return Instance()->hdfFile->dataset_exists( path );
 }
 
 //image data io
 
-void OmProjectData::CreateImageData(string & path, Vector3 < int >dataDims, Vector3 < int >chunkDims,
+void OmProjectData::CreateImageData(OmHdf5Path path, Vector3 < int >dataDims, Vector3 < int >chunkDims,
 				    int bytesPerSample)
 {
 	Instance()->hdfFile->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, bytesPerSample);
 }
 
-vtkImageData *OmProjectData::ReadImageData(string & path, const DataBbox & extent, int bytesPerSample)
+vtkImageData *OmProjectData::ReadImageData(OmHdf5Path path, const DataBbox & extent, int bytesPerSample)
 {
 	return Instance()->hdfFile->dataset_image_read_trim( path, extent, bytesPerSample);
 }
 
-void OmProjectData::WriteImageData(string & path, const DataBbox & extent, int bytesPerSample, vtkImageData * data)
+void OmProjectData::WriteImageData(OmHdf5Path path, const DataBbox & extent, int bytesPerSample, vtkImageData * data)
 {
 	Instance()->hdfFile->dataset_image_write_trim( path, extent, bytesPerSample, data);
 }
 
 //raw data io
-void *OmProjectData::ReadRawData(string & path, int *size)
+void *OmProjectData::ReadRawData(OmHdf5Path path, int *size)
 {
 	return Instance()->hdfFile->dataset_raw_read( path, size);
 }
 
-void OmProjectData::WriteRawData(string & path, int size, const void *data)
+void OmProjectData::WriteRawData(OmHdf5Path path, int size, const void *data)
 {
 	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, size, data);
 }

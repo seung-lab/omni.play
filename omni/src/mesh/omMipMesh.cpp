@@ -86,19 +86,16 @@ OmMipMesh::~OmMipMesh()
 	}
 }
 
-#pragma mark
-#pragma mark Mesh IO Methods
 /////////////////////////////////
 ///////          Mesh IO Methods
 
-void
- OmMipMesh::Load()
+void OmMipMesh::Load()
 {
 	int size;
-	string fpath;
 
 	//read meta data
-	fpath = GetDirectoryPath() + "metamesh.dat";
+	OmHdf5Path fpath;
+	fpath.setPath( GetDirectoryPath() + "metamesh.dat" );
 	char *meta = (char *)OmProjectData::ReadRawData(fpath);
 	char result = *meta;
 	delete meta;
@@ -108,17 +105,17 @@ void
 		return;
 
 	//read strip offset/size data
-	fpath = GetDirectoryPath() + "stripoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "stripoffset.dat" );
 	mpStripOffsetSizeData = (uint32_t *) OmProjectData::ReadRawData(fpath, &size);
 	mStripCount = size / (2 * sizeof(uint32_t));
 
 	//read vertex offset data
-	fpath = GetDirectoryPath() + "vertexoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "vertexoffset.dat" );
 	mpVertexIndexData = (GLuint *) OmProjectData::ReadRawData(fpath, &size);
 	mVertexIndexCount = size / sizeof(GLuint);
 
 	//read strip offset/size data
-	fpath = GetDirectoryPath() + "vertex.dat";
+	fpath.setPath( GetDirectoryPath() + "vertex.dat" );
 	mpVertexData = (GLfloat *) OmProjectData::ReadRawData(fpath, &size);
 	mVertexCount = size / (6 * sizeof(GLfloat));
 
@@ -179,14 +176,13 @@ void OmMipMesh::Save()
 		hdf5File = mHdf5File;
        	}
 
-
-	string fpath;
 	int size;
 
 	assert(hdf5File);
 
 	//write meta data
-	fpath = GetDirectoryPath() + "metamesh.dat";
+	OmHdf5Path fpath;
+	fpath.setPath( GetDirectoryPath() + "metamesh.dat" );
 	char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
 	hdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);
 
@@ -195,17 +191,17 @@ void OmMipMesh::Save()
 		return;
 
 	//write strip offset/size data
-	fpath = GetDirectoryPath() + "stripoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "stripoffset.dat" );
 	size = 2 * mStripCount * sizeof(uint32_t);
 	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpStripOffsetSizeData);
 
 	//write vertex offset data
-	fpath = GetDirectoryPath() + "vertexoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "vertexoffset.dat" );
 	size = mVertexIndexCount * sizeof(GLuint);
 	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexIndexData);
 
 	//write strip offset/size data
-	fpath = GetDirectoryPath() + "vertex.dat";
+	fpath.setPath( GetDirectoryPath() + "vertex.dat" );
 	size = 6 * mVertexCount * sizeof(GLfloat);
 	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
 }
