@@ -163,9 +163,10 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
 
 void OmMipMesh::Save()
 {
+	OmHdf5 * hdf5File = NULL;
 
 	if (!OmGarbage::GetParallel()) {
-               	mHdf5File = OmProjectData::GetHdf5File();
+               	hdf5File = OmProjectData::GetHdf5File();
        	} else {
                	if (NULL == mHdf5File) {
 			try {
@@ -175,16 +176,19 @@ void OmMipMesh::Save()
 				//std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
 			}
                	}
+		hdf5File = mHdf5File;
        	}
 
 
 	string fpath;
 	int size;
 
+	assert(hdf5File);
+
 	//write meta data
 	fpath = GetDirectoryPath() + "metamesh.dat";
 	char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
-	mHdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);
 
 	//if meta is zero then skip mesh
 	if (!meta)
@@ -193,17 +197,17 @@ void OmMipMesh::Save()
 	//write strip offset/size data
 	fpath = GetDirectoryPath() + "stripoffset.dat";
 	size = 2 * mStripCount * sizeof(uint32_t);
-	mHdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpStripOffsetSizeData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpStripOffsetSizeData);
 
 	//write vertex offset data
 	fpath = GetDirectoryPath() + "vertexoffset.dat";
 	size = mVertexIndexCount * sizeof(GLuint);
-	mHdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexIndexData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexIndexData);
 
 	//write strip offset/size data
 	fpath = GetDirectoryPath() + "vertex.dat";
 	size = 6 * mVertexCount * sizeof(GLfloat);
-	mHdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
 }
 
 string OmMipMesh::GetFileName()
