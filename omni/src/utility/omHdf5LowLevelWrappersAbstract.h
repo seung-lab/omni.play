@@ -6,6 +6,9 @@
 class OmHdf5LowLevelWrappersAbstract
 {
  public:
+	virtual void open(string fileName) = 0;
+	virtual void close(string fileName) = 0;
+
 	//file
 	virtual void file_create(string fpath) = 0;
 	

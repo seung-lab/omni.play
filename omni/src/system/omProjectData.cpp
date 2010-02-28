@@ -65,11 +65,13 @@ void OmProjectData::Create()
 
 void OmProjectData::Open()
 {
+	Instance()->hdfFile->open();
 	Instance()->mIsOpen = true;
 }
 
 void OmProjectData::Close()
 {
+	Instance()->hdfFile->close();
 	Instance()->mIsOpen = false;
 }
 

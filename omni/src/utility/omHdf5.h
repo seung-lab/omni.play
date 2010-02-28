@@ -24,6 +24,8 @@ class OmHdf5
 	QString getFileNameAndPath();
 
 	//file
+	void open();
+	void close();
 	void create();
 
 	//group

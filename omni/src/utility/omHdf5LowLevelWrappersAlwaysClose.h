@@ -8,6 +8,9 @@ class OmHdf5LowLevelWrappersAlwaysClose : public OmHdf5LowLevelWrappersAbstract
  public:
 	OmHdf5LowLevelWrappersAlwaysClose();
 
+	virtual void open(string fileName);
+	virtual void close(string fileName);
+
 	//file
 	virtual void file_create(string fpath);
 	

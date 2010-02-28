@@ -22,6 +22,14 @@ OmHdf5LowLevelWrappersAlwaysClose::OmHdf5LowLevelWrappersAlwaysClose()
 {
 }
 
+void OmHdf5LowLevelWrappersAlwaysClose::open(string fileName)
+{
+}
+
+void OmHdf5LowLevelWrappersAlwaysClose::close(string fileName)
+{
+}
+
 /////////////////////////////////
 ///////          File
 void OmHdf5LowLevelWrappersAlwaysClose::file_create(string fpath)

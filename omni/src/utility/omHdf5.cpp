@@ -36,6 +36,18 @@ void OmHdf5::create()
 }
 
 // hdf5 wrappers -- with locking
+void OmHdf5::open()
+{
+	QMutexLocker locker(fileLock);
+	hdfLowLevelWrap->open(getFileNameAndPathString());
+}
+
+void OmHdf5::close()
+{
+	QMutexLocker locker(fileLock);
+	hdfLowLevelWrap->close(getFileNameAndPathString());
+}
+
 bool OmHdf5::group_exists( string name )
 {
 	QMutexLocker locker(fileLock);
