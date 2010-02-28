@@ -301,6 +301,10 @@ sub expat {
 }
 
 sub hdf5 {
+    hdf5_18();
+}
+
+sub hdf5_16 {
     prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
 }
 
