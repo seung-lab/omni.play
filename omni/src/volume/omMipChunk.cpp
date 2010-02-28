@@ -716,7 +716,6 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
  */
 vtkImageData *OmMipChunk::GetMeshImageData()
 {
-	//debug("FIXME", << "OmMipChunk::GetMeshImageData: " << mCoordinate << endl;
 	Open ();
 
 	DataCoord data_dims;
@@ -755,12 +754,6 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 
 				debug("mipchunk", "got mpImageData: %i, rc:%i\n", p_chunk->mpImageData, p_chunk->mpImageData->GetReferenceCount());
 
-
-				//get pointer to image data
-				//vtkImageData *p_src_data = p_chunk->mpImageData;
-
-				debug ("genone", "got %i\n", p_chunk->mpImageData);
-
 				//get dim size
 				int chunk_dim = mpMipVolume->GetChunkDimension();
 
@@ -768,57 +761,13 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 
-				//p_chunk = shared_ptr < OmMipChunk > ();
-				//mpMipVolume->Remove (mip_coord);
+				p_chunk = shared_ptr < OmMipChunk > ();
+				mpMipVolume->Remove (mip_coord);
 			}
 
 	return p_mesh_data;
-	//return NULL;
 }
 
-/*
-DataBbox sliceDataBbox(const DataBbox &bbox, OmDataVolumePlane plane, int depth) {
-	DataBbox slice_bbox;
-	const Vector3<int> &data_extent_min = bbox.getMin();
-	const Vector3<int> &data_extent_max = bbox.getMax();
-	
-	switch(plane) {
-		case VOL_XY_PLANE:
-			if(depth < data_extent_min.z || depth > data_extent_max.z)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(data_extent_min.x, data_extent_min.y, depth));
-			slice_bbox.setMax(Vector3<int>(data_extent_max.x, data_extent_max.y, depth));
-			break;
-			
-		case VOL_XZ_PLANE:
-			if(depth < data_extent_min.y || depth > data_extent_max.y)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(data_extent_min.x, depth, data_extent_min.z));
-			slice_bbox.setMax(Vector3<int>(data_extent_max.x, depth, data_extent_max.z));
-			break;
-			
-		case VOL_YZ_PLANE:
-			if(depth < data_extent_min.x || depth > data_extent_max.x)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(depth, data_extent_min.y, data_extent_min.z));
-			slice_bbox.setMax(Vector3<int>(depth, data_extent_max.y, data_extent_max.z));
-			break;
-			
-		default:
-			assert(false);
-	}
-	
-	return slice_bbox;
-}
-
-
-*/
-
-#pragma mark
-#pragma mark Drawing
 /////////////////////////////////
 ///////          Drawing
 
@@ -873,11 +822,8 @@ void OmMipChunk::DrawClippedExtent()
 	glPopAttrib();
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
-
 ostream & operator<<(ostream & out, const OmMipChunk & mc)
 {
 
