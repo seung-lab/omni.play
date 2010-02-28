@@ -167,7 +167,7 @@ void OmMipMesh::Save()
        	} else {
                	if (NULL == mHdf5File) {
 			try {
-                       		mHdf5File = new OmHdf5(QString(GetLocalPathForHd5fChunk().c_str()));
+                       		mHdf5File = new OmHdf5(QString::fromStdString( GetLocalPathForHd5fChunk() ) );
 				mHdf5File->create();
 			} catch (OmIoException e) {
 				//std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
