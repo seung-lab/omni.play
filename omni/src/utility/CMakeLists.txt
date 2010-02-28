@@ -6,7 +6,8 @@ SET(OM_UTILITY_LIB_SRCS
 	omHdf5Dataset.cpp
 	omHdf5Helpers.cpp
 	omHdf5LowLevel.cpp
-	omHdf5LowLevelWrappersAlwaysClose.cpp
+	omHdf5LowLevelWrappersAutoOpenClose.cpp
+	omHdf5LowLevelWrappersManualOpenClose.cpp
 	omImageDataIo.cpp
 	omSystemInformation.cpp
 	localPrefFiles.cpp

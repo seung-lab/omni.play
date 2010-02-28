@@ -14,6 +14,7 @@
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
 #include "system/omGarbage.h"
+#include "system/omProjectData.h"
 #include "gui/inspectors/mutexServer.h"
 
 OmId SegmentationID = 0;
@@ -149,6 +150,7 @@ void processLine( QString line, QString fName )
 	} else if( line.startsWith("parallel") ){
 		QStringList args = line.split(':');
 		OmGarbage::SetParallel(args[1], getNum(args[2]));
+		OmProjectData::ResetHDF5fileAsAutoOpenAndClose( true );
 	} else if( line.startsWith("serve") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);

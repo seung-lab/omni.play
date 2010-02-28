@@ -8,7 +8,8 @@
 using std::string;
 
 #include "volume/omVolumeTypes.h"
-#include "omHdf5LowLevelWrappersAlwaysClose.h"
+#include "omHdf5LowLevelWrappersAutoOpenClose.h"
+#include "omHdf5LowLevelWrappersManualOpenClose.h"
 #include "omHdf5Helpers.h"
 #include "omHdf5Dataset.h"
 
@@ -17,11 +18,12 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath, const bool keepOpen = false );
+	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose = false );
 	~OmHdf5();
 
 	string getFileNameAndPathString();
 	QString getFileNameAndPath();
+	void resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
 
 	//file
 	void open();
@@ -50,6 +52,7 @@ class OmHdf5
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex * fileLock;
 	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
+	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
 };
 
 #endif

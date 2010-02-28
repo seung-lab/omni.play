@@ -1,12 +1,12 @@
-#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_ALWAYS_CLOSE_H
-#define OM_MDF5_LOW_LEVEL_WRAPPERS_ALWAYS_CLOSE_H
+#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
+#define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
 
 #include "utility/omHdf5LowLevelWrappersAbstract.h"
 
-class OmHdf5LowLevelWrappersAlwaysClose : public OmHdf5LowLevelWrappersAbstract
+class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstract
 {
  public:
-	OmHdf5LowLevelWrappersAlwaysClose();
+	OmHdf5LowLevelWrappersManualOpenClose();
 
 	virtual void open(string fileName);
 	virtual void close(string fileName);
@@ -34,6 +34,8 @@ class OmHdf5LowLevelWrappersAlwaysClose : public OmHdf5LowLevelWrappersAbstract
 
  private:
 	OmHdf5LowLevel hdfLowLevel;
+	hid_t fileId;
+	bool opened;
 };
 
 #endif

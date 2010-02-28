@@ -50,9 +50,14 @@ QString OmProjectData::getFileNameAndPath()
 	return Instance()->hdfFile->getFileNameAndPath();
 }
 
-
 /////////////////////////////////
 ///////          ProjectData Access
+
+void OmProjectData::ResetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
+{
+	Instance()->hdfFile->resetHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
+}
+
 void OmProjectData::Create()
 {
 	QFile projectFile( getFileNameAndPath() );

@@ -2,13 +2,13 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
 #include "common/omVtk.h"
+#include "common/omDebug.h"
 
 #include <vtkImageData.h>
 #include <QFile>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string_regex.hpp>
-#include "common/omDebug.h"
 namespace bfa = boost::algorithm;
 
 /////////////////////////////////
@@ -26,6 +26,8 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 
 hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
 {
+	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
+
 	hid_t fileId;
 	fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
 	
@@ -37,6 +39,8 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
 
 void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 {
+	debug("hdf5", "%s: closed HDF file\n", __FUNCTION__ );
+
         herr_t ret = H5Fclose(fileId);
         if (ret < 0)
                 throw OmIoException("Could not close HDF5 file.");

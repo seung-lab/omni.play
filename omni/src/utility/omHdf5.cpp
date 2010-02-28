@@ -1,16 +1,11 @@
 #include "omHdf5.h"
 #include <stdlib.h>
 
-OmHdf5::OmHdf5( QString fileNameAndPath, const bool keepOpen )
+OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose )
 {
 	m_fileNameAndPath = fileNameAndPath;
 	fileLock = new QMutex();
-
-	if( keepOpen ){
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAlwaysClose();
-	} else {
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAlwaysClose();
-	}
+	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
 }
 
 OmHdf5::~OmHdf5()
@@ -27,6 +22,23 @@ QString OmHdf5::getFileNameAndPath()
 string OmHdf5::getFileNameAndPathString()
 {
 	return m_fileNameAndPath.toStdString();
+}
+
+void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
+{
+	if( autoOpenAndClose ){
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose();
+	} else {
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose();
+	}
+}
+
+void OmHdf5::resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
+{
+	QMutexLocker locker(fileLock);
+	hdfLowLevelWrap->close( getFileNameAndPathString() );
+	delete(hdfLowLevelWrap);
+	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
 }
 
 // hdf5 wrappers -- no locking
