@@ -520,7 +520,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const 
 
 	//Creates a dataset at the specified location. 
 	hid_t type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
-	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, plist_id, H5P_DEFAULT, H5P_DEFAULT);
+	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not create HDF5 dataset.");
 
