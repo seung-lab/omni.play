@@ -1851,3 +1851,276 @@ Program received signal SIGABRT, Aborted.
 #10 0x0000003545e06617 in start_thread () from /lib64/libpthread.so.0
 ---Type <return> to continue, or q <return> to quit---
 #11 0x00000035452d3c2d in clone () from /lib64/libc.so.6
+
+
+
+
+I don't understand this bug fully, but here's the output for a bug I found
+It seems to have something to do with Hdf5.
+
+
+(gdb) run -dcross -nview2d,thread
+Starting program: /Users/didier/branch/omni/bin/omni -dcross -nview2d,thread
+[Thread debugging using libthread_db enabled]                               
+[New Thread 0x7f13c61b9790 (LWP 23551)]                                     
+[New Thread 0x7f13bd7b9950 (LWP 23552)]                                     
+[New Thread 0x7f13bcfb8950 (LWP 23553)]                                     
+[New Thread 0x7f13bc7b7950 (LWP 23554)]                                     
+[New Thread 0x7f13bbfb6950 (LWP 23555)]                                     
+[New Thread 0x7f13bb234950 (LWP 23556)]                                     
+[New Thread 0x7f13baa33950 (LWP 23557)]                                     
+[New Thread 0x7f13abfff950 (LWP 23558)]                                     
+[New Thread 0x7f13ab7fe950 (LWP 23559)]                                     
+[New Thread 0x7f13a9ffb950 (LWP 23561)]                                     
+[New Thread 0x7f13a97fa950 (LWP 23562)]                                     
+*** glibc detected *** /Users/didier/branch/omni/bin/omni: corrupted double-linked list: 0x0000000003a71200 ***                                                                                     
+======= Backtrace: =========                                                                      
+/lib/libc.so.6[0x7f13c3bd6b2c]                                                                    
+/lib/libc.so.6[0x7f13c3bd7e98]                                                                    
+/lib/libc.so.6(cfree+0x76)[0x7f13c3bd8276]                                                        
+/usr/lib/tls/libnvidia-tls.so.1[0x7f13c61bda3b]                                                   
+======= Memory map: ========                                                                      
+00400000-01acc000 r-xp 00000000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
+01ccb000-01d05000 r--p 016cb000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
+01d05000-01d1a000 rw-p 01705000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
+01d1a000-01d26000 rw-p 01d1a000 00:00 0                                                           
+02958000-040a6000 rw-p 02958000 00:00 0                                  [heap]                   
+402e4000-40364000 rw-p 00000000 00:0f 731                                /dev/zero                
+40442000-404c2000 rw-p 00000000 00:0f 731                                /dev/zero                
+406f0000-406f2000 rwxp 00000000 00:0f 731                                /dev/zero                
+40c78000-40cf8000 rw-p 00000000 00:0f 731                                /dev/zero                
+41d44000-41dc4000 rw-p 00000000 00:0f 731                                /dev/zero                
+7f13a87f9000-7f13a8ffa000 rw-p 7f13a87f9000 00:00 0                                               
+7f13a8ffa000-7f13a8ffb000 ---p 7f13a8ffa000 00:00 0                                               
+7f13a8ffb000-7f13a97fb000 rwxp 7f13a8ffb000 00:00 0                                               
+7f13a97fb000-7f13a97fc000 ---p 7f13a97fb000 00:00 0                                               
+7f13a97fc000-7f13a9ffc000 rwxp 7f13a97fc000 00:00 0                                               
+7f13a9ffc000-7f13aaffe000 rw-p 7f13a9ffc000 00:00 0                                               
+7f13aaffe000-7f13aafff000 ---p 7f13aaffe000 00:00 0                                               
+7f13aafff000-7f13ab7ff000 rwxp 7f13aafff000 00:00 0                                               
+7f13ab7ff000-7f13ab800000 ---p 7f13ab7ff000 00:00 0                                               
+7f13ab800000-7f13ac000000 rwxp 7f13ab800000 00:00 0                                               
+7f13ac000000-7f13ac444000 rw-p 7f13ac000000 00:00 0                                               
+7f13ac444000-7f13b0000000 ---p 7f13ac444000 00:00 0                                               
+7f13b0202000-7f13b1204000 rw-p 7f13b0202000 00:00 0                                               
+7f13b14be000-7f13b1cbf000 rw-p 7f13b14be000 00:00 0                                               
+7f13b1cbf000-7f13b1d3f000 rw-s 801d22000 00:0f 7692                      /dev/nvidia0             
+7f13b1d3f000-7f13b1f40000 rw-p 7f13b1d3f000 00:00 0                                               
+7f13b21fa000-7f13b4000000 rw-p 7f13b21fa000 00:00 0                                               
+7f13b4000000-7f13b424e000 rw-p 7f13b4000000 00:00 0                                               
+7f13b424e000-7f13b8000000 ---p 7f13b424e000 00:00 0                                               
+7f13b802b000-7f13ba233000 rw-p 7f13b802b000 00:00 0                                               
+7f13ba233000-7f13ba234000 ---p 7f13ba233000 00:00 0                                               
+7f13ba234000-7f13baa34000 rwxp 7f13ba234000 00:00 0                                               
+7f13baa34000-7f13baa35000 ---p 7f13baa34000 00:00 0                                               
+7f13baa35000-7f13bb235000 rwxp 7f13baa35000 00:00 0                                               
+7f13bb235000-7f13bb635000 rw-s 72a1c3000 00:0f 7692                      /dev/nvidia0             
+7f13bb635000-7f13bb735000 rw-s 8064ee000 00:0f 7692                      /dev/nvidia0             
+7f13bb735000-7f13bb775000 rw-s 530868000 00:0f 7692                      /dev/nvidia0             
+7f13bb795000-7f13bb7b6000 rw-s 00000000 00:09 0                          /SYSV00000000 (deleted)  
+7f13bb7b6000-7f13bb7b7000 ---p 7f13bb7b6000 00:00 0                                               
+7f13bb7b7000-7f13bbfb7000 rwxp 7f13bb7b7000 00:00 0                                               
+7f13bbfb7000-7f13bbfb8000 ---p 7f13bbfb7000 00:00 0                                               
+7f13bbfb8000-7f13bc7b8000 rwxp 7f13bbfb8000 00:00 0                                               
+7f13bc7b8000-7f13bc7b9000 ---p 7f13bc7b8000 00:00 0                                               
+7f13bc7b9000-7f13bcfb9000 rwxp 7f13bc7b9000 00:00 0                                               
+7f13bcfb9000-7f13bcfba000 ---p 7f13bcfb9000 00:00 0                                               
+7f13bcfba000-7f13bd7ba000 rwxp 7f13bcfba000 00:00 0                                               
+7f13bd7ba000-7f13bd7bd000 r-xp 00000000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
+7f13bd7bd000-7f13bd9bc000 ---p 00003000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
+7f13bd9bc000-7f13bd9bd000 rw-p 00002000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
+7f13bd9bd000-7f13bd9bf000 r-xp 00000000 08:02 2595                       /lib/libkeyutils-1.2.so  
+7f13bd9bf000-7f13bdbbe000 ---p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so  
+7f13bdbbe000-7f13bdbbf000 r--p 00001000 08:02 2595                       /lib/libkeyutils-1.2.so  
+7f13bdbbf000-7f13bdbc0000 rw-p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so  
+7f13bdbc0000-7f13bdbc7000 r-xp 00000000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
+7f13bdbc7000-7f13bddc6000 ---p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
+7f13bddc6000-7f13bddc7000 r--p 00006000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
+7f13bddc7000-7f13bddc8000 rw-p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
+7f13bddc8000-7f13bddeb000 r-xp 00000000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
+7f13bddeb000-7f13bdfeb000 ---p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
+7f13bdfeb000-7f13bdfed000 r--p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
+7f13bdfed000-7f13bdfee000 rw-p 00025000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
+7f13bdfee000-7f13be053000 r-xp 00000000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
+7f13be053000-7f13be252000 ---p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
+7f13be252000-7f13be253000 r--p 00064000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
+7f13be253000-7f13be255000 rw-p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
+7f13be255000-7f13be265000 r-xp 00000000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
+7f13be265000-7f13be464000 ---p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
+7f13be464000-7f13be465000 r--p 0000f000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
+7f13be465000-7f13be466000 rw-p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
+7f13be466000-7f13be509000 r-xp 00000000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
+7f13be509000-7f13be708000 ---p 000a3000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
+7f13be708000-7f13be712000 r--p 000a2000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
+7f13be712000-7f13be713000 rw-p 000ac000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
+7f13be713000-7f13be727000 r-xp 00000000 08:02 7717                       /lib/libresolv-2.9.so    
+7f13be727000-7f13be927000 ---p 00014000 08:02 7717                       /lib/libresolv-2.9.so    
+7f13be927000-7f13be928000 r--p 00014000 08:02 7717                       /lib/libresolv-2.9.so    
+7f13be928000-7f13be929000 rw-p 00015000 08:02 7717                       /lib/libresolv-2.9.so    
+7f13be929000-7f13be92b000 rw-p 7f13be929000 00:00 0                                               
+7f13be9                                                                                           
+Program received signal SIGABRT, Aborted.                                                         
+[Switching to Thread 0x7f13abfff950 (LWP 23558)]                                                  
+0x00007f13c3b90fb5 in raise () from /lib/libc.so.6                                                
+(gdb) bt                                                                                          
+#0  0x00007f13c3b90fb5 in raise () from /lib/libc.so.6                                            
+#1  0x00007f13c3b92bc3 in abort () from /lib/libc.so.6                                            
+#2  0x00007f13c3bd0228 in ?? () from /lib/libc.so.6                                               
+#3  0x00007f13c3bd6b2c in ?? () from /lib/libc.so.6                                               
+#4  0x00007f13c3bd7e98 in ?? () from /lib/libc.so.6                                               
+#5  0x00007f13c3bd8276 in free () from /lib/libc.so.6                                             
+#6  0x00007f13c61bda3b in ?? () from /usr/lib/tls/libnvidia-tls.so.1                              
+#7  0x0000000000eb4662 in QString::operator= ()                                                   
+#8  0x000000000104970a in OmGarbage::Instance ()
+    at /Users/didier/branch/omni/src/system/omGarbage.cpp:56
+#9  0x0000000001049995 in OmGarbage::Unlock ()
+    at /Users/didier/branch/omni/src/system/omGarbage.cpp:91
+#10 0x000000000104ef53 in om_hdf5_dataset_image_get_dims (fileId=67108864,
+    name=0x7f13b424c0a8 "channels/channel1/0/volume.dat")
+    at /Users/didier/branch/omni/src/utility/omHdf5.cpp:357
+#11 0x000000000104f698 in om_hdf5_dataset_image_read_trim (fileId=67108864,
+    name=0x7f13b424c0a8 "channels/channel1/0/volume.dat", dataExtent=
+      {static UNITBOX = <optimized out>, _min = {{{x = -1409291104, y = 32531, z = -1272659800}, {r = -1409291104, g = 32531, b = -1272659800}, xyz = {-1409291104, 32531, -1272659800}, rgb = {-1409291104, 32531, -1272659800}, array = {-1409291104, 32531, -1272659800}}, static ZERO = {{{x = 0,y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r= 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, _max = {{{x = 32531, y = 8298244, z = 67108864}, {r = 32531, g = 8298244, b = 67108864}, xyz = {32531, 8298244, 67108864}, rgb = {32531, 8298244, 67108864}, array = {32531, 8298244, 67108864}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO =<same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, _dirty = false, _empty = false},
+    bytesPerSample=1) at /Users/didier/branch/omni/src/utility/omHdf5.cpp:524
+#12 0x000000000081ee02 in OmProjectData::ReadImageData (path=@0x7f13abffed20, extent=@0x3858184,
+    bytesPerSample=1) at /Users/didier/branch/omni/src/system/omProjectData.cpp:187
+#13 0x000000000080b981 in OmMipChunk::ReadVolumeData (this=0x38580f0)
+    at /Users/didier/branch/omni/src/volume/omMipChunk.cpp:252
+#14 0x000000000080ba38 in OmMipChunk::Open (this=0x38580f0)
+    at /Users/didier/branch/omni/src/volume/omMipChunk.cpp:127
+#15 0x000000000085a3dc in OmTile::GetImageData (this=0x3075888, key=@0x7f13abffefe0,
+    sliceDims=@0x7f13abffef30, vol=0x2a91100)
+    at /Users/didier/branch/omni/src/view2d/omTile.cpp:145
+#16 0x000000000085a52b in OmTile::BindToTextureID (this=0x3075888, key=@0x7f13abffefe0,
+    cache=0x30756b0) at /Users/didier/branch/omni/src/view2d/omTile.cpp:76
+#17 0x000000000083d6d2 in OmThreadedCachingTile::HandleCacheMiss (this=0x30756b0,
+    key=@0x7f13abffefe0) at /Users/didier/branch/omni/src/view2d/omThreadedCachingTile.cpp:106
+---Type <return> to continue, or q <return> to quit---
+#18 0x0000000000843bd9 in OmThreadedCache<OmTileCoord, OmTextureID>::FetchLoop (this=0x30756b0)
+    at /Users/didier/branch/omni/src/system/omThreadedCache.h:630
+#19 0x0000000000843e31 in start_cache_fetch_thread<OmTileCoord, OmTextureID> (arg=0x30756b0)
+    at /Users/didier/branch/omni/src/system/omThreadedCache.h:745
+#20 0x00007f13c55393ba in start_thread () from /lib/libpthread.so.0
+#21 0x00007f13c3c43fcd in clone () from /lib/libc.so.6
+#22 0x0000000000000000 in ?? ()
+
+/**********************************************************************/
+took a look at mHdf5Lock
+/**********************************************************************/
+#8  0x000000000104970a in OmGarbage::Instance ()
+    at /Users/didier/branch/omni/src/system/omGarbage.cpp:56
+56              mspInstance->mHdf5Lock = fnpnProject + ".lock";
+(gdb) p mspInstance->mHdf5Lock
+$2 = {static null = {<No data fields>}, static shared_null = {ref = {_q_value = 1196},
+    alloc = 0, size = 0, data = 0x1d0bc9a, clean = 0, simpletext = 0, righttoleft = 0,
+    asciiCache = 0, capacity = 0, reserved = 0, array = {0}}, static shared_empty = {ref = {
+      _q_value = 6}, alloc = 0, size = 0, data = 0x1d0bcba, clean = 0, simpletext = 0,
+    righttoleft = 0, asciiCache = 0, capacity = 0, reserved = 0, array = {0}},
+  d = 0x7f13b424dd10, static codecForCStrings = 0x0}
+
+
+
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+    srcCopyBbox=@0x7fffef28ac40)
+    at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
+653             srcData->GetExtent(src_data_extent);
+(gdb) bt
+#0  0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+    srcCopyBbox=@0x7fffef28ac40)
+    at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
+#1  0x00000000007c6ca2 in OmMipChunk::ExtractDataSlice (this=0x1b739fa0, 
+    plane=VOL_XY_PLANE, offset=35, sliceDims=@0x7fffef28adf0, fast=true)
+    at /Users/purcaro/omni.staging/omni/src/volume/omMipChunk.cpp:707
+#2  0x0000000000802432 in OmView2d::GetImageData (this=0x1b79a470, 
+    key=@0x1b73a19c, sliceDims=@0x7fffef28adf0, vol=0x1b638290)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2244
+#3  0x0000000000802f74 in OmView2d::myBindToTextureID (this=0x1b79a470, 
+    gotten_id={px = 0x7fffef28b080, pn = {pi_ = 0x1b79a470}})
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2271
+#4  0x00000000008045df in OmView2d::PreDraw (this=0x1b79a470, zoomMipVector=
+      {{{x = -282545632, y = 32767}, {min = -282545632, max = 32767}, xy = {-282545632, 32767}, array = {-282545632, 32767}}, static ZERO = <optimized out>})
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2444
+#5  0x000000000080524e in OmView2d::Draw (this=0x1b79a470, mip=0)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2056
+#6  0x000000000080554d in OmView2d::DrawFromCache (this=0x1b79a470)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:1890
+#7  0x000000000080c128 in OmView2d::safePaintEvent (this=0x1b79a470, 
+    event=0x7fffef28c280)
+    at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:376
+---Type <return> to continue, or q <return> to quit---
+
+
+After killing a messing job and starting another:
+finished meashing chunk 0:0,2,0
+finished meashing chunk 0:1,2,0
+HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
+  #000: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5D.c line 171 in H5Dcreate2(): unable to create dataset
+    major: Dataset
+    minor: Unable to initialize object
+  #001: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Dint.c line 428 in H5D_create_named(): unable to create and link to dataset
+    major: Dataset
+    minor: Unable to initialize object
+  #002: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1639 in H5L_link_object(): unable to create new link to object
+    major: Links
+    minor: Unable to initialize object
+  #003: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1862 in H5L_create_real(): can't insert link
+    major: Symbol table
+    minor: Unable to insert object
+  #004: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 877 in H5G_traverse(): internal path traversal failed
+    major: Symbol table
+    minor: Object not found
+  #005: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 703 in H5G_traverse_real(): traversal operator failed
+    major: Symbol table
+    minor: Callback failed
+  #006: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1674 in H5L_link_cb(): name already exists
+    major: Symbol table
+    minor: Object already exists
+Mesher failure
+finished meashing chunk 0:0,1,0
+finished meashing chunk 0:0,0,0
+finished meashing chunk 1:0,1,0
+finished meashing chunk 1:0,0,0
+finished meashing chunk 2:0,0,0
+meshingManager ERROR: the following chunks failed to fully mesh:
+failed to mesh chunk 0:1,0,0
+failed to mesh chunk 0:0,1,0
+saved project file "/home/matt/rabit.omni", at path "project.dat"
+segmentation mesh build performed in (60.00 secs)
+HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
+  #000: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5D.c line 321 in H5Dopen2(): not found
+    major: Dataset
+    minor: Object not found
+  #001: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gloc.c line 468 in H5G_loc_find(): can't find object
+    major: Symbol table
+    minor: Object not found
+  #002: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 877 in H5G_traverse(): internal path traversal failed
+    major: Symbol table
+    minor: Object not found
+  #003: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 665 in H5G_traverse_real(): can't look up component
+    major: Symbol table
+    minor: Object not found
+  #004: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gobj.c line 1047 in H5G_obj_lookup(): can't locate object
+    major: Symbol table
+    minor: Object not found
+  #005: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gstab.c line 844 in H5G_stab_lookup(): unable to protect symbol table heap
+    major: Symbol table
+    minor: Protected metadata error
+  #006: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5HL.c line 360 in H5HL_protect(): unable to load heap
+    major: Heap
+    minor: Unable to load metadata into cache
+  #007: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5AC.c line 1831 in H5AC_protect(): H5C_protect() failed.
+    major: Object cache
+    minor: Unable to protect metadata
+  #008: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5C.c line 6160 in H5C_protect(): can't load entry
+    major: Object cache
+    minor: Unable to load metadata into cache
+  #009: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5C.c line 10990 in H5C_load_entry(): unable to load entry
+    major: Object cache
+    minor: Unable to load metadata into cache
+  #010: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5HLcache.c line 259 in H5HL_load(): bad heap free list
+    major: Heap
+    minor: Unable to load metadata into cache
+
+

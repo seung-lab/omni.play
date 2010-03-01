@@ -1,9 +1,10 @@
-
 #include "omImageDataIo.h"
-
 #include "common/omException.h"
 #include "utility/omHdf5.h"
+#include "utility/omHdf5Helpers.h"
 #include "common/omVtk.h"
+
+#include <QFile>
 
 #include <vtk_tiff.h>
 
@@ -41,10 +42,6 @@ namespace bfs = boost::filesystem;
 
 #define DEBUG 0
 
-static const char *HDF5_DEFAULT_DATASET_NAME = "main";
-
-#pragma mark -
-#pragma mark ImageType Methods
 /////////////////////////////////
 ///////          ImageType Methods
 
@@ -264,20 +261,14 @@ vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const
 vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, const DataBbox srcExtentBbox,
 				     const DataBbox dataExtentBbox, int bytesPerSample)
 {
-
 	//assert only one hdf5 file specified
 	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
 
-	string fpath = dpath + fnames.front();
+	OmHdf5 hdfImportFile( QString::fromStdString( dpath + fnames.front() ));
 
-	//open file
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
-	//write image data
-	vtkImageData *data =
-	    om_hdf5_dataset_image_read_trim(file_id, HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample);
-	//close file
-	om_hdf5_file_close(file_id);
-
+	vtkImageData *data = hdfImportFile.dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
+								   dataExtentBbox, 
+								   bytesPerSample);
 	return data;
 }
 
@@ -307,8 +298,7 @@ om_imagedata_write(vtkImageData * data, string dpath, string fpattern, const Dat
 	}
 }
 
-void
-om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
+void om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
 		       int bytesPerSample)
 {
 
@@ -378,111 +368,28 @@ om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, cons
 	om_imagedata_write_hdf5(data, dpath, fpattern, dataExtentBbox, dataExtentBbox, bytesPerSample);
 }
 
-void
-om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dstExtentBbox,
-			const DataBbox dataExtentBbox, int bytesPerSample)
+void om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample)
 {
-
-	//create file if needed
-	string fpath = dpath + fpattern;
-	if (!bfs::exists(bfs::path(fpath))) {
-
-		//create file
-		om_hdf5_file_create(fpath.c_str());
-		//open
-		hid_t file_id = om_hdf5_file_open(fpath.c_str());
-
-		//create image file
+	QString exportDataFileName = QString::fromStdString( dpath + fpattern);
+	OmHdf5 hdfExport( exportDataFileName );
+	
+	if( !QFile::exists(exportDataFileName) ){
+		hdfExport.create();
 		Vector3 < int >dest_dims = dstExtentBbox.getUnitDimensions();
-		om_hdf5_dataset_image_create_tree_overwrite(file_id, HDF5_DEFAULT_DATASET_NAME, dest_dims, dest_dims,
-							    bytesPerSample, true);
-
-		//close file
-		om_hdf5_file_close(file_id);
+		
+		hdfExport.dataset_image_create_tree_overwrite( OmHdf5Helpers::getDefaultDatasetName(), 
+							       dest_dims, dest_dims, bytesPerSample, true);
 	}
-	//open file
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
+	
 	//write image data
-	om_hdf5_dataset_image_write_trim(file_id, HDF5_DEFAULT_DATASET_NAME, dataExtentBbox, bytesPerSample, data);
-	//close file
-	om_hdf5_file_close(file_id);
+	hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+					   dataExtentBbox, bytesPerSample, data);
 }
 
 #pragma mark -
 #pragma mark Dimensions Functions
 /////////////////////////////////
 ///////          Dimensions Functions
-
-/*
-Vector3<int> 
-om_imagedata_get_dims(string dpath, string fpattern) {
-	
-	switch(om_imagedata_parse_image_type(fpattern)) {
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-			return om_imagedata_get_dims_vtk(dpath, fpattern);
-			
-		case HDF5_TYPE:
-			return om_imagedata_get_dims_hdf5(dpath, fpattern);
-			
-		default:
-			assert(false && "Unknown file format");
-	}
-}
-
-Vector3<int> 
-om_imagedata_get_dims_vtk(string dpath, string fpattern) {
-	////use vtk to determine properties
-	vtkImageData *data = vtkImageData::New();
-	
-	//convert to vtk "%s/FilePattern" format
-	string vtk_file_pattern = "%s" + fpattern;
-	
-	//set reader props
-	vtkImageReader2 *reader = om_imagedata_get_reader(fpattern);
-	reader->SetFilePrefix(dpath.c_str());
-	reader->SetFilePattern(vtk_file_pattern.c_str());
-	reader->SetOutput(data);
-	reader->Update();
-	
-	//get dim information
-	Vector3<int> src_dims;
-	data->GetDimensions(src_dims.array);
-	src_dims.z = countMatchesInDirectory(dpath, fpattern);
-
-	//get sample information
-	//mSourceBytesPerSample = mImageData->GetScalarSize();
-	
-	//debug("FIXME", << mSourceDataExtent << endl;
-	//debug("FIXME", << mSamplesPerVoxel << endl;
-	//debug("FIXME", << mBytesPerSample << endl;
-	
-	//delete image and reader
-	data->Delete();
-	reader->Delete();
-	
-	return src_dims;
-}
-
-Vector3<int> 
-om_imagedata_get_dims_hdf5(string dpath, string fpattern) {
-
-	//get fileid
-	string fpath = dpath + fpattern;
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
-	
-	//get dims of image
-	Vector3<int> dims = om_hdf5_dataset_image_get_dims(file_id, HDF5_DEFAULT_DATASET_NAME);
-	
-	//close file
-	om_hdf5_file_close(file_id);
-	
-	return dims;
-}
-*/
-
 Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fnames)
 {
 
@@ -542,30 +449,18 @@ Vector3 < int > om_imagedata_get_dims_vtk(string dpath, const list < string > &f
 
 Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &fnames)
 {
-
-	//assert only one hdf5 file specified
 	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
 
-	//get fileid
-	string fpath = dpath + fnames.front();
-	hid_t file_id = om_hdf5_file_open(fpath.c_str());
+	OmHdf5 hdfExport( QString::fromStdString( dpath + fnames.front() ) );
 
 	//get dims of image
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims(file_id, HDF5_DEFAULT_DATASET_NAME);
-
-	//close file
-	om_hdf5_file_close(file_id);
+	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
 
 	return dims;
 }
 
-#pragma mark -
-#pragma mark vtkImageData Utility Functions
 /////////////////////////////////
-///////
 ///////          vtkImageData Utility Functions
-///////
-
 void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >&aabb, int extent[])
 {
 	extent[0] = aabb.getMin().x;
@@ -605,12 +500,8 @@ void printImageData(vtkImageData * data)
 				}
 
 			}
-
-			//end of x line
 			//debug("FIXME", << endl;
 		}
-
-		//end of y sheet
 		//debug("FIXME", << endl;
 	}
 }
@@ -632,17 +523,12 @@ vtkImageData *allocImageData(Vector3 < int >dims, int bytesPerSample)
 {
 	//alloc data
 	vtkImageData *data = vtkImageData::New();
-	debug ("mesher1", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
+	debug ("meshercrash", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
 	data->SetDimensions(dims.x, dims.y, dims.z);
-	debug ("mesher1", "1rc ==  %i\n", data->GetReferenceCount());
 	data->SetScalarType(bytesToVtkScalarType(bytesPerSample));
-	debug ("mesher1", "2rc ==  %i\n", data->GetReferenceCount());
 	data->SetNumberOfScalarComponents(1);
-	debug ("mesher1", "3rc ==  %i\n", data->GetReferenceCount());
 	data->AllocateScalars();
-	debug ("mesher1", "4rc ==  %i\n", data->GetReferenceCount());
 	data->Update();
-	debug ("mesher1", "5rc ==  %i\n", data->GetReferenceCount());
 
 	data->ReleaseDataFlagOn();
 
@@ -770,7 +656,9 @@ copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
 
 	//get scalar pointers
 	char *src_data_ptr = static_cast < char *>(srcData->GetScalarPointerForExtent(src_copy_extent));
+	assert( src_data_ptr );
 	char *dst_data_ptr = static_cast < char *>(dstData->GetScalarPointerForExtent(dst_copy_extent));
+	assert( dst_data_ptr );
 
 	//loop over all slices, rows, and pixels
 	for (int z = 0; z < copy_bbox_dim.z; z++) {
@@ -922,21 +810,6 @@ void om_imagedata_regex_match_dir_contents(string dpath, string regexStr, list <
 	}
 }
 
-/*
- 
- //if extension not yet set
- if(0 == ext.size()) {
- ext = bfs::path(fname).extension();
- } else {
- //ext must match
- if(ext != bfs::path(fname).extension()) {
- //else clear matches and return
- rMatchFnames.clear();
- return;
- }
- }
- */
-
 bool string_natural_comparison(const string & lhs, const string & rhs)
 {
 	return strnatcmp(lhs.c_str(), rhs.c_str()) < 0;
@@ -1046,22 +919,16 @@ void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list 
 
 void om_imagedata_remove_symlink_dir(string symlink_dpath)
 {
-
 	//if temp directory exists
 	if (bfs::exists(bfs::path(symlink_dpath))) {
-
 		//attemp to remove temp directory
 		if (!bfs::remove_all(bfs::path(symlink_dpath))) {
 			//debug("FIXME", << "om_imagedata_remove_symlink_dir: could not remove temp dirctory" << endl;
 			assert(false);
 		}
-
 	}
-
 }
 
-#pragma mark -
-#pragma mark Utility Functions
 /////////////////////////////////
 ///////
 ///////         Utility Functions

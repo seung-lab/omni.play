@@ -20,6 +20,7 @@
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
+#include <QMutex>
 using namespace vmml;
 
 
@@ -104,6 +105,7 @@ public:
 	
 	
 private:
+	QMutex * mOpenLock;
 	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 	

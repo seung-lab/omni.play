@@ -3,6 +3,7 @@
 #include "omVolume.h"
 #include "omMipChunk.h"
 #include "omVolumeCuller.h"
+#include "mesh/meshingManager.h"
 
 #include "segment/omSegmentEditor.h"
 #include "system/omProjectData.h"
@@ -243,7 +244,7 @@ void OmSegmentation::BuildMeshData()
 	OmProject::Save();
 }
 
-/*
+/**
  * Produce the plan file.
  */
 void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
@@ -253,7 +254,6 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
                                         GetName());
 
     	QFile file(planFile);
-    	//QFile file("file.txt");
     	if ( !file.open(QIODevice::WriteOnly)) {
 		throw (false && "couldn't open the plan file, check to make sure you have write permission");
 	}
@@ -278,52 +278,44 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
 }
 
 
-/*
+/**
  * Build the meshes for a single chunk.
  */
-void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z)
+void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThreads )
 {
+	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 	OmMipChunkCoord chunk_coord(level, x, y, z);
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
-	GetChunk(p_chunk, chunk_coord);
 
-	const SegmentDataSet & rMeshVals = p_chunk->GetDirectDataValues();
-        if( 0 != rMeshVals.size() ){
-        	mMipMeshManager.BuildChunkMeshes(p_chunk, rMeshVals );
-        }
+	meshingMan->addToQueue( chunk_coord );
+	if( numThreads > 0 ){
+		meshingMan->setNumThreads( numThreads );
+	}
+	meshingMan->start();
+	meshingMan->wait();
+	delete(meshingMan);
 }
-
 
 void OmSegmentation::BuildMeshDataInternal()
 {
+	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 
-	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 
-		//dim of leaf coords
 		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
 
-		//for all coords of level
-		for (int z = 0; z < mip_coord_dims.z; ++z)
-			for (int y = 0; y < mip_coord_dims.y; ++y)
+		for (int z = 0; z < mip_coord_dims.z; ++z) {
+			for (int y = 0; y < mip_coord_dims.y; ++y) {
 				for (int x = 0; x < mip_coord_dims.x; ++x) {
-
-					//form mip chunk coord
 					OmMipChunkCoord chunk_coord(level, x, y, z);
-
-					//get built chunk (hold shared pointer whild building)
-					shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
-					GetChunk(p_chunk, chunk_coord);
-
-					const SegmentDataSet & rMeshVals = p_chunk->GetDirectDataValues();
-					if( 0 != rMeshVals.size() ){
-						mMipMeshManager.BuildChunkMeshes(p_chunk, rMeshVals );
-					}
-
-					//update progress
-					//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_INCREMENT));
+					meshingMan->addToQueue( chunk_coord );
 				}
+			}
+		}
 	}
+	
+	meshingMan->start();
+	meshingMan->wait();
+	delete(meshingMan);
 }
 
 /*
@@ -357,20 +349,19 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 
 	//rebuild mesh data only if entire volume data has been built as well
 	if (IsVolumeDataBuilt() && IsMeshDataBuilt()) {
-		//get pointer to chunk
+		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		meshingMan->setToOnlyMeshModifiedValues();
+		meshingMan->addToQueue( mipCoord );
+		meshingMan->start();
+		meshingMan->wait();
+
 		shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
 		GetChunk(p_chunk, mipCoord);
 
-		//get modified values
 		const SegmentDataSet & rModifiedValues = p_chunk->GetModifiedVoxelValues();
-
-		//return if no values modified
 		if (rModifiedValues.size() == 0) {
-			//debug("FIXME", << "OmSegmentation::BuildChunk: no modified values to mesh" << endl;
 			return;
 		}
-		//build mesh
-		mMipMeshManager.BuildChunkMeshes(p_chunk, rModifiedValues);
 
 		//remove mesh from cache to force it to reload
 		SegmentDataSet::iterator itr;
@@ -379,7 +370,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
 	}
-
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const SegmentDataSet & rModifiedValues)
@@ -390,12 +380,12 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const Segmen
 
 	//rebuild mesh data only if entire volume data has been built
 	if (IsVolumeDataBuilt()) {
-		//get pointer to chunk
-		shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
-		GetChunk(p_chunk, mipCoord);
-		//build mesh
-		mMipMeshManager.BuildChunkMeshes(p_chunk, rModifiedValues);
+		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		meshingMan->addToQueue( mipCoord );
+		meshingMan->start();
+		meshingMan->wait();
 	}
+
 	//remove mesh from cache to force it to reload
 	SegmentDataSet::iterator itr;
 	for (itr = rModifiedValues.begin(); itr != rModifiedValues.end(); itr++) {

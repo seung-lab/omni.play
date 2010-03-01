@@ -20,6 +20,7 @@ enum {OM_DEBUG_REMOVE,OM_DEBUG_ADD};
  * A function designed for selecting and customizing debug statements to stdout
  */
 
+bool isDebugCategoryEnabled( const char *category );
 void debug(const char *category, const char *format, ...);
 void debugInit();
 int  debugParseArg(char *stringInput,int action);
@@ -37,6 +38,12 @@ void usage();
 #define pthread_mutex_unlock(x) debug("mutex","unlocking enter: %p (line:fun) %i:%s \n",x,__LINE__, __FUNCTION__);\
         pthread_mutex_unlock(x);\
         debug("mutex","unlocking exit: %p (line:fun) %i:%s \n",x,__LINE__, __FUNCTION__);
+
+
+bool ToggleShowMeAnImageEnabler();
+void ShowMeAnImage(char *data_buffer, int dx, int dy);
+
+
 #endif
 
 

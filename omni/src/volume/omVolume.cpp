@@ -44,7 +44,8 @@ void
 	SetUserScale(Vector3i(1, 1, 1));
 	SetScale(Vector3i(10, 10, 10));
 
-	mDataResolution = Vector3i::ONE;
+	mDataResolution = Vector3f::ONE;
+	SetStretchValues();
 }
 
 OmVolume *OmVolume::Instance()
@@ -76,9 +77,9 @@ void OmVolume::Delete()
 Vector3 < float > OmVolume::GetScale()
 {
 	return Vector3 < float >(
-	       Instance()->mSpaceToUserMat.m00 * Instance()->mNormToSpaceMat.m00,
-	       Instance()->mSpaceToUserMat.m11 * Instance()->mNormToSpaceMat.m11,
-	       Instance()->mSpaceToUserMat.m22 * Instance()->mNormToSpaceMat.m22);
+	       Instance()->mNormToSpaceMat.m00,
+	       Instance()->mNormToSpaceMat.m11,
+	       Instance()->mNormToSpaceMat.m22);
 
 }
 
@@ -122,6 +123,16 @@ OmVolume::SetTranslation(const Vector3<float> &trans) {
 	return Instance()->mNormToSpaceMat.getInverse(Instance()->mNormToSpaceInvMat);
 }
 */
+QString OmVolume::GetUnit()
+{
+	return Instance()->unitString;
+}
+
+void OmVolume::SetUnit(QString unit)
+{
+	Instance()->unitString = unit;
+}
+
 
 #pragma mark
 #pragma mark Coordinate Frame Methods
@@ -236,9 +247,18 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 
 	//update scale
 	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3 < int >::ONE;
+	SetStretchValues();
 	return SetScale(Instance()->mDataResolution * data_dims);
 }
 
+void OmVolume::CheckDataResolution()
+{
+	Vector3f res=Instance()->mDataResolution;
+	if ((res != Vector3i::ONE)&&(res != Vector3i::ZERO)){
+		Instance()->SetDataResolution( res);
+	}
+}	
+		
 int OmVolume::GetChunkDimension()
 {
 	return Instance()->mChunkDim;
@@ -399,6 +419,40 @@ void OmVolume::DrawEditSelectionVoxels()
 	//pop matrix
 	glPopMatrix();
 }
+
+Vector2f OmVolume::GetStretchValues(ViewType plane)
+{
+	Vector3f stretch =Instance()->mDataStretchValues;
+	switch(plane){
+	case XY_VIEW:
+		return Vector2f(stretch.x,stretch.y);
+	case YZ_VIEW:
+		return Vector2f(stretch.z,stretch.y);
+	case XZ_VIEW:
+		return Vector2f(stretch.x,stretch.z);
+	}
+}
+
+void OmVolume::SetStretchValues()
+{
+	Vector3f res =Instance()->mDataResolution;
+	if ((res.x<=res.y)&&(res.x<=res.z)){
+		Instance()->mDataStretchValues.x = 1.0;
+		Instance()->mDataStretchValues.y = res.y/res.x;
+		Instance()->mDataStretchValues.z = res.z/res.x;
+	} else {
+		if (res.y<=res.z){
+			Instance()->mDataStretchValues.x = res.x/res.y;
+			Instance()->mDataStretchValues.y = 1.0;
+			Instance()->mDataStretchValues.z = res.z/res.y;
+		} else {
+			Instance()->mDataStretchValues.x = res.x/res.z;
+			Instance()->mDataStretchValues.y = res.y/res.z;	
+			Instance()->mDataStretchValues.z = 1.0;
+		}
+	}
+}
+
 
 #pragma mark
 #pragma mark Print Methods

@@ -46,8 +46,13 @@ public:
 	static void SetDataDimensions(const Vector3i& dim);
 	static Vector3f GetDataResolution();
 	static bool SetDataResolution(const Vector3f& res);
+	static void CheckDataResolution();
+	static Vector2f GetStretchValues(ViewType plane);
+	static void SetStretchValues();
 	static int GetChunkDimension();
 	static void SetChunkDimension(int);
+	static QString GetUnit();
+	static void SetUnit(QString unit);
 	
 	//coordinate frame methods
 	static NormCoord DataToNormCoord(const DataCoord &data, bool centered = true);
@@ -108,7 +113,9 @@ private:
 	//data properties
 	DataBbox mDataExtent;
 	Vector3f mDataResolution;	//units per voxel
-	int mChunkDim;
+	Vector3f mDataStretchValues;
+int mChunkDim;
+	QString unitString;
 	
 	//data managers
 	OmGenericManager<OmChannel> mChannelManager;

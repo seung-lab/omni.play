@@ -10,6 +10,7 @@
 #include "system/events/omProgressEvent.h"
 #include "system/events/omAlertEvent.h"
 #include "common/omVtk.h"
+#include "common/omStd.h"
 #include "utility/omImageDataIo.h"
 
 #include <vtkImageData.h>
@@ -322,7 +323,7 @@ Vector3 < int > OmMipVolume::MipLevelDataDimensions(int level)
 	Vector3 < float >source_dims = source_extent.getUnitDimensions();
 
 	//dims in fraction of pixels
-	Vector3 < float >mip_level_dims = source_dims / pow(2, level);
+	Vector3 < float >mip_level_dims = source_dims / OMPOW(2, level);
 
 	return Vector3 < int >(ceil(mip_level_dims.x), ceil(mip_level_dims.y), ceil(mip_level_dims.z));
 }
@@ -368,7 +369,7 @@ int OmMipVolume::MipChunksInVolume()
  */
 OmMipChunkCoord OmMipVolume::DataToMipCoord(const DataCoord & dataCoord, int level)
 {
-	int data_dim = pow(2, level) * GetChunkDimension();
+	int data_dim = OMPOW(2, level) * GetChunkDimension();
 
 	return OmMipChunkCoord(level,
 			       floor(float (dataCoord.x) / data_dim),
@@ -386,8 +387,8 @@ OmMipChunkCoord OmMipVolume::NormToMipCoord(const NormCoord & normCoord, int lev
 DataBbox OmMipVolume::MipCoordToDataBbox(const OmMipChunkCoord & rMipCoord, int newLevel)
 {
 
-	int old_level_factor = pow(2, rMipCoord.Level);
-	int new_level_factor = pow(2, newLevel);
+	int old_level_factor = OMPOW(2, rMipCoord.Level);
+	int new_level_factor = OMPOW(2, newLevel);
 
 	//convert to leaf level dimensions
 	int leaf_dim = GetChunkDimension() * old_level_factor;
@@ -575,7 +576,9 @@ void OmMipVolume::AllocInternalData()
 								   ROUNDUP(data_dims.z, GetChunkDimension()));
 
 		//alloc image data
-		string mip_volume_level_path = MipLevelInternalDataPath(i);
+		
+		OmHdf5Path mip_volume_level_path;
+		mip_volume_level_path.setPath( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
 		OmProjectData::CreateImageData(mip_volume_level_path, rounded_data_dims,
@@ -591,8 +594,10 @@ void OmMipVolume::DeleteInternalData()
 {
 	//debug("genone","OmMipVolume::DeleteInternalData()\n");
 
-	if (OmProjectData::GroupExists(mDirectoryPath)) {
-		OmProjectData::GroupDelete(mDirectoryPath);
+	OmHdf5Path path;
+	path.setPath( mDirectoryPath );
+	if (OmProjectData::GroupExists(path)) {
+		OmProjectData::GroupDelete(path);
 	}
 }
 
@@ -707,7 +712,8 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	string source_data_path = MipLevelInternalDataPath(rMipCoord.Level - 1);
+	OmHdf5Path source_data_path;
+	source_data_path.setPath( MipLevelInternalDataPath(rMipCoord.Level - 1) );
 	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
 	//read and get pointer to data
@@ -803,7 +809,8 @@ bool OmMipVolume::ImportSourceData()
 				      MipChunksInMipLevel(0)));
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	string leaf_volume_path = MipLevelInternalDataPath(0);
+	OmHdf5Path leaf_volume_path;
+	leaf_volume_path.setPath( MipLevelInternalDataPath(0) );
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z)
@@ -887,7 +894,8 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	string mip_volume_path = MipLevelInternalDataPath(0);
+	OmHdf5Path mip_volume_path;
+	mip_volume_path.setPath( MipLevelInternalDataPath(0) );
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z)

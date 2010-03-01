@@ -5,6 +5,7 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
+#include "system/omLocalPreferences.h"
 
 #define DEBUG 0
 
@@ -32,16 +33,11 @@ OmCacheManager::OmCacheManager()
 	mSavedDelta = 0;
 	mThreadCount = 0;
 
-	//refresh prefs to call event listener
-	mCacheMap[RAM_CACHE_GROUP].MaxSize =
-	    OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
-	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-	    OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
+	doUpdateCacheSizeFromLocalPrefs();
 }
 
 OmCacheManager::~OmCacheManager()
 {
-
 }
 
 OmCacheManager *OmCacheManager::Instance()
@@ -59,37 +55,19 @@ void OmCacheManager::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Event Listener Methods
-/////////////////////////////////
-///////          Event Listener Methods
-
-/*
- *	Preferences listener for cache group size changes.
- */
-void OmCacheManager::PreferenceChangeEvent(OmPreferenceEvent * event)
+void OmCacheManager::UpdateCacheSizeFromLocalPrefs()
 {
-	//debug("FIXME", << "OmCacheManager::PreferenceChangeEvent" << endl;
-	switch (event->GetPreference()) {
-
-	case OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT:
-		mCacheMap[RAM_CACHE_GROUP].MaxSize =
-		    OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
-		break;
-
-	case OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT:
-		mCacheMap[VRAM_CACHE_GROUP].MaxSize =
-		    OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT) * float (BYTES_PER_MB);
-		break;
-
-	default:
-		return;
-	}
-
+	Instance()->doUpdateCacheSizeFromLocalPrefs();
 }
 
-#pragma mark
-#pragma mark Accessors Methods
+void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
+{
+	mCacheMap[RAM_CACHE_GROUP].MaxSize =
+	    OmLocalPreferences::getRamCacheSizeMB() * float (BYTES_PER_MB);
+	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
+	    OmLocalPreferences::getVRamCacheSizeMB() * float (BYTES_PER_MB);
+}
+
 /////////////////////////////////
 ///////          Accessors Methods
 

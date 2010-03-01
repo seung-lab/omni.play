@@ -2,7 +2,6 @@
 #include "omPreferenceDefinitions.h"
 #include "omPreferences.h"
 #include "common/omDebug.h"
-#include "system/omNumCores.h"
 
 #pragma mark
 #pragma mark All Default Preferences
@@ -16,7 +15,6 @@ void omSetDefaultAllPreferences()
 	omSetDefaultGuiPreferences();
 	omSetDefaultMeshPreferences();
 	omSetDefaultSegmentPreferences();
-	omSetDefaultSystemPreferences();
 	omSetDefaultView2dPreferences();
 	omSetDefaultView3dPreferences();
 }
@@ -50,28 +48,14 @@ void omSetDefaultGuiPreferences()
 
 void omSetDefaultMeshPreferences()
 {
-
 	OmPreferences::Set(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, 50);
 	OmPreferences::Set(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, 30.0f);
 	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 0.15f);
-			   
-	const int numCoresRaw = (int)OmNumCores::get_num_cores();
-	int numCores = numCoresRaw - 1;
-	if( 1 == numCoresRaw ){
-		numCores = 1;
-	}
-	OmPreferences::Set(OM_PREF_MESH_NUM_MESHING_THREADS_INT, numCores );
 }
 
 void omSetDefaultSegmentPreferences()
 {
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);
-}
-
-void omSetDefaultSystemPreferences()
-{
-	OmPreferences::Set(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT, 256.0f);
-	OmPreferences::Set(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, 128.0f);
 }
 
 void omSetDefaultView2dPreferences()
@@ -87,7 +71,6 @@ void omSetDefaultView2dPreferences()
 
 void omSetDefaultView3dPreferences()
 {
-
 	OmPreferences::Set(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F, Vector3f::ZERO);
 	OmPreferences::Set(OM_PREF_VIEW3D_FOCUS_STYLE_INT, 1);
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);

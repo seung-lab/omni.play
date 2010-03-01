@@ -263,36 +263,10 @@ sub boost {
     boost142();
 }
 
-sub boost138 {
-    my $baseFileName = "boost_1_38_0";
-    my $libFolderName = "Boost";
-    prepare( $baseFileName, $libFolderName );
-
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/tools/build/v2/user-config.jam`;
-    `echo "using mpi : /usr/bin/mpiCC ;" >> $srcPath/$baseFileName/user-config.jam`;
-
-    # as of Dec 2009, these are the portions of boost we appear to be using:
-    # headers:   timer, shared_ptr, tuple, algorithm
-    # libraries: filesystem, mpi, regex, serialization, thread (for # of processors)
-    # to see all the boost libraries that can be built, do
-    # ..../boost_1_38_0/configure --show-libraries
-    
-    # boost uses its own build folder; just symlink it to ours for consistency...
-    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
-    `rm -rf $boostLocalBuildFolder`;
-    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
-
-    buildInSourceFolder( $baseFileName, "Boost", "--with-libraries=filesystem,mpi,regex,serialization,thread" );
-}
-
 sub boost142 {
     my $baseFileName = "boost_1_42_0";
     my $libFolderName = "Boost";
-    prepare( $baseFileName, $libFolderName );
-
-    my $boostLocalBuildFolder = "$srcPath/$baseFileName/bin.v2";
-    `rm -rf $boostLocalBuildFolder`;
-    `ln -s $buildPath/$baseFileName $boostLocalBuildFolder`;
+    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
 
     my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
     print "configuring ($cmd)\n"; 
@@ -327,7 +301,15 @@ sub expat {
 }
 
 sub hdf5 {
+    hdf5_18();
+}
+
+sub hdf5_16 {
     prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
+}
+
+sub hdf5_18 {
+    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no" );
 }
 
 sub qt {
@@ -346,7 +328,7 @@ sub qt46 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+    prepareAndBuild( $baseFileName, "Qt", "-debug -opensource -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub omni {
@@ -578,9 +560,9 @@ sub setupParallelBuildOption {
 sub experimentalMenu {
     print "experimental build menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build QT 4.6.2\n";
-    print "2 -- Build boost 1.42\n\n";
-    my $max_answer = 2;
+    print "1 -- Build HDF 1.8.4p1\n";
+    print "\n";
+    my $max_answer = 1;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -601,9 +583,7 @@ sub runExperimentalMenuEntry {
     if( 0 == $entry ){
         return();
     }elsif( 1 == $entry ){
-	qt46();
-    }elsif( 2 == $entry ){
-        boost142();
+	hdf5_18();
     }
 }
 
@@ -621,16 +601,3 @@ sub checkCmdLineArgs {
 }
 
 checkCmdLineArgs();
-
-sub gcc {
-    # just in case...
-    # ../gcc-4.3.4/configure --prefix=/Users/purcaro/bin/gcc-4.3.4 --enable-languages=c,c++ --disable-nls
-}
-
-sub subversion {
-    # just in case...
-    # in srcs folder:
-    # svn co http://svn.apache.org/repos/asf/apr/apr/branches/1.2.x apr
-    # svn co http://svn.apache.org/repos/asf/apr/apr-util/branches/1.2.x apr-util
-
-}

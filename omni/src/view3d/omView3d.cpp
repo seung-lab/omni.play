@@ -72,7 +72,7 @@ static void resetBackoff ()
 static void increaseBackoff ()
 {
 	secretBackoff++;
-	if (secretBackoff > 5) {
+	if (secretBackoff > 50) {
 		OmStateManager::setMyBackoff( OmStateManager::getMyBackoff() + 1 );
 		secretBackoff = 0;
 	}

@@ -1,17 +1,28 @@
 #include <QApplication>
 
+#include <dlfcn.h>
+
+#include <QTextStream>
+#include <QFile>
+#include <QFileInfo>
+#include <QTime>
+#include <time.h>
+
 #include "mainwindow.h"
 #include "volume/omFilter2d.h"
 #include "project/omProject.h"
-#include <dlfcn.h>
-#include "common/omDebug.h"
-#include <QTextStream>
-#include <QFile>
 #include "volume/omVolume.h"
+#include "common/omDebug.h"
+#include "system/omGarbage.h"
+#include "system/omProjectData.h"
+#include "gui/inspectors/mutexServer.h"
 
 OmId SegmentationID = 0;
 
 GGOCTFPointer GGOCTFunction = 0;
+int argc_global;
+char **argv_global;
+
 int firsttime(int argc, char *argv[])
 {
 	switch (argc) {
@@ -40,14 +51,12 @@ int firsttime(int argc, char *argv[])
 
 void openProject( QString fName )
 {
-	QString fname = fName.section('/', -1);
-	QString dpath = fName.remove(fname);
-	
 	try {
-		OmProject::Load(dpath.toStdString(), fname.toStdString());
-		printf("opened project\n");
+		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
+		OmProject::Load( fName );
+		printf("opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
-		printf("could not open project \"%s\"\n", qPrintable( fName ));
+	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
 	}
 }
 
@@ -63,16 +72,32 @@ unsigned int getNum( QString arg )
 	}
 }
 
-void processHeadlessLine( QString line, QString fName )
+void processLine( QString line, QString fName )
 {
+	time_t start;
+	time_t end;
+	double dif;
+
 	if( line == "q" || line == "quit" ){
 		printf("exiting...\n");
 		exit(0);
+	} else if( "save" == line ) {
+		OmProject::Save();
 	} else if( "mesh" == line ) {
-		if( SegmentationID > 0 ){
-			printf("running mesh on segmentation %d\n", SegmentationID);
-			OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
-		}
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
+
+		printf("running mesh on segmentation %d\n", SegmentationID);
+
+
+		time (&start);
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
+		time (&end);
+		dif = difftime (end,start);
+		printf("meshing done (%.2lf secs)\n", dif );
+
 	} else if( line.startsWith("meshchunk") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
@@ -82,10 +107,31 @@ void processHeadlessLine( QString line, QString fName )
 		unsigned int x = getNum( coords[0] );
 		unsigned int y = getNum( coords[1] );
 		unsigned int z = getNum( coords[2] );
+		
+		int numThreads=0;
+		if( 5 == args.size() ){
+			numThreads = getNum( args[4] );
+			printf("over-road edfault number of threads...\n");
+		}
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
-		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z);
-		printf("done\n");
+		time (&start);
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
+		time (&end);
+		dif = difftime (end,start);
+		printf("meshing done (%.2lf secs)\n", dif );
+	} else if( "meshplan" == line ) {
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
+		QString planFile = fName + ".plan";
+		OmVolume::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
+		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( "meshdone" == line ) {
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
 		OmVolume::GetSegmentation( SegmentationID ).mMipMeshManager.SetMeshDataBuilt(true);
 		OmProject::Save();
 	} else if( line.startsWith("seg") ) {
@@ -93,10 +139,26 @@ void processHeadlessLine( QString line, QString fName )
 		SegmentationID = getNum( args[1] );
 		if( SegmentationID > 0 ){
 			printf("segmentationID set to %d\n", SegmentationID );
-		} 
+		} else {
+			printf("invalid segmentation\n");
+		}
+	} else if( line.startsWith("openFile") ){
+		QStringList args = line.split(':');
+		openProject( args[1] );
 	} else if( line.startsWith("open") ){
 		openProject( fName );
-	
+	} else if( line.startsWith("parallel") ){
+		QStringList args = line.split(':');
+		OmGarbage::SetParallel(args[1], getNum(args[2]));
+		OmProjectData::ResetHDF5fileAsAutoOpenAndClose( true );
+	} else if( line.startsWith("serve") ){
+		QStringList args = line.split(':');
+		QCoreApplication app(argc_global, argv_global);
+
+		MutexServer * server = new MutexServer (args[1], getNum(args[2]));
+		server->start ();
+		
+		app.exec ();
 	} else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
@@ -108,8 +170,28 @@ void runInteractive( QString fName )
 	QString line;
 	do {
 		line = stream.readLine();
-		processHeadlessLine( line, fName );
+		processLine( line, fName );
 	} while (!line.isNull());
+}
+
+void runScript( const QString scriptFileName, QString fName )
+{
+	if (!QFile::exists( scriptFileName )) {
+		printf("could not open plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+		
+	QFile file(scriptFileName);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		printf("could not read plan file \"%s\"\n", qPrintable(scriptFileName));
+		exit(1);
+	}
+		
+	QTextStream in(&file);
+	while (!in.atEnd()) {
+		QString line = in.readLine();
+		processLine( line, fName );
+	}
 }
 
 void runHeadless( QString headlessCMD, QString fName )
@@ -125,30 +207,22 @@ void runHeadless( QString headlessCMD, QString fName )
 		QString planFileName = headlessCMD;
 		planFileName.replace("--headless=", "");
 
-		if (!QFile::exists( planFileName )) {
-			printf("could not open plan file \"%s\"\n", qPrintable(planFileName));
-			exit(1);
-		}
-		
-		QFile file(planFileName);
-		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			printf("could not read plan file \"%s\"\n", qPrintable(planFileName));
-			exit(1);
-		}
-		
-		QTextStream in(&file);
-		while (!in.atEnd()) {
-			QString line = in.readLine();
-			processHeadlessLine( line, fName );
-		}
-
-		processHeadlessLine( "meshdone", fName );
-		OmProject::Save();
+		runScript( planFileName, fName );
 	}
+}
+
+void setOmniExecutablePath( QString rel_fnpn )
+{
+	QFileInfo fInfo(rel_fnpn);
+	QString fnpn = fInfo.absoluteFilePath();
+
+	OmStateManager::setOmniExecutableAbsolutePath( fnpn );
 }
 
 int main(int argc, char *argv[])
 {
+	argc_global = argc;
+	argv_global = argv;
 	//    return firsttime (argc, argv);
 
 	CmdLineArgs args = parseAnythingYouCan(argc, argv);
@@ -158,12 +232,13 @@ int main(int argc, char *argv[])
 
 	QString fName = "";
 	if ( args.fileArgIndex > 0 ) {
-		fName = QString::fromStdString( argv[ args.fileArgIndex ] );			
+		fName = QString::fromStdString( argv[ args.fileArgIndex ] );
 	}
 
 	if( args.runHeadless ){
 		runHeadless( args.headlessCMD, fName );
 	} else {
+		setOmniExecutablePath( QString( argv[0] ) );
 		QApplication app(argc, argv);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;

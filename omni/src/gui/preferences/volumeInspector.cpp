@@ -23,8 +23,6 @@ VolumeInspector::VolumeInspector(QWidget * parent)
 
 	grid->addWidget( makeSrcPropBox(), 0, 0 );
 	grid->addWidget( makeVolPropBox(), 1, 0 );
-	grid->addWidget( makeCachePropBox(), 2, 0 );
-	//grid->addWidget( makeAddDataBox(), 3, 0 );
 	grid->addWidget( makeNotesBox(), 4, 0 );
 	grid->setRowStretch( 5, 1 );
 
@@ -45,82 +43,23 @@ QGroupBox* VolumeInspector::makeNotesBox()
 	return groupBox;
 }
 
-/*
-QGroupBox* VolumeInspector::makeAddDataBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Add Data");
-	QVBoxLayout* vbox = new QVBoxLayout();
-	groupBox->setLayout( vbox );
-
-        addChannelButton = new QPushButton(groupBox);
-        addChannelButton->setObjectName(QString("addChannelButton"));
-	addChannelButton->setText("Add Channel");
-        vbox->addWidget(addChannelButton);
-
-        addSegmentationButton = new QPushButton(groupBox);
-        addSegmentationButton->setObjectName(QString("addSegmen"));
-        addSegmentationButton->setText("Add Segmentation");
-	vbox->addWidget(addSegmentationButton);
-
-	return groupBox;
-}
-*/
-QGroupBox* VolumeInspector::makeCachePropBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Cache Properties");
-	QGridLayout* gridLayout = new QGridLayout;
-	groupBox->setLayout( gridLayout );
-
-        QLabel* ramLabel = new QLabel(groupBox);
-        ramLabel->setObjectName(QString("ramLabel"));
-        ramLabel->setToolTip("(MB)");
-        ramLabel->setText("RAM Cache");
-        gridLayout->addWidget(ramLabel, 0, 0, 1, 1);
-
-        ramSlider = new QSlider(groupBox);
-        ramSlider->setObjectName(QString("ramSlider"));
-        ramSlider->setMinimum(100);
-        ramSlider->setMaximum(10000);
-        ramSlider->setSingleStep(1);
-        ramSlider->setOrientation(Qt::Horizontal);
-        ramSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(ramSlider, 0, 1, 1, 1);
-
-        ramSizeLabel = new QLabel(groupBox);
-        ramSizeLabel->setObjectName(QString("ramSizeLabel"));
-	ramSizeLabel->setText("size");
-        gridLayout->addWidget(ramSizeLabel, 1, 1, 1, 1);
-
-
-        vramSizeLabel = new QLabel(groupBox);
-        vramSizeLabel->setObjectName(QString("vramSizeLabel"));
-        vramSizeLabel->setText("size");
-        gridLayout->addWidget(vramSizeLabel, 3, 1, 1, 1);
-
-	vramSlider = new QSlider(groupBox);
-        vramSlider->setObjectName(QString("vramSlider"));
-        vramSlider->setMinimum(100);
-        vramSlider->setMaximum(10000);
-        vramSlider->setSingleStep(1);
-        vramSlider->setOrientation(Qt::Horizontal);
-        vramSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(vramSlider, 2, 1, 1, 1);
-
-        vramLabel = new QLabel(groupBox);
-        vramLabel->setObjectName(QString("vramLabel"));
-	vramLabel->setToolTip("(MB)");
-	vramLabel->setText("VRAM Cache");
-        gridLayout->addWidget(vramLabel, 2, 0, 1, 1);
-
-	return groupBox;
-}
-
 QGroupBox* VolumeInspector::makeVolPropBox()
 {
 	QGroupBox* groupBox = new QGroupBox("Volume Properties");
 	QGridLayout* gridLayout = new QGridLayout;
 	groupBox->setLayout( gridLayout );
 
+	QLabel* dimLabel = new QLabel(groupBox);
+        dimLabel->setObjectName(QString("dimLabel"));
+	dimLabel->setText("Size:");
+	gridLayout->addWidget(dimLabel, 0, 0, 1, 1);
+
+	dimSizeLabel = new QLabel(groupBox);
+        dimSizeLabel->setObjectName(QString("dimSizeLabel"));
+	SizeLabelUpdate();
+	gridLayout->addWidget(dimSizeLabel, 0, 1, 1, 1);
+
+#if 0
 	QLabel* scaleLabel = new QLabel(groupBox);
         scaleLabel->setObjectName(QString("scaleLabel"));
 	scaleLabel->setText("Scale:");
@@ -129,7 +68,7 @@ QGroupBox* VolumeInspector::makeVolPropBox()
 	scaleEdit = new QLineEdit(groupBox);
         scaleEdit->setObjectName(QString("scaleEdit"));
 	gridLayout->addWidget(scaleEdit, 0, 1, 1, 1);
-       
+#endif       
 
         QLabel* resolutionLabel = new QLabel(groupBox);
         resolutionLabel->setObjectName(QString("resolutionLabel"));
@@ -142,23 +81,42 @@ QGroupBox* VolumeInspector::makeVolPropBox()
 	resolutionEdit->setToolTip("X,Y,Z");
         gridLayout->addWidget(resolutionEdit, 1, 1, 1, 1);
 
+        QLabel* unitLabel = new QLabel(groupBox);
+        unitLabel->setObjectName(QString("unitLabel"));
+	unitLabel->setToolTip("X, Y, Z");
+        unitLabel->setText("Resolution Units:");
+        gridLayout->addWidget(unitLabel, 2, 0, 1, 1);
+
+        unitList = new QComboBox(groupBox);
+        unitList->setObjectName(QString("unitList"));
+	unitList->setToolTip("X,Y,Z");
+	QChar unit[3];
+	// add angstrom symbol
+	unit[0]=8491;
+	unitList->addItem(QString(unit,1));
+	unitList->addItem(QString("nm"));
+	// add greek letter 'mu' and letter 'm'
+	unit[0]=956;
+	unit[1]=109;
+	unitList->addItem(QString(unit,2));
+        gridLayout->addWidget(unitList, 2, 1, 1, 1);
 
         QLabel* extentLabel = new QLabel(groupBox);
         extentLabel->setObjectName(QString("extentLabel"));
         extentLabel->setToolTip("(in pixels)");
         extentLabel->setText("Data Extent:");
-        gridLayout->addWidget(extentLabel, 2, 0, 1, 1);
+        gridLayout->addWidget(extentLabel, 3, 0, 1, 1);
 
         extentEdit = new QLineEdit(groupBox);
         extentEdit->setObjectName(QString("extentEdit"));
-        gridLayout->addWidget(extentEdit, 2, 1, 1, 1);
+        gridLayout->addWidget(extentEdit, 3, 1, 1, 1);
 
 
 	QLabel* lengthLabel = new QLabel(groupBox);
         lengthLabel->setObjectName(QString("lengthLabel"));
         lengthLabel->setToolTip("(in pixels)");
         lengthLabel->setText("Chunk Size:");
-        gridLayout->addWidget(lengthLabel, 3, 0, 1, 1);
+        gridLayout->addWidget(lengthLabel, 4, 0, 1, 1);
 
         sizeSlider = new QSlider(groupBox);
         sizeSlider->setObjectName(QString("sizeSlider"));
@@ -167,12 +125,12 @@ QGroupBox* VolumeInspector::makeVolPropBox()
         sizeSlider->setSingleStep(1);
         sizeSlider->setOrientation(Qt::Horizontal);
         sizeSlider->setTickPosition(QSlider::TicksBelow);
-        gridLayout->addWidget(sizeSlider, 3, 1, 1, 1);
+        gridLayout->addWidget(sizeSlider, 4, 1, 1, 1);
 
         sizeLabel = new QLabel(groupBox);
         sizeLabel->setObjectName(QString("sizeLabel"));
 	sizeLabel->setText("size");
-	gridLayout->addWidget(sizeLabel, 4, 1, 1, 1);
+	gridLayout->addWidget(sizeLabel, 5, 1, 1, 1);
 
 	return groupBox;
 }
@@ -205,9 +163,9 @@ void VolumeInspector::init_values()
 	const string & my_notes = (*OmVolume::Instance()).GetNote();
 	notesEdit->setPlainText(QString::fromStdString(my_notes));
 
-	Vector3 < float >scale = OmVolume::GetUserScale();
-	scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
-			   QString::number(scale.z) + "]");
+	//Vector3 < float >scale = OmVolume::GetUserScale();
+	//scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
+	//	   QString::number(scale.z) + "]");
 
 	Vector3 < float >res = OmVolume::GetDataResolution();
 	resolutionEdit->setText("[" + QString::number(res.x) + " " + QString::number(res.y) + " " +
@@ -220,12 +178,6 @@ void VolumeInspector::init_values()
 	int my_chunk_size = OmVolume::GetChunkDimension();
 	sizeSlider->setSliderPosition(my_chunk_size / 2);
 	sizeLabel->setNum(my_chunk_size);
-
-	ramSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT)));
-	ramSizeLabel->setNum(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT)));
-
-	vramSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT)));
-	vramSizeLabel->setNum(floor(OmPreferences::GetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT)));
 }
 
 void VolumeInspector::on_nameEdit_editingFinished()
@@ -259,6 +211,7 @@ void VolumeInspector::on_resolutionEdit_editingFinished()
 
 	Vector3 < float >res_vec = Vector3 < float >(x.toFloat(), y.toFloat(), z.toFloat());
 	OmVolume::Instance()->SetDataResolution(res_vec);
+	SizeLabelUpdate();
 }
 
 void VolumeInspector::on_extentEdit_editingFinished()
@@ -276,6 +229,12 @@ void VolumeInspector::on_extentEdit_editingFinished()
 	OmVolume::Instance()->SetDataDimensions(data_extent);
 }
 
+void VolumeInspector::on_unitList_activated()
+{
+	OmVolume::SetUnit(unitList->currentText());
+	SizeLabelUpdate();
+}
+
 void VolumeInspector::on_notesEdit_textChanged()
 {
 	OmVolume::Instance()->SetNote(notesEdit->toPlainText().toStdString());
@@ -287,14 +246,21 @@ void VolumeInspector::on_sizeSlider_valueChanged()
 	OmVolume::SetChunkDimension(sizeSlider->value() * 2);
 }
 
-void VolumeInspector::on_ramSlider_valueChanged()
+void VolumeInspector::SizeLabelUpdate()
 {
-	OmPreferences::SetFloat(OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT, (ramSlider->value() * 1.0));
-	ramSizeLabel->setNum(ramSlider->value());
-}
+	Vector3i dataExtent = OmVolume::GetDataDimensions();
+	Vector3f dataResolution = OmVolume::GetDataResolution();
+	Vector3f spaceExtent = OmVolume::GetScale();
+	QString unit = OmVolume::GetUnit();
 
-void VolumeInspector::on_vramSlider_valueChanged()
-{
-	OmPreferences::SetFloat(OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT, (vramSlider->value() * 1.0));
-	vramSizeLabel->setNum(vramSlider->value());
+	QString messageString = QString::number(spaceExtent.x);
+	messageString.append(" x ");
+	messageString.append(QString::number(spaceExtent.y));
+	messageString.append(" x ");
+	messageString.append(QString::number(spaceExtent.z));
+	messageString.append(" ");
+	messageString.append(unit);
+
+	dimSizeLabel->setText(messageString);
+	return;
 }

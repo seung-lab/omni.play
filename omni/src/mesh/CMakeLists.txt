@@ -1,23 +1,18 @@
-
 # LIBRARY
 
 #specify sources
 SET(OM_MESH_LIB_SRCS
-	
-	omMipChunkMesher.cpp
 	omMesher.cpp
 	omMipMesh.cpp
 	omMipMeshManager.cpp
 	omMipMeshCoord.cpp
+	omMeshSource.cpp
 )
-
 
 #create static library
 ADD_LIBRARY(omMesh 
 	${OM_MESH_LIB_SRCS}
 )
-
-
 
 TARGET_LINK_LIBRARIES( omMesh
 	omCommon
@@ -25,11 +20,6 @@ TARGET_LINK_LIBRARIES( omMesh
 	omVolume
 	omSystem
 )
-
-
-
-
-
 
 # EXECUTABLE
 

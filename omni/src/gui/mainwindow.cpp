@@ -94,18 +94,14 @@ void MainWindow::newProject()
 		if (fileName == NULL)
 			return;
 
-		//debug("genone","New Project");
-		QString fname = fileName.section('/', -1);
-		QString dpath = fileName.remove(fname);
+		if (!fileName.endsWith(".omni")) {
+			fileName.append(".omni");
+		}
 
-		if (!fname.endsWith(".omni"))
-			fname.append(".omni");
+		OmProject::New( fileName );
+		recentFiles.addFile( fileName );
 
-		OmProject::New(dpath.toStdString(), fname.toStdString());
-
-		recentFiles.addFile(fname, dpath);
-
-		setWindowTitle(tr("Omni - ") + fname);
+		setWindowTitle(tr("Omni - ") + fileName);
 
 		isProjectOpen = true;
 
@@ -133,8 +129,6 @@ void MainWindow::newProject()
 
 		setupToolbarInitially();
 
-		setWindowTitle(tr("Omni - ") + fname);
-
 		openInspector();
 
 	} catch(OmException & e) {
@@ -155,6 +149,22 @@ void MainWindow::showEditPreferencesDialog()
 	} 
 
 	preferences = new Preferences(this);
+	preferences->showProjectPreferences();
+	preferences->show();
+	preferences->raise();
+	preferences->activateWindow();
+}
+
+void MainWindow::showEditLocalPreferencesDialog()
+{
+	if (preferences) {
+		preferences->close();
+		delete preferences;
+		preferences = NULL;
+	} 
+
+	preferences = new Preferences(this);
+	preferences->showLocalPreferences();
 	preferences->show();
 	preferences->raise();
 	preferences->activateWindow();
@@ -270,26 +280,14 @@ void MainWindow::openProject()
 void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
-		QString fname = fileNameAndPath.section('/', -1);
-		QString dpath = fileNameAndPath.remove(fname);
-		openProject(fname, dpath);
-
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::openProject(QString fname, QString dpath)
-{
-	try {
 
 		try {
-			OmProject::Load(dpath.toStdString(), fname.toStdString());
+			OmProject::Load( fileNameAndPath );
 		} catch(...) {
 			throw OmIoException("error during load of OmProject object");
 		}
 
-		recentFiles.addFile(fname, dpath);
+		recentFiles.addFile( fileNameAndPath );
 
 		isProjectOpen = true;
 
@@ -317,7 +315,7 @@ void MainWindow::openProject(QString fname, QString dpath)
 
 		setupToolbarInitially();
 
-		setWindowTitle(tr("Omni - ") + fname);
+		setWindowTitle(tr("Omni - ") + fileNameAndPath );
 		openInspector();
 
 	} catch(OmException & e) {
@@ -733,6 +731,9 @@ void MainWindow::createActions()
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit
+	editLocalPreferencesAct = new QAction(tr("&Local Preferences"), this);
+	connect(editLocalPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditLocalPreferencesDialog()));
+
 	editPreferencesAct = new QAction(tr("&Project Preferences"), this);
 	connect(editPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditPreferencesDialog()));
 
@@ -780,6 +781,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(quitAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(editLocalPreferencesAct);
 	editMenu->addAction(editPreferencesAct);
 
 	projectMenu = menuBar()->addMenu(tr("&Project"));

@@ -1,11 +1,32 @@
 #include "preferences.h"
 #include "volumeInspector.h"
-#include "ui_preferences3d.h"
 #include "preferences3d.h"
 #include "preferences2d.h"
 #include "preferencesMesh.h"
+#include "localPreferences.h"
+#include "localPreferences2d.h"
 
 Preferences::Preferences(QWidget *parent) : QDialog(parent)
+{
+}
+
+void Preferences::showLocalPreferences()
+{
+     tabs = new QTabWidget;
+     tabs->addTab(new LocalPreferences(this), "System" );
+     tabs->addTab(new LocalPreferences2d(this), "2D View" );
+
+     closeButton = new QPushButton("&Close");
+     connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
+     
+     QVBoxLayout *mainLayout = new QVBoxLayout();
+     mainLayout->addWidget(closeButton);
+     mainLayout->addWidget(tabs);
+     setLayout(mainLayout);
+     setWindowTitle(tr("Local Preferences"));
+}
+
+void Preferences::showProjectPreferences()
 {
      tabs = new QTabWidget;
      tabs->addTab(new VolumeInspector(this), "Volume" );

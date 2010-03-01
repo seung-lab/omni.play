@@ -62,9 +62,9 @@ public:
 	bool IsMeshDataBuilt();
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
-	void BuildMeshChunk(int level, int x, int y, int z);
-	void BuildMeshDataInternal();
-	
+	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
+	void BuildMeshDataInternal();	
+
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
 	
@@ -108,7 +108,7 @@ public:
 	void DrawMeshes( const OmBitfield &, const OmMipChunkCoord &, const SegmentDataSet & ) { }
 	
 	void Print();
-	OmMipMeshManager mMipMeshManager;	
+	OmMipMeshManager mMipMeshManager;
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy

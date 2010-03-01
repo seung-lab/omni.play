@@ -6,31 +6,66 @@
 #include <QThread>
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
+#include "project/omProject.h"
+#include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
 
 #include <boost/progress.hpp>
 
-SegInspector::SegInspector(OmId seg_id, QWidget * parent)
+SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
  : QWidget(parent)
 {
+	sdw = incoming_sdw;
+
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
 	overallContainer->addWidget(makeActionsBox());
 	overallContainer->addWidget(makeToolsBox());
+	overallContainer->addWidget(makeStatsBox());
 	overallContainer->addWidget(makeNotesBox());
+
+	populateSegmentationInspector();
+	directoryEdit->setReadOnly(true);
 
         QMetaObject::connectSlotsByName(this);
 
-	my_id = seg_id;
-	directoryEdit->setReadOnly(true);
+	mMeshinatorProc = NULL;
+	mMeshinatorDialog = NULL;
+	mutexServer = NULL;
+}
+
+QGroupBox* SegInspector::makeStatsBox()
+{
+	QGroupBox* statsBox = new QGroupBox("Stats");
+	QGridLayout *grid = new QGridLayout( statsBox );
+
+	QLabel *labelNumSegments = new QLabel(statsBox);
+	labelNumSegments->setText("number of segments:");
+	grid->addWidget( labelNumSegments, 0, 0 );
+	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
+	QString numSegs = QString::number( sdw.getNumberOfSegments() );
+
+	QString commaNumSegs;
+	QString::iterator i;
+	int counter = 0;
+	for (i = numSegs.end()-1; i != numSegs.begin()-1; i-- ){
+		counter++;
+		commaNumSegs.prepend( (*i) );
+		if( 0 == ( counter % 3 ) && 
+		    counter != numSegs.size() ){
+			commaNumSegs.prepend(',');
+		}
+	}
+
+	labelNumSegmentsNum->setText( commaNumSegs );
+	grid->addWidget( labelNumSegmentsNum, 0, 1 );
+
+	return statsBox;
 }
 
 QGroupBox* SegInspector::makeNotesBox()
 {
 	QGroupBox* notesBox = new QGroupBox("Notes");
-
 	QGridLayout *gridNotes = new QGridLayout( notesBox );
 
 	notesEdit = new QPlainTextEdit(notesBox);
@@ -43,7 +78,6 @@ QGroupBox* SegInspector::makeNotesBox()
 QGroupBox* SegInspector::makeToolsBox()
 {
 	QGroupBox* segmentBox = new QGroupBox("Tools");
-
 	QGridLayout *gridSegment = new QGridLayout( segmentBox );
 
 	addSegmentButton = new QPushButton(segmentBox);
@@ -57,14 +91,13 @@ QGroupBox* SegInspector::makeToolsBox()
 QGroupBox* SegInspector::makeActionsBox()
 {
 	QGroupBox* actionsBox = new QGroupBox("Actions");
-
 	QGridLayout *gridAction = new QGridLayout( actionsBox );
 
 	QLabel *labelNumThreadsText = new QLabel(actionsBox);
 	labelNumThreadsText->setText("number of meshing threads: ");
 	gridAction->addWidget( labelNumThreadsText, 0, 0 );
 	QLabel *labelNumThreadsNum = new QLabel(actionsBox);
-	labelNumThreadsNum->setNum( OmPreferences::GetInteger(OM_PREF_MESH_NUM_MESHING_THREADS_INT ));
+	labelNumThreadsNum->setNum( OmLocalPreferences::numAllowedWorkerThreads());
 	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
 
 	buildComboBox = new QComboBox(actionsBox);
@@ -95,7 +128,6 @@ QGroupBox* SegInspector::makeActionsBox()
 QGroupBox* SegInspector::makeSourcesBox()
 {
 	QGroupBox* sourceBox = new QGroupBox("Source");
-
 	QGridLayout *grid = new QGridLayout( sourceBox );
 
 	QLabel *nameLabel = new QLabel(sourceBox);
@@ -146,14 +178,9 @@ QGroupBox* SegInspector::makeSourcesBox()
 	return sourceBox;
 }
 
-void SegInspector::setId(OmId new_id)
-{
-	my_id = new_id;
-}
-
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(my_id).SetName(nameEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetName(nameEdit->text().toStdString());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -165,11 +192,11 @@ void SegInspector::on_browseButton_clicked()
 			dir += QString("/");
 		directoryEdit->setText(dir);
 
-		OmVolume::GetSegmentation(my_id).SetSourceDirectoryPath(dir.toStdString());
+		OmVolume::GetSegmentation(sdw.getID()).SetSourceDirectoryPath(dir.toStdString());
 
 		listWidget->clear();
 		list < string >::const_iterator match_it;
-		const list < string > &matches = OmVolume::GetSegmentation(my_id).GetSourceFilenameRegexMatches();
+		const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
 
 		for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 			listWidget->addItem(QString::fromStdString(*match_it));
@@ -186,21 +213,21 @@ void SegInspector::on_exportButton_clicked()
 	QString fname = fileName.section('/', -1);
 	QString dpath = fileName.remove(fname);
 
-	OmVolume::GetSegmentation(my_id).ExportInternalData(dpath.toStdString(), fname.toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(dpath.toStdString(), fname.toStdString());
 }
 
 void SegInspector::on_patternEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(my_id).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
 }
 
 void SegInspector::on_patternEdit_textChanged()
 {
-	OmVolume::GetSegmentation(my_id).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
 
 	listWidget->clear();
 	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetSegmentation(my_id).GetSourceFilenameRegexMatches();
+	const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
 
 	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
 		listWidget->addItem(QString::fromStdString(*match_it));
@@ -221,10 +248,15 @@ void build_image(OmSegmentation * current_seg)
 void build_mesh(OmSegmentation * current_seg)
 {
 	printf("starting segmentation mesh build...\n");
-	boost::timer* timer = new boost::timer();
+	time_t start;
+	time_t end;
+	double dif;
+	
+	time (&start);
 	current_seg->BuildMeshData();
-	const double timeToMeshSecs = timer->elapsed();
-	printf("segmentation mesh build performed in %g (secs?)\n", timeToMeshSecs);
+	time (&end);
+	dif = difftime (end,start);
+	printf("segmentation mesh build performed in (%.2lf secs)\n", dif );
 }
 
 void build_image_and_mesh( OmSegmentation * current_seg )
@@ -232,6 +264,23 @@ void build_image_and_mesh( OmSegmentation * current_seg )
 	build_image(current_seg);
 	build_mesh(current_seg);
 }
+
+
+QString& GetScriptCmd (QString arg)
+{
+	static QString cmd;
+
+	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
+	debug ("meshinator", "%s\n", qPrintable (omniPath));
+	QString cmdPath = omniPath; 
+
+	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
+	cmd = cmdPath;
+	cmd += "/scripts/cluster/headnodemesher.pl " + arg;
+
+	return cmd;
+}
+
 
 void SegInspector::on_buildButton_clicked()
 {
@@ -242,55 +291,86 @@ void SegInspector::on_buildButton_clicked()
 	extern void build_mesh(OmSegmentation * current_seg);
 	extern void build_image_and_mesh(OmSegmentation * current_seg);
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(my_id);
+	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
 	if (cur_text == QString("Data")) {
-		//OmVolume::GetSegmentation(my_id).BuildVolumeData();
 		QFuture < void >future = QtConcurrent::run(build_image, &current_seg);
-		emit segmentationBuilt(my_id);
+		emit segmentationBuilt(sdw.getID());
 	} else if (cur_text == QString("Mesh")) {
-		//      OmVolume::GetSegmentation(my_id).BuildMeshData();
 		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
-		//              emit meshBuilt(my_id);
+		//              emit meshBuilt(sdw.getID());
 	} else if (cur_text == QString("Data & Mesh")) {
 		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
-		emit segmentationBuilt(my_id);
+		emit segmentationBuilt(sdw.getID());
 	} else if( "Meshinator" == cur_text ){
-
-		QString fileName  = QString::fromStdString( OmProjectData::GetFileName() );
-		QString pathName  = QString::fromStdString( OmProjectData::GetDirectoryPath() );
-		QString rel_fnpn = pathName + fileName;
+		QString rel_fnpn = OmProjectData::getFileNameAndPath();
 		QFileInfo fInfo(rel_fnpn);
 		QString fnpnProject = fInfo.absoluteFilePath();
-		QString fnpnPlan = fInfo.absoluteFilePath() + ".plan";
+		QString fnpnPlan = fnpnProject + ".plan";
 		current_seg.BuildMeshDataPlan( fnpnPlan );
 
+		QString script = GetScriptCmd (fnpnPlan);
+		debug ("meshinator", "%s\n", qPrintable (script));
+		if (mMeshinatorProc) {
+			delete mMeshinatorProc;
+		}
 		
+		startMutexServer();
+
+		mMeshinatorProc = new QProcess ();
+		mMeshinatorProc->start(script);
+
+		if (mMeshinatorDialog) {
+			delete mMeshinatorDialog;
+		}
+		mMeshinatorDialog = new QDialog ();
+		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
+		mMeshinatorDialog->exec ();
+
+		stopMutexServer();
+		current_seg.mMipMeshManager.SetMeshDataBuilt(true);
+		OmProject::Save();
 	}
-	
 }
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetSegmentation(my_id).SetNote(notesEdit->toPlainText().toStdString());
-}
-
-void SegInspector::setSegmentationID(const OmId segmenID)
-{
-	SegmentationID = segmenID;
+	OmVolume::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
 }
 
 OmId SegInspector::getSegmentationID()
 {
-	return SegmentationID;
+	return sdw.getID();
 }
 
-void SegInspector::setSegmentID(const OmId segID)
+void SegInspector::populateSegmentationInspector()
 {
-	SegmentID = segID;
+	nameEdit->setText( sdw.getName() );
+	nameEdit->setMinimumWidth(200);
+
+	directoryEdit->setText( sdw.GetSourceDirectoryPath() );
+	directoryEdit->setMinimumWidth(200);
+
+	patternEdit->setText( sdw.GetSourceFilenameRegex() );
+	patternEdit->setMinimumWidth(200);
+
+	notesEdit->setPlainText( sdw.getNote() );
+
+	listWidget->clear();
+
+	foreach( string matchStr, sdw.GetSourceFilenameRegexMatches() ){
+		listWidget->addItem( QString::fromStdString( matchStr ) );
+	}
 }
 
-OmId SegInspector::getSegmentID()
+void SegInspector::startMutexServer()
 {
-	return SegmentID;
+	mutexServer = new MutexServer("brianiac", 8989);
+	mutexServer->start();
+}
+
+void SegInspector::stopMutexServer()
+{
+	mutexServer->quit();
+	delete mutexServer;
 }

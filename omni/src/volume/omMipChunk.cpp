@@ -54,6 +54,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	UpdateSize(sizeof(OmMipChunk));
 
 	mpImageData = NULL;
+	mOpenLock = new QMutex();
 }
 
 OmMipChunk::~OmMipChunk()
@@ -117,11 +118,12 @@ void
  */
 void OmMipChunk::Open()
 {
-	//debug("genone","OmMipChunk::Open()");
+        QMutexLocker locker(mOpenLock);
 
 	//ignore if already open
 	if (IsOpen())
 		return;
+
 
 	//read volume data
 	ReadVolumeData();
@@ -134,24 +136,18 @@ void OmMipChunk::Open()
 
 void OmMipChunk::OpenForWrite()
 {
-	//debug("genone","OmMipChunk::OpenForWrite()");
-
-	//ignore if already open
-	if (IsOpen())
+	if (IsOpen()) {
 		return;
+	}
 
-	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
-
-	//read from project data
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-	//debug("FIXME", << "BPS: " << GetBytesPerSample() << endl;
+	vtkImageData *data = OmProjectData::ReadImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
-	//set this image data
 	SetImageData(data);
 
-	//set open
 	SetOpen(true);
 }
 
@@ -198,7 +194,8 @@ void OmMipChunk::Close()
 	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 
 	//delete image data
-	debug("mipchunk", "freeing mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+	debug("mipchunk", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
+	debug("meshercrash", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
 	mpImageData->Delete();
 	mpImageData = NULL;
 }
@@ -241,7 +238,8 @@ bool OmMipChunk::IsMetaDataDirty() const
 void OmMipChunk::ReadVolumeData()
 {
 	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
 	//read from project data
 	if (!OmProjectData::DataExists(mip_level_vol_path)) {
@@ -262,46 +260,45 @@ void OmMipChunk::ReadVolumeData()
 
 void OmMipChunk::WriteVolumeData()
 {
-	if (!IsOpen())
+	if (!IsOpen()) {
 		OpenForWrite();
-	//assert(IsOpen());
-	//get path to mip level volume
-	string mip_level_vol_path = mpMipVolume->MipLevelInternalDataPath(GetLevel());
-	//write to project data
-	if (mpImageData)
-		OmProjectData::WriteImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
-	//data clean
+	}
+
+	OmHdf5Path mip_level_vol_path;
+	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+
+	if (mpImageData) {
+		OmProjectData::WriteImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
+	}
+
 	mVolumeDataDirty = false;
 }
 
 void OmMipChunk::ReadMetaData()
 {
-	//	return;
+	// TODO: must we do this? (purcaro)
 
-	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	//debug("genone","OmMipChunk::ReadMetaData: %s \n", fpath.data());
+	OmHdf5Path dat_file_path;
+	dat_file_path.setPath( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
 
 	//read archive if it exists
-	if (OmProjectData::DataExists(fpath))
-		OmProjectData::ArchiveRead < OmMipChunk > (fpath, this);
+	if (OmProjectData::DataExists(dat_file_path)) {
+		OmProjectData::ArchiveRead < OmMipChunk > (dat_file_path, this);
+	}
 
 	//otherwise, no metadata to read in
 }
 
 void OmMipChunk::WriteMetaData()
 {
-	string fpath = mpMipVolume->MipChunkMetaDataPath(mCoordinate);
-	//debug("genone","OmMipChunk::WriteMetaData:  %s \n", fpath.data());
+	OmHdf5Path dat_file_path;
+	dat_file_path.setPath(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
-	//store archive
-	OmProjectData::ArchiveWrite < OmMipChunk > (fpath, this);
+	OmProjectData::ArchiveWrite < OmMipChunk > (dat_file_path, this);
 
-	//meta data clean
 	mMetaDataDirty = false;
 }
 
-#pragma mark
-#pragma mark MetaData Accessors
 /////////////////////////////////
 ///////          MetaData Accessors
 
@@ -315,8 +312,6 @@ void OmMipChunk::ClearModifiedVoxelValues()
 	mModifiedVoxelValues.clear();
 }
 
-#pragma mark
-#pragma mark Data Accessors
 /////////////////////////////////
 ///////          Data Accessors
 
@@ -721,7 +716,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
  */
 vtkImageData *OmMipChunk::GetMeshImageData()
 {
-	//debug("FIXME", << "OmMipChunk::GetMeshImageData: " << mCoordinate << endl;
+	Open ();
 
 	DataCoord data_dims;
 	mpImageData->GetDimensions(data_dims.array);
@@ -738,14 +733,15 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	clearImageData(p_mesh_data);
 
 	//for all 8 adjacent chunks
-	for (int z = 0; z < 2; z++)
-		for (int y = 0; y < 2; y++)
+	for (int z = 0; z < 2; z++) {
+		for (int y = 0; y < 2; y++) {
 			for (int x = 0; x < 2; x++) {
 
 				//form mip coord
 				OmMipChunkCoord mip_coord(mCoordinate.get < 0 > (),
 							  mCoordinate.get < 1 > () + x,
-							  mCoordinate.get < 2 > () + y, mCoordinate.get < 3 > () + z);
+							  mCoordinate.get < 2 > () + y, 
+							  mCoordinate.get < 3 > () + z);
 
 				//skip invalid mip coord
 				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
@@ -759,70 +755,23 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 
 				debug("mipchunk", "got mpImageData: %i, rc:%i\n", p_chunk->mpImageData, p_chunk->mpImageData->GetReferenceCount());
 
-
-				//get pointer to image data
-				//vtkImageData *p_src_data = p_chunk->mpImageData;
-
-				debug ("genone", "got %i\n", p_chunk->mpImageData);
-
 				//get dim size
 				int chunk_dim = mpMipVolume->GetChunkDimension();
 
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
+				QMutexLocker locker(mOpenLock);
 				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
-
-				p_chunk = shared_ptr < OmMipChunk > ();
-				mpMipVolume->Remove (mip_coord);
+				
+				p_chunk = shared_ptr  < OmMipChunk > ();
+				mpMipVolume->Remove(mip_coord);
 			}
+		}
+	}
 
 	return p_mesh_data;
-	//return NULL;
 }
 
-/*
-DataBbox sliceDataBbox(const DataBbox &bbox, OmDataVolumePlane plane, int depth) {
-	DataBbox slice_bbox;
-	const Vector3<int> &data_extent_min = bbox.getMin();
-	const Vector3<int> &data_extent_max = bbox.getMax();
-	
-	switch(plane) {
-		case VOL_XY_PLANE:
-			if(depth < data_extent_min.z || depth > data_extent_max.z)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(data_extent_min.x, data_extent_min.y, depth));
-			slice_bbox.setMax(Vector3<int>(data_extent_max.x, data_extent_max.y, depth));
-			break;
-			
-		case VOL_XZ_PLANE:
-			if(depth < data_extent_min.y || depth > data_extent_max.y)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(data_extent_min.x, depth, data_extent_min.z));
-			slice_bbox.setMax(Vector3<int>(data_extent_max.x, depth, data_extent_max.z));
-			break;
-			
-		case VOL_YZ_PLANE:
-			if(depth < data_extent_min.x || depth > data_extent_max.x)
-				throw OmAccessException("Specified depth not valid.");
-			
-			slice_bbox.setMin(Vector3<int>(depth, data_extent_min.y, data_extent_min.z));
-			slice_bbox.setMax(Vector3<int>(depth, data_extent_max.y, data_extent_max.z));
-			break;
-			
-		default:
-			assert(false);
-	}
-	
-	return slice_bbox;
-}
-
-
-*/
-
-#pragma mark
-#pragma mark Drawing
 /////////////////////////////////
 ///////          Drawing
 
@@ -877,11 +826,8 @@ void OmMipChunk::DrawClippedExtent()
 	glPopAttrib();
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
-
 ostream & operator<<(ostream & out, const OmMipChunk & mc)
 {
 

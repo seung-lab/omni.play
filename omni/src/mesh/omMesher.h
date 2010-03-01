@@ -8,6 +8,7 @@
  *	Brett Warne - bwarne@mit.edu - 3/7/09
  */
 
+#include "omMeshSource.h"
 #include "volume/omMipChunkCoord.h"
 #include "segment/omSegmentTypes.h"
 #include "system/omSystemTypes.h"
@@ -17,18 +18,14 @@ using boost::shared_ptr;
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
 
-
 #include <vtkImageData.h>
 #include <vtkWindowedSincPolyDataFilter.h>
 
-
 class OmMipMesh;
 class OmMipMeshManager;
-
 class OmMipChunk;
 
 class vtkImageData;
-
 class vtkDiscreteMarchingCubes;
 class vtkQuadricDecimation;
 class vtkTransform;
@@ -38,37 +35,6 @@ class vtkPolyDataNormals;
 class vtkStripper;
 class vtkPolyData;
 class vtkWindowedSincPolyDataFilter;
-
-
-
-
-
-class OmMeshSource {
-	
-public:
-	OmMeshSource();
-	~OmMeshSource();
-	
-	//load mesh data from chunk - expensive
-	void Load( shared_ptr<OmMipChunk> chunk );
-	
-	//copy from another mesh source - cheaper
-	void Copy( OmMeshSource &source );
-	
-	vtkImageData *pImageData;
-	OmMipChunkCoord MipCoord;
-	AxisAlignedBoundingBox<int> SrcBbox;
-	AxisAlignedBoundingBox<float> DstBbox;
-	
-protected:
-        shared_ptr<OmMipChunk> mChunk;
-	OmMeshSource(OmMeshSource &);
-	OmMeshSource& operator= (const OmMeshSource &);
-};
-
-
-
-
 
 class OmMesher {
 	
@@ -97,7 +63,5 @@ private:
 	bool mUseWindowedSinc;
 	vtkWindowedSincPolyDataFilter *mpWindowedSincPolyDataFilter;
 };
-
-
 
 #endif

@@ -1,5 +1,3 @@
-
-
 ## LIBRARY ##
 
 #specify sources
@@ -15,6 +13,9 @@ SET(OM_VOLUME_LIB_SRCS
 	omSegmentation.cpp
 	omVolume.cpp
 	../utility/dataWrappers.cpp
+	../mesh/meshingManager.cpp
+	../mesh/meshingChunkThreadManager.cpp
+	../mesh/meshingChunkThread.cpp
 )
 
 
@@ -33,10 +34,6 @@ TARGET_LINK_LIBRARIES( omVolume
 	omVoxel
 	omView2d
 )
-
-
-
-
 
 
 ## EXECUTABLE ##

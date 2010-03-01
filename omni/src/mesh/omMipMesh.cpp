@@ -4,6 +4,8 @@
 
 #include "segment/omSegmentManager.h"
 #include "system/omProjectData.h"
+#include "project/omProject.h"
+#include "system/omGarbage.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -11,6 +13,7 @@ namespace bfs = boost::filesystem;
 
 #include <fstream>
 #include "common/omDebug.h"
+#include <QFile>
 
 #define DEBUG 0
 
@@ -43,6 +46,9 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
 	mVertexDataVboId = NULL_VBO_ID;
 	mVertexIndexDataVboId = NULL_VBO_ID;
 
+	mHdf5File = NULL;
+
+	mSegmentationID = 0;
 }
 
 OmMipMesh::~OmMipMesh()
@@ -75,33 +81,21 @@ OmMipMesh::~OmMipMesh()
 		mpVertexData = NULL;
 	}
 
+	if (mHdf5File) {
+		delete mHdf5File;
+	}
 }
 
-#pragma mark
-#pragma mark Mesh IO Methods
 /////////////////////////////////
 ///////          Mesh IO Methods
 
-void
- OmMipMesh::Load()
+void OmMipMesh::Load()
 {
-	//string fpath = GetDirectoryPath() + GetFileName();
-	//debug("FIXME", << "OmMipMesh::Load: " << fpath << endl;
-
-	//debug("genone","OmMipMesh::Load: %s \n", GetDirectoryPath().data());
-	//if(!bfs::exists(bfs::path(fpath))) 
-	//      throw OmIoException("File not found:" + fpath);
-
-	////debug("genone","OmMipMesh::Load: mesh found on disk");
-
-	//read in archive
-	//archive_read< OmMipMesh >(fpath, this);
-
 	int size;
-	string fpath;
 
 	//read meta data
-	fpath = GetDirectoryPath() + "metamesh.dat";
+	OmHdf5Path fpath;
+	fpath.setPath( GetDirectoryPath() + "metamesh.dat" );
 	char *meta = (char *)OmProjectData::ReadRawData(fpath);
 	char result = *meta;
 	delete meta;
@@ -111,60 +105,105 @@ void
 		return;
 
 	//read strip offset/size data
-	fpath = GetDirectoryPath() + "stripoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "stripoffset.dat" );
 	mpStripOffsetSizeData = (uint32_t *) OmProjectData::ReadRawData(fpath, &size);
 	mStripCount = size / (2 * sizeof(uint32_t));
 
 	//read vertex offset data
-	fpath = GetDirectoryPath() + "vertexoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "vertexoffset.dat" );
 	mpVertexIndexData = (GLuint *) OmProjectData::ReadRawData(fpath, &size);
 	mVertexIndexCount = size / sizeof(GLuint);
 
 	//read strip offset/size data
-	fpath = GetDirectoryPath() + "vertex.dat";
+	fpath.setPath( GetDirectoryPath() + "vertex.dat" );
 	mpVertexData = (GLfloat *) OmProjectData::ReadRawData(fpath, &size);
 	mVertexCount = size / (6 * sizeof(GLfloat));
 
 	//debug("genone","OmMipMesh::Load: got mesh from disk\n");
 }
 
+static void putpid(char *s)
+{
+        static char pidstr[6];
+        pid_t pid;
+        int i;
+
+        if (pidstr[0] == 0) {
+                pid = getpid();
+                for(i = 0; i < 5; i++) {
+                        pidstr[4 - i] = (pid % 10) + '0';
+                        pid /= 10;
+                }
+                pidstr[5] = 0;
+        }
+        strcpy(s, pidstr);
+}
+
+string OmMipMesh::GetLocalPathForHd5fChunk()
+{
+        char mip_dname_buf[MAX_FNAME_SIZE];
+	char pid[256] = {0};
+	putpid(pid);
+        sprintf(mip_dname_buf, "%d.%d.%d_%d_%d.%s.%s.h5",
+               	getSegmentationID(),
+                mMeshCoordinate.MipChunkCoord.Level,
+                mMeshCoordinate.MipChunkCoord.Coordinate.x,
+                mMeshCoordinate.MipChunkCoord.Coordinate.y,
+                mMeshCoordinate.MipChunkCoord.Coordinate.z,
+               	qPrintable(OmProject::GetFileName()),
+		pid);
+
+	debug("parallel", "/tmp/meshinator_%s\n", mip_dname_buf);
+	//std::cerr << "/tmp/meshinator_" << mip_dname_buf <<endl;
+        return "/tmp/meshinator_" + string(mip_dname_buf);
+}
+
 void OmMipMesh::Save()
 {
-	//string fpath = GetDirectoryPath() + GetFileName();
-	//debug("genone","OmMipMesh::Save: %s\n", GetDirectoryPath().data());
+	OmHdf5 * hdf5File = NULL;
 
-	//create all intermediate directories
-	//bfs::create_directories(bfs::path(GetDirectoryPath()));
+	if (!OmGarbage::GetParallel()) {
+               	hdf5File = OmProjectData::GetHdf5File();
+       	} else {
+               	if (NULL == mHdf5File) {
+			try {
+                       		mHdf5File = new OmHdf5(QString::fromStdString( GetLocalPathForHd5fChunk() ) );
+				mHdf5File->create();
+			} catch (OmIoException e) {
+				//std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
+			}
+               	}
+		hdf5File = mHdf5File;
+       	}
 
-	//write out archive
-	//archive_write< OmMipMesh >(fpath, this);
-
-	string fpath;
 	int size;
 
+	assert(hdf5File);
+
 	//write meta data
-	fpath = GetDirectoryPath() + "metamesh.dat";
+	OmHdf5Path fpath;
+	fpath.setPath( GetDirectoryPath() + "metamesh.dat" );
 	char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
-	OmProjectData::WriteRawData(fpath, 1, &meta);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);
 
 	//if meta is zero then skip mesh
 	if (!meta)
 		return;
 
 	//write strip offset/size data
-	fpath = GetDirectoryPath() + "stripoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "stripoffset.dat" );
 	size = 2 * mStripCount * sizeof(uint32_t);
-	OmProjectData::WriteRawData(fpath, size, mpStripOffsetSizeData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpStripOffsetSizeData);
 
 	//write vertex offset data
-	fpath = GetDirectoryPath() + "vertexoffset.dat";
+	fpath.setPath( GetDirectoryPath() + "vertexoffset.dat" );
 	size = mVertexIndexCount * sizeof(GLuint);
-	OmProjectData::WriteRawData(fpath, size, mpVertexIndexData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexIndexData);
 
 	//write strip offset/size data
-	fpath = GetDirectoryPath() + "vertex.dat";
+	fpath.setPath( GetDirectoryPath() + "vertex.dat" );
 	size = 6 * mVertexCount * sizeof(GLfloat);
-	OmProjectData::WriteRawData(fpath, size, mpVertexData);
+	hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
 }
 
 string OmMipMesh::GetFileName()

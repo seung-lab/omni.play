@@ -104,6 +104,22 @@ unsigned int SegmentationDataWrapper::getNumberOfSegments()
 	return OmVolume::GetSegmentation(mID).GetValidSegmentIds().size();
 }
 
+QString SegmentationDataWrapper::GetSourceDirectoryPath()
+{
+	return QString::fromStdString( OmVolume::GetSegmentation(mID).GetSourceDirectoryPath() );
+}
+
+QString SegmentationDataWrapper::GetSourceFilenameRegex()
+{
+	return QString::fromStdString( OmVolume::GetSegmentation(mID).GetSourceFilenameRegex() );
+}
+
+const list < string > SegmentationDataWrapper::GetSourceFilenameRegexMatches()
+{
+	return OmVolume::GetSegmentation(mID).GetSourceFilenameRegexMatches();
+}
+
+
 /*******************************************
  ****** Segments
  *******************************************/

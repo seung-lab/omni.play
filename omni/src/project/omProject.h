@@ -37,18 +37,15 @@ public:
 	static void Delete();
 	
 	//project properties
-	static const string& GetFileName();
-	static void SetFileName(const string &);
+	static QString GetFileName() {return Instance()->mFileName;}
 	static const string& GetDirectoryPath();
-	static void SetDirectoryPath(const string &);
 	static string GetTempDirectoryPath();
 	
 	//project IO
-	static void New(string dpath, string fname);
+	static void New( QString fileNameAndPath );
 	static void Save();
-	static void SaveAs(string dpath, string fname);
 	static void Commit();
-	static void Load(string dpath, string fname);
+	static void Load( QString fileNameAndPath );
 	static void Close();
 	
 	
@@ -65,8 +62,8 @@ private:
 	static OmProject* mspInstance;
 	
 	//project
-	string mFileName;
-	string mDirectoryPath;
+	QString mFileName;
+	QString mDirectoryPath;
 
 	
 	friend class boost::serialization::access;

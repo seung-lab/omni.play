@@ -3,14 +3,21 @@
 #specify sources
 SET(OM_UTILITY_LIB_SRCS
 	omHdf5.cpp
+	omHdf5Dataset.cpp
+	omHdf5Path.cpp
+	omHdf5Helpers.cpp
+	omHdf5LowLevel.cpp
+	omHdf5LowLevelWrappersAutoOpenClose.cpp
+	omHdf5LowLevelWrappersManualOpenClose.cpp
 	omImageDataIo.cpp
+	omSystemInformation.cpp
+	localPrefFiles.cpp
 )
 
 #create static library
 ADD_LIBRARY(omUtility
 	${OM_UTILITY_LIB_SRCS}
 )
-
 
 TARGET_LINK_LIBRARIES( omUtility
 	omCommon
@@ -19,13 +26,6 @@ TARGET_LINK_LIBRARIES( omUtility
 	${OM_HDF5_LIBS}
 	${OM_BOOST_LIBS}
 )
-
-
-
-#	omSystem
-#	omLibrary
-#	omView2d
-
 
 # EXECUTABLE
 

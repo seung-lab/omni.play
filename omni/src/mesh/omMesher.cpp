@@ -2,7 +2,6 @@
 #include "omMesher.h"
 #include "omMipMesh.h"
 #include "omMipMeshManager.h"
-
 #include "volume/omMipChunk.h"
 
 #include "common/omGl.h"
@@ -35,56 +34,6 @@
 void srcToDestBboxTransform(const OmMeshSource & meshSource, vtkTransform * pTransform);
 uint32_t numStripsInStripCellArray(vtkCellArray * pStripCellArray);
 
-#pragma mark -
-#pragma mark OmMeshSource
-/////////////////////////////////
-///////
-///////          OmMeshSource
-///////
-
-OmMeshSource::OmMeshSource()
-{
-	pImageData = NULL;
-}
-
-//delete image data
-OmMeshSource::~OmMeshSource()
-{
-	debug ("mesher1", "OmMeshSource::~OmMeshSource %i\n", pImageData);
-
-	//delete image data if loaded
-	if (pImageData != NULL)
-		pImageData->Delete();
-}
-
-//load mesh data from chunk - expensive
-void
- OmMeshSource::Load(shared_ptr < OmMipChunk > chunk)
-{
-	debug ("mesher1", "OmMeshSource::Load\n");
-	MipCoord = chunk->GetCoordinate();
-	SrcBbox = chunk->GetExtent();
-	DstBbox = chunk->GetNormExtent();
-	mChunk = chunk;
-}
-
-//copy from another mesh source - cheaper
-void OmMeshSource::Copy(OmMeshSource & source)
-{
-	//copy values
-	MipCoord = source.MipCoord;
-	SrcBbox = source.SrcBbox;
-	DstBbox = source.DstBbox;
-	source.mChunk->Open ();
-	pImageData = source.mChunk->GetMeshImageData();
-	debug ("mesher1", "OmMeshSource::Copy %i\n", pImageData);
-	pImageData->Update();
-}
-
-OmMeshSource& OmMeshSource::operator= (const OmMeshSource & foo)
-{
-	assert (0);
-}
 
 #pragma mark -
 #pragma mark OmMesher
@@ -215,20 +164,20 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 
 	vtkFloatArray *p_normal_data_array = vtkFloatArray::New();
 	p_normal_data_array->DeepCopy(pPolyData->GetPointData()->GetNormals());
-	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: convert to floats");
+	//debug("genone","OmMesher::BuildMeshFromPolyData: convert to floats");
 
 	//get strip cells properties
 	vtkCellArray *p_strip_cells_array = pPolyData->GetStrips();
 	uint32_t num_strips = numStripsInStripCellArray(p_strip_cells_array);
 	uint32_t strip_cells_array_size = p_strip_cells_array->GetNumberOfConnectivityEntries();
 	vtkIdType *p_strip_cells_array_data = p_strip_cells_array->GetPointer();
-	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: get strip props");
+	//debug("genone","OmMesher::BuildMeshFromPolyData: get strip props");
 
 	//create aliases to mesh data
 	uint32_t *&r_mesh_strip_offset_size_data = pMesh->mpStripOffsetSizeData;
 	GLuint *&r_mesh_vert_indicies = pMesh->mpVertexIndexData;
 	GLfloat *&r_mesh_vert_data = pMesh->mpVertexData;
-	//debug("genone","OmMipChunkMesher::BuildMeshFromPolyData: mesh alias");
+	//debug("genone","OmMesher::BuildMeshFromPolyData: mesh alias");
 
 	//setup and alloc mesh memory
 	pMesh->mStripCount = num_strips;
@@ -242,14 +191,14 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 	uint32_t vert_count = p_points_data_array->GetNumberOfTuples();
 	pMesh->mVertexCount = vert_count;
 	r_mesh_vert_data = new GLfloat[6 * vert_count];
-	//debug("genone","OmMipChunkMesher:: allocd mesh memory");
+	//debug("genone","OmMesher:: allocd mesh memory");
 
 	//copy interleved position and normal data
 	for (uint32_t idx = 0; idx < vert_count; idx++) {
 		p_points_data_array->GetTupleValue(idx, &r_mesh_vert_data[6 * idx]);
 		p_normal_data_array->GetTupleValue(idx, &r_mesh_vert_data[6 * idx + 3]);
 	}
-	//debug("genone","OmMipChunkMesher:: got vertex data");
+	//debug("genone","OmMesher:: got vertex data");
 
 	//store strip geom index offset and geom size data and geom indicies
 	uint32_t strip_idx = 0;
@@ -276,7 +225,7 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 		strip_idx++;
 	}
 
-	debug("mesher1","OmMipChunkMesher:: strips ref: %i \n", p_strip_cells_array->GetReferenceCount());
+	debug("mesher1","OmMesher:: strips ref: %i \n", p_strip_cells_array->GetReferenceCount());
 	//p_strip_cells_array->Delete();
 	p_points_data_array->Delete();
 	p_normal_data_array->Delete();

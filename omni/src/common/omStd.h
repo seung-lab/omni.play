@@ -44,6 +44,7 @@ using std::ostringstream;
 #include <vector>
 using std::vector;
 
+#define OMPOW(base,expon) (int)pow((double) base, (double)expon)
 
 // Platform-Dependent Definitions
 #ifdef __APPLE__

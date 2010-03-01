@@ -9,7 +9,7 @@
 #include "inspectors/chanInspector.h"
 #include "inspectors/segObjectInspector.h"
 #include "inspectors/filObjectInspector.h"
-#include "inspectorProperties.h"
+#include "inspectors/inspectorProperties.h"
 
 #include "common/omStd.h"
 #include "system/omSystemTypes.h"
@@ -134,7 +134,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	FilObjectInspector *filObjectInspectorWidget;
 
 	void populateChannelInspector(OmId c_id);
-	void populateSegmentationInspector(OmId s_id);
+	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	bool first_access;
 

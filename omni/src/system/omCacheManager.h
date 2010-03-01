@@ -1,10 +1,5 @@
-
 #ifndef OM_CACHE_MANAGER_H
 #define OM_CACHE_MANAGER_H
-
-/*
- *
- */
 
 #include "system/events/omPreferenceEvent.h"
 
@@ -12,19 +7,13 @@
 #include "common/omThreads.h"
 #include "common/omStd.h"
 
-
-//#define DEFAULT_MAX_CACHE_SIZE_BYTES (128 * BYTES_PER_MB)
-
-
 class OmCacheBase;
-
 
 //caches
 enum OmCacheGroup {
 	RAM_CACHE_GROUP = 1,
 	VRAM_CACHE_GROUP
 };
-
 
 struct CacheGroupProperties {
 	CacheGroupProperties() {
@@ -40,10 +29,7 @@ struct CacheGroupProperties {
 	set< OmCacheBase* > CacheSet;
 };
 
-
-
-
-class OmCacheManager : public OmPreferenceEventListener {
+class OmCacheManager {
 
 public:
 	
@@ -54,7 +40,9 @@ public:
 	static void RemoveCache(OmCacheGroup group, OmCacheBase *base);
 	
 	static void UpdateCacheSize(OmCacheGroup group, int delta);
+	static void UpdateCacheSizeFromLocalPrefs();
 	
+	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
 	void CleanCacheGroup(OmCacheGroup group);
 	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);

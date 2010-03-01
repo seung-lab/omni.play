@@ -48,6 +48,10 @@ class SegmentationDataWrapper : public DataWrapper
 	QHash< OmId, SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
+
+	QString GetSourceDirectoryPath();
+	QString GetSourceFilenameRegex();
+	const list < string > GetSourceFilenameRegexMatches();
 };
 
 class SegmentDataWrapper : public DataWrapper 

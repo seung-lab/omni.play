@@ -252,16 +252,13 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 }
 
-void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
+void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
-	const OmId item_id = data.getID();
-
-	QWidget *my_widget = splitter->widget(1);
-
 	QList < int >my_sizes = splitter->sizes();
+	QWidget *my_widget = splitter->widget(1);
 	delete my_widget;
 	
-	segInspectorWidget = new SegInspector(item_id, splitter);
+	segInspectorWidget = new SegInspector( sdw, splitter);
 	
 	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
 	
@@ -269,10 +266,6 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper data)
 	
 	if (!(first_access))
 		splitter->setSizes(my_sizes);
-
-	segInspectorWidget->setId(item_id);
-	populateSegmentationInspector(item_id);
-	segInspectorWidget->setSegmentationID(item_id);
 
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
@@ -543,34 +536,6 @@ void MyInspectorWidget::populateChannelInspector(OmId c_id)
 
 	const string & my_notes = current_channel.GetNote();
 	channelInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-}
-
-void MyInspectorWidget::populateSegmentationInspector(OmId s_id)
-{
-	OmSegmentation & current_segmentation = OmVolume::GetSegmentation(s_id);
-
-	const string & my_name = current_segmentation.GetName();
-	segInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
-	segInspectorWidget->nameEdit->setMinimumWidth(200);
-
-	const string & my_directory = current_segmentation.GetSourceDirectoryPath();
-	segInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
-	segInspectorWidget->directoryEdit->setMinimumWidth(200);
-
-	const string & my_pattern = current_segmentation.GetSourceFilenameRegex();
-	segInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
-	segInspectorWidget->patternEdit->setMinimumWidth(200);
-
-	const string & my_notes = current_segmentation.GetNote();
-	segInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-
-	segInspectorWidget->listWidget->clear();
-
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetSegmentation(s_id).GetSourceFilenameRegexMatches();
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		segInspectorWidget->listWidget->addItem(QString::fromStdString(*match_it));
-	}
 }
 
 void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)

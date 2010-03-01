@@ -1,12 +1,10 @@
 #ifndef OM_PREFERENCES_DEFINITIONS_H
 #define OM_PREFERENCES_DEFINITIONS_H
 
-
 /*
  *
  *	Brett Warne - bwarne@mit.edu - 4/8/09
  */
-
 
 //
 //	Preference Naming Convetion:
@@ -21,8 +19,6 @@
 
 
 enum {
-	//COMMON
-	
 	//GUI
 	OM_PREF_GUI_VIEWBOX_MOVE_RIGHT_STR = 100,			
 	OM_PREF_GUI_VIEWBOX_MOVE_LEFT_STR,			
@@ -38,19 +34,10 @@ enum {
 	OM_PREF_GUI_UNDO_STR,						
 	OM_PREF_GUI_REDO_STR,						
 
-	
 	//MESH
 	OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT = 200,		
 	OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT,		
 	OM_PREF_MESH_REDUCTION_PERCENT_FLT,	
-	OM_PREF_MESH_NUM_MESHING_THREADS_INT,
-	
-	//SEGMENT
-	
-	//SYSTEM
-	OM_PREF_SYSTEM_RAM_GROUP_CACHE_MAX_MB_FLT = 400,
-	OM_PREF_SYSTEM_VRAM_GROUP_CACHE_MAX_MB_FLT,
-	
 	
 	//VIEW2D
 	OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT = 500,
@@ -61,13 +48,7 @@ enum {
 	OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT,
 	OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT,
 
-
-	
-	
-	
-	
-	//VIEW3D
-	
+	//VIEW3D	
 	OM_PREF_VIEW3D_ANTIALIASING_BOOL = 600,			
 	OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F,			
 	OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT,			
@@ -84,13 +65,7 @@ enum {
 	OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT,		
 	OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL
 	
-	//VOLUME
 };
-
-
-
-
-
 
 // functions to set default preferences
 void omSetDefaultAllPreferences();
@@ -98,7 +73,6 @@ void omSetDefaultCommonPreferences();
 void omSetDefaultGuiPreferences();
 void omSetDefaultMeshPreferences();
 void omSetDefaultSegmentPreferences();
-void omSetDefaultSystemPreferences();
 void omSetDefaultView2dPreferences();
 void omSetDefaultView3dPreferences();
 

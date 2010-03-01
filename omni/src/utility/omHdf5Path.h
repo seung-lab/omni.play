@@ -1,0 +1,18 @@
+#ifndef OM_HDF_PATH_H
+#define OM_HDF_PATH_H
+
+#include <QString>
+#include <string>
+
+class OmHdf5Path 
+{
+ public:
+	OmHdf5Path();
+	void setPath( std::string str );
+	std::string getString();
+
+ private:
+	QString mPath;
+}; 
+
+#endif

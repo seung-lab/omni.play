@@ -23,8 +23,6 @@
 #include "volume/omSegmentation.h"
 
 #include "common/omStd.h"
-#include "system/omAnimate.h"
-
 
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
@@ -42,7 +40,8 @@ class OmTileCoord;
 
 class Drawable {
 public:
-        int x, y, tileLength;
+        int x, y;
+	int tileLength;
 	float zoomFactor;
         shared_ptr<OmTextureID> gotten_id;
 	OmTileCoord tileCoord;
@@ -80,7 +79,7 @@ protected:
 	void resizeEvent (QResizeEvent * event);
         DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
 
-	void PanOnZoom(Vector2<int> current_zoom, bool postEvent = true);	// Helper for zooming.
+	void PanAndZoom(Vector2<int> new_zoom, bool postEvent = true);	// Helper for zooming.
 	void SetViewSliceOnPan ();						// Helper for panning.
 	void GlobalDepthFix (float howMuch);					// Helper for zooming.
 	void PanOnZoomSelf (Vector2<int> current_zoom);				// Helper for mipping.
@@ -168,7 +167,6 @@ protected:
 
 
 private:
-	OmAnimate * mAnimation;
 	OmId mEditedSegmentation;
 	bool mMIP;
         unsigned int mSlide;
@@ -182,6 +180,7 @@ private:
 	int mBrushToolDiameter;
 	OmId mCurrentSegmentation;
 	QImage mImage;
+	QPainter painter;
 	bool mLevelLock;
 	bool mNewDraw;
 	vector <Drawable*> mTextures;
@@ -200,12 +199,14 @@ private:
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
 
-	SpaceCoord ScreenToSpaceCoord(const ScreenCoord &screenc);
-	ScreenCoord SpaceToScreenCoord(const SpaceCoord &spacec);
-	ScreenCoord DataToScreenCoord(const DataCoord &datac);
-	DataCoord ScreenToDataCoord(const ScreenCoord &screenc);
-	ScreenCoord NormToScreenCoord(const NormCoord &normc);
-	NormCoord ScreenToNormCoord(const ScreenCoord &screenc);
+	Vector2i ScreenToPanShift(Vector2i screenshift);
+
+	SpaceCoord ScreenToSpaceCoord(ViewType viewType,const ScreenCoord &screenc);
+	ScreenCoord SpaceToScreenCoord(ViewType viewType,const SpaceCoord &spacec);
+	ScreenCoord DataToScreenCoord(ViewType viewType,const DataCoord &datac);
+	DataCoord ScreenToDataCoord(ViewType viewType,const ScreenCoord &screenc);
+	ScreenCoord NormToScreenCoord(ViewType viewType,const NormCoord &normc);
+	NormCoord ScreenToNormCoord(ViewType viewType,const ScreenCoord &screenc);
 	
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 	// void EditModeMouseDoubleClick(QMouseEvent *event);

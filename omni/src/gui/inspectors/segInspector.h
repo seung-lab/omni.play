@@ -5,25 +5,22 @@
 #include <QWidget> 
 #include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
+#include "mutexServer.h"
 
 class SegInspector : public QWidget
 { 
     Q_OBJECT 
 	
 public: 
-	SegInspector(OmId seg_id, QWidget *parent = 0); 
+	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent = 0); 
 	
-	void setId(OmId new_id);
+	OmId getSegmentationID();
 	QString raiseFileDialog();
 	
 	void build_image(OmSegmentation *current_seg);
 	void build_mesh(OmSegmentation *current_seg);	
 	
-	void setSegmentationID( const OmId segmenID );
-	OmId getSegmentationID();
-	void setSegmentID( const OmId segID );
-	OmId getSegmentID();
-
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
 	QListWidget* listWidget;
@@ -47,13 +44,21 @@ public:
 	void segmentationBuilt( OmId segmen_id );
 	
  private:
-	OmId my_id;
-	OmId SegmentationID;
-	OmId SegmentID;
+	SegmentationDataWrapper sdw;
+	void populateSegmentationInspector();
 
 	QGroupBox* makeActionsBox();
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeToolsBox();
 	QGroupBox* makeNotesBox();
+	QGroupBox* makeStatsBox();
+
+	QProcess* mMeshinatorProc;
+	QDialog* mMeshinatorDialog;
+
+	MutexServer* mutexServer;
+	void startMutexServer();
+	void stopMutexServer();
+
 }; 
 #endif
