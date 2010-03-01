@@ -733,14 +733,15 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	clearImageData(p_mesh_data);
 
 	//for all 8 adjacent chunks
-	for (int z = 0; z < 2; z++)
-		for (int y = 0; y < 2; y++)
+	for (int z = 0; z < 2; z++) {
+		for (int y = 0; y < 2; y++) {
 			for (int x = 0; x < 2; x++) {
 
 				//form mip coord
 				OmMipChunkCoord mip_coord(mCoordinate.get < 0 > (),
 							  mCoordinate.get < 1 > () + x,
-							  mCoordinate.get < 2 > () + y, mCoordinate.get < 3 > () + z);
+							  mCoordinate.get < 2 > () + y, 
+							  mCoordinate.get < 3 > () + z);
 
 				//skip invalid mip coord
 				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
@@ -761,7 +762,12 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				QMutexLocker locker(mOpenLock);
 				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
+				
+				p_chunk = shared_ptr  < OmMipChunk > ();
+				mpMipVolume->Remove(mip_coord);
 			}
+		}
+	}
 
 	return p_mesh_data;
 }
