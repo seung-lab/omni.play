@@ -309,7 +309,7 @@ sub hdf5_16 {
 }
 
 sub hdf5_18 {
-    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --with-default-api-version=v16" );
+    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no" );
 }
 
 sub qt {

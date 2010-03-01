@@ -37,6 +37,9 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
 	if (fileId < 0) {
                 throw OmIoException("Could not open HDF5 file.");
 	}
+
+	printfFileCacheSize( fileId );
+
         return fileId;
 }
 
@@ -61,7 +64,7 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 	//Try to open a group
 	//Turn off error printing idea from http://www.fiberbundle.net/index.html
 	H5E_BEGIN_TRY {
-		group_id = H5Gopen(fileId, name);
+		group_id = H5Gopen2(fileId, name, H5P_DEFAULT);
 	} H5E_END_TRY
 	    //if failure, then assume doesn't exist
 	    if (group_id < 0)
@@ -200,7 +203,7 @@ void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const ch
 	herr_t status;
 
 	//Opens an existing dataset.
-	hid_t dataset_id = H5Dopen(fileId, name);
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -276,7 +279,7 @@ void OmHdf5LowLevel::om_hdf5_group_create_with_lock(hid_t fileId, const char *na
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
         //Creates a new empty group and links it into the file.
-        hid_t group_id = H5Gcreate(fileId, name, 0);
+        hid_t group_id = H5Gcreate2(fileId, name, 0, H5P_DEFAULT, H5P_DEFAULT);
         if (group_id < 0)
                 throw OmIoException("Could not create HDF5 group.");
 
@@ -327,7 +330,7 @@ bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *
 	//Try to open a data set
 	//Turn off error printing idea from http://www.fiberbundle.net/index.html
 	H5E_BEGIN_TRY {
-		dataset_id = H5Dopen(fileId, name);
+		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	} H5E_END_TRY
 	
 		  //if failure, then assume doesn't exist
@@ -395,7 +398,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 		throw OmIoException("Could not create HDF5 dataspace.");
 
 	//Creates a dataset at the specified location. 
-	hid_t dataset_id = H5Dcreate(fileId, name, H5T_NATIVE_UCHAR, dataspace_id, H5P_DEFAULT);
+	hid_t dataset_id = H5Dcreate2(fileId, name, H5T_NATIVE_UCHAR, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not create HDF5 dataset.");
 
@@ -428,7 +431,7 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	herr_t status;
 
 	//Opens an existing dataset.
-	hid_t dataset_id = H5Dopen(fileId, name);
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -493,7 +496,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const 
 
 	//Creates a dataset at the specified location. 
 	hid_t type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
-	hid_t dataset_id = H5Dcreate(fileId, name, type_id, dataspace_id, plist_id);
+	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, plist_id, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not create HDF5 dataset.");
 
@@ -522,7 +525,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
-	hid_t dataset_id = H5Dopen(fileId, name);
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -596,7 +599,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
-	hid_t dataset_id = H5Dopen(fileId, name);
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
@@ -692,3 +695,21 @@ void OmHdf5LowLevel::printfDatasetCacheSize( const hid_t dataset_id )
 	printf("dataset cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));	      
 }
 
+void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
+{
+	if( !isDebugCategoryEnabled( "hdf5cache" ) ){
+		return;
+	}
+
+	int    mdc_nelmts;
+	size_t rdcc_nelmts;
+	size_t rdcc_nbytes;
+	double rdcc_w0;
+
+	herr_t err = H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
+
+	printf("file cache info: Number of chunk slots in the meta data cache: %s\n", qPrintable( QString::number(mdc_nelmts )));
+	printf("file cache info: Number of elements in the raw data chunk cache: %s\n", qPrintable( QString::number( rdcc_nelmts )));
+	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
+	printf("dataset cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
+}
