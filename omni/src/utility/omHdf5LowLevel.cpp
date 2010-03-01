@@ -31,8 +31,23 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	hid_t fileId;
-	fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+	const int totalCacheSizeMB = 20;
+		
+	// number of elements (objects) in the raw data chunk cache (default 521)
+	//  should be a prime number (due to simplistic hashing algorithm)
+	size_t rdcc_nelmts = 2011; 
+	
+	size_t rdcc_nbytes = totalCacheSizeMB * 1024 * 1024; // total size of the raw data chunk cache (default 1MB)
+	double rdcc_w0 = 0.75;  // preemption policy (default 0.75)
+	int    mdc_nelmts  = 0;    // no longer used
+
+	hid_t fapl = H5Pcreate(H5P_FILE_ACCESS); // defaults
+	herr_t err = H5Pset_cache( fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0 );
+	if(err < 0) {
+                throw OmIoException("Could not setup HDF5 file cache.");
+	}
+
+	hid_t fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
 	
 	if (fileId < 0) {
                 throw OmIoException("Could not open HDF5 file.");
@@ -146,6 +161,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 				 vtkImageData * pImageData)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
 
 	//get dims
 	Vector3 < int >dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
@@ -197,12 +213,13 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 ///////          Dataset Raw Data
 
 /**
- * method used to read meshes from disk
+ * method used to read meshes and .dat files from disk
  */
 void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char *name, int *size)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
+	debug("hdf5verbose", "\nOmHDF5LowLevel: in %s...\n", __FUNCTION__);
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
+	
 	void *dataset_data;
 	herr_t status;
 
@@ -708,15 +725,14 @@ void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
 		return;
 	}
 
-	int    mdc_nelmts;
+	int    mdc_nelmts; // no longer used
 	size_t rdcc_nelmts;
 	size_t rdcc_nbytes;
 	double rdcc_w0;
 
 	herr_t err = H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
 
-	printf("file cache info: Number of chunk slots in the meta data cache: %s\n", qPrintable( QString::number(mdc_nelmts )));
 	printf("file cache info: Number of elements in the raw data chunk cache: %s\n", qPrintable( QString::number( rdcc_nelmts )));
 	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
-	printf("dataset cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
+	printf("file cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
 }
