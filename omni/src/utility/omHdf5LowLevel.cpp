@@ -195,6 +195,10 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 
 /////////////////////////////////
 ///////          Dataset Raw Data
+
+/**
+ * method used to read meshes from disk
+ */
 void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char *name, int *size)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
@@ -216,8 +220,11 @@ void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const ch
 
 	//Returns the amount of storage required for a dataset. 
 	hsize_t dataset_size = H5Dget_storage_size(dataset_id);
-	if (NULL != size)
+	if (NULL != size) {
 		*size = (int)dataset_size;
+	}
+
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s: dataset size is %d\n", __FUNCTION__, (int)dataset_size);
 
 	//Allocate memory to read into
 	dataset_data = malloc(dataset_size);
