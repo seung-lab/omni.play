@@ -57,6 +57,11 @@ void MeshingManager::addToFailedQueue( OmMipChunkCoord coord )
 	mFailedChunkCoords.enqueue( coord );
 }
 
+int MeshingManager::numCoordsLeftToMesh()
+{
+	return mChunkCoords.size();
+}
+
 void MeshingManager::run()
 {
 	const int numChunksToProcess = mChunkCoords.size();
@@ -69,7 +74,8 @@ void MeshingManager::run()
 	num_worker_threads_active = new QSemaphore( maxNumberWorkerThreads );
 
 	QQueue<MeshingChunkThreadManager*> chunkThreads;
-	foreach( OmMipChunkCoord coord, mChunkCoords ) {
+	while( !mChunkCoords.empty() ){
+		OmMipChunkCoord coord = mChunkCoords.dequeue();
 		num_chunk_threads_active->acquire(1);
 		MeshingChunkThreadManager * chunkThread = new MeshingChunkThreadManager( this, coord );
 		chunkThreads.enqueue(chunkThread);

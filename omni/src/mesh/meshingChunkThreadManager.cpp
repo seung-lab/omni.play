@@ -11,11 +11,18 @@ MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManage
 
 	mutex = new QMutex();
 }
+
+unsigned int MeshingChunkThreadManager::getNumSegmentValuesLeftToMesh()
+{
+	QMutexLocker locker( mutex );
+	return valuesToMesh.size();
+}
+
 SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 {
 	QMutexLocker locker( mutex );
 
-	if( 0 == valuesToMesh.size() ) {
+	if( valuesToMesh.empty() ) {
 		return NULL_SEGMENT_DATA;
 	} 
 
@@ -23,6 +30,11 @@ SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 	SEGMENT_DATA_TYPE segment_value = *valuesToMesh.begin();
 	valuesToMesh.erase(segment_value);
 	assert(NULL_SEGMENT_DATA != segment_value);
+
+	unsigned int leftToDo = totalNumValuesToMesh - valuesToMesh.size();
+	debug("meshverbose", "MeshingChunkThreadManager: in %s: for chunk (%s), %d of %d values given out\n", 
+	      __FUNCTION__, qPrintable( mCoord.getCoordsAsString()), leftToDo, totalNumValuesToMesh );
+
 	return segment_value;
 }
 
@@ -39,7 +51,7 @@ void MeshingChunkThreadManager::setupValuesToMesh( shared_ptr < OmMipChunk > chu
 	totalNumValuesToMesh = valuesToMesh.size();
 
 	if( totalNumValuesToMesh > 50000 ){
-		printf("warning: meshing a chunk with %d values...\n", totalNumValuesToMesh );
+		printf("warning: meshing chunk (%s) with %d values...\n", qPrintable( mCoord.getCoordsAsString()), totalNumValuesToMesh );
 	}
 }
 
@@ -76,7 +88,8 @@ void MeshingChunkThreadManager::run()
 	chunk = shared_ptr < OmMipChunk > ();
 
 	mMeshManager->num_chunk_threads_active->release(1);
-	printf("finished meashing chunk %s\n", qPrintable( mCoord.getCoordsAsString()));
+	printf("finished meashing chunk %s; %d left\n", qPrintable( mCoord.getCoordsAsString()),
+	       mMeshManager->numCoordsLeftToMesh() );
 }
 
 void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipChunk > chunk )

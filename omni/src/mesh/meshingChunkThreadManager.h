@@ -18,6 +18,7 @@ class MeshingChunkThreadManager : public QThread
 	OmMipChunkCoord mCurrentMipCoord;
 
 	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
+	unsigned int getNumSegmentValuesLeftToMesh();
 
  private:
 	SegmentDataSet valuesToMesh;

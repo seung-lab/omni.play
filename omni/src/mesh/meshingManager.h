@@ -14,7 +14,10 @@ class MeshingManager : public QThread
 {
  public:
 	MeshingManager( const OmId segmentationID, OmMipMeshManager * mipMeshManager );
+
 	void addToQueue( const OmMipChunkCoord coord );
+	int numCoordsLeftToMesh();
+
 	void setNumThreads( const int numThreads );
 	int getNumThreadOverride();
 	void run();
