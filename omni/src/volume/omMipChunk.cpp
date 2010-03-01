@@ -759,10 +759,8 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
+				QMutexLocker locker(mOpenLock);
 				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
-
-				p_chunk = shared_ptr < OmMipChunk > ();
-				mpMipVolume->Remove (mip_coord);
 			}
 
 	return p_mesh_data;
