@@ -2050,3 +2050,77 @@ Program received signal SIGSEGV, Segmentation fault.
     event=0x7fffef28c280)
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:376
 ---Type <return> to continue, or q <return> to quit---
+
+
+After killing a messing job and starting another:
+finished meashing chunk 0:0,2,0
+finished meashing chunk 0:1,2,0
+HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
+  #000: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5D.c line 171 in H5Dcreate2(): unable to create dataset
+    major: Dataset
+    minor: Unable to initialize object
+  #001: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Dint.c line 428 in H5D_create_named(): unable to create and link to dataset
+    major: Dataset
+    minor: Unable to initialize object
+  #002: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1639 in H5L_link_object(): unable to create new link to object
+    major: Links
+    minor: Unable to initialize object
+  #003: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1862 in H5L_create_real(): can't insert link
+    major: Symbol table
+    minor: Unable to insert object
+  #004: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 877 in H5G_traverse(): internal path traversal failed
+    major: Symbol table
+    minor: Object not found
+  #005: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 703 in H5G_traverse_real(): traversal operator failed
+    major: Symbol table
+    minor: Callback failed
+  #006: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5L.c line 1674 in H5L_link_cb(): name already exists
+    major: Symbol table
+    minor: Object already exists
+Mesher failure
+finished meashing chunk 0:0,1,0
+finished meashing chunk 0:0,0,0
+finished meashing chunk 1:0,1,0
+finished meashing chunk 1:0,0,0
+finished meashing chunk 2:0,0,0
+meshingManager ERROR: the following chunks failed to fully mesh:
+failed to mesh chunk 0:1,0,0
+failed to mesh chunk 0:0,1,0
+saved project file "/home/matt/rabit.omni", at path "project.dat"
+segmentation mesh build performed in (60.00 secs)
+HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
+  #000: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5D.c line 321 in H5Dopen2(): not found
+    major: Dataset
+    minor: Object not found
+  #001: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gloc.c line 468 in H5G_loc_find(): can't find object
+    major: Symbol table
+    minor: Object not found
+  #002: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 877 in H5G_traverse(): internal path traversal failed
+    major: Symbol table
+    minor: Object not found
+  #003: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 665 in H5G_traverse_real(): can't look up component
+    major: Symbol table
+    minor: Object not found
+  #004: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gobj.c line 1047 in H5G_obj_lookup(): can't locate object
+    major: Symbol table
+    minor: Object not found
+  #005: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5Gstab.c line 844 in H5G_stab_lookup(): unable to protect symbol table heap
+    major: Symbol table
+    minor: Protected metadata error
+  #006: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5HL.c line 360 in H5HL_protect(): unable to load heap
+    major: Heap
+    minor: Unable to load metadata into cache
+  #007: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5AC.c line 1831 in H5AC_protect(): H5C_protect() failed.
+    major: Object cache
+    minor: Unable to protect metadata
+  #008: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5C.c line 6160 in H5C_protect(): can't load entry
+    major: Object cache
+    minor: Unable to load metadata into cache
+  #009: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5C.c line 10990 in H5C_load_entry(): unable to load entry
+    major: Object cache
+    minor: Unable to load metadata into cache
+  #010: /home/matt/omni1/external/srcs/hdf5-1.8.4-patch1/src/H5HLcache.c line 259 in H5HL_load(): bad heap free list
+    major: Heap
+    minor: Unable to load metadata into cache
+
+
