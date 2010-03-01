@@ -107,6 +107,10 @@ void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipC
 	QQueue<MeshingChunkThread*> threads;
 	for( int i = 0; i < num_threads_to_use; i++ ){
 		mMeshManager->num_worker_threads_active->acquire(1);
+		if( 0 == getNumSegmentValuesLeftToMesh() ) {
+			mMeshManager->num_worker_threads_active->release(1);
+			break;
+		} 
 		MeshingChunkThread* thread = new MeshingChunkThread(this, i);
 		threads.enqueue(thread);
 		thread->start();
