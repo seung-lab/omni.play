@@ -24,7 +24,6 @@ class OmHdf5
 
 	string getFileNameAndPathString();
 	QString getFileNameAndPath();
-	void resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
 
 	//file
 	void open();

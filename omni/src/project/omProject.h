@@ -45,7 +45,7 @@ public:
 	static void New( QString fileNameAndPath );
 	static void Save();
 	static void Commit();
-	static void Load( QString fileNameAndPath );
+	static void Load( QString fileNameAndPath, const bool autoOpenAndClose = false );
 	static void Close();
 	
 	
@@ -71,17 +71,8 @@ private:
 	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-
-
-
-
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
-
 
 BOOST_CLASS_VERSION(OmProject, 1)
 
@@ -93,16 +84,6 @@ OmProject::serialize(Archive & ar, const unsigned int file_version) {
 	ar & *OmKeyManager::Instance();
 	ar & *OmTagManager::Instance();
 	ar & *OmVolume::Instance();
-
-/*
-	if (file_version > 0 ) {
-		ar & *OmViewList::Instance();
-	}
-		//ar & *OmColormaps::Instance();
-	ar & *OmGroups::Instance();
-*/
 }
-
-
 
 #endif

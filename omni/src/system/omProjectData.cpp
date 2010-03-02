@@ -17,14 +17,14 @@ OmProjectData::OmProjectData()
 {
 }
 
-void OmProjectData::instantiateProjectData( QString fileNameAndPath )
+void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool autoOpenAndClose )
 {
 	if (NULL != mspInstance) {
 		delete mspInstance;
 		mspInstance = new OmProjectData;
 	}
 
-	Instance()->hdfFile = OmHdf5Manager::getOmHdf5File( fileNameAndPath, false );
+	Instance()->hdfFile = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose );
 }
 
 OmProjectData::~OmProjectData()
@@ -53,11 +53,6 @@ QString OmProjectData::getFileNameAndPath()
 
 /////////////////////////////////
 ///////          ProjectData Access
-
-void OmProjectData::ResetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
-{
-	Instance()->hdfFile->resetHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
-}
 
 void OmProjectData::Create()
 {

@@ -18,12 +18,12 @@ class vtkImageData;
 
 class OmProjectData {
 public:
-	static void instantiateProjectData( QString fileNameAndPath );	
+	static void instantiateProjectData( QString fileNameAndPath, 
+					    const bool autoOpenAndClose);
 	static OmProjectData* Instance();
 	static void Delete();
 	
 	static QString getFileNameAndPath();
-	static void ResetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
 	
 	static void Create();
 	static void Open();

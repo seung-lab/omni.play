@@ -49,11 +49,11 @@ int firsttime(int argc, char *argv[])
 	return app.exec();
 }
 
-void openProject( QString fName )
+void openProject( QString fName, const bool autoOpenAndClose )
 {
 	try {
 		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
-		OmProject::Load( fName );
+		OmProject::Load( fName, autoOpenAndClose );
 		printf("opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
 	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
@@ -144,13 +144,12 @@ void processLine( QString line, QString fName )
 		}
 	} else if( line.startsWith("openFile") ){
 		QStringList args = line.split(':');
-		openProject( args[1] );
+		openProject( args[1], false );
 	} else if( line.startsWith("open") ){
-		openProject( fName );
+		openProject( fName, false );
 	} else if( line.startsWith("parallel") ){
 		QStringList args = line.split(':');
 		OmGarbage::SetParallel(args[1], getNum(args[2]));
-		OmProjectData::ResetHDF5fileAsAutoOpenAndClose( true );
 	} else if( line.startsWith("serve") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);
@@ -196,14 +195,16 @@ void runScript( const QString scriptFileName, QString fName )
 
 void runHeadless( QString headlessCMD, QString fName )
 {	
-
-	if( fName != "" ){
-		openProject( fName );
-	}
-
 	if( "--headless" == headlessCMD ){
+		if( fName != "" ){
+			openProject( fName, false );
+		}
 		runInteractive( fName );
 	} else {
+		if( fName != "" ){
+			openProject( fName, true );
+		}
+
 		QString planFileName = headlessCMD;
 		planFileName.replace("--headless=", "");
 
