@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "myInspectorWidget.h"
+#include "guiUtils.h"
 
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
@@ -130,26 +131,6 @@ MyInspectorWidget::~MyInspectorWidget()
 	delete(splitter);
 }
 
-Qt::CheckState MyInspectorWidget::getCheckState(const bool enabled)
-{
-	if (enabled) {
-		return Qt::Checked;
-	} else {
-		return Qt::Unchecked;
-	}
-}
-
-bool MyInspectorWidget::getBoolState(const Qt::CheckState state)
-{
-	switch(state ) {
-	case Qt::Unchecked:
-		return false;
-	case Qt::PartiallyChecked:
-	case Qt::Checked:
-		return true;
-	}
-}
-
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -168,7 +149,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		row->setText(ID_COL, QString("%1").arg(cdw.getID()));
 		row->setText(NOTE_COL, cdw.getNote());
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
-		setRowFlagsAndCheckState(row, getCheckState(cdw.isEnabled()));
+		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
 	}
 
 	foreach(OmId segmenID, OmVolume::GetValidSegmentationIds()) {
@@ -179,7 +160,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		row->setText(ID_COL, QString("%1").arg(sdw.getID()));
 		row->setText(NOTE_COL, sdw.getNote());
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
-		setRowFlagsAndCheckState(row, getCheckState(sdw.isEnabled()));
+		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
 	}
 
 	dataSrcListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
@@ -206,7 +187,7 @@ void MyInspectorWidget::populateChannelElementsListWidget(ChannelDataWrapper cdw
 		row->setText(ID_COL, QString("%1").arg(filter.getID()));
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(filter));
 		//row->setText( NOTE_COL, filter.getNote() );
-		setRowFlagsAndCheckState(row, getCheckState(true));
+		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(true));
 		//row->setSelected( seg.isSelected() );
 	}
 
@@ -669,7 +650,7 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 		row->setText(ID_COL, seg.getIDstr());
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(seg));
 		row->setText(NOTE_COL, seg.getNote());
-		setRowFlagsAndCheckState(row, getCheckState(seg.isEnabled()));
+		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg.isEnabled()));
 		row->setSelected(seg.isSelected());
 		if (doScrollToSelectedSegment && seg.getID() == segmentJustSelectedID) {
 			rowToJumpTo = row;
@@ -700,7 +681,7 @@ void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int 
 	// TODO: make sure list of modified segments is correct....
 
 	if (0 == column) {
-		const bool isChecked = getBoolState( current->checkState( ENABLED_COL ) );
+		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
 		sdw.setEnabled(isChecked);
 		sendSegmentChangeEvent(sdw, false);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );

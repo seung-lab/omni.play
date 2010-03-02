@@ -34,6 +34,82 @@ void OmLocalPreferences::Delete()
 	mspInstance = NULL;
 }
 
+/////////////////////////////
+// private data accessors
+bool OmLocalPreferences::readSettingBool( QString setting, const bool defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingBool( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+void OmLocalPreferences::writeSettingBool( QString setting, const bool value )
+{
+	Instance()->localPrefFiles->writeSettingBool( setting, value );
+}
+
+int OmLocalPreferences::readSettingInt( QString setting, const int defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingInt( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+void OmLocalPreferences::writeSettingInt( QString setting, const int value )
+{
+	Instance()->localPrefFiles->writeSettingInt( setting, value );
+}
+
+unsigned int OmLocalPreferences::readSettingUInt( QString setting, const unsigned int defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingUInt( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+void OmLocalPreferences::writeSettingUInt( QString setting, const unsigned int value )
+{
+	Instance()->localPrefFiles->writeSettingUInt( setting, value );
+}
+
+bool OmLocalPreferences::settingExists( QString setting )
+{
+	return Instance()->localPrefFiles->checkIfSettingExists( setting );
+}
+
+QStringList OmLocalPreferences::readSettingQStringList( QString setting, QStringList defaultRet )
+{
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	} 
+
+	try{
+		return Instance()->localPrefFiles->readSettingQStringList( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
+}
+
+/////////////////////////////
+// num cores
 int OmLocalPreferences::get_num_cores()
 {
 	return (int)OmSystemInformation::get_num_cores();
@@ -122,58 +198,14 @@ void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
 }
 
 /////////////////////////////
-// data accessors
-void OmLocalPreferences::writeSettingUInt( QString setting, const unsigned int value )
+// where to store temporary meshes
+bool OmLocalPreferences::getStoreMeshesInTempFolder()
 {
-	Instance()->localPrefFiles->writeSettingUInt( setting, value );
+	const bool defaultRet = false;
+	return readSettingBool( "storeMeshesInTempFolder", defaultRet );
 }
 
-void OmLocalPreferences::writeSettingInt( QString setting, const int value )
+void OmLocalPreferences::setStoreMeshesInTempFolder( const bool value )
 {
-	Instance()->localPrefFiles->writeSettingInt( setting, value );
+	writeSettingBool( "storeMeshesInTempFolder", value );
 }
-
-unsigned int OmLocalPreferences::readSettingUInt( QString setting, const unsigned int defaultRet )
-{
-	if( !settingExists( setting ) ){
-		return defaultRet;
-	} 
-
-	try{
-		return Instance()->localPrefFiles->readSettingUInt( setting  );
-	} catch (...) {
-		return defaultRet;
-	}
-}
-
-int OmLocalPreferences::readSettingInt( QString setting, const int defaultRet )
-{
-	if( !settingExists( setting ) ){
-		return defaultRet;
-	} 
-
-	try{
-		return Instance()->localPrefFiles->readSettingInt( setting  );
-	} catch (...) {
-		return defaultRet;
-	}
-}
-
-bool OmLocalPreferences::settingExists( QString setting )
-{
-	return Instance()->localPrefFiles->checkIfSettingExists( setting );
-}
-
-QStringList OmLocalPreferences::readSettingQStringList( QString setting, QStringList defaultRet )
-{
-	if( !settingExists( setting ) ){
-		return defaultRet;
-	} 
-
-	try{
-		return Instance()->localPrefFiles->readSettingQStringList( setting  );
-	} catch (...) {
-		return defaultRet;
-	}
-}
-

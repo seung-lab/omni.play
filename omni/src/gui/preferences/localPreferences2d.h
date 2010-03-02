@@ -15,6 +15,6 @@ class LocalPreferences2d : public QWidget
 
  private:
  	QGroupBox* makeGeneralPropBox();
-        QCheckBox  *stickyCrosshairMode;	
+        QCheckBox  *stickyCrosshairMode;
 }; 
 #endif

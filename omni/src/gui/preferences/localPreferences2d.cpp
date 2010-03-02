@@ -1,8 +1,8 @@
+#include <QtGui>
+#include "guiUtils.h"
 #include "localPreferences2d.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
-#include <assert.h>
-#include "Qt"
 
 LocalPreferences2d::LocalPreferences2d(QWidget * parent)
  : QWidget(parent)
@@ -12,7 +12,8 @@ LocalPreferences2d::LocalPreferences2d(QWidget * parent)
 	overallContainer->addWidget( makeGeneralPropBox());
 	overallContainer->insertStretch(2, 1);
 
-        connect(stickyCrosshairMode,SIGNAL(stateChanged(int)),(this),SLOT(on_stickyCrosshairMode_stateChanged(int)));
+        connect(stickyCrosshairMode, SIGNAL(stateChanged(int)),
+		this, SLOT(on_stickyCrosshairMode_stateChanged(int)));
 }
 
 QGroupBox* LocalPreferences2d::makeGeneralPropBox()
@@ -20,7 +21,6 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
 	QGroupBox* groupBox = new QGroupBox("General");
 	QGridLayout* gridLayout = new QGridLayout;
 	groupBox->setLayout( gridLayout );
-
 
         stickyCrosshairMode = new QCheckBox(groupBox);
 	stickyCrosshairMode->setText("Sticky Crosshair Mode");
@@ -31,13 +31,8 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
   	return groupBox;
 }
 
-
-
-void LocalPreferences2d::on_stickyCrosshairMode_stateChanged(int state)
+void LocalPreferences2d::on_stickyCrosshairMode_stateChanged( int state)
 {
-	if (state == Qt::Checked) OmLocalPreferences::setStickyCrosshairMode(true);
-	if (state == Qt::Unchecked) OmLocalPreferences::setStickyCrosshairMode(false);
-	assert(state != Qt::PartiallyChecked);
+	const bool val = GuiUtils::getBoolState( stickyCrosshairMode->checkState() );
+	OmLocalPreferences::setStickyCrosshairMode( val );
 }
-
-

@@ -1,13 +1,15 @@
-#include "localPreferences.h"
+#include "localPreferencesSystem.h"
+#include "gui/guiUtils.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
 
-LocalPreferences::LocalPreferences(QWidget * parent)
+LocalPreferencesSystem::LocalPreferencesSystem(QWidget * parent)
  : QWidget(parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
 	overallContainer->addWidget( makeNumberOfThreadsBox());
 	overallContainer->addWidget( makeCachePropBox());
+	overallContainer->addWidget( makeMeshBox());
 	overallContainer->insertStretch( 4, 1 );
 	init_cache_prop_values();
 
@@ -24,9 +26,12 @@ LocalPreferences::LocalPreferences(QWidget * parent)
 		this, SLOT( on_ramSlider_sliderReleased()));
 	connect(vramSlider, SIGNAL(sliderReleased()), 
 		this, SLOT(on_vramSlider_sliderReleased()));
+
+       connect(storeMeshesInTempFolder, SIGNAL(stateChanged(int)),
+		this, SLOT(on_storeMeshesInTempFolder_stateChanged(int)));
 }
 
-QGroupBox* LocalPreferences::makeCachePropBox()
+QGroupBox* LocalPreferencesSystem::makeCachePropBox()
 {
 	QGroupBox* groupBox = new QGroupBox("Cache Properties");
 	QGridLayout* gridLayout = new QGridLayout;
@@ -76,7 +81,7 @@ QGroupBox* LocalPreferences::makeCachePropBox()
 	return groupBox;
 }
 
-void LocalPreferences::init_cache_prop_values()
+void LocalPreferencesSystem::init_cache_prop_values()
 {
 	const unsigned int ramSize = OmLocalPreferences::getRamCacheSizeMB();
 	ramSlider->setValue( ramSize );
@@ -87,29 +92,29 @@ void LocalPreferences::init_cache_prop_values()
 	vramSizeLabel->setText( QString::number( vramSize ) );
 }
 
-void LocalPreferences::on_ramSlider_valueChanged()
+void LocalPreferencesSystem::on_ramSlider_valueChanged()
 {
 	ramSizeLabel->setNum(ramSlider->value());
 }
 
-void LocalPreferences::on_vramSlider_valueChanged()
+void LocalPreferencesSystem::on_vramSlider_valueChanged()
 {
 	vramSizeLabel->setNum(vramSlider->value());
 }
 
-void LocalPreferences::on_ramSlider_sliderReleased()
+void LocalPreferencesSystem::on_ramSlider_sliderReleased()
 {
 	ramSizeLabel->setNum(ramSlider->value());
 	OmLocalPreferences::setRamCacheSizeMB( ramSlider->value() );
 }
 
-void LocalPreferences::on_vramSlider_sliderReleased()
+void LocalPreferencesSystem::on_vramSlider_sliderReleased()
 {
 	vramSizeLabel->setNum(vramSlider->value());
 	OmLocalPreferences::setVRamCacheSizeMB( vramSlider->value() );
 }
 
-QGroupBox* LocalPreferences::makeNumberOfThreadsBox()
+QGroupBox* LocalPreferencesSystem::makeNumberOfThreadsBox()
 {
 	QGroupBox* groupBox = new QGroupBox("Number of Meshing Threads");
 	QVBoxLayout* vbox = new QVBoxLayout;
@@ -136,13 +141,33 @@ QGroupBox* LocalPreferences::makeNumberOfThreadsBox()
 	return groupBox;
 }
 
-void LocalPreferences::on_numThreadsSlider_valueChanged()
+void LocalPreferencesSystem::on_numThreadsSlider_valueChanged()
 {
 	numThreadsSliderLabel->setNum(numThreadsSlider->value());
 }
 
-void LocalPreferences::on_numThreadsSlider_sliderReleased()
+void LocalPreferencesSystem::on_numThreadsSlider_sliderReleased()
 {
 	numThreadsSliderLabel->setNum(numThreadsSlider->value());
 	OmLocalPreferences::setNumAllowedWorkerThreads( numThreadsSlider->value() );
+}
+
+QGroupBox* LocalPreferencesSystem::makeMeshBox()
+{
+	QGroupBox* groupBox = new QGroupBox("Meshing");
+	QGridLayout* gridLayout = new QGridLayout;
+	groupBox->setLayout( gridLayout );
+
+        storeMeshesInTempFolder = new QCheckBox(groupBox);
+	storeMeshesInTempFolder->setText("Store Files in Temp Folder");
+	storeMeshesInTempFolder->setChecked( OmLocalPreferences::getStoreMeshesInTempFolder() );
+        gridLayout->addWidget(storeMeshesInTempFolder, 0, 0, 1, 1);
+
+  	return groupBox;
+}
+
+void LocalPreferencesSystem::on_storeMeshesInTempFolder_stateChanged( int state)
+{
+	const bool val = GuiUtils::getBoolState( storeMeshesInTempFolder->checkState() );
+	OmLocalPreferences::setStoreMeshesInTempFolder( val );
 }

@@ -4,6 +4,7 @@
 
 #include "segment/omSegmentManager.h"
 #include "system/omProjectData.h"
+#include "system/omLocalPreferences.h"
 #include "project/omProject.h"
 #include "system/omGarbage.h"
 
@@ -161,11 +162,12 @@ void OmMipMesh::Save()
 {
 	OmHdf5 * hdf5File = NULL;
 
-	if ( !OmGarbage::GetParallel()) {
-		hdf5File = OmProjectData::GetHdf5File();
-	} else {
+	if( OmLocalPreferences::getStoreMeshesInTempFolder() || 
+	    OmGarbage::GetParallel()) {
 		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
 		hdf5File->create();
+	} else {
+		hdf5File = OmProjectData::GetHdf5File();
 	}
 
 	int size;
