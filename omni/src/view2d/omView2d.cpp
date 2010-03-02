@@ -3025,11 +3025,11 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 {
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2 < int >drag = Vector2 < int >((clickPoint.x - event->x()), clickPoint.y - event->y());
+	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
 	Vector2i thisPoint = Vector2i(event->x(),event->y());
 
-	mDragX += drag.x / (zoomMipVector.y / 10.);
-	mDragY += drag.y / (zoomMipVector.y / 10.);
+	//mDragX += drag.x / (zoomMipVector.y / 10.);
+	//mDragY += drag.y / (zoomMipVector.y / 10.);
 
 
 	if (OmLocalPreferences::getStickyCrosshairMode()){
@@ -3042,13 +3042,8 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else {
 	
-		
-	drag.x = mDragX;
-	drag.y = mDragY;
-	mDragX = mDragX - drag.x;
-	mDragY = mDragY - drag.y;
-	OmStateManager::Instance()->SetPanDistance(mViewType,
-						   Vector2f(current_pan.x - drag.x, current_pan.y - drag.y));
+
+	OmStateManager::Instance()->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
 	SetViewSliceOnPan();
         debug("cross","current_pan.x: %i   current_pan.y  %i \n",current_pan.x,current_pan.y);
 	float xdepth,ydepth,zdepth;
