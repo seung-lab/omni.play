@@ -121,7 +121,7 @@ sub getIdlest
     }
 
     my $theOne = pop @idleHosts;
-    #print "theone = $theOne\n";
+    return "" if (!defined $theOne);
 
     my $uptime;
     my $idleNode;
@@ -129,10 +129,10 @@ sub getIdlest
     ($uptime, $idleNode) = split (/ /, $theOne);
 
     if ($backoff < $initialPound) {
-        return $idleNode if (defined $uptime && $uptime ne "" && $uptime < 1);
+        return $idleNode if (defined $idleNode && $uptime ne "" && $uptime < 1);
         return "";
     } else {
-        return $idleNode if (defined $uptime&& $uptime ne "" && $uptime < 4);
+        return $idleNode if (defined $idleNode && $uptime ne "" && $uptime < 4);
         return "";
     }
 }

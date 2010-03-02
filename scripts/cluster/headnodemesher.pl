@@ -6,14 +6,21 @@ use File::Basename;
 use POSIX;
 use Thread;
 
-$SIG{INT} = \&killAllOmnis;
+$plan = $ARGV[0];
+$project = substr($plan, 0, length($plan) - length(".plan"));	# If 1 chop off it is for the enter.
+$meshOutputDir = "/Users/$ENV{HOME}/meshinator/";
+print `mkdir -p $meshOutputDir`;
 
-my $numMeshProcessesPerHost = 1;
-
-(my $name, my $path, my $suffix) = fileparse( abs_path( $0 ) );
+(my $name, my $path, my $suffix) = fileparse(abs_path($0));
 my $meshinatorHome = $path;
+print `cd $meshinatorHome; ./runAcrossCluster.pl rm -rf /tmp/meshinator*`;
+print `cd $meshinatorHome; ./$meshinatorHome/meshinator.pl $plan`;
+print `cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir`;
+print `find $meshOutputDir -exec $meshinatorHome/hdf5_merge {} $project`;
+
+exit(0);
+
 my $meshinatorHosts = "$meshinatorHome/hosts";
-my $meshinatorOmni = "$meshinatorHome/../../omni/bin/omni";
 
 open HOSTS, "$meshinatorHosts" or die "could not find $meshinatorHosts";
 my @hostList = <HOSTS>;
@@ -31,9 +38,6 @@ my @meshCommandHostInput;
 
 `cd $meshinatorHome; ./`;
 
-sub killAllOmnis {
-	`cd $meshinatorHome; ./killAllOmni.pl&`;
-}
 
 sub byHost {
     $numMeshProcessesPerHost = 1;
