@@ -2,6 +2,7 @@
 #include "omPreferenceDefinitions.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
+#include "utility/omHdf5Manager.h"
 #include <QFile>
 
 //init instance pointer
@@ -23,7 +24,7 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 		mspInstance = new OmProjectData;
 	}
 
-	Instance()->hdfFile = new OmHdf5( fileNameAndPath, false );
+	Instance()->hdfFile = OmHdf5Manager::getOmHdf5File( fileNameAndPath, false );
 }
 
 OmProjectData::~OmProjectData()

@@ -1,4 +1,4 @@
-
+#include "utility/omHdf5Manager.h"
 #include "omMipMesh.h"
 #include "omMipMeshManager.h"
 
@@ -159,28 +159,20 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
 
 void OmMipMesh::Save()
 {
-	static OmHdf5 * gHdf5File = NULL;
-
 	OmHdf5 * hdf5File = NULL;
 
-	if (!OmGarbage::GetParallel()) {
+	if ( !OmGarbage::GetParallel()) {
                	hdf5File = OmProjectData::GetHdf5File();
        	} else {
-		OmGarbage::Lock ();
-               	if (NULL == gHdf5File) {
+               	if (NULL == hdf5File) {
 			try {
-                       		gHdf5File = new OmHdf5(QString::fromStdString(GetLocalPathForHd5fChunk()));
-				hdf5File = gHdf5File;
+                       		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
 				hdf5File->create();
-				hdf5File->open();
 			} catch (OmIoException e) {
 				std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
-				OmGarbage::Unlock ();
 				throw OmIoException ("Parallel meshing failure due to hdf5 error.\n");
 			}
                	}
-		hdf5File = gHdf5File;
-		OmGarbage::Unlock ();
        	}
 
 	int size;
