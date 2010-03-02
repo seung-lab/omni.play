@@ -63,15 +63,16 @@ public:
 	
 	static void SetViewSliceMax(ViewType, Vector2<float>, bool postEvent = true);
 	static Vector2<float> GetViewSliceMax(ViewType);
-	
+
+	static SpaceCoord GetViewDepthCoord();	
 	static void SetViewSliceDepth(ViewType, float, bool postEvent = true);
 	static float GetViewSliceDepth(ViewType);
 	
 	static void SetZoomLevel(Vector2<int>);
 	static Vector2<int> GetZoomLevel();
 	
-	static void SetPanDistance(ViewType, Vector2<int>, bool postEvent = true);
-	static Vector2<int> GetPanDistance(ViewType);
+	static void SetPanDistance(ViewType, Vector2f, bool postEvent = true);
+	static Vector2f GetPanDistance(ViewType);
 	
 	
 	// slices

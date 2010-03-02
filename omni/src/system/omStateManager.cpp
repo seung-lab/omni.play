@@ -242,6 +242,15 @@ void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEve
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
 }
 
+SpaceCoord OmStateManager::GetViewDepthCoord()
+{
+	SpaceCoord spacec;
+	spacec.x = Instance()->mYZSlice[4];
+	spacec.y = Instance()->mXZSlice[4];
+	spacec.z = Instance()->mXYSlice[4];
+	return spacec;
+}
+
 float OmStateManager::GetViewSliceDepth(ViewType plane)
 {
 	switch (plane) {
@@ -274,7 +283,7 @@ Vector2 < int > OmStateManager::GetZoomLevel()
 /*
  *	Set/Get pan distance.
  */
-void OmStateManager::SetPanDistance(ViewType plane, Vector2 < int >pan, bool postEvent)
+void OmStateManager::SetPanDistance(ViewType plane, Vector2f pan, bool postEvent)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -297,7 +306,7 @@ void OmStateManager::SetPanDistance(ViewType plane, Vector2 < int >pan, bool pos
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
 }
 
-Vector2 < int > OmStateManager::GetPanDistance(ViewType plane)
+Vector2f OmStateManager::GetPanDistance(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
