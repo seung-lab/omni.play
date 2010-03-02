@@ -144,36 +144,43 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
         char mip_dname_buf[MAX_FNAME_SIZE];
 	char pid[256] = {0};
 	putpid(pid);
-        sprintf(mip_dname_buf, "%d.%d.%d_%d_%d.%s.%s.h5",
+        sprintf(mip_dname_buf, "%d.%d.%d_%d_%d.%s.%s.%i.h5",
                	getSegmentationID(),
                 mMeshCoordinate.MipChunkCoord.Level,
                 mMeshCoordinate.MipChunkCoord.Coordinate.x,
                 mMeshCoordinate.MipChunkCoord.Coordinate.y,
                 mMeshCoordinate.MipChunkCoord.Coordinate.z,
                	qPrintable(OmProject::GetFileName()),
-		pid);
+		pid, mMeshCoordinate.DataValue);
 
 	debug("parallel", "/tmp/meshinator_%s\n", mip_dname_buf);
-	//std::cerr << "/tmp/meshinator_" << mip_dname_buf <<endl;
         return "/tmp/meshinator_" + string(mip_dname_buf);
 }
 
 void OmMipMesh::Save()
 {
+	static OmHdf5 * gHdf5File = NULL;
+
 	OmHdf5 * hdf5File = NULL;
 
 	if (!OmGarbage::GetParallel()) {
                	hdf5File = OmProjectData::GetHdf5File();
        	} else {
-               	if (NULL == mHdf5File) {
+		OmGarbage::Lock ();
+               	if (NULL == gHdf5File) {
 			try {
-                       		mHdf5File = new OmHdf5(QString::fromStdString( GetLocalPathForHd5fChunk() ) );
-				mHdf5File->create();
+                       		gHdf5File = new OmHdf5(QString::fromStdString(GetLocalPathForHd5fChunk()));
+				hdf5File = gHdf5File;
+				hdf5File->create();
+				hdf5File->open();
 			} catch (OmIoException e) {
-				//std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
+				std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
+				OmGarbage::Unlock ();
+				throw OmIoException ("Parallel meshing failure due to hdf5 error.\n");
 			}
                	}
-		hdf5File = mHdf5File;
+		hdf5File = gHdf5File;
+		OmGarbage::Unlock ();
        	}
 
 	int size;

@@ -3,13 +3,15 @@
 use strict;
 
 use Thread;
+my $output = $ENV{HOME} if (!defined $ARGV[0]);
+$output = $ARGV[0] if (!defined $output);
 
 sub runNode 
 {
     my $node = $_[0];
-    `mkdir -p /home/mwimer/${node}/`;
-    print "gathering with: `ssh ${node} cp /tmp/meshinator* /home/mwimer/${node}/`\n";
-    `ssh ${node} cp /tmp/meshinator* /home/mwimer/${node}/`;
+    `mkdir -p $output/${node}/`;
+    print "gathering with: `ssh ${node} cp /tmp/meshinator\* $output/${node}/`\n";
+    `ssh ${node} cp /tmp/meshinator\* $output/${node}/`;
 }
 
 open IN_FILE,  "<", "hosts"  or die "could not read hosts";

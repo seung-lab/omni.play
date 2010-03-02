@@ -23,6 +23,15 @@ my $omniScriptFile = $scriptPath.'/buildomni.sh';
 my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
 
 my $globalMakeOptions = "";
+my $hostname = `hostname`;
+
+if ($hostname =~ /brainiac/) {
+    my $nodes = `cat $basePath/scripts/cluster/distcchosts`;
+    $ENV{DISTCC_HOSTS} = $nodes;
+    $globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
+                " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
+}
+
 
 # Create build path if it doesn't exist yet.
 print `mkdir $buildPath` if (!-e $buildPath);
@@ -289,7 +298,10 @@ sub libtiff {
 }
 
 sub freetype {
+    my $tempMakeOptions = $globalMakeOptions;
+    $globalMakeOptions = "";
     prepareAndBuild( "freetype-2.3.9", "FreeType" );
+    $globalMakeOptions = $tempMakeOptions;
 }
 
 sub fontconfig {
@@ -552,7 +564,11 @@ sub setupParallelBuildOption {
 	$numCores = $_[0];
     }
 
-    $globalMakeOptions =  " -j$numCores ";
+    if ($hostname =~ /brainiac/) {
+        $globalMakeOptions .=  " -j60 ";
+    } else {
+        $globalMakeOptions .=  " -j$numCores ";
+    }
 
     print "number of parallel builds (override with \"-j n\" switch to bootstrap.pl): $numCores\n";
 }
