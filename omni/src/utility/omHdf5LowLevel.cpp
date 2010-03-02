@@ -74,22 +74,16 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-H5G_stat_t objectinfo;
-
 	//Try to open a group
 	//Turn off error printing idea from http://www.fiberbundle.net/index.html
 	H5E_BEGIN_TRY {
-		herr_t ret = H5Gget_objinfo(fileId, name, 0, &objectinfo);
+		herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
 		if( ret < 0 ){
 			return false;
 		}
 	} H5E_END_TRY
 
-	if (objectinfo.type == H5G_GROUP){
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims,
