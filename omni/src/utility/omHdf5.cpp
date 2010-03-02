@@ -48,6 +48,7 @@ void OmHdf5::resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 // hdf5 wrappers -- no locking
 void OmHdf5::create()
 {
+	QMutexLocker locker(fileLock);
 	hdfLowLevelWrap->file_create();
 }
 

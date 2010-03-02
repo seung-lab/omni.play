@@ -28,6 +28,7 @@ private:
 
 	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose );
 	QHash<QString, OmHdf5*> hdf5Files;
+	QMutex lock;
 };
 
 #endif

@@ -36,6 +36,8 @@ void OmHdf5Manager::Delete()
 
 OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose )
 {
+	QMutexLocker locker(&lock);
+
 	QFileInfo fInfo(fileNameAndPath);
 	QString abs_fnpn = fInfo.absoluteFilePath();
 
