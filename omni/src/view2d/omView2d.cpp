@@ -196,6 +196,9 @@ void OmView2d::initializeGL()
 
 void OmView2d::resizeEvent(QResizeEvent * event)
 {
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	}
 	resizeGL(event->size().width(), event->size().height());
 	myUpdate();
 }
@@ -1213,7 +1216,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 
 void OmView2d::SetViewSliceOnPan()
 {
-	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
 	float pl = OMPOW(2, zoomMipVector.x);
@@ -1397,19 +1400,15 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Escape:
 		{
-			// Attempt to return to a safe camera location.
-			mLevelLock = false;
-			Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
-			current_zoom.x = 0;
-			current_zoom.y = 10;
-			OmStateManager::Instance()->SetZoomLevel(current_zoom);
+			SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+			OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
+			OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
+			OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
 
-			int widthTranslate = 0;
-			int heightTranslate = 0;
-
-			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2f(widthTranslate, heightTranslate));
-
+			if (OmLocalPreferences::getStickyCrosshairMode()){
+				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+			}
+		
 			Refresh();
 			mTextures.clear();
 			myUpdate();
@@ -1726,14 +1725,18 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
 	
 	ScreenCoord crossCoord = SpaceToScreenCoord(mViewType, depth);
+	//crossCoord =  SpaceToScreenCoord(mViewType, ScreenToSpaceCoord(mViewType, crossCoord));
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
 
 
 	Vector2f currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord) + currentPan;
+	Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
+	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
+	newPan += currentPan;
         OmStateManager::Instance()->SetPanDistance(mViewType, newPan);
 	debug ("cross","view: %i  depth.(x,y,z): (%f,%f,%f)\n",mViewType,depth.x,depth.y,depth.z);
-	debug ("cross", "view: %i  currentPan.(x,y): (%i,%i)\n", mViewType,currentPan.x,currentPan.y);
+	debug ("cross", "view: %i  currentPan.(x,y): (%f,%f)\n", mViewType,currentPan.x,currentPan.y);
+	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
 	debug ("cross", "view: %i  crossCoord.(x,y): (%i,%i)\n", mViewType,crossCoord.x,crossCoord.y);
 	debug ("cross", "view: %i  centerCoord.(x,y): (%i,%i)\n", mViewType,centerCoord.x,centerCoord.y);
 
@@ -2026,7 +2029,7 @@ void OmView2d::Draw(int mip)
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	if (mip) {
 		Vector2f zoom = zoomMipVector;
-		Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+		Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 
 		int lvl = zoomMipVector.x + 2;
 
@@ -2037,15 +2040,14 @@ void OmView2d::Draw(int mip)
 			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 <
-								   int >(translateVector.x / (1 + i - zoomMipVector.x),
+								   Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
 									 translateVector.y / (1 + i - zoomMipVector.x)),
 								   false);
 
 			PreDraw(zoom);
 		}
 		OmStateManager::Instance()->SetPanDistance(mViewType,
-							   Vector2 < int >(translateVector.x, translateVector.y),
+							   Vector2f(translateVector.x, translateVector.y),
 							   false);
 	}
 
@@ -2529,7 +2531,7 @@ void OmView2d::DrawCursors()
 
 
 	ScreenCoord screenc = SpaceToScreenCoord(mViewType,depth);
-
+	//debug("cross","Crosshair Screen: %i %i \n",screenc.x, screenc.y);
 	switch (mViewType) {
 	case XY_VIEW:
 		painter.setPen(Qt::red);
@@ -2586,8 +2588,11 @@ Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
 	Vector2i zoomLevel = OmStateManager::Instance()->GetZoomLevel();
 	float factor = OMPOW(2,zoomLevel.x);
 	float zoomScale = zoomLevel.y/10.0;
-	float panx = ((float)screenshift.x)/zoomScale/stretch.x;
-	float pany = ((float)screenshift.y)/zoomScale/stretch.y;
+	float panx = screenshift.x;
+	debug("cross","inside SreenToPanShift: panx: %f\n",panx);
+	panx = panx/zoomScale/stretch.x;
+	float pany = screenshift.y;
+	pany = pany/zoomScale/stretch.y;
 	return Vector2f(panx, pany);
 }
 
@@ -3057,8 +3062,8 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	debug("cross","crosshairdata.(x,y,z): (%i,%i,%i)\n",crosshairdata.x,crosshairdata.y,crosshairdata.z);
 	debug("cross","crosshair.x: %i   crosshair.y  %i  \n",crosshairCoord.x,crosshairCoord.y);
 	}
-	//clickPoint.x = event->x();
-	//clickPoint.y = event->y();
+	clickPoint.x = event->x();
+	clickPoint.y = event->y();
 }
 
 bool OmView2d::doDisplayInformation()

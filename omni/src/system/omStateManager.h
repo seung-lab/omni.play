@@ -136,7 +136,7 @@ private:
 	
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
-	int mXYPan[2], mYZPan[2], mXZPan[2];
+	float mXYPan[2], mYZPan[2], mXZPan[2];
 	Vector2<int> zoom_level;
 	
 	SpaceBbox mViewBbox;
@@ -145,7 +145,7 @@ private:
 	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
 	
 	int mViewSliceBytesPerSample, mViewSliceSamplesPerPixel;
-	Vector3<int> mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
+	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
 	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
 	
 	

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "utility/omSystemInformation.h"
 #include "system/omCacheManager.h"
+#include "system/omEventManager.h"
+#include "system/events/omViewEvent.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
@@ -91,8 +93,9 @@ bool OmLocalPreferences::getStickyCrosshairMode()
 		int defaultRet = 1;
 		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
 		Instance()->stickyCrosshairMode[0] = (bool) readSettingUInt( "stickyCrosshairMode", defaultRet );
-	} 
-	return Instance()->stickyCrosshairMode[0];		
+	}
+	bool sticky = Instance()->stickyCrosshairMode[0];
+	return sticky;		
 }
 
 void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
@@ -101,6 +104,7 @@ void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
 		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
 	} 
 	Instance()->stickyCrosshairMode[0] = sticky;
+	if (sticky) OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	writeSettingUInt("stickyCrosshairMode", sticky);
 }
 

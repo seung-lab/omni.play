@@ -44,6 +44,15 @@ OmStateManager::OmStateManager()
 	mXYSliceEnabled = false;
 	mYZSliceEnabled = false;
 	mXZSliceEnabled = false;
+
+	debug("cross","OmStateManager is being Constructed!");
+	
+	SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	mYZSlice[4] = depth.x;
+	mXZSlice[4] = depth.y;
+	mXYSlice[4] = depth.z;
+	
+	
 }
 
 OmStateManager::~OmStateManager()
@@ -251,6 +260,7 @@ SpaceCoord OmStateManager::GetViewDepthCoord()
 	return spacec;
 }
 
+
 float OmStateManager::GetViewSliceDepth(ViewType plane)
 {
 	switch (plane) {
@@ -310,11 +320,11 @@ Vector2f OmStateManager::GetPanDistance(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
-		return Vector2 < int >(Instance()->mXYPan[0], Instance()->mXYPan[1]);
+		return Vector2f(Instance()->mXYPan[0], Instance()->mXYPan[1]);
 	case XZ_VIEW:
-		return Vector2 < int >(Instance()->mXZPan[0], Instance()->mXZPan[1]);
+		return Vector2f(Instance()->mXZPan[0], Instance()->mXZPan[1]);
 	case YZ_VIEW:
-		return Vector2 < int >(Instance()->mYZPan[0], Instance()->mYZPan[1]);
+		return Vector2f(Instance()->mYZPan[0], Instance()->mYZPan[1]);
 	default:
 		assert(false);
 	}
