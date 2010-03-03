@@ -8,6 +8,7 @@ SET( OMGUI_SRCS
 
 	../utility/dataWrappers.cpp
 	../system/omAnimate.cpp
+	guiUtils.cpp
 
 	inspectors/segInspector.cpp
 	inspectors/chanInspector.cpp
@@ -20,7 +21,7 @@ SET( OMGUI_SRCS
         preferences/preferences3d.cpp
 	preferences/preferences2d.cpp
 	preferences/preferences.cpp
-	preferences/localPreferences.cpp
+	preferences/localPreferencesSystem.cpp
 	preferences/localPreferences2d.cpp
 	preferences/volumeInspector.cpp
 
@@ -48,7 +49,7 @@ SET( OMGUI_MOC_HDRS
 	preferences/preferences3d.h
 	preferences/preferences2d.h
 	preferences/preferences.h
-	preferences/localPreferences.h
+	preferences/localPreferencesSystem.h
 	preferences/localPreferences2d.h
 	preferences/volumeInspector.h
 

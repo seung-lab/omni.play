@@ -400,9 +400,6 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	pImageData->GetDimensions(dims.array);
 	assert(dims == GetDimensions());
 
-	//close if already open
-	//if(IsOpen()) Close();
-
 	if (mpImageData) {
 		mpImageData->Delete ();
 	}

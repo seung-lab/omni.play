@@ -1,5 +1,7 @@
 #include <QApplication>
 
+#include <signal.h>
+#include <execinfo.h>
 #include <dlfcn.h>
 
 #include <QTextStream>
@@ -49,11 +51,11 @@ int firsttime(int argc, char *argv[])
 	return app.exec();
 }
 
-void openProject( QString fName )
+void openProject( QString fName, const bool autoOpenAndClose )
 {
 	try {
 		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
-		OmProject::Load( fName );
+		OmProject::Load( fName, autoOpenAndClose );
 		printf("opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
 	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
@@ -144,13 +146,12 @@ void processLine( QString line, QString fName )
 		}
 	} else if( line.startsWith("openFile") ){
 		QStringList args = line.split(':');
-		openProject( args[1] );
+		openProject( args[1], false );
 	} else if( line.startsWith("open") ){
-		openProject( fName );
+		openProject( fName, false );
 	} else if( line.startsWith("parallel") ){
 		QStringList args = line.split(':');
 		OmGarbage::SetParallel(args[1], getNum(args[2]));
-		OmProjectData::ResetHDF5fileAsAutoOpenAndClose( true );
 	} else if( line.startsWith("serve") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);
@@ -196,14 +197,16 @@ void runScript( const QString scriptFileName, QString fName )
 
 void runHeadless( QString headlessCMD, QString fName )
 {	
-
-	if( fName != "" ){
-		openProject( fName );
-	}
-
 	if( "--headless" == headlessCMD ){
+		if( fName != "" ){
+			openProject( fName, false );
+		}
 		runInteractive( fName );
 	} else {
+		if( fName != "" ){
+			openProject( fName, true );
+		}
+
 		QString planFileName = headlessCMD;
 		planFileName.replace("--headless=", "");
 
@@ -219,12 +222,35 @@ void setOmniExecutablePath( QString rel_fnpn )
 	OmStateManager::setOmniExecutableAbsolutePath( fnpn );
 }
 
+//int backtrace (void **buffer, int size);
+//char ** backtrace_symbols (void *const *buffer, int size);
+void myBacktrace (int sig)
+{
+       	void *array[1000];
+       	size_t size;
+       	char **strings;
+       	size_t i;
+     
+       	size = backtrace (array, 1000);
+       	strings = backtrace_symbols (array, size);
+     
+       	fprintf (stderr, "Obtained %zd stack frames.\n", size);
+     
+	for (i = 0; i < size; i++)
+		fprintf (stderr, "%s\n", strings[i]);
+     
+	free (strings);
+
+	exit(0);
+}
 int main(int argc, char *argv[])
 {
 	argc_global = argc;
 	argv_global = argv;
-	//    return firsttime (argc, argv);
 
+	signal (SIGSEGV, myBacktrace);
+	signal (SIGBUS, myBacktrace);
+	signal (SIGABRT, myBacktrace);
 	CmdLineArgs args = parseAnythingYouCan(argc, argv);
 	if ( args.fileArgIndex < 0){
 		return 0;

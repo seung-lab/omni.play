@@ -11,7 +11,7 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID, co
 :OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds),
 texture(texture), flags(flags), x(x), y(y)
 {
-	//debug("genone","OmTextureID::OmTextureID(cache=%i)\n", cache); 
+	debug("crazycash","texID %i\n", texID); 
 	if (!cache) assert (0);
 
 	//UpdateSize(mem_size);

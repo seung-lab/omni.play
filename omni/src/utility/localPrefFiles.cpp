@@ -136,3 +136,25 @@ void LocalPrefFiles::writeSettingQStringList( QString setting, QStringList value
 		out << values.at(i) << endl;
 	}
 }
+
+bool LocalPrefFiles::readSettingBool( QString setting )
+{
+	const unsigned int val = readSettingUInt( setting );
+	if( 0 == val ){
+		return false;
+	}
+
+	return true;
+}
+
+void LocalPrefFiles::writeSettingBool( QString setting, const bool value )
+{
+	unsigned int intValue;
+	if( true == value ){
+		intValue = 1;
+	} else {
+		intValue = 0;
+	}
+
+	writeSettingUInt( setting, intValue );
+}

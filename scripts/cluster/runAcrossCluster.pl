@@ -5,6 +5,8 @@ use Cwd 'abs_path';
 use File::Basename;
 use Thread;
 
+my $speed = ">"; # set to not background.
+
 my $cmd = $ARGV[0];
 my $cmdIsFile = 0;
 if (-e $cmd) {
@@ -13,7 +15,7 @@ if (-e $cmd) {
     if( $cmd =~ m/\.pl$/ ){
 	$cmd = "perl " . $cmd;
     }
-    $cmd = "$cmd &> /dev/null";
+    $cmd = "$cmd $speed /dev/null";
 }
 
 sub runNode 

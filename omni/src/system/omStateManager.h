@@ -63,15 +63,16 @@ public:
 	
 	static void SetViewSliceMax(ViewType, Vector2<float>, bool postEvent = true);
 	static Vector2<float> GetViewSliceMax(ViewType);
-	
+
+	static SpaceCoord GetViewDepthCoord();	
 	static void SetViewSliceDepth(ViewType, float, bool postEvent = true);
 	static float GetViewSliceDepth(ViewType);
 	
 	static void SetZoomLevel(Vector2<int>);
 	static Vector2<int> GetZoomLevel();
 	
-	static void SetPanDistance(ViewType, Vector2<int>, bool postEvent = true);
-	static Vector2<int> GetPanDistance(ViewType);
+	static void SetPanDistance(ViewType, Vector2f, bool postEvent = true);
+	static Vector2f GetPanDistance(ViewType);
 	
 	
 	// slices
@@ -135,7 +136,7 @@ private:
 	
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
-	int mXYPan[2], mYZPan[2], mXZPan[2];
+	float mXYPan[2], mYZPan[2], mXZPan[2];
 	Vector2<int> zoom_level;
 	
 	SpaceBbox mViewBbox;
@@ -144,7 +145,7 @@ private:
 	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
 	
 	int mViewSliceBytesPerSample, mViewSliceSamplesPerPixel;
-	Vector3<int> mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
+	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
 	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
 	
 	

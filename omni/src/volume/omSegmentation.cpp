@@ -249,6 +249,7 @@ void OmSegmentation::BuildMeshData()
  */
 void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
 {
+	QList <OmMipChunk> list;
         if (!IsVolumeDataBuilt())
                 throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
                                         GetName());
@@ -269,11 +270,13 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
                 for (int z = 0; z < mip_coord_dims.z; ++z) {
                         for (int y = 0; y < mip_coord_dims.y; ++y) {
                                 for (int x = 0; x < mip_coord_dims.x; ++x) {
+					//stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
 					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
                                 }
 			}
 		}
         }
+
         file.close();
 }
 

@@ -140,7 +140,7 @@ protected:
 	
 	//draw methods
 	void Draw(int mip=true);
-	void Draw(vector <Drawable*> &textures);
+	void TextureDraw(vector <Drawable*> &textures);
 	void safeTexture(shared_ptr<OmTextureID> gotten_id);
 	void safeDraw(float zoomFactor, int x, int y, int tileLength, shared_ptr<OmTextureID> gotten_id);
 	void PreDraw(Vector2i);
@@ -199,7 +199,7 @@ private:
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
 
-	Vector2i ScreenToPanShift(Vector2i screenshift);
+	Vector2f ScreenToPanShift(Vector2i screenshift);
 
 	SpaceCoord ScreenToSpaceCoord(ViewType viewType,const ScreenCoord &screenc);
 	ScreenCoord SpaceToScreenCoord(ViewType viewType,const SpaceCoord &spacec);
@@ -239,6 +239,7 @@ private:
 
 	bool iSentIt;
 	bool mScribbling;
+	bool mInitialized;
 	
 	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
 	DataCoord lastDataPoint;
@@ -258,8 +259,10 @@ private:
 	
 	
 	// cursor props
-	Vector2<float> clickPoint;
-	
+	ScreenCoord clickPoint;
+	SpaceCoord rememberCoord;
+	SpaceCoord rememberDepthCoord;
+
 	// These coords are accurate for orthogonal views, not flat coordinates.
 	set<DataCoord> modifiedCoords;
 	

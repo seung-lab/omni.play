@@ -3,6 +3,7 @@
 #specify sources
 SET(OM_UTILITY_LIB_SRCS
 	omHdf5.cpp
+	omHdf5Manager.cpp
 	omHdf5Dataset.cpp
 	omHdf5Path.cpp
 	omHdf5Helpers.cpp

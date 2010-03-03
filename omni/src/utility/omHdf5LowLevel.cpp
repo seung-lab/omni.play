@@ -74,21 +74,14 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	hid_t group_id;
-
 	//Try to open a group
 	//Turn off error printing idea from http://www.fiberbundle.net/index.html
 	H5E_BEGIN_TRY {
-		group_id = H5Gopen2(fileId, name, H5P_DEFAULT);
+		herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
+		if( ret < 0 ){
+			return false;
+		}
 	} H5E_END_TRY
-	    //if failure, then assume doesn't exist
-	    if (group_id < 0)
-		return false;
-
-	//Closes the specified dataset. 
-	herr_t status = H5Gclose(group_id);
-	if (status < 0)
-		throw OmIoException("Could not close HDF5 group.");
 
 	return true;
 }

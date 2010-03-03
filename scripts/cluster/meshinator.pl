@@ -5,11 +5,14 @@ use Cwd 'abs_path';
 use File::Basename;
 use POSIX;
 
+select STDOUT; $| = 1;
 
 my $howMany = 0;
 my $whoami = `whoami`;
 chomp($whoami);
 
+my $force = 0;
+$force = 1 if (defined $ARGV[1] && "--force" eq $ARGV[1]);
 
 $SIG{INT} = \&killAllOmnis;
 
@@ -121,7 +124,7 @@ sub getIdlest
     }
 
     my $theOne = pop @idleHosts;
-    #print "theone = $theOne\n";
+    return "" if (!defined $theOne);
 
     my $uptime;
     my $idleNode;
@@ -129,16 +132,16 @@ sub getIdlest
     ($uptime, $idleNode) = split (/ /, $theOne);
 
     if ($backoff < $initialPound) {
-        return $idleNode if ($uptime ne "" && $uptime < 1);
+        return $idleNode if (defined $uptime && $uptime ne "" && $uptime < 1);
         return "";
     } else {
-        return $idleNode if ($uptime ne "" && $uptime < 4);
+        return $idleNode if (defined $uptime && $uptime ne "" && $uptime < 4);
         return "";
     }
 }
 print "Current idle node is " . getIdlest(1) . "\n";
 
-if (-t STDIN) {
+if (-t STDIN && !$force) {
     print "proceed to run on cluster? :";
     my $answer = <STDIN>;
     chomp ($answer);
@@ -224,7 +227,8 @@ sub meshinator {
                 $node = $lastOne;
             }
 	    $connectcount{$node}++;
-    	    my $cmd = "rsh $node $meshinatorOmni --headless=$fNameAndPath $projectFile && echo success";
+    	    my $cmd = "rsh $node \"$meshinatorOmni --headless=$fNameAndPath $projectFile || touch /tmp/failure\"";
+    	    print "$cmd\n";
     	    runNode ($cmd, $node, $logFile, $fNameAndPath, $lockFile);
 
     	    #my $thr = new Thread \&runNode, $cmd, $node, $logFile, $fNameAndPath, $lockFile;

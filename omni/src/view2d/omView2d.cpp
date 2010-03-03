@@ -156,6 +156,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	delete_dirty = false;
 
 	iSentIt = false;
+	mInitialized = false;
 
 	OmCachingThreadedCachingTile::Refresh();
 }
@@ -195,6 +196,9 @@ void OmView2d::initializeGL()
 
 void OmView2d::resizeEvent(QResizeEvent * event)
 {
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	}
 	resizeGL(event->size().width(), event->size().height());
 	myUpdate();
 }
@@ -225,6 +229,12 @@ void OmView2d::resizeGL(int width, int height)
  */
 void OmView2d::paintEvent(QPaintEvent * event)
 {
+	if (!mInitialized){
+		mInitialized = true;
+		if (OmLocalPreferences::getStickyCrosshairMode()){
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+		}
+	}
 	//debug("cross","Paint Event Boolean %i \n",event->erased());
 	boost::timer t;
 	float zoomFactor = OmStateManager::Instance()->GetZoomLevel().y / 10.0;
@@ -1206,7 +1216,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 
 void OmView2d::SetViewSliceOnPan()
 {
-	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
 	float pl = OMPOW(2, zoomMipVector.x);
@@ -1234,8 +1244,8 @@ void OmView2d::PanOnZoomSelf(Vector2 < int >current_zoom)
 {
 #if 0
 	Vector2 < int >pro_zoom = OmStateManager::Instance()->GetZoomLevel();
-	int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
-	int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
+	float widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
+	float heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
 
 	if (pro_zoom.x > current_zoom.x) {
 		widthTranslate = widthTranslate / 2;
@@ -1252,51 +1262,41 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 {
 	// First We Declare some variables
 	ScreenCoord newCrosshairCoord;
-	ScreenCoord oldPan;
-	ScreenCoord newPan;
+	Vector2f oldPan;
+	Vector2f newPan;
 	float panx,pany;
-	bool notQuiteLinedUp=true;
 
 	// Get the mDepthCoord
-	float xdepth,ydepth,zdepth;
-	xdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-	ydepth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-	zdepth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
-	SpaceCoord mDepthCoord = Vector3f(xdepth,ydepth,zdepth);
-
-
-
-
+	SpaceCoord depth = OmStateManager::GetViewDepthCoord();
 
 	// Get what the Crosshair Coordinates for each view before the zoom were
-	ScreenCoord XY_CrosshairCoord = SpaceToScreenCoord(XY_VIEW, mDepthCoord);
-	ScreenCoord XZ_CrosshairCoord = SpaceToScreenCoord(XZ_VIEW, mDepthCoord);
-	ScreenCoord YZ_CrosshairCoord = SpaceToScreenCoord(YZ_VIEW, mDepthCoord);
+	ScreenCoord XY_CrosshairCoord = SpaceToScreenCoord(XY_VIEW, depth);
+	ScreenCoord XZ_CrosshairCoord = SpaceToScreenCoord(XZ_VIEW, depth);
+	ScreenCoord YZ_CrosshairCoord = SpaceToScreenCoord(YZ_VIEW, depth);
 
 	// Do the Zoom
 	OmStateManager::Instance()->SetZoomLevel(new_zoom);
 	
-
 	// Get the new Crosshair Coordinates for each view and set the 
 	// Pan to shift them back to what they were originally
 	oldPan = OmStateManager::Instance()->GetPanDistance(XY_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(XY_VIEW, mDepthCoord);
-	notQuiteLinedUp = false;
+	newCrosshairCoord = SpaceToScreenCoord(XY_VIEW, depth);
 	newPan = oldPan + ScreenToPanShift(XY_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(XY_VIEW, newPan, postEvent);
-	
-	
-
 
 	oldPan = OmStateManager::Instance()->GetPanDistance(XZ_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(XZ_VIEW, mDepthCoord);
+	newCrosshairCoord = SpaceToScreenCoord(XZ_VIEW, depth);
 	newPan  =oldPan + ScreenToPanShift(XZ_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, newPan, postEvent);
 
 	oldPan = OmStateManager::Instance()->GetPanDistance(YZ_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(YZ_VIEW, mDepthCoord);
+	newCrosshairCoord = SpaceToScreenCoord(YZ_VIEW, depth);
 	newPan =  oldPan + ScreenToPanShift(YZ_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, newPan,postEvent);
+
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	}
 				
 	SetViewSliceOnPan();
 }
@@ -1400,19 +1400,15 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Escape:
 		{
-			// Attempt to return to a safe camera location.
-			mLevelLock = false;
-			Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
-			current_zoom.x = 0;
-			current_zoom.y = 10;
-			OmStateManager::Instance()->SetZoomLevel(current_zoom);
+			SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+			OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
+			OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
+			OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
 
-			int widthTranslate = 0;
-			int heightTranslate = 0;
-
-			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 < int >(widthTranslate, heightTranslate));
-
+			if (OmLocalPreferences::getStickyCrosshairMode()){
+				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+			}
+		
 			Refresh();
 			mTextures.clear();
 			myUpdate();
@@ -1450,10 +1446,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Right:
 		{
-			Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 < int >(current_pan.x + 5, current_pan.y));
+								   Vector2f(current_pan.x + 5, current_pan.y));
 
 			SetViewSliceOnPan();
 
@@ -1461,10 +1457,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Left:
 		{
-			Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 < int >(current_pan.x - 5, current_pan.y));
+								   Vector2f(current_pan.x - 5, current_pan.y));
 
 			SetViewSliceOnPan();
 		}
@@ -1481,10 +1477,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Down:
 		{
-			Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 < int >(current_pan.x, current_pan.y - 5));
+								   Vector2f(current_pan.x, current_pan.y - 5));
 
 			SetViewSliceOnPan();
 		}
@@ -1729,14 +1725,18 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
 	
 	ScreenCoord crossCoord = SpaceToScreenCoord(mViewType, depth);
+	//crossCoord =  SpaceToScreenCoord(mViewType, ScreenToSpaceCoord(mViewType, crossCoord));
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
 
 
-	Vector2i currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2i newPan = ScreenToPanShift(centerCoord - crossCoord) + currentPan;
+	Vector2f currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
+	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
+	newPan += currentPan;
         OmStateManager::Instance()->SetPanDistance(mViewType, newPan);
 	debug ("cross","view: %i  depth.(x,y,z): (%f,%f,%f)\n",mViewType,depth.x,depth.y,depth.z);
-	debug ("cross", "view: %i  currentPan.(x,y): (%i,%i)\n", mViewType,currentPan.x,currentPan.y);
+	debug ("cross", "view: %i  currentPan.(x,y): (%f,%f)\n", mViewType,currentPan.x,currentPan.y);
+	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
 	debug ("cross", "view: %i  crossCoord.(x,y): (%i,%i)\n", mViewType,crossCoord.x,crossCoord.y);
 	debug ("cross", "view: %i  centerCoord.(x,y): (%i,%i)\n", mViewType,centerCoord.x,centerCoord.y);
 
@@ -2029,7 +2029,7 @@ void OmView2d::Draw(int mip)
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	if (mip) {
 		Vector2f zoom = zoomMipVector;
-		Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+		Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 
 		int lvl = zoomMipVector.x + 2;
 
@@ -2040,21 +2040,20 @@ void OmView2d::Draw(int mip)
 			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2 <
-								   int >(translateVector.x / (1 + i - zoomMipVector.x),
+								   Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
 									 translateVector.y / (1 + i - zoomMipVector.x)),
 								   false);
 
 			PreDraw(zoom);
 		}
 		OmStateManager::Instance()->SetPanDistance(mViewType,
-							   Vector2 < int >(translateVector.x, translateVector.y),
+							   Vector2f(translateVector.x, translateVector.y),
 							   false);
 	}
 
 	PreDraw(zoomMipVector);
 
-	Draw(mTextures);
+	TextureDraw(mTextures);
 	mTextures.clear ();
 }
 
@@ -2323,7 +2322,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
-	Vector2i translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
 	
 	Vector3f depth;
@@ -2437,7 +2436,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 				if (gotten_id) {
 					gotten_id->mVolType = mCache->mVolType;
-					if (gotten_id->GetTextureID() == 0) {
+					if ((gotten_id->GetTextureID() == 0)) {
 						//debug("FIXME", << "no id..." << gotten_id->texture << endl;
 						if (NULL == gotten_id->texture && my_chunk->IsOpen()) {
 							myBindToTextureID(gotten_id);
@@ -2468,7 +2467,10 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 							      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
 								       gotten_id));
 					} else {
-						//debug("FIXME", << "texture is NOT valid! : " << gotten_id->GetTextureID() << endl;
+						//	mTextures.push_back(new
+						//	      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
+						//	       gotten_id));
+						debug("cross", "texture is NOT valid! \n");
 					}
 
 				} else {
@@ -2490,7 +2492,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 
 */
-void OmView2d::Draw(vector < Drawable * >&textures)
+void OmView2d::TextureDraw(vector < Drawable * >&textures)
 {
 	for (vector < Drawable * >::iterator it = textures.begin(); textures.end() != it; it++) {
 		Drawable *d = *it;
@@ -2529,7 +2531,7 @@ void OmView2d::DrawCursors()
 
 
 	ScreenCoord screenc = SpaceToScreenCoord(mViewType,depth);
-
+	//debug("cross","Crosshair Screen: %i %i \n",screenc.x, screenc.y);
 	switch (mViewType) {
 	case XY_VIEW:
 		painter.setPen(Qt::red);
@@ -2580,30 +2582,101 @@ SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
 	return new_space_center;
 }
 
-Vector2i OmView2d::ScreenToPanShift(Vector2i screenshift)
+Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
 {
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);
 	Vector2i zoomLevel = OmStateManager::Instance()->GetZoomLevel();
 	float factor = OMPOW(2,zoomLevel.x);
-	float zoomScale = zoomLevel.y;
-	float panx = ((float)screenshift.x)/zoomScale/stretch.x*10.0;
-	float pany = ((float)screenshift.y)/zoomScale/stretch.y*10.0;
-	return Vector2i((int) panx, (int) pany);
+	float zoomScale = zoomLevel.y/10.0;
+	float panx = screenshift.x;
+	debug("cross","inside SreenToPanShift: panx: %f\n",panx);
+	panx = panx/zoomScale/stretch.x;
+	float pany = screenshift.y;
+	pany = pany/zoomScale/stretch.y;
+	return Vector2f(panx, pany);
 }
 
 SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & screenc)
 {
-	return DataToSpaceCoord(ScreenToDataCoord(viewType, screenc));
+	Vector2f mPanDistance =  OmStateManager::Instance()->GetPanDistance(mViewType);
+        Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();          Vector3f mScale = OmVolume::Instance()->GetScale();                
+	Vector2f stretch= OmVolume::GetStretchValues(mViewType);                  
+
+	DataBbox extent = OmVolume::GetDataExtent();
+	Vector3f dataScale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3f datac; //= normCoord * scale;
+	NormCoord normc;
+        Vector3f result;
+        float factor = OMPOW(2,mZoomLevel.x);                                                             
+        float zoomScale = mZoomLevel.y;                                                                 
+        switch(mViewType){                                                                              
+        case XY_VIEW:                                                                                   
+                normc.x = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.x;    
+                normc.y = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.y;
+		result = OmVolume::NormToSpaceCoord(normc);
+		result.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+                break;                                                                                  
+        case XZ_VIEW:                                                                                   
+                normc.x = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.x;  
+                normc.z = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.z;
+		result = OmVolume::NormToSpaceCoord(normc);
+                result.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+                break;                                                                                  
+        case YZ_VIEW:
+                normc.z = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.z;                           
+                normc.y = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.y;
+                result =  OmVolume::NormToSpaceCoord(normc);
+                result.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);  
+                break;                                                                                  
+        default:                                                                                   
+				 //assert(0);                                                                              
+                break;                                                                                  
+        }                                                                                              
+        return result;        
 }
 
 ScreenCoord OmView2d::SpaceToScreenCoord(ViewType viewType, const SpaceCoord & spacec)
 {
-	return DataToScreenCoord(viewType, SpaceToDataCoord(spacec));
+	NormCoord normCoord = OmVolume::SpaceToNormCoord(spacec);
+
+	DataBbox extent = OmVolume::GetDataExtent();
+	Vector3f scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3f datac = normCoord * scale;
+
+	Vector2f mPanDistance = OmStateManager::Instance()->GetPanDistance(viewType);                  
+        Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel(); 
+	Vector2f stretch= OmVolume::GetStretchValues(mViewType);
+	Vector2i result;
+	float factor = OMPOW(2,mZoomLevel.x);
+	float zoomScale = mZoomLevel.y;
+	//debug ("cross", "factor: %f \n", factor);
+	//debug ("cross", "zoomScale: %f \n", zoomScale);
+	//debug ("cross", "mScale.(x,y,z):  (%f,%f,%f) \n",mScale.x,mScale.y,mScale.z);
+
+	switch(viewType){
+	case XY_VIEW:
+		result.x = (int)((float)(datac.x/factor+mPanDistance.x)*zoomScale/10.0*stretch.x);
+		result.y = (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale/10.0*stretch.y);  
+		break;
+	case XZ_VIEW:
+                result.x = (int)((float)(datac.x/factor+mPanDistance.x)*zoomScale/10.0*stretch.x);        
+		result.y = (int)((float)(datac.z/factor+mPanDistance.y)*zoomScale/10.0*stretch.y);
+		break;
+	case YZ_VIEW:
+		result.x = (int)((float)(datac.z/factor+mPanDistance.x)*zoomScale/10.0*stretch.x);       
+	        result.y = (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale/10.0*stretch.y);
+		break;
+	default:
+		assert(0);
+		break;
+	}
+	return result;
+	
 }
 
 ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & datac)
 {
-	Vector2i mPanDistance = OmStateManager::Instance()->GetPanDistance(viewType);                  
+	Vector2f mPanDistance = OmStateManager::Instance()->GetPanDistance(viewType);                  
         Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel(); 
 	Vector3f mScale = OmVolume::Instance()->GetScale();
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);
@@ -2637,7 +2710,7 @@ ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & dat
 
 DataCoord OmView2d::ScreenToDataCoord(ViewType viewType, const ScreenCoord & screenc)
 {
-	Vector2i mPanDistance = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f mPanDistance =  OmStateManager::Instance()->GetPanDistance(mViewType);
         Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();          Vector3f mScale = OmVolume::Instance()->GetScale();                
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);                  
         Vector3i result;
@@ -2690,11 +2763,15 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 
 void OmView2d::mousePressEvent(QMouseEvent * event)
 {
+	clickPoint.x = event->x();
+	clickPoint.y = event->y();
+	rememberCoord = ScreenToSpaceCoord(mViewType, clickPoint);
+	rememberDepthCoord = OmStateManager::GetViewDepthCoord();
+
 	switch (OmStateManager::GetSystemMode()) {
 
 		case NAVIGATION_SYSTEM_MODE: {
-			clickPoint.x = event->x();
-			clickPoint.y = event->y();
+
 
 			if (event->button() == Qt::LeftButton) {
 				const bool crosshair = event->modifiers() & Qt::ControlModifier;
@@ -2947,34 +3024,26 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 {
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2 < int >drag = Vector2 < int >((clickPoint.x - event->x()), clickPoint.y - event->y());
+	Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
+	Vector2i thisPoint = Vector2i(event->x(),event->y());
 
-	mDragX += drag.x / (zoomMipVector.y / 10.);
-	mDragY += drag.y / (zoomMipVector.y / 10.);
+	//mDragX += drag.x / (zoomMipVector.y / 10.);
+	//mDragY += drag.y / (zoomMipVector.y / 10.);
 
 
 	if (OmLocalPreferences::getStickyCrosshairMode()){
-		SpaceCoord depth;
-		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
-		ScreenCoord screenc=SpaceToScreenCoord(mViewType, depth);
-		screenc+=drag;
-		depth = ScreenToSpaceCoord(mViewType, screenc);
+		SpaceCoord thisCoord = ScreenToSpaceCoord(mViewType,thisPoint);
+		SpaceCoord difference = thisCoord - rememberCoord;
+	       	SpaceCoord depth = OmStateManager::GetViewDepthCoord() -difference;
 		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
 		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
 		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else {
 	
-		
-	drag.x = mDragX;
-	drag.y = mDragY;
-	mDragX = mDragX - drag.x;
-	mDragY = mDragY - drag.y;
-	OmStateManager::Instance()->SetPanDistance(mViewType,
-						   Vector2 < int >(current_pan.x - drag.x, current_pan.y - drag.y));
+
+	OmStateManager::Instance()->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
 	SetViewSliceOnPan();
         debug("cross","current_pan.x: %i   current_pan.y  %i \n",current_pan.x,current_pan.y);
 	float xdepth,ydepth,zdepth;

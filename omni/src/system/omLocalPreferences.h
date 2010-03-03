@@ -11,13 +11,19 @@ public:
 	static void Delete();
 
 	static int get_num_cores();
+
 	static int numAllowedWorkerThreads();
 	static void setNumAllowedWorkerThreads(int);
 
+	static bool getStoreMeshesInTempFolder();
+	static void setStoreMeshesInTempFolder( const bool );
+
 	static unsigned int getRamCacheSizeMB();
 	static void setRamCacheSizeMB(const unsigned int);
+
 	static unsigned int getVRamCacheSizeMB();
 	static void setVRamCacheSizeMB(const unsigned int);
+
 	static bool getStickyCrosshairMode();
 	static void setStickyCrosshairMode(bool sticky);
 
@@ -35,13 +41,17 @@ private:
 	//singleton
 	static OmLocalPreferences* mspInstance;
 
+	static bool readSettingBool( QString setting, const bool defaultRet );
+	static void writeSettingBool( QString setting, const bool value );
+
+	static int readSettingInt( QString setting, const int defaultRet );
 	static void writeSettingInt( QString setting, const int value );
-	static void writeSettingUInt( QString setting, const unsigned int value );
 
 	static unsigned int readSettingUInt( QString setting, const unsigned int defaultRet );
-	static int readSettingInt( QString setting, const int defaultRet );
+	static void writeSettingUInt( QString setting, const unsigned int value );
+
 	static QStringList readSettingQStringList( QString setting, QStringList defaultRet );
-	
+
 	static bool settingExists( QString setting );
 
 	bool * stickyCrosshairMode;

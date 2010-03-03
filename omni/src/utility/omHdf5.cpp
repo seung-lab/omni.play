@@ -27,7 +27,8 @@ string OmHdf5::getFileNameAndPathString()
 	return m_fileNameAndPath.toStdString();
 }
 
-// set whether HDF file should be kept opened, or automatically closed, between calls into the file
+// set whether HDF file should be kept opened, 
+//  or automatically closed, between calls into the file
 void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 {
 	if( autoOpenAndClose ){
@@ -37,17 +38,10 @@ void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
 	}
 }
 
-void OmHdf5::resetHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
-{
-	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->close();
-	delete(hdfLowLevelWrap);
-	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
-}
-
 // hdf5 wrappers -- no locking
 void OmHdf5::create()
 {
+	QMutexLocker locker(fileLock);
 	hdfLowLevelWrap->file_create();
 }
 

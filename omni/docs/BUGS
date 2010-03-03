@@ -2123,4 +2123,22 @@ HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
     major: Heap
     minor: Unable to load metadata into cache
 
+Seems trying to load something is causing an assertion on the cluster:
+HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
+  #000: /home/mwimer/staging/external/srcs/hdf5-1.8.4-patch1/src/H5D.c line 321 in H5Dopen2(): not found
+    major: Dataset
+    minor: Object not found
+  #001: /home/mwimer/staging/external/srcs/hdf5-1.8.4-patch1/src/H5Gloc.c line 468 in H5G_loc_find(): can't find object
+    major: Symbol table
+    minor: Object not found
+  #002: /home/mwimer/staging/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 877 in H5G_traverse(): internal path traversal failed
+    major: Symbol table
+    minor: Object not found
+  #003: /home/mwimer/staging/external/srcs/hdf5-1.8.4-patch1/src/H5Gtraverse.c line 703 in H5G_traverse_real(): traversal operator failed
+    major: Symbol table
+    minor: Callback failed
+  #004: /home/mwimer/staging/external/srcs/hdf5-1.8.4-patch1/src/H5Gloc.c line 423 in H5G_loc_find_cb(): object doesn't exist
+    major: Symbol table
+    minor: Object not found
+omni: /home/mwimer/staging/omni/src/volume/omMipChunk.cpp:246: void OmMipChunk::ReadVolumeData(): Assertion `0' failed.
 

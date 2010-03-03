@@ -28,8 +28,7 @@ OmVolume::~OmVolume()
 	//debug("genone","OmVolume::~OmVolume()");
 }
 
-void
- OmVolume::Initialize()
+void OmVolume::Initialize()
 {
 	mNormToSpaceMat = Matrix4 < float >::IDENTITY;
 	mNormToSpaceInvMat = Matrix4 < float >::IDENTITY;
@@ -64,13 +63,6 @@ void OmVolume::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Accessor Methods
-/////////////////////////////////
-///////          Accessor Methods
-
-#pragma mark
-#pragma mark Transform Methods
 /////////////////////////////////
 ///////          Transform Methods
 
@@ -109,20 +101,7 @@ bool OmVolume::SetUserScale(const Vector3 < float >&scale)
 	//set inverse and return if invertable
 	return Instance()->mSpaceToUserMat.getInverse(Instance()->mSpaceToUserInvMat);
 }
-/*
-Vector3<float>
-OmVolume::GetTranslation() {
-	return Instance()->mNormToSpaceMat.getTranslation();
-}
 
-bool 
-OmVolume::SetTranslation(const Vector3<float> &trans) {
-	//set translation
-	Instance()->mNormToSpaceMat.setTranslation(trans);
-	//set inverse and return if invertable
-	return Instance()->mNormToSpaceMat.getInverse(Instance()->mNormToSpaceInvMat);
-}
-*/
 QString OmVolume::GetUnit()
 {
 	return Instance()->unitString;
@@ -133,9 +112,6 @@ void OmVolume::SetUnit(QString unit)
 	Instance()->unitString = unit;
 }
 
-
-#pragma mark
-#pragma mark Coordinate Frame Methods
 /////////////////////////////////
 ///////          Coordinate Frame Methods
 
@@ -159,47 +135,43 @@ SpaceBbox OmVolume::NormToSpaceBbox(const NormBbox & normBbox)
 	return SpaceBbox(NormToSpaceCoord(normBbox.getMin()), NormToSpaceCoord(normBbox.getMax()));
 }
 
-/*
+/**
  *	Converts DataCoord to NormCoord based on source extent of data volume.
  *	NormCoords are used for relative location information and not absolute data access.
  *	centered : causes normalized coordinates to represent center of rectangular pixel.
  */
 NormCoord OmVolume::DataToNormCoord(const DataCoord & data, bool centered)
 {
-
 	const DataBbox & extent = GetDataExtent();
 	Vector3 < float >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
 	Vector3 < float >offset = centered ? Vector3 < float >(0.5f, 0.5f, 0.5f) : Vector3 < float >::ZERO;
 	return NormCoord((offset + data) / scale);
 }
 
-/*
+/**
  *	Returns rectangular pixel that contains given normalized coordinate.
  */
 DataCoord OmVolume::NormToDataCoord(const NormCoord & norm)
 {
-
 	const DataBbox & extent = GetDataExtent();
 	Vector3 < int >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
 	return DataCoord(floor(norm.x * scale.x), floor(norm.y * scale.y), floor(norm.z * scale.z));
 }
 
-/*
+/**
  *	Returns normalized bbox that encloses rectangular pixels in given data bbox.
  */
 NormBbox OmVolume::DataToNormBbox(const DataBbox & dataBbox)
 {
-
 	return NormBbox(DataToNormCoord(dataBbox.getMin(), false),
 			DataToNormCoord(dataBbox.getMax() + Vector3 < int >::ONE, false));
 }
 
-/*
+/**
  *	Returns data bbox contained by given normalized bounding box.
  */
 DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
 {
-
 	const DataBbox & extent = GetDataExtent();
 	Vector3 < float >normalized_pixel_dim =
 	    Vector3 < float >::ONE / (extent.getMax() - extent.getMin() + Vector3 < float >::ONE);
@@ -210,8 +182,6 @@ DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
 	return DataBbox(NormToDataCoord(extent_min), NormToDataCoord(extent_max));
 }
 
-#pragma mark
-#pragma mark Data Properties
 /////////////////////////////////
 ///////          Data Properties
 
@@ -269,8 +239,6 @@ void OmVolume::SetChunkDimension(int dim)
 	Instance()->mChunkDim = dim;
 }
 
-#pragma mark
-#pragma mark Channel Manager Methods
 /////////////////////////////////
 ///////          Channel Manager Method
 
@@ -312,8 +280,6 @@ void OmVolume::SetChannelEnabled(OmId id, bool enable)
 	Instance()->mChannelManager.SetEnabled(id, enable);
 }
 
-#pragma mark
-#pragma mark Segmentation Manager Methods
 /////////////////////////////////
 ///////          Segmentation Manager Method
 
@@ -372,8 +338,6 @@ QList < SegmentDataWrapper > OmVolume::GetSelectedSegmentIDs()
 	return segmentationsAndSegments;
 }
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Method
 

@@ -102,7 +102,7 @@ OmTextureID *OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord & key)
 //      OmStateManager::MakeContextCurrent(mFetchThreadContext);
 
 	//return mesh to cache
-	//debug("genone","OmThreadedCachingTile::HandleCacheMiss: returning texture");  
+	debug("crazycash","I'm fetching a Texture ID Boss!\n");  
 	return BindToTextureID(key, this);
 	// OmTile: OmTextureID* BindToTextureID(const OmTileCoord &key);
 }

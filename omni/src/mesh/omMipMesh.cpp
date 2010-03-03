@@ -1,9 +1,10 @@
-
+#include "utility/omHdf5Manager.h"
 #include "omMipMesh.h"
 #include "omMipMeshManager.h"
 
 #include "segment/omSegmentManager.h"
 #include "system/omProjectData.h"
+#include "system/omLocalPreferences.h"
 #include "project/omProject.h"
 #include "system/omGarbage.h"
 
@@ -154,7 +155,6 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
 		pid);
 
 	debug("parallel", "/tmp/meshinator_%s\n", mip_dname_buf);
-	//std::cerr << "/tmp/meshinator_" << mip_dname_buf <<endl;
         return "/tmp/meshinator_" + string(mip_dname_buf);
 }
 
@@ -162,19 +162,13 @@ void OmMipMesh::Save()
 {
 	OmHdf5 * hdf5File = NULL;
 
-	if (!OmGarbage::GetParallel()) {
-               	hdf5File = OmProjectData::GetHdf5File();
-       	} else {
-               	if (NULL == mHdf5File) {
-			try {
-                       		mHdf5File = new OmHdf5(QString::fromStdString( GetLocalPathForHd5fChunk() ) );
-				mHdf5File->create();
-			} catch (OmIoException e) {
-				//std::cerr << GetLocalPathForHd5fChunk().c_str() << " should exist\n" << endl;;
-			}
-               	}
-		hdf5File = mHdf5File;
-       	}
+	if( OmLocalPreferences::getStoreMeshesInTempFolder() || 
+	    OmGarbage::GetParallel()) {
+		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
+		hdf5File->create();
+	} else {
+		hdf5File = OmProjectData::GetHdf5File();
+	}
 
 	int size;
 

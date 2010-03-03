@@ -8,11 +8,17 @@ class LocalPrefFiles
  public:
 	LocalPrefFiles();
 	bool checkIfSettingExists( QString setting );
+
+	bool readSettingBool( QString setting );
+	void writeSettingBool( QString setting, const bool value );
+
 	int readSettingInt( QString setting );
-	unsigned int readSettingUInt( QString setting );
-	QStringList readSettingQStringList( QString setting );
 	void writeSettingInt( QString setting, const int value );
+
+	unsigned int readSettingUInt( QString setting );
 	void writeSettingUInt( QString setting, const unsigned int value );
+
+	QStringList readSettingQStringList( QString setting );
 	void writeSettingQStringList( QString setting, QStringList values );
 
  private:
