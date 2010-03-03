@@ -227,7 +227,7 @@ sub meshinator {
                 $node = $lastOne;
             }
 	    $connectcount{$node}++;
-    	    my $cmd = "rsh $node $meshinatorOmni --headless=$fNameAndPath $projectFile || touch /tmp/failure";
+    	    my $cmd = "rsh $node \"$meshinatorOmni --headless=$fNameAndPath $projectFile || touch /tmp/failure\"";
     	    print "$cmd\n";
     	    runNode ($cmd, $node, $logFile, $fNameAndPath, $lockFile);
 

@@ -24,12 +24,13 @@ my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
 
 my $globalMakeOptions = "";
 my $hostname = `hostname`;
-
+my $profileOn = "";
 if ($hostname =~ /brainiac/) {
     my $nodes = `cat $basePath/scripts/cluster/distcchosts`;
     $ENV{DISTCC_HOSTS} = $nodes;
     $globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
                 " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
+    $profileOn = "p";
 }
 
 
@@ -92,9 +93,9 @@ sub vtk {
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
     if ( isMac() ){
 	`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    }
+    } 
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-${profileOn}g -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
 
     #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
@@ -321,7 +322,7 @@ sub hdf5_16 {
 }
 
 sub hdf5_18 {
-    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no" );
+    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no --enable-threadsafe --with-pthread=/usr/lib" );
 }
 
 sub qt {
