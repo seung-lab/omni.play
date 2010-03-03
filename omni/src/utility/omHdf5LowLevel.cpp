@@ -341,11 +341,24 @@ void OmHdf5LowLevel::om_hdf5_group_delete_with_lock(hid_t fileId, const char *na
 bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *name)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+
+	hid_t dataset_id;
+
+	//Try to open a data set
+	//Turn off error printing idea from http://www.fiberbundle.net/index.html
+	H5E_BEGIN_TRY {
+		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
+	} H5E_END_TRY
 	
-	herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
-	if( ret < 0 ){
-		return false;
-	}
+		  //if failure, then assume doesn't exist
+		  if (dataset_id < 0)
+			  return false;
+	
+	//Closes the specified dataset. 
+	herr_t ret = H5Dclose(dataset_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataset.");
+
 	return true;
 }
 
