@@ -30,7 +30,7 @@ if ($hostname =~ /brainiac/) {
     $ENV{DISTCC_HOSTS} = $nodes;
     $globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
                 " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
-    $profileOn = "p";
+    $profileOn = "";
 }
 
 
