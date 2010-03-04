@@ -12,7 +12,6 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegment.h"
 
-#include "segment/actions/segment/omSegmentSelectAction.h"
 
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
@@ -24,10 +23,10 @@
 using namespace vmml;
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
-Q_DECLARE_METATYPE(SegmentDataWrapper);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
-MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
+MyInspectorWidget::MyInspectorWidget(QWidget * parent)
+ : QWidget(parent)
 {
 	layoutWidget = new QWidget( this );
 	QVBoxLayout *verticalLayout = new QVBoxLayout(layoutWidget);
@@ -38,6 +37,7 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 
 	currentDataSrc = DataWrapperContainer();
 	inspectorProperties = new InspectorProperties( this );
+	segmentList = new SegmentList(this, inspectorProperties, dataElementsTabs  );
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -50,20 +50,6 @@ void MyInspectorWidget::setTabEnabled( QWidget * tab, QString title )
 {
 	dataElementsTabs->removeTab( 0 );
 	dataElementsTabs->addTab( tab, title );	
-}
-
-QTreeWidget *MyInspectorWidget::setupDataElementList()
-{
-	dataElementsWidget = new QTreeWidget(this);
-	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	dataElementsWidget->setAlternatingRowColors(true);
-	dataElementsWidget->setColumnCount(3);
-
-	QStringList headers;
-	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
-	dataElementsWidget->setHeaderLabels(headers);
-
-	return dataElementsWidget;
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
@@ -84,6 +70,7 @@ QTreeWidget *MyInspectorWidget::setupDataSrcList()
 	dataSrcListWidget = new QTreeWidget(this);
 	dataSrcListWidget->setAlternatingRowColors(false);
 	dataSrcListWidget->setColumnCount(3);
+
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataSrcListWidget->setHeaderLabels(headers);
@@ -144,7 +131,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *, int)));
 
-	autoResizeColumnWidths(dataSrcListWidget, 3);
+	GuiUtils::autoResizeColumnWidths(dataSrcListWidget, 3);
 
 	dataSrcListWidget->update();
 }
@@ -177,16 +164,9 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 	connect(filterListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(addToSplitterDataElementFilter(QTreeWidgetItem *, int)));
 
-	autoResizeColumnWidths(filterListWidget, 3);
+	GuiUtils::autoResizeColumnWidths(filterListWidget, 3);
 
 	filterListWidget->update();
-}
-
-void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)
-{
-	for (int i = 0; i <= max_col_to_display; i++) {
-		widget->resizeColumnToContents(i);
-	}
 }
 
 void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
@@ -220,16 +200,6 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 						 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
-void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
-{
-	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-
-	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
-
-	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
-						 QString("Segment %1 Inspector").arg(sdw.getID()) );
-}
 
 void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
 {
@@ -334,7 +304,7 @@ void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt(menuPoint);
-	if (!dataSrcItem) {	// right click occured in "white space" of widget (not on actual item, like channel1, etc)
+	if (!dataSrcItem) {	// right click occured in "white space" of widget (not on actual item, like channe1, etc)
 		connect(makeDataSrcContextMenu(dataSrcListWidget),
 			SIGNAL(triggered(QAction *)), this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
 
@@ -508,209 +478,53 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 
 void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID)
 {
-	currentDataSrc = DataWrapperContainer(SEGMENTATION, segmentationID);
-	populateSegmentElementsListWidget();
+	segmentList->makeSegmentationActive(segmentationID);
 }
 
 void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw)
 {
-	currentDataSrc = DataWrapperContainer(sdw);
-	populateSegmentElementsListWidget();
+	segmentList->makeSegmentationActive(sdw);
 }
 
 void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
-	currentDataSrc = DataWrapperContainer(SEGMENTATION, segmentationID);
-	populateSegmentElementsListWidget(true, segmentJustSelectedID);
+	segmentList->makeSegmentationActive(segmentationID, segmentJustSelectedID);
 }
 
 void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
 {
-	currentDataSrc = DataWrapperContainer(sdw);
-	populateSegmentElementsListWidget(true, segmentJustSelectedID);
-}
-
-void MyInspectorWidget::addSegment()
-{
-	const OmId segmentationID = segInspectorWidget->getSegmentationID();
-	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
-	rebuildSegmentList(segmentationID, added_segment.GetId());
+	segmentList->makeSegmentationActive(sdw, segmentJustSelectedID);
 }
 
 void MyInspectorWidget::refreshWidgetData()
 {
 	populateDataSrcListWidget();
-	populateSegmentElementsListWidget();
+	segmentList->populateSegmentElementsListWidget();
 }
 
 void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID)
 {
 	populateDataSrcListWidget();
-
-	hashOfSementationsAndSegments.remove(segmentationID);
-	makeSegmentationActive(segmentationID);
+	segmentList->rebuildSegmentList(segmentationID);
 }
 
 void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
 					   const OmId segmentJustAddedID)
 {
 	populateDataSrcListWidget();
-
-	hashOfSementationsAndSegments.remove(segmentationID);
-	makeSegmentationActive(segmentationID, segmentJustAddedID );
+	segmentList->rebuildSegmentList( segmentationID, segmentJustAddedID);
 }
 
 void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
-	debug("guievent", "in %s...\n", __FUNCTION__ );
-
-	SegmentationDataWrapper sdw = currentDataSrc.getSegmentationDataWrapper();
-	const OmId segmenID = sdw.getID();
-
-	if (!hashOfSementationsAndSegments.contains(segmenID)) {
-		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
-	} else {
-		const unsigned int num_segs_from_hash = hashOfSementationsAndSegments.value(segmenID).size();
-		const unsigned int num_segs_from_core = sdw.getNumberOfSegments();
-		if( num_segs_from_hash != num_segs_from_core ){
-			hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
-		}
-	}
-
-	setTabEnabled( setupDataElementList(), "All Segments" );
-	dataElementsWidget->clear();
-	dataElementsWidget->selectionModel()->blockSignals(true);
-	dataElementsWidget->selectionModel()->clearSelection();
-
-	QTreeWidgetItem *rowToJumpTo = NULL;
-	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
-
-	//OmSegmentation& segmentation = OmVolume::GetSegmentation( sdw.getID() );
-
-	int count = 0;
-	foreach(SegmentDataWrapper seg, segs) {
-		count++;
-		if (count > 60000){
-			break;
-		}
-		/*
-		SegmentDataSet mapped;
-		segmentation.MapValuesToSegmentId( seg.getID(), mapped );
-		QString new_note("");
-		foreach( SEGMENT_DATA_TYPE mapped_seg, mapped ){
-			new_note += QString::number(mapped_seg) + ", ";
-		}
-		seg.setNote( new_note );
-		*/
-		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
-		row->setText(NAME_COL, seg.getName());
-		row->setText(ID_COL, seg.getIDstr());
-		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(seg));
-		row->setText(NOTE_COL, seg.getNote());
-		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg.isEnabled()));
-		row->setSelected(seg.isSelected());
-		if (doScrollToSelectedSegment && seg.getID() == segmentJustSelectedID) {
-			rowToJumpTo = row;
-		}
-	}
-
-	dataElementsWidget->selectionModel()->blockSignals(false);
-	dataElementsWidget->update();
-
-	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
-	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
-
-	autoResizeColumnWidths(dataElementsWidget, 3);
-
-	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
-		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
-	}
+	segmentList->populateSegmentElementsListWidget( doScrollToSelectedSegment,
+							segmentJustSelectedID);
 }
 
-void MyInspectorWidget::leftClickOnSegment(QTreeWidgetItem * current, const int column)
+void MyInspectorWidget::addSegment()
 {
-	addToSplitterDataElementSegment(current, column);
-
-	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-
-	// TODO: make sure list of modified segments is correct....
-
-	if (0 == column) {
-		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
-		sdw.setEnabled(isChecked);
-		sendSegmentChangeEvent(sdw, false);
-		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
-	} else {
-		OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
-		segmentation.SetAllSegmentsSelected(false);
-		
-		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
-			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
-			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-			item_sdw.setSelected(true);
-		}
-		sendSegmentChangeEvent(sdw, true);
-	}
-}
-
-/*
-
- protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-
-void MyInspectorWidget::mousePressEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse start\n");
-}
-
-void MyInspectorWidget::mouseMoveEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse move\n");
-}
-
-void MyInspectorWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse release\n");
-}
-*/
-/*
-        switch (event->key()) {
-        case Qt::Key_Up:
-                debug("gui", "hi key up\n");
-                break;
-        case Qt::Key_Down:
-                debug("gui", "hi key down\n");
-                break;
-        }       
-*/
-
-void MyInspectorWidget::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
-{
-	const OmId segmentationID = sdw.getSegmentationID();
-	const OmId segmentID = sdw.getID();
-	OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
-
-	OmIds selected_segment_ids;
-	OmIds un_selected_segment_ids;
-
-	if (augment_selection) {
-		selected_segment_ids = segmentation.GetSelectedSegmentIds();
-	} else {
-		selected_segment_ids.insert(segmentID);
-		un_selected_segment_ids = segmentation.GetSelectedSegmentIds();
-		un_selected_segment_ids.erase(segmentID);
-	}
-
-	(new OmSegmentSelectAction(segmentationID,
-				   selected_segment_ids, 
-				   un_selected_segment_ids, 
-				   segmentID, 
-				   this,
-				   "myInspectorWidget"))->Run();
+	const OmId segmentationID = segInspectorWidget->getSegmentationID();
+	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
+	segmentList->rebuildSegmentList(segmentationID, added_segment.GetId());
 }
