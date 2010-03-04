@@ -107,10 +107,12 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingT
 					textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
 						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
 					free(vDataFake);
+					free(vData);
 				}
 				OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
 				textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
 						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
+				free(vData);
 			}
 			return textureID;
 		}
