@@ -620,8 +620,8 @@ void OmView2d::SetDepth(QMouseEvent * event)
 	ScreenCoord screenc = ScreenCoord(event->x(),event->y());
 	SpaceCoord newDepth = ScreenToSpaceCoord(mViewType,screenc);
 
-	debug ("cross", "click event x,y (%i, %i)\n", clickPoint.x, clickPoint.y);
-	debug ("cross", "newDepth x,y,z (%f, %f, %f)\n", newDepth.x, newDepth.y,newDepth.z);
+	debug ("cross", "click event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
+	debug ("cross", "newDepth x,y,z (%f, %f,)\n", newDepth.x, newDepth.y,newDepth.z);
 	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, newDepth.z);
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, newDepth.y);
 	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, newDepth.x);
@@ -2336,17 +2336,17 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	case XY_VIEW:
 		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
 		data_coord = SpaceToDataCoord(depth);
-	        dataDepth = data_coord.z;
+	        mDataDepth = data_coord.z;
 		break;
 	case XZ_VIEW:
 		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
-	        dataDepth = data_coord.y;
+	        mDataDepth = data_coord.y;
 		break;
 	case YZ_VIEW:
 		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
-	        dataDepth = data_coord.x;
+	        mDataDepth = data_coord.x;
 		break;
 	}
 
@@ -2395,7 +2395,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		}
 
 #if 1
-		debug("view2d","dataDepth = %i\n",dataDepth);
+		debug("view2d","mDataDepth = %i\n",mDataDepth);
 		debug("view2d", "tl = %i\n", tl);
 		debug("view2d", "pl = %i\n", pl);
 		//debug("view2d", "x = %i\n", x);
@@ -2412,7 +2412,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
-			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, dataDepth);;
+			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
@@ -2422,66 +2422,17 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
 			debug ("postdraw", "coord.(x,y,z): (%f,%f,%f)\n", coord.Coordinate.x,coord.Coordinate.y,coord.Coordinate.z);
 
-			shared_ptr < OmMipChunk > my_chunk;
 			shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
-			if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-				mCache->mVolume->GetChunk(my_chunk, coord);
-				if (my_chunk->IsOpen()) {
-					mCache->GetTextureID(gotten_id, mTileCoord);
-				} else {
-					mCache->GetTextureID(gotten_id, mTileCoord, false);
-					//debug("FIXME", << "Not Open" << endl;
-				}
-
-				//debug("FIXME", << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
-
-				mTileCount++;
-				//if (mTileCount > 38000) return;       // Failsafe hack added by MW.
-
+                        if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
+				mCache->GetTextureID(gotten_id, mTileCoord, false);
 				if (gotten_id) {
-					gotten_id->mVolType = mCache->mVolType;
-					if ((gotten_id->GetTextureID() == 0)) {
-						//debug("FIXME", << "no id..." << gotten_id->texture << endl;
-						if (NULL == gotten_id->texture && my_chunk->IsOpen()) {
-							myBindToTextureID(gotten_id);
-							if (gotten_id->texture) {
-								safeTexture(gotten_id);
-								//debug("FIXME", << "made texture on the fly..." << endl;
-							} else {
-								gotten_id = shared_ptr < OmTextureID > ();
-								mCache->Remove(mTileCoord);
-								mCache->GetTextureID(gotten_id, mTileCoord, false);
-								complete = false;
-							}
-						} else if (gotten_id->texture) {
-							//debug("FIXME", << "got here...." << endl;
-							safeTexture(gotten_id);
-						} else {
-							gotten_id = shared_ptr < OmTextureID > ();
-							mCache->Remove(mTileCoord);
-							mCache->GetTextureID(gotten_id, mTileCoord, false);
-							complete = false;
-						}
-					}
-
-					if (gotten_id && gotten_id->GetTextureID() != 0) {
-						//debug("FIXME", << "texture is valid! : " << gotten_id->GetTextureID() << endl;
-						mTextures.
-						    push_back(new
-							      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
-								       gotten_id));
-					} else {
-						//	mTextures.push_back(new
-						//	      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
-						//	       gotten_id));
-						debug("cross", "texture is NOT valid! \n");
-					}
-
+					safeTexture(gotten_id);
+					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
-					//debug("FIXME", << "not gotton " << mTileCoord << endl;
-					//mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
+					complete = false;
 				}
 			}
+			else debug("predrawverbose", "bad coordinates\n");
 		}
 	}
 	if (!complete) {
@@ -2776,10 +2727,10 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 
 void OmView2d::mousePressEvent(QMouseEvent * event)
 {
-	mClickPoint.x = event->x();
-	mClickPoint.y = event->y();
-	mRememberCoord = ScreenToSpaceCoord(mViewType, mClickPoint);
-	mRememberDepthCoord = OmStateManager::GetViewDepthCoord();
+	clickPoint.x = event->x();
+	clickPoint.y = event->y();
+	rememberCoord = ScreenToSpaceCoord(mViewType, clickPoint);
+	rememberDepthCoord = OmStateManager::GetViewDepthCoord();
 
 	switch (OmStateManager::GetSystemMode()) {
 
