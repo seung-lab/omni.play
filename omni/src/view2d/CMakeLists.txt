@@ -8,6 +8,8 @@ SET(OM_VIEW2D_SRCS
 	omCachingTile.cpp
 	omThreadedCachingTile.cpp
 	omView2d.cpp
+	omView2dEvent.cpp
+	omView2dConverters.cpp
 	omTileCoord.cpp
 )
 

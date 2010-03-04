@@ -218,17 +218,17 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
-		return Vector2 < float >(&Instance()->mXYSlice[2]);
+		return Vector2f(&Instance()->mXYSlice[2]);
 	case XZ_VIEW:
-		return Vector2 < float >(&Instance()->mXZSlice[2]);
+		return Vector2f(&Instance()->mXZSlice[2]);
 	case YZ_VIEW:
-		return Vector2 < float >(&Instance()->mYZSlice[2]);
+		return Vector2f(&Instance()->mYZSlice[2]);
 	default:
 		assert(false);
 	}
 }
 
-/*
+/**
  *	Set/Get depth of view slice.
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
