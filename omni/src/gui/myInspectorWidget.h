@@ -64,7 +64,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column);
 	void addToSplitterDataSource(QTreeWidgetItem * current, const int column);
 
-	void rebuildSegmentList(const OmId segmentationID);
 	void doDataSrcContextMenuVolAdd(QAction * act);
 	void addSegment();
 
@@ -96,12 +95,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
 	void addChannelToVolume();
 	void addSegmentationToVolume();
-	void makeSegmentationActive(const OmId segmentationID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw);
-	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
 
-	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
 	DataWrapperContainer currentDataSrc;
 
 	QWidget *layoutWidget;
@@ -131,9 +125,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	ViewType getViewType(QAction * act);
 
 	void setTabEnabled( QWidget * tab, QString title );
-
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment =
-					       false, const OmId segmentJustSelectedID = 0);
 
 };
 

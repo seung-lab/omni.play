@@ -115,7 +115,9 @@ void SegmentList::addToSplitterDataElementSegment(QTreeWidgetItem * current, con
 	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
 
 	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
-						 QString("Segment %1 Inspector").arg(sdw.getID()) );
+						 QString("Segmentation%1: Segment %2")
+						 .arg(sdw.getSegmentationID())
+						 .arg(sdw.getID()) );
 }
 
 void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
@@ -140,7 +142,7 @@ void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augm
 				   un_selected_segment_ids, 
 				   segmentID, 
 				   this,
-				   "myInspectorWidget"))->Run();
+				   "segmentList"))->Run();
 }
 
 QTreeWidget * SegmentList::setupDataElementList()
@@ -251,10 +253,10 @@ void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
 	if (this == event->getSender()) {
-		debug("guievent", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("guievent", "in SegmentList:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 		return;
 	} else {
-		debug("guievent", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("guievent", "in SegmentList:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();

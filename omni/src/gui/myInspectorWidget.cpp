@@ -189,7 +189,8 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
 	segInspectorWidget = new SegInspector( sdw, this);
 	
-	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
+	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
+		segmentList, SLOT(rebuildSegmentList(OmId)));
 	
 	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
 
@@ -224,7 +225,7 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const
 		break;
 	case SEGMENTATION:
 		addSegmentationToSplitter(dwc.getSegmentationDataWrapper());
-		makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
 }
@@ -287,7 +288,7 @@ void MyInspectorWidget::addSegmentationToVolume()
 {
 	OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
 	addToVolume(&added_segmentation, SEGMENTATION);
-	makeSegmentationActive(added_segmentation.GetId());
+	segmentList->makeSegmentationActive(added_segmentation.GetId());
 }
 
 void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
@@ -339,7 +340,7 @@ void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
 		break;
 	case SEGMENTATION:
 		showSegmentationContextMenu();
-		makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
 }
@@ -377,7 +378,7 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
 	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
 	SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
-	makeSegmentationActive(sdw);
+	segmentList->makeSegmentationActive(sdw);
 
 	const OmId segmentationID = sdw.getID();
 	emit triggerSegmentationView(segmentationID, 0, getViewType(act));
@@ -456,50 +457,10 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 	segmentList->dealWithSegmentObjectModificationEvent(event);
 }
 
-void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID)
-{
-	segmentList->makeSegmentationActive(segmentationID);
-}
-
-void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw)
-{
-	segmentList->makeSegmentationActive(sdw);
-}
-
-void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
-{
-	segmentList->makeSegmentationActive(segmentationID, segmentJustSelectedID);
-}
-
-void MyInspectorWidget::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
-{
-	segmentList->makeSegmentationActive(sdw, segmentJustSelectedID);
-}
-
 void MyInspectorWidget::refreshWidgetData()
 {
 	populateDataSrcListWidget();
 	segmentList->populateSegmentElementsListWidget();
-}
-
-void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID)
-{
-	populateDataSrcListWidget();
-	segmentList->rebuildSegmentList(segmentationID);
-}
-
-void MyInspectorWidget::rebuildSegmentList(const OmId segmentationID,
-					   const OmId segmentJustAddedID)
-{
-	populateDataSrcListWidget();
-	segmentList->rebuildSegmentList( segmentationID, segmentJustAddedID);
-}
-
-void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							  const OmId segmentJustSelectedID)
-{
-	segmentList->populateSegmentElementsListWidget( doScrollToSelectedSegment,
-							segmentJustSelectedID);
 }
 
 void MyInspectorWidget::addSegment()
