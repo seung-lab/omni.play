@@ -1400,12 +1400,14 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Escape:
 		{
+			
 			SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 			OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
 			OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
 			OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
 
 			if (OmLocalPreferences::getStickyCrosshairMode()){
+				debug("cross","we made it to the great Escape!\n");
 				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 			}
 		
