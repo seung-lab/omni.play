@@ -2422,66 +2422,17 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
 			debug ("postdraw", "coord.(x,y,z): (%f,%f,%f)\n", coord.Coordinate.x,coord.Coordinate.y,coord.Coordinate.z);
 
-			shared_ptr < OmMipChunk > my_chunk;
 			shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
-			if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-				mCache->mVolume->GetChunk(my_chunk, coord);
-				if (my_chunk->IsOpen()) {
-					mCache->GetTextureID(gotten_id, mTileCoord);
-				} else {
-					mCache->GetTextureID(gotten_id, mTileCoord, false);
-					//debug("FIXME", << "Not Open" << endl;
-				}
-
-				//debug("FIXME", << "tile: " << mTileCoord << " gotten_id:" << gotten_id << endl;
-
-				mTileCount++;
-				//if (mTileCount > 38000) return;       // Failsafe hack added by MW.
-
+                        if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
+				mCache->GetTextureID(gotten_id, mTileCoord, false);
 				if (gotten_id) {
-					gotten_id->mVolType = mCache->mVolType;
-					if ((gotten_id->GetTextureID() == 0)) {
-						//debug("FIXME", << "no id..." << gotten_id->texture << endl;
-						if (NULL == gotten_id->texture && my_chunk->IsOpen()) {
-							myBindToTextureID(gotten_id);
-							if (gotten_id->texture) {
-								safeTexture(gotten_id);
-								//debug("FIXME", << "made texture on the fly..." << endl;
-							} else {
-								gotten_id = shared_ptr < OmTextureID > ();
-								mCache->Remove(mTileCoord);
-								mCache->GetTextureID(gotten_id, mTileCoord, false);
-								complete = false;
-							}
-						} else if (gotten_id->texture) {
-							//debug("FIXME", << "got here...." << endl;
-							safeTexture(gotten_id);
-						} else {
-							gotten_id = shared_ptr < OmTextureID > ();
-							mCache->Remove(mTileCoord);
-							mCache->GetTextureID(gotten_id, mTileCoord, false);
-							complete = false;
-						}
-					}
-
-					if (gotten_id && gotten_id->GetTextureID() != 0) {
-						//debug("FIXME", << "texture is valid! : " << gotten_id->GetTextureID() << endl;
-						mTextures.
-						    push_back(new
-							      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
-								       gotten_id));
-					} else {
-						//	mTextures.push_back(new
-						//	      Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor,
-						//	       gotten_id));
-						debug("cross", "texture is NOT valid! \n");
-					}
-
+					safeTexture(gotten_id);
+					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
-					//debug("FIXME", << "not gotton " << mTileCoord << endl;
-					//mTextures.push_back (new Drawable (x, y, tileLength, mTileCoord, zoomFactor));
+					complete = false;
 				}
 			}
+			else debug("predrawverbose", "bad coordinates\n");
 		}
 	}
 	if (!complete) {

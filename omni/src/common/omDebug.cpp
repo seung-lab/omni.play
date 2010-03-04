@@ -28,7 +28,7 @@ bool isDebugCategoryEnabled( const char *category )
 	return false;
 }
 
-void debug(const char *category, const char *format, ...)
+void actual_debug(const char *category, const char *format, ...)
 {
 	int i;
 	va_list args;
