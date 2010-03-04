@@ -188,16 +188,6 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 
 	autoResizeColumnWidths(filterListWidget, 3);
 
-	filterListWidget->header()->setStretchLastSection(false);
-	filterListWidget->header()->setResizeMode(0,QHeaderView::Custom);
-	filterListWidget->header()->setResizeMode(1,QHeaderView::Stretch);
-	filterListWidget->header()->setResizeMode(2,QHeaderView::Custom);
-	filterListWidget->header()->setResizeMode(3,QHeaderView::Custom);
-	filterListWidget->resizeColumnToContents(0);
-	filterListWidget->resizeColumnToContents(2);
-	filterListWidget->resizeColumnToContents(3);
-
-
 	filterListWidget->update();
 }
 
@@ -235,7 +225,8 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 
-	inspectorProperties->setOrReplaceWidget( segInspectorWidget, "Segmentation Inspector" );
+	inspectorProperties->setOrReplaceWidget( segInspectorWidget, 
+						 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
 void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
@@ -245,7 +236,8 @@ void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * curren
 
 	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
 
-	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, "Segment Inspector" );
+	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
+						 QString("Segment %1 Inspector").arg(sdw.getID()) );
 }
 
 void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
@@ -255,7 +247,8 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 
 	filObjectInspectorWidget = new FilObjectInspector(this, fdw);
 
-	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, "Channel Inspector" );
+	inspectorProperties->setOrReplaceWidget( filObjectInspectorWidget, 
+						 QString("Filter %1 Inspector").arg(fdw.getID()) );
 }
 
 void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
