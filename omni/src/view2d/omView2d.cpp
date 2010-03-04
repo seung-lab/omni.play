@@ -2603,7 +2603,11 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 	Vector2f stretch= OmVolume::GetStretchValues(mViewType);                  
 
 	DataBbox extent = OmVolume::GetDataExtent();
-	Vector3f dataScale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3f dataScale;
+	Vector3i scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	dataScale.x = (float) scale.x;
+	dataScale.y = (float) scale.y;
+	dataScale.z = (float) scale.z;
 	Vector3f datac; //= normCoord * scale;
 	NormCoord normc;
         Vector3f result;
@@ -2640,7 +2644,12 @@ ScreenCoord OmView2d::SpaceToScreenCoord(ViewType viewType, const SpaceCoord & s
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(spacec);
 
 	DataBbox extent = OmVolume::GetDataExtent();
-	Vector3f scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3f scale;
+	scale.x = (float)(extent.getMax().x - extent.getMin().x + 1);
+	scale.y = (float)(extent.getMax().y - extent.getMin().y + 1);
+	scale.z = (float)(extent.getMax().z - extent.getMin().z + 1);
+
+	
 	Vector3f datac = normCoord * scale;
 
 	Vector2f mPanDistance = OmStateManager::Instance()->GetPanDistance(viewType);                  

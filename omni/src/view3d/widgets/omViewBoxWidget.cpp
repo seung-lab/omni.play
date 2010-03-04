@@ -5,6 +5,7 @@
 #include "system/omSystemTypes.h"
 #include "system/omStateManager.h"
 #include "common/omGl.h"
+#include "system/omLocalPreferences.h"
 
 #define DEBUG 0
 
@@ -17,6 +18,7 @@ static const int RECT_WIREFRAME_LINE_WIDTH = 2;
 void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, bool wire);
 //void drawBboxSlice(const SpaceBbox &bbox, OmViewBoxPlane plane, float offset, bool wire);
 void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth);
+void drawLines(SpaceCoord depth);
 
 #pragma mark -
 #pragma mark Example Class
@@ -30,9 +32,10 @@ void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float
 /////////////////////////////////
 ///////          Example Methods
 
-/*
+/**
  *	Draw the three orthogonal slices from of the view box
  */
+
 void OmViewBoxWidget::Draw()
 {
 	//cout << "in OmViewBoxWidget::Draw()" << endl;
@@ -51,6 +54,7 @@ void OmViewBoxWidget::Draw()
 	//set line width
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
+
 	/*
 	   const SpaceBbox &r_view_bbox = OmStateManager::GetViewBbox();
 	   const SpaceCoord &r_slice_point = OmStateManager::GetViewCenter();
@@ -59,17 +63,25 @@ void OmViewBoxWidget::Draw()
 	   drawBboxSlice(r_view_bbox, XZ_PLANE, r_slice_point.y, true);
 	   drawBboxSlice(r_view_bbox, YZ_PLANE, r_slice_point.x, true);
 	 */
-	drawSlice(XY_VIEW, OmStateManager::GetViewSliceMin(XY_VIEW), OmStateManager::GetViewSliceMax(XY_VIEW),
-		  OmStateManager::GetViewSliceDepth(XY_VIEW));
-	drawSlice(XZ_VIEW, OmStateManager::GetViewSliceMin(XZ_VIEW), OmStateManager::GetViewSliceMax(XZ_VIEW),
-		  OmStateManager::GetViewSliceDepth(XZ_VIEW));
-	drawSlice(YZ_VIEW, OmStateManager::GetViewSliceMin(YZ_VIEW), OmStateManager::GetViewSliceMax(YZ_VIEW),
-		  OmStateManager::GetViewSliceDepth(YZ_VIEW));
 
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+
+		drawLines(OmStateManager::GetViewDepthCoord());
+
+	} else {
+		drawSlice(XY_VIEW, OmStateManager::GetViewSliceMin(XY_VIEW), OmStateManager::GetViewSliceMax(XY_VIEW),
+ 		  OmStateManager::GetViewSliceDepth(XY_VIEW));
+		drawSlice(XZ_VIEW, OmStateManager::GetViewSliceMin(XZ_VIEW), OmStateManager::GetViewSliceMax(XZ_VIEW),
+		  OmStateManager::GetViewSliceDepth(XZ_VIEW));
+		drawSlice(YZ_VIEW, OmStateManager::GetViewSliceMin(YZ_VIEW), OmStateManager::GetViewSliceMax(YZ_VIEW),
+		  OmStateManager::GetViewSliceDepth(YZ_VIEW));
+	}
 	glPopAttrib();
 }
 
-/*
+
+
+/**
  *	Draw a rectangle given the verticies in counter-clockwise order
  */
 void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, bool wire)
@@ -84,7 +96,36 @@ void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, b
 	glEnd();
 }
 
-/*
+void drawLines(SpaceCoord depth)
+{
+	SpaceCoord v0, v1;
+
+	glColor3fv(OMGL_BLUE);
+	v0 = SpaceCoord(depth.x, depth.y, depth.z-0.1);
+	v1 = SpaceCoord(depth.x, depth.y, depth.z+0.1);
+	glBegin(GL_LINE_STRIP);
+	glVertex3fv(v0.array);
+	glVertex3fv(v1.array);	
+	glEnd();
+
+	glColor3fv(OMGL_GREEN);
+	v0 = SpaceCoord(depth.x, depth.y-0.1, depth.z);
+	v1 = SpaceCoord(depth.x, depth.y+0.1, depth.z);
+	glBegin(GL_LINE_STRIP);
+	glVertex3fv(v0.array);
+	glVertex3fv(v1.array);	
+	glEnd();
+
+	glColor3fv(OMGL_RED);
+	v0 = SpaceCoord(depth.x-0.1, depth.y, depth.z);
+	v1 = SpaceCoord(depth.x+0.1, depth.y, depth.z);
+	glBegin(GL_LINE_STRIP);
+	glVertex3fv(v0.array);
+	glVertex3fv(v1.array);	
+	glEnd();
+}
+
+/**
  *	Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
 void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth)
@@ -123,41 +164,3 @@ void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float
 
 }
 
-/*
-void
-drawBboxSlice(const SpaceBbox &bbox, OmViewBoxPlane plane, float offset, bool wire) {
-	
-	const SpaceCoord& r_min = bbox.getMin();
-	const SpaceCoord& r_max = bbox.getMax();
-	
-	SpaceCoord v0, v1, v2, v3;
-	
-	switch(plane) {
-		case XY_PLANE:
-			glColor3fv(OMGL_BLUE);
-			v0 = SpaceCoord(r_min.x, r_min.y, offset);
-			v1 = SpaceCoord(r_max.x, r_min.y, offset);
-			v2 = SpaceCoord(r_max.x, r_max.y, offset);
-			v3 = SpaceCoord(r_min.x, r_max.y, offset);
-			break;
-			
-		case XZ_PLANE:
-			glColor3fv(OMGL_GREEN);
-			v0 = SpaceCoord(r_min.x, offset, r_min.z);
-			v1 = SpaceCoord(r_min.x, offset, r_max.z);
-			v2 = SpaceCoord(r_max.x, offset, r_max.z);
-			v3 = SpaceCoord(r_max.x, offset, r_min.z);
-			break;
-			
-		case YZ_PLANE:
-			glColor3fv(OMGL_RED);
-			v0 = SpaceCoord(offset, r_min.y, r_min.z);
-			v1 = SpaceCoord(offset, r_max.y, r_min.z);
-			v2 = SpaceCoord(offset, r_max.y, r_max.z);
-			v3 = SpaceCoord(offset, r_min.y, r_max.z);
-			break;
-	}
-	
-	drawRectangle(v0, v1, v2, v3, wire);
-}
-*/

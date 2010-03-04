@@ -714,7 +714,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	
-	debug("view3d", "coordinate is now (%d, %d, %d)\n", 
+	debug("view3d", "coordinate is now (%f, %f, %f)\n", 
 	      picked_voxel.x,
 	      picked_voxel.y,
 	      picked_voxel.z
