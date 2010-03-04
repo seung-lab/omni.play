@@ -1405,7 +1405,9 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 			OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
 			OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
 			OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
-
+			OmStateManager::SetPanDistance(YZ_VIEW, Vector2f(0,0));
+			OmStateManager::SetPanDistance(XZ_VIEW, Vector2f(0,0));
+			OmStateManager::SetPanDistance(XY_VIEW, Vector2f(0,0));			
 			if (OmLocalPreferences::getStickyCrosshairMode()){
 				debug("cross","we made it to the great Escape!\n");
 				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
@@ -2606,7 +2608,7 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 
 	DataBbox extent = OmVolume::GetDataExtent();
 	Vector3f dataScale;
-	Vector3i scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	Vector3i scale = extent.getMax() - extent.getMin() + Vector3i::ONE;
 	dataScale.x = (float) scale.x;
 	dataScale.y = (float) scale.y;
 	dataScale.z = (float) scale.z;
