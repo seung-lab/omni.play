@@ -166,17 +166,20 @@ int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 {
 
 	// find depth
-	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
-	DataCoord mDataCoord = OmVolume::NormToDataCoord(mNormCoord);
+	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	float factor=OMPOW(2,zoomMipVector.x);
+
 
 	if (view_type == XY_VIEW) {
-		return mDataCoord.z;
+		return (int)(dataCoord.z/factor);
 	}
 	if (view_type == XZ_VIEW) {
-		return mDataCoord.y;
+		return (int)(dataCoord.y/factor);
 	}
 	if (view_type == YZ_VIEW) {
-		return mDataCoord.x;
+		return (int)(dataCoord.x/factor);
 	}
 }
 
