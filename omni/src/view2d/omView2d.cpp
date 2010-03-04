@@ -75,12 +75,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 	setMouseTracking(true);	// necessary for mouse-centered zooming
 	setAutoFillBackground(false);	// necessary for proper QPainter functionality
 
-	//setup widgets
-	// mView3dWidgetManager.Set(1, new OmSelectionWidget(this));
-	// mView3dWidgetManager.Set(2, new OmViewBoxWidget(this));
-	// mView3dWidgetManager.Set(3, new OmInfoWidget(this));
-	// mView3dWidgetManager.Set(4, new OmChunkExtentWidget(this));
-
 	pbuffer = new QGLPixelBuffer(size(), QGLFormat::defaultFormat(), sharedwidget);
 	mNewDraw = false;
 
@@ -2553,9 +2547,11 @@ Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
 
 SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & screenc)
 {
-	Vector2f mPanDistance =  OmStateManager::Instance()->GetPanDistance(mViewType);
-        Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();          Vector3f mScale = OmVolume::Instance()->GetScale();                
-	Vector2f stretch= OmVolume::GetStretchValues(mViewType);                  
+	Vector2f mPanDistance = OmStateManager::Instance()->GetPanDistance(mViewType);
+	debug("cross", "pan: %f, %f\n", mPanDistance.x, mPanDistance.y);
+        Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();         
+	Vector3f mScale = OmVolume::Instance()->GetScale();                
+	Vector2f stretch = OmVolume::GetStretchValues(mViewType);                  
 
 	DataBbox extent = OmVolume::GetDataExtent();
 	Vector3f dataScale;
@@ -2563,10 +2559,12 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 	dataScale.x = (float) scale.x;
 	dataScale.y = (float) scale.y;
 	dataScale.z = (float) scale.z;
-	Vector3f datac; //= normCoord * scale;
+	debug("cross", "datascale: x,y,z: %f, %f, %f\n", dataScale.x, dataScale.y, dataScale.z);
+	Vector3f datac;
 	NormCoord normc;
         Vector3f result;
         float factor = OMPOW(2,mZoomLevel.x);                                                             
+	debug("cross", "factor: %f\n", factor);
         float zoomScale = mZoomLevel.y;                                                                 
         switch(mViewType){                                                                              
         case XY_VIEW:                                                                                   
