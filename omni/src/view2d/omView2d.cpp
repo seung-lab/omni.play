@@ -614,8 +614,9 @@ void OmView2d::SetDepth(QMouseEvent * event)
 	ScreenCoord screenc = ScreenCoord(event->x(),event->y());
 	SpaceCoord newDepth = ScreenToSpaceCoord(mViewType,screenc);
 
-	debug ("cross", "click event x,y (%f, %f)\n", clickPoint.x, clickPoint.y);
-	debug ("cross", "newDepth x,y,z (%f, %f,)\n", newDepth.x, newDepth.y,newDepth.z);
+	debug ("cross", "click event x,y (%i, %i)\n", clickPoint.x, clickPoint.y);
+	debug ("cross", "screenc x,y (%i, %i)\n", screenc.x, screenc.y);
+	debug ("cross", "newDepth x,y,z (%f, %f, %f)\n", newDepth.x, newDepth.y,newDepth.z);
 	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, newDepth.z);
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, newDepth.y);
 	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, newDepth.x);
@@ -2561,7 +2562,7 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 	dataScale.z = (float) scale.z;
 	debug("cross", "datascale: x,y,z: %f, %f, %f\n", dataScale.x, dataScale.y, dataScale.z);
 	Vector3f datac;
-	NormCoord normc;
+	NormCoord normc = NormCoord(0,0,0);
         Vector3f result;
         float factor = OMPOW(2,mZoomLevel.x);                                                             
 	debug("cross", "factor: %f\n", factor);
@@ -2588,7 +2589,10 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
         default:                                                                                   
 				 //assert(0);                                                                              
                 break;                                                                                  
-        }                                                                                              
+        }                         
+	assert(!isnan(result.x));
+	assert(!isnan(result.y));
+	assert(!isnan(result.z));
         return result;        
 }
 

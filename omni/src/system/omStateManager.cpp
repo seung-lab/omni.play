@@ -233,6 +233,7 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
 {
+	if (isnan(depth)) assert(0);
 	switch (plane) {
 	case XY_VIEW:
 		Instance()->mXYSlice[4] = depth;
