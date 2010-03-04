@@ -48,7 +48,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	static const int ID_COL = 2;
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
-	static const int MAX_COL_TO_DISPLAY = 3;
 
 	void SegmentObjectModificationEvent(OmSegmentEvent * event);
 
@@ -60,6 +59,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
 	void leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column);
+	void leftClickOnFilterItem(QTreeWidgetItem * current, const int column);
 
 	void selectChannelView(QAction * act);
 	void selectSegmentationView(QAction * act);
@@ -73,11 +73,10 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
  private:
 
-	 QSplitter * splitter;
-
 	///////////////////////////////
 	// new inspector elements
 	QTreeWidget *dataSrcListWidget;
+	QTreeWidget *filterListWidget;
 	void populateDataSrcListWidget();
 	void addChannelToSplitter(ChannelDataWrapper data);
 	void addSegmentationToSplitter(SegmentationDataWrapper data);
@@ -92,10 +91,11 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QTabWidget *dataElementsTabs;
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment =
 					       false, const OmId segmentJustSelectedID = 0);
-	void populateChannelElementsListWidget(ChannelDataWrapper data);
-	QTreeWidget *setupVolumeList(QWidget * layoutWidget);
-	QTreeWidget *setupDataElementList();
-	QTreeWidget *setupDataSrcList();
+	void populateFilterListWidget(ChannelDataWrapper cdw);
+	QTreeWidget * setupVolumeList(QWidget * layoutWidget);
+	QTreeWidget * setupDataElementList();
+	QTreeWidget * setupDataSrcList();
+	QTreeWidget * setupFilterList();
 	ChannelDataWrapper getCurrentlySelectedChannel();
 	Qt::CheckState getCheckState(const bool enabled);
 	bool getBoolState(const Qt::CheckState state);
@@ -104,7 +104,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
 	void addChannelToVolume();
 	void addSegmentationToVolume();
-	void autoResizeColumnWidths(QTreeWidget * widget);
+	void autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display);
 	void makeSegmentationActive(const OmId segmentationID);
 	void makeSegmentationActive(SegmentationDataWrapper sdw);
 	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
@@ -112,6 +112,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
 	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
 	DataWrapperContainer currentDataSrc;
+
+	QWidget *layoutWidget;
 
 	// keep local hash of segmentation --> segments to maintain 
 	//  GUI state information about which segments are selected
@@ -136,9 +138,11 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void populateChannelInspector(OmId c_id);
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
-	bool first_access;
+	InspectorProperties * inspectorProperties;
 
 	ViewType getViewType(QAction * act);
+
+	void setTabEnabled( QWidget * tab, QString title );
 };
 
 #endif

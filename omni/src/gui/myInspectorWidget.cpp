@@ -29,46 +29,26 @@ Q_DECLARE_METATYPE(FilterDataWrapper);
 
 MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 {
-	QSizePolicy mSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-	mSizePolicy.setHorizontalStretch(0);
-	mSizePolicy.setVerticalStretch(0);
-	mSizePolicy.setHeightForWidth(sizePolicy().hasHeightForWidth());
-	setSizePolicy(mSizePolicy);
+	inspectorProperties = new InspectorProperties( this );
 
-	splitter = new QSplitter(this);
-	splitter->setOrientation(Qt::Horizontal);
-
-	QWidget *layoutWidget = new QWidget(splitter);
-	splitter->addWidget(layoutWidget);
+	layoutWidget = new QWidget( this );
 	QVBoxLayout *verticalLayout = new QVBoxLayout(layoutWidget);
-	verticalLayout->setContentsMargins(0, 0, 0, 0);
 
-	// Volumes/Preferences (2D view, Mesh, etc..)
 	verticalLayout->addWidget(setupVolumeList(layoutWidget));
-
-	// data source list (Channel, Segmentation, etc)
 	verticalLayout->addWidget(setupDataSrcList());
 
-	// data elements: segments, filters, etc (and search widgets)
-	//      verticalLayout->addWidget( setupDataElementList() );
 	dataElementsTabs = new QTabWidget();
 	verticalLayout->addWidget(dataElementsTabs);
-	dataElementsTabs->addTab(setupDataElementList(), "All");
-
-	//      verticalLayout->addLayout( setupSearchStuff() );
-
-	// setup main grid layout
-	QVBoxLayout *verticalLayout_2 = new QVBoxLayout();
-	verticalLayout_2->addWidget(splitter);
-	QGridLayout *gridLayout = new QGridLayout(this);
-	gridLayout->addLayout(verticalLayout_2, 0, 0, 1, 1);
 
 	currentDataSrc = DataWrapperContainer();
 
-	first_access = true;
-
-	// what does this do? (purcaro)
 	QMetaObject::connectSlotsByName(this);
+}
+
+void MyInspectorWidget::setTabEnabled( QWidget * tab, QString title )
+{
+	dataElementsTabs->removeTab( 0 );
+	dataElementsTabs->addTab( tab, title );	
 }
 
 QTreeWidget *MyInspectorWidget::setupDataElementList()
@@ -76,13 +56,26 @@ QTreeWidget *MyInspectorWidget::setupDataElementList()
 	dataElementsWidget = new QTreeWidget(this);
 	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	dataElementsWidget->setAlternatingRowColors(true);
-
 	dataElementsWidget->setColumnCount(3);
+
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataElementsWidget->setHeaderLabels(headers);
 
 	return dataElementsWidget;
+}
+
+QTreeWidget *MyInspectorWidget::setupFilterList()
+{
+	filterListWidget = new QTreeWidget(this);
+	filterListWidget->setAlternatingRowColors(false);
+	filterListWidget->setColumnCount(3);
+
+	QStringList headers;
+	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
+	filterListWidget->setHeaderLabels(headers);
+
+	return filterListWidget;
 }
 
 QTreeWidget *MyInspectorWidget::setupDataSrcList()
@@ -117,18 +110,11 @@ QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
 	volumeListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	volumeListWidget->setHeaderHidden(true);
 
-	QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
-	sizePolicy2.setHorizontalStretch(0);
-	sizePolicy2.setVerticalStretch(0);
-	sizePolicy2.setHeightForWidth(volumeListWidget->sizePolicy().hasHeightForWidth());
-	volumeListWidget->setSizePolicy(sizePolicy2);
-
 	return volumeListWidget;
 }
 
 MyInspectorWidget::~MyInspectorWidget()
 {
-	delete(splitter);
 }
 
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -167,89 +153,89 @@ void MyInspectorWidget::populateDataSrcListWidget()
 	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *, int)));
 
-	autoResizeColumnWidths(dataSrcListWidget);
+	autoResizeColumnWidths(dataSrcListWidget, 3);
 
 	dataSrcListWidget->update();
 }
 
-void MyInspectorWidget::populateChannelElementsListWidget(ChannelDataWrapper cdw)
+void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	dataElementsWidget->clear();
+	setTabEnabled( setupFilterList(), "Filters" );
+
+	filterListWidget->clear();
 
 	const OmId segmenID = cdw.getID();
 
-	dataElementsWidget->selectionModel()->blockSignals(true);
-	dataElementsWidget->selectionModel()->clearSelection();
+	filterListWidget->selectionModel()->blockSignals(true);
+	filterListWidget->selectionModel()->clearSelection();
 
 	foreach(FilterDataWrapper filter, cdw.getAllFilterIDsAndNames()) {
-		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
+		QTreeWidgetItem *row = new QTreeWidgetItem(filterListWidget);
 		row->setText(NAME_COL, filter.getName());
 		row->setText(ID_COL, QString("%1").arg(filter.getID()));
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(filter));
 		//row->setText( NOTE_COL, filter.getNote() );
+		row->setText( NOTE_COL, "" );
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(true));
 		//row->setSelected( seg.isSelected() );
 	}
 
-	dataElementsWidget->selectionModel()->blockSignals(false);
+	filterListWidget->selectionModel()->blockSignals(false);
 
-	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
-	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+	filterListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
+	connect(filterListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(addToSplitterDataElementFilter(QTreeWidgetItem *, int)));
 
-	autoResizeColumnWidths(dataElementsWidget);
+	autoResizeColumnWidths(filterListWidget, 3);
 
-	dataElementsWidget->update();
+	filterListWidget->header()->setStretchLastSection(false);
+	filterListWidget->header()->setResizeMode(0,QHeaderView::Custom);
+	filterListWidget->header()->setResizeMode(1,QHeaderView::Stretch);
+	filterListWidget->header()->setResizeMode(2,QHeaderView::Custom);
+	filterListWidget->header()->setResizeMode(3,QHeaderView::Custom);
+	filterListWidget->resizeColumnToContents(0);
+	filterListWidget->resizeColumnToContents(2);
+	filterListWidget->resizeColumnToContents(3);
+
+
+	filterListWidget->update();
 }
 
-void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget)
+void MyInspectorWidget::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)
 {
-	for (int i = 0; i <= MAX_COL_TO_DISPLAY; i++) {
+	for (int i = 0; i <= max_col_to_display; i++) {
 		widget->resizeColumnToContents(i);
 	}
 }
 
-void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper data)
+void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 {
-	const OmId item_id = data.getID();
-
-	QWidget *my_widget = splitter->widget(1);
+	channelInspectorWidget = new ChanInspector( cdw, this);
 	
-	QList < int >my_sizes = splitter->sizes();
-	delete my_widget;
-	channelInspectorWidget = new ChanInspector(item_id, splitter);
+	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
+		this, SLOT(addFilter()));
 	
-	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), this, SLOT(addFilter()));
-	
-	if (!(first_access)) {
-		splitter->setSizes(my_sizes);
-	}
-
-	channelInspectorWidget->setId(item_id);
-	populateChannelInspector(item_id);
-	channelInspectorWidget->setChannelID(item_id);
+	populateChannelInspector( cdw.getID() );
 
 	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
+
+	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, 
+						 QString("Channel %1 Inspector").arg(cdw.getID()) );
 }
 
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
-	QList < int >my_sizes = splitter->sizes();
-	QWidget *my_widget = splitter->widget(1);
-	delete my_widget;
-	
-	segInspectorWidget = new SegInspector( sdw, splitter);
+	segInspectorWidget = new SegInspector( sdw, this);
 	
 	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), this, SLOT(rebuildSegmentList(OmId)));
 	
 	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
-	
-	if (!(first_access))
-		splitter->setSizes(my_sizes);
 
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
+
+	inspectorProperties->setOrReplaceWidget( segInspectorWidget, "Segmentation Inspector" );
 }
 
 void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
@@ -257,15 +243,9 @@ void MyInspectorWidget::addToSplitterDataElementSegment(QTreeWidgetItem * curren
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
-	QWidget *my_widget = splitter->widget(1);
-	QList < int >my_sizes = splitter->sizes();
-	delete my_widget;
-	segObjectInspectorWidget = new SegObjectInspector(sdw, splitter);
-	if (!(first_access)) {
-		splitter->setSizes(my_sizes);
-	}
+	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
 
-	first_access = false;
+	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, "Segment Inspector" );
 }
 
 void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
@@ -273,15 +253,9 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
 
-	QWidget *my_widget = splitter->widget(1);
-	QList < int >my_sizes = splitter->sizes();
-	delete my_widget;
-	filObjectInspectorWidget = new FilObjectInspector(splitter, fdw);
-	if (!(first_access)) {
-		splitter->setSizes(my_sizes);
-	}
+	filObjectInspectorWidget = new FilObjectInspector(this, fdw);
 
-	first_access = false;
+	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, "Channel Inspector" );
 }
 
 void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
@@ -292,15 +266,13 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const
 	switch (dwc.getType()) {
 	case CHANNEL:
 		addChannelToSplitter(dwc.getChannelDataWrapper());
-		populateChannelElementsListWidget(dwc.getChannelDataWrapper());
+		populateFilterListWidget(dwc.getChannelDataWrapper());
 		break;
 	case SEGMENTATION:
 		addSegmentationToSplitter(dwc.getSegmentationDataWrapper());
 		makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	}
-
-	first_access = false;
 }
 
 void MyInspectorWidget::showChannelContextMenu()
@@ -388,6 +360,11 @@ void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
 	doShowDataSrcContextMenu( dataSrcItem );
 }
 
+void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current, const int column)
+{
+	addToSplitterDataSource(current, column );
+}
+
 void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
@@ -461,14 +438,10 @@ void MyInspectorWidget::addToVolume(OmManageableObject * item, ObjectType item_t
 
 void MyInspectorWidget::addFilter()
 {
-	ChannelDataWrapper cdw(channelInspectorWidget->getId());
-
-	OmFilter2d & added_filter = OmVolume::GetChannel(cdw.getID()).AddFilter();
-
-	channelInspectorWidget->setFilterID(added_filter.GetId());
-
+	ChannelDataWrapper cdw = channelInspectorWidget->getChannelDataWrapper();
+	OmFilter2d & added_filter = OmVolume::GetChannel( cdw.getID() ).AddFilter();
 	populateDataSrcListWidget();
-	populateChannelElementsListWidget(cdw);
+	populateFilterListWidget(cdw);
 }
 
 void MyInspectorWidget::nameEditChanged()
@@ -621,6 +594,7 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 		}
 	}
 
+	setTabEnabled( setupDataElementList(), "All Segments" );
 	dataElementsWidget->clear();
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
@@ -664,7 +638,7 @@ void MyInspectorWidget::populateSegmentElementsListWidget(const bool doScrollToS
 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
 
-	autoResizeColumnWidths(dataElementsWidget);
+	autoResizeColumnWidths(dataElementsWidget, 3);
 
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);

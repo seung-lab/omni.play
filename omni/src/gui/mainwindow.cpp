@@ -362,7 +362,7 @@ void MainWindow::openInspector()
 			return;
 		}
 
-		omniInspector = new MyInspectorWidget();
+		omniInspector = new MyInspectorWidget( this );
 
 		QDockWidget *dock = new QDockWidget(tr("Inspector"), this);
 		dock->setAllowedAreas(Qt::AllDockWidgetAreas);

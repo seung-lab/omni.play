@@ -4,29 +4,20 @@
 #include <QWidget> 
 #include "ui_chanInspector.h" 
 #include "system/omSystemTypes.h"
-
+#include "utility/dataWrappers.h"
 #include "volume/omChannel.h"
 
 class ChanInspector : public QWidget, public Ui::chanInspector
 { 
-    Q_OBJECT 
+	Q_OBJECT 
 	
-public: 
-    ChanInspector(OmId chan_id, QWidget *parent = 0);
-	
-	void setId(OmId new_id);
-	const OmId getId(){ return my_id; }
-	QString raiseFileDialog();
-	
-	void intermediate_build_call(OmChannel *current_channel);
-	
-    void setChannelID( const OmId );
-    OmId getChannelID();
-    void setFilterID( const OmId );
-    OmId getFilterID();
-	
+ public: 
+	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent = 0);
+ 	QString raiseFileDialog();
+ 	void intermediate_build_call(OmChannel *current_channel);
+	ChannelDataWrapper getChannelDataWrapper();
 
-	private slots:
+ private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
 	void on_patternEdit_editingFinished();
@@ -34,11 +25,8 @@ public:
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
-	
-private:
-	OmId my_id;
-	OmId ChannelID;
-	OmId FilterID;
-	
+    
+ private:
+	ChannelDataWrapper cdw;
 }; 
 #endif
