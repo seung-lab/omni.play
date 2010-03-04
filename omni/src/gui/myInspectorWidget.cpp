@@ -29,20 +29,21 @@ Q_DECLARE_METATYPE(FilterDataWrapper);
 
 MyInspectorWidget::MyInspectorWidget(QWidget * parent):QWidget(parent)
 {
-	inspectorProperties = new InspectorProperties( this );
-
 	layoutWidget = new QWidget( this );
 	QVBoxLayout *verticalLayout = new QVBoxLayout(layoutWidget);
-
 	verticalLayout->addWidget(setupVolumeList(layoutWidget));
 	verticalLayout->addWidget(setupDataSrcList());
-
 	dataElementsTabs = new QTabWidget();
 	verticalLayout->addWidget(dataElementsTabs);
 
 	currentDataSrc = DataWrapperContainer();
+	inspectorProperties = new InspectorProperties( this );
 
 	QMetaObject::connectSlotsByName(this);
+}
+
+MyInspectorWidget::~MyInspectorWidget()
+{
 }
 
 void MyInspectorWidget::setTabEnabled( QWidget * tab, QString title )
@@ -87,12 +88,6 @@ QTreeWidget *MyInspectorWidget::setupDataSrcList()
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataSrcListWidget->setHeaderLabels(headers);
 
-	QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Minimum);
-	sizePolicy3.setHorizontalStretch(0);
-	sizePolicy3.setVerticalStretch(0);
-	sizePolicy3.setHeightForWidth(dataSrcListWidget->sizePolicy().hasHeightForWidth());
-	dataSrcListWidget->setSizePolicy(sizePolicy3);
-
 	populateDataSrcListWidget();
 
 	// context menu setup
@@ -111,10 +106,6 @@ QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
 	volumeListWidget->setHeaderHidden(true);
 
 	return volumeListWidget;
-}
-
-MyInspectorWidget::~MyInspectorWidget()
-{
 }
 
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
