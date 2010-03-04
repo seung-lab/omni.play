@@ -11,6 +11,7 @@ SegmentList::SegmentList( QWidget * parent,
 {
 	inspectorProperties = in_inspectorProperties;
 	dataElementsTabs = in_dataElementsTabs;
+	haveValidSDW = false;
 }
 
 void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
@@ -18,7 +19,12 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 {
 	debug("guievent", "in %s...\n", __FUNCTION__ );
 
-	SegmentationDataWrapper sdw = currentDataSrc;
+	if( !haveValidSDW ){
+		printf("invalid sdw...\n");
+		return;
+	}
+
+	SegmentationDataWrapper sdw = currentSDW;
 	const OmId segmenID = sdw.getID();
 
 	if (!hashOfSementationsAndSegments.contains(segmenID)) {
@@ -31,7 +37,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 		}
 	}
 
-	setTabEnabled( setupDataElementList(), "All Segments" );
+	setTabEnabled( setupDataElementList(), QString("Seg%1: All Segments").arg(sdw.getID()) );
 	dataElementsWidget->clear();
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
@@ -165,25 +171,29 @@ void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState
 
 void SegmentList::makeSegmentationActive(const OmId segmentationID)
 {
-	currentDataSrc = SegmentationDataWrapper(segmentationID);
+	currentSDW = SegmentationDataWrapper(segmentationID);
+	haveValidSDW = true;
 	populateSegmentElementsListWidget();
 }
 
 void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw)
 {
-	currentDataSrc = sdw;
+	currentSDW = sdw;
+	haveValidSDW = true;
 	populateSegmentElementsListWidget();
 }
 
 void SegmentList::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
-	currentDataSrc = SegmentationDataWrapper(segmentationID);
+	currentSDW = SegmentationDataWrapper(segmentationID);
+	haveValidSDW = true;
 	populateSegmentElementsListWidget(true, segmentJustSelectedID);
 }
 
 void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
 {
-	currentDataSrc = sdw;
+	currentSDW = sdw;
+	haveValidSDW = true;
 	populateSegmentElementsListWidget(true, segmentJustSelectedID);
 }
 
@@ -236,3 +246,27 @@ void MyInspectorWidget::mouseReleaseEvent(QMouseEvent *event)
         }       
 */
 
+void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+{
+	// quick hack; assumes userData is pointer to sender (and we're the only
+	//  ones to set the sender...)
+	if (this == event->getSender()) {
+		debug("guievent", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		return;
+	} else {
+		debug("guievent", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+	}
+
+	const OmId segmentationID = event->GetModifiedSegmentationId();
+	if (!OmVolume::IsSegmentationValid(segmentationID)) {
+		if( haveValidSDW ){
+			populateSegmentElementsListWidget();
+		}
+		return;
+	}
+
+	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
+	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
+
+	makeSegmentationActive(segmentationID, segmentJustSelectedID);
+}

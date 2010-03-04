@@ -453,27 +453,7 @@ void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
-	// quick hack; assumes userData is pointer to sender (and we're the only
-	//  ones to set the sender...)
-	if (this == event->getSender()) {
-		debug("guievent", "in MyInspectorWidget:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
-		return;
-	} else {
-		debug("guievent", "in MyInspectorWidget:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
-	}
-
-	const OmId segmentationID = event->GetModifiedSegmentationId();
-	if (!OmVolume::IsSegmentationValid(segmentationID)) {
-		if( currentDataSrc.isValidContainer() ){
-			populateSegmentElementsListWidget();
-		}
-		return;
-	}
-
-	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
-	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
-
-	makeSegmentationActive(segmentationID, segmentJustSelectedID);
+	segmentList->dealWithSegmentObjectModificationEvent(event);
 }
 
 void MyInspectorWidget::makeSegmentationActive(const OmId segmentationID)
