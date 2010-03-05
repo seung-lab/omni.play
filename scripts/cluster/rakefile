@@ -1,0 +1,34 @@
+# Proposed template rakefile for the automated build of omni.
+#
+#
+task :buildbox
+
+  namespace "main" do
+    task :buildbox
+      puts "Building..."
+
+      # Get source as buildbox.
+      puts "Downloading source..."
+      # Build cluster specific tool chain.
+      puts "Building toolchain..."
+     
+    namespace "superuser" do
+      task :buildbox
+        puts "Installing..."
+        # Install cluster specific toolchain.
+    end
+
+    namespace "omni" do
+      task :buildbox
+        puts "Instantiating..."
+        # Bootstrap omni.
+        # Mesh buildbox.omni.
+    end
+
+    namespace "execute" do 
+      task :buildbox
+        puts "Loading Omni..."
+    end
+  end
+
+task :default => ["main:buildbox", "main:superuser:buildbox", "main:omni:buildbox", "main:execute:buildbox"]
