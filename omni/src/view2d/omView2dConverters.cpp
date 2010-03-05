@@ -230,4 +230,69 @@ NormCoord OmView2d::ScreenToNormCoord(ViewType viewType, const ScreenCoord & scr
 	//return DataToNormCoord(ScreenToDataCoord(screenc));  
 }
 
+DataCoord OmView2d::ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth)
+{
+	DataCoord this_data_coord;
+	switch (mViewType) {
+	case XY_VIEW:
+		this_data_coord = DataCoord(xMipChunk, yMipChunk, mDataDepth);
+		break;
+	case XZ_VIEW:
+		this_data_coord = DataCoord(xMipChunk, mDataDepth, yMipChunk);
+		break;
+	case YZ_VIEW:
+		this_data_coord = DataCoord(mDataDepth, yMipChunk, xMipChunk);
+		break;
+	}
+	return this_data_coord;
+}
+
+int OmView2d::GetDepthToDataSlice(ViewType viewType)
+{
+	SpaceCoord depthCoord = OmStateManager::GetViewDepthCoord();
+	DataCoord dataCoord = SpaceToDataCoord(depthCoord);
+	switch(viewType){
+	case XY_VIEW:	return dataCoord.z;
+	case XZ_VIEW:	return dataCoord.y;
+	case YZ_VIEW:	return dataCoord.x;
+	default: assert(0);
+	}
+}
+
+void OmView2d::SetDataSliceToDepth(ViewType viewType, int slice)
+{
+	DataCoord dataCoord = DataCoord(0, 0, 0);
+	SpaceCoord depthCoord = SpaceCoord(0.0, 0.0, 0.0);
+	switch(viewType){
+	case XY_VIEW:
+		dataCoord.z = slice;
+		depthCoord = DataToSpaceCoord(dataCoord);
+		OmStateManager::SetViewSliceDepth( viewType, depthCoord.z);
+		break;
+	case XZ_VIEW:
+		dataCoord.y = slice;
+		depthCoord = DataToSpaceCoord(dataCoord);
+		OmStateManager::SetViewSliceDepth( viewType, depthCoord.y);		
+		break;
+	case YZ_VIEW:
+		dataCoord.x = slice;
+		depthCoord = DataToSpaceCoord(dataCoord);
+		OmStateManager::SetViewSliceDepth( viewType, depthCoord.x);		
+		break;
+	default: assert(0);
+	}
+}
+
+int OmView2d::GetDepthToDataMax(ViewType viewType)
+{
+	NormCoord normCoord = NormCoord(1.0,1.0,1.0);
+	
+	DataCoord maxCoord = OmVolume::NormToDataCoord(normCoord);
+	switch(viewType){
+	case XY_VIEW:	return maxCoord.z;
+	case XZ_VIEW:	return maxCoord.y;
+	case YZ_VIEW:	return maxCoord.x;
+	default: assert(0);
+	}
+}
 //\}

@@ -17,6 +17,8 @@
 #include "volume/omVolume.h"
 
 #include "project/omProject.h"
+        bool amInFillMode();
+        bool doDisplayInformation();
 
 /**
  * \name Mouse Event Handlers 
