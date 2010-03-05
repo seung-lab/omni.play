@@ -729,6 +729,7 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
         //pick point causes localized redraw (but all depth info stored in selection buffer)
         vector < int >result;
         bool valid_pick = mpView3d->PickPoint(point2d, result);
+        debug("crosshair", "size of crosshair PickPoint call's hit list: %i\n", result.size());
 
         //if valid and return count
         if (!valid_pick || (result.size() != 3))
@@ -745,7 +746,7 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
                 return false;
 
         //define depth scale factor
-        float z_depth_scale = 1.0f;
+        float z_depth_scale = 0.0f;
 
         //normalized vector from camera to unprojected point
         Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());

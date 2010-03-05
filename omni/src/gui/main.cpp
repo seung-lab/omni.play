@@ -160,14 +160,12 @@ void processLine( QString line, QString fName )
 		server->start ();
 		
 		app.exec ();
-        } else if( line.startsWith("ninja") ){
+        } else if( line.startsWith("addSegment") ){
                 if( 0 == SegmentationID  ){
                         printf("please choose segmentation first!\n");
                         return;
                 }
-		for (int i = 0; i < 900; i++) {
-                	OmVolume::GetSegmentation( SegmentationID ).AddSegment();
-		}
+                OmVolume::GetSegmentation( SegmentationID ).AddSegment();
                 OmProject::Save();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
