@@ -52,7 +52,7 @@ OmStateManager::OmStateManager()
 	mXZSlice[4] = depth.y;
 	mXYSlice[4] = depth.z;
 	
-	
+	mParallel = false;
 }
 
 OmStateManager::~OmStateManager()
@@ -132,18 +132,35 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 	return Instance()->omniExecPathAbsolute;
 }
 
-/////////////////////////////////
-///////          Project State
-
-/*
-void
-OmStateManager::FlushState() {
-	//commit project
-	OmProject::Save();
-	//clean undo stack
-	Instance()->mpUndoStack->clear();
+QString OmStateManager::getScratchPath()
+{
+	QString scratchPath;
+	return scratchPath;
 }
-*/
+
+QString OmStateManager::getPID()
+{
+	QString pid;
+	return pid;
+}
+
+QString OmStateManager::getHostname()
+{
+	QString hostname;
+	return hostname;
+}
+
+bool OmStateManager::getParallel()
+{
+	return Instance()->mParallel;
+}
+
+void OmStateManager::setParallel(bool parallel)
+{
+	// This has a race condition in that others migth have been acting on this
+	// value while it is changing, which could lead to a crash.
+	Instance()->mParallel = parallel;
+}
 
 /////////////////////////////////
 ///////          View Event
