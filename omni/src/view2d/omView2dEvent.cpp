@@ -602,11 +602,10 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 //\}
 
 
-/*
+/**
  * \name View Event Methods
+ * \{
  */
-
-//\{
 void OmView2d::ViewBoxChangeEvent(OmViewEvent * event)
 {
 	//debug("genone","OmView2d::ViewBoxChangeEvent -- " << mViewType);
@@ -687,11 +686,10 @@ void OmView2d::SystemModeChangeEvent(OmSystemModeEvent * event)
 }
 //\}
 
-/*
+/**
  * \name Key Event Methods
+ * \{
  */
-
-//\{
 void OmView2d::keyPressEvent(QKeyEvent * event)
 {
 	//debug("genone","OmView2d::keyPressEvent -- " << mViewType);
