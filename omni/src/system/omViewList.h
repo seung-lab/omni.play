@@ -17,8 +17,8 @@ public:
         static OmViewList* Instance();
         static void Delete();
 
-	static OmId AddView ();
-	static void RemoveView (OmId view);
+	static OmId AddBinder ();
+	static void RemoveBinder (OmId view);
 	static set<OmId> GetViews ();
 
 protected:
@@ -33,7 +33,7 @@ private:
         //singleton
         static OmViewList* mspInstance;
 
-	OmGenericManager< OmViewListItem > mGenericViewListManager;
+	OmGenericManager<OmViewListBinder> mGenericViewListManager;
         
         //serialization
         friend class boost::serialization::access;

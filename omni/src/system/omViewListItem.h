@@ -15,9 +15,9 @@ class OmViewListItem : public OmManageableObject {
 public:
 
 	OmLayer& AddLayer ();
-	void RemoveLayer (OmId layer);
-	void RemoveLayer (OmLayer& layer);
-	set<OmLayer> GetLayers ();
+	void RemoveBinder (OmId binder);
+	void RemoveBinder (OmBinder& binder);
+	set<OmBinder>& GetBinder();
 
 	void MoveLayerUp (OmId layer);
 	void MoveLayerUp (OmLayer& layer);

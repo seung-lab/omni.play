@@ -137,6 +137,27 @@ void LocalPrefFiles::writeSettingQStringList( QString setting, QStringList value
 	}
 }
 
+void LocalPrefFiles::writeSettingQString( QString setting, QString value )
+{
+        QFile file(getFileName( setting ) );
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                throw new OmIoException( "could not write file" );
+        }
+
+        QTextStream out(&file);
+	out << value << endl;
+}
+
+QString LocalPrefFiles::readSettingQString( QString setting )
+{
+        QStringList lines = readFile( setting );
+        if( 1 != lines.size() ){
+                throw new OmIoException( "no preference found" );
+        }
+
+        return lines[0];
+}
+
 bool LocalPrefFiles::readSettingBool( QString setting )
 {
 	const unsigned int val = readSettingUInt( setting );

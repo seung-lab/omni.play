@@ -30,6 +30,10 @@ public:
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
 
+	static QString getScratchPath( );
+	static void setScratchPath( QString value);
+
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmLocalPreferences();
@@ -51,6 +55,9 @@ private:
 	static void writeSettingUInt( QString setting, const unsigned int value );
 
 	static QStringList readSettingQStringList( QString setting, QStringList defaultRet );
+
+	static void writeSettingQString (QString setting, QString value);
+	static QString readSettingQString (QString setting, QString defaultRet);
 
 	static bool settingExists( QString setting );
 

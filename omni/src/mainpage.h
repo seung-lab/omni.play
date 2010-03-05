@@ -11,7 +11,9 @@
  *
  *  The requirements for this software can be found at: http://gliamac.mit.edu/doxygen/omni/Requirements.pdf \n
  *  Archived versions can be found at: \htmlonly <A HREF="http://gliamac.mit.edu/doxygen/omni/archives" TARGET="_blank">
- *  http://gliamac.mit.edu/doxygen/omni/archives </A> \endhtmlonly 
+ *  http://gliamac.mit.edu/doxygen/omni/archives </A>
+ *  Fisheye is at <A HREF="http://gliamac:8060/" TARGET="_blank">http://gliamac:8060/</A>
+ *  \endhtmlonly 
  */
   
  */
