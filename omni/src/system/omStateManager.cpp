@@ -1,10 +1,13 @@
 #include "omStateManager.h"
 #include "omEventManager.h"
 #include "project/omProject.h"
+#include "system/omLocalPreferences.h"
 #include "events/omViewEvent.h"
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
+#include <sys/utsname.h>
+
 
 //undostack
 #include <QUndoStack>
@@ -132,22 +135,31 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 	return Instance()->omniExecPathAbsolute;
 }
 
-QString OmStateManager::getScratchPath()
-{
-	QString scratchPath;
-	return scratchPath;
-}
-
 QString OmStateManager::getPID()
 {
-	QString pid;
-	return pid;
+        static char pidstr[6] = {0};
+        pid_t pid;
+        int i;
+
+        if (pidstr[0] == 0) {
+                pid = getpid();
+                for(i = 0; i < 5; i++) {
+                        pidstr[4 - i] = (pid % 10) + '0';
+                        pid /= 10;
+                }
+                pidstr[5] = 0;
+        }
+
+	return QString (pidstr);
 }
 
 QString OmStateManager::getHostname()
 {
-	QString hostname;
-	return hostname;
+	static struct utsname uts = {0};
+
+        if (uts.nodename[0] == 0) uname(&uts);
+
+	return QString(uts.nodename);
 }
 
 bool OmStateManager::getParallel()

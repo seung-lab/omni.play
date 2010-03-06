@@ -6,7 +6,6 @@
 #include "system/omProjectData.h"
 #include "system/omLocalPreferences.h"
 #include "project/omProject.h"
-#include "system/omGarbage.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -123,28 +122,11 @@ void OmMipMesh::Load()
 	//debug("genone","OmMipMesh::Load: got mesh from disk\n");
 }
 
-static void putpid(char *s)
-{
-        static char pidstr[6];
-        pid_t pid;
-        int i;
-
-        if (pidstr[0] == 0) {
-                pid = getpid();
-                for(i = 0; i < 5; i++) {
-                        pidstr[4 - i] = (pid % 10) + '0';
-                        pid /= 10;
-                }
-                pidstr[5] = 0;
-        }
-        strcpy(s, pidstr);
-}
-
 string OmMipMesh::GetLocalPathForHd5fChunk()
 {
         char mip_dname_buf[MAX_FNAME_SIZE];
-	char pid[256] = {0};
-	putpid(pid);
+	QString pid = OmStateManager::getPID();
+	string ret;
         sprintf(mip_dname_buf, "%d.%d.%d_%d_%d.%s.%s.h5",
                	getSegmentationID(),
                 mMeshCoordinate.MipChunkCoord.Level,
@@ -152,18 +134,19 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
                 mMeshCoordinate.MipChunkCoord.Coordinate.y,
                 mMeshCoordinate.MipChunkCoord.Coordinate.z,
                	qPrintable(OmProject::GetFileName()),
-		pid);
+		qPrintable(pid));
 
-	debug("parallel", "/tmp/meshinator_%s\n", mip_dname_buf);
-        return "/tmp/meshinator_" + string(mip_dname_buf);
+        ret = string(qPrintable(OmLocalPreferences::getScratchPath())) + "/meshinator_" + string(mip_dname_buf);
+	debug("parallel", "parallel mesh fs path: %s\n", ret.c_str());
+        return ret;
 }
 
 void OmMipMesh::Save()
 {
 	OmHdf5 * hdf5File = NULL;
 
-	if( OmLocalPreferences::getStoreMeshesInTempFolder() || 
-	    OmGarbage::GetParallel()) {
+	if (OmLocalPreferences::getStoreMeshesInTempFolder() || 
+	    OmStateManager::getParallel()) {
 		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
 		hdf5File->create();
 	} else {

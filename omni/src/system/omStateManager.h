@@ -118,7 +118,6 @@ public:
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
-	static QString getScratchPath();
 	static QString getPID();
 	static QString getHostname();
 	static bool getParallel();

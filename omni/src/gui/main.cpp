@@ -151,7 +151,7 @@ void processLine( QString line, QString fName )
 		openProject( fName, false );
 	} else if( line.startsWith("parallel") ){
 		QStringList args = line.split(':');
-		OmGarbage::SetParallel(args[1], getNum(args[2]));
+		OmStateManager::setParallel(true);
 	} else if( line.startsWith("serve") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);

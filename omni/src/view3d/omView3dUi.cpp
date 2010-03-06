@@ -728,12 +728,13 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 
         //pick point causes localized redraw (but all depth info stored in selection buffer)
         vector < int >result;
-        bool valid_pick = mpView3d->PickPoint(point2d, result);
-        debug("crosshair", "size of crosshair PickPoint call's hit list: %i\n", result.size());
+	bool valid_pick;
+	mpView3d->updateGL();
+	valid_pick = mpView3d->PickPoint(point2d, result);
+	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n", valid_pick, result.size());
 
-        //if valid and return count
-        if (!valid_pick || (result.size() != 3))
-                return false;
+	if(!valid_pick || result.size() != 3)
+		return false;
 
         if (!OmVolume::IsSegmentationValid(result[0]))
                 return false;
