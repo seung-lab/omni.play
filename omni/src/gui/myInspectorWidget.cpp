@@ -28,28 +28,22 @@ Q_DECLARE_METATYPE(FilterDataWrapper);
 MyInspectorWidget::MyInspectorWidget(QWidget * parent)
  : QWidget(parent)
 {
-	layoutWidget = new QWidget( this );
-	QVBoxLayout *verticalLayout = new QVBoxLayout(layoutWidget);
-	verticalLayout->addWidget(setupVolumeList(layoutWidget));
+	verticalLayout = new QVBoxLayout(this);
+	
+	//	verticalLayout->addWidget(setupVolumeList(layoutWidget));
 	verticalLayout->addWidget(setupDataSrcList());
-	dataElementsTabs = new QTabWidget();
-	verticalLayout->addWidget(dataElementsTabs);
 
 	currentDataSrc = DataWrapperContainer();
+
 	inspectorProperties = new InspectorProperties( this );
-	segmentList = new SegmentList(this, inspectorProperties, dataElementsTabs  );
+	elementListBox = new ElementListBox(this, verticalLayout);
+	segmentList = new SegmentList(this, inspectorProperties, elementListBox  );
 
 	QMetaObject::connectSlotsByName(this);
 }
 
 MyInspectorWidget::~MyInspectorWidget()
 {
-}
-
-void MyInspectorWidget::setTabEnabled( QWidget * tab, QString title )
-{
-	dataElementsTabs->removeTab( 0 );
-	dataElementsTabs->addTab( tab, title );	
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
@@ -70,6 +64,8 @@ QTreeWidget *MyInspectorWidget::setupDataSrcList()
 	dataSrcListWidget = new QTreeWidget(this);
 	dataSrcListWidget->setAlternatingRowColors(false);
 	dataSrcListWidget->setColumnCount(3);
+
+	dataSrcListWidget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
@@ -138,7 +134,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	setTabEnabled( setupFilterList(), "Filters" );
+	elementListBox->setTabEnabled( setupFilterList(), "Filters" );
 
 	filterListWidget->clear();
 

@@ -363,6 +363,7 @@ void MainWindow::openInspector()
 		}
 
 		omniInspector = new MyInspectorWidget( this );
+		omniInspector->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
 
 		QDockWidget *dock = new QDockWidget(tr("Inspector"), this);
 		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -381,8 +382,6 @@ void MainWindow::openInspector()
 			this, SLOT(openChannelView(OmId, OmId, OmId, ViewType)));
 		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, OmId, ViewType)),
 			this, SLOT(openSegmentationView(OmId, OmId, ViewType)));
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);

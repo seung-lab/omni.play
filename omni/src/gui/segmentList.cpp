@@ -6,11 +6,11 @@ Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 SegmentList::SegmentList( QWidget * parent, 
 			  InspectorProperties * in_inspectorProperties,
-			  QTabWidget * in_dataElementsTabs ) 
+			  ElementListBox * in_elementListBox ) 
   : QWidget( parent )
 {
 	inspectorProperties = in_inspectorProperties;
-	dataElementsTabs = in_dataElementsTabs;
+	elementListBox = in_elementListBox;
 	haveValidSDW = false;
 }
 
@@ -37,7 +37,8 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 		}
 	}
 
-	setTabEnabled( setupDataElementList(), QString("Seg%1: All Segments").arg(sdw.getID()) );
+	elementListBox->setTabEnabled( setupDataElementList(), 
+				       QString("Seg%1: All Segments").arg(sdw.getID()) );
 	dataElementsWidget->clear();
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
@@ -157,12 +158,6 @@ QTreeWidget * SegmentList::setupDataElementList()
 	dataElementsWidget->setHeaderLabels(headers);
 
 	return dataElementsWidget;
-}
-
-void SegmentList::setTabEnabled( QWidget * tab, QString title )
-{
-	dataElementsTabs->removeTab( 0 );
-	dataElementsTabs->addTab( tab, title );	
 }
 
 void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)

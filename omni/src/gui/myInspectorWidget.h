@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "gui/segmentList.h"
+#include "gui/elementListBox.h"
 #include "inspectors/segInspector.h"
 #include "inspectors/chanInspector.h"
 #include "inspectors/filObjectInspector.h"
@@ -83,7 +84,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QMenu *makeContextMenuBase(QTreeWidget * parent);
 	bool isThereASegmentationSelected();
 
-	QTabWidget *dataElementsTabs;
+
 	void populateFilterListWidget(ChannelDataWrapper cdw);
 	QTreeWidget * setupVolumeList(QWidget * layoutWidget);
 
@@ -97,8 +98,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addSegmentationToVolume();
 
 	DataWrapperContainer currentDataSrc;
-
-	QWidget *layoutWidget;
 
 	///////////////////////////////
 
@@ -121,11 +120,11 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	InspectorProperties * inspectorProperties;
 	SegmentList * segmentList;
+	ElementListBox * elementListBox;
 
 	ViewType getViewType(QAction * act);
 
-	void setTabEnabled( QWidget * tab, QString title );
-
+	QVBoxLayout * verticalLayout;
 };
 
 #endif

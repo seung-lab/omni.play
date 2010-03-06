@@ -11,13 +11,14 @@
 #include "utility/dataWrappers.h"
 #include "system/events/omSegmentEvent.h"
 #include "common/omDebug.h"
+#include "gui/elementListBox.h"
 
 class SegmentList : public QWidget
 {
 	Q_OBJECT
 
 public:
-	SegmentList( QWidget * , InspectorProperties *, QTabWidget * );
+	SegmentList( QWidget * , InspectorProperties *, ElementListBox * );
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment =
 					       false, const OmId segmentJustSelectedID = 0);
 
@@ -56,8 +57,8 @@ private:
 	bool haveValidSDW;
 
 	QTreeWidget * setupDataElementList();
-	QTabWidget * dataElementsTabs;
-	void setTabEnabled( QWidget * tab, QString title );
+	ElementListBox * elementListBox;
+
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	SegObjectInspector *segObjectInspectorWidget;
