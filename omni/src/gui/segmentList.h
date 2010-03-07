@@ -60,7 +60,7 @@ private:
 
 	SegObjectInspector *segObjectInspectorWidget;
 
-	QList< SEGMENT_DATA_TYPE > getSegmentsToDisplay();
+	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay();
 };
 
 #endif

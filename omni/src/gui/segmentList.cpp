@@ -14,14 +14,14 @@ SegmentList::SegmentList( QWidget * parent,
 	haveValidSDW = false;
 }
 
-QList< SEGMENT_DATA_TYPE > SegmentList::getSegmentsToDisplay()
+QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay()
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
 	
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
 
-	QList <OmId> mysegmentIDs;
+	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
 	
 	OmIds::iterator itr;
 	int counter = 0;
@@ -32,7 +32,7 @@ QList< SEGMENT_DATA_TYPE > SegmentList::getSegmentsToDisplay()
 			break;
 		}
 		
-		mysegmentIDs << (*itr);
+		mysegmentIDs->append((*itr));
 	}
 	
 	return mysegmentIDs;
@@ -50,7 +50,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	SegmentationDataWrapper sdw = currentSDW;
 	const OmId segmentationID = sdw.getID();
-	QList< SEGMENT_DATA_TYPE > segs = getSegmentsToDisplay();
+	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay();
 
 	elementListBox->setTabEnabled( setupDataElementList(), 
 				       QString("Seg%1: All Segments").arg(sdw.getID()) );
@@ -60,7 +60,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	foreach(SEGMENT_DATA_TYPE segID, segs) {
+	foreach(SEGMENT_DATA_TYPE segID, (*segs)) {
 		SegmentDataWrapper seg( segmentationID, segID );
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
@@ -74,6 +74,8 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 			rowToJumpTo = row;
 		}
 	}
+
+	delete(segs);
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
 	dataElementsWidget->update();
