@@ -79,15 +79,15 @@ SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
 	mEnabled = OmVolume::IsSegmentationEnabled(mID);
 }
 
-QHash < OmId, SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames()
+QList < SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames()
 {
-	QHash < OmId, SegmentDataWrapper > segs;
+	QList < SegmentDataWrapper > segs;
 
 	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
 
 	foreach(OmId segID, segmen.GetValidSegmentIds()) {
 		SegmentDataWrapper seg(mID, segID);
-		segs[segID] = seg;
+		segs << seg;
 	}
 
 	return segs;

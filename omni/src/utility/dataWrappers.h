@@ -45,7 +45,7 @@ class SegmentationDataWrapper : public DataWrapper
  public:
 	SegmentationDataWrapper(){}
 	SegmentationDataWrapper( const OmId mID );
-	QHash< OmId, SegmentDataWrapper > getAllSegmentIDsAndNames();
+	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
 

@@ -46,9 +46,6 @@ private:
 
 	QTreeWidget *dataElementsWidget;
 
-	// keep local hash of segmentation --> segments to maintain 
-	//  GUI state information about which segments are selected
-	QHash < OmId, QHash < OmId, SegmentDataWrapper > >hashOfSementationsAndSegments;
 	InspectorProperties * inspectorProperties;
 
 	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
@@ -62,6 +59,8 @@ private:
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	SegObjectInspector *segObjectInspectorWidget;
+
+	QList< SEGMENT_DATA_TYPE > getSegmentsToDisplay();
 };
 
 #endif

@@ -14,6 +14,30 @@ SegmentList::SegmentList( QWidget * parent,
 	haveValidSDW = false;
 }
 
+QList< SEGMENT_DATA_TYPE > SegmentList::getSegmentsToDisplay()
+{
+	SegmentationDataWrapper sdw = currentSDW;
+	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
+	
+	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
+
+	QList <OmId> mysegmentIDs;
+	
+	OmIds::iterator itr;
+	int counter = 0;
+	const int  max_counter = 100;
+	for (itr = allSegmentIDs.begin(); itr != allSegmentIDs.end(); itr++) {
+		counter++;
+		if( counter > max_counter ){
+			break;
+		}
+		
+		mysegmentIDs << (*itr);
+	}
+	
+	return mysegmentIDs;
+}
+
 void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							  const OmId segmentJustSelectedID)
 {
@@ -25,17 +49,8 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	const OmId segmenID = sdw.getID();
-
-	if (!hashOfSementationsAndSegments.contains(segmenID)) {
-		hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
-	} else {
-		const unsigned int num_segs_from_hash = hashOfSementationsAndSegments.value(segmenID).size();
-		const unsigned int num_segs_from_core = sdw.getNumberOfSegments();
-		if( num_segs_from_hash != num_segs_from_core ){
-			hashOfSementationsAndSegments[segmenID] = sdw.getAllSegmentIDsAndNames();
-		}
-	}
+	const OmId segmentationID = sdw.getID();
+	QList< SEGMENT_DATA_TYPE > segs = getSegmentsToDisplay();
 
 	elementListBox->setTabEnabled( setupDataElementList(), 
 				       QString("Seg%1: All Segments").arg(sdw.getID()) );
@@ -44,16 +59,9 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	dataElementsWidget->selectionModel()->clearSelection();
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
-	QHash < OmId, SegmentDataWrapper > segs = hashOfSementationsAndSegments.value(segmenID);
 
-	//OmSegmentation& segmentation = OmVolume::GetSegmentation( sdw.getID() );
-
-	int count = 0;
-	foreach(SegmentDataWrapper seg, segs) {
-		count++;
-		if (count > 60000){
-			break;
-		}
+	foreach(SEGMENT_DATA_TYPE segID, segs) {
+		SegmentDataWrapper seg( segmentationID, segID );
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
@@ -196,14 +204,14 @@ void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID)
 {
-	hashOfSementationsAndSegments.remove(segmentationID);
+	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID);
 }
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID,
 					   const OmId segmentJustAddedID)
 {
-	hashOfSementationsAndSegments.remove(segmentationID);
+	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
