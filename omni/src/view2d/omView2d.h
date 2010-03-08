@@ -228,7 +228,7 @@ private:
 	OmId mSecondSegId;
 	
 	int mTileCount;
-	Vector2f mMousePoint;
+	Vector2i mMousePoint;
 	
 	// OmCamera2d mCamera;
 	OmGenericManager< OmView2dWidget > mView2dWidgetManager;

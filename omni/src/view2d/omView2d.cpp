@@ -1669,7 +1669,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
 	
-	Vector3f depth;
+	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
 	int mDataDepth;
 	switch (mViewType){
@@ -1840,7 +1840,6 @@ void OmView2d::DrawCursors()
 		painter.setPen(Qt::blue);
 		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
 		break;
-	
 	case YZ_VIEW:
 		painter.setPen(Qt::blue);
 		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
