@@ -59,28 +59,6 @@ QTreeWidget *MyInspectorWidget::setupFilterList()
 	return filterListWidget;
 }
 
-QTreeWidget *MyInspectorWidget::setupDataSrcList()
-{
-	dataSrcListWidget = new QTreeWidget(this);
-	dataSrcListWidget->setAlternatingRowColors(false);
-	dataSrcListWidget->setColumnCount(3);
-
-	dataSrcListWidget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-
-	QStringList headers;
-	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
-	dataSrcListWidget->setHeaderLabels(headers);
-
-	populateDataSrcListWidget();
-
-	// context menu setup
-	dataSrcListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(dataSrcListWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
-		this, SLOT(showDataSrcContextMenu(const QPoint &)));
-
-	return dataSrcListWidget;
-}
-
 QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
 {
 	QTreeWidget *volumeListWidget = new QTreeWidget(layoutWidget);
@@ -126,7 +104,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 	dataSrcListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *, int)));
-
+	
 	GuiUtils::autoResizeColumnWidths(dataSrcListWidget, 3);
 
 	dataSrcListWidget->update();
@@ -134,8 +112,10 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	elementListBox->setTabEnabled( setupFilterList(), "Filters" );
-
+	elementListBox->setTabEnabled( QString("Channel %1").arg(cdw.getID()), 
+				      setupFilterList(), 
+				       "Filters" );
+				      
 	filterListWidget->clear();
 
 	const OmId segmenID = cdw.getID();
@@ -165,21 +145,6 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 	filterListWidget->update();
 }
 
-void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
-{
-	channelInspectorWidget = new ChanInspector( cdw, this);
-	
-	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
-		this, SLOT(addFilter()));
-	
-	populateChannelInspector( cdw.getID() );
-
-	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-
-	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, 
-						 QString("Channel %1 Inspector").arg(cdw.getID()) );
-}
 
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
@@ -209,70 +174,6 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 						 QString("Filter %1 Inspector").arg(fdw.getID()) );
 }
 
-void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current, const int column)
-{
-	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-
-	switch (dwc.getType()) {
-	case CHANNEL:
-		addChannelToSplitter(dwc.getChannelDataWrapper());
-		populateFilterListWidget(dwc.getChannelDataWrapper());
-		break;
-	case SEGMENTATION:
-		addSegmentationToSplitter(dwc.getSegmentationDataWrapper());
-		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
-		break;
-	}
-}
-
-void MyInspectorWidget::showChannelContextMenu()
-{
-	connect(makeContextMenuBase(dataSrcListWidget),
-		SIGNAL(triggered(QAction *)), this, SLOT(selectChannelView(QAction *)));
-
-	contextMenu->exec(QCursor::pos());
-}
-
-void MyInspectorWidget::showSegmentationContextMenu()
-{
-	connect(makeContextMenuBase(dataSrcListWidget),
-		SIGNAL(triggered(QAction *)), this, SLOT(selectSegmentationView(QAction *)));
-
-	contextMenu->exec(QCursor::pos());
-}
-
-QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
-{
-	addChannelAct = new QAction(tr("Add Channel"), parent);
-
-	addSegmentationAct = new QAction(tr("Add Segmentation"), parent);
-
-	contextMenuDataSrc = new QMenu(parent);
-	contextMenuDataSrc->addAction(addChannelAct);
-	contextMenuDataSrc->addAction(addSegmentationAct);
-
-	return contextMenuDataSrc;
-}
-
-QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
-{
-	xyAct = new QAction(tr("&View XY"), parent);
-	xyAct->setStatusTip(tr("Opens the XY view"));
-
-	xzAct = new QAction(tr("&View XZ"), parent);
-	xzAct->setStatusTip(tr("Opens the XZ view"));
-
-	yzAct = new QAction(tr("&View YZ"), parent);
-	yzAct->setStatusTip(tr("Opens the YZ view"));
-
-	contextMenu = new QMenu(parent);
-	contextMenu->addAction(xyAct);
-	contextMenu->addAction(xzAct);
-	contextMenu->addAction(yzAct);
-
-	return contextMenu;
-}
 
 void MyInspectorWidget::addChannelToVolume()
 {
@@ -298,22 +199,12 @@ void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 	}
 }
 
-void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
-{
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt(menuPoint);
-	if (!dataSrcItem) {	// right click occured in "white space" of widget (not on actual item, like channe1, etc)
-		connect(makeDataSrcContextMenu(dataSrcListWidget),
-			SIGNAL(triggered(QAction *)), this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
-
-		contextMenuDataSrc->exec(dataSrcListWidget->mapToGlobal(menuPoint));
-		return;
-	}
-	doShowDataSrcContextMenu( dataSrcItem );
-}
 
 void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current, const int column)
 {
-	addToSplitterDataSource(current, column );
+	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+		addToSplitterDataSource(current );
+	}
 }
 
 void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
@@ -321,23 +212,7 @@ void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, con
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		doShowDataSrcContextMenu( current );
 	} else {
-		addToSplitterDataSource(current, column );
-	}
-}
-
-void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
-{
-	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
-	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-
-	switch (dwc.getType()) {
-	case CHANNEL:
-		showChannelContextMenu();
-		break;
-	case SEGMENTATION:
-		showSegmentationContextMenu();
-		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
-		break;
+		addToSplitterDataSource(current );
 	}
 }
 
@@ -352,32 +227,6 @@ ViewType MyInspectorWidget::getViewType(QAction * act)
 	} else {
 		throw OmFormatException("could not match QAction type...\n");
 	}
-}
-
-void MyInspectorWidget::selectChannelView(QAction * act)
-{
-	OmId primary_id = getCurrentlySelectedChannel().getID();
-	emit triggerChannelView(primary_id, 0, 0, getViewType(act));
-}
-
-ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel()
-{
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
-	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-	return dwc.getChannelDataWrapper();
-}
-
-void MyInspectorWidget::selectSegmentationView(QAction * act)
-{
-	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
-	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
-	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-	SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
-	segmentList->makeSegmentationActive(sdw);
-
-	const OmId segmentationID = sdw.getID();
-	emit triggerSegmentationView(segmentationID, 0, getViewType(act));
 }
 
 // called from mainwindow after segmentation or channel added
@@ -464,4 +313,180 @@ void MyInspectorWidget::addSegment()
 	const OmId segmentationID = segInspectorWidget->getSegmentationID();
 	OmSegment & added_segment = OmVolume::GetSegmentation(segmentationID).AddSegment();
 	segmentList->rebuildSegmentList(segmentationID, added_segment.GetId());
+}
+
+
+
+//////////////////////////////
+///////// Data Source Box Stuff
+//////////////////////////////
+QTreeWidget *MyInspectorWidget::setupDataSrcList()
+{
+	dataSrcListWidget = new QTreeWidget(this);
+	dataSrcListWidget->setAlternatingRowColors(false);
+	dataSrcListWidget->setColumnCount(3);
+
+	dataSrcListWidget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+
+	QStringList headers;
+	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
+	dataSrcListWidget->setHeaderLabels(headers);
+
+	populateDataSrcListWidget();
+
+	// context menu setup
+	dataSrcListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(dataSrcListWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
+		this, SLOT(showDataSrcContextMenu(const QPoint &)));
+
+	return dataSrcListWidget;
+}
+
+void MyInspectorWidget::showDataSrcContextMenu(const QPoint & menuPoint)
+{
+	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->itemAt(menuPoint);
+	if (!dataSrcItem) {	// right click occured in "white space" of widget
+		connect(makeDataSrcContextMenu(dataSrcListWidget),
+			SIGNAL(triggered(QAction *)), this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
+
+		contextMenuDataSrc->exec(dataSrcListWidget->mapToGlobal(menuPoint));
+		return;
+	}
+	doShowDataSrcContextMenu( dataSrcItem );
+}
+
+QMenu *MyInspectorWidget::makeDataSrcContextMenu(QTreeWidget * parent)
+{
+	addChannelAct = new QAction(tr("Add Channel"), parent);
+
+	addSegmentationAct = new QAction(tr("Add Segmentation"), parent);
+
+	contextMenuDataSrc = new QMenu(parent);
+	contextMenuDataSrc->addAction(addChannelAct);
+	contextMenuDataSrc->addAction(addSegmentationAct);
+
+	return contextMenuDataSrc;
+}
+
+void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
+{
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+
+	switch (dwc.getType()) {
+	case CHANNEL:
+		showChannelContextMenu();
+		break;
+	case SEGMENTATION:
+		showSegmentationContextMenu();
+		break;
+	}
+}
+
+void MyInspectorWidget::showChannelContextMenu()
+{
+	connect(makeContextMenuBase(dataSrcListWidget), SIGNAL(triggered(QAction *)), 
+		this, SLOT(selectChannelView(QAction *)));
+
+	contextMenu->exec(QCursor::pos());
+}
+
+QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
+{
+	xyAct = new QAction(tr("&View XY"), parent);
+	xyAct->setStatusTip(tr("Opens the XY view"));
+
+	xzAct = new QAction(tr("&View XZ"), parent);
+	xzAct->setStatusTip(tr("Opens the XZ view"));
+
+	yzAct = new QAction(tr("&View YZ"), parent);
+	yzAct->setStatusTip(tr("Opens the YZ view"));
+
+	propAct = new QAction(tr("&Properties"), parent);
+	propAct->setStatusTip(tr("Opens properties"));
+
+	contextMenu = new QMenu(parent);
+	contextMenu->addAction(xyAct);
+	contextMenu->addAction(xzAct);
+	contextMenu->addAction(yzAct);
+	contextMenu->addAction(propAct);
+
+	return contextMenu;
+}
+
+void MyInspectorWidget::selectChannelView(QAction * act)
+{
+	ChannelDataWrapper cdw = getCurrentlySelectedChannel();
+	if( propAct == act ){
+		addChannelToSplitter(cdw);
+	} else {
+		emit triggerChannelView( cdw.getID(), 0, 0, getViewType(act));
+	}
+}
+
+void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
+{
+	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+
+	switch (dwc.getType()) {
+	case CHANNEL:
+		populateFilterListWidget(dwc.getChannelDataWrapper());
+		break;
+	case SEGMENTATION:
+		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		break;
+	}
+}
+
+ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel()
+{
+	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+	return dwc.getChannelDataWrapper();
+}
+
+void MyInspectorWidget::showSegmentationContextMenu()
+{
+	connect(makeContextMenuBase(dataSrcListWidget), SIGNAL(triggered(QAction *)), 
+		this, SLOT(selectSegmentationView(QAction *)));
+
+	contextMenu->exec(QCursor::pos());
+}
+
+SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
+{
+	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
+	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
+	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
+	return dwc.getSegmentationDataWrapper();
+}
+
+void MyInspectorWidget::selectSegmentationView(QAction * act)
+{
+	SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
+	segmentList->makeSegmentationActive(sdw);
+
+	if( propAct == act ){
+		addSegmentationToSplitter(sdw);
+	} else {
+		emit triggerSegmentationView( sdw.getID(), 0, getViewType(act));
+	}
+}
+
+void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
+{
+	channelInspectorWidget = new ChanInspector( cdw, this);
+	
+	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
+		this, SLOT(addFilter()));
+	
+	populateChannelInspector( cdw.getID() );
+
+	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
+
+	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, 
+						 QString("Channel %1 Inspector").arg(cdw.getID()) );
 }

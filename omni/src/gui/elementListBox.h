@@ -10,8 +10,7 @@ class ElementListBox : public QWidget
 
 public:
 	ElementListBox( QWidget *, QVBoxLayout * );
-	void setBoxTitle( QString title );
-	void setTabEnabled( QWidget * tab, QString title );
+	void setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle );
 
 public slots:
 

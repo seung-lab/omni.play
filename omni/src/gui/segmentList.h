@@ -35,7 +35,9 @@ public slots:
 
 private slots: 
 	void leftClickOnSegment(QTreeWidgetItem * current, const int column);
-	void addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column);
+	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
+	void showContextMenu(const QPoint & menuPoint);
+	void segmentRightClickMenu(QAction * act);
 
 private:
 	static const int ENABLED_COL = 0;
@@ -44,23 +46,26 @@ private:
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
 
-	QTreeWidget *dataElementsWidget;
-
-	InspectorProperties * inspectorProperties;
-
-	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
+	QTreeWidget * dataElementsWidget;
+ 	InspectorProperties * inspectorProperties;
+	ElementListBox * elementListBox;
+	SegObjectInspector *segObjectInspectorWidget;
 
 	SegmentationDataWrapper currentSDW;
 	bool haveValidSDW;
 
-	QTreeWidget * setupDataElementList();
-	ElementListBox * elementListBox;
+	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
 
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
-	SegObjectInspector *segObjectInspectorWidget;
+	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const unsigned int offset );
 
-	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay();
+	SegmentDataWrapper getCurrentlySelectedSegment();
+	QMenu * makeSegmentContextMenu(QTreeWidget * parent);
+	QTreeWidget * setupDataElementList();
+	QMenu *contextMenu;
+	QAction *propAct;
+	void showSegmentContextMenu();
 };
 
 #endif

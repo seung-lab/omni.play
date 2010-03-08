@@ -63,7 +63,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void selectChannelView(QAction * act);
 	void selectSegmentationView(QAction * act);
 	void addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column);
-	void addToSplitterDataSource(QTreeWidgetItem * current, const int column);
+	void addToSplitterDataSource(QTreeWidgetItem * current);
 
 	void doDataSrcContextMenuVolAdd(QAction * act);
 	void addSegment();
@@ -91,6 +91,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QTreeWidget * setupDataSrcList();
 	QTreeWidget * setupFilterList();
 	ChannelDataWrapper getCurrentlySelectedChannel();
+	SegmentationDataWrapper getCurrentlySelectedSegmentation();
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
@@ -104,6 +105,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QAction *xyAct;
 	QAction *xzAct;
 	QAction *yzAct;
+	QAction *propAct;
 
 	QAction *addChannelAct;
 	QAction *addSegmentationAct;

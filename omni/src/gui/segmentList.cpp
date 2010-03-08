@@ -14,7 +14,7 @@ SegmentList::SegmentList( QWidget * parent,
 	haveValidSDW = false;
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay()
+QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const unsigned int offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
@@ -28,6 +28,9 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay()
 	const int  max_counter = 100;
 	for (itr = allSegmentIDs.begin(); itr != allSegmentIDs.end(); itr++) {
 		counter++;
+		if( counter < offset ){
+			continue;
+		}
 		if( counter > max_counter ){
 			break;
 		}
@@ -50,11 +53,13 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	SegmentationDataWrapper sdw = currentSDW;
 	const OmId segmentationID = sdw.getID();
-	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay();
+	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( 0 );
 
-	elementListBox->setTabEnabled( setupDataElementList(), 
-				       QString("Seg%1: All Segments").arg(sdw.getID()) );
+	elementListBox->setTabEnabled( QString("Segmentation %1").arg(sdw.getID()),
+				       setupDataElementList(), 
+				       QString("All Segments") );
 	dataElementsWidget->clear();
+	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
@@ -84,16 +89,74 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
 
+	dataElementsWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(dataElementsWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
+		this, SLOT(showContextMenu(const QPoint &)));
+
 	GuiUtils::autoResizeColumnWidths(dataElementsWidget, 3);
 
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
 	}
+
+	dataElementsWidget->setUpdatesEnabled( true);
+}
+
+void SegmentList::showContextMenu(const QPoint & menuPoint)
+{
+	QTreeWidgetItem * segmentItem = dataElementsWidget->itemAt(menuPoint);
+	if (!segmentItem) {	// right click occured in "white space" of widget
+		/*
+		connect(makeSegmentContextMenu(dataElementsWidget), SIGNAL(triggered(QAction *)), 
+			this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
+
+		contextMenu->exec(dataElementsWidget->mapToGlobal(menuPoint));
+		*/
+		return;
+	}
+
+	showSegmentContextMenu();
+}
+
+void SegmentList::showSegmentContextMenu()
+{
+	connect(makeSegmentContextMenu(dataElementsWidget), SIGNAL(triggered(QAction *)), 
+		this, SLOT(segmentRightClickMenu(QAction *)));
+
+	contextMenu->exec(QCursor::pos());
+}
+
+SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
+{
+	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
+	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);
+	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
+	return sdw;
+}
+
+void SegmentList::segmentRightClickMenu(QAction * act)
+{
+	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
+	if( propAct == act ){
+		addToSplitterDataElementSegment( sdw );
+	} 
+}
+
+QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
+{
+	propAct = new QAction(tr("&Properties"), parent);
+	contextMenu = new QMenu(parent);
+	contextMenu->addAction(propAct);
+
+	return contextMenu;
 }
 
 void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
 {
-	addToSplitterDataElementSegment(current, column);
+	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+		SegmentDataWrapper sdw = getCurrentlySelectedSegment();
+		addToSplitterDataElementSegment(sdw);
+	}
 
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
@@ -118,11 +181,8 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 	}
 }
 
-void SegmentList::addToSplitterDataElementSegment(QTreeWidgetItem * current, const int column)
+void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 {
-	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-
 	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
 
 	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 

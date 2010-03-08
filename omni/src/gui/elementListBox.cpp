@@ -5,28 +5,22 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * in_verticalLayou
 {
 	verticalLayout = in_verticalLayout;
 
-	groupBox = NULL;
 	dataElementsTabs = NULL;
-	overallContainer = NULL;
 
-
-	groupBox = new QGroupBox("hi");
+	groupBox = new QGroupBox("");
+	overallContainer = new QVBoxLayout( groupBox );
 	verticalLayout->addWidget( groupBox );
-
 }
 
-void ElementListBox::setTabEnabled( QWidget * tab, QString title )
+void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
 {
-	if( NULL != groupBox ){
-		verticalLayout->removeWidget( groupBox );
-		delete groupBox;
+	if( NULL == dataElementsTabs ){
+		dataElementsTabs = new QTabWidget( this );
+		overallContainer->addWidget( dataElementsTabs );
 	}
+	
+	dataElementsTabs->clear();
+	dataElementsTabs->addTab( tab, tabTitle );	
 
-	groupBox = new QGroupBox("hi");
-	overallContainer = new QVBoxLayout( groupBox );
-	dataElementsTabs = new QTabWidget( this );
-	dataElementsTabs->addTab( tab, title );	
-	overallContainer->addWidget( dataElementsTabs );
-
-	verticalLayout->addWidget( groupBox );
+	groupBox->setTitle( boxTitle );
 }
