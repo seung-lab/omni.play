@@ -12,29 +12,37 @@ SegmentList::SegmentList( QWidget * parent,
 	inspectorProperties = in_inspectorProperties;
 	elementListBox = in_elementListBox;
 	haveValidSDW = false;
+	dataElementsWidget = NULL;
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const unsigned int offset )
+QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const bool doScrollToSelectedSegment,
+								const OmId segmentJustSelectedID )
 {
+	const int max_num_segments_page = 100;
+
+	int offset;
+	if( doScrollToSelectedSegment ) {
+		offset = segmentJustSelectedID - (segmentJustSelectedID % max_num_segments_page );
+	} else {
+		offset = 0;
+	}
+
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
-	
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
-
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
 	
 	OmIds::iterator itr;
 	int counter = 0;
-	const int  max_counter = 100;
 	for (itr = allSegmentIDs.begin(); itr != allSegmentIDs.end(); itr++) {
 		counter++;
 		if( counter < offset ){
 			continue;
 		}
-		if( counter > max_counter ){
+		if( counter > (max_num_segments_page + offset ) ){
 			break;
 		}
-		
+
 		mysegmentIDs->append((*itr));
 	}
 	
@@ -42,7 +50,7 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const unsigned i
 }
 
 void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							  const OmId segmentJustSelectedID)
+						    const OmId segmentJustSelectedID)
 {
 	debug("guievent", "in %s...\n", __FUNCTION__ );
 
@@ -50,23 +58,23 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 		printf("invalid sdw...\n");
 		return;
 	}
+	if( NULL == dataElementsWidget ){
+		setupDataElementList();
+	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	const OmId segmentationID = sdw.getID();
-	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( 0 );
+	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( doScrollToSelectedSegment, 
+								  segmentJustSelectedID );
 
-	elementListBox->setTabEnabled( QString("Segmentation %1").arg(sdw.getID()),
-				       setupDataElementList(), 
-				       QString("All Segments") );
-	dataElementsWidget->clear();
 	dataElementsWidget->setUpdatesEnabled( false );
+	dataElementsWidget->clear();
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
 	foreach(SEGMENT_DATA_TYPE segID, (*segs)) {
-		SegmentDataWrapper seg( segmentationID, segID );
+		SegmentDataWrapper seg(  sdw.getID(), segID );
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
@@ -83,7 +91,6 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	delete(segs);
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
-	dataElementsWidget->update();
 
 	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
@@ -100,6 +107,10 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	dataElementsWidget->setUpdatesEnabled( true);
+
+	elementListBox->setTabEnabled( QString("Segmentation %1").arg(sdw.getID()),
+				       dataElementsWidget,
+				       QString("All Segments") );
 }
 
 void SegmentList::showContextMenu(const QPoint & menuPoint)
@@ -216,7 +227,7 @@ void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augm
 				   "segmentList"))->Run();
 }
 
-QTreeWidget * SegmentList::setupDataElementList()
+void SegmentList::setupDataElementList()
 {
 	dataElementsWidget = new QTreeWidget(this);
 	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -226,8 +237,6 @@ QTreeWidget * SegmentList::setupDataElementList()
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataElementsWidget->setHeaderLabels(headers);
-
-	return dataElementsWidget;
 }
 
 void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)

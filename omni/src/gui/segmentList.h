@@ -49,7 +49,7 @@ private:
 	QTreeWidget * dataElementsWidget;
  	InspectorProperties * inspectorProperties;
 	ElementListBox * elementListBox;
-	SegObjectInspector *segObjectInspectorWidget;
+	SegObjectInspector * segObjectInspectorWidget;
 
 	SegmentationDataWrapper currentSDW;
 	bool haveValidSDW;
@@ -58,13 +58,14 @@ private:
 
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
-	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const unsigned int offset );
+	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const bool doScrollToSelectedSegment,
+							   const OmId segmentJustSelectedID );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	QMenu * makeSegmentContextMenu(QTreeWidget * parent);
-	QTreeWidget * setupDataElementList();
-	QMenu *contextMenu;
-	QAction *propAct;
+	void setupDataElementList();
+	QMenu * contextMenu;
+	QAction * propAct;
 	void showSegmentContextMenu();
 };
 
