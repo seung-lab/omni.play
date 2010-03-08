@@ -12,6 +12,9 @@ public:
 	ElementListBox( QWidget *, QVBoxLayout * );
 	void setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle );
 
+	QPushButton * prevButton;
+	QPushButton * nextButton;
+	
 public slots:
 
 private slots: 
@@ -21,6 +24,7 @@ private:
 	QGroupBox * groupBox;
 	QVBoxLayout * verticalLayout;
 	QVBoxLayout* overallContainer;
+	void setupBox();
 };
 
 #endif

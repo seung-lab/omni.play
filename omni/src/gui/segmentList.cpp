@@ -13,20 +13,24 @@ SegmentList::SegmentList( QWidget * parent,
 	elementListBox = in_elementListBox;
 	haveValidSDW = false;
 	dataElementsWidget = NULL;
+
+	mNumSegmentsPerPage = getNumSegmentsPerPage();
+	currentPageNum = 0;
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const bool doScrollToSelectedSegment,
-								const OmId segmentJustSelectedID )
+int SegmentList::getNumSegmentsPerPage()
 {
-	const int max_num_segments_page = 100;
+	return 100;
+}
 
-	int offset;
-	if( doScrollToSelectedSegment ) {
-		offset = segmentJustSelectedID - (segmentJustSelectedID % max_num_segments_page );
-	} else {
-		offset = 0;
-	}
+QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+{
+	int offset = firstSegmentID - (firstSegmentID % mNumSegmentsPerPage );
+	return doGetSegmentsToDisplay( offset );
+}
 
+QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int offset )
+{
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
@@ -39,7 +43,7 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const bool doScr
 		if( counter < offset ){
 			continue;
 		}
-		if( counter > (max_num_segments_page + offset ) ){
+		if( counter > (mNumSegmentsPerPage + offset ) ){
 			break;
 		}
 
@@ -63,8 +67,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( doScrollToSelectedSegment, 
-								  segmentJustSelectedID );
+	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( segmentJustSelectedID );
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();
@@ -111,6 +114,39 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	elementListBox->setTabEnabled( QString("Segmentation %1").arg(sdw.getID()),
 				       dataElementsWidget,
 				       QString("All Segments") );
+	dealWithButtons();
+}
+
+void SegmentList::dealWithButtons()
+{
+	elementListBox->prevButton->disconnect(SIGNAL( released() ));
+	connect( elementListBox->prevButton, SIGNAL( released()  ), 
+		 this, SLOT( goToPrevPage() ), Qt::DirectConnection);
+
+	elementListBox->nextButton->disconnect(SIGNAL( released() ));
+	connect( elementListBox->nextButton, SIGNAL( released()  ), 
+		 this, SLOT( goToNextPage() ), Qt::DirectConnection);
+}
+
+void SegmentList::goToNextPage()
+{
+	printf("hi from next page\n");
+
+	currentPageNum++;
+	int offset = currentPageNum * mNumSegmentsPerPage;
+	populateSegmentElementsListWidget( false, offset );
+}
+
+void SegmentList::goToPrevPage()
+{
+	printf("hi from prev page\n");
+
+	currentPageNum--;
+	if( currentPageNum < 0 ){
+		currentPageNum = 0;
+	}
+	int offset = currentPageNum * mNumSegmentsPerPage;
+	populateSegmentElementsListWidget( false, offset );
 }
 
 void SegmentList::showContextMenu(const QPoint & menuPoint)

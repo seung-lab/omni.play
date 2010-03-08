@@ -15,12 +15,27 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * in_verticalLayou
 void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
 {
 	if( NULL == dataElementsTabs ){
-		dataElementsTabs = new QTabWidget( this );
-		overallContainer->addWidget( dataElementsTabs );
+		setupBox();
 	}
 	
 	dataElementsTabs->clear();
 	dataElementsTabs->addTab( tab, tabTitle );	
 
 	groupBox->setTitle( boxTitle );
+}
+
+void ElementListBox::setupBox()
+{
+	dataElementsTabs = new QTabWidget( this );
+	overallContainer->addWidget( dataElementsTabs );
+	
+	QGroupBox * buttonBox = new QGroupBox("");
+	buttonBox->setFlat(true);
+	overallContainer->addWidget( buttonBox );
+	QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
+	
+	prevButton = new QPushButton("<", this);
+	buttons->addWidget( prevButton );
+	nextButton = new QPushButton(">", this);
+	buttons->addWidget( nextButton );
 }

@@ -32,6 +32,8 @@ public:
 
 public slots:
 	void rebuildSegmentList(const OmId segmentationID);
+	void goToNextPage();
+	void goToPrevPage();
 
 private slots: 
 	void leftClickOnSegment(QTreeWidgetItem * current, const int column);
@@ -58,8 +60,8 @@ private:
 
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
-	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const bool doScrollToSelectedSegment,
-							   const OmId segmentJustSelectedID );
+	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const OmId firstSegmentID );
+	QList< SEGMENT_DATA_TYPE > * doGetSegmentsToDisplay( const int offset );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	QMenu * makeSegmentContextMenu(QTreeWidget * parent);
@@ -67,6 +69,11 @@ private:
 	QMenu * contextMenu;
 	QAction * propAct;
 	void showSegmentContextMenu();
+	int getNumSegmentsPerPage();
+	void dealWithButtons();
+
+	int mNumSegmentsPerPage;
+	int currentPageNum;
 };
 
 #endif
