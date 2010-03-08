@@ -29,8 +29,8 @@ public:
 	void SetEditable (bool editable);
 	bool IsEditable ();
 
-	void SetListPosition (int loc);
-	int GetListPosition ();
+	//void SetListPosition (int loc);
+	//int GetListPosition ();
 
 private:
 	bool mIsVisible;

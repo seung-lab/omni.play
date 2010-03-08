@@ -93,33 +93,26 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingT
 				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
 						    myIdSet, cache, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
-#if 0
+				void * out = NULL;
 				if (1 == mBytesPerSample) {
-					uint32_t *vDataFake;
-					vDataFake =
-					    (uint32_t *) malloc((tile_dims.x * tile_dims.y) *
-								sizeof(SEGMENT_DATA_TYPE));
+					uint32_t *vDataFake = NULL;
+					vDataFake = (uint32_t*) malloc((tile_dims.x * tile_dims.y) * sizeof(SEGMENT_DATA_TYPE));
 					//memset (vDataFake, '\0', (tile_dims.x * tile_dims.y) * sizeof (SEGMENT_DATA_TYPE));
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
 						vDataFake[i] << 8;
 						//debug("FIXME", << " "  << (int)((unsigned char*)(vData))[i];
 					}
-					//debug("FIXME", << endl;
+					OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vDataFake), tile_dims, key, &out);
+					textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
+						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
+					free(vDataFake);
 					free(vData);
-					vData = (void *)vDataFake;
 				}
-				void *out = NULL;
-				//debug("FIXME", << "in: vData: " << vData << ". " << out << endl;
 				OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
-				//debug("FIXME", << "out: vData: " << out << endl;
-				vData = out;
-#else
-				OmIds myIdSet;
-#endif
-				textureID =
-				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, cache, vData, OMTILE_NEEDCOLORMAP);
+				textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
+						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
+				free(vData);
 			}
 			return textureID;
 		}
@@ -135,7 +128,7 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, O
 {
 	//TODO: pull more data out when chunk is open
 
-	////debug("genone","INSIDE HDF5 ERROR");
+	//debug("genone","INSIDE HDF5 ERROR");
 
 	shared_ptr < OmMipChunk > my_chunk;
 	vol->GetChunk(my_chunk, TileToMipCoord(key));
@@ -144,11 +137,8 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, O
 
 	my_chunk->Open();
 
-	return NULL;
-
 	int realDepth = mDepth % (vol->GetChunkDimension());
 
-	////debug("genone","INSIDE DEPTH ERROR");
 	void *void_data = NULL;
 	if (view_type == XY_VIEW) {
 		////debug("genone","realdepth: " << realDepth);
@@ -159,9 +149,6 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, O
 	} else if (view_type == YZ_VIEW) {
 		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
 	}
-	////debug("genone","after depth error?");
-
-	// unsigned char* data = (unsigned char*)void_data;
 
 	return void_data;
 }
@@ -179,17 +166,20 @@ int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 {
 
 	// find depth
-	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
-	DataCoord mDataCoord = OmVolume::NormToDataCoord(mNormCoord);
+	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	float factor=OMPOW(2,zoomMipVector.x);
+
 
 	if (view_type == XY_VIEW) {
-		return mDataCoord.z;
+		return (int)(dataCoord.z/factor);
 	}
 	if (view_type == XZ_VIEW) {
-		return mDataCoord.y;
+		return (int)(dataCoord.y/factor);
 	}
 	if (view_type == YZ_VIEW) {
-		return mDataCoord.x;
+		return (int)(dataCoord.x/factor);
 	}
 }
 
@@ -260,6 +250,7 @@ int clamp(int c)
 OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, const OmTileCoord & key, void **rData)
 {
 	//debug("genone","OmTile::setMyColorMap(imageData)");
+	debug("blank", "going to make it the texture now\n");
 
 	OmIds found_ids;
 
@@ -346,7 +337,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2 < int >dims, 
 		ctr = ctr + 4;
 		lastid = tmpid;
 	}
-	// //debug("FIXME", << "going to make it the texture now" << endl;
+	debug("blank", "going to make it the texture now\n");
 	*rData = data;
 
 	return found_ids;

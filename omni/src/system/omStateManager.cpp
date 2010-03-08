@@ -1,10 +1,13 @@
 #include "omStateManager.h"
 #include "omEventManager.h"
 #include "project/omProject.h"
+#include "system/omLocalPreferences.h"
 #include "events/omViewEvent.h"
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
+#include <sys/utsname.h>
+
 
 //undostack
 #include <QUndoStack>
@@ -52,7 +55,7 @@ OmStateManager::OmStateManager()
 	mXZSlice[4] = depth.y;
 	mXYSlice[4] = depth.z;
 	
-	
+	mParallel = false;
 }
 
 OmStateManager::~OmStateManager()
@@ -132,18 +135,44 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 	return Instance()->omniExecPathAbsolute;
 }
 
-/////////////////////////////////
-///////          Project State
+QString OmStateManager::getPID()
+{
+        static char pidstr[6] = {0};
+        pid_t pid;
+        int i;
 
-/*
-void
-OmStateManager::FlushState() {
-	//commit project
-	OmProject::Save();
-	//clean undo stack
-	Instance()->mpUndoStack->clear();
+        if (pidstr[0] == 0) {
+                pid = getpid();
+                for(i = 0; i < 5; i++) {
+                        pidstr[4 - i] = (pid % 10) + '0';
+                        pid /= 10;
+                }
+                pidstr[5] = 0;
+        }
+
+	return QString (pidstr);
 }
-*/
+
+QString OmStateManager::getHostname()
+{
+	static struct utsname uts = {0};
+
+        if (uts.nodename[0] == 0) uname(&uts);
+
+	return QString(uts.nodename);
+}
+
+bool OmStateManager::getParallel()
+{
+	return Instance()->mParallel;
+}
+
+void OmStateManager::setParallel(bool parallel)
+{
+	// This has a race condition in that others migth have been acting on this
+	// value while it is changing, which could lead to a crash.
+	Instance()->mParallel = parallel;
+}
 
 /////////////////////////////////
 ///////          View Event
@@ -218,21 +247,22 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
-		return Vector2 < float >(&Instance()->mXYSlice[2]);
+		return Vector2f(&Instance()->mXYSlice[2]);
 	case XZ_VIEW:
-		return Vector2 < float >(&Instance()->mXZSlice[2]);
+		return Vector2f(&Instance()->mXZSlice[2]);
 	case YZ_VIEW:
-		return Vector2 < float >(&Instance()->mYZSlice[2]);
+		return Vector2f(&Instance()->mYZSlice[2]);
 	default:
 		assert(false);
 	}
 }
 
-/*
+/**
  *	Set/Get depth of view slice.
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
 {
+	if (isnan(depth)) assert(0);
 	switch (plane) {
 	case XY_VIEW:
 		Instance()->mXYSlice[4] = depth;

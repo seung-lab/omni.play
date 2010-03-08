@@ -21,6 +21,8 @@ class LocalPrefFiles
 	QStringList readSettingQStringList( QString setting );
 	void writeSettingQStringList( QString setting, QStringList values );
 
+	QString readSettingQString( QString setting );
+	void writeSettingQString( QString setting, QString value );
  private:
 	QDir prefFolder;
 	void setupPrefFolder();

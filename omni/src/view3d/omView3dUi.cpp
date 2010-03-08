@@ -714,7 +714,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	
-	debug("view3d", "coordinate is now (%d, %d, %d)\n", 
+	debug("view3d", "coordinate is now (%f, %f, %f)\n", 
 	      picked_voxel.x,
 	      picked_voxel.y,
 	      picked_voxel.z
@@ -728,11 +728,13 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 
         //pick point causes localized redraw (but all depth info stored in selection buffer)
         vector < int >result;
-        bool valid_pick = mpView3d->PickPoint(point2d, result);
+	bool valid_pick;
+	mpView3d->updateGL();
+	valid_pick = mpView3d->PickPoint(point2d, result);
+	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n", valid_pick, result.size());
 
-        //if valid and return count
-        if (!valid_pick || (result.size() != 3))
-                return false;
+	if(!valid_pick || result.size() != 3)
+		return false;
 
         if (!OmVolume::IsSegmentationValid(result[0]))
                 return false;
@@ -745,7 +747,7 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
                 return false;
 
         //define depth scale factor
-        float z_depth_scale = 1.0f;
+        float z_depth_scale = 0.0f;
 
         //normalized vector from camera to unprojected point
         Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());

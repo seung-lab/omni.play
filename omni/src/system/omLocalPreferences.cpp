@@ -108,6 +108,25 @@ QStringList OmLocalPreferences::readSettingQStringList( QString setting, QString
 	}
 }
 
+void OmLocalPreferences::writeSettingQString (QString setting, QString value)
+{
+	Instance()->localPrefFiles->writeSettingQString( setting, value );
+}
+
+QString OmLocalPreferences::readSettingQString (QString setting, QString defaultRet)
+{
+        if( !settingExists( setting ) ){
+                return defaultRet;
+        }
+
+        try{
+                return Instance()->localPrefFiles->readSettingQString( setting  );
+        } catch (...) {
+                return defaultRet;
+        }
+
+}
+
 /////////////////////////////
 // num cores
 int OmLocalPreferences::get_num_cores()
@@ -209,3 +228,15 @@ void OmLocalPreferences::setStoreMeshesInTempFolder( const bool value )
 {
 	writeSettingBool( "storeMeshesInTempFolder", value );
 }
+
+void OmLocalPreferences::setScratchPath( QString scratchPath )
+{
+	writeSettingQString( "sratchPath", scratchPath );
+}
+
+QString OmLocalPreferences::getScratchPath( )
+{
+	QString defaultPath = "/tmp";
+	return readSettingQString( "sratchPath", defaultPath );
+}
+

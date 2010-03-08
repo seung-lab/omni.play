@@ -6,6 +6,8 @@
 
 #include <QString>
 
+#define debug(x, ...) actual_debug(x, __VA_ARGS__)
+
 class CmdLineArgs 
 {
 public:
@@ -21,7 +23,7 @@ enum {OM_DEBUG_REMOVE,OM_DEBUG_ADD};
  */
 
 bool isDebugCategoryEnabled( const char *category );
-void debug(const char *category, const char *format, ...);
+void actual_debug(const char *category, const char *format, ...);
 void debugInit();
 int  debugParseArg(char *stringInput,int action);
 void debugAddCategory(char *category,int length);

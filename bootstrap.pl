@@ -30,7 +30,7 @@ if ($hostname =~ /brainiac/) {
     $ENV{DISTCC_HOSTS} = $nodes;
     $globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
                 " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
-    $profileOn = "p";
+    $profileOn = "";
 }
 
 
@@ -341,7 +341,7 @@ sub qt46 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    prepareAndBuild( $baseFileName, "Qt", "-debug -opensource -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
+    prepareAndBuild( $baseFileName, "Qt", "-debug -opensource -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -qt-sql-sqlite" );
 }
 
 sub omni {

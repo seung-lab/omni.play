@@ -42,18 +42,13 @@ public:
 	static OmGarbage* Instance();
 	static void Delete();
 	
-
 	static void asOmTextureId(GLuint);
 	static void safeCleanTextureIds ();
 	
 	static void Lock ();
 	static vector<GLuint>& LockTextures ();
-	static void Hdf5Lock ();
-	static void Hdf5Unlock ();
 	static void Unlock ();
 	static void UnlockTextures ();
-	static void SetParallel (QString host, int port);
-	static bool GetParallel ();
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -67,17 +62,9 @@ private:
 	//singleton
 	static OmGarbage* mspInstance;
 	
-
 	//garbage
 	vector <GLuint> mTextures;
 	pthread_mutex_t mTextureMutex;
-
-	QString mHdf5Lock;
-	QTcpSocket * mSocket;
-	bool mParallel;
-	QString mHost;
-	int mPort;
-	int mSocketFD;
 };
 
 

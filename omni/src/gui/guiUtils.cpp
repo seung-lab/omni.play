@@ -20,3 +20,9 @@ bool GuiUtils::getBoolState(const Qt::CheckState state)
 	}
 }
 
+void GuiUtils::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)
+{
+	for (int i = 0; i <= max_col_to_display; i++) {
+		widget->resizeColumnToContents(i);
+	}
+}

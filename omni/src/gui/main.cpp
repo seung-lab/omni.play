@@ -151,7 +151,7 @@ void processLine( QString line, QString fName )
 		openProject( fName, false );
 	} else if( line.startsWith("parallel") ){
 		QStringList args = line.split(':');
-		OmGarbage::SetParallel(args[1], getNum(args[2]));
+		OmStateManager::setParallel(true);
 	} else if( line.startsWith("serve") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);
@@ -160,7 +160,14 @@ void processLine( QString line, QString fName )
 		server->start ();
 		
 		app.exec ();
-	} else {
+        } else if( line.startsWith("addSegment") ){
+                if( 0 == SegmentationID  ){
+                        printf("please choose segmentation first!\n");
+                        return;
+                }
+                OmVolume::GetSegmentation( SegmentationID ).AddSegment();
+                OmProject::Save();
+        } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
 }

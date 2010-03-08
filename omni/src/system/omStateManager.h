@@ -118,6 +118,11 @@ public:
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
+	static QString getPID();
+	static QString getHostname();
+	static bool getParallel();
+	static void setParallel(bool parallel);
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmStateManager();
@@ -171,33 +176,7 @@ private:
 	unsigned int myBackoff;
 
 	QString omniExecPathAbsolute;
-	/*
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
-	 */
+	bool mParallel;
 };
-
-
-
-
-
-	
-#pragma mark 
-#pragma mark Serialization
-/////////////////////////////////
-///////		 Serialization
-
-/*
-BOOST_CLASS_VERSION(OmStateManager, 0)
-
-template<class Archive>
-void 
-OmStateManager::serialize(Archive & ar, const unsigned int file_version) {
-	ar & mViewBbox;
-	ar & mViewCenter;
-}
-*/
-
 
 #endif

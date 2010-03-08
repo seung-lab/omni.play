@@ -9,6 +9,8 @@ SET( OMGUI_SRCS
 	../utility/dataWrappers.cpp
 	../system/omAnimate.cpp
 	guiUtils.cpp
+	segmentList.cpp
+	elementListBox.cpp
 
 	inspectors/segInspector.cpp
 	inspectors/chanInspector.cpp
@@ -37,6 +39,8 @@ SET( OMGUI_MOC_HDRS
 	mainwindow.h
 	../view3d/omView3d.h
 	../view2d/omView2d.h
+	segmentList.h
+	elementListBox.h
 
 	inspectors/segInspector.h
 	inspectors/chanInspector.h
