@@ -74,6 +74,7 @@ private:
 
 	int mNumSegmentsPerPage;
 	int currentPageNum;
+	unsigned int mNumSegments;
 };
 
 #endif

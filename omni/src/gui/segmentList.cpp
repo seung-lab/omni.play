@@ -16,6 +16,7 @@ SegmentList::SegmentList( QWidget * parent,
 
 	mNumSegmentsPerPage = getNumSegmentsPerPage();
 	currentPageNum = 0;
+	mNumSegments = 0;
 }
 
 int SegmentList::getNumSegmentsPerPage()
@@ -29,13 +30,22 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId first
 	return doGetSegmentsToDisplay( offset );
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int offset )
+QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
-	
+
+	mNumSegments = allSegmentIDs.size();
+
+	int offset;
+	if( mNumSegments > in_offset ){
+		offset = in_offset;
+	} else {
+		offset = 0;
+	}
+
 	OmIds::iterator itr = allSegmentIDs.begin();
 	advance( itr, offset );
 	int counter = 0;
@@ -128,17 +138,17 @@ void SegmentList::dealWithButtons()
 
 void SegmentList::goToNextPage()
 {
-	printf("hi from next page\n");
-
 	currentPageNum++;
 	int offset = currentPageNum * mNumSegmentsPerPage;
+	if( offset > mNumSegments ){
+		currentPageNum--;
+		offset = currentPageNum * mNumSegmentsPerPage;
+	}
 	populateSegmentElementsListWidget( false, offset );
 }
 
 void SegmentList::goToPrevPage()
 {
-	printf("hi from prev page\n");
-
 	currentPageNum--;
 	if( currentPageNum < 0 ){
 		currentPageNum = 0;
