@@ -36,14 +36,12 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int offs
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
 	
-	OmIds::iterator itr;
+	OmIds::iterator itr = allSegmentIDs.begin();
+	advance( itr, offset );
 	int counter = 0;
-	for (itr = allSegmentIDs.begin(); itr != allSegmentIDs.end(); itr++) {
+	for(; itr != allSegmentIDs.end(); itr++) {
 		counter++;
-		if( counter < offset ){
-			continue;
-		}
-		if( counter > (mNumSegmentsPerPage + offset ) ){
+		if( counter > mNumSegmentsPerPage ){
 			break;
 		}
 
