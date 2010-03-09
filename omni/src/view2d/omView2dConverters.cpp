@@ -323,23 +323,23 @@ Vector2f OmView2d::GetPanDistance(ViewType viewType)
 	DataCoord mydataCoord = SpaceToDataCoord(mydepth);
 	debug("pan", "1: dc:x,y,z:%i,%i,%i\n", mydataCoord.x, mydataCoord.y, mydataCoord.z);
 
-	float panx = (mTotalViewport.width/2.0)/(zoomScale/10.0);
-	float pany = (mTotalViewport.height/2.0)/(zoomScale/10.0);
+	float panx = (mTotalViewport.width/2.0)/(zoomScale*stretch.x/10.0);
+	float pany = (mTotalViewport.height/2.0)/(zoomScale*stretch.y/10.0);
 
 	debug("pan", "pan:x,y:%f,%f\n", panx, pany);
 	
         switch(viewType){
         case XY_VIEW:
-		better.x = panx-mydataCoord.x/factor;
-		better.y = pany-mydataCoord.y/factor;
+		better.x = (panx-mydataCoord.x/factor);
+		better.y = (pany-mydataCoord.y/factor);
 		break;
 	case XZ_VIEW:
-		better.x = panx-mydataCoord.x/factor;
-		better.y = pany-mydataCoord.z/factor;
+		better.x = (panx-mydataCoord.x/factor);
+		better.y = (pany-mydataCoord.z/factor);
 		break;
 	case YZ_VIEW:
-		better.x = panx-mydataCoord.z/factor;
-		better.y = pany-mydataCoord.y/factor;
+		better.x = (panx-mydataCoord.z/factor);
+		better.y = (pany-mydataCoord.y/factor);
 		break;
 	default:
 		break;
@@ -348,6 +348,7 @@ Vector2f OmView2d::GetPanDistance(ViewType viewType)
 	debug("pan", "better: x,y:%f,%f\n", better.x, better.y);
 
 	return better;
+	return pd;
 }
 //\}
 
