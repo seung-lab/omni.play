@@ -480,7 +480,7 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
-	debug("hdf5image", "dims are %d:%d%d; maxdims are %d:%d%d\n", 
+	debug("hdf5image", "dims are %d:%d:%d; maxdims are %d:%d:%d\n", 
 	      DEBUGV3(dims), DEBUGV3(maxdims));
 
 	//flip from hdf5 version

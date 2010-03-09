@@ -886,7 +886,7 @@ OmMipVolume::ImportSourceDataSlice() {
  */
 void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 {
-	//debug("FIXME", << "OmMipVolume::Export()" << endl;
+	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n", qPrintable(fileNameAndPath));
 
 	//get leaf data extent
 	DataBbox leaf_data_extent = GetExtent();
