@@ -869,7 +869,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 void OmView2d::SetViewSliceOnPan()
 {
-	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f translateVector = GetPanDistance(mViewType);
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
 	float pl = OMPOW(2, zoomMipVector.x);
@@ -913,28 +913,30 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 
 	// Do the Zoom
 	OmStateManager::Instance()->SetZoomLevel(new_zoom);
+
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+		return;
+	}
+				
 	
 	// Get the new Crosshair Coordinates for each view and set the 
 	// Pan to shift them back to what they were originally
-	oldPan = OmStateManager::Instance()->GetPanDistance(XY_VIEW);
+	oldPan = GetPanDistance(XY_VIEW);
 	newCrosshairCoord = SpaceToScreenCoord(XY_VIEW, depth);
 	newPan = oldPan + ScreenToPanShift(XY_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(XY_VIEW, newPan, postEvent);
 
-	oldPan = OmStateManager::Instance()->GetPanDistance(XZ_VIEW);
+	oldPan = GetPanDistance(XZ_VIEW);
 	newCrosshairCoord = SpaceToScreenCoord(XZ_VIEW, depth);
 	newPan  =oldPan + ScreenToPanShift(XZ_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, newPan, postEvent);
 
-	oldPan = OmStateManager::Instance()->GetPanDistance(YZ_VIEW);
+	oldPan = GetPanDistance(YZ_VIEW);
 	newCrosshairCoord = SpaceToScreenCoord(YZ_VIEW, depth);
 	newPan =  oldPan + ScreenToPanShift(YZ_CrosshairCoord-newCrosshairCoord);
 	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, newPan,postEvent);
 
-	if (OmLocalPreferences::getStickyCrosshairMode()){
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-	}
-				
 	SetViewSliceOnPan();
 }
 
@@ -1371,9 +1373,9 @@ void OmView2d::Draw(int mip)
 	drawComplete = true;
 
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	if (mip) {
+	if (0) {
 		Vector2f zoom = zoomMipVector;
-		Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+		Vector2f translateVector = GetPanDistance(mViewType);
 
 		int lvl = zoomMipVector.x + 2;
 
@@ -1666,7 +1668,7 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 
 	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 
-	Vector2f translateVector = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f translateVector = GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
 	
 	Vector3f depth = Vector3f( 0, 0, 0);

@@ -201,6 +201,7 @@ private:
 	int GetDepthToDataSlice(ViewType viewType);
 	void SetDataSliceToDepth(ViewType viewType, int slice);
 	int GetDepthToDataMax(ViewType viewType);
+	Vector2f GetPanDistance(ViewType viewType);
 	///////////////////////////////////////
 
 
