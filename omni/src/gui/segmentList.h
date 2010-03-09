@@ -41,6 +41,12 @@ private slots:
 	void showContextMenu(const QPoint & menuPoint);
 	void segmentRightClickMenu(QAction * act);
 
+protected:
+	void keyPressEvent (QKeyEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
 private:
 	static const int ENABLED_COL = 0;
 	static const int NAME_COL = 1;

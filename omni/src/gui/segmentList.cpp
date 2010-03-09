@@ -123,6 +123,8 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 				       dataElementsWidget,
 				       QString("All Segments") );
 	dealWithButtons();
+
+	setFocusPolicy(Qt::StrongFocus);
 }
 
 void SegmentList::dealWithButtons()
@@ -281,6 +283,8 @@ void SegmentList::setupDataElementList()
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataElementsWidget->setHeaderLabels(headers);
+
+	dataElementsWidget->setFocusPolicy(Qt::ClickFocus);
 }
 
 void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -319,52 +323,43 @@ void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID)
 {
-	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID);
 }
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID,
 					   const OmId segmentJustAddedID)
 {
-	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
+void SegmentList::keyPressEvent(QKeyEvent * event)
+{
+	printf("hi\n");
 
+	switch (event->key()) {
+	case Qt::Key_Up:
+		printf("hi from keyup\n");
+		break;
+	case Qt::Key_Down:
+		printf("hi from keyup\n");
+		break;
+	}
+}
 
-/*
-
- protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-
-void MyInspectorWidget::mousePressEvent(QMouseEvent *event)
+void SegmentList::mousePressEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse start\n");
 }
 
-void MyInspectorWidget::mouseMoveEvent(QMouseEvent *event)
+void SegmentList::mouseMoveEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse move\n");
 }
 
-void MyInspectorWidget::mouseReleaseEvent(QMouseEvent *event)
+void SegmentList::mouseReleaseEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse release\n");
 }
-*/
-/*
-        switch (event->key()) {
-        case Qt::Key_Up:
-                debug("gui", "hi key up\n");
-                break;
-        case Qt::Key_Down:
-                debug("gui", "hi key down\n");
-                break;
-        }       
-*/
 
 void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {

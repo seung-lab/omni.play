@@ -290,9 +290,9 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		str = QString::number(zoomFactor, 'f', 2) + QString(" zoomFactor");
 		painter.drawText(QPoint(0, mTotalViewport.height - 60), str);
 
-		//		float sliceDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
-		//		str = QString::number(sliceDepth, 'f', 2) + QString(" Slice Depth");
-		//		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
+		int sliceDepth = GetDepthToDataSlice(mViewType);
+		str = QString::number(sliceDepth) + QString(" Slice Depth");
+		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
 
 		float tiles = 10;
 		str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
