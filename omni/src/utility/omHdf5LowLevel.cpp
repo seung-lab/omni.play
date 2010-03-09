@@ -19,10 +19,10 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 
         QFile file(QString(fpath.c_str()));
         if(!file.exists()){
-		H5E_BEGIN_TRY {
+		//		H5E_BEGIN_TRY {
 			hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
 			om_hdf5_file_close_with_lock(fileId);
-		} H5E_END_TRY
+			//		} H5E_END_TRY
         }
 }
 
@@ -480,11 +480,19 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
+	debug("hdf5image", "dims are %d:%d%d; maxdims are %d:%d%d\n", 
+	      DEBUGV3(dims), DEBUGV3(maxdims));
+
 	//flip from hdf5 version
 	return Vector3 < int >(dims.z, dims.y, dims.x);
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, 
+							    const char *name, 
+							    Vector3 < int > dataDims, 
+							    Vector3 < int > chunkDims, 
+							    int bytesPerSample, 
+							    bool unlimited)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -502,9 +510,13 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const 
 
 	//data dims
 	Vector3 < hsize_t > flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
-	Vector3 < hsize_t > flipped_max_data_dims =
-	    unlimited ? Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED,
-					     H5S_UNLIMITED) : Vector3 < hsize_t > (dataDims.z, dataDims.y, dataDims.x);
+	Vector3 < hsize_t > flipped_max_data_dims;
+
+	if( unlimited ){
+		flipped_max_data_dims = Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED, H5S_UNLIMITED);
+	} else { 
+		flipped_max_data_dims = Vector3 < hsize_t > (dataDims.z, dataDims.y, dataDims.x);
+	}
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
@@ -562,7 +574,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	Vector3 < hsize_t > block = extent.getUnitDimensions();
 	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
-
+	debug("hdf5image", "start:%i,%i,%i\n", DEBUGV3(start));
+	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
 	//Selects a hyperslab region to add to the current selected region. 
 	herr_t ret =
 	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,

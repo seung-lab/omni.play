@@ -140,7 +140,7 @@ public:
 	//io
 	bool ImportSourceData();
 	void ImportSourceDataSlice();
-	void ExportInternalData(string dpath, string fname);
+	void ExportInternalData(QString fileNameAndPath);
 	virtual void ExportDataFilter(vtkImageData *) { }
 
 	

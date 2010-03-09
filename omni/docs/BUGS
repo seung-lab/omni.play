@@ -2142,3 +2142,53 @@ HDF5-DIAG: Error detected in HDF5 (1.8.4-patch1) thread 0:
     minor: Object not found
 omni: /home/mwimer/staging/omni/src/volume/omMipChunk.cpp:246: void OmMipChunk::ReadVolumeData(): Assertion `0' failed.
 
+
+
+
+
+    at ../../../../gcc-4.3.4/libstdc++-v3/libsupc++/eh_throw.cc:63
+#1  0x0000000000f8fb64 in boost::regex_error::raise ()
+#2  0x0000000000f7e6d0 in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::fail ()
+#3  0x0000000000f7e850 in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::fail ()
+#4  0x0000000000f8f14d in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::parse_extended ()
+#5  0x0000000000f88299 in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::parse ()
+#6  0x0000000000f886b6 in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::do_assign ()
+#7  0x00000000008c151b in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::assign (this=0x7ffff8e8d000, 
+    p1=0x14f5c818 "*", p2=0x14f5c819 "", f=0) at /Users/purcaro/omni.staging/external/libs/Boost/include/boost/regex/v4/basic_regex.hpp:425
+#8  0x00000000008c1565 in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::assign<std::char_traits<char>, std::allocator<char> > (this=0x7ffff8e8d000, s=@0x7ffff8e8d0b0, f=0)
+    at /Users/purcaro/omni.staging/external/libs/Boost/include/boost/regex/v4/basic_regex.hpp:463
+#9  0x00000000008b5599 in om_imagedata_regex_match_dir_contents_sorted (dpath=
+        {static npos = 18446744073709551615, _M_dataplus = {<std::allocator<char>> = {<__gnu_cxx::new_allocator<char>> = {<No data fields>}, <No data fields>}, _M_p = 0x7ffff8e8d0c0 "���\024"}}, regexStr=
+        {static npos = 18446744073709551615, _M_dataplus = {<std::allocator<char>> = {<__gnu_cxx::new_allocator<char>> = {<No data fields>}, <No data fields>}, _M_p = 0x7ffff8e8d0b0 "\030��\024"}}, rMatchFnames=@0x14dcf578)
+    at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:831
+#10 0x00000000007bd33d in OmMipVolume::UpdateSourceFilenameRegexMatches (this=0x14dcf370)
+    at /Users/purcaro/omni.staging/omni/src/volume/omMipVolume.cpp:174
+#11 0x00000000007bd409 in OmMipVolume::SetSourceFilenameRegex (this=0x14dcf370, regex=@0x7ffff8e8d140)
+    at /Users/purcaro/omni.staging/omni/src/volume/omMipVolume.cpp:156
+#12 0x000000000078d4d7 in SegInspector::on_patternEdit_textChanged (this=0x14df5500)
+    at /Users/purcaro/omni.staging/omni/src/gui/inspectors/segInspector.cpp:226
+#13 0x00000000007b04ca in SegInspector::qt_metacall (this=0x14df5500, _c=QMetaObject::InvokeMetaMethod, _id=5, _a=0x7ffff8e8d360)
+    at /Users/purcaro/omni.staging/omni/inst/gui/inspectors/moc_segInspector.cxx:95
+#14 0x00002b95bf420dfb in QMetaObject::metacall (object=0x14df5500, cl=QMetaObject::InvokeMetaMethod, idx=32, argv=0x7ffff8e8d360)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/corelib/kernel/qmetaobject.cpp:237
+#15 0x00002b95bf435416 in QMetaObject::activate (sender=0x14f58050, m=0x2b95beea78a0, local_signal_index=0, argv=0x7ffff8e8d360)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/corelib/kernel/qobject.cpp:3285
+#16 0x00002b95be6837b1 in QLineEdit::textChanged (this=0x14f58050, _t1=@0x7ffff8e8d630) at .moc/debug-shared/moc_qlineedit.cpp:235
+#17 0x00002b95be686e4a in QLineEdit::qt_metacall (this=0x14f58050, _c=QMetaObject::InvokeMetaMethod, _id=0, _a=0x7ffff8e8d5e0)
+    at .moc/debug-shared/moc_qlineedit.cpp:154
+#18 0x00002b95bf420dfb in QMetaObject::metacall (object=0x14f58050, cl=QMetaObject::InvokeMetaMethod, idx=27, argv=0x7ffff8e8d5e0)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/corelib/kernel/qmetaobject.cpp:237
+#19 0x00002b95bf435416 in QMetaObject::activate (sender=0x14f582c0, m=0x2b95beec1ec0, local_signal_index=3, argv=0x7ffff8e8d5e0)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/corelib/kernel/qobject.cpp:3285
+#20 0x00002b95be9a5345 in QLineControl::textChanged (this=0x14f582c0, _t1=@0x7ffff8e8d630) at .moc/debug-shared/moc_qlinecontrol_p.cpp:131
+#21 0x00002b95be68e498 in QLineControl::finishChange (this=0x14f582c0, validateFromState=0, update=false, edited=true)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/widgets/qlinecontrol.cpp:605
+#22 0x00002b95be68f5a9 in QLineControl::insert (this=0x14f582c0, newText=@0x7ffff8e8d730)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/widgets/qlinecontrol.cpp:218
+#23 0x00002b95be691726 in QLineControl::processKeyEvent (this=0x14f582c0, event=0x7ffff8e8e4f0)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/widgets/qlinecontrol.cpp:1778
+#24 0x00002b95be685a8f in QLineEdit::keyPressEvent (this=0x14f58050, event=0x7ffff8e8e4f0)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/widgets/qlineedit.cpp:1661
+#25 0x00002b95be1d3adb in QWidget::event (this=0x14f58050, event=0x7ffff8e8e4f0)
+    at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/kernel/qwidget.cpp:8033
+---Type <return> to continue, or q <return> to quit---q

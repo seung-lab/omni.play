@@ -7,7 +7,7 @@
 #include <QString>
 
 #define debug(x, ...) actual_debug(x, __VA_ARGS__)
-
+#define DEBUGV3(vec) vec.x, vec.y, vec.z
 class CmdLineArgs 
 {
 public:

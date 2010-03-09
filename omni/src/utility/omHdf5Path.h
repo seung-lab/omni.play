@@ -11,6 +11,10 @@ class OmHdf5Path
 	void setPath( std::string str );
 	std::string getString();
 
+	OmHdf5Path operator=( OmHdf5Path & rhs ) {
+		this->mPath = rhs.mPath;
+	}
+
  private:
 	QString mPath;
 }; 

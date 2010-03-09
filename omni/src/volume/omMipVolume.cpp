@@ -188,7 +188,6 @@ const list < string > & OmMipVolume::GetSourceFilenameRegexMatches()
  */
 bool OmMipVolume::IsSourceValid()
 {
-
 	//if matches    
 	if (GetSourceFilenameRegexMatches().size() == 0)
 		return false;
@@ -203,6 +202,7 @@ bool OmMipVolume::IsSourceValid()
 
 const DataBbox & OmMipVolume::GetExtent()
 {
+	debug("hdf5image", "extents: %i,%i,%i\n", DEBUGV3(OmVolume::GetDataExtent().getMax()));
 	return OmVolume::GetDataExtent();
 }
 
@@ -256,7 +256,6 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
  */
 void OmMipVolume::UpdateMipProperties()
 {
-
 	//if valid source, check dimensions
 	if (IsSourceValid()) {
 
@@ -615,7 +614,7 @@ void OmMipVolume::Build()
 
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
-
+	
 	//update properties
 	UpdateMipProperties();
 
@@ -885,7 +884,7 @@ OmMipVolume::ImportSourceDataSlice() {
  *	Export leaf volume data to HDF5 format.  Calls ExportImageDataFilter so subclass can 
  *	post-process the image data before it is written.
  */
-void OmMipVolume::ExportInternalData(string dpath, string fname)
+void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 {
 	//debug("FIXME", << "OmMipVolume::Export()" << endl;
 
@@ -904,6 +903,7 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 
 				//form mip chunk coord
 				OmMipChunkCoord leaf_coord(0, x, y, z);
+
 				//get chunk data bbox
 				DataBbox chunk_data_bbox = MipCoordToDataBbox(leaf_coord, 0);
 
@@ -916,7 +916,9 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 
 				//write to hdf5 file
 				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
-				om_imagedata_write_hdf5(p_chunk_img_data, dpath, fname, leaf_data_extent,
+				om_imagedata_write_hdf5(p_chunk_img_data, 
+							fileNameAndPath,
+							leaf_data_extent,
 							chunk_data_bbox, GetBytesPerSample());
 
 				//delete read data

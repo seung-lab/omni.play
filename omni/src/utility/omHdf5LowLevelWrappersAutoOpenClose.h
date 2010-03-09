@@ -34,7 +34,7 @@ class OmHdf5LowLevelWrappersAutoOpenClose : public OmHdf5LowLevelWrappersAbstrac
 
  private:
 	OmHdf5LowLevel hdfLowLevel;
-	const string mFileName;
+	string mFileName;
 };
 
 #endif

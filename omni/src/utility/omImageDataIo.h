@@ -18,6 +18,8 @@ using namespace vmml;
 #include <boost/filesystem/convenience.hpp>
 namespace bfs=boost::filesystem;
 
+#include <QString>
+
 #include <list>
 using std::list;
 
@@ -29,7 +31,8 @@ class vtkImageWriter;
 class vtkImageData;
 
 //type
-ImageType om_imagedata_parse_image_type(const string &fname);
+ImageType om_imagedata_parse_image_type( string str );
+ImageType om_imagedata_parse_image_type(QString fileNameAndPath);
 	
 //vtk io
 vtkImageReader2* om_imagedata_get_reader(ImageType);
@@ -43,10 +46,10 @@ vtkImageData* om_imagedata_read_vtk(string dpath, list<string> &fnames, const Da
 vtkImageData* om_imagedata_read_hdf5(string dpath, list<string> &fnames, const DataBbox srcExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample);
 
 //writing
-void om_imagedata_write(vtkImageData *data, string dpath, string fpattern, const DataBbox dataExtentBbox, int bytesPerSample);
-void om_imagedata_write_vtk(vtkImageData *data, string dpath, string fpattern, const DataBbox dataExtentBbox, int bytesPerSample);
-void om_imagedata_write_hdf5(vtkImageData *data, string dpath, string fpattern, const DataBbox dataExtentBbox, int bytesPerSample);
-void om_imagedata_write_hdf5(vtkImageData *data, string dpath, string fpattern, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample);
+void om_imagedata_write(vtkImageData *data, QString fileNameAndPath, const DataBbox dataExtentBbox, int bytesPerSample);
+void om_imagedata_write_vtk(vtkImageData *data, QString fileNameAndPath, const DataBbox dataExtentBbox, int bytesPerSample);
+void om_imagedata_write_hdf5(vtkImageData *data, QString fileNameAndPath, const DataBbox dataExtentBbox, int bytesPerSample);
+void om_imagedata_write_hdf5(vtkImageData *data, QString fileNameAndPath, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample);
 
 //determine dimensions
 Vector3<int> om_imagedata_get_dims(string dpath, const list<string> &fname);
