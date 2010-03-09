@@ -891,6 +891,7 @@ void OmView2d::SetViewSliceOnPan()
 		OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.x, maxSpaceCoord.y), false);
 		OmStateManager::SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.x, minSpaceCoord.y), false);
 	}
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 
@@ -915,27 +916,23 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 	OmStateManager::Instance()->SetZoomLevel(new_zoom);
 
 	if (OmLocalPreferences::getStickyCrosshairMode()){
+		SetViewSliceOnPan();
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		return;
 	}
 				
-	
-	// Get the new Crosshair Coordinates for each view and set the 
-	// Pan to shift them back to what they were originally
-	oldPan = GetPanDistance(XY_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(XY_VIEW, depth);
-	newPan = oldPan + ScreenToPanShift(XY_CrosshairCoord-newCrosshairCoord);
-	OmStateManager::Instance()->SetPanDistance(XY_VIEW, newPan, postEvent);
+        Vector2 < int >pro_zoom = OmStateManager::Instance()->GetZoomLevel();
+        int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
+        int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
 
-	oldPan = GetPanDistance(XZ_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(XZ_VIEW, depth);
-	newPan  =oldPan + ScreenToPanShift(XZ_CrosshairCoord-newCrosshairCoord);
-	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, newPan, postEvent);
-
-	oldPan = GetPanDistance(YZ_VIEW);
-	newCrosshairCoord = SpaceToScreenCoord(YZ_VIEW, depth);
-	newPan =  oldPan + ScreenToPanShift(YZ_CrosshairCoord-newCrosshairCoord);
-	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, newPan,postEvent);
+        if (pro_zoom.x > new_zoom.x) {
+                widthTranslate = widthTranslate / 2;
+                heightTranslate = heightTranslate / 2;
+        } else if (pro_zoom.x < new_zoom.x) {
+                widthTranslate = widthTranslate * 2;
+                heightTranslate = heightTranslate * 2;
+        }
+        OmStateManager::Instance()->SetPanDistance(mViewType, Vector2 < int >(widthTranslate, heightTranslate), postEvent);
 
 	SetViewSliceOnPan();
 }

@@ -563,7 +563,7 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 {
 	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+	Vector2f current_pan = GetPanDistance(mViewType);
 	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
 	Vector2i thisPoint = Vector2i(event->x(),event->y());
 
@@ -629,17 +629,18 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	//crossCoord =  SpaceToScreenCoord(mViewType, ScreenToSpaceCoord(mViewType, crossCoord));
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
 
-
-	Vector2f currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
-	Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
-	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
-	newPan += currentPan;
+        Vector2f currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
+        Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
+        debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
+        newPan += currentPan;
         OmStateManager::Instance()->SetPanDistance(mViewType, newPan);
-	debug ("cross","view: %i  depth.(x,y,z): (%f,%f,%f)\n",mViewType,depth.x,depth.y,depth.z);
-	debug ("cross", "view: %i  currentPan.(x,y): (%f,%f)\n", mViewType,currentPan.x,currentPan.y);
-	debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
-	debug ("cross", "view: %i  crossCoord.(x,y): (%i,%i)\n", mViewType,crossCoord.x,crossCoord.y);
-	debug ("cross", "view: %i  centerCoord.(x,y): (%i,%i)\n", mViewType,centerCoord.x,centerCoord.y);
+        debug ("cross","view: %i  depth.(x,y,z): (%f,%f,%f)\n",mViewType,depth.x,depth.y,depth.z);
+        debug ("cross", "view: %i  currentPan.(x,y): (%f,%f)\n", mViewType,currentPan.x,currentPan.y);
+        debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
+        debug ("cross", "view: %i  crossCoord.(x,y): (%i,%i)\n", mViewType,crossCoord.x,crossCoord.y);
+        debug ("cross", "view: %i  centerCoord.(x,y): (%i,%i)\n", mViewType,centerCoord.x,centerCoord.y);
+
+	SetViewSliceOnPan();
 
 	myUpdate();
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
@@ -810,7 +811,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Right:
 		{
-			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
 								   Vector2f(current_pan.x + 5, current_pan.y));
@@ -821,7 +822,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Left:
 		{
-			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
 								   Vector2f(current_pan.x - 5, current_pan.y));
@@ -831,7 +832,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Up:
 		{
-			Vector2 < int >current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2 < int >current_pan = GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
 								   Vector2 < int >(current_pan.x, current_pan.y + 5));
@@ -841,7 +842,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Down:
 		{
-			Vector2f current_pan = OmStateManager::Instance()->GetPanDistance(mViewType);
+			Vector2f current_pan = GetPanDistance(mViewType);
 
 			OmStateManager::Instance()->SetPanDistance(mViewType,
 								   Vector2f(current_pan.x, current_pan.y - 5));
