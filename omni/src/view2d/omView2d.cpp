@@ -904,14 +904,6 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 	Vector2f newPan;
 	float panx,pany;
 
-	// Get the mDepthCoord
-	SpaceCoord depth = OmStateManager::GetViewDepthCoord();
-
-	// Get what the Crosshair Coordinates for each view before the zoom were
-	ScreenCoord XY_CrosshairCoord = SpaceToScreenCoord(XY_VIEW, depth);
-	ScreenCoord XZ_CrosshairCoord = SpaceToScreenCoord(XZ_VIEW, depth);
-	ScreenCoord YZ_CrosshairCoord = SpaceToScreenCoord(YZ_VIEW, depth);
-
 	// Do the Zoom
 	OmStateManager::Instance()->SetZoomLevel(new_zoom);
 
@@ -920,20 +912,26 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		return;
 	}
-				
-        Vector2 < int >pro_zoom = OmStateManager::Instance()->GetZoomLevel();
-        int widthTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).x;
-        int heightTranslate = OmStateManager::Instance()->GetPanDistance(mViewType).y;
 
-        if (pro_zoom.x > new_zoom.x) {
-                widthTranslate = widthTranslate / 2;
-                heightTranslate = heightTranslate / 2;
-        } else if (pro_zoom.x < new_zoom.x) {
-                widthTranslate = widthTranslate * 2;
-                heightTranslate = heightTranslate * 2;
+        // Update the pan so view stays centered.
+        ViewType vts[] = { XY_VIEW, YZ_VIEW, XZ_VIEW };
+
+        for (int i = 0; i < 3; i++) {
+                Vector2 < int >pro_zoom = OmStateManager::Instance()->GetZoomLevel();
+                int widthTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).x;
+                int heightTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).y;
+
+                if (pro_zoom.x > new_zoom.x) {
+                        widthTranslate = widthTranslate / 2;
+                        heightTranslate = heightTranslate / 2;
+                } else if (pro_zoom.x < new_zoom.x) {
+                        widthTranslate = widthTranslate * 2;
+                        heightTranslate = heightTranslate * 2;
+                }
+
+                OmStateManager::Instance()->SetPanDistance(vts[i], Vector2 < int >(widthTranslate, heightTranslate),
+                                                           postEvent);
         }
-        OmStateManager::Instance()->SetPanDistance(mViewType, Vector2 < int >(widthTranslate, heightTranslate), postEvent);
-
 	SetViewSliceOnPan();
 }
 
@@ -1230,7 +1228,7 @@ void OmView2d::DrawFromCache()
 		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 		mCache->SetContinuousUpdate(false);
 
-		Draw(true);
+		Draw(false);
 	} else {
 		mCurrentSegmentation = mImageId;
 		OmSegmentation & current_seg = OmVolume::GetSegmentation(mImageId);

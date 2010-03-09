@@ -45,8 +45,6 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 	switch (OmStateManager::GetSystemMode()) {
 
 		case NAVIGATION_SYSTEM_MODE: {
-
-
 			if (event->button() == Qt::LeftButton) {
 				const bool crosshair = event->modifiers() & Qt::ControlModifier;
 				if( crosshair ){
@@ -567,34 +565,28 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
 	Vector2i thisPoint = Vector2i(event->x(),event->y());
 
-	//mDragX += drag.x / (zoomMipVector.y / 10.);
-	//mDragY += drag.y / (zoomMipVector.y / 10.);
-
-
-	if (OmLocalPreferences::getStickyCrosshairMode()){
+	if (OmLocalPreferences::getStickyCrosshairMode()) {
 		SpaceCoord thisCoord = ScreenToSpaceCoord(mViewType,thisPoint);
 		SpaceCoord difference = thisCoord - rememberCoord;
-	       	SpaceCoord depth = OmStateManager::GetViewDepthCoord() -difference;
+	       	SpaceCoord depth = OmStateManager::GetViewDepthCoord() - difference;
 		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
 		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
 		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else {
-	
+		OmStateManager::Instance()->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
+		SetViewSliceOnPan();
+        	debug("cross","current_pan.x: %f current_pan.y %f \n", current_pan.x, current_pan.y);
+		float xdepth,ydepth,zdepth;
+		xdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		ydepth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		zdepth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		SpaceCoord mDepthCoord = Vector3f(xdepth,ydepth,zdepth);
 
-	OmStateManager::Instance()->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
-	SetViewSliceOnPan();
-        debug("cross","current_pan.x: %i   current_pan.y  %i \n",current_pan.x,current_pan.y);
-	float xdepth,ydepth,zdepth;
-	xdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-	ydepth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-	zdepth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
-	SpaceCoord mDepthCoord = Vector3f(xdepth,ydepth,zdepth);
-
-	ScreenCoord crosshairCoord = SpaceToScreenCoord(mViewType, mDepthCoord);
-	DataCoord crosshairdata = SpaceToDataCoord(mDepthCoord);
-	debug("cross","crosshairdata.(x,y,z): (%i,%i,%i)\n",crosshairdata.x,crosshairdata.y,crosshairdata.z);
-	debug("cross","crosshair.x: %i   crosshair.y  %i  \n",crosshairCoord.x,crosshairCoord.y);
+		ScreenCoord crosshairCoord = SpaceToScreenCoord(mViewType, mDepthCoord);
+		DataCoord crosshairdata = SpaceToDataCoord(mDepthCoord);
+		debug("cross","crosshairdata.(x,y,z): (%i,%i,%i)\n",crosshairdata.x, crosshairdata.y, crosshairdata.z);
+		debug("cross","crosshair.x: %i crosshair.y %i\n", crosshairCoord.x, crosshairCoord.y);
 	}
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
