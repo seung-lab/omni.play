@@ -49,17 +49,12 @@ namespace bfs = boost::filesystem;
 /*
  *	Return image type based on filename extension
  */
-ImageType om_imagedata_parse_image_type( string str )
-{
-	return om_imagedata_parse_image_type( QString::fromStdString( str ) );
-}
-
 ImageType om_imagedata_parse_image_type( QString fileNameAndPath )
 {
 	QString extension = QFileInfo(fileNameAndPath).suffix();
 
 	//extract file extension
-	string ext = extension.toStdString();
+	string ext = "." + extension.toStdString();
 
 	//switch for extention type
 	if (".tif" == ext || ".tiff" == ext) {
@@ -129,7 +124,7 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 
 vtkImageReader2 *om_imagedata_get_reader(const string & fname)
 {
-	return om_imagedata_get_reader(om_imagedata_parse_image_type(fname));
+	return om_imagedata_get_reader(om_imagedata_parse_image_type( QString::fromStdString( fname)) );
 }
 
 /*
@@ -159,7 +154,7 @@ vtkImageWriter *om_imagedata_get_writer(ImageType type)
 
 vtkImageWriter *om_imagedata_get_writer(string & fname)
 {
-	return om_imagedata_get_writer(om_imagedata_parse_image_type(fname));
+	return om_imagedata_get_writer(om_imagedata_parse_image_type( QString::fromStdString(fname)));
 }
 
 #pragma mark -
@@ -173,7 +168,7 @@ vtkImageData *om_imagedata_read(string dpath, list < string > &fnames, const Dat
 
 	assert(fnames.size() && "No files to read.");
 
-	switch (om_imagedata_parse_image_type(fnames.front())) {
+	switch (om_imagedata_parse_image_type( QString::fromStdString( fnames.front()))) {
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:
@@ -417,7 +412,7 @@ Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fname
 	assert(fnames.size() && "No files specified");
 
 	//use first name in list to determine filetype
-	switch (om_imagedata_parse_image_type(fnames.front())) {
+	switch (om_imagedata_parse_image_type(QString::fromStdString( fnames.front()) )) {
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:

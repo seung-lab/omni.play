@@ -31,7 +31,6 @@ class vtkImageWriter;
 class vtkImageData;
 
 //type
-ImageType om_imagedata_parse_image_type( string str );
 ImageType om_imagedata_parse_image_type(QString fileNameAndPath);
 	
 //vtk io
