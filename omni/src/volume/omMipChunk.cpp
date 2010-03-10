@@ -268,7 +268,7 @@ void OmMipChunk::WriteVolumeData()
 	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
 	if (mpImageData) {
-		OmProjectData::WriteImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
+		OmProjectData::WriteImageData( mip_level_vol_path, (DataBbox*)&GetExtent(), GetBytesPerSample(), mpImageData);
 	}
 
 	mVolumeDataDirty = false;

@@ -39,9 +39,9 @@ class OmHdf5
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
-	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited  = false);
+	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample, bool unlimited  = false);
 	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_image_write_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	void dataset_image_write_trim( OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 
 	//data set raw
 	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);

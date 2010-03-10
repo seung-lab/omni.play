@@ -49,6 +49,10 @@ void om_imagedata_write(vtkImageData *data, QString fileNameAndPath, const DataB
 void om_imagedata_write_vtk(vtkImageData *data, QString fileNameAndPath, const DataBbox dataExtentBbox, int bytesPerSample);
 void om_imagedata_write_hdf5(vtkImageData *data, QString fileNameAndPath, const DataBbox dataExtentBbox, int bytesPerSample);
 void om_imagedata_write_hdf5(vtkImageData *data, QString fileNameAndPath, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample);
+void om_imagedata_write_hdf5_cool(vtkImageData * data, QString fileNameAndPath,
+                             const DataBbox* dstExtentBbox, const DataBbox* dataExtentBbox,
+                             int bytesPerSample);
+
 
 //determine dimensions
 Vector3<int> om_imagedata_get_dims(string dpath, const list<string> &fname);

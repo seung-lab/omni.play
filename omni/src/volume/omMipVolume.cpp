@@ -17,6 +17,7 @@
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
 #include "common/omDebug.h"
+#include <QFile>
 
 #define DEBUG 0
 
@@ -562,7 +563,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
  */
 void OmMipVolume::AllocInternalData()
 {
-
+	Vector3<int> chunkdims = GetChunkDimensions();
 	//for all levels, alloc image data
 	for (int i = 0; i <= GetRootMipLevel(); i++) {
 		//debug("genone","OmMipVolume::AllocInternalData()\n");
@@ -580,8 +581,8 @@ void OmMipVolume::AllocInternalData()
 		mip_volume_level_path.setPath( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
-		OmProjectData::CreateImageData(mip_volume_level_path, rounded_data_dims,
-					       GetChunkDimensions(), GetBytesPerSample());
+		OmProjectData::CreateImageData(mip_volume_level_path, &rounded_data_dims,
+					       &chunkdims, GetBytesPerSample());
 	}
 
 }
@@ -827,7 +828,7 @@ bool OmMipVolume::ImportSourceData()
 						      GetExtent(), chunk_data_bbox, GetBytesPerSample());
 
 				//write to project data
-				OmProjectData::WriteImageData(leaf_volume_path, chunk_data_bbox, GetBytesPerSample(),
+				OmProjectData::WriteImageData(leaf_volume_path, &chunk_data_bbox, GetBytesPerSample(),
 							      p_img_data);
 
 				//delete read data
@@ -895,10 +896,28 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmHdf5Path mip_volume_path;
 	mip_volume_path.setPath( MipLevelInternalDataPath(0) );
+        //round up to nearest chunk
+
+        OmHdf5 hdfExport( fileNameAndPath, false );
+        OmHdf5Path fpath;
+        fpath.setPath("main");
+
+	if( !QFile::exists(fileNameAndPath) ){
+        	hdfExport.create();
+        	hdfExport.open();
+		Vector3<int> full = MipLevelDataDimensions(0);
+        	Vector3<int>rounded_data_dims = Vector3 <int>(ROUNDUP(full.x, GetChunkDimension()),
+                                                                   ROUNDUP(full.y, GetChunkDimension()),
+                                                                   ROUNDUP(full.z, GetChunkDimension()));
+        	hdfExport.dataset_image_create_tree_overwrite(fpath, &rounded_data_dims, &full, GetBytesPerSample());
+	} else {
+        	hdfExport.open();
+	}
+
 
 	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z)
-		for (int y = 0; y < leaf_mip_dims.y; ++y)
+	for (int z = 0; z < leaf_mip_dims.z; ++z) {
+		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 				//form mip chunk coord
@@ -916,14 +935,17 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 
 				//write to hdf5 file
 				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
-				om_imagedata_write_hdf5(p_chunk_img_data, 
-							fileNameAndPath,
-							leaf_data_extent,
-							chunk_data_bbox, GetBytesPerSample());
+
+				hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+                                           (DataBbox*)&chunk_data_bbox, GetBytesPerSample(), p_chunk_img_data);
+
 
 				//delete read data
 				p_chunk_img_data->Delete();
 			}
+		}
+	}
+	hdfExport.close();
 }
 
 #pragma mark

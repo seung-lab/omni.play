@@ -406,6 +406,7 @@ const Vector3< T >& Vector3< T >::operator=( const Vector3& rhs )
     x = rhs.x; 
     y = rhs.y; 
     z = rhs.z; 
+    //printf("x,y,z: %d,%d,%d\n", x,y,z);
     return *this;
 } 
 

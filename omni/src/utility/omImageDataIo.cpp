@@ -376,10 +376,27 @@ om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
 	om_imagedata_write_hdf5(data, fileNameAndPath, dataExtentBbox, dataExtentBbox, bytesPerSample);
 }
 
+void om_imagedata_write_hdf5_cool(vtkImageData * data, QString fileNameAndPath,
+                             const DataBbox* dstExtentBbox, const DataBbox* dataExtentBbox,
+                             int bytesPerSample)
+{
+	OmHdf5 hdfExport( fileNameAndPath, false );
+	OmHdf5Path fpath;
+	fpath.setPath("main");
+
+        hdfExport.open();
+        //write image data
+        hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+                                           (DataBbox*)dataExtentBbox, bytesPerSample, data);
+        hdfExport.close();
+}
+
+
 void om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
 			     const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, 
 			     int bytesPerSample)
 {
+#if 0
 	OmHdf5 hdfExport( fileNameAndPath, false );
 	
 	if( !QFile::exists(fileNameAndPath) ){
@@ -398,8 +415,9 @@ void om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
 	hdfExport.open();
 	//write image data
 	hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
-					   dataExtentBbox, bytesPerSample, data);
+					   &dataExtentBbox, bytesPerSample, data);
 	hdfExport.close();
+#endif
 }
 
 #pragma mark -

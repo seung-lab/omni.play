@@ -41,9 +41,9 @@ public:
 	static bool DataExists(OmHdf5Path path);
 	
 	//image data io
-	static void CreateImageData(OmHdf5Path path, Vector3<int> dataDims, Vector3<int> chunkDims, int bytesPerSample);
+	static void CreateImageData(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
 	static vtkImageData* ReadImageData(OmHdf5Path path, const DataBbox &extent, int bytesPerSample);
-	static void WriteImageData(OmHdf5Path path, const DataBbox &extent, int bytesPerSample, vtkImageData *data);
+	static void WriteImageData(OmHdf5Path path, DataBbox *extent, int bytesPerSample, vtkImageData *data);
 
 	//raw data io
 	static void* ReadRawData(OmHdf5Path path, int* size = NULL);

@@ -104,7 +104,7 @@ bool OmProjectData::DataExists(OmHdf5Path path)
 
 //image data io
 
-void OmProjectData::CreateImageData(OmHdf5Path path, Vector3 < int >dataDims, Vector3 < int >chunkDims,
+void OmProjectData::CreateImageData(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims,
 				    int bytesPerSample)
 {
 	Instance()->hdfFile->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, bytesPerSample);
@@ -115,7 +115,7 @@ vtkImageData *OmProjectData::ReadImageData(OmHdf5Path path, const DataBbox & ext
 	return Instance()->hdfFile->dataset_image_read_trim( path, extent, bytesPerSample);
 }
 
-void OmProjectData::WriteImageData(OmHdf5Path path, const DataBbox & extent, int bytesPerSample, vtkImageData * data)
+void OmProjectData::WriteImageData(OmHdf5Path path, DataBbox * extent, int bytesPerSample, vtkImageData * data)
 {
 	Instance()->hdfFile->dataset_image_write_trim( path, extent, bytesPerSample, data);
 }
