@@ -126,7 +126,7 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 
 	//compute target size for group
 
-	int32_t target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
+	unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
 
 	//get caches in group
 	set < OmCacheBase * >&cache_set = mCacheMap[group].CacheSet;

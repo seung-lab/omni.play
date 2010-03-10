@@ -167,6 +167,11 @@ void processLine( QString line, QString fName )
                 }
                 OmVolume::GetSegmentation( SegmentationID ).AddSegment();
                 OmProject::Save();
+        } else if( line.startsWith("setDataExtent") ){
+		QStringList args = line.split(':');
+		Vector3<int> maxext = Vector3<int>(getNum(args[1]),getNum(args[2]),getNum(args[3]));
+		OmVolume::SetDataDimensions(maxext);
+                OmProject::Save();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
