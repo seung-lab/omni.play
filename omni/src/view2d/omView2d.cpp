@@ -939,49 +939,15 @@ void quicky()
 
 void OmView2d::MoveUpStackCloserToViewer()
 {
-
-	SpaceCoord unit = DataToSpaceCoord(DataCoord(1,1,1));
-	SpaceCoord depth;
-	switch (mViewType){                                                                                           
-        case XY_VIEW:                                                                                              
-                depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
-                depth.z+= unit.z;                                                            
-                OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW,depth.z);
-                break;                                                                                     
-        case XZ_VIEW:                                                                                              
-                depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);                     
-                depth.y+= unit.y;
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW,depth.y);     
-                break;                 
-        case YZ_VIEW:                                                                        
-                depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);          
-                depth.x+= unit.x;
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW,depth.x);  
-		break;
-        }    
+	int depth = GetDepthToDataSlice(mViewType);
+	SetDataSliceToDepth(mViewType, depth+1);	
+   
 }
 
 void OmView2d::MoveDownStackFartherFromViewer()
 {
-	SpaceCoord unit = DataToSpaceCoord(DataCoord(1,1,1));                                    
-        SpaceCoord depth;                                                                                 
-        switch (mViewType){                                                               
-        case XY_VIEW:                                                                     
-                depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
-                depth.z-= unit.z; 
-      		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW,depth.z);   
-                break;  
-        case XZ_VIEW:                                                                                        
-                depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);                                      
-                depth.y-= unit.y;                                                                                 
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW,depth.y);                                 
-                break;                                   
-        case YZ_VIEW:                                                                                        
-                depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);                         
-                depth.x-= unit.x;                                                                             
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW,depth.x);                          
-                break;                                                                                       
-        }              
+	int depth = GetDepthToDataSlice(mViewType);
+	SetDataSliceToDepth(mViewType, depth-1);      
 }
 
 /////////////////////////////////
@@ -1326,11 +1292,11 @@ void OmView2d::Draw(int mip)
 	drawComplete = true;
 
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	if (0) {
+	if (true) {
 		Vector2f zoom = zoomMipVector;
 		Vector2f translateVector = GetPanDistance(mViewType);
 
-		int lvl = zoomMipVector.x + 2;
+		int lvl = zoomMipVector.x+1;
 
 		for (int i = mRootLevel; i > lvl; i--) {
 			
@@ -1614,7 +1580,7 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 		//debug("genone", "MIP COORD IS INVALID\n");
 	}
 }
-void OmView2d::PreDraw(Vector2i zoomMipVector)
+void OmView2d::PreDraw(Vector2f zoomMipVector)
 {
 	drawComplete = true;
 	unsigned int freshness = 0;

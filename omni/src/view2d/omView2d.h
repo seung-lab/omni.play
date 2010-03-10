@@ -90,7 +90,7 @@ protected:
 	void TextureDraw(vector <Drawable*> &textures);
 	void safeTexture(shared_ptr<OmTextureID> gotten_id);
 	void safeDraw(float zoomFactor, int x, int y, int tileLength, shared_ptr<OmTextureID> gotten_id);
-	void PreDraw(Vector2i);
+	void PreDraw(Vector2f);
 
 	void DrawFromFilter (OmFilter2d&);
 	void DrawFromCache();
