@@ -60,8 +60,6 @@ public:
 
 
 
-#pragma mark 
-#pragma mark Operators
 /////////////////////////////////
 ///////		 Operators
 
@@ -98,8 +96,6 @@ OmMipSegmentDataCoord::operator<( const OmMipSegmentDataCoord& rhs ) const
 
 
 
-#pragma mark 
-#pragma mark stream
 /////////////////////////////////
 ///////		 stream
 
@@ -114,8 +110,6 @@ operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
 
 
 
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

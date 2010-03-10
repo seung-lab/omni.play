@@ -11,8 +11,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVoxelSetValueAction Class
 /////////////////////////////////
 ///////
 ///////          OmVoxelSetValueAction Class
@@ -61,8 +59,6 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoor
 	mUndoable = false;
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

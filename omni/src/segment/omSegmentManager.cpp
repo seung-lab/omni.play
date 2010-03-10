@@ -12,8 +12,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmSegmentManager
 /////////////////////////////////
 ///////
 ///////          OmSegmentManager
@@ -25,8 +23,6 @@ OmSegmentManager::OmSegmentManager()
 	mCachedSegmentDataValuesDirty = true;
 }
 
-#pragma mark
-#pragma mark Segment Management
 /////////////////////////////////
 ///////         Segment Management
 
@@ -166,8 +162,6 @@ void OmSegmentManager::SegmentCall(void (OmSegment::*fxn) ())
 	mGenericSegmentManager.CallValid(fxn);
 }
 
-#pragma mark
-#pragma mark DataMap Methods
 /////////////////////////////////
 ///////          DataMap Methods
 
@@ -201,8 +195,6 @@ void OmSegmentManager::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & 
 	mSegmentDataMap.UnMapValuesToSegmentId(omId, rValueSet);
 }
 
-#pragma mark
-#pragma mark Cached Segment Data Values Methods
 /////////////////////////////////
 ///////          Cached Segment Data Values Methods
 
@@ -260,8 +252,6 @@ const SegmentDataSet & OmSegmentManager::GetUnselectedSegmentDataValues()
 	return mUnselectedSegmentDataValues;
 }
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////          Accessor Methods
 

@@ -529,7 +529,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
 {
 	try {
 
-#pragma mark <TODO: Saving position of windows and restoring position of windows>
 		// QMainWindow::saveState() and restoreState()
 
 		if (isProjectOpen)

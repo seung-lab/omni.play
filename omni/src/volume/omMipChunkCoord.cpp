@@ -4,8 +4,6 @@
 
 const OmMipChunkCoord OmMipChunkCoord::NULL_COORD(-1, -1, -1, -1);
 
-#pragma mark -
-#pragma mark OmMipChunkCoord
 /////////////////////////////////
 ///////          OmMipChunkCoord
 
@@ -40,8 +38,6 @@ bool OmMipChunkCoord::IsLeaf() const
 	return 0 == Level;
 }
 
-#pragma mark -
-#pragma mark Family Coordinates
 /////////////////////////////////
 ///////          Family Coordinates
 
@@ -114,8 +110,6 @@ void OmMipChunkCoord::ChildrenCoords(OmMipChunkCoord * pChildren) const
 
 }
 
-#pragma mark -
-#pragma mark Operators
 /////////////////////////////////
 ///////          Operators
 

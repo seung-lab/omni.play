@@ -33,7 +33,6 @@ enum View3dWidgetIds {
 
 void initLights();
 
-#pragma mark -
 /////////////////////////////////////
 //////////
 //////////      OmView3d Class
@@ -86,8 +85,6 @@ OmCamera & OmView3d::GetCamera()
 	return mCamera;
 }
 
-#pragma mark
-#pragma mark GL Event Methods
 /////////////////////////////////
 ///////          GL Event Methods
 
@@ -157,8 +154,6 @@ void OmView3d::paintGL()
 	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
 
-#pragma mark
-#pragma mark QEvent Methods
 /////////////////////////////////
 ///////          QEvent Methods
 
@@ -208,8 +203,6 @@ void OmView3d::wheelEvent ( QWheelEvent * event )
 	mouseWheelEvent(event);
 }
 
-#pragma mark
-#pragma mark Omni Event
 /////////////////////////////////
 ///////          Omni Event
 
@@ -300,8 +293,6 @@ void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
 	//updateGL();
 }
 
-#pragma mark
-#pragma mark
 /////////////////////////////////
 ///////          Gl Actions
 
@@ -369,8 +360,6 @@ bool OmView3d::UnprojectPoint(Vector2i point2d, Vector3f & point3d, float z_scal
 	return true;
 }
 
-#pragma mark
-#pragma mark Widget Methods
 /////////////////////////////////
 ///////          Widget Methods
 
@@ -392,8 +381,6 @@ void OmView3d::UpdateEnabledWidgets()
 
 }
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Methods
 
@@ -489,8 +476,6 @@ void OmView3d::DrawEditSelectionVoxels()
 	glPopAttrib();
 }
 
-#pragma mark
-#pragma mark Draw Settings
 /////////////////////////////////
 ///////          Draw Settings
 
@@ -529,8 +514,6 @@ void OmView3d::DrawWidgets()
 	mView3dWidgetManager.CallEnabled(&OmView3dWidget::Draw);
 }
 
-#pragma mark -
-#pragma mark Utility Functions
 /////////////////////////////////
 ///////
 ///////         Utility Functions

@@ -11,8 +11,6 @@
 //init instance pointer
 OmVolume *OmVolume::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmVolume
 /////////////////////////////////
 ///////
 ///////         OmVolume
@@ -418,8 +416,6 @@ void OmVolume::SetStretchValues()
 }
 
 
-#pragma mark
-#pragma mark Print Methods
 /////////////////////////////////
 ///////         Print Method
 

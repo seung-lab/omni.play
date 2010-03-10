@@ -59,8 +59,6 @@ public:
 
 
 
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

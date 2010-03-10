@@ -8,8 +8,6 @@
 
 
 
-#pragma mark -
-#pragma mark OmFilterManager
 /////////////////////////////////
 ///////
 ///////		 OmFilterManager
@@ -18,8 +16,6 @@ OmFilter2dManager::OmFilter2dManager() {
 }
 
 
-#pragma mark 
-#pragma mark Filter Management
 /////////////////////////////////
 ///////		Filter Management
 
@@ -53,14 +49,10 @@ bool OmFilter2dManager::IsFilterValid(OmId id)
 
 
 
-#pragma mark 
-#pragma mark DataMap Methods
 /////////////////////////////////
 ///////		 DataMap Methods
 
 
-#pragma mark 
-#pragma mark Cached Filter Data Values Methods
 /////////////////////////////////
 ///////		 Cached Filter Data Values Methods
 
@@ -69,8 +61,6 @@ bool OmFilter2dManager::IsFilterValid(OmId id)
 
 
 
-#pragma mark 
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////		 Accessor Methods
 

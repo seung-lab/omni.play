@@ -7,8 +7,6 @@
 //init instance pointer
 OmTagManager *OmTagManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -39,8 +37,6 @@ void OmTagManager::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Tag Management
 /////////////////////////////////
 ///////          Tag Management
 

@@ -60,8 +60,6 @@ private:
 
 
 
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

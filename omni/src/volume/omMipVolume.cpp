@@ -24,8 +24,6 @@
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const string MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 
-#pragma mark -
-#pragma mark OmMipVolume
 /////////////////////////////////
 ///////
 ///////         OmMipVolume
@@ -61,8 +59,6 @@ OmMipVolume::~OmMipVolume()
 	MipChunkThreadedCache::Clear();
 }
 
-#pragma mark
-#pragma mark DataVolume
 /////////////////////////////////
 ///////          DataVolume
 
@@ -79,8 +75,6 @@ void
 	MipChunkThreadedCache::Call(&OmMipChunk::Flush, false);
 }
 
-#pragma mark
-#pragma mark Internal Data Properties
 /////////////////////////////////
 ///////          Internal Data Properties
 
@@ -130,8 +124,6 @@ string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 	return GetDirectoryPath() + string(mip_dname_buf) + MIP_CHUNK_META_DATA_FILE_NAME;
 }
 
-#pragma mark
-#pragma mark Source Data Properties
 /////////////////////////////////
 ///////          Source Data Properties
 
@@ -196,8 +188,6 @@ bool OmMipVolume::IsSourceValid()
 	return true;
 }
 
-#pragma mark
-#pragma mark Mip Data Properties
 /////////////////////////////////
 ///////          Mip Data Properties
 
@@ -283,8 +273,6 @@ void OmMipVolume::UpdateMipProperties()
 	UpdateRootLevel();
 }
 
-#pragma mark
-#pragma mark Mip Level Methods
 /////////////////////////////////
 ///////          Mip Level Methods
 
@@ -362,8 +350,6 @@ int OmMipVolume::MipChunksInVolume()
 	return total;
 }
 
-#pragma mark
-#pragma mark MipCoordinate Methods
 /////////////////////////////////
 ///////          MipCoordinate Methods
 
@@ -414,8 +400,6 @@ NormBbox OmMipVolume::MipCoordToNormBbox(const OmMipChunkCoord & rMipCoord)
 	return OmVolume::DataToNormBbox(MipCoordToDataBbox(rMipCoord, 0));
 }
 
-#pragma mark
-#pragma mark MipChunk Methods
 /////////////////////////////////
 ///////          MipChunk Methods
 
@@ -469,8 +453,6 @@ void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & mipCoord, s
 	}
 }
 
-#pragma mark
-#pragma mark MipChunk Access
 /////////////////////////////////
 ///////          MipChunk Access
 
@@ -515,8 +497,6 @@ OmMipChunk *OmMipVolume::HandleCacheMiss(const OmMipChunkCoord & rMipCoord)
 	return new OmMipChunk(rMipCoord, this);
 }
 
-#pragma mark
-#pragma mark Data Accessors
 /////////////////////////////////
 ///////          Data Accessors
 
@@ -555,8 +535,6 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 	// //debug("FIXME", << "OmMipVolume::SetVoxelValue done" << endl;
 }
 
-#pragma mark
-#pragma mark Mip Construction Methods
 /////////////////////////////////
 ///////         Mip Construction Methods
 
@@ -604,8 +582,6 @@ void OmMipVolume::DeleteInternalData()
 	}
 }
 
-#pragma mark
-#pragma mark Building
 /////////////////////////////////
 ///////          Building
 
@@ -791,8 +767,6 @@ void OmMipVolume::BuildEditedLeafChunks()
 	mEditedLeafChunks.clear();
 }
 
-#pragma mark
-#pragma mark IO
 /////////////////////////////////
 ///////          IO
 
@@ -951,8 +925,6 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	hdfExport.close();
 }
 
-#pragma mark
-#pragma mark Subsampling Methods
 /////////////////////////////////
 ///////          Subsampling Methods            
 

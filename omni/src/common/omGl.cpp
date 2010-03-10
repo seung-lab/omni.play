@@ -15,8 +15,6 @@
 #define SELEC_BUFF_SIZE 256
 static GLuint selectBuf[SELEC_BUFF_SIZE];
 
-#pragma mark
-#pragma mark Picking Utility Methods
 /////////////////////////////////
 ///////          Picking Utility Methods
 
@@ -182,8 +180,6 @@ void popGlState()
 	glPopAttrib();
 }
 
-#pragma mark
-#pragma mark Shapes Macros
 /////////////////////////////////
 ///////          Shapes Macros
 static void drawBox(GLfloat size, GLenum type)
@@ -236,8 +232,6 @@ void omglSolidCube(GLdouble size)
 	drawBox(size, GL_QUADS);
 }
 
-#pragma mark
-#pragma mark Draw Generic 3D Axis
 /////////////////////////////////
 ///////          Draw Generic 3D Axis
 

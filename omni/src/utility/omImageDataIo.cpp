@@ -77,8 +77,6 @@ ImageType om_imagedata_parse_image_type( QString fileNameAndPath )
 	}
 }
 
-#pragma mark -
-#pragma mark VTK IO Methods
 /////////////////////////////////
 ///////          VTK IO Methods
 
@@ -157,8 +155,6 @@ vtkImageWriter *om_imagedata_get_writer(string & fname)
 	return om_imagedata_get_writer(om_imagedata_parse_image_type( QString::fromStdString(fname)));
 }
 
-#pragma mark -
-#pragma mark Reading Functions
 /////////////////////////////////
 ///////          Reading Functions
 
@@ -275,8 +271,6 @@ vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, cons
 	return data;
 }
 
-#pragma mark -
-#pragma mark Writing Functions
 /////////////////////////////////
 ///////         Writing Functions
 
@@ -420,8 +414,6 @@ void om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
 #endif
 }
 
-#pragma mark -
-#pragma mark Dimensions Functions
 /////////////////////////////////
 ///////          Dimensions Functions
 Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fnames)
@@ -792,8 +784,6 @@ void appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** output
 	}
 }
 
-#pragma mark -
-#pragma mark Symlink Data
 /////////////////////////////////
 ///////          Symlink Data
 

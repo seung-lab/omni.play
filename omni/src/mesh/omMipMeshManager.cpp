@@ -21,8 +21,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmMipMeshManager
 /////////////////////////////////
 ///////
 ///////          OmMipMeshManager
@@ -49,8 +47,6 @@ OmMipMeshManager::~OmMipMeshManager()
 	//if(mFetchThreadContext) delete mFetchThreadContext;
 }
 
-#pragma mark
-#pragma mark Property Accessors
 /////////////////////////////////
 ///////          Property Accessors
 
@@ -67,8 +63,6 @@ void OmMipMeshManager::SetDirectoryPath(const string & dpath)
 	mDirectoryPath = dpath;
 }
 
-#pragma mark
-#pragma mark Mesh Accessors
 /////////////////////////////////
 ///////          Mesh Accessors
 
@@ -151,8 +145,6 @@ bool OmMipMeshManager::InitializeFetchThread()
 	return true;
 }
 
-#pragma mark
-#pragma mark Draw
 /////////////////////////////////
 ///////          Draw
 

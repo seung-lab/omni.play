@@ -37,8 +37,6 @@ const bool OmTextureID::FindId(OmId f_id)
 	return (mIdSet.find(f_id) != mIdSet.end());
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
 

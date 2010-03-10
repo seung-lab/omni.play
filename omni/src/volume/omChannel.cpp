@@ -42,8 +42,6 @@ OmChannel::OmChannel(OmId id)
         SetCacheName("OmChannel");
 }
 
-#pragma mark
-#pragma mark Properties
 /////////////////////////////////
 ///////          Properties
 
@@ -61,8 +59,6 @@ const Vector3f & OmChannel::GetHue()
 	return mHueColor;
 }
 
-#pragma mark
-#pragma mark Accessors
 /////////////////////////////////
 ///////          Accessors
 
@@ -103,8 +99,6 @@ bool OmChannel::IsFilterEnabled(OmId id)
 	return mFilter2dManager.IsFilterEnabled(id);
 }
 
-#pragma mark
-#pragma mark Print Methods
 /////////////////////////////////
 ///////          Print Methods
 

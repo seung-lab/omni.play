@@ -12,8 +12,6 @@
 //init instance pointer
 OmCacheManager *OmCacheManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -119,8 +117,6 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 
 }
 
-#pragma mark
-#pragma mark Cleaning Methods
 /////////////////////////////////
 ///////          Cleaning Methods
 extern unsigned int myBackoff;

@@ -12,8 +12,6 @@ static const Vector3 < float >INITIAL_DIRECTION(1, 0, 0);	//direction
 static const Vector3 < float >INITIAL_FOCUS(0, 0, 0);	//focus
 static const Vector3 < float >INITIAL_UP(0, 1, 0);	//orientation
 
-#pragma mark -
-#pragma mark OmCamera
 /////////////////////////////////
 ///////
 ///////          OmCamera
@@ -36,8 +34,6 @@ OmCamera::OmCamera()
 	//SetDistance(INITIAL_POSITION.length());
 }
 
-#pragma mark -
-#pragma mark State Accessors
 /////////////////////////////////
 ///////          State Accessors
 
@@ -166,8 +162,6 @@ void OmCamera::ApplyModelview()
 	glLoadMatrixf(mModelViewMatrix.ml);
 }
 
-#pragma mark -
-#pragma mark Property Accessors
 /////////////////////////////////
 ///////
 ///////          Property Accessors
@@ -243,8 +237,6 @@ Matrix4 < float > OmCamera::GetProjModelViewMatrix() const
 	return mProjectionMatrix * mModelViewMatrix;
 }
 
-#pragma mark -
-#pragma mark Draw
 /////////////////////////////////
 ///////          Draw
 
@@ -270,8 +262,6 @@ void OmCamera::DrawFocusAxis()
 	glPopMatrix();
 }
 
-#pragma mark -
-#pragma mark Movement
 /////////////////////////////////
 ///////          Movement
 

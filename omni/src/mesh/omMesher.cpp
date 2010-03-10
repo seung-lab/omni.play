@@ -35,8 +35,6 @@ void srcToDestBboxTransform(const OmMeshSource & meshSource, vtkTransform * pTra
 uint32_t numStripsInStripCellArray(vtkCellArray * pStripCellArray);
 
 
-#pragma mark -
-#pragma mark OmMesher
 /////////////////////////////////
 ///////
 ///////          OmMesher
@@ -231,8 +229,6 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 	p_normal_data_array->Delete();
 }
 
-#pragma mark
-#pragma mark Utility Methods
 /////////////////////////////////
 ///////          Utility Methods
 

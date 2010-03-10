@@ -13,8 +13,6 @@ namespace bfs = boost::filesystem;
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmDataVolume Class
 /////////////////////////////////
 ///////
 ///////         OmDataVolume Class
@@ -33,8 +31,6 @@ OmDataVolume::~OmDataVolume()
 	Close();
 }
 
-#pragma mark
-#pragma mark Property Accessor Methods
 /////////////////////////////////
 ///////          Property Accessor Methods
 
@@ -58,8 +54,6 @@ void OmDataVolume::SetOpen(bool state)
 	mIsOpen = state;
 }
 
-#pragma mark
-#pragma mark State Accessor Methods
 /////////////////////////////////
 ///////          State Accessor Methods
 
@@ -74,8 +68,6 @@ bool OmDataVolume::IsDirty() const
 	return false;
 }
 
-#pragma mark
-#pragma mark Data I/O Methods
 /////////////////////////////////
 ///////          Data I/O Methods
 
@@ -141,8 +133,6 @@ OmDataVolume::Write(const DataBbox &dataExtentBbox, int bytesPerSample) {
 }
 */
 
-#pragma mark
-#pragma mark Voxel Accessors
 /////////////////////////////////
 ///////          Voxel Accessors
 
@@ -151,8 +141,6 @@ bool OmDataVolume::ContainsVoxel(const DataCoord & vox)
 	return GetExtent().contains(vox);
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
 

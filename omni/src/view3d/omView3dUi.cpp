@@ -17,8 +17,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -30,8 +28,6 @@ OmView3dUi::OmView3dUi(OmView3d * view3d)
 
 }
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 
@@ -118,8 +114,6 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Navigation Mode Methods
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -186,8 +180,6 @@ void OmView3dUi::NavigationModeKeyPress(QKeyEvent * event)
 
 }
 
-#pragma mark
-#pragma mark Edit Mode Methods
 /////////////////////////////////
 ///////          Edit Mode Methods
 
@@ -275,8 +267,6 @@ void OmView3dUi::EditModeKeyPress(QKeyEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Camera Movement Methods
 /////////////////////////////////
 ///////          Camera Movement Methods
 
@@ -338,8 +328,6 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 	mpView3d->mCamera.MovementEnd(point);
 }
 
-#pragma mark
-#pragma mark Segment Picking
 /////////////////////////////////
 ///////          Segment Picking
 
@@ -403,8 +391,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
  }
  */
 
-#pragma mark
-#pragma mark Pick Voxel Methods
 /////////////////////////////////
 ///////          Pick Voxel Methods
 
@@ -525,8 +511,6 @@ bool OmView3dUi::PickVoxelCameraFocus(QKeyEvent * keyEvent, bool drag, DataCoord
  }
  */
 
-#pragma mark
-#pragma mark  Segment Actions
 /////////////////////////////////
 ///////           Segment Actions
 
@@ -565,8 +549,6 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	}
 }
 
-#pragma mark
-#pragma mark  Voxel Actions
 /////////////////////////////////
 ///////           Voxel Actions
 
@@ -673,8 +655,6 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 	(new OmVoxelSetValueAction(segmentation_id, picked_voxel, data_value))->Run();
 }
 
-#pragma mark
-#pragma mark  Segment Context Menu
 /////////////////////////////////
 ///////           Segment Context Menu
 

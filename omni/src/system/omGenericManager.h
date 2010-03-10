@@ -233,8 +233,6 @@ OmGenericManager<T>::Size() {
 
 
 
-#pragma mark 
-#pragma mark Valid
 /////////////////////////////////
 ///////		 Valid
 
@@ -275,8 +273,6 @@ OmGenericManager<T>::CallValid(void (T::*fxn)(U), U arg) {
 
 
 
-#pragma mark 
-#pragma mark Enabled
 /////////////////////////////////
 ///////		 Enabled
 
@@ -352,8 +348,6 @@ OmGenericManager<T>::CallEnabled(void (T::*fxn)(U), U arg) {
 
 
 
-#pragma mark 
-#pragma mark Selected
 /////////////////////////////////
 ///////		 Selected
 
@@ -437,8 +431,6 @@ OmGenericManager<T>::CallSelected(void (T::*fxn)(U), U arg) {
 
 
 
-#pragma mark 
-#pragma mark Function Calls
 /////////////////////////////////
 ///////		 Function Calls
 
@@ -509,8 +501,6 @@ OmGenericManager<T>::Call( OmIds &set, void (T::*fxn)(U), U arg) {
 
 
 
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

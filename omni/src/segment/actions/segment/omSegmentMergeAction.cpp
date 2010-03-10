@@ -8,8 +8,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmSegmentMergeAction Class
 /////////////////////////////////
 ///////
 ///////          OmSegmentMergeAction Class
@@ -57,8 +55,6 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

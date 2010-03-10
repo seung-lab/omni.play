@@ -67,8 +67,6 @@ void om_imagedata_remove_symlink_dir(string symlink_dpath);
 
 
 
-#pragma mark 
-#pragma mark vtkImageData Utility Functions
 /////////////////////////////////
 ///////		 vtkImageData Utility Functions
 

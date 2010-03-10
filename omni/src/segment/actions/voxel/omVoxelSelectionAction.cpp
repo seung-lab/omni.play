@@ -5,8 +5,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVoxelSelectionAction Class
 /////////////////////////////////
 ///////
 ///////          OmVoxelSelectionAction Class
@@ -26,8 +24,6 @@ OmVoxelSelectionAction::OmVoxelSelectionAction(const DataCoord & voxel, bool sta
 
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

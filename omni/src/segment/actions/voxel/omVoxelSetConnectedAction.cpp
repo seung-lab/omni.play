@@ -9,8 +9,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVoxelSetAction Class
 /////////////////////////////////
 ///////
 ///////          OmVoxelSetAction Class
@@ -62,8 +60,6 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 	SetUndoable(false);
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

@@ -32,8 +32,6 @@ namespace bfs = boost::filesystem;
 //init instance pointer
 OmGarbage *OmGarbage::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmGarbage
 /////////////////////////////////
 ///////
 ///////          OmGarbage

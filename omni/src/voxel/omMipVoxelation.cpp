@@ -8,8 +8,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -28,8 +26,6 @@ OmMipVoxelation::~OmMipVoxelation()
 
 }
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////          Accessor Methods
 
@@ -38,8 +34,6 @@ SEGMENT_DATA_TYPE OmMipVoxelation::GetSegmentDataValue()
 	return mCoordinate.DataValue;
 }
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 
@@ -53,8 +47,6 @@ void OmMipVoxelation::RemoveVoxel(DataCoord & vox)
 	mVoxels.erase(vox);
 }
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Methods
 

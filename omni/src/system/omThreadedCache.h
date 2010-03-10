@@ -121,8 +121,6 @@ private:
 
 
 
-#pragma mark 
-#pragma mark OmThreadedCache
 /////////////////////////////////
 ///////		 OmThreadedCache
 
@@ -192,8 +190,6 @@ OmThreadedCache<T,U>::~OmThreadedCache() {
 
 
 
-#pragma mark 
-#pragma mark Value Accessors
 /////////////////////////////////
 ///////		 Value Accessors
 
@@ -496,8 +492,6 @@ OmThreadedCache<T,U>::Clear() {
 
 
 
-#pragma mark 
-#pragma mark Fetch Properties
 /////////////////////////////////
 ///////		 Fetch Properties
 
@@ -536,8 +530,6 @@ OmThreadedCache<T,U>::GetFetchUpdateClearsFetchStack() {
 
 
 
-#pragma mark 
-#pragma mark Fetching
 /////////////////////////////////
 ///////		 Fetching
 
@@ -727,8 +719,6 @@ OmThreadedCache<T,U>::GetCacheName(char * result) {
 
 
 
-#pragma mark 
-#pragma mark Fetch Loop Initializer
 /////////////////////////////////
 ///////		 Fetch Loop Initializer
 

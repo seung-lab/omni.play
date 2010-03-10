@@ -10,8 +10,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVoxelSelectionAction Class
 /////////////////////////////////
 ///////
 ///////          OmVoxelSelectionAction Class
@@ -44,8 +42,6 @@ OmSegmentSelectionAction::OmSegmentSelectionAction(OmId segmentationId, OmId seg
 
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

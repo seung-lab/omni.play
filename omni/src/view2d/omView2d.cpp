@@ -159,8 +159,6 @@ OmView2d::~OmView2d()
 	OmCachingThreadedCachingTile::Refresh();
 }
 
-#pragma mark
-#pragma mark GL Event Methods
 /////////////////////////////////
 ///////          GL Event Methods
 
@@ -386,8 +384,6 @@ QImage OmView2d::safePaintEvent(QPaintEvent * event)
 	return pbuffer->toImage();
 }
 
-#pragma mark
-#pragma mark MouseEvent Methods
 /////////////////////////////////
 ///////          MouseEvent Methods
 
@@ -615,8 +611,6 @@ void OmView2d::SetDepth(QMouseEvent * event)
 }
 
 
-#pragma mark
-#pragma mark Edit Mode Methods
 /////////////////////////////////
 ///////          Edit Mode Methods
 
@@ -861,8 +855,6 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 }
 
 
-#pragma mark
-#pragma mark KeyEvent Methods
 /////////////////////////////////
 ///////          KeyEvent Methods
 
@@ -1020,8 +1012,6 @@ void OmView2d::MoveDownStackFartherFromViewer()
         }              
 }
 
-#pragma mark
-#pragma mark OmEvent Methods
 /////////////////////////////////
 ///////          OmEvent Methods
 
@@ -1109,8 +1099,6 @@ void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Actions
 /////////////////////////////////
 ///////          Actions
 
@@ -1191,8 +1179,6 @@ void OmView2d::myUpdate()
 	update();
 }
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////		 Draw Methods
 void OmView2d::DrawFromFilter(OmFilter2d &filter)

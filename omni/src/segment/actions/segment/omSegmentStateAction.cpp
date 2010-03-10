@@ -10,8 +10,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmSegmentStateAction
 /////////////////////////////////
 ///////
 ///////          OmSegmentStateAction
@@ -54,8 +52,6 @@ void
 
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

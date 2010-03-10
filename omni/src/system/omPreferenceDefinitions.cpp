@@ -3,8 +3,6 @@
 #include "omPreferences.h"
 #include "common/omDebug.h"
 
-#pragma mark
-#pragma mark All Default Preferences
 /////////////////////////////////
 ///////          All Default Preferences
 
@@ -19,8 +17,6 @@ void omSetDefaultAllPreferences()
 	omSetDefaultView3dPreferences();
 }
 
-#pragma mark
-#pragma mark Individual Library Default Preferences
 /////////////////////////////////
 ///////          Individual Library Default Preferences
 

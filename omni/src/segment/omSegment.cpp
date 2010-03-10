@@ -9,8 +9,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmSegment Class
 /////////////////////////////////
 ///////
 ///////         OmSegment Class

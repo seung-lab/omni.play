@@ -22,8 +22,6 @@
 //init instance pointer
 OmStateManager *OmStateManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -99,8 +97,6 @@ void OmStateManager::Delete()
 	}
 }
 
-#pragma mark
-#pragma mark Project
 /////////////////////////////////
 ///////          Project
 
@@ -442,8 +438,6 @@ void OmStateManager::SetViewSlice(const OmSlicePlane plane, const Vector3 < int 
 	}
 }
 
-#pragma mark
-#pragma mark System Mode
 /////////////////////////////////
 ///////          System Mode
 
@@ -466,8 +460,6 @@ void OmStateManager::SetSystemMode(const OmSystemMode new_mode)
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 }
 
-#pragma mark
-#pragma mark Tool Mode
 /////////////////////////////////
 ///////          Tool Mode
 
@@ -489,8 +481,6 @@ void OmStateManager::SetToolMode(const OmToolMode new_mode)
 	OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 }
 
-#pragma mark
-#pragma mark UndoStack
 /////////////////////////////////
 ///////          UndoStack
 
@@ -516,8 +506,6 @@ void OmStateManager::ClearUndoStack()
 
 static QGLWidget *sharedwidget = NULL;
 
-#pragma mark
-#pragma mark View3d Context
 /////////////////////////////////
 ///////          View3d Context
 
@@ -611,8 +599,6 @@ QGLContext *OmStateManager::GetSharedView2dContext(const QGLContext * pContext)
 	return NULL;
 }
 
-#pragma mark
-#pragma mark Transparency State
 /////////////////////////////////
 ///////          Transparency State
 

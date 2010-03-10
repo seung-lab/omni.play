@@ -8,8 +8,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -59,8 +57,6 @@ void OmAction::Run()
 	}
 }
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 
