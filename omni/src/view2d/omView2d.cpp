@@ -290,7 +290,12 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		str = QString::number(sliceDepth) + QString(" Slice Depth");
 		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
 
-		str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		if (mTileCountIncomplete) {
+			str = QString::number(mTileCountIncomplete, 'f', 0) + QString(" tile(s) incomplete of ");
+			str += QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		} else {
+			str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		}
 		painter.drawText(QPoint(0, mTotalViewport.height - 20), str);
 
 		if (!mScribbling) {
@@ -322,6 +327,7 @@ QImage OmView2d::safePaintEvent(QPaintEvent * event)
 	mTextures.clear();
 
 	mTileCount = 0;
+	mTileCountIncomplete = 0;
 	initializeGL();
 	pbuffer->makeCurrent();
 
@@ -1622,10 +1628,12 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 			shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
                         if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
 				mCache->GetTextureID(gotten_id, mTileCoord, false);
+				mTileCount++;
 				if (gotten_id) {
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
+					mTileCountIncomplete++;
 					complete = false;
 				}
 			}
