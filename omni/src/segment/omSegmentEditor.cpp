@@ -13,8 +13,6 @@
 //init instance pointer
 OmSegmentEditor *OmSegmentEditor::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -46,8 +44,6 @@ void OmSegmentEditor::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Edit Selection
 /////////////////////////////////
 ///////          Edit Selection
 
@@ -77,8 +73,6 @@ bool OmSegmentEditor::GetEditSelection(OmId & segmentation, OmId & segment)
 	return true;
 }
 
-#pragma mark
-#pragma mark Selected Voxels
 /////////////////////////////////
 ///////          Selected Voxels
 
@@ -110,8 +104,6 @@ bool OmSegmentEditor::GetSelectedVoxelState(const DataCoord & dataCoord)
 	return Instance()->mSelectedVoxels.count(dataCoord);
 }
 
-#pragma mark
-#pragma mark Voxels
 /////////////////////////////////
 ///////          Voxels
 
@@ -126,8 +118,6 @@ DataCoord OmSegmentEditor::SpaceCoordToEditSelectionVoxel(const SpaceCoord & spa
 	return dataCoord;
 }
 
-#pragma mark
-#pragma mark Draw
 /////////////////////////////////
 ///////          Draw
 

@@ -5,6 +5,7 @@
 #include "common/omVtk.h"
 
 #include <QFile>
+#include <QFileInfo>
 
 #include <vtk_tiff.h>
 
@@ -48,10 +49,12 @@ namespace bfs = boost::filesystem;
 /*
  *	Return image type based on filename extension
  */
-ImageType om_imagedata_parse_image_type(const string & fname)
+ImageType om_imagedata_parse_image_type( QString fileNameAndPath )
 {
+	QString extension = QFileInfo(fileNameAndPath).suffix();
+
 	//extract file extension
-	string ext = bfs::path(fname).extension();
+	string ext = "." + extension.toStdString();
 
 	//switch for extention type
 	if (".tif" == ext || ".tiff" == ext) {
@@ -74,8 +77,6 @@ ImageType om_imagedata_parse_image_type(const string & fname)
 	}
 }
 
-#pragma mark -
-#pragma mark VTK IO Methods
 /////////////////////////////////
 ///////          VTK IO Methods
 
@@ -91,24 +92,18 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 
 	case TIFF_TYPE:
 		reader = vtkTIFFReader::New();
-		//vtkTIFFReader *tiff_reader = vtkTIFFReader::New();
-		//tiff_reader->SetOrientationType(ORIENTATION_TOPLEFT);
-		//reader = (vtkImageReader2*) tiff_reader; 
 		break;
-
 	case JPEG_TYPE:
 		reader = vtkJPEGReader::New();
 		break;
-
 	case PNG_TYPE:
 		reader = vtkPNGReader::New();
 		break;
-
 	case VTK_TYPE:
 		reader = vtkImageReader2::New();
 		break;
-
- defaut:
+	case HDF5_TYPE:
+	case NONE_TYPE:
 		throw OmAccessException("File type not recognized.");
 
 	}
@@ -121,7 +116,7 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 
 vtkImageReader2 *om_imagedata_get_reader(const string & fname)
 {
-	return om_imagedata_get_reader(om_imagedata_parse_image_type(fname));
+	return om_imagedata_get_reader(om_imagedata_parse_image_type( QString::fromStdString( fname)) );
 }
 
 /*
@@ -131,31 +126,26 @@ vtkImageWriter *om_imagedata_get_writer(ImageType type)
 {
 	//switch for extention type
 	switch (type) {
-
 	case TIFF_TYPE:
 		return vtkTIFFWriter::New();
-
 	case JPEG_TYPE:
 		return vtkJPEGWriter::New();
-
 	case PNG_TYPE:
 		return vtkPNGWriter::New();
-
 	case VTK_TYPE:
 		return vtkImageWriter::New();
-
+	case HDF5_TYPE:
+	case NONE_TYPE:
+	default:
+		throw OmAccessException("File type not recognized.");
 	}
-
-	throw OmAccessException("File type not recognized.");
 }
 
 vtkImageWriter *om_imagedata_get_writer(string & fname)
 {
-	return om_imagedata_get_writer(om_imagedata_parse_image_type(fname));
+	return om_imagedata_get_writer(om_imagedata_parse_image_type( QString::fromStdString(fname)));
 }
 
-#pragma mark -
-#pragma mark Reading Functions
 /////////////////////////////////
 ///////          Reading Functions
 
@@ -165,7 +155,7 @@ vtkImageData *om_imagedata_read(string dpath, list < string > &fnames, const Dat
 
 	assert(fnames.size() && "No files to read.");
 
-	switch (om_imagedata_parse_image_type(fnames.front())) {
+	switch (om_imagedata_parse_image_type( QString::fromStdString( fnames.front()))) {
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:
@@ -272,36 +262,15 @@ vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, cons
 	return data;
 }
 
-#pragma mark -
-#pragma mark Writing Functions
 /////////////////////////////////
 ///////         Writing Functions
 
-void
-om_imagedata_write(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
-		   int bytesPerSample)
-{
-
-	switch (om_imagedata_parse_image_type(fpattern)) {
-	case TIFF_TYPE:
-	case JPEG_TYPE:
-	case VTK_TYPE:
-		om_imagedata_write_vtk(data, dpath, fpattern, dataExtentBbox, bytesPerSample);
-		break;
-
-	case HDF5_TYPE:
-		om_imagedata_write_hdf5(data, dpath, fpattern, dataExtentBbox, bytesPerSample);
-		break;
-
-	default:
-		assert(false && "Unsupported file format");
-	}
-}
-
-void om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
+void om_imagedata_write_vtk(vtkImageData * data, QString fileNameAndPath, const DataBbox dataExtentBbox,
 		       int bytesPerSample)
 {
 
+	assert(0); //this is tottally broken
+	/*
 	//debug("genone","Write");
 
 	//convert to vtk extent
@@ -335,9 +304,10 @@ void om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, 
 	p_caster->SetOutputScalarType(bytesToVtkScalarType(bytesPerSample));
 
 	//create image writer
-	vtkImageWriter *writer = om_imagedata_get_writer(fpattern);
+	vtkImageWriter *writer = om_imagedata_get_writer( om_imagedata_parse_image_type( fileNameAndPath ));
 	writer->SetInput(p_caster->GetOutput());
-	writer->SetFilePrefix(dpath.c_str());
+	string path = QFileInfo( fileNameAndPath ).absolutePath().toStrString();
+	writer->SetFilePrefix( path.c_str() );
 
 	//convert to vtk "%s/FilePattern" format
 	string vtk_file_pattern = "%s" + fpattern;
@@ -356,38 +326,13 @@ void om_imagedata_write_vtk(vtkImageData * data, string dpath, string fpattern, 
 	padder->Delete();
 	flipper->Delete();
 	extent_translator->Delete();
+	*/
 }
 
 /*
  *	Destination extent is data extent when not specified.
  */
-void
-om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dataExtentBbox,
-			int bytesPerSample)
-{
-	om_imagedata_write_hdf5(data, dpath, fpattern, dataExtentBbox, dataExtentBbox, bytesPerSample);
-}
 
-void om_imagedata_write_hdf5(vtkImageData * data, string dpath, string fpattern, const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, int bytesPerSample)
-{
-	QString exportDataFileName = QString::fromStdString( dpath + fpattern);
-	OmHdf5 hdfExport( exportDataFileName );
-	
-	if( !QFile::exists(exportDataFileName) ){
-		hdfExport.create();
-		Vector3 < int >dest_dims = dstExtentBbox.getUnitDimensions();
-		
-		hdfExport.dataset_image_create_tree_overwrite( OmHdf5Helpers::getDefaultDatasetName(), 
-							       dest_dims, dest_dims, bytesPerSample, true);
-	}
-	
-	//write image data
-	hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
-					   dataExtentBbox, bytesPerSample, data);
-}
-
-#pragma mark -
-#pragma mark Dimensions Functions
 /////////////////////////////////
 ///////          Dimensions Functions
 Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fnames)
@@ -396,7 +341,7 @@ Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fname
 	assert(fnames.size() && "No files specified");
 
 	//use first name in list to determine filetype
-	switch (om_imagedata_parse_image_type(fnames.front())) {
+	switch (om_imagedata_parse_image_type(QString::fromStdString( fnames.front()) )) {
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:
@@ -456,6 +401,7 @@ Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &
 	//get dims of image
 	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
 
+	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
 	return dims;
 }
 
@@ -484,7 +430,6 @@ void printImageData(vtkImageData * data)
 	data->GetExtent(extent);
 
 	int num_components = data->GetNumberOfScalarComponents();
-	float f;
 
 	for (int z = extent[4]; z <= extent[5]; ++z) {
 		for (int y = extent[2]; y <= extent[3]; ++y) {
@@ -757,8 +702,6 @@ void appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** output
 	}
 }
 
-#pragma mark -
-#pragma mark Symlink Data
 /////////////////////////////////
 ///////          Symlink Data
 

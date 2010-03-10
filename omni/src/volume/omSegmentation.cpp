@@ -26,8 +26,6 @@ using namespace vmml;
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmSegmentation
 /////////////////////////////////
 ///////
 ///////         OmSegmentation
@@ -68,8 +66,6 @@ OmSegmentation::OmSegmentation(OmId id)
 	BuildVolumeData();
 }
 
-#pragma mark
-#pragma mark Property Accessors
 /////////////////////////////////
 ///////          Property Accessors
 
@@ -82,8 +78,6 @@ void OmSegmentation::SetDirectoryPath(string dpath)
 	mMipMeshManager.SetDirectoryPath(dpath);
 }
 
-#pragma mark
-#pragma mark Data Mapping
 /////////////////////////////////
 ///////          Data Mapping
 
@@ -132,8 +126,6 @@ void OmSegmentation::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & va
 	mSegmentManager.UnMapValuesToSegmentId(omId, values);
 }
 
-#pragma mark
-#pragma mark Data Accessors
 /////////////////////////////////
 ///////          Data Accessors
 
@@ -175,8 +167,6 @@ void OmSegmentation::SetVoxelSegmentId(const DataCoord & vox, OmId omId)
 	SetVoxelValue(vox, GetValueMappedToSegmentId(omId));
 }
 
-#pragma mark
-#pragma mark Build Methods
 /////////////////////////////////
 ///////          Build Methods
 
@@ -223,23 +213,16 @@ bool OmSegmentation::IsMeshDataBuilt()
 void OmSegmentation::BuildMeshData()
 {
 
-	if (!IsVolumeDataBuilt())
+	if (!IsVolumeDataBuilt()) {
 		throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
 					GetName());
-
-	//init progress bar
-	int num_chunks_in_build = MipChunksInVolume();
-	//string progress_bar_str = string("Building Segmentation Meshes: ") + GetName();
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, progress_bar_str, 0, num_chunks_in_build));
+	}
 
 	//build all levels
 	BuildMeshDataInternal();
 
 	//all chunks have been meshed
 	mMipMeshManager.SetMeshDataBuilt(true);
-
-	//hide progress bar
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 
 	OmProject::Save();
 }
@@ -400,8 +383,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const Segmen
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
-#pragma mark
-#pragma mark Export
 /////////////////////////////////
 ///////          Export
 
@@ -438,8 +419,6 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 }
 
-#pragma mark
-#pragma mark Event Handling
 /////////////////////////////////
 ///////          Event Handling
 
@@ -453,8 +432,6 @@ void OmSegmentation::SystemModeChangeEvent(OmSystemModeEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Segment Management
 /////////////////////////////////
 ///////          Segment Management
 
@@ -525,8 +502,6 @@ const OmIds & OmSegmentation::GetSelectedSegmentIds()
 	return mSegmentManager.GetSelectedSegmentIds();
 }
 
-#pragma mark
-#pragma mark Segment Data Values Management
 /////////////////////////////////
 ///////          Segment Data Values Management
 
@@ -551,8 +526,6 @@ const SegmentDataSet & OmSegmentation::GetVoxelizedSegmentDataValues()
 	return empty;
 }
 
-#pragma mark
-#pragma mark Draw
 /////////////////////////////////
 ///////          Draw
 
@@ -782,8 +755,6 @@ void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const Seg
 
 //glPopMatrix();
 
-#pragma mark
-#pragma mark Print Methods
 /////////////////////////////////
 ///////          Print Methods
 

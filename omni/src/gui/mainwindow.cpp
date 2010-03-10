@@ -340,18 +340,12 @@ void MainWindow::closeProject()
 	}
 }
 
-bool MainWindow::saveProject()
+void MainWindow::saveProject()
 {
-	try {
-
-		// Saves the current project
-		// Does not prompt the user
-		// Serializes Volume to the current working directory
-
-		OmProject::Save();
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
+	// Saves the current project
+	// Does not prompt the user
+	// Serializes Volume to the current working directory
+	OmProject::Save();
 }
 
 void MainWindow::openInspector()
@@ -529,7 +523,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
 {
 	try {
 
-#pragma mark <TODO: Saving position of windows and restoring position of windows>
 		// QMainWindow::saveState() and restoreState()
 
 		if (isProjectOpen)
@@ -827,32 +820,27 @@ void MainWindow::createDockWindows()
 
 bool MainWindow::checkForSave()
 {
-	try {
-		QMessageBox msgBox;
-		msgBox.setText("Do you want to save your current project?");
-		msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		msgBox.setDefaultButton(QMessageBox::Save);
-
-		const int ret = msgBox.exec();
-		switch (ret) {
-		case QMessageBox::Save:
-			OmProject::Save();
-			break;
-		case QMessageBox::Discard:
-			// Don't Save was clicked
-			break;
-		case QMessageBox::Cancel:
-			return false;
-			break;
-		default:
-			// should never be reached
-			break;
-		}
-		return true;
-
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
+	QMessageBox msgBox;
+	msgBox.setText("Do you want to save your current project?");
+	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Save);
+	
+	const int ret = msgBox.exec();
+	switch (ret) {
+	case QMessageBox::Save:
+		OmProject::Save();
+		break;
+	case QMessageBox::Discard:
+		// Don't Save was clicked
+		break;
+	case QMessageBox::Cancel:
+		return false;
+		break;
+	default:
+		break;
 	}
+	
+	return true;
 }
 
 void MainWindow::spawnErrorDialog(OmException & e)
@@ -1213,6 +1201,9 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 		break;
 	case VOXELIZE_MODE:
 		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
+		break;
+	case FILL_MODE:
+		// TODO???
 		break;
 	}
 }

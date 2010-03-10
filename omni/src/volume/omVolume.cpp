@@ -11,8 +11,6 @@
 //init instance pointer
 OmVolume *OmVolume::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmVolume
 /////////////////////////////////
 ///////
 ///////         OmVolume
@@ -387,14 +385,21 @@ void OmVolume::DrawEditSelectionVoxels()
 Vector2f OmVolume::GetStretchValues(ViewType plane)
 {
 	Vector3f stretch =Instance()->mDataStretchValues;
+	Vector2f ret;
+
 	switch(plane){
 	case XY_VIEW:
-		return Vector2f(stretch.x,stretch.y);
+		ret = Vector2f(stretch.x,stretch.y);
+		break;
 	case YZ_VIEW:
-		return Vector2f(stretch.z,stretch.y);
+		ret = Vector2f(stretch.z,stretch.y);
+		break;
 	case XZ_VIEW:
-		return Vector2f(stretch.x,stretch.z);
+		ret = Vector2f(stretch.x,stretch.z);
+		break;
 	}
+
+	return ret;
 }
 
 void OmVolume::SetStretchValues()
@@ -418,8 +423,6 @@ void OmVolume::SetStretchValues()
 }
 
 
-#pragma mark
-#pragma mark Print Methods
 /////////////////////////////////
 ///////         Print Method
 

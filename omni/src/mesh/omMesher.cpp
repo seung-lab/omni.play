@@ -35,8 +35,6 @@ void srcToDestBboxTransform(const OmMeshSource & meshSource, vtkTransform * pTra
 uint32_t numStripsInStripCellArray(vtkCellArray * pStripCellArray);
 
 
-#pragma mark -
-#pragma mark OmMesher
 /////////////////////////////////
 ///////
 ///////          OmMesher
@@ -105,7 +103,7 @@ void
 		//sinc smooth poly
 		mpWindowedSincPolyDataFilter = vtkWindowedSincPolyDataFilter::New();
 		mpWindowedSincPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
-		int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
+
 		mpWindowedSincPolyDataFilter->SetNumberOfIterations(12);	//smooth geometry
 		mpWindowedSincPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 		//form normals
@@ -231,8 +229,6 @@ void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
 	p_normal_data_array->Delete();
 }
 
-#pragma mark
-#pragma mark Utility Methods
 /////////////////////////////////
 ///////          Utility Methods
 

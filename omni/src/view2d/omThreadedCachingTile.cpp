@@ -155,12 +155,6 @@ void OmThreadedCachingTile::subImageTex(shared_ptr < OmTextureID > &texID, int d
 	ReplaceTextureRegion(texID, dim, vox, color, tl);
 }
 
-void OmThreadedCachingTile::subFullImageTex(shared_ptr < OmTextureID > &texID, DataCoord firstCoord, int tl)
-{
-	//std::cerr << __FUNCTION__ << endl;
-	ReplaceFullTextureRegion(texID, firstCoord, tl);
-}
-
 void OmThreadedCachingTile::SetMaxCacheSize(int bytes)
 {
 	//std::cerr << __FUNCTION__ << endl;

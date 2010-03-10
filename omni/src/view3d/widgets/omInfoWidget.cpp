@@ -15,8 +15,6 @@ static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 //void drawString(const char *str, int x, int y, float color[4], void *font);
 //void printf2str(string &str, const char *fmt, ...);
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -31,8 +29,6 @@ static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 	mFont.setItalic(true);
 };
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Methods
 

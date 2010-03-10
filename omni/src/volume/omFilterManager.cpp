@@ -7,8 +7,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmFilterManager
 /////////////////////////////////
 ///////
 ///////          OmFilterManager
@@ -17,8 +15,6 @@ OmFilterManager::OmFilterManager()
 {
 }
 
-#pragma mark
-#pragma mark Filter Management
 /////////////////////////////////
 ///////         Filter Management
 
@@ -44,17 +40,11 @@ bool OmFilterManager::IsFilterEnabled(OmId id)
 	return mGenericFilterManager.IsEnabled(id);
 }
 
-#pragma mark
-#pragma mark DataMap Methods
 /////////////////////////////////
 ///////          DataMap Methods
 
-#pragma mark
-#pragma mark Cached Filter Data Values Methods
 /////////////////////////////////
 ///////          Cached Filter Data Values Methods
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////          Accessor Methods

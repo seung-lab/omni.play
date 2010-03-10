@@ -16,6 +16,7 @@ SegmentList::SegmentList( QWidget * parent,
 
 	mNumSegmentsPerPage = getNumSegmentsPerPage();
 	currentPageNum = 0;
+	mNumSegments = 0;
 }
 
 int SegmentList::getNumSegmentsPerPage()
@@ -29,13 +30,22 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId first
 	return doGetSegmentsToDisplay( offset );
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int offset )
+QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
 	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
-	
+
+	mNumSegments = allSegmentIDs.size();
+
+	int offset;
+	if( mNumSegments > in_offset ){
+		offset = in_offset;
+	} else {
+		offset = 0;
+	}
+
 	OmIds::iterator itr = allSegmentIDs.begin();
 	advance( itr, offset );
 	int counter = 0;
@@ -113,6 +123,8 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 				       dataElementsWidget,
 				       QString("All Segments") );
 	dealWithButtons();
+
+	setFocusPolicy(Qt::StrongFocus);
 }
 
 void SegmentList::dealWithButtons()
@@ -128,17 +140,17 @@ void SegmentList::dealWithButtons()
 
 void SegmentList::goToNextPage()
 {
-	printf("hi from next page\n");
-
 	currentPageNum++;
-	int offset = currentPageNum * mNumSegmentsPerPage;
+	unsigned int offset = currentPageNum * mNumSegmentsPerPage;
+	if( offset > mNumSegments ){
+		currentPageNum--;
+		offset = currentPageNum * mNumSegmentsPerPage;
+	}
 	populateSegmentElementsListWidget( false, offset );
 }
 
 void SegmentList::goToPrevPage()
 {
-	printf("hi from prev page\n");
-
 	currentPageNum--;
 	if( currentPageNum < 0 ){
 		currentPageNum = 0;
@@ -271,6 +283,8 @@ void SegmentList::setupDataElementList()
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
 	dataElementsWidget->setHeaderLabels(headers);
+
+	dataElementsWidget->setFocusPolicy(Qt::ClickFocus);
 }
 
 void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -309,52 +323,43 @@ void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID)
 {
-	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID);
 }
 
 void SegmentList::rebuildSegmentList(const OmId segmentationID,
 					   const OmId segmentJustAddedID)
 {
-	//hashOfSementationsAndSegments.remove(segmentationID);
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
+void SegmentList::keyPressEvent(QKeyEvent * event)
+{
+	printf("hi\n");
 
+	switch (event->key()) {
+	case Qt::Key_Up:
+		printf("hi from keyup\n");
+		break;
+	case Qt::Key_Down:
+		printf("hi from keyup\n");
+		break;
+	}
+}
 
-/*
-
- protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-
-void MyInspectorWidget::mousePressEvent(QMouseEvent *event)
+void SegmentList::mousePressEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse start\n");
 }
 
-void MyInspectorWidget::mouseMoveEvent(QMouseEvent *event)
+void SegmentList::mouseMoveEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse move\n");
 }
 
-void MyInspectorWidget::mouseReleaseEvent(QMouseEvent *event)
+void SegmentList::mouseReleaseEvent(QMouseEvent *event)
 {
 	debug("guimouse", "mouse release\n");
 }
-*/
-/*
-        switch (event->key()) {
-        case Qt::Key_Up:
-                debug("gui", "hi key up\n");
-                break;
-        case Qt::Key_Down:
-                debug("gui", "hi key down\n");
-                break;
-        }       
-*/
 
 void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {

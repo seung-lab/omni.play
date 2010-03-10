@@ -127,8 +127,6 @@ int mChunkDim;
 	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

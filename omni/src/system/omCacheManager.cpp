@@ -12,8 +12,6 @@
 //init instance pointer
 OmCacheManager *OmCacheManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -119,8 +117,6 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 
 }
 
-#pragma mark
-#pragma mark Cleaning Methods
 /////////////////////////////////
 ///////          Cleaning Methods
 extern unsigned int myBackoff;
@@ -128,22 +124,18 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
 	pthread_mutex_lock(&mCacheMapMutex);
 
-
 	//compute target size for group
-
-	uint32_t target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
-	//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i, %i\n",
-	//	  target_size, mTargetRatio, group, mCacheMap[group].MaxSize, mCacheMap[group].Size);
+	unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
 
 	//get caches in group
 	set < OmCacheBase * >&cache_set = mCacheMap[group].CacheSet;
 
 	//note last successful remove cache
 	OmCacheBase *p_last_successful_remove_cache = NULL;
+
 	//call event for every listener in the set
 	set < OmCacheBase * >::iterator itr;
-	//loop through set
-	//while (target_size) {
+
 	for (int count = 0; count < 2; count++) {
 		for (itr = cache_set.begin(); itr != cache_set.end(); ++itr) {
 
@@ -154,8 +146,6 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 			//remove element from cache
 			bool removed = (*itr)->RemoveOldest();
 
-			//debug ("thread", "target_size:%i = mTargetRatio:%f * mCacheMap[%i].MaxSize = %i\n",
-			// 		target_size, mTargetRatio, group, mCacheMap[group].MaxSize);
 
 			//if successfully removed
 			if (removed) {
@@ -176,7 +166,7 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 	pthread_mutex_unlock(&mCacheMapMutex);
 }
 
-void *OmCacheManager::CleanOne(void *in)
+void * OmCacheManager::CleanOne(void *in)
 {
 	OmCacheBase *base = (OmCacheBase *) in;
 

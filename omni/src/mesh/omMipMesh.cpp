@@ -22,8 +22,6 @@ static const char *MIP_MESH_FILE_NAME = "mesh.%d.dat";
 //utility
 GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
 
-#pragma mark -
-#pragma mark MipMesh
 /////////////////////////////////
 ///////
 ///////          MipMesh
@@ -209,8 +207,6 @@ bool OmMipMesh::IsEmptyMesh()
 	return (0 == mVertexCount);
 }
 
-#pragma mark
-#pragma mark VBO Methods
 /////////////////////////////////
 ///////          VBO Methods
 
@@ -272,8 +268,6 @@ void OmMipMesh::DeleteVbo()
 	UpdateSize(-(vertex_data_size + vertex_index_data_size));
 }
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Methods
 
@@ -326,25 +320,17 @@ void OmMipMesh::Draw()
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
 
 ostream & operator<<(ostream & out, const OmMipMesh & m)
 {
-
 	out << "Strip Count: \t" << m.mStripCount << "\n";
 	out << "Vertex Index Count: \t" << m.mVertexIndexCount << "\n";
 	out << "Vertex Count: \t" << m.mVertexCount << "\n";
-	//debug("FIXME", << "Vertex Data Vbo Id: " << m.mVertexDataVboId << "\n";
-	//debug("FIXME", << "Vertex Index Data Vbo Id: " << m.mVertexIndexDataVboId << "\n";
-
-	//out << "State: " << (v.IsOpen() ? "Open" : "Closed") << endl;
+	return out;
 }
 
-#pragma mark
-#pragma mark Utility Functions
 /////////////////////////////////
 ///////          Utility Functions
 

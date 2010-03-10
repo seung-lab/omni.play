@@ -70,7 +70,10 @@ public:
 	OmMipVolume *mVolume;
 	OmSegmentation *mSeg;
 	QGLPixelBuffer *  pbuffer;
-	
+
+	int GetDepthToDataSlice(ViewType viewType);
+	void SetDataSliceToDepth(ViewType viewType, int slice);
+	int GetDepthToDataMax(ViewType viewType);
 	
 protected:
 	// GL event methods
@@ -195,12 +198,9 @@ private:
 	ScreenCoord SpaceToScreenCoord(ViewType viewType,const SpaceCoord &spacec);
 	ScreenCoord DataToScreenCoord(ViewType viewType,const DataCoord &datac);
 	DataCoord ScreenToDataCoord(ViewType viewType,const ScreenCoord &screenc);
-	ScreenCoord NormToScreenCoord(ViewType viewType,const NormCoord &normc);
 	NormCoord ScreenToNormCoord(ViewType viewType,const ScreenCoord &screenc);
         DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
-	int GetDepthToDataSlice(ViewType viewType);
-	void SetDataSliceToDepth(ViewType viewType, int slice);
-	int GetDepthToDataMax(ViewType viewType);
+	Vector2f GetPanDistance(ViewType viewType);
 	///////////////////////////////////////
 
 

@@ -51,7 +51,6 @@ public:
 	void setSecondMipVolume(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);
 	bool checkSecondMipVolume() { return isSecondMipVolume; }
 	
-	void subFullImageTex(shared_ptr<OmTextureID> &texID, DataCoord firstCoord, int tl);
 	void subImageTex(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
 	
 	void SetMaxCacheSize(int bytes);
@@ -90,7 +89,7 @@ public:
 		mCache = NULL;
 		mDelete = false;
 
-		for (int i = 0; i < caches.size(); i++) {
+		for (unsigned int i = 0; i < caches.size(); i++) {
 			if (caches[i]->mViewtype == mViewtype	&&
 			    caches[i]->mVoltype == mVoltype 	&&
 			    caches[i]->mImage_id == mImage_id	&&

@@ -20,15 +20,11 @@ void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, b
 void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth);
 void drawLines(SpaceCoord depth);
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
 ///////
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 

@@ -9,8 +9,6 @@
 //init instance pointer
 OmPreferences *OmPreferences::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager
@@ -41,8 +39,6 @@ void OmPreferences::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark
-#pragma mark Item Accessors
 /////////////////////////////////
 ///////          Item Accessors
 
@@ -93,8 +89,6 @@ void OmPreferences::RefreshPreference(const int key)
 	SetItem(key, item);
 }
 
-#pragma mark
-#pragma mark Accessors
 /////////////////////////////////
 ///////          Accessors
 

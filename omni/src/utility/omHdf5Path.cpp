@@ -13,3 +13,8 @@ std::string OmHdf5Path::getString()
 {
 	return mPath.toStdString();
 }
+
+OmHdf5Path& OmHdf5Path::operator=( OmHdf5Path & rhs ) {
+	this->mPath = rhs.mPath;
+	return *this;
+}

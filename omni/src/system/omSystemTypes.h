@@ -23,7 +23,7 @@ typedef unsigned int OmBitfield;
 
 
 //slices
-enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW, ALL };
+enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW };
 
 //objects
 enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER };

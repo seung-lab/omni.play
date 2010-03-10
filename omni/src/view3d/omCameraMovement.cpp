@@ -6,8 +6,6 @@
 #include "common/omDebug.h"
 using namespace vmml;
 
-#pragma mark -
-#pragma mark CameraArcBall
 /////////////////////////////////////
 //////////
 //////////      CameraArcBall Methods
@@ -118,8 +116,6 @@ void OmCameraArcBall::MapPointToSphere(const Vector2 < float >&point, Vector3 < 
 	}
 }
 
-#pragma mark -
-#pragma mark CameraPan
 /////////////////////////////////////
 //////////
 //////////      CameraPan Methods
@@ -174,8 +170,6 @@ void OmCameraPan::Drag(const Vector2 < float >&point)
 	mpCamera->SetFocus(center);
 }
 
-#pragma mark -
-#pragma mark CameraZoom
 /////////////////////////////////////
 //////////
 //////////      CameraZoom Methods
@@ -199,6 +193,5 @@ void OmCameraZoom::Drag(const Vector2 < float >&point)
 	double delta = double (cy - sy) / r_viewport[3];
 
 	// exponential zoom factor
-	float distance = mpCamera->GetDistance();
 	mpCamera->SetDistance(max(mStartDistance, 1.0f) * exp(delta));
 }

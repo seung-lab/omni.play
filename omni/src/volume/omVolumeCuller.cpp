@@ -7,8 +7,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVolumeCuller
 /////////////////////////////////
 ///////
 ///////          OmVolumeCuller
@@ -22,8 +20,6 @@ OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
 	mFrustumCuller.setup(mProjModelView);
 }
 
-#pragma mark
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////          Accessor Methods
 /*
@@ -57,8 +53,6 @@ const NormCoord & OmVolumeCuller::GetFocus() const
 	return mFocus;
 }
 
-#pragma mark
-#pragma mark Transform Methods
 /////////////////////////////////
 ///////          Transform Methods
 
@@ -78,8 +72,6 @@ void OmVolumeCuller::TransformCuller(const Matrix4f & mat, const Matrix4f & matI
 	mFocus = matInv * mFocus;
 }
 
-#pragma mark
-#pragma mark Frustum Test Methods
 /////////////////////////////////
 ///////          Frustum Test Methods
 

@@ -19,10 +19,10 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 
         QFile file(QString(fpath.c_str()));
         if(!file.exists()){
-		H5E_BEGIN_TRY {
+		//		H5E_BEGIN_TRY {
 			hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
 			om_hdf5_file_close_with_lock(fileId);
-		} H5E_END_TRY
+			//		} H5E_END_TRY
         }
 }
 
@@ -86,8 +86,8 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 	return true;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims,
-					    Vector3 < int >chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims,
+					    Vector3<int>* chunkDims, int bytesPerSample, bool unlimited)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -150,26 +150,27 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 	return filled_read_data;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, const char *name, DataBbox dataExtent, int bytesPerSample,
+void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, const char *name, DataBbox* dataExtent, int bytesPerSample,
 				 vtkImageData * pImageData)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
 
 	//get dims
-	Vector3 < int >dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
+	Vector3<int> dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
+	debug("hdf5image", "dims: %i,%i,%i\n", DEBUGV3(dims));
 
 	//create extent
 	DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
 
 	//if data extent contains given extent, just write data
-	if (dataset_extent.contains(dataExtent)) {
+	if (dataset_extent.contains(*dataExtent)) {
 		om_hdf5_dataset_image_write_with_lock(fileId, name, dataExtent, bytesPerSample, pImageData);
 		return;
 	}
 	//intersect with given extent
 	DataBbox intersect_extent = dataset_extent;
-	intersect_extent.intersect(dataExtent);
+	intersect_extent.intersect(*dataExtent);
 
 	//if empty intersection, just return
 	if (intersect_extent.isEmpty())
@@ -185,7 +186,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 
 	//normalize to min of dataExtent
 	DataBbox dataextent_norm_intersect_extent = intersect_extent;
-	dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
+	dataextent_norm_intersect_extent.offset(-dataExtent->getMin());
 
 	//debug("FIXME", << intersect_norm_intersect_extent << endl;
 	//debug("FIXME", << dataextent_norm_intersect_extent << endl;
@@ -195,7 +196,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 		      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
 
 	//write intersection
-	om_hdf5_dataset_image_write_with_lock(fileId, name, intersect_extent, bytesPerSample, p_intersect_data);
+	om_hdf5_dataset_image_write_with_lock(fileId, name, &intersect_extent, bytesPerSample, p_intersect_data);
 
 	//delete temp intersect data
 	p_intersect_data->Delete();
@@ -316,7 +317,7 @@ void OmHdf5LowLevel::om_hdf5_group_create_tree_with_lock(hid_t fileId, const cha
         bfa::split(name_split_vec, name, bfa::is_any_of("/"));
 
         string name_rejoin_str;
-        for (int i = 0; i < name_split_vec.size(); ++i) {
+        for (unsigned int i = 0; i < name_split_vec.size(); ++i) {
                 //add split
                 name_rejoin_str.append(name_split_vec[i]).append("/");
                 //create if group does not exist
@@ -409,6 +410,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	//Creates a new simple dataspace and opens it for access. 
 	int rank = 1;
 	hsize_t dim = size;
+	
+	// TODO: fixme! use the max dim!
 	hsize_t max = dim ? dim : H5S_UNLIMITED;
 	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
 	if (dataspace_id < 0)
@@ -480,13 +483,23 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
+	debug("hdf5image", "dims are %d:%d:%d; maxdims are %d:%d:%d\n", 
+	      DEBUGV3(dims), DEBUGV3(maxdims));
+
 	//flip from hdf5 version
 	return Vector3 < int >(dims.z, dims.y, dims.x);
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3 < int >dataDims, Vector3 < int >chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, 
+							    const char *name, 
+							    Vector3<int>* dataDims, 
+							    Vector3<int>* chunkDims, 
+							    int bytesPerSample, 
+							    bool unlimited)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+	herr_t ret;
+	int rank = 3;
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...%i\n", __FUNCTION__, unlimited);
 
 	//Creates a new property as an instance of a property list class.
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
@@ -494,17 +507,20 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId, const 
 		throw OmIoException("Could not create HDF5 property list.");
 
 	//Sets the size of the chunks used to store a chunked layout dataset. 
-	int rank = 3;
-	Vector3 < hsize_t > flipped_chunk_dim(chunkDims.z, chunkDims.y, chunkDims.x);
-	herr_t ret = H5Pset_chunk(plist_id, rank, flipped_chunk_dim.array);
+	Vector3 < hsize_t > flipped_chunk_dim(chunkDims->z, chunkDims->y, chunkDims->x);
+	ret = H5Pset_chunk(plist_id, rank, flipped_chunk_dim.array);
 	if (ret < 0)
 		throw OmIoException("Could not set HDF5 chunk size.");
 
 	//data dims
-	Vector3 < hsize_t > flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
-	Vector3 < hsize_t > flipped_max_data_dims =
-	    unlimited ? Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED,
-					     H5S_UNLIMITED) : Vector3 < hsize_t > (dataDims.z, dataDims.y, dataDims.x);
+	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
+	Vector3 < hsize_t > flipped_max_data_dims;
+
+	if(unlimited){
+		flipped_max_data_dims = Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED, H5S_UNLIMITED);
+	} else { 
+		flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
+	}
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
@@ -562,7 +578,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	Vector3 < hsize_t > block = extent.getUnitDimensions();
 	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
-
+	debug("hdf5image", "start:%i,%i,%i\n", DEBUGV3(start));
+	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
 	//Selects a hyperslab region to add to the current selected region. 
 	herr_t ret =
 	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
@@ -607,7 +624,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 }
 
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  vtkImageData * imageData)
+void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const char *name, DataBbox* extent, int bytesPerSample,  vtkImageData * imageData)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -625,7 +642,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	hid_t dataset_type_id = H5Dget_type(dataset_id);
 
 	//assert that dest datatype size matches desired size
-	assert(H5Tget_size(dataset_type_id) == bytesPerSample);
+	assert(H5Tget_size(dataset_type_id) == (unsigned int)bytesPerSample);
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
@@ -635,13 +652,13 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
-	Vector3 < hsize_t > start = extent.getMin();
+	Vector3 < hsize_t > start = extent->getMin();
 	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
 
 	Vector3 < hsize_t > stride = Vector3i::ONE;
 	Vector3 < hsize_t > count = Vector3i::ONE;
 
-	Vector3 < hsize_t > block = extent.getUnitDimensions();
+	Vector3 < hsize_t > block = extent->getUnitDimensions();
 	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
 
 	//Selects a hyperslab region to add to the current selected region. 
@@ -659,7 +676,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	Vector3 < int >extent_dims = extent->getUnitDimensions();
 	int data_dims[3];
 	imageData->GetDimensions(data_dims);
 	assert(data_dims[0] == extent_dims.x && data_dims[1] == extent_dims.y && data_dims[2] == extent_dims.z);
@@ -705,7 +722,7 @@ void OmHdf5LowLevel::printfDatasetCacheSize( const hid_t dataset_id )
 	size_t rdcc_nbytes;
 	double rdcc_w0;
 
-	herr_t err = H5Pget_chunk_cache( H5Dget_access_plist(dataset_id), &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
+	H5Pget_chunk_cache( H5Dget_access_plist(dataset_id), &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
 
 	printf("dataset cache info: Number of chunk slots in the raw data chunk cache: %s\n", qPrintable( QString::number(rdcc_nslots )));
 	printf("dataset cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
@@ -723,7 +740,7 @@ void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
 	size_t rdcc_nbytes;
 	double rdcc_w0;
 
-	herr_t err = H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
+	H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
 
 	printf("file cache info: Number of elements in the raw data chunk cache: %s\n", qPrintable( QString::number( rdcc_nelmts )));
 	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));

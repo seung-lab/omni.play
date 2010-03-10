@@ -210,10 +210,9 @@ void SegInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	QString fname = fileName.section('/', -1);
-	QString dpath = fileName.remove(fname);
+	printf("%s: exporting to %s\n", __FUNCTION__, qPrintable( fileName ));
 
-	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(dpath.toStdString(), fname.toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
 }
 
 void SegInspector::on_patternEdit_editingFinished()

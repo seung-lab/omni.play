@@ -41,6 +41,12 @@ private slots:
 	void showContextMenu(const QPoint & menuPoint);
 	void segmentRightClickMenu(QAction * act);
 
+protected:
+	void keyPressEvent (QKeyEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
 private:
 	static const int ENABLED_COL = 0;
 	static const int NAME_COL = 1;
@@ -61,7 +67,7 @@ private:
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const OmId firstSegmentID );
-	QList< SEGMENT_DATA_TYPE > * doGetSegmentsToDisplay( const int offset );
+	QList< SEGMENT_DATA_TYPE > * doGetSegmentsToDisplay( const unsigned int offset );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	QMenu * makeSegmentContextMenu(QTreeWidget * parent);
@@ -74,6 +80,7 @@ private:
 
 	int mNumSegmentsPerPage;
 	int currentPageNum;
+	unsigned int mNumSegments;
 };
 
 #endif

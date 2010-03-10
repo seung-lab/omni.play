@@ -57,10 +57,7 @@ void ChanInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	QString fname = fileName.section('/', -1);
-	QString dpath = fileName.remove(fname);
-
-	OmVolume::GetChannel(cdw.getID()).ExportInternalData(dpath.toStdString(), fname.toStdString());
+	OmVolume::GetChannel(cdw.getID()).ExportInternalData( fileName );
 }
 
 void ChanInspector::on_patternEdit_editingFinished()

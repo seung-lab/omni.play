@@ -49,4 +49,5 @@ ostream & operator<<(ostream & out, const OmTileCoord & in)
 	out << "[ " << in.Level;
 	out << " ( " << in.Coordinate.x << " " << in.Coordinate.y << " " << in.Coordinate.z << " " << 
 		        in.mVolType << " " << in.mFreshness << " ) ]";
+	return out;
 }

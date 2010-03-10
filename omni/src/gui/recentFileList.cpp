@@ -9,11 +9,10 @@
 #include "system/omLocalPreferences.h"
 
 /********************************************
-/* helper class to track recently created/opened files
-/* TODO:     store recently-used files in a YAML configuration file?
-/* BASED ON: http://doc.trolltech.com/4.3/mainwindows-recentfiles-mainwindow-cpp.html
-/* ADDED BY: purcaro
-/********************************************/
+ * helper class to track recently created/opened files
+ * BASED ON: http://doc.trolltech.com/4.3/mainwindows-recentfiles-mainwindow-cpp.html
+ * ADDED BY: purcaro
+ ********************************************/
 
 RecentFileList::RecentFileList()
 {

@@ -34,7 +34,7 @@ FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper
 
 void FilObjectInspector::saveFilterAlphaValue()
 {		
-	OmProject::Save();
+	//	OmProject::Save();
 }
 
 void FilObjectInspector::setFilAlpha(int alpha)
@@ -129,11 +129,11 @@ int FilObjectInspector::getSegmentationIDtoFilter()
 void FilObjectInspector::sourceEditChangedChan()
 {
 	OmVolume::GetChannel( mChannelID ).GetFilter( mFilterID ).SetChannel(getChannelIDtoFilter());
-	OmProject::Save();
+	//	OmProject::Save();
 }
 
 void FilObjectInspector::sourceEditChangedSeg()
 {
 	OmVolume::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(getSegmentationIDtoFilter());
-	OmProject::Save();
+	//	OmProject::Save();
 }

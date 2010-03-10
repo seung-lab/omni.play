@@ -37,15 +37,13 @@ const bool OmTextureID::FindId(OmId f_id)
 	return (mIdSet.find(f_id) != mIdSet.end());
 }
 
-#pragma mark
-#pragma mark ostream
 /////////////////////////////////
 ///////          ostream
 
 ostream & operator<<(ostream & out, const OmTextureID & tid)
 {
-
 	out << "Texture ID: " << tid.GetTextureID() << "\n";
 	out << "Size in Memory: " << tid.GetSize() << "\n";
 	out << "Tile Coordinate Level: " << tid.GetCoordinate().Level << "\n";
+	return out;
 }

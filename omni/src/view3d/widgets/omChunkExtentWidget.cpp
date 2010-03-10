@@ -14,8 +14,6 @@ static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
 ////////////////////////////////////////
 ///////         Utility Functions Prototypes
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -27,8 +25,6 @@ OmChunkExtentWidget::OmChunkExtentWidget(OmView3d * view3d)
 
 };
 
-#pragma mark
-#pragma mark Draw Methods
 /////////////////////////////////
 ///////          Draw Methods
 

@@ -7,8 +7,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmEditSelectionApplyAction Class
 /////////////////////////////////
 ///////
 ///////          OmEditSelectionApplyAction Class
@@ -36,8 +34,6 @@ OmEditSelectionApplyAction::OmEditSelectionApplyAction()
 
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

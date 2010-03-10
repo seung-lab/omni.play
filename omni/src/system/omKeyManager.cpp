@@ -9,8 +9,6 @@
 //init instance pointer
 OmKeyManager *OmKeyManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmKeyManager
 /////////////////////////////////
 ///////
 ///////          OmKeyManager
@@ -41,8 +39,6 @@ void OmKeyManager::Delete()
 	mspInstance = NULL;
 }
 
-#pragma mark -
-#pragma mark Map Key Sequence
 /////////////////////////////////
 ///////          Map Key Sequence
 
@@ -86,8 +82,6 @@ void OmKeyManager::MapKeySequence(OmKeySequence omKeySeq, string keySequenceStr)
 	Instance()->mDefsToKeySeqBiMap.map(omKeySeq, keySequenceStr);
 }
 
-#pragma mark -
-#pragma mark Lookup Key Sequence
 /////////////////////////////////
 ///////          Lookup Key Sequence
 
@@ -135,8 +129,6 @@ QKeySequence OmKeyManager::OmToQKeySequence(OmKeySequence omKeySeq)
 
 }
 
-#pragma mark -
-#pragma mark Default Mapping
 /////////////////////////////////
 ///////          Default Mapping
 

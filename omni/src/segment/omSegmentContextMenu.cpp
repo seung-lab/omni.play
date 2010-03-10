@@ -15,20 +15,14 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
 ///////
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 
-#pragma mark
-#pragma mark Context Menu Methods
 /////////////////////////////////
 ///////          Context Menu Methods
 
@@ -171,8 +165,6 @@ void OmSegmentContextMenu::AddVoxelAction()
 	addAction(QString("Set Connected Voxels"), this, SLOT(SetConnectedVoxels()));
 }
 
-#pragma mark
-#pragma mark Context Menu Slots Methods
 /////////////////////////////////
 ///////          Context Menu Slots Methods
 

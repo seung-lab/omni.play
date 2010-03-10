@@ -25,8 +25,6 @@ namespace bfs = boost::filesystem;
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
-#pragma mark -
-#pragma mark OmMipChunk Class
 /////////////////////////////////
 ///////
 ///////         OmMipChunk Class
@@ -108,8 +106,6 @@ void
 	mMetaDataDirty = false;
 }
 
-#pragma mark
-#pragma mark DataVolume Methods
 /////////////////////////////////
 ///////          DataVolume Methods
 
@@ -200,8 +196,6 @@ void OmMipChunk::Close()
 	mpImageData = NULL;
 }
 
-#pragma mark
-#pragma mark Data Properties
 /////////////////////////////////
 ///////          Data Properties
 
@@ -210,8 +204,6 @@ const DataBbox & OmMipChunk::GetExtent()
 	return mDataExtent;
 }
 
-#pragma mark
-#pragma mark Dirty Methods
 /////////////////////////////////
 ///////          Dirty Methods
 
@@ -230,8 +222,6 @@ bool OmMipChunk::IsMetaDataDirty() const
 	return mpMipVolume->GetChunksStoreMetaData() && mMetaDataDirty;
 }
 
-#pragma mark
-#pragma mark  Data IO
 /////////////////////////////////
 ///////           Data IO
 
@@ -268,7 +258,7 @@ void OmMipChunk::WriteVolumeData()
 	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
 	if (mpImageData) {
-		OmProjectData::WriteImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample(), mpImageData);
+		OmProjectData::WriteImageData( mip_level_vol_path, (DataBbox*)&GetExtent(), GetBytesPerSample(), mpImageData);
 	}
 
 	mVolumeDataDirty = false;
@@ -419,8 +409,6 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	UpdateSize(float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 }
 
-#pragma mark
-#pragma mark Mip Accessors
 /////////////////////////////////
 ///////          Mip Accessors
 
@@ -455,8 +443,6 @@ const set < OmMipChunkCoord > & OmMipChunk::GetChildrenCoordinates()
 	return mChildrenCoordinates;
 }
 
-#pragma mark
-#pragma mark Property Accessors
 /////////////////////////////////
 ///////          Property Accessors
 
@@ -470,8 +456,6 @@ const NormBbox & OmMipChunk::GetClippedNormExtent() const
 	return mClippedNormExtent;
 }
 
-#pragma mark
-#pragma mark MetaData Accessors
 /////////////////////////////////
 ///////          MetaData Accessors
 
@@ -589,8 +573,6 @@ void OmMipChunk::RefreshIndirectDataValues()
 	mMetaDataDirty = true;
 }
 
-#pragma mark
-#pragma mark Slice Data Access
 /////////////////////////////////
 ///////          Slice Data Access
 
@@ -701,8 +683,6 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
 	return copyImageData(mpImageData, relative_slice_bbox);
 }
 
-#pragma mark
-#pragma mark Meshing
 /////////////////////////////////
 ///////          Meshing
 

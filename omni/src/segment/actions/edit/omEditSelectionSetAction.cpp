@@ -5,8 +5,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmEditSelectionSetAction Class
 /////////////////////////////////
 ///////
 ///////          OmEditSelectionSetAction Class
@@ -23,8 +21,6 @@ OmEditSelectionSetAction::OmEditSelectionSetAction(OmId segmentationId, OmId seg
 	OmSegmentEditor::GetEditSelection(mOldSegmentationId, mOldSegmentId);
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

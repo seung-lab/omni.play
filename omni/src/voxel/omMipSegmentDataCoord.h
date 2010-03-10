@@ -60,8 +60,6 @@ public:
 
 
 
-#pragma mark 
-#pragma mark Operators
 /////////////////////////////////
 ///////		 Operators
 
@@ -93,13 +91,6 @@ OmMipSegmentDataCoord::operator<( const OmMipSegmentDataCoord& rhs ) const
 	return (DataValue < rhs.DataValue);
 }	
 
-
-
-
-
-
-#pragma mark 
-#pragma mark stream
 /////////////////////////////////
 ///////		 stream
 
@@ -107,15 +98,9 @@ inline
 ostream& 
 operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
 	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
+	return out;
 }
 
-
-
-
-
-
-#pragma mark 
-#pragma mark Serialization
 /////////////////////////////////
 ///////		 Serialization
 

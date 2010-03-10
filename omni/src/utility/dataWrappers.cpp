@@ -18,6 +18,11 @@ DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId
 		segmenDW = SegmentationDataWrapper(obj_id);
 		mIsValidContainer = true;
 		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
+		break;
 	}
 }
 

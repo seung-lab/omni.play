@@ -11,8 +11,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmVoxelSetValueAction Class
 /////////////////////////////////
 ///////
 ///////          OmVoxelSetValueAction Class
@@ -26,9 +24,6 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rV
 
 	//store new value
 	mNewValue = value;
-
-	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
 
 	//store old value of voxel
 	//mOldVoxelValues[rVoxel] = r_segmentation.GetVoxelValue(rVoxel);
@@ -46,23 +41,16 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoor
 	//store new value
 	mNewValue = value;
 
-	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-
-#if 1
 	//store old values of voxels
 	set < DataCoord >::iterator itr;
 	for (itr = rVoxels.begin(); itr != rVoxels.end(); itr++) {
 		//mOldVoxelValues[*itr] = r_segmentation.GetVoxelValue(*itr);
 		mOldVoxelValues[*itr] = mNewValue;
 	}
-#endif
 
 	mUndoable = false;
 }
 
-#pragma mark
-#pragma mark Action Methods
 /////////////////////////////////
 ///////          Action Methods
 

@@ -13,8 +13,6 @@
 
 
 
-#pragma mark -
-#pragma mark OmFilter Class
 /////////////////////////////////
 ///////
 ///////		OmFilter Class
@@ -106,23 +104,17 @@ void OmFilter2d::SetChannel (OmId id) {
 
 
 
-#pragma mark 
-#pragma mark Accessor Methods
 /////////////////////////////////
 ///////		Accessor Methods
 
 
 
 
-#pragma mark 
-#pragma mark Example Methods
 /////////////////////////////////
 ///////		Example Methods
 
 
 
-#pragma mark 
-#pragma mark Print Methods
 /////////////////////////////////
 ///////		 Print Methods
 

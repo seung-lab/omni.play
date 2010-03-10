@@ -7,8 +7,6 @@
 //init instance pointer
 OmTagManager *OmTagManager::mspInstance = 0;
 
-#pragma mark -
-#pragma mark OmStateManager
 /////////////////////////////////
 ///////
 ///////          OmStateManager

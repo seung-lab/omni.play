@@ -4,15 +4,11 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
 ///////
 
-#pragma mark
-#pragma mark Mapping Methods
 /////////////////////////////////
 ///////          Mapping Methods
 
@@ -23,7 +19,6 @@ bool OmSegmentDataMap::IsValueMappedToSegmentId(SEGMENT_DATA_TYPE value)
 
 SEGMENT_DATA_TYPE OmSegmentDataMap::GetUnMappedValue()
 {
-
 	//try all values starting at 1
 	SEGMENT_DATA_TYPE value = 1;
 	while (NULL_SEGMENT_DATA != value) {
@@ -40,6 +35,8 @@ SEGMENT_DATA_TYPE OmSegmentDataMap::GetUnMappedValue()
 		//could not find free value
 		return NULL_SEGMENT_DATA;
 	}
+
+	return NULL_SEGMENT_DATA;
 }
 
 OmId OmSegmentDataMap::GetSegmentIdMappedToValue(SEGMENT_DATA_TYPE value)

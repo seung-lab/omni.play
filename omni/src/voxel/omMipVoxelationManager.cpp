@@ -18,8 +18,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark OmMipVoxelationManager
 /////////////////////////////////
 ///////
 ///////          OmMipVoxelationManager
@@ -43,13 +41,9 @@ OmMipVoxelationManager::~OmMipVoxelationManager()
 
 }
 
-#pragma mark
-#pragma mark Property Accessors
 /////////////////////////////////
 ///////          Property Accessors
 
-#pragma mark
-#pragma mark Voxelation Accessors
 /////////////////////////////////
 ///////          Voxelation Accessors
 
@@ -72,8 +66,6 @@ void OmMipVoxelationManager::RemoveVoxelation(const OmMipSegmentDataCoord & coor
 	MipVoxelationCache::Remove(coord);
 }
 
-#pragma mark
-#pragma mark Voxelation Generation
 /////////////////////////////////
 ///////          Voxelation Generation
 
@@ -247,8 +239,6 @@ void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
 
 }
 
-#pragma mark
-#pragma mark Cache Handles
 /////////////////////////////////
 ///////          Cache Handles
 
@@ -268,8 +258,6 @@ void OmMipVoxelationManager::HandleFetchUpdate()
 	//debug("genone","OmMipVoxelationManager::FetchUpdate: redraw sent");
 }
 
-#pragma mark
-#pragma mark Draw
 /////////////////////////////////
 ///////          Draw
 

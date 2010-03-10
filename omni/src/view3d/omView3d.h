@@ -75,7 +75,7 @@ class OmView3d : public QGLWidget,
 		void SelectVoxel(DataCoord &voxel, bool append);
 		
 		//gl actions
-		bool PickPoint(Vector2<int> point, vector<int> &names);
+		bool PickPoint(Vector2<int> point, vector<unsigned int> &names);
 		bool UnprojectPoint(Vector2i point2d, Vector3f &point3d, float depth_scale_factor = 1.0f);
 		//draw methods
 		void Draw(OmBitfield option);

@@ -17,8 +17,6 @@
 
 #define DEBUG 0
 
-#pragma mark -
-#pragma mark Example Class
 /////////////////////////////////
 ///////
 ///////          Example Class
@@ -30,8 +28,6 @@ OmView3dUi::OmView3dUi(OmView3d * view3d)
 
 }
 
-#pragma mark
-#pragma mark Example Methods
 /////////////////////////////////
 ///////          Example Methods
 
@@ -118,8 +114,6 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Navigation Mode Methods
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -162,32 +156,8 @@ void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
 
 void OmView3dUi::NavigationModeKeyPress(QKeyEvent * event)
 {
-
-	switch (OmKeyManager::LookupKeySequence(event)) {
-	case OmKeySeq_Edit_Mode:
-		//debug("FIXME", << "OmView3d::keyPressEvent: EDIT_SYSTEM_MODE" << endl;
-		OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
-		break;
-
-	case OmKeySeq_Navigation_Mode:
-		//debug("FIXME", << "OmView3d::keyPressEvent: NAVIGATION_SYSTEM_MODE" << endl;
-		OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
-		break;
-
-	case OmKeySeq_Undo:
-		OmStateManager::GetUndoStack()->undo();
-		break;
-
-	case OmKeySeq_Redo:
-		OmStateManager::GetUndoStack()->redo();
-		break;
-
-	}
-
 }
 
-#pragma mark
-#pragma mark Edit Mode Methods
 /////////////////////////////////
 ///////          Edit Mode Methods
 
@@ -275,8 +245,6 @@ void OmView3dUi::EditModeKeyPress(QKeyEvent * event)
 	}
 }
 
-#pragma mark
-#pragma mark Camera Movement Methods
 /////////////////////////////////
 ///////          Camera Movement Methods
 
@@ -285,7 +253,6 @@ void OmView3dUi::CameraMovementMouseStart(QMouseEvent * event)
 	//get point and modifier
 	Vector2f point = Vector2f(event->x(), event->y());
 	bool shift_modifier = event->modifiers() & Qt::ShiftModifier;
-	bool control_modifier = event->modifiers() & Qt::ControlModifier;
 
 	//left w/o shift moves rotate
 	if (event->buttons() & Qt::LeftButton && !shift_modifier) {
@@ -338,8 +305,6 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 	mpView3d->mCamera.MovementEnd(point);
 }
 
-#pragma mark
-#pragma mark Segment Picking
 /////////////////////////////////
 ///////          Segment Picking
 
@@ -348,11 +313,9 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
-	bool shift_pressed = event->modifiers() & Qt::ShiftModifier;
-	bool control_pressed = event->modifiers() & Qt::ControlModifier;
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	vector < int >result;
+	vector<unsigned int> result;
 	bool valid_pick = mpView3d->PickPoint(point2d, result);
 
 	//if valid and return count
@@ -366,7 +329,9 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//check if dragging
-	if (drag && (result[0] == mPrevSegmentationId) && (result[1] == mPrevSegmentId)) {
+	if (drag && 
+	    (result[0] == mPrevSegmentationId) && 
+	    (result[1] == mPrevSegmentId)) {
 		return false;
 	} else {
 		//update prev selection
@@ -387,24 +352,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 	return true;
 }
 
-	//bool selected_state = r_segmentation.IsSegmentSelected( result[2] );
-
-//      //run segment selection action
-//(new OmSegmentSelectionAction(result[1], result[2], !selected_state, shift_pressed))->Run();
-
-/*
- //if control pressed and object is already selected
- if(control_pressed) {
- //if unproject is valid, then set camera focus
- Vector3f point3d;
- if(UnprojectPoint(point2d, point3d)) {
- mCamera.SetFocus(point3d);
- }
- }
- */
-
-#pragma mark
-#pragma mark Pick Voxel Methods
 /////////////////////////////////
 ///////          Pick Voxel Methods
 
@@ -426,10 +373,9 @@ bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVox
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
-	bool shft_mod = event->modifiers() & Qt::ShiftModifier;
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	vector < int >result;
+	vector<unsigned int>result;
 	bool valid_pick = mpView3d->PickPoint(point2d, result);
 
 	//if valid and return count
@@ -447,21 +393,6 @@ bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVox
 
 	//define depth scale factor
 	float z_depth_scale = 1.0f;
-
-	/*
-	   if(event->buttons() && (event->modifiers()&Qt::AltModifier) )  {
-	   //scales closer (on top of voxel)
-	   z_depth_scale = -0.05f;
-
-	   } else if(event->buttons()) {
-	   //scales further away (into voxel)
-	   z_depth_scale = 0.05f;
-
-	   } else {
-	   //not handled button
-	   return false;
-	   }
-	 */
 
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
@@ -525,8 +456,6 @@ bool OmView3dUi::PickVoxelCameraFocus(QKeyEvent * keyEvent, bool drag, DataCoord
  }
  */
 
-#pragma mark
-#pragma mark  Segment Actions
 /////////////////////////////////
 ///////           Segment Actions
 
@@ -565,8 +494,6 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	}
 }
 
-#pragma mark
-#pragma mark  Voxel Actions
 /////////////////////////////////
 ///////           Voxel Actions
 
@@ -581,6 +508,14 @@ void OmView3dUi::VoxelEditMouse(QMouseEvent * mouseEvent, bool drag)
 	case ADD_VOXEL_MODE:
 	case SUBTRACT_VOXEL_MODE:
 		VoxelSetMouse(mouseEvent, drag);
+		break;
+
+	case SELECT_MODE:
+	case PAN_MODE:
+	case CROSSHAIR_MODE:
+	case ZOOM_MODE:
+	case FILL_MODE:
+	case VOXELIZE_MODE:
 		break;
 	}
 
@@ -673,8 +608,6 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 	(new OmVoxelSetValueAction(segmentation_id, picked_voxel, data_value))->Run();
 }
 
-#pragma mark
-#pragma mark  Segment Context Menu
 /////////////////////////////////
 ///////           Segment Context Menu
 
@@ -727,11 +660,14 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
         Vector2i point2d(event->x(), event->y());
 
         //pick point causes localized redraw (but all depth info stored in selection buffer)
-        vector < int >result;
+        vector<unsigned int>result;
+
 	bool valid_pick;
 	mpView3d->updateGL();
 	valid_pick = mpView3d->PickPoint(point2d, result);
-	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n", valid_pick, result.size());
+
+	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n", 
+	      valid_pick, result.size());
 
 	if(!valid_pick || result.size() != 3)
 		return false;

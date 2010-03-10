@@ -17,14 +17,13 @@
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
 #include "common/omDebug.h"
+#include <QFile>
 
 #define DEBUG 0
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const string MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 
-#pragma mark -
-#pragma mark OmMipVolume
 /////////////////////////////////
 ///////
 ///////         OmMipVolume
@@ -60,8 +59,6 @@ OmMipVolume::~OmMipVolume()
 	MipChunkThreadedCache::Clear();
 }
 
-#pragma mark
-#pragma mark DataVolume
 /////////////////////////////////
 ///////          DataVolume
 
@@ -78,8 +75,6 @@ void
 	MipChunkThreadedCache::Call(&OmMipChunk::Flush, false);
 }
 
-#pragma mark
-#pragma mark Internal Data Properties
 /////////////////////////////////
 ///////          Internal Data Properties
 
@@ -129,8 +124,6 @@ string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 	return GetDirectoryPath() + string(mip_dname_buf) + MIP_CHUNK_META_DATA_FILE_NAME;
 }
 
-#pragma mark
-#pragma mark Source Data Properties
 /////////////////////////////////
 ///////          Source Data Properties
 
@@ -188,7 +181,6 @@ const list < string > & OmMipVolume::GetSourceFilenameRegexMatches()
  */
 bool OmMipVolume::IsSourceValid()
 {
-
 	//if matches    
 	if (GetSourceFilenameRegexMatches().size() == 0)
 		return false;
@@ -196,13 +188,12 @@ bool OmMipVolume::IsSourceValid()
 	return true;
 }
 
-#pragma mark
-#pragma mark Mip Data Properties
 /////////////////////////////////
 ///////          Mip Data Properties
 
 const DataBbox & OmMipVolume::GetExtent()
 {
+	debug("hdf5image", "extents: %i,%i,%i\n", DEBUGV3(OmVolume::GetDataExtent().getMax()));
 	return OmVolume::GetDataExtent();
 }
 
@@ -256,13 +247,15 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
  */
 void OmMipVolume::UpdateMipProperties()
 {
-
 	//if valid source, check dimensions
 	if (IsSourceValid()) {
 
 		//get source dimensions
 		Vector3 < int >source_dims =
 		    om_imagedata_get_dims(GetSourceDirectoryPath(), GetSourceFilenameRegexMatches());
+
+		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims), GetSourceDirectoryPath().c_str(),
+			GetSourceFilenameRegexMatches().front().c_str());
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
@@ -280,8 +273,6 @@ void OmMipVolume::UpdateMipProperties()
 	UpdateRootLevel();
 }
 
-#pragma mark
-#pragma mark Mip Level Methods
 /////////////////////////////////
 ///////          Mip Level Methods
 
@@ -359,8 +350,6 @@ int OmMipVolume::MipChunksInVolume()
 	return total;
 }
 
-#pragma mark
-#pragma mark MipCoordinate Methods
 /////////////////////////////////
 ///////          MipCoordinate Methods
 
@@ -411,8 +400,6 @@ NormBbox OmMipVolume::MipCoordToNormBbox(const OmMipChunkCoord & rMipCoord)
 	return OmVolume::DataToNormBbox(MipCoordToDataBbox(rMipCoord, 0));
 }
 
-#pragma mark
-#pragma mark MipChunk Methods
 /////////////////////////////////
 ///////          MipChunk Methods
 
@@ -466,8 +453,6 @@ void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & mipCoord, s
 	}
 }
 
-#pragma mark
-#pragma mark MipChunk Access
 /////////////////////////////////
 ///////          MipChunk Access
 
@@ -512,8 +497,6 @@ OmMipChunk *OmMipVolume::HandleCacheMiss(const OmMipChunkCoord & rMipCoord)
 	return new OmMipChunk(rMipCoord, this);
 }
 
-#pragma mark
-#pragma mark Data Accessors
 /////////////////////////////////
 ///////          Data Accessors
 
@@ -552,8 +535,6 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 	// //debug("FIXME", << "OmMipVolume::SetVoxelValue done" << endl;
 }
 
-#pragma mark
-#pragma mark Mip Construction Methods
 /////////////////////////////////
 ///////         Mip Construction Methods
 
@@ -563,7 +544,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
  */
 void OmMipVolume::AllocInternalData()
 {
-
+	Vector3<int> chunkdims = GetChunkDimensions();
 	//for all levels, alloc image data
 	for (int i = 0; i <= GetRootMipLevel(); i++) {
 		//debug("genone","OmMipVolume::AllocInternalData()\n");
@@ -581,8 +562,8 @@ void OmMipVolume::AllocInternalData()
 		mip_volume_level_path.setPath( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
-		OmProjectData::CreateImageData(mip_volume_level_path, rounded_data_dims,
-					       GetChunkDimensions(), GetBytesPerSample());
+		OmProjectData::CreateImageData(mip_volume_level_path, &rounded_data_dims,
+					       &chunkdims, GetBytesPerSample());
 	}
 
 }
@@ -601,8 +582,6 @@ void OmMipVolume::DeleteInternalData()
 	}
 }
 
-#pragma mark
-#pragma mark Building
 /////////////////////////////////
 ///////          Building
 
@@ -615,7 +594,7 @@ void OmMipVolume::Build()
 
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
-
+	
 	//update properties
 	UpdateMipProperties();
 
@@ -788,8 +767,6 @@ void OmMipVolume::BuildEditedLeafChunks()
 	mEditedLeafChunks.clear();
 }
 
-#pragma mark
-#pragma mark IO
 /////////////////////////////////
 ///////          IO
 
@@ -828,7 +805,7 @@ bool OmMipVolume::ImportSourceData()
 						      GetExtent(), chunk_data_bbox, GetBytesPerSample());
 
 				//write to project data
-				OmProjectData::WriteImageData(leaf_volume_path, chunk_data_bbox, GetBytesPerSample(),
+				OmProjectData::WriteImageData(leaf_volume_path, &chunk_data_bbox, GetBytesPerSample(),
 							      p_img_data);
 
 				//delete read data
@@ -885,9 +862,9 @@ OmMipVolume::ImportSourceDataSlice() {
  *	Export leaf volume data to HDF5 format.  Calls ExportImageDataFilter so subclass can 
  *	post-process the image data before it is written.
  */
-void OmMipVolume::ExportInternalData(string dpath, string fname)
+void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 {
-	//debug("FIXME", << "OmMipVolume::Export()" << endl;
+	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n", qPrintable(fileNameAndPath));
 
 	//get leaf data extent
 	DataBbox leaf_data_extent = GetExtent();
@@ -896,14 +873,33 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmHdf5Path mip_volume_path;
 	mip_volume_path.setPath( MipLevelInternalDataPath(0) );
+        //round up to nearest chunk
+
+        OmHdf5 hdfExport( fileNameAndPath, false );
+        OmHdf5Path fpath;
+        fpath.setPath("main");
+
+	if( !QFile::exists(fileNameAndPath) ){
+        	hdfExport.create();
+        	hdfExport.open();
+		Vector3<int> full = MipLevelDataDimensions(0);
+        	Vector3<int>rounded_data_dims = Vector3 <int>(ROUNDUP(full.x, GetChunkDimension()),
+                                                                   ROUNDUP(full.y, GetChunkDimension()),
+                                                                   ROUNDUP(full.z, GetChunkDimension()));
+        	hdfExport.dataset_image_create_tree_overwrite(fpath, &rounded_data_dims, &full, GetBytesPerSample());
+	} else {
+        	hdfExport.open();
+	}
+
 
 	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z)
-		for (int y = 0; y < leaf_mip_dims.y; ++y)
+	for (int z = 0; z < leaf_mip_dims.z; ++z) {
+		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 				//form mip chunk coord
 				OmMipChunkCoord leaf_coord(0, x, y, z);
+
 				//get chunk data bbox
 				DataBbox chunk_data_bbox = MipCoordToDataBbox(leaf_coord, 0);
 
@@ -916,16 +912,19 @@ void OmMipVolume::ExportInternalData(string dpath, string fname)
 
 				//write to hdf5 file
 				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
-				om_imagedata_write_hdf5(p_chunk_img_data, dpath, fname, leaf_data_extent,
-							chunk_data_bbox, GetBytesPerSample());
+
+				hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+                                           (DataBbox*)&chunk_data_bbox, GetBytesPerSample(), p_chunk_img_data);
+
 
 				//delete read data
 				p_chunk_img_data->Delete();
 			}
+		}
+	}
+	hdfExport.close();
 }
 
-#pragma mark
-#pragma mark Subsampling Methods
 /////////////////////////////////
 ///////          Subsampling Methods            
 
