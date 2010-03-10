@@ -1292,7 +1292,7 @@ void OmView2d::Draw(int mip)
 	drawComplete = true;
 
 	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	if (true) {
+	if (0) {
 		Vector2f zoom = zoomMipVector;
 		Vector2f translateVector = GetPanDistance(mViewType);
 
