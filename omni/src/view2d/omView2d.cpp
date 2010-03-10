@@ -1713,6 +1713,19 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
+			for (int count = -5; count < 6; count++) {
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
+                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
+										OmCachingThreadedCachingTile::Freshen(false));
+                        	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
+                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
+				shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
+                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
+                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
+				}
+			}
+
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
