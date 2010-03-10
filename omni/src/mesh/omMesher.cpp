@@ -103,7 +103,7 @@ void
 		//sinc smooth poly
 		mpWindowedSincPolyDataFilter = vtkWindowedSincPolyDataFilter::New();
 		mpWindowedSincPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
-		int num_smoothing_iters = OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT);
+
 		mpWindowedSincPolyDataFilter->SetNumberOfIterations(12);	//smooth geometry
 		mpWindowedSincPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 		//form normals

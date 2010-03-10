@@ -213,23 +213,16 @@ bool OmSegmentation::IsMeshDataBuilt()
 void OmSegmentation::BuildMeshData()
 {
 
-	if (!IsVolumeDataBuilt())
+	if (!IsVolumeDataBuilt()) {
 		throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
 					GetName());
-
-	//init progress bar
-	int num_chunks_in_build = MipChunksInVolume();
-	//string progress_bar_str = string("Building Segmentation Meshes: ") + GetName();
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, progress_bar_str, 0, num_chunks_in_build));
+	}
 
 	//build all levels
 	BuildMeshDataInternal();
 
 	//all chunks have been meshed
 	mMipMeshManager.SetMeshDataBuilt(true);
-
-	//hide progress bar
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 
 	OmProject::Save();
 }

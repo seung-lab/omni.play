@@ -58,7 +58,6 @@ public:
 	void setMergeChannels(unsigned char *imageData, unsigned char *secondImageData, Vector2<int> dims, Vector2<int> second_dims, const OmTileCoord &key);
 	OmIds setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 
-	void ReplaceFullTextureRegion(shared_ptr<OmTextureID> &texID, DataCoord firstCoord, int tl);
 	void ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
 private:
 	

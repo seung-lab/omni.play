@@ -157,4 +157,5 @@ ostream & operator<<(ostream & out, const OmMipChunkCoord & in)
 {
 	out << "[ " << in.Level;
 	out << " ( " << in.Coordinate.x << " " << in.Coordinate.y << " " << in.Coordinate.z << " ) ]";
+	return out;
 }

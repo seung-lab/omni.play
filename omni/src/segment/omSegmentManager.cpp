@@ -172,12 +172,12 @@ bool OmSegmentManager::IsValueMappedToSegmentId(SEGMENT_DATA_TYPE value)
 
 OmId OmSegmentManager::GetSegmentIdMappedToValue(SEGMENT_DATA_TYPE value)
 {
-	mSegmentDataMap.GetSegmentIdMappedToValue(value);
+	return mSegmentDataMap.GetSegmentIdMappedToValue(value);
 }
 
 const SegmentDataSet & OmSegmentManager::GetValuesMappedToSegmentId(OmId omId)
 {
-	mSegmentDataMap.GetValuesMappedToSegmentId(omId);
+	return mSegmentDataMap.GetValuesMappedToSegmentId(omId);
 }
 
 void OmSegmentManager::MapValueToSegmentId(OmId omId, SEGMENT_DATA_TYPE value)

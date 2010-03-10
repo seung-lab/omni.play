@@ -336,8 +336,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
-	bool shift_pressed = event->modifiers() & Qt::ShiftModifier;
-	bool control_pressed = event->modifiers() & Qt::ControlModifier;
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
 	vector < int >result;
@@ -354,7 +352,9 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//check if dragging
-	if (drag && (result[0] == mPrevSegmentationId) && (result[1] == mPrevSegmentId)) {
+	if (drag && 
+	    (result[0] == mPrevSegmentationId) && 
+	    (result[1] == mPrevSegmentId)) {
 		return false;
 	} else {
 		//update prev selection

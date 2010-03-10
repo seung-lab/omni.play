@@ -275,17 +275,16 @@ void OmCamera::MovementStart(CameraMovementType type, const Vector2 < float >&po
 	case CAMERA_PAN:
 		mPanner.Click(point);
 		break;
-
 	case CAMERA_ZOOM:
 		mZoomer.Click(point);
 		break;
-
 	case CAMERA_LOOKAT_ROTATE:
 		mArcBall.Click(point);
 		break;
-
 	case CAMERA_ORBIT_ROTATE:
 		mArcBall.Click(point);
+		break;
+	case CAMERA_NONE:
 		break;
 	}
 }
@@ -297,25 +296,21 @@ void OmCamera::MovementUpdate(const Vector2 < float >&point)
 	case CAMERA_PAN:
 		mPanner.Drag(point);
 		break;
-
 	case CAMERA_ZOOM:
 		mZoomer.Drag(point);
 		break;
-
 	case CAMERA_LOOKAT_ROTATE:
 		mArcBall.Drag(point);
 		break;
-
 	case CAMERA_ORBIT_ROTATE:
 		mArcBall.Drag(point);
 		break;
+	case CAMERA_NONE:
+		break;
 	}
-
 }
 
 void OmCamera::MovementEnd(const Vector2 < float >&point)
 {
-
 	mMovementType = CAMERA_NONE;
-
 }

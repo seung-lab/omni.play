@@ -118,8 +118,6 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 				      
 	filterListWidget->clear();
 
-	const OmId segmenID = cdw.getID();
-
 	filterListWidget->selectionModel()->blockSignals(true);
 	filterListWidget->selectionModel()->clearSelection();
 
@@ -239,7 +237,7 @@ void MyInspectorWidget::addToVolume(OmManageableObject * item, ObjectType item_t
 void MyInspectorWidget::addFilter()
 {
 	ChannelDataWrapper cdw = channelInspectorWidget->getChannelDataWrapper();
-	OmFilter2d & added_filter = OmVolume::GetChannel( cdw.getID() ).AddFilter();
+	OmVolume::GetChannel(cdw.getID()).AddFilter();
 	populateDataSrcListWidget();
 	populateFilterListWidget(cdw);
 }
@@ -380,6 +378,11 @@ void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
 	case SEGMENTATION:
 		showSegmentationContextMenu();
 		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
+		break;
 	}
 }
 
@@ -435,6 +438,11 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
 		break;
 	case SEGMENTATION:
 		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
 		break;
 	}
 }

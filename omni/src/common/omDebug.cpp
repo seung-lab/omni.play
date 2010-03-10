@@ -47,7 +47,7 @@ void debugInit()
 
 int debugParseArg(char *stringInput,int action)
 {
-	int i,j,length,position,newPosition,categoryLength;
+	int i, j, length, position;
 	char category[OM_DEBUG_STRING_SIZE];
 	length=strlen(stringInput);
 	position=0;
@@ -227,7 +227,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 
 CmdLineArgs parseAnythingYouCan(int argc, char *argv[])
 {	
-	int result,fileArgIndex;
+	int result;
 	result   = parseEnvironment();
 
 	if (result==-1){

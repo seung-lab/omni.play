@@ -54,11 +54,7 @@ bool OmEventManager::event(QEvent * event)
 	//call event for every listener in the set
 	EventListenerSet::iterator it;
 	for (it = listener_set.begin(); it != listener_set.end(); it++) {
-
-		//get listener
-		OmEventListener *listener = *it;
 		om_event->Dispatch(*it);
-
 	}
 
 	return true;

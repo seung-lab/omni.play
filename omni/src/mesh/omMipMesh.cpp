@@ -325,14 +325,10 @@ void OmMipMesh::Draw()
 
 ostream & operator<<(ostream & out, const OmMipMesh & m)
 {
-
 	out << "Strip Count: \t" << m.mStripCount << "\n";
 	out << "Vertex Index Count: \t" << m.mVertexIndexCount << "\n";
 	out << "Vertex Count: \t" << m.mVertexCount << "\n";
-	//debug("FIXME", << "Vertex Data Vbo Id: " << m.mVertexDataVboId << "\n";
-	//debug("FIXME", << "Vertex Index Data Vbo Id: " << m.mVertexIndexDataVboId << "\n";
-
-	//out << "State: " << (v.IsOpen() ? "Open" : "Closed") << endl;
+	return out;
 }
 
 /////////////////////////////////

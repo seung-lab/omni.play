@@ -84,8 +84,7 @@ void
 	char merged_into_buffer[255];
 	snprintf (merged_into_buffer, 254, "Merged into me");
 	for (itr = mPrevSegmentIdToValueMap.begin(); itr != mPrevSegmentIdToValueMap.end(); itr++) {
-		const OmId & r_segment_id = itr->first;
-		const SegmentDataSet & r_data_set = itr->second;
+
 		OmSegment & seg = r_segmentation.GetSegment (itr->first);
 		if( seg.GetId() == mDestinationSegmentId ){
 			seg.SetNote (merged_into_buffer);

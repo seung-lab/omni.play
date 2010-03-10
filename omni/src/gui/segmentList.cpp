@@ -30,7 +30,7 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId first
 	return doGetSegmentsToDisplay( offset );
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const int in_offset )
+QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
@@ -141,7 +141,7 @@ void SegmentList::dealWithButtons()
 void SegmentList::goToNextPage()
 {
 	currentPageNum++;
-	int offset = currentPageNum * mNumSegmentsPerPage;
+	unsigned int offset = currentPageNum * mNumSegmentsPerPage;
 	if( offset > mNumSegments ){
 		currentPageNum--;
 		offset = currentPageNum * mNumSegmentsPerPage;

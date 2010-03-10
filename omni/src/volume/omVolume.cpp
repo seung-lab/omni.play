@@ -385,14 +385,19 @@ void OmVolume::DrawEditSelectionVoxels()
 Vector2f OmVolume::GetStretchValues(ViewType plane)
 {
 	Vector3f stretch =Instance()->mDataStretchValues;
+	Vector2f ret;
+
 	switch(plane){
 	case XY_VIEW:
-		return Vector2f(stretch.x,stretch.y);
+		ret = Vector2f(stretch.x,stretch.y);
+		break;
 	case YZ_VIEW:
-		return Vector2f(stretch.z,stretch.y);
+		ret = Vector2f(stretch.z,stretch.y);
 	case XZ_VIEW:
-		return Vector2f(stretch.x,stretch.z);
+		ret = Vector2f(stretch.x,stretch.z);
 	}
+
+	return ret;
 }
 
 void OmVolume::SetStretchValues()

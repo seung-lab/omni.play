@@ -340,18 +340,12 @@ void MainWindow::closeProject()
 	}
 }
 
-bool MainWindow::saveProject()
+void MainWindow::saveProject()
 {
-	try {
-
-		// Saves the current project
-		// Does not prompt the user
-		// Serializes Volume to the current working directory
-
-		OmProject::Save();
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
+	// Saves the current project
+	// Does not prompt the user
+	// Serializes Volume to the current working directory
+	OmProject::Save();
 }
 
 void MainWindow::openInspector()
@@ -1207,6 +1201,9 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 		break;
 	case VOXELIZE_MODE:
 		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
+		break;
+	case FILL_MODE:
+		// TODO???
 		break;
 	}
 }

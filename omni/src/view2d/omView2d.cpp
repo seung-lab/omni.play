@@ -97,8 +97,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 
 		if (mSecondId && mThirdId) {
 			OmChannel & second_channel = OmVolume::GetChannel(mSecondId);
-			OmChannel & third_channel = OmVolume::GetChannel(mThirdId);
-			//debug("genone","THERE ARE THREE IDS");
 			mCache->setSecondMipVolume(CHANNEL, mSecondId, &second_channel);
 		}
 
@@ -292,7 +290,6 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		str = QString::number(sliceDepth) + QString(" Slice Depth");
 		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
 
-		float tiles = 10;
 		str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
 		painter.drawText(QPoint(0, mTotalViewport.height - 20), str);
 
@@ -445,24 +442,6 @@ DataCoord OmView2d::BrushToolOTGDC(DataCoord off)
 	}
 	return ret;
 }
-
-static bool BrushTool8[8][8] = {
-	{0, 0, 0, 1, 1, 0, 0, 0},
-
-	{0, 0, 1, 1, 1, 1, 0, 0},
-
-	{0, 1, 1, 1, 1, 1, 1, 0},
-
-	{1, 1, 1, 1, 1, 1, 1, 1},
-
-	{1, 1, 1, 1, 1, 1, 1, 1},
-
-	{0, 1, 1, 1, 1, 1, 1, 0},
-
-	{0, 0, 1, 1, 1, 1, 0, 0},
-
-	{0, 0, 0, 1, 1, 0, 0, 0}
-};
 
 static bool BrushTool32[32][32] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -762,8 +741,6 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 	// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 
-	int lastx = x0 - mBrushToolDiameter / 4;
-	int lasty = y0 - mBrushToolDiameter / 4;
 	if (dx > dy) {
 		int fraction = dy - (dx >> 1);	// same as 2*dy - dx
 		while (x0 != x1) {
@@ -780,18 +757,14 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 			DataCoord globalDC;
 			switch (mViewType) {
-			case XY_VIEW:{
-					globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-					//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
-				}
+			case XY_VIEW:
+				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
 				break;
-			case XZ_VIEW:{
-					globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-				}
+			case XZ_VIEW:
+				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
 				break;
-			case YZ_VIEW:{
-					globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-				}
+			case YZ_VIEW:
+				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
 				break;
 			}
 			//debug("FIXME", << "global click point: " << globalDC << endl;
@@ -894,7 +867,6 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 	ScreenCoord newCrosshairCoord;
 	Vector2f oldPan;
 	Vector2f newPan;
-	float panx,pany;
 
 	// Do the Zoom
 	OmStateManager::Instance()->SetZoomLevel(new_zoom);
@@ -1431,15 +1403,20 @@ int OmView2d::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 	Vector2f mZoomMipVector = OmStateManager::Instance()->GetZoomLevel();
 	float factor=OMPOW(2,mZoomMipVector.x);
 
-	if (mViewType == XY_VIEW) {
-		return (int)(dataCoord.z/factor);
+	int ret;
+
+	switch(mViewType){
+	case XY_VIEW:
+		ret = (int)(dataCoord.z/factor);
+		break;
+	case XZ_VIEW:
+		ret = (int)(dataCoord.y/factor);
+		break;
+	case YZ_VIEW:
+		ret = (int)(dataCoord.x/factor);
 	}
-	if (mViewType == XZ_VIEW) {
-		return (int)(dataCoord.y/factor);
-	}
-	if (mViewType == YZ_VIEW) {
-		return (int)(dataCoord.x/factor);
-	}
+
+	return ret;
 }
 
 static int clamp(int c)
@@ -1458,7 +1435,6 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 	bool entered;
 
 	DataBbox data_bbox = mCache->mVolume->MipCoordToDataBbox(mCache->TileToMipCoord(key), 0);
-	int my_depth = GetDepth(key, mCache->mVolume);
 
 	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
 	//bzero (data, dims.x*dims.y*SEGMENT_DATA_BYTES_PER_SAMPLE);
@@ -1478,13 +1454,12 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 
 	QHash < SEGMENT_DATA_TYPE, QColor > speedTable;
 	QColor newcolor;
-	OmId id;
 
-	// looping through each value of imageData, which is strictly dims.x * dims.y big, no extra because of cast to SEGMENT_DATA_TYPE
+	// looping through each value of imageData, which is strictly dims.x * dims.y big, 
+	//   no extra because of cast to SEGMENT_DATA_TYPE
 	for (int i = 0; i < dims.x * dims.y; i++) {
-		SEGMENT_DATA_TYPE tmpid = (SEGMENT_DATA_TYPE) imageData[i];
 
-		//if (0 != tmpid) debug("genone", "gotten segment id %i\n", tmpid);
+		SEGMENT_DATA_TYPE tmpid = (SEGMENT_DATA_TYPE) imageData[i];
 
 		if (tmpid != lastid) {
 			if (!speedTable.contains(tmpid)) {
@@ -1615,8 +1590,6 @@ void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
 								sizeof(SEGMENT_DATA_TYPE));
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
-						vDataFake[i] << 8;
-						//debug("FIXME", << " "  << (int)((unsigned char*)(vData))[i];
 					}
 					//debug("FIXME", << endl;
 					free(vData);
@@ -1682,6 +1655,11 @@ void OmView2d::PreDraw(Vector2i zoomMipVector)
 	case SEGMENTATION:
 		tileLength = OmVolume::GetSegmentation(mCache->mImageId).GetChunkDimension();
 		freshness = OmCachingThreadedCachingTile::Freshen(false);
+		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
 		break;
 	}
 

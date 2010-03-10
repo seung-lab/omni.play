@@ -98,6 +98,7 @@ inline
 ostream& 
 operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
 	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
+	return out;
 }
 
 /////////////////////////////////

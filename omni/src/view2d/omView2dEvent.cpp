@@ -104,11 +104,7 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 
 void OmView2d::mouseSelectSegment(QMouseEvent * event)
 {
-	//debug ("genone", "in mouseSelectSegment");
-
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
-
-	int pick_object_type;
 
 	// find segment selected
 	DataCoord dataClickPoint = getMouseClickpointGlobalDataCoord(event);

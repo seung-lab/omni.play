@@ -68,7 +68,7 @@ class MainWindow
 		void openProject();
 		void openRecentFile();
 		void closeProject();
-		bool saveProject();
+		void saveProject();
 		
 		void openInspector();
 		void openUndoView();

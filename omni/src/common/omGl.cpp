@@ -80,14 +80,13 @@ int stopPicking()
 void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 {
 	GLuint *buffer = selectBuf;
-	unsigned int i, j;
 	GLuint names, *ptr, minZ, *ptrNames, numberOfNames;
 
 	//printf ("hits = %d\n", hits);
 	//find closest hit
 	ptr = (GLuint *) buffer;
 	minZ = 0xffffffff;
-	for (i = 0; i < hits; i++) {
+	for ( int i = 0; i < hits; i++) {
 		names = *ptr;
 		ptr++;
 		if (*ptr < minZ) {
@@ -103,22 +102,6 @@ void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 	//store results
 	*pNumNamesRet = numberOfNames;
 	*ppNamesRet = (int *)ptrNames;
-
-	//unsigned int depth = *(ptrNames-2);
-	//debug("FIXME", << "selection buf: " << (float)depth/ (unsigned int)(-1) << endl;
-	//unsigned int max = -1;
-	//debug("FIXME", << depth/max;
-
-	//PRINT NAMES OF CLOSEST
-	/*
-	   //debug("FIXME", << "num hits: " << hits << endl;
-	   //debug("FIXME", << "num names: " << numberOfNames << endl;
-	   for (j = 0; j < numberOfNames; j++,ptr++) {
-	   printf ("%d ", *ptr);
-	   }
-	   printf ("\n");
-	 */
-
 }
 
 /*
