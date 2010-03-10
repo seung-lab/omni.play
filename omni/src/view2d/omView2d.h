@@ -228,6 +228,7 @@ private:
 	OmId mSecondSegId;
 	
 	int mTileCount;
+	int mTileCountIncomplete;
 	Vector2i mMousePoint;
 	
 	// OmCamera2d mCamera;
