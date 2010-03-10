@@ -826,32 +826,27 @@ void MainWindow::createDockWindows()
 
 bool MainWindow::checkForSave()
 {
-	try {
-		QMessageBox msgBox;
-		msgBox.setText("Do you want to save your current project?");
-		msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		msgBox.setDefaultButton(QMessageBox::Save);
-
-		const int ret = msgBox.exec();
-		switch (ret) {
-		case QMessageBox::Save:
-			OmProject::Save();
-			break;
-		case QMessageBox::Discard:
-			// Don't Save was clicked
-			break;
-		case QMessageBox::Cancel:
-			return false;
-			break;
-		default:
-			// should never be reached
-			break;
-		}
-		return true;
-
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
+	QMessageBox msgBox;
+	msgBox.setText("Do you want to save your current project?");
+	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Save);
+	
+	const int ret = msgBox.exec();
+	switch (ret) {
+	case QMessageBox::Save:
+		OmProject::Save();
+		break;
+	case QMessageBox::Discard:
+		// Don't Save was clicked
+		break;
+	case QMessageBox::Cancel:
+		return false;
+		break;
+	default:
+		break;
 	}
+	
+	return true;
 }
 
 void MainWindow::spawnErrorDialog(OmException & e)

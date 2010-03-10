@@ -92,24 +92,18 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 
 	case TIFF_TYPE:
 		reader = vtkTIFFReader::New();
-		//vtkTIFFReader *tiff_reader = vtkTIFFReader::New();
-		//tiff_reader->SetOrientationType(ORIENTATION_TOPLEFT);
-		//reader = (vtkImageReader2*) tiff_reader; 
 		break;
-
 	case JPEG_TYPE:
 		reader = vtkJPEGReader::New();
 		break;
-
 	case PNG_TYPE:
 		reader = vtkPNGReader::New();
 		break;
-
 	case VTK_TYPE:
 		reader = vtkImageReader2::New();
 		break;
-
- defaut:
+	case HDF5_TYPE:
+	case NONE_TYPE:
 		throw OmAccessException("File type not recognized.");
 
 	}
@@ -132,22 +126,19 @@ vtkImageWriter *om_imagedata_get_writer(ImageType type)
 {
 	//switch for extention type
 	switch (type) {
-
 	case TIFF_TYPE:
 		return vtkTIFFWriter::New();
-
 	case JPEG_TYPE:
 		return vtkJPEGWriter::New();
-
 	case PNG_TYPE:
 		return vtkPNGWriter::New();
-
 	case VTK_TYPE:
 		return vtkImageWriter::New();
-
+	case HDF5_TYPE:
+	case NONE_TYPE:
+	default:
+		throw OmAccessException("File type not recognized.");
 	}
-
-	throw OmAccessException("File type not recognized.");
 }
 
 vtkImageWriter *om_imagedata_get_writer(string & fname)
@@ -274,27 +265,6 @@ vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, cons
 /////////////////////////////////
 ///////         Writing Functions
 
-void
-om_imagedata_write(vtkImageData * data, QString fileNameAndPath, const DataBbox dataExtentBbox,
-		   int bytesPerSample)
-{
-
-	switch (om_imagedata_parse_image_type(fileNameAndPath)) {
-	case TIFF_TYPE:
-	case JPEG_TYPE:
-	case VTK_TYPE:
-		om_imagedata_write_vtk(data, fileNameAndPath, dataExtentBbox, bytesPerSample);
-		break;
-
-	case HDF5_TYPE:
-		om_imagedata_write_hdf5(data, fileNameAndPath, dataExtentBbox, bytesPerSample);
-		break;
-
-	default:
-		assert(false && "Unsupported file format");
-	}
-}
-
 void om_imagedata_write_vtk(vtkImageData * data, QString fileNameAndPath, const DataBbox dataExtentBbox,
 		       int bytesPerSample)
 {
@@ -362,57 +332,6 @@ void om_imagedata_write_vtk(vtkImageData * data, QString fileNameAndPath, const 
 /*
  *	Destination extent is data extent when not specified.
  */
-void
-om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
-			const DataBbox dataExtentBbox,
-			int bytesPerSample)
-{
-	om_imagedata_write_hdf5(data, fileNameAndPath, dataExtentBbox, dataExtentBbox, bytesPerSample);
-}
-
-void om_imagedata_write_hdf5_cool(vtkImageData * data, QString fileNameAndPath,
-                             const DataBbox* dstExtentBbox, const DataBbox* dataExtentBbox,
-                             int bytesPerSample)
-{
-	OmHdf5 hdfExport( fileNameAndPath, false );
-	OmHdf5Path fpath;
-	fpath.setPath("main");
-
-        hdfExport.open();
-        //write image data
-        hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
-                                           (DataBbox*)dataExtentBbox, bytesPerSample, data);
-        hdfExport.close();
-}
-
-
-void om_imagedata_write_hdf5(vtkImageData * data, QString fileNameAndPath,
-			     const DataBbox dstExtentBbox, const DataBbox dataExtentBbox, 
-			     int bytesPerSample)
-{
-#if 0
-	OmHdf5 hdfExport( fileNameAndPath, false );
-	
-	if( !QFile::exists(fileNameAndPath) ){
-		hdfExport.create();
-		hdfExport.open();
-		Vector3 < int > dest_dims = dstExtentBbox.getUnitDimensions();
-		
-		hdfExport.dataset_image_create_tree_overwrite( OmHdf5Helpers::getDefaultDatasetName(), 
-							       dest_dims, 
-							       dest_dims, 
-							       bytesPerSample, 
-							       true);
-		hdfExport.close();
-	}
-	
-	hdfExport.open();
-	//write image data
-	hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
-					   &dataExtentBbox, bytesPerSample, data);
-	hdfExport.close();
-#endif
-}
 
 /////////////////////////////////
 ///////          Dimensions Functions
@@ -511,7 +430,6 @@ void printImageData(vtkImageData * data)
 	data->GetExtent(extent);
 
 	int num_components = data->GetNumberOfScalarComponents();
-	float f;
 
 	for (int z = extent[4]; z <= extent[5]; ++z) {
 		for (int y = extent[2]; y <= extent[3]; ++y) {

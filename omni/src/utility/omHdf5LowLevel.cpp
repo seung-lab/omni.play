@@ -317,7 +317,7 @@ void OmHdf5LowLevel::om_hdf5_group_create_tree_with_lock(hid_t fileId, const cha
         bfa::split(name_split_vec, name, bfa::is_any_of("/"));
 
         string name_rejoin_str;
-        for (int i = 0; i < name_split_vec.size(); ++i) {
+        for (unsigned int i = 0; i < name_split_vec.size(); ++i) {
                 //add split
                 name_rejoin_str.append(name_split_vec[i]).append("/");
                 //create if group does not exist
@@ -410,6 +410,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	//Creates a new simple dataspace and opens it for access. 
 	int rank = 1;
 	hsize_t dim = size;
+	
+	// TODO: fixme! use the max dim!
 	hsize_t max = dim ? dim : H5S_UNLIMITED;
 	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
 	if (dataspace_id < 0)
@@ -444,7 +446,7 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	Vector3 < hsize_t > dims = Vector3<hsize_t>(1234, 4567, 8910);
+	Vector3 < hsize_t > dims;
 
 	herr_t status;
 
@@ -640,7 +642,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	hid_t dataset_type_id = H5Dget_type(dataset_id);
 
 	//assert that dest datatype size matches desired size
-	assert(H5Tget_size(dataset_type_id) == bytesPerSample);
+	assert(H5Tget_size(dataset_type_id) == (unsigned int)bytesPerSample);
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
@@ -720,7 +722,7 @@ void OmHdf5LowLevel::printfDatasetCacheSize( const hid_t dataset_id )
 	size_t rdcc_nbytes;
 	double rdcc_w0;
 
-	herr_t err = H5Pget_chunk_cache( H5Dget_access_plist(dataset_id), &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
+	H5Pget_chunk_cache( H5Dget_access_plist(dataset_id), &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
 
 	printf("dataset cache info: Number of chunk slots in the raw data chunk cache: %s\n", qPrintable( QString::number(rdcc_nslots )));
 	printf("dataset cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
@@ -738,7 +740,7 @@ void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
 	size_t rdcc_nbytes;
 	double rdcc_w0;
 
-	herr_t err = H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
+	H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
 
 	printf("file cache info: Number of elements in the raw data chunk cache: %s\n", qPrintable( QString::number( rdcc_nelmts )));
 	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));

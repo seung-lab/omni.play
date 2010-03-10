@@ -90,7 +90,7 @@ public:
 		mCache = NULL;
 		mDelete = false;
 
-		for (int i = 0; i < caches.size(); i++) {
+		for (unsigned int i = 0; i < caches.size(); i++) {
 			if (caches[i]->mViewtype == mViewtype	&&
 			    caches[i]->mVoltype == mVoltype 	&&
 			    caches[i]->mImage_id == mImage_id	&&

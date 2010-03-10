@@ -91,11 +91,6 @@ OmMipSegmentDataCoord::operator<( const OmMipSegmentDataCoord& rhs ) const
 	return (DataValue < rhs.DataValue);
 }	
 
-
-
-
-
-
 /////////////////////////////////
 ///////		 stream
 
@@ -104,11 +99,6 @@ ostream&
 operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
 	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
 }
-
-
-
-
-
 
 /////////////////////////////////
 ///////		 Serialization
