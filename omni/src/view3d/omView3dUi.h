@@ -55,8 +55,8 @@ public:
 	void CameraMovementMouseWheel(QWheelEvent *event);
 	
 	//segment picking
-	bool PickSegmentMouse(QMouseEvent *event, bool drag, OmId &segmentationId, OmId &segmentId, int *pickName = NULL);
-	
+	bool PickSegmentMouse(QMouseEvent *event, bool drag, OmId &segmentationId, 
+			      OmId &segmentId, int *pickName = NULL);      
 	
 	//voxel picking
 	bool PickVoxel(QKeyEvent *keyEvent, QMouseEvent *mouseEvent, bool drag, DataCoord &voxel);

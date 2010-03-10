@@ -299,7 +299,7 @@ void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
 /*
  *	Returns a vector names of closest picked result for given draw options.
  */
-bool OmView3d::PickPoint(Vector2 < int >point2d, vector < int >&rNamesVec)
+bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesVec)
 {
 	//clear name vector
 	rNamesVec.clear();
@@ -317,7 +317,7 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < int >&rNamesVec)
 
 	//if hits < 0, then buffer overflow
 	if (hits < 0) {
-		//debug("FIXME", << "OmView3d::PickPoint: hit buffer overflow" << endl;
+		printf("OmView3d::PickPoint: hit buffer overflow\n");
 		return false;
 	}
 	//if no hits, success
@@ -326,6 +326,7 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < int >&rNamesVec)
 
 	//number of names in closest hit
 	int numNames;
+
 	//pointer to closest hit names
 	int *pNames;
 	processHits(hits, &pNames, &numNames);

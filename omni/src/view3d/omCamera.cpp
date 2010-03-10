@@ -267,8 +267,6 @@ void OmCamera::DrawFocusAxis()
 
 void OmCamera::MovementStart(CameraMovementType type, const Vector2 < float >&point)
 {
-
-	//set movement type
 	mMovementType = type;
 
 	switch (type) {
@@ -291,7 +289,6 @@ void OmCamera::MovementStart(CameraMovementType type, const Vector2 < float >&po
 
 void OmCamera::MovementUpdate(const Vector2 < float >&point)
 {
-
 	switch (mMovementType) {
 	case CAMERA_PAN:
 		mPanner.Drag(point);

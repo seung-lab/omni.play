@@ -504,8 +504,6 @@ void OmStateManager::ClearUndoStack()
 	GetUndoStack()->clear();
 }
 
-static QGLWidget *sharedwidget = NULL;
-
 /////////////////////////////////
 ///////          View3d Context
 

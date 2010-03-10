@@ -52,4 +52,5 @@ bool OmMipMeshCoord::operator<(const OmMipMeshCoord & rhs) const
 ostream & operator<<(ostream & out, const OmMipMeshCoord & in)
 {
 	out << in.MipChunkCoord << " { " << (int)in.DataValue << " } ";
+	return out;
 }

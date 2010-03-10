@@ -11,13 +11,19 @@ Qt::CheckState GuiUtils::getCheckState(const bool enabled)
 
 bool GuiUtils::getBoolState(const Qt::CheckState state)
 {
-	switch(state ) {
+	bool ret;
+
+	switch(state) {
 	case Qt::Unchecked:
-		return false;
+		ret = false;
+		break;
 	case Qt::PartiallyChecked:
 	case Qt::Checked:
-		return true;
+		ret = true;
+		break;
 	}
+
+	return ret;
 }
 
 void GuiUtils::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)
