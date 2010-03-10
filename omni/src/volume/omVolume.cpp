@@ -393,8 +393,10 @@ Vector2f OmVolume::GetStretchValues(ViewType plane)
 		break;
 	case YZ_VIEW:
 		ret = Vector2f(stretch.z,stretch.y);
+		break;
 	case XZ_VIEW:
 		ret = Vector2f(stretch.x,stretch.z);
+		break;
 	}
 
 	return ret;
