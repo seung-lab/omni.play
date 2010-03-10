@@ -264,6 +264,9 @@ void OmMipVolume::UpdateMipProperties()
 		Vector3 < int >source_dims =
 		    om_imagedata_get_dims(GetSourceDirectoryPath(), GetSourceFilenameRegexMatches());
 
+		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims), GetSourceDirectoryPath().c_str(),
+			GetSourceFilenameRegexMatches().front().c_str());
+
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
 			//debug("FIXME", << "OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS" << endl;

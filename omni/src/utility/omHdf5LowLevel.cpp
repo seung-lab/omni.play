@@ -444,7 +444,7 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	Vector3 < hsize_t > dims;
+	Vector3 < hsize_t > dims = Vector3<hsize_t>(1234, 4567, 8910);
 
 	herr_t status;
 

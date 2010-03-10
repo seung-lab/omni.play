@@ -117,5 +117,5 @@ void OmHdf5::dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const
 Vector3 < int > OmHdf5::dataset_image_get_dims( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_get_dims_with_lock( path );
+	return hdfLowLevelWrap->dataset_image_get_dims_with_lock( path );
 }

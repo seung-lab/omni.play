@@ -490,6 +490,7 @@ Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &
 	//get dims of image
 	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
 
+	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
 	return dims;
 }
 

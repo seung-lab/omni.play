@@ -126,7 +126,10 @@ void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_wi
 //imageIo
 Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_with_lock(OmHdf5Path path)
 {
+	Vector3<int> ret;
 	HDF5_WRAP();
-	hdfLowLevel.om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
+	ret = hdfLowLevel.om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 	HDF5_UNWRAP();
+
+	return ret;
 }
