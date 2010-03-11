@@ -3,7 +3,6 @@
 #include "recentFileList.h"
 
 #include "view2d/omTile.h"
-#include "view2d/omCachingTile.h"
 #include "view2d/omTextureID.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"

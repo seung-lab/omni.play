@@ -7,11 +7,6 @@ Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zo
 	mGood = true;
 }
 
-Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
-:x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor)
-{
-	mGood = false;
-}
 Drawable::~Drawable ()
 {
 	//debug ("genone", "freeing?\n");

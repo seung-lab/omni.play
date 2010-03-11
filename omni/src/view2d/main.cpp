@@ -1,11 +1,4 @@
-
-//#include <QApplication> 
-//#include <QWidget> 
-//
-//#include "common/omGl.h"
-//
 //#include "omTile.h"
-//#include "omCachingTile.h"
 //#include "omTextureID.h"
 //
 //#include "common/omStd.h"
@@ -91,10 +84,8 @@ void CachingTest() {
 	
 	int depth = omniTile->GetDepth(mTileCoord);
 	cout << "depth = " << depth << endl;
-	
-	
-	
-	OmCachingTile *cache = new OmCachingTile(XZ_VIEW, CHANNEL, 1, &mChannel);
+		
+	// OmThreadedCachingTile *cache = new OmThreadedCachingTile(XZ_VIEW, CHANNEL, 1, &mChannel);
 	
 	shared_ptr<OmTextureID> gotten_id = cache->GetTextureID(mTileCoord);
 	

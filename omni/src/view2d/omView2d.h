@@ -162,16 +162,6 @@ protected:
 	void ViewCenterChangeEvent(OmViewEvent *event);
 	///////////////////////////////////////
 
-
-	// gobbledee gook comments . . . lemme know if u want to save . . .
-	//edit actions
-	// void SelectSegment(QMouseEvent *event);
-	// void DrawEditSelection();
-	// void EditModeMouseDoubleClick(QMouseEvent *event);	
-	//actions
-	// vector<int> PickPoint(Vector2<int> pt, OmBitfield drawOptions);
-
-
 private:
 	///////////////////////////////////////
 	// omView2dConverters.cpp
@@ -221,12 +211,10 @@ private:
 	// OmCamera2d mCamera;
 	OmGenericManager< OmView2dWidget > mView2dWidgetManager;
 	
-	// OmCachingTile *mCache;
 	OmThreadedCachingTile *mCache;
 	double mAlpha;
 	bool mJoiningSegmentToggled;
 	
-	// OmView2dUi mView2dUi;
 	ViewType mViewType;
 	ObjectType mVolumeType;
 	OmId mImageId;

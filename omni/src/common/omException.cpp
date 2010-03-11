@@ -17,8 +17,6 @@ string execptString(const char *format, ...);
 OmException::OmException(const string & name, OmExceptType type, const string & msg)
 :mName(name), mType(type), mMessage(msg)
 {
-
-	Log();
 }
 
 const string & OmException::GetName()
@@ -38,19 +36,10 @@ const string & OmException::GetType()
 
 void OmException::Parse(const char *format, va_list args)
 {
-
 	//parse message
 	char error_buf[EXCEPT_STR_SIZE];
 	vsnprintf(error_buf, sizeof(error_buf), format, args);
 	mMessage.assign(error_buf);
-
-	//Log
-	Log();
-}
-
-void OmException::Log()
-{
-	//debug("FIXME", << mName << " " << exceptTypeToString(mType) << ": " << mMessage << endl;
 }
 
 string exceptTypeToString(OmExceptType t)

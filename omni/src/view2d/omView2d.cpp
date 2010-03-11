@@ -1,6 +1,4 @@
 #include "omView2d.h"
-
-#include "omCachingTile.h"
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
@@ -84,7 +82,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
 		mVolume = &current_channel;
 
-		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_channel);
 		OmCachingThreadedCachingTile *fastCache =
 		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
 		mCache = fastCache->mCache;
@@ -106,7 +103,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		mVolume = &current_seg;
 		mSeg = &current_seg;
 
-		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_seg);
 		OmCachingThreadedCachingTile *fastCache =
 		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
 		mCache = fastCache->mCache;

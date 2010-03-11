@@ -5,7 +5,6 @@
 SET(OM_VIEW2D_SRCS
 	omTile.cpp
 	omTextureID.cpp
-	omCachingTile.cpp
 	omThreadedCachingTile.cpp
 	omView2d.cpp
 	omView2dEvent.cpp

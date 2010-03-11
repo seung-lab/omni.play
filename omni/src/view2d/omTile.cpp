@@ -183,63 +183,6 @@ int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 	return ret;
 }
 
-void OmTile::setMergeChannels(unsigned char *imageData, unsigned char *secondImageData, Vector2<int> dims,
-			      Vector2<int> second_dims, const OmTileCoord & key)
-{
-	//debug("genone","OmTile::setMergeChannels()");
-	// imageData is channel data if there is a background volume
-
-	DataBbox data_bbox = mVolume->MipCoordToDataBbox(TileToMipCoord(key), 0);
-	int my_depth = GetDepth(key, mVolume);
-
-	unsigned char *data = new unsigned char[dims.x * dims.y * 4];
-
-	int ctr = 0;
-	int newctr = 0;
-
-	int z_min = data_bbox.getMin().z;
-	int z_max = data_bbox.getMax().z;
-	int y_min = data_bbox.getMin().y;
-	int y_max = data_bbox.getMax().y;
-	int x_min = data_bbox.getMin().x;
-	int x_max = data_bbox.getMax().x;
-	if (view_type == XY_VIEW) {
-		z_min = my_depth;
-		z_max = my_depth;
-	} else if (view_type == XZ_VIEW) {
-		y_min = my_depth;
-		y_max = my_depth;
-	} else if (view_type == YZ_VIEW) {
-		x_min = my_depth;
-		x_max = my_depth;
-	}
-	//      //debug("FIXME", << "IMAGE DATA: " << endl;
-	//      for(int i = 0 ; i < 100 ; i++)
-	//              //debug("FIXME", << (unsigned int) imageData[i] << endl;
-	//      
-	//      //debug("FIXME", << "SECOND DATA: " << endl;
-	//      for(int i = 0 ; i < 100 ; i++)
-	//              //debug("FIXME", << (unsigned int) secondImageData[i] << endl;
-
-	for (int z = z_min; z <= z_max; z++) {
-		for (int y = y_min; y <= y_max; y++) {
-			for (int x = x_min; x <= x_max; x++) {
-
-				data[ctr] = (unsigned int)imageData[newctr];
-				data[ctr + 1] = (unsigned int)imageData[newctr];
-				data[ctr + 2] = (unsigned int)imageData[newctr];
-				data[ctr + 3] = 255;
-
-			}
-			newctr = newctr + 1;
-			ctr = ctr + 4;
-		}
-	}
-
-	//glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, dims.x, dims.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-}
-
 int clamp(int c)
 {
 	if (c > 255)

@@ -21,8 +21,6 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 {
 	// omView2d passes in its own context
 
-	//std::cerr << __FUNCTION__ << endl;
-
 	isSecondMipVolume = false;
 
 	mFetchThreadContext = OmStateManager::GetSharedView2dContext(shareContext);
@@ -30,20 +28,16 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mVolType = voltype;
 	mImageId = image_id;
 
-	/** Set The Name of the Cache */
         SetCacheName("OmThreadedCachingTile");
-
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
 {
 	std::cerr << __FUNCTION__ << endl;
-	//if(mFetchThreadContext) delete mFetchThreadContext;
 }
 
 void OmThreadedCachingTile::GetTextureID(shared_ptr < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
 {
-
 	TextureIDThreadedCache::Get(p_value, tileCoord, block);
 	return;
 }
@@ -53,9 +47,6 @@ void OmThreadedCachingTile::GetTextureID(shared_ptr < OmTextureID > &p_value, co
 void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr < OmTextureID > &p_value, const OmTileCoord & tileCoord,
 						int rootLevel, OmTileCoord & retCoord)
 {
-	// //debug("genone","OmCachingTile::GetTextureID: " << tileCoord.get<0>() << " " << tileCoord.get<1>());
-	//std::cerr << __FUNCTION__ << endl;
-
 	if (rootLevel == tileCoord.Level) {	// Short curcuit because already low as mip level goes.
 		retCoord = tileCoord;
 		GetTextureID(p_value, tileCoord);
