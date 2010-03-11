@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 
 #include "omTile.h"
@@ -343,110 +342,112 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 	return found_ids;
 }
 
-void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, int dim, set < DataCoord > &vox, QColor & color,
+void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, 
+				  int dim, 
+				  set < DataCoord > &vox, 
+				  QColor & color,
 				  int tl)
 {
 	GLuint texture = texID->GetTextureID();
 	// so instead of relying on the color, i want to have *data be filled
 	//   with the appropriate value from channel
 
-	unsigned char *data = new unsigned char[4];
+	if (vox.empty()) {
+		return;
+	}
+
+	unsigned char * data = new unsigned char[4];
 
 	set < DataCoord >::iterator itr;
 
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
 
-	if (!vox.empty()) {
+	for (itr = vox.begin(); itr != vox.end(); itr++) {
 
-		for (itr = vox.begin(); itr != vox.end(); itr++) {
+		// data coord is flat xy view, need to translate into other views in order to access data
 
-			// data coord is flat xy view, need to translate into other views in order to access data
+		DataCoord vox = *itr;
 
-			DataCoord vox = *itr;
+		DataCoord orthoVox;
+		switch (view_type) {
+		case XY_VIEW:
+			orthoVox = DataCoord(vox.x, vox.y, vox.z);
+			break;
+		case XZ_VIEW:
+			// ortho coord: (x, z, y) need (x, y, z)
+			orthoVox = DataCoord(vox.x, vox.z, vox.y);
+			break;
+		case YZ_VIEW:
+			// ortho coord: (z, y, x) need (x, y, z)
+			orthoVox = DataCoord(vox.z, vox.x, vox.y);
+			break;
+		}
 
-			DataCoord orthoVox;
-			switch (view_type) {
-			case XY_VIEW:
-				orthoVox = DataCoord(vox.x, vox.y, vox.z);
-				break;
-			case XZ_VIEW:
-				// ortho coord: (x, z, y) need (x, y, z)
-				orthoVox = DataCoord(vox.x, vox.z, vox.y);
-				break;
-			case YZ_VIEW:
-				// ortho coord: (z, y, x) need (x, y, z)
-				orthoVox = DataCoord(vox.z, vox.x, vox.y);
-				break;
-			}
+		//debug("FIXME", << "orthoVox = " << orthoVox << " ----- view = " << view_type << endl;
+		// OmId id = current_seg.GetSegmentIdMappedToValue((SEGMENT_DATA_TYPE)
+		uint32_t bg_voxel_value = mBackgroundVolume->GetVoxelValue(orthoVox);
+		SEGMENT_DATA_TYPE fg_voxel_value = mVolume->GetVoxelValue(orthoVox);
+		//debug("FIXME", << "BG VOXEL VALUE = " << bg_voxel_value << endl;
+		//debug("FIXME", << "FG VOXEL VALUE = " << fg_voxel_value << endl;
 
-			//debug("FIXME", << "orthoVox = " << orthoVox << " ----- view = " << view_type << endl;
-			// OmId id = current_seg.GetSegmentIdMappedToValue((SEGMENT_DATA_TYPE)
-			uint32_t bg_voxel_value = mBackgroundVolume->GetVoxelValue(orthoVox);
-			SEGMENT_DATA_TYPE fg_voxel_value = mVolume->GetVoxelValue(orthoVox);
-			//debug("FIXME", << "BG VOXEL VALUE = " << bg_voxel_value << endl;
-			//debug("FIXME", << "FG VOXEL VALUE = " << fg_voxel_value << endl;
+		// okay so IF fg is 0, then all bg
+		// if fg != 0, then mix
 
-			// okay so IF fg is 0, then all bg
-			// if fg != 0, then mix
+		OmId id = current_seg.GetSegmentIdMappedToValue(fg_voxel_value);
+		QColor newcolor;
 
-			OmId id = current_seg.GetSegmentIdMappedToValue(fg_voxel_value);
-			QColor newcolor;
+		if (id == 0) {
+			data[0] = bg_voxel_value;
+			data[1] = bg_voxel_value;
+			data[2] = bg_voxel_value;
+			data[3] = 255;
+		} else {
 
-			if (id == 0) {
-				data[0] = bg_voxel_value;
-				data[1] = bg_voxel_value;
-				data[2] = bg_voxel_value;
-				data[3] = 255;
-			} else {
+			if (current_seg.IsSegmentSelected(id)) {
 
-				if (current_seg.IsSegmentSelected(id)) {
+				switch (OmStateManager::GetSystemMode()) {
+				case NAVIGATION_SYSTEM_MODE:{
+					newcolor = qRgba(255, 255, 0, 255);
 
-					switch (OmStateManager::GetSystemMode()) {
-					case NAVIGATION_SYSTEM_MODE:{
-							newcolor = qRgba(255, 255, 0, 255);
-
-							data[0] =
-							    (newcolor.red() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[1] =
-							    (newcolor.green() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[2] =
-							    (newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[3] = 255;
-						}
-						break;
-
-					case EDIT_SYSTEM_MODE:{
-							const Vector3 < float >&color =
-							    OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
-
-							newcolor =
-							    qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
-
-							data[0] =
-							    (newcolor.red() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[1] =
-							    (newcolor.green() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[2] =
-							    (newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
-							data[3] = 255;
-						}
-
-					}
-				} else {
-
-					const Vector3 < float >&color =
-					    OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
-
-					newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
-
-					data[0] = (newcolor.red() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
-					data[1] = (newcolor.green() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
-					data[2] = (newcolor.blue() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
+					data[0] =
+						(newcolor.red() * .95) + ((bg_voxel_value) * (1.0 - .95));
+					data[1] =
+						(newcolor.green() * .95) + ((bg_voxel_value) * (1.0 - .95));
+					data[2] =
+						(newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
 					data[3] = 255;
 				}
-			}
+					break;
 
+				case EDIT_SYSTEM_MODE:{
+					const Vector3 < float >&color =
+						OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+
+					newcolor =
+						qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+
+					data[0] =
+						(newcolor.red() * .95) + ((bg_voxel_value) * (1.0 - .95));
+					data[1] =
+						(newcolor.green() * .95) + ((bg_voxel_value) * (1.0 - .95));
+					data[2] =
+						(newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
+					data[3] = 255;
+				}
+
+				}
+			} else {
+
+				const Vector3 < float >&color =
+					OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+
+				newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
+
+				data[0] = (newcolor.red() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
+				data[1] = (newcolor.green() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
+				data[2] = (newcolor.blue() * mAlpha) + ((bg_voxel_value) * (1.0 - mAlpha));
+				data[3] = 255;
+			}
 		}
 	}
-
 }

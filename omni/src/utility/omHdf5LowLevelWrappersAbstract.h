@@ -7,6 +7,8 @@
 class OmHdf5LowLevelWrappersAbstract
 {
  public:
+	virtual ~OmHdf5LowLevelWrappersAbstract() = 0;
+
 	virtual void open() = 0;
 	virtual void close() = 0;
 
