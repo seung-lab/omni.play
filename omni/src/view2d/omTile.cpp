@@ -164,8 +164,9 @@ int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 {
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
-	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-	float factor=OMPOW(2,zoomMipVector.x);
+        float factor=OMPOW(2,key.Level);
+
+	debug("tile", "factor:%f\n", factor);
 
 	int ret;
 

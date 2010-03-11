@@ -53,6 +53,13 @@ OmStateManager::OmStateManager()
 	mXZSlice[4] = depth.y;
 	mXYSlice[4] = depth.z;
 	
+	mXYPan[0] = 0.0;
+	mXYPan[1] = 0.0;
+	mYZPan[0] = 0.0;
+	mYZPan[1] = 0.0;
+	mXZPan[0] = 0.0;
+	mXZPan[1] = 0.0;
+
 	mParallel = false;
 }
 

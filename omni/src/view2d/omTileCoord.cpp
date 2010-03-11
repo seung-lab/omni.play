@@ -11,7 +11,6 @@ OmTileCoord::OmTileCoord()
 OmTileCoord::OmTileCoord(int mLevel, const SpaceCoord & pSpaceCoord, int volType, unsigned int freshness)
 :Level(mLevel), Coordinate(pSpaceCoord), mVolType (volType), mFreshness (freshness)
 {
-
 }
 
 void OmTileCoord::operator=(const OmTileCoord & rhs)

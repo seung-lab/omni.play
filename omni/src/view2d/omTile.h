@@ -60,7 +60,6 @@ public:
 
 	void ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
 private:
-	
 	ViewType view_type;
 	ObjectType vol_type;
 	OmId myID;
