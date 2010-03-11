@@ -1328,23 +1328,6 @@ void OmView2d::Draw(int mip)
 	mTextures.clear ();
 }
 
-Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor,
-		   shared_ptr < OmTextureID > gotten_id)
-:x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor), gotten_id(gotten_id)
-{
-	mGood = true;
-}
-
-Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
-:x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor)
-{
-	mGood = false;
-}
-Drawable::~Drawable ()
-{
-	//debug ("genone", "freeing?\n");
-	gotten_id = shared_ptr < OmTextureID > ();
-}
 
 void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord tileCoord, const GLuint texID,
 		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)

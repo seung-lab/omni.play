@@ -7,6 +7,7 @@ class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstr
 {
  public:
 	OmHdf5LowLevelWrappersManualOpenClose(string fileName);
+	~OmHdf5LowLevelWrappersManualOpenClose();
 
 	virtual void open();
 	virtual void close();

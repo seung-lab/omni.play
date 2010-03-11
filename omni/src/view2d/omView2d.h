@@ -1,6 +1,8 @@
 #ifndef OM_QT_VIEW_2D_H
 #define OM_QT_VIEW_2D_H 
 
+#include "drawable.h"
+
 #include <QGLPixelBuffer>
 
 #include "omView2dWidget.h"
@@ -36,21 +38,6 @@ using boost::tuple;
 
 class OmThreadedCachingTile;
 class OmTileCoord;
-
-
-class Drawable {
-public:
-        int x, y;
-	int tileLength;
-	float zoomFactor;
-        shared_ptr<OmTextureID> gotten_id;
-	OmTileCoord tileCoord;
-	bool mGood;
-        Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor, shared_ptr<OmTextureID> gotten_id);
-        Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor);
-	~Drawable ();
-};
-
 
 class OmView2d : public QWidget,
 public OmViewEventListener,

@@ -25,6 +25,10 @@ OmHdf5LowLevelWrappersAutoOpenClose::OmHdf5LowLevelWrappersAutoOpenClose(string 
 {
 }
 
+OmHdf5LowLevelWrappersAutoOpenClose::~OmHdf5LowLevelWrappersAutoOpenClose()
+{
+}
+
 void OmHdf5LowLevelWrappersAutoOpenClose::open()
 {
 }

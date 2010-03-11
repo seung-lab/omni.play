@@ -17,6 +17,10 @@ OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(str
 	opened = false;;
 }
 
+OmHdf5LowLevelWrappersManualOpenClose::~OmHdf5LowLevelWrappersManualOpenClose()
+{
+}
+
 void OmHdf5LowLevelWrappersManualOpenClose::open()
 {
 	if(opened) {

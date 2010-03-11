@@ -11,6 +11,7 @@ SET(OM_VIEW2D_SRCS
 	omView2dEvent.cpp
 	omView2dConverters.cpp
 	omTileCoord.cpp
+	drawable.cpp
 )
 
 #create static library

@@ -348,7 +348,6 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 				  QColor & color,
 				  int tl)
 {
-	GLuint texture = texID->GetTextureID();
 	// so instead of relying on the color, i want to have *data be filled
 	//   with the appropriate value from channel
 

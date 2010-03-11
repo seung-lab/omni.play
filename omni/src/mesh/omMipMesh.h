@@ -57,8 +57,8 @@ public:
 private:
 	OmId mSegmentationID;
 	OmHdf5 * mHdf5File;
-	OmMipMeshCoord mMeshCoordinate;
 	OmMipMeshManager * const mpMipMeshManager;
+	OmMipMeshCoord mMeshCoordinate;
 		
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;

@@ -6,8 +6,7 @@
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
-#include <sys/utsname.h>
-
+#include <QHostInfo>
 
 //undostack
 #include <QUndoStack>
@@ -158,11 +157,7 @@ QString OmStateManager::getPID()
 
 QString OmStateManager::getHostname()
 {
-	static struct utsname uts = {0};
-
-        if (uts.nodename[0] == 0) uname(&uts);
-
-	return QString(uts.nodename);
+	return QHostInfo::localHostName();
 }
 
 bool OmStateManager::getParallel()
