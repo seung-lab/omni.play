@@ -78,6 +78,8 @@ protected:
 	void safeTexture(shared_ptr<OmTextureID> gotten_id);
 	void safeDraw(float zoomFactor, int x, int y, int tileLength, shared_ptr<OmTextureID> gotten_id);
 	void PreDraw(Vector2f);
+	bool BufferTiles(Vector2f zoomMipVector, bool buffertiles);
+
 
 	void DrawFromFilter (OmFilter2d&);
 	void DrawFromCache();
@@ -206,6 +208,9 @@ private:
 	
 	int mTileCount;
 	int mTileCountIncomplete;
+        int mBufferTileCount;
+        int mBufferTileCountIncomplete;
+
 	Vector2i mMousePoint;
 	
 	// OmCamera2d mCamera;

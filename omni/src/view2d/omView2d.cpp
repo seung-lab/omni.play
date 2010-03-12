@@ -1482,7 +1482,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 	return found_ids;
 }
 
-void OmView2d::PreDraw(Vector2f zoomMipVector)
+bool OmView2d::BufferTiles(Vector2f zoomMipVector, bool buffertiles)
 {
 	drawComplete = true;
 	unsigned int freshness = 0;
@@ -1591,8 +1591,142 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 				shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
+                                	if (gotten_id) {
+                                        	safeTexture(gotten_id);
+                                	} else {
+						mTileCountIncomplete++;
+                                        	if (mTileCountIncomplete >= mTileCount) {
+							return false;
+						}
+                                        	complete = false;
+                                	}
 				}
 			}
+		}
+	}
+	if (!complete) {
+		//debug ("genone", "not complete yet in predraw\n");
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	} else {
+		//debug ("genone", "complete in predraw\n");
+	}
+	return complete;
+}
+
+
+void OmView2d::PreDraw(Vector2f zoomMipVector)
+{
+	drawComplete = true;
+	unsigned int freshness = 0;
+	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
+
+	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+
+	Vector2f translateVector = GetPanDistance(mViewType);
+	float zoomFactor = (zoomMipVector.y / 10.0);
+	
+	Vector3f depth = Vector3f( 0, 0, 0);
+	DataCoord data_coord;
+	int mDataDepth;
+	switch (mViewType){
+	case XY_VIEW:
+		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.z;
+		break;
+	case XZ_VIEW:
+		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.y;
+		break;
+	case YZ_VIEW:
+		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.x;
+		break;
+	}
+
+	
+	int tileLength;
+	switch (mCache->mVolType) {
+	case CHANNEL:
+		tileLength = OmVolume::GetChannel(mCache->mImageId).GetChunkDimension();
+		break;
+	case SEGMENTATION:
+		tileLength = OmVolume::GetSegmentation(mCache->mImageId).GetChunkDimension();
+		freshness = OmCachingThreadedCachingTile::Freshen(false);
+		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
+		break;
+	}
+
+	
+	bool complete = true;
+	int xMipChunk;
+	int yMipChunk;
+	int xval;
+	int yval;
+	Vector2f stretch = OmVolume::GetStretchValues(mViewType);
+
+	int pl = OMPOW(2, zoomMipVector.x);
+	int tl = tileLength * OMPOW(2, zoomMipVector.x);
+
+	if (translateVector.y < 0) {
+		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
+		yMipChunk = ((abs(translateVector.y) /tl)) * tl * pl;
+		yval = (-1 * (abs(translateVector.y) % tl));
+	} else {
+		yMipChunk = 0;
+		yval = translateVector.y;
+	}
+
+	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
+
+		if (translateVector.x < 0) {
+			//debug ("genone", "((abs(translateVector.x) / tl)) * tl * pl = %i\n", ((abs(translateVector.x) / tl)) * tl * pl);
+			xMipChunk = ((abs(translateVector.x) / tl)) * tl * pl;
+			xval = (-1 * (abs(translateVector.x) % tl));
+		} else {
+			xMipChunk = 0;
+			xval = translateVector.x;
+		}
+
+#if 1
+		debug("view2d","mDataDepth = %i\n",mDataDepth);
+		debug("view2d", "tl = %i\n", tl);
+		debug("view2d", "pl = %i\n", pl);
+		//debug("view2d", "x = %i\n", x);
+		debug("view2d", "y = %i\n", y);
+		debug("view2d", "xval = %i\n", xval);
+		debug("view2d", "yval = %i\n", yval);
+		debug("view2d", "translateVector.x = %i\n", translateVector.x);
+		debug("view2d", "translateVector.y = %i\n", translateVector.y);
+		debug("view2d", "xMipChunk = %i\n", xMipChunk);
+		debug("view2d", "yMipChunk = %i\n", yMipChunk);
+		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
+#endif
+
+		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
+
+#if 0
+			for (int count = -5; count < 6; count++) {
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
+                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
+										OmCachingThreadedCachingTile::Freshen(false));
+                        	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
+                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
+				shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
+                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
+                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
+				}
+			}
+#endif
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
@@ -1623,9 +1757,11 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 		//debug ("genone", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
+		BufferTiles(zoomMipVector, complete);
 		//debug ("genone", "complete in predraw\n");
 	}
 }
+
 
 /*
 
