@@ -11,23 +11,16 @@
 #include "common/omDebug.h"
 namespace bfs = boost::filesystem;
 
-#define DEBUG 0
-
 /////////////////////////////////
-///////
 ///////         OmDataVolume Class
-///////
-
 OmDataVolume::OmDataVolume()
 {
-	//debug("genone","OmDataVolume::OmDataVolume()");
 	mBytesPerSample = -1;
 	mIsOpen = false;
 }
 
 OmDataVolume::~OmDataVolume()
 {
-	//debug("genone","OmDataVolume::~OmDataVolume()");
 	Close();
 }
 
@@ -109,30 +102,6 @@ void OmDataVolume::Close()
 	SetOpen(false);
 }
 
-/*
- *	Returns vtkImageData for given bbox extent region from an image volume.
- *	Pads with zeros if extent specified is larger than source.
- */
-/*
-vtkImageData* 
-OmDataVolume::Read(const DataBbox &dataExtentBbox, int bytesPerSample) { 
-	//debug("genone","OmDataVolume::Read(dataExtentBbox, bytesPerSample)");
-	assert(false);
-}
-*/
-
-/*
- *	Writes a given bbox region of the loaded volume (with respect to normalized extent).
- *	Pads with zeros if extent specified is larger than read data volume.
- */
-/*
-void 
-OmDataVolume::Write(const DataBbox &dataExtentBbox, int bytesPerSample) { 
-	//debug("genone","OmDataVolume::Write(dataExtentBbox, bytesPerSample)");
-	assert(false);
-}
-*/
-
 /////////////////////////////////
 ///////          Voxel Accessors
 
@@ -146,11 +115,8 @@ bool OmDataVolume::ContainsVoxel(const DataCoord & vox)
 
 ostream & operator<<(ostream & out, const OmDataVolume & v)
 {
-
 	//DataBbox extent =  v.GetExtent();
-
 	//out << "Extent: " << extent << "\n";
 	out << "State: " << (v.IsOpen()? "Open" : "Closed") << endl;
-
 	return out;
 }
