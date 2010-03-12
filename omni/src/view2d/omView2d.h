@@ -1,6 +1,8 @@
 #ifndef OM_QT_VIEW_2D_H
 #define OM_QT_VIEW_2D_H 
 
+#include "drawable.h"
+
 #include <QGLPixelBuffer>
 
 #include "omView2dWidget.h"
@@ -36,21 +38,6 @@ using boost::tuple;
 
 class OmThreadedCachingTile;
 class OmTileCoord;
-
-
-class Drawable {
-public:
-        int x, y;
-	int tileLength;
-	float zoomFactor;
-        shared_ptr<OmTextureID> gotten_id;
-	OmTileCoord tileCoord;
-	bool mGood;
-        Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor, shared_ptr<OmTextureID> gotten_id);
-        Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor);
-	~Drawable ();
-};
-
 
 class OmView2d : public QWidget,
 public OmViewEventListener,
@@ -91,6 +78,8 @@ protected:
 	void safeTexture(shared_ptr<OmTextureID> gotten_id);
 	void safeDraw(float zoomFactor, int x, int y, int tileLength, shared_ptr<OmTextureID> gotten_id);
 	void PreDraw(Vector2f);
+	bool BufferTiles(Vector2f zoomMipVector, bool buffertiles);
+
 
 	void DrawFromFilter (OmFilter2d&);
 	void DrawFromCache();
@@ -175,16 +164,6 @@ protected:
 	void ViewCenterChangeEvent(OmViewEvent *event);
 	///////////////////////////////////////
 
-
-	// gobbledee gook comments . . . lemme know if u want to save . . .
-	//edit actions
-	// void SelectSegment(QMouseEvent *event);
-	// void DrawEditSelection();
-	// void EditModeMouseDoubleClick(QMouseEvent *event);	
-	//actions
-	// vector<int> PickPoint(Vector2<int> pt, OmBitfield drawOptions);
-
-
 private:
 	///////////////////////////////////////
 	// omView2dConverters.cpp
@@ -228,17 +207,19 @@ private:
 	OmId mSecondSegId;
 	
 	int mTileCount;
+	int mTileCountIncomplete;
+        int mBufferTileCount;
+        int mBufferTileCountIncomplete;
+
 	Vector2i mMousePoint;
 	
 	// OmCamera2d mCamera;
 	OmGenericManager< OmView2dWidget > mView2dWidgetManager;
 	
-	// OmCachingTile *mCache;
 	OmThreadedCachingTile *mCache;
 	double mAlpha;
 	bool mJoiningSegmentToggled;
 	
-	// OmView2dUi mView2dUi;
 	ViewType mViewType;
 	ObjectType mVolumeType;
 	OmId mImageId;

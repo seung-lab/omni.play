@@ -24,8 +24,6 @@ enum CameraMovementType {
 	CAMERA_LOOKAT_ROTATE 
 };
 
-
-
 class OmCamera {
 
 public:
@@ -46,7 +44,6 @@ public:
 	void UpdateModelview();
 	void ApplyModelview();
 	
-	
 	//accessors
 	Vector3<float> GetPosition();
 	
@@ -61,17 +58,14 @@ public:
 	
 	Quaternionf GetLookAtRotation();
 	void SetLookAtRotation(const Quaternionf&);
-	
-	
+	       
 	const Matrix4<float>& GetModelViewMatrix() const;
 	const Matrix4<float>& GetProjectionMatrix() const;
 	Matrix4<float> GetProjModelViewMatrix() const;
-	
-	
+
 	//draw
 	void DrawFocusAxis();
-	
-	
+		
 	//movement
 	void MovementStart(CameraMovementType type, const Vector2<float> &point);
 	void MovementUpdate(const Vector2<float> &point);
@@ -79,8 +73,8 @@ public:
 	
 private:	
 	//viewport props
-	Vector4<int> mViewport;			//lower left x, lower left y, width, height
-	Vector4<float> mPerspective;	//field of view, aspect ratio, near clip, far clip
+	Vector4<int> mViewport;		// lower left x, lower left y, width, height
+	Vector4<float> mPerspective;	// field of view, aspect ratio, near clip, far clip
 	
 	//defines camera position
 	float mDistance;
@@ -100,15 +94,13 @@ private:
 	// movement members
 	CameraMovementType mMovementType;
 	
-	OmCameraPan mPanner;
 	OmCameraZoom mZoomer;
+	OmCameraPan mPanner;
 	OmCameraArcBall mArcBall;
 	
 	friend class OmCameraArcBall;
 	friend class OmCameraPan;
 	friend class OmCameraZoom;
 };
-
-
 
 #endif

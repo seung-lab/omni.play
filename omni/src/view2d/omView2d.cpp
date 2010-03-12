@@ -1,6 +1,4 @@
 #include "omView2d.h"
-
-#include "omCachingTile.h"
 #include "omTextureID.h"
 
 #include "system/omStateManager.h"
@@ -84,7 +82,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
 		mVolume = &current_channel;
 
-		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_channel);
 		OmCachingThreadedCachingTile *fastCache =
 		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
 		mCache = fastCache->mCache;
@@ -106,7 +103,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		mVolume = &current_seg;
 		mSeg = &current_seg;
 
-		//              mCache = new OmCachingTile(mViewType, mVolumeType, image_id, &current_seg);
 		OmCachingThreadedCachingTile *fastCache =
 		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
 		mCache = fastCache->mCache;
@@ -290,7 +286,12 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		str = QString::number(sliceDepth) + QString(" Slice Depth");
 		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
 
-		str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		if (mTileCountIncomplete) {
+			str = QString::number(mTileCountIncomplete, 'f', 0) + QString(" tile(s) incomplete of ");
+			str += QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		} else {
+			str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+		}
 		painter.drawText(QPoint(0, mTotalViewport.height - 20), str);
 
 		if (!mScribbling) {
@@ -322,6 +323,7 @@ QImage OmView2d::safePaintEvent(QPaintEvent * event)
 	mTextures.clear();
 
 	mTileCount = 0;
+	mTileCountIncomplete = 0;
 	initializeGL();
 	pbuffer->makeCurrent();
 
@@ -1322,23 +1324,6 @@ void OmView2d::Draw(int mip)
 	mTextures.clear ();
 }
 
-Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor,
-		   shared_ptr < OmTextureID > gotten_id)
-:x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor), gotten_id(gotten_id)
-{
-	mGood = true;
-}
-
-Drawable::Drawable(int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor)
-:x(x), y(y), tileLength(tileLength), tileCoord(tileCoord), zoomFactor(zoomFactor)
-{
-	mGood = false;
-}
-Drawable::~Drawable ()
-{
-	//debug ("genone", "freeing?\n");
-	gotten_id = shared_ptr < OmTextureID > ();
-}
 
 void OmTextureIDUpdate(shared_ptr < OmTextureID > gotten_id, const OmTileCoord tileCoord, const GLuint texID,
 		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)
@@ -1497,90 +1482,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 	return found_ids;
 }
 
-void *OmView2d::GetImageData(const OmTileCoord & key, Vector2 < int >&sliceDims, OmMipVolume * vol)
-{
-	//debug("FIXME", << "in OmView2d::GetImageData" << endl;
-	shared_ptr < OmMipChunk > my_chunk;
-	vol->GetChunk(my_chunk, mCache->TileToMipCoord(key));
-	int depth = GetDepth(key, vol);
-	int realDepth = depth % (vol->GetChunkDimension());
-
-	void *void_data = NULL;
-	if (mViewType == XY_VIEW) {
-		void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, true);
-	} else if (mViewType == XZ_VIEW) {
-		void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, true);
-	} else if (mViewType == YZ_VIEW) {
-		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, true);
-	}
-	//debug ("genone", "allocating texture %x\n", void_data);
-	return void_data;
-}
-
-void OmView2d::myBindToTextureID(shared_ptr < OmTextureID > gotten_id)
-{
-	//std::cerr << "entering " << __FUNCTION__ << endl;
-	int BPS = mCache->mVolume->GetBytesPerSample();
-	OmMipChunkCoord coord = mCache->TileToMipCoord(gotten_id->mTileCoordinate);
-
-	//debug("FIXME", << "tile coord: "  << gotten_id->mTileCoordinate << endl;
-
-	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-
-		int mcc_x = coord.Coordinate.x;
-		int mcc_y = coord.Coordinate.y;
-		int mcc_z = coord.Coordinate.z;
-
-		void *vData = NULL;
-		if ((mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0)) {
-			Vector2 < int >tile_dims;
-			vData = GetImageData(gotten_id->mTileCoordinate, tile_dims, mCache->mVolume);
-
-			if (!vData) {
-				assert (0);
-				return;
-			}
-
-			//debug("FIXME", << "vData: "  << vData << endl;
-			if (mCache->mVolType == CHANNEL) {
-				OmIds myIdSet;
-				//debug("genone", "CALL1 %x\n", vData);
-				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
-						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDTEXTUREBUILT);
-			} else {
-				if (1 == BPS) {
-					//debug("genone", "1 bps !!!!!!!!!!!!!!!!!\n");
-					uint32_t *vDataFake;
-					vDataFake =
-					    (uint32_t *) malloc((tile_dims.x * tile_dims.y) *
-								sizeof(SEGMENT_DATA_TYPE));
-					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
-						vDataFake[i] = ((unsigned char *)(vData))[i];
-					}
-					//debug("FIXME", << endl;
-					free(vData);
-					vData = (void *)vDataFake;
-				}
-				OmIds myIdSet;
-				void *out = NULL;
-				//debug("FIXME", << "in: vData: " << vData << ". " << out << endl;
-				myIdSet =
-				    setMyColorMap(mCurrentSegmentation, ((SEGMENT_DATA_TYPE *) vData), tile_dims,
-						  gotten_id->mTileCoordinate, &out);
-				//debug("FIXME", << "out: vData: " << out << endl;
-				vData = out;
-				//debug("genone", "CALL2 %x\n", vData);
-				OmTextureIDUpdate(gotten_id, gotten_id->mTileCoordinate, 0, (tile_dims.x * tile_dims.y),
-						  tile_dims.x, tile_dims.y, myIdSet, vData, OMTILE_NEEDCOLORMAP);
-			}
-			//debug("genone", "ELSE %x\n", vData);
-		}
-		//debug("genone", "VALID\n");
-	} else {
-		//debug("genone", "MIP COORD IS INVALID\n");
-	}
-}
-void OmView2d::PreDraw(Vector2f zoomMipVector)
+bool OmView2d::BufferTiles(Vector2f zoomMipVector, bool buffertiles)
 {
 	drawComplete = true;
 	unsigned int freshness = 0;
@@ -1689,8 +1591,142 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 				shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
+                                	if (gotten_id) {
+                                        	safeTexture(gotten_id);
+                                	} else {
+						mTileCountIncomplete++;
+                                        	if (mTileCountIncomplete >= mTileCount) {
+							return false;
+						}
+                                        	complete = false;
+                                	}
 				}
 			}
+		}
+	}
+	if (!complete) {
+		//debug ("genone", "not complete yet in predraw\n");
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	} else {
+		//debug ("genone", "complete in predraw\n");
+	}
+	return complete;
+}
+
+
+void OmView2d::PreDraw(Vector2f zoomMipVector)
+{
+	drawComplete = true;
+	unsigned int freshness = 0;
+	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
+
+	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+
+	Vector2f translateVector = GetPanDistance(mViewType);
+	float zoomFactor = (zoomMipVector.y / 10.0);
+	
+	Vector3f depth = Vector3f( 0, 0, 0);
+	DataCoord data_coord;
+	int mDataDepth;
+	switch (mViewType){
+	case XY_VIEW:
+		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.z;
+		break;
+	case XZ_VIEW:
+		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.y;
+		break;
+	case YZ_VIEW:
+		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		data_coord = SpaceToDataCoord(depth);
+	        mDataDepth = data_coord.x;
+		break;
+	}
+
+	
+	int tileLength;
+	switch (mCache->mVolType) {
+	case CHANNEL:
+		tileLength = OmVolume::GetChannel(mCache->mImageId).GetChunkDimension();
+		break;
+	case SEGMENTATION:
+		tileLength = OmVolume::GetSegmentation(mCache->mImageId).GetChunkDimension();
+		freshness = OmCachingThreadedCachingTile::Freshen(false);
+		break;
+	case VOLUME:
+	case SEGMENT:
+	case NOTE:
+	case FILTER:
+		break;
+	}
+
+	
+	bool complete = true;
+	int xMipChunk;
+	int yMipChunk;
+	int xval;
+	int yval;
+	Vector2f stretch = OmVolume::GetStretchValues(mViewType);
+
+	int pl = OMPOW(2, zoomMipVector.x);
+	int tl = tileLength * OMPOW(2, zoomMipVector.x);
+
+	if (translateVector.y < 0) {
+		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
+		yMipChunk = ((abs(translateVector.y) /tl)) * tl * pl;
+		yval = (-1 * (abs(translateVector.y) % tl));
+	} else {
+		yMipChunk = 0;
+		yval = translateVector.y;
+	}
+
+	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
+
+		if (translateVector.x < 0) {
+			//debug ("genone", "((abs(translateVector.x) / tl)) * tl * pl = %i\n", ((abs(translateVector.x) / tl)) * tl * pl);
+			xMipChunk = ((abs(translateVector.x) / tl)) * tl * pl;
+			xval = (-1 * (abs(translateVector.x) % tl));
+		} else {
+			xMipChunk = 0;
+			xval = translateVector.x;
+		}
+
+#if 1
+		debug("view2d","mDataDepth = %i\n",mDataDepth);
+		debug("view2d", "tl = %i\n", tl);
+		debug("view2d", "pl = %i\n", pl);
+		//debug("view2d", "x = %i\n", x);
+		debug("view2d", "y = %i\n", y);
+		debug("view2d", "xval = %i\n", xval);
+		debug("view2d", "yval = %i\n", yval);
+		debug("view2d", "translateVector.x = %i\n", translateVector.x);
+		debug("view2d", "translateVector.y = %i\n", translateVector.y);
+		debug("view2d", "xMipChunk = %i\n", xMipChunk);
+		debug("view2d", "yMipChunk = %i\n", yMipChunk);
+		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
+#endif
+
+		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
+
+#if 0
+			for (int count = -5; count < 6; count++) {
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
+                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
+										OmCachingThreadedCachingTile::Freshen(false));
+                        	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
+                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
+				shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
+                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
+                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
+				}
+			}
+#endif
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
@@ -1705,10 +1741,12 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 			shared_ptr < OmTextureID > gotten_id = shared_ptr < OmTextureID > ();
                         if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
 				mCache->GetTextureID(gotten_id, mTileCoord, false);
+				mTileCount++;
 				if (gotten_id) {
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
+					mTileCountIncomplete++;
 					complete = false;
 				}
 			}
@@ -1719,9 +1757,11 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 		//debug ("genone", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
+		BufferTiles(zoomMipVector, complete);
 		//debug ("genone", "complete in predraw\n");
 	}
 }
+
 
 /*
 

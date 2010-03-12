@@ -1,71 +1,29 @@
 #include "omException.h"
 #include "common/omDebug.h"
 
-string OmExceptTypeStrings[] = { "Note",
-	"Information",
-	"Warning",
-	"Error",
-	"Critical Error"
+static string OmExceptTypeStrings[] = { "Note",
+					"Information",
+					"Warning",
+					"Error",
+					"Critical Error"
 };
-
-/*
- * Utility Methods
- */
-string exceptTypeToString(OmExceptType t);
-string execptString(const char *format, ...);
 
 OmException::OmException(const string & name, OmExceptType type, const string & msg)
 :mName(name), mType(type), mMessage(msg)
 {
-
-	Log();
 }
 
-const string & OmException::GetName()
+QString OmException::GetName()
 {
-	return mName;
+	return QString::fromStdString( mName );
 }
 
-const string & OmException::GetMessage()
+QString OmException::GetMessage()
 {
-	return mMessage;
+	return QString::fromStdString( mMessage );
 }
 
-const string & OmException::GetType()
+QString OmException::GetType()
 {
-	return OmExceptTypeStrings[mType];
-}
-
-void OmException::Parse(const char *format, va_list args)
-{
-
-	//parse message
-	char error_buf[EXCEPT_STR_SIZE];
-	vsnprintf(error_buf, sizeof(error_buf), format, args);
-	mMessage.assign(error_buf);
-
-	//Log
-	Log();
-}
-
-void OmException::Log()
-{
-	//debug("FIXME", << mName << " " << exceptTypeToString(mType) << ": " << mMessage << endl;
-}
-
-string exceptTypeToString(OmExceptType t)
-{
-	return OmExceptTypeStrings[t];
-}
-
-string execptString(const char *format, ...)
-{
-	char error_buf[EXCEPT_STR_SIZE];
-
-	va_list args;
-	va_start(args, format);
-	vsnprintf(error_buf, sizeof(error_buf), format, args);
-	va_end(args);
-
-	return string(error_buf);
+	return QString::fromStdString( OmExceptTypeStrings[mType] );
 }

@@ -165,14 +165,3 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 
 	pthread_mutex_unlock(&mCacheMapMutex);
 }
-
-void * OmCacheManager::CleanOne(void *in)
-{
-	OmCacheBase *base = (OmCacheBase *) in;
-
-	//debug("FIXME", << "in......................................: " << base << endl;
-	base->RemoveOldest();
-	pthread_mutex_lock(&Instance()->mCacheMapMutex);
-	Instance()->mThreadCount--;
-	pthread_mutex_unlock(&Instance()->mCacheMapMutex);
-}

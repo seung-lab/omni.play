@@ -46,8 +46,6 @@ public:
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
 	void CleanCacheGroup(OmCacheGroup group);
 	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);
-
-	static void * CleanOne (void* in);		// Threaded function.
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -83,24 +81,14 @@ private:
 	void serialize(Archive & ar, const unsigned int file_version);
 };
 
-
-
-
-
-
-
 /////////////////////////////////
 ///////		 Serialization
-
 
 BOOST_CLASS_VERSION(OmCacheManager, 0)
 
 template<class Archive>
 void 
 OmCacheManager::serialize(Archive & ar, const unsigned int file_version) {
-
 }
-
-
 
 #endif

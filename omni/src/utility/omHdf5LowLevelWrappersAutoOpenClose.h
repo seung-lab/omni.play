@@ -7,6 +7,7 @@ class OmHdf5LowLevelWrappersAutoOpenClose : public OmHdf5LowLevelWrappersAbstrac
 {
  public:
 	OmHdf5LowLevelWrappersAutoOpenClose(string fileName);
+	~OmHdf5LowLevelWrappersAutoOpenClose();
 
 	virtual void open();
 	virtual void close();

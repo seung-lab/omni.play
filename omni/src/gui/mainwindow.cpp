@@ -3,7 +3,6 @@
 #include "recentFileList.h"
 
 #include "view2d/omTile.h"
-#include "view2d/omCachingTile.h"
 #include "view2d/omTextureID.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
@@ -845,14 +844,9 @@ bool MainWindow::checkForSave()
 
 void MainWindow::spawnErrorDialog(OmException & e)
 {
-	// FIXME Some things being displayed should actually crashes?
-	// For debugging, turn this on. 
 	//assert (0);
-	QString type = QString::fromStdString(e.GetType());
-	QString name = QString::fromStdString(e.GetName());
-	QString msg = QString::fromStdString(e.GetMessage());
 
-	QString errorMessage = type + ": " + name + ". " + msg;
+	QString errorMessage = e.GetType() + ": " + e.GetName() + ". " + e.GetMessage();
 	exceptionMessage->showMessage(errorMessage);
 	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
 }

@@ -104,8 +104,8 @@ void OmView3d::initializeGL()
 	glEnable(GL_NORMALIZE);	// normalize normals for lighting
 	//glEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_CULL_FACE);	// enable culling
-	glCullFace(GL_BACK);	// specify backface culling
+	//glEnable(GL_CULL_FACE);	// enable culling
+	//glCullFace(GL_BACK);	// specify backface culling
 
 	//set material properties
 	glEnable(GL_COLOR_MATERIAL);	// cause material to track current color

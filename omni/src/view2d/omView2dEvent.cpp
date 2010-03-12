@@ -617,7 +617,7 @@ void OmView2d::ViewCenterChangeEvent(OmViewEvent * event)
 	//crossCoord =  SpaceToScreenCoord(mViewType, ScreenToSpaceCoord(mViewType, crossCoord));
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
 
-        Vector2f currentPan = OmStateManager::Instance()->GetPanDistance(mViewType);
+        Vector2f currentPan = GetPanDistance(mViewType);
         Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
         debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
         newPan += currentPan;

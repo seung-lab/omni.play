@@ -6,8 +6,7 @@
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
-#include <sys/utsname.h>
-
+#include <QHostInfo>
 
 //undostack
 #include <QUndoStack>
@@ -53,6 +52,13 @@ OmStateManager::OmStateManager()
 	mXZSlice[4] = depth.y;
 	mXYSlice[4] = depth.z;
 	
+	mXYPan[0] = 0.0;
+	mXYPan[1] = 0.0;
+	mYZPan[0] = 0.0;
+	mYZPan[1] = 0.0;
+	mXZPan[0] = 0.0;
+	mXZPan[1] = 0.0;
+
 	mParallel = false;
 }
 
@@ -151,11 +157,7 @@ QString OmStateManager::getPID()
 
 QString OmStateManager::getHostname()
 {
-	static struct utsname uts = {0};
-
-        if (uts.nodename[0] == 0) uname(&uts);
-
-	return QString(uts.nodename);
+	return QHostInfo::localHostName();
 }
 
 bool OmStateManager::getParallel()

@@ -55,12 +55,10 @@ public:
 	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
 	int GetDepth(const OmTileCoord &key, OmMipVolume *vol);
-	void setMergeChannels(unsigned char *imageData, unsigned char *secondImageData, Vector2<int> dims, Vector2<int> second_dims, const OmTileCoord &key);
 	OmIds setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 
 	void ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
 private:
-	
 	ViewType view_type;
 	ObjectType vol_type;
 	OmId myID;
