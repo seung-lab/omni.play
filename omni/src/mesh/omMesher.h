@@ -34,6 +34,7 @@ class vtkSmoothPolyDataFilter;
 class vtkPolyDataNormals;
 class vtkStripper;
 class vtkPolyData;
+class vtkCleanPolyData;
 class vtkWindowedSincPolyDataFilter;
 
 class OmMesher {
@@ -46,7 +47,7 @@ public:
 	void ExtractMesh(OmMipMesh*, SEGMENT_DATA_TYPE);
 	
 private:
-	void BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh);
+	void BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh, vtkPolyData *pPolyDataTriangles=0);
 	
 	//source
 	OmMeshSource mMeshSource;
@@ -59,6 +60,7 @@ private:
 	vtkSmoothPolyDataFilter *mpSmoothPolyDataFilter;
 	vtkPolyDataNormals *mpPolyDataNormals;
 	vtkStripper *mpStripper;
+	vtkCleanPolyData * mpCleanPolyData;
 
 	bool mUseWindowedSinc;
 	vtkWindowedSincPolyDataFilter *mpWindowedSincPolyDataFilter;

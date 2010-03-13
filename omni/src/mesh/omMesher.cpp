@@ -20,6 +20,7 @@
 #include "common/omDebug.h"
 #import <vtkCleanPolyData.h>
 #import <vtkSmoothPolyDataFilter.h>
+#import <vtkCleanPolyData.h>
 #import <vtkPolyDataNormals.h>
 #import <vtkStripper.h>
 #import <vtkPolyData.h>
@@ -66,6 +67,7 @@ OmMesher::~OmMesher()
 	}
 	mpPolyDataNormals->Delete();
 	mpStripper->Delete();
+	mpCleanPolyData->Delete();
 }
 
 
@@ -131,6 +133,10 @@ void
 	mpStripper = vtkStripper::New();
 	mpStripper->SetInputConnection(mpPolyDataNormals->GetOutputPort());
 	mpStripper->GetOutput()->ReleaseDataFlagOn();
+
+	mpCleanPolyData = vtkCleanPolyData::New();
+	mpCleanPolyData->SetInputConnection(mpStripper->GetOutputPort());
+	mpCleanPolyData->GetOutput()->ReleaseDataFlagOn();
 }
 
 void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
@@ -141,16 +147,26 @@ void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
 	//mpDecimation->Update();
 
 	//get poly from stripper
-	vtkPolyData *p_poly_data = mpStripper->GetOutput();
+	vtkPolyData *p_poly_data = mpCleanPolyData->GetOutput();
 	p_poly_data->Squeeze();
 	p_poly_data->Update();
 
 	//make mesh from poly data
-	BuildMeshFromPolyData(p_poly_data, pMesh);
+	BuildMeshFromPolyData(p_poly_data, pMesh); // p_poly_data_as_triangles);
 }
 
-void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh)
+void OmMesher::BuildMeshFromPolyData(vtkPolyData * pPolyData, OmMipMesh * pMesh, vtkPolyData * pPolyDataTriangles)
 {
+	if (pPolyDataTriangles && pPolyDataTriangles->GetNumberOfCells() != 0) {
+	        vtkFloatArray *p_points_data_array = vtkFloatArray::New();      //polyData->GetPoints()->GetData();
+		p_points_data_array->DeepCopy(pPolyDataTriangles->GetPoints()->GetData());
+
+		vtkFloatArray *p_normal_data_array = vtkFloatArray::New();
+		p_normal_data_array->DeepCopy(pPolyDataTriangles->GetPointData()->GetNormals());
+
+
+	}
+
 
 	//check for polyData that has been decimated to nothing
 	if (pPolyData->GetNumberOfCells() == 0)
