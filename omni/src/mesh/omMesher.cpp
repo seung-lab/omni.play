@@ -136,6 +136,8 @@ void
 
 	mpCleanPolyData = vtkCleanPolyData::New();
 	mpCleanPolyData->SetInputConnection(mpStripper->GetOutputPort());
+	mpCleanPolyData->PointMergingOn();
+	mpCleanPolyData->ConvertStripsToPolysOff();
 	mpCleanPolyData->GetOutput()->ReleaseDataFlagOn();
 }
 
