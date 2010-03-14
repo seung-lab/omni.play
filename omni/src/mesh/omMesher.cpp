@@ -23,6 +23,8 @@
 #import <vtkCleanPolyData.h>
 #import <vtkPolyDataNormals.h>
 #import <vtkStripper.h>
+#import <vtkTriangleFilter.h>
+#include <vtkLoopSubdivisionFilter.h>
 #import <vtkPolyData.h>
 #import <vtkTransformPolyDataFilter.h>
 #import <vtkQuadricDecimation.h>
@@ -49,6 +51,7 @@ OmMesher::OmMesher(OmMeshSource & meshSource)
 
 	mUseWindowedSinc = true;
 	mUseWindowedSinc = sizeof (void*) == 4;
+	//mUseWindowedSinc = false;
 	
 	//init pipeline (uses source for transform)
 	InitMeshingPipeline();
@@ -106,12 +109,12 @@ void
 		mpWindowedSincPolyDataFilter = vtkWindowedSincPolyDataFilter::New();
 		mpWindowedSincPolyDataFilter->SetInput(mpTransformPolyDataFilter->GetOutput());
 
-		mpWindowedSincPolyDataFilter->SetNumberOfIterations(12);	//smooth geometry
+		mpWindowedSincPolyDataFilter->SetNumberOfIterations(3);	//smooth geometry
 		mpWindowedSincPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 		//form normals
 		mpPolyDataNormals = vtkPolyDataNormals::New();
 		mpPolyDataNormals->SetInputConnection(mpWindowedSincPolyDataFilter->GetOutputPort());
-		//mpPolyDataNormals->SplittingOff();
+		//mpPolyDataNormals->SplittingOn();
 		double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
 		mpPolyDataNormals->SetFeatureAngle(preserved_feature_angle);	//give appearance of smoothing
 	} else {
@@ -124,7 +127,7 @@ void
 		//form normals
 		mpPolyDataNormals = vtkPolyDataNormals::New();
 		mpPolyDataNormals->SetInputConnection(mpSmoothPolyDataFilter->GetOutputPort());
-		//mpPolyDataNormals->SplittingOff();
+		//mpPolyDataNormals->SplittingOn();
 		double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
 		mpPolyDataNormals->SetFeatureAngle(preserved_feature_angle);	//give appearance of smoothing
 	}
@@ -134,11 +137,55 @@ void
 	mpStripper->SetInputConnection(mpPolyDataNormals->GetOutputPort());
 	mpStripper->GetOutput()->ReleaseDataFlagOn();
 
+	// Convert strip data to triangles so that any initial degenerate strips aren't 
+	// automatically converted to polygons by the cleaning process.
+	vtkTriangleFilter * triangles = vtkTriangleFilter::New();
+	triangles->SetInputConnection(mpStripper->GetOutputPort());
+
+	// Clean the triangle data but allow for some polygons to be created from degenerate
+	// strips that appear to be formed during the cleaning process.
 	mpCleanPolyData = vtkCleanPolyData::New();
-	mpCleanPolyData->SetInputConnection(mpStripper->GetOutputPort());
+	mpCleanPolyData->SetInputConnection(triangles->GetOutputPort());
 	mpCleanPolyData->PointMergingOn();
-	mpCleanPolyData->ConvertStripsToPolysOff();
+	mpCleanPolyData->ConvertStripsToPolysOn();
 	mpCleanPolyData->GetOutput()->ReleaseDataFlagOn();
+	triangles->Delete();
+
+	// Ack, that last step generated polygons! We don't want polygons, so we need to
+	// convert the polygons back to triangles.
+        triangles = vtkTriangleFilter::New();
+        triangles->SetInputConnection(mpCleanPolyData->GetOutputPort());
+	mpCleanPolyData->Delete();
+
+	// Now we should to clean these new triangles too. But this time don't allow polygons.
+        mpCleanPolyData = vtkCleanPolyData::New();
+        mpCleanPolyData->SetInputConnection(triangles->GetOutputPort());
+        mpCleanPolyData->ConvertStripsToPolysOff();
+        mpCleanPolyData->GetOutput()->ReleaseDataFlagOn();
+        triangles->Delete();
+
+	// Now we can iteratively reshape the clean meshes.
+	vtkCleanPolyData * input = mpCleanPolyData;
+	for (int i = 0; i < 1; i++) {
+        	//strip poly
+        	vtkStripper * stripper = vtkStripper::New();
+        	stripper->SetInputConnection(input->GetOutputPort());
+        	stripper->GetOutput()->ReleaseDataFlagOn();
+
+        	vtkCleanPolyData * cleanPolyData = vtkCleanPolyData::New();
+        	cleanPolyData->SetInputConnection(stripper->GetOutputPort());
+        	cleanPolyData->PointMergingOn();
+		cleanPolyData->ConvertLinesToPointsOn();
+		cleanPolyData->ConvertPolysToLinesOn();
+        	cleanPolyData->ConvertStripsToPolysOff();
+        	cleanPolyData->GetOutput()->ReleaseDataFlagOn();
+
+		input->Delete();
+		stripper->Delete();
+		input = cleanPolyData;
+	}
+	mpCleanPolyData = input;
+
 }
 
 void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
