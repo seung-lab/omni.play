@@ -34,8 +34,10 @@ void actual_debug(const char *category, const char *format, ...)
 	va_list args;
 	va_start(args, format);
 	for (i=0;i<debugCategoryNumber;i++){
-		if (!strncmp(category,debugCategoryArray[i], OM_DEBUG_STRING_SIZE))
+		if (!strncmp(category,debugCategoryArray[i], OM_DEBUG_STRING_SIZE)) {
 			vfprintf(stdout, format, args);
+			fflush(stdout);
+		}
 	}
 	va_end(args);
 }

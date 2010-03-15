@@ -271,16 +271,27 @@ void OmMipMesh::DeleteVbo()
 /////////////////////////////////
 ///////          Draw Methods
 
-void OmMipMesh::Draw()
+bool OmMipMesh::Draw(bool doCreateVbo)
 {
+	bool ret = false;
 
 	//ignore empty meshes
 	if (IsEmptyMesh())
-		return;
+		return ret;
 
 	//if(!IsVbo()) assert(false);
-	if (!IsVbo())
-		CreateVbo();
+	if (!IsVbo()) {
+		debug("vbo", "going to create vbo\n");
+		if (doCreateVbo) {
+			CreateVbo();
+			ret = true;
+		} else {
+			debug("vbo", "not creating vbo\n");
+			return ret;
+		}
+		
+		debug("vbo", "done to creating vbo\n");
+	}
 
 	//debug("genone","OmMipMesh::Draw()");
 
@@ -304,12 +315,14 @@ void OmMipMesh::Draw()
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	//// draw mesh elements
+	debug("elements", "going to draw elements\n");
 	for (uint32_t idx = 0; idx < mStripCount; idx++) {
 		glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
 			       mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
 			       GL_UNSIGNED_INT,	//type
 			       (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
 	}
+	debug("elements", "done drawing %i elements\n", mStripCount);
 
 	//disable client state
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -318,6 +331,8 @@ void OmMipMesh::Draw()
 	// release VBOs: gl*Pointer() return to normal
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+
+	return ret;
 }
 
 /////////////////////////////////

@@ -41,7 +41,7 @@ public:
 	
 	bool IsEmptyMesh();
 	
-	void Draw();
+	bool Draw(bool doCreateVbo = true);
         void setSegmentationID(OmId sid)
         {
                 mSegmentationID = sid;
