@@ -27,7 +27,9 @@ unsigned int OmSystemInformation::get_total_system_memory_megs()
 	struct sysinfo s_info;
 	
 	int error = sysinfo(&s_info);
-	printf("%s: code error = %d\n", __FUNCTION__, error);
+	if( 0 != error ){
+		printf("%s: code error = %d\n", __FUNCTION__, error);
+	}
  
 	unsigned long system_memory = s_info.totalram;
 	return  system_memory / 1024 / 1024;

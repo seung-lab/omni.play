@@ -193,6 +193,7 @@ void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
 
 	//update meshing value
 	mpDiscreteMarchingCubes->SetValue(0, value);
+
 	//mpDecimation->Update();
 
 	//get poly from stripper

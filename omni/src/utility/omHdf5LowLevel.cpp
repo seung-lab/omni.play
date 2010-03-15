@@ -412,7 +412,14 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	hsize_t dim = size;
 	
 	// TODO: fixme! use the max dim!
-	hsize_t max = dim ? dim : H5S_UNLIMITED;
+	hsize_t max;
+	if( dim ){
+		max = dim;
+		printf("%s: max is %s\n", __FUNCTION__, qPrintable(QString::number( max ) ));
+	} else {
+		printf("%s: max is H5S_UNLIMITED\n", __FUNCTION__ );
+		max = H5S_UNLIMITED;
+	}
 	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
 	if (dataspace_id < 0)
 		throw OmIoException("Could not create HDF5 dataspace.");
@@ -426,7 +433,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	if (NULL != data) {
 		status = H5Dwrite(dataset_id, H5T_NATIVE_UCHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 		if (status < 0)
-			throw OmIoException("Could copy data into HDF5 dataset.");
+			throw OmIoException("Could not copy data into HDF5 dataset.");
 	}
 
 	//Closes the specified dataset. 
