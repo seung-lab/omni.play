@@ -82,6 +82,6 @@ void omSetDefaultView3dPreferences()
 
 	OmPreferences::Set(OM_PREF_VIEW3D_ANTIALIASING_BOOL, false);
 	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FOV_FLT, 60.0f);
-	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, 1.0f);
-	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, 1000.0f);
+	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, 0.000001f);
+	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, 10000000000.0f);
 }
