@@ -6,6 +6,11 @@ use File::Basename;
 use POSIX;
 select STDOUT; $| = 1;
 
+my $failurelock = `ls /tmp/failure`;
+if ($failurelock =~ /failure/) {
+	die "make sure someone other omni isn't currently meshinating.\n";
+}
+print `touch /tmp/failure`;
 
 my $start = time ();
 my $plan = $ARGV[0];
@@ -47,4 +52,5 @@ print `rm -rf $meshOutputDir/data/`;
 
 my $timeSecs = (time() - $start);
 print "$timeSecs seconds.\n";
+print `rm /tmp/failure`;
 print "meshdone\n";
