@@ -41,6 +41,9 @@ print `cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir/data/`;
 print "find $meshOutputDir -name \"*.h5\" -exec $meshinatorHome/hdf5_merge {} $project \\;\n";
 print `find $meshOutputDir -name "*.h5" -exec $meshinatorHome/hdf5_merge {} $project \\;`;
 print `/usr/local/bin/du -ach $meshOutputDir`;
+print "cd $meshinatorHome; ./runAcrossCluster.pl \"rm /tmp/meshinat*\"\n";
+print `cd $meshinatorHome; ./runAcrossCluster.pl \"rm /tmp/meshinat\\*\"\n`;
+print `rm -rf $meshOutputDir/data/`;
 
 my $timeSecs = (time() - $start);
 print "$timeSecs seconds.\n";
