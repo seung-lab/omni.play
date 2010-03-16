@@ -59,6 +59,9 @@ OmView3d::OmView3d(QWidget * parent)
 	UpdateEnabledWidgets();
 
 	OmStateManager::setMyBackoff( 1 );
+
+        mDrawTimer.stop();
+        connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 }
 
 
@@ -104,8 +107,8 @@ void OmView3d::initializeGL()
 	glEnable(GL_NORMALIZE);	// normalize normals for lighting
 	//glEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_CULL_FACE);	// enable culling
-	glCullFace(GL_BACK);	// specify backface culling
+	//glEnable(GL_CULL_FACE);	// enable culling
+	//glCullFace(GL_BACK);	// specify backface culling
 
 	//set material properties
 	glEnable(GL_COLOR_MATERIAL);	// cause material to track current color
@@ -153,6 +156,28 @@ void OmView3d::paintGL()
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_RENDERMODE_RENDER | DRAWOP_DRAW_WIDGETS);
 	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
+
+/*
+ * Interface to the real updateGL.
+ */
+void OmView3d::myUpdate()
+{
+	doTimedDraw();
+}
+
+void OmView3d::doTimedDraw()
+{
+	if (mDrawTimer.isActive()) {
+        	mDrawTimer.stop();
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	} else {
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	}
+}
+
+
 
 /////////////////////////////////
 ///////          QEvent Methods
@@ -242,55 +267,56 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 		return;
 	}
 
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
 {
+
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
 {
-	updateGL();
+	myUpdate();
 	increaseBackoff ();
 }
 
 void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
 {
 	//UpdateEnabledWidgets();
-	//updateGL();
+	//myUpdate();
 }
 
 /////////////////////////////////
@@ -387,7 +413,7 @@ void OmView3d::UpdateEnabledWidgets()
 
 /*
  *	Root of drawing tree.  
- *	Called from updateGL() and picking calls.
+ *	Called from myUpdate() and picking calls.
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
 {
@@ -494,7 +520,7 @@ void OmView3d::SetCameraPerspective()
 	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
 	far = 10000000.0;
 	Vector4 < float >perspective(fov, (float)(400) / 300, near, far);
-	debug("glmatrix","NEAR_PLANE: %f\nFAR_PLANE: %f\n",near,far);
+
 	mCamera.SetPerspective(perspective);
 	mCamera.ResetModelview();
 }
