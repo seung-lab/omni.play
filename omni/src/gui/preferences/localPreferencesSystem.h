@@ -10,22 +10,14 @@ class LocalPreferencesSystem : public QWidget
 public: 
 	LocalPreferencesSystem(QWidget *parent = 0); 
     
- private slots: 
-	void on_numThreadsSlider_valueChanged();
+private slots: 
 	void on_ramSlider_valueChanged();
 	void on_vramSlider_valueChanged();
 
-	void on_numThreadsSlider_sliderReleased();
 	void on_ramSlider_sliderReleased();
 	void on_vramSlider_sliderReleased();
 
-	void on_storeMeshesInTempFolder_stateChanged( int state);
-
  private:
-	QGroupBox * makeNumberOfThreadsBox();
-	QSlider * numThreadsSlider;
-        QLabel * numThreadsSliderLabel;
-
 	QGroupBox* makeCachePropBox();
 	void init_cache_prop_values();
 	QLabel * sizeLabel;
@@ -34,8 +26,5 @@ public:
 	QLabel * vramSizeLabel;
 	QSlider * ramSlider;
 	QSlider * vramSlider;
-
-	QGroupBox* makeMeshBox();
-        QCheckBox * storeMeshesInTempFolder;
 }; 
 #endif

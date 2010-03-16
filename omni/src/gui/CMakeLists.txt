@@ -24,7 +24,9 @@ SET( OMGUI_SRCS
 	preferences/preferences2d.cpp
 	preferences/preferences.cpp
 	preferences/localPreferencesSystem.cpp
+	preferences/localPreferencesMeshing.cpp
 	preferences/localPreferences2d.cpp
+	preferences/localPreferences3d.cpp
 	preferences/volumeInspector.cpp
 
 	myInspectorWidget.cpp
@@ -54,7 +56,9 @@ SET( OMGUI_MOC_HDRS
 	preferences/preferences2d.h
 	preferences/preferences.h
 	preferences/localPreferencesSystem.h
+	preferences/localPreferencesMeshing.h
 	preferences/localPreferences2d.h
+	preferences/localPreferences3d.h
 	preferences/volumeInspector.h
 
 	myInspectorWidget.h
