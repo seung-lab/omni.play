@@ -59,6 +59,9 @@ OmView3d::OmView3d(QWidget * parent)
 	UpdateEnabledWidgets();
 
 	OmStateManager::setMyBackoff( 1 );
+
+        mDrawTimer.stop();
+        connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 }
 
 
@@ -154,6 +157,28 @@ void OmView3d::paintGL()
 	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
 
+/*
+ * Interface to the real updateGL.
+ */
+void OmView3d::myUpdate()
+{
+	doTimedDraw();
+}
+
+void OmView3d::doTimedDraw()
+{
+	if (mDrawTimer.isActive()) {
+        	mDrawTimer.stop();
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	} else {
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	}
+}
+
+
+
 /////////////////////////////////
 ///////          QEvent Methods
 
@@ -242,55 +267,56 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 		return;
 	}
 
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
 {
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
 {
+
 	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
 {
-	updateGL();
+	myUpdate();
 	increaseBackoff ();
 }
 
 void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
 {
 	//UpdateEnabledWidgets();
-	//updateGL();
+	//myUpdate();
 }
 
 /////////////////////////////////
@@ -387,7 +413,7 @@ void OmView3d::UpdateEnabledWidgets()
 
 /*
  *	Root of drawing tree.  
- *	Called from updateGL() and picking calls.
+ *	Called from myUpdate() and picking calls.
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
 {

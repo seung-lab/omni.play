@@ -22,6 +22,7 @@
 using namespace vmml;
 
 #include <QGLWidget>
+#include <QTimer>
 #include <QtGui> 
 
 class OmView3d : public QGLWidget, 
@@ -82,6 +83,8 @@ class OmView3d : public QGLWidget,
 		void DrawVolumes(OmBitfield option);
 		void DrawEditSelectionVoxels();
 		void DrawWidgets();
+		void doTimedDraw();
+		void myUpdate();
 		
 		//draw settings
 		void SetBackgroundColor();
@@ -93,6 +96,7 @@ class OmView3d : public QGLWidget,
 		
 		
 	private:
+		QTimer mDrawTimer;
 		OmView3dUi mView3dUi;
 		OmCamera mCamera;
 		OmGenericManager< OmView3dWidget > mView3dWidgetManager;
