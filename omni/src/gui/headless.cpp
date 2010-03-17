@@ -130,7 +130,7 @@ void Headless::processLine( QString line, QString fName )
 		server->start ();
 		
 		app.exec ();
-        } else if( line.startsWith("addSegment") ){
+        } else if( line.startsWith("addSegment:") ){
                 if( 0 == SegmentationID  ){
                         printf("please choose segmentation first!\n");
                         return;
