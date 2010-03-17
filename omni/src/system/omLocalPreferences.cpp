@@ -203,6 +203,54 @@ void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
 	writeSettingUInt("stickyCrosshairMode", sticky);
 }
 
+int OmLocalPreferences::getDefaultCrosshairValue()
+{
+	int defaultRet = 1;
+	readSettingUInt( "crosshairValue", defaultRet );
+	Instance()->setCrosshairValue(defaultRet);
+	return defaultRet;
+}
+int OmLocalPreferences::getCrosshairValue()
+{
+	return Instance()->mCrosshairValue;
+}
+void OmLocalPreferences::setCrosshairValue(int value)
+{
+	Instance()->mCrosshairValue = value;
+}
+
+int OmLocalPreferences::getDefault2DViewFrameIn3D()
+{
+	int defaultRet = false;
+	readSettingUInt( "2DViewFrameIn3D", defaultRet );
+	Instance()->set2DViewFrameIn3D(defaultRet);
+	return defaultRet;
+}
+int OmLocalPreferences::get2DViewFrameIn3D()
+{
+	return Instance()->m2DViewFrameIn3D;
+}
+void OmLocalPreferences::set2DViewFrameIn3D(bool value)
+{
+	Instance()->m2DViewFrameIn3D = value;
+}
+
+int OmLocalPreferences::getDefaultDrawCrosshairsIn3D()
+{
+	int defaultRet = false;
+	readSettingUInt( "DrawCrosshairsIn3D", defaultRet );
+	Instance()->setDrawCrosshairsIn3D(defaultRet);
+	return defaultRet;
+}
+int OmLocalPreferences::getDrawCrosshairsIn3D()
+{
+	return Instance()->mDrawCrosshairsIn3D;
+}
+void OmLocalPreferences::setDrawCrosshairsIn3D(bool value)
+{
+	Instance()->mDrawCrosshairsIn3D = value;
+}
+
 /////////////////////////////
 // recently-used files
 QStringList OmLocalPreferences::getRecentlyUsedFilesNames()

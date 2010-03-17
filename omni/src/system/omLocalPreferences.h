@@ -27,6 +27,18 @@ public:
 	static bool getStickyCrosshairMode();
 	static void setStickyCrosshairMode(bool sticky);
 
+	static int getCrosshairValue();
+	static int getDefaultCrosshairValue();
+	static void setCrosshairValue(int value);
+
+	static int get2DViewFrameIn3D();
+	static int getDefault2DViewFrameIn3D();
+	static void set2DViewFrameIn3D(bool value);
+
+	static int getDrawCrosshairsIn3D();
+	static int getDefaultDrawCrosshairsIn3D();
+	static void setDrawCrosshairsIn3D(bool value);
+
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
 
@@ -61,8 +73,14 @@ private:
 
 	static bool settingExists( QString setting );
 
+	// Global Variables for Quick access to Preference Settings
+	// Thus bypassing any file I/O
 	bool * stickyCrosshairMode;
+	bool m2DViewFrameIn3D;
+	bool mDrawCrosshairsIn3D;
+	int mCrosshairValue;
 	LocalPrefFiles* localPrefFiles;
+
 };
 
 #endif

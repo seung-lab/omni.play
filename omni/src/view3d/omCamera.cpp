@@ -84,7 +84,7 @@ void OmCamera::ApplyPerspective()
 
 	//refresh projection matrix
 	glLoadIdentity();
-	gluPerspective(mPerspective[0], mPerspective[1], mPerspective[2], mPerspective[3]);	//glFrustum()
+	gluPerspective(mPerspective[0], mPerspective[1], mPerspective[2], 10000000);	//glFrustum()
 
 	//store projection matrix
 	glGetFloatv(GL_PROJECTION_MATRIX, mProjectionMatrix.ml);

@@ -11,8 +11,16 @@ class LocalPreferences3d : public QWidget
 	LocalPreferences3d(QWidget *parent); 
     
  private slots: 
+	void on_crosshairSlider_valueChanged();
+	void on_viewSquareCheckBox_stateChanged();
+	void on_crosshairCheckBox_stateChanged();
 
  private:
  	QGroupBox* makeGeneralPropBox();
+	QLabel* crosshairLabel;
+	QSlider* crosshairSlider;
+	QLabel* crosshairValue;
+	QCheckBox* viewSquareCheckBox;
+	QCheckBox* crosshairCheckBox;
 }; 
 #endif

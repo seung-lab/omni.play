@@ -16,9 +16,9 @@ void Preferences::showLocalPreferences()
 {
      tabs = new QTabWidget;
      tabs->addTab(new LocalPreferencesSystem(this), "System" );
-     tabs->addTab(new LocalPreferencesMeshing(this), "Mesh" );
      tabs->addTab(new LocalPreferences2d(this), "2D View" );
-     tabs->addTab(new LocalPreferences2d(this), "3D View" );
+     tabs->addTab(new LocalPreferences3d(this), "3D View" );
+     tabs->addTab(new LocalPreferencesMeshing(this), "Mesh" );
 
      closeButton = new QPushButton("&Close");
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));

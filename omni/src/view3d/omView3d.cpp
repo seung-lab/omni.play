@@ -17,6 +17,7 @@
 #include "system/omEventManager.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
+#include "system/omLocalPreferences.h"
 
 #include "common/omGl.h"
 #include "common/omDebug.h"
@@ -60,6 +61,11 @@ OmView3d::OmView3d(QWidget * parent)
 
         mDrawTimer.stop();
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+
+	// These calls simply prime Michaels Local Preferences File I/O System
+	bool disposable = OmLocalPreferences::getDefault2DViewFrameIn3D();
+	disposable = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
+	int whatever = OmLocalPreferences::getDefaultCrosshairValue();
 }
 
 OmView3d::~OmView3d()
