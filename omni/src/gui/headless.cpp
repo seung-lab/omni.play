@@ -70,7 +70,7 @@ void Headless::processLine( QString line, QString fName )
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );
 
-	} else if( line.startsWith("meshchunk") ) {
+	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
 		SegmentationID = getNum( args[1] );
@@ -106,7 +106,7 @@ void Headless::processLine( QString line, QString fName )
 		} 
 		OmVolume::GetSegmentation( SegmentationID ).mMipMeshManager.SetMeshDataBuilt(true);
 		OmProject::Save();
-	} else if( line.startsWith("seg") ) {
+	} else if( line.startsWith("seg:") ) {
 		QStringList args = line.split(':');
 		SegmentationID = getNum( args[1] );
 		if( SegmentationID > 0 ){
@@ -114,15 +114,15 @@ void Headless::processLine( QString line, QString fName )
 		} else {
 			printf("invalid segmentation\n");
 		}
-	} else if( line.startsWith("openFile") ){
+	} else if( line.startsWith("openFile:") ){
 		QStringList args = line.split(':');
 		openProject( args[1], false );
 	} else if( line.startsWith("open") ){
 		openProject( fName, false );
-	} else if( line.startsWith("parallel") ){
+	} else if( line.startsWith("parallel:") ){
 		QStringList args = line.split(':');
 		OmStateManager::setParallel(true);
-	} else if( line.startsWith("serve") ){
+	} else if( line.startsWith("serve:") ){
 		QStringList args = line.split(':');
 		QCoreApplication app(argc_global, argv_global);
 
@@ -137,16 +137,16 @@ void Headless::processLine( QString line, QString fName )
                 }
                 OmVolume::GetSegmentation( SegmentationID ).AddSegment();
                 OmProject::Save();
-        } else if( line.startsWith("setDataExtent") ){
+        } else if( line.startsWith("setDataExtent:") ){
 		QStringList args = line.split(':');
 		Vector3<int> maxext = Vector3<int>(getNum(args[1]),getNum(args[2]),getNum(args[3]));
 		OmVolume::SetDataDimensions(maxext);
                 OmProject::Save();
-	} else if( line.startsWith("create") ) {
+	} else if( line.startsWith("create:") ) {
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];
                 OmProject::New( projectFileNameAndPath, true );
-	} else if( line.startsWith("addSegmentationFromHDF5") ){
+	} else if( line.startsWith("addSegmentationFromHDF5:") ){
 		QStringList args = line.split(':');
 
 		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
