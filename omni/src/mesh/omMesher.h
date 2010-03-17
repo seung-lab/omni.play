@@ -21,13 +21,14 @@ using namespace vmml;
 #include <vtkImageData.h>
 #include <vtkWindowedSincPolyDataFilter.h>
 
+
 class OmMipMesh;
 class OmMipMeshManager;
 class OmMipChunk;
 
 class vtkImageData;
 class vtkDiscreteMarchingCubes;
-class vtkQuadricDecimation;
+class vtkDecimatePro;
 class vtkTransform;
 class vtkTransformPolyDataFilter;
 class vtkSmoothPolyDataFilter;
@@ -54,7 +55,8 @@ private:
 	
 	//vtk pipeline
 	vtkDiscreteMarchingCubes *mpDiscreteMarchingCubes;
-	vtkQuadricDecimation *mpDecimation;
+	vtkDecimatePro *mpDecimation;
+
 	vtkTransform *mpTransform;
 	vtkTransformPolyDataFilter *mpTransformPolyDataFilter;
 	vtkSmoothPolyDataFilter *mpSmoothPolyDataFilter;

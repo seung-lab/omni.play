@@ -27,11 +27,9 @@
 #include <vtkShrinkPolyData.h>
 #import <vtkPolyData.h>
 #import <vtkTransformPolyDataFilter.h>
-#import <vtkQuadricDecimation.h>
-
 #import <vtkDecimatePro.h>
 
-#define DEBUG 0
+
 
 //utility
 void srcToDestBboxTransform(const OmMeshSource & meshSource, vtkTransform * pTransform);
@@ -60,7 +58,6 @@ OmMesher::OmMesher(OmMeshSource & meshSource)
 OmMesher::~OmMesher()
 {
 	mpDiscreteMarchingCubes->Delete();
-	mpDecimation->Delete();
 	mpTransform->Delete();
 	mpTransformPolyDataFilter->Delete();
 	if (mUseWindowedSinc) {
@@ -71,6 +68,7 @@ OmMesher::~OmMesher()
 	mpPolyDataNormals->Delete();
 	mpStripper->Delete();
 	mpCleanPolyData->Delete();
+	mpDecimation->Delete();
 }
 
 
@@ -82,27 +80,33 @@ void
 	mpDiscreteMarchingCubes->SetInput(mMeshSource.pImageData);
 	mpDiscreteMarchingCubes->GetOutput()->ReleaseDataFlagOn();
 
+	vtkTriangleFilter * triangles = vtkTriangleFilter::New();
+        triangles->SetInput(mpDiscreteMarchingCubes->GetOutput());
+
         // decimate clean poly
-        mpDecimation = vtkQuadricDecimation::New();
-        mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
+        mpDecimation = vtkDecimatePro::New();
+        mpDecimation->SetInput(triangles->GetOutput());
+        mpDecimation->SetAccumulateError(1);
+        mpDecimation->PreserveTopologyOn();
+        mpDecimation->SplittingOn();
+        double preserved_feature_angle = OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT);
+        mpDecimation->SetFeatureAngle(preserved_feature_angle);
+        triangles->Delete();
+
         double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
         //debug("FIXME", << "target_reduction: " << target_reduction << endl;
-        if (mUseWindowedSinc) {
-                mpDecimation->SetTargetReduction(target_reduction/100.);
-        } else {
-                mpDecimation->SetTargetReduction(target_reduction/100.);
-        }
+        mpDecimation->SetTargetReduction(target_reduction/100.);
         mpDecimation->GetOutput()->ReleaseDataFlagOn();
 
-	//form transform to norm extent
-	mpTransform = vtkTransform::New();
-	srcToDestBboxTransform(mMeshSource, mpTransform);
+        //form transform to norm extent
+        mpTransform = vtkTransform::New();
+        srcToDestBboxTransform(mMeshSource, mpTransform);
 
-	//perfrom transform
-	mpTransformPolyDataFilter = vtkTransformPolyDataFilter::New();
-	mpTransformPolyDataFilter->SetInput(mpDecimation->GetOutput());
-	mpTransformPolyDataFilter->SetTransform(mpTransform);
-	mpTransformPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
+        //perfrom transform
+        mpTransformPolyDataFilter = vtkTransformPolyDataFilter::New();
+        mpTransformPolyDataFilter->SetInput(mpDecimation->GetOutput());
+        mpTransformPolyDataFilter->SetTransform(mpTransform);
+        mpTransformPolyDataFilter->GetOutput()->ReleaseDataFlagOn();
 
 	if (mUseWindowedSinc) {
 		//sinc smooth poly
@@ -139,7 +143,7 @@ void
 
 	// Convert strip data to triangles so that any initial degenerate strips aren't 
 	// automatically converted to polygons by the cleaning process.
-	vtkTriangleFilter * triangles = vtkTriangleFilter::New();
+	triangles = vtkTriangleFilter::New();
 	triangles->SetInputConnection(mpStripper->GetOutputPort());
 
 	// Clean the triangle data but allow for some polygons to be created from degenerate
