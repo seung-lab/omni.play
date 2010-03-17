@@ -148,12 +148,15 @@ void Headless::processLine( QString line, QString fName )
                 OmProject::New( projectFileNameAndPath, true );
 	} else if( line.startsWith("addSegmentationFromHDF5") ){
 		QStringList args = line.split(':');
-		QString hdf5fnp = args[1];
 
 		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
+		SegmentationID = added_segmentation.GetId();
+
+		QString hdf5fnp = args[1];
+
 		BuildVolumes bv;
 		bv.addFileNameAndPath( hdf5fnp );
-		bv.buildAndMeshSegmentation( &added_segmentation );
+		bv.build_seg_image( &added_segmentation );
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
