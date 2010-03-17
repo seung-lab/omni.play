@@ -46,7 +46,7 @@ void omSetDefaultMeshPreferences()
 {
 	OmPreferences::Set(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, 50);
 	OmPreferences::Set(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, 30.0f);
-	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 0.15f);
+	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 35.0f);
 }
 
 void omSetDefaultSegmentPreferences()

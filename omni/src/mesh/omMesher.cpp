@@ -24,7 +24,7 @@
 #import <vtkPolyDataNormals.h>
 #import <vtkStripper.h>
 #import <vtkTriangleFilter.h>
-#include <vtkLoopSubdivisionFilter.h>
+#include <vtkShrinkPolyData.h>
 #import <vtkPolyData.h>
 #import <vtkTransformPolyDataFilter.h>
 #import <vtkQuadricDecimation.h>
@@ -82,17 +82,17 @@ void
 	mpDiscreteMarchingCubes->SetInput(mMeshSource.pImageData);
 	mpDiscreteMarchingCubes->GetOutput()->ReleaseDataFlagOn();
 
-	// decimate clean poly
-	mpDecimation = vtkQuadricDecimation::New();
-	mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
-	double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
-	//debug("FIXME", << "target_reduction: " << target_reduction << endl;
-	if (mUseWindowedSinc) {
-		mpDecimation->SetTargetReduction(.07);
-	} else {
-		mpDecimation->SetTargetReduction(target_reduction);
-	}
-	mpDecimation->GetOutput()->ReleaseDataFlagOn();
+        // decimate clean poly
+        mpDecimation = vtkQuadricDecimation::New();
+        mpDecimation->SetInput(mpDiscreteMarchingCubes->GetOutput());
+        double target_reduction = OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT);
+        //debug("FIXME", << "target_reduction: " << target_reduction << endl;
+        if (mUseWindowedSinc) {
+                mpDecimation->SetTargetReduction(target_reduction/100.);
+        } else {
+                mpDecimation->SetTargetReduction(target_reduction/100.);
+        }
+        mpDecimation->GetOutput()->ReleaseDataFlagOn();
 
 	//form transform to norm extent
 	mpTransform = vtkTransform::New();
@@ -157,12 +157,17 @@ void
         triangles->SetInputConnection(mpCleanPolyData->GetOutputPort());
 	mpCleanPolyData->Delete();
 
+	vtkShrinkPolyData * shrink = vtkShrinkPolyData::New();
+	shrink->SetInputConnection(triangles->GetOutputPort());
+	shrink->SetShrinkFactor(1.0);
+        triangles->Delete();
+
 	// Now we should to clean these new triangles too. But this time don't allow polygons.
         mpCleanPolyData = vtkCleanPolyData::New();
-        mpCleanPolyData->SetInputConnection(triangles->GetOutputPort());
+        mpCleanPolyData->SetInputConnection(shrink->GetOutputPort());
         mpCleanPolyData->ConvertStripsToPolysOff();
         mpCleanPolyData->GetOutput()->ReleaseDataFlagOn();
-        triangles->Delete();
+        shrink->Delete();
 
 	// Now we can iteratively reshape the clean meshes.
 	vtkCleanPolyData * input = mpCleanPolyData;
@@ -175,6 +180,7 @@ void
         	vtkCleanPolyData * cleanPolyData = vtkCleanPolyData::New();
         	cleanPolyData->SetInputConnection(stripper->GetOutputPort());
         	cleanPolyData->PointMergingOn();
+        	//cleanPolyData->SetTolerance(.3);
 		cleanPolyData->ConvertLinesToPointsOn();
 		cleanPolyData->ConvertPolysToLinesOn();
         	cleanPolyData->ConvertStripsToPolysOff();
