@@ -24,7 +24,7 @@ class OmHdf5LowLevelWrappersAutoOpenClose : public OmHdf5LowLevelWrappersAbstrac
 
 	//image I/O
 	virtual Vector3 < int > dataset_image_get_dims_with_lock(OmHdf5Path path);
-	virtual void dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample, bool unlimited);
+	virtual void dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
 	virtual vtkImageData* dataset_image_read_trim_with_lock(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
 	virtual void dataset_image_write_trim_with_lock(OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 	

@@ -77,11 +77,10 @@ bool OmHdf5::dataset_exists( OmHdf5Path path )
 }
 
 void OmHdf5::dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3<int>* dataDims, 
-						  Vector3<int>* chunkDims, int bytesPerSample,
-						  bool unlimited ) 
+						  Vector3<int>* chunkDims, int bytesPerSample ) 
 {
 	QMutexLocker locker(fileLock);
-	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, bytesPerSample, unlimited );
+	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, bytesPerSample);
 }
 
 vtkImageData* OmHdf5::dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)

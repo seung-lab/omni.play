@@ -79,11 +79,11 @@ bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(OmHdf5Path 
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, int bytesPerSample, bool unlimited)
+					    Vector3<int>* chunkDims, int bytesPerSample)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
-	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
 	HDF5_UNWRAP();
 }
 

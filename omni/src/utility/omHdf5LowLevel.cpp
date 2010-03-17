@@ -19,10 +19,11 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 
         QFile file(QString(fpath.c_str()));
         if(!file.exists()){
-		//		H5E_BEGIN_TRY {
-			hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
-			om_hdf5_file_close_with_lock(fileId);
-			//		} H5E_END_TRY
+		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
+		if (fileId < 0)
+			throw OmIoException("Could not create HDF5 file.");
+		
+		om_hdf5_file_close_with_lock(fileId);
         }
 }
 
@@ -63,6 +64,7 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 	debug("hdf5", "%s: closed HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
+	H5Fflush(fileId, H5F_SCOPE_GLOBAL);
         herr_t ret = H5Fclose(fileId);
         if (ret < 0)
                 throw OmIoException("Could not close HDF5 file.");
@@ -86,8 +88,10 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 	return true;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, 
+									   Vector3<int>* dataDims,
+									   Vector3<int>* chunkDims, 
+									   int bytesPerSample)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -95,7 +99,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t
 	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
 
 	//create data
-	om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
 }
 
 /**
@@ -412,15 +416,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	hsize_t dim = size;
 	
 	// TODO: fixme! use the max dim!
-	hsize_t max;
-	if( dim ){
-		max = dim;
-		printf("%s: max is %s\n", __FUNCTION__, qPrintable(QString::number( max ) ));
-	} else {
-		printf("%s: max is H5S_UNLIMITED\n", __FUNCTION__ );
-		max = H5S_UNLIMITED;
-	}
-	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
+	hsize_t max = dim;
+	hid_t dataspace_id = H5Screate_simple(rank, &dim, &max);
 	if (dataspace_id < 0)
 		throw OmIoException("Could not create HDF5 dataspace.");
 
@@ -501,12 +498,11 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 							    const char *name, 
 							    Vector3<int>* dataDims, 
 							    Vector3<int>* chunkDims, 
-							    int bytesPerSample, 
-							    bool unlimited)
+							    int bytesPerSample )
 {
 	herr_t ret;
 	int rank = 3;
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...%i\n", __FUNCTION__, unlimited);
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
 
 	//Creates a new property as an instance of a property list class.
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
@@ -523,11 +519,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
 	Vector3 < hsize_t > flipped_max_data_dims;
 
-	if(unlimited){
-		flipped_max_data_dims = Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED, H5S_UNLIMITED);
-	} else { 
-		flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
-	}
+	flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
@@ -554,7 +546,6 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 
 vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
