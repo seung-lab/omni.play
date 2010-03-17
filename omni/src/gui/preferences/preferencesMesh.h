@@ -8,7 +8,7 @@ class PreferencesMesh : public QWidget
     Q_OBJECT 
 	
 public: 
-	PreferencesMesh(QWidget *parent = 0); 
+	PreferencesMesh(QWidget *parent); 
     
  private slots: 
 	void on_tdpSlider_valueChanged();	// OM_PREF_MESH_REDUCTION_PERCENT_FLT

@@ -109,22 +109,6 @@ unsigned int SegmentationDataWrapper::getNumberOfSegments()
 	return OmVolume::GetSegmentation(mID).GetValidSegmentIds().size();
 }
 
-QString SegmentationDataWrapper::GetSourceDirectoryPath()
-{
-	return QString::fromStdString( OmVolume::GetSegmentation(mID).GetSourceDirectoryPath() );
-}
-
-QString SegmentationDataWrapper::GetSourceFilenameRegex()
-{
-	return QString::fromStdString( OmVolume::GetSegmentation(mID).GetSourceFilenameRegex() );
-}
-
-const list < string > SegmentationDataWrapper::GetSourceFilenameRegexMatches()
-{
-	return OmVolume::GetSegmentation(mID).GetSourceFilenameRegexMatches();
-}
-
-
 /*******************************************
  ****** Segments
  *******************************************/
@@ -227,15 +211,12 @@ QString SegmentDataWrapper::getDataValuesForSegment()
 
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
-	
 	const SEGMENT_DATA_TYPE value = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).get_original_mapped_data_value();
 	if( 0 == value ){
 		return "<not set>";
 	} else {
 		return QString::number( value );
 	}
-	
-	//	return QString::number( OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).get_original_mapped_data_value() );
 }
 
 /*******************************************

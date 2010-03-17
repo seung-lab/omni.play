@@ -13,6 +13,7 @@ SET(OM_UTILITY_LIB_SRCS
 	omImageDataIo.cpp
 	omSystemInformation.cpp
 	localPrefFiles.cpp
+	sortHelpers.cpp
 )
 
 #create static library

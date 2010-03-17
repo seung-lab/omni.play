@@ -9,7 +9,7 @@ class Preferences2d : public QWidget
     Q_OBJECT 
 	
 public: 
-    Preferences2d(QWidget *parent = 0); 
+    Preferences2d(QWidget *parent); 
     
 private slots: 
 	void on_volEdit_editingFinished();

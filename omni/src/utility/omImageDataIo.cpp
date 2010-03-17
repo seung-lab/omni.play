@@ -114,9 +114,9 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 	return reader;
 }
 
-vtkImageReader2 *om_imagedata_get_reader(const string & fname)
+vtkImageReader2 *om_imagedata_get_reader( QString fname)
 {
-	return om_imagedata_get_reader(om_imagedata_parse_image_type( QString::fromStdString( fname)) );
+	return om_imagedata_get_reader(om_imagedata_parse_image_type( fname ) );
 }
 
 /*
@@ -149,53 +149,49 @@ vtkImageWriter *om_imagedata_get_writer(string & fname)
 /////////////////////////////////
 ///////          Reading Functions
 
-vtkImageData *om_imagedata_read(string dpath, list < string > &fnames, const DataBbox srcExtentBbox,
-				const DataBbox dataExtentBbox, int bytesPerSample)
+vtkImageData *om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
+				 const DataBbox srcExtentBbox,
+				 const DataBbox dataExtentBbox, 
+				 int bytesPerSample)
 {
 
-	assert(fnames.size() && "No files to read.");
+	assert(sourceFilenamesAndPaths.size() && "No files to read.");
 
-	switch (om_imagedata_parse_image_type( QString::fromStdString( fnames.front()))) {
+	switch (om_imagedata_parse_image_type( sourceFilenamesAndPaths[0].filePath() )){
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:
 	case VTK_TYPE:
-		return om_imagedata_read_vtk(dpath, fnames, srcExtentBbox, dataExtentBbox, bytesPerSample);
+		return om_imagedata_read_vtk( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
 
 	case HDF5_TYPE:
-		return om_imagedata_read_hdf5(dpath, fnames, srcExtentBbox, dataExtentBbox, bytesPerSample);
+		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
 
 	default:
 		assert(false && "Unknown file format");
 	}
 }
 
-vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const DataBbox srcExtentBbox,
-				    const DataBbox dataExtentBbox, int bytesPerSample)
+vtkImageData *om_imagedata_read_vtk( QFileInfoList sourceFilenamesAndPaths, 
+				     const DataBbox srcExtentBbox,
+				     const DataBbox dataExtentBbox, 
+				     int bytesPerSample)
 {
-	//debug("genone","om_imagedata_read_vtk");
-
 	//alloc dynamic image data
 	vtkImageData *data = vtkImageData::New();
 
 	//get image reader for name specified file type
-	vtkImageReader2 *p_reader = om_imagedata_get_reader(fnames.front());
+	vtkImageReader2 *p_reader = om_imagedata_get_reader( sourceFilenamesAndPaths[0].filePath() );
 
 	//generate vtkStringArray
 	vtkStringArray *vtk_fpaths_stings = vtkStringArray::New();
-	list < string >::iterator itr;
-	for (itr = fnames.begin(); itr != fnames.end(); itr++) {
-		vtk_fpaths_stings->InsertNextValue(dpath + *itr);
+	foreach( QFileInfo fi, sourceFilenamesAndPaths ){
+		string fnp = fi.filePath().toStdString();
+		vtk_fpaths_stings->InsertNextValue( fnp );
 	}
 
 	//set filenames
 	p_reader->SetFileNames(vtk_fpaths_stings);
-
-	//set reader props
-	//p_reader->SetFilePrefix(dpath.c_str());
-	//convert to vtk "%s/FilePattern" format
-	//string vtk_file_pattern = "%s" + fpattern;
-	//p_reader->SetFilePattern(vtk_file_pattern.c_str());
 
 	//source extent to read from
 	int vtk_src_extent[6];
@@ -233,9 +229,6 @@ vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const
 	extent_translator->SetOutput(data);
 	extent_translator->Update();
 
-	//      //debug("FIXME", << "UPDATE" << endl;
-	//      //debug("FIXME", << dpath << vtk_file_pattern << endl;
-	//debug("FIXME", << "om_imagedata_read" << data->GetScalarSize() << endl;
 
 	//delete all but image
 	p_reader->Delete();
@@ -248,85 +241,20 @@ vtkImageData *om_imagedata_read_vtk(string dpath, list < string > &fnames, const
 	return data;
 }
 
-vtkImageData *om_imagedata_read_hdf5(string dpath, list < string > &fnames, const DataBbox srcExtentBbox,
-				     const DataBbox dataExtentBbox, int bytesPerSample)
+vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
+				      const DataBbox srcExtentBbox,
+				      const DataBbox dataExtentBbox, 
+				      int bytesPerSample)
 {
 	//assert only one hdf5 file specified
-	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
+	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
-	OmHdf5 hdfImportFile( QString::fromStdString( dpath + fnames.front() ));
+	OmHdf5 hdfImportFile( sourceFilenamesAndPaths[0].filePath() );
 
 	vtkImageData *data = hdfImportFile.dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
 								   dataExtentBbox, 
 								   bytesPerSample);
 	return data;
-}
-
-/////////////////////////////////
-///////         Writing Functions
-
-void om_imagedata_write_vtk(vtkImageData * data, QString fileNameAndPath, const DataBbox dataExtentBbox,
-		       int bytesPerSample)
-{
-
-	assert(0); //this is tottally broken
-	/*
-	//debug("genone","Write");
-
-	//convert to vtk extent
-	int vtk_extent[6];
-	getVtkExtentFromAxisAlignedBoundingBox(dataExtentBbox, vtk_extent);
-
-	//extract volume of interest
-	vtkExtractVOI *voi_extractor = vtkExtractVOI::New();
-	voi_extractor->SetInput(data);
-	voi_extractor->SetVOI(vtk_extent);
-
-	//pad extent cut by voi extractor
-	vtkImageConstantPad *padder = vtkImageConstantPad::New();
-	padder->SetInput(voi_extractor->GetOutput());
-	padder->SetOutputWholeExtent(vtk_extent);
-
-	//flip
-	vtkImageFlip *flipper = vtkImageFlip::New();
-	flipper->SetInput(padder->GetOutput());
-	flipper->SetFilteredAxis(1);
-
-	//normalize extent
-	vtkImageTranslateExtent *extent_translator = vtkImageTranslateExtent::New();
-	extent_translator->SetInput(flipper->GetOutput());
-	Vector3 < int >translation = -dataExtentBbox.getMin();
-	extent_translator->SetTranslation(translation.array);
-
-	//cast data
-	vtkImageCast *p_caster = vtkImageCast::New();
-	p_caster->SetInput(extent_translator->GetOutput());
-	p_caster->SetOutputScalarType(bytesToVtkScalarType(bytesPerSample));
-
-	//create image writer
-	vtkImageWriter *writer = om_imagedata_get_writer( om_imagedata_parse_image_type( fileNameAndPath ));
-	writer->SetInput(p_caster->GetOutput());
-	string path = QFileInfo( fileNameAndPath ).absolutePath().toStrString();
-	writer->SetFilePrefix( path.c_str() );
-
-	//convert to vtk "%s/FilePattern" format
-	string vtk_file_pattern = "%s" + fpattern;
-	writer->SetFilePattern(vtk_file_pattern.c_str());
-
-	//create output directory
-	bfs::create_directories(bfs::path(dpath));
-
-	//writer->Update();
-	writer->Write();
-
-	//delete all but image
-	writer->Delete();
-	p_caster->Delete();
-	voi_extractor->Delete();
-	padder->Delete();
-	flipper->Delete();
-	extent_translator->Delete();
-	*/
 }
 
 /*
@@ -335,55 +263,46 @@ void om_imagedata_write_vtk(vtkImageData * data, QString fileNameAndPath, const 
 
 /////////////////////////////////
 ///////          Dimensions Functions
-Vector3 < int > om_imagedata_get_dims(string dpath, const list < string > &fnames)
+Vector3 < int > om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths )
 {
-
-	assert(fnames.size() && "No files specified");
+	assert(sourceFilenamesAndPaths.size() && "No files specified");
 
 	//use first name in list to determine filetype
-	switch (om_imagedata_parse_image_type(QString::fromStdString( fnames.front()) )) {
+	switch (om_imagedata_parse_image_type( sourceFilenamesAndPaths[0].filePath() )){
 	case TIFF_TYPE:
 	case JPEG_TYPE:
 	case PNG_TYPE:
 	case VTK_TYPE:
-		return om_imagedata_get_dims_vtk(dpath, fnames);
+		return om_imagedata_get_dims_vtk( sourceFilenamesAndPaths );
 
 	case HDF5_TYPE:
-		return om_imagedata_get_dims_hdf5(dpath, fnames);
+		return om_imagedata_get_dims_hdf5( sourceFilenamesAndPaths );
 
 	default:
 		assert(false && "Unknown file format");
 	}
 }
 
-Vector3 < int > om_imagedata_get_dims_vtk(string dpath, const list < string > &fnames)
+Vector3 < int > om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths )
 {
-
 	////use vtk to determine properties
 	vtkImageData *data = vtkImageData::New();
 
-	//convert to vtk "%s/FilePattern" format
-	//string vtk_file_pattern = "%s" + fpattern;    
-
 	//set reader props
-	vtkImageReader2 *reader = om_imagedata_get_reader(fnames.front());
-	reader->SetFileName((dpath + fnames.front()).c_str());
+	vtkImageReader2 *reader = om_imagedata_get_reader( sourceFilenamesAndPaths[0].filePath() );
+	string firstFileNameAndPath = sourceFilenamesAndPaths[0].filePath().toStdString();
+	reader->SetFileName( firstFileNameAndPath.c_str() );
 	reader->SetOutput(data);
 	reader->Update();
 
 	//get dim information
 	Vector3 < int >src_dims;
+
 	//set slice dimensions
 	data->GetDimensions(src_dims.array);
+
 	//set num slices
-	src_dims.z = fnames.size();
-
-	//get sample information
-	//mSourceBytesPerSample = mImageData->GetScalarSize();
-
-	//debug("FIXME", << mSourceDataExtent << endl;
-	//debug("FIXME", << mSamplesPerVoxel << endl;
-	//debug("FIXME", << mBytesPerSample << endl;
+	src_dims.z = sourceFilenamesAndPaths.size();
 
 	//delete image and reader
 	data->Delete();
@@ -392,11 +311,11 @@ Vector3 < int > om_imagedata_get_dims_vtk(string dpath, const list < string > &f
 	return src_dims;
 }
 
-Vector3 < int > om_imagedata_get_dims_hdf5(string dpath, const list < string > &fnames)
+Vector3 < int > om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths )
 {
-	assert((fnames.size() == 1) && "More than one hdf5 file specified.h");
+	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
-	OmHdf5 hdfExport( QString::fromStdString( dpath + fnames.front() ) );
+	OmHdf5 hdfExport( sourceFilenamesAndPaths[0].filePath() );
 
 	//get dims of image
 	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
@@ -700,238 +619,4 @@ void appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** output
 		inputImageData[2 * i]->Delete();
 		inputImageData[2 * i + 1]->Delete();
 	}
-}
-
-/////////////////////////////////
-///////          Symlink Data
-
-/*
- *	Regex to find all valid filenames in a given directory
- *	All results must have the same extention type.
- */
-void om_imagedata_regex_match_dir_contents(string dpath, string regexStr, list < string > &rMatchFnames)
-{
-
-	//clear vector
-	rMatchFnames.clear();
-
-	//try to setup regular expression
-	boost::regex re;
-	try {
-		re.assign(regexStr);
-	} catch(boost::regex_error & e) {
-		//debug("FIXME", << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
-		return;
-	}
-
-	//bfs path to directory
-	bfs::path dpath_bfs(dpath);
-
-	//if does not exist or not a directory
-	if (!bfs::exists(dpath_bfs) || !bfs::is_directory(dpath_bfs)) {
-		//debug("FIXME", << "om_imagedata_regex_contents: source directory does not exist" << endl;
-		return;
-	}
-	//for all contents
-	string ext;
-	bfs::directory_iterator end;
-	for (bfs::directory_iterator itr(dpath_bfs); itr != end; ++itr) {
-
-		//ignore directories
-		if (bfs::is_directory(*itr))
-			continue;
-
-		//for each file path, get leaf file name
-		string fname = itr->leaf();
-
-		//ignore if not a match
-		if (!boost::regex_match(fname, re))
-			continue;
-
-		//else valid match so store
-		rMatchFnames.push_back(fname);
-	}
-}
-
-bool string_natural_comparison(const string & lhs, const string & rhs)
-{
-	return strnatcmp(lhs.c_str(), rhs.c_str()) < 0;
-}
-
-/*
- *	Given a directory path and a regular expression, creates a list of matching filenames
- *	sorted by natural ordering.
- */
-void om_imagedata_regex_match_dir_contents_sorted(string dpath, string regexStr, list < string > &rMatchFnames)
-{
-
-	//clear vector
-	rMatchFnames.clear();
-
-	//try to setup regular expression
-	boost::regex re;
-	try {
-		re.assign(regexStr);
-	} catch(boost::regex_error & e) {
-		//debug("FIXME", << "om_imagedata_regex_contents: " << regexStr << "is not a valid regular expression" << endl;
-		return;
-	}
-
-	//bfs path to directory
-	bfs::path dpath_bfs(dpath);
-
-	//if does not exist or not a directory
-	if (!bfs::exists(dpath_bfs) || !bfs::is_directory(dpath_bfs)) {
-		//debug("FIXME", << "om_imagedata_regex_match_dir_contents_sorted: source directory does not exist" << endl;
-		return;
-	}
-	//create a set that sorts by natrual string comparison
-	set < string, bool(*)(const string & lhs, const string & rhs)>match_nat_cmp_set(string_natural_comparison);
-
-	//for all contents
-	string ext;
-	bfs::directory_iterator end;
-	for (bfs::directory_iterator itr(dpath_bfs); itr != end; ++itr) {
-
-		//ignore directories
-		if (bfs::is_directory(*itr))
-			continue;
-
-		//for each file path, get leaf file name
-		string fname = itr->leaf();
-
-		//ignore if not a match
-		if (!boost::regex_match(fname, re))
-			continue;
-
-		//else valid match so store
-		match_nat_cmp_set.insert(fname);
-	}
-
-	//convert set to a list
-	set < string, int (*) (const string & lhs, const string & rhs)>::iterator match_itr;
-	for (match_itr = match_nat_cmp_set.begin(); match_itr != match_nat_cmp_set.end(); match_itr++) {
-		rMatchFnames.push_back(*match_itr);
-	}
-}
-
-/*
- *	Given a source directory and list of source file names, create a directory of symlinks
- *	with sequentially labed files.
- */
-void om_imagedata_create_symlink_dir(string symlinkDpath, string srcDpath, list < string > &rSrcFnames)
-{
-
-	//ignore if no src_files
-	if (rSrcFnames.size() == 0)
-		return;
-
-	//remove output directory if it already exists
-	om_imagedata_remove_symlink_dir(symlinkDpath);
-
-	//create output directory
-	if (!bfs::create_directories(bfs::path(symlinkDpath))) {
-		//debug("FIXME", << "om_imagedata_create_symlink_dir: could not create temp dirctory" << endl;
-		assert(false);
-	}
-	//for all filenames in the list
-	string src_fpath, symlink_fpath;
-	list < string >::iterator itr;
-	int i = 0;
-	for (itr = rSrcFnames.begin(); itr != rSrcFnames.end(); itr++, i++) {
-
-		//form real path
-		src_fpath = srcDpath + *itr;
-
-		//check real path exists
-		if (!bfs::exists(bfs::path(src_fpath))) {
-			//debug("FIXME", << "om_imagedata_create_symlink_dir: source not found " << src_fpath << endl;
-			assert(false);
-		}
-		//make symlink path
-		makeFilePath(symlink_fpath, symlinkDpath, "temp.%d.tif", i);
-
-		//create symlink from symlink_path to src_path
-		create_symlink(bfs::path(src_fpath), bfs::path(symlink_fpath));
-		if (!bfs::exists(bfs::path(symlink_fpath))) {
-			//debug("FIXME", << "om_imagedata_create_symlink_dir: could not create symlink: " << symlink_fpath << endl;
-			assert(false);
-		}
-	}
-}
-
-void om_imagedata_remove_symlink_dir(string symlink_dpath)
-{
-	//if temp directory exists
-	if (bfs::exists(bfs::path(symlink_dpath))) {
-		//attemp to remove temp directory
-		if (!bfs::remove_all(bfs::path(symlink_dpath))) {
-			//debug("FIXME", << "om_imagedata_remove_symlink_dir: could not remove temp dirctory" << endl;
-			assert(false);
-		}
-	}
-}
-
-/////////////////////////////////
-///////
-///////         Utility Functions
-///////
-
-/* 
- * Generates filepath from given directory path, file format, and index value.
- * on error, returns -1
- */
-void makeFilePath(string & fpath, const string & dpath, const string & fpattern, int index)
-{
-
-	char formatted_fname_buf[MAX_FNAME_SIZE];
-	int str_len = 0;
-
-	//try to create formatted filename
-	if ((str_len = sprintf(formatted_fname_buf, fpattern.c_str(), index)) < 0)
-		throw OmFormatException("Could not create formatted filename");
-
-	//check formatted string fits in buffer
-	if (str_len > MAX_FNAME_SIZE)
-		throw OmFormatException("Filename too long.");
-
-	//set to directory path
-	fpath = dpath;
-
-	//and append filename
-	fpath.append(formatted_fname_buf);
-}
-
-/*
- * Returns the number of files that match given fpattern in directory dpath.  
- * Enumerates starting from 1 to fill format string with "%d" charactors in it.
- */
-
-int countMatchesInDirectory(string & dpath, string & fpattern)
-{
-
-	int file_index = 0;
-
-	while (true) {
-
-		//get next filepath
-		string fpath;
-		try {
-			makeFilePath(fpath, dpath, fpattern, file_index);
-
-		}
-		catch(OmFormatException e) {
-			fprintf(stderr, "Could not get next file path\n");
-			continue;
-		}
-
-		//is file path valid
-		if (!bfs::exists(bfs::path(fpath)))
-			break;
-
-		//else, inc file index
-		file_index = file_index + 1;
-	}
-
-	return file_index;
 }

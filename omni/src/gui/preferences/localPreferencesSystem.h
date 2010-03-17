@@ -8,7 +8,7 @@ class LocalPreferencesSystem : public QWidget
     Q_OBJECT 
 	
 public: 
-	LocalPreferencesSystem(QWidget *parent = 0); 
+	LocalPreferencesSystem(QWidget *parent); 
     
 private slots: 
 	void on_ramSlider_valueChanged();

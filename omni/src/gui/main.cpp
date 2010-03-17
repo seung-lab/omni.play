@@ -172,6 +172,9 @@ void processLine( QString line, QString fName )
 		Vector3<int> maxext = Vector3<int>(getNum(args[1]),getNum(args[2]),getNum(args[3]));
 		OmVolume::SetDataDimensions(maxext);
                 OmProject::Save();
+	} else if ( line.startsWith("buildAndMeshSegmentation") ){
+		
+
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}

@@ -260,36 +260,6 @@ void MyInspectorWidget::nameEditChanged()
 	 */
 }
 
-void MyInspectorWidget::populateChannelInspector(OmId c_id)
-{
-	OmChannel & current_channel = OmVolume::GetChannel(c_id);
-
-	const string & my_name = current_channel.GetName();
-	channelInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
-	channelInspectorWidget->nameEdit->setMinimumWidth(200);
-
-	const string & my_directory = current_channel.GetSourceDirectoryPath();
-	channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
-	channelInspectorWidget->directoryEdit->setMinimumWidth(200);
-
-	////debug("genone","SOURCE DIRECTORY PATH = " << my_directory);
-
-	const string & my_pattern = current_channel.GetSourceFilenameRegex();
-	channelInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
-	channelInspectorWidget->patternEdit->setMinimumWidth(200);
-
-	channelInspectorWidget->listWidget->clear();
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetChannel(c_id).GetSourceFilenameRegexMatches();
-
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		channelInspectorWidget->listWidget->addItem(QString::fromStdString(*match_it));
-	}
-
-	const string & my_notes = current_channel.GetNote();
-	channelInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-}
-
 void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
 {
 	//debug("FIXME", << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
@@ -490,8 +460,6 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
 		this, SLOT(addFilter()));
 	
-	populateChannelInspector( cdw.getID() );
-
 	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 

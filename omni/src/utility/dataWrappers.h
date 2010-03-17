@@ -49,9 +49,7 @@ class SegmentationDataWrapper : public DataWrapper
 	QString getNote();
 	unsigned int getNumberOfSegments();
 
-	QString GetSourceDirectoryPath();
-	QString GetSourceFilenameRegex();
-	const list < string > GetSourceFilenameRegexMatches();
+	//	QString GetSourceDirectoryPath();
 };
 
 class SegmentDataWrapper : public DataWrapper 

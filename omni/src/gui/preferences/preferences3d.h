@@ -9,7 +9,7 @@ class Preferences3d : public QWidget, public Ui::preferences3d
     Q_OBJECT 
 	
 public: 
-    Preferences3d(QWidget *parent = 0); 
+    Preferences3d(QWidget *parent); 
 	
 	
 	private slots: 

@@ -10,7 +10,7 @@ class VolumeInspector : public QWidget
     Q_OBJECT 
 	
 public: 
-	VolumeInspector(QWidget *parent = 0); 
+	VolumeInspector(QWidget *parent); 
 	QPushButton *addChannelButton;
 	QPushButton *addSegmentationButton;
 		

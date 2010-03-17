@@ -6,13 +6,15 @@
 #include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 #include "volume/omChannel.h"
+#include <QFileInfoList>
+#include <QStringList>
 
 class ChanInspector : public QWidget, public Ui::chanInspector
 { 
 	Q_OBJECT 
 	
  public: 
-	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent = 0);
+	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent);
  	QString raiseFileDialog();
  	void intermediate_build_call(OmChannel *current_channel);
 	ChannelDataWrapper getChannelDataWrapper();
@@ -28,5 +30,11 @@ class ChanInspector : public QWidget, public Ui::chanInspector
     
  private:
 	ChannelDataWrapper cdw;
+	void updateFileList();
+	void populateChannelInspector();
+
+	QDir getDir();
+	QStringList getFileList();
+	QFileInfoList getFileInfoList();
 }; 
 #endif

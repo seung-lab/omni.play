@@ -32,8 +32,8 @@ static const string MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 OmMipVolume::OmMipVolume()
  : MipChunkThreadedCache(RAM_CACHE_GROUP)
 {
+	sourceFilesWereSet = false;
 
-	/** Set The Name of the Cache */
         SetCacheName("OmMipVolume");
 
 	//init
@@ -126,65 +126,29 @@ string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 
 /////////////////////////////////
 ///////          Source Data Properties
-
-const string & OmMipVolume::GetSourceDirectoryPath()
+void OmMipVolume::SetSourceFilenamesAndPaths( QFileInfoList sourceFilenamesAndPaths )
 {
-	return mSourceDirectoryPath;
+	mSourceFilenamesAndPaths = sourceFilenamesAndPaths;
+	sourceFilesWereSet = true;
 }
 
-void OmMipVolume::SetSourceDirectoryPath(const string & dpath)
+QFileInfoList OmMipVolume::GetSourceFilenamesAndPaths()
 {
-	mSourceDirectoryPath = dpath;
-	UpdateSourceFilenameRegexMatches();
+	return mSourceFilenamesAndPaths;
 }
 
-const string & OmMipVolume::GetSourceFilenameRegex()
-{
-	return mSourceFilenameRegex;
-}
-
-void OmMipVolume::SetSourceFilenameRegex(const string & regex)
-{
-	mSourceFilenameRegex = regex;
-	UpdateSourceFilenameRegexMatches();
-}
-
-/*
- *	Update matches if changes to source directory or regex.
- */
-void OmMipVolume::UpdateSourceFilenameRegexMatches()
-{
-
-	//clear matches if no directory specified
-	if (GetSourceDirectoryPath().size() == 0) {
-		mSourceFilenameRegexMatches.clear();
-		return;
-	}
-	//if source regex is empty, use wildcard
-	string regex = mSourceFilenameRegex.size()? mSourceFilenameRegex : ".*";
-
-	//use specified dir and regex to find matches
-	om_imagedata_regex_match_dir_contents_sorted(GetSourceDirectoryPath(), regex, mSourceFilenameRegexMatches);
-}
-
-/*
- *	Get reference to list of matching filenames for preset regex and source directory.
- */
-const list < string > & OmMipVolume::GetSourceFilenameRegexMatches()
-{
-	return mSourceFilenameRegexMatches;
-}
-
-/*
- *	Returns if source data is valid.  Simple test if there are any
- *	matching files as the source.
- */
 bool OmMipVolume::IsSourceValid()
 {
-	//if matches    
-	if (GetSourceFilenameRegexMatches().size() == 0)
+	if( mSourceFilenamesAndPaths.empty() ){
 		return false;
+	}
 
+	foreach( QFileInfo fi, mSourceFilenamesAndPaths ){
+		if( !fi.exists() ){
+			return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -247,24 +211,22 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
  */
 void OmMipVolume::UpdateMipProperties()
 {
-	//if valid source, check dimensions
 	if (IsSourceValid()) {
 
 		//get source dimensions
-		Vector3 < int >source_dims =
-		    om_imagedata_get_dims(GetSourceDirectoryPath(), GetSourceFilenameRegexMatches());
+		Vector3 < int >source_dims = om_imagedata_get_dims( mSourceFilenamesAndPaths );
 
-		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims), GetSourceDirectoryPath().c_str(),
-			GetSourceFilenameRegexMatches().front().c_str());
+		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
-			//debug("FIXME", << "OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS" << endl;
+			printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
 
 			//update volume dimensions
 			OmVolume::SetDataDimensions(source_dims);
 		}
 	}
+
 	//check for valid mip chunk dim
 	if (GetChunkDimension() % 2)
 		throw OmFormatException("Chunk dimensions must be even.");
@@ -590,8 +552,6 @@ void OmMipVolume::DeleteInternalData()
  */
 void OmMipVolume::Build()
 {
-	//debug("genone","OmMipVolume::Build: starting build"); 
-
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
 	
@@ -606,7 +566,7 @@ void OmMipVolume::Build()
 
 	//if source data valid
 	if (!IsSourceValid()) {
-		//debug("FIXME", << "OmMipVolume::Build: blank build complete " << endl;
+		printf("OmMipVolume::Build: blank build complete\n");
 		SetBuildState(MIPVOL_BUILT);
 		return;
 	}
@@ -622,9 +582,9 @@ void OmMipVolume::Build()
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
 	}
+
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
-	//debug("FIXME", << "OmMipVolume::Build: build complete " << endl;
 }
 
 /*
@@ -780,8 +740,8 @@ bool OmMipVolume::ImportSourceData()
 
 	//init progress bar
 	int prog_count = 0;
-	OmEventManager::
-	    PostEvent(new
+	OmEventManager::PostEvent(
+				  new
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data...               "), 0,
 				      MipChunksInMipLevel(0)));
 	//dim of leaf coords
@@ -790,8 +750,8 @@ bool OmMipVolume::ImportSourceData()
 	leaf_volume_path.setPath( MipLevelInternalDataPath(0) );
 
 	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z)
-		for (int y = 0; y < leaf_mip_dims.y; ++y)
+	for (int z = 0; z < leaf_mip_dims.z; ++z) {
+		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 				//get chunk data bbox
@@ -801,8 +761,10 @@ bool OmMipVolume::ImportSourceData()
 
 				//read chunk image data from source
 				vtkImageData *p_img_data =
-				    om_imagedata_read(GetSourceDirectoryPath(), mSourceFilenameRegexMatches,
-						      GetExtent(), chunk_data_bbox, GetBytesPerSample());
+					om_imagedata_read(mSourceFilenamesAndPaths, 
+							  GetExtent(), 
+							  chunk_data_bbox, 
+							  GetBytesPerSample());
 
 				//write to project data
 				OmProjectData::WriteImageData(leaf_volume_path, &chunk_data_bbox, GetBytesPerSample(),
@@ -819,6 +781,8 @@ bool OmMipVolume::ImportSourceData()
 				OmEventManager::
 				    PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_VALUE, ++prog_count));
 			}
+		}
+	}
 
 	//hide progress bar
 	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));

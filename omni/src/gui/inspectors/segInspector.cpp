@@ -9,7 +9,10 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
+#include "system/buildVolumes.h"
+#include "utility/sortHelpers.h"
 
+#include <strnatcmp.h>
 #include <boost/progress.hpp>
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
@@ -188,19 +191,8 @@ void SegInspector::on_browseButton_clicked()
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
 							"", QFileDialog::ShowDirsOnly);
 	if (dir != "") {
-		if (!dir.endsWith("/"))
-			dir += QString("/");
 		directoryEdit->setText(dir);
-
-		OmVolume::GetSegmentation(sdw.getID()).SetSourceDirectoryPath(dir.toStdString());
-
-		listWidget->clear();
-		list < string >::const_iterator match_it;
-		const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
-
-		for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-			listWidget->addItem(QString::fromStdString(*match_it));
-		}
+		updateFileList();
 	}
 }
 
@@ -210,60 +202,74 @@ void SegInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	printf("%s: exporting to %s\n", __FUNCTION__, qPrintable( fileName ));
-
 	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
 }
 
 void SegInspector::on_patternEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
 }
 
-void SegInspector::on_patternEdit_textChanged()
+QDir SegInspector::getDir()
+{	
+	QString regex = patternEdit->text();
+	QDir dir( directoryEdit->text() );
+
+	dir.setSorting( QDir::Name );
+	dir.setFilter( QDir::Files );
+	QStringList filters;
+	filters << regex;
+	dir.setNameFilters( filters );
+
+	return dir;
+}
+
+QStringList SegInspector::getFileList()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	QStringList files = getDir().entryList();
+	return SortHelpers::sortNaturally( files );
+}
 
+QFileInfoList SegInspector::getFileInfoList()
+{
+	QFileInfoList files = getDir().entryInfoList();
+	return SortHelpers::sortNaturally( files );
+}
+
+void SegInspector::updateFileList()
+{
 	listWidget->clear();
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetSegmentation(sdw.getID()).GetSourceFilenameRegexMatches();
 
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		listWidget->addItem(QString::fromStdString(*match_it));
+	foreach (QString fn, getFileList() ) {
+		listWidget->addItem( fn );
 	}
 
 	listWidget->update();
 }
 
-void build_image(OmSegmentation * current_seg)
+void SegInspector::on_patternEdit_textChanged()
 {
-	printf("starting segmentation data build...\n");
-	boost::timer* timer = new boost::timer();
-	current_seg->BuildVolumeData();
-	const double timeToMeshSecs = timer->elapsed();
-	printf("segmentation data build performed in %g (secs?)\n", timeToMeshSecs);
+	updateFileList();
 }
 
-void build_mesh(OmSegmentation * current_seg)
+void SegInspector::build_image(OmSegmentation * current_seg)
 {
-	printf("starting segmentation mesh build...\n");
-	time_t start;
-	time_t end;
-	double dif;
-	
-	time (&start);
-	current_seg->BuildMeshData();
-	time (&end);
-	dif = difftime (end,start);
-	printf("segmentation mesh build performed in (%.2lf secs)\n", dif );
+	BuildVolumes bv;
+	bv.setFileNamesAndPaths( getFileInfoList() );
+	bv.build_seg_image( current_seg );
 }
 
-void build_image_and_mesh( OmSegmentation * current_seg )
+void SegInspector::build_mesh(OmSegmentation * current_seg)
+{
+	BuildVolumes bv;
+	bv.setFileNamesAndPaths( getFileInfoList() );
+	bv.build_seg_mesh( current_seg );
+}
+
+void SegInspector::build_image_and_mesh( OmSegmentation * current_seg )
 {
 	build_image(current_seg);
 	build_mesh(current_seg);
 }
-
 
 QString& GetScriptCmd (QString arg)
 {
@@ -280,26 +286,25 @@ QString& GetScriptCmd (QString arg)
 	return cmd;
 }
 
-
 void SegInspector::on_buildButton_clicked()
 {
 	// check current selection in buildComboBox
 	QString cur_text = buildComboBox->currentText();
 
-	extern void build_image(OmSegmentation * current_seg);
-	extern void build_mesh(OmSegmentation * current_seg);
-	extern void build_image_and_mesh(OmSegmentation * current_seg);
-
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
-	if (cur_text == QString("Data")) {
-		QFuture < void >future = QtConcurrent::run(build_image, &current_seg);
+	if ("Data" == cur_text ){
+		//QFuture < void >future = QtConcurrent::run(&SegInspector::build_image, &current_seg);
+		build_image(&current_seg);
 		emit segmentationBuilt(sdw.getID());
-	} else if (cur_text == QString("Mesh")) {
-		QFuture < void >future = QtConcurrent::run(build_mesh, &current_seg);
+
+	} else if ( "Mesh" == cur_text ){
+		//QFuture < void >future = QtConcurrent::run(&SegInspector::build_mesh, &current_seg);
+		build_mesh(&current_seg);
 		//              emit meshBuilt(sdw.getID());
-	} else if (cur_text == QString("Data & Mesh")) {
-		QFuture < void >f1 = QtConcurrent::run(build_image_and_mesh, &current_seg);
+	} else if ("Data & Mesh" == cur_text){
+		//QFuture < void >f1 = QtConcurrent::run(&SegInspector::build_image_and_mesh, &current_seg);
+		build_image_and_mesh( &current_seg);
 		emit segmentationBuilt(sdw.getID());
 	} else if( "Meshinator" == cur_text ){
 		QString rel_fnpn = OmProjectData::getFileNameAndPath();
@@ -324,7 +329,7 @@ void SegInspector::on_buildButton_clicked()
 		}
 		mMeshinatorDialog = new QDialog ();
 		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
-		mMeshinatorDialog->exec ();
+		mMeshinatorDialog->exec();
 
 		stopMutexServer();
 		current_seg.mMipMeshManager.SetMeshDataBuilt(true);
@@ -347,19 +352,16 @@ void SegInspector::populateSegmentationInspector()
 	nameEdit->setText( sdw.getName() );
 	nameEdit->setMinimumWidth(200);
 
-	directoryEdit->setText( sdw.GetSourceDirectoryPath() );
+	//TODO: fix me!
+	//directoryEdit->setText( sdw.GetSourceDirectoryPath() );
 	directoryEdit->setMinimumWidth(200);
 
-	patternEdit->setText( sdw.GetSourceFilenameRegex() );
+	patternEdit->setText( "*" );
 	patternEdit->setMinimumWidth(200);
 
 	notesEdit->setPlainText( sdw.getNote() );
 
-	listWidget->clear();
-
-	foreach( string matchStr, sdw.GetSourceFilenameRegexMatches() ){
-		listWidget->addItem( QString::fromStdString( matchStr ) );
-	}
+	updateFileList();
 }
 
 void SegInspector::startMutexServer()

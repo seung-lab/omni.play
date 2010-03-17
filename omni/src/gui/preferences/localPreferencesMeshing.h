@@ -8,7 +8,7 @@ class LocalPreferencesMeshing : public QWidget
     Q_OBJECT 
 	
 public: 
-	LocalPreferencesMeshing(QWidget *parent = 0); 
+	LocalPreferencesMeshing(QWidget *parent); 
     
 private slots: 
 	void on_numThreadsSlider_valueChanged();

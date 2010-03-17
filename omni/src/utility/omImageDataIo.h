@@ -6,7 +6,6 @@
  *
  */
 
-
 #include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
 
@@ -14,12 +13,12 @@
 #include <vmmlib/serialization.h>
 using namespace vmml;
 
+#include <QFileInfoList>
 #include <QString>
 #include <list>
 using std::list;
 
 enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE };
-
 
 class vtkImageReader2;
 class vtkImageWriter;
@@ -30,32 +29,22 @@ ImageType om_imagedata_parse_image_type(QString fileNameAndPath);
 	
 //vtk io
 vtkImageReader2* om_imagedata_get_reader(ImageType);
-vtkImageReader2* om_imagedata_get_reader(const string &fname);
+vtkImageReader2* om_imagedata_get_reader(QString fname);
 vtkImageWriter* om_imagedata_get_writer(ImageType);
 vtkImageWriter* om_imagedata_get_writer(const string &fname);
 
 //reading
-vtkImageData* om_imagedata_read(string dpath, list<string> &fnames, const DataBbox srcExtentBbox, 
+vtkImageData* om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, const DataBbox srcExtentBbox, 
 				const DataBbox dataExtentBbox, int bytesPerSample);
-vtkImageData* om_imagedata_read_vtk(string dpath, list<string> &fnames, const DataBbox srcExtentBbox, 
+vtkImageData* om_imagedata_read_vtk(QFileInfoList sourceFilenamesAndPaths, const DataBbox srcExtentBbox, 
 				    const DataBbox dataExtentBbox, int bytesPerSample);
-vtkImageData* om_imagedata_read_hdf5(string dpath, list<string> &fnames, const DataBbox srcExtentBbox, 
+vtkImageData* om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths, const DataBbox srcExtentBbox, 
 				     const DataBbox dataExtentBbox, int bytesPerSample);
 
-//writing
-void om_imagedata_write_vtk(vtkImageData *data, QString fileNameAndPath, 
-			    const DataBbox dataExtentBbox, int bytesPerSample);
-
 //determine dimensions
-Vector3<int> om_imagedata_get_dims(string dpath, const list<string> &fname);
-Vector3<int> om_imagedata_get_dims_vtk(string dpath, const list<string> &fname);
-Vector3<int> om_imagedata_get_dims_hdf5(string dpath, const list<string> &fname);
-
-//symlink data
-void om_imagedata_regex_match_dir_contents(string dpath, string regex, list<string> &matches);
-void om_imagedata_regex_match_dir_contents_sorted(string dpath, string regexStr, list<string> &matches);
-void om_imagedata_create_symlink_dir(string symlink_dpath, string src_dpath, list<string> &src_fnames);
-void om_imagedata_remove_symlink_dir(string symlink_dpath);
+Vector3<int> om_imagedata_get_dims(QFileInfoList sourceFilenamesAndPaths);
+Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList sourceFilenamesAndPaths);
+Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths );
 
 /////////////////////////////////
 ///////		 vtkImageData Utility Functions
@@ -75,10 +64,5 @@ vtkImageData* allocImageData(Vector3<int> dims, int bytesPerSample);
 vtkImageData* createBlankImageData(Vector3<int> dims, int bytesPerSample, char value = 0);
 
 void appendImageDataPairs(vtkImageData **inputImageData, vtkImageData **outputImageData, int num_pairs, int axis);
-
-////////////////////////////////////////
-///////		Utility Functions Prototypes
-void makeFilePath(string &fpath, const string &dpath, const string &fpattern, int index);
-int countMatchesInDirectory(string &dpath, string &fpattern);
 
 #endif

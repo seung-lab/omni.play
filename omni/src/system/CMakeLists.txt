@@ -32,6 +32,7 @@ SET(OM_SYSTEM_LIB_SRCS
 #	omViewList.cpp
 #	omSnapshot.cpp
 	omLocalPreferences.cpp	
+	buildVolumes.cpp
 	${OM_SYSTEM_EVENTS_SRCS}
 )
 

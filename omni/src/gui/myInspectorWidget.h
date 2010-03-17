@@ -25,7 +25,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
  
  public:
-	 MyInspectorWidget(QWidget * parent = 0);
+	 MyInspectorWidget(QWidget * parent);
 	~MyInspectorWidget();
 
 	void addToVolume(OmManageableObject * item, ObjectType item_type);

@@ -13,13 +13,14 @@ class SegInspector : public QWidget
     Q_OBJECT 
 	
 public: 
-	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent = 0); 
+	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent); 
 	
 	OmId getSegmentationID();
 	QString raiseFileDialog();
-	
-	void build_image(OmSegmentation *current_seg);
-	void build_mesh(OmSegmentation *current_seg);	
+
+	void build_image(OmSegmentation * current_seg);
+	void build_mesh(OmSegmentation * current_seg);
+	void build_image_and_mesh( OmSegmentation * current_seg );
 	
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -46,6 +47,7 @@ public:
  private:
 	SegmentationDataWrapper sdw;
 	void populateSegmentationInspector();
+	void updateFileList();
 
 	QGroupBox* makeActionsBox();
 	QGroupBox* makeSourcesBox();
@@ -59,6 +61,10 @@ public:
 	MutexServer* mutexServer;
 	void startMutexServer();
 	void stopMutexServer();
+
+	QDir getDir();
+	QStringList getFileList();
+	QFileInfoList getFileInfoList();
 
 }; 
 #endif
