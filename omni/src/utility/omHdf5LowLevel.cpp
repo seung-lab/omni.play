@@ -17,7 +17,7 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-        QFile file(QString(fpath.c_str()));
+        QFile file(QString::fromStdString(fpath));
         if(!file.exists()){
 		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
 		if (fileId < 0)
