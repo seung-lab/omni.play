@@ -14,6 +14,7 @@
 #include "system/omGarbage.h"
 #include "system/omProjectData.h"
 #include "gui/inspectors/mutexServer.h"
+#include "system/buildVolumes.h"
 
 int argc_global;
 char **argv_global;
@@ -141,6 +142,18 @@ void Headless::processLine( QString line, QString fName )
 		Vector3<int> maxext = Vector3<int>(getNum(args[1]),getNum(args[2]),getNum(args[3]));
 		OmVolume::SetDataDimensions(maxext);
                 OmProject::Save();
+	} else if( line.startsWith("create") ) {
+		QStringList args = line.split(':');
+		QString projectFileNameAndPath = args[1];
+                OmProject::New( projectFileNameAndPath, true );
+	} else if( line.startsWith("addSegmentationFromHDF5") ){
+		QStringList args = line.split(':');
+		QString hdf5fnp = args[1];
+
+		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
+		BuildVolumes bv;
+		bv.addFileNameAndPath( hdf5fnp );
+		bv.buildAndMeshSegmentation( &added_segmentation );
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
@@ -151,6 +164,7 @@ void Headless::runInteractive( QString fName )
 	QTextStream stream(stdin);
 	QString line;
 	do {
+		printf("> ");
 		line = stream.readLine();
 		processLine( line, fName );
 	} while (!line.isNull());

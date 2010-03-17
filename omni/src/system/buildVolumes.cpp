@@ -4,6 +4,11 @@ BuildVolumes::BuildVolumes()
 {
 }
 
+void BuildVolumes::addFileNameAndPath( QString fnp )
+{
+	mFileNamesAndPaths << fnp;
+}
+
 void BuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 {
 	mFileNamesAndPaths = fileNamesAndPaths;

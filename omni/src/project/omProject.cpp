@@ -55,8 +55,12 @@ void OmProject::Delete()
 
 /////////////////////////////////
 ///////          Project IO
-void OmProject::New( QString fileNameAndPath )
+void OmProject::New( QString fileNameAndPath, bool amHeadless )
 {
+	if (!fileNameAndPath.endsWith(".omni")) {
+		fileNameAndPath.append(".omni");
+	}
+
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
 	Instance()->mDirectoryPath = fileInfo.filePath();
@@ -67,7 +71,10 @@ void OmProject::New( QString fileNameAndPath )
 
 	//load default project preferences
 	omSetDefaultAllPreferences();
-	OmKeyManager::SetDefaults();
+	
+	if( !amHeadless ){
+		OmKeyManager::SetDefaults();
+	}
 
 	Save();
 

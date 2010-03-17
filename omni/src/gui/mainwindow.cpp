@@ -93,10 +93,6 @@ void MainWindow::newProject()
 		if (fileName == NULL)
 			return;
 
-		if (!fileName.endsWith(".omni")) {
-			fileName.append(".omni");
-		}
-
 		OmProject::New( fileName );
 		recentFiles.addFile( fileName );
 
