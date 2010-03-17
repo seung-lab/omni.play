@@ -772,7 +772,7 @@ bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
 
 	//if distance too large, just draw it - else keep breaking it down
 	//debug("view3d", "backoff: %d\n", myBackoff );
-	return (camera_to_center > distance / OmStateManager::getMyBackoff() );
+	return (camera_to_center > distance);
 }
 
 void OmMipChunk::DrawClippedExtent()

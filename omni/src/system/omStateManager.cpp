@@ -613,13 +613,3 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 }
 
 
-unsigned int OmStateManager::getMyBackoff()
-{
-	return Instance()->myBackoff;
-}
-
-void OmStateManager::setMyBackoff( unsigned int val)
-{
-	Instance()->myBackoff = val;
-}
-

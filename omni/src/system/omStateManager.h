@@ -112,9 +112,6 @@ public:
 	static float GetTransparencyAlpha();
 	static void SetTransparencyAlpha(float);
 	
-	static unsigned int getMyBackoff();
-	static void setMyBackoff( unsigned int val );
-
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
