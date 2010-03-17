@@ -3,6 +3,7 @@
 #------------------------------------------------------------
 SET( OMGUI_SRCS
 	main.cpp
+	headless.cpp
 	mainwindow.cpp
 	recentFileList.cpp
 
