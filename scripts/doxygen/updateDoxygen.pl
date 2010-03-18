@@ -67,7 +67,10 @@ sub updateFolder {
 
 	`mkdir -p $output_folder`;
 
-	updateDoxygenConfigFile( $svn_ver, $output_folder, $src_path );
+	my $output_folder_base = $main_output."/".$folder;
+	my $output_folder_rev = $svn_ver;
+
+	updateDoxygenConfigFile( $svn_ver, $output_folder_base, $output_folder_rev, $src_path );
 
 	print "==> running doxygen...\n\tdoxygen warnings:\n";
 	`doxygen`;
@@ -76,8 +79,9 @@ sub updateFolder {
 
 sub updateDoxygenConfigFile {
     my $svn_ver = $_[0];
-    my $output_path = $_[1];    
-    my $src_path = $_[2];
+    my $output_folder_base = $_[1];
+    my $output_folder_rev  = $_[2];
+    my $src_path = $_[3];
 
     my $inFileName  = "$script_path/Doxyfile.template";
     my $outFileName = "$script_path/Doxyfile";
@@ -89,9 +93,11 @@ sub updateDoxygenConfigFile {
 	if( $line =~ /^PROJECT_NUMBER / ) {
 	    print OUT_FILE "PROJECT_NUMBER = Revision:".$svn_ver."\n";
 	} elsif ( $line =~ /^OUTPUT_DIRECTORY / ) {
-	    print OUT_FILE "OUTPUT_DIRECTORY = ".$output_path."\n";
+	    print OUT_FILE "OUTPUT_DIRECTORY = ".$output_path_base."\n";
 	} elsif ( $line =~ /^INPUT  / ) {
 	    print OUT_FILE "INPUT = ".$src_path."\n";
+	} elsif ( $line =~ /^HTML_OUTPUT  / ) {
+	    print OUT_FILE "HTML_OUTPUT = ".$output_folder_rev."\n";
 	} else {
 	    print OUT_FILE $line;
 	}
