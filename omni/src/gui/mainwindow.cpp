@@ -93,7 +93,7 @@ void MainWindow::newProject()
 		if (fileName == NULL)
 			return;
 
-		OmProject::New( fileName );
+		fileName = OmProject::New( fileName );
 		recentFiles.addFile( fileName );
 
 		setWindowTitle(tr("Omni - ") + fileName);

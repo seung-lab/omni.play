@@ -55,7 +55,7 @@ void OmProject::Delete()
 
 /////////////////////////////////
 ///////          Project IO
-void OmProject::New( QString fileNameAndPath, bool amHeadless )
+QString OmProject::New( QString fileNameAndPath, bool amHeadless )
 {
 	if (!fileNameAndPath.endsWith(".omni")) {
 		fileNameAndPath.append(".omni");
@@ -79,6 +79,8 @@ void OmProject::New( QString fileNameAndPath, bool amHeadless )
 	Save();
 
 	OmProjectData::Flush();
+
+	return fileNameAndPath;
 }
 
 void OmProject::Save()
