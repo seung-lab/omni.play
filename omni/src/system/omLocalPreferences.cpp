@@ -5,6 +5,7 @@
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
+#include "common/omDebug.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
@@ -185,7 +186,7 @@ void OmLocalPreferences::setVRamCacheSizeMB(const unsigned int size)
 bool OmLocalPreferences::getStickyCrosshairMode()
 {
 	if (Instance()->stickyCrosshairMode==NULL){
-		int defaultRet = 1;
+		const unsigned int defaultRet = 1;
 		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
 		Instance()->stickyCrosshairMode[0] = (bool) readSettingUInt( "stickyCrosshairMode", defaultRet );
 	}
@@ -203,52 +204,58 @@ void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
 	writeSettingUInt("stickyCrosshairMode", sticky);
 }
 
-int OmLocalPreferences::getDefaultCrosshairValue()
+unsigned int OmLocalPreferences::getDefaultCrosshairValue()
 {
-	int defaultRet = 1;
-	readSettingUInt( "crosshairValue", defaultRet );
-	Instance()->setCrosshairValue(defaultRet);
-	return defaultRet;
+	const unsigned int defaultRet = 1;
+	Instance()->mCrosshairValue = readSettingUInt("crosshairValue", defaultRet );;
+	return getCrosshairValue();
 }
-int OmLocalPreferences::getCrosshairValue()
+
+unsigned int OmLocalPreferences::getCrosshairValue()
 {
 	return Instance()->mCrosshairValue;
 }
-void OmLocalPreferences::setCrosshairValue(int value)
+
+void OmLocalPreferences::setCrosshairValue(unsigned int value)
 {
 	Instance()->mCrosshairValue = value;
+	writeSettingUInt( "crosshairValue", value );
 }
 
-int OmLocalPreferences::getDefault2DViewFrameIn3D()
+bool OmLocalPreferences::getDefault2DViewFrameIn3D()
 {
-	int defaultRet = false;
-	readSettingUInt( "2DViewFrameIn3D", defaultRet );
-	Instance()->set2DViewFrameIn3D(defaultRet);
-	return defaultRet;
+	const bool defaultRet = false;
+	Instance()->m2DViewFrameIn3D = readSettingBool("2DViewFrameIn3D", defaultRet );
+	return get2DViewFrameIn3D();
 }
-int OmLocalPreferences::get2DViewFrameIn3D()
+bool OmLocalPreferences::get2DViewFrameIn3D()
 {
 	return Instance()->m2DViewFrameIn3D;
 }
+
 void OmLocalPreferences::set2DViewFrameIn3D(bool value)
 {
 	Instance()->m2DViewFrameIn3D = value;
+	writeSettingBool("2DViewFrameIn3D", value);
 }
 
-int OmLocalPreferences::getDefaultDrawCrosshairsIn3D()
+bool OmLocalPreferences::getDefaultDrawCrosshairsIn3D()
 {
-	int defaultRet = false;
-	readSettingUInt( "DrawCrosshairsIn3D", defaultRet );
-	Instance()->setDrawCrosshairsIn3D(defaultRet);
-	return defaultRet;
+	const bool defaultRet = false;
+	Instance()->mDrawCrosshairsIn3D = readSettingBool( "DrawCrosshairsIn3D", defaultRet );
+	return getDrawCrosshairsIn3D();
 }
-int OmLocalPreferences::getDrawCrosshairsIn3D()
+
+bool OmLocalPreferences::getDrawCrosshairsIn3D()
 {
 	return Instance()->mDrawCrosshairsIn3D;
 }
+
 void OmLocalPreferences::setDrawCrosshairsIn3D(bool value)
 {
 	Instance()->mDrawCrosshairsIn3D = value;
+	writeSettingBool("DrawCrosshairsIn3D", value);
+	
 }
 
 /////////////////////////////

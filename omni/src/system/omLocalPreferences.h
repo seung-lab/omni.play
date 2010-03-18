@@ -27,17 +27,17 @@ public:
 	static bool getStickyCrosshairMode();
 	static void setStickyCrosshairMode(bool sticky);
 
-	static int getCrosshairValue();
-	static int getDefaultCrosshairValue();
-	static void setCrosshairValue(int value);
+	static unsigned int getCrosshairValue();
+	static unsigned int getDefaultCrosshairValue();
+	static void setCrosshairValue(const unsigned int);
 
-	static int get2DViewFrameIn3D();
-	static int getDefault2DViewFrameIn3D();
-	static void set2DViewFrameIn3D(bool value);
+	static bool get2DViewFrameIn3D();
+	static bool getDefault2DViewFrameIn3D();
+	static void set2DViewFrameIn3D(const bool);
 
-	static int getDrawCrosshairsIn3D();
-	static int getDefaultDrawCrosshairsIn3D();
-	static void setDrawCrosshairsIn3D(bool value);
+	static bool getDrawCrosshairsIn3D();
+	static bool getDefaultDrawCrosshairsIn3D();
+	static void setDrawCrosshairsIn3D(const bool);
 
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);

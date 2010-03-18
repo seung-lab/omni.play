@@ -50,8 +50,8 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox()
 	gridLayout->addWidget(crosshairLabel, 3, 0, 1, 1);
 
 	crosshairValue = new QLabel(groupBox);
-	int value = OmLocalPreferences::getDefaultCrosshairValue();
-	crosshairValue->setNum(value);
+	unsigned int value = OmLocalPreferences::getDefaultCrosshairValue();
+	crosshairValue->setNum(((float)value)/20.0);
 	crosshairValue->setEnabled(crosshair);
 	gridLayout->addWidget(crosshairValue, 3, 1, 1, 1);  
 
