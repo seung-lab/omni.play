@@ -164,7 +164,9 @@ void OmView3d::myUpdate()
 void OmView3d::doTimedDraw()
 {
 	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
-	if (mElapsed->elapsed() > 0.05) {
+	if (mElapsed->elapsed() > 0.5) {
+		delete mElapsed;
+		mElapsed = new boost::timer();
 		updateGL();
 	}
 	if (mDrawTimer.isActive()) {
