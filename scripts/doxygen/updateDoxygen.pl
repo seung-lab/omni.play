@@ -40,6 +40,7 @@ sub runFolders {
 
 sub updateFolder {
 	my $folder = $_;
+	my $start = Time::HiRes::gettimeofday();
 
 	my $path = $root."/".$folder;   
 	print $path."\n";
@@ -66,7 +67,10 @@ sub updateFolder {
 
 	print "==> running doxygen...\n\tdoxygen warnings:\n";
 	`doxygen`;
-	print "\n\ndone!\n";
+	print "\n\ndone!";
+
+	my $end = Time::HiRes::gettimeofday();
+	printf(" (%.2f seconds)\n", $end - $start);
 }
 
 sub updateDoxygenConfigFile {
