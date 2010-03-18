@@ -14,10 +14,8 @@
 #include "system/events/omVoxelEvent.h"
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
-
-
 #include "common/omStd.h"
-
+#include <boost/progress.hpp>
 #include <vmmlib/vmmlib.h>
 using namespace vmml;
 
@@ -97,6 +95,7 @@ class OmView3d : public QGLWidget,
 		
 		
 	private:
+		boost::timer * mElapsed;
 		QTimer mDrawTimer;
 		OmView3dUi mView3dUi;
 		OmCamera mCamera;

@@ -66,6 +66,7 @@ OmView3d::OmView3d(QWidget * parent)
 	bool disposable = OmLocalPreferences::getDefault2DViewFrameIn3D();
 	disposable = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
 	int whatever = OmLocalPreferences::getDefaultCrosshairValue();
+	mElapsed = new boost::timer();
 }
 
 OmView3d::~OmView3d()
@@ -122,7 +123,7 @@ void OmView3d::initializeGL()
 	// than previous stored depth value
 
 	SetBlending();
-	//glEnable(GL_BLEND);                                                   // enable blending for transparency
+	glEnable(GL_BLEND);                                                   // enable blending for transparency
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);            // set blend function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
@@ -162,6 +163,10 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
+	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
+	if (mElapsed->elapsed() > 0.05) {
+		updateGL();
+	}
 	if (mDrawTimer.isActive()) {
         	mDrawTimer.stop();
         	mDrawTimer.start(100);
@@ -398,7 +403,8 @@ void OmView3d::UpdateEnabledWidgets()
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
 {
-
+	delete mElapsed;
+	mElapsed = new boost::timer();
 	// clear buffer
 	glClearStencil(0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

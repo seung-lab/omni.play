@@ -301,6 +301,7 @@ void OmView2d::paintEvent(QPaintEvent * event)
 			if (mElapsed) {
 				str = QString::number(1.0 / mElapsed->elapsed(), 'f', 4) + QString(" fps");
 				painter.drawText(QPoint(0, mTotalViewport.height), str);
+				delete mElapsed;
 				mElapsed = new boost::timer();
 			} else {
 				mElapsed = new boost::timer();
