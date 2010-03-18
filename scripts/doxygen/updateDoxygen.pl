@@ -46,14 +46,14 @@ sub runFolders {
 
 sub updateFolder {
 	my $folder = $_;
-	my $path = $root."/".$folder;   
-	print $path."\n";
+	my $src_path = $root."/".$folder;   
+	print $src_path."\n";
 
 	print "==> updating src...";
-	`svn up $path`;
+	`svn up $src_path`;
 	print "done\n";
 
-	my $xml_log = `svn log -l 1 --with-no-revprops --xml $path`;
+	my $xml_log = `svn log -l 1 --with-no-revprops --xml $src_path`;
 	my $xs1 = XML::Simple->new();
 	my $doc = $xs1->XMLin($xml_log);
 	my $svn_ver = $doc->{logentry}->{revision};
@@ -67,7 +67,7 @@ sub updateFolder {
 
 	`mkdir -p $output_folder`;
 
-	updateDoxygenConfigFile( $svn_ver, $output_folder, $path );
+	updateDoxygenConfigFile( $svn_ver, $output_folder, $src_path );
 
 	print "==> running doxygen...\n\tdoxygen warnings:\n";
 	`doxygen`;
@@ -77,7 +77,7 @@ sub updateFolder {
 sub updateDoxygenConfigFile {
     my $svn_ver = $_[0];
     my $output_path = $_[1];    
-    my $path = $_[2];
+    my $src_path = $_[2];
 
     my $inFileName  = "$script_path/Doxyfile.template";
     my $outFileName = "$script_path/Doxyfile";
@@ -91,7 +91,7 @@ sub updateDoxygenConfigFile {
 	} elsif ( $line =~ /^OUTPUT_DIRECTORY / ) {
 	    print OUT_FILE "OUTPUT_DIRECTORY = ".$output_path."\n";
 	} elsif ( $line =~ /^INPUT  / ) {
-	    print OUT_FILE "INPUT = ".$path."\n";
+	    print OUT_FILE "INPUT = ".$src_path."\n";
 	} else {
 	    print OUT_FILE $line;
 	}
