@@ -93,7 +93,7 @@ sub updateDoxygenConfigFile {
 	if( $line =~ /^PROJECT_NUMBER / ) {
 	    print OUT_FILE "PROJECT_NUMBER = Revision:".$svn_ver."\n";
 	} elsif ( $line =~ /^OUTPUT_DIRECTORY / ) {
-	    print OUT_FILE "OUTPUT_DIRECTORY = ".$output_path_base."\n";
+	    print OUT_FILE "OUTPUT_DIRECTORY = ".$output_folder_base."\n";
 	} elsif ( $line =~ /^INPUT  / ) {
 	    print OUT_FILE "INPUT = ".$src_path."\n";
 	} elsif ( $line =~ /^HTML_OUTPUT  / ) {
