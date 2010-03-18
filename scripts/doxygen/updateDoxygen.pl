@@ -6,8 +6,9 @@ use Cwd 'abs_path';
 use File::Basename;
 use File::Copy;
 use POSIX;
+use Time::HiRes;
 
-my $minutesBetweenUpdates = 120;
+my $minutesBetweenUpdates = 6*60;
 
 my ($script_name, $script_path, $script_suffix) = fileparse( abs_path( $0 ) );
 
