@@ -8,6 +8,8 @@ use File::Copy;
 use POSIX;
 use Time::HiRes;
 
+$| = 1;  # autoflush
+
 my $minutesBetweenUpdates = 6*60;
 
 my ($script_name, $script_path, $script_suffix) = fileparse( abs_path( $0 ) );
@@ -23,6 +25,7 @@ sub main {
     while(1){
 	runFolders();
 	updateIndex();
+	print "******************************************************\n";
 	print "sleeping for $minutesBetweenUpdates minutes...";
 	sleep 60 * $minutesBetweenUpdates;
     }
