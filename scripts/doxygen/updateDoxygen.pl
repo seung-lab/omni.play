@@ -35,14 +35,17 @@ sub updateIndex {
 
 sub runFolders {
     foreach (@folders) {
+	my $start = Time::HiRes::gettimeofday();
+
 	updateFolder( $_ );
+
+	my $end = Time::HiRes::gettimeofday();
+	printf("(completed in %.2f seconds)\n", $end - $start);
     }
 }
 
 sub updateFolder {
 	my $folder = $_;
-	my $start = Time::HiRes::gettimeofday();
-
 	my $path = $root."/".$folder;   
 	print $path."\n";
 
@@ -68,10 +71,7 @@ sub updateFolder {
 
 	print "==> running doxygen...\n\tdoxygen warnings:\n";
 	`doxygen`;
-	print "\n\ndone!";
-
-	my $end = Time::HiRes::gettimeofday();
-	printf(" (%.2f seconds)\n", $end - $start);
+	print "\n\ndone!\n";
 }
 
 sub updateDoxygenConfigFile {
