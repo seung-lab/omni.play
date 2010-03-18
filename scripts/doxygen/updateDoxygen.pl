@@ -29,7 +29,7 @@ sub main {
 
 sub updateIndex {
     my $in_file_path  = $script_path."/index.html";
-    my $out_file_path = $main_output."/index.html";
+    my $out_file_path = $root."/www/index.html";
     copy( $in_file_path, $out_file_path ) or die "Could not copy index.html file";
 }
 
