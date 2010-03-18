@@ -38,6 +38,7 @@ sub runFolders {
     foreach (@folders) {
 	my $start = Time::HiRes::gettimeofday();
 
+	print "******************************************************\n";
 	updateFolder( $_ );
 
 	my $end = Time::HiRes::gettimeofday();
