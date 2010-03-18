@@ -7,7 +7,7 @@ use File::Basename;
 use File::Copy;
 use POSIX;
 
-my $minutesBetweenUpdates = 30;
+my $minutesBetweenUpdates = 120;
 
 my ($script_name, $script_path, $script_suffix) = fileparse( abs_path( $0 ) );
 
@@ -42,22 +42,30 @@ sub updateFolder {
 	my $folder = $_;
 
 	my $path = $root."/".$folder;   
+	print $path."\n";
 
+	print "==> updating src...";
 	`svn up $path`;
+	print "done\n";
 
 	my $xml_log = `svn log -l 1 --with-no-revprops --xml $path`;
 	my $xs1 = XML::Simple->new();
 	my $doc = $xs1->XMLin($xml_log);
 	my $svn_ver = $doc->{logentry}->{revision};
-
-	print $path." (".$svn_ver.")\n";
+	print "at revision: ".$svn_ver."\n";
 
 	my $output_folder = $main_output."/".$folder."/".$svn_ver;
+	print "==> removing old output folder...";
+	`rm -rf $output_folder`;
+	print "done\n";
+
 	`mkdir -p $output_folder`;
 
 	updateDoxygenConfigFile( $svn_ver, $output_folder, $path );
 
+	print "==> running doxygen...\n\tdoxygen warnings:\n";
 	`doxygen`;
+	print "\n\ndone!\n";
 }
 
 sub updateDoxygenConfigFile {
