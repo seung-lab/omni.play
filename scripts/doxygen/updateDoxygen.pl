@@ -52,12 +52,13 @@ sub updateFolder {
 	my $xs1 = XML::Simple->new();
 	my $doc = $xs1->XMLin($xml_log);
 	my $svn_ver = $doc->{logentry}->{revision};
-	print "at revision: ".$svn_ver."\n";
+	print "\tat revision: ".$svn_ver."\n";
 
 	my $output_folder = $main_output."/".$folder."/".$svn_ver;
-	print "==> removing old output folder...";
-	`rm -rf $output_folder`;
-	print "done\n";
+	if( -d $output_folder ){
+	    print "skipping...\n";
+	    return;
+	}
 
 	`mkdir -p $output_folder`;
 
