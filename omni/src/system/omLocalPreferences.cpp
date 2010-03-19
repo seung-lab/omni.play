@@ -255,8 +255,26 @@ void OmLocalPreferences::setDrawCrosshairsIn3D(bool value)
 {
 	Instance()->mDrawCrosshairsIn3D = value;
 	writeSettingBool("DrawCrosshairsIn3D", value);
-	
 }
+
+bool OmLocalPreferences::getDefaultDoDiscoBall()
+{
+        const bool defaultRet = true;
+        Instance()->mDoDiscoBall = readSettingBool( "DoDiscoBall", defaultRet );
+        return getDoDiscoBall();
+}
+
+bool OmLocalPreferences::getDoDiscoBall()
+{
+        return Instance()->mDoDiscoBall;
+}
+
+void OmLocalPreferences::setDoDiscoBall(bool value)
+{
+        Instance()->mDoDiscoBall = value;
+        writeSettingBool("DoDiscoBall", value);
+}
+
 
 /////////////////////////////
 // recently-used files

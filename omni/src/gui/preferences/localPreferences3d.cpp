@@ -15,6 +15,9 @@ LocalPreferences3d::LocalPreferences3d(QWidget * parent)
 	overallContainer->addWidget( makeGeneralPropBox());
 	overallContainer->insertStretch(4, 3);
 
+	connect(discoCheckBox, SIGNAL(stateChanged(int)), 
+		this, SLOT(on_discoCheckBox_stateChanged()));
+
 	connect(crosshairSlider, SIGNAL(valueChanged(int)), 
 		this, SLOT(on_crosshairSlider_valueChanged()));
 	connect(viewSquareCheckBox, SIGNAL(stateChanged(int)), 
@@ -67,6 +70,13 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox()
 	gridLayout->addWidget(crosshairSlider, 4, 0, 1, 3);
 
 
+        // 3D Disco Ball CheckBox
+        discoCheckBox = new QCheckBox(groupBox);
+        discoCheckBox->setText("Partial Transparency in 3D");
+        bool discoBall = OmLocalPreferences::getDefaultDoDiscoBall();
+        discoCheckBox->setChecked(discoBall);
+        gridLayout->addWidget(discoCheckBox, 5, 0, 1, 1);
+
 
   	return groupBox;
 }
@@ -84,8 +94,17 @@ LocalPreferences3d::on_crosshairSlider_valueChanged()
 void
 LocalPreferences3d::on_viewSquareCheckBox_stateChanged()
 {
-	const bool val = GuiUtils::getBoolState( viewSquareCheckBox->checkState() );
-	OmLocalPreferences::set2DViewFrameIn3D( val );
+        const bool val = GuiUtils::getBoolState( viewSquareCheckBox->checkState() );
+        OmLocalPreferences::set2DViewFrameIn3D( val );
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+}
+
+
+void
+LocalPreferences3d::on_discoCheckBox_stateChanged()
+{
+	const bool val = GuiUtils::getBoolState( discoCheckBox->checkState() );
+	OmLocalPreferences::setDoDiscoBall( val );
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 void

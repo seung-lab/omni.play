@@ -4,6 +4,7 @@
 #include "volume/omDrawOptions.h"
 #include "common/omGl.h"
 #include "system/omPreferences.h"
+#include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
 
@@ -78,7 +79,20 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		glColor3fva(hyperColor.array, OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else {
-		glColor3fv(hyperColor.array);
+		if (OmLocalPreferences::getDoDiscoBall()) {
+			static float s = 10.0;
+			static int dir = 1;
+		
+			glEnable(GL_BLEND);
+			glColor3fva(hyperColor.array, s/200+.4);
+			s += .1*dir;
+			if (s > 60) dir = -1;
+			if (s < 10) dir = 1;
+			glMaterialf(GL_FRONT, GL_SHININESS, 100-s);
+		} else {
+			glColor3fv(hyperColor.array);
+		}
+
 	}
 
 }

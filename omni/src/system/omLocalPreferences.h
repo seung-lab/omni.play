@@ -39,6 +39,10 @@ public:
 	static bool getDefaultDrawCrosshairsIn3D();
 	static void setDrawCrosshairsIn3D(const bool);
 
+        static bool getDoDiscoBall();
+        static bool getDefaultDoDiscoBall();
+        static void setDoDiscoBall(const bool);
+
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
 
@@ -78,6 +82,7 @@ private:
 	bool * stickyCrosshairMode;
 	bool m2DViewFrameIn3D;
 	bool mDrawCrosshairsIn3D;
+	bool mDoDiscoBall;
 	int mCrosshairValue;
 	LocalPrefFiles* localPrefFiles;
 
