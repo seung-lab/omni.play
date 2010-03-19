@@ -3,6 +3,10 @@
 
 int main(int argc, char* argv[])
 {
+	if (argc!=3){
+		printf("Wrong Number of Arguments!!!");
+		return 0;
+	}
 	hid_t dataset,filespace,file;
 	void* data;
 	file = H5Fopen (argv[1], H5F_ACC_RDWR, H5P_DEFAULT);
@@ -21,7 +25,7 @@ int main(int argc, char* argv[])
 	}
 
 	FILE* afile;
-	afile =fopen("./output.dat","wb");
+	afile =fopen(argv[3],"wb");
 	if (afile != NULL){
 		fwrite(data,number,size,afile);
 	} else {
