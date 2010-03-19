@@ -34,6 +34,8 @@ public:
 	static void Flush();
 	
 	static bool IsOpen() {return Instance()->mIsOpen;}
+	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
+
 	static OmDataLayer * GetDataLayer();
 	static OmDataReader * GetDataReader();
 	static OmDataWriter * GetDataWriter();
@@ -71,6 +73,9 @@ private:
 
 	bool mIsOpen;
 
+	bool mIsReadOnly;
+
+	void setupDataLayer( QString fileNameAndPath, const bool autoOpenAndClose);
 	OmDataLayer  * dataLayer;
 	OmDataReader * dataReader;
 	OmDataWriter * dataWriter;
@@ -104,6 +109,11 @@ template< class T >
 void 
 OmProjectData::ArchiveWrite( OmHdf5Path path, T* t) {
 	assert(IsOpen());
+
+	if( Instance()->IsReadOnly() ){
+		printf("not saving %s...\n", path.getString().c_str() );
+		return;
+	}
 
 	//create string stream to write to
 	std::stringstream sstream;

@@ -186,6 +186,8 @@ class MainWindow
 		void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode );
 
 		Preferences* preferences;
+		void windowTitleSet(QString title);
+		void windowTitleClear();
 	};
 
 #endif

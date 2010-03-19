@@ -10,6 +10,7 @@
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 #include "utility/dataWrappers.h"
+#include "system/omProjectData.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omEventManager.h"
@@ -57,7 +58,7 @@ MainWindow::MainWindow()
 		createToolbar();
 		createStatusBar();
 
-		setWindowTitle(tr("Omni"));
+		windowTitleClear();
 		resize(1000, 800);
 
 		preferences = NULL;
@@ -95,7 +96,7 @@ void MainWindow::newProject()
 		fileName = OmProject::New( fileName );
 		recentFiles.addFile( fileName );
 
-		setWindowTitle(tr("Omni - ") + fileName);
+		windowTitleSet( fileName );
 
 		isProjectOpen = true;
 
@@ -227,7 +228,7 @@ bool MainWindow::closeProjectIfOpen()
 
 	OmProject::Close();
 
-	setWindowTitle(tr("Omni"));
+	windowTitleClear();
 
 	return true;
 }
@@ -316,7 +317,7 @@ void MainWindow::openProject(QString fileNameAndPath)
 
 		setupToolbarInitially();
 
-		setWindowTitle(tr("Omni - ") + fileNameAndPath );
+		windowTitleSet( fileNameAndPath );
 		openInspector();
 
 	} catch(OmException & e) {
@@ -1195,4 +1196,21 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 		// TODO???
 		break;
 	}
+}
+
+
+void MainWindow::windowTitleSet(QString title)
+{
+	QString str = "Omni - " + title;
+	
+	if( OmProjectData::IsReadOnly() ){
+		str = "[READ-ONLY] " + str;
+	}
+	
+	setWindowTitle( str );
+}
+
+void MainWindow::windowTitleClear()
+{
+	setWindowTitle(tr("Omni"));
 }

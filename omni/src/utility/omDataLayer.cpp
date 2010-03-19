@@ -22,6 +22,7 @@ OmDataReader * OmDataLayer::getReader(  QString fileNameAndPath, const bool auto
 OmDataWriter * OmDataLayer::getWriter(  QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
 	if( readOnly ){
+		printf("%s: in read-only mode...\n", __FUNCTION__);
 		return new OmDummyWriter( fileNameAndPath, autoOpenAndClose );
 	}
 	
