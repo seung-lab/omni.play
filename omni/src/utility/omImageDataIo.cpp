@@ -1,6 +1,8 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
-#include "utility/omHdf5.h"
+#include "utility/omDataLayer.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
 #include "utility/omHdf5Helpers.h"
 #include "common/omVtk.h"
 
@@ -246,12 +248,13 @@ vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
 				      const DataBbox dataExtentBbox, 
 				      int bytesPerSample)
 {
-	//assert only one hdf5 file specified
+	//FIXME: don't assert, or check before calling me!
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
-	OmHdf5 hdfImportFile( sourceFilenamesAndPaths[0].filePath() );
+	OmDataLayer dl;
+	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
 
-	vtkImageData *data = hdfImportFile.dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
+	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
 								   dataExtentBbox, 
 								   bytesPerSample);
 	return data;
@@ -315,10 +318,11 @@ Vector3 < int > om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPath
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
-	OmHdf5 hdfExport( sourceFilenamesAndPaths[0].filePath() );
+	OmDataLayer dl;
+	OmDataReader * hdf5reader = dl.getReader(sourceFilenamesAndPaths[0].filePath(), true );
 
 	//get dims of image
-	Vector3 < int >dims = hdfExport.dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
+	Vector3 < int >dims = hdf5reader->dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
 
 	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
 	return dims;

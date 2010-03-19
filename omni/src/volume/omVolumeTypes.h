@@ -7,12 +7,8 @@
 #ifndef OM_VOLUME_TYPES_H
 #define OM_VOLUME_TYPES_H
 
-
 #include "common/omStd.h"
-
 #include <vmmlib/vmmlib.h>
-
-
 
 //coordinate frames
 typedef vmml::Vector3<int> DataCoord;

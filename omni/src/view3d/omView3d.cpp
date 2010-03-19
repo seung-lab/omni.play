@@ -123,8 +123,8 @@ void OmView3d::initializeGL()
 	// than previous stored depth value
 
 	SetBlending();
-	glEnable(GL_BLEND);                                                   // enable blending for transparency
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);            // set blend function
+	glEnable(GL_BLEND);                   // enable blending for transparency
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // set blend function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
 
@@ -150,7 +150,6 @@ void OmView3d::resizeGL(int width, int height)
 void OmView3d::paintGL()
 {
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_RENDERMODE_RENDER | DRAWOP_DRAW_WIDGETS);
-	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
 
 /*
@@ -169,6 +168,7 @@ void OmView3d::doTimedDraw()
 		mElapsed = new boost::timer();
 		updateGL();
 	}
+
 	if (mDrawTimer.isActive()) {
         	mDrawTimer.stop();
         	mDrawTimer.start(100);
@@ -560,32 +560,3 @@ void initLights()
 
 	glEnable(GL_LIGHT0);	// enable light source after configuration
 }
-
-/*
- int OmView3d::faceAtPosition(const QPoint&pos) 
- { 
- //debug("FIXME", << "face at" << endl;
- 
- const int MaxSize = 512; 
- GLuint buffer[MaxSize]; 
- GLint viewport[4]; 
- glGetIntegerv(GL_VIEWPORT, viewport); 
- glSelectBuffer(MaxSize, buffer); 
- glRenderMode(GL_SELECT); 
- glInitNames(); 
- glPushName(0); 
- glMatrixMode(GL_PROJECTION); 
- glPushMatrix(); 
- glLoadIdentity(); 
- gluPickMatrix(GLdouble(pos.x()), GLdouble(viewport[3] - pos.y()), 
- 5.0, 5.0, viewport); 
- GLfloat x = GLfloat(width())/height(); 
- glFrustum(-x, x, -1.0, 1.0, 4.0, 15.0); 
- draw(); 
- glMatrixMode(GL_PROJECTION); 
- glPopMatrix(); 
- if (!glRenderMode(GL_RENDER)) 
- return -1; 
- return buffer[3]; 
- } 
- */

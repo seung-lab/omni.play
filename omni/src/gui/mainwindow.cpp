@@ -74,7 +74,6 @@ MainWindow::MainWindow()
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
 }
 
 // Creates a new project

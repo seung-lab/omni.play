@@ -7,6 +7,10 @@
 #include "system/omLocalPreferences.h"
 #include "project/omProject.h"
 
+#include "utility/omDataLayer.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 namespace bfs = boost::filesystem;
@@ -141,14 +145,15 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
 
 void OmMipMesh::Save()
 {
-	OmHdf5 * hdf5File = NULL;
+	OmDataWriter * hdf5File;
 
 	if (OmLocalPreferences::getStoreMeshesInTempFolder() || 
 	    OmStateManager::getParallel()) {
-		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
+		OmDataLayer * dl = OmProjectData::GetDataLayer();
+		hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ), true );
 		hdf5File->create();
 	} else {
-		hdf5File = OmProjectData::GetHdf5File();
+		hdf5File = OmProjectData::GetDataWriter();
 	}
 
 	int size;
