@@ -19,7 +19,7 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose = true );
+	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
 	~OmHdf5();
 
 	string getFileNameAndPathString();
@@ -52,7 +52,7 @@ class OmHdf5
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex * fileLock;
 	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
-	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
+	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };
 
 #endif

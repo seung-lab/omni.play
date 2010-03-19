@@ -3,9 +3,9 @@
 #include "common/omDebug.h"
 #include <stdlib.h>
 
-OmHdf5Reader::OmHdf5Reader( QString fileNameAndPath, const bool autoOpenAndClose )
+OmHdf5Reader::OmHdf5Reader( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
-	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose );
+	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose, readOnly );
 }
 
 OmHdf5Reader::~OmHdf5Reader()

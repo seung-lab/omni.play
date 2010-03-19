@@ -14,7 +14,7 @@ class OmHdf5Manager {
 public:
 	static OmHdf5Manager* Instance();
 	static void Delete();
-	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose = true);
+	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -26,7 +26,7 @@ protected:
 private:
 	static OmHdf5Manager* mspInstance;
 
-	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose );
+	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly );
 	QHash<QString, OmHdf5*> hdf5Files;
 	QMutex lock;
 };

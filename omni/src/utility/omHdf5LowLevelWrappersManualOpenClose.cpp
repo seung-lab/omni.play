@@ -10,8 +10,8 @@
 	}
 #define HDF5_UNWRAP()
 
-OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(string fileName)
-	: mFileName(fileName)
+OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly)
+	: mFileName(fileName), mReadOnly(readOnly)
 {
 	fileId = -1;
 	opened = false;;
@@ -27,7 +27,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::open()
                 throw OmIoException("HDF5 file was already open");
 	}
 
-	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName);
+	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName, mReadOnly);
 	opened = true;
 }
 

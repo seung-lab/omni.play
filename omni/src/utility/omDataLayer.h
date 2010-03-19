@@ -9,7 +9,9 @@ class OmDataLayer
  public:
 	OmDataLayer();
 	~OmDataLayer();
-	OmDataReader * getReader( QString fileNameAndPath, const bool autoOpenAndClose );
+	OmDataReader * getReader( QString fileNameAndPath, 
+				  const bool autoOpenAndClose, 
+				  const bool readOnly );
 	OmDataWriter * getWriter( QString fileNameAndPath, const bool autoOpenAndClose );
 };
 

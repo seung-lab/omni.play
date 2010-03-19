@@ -8,8 +8,8 @@
 	hid_t fileId;                                                           \
 	bool opened = false;						        \
 	try { 									\
-		fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName);   \
-		opened = true;
+	fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName, mReadOnly);	\
+	opened = true;
 
 #define HDF5_UNWRAP() 								\
 	} catch (...) { 							\
@@ -20,8 +20,8 @@
 	}									\
 	hdfLowLevel.om_hdf5_file_close_with_lock (fileId);			
 
-OmHdf5LowLevelWrappersAutoOpenClose::OmHdf5LowLevelWrappersAutoOpenClose(string fileName)
-	: mFileName(fileName)
+OmHdf5LowLevelWrappersAutoOpenClose::OmHdf5LowLevelWrappersAutoOpenClose(string fileName, const bool readOnly )
+	: mFileName(fileName), mReadOnly( readOnly )
 {
 }
 

@@ -14,9 +14,9 @@ OmDataLayer::~OmDataLayer()
 	//TODO: fixme!
 }
 
-OmDataReader * OmDataLayer::getReader(  QString fileNameAndPath, const bool autoOpenAndClose )
+OmDataReader * OmDataLayer::getReader(  QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
-	return new OmHdf5Reader( fileNameAndPath, autoOpenAndClose );
+	return new OmHdf5Reader( fileNameAndPath, autoOpenAndClose, readOnly );
 }
 
 OmDataWriter * OmDataLayer::getWriter(  QString fileNameAndPath, const bool autoOpenAndClose )

@@ -428,12 +428,10 @@ void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & mipCoord, s
  */
 void OmMipVolume::GetChunk(shared_ptr < OmMipChunk > &p_value, const OmMipChunkCoord & rMipCoord, bool block)
 {
-
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
 	MipChunkThreadedCache::Get(p_value, rMipCoord, block);
-	return;
 }
 
 /*
@@ -789,39 +787,6 @@ bool OmMipVolume::ImportSourceData()
 }
 
 /*
-void
-OmMipVolume::ImportSourceDataSlice() {
-	//debug("FIXME", << "OmMipVolume::ImportSourceData()" << endl;
-	
-	//dim of leaf coords
-	//Vector3<int> leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	string leaf_volume_path = MipLevelInternalDataPath(0);
-	
-	Vector3<int> leaf_data_dims = MipLevelDataDimensions(0);
-	
-	//for all coords
-	for(int z=0; z<leaf_data_dims.z; ++z) {
-				
-		DataCoord min = DataCoord(0,0,z);
-		DataCoord max = DataCoord(leaf_data_dims.x-1,leaf_data_dims.y-1,z);
-		
-		DataBbox chunk_data_bbox = DataBbox(min, max);
-		//debug("FIXME", << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
-		
-		//read chunk image data from source
-		vtkImageData* p_img_data = om_imagedata_read(GetSourceDirectoryPath(), mSourceFilenameRegexMatches, 
-													 GetExtent(), chunk_data_bbox, GetBytesPerSample());
-		
-		//write to project data
-		OmProjectData::WriteImageData(leaf_volume_path, chunk_data_bbox, GetBytesPerSample(), p_img_data);
-		
-		//delete read data
-		p_img_data->Delete();
-	}
-}
-*/
-
-/*
  *	Export leaf volume data to HDF5 format.  Calls ExportImageDataFilter so subclass can 
  *	post-process the image data before it is written.
  */
@@ -838,7 +803,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	mip_volume_path.setPath( MipLevelInternalDataPath(0) );
         //round up to nearest chunk
 
-        OmHdf5 hdfExport( fileNameAndPath, false );
+        OmHdf5 hdfExport( fileNameAndPath, false, false );
         OmHdf5Path fpath;
         fpath.setPath("main");
 
@@ -847,8 +812,8 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
         	hdfExport.open();
 		Vector3<int> full = MipLevelDataDimensions(0);
         	Vector3<int>rounded_data_dims = Vector3 <int>(ROUNDUP(full.x, GetChunkDimension()),
-                                                                   ROUNDUP(full.y, GetChunkDimension()),
-                                                                   ROUNDUP(full.z, GetChunkDimension()));
+							      ROUNDUP(full.y, GetChunkDimension()),
+							      ROUNDUP(full.z, GetChunkDimension()));
         	hdfExport.dataset_image_create_tree_overwrite(fpath, &rounded_data_dims, &full, GetBytesPerSample());
 	} else {
         	hdfExport.open();

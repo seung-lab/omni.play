@@ -27,7 +27,7 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
         }
 }
 
-hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
+hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readOnly  )
 {
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
@@ -48,7 +48,12 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
                 throw OmIoException("Could not setup HDF5 file cache.");
 	}
 
-	hid_t fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
+	hid_t fileId;
+	if( readOnly ) {
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, fapl);
+	} else {
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
+	}
 	
 	if (fileId < 0) {
                 throw OmIoException("Could not open HDF5 file.");

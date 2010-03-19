@@ -2,11 +2,11 @@
 #include "common/omDebug.h"
 #include <stdlib.h>
 
-OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose )
+OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
 	m_fileNameAndPath = fileNameAndPath;
 	fileLock = new QMutex();
-	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose );
+	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose, readOnly );
 }
 
 OmHdf5::~OmHdf5()
@@ -29,12 +29,12 @@ string OmHdf5::getFileNameAndPathString()
 
 // set whether HDF file should be kept opened, 
 //  or automatically closed, between calls into the file
-void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose )
+void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly )
 {
 	if( autoOpenAndClose ){
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose(getFileNameAndPathString());
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose(getFileNameAndPathString(), readOnly);
 	} else {
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString());
+		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly);
 	}
 }
 

@@ -252,7 +252,7 @@ vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
 	OmDataLayer dl;
-	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
+	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true, true );
 
 	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
 								   dataExtentBbox, 
@@ -319,7 +319,7 @@ Vector3 < int > om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPath
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
 	OmDataLayer dl;
-	OmDataReader * hdf5reader = dl.getReader(sourceFilenamesAndPaths[0].filePath(), true );
+	OmDataReader * hdf5reader = dl.getReader(sourceFilenamesAndPaths[0].filePath(), true, true );
 
 	//get dims of image
 	Vector3 < int >dims = hdf5reader->dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );

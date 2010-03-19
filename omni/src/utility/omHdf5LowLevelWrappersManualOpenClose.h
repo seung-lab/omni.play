@@ -6,7 +6,7 @@
 class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstract
 {
  public:
-	OmHdf5LowLevelWrappersManualOpenClose(string fileName);
+	OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly);
 	~OmHdf5LowLevelWrappersManualOpenClose();
 
 	virtual void open();
@@ -36,6 +36,7 @@ class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstr
  private:
 	OmHdf5LowLevel hdfLowLevel;
 	const string mFileName;
+	const bool mReadOnly;
 	hid_t fileId;
 	bool opened;
 };

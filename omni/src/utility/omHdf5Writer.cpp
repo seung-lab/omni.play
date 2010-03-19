@@ -5,7 +5,7 @@
 
 OmHdf5Writer::OmHdf5Writer( QString fileNameAndPath, const bool autoOpenAndClose )
 {
-	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose );
+	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose, false );
 }
 
 OmHdf5Writer::~OmHdf5Writer()

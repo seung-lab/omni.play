@@ -27,7 +27,13 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool 
 
 	Instance()->dataLayer = new OmDataLayer();
 
-	Instance()->dataReader = Instance()->dataLayer->getReader( fileNameAndPath, autoOpenAndClose );
+	bool isReadOnly = true;
+	QFileInfo file(fileNameAndPath);
+	if (file.permission(QFile::WriteUser)){
+		isReadOnly = false; 
+	}
+
+	Instance()->dataReader = Instance()->dataLayer->getReader( fileNameAndPath, autoOpenAndClose, isReadOnly );
 	Instance()->dataWriter = Instance()->dataLayer->getWriter( fileNameAndPath, autoOpenAndClose );
 }
 

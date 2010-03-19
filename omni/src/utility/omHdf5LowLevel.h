@@ -17,7 +17,7 @@ class OmHdf5LowLevel
  public:
 	//file
 	void om_hdf5_file_create(string fpath);
-	hid_t om_hdf5_file_open_with_lock(string fpath);
+	hid_t om_hdf5_file_open_with_lock(string fpath, const bool readOnly);
 	void om_hdf5_file_close_with_lock(hid_t fileId);
 
 	//group
