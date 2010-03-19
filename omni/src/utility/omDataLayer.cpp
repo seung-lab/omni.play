@@ -19,12 +19,11 @@ OmDataReader * OmDataLayer::getReader(  QString fileNameAndPath, const bool auto
 	return new OmHdf5Reader( fileNameAndPath, autoOpenAndClose, readOnly );
 }
 
-OmDataWriter * OmDataLayer::getWriter(  QString fileNameAndPath, const bool autoOpenAndClose )
+OmDataWriter * OmDataLayer::getWriter(  QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
-	QFileInfo file(fileNameAndPath);
-	if (file.permission(QFile::WriteUser)){
-		return new OmHdf5Writer( fileNameAndPath, autoOpenAndClose );
-	} else {
+	if( readOnly ){
 		return new OmDummyWriter( fileNameAndPath, autoOpenAndClose );
 	}
+	
+	return new OmHdf5Writer( fileNameAndPath, autoOpenAndClose );
 }

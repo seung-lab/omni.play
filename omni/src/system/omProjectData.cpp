@@ -3,7 +3,7 @@
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "utility/omHdf5Manager.h"
-#include <QFileInfo>
+#include "utility/fileHelpers.h"
 #include <QFile>
 
 //init instance pointer
@@ -27,14 +27,9 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool 
 
 	Instance()->dataLayer = new OmDataLayer();
 
-	bool isReadOnly = true;
-	QFileInfo file(fileNameAndPath);
-	if (file.permission(QFile::WriteUser)){
-		isReadOnly = false; 
-	}
-
+	bool isReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
 	Instance()->dataReader = Instance()->dataLayer->getReader( fileNameAndPath, autoOpenAndClose, isReadOnly );
-	Instance()->dataWriter = Instance()->dataLayer->getWriter( fileNameAndPath, autoOpenAndClose );
+	Instance()->dataWriter = Instance()->dataLayer->getWriter( fileNameAndPath, autoOpenAndClose, isReadOnly );
 }
 
 OmProjectData::~OmProjectData()

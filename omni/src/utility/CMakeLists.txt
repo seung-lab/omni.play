@@ -2,6 +2,7 @@
 
 #specify sources
 SET(OM_UTILITY_LIB_SRCS
+	fileHelpers.cpp
 	omHdf5.cpp
 	omDataLayer.cpp
 	omHdf5Reader.cpp

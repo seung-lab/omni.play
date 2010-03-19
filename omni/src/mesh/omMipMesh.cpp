@@ -150,7 +150,8 @@ void OmMipMesh::Save()
 	if (OmLocalPreferences::getStoreMeshesInTempFolder() || 
 	    OmStateManager::getParallel()) {
 		OmDataLayer * dl = OmProjectData::GetDataLayer();
-		hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ), true );
+		hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ), 
+					  true, false );
 		hdf5File->create();
 	} else {
 		hdf5File = OmProjectData::GetDataWriter();
