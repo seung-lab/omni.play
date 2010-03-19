@@ -317,6 +317,8 @@ void MainWindow::openProject(QString fileNameAndPath)
 
 		setupToolbarInitially();
 
+		updateReadOnlyRelatedWidgets();
+
 		windowTitleSet( fileNameAndPath );
 		openInspector();
 
@@ -712,7 +714,7 @@ void MainWindow::createActions()
 	saveAct->setShortcut(tr("Ctrl+S"));
 	saveAct->setStatusTip(tr("Saves the current project"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveProject()));
-
+	
 	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
 		recentFiles.recentFileActs[i] = new QAction(this);
 		recentFiles.recentFileActs[i]->setVisible(false);
@@ -847,6 +849,14 @@ void MainWindow::spawnErrorDialog(OmException & e)
 	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
 }
 
+void MainWindow::updateReadOnlyRelatedWidgets()
+{
+	const bool toBeEnabled = !OmProjectData::IsReadOnly();
+
+	saveAct->setEnabled(toBeEnabled);
+	modifyAct->setEnabled(toBeEnabled);
+}
+
 ////////////////////////////////////////////////////////////
 // Toolbars
 ////////////////////////////////////////////////////////////
@@ -941,6 +951,10 @@ void MainWindow::ChangeModeModify(const bool checked)
 			OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
 			resetTools(EDIT_SYSTEM_MODE);
 		} else {
+			if( OmProjectData::IsReadOnly() ){
+				return;
+			}
+
 			OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
 			resetTools(NAVIGATION_SYSTEM_MODE);
 		}

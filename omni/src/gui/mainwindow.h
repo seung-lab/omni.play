@@ -188,6 +188,7 @@ class MainWindow
 		Preferences* preferences;
 		void windowTitleSet(QString title);
 		void windowTitleClear();
+		void updateReadOnlyRelatedWidgets();
 	};
 
 #endif

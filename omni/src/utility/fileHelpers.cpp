@@ -3,10 +3,10 @@
 
 bool FileHelpers::isFileReadOnly( QString fileNameAndPath )
 {
-	bool isReadOnly = true;
+	bool isReadOnly = false;
 	QFileInfo file(fileNameAndPath);
-	if (file.permission(QFile::WriteUser)){
-		isReadOnly = false; 
+	if (file.exists() && !file.permission(QFile::WriteUser)){
+		isReadOnly = true; 
 	}
 	
 	return isReadOnly;
