@@ -12,7 +12,7 @@ my $meshinatorHome = $path;
 
 # Create File
 my $project = abs_path($ARGV[0]);
-my $createFileLine = "create:".$project."\n";
+my $createFileLine = "createOrOpen:".$project."\n";
 my $full =  "$project.full";
 print `rm -f $full`;
 my $plan = "$project.plan";
@@ -21,7 +21,6 @@ my $plan = "$project.plan";
 my @h5s = @ARGV[1 .. scalar @ARGV-1];
 foreach my $h5 (@h5s)
 {
-        # create shouldn't overwrite old projects...
 	my $addSegLines = $createFileLine;
 
 	my $hf5path = abs_path($h5);

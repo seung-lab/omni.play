@@ -96,7 +96,7 @@ void Headless::processLine( QString line, QString fName )
 			printf("please choose segmentation first!\n");
 			return;
 		} 
-		QString planFile = fName + ".plan";
+		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
 		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( "meshdone" == line ) {
@@ -146,6 +146,18 @@ void Headless::processLine( QString line, QString fName )
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];
                 OmProject::New( projectFileNameAndPath, true );
+	} else if( line.startsWith("createOrOpen:") ) {
+		QStringList args = line.split(':');
+		QString projectFileNameAndPath = args[1];
+
+		QFile file( projectFileNameAndPath );
+		if(file.exists()){
+			OmProject::Load( projectFileNameAndPath, false );
+			
+		} else {
+			OmProject::New( projectFileNameAndPath, true );
+		}
+		
 	} else if( line.startsWith("addSegmentationFromHDF5:") ){
 		QStringList args = line.split(':');
 
