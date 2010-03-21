@@ -91,6 +91,12 @@ void Headless::processLine( QString line, QString fName )
 		time (&end);
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );
+	} else if( line.startsWith("runMeshPlan:") ) {
+		time (&start);
+		runMeshPlan( line );
+		time (&end);
+		dif = difftime (end,start);
+		printf("meshing done (%.2lf secs)\n", dif );
 	} else if( "meshplan" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");
@@ -263,4 +269,54 @@ int Headless::start(int argc, char *argv[])
 		
 		return app.exec();
 	}
+}
+
+void Headless::runMeshPlan( QString headlessLine )
+{
+	QStringList headlessArgs = headlessLine.split(':');
+	QString planName = headlessArgs[1];
+
+	QFile file( planName );
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		throw OmIoException( "could not read file" );
+	}
+	
+	QSet<OmId> segmentationIDs;
+
+	QString line;
+	QTextStream in(&file);
+	while (!in.atEnd()) {
+		line = in.readLine();
+		
+		QStringList args = line.split(':');
+		OmId segmentationID = getNum( args[1] );
+		unsigned int mipLevel = getNum( args[2] );
+		QStringList coords = args[3].split(',');
+		unsigned int x = getNum( coords[0] );
+		unsigned int y = getNum( coords[1] );
+		unsigned int z = getNum( coords[2] );
+
+		if (!segmentationIDs.contains(segmentationID)){
+			segmentationIDs << segmentationID;
+		}
+
+		OmVolume::GetSegmentation( segmentationID ).QueueUpMeshChunk( mipLevel, x, y, z);
+	}
+
+	foreach( OmId segID, segmentationIDs){
+		OmVolume::GetSegmentation( segID ).RunMeshQueue();
+	}
+}
+
+OmMipChunkCoord Headless::makeChunkCoord( QString line )
+{
+	QStringList args = line.split(':');
+	OmId segmentationID = getNum( args[1] );
+	unsigned int mipLevel = getNum( args[2] );
+	QStringList coords = args[3].split(',');
+	unsigned int x = getNum( coords[0] );
+	unsigned int y = getNum( coords[1] );
+	unsigned int z = getNum( coords[2] );
+
+	return OmMipChunkCoord(segmentationID, level, x, y, z);
 }

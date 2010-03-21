@@ -3,7 +3,6 @@
 #include "omVolume.h"
 #include "omMipChunk.h"
 #include "omVolumeCuller.h"
-#include "mesh/meshingManager.h"
 
 #include "segment/omSegmentEditor.h"
 #include "system/omProjectData.h"
@@ -38,6 +37,8 @@ OmSegmentation::OmSegmentation()
 
 	/** Set The Name of the Cache */
         SetCacheName("OmMipMeshManager");
+
+	mMeshingMan = NULL;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -64,6 +65,8 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	//build blank data
 	BuildVolumeData();
+
+	mMeshingMan = NULL;
 }
 
 /////////////////////////////////
@@ -732,29 +735,6 @@ void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const Seg
 	mMipVoxelationManager.DrawVoxelations(mSegmentManager, mipCoord, rRelvDataVals, drawOps);
 }
 
-/*
- //get pointer to chunk
- shared_ptr<OmMipChunk> p_chunk = GetChunk(mipCoord);
- 
- //push modelview matrix
- glPushMatrix();
- */
-
-/*
- //transform into voxel space
- Vector3f translate = mNormExtent.getMin();
- Vector3f scale = Vector3f::ONE / GetDataExtent().getUnitDimensions();
- Vector3f norm_extent_scale = GetNormExtent().getDimensions();
- glTranslatefv(translate.array);
- glScalefv(norm_extent_scale.array);	//makes chunk dims = 1
- glScalefv(scale.array);	//makes chunk dims match data extent
- */
-
-//call voxel map draw
-//mChunkVoxels.DrawVoxels(rCuller, rSegmentation, rRelvDataVals);
-
-//glPopMatrix();
-
 /////////////////////////////////
 ///////          Print Methods
 
@@ -766,4 +746,30 @@ void OmSegmentation::Print()
 		//debug("FIXME", << "\t   Segments:" << endl;
 		mSegmentManager.SegmentCall(&OmSegment::Print);
 	}
+}
+
+/**
+ * Enqueue chunk coord to build
+ */
+void OmSegmentation::QueueUpMeshChunk(int level, int x, int y, int z)
+{
+	if( NULL == mMeshingMan ){
+		mMeshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+	}
+
+	OmMipChunkCoord chunk_coord(level, x, y, z);
+
+	mMeshingMan->addToQueue( chunk_coord );
+}
+
+void OmSegmentation::RunMeshQueue()
+{
+	if(  NULL == mMeshingMan ){
+		return;
+	}
+
+	mMeshingMan->start();
+	mMeshingMan->wait();
+	delete(mMeshingMan);
+	mMeshingMan = NULL;
 }

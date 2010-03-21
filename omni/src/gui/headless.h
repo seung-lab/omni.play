@@ -15,7 +15,7 @@ class Headless
 	void runScript( const QString scriptFileName, QString fName );
 	void runHeadless( QString headlessCMD, QString fName );
 	void setOmniExecutablePath( QString rel_fnpn );
-
+	void runMeshPlan( QString headlessLine );
 };
 
 #endif
