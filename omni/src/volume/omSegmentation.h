@@ -17,7 +17,7 @@
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "system/events/omSystemModeEvent.h"
-
+#include "volume/omSegmentationChunkCoord.h"
 #include "common/omStd.h"
 
 #include <vmmlib/frustumCuller.h>
@@ -65,7 +65,7 @@ public:
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
 	void BuildMeshDataInternal();	
-	void QueueUpMeshChunk(int level, int x, int y, int z);
+	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);

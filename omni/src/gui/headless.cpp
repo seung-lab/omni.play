@@ -287,20 +287,15 @@ void Headless::runMeshPlan( QString headlessLine )
 	QTextStream in(&file);
 	while (!in.atEnd()) {
 		line = in.readLine();
-		
-		QStringList args = line.split(':');
-		OmId segmentationID = getNum( args[1] );
-		unsigned int mipLevel = getNum( args[2] );
-		QStringList coords = args[3].split(',');
-		unsigned int x = getNum( coords[0] );
-		unsigned int y = getNum( coords[1] );
-		unsigned int z = getNum( coords[2] );
+
+		OmSegmentationChunkCoord coord = makeChunkCoord( line );
+		OmId segmentationID = coord.getSegmentationID();
 
 		if (!segmentationIDs.contains(segmentationID)){
 			segmentationIDs << segmentationID;
 		}
 
-		OmVolume::GetSegmentation( segmentationID ).QueueUpMeshChunk( mipLevel, x, y, z);
+		OmVolume::GetSegmentation( segmentationID ).QueueUpMeshChunk( coord );
 	}
 
 	foreach( OmId segID, segmentationIDs){
@@ -308,7 +303,7 @@ void Headless::runMeshPlan( QString headlessLine )
 	}
 }
 
-OmMipChunkCoord Headless::makeChunkCoord( QString line )
+OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 {
 	QStringList args = line.split(':');
 	OmId segmentationID = getNum( args[1] );
@@ -318,5 +313,5 @@ OmMipChunkCoord Headless::makeChunkCoord( QString line )
 	unsigned int y = getNum( coords[1] );
 	unsigned int z = getNum( coords[2] );
 
-	return OmMipChunkCoord(segmentationID, level, x, y, z);
+	return OmSegmentationChunkCoord(segmentationID, mipLevel, x, y, z);
 }

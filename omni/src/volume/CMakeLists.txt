@@ -8,6 +8,7 @@ SET(OM_VOLUME_LIB_SRCS
 	omFilter2dManager.cpp
 	omMipChunk.cpp
 	omMipChunkCoord.cpp
+	omSegmentationChunkCoord.cpp
 	omVolumeCuller.cpp
 	omMipVolume.cpp
 	omSegmentation.cpp

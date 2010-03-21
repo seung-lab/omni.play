@@ -1,6 +1,8 @@
 #ifndef HEADLESS_H
 #define HEADLESS_H
 
+#include "volume/omSegmentationChunkCoord.h"
+
 class Headless
 {
  public:
@@ -16,6 +18,8 @@ class Headless
 	void runHeadless( QString headlessCMD, QString fName );
 	void setOmniExecutablePath( QString rel_fnpn );
 	void runMeshPlan( QString headlessLine );
+	OmSegmentationChunkCoord makeChunkCoord( QString line );
+	
 };
 
 #endif

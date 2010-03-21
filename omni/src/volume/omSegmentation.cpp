@@ -751,13 +751,11 @@ void OmSegmentation::Print()
 /**
  * Enqueue chunk coord to build
  */
-void OmSegmentation::QueueUpMeshChunk(int level, int x, int y, int z)
+void OmSegmentation::QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord )
 {
 	if( NULL == mMeshingMan ){
 		mMeshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 	}
-
-	OmMipChunkCoord chunk_coord(level, x, y, z);
 
 	mMeshingMan->addToQueue( chunk_coord );
 }
