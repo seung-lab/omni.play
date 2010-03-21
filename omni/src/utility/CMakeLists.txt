@@ -37,6 +37,16 @@ TARGET_LINK_LIBRARIES( omUtility
 # EXECUTABLE
 
 #specify executable
+ADD_EXECUTABLE( hdf5_merge
+        hdf5_merge.cpp
+)
+TARGET_LINK_LIBRARIES( hdf5_merge 
+	${OM_HDF5_LIBS}
+	-lpthread -lrt
+)
+
+
+#specify executable
 #ADD_EXECUTABLE( omUtilityApp
 #	main.cpp
 #)
