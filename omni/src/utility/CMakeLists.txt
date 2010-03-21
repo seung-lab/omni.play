@@ -42,7 +42,7 @@ ADD_EXECUTABLE( hdf5_merge
 )
 TARGET_LINK_LIBRARIES( hdf5_merge 
 	${OM_HDF5_LIBS}
-	-lpthread -lrt
+	-lpthread
 )
 
 
