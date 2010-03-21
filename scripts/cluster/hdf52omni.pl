@@ -12,46 +12,33 @@ my $meshinatorHome = $path;
 
 # Create File
 my $project = abs_path($ARGV[0]);
-chomp($project);
 my $createFileLine = "create:".$project."\n";
-
-print "will create \"$createFileLine\"\n";
-
 my $full =  "$project.full";
-print `unlink $full`;
+print `rm -f $full`;
 my $plan = "$project.plan";
-
-sub runLinesRaw
-{
-	my $project = "";
-	$project = $_[1] if (defined $_[1]);
-	open CMD, ">.my.omni.cmd" or die $!;
-	print CMD $_[0];
-	print "running; $meshinatorHome/../../omni/bin/omni --headless=.my.omni.cmd $project";
-	print `$meshinatorHome/../../omni/bin/omni --headless=.my.omni.cmd $project`;
-}
-
-sub runLinesProject
-{
-	runLinesRaw($_[0], $_[1]);
-}
-
-#runLinesRaw($createFileLine);
 
 # Add Segmentations
 my @h5s = @ARGV[1 .. scalar @ARGV-1];
-#print @h5s;
-#exit(0);
-my $seg = 0;
 foreach my $h5 (@h5s)
 {
-	$seg++;
+        # create shouldn't overwrite old projects...
 	my $addSegLines = $createFileLine;
-	$addSegLines .= "addSegmentationFromHDF5:".abs_path($h5)."\n";
- 	$addSegLines .= "seg:".$seg."\n";
- 	$addSegLines .= "meshplan\n";
 
-	runLinesProject($addSegLines);
+	my $hf5path = abs_path($h5);
+	print "about to build $hf5path..\n";
+	$addSegLines .= "addSegmentationFromHDF5:".$hf5path."\n";
+
+        # seg:number is already set by the time we get here
+ 	$addSegLines .= "meshplan\n";  
+
+	# runLinesProject($addSegLines);
+
+	`cat $addSegLines > .my.omni.cmd`;
+
+	my $cmd = "$meshinatorHome/../../omni/bin/omni --headless=.my.omni.cmd $project";
+	print "running ($cmd)\n";
+	print `$cmd`;
+
 	print `cat $plan >> $full`; 
 }
 
