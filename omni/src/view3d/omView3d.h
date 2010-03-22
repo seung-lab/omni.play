@@ -34,7 +34,7 @@ class OmView3d : public QGLWidget,
 		Q_OBJECT
 		
 	public:
-		OmView3d(QWidget *parent = NULL);
+		OmView3d(QWidget *parent);
 		~OmView3d();
 		OmCamera& GetCamera();
 		

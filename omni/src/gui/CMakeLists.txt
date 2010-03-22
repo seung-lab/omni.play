@@ -6,6 +6,7 @@ SET( OMGUI_SRCS
 	headless.cpp
 	mainwindow.cpp
 	recentFileList.cpp
+	viewGroup.cpp
 
 	../utility/dataWrappers.cpp
 	../system/omAnimate.cpp

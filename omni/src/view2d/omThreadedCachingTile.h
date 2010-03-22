@@ -1,7 +1,6 @@
 #ifndef OM_CACHING_TILE_H
 #define OM_CACHING_TILE_H
 
-
 #include "omTile.h"
 #include "omTextureID.h"
 #include "system/omThreadedCache.h"
@@ -34,8 +33,7 @@ public:
 	OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, const QGLContext *shareContext );
 	
 	~OmThreadedCachingTile();
-	
-	
+		
 	// texture ID
 	virtual void GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
 	void GetTextureIDDownMip(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
@@ -47,22 +45,15 @@ public:
 	//void ClearCache();
 	void SetContinuousUpdate(bool);
 	
-	// setting second OmMipVolume for overlay
-	void setSecondMipVolume(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);
-	bool checkSecondMipVolume() { return isSecondMipVolume; }
-	
 	void subImageTex(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
-	
-	void SetMaxCacheSize(int bytes);
 	
 	ObjectType mVolType;
 	OmId mImageId;
+
 private:
 	OmTextureID* HandleCacheMiss(const OmTileCoord &key);
 	void HandleFetchUpdate();
 	bool InitializeFetchThread();
-	
-	bool isSecondMipVolume;
 	
 	QGLContext* mFetchThreadContext;
 	const QGLContext* mShareContext;

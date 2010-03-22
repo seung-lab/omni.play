@@ -393,7 +393,7 @@ void MyInspectorWidget::selectChannelView(QAction * act)
 	if( propAct == act ){
 		addChannelToSplitter(cdw);
 	} else {
-		emit triggerChannelView( cdw.getID(), 0, 0, getViewType(act));
+		emit triggerChannelView( cdw.getID(), getViewType(act));
 	}
 }
 
@@ -449,7 +449,7 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 	if( propAct == act ){
 		addSegmentationToSplitter(sdw);
 	} else {
-		emit triggerSegmentationView( sdw.getID(), 0, getViewType(act));
+		emit triggerSegmentationView( sdw.getID(), getViewType(act));
 	}
 }
 

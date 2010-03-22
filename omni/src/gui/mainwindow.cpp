@@ -369,10 +369,10 @@ void MainWindow::openInspector()
 		connect(omniInspector, SIGNAL(addChannel()), this, SLOT(addChannelToVolume()));
 		connect(omniInspector, SIGNAL(addSegmentation()), this, SLOT(addSegmentationToVolume()));
 
-		connect(omniInspector, SIGNAL(triggerChannelView(OmId, OmId, OmId, ViewType)),
-			this, SLOT(openChannelView(OmId, OmId, OmId, ViewType)));
-		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, OmId, ViewType)),
-			this, SLOT(openSegmentationView(OmId, OmId, ViewType)));
+		connect(omniInspector, SIGNAL(triggerChannelView(OmId, ViewType)),
+			this, SLOT(openChannelView(OmId, ViewType)));
+		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, ViewType)),
+			this, SLOT(openSegmentationView(OmId, ViewType)));
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -405,50 +405,43 @@ void MainWindow::openUndoView()
 void MainWindow::open3dView()
 {
 	try {
-
-		//debug("genone","MainWindow::open3dView()");
-
-		if (isProjectOpen) {
-
-			//debug("genone","opening 3d view");
-			qtView3d = new OmView3d();
-
-			QDockWidget *dock = new QDockWidget(tr("3D View"), this);
-			dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-			qtView3d->setParent(dock);
-			dock->setWidget(qtView3d);
-
-			addDockWidget(Qt::TopDockWidgetArea, dock);
-			windowMenu->addAction(dock->toggleViewAction());
-
-			dock->setAttribute(Qt::WA_DeleteOnClose);
-			//              //debug("genone","omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
+		if (!isProjectOpen) {
+			return;
 		}
+
+		qtView3d = new OmView3d( this );
+
+		QDockWidget *dock = new QDockWidget(tr("3D View"), this);
+		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+		qtView3d->setParent(dock);
+		dock->setWidget(qtView3d);
+
+		addDockWidget(Qt::TopDockWidgetArea, dock);
+		windowMenu->addAction(dock->toggleViewAction());
+
+		dock->setAttribute(Qt::WA_DeleteOnClose);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
 
-void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype)
+void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 {
 	try {
-
-		//debug("genone","MainWindow::openChannelView()");
-
-		string name = OmVolume::GetChannel(chan_id).GetName();
-		QString qname = QString::fromStdString(name);
-		if (vtype == XY_VIEW)
-			qname = qname + QString(" -- XY View");
-		else if (vtype == XZ_VIEW)
-			qname = qname + QString(" -- XZ View");
-		else
-			qname = qname + QString(" -- YZ View");
+		QString qname = QString::fromStdString( OmVolume::GetChannel(chan_id).GetName() );
+		if (vtype == XY_VIEW) {
+			qname += " -- XY View";
+		} else if (vtype == XZ_VIEW) {
+			qname += " -- XZ View";
+		} else {
+			qname += " -- YZ View";
+		}
 
 		QDockWidget *dock;
 
-		OmView2d *qtView2d_current = new OmView2d(vtype, CHANNEL, chan_id, second_chan_id, third_id);
+		OmView2d *qtView2d_current = new OmView2d(vtype, CHANNEL, chan_id, this );
 		dock = new QDockWidget(qname, this);
 		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 
@@ -466,10 +459,10 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 
 }
 
-void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype)
+void MainWindow::openSegmentationView(OmId primary_id, ViewType vtype)
 {
 	try {
-		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, secondary_id);
+		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, this);
 
 		string name = OmVolume::GetSegmentation(primary_id).GetName();
 		QString qname = QString::fromStdString(name);

@@ -38,8 +38,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addChannel();
 	void addSegmentation();
 
-	void triggerChannelView(OmId chan_id, OmId second_chan_id, OmId third_chan_id, ViewType vtype);
-	void triggerSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
+	void triggerChannelView(OmId chan_id, ViewType vtype);
+	void triggerSegmentationView(OmId primary_id, ViewType vtype);
 
  protected:
 

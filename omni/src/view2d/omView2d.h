@@ -49,9 +49,7 @@ public OmVoxelEventListener
 	Q_OBJECT
 	
 public:
-	OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId second_id, OmId third_id = 0, QWidget *parent = 0);
-	// OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId second_id, OmId third_id, QWidget *parent = 0);
-	// OmCamera2d& GetCamera();
+	OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget *parent);
  	~OmView2d();
 	
 	OmMipVolume *mVolume;
@@ -223,8 +221,6 @@ private:
 	ViewType mViewType;
 	ObjectType mVolumeType;
 	OmId mImageId;
-	OmId mSecondId;
-	OmId mThirdId;
 	bool iSentIt;
 	bool mScribbling;
 	bool mInitialized;
@@ -280,6 +276,8 @@ private:
 
 	bool amInFillMode();
 	bool doDisplayInformation();
+
+	void displayInformation( QString & elapsedTime );
 };
 
 #endif 

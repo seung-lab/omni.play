@@ -34,18 +34,14 @@ static QGLWidget *sharedwidget = NULL;
 /**
  *	Constructs View2d widget.
  */
-OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId second_id, OmId third_id,
-		   QWidget * parent)
+OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget * parent)
  : QWidget(parent)
 {
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget();
-	//debug("genone","OmView2d::OmView2d -- " << viewtype);
 
 	mViewType = viewtype;
 	mVolumeType = voltype;
 	mImageId = image_id;
-	mSecondId = second_id;
-	mThirdId = third_id;
 	mAlpha = 1;
 	mJoiningSegmentToggled = false;
 	mLevelLock = false;
@@ -88,14 +84,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
-
 		mCache->SetContinuousUpdate(false);
-
-		if (mSecondId && mThirdId) {
-			OmChannel & second_channel = OmVolume::GetChannel(mSecondId);
-			mCache->setSecondMipVolume(CHANNEL, mSecondId, &second_channel);
-		}
 
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
@@ -109,13 +98,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, OmId se
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 		mCache->SetContinuousUpdate(false);
-
-		if (mSecondId) {
-			OmChannel & second_channel = OmVolume::GetChannel(mSecondId);
-			mCache->setSecondMipVolume(CHANNEL, mSecondId, &second_channel);
-		}
 
 		mRootLevel = current_seg.GetRootMipLevel();
 	}
@@ -270,43 +253,8 @@ void OmView2d::paintEvent(QPaintEvent * event)
 		sentTexture = false;
 
 	if (doDisplayInformation()) {
-		QString str = QString("MIP Level Locked (Press L to unlock.)");
-		if (mLevelLock)
-			painter.drawText(QPoint(0, mTotalViewport.height - 80), str);
-
-		Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
-		str = QString::number(zoomMipVector.x, 'f', 2) + QString(" Level");
-		painter.drawText(QPoint(0, mTotalViewport.height - 80), str);
-
-		float zoomFactor = (zoomMipVector.y / 10.0);
-		str = QString::number(zoomFactor, 'f', 2) + QString(" zoomFactor");
-		painter.drawText(QPoint(0, mTotalViewport.height - 60), str);
-
-		int sliceDepth = GetDepthToDataSlice(mViewType);
-		str = QString::number(sliceDepth) + QString(" Slice Depth");
-		painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
-
-		if (mTileCountIncomplete) {
-			str = QString::number(mTileCountIncomplete, 'f', 0) + QString(" tile(s) incomplete of ");
-			str += QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
-		} else {
-			str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
-		}
-		painter.drawText(QPoint(0, mTotalViewport.height - 20), str);
-
-		if (!mScribbling) {
-			str = QString::number(t.elapsed(), 'f', 4) + QString(" s");
-			painter.drawText(QPoint(0, mTotalViewport.height), str);
-		} else {
-			if (mElapsed) {
-				str = QString::number(1.0 / mElapsed->elapsed(), 'f', 4) + QString(" fps");
-				painter.drawText(QPoint(0, mTotalViewport.height), str);
-				delete mElapsed;
-				mElapsed = new boost::timer();
-			} else {
-				mElapsed = new boost::timer();
-			}
-		}
+		QString elapsedTime = QString::number(t.elapsed(), 'f', 4);
+		displayInformation( elapsedTime );
 	}
 
 	DrawCursors();
@@ -314,6 +262,47 @@ void OmView2d::paintEvent(QPaintEvent * event)
 	painter.end();
 
 	SetViewSliceOnPan();
+}
+
+void OmView2d::displayInformation( QString & elapsedTime )
+{
+	QString str = QString("MIP Level Locked (Press L to unlock.)");
+	if (mLevelLock)
+		painter.drawText(QPoint(0, mTotalViewport.height - 80), str);
+
+	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	str = QString::number(zoomMipVector.x, 'f', 2) + QString(" Level");
+	painter.drawText(QPoint(0, mTotalViewport.height - 80), str);
+
+	float zoomFactor = (zoomMipVector.y / 10.0);
+	str = QString::number(zoomFactor, 'f', 2) + QString(" zoomFactor");
+	painter.drawText(QPoint(0, mTotalViewport.height - 60), str);
+
+	int sliceDepth = GetDepthToDataSlice(mViewType);
+	str = QString::number(sliceDepth) + QString(" Slice Depth");
+	painter.drawText(QPoint(0, mTotalViewport.height - 40), str);
+
+	if (mTileCountIncomplete) {
+		str = QString::number(mTileCountIncomplete, 'f', 0) + QString(" tile(s) incomplete of ");
+		str += QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+	} else {
+		str = QString::number(mTileCount, 'f', 0) + QString(" tile(s)");
+	}
+	painter.drawText(QPoint(0, mTotalViewport.height - 20), str);
+
+	if (!mScribbling) {
+		str = elapsedTime + QString(" s");
+		painter.drawText(QPoint(0, mTotalViewport.height), str);
+	} else {
+		if (mElapsed) {
+			str = QString::number(1.0 / mElapsed->elapsed(), 'f', 4) + QString(" fps");
+			painter.drawText(QPoint(0, mTotalViewport.height), str);
+			delete mElapsed;
+			mElapsed = new boost::timer();
+		} else {
+			mElapsed = new boost::timer();
+		}
+	}
 }
 
 QImage OmView2d::safePaintEvent(QPaintEvent * event)
@@ -414,9 +403,7 @@ void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalData
 	if (theId && !current_seg.IsSegmentSelected(theId)) {
 		(new OmSegmentSelectAction(segmentation_id, theId, true))->Run();
 		Refresh();
-	} else {
-	}
-
+	} 
 }
 
 DataCoord OmView2d::BrushToolOTGDC(DataCoord off)
@@ -721,18 +708,14 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 	DataCoord globalDC;
 	switch (mViewType) {
-	case XY_VIEW:{
-			globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-			//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
-		}
+	case XY_VIEW:
+		globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
 		break;
-	case XZ_VIEW:{
-			globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-		}
+	case XZ_VIEW:
+		globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
 		break;
-	case YZ_VIEW:{
-			globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-		}
+	case YZ_VIEW:
+		globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
 		break;
 	}
 	//debug("FIXME", << "global click point: " << globalDC << endl;
@@ -790,8 +773,10 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 				x0 += stepx;
 				fraction -= dy;
 			}
+
 			y0 += stepy;
 			fraction += dx;
+
 			//modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
 			DataCoord myDC = DataCoord(x0, y0, mViewDepth);
 
@@ -799,18 +784,14 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 			DataCoord globalDC;
 			switch (mViewType) {
-			case XY_VIEW:{
-					globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-					//                                      //debug("FIXME", << "Pulling --> " << xMipChunk << " " << yMipChunk << " " << mDataDepth << endl;
-				}
+			case XY_VIEW:
+				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
 				break;
-			case XZ_VIEW:{
-					globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-				}
+			case XZ_VIEW:
+				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
 				break;
-			case YZ_VIEW:{
-					globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-				}
+			case YZ_VIEW:
+				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
 				break;
 			}
 			//debug("FIXME", << "global click point: " << globalDC << endl;
@@ -913,22 +894,6 @@ void OmView2d::setBrushToolDiameter()
 	} else if (32 == mBrushToolDiameter) {
 		mBrushToolDiameter = 1;
 	}
-
-	/*
-	   if (1 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 2;
-	   } else if (2 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 4;
-	   } else if (4 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 8;
-	   } else if (8 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 16;             
-	   } else if (16 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 32;             
-	   } else if (32 == mBrushToolDiameter) {
-	   mBrushToolDiameter = 1;              
-	   }
-	 */
 }
 
 
@@ -1017,10 +982,6 @@ void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
 	debug("view2d","OmView2d::SegmentEditSelectionChangeEvent\n");
 
 	if (mVolumeType == SEGMENTATION) {
-		//              modified_Ids = event->GetModifiedSegmentIds();
-		//              delete_dirty = true;
-		//              myUpdate();
-
 		// need to myUpdate paintbrush, not anything on the screen 
 
 		OmId mentationEditId;
@@ -1152,7 +1113,6 @@ void OmView2d::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 		mCache->SetContinuousUpdate(false);
 
 		Draw(false);
@@ -1167,7 +1127,6 @@ void OmView2d::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetMaxCacheSize(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT) * BYTES_PER_MB);
 		mCache->SetContinuousUpdate(false);
 		Draw(false);
 	}
