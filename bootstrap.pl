@@ -20,9 +20,12 @@ my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
 my $omniScriptFile = $scriptPath.'/buildomni.sh';
+my $omniScriptOptions = "";
+
 my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
 
 my $globalMakeOptions = "";
+
 my $hostname = `hostname`;
 my $profileOn = "";
 if ($hostname =~ /brainiac/) {
@@ -54,7 +57,7 @@ export BOOST_ROOT=$libPath/Boost
 export EXPAT_INCLUDE=$libPath/expat/lib/
 export EXPAT_LIBPATH=$libPath/expat/include/
 cd $basePath/omni
-cmake .
+cmake $omniScriptOptions .
 make $globalMakeOptions
 END
     print SCRIPT $script;
@@ -372,7 +375,7 @@ END
 
     my $cmd = "sh $omniScriptFile";
     print "running: ($cmd)\n";
-    `$cmd`;
+    print `$cmd`;
     print "done\n";
 }
 
@@ -577,7 +580,7 @@ sub setupParallelBuildOption {
 sub experimentalMenu {
     print "experimental build menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build HDF 1.8.4p1\n";
+    print "1 -- Build Omni no debug\n";
     print "\n";
     my $max_answer = 1;
 
@@ -600,7 +603,10 @@ sub runExperimentalMenuEntry {
     if( 0 == $entry ){
         return();
     }elsif( 1 == $entry ){
-	hdf5_18();
+	$omniScriptOptions = " -D NO_DEBUG=1 ";
+	$globalMakeOptions .= " VERBOSE=1 ";
+	genOmniScript();
+	omni();
     }
 }
 

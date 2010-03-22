@@ -6,8 +6,14 @@
 
 #include <QString>
 
+#ifdef NO_DEBUG
+#define debug(x, ...) ()
+#else
 #define debug(x, ...) actual_debug(x, __VA_ARGS__)
+#endif
+
 #define DEBUGV3(vec) vec.x, vec.y, vec.z
+
 class CmdLineArgs 
 {
 public:

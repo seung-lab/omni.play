@@ -3,6 +3,7 @@
 #include "common/omException.h"
 #include "common/omVtk.h"
 #include "common/omDebug.h"
+#include "utility/omSystemInformation.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -32,7 +33,7 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	const int totalCacheSizeMB = 20;
+	const unsigned int totalCacheSizeMB = OmSystemInformation::get_total_system_memory_megs() / 20;
 		
 	// number of elements (objects) in the raw data chunk cache (default 521)
 	//  should be a prime number (due to simplistic hashing algorithm)
