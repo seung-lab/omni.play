@@ -272,7 +272,6 @@ sub prepareNukeSrcsAndBuild {
 }
 
 sub boost {
-#    boost138();
     boost142();
 }
 
@@ -320,21 +319,12 @@ sub hdf5 {
     hdf5_18();
 }
 
-sub hdf5_16 {
-    prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
-}
-
 sub hdf5_18 {
     prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no --enable-threadsafe --with-pthread=/usr/lib" );
 }
 
 sub qt {
     qt46();
-}
-
-sub qt45 {
-    my $baseFileName = "qt-all-opensource-src-4.5.2";
-    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub qt46 {
@@ -428,11 +418,7 @@ sub smallLibraries {
 sub release {
 	my $version = "1.0";
 
-	smallLibraries();
-	boost();
-	qt();
-	vtk();
-	omni();
+	buildAll();
 
 	# Do release specific work now.
 
@@ -471,6 +457,14 @@ sub menu {
     }
 }
 
+sub buildAll {
+	smallLibraries();
+	boost();
+	qt();
+	vtk();
+	omni();
+}
+
 sub runMenuEntry {
     my $entry = $_[0];
 
@@ -487,11 +481,7 @@ sub runMenuEntry {
     }elsif( 5 == $entry ){
 	omni();
     }elsif( 6 == $entry ){
-	smallLibraries();
-	boost();
-	qt();
-	vtk();
-	omni();
+	buildAll();
     }elsif( 7 == $entry ){
 	smallLibraryMenu();
     }elsif( 8 == $entry ){
@@ -603,6 +593,7 @@ sub runExperimentalMenuEntry {
     if( 0 == $entry ){
         return();
     }elsif( 1 == $entry ){
+	`(cd $omniPath; make clean)`;
 	$omniScriptOptions = " -D NO_DEBUG=1 ";
 	$globalMakeOptions .= " VERBOSE=1 ";
 	genOmniScript();

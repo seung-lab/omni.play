@@ -16,6 +16,7 @@
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
 bool ViewerIsEnabled;
+bool mDebugAll = false;
 
 bool isDebugCategoryEnabled( const char *category )
 {
@@ -33,12 +34,19 @@ void actual_debug(const char *category, const char *format, ...)
 	int i;
 	va_list args;
 	va_start(args, format);
-	for (i=0;i<debugCategoryNumber;i++){
-		if (!strncmp(category,debugCategoryArray[i], OM_DEBUG_STRING_SIZE)) {
-			vfprintf(stdout, format, args);
-			fflush(stdout);
+
+	if( mDebugAll ) {
+		vfprintf(stdout, format, args);
+		fflush(stdout);
+	} else {
+		for (i=0;i<debugCategoryNumber;i++){
+			if (!strncmp(category,debugCategoryArray[i], OM_DEBUG_STRING_SIZE)) {
+				vfprintf(stdout, format, args);
+				fflush(stdout);
+			}
 		}
 	}
+
 	va_end(args);
 }
 
@@ -190,21 +198,21 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 						fileArgIndex = -1;
 						break;
 					}
-				} else {
-					if(!strncmp(argv[i],"--nodebug=",10)){
-						if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)){
-							fileArgIndex = -1;
-							break;
-						}
-					} else if(!strncmp(argv[i],"--headless",10)){
-						runHeadless = true;
-						headlessCMD = QString::fromStdString( argv[i] );
-					} else {
-						printf("Unrecognized option %s.\n\n",argv[i]);
-						usage();
-						fileArgIndex = -2;
+				} else if(!strncmp(argv[i],"--nodebug=",10)){
+					if (-1==debugParseArg(&argv[i][10],OM_DEBUG_REMOVE)){
+						fileArgIndex = -1;
 						break;
 					}
+				} else if(!strncmp(argv[i],"--debugAll",10)){
+					mDebugAll = true;
+				} else if(!strncmp(argv[i],"--headless",10)){
+					runHeadless = true;
+					headlessCMD = QString::fromStdString( argv[i] );
+				} else {
+					printf("Unrecognized option %s.\n\n",argv[i]);
+					usage();
+					fileArgIndex = -2;
+					break;
 				}
 			} else {
 				printf("Unrecognized option %s.\n\n",argv[i]);
