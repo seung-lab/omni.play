@@ -13,7 +13,7 @@
 #include <QComboBox>
 #include <QErrorMessage>
 
-
+#include "gui/viewGroup.h"
 #include "common/omStd.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -27,9 +27,8 @@
 #include "gui/recentFileList.h"
 #include "gui/preferences/preferences.h"
 
-class OmView2d;
-class OmView3d;
 class MyInspectorWidget;
+class ViewGroup;
 
 class MainWindow 
 : public QMainWindow, 	
@@ -49,7 +48,9 @@ class MainWindow
 		
 	void openProject( QString fileNameAndPath );
 	void openProject( QString fileName, QString pathName );
-		
+
+	friend class ViewGroup;
+
  protected: 
 	void closeEvent(QCloseEvent *event); 
 		
@@ -150,9 +151,6 @@ class MainWindow
 	QProgressDialog prog_dialog;
 	bool editsMade;
 		
-	OmView3d *qtView3d;
-	OmView2d *qtView2d;
-		
 	MyInspectorWidget *omniInspector;
 	QUndoView *undoView;
 		
@@ -190,6 +188,8 @@ class MainWindow
 	void windowTitleSet(QString title);
 	void windowTitleClear();
 	void updateReadOnlyRelatedWidgets();
+
+	ViewGroup * mViewGroup;
 };
 
 #endif

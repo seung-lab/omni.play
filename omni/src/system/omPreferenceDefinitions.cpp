@@ -70,11 +70,11 @@ void omSetDefaultView3dPreferences()
 	OmPreferences::Set(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F, Vector3f::ZERO);
 	OmPreferences::Set(OM_PREF_VIEW3D_FOCUS_STYLE_INT, 1);
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);
-	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, true);
-	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_AXIS_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_AXIS_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL, true);
 
-	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_INFO_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_INFO_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_FOCUS_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT, 0.2f);

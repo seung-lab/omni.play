@@ -4,8 +4,6 @@
 
 #include "view2d/omTile.h"
 #include "view2d/omTextureID.h"
-#include "view2d/omView2d.h"
-#include "view3d/omView3d.h"
 #include "project/omProject.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
@@ -71,6 +69,8 @@ MainWindow::MainWindow()
 		// statusBar()->addWidget(prog_bar);
 
 		recentFiles.loadRecentlyUsedFilesListFromFS();
+
+		mViewGroup = new ViewGroup( this );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -382,8 +382,6 @@ void MainWindow::openInspector()
 void MainWindow::openUndoView()
 {
 	try {
-
-		//debug("genone","opening undo history");
 		undoView = new QUndoView();
 
 		QDockWidget *dock = new QDockWidget(tr("History"), this);
@@ -409,18 +407,7 @@ void MainWindow::open3dView()
 			return;
 		}
 
-		qtView3d = new OmView3d( this );
-
-		QDockWidget *dock = new QDockWidget(tr("3D View"), this);
-		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-		qtView3d->setParent(dock);
-		dock->setWidget(qtView3d);
-
-		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
+		mViewGroup->addView3D();
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -430,28 +417,7 @@ void MainWindow::open3dView()
 void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 {
 	try {
-		QString qname = QString::fromStdString( OmVolume::GetChannel(chan_id).GetName() );
-		if (vtype == XY_VIEW) {
-			qname += " -- XY View";
-		} else if (vtype == XZ_VIEW) {
-			qname += " -- XZ View";
-		} else {
-			qname += " -- YZ View";
-		}
-
-		QDockWidget *dock;
-
-		OmView2d *qtView2d_current = new OmView2d(vtype, CHANNEL, chan_id, this );
-		dock = new QDockWidget(qname, this);
-		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-		qtView2d_current->setParent(dock);
-		dock->setWidget(qtView2d_current);
-
-		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
+		mViewGroup->addView2Dchannel( chan_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -459,30 +425,10 @@ void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 
 }
 
-void MainWindow::openSegmentationView(OmId primary_id, ViewType vtype)
+void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 {
 	try {
-		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, this);
-
-		string name = OmVolume::GetSegmentation(primary_id).GetName();
-		QString qname = QString::fromStdString(name);
-		if (vtype == XY_VIEW)
-			qname = qname + QString(" -- XY View");
-		else if (vtype == XZ_VIEW)
-			qname = qname + QString(" -- XZ View");
-		else
-			qname = qname + QString(" -- YZ View");
-
-		QDockWidget *dock = new QDockWidget(qname, this);
-		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-		qtView2d_current->setParent(dock);
-		dock->setWidget(qtView2d_current);
-
-		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
+		mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
