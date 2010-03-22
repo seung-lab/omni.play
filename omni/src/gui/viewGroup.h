@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QWidget>
 #include <QString>
+#include <QMap>
 #include <string>
 
 #include "system/omSystemTypes.h"
@@ -22,12 +23,13 @@ class ViewGroup : public QWidget
 
  private:
 	MainWindow * mMainWindow;
-	
-	// OmView3d *qtView3d;
-	// OmView2d *qtView2d;
+
+	QDockWidget * dock3D;
+	QMap<ViewType, QDockWidget*> channelDockWidgets;
+	QMap<ViewType, QDockWidget*> segmentationDockWidgets;
  
 	QString getViewName( std::string baseName, ViewType vtype );
-	void insertWidget( QWidget * widget, QString name );
+	QDockWidget *makeDockWidget( QWidget * widget, QString name );
 };
 
 #endif
