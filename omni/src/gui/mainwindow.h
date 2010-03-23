@@ -190,7 +190,7 @@ class MainWindow
 	void resetViewGroup();
 
 	void updateGuiFromPorjectLoadOrOpen( QString fileName );
-
+	void forceWindowUpdate();
 };
 
 #endif

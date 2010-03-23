@@ -1,4 +1,3 @@
-
 # LIBRARY
 
 #specify sources
@@ -24,24 +23,3 @@ TARGET_LINK_LIBRARIES( omView2d
 	omVolume
 	omSegment
 )
-
-# EXECUTABLE
-
-SET(OM_VIEW2D_MOC_HDRS
-  mainwindow.h
-  omView2d.h
-)
-QT4_WRAP_CPP(OM_VIEW2D_MOC_SRCS 
-				${OM_VIEW2D_MOC_HDRS})
-
-#specify executable
-#ADD_EXECUTABLE(omView2dApp
-#	main.cpp
-#	mainwindow.cpp 
-#	${OM_VIEW2D_MOC_SRCS})
-
-#link binaries targets against libraries
-#TARGET_LINK_LIBRARIES(
-#	omView2dApp 
-#	omView2d
-#)

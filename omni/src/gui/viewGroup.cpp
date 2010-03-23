@@ -90,6 +90,9 @@ QDockWidget * ViewGroup::makeDockWidget( QWidget * widget, QString name )
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 
+	dock->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+	widget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+
 	mMainWindow->windowMenu->addAction(dock->toggleViewAction());
 
 	return dock;
@@ -135,8 +138,8 @@ void ViewGroup::insertDockIntoGroup( QDockWidget * dock, QDockWidget * widgetToT
 
 void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 {
-	const int h = biggest->height();
-	const int w = biggest->width();
+	const int h = biggest->widget()->height();
+	const int w = biggest->widget()->width();
 
 	QList<QDockWidget *> tabified = mMainWindow->tabifiedDockWidgets( biggest );
 	if( !tabified.empty() ){
@@ -151,15 +154,11 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 		mMainWindow->splitDockWidget( biggest, dock, Qt::Vertical );
 	}
 
-	foreach( QDockWidget* widget, tabified ){
-		widget->show();
-		insertByTabbing( widget, biggest );
-	}
-
-	if( w > h ){
-		dock->resize( w / 2, h );
-	} else {
-		dock->resize( w, h / 2);
+	if( !tabified.empty() ){
+		foreach( QDockWidget* widget, tabified ){
+			widget->show();
+			insertByTabbing( widget, biggest );
+		}
 	}
 }
 

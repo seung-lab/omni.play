@@ -1029,6 +1029,11 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	openInspector();
 }
 
+void MainWindow::forceWindowUpdate()
+{
+	QApplication::processEvents();
+}
+
 void MainWindow::open2Dand3dViews()
 {
 	OmId channelID = 1;
@@ -1036,22 +1041,22 @@ void MainWindow::open2Dand3dViews()
 
 	if( OmVolume::IsChannelValid(channelID) ){
 		mViewGroup->addView2Dchannel( channelID, XY_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 		mViewGroup->addView2Dchannel( channelID, XZ_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 		mViewGroup->addView2Dchannel( channelID, YZ_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 	}
 
 	mViewGroup->addView3D();
-	QApplication::sendPostedEvents();
+	forceWindowUpdate();
 
 	if( OmVolume::IsSegmentationValid(segmentationID)) {
 		mViewGroup->addView2Dsegmentation( segmentationID, XY_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 		mViewGroup->addView2Dsegmentation( segmentationID, XZ_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 		mViewGroup->addView2Dsegmentation( segmentationID, YZ_VIEW);
-		QApplication::sendPostedEvents();
+		forceWindowUpdate();
 	}
 }
