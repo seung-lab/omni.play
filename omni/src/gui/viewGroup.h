@@ -24,12 +24,19 @@ class ViewGroup : public QWidget
  private:
 	MainWindow * mMainWindow;
 
+	QSet<QDockWidget*> allDockWidgets;
 	QDockWidget * dock3D;
 	QMap<ViewType, QDockWidget*> channelDockWidgets;
 	QMap<ViewType, QDockWidget*> segmentationDockWidgets;
  
 	QString getViewName( std::string baseName, ViewType vtype );
 	QDockWidget *makeDockWidget( QWidget * widget, QString name );
+	QDockWidget * getBiggestDockWidget();
+	int getNumDockWidgets();
+
+	void insertDockIntoGroup( QDockWidget * dock, QDockWidget * widgetToTabify );
+	void insertBySplitting( QDockWidget * dock, QDockWidget * biggest );
+	void insertByTabbing( QDockWidget * dock, QDockWidget * widgetToTabify);
 };
 
 #endif

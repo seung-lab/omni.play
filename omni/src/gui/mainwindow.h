@@ -32,7 +32,6 @@ class ViewGroup;
 
 class MainWindow 
 : public QMainWindow, 	
-  public OmSegmentEventListener,
   public OmProgressEventListener,
   public OmAlertEventListener,
   public OmSystemModeEventListener
@@ -86,7 +85,6 @@ class MainWindow
 		
 	void updateStatusBar(); 	
 	void updateKeyShortcuts();		
-	void changeSelection(int segmentIndex);
 		
 	void spawnErrorDialog(OmException &e);
 
@@ -99,15 +97,14 @@ class MainWindow
 	void toolbarEraser(bool checked);
 	void toolbarFill(bool checked);
 	void toolbarVoxelize(bool checked);
-	void updateComboBoxes( const OmId segmentationID = 0, 
-			       const OmId segmentJustSelectedID = 0 );
-				
+
+	void open2Dand3dViews();	
+			
  private:
 	void createActions();
 	void createMenus();
 	void createToolBars();
 	void createStatusBar();
-	void createDockWindows();
 		
 	bool checkForSave();
 		
@@ -124,15 +121,13 @@ class MainWindow
 	QToolBar *toolToolBar;
 	QToolBar *navigateToolBar;
 	QToolBar *editToolBar;
+	QToolBar *viewToolBar;
 		
 	QAction *newAct;
 	QAction *openAct;
 	QAction *saveAct;
 	QAction *closeAct;
 	QAction *quitAct;
-		
-	QComboBox *selectSegmentationBox;
-	QPushButton *editColorButton;
 		
 	QAction *editPreferencesAct;
 	QAction *editLocalPreferencesAct;
@@ -175,6 +170,8 @@ class MainWindow
 	QAction *toolbarFillAct;
 	QAction *toolbarVoxelizeAct;
 
+	QAction *toolbarView2D3DopenAct;
+
 	QAction *panAct;
 	QAction *zoomAct;
 	void resetTool( QAction* tool, const bool enabled );
@@ -190,6 +187,10 @@ class MainWindow
 	void updateReadOnlyRelatedWidgets();
 
 	ViewGroup * mViewGroup;
+	void resetViewGroup();
+
+	void updateGuiFromPorjectLoadOrOpen( QString fileName );
+
 };
 
 #endif

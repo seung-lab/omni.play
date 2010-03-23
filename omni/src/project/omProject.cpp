@@ -80,7 +80,7 @@ QString OmProject::New( QString fileNameAndPath, bool amHeadless )
 
 	OmProjectData::Flush();
 
-	return fileNameAndPath;
+	return fileInfo.absoluteFilePath();
 }
 
 void OmProject::Save()
