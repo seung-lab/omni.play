@@ -148,10 +148,14 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 		}
 	}
 
+	int desiredW = w;
+	int desiredH = h;
 	if( w > h ){
 		mMainWindow->splitDockWidget( biggest, dock, Qt::Horizontal );
+		desiredW = w / 2;
 	} else {
 		mMainWindow->splitDockWidget( biggest, dock, Qt::Vertical );
+		desiredH = h / 2;
 	}
 
 	if( !tabified.empty() ){
@@ -160,6 +164,29 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 			insertByTabbing( widget, biggest );
 		}
 	}
+
+	QApplication::processEvents();
+	biggest->widget()->resize( desiredW, desiredH );
+	dock->widget()->resize( desiredW, desiredH );
+	biggest->resize( desiredW, desiredH );
+	dock->resize( desiredW, desiredH );
+
+	QApplication::processEvents();
+
+	printf("widget size is: %d x %d\n", 
+	       dock->widget()->width(), 
+	       dock->widget()->height() );
+	printf("widget dock size is: %d x %d\n", 
+	       dock->width(), 
+	       dock->height() );
+
+	printf("biggest widget size is: %d x %d\n", 
+	       biggest->widget()->width(), 
+	       biggest->widget()->height() );
+	printf("biggest widget size is: %d x %d\n", 
+	       biggest->width(), 
+	       biggest->height() );
+
 }
 
 void ViewGroup::insertByTabbing( QDockWidget * dock, QDockWidget * widgetToTabify )
