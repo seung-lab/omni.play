@@ -15,7 +15,20 @@ apt-get install mesa-common-dev
 apt-get install emacs
 apt-get install libxt-dev
 
+on Ubuntu 9.10 AMD64bit (on Intel Xeon 64 bit processor)
+needed the above but not freetype, nor the xml stuff
 
+also:
+
+libgl1-mesa-dev
+libglu1-mesa-dev
+
+also added
+
+libgl1-mesa-dri-dbg	
+libgl1-mesa-glx-dbg	
+
+to get debugging symbols
 
 
 

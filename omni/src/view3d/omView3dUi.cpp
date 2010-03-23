@@ -25,7 +25,7 @@
 OmView3dUi::OmView3dUi(OmView3d * view3d)
  : mpView3d(view3d)
 {
-
+        mCPressed=false;
 }
 
 /////////////////////////////////
@@ -103,6 +103,7 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
+        if (event->key() & Qt::Key_C) mCPressed = true; 
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeKeyPress(event);
@@ -114,6 +115,10 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 	}
 }
 
+void OmView3dUi::KeyReleaseEvent(QKeyEvent * event)
+{
+
+}
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -129,6 +134,8 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 	bool control_modifier = event->modifiers() & Qt::ControlModifier;
 	if (event->buttons() & Qt::LeftButton && control_modifier) {
 		crosshair(event);
+	} else if ((event->buttons() & Qt::LeftButton) & mCPressed){
+	        CenterAxisOfRotation(event);
 	} else {
 		CameraMovementMouseStart(event);
 	}
@@ -625,6 +632,20 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 	//refersh context menu and display
 	mSegmentContextMenu.Refresh(segmentation_id, segment_id);
 	mSegmentContextMenu.exec(event->globalPos());
+}
+
+void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
+{
+	DataCoord voxel;
+	if (!PickVoxelMouseCrosshair(event, voxel)){
+		mpView3d->updateGL();
+		return;
+	}
+	mpView3d->updateGL();
+	mpView3d->mCamera.SetFocus(voxel);
+	mCPressed = false;
+	debug("axis", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
+
 }
 
 void OmView3dUi::crosshair(QMouseEvent * event)

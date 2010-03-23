@@ -30,6 +30,7 @@ public:
 	void MouseDoubleClick(QMouseEvent *event);
 	void MouseWheel(QWheelEvent *event);
 	void KeyPress(QKeyEvent *event);
+	void KeyReleaseEvent(QKeyEvent *event);
 	
 	//navigation mode
 	void NavigationModeMousePressed(QMouseEvent *event);
@@ -92,8 +93,9 @@ private:
 	OmId mPrevSegmentationId, mPrevSegmentId;
 
 	void crosshair(QMouseEvent * event);
+	void CenterAxisOfRotation(QMouseEvent * event);
 	bool PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
-	
+	bool mCPressed;
 };
 
 
