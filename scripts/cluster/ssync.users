@@ -1,0 +1,23 @@
+#!/bin/csh
+#
+# Install as /sbin/ssync.users
+#
+# This script automatically synchronizes accounts on slave nodes in a Beowulf cluster.
+# 
+# The host list of machines to keep in sync is /etc/ssync/hosts.users.
+# The file list to push to the rest of the slave nodes is /etc/ssync/files.users.
+# 
+
+foreach node (`cat /etc/ssync/hosts.users | grep -v ^\#`)
+	ssh ${node} /bin/true >& /dev/null
+	setenv RETVAL $?
+	if ( ${RETVAL} != 0 ) continue
+	#echo "Syncing ${node}"
+	foreach file (`cat /etc/ssync/files.users`)
+		test -e ${file} || break
+		#echo "    Copying ${file}"
+		rsync ${file} ${node}:${file}
+	end
+end
+
+# vim:ts=4:sw=4
