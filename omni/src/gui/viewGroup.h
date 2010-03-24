@@ -13,6 +13,16 @@ class MainWindow;
 class OmView2d;
 class OmView3d;
 
+class ViewGroupWidget
+{
+ public:
+	ViewGroupWidget( QWidget* w, QString n, QString on )
+		: widget(w), name(n), objName(on) {}
+	QWidget * widget;
+	QString name;
+	QString objName;
+};
+
 class ViewGroup : public QWidget
 {
  public:
@@ -23,20 +33,25 @@ class ViewGroup : public QWidget
 
  private:
 	MainWindow * mMainWindow;
-
-	QSet<QDockWidget*> allDockWidgets;
-	QDockWidget * dock3D;
-	QMap<ViewType, QDockWidget*> channelDockWidgets;
-	QMap<ViewType, QDockWidget*> segmentationDockWidgets;
+	const int mID;
  
 	QString getViewName( std::string baseName, ViewType vtype );
-	QDockWidget *makeDockWidget( QWidget * widget, QString name );
+	QDockWidget *makeDockWidget( ViewGroupWidget * vgw );
 	QDockWidget * getBiggestDockWidget();
 	int getNumDockWidgets();
 
-	void insertDockIntoGroup( QDockWidget * dock, QDockWidget * widgetToTabify );
-	void insertBySplitting( QDockWidget * dock, QDockWidget * biggest );
-	void insertByTabbing( QDockWidget * dock, QDockWidget * widgetToTabify);
+	void insertDockIntoGroup( ViewGroupWidget * vgw, QDockWidget * widgetToTabify );
+	void insertBySplitting( ViewGroupWidget * vgw, QDockWidget * biggest );
+	void insertByTabbing( ViewGroupWidget * vgw, QDockWidget * widgetToTabify);
+	QString getViewTypeAsStr( ViewType vtype );
+
+	QString viewGroupName();
+	QString makeObjectName();
+	QString makeObjectName( ObjectType voltype, ViewType vtype );
+
+	bool doesDockWidgetexist( QString objName );
+	QList<QDockWidget * > getAllDockWidgets();
+	QDockWidget* getDockWidget( QString objName );
 };
 
 #endif

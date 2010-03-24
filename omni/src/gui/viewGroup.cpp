@@ -5,110 +5,201 @@
 #include "gui/mainwindow.h"
 
 ViewGroup::ViewGroup( MainWindow * mainWindow )
-	: mMainWindow( mainWindow )
+	: mMainWindow( mainWindow ), mID(1)
 {
-	dock3D = NULL;
+}
+
+QString ViewGroup::viewGroupName()
+{
+	return "ViewGroup" + QString::number(mID);
+}
+
+QString ViewGroup::makeObjectName()
+{
+	return "3d_" + viewGroupName();
+}
+
+QString ViewGroup::makeObjectName( ObjectType voltype, ViewType vtype )
+{
+	QString name;
+
+	if( CHANNEL == voltype ){
+		name = "channel_";
+	} else if ( SEGMENTATION == voltype ) {
+		name = "segmentation_";
+	}
+
+	name += getViewTypeAsStr(vtype) + "_" + viewGroupName();
+
+	return name;
+}
+
+QDockWidget* ViewGroup::getDockWidget( QString objName )
+{
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( objName );
+
+	if( widgets.isEmpty() ){
+		return NULL;
+	} else if( widgets.size() > 1 ){
+		assert(0);
+	}
+	
+	return widgets[0];
+}
+
+bool ViewGroup::doesDockWidgetexist( QString objName )
+{
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( objName );
+
+	if( widgets.isEmpty() ){
+		return false;
+	}
+	
+	return true;
+}
+
+QList<QDockWidget * > ViewGroup::getAllDockWidgets()
+{
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QRegExp rx( ".*" + viewGroupName() + "$" );
+	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( rx );
+
+	return widgets;
+}
+
+int ViewGroup::getNumDockWidgets()
+{
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QList<QDockWidget * > widgets = getAllDockWidgets();
+	return widgets.size();
 }
 
 void ViewGroup::addView3D()
 {
-	if( dock3D != NULL ){
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QString objName = makeObjectName();
+
+	if( doesDockWidgetexist( objName ) ){
 		return;
 	}
 
 	QString name = "3D View";
 	OmView3d * view3d = new OmView3d( this );
 
-	QDockWidget * dock = makeDockWidget( view3d, name );
+	ViewGroupWidget * vgw = new ViewGroupWidget( view3d, name, objName );
 
-	insertDockIntoGroup( dock, NULL );
-	dock3D = dock;
+	insertDockIntoGroup( vgw, NULL );
+
+	delete(vgw);
 }
 
 void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 {
-	if( channelDockWidgets.contains( vtype ) ){
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QString objName = makeObjectName( CHANNEL, vtype );
+
+	if( doesDockWidgetexist( objName ) ){
 		return;
 	}
-
+	
 	QString name = getViewName( OmVolume::GetChannel(chan_id).GetName(), vtype );
 	OmView2d * view2d = new OmView2d(vtype, CHANNEL, chan_id, this );
 
-	QDockWidget * dock = makeDockWidget( view2d, name );
-
+	ViewGroupWidget * vgw = new ViewGroupWidget( view2d, name, objName );
+	
 	QDockWidget * widgetToTabify = NULL;
-	if( segmentationDockWidgets.contains( vtype ) ){
-		widgetToTabify = segmentationDockWidgets.value( vtype );
+	QString complimentaryObjName = makeObjectName( SEGMENTATION, vtype );
+	if( doesDockWidgetexist(complimentaryObjName) ){
+		widgetToTabify = getDockWidget(complimentaryObjName);
 	}
-	insertDockIntoGroup( dock, widgetToTabify );
 
-	channelDockWidgets[ vtype ] = dock;
+	insertDockIntoGroup( vgw, widgetToTabify );
+
+	delete(vgw);
 }
 
 void ViewGroup::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
 {
-	if( segmentationDockWidgets.contains( vtype ) ){
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QString objName = makeObjectName( SEGMENTATION, vtype );
+
+	if( doesDockWidgetexist( objName ) ){
 		return;
 	}
 
 	QString name = getViewName( OmVolume::GetSegmentation(segmentation_id).GetName(), vtype );
 	OmView2d * view2d = new OmView2d(vtype, SEGMENTATION, segmentation_id, this);
 
-	QDockWidget * dock = makeDockWidget( view2d, name );
+	ViewGroupWidget * vgw = new ViewGroupWidget( view2d, name, objName );
 
 	QDockWidget * widgetToTabify = NULL;
-	if( channelDockWidgets.contains( vtype ) ){
-		widgetToTabify = channelDockWidgets.value( vtype );
+	QString complimentaryObjName = makeObjectName( CHANNEL, vtype );
+	if( doesDockWidgetexist(complimentaryObjName) ){
+		widgetToTabify = getDockWidget(complimentaryObjName);
 	}
-	insertDockIntoGroup( dock, widgetToTabify );
 
-	segmentationDockWidgets[ vtype ] = dock;
+	insertDockIntoGroup( vgw, widgetToTabify );
+
+	delete(vgw);
 }
 
 QString ViewGroup::getViewName( string baseName, ViewType vtype )
 {
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
 	QString name = QString::fromStdString( baseName );
-
-	if (vtype == XY_VIEW) {
-		name += " -- XY View";
-	} else if (vtype == XZ_VIEW) {
-		name += " -- XZ View";
-	} else {
-		name += " -- YZ View";
-	}
-
+	name += " -- " + getViewTypeAsStr(vtype) + " View";
 	return name;
 }
 
-QDockWidget * ViewGroup::makeDockWidget( QWidget * widget, QString name )
+QString ViewGroup::getViewTypeAsStr( ViewType vtype )
 {
-	QDockWidget * dock = new QDockWidget(name, mMainWindow);
-	
-	widget->setParent(dock);
+	if (vtype == XY_VIEW) {
+		return "XY";
+	} else if (vtype == XZ_VIEW) {
+		return "XZ";
+	} else {
+		return "YZ";
+	}
+}
 
-	dock->setWidget(widget);
+QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidget * vgw )
+{
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QDockWidget * dock = new QDockWidget( vgw->name, mMainWindow);
+	vgw->widget->setParent(dock);
+
+	dock->setObjectName( vgw->objName );
+	dock->setWidget(vgw->widget);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 
 	dock->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-	widget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+	vgw->widget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
 	mMainWindow->windowMenu->addAction(dock->toggleViewAction());
 
 	return dock;
 }
 
-int ViewGroup::getNumDockWidgets()
-{
-	return allDockWidgets.size();
-}
-
 QDockWidget * ViewGroup::getBiggestDockWidget()
 {
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
 	QDockWidget * biggest = NULL;
 	long long biggest_area = 0;
 
-	foreach( QDockWidget* dock, allDockWidgets ){
+	foreach( QDockWidget* dock, getAllDockWidgets() ){
 		long long area = dock->width() * dock->height();
 		if( area > biggest_area ){
 			biggest_area = area;
@@ -119,25 +210,28 @@ QDockWidget * ViewGroup::getBiggestDockWidget()
 	return biggest;
 }
 
-void ViewGroup::insertDockIntoGroup( QDockWidget * dock, QDockWidget * widgetToTabify )
+void ViewGroup::insertDockIntoGroup( ViewGroupWidget * vgw, QDockWidget * widgetToTabify )
 {
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
 	QDockWidget * biggest = getBiggestDockWidget();
 		
 	if( 0 == getNumDockWidgets() || NULL == biggest ){
+		QDockWidget * dock = makeDockWidget( vgw );
 		mMainWindow->addDockWidget(Qt::TopDockWidgetArea, dock);
 	} else {
 		if( NULL == widgetToTabify ) {
-			insertBySplitting( dock, biggest );
+			insertBySplitting( vgw, biggest );
 		} else {
-			insertByTabbing( dock, widgetToTabify );
+			insertByTabbing( vgw, widgetToTabify );
 		}
 	}
-
-	allDockWidgets << dock;
 }
 
-void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
+void ViewGroup::insertBySplitting( ViewGroupWidget * vgw, QDockWidget * biggest )
 {
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
 	const int h = biggest->widget()->height();
 	const int w = biggest->widget()->width();
 
@@ -150,6 +244,9 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 
 	int desiredW = w;
 	int desiredH = h;
+
+	QDockWidget * dock = makeDockWidget( vgw );
+
 	if( w > h ){
 		mMainWindow->splitDockWidget( biggest, dock, Qt::Horizontal );
 		desiredW = w / 2;
@@ -161,16 +258,16 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 	if( !tabified.empty() ){
 		foreach( QDockWidget* widget, tabified ){
 			widget->show();
-			insertByTabbing( widget, biggest );
+			mMainWindow->tabifyDockWidget( biggest, widget );
 		}
 	}
 
 	QApplication::processEvents();
 	biggest->widget()->resize( desiredW, desiredH );
 	dock->widget()->resize( desiredW, desiredH );
+	QApplication::processEvents();
 	biggest->resize( desiredW, desiredH );
 	dock->resize( desiredW, desiredH );
-
 	QApplication::processEvents();
 
 	printf("widget size is: %d x %d\n", 
@@ -189,7 +286,10 @@ void ViewGroup::insertBySplitting( QDockWidget * dock, QDockWidget * biggest )
 
 }
 
-void ViewGroup::insertByTabbing( QDockWidget * dock, QDockWidget * widgetToTabify )
+void ViewGroup::insertByTabbing( ViewGroupWidget * vgw, QDockWidget * widgetToTabify )
 {
+	debug("viewGroup", "in %s...\n", __FUNCTION__ );
+
+	QDockWidget * dock = makeDockWidget( vgw );
 	mMainWindow->tabifyDockWidget( widgetToTabify, dock );
 }
