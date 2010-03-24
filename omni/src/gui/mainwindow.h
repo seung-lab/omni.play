@@ -191,6 +191,7 @@ class MainWindow
 
 	void updateGuiFromPorjectLoadOrOpen( QString fileName );
 	void forceWindowUpdate();
+	void setToolbarDisabled();
 };
 
 #endif

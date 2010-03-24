@@ -69,6 +69,10 @@ QList<QDockWidget * > ViewGroup::getAllDockWidgets()
 	QRegExp rx( ".*" + viewGroupName() + "$" );
 	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( rx );
 
+	foreach( QDockWidget * w, widgets ){
+		debug("viewGroup", "found %s\n", qPrintable(w->objectName()));
+	}
+
 	return widgets;
 }
 
@@ -262,6 +266,7 @@ void ViewGroup::insertBySplitting( ViewGroupWidget * vgw, QDockWidget * biggest 
 		}
 	}
 
+	/*
 	QApplication::processEvents();
 	biggest->widget()->resize( desiredW, desiredH );
 	dock->widget()->resize( desiredW, desiredH );
@@ -269,18 +274,19 @@ void ViewGroup::insertBySplitting( ViewGroupWidget * vgw, QDockWidget * biggest 
 	biggest->resize( desiredW, desiredH );
 	dock->resize( desiredW, desiredH );
 	QApplication::processEvents();
+	*/
 
-	printf("widget size is: %d x %d\n", 
+	debug("viewGroup", "widget size is: %d x %d\n", 
 	       dock->widget()->width(), 
 	       dock->widget()->height() );
-	printf("widget dock size is: %d x %d\n", 
+	debug("viewGroup", "widget dock size is: %d x %d\n", 
 	       dock->width(), 
 	       dock->height() );
 
-	printf("biggest widget size is: %d x %d\n", 
+	debug("viewGroup", "biggest widget size is: %d x %d\n", 
 	       biggest->widget()->width(), 
 	       biggest->widget()->height() );
-	printf("biggest widget size is: %d x %d\n", 
+	debug("viewGroup", "biggest widget size is: %d x %d\n", 
 	       biggest->width(), 
 	       biggest->height() );
 

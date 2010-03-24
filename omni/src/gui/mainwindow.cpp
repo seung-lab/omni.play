@@ -201,7 +201,7 @@ bool MainWindow::closeProjectIfOpen()
 	}
 
 	OmProject::Close();
-
+	setToolbarDisabled();
 	windowTitleClear();
 
 	return true;
@@ -721,6 +721,8 @@ void MainWindow::updateReadOnlyRelatedWidgets()
 
 	saveAct->setEnabled(toBeEnabled);
 	modifyAct->setEnabled(toBeEnabled);
+	
+	toolbarView2D3DopenAct->setEnabled(true);
 }
 
 ////////////////////////////////////////////////////////////
@@ -730,6 +732,22 @@ void MainWindow::createToolbar()
 {
 	createToolbarActions();
 	addToolbars();
+	setToolbarDisabled();
+}
+
+void MainWindow::setToolbarDisabled()
+{
+	saveAct->setEnabled(false);
+	modifyAct->setEnabled(false);
+	toolbarSelectAct->setEnabled(false);
+	toolbarCrosshairAct->setEnabled(false);
+	toolbarPanAct->setEnabled(false);
+	toolbarZoomAct->setEnabled(false);
+	toolbarVoxelizeAct->setEnabled(false);
+	toolbarBrushAct->setEnabled(false);
+	toolbarEraserAct->setEnabled(false);
+	toolbarFillAct->setEnabled(false);
+	toolbarView2D3DopenAct->setEnabled(false);
 }
 
 void MainWindow::createToolbarActions()
@@ -782,7 +800,7 @@ void MainWindow::createToolbarActions()
 	toolbarView2D3DopenAct = new QAction(tr("&Open 2D and 3D Views"), this);
 	toolbarView2D3DopenAct->setStatusTip(tr("Open 2D and 3D Views"));
 	connect(toolbarView2D3DopenAct, SIGNAL(triggered(bool)), this, SLOT(open2Dand3dViews()));
-	toolbarFillAct->setCheckable(false);
+	toolbarView2D3DopenAct->setCheckable(false);
 	
 }
 
@@ -907,6 +925,7 @@ void MainWindow::resetTools(const OmSystemMode sys_mode)
 {
 	switch (sys_mode) {
 	case (NAVIGATION_SYSTEM_MODE):
+		resetViewTools();
 		resetModifyTools(false);
 		toolbarPanAct->setChecked(true);
 		OmStateManager::SetToolMode(PAN_MODE);
@@ -999,8 +1018,7 @@ void MainWindow::resetViewGroup()
 		delete(mViewGroup);
 	}
 
-	mViewGroup = new ViewGroup( this );
-		
+	mViewGroup = new ViewGroup( this );	
 }
 
 void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
