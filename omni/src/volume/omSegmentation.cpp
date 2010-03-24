@@ -247,15 +247,15 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
         QTextStream stream(&file);
 
         //for each level
-        for (int level = 0; level <= GetRootMipLevel(); ++level) {
+        for (int level = GetRootMipLevel(); level >= 0; --level) {
 
                 //dim of leaf coords
                 Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
 
                 //for all coords of level
-                for (int z = 0; z < mip_coord_dims.z; ++z) {
-                        for (int y = 0; y < mip_coord_dims.y; ++y) {
-                                for (int x = 0; x < mip_coord_dims.x; ++x) {
+                for (int z = mip_coord_dims.z; z >= 0; --z) {
+                        for (int y = mip_coord_dims.y; y >= 0; --y) {
+                                for (int x = mip_coord_dims.x; x >= 0; --x) {
 					//stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
 					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
                                 }
