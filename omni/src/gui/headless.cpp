@@ -102,7 +102,8 @@ void Headless::processLine( QString line, QString fName )
 			printf("please choose segmentation first!\n");
 			return;
 		} 
-		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
+		QString planFile = fName + ".plan";
+		//		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
 		OmVolume::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
 		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( "meshdone" == line ) {
