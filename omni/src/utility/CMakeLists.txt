@@ -45,6 +45,24 @@ TARGET_LINK_LIBRARIES( hdf5_merge
 	-lpthread
 )
 
+#specify executable
+ADD_EXECUTABLE( h5get
+        h5get.cpp
+)
+TARGET_LINK_LIBRARIES( h5get 
+	${OM_HDF5_LIBS}
+	-lpthread
+)
+
+#specify executable
+ADD_EXECUTABLE( h5meshget
+        h5meshget.cpp
+)
+TARGET_LINK_LIBRARIES( h5meshget 
+	${OM_HDF5_LIBS}
+	-lpthread
+)
+
 
 #specify executable
 #ADD_EXECUTABLE( omUtilityApp
