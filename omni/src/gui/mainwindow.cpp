@@ -1057,24 +1057,5 @@ void MainWindow::open2Dand3dViews()
 	OmId channelID = 1;
 	OmId segmentationID = 1;
 
-	if( OmVolume::IsChannelValid(channelID) ){
-		mViewGroup->addView2Dchannel( channelID, XY_VIEW);
-		forceWindowUpdate();
-		mViewGroup->addView2Dchannel( channelID, XZ_VIEW);
-		forceWindowUpdate();
-		mViewGroup->addView2Dchannel( channelID, YZ_VIEW);
-		forceWindowUpdate();
-	}
-
-	mViewGroup->addView3D();
-	forceWindowUpdate();
-
-	if( OmVolume::IsSegmentationValid(segmentationID)) {
-		mViewGroup->addView2Dsegmentation( segmentationID, XY_VIEW);
-		forceWindowUpdate();
-		mViewGroup->addView2Dsegmentation( segmentationID, XZ_VIEW);
-		forceWindowUpdate();
-		mViewGroup->addView2Dsegmentation( segmentationID, YZ_VIEW);
-		forceWindowUpdate();
-	}
+	mViewGroup->addAllViews( channelID, segmentationID );
 }

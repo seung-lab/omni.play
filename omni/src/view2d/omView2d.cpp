@@ -1790,4 +1790,3 @@ bool OmView2d::doDisplayInformation()
 {
 	return OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
 }
-
