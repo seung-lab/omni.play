@@ -793,7 +793,7 @@ void OmMipChunk::DrawClippedExtent()
 
 	glTranslatef(0.5, 0.5, 0.5);
 	glColor3f(0.5, 0.5, 0.5);
-	//omglWireCube(1);
+	omglWireCube(1);
 	glTranslatef(-0.5, -0.5, -0.5);
 
 	//glScalefv( (Vector3f::ONE/scale).array);

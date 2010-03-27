@@ -63,9 +63,10 @@ OmView3d::OmView3d(QWidget * parent)
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
-	bool disposable = OmLocalPreferences::getDefault2DViewFrameIn3D();
-	disposable = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
-	int whatever = OmLocalPreferences::getDefaultCrosshairValue();
+	OmLocalPreferences::getDefault2DViewFrameIn3D();
+	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
+	OmLocalPreferences::getDefaultCrosshairValue();
+	OmLocalPreferences::getDefaultDoDiscoBall();
 	mElapsed = new boost::timer();
 }
 
