@@ -265,8 +265,6 @@ QDockWidget * ViewGroup::chooseDockToTabify( ViewGroupWidgetInfo * vgw )
 
 void ViewGroup::insertDockIntoGroup( ViewGroupWidgetInfo * vgw )
 {
-	debug("viewGroup", "in %s...\n", __FUNCTION__ );
-
 	if( 0 == getNumDockWidgets() ) {
 		QDockWidget * dock = makeDockWidget( vgw );
 		mMainWindow->addDockWidget(Qt::TopDockWidgetArea, dock);
@@ -276,16 +274,15 @@ void ViewGroup::insertDockIntoGroup( ViewGroupWidgetInfo * vgw )
 			insertByTabbing( vgw, dockToTabify );
 		} else {
 			insertBySplitting( vgw, chooseDockToSplit( vgw ));
+			QApplication::processEvents();
 		}
 	}
 
-	QApplication::processEvents();
+
 }
 
 void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * biggest )
 {
-	debug("viewGroup", "in %s...\n", __FUNCTION__ );
-
 	QList<QDockWidget *> tabified = mMainWindow->tabifiedDockWidgets( biggest );
 	if( !tabified.empty() ){
 		foreach( QDockWidget* widget, tabified ){
@@ -295,53 +292,21 @@ void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * bigg
 
 	Qt::Orientation dir = vgw->dir;
 
-	int h = biggest->widget()->height();
-	int w = biggest->widget()->width();
-
-	if( Qt::Horizontal == dir ){
-		w = w/2;
-	} else {
-		h = h/2;
-	}
-
 	QDockWidget * dock = makeDockWidget( vgw );
-	dock->widget()->resize( w, h );
-	biggest->widget()->resize( w, h );
-	dock->resize( w, h );
-	biggest->resize( w, h );
 
 	debug("viewGroup", "\t inserting %s by splitting...\n", qPrintable(dock->objectName()));
 	mMainWindow->splitDockWidget( biggest, dock, dir );
 
 	if( !tabified.empty() ){
 		foreach( QDockWidget* dwidget, tabified ){
-			dwidget->widget()->resize( w, h );
-			dwidget->resize( w, h );
 			dwidget->show();			
 			mMainWindow->tabifyDockWidget( biggest, dwidget );
 		}
 	}
-
-	debug("viewGroup", "widget size is: %d x %d\n", 
-	       dock->widget()->width(), 
-	       dock->widget()->height() );
-	debug("viewGroup", "widget dock size is: %d x %d\n", 
-	       dock->width(), 
-	       dock->height() );
-
-	debug("viewGroup", "biggest widget size is: %d x %d\n", 
-	       biggest->widget()->width(), 
-	       biggest->widget()->height() );
-	debug("viewGroup", "biggest dock size is: %d x %d\n", 
-	       biggest->width(), 
-	       biggest->height() );
-
 }
 
 void ViewGroup::insertByTabbing( ViewGroupWidgetInfo * vgw, QDockWidget * widgetToTabify )
 {
-	debug("viewGroup", "in %s...\n", __FUNCTION__ );
-
 	QDockWidget * dock = makeDockWidget( vgw );
 	debug("viewGroup", "\t inserting %s by tabbing...\n", qPrintable(dock->objectName()));
 	mMainWindow->tabifyDockWidget( widgetToTabify, dock );
