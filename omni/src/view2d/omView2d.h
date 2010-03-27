@@ -162,6 +162,8 @@ protected:
 	void ViewCenterChangeEvent(OmViewEvent *event);
 	///////////////////////////////////////
 
+	QSize sizeHint () const;
+
 private:
 	///////////////////////////////////////
 	// omView2dConverters.cpp

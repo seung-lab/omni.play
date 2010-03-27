@@ -1776,8 +1776,6 @@ void OmView2d::DrawCursors()
 		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
 		break;
 	}
-
-
 }
 
 bool OmView2d::amInFillMode()
@@ -1789,4 +1787,14 @@ bool OmView2d::amInFillMode()
 bool OmView2d::doDisplayInformation()
 {
 	return OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
+}
+
+QSize OmView2d::sizeHint () const
+{
+	QWidget * mw = QApplication::activeWindow();
+	QSize s( mw->width() ,
+		 mw->height() );
+	printf("2d: size hint is (%d, %d)\n", s.width(), s.height() );
+
+	return s;
 }

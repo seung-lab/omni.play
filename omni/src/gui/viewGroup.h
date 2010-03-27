@@ -2,42 +2,14 @@
 #define VIEW_GROUP_H
 
 #include <QtGui>
-#include <QWidget>
-#include <QString>
 #include <QMap>
 #include <string>
 
-#include "system/omSystemTypes.h"
-
-enum WIDGET_TYPE { VIEW2D_CHAN, VIEW2D_SEG, VIEW3D };
+#include "viewGroupWidgetInfo.h"
 
 class MainWindow;
 class OmView2d;
 class OmView3d;
-
-class ViewGroupWidgetInfo
-{
- public:
-	ViewGroupWidgetInfo( QString in_name, WIDGET_TYPE in_widgetType ) 
-		{
-			name = in_name;
-			widgetType = in_widgetType;
-		}
-
-	ViewGroupWidgetInfo( QString in_name, WIDGET_TYPE in_widgetType, ViewType in_vtype ) 
-		{
-			name = in_name;
-			widgetType = in_widgetType;
-			vtype = in_vtype;
-		}
-	
-	QWidget * widget;
-	QString name;
-	WIDGET_TYPE widgetType;
-	ViewType vtype;
-
-	Qt::Orientation dir;
-};
 
 class ViewGroup : public QWidget
 {

@@ -561,3 +561,13 @@ void initLights()
 
 	glEnable(GL_LIGHT0);	// enable light source after configuration
 }
+
+QSize OmView3d::sizeHint () const
+{
+	QWidget * mw = QApplication::activeWindow();
+	QSize s( mw->width()  ,
+		 mw->height()  );
+	printf("3d: size hint is (%d, %d)\n", s.width(), s.height() );
+
+	return s;
+}

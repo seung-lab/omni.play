@@ -173,10 +173,6 @@ QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidgetInfo * vgw )
 	QDockWidget * dock = new QDockWidget( vgw->name, mMainWindow);
 	vgw->widget->setParent(dock);
 
-	dock->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );
-	vgw->widget->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );
-
-
 	dock->setObjectName( makeObjectName(vgw) );
 	dock->setWidget(vgw->widget);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
