@@ -146,11 +146,10 @@ void MainWindow::addChannelToVolume()
 			return;
 		}
 
-		OmChannel & added_channel = OmVolume::AddChannel();
-
 		if (omniInspector) {
-			omniInspector->addToVolume(&added_channel, CHANNEL);
+			omniInspector->addChannelToVolume();
 		}
+		
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -163,11 +162,10 @@ void MainWindow::addSegmentationToVolume()
 			return;
 		}
 
-		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
-
 		if (omniInspector) {
-			omniInspector->addToVolume(&added_segmentation, SEGMENTATION);
+			omniInspector->addSegmentationToVolume();
 		}
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -309,10 +307,6 @@ void MainWindow::openInspector()
 
 		addDockWidget(Qt::TopDockWidgetArea, dock);
 		windowMenu->addAction(dock->toggleViewAction());
-
-		// TODO: fixme! (purcaro)
-		connect(omniInspector, SIGNAL(addChannel()), this, SLOT(addChannelToVolume()));
-		connect(omniInspector, SIGNAL(addSegmentation()), this, SLOT(addSegmentationToVolume()));
 
 		connect(omniInspector, SIGNAL(triggerChannelView(OmId, ViewType)),
 			this, SLOT(openChannelView(OmId, ViewType)));

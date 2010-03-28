@@ -295,9 +295,7 @@ void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState
 
 void SegmentList::makeSegmentationActive(const OmId segmentationID)
 {
-	currentSDW = SegmentationDataWrapper(segmentationID);
-	haveValidSDW = true;
-	populateSegmentElementsListWidget();
+	makeSegmentationActive( SegmentationDataWrapper(segmentationID) );
 }
 
 void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw)
@@ -309,9 +307,7 @@ void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw)
 
 void SegmentList::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
-	currentSDW = SegmentationDataWrapper(segmentationID);
-	haveValidSDW = true;
-	populateSegmentElementsListWidget(true, segmentJustSelectedID);
+	makeSegmentationActive( SegmentationDataWrapper(segmentationID), segmentJustSelectedID);
 }
 
 void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)

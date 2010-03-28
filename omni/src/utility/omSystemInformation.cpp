@@ -6,26 +6,14 @@
 unsigned int OmSystemInformation::get_num_cores()
 {
 	const unsigned int boost_num_cores = boost::thread::hardware_concurrency();
-
-	if( boost_num_cores < 1  ||
-	    boost_num_cores > 32 ){
-		printf("boost did not find correct number of cores (found %d)...\n", boost_num_cores);
-		return 2;
-	}
-
 	return boost_num_cores;
 }
 
-
-
 #ifdef __APPLE__
-
-
-
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
 	
-	/*
+	/**
 	 * Determine physical RAM in OS X
 	 * http://stackoverflow.com/questions/583736/determine-physical-mem-size-programmatically-on-osx
 	 * http://developer.apple.com/mac/library/documentation/Darwin/Reference/ManPages/man3/sysctl.3.html
@@ -43,14 +31,9 @@ unsigned int OmSystemInformation::get_num_cores()
 		sysctl(mib, 2, &physical_memory, &length, NULL, 0);
 
 		// Convert to megabites
-		return physical_memory / ( 1024 * 1024 );
+		return physical_memory / 1024 / 1024;
 	}
-
-
-
 #else
-
-
 	#include <sys/sysinfo.h>
 
 	/**
@@ -64,17 +47,10 @@ unsigned int OmSystemInformation::get_num_cores()
 		
 		int error = sysinfo(&s_info);
 		if( 0 != error ){
-			printf("%s: code error = %d\n", __FUNCTION__, error);
+			printf("%s: getting sysinfo struct: code error = %d\n", __FUNCTION__, error);
 		}
 	 
-		unsigned long system_memory = s_info.totalram;
-		return  system_memory / 1024 / 1024;
+		unsigned long system_memory_bytes = s_info.totalram;
+		return system_memory_bytes / 1024 / 1024;
 	}
-
-
-
-
 #endif
-
-
-
