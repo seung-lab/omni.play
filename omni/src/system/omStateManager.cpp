@@ -18,6 +18,11 @@
 #include <QtOpenGL/QGLFormat>
 #include "common/omDebug.h"
 
+//#if __APPLE__
+//	#include <cmath>
+//#endif
+
+
 #define DEBUG 0
 
 //init instance pointer
@@ -264,7 +269,7 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
 {
-	if (isnan(depth)) assert(0);
+	if (std::isnan(depth)) assert(0);
 	switch (plane) {
 	case XY_VIEW:
 		Instance()->mXYSlice[4] = depth;

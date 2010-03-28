@@ -105,9 +105,9 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 				 //assert(0);                                                                              
                 break;                                                                                  
         }                         
-	assert(!isnan(result.x));
-	assert(!isnan(result.y));
-	assert(!isnan(result.z));
+	assert(!std::isnan(result.x));
+	assert(!std::isnan(result.y));
+	assert(!std::isnan(result.z));
         return result;        
 }
 
