@@ -99,7 +99,8 @@ class MainWindow
 	void toolbarVoxelize(bool checked);
 
 	void open2Dand3dViews();	
-			
+	void setFilAlpha(int alpha);
+		
  private:
 	void createActions();
 	void createMenus();
@@ -122,7 +123,8 @@ class MainWindow
 	QToolBar *navigateToolBar;
 	QToolBar *editToolBar;
 	QToolBar *viewToolBar;
-		
+	QToolBar *filterToolBar;
+
 	QAction *newAct;
 	QAction *openAct;
 	QAction *saveAct;
@@ -192,6 +194,11 @@ class MainWindow
 	void updateGuiFromPorjectLoadOrOpen( QString fileName );
 	void forceWindowUpdate();
 	void setToolbarDisabled();
+
+	QSlider *alphaSlider;
+	void setupFilterToolbar();
+	void setFilterToolbarEnabled( bool setEnabled );
+
 };
 
 #endif

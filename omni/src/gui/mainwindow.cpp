@@ -732,7 +732,50 @@ void MainWindow::createToolbar()
 {
 	createToolbarActions();
 	addToolbars();
+	setupFilterToolbar();
 	setToolbarDisabled();
+}
+
+void MainWindow::setupFilterToolbar()
+{
+	alphaSlider = new QSlider(Qt::Horizontal, this );
+	alphaSlider->setObjectName(QString::fromUtf8("alphaSlider"));
+
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			alphaSlider->setValue(filter.GetAlpha() * 100);
+ 		}
+	}
+
+	connect(alphaSlider, SIGNAL(valueChanged(int)), 
+		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
+	
+	filterToolBar = addToolBar(tr("Filter"));
+	filterToolBar->addWidget( alphaSlider );
+}
+
+void MainWindow::setFilAlpha(int alpha)
+{
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			channel.GetFilter( filterID ).SetAlpha((double)alpha / 100.00);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
+	}
+}
+
+void MainWindow::setFilterToolbarEnabled( bool setEnabled )
+{
+	alphaSlider->setEnabled( setEnabled );
 }
 
 void MainWindow::setToolbarDisabled()
@@ -748,6 +791,8 @@ void MainWindow::setToolbarDisabled()
 	toolbarEraserAct->setEnabled(false);
 	toolbarFillAct->setEnabled(false);
 	toolbarView2D3DopenAct->setEnabled(false);
+
+	setFilterToolbarEnabled( false );
 }
 
 void MainWindow::createToolbarActions()
@@ -831,6 +876,7 @@ void MainWindow::addToolbars()
 void MainWindow::setupToolbarInitially()
 {
 	resetTools(NAVIGATION_SYSTEM_MODE);
+	setFilterToolbarEnabled( true );
 
 	OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));

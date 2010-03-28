@@ -46,6 +46,7 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent)
 
 MyInspectorWidget::~MyInspectorWidget()
 {
+	OmStateManager::setInspector( NULL );
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
