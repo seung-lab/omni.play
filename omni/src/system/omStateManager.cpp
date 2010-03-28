@@ -7,9 +7,11 @@
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
 #include <QHostInfo>
+#include "gui/myInspectorWidget.h"
 
 //undostack
 #include <QUndoStack>
+#include <QApplication>
 
 //view3d context
 #include <QtOpenGL/qgl.h>
@@ -60,6 +62,8 @@ OmStateManager::OmStateManager()
 	mXZPan[1] = 0.0;
 
 	mParallel = false;
+
+	inspectorWidget = NULL;
 }
 
 OmStateManager::~OmStateManager()
@@ -613,3 +617,20 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 }
 
 
+void OmStateManager::setInspector( MyInspectorWidget * miw )
+{
+	Instance()->inspectorWidget = miw;
+}
+
+QSize OmStateManager::getViewBoxSizeHint()
+{
+	QWidget * mw = QApplication::activeWindow();
+	int w = mw->width();
+	int h = mw->height();
+	
+	if( Instance()->inspectorWidget != NULL ){
+		w -= Instance()->inspectorWidget->width();
+	}
+
+	return QSize( w, h );
+}

@@ -40,6 +40,8 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent)
 	segmentList = new SegmentList(this, inspectorProperties, elementListBox  );
 
 	QMetaObject::connectSlotsByName(this);
+
+	OmStateManager::setInspector( this );
 }
 
 MyInspectorWidget::~MyInspectorWidget()

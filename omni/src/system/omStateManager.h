@@ -15,6 +15,7 @@
 #include "common/omStd.h"
 
 #include <QString>
+#include <QSize>
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
@@ -25,7 +26,7 @@ class QUndoStack;
 class QUndoCommand;
 class QGLWidget;
 class QGLContext;
-
+class MyInspectorWidget;
 
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
@@ -120,6 +121,9 @@ public:
 	static bool getParallel();
 	static void setParallel(bool parallel);
 
+	static void setInspector( MyInspectorWidget * miw );
+	static QSize getViewBoxSizeHint();
+
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
 	OmStateManager();
@@ -174,6 +178,8 @@ private:
 
 	QString omniExecPathAbsolute;
 	bool mParallel;
+
+	MyInspectorWidget * inspectorWidget;
 };
 
 #endif

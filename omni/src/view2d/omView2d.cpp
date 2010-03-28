@@ -1791,10 +1791,5 @@ bool OmView2d::doDisplayInformation()
 
 QSize OmView2d::sizeHint () const
 {
-	QWidget * mw = QApplication::activeWindow();
-	QSize s( mw->width() ,
-		 mw->height() );
-	printf("2d: size hint is (%d, %d)\n", s.width(), s.height() );
-
-	return s;
+	return OmStateManager::getViewBoxSizeHint();
 }

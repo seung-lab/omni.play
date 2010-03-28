@@ -276,9 +276,7 @@ void ViewGroup::insertDockIntoGroup( ViewGroupWidgetInfo * vgw )
 			insertBySplitting( vgw, chooseDockToSplit( vgw ));
 			QApplication::processEvents();
 		}
-	}
-
-
+	}       
 }
 
 void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * biggest )
@@ -293,7 +291,7 @@ void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * bigg
 	Qt::Orientation dir = vgw->dir;
 
 	QDockWidget * dock = makeDockWidget( vgw );
-
+	 	
 	debug("viewGroup", "\t inserting %s by splitting...\n", qPrintable(dock->objectName()));
 	mMainWindow->splitDockWidget( biggest, dock, dir );
 

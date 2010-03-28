@@ -564,10 +564,6 @@ void initLights()
 
 QSize OmView3d::sizeHint () const
 {
-	QWidget * mw = QApplication::activeWindow();
-	QSize s( mw->width()  ,
-		 mw->height()  );
-	printf("3d: size hint is (%d, %d)\n", s.width(), s.height() );
-
-	return s;
+	QSize s = OmStateManager::getViewBoxSizeHint();
+	return QSize( s.width(), s.height() - 76 );
 }
