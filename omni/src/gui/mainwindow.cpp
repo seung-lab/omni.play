@@ -70,6 +70,8 @@ MainWindow::MainWindow()
 
 		mViewGroup = NULL;
 
+		updateReadOnlyRelatedWidgets();
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -199,8 +201,9 @@ bool MainWindow::closeProjectIfOpen()
 	}
 
 	OmProject::Close();
-	setToolbarDisabled();
 	windowTitleClear();
+
+	updateReadOnlyRelatedWidgets();
 
 	return true;
 }
@@ -711,12 +714,19 @@ void MainWindow::spawnErrorDialog(OmException & e)
 
 void MainWindow::updateReadOnlyRelatedWidgets()
 {
-	const bool toBeEnabled = !OmProjectData::IsReadOnly();
+	bool toBeEnabled = false;
+
+	if ( isProjectOpen && !OmProjectData::IsReadOnly() ){
+		toBeEnabled = true;
+	}
 
 	saveAct->setEnabled(toBeEnabled);
 	modifyAct->setEnabled(toBeEnabled);
 	
-	toolbarView2D3DopenAct->setEnabled(true);
+	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
+
+	addChannelAct->setEnabled( toBeEnabled );
+	addSegmentationAct->setEnabled( toBeEnabled );
 }
 
 ////////////////////////////////////////////////////////////
