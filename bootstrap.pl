@@ -441,8 +441,9 @@ sub menu {
     print "7 -- Build one of the small libraries...\n";
     print "8 -- Generate scripts\n";
     print "9 -- Build and tar release!\n";
-    print "10 -- Experimental builds...\n\n";
-    my $max_answer = 10;
+    print "10 -- Experimental builds...\n";
+    print "11 -- Ubuntu 9.10-64bit library apt-gets...\n\n";
+    my $max_answer = 11;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -490,6 +491,8 @@ sub runMenuEntry {
         release();
     }elsif( 10 == $entry ){
         experimentalMenu();
+    }elsif( 11 == $entry ){
+        doUbuntuAptGets();
     }
 }
 
@@ -615,3 +618,26 @@ sub checkCmdLineArgs {
 }
 
 checkCmdLineArgs();
+
+
+sub doUbuntuAptGets{
+    print `sudo apt-get install libxrender-dev `;
+    print `sudo apt-get install libxext-dev`;
+    print `sudo apt-get install freeglut3-dev`;
+    print `sudo apt-get install freetype`;
+    print `sudo apt-get install g++`;
+    print `sudo apt-get install freetype`;
+    print `sudo apt-get install libfreetype6-dev`;
+    print `sudo apt-get install libxml2`;
+    print `sudo apt-get install libxml2-dev`;
+    print `sudo apt-get install cmake`;
+    print `sudo apt-get install mesa-common-dev`;
+    print `sudo apt-get install emacs`;
+    print `sudo apt-get install libxt-dev`;
+    print `sudo apt-get install libgl1-mesa-dev`;
+    print `sudo apt-get install libglu1-mesa-dev`;
+    print `sudo apt-get install libgl1-mesa-dri-dbg	`;
+    print `sudo apt-get install libgl1-mesa-glx-dbg	`;
+    print "Done with the Ubuntu 9.10 apt-gets! \n\n";
+}
+     
