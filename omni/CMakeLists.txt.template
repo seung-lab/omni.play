@@ -95,7 +95,7 @@ SET(OM_BOOST_LIBS
 )
 
 if( APPLE )
-	SET(OM_QT_LIBS ${QT_LIBRARIES} )
+	SET(OM_QT_LIBS ${QT_LIBRARIES} boost_serialization boost_thread boost_system)
 endif( APPLE )
 
 

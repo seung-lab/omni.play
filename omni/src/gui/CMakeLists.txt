@@ -138,3 +138,5 @@ TARGET_LINK_LIBRARIES(omni
 	omProject
 	${OM_QT_LIBS}
 )
+
+SET_TARGET_PROPERTIES(omni PROPERTIES LINK_FLAGS "-L../../../external/libs/Boost/lib/")
