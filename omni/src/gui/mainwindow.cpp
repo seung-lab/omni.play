@@ -743,7 +743,7 @@ void MainWindow::createToolbar()
 void MainWindow::setupFilterToolbar()
 {
 	alphaSlider = new QSlider(Qt::Horizontal, this );
-	alphaSlider->setObjectName(QString::fromUtf8("alphaSlider"));
+	alphaSlider->setObjectName("alphaSlider");
 
 	OmId channelID = 1;
 	OmId filterID = 1;
@@ -753,13 +753,14 @@ void MainWindow::setupFilterToolbar()
 		if( channel.IsFilterValid( filterID ) ){
 			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
 			alphaSlider->setValue(filter.GetAlpha() * 100);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
  		}
 	}
 
 	connect(alphaSlider, SIGNAL(valueChanged(int)), 
 		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
 	
-	filterToolBar = addToolBar(tr("Filter"));
+	filterToolBar = addToolBar("Filter");
 	filterToolBar->addWidget( alphaSlider );
 }
 
