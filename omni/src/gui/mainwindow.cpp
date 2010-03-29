@@ -723,10 +723,14 @@ void MainWindow::updateReadOnlyRelatedWidgets()
 	saveAct->setEnabled(toBeEnabled);
 	modifyAct->setEnabled(toBeEnabled);
 	
-	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
-
 	addChannelAct->setEnabled( toBeEnabled );
 	addSegmentationAct->setEnabled( toBeEnabled );
+
+	if ( isProjectOpen ){
+		toBeEnabled = true;
+	}
+	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
+
 }
 
 ////////////////////////////////////////////////////////////
@@ -762,6 +766,21 @@ void MainWindow::setupFilterToolbar()
 	
 	filterToolBar = addToolBar("Filter");
 	filterToolBar->addWidget( alphaSlider );
+}
+
+void MainWindow::updateSilder()
+{
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			alphaSlider->setValue(filter.GetAlpha() * 100);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
+	}
 }
 
 void MainWindow::setFilAlpha(int alpha)
@@ -1093,6 +1112,7 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
 	setupToolbarInitially();
+	updateSilder();
 
 	windowTitleSet( fileName );
 	openInspector();

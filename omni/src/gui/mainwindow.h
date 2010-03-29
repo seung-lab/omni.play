@@ -198,7 +198,7 @@ class MainWindow
 	QSlider *alphaSlider;
 	void setupFilterToolbar();
 	void setFilterToolbarEnabled( bool setEnabled );
-
+	void updateSilder();
 };
 
 #endif
