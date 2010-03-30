@@ -680,7 +680,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
 	relative_slice_bbox.offset(-GetExtent().getMin());
 
 	//return pointer to data
-	return copyImageData(mpImageData, relative_slice_bbox);
+	return OmImageDataIo::copyImageData(mpImageData, relative_slice_bbox);
 }
 
 /////////////////////////////////
@@ -707,7 +707,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	p_mesh_data->AllocateScalars();
 
 	//initialize data
-	clearImageData(p_mesh_data);
+	OmImageDataIo::clearImageData(p_mesh_data);
 
 	//for all 8 adjacent chunks
 	for (int z = 0; z < 2; z++) {
@@ -738,7 +738,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				QMutexLocker locker(mOpenLock);
-				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
+				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 				
 				p_chunk = shared_ptr  < OmMipChunk > ();
 				mpMipVolume->Remove(mip_coord);

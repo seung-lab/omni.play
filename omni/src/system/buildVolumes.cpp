@@ -34,7 +34,7 @@ bool BuildVolumes::checkSettingsAndTime(QString type )
 		return false;
 	}
 
-	if( !are_file_names_valid(mFileNamesAndPaths)){
+	if( ! OmImageDataIo::are_file_names_valid(mFileNamesAndPaths)){
 		printf("\tError: file list contains invalid files\n");
 		return false;
 	}

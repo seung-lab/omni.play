@@ -213,7 +213,7 @@ void OmMipVolume::UpdateMipProperties()
 	if (IsSourceValid()) {
 
 		//get source dimensions
-		Vector3 < int >source_dims = om_imagedata_get_dims( mSourceFilenamesAndPaths );
+		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths );
 
 		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
@@ -758,11 +758,11 @@ bool OmMipVolume::ImportSourceData()
 
 				//read chunk image data from source
 				vtkImageData *p_img_data =
-					om_imagedata_read(mSourceFilenamesAndPaths, 
-							  GetExtent(), 
-							  chunk_data_bbox, 
-							  GetBytesPerSample());
-
+					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
+									 GetExtent(), 
+									 chunk_data_bbox, 
+									 GetBytesPerSample());
+				
 				//write to project data
 				OmProjectData::WriteImageData(leaf_volume_path, &chunk_data_bbox, GetBytesPerSample(),
 							      p_img_data);

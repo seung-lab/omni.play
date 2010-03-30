@@ -128,14 +128,14 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 
 	//if empty intersection, return blank data
 	if (intersect_extent.isEmpty()) {
-		return createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
+		return OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
 	}
 	//else merge intersection and read data
 	//read intersection from source
 	vtkImageData *intersect_image_data = om_hdf5_dataset_image_read_with_lock(fileId, name, intersect_extent, bytesPerSample);
 
 	//create blanks data
-	vtkImageData *filled_read_data = createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
+	vtkImageData *filled_read_data = OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
 
 	//copy intersected data to proper location in blank image data
 	//normalize to min of intersection
@@ -147,7 +147,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 	dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
 
 	//copy data
-	copyImageData(filled_read_data, dataextent_norm_intersect_extent,	//copy to intersect region in dataExtent
+	OmImageDataIo::copyImageData(filled_read_data, dataextent_norm_intersect_extent,	//copy to intersect region in dataExtent
 		      intersect_image_data, intersect_norm_intersect_extent);	//from extent of intersection
 
 	//delete read intersect data
@@ -184,7 +184,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 		return;
 
 	//else create alloc image data with just intersection
-	vtkImageData *p_intersect_data = allocImageData(intersect_extent.getUnitDimensions(), bytesPerSample);
+	vtkImageData *p_intersect_data = OmImageDataIo::allocImageData(intersect_extent.getUnitDimensions(), bytesPerSample);
 
 	//copy imagedata intersection into intersection data
 	//normalize to min of intersection
@@ -199,8 +199,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 	//debug("FIXME", << dataextent_norm_intersect_extent << endl;
 
 	//copy data
-	copyImageData(p_intersect_data, intersect_norm_intersect_extent,	//copy to extent of intersection
-		      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
+	OmImageDataIo::copyImageData(p_intersect_data, intersect_norm_intersect_extent,	//copy to extent of intersection
+				      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
 
 	//write intersection
 	om_hdf5_dataset_image_write_with_lock(fileId, name, &intersect_extent, bytesPerSample, p_intersect_data);
@@ -594,7 +594,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	//setup image data
 	Vector3 < int >extent_dims = extent.getUnitDimensions();
-	imageData = allocImageData(extent_dims, bytesPerSample);
+	imageData = OmImageDataIo::allocImageData(extent_dims, bytesPerSample);
 
 	//Reads raw data from a dataset into a buffer. 
 	hid_t mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
