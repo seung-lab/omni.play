@@ -8,18 +8,27 @@
 class BuildVolumes
 {
  public:
-	BuildVolumes();
+	BuildVolumes( OmSegmentation * );
+	BuildVolumes(OmChannel * );
 	void setFileNamesAndPaths( QFileInfoList fileNamesAndPaths );
 	void addFileNameAndPath( QString fnp );
 
-	void buildAndMeshSegmentation( OmSegmentation * current_seg );
-	void build_seg_image(OmSegmentation * current_seg);
-	void build_seg_mesh(OmSegmentation * current_seg);
-	void build_channel(OmChannel * current_channel);
+	void buildAndMeshSegmentation();
+	void build_seg_image();
+	void build_seg_mesh();
+	void build_channel();
 
  private:
 	QFileInfoList mFileNamesAndPaths;
-};
+	OmSegmentation * mSeg;
+	OmChannel * mChann;
 
+	time_t time_start;
+	time_t time_end;
+	double time_dif;
+
+	bool checkSettingsAndTime(QString type);
+	void stopTiming(QString type);
+};
 
 #endif

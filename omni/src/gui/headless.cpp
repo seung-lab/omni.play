@@ -13,7 +13,6 @@
 #include "common/omDebug.h"
 #include "system/omGarbage.h"
 #include "system/omProjectData.h"
-#include "gui/inspectors/mutexServer.h"
 #include "system/buildVolumes.h"
 
 int argc_global;
@@ -129,14 +128,6 @@ void Headless::processLine( QString line, QString fName )
 	} else if( line.startsWith("parallel:") ){
 		QStringList args = line.split(':');
 		OmStateManager::setParallel(true);
-	} else if( line.startsWith("serve:") ){
-		QStringList args = line.split(':');
-		QCoreApplication app(argc_global, argv_global);
-
-		MutexServer * server = new MutexServer (args[1], getNum(args[2]));
-		server->start ();
-		
-		app.exec ();
         } else if( line.startsWith("addSegment:") ){
                 if( 0 == SegmentationID  ){
                         printf("please choose segmentation first!\n");
@@ -173,9 +164,9 @@ void Headless::processLine( QString line, QString fName )
 
 		QString hdf5fnp = args[1];
 
-		BuildVolumes bv;
+		BuildVolumes bv( &added_segmentation );
 		bv.addFileNameAndPath( hdf5fnp );
-		bv.build_seg_image( &added_segmentation );
+		bv.build_seg_image();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}

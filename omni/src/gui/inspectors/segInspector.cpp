@@ -34,7 +34,6 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget 
 
 	mMeshinatorProc = NULL;
 	mMeshinatorDialog = NULL;
-	mutexServer = NULL;
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -205,10 +204,6 @@ void SegInspector::on_exportButton_clicked()
 	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
 }
 
-void SegInspector::on_patternEdit_editingFinished()
-{
-}
-
 QDir SegInspector::getDir()
 {	
 	QString regex = patternEdit->text();
@@ -251,26 +246,6 @@ void SegInspector::on_patternEdit_textChanged()
 	updateFileList();
 }
 
-void SegInspector::build_image(OmSegmentation * current_seg)
-{
-	BuildVolumes bv;
-	bv.setFileNamesAndPaths( getFileInfoList() );
-	bv.build_seg_image( current_seg );
-}
-
-void SegInspector::build_mesh(OmSegmentation * current_seg)
-{
-	BuildVolumes bv;
-	bv.setFileNamesAndPaths( getFileInfoList() );
-	bv.build_seg_mesh( current_seg );
-}
-
-void SegInspector::build_image_and_mesh( OmSegmentation * current_seg )
-{
-	build_image(current_seg);
-	build_mesh(current_seg);
-}
-
 QString& GetScriptCmd (QString arg)
 {
 	static QString cmd;
@@ -288,53 +263,52 @@ QString& GetScriptCmd (QString arg)
 
 void SegInspector::on_buildButton_clicked()
 {
-	// check current selection in buildComboBox
-	QString cur_text = buildComboBox->currentText();
-
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
-	if ("Data" == cur_text ){
-		//QFuture < void >future = QtConcurrent::run(&SegInspector::build_image, &current_seg);
-		build_image(&current_seg);
+	BuildVolumes bv(&current_seg);
+	bv.setFileNamesAndPaths( getFileInfoList() );
+
+	QString whatOrHowToBuild = buildComboBox->currentText();
+	if ("Data" == whatOrHowToBuild ){
+		bv.build_seg_image();
 		emit segmentationBuilt(sdw.getID());
 
-	} else if ( "Mesh" == cur_text ){
-		//QFuture < void >future = QtConcurrent::run(&SegInspector::build_mesh, &current_seg);
-		build_mesh(&current_seg);
-		//              emit meshBuilt(sdw.getID());
-	} else if ("Data & Mesh" == cur_text){
-		//QFuture < void >f1 = QtConcurrent::run(&SegInspector::build_image_and_mesh, &current_seg);
-		build_image_and_mesh( &current_seg);
+	} else if ( "Mesh" == whatOrHowToBuild ){
+		bv.build_seg_mesh();
+
+	} else if ("Data & Mesh" == whatOrHowToBuild){
+		bv.buildAndMeshSegmentation();
 		emit segmentationBuilt(sdw.getID());
-	} else if( "Meshinator" == cur_text ){
-		QString rel_fnpn = OmProjectData::getFileNameAndPath();
-		QFileInfo fInfo(rel_fnpn);
-		QString fnpnProject = fInfo.absoluteFilePath();
-		QString fnpnPlan = fnpnProject + ".plan";
-		current_seg.BuildMeshDataPlan( fnpnPlan );
 
-		QString script = GetScriptCmd (fnpnPlan);
-		debug ("meshinator", "%s\n", qPrintable (script));
-		if (mMeshinatorProc) {
-			delete mMeshinatorProc;
-		}
-		
-		startMutexServer();
-
-		mMeshinatorProc = new QProcess ();
-		mMeshinatorProc->start(script);
-
-		if (mMeshinatorDialog) {
-			delete mMeshinatorDialog;
-		}
-		mMeshinatorDialog = new QDialog ();
-		connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
-		mMeshinatorDialog->exec();
-
-		stopMutexServer();
-		current_seg.mMipMeshManager.SetMeshDataBuilt(true);
-		OmProject::Save();
+	} else if( "Meshinator" == whatOrHowToBuild ){
+		doMeshinate( &current_seg );
 	}
+}
+
+void SegInspector::doMeshinate( OmSegmentation * current_seg )
+{
+	QString abs_fnpn = OmProjectData::getAbsoluteFileNameAndPath();
+	QString fnpnPlan = abs_fnpn + ".plan";
+	current_seg->BuildMeshDataPlan( fnpnPlan );
+
+	QString script = GetScriptCmd (fnpnPlan);
+	debug ("meshinator", "%s\n", qPrintable (script));
+	if (mMeshinatorProc) {
+		delete mMeshinatorProc;
+	}
+		
+	mMeshinatorProc = new QProcess ();
+	mMeshinatorProc->start(script);
+
+	if (mMeshinatorDialog) {
+		delete mMeshinatorDialog;
+	}
+	mMeshinatorDialog = new QDialog ();
+	connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
+	mMeshinatorDialog->exec();
+
+	current_seg->mMipMeshManager.SetMeshDataBuilt(true);
+	OmProject::Save();
 }
 
 void SegInspector::on_notesEdit_textChanged()
@@ -362,16 +336,4 @@ void SegInspector::populateSegmentationInspector()
 	notesEdit->setPlainText( sdw.getNote() );
 
 	updateFileList();
-}
-
-void SegInspector::startMutexServer()
-{
-	mutexServer = new MutexServer("brianiac", 8989);
-	mutexServer->start();
-}
-
-void SegInspector::stopMutexServer()
-{
-	mutexServer->quit();
-	delete mutexServer;
 }

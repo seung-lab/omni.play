@@ -7,10 +7,7 @@
 
 #include <vtkImageData.h>
 #include <QFile>
-
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string_regex.hpp>
-namespace bfa = boost::algorithm;
+#include <QStringList>
 
 /////////////////////////////////
 ///////          File
@@ -322,17 +319,16 @@ void OmHdf5LowLevel::om_hdf5_group_create_with_lock(hid_t fileId, const char *na
 void OmHdf5LowLevel::om_hdf5_group_create_tree_with_lock(hid_t fileId, const char *name)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+	
+	QString currentPath;
+	foreach( QString folder, QString(name).split('/') ){
+		currentPath += folder + "/";
 
-        vector < string > name_split_vec;
-        bfa::split(name_split_vec, name, bfa::is_any_of("/"));
+		string curPathStr = currentPath.toStdString();
 
-        string name_rejoin_str;
-        for (unsigned int i = 0; i < name_split_vec.size(); ++i) {
-                //add split
-                name_rejoin_str.append(name_split_vec[i]).append("/");
                 //create if group does not exist
-                if (!om_hdf5_group_exists_with_lock(fileId, name_rejoin_str.c_str())) {
-                        om_hdf5_group_create_with_lock(fileId, name_rejoin_str.c_str());
+                if (!om_hdf5_group_exists_with_lock(fileId, curPathStr.c_str() ) ){
+                        om_hdf5_group_create_with_lock(fileId, curPathStr.c_str() );
                 }
         }
 }
@@ -361,9 +357,9 @@ bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *
 		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	} H5E_END_TRY
 	
-		  //if failure, then assume doesn't exist
-		  if (dataset_id < 0)
-			  return false;
+	//if failure, then assume doesn't exist
+	if (dataset_id < 0)
+		return false;
 	
 	//Closes the specified dataset. 
 	herr_t ret = H5Dclose(dataset_id);

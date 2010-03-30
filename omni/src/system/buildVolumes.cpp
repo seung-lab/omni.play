@@ -1,7 +1,14 @@
 #include "buildVolumes.h"
+#include "utility/omImageDataIo.h"
 
-BuildVolumes::BuildVolumes()
+BuildVolumes::BuildVolumes(OmSegmentation * seg)
 {
+	mSeg = seg;
+}
+
+BuildVolumes::BuildVolumes(OmChannel * chan)
+{
+	mChann = chan;
 }
 
 void BuildVolumes::addFileNameAndPath( QString fnp )
@@ -14,54 +21,73 @@ void BuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 	mFileNamesAndPaths = fileNamesAndPaths;
 }
 
-void BuildVolumes::buildAndMeshSegmentation( OmSegmentation * current_seg )
+void BuildVolumes::buildAndMeshSegmentation()
 {
-	build_seg_image(current_seg);
-	build_seg_mesh(current_seg);
+	build_seg_image();
+	build_seg_mesh();
 }
 
-void BuildVolumes::build_seg_image(OmSegmentation * current_seg)
+bool BuildVolumes::checkSettingsAndTime(QString type )
 {
-	printf("starting segmentation data build...\n");
-	time_t start;
-	time_t end;
-	double dif;
-	
-	time (&start);
-	current_seg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-	current_seg->BuildVolumeData();
-	time (&end);
-	dif = difftime(end, start);
-	printf("segmentation data build performed in (%.2lf secs)\n", dif );
+	if( mFileNamesAndPaths.empty() ) {
+		printf("\tError: can't build: no files selected\n");
+		return false;
+	}
+
+	if( !are_file_names_valid(mFileNamesAndPaths)){
+		printf("\tError: file list contains invalid files\n");
+		return false;
+	}
+
+	printf("starting %s build...\n", qPrintable(type));
+	time(&time_start);
+	return true;
 }
 
-void BuildVolumes::build_seg_mesh(OmSegmentation * current_seg)
+void BuildVolumes::stopTiming(QString type)
 {
-	printf("starting segmentation mesh build...\n");
-	time_t start;
-	time_t end;
-	double dif;
-	
-	time (&start);
-	current_seg->BuildMeshData();
-	time (&end);
-	dif = difftime(end, start);
-	printf("segmentation mesh build performed in (%.2lf secs)\n", dif );
+	time(&time_end);
+	time_dif = difftime(time_end, time_start);
+	printf("\t%s build performed in (%.2lf secs)\n", qPrintable(type), time_dif );
 }
 
-void BuildVolumes::build_channel(OmChannel * current_channel)
+void BuildVolumes::build_seg_image()
 {
-	printf("starting channel build...\n");
-	time_t start;
-	time_t end;
-	double dif;
-	
-	time (&start);
-	current_channel->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-	current_channel->BuildVolumeData();
-	time (&end);
-	dif = difftime(end, start);
-	printf("channel build performed in (%.2lf secs)\n", dif );
+	QString type = "segmentation data";
+
+	if(!checkSettingsAndTime(type) ){
+		return;
+	}
+
+	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
+	mSeg->BuildVolumeData();
+
+	stopTiming(type);
+}
+
+void BuildVolumes::build_seg_mesh()
+{
+	QString type = "segmentation mesh";
+	if(!checkSettingsAndTime(type) ){
+		return;
+	}
+
+	mSeg->BuildMeshData();
+
+	stopTiming(type);
+}
+
+void BuildVolumes::build_channel()
+{
+	QString type = "channel";
+	if(!checkSettingsAndTime(type) ){
+		return;
+	}
+
+	mChann->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
+	mChann->BuildVolumeData();
+
+	stopTiming(type);
 }
 
 	

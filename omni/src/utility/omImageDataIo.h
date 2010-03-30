@@ -15,14 +15,14 @@ using namespace vmml;
 
 #include <QFileInfoList>
 #include <QString>
-#include <list>
-using std::list;
 
 enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE };
 
 class vtkImageReader2;
 class vtkImageWriter;
 class vtkImageData;
+
+bool are_file_names_valid( QFileInfoList sourceFilenamesAndPaths );
 
 //type
 ImageType om_imagedata_parse_image_type(QString fileNameAndPath);

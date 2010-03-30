@@ -5,6 +5,7 @@
 #include "utility/omHdf5Manager.h"
 #include "utility/fileHelpers.h"
 #include <QFile>
+#include <QFileInfo>
 
 //init instance pointer
 OmProjectData *OmProjectData::mspInstance = 0;
@@ -51,6 +52,13 @@ void OmProjectData::Delete()
 QString OmProjectData::getFileNameAndPath()
 {
 	return Instance()->dataReader->getFileNameAndPath();
+}
+
+QString OmProjectData::getAbsoluteFileNameAndPath()
+{
+	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QFileInfo fInfo(rel_fnpn);
+	return fInfo.absoluteFilePath();
 }
 
 /////////////////////////////////

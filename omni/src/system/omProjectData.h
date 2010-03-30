@@ -27,7 +27,8 @@ public:
 	static void Delete();
 	
 	static QString getFileNameAndPath();
-	
+	static QString getAbsoluteFileNameAndPath();
+
 	static void Create();
 	static void Open();
 	static void Close();

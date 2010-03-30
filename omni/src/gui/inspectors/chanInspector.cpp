@@ -86,10 +86,6 @@ void ChanInspector::updateFileList()
 	listWidget->update();
 }
 
-void ChanInspector::on_patternEdit_editingFinished()
-{
-}
-
 void ChanInspector::on_patternEdit_textChanged()
 {
 	updateFileList();
@@ -97,16 +93,15 @@ void ChanInspector::on_patternEdit_textChanged()
 
 void ChanInspector::intermediate_build_call(OmChannel * current_channel)
 {
-	BuildVolumes bv;
+	BuildVolumes bv( current_channel );
 	bv.setFileNamesAndPaths( getFileInfoList() );
-	bv.build_channel( current_channel );
+	bv.build_channel();
 }
 
 void ChanInspector::on_buildButton_clicked()
 {
 	OmChannel & current_channel = OmVolume::GetChannel(cdw.getID());
 
-	//QFuture < void >future = QtConcurrent::run(intermediate_build_call, &current_channel);
 	intermediate_build_call( &current_channel);
 }
 

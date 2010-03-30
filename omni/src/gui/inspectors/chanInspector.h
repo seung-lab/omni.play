@@ -22,7 +22,6 @@ class ChanInspector : public QWidget, public Ui::chanInspector
  private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
-	void on_patternEdit_editingFinished();
 	void on_patternEdit_textChanged();
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();

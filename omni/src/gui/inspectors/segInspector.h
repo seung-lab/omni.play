@@ -6,7 +6,6 @@
 #include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
-#include "mutexServer.h"
 
 class SegInspector : public QWidget
 { 
@@ -16,11 +15,6 @@ public:
 	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent); 
 	
 	OmId getSegmentationID();
-	QString raiseFileDialog();
-
-	void build_image(OmSegmentation * current_seg);
-	void build_mesh(OmSegmentation * current_seg);
-	void build_image_and_mesh( OmSegmentation * current_seg );
 	
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -34,7 +28,6 @@ public:
  private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
-	void on_patternEdit_editingFinished();
 	void on_patternEdit_textChanged();
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
@@ -55,12 +48,9 @@ public:
 	QGroupBox* makeNotesBox();
 	QGroupBox* makeStatsBox();
 
+	void doMeshinate( OmSegmentation * current_seg );
 	QProcess* mMeshinatorProc;
 	QDialog* mMeshinatorDialog;
-
-	MutexServer* mutexServer;
-	void startMutexServer();
-	void stopMutexServer();
 
 	QDir getDir();
 	QStringList getFileList();

@@ -31,13 +31,6 @@
 
 #include <vtkStringArray.h>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
-
-#include <boost/regex.hpp>
-//namespace brx=boost::regex;
-
 #include <strnatcmp.h>
 
 #include <hdf5.h>
@@ -259,6 +252,35 @@ vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
 								   bytesPerSample);
 	return data;
 }
+
+bool are_file_names_valid( QFileInfoList sourceFilenamesAndPaths )
+{
+	if( sourceFilenamesAndPaths.empty() ){
+		return false;
+	}
+
+	foreach( QFileInfo file, sourceFilenamesAndPaths ){
+		if( !file.exists() ){
+			return false;
+		}
+
+		switch (om_imagedata_parse_image_type( file.filePath() )){
+		case TIFF_TYPE:
+		case JPEG_TYPE:
+		case PNG_TYPE:
+		case VTK_TYPE:
+		case HDF5_TYPE:
+			break;
+
+		default:
+			printf("invalid file: %s\n", qPrintable(file.filePath()) );
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 /*
  *	Destination extent is data extent when not specified.

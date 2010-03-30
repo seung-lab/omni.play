@@ -4,10 +4,10 @@
 #define OM_DEBUG_STRING_SIZE 30
 #define OM_DEBUG_STRING_MAX_NUMBER 30
 
-#include <QString>
+#include "omCommon.h"
 
 #ifdef NO_DEBUG
-#define debug(x, ...) ()
+#define debug(x, ...) ;
 #else
 #define debug(x, ...) actual_debug(x, __VA_ARGS__)
 #endif
@@ -22,7 +22,7 @@ public:
 	QString headlessCMD;
 };
 
-enum {OM_DEBUG_REMOVE,OM_DEBUG_ADD};
+enum { OM_DEBUG_REMOVE, OM_DEBUG_ADD };
 
 /**
  * A function designed for selecting and customizing debug statements to stdout

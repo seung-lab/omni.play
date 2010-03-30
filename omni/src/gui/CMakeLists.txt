@@ -19,7 +19,6 @@ SET( OMGUI_SRCS
 	inspectors/segObjectInspector.cpp
 	inspectors/filObjectInspector.cpp
 	inspectors/inspectorProperties.cpp
-	inspectors/mutexServer.cpp
 
         preferences/preferencesMesh.cpp
         preferences/preferences3d.cpp
@@ -51,7 +50,6 @@ SET( OMGUI_MOC_HDRS
 	inspectors/segObjectInspector.h
 	inspectors/filObjectInspector.h
 	inspectors/inspectorProperties.h
-	inspectors/mutexServer.h
 
 	preferences/preferencesMesh.h
 	preferences/preferences3d.h
