@@ -627,8 +627,9 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		mpView3d->updateGL();
 		return;
 	}
-	mpView3d->updateGL();
 	mpView3d->mCamera.SetFocus(voxel);
+	mpView3d->updateGL();
+
 	mCPressed = false;
 	
 
