@@ -280,7 +280,7 @@ sub boost142 {
     my $libFolderName = "Boost";
     prepareNukeSrcsFolder( $baseFileName, $libFolderName );
 
-    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=serialization,thread";
     print "configuring ($cmd)\n"; 
     `($cmd)`;
     print "done\n";

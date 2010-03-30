@@ -1,7 +1,6 @@
 #ifndef VIEW_GROUP_WIDGET_INFO_H
 #define VIEW_GROUP_WIDGET_INFO_H
 
-#include <QString>
 #include <QWidget>
 
 #include "system/omSystemTypes.h"

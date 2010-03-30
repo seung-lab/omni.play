@@ -1,7 +1,6 @@
 #ifndef OM_LOCAL_CONFIGURATION_H
 #define OM_LOCAL_CONFIGURATION_H
 
-#include <QString>
 #include "utility/localPrefFiles.h"
 
 class OmLocalPreferences {

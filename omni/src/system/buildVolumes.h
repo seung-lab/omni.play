@@ -1,7 +1,6 @@
 #ifndef BUILD_VOLUMES_H
 #define BUILD_VOLUMES_H
 
-#include <QString>
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 

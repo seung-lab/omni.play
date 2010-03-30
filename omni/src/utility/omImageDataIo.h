@@ -14,7 +14,6 @@
 using namespace vmml;
 
 #include <QFileInfoList>
-#include <QString>
 
 enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE };
 

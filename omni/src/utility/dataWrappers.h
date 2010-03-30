@@ -6,7 +6,6 @@
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 
-#include <QString>
 #include <QHash>
 
 class SegmentDataWrapper;

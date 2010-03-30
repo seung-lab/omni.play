@@ -1,7 +1,7 @@
 #ifndef FILE_HELPERS_H
 #define FILE_HELPERS_H
 
-#include <QString>
+#include "common/omCommon.h"
 
 class FileHelpers
 {

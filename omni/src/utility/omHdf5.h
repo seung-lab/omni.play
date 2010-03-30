@@ -2,7 +2,6 @@
 #define OM_HDF_H
 
 #include <QMutex>
-#include <QString>
 #include <QQueue>
 #include <string>
 using std::string;

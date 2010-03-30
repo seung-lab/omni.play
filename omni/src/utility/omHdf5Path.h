@@ -1,7 +1,7 @@
 #ifndef OM_HDF_PATH_H
 #define OM_HDF_PATH_H
 
-#include <QString>
+#include "common/omCommon.h"
 #include <string>
 
 class OmHdf5Path 

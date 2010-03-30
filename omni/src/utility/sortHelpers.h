@@ -6,7 +6,6 @@
 #include <QFileInfoList>
 #include <QFileInfo>
 #include <QStringList>
-#include <QString>
 
 class SortHelpers
 {

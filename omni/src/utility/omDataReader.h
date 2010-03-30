@@ -4,7 +4,6 @@
 #include "volume/omVolumeTypes.h"
 #include "utility/omHdf5Path.h"
 
-#include <QString>
 #include <string>
 
 #include <vmmlib/vmmlib.h>

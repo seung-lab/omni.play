@@ -6,4 +6,7 @@
 
 #include <QString>
 
+#include "common/omStd.h"
+#include "common/omSerialization.h"
+
 #endif
