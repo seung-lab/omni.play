@@ -20,11 +20,7 @@
 
 OmFilter2d::OmFilter2d (OmId segid, OmId chanid, OmId filterid)
 {
-	OmFilter2d *repair;
-
-	//OmView2d *xy = new OmView2d(XY_VIEW, CHANNEL, chanid, 0, 0, NULL);
-
-	repair = new OmFilter2d (filterid);
+	OmFilter2d *repair = new OmFilter2d (filterid);
 	mSeg = segid;
 	mChannel = chanid;
 	repair->GetCache (XY_VIEW);
@@ -38,9 +34,9 @@ OmFilter2d::OmFilter2d() {
 }
 
 OmFilter2d::OmFilter2d(OmId omId) 
-: OmManageableObject(omId) {
-	
-	mName = printf2str(256, "filter%05d", omId);
+: OmManageableObject(omId) 
+{
+	mName = QString("filter%1").arg(omId).toStdString();
 	
 	//initially transparent.
 	mAlpha = 0.0;
@@ -100,26 +96,4 @@ void OmFilter2d::SetChannel (OmId id) {
 	} catch (OmAccessException e) {
 		mChannel = 0;
 	}
-}
-
-
-
-/////////////////////////////////
-///////		Accessor Methods
-
-
-
-
-/////////////////////////////////
-///////		Example Methods
-
-
-
-/////////////////////////////////
-///////		 Print Methods
-
-
-void
-OmFilter2d::Print() {
-	//debug("FIXME", << "\t\t" << mName << " (" << mId << ")" << endl;
 }

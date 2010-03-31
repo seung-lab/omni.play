@@ -16,12 +16,7 @@
 #include <vtkImageData.h>
 #include <vtkType.h>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 #include "common/omDebug.h"
-namespace bfs = boost::filesystem;
-
-#define DEBUG 0
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 

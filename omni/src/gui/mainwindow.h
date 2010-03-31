@@ -21,7 +21,6 @@
 #include "system/omStateManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omProgressEvent.h"
-#include "system/events/omAlertEvent.h"
 #include "system/events/omSystemModeEvent.h"
 
 #include "gui/recentFileList.h"
@@ -33,7 +32,6 @@ class ViewGroup;
 class MainWindow 
 : public QMainWindow, 	
   public OmProgressEventListener,
-  public OmAlertEventListener,
   public OmSystemModeEventListener
 {
  Q_OBJECT
@@ -55,7 +53,6 @@ class MainWindow
 		
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
 	void SystemModeChangeEvent(OmSystemModeEvent * event);		
-	void AlertNotifyEvent(OmAlertEvent *event);
 		
 	void ProgressShow(OmProgressEvent *event);
 	void ProgressHide(OmProgressEvent *event);

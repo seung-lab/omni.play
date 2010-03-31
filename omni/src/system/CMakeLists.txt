@@ -12,7 +12,6 @@ SET(OM_SYSTEM_EVENTS_SRCS
 	events/omViewEvent.cpp
 	events/omView3dEvent.cpp
 	events/omVoxelEvent.cpp
-	events/omAlertEvent.cpp
 )
 
 

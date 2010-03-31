@@ -11,15 +11,8 @@
 #include "utility/omDataReader.h"
 #include "utility/omDataWriter.h"
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
-
-#include <fstream>
 #include "common/omDebug.h"
 #include <QFile>
-
-#define DEBUG 0
 
 static const char *MIP_MESH_FILE_NAME = "mesh.%d.dat";
 

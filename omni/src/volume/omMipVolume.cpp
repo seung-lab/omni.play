@@ -7,7 +7,6 @@
 #include "system/omProjectData.h"
 #include "system/omEventManager.h"
 #include "system/events/omProgressEvent.h"
-#include "system/events/omAlertEvent.h"
 #include "common/omVtk.h"
 #include "common/omStd.h"
 #include "utility/omImageDataIo.h"
@@ -17,8 +16,6 @@
 #include <vtkImageConstantPad.h>
 #include "common/omDebug.h"
 #include <QFile>
-
-#define DEBUG 0
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const string MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";

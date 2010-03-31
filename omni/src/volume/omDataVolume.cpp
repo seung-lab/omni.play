@@ -1,15 +1,9 @@
-
 #include "omDataVolume.h"
 
 #include "common/omVtk.h"
 #include "common/omException.h"
 #include "project/omProject.h"
 #include "utility/omImageDataIo.h"
-
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include "common/omDebug.h"
-namespace bfs = boost::filesystem;
 
 /////////////////////////////////
 ///////         OmDataVolume Class

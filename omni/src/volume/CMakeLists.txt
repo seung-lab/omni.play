@@ -35,16 +35,3 @@ TARGET_LINK_LIBRARIES( omVolume
 	omVoxel
 	omView2d
 )
-
-
-## EXECUTABLE ##
-
-#specify executable
-#ADD_EXECUTABLE( omVolumeApp
-#	main.cpp
-#)
-
-
-#TARGET_LINK_LIBRARIES( omVolumeApp
-#	omVolume
-#)

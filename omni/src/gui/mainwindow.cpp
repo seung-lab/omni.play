@@ -418,32 +418,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 }
 
-void MainWindow::AlertNotifyEvent(OmAlertEvent * event)
-{
-	//debug("genone","MainWindow::AlertNotifyEvent");
-
-	try {
-		QMessageBox msgBox;
-		msgBox.setText(QString::fromStdString(event->GetText()));
-		msgBox.setInformativeText(QString::fromStdString(event->GetMoreText()));
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-		msgBox.setDefaultButton(QMessageBox::Yes);
-		int ret = msgBox.exec();
-
-		switch (ret) {
-		case QMessageBox::Yes:
-			break;
-		case QMessageBox::No:
-			throw OmFormatException("Invalid data format.");
-		default:
-			// should never be reached
-			break;
-		}
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
 void MainWindow::ProgressShow(OmProgressEvent * event)
 {
 	try {

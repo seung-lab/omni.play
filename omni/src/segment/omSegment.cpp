@@ -24,7 +24,7 @@ OmSegment::OmSegment(OmId omId)
 {
 	original_mapped_data_value = 0;
 
-	mName = printf2str(256, "segment%05d", omId);
+	mName = QString("segment%1").arg(omId).toStdString();
 
 	//initially random color
 	do {
