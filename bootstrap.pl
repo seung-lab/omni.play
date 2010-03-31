@@ -621,23 +621,23 @@ checkCmdLineArgs();
 
 
 sub doUbuntuAptGets{
-    print `sudo apt-get install libxrender-dev `;
-    print `sudo apt-get install libxext-dev`;
-    print `sudo apt-get install freeglut3-dev`;
-    print `sudo apt-get install freetype`;
-    print `sudo apt-get install g++`;
-    print `sudo apt-get install freetype`;
-    print `sudo apt-get install libfreetype6-dev`;
-    print `sudo apt-get install libxml2`;
-    print `sudo apt-get install libxml2-dev`;
-    print `sudo apt-get install cmake`;
-    print `sudo apt-get install mesa-common-dev`;
-    print `sudo apt-get install emacs`;
-    print `sudo apt-get install libxt-dev`;
-    print `sudo apt-get install libgl1-mesa-dev`;
-    print `sudo apt-get install libglu1-mesa-dev`;
-    print `sudo apt-get install libgl1-mesa-dri-dbg	`;
-    print `sudo apt-get install libgl1-mesa-glx-dbg	`;
+    print `sudo apt-get -y install libxrender-dev `;
+    print `sudo apt-get -y install libxext-dev`;
+    print `sudo apt-get -y install freeglut3-dev`;
+    print `sudo apt-get -y install freetype`;
+    print `sudo apt-get -y install g++`;
+    print `sudo apt-get -y install freetype`;
+    print `sudo apt-get -y install libfreetype6-dev`;
+    print `sudo apt-get -y install libxml2`;
+    print `sudo apt-get -y install libxml2-dev`;
+    print `sudo apt-get -y install cmake`;
+    print `sudo apt-get -y install mesa-common-dev`;
+    print `sudo apt-get -y install emacs`;
+    print `sudo apt-get -y install libxt-dev`;
+    print `sudo apt-get -y install libgl1-mesa-dev`;
+    print `sudo apt-get -y install libglu1-mesa-dev`;
+    print `sudo apt-get -y install libgl1-mesa-dri-dbg	`;
+    print `sudo apt-get -y install libgl1-mesa-glx-dbg	`;
     print "Done with the Ubuntu 9.10 apt-gets! \n\n";
 }
      
