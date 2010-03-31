@@ -264,8 +264,6 @@ void MainWindow::openProject(QString fileNameAndPath)
 
 		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 
-		updateReadOnlyRelatedWidgets();
-
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -1090,6 +1088,7 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 
 	windowTitleSet( fileName );
 	openInspector();
+	updateReadOnlyRelatedWidgets();
 }
 
 void MainWindow::forceWindowUpdate()

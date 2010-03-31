@@ -119,7 +119,6 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 
 /////////////////////////////////
 ///////          Cleaning Methods
-extern unsigned int myBackoff;
 void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
 	pthread_mutex_lock(&mCacheMapMutex);
