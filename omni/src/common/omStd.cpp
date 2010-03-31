@@ -1,69 +1,10 @@
-
 #include "omStd.h"
 
 // Error Reporting Includes
 #include <stdarg.h>
 #include "common/omDebug.h"
 
-// Error Reporting Definitions
-#define ERROR_IGNORE 0
-#define ERROR_CONTINUE 1
-#define ERROR_ABORT 2
-
 #define OMPOW(base,expon) (int)pow((double) base, (double)expon)
-
-
-// Error Reporting Functions
-static void processError(const char *format, va_list args, const char *message, int disposition)
-{
-
-	char errorBuf[2048];
-	vsnprintf(errorBuf, sizeof(errorBuf), format, args);
-
-	// Report error
-	switch (disposition) {
-	case ERROR_IGNORE:
-		return;
-	case ERROR_CONTINUE:
-		fprintf(stderr, "%s: %s\n", message, errorBuf);
-		break;
-	case ERROR_ABORT:
-		fprintf(stderr, "%s: %s\n", message, errorBuf);
-		exit(1);
-	}
-}
-
-void Info(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	processError(format, args, "Notice", ERROR_CONTINUE);
-	va_end(args);
-}
-
-void Warning(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	processError(format, args, "Warning", ERROR_CONTINUE);
-	va_end(args);
-}
-
-void Error(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	processError(format, args, "Error", ERROR_CONTINUE);
-	va_end(args);
-}
-
-void Severe(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	processError(format, args, "Fatal Error", ERROR_ABORT);
-	va_end(args);
-}
 
 // Random Number State
 /*

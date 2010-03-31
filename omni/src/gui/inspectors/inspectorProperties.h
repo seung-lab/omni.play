@@ -9,7 +9,7 @@ class InspectorProperties : public QDialog
 	Q_OBJECT
 
 public:
-	InspectorProperties(QWidget *parent = 0);
+	InspectorProperties(QWidget *parent);
 	void setOrReplaceWidget(QWidget *incomingWidget, const QString title);
 
 private slots:

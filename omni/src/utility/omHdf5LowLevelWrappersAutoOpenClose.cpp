@@ -8,8 +8,8 @@
 	hid_t fileId;                                                           \
 	bool opened = false;						        \
 	try { 									\
-		fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName);   \
-		opened = true;
+	fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName, mReadOnly);	\
+	opened = true;
 
 #define HDF5_UNWRAP() 								\
 	} catch (...) { 							\
@@ -20,8 +20,8 @@
 	}									\
 	hdfLowLevel.om_hdf5_file_close_with_lock (fileId);			
 
-OmHdf5LowLevelWrappersAutoOpenClose::OmHdf5LowLevelWrappersAutoOpenClose(string fileName)
-	: mFileName(fileName)
+OmHdf5LowLevelWrappersAutoOpenClose::OmHdf5LowLevelWrappersAutoOpenClose(string fileName, const bool readOnly )
+	: mFileName(fileName), mReadOnly( readOnly )
 {
 }
 
@@ -74,11 +74,11 @@ bool OmHdf5LowLevelWrappersAutoOpenClose::dataset_exists_with_lock(OmHdf5Path pa
 	return exists;
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3< int>* chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3< int>* chunkDims, int bytesPerSample)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
-	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
 	HDF5_UNWRAP();
 }
 

@@ -3,7 +3,6 @@
 
 #include <QAction>
 #include <QStringList>
-#include <QString>
 
 // TODO: make into preference (purcaro)
 enum { MAX_NUMBER_OF_RECENT_FILES = 5 };

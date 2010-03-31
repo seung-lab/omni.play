@@ -3,7 +3,9 @@
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "utility/omHdf5Manager.h"
+#include "utility/fileHelpers.h"
 #include <QFile>
+#include <QFileInfo>
 
 //init instance pointer
 OmProjectData *OmProjectData::mspInstance = 0;
@@ -15,6 +17,7 @@ OmProjectData *OmProjectData::mspInstance = 0;
 
 OmProjectData::OmProjectData()
 {
+	mIsReadOnly = false;
 }
 
 void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool autoOpenAndClose )
@@ -23,8 +26,8 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool 
 		delete mspInstance;
 		mspInstance = new OmProjectData;
 	}
-
-	Instance()->hdfFile = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose );
+	
+	Instance()->setupDataLayer( fileNameAndPath, autoOpenAndClose );
 }
 
 OmProjectData::~OmProjectData()
@@ -34,7 +37,7 @@ OmProjectData::~OmProjectData()
 OmProjectData *OmProjectData::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmProjectData;
+		mspInstance = new OmProjectData();
 	}
 	return mspInstance;
 }
@@ -48,7 +51,14 @@ void OmProjectData::Delete()
 
 QString OmProjectData::getFileNameAndPath()
 {
-	return Instance()->hdfFile->getFileNameAndPath();
+	return Instance()->dataReader->getFileNameAndPath();
+}
+
+QString OmProjectData::getAbsoluteFileNameAndPath()
+{
+	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QFileInfo fInfo(rel_fnpn);
+	return fInfo.absoluteFilePath();
 }
 
 /////////////////////////////////
@@ -61,18 +71,18 @@ void OmProjectData::Create()
 		projectFile.remove();
 	}
 
-	Instance()->hdfFile->create();
+	Instance()->dataWriter->create();
 }
 
 void OmProjectData::Open()
 {
-	Instance()->hdfFile->open();
+	Instance()->dataReader->open();
 	Instance()->mIsOpen = true;
 }
 
 void OmProjectData::Close()
 {
-	Instance()->hdfFile->close();
+	Instance()->dataReader->close();
 	Instance()->mIsOpen = false;
 }
 
@@ -89,17 +99,17 @@ void OmProjectData::Flush()
 
 bool OmProjectData::GroupExists(OmHdf5Path path)
 {
-	return Instance()->hdfFile->group_exists( path );
+	return Instance()->dataReader->group_exists( path );
 }
 
 void OmProjectData::GroupDelete(OmHdf5Path path)
 {
-	Instance()->hdfFile->group_delete( path );
+	Instance()->dataWriter->group_delete( path );
 }
 
 bool OmProjectData::DataExists(OmHdf5Path path)
 {
-	return Instance()->hdfFile->dataset_exists( path );
+	return Instance()->dataReader->dataset_exists( path );
 }
 
 //image data io
@@ -107,28 +117,49 @@ bool OmProjectData::DataExists(OmHdf5Path path)
 void OmProjectData::CreateImageData(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims,
 				    int bytesPerSample)
 {
-	Instance()->hdfFile->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, bytesPerSample);
+	Instance()->dataWriter->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, bytesPerSample);
 }
 
 vtkImageData *OmProjectData::ReadImageData(OmHdf5Path path, const DataBbox & extent, int bytesPerSample)
 {
-	return Instance()->hdfFile->dataset_image_read_trim( path, extent, bytesPerSample);
+	return Instance()->dataReader->dataset_image_read_trim( path, extent, bytesPerSample);
 }
 
 void OmProjectData::WriteImageData(OmHdf5Path path, DataBbox * extent, int bytesPerSample, vtkImageData * data)
 {
-	Instance()->hdfFile->dataset_image_write_trim( path, extent, bytesPerSample, data);
+	Instance()->dataWriter->dataset_image_write_trim( path, extent, bytesPerSample, data);
 }
 
 //raw data io
 void *OmProjectData::ReadRawData(OmHdf5Path path, int *size)
 {
-	return Instance()->hdfFile->dataset_raw_read( path, size);
+	return Instance()->dataReader->dataset_raw_read( path, size);
 }
 
 void OmProjectData::WriteRawData(OmHdf5Path path, int size, const void *data)
 {
-	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, size, data);
+	Instance()->dataWriter->dataset_raw_create_tree_overwrite( path, size, data);
 }
 
+OmDataLayer * OmProjectData::GetDataLayer()
+{
+	return Instance()->dataLayer;
+}
 
+OmDataReader * OmProjectData::GetDataReader()
+{
+	return Instance()->dataReader;
+}
+
+OmDataWriter * OmProjectData::GetDataWriter()
+{
+	return Instance()->dataWriter;
+}
+
+void OmProjectData::setupDataLayer( QString fileNameAndPath, const bool autoOpenAndClose)
+{
+	dataLayer = new OmDataLayer();
+	mIsReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
+	dataReader = dataLayer->getReader( fileNameAndPath, autoOpenAndClose, mIsReadOnly );
+	dataWriter = dataLayer->getWriter( fileNameAndPath, autoOpenAndClose, mIsReadOnly );
+}

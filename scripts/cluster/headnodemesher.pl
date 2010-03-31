@@ -6,6 +6,11 @@ use File::Basename;
 use POSIX;
 select STDOUT; $| = 1;
 
+my $failurelock = `ls /tmp/failure`;
+if ($failurelock =~ /failure/) {
+	die "make sure someone other omni isn't currently meshinating.\n";
+}
+print `touch /tmp/failure`;
 
 my $start = time ();
 my $plan = $ARGV[0];
@@ -36,12 +41,16 @@ print `cd $meshinatorHome; ./runAcrossCluster.pl \"ls /tmp/meshinat\\*\"\n`;
 print "cd $meshinatorHome; ./meshinator.pl $plan --force\n";
 print `cd $meshinatorHome; ./meshinator.pl $plan --force`;
 print `cd $meshinatorHome; ./runAcrossCluster.pl \"ls /tmp/failure"\n`;
-print "cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir/data/\n";
-print `cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir/data/`;
-print "find $meshOutputDir -name \"*.h5\" -exec $meshinatorHome/hdf5_merge {} $project \\;\n";
-print `find $meshOutputDir -name "*.h5" -exec $meshinatorHome/hdf5_merge {} $project \\;`;
+#print "cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir/data/\n";
+#print `cd $meshinatorHome; ./gatherMeshinator.pl $meshOutputDir/data/`;
+print "find /mnt/nodes/ -name \"*.h5\" -exec $meshinatorHome/../../omni/bin/hdf5_merge {} $project \\;\n";
+print `find /mnt/nodes/ -name "*.h5" -exec $meshinatorHome/../../omni/bin/hdf5_merge {} $project \\;`;
 print `/usr/local/bin/du -ach $meshOutputDir`;
+print "cd $meshinatorHome; ./runAcrossCluster.pl \"rm /tmp/meshinat*\"\n";
+print `cd $meshinatorHome; ./runAcrossCluster.pl \"rm /tmp/meshinat\\*\"\n`;
+print `rm -rf $meshOutputDir/data/`;
 
 my $timeSecs = (time() - $start);
 print "$timeSecs seconds.\n";
+print `rm /tmp/failure`;
 print "meshdone\n";

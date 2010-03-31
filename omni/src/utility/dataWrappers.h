@@ -6,7 +6,6 @@
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 
-#include <QString>
 #include <QHash>
 
 class SegmentDataWrapper;
@@ -49,9 +48,7 @@ class SegmentationDataWrapper : public DataWrapper
 	QString getNote();
 	unsigned int getNumberOfSegments();
 
-	QString GetSourceDirectoryPath();
-	QString GetSourceFilenameRegex();
-	const list < string > GetSourceFilenameRegexMatches();
+	//	QString GetSourceDirectoryPath();
 };
 
 class SegmentDataWrapper : public DataWrapper 

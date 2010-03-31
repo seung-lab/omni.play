@@ -152,6 +152,8 @@ void OmMipMeshManager::DrawMeshes(OmSegmentManager & rSegMgr,
 				  const OmBitfield & drawOps,
 				  const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals)
 {
+	bool created = false;
+	bool wasNotCreated = false;
 	//debug("view3d", "in %s, about to draw %d chunks\n", __FUNCTION__, rRelvDataVals.size() );
 
 	//for all relevent data values in chunk
@@ -177,10 +179,25 @@ void OmMipMeshManager::DrawMeshes(OmSegmentManager & rSegMgr,
 		glPushName(r_segment.GetId());
 		glPushName(OMGL_NAME_MESH);
 
-		p_mesh->Draw();
+		if (created) {
+			bool wasCreated;
+			wasCreated = p_mesh->Draw(false);
+                        if (!wasCreated) {
+                        	wasNotCreated = true;
+                        }
+		} else {
+			bool wasCreated;
+			wasCreated = p_mesh->Draw();
+			if (wasCreated) {
+				created = true;
+			}
+		}
 
 		glPopName();
 		glPopName();
 
+	}
+	if (wasNotCreated) {
+		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 	}
 }

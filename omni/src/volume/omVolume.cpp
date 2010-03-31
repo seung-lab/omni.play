@@ -123,7 +123,7 @@ NormCoord OmVolume::SpaceToNormCoord(const SpaceCoord & spatial)
 	return Instance()->mNormToSpaceInvMat * spatial;
 }
 
-NormBbox OmVolume::SpaceToNormBbox(const AxisAlignedBoundingBox < float >&spacialBbox)
+NormBbox OmVolume::SpaceToNormBbox(const SpaceBbox &spacialBbox)
 {
 	return NormBbox(SpaceToNormCoord(spacialBbox.getMin()), SpaceToNormCoord(spacialBbox.getMax()));
 }

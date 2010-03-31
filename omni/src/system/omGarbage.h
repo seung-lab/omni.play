@@ -25,7 +25,6 @@
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
 #include <pthread.h>
-#include <QString>
 #include <QtNetwork/QTcpSocket>
 
 

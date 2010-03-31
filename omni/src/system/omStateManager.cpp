@@ -7,14 +7,21 @@
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
 #include <QHostInfo>
+#include "gui/myInspectorWidget.h"
 
 //undostack
 #include <QUndoStack>
+#include <QApplication>
 
 //view3d context
 #include <QtOpenGL/qgl.h>
 #include <QtOpenGL/QGLFormat>
 #include "common/omDebug.h"
+
+//#if __APPLE__
+//	#include <cmath>
+//#endif
+
 
 #define DEBUG 0
 
@@ -60,6 +67,8 @@ OmStateManager::OmStateManager()
 	mXZPan[1] = 0.0;
 
 	mParallel = false;
+
+	inspectorWidget = NULL;
 }
 
 OmStateManager::~OmStateManager()
@@ -260,7 +269,7 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
 {
-	if (isnan(depth)) assert(0);
+	if (std::isnan(depth)) assert(0);
 	switch (plane) {
 	case XY_VIEW:
 		Instance()->mXYSlice[4] = depth;
@@ -613,13 +622,20 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 }
 
 
-unsigned int OmStateManager::getMyBackoff()
+void OmStateManager::setInspector( MyInspectorWidget * miw )
 {
-	return Instance()->myBackoff;
+	Instance()->inspectorWidget = miw;
 }
 
-void OmStateManager::setMyBackoff( unsigned int val)
+QSize OmStateManager::getViewBoxSizeHint()
 {
-	Instance()->myBackoff = val;
-}
+	QWidget * mw = QApplication::activeWindow();
+	int w = mw->width();
+	int h = mw->height();
+	
+	if( Instance()->inspectorWidget != NULL ){
+		w -= Instance()->inspectorWidget->width();
+	}
 
+	return QSize( w, h );
+}

@@ -10,12 +10,10 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include <QString>
 
 #include "omVolumeTypes.h"
 
-#include "common/omStd.h"
-#include "common/omSerialization.h"
+#include "common/omCommon.h"
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>

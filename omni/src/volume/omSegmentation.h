@@ -11,12 +11,13 @@
 
 #include "mesh/omMipMeshManager.h"
 #include "voxel/omMipVoxelationManager.h"
+#include "mesh/meshingManager.h"
 #include "segment/omSegmentManager.h"
 #include "system/omSystemTypes.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "system/events/omSystemModeEvent.h"
-
+#include "volume/omSegmentationChunkCoord.h"
 #include "common/omStd.h"
 
 #include <vmmlib/frustumCuller.h>
@@ -64,6 +65,8 @@ public:
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
 	void BuildMeshDataInternal();	
+	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
+	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
@@ -117,6 +120,8 @@ protected:
 	
 	
 private:
+	MeshingManager * mMeshingMan;
+
 	//mesh data exists
 	bool mIsMeshDataBuilt;
 	

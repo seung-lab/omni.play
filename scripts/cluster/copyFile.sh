@@ -2,12 +2,7 @@
 
 foreach node (`cat /home/purcaro/omni.staging/scripts/cluster/hosts | grep -v ^\#`)
 	echo "Syncing ${node}"
-	foreach file (`cat /home/purcaro/omni.staging/scripts/cluster/files | grep -v ^\#`)
-		if ( -e ${file} ) then
-			echo "    Copying ${file}" ;
-			rsync -a ${file} ${node}:${file} ;
-		endif
-	end
+	rsync --partial --progress /scratch/purcaro/Omni-data/E1088--justSegmentationNoMesh.omni ${node}:/scratch/purcaro/Omni-data/E1088--justSegmentationNoMesh.omni
 end
 
 # vim:ts=4:sw=4

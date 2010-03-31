@@ -1,7 +1,6 @@
 #ifndef OM_MIP_VOLUME_H 
 #define OM_MIP_VOLUME_H
 
-
 /*
  *	OmMipVolume allows a source volume to be coverted to and accessed as compressed segments
  *	of regular size called MipChunks.  MipVolume extends GenericCache to allow for MipChunk caching.
@@ -9,17 +8,12 @@
  *	Brett Warne - bwarne@mit.edu - 7/19/09
  */
 
-
 #include "omDataVolume.h"
 #include "omMipChunkCoord.h"
-
 #include "system/omThreadedCache.h"
 #include "system/omSystemTypes.h"
-
 #include "common/omStd.h"
 #include "common/omSerialization.h"
-
-
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
 using namespace vmml;
@@ -29,6 +23,8 @@ using boost::shared_ptr;
 
 #include <list>
 using std::list;
+
+#include <QFileInfo>
 
 class OmMipChunk;
 class vtkImageData;
@@ -42,18 +38,14 @@ enum MipVolumeBuildState { MIPVOL_UNBUILT, MIPVOL_BUILT, MIPVOL_BUILDING };
 //typedef chunk cache
 typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;
 
-
-
 class OmMipVolume : public OmDataVolume, public MipChunkThreadedCache {
 	
 public:
 	OmMipVolume();
 	~OmMipVolume();
 	
-
 	void Flush();
-	
-	//internal data properties
+
 	void SetFilename(const string &);
 	string GetFilename();
 	virtual void SetDirectoryPath(const string &);
@@ -62,18 +54,11 @@ public:
 	string MipLevelInternalDataPath(int level);
 	string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 	
-	
 	//source data properties
-	void SetSourceDirectoryPath(const string &);
-	const string& GetSourceDirectoryPath();
-	void SetSourceFilenameRegex(const string &);
-	const string& GetSourceFilenameRegex();
-	
-	void UpdateSourceFilenameRegexMatches();
-	const list<string>& GetSourceFilenameRegexMatches();
+	void SetSourceFilenamesAndPaths( QFileInfoList );
+	QFileInfoList GetSourceFilenamesAndPaths();
 	bool IsSourceValid();
-	
-	
+		
 	// data properties
 	const DataBbox& GetExtent();
 	int GetChunkDimension();
@@ -89,9 +74,7 @@ public:
 	bool IsBuilding();
 	
 	void UpdateMipProperties();
-	
-	
-	
+		
 	//TODO: move to volume
 	//mip level method
 	void UpdateRootLevel();
@@ -112,30 +95,19 @@ public:
 	int MipChunkDimension(int level);
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &mipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
-	
-	
-	
-	
-	
-	
 	void GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
-	
 	
 	//mip data accessors
 	uint32_t GetVoxelValue(const DataCoord &vox);
 	void SetVoxelValue(const DataCoord &vox, uint32_t value);
-	
-	
-	
+
 	//build methods
 	void Build();
 	bool BuildVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
-	
 	void BuildEditedLeafChunks();
-	
 	
 	//io
 	bool ImportSourceData();
@@ -154,21 +126,16 @@ protected:
 	void UpdateRootMipLevel();
 	
 	//mip properties
-	string mDirectoryPath;		// ex. "./" or "images/out/"
-	string mFilename;
-	
-	string mSourceDirectoryPath;
-	string mSourceFilenameRegex;
-	list<string> mSourceFilenameRegexMatches;
+	QFileInfoList mSourceFilenamesAndPaths;
 	
 	//mip data
 	MipVolumeBuildState mBuildState;
-	int mMipLeafDim;					//must be even
-	int mMipRootLevel;					//inferred from leaf dim and source data extent
+	int mMipLeafDim;			//must be even
+	int mMipRootLevel;			//inferred from leaf dim and source data extent
 	SubsampleMode mSubsampleMode;		//method to use when subsampling	
-	bool mStoreChunkMetaData;			//do chunks have metadata
+	bool mStoreChunkMetaData;		//do chunks have metadata
 
-	set< OmMipChunkCoord > mEditedLeafChunks;			//set of edited chunks that need rebuild
+	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 
 	
 private:
@@ -182,16 +149,18 @@ private:
 	template< typename T > T CalculateMode( T* array, int size);
 	template< typename T > T CalculateAverage( T* array, int size);
 	
-	
+	string mDirectoryPath;          // ex. "./" or "images/out/"
+	string mFilename;
+	bool sourceFilesWereSet;
+
+	// TODO: delete these: no longer used
+	string mSourceDirectoryPath;
+	string mSourceFilenameRegex;
+
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int file_version);
 };
-
-
-
-
-
 
 /////////////////////////////////
 ///////		 Serialization
@@ -200,8 +169,8 @@ BOOST_CLASS_VERSION(OmMipVolume, 0)
 
 template<class Archive>
 void 
-OmMipVolume::serialize(Archive & ar, const unsigned int file_version) {
-	
+OmMipVolume::serialize(Archive & ar, const unsigned int file_version) 
+{
 	//mip volume
 	ar & mDirectoryPath;
 	ar & mMipLeafDim;

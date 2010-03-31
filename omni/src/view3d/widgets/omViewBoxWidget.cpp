@@ -60,11 +60,7 @@ void OmViewBoxWidget::Draw()
 	   drawBboxSlice(r_view_bbox, YZ_PLANE, r_slice_point.x, true);
 	 */
 
-	if (OmLocalPreferences::getStickyCrosshairMode()){
-
-		drawLines(OmStateManager::GetViewDepthCoord());
-
-	} else {
+	if (OmLocalPreferences::get2DViewFrameIn3D()){
 		drawSlice(XY_VIEW, OmStateManager::GetViewSliceMin(XY_VIEW), OmStateManager::GetViewSliceMax(XY_VIEW),
  		  OmStateManager::GetViewSliceDepth(XY_VIEW));
 		drawSlice(XZ_VIEW, OmStateManager::GetViewSliceMin(XZ_VIEW), OmStateManager::GetViewSliceMax(XZ_VIEW),
@@ -72,6 +68,11 @@ void OmViewBoxWidget::Draw()
 		drawSlice(YZ_VIEW, OmStateManager::GetViewSliceMin(YZ_VIEW), OmStateManager::GetViewSliceMax(YZ_VIEW),
 		  OmStateManager::GetViewSliceDepth(YZ_VIEW));
 	}
+
+	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
+		drawLines(OmStateManager::GetViewDepthCoord());
+	}
+
 	glPopAttrib();
 }
 
@@ -96,25 +97,27 @@ void drawLines(SpaceCoord depth)
 {
 	SpaceCoord v0, v1;
 
+	float distance = ((float)OmLocalPreferences::getCrosshairValue())/10.0;
+
 	glColor3fv(OMGL_BLUE);
-	v0 = SpaceCoord(depth.x, depth.y, depth.z-0.1);
-	v1 = SpaceCoord(depth.x, depth.y, depth.z+0.1);
+	v0 = SpaceCoord(depth.x, depth.y, depth.z-distance);
+	v1 = SpaceCoord(depth.x, depth.y, depth.z+distance);
 	glBegin(GL_LINE_STRIP);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);	
 	glEnd();
 
 	glColor3fv(OMGL_GREEN);
-	v0 = SpaceCoord(depth.x, depth.y-0.1, depth.z);
-	v1 = SpaceCoord(depth.x, depth.y+0.1, depth.z);
+	v0 = SpaceCoord(depth.x, depth.y-distance, depth.z);
+	v1 = SpaceCoord(depth.x, depth.y+distance, depth.z);
 	glBegin(GL_LINE_STRIP);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);	
 	glEnd();
 
 	glColor3fv(OMGL_RED);
-	v0 = SpaceCoord(depth.x-0.1, depth.y, depth.z);
-	v1 = SpaceCoord(depth.x+0.1, depth.y, depth.z);
+	v0 = SpaceCoord(depth.x-distance, depth.y, depth.z);
+	v1 = SpaceCoord(depth.x+distance, depth.y, depth.z);
 	glBegin(GL_LINE_STRIP);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);	

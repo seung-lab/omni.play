@@ -8,7 +8,10 @@
  */
 
 #include "volume/omVolumeTypes.h"
-#include "utility/omHdf5.h"
+#include "common/omSerialization.h"
+#include "utility/omDataLayer.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
 #include "common/omStd.h"
 
 #include <vmmlib/vmmlib.h>
@@ -24,14 +27,19 @@ public:
 	static void Delete();
 	
 	static QString getFileNameAndPath();
-	
+	static QString getAbsoluteFileNameAndPath();
+
 	static void Create();
 	static void Open();
 	static void Close();
 	static void Flush();
 	
 	static bool IsOpen() {return Instance()->mIsOpen;}
-	static OmHdf5* GetHdf5File () {return Instance()->hdfFile;}
+	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
+
+	static OmDataLayer * GetDataLayer();
+	static OmDataReader * GetDataReader();
+	static OmDataWriter * GetDataWriter();
 
 	//groups
 	static bool GroupExists(OmHdf5Path path);
@@ -66,7 +74,12 @@ private:
 
 	bool mIsOpen;
 
-	OmHdf5* hdfFile;
+	bool mIsReadOnly;
+
+	void setupDataLayer( QString fileNameAndPath, const bool autoOpenAndClose);
+	OmDataLayer  * dataLayer;
+	OmDataReader * dataReader;
+	OmDataWriter * dataWriter;
 };
 
 template< class T > 
@@ -74,12 +87,12 @@ void
 OmProjectData::ArchiveRead( OmHdf5Path path, T* t) {
 	assert(IsOpen());
 
-	bool dataExists = Instance()->hdfFile->dataset_exists( path );
+	bool dataExists = Instance()->dataReader->dataset_exists( path );
 	assert( dataExists );
 	
 	//read dataset
 	int size;
-	char* p_data = (char*) Instance()->hdfFile->dataset_raw_read(path, &size);
+	char* p_data = (char*) Instance()->dataReader->dataset_raw_read(path, &size);
 	
 	//create string stream to read from
 	std::stringstream sstream;
@@ -98,6 +111,11 @@ void
 OmProjectData::ArchiveWrite( OmHdf5Path path, T* t) {
 	assert(IsOpen());
 
+	if( Instance()->IsReadOnly() ){
+		printf("not saving %s...\n", path.getString().c_str() );
+		return;
+	}
+
 	//create string stream to write to
 	std::stringstream sstream;
 	
@@ -109,7 +127,7 @@ OmProjectData::ArchiveWrite( OmHdf5Path path, T* t) {
 	string str = sstream.str();
 	
 	//write dataset
-	Instance()->hdfFile->dataset_raw_create_tree_overwrite( path, str.size(), str.c_str());
+	Instance()->dataWriter->dataset_raw_create_tree_overwrite( path, str.size(), str.c_str());
 
 	printf("saved project file \"%s\", at path \"%s\"\n", qPrintable(getFileNameAndPath()), path.getString().c_str() );
 }

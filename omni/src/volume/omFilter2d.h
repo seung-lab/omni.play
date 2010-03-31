@@ -39,8 +39,6 @@ public:
 	
 	OmThreadedCachingTile * GetCache (ViewType);
 	
-	void Print();
-	
 private:
 	//data members
 	double mAlpha;

@@ -20,9 +20,12 @@ my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
 
 my $omniScriptFile = $scriptPath.'/buildomni.sh';
+my $omniScriptOptions = "";
+
 my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
 
 my $globalMakeOptions = "";
+
 my $hostname = `hostname`;
 my $profileOn = "";
 if ($hostname =~ /brainiac/) {
@@ -54,7 +57,7 @@ export BOOST_ROOT=$libPath/Boost
 export EXPAT_INCLUDE=$libPath/expat/lib/
 export EXPAT_LIBPATH=$libPath/expat/include/
 cd $basePath/omni
-cmake .
+cmake $omniScriptOptions .
 make $globalMakeOptions
 END
     print SCRIPT $script;
@@ -269,7 +272,6 @@ sub prepareNukeSrcsAndBuild {
 }
 
 sub boost {
-#    boost138();
     boost142();
 }
 
@@ -278,7 +280,7 @@ sub boost142 {
     my $libFolderName = "Boost";
     prepareNukeSrcsFolder( $baseFileName, $libFolderName );
 
-    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=serialization,thread";
     print "configuring ($cmd)\n"; 
     `($cmd)`;
     print "done\n";
@@ -317,21 +319,12 @@ sub hdf5 {
     hdf5_18();
 }
 
-sub hdf5_16 {
-    prepareAndBuild( "hdf5-1.6.9", "HDF5", "--enable-threadsafe --with-pthread=/usr/lib --enable-shared=no --enable-zlib=no" );
-}
-
 sub hdf5_18 {
     prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no --enable-threadsafe --with-pthread=/usr/lib" );
 }
 
 sub qt {
     qt46();
-}
-
-sub qt45 {
-    my $baseFileName = "qt-all-opensource-src-4.5.2";
-    prepareAndBuild( $baseFileName, "Qt", "-no-zlib -opensource -static -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit" );
 }
 
 sub qt46 {
@@ -372,7 +365,7 @@ END
 
     my $cmd = "sh $omniScriptFile";
     print "running: ($cmd)\n";
-    `$cmd`;
+    print `$cmd`;
     print "done\n";
 }
 
@@ -425,11 +418,7 @@ sub smallLibraries {
 sub release {
 	my $version = "1.0";
 
-	smallLibraries();
-	boost();
-	qt();
-	vtk();
-	omni();
+	buildAll();
 
 	# Do release specific work now.
 
@@ -452,8 +441,9 @@ sub menu {
     print "7 -- Build one of the small libraries...\n";
     print "8 -- Generate scripts\n";
     print "9 -- Build and tar release!\n";
-    print "10 -- Experimental builds...\n\n";
-    my $max_answer = 10;
+    print "10 -- Experimental builds...\n";
+    print "11 -- Ubuntu 9.10-64bit library apt-gets...\n\n";
+    my $max_answer = 11;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -466,6 +456,14 @@ sub menu {
 	    }
 	}
     }
+}
+
+sub buildAll {
+	smallLibraries();
+	boost();
+	qt();
+	vtk();
+	omni();
 }
 
 sub runMenuEntry {
@@ -484,11 +482,7 @@ sub runMenuEntry {
     }elsif( 5 == $entry ){
 	omni();
     }elsif( 6 == $entry ){
-	smallLibraries();
-	boost();
-	qt();
-	vtk();
-	omni();
+	buildAll();
     }elsif( 7 == $entry ){
 	smallLibraryMenu();
     }elsif( 8 == $entry ){
@@ -497,6 +491,8 @@ sub runMenuEntry {
         release();
     }elsif( 10 == $entry ){
         experimentalMenu();
+    }elsif( 11 == $entry ){
+        doUbuntuAptGets();
     }
 }
 
@@ -577,7 +573,7 @@ sub setupParallelBuildOption {
 sub experimentalMenu {
     print "experimental build menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build HDF 1.8.4p1\n";
+    print "1 -- Build Omni no debug\n";
     print "\n";
     my $max_answer = 1;
 
@@ -600,7 +596,11 @@ sub runExperimentalMenuEntry {
     if( 0 == $entry ){
         return();
     }elsif( 1 == $entry ){
-	hdf5_18();
+	`(cd $omniPath; make clean)`;
+	$omniScriptOptions = " -D NO_DEBUG=1 ";
+	$globalMakeOptions .= " VERBOSE=1 ";
+	genOmniScript();
+	omni();
     }
 }
 
@@ -618,3 +618,26 @@ sub checkCmdLineArgs {
 }
 
 checkCmdLineArgs();
+
+
+sub doUbuntuAptGets{
+    print `sudo apt-get install libxrender-dev `;
+    print `sudo apt-get install libxext-dev`;
+    print `sudo apt-get install freeglut3-dev`;
+    print `sudo apt-get install freetype`;
+    print `sudo apt-get install g++`;
+    print `sudo apt-get install freetype`;
+    print `sudo apt-get install libfreetype6-dev`;
+    print `sudo apt-get install libxml2`;
+    print `sudo apt-get install libxml2-dev`;
+    print `sudo apt-get install cmake`;
+    print `sudo apt-get install mesa-common-dev`;
+    print `sudo apt-get install emacs`;
+    print `sudo apt-get install libxt-dev`;
+    print `sudo apt-get install libgl1-mesa-dev`;
+    print `sudo apt-get install libglu1-mesa-dev`;
+    print `sudo apt-get install libgl1-mesa-dri-dbg	`;
+    print `sudo apt-get install libgl1-mesa-glx-dbg	`;
+    print "Done with the Ubuntu 9.10 apt-gets! \n\n";
+}
+     

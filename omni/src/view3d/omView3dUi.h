@@ -92,8 +92,9 @@ private:
 	OmId mPrevSegmentationId, mPrevSegmentId;
 
 	void crosshair(QMouseEvent * event);
+	void CenterAxisOfRotation(QMouseEvent * event);
 	bool PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
-	
+	bool mCPressed;
 };
 
 

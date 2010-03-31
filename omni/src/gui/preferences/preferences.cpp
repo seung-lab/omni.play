@@ -4,7 +4,9 @@
 #include "preferences2d.h"
 #include "preferencesMesh.h"
 #include "localPreferencesSystem.h"
+#include "localPreferencesMeshing.h"
 #include "localPreferences2d.h"
+#include "localPreferences3d.h"
 
 Preferences::Preferences(QWidget *parent) : QDialog(parent)
 {
@@ -15,6 +17,8 @@ void Preferences::showLocalPreferences()
      tabs = new QTabWidget;
      tabs->addTab(new LocalPreferencesSystem(this), "System" );
      tabs->addTab(new LocalPreferences2d(this), "2D View" );
+     tabs->addTab(new LocalPreferences3d(this), "3D View" );
+     tabs->addTab(new LocalPreferencesMeshing(this), "Mesh" );
 
      closeButton = new QPushButton("&Close");
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));

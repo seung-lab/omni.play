@@ -3,8 +3,10 @@
 #------------------------------------------------------------
 SET( OMGUI_SRCS
 	main.cpp
+	headless.cpp
 	mainwindow.cpp
 	recentFileList.cpp
+	viewGroup.cpp
 
 	../utility/dataWrappers.cpp
 	../system/omAnimate.cpp
@@ -17,14 +19,15 @@ SET( OMGUI_SRCS
 	inspectors/segObjectInspector.cpp
 	inspectors/filObjectInspector.cpp
 	inspectors/inspectorProperties.cpp
-	inspectors/mutexServer.cpp
 
         preferences/preferencesMesh.cpp
         preferences/preferences3d.cpp
 	preferences/preferences2d.cpp
 	preferences/preferences.cpp
 	preferences/localPreferencesSystem.cpp
+	preferences/localPreferencesMeshing.cpp
 	preferences/localPreferences2d.cpp
+	preferences/localPreferences3d.cpp
 	preferences/volumeInspector.cpp
 
 	myInspectorWidget.cpp
@@ -47,14 +50,15 @@ SET( OMGUI_MOC_HDRS
 	inspectors/segObjectInspector.h
 	inspectors/filObjectInspector.h
 	inspectors/inspectorProperties.h
-	inspectors/mutexServer.h
 
 	preferences/preferencesMesh.h
 	preferences/preferences3d.h
 	preferences/preferences2d.h
 	preferences/preferences.h
 	preferences/localPreferencesSystem.h
+	preferences/localPreferencesMeshing.h
 	preferences/localPreferences2d.h
+	preferences/localPreferences3d.h
 	preferences/volumeInspector.h
 
 	myInspectorWidget.h
@@ -103,9 +107,9 @@ INCLUDE_DIRECTORIES (
 SET(GUI_TYPE)
 IF(APPLE)
 	SET(GUI_TYPE MACOSX_BUNDLE)
-	SET(OMGUI_SRCS ${OMGUI_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Omni.icns)
-	SET(MACOSX_BUNDLE_ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Omni.icns)
-	SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/Omni.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+	SET(OMGUI_SRCS ${OMGUI_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/omni.icns)
+	SET(MACOSX_BUNDLE_ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Resources/omni.icns)
+	SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/omni.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 ENDIF (APPLE)
 
@@ -132,3 +136,5 @@ TARGET_LINK_LIBRARIES(omni
 	omProject
 	${OM_QT_LIBS}
 )
+
+SET_TARGET_PROPERTIES(omni PROPERTIES LINK_FLAGS "-L../../../external/libs/Boost/lib/")

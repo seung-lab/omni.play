@@ -19,11 +19,7 @@
 
 OmFilter::OmFilter(OmId segid, OmId chanid, OmId filterid)
 {
-	OmFilter *repair;
-
-	//OmView2d *xy = new OmView2d(XY_VIEW, CHANNEL, chanid, 0, 0, NULL);
-
-	repair = new OmFilter(filterid);
+	OmFilter *repair = new OmFilter(filterid);
 	mSeg = segid;
 	mChannel = chanid;
 	repair->GetCache(XY_VIEW);
@@ -39,8 +35,7 @@ OmFilter::OmFilter()
 OmFilter::OmFilter(OmId omId)
  : OmManageableObject(omId)
 {
-
-	mName = printf2str(256, "filter%05d", omId);
+	mName = QString("filter%1").arg(omId).toStdString();
 
 	//initially transparent.
 	mAlpha = 0.0;

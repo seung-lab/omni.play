@@ -10,8 +10,8 @@
 	}
 #define HDF5_UNWRAP()
 
-OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(string fileName)
-	: mFileName(fileName)
+OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly)
+	: mFileName(fileName), mReadOnly(readOnly)
 {
 	fileId = -1;
 	opened = false;;
@@ -27,7 +27,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::open()
                 throw OmIoException("HDF5 file was already open");
 	}
 
-	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName);
+	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName, mReadOnly);
 	opened = true;
 }
 
@@ -79,11 +79,11 @@ bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(OmHdf5Path 
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, int bytesPerSample, bool unlimited)
+					    Vector3<int>* chunkDims, int bytesPerSample)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
-	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
 	HDF5_UNWRAP();
 }
 

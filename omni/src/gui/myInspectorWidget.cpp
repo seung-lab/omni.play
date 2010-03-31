@@ -30,7 +30,6 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent)
 {
 	verticalLayout = new QVBoxLayout(this);
 	
-	//	verticalLayout->addWidget(setupVolumeList(layoutWidget));
 	verticalLayout->addWidget(setupDataSrcList());
 
 	currentDataSrc = DataWrapperContainer();
@@ -40,10 +39,13 @@ MyInspectorWidget::MyInspectorWidget(QWidget * parent)
 	segmentList = new SegmentList(this, inspectorProperties, elementListBox  );
 
 	QMetaObject::connectSlotsByName(this);
+
+	OmStateManager::setInspector( this );
 }
 
 MyInspectorWidget::~MyInspectorWidget()
 {
+	OmStateManager::setInspector( NULL );
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
@@ -57,16 +59,6 @@ QTreeWidget *MyInspectorWidget::setupFilterList()
 	filterListWidget->setHeaderLabels(headers);
 
 	return filterListWidget;
-}
-
-QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
-{
-	QTreeWidget *volumeListWidget = new QTreeWidget(layoutWidget);
-	volumeListWidget->setMaximumSize(QSize(16777215, 75));
-	volumeListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	volumeListWidget->setHeaderHidden(true);
-
-	return volumeListWidget;
 }
 
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -143,7 +135,6 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 	filterListWidget->update();
 }
 
-
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
 	segInspectorWidget = new SegInspector( sdw, this);
@@ -160,7 +151,6 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 						 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
-
 void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
 {
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
@@ -172,18 +162,23 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 						 QString("Filter %1 Inspector").arg(fdw.getID()) );
 }
 
-
 void MyInspectorWidget::addChannelToVolume()
 {
 	OmChannel & added_channel = OmVolume::AddChannel();
-	addToVolume(&added_channel, CHANNEL);
+	populateDataSrcListWidget();
+
+	ChannelDataWrapper cdw( added_channel.GetId() );
+	addChannelToSplitter(cdw);
 }
 
 void MyInspectorWidget::addSegmentationToVolume()
 {
 	OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
-	addToVolume(&added_segmentation, SEGMENTATION);
-	segmentList->makeSegmentationActive(added_segmentation.GetId());
+	populateDataSrcListWidget();
+
+	SegmentationDataWrapper sdw( added_segmentation.GetId() );
+	segmentList->makeSegmentationActive( sdw );
+	addSegmentationToSplitter( sdw);
 }
 
 void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
@@ -196,7 +191,6 @@ void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 		throw OmFormatException("could not match QAction type...\n");
 	}
 }
-
 
 void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current, const int column)
 {
@@ -227,13 +221,6 @@ ViewType MyInspectorWidget::getViewType(QAction * act)
 	}
 }
 
-// called from mainwindow after segmentation or channel added
-// "refresh datasrc list"
-void MyInspectorWidget::addToVolume(OmManageableObject * item, ObjectType item_type)
-{
-	populateDataSrcListWidget();
-}
-
 void MyInspectorWidget::addFilter()
 {
 	ChannelDataWrapper cdw = channelInspectorWidget->getChannelDataWrapper();
@@ -258,41 +245,6 @@ void MyInspectorWidget::nameEditChanged()
 	   else if(FILTER == item_type)
 	   proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
 	 */
-}
-
-void MyInspectorWidget::populateChannelInspector(OmId c_id)
-{
-	OmChannel & current_channel = OmVolume::GetChannel(c_id);
-
-	const string & my_name = current_channel.GetName();
-	channelInspectorWidget->nameEdit->setText(QString::fromStdString(my_name));
-	channelInspectorWidget->nameEdit->setMinimumWidth(200);
-
-	const string & my_directory = current_channel.GetSourceDirectoryPath();
-	channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
-	channelInspectorWidget->directoryEdit->setMinimumWidth(200);
-
-	////debug("genone","SOURCE DIRECTORY PATH = " << my_directory);
-
-	const string & my_pattern = current_channel.GetSourceFilenameRegex();
-	channelInspectorWidget->patternEdit->setText(QString::fromStdString(my_pattern));
-	channelInspectorWidget->patternEdit->setMinimumWidth(200);
-
-	channelInspectorWidget->listWidget->clear();
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetChannel(c_id).GetSourceFilenameRegexMatches();
-
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		channelInspectorWidget->listWidget->addItem(QString::fromStdString(*match_it));
-	}
-
-	const string & my_notes = current_channel.GetNote();
-	channelInspectorWidget->notesEdit->setPlainText(QString::fromStdString(my_notes));
-}
-
-void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
-{
-	//debug("FIXME", << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
 }
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
@@ -423,7 +375,7 @@ void MyInspectorWidget::selectChannelView(QAction * act)
 	if( propAct == act ){
 		addChannelToSplitter(cdw);
 	} else {
-		emit triggerChannelView( cdw.getID(), 0, 0, getViewType(act));
+		emit triggerChannelView( cdw.getID(), getViewType(act));
 	}
 }
 
@@ -479,7 +431,7 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 	if( propAct == act ){
 		addSegmentationToSplitter(sdw);
 	} else {
-		emit triggerSegmentationView( sdw.getID(), 0, getViewType(act));
+		emit triggerSegmentationView( sdw.getID(), getViewType(act));
 	}
 }
 
@@ -490,8 +442,6 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
 		this, SLOT(addFilter()));
 	
-	populateChannelInspector( cdw.getID() );
-
 	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 

@@ -25,21 +25,17 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
  
  public:
-	 MyInspectorWidget(QWidget * parent = 0);
+	 MyInspectorWidget(QWidget * parent);
 	~MyInspectorWidget();
 
-	void addToVolume(OmManageableObject * item, ObjectType item_type);
-	void addToSegmentation();
-	void addToChannel();
+	void addChannelToVolume();
+	void addSegmentationToVolume();
 
 	void refreshWidgetData();
 
  signals: 
-	void addChannel();
-	void addSegmentation();
-
-	void triggerChannelView(OmId chan_id, OmId second_chan_id, OmId third_chan_id, ViewType vtype);
-	void triggerSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype);
+	void triggerChannelView(OmId chan_id, ViewType vtype);
+	void triggerSegmentationView(OmId primary_id, ViewType vtype);
 
  protected:
 
@@ -54,7 +50,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  private slots: 
         void addFilter();
 	void nameEditChanged();
-	void addChildrenToSegmentation(OmId seg_id);
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
 	void leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column);
@@ -82,11 +77,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void showSegmentationContextMenu();
 	void doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem );
 	QMenu *makeContextMenuBase(QTreeWidget * parent);
-	bool isThereASegmentationSelected();
-
 
 	void populateFilterListWidget(ChannelDataWrapper cdw);
-	QTreeWidget * setupVolumeList(QWidget * layoutWidget);
 
 	QTreeWidget * setupDataSrcList();
 	QTreeWidget * setupFilterList();
@@ -95,8 +87,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
-	void addChannelToVolume();
-	void addSegmentationToVolume();
 
 	DataWrapperContainer currentDataSrc;
 

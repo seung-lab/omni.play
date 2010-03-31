@@ -46,7 +46,7 @@ void omSetDefaultMeshPreferences()
 {
 	OmPreferences::Set(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, 50);
 	OmPreferences::Set(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, 30.0f);
-	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 0.15f);
+	OmPreferences::Set(OM_PREF_MESH_REDUCTION_PERCENT_FLT, 35.0f);
 }
 
 void omSetDefaultSegmentPreferences()
@@ -70,11 +70,11 @@ void omSetDefaultView3dPreferences()
 	OmPreferences::Set(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F, Vector3f::ZERO);
 	OmPreferences::Set(OM_PREF_VIEW3D_FOCUS_STYLE_INT, 1);
 	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, Vector3f::ONE);
-	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, true);
-	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_AXIS_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_AXIS_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL, true);
 
-	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_INFO_BOOL, false);
+	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_INFO_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_FOCUS_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL, true);
 	OmPreferences::Set(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT, 0.2f);
@@ -83,5 +83,5 @@ void omSetDefaultView3dPreferences()
 	OmPreferences::Set(OM_PREF_VIEW3D_ANTIALIASING_BOOL, false);
 	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FOV_FLT, 60.0f);
 	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, 1.0f);
-	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, 1000.0f);
+	OmPreferences::Set(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, 1000000.0f);
 }

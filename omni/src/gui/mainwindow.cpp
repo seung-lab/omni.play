@@ -4,12 +4,11 @@
 
 #include "view2d/omTile.h"
 #include "view2d/omTextureID.h"
-#include "view2d/omView2d.h"
-#include "view3d/omView3d.h"
 #include "project/omProject.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
 #include "utility/dataWrappers.h"
+#include "system/omProjectData.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omEventManager.h"
@@ -20,12 +19,10 @@
 
 #include "common/omException.h"
 
+#include<unistd.h>
+
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
-
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include "common/omDebug.h"
@@ -57,7 +54,7 @@ MainWindow::MainWindow()
 		createToolbar();
 		createStatusBar();
 
-		setWindowTitle(tr("Omni"));
+		windowTitleClear();
 		resize(1000, 800);
 
 		preferences = NULL;
@@ -71,10 +68,13 @@ MainWindow::MainWindow()
 
 		recentFiles.loadRecentlyUsedFilesListFromFS();
 
+		mViewGroup = NULL;
+
+		updateReadOnlyRelatedWidgets();
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
 }
 
 // Creates a new project
@@ -90,45 +90,17 @@ void MainWindow::newProject()
 
 		QString fileName = QFileDialog::getSaveFileName(this, tr("New Project"));
 
-		if (fileName == NULL)
+		if (fileName == NULL) {
 			return;
-
-		if (!fileName.endsWith(".omni")) {
-			fileName.append(".omni");
 		}
 
-		OmProject::New( fileName );
-		recentFiles.addFile( fileName );
-
-		setWindowTitle(tr("Omni - ") + fileName);
-
-		isProjectOpen = true;
-
-		updateComboBoxes();
-		updateKeyShortcuts();
-
-		OmStateManager::Instance()->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
-		OmStateManager::Instance()->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
+		QString fileNameAndPath = OmProject::New( fileName );
 
 		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, 0.0);
 		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, 0.0);
 		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, 0.0);
-
-		OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(0, 10));
-		OmStateManager::Instance()->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
-		OmStateManager::Instance()->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
-		OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
-
-		createDockWindows();
-
-		setupToolbarInitially();
-
-		openInspector();
+		
+		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -176,11 +148,10 @@ void MainWindow::addChannelToVolume()
 			return;
 		}
 
-		OmChannel & added_channel = OmVolume::AddChannel();
-
 		if (omniInspector) {
-			omniInspector->addToVolume(&added_channel, CHANNEL);
+			omniInspector->addChannelToVolume();
 		}
+		
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -193,11 +164,10 @@ void MainWindow::addSegmentationToVolume()
 			return;
 		}
 
-		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
-
 		if (omniInspector) {
-			omniInspector->addToVolume(&added_segmentation, SEGMENTATION);
+			omniInspector->addSegmentationToVolume();
 		}
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -231,8 +201,9 @@ bool MainWindow::closeProjectIfOpen()
 	}
 
 	OmProject::Close();
+	windowTitleClear();
 
-	setWindowTitle(tr("Omni"));
+	updateReadOnlyRelatedWidgets();
 
 	return true;
 }
@@ -286,43 +257,12 @@ void MainWindow::openProject(QString fileNameAndPath)
 			throw OmIoException("error during load of OmProject object");
 		}
 
-		recentFiles.addFile( fileNameAndPath );
-
-		isProjectOpen = true;
-
-		updateComboBoxes();
-		updateKeyShortcuts();
-
-		OmStateManager::Instance()->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
-		OmStateManager::Instance()->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-		OmStateManager::Instance()->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
 		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
 		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
 		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);		
 
-
-
-		//OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, 0.0);
-		//OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, 0.0);
-		//OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, 0.0);
-
-		OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(0, 10));
-		OmStateManager::Instance()->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
-		OmStateManager::Instance()->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
-		OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
-
-		createDockWindows();
-
-		setupToolbarInitially();
-
-		setWindowTitle(tr("Omni - ") + fileNameAndPath );
-		openInspector();
+		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -355,6 +295,8 @@ void MainWindow::openInspector()
 			return;
 		}
 
+		resetViewGroup();
+
 		omniInspector = new MyInspectorWidget( this );
 		omniInspector->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
 
@@ -367,14 +309,10 @@ void MainWindow::openInspector()
 		addDockWidget(Qt::TopDockWidgetArea, dock);
 		windowMenu->addAction(dock->toggleViewAction());
 
-		// TODO: fixme! (purcaro)
-		connect(omniInspector, SIGNAL(addChannel()), this, SLOT(addChannelToVolume()));
-		connect(omniInspector, SIGNAL(addSegmentation()), this, SLOT(addSegmentationToVolume()));
-
-		connect(omniInspector, SIGNAL(triggerChannelView(OmId, OmId, OmId, ViewType)),
-			this, SLOT(openChannelView(OmId, OmId, OmId, ViewType)));
-		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, OmId, ViewType)),
-			this, SLOT(openSegmentationView(OmId, OmId, ViewType)));
+		connect(omniInspector, SIGNAL(triggerChannelView(OmId, ViewType)),
+			this, SLOT(openChannelView(OmId, ViewType)));
+		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, ViewType)),
+			this, SLOT(openSegmentationView(OmId, ViewType)));
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -384,8 +322,6 @@ void MainWindow::openInspector()
 void MainWindow::openUndoView()
 {
 	try {
-
-		//debug("genone","opening undo history");
 		undoView = new QUndoView();
 
 		QDockWidget *dock = new QDockWidget(tr("History"), this);
@@ -407,60 +343,21 @@ void MainWindow::openUndoView()
 void MainWindow::open3dView()
 {
 	try {
-
-		//debug("genone","MainWindow::open3dView()");
-
-		if (isProjectOpen) {
-
-			//debug("genone","opening 3d view");
-			qtView3d = new OmView3d();
-
-			QDockWidget *dock = new QDockWidget(tr("3D View"), this);
-			dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-			qtView3d->setParent(dock);
-			dock->setWidget(qtView3d);
-
-			addDockWidget(Qt::TopDockWidgetArea, dock);
-			windowMenu->addAction(dock->toggleViewAction());
-
-			dock->setAttribute(Qt::WA_DeleteOnClose);
-			//              //debug("genone","omni inspector delete on close: " << dock->testAttribute(Qt::WA_DeleteOnClose));
+		if (!isProjectOpen) {
+			return;
 		}
 
+		mViewGroup->addView3D();
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
 }
 
-void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_id, ViewType vtype)
+void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 {
 	try {
-
-		//debug("genone","MainWindow::openChannelView()");
-
-		string name = OmVolume::GetChannel(chan_id).GetName();
-		QString qname = QString::fromStdString(name);
-		if (vtype == XY_VIEW)
-			qname = qname + QString(" -- XY View");
-		else if (vtype == XZ_VIEW)
-			qname = qname + QString(" -- XZ View");
-		else
-			qname = qname + QString(" -- YZ View");
-
-		QDockWidget *dock;
-
-		OmView2d *qtView2d_current = new OmView2d(vtype, CHANNEL, chan_id, second_chan_id, third_id);
-		dock = new QDockWidget(qname, this);
-		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-		qtView2d_current->setParent(dock);
-		dock->setWidget(qtView2d_current);
-
-		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
+		mViewGroup->addView2Dchannel( chan_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -468,30 +365,10 @@ void MainWindow::openChannelView(OmId chan_id, OmId second_chan_id, OmId third_i
 
 }
 
-void MainWindow::openSegmentationView(OmId primary_id, OmId secondary_id, ViewType vtype)
+void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 {
 	try {
-		OmView2d *qtView2d_current = new OmView2d(vtype, SEGMENTATION, primary_id, secondary_id);
-
-		string name = OmVolume::GetSegmentation(primary_id).GetName();
-		QString qname = QString::fromStdString(name);
-		if (vtype == XY_VIEW)
-			qname = qname + QString(" -- XY View");
-		else if (vtype == XZ_VIEW)
-			qname = qname + QString(" -- XZ View");
-		else
-			qname = qname + QString(" -- YZ View");
-
-		QDockWidget *dock = new QDockWidget(qname, this);
-		dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-		qtView2d_current->setParent(dock);
-		dock->setWidget(qtView2d_current);
-
-		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
-
-		dock->setAttribute(Qt::WA_DeleteOnClose);
+		mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -537,32 +414,6 @@ void MainWindow::closeEvent(QCloseEvent * event)
 		spawnErrorDialog(e);
 	}
 
-}
-
-void MainWindow::AlertNotifyEvent(OmAlertEvent * event)
-{
-	//debug("genone","MainWindow::AlertNotifyEvent");
-
-	try {
-		QMessageBox msgBox;
-		msgBox.setText(QString::fromStdString(event->GetText()));
-		msgBox.setInformativeText(QString::fromStdString(event->GetMoreText()));
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-		msgBox.setDefaultButton(QMessageBox::Yes);
-		int ret = msgBox.exec();
-
-		switch (ret) {
-		case QMessageBox::Yes:
-			break;
-		case QMessageBox::No:
-			throw OmFormatException("Invalid data format.");
-		default:
-			// should never be reached
-			break;
-		}
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
 }
 
 void MainWindow::ProgressShow(OmProgressEvent * event)
@@ -716,7 +567,7 @@ void MainWindow::createActions()
 	saveAct->setShortcut(tr("Ctrl+S"));
 	saveAct->setStatusTip(tr("Saves the current project"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveProject()));
-
+	
 	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
 		recentFiles.recentFileActs[i] = new QAction(this);
 		recentFiles.recentFileActs[i]->setVisible(false);
@@ -799,24 +650,6 @@ void MainWindow::createStatusBar()
 	// statusBar()->showMessage(tr("Ready"));
 }
 
-void MainWindow::createDockWindows()
-{
-
-	//      QDockWidget *spacerdock = new QDockWidget(tr("Spacer"), this);
-	//      spacerdock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	//      
-	//      QWidget *spacer = new QWidget;
-	//      
-	//      spacer->setParent(spacerdock);
-	//      spacerdock->setWidget(spacer);
-	//      
-	//      //      splitDockWidget(mydock, spacerdock, Qt::Vertical);
-	//      
-	//      addDockWidget(Qt::AllDockWidgetAreas, spacerdock);
-	//      viewMenu->addAction(spacerdock->toggleViewAction());
-
-}
-
 bool MainWindow::checkForSave()
 {
 	QMessageBox msgBox;
@@ -851,6 +684,27 @@ void MainWindow::spawnErrorDialog(OmException & e)
 	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
 }
 
+void MainWindow::updateReadOnlyRelatedWidgets()
+{
+	bool toBeEnabled = false;
+
+	if ( isProjectOpen && !OmProjectData::IsReadOnly() ){
+		toBeEnabled = true;
+	}
+
+	saveAct->setEnabled(toBeEnabled);
+	modifyAct->setEnabled(toBeEnabled);
+	
+	addChannelAct->setEnabled( toBeEnabled );
+	addSegmentationAct->setEnabled( toBeEnabled );
+
+	if ( isProjectOpen ){
+		toBeEnabled = true;
+	}
+	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
+
+}
+
 ////////////////////////////////////////////////////////////
 // Toolbars
 ////////////////////////////////////////////////////////////
@@ -858,7 +712,83 @@ void MainWindow::createToolbar()
 {
 	createToolbarActions();
 	addToolbars();
-	setupSegmentationBoxes();
+	setupFilterToolbar();
+	setToolbarDisabled();
+}
+
+void MainWindow::setupFilterToolbar()
+{
+	alphaSlider = new QSlider(Qt::Horizontal, this );
+	alphaSlider->setObjectName("alphaSlider");
+
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			alphaSlider->setValue(filter.GetAlpha() * 100);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
+	}
+
+	connect(alphaSlider, SIGNAL(valueChanged(int)), 
+		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
+	
+	filterToolBar = addToolBar("Filter");
+	filterToolBar->addWidget( alphaSlider );
+}
+
+void MainWindow::updateSilder()
+{
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			alphaSlider->setValue(filter.GetAlpha() * 100);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
+	}
+}
+
+void MainWindow::setFilAlpha(int alpha)
+{
+	OmId channelID = 1;
+	OmId filterID = 1;
+
+	if( OmVolume::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmVolume::GetChannel( channelID );
+		if( channel.IsFilterValid( filterID ) ){
+			channel.GetFilter( filterID ).SetAlpha((double)alpha / 100.00);
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+ 		}
+	}
+}
+
+void MainWindow::setFilterToolbarEnabled( bool setEnabled )
+{
+	alphaSlider->setEnabled( setEnabled );
+}
+
+void MainWindow::setToolbarDisabled()
+{
+	saveAct->setEnabled(false);
+	modifyAct->setEnabled(false);
+	toolbarSelectAct->setEnabled(false);
+	toolbarCrosshairAct->setEnabled(false);
+	toolbarPanAct->setEnabled(false);
+	toolbarZoomAct->setEnabled(false);
+	toolbarVoxelizeAct->setEnabled(false);
+	toolbarBrushAct->setEnabled(false);
+	toolbarEraserAct->setEnabled(false);
+	toolbarFillAct->setEnabled(false);
+	toolbarView2D3DopenAct->setEnabled(false);
+
+	setFilterToolbarEnabled( false );
 }
 
 void MainWindow::createToolbarActions()
@@ -907,6 +837,12 @@ void MainWindow::createToolbarActions()
 	toolbarFillAct->setStatusTip(tr("Switches to Fill Mode"));
 	connect(toolbarFillAct, SIGNAL(triggered(bool)), this, SLOT(toolbarFill(bool)));
 	toolbarFillAct->setCheckable(true);
+
+	toolbarView2D3DopenAct = new QAction(tr("&Open 2D and 3D Views"), this);
+	toolbarView2D3DopenAct->setStatusTip(tr("Open 2D and 3D Views"));
+	connect(toolbarView2D3DopenAct, SIGNAL(triggered(bool)), this, SLOT(open2Dand3dViews()));
+	toolbarView2D3DopenAct->setCheckable(false);
+	
 }
 
 void MainWindow::addToolbars()
@@ -928,11 +864,15 @@ void MainWindow::addToolbars()
 	toolToolBar->addAction(toolbarBrushAct);
 	toolToolBar->addAction(toolbarEraserAct);
 	toolToolBar->addAction(toolbarFillAct);
+
+	viewToolBar = addToolBar(tr("Views"));
+	viewToolBar->addAction(toolbarView2D3DopenAct);
 }
 
 void MainWindow::setupToolbarInitially()
 {
 	resetTools(NAVIGATION_SYSTEM_MODE);
+	setFilterToolbarEnabled( true );
 
 	OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
@@ -945,6 +885,10 @@ void MainWindow::ChangeModeModify(const bool checked)
 			OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
 			resetTools(EDIT_SYSTEM_MODE);
 		} else {
+			if( OmProjectData::IsReadOnly() ){
+				return;
+			}
+
 			OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
 			resetTools(NAVIGATION_SYSTEM_MODE);
 		}
@@ -1023,6 +967,7 @@ void MainWindow::resetTools(const OmSystemMode sys_mode)
 {
 	switch (sys_mode) {
 	case (NAVIGATION_SYSTEM_MODE):
+		resetViewTools();
 		resetModifyTools(false);
 		toolbarPanAct->setChecked(true);
 		OmStateManager::SetToolMode(PAN_MODE);
@@ -1055,116 +1000,6 @@ void MainWindow::resetModifyTools(const bool enabled)
 	resetTool(toolbarBrushAct, enabled);
 	resetTool(toolbarEraserAct, enabled);
 	resetTool(toolbarFillAct, enabled);
-}
-
-////////////////////////////////////////////////////////////
-// Segmentation Combo Box in Toolbar
-
-void MainWindow::setupSegmentationBoxes()
-{
-	selectSegmentationBox = new QComboBox();
-	selectSegmentationBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	toolToolBar->addWidget(selectSegmentationBox);
-
-	editColorButton = new QPushButton();
-	editColorButton->setMaximumWidth(50);
-	toolToolBar->addWidget(editColorButton);
-
-	connect(selectSegmentationBox, SIGNAL(currentIndexChanged(int)), 
-		this, SLOT(changeSelection(int)));
-}
-
-void MainWindow::updateComboBoxes(const OmId segmentationID, const OmId segmentJustSelectedID)
-{
-	try {
-		selectSegmentationBox->blockSignals(true);
-		selectSegmentationBox->clear();
-		editColorButton->setIcon(QIcon());
-
-		int indexToSet = -1;
-		int counter = 0;
-		foreach( SegmentDataWrapper segH, OmVolume::GetSelectedSegmentIDs()) {
-			QString comboBoxRowStr = segH.getSegmentationName() + "--" + segH.getName();
-			selectSegmentationBox->addItem(comboBoxRowStr, qVariantFromValue(segH));
-
-			// if we get none-zero segmenetation and segment IDs, select the segment 
-			//  (in the correct segmentation) as the currently active combo box item
-			if (segmentationID == segH.getSegmentationID()) {
-				if (segmentJustSelectedID == segH.getID()) {
-					indexToSet = counter;
-				}
-			}
-			counter++;
-		}
-		if (indexToSet != -1) {
-			selectSegmentationBox->setCurrentIndex(indexToSet);
-		}
-		selectSegmentationBox->update();
-		selectSegmentationBox->blockSignals(false);
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::SegmentObjectModificationEvent(OmSegmentEvent * event)
-{
-	try {
-		if(event->getSender() == this) {
-			//debug("gui", "%s...; skipping since i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
-			return;
-		}
-
-		const OmId segmentationID = event->GetModifiedSegmentationId();
-		const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
-		updateComboBoxes(segmentationID, segmentJustSelectedID);
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::changeSelection(int segmentIndex)
-{
-	try {
-		editColorButton->setIcon(QIcon());
-
-		QVariant result = selectSegmentationBox->itemData(selectSegmentationBox->currentIndex());
-		SegmentDataWrapper segH = result.value < SegmentDataWrapper > ();
-		const OmId segmentationID = segH.getSegmentationID();
-		const OmId segmentID = segH.getID();
-
-		if( !OmVolume::IsSegmentationValid( segmentationID ) ){
-			debug("gui", "invalid segmentation found; ID is %d\n", segmentationID );
-			return;
-		}
-		OmSegmentation& segmentation = OmVolume::GetSegmentation(segmentationID);
-		if( !segmentation.IsSegmentValid( segmentID ) ){
-			debug("gui", "invalid segment found; ID is %d\n", segmentID );
-			return;
-		}
-		
-		OmSegmentEditor::SetEditSelection(segmentationID, segmentID);
-
-		OmSegment& segment = segmentation.GetSegment(segmentID);
-		const Vector3 < float >&color = segment.GetColor();
-		
-		QPixmap *pixm = new QPixmap(40, 30);
-		QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
-		pixm->fill(newcolor);
-		
-		editColorButton->setIcon(QIcon(*pixm));
-		
-		OmIds selected_segment_ids;
-		selected_segment_ids.insert(segmentID);
-		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
-							     segmentationID,
-							     selected_segment_ids, 
-							     segmentID, 
-							     this,
-							     "mainwindow"));
-	} catch(OmException & e) {
-		// We want to just ignore random voodoo that happened. Don't let the user know. MW.
-		spawnErrorDialog(e);
-	}
 }
 
 void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
@@ -1200,4 +1035,71 @@ void MainWindow::SystemModeChangeEvent(OmSystemModeEvent * event)
 		// TODO???
 		break;
 	}
+}
+
+
+void MainWindow::windowTitleSet(QString title)
+{
+	QString str = "Omni - " + title;
+	
+	if( OmProjectData::IsReadOnly() ){
+		str = "[READ-ONLY] " + str;
+	}
+	
+	setWindowTitle( str );
+}
+
+void MainWindow::windowTitleClear()
+{
+	setWindowTitle(tr("Omni"));
+}
+
+void MainWindow::resetViewGroup()
+{
+	if( mViewGroup != NULL ){
+		delete(mViewGroup);
+	}
+
+	mViewGroup = new ViewGroup( this );	
+}
+
+void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
+{
+	recentFiles.addFile( fileName );
+	isProjectOpen = true;
+
+	updateKeyShortcuts();
+
+	OmStateManager::Instance()->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
+	OmStateManager::Instance()->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
+	OmStateManager::Instance()->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
+
+	OmStateManager::Instance()->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
+	OmStateManager::Instance()->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
+	OmStateManager::Instance()->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
+
+	OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(0, 10));
+	OmStateManager::Instance()->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
+	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
+	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
+
+	setupToolbarInitially();
+	updateSilder();
+
+	windowTitleSet( fileName );
+	openInspector();
+	updateReadOnlyRelatedWidgets();
+}
+
+void MainWindow::forceWindowUpdate()
+{
+	QApplication::processEvents();
+}
+
+void MainWindow::open2Dand3dViews()
+{
+	OmId channelID = 1;
+	OmId segmentationID = 1;
+
+	mViewGroup->addAllViews( channelID, segmentationID );
 }

@@ -12,7 +12,6 @@ SET(OM_SYSTEM_EVENTS_SRCS
 	events/omViewEvent.cpp
 	events/omView3dEvent.cpp
 	events/omVoxelEvent.cpp
-	events/omAlertEvent.cpp
 )
 
 
@@ -32,6 +31,7 @@ SET(OM_SYSTEM_LIB_SRCS
 #	omViewList.cpp
 #	omSnapshot.cpp
 	omLocalPreferences.cpp	
+	buildVolumes.cpp
 	${OM_SYSTEM_EVENTS_SRCS}
 )
 

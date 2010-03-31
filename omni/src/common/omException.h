@@ -10,9 +10,8 @@
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "common/omStd.h"
+#include "common/omCommon.h"
 #include <stdarg.h>
-#include <QString>
 
 enum OmExceptType {  EXCEPT_NOTE = 0, // not reported to user, make internal note
 		     EXCEPT_INFO,     // give user information (usage, formatting, etc)	     

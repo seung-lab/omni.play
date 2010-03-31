@@ -42,7 +42,7 @@ public:
 	static string GetTempDirectoryPath();
 	
 	//project IO
-	static void New( QString fileNameAndPath );
+	static QString New( QString fileNameAndPath, bool amHeadless = false );
 	static void Save();
 	static void Commit();
 	static void Load( QString fileNameAndPath, const bool autoOpenAndClose = false );

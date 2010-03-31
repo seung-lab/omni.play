@@ -1,0 +1,26 @@
+#!/bin/csh
+#
+# Install in /sbin/ssync.files
+#
+# This script automatically synchronizes configuration files on the
+# compute nodes in a Beowulf cluster.
+# 
+# The host list of machines to keep in sync is /etc/ssync/hosts.
+#
+# The file list to push to the compute nodes is /etc/ssync/files
+# 
+
+foreach node (`cat /root/svn.scripts/hosts | grep -v ^\#`)
+	#ssh ${node} /bin/true >& /dev/null
+	setenv RETVAL $?
+	if ( ${RETVAL} != 0 ) continue
+	#echo "Syncing ${node}"
+#	umount /mnt/${node}/scratch
+#	umount /mnt/${node}/tmp
+#	mount -t smbfs -o ro //${node}/scratch /mnt/nodes/${node}/scratch
+#	mount -t smbfs -o ro //${node}/tmp /mnt/nodes/${node}/tmp	
+#	ssh ${node} '/bin/rm -rf /scratch/*'
+#	ssh ${node} '/bin/rm -rf /tmp/*'
+end
+
+# vim:ts=4:sw=4

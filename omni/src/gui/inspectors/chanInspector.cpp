@@ -7,8 +7,8 @@
 #include <QThread>
 #include <qtconcurrentrun.h>
 #include "common/omDebug.h"
-
-#define DEBUG 0
+#include "utility/sortHelpers.h"
+#include "system/buildVolumes.h"
 
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) : QWidget(parent)
 {
@@ -16,6 +16,8 @@ ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) 
 
 	cdw = incoming_cdw;
 	directoryEdit->setReadOnly(true);
+
+	populateChannelInspector();
 }
 
 ChannelDataWrapper ChanInspector::getChannelDataWrapper()
@@ -33,65 +35,97 @@ void ChanInspector::on_browseButton_clicked()
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
 							"", QFileDialog::ShowDirsOnly);
 	if (dir != "") {
-
-		if (!dir.endsWith("/"))
-			dir += QString("/");
-
 		directoryEdit->setText(dir);
-
-		OmVolume::GetChannel(cdw.getID()).SetSourceDirectoryPath(dir.toStdString());
-
-		listWidget->clear();
-		list < string >::const_iterator match_it;
-		const list < string > &matches = OmVolume::GetChannel(cdw.getID()).GetSourceFilenameRegexMatches();
-
-		for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-			listWidget->addItem(QString::fromStdString(*match_it));
-		}
+		updateFileList();
 	}
 }
 
 void ChanInspector::on_exportButton_clicked()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Export As"));
-	if (fileName == NULL)
+	if (fileName == NULL){
 		return;
+	}
 
 	OmVolume::GetChannel(cdw.getID()).ExportInternalData( fileName );
 }
+QDir ChanInspector::getDir()
+{	
+	QString regex = patternEdit->text();
+	QDir dir( directoryEdit->text() );
 
-void ChanInspector::on_patternEdit_editingFinished()
+	dir.setSorting( QDir::Name );
+	dir.setFilter( QDir::Files );
+	QStringList filters;
+	filters << regex;
+	dir.setNameFilters( filters );
+
+	return dir;
+}
+
+QStringList ChanInspector::getFileList()
 {
-	OmVolume::GetChannel(cdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
+	QStringList files = getDir().entryList();
+	return SortHelpers::sortNaturally( files );
+}
+
+QFileInfoList ChanInspector::getFileInfoList()
+{
+	QFileInfoList files = getDir().entryInfoList();
+	return SortHelpers::sortNaturally( files );
+}
+
+void ChanInspector::updateFileList()
+{
+	listWidget->clear();
+
+	foreach (QString fn, getFileList() ) {
+		listWidget->addItem( fn );
+	}
+
+	listWidget->update();
 }
 
 void ChanInspector::on_patternEdit_textChanged()
 {
-	OmVolume::GetChannel(cdw.getID()).SetSourceFilenameRegex(patternEdit->text().toStdString());
-
-	listWidget->clear();
-	list < string >::const_iterator match_it;
-	const list < string > &matches = OmVolume::GetChannel(cdw.getID()).GetSourceFilenameRegexMatches();
-
-	for (match_it = matches.begin(); match_it != matches.end(); ++match_it) {
-		listWidget->addItem(QString::fromStdString(*match_it));
-	}
+	updateFileList();
 }
 
-void intermediate_build_call(OmChannel * current_channel)
+void ChanInspector::intermediate_build_call(OmChannel * current_channel)
 {
-	current_channel->BuildVolumeData();
+	BuildVolumes bv( current_channel );
+	bv.setFileNamesAndPaths( getFileInfoList() );
+	bv.build_channel();
 }
 
 void ChanInspector::on_buildButton_clicked()
 {
 	OmChannel & current_channel = OmVolume::GetChannel(cdw.getID());
 
-	extern void intermediate_build_call(OmChannel * current_channel);
-	QFuture < void >future = QtConcurrent::run(intermediate_build_call, &current_channel);
+	intermediate_build_call( &current_channel);
 }
 
 void ChanInspector::on_notesEdit_textChanged()
 {
 	OmVolume::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
 }
+
+void ChanInspector::populateChannelInspector()
+{
+	nameEdit->setText( cdw.getName() );
+	nameEdit->setMinimumWidth(200);
+
+	// TODO: fix me!
+	//const string & my_directory = current_channel.GetSourceDirectoryPath();
+	//channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
+
+	directoryEdit->setMinimumWidth(200);
+
+	patternEdit->setText( "*" );
+	patternEdit->setMinimumWidth(200);
+
+	notesEdit->setPlainText( cdw.getNote() );
+
+	updateFileList();
+}
+

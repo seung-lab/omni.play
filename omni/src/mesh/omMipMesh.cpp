@@ -7,15 +7,12 @@
 #include "system/omLocalPreferences.h"
 #include "project/omProject.h"
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
+#include "utility/omDataLayer.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
 
-#include <fstream>
 #include "common/omDebug.h"
 #include <QFile>
-
-#define DEBUG 0
 
 static const char *MIP_MESH_FILE_NAME = "mesh.%d.dat";
 
@@ -141,14 +138,16 @@ string OmMipMesh::GetLocalPathForHd5fChunk()
 
 void OmMipMesh::Save()
 {
-	OmHdf5 * hdf5File = NULL;
+	OmDataWriter * hdf5File;
 
 	if (OmLocalPreferences::getStoreMeshesInTempFolder() || 
 	    OmStateManager::getParallel()) {
-		hdf5File = OmHdf5Manager::getOmHdf5File( QString::fromStdString( GetLocalPathForHd5fChunk() ) );
+		OmDataLayer * dl = OmProjectData::GetDataLayer();
+		hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ), 
+					  true, false );
 		hdf5File->create();
 	} else {
-		hdf5File = OmProjectData::GetHdf5File();
+		hdf5File = OmProjectData::GetDataWriter();
 	}
 
 	int size;
@@ -271,16 +270,27 @@ void OmMipMesh::DeleteVbo()
 /////////////////////////////////
 ///////          Draw Methods
 
-void OmMipMesh::Draw()
+bool OmMipMesh::Draw(bool doCreateVbo)
 {
+	bool ret = false;
 
 	//ignore empty meshes
 	if (IsEmptyMesh())
-		return;
+		return ret;
 
 	//if(!IsVbo()) assert(false);
-	if (!IsVbo())
-		CreateVbo();
+	if (!IsVbo()) {
+		debug("vbo", "going to create vbo\n");
+		if (doCreateVbo) {
+			CreateVbo();
+			ret = true;
+		} else {
+			debug("vbo", "not creating vbo\n");
+			return ret;
+		}
+		
+		debug("vbo", "done to creating vbo\n");
+	}
 
 	//debug("genone","OmMipMesh::Draw()");
 
@@ -304,12 +314,14 @@ void OmMipMesh::Draw()
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	//// draw mesh elements
+	debug("elements", "going to draw elements\n");
 	for (uint32_t idx = 0; idx < mStripCount; idx++) {
 		glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
 			       mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
 			       GL_UNSIGNED_INT,	//type
 			       (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
 	}
+	debug("elements", "done drawing %i elements\n", mStripCount);
 
 	//disable client state
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -318,6 +330,8 @@ void OmMipMesh::Draw()
 	// release VBOs: gl*Pointer() return to normal
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+
+	return ret;
 }
 
 /////////////////////////////////

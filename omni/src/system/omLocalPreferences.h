@@ -1,7 +1,6 @@
 #ifndef OM_LOCAL_CONFIGURATION_H
 #define OM_LOCAL_CONFIGURATION_H
 
-#include <QString>
 #include "utility/localPrefFiles.h"
 
 class OmLocalPreferences {
@@ -26,6 +25,22 @@ public:
 
 	static bool getStickyCrosshairMode();
 	static void setStickyCrosshairMode(bool sticky);
+
+	static unsigned int getCrosshairValue();
+	static unsigned int getDefaultCrosshairValue();
+	static void setCrosshairValue(const unsigned int);
+
+	static bool get2DViewFrameIn3D();
+	static bool getDefault2DViewFrameIn3D();
+	static void set2DViewFrameIn3D(const bool);
+
+	static bool getDrawCrosshairsIn3D();
+	static bool getDefaultDrawCrosshairsIn3D();
+	static void setDrawCrosshairsIn3D(const bool);
+
+        static bool getDoDiscoBall();
+        static bool getDefaultDoDiscoBall();
+        static void setDoDiscoBall(const bool);
 
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
@@ -61,8 +76,15 @@ private:
 
 	static bool settingExists( QString setting );
 
+	// Global Variables for Quick access to Preference Settings
+	// Thus bypassing any file I/O
 	bool * stickyCrosshairMode;
+	bool m2DViewFrameIn3D;
+	bool mDrawCrosshairsIn3D;
+	bool mDoDiscoBall;
+	int mCrosshairValue;
 	LocalPrefFiles* localPrefFiles;
+
 };
 
 #endif

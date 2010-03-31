@@ -3,13 +3,11 @@
 #include "common/omException.h"
 #include "common/omVtk.h"
 #include "common/omDebug.h"
+#include "utility/omSystemInformation.h"
 
 #include <vtkImageData.h>
 #include <QFile>
-
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string_regex.hpp>
-namespace bfa = boost::algorithm;
+#include <QStringList>
 
 /////////////////////////////////
 ///////          File
@@ -17,21 +15,22 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-        QFile file(QString(fpath.c_str()));
+        QFile file(QString::fromStdString(fpath));
         if(!file.exists()){
-		//		H5E_BEGIN_TRY {
-			hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
-			om_hdf5_file_close_with_lock(fileId);
-			//		} H5E_END_TRY
+		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
+		if (fileId < 0)
+			throw OmIoException("Could not create HDF5 file.");
+		
+		om_hdf5_file_close_with_lock(fileId);
         }
 }
 
-hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
+hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readOnly  )
 {
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	const int totalCacheSizeMB = 20;
+	const unsigned int totalCacheSizeMB = OmSystemInformation::get_total_system_memory_megs() / 20;
 		
 	// number of elements (objects) in the raw data chunk cache (default 521)
 	//  should be a prime number (due to simplistic hashing algorithm)
@@ -47,7 +46,12 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath)
                 throw OmIoException("Could not setup HDF5 file cache.");
 	}
 
-	hid_t fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
+	hid_t fileId;
+	if( readOnly ) {
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, fapl);
+	} else {
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
+	}
 	
 	if (fileId < 0) {
                 throw OmIoException("Could not open HDF5 file.");
@@ -63,6 +67,7 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 	debug("hdf5", "%s: closed HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
+	H5Fflush(fileId, H5F_SCOPE_GLOBAL);
         herr_t ret = H5Fclose(fileId);
         if (ret < 0)
                 throw OmIoException("Could not close HDF5 file.");
@@ -86,8 +91,10 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 	return true;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, int bytesPerSample, bool unlimited)
+void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, 
+									   Vector3<int>* dataDims,
+									   Vector3<int>* chunkDims, 
+									   int bytesPerSample)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -95,7 +102,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t
 	om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
 
 	//create data
-	om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample, unlimited);
+	om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
 }
 
 /**
@@ -121,14 +128,14 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 
 	//if empty intersection, return blank data
 	if (intersect_extent.isEmpty()) {
-		return createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
+		return OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
 	}
 	//else merge intersection and read data
 	//read intersection from source
 	vtkImageData *intersect_image_data = om_hdf5_dataset_image_read_with_lock(fileId, name, intersect_extent, bytesPerSample);
 
 	//create blanks data
-	vtkImageData *filled_read_data = createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
+	vtkImageData *filled_read_data = OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
 
 	//copy intersected data to proper location in blank image data
 	//normalize to min of intersection
@@ -140,7 +147,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 	dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
 
 	//copy data
-	copyImageData(filled_read_data, dataextent_norm_intersect_extent,	//copy to intersect region in dataExtent
+	OmImageDataIo::copyImageData(filled_read_data, dataextent_norm_intersect_extent,	//copy to intersect region in dataExtent
 		      intersect_image_data, intersect_norm_intersect_extent);	//from extent of intersection
 
 	//delete read intersect data
@@ -177,7 +184,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 		return;
 
 	//else create alloc image data with just intersection
-	vtkImageData *p_intersect_data = allocImageData(intersect_extent.getUnitDimensions(), bytesPerSample);
+	vtkImageData *p_intersect_data = OmImageDataIo::allocImageData(intersect_extent.getUnitDimensions(), bytesPerSample);
 
 	//copy imagedata intersection into intersection data
 	//normalize to min of intersection
@@ -192,8 +199,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 	//debug("FIXME", << dataextent_norm_intersect_extent << endl;
 
 	//copy data
-	copyImageData(p_intersect_data, intersect_norm_intersect_extent,	//copy to extent of intersection
-		      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
+	OmImageDataIo::copyImageData(p_intersect_data, intersect_norm_intersect_extent,	//copy to extent of intersection
+				      pImageData, dataextent_norm_intersect_extent);	//from intersection in dataExtent
 
 	//write intersection
 	om_hdf5_dataset_image_write_with_lock(fileId, name, &intersect_extent, bytesPerSample, p_intersect_data);
@@ -312,17 +319,16 @@ void OmHdf5LowLevel::om_hdf5_group_create_with_lock(hid_t fileId, const char *na
 void OmHdf5LowLevel::om_hdf5_group_create_tree_with_lock(hid_t fileId, const char *name)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+	
+	QString currentPath;
+	foreach( QString folder, QString(name).split('/') ){
+		currentPath += folder + "/";
 
-        vector < string > name_split_vec;
-        bfa::split(name_split_vec, name, bfa::is_any_of("/"));
+		string curPathStr = currentPath.toStdString();
 
-        string name_rejoin_str;
-        for (unsigned int i = 0; i < name_split_vec.size(); ++i) {
-                //add split
-                name_rejoin_str.append(name_split_vec[i]).append("/");
                 //create if group does not exist
-                if (!om_hdf5_group_exists_with_lock(fileId, name_rejoin_str.c_str())) {
-                        om_hdf5_group_create_with_lock(fileId, name_rejoin_str.c_str());
+                if (!om_hdf5_group_exists_with_lock(fileId, curPathStr.c_str() ) ){
+                        om_hdf5_group_create_with_lock(fileId, curPathStr.c_str() );
                 }
         }
 }
@@ -351,9 +357,9 @@ bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *
 		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	} H5E_END_TRY
 	
-		  //if failure, then assume doesn't exist
-		  if (dataset_id < 0)
-			  return false;
+	//if failure, then assume doesn't exist
+	if (dataset_id < 0)
+		return false;
 	
 	//Closes the specified dataset. 
 	herr_t ret = H5Dclose(dataset_id);
@@ -412,8 +418,8 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	hsize_t dim = size;
 	
 	// TODO: fixme! use the max dim!
-	hsize_t max = dim ? dim : H5S_UNLIMITED;
-	hid_t dataspace_id = H5Screate_simple(rank, &dim, NULL);
+	hsize_t max = dim;
+	hid_t dataspace_id = H5Screate_simple(rank, &dim, &max);
 	if (dataspace_id < 0)
 		throw OmIoException("Could not create HDF5 dataspace.");
 
@@ -426,7 +432,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	if (NULL != data) {
 		status = H5Dwrite(dataset_id, H5T_NATIVE_UCHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 		if (status < 0)
-			throw OmIoException("Could copy data into HDF5 dataset.");
+			throw OmIoException("Could not copy data into HDF5 dataset.");
 	}
 
 	//Closes the specified dataset. 
@@ -494,12 +500,11 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 							    const char *name, 
 							    Vector3<int>* dataDims, 
 							    Vector3<int>* chunkDims, 
-							    int bytesPerSample, 
-							    bool unlimited)
+							    int bytesPerSample )
 {
 	herr_t ret;
 	int rank = 3;
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...%i\n", __FUNCTION__, unlimited);
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...i\n", __FUNCTION__);
 
 	//Creates a new property as an instance of a property list class.
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
@@ -516,11 +521,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
 	Vector3 < hsize_t > flipped_max_data_dims;
 
-	if(unlimited){
-		flipped_max_data_dims = Vector3 < hsize_t > (H5S_UNLIMITED, H5S_UNLIMITED, H5S_UNLIMITED);
-	} else { 
-		flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
-	}
+	flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
@@ -547,7 +548,6 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
-	//H5Fflush (fileId, H5F_SCOPE_GLOBAL);
 }
 
 vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
@@ -594,7 +594,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	//setup image data
 	Vector3 < int >extent_dims = extent.getUnitDimensions();
-	imageData = allocImageData(extent_dims, bytesPerSample);
+	imageData = OmImageDataIo::allocImageData(extent_dims, bytesPerSample);
 
 	//Reads raw data from a dataset into a buffer. 
 	hid_t mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);

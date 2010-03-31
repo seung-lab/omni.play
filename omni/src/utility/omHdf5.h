@@ -2,7 +2,6 @@
 #define OM_HDF_H
 
 #include <QMutex>
-#include <QString>
 #include <QQueue>
 #include <string>
 using std::string;
@@ -19,7 +18,7 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose = true );
+	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
 	~OmHdf5();
 
 	string getFileNameAndPathString();
@@ -39,7 +38,7 @@ class OmHdf5
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
-	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample, bool unlimited  = false);
+	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample );
 	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
 	void dataset_image_write_trim( OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 
@@ -52,7 +51,7 @@ class OmHdf5
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex * fileLock;
 	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
-	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose );
+	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };
 
 #endif

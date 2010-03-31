@@ -2192,3 +2192,86 @@ omni: /home/mwimer/staging/omni/src/volume/omMipChunk.cpp:246: void OmMipChunk::
 #25 0x00002b95be1d3adb in QWidget::event (this=0x14f58050, event=0x7ffff8e8e4f0)
     at /home/purcaro.local/omni.staging/external/srcs/qt-everywhere-opensource-src-4.6.2/src/gui/kernel/qwidget.cpp:8033
 ---Type <return> to continue, or q <return> to quit---q
+
+
+
+
+-------------
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x43ef5940 (LWP 22871)]
+0x0000000000aea216 in vtkDataArrayTemplate<float>::GetTuple (this=0x2aab4002c440, i=52604759441408, tuple=0x43ef3fc0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:612
+612         tuple[j] = static_cast<double>(t[j]);
+(gdb) bt
+#0  0x0000000000aea216 in vtkDataArrayTemplate<float>::GetTuple (this=0x2aab4002c440, i=52604759441408, tuple=0x43ef3fc0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Common/vtkDataArrayTemplate.txx:612
+#1  0x00000000008acfca in vtkPoints::GetPoint (this=0x2aab405cf370, id=52604759441408, x=0x43ef3fc0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Common/vtkPoints.h:119
+#2  0x00000000009d9b8f in vtkPolyData::ComputeBounds (this=0x351f7c90)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkPolyData.cxx:635
+#3  0x00000000009761e1 in vtkDataSet::GetLength (this=0x351f7c90)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDataSet.cxx:215
+#4  0x00000000008a9216 in vtkCleanPolyData::CreateDefaultLocator (this=0x2aaad7127400, input=0x351f7c90)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Graphics/vtkCleanPolyData.cxx:618
+#5  0x00000000008a98ed in vtkCleanPolyData::RequestData (this=0x2aaad7127400, inputVector=0x2aaad6c39e70, outputVector=0x32d72b80)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Graphics/vtkCleanPolyData.cxx:192
+#6  0x00000000009d5270 in vtkPolyDataAlgorithm::ProcessRequest (this=0x2aaad7127400, request=0x2aaab7584720, inputVector=0x2aaad6c39e70,
+    outputVector=0x32d72b80) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkPolyDataAlgorithm.cxx:92
+#7  0x000000000097be02 in vtkExecutive::CallAlgorithm (this=0x28399210, request=0x2aaab7584720, direction=1, inInfo=0x2aaad6c39e70,
+    outInfo=0x32d72b80) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:748
+#8  0x0000000000976d65 in vtkDemandDrivenPipeline::ExecuteData (this=0x28399210, request=0x2aaab7584720, inInfo=0x2aaad6c39e70,
+    outInfo=0x32d72b80) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:508
+#9  0x000000000097acc2 in vtkDemandDrivenPipeline::ProcessRequest (this=0x28399210, request=0x2aaab7584720, inInfoVec=0x2aaad6c39e70,
+    outInfoVec=0x32d72b80) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:280
+#10 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x28399210, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6c39e70, outInfoVec=0x32d72b80)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+---Type <return> to continue, or q <return> to quit---
+#11 0x000000000097e0aa in vtkExecutive::ForwardUpstream (this=0x3278f5c0, request=0x2aaab7584720)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:645
+#12 0x000000000097ac3d in vtkDemandDrivenPipeline::ProcessRequest (this=0x3278f5c0, request=0x2aaab7584720, inInfoVec=0x2aaad6eb1720,
+    outInfoVec=0x2aab0add5d60) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:266
+#13 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x3278f5c0, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6eb1720, outInfoVec=0x2aab0add5d60)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#14 0x000000000097e0aa in vtkExecutive::ForwardUpstream (this=0x2aab4d093330, request=0x2aaab7584720)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:645
+#15 0x000000000097ac3d in vtkDemandDrivenPipeline::ProcessRequest (this=0x2aab4d093330, request=0x2aaab7584720, inInfoVec=0x2aaad6dddb90,
+    outInfoVec=0x34f203f0) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:266
+#16 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x2aab4d093330, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6dddb90, outInfoVec=0x34f203f0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#17 0x000000000097e0aa in vtkExecutive::ForwardUpstream (this=0x2ccc14f0, request=0x2aaab7584720)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:645
+#18 0x000000000097ac3d in vtkDemandDrivenPipeline::ProcessRequest (this=0x2ccc14f0, request=0x2aaab7584720, inInfoVec=0x2aaad6dffb50,
+    outInfoVec=0x222040f0) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:266
+#19 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x2ccc14f0, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6dffb50, outInfoVec=0x222040f0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#20 0x000000000097e0aa in vtkExecutive::ForwardUpstream (this=0x2325c790, request=0x2aaab7584720)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:645
+---Type <return> to continue, or q <return> to quit---
+#21 0x000000000097ac3d in vtkDemandDrivenPipeline::ProcessRequest (this=0x2325c790, request=0x2aaab7584720, inInfoVec=0x2aaad6f04240,
+    outInfoVec=0x17714140) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:266
+#22 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x2325c790, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6f04240, outInfoVec=0x17714140)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#23 0x000000000097e0aa in vtkExecutive::ForwardUpstream (this=0x283a06e0, request=0x2aaab7584720)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkExecutive.cxx:645
+#24 0x000000000097ac3d in vtkDemandDrivenPipeline::ProcessRequest (this=0x283a06e0, request=0x2aaab7584720, inInfoVec=0x2aaad6ef4d90,
+    outInfoVec=0x32e7e080) at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:266
+#25 0x0000000000a13193 in vtkStreamingDemandDrivenPipeline::ProcessRequest (this=0x283a06e0, request=0x2aaab7584720,
+    inInfoVec=0x2aaad6ef4d90, outInfoVec=0x32e7e080)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:190
+#26 0x000000000097a811 in vtkDemandDrivenPipeline::UpdateData (this=0x283a06e0, outputPort=0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDemandDrivenPipeline.cxx:450
+#27 0x0000000000a11f09 in vtkStreamingDemandDrivenPipeline::Update (this=0x283a06e0, port=0)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkStreamingDemandDrivenPipeline.cxx:234
+#28 0x000000000096998d in vtkDataObject::Update (this=0x2f595d30)
+    at /net/omicfs/home/purcaro/omni.staging/external/srcs/vtk-5.4.2/Filtering/vtkDataObject.cxx:1034
+#29 0x000000000087d1d2 in OmMesher::ExtractMesh (this=0x43ef4f20, pMesh=0x2aab4d095e10, value=3)
+    at /net/omicfs/home/purcaro/omni.staging/omni/src/mesh/omMesher.cpp:212
+#30 0x00000000007c335c in MeshingChunkThread::doMeshStuff (this=0x2aab3d049c80)
+    at /net/omicfs/home/purcaro/omni.staging/omni/src/mesh/meshingChunkThread.cpp:48
+#31 0x00000000007c341c in MeshingChunkThread::run (this=0x2aab3d049c80)
+---Type <return> to continue, or q <return> to quit---q

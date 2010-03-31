@@ -3,7 +3,6 @@
 #include "omVolume.h"
 #include "omMipChunk.h"
 #include "omVolumeCuller.h"
-#include "mesh/meshingManager.h"
 
 #include "segment/omSegmentEditor.h"
 #include "system/omProjectData.h"
@@ -38,6 +37,8 @@ OmSegmentation::OmSegmentation()
 
 	/** Set The Name of the Cache */
         SetCacheName("OmMipMeshManager");
+
+	mMeshingMan = NULL;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -64,6 +65,8 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	//build blank data
 	BuildVolumeData();
+
+	mMeshingMan = NULL;
 }
 
 /////////////////////////////////
@@ -244,15 +247,15 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
         QTextStream stream(&file);
 
         //for each level
-        for (int level = 0; level <= GetRootMipLevel(); ++level) {
+        for (int level = GetRootMipLevel(); level >= 0; --level) {
 
                 //dim of leaf coords
                 Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
 
                 //for all coords of level
-                for (int z = 0; z < mip_coord_dims.z; ++z) {
-                        for (int y = 0; y < mip_coord_dims.y; ++y) {
-                                for (int x = 0; x < mip_coord_dims.x; ++x) {
+                for (int z = mip_coord_dims.z; z >= 0; --z) {
+                        for (int y = mip_coord_dims.y; y >= 0; --y) {
+                                for (int x = mip_coord_dims.x; x >= 0; --x) {
 					//stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
 					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
                                 }
@@ -732,29 +735,6 @@ void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const Seg
 	mMipVoxelationManager.DrawVoxelations(mSegmentManager, mipCoord, rRelvDataVals, drawOps);
 }
 
-/*
- //get pointer to chunk
- shared_ptr<OmMipChunk> p_chunk = GetChunk(mipCoord);
- 
- //push modelview matrix
- glPushMatrix();
- */
-
-/*
- //transform into voxel space
- Vector3f translate = mNormExtent.getMin();
- Vector3f scale = Vector3f::ONE / GetDataExtent().getUnitDimensions();
- Vector3f norm_extent_scale = GetNormExtent().getDimensions();
- glTranslatefv(translate.array);
- glScalefv(norm_extent_scale.array);	//makes chunk dims = 1
- glScalefv(scale.array);	//makes chunk dims match data extent
- */
-
-//call voxel map draw
-//mChunkVoxels.DrawVoxels(rCuller, rSegmentation, rRelvDataVals);
-
-//glPopMatrix();
-
 /////////////////////////////////
 ///////          Print Methods
 
@@ -766,4 +746,28 @@ void OmSegmentation::Print()
 		//debug("FIXME", << "\t   Segments:" << endl;
 		mSegmentManager.SegmentCall(&OmSegment::Print);
 	}
+}
+
+/**
+ * Enqueue chunk coord to build
+ */
+void OmSegmentation::QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord )
+{
+	if( NULL == mMeshingMan ){
+		mMeshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+	}
+
+	mMeshingMan->addToQueue( chunk_coord );
+}
+
+void OmSegmentation::RunMeshQueue()
+{
+	if(  NULL == mMeshingMan ){
+		return;
+	}
+
+	mMeshingMan->start();
+	mMeshingMan->wait();
+	delete(mMeshingMan);
+	mMeshingMan = NULL;
 }

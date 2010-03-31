@@ -124,14 +124,14 @@ void Preferences3d::on_fovSlider_valueChanged()
 
 void Preferences3d::on_nearplaneSlider_valueChanged()
 {
-	OmPreferences::SetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, (nearplaneSlider->value() * 1.0));
+	OmPreferences::SetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, (nearplaneSlider->value()));
 
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }
 
 void Preferences3d::on_farplaneSlider_valueChanged()
 {
-	OmPreferences::SetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, (farplaneSlider->value() * 1.0));
+	OmPreferences::SetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, (farplaneSlider->value() * 1000.0));
 
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }

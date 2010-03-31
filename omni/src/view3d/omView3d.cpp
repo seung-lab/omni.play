@@ -17,6 +17,7 @@
 #include "system/omEventManager.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
+#include "system/omLocalPreferences.h"
 
 #include "common/omGl.h"
 #include "common/omDebug.h"
@@ -38,7 +39,6 @@ void initLights();
 //////////      OmView3d Class
 //////////
 
-static int secretBackoff = 0;
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
@@ -58,22 +58,22 @@ OmView3d::OmView3d(QWidget * parent)
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
 
-	OmStateManager::setMyBackoff( 1 );
+
+        mDrawTimer.stop();
+        connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+
+	// These calls simply prime Michaels Local Preferences File I/O System
+	OmLocalPreferences::getDefault2DViewFrameIn3D();
+	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
+	OmLocalPreferences::getDefaultCrosshairValue();
+	OmLocalPreferences::getDefaultDoDiscoBall();
+	mElapsed = new boost::timer();
 }
 
-
-static void resetBackoff ()
+OmView3d::~OmView3d()
 {
-	OmStateManager::setMyBackoff( 1 );
-	secretBackoff = 0;
-}
-
-static void increaseBackoff ()
-{
-	secretBackoff++;
-	if (secretBackoff > 50) {
-		OmStateManager::setMyBackoff( OmStateManager::getMyBackoff() + 1 );
-		secretBackoff = 0;
+        if (mDrawTimer.isActive()) {
+        	mDrawTimer.stop();
 	}
 }
 
@@ -124,8 +124,8 @@ void OmView3d::initializeGL()
 	// than previous stored depth value
 
 	SetBlending();
-	//glEnable(GL_BLEND);                                                   // enable blending for transparency
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);            // set blend function
+	glEnable(GL_BLEND);                   // enable blending for transparency
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // set blend function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
 
@@ -151,15 +151,42 @@ void OmView3d::resizeGL(int width, int height)
 void OmView3d::paintGL()
 {
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_RENDERMODE_RENDER | DRAWOP_DRAW_WIDGETS);
-	//debug("FIXME", << "Done THREE D drawing" << endl;
 }
+
+/*
+ * Interface to the real updateGL.
+ */
+void OmView3d::myUpdate()
+{
+	doTimedDraw();
+}
+
+void OmView3d::doTimedDraw()
+{
+	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
+	if (mElapsed->elapsed() > 0.5) {
+		delete mElapsed;
+		mElapsed = new boost::timer();
+		updateGL();
+	}
+
+	if (mDrawTimer.isActive()) {
+        	mDrawTimer.stop();
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	} else {
+        	mDrawTimer.start(100);
+		mDrawTimer.setSingleShot(true);
+	}
+}
+
+
 
 /////////////////////////////////
 ///////          QEvent Methods
 
 void OmView3d::mousePressEvent(QMouseEvent * event)
 {
-	resetBackoff();
 	try {
 		mView3dUi.MousePressed(event);
 	} catch(...) {
@@ -169,37 +196,31 @@ void OmView3d::mousePressEvent(QMouseEvent * event)
 
 void OmView3d::mouseReleaseEvent(QMouseEvent * event)
 {
-	resetBackoff();
 	mView3dUi.MouseRelease(event);
 }
 
 void OmView3d::mouseMoveEvent(QMouseEvent * event)
 {
-	resetBackoff();
 	mView3dUi.MouseMove(event);
 }
 
 void OmView3d::mouseDoubleClickEvent(QMouseEvent * event)
 {
-	resetBackoff();
 	mView3dUi.MouseDoubleClick(event);
 }
 
 void OmView3d::mouseWheelEvent(QWheelEvent * event)
 {
-	resetBackoff();
 	mView3dUi.MouseWheel(event);
 }
 
 void OmView3d::keyPressEvent(QKeyEvent * event)
 {
-	resetBackoff();
 	mView3dUi.KeyPress(event);
 }
 
 void OmView3d::wheelEvent ( QWheelEvent * event )
 {
-	resetBackoff();
 	mouseWheelEvent(event);
 }
 
@@ -242,55 +263,49 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 		return;
 	}
 
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
-	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
 {
-	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
 {
-	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
 {
-	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
 {
-	resetBackoff();
-	updateGL();
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
 {
-	resetBackoff();
-	updateGL();
+
+	myUpdate();
 }
 
 void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
 {
-	updateGL();
-	increaseBackoff ();
+	myUpdate();
 }
 
 void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
 {
 	//UpdateEnabledWidgets();
-	//updateGL();
+	//myUpdate();
 }
 
 /////////////////////////////////
@@ -387,11 +402,12 @@ void OmView3d::UpdateEnabledWidgets()
 
 /*
  *	Root of drawing tree.  
- *	Called from updateGL() and picking calls.
+ *	Called from myUpdate() and picking calls.
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
 {
-
+	delete mElapsed;
+	mElapsed = new boost::timer();
 	// clear buffer
 	glClearStencil(0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -492,7 +508,7 @@ void OmView3d::SetCameraPerspective()
 	float near = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
 	float far = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
 	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
-
+	far = 10000000.0;
 	Vector4 < float >perspective(fov, (float)(400) / 300, near, far);
 
 	mCamera.SetPerspective(perspective);
@@ -546,31 +562,8 @@ void initLights()
 	glEnable(GL_LIGHT0);	// enable light source after configuration
 }
 
-/*
- int OmView3d::faceAtPosition(const QPoint&pos) 
- { 
- //debug("FIXME", << "face at" << endl;
- 
- const int MaxSize = 512; 
- GLuint buffer[MaxSize]; 
- GLint viewport[4]; 
- glGetIntegerv(GL_VIEWPORT, viewport); 
- glSelectBuffer(MaxSize, buffer); 
- glRenderMode(GL_SELECT); 
- glInitNames(); 
- glPushName(0); 
- glMatrixMode(GL_PROJECTION); 
- glPushMatrix(); 
- glLoadIdentity(); 
- gluPickMatrix(GLdouble(pos.x()), GLdouble(viewport[3] - pos.y()), 
- 5.0, 5.0, viewport); 
- GLfloat x = GLfloat(width())/height(); 
- glFrustum(-x, x, -1.0, 1.0, 4.0, 15.0); 
- draw(); 
- glMatrixMode(GL_PROJECTION); 
- glPopMatrix(); 
- if (!glRenderMode(GL_RENDER)) 
- return -1; 
- return buffer[3]; 
- } 
- */
+QSize OmView3d::sizeHint () const
+{
+	QSize s = OmStateManager::getViewBoxSizeHint();
+	return QSize( s.width(), s.height() - 76 );
+}

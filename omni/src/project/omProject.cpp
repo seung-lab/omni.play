@@ -15,15 +15,8 @@
 #include <QFile>
 #include <QFileInfo>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
-
 #include "common/omDebug.h"
 #include "common/omException.h"
-
-
-#define DEBUG 0
 
 //init instance pointer
 OmProject *OmProject::mspInstance = 0;
@@ -55,8 +48,12 @@ void OmProject::Delete()
 
 /////////////////////////////////
 ///////          Project IO
-void OmProject::New( QString fileNameAndPath )
+QString OmProject::New( QString fileNameAndPath, bool amHeadless )
 {
+	if (!fileNameAndPath.endsWith(".omni")) {
+		fileNameAndPath.append(".omni");
+	}
+
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
 	Instance()->mDirectoryPath = fileInfo.filePath();
@@ -67,11 +64,16 @@ void OmProject::New( QString fileNameAndPath )
 
 	//load default project preferences
 	omSetDefaultAllPreferences();
-	OmKeyManager::SetDefaults();
+	
+	if( !amHeadless ){
+		OmKeyManager::SetDefaults();
+	}
 
 	Save();
 
 	OmProjectData::Flush();
+
+	return fileInfo.absoluteFilePath();
 }
 
 void OmProject::Save()

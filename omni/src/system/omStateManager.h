@@ -9,12 +9,11 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
+#include "common/omCommon.h"
 #include "omSystemTypes.h"
 #include "volume/omVolumeTypes.h"
-#include "common/omSerialization.h"
-#include "common/omStd.h"
 
-#include <QString>
+#include <QSize>
 
 #include <vmmlib/vmmlib.h>
 #include <vmmlib/serialization.h>
@@ -25,7 +24,7 @@ class QUndoStack;
 class QUndoCommand;
 class QGLWidget;
 class QGLContext;
-
+class MyInspectorWidget;
 
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
@@ -112,9 +111,6 @@ public:
 	static float GetTransparencyAlpha();
 	static void SetTransparencyAlpha(float);
 	
-	static unsigned int getMyBackoff();
-	static void setMyBackoff( unsigned int val );
-
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
@@ -122,6 +118,9 @@ public:
 	static QString getHostname();
 	static bool getParallel();
 	static void setParallel(bool parallel);
+
+	static void setInspector( MyInspectorWidget * miw );
+	static QSize getViewBoxSizeHint();
 
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -177,6 +176,8 @@ private:
 
 	QString omniExecPathAbsolute;
 	bool mParallel;
+
+	MyInspectorWidget * inspectorWidget;
 };
 
 #endif

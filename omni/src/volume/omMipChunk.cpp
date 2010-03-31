@@ -16,12 +16,7 @@
 #include <vtkImageData.h>
 #include <vtkType.h>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 #include "common/omDebug.h"
-namespace bfs = boost::filesystem;
-
-#define DEBUG 0
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
@@ -680,7 +675,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
 	relative_slice_bbox.offset(-GetExtent().getMin());
 
 	//return pointer to data
-	return copyImageData(mpImageData, relative_slice_bbox);
+	return OmImageDataIo::copyImageData(mpImageData, relative_slice_bbox);
 }
 
 /////////////////////////////////
@@ -707,7 +702,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	p_mesh_data->AllocateScalars();
 
 	//initialize data
-	clearImageData(p_mesh_data);
+	OmImageDataIo::clearImageData(p_mesh_data);
 
 	//for all 8 adjacent chunks
 	for (int z = 0; z < 2; z++) {
@@ -738,7 +733,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				QMutexLocker locker(mOpenLock);
-				copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
+				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 				
 				p_chunk = shared_ptr  < OmMipChunk > ();
 				mpMipVolume->Remove(mip_coord);
@@ -772,7 +767,7 @@ bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
 
 	//if distance too large, just draw it - else keep breaking it down
 	//debug("view3d", "backoff: %d\n", myBackoff );
-	return (camera_to_center > distance / OmStateManager::getMyBackoff() );
+	return (camera_to_center > distance);
 }
 
 void OmMipChunk::DrawClippedExtent()
@@ -793,7 +788,7 @@ void OmMipChunk::DrawClippedExtent()
 
 	glTranslatef(0.5, 0.5, 0.5);
 	glColor3f(0.5, 0.5, 0.5);
-	omglWireCube(1);
+	//omglWireCube(1);
 	glTranslatef(-0.5, -0.5, -0.5);
 
 	//glScalefv( (Vector3f::ONE/scale).array);

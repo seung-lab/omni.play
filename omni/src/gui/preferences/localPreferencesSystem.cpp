@@ -7,28 +7,19 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget * parent)
  : QWidget(parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
-	overallContainer->addWidget( makeNumberOfThreadsBox());
 	overallContainer->addWidget( makeCachePropBox());
-	overallContainer->addWidget( makeMeshBox());
 	overallContainer->insertStretch( 4, 1 );
 	init_cache_prop_values();
 
-	connect(numThreadsSlider, SIGNAL(valueChanged(int)), 
-		this, SLOT(on_numThreadsSlider_valueChanged()));
 	connect(ramSlider, SIGNAL(valueChanged(int)), 
 		this, SLOT( on_ramSlider_valueChanged()));
 	connect(vramSlider, SIGNAL(valueChanged(int)), 
 		this, SLOT(on_vramSlider_valueChanged()));
 
-	connect(numThreadsSlider, SIGNAL(sliderReleased()), 
-		this, SLOT(on_numThreadsSlider_sliderReleased()));
 	connect(ramSlider, SIGNAL(sliderReleased()), 
 		this, SLOT( on_ramSlider_sliderReleased()));
 	connect(vramSlider, SIGNAL(sliderReleased()), 
 		this, SLOT(on_vramSlider_sliderReleased()));
-
-       connect(storeMeshesInTempFolder, SIGNAL(stateChanged(int)),
-		this, SLOT(on_storeMeshesInTempFolder_stateChanged(int)));
 }
 
 QGroupBox* LocalPreferencesSystem::makeCachePropBox()
@@ -114,60 +105,3 @@ void LocalPreferencesSystem::on_vramSlider_sliderReleased()
 	OmLocalPreferences::setVRamCacheSizeMB( vramSlider->value() );
 }
 
-QGroupBox* LocalPreferencesSystem::makeNumberOfThreadsBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Number of Meshing Threads");
-	QVBoxLayout* vbox = new QVBoxLayout;
-	groupBox->setLayout( vbox );
-
-	numThreadsSliderLabel = new QLabel(groupBox);
-	numThreadsSliderLabel->setMinimumSize(QSize(20, 0));
-	numThreadsSliderLabel->setMaximumSize(QSize(20, 16777215));
-	vbox->addWidget(numThreadsSliderLabel);
-
-	numThreadsSlider = new QSlider(groupBox);
-	numThreadsSlider->setMaximum(100);
-	numThreadsSlider->setOrientation(Qt::Horizontal);
-	numThreadsSlider->setTickPosition(QSlider::TicksBelow);
-	numThreadsSlider->setTickInterval(10);
-	vbox->addWidget(numThreadsSlider);
-
-	numThreadsSlider->setMinimum( 1 );
-	numThreadsSlider->setMaximum( 2 * OmLocalPreferences::get_num_cores() );
-
-	numThreadsSlider->setValue( OmLocalPreferences::numAllowedWorkerThreads() );
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-
-	return groupBox;
-}
-
-void LocalPreferencesSystem::on_numThreadsSlider_valueChanged()
-{
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-}
-
-void LocalPreferencesSystem::on_numThreadsSlider_sliderReleased()
-{
-	numThreadsSliderLabel->setNum(numThreadsSlider->value());
-	OmLocalPreferences::setNumAllowedWorkerThreads( numThreadsSlider->value() );
-}
-
-QGroupBox* LocalPreferencesSystem::makeMeshBox()
-{
-	QGroupBox* groupBox = new QGroupBox("Meshing");
-	QGridLayout* gridLayout = new QGridLayout;
-	groupBox->setLayout( gridLayout );
-
-        storeMeshesInTempFolder = new QCheckBox(groupBox);
-	storeMeshesInTempFolder->setText("Store Files in Temp Folder");
-	storeMeshesInTempFolder->setChecked( OmLocalPreferences::getStoreMeshesInTempFolder() );
-        gridLayout->addWidget(storeMeshesInTempFolder, 0, 0, 1, 1);
-
-  	return groupBox;
-}
-
-void LocalPreferencesSystem::on_storeMeshesInTempFolder_stateChanged( int state)
-{
-	const bool val = GuiUtils::getBoolState( storeMeshesInTempFolder->checkState() );
-	OmLocalPreferences::setStoreMeshesInTempFolder( val );
-}

@@ -1,9 +1,8 @@
 on ubuntu, omni needs:
 
- libxrender-dev 
-'libxext-dev
-freeglut3-dev
-
+apt-get install libxrender-dev 
+apt-get install libxext-dev
+apt-get install freeglut3-dev
 apt-get install freetype
 apt-get install g++
 apt-get install freetype
@@ -15,31 +14,19 @@ apt-get install mesa-common-dev
 apt-get install emacs
 apt-get install libxt-dev
 
+on Ubuntu 9.10 AMD64bit (on Intel Xeon 64 bit processor)
+needed the above but not freetype, nor the xml stuff
+
+also:
+
+apt-get install libgl1-mesa-dev
+apt-get install libglu1-mesa-dev
+
+also added
+
+apt-get install libgl1-mesa-dri-dbg	
+apt-get install libgl1-mesa-glx-dbg	
+
+to get debugging symbols
 
 
-
-
-building subversion:
-
-==================================================================
-WARNING: skipping the build of mod_dav_svn
-         try using --with-apxs
-==================================================================
-configure: checking sqlite library
-amalgamation not found at no
-configure: WARNING: no suitable sqlite found in no
-
-An appropriate version of sqlite could not be found.  We recommmend
-3.6.13, but require at least 3.4.0.
-Please either install a newer sqlite on this system
-
-or
-
-get the sqlite 3.6.13 amalgamation from:
-    http://www.sqlite.org/sqlite-amalgamation-3.6.13.tar.gz
-unpack the archive using tar/gunzip and copy sqlite3.c from the
-resulting directory to:
-/home/purcaro/tmp.local/subversion-1.6.9/sqlite-amalgamation/sqlite3.c
-This file also ships as part of the subversion-deps distribution.
-
-configure: error: Subversion requires SQLite
