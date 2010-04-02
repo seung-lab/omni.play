@@ -28,24 +28,32 @@ my $globalMakeOptions = "";
 
 my $hostname = `hostname`;
 my $profileOn = "";
-if ($hostname =~ /brainiac/) {
-    my $nodes = `cat $basePath/scripts/cluster/distcchosts`;
-    $ENV{DISTCC_HOSTS} = $nodes;
-    $globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
-                " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
-    $profileOn = "";
-}
-
-
-# Create build path if it doesn't exist yet.
-print `mkdir $buildPath` if (!-e $buildPath);
-
-# Create srcs path if it doesn't exist yet.
-print `mkdir $srcPath` if (!-e $srcPath);
 
 sub isMac {
     my $uname = `uname`;
     return ($uname =~ /Darwin/);
+}
+
+sub onCluster {
+    return ($hostname =~ /brainiac/);
+}
+
+sub dealWithCluster {
+    if ( onCluster() ) {
+	my $nodes = `cat $basePath/scripts/cluster/distcchosts`;
+	$ENV{DISTCC_HOSTS} = $nodes;
+	$globalMakeOptions .= " CC=\"distcc /usr/local/gcc-4.3.4/bin/gcc4.3.4\" " .
+	    " CXX=\"distcc /usr/local/gcc-4.3.4/bin/g++4.3.4\"";
+	$profileOn = "";
+    }
+}
+
+sub makeDirPaths {
+    # Create build path if it doesn't exist yet.
+    print `mkdir $buildPath` if (!-e $buildPath);
+    
+    # Create srcs path if it doesn't exist yet.
+    print `mkdir $srcPath` if (!-e $srcPath);
 }
 
 sub genOmniScript {
@@ -280,7 +288,7 @@ sub boost142 {
     my $libFolderName = "Boost";
     prepareNukeSrcsFolder( $baseFileName, $libFolderName );
 
-    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=serialization,thread";
+    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
     print "configuring ($cmd)\n"; 
     `($cmd)`;
     print "done\n";
@@ -561,7 +569,7 @@ sub setupParallelBuildOption {
 	$numCores = $_[0];
     }
 
-    if ($hostname =~ /brainiac/) {
+    if (onCluster()) {
         $globalMakeOptions .=  " -j60 ";
     } else {
         $globalMakeOptions .=  " -j$numCores ";
@@ -617,9 +625,6 @@ sub checkCmdLineArgs {
     }
 }
 
-checkCmdLineArgs();
-
-
 sub doUbuntuAptGets{
     print `sudo apt-get -y install libxrender-dev `;
     print `sudo apt-get -y install libxext-dev`;
@@ -640,4 +645,7 @@ sub doUbuntuAptGets{
     print `sudo apt-get -y install libgl1-mesa-glx-dbg	`;
     print "Done with the Ubuntu 9.10 apt-gets! \n\n";
 }
-     
+
+dealWithCluster();
+makeDirPaths();
+checkCmdLineArgs();
