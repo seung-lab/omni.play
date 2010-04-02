@@ -14,9 +14,13 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * in_verticalLayou
 
 void ElementListBox::clear()
 {
-	if( NULL != dataElementsTabs ){
-		delete dataElementsTabs;
+	if( NULL == dataElementsTabs ){
+		setupBox();
 	}
+	
+	dataElementsTabs->clear();
+
+	groupBox->setTitle( boxTitle );
 }
 
 void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
