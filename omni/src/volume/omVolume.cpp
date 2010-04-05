@@ -222,9 +222,11 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 void OmVolume::CheckDataResolution()
 {
 	Vector3f res=Instance()->mDataResolution;
-	if ((res != Vector3i::ONE)&&(res != Vector3i::ZERO)){
-		Instance()->SetDataResolution( res);
+	if (res == Vector3i::ZERO){
+		res = Vector3i::ONE;
+
 	}
+	Instance()->SetDataResolution( res);	
 }	
 		
 int OmVolume::GetChunkDimension()
