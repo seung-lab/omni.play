@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QWidget>
 
+#include "gui/mainwindow.h"
 #include "gui/segmentList.h"
 #include "gui/elementListBox.h"
 #include "inspectors/segInspector.h"
@@ -25,7 +26,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
  
  public:
-	 MyInspectorWidget(QWidget * parent);
+	 MyInspectorWidget( MainWindow* parent);
 	~MyInspectorWidget();
 
 	void addChannelToVolume();
@@ -62,7 +63,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	void doDataSrcContextMenuVolAdd(QAction * act);
 	void addSegment();
-
+	void deleteSegmentation(SegmentationDataWrapper sdw);
+	void deleteChannel(ChannelDataWrapper cdw);
  private:
 
 	///////////////////////////////
@@ -90,12 +92,15 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	DataWrapperContainer currentDataSrc;
 
+	MainWindow* mParentWindow;
+
 	///////////////////////////////
 
 	QAction *xyAct;
 	QAction *xzAct;
 	QAction *yzAct;
 	QAction *propAct;
+	QAction *delAct;
 
 	QAction *addChannelAct;
 	QAction *addSegmentationAct;

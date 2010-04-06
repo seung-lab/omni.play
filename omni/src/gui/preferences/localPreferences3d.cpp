@@ -65,6 +65,7 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox()
 	crosshairSlider->setOrientation(Qt::Horizontal);
 	crosshairSlider->setTickPosition(QSlider::TicksBelow);
 	crosshairSlider->setTickInterval(200);
+	crosshairSlider->setValue(value);
 	crosshairSlider->setEnabled(crosshair);
 
 	gridLayout->addWidget(crosshairSlider, 4, 0, 1, 3);

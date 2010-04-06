@@ -110,6 +110,11 @@ void ChanInspector::on_notesEdit_textChanged()
 	OmVolume::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
 }
 
+OmId ChanInspector::getChannelID()
+{
+	return cdw.getID();
+}
+
 void ChanInspector::populateChannelInspector()
 {
 	nameEdit->setText( cdw.getName() );

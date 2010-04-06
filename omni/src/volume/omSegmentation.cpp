@@ -771,3 +771,10 @@ void OmSegmentation::RunMeshQueue()
 	delete(mMeshingMan);
 	mMeshingMan = NULL;
 }
+
+void OmSegmentation::DeleteCaches()
+{
+	mMipMeshManager.KillFetchLoop();
+	mMipVoxelationManager.KillFetchLoop();
+	this->KillFetchLoop();
+}

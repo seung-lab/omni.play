@@ -215,6 +215,15 @@ OmGenericManager<T>::Remove(OmId omId) {
 	T *p_object = mMap[omId];
 	mMap.erase(omId);
 	delete p_object;
+
+	//make sure mNextId is adjusted accordingly
+	OmId maxId = 0;
+	typename map< OmId, T* >::iterator it;
+	for( it=mMap.begin(); it != mMap.end(); it++ ) {
+		if ((*it).first > maxId) maxId = (*it).first;
+	}
+	maxId++;
+	mNextId=maxId;
 }
 
 

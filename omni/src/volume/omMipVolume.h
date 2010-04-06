@@ -45,6 +45,7 @@ public:
 	~OmMipVolume();
 	
 	void Flush();
+	void PrepareForCompleteDelete();
 
 	void SetFilename(const string &);
 	string GetFilename();
@@ -58,7 +59,8 @@ public:
 	void SetSourceFilenamesAndPaths( QFileInfoList );
 	QFileInfoList GetSourceFilenamesAndPaths();
 	bool IsSourceValid();
-		
+	
+	
 	// data properties
 	const DataBbox& GetExtent();
 	int GetChunkDimension();
@@ -114,6 +116,7 @@ public:
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);
 	virtual void ExportDataFilter(vtkImageData *) { }
+	void DeleteVolumeData();
 
 	
 protected:		
@@ -152,6 +155,7 @@ private:
 	string mDirectoryPath;          // ex. "./" or "images/out/"
 	string mFilename;
 	bool sourceFilesWereSet;
+	bool mCompleteDelete;
 
 	// TODO: delete these: no longer used
 	string mSourceDirectoryPath;

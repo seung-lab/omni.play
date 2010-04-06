@@ -40,6 +40,7 @@ OmMipVolume::OmMipVolume()
 
 	mBytesPerSample = 1;
 	mSubsampleMode = SUBSAMPLE_NONE;
+	mCompleteDelete=false;
 
 }
 
@@ -48,11 +49,16 @@ OmMipVolume::~OmMipVolume()
 	//debug("genone","OmMipVolume::~OmMipVolume()");
 
 	//flush edits
-	Flush();
+	if (!mCompleteDelete) Flush();
 
 	//clear cache before destructing since chunks depend on existance 
 	//of parent mipvolume
-	MipChunkThreadedCache::Clear();
+	if (!mCompleteDelete) MipChunkThreadedCache::Clear();
+}
+
+void OmMipVolume::PrepareForCompleteDelete()
+{
+	mCompleteDelete=true;
 }
 
 /////////////////////////////////
@@ -524,7 +530,13 @@ void OmMipVolume::AllocInternalData()
 
 }
 
-/*
+void OmMipVolume::DeleteVolumeData()
+{
+	DeleteInternalData();
+}
+
+
+/**
  *	Deletes all data on disk associated with this MipVolume if it exists.
  */
 void OmMipVolume::DeleteInternalData()

@@ -15,6 +15,9 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	
  public: 
 	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent);
+
+	OmId getChannelID();
+
  	QString raiseFileDialog();
  	void intermediate_build_call(OmChannel *current_channel);
 	ChannelDataWrapper getChannelDataWrapper();
@@ -26,7 +29,7 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
-    
+
  private:
 	ChannelDataWrapper cdw;
 	void updateFileList();
