@@ -46,6 +46,8 @@ class MainWindow
 	void openProject( QString fileNameAndPath );
 	void openProject( QString fileName, QString pathName );
 
+	void cleanViewsOnVolumeChange(int objectType, OmId objectId);
+
 	friend class ViewGroup;
 
  protected: 

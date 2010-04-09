@@ -63,6 +63,7 @@ public:
 	bool FetchUpdateCheck();
 	virtual void HandleFetchUpdate() { };
 	virtual bool InitializeFetchThread();
+	virtual void KillFetchLoop();
 	
 	//fetch properties
 	void SetFetchUpdateInterval(float);
@@ -736,9 +737,17 @@ start_cache_fetch_thread(void* arg)
 	return 0;
 }
 
+template < typename T,  typename U  > 
+void
+OmThreadedCache<T,U>::KillFetchLoop() {
 
+	mKillingFetchThread = true;
+	pthread_cond_signal(&mFetchThreadCv);
 
+	//spin until done killing
+	while(mFetchThreadAlive) { }
+	
 
-
+}
 
 #endif

@@ -1103,3 +1103,34 @@ void MainWindow::open2Dand3dViews()
 
 	mViewGroup->addAllViews( channelID, segmentationID );
 }
+
+void MainWindow::cleanViewsOnVolumeChange(int objectType, OmId objectId )
+{
+
+	
+	QString unwantedView3DTitle = "3D";
+	QString unwantedView2DTitle;
+	switch (objectType){
+	case CHANNEL:
+		unwantedView2DTitle = "channel" + QString::number(objectId);
+		break;
+	case SEGMENTATION:
+		unwantedView2DTitle = "segmentation" + QString::number(objectId);
+		break;
+	default:
+		unwantedView2DTitle = "Grab A Sausage";
+		break;
+	}	
+	QList<QDockWidget *> dockwidgets = this->findChildren<QDockWidget *>();
+	QList<QDockWidget *>::const_iterator it;
+	for (it = dockwidgets.constBegin();it != dockwidgets.constEnd();++it){
+		QString title = (*it)->windowTitle();
+		if (title.startsWith(unwantedView2DTitle)){
+			delete (*it);
+		}
+		if (title.startsWith(unwantedView3DTitle)){
+			delete (*it);
+		}					
+		debug("cleanv","%s   %s   \n", unwantedView2DTitle.data(),title.data());
+	}
+}

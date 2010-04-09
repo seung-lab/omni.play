@@ -79,7 +79,7 @@ void OmFilter2d::SetSegmentation (OmId id) {
 		mCache = NULL;
 	}
 	try {
-		OmVolume::GetSegmentation (id);
+		//OmVolume::GetSegmentation (id);
 		mSeg = id;
 	} catch (OmAccessException e) {
 		mSeg = 0;

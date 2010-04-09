@@ -222,9 +222,11 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 void OmVolume::CheckDataResolution()
 {
 	Vector3f res=Instance()->mDataResolution;
-	if ((res != Vector3i::ONE)&&(res != Vector3i::ZERO)){
-		Instance()->SetDataResolution( res);
+	if (res == Vector3i::ZERO){
+		res = Vector3i::ONE;
+
 	}
+	Instance()->SetDataResolution( res);	
 }	
 		
 int OmVolume::GetChunkDimension()
@@ -254,6 +256,7 @@ OmChannel & OmVolume::AddChannel()
 
 void OmVolume::RemoveChannel(OmId id)
 {
+	Instance()->mChannelManager.Get(id).DeleteVolumeData();
 	Instance()->mChannelManager.Remove(id);
 	OmProject::Save();
 }
@@ -296,6 +299,22 @@ OmSegmentation & OmVolume::AddSegmentation()
 
 void OmVolume::RemoveSegmentation(OmId id)
 {
+
+
+	//const set < OmId > channelIDs = Instance()->mChannelManager.Get(id).GetValidFilterIds();
+	//set < OmId >::iterator obj_it;
+	foreach(OmId channelID, OmVolume::GetValidChannelIds()) {
+		OmChannel & channel = OmVolume::GetChannel(channelID);
+		foreach(OmId filterID, channel.GetValidFilterIds()) {
+			OmFilter2d &filter = channel.GetFilter(filterID);
+			if (filter.GetSegmentation() == id){
+				filter.SetSegmentation(0);				
+			}
+		}
+	}	
+	Instance()->mSegmentationManager.Get(id).DeleteCaches();
+	Instance()->mSegmentationManager.Get(id).PrepareForCompleteDelete();
+	Instance()->mSegmentationManager.Get(id).DeleteVolumeData();
 	Instance()->mSegmentationManager.Remove(id);
 	OmProject::Save();
 }

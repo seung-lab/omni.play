@@ -12,7 +12,7 @@ public:
 	InspectorProperties(QWidget *parent);
 	void setOrReplaceWidget(QWidget *incomingWidget, const QString title);
 
-private slots:
+public slots:
 	void closeDialog();
 	
 private:

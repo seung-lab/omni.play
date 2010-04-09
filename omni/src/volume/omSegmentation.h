@@ -99,7 +99,7 @@ public:
 	const SegmentDataSet& GetSelectedSegmentDataValues();
 	const SegmentDataSet& GetUnselectedSegmentDataValues();
 	const SegmentDataSet& GetVoxelizedSegmentDataValues();
-	
+	void DeleteCaches();	
 	
 	//drawing
 	void Draw(const OmVolumeCuller &);

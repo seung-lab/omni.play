@@ -12,6 +12,16 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * in_verticalLayou
 	verticalLayout->addWidget( groupBox );
 }
 
+void ElementListBox::clear()
+{
+	if( NULL == dataElementsTabs ){
+		return;
+	}
+
+	dataElementsTabs->clear();
+	groupBox->setTitle( "" );
+}
+
 void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
 {
 	if( NULL == dataElementsTabs ){
