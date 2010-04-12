@@ -627,7 +627,9 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		mpView3d->updateGL();
 		return;
 	}
-	mpView3d->mCamera.SetFocus(voxel);
+
+	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
+	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
 
 	mCPressed = false;
