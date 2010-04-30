@@ -1,4 +1,3 @@
-
 #include "omSegmentEditor.h"
 
 #include "volume/omVolume.h"
@@ -7,8 +6,6 @@
 #include "system/omEventManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "common/omDebug.h"
-
-#define DEBUG 0
 
 //init instance pointer
 OmSegmentEditor *OmSegmentEditor::mspInstance = 0;
@@ -20,8 +17,8 @@ OmSegmentEditor *OmSegmentEditor::mspInstance = 0;
 
 OmSegmentEditor::OmSegmentEditor()
 {
-	mEditSegmentation = NULL_OM_ID;
-	mEditSegment = NULL_OM_ID;
+	mEditSegmentation = 0;
+	mEditSegment = 0;
 }
 
 OmSegmentEditor::~OmSegmentEditor()

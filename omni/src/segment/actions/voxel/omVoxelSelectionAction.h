@@ -8,7 +8,6 @@
 
 #include "system/omAction.h"
 
-#include "volume/omVolumeTypes.h"
 
 
 class OmVoxelSelectionAction : public OmAction {

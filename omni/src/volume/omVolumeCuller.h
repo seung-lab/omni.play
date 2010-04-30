@@ -9,15 +9,8 @@
  *	The culler also keeps track of it's position of the camera and camera's focus.
  */
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
-#include "omVolumeTypes.h"
+#include "common/omCommon.h"
 #include "omDrawOptions.h"
-
-#include "system/omSystemTypes.h"
-
-
 
 class OmMipChunk;
 
@@ -29,21 +22,21 @@ public:
 					 OmBitfield options);
 	
 	//accessors
-	bool CheckDrawOption(OmBitfield option) const;
-	OmBitfield MaskDrawOptions(OmBitfield mask) const;
-	OmBitfield GetDrawOptions() const;
+	bool CheckDrawOption(OmBitfield option);
+	OmBitfield MaskDrawOptions(OmBitfield mask);
+	OmBitfield GetDrawOptions();
 	
-	const NormCoord& GetPosition() const;
-	const NormCoord& GetFocus() const;
+	NormCoord& GetPosition();
+	const NormCoord& GetFocus();
 	
 	//transform
-	OmVolumeCuller GetTransformed(const Matrix4f&, const Matrix4f&) const;
-	OmVolumeCuller GetTransformedCuller(const Matrix4f&, const Matrix4f&) const;
+	OmVolumeCuller GetTransformed(const Matrix4f&, const Matrix4f&);
+	OmVolumeCuller GetTransformedCuller(const Matrix4f&, const Matrix4f&);
 	void TransformCuller(const Matrix4f& mat, const Matrix4f& matInv);
 
 	//tests
-	Visibility TestChunk(const OmMipChunk &) const;
-	Visibility VisibilityTestNormBbox(const NormBbox &) const;
+	Visibility TestChunk( OmMipChunk &);
+	Visibility VisibilityTestNormBbox(const NormBbox &);
 	
 	
 	//temp

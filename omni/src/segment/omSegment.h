@@ -7,57 +7,73 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "omSegmentTypes.h"
-#include "system/omSystemTypes.h"
+#include "common/omCommon.h"
 #include "system/omManageableObject.h"
+#include "volume/omMipChunkCoord.h"
+#include "utility/omHdf5Path.h"
 
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
+class OmSegmentCache;
 
-class OmSegment : public OmManageableObject {
+class OmSegment {
 
 public:
-	OmSegment();
-	OmSegment(OmId id);
-	
+	OmSegment(OmId segmentID, SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
+	OmSegment(OmSegmentCache * cache);
+
+	void updateChunkCoordInfo( const OmMipChunkCoord & mipCoord );
+	QSet< OmMipChunkCoord > & getChunks();
+
 	//accessors
-	const Vector3<float>& GetColor() const;
+	const Vector3<float>& GetColor();
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
-	void set_original_mapped_data_value(const SEGMENT_DATA_TYPE value );
-	SEGMENT_DATA_TYPE get_original_mapped_data_value();
+
+	SEGMENT_DATA_TYPE getValue();
+	SegmentDataSet getValues();
+	OmIds getIDs();
 	
+	// Serialization.
+	void Save();
+
+	OmId GetId();
+	QString GetNote();
+	void SetNote(QString);
+	QString GetName();
+	void SetName(QString);
+	bool IsSelected();
+	void SetSelected(bool isSelected);
+	bool IsEnabled();
+	void SetEnabled(bool);
+
+	void Join(OmSegment *, double threshold = 0);
+	void setParent(OmSegment * segment, double threshold);
+	OmId getParent();
+
+	OmId getSegmentationID();
+
 private:
-	//data members
+	OmId mID;
+	SEGMENT_DATA_TYPE mValue;
+	OmSegmentCache * mCache;
+
 	Vector3<float> mColor;
-	OmId mJoinId;
-	SEGMENT_DATA_TYPE original_mapped_data_value;
+
+	OmIds segmentsJoinedIntoMe;
+	OmId parentSegID;
+	double mThreshold;
 	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	QSet< OmMipChunkCoord > chunks;
+		
+	void SetInitialColor();
+	OmHdf5Path getValuePath();
+	OmHdf5Path getSegmentPath();
+
+	friend class OmSegmentCacheImpl;
+
+	friend QDataStream &operator<<(QDataStream & out, const OmSegment & segment );
+	friend QDataStream &operator>>(QDataStream & in, OmSegment & segment );
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmSegment, 2)
-
-template<class Archive>
-void 
-OmSegment::serialize(Archive & ar, const unsigned int file_version) {
-	ar & boost::serialization::base_object<OmManageableObject>(*this);
-	
-	if (file_version > 0) {
-		ar & mJoinId;
-	}
-	if (file_version > 1) {
-		ar & original_mapped_data_value;
-	}
-	ar & mColor;
-}
 
 #endif

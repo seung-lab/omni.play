@@ -8,21 +8,9 @@
  *	Brett Warne - bwarne@mit.edu - 7/19/09
  */
 
-#include "omDataVolume.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
-#include "system/omSystemTypes.h"
 #include "common/omStd.h"
-#include "common/omSerialization.h"
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
-
-#include <list>
-using std::list;
 
 #include <QFileInfo>
 
@@ -30,15 +18,15 @@ class OmMipChunk;
 class vtkImageData;
 
 //enum subsampling methods
-enum SubsampleMode { SUBSAMPLE_MEAN, SUBSAMPLE_MODE, SUBSAMPLE_RANDOM, SUBSAMPLE_NONE };
+enum SubsampleMode { SUBSAMPLE_MEAN = 0, SUBSAMPLE_MODE, SUBSAMPLE_RANDOM, SUBSAMPLE_NONE };
 
 //mipvolume state
-enum MipVolumeBuildState { MIPVOL_UNBUILT, MIPVOL_BUILT, MIPVOL_BUILDING };
+enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
 
 //typedef chunk cache
 typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;
 
-class OmMipVolume : public OmDataVolume, public MipChunkThreadedCache {
+class OmMipVolume : public MipChunkThreadedCache {
 	
 public:
 	OmMipVolume();
@@ -47,13 +35,13 @@ public:
 	void Flush();
 	void PrepareForCompleteDelete();
 
-	void SetFilename(const string &);
-	string GetFilename();
-	virtual void SetDirectoryPath(const string &);
-	string GetDirectoryPath();
+	void SetFilename(const QString &);
+	QString GetFilename();
+	virtual void SetDirectoryPath(const QString &);
+	QString GetDirectoryPath();
 	
-	string MipLevelInternalDataPath(int level);
-	string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
+	QString MipLevelInternalDataPath(int level);
+	QString MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 	
 	//source data properties
 	void SetSourceFilenamesAndPaths( QFileInfoList );
@@ -97,12 +85,12 @@ public:
 	int MipChunkDimension(int level);
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &mipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
-	void GetChunk(shared_ptr<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
+	void GetChunk(QExplicitlySharedDataPointer<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
 	
 	//mip data accessors
-	uint32_t GetVoxelValue(const DataCoord &vox);
-	void SetVoxelValue(const DataCoord &vox, uint32_t value);
+	quint32 GetVoxelValue(const DataCoord &vox);
+	void SetVoxelValue(const DataCoord &vox, quint32 value);
 
 	//build methods
 	void Build();
@@ -118,6 +106,9 @@ public:
 	virtual void ExportDataFilter(vtkImageData *) { }
 	void DeleteVolumeData();
 
+	bool ContainsVoxel(const DataCoord &vox);
+	const int GetBytesPerSample();
+	void SetBytesPerSample(int);
 	
 protected:		
 	//state
@@ -132,10 +123,10 @@ protected:
 	QFileInfoList mSourceFilenamesAndPaths;
 	
 	//mip data
-	MipVolumeBuildState mBuildState;
+	int mBuildState;
 	int mMipLeafDim;			//must be even
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
-	SubsampleMode mSubsampleMode;		//method to use when subsampling	
+	int mSubsampleMode;		//method to use when subsampling	
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
@@ -143,6 +134,8 @@ protected:
 	
 private:
 	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
+
+	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	
 	//subsample data methods
 	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
@@ -152,43 +145,13 @@ private:
 	template< typename T > T CalculateMode( T* array, int size);
 	template< typename T > T CalculateAverage( T* array, int size);
 	
-	string mDirectoryPath;          // ex. "./" or "images/out/"
-	string mFilename;
+	QString mDirectoryPath;          // ex. "./" or "images/out/"
+	QString mFilename;
 	bool sourceFilesWereSet;
 	bool mCompleteDelete;
 
-	// TODO: delete these: no longer used
-	string mSourceDirectoryPath;
-	string mSourceFilenameRegex;
-
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	friend class OmDataArchiveProject;
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmMipVolume, 0)
-
-template<class Archive>
-void 
-OmMipVolume::serialize(Archive & ar, const unsigned int file_version) 
-{
-	//mip volume
-	ar & mDirectoryPath;
-	ar & mMipLeafDim;
-	ar & mMipRootLevel;
-	
-	ar & mSourceDirectoryPath;
-	ar & mSourceFilenameRegex;
-	
-	ar & mSubsampleMode;
-	ar & mBuildState;
-	ar & mStoreChunkMetaData;
-	
-}
-
 
 #endif
 

@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QWidget> 
-#include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 
 class SegObjectInspector : public QWidget
@@ -29,6 +28,7 @@ private:
 	QPlainTextEdit *notesEdit;
 	QLabel* dataValuesList;
 	QLabel* origDataValueList;
+	QLabel* chunkList;
 
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeNotesBox();

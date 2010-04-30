@@ -23,7 +23,7 @@ OmMeshSource::~OmMeshSource()
 
 //load mesh data from chunk - expensive
 void
- OmMeshSource::Load(shared_ptr < OmMipChunk > chunk)
+ OmMeshSource::Load(QExplicitlySharedDataPointer < OmMipChunk > chunk)
 {
 	debug ("mesher1", "OmMeshSource::Load\n");
 	MipCoord = chunk->GetCoordinate();
@@ -45,7 +45,9 @@ void OmMeshSource::Copy(OmMeshSource & source)
 	pImageData->Update();
 }
 
-OmMeshSource& OmMeshSource::operator= (const OmMeshSource & foo)
+OmMeshSource& OmMeshSource::operator= (const OmMeshSource &)
 {
+	OmMeshSource s;
 	assert (0);
+	return s;
 }

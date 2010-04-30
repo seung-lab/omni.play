@@ -7,10 +7,7 @@
  */
 
 #include "system/omAction.h"
-#include "system/omSystemTypes.h"
 
-#include "volume/omVolumeTypes.h"
-#include "segment/omSegmentTypes.h"
 
 
 class OmSegmentMergeAction : public OmAction {

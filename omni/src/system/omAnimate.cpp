@@ -22,22 +22,6 @@ void OmAnimate::safeTerminate ()
 void OmAnimate::run ()
 {
 	try {
-		OmSegmentation & seg = OmVolume::GetSegmentation (mSegmentation);
-
-		foreach(OmId segID, seg.GetValidSegmentIds()) {
-
-			if (mTerminate) {
-				return;
-			}
-
-			seg.SetSegmentSelected (segID, true);
-
-			sleep (1);
-			seg.SetAllSegmentsSelected (false);
-
-			OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-
-		}
 
 	} catch (...) {
 		debug ("animate", "Animation failed to run fully.\n");

@@ -3,13 +3,12 @@
 
 #include "volume/omVolume.h"
 #include "segment/omSegmentEditor.h"
+#include "utility/omDataArchiveQT.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omGarbage.h"
-#include "system/omKeyManager.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
-#include "system/omTagManager.h"
 #include "system/omProjectData.h"
 
 #include <QFile>
@@ -48,7 +47,7 @@ void OmProject::Delete()
 
 /////////////////////////////////
 ///////          Project IO
-QString OmProject::New( QString fileNameAndPath, bool amHeadless )
+QString OmProject::New( QString fileNameAndPath )
 {
 	if (!fileNameAndPath.endsWith(".omni")) {
 		fileNameAndPath.append(".omni");
@@ -65,13 +64,7 @@ QString OmProject::New( QString fileNameAndPath, bool amHeadless )
 	//load default project preferences
 	omSetDefaultAllPreferences();
 	
-	if( !amHeadless ){
-		OmKeyManager::SetDefaults();
-	}
-
 	Save();
-
-	OmProjectData::Flush();
 
 	return fileInfo.absoluteFilePath();
 }
@@ -82,8 +75,14 @@ void OmProject::Save()
 		return;
 	}
 
-	OmProjectData::ArchiveWrite < OmProject > (OmHdf5Helpers::getProjectArchiveName(), Instance());
-	OmProjectData::Flush();
+	//TODO: move this into omProjectData
+
+	foreach( OmId segID, OmVolume::GetValidSegmentationIds() ){
+		OmVolume::GetSegmentation( segID ).FlushDirtySegments();
+	}
+
+	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+	
 }
 
 void OmProject::Commit()
@@ -106,7 +105,14 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 	
 	OmProjectData::instantiateProjectData( fileNameAndPath, autoOpenAndClose );
 	OmProjectData::Open();
-	OmProjectData::ArchiveRead < OmProject > (OmHdf5Helpers::getProjectArchiveName(), Instance());
+
+	try {
+		OmDataArchiveQT::ArchiveRead(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+	} catch( ... ) {
+		OmProjectData::Close();
+		throw OmIoException("error during load of project metadata");
+	}
+
 	OmVolume::CheckDataResolution();
 }
 
@@ -121,10 +127,8 @@ void OmProject::Close()
 	OmCacheManager::Delete();
 	OmEventManager::Delete();
 	OmGarbage::Delete();
-	OmKeyManager::Delete();
 	OmPreferences::Delete();
 	OmStateManager::Delete();
-	OmTagManager::Delete();
 
 	//close project data
 	OmProjectData::Close();

@@ -7,7 +7,6 @@
 #include "inspectors/inspectorProperties.h"
 #include "inspectors/segObjectInspector.h"
 #include "common/omStd.h"
-#include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 #include "system/events/omSegmentEvent.h"
 #include "common/omDebug.h"
@@ -43,9 +42,6 @@ private slots:
 
 protected:
 	void keyPressEvent (QKeyEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
 
 private:
 	static const int ENABLED_COL = 0;
@@ -77,6 +73,7 @@ private:
 	void showSegmentContextMenu();
 	int getNumSegmentsPerPage();
 	void dealWithButtons();
+	bool isSegmentSelected();
 
 	int mNumSegmentsPerPage;
 	int currentPageNum;

@@ -1,5 +1,5 @@
-#include "omHdf5LowLevel.h"
-#include "omImageDataIo.h"
+#include "utility/omHdf5LowLevel.h"
+#include "utility/omImageDataIo.h"
 #include "common/omException.h"
 #include "common/omVtk.h"
 #include "common/omDebug.h"
@@ -746,3 +746,218 @@ void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
 	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
 	printf("file cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
 }
+
+void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  void * imageData)
+{
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+
+	hid_t mem_type_id;
+
+	//Opens an existing dataset.
+	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
+	if (dataset_id < 0)
+		throw OmIoException("Could not open HDF5 dataset.");
+
+	//Returns an identifier for a copy of the datatype for a dataset. 
+	//hid_t H5Dget_type(hid_t dataset_id  )
+	hid_t dataset_type_id = H5Dget_type(dataset_id);
+
+	//assert that dest datatype size matches desired size
+	assert(H5Tget_size(dataset_type_id) == (unsigned int)bytesPerSample);
+
+	//Returns an identifier for a copy of the dataspace for a dataset. 
+	//hid_t H5Dget_space(hid_t dataset_id  ) 
+	hid_t dataspace_id = H5Dget_space(dataset_id);
+	if (dataspace_id < 0)
+		throw OmIoException("Could not get HDF5 dataspace.");
+	
+	//create start, stride, count, block
+	//flip coordinates cuz thats how hdf5 likes it
+	Vector3 < hsize_t > start = extent.getMin();
+	Vector3 < hsize_t > end   = extent.getMax();
+	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+
+	/*
+	hsize_t* dims;
+	hsize_t* maxdims;
+	if(H5Sget_simple_extent_dims(dataspace_id, dims, maxdims) < 0)
+		throw OmIoException("Could not get HDF5 data extent.");
+        if ((dims[0]<end.z)&&(dims[1]<end.y)&&(dims[2]<end.z))
+		throw OmIoException("Tried to write data outside of Dataspace extent.");
+	*/
+
+	Vector3 < hsize_t > stride = Vector3i::ONE;
+	Vector3 < hsize_t > count = Vector3i::ONE;
+
+	Vector3 < hsize_t > block = extent.getUnitDimensions();
+	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+
+	//Selects a hyperslab region to add to the current selected region. 
+	//herr_t H5Sselect_hyperslab(hid_t space_id, H5S_seloper_t op, const hsize_t *start, const hsize_t *stride, const hsize_t *count, const hsize_t *block  ) 
+	herr_t ret =
+	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
+				block_flipped.array);
+	if (ret < 0)
+		throw OmIoException("Could not select HDF5 hyperslab.");
+
+	//Creates a new simple dataspace and opens it for access. 
+	//hid_t H5Screate_simple(int rank, const hsize_t * dims, const hsize_t * maxdims  ) 
+	hid_t mem_dataspace_id = H5Screate_simple(3, block.array, block.array);
+	if (mem_dataspace_id < 0)
+		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
+
+	//setup image data
+	Vector3 < int >extent_dims = extent.getUnitDimensions();
+
+
+	//Reads raw data from a dataset into a buffer. 
+	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
+	mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
+	ret = H5Dwrite(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT, imageData);
+	if (ret < 0)
+		throw OmIoException("Could not read HDF5 dataset.");
+
+	//Releases and terminates access to a dataspace. 
+	//herr_t H5Sclose(hid_t space_id  ) 
+	ret = H5Sclose(mem_dataspace_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 scratch dataspace.");
+
+	ret = H5Sclose(dataspace_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataspace.");
+
+	//Closes the specified dataset. 
+	//herr_t H5Dclose(hid_t dataset_id  ) 
+	ret = H5Dclose(dataset_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataset.");
+}
+
+void * OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
+{
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+
+	void *imageData;
+
+	//Opens an existing dataset.
+	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
+	if (dataset_id < 0)
+		throw OmIoException("Could not open HDF5 dataset.");
+
+	//Returns an identifier for a copy of the dataspace for a dataset. 
+	//hid_t H5Dget_space(hid_t dataset_id  ) 
+	hid_t dataspace_id = H5Dget_space(dataset_id);
+	if (dataspace_id < 0)
+		throw OmIoException("Could not get HDF5 dataspace.");
+
+	//create start, stride, count, block
+	//flip coordinates cuz thats how hdf5 likes it
+	Vector3 < hsize_t > start = extent.getMin();
+	Vector3 < hsize_t > end   = extent.getMax();
+	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+
+	//hsize_t* dims;
+	//hsize_t* maxdims;
+        //if(H5Sget_simple_extent_dims(dataspace_id, dims, maxdims) < 0)
+        //	throw OmIoException("Could not get HDF5 data extent.");
+        //if ((dims[0]<end.z)&&(dims[1]<end.y)&&(dims[2]<end.z))
+        //	throw OmIoException("Tried to read data outside of Dataspace extent.");
+
+	Vector3 < hsize_t > stride = Vector3i::ONE;
+	Vector3 < hsize_t > count = Vector3i::ONE;
+
+	Vector3 < hsize_t > block = extent.getUnitDimensions();
+	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+	debug("hdf5image", "start:%i,%i,%i\n", DEBUGV3(start));
+	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
+	//Selects a hyperslab region to add to the current selected region. 
+	herr_t ret =
+	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
+				block_flipped.array);
+	if (ret < 0)
+		throw OmIoException("Could not select HDF5 hyperslab.");
+
+	//Creates a new simple dataspace and opens it for access. 
+	hid_t mem_dataspace_id = H5Screate_simple(3, block.array, NULL);
+	if (mem_dataspace_id < 0)
+		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
+
+	//setup image data
+	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*bytesPerSample);
+
+	//Reads raw data from a dataset into a buffer. 
+	hid_t mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
+	ret =
+	    H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+		    imageData);
+	if (ret < 0)
+		throw OmIoException("Could not read HDF5 dataset.");
+
+	//Releases and terminates access to a dataspace. 
+	//herr_t H5Sclose(hid_t space_id  ) 
+	ret = H5Sclose(mem_dataspace_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 scratch dataspace.");
+
+	ret = H5Sclose(dataspace_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataspace.");
+
+	//Closes the specified dataset. 
+	//herr_t H5Dclose(hid_t dataset_id  ) 
+	ret = H5Dclose(dataset_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataset.");
+
+	return imageData;
+}
+
+/////////////////////////////////
+///////          ImageIo
+Vector3< int > OmHdf5LowLevel::om_hdf5_dataset_get_dims_with_lock(hid_t fileId, const char *name)
+{
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+
+	Vector3 < hsize_t > dims;
+
+	herr_t status;
+
+	//Opens an existing dataset.
+	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
+	if (dataset_id < 0)
+		throw OmIoException("Could not open HDF5 dataset.");
+
+	//Returns an identifier for a copy of the dataspace for a dataset. 
+	hid_t dataspace_id = H5Dget_space(dataset_id);
+	if (dataspace_id < 0)
+		throw OmIoException("Could not get HDF5 dataspace.");
+
+	//Determines the dimensionality of a dataspace. 
+	int rank = H5Sget_simple_extent_ndims(dataspace_id);
+	if (rank < 0)
+		throw OmIoException("Could not determine rank of HDF5 dataspace.");
+
+	//Retrieves dataspace dimension size and maximum size.
+	Vector3 < hsize_t > maxdims;
+	rank = H5Sget_simple_extent_dims(dataspace_id, dims.array, maxdims.array);
+	if (rank < 0)
+		throw OmIoException("Could not determine dimensions of HDF5 dataspace.");
+
+	//Releases and terminates access to a dataspace.  
+	status = H5Sclose(dataspace_id);
+	if (status < 0)
+		throw OmIoException("Could not close HDF5 dataspace.");
+
+	//Closes the specified dataset. 
+	status = H5Dclose(dataset_id);
+	if (status < 0)
+		throw OmIoException("Could not close HDF5 dataset.");
+
+	//flip from hdf5 version
+	return dims;
+}
+

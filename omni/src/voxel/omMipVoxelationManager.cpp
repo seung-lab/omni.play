@@ -4,8 +4,7 @@
 #include "omMipVoxelation.h"
 #include "voxel/omMipSegmentDataCoord.h"
 
-#include "segment/omSegmentTypes.h"
-#include "segment/omSegmentManager.h"
+#include "segment/omSegmentCache.h"
 #include "volume/omDrawOptions.h"
 #include "volume/omMipVolume.h"
 
@@ -13,8 +12,8 @@
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
 
-#include "common/omThreads.h"
 #include "common/omDebug.h"
+#include "common/omGl.h"
 
 #define DEBUG 0
 
@@ -48,12 +47,9 @@ OmMipVoxelationManager::~OmMipVoxelationManager()
 ///////          Voxelation Accessors
 
 void
- OmMipVoxelationManager::GetVoxelation(shared_ptr < OmMipVoxelation > &p_value, const OmMipSegmentDataCoord & coord)
+OmMipVoxelationManager::GetVoxelation(QExplicitlySharedDataPointer < OmMipVoxelation > &p_value, const OmMipSegmentDataCoord & coord)
 {
-
-	//shared_ptr<OmMipVoxelation> p_value = shared_ptr<OmMipVoxelation>();
-	MipVoxelationCache::Get(p_value, coord);
-	return;
+	MipVoxelationCache::Get(p_value, coord, false);
 }
 
 bool OmMipVoxelationManager::ContainsVoxelation(const OmMipSegmentDataCoord & coord)
@@ -90,25 +86,30 @@ bool OmMipVoxelationManager::IsBoundaryVoxel(const DataCoord & rDataCoord)
 	DataCoord neighbor_coord;
 
 	//for all neighboring voxels
-	for (int z = -1; z <= 1; ++z)
-		for (int y = -1; y <= 1; ++y)
+	for (int z = -1; z <= 1; ++z) {
+		for (int y = -1; y <= 1; ++y) {
 			for (int x = -1; x <= 1; ++x) {
 
 				//skip original voxel position
-				if ((x == 0) && (y == 0) && (z == 0))
+				if ((x == 0) && (y == 0) && (z == 0)) {
 					continue;
+				}
 
 				//form neighbor coord
 				neighbor_coord = rDataCoord + Vector3 < int >(x, y, z);
 
 				//invalid coordinates indicates boundary
-				if (!mpMipVolume->ContainsVoxel(neighbor_coord))
+				if (!mpMipVolume->ContainsVoxel(neighbor_coord)) {
 					return true;
+				}
 
 				//if neighbor segment different from source
-				if (voxel_value != mpMipVolume->GetVoxelValue(neighbor_coord))
+				if (voxel_value != mpMipVolume->GetVoxelValue(neighbor_coord)) {
 					return true;
+				}
 			}
+		}
+	}
 
 	//otherwise all neighbors were the same as vox_seg_id
 	return false;
@@ -220,7 +221,7 @@ void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
 	//if old value  is voxelated
 	if (ContainsVoxelation(old_mip_data_coord)) {
 		//get voxelation
-		shared_ptr < OmMipVoxelation > p_voxelation;
+		QExplicitlySharedDataPointer < OmMipVoxelation > p_voxelation;
 		GetVoxelation(p_voxelation, old_mip_data_coord);
 		//refresh to add neighbor boundary voxels
 		RefreshNeighboringVoxels(rVox, *p_voxelation);
@@ -231,7 +232,7 @@ void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
 	//if old value  is voxelated
 	if (ContainsVoxelation(new_mip_data_coord)) {
 		//get voxelation
-		shared_ptr < OmMipVoxelation > p_voxelation;
+		QExplicitlySharedDataPointer < OmMipVoxelation > p_voxelation;
 		GetVoxelation(p_voxelation, new_mip_data_coord);
 		//refresh to remove non-boundary neighbors
 		RefreshNeighboringVoxels(rVox, *p_voxelation);
@@ -261,11 +262,11 @@ void OmMipVoxelationManager::HandleFetchUpdate()
 /////////////////////////////////
 ///////          Draw
 
-void OmMipVoxelationManager::DrawVoxelations(OmSegmentManager & rSegMgr,
+void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 					     const OmMipChunkCoord & mipCoord,
-					     const SegmentDataSet & rRelvDataVals, const OmBitfield & drawOps)
+					     const SegmentDataSet & rRelvDataVals, 
+					     const OmBitfield & drawOps)
 {
-
 	//push modelview matrix
 	glPushMatrix();
 
@@ -274,26 +275,22 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentManager & rSegMgr,
 	glScalefv(scale.array);
 
 	//for all relevent data values in chunk
-	SegmentDataSet::iterator itr;
-	for (itr = rRelvDataVals.begin(); itr != rRelvDataVals.end(); itr++) {
+	foreach( SEGMENT_DATA_TYPE val, rRelvDataVals ){
 
 		//get pointer to mesh
-		shared_ptr < OmMipVoxelation > p_voxelation;
-		GetVoxelation(p_voxelation, OmMipSegmentDataCoord(mipCoord, *itr));
+		QExplicitlySharedDataPointer < OmMipVoxelation > p_voxelation;
+		GetVoxelation(p_voxelation, OmMipSegmentDataCoord(mipCoord, val));
 
 		//if null pointer, then not in cache so skip to next mesh
-		if (NULL == p_voxelation.get())
+		if (NULL == p_voxelation)
 			continue;
 
 		//determine which segment this data values belongs to
-		OmId segment_id = rSegMgr.GetSegmentIdMappedToValue(*itr);
-
-		//apply segment color
-		OmSegment & r_segment = rSegMgr.GetSegment(segment_id);
-		r_segment.ApplyColor(drawOps);
+		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
+		r_segment->ApplyColor(drawOps);
 
 		//draw mesh
-		glPushName(r_segment.GetId());
+		glPushName(r_segment->GetId());
 		glPushName(OMGL_NAME_VOXEL);
 
 		p_voxelation->Draw();

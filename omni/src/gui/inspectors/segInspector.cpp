@@ -1,19 +1,12 @@
 #include "segInspector.h"
 
-#include "common/omStd.h"
-#include "volume/omVolume.h"
-
-#include <QThread>
-#include <qtconcurrentrun.h>
 #include "common/omDebug.h"
+#include "volume/omVolume.h"
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "system/buildVolumes.h"
+#include "system/omBuildVolumes.h"
 #include "utility/sortHelpers.h"
-
-#include <strnatcmp.h>
-#include <boost/progress.hpp>
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
  : QWidget(parent)
@@ -47,6 +40,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
 	QString numSegs = QString::number( sdw.getNumberOfSegments() );
 
+	// TODO: refactor out into StringHelpers; make better...
 	QString commaNumSegs;
 	QString::iterator i;
 	int counter = 0;
@@ -182,7 +176,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetName(nameEdit->text().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -265,7 +259,7 @@ void SegInspector::on_buildButton_clicked()
 {
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
-	BuildVolumes bv(&current_seg);
+	OmBuildVolumes bv(&current_seg);
 	bv.setFileNamesAndPaths( getFileInfoList() );
 
 	QString whatOrHowToBuild = buildComboBox->currentText();
@@ -313,7 +307,7 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
+	OmVolume::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId SegInspector::getSegmentationID()

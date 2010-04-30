@@ -307,7 +307,7 @@ void OmCamera::MovementUpdate(const Vector2 < float >&point)
 	}
 }
 
-void OmCamera::MovementEnd(const Vector2 < float >&point)
+void OmCamera::MovementEnd(const Vector2 < float >& )
 {
 	mMovementType = CAMERA_NONE;
 }

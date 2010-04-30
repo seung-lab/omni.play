@@ -63,10 +63,9 @@ OmView3d::OmView3d(QWidget * parent)
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
-	OmLocalPreferences::getDefault2DViewFrameIn3D();
-	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
-	OmLocalPreferences::getDefaultCrosshairValue();
-	OmLocalPreferences::getDefaultDoDiscoBall();
+	bool disposable = OmLocalPreferences::getDefault2DViewFrameIn3D();
+	disposable = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
+	int whatever = OmLocalPreferences::getDefaultCrosshairValue();
 	mElapsed = new boost::timer();
 }
 
@@ -560,10 +559,4 @@ void initLights()
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
 	glEnable(GL_LIGHT0);	// enable light source after configuration
-}
-
-QSize OmView3d::sizeHint () const
-{
-	QSize s = OmStateManager::getViewBoxSizeHint();
-	return QSize( s.width(), s.height() - 76 );
 }

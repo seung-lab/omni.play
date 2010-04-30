@@ -14,8 +14,7 @@
 #include "inspectors/inspectorProperties.h"
 
 #include "common/omStd.h"
-#include "system/omSystemTypes.h"
-#include "volume/omFilter.h"
+#include "volume/omFilter2d.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 

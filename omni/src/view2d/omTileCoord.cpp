@@ -50,3 +50,10 @@ ostream & operator<<(ostream & out, const OmTileCoord & in)
 		        in.mVolType << " " << in.mFreshness << " ) ]";
 	return out;
 }
+
+uint qHash(const OmTileCoord& c )
+{
+	return qHash( QString("%1_%2")
+		      .arg(c.Level)
+		      .arg(qHash(c.Coordinate)));
+}

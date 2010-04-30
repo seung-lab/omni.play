@@ -1,13 +1,10 @@
 #ifndef OM_DATA_READER_H
 #define OM_DATA_READER_H
 
-#include "volume/omVolumeTypes.h"
 #include "utility/omHdf5Path.h"
 
 #include <string>
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 class vtkImageData;
 
@@ -31,9 +28,13 @@ class OmDataReader
 	//image I/O
 	virtual Vector3 < int > dataset_image_get_dims(OmHdf5Path path ) = 0;
 	virtual vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample) = 0;
+	virtual void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)=0;
 
 	//data set raw
 	virtual void* dataset_raw_read( OmHdf5Path path, int* size = NULL) = 0;
+
+	virtual Vector3< int > dataset_get_dims(OmHdf5Path path) = 0;
+ 
 };
 
 #endif

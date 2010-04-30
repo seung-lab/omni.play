@@ -1,14 +1,12 @@
 #ifndef MESHING_MANAGER_H
 #define MESHING_MANAGER_H
 
-#include "system/omSystemTypes.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipChunkCoord.h"
 #include "mesh/omMipMeshManager.h"
 #include <QQueue>
 #include <QThread>
 #include <QSemaphore>
-using boost::shared_ptr;
 
 class MeshingManager : public QThread
 {

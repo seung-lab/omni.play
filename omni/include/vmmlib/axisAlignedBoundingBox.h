@@ -301,16 +301,16 @@ AxisAlignedBoundingBox< T >::getNearestVertex(const Vector3< T > &v) const {
 	Vector3< T > dist_min = (v - _min) * (v - _min);
 	Vector3< T > dist_max = (v - _max) * (v - _max);
 	
-	Vector3< T > near = _min;
+	Vector3< T > mynear = _min;
 	
 	if( dist_min.x > dist_max.x )
-		near.x = _max.x;
+		mynear.x = _max.x;
 	if( dist_min.y > dist_max.y )
-		near.y = _max.y;
+		mynear.y = _max.y;
 	if( dist_min.z > dist_max.z )
-		near.z = _max.z;
+		mynear.z = _max.z;
 	
-	return near;
+	return mynear;
 }
 	
 	

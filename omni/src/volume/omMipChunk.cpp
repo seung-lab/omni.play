@@ -1,17 +1,18 @@
 
+
 #include "omMipChunk.h"
 #include "omMipVolume.h"
 #include "omVolumeCuller.h"
 #include "omSegmentation.h"
 
 #include "segment/omSegment.h"
-#include "system/omSystemTypes.h"
 #include "system/omStateManager.h"
 #include "system/omProjectData.h"
 #include "common/omUtility.h"
 #include "common/omGl.h"
 #include "common/omVtk.h"
 #include "utility/omImageDataIo.h"
+#include "utility/omDataArchiveQT.h"
 
 #include <vtkImageData.h>
 #include <vtkType.h>
@@ -38,16 +39,15 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	//init chunk properties
 	InitChunk(rMipCoord);
 
-	//read meta data if needed
-	if (mpMipVolume->GetChunksStoreMetaData()) {
-		ReadMetaData();
-	}
+	containedValuesDataLoaded = false;
 
 	//update cache size
 	UpdateSize(sizeof(OmMipChunk));
 
 	mpImageData = NULL;
 	mOpenLock = new QMutex();
+
+	mIsOpen = false;
 }
 
 OmMipChunk::~OmMipChunk()
@@ -57,8 +57,9 @@ OmMipChunk::~OmMipChunk()
 	//since parent destructor is called after this child destructor, we need to call
 	//child Close() here, or else child Close() won't be called (since child won't exist)
 	//when called in parent destructor
-	if (IsOpen())
+	if (IsOpen()) {
 		Close();
+	}
 
 	//remove object size from cache
 	UpdateSize(-int (sizeof(OmMipChunk)));
@@ -94,11 +95,8 @@ void
 	mClippedNormExtent = mpMipVolume->MipCoordToNormBbox(rMipCoord);
 	mClippedNormExtent.intersect(AxisAlignedBoundingBox < float >::UNITBOX);
 
-	//set bytes per sample
-	mBytesPerSample = mpMipVolume->GetBytesPerSample();
-
 	//set if mipvolume uses metadata
-	mMetaDataDirty = false;
+	setMetaDataClean();	
 }
 
 /////////////////////////////////
@@ -132,10 +130,10 @@ void OmMipChunk::OpenForWrite()
 	}
 
 	OmHdf5Path mip_level_vol_path;
-	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	vtkImageData *data = OmProjectData::ReadImageData( mip_level_vol_path, GetExtent(), GetBytesPerSample());
+	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
 	SetImageData(data);
 
@@ -147,12 +145,12 @@ void OmMipChunk::OpenForWrite()
  */
 void OmMipChunk::Flush()
 {
-	//debug("genone", "OmMipChunk::Flush()\n" );
-
 	//only write if dirty
 	if (IsVolumeDataDirty()) {
+		printf("flushing chunk\n");
 		WriteVolumeData();
 	}
+
 	//write meta data if dirty
 	if (IsMetaDataDirty()) {
 		WriteMetaData();
@@ -202,19 +200,21 @@ const DataBbox & OmMipChunk::GetExtent()
 /////////////////////////////////
 ///////          Dirty Methods
 
-bool OmMipChunk::IsDirty() const
+bool OmMipChunk::IsDirty()
 {
 	return IsVolumeDataDirty() || IsMetaDataDirty();
 }
 
-bool OmMipChunk::IsVolumeDataDirty() const
+bool OmMipChunk::IsVolumeDataDirty()
 {
-	return mVolumeDataDirty;
+	return mChunkVolumeDataDirty;
 }
 
-bool OmMipChunk::IsMetaDataDirty() const
+bool OmMipChunk::IsMetaDataDirty()
 {
-	return mpMipVolume->GetChunksStoreMetaData() && mMetaDataDirty;
+	//TODO: why isn't this OR (ie. ||)?
+	return mpMipVolume->GetChunksStoreMetaData() 
+		&& mChunkMetaDataDirty;
 }
 
 /////////////////////////////////
@@ -224,15 +224,15 @@ void OmMipChunk::ReadVolumeData()
 {
 	//get path to mip level volume
 	OmHdf5Path mip_level_vol_path;
-	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
 	//read from project data
-	if (!OmProjectData::DataExists(mip_level_vol_path)) {
+	if (!OmProjectData::GetProjectDataReader()->dataset_exists(mip_level_vol_path)) {
 		assert(0);
 		throw OmIoException("no MIP data found");
 	}
 
-	vtkImageData *data = OmProjectData::ReadImageData(mip_level_vol_path, GetExtent(), GetBytesPerSample());
+	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent(), GetBytesPerSample());
 	debug("mipchunk", "data: %i, refcount of:%i\n", data, data->GetReferenceCount ());
 
 	//set this image data
@@ -240,7 +240,7 @@ void OmMipChunk::ReadVolumeData()
 
 	// Need to undo the side effect caused by setting the image data. Don't want to write out the data just
 	// because we set the newly loaded data.
-	mVolumeDataDirty = false;
+	setVolDataClean();
 }
 
 void OmMipChunk::WriteVolumeData()
@@ -250,44 +250,40 @@ void OmMipChunk::WriteVolumeData()
 	}
 
 	OmHdf5Path mip_level_vol_path;
-	mip_level_vol_path.setPath( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
 	if (mpImageData) {
-		OmProjectData::WriteImageData( mip_level_vol_path, (DataBbox*)&GetExtent(), GetBytesPerSample(), mpImageData);
+		OmProjectData::GetDataWriter()->dataset_image_write_trim( mip_level_vol_path, (DataBbox*)&GetExtent(), GetBytesPerSample(), mpImageData);
 	}
 
-	mVolumeDataDirty = false;
+	setVolDataClean();
 }
 
 void OmMipChunk::ReadMetaData()
 {
-	// TODO: must we do this? (purcaro)
-
 	OmHdf5Path dat_file_path;
-	dat_file_path.setPath( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
+	dat_file_path.setPathQstr( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
 
 	//read archive if it exists
-	if (OmProjectData::DataExists(dat_file_path)) {
-		OmProjectData::ArchiveRead < OmMipChunk > (dat_file_path, this);
+	if (OmProjectData::GetProjectDataReader()->dataset_exists(dat_file_path)) {
+		OmDataArchiveQT::ArchiveRead(dat_file_path, this);
 	}
-
-	//otherwise, no metadata to read in
 }
 
 void OmMipChunk::WriteMetaData()
 {
 	OmHdf5Path dat_file_path;
-	dat_file_path.setPath(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	dat_file_path.setPathQstr(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
-	OmProjectData::ArchiveWrite < OmMipChunk > (dat_file_path, this);
+	OmDataArchiveQT::ArchiveWrite(dat_file_path, this);
 
-	mMetaDataDirty = false;
+	setMetaDataClean();
 }
 
 /////////////////////////////////
 ///////          MetaData Accessors
 
-const SegmentDataSet & OmMipChunk::GetModifiedVoxelValues() const
+const SegmentDataSet & OmMipChunk::GetModifiedVoxelValues()
 {
 	return mModifiedVoxelValues;
 }
@@ -325,21 +321,19 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 	void *p_scalar = mpImageData->GetScalarPointer(offset.x, offset.y, offset.z);
 
 	//cast to appropriate type and return as uint
-	switch (mBytesPerSample) {
+	switch (GetBytesPerSample()) {
 	case 1:
-		*((uint8_t *) p_scalar) = (uint8_t) val;
+		*((quint8 *) p_scalar) = (quint8) val;
 		break;
 	case 4:
 		*((uint32_t *) p_scalar) = val;
 		break;
 	default:
-		//assert(false && ""What?! Data must be 1 or 4 bytes large");
-		//debug("FIXME", << "What?! Data must be 1 or 4 bytes large, not " << mBytesPerSample << endl;
 		break;
 	}
 
 	//data volume now dirty
-	mVolumeDataDirty = true;
+	setVolDataDirty();
 }
 
 /*
@@ -360,9 +354,9 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 	void *p_scalar = mpImageData->GetScalarPointer(offset.x, offset.y, offset.z);
 
 	//cast to appropriate type and return as uint
-	switch (mBytesPerSample) {
+	switch (GetBytesPerSample()) {
 	case 1:
-		return *((uint8_t *) p_scalar);
+		return *((quint8 *) p_scalar);
 	case 4:
 		return *((uint32_t *) p_scalar);
 	default:
@@ -394,10 +388,7 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 
 	//set data causes chunk to be open and dirty
 	SetOpen(true);
-	mVolumeDataDirty = true;
-
-	//get property from set data
-	mBytesPerSample = mpImageData->GetScalarSize();
+	setVolDataDirty();
 
 	//remove image data size from cache (convert to bytes)
 	int est_mem_bytes = mpImageData->GetEstimatedMemorySize() * 1024;
@@ -407,18 +398,18 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 /////////////////////////////////
 ///////          Mip Accessors
 
-int OmMipChunk::GetLevel() const
+int OmMipChunk::GetLevel()
 {
 	return mCoordinate.Level;
 }
 
-bool OmMipChunk::IsRoot() const
+bool OmMipChunk::IsRoot()
 {
 	//if parent is null
 	return mParentCoord == OmMipChunkCoord::NULL_COORD;
 }
 
-bool OmMipChunk::IsLeaf() const
+bool OmMipChunk::IsLeaf()
 {
 	return mCoordinate.Level == 0;
 }
@@ -441,12 +432,12 @@ const set < OmMipChunkCoord > & OmMipChunk::GetChildrenCoordinates()
 /////////////////////////////////
 ///////          Property Accessors
 
-const NormBbox & OmMipChunk::GetNormExtent() const
+const NormBbox & OmMipChunk::GetNormExtent()
 {
 	return mNormExtent;
 }
 
-const NormBbox & OmMipChunk::GetClippedNormExtent() const
+const NormBbox & OmMipChunk::GetClippedNormExtent()
 {
 	return mClippedNormExtent;
 }
@@ -458,9 +449,10 @@ const NormBbox & OmMipChunk::GetClippedNormExtent() const
  *	Returns reference to set of all values directly contained by
  *	the image data of this MipChunk
  */
-const SegmentDataSet & OmMipChunk::GetDirectDataValues() const
+const SegmentDataSet & OmMipChunk::GetDirectDataValues()
 {
-	return mDirectlyContainedDataValuesSet;
+	loadMetadataIfPresent();
+	return mDirectlyContainedValues;
 }
 
 /*
@@ -468,9 +460,44 @@ const SegmentDataSet & OmMipChunk::GetDirectDataValues() const
  *	by the bounds of this MipChunk.  That is all the direcly contained
  *	values of the children of this MipChunk.
  */
-const SegmentDataSet & OmMipChunk::GetIndirectDataValues() const
+const SegmentDataSet & OmMipChunk::GetIndirectDataValues()
 {
-	return mIndirectlyContainedDataValuesSet;
+	loadMetadataIfPresent();
+	return mIndirectlyContainedValues;
+}
+
+/*
+ *	Returns reference to set of all values directly contained by
+ *	the image data of this MipChunk
+ */
+SegmentDataSet & OmMipChunk::GetDirectDataValuesInternal()
+{
+	loadMetadataIfPresent();
+	return mDirectlyContainedValues;
+}
+
+/*
+ *	Returns reference to set of values indirectly (spatially) contained
+ *	by the bounds of this MipChunk.  That is all the direcly contained
+ *	values of the children of this MipChunk.
+ */
+SegmentDataSet & OmMipChunk::GetIndirectDataValuesInternal()
+{
+	loadMetadataIfPresent();
+	return mIndirectlyContainedValues;
+}
+
+void OmMipChunk::loadMetadataIfPresent()
+{
+	if( containedValuesDataLoaded ){
+		return;
+	}
+
+	if (mpMipVolume->GetChunksStoreMetaData()) {
+		ReadMetaData();
+	}
+
+	containedValuesDataLoaded = true;
 }
 
 /*
@@ -479,56 +506,58 @@ const SegmentDataSet & OmMipChunk::GetIndirectDataValues() const
  */
 void OmMipChunk::RefreshDirectDataValues()
 {
-
 	//uses mpImageData so ensure chunk is open
 	Open();
 
 	//clear previous segments
-	mDirectlyContainedDataValuesSet.clear();
+	GetDirectDataValuesInternal().clear();
 
 	//get data extent (varify it is a chunk)
 	int extent[6];
 	mpImageData->GetExtent(extent);
 
 	//get pointer to native scalar data
-	//assert(mpImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
 	if (SEGMENT_DATA_BYTES_PER_SAMPLE == mpImageData->GetScalarSize()) {
 		SEGMENT_DATA_TYPE *p_scalar_data = static_cast < SEGMENT_DATA_TYPE * >(mpImageData->GetScalarPointer());
 
 		//for all voxels in the chunk
 		int x, y, z;
-		for (z = extent[0]; z <= extent[1]; z++)
-			for (y = extent[2]; y <= extent[3]; y++)
+		for (z = extent[0]; z <= extent[1]; z++) {
+			for (y = extent[2]; y <= extent[3]; y++) {
 				for (x = extent[4]; x <= extent[5]; x++) {
 
 					//if non-null insert in set
 					if (NULL_SEGMENT_DATA != *p_scalar_data) {
-						mDirectlyContainedDataValuesSet.insert(*p_scalar_data);
+						GetDirectDataValuesInternal().insert(*p_scalar_data);
 					}
 					//adv to next scalar
 					++p_scalar_data;
 				}
-
+			}
+		}
 	} else if (1 == mpImageData->GetScalarSize()) {
 		unsigned char *p_scalar_data = static_cast < unsigned char *>(mpImageData->GetScalarPointer());
 
 		//for all voxels in the chunk
 		int x, y, z;
-		for (z = extent[0]; z <= extent[1]; z++)
-			for (y = extent[2]; y <= extent[3]; y++)
+		for (z = extent[0]; z <= extent[1]; z++) {
+			for (y = extent[2]; y <= extent[3]; y++) {
 				for (x = extent[4]; x <= extent[5]; x++) {
 
 					//if non-null insert in set
 					if ('\0' != *p_scalar_data) {
 						SEGMENT_DATA_TYPE my_scalar_data = (SEGMENT_DATA_TYPE) (*p_scalar_data);
-						mDirectlyContainedDataValuesSet.insert(my_scalar_data);
+						GetDirectDataValuesInternal().insert(my_scalar_data);
 					}
 					//adv to next scalar
 					++p_scalar_data;
 				}
+			}
+		}
 	}
+
 	//note metadata is dirty
-	mMetaDataDirty = true;
+	setMetaDataDirty();
 }
 
 /*
@@ -543,29 +572,28 @@ void OmMipChunk::RefreshIndirectDataValues()
 	Open();
 
 	//clear previous segment ids
-	mIndirectlyContainedDataValuesSet.clear();
+	GetIndirectDataValuesInternal().clear();
 
 	//if leaf, then spatial is data
 	if (IsLeaf()) {
-		mIndirectlyContainedDataValuesSet = mDirectlyContainedDataValuesSet;
+		GetIndirectDataValuesInternal() = GetDirectDataValuesInternal();
 		return;
 	}
 	//for each valid child
-	set < OmMipChunkCoord >::iterator itr;
-	for (itr = mChildrenCoordinates.begin(); itr != mChildrenCoordinates.end(); itr++) {
+	foreach( OmMipChunkCoord coord, mChildrenCoordinates ){
+
 		//get child
-		shared_ptr < OmMipChunk > p_child_chunk = shared_ptr < OmMipChunk > ();
-		mpMipVolume->GetChunk(p_child_chunk, *itr);
-		const SegmentDataSet & r_child_indirect_data_values = p_child_chunk->GetIndirectDataValues();
+		QExplicitlySharedDataPointer < OmMipChunk > p_child_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+		mpMipVolume->GetChunk(p_child_chunk, coord );
+		const SegmentDataSet & r_child_indirect_data_values = p_child_chunk->GetIndirectDataValuesInternal();
 
 		//insert spatially contained children
-		mIndirectlyContainedDataValuesSet.insert(r_child_indirect_data_values.begin(),
-							 r_child_indirect_data_values.end());
+		GetIndirectDataValuesInternal().unite(r_child_indirect_data_values);
 
 	}
 
 	//note metadata is dirty
-	mMetaDataDirty = true;
+	setMetaDataDirty();
 }
 
 /////////////////////////////////
@@ -603,9 +631,6 @@ AxisAlignedBoundingBox < int > OmMipChunk::ExtractSliceExtent(OmDataVolumePlane 
 		slice_bbox.setMin(Vector3 < int >(coord, data_extent_min.y, data_extent_min.z));
 		slice_bbox.setMax(Vector3 < int >(coord, data_extent_max.y, data_extent_max.z));
 		break;
-
-	default:
-		assert(false);
 	}
 
 	return slice_bbox;
@@ -710,17 +735,17 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 			for (int x = 0; x < 2; x++) {
 
 				//form mip coord
-				OmMipChunkCoord mip_coord(mCoordinate.get < 0 > (),
-							  mCoordinate.get < 1 > () + x,
-							  mCoordinate.get < 2 > () + y, 
-							  mCoordinate.get < 3 > () + z);
+				OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
+							  mCoordinate.getCoordinateX() + x,
+							  mCoordinate.getCoordinateY() + y, 
+							  mCoordinate.getCoordinateZ() + z);
 
 				//skip invalid mip coord
 				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
 					continue;
 
 				//else get chunk
-				shared_ptr < OmMipChunk > p_chunk;
+				QExplicitlySharedDataPointer < OmMipChunk > p_chunk;
 				mpMipVolume->GetChunk(p_chunk, mip_coord);
 
 				p_chunk->Open();
@@ -735,7 +760,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				QMutexLocker locker(mOpenLock);
 				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 				
-				p_chunk = shared_ptr  < OmMipChunk > ();
+				p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();
 				mpMipVolume->Remove(mip_coord);
 			}
 		}
@@ -752,14 +777,14 @@ vtkImageData *OmMipChunk::GetMeshImageData()
  *	or if we should continue refining so as to draw children.
  */
 
-bool OmMipChunk::DrawCheck(const OmVolumeCuller & rCuller)
+bool OmMipChunk::DrawCheck(OmVolumeCuller & rCuller)
 {
 	//draw if leaf
-	if (IsLeaf())
+	if (IsLeaf()) {
 		return true;
+	}
 
 	NormCoord camera = rCuller.GetPosition();
-	//NormCoord center = mNormExtent.getCenter();
 	NormCoord center = mClippedNormExtent.getCenter();
 
 	float camera_to_center = center.distance(camera);
@@ -798,16 +823,47 @@ void OmMipChunk::DrawClippedExtent()
 	glPopAttrib();
 }
 
-/////////////////////////////////
-///////          ostream
-ostream & operator<<(ostream & out, const OmMipChunk & mc)
+bool OmMipChunk::IsOpen()
 {
+	return mIsOpen;
+}
 
-	out << (OmDataVolume &) mc;
+void OmMipChunk::SetOpen(bool state)
+{
+	mIsOpen = state;
+}
 
-	//debug("FIXME", << "Root: " << mc.IsRoot() << "\n";
-	//debug("FIXME", << "Leaf: " << mc.IsLeaf() << "\n";
-	out << "Normalized Extent: " << mc.mNormExtent << "\n";
+int OmMipChunk::GetBytesPerSample()
+{
+	return mpMipVolume->GetBytesPerSample();
+}
 
-	return out;
+bool OmMipChunk::ContainsVoxel(const DataCoord & vox)
+{
+	return GetExtent().contains(vox);
+}
+
+const Vector3 < int > OmMipChunk::GetDimensions()
+{
+	return GetExtent().getUnitDimensions();
+}
+
+void OmMipChunk::setVolDataDirty()
+{
+	mChunkVolumeDataDirty = true;
+}
+
+void OmMipChunk::setMetaDataDirty()
+{
+	mChunkMetaDataDirty = true;
+}
+
+void OmMipChunk::setVolDataClean()
+{
+	mChunkVolumeDataDirty = false;
+}
+
+void OmMipChunk::setMetaDataClean()
+{
+	mChunkMetaDataDirty = false;
 }

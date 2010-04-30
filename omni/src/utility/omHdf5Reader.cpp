@@ -57,3 +57,13 @@ Vector3 < int > OmHdf5Reader::dataset_image_get_dims( OmHdf5Path path )
 {
 	return hdf5->dataset_image_get_dims( path );
 }
+
+void* OmHdf5Reader::dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+{
+	return hdf5->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );
+}
+
+Vector3< int > OmHdf5Reader::dataset_get_dims( OmHdf5Path path )
+{
+	return hdf5->dataset_get_dims( path );
+}

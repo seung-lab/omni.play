@@ -1,5 +1,4 @@
-
-#include "volume/omFilter.h"
+#include "volume/omFilter2d.h"
 
 #include "volume/omDrawOptions.h"
 #include "common/omGl.h"
@@ -8,10 +7,6 @@
 #include "volume/omVolume.h"
 #include "view2d/omThreadedCachingTile.h"
 #include "view2d/omView2d.h"
-
-#define DEBUG 0
-
-
 
 /////////////////////////////////
 ///////
@@ -26,7 +21,6 @@ OmFilter2d::OmFilter2d (OmId segid, OmId chanid, OmId filterid)
 	repair->GetCache (XY_VIEW);
 }
 
-
 OmFilter2d::OmFilter2d() {
 	mAlpha = 0.0;
 	mSeg = 0;
@@ -36,14 +30,13 @@ OmFilter2d::OmFilter2d() {
 OmFilter2d::OmFilter2d(OmId omId) 
 : OmManageableObject(omId) 
 {
-	mName = QString("filter%1").arg(omId).toStdString();
+	mName = QString("filter%1").arg(omId);
 	
 	//initially transparent.
 	mAlpha = 0.0;
 	mSeg = 0;
 	mChannel = 0;
 }
-
 
 void OmFilter2d::SetAlpha (double alpha)
 {
@@ -73,6 +66,9 @@ OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype)
 	return mCache;
 }
 
+OmId OmFilter2d::GetSegmentation () {
+	return mSeg;
+}
 
 void OmFilter2d::SetSegmentation (OmId id) {
 	if (mSeg != id || 0 == id) {
@@ -84,6 +80,10 @@ void OmFilter2d::SetSegmentation (OmId id) {
 	} catch (OmAccessException e) {
 		mSeg = 0;
 	}
+}
+
+OmId OmFilter2d::GetChannel () {
+	return mChannel;
 }
 
 void OmFilter2d::SetChannel (OmId id) {

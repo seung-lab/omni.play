@@ -69,7 +69,6 @@ enum {
 
 // functions to set default preferences
 void omSetDefaultAllPreferences();
-void omSetDefaultCommonPreferences();
 void omSetDefaultGuiPreferences();
 void omSetDefaultMeshPreferences();
 void omSetDefaultSegmentPreferences();

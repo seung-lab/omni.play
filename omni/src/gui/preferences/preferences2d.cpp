@@ -2,8 +2,6 @@
 
 #include "common/omStd.h"
 #include "volume/omVolume.h"
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"

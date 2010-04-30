@@ -45,9 +45,8 @@ void
 
 	//store old state of all changed segment ids
 	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(segmentationId);
-	OmIds::iterator itr;
-	for (itr = segmentIds.begin(); itr != segmentIds.end(); itr++) {
-		mPrevSegmentStates[*itr] = r_segmentation.IsSegmentEnabled(*itr);
+	foreach( OmId id, segmentIds ){
+		mPrevSegmentStates[id] = r_segmentation.IsSegmentEnabled(id);
 	}
 
 }
@@ -68,8 +67,9 @@ void OmSegmentStateAction::Action()
 	}
 
 	//send segment selection change event
-	OmEventManager::
-	    PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION, mSegmentationId, mSegmentIds));
+	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION, 
+						     mSegmentationId, 
+						     mSegmentIds));
 }
 
 void OmSegmentStateAction::UndoAction()
@@ -85,8 +85,9 @@ void OmSegmentStateAction::UndoAction()
 	}
 
 	//send segment selection change event
-	OmEventManager::
-	    PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION, mSegmentationId, mSegmentIds));
+	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION, 
+						     mSegmentationId, 
+						     mSegmentIds));
 }
 
 string OmSegmentStateAction::Description()

@@ -1,10 +1,14 @@
 #include <signal.h>
-#include <execinfo.h>
-#include <dlfcn.h>
 
 #include "mainwindow.h"
 #include "headless.h"
 #include "project/omProject.h"
+
+#ifndef WIN32
+#include <execinfo.h>
+#include <dlfcn.h>
+#endif
+
 
 GGOCTFPointer GGOCTFunction = 0;
 
@@ -38,8 +42,9 @@ int firsttime(int argc, char *argv[])
 
 //int backtrace (void **buffer, int size);
 //char ** backtrace_symbols (void *const *buffer, int size);
-void myBacktrace (int sig)
+void myBacktrace (int)
 {
+#ifndef WIN32
        	void *array[1000];
        	size_t size;
        	char **strings;
@@ -56,13 +61,21 @@ void myBacktrace (int sig)
 	free (strings);
 
 	exit(0);
+#endif
 }
+
+#ifdef WIN32
+void * __gxx_personality_v0=0;
+void * _Unwind_Resume =0;
+#endif
 
 int main(int argc, char *argv[])
 {
+#ifndef WIN32
 	signal (SIGSEGV, myBacktrace);
 	signal (SIGBUS, myBacktrace);
 	signal (SIGABRT, myBacktrace);
+#endif
 
 	Headless headless;
 	return headless.start(argc, argv);

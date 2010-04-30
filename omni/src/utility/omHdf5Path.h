@@ -9,7 +9,10 @@ class OmHdf5Path
  public:
 	OmHdf5Path();
 	void setPath( std::string str );
+	void setPathQstr( QString );
+
 	std::string getString();
+	QString getStringQStr();
 
 	OmHdf5Path & operator=( OmHdf5Path & rhs );
 

@@ -21,9 +21,11 @@ void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QStr
 	mainLayout->addWidget( mWidget );
 	setWindowTitle(title);
 
-	show();
-	raise();
-	activateWindow();
+	if( !isVisible() ){
+		show();
+		raise();
+		activateWindow();
+	}
 }
 
 void InspectorProperties::closeDialog()

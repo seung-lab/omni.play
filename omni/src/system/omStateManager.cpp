@@ -6,8 +6,10 @@
 #include "events/omView3dEvent.h"
 #include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
-#include <QHostInfo>
 #include "gui/myInspectorWidget.h"
+#include "gui/mainwindow.h"
+
+#include <QHostInfo>
 
 //undostack
 #include <QUndoStack>
@@ -18,20 +20,8 @@
 #include <QtOpenGL/QGLFormat>
 #include "common/omDebug.h"
 
-//#if __APPLE__
-//	#include <cmath>
-//#endif
-
-
-#define DEBUG 0
-
 //init instance pointer
 OmStateManager *OmStateManager::mspInstance = 0;
-
-/////////////////////////////////
-///////
-///////          OmStateManager
-///////
 
 OmStateManager::OmStateManager()
 {
@@ -69,32 +59,31 @@ OmStateManager::OmStateManager()
 	mParallel = false;
 
 	inspectorWidget = NULL;
+	mainWindow = NULL;
 }
 
 OmStateManager::~OmStateManager()
 {
-
 	//undostack
 	if (mpUndoStack) {
 		delete mpUndoStack;
 		mpUndoStack = NULL;
 	}
+
 	//view3d
 	if (mpPrimaryView3dWidget) {
 		delete mpPrimaryView3dWidget;
 		mpPrimaryView3dWidget = NULL;
 	}
-
 }
 
 /*
  * Static accessor
  */
-
 OmStateManager *OmStateManager::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmStateManager;
+		mspInstance = new OmStateManager();
 	}
 	return mspInstance;
 }
@@ -104,8 +93,6 @@ OmStateManager *OmStateManager::Instance()
  */
 void OmStateManager::Delete()
 {
-
-	//delete self
 	if (mspInstance) {
 		delete mspInstance;
 		mspInstance = NULL;
@@ -145,7 +132,10 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 {
 	return Instance()->omniExecPathAbsolute;
 }
-
+#if WIN32
+#define getpid() 0
+#define pid_t int
+#endif
 QString OmStateManager::getPID()
 {
         static char pidstr[6] = {0};
@@ -166,7 +156,11 @@ QString OmStateManager::getPID()
 
 QString OmStateManager::getHostname()
 {
+#ifdef WIN32
+	return QString("localhost");
+#else
 	return QHostInfo::localHostName();
+#endif
 }
 
 bool OmStateManager::getParallel()
@@ -269,7 +263,7 @@ Vector2 < float > OmStateManager::GetViewSliceMax(ViewType plane)
  */
 void OmStateManager::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
 {
-	if (std::isnan(depth)) assert(0);
+	if (ISNAN(depth)) assert(0);
 	switch (plane) {
 	case XY_VIEW:
 		Instance()->mXYSlice[4] = depth;
@@ -395,7 +389,7 @@ void OmStateManager::SetSliceState(OmSlicePlane plane, bool enabled)
  *	Sets the data format for the slice image data.  This will automatically clear
  *	any image data previously set.
  */
-void OmStateManager::SetViewSliceDataFormat(int bytesPerSample, int samplesPerPixel)
+void OmStateManager::SetViewSliceDataFormat(int bytesPerSample)
 {
 	//debug("genone","OmStateManager::SetViewSliceDataFormat");
 
@@ -570,44 +564,6 @@ QGLContext *OmStateManager::GetSharedView3dContext()
 	return p_shared_context;
 }
 
-/*
- *	Makes given QGLContext current. 
- */
-void OmStateManager::MakeContextCurrent(QGLContext * pContext)
-{
-	//pContext->makeCurrent();
-}
-
-/*
- *	Returns a pointer to a QGLContext that is shared with the primary QGLContext.  
- */
-QGLContext *OmStateManager::GetSharedView2dContext(const QGLContext * pContext)
-{
-
-//      //create primary widget if it does not exist yet
-//      if(Instance()->mpPrimaryView3dWidget == NULL) 
-//              CreatePrimaryView3dWidget();
-//      
-//      //get primary context
-//      const QGLContext* p_primary_context = Instance()->mpPrimaryView3dWidget->context();
-
-#if 0
-	//make isntance of a shared context
-	QGLContext *p_shared_context = new QGLContext(pContext->format(),
-						      pContext->device());
-
-	//create context that is shared with primary
-	p_shared_context->create(pContext);
-
-	//assert context is valid and is sharing
-	assert(p_shared_context->isValid() && "Shared context not valid.");
-	assert(p_shared_context->isSharing() && "New shared context is not sharing");
-
-	return p_shared_context;
-#endif
-	return NULL;
-}
-
 /////////////////////////////////
 ///////          Transparency State
 
@@ -638,4 +594,14 @@ QSize OmStateManager::getViewBoxSizeHint()
 	}
 
 	return QSize( w, h );
+}
+
+void OmStateManager::SetMainWindow( MainWindow * mw)
+{
+	Instance()->mainWindow = mw;
+}
+
+void OmStateManager::UpdateStatusBar( QString msg )
+{
+	Instance()->mainWindow->updateStatusBar( msg );
 }

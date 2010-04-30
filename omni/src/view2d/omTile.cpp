@@ -127,10 +127,10 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 
 	//debug("genone","INSIDE HDF5 ERROR");
 
-	shared_ptr < OmMipChunk > my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key));
+	QExplicitlySharedDataPointer < OmSimpleChunk > my_chunk;
+	vol->GetSimpleChunk(my_chunk, TileToMipCoord(key));
 	////debug("genone","after hdf5 error?");
-	int mDepth = GetDepth(key, vol);
+	int mDepth = GetDepth(key);
 
 	my_chunk->Open();
 
@@ -159,7 +159,7 @@ OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 
 }
 
-int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
+int OmTile::GetDepth(const OmTileCoord & key)
 {
 	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
@@ -207,22 +207,21 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 	//debug ("genone", "key volume type: %i\n", key.mVolType);
 
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
-	bool doValidate = current_seg.GetSelectedSegmentDataValues ().size ();
+	bool doValidate = current_seg.AreSegmentsSelected();
 	if (SEGMENTATION == key.mVolType) {
 		doValidate = false;	
 	}
 
-	map < SEGMENT_DATA_TYPE, QColor > speedTable;
+	QHash < SEGMENT_DATA_TYPE, QColor > speedTable;
 	QColor newcolor;
 	SEGMENT_DATA_TYPE lastid = 0;
 
 	// looping through each value of imageData, which is strictly dims.x * dims.y big, no extra because of cast to SEGMENT_DATA_TYPE
 	for (int i = 0; i < dims.x * dims.y; i++) {
 		SEGMENT_DATA_TYPE tmpid = (SEGMENT_DATA_TYPE) imageData[i];
-		map < SEGMENT_DATA_TYPE, QColor >::iterator it = speedTable.find(tmpid);
 
 		if (tmpid != lastid) {
-			if (speedTable.end() == it) {
+			if (!speedTable.contains(tmpid)) {
 
 				//debug("FIXME", << "gotten segment id mapped to value" << endl;
 
@@ -238,8 +237,8 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 					found_ids.insert(id);
 
 					// //debug("FIXME", << "asking for color now" << endl;
-					const Vector3 < float >&color =
-					    OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+					OmSegment * segment = current_seg.GetSegment(id);
+					const Vector3 < float >&color = segment->GetColor();
 
 					if (current_seg.IsSegmentSelected(id))
 						newcolor =
@@ -263,7 +262,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 				//debug("FIXME", << " adding to speed table" << endl;
 			} else {
 				//debug("FIXME", << " using speed table" << endl;
-				newcolor = (*it).second;
+				newcolor = speedTable.value(tmpid);
 				data[ctr] = newcolor.red();
 				data[ctr + 1] = newcolor.green();
 				data[ctr + 2] = newcolor.blue();
@@ -285,11 +284,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 	return found_ids;
 }
 
-void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, 
-				  int dim, 
-				  set < DataCoord > &vox, 
-				  QColor & color,
-				  int tl)
+void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 {
 	// so instead of relying on the color, i want to have *data be filled
 	//   with the appropriate value from channel
@@ -362,8 +357,8 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 					break;
 
 				case EDIT_SYSTEM_MODE:{
-					const Vector3 < float >&color =
-						OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+					OmSegment * segment = OmVolume::GetSegmentation(myID).GetSegment(id);
+					const Vector3 < float >&color = segment->GetColor();
 
 					newcolor =
 						qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
@@ -379,9 +374,8 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 
 				}
 			} else {
-
-				const Vector3 < float >&color =
-					OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+				OmSegment * segment = OmVolume::GetSegmentation(myID).GetSegment(id);
+				const Vector3 < float >&color = segment->GetColor();
 
 				newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
 

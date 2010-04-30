@@ -2,9 +2,7 @@
 #include "omCameraMovement.h"
 #include "omCamera.h"
 
-#include <vmmlib/vmmlib.h>
 #include "common/omDebug.h"
-using namespace vmml;
 
 /////////////////////////////////////
 //////////

@@ -4,10 +4,11 @@
 #include <QMutex>
 #include <QQueue>
 
-#include "volume/omVolumeTypes.h"
+#include "common/omCommon.h"
 #include "utility/omHdf5.h"
 #include "utility/omHdf5Path.h"
 #include "utility/omDataReader.h"
+
 class vtkImageData;
 
 class OmHdf5Reader : public OmDataReader
@@ -32,9 +33,11 @@ class OmHdf5Reader : public OmDataReader
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
 	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-
+	void* dataset_image_read_simple_trim( OmHdf5Path path, DataBbox dataExtent);
 	//data set raw
 	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);
+	void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
+	Vector3< int > dataset_get_dims( OmHdf5Path path );
 
  private:
 	OmHdf5 * hdf5;

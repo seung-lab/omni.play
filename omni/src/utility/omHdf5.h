@@ -1,12 +1,12 @@
 #ifndef OM_HDF_H
 #define OM_HDF_H
 
-#include <QMutex>
+#include <QReadWriteLock>
 #include <QQueue>
 #include <string>
 using std::string;
 
-#include "volume/omVolumeTypes.h"
+#include "common/omCommon.h"
 #include "utility/omHdf5LowLevelWrappersAutoOpenClose.h"
 #include "utility/omHdf5LowLevelWrappersManualOpenClose.h"
 #include "utility/omHdf5Helpers.h"
@@ -45,11 +45,14 @@ class OmHdf5
 	//data set raw
 	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);
 	void dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data);
+	void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
+	void dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData);
+	Vector3< int > dataset_get_dims( OmHdf5Path path );
 
  private:
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
-	QMutex * fileLock;
+	QReadWriteLock * fileLock;
 	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
 	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };

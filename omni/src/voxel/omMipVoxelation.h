@@ -1,28 +1,15 @@
 #ifndef OM_MIP_VOXELATION_H
 #define OM_MIP_VOXELATION_H
 
-/*
- *
- *
- */
-
 #include "voxel/omMipSegmentDataCoord.h"
 
-#include "volume/omVolumeTypes.h"
-#include "segment/omSegmentTypes.h"
 #include "system/omCacheableBase.h"
 #include "common/omStd.h"
-
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
 
 class OmMipVoxelation;
 class OmMipVoxelationManager;
 
-
-
-class OmMipVoxelation : protected OmCacheableBase {
+class OmMipVoxelation : public OmCacheableBase {
 
 public:
 	OmMipVoxelation(const OmMipSegmentDataCoord &mipSegDataCoord, OmMipVoxelationManager *cache);
@@ -38,6 +25,8 @@ public:
 	//draw
 	void Draw();
 	
+	void Flush();
+
 private:
 	OmMipSegmentDataCoord mCoordinate;
 	set< DataCoord > mVoxels;

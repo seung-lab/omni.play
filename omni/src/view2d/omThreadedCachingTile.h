@@ -12,9 +12,6 @@
 
 #include "volume/omMipVolume.h"
 
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-
 
 typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDThreadedCache;
 
@@ -35,8 +32,8 @@ public:
 	~OmThreadedCachingTile();
 		
 	// texture ID
-	virtual void GetTextureID(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
-	void GetTextureIDDownMip(shared_ptr<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
+	virtual void GetTextureID(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
+	void GetTextureIDDownMip(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
 	void StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID);
 	
 	//cache actions
@@ -45,7 +42,7 @@ public:
 	//void ClearCache();
 	void SetContinuousUpdate(bool);
 	
-	void subImageTex(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
+	void subImageTex(set< DataCoord > &vox );
 	
 	ObjectType mVolType;
 	OmId mImageId;
@@ -55,7 +52,6 @@ private:
 	void HandleFetchUpdate();
 	bool InitializeFetchThread();
 	
-	QGLContext* mFetchThreadContext;
 	const QGLContext* mShareContext;
 };
 

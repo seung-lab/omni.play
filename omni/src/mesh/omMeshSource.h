@@ -4,8 +4,6 @@
 #include "volume/omMipChunk.h"
 #include "volume/omMipChunkCoord.h"
 #include <vtkImageData.h>
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 class OmMeshSource {
 public:
@@ -13,18 +11,19 @@ public:
 	~OmMeshSource();
 	
 	//load mesh data from chunk - expensive
-	void Load( shared_ptr<OmMipChunk> chunk );
+	void Load( QExplicitlySharedDataPointer<OmMipChunk> chunk );
 	
 	//copy from another mesh source - cheaper
 	void Copy( OmMeshSource &source );
 	
 	vtkImageData *pImageData;
 	OmMipChunkCoord MipCoord;
+	int mDecimateLevel;
 	AxisAlignedBoundingBox<int> SrcBbox;
 	AxisAlignedBoundingBox<float> DstBbox;
 	
 protected:
-        shared_ptr<OmMipChunk> mChunk;
+        QExplicitlySharedDataPointer<OmMipChunk> mChunk;
 	OmMeshSource(OmMeshSource &);
 	OmMeshSource& operator= (const OmMeshSource &);
 };

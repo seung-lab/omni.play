@@ -7,28 +7,6 @@
 #include "common/omDebug.h"
 #include "system/omProjectData.h"
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include <QFileInfo>
-#include <QtNetwork/QTcpSocket>
-
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/utsname.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
-
-
-namespace bfs = boost::filesystem;
-
-#define DEBUG 0
-
 //init instance pointer
 OmGarbage *OmGarbage::mspInstance = 0;
 
@@ -51,14 +29,12 @@ OmGarbage *OmGarbage::Instance()
 		mspInstance = new OmGarbage;
 	}
 
-	pthread_mutex_init(&mspInstance->mTextureMutex, NULL);
 	return mspInstance;
 }
 
 void OmGarbage::Delete()
 {
 	if (mspInstance) {
-		pthread_mutex_destroy(&OmGarbage::Instance()->mTextureMutex);
 		delete mspInstance;
 	}
 	mspInstance = NULL;
@@ -73,7 +49,7 @@ void OmGarbage::asOmTextureId(GLuint texture)
 
 void OmGarbage::Lock()
 {
-	pthread_mutex_lock(&OmGarbage::Instance()->mTextureMutex);
+	OmGarbage::Instance()->mTextureMutex.lock();
 }
 
 vector < GLuint > &OmGarbage::LockTextures()
@@ -84,7 +60,7 @@ vector < GLuint > &OmGarbage::LockTextures()
 
 void OmGarbage::Unlock()
 {
-	pthread_mutex_unlock(&OmGarbage::Instance()->mTextureMutex);
+	OmGarbage::Instance()->mTextureMutex.unlock();
 }
 
 void OmGarbage::UnlockTextures()

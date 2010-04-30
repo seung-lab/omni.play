@@ -27,15 +27,16 @@ OmPreferences::~OmPreferences()
 OmPreferences *OmPreferences::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmPreferences;
+		mspInstance = new OmPreferences();
 	}
 	return mspInstance;
 }
 
 void OmPreferences::Delete()
 {
-	if (mspInstance)
+	if (mspInstance){
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 
@@ -44,175 +45,76 @@ void OmPreferences::Delete()
 
 bool OmPreferences::ValidPreference(const int key)
 {
-	return Instance()->mPreferenceMap.count(key);
+	return Instance()->CheckKey(key);
 }
 
-const OmPrefItem & OmPreferences::GetItem(const int key, const OmPrefItem::OmPrefItemType & type)
+bool OmPreferences::CheckKey(const int)
 {
-	//check key exists
-	if (!ValidPreference(key)) {
-		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
-		assert(false);
-	}
-	//get item
-	OmPrefItem & item = Instance()->mPreferenceMap[key];
+	return true;
 
-	//check item type
-	if (item.mType != type) {
-		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " has unexpected type." << endl;
-		//debug("FIXME", << "OmPreferences::GetItem: Expected key type: " << type << " but found: " << item.mType << endl;
-		assert(false);
-	}
-
-	return item;
-}
-
-void OmPreferences::SetItem(const int key, const OmPrefItem & item)
-{
-	//set preference
-	Instance()->mPreferenceMap[key] = item;
-	//post preference change event
-	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
-}
-
-void OmPreferences::RefreshPreference(const int key)
-{
-	//check key exists
-	if (!ValidPreference(key)) {
-		//debug("FIXME", << "OmPreferences::GetItem: Preference key: " << key << " does not exist." << endl;
-		assert(false);
-	}
-	//get item
-	OmPrefItem & item = Instance()->mPreferenceMap[key];
-
-	//set item
-	SetItem(key, item);
+	//TODO: check if key exists locallys; if not, set key from defaults in OmPreferenceDefinitions
 }
 
 /////////////////////////////////
 ///////          Accessors
 
-const string & OmPreferences::GetString(const int key)
+string OmPreferences::GetString(const int key)
 {
-	return GetItem(key, OmPrefItem::STRING_TYPE).mString;
+	CheckKey(key);
+	return Instance()->stringPrefs.value(key).toStdString();
 }
 
-void OmPreferences::SetString(const int key, const string & value)
+void OmPreferences::SetString(const int key, string value)
 {
-	OmPrefItem item;
-	item.mType = OmPrefItem::STRING_TYPE;
-	item.mString = value;
-
-	SetItem(key, item);
-}
-
-void OmPreferences::Get(const int key, string & value)
-{
-	value = GetString(key);
-}
-
-void OmPreferences::Set(const int key, const string & value)
-{
-	SetString(key, value);
-}
-
-void OmPreferences::Set(const int key, const char *c_str)
-{
-	SetString(key, c_str);
+	Instance()->stringPrefs[ key ] = QString::fromStdString(value);
+	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
 }
 
 float OmPreferences::GetFloat(const int key)
 {
-	return GetItem(key, OmPrefItem::FLOAT_TYPE).mFloat;
+	CheckKey(key);
+	return Instance()->floatPrefs.value(key);
 }
 
 void OmPreferences::SetFloat(const int key, const float value)
 {
-	OmPrefItem item;
-	item.mType = OmPrefItem::FLOAT_TYPE;
-	item.mFloat = value;
-
-	SetItem(key, item);
-}
-
-void OmPreferences::Get(const int key, float &value)
-{
-	value = GetFloat(key);
-}
-
-void OmPreferences::Set(const int key, const float value)
-{
-	SetFloat(key, value);
+	Instance()->floatPrefs[key] = value;
+	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
 }
 
 int OmPreferences::GetInteger(const int key)
 {
-	return GetItem(key, OmPrefItem::INTEGER_TYPE).mInteger;
+	CheckKey(key);
+	return Instance()->intPrefs.value(key);
 }
 
 void OmPreferences::SetInteger(const int key, const int value)
 {
-	OmPrefItem item;
-	item.mType = OmPrefItem::INTEGER_TYPE;
-	item.mInteger = value;
-
-	SetItem(key, item);
-}
-
-void OmPreferences::Get(const int key, int &value)
-{
-	value = GetInteger(key);
-}
-
-void OmPreferences::Set(const int key, const int value)
-{
-	SetInteger(key, value);
+	Instance()->intPrefs[key] = value;
+	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
 }
 
 bool OmPreferences::GetBoolean(const int key)
 {
-	return GetItem(key, OmPrefItem::BOOLEAN_TYPE).mBoolean;
+	CheckKey(key);
+	return Instance()->boolPrefs.value(key);
 }
 
 void OmPreferences::SetBoolean(const int key, const bool value)
 {
-	OmPrefItem item;
-	item.mType = OmPrefItem::BOOLEAN_TYPE;
-	item.mBoolean = value;
-
-	SetItem(key, item);
+	Instance()->boolPrefs[key] = value;
+	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
 }
 
-void OmPreferences::Get(const int key, bool & value)
+Vector3f OmPreferences::GetVector3f(const int key)
 {
-	value = GetBoolean(key);
+	CheckKey(key);
+	return Instance()->v3fPrefs.value(key);
 }
 
-void OmPreferences::Set(const int key, const bool value)
+void OmPreferences::SetVector3f(const int key, Vector3f value)
 {
-	SetBoolean(key, value);
-}
+	Instance()->v3fPrefs[key] = value;
+	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
 
-const Vector3f & OmPreferences::GetVector3f(const int key)
-{
-	return GetItem(key, OmPrefItem::VECTOR3F_TYPE).mVector3f;
-}
-
-void OmPreferences::SetVector3f(const int key, const Vector3f & value)
-{
-	OmPrefItem item;
-	item.mType = OmPrefItem::VECTOR3F_TYPE;
-	item.mVector3f = value;
-
-	SetItem(key, item);
-}
-
-void OmPreferences::Get(const int key, Vector3f & value)
-{
-	value = GetVector3f(key);
-}
-
-void OmPreferences::Set(const int key, const Vector3f & value)
-{
-	SetVector3f(key, value);
 }

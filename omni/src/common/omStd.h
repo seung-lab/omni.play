@@ -62,40 +62,67 @@ using std::vector;
 #define sqrtf sqrt
 #endif // __APPLE__
 
+#ifdef WIN32
+#include <float.h>
+#define ISNAN(x) _isnan(x)
+#define snprintf _snprintf
+#ifndef M_PI
+#define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
+#endif
+static inline double round(double val)
+{   
+    return floor(val + 0.5);
+}
+#else
+#define ISNAN(x) std::isnan(x)
+#endif
 
 // Global Type Definitions
 // Explicitly-sized versions of integer types
-// from 6.828 JOS types.h
-typedef __signed char int8_t;
-typedef unsigned char uint8_t;
-typedef short int16_t;
-typedef unsigned short uint16_t;
-typedef int int32_t;
-typedef unsigned int uint32_t;
-//typedef long long int64_t;
-//typedef unsigned long long uint64_t;
+// from QT
 
-typedef unsigned int u_int;
-typedef unsigned long u_long;
+typedef signed char qint8;         /* 8 bit signed */
+typedef unsigned char quint8;      /* 8 bit unsigned */
+typedef short qint16;              /* 16 bit signed */
+typedef unsigned short quint16;    /* 16 bit unsigned */
+typedef int qint32;                /* 32 bit signed */
+typedef unsigned int quint32;      /* 32 bit unsigned */
+typedef long long qint64;           /* 64 bit signed */
+typedef unsigned long long quint64; /* 64 bit unsigned */
+typedef qint64 qlonglong;
+typedef quint64 qulonglong;
 
 // Global Constants
-#define MAX_FNAME_SIZE	200
 #define BYTES_PER_MB 1048576
 
 #define EPSILON 1.0e-5
 
+#ifdef WIN32
+inline quint32 ROUNDDOWN (quint32 a, quint32 n)
+{
+	quint32 __a = (quint32) (a);
+	return (__a - __a % (n)); 
+}
+inline quint32 ROUNDUP (quint32 a, quint32 n)
+{
+	quint32 __n = (quint32) (n);
+	return (ROUNDDOWN((quint32) (a) + __n - 1, __n));	
+}
+
+#else
 // Rounding operations (efficient when n is a power of 2)
 // Round down to the nearest multiple of n
 #define ROUNDDOWN(a, n)			\
 ({					\
-	uint32_t __a = (uint32_t) (a);	\
+	quint32 __a = (quint32) (a);	\
 	(typeof(a)) (__a - __a % (n));	\
 })
 // Round up to the nearest multiple of n
 #define ROUNDUP(a, n)				\
 ({						\
-	uint32_t __n = (uint32_t) (n);		\
-	(typeof(a)) (ROUNDDOWN((uint32_t) (a) + __n - 1, __n));	\
+	quint32 __n = (quint32) (n);		\
+	(typeof(a)) (ROUNDDOWN((quint32) (a) + __n - 1, __n));	\
 })
+#endif
 
 #endif

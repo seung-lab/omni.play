@@ -103,7 +103,7 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
-        if (event->key() == Qt::Key_C) mCPressed = true; 
+        if (event->key() & Qt::Key_C) mCPressed = true; 
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeKeyPress(event);
@@ -115,6 +115,10 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 	}
 }
 
+void OmView3dUi::KeyReleaseEvent(QKeyEvent * event)
+{
+
+}
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -122,17 +126,15 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 {
 
 	//if right click
-
 	if (event->buttons() & Qt::RightButton && !event->modifiers()) {
 		ShowSegmentContextMenu(event);
 		return;
 	}
 
 	bool control_modifier = event->modifiers() & Qt::ControlModifier;
-	debug("hey","%i  %i \n\n",control_modifier,mCPressed);
 	if (event->buttons() & Qt::LeftButton && control_modifier) {
 		crosshair(event);
-	} else if ((event->buttons() & Qt::LeftButton) && mCPressed){
+	} else if ((event->buttons() & Qt::LeftButton) & mCPressed){
 	        CenterAxisOfRotation(event);
 	} else {
 		CameraMovementMouseStart(event);
@@ -447,7 +449,19 @@ bool OmView3dUi::PickVoxelCameraFocus(QKeyEvent * keyEvent, bool drag, DataCoord
 	return true;
 }
 
-
+/*
+ 
+ if(!event->modifiers() & Qt::AltModifier) {
+ //left button scales further away (into voxel)
+ z_depth_scale = 0.05f;
+ } else if(event->modifiers() & Qt::AltModifier)  {
+ //right button scales closer (on top of voxel)
+ z_depth_scale = -0.05f;
+ } else {
+ //not handled button
+ return false;
+ }
+ */
 
 /////////////////////////////////
 ///////           Segment Actions
@@ -627,13 +641,10 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		mpView3d->updateGL();
 		return;
 	}
-
-	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
-	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
-
+	mpView3d->mCamera.SetFocus(voxel);
 	mCPressed = false;
-	
+	debug("axis", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
 
 }
 

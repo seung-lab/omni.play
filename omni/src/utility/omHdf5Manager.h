@@ -7,6 +7,7 @@
 
 #include "omHdf5.h"
 #include <QHash>
+#include <QMutex>
 
 class OmHdf5Manager {
 

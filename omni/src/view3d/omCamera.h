@@ -10,8 +10,6 @@
 #include "common/omStd.h"
 #include "common/omException.h"
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 
 class OmCameraArcBall;

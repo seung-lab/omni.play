@@ -23,10 +23,11 @@ class MeshingChunkThreadManager : public QThread
  private:
 	SegmentDataSet valuesToMesh;
 	OmMipChunkCoord mCoord;
-	void setupValuesToMesh( shared_ptr < OmMipChunk > chunk );
+	OmMipChunkCoord mMipCoord;
+	void setupValuesToMesh( QExplicitlySharedDataPointer < OmMipChunk > chunk );
 	int numberOfThreadsToUseForThisChunk( const int totalNumValuesToMesh );
 	unsigned int totalNumValuesToMesh;
-	void getDataAndSpawnWorkerThread( shared_ptr < OmMipChunk > chunk );
+	void getDataAndSpawnWorkerThread( QExplicitlySharedDataPointer < OmMipChunk > chunk );
 };
 
 #endif

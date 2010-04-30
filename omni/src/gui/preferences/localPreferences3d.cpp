@@ -1,6 +1,6 @@
 #include <QtGui>
-#include "guiUtils.h"
-#include "localPreferences3d.h"
+#include "gui/guiUtils.h"
+#include "gui/preferences/localPreferences3d.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
 #include "system/omEventManager.h"

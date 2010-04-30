@@ -10,22 +10,15 @@
  */
 
 #include "common/omCommon.h"
-#include "omSystemTypes.h"
-#include "volume/omVolumeTypes.h"
 
 #include <QSize>
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
 
 class QUndoStack;
 class QUndoCommand;
 class QGLWidget;
 class QGLContext;
 class MyInspectorWidget;
-
+class MainWindow;
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
 enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE };
@@ -47,7 +40,9 @@ public:
 	
 	static OmStateManager* Instance();
 	static void Delete();
-	
+
+	static void SetMainWindow( MainWindow *);
+	static void UpdateStatusBar( QString msg );
 
 	//project
 	static const string& GetProjectFileName();
@@ -77,7 +72,7 @@ public:
 	// slices
 	static void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	static void SetViewSliceDataFormat(int bytesPerSample, int samplesPerPixel);
+	static void SetViewSliceDataFormat(int bytesPerSample);
 	static void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
 
 	
@@ -102,7 +97,6 @@ public:
 	static void CreatePrimaryView3dWidget();
 	static const QGLWidget* GetPrimaryView3dWidget();
 	static QGLContext* GetSharedView3dContext();
-	static void MakeContextCurrent(QGLContext* context);
 	
 	//view2d context
 	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
@@ -178,6 +172,7 @@ private:
 	bool mParallel;
 
 	MyInspectorWidget * inspectorWidget;
+	MainWindow * mainWindow;
 };
 
 #endif

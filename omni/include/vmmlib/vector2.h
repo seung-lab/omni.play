@@ -108,12 +108,12 @@ public:
     // returns a size_t with a bitmask of the component comparison results
     // -> if this->x is smaller a.x, the first bit will be enabled;
     // -> if this->y is smaller a.y, the second bit will be enabled;
-    const size_t smaller( const Vector2& a ) const;
-    const size_t smaller( const Vector2& a, const size_t axis ) const;
+    size_t smaller( const Vector2& a ) const;
+    size_t smaller( const Vector2& a, const size_t axis ) const;
     // -> if this->x is greater a.x, the first bit will be enabled;
     // -> if this->y is greater a.y, the second bit will be enabled;
-    const size_t greater( const Vector2& a ) const;
-    const size_t greater( const Vector2& a, const size_t axis ) const;
+    size_t greater( const Vector2& a ) const;
+    size_t greater( const Vector2& a, const size_t axis ) const;
     
     T length() const;
     T lengthSquared() const;
@@ -640,7 +640,7 @@ bool Vector2< T >::operator!=(const Vector2 &a ) const
 // component-component compare
 // returns a size_t with a bitmask of the component comparison results
 template < typename T > 
-const size_t 
+size_t 
 Vector2< T >::smaller( const Vector2< T >& a ) const
 {
     size_t result = 0;
@@ -653,7 +653,7 @@ Vector2< T >::smaller( const Vector2< T >& a ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector2< T >::smaller( const Vector2< T >& a, const size_t axis  ) const
 {
     return ( xy[ axis ] < a.xy[ axis ] ) ? 1 << axis : 0;
@@ -662,7 +662,7 @@ Vector2< T >::smaller( const Vector2< T >& a, const size_t axis  ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector2< T >::greater( const Vector2< T >& a ) const
 {
     size_t result = 0;
@@ -675,7 +675,7 @@ Vector2< T >::greater( const Vector2< T >& a ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector2< T >::greater( const Vector2< T >& a, const size_t axis  ) const
 {
     return ( xy[ axis ] > a.xy[ axis ] ) ? 1 << axis : 0;

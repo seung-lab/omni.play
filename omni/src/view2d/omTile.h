@@ -10,26 +10,11 @@
 
 
 #include "common/omStd.h"
-
 #include "volume/omMipChunkCoord.h"
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
-#include "segment/omSegmentTypes.h"
-
-#include "system/omSystemTypes.h"
-#include "volume/omVolumeTypes.h"
 #include "system/omCacheBase.h"
+#include <QExplicitlySharedDataPointer>
 
 #include <QColor>
-
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
 class OmMipVolume;
 class OmTextureID;
@@ -54,10 +39,10 @@ public:
 // private:	
 	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
-	int GetDepth(const OmTileCoord &key, OmMipVolume *vol);
+	int GetDepth(const OmTileCoord &key);
 	OmIds setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 
-	void ReplaceTextureRegion(shared_ptr<OmTextureID> &texID, int dim, set< DataCoord > &vox, QColor &color, int tl);
+	void ReplaceTextureRegion(set< DataCoord > &vox);
 private:
 	ViewType view_type;
 	ObjectType vol_type;

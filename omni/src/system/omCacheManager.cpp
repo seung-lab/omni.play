@@ -1,4 +1,3 @@
-
 #include "omCacheManager.h"
 #include "omCacheBase.h"
 
@@ -6,8 +5,6 @@
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
-
-#define DEBUG 0
 
 //init instance pointer
 OmCacheManager *OmCacheManager::mspInstance = 0;
@@ -19,10 +16,6 @@ OmCacheManager *OmCacheManager::mspInstance = 0;
 
 OmCacheManager::OmCacheManager()
 {
-	//init mutex
-	pthread_mutex_init(&mCacheMapMutex, NULL);
-	pthread_mutex_init(&mRealCacheMapMutex, NULL);
-
 	//init vars
 	mTargetRatio = 0.75;
 	mCurrentlyCleaning = false;
@@ -41,15 +34,17 @@ OmCacheManager::~OmCacheManager()
 OmCacheManager *OmCacheManager::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmCacheManager;
+		mspInstance = new OmCacheManager();
 	}
 	return mspInstance;
 }
 
 void OmCacheManager::Delete()
 {
-	if (mspInstance)
+	if (mspInstance) {
 		delete mspInstance;
+	}
+
 	mspInstance = NULL;
 }
 
@@ -74,11 +69,11 @@ void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
  */
 void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
 {
-	pthread_mutex_lock(&Instance()->mCacheMapMutex);
-	pthread_mutex_lock(&Instance()->mRealCacheMapMutex);
+	Instance()->mCacheMapMutex.lock();
+	Instance()->mRealCacheMapMutex.lock();
 	Instance()->mCacheMap[group].CacheSet.insert(base);
-	pthread_mutex_unlock(&Instance()->mRealCacheMapMutex);
-	pthread_mutex_unlock(&Instance()->mCacheMapMutex);
+	Instance()->mRealCacheMapMutex.unlock();
+	Instance()->mCacheMapMutex.unlock();
 }
 
 /*
@@ -86,13 +81,32 @@ void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
  */
 void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
 {
-	pthread_mutex_lock(&Instance()->mCacheMapMutex);
-	pthread_mutex_lock(&Instance()->mRealCacheMapMutex);
+	Instance()->mCacheMapMutex.lock();
+	Instance()->mRealCacheMapMutex.lock();
 	Instance()->mDelayDelta = true;
 	Instance()->mCacheMap[group].CacheSet.erase(base);
 	Instance()->mDelayDelta = false;
-	pthread_mutex_unlock(&Instance()->mRealCacheMapMutex);
-	pthread_mutex_unlock(&Instance()->mCacheMapMutex);
+	Instance()->mRealCacheMapMutex.unlock();
+	Instance()->mCacheMapMutex.unlock();
+}
+
+OmCacheBase* OmCacheManager::GetCache(OmCacheGroup group, int index)
+{
+	return Instance()->GetCacheInternal(group, index);				
+}
+
+OmCacheBase* OmCacheManager::GetCacheInternal(OmCacheGroup group, int index)
+{
+	set< OmCacheBase*>::iterator it;
+	it = Instance()->mCacheMap[group].CacheSet.begin();
+	int i =0;
+	while (it !=  mCacheMap[group].CacheSet.end()){
+		if (i == index) return *it;
+		it++;
+		i++;
+	}
+	
+	if (i < index+1) return NULL;				
 }
 
 /*
@@ -100,9 +114,7 @@ void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
  */
 void OmCacheManager::UpdateCacheSize(OmCacheGroup group, int delta)
 {
-
 	Instance()->UpdateCacheSizeInternal(group, delta);
-
 }
 
 /*
@@ -110,58 +122,28 @@ void OmCacheManager::UpdateCacheSize(OmCacheGroup group, int delta)
  */
 void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 {
-
-	pthread_mutex_lock(&mRealCacheMapMutex);
+	QMutexLocker locker( &mRealCacheMapMutex );
 	Instance()->mCacheMap[group].Size += delta;
-	pthread_mutex_unlock(&mRealCacheMapMutex);
-
 }
 
 /////////////////////////////////
 ///////          Cleaning Methods
 void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
-	pthread_mutex_lock(&mCacheMapMutex);
+	QMutexLocker locker( &mCacheMapMutex );
 
 	//compute target size for group
-
 	unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
 
-	//get caches in group
-	set < OmCacheBase * >&cache_set = mCacheMap[group].CacheSet;
-
-	//note last successful remove cache
-	OmCacheBase *p_last_successful_remove_cache = NULL;
-
-	//call event for every listener in the set
-	set < OmCacheBase * >::iterator itr;
-
 	for (int count = 0; count < 2; count++) {
-		for (itr = cache_set.begin(); itr != cache_set.end(); ++itr) {
-
+		foreach( OmCacheBase * ptr, mCacheMap[group].CacheSet ) {
+			
 			//return if target reached
-			if (mCacheMap[group].Size <= target_size)
-				goto end_cleaning_group;
-
-			//remove element from cache
-			bool removed = (*itr)->RemoveOldest();
-
-
-			//if successfully removed
-			if (removed) {
-				//debug ("thread", "removed\n");
-				//record element was removed from cache
-				p_last_successful_remove_cache = *itr;
-			} else {
-				//debug ("thread", "not removed\n");
-				//check if we have looped unsuccessfully
-				if (p_last_successful_remove_cache == *itr)
-					goto end_cleaning_group;
+			if (mCacheMap[group].Size <= target_size){
+				return;
 			}
+			
+			ptr->RemoveOldest();
 		}
 	}
-
- end_cleaning_group:
-
-	pthread_mutex_unlock(&mCacheMapMutex);
 }

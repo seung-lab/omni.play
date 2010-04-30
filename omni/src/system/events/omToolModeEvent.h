@@ -8,8 +8,6 @@
 
 
 #include <common/omStd.h>
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 #include "system/omEvent.h"
 	
@@ -34,7 +32,7 @@ class OmToolModeEventListener : public OmEventListener {
 public:	
 	OmToolModeEventListener() : OmEventListener(OmToolModeEvent::CLASS) { };
 	
-	virtual void ToolModeChangeEvent(OmToolModeEvent *event) { };
+	virtual void ToolModeChangeEvent() = 0;
 
 };
 

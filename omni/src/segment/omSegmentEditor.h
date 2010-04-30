@@ -1,15 +1,7 @@
 #ifndef OM_SEGMENT_EDITOR_H
 #define OM_SEGMENT_EDITOR_H
 
-/*
- *
- */
-
-
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
-#include "common/omStd.h"
-
+#include "common/omCommon.h"
 
 class OmSegmentEditor {
 
@@ -43,7 +35,6 @@ protected:
 	~OmSegmentEditor();
 	OmSegmentEditor(const OmSegmentEditor&);
 	OmSegmentEditor& operator= (const OmSegmentEditor&);
-
 	
 private:
 	//singleton
@@ -53,8 +44,5 @@ private:
 	set< DataCoord > mSelectedVoxels;
 	
 };
-
-
-
 
 #endif

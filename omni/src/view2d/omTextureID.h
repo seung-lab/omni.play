@@ -12,8 +12,6 @@
 
 #include "common/omStd.h"
 #include "common/omGl.h"
-#include "system/omSystemTypes.h"
-#include "volume/omVolumeTypes.h"
 #include "system/omCacheableBase.h"
 #include "system/omGenericManager.h"
 #include "omTileCoord.h"
@@ -25,41 +23,34 @@
 #define OMTILE_GOOD		3
 #define OMTILE_NEEDCOLORMAP 	4
 
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
 class OmThreadedCachingTile;
 
 class OmTextureID;
 
-class OmTextureID : protected OmCacheableBase {
+class OmTextureID : public OmCacheableBase {
 	
 public:
-	OmTextureID(const OmTileCoord &tileCoord, const GLuint &texID, const int &size, const int x, const int y, const OmIds &containedIds, OmThreadedCachingTile *cache = NULL, void* texture = NULL, int flags = 0);
+	OmTextureID(const OmTileCoord &tileCoord, 
+		    const GLuint &texID, 
+		    const int &size, 
+		    const int x, 
+		    const int y, 
+		    const OmIds &containedIds, 
+		    OmThreadedCachingTile *cache = NULL, 
+		    void* texture = NULL, 
+		    int flags = 0);
 	~OmTextureID();
 	
 	//texture ID property accessors;
-	const GLuint GetTextureID() const { return textureID; }
-	const int GetSize() const { return mem_size; }
+	GLuint GetTextureID() const { return textureID; }
+	int GetSize() const { return mem_size; }
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
 	
 	const OmIds GetIds() const { return mIdSet; }
-	const bool FindId(OmId f_id);
+	bool FindId(OmId f_id);
 		
-	class OmTexureIDSafeDelete: public QObject
-	{
-	Q_OBJECT
-	public:
-        	OmTexureIDSafeDelete (GLuint textureID);
-        	~OmTexureIDSafeDelete ();
-	private:
-        	GLuint mTextureID;
-	};
-	
+	void Flush();
+
 	OmTileCoord mTileCoordinate;
 	GLuint textureID;
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel

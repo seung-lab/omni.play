@@ -2,7 +2,6 @@
 #define OM_SEGMENTATION_CHUNK_COORD_H
 
 #include "omMipChunkCoord.h"
-#include "system/omSystemTypes.h"
 
 class OmSegmentationChunkCoord : public OmMipChunkCoord
 {

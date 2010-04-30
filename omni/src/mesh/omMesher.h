@@ -10,13 +10,7 @@
 
 #include "omMeshSource.h"
 #include "volume/omMipChunkCoord.h"
-#include "segment/omSegmentTypes.h"
-#include "system/omSystemTypes.h"
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 #include <vtkImageData.h>
 #include <vtkWindowedSincPolyDataFilter.h>

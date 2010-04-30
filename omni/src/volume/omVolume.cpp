@@ -43,6 +43,8 @@ void OmVolume::Initialize()
 
 	mDataResolution = Vector3f::ONE;
 	SetStretchValues();
+
+	unitString = "";
 }
 
 OmVolume *OmVolume::Instance()
@@ -266,7 +268,7 @@ bool OmVolume::IsChannelValid(OmId id)
 	return Instance()->mChannelManager.IsValid(id);
 }
 
-const set < OmId > & OmVolume::GetValidChannelIds()
+const OmIds & OmVolume::GetValidChannelIds()
 {
 	return Instance()->mChannelManager.GetValidIds();
 }
@@ -299,10 +301,6 @@ OmSegmentation & OmVolume::AddSegmentation()
 
 void OmVolume::RemoveSegmentation(OmId id)
 {
-
-
-	//const set < OmId > channelIDs = Instance()->mChannelManager.Get(id).GetValidFilterIds();
-	//set < OmId >::iterator obj_it;
 	foreach(OmId channelID, OmVolume::GetValidChannelIds()) {
 		OmChannel & channel = OmVolume::GetChannel(channelID);
 		foreach(OmId filterID, channel.GetValidFilterIds()) {
@@ -312,7 +310,7 @@ void OmVolume::RemoveSegmentation(OmId id)
 			}
 		}
 	}	
-	Instance()->mSegmentationManager.Get(id).DeleteCaches();
+
 	Instance()->mSegmentationManager.Get(id).PrepareForCompleteDelete();
 	Instance()->mSegmentationManager.Get(id).DeleteVolumeData();
 	Instance()->mSegmentationManager.Remove(id);
@@ -324,7 +322,7 @@ bool OmVolume::IsSegmentationValid(OmId id)
 	return Instance()->mSegmentationManager.IsValid(id);
 }
 
-const set < OmId > & OmVolume::GetValidSegmentationIds()
+const OmIds & OmVolume::GetValidSegmentationIds()
 {
 	return Instance()->mSegmentationManager.GetValidIds();
 }
@@ -339,22 +337,6 @@ void OmVolume::SetSegmentationEnabled(OmId id, bool enable)
 	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
 
-QList < SegmentDataWrapper > OmVolume::GetSelectedSegmentIDs()
-{
-	QList < SegmentDataWrapper > segmentationsAndSegments;
-
-	foreach(OmId segmentationID, OmVolume::GetValidSegmentationIds()) {
-		OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
-
-		foreach(OmId segmentID, segmentation.GetSelectedSegmentIds()) {
-			SegmentDataWrapper seg( segmentationID, segmentID);
-			segmentationsAndSegments.append(seg);
-		}
-	}
-
-	return segmentationsAndSegments;
-}
-
 /////////////////////////////////
 ///////          Draw Method
 
@@ -362,7 +344,7 @@ QList < SegmentDataWrapper > OmVolume::GetSelectedSegmentIDs()
  *	Draw 3d components of the volume.  Call segmentation manager to draw each 
  *	segmentation in the volume using a transformed volume culler.
  */
-void OmVolume::Draw(const OmVolumeCuller & rCuller)
+void OmVolume::Draw(OmVolumeCuller & rCuller)
 {
 	//transform to normal frame
 	glPushMatrix();
@@ -372,6 +354,7 @@ void OmVolume::Draw(const OmVolumeCuller & rCuller)
 	if (rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
 		glDrawPositiveAxis();
 	}
+
 	//return if no chunk level drawing
 	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_CHUNKS)) {
 		glPopMatrix();
@@ -380,7 +363,10 @@ void OmVolume::Draw(const OmVolumeCuller & rCuller)
 	//form culler for this volume and call draw on all volumes
 	OmVolumeCuller volume_culler =
 	    rCuller.GetTransformedCuller(Instance()->mNormToSpaceMat, Instance()->mNormToSpaceInvMat);
-	Instance()->mSegmentationManager.CallEnabled < const OmVolumeCuller & >(&OmSegmentation::Draw, volume_culler);
+	
+	foreach( OmId id, Instance()->mSegmentationManager.GetEnabledIds() ){
+		GetSegmentation( id ).Draw( volume_culler);
+	}
 
 	//pop matrix
 	glPopMatrix();
@@ -439,18 +425,4 @@ void OmVolume::SetStretchValues()
 			Instance()->mDataStretchValues.z = 1.0;
 		}
 	}
-}
-
-
-/////////////////////////////////
-///////         Print Method
-
-void OmVolume::Print()
-{
-
-	//debug("FIXME", << "   Channels:" << endl;
-	mChannelManager.CallValid(&OmChannel::Print);
-
-	//debug("FIXME", << "   Segmentations:" << endl;
-	mSegmentationManager.CallValid(&OmSegmentation::Print);
 }

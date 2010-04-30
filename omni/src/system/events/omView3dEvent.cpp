@@ -23,11 +23,11 @@ void
 	switch (type()) {
 
 	case OmView3dEvent::REDRAW:
-		p_cast_listener->View3dRedrawEvent(this);
+		p_cast_listener->View3dRedrawEvent();
 		return;
 
 	case OmView3dEvent::REDRAW_CACHE:
-		p_cast_listener->View3dRedrawEventFromCache(this);
+		p_cast_listener->View3dRedrawEventFromCache();
 		return;
 
 	case OmView3dEvent::UPDATE_PREFERENCES:

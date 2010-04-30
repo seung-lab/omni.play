@@ -2,8 +2,7 @@
 #define VIEW_GROUP_WIDGET_INFO_H
 
 #include <QWidget>
-
-#include "system/omSystemTypes.h"
+#include "common/omCommon.h"
 
 enum WIDGET_TYPE { VIEW2D_CHAN, VIEW2D_SEG, VIEW3D };
 

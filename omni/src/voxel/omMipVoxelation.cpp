@@ -89,3 +89,8 @@ void OmMipVoxelation::Draw()
 	glPopAttrib();
 
 }
+
+void OmMipVoxelation::Flush()
+{
+	printf("FIXME: should I write something to disk?\n");
+}

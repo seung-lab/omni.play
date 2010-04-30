@@ -9,7 +9,6 @@
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omLocalPreferences.h"
-#include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
 #include "volume/omVolume.h"
@@ -61,7 +60,7 @@ Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
 	return Vector2f(panx, pany);
 }
 
-SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & screenc)
+SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
 {
 	Vector2f mPanDistance = GetPanDistance(mViewType);
 	debug("cross", "pan: %f, %f\n", mPanDistance.x, mPanDistance.y);
@@ -105,9 +104,9 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(ViewType viewType, const ScreenCoord & s
 				 //assert(0);                                                                              
                 break;                                                                                  
         }                         
-	assert(!std::isnan(result.x));
-	assert(!std::isnan(result.y));
-	assert(!std::isnan(result.z));
+	assert(!ISNAN(result.x));
+	assert(!ISNAN(result.y));
+	assert(!ISNAN(result.z));
         return result;        
 }
 
@@ -189,7 +188,7 @@ ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & dat
 		
  }
 
-DataCoord OmView2d::ScreenToDataCoord(ViewType viewType, const ScreenCoord & screenc)
+DataCoord OmView2d::ScreenToDataCoord(const ScreenCoord & screenc)
 {
 	Vector2f mPanDistance =  GetPanDistance(mViewType);
         Vector2f mZoomLevel = OmStateManager::Instance()->GetZoomLevel();

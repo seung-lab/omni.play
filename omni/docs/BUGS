@@ -2275,3 +2275,27 @@ Program received signal SIGSEGV, Segmentation fault.
     at /net/omicfs/home/purcaro/omni.staging/omni/src/mesh/meshingChunkThread.cpp:48
 #31 0x00000000007c341c in MeshingChunkThread::run (this=0x2aab3d049c80)
 ---Type <return> to continue, or q <return> to quit---q
+
+
+
+***********************
+when closing file after joining segments:
+
+OmHDF5LowLevel: in om_hdf5_dataset_exists_with_lock...
+OmHDF5LowLevel: in om_hdf5_dataset_delete_with_lock...
+OmHDF5LowLevel: in om_hdf5_dataset_raw_create_with_lock...
+OmHDF5LowLevel: in om_hdf5_file_close_with_lock...
+OmHDF5LowLevel: in om_hdf5_file_open_with_lock...
+HDF5: infinite loop closing library
+      D,G,S,T,F,D,G,F,FD,P,FD,P,FD,P,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E
+
+HDF5: infinite loop closing library
+Here is the backtrace:
+Breakpoint 1, 0x00007ffff3f33ac0 in fprintf () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007ffff3f33ac0 in fprintf () from /lib/libc.so.6
+#1  0x0000000000b29261 in H5_term_library ()
+#2  0x00007ffff3f1cc12 in exit () from /lib/libc.so.6
+#3  0x00007ffff3f02ac4 in __libc_start_main () from /lib/libc.so.6
+#4  0x000000000063b619 in _start () at ../sysdeps/x86_64/elf/start.S:113
+

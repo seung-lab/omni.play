@@ -52,12 +52,12 @@ class OmProgressEventListener : public OmEventListener {
 public:	
 	OmProgressEventListener() : OmEventListener(OmProgressEvent::CLASS) { };
 
-	virtual void ProgressShow(OmProgressEvent *event) { };
-	virtual void ProgressHide(OmProgressEvent *event) { };
+	virtual void ProgressShow() = 0;
+	virtual void ProgressHide() = 0;
 	
-	virtual void ProgressRangeEvent(OmProgressEvent *event) { };
-	virtual void ProgressValueEvent(OmProgressEvent *event) { };
-	virtual void ProgressIncrementEvent(OmProgressEvent *event) { };
+	virtual void ProgressRangeEvent() = 0;
+	virtual void ProgressValueEvent() = 0;
+	virtual void ProgressIncrementEvent() = 0;
 	
 };
 

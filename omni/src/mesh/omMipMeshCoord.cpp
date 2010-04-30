@@ -14,16 +14,6 @@ OmMipMeshCoord::OmMipMeshCoord(const OmMipChunkCoord & rMipChunkCoord, SEGMENT_D
 
 }
 
-OmMipMeshCoord::OmMipMeshCoord(const tuple < int, int, int, int >&rMipChunkCoord, SEGMENT_DATA_TYPE dataValue)
-{
-
-	MipChunkCoord.Level = rMipChunkCoord.get < 0 > ();
-	MipChunkCoord.Coordinate.x = rMipChunkCoord.get < 1 > ();
-	MipChunkCoord.Coordinate.y = rMipChunkCoord.get < 2 > ();
-	MipChunkCoord.Coordinate.z = rMipChunkCoord.get < 3 > ();
-	DataValue = dataValue;
-}
-
 void
  OmMipMeshCoord::operator=(const OmMipMeshCoord & rhs)
 {
@@ -53,4 +43,12 @@ ostream & operator<<(ostream & out, const OmMipMeshCoord & in)
 {
 	out << in.MipChunkCoord << " { " << (int)in.DataValue << " } ";
 	return out;
+}
+
+uint qHash(const OmMipMeshCoord & c)
+{
+        return qHash( QString("%1_%2")
+		      .arg(c.DataValue)
+		      .arg(qHash(c.MipChunkCoord)));
+		      
 }

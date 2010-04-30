@@ -1,14 +1,13 @@
 #include <QtGui>
-#include "chanInspector.h"
+#include <QThread>
 
+#include "chanInspector.h"
 #include "common/omStd.h"
 #include "volume/omVolume.h"
-
-#include <QThread>
-#include <qtconcurrentrun.h>
 #include "common/omDebug.h"
 #include "utility/sortHelpers.h"
-#include "system/buildVolumes.h"
+#include "system/omBuildVolumes.h"
+#include "system/omProjectData.h"
 
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) : QWidget(parent)
 {
@@ -18,6 +17,9 @@ ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) 
 	directoryEdit->setReadOnly(true);
 
 	populateChannelInspector();
+
+	//	connect(nameEdit, SIGNAL(editingFinished()),
+	//		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 }
 
 ChannelDataWrapper ChanInspector::getChannelDataWrapper()
@@ -27,7 +29,7 @@ ChannelDataWrapper ChanInspector::getChannelDataWrapper()
 
 void ChanInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetChannel(cdw.getID()).SetName(nameEdit->text().toStdString());
+	OmVolume::GetChannel(cdw.getID()).SetName(nameEdit->text());
 }
 
 void ChanInspector::on_browseButton_clicked()
@@ -43,7 +45,7 @@ void ChanInspector::on_browseButton_clicked()
 void ChanInspector::on_exportButton_clicked()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Export As"));
-	if (fileName == NULL){
+	if( NULL == fileName ){
 		return;
 	}
 
@@ -91,23 +93,18 @@ void ChanInspector::on_patternEdit_textChanged()
 	updateFileList();
 }
 
-void ChanInspector::intermediate_build_call(OmChannel * current_channel)
-{
-	BuildVolumes bv( current_channel );
-	bv.setFileNamesAndPaths( getFileInfoList() );
-	bv.build_channel();
-}
-
 void ChanInspector::on_buildButton_clicked()
 {
 	OmChannel & current_channel = OmVolume::GetChannel(cdw.getID());
 
-	intermediate_build_call( &current_channel);
+	OmBuildVolumes bv( &current_channel );
+	bv.setFileNamesAndPaths( getFileInfoList() );
+	bv.build_channel();
 }
 
 void ChanInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText().toStdString());
+	OmVolume::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId ChanInspector::getChannelID()
@@ -120,10 +117,12 @@ void ChanInspector::populateChannelInspector()
 	nameEdit->setText( cdw.getName() );
 	nameEdit->setMinimumWidth(200);
 
-	// TODO: fix me!
-	//const string & my_directory = current_channel.GetSourceDirectoryPath();
-	//channelInspectorWidget->directoryEdit->setText(QString::fromStdString(my_directory));
-
+	//TODO: fix me!
+	if( 0 ){
+		// use path from where import files were orginally...
+	} else {
+		directoryEdit->setText( OmProjectData::getAbsolutePath() );
+	}
 	directoryEdit->setMinimumWidth(200);
 
 	patternEdit->setText( "*" );
@@ -134,3 +133,7 @@ void ChanInspector::populateChannelInspector()
 	updateFileList();
 }
 
+void ChanInspector::nameEditChanged()
+{
+	//	sdw.setName( nameEdit->text() );
+}

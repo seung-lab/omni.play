@@ -981,7 +981,7 @@ void OmView2d::SegmentEditSelectionChangeEvent(OmSegmentEvent * event)
 			if (mentationEditId == mImageId) {
 
 				const Vector3 < float >&color =
-				    OmVolume::GetSegmentation(mentationEditId).GetSegment(mentEditId).GetColor();
+				    OmVolume::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColor();
 
 				////debug("genone","SETTING EDIT COLOR");
 				editColor = qRgba(color.x * 255, color.y * 255, color.z * 255, 255);
@@ -1377,7 +1377,7 @@ OmIds OmView2d::setMyColorMap(OmId segid, SEGMENT_DATA_TYPE * imageData, Vector2
 
 					// //debug("FIXME", << "asking for color now" << endl;
 					const Vector3 < float >&color =
-					    OmVolume::GetSegmentation(segid).GetSegment(id).GetColor();
+					    OmVolume::GetSegmentation(segid).GetSegment(id)->GetColor();
 
 					if (current_seg.IsSegmentSelected(id)) {
 
@@ -1776,6 +1776,8 @@ void OmView2d::DrawCursors()
 		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
 		break;
 	}
+
+
 }
 
 bool OmView2d::amInFillMode()
@@ -1787,9 +1789,4 @@ bool OmView2d::amInFillMode()
 bool OmView2d::doDisplayInformation()
 {
 	return OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL);
-}
-
-QSize OmView2d::sizeHint () const
-{
-	return OmStateManager::getViewBoxSizeHint();
 }

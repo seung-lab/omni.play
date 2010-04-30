@@ -23,9 +23,10 @@ public:
 		mCacheGroup = group;
 		OmCacheManager::AddCache(mCacheGroup, this);
 	}
+
 	//destructor
 	~OmCacheBase() {
-		OmCacheManager::AddCache(mCacheGroup, this);
+		OmCacheManager::RemoveCache(mCacheGroup, this);
 	}
 	
 	
@@ -40,7 +41,13 @@ public:
 	}
 	
 	//remove single element from cache
-	virtual bool RemoveOldest() = 0;
+	virtual void RemoveOldest() = 0;
+	virtual unsigned int GetFetchStackSize() = 0;
+	virtual long GetCacheSize() = 0;
+
+	/**Name function for debugging */
+	virtual void SetCacheName(const char* name) = 0;
+	virtual char* GetCacheName() = 0;
 
 protected:
 	int mSavedDelta;
@@ -48,6 +55,7 @@ protected:
 	
 	OmCacheGroup mCacheGroup;
 private:
+
 };
 
 

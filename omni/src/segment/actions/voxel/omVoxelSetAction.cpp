@@ -1,4 +1,3 @@
-
 #include "omVoxelSetAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -8,8 +7,6 @@
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omVoxelEvent.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////
@@ -92,8 +89,8 @@ string OmVoxelSetAction::Description()
 	} else {
 		//get segmentation
 		OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
-		OmSegment & r_segment = r_segmentation.GetSegment(mSegmentId);
+		OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
 
-		return string("Set Voxel To ") + r_segment.GetName();
+		return string("Set Voxel To ") + r_segment->GetName().toStdString();
 	}
 }

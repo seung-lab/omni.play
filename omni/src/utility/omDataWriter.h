@@ -1,11 +1,8 @@
 #ifndef OM_DATA_READER_WRITER_H
 #define OM_DATA_READER_WRITER_H
 
-#include "volume/omVolumeTypes.h"
 #include "utility/omHdf5Path.h"
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 class vtkImageData;
 

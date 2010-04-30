@@ -8,8 +8,15 @@
 #ifndef OM_GL_H
 #define OM_GL_H
 
-#define GL_GLEXT_PROTOTYPES
+#ifdef WIN32
+#include <windows.h>
+#endif
 
+#define GL_GLEXT_PROTOTYPES
+#ifdef WIN32
+extern void * wglGetProcAddress (char * str);
+
+#endif
 
 #if defined(__APPLE_CC__)
 #include <OpenGL/gl.h>
@@ -20,6 +27,7 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 #endif
+
 
 
 /*

@@ -37,7 +37,7 @@ class OmPreferenceEventListener : public OmEventListener {
 public:	
 	OmPreferenceEventListener() : OmEventListener(OmPreferenceEvent::CLASS) { };
 
-	virtual void PreferenceChangeEvent(OmPreferenceEvent *event) { };
+	virtual void PreferenceChangeEvent(OmPreferenceEvent * event) = 0;
 };
 
 

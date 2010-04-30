@@ -47,7 +47,7 @@
 static unsigned long mt[N];	/* the array for the state vector  */
 static int mti = N + 1;		/* mti==N+1 means mt[N] is not initialized */
 // Random Number Functions
-static void init_genrand(u_long seed)
+static void init_genrand(unsigned long seed)
 {
 	mt[0] = seed & 0xffffffffUL;
 	for (mti = 1; mti < N; mti++) {

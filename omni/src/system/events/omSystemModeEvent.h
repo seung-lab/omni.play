@@ -8,8 +8,6 @@
 
 
 #include <common/omStd.h>
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 #include "system/omEvent.h"
 	
@@ -34,7 +32,7 @@ class OmSystemModeEventListener : public OmEventListener {
 public:	
 	OmSystemModeEventListener() : OmEventListener(OmSystemModeEvent::CLASS) { };
 	
-	virtual void SystemModeChangeEvent(OmSystemModeEvent *event) { };
+	virtual void SystemModeChangeEvent() = 0;
 
 };
 

@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QWidget> 
-#include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
 
@@ -15,6 +14,10 @@ public:
 	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent); 
 	
 	OmId getSegmentationID();
+
+	void build_image(OmSegmentation * current_seg);
+	void build_mesh(OmSegmentation * current_seg);
+	void build_image_and_mesh( OmSegmentation * current_seg );
 	
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -51,6 +54,10 @@ public:
 	void doMeshinate( OmSegmentation * current_seg );
 	QProcess* mMeshinatorProc;
 	QDialog* mMeshinatorDialog;
+
+	QDir getDir();
+	QStringList getFileList();
+	QFileInfoList getFileInfoList();
 
 	QDir getDir();
 	QStringList getFileList();

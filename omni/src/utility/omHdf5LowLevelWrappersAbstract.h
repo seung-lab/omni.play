@@ -3,6 +3,7 @@
 
 #include "utility/omHdf5LowLevel.h"
 #include "utility/omHdf5Path.h"
+class vtkImageData;
 
 class OmHdf5LowLevelWrappersAbstract
 {
@@ -27,11 +28,15 @@ class OmHdf5LowLevelWrappersAbstract
 	virtual void dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample) = 0;
 	virtual vtkImageData* dataset_image_read_trim_with_lock(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample) = 0;
 	virtual void dataset_image_write_trim_with_lock(OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData) = 0;
-	
+	virtual void* dataset_read_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample) = 0;
+	virtual void dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData) = 0;	
 	//data set raw
 	virtual void* dataset_raw_read_with_lock(OmHdf5Path path, int* size = NULL) = 0;
 	virtual void dataset_raw_create_with_lock(OmHdf5Path path, int size, const void *data) = 0;
 	virtual void dataset_raw_create_tree_overwrite_with_lock(OmHdf5Path path, int size, const void* data) = 0;
+
+	virtual Vector3< int > dataset_get_dims_with_lock( OmHdf5Path path ) = 0;
+
 };
 
 #endif

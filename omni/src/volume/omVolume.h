@@ -8,20 +8,14 @@
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-#include "omVolumeTypes.h"
 #include "omChannel.h"
 #include "omSegmentation.h"
 
-#include "system/omSystemTypes.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "common/omGl.h"
 #include "common/omStd.h"
 #include "utility/dataWrappers.h"
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
 
 class OmChannel;
 class OmVolumeCuller;
@@ -70,7 +64,7 @@ public:
 	static OmChannel& AddChannel();
 	static void RemoveChannel(OmId id);
 	static bool IsChannelValid(OmId id);
-	static const set<OmId>& GetValidChannelIds();
+	static const OmIds & GetValidChannelIds();
 	static bool IsChannelEnabled(OmId id);
 	static void SetChannelEnabled(OmId id, bool enable);
 	
@@ -78,16 +72,13 @@ public:
 	static OmSegmentation& AddSegmentation();
 	static void RemoveSegmentation(OmId id);
 	static bool IsSegmentationValid(OmId id);
-	static const set<OmId>& GetValidSegmentationIds();
+	static const OmIds & GetValidSegmentationIds();
 	static bool IsSegmentationEnabled(OmId id);
 	static void SetSegmentationEnabled(OmId id, bool enable);
-	static QList< SegmentDataWrapper > GetSelectedSegmentIDs();
 	
 	//drawing
-	static void Draw(const OmVolumeCuller &);
+	static void Draw(OmVolumeCuller &);
 	static void DrawEditSelectionVoxels();
-	
-	void Print();
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -114,40 +105,16 @@ private:
 	DataBbox mDataExtent;
 	Vector3f mDataResolution;	//units per voxel
 	Vector3f mDataStretchValues;
-int mChunkDim;
+	
+	int mChunkDim;
 	QString unitString;
 	
 	//data managers
 	OmGenericManager<OmChannel> mChannelManager;
 	OmGenericManager<OmSegmentation> mSegmentationManager;
 	
-	//serialization
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	friend QDataStream &operator<<(QDataStream & out, const OmVolume & v );
+	friend QDataStream &operator>>(QDataStream & in, OmVolume & v );
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmVolume, 0)
-
-template<class Archive>
-void 
-OmVolume::serialize(Archive & ar, const unsigned int file_version) {
-	
-	//volume props
-
-	ar & mNormToSpaceMat & mNormToSpaceInvMat;
-	ar & mDataExtent & mDataResolution;
-	ar & mChunkDim;
-
-	// TODO This should be serialized someday
-	//ar & mSpaceToUserMat & mSpaceToUserInvMat	
-
-	//managers
-	ar & mChannelManager;
-	ar & mSegmentationManager;
-}
 
 #endif

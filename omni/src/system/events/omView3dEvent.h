@@ -43,9 +43,9 @@ public:
 	OmView3dEventListener() : OmEventListener(OmView3dEvent::CLASS) {
 	};
 	
-	virtual void View3dRedrawEvent(OmView3dEvent *event) { };
-	virtual void View3dRedrawEventFromCache(OmView3dEvent *event) { };
-	virtual void View3dUpdatePreferencesEvent(OmView3dEvent *event) { };
+	virtual void View3dRedrawEvent() = 0;
+	virtual void View3dRedrawEventFromCache() = 0;
+	virtual void View3dUpdatePreferencesEvent() = 0;
 };
 
 

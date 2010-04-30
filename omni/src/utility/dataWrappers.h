@@ -1,7 +1,6 @@
 #ifndef DATA_WRAPPERS
 #define DATA_WRAPPERS
 
-#include "system/omSystemTypes.h"
 #include "common/omException.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
@@ -47,7 +46,7 @@ class SegmentationDataWrapper : public DataWrapper
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
-
+	unsigned int getNumberOfTopSegments();
 	//	QString GetSourceDirectoryPath();
 };
 
@@ -74,6 +73,7 @@ class SegmentDataWrapper : public DataWrapper
 	void setName( const QString& str );
 	QString getDataValuesForSegment();
 	QString get_original_mapped_data_value();
+	QString chunkListStr();
  private:
 	OmId mSegmentationID;
 };

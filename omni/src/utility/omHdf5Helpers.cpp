@@ -7,9 +7,9 @@ OmHdf5Path OmHdf5Helpers::getDefaultDatasetName()
 	return path;
 }
 
-OmHdf5Path OmHdf5Helpers::getProjectArchiveName()
+OmHdf5Path OmHdf5Helpers::getProjectArchiveNameQT()
 {
 	OmHdf5Path path;
-	path.setPath("project.dat");
+	path.setPath("project.qt.dat");
 	return path;
 }

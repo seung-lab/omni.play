@@ -46,6 +46,7 @@ void SegObjectInspector::set_initial_values()
 
 	dataValuesList->setText( sdw.getDataValuesForSegment() );
 	origDataValueList->setText( sdw.get_original_mapped_data_value() );
+	chunkList->setText( sdw.chunkListStr() );
 }
 
 void SegObjectInspector::nameEditChanged()
@@ -135,6 +136,15 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	dataValuesList = new QLabel(sourceBox);
 	dataValuesList->setObjectName(QString::fromUtf8("dataValuesList"));
         grid->addWidget(dataValuesList, 5, 1);
+
+	QLabel* chunkLabel = new QLabel(sourceBox);
+	chunkLabel->setObjectName(QString::fromUtf8("chunkLabel"));
+	chunkLabel->setText( "Chunks" );
+        grid->addWidget(chunkLabel, 6, 0);
+
+	chunkList = new QLabel(sourceBox);
+	chunkList->setObjectName(QString::fromUtf8("chunkList"));
+        grid->addWidget(chunkList, 6, 1);
 
 	return sourceBox;
 }

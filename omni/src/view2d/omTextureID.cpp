@@ -8,8 +8,8 @@
 
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID, const int &size, const int x, const int y,
 			 const OmIds & containedIds, OmThreadedCachingTile * cache, void *texture, int flags)
-:OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds),
-texture(texture), flags(flags), x(x), y(y)
+	:OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds),
+	 texture(texture), flags(flags), x(x), y(y)
 {
 	debug("crazycash","texID %i\n", texID); 
 	if (!cache) assert (0);
@@ -31,7 +31,7 @@ OmTextureID::~OmTextureID()
 	UpdateSize(-128 * 128 * 4);
 }
 
-const bool OmTextureID::FindId(OmId f_id)
+bool OmTextureID::FindId(OmId f_id)
 {
 
 	return (mIdSet.find(f_id) != mIdSet.end());
@@ -46,4 +46,9 @@ ostream & operator<<(ostream & out, const OmTextureID & tid)
 	out << "Size in Memory: " << tid.GetSize() << "\n";
 	out << "Tile Coordinate Level: " << tid.GetCoordinate().Level << "\n";
 	return out;
+}
+
+void OmTextureID::Flush()
+{
+	printf("FIXME: should I write something to disk?\n");
 }

@@ -7,7 +7,6 @@
  */
 
 #include "system/omAction.h"
-#include "system/omSystemTypes.h"
 
 
 
@@ -52,7 +51,6 @@ private:
 	string mComment;
 
 	bool mNewState;
-	map< OmId, bool > mPrevSegmentStates;
 };
 
 

@@ -8,23 +8,7 @@
 *	Rachel Shearer - rshearer@mit.edu
  */
 
-#include "common/omStd.h"
-
-#include "common/omStd.h"
-#include "common/omSerialization.h"
-
-#include "system/omSystemTypes.h"
-#include "volume/omVolumeTypes.h"
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-
+#include "common/omCommon.h"
 
 class OmTileCoord {
 	
@@ -36,40 +20,20 @@ public:
 	bool operator==( const OmTileCoord& rhs ) const;
 	bool operator!=( const OmTileCoord& rhs ) const;
 	bool operator<( const OmTileCoord& rhs ) const;
-
-	
 		
 	int Level;
 	SpaceCoord Coordinate;
+
 	int mVolType;
 	unsigned int mFreshness;
-	
-	
+		
 	friend ostream& operator<<(ostream &out, const OmTileCoord &in);
 	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	friend QDataStream &operator<<(QDataStream & out, const OmTileCoord & c );
+	friend QDataStream &operator>>(QDataStream & in, OmTileCoord & c );
+
 };
 
-
-
-
-
-
-
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmTileCoord, 0)
-
-template<class Archive>
-void 
-OmTileCoord::serialize(Archive & ar, const unsigned int file_version) {
-	
-	ar & Level;
-	ar & Coordinate;
-}
+uint qHash(const OmTileCoord& c );
 
 #endif

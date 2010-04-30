@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QErrorMessage>
 
+
 #include "gui/viewGroup.h"
 #include "common/omStd.h"
 #include "volume/omChannel.h"
@@ -28,25 +29,27 @@
 
 class MyInspectorWidget;
 class ViewGroup;
+class CacheMonitorDialog;
 
 class MainWindow 
 : public QMainWindow, 	
-  public OmProgressEventListener,
+  //  public OmProgressEventListener,
   public OmSystemModeEventListener
 {
  Q_OBJECT
  
   public:
 	MainWindow();
-	
+
 	void channel_build(OmChannel *current_channel);
 	void seg_build(OmSegmentation *current_seg);
 	void mesh_build(OmSegmentation *current_seg, QFuture<void> &last_future);		
-		
+
 	void openProject( QString fileNameAndPath );
 	void openProject( QString fileName, QString pathName );
 
-	void cleanViewsOnVolumeChange(int objectType, OmId objectId);
+	void cleanViewsOnVolumeChange(ObjectType objectType, OmId objectId);
+	void updateStatusBar( QString msg );
 
 	friend class ViewGroup;
 
@@ -54,15 +57,8 @@ class MainWindow
 	void closeEvent(QCloseEvent *event); 
 		
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SystemModeChangeEvent(OmSystemModeEvent * event);		
-		
-	void ProgressShow(OmProgressEvent *event);
-	void ProgressHide(OmProgressEvent *event);
-		
-	void ProgressRangeEvent(OmProgressEvent *event);
-	void ProgressValueEvent(OmProgressEvent *event);
-	void ProgressIncrementEvent(OmProgressEvent *event);	
-		
+	void SystemModeChangeEvent();		
+	
  private slots:
 	void newProject();
 	void openProject();
@@ -72,8 +68,9 @@ class MainWindow
 		
 	void openInspector();
 	void openUndoView();
+	void openCacheMonitor();
 		
-	void open3dView();		
+	void open3dView();
 	void openChannelView(OmId chan_id, ViewType vtype);
 	void openSegmentationView(OmId primary_id, ViewType vtype);
 		
@@ -81,9 +78,6 @@ class MainWindow
 	void showEditLocalPreferencesDialog();
 	void addChannelToVolume();
 	void addSegmentationToVolume();
-		
-	void updateStatusBar(); 	
-	void updateKeyShortcuts();		
 		
 	void spawnErrorDialog(OmException &e);
 
@@ -97,14 +91,13 @@ class MainWindow
 	void toolbarFill(bool checked);
 	void toolbarVoxelize(bool checked);
 
-	void open2Dand3dViews();	
+	void open2Dand3dViews();
 	void setFilAlpha(int alpha);
 		
  private:
 	void createActions();
 	void createMenus();
 	void createToolBars();
-	void createStatusBar();
 		
 	bool checkForSave();
 		
@@ -138,6 +131,7 @@ class MainWindow
 		
 	QAction *openOmniInspector;
 	QAction *openUndoViewAct;
+	QAction *openCacheMonitorAct;
 		
 	QAction *open3DAct;
 		
@@ -149,6 +143,7 @@ class MainWindow
 		
 	MyInspectorWidget *omniInspector;
 	QUndoView *undoView;
+	CacheMonitorDialog *mCacheMonitorDialog; 
 		
 	bool isProjectOpen;
 	bool closeProjectIfOpen();
@@ -198,6 +193,10 @@ class MainWindow
 	void setupFilterToolbar();
 	void setFilterToolbarEnabled( bool setEnabled );
 	void updateSilder();
+
+	QLabel * statusBarLabel;
+
+	void createStatusBar();
 };
 
 #endif

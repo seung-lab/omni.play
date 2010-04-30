@@ -9,22 +9,16 @@
  *	Brett Warne - bwarne@mit.edu - 5/28/09
  */
 
-#include "segment/omSegmentTypes.h"
 
 #include "common/omStd.h"
 #include "volume/omMipChunkCoord.h"
 
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-
-
 class OmMipSegmentDataCoord {
-public:
+
+ public:
 	OmMipSegmentDataCoord() {
 		MipChunkCoord = OmMipChunkCoord();
-		DataValue = -1;
+		DataValue = 0;
 	}
 	
 	OmMipSegmentDataCoord( const OmMipChunkCoord& rMipChunkCoord, SEGMENT_DATA_TYPE dataValue)
@@ -41,77 +35,15 @@ public:
 	//data members
 	OmMipChunkCoord MipChunkCoord;
 	SEGMENT_DATA_TYPE DataValue;
-	
-	
+		
 	//stream
 	friend ostream& operator<<(ostream &out, const OmMipSegmentDataCoord &in);
 	
-	//serialization
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	friend QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c );
+	friend QDataStream &operator>>(QDataStream & in, OmMipSegmentDataCoord & c );
+
 };
 
-
-
-
-
-
-
-
-
-/////////////////////////////////
-///////		 Operators
-
-inline
-void 
-OmMipSegmentDataCoord::operator=( const OmMipSegmentDataCoord& rhs ) {
-	MipChunkCoord = rhs.MipChunkCoord;
-	DataValue = rhs.DataValue;
-}
-
-inline
-bool 
-OmMipSegmentDataCoord::operator==( const OmMipSegmentDataCoord& rhs ) const {
-	return MipChunkCoord == rhs.MipChunkCoord && DataValue == rhs.DataValue;
-}
-
-inline
-bool 
-OmMipSegmentDataCoord::operator!=( const OmMipSegmentDataCoord& rhs ) const {
-	return MipChunkCoord != rhs.MipChunkCoord || DataValue != rhs.DataValue;
-}
-
-/* comparitor for key usage */
-inline
-bool 
-OmMipSegmentDataCoord::operator<( const OmMipSegmentDataCoord& rhs ) const 
-{ 
-	if(MipChunkCoord != rhs.MipChunkCoord) return (MipChunkCoord <  rhs.MipChunkCoord);
-	return (DataValue < rhs.DataValue);
-}	
-
-/////////////////////////////////
-///////		 stream
-
-inline
-ostream& 
-operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
-	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
-	return out;
-}
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmMipSegmentDataCoord, 0)
-
-template<class Archive>
-void 
-OmMipSegmentDataCoord::serialize(Archive & ar, const unsigned int file_version) {
-	
-	ar & MipChunkCoord;
-	ar & DataValue;
-}
+uint qHash(const OmMipSegmentDataCoord& c);
 
 #endif
