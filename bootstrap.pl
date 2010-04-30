@@ -29,9 +29,21 @@ my $globalMakeOptions = "";
 my $hostname = `hostname`;
 my $profileOn = "";
 
+# from http://stackoverflow.com/questions/334686/how-can-i-detect-the-operating-system-in-perl
 sub isMac {
-    my $uname = `uname`;
-    return ($uname =~ /Darwin/);
+    return ("darwin" eq $^O);
+}
+
+sub isLinux {
+    return ("linux" eq $^O);
+}
+
+sub isWindowsNative {
+    return ("MSWin32" eq $^O);
+}
+
+sub isWindowsCygwin {
+    return ("cygwin" eq $^O);
 }
 
 sub onCluster {
@@ -60,12 +72,8 @@ sub genOmniScript {
     open (SCRIPT, ">", $omniScriptFile) or die $!;
 
     my $script = <<END;
-export QTDIR=$libPath/Qt
-export BOOST_ROOT=$libPath/Boost
-export EXPAT_INCLUDE=$libPath/expat/lib/
-export EXPAT_LIBPATH=$libPath/expat/include/
 cd $basePath/omni
-cmake $omniScriptOptions .
+../external/libs/Qt/bin/qmake omni.pro
 make $globalMakeOptions
 END
     print SCRIPT $script;
@@ -279,26 +287,6 @@ sub prepareNukeSrcsAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
-sub boost {
-    boost142();
-}
-
-sub boost142 {
-    my $baseFileName = "boost_1_42_0";
-    my $libFolderName = "Boost";
-    prepareNukeSrcsFolder( $baseFileName, $libFolderName );
-
-    my $cmd = "cd $srcPath/$baseFileName; ./bootstrap.sh --prefix=$libPath/$libFolderName --with-libraries=filesystem,mpi,regex,serialization,thread";
-    print "configuring ($cmd)\n"; 
-    `($cmd)`;
-    print "done\n";
-
-    $cmd = "cd $srcPath/$baseFileName; ./bjam install";
-    print "building and installing ($cmd)\n";
-    `($cmd)`;
-    print "done\n";
-}
-
 sub libpng {
     prepareAndBuild( "libpng-1.2.39", "libpng" );
 }
@@ -328,7 +316,14 @@ sub hdf5 {
 }
 
 sub hdf5_18 {
-    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", "--enable-shared=no --enable-threadsafe --with-pthread=/usr/lib" );
+    my $args = " --enable-threadsafe ";
+    if( isWindowsNative() || isWindowsCygwin() ){
+
+    } else {
+	$args .= " --with-pthread=/usr/lib ";
+    }
+
+    prepareAndBuild( "hdf5-1.8.4-patch1", "HDF5", $args );
 }
 
 sub qt {
@@ -342,65 +337,22 @@ sub qt46 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    prepareAndBuild( $baseFileName, "Qt", "-debug -opensource -no-glib -fast -make libs -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -qt-sql-sqlite" );
+    my $args = "-debug -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
+    if ( isMac() ){
+	$args .= " -arch x86_64 ";
+    }
+
+    prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
 sub omni {
     printTitle("omni");
     genOmniScript();
 
-    my $cmakeSettings = <<END;
-CMAKE_BUILD_TYPE:STRING=Debug
-CMAKE_INSTALL_PREFIX:STRING=$buildPath
-QT_QMAKE_EXECUTABLE:STRING=$libPath/Qt/bin/qmake
-DESIRED_QT_VERSION:STRING=4
-
-TIFF_INCLUDE_DIR:PATH=$libPath/libtiff/include
-TIFF_LIBRARY:PATH=$libPath/libtiff/lib/libtiff.a
-
-EXPAT_INCLUDE_DIR:PATH=$libPath/expat/include
-EXPAT_LIBRARY:PATH=$libPath/expat/lib/libexpat.a
-
-PNG_INCLUDE_DIR:PATH=$libPath/libpng/include
-PNG_LIBRARY:PATH=$libPath/libpng/lib/libpng.a
-
-END
-
-    `echo "$cmakeSettings" > $omniPath/CMakeCache.txt`;
-    `rm -rf $omniPath/CMakeFiles`;
-
-    updateCMakeListsFile();
-
     my $cmd = "sh $omniScriptFile";
     print "running: ($cmd)\n";
     print `$cmd`;
     print "done\n";
-}
-
-sub updateCMakeListsFile {
-    my $inFileName  = "$omniPath/CMakeLists.txt.template";
-    my $outFileName = "$omniPath/CMakeLists.txt";
-
-    open IN_FILE,  "<", $inFileName  or die "could not read $inFileName";
-    open OUT_FILE, ">", $outFileName or die "could not write $outFileName";;
-
-    while (my $line = <IN_FILE>) { 
-	if( $line =~ /^SET\(OM_EXT_LIBS_DIR/ ) {
-	    print OUT_FILE "SET(OM_EXT_LIBS_DIR \"$libPath\")\n";
-	} elsif ( $line =~ /^SET\(BOOST_VERS_EXT/ ) {
-	    my $fName = `ls $libPath/Boost/lib/libboost_system*38.a`;
-	    ( my $boost_ver ) = ($fName =~/.*(gcc.*)\.a/);
-	    if( isMac() ){
-		$boost_ver = "x".$boost_ver;
-	    } 
-	    print OUT_FILE "SET(BOOST_VERS_EXT \"$boost_ver\")\n";
-	} else {
-	    print OUT_FILE $line;
-	}
-    }
-    
-    close OUT_FILE;
-    close IN_FILE;
 }
 
 sub printTitle {
@@ -441,7 +393,6 @@ sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
-    print "2 -- Build boost\n";
     print "3 -- Build qt\n";
     print "4 -- Build vtk\n";
     print "5 -- Build omni\n";
@@ -468,7 +419,6 @@ sub menu {
 
 sub buildAll {
 	smallLibraries();
-	boost();
 	qt();
 	vtk();
 	omni();
@@ -481,8 +431,6 @@ sub runMenuEntry {
 	return();
     }elsif( 1 == $entry ){
 	smallLibraries();
-    }elsif( 2 == $entry ){
-	boost();
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
@@ -553,6 +501,12 @@ sub numberOfCores {
     my $numCores = 2;
     if (-e "/proc/cpuinfo") {
 	$numCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
+    }
+
+    if( isMac() ){
+	$numCores = `/usr/sbin/system_profiler SPHardwareDataType | grep Total | cut -f2 -d:`;
+	chomp($numCores);
+	$numCores =~ s/ //g;
     }
 
     if( $numCores < 2 ){
@@ -626,23 +580,17 @@ sub checkCmdLineArgs {
 }
 
 sub doUbuntuAptGets{
-    print `sudo apt-get -y install libxrender-dev `;
-    print `sudo apt-get -y install libxext-dev`;
-    print `sudo apt-get -y install freeglut3-dev`;
-    print `sudo apt-get -y install freetype`;
-    print `sudo apt-get -y install g++`;
-    print `sudo apt-get -y install freetype`;
-    print `sudo apt-get -y install libfreetype6-dev`;
-    print `sudo apt-get -y install libxml2`;
-    print `sudo apt-get -y install libxml2-dev`;
-    print `sudo apt-get -y install cmake`;
-    print `sudo apt-get -y install mesa-common-dev`;
-    print `sudo apt-get -y install emacs`;
-    print `sudo apt-get -y install libxt-dev`;
-    print `sudo apt-get -y install libgl1-mesa-dev`;
-    print `sudo apt-get -y install libglu1-mesa-dev`;
-    print `sudo apt-get -y install libgl1-mesa-dri-dbg	`;
-    print `sudo apt-get -y install libgl1-mesa-glx-dbg	`;
+    my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++ 
+	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev 
+	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
+	libgl1-mesa-glx-dbg);
+
+    my $args = "";
+    foreach (@packages){
+	$args .= " $_";
+    }
+
+    print `sudo apt-get -y install $args`;
     print "Done with the Ubuntu 9.10 apt-gets! \n\n";
 }
 
