@@ -1,8 +1,6 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
 #include "utility/omDataLayer.h"
-#include "utility/omDataReader.h"
-#include "utility/omDataWriter.h"
 #include "utility/omHdf5Helpers.h"
 #include "common/omVtk.h"
 
@@ -31,27 +29,18 @@
 
 #include <vtkStringArray.h>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-namespace bfs = boost::filesystem;
-
-#include <boost/regex.hpp>
-//namespace brx=boost::regex;
-
 #include <strnatcmp.h>
 
-#include <hdf5.h>
+#include "utility/omHdf5.h"
 #include "common/omDebug.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////          ImageType Methods
 
-/*
+/**
  *	Return image type based on filename extension
  */
-ImageType om_imagedata_parse_image_type( QString fileNameAndPath )
+ImageType OmImageDataIo::om_imagedata_parse_image_type( QString fileNameAndPath )
 {
 	QString extension = QFileInfo(fileNameAndPath).suffix();
 
@@ -85,7 +74,7 @@ ImageType om_imagedata_parse_image_type( QString fileNameAndPath )
 /*
  *	Return pointer to new image reader given an image type.
  */
-vtkImageReader2 *om_imagedata_get_reader(ImageType type)
+vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader(ImageType type)
 {
 
 	//switch for extention type
@@ -107,54 +96,26 @@ vtkImageReader2 *om_imagedata_get_reader(ImageType type)
 	case HDF5_TYPE:
 	case NONE_TYPE:
 		throw OmAccessException("File type not recognized.");
-
 	}
 
 	//read from lowerleft (since it writes from lower left)
 	reader->SetFileLowerLeft(1);
-	//debug("FIXME", << reader->GetFileLowerLeft() << endl;
+
 	return reader;
 }
 
-vtkImageReader2 *om_imagedata_get_reader( QString fname)
+vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader( QString fname)
 {
 	return om_imagedata_get_reader(om_imagedata_parse_image_type( fname ) );
-}
-
-/*
- *	Return pointer to new image writer given an image type.
- */
-vtkImageWriter *om_imagedata_get_writer(ImageType type)
-{
-	//switch for extention type
-	switch (type) {
-	case TIFF_TYPE:
-		return vtkTIFFWriter::New();
-	case JPEG_TYPE:
-		return vtkJPEGWriter::New();
-	case PNG_TYPE:
-		return vtkPNGWriter::New();
-	case VTK_TYPE:
-		return vtkImageWriter::New();
-	case HDF5_TYPE:
-	case NONE_TYPE:
-	default:
-		throw OmAccessException("File type not recognized.");
-	}
-}
-
-vtkImageWriter *om_imagedata_get_writer(string & fname)
-{
-	return om_imagedata_get_writer(om_imagedata_parse_image_type( QString::fromStdString(fname)));
 }
 
 /////////////////////////////////
 ///////          Reading Functions
 
-vtkImageData *om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
-				 const DataBbox srcExtentBbox,
-				 const DataBbox dataExtentBbox, 
-				 int bytesPerSample)
+vtkImageData * OmImageDataIo::om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
+						 const DataBbox srcExtentBbox,
+						 const DataBbox dataExtentBbox, 
+						 int bytesPerSample)
 {
 
 	assert(sourceFilenamesAndPaths.size() && "No files to read.");
@@ -167,17 +128,17 @@ vtkImageData *om_imagedata_read( QFileInfoList sourceFilenamesAndPaths,
 		return om_imagedata_read_vtk( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
 
 	case HDF5_TYPE:
-		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
+		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, dataExtentBbox, bytesPerSample);
 
 	default:
 		assert(false && "Unknown file format");
 	}
 }
 
-vtkImageData *om_imagedata_read_vtk( QFileInfoList sourceFilenamesAndPaths, 
-				     const DataBbox srcExtentBbox,
-				     const DataBbox dataExtentBbox, 
-				     int bytesPerSample)
+vtkImageData * OmImageDataIo::om_imagedata_read_vtk( QFileInfoList sourceFilenamesAndPaths, 
+						     const DataBbox srcExtentBbox,
+						     const DataBbox dataExtentBbox, 
+						     int bytesPerSample)
 {
 	//alloc dynamic image data
 	vtkImageData *data = vtkImageData::New();
@@ -243,10 +204,9 @@ vtkImageData *om_imagedata_read_vtk( QFileInfoList sourceFilenamesAndPaths,
 	return data;
 }
 
-vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
-				      const DataBbox srcExtentBbox,
-				      const DataBbox dataExtentBbox, 
-				      int bytesPerSample)
+vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
+						      const DataBbox dataExtentBbox, 
+						      int bytesPerSample)
 {
 	//FIXME: don't assert, or check before calling me!
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
@@ -255,10 +215,39 @@ vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
 	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true, true );
 
 	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
-								   dataExtentBbox, 
-								   bytesPerSample);
+								  dataExtentBbox, 
+								  bytesPerSample);
 	return data;
 }
+
+bool OmImageDataIo::are_file_names_valid( QFileInfoList sourceFilenamesAndPaths )
+{
+	if( sourceFilenamesAndPaths.empty() ){
+		return false;
+	}
+
+	foreach( QFileInfo file, sourceFilenamesAndPaths ){
+		if( !file.exists() ){
+			return false;
+		}
+
+		switch ( om_imagedata_parse_image_type( file.filePath() )){
+		case TIFF_TYPE:
+		case JPEG_TYPE:
+		case PNG_TYPE:
+		case VTK_TYPE:
+		case HDF5_TYPE:
+			break;
+
+		default:
+			printf("invalid file: %s\n", qPrintable(file.filePath()) );
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 /*
  *	Destination extent is data extent when not specified.
@@ -266,7 +255,7 @@ vtkImageData *om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
 
 /////////////////////////////////
 ///////          Dimensions Functions
-Vector3 < int > om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths )
+Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths )
 {
 	assert(sourceFilenamesAndPaths.size() && "No files specified");
 
@@ -286,7 +275,7 @@ Vector3 < int > om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths )
 	}
 }
 
-Vector3 < int > om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths )
+Vector3 < int > OmImageDataIo::om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths )
 {
 	////use vtk to determine properties
 	vtkImageData *data = vtkImageData::New();
@@ -314,7 +303,7 @@ Vector3 < int > om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths
 	return src_dims;
 }
 
-Vector3 < int > om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths )
+Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths )
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
@@ -330,7 +319,7 @@ Vector3 < int > om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPath
 
 /////////////////////////////////
 ///////          vtkImageData Utility Functions
-void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >&aabb, int extent[])
+void OmImageDataIo::getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >&aabb, int extent[])
 {
 	extent[0] = aabb.getMin().x;
 	extent[1] = aabb.getMax().x;
@@ -340,41 +329,14 @@ void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >
 	extent[5] = aabb.getMax().z;
 }
 
-void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[], AxisAlignedBoundingBox < int >&aabb)
+void OmImageDataIo::setAxisAlignedBoundingBoxFromVtkExtent(const int extent[], AxisAlignedBoundingBox < int >&aabb)
 {
 	aabb.setMin(Vector3 < int >(extent[0], extent[2], extent[4]));
 	aabb.setMax(Vector3 < int >(extent[1], extent[3], extent[5]));
 	aabb.setEmpty(false);
 }
 
-void printImageData(vtkImageData * data)
-{
-	int extent[6];
-	data->GetExtent(extent);
-
-	int num_components = data->GetNumberOfScalarComponents();
-
-	for (int z = extent[4]; z <= extent[5]; ++z) {
-		for (int y = extent[2]; y <= extent[3]; ++y) {
-			for (int x = extent[0]; x <= extent[1]; ++x) {
-
-				if (num_components == 1) {
-					//debug("FIXME", << data->GetScalarComponentAsFloat(x, y, z, 0) << " ";
-				} else {
-					//debug("FIXME", << "( ";
-					//for (int i = 0; i < num_components; ++i)
-						//debug("FIXME", << data->GetScalarComponentAsFloat(x, y, z, i) << " ";
-					//debug("FIXME", << ")";
-				}
-
-			}
-			//debug("FIXME", << endl;
-		}
-		//debug("FIXME", << endl;
-	}
-}
-
-void clearImageData(vtkImageData * data)
+void OmImageDataIo::clearImageData(vtkImageData * data)
 {
 	int dims[3];
 	data->GetDimensions(dims);
@@ -387,7 +349,7 @@ void clearImageData(vtkImageData * data)
 	memset(scalar_pointer, 0, bytes_per_sample * samples_per_voxel * dims[0] * dims[1] * dims[2]);
 }
 
-vtkImageData *allocImageData(Vector3 < int >dims, int bytesPerSample)
+vtkImageData * OmImageDataIo::allocImageData(Vector3 < int >dims, int bytesPerSample)
 {
 	//alloc data
 	vtkImageData *data = vtkImageData::New();
@@ -403,7 +365,7 @@ vtkImageData *allocImageData(Vector3 < int >dims, int bytesPerSample)
 	return data;
 }
 
-vtkImageData *createBlankImageData(Vector3 < int >dims, int bytesPerSample, char value)
+vtkImageData * OmImageDataIo::createBlankImageData(Vector3 < int >dims, int bytesPerSample, char value)
 {
 	//alloc data
 	vtkImageData *data = allocImageData(dims, bytesPerSample);
@@ -417,7 +379,7 @@ vtkImageData *createBlankImageData(Vector3 < int >dims, int bytesPerSample, char
 /*
  *	Returns pointer to array of copied data from specified source and bbox.
  */
-void *copyImageData(vtkImageData * srcData, const DataBbox & srcCopyBbox)
+void * OmImageDataIo::copyImageData(vtkImageData * srcData, const DataBbox & srcCopyBbox)
 {
 
 	//get vtk formatted copy extent
@@ -478,9 +440,8 @@ void *copyImageData(vtkImageData * srcData, const DataBbox & srcCopyBbox)
 	return p_out_data;
 }
 
-void
-copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
-	      vtkImageData * srcData, const DataBbox & srcCopyBbox)
+void OmImageDataIo::copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
+				  vtkImageData * srcData, const DataBbox & srcCopyBbox)
 {
 
 	//get vtk formatted extent
@@ -556,7 +517,7 @@ copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
 	}
 }
 
-void copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * srcData, const Vector3 < int >&srcOffset)
+void OmImageDataIo::copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * srcData, const Vector3 < int >&srcOffset)
 {
 
 	//bbox of source and destination
@@ -602,7 +563,7 @@ void copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * s
  *	Input data is deleted after output data is created.
  */
 
-void appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** outputImageData, int num_pairs, int axis)
+void OmImageDataIo::appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** outputImageData, int num_pairs, int axis)
 {
 
 	for (int i = 0; i < num_pairs; i++) {

@@ -3,18 +3,14 @@
 
 #include "omCacheBase.h"
 
-#include "utility/stackSet.h"
 #include "common/omException.h"
 #include "common/omDebug.h"
 
 #include <QWaitCondition>
 #include <QMutex>
 #include <QThread>
-
 #include <QExplicitlySharedDataPointer>
-
-#include <list>
-using std::list;
+#include <QStack>
 
 #include <time.h>
 
@@ -34,7 +30,7 @@ using std::list;
  *	Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
-template < typename T,  typename U  >
+template < typename KEY, typename PTR  >
 class OmThreadedCache : public OmCacheBase, public QThread
 {	
  public:
@@ -43,42 +39,52 @@ class OmThreadedCache : public OmCacheBase, public QThread
 	virtual ~OmThreadedCache();
 		
 	//value accessors
-	void Get(QExplicitlySharedDataPointer<U> &p_value,
-		 const T &key, 
-		 bool blocking = false, 
-		 bool exist = false);
-	void Add(const T &key, U *value);
-	void Remove(const T &key);
-	bool RemoveOldest();
-	bool Contains(const T &key);
-	void Call(void (U::*fxn)() , bool lock = true);
+	void Get(QExplicitlySharedDataPointer<PTR> &p_value,
+		 const KEY &key, 
+		 bool blocking);
+	void Add(const KEY &key, PTR *value);
+	void Remove(const KEY &key);
+	void RemoveOldest();
+	bool Contains(const KEY &key);
 	void Clear();
-	
+	void Flush();
+
 	//fetch thread
 	bool IsFetchStackEmpty();
 	void FetchLoop();
 	bool FetchUpdateCheck();
+	virtual void HandleFetchUpdate() { };
 	virtual bool InitializeFetchThread();
 	virtual bool KillFetchThread(); 
 	
+	//fetch properties
+	void SetFetchUpdateInterval(float);
+	float GetFetchUpdateInterval();
+	void SetFetchUpdateClearsFetchStack(bool);
+	bool GetFetchUpdateClearsFetchStack();
+
+	//get info about the cache 
+	unsigned int GetFetchStackSize();
+	long GetCacheSize();
+
 	/**Name function for debugging */
 	void SetCacheName(const char* name);
-	void GetCacheName(char* name);
+	char* GetCacheName();
 
 	void run();
 	
 protected:
-	virtual U* HandleCacheMiss(const T &key) = 0;
+	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 	
 private:
 	//key, shared pointer value cache
-	map< T, QExplicitlySharedDataPointer< U > > mCachedValuesMap;
+	QHash< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
 
 	//least recently accessed at head of list
-	list< T > mKeyAccessList;
+	QList< KEY > mKeyAccessList;
 		
-	StackSet< T > mFetchStack;	//stack of keys to be fetched
-	set< T > mCurrentlyFetching;	//set of keys currently being fetched
+	QStack< KEY > mFetchStack;	//stack of keys to be fetched
+	QList< KEY > mCurrentlyFetching;	//set of keys currently being fetched
 	
 	bool mFetchThreadAlive;
 	bool mInitializeFetchThread;
@@ -97,10 +103,23 @@ private:
 	QThread mFetchThread;
 	QMutex mFetchThreadMutex;
 	QWaitCondition mFetchThreadCv;
+	
+	//fetch thread update
+	time_t mLastUpdateTime;
+	
+	//fetch update prefs
+	float mFetchUpdateInterval;
+	bool mFetchUpdateClearsStack;
+
+	// size of this cache
+	long mCacheSize;
+	long mCacheObjects;
 
 	/** name/descriptor of Cache for debugging */
 	char mCacheName[40];
 	void * threadSelf;
+
+
 };
 
 #endif

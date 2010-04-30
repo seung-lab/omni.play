@@ -12,7 +12,6 @@
 #include "volume/omDrawOptions.h"
 
 #include "system/omStateManager.h"
-#include "system/omKeyManager.h"
 #include "common/omDebug.h"
 
 #define DEBUG 0
@@ -103,7 +102,7 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
-        if (event->key() & Qt::Key_C) mCPressed = true; 
+        if (event->key() == Qt::Key_C) mCPressed = true; 
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeKeyPress(event);
@@ -115,10 +114,6 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 	}
 }
 
-void OmView3dUi::KeyReleaseEvent(QKeyEvent * event)
-{
-
-}
 /////////////////////////////////
 ///////          Navigation Mode Methods
 
@@ -126,15 +121,17 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 {
 
 	//if right click
+
 	if (event->buttons() & Qt::RightButton && !event->modifiers()) {
 		ShowSegmentContextMenu(event);
 		return;
 	}
 
 	bool control_modifier = event->modifiers() & Qt::ControlModifier;
+	debug("hey","%i  %i \n\n",control_modifier,mCPressed);
 	if (event->buttons() & Qt::LeftButton && control_modifier) {
 		crosshair(event);
-	} else if ((event->buttons() & Qt::LeftButton) & mCPressed){
+	} else if ((event->buttons() & Qt::LeftButton) && mCPressed){
 	        CenterAxisOfRotation(event);
 	} else {
 		CameraMovementMouseStart(event);
@@ -151,7 +148,7 @@ void OmView3dUi::NavigationModeMouseMove(QMouseEvent * event)
 	CameraMovementMouseUpdate(event);
 }
 
-void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
+void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent *)
 {
 	//SegmentSelectToggleMouse(event, false);
 }
@@ -161,7 +158,7 @@ void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
 	CameraMovementMouseWheel(event);
 }
 
-void OmView3dUi::NavigationModeKeyPress(QKeyEvent * event)
+void OmView3dUi::NavigationModeKeyPress(QKeyEvent *)
 {
 }
 
@@ -233,23 +230,7 @@ void OmView3dUi::EditModeMouseWheel(QWheelEvent * event)
 
 void OmView3dUi::EditModeKeyPress(QKeyEvent * event)
 {
-
-	//OmStateManager::SetToolMode(SUBTRACT_VOXEL_MODE);     
-
-	switch (OmKeyManager::LookupKeySequence(event)) {
-
-	case OmKeySeq_Focus_Select:
-		VoxelSelectToggleKey(event, false);
-		break;
-
-	case OmKeySeq_Focus_Select_Append:
-		VoxelSelectToggleKey(event, true);
-		break;
-
-	default:
-		//or try regular nav event
-		NavigationModeKeyPress(event);
-	}
+	NavigationModeKeyPress(event);
 }
 
 /////////////////////////////////
@@ -365,7 +346,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 bool OmView3dUi::PickVoxel(QKeyEvent * keyEvent, QMouseEvent * mouseEvent, bool drag, DataCoord & voxel)
 {
 	if (NULL != keyEvent) {
-		return PickVoxelCameraFocus(keyEvent, drag, voxel);
+		return PickVoxelCameraFocus(voxel);
 	}
 
 	if (NULL != mouseEvent) {
@@ -439,29 +420,14 @@ bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVox
 	return true;
 }
 
-bool OmView3dUi::PickVoxelCameraFocus(QKeyEvent * keyEvent, bool drag, DataCoord & rVoxel)
+bool OmView3dUi::PickVoxelCameraFocus(DataCoord & rVoxel)
 {
-
 	NormCoord norm_coord = OmVolume::SpaceToNormCoord(mpView3d->mCamera.GetPosition());
 	DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
 
 	rVoxel = voxel;
 	return true;
 }
-
-/*
- 
- if(!event->modifiers() & Qt::AltModifier) {
- //left button scales further away (into voxel)
- z_depth_scale = 0.05f;
- } else if(event->modifiers() & Qt::AltModifier)  {
- //right button scales closer (on top of voxel)
- z_depth_scale = -0.05f;
- } else {
- //not handled button
- return false;
- }
- */
 
 /////////////////////////////////
 ///////           Segment Actions
@@ -552,12 +518,12 @@ void OmView3dUi::VoxelSelectToggleMouse(QMouseEvent * mouseEvent, bool drag)
 	(new OmVoxelSelectionAction(picked_voxel, !voxel_select_state, augment_selection))->Run();
 }
 
-void OmView3dUi::VoxelSelectToggleKey(QKeyEvent * keyEvent, bool augment)
+void OmView3dUi::VoxelSelectToggleKey(QKeyEvent *, bool augment)
 {
 
 	//pick voxel
 	DataCoord picked_voxel;
-	if (!PickVoxelCameraFocus(keyEvent, false, picked_voxel))
+	if (!PickVoxelCameraFocus(picked_voxel))
 		return;
 
 	//get voxel state
@@ -641,10 +607,13 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		mpView3d->updateGL();
 		return;
 	}
+
+	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
+	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
-	mpView3d->mCamera.SetFocus(voxel);
+
 	mCPressed = false;
-	debug("axis", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
+	
 
 }
 

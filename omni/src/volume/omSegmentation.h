@@ -47,7 +47,6 @@ public:
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
 	
-	bool IsMeshDataBuilt();
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
@@ -62,12 +61,12 @@ public:
 	void ExportDataFilter(vtkImageData *);
 	
 	//events
-	void SystemModeChangeEvent(OmSystemModeEvent *event);
+	void SystemModeChangeEvent();
 							
 	//segment management
 	OmSegment* GetSegment(OmId id);
+	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE id);
 	OmSegment* AddSegment();
-	void RemoveSegment(OmId id);
 	bool IsSegmentValid(OmId id);
 	bool IsSegmentEnabled(OmId id);
 	void SetSegmentEnabled(OmId id, bool enable);
@@ -77,14 +76,17 @@ public:
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
 	const OmIds& GetSelectedSegmentIds();
+
 	OmId GetNumSegments();
+	OmId GetNumTopSegments();
 	
 	bool AreSegmentsSelected();
 	
 	//drawing
-	void Draw(const OmVolumeCuller &);
-	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &, const int numSegments);
-	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, const OmVolumeCuller &rCuller);
+	void Draw(OmVolumeCuller &);
+	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, 
+				OmVolumeCuller &, const int numSegments);
+	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, OmVolumeCuller &rCuller);
 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
@@ -99,11 +101,9 @@ protected:
 	
 private:
 	void KillCacheThreads();
+	QList< OmMipChunkCoord > getMipCoordsInFrustrum(OmVolumeCuller & rCuller);
 
 	MeshingManager * mMeshingMan;
-
-	//mesh data exists
-	bool mIsMeshDataBuilt;
 	
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;

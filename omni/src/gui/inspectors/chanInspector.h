@@ -27,6 +27,7 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
+	void nameEditChanged();
 
  private:
 	ChannelDataWrapper cdw;

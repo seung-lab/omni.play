@@ -28,7 +28,6 @@ public:
 	void MouseDoubleClick(QMouseEvent *event);
 	void MouseWheel(QWheelEvent *event);
 	void KeyPress(QKeyEvent *event);
-	void KeyReleaseEvent(QKeyEvent *event);
 	
 	//navigation mode
 	void NavigationModeMousePressed(QMouseEvent *event);

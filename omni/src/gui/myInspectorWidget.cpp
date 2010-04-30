@@ -2,10 +2,8 @@
 #include "myInspectorWidget.h"
 #include "guiUtils.h"
 
-#include "volume/omVolumeTypes.h"
 #include "common/omStd.h"
 #include "project/omProject.h"
-#include "system/omSystemTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omVolume.h"
 #include "volume/omChannel.h"
@@ -17,33 +15,38 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
 #include "common/omDebug.h"
-using namespace vmml;
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
-MyInspectorWidget::MyInspectorWidget(QWidget * parent)
+MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
  : QWidget(parent)
 {
+
+	mParentWindow = parent;
+
 	verticalLayout = new QVBoxLayout(this);
 	
-	//	verticalLayout->addWidget(setupVolumeList(layoutWidget));
 	verticalLayout->addWidget(setupDataSrcList());
 
 	currentDataSrc = DataWrapperContainer();
 
 	inspectorProperties = new InspectorProperties( this );
+
 	elementListBox = new ElementListBox(this, verticalLayout);
-	segmentList = new SegmentList(this, inspectorProperties, elementListBox  );
+	segmentList = new SegmentList(this, inspectorProperties, elementListBox);
+	channelInspectorWidget=NULL;
+	segInspectorWidget=NULL;
 
 	QMetaObject::connectSlotsByName(this);
+
+	OmStateManager::setInspector( this );
 }
 
 MyInspectorWidget::~MyInspectorWidget()
 {
+	OmStateManager::setInspector( NULL );
 }
 
 QTreeWidget *MyInspectorWidget::setupFilterList()
@@ -57,16 +60,6 @@ QTreeWidget *MyInspectorWidget::setupFilterList()
 	filterListWidget->setHeaderLabels(headers);
 
 	return filterListWidget;
-}
-
-QTreeWidget *MyInspectorWidget::setupVolumeList(QWidget * layoutWidget)
-{
-	QTreeWidget *volumeListWidget = new QTreeWidget(layoutWidget);
-	volumeListWidget->setMaximumSize(QSize(16777215, 75));
-	volumeListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	volumeListWidget->setHeaderHidden(true);
-
-	return volumeListWidget;
 }
 
 void MyInspectorWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -103,7 +96,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 	dataSrcListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *, int)));
+		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *)));
 	
 	GuiUtils::autoResizeColumnWidths(dataSrcListWidget, 3);
 
@@ -136,13 +129,12 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 
 	filterListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(filterListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(addToSplitterDataElementFilter(QTreeWidgetItem *, int)));
+                this, SLOT(addToSplitterDataElementFilter(QTreeWidgetItem *)));
 
 	GuiUtils::autoResizeColumnWidths(filterListWidget, 3);
 
 	filterListWidget->update();
 }
-
 
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
@@ -160,8 +152,7 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 						 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
-
-void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column)
+void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current)
 {
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	FilterDataWrapper fdw = result.value < FilterDataWrapper > ();
@@ -172,18 +163,23 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 						 QString("Filter %1 Inspector").arg(fdw.getID()) );
 }
 
-
 void MyInspectorWidget::addChannelToVolume()
 {
 	OmChannel & added_channel = OmVolume::AddChannel();
-	addToVolume(&added_channel, CHANNEL);
+	populateDataSrcListWidget();
+
+	ChannelDataWrapper cdw( added_channel.GetId() );
+	addChannelToSplitter(cdw);
 }
 
 void MyInspectorWidget::addSegmentationToVolume()
 {
 	OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
-	addToVolume(&added_segmentation, SEGMENTATION);
-	segmentList->makeSegmentationActive(added_segmentation.GetId());
+	populateDataSrcListWidget();
+
+	SegmentationDataWrapper sdw( added_segmentation.GetId() );
+	segmentList->makeSegmentationActive( sdw );
+	addSegmentationToSplitter( sdw);
 }
 
 void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
@@ -197,15 +193,14 @@ void MyInspectorWidget::doDataSrcContextMenuVolAdd(QAction * act)
 	}
 }
 
-
-void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current, const int column)
+void MyInspectorWidget::leftClickOnFilterItem(QTreeWidgetItem * current)
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		addToSplitterDataSource(current );
 	}
 }
 
-void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column)
+void MyInspectorWidget::leftClickOnDataSourceItem(QTreeWidgetItem * current)
 {
 	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
 		doShowDataSrcContextMenu( current );
@@ -225,13 +220,6 @@ ViewType MyInspectorWidget::getViewType(QAction * act)
 	} else {
 		throw OmFormatException("could not match QAction type...\n");
 	}
-}
-
-// called from mainwindow after segmentation or channel added
-// "refresh datasrc list"
-void MyInspectorWidget::addToVolume(OmManageableObject * item, ObjectType item_type)
-{
-	populateDataSrcListWidget();
 }
 
 void MyInspectorWidget::addFilter()
@@ -258,11 +246,6 @@ void MyInspectorWidget::nameEditChanged()
 	   else if(FILTER == item_type)
 	   proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
 	 */
-}
-
-void MyInspectorWidget::addChildrenToSegmentation(OmId seg_id)
-{
-	//debug("FIXME", << "MyInspectorWidget::addChildrenToSegmentation: mesh was built; should we do something? (purcaro)\n";
 }
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
@@ -378,11 +361,15 @@ QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
 	propAct = new QAction(tr("&Properties"), parent);
 	propAct->setStatusTip(tr("Opens properties"));
 
+	delAct = new QAction(tr("&Delete"), parent);
+	propAct->setStatusTip(tr("Does nothing currently"));
+
 	contextMenu = new QMenu(parent);
 	contextMenu->addAction(xyAct);
 	contextMenu->addAction(xzAct);
 	contextMenu->addAction(yzAct);
 	contextMenu->addAction(propAct);
+	contextMenu->addAction(delAct);
 
 	return contextMenu;
 }
@@ -392,6 +379,8 @@ void MyInspectorWidget::selectChannelView(QAction * act)
 	ChannelDataWrapper cdw = getCurrentlySelectedChannel();
 	if( propAct == act ){
 		addChannelToSplitter(cdw);
+	} else if (delAct == act) {
+		deleteChannel(cdw);
 	} else {
 		emit triggerChannelView( cdw.getID(), getViewType(act));
 	}
@@ -448,6 +437,8 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 
 	if( propAct == act ){
 		addSegmentationToSplitter(sdw);
+	} else if (delAct == act) {
+		deleteSegmentation(sdw);
 	} else {
 		emit triggerSegmentationView( sdw.getID(), getViewType(act));
 	}
@@ -460,9 +451,39 @@ void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
 		this, SLOT(addFilter()));
 	
-	connect(channelInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-
 	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, 
 						 QString("Channel %1 Inspector").arg(cdw.getID()) );
+}
+
+void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
+{
+	elementListBox->clear();
+
+	mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
+	foreach(OmId channelID, OmVolume::GetValidChannelIds()) {
+		OmChannel & channel = OmVolume::GetChannel(channelID);
+		foreach(OmId filterID, channel.GetValidFilterIds()) {
+			OmFilter2d &filter = channel.GetFilter(filterID);
+			if (filter.GetSegmentation() == sdw.getID()){
+				mParentWindow->cleanViewsOnVolumeChange(CHANNEL,channelID);
+			}
+		}
+	}
+
+        mParentWindow->cleanViewsOnVolumeChange(SEGMENTATION, sdw.getID());
+
+	inspectorProperties->closeDialog();
+
+	OmVolume::RemoveSegmentation(sdw.getID());
+	populateDataSrcListWidget();
+}
+
+void MyInspectorWidget::deleteChannel(ChannelDataWrapper cdw)
+{
+
+	inspectorProperties->closeDialog();
+	elementListBox->clear();
+	mParentWindow->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());	
+	OmVolume::RemoveChannel(cdw.getID());
+	populateDataSrcListWidget();	
 }

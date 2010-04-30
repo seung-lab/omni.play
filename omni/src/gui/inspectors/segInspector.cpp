@@ -7,6 +7,7 @@
 #include "system/omProjectData.h"
 #include "system/omBuildVolumes.h"
 #include "utility/sortHelpers.h"
+#include "utility/stringHelpers.h"
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
  : QWidget(parent)
@@ -38,23 +39,21 @@ QGroupBox* SegInspector::makeStatsBox()
 	labelNumSegments->setText("number of segments:");
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
-	QString numSegs = QString::number( sdw.getNumberOfSegments() );
 
-	// TODO: refactor out into StringHelpers; make better...
-	QString commaNumSegs;
-	QString::iterator i;
-	int counter = 0;
-	for (i = numSegs.end()-1; i != numSegs.begin()-1; i-- ){
-		counter++;
-		commaNumSegs.prepend( (*i) );
-		if( 0 == ( counter % 3 ) && 
-		    counter != numSegs.size() ){
-			commaNumSegs.prepend(',');
-		}
-	}
-
+	QString commaNumSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfSegments() );
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
+
+
+	QLabel *labelNumTopSegments = new QLabel(statsBox);
+	labelNumTopSegments->setText("number of top-level segments:");
+	grid->addWidget( labelNumTopSegments, 1, 0 );
+	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
+
+	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
+	labelNumTopSegmentsNum->setText( commaNumTopSegs );
+	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
+
 
 	return statsBox;
 }
@@ -301,7 +300,6 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 	connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
 	mMeshinatorDialog->exec();
 
-	current_seg->mMipMeshManager.SetMeshDataBuilt(true);
 	OmProject::Save();
 }
 
@@ -321,7 +319,11 @@ void SegInspector::populateSegmentationInspector()
 	nameEdit->setMinimumWidth(200);
 
 	//TODO: fix me!
-	//directoryEdit->setText( sdw.GetSourceDirectoryPath() );
+	if( 0 ){
+		// use path from where import files were orginally...
+	} else {
+		directoryEdit->setText( OmProjectData::getAbsolutePath() );
+	}
 	directoryEdit->setMinimumWidth(200);
 
 	patternEdit->setText( "*" );

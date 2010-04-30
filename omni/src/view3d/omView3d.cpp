@@ -10,10 +10,8 @@
 
 #include "volume/omVolumeCuller.h"
 
-#include "system/omKeyManager.h"
 #include "system/omStateManager.h"
 #include "project/omProject.h"
-#include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -23,7 +21,7 @@
 #include "common/omDebug.h"
 
 enum View3dWidgetIds {
-	VIEW3D_WIDGET_ID_SELECTION = 1,
+	VIEW3D_WIDGET_ID_SELECTION = 0,
 	VIEW3D_WIDGET_ID_VIEWBOX,
 	VIEW3D_WIDGET_ID_INFO,
 	VIEW3D_WIDGET_ID_CHUNK_EXTENT
@@ -39,21 +37,35 @@ void initLights();
 //////////      OmView3d Class
 //////////
 
+#ifdef WIN32
+typedef void (*GLDELETEBUFFERS)(GLsizei n, const GLuint *buffers);
+typedef void (*GLBINDBUFFER)(GLenum target, GLuint buffer);
+typedef void (*GLGENBUFFERS)(GLsizei n, GLuint *buffers);
+typedef void (*GLBUFFERDATA)(GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
+typedef void (*GLGETBUFFERPARAIV)(GLenum target, GLenum pname, GLint *params);
+
+GLDELETEBUFFERS glDeleteBuffersARBFunction;
+GLBINDBUFFER glBindBufferARBFunction;
+GLGENBUFFERS glGenBuffersARBFunction;
+GLBUFFERDATA glBufferDataARBFunction;
+GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
+#endif
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget * parent)
- : QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), mView3dUi(this)
+	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), 
+	  mView3dUi(this)
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
 
 	//setup widgets
-	mView3dWidgetManager.Set(VIEW3D_WIDGET_ID_SELECTION, new OmSelectionWidget(this));
-	mView3dWidgetManager.Set(VIEW3D_WIDGET_ID_VIEWBOX, new OmViewBoxWidget(this));
-	mView3dWidgetManager.Set(VIEW3D_WIDGET_ID_INFO, new OmInfoWidget(this));
-	mView3dWidgetManager.Set(VIEW3D_WIDGET_ID_CHUNK_EXTENT, new OmChunkExtentWidget(this));
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_SELECTION] = new OmSelectionWidget(this);
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this);
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO] = new OmInfoWidget(this);
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_CHUNK_EXTENT] = new OmChunkExtentWidget(this);
 
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
@@ -63,10 +75,25 @@ OmView3d::OmView3d(QWidget * parent)
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
-	bool disposable = OmLocalPreferences::getDefault2DViewFrameIn3D();
-	disposable = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
-	int whatever = OmLocalPreferences::getDefaultCrosshairValue();
-	mElapsed = new boost::timer();
+	OmLocalPreferences::getDefault2DViewFrameIn3D();
+	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
+	OmLocalPreferences::getDefaultCrosshairValue();
+	OmLocalPreferences::getDefaultDoDiscoBall();
+	mElapsed = new QTime();
+	mElapsed->start();
+
+#ifdef WIN32
+	glDeleteBuffersARBFunction = (GLDELETEBUFFERS) wglGetProcAddress("glDeleteBuffersARB");
+	assert(glDeleteBuffersARBFunction);
+	glBindBufferARBFunction = (GLBINDBUFFER) wglGetProcAddress("glBindBufferARB");
+	assert(glBindBufferARBFunction);
+	glGenBuffersARBFunction = (GLGENBUFFERS) wglGetProcAddress("glGenBuffersARB");
+	assert(glGenBuffersARBFunction);
+	glBufferDataARBFunction = (GLBUFFERDATA) wglGetProcAddress("glBufferDataARB");
+	assert(glBufferDataARBFunction);
+	glGetBufferParameterivARBFunction = (GLGETBUFFERPARAIV) wglGetProcAddress("glGetBufferParameterivARB");
+	assert(glGetBufferParameterivARBFunction);
+#endif
 }
 
 OmView3d::~OmView3d()
@@ -118,7 +145,7 @@ void OmView3d::initializeGL()
 
 	SetBackgroundColor();	// background color
 	glClearStencil(0);	// clear stencil buffer
-	glClearDepth(1.0f);	// 0 is near, 1 is far
+	glClearDepth(1.0f);	// 0 is mynear, 1 is myfar
 	glDepthFunc(GL_LEQUAL);	// drawn if depth value is less than or equal
 	// than previous stored depth value
 
@@ -163,9 +190,8 @@ void OmView3d::myUpdate()
 void OmView3d::doTimedDraw()
 {
 	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
-	if (mElapsed->elapsed() > 0.5) {
-		delete mElapsed;
-		mElapsed = new boost::timer();
+	if (mElapsed->elapsed() > 5000) {
+		mElapsed->restart();
 		updateGL();
 	}
 
@@ -265,46 +291,44 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 	myUpdate();
 }
 
-void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent * event)
+void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent *)
 {
 	myUpdate();
 }
 
-void OmView3d::VoxelModificationEvent(OmVoxelEvent * event)
+void OmView3d::VoxelModificationEvent(OmVoxelEvent *)
 {
 	myUpdate();
 }
 
-void OmView3d::SegmentDataModificationEvent(OmSegmentEvent * event)
+void OmView3d::SegmentDataModificationEvent()
 {
 	myUpdate();
 }
 
-void OmView3d::SystemModeChangeEvent(OmSystemModeEvent * event)
+void OmView3d::SystemModeChangeEvent()
 {
 	myUpdate();
 }
 
-void OmView3d::ViewBoxChangeEvent(OmViewEvent * event)
+void OmView3d::ViewBoxChangeEvent()
 {
 	myUpdate();
 }
 
-void OmView3d::View3dRedrawEvent(OmView3dEvent * event)
+void OmView3d::View3dRedrawEvent()
 {
 
 	myUpdate();
 }
 
-void OmView3d::View3dRedrawEventFromCache(OmView3dEvent * event)
+void OmView3d::View3dRedrawEventFromCache()
 {
 	myUpdate();
 }
 
-void OmView3d::View3dUpdatePreferencesEvent(OmView3dEvent * event)
+void OmView3d::View3dUpdatePreferencesEvent()
 {
-	//UpdateEnabledWidgets();
-	//myUpdate();
 }
 
 /////////////////////////////////
@@ -322,7 +346,6 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesV
 	startPicking(point2d.x, point2d.y, mCamera.GetPerspective().array);
 
 	//render selectable points
-	//Draw(drawOps); //OmBitfield drawOps,
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_SELECTED | DRAWOP_RENDERMODE_SELECTION);
 	Draw(DRAWOP_LEVEL_ALL | DRAWOP_SEGMENT_FILTER_UNSELECTED | DRAWOP_RENDERMODE_SELECTION);
 
@@ -383,16 +406,16 @@ void OmView3d::UpdateEnabledWidgets()
 
 	//set widgets enabled
 	bool highlight_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
-	mView3dWidgetManager.SetEnabled(VIEW3D_WIDGET_ID_SELECTION, highlight_widget_state);
+	mView3dWidgetManager[ VIEW3D_WIDGET_ID_SELECTION]->enabled = highlight_widget_state;
 
 	bool viewbox_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
-	mView3dWidgetManager.SetEnabled(VIEW3D_WIDGET_ID_VIEWBOX, viewbox_widget_state);
+	mView3dWidgetManager[ VIEW3D_WIDGET_ID_VIEWBOX]->enabled = viewbox_widget_state;
 
 	bool info_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_INFO_BOOL);
-	mView3dWidgetManager.SetEnabled(VIEW3D_WIDGET_ID_INFO, info_widget_state);
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO]->enabled = info_widget_state;
 
 	bool extent_widget = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
-	mView3dWidgetManager.SetEnabled(VIEW3D_WIDGET_ID_CHUNK_EXTENT, extent_widget);
+	mView3dWidgetManager[ VIEW3D_WIDGET_ID_CHUNK_EXTENT]->enabled = extent_widget;
 
 }
 
@@ -405,8 +428,7 @@ void OmView3d::UpdateEnabledWidgets()
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
 {
-	delete mElapsed;
-	mElapsed = new boost::timer();
+	mElapsed->restart();
 	// clear buffer
 	glClearStencil(0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -431,13 +453,15 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 			DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_SELECTED);
 			glDisable(GL_STENCIL_TEST);
 
-			//draw unselected
+			//draw unselected (i.e. enabled) segments
 			//if transparent unselected, disable writing to depth buffer
-			if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL))
+			if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 				glDepthMask(GL_FALSE);
-			//draw unselected segments
+			}
+
 			DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_UNSELECTED |
 				    DRAWOP_SEGMENT_COLOR_TRANSPARENT);
+
 			//always renable writing to depth buffer
 			glDepthMask(GL_TRUE);
 		}
@@ -504,11 +528,11 @@ void OmView3d::SetBackgroundColor()
 void OmView3d::SetCameraPerspective()
 {
 
-	float near = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
-	float far = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
+	float mynear = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
+	float myfar = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
 	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
-	far = 10000000.0;
-	Vector4 < float >perspective(fov, (float)(400) / 300, near, far);
+	myfar = 10000000.0;
+	Vector4 < float >perspective(fov, (float)(400) / 300, mynear, myfar);
 
 	mCamera.SetPerspective(perspective);
 	mCamera.ResetModelview();
@@ -527,7 +551,11 @@ void OmView3d::SetBlending()
  */
 void OmView3d::DrawWidgets()
 {
-	mView3dWidgetManager.CallEnabled(&OmView3dWidget::Draw);
+	foreach( OmView3dWidget* w, mView3dWidgetManager ){
+		if( w->enabled ){
+			w->Draw();
+		}
+	}
 }
 
 /////////////////////////////////
@@ -559,4 +587,10 @@ void initLights()
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
 	glEnable(GL_LIGHT0);	// enable light source after configuration
+}
+
+QSize OmView3d::sizeHint () const
+{
+	QSize s = OmStateManager::getViewBoxSizeHint();
+	return QSize( s.width(), s.height() - 76 );
 }
