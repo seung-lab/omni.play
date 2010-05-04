@@ -9,16 +9,14 @@
 #include "gui/cacheMonitorWidget.h"
 #include "common/omStd.h"
 
-class CacheMonitorDialog : public QDialog {
+class CacheMonitorDialog : public QDialog 
+{
 
 Q_OBJECT
 
  public:
 	CacheMonitorDialog(MainWindow *parent);	
 	~CacheMonitorDialog();
-
-
-
 
  private slots:
 	void Refresh();
@@ -30,10 +28,6 @@ Q_OBJECT
 	QTimer *mTimer;
 	CacheMonitorWidget* mCacheMonitorWidget;
 	bool mDying;
-
-
-
-
 };
 
 #endif

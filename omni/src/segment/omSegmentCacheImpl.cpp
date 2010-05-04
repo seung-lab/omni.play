@@ -16,6 +16,11 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation *segmentation, OmSegmentCa
         mAllEnabled = false;
 }
 
+OmSegmentCacheImpl::~OmSegmentCacheImpl()
+{
+	flushDirtySegments();
+}
+
 OmId OmSegmentCacheImpl::getSegmentationID()
 {
 	return mSegmentation->GetId();
@@ -181,9 +186,19 @@ OmHdf5Path OmSegmentCacheImpl::getValuePath( SEGMENT_DATA_TYPE value )
 	return OmDataPaths::getSegmentValuePath( getSegmentationID(), value );
 }
 
+OmHdf5Path OmSegmentCacheImpl::getValuePath( OmSegment * seg )
+{
+	return OmDataPaths::getSegmentValuePath( getSegmentationID(), seg->getValue() );
+}
+
 OmHdf5Path OmSegmentCacheImpl::getSegmentPath( OmId segmentID )
 {
 	return OmDataPaths::getSegmentPath( getSegmentationID(), segmentID);
+}
+
+OmHdf5Path OmSegmentCacheImpl::getSegmentPath( OmSegment * seg )
+{
+	return OmDataPaths::getSegmentPath( getSegmentationID(), seg->GetId() );
 }
 
 OmIds & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
@@ -316,7 +331,7 @@ void OmSegmentCacheImpl::addToDirtySegmentList( OmSegment* seg)
 void OmSegmentCacheImpl::flushDirtySegments()
 {
 	foreach( OmSegment* seg, dirtySegments ){
-		seg->Save();
+		Save( seg );
 	}
 
 	dirtySegments.clear();
@@ -324,7 +339,7 @@ void OmSegmentCacheImpl::flushDirtySegments()
 
 int OmSegmentCacheImpl::maxDirtySegmentsBeforeFlushing()
 {
-	return 10000;
+	return 1000;
 }
 
 SegmentDataSet OmSegmentCacheImpl::getValues( OmSegment * segment )
@@ -369,4 +384,45 @@ OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 	}
 
 	return GetSegmentFromID(root->GetId());
+}
+
+void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
+{
+	OmSegment * root = findRoot(segmentUnknownLevel);
+
+	double minThreshold = 1;
+	OmSegment * segToRemove = NULL;
+	foreach( OmId childID, root->segmentsJoinedIntoMe ){
+		OmSegment * child = GetSegmentFromID( childID );
+		if( child->getThreshold() < minThreshold){
+			minThreshold = child->getThreshold();
+			segToRemove = child;
+		}
+	}
+	
+	if( NULL == segToRemove ){
+		printf("no children to remove\n");
+		return;
+	}
+
+	clearCaches( root );
+
+	root->removeChild( segToRemove );
+	segToRemove->clearParent();
+
+	printf("removed %d from parent\n", segToRemove->GetId() );
+}
+
+void OmSegmentCacheImpl::clearCaches( OmSegment * seg )
+{
+	cacheOfSelectedSegmentValues.clear();
+	cacheRootNodeToAllChildren.remove( seg->GetId() );
+}
+
+void OmSegmentCacheImpl::Save( OmSegment * seg )
+{
+	OmDataArchiveQT::ArchiveWrite( getSegmentPath( seg ), seg);
+
+	OmId id = seg->GetId();
+	OmDataArchiveQT::ArchiveWrite( getValuePath( seg ), &id );
 }

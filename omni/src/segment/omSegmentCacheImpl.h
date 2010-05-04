@@ -6,6 +6,7 @@
 class OmSegmentCacheImpl {
 public:
 	OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache);
+	~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
@@ -42,24 +43,30 @@ public:
 
 	OmId getSegmentationID();
 
-	void addToDirtySegmentList( OmSegment* seg);
-	void flushDirtySegments();
+	virtual void addToDirtySegmentList( OmSegment* seg);
+	virtual void flushDirtySegments();
 
 	SegmentDataSet getValues( OmSegment * segment  );
 	OmIds getIDs( OmSegment * segment );
 
-	OmIds getIDsHelper( OmSegment * segment );
 	OmSegment * findRoot( OmSegment * segment );
 
-private:
+	void splitChildLowestThreshold( OmSegment * segment );
+
+	void Save( OmSegment * seg );
+
+ protected:
+	QHash<OmId, OmSegment*> mSegIdToSegPtrHash;
+
+ private:
 	
 	bool mAllSelected;
 	bool mAllEnabled;
 
-	QHash<OmId, OmSegment*> mSegIdToSegPtrHash;
 	OmSegment* LoadSegment(OmId);
 	OmSegment* doLoadSegment(OmId);
 	OmHdf5Path getSegmentPath( OmId segmentID );
+	OmHdf5Path getSegmentPath( OmSegment * seg );
 	OmId getNextSegmentID();
 	OmId mMaxSegmentID;
 
@@ -67,8 +74,11 @@ private:
 	OmId LoadValue(SEGMENT_DATA_TYPE);
 	OmId doLoadValue(SEGMENT_DATA_TYPE);
 	OmHdf5Path getValuePath( SEGMENT_DATA_TYPE value );
+	OmHdf5Path getValuePath( OmSegment * seg );
 	SEGMENT_DATA_TYPE getNextValue();
 	SEGMENT_DATA_TYPE mMaxValue;
+
+	OmIds getIDsHelper( OmSegment * segment );
 
 	int maxDirtySegmentsBeforeFlushing();
 
@@ -79,6 +89,7 @@ private:
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
+	void clearCaches( OmSegment * seg );
 	SegmentDataSet cacheOfSelectedSegmentValues;
 	QHash< OmId, OmIds > cacheRootNodeToAllChildren;
 

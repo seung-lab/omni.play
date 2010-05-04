@@ -3,6 +3,7 @@
 
 #include "system/events/omPreferenceEvent.h"
 #include "common/omStd.h"
+#include "system/omCacheInfo.h"
 
 #include <QMutex>
 
@@ -36,8 +37,7 @@ public:
 
 	static void AddCache(OmCacheGroup group, OmCacheBase *base);
 	static void RemoveCache(OmCacheGroup group, OmCacheBase *base);
-	static OmCacheBase* GetCache(OmCacheGroup group, int index);
-	OmCacheBase* GetCacheInternal(OmCacheGroup group, int index);
+	static QList< OmCacheInfo > GetCacheInfo(OmCacheGroup group);
 	
 	static void UpdateCacheSize(OmCacheGroup group, int delta);
 	static void UpdateCacheSizeFromLocalPrefs();

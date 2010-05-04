@@ -13,7 +13,7 @@
 #include "common/omDebug.h"
 #include "system/omGarbage.h"
 #include "system/omProjectData.h"
-#include "system/omBuildVolumes.h"
+#include "system/omBuildSegmentation.h"
 #include "utility/stringHelpers.h"
 
 int argc_global;
@@ -48,15 +48,9 @@ void Headless::processLine( QString line, QString fName )
 			printf("please choose segmentation first!\n");
 			return;
 		} 
-
-		printf("running mesh on segmentation %d\n", SegmentationID);
-
-
-		time (&start);
-		OmVolume::GetSegmentation( SegmentationID ).BuildMeshData();
-		time (&end);
-		dif = difftime (end,start);
-		printf("meshing done (%.2lf secs)\n", dif );
+		OmSegmentation & added_segmentation = OmVolume::GetSegmentation(SegmentationID);
+		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
+		bs->build_seg_mesh();
 
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
@@ -142,13 +136,11 @@ void Headless::processLine( QString line, QString fName )
 		QStringList args = line.split(':');
 
 		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
-		SegmentationID = added_segmentation.GetId();
-
 		QString hdf5fnp = args[1];
 
-		OmBuildVolumes bv( &added_segmentation );
-		bv.addFileNameAndPath( hdf5fnp );
-		bv.build_seg_image();
+		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
+		bs->addFileNameAndPath( hdf5fnp );
+		bs->build_seg_image();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}

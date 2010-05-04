@@ -1,36 +1,29 @@
 #ifndef OM_BUILD_VOLUMES_H
 #define OM_BUILD_VOLUMES_H
 
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
+#include <QFileInfoList>
+#include <QString>
+#include <QThread>
 
 class OmBuildVolumes
 {
  public:
-	OmBuildVolumes( OmSegmentation * );
-	OmBuildVolumes(OmChannel * );
+	OmBuildVolumes();
 	void setFileNamesAndPaths( QFileInfoList fileNamesAndPaths );
 	void addFileNameAndPath( QString fnp );
 
-	void buildAndMeshSegmentation();
-	void build_seg_image();
-	void build_seg_mesh();
-	void build_channel();
-
- private:
-	QFileInfoList mFileNamesAndPaths;
-	OmSegmentation * mSeg;
-	OmChannel * mChann;
-
-	time_t time_start;
-	time_t time_end;
-	double time_dif;
-
+ protected:
 	bool checkSettingsAndTime(QString type);
 	void stopTiming(QString type);
 
-	void loadDendrogram();
 	QString getSelectedHDF5file();
+
+	QFileInfoList mFileNamesAndPaths;
+
+ private:
+	time_t time_start;
+	time_t time_end;
+	double time_dif;
 };
 
 #endif

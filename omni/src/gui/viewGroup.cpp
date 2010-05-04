@@ -181,7 +181,7 @@ QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidgetInfo * vgw )
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	mMainWindow->windowMenu->addAction(dock->toggleViewAction());
+	mMainWindow->mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 	return dock;
 }

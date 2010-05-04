@@ -19,7 +19,7 @@
 class OmChannel : public OmMipVolume, public OmManageableObject {
 
 public:
-	OmChannel() { }
+        OmChannel();
 	OmChannel(OmId id);
 	
 	//properties

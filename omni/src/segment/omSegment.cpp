@@ -50,6 +50,12 @@ void OmSegment::setParent(OmSegment * segment, double threshold)
 	mCache->addToDirtySegmentList(this);
 }
 
+void OmSegment::clearParent()
+{
+	parentSegID = 0;
+	mThreshold = 0;
+}
+
 SEGMENT_DATA_TYPE OmSegment::getValue()
 {
 	return mValue;
@@ -136,24 +142,6 @@ const Vector3 < float >& OmSegment::GetColor()
 	return mColor;
 }
 
-void OmSegment::Save()
-{
-	OmDataArchiveQT::ArchiveWrite( getSegmentPath(), this);
-
-	OmId id = GetId();
-	OmDataArchiveQT::ArchiveWrite(getValuePath(), &id );
-}
-
-OmHdf5Path OmSegment::getValuePath()
-{
-	return OmDataPaths::getSegmentValuePath( mCache->getSegmentationID(), mValue);
-}
-
-OmHdf5Path OmSegment::getSegmentPath()
-{
-	return OmDataPaths::getSegmentPath( mCache->getSegmentationID(), GetId() );
-}
-
 OmId OmSegment::GetId()
 {
 	return mID;
@@ -229,4 +217,19 @@ QSet< OmMipChunkCoord > & OmSegment::getChunks()
 OmId OmSegment::getParent()
 {
 	return parentSegID;
+}
+
+void OmSegment::splitChildLowestThreshold()
+{
+	mCache->splitChildLowestThreshold( this );
+}
+
+double OmSegment::getThreshold()
+{
+	return mThreshold;
+}
+
+void OmSegment::removeChild( OmSegment * segment )
+{
+	segmentsJoinedIntoMe.remove( segment->GetId() );
 }

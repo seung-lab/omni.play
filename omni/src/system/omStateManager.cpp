@@ -453,15 +453,19 @@ OmSystemMode OmStateManager::GetSystemMode()
 
 void OmStateManager::SetSystemMode(const OmSystemMode new_mode)
 {
-
-	//return if no change
-	if (new_mode == Instance()->mSystemMode)
+	if (new_mode == Instance()->mSystemMode) {
 		return;
+	}
 
-	//set new mode
+	Instance()->mSystemModePrev = Instance()->mSystemMode;
 	Instance()->mSystemMode = new_mode;
 
-	//post change event
+	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+}
+
+void OmStateManager::SetSystemModePrev()
+{
+	Instance()->mSystemMode = Instance()->mSystemModePrev;
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 }
 
@@ -485,6 +489,25 @@ void OmStateManager::SetToolMode(const OmToolMode new_mode)
 	//post tool mode change
 	OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 }
+
+OmDendToolMode OmStateManager::GetDendToolMode()
+{
+	return Instance()->mDendToolMode;
+}
+
+void OmStateManager::SetDendToolMode(const OmDendToolMode new_mode)
+{
+	//return if no change
+	if (new_mode == Instance()->mDendToolMode)
+		return;
+
+	//set new mode
+	Instance()->mDendToolMode = new_mode;
+
+	//post tool mode change
+	//OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+}
+
 
 /////////////////////////////////
 ///////          UndoStack

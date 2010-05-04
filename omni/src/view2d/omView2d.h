@@ -18,8 +18,8 @@
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "volume/omFilter2d.h"
-
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
 
 #include "common/omStd.h"
 
@@ -268,7 +268,12 @@ private:
 
 	void displayInformation( QString & elapsedTime );
 
-	void doSelectSegment( OmSegmentation & segmentation, OmId segmentID, bool augment_selection );
+	void doSelectSegment( SegmentDataWrapper sdw, bool augment_selection );
+	void resetWindow();
+	void doFindAndSplitSegment(QMouseEvent * event );
+	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
+
+	void doRedraw();
 
 #ifdef WIN32
 	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);

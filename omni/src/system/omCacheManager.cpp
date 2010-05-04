@@ -90,23 +90,21 @@ void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
 	Instance()->mCacheMapMutex.unlock();
 }
 
-OmCacheBase* OmCacheManager::GetCache(OmCacheGroup group, int index)
+QList< OmCacheInfo > OmCacheManager::GetCacheInfo(OmCacheGroup group)
 {
-	return Instance()->GetCacheInternal(group, index);				
-}
+	// TODO: mutex lock
+	//QMutexLocker locker( &mCacheMapMutex );
 
-OmCacheBase* OmCacheManager::GetCacheInternal(OmCacheGroup group, int index)
-{
-	set< OmCacheBase*>::iterator it;
-	it = Instance()->mCacheMap[group].CacheSet.begin();
-	int i =0;
-	while (it !=  mCacheMap[group].CacheSet.end()){
-		if (i == index) return *it;
-		it++;
-		i++;
+	QList< OmCacheInfo > infos;
+	
+	foreach( OmCacheBase * c, Instance()->mCacheMap[group].CacheSet ){
+		OmCacheInfo info;
+		info.cacheSize = c->GetCacheSize();
+		info.cacheName = c->GetCacheName();
+		infos << info;
 	}
 	
-	if (i < index+1) return NULL;				
+	return infos;
 }
 
 /*

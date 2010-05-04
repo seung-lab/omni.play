@@ -6,7 +6,7 @@
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
 #include "utility/sortHelpers.h"
-#include "system/omBuildVolumes.h"
+#include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) : QWidget(parent)
@@ -97,9 +97,9 @@ void ChanInspector::on_buildButton_clicked()
 {
 	OmChannel & current_channel = OmVolume::GetChannel(cdw.getID());
 
-	OmBuildVolumes bv( &current_channel );
-	bv.setFileNamesAndPaths( getFileInfoList() );
-	bv.build_channel();
+	OmBuildChannel * bc = new OmBuildChannel( &current_channel );
+	bc->setFileNamesAndPaths( getFileInfoList() );
+	bc->build_channel();
 }
 
 void ChanInspector::on_notesEdit_textChanged()

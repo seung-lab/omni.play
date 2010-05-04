@@ -205,6 +205,16 @@ QString SegmentDataWrapper::chunkListStr()
 	return StringHelpers::getStringFromStringList( strs );
 }
 
+OmSegmentation & SegmentDataWrapper::getSegmentation()
+{ 
+	return OmVolume::GetSegmentation(mSegmentationID); 
+}
+
+OmSegment * SegmentDataWrapper::getSegment()
+{
+	return getSegmentation().GetSegment( mID );
+}
+
 /*******************************************
  ****** Filters
  *******************************************/

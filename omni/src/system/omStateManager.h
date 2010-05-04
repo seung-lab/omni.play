@@ -21,7 +21,7 @@ class MyInspectorWidget;
 class MainWindow;
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
-enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE };
+enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE, DEND_MODE };
 enum OmToolMode { SELECT_MODE,
 		  PAN_MODE,
 		  CROSSHAIR_MODE,
@@ -32,6 +32,8 @@ enum OmToolMode { SELECT_MODE,
 		  FILL_MODE, 
 		  VOXELIZE_MODE,
 };
+
+enum OmDendToolMode { SPLIT }; 
 
 
 class OmStateManager {
@@ -80,11 +82,13 @@ public:
 	//system mode
 	static OmSystemMode GetSystemMode();
 	static void SetSystemMode(const OmSystemMode mode);
-	
+	static void SetSystemModePrev();
 	
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolMode(const OmToolMode mode);
+	static OmDendToolMode GetDendToolMode();
+	static void SetDendToolMode(const OmDendToolMode mode);
 	
 	
 	//undostack
@@ -153,9 +157,11 @@ private:
 	
 	//system mode
 	OmSystemMode mSystemMode;
-	
+	OmSystemMode mSystemModePrev;
+
 	//tool mode
 	OmToolMode mToolMode;
+	OmDendToolMode mDendToolMode;
 	
 	//undostack
 	QUndoStack *mpUndoStack;

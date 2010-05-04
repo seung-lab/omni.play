@@ -7,6 +7,8 @@
 OmSimpleChunkThreadedCache::OmSimpleChunkThreadedCache(OmMipVolume * volume) : SimpleChunkThreadedCache(RAM_CACHE_GROUP)
 {
 	SetCacheName("SimpleChunkThreadedCache");
+        int chunkDim = volume->GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim*volume->GetBytesPerSample());
 	mMipVolume = volume;
 
 }

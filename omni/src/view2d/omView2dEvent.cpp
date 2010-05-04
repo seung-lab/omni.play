@@ -26,7 +26,7 @@ void OmView2d::mouseDoubleClickEvent(QMouseEvent*)
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
-		break;
+	case DEND_MODE:
 	case EDIT_SYSTEM_MODE:
 		break;
 	}
@@ -41,43 +41,55 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 
 	switch (OmStateManager::GetSystemMode()) {
 
-		case NAVIGATION_SYSTEM_MODE: {
-			if (event->button() == Qt::LeftButton) {
-				const bool crosshair = event->modifiers() & Qt::ControlModifier;
-				if( crosshair ){
-					mouseSetCrosshair(event);
-				} else {
-					mouseNavModeLeftButton(event);
-				}
-			} else if (event->button() == Qt::RightButton) {
-				mouseSelectSegment(event);
+	case NAVIGATION_SYSTEM_MODE: 
+		if (event->button() == Qt::LeftButton) {
+			const bool crosshair = event->modifiers() & Qt::ControlModifier;
+			if( crosshair ){
+				mouseSetCrosshair(event);
+			} else {
+				mouseNavModeLeftButton(event);
 			}
-
-			cameraMoving = true;
+		} else if (event->button() == Qt::RightButton) {
+			mouseSelectSegment(event);
+		}
+			
+		cameraMoving = true;
+			
+		break;
+			
+  	case DEND_MODE: 
+		if (event->button() == Qt::LeftButton) {
+			doFindAndSplitSegment( event );
+			doRedraw();
 		}
 		break;
-
-		case EDIT_SYSTEM_MODE: {
-			if (event->button() == Qt::LeftButton) {
-				const bool crosshair = event->modifiers() & Qt::ControlModifier;
-				if( crosshair ){
-					mouseSetCrosshair(event);
-				} else {
-					mouseEditModeLeftButton(event);
-				}
-			} else if (event->button() == Qt::RightButton) {
-				mouseSelectSegment(event);
+		
+	case EDIT_SYSTEM_MODE: 
+		if (event->button() == Qt::LeftButton) {
+			const bool crosshair = event->modifiers() & Qt::ControlModifier;
+			if( crosshair ){
+				mouseSetCrosshair(event);
+			} else {
+				mouseEditModeLeftButton(event);
 			}
+		} else if (event->button() == Qt::RightButton) {
+			mouseSelectSegment(event);
 		}
+		
 		break;
 	}
 }
 
-void OmView2d::mouseSetCrosshair(QMouseEvent * event)
+void OmView2d::doRedraw()
 {
 	Refresh();
 	mTextures.clear();
 	myUpdate();
+}
+
+void OmView2d::mouseSetCrosshair(QMouseEvent * event)
+{
+	doRedraw();
 
 	SetDepth(event);
 
@@ -85,8 +97,6 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 }
 
-// XY_VIEW is the default viewType 
-// (different newTypes only used by mouseMove_NavMode_DrawInfo(...) for some reason??? (purcaro)
 DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event)
 {
 	Vector2f clickPoint = Vector2f(event->x(), event->y());
@@ -98,8 +108,11 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 	return  getMouseClickpointLocalDataCoord(event);
 }
 
-void OmView2d::doSelectSegment( OmSegmentation & segmentation, OmId segmentID, bool augment_selection )
+void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 {
+	OmSegmentation & segmentation = sdw.getSegmentation();
+	OmId segmentID = sdw.getID();
+
 	if( !segmentation.IsSegmentValid(segmentID)){
 		return;
 	}
@@ -133,16 +146,28 @@ void OmView2d::mouseSelectSegment(QMouseEvent * event)
 {
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
-	// find segment selected
+	SegmentDataWrapper * sdw = getSelectedSegment( event );
+	if( NULL == sdw ){
+		return;
+	}
+
+	return doSelectSegment( (*sdw), augment_selection );
+}
+
+SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
+{
 	DataCoord dataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 	OmId segmentID;
 	OmId segmentationID;
-	if (mVolumeType == SEGMENTATION) {
+	if( SEGMENTATION == mVolumeType ){
 		segmentationID = mImageId;
 		OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
 		segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
-		return doSelectSegment( segmentation, segmentID, augment_selection );
+		if( 0 == segmentID  ){
+			return NULL;
+		}
+		return new SegmentDataWrapper( segmentationID, segmentID );
 	} else {
 		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
 		foreach( OmId id, current_channel.GetValidFilterIds() ) {
@@ -153,12 +178,16 @@ void OmView2d::mouseSelectSegment(QMouseEvent * event)
 				segmentationID = filter.GetSegmentation();
 				OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
 				segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
-				return doSelectSegment( segmentation, segmentID, augment_selection );
+				if( 0 == segmentID  ){
+					return NULL;
+				}
+				return new SegmentDataWrapper( segmentationID, segmentID );
 			}
 		}
 	}
+	
+	return NULL;
 }
-
 
 void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 {
@@ -194,11 +223,9 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 
 	OmId segid = OmVolume::GetSegmentation(segmentation_id).GetVoxelSegmentId(globalDataClickPoint);
 	FillToolFill(segmentation_id, globalDataClickPoint, data_value, segid);
-	Refresh();
-	mTextures.clear();
-	myUpdate();
-}
 
+	doRedraw();
+}
 
 void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 {
@@ -475,6 +502,8 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 				}
 			}
 			break;
+		case DEND_MODE:
+			break;
 		case EDIT_SYSTEM_MODE:
 			EditModeMouseMove(event);
 			break;
@@ -540,6 +569,8 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 	case NAVIGATION_SYSTEM_MODE:
 		cameraMoving = false;
 		PickToolGetColor(event);
+		break;
+	case DEND_MODE:
 		break;
 	case EDIT_SYSTEM_MODE:
 		EditModeMouseRelease(event);
@@ -673,25 +704,19 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 	switch (event->key()) {
 	case Qt::Key_D:
-		{
-			mMIP = !mMIP;
-		}
+		mMIP = !mMIP;
 		break;
 	case Qt::Key_M:
-		{
-			mEmitMovie = !mEmitMovie;
-		}
+		mEmitMovie = !mEmitMovie;
 		break;
 	case Qt::Key_P:
 		setBrushToolDiameter();
 		myUpdate();
 		break;
-
 	case Qt::Key_L:
 		mLevelLock = !mLevelLock;
 		myUpdate();
 		break;
-
 	case Qt::Key_J:
 		// Toggle joining of a segment.
 		{
@@ -725,30 +750,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 	case Qt::Key_F:
 		// Toggle fill mode.
-		{
-			myUpdate();
-		}
+		myUpdate();
 		break;
 	case Qt::Key_Escape:
-		{
-			
-			SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-			OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
-			OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
-			OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
-			OmStateManager::SetPanDistance(YZ_VIEW, Vector2f(0,0));
-			OmStateManager::SetPanDistance(XZ_VIEW, Vector2f(0,0));
-			OmStateManager::SetPanDistance(XY_VIEW, Vector2f(0,0));			
-			if (OmLocalPreferences::getStickyCrosshairMode()){
-				debug("cross","we made it to the great Escape!\n");
-				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-			}
-		
-			Refresh();
-			mTextures.clear();
-			myUpdate();
-
-		}
+		resetWindow();
 		break;
 	case Qt::Key_Minus:
 		{
@@ -845,3 +850,31 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 }
 
 //\}
+
+void OmView2d::resetWindow()
+{
+	SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
+	OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
+	OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
+	OmStateManager::SetPanDistance(YZ_VIEW, Vector2f(0,0));
+	OmStateManager::SetPanDistance(XZ_VIEW, Vector2f(0,0));
+	OmStateManager::SetPanDistance(XY_VIEW, Vector2f(0,0));			
+	if (OmLocalPreferences::getStickyCrosshairMode()){
+		debug("cross","we made it to the great Escape!\n");
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+	}
+		
+	doRedraw();
+}
+
+void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
+{
+	SegmentDataWrapper * sdw = getSelectedSegment( event );
+	if( NULL == sdw ){
+		return;
+	}
+
+	OmSegment * seg = sdw->getSegment();
+	seg->splitChildLowestThreshold();
+}

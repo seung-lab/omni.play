@@ -4,16 +4,29 @@
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "segment/omSegmentCacheImplBatch.h"
 #include <QMutexLocker>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
 {
 	mImpl = new OmSegmentCacheImpl(segmentation, this);
+	mSegmentation = segmentation;
 }
 
 OmSegmentCache::~OmSegmentCache()
 {
 	delete(mImpl);
+}
+
+void OmSegmentCache::turnBatchModeOn( const bool batchMode )
+{
+	delete(mImpl);
+
+	if( batchMode ){
+		mImpl = new OmSegmentCacheImplBatch(mSegmentation, this);
+	} else {
+		mImpl = new OmSegmentCacheImpl(mSegmentation, this);
+	}
 }
 
 OmId OmSegmentCache::getSegmentationID()
@@ -190,14 +203,14 @@ OmIds OmSegmentCache::getIDs( OmSegment * segment )
 	return mImpl->getIDs( segment );
 }
 
-OmIds OmSegmentCache::getIDsHelper( OmSegment * segment )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->getIDsHelper( segment );
-}
-
 OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->findRoot( segment );
+}
+
+void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->splitChildLowestThreshold( segment );
 }

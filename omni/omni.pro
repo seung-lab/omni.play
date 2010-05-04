@@ -102,10 +102,15 @@ HEADERS += lib/strnatcmp.h \
            src/common/omVtk.h \
            src/gui/cacheMonitorDialog.h \
            src/gui/cacheMonitorWidget.h \
+           src/system/OmCacheInfo.h \
            src/gui/elementListBox.h \
            src/gui/guiUtils.h \
            src/gui/headless.h \
            src/gui/mainwindow.h \
+           src/gui/toolbars/toolbarManager.h \
+           src/gui/toolbars/navAndEditToolBars.h \
+           src/gui/toolbars/dendToolbar.h \
+           src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
            src/gui/recentFileList.h \
            src/gui/searchInspector.h \
@@ -125,11 +130,14 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegment.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \
+           src/segment/omSegmentCacheImplBatch.h \
            src/segment/omSegmentContextMenu.h \
            src/segment/omSegmentEditor.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildVolumes.h \
+           src/system/omBuildChannel.h \
+           src/system/omBuildSegmentation.h \
            src/system/omCacheableBase.h \
            src/system/omCacheBase.h \
            src/system/omCacheManager.h \
@@ -265,11 +273,16 @@ SOURCES += lib/strnatcmp.cpp \
            src/common/omStd.cpp \
            src/gui/cacheMonitorDialog.cpp \
            src/gui/cacheMonitorWidget.cpp \
+           src/system/OmCacheInfo.cpp \
            src/gui/elementListBox.cpp \
            src/gui/guiUtils.cpp \
            src/gui/headless.cpp \
            src/gui/main.cpp \
            src/gui/mainwindow.cpp \
+           src/gui/toolbars/toolbarManager.cpp \
+           src/gui/toolbars/navAndEditToolBars.cpp \
+           src/gui/toolbars/dendToolbar.cpp \
+           src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \
            src/gui/segmentList.cpp \
@@ -286,11 +299,14 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegment.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
+           src/segment/omSegmentCacheImplBatch.cpp \
            src/segment/omSegmentContextMenu.cpp \
            src/segment/omSegmentEditor.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildVolumes.cpp \
+           src/system/omBuildChannel.cpp \
+           src/system/omBuildSegmentation.cpp \
            src/system/omCacheableBase.cpp \
            src/system/omCacheManager.cpp \
            src/system/omEvent.cpp \

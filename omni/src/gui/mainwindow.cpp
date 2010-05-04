@@ -24,40 +24,35 @@ MainWindow::MainWindow()
 	exceptionMessage = new QErrorMessage(this);
 	OmStateManager::SetMainWindow(this);
 
-	try {
+	setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
+	setAnimated(false);
 
-		setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
-		setAnimated(false);
+	setFocusPolicy(Qt::ClickFocus);
 
-		setFocusPolicy(Qt::ClickFocus);
+	loadingDock = new QFrame;
+	loadingDock->setFrameStyle(QFrame::Box | QFrame::Raised);
 
-		loadingDock = new QFrame;
-		loadingDock->setFrameStyle(QFrame::Box | QFrame::Raised);
+	QGridLayout *dockLayout = new QGridLayout;
 
-		QGridLayout *dockLayout = new QGridLayout;
+	loadingDock->setLayout(dockLayout);
 
-		loadingDock->setLayout(dockLayout);
+	mMenuBar = new MenuBar( this );
+	mToolBars = NULL;
+	mIsProjectOpen = false;
 
-		createActions();
-		createMenus();
-		createToolbar();
-		createStatusBar();
+	createStatusBar();
 
-		windowTitleClear();
-		resize(1000, 800);
+	windowTitleClear();
+	resize(1000, 800);
 
-		preferences = NULL;
-		isProjectOpen = false;
-		omniInspector = NULL;
-		undoView = NULL;
-		mViewGroup = NULL;
+	preferences = NULL;
+	setProjectOpen( false );
+	omniInspector = NULL;
+	undoView = NULL;
+	mViewGroup = NULL;
+	mCacheMonitorDialog = NULL;
 
-		recentFiles.loadRecentlyUsedFilesListFromFS();
-		updateReadOnlyRelatedWidgets();
-
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
+	updateReadOnlyRelatedWidgets();
 }
 
 // Creates a new project
@@ -92,13 +87,13 @@ void MainWindow::newProject()
 
 void MainWindow::showEditPreferencesDialog()
 {
-	if (!isProjectOpen) {
+	if (!isProjectOpen() ) {
 		return;
 	}
 	
 	if (preferences) {
 		preferences->close();
-		delete preferences;
+		delete(preferences);
 		preferences = NULL;
 	} 
 
@@ -113,7 +108,7 @@ void MainWindow::showEditLocalPreferencesDialog()
 {
 	if (preferences) {
 		preferences->close();
-		delete preferences;
+		delete(preferences);
 		preferences = NULL;
 	} 
 
@@ -127,7 +122,7 @@ void MainWindow::showEditLocalPreferencesDialog()
 void MainWindow::addChannelToVolume()
 {
 	try {
-		if (!isProjectOpen) {
+		if (!isProjectOpen() ) {
 			return;
 		}
 
@@ -143,7 +138,7 @@ void MainWindow::addChannelToVolume()
 void MainWindow::addSegmentationToVolume()
 {
 	try {
-		if (!isProjectOpen) {
+		if (!isProjectOpen() ) {
 			return;
 		}
 
@@ -160,7 +155,7 @@ void MainWindow::addSegmentationToVolume()
 bool MainWindow::closeProjectIfOpen()
 {
 
-	if (!isProjectOpen) {
+	if (!isProjectOpen() ) {
 		return true;
 	}
 
@@ -168,7 +163,7 @@ bool MainWindow::closeProjectIfOpen()
 		return false;
 	}
 
-	isProjectOpen = false;
+	setProjectOpen( false );
 
 	// get rid of QDockWidget that may contain Inspector, History, View, etc widgets        
 	foreach( QDockWidget * dw, this->findChildren<QDockWidget *>() ){
@@ -177,7 +172,7 @@ bool MainWindow::closeProjectIfOpen()
 
 	if (preferences) {
 		preferences->close();
-		delete preferences;
+		delete(preferences);
 		preferences = NULL;
 	}
 
@@ -231,7 +226,6 @@ void MainWindow::openProject()
 void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
-
 		try {
 			OmProject::Load( fileNameAndPath );
 		} catch(...) {
@@ -272,7 +266,7 @@ void MainWindow::openInspector()
 {
 	try {
 
-		if (!isProjectOpen) {
+		if (!isProjectOpen()) {
 			return;
 		}
 
@@ -288,7 +282,7 @@ void MainWindow::openInspector()
 		dock->setWidget(omniInspector);
 
 		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
+		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 		connect(omniInspector, SIGNAL(triggerChannelView(OmId, ViewType)),
 			this, SLOT(openChannelView(OmId, ViewType)));
@@ -312,7 +306,7 @@ void MainWindow::openUndoView()
 		dock->setWidget(undoView);
 
 		addDockWidget(Qt::TopDockWidgetArea, dock);
-		windowMenu->addAction(dock->toggleViewAction());
+		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 		undoView->setStack(OmStateManager::GetUndoStack());
 
@@ -324,7 +318,7 @@ void MainWindow::openUndoView()
 void MainWindow::open3dView()
 {
 	try {
-		if (!isProjectOpen) {
+		if (!isProjectOpen()) {
 			return;
 		}
 
@@ -343,7 +337,6 @@ void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
 }
 
 void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
@@ -359,122 +352,17 @@ void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 void MainWindow::closeEvent(QCloseEvent * event)
 {
 	try {
-
 		// QMainWindow::saveState() and restoreState()
 
-		if (isProjectOpen)
-			if (!checkForSave())
+		if (isProjectOpen()) {
+			if (!checkForSave()) {
 				event->ignore();
+			}
+		}
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
-}
-
-void MainWindow::createActions()
-{
-	// Menubar
-	// File
-	newAct = new QAction(tr("&New Project..."), this);
-	newAct->setShortcut(tr("Ctrl+N"));
-	newAct->setStatusTip(tr("Begin a new project"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(newProject()));
-
-	openAct = new QAction(tr("&Open..."), this);
-	openAct->setShortcut(tr("Ctrl+O"));
-	openAct->setStatusTip(tr("Open an existing project"));
-	connect(openAct, SIGNAL(triggered()), this, SLOT(openProject()));
-
-	closeAct = new QAction(tr("&Close"), this);
-	closeAct->setStatusTip(tr("Close current project"));
-	connect(closeAct, SIGNAL(triggered()), this, SLOT(closeProject()));
-
-	saveAct = new QAction(tr("&Save"), this);
-	saveAct->setShortcut(tr("Ctrl+S"));
-	saveAct->setStatusTip(tr("Saves the current project"));
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveProject()));
-	
-	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
-		recentFiles.recentFileActs[i] = new QAction(this);
-		recentFiles.recentFileActs[i]->setVisible(false);
-		connect(recentFiles.recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
-	}
-
-	quitAct = new QAction(tr("&Quit"), this);
-	quitAct->setShortcut(tr("Ctrl+Q"));
-	quitAct->setStatusTip(tr("Quit the application"));
-	connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-	// Edit
-	editLocalPreferencesAct = new QAction(tr("&Local Preferences"), this);
-	connect(editLocalPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditLocalPreferencesDialog()));
-
-	editPreferencesAct = new QAction(tr("&Project Preferences"), this);
-	connect(editPreferencesAct, SIGNAL(triggered()), this, SLOT(showEditPreferencesDialog()));
-
-	// Project
-	addChannelAct = new QAction(tr("Add &Channel"), this);
-	addChannelAct->setShortcut(tr("Ctrl+Shift+C"));
-	addChannelAct->setStatusTip(tr("Adds a channe to the current project"));
-	connect(addChannelAct, SIGNAL(triggered()), this, SLOT(addChannelToVolume()));
-
-	addSegmentationAct = new QAction(tr("Add &Segmentation"), this);
-	addSegmentationAct->setShortcut(tr("Ctrl+Shift+S"));
-	addSegmentationAct->setStatusTip(tr("Adds a volume to the current project"));
-	connect(addSegmentationAct, SIGNAL(triggered()), this, SLOT(addSegmentationToVolume()));
-
-	// Tools
-	openOmniInspector = new QAction(tr("&Inspector"), this);
-	openOmniInspector->setShortcut(tr("Ctrl+I"));
-	openOmniInspector->setStatusTip(tr("Opens the Omni Inspector"));
-	connect(openOmniInspector, SIGNAL(triggered()), this, SLOT(openInspector()));
-
-	openUndoViewAct = new QAction(tr("&History"), this);
-	openUndoViewAct->setStatusTip(tr("Opens the Undo History"));
-	connect(openUndoViewAct, SIGNAL(triggered()), this, SLOT(openUndoView()));
-
-	openCacheMonitorAct = new QAction(tr("&Cache Monitor"), this);
-	openUndoViewAct->setStatusTip(tr("Opens the Cache Monitor Tool"));
-	connect(openCacheMonitorAct, SIGNAL(triggered()), this, SLOT(openCacheMonitor()));
-
-	// Window
-	open3DAct = new QAction(tr("Open &3D View"), this);
-	open3DAct->setShortcut(tr("Ctrl+3"));
-	open3DAct->setStatusTip(tr("Opens the 3D view"));
-	connect(open3DAct, SIGNAL(triggered()), this, SLOT(open3dView()));
-}
-
-void MainWindow::createMenus()
-{
-	fileMenu = menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(newAct);
-	fileMenu->addAction(openAct);
-	fileMenu->addSeparator();
-	fileMenu->addAction(closeAct);
-	fileMenu->addAction(saveAct);
-	fileMenu->addSeparator();
-	for (int i = 0; i < recentFiles.getMaxNumberOfRecentlyUsedFilesToDisplay(); i++) {
-		fileMenu->addAction(recentFiles.recentFileActs[i]);
-	}
-	fileMenu->addSeparator();
-	fileMenu->addAction(quitAct);
-
-	editMenu = menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(editLocalPreferencesAct);
-	editMenu->addAction(editPreferencesAct);
-
-	projectMenu = menuBar()->addMenu(tr("&Project"));
-	projectMenu->addAction(addChannelAct);
-	projectMenu->addAction(addSegmentationAct);
-
-	toolMenu = menuBar()->addMenu(tr("&Tools"));
-	toolMenu->addAction(openOmniInspector);
-	toolMenu->addAction(openUndoViewAct);
-	toolMenu->addAction(openCacheMonitorAct);
-
-	windowMenu = menuBar()->addMenu(tr("&Window"));
-	windowMenu->addAction(open3DAct);
 }
 
 bool MainWindow::checkForSave()
@@ -513,357 +401,12 @@ void MainWindow::spawnErrorDialog(OmException & e)
 
 void MainWindow::updateReadOnlyRelatedWidgets()
 {
-	bool toBeEnabled = false;
+	mMenuBar->updateReadOnlyRelatedWidgets();
 
-	if ( isProjectOpen && !OmProjectData::IsReadOnly() ){
-		toBeEnabled = true;
-	}
-
-	saveAct->setEnabled(toBeEnabled);
-	modifyAct->setEnabled(toBeEnabled);
-	
-	addChannelAct->setEnabled( toBeEnabled );
-	addSegmentationAct->setEnabled( toBeEnabled );
-
-	if ( isProjectOpen ){
-		toBeEnabled = true;
-	}
-	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
-
-}
-
-////////////////////////////////////////////////////////////
-// Toolbars
-////////////////////////////////////////////////////////////
-void MainWindow::createToolbar()
-{
-	createToolbarActions();
-	addToolbars();
-	setupFilterToolbar();
-	setToolbarDisabled();
-}
-
-void MainWindow::setupFilterToolbar()
-{
-	alphaSlider = new QSlider(Qt::Horizontal, this );
-	alphaSlider->setObjectName("alphaSlider");
-
-	OmId channelID = 1;
-	OmId filterID = 1;
-
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
-		if( channel.IsFilterValid( filterID ) ){
-			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
-			alphaSlider->setValue(filter.GetAlpha() * 100);
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
- 		}
-	}
-
-	connect(alphaSlider, SIGNAL(valueChanged(int)), 
-		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
-	
-	filterToolBar = addToolBar("Filter");
-	filterToolBar->addWidget( alphaSlider );
-}
-
-void MainWindow::updateSilder()
-{
-	OmId channelID = 1;
-	OmId filterID = 1;
-
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
-		if( channel.IsFilterValid( filterID ) ){
-			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
-			alphaSlider->setValue(filter.GetAlpha() * 100);
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
- 		}
+	if( mToolBars != NULL ){
+		mToolBars->updateReadOnlyRelatedWidgets();
 	}
 }
-
-void MainWindow::setFilAlpha(int alpha)
-{
-	OmId channelID = 1;
-	OmId filterID = 1;
-
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
-		if( channel.IsFilterValid( filterID ) ){
-			channel.GetFilter( filterID ).SetAlpha((double)alpha / 100.00);
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
- 		}
-	}
-}
-
-void MainWindow::setFilterToolbarEnabled( bool setEnabled )
-{
-	alphaSlider->setEnabled( setEnabled );
-}
-
-void MainWindow::setToolbarDisabled()
-{
-	saveAct->setEnabled(false);
-	modifyAct->setEnabled(false);
-	toolbarSelectAct->setEnabled(false);
-	toolbarCrosshairAct->setEnabled(false);
-	toolbarPanAct->setEnabled(false);
-	toolbarZoomAct->setEnabled(false);
-	toolbarVoxelizeAct->setEnabled(false);
-	toolbarBrushAct->setEnabled(false);
-	toolbarEraserAct->setEnabled(false);
-	toolbarFillAct->setEnabled(false);
-	toolbarView2D3DopenAct->setEnabled(false);
-
-	setFilterToolbarEnabled( false );
-}
-
-void MainWindow::createToolbarActions()
-{
-	modifyAct = new QAction(tr("&Modify Mode"), this);
-	modifyAct->setStatusTip(tr("Switches to Modify Mode"));
-	connect(modifyAct, SIGNAL(triggered(bool)), this, SLOT(ChangeModeModify(bool)));
-	modifyAct->setCheckable(true);
-
-	toolbarSelectAct = new QAction(tr("&Select"), this);
-	toolbarSelectAct->setStatusTip(tr("Switches to Object Selection Mode"));
-	connect(toolbarSelectAct, SIGNAL(triggered(bool)), this, SLOT(toolbarSelect(bool)));
-	toolbarSelectAct->setCheckable(true);
-
-	toolbarCrosshairAct = new QAction(tr("&Crosshair"), this);
-	toolbarCrosshairAct->setStatusTip(tr("Switches on Crosshairs"));
-	connect(toolbarCrosshairAct, SIGNAL(triggered(bool)), this, SLOT(toolbarCrosshair(bool)));
-	toolbarCrosshairAct->setCheckable(true);
-
-	toolbarPanAct = new QAction(tr("&Pan"), this);
-	toolbarPanAct->setStatusTip(tr("Switches to Pan Mode"));
-	connect(toolbarPanAct, SIGNAL(triggered(bool)), this, SLOT(toolbarPan(bool)));
-	toolbarPanAct->setCheckable(true);
-
-	toolbarZoomAct = new QAction(tr("&Zoom"), this);
-	toolbarZoomAct->setStatusTip(tr("Switches to Zoom Mode"));
-	connect(toolbarZoomAct, SIGNAL(triggered(bool)), this, SLOT(toolbarZoom(bool)));
-	toolbarZoomAct->setCheckable(true);
-
-	toolbarVoxelizeAct = new QAction(tr("&Voxelizer"), this);
-	toolbarVoxelizeAct->setStatusTip(tr("Switches to Voxel Mode"));
-	connect(toolbarVoxelizeAct, SIGNAL(triggered(bool)), this, SLOT(toolbarVoxelize(bool)));
-	toolbarVoxelizeAct->setCheckable(true);
-
-	toolbarBrushAct = new QAction(tr("&Brush"), this);
-	toolbarBrushAct->setStatusTip(tr("Switches to Voxel Add Mode"));
-	connect(toolbarBrushAct, SIGNAL(triggered(bool)), this, SLOT(toolbarBrush(bool)));
-	toolbarBrushAct->setCheckable(true);
-
-	toolbarEraserAct = new QAction(tr("&Eraser"), this);
-	toolbarEraserAct->setStatusTip(tr("Switches to Voxel Subtraction Mode"));
-	connect(toolbarEraserAct, SIGNAL(triggered(bool)), this, SLOT(toolbarEraser(bool)));
-	toolbarEraserAct->setCheckable(true);
-
-	toolbarFillAct = new QAction(tr("&Fill"), this);
-	toolbarFillAct->setStatusTip(tr("Switches to Fill Mode"));
-	connect(toolbarFillAct, SIGNAL(triggered(bool)), this, SLOT(toolbarFill(bool)));
-	toolbarFillAct->setCheckable(true);
-
-	toolbarView2D3DopenAct = new QAction(tr("&Open 2D and 3D Views"), this);
-	toolbarView2D3DopenAct->setStatusTip(tr("Open 2D and 3D Views"));
-	connect(toolbarView2D3DopenAct, SIGNAL(triggered(bool)), this, SLOT(open2Dand3dViews()));
-	toolbarView2D3DopenAct->setCheckable(false);
-	
-}
-
-void MainWindow::addToolbars()
-{
-	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->addAction(saveAct);
-
-	systemToolBar = addToolBar(tr("Mode"));
-	systemToolBar->addAction(modifyAct);
-
-	navigateToolBar = addToolBar(tr("Navigate"));
-	navigateToolBar->addAction(toolbarSelectAct);
-	navigateToolBar->addAction(toolbarCrosshairAct);
-	navigateToolBar->addAction(toolbarPanAct);
-	navigateToolBar->addAction(toolbarZoomAct);
-	navigateToolBar->addAction(toolbarVoxelizeAct);
-
-	toolToolBar = addToolBar(tr("Tools"));
-	toolToolBar->addAction(toolbarBrushAct);
-	toolToolBar->addAction(toolbarEraserAct);
-	toolToolBar->addAction(toolbarFillAct);
-
-	viewToolBar = addToolBar(tr("Views"));
-	viewToolBar->addAction(toolbarView2D3DopenAct);
-}
-
-void MainWindow::setupToolbarInitially()
-{
-	resetTools(NAVIGATION_SYSTEM_MODE);
-	setFilterToolbarEnabled( true );
-
-	OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
-	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-}
-
-void MainWindow::ChangeModeModify(const bool checked)
-{
-	try {
-		if (checked) {
-			OmStateManager::SetSystemMode(EDIT_SYSTEM_MODE);
-			resetTools(EDIT_SYSTEM_MODE);
-		} else {
-			if( OmProjectData::IsReadOnly() ){
-				return;
-			}
-
-			OmStateManager::SetSystemMode(NAVIGATION_SYSTEM_MODE);
-			resetTools(NAVIGATION_SYSTEM_MODE);
-		}
-
-		OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-	} catch(OmException & e) {
-		spawnErrorDialog(e);
-	}
-}
-
-void MainWindow::toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode)
-{
-	if (checked) {
-		resetViewTools();
-
-		switch (OmStateManager::GetSystemMode()) {
-		case (NAVIGATION_SYSTEM_MODE):
-			resetModifyTools(false);
-			break;
-		case (EDIT_SYSTEM_MODE):
-			resetModifyTools(true);
-			break;
-		default:
-			break;
-		}
-
-		tool->setChecked(true);
-		OmStateManager::SetToolMode(mode);
-		OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-	}
-}
-
-// view tools
-void MainWindow::toolbarSelect(const bool checked)
-{
-	toolbarToolChange(checked, toolbarSelectAct, SELECT_MODE); 
-}
-
-void MainWindow::toolbarCrosshair(const bool checked)
-{
-	toolbarToolChange(checked, toolbarCrosshairAct, CROSSHAIR_MODE);
-}
-
-void MainWindow::toolbarPan(const bool checked)
-{
-	toolbarToolChange(checked, toolbarPanAct, PAN_MODE);
-}
-
-void MainWindow::toolbarZoom(const bool checked)
-{
-	toolbarToolChange(checked, toolbarZoomAct, ZOOM_MODE);
-}
-
-void MainWindow::toolbarVoxelize(const bool checked)
-{
-	toolbarToolChange(checked, toolbarVoxelizeAct, VOXELIZE_MODE);
-}
-
-// modify tools
-void MainWindow::toolbarBrush(const bool checked)
-{
-	toolbarToolChange(checked, toolbarBrushAct, ADD_VOXEL_MODE);
-}
-
-void MainWindow::toolbarEraser(const bool checked)
-{
-	toolbarToolChange(checked, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
-}
-
-void MainWindow::toolbarFill(const bool checked)
-{
-	toolbarToolChange(checked, toolbarFillAct, SELECT_VOXEL_MODE);
-}
-
-void MainWindow::resetTools(const OmSystemMode sys_mode)
-{
-	switch (sys_mode) {
-	case (NAVIGATION_SYSTEM_MODE):
-		resetViewTools();
-		resetModifyTools(false);
-		toolbarPanAct->setChecked(true);
-		OmStateManager::SetToolMode(PAN_MODE);
-		break;
-	case (EDIT_SYSTEM_MODE):
-		resetModifyTools(true);
-		break;
-	default:
-		break;
-	}
-}
-
-void MainWindow::resetTool(QAction * tool, const bool enabled)
-{
-	tool->setChecked(false);
-	tool->setEnabled(enabled);
-}
-
-void MainWindow::resetViewTools()
-{
-	resetTool(toolbarSelectAct, true);
-	resetTool(toolbarCrosshairAct, true);
-	resetTool(toolbarPanAct, true);
-	resetTool(toolbarZoomAct, true);
-	resetTool(toolbarVoxelizeAct, true);
-}
-
-void MainWindow::resetModifyTools(const bool enabled)
-{
-	resetTool(toolbarBrushAct, enabled);
-	resetTool(toolbarEraserAct, enabled);
-	resetTool(toolbarFillAct, enabled);
-}
-
-void MainWindow::SystemModeChangeEvent()
-{
-	debug("gui", "hi from %s\n", __FUNCTION__);
-
-	switch (OmStateManager::GetToolMode()) {
-	case SELECT_MODE:
-		toolbarToolChange(true, toolbarSelectAct, SELECT_MODE); 
-		break;
-	case PAN_MODE:
-		toolbarToolChange(true, toolbarPanAct, PAN_MODE);
-		break;
-	case CROSSHAIR_MODE:
-		toolbarToolChange(true, toolbarCrosshairAct, CROSSHAIR_MODE);
-		break;
-	case ZOOM_MODE:
-		toolbarToolChange(true, toolbarZoomAct, ZOOM_MODE);
-		break;
-	case ADD_VOXEL_MODE:
-		toolbarToolChange(true, toolbarBrushAct, ADD_VOXEL_MODE);
-		break;
-	case SUBTRACT_VOXEL_MODE:
-		toolbarToolChange(true, toolbarEraserAct, SUBTRACT_VOXEL_MODE);
-		break;
-	case SELECT_VOXEL_MODE:
-		toolbarToolChange(true, toolbarFillAct, SELECT_VOXEL_MODE);
-		break;
-	case VOXELIZE_MODE:
-		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
-		break;
-	case FILL_MODE:
-		// TODO???
-		break;
-	}
-}
-
 
 void MainWindow::windowTitleSet(QString title)
 {
@@ -892,8 +435,12 @@ void MainWindow::resetViewGroup()
 
 void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 {
-	recentFiles.addFile( fileName );
-	isProjectOpen = true;
+	if( NULL == mToolBars ){
+		mToolBars = new ToolBarManager(this);
+	}
+
+	mMenuBar->addRecentFile(fileName);
+	setProjectOpen( true );
 
 	OmStateManager::Instance()->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
 	OmStateManager::Instance()->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
@@ -908,17 +455,12 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
 	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
-	setupToolbarInitially();
-	updateSilder();
+	mToolBars->setupToolbarInitially();
+	mToolBars->updateGuiFromPorjectLoadOrOpen();
 
 	windowTitleSet( fileName );
 	openInspector();
 	updateReadOnlyRelatedWidgets();
-}
-
-void MainWindow::forceWindowUpdate()
-{
-	QApplication::processEvents();
 }
 
 void MainWindow::open2Dand3dViews()
@@ -932,10 +474,10 @@ void MainWindow::open2Dand3dViews()
 void MainWindow::openCacheMonitor()
 {
 	mCacheMonitorDialog = new CacheMonitorDialog( this );
-	
+	mCacheMonitorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+
 	mCacheMonitorDialog->show();
-	openCacheMonitorAct->setChecked(true);
-	
+	mMenuBar->getOpenCacheMonitorAct()->setChecked(true);
 }
 
 void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmId objectId )
@@ -978,4 +520,19 @@ void MainWindow::createStatusBar()
 void MainWindow::updateStatusBar( QString msg )
 {
 	statusBarLabel->setText(msg);
+}
+
+void MainWindow::SystemModeChangeEvent()
+{
+	mToolBars->SystemModeChangeEvent();
+}
+
+bool MainWindow::isProjectOpen()
+{
+	return mIsProjectOpen;
+}
+
+void MainWindow::setProjectOpen(bool open)
+{
+	mIsProjectOpen = open;
 }

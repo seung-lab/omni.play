@@ -1389,7 +1389,6 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	int tl = tileLength * OMPOW(2, zoomMipVector.x);
 
 	if (translateVector.y < 0) {
-		//debug("genone", "((abs(translateVector.y) / tl)) * tl * pl  == %i\n", ((abs(translateVector.y) / tl)) * tl * pl);
 		yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
 		yval = (-1 * (abs((int)translateVector.y) % tl));
 	} else {
@@ -1401,7 +1400,6 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
 		if (translateVector.x < 0) {
-			//debug ("genone", "((abs(translateVector.x) / tl)) * tl * pl = %i\n", ((abs(translateVector.x) / tl)) * tl * pl);
 			xMipChunk = ((abs((int)translateVector.x) / tl)) * tl * pl;
 			xval = (-1 * (abs((int)translateVector.x) % tl));
 		} else {
@@ -1409,7 +1407,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 			xval = translateVector.x;
 		}
 
-#if 1
+#if 0
 		debug("view2d","mDataDepth = %i\n",mDataDepth);
 		debug("view2d", "tl = %i\n", tl);
 		debug("view2d", "pl = %i\n", pl);
@@ -1537,21 +1535,6 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 
 		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
-
-#if 0
-			for (int count = -5; count < 6; count++) {
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
-                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
-										OmCachingThreadedCachingTile::Freshen(false));
-                        	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(mTileCoord.Coordinate);
-                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
-                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
-				}
-			}
-#endif
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);

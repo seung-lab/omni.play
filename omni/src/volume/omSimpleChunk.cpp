@@ -701,9 +701,13 @@ void *OmSimpleChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vecto
 
 	for (index_y=0; index_y<sliceDims.y; index_y++){
 		for (index_x=0; index_x<sliceDims.x; index_x++){
-			if (bytesPerSample == 1) char_result[sliceIndex] = char_ptr[imageIndex];
-			if (bytesPerSample == 4) int_result[sliceIndex] = int_ptr[imageIndex];
-			imageIndex+=imageIncrement.x;
+			if (bytesPerSample == 1){
+				char_result[sliceIndex] = char_ptr[imageIndex];
+			}
+			if (bytesPerSample == 4){
+				int_result[sliceIndex] = int_ptr[imageIndex];
+			}
+			imageIndex += imageIncrement.x;
 			sliceIndex++;
 		}
 		imageIndex += imageIncrement.y;

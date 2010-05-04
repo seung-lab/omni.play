@@ -276,9 +276,15 @@ template < typename KEY, typename PTR  >
 long
 OmThreadedCache<KEY,PTR>::GetCacheSize()
 {
-	return mCacheSize;
+        return mCache.size() * mObjectSize;
 }
 
+template < typename KEY, typename PTR  >
+void
+OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
+{
+        mObjectSize = size;
+}
 /**
  *	This loop is only performed by the Fetch Thread.  It waits on the
  *	conditional variable triggered by the main thread when a new element

@@ -18,6 +18,8 @@ public:
 	OmSegmentCache(OmSegmentation * segmentation);
 	~OmSegmentCache();
 
+	void turnBatchModeOn( const bool batchMode );
+
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
 	OmSegment* AddSegment(SEGMENT_DATA_TYPE value);
@@ -59,13 +61,15 @@ public:
 	SegmentDataSet getValues( OmSegment * segment  );
 	OmIds getIDs( OmSegment * segment );
 
-	OmIds getIDsHelper( OmSegment * segment );
 	OmSegment * findRoot( OmSegment * segment );
+
+	void splitChildLowestThreshold( OmSegment * segment );
 
 private:
 	QMutex mMutex;
 	
 	OmSegmentCacheImpl * mImpl;
+	OmSegmentation * mSegmentation;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );

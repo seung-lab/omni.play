@@ -11,6 +11,14 @@
 
 #define DEBUG 0
 
+OmChannel::OmChannel()
+{
+        /** Set The Name of the Cache */
+        SetCacheName("OmChannel --> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim);
+}
+
 OmChannel::OmChannel(OmId id)
  : OmManageableObject(id)
 {
@@ -39,7 +47,9 @@ OmChannel::OmChannel(OmId id)
 	BuildVolumeData();
 
 	/** Set The Name of the Cache */
-        SetCacheName("OmChannel");
+        SetCacheName("OmChannel --> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim);
 }
 
 /////////////////////////////////

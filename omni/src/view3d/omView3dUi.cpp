@@ -35,6 +35,7 @@ void
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeMousePressed(event);
 		break;
 
@@ -48,6 +49,7 @@ void OmView3dUi::MouseRelease(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeMouseRelease(event);
 		break;
 
@@ -65,6 +67,7 @@ void OmView3dUi::MouseMove(QMouseEvent * event)
 
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeMouseMove(event);
 		break;
 
@@ -78,6 +81,7 @@ void OmView3dUi::MouseDoubleClick(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeMouseDoubleClick(event);
 		break;
 
@@ -91,6 +95,7 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeMouseWheel(event);
 		break;
 
@@ -105,6 +110,7 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
         if (event->key() == Qt::Key_C) mCPressed = true; 
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
+	case DEND_MODE:
 		NavigationModeKeyPress(event);
 		break;
 
@@ -119,9 +125,6 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 
 void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 {
-
-	//if right click
-
 	if (event->buttons() & Qt::RightButton && !event->modifiers()) {
 		ShowSegmentContextMenu(event);
 		return;

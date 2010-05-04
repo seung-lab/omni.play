@@ -343,7 +343,9 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 			if (current_seg.IsSegmentSelected(id)) {
 
 				switch (OmStateManager::GetSystemMode()) {
-				case NAVIGATION_SYSTEM_MODE:{
+				case NAVIGATION_SYSTEM_MODE:
+				case DEND_MODE:
+
 					newcolor = qRgba(255, 255, 0, 255);
 
 					data[0] =
@@ -353,7 +355,7 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 					data[2] =
 						(newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
 					data[3] = 255;
-				}
+					
 					break;
 
 				case EDIT_SYSTEM_MODE:{

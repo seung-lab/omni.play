@@ -23,6 +23,8 @@ public:
 	void updateChunkCoordInfo( const OmMipChunkCoord & mipCoord );
 	QSet< OmMipChunkCoord > & getChunks();
 
+	void splitChildLowestThreshold();
+
 	//accessors
 	const Vector3<float>& GetColor();
 	void SetColor(const Vector3<float> &);
@@ -33,9 +35,6 @@ public:
 	SEGMENT_DATA_TYPE getValue();
 	SegmentDataSet getValues();
 	OmIds getIDs();
-	
-	// Serialization.
-	void Save();
 
 	OmId GetId();
 	QString GetNote();
@@ -49,9 +48,12 @@ public:
 
 	void Join(OmSegment *, double threshold = 0);
 	void setParent(OmSegment * segment, double threshold);
+	void clearParent();
 	OmId getParent();
+	void removeChild( OmSegment * segment );
 
 	OmId getSegmentationID();
+	double getThreshold();
 
 private:
 	OmId mID;
@@ -67,8 +69,6 @@ private:
 	QSet< OmMipChunkCoord > chunks;
 		
 	void SetInitialColor();
-	OmHdf5Path getValuePath();
-	OmHdf5Path getSegmentPath();
 
 	friend class OmSegmentCacheImpl;
 

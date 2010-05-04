@@ -28,8 +28,9 @@ OmSegmentation::OmSegmentation()
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-        //SetCacheName("OmMipMeshManager");
-
+        SetCacheName("OmSegmentation -> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
 }
 
@@ -57,6 +58,10 @@ OmSegmentation::OmSegmentation(OmId id)
 	BuildVolumeData();
 
 	mMeshingMan = NULL;
+
+        SetCacheName("OmSegmentation -> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 }
 
 OmSegmentation::~OmSegmentation()
@@ -146,6 +151,8 @@ void OmSegmentation::BuildVolumeData()
 	//build volume
 	OmMipVolume::Build();
 
+	mSegmentCache.turnBatchModeOn(true);
+
 	// skip root (already done)
 	for (int level = 0; level < GetRootMipLevel(); ++level) {
 
@@ -167,6 +174,9 @@ void OmSegmentation::BuildVolumeData()
 			}
 		}
 	}
+	
+	mSegmentCache.flushDirtySegments();
+	mSegmentCache.turnBatchModeOn(false);
 
 	//seg change event
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));

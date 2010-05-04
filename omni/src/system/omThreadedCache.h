@@ -66,6 +66,7 @@ class OmThreadedCache : public OmCacheBase, public QThread
 	//get info about the cache 
 	unsigned int GetFetchStackSize();
 	long GetCacheSize();
+        void SetObjectSize(long size);
 
 	/**Name function for debugging */
 	void SetCacheName(const char* name);
@@ -114,6 +115,7 @@ private:
 	// size of this cache
 	long mCacheSize;
 	long mCacheObjects;
+        long mObjectSize;
 
 	/** name/descriptor of Cache for debugging */
 	char mCacheName[40];

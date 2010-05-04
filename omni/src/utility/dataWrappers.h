@@ -59,6 +59,9 @@ class SegmentDataWrapper : public DataWrapper
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
 	
+	OmSegmentation & getSegmentation();
+	OmSegment * getSegment();
+	
 	bool isSelected();
 	void toggleSelected();
 	void setSelected( const bool isSelected );

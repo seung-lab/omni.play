@@ -5,7 +5,7 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "system/omBuildVolumes.h"
+#include "system/omBuildSegmentation.h"
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
 
@@ -258,19 +258,19 @@ void SegInspector::on_buildButton_clicked()
 {
 	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
 
-	OmBuildVolumes bv(&current_seg);
-	bv.setFileNamesAndPaths( getFileInfoList() );
+	OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
+	bs->setFileNamesAndPaths( getFileInfoList() );
 
 	QString whatOrHowToBuild = buildComboBox->currentText();
 	if ("Data" == whatOrHowToBuild ){
-		bv.build_seg_image();
+		bs->build_seg_image();
 		emit segmentationBuilt(sdw.getID());
 
 	} else if ( "Mesh" == whatOrHowToBuild ){
-		bv.build_seg_mesh();
+		bs->build_seg_mesh();
 
 	} else if ("Data & Mesh" == whatOrHowToBuild){
-		bv.buildAndMeshSegmentation();
+		bs->buildAndMeshSegmentation();
 		emit segmentationBuilt(sdw.getID());
 
 	} else if( "Meshinator" == whatOrHowToBuild ){

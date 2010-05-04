@@ -9,7 +9,7 @@
 #include "common/omDebug.h"
 
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
-					     const QGLContext * shareContext)
+                                             const QGLContext * shareContext)
 :OmTile(viewtype, voltype, image_id, vol), TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
 {
 	// omView2d passes in its own context
@@ -19,6 +19,8 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mImageId = image_id;
 
         SetCacheName("OmThreadedCachingTile");
+        int chunkDim = vol->GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*4);
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
