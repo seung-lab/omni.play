@@ -51,7 +51,7 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & added_segmentation = OmVolume::GetSegmentation(SegmentationID);
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
 		bs->build_seg_mesh();
-
+		bs->wait();
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
@@ -141,6 +141,7 @@ void Headless::processLine( QString line, QString fName )
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
 		bs->addFileNameAndPath( hdf5fnp );
 		bs->build_seg_image();
+		bs->wait();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}
