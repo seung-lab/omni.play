@@ -5,6 +5,9 @@
 #include <QWidget> 
 #include <QComboBox>
 
+#include "common/omCommon.h"
+#include "project/omProject.h"
+
 class VolumeInspector : public QWidget
 { 
     Q_OBJECT 
@@ -14,6 +17,16 @@ public:
 	QPushButton *addChannelButton;
 	QPushButton *addSegmentationButton;
 		
+        OmVolume & GetVolume() {
+                if (mVolumeType == CHANNEL) {
+                        OmChannel & current_channel = OmProject::GetChannel(mImageId);
+                        return current_channel;
+                } else {
+                        OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
+                        return current_seg;
+                }
+        }
+
 private slots: 
 	void on_nameEdit_editingFinished();
 	void on_scaleEdit_editingFinished();
@@ -23,6 +36,8 @@ private slots:
 	void on_sizeSlider_valueChanged();
 	void on_unitList_activated();	
  private:
+	OmId mImageId;
+	ObjectType mVolumeType;
 	QLabel* sizeLabel;
 	QLabel* dimSizeLabel;
 	QLineEdit *nameEdit;

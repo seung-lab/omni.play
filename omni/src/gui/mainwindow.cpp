@@ -232,10 +232,12 @@ void MainWindow::openProject(QString fileNameAndPath)
 			throw OmIoException("error during load of OmProject object");
 		}
 
+#if 0
 		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);		
+#endif
+		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, 0.0);
+		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, 0.0);
+		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, 0.0);		
 
 		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 

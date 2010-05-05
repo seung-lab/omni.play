@@ -77,8 +77,8 @@ void OmProject::Save()
 
 	//TODO: move this into omProjectData
 
-	foreach( OmId segID, OmVolume::GetValidSegmentationIds() ){
-		OmVolume::GetSegmentation( segID ).FlushDirtySegments();
+	foreach( OmId segID, OmProject::GetValidSegmentationIds() ){
+		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 	}
 
 	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
@@ -113,15 +113,13 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		throw OmIoException("error during load of project metadata");
 	}
 
-	OmVolume::CheckDataResolution();
+	//OmVolume::CheckDataResolution();
 }
 
 void OmProject::Close()
 {
 	//delete all singletons
 
-	//volume depends on the following so it must be deleted first
-	OmVolume::Delete();
 
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();
@@ -133,4 +131,110 @@ void OmProject::Close()
 	//close project data
 	OmProjectData::Close();
 	OmProjectData::Delete();
+}
+
+
+/////////////////////////////////
+///////          Channel Manager Method
+
+OmChannel & OmProject::GetChannel(OmId id)
+{
+        return Instance()->mChannelManager.Get(id);
+}
+
+OmChannel & OmProject::AddChannel()
+{
+        OmChannel & r_channel = Instance()->mChannelManager.Add();
+        OmProject::Save();
+        return r_channel;
+}
+
+void OmProject::RemoveChannel(OmId id)
+{
+        Instance()->mChannelManager.Get(id).DeleteVolumeData();
+        Instance()->mChannelManager.Remove(id);
+        OmProject::Save();
+}
+
+bool OmProject::IsChannelValid(OmId id)
+{
+        return Instance()->mChannelManager.IsValid(id);
+}
+
+const OmIds & OmProject::GetValidChannelIds()
+{
+        return Instance()->mChannelManager.GetValidIds();
+}
+
+bool OmProject::IsChannelEnabled(OmId id)
+{
+        return Instance()->mChannelManager.IsEnabled(id);
+}
+
+void OmProject::SetChannelEnabled(OmId id, bool enable)
+{
+        Instance()->mChannelManager.SetEnabled(id, enable);
+}
+
+/////////////////////////////////
+///////          Segmentation Manager Method
+
+OmSegmentation & OmProject::GetSegmentation(OmId id)
+{
+        Instance()->mSegmentationManager.Get(id).SetBytesPerSample(4);
+        return Instance()->mSegmentationManager.Get(id);
+}
+
+OmSegmentation & OmProject::AddSegmentation()
+{
+        OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
+        OmProject::Save();
+        return r_segmentation;
+}
+
+void OmProject::RemoveSegmentation(OmId id)
+{
+        foreach(OmId channelID, OmProject::GetValidChannelIds()) {
+                OmChannel & channel = OmProject::GetChannel(channelID);
+                foreach(OmId filterID, channel.GetValidFilterIds()) {
+                        OmFilter2d &filter = channel.GetFilter(filterID);
+                        if (filter.GetSegmentation() == id){
+                                filter.SetSegmentation(0);
+                        }
+                }
+        }
+
+        Instance()->mSegmentationManager.Get(id).PrepareForCompleteDelete();
+        Instance()->mSegmentationManager.Get(id).DeleteVolumeData();
+        Instance()->mSegmentationManager.Remove(id);
+        OmProject::Save();
+}
+
+bool OmProject::IsSegmentationValid(OmId id)
+{
+        return Instance()->mSegmentationManager.IsValid(id);
+}
+
+const OmIds & OmProject::GetValidSegmentationIds()
+{
+        return Instance()->mSegmentationManager.GetValidIds();
+}
+
+bool OmProject::IsSegmentationEnabled(OmId id)
+{
+        return Instance()->mSegmentationManager.IsEnabled(id);
+}
+
+void OmProject::SetSegmentationEnabled(OmId id, bool enable)
+{
+        Instance()->mSegmentationManager.SetEnabled(id, enable);
+}
+
+void OmProject::Draw(OmVolumeCuller & rCuller)
+{
+        foreach( OmId id, Instance()->mSegmentationManager.GetEnabledIds() ){
+                GetSegmentation( id ).Draw( rCuller);
+        }
+
+
 }

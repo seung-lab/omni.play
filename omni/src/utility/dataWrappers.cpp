@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "dataWrappers.h"
 #include "common/omDebug.h"
 #include "utility/stringHelpers.h"
@@ -45,21 +46,21 @@ bool DataWrapperContainer::isValidContainer()
 ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
 :DataWrapper(ID, CHANNEL)
 {
-	OmChannel & chann = OmVolume::GetChannel(mID);
+	OmChannel & chann = OmProject::GetChannel(mID);
 	mName = chann.GetName();
-	mEnabled = OmVolume::IsChannelEnabled(mID);
+	mEnabled = OmProject::IsChannelEnabled(mID);
 }
 
 QString ChannelDataWrapper::getNote()
 {
-	return OmVolume::GetChannel(mID).GetNote();
+	return OmProject::GetChannel(mID).GetNote();
 }
 
 QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 {
 	QHash < OmId, FilterDataWrapper > filters;
 
-	OmChannel & chann = OmVolume::GetChannel(mID);
+	OmChannel & chann = OmProject::GetChannel(mID);
 
 	foreach(OmId filterID, chann.GetValidFilterIds()) {
 		FilterDataWrapper filter(mID,
@@ -79,24 +80,24 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
  : DataWrapper(ID, SEGMENTATION)
 {
-	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
+	OmSegmentation & segmen = OmProject::GetSegmentation(mID);
 	mName = segmen.GetName();
-	mEnabled = OmVolume::IsSegmentationEnabled(mID);
+	mEnabled = OmProject::IsSegmentationEnabled(mID);
 }
 
 QString SegmentationDataWrapper::getNote()
 {
-	return OmVolume::GetSegmentation(mID).GetNote();
+	return OmProject::GetSegmentation(mID).GetNote();
 }
 
 unsigned int SegmentationDataWrapper::getNumberOfSegments()
 {
-	return OmVolume::GetSegmentation(mID).GetNumSegments();
+	return OmProject::GetSegmentation(mID).GetNumSegments();
 }
 
 unsigned int SegmentationDataWrapper::getNumberOfTopSegments()
 {
-	return OmVolume::GetSegmentation(mID).GetNumTopSegments();
+	return OmProject::GetSegmentation(mID).GetNumTopSegments();
 }
 
 /*******************************************
@@ -106,52 +107,52 @@ SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId seg
  : DataWrapper(segmentID, SEGMENT)
 {
 	mSegmentationID = segmentationID;
-	mName = OmVolume::GetSegmentation(mSegmentationID).GetSegment(segmentID)->GetName();
+	mName = OmProject::GetSegmentation(mSegmentationID).GetSegment(segmentID)->GetName();
 }
 
 QString SegmentDataWrapper::getSegmentationName()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).GetName();
+	return OmProject::GetSegmentation(mSegmentationID).GetName();
 }
 
 bool SegmentDataWrapper::isSelected()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
+	return OmProject::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
 }
 
 void SegmentDataWrapper::setSelected(const bool isSelected)
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
 }
 
 void SegmentDataWrapper::toggleSelected()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
 }
 
 bool SegmentDataWrapper::isEnabled()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
+	return OmProject::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
 }
 
 void SegmentDataWrapper::toggleEnabled()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
 }
 
 void SegmentDataWrapper::setEnabled(const bool enabled)
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
 }
 
 QString SegmentDataWrapper::getNote()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->GetNote();
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetNote();
 }
 
 void SegmentDataWrapper::setNote(QString str)
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->SetNote(str);
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetNote(str);
 }
 
 QString SegmentDataWrapper::getIDstr()
@@ -161,29 +162,29 @@ QString SegmentDataWrapper::getIDstr()
 
 const Vector3 < float >& SegmentDataWrapper::getColor()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColor();
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColor();
 }
 
 void SegmentDataWrapper::setColor(const Vector3 < float >& color)
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->SetColor( color );
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetColor( color );
 }
 
 void SegmentDataWrapper::setName( const QString& str )
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->SetName( str );
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetName( str );
 }
 
 QString SegmentDataWrapper::getDataValuesForSegment()
 {
-	const SegmentDataSet & data_set = OmVolume::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
+	const SegmentDataSet & data_set = OmProject::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
 	
 	return StringHelpers::getStringFromSegmentSet( data_set );
 }
 
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
-	const SEGMENT_DATA_TYPE value = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
+	const SEGMENT_DATA_TYPE value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
 	if( 0 == value ){
 		return "<not set>";
 	} else {
@@ -194,7 +195,7 @@ QString SegmentDataWrapper::get_original_mapped_data_value()
 QString SegmentDataWrapper::chunkListStr()
 {
 	QStringList strs;
-	foreach( OmMipChunkCoord c, OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID)->getChunks() ){
+	foreach( OmMipChunkCoord c, OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getChunks() ){
 		strs << QString("[%1:%2,%3,%4]")
 			.arg(c.getLevel())
 			.arg(c.getCoordinateX())
@@ -207,7 +208,7 @@ QString SegmentDataWrapper::chunkListStr()
 
 OmSegmentation & SegmentDataWrapper::getSegmentation()
 { 
-	return OmVolume::GetSegmentation(mSegmentationID); 
+	return OmProject::GetSegmentation(mSegmentationID); 
 }
 
 OmSegment * SegmentDataWrapper::getSegment()

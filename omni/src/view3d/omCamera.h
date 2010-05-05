@@ -1,3 +1,8 @@
+//
+// TODO: GIVE CREDIT TO Eugene Hsu, this is mostly HIS CODE 
+//       and based on 6.839 demo code for camera!
+//
+
 #ifndef OM_GL_CAMERA_H
 #define OM_GL_CAMERA_H
 

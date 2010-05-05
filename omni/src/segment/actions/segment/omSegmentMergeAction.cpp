@@ -2,6 +2,7 @@
 #include "segment/omSegmentEditor.h"
 #include "system/events/omSegmentEvent.h"
 #include "volume/omVolume.h"
+#include "project/omProject.h"
 #include "volume/omSegmentation.h"
 
 /////////////////////////////////
@@ -20,7 +21,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 	mMergeSegmentationId = mergeSegmentationId;
 
 	//copy all selected segments and their set of data vals
-	OmSegmentation & segmentation = OmVolume::GetSegmentation(mMergeSegmentationId);
+	OmSegmentation & segmentation = OmProject::GetSegmentation(mMergeSegmentationId);
 	QList<OmId> selected_segments = segmentation.GetSelectedSegmentIds().toList();
 
 	if( 0 == selected_segments.size() ){

@@ -14,6 +14,9 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation *segmentation, OmSegmentCa
 	mMaxValue = 0;
         mAllSelected = false;
         mAllEnabled = false;
+
+	amInBatchMode = false;
+	needToFlush = false;
 }
 
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
@@ -321,20 +324,48 @@ QString OmSegmentCacheImpl::getSegmentNote( OmId segID )
 
 void OmSegmentCacheImpl::addToDirtySegmentList( OmSegment* seg)
 {
-	dirtySegments.insert(seg);
-
-	if( dirtySegments.size() > maxDirtySegmentsBeforeFlushing() ){
-		flushDirtySegments();
+	if( amInBatchMode ){
+		needToFlush = true;
+	} else {
+		dirtySegments.insert(seg);
+		
+		if( dirtySegments.size() > maxDirtySegmentsBeforeFlushing() ){
+			flushDirtySegments();
+		}
 	}
 }
 
 void OmSegmentCacheImpl::flushDirtySegments()
 {
-	foreach( OmSegment* seg, dirtySegments ){
-		Save( seg );
-	}
+	if( amInBatchMode ){
+		if( !needToFlush ){
+			return;
+		}
 
-	dirtySegments.clear();
+		time_t time_start;
+		time_t time_end;
+		double time_dif;
+
+		printf("flushing all segment metadata; please wait...");
+		time(&time_start);
+
+		foreach( OmSegment* seg, mSegIdToSegPtrHash ){
+			Save( seg );
+		}
+
+		time(&time_end);
+		time_dif = difftime(time_end, time_start);
+
+		printf("done (%.2lf secs)\n", time_dif);
+
+		needToFlush = false;
+	} else {
+		foreach( OmSegment* seg, dirtySegments ){
+			Save( seg );
+		}
+		
+		dirtySegments.clear();
+	}
 }
 
 int OmSegmentCacheImpl::maxDirtySegmentsBeforeFlushing()
@@ -343,6 +374,18 @@ int OmSegmentCacheImpl::maxDirtySegmentsBeforeFlushing()
 }
 
 SegmentDataSet OmSegmentCacheImpl::getValues( OmSegment * segment )
+{
+	OmSegment * root = findRoot( segment );
+
+	if( !cacheRootNodeToAllChildrenValues.contains( root->GetId() )){
+		cacheRootNodeToAllChildrenValues.insert( root->GetId(), getValuesHelper( root ) );
+	}
+
+	return cacheRootNodeToAllChildrenValues.value( root->GetId() );
+
+}
+
+SegmentDataSet OmSegmentCacheImpl::getValuesHelper( OmSegment * segment )
 {
 	SegmentDataSet values;
 
@@ -357,11 +400,11 @@ OmIds OmSegmentCacheImpl::getIDs( OmSegment * segment )
 {
 	OmSegment * root = findRoot( segment );
 
-	if( !cacheRootNodeToAllChildren.contains( root->GetId() )){
-		cacheRootNodeToAllChildren.insert( root->GetId(), getIDsHelper( root ) );
+	if( !cacheRootNodeToAllChildrenIDs.contains( root->GetId() )){
+		cacheRootNodeToAllChildrenIDs.insert( root->GetId(), getIDsHelper( root ) );
 	}
 
-	return cacheRootNodeToAllChildren.value( root->GetId() );
+	return cacheRootNodeToAllChildrenIDs.value( root->GetId() );
 }
 
 OmIds OmSegmentCacheImpl::getIDsHelper( OmSegment * segment )
@@ -416,7 +459,8 @@ void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLe
 void OmSegmentCacheImpl::clearCaches( OmSegment * seg )
 {
 	cacheOfSelectedSegmentValues.clear();
-	cacheRootNodeToAllChildren.remove( seg->GetId() );
+	cacheRootNodeToAllChildrenIDs.remove( seg->GetId() );
+	cacheRootNodeToAllChildrenValues.remove( seg->GetId() );
 }
 
 void OmSegmentCacheImpl::Save( OmSegment * seg )
@@ -425,4 +469,9 @@ void OmSegmentCacheImpl::Save( OmSegment * seg )
 
 	OmId id = seg->GetId();
 	OmDataArchiveQT::ArchiveWrite( getValuePath( seg ), &id );
+}
+
+void OmSegmentCacheImpl::turnBatchModeOn( const bool batchMode )
+{
+	amInBatchMode = batchMode;
 }

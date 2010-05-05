@@ -2,8 +2,6 @@
  * Author(s): Matt Wimer
  */
 #include <qthread.h>
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 #include "common/omDebug.h"
 
 class OmAnimate: public QThread

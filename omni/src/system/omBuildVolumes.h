@@ -20,6 +20,8 @@ class OmBuildVolumes
 
 	QFileInfoList mFileNamesAndPaths;
 
+	void readImages();
+
  private:
 	time_t time_start;
 	time_t time_end;

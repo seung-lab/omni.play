@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "gui/toolbars/navAndEditToolBars.h"
 #include "gui/mainwindow.h"
 #include "volume/omVolume.h"
@@ -30,10 +31,10 @@ void NavAndEditToolBars::setupFilterToolbar()
 	OmId channelID = 1;
 	OmId filterID = 1;
 
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
+	if( OmProject::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmProject::GetChannel( channelID );
 		if( channel.IsFilterValid( filterID ) ){
-			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			OmFilter2d & filter = OmProject::GetChannel(channelID).GetFilter(filterID);
 			alphaSlider->setValue(filter.GetAlpha() * 100);
 			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
  		}
@@ -51,10 +52,10 @@ void NavAndEditToolBars::updateSilder()
 	OmId channelID = 1;
 	OmId filterID = 1;
 
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
+	if( OmProject::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmProject::GetChannel( channelID );
 		if( channel.IsFilterValid( filterID ) ){
-			OmFilter2d & filter = OmVolume::GetChannel(channelID).GetFilter(filterID);
+			OmFilter2d & filter = OmProject::GetChannel(channelID).GetFilter(filterID);
 			alphaSlider->setValue(filter.GetAlpha() * 100);
 			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
  		}
@@ -66,8 +67,8 @@ void NavAndEditToolBars::setFilAlpha(int alpha)
 	OmId channelID = 1;
 	OmId filterID = 1;
 
-	if( OmVolume::IsChannelValid( channelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( channelID );
+	if( OmProject::IsChannelValid( channelID ) ){
+		OmChannel& channel = OmProject::GetChannel( channelID );
 		if( channel.IsFilterValid( filterID ) ){
 			channel.GetFilter( filterID ).SetAlpha((double)alpha / 100.00);
 			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));

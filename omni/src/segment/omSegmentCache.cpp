@@ -4,7 +4,6 @@
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCacheImpl.h"
-#include "segment/omSegmentCacheImplBatch.h"
 #include <QMutexLocker>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
@@ -20,13 +19,8 @@ OmSegmentCache::~OmSegmentCache()
 
 void OmSegmentCache::turnBatchModeOn( const bool batchMode )
 {
-	delete(mImpl);
-
-	if( batchMode ){
-		mImpl = new OmSegmentCacheImplBatch(mSegmentation, this);
-	} else {
-		mImpl = new OmSegmentCacheImpl(mSegmentation, this);
-	}
+	QMutexLocker locker( &mMutex );
+	mImpl->turnBatchModeOn( batchMode );
 }
 
 OmId OmSegmentCache::getSegmentationID()

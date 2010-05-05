@@ -17,6 +17,9 @@ class OmDataArchiveProject
 
 	static void storeOmMipVolume( QDataStream & out, const OmMipVolume & m );
 	static void loadOmMipVolume( QDataStream & in, OmMipVolume & m );
+
+	static void storeOmVolume( QDataStream & out, const OmVolume & v );
+	static void loadOmVolume( QDataStream & in, OmVolume & v );
 };
 
 QDataStream &operator<<(QDataStream & out, const OmProject & project );
@@ -24,9 +27,6 @@ QDataStream &operator>>(QDataStream & in, OmProject & project );
 
 QDataStream &operator<<(QDataStream & out, const OmPreferences & p );
 QDataStream &operator>>(QDataStream & in, OmPreferences & p );
-
-QDataStream &operator<<(QDataStream & out, const OmVolume & v );
-QDataStream &operator>>(QDataStream & in, OmVolume & v );
 
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & );
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & );

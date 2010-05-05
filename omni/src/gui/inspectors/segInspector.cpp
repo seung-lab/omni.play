@@ -175,7 +175,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetName(nameEdit->text());
+	OmProject::GetSegmentation(sdw.getID()).SetName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -194,7 +194,7 @@ void SegInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	OmVolume::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
+	OmProject::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
 }
 
 QDir SegInspector::getDir()
@@ -256,7 +256,7 @@ QString& GetScriptCmd (QString arg)
 
 void SegInspector::on_buildButton_clicked()
 {
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(sdw.getID());
+	OmSegmentation & current_seg = OmProject::GetSegmentation(sdw.getID());
 
 	OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
 	bs->setFileNamesAndPaths( getFileInfoList() );
@@ -305,7 +305,7 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText());
+	OmProject::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId SegInspector::getSegmentationID()

@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "omVoxelSetAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -32,7 +33,7 @@ OmVoxelSetAction::OmVoxelSetAction(DataCoord & voxel)
 		return;
 	}
 	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//get current voxel value
 	mPrevDataValue = r_segmentation.GetVoxelValue(mVoxel);
@@ -60,7 +61,7 @@ void
  OmVoxelSetAction::Action()
 {
 	//set voxel
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//set voxel to stored segment id
 	r_segmentation.SetVoxelValue(mVoxel, mDataValue);
@@ -72,7 +73,7 @@ void
 void OmVoxelSetAction::UndoAction()
 {
 	//set voxel
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//set voxel to stored segment id
 	r_segmentation.SetVoxelValue(mVoxel, mPrevDataValue);
@@ -88,7 +89,7 @@ string OmVoxelSetAction::Description()
 		return "Remove Voxel";
 	} else {
 		//get segmentation
-		OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+		OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 		OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
 
 		return string("Set Voxel To ") + r_segment->GetName().toStdString();

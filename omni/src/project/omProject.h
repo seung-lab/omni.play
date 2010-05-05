@@ -12,7 +12,8 @@
 #include "common/omStd.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
-#include "volume/omVolume.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
@@ -36,6 +37,25 @@ public:
 	static void Load( QString fileNameAndPath, const bool autoOpenAndClose = false );
 	static void Close();
 	
+
+        //volume management
+        static OmChannel& GetChannel(OmId id);
+        static OmChannel& AddChannel();
+        static void RemoveChannel(OmId id);
+        static bool IsChannelValid(OmId id);
+        static const OmIds & GetValidChannelIds();
+        static bool IsChannelEnabled(OmId id);
+        static void SetChannelEnabled(OmId id, bool enable);
+        
+        static OmSegmentation& GetSegmentation(OmId id);
+        static OmSegmentation& AddSegmentation();
+        static void RemoveSegmentation(OmId id);
+        static bool IsSegmentationValid(OmId id);
+        static const OmIds & GetValidSegmentationIds();
+        static bool IsSegmentationEnabled(OmId id);
+        static void SetSegmentationEnabled(OmId id, bool enable);
+	static void Draw(OmVolumeCuller & rCuller);
+
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -53,6 +73,12 @@ private:
 	QString mFileName;
 	QString mDirectoryPath;
 
+        //data managers
+        OmGenericManager<OmChannel> mChannelManager;
+        OmGenericManager<OmSegmentation> mSegmentationManager;
+
+        friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
+        friend QDataStream &operator>>(QDataStream & in, OmProject & p );
 };
 
 #endif

@@ -44,10 +44,10 @@ OmStateManager::OmStateManager()
 
 	debug("cross","OmStateManager is being Constructed!");
 	
-	SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-	mYZSlice[4] = depth.x;
-	mXZSlice[4] = depth.y;
-	mXYSlice[4] = depth.z;
+	//SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	mYZSlice[4] = 0.0;
+	mXZSlice[4] = 0.0;
+	mXYSlice[4] = 0.0;
 	
 	mXYPan[0] = 0.0;
 	mXYPan[1] = 0.0;

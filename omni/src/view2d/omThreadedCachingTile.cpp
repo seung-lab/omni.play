@@ -1,3 +1,4 @@
+#include "volume/omVolume.h"
 #include "omThreadedCachingTile.h"
 
 #include "system/omEventManager.h"

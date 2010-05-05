@@ -2,6 +2,8 @@
 
 #include "omTile.h"
 
+#include "volume/omVolume.h"
+#include "project/omProject.h"
 #include "volume/omMipChunk.h"
 #include "system/omStateManager.h"
 
@@ -154,15 +156,17 @@ OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 {
 
 	// find mip coord
-	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
+	NormCoord mNormCoord = current_seg.SpaceToNormCoord(key.Coordinate);
 	return mVolume->NormToMipCoord(mNormCoord, key.Level);
 
 }
 
 int OmTile::GetDepth(const OmTileCoord & key)
 {
-	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
+	NormCoord normCoord = current_seg.SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = current_seg.NormToDataCoord(normCoord);
         float factor=OMPOW(2,key.Level);
 
 	debug("tile", "factor:%f\n", factor);
@@ -206,7 +210,7 @@ OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, co
 
 	//debug ("genone", "key volume type: %i\n", key.mVolType);
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
 	bool doValidate = current_seg.AreSegmentsSelected();
 	if (SEGMENTATION == key.mVolType) {
 		doValidate = false;	
@@ -297,7 +301,7 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 
 	set < DataCoord >::iterator itr;
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
 
 	for (itr = vox.begin(); itr != vox.end(); itr++) {
 
@@ -359,7 +363,7 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 					break;
 
 				case EDIT_SYSTEM_MODE:{
-					OmSegment * segment = OmVolume::GetSegmentation(myID).GetSegment(id);
+					OmSegment * segment = OmProject::GetSegmentation(myID).GetSegment(id);
 					const Vector3 < float >&color = segment->GetColor();
 
 					newcolor =
@@ -376,7 +380,7 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 
 				}
 			} else {
-				OmSegment * segment = OmVolume::GetSegmentation(myID).GetSegment(id);
+				OmSegment * segment = OmProject::GetSegmentation(myID).GetSegment(id);
 				const Vector3 < float >&color = segment->GetColor();
 
 				newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);

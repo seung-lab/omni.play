@@ -791,7 +791,7 @@ bool OmMipChunk::DrawCheck(OmVolumeCuller & rCuller)
 	float distance = (mNormExtent.getMax() - mNormExtent.getCenter()).length();
 
 	//if distance too large, just draw it - else keep breaking it down
-	//debug("view3d", "backoff: %d\n", myBackoff );
+	debug("vol", "cam,dist:%f,%f\n", camera_to_center, distance);
 	return (camera_to_center > distance);
 }
 

@@ -13,6 +13,13 @@ class OmBuildChannel : public OmBuildVolumes, public QThread
  private:
 	OmChannel * mChann;
 	void run();
+
+	void newBuild();
+	int mDepth;
+	Vector3 < int > MipLevelDataDimensions(int level);
+	bool BuildVolume();
+	void BuildChunk(const OmMipChunkCoord & rMipCoord);
+	DataBbox MipCoordToDataBbox(const OmMipChunkCoord & rMipCoord, int newLevel);
 };
 
 #endif

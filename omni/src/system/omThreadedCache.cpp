@@ -147,10 +147,6 @@ OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 
 	QExplicitlySharedDataPointer<PTR> old_value = mCache[key];
 
-	//subtract size from cache size
-	mCacheSize -= sizeof(*old_value);
-	mCacheObjects--;
-	
 	//then remove from cache
 	mCache.remove(key);
 	mKeyAccessList.removeAll(key);
@@ -182,10 +178,6 @@ OmThreadedCache<KEY,PTR>::RemoveOldest()
 	
 		//get ref to old value
 		old_value = mCache[r_oldest_key];
-
-		//subtract size from cache size
-		mCacheSize -= sizeof(*old_value);
-		mCacheObjects--;
 
 		assert(r_oldest_key == mKeyAccessList.back());
 	
@@ -272,6 +264,7 @@ OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 	return mFetchStack.size();
 }
 
+// Get Estimate of RAM size occupied by this cache
 template < typename KEY, typename PTR  >
 long
 OmThreadedCache<KEY,PTR>::GetCacheSize()
@@ -364,10 +357,6 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			mCacheMutex.lock();
 			//add to cache map
 			mCache[fetch_key] = QExplicitlySharedDataPointer<PTR>(fetch_value);
-
-			//add size to cache size;
-			mCacheSize+=sizeof(*fetch_value);
-			mCacheObjects++;
 
 			//add to access list
 			mKeyAccessList.push_front(fetch_key);

@@ -14,6 +14,7 @@
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
 #include "common/omDebug.h"
+#include "utility/omHdf5.h"
 #include <QFile>
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
@@ -218,7 +219,6 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
 void OmMipVolume::UpdateMipProperties()
 {
 	if (IsSourceValid()) {
-
 		//get source dimensions
 		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths );
 

@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "segmentList.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "guiUtils.h"
@@ -33,7 +34,7 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId first
 QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
-	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
+	OmSegmentation & segmentation = OmProject::GetSegmentation( sdw.getID() );
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
 
 	mNumSegments = segmentation.GetNumSegments();
@@ -234,7 +235,7 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 		sendSegmentChangeEvent(sdw, false);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {
-		OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
+		OmSegmentation & segmentation = OmProject::GetSegmentation(sdw.getSegmentationID());
 		segmentation.SetAllSegmentsSelected(false);
 		
 		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
@@ -250,7 +251,7 @@ void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augm
 {
 	const OmId segmentationID = sdw.getSegmentationID();
 	const OmId segmentID = sdw.getID();
-	OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
+	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 
 	OmIds selected_segment_ids;
 	OmIds un_selected_segment_ids;
@@ -362,7 +363,7 @@ void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
-	if (!OmVolume::IsSegmentationValid(segmentationID)) {
+	if (!OmProject::IsSegmentationValid(segmentationID)) {
 		if( haveValidSDW ){
 			populateSegmentElementsListWidget();
 		}

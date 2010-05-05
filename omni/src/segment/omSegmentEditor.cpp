@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "omSegmentEditor.h"
 
 #include "volume/omVolume.h"
@@ -58,11 +59,11 @@ bool OmSegmentEditor::GetEditSelection(OmId & segmentation, OmId & segment)
 	segment = Instance()->mEditSegment;
 
 	//check for segmentation validity
-	if (!OmVolume::IsSegmentationValid(segmentation))
+	if (!OmProject::IsSegmentationValid(segmentation))
 		return false;
 
 	//check for segment validity
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(segmentation);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation);
 	if (!r_segmentation.IsSegmentValid(segment))
 		return false;
 
@@ -104,13 +105,15 @@ bool OmSegmentEditor::GetSelectedVoxelState(const DataCoord & dataCoord)
 /////////////////////////////////
 ///////          Voxels
 
-DataCoord OmSegmentEditor::SpaceCoordToEditSelectionVoxel(const SpaceCoord & spaceCoord)
+DataCoord OmSegmentEditor::SpaceCoordToEditSelectionVoxel(const SpaceCoord & )
 {
 
+	assert(false && "this isn't implemented");
 	//convert to norm coord
-	NormCoord normCoord = OmVolume::SpaceToNormCoord(spaceCoord);
+	//NormCoord normCoord = OmVolume::SpaceToNormCoord(spaceCoord);
 	//convert to data coord
-	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	//DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	DataCoord dataCoord;
 
 	return dataCoord;
 }
@@ -120,10 +123,13 @@ DataCoord OmSegmentEditor::SpaceCoordToEditSelectionVoxel(const SpaceCoord & spa
 
 void OmSegmentEditor::DrawEditSelectionVoxels()
 {
+
+	assert(false && "this code is dead");
 	//push modelview matrix
 	glPushMatrix();
 
-	Vector3f scale = Vector3f::ONE / OmVolume::GetDataExtent().getUnitDimensions();
+	//Vector3f scale = Vector3f::ONE / OmVolume::GetDataExtent().getUnitDimensions();
+	Vector3f scale = Vector3f::ONE;
 	glScalefv(scale.array);
 
 	//all omglSolidCubes are centered at 0,0,0 so offset by 1/2

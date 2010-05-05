@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "omSegmentContextMenu.h"
 
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -72,7 +73,7 @@ void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId)
 void OmSegmentContextMenu::AddSelectionNames()
 {
 	//get segmentation and segment
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
 
 	addAction( r_segment->GetName() );
@@ -86,7 +87,7 @@ void OmSegmentContextMenu::AddSelectionAction()
 {
 
 	//get segmentation and segment
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//is segment selected
 	bool is_segment_selected = r_segmentation.IsSegmentSelected(mSegmentId);
@@ -108,7 +109,7 @@ void OmSegmentContextMenu::AddDisableActions()
 {
 
 	//is segment selected
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	bool is_segment_enabled = r_segmentation.IsSegmentEnabled(mSegmentId);
 
 	//if segment is already selected
@@ -166,7 +167,7 @@ void OmSegmentContextMenu::UnselectOthers()
 {
 
 	//get current selection
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	OmIds selected_segment_ids = r_segmentation.GetSelectedSegmentIds();
 	selected_segment_ids.remove(mSegmentId);
 
@@ -185,13 +186,13 @@ void OmSegmentContextMenu::Enable()
 
 void OmSegmentContextMenu::DisableSelected()
 {
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	(new OmSegmentStateAction(mSegmentationId, r_segmentation.GetSelectedSegmentIds(), false))->Run();
 }
 
 void OmSegmentContextMenu::DisableUnselected()
 {
-	OmSegmentation & seg = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 
 	//form unselected
 	OmIds unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();

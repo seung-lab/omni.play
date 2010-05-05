@@ -6,6 +6,7 @@
 #include "utility/stringHelpers.h"
 
 #include <QTextStream>
+#include <QImage>
 
 OmBuildVolumes::OmBuildVolumes()
 {
@@ -61,4 +62,13 @@ QString OmBuildVolumes::getSelectedHDF5file()
 	}
 
 	return "";
+}
+
+void OmBuildVolumes::readImages()
+{
+	foreach( QFileInfo finfo, mFileNamesAndPaths ){
+		QImage image( finfo.filePath() );
+		printf("%s: (%dx%d), %d bytes total; depth %d\n", qPrintable( finfo.filePath() ),
+		       image.width(), image.height(), image.byteCount(), image.depth() );
+	}
 }

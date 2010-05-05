@@ -1,4 +1,5 @@
 
+#include "project/omProject.h"
 #include "omSegmentSelectAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -69,13 +70,25 @@ void OmSegmentSelectAction::Initialize(OmId segmentationId,
 
 	mSender = sender;
 	mComment = comment;
+#if 0
+
+	//store old state of all changed segment ids
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentationId);
+	OmIds::iterator itr;
+	for (itr = mSelectIds.begin(); itr != mSelectIds.end(); itr++) {
+		mPrevSegmentStates[*itr] = r_segmentation.IsSegmentSelected(*itr);
+	}
+	for (itr = mUnselectIds.begin(); itr != mUnselectIds.end(); itr++) {
+		mPrevSegmentStates[*itr] = r_segmentation.IsSegmentSelected(*itr);
+	}
+#endif
 }
 
 /////////////////////////////////
 ///////          Action Methods
 void OmSegmentSelectAction::Action()
 {
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	foreach( OmId segID, mSelectIds ){
 		r_segmentation.SetSegmentSelected( segID, true);
@@ -97,6 +110,22 @@ void OmSegmentSelectAction::Action()
 
 void OmSegmentSelectAction::UndoAction()
 {
+#if 0
+	//get refs to volume and segmentation
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+
+	//for all segments in map, set old state of segment
+	map < OmId, bool >::iterator itr;
+	for (itr = mPrevSegmentStates.begin(); itr != mPrevSegmentStates.end(); itr++) {
+		r_segmentation.SetSegmentSelected(itr->first, mPrevSegmentStates[itr->first]);
+	}
+
+	//send segment selection change event
+	OmIds modified_segment_ids = mSelectIds;
+	modified_segment_ids.unite(mUnselectIds);
+	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
+						     mSegmentationId, modified_segment_ids));
+#endif
 }
 
 string OmSegmentSelectAction::Description()

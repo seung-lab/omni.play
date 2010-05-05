@@ -3,6 +3,7 @@
 #include "omView3d.h"
 #include "omCamera.h"
 
+#include "project/omProject.h"
 #include "segment/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
@@ -314,9 +315,9 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//ensure valid OmIds
-	if (!OmVolume::IsSegmentationValid(result[0]))
+	if (!OmProject::IsSegmentationValid(result[0]))
 		return false;
-	if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+	if (!OmProject::GetSegmentation(result[0]).IsSegmentValid(result[1]))
 		return false;
 
 	//check if dragging
@@ -346,18 +347,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 /////////////////////////////////
 ///////          Pick Voxel Methods
 
-bool OmView3dUi::PickVoxel(QKeyEvent * keyEvent, QMouseEvent * mouseEvent, bool drag, DataCoord & voxel)
-{
-	if (NULL != keyEvent) {
-		return PickVoxelCameraFocus(voxel);
-	}
-
-	if (NULL != mouseEvent) {
-		return PickVoxelMouse(mouseEvent, drag, voxel);
-	}
-
-	assert(false);
-}
 
 bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVoxel)
 {
@@ -408,8 +397,9 @@ bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVox
 	//TODO: if left button, ensure voxel exists
 
 	//get voxel at point3d
-	NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
-	DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+        OmSegmentation & current_seg = OmProject::GetSegmentation(result[0]);
+	NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
+	DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
 
 	//if we've already selected voxel while dragging
 	if (drag && (mPrevMouseSelectVoxel == voxel)) {
@@ -419,15 +409,6 @@ bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVox
 	}
 
 	//return success with voxel
-	rVoxel = voxel;
-	return true;
-}
-
-bool OmView3dUi::PickVoxelCameraFocus(DataCoord & rVoxel)
-{
-	NormCoord norm_coord = OmVolume::SpaceToNormCoord(mpView3d->mCamera.GetPosition());
-	DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
-
 	rVoxel = voxel;
 	return true;
 }
@@ -451,12 +432,12 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 		return;
 
 	//get segment state
-	bool new_segment_select_state = !(OmVolume::GetSegmentation(segmentation_id).IsSegmentSelected(segment_id));
+	bool new_segment_select_state = !(OmProject::GetSegmentation(segmentation_id).IsSegmentSelected(segment_id));
 
 	//if not augmenting slection and selecting segment
 	if (!augment_selection && new_segment_select_state) {
 		//get current selection
-		OmSegmentation & r_segmentation = OmVolume::GetSegmentation(segmentation_id);
+		OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
 		//select new segment, deselect current segments
 		OmIds select_segment_ids;
 		select_segment_ids.insert(segment_id);
@@ -521,21 +502,6 @@ void OmView3dUi::VoxelSelectToggleMouse(QMouseEvent * mouseEvent, bool drag)
 	(new OmVoxelSelectionAction(picked_voxel, !voxel_select_state, augment_selection))->Run();
 }
 
-void OmView3dUi::VoxelSelectToggleKey(QKeyEvent *, bool augment)
-{
-
-	//pick voxel
-	DataCoord picked_voxel;
-	if (!PickVoxelCameraFocus(picked_voxel))
-		return;
-
-	//get voxel state
-	bool voxel_select_state = OmSegmentEditor::GetSelectedVoxelState(picked_voxel);
-
-	//run action
-	(new OmVoxelSelectionAction(picked_voxel, !voxel_select_state, augment))->Run();
-}
-
 void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 {
 
@@ -569,7 +535,7 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmVolume::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -606,12 +572,14 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 {
 	DataCoord voxel;
-	if (!PickVoxelMouseCrosshair(event, voxel)){
+	OmId seg = PickVoxelMouseCrosshair(event, voxel);
+	if (!seg) {
 		mpView3d->updateGL();
 		return;
 	}
 
-	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
+        OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
 
@@ -625,7 +593,8 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	debug("view3d", "hi from %s\n", __FUNCTION__);
 
 	DataCoord voxel;
-	if (!PickVoxelMouseCrosshair(event, voxel)){
+	OmId seg = PickVoxelMouseCrosshair(event, voxel);
+	if (!seg) {
 		mpView3d->updateGL();
 		return;
 	}
@@ -633,11 +602,12 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 
 	debug("view3d", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
 
-	SpaceCoord picked_voxel = OmVolume::NormToSpaceCoord(OmVolume::DataToNormCoord(voxel));
+        OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 
-	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+	OmStateManager::SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+	OmStateManager::SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+	OmStateManager::SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	
 	debug("view3d", "coordinate is now (%f, %f, %f)\n", 
@@ -647,7 +617,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	      );
 }
 
-bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
+OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
 {
         //extract event properties
         Vector2i point2d(event->x(), event->y());
@@ -663,17 +633,17 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 	      valid_pick, result.size());
 
 	if(!valid_pick || result.size() != 3)
-		return false;
+		return 0;
 
-        if (!OmVolume::IsSegmentationValid(result[0]))
-                return false;
-        if (!OmVolume::GetSegmentation(result[0]).IsSegmentValid(result[1]))
-                return false;
+        if (!OmProject::IsSegmentationValid(result[0]))
+                return 0;
+        if (!OmProject::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+                return 0;
 
         //unproject to point3d
         Vector3f point3d;
         if (!mpView3d->UnprojectPoint(point2d, point3d))
-                return false;
+                return 0;
 
         //define depth scale factor
         float z_depth_scale = 0.0f;
@@ -684,10 +654,11 @@ bool OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
         Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
 
         //get voxel at point3d
-        NormCoord norm_coord = OmVolume::SpaceToNormCoord(point3d + scaled_norm_vec);
-        DataCoord voxel = OmVolume::NormToDataCoord(norm_coord);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(result[0]);
+        NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
+        DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
 
         //return success with voxel
         rVoxel = voxel;
-        return true;
+        return result[0];
 }

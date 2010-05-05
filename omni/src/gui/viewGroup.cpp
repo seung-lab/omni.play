@@ -1,4 +1,5 @@
-#include "viewGroup.h"
+#include "project/omProject.h"
+#include "gui/viewGroup.h"
 #include "volume/omVolume.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
@@ -120,7 +121,7 @@ void ViewGroup::addView3D()
 
 void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 {
-	QString name = getViewName( OmVolume::GetChannel(chan_id).GetName(), vtype );
+	QString name = getViewName( OmProject::GetChannel(chan_id).GetName(), vtype );
 	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_CHAN, vtype );
 
 	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
@@ -136,7 +137,7 @@ void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 
 void ViewGroup::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
 {
-	QString name = getViewName( OmVolume::GetSegmentation(segmentation_id).GetName(), vtype );
+	QString name = getViewName( OmProject::GetSegmentation(segmentation_id).GetName(), vtype );
 	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_SEG, vtype );
 
 	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
@@ -317,13 +318,13 @@ void ViewGroup::addAllViews(OmId channelID, OmId segmentationID )
 		delete(w);
 	}
 
-	if( OmVolume::IsChannelValid(channelID) ){
+	if( OmProject::IsChannelValid(channelID) ){
 		addView2Dchannel( channelID, UpperLeft);
 		addView2Dchannel( channelID, UpperRight);
 		addView2Dchannel( channelID, LowerLeft);
 	}
 
-	if( OmVolume::IsSegmentationValid(segmentationID)) {
+	if( OmProject::IsSegmentationValid(segmentationID)) {
 		addView2Dsegmentation( segmentationID, UpperLeft);
 		addView2Dsegmentation( segmentationID, UpperRight);
 		addView2Dsegmentation( segmentationID, LowerLeft);

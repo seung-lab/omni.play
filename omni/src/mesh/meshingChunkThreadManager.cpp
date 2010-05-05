@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "meshingChunkThreadManager.h"
 #include "common/omDebug.h"
 #include "volume/omVolume.h"
@@ -77,7 +78,7 @@ int MeshingChunkThreadManager::numberOfThreadsToUseForThisChunk( const int total
 void MeshingChunkThreadManager::run()
 {
 	QExplicitlySharedDataPointer < OmMipChunk > chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-	OmVolume::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
+	OmProject::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
 
 	setupValuesToMesh( chunk );
 

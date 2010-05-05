@@ -48,7 +48,7 @@ void Headless::processLine( QString line, QString fName )
 			printf("please choose segmentation first!\n");
 			return;
 		} 
-		OmSegmentation & added_segmentation = OmVolume::GetSegmentation(SegmentationID);
+		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
 		bs->build_seg_mesh();
 		bs->wait();
@@ -69,7 +69,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
 		time (&start);
-		OmVolume::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
+		OmProject::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
 		time (&end);
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );
@@ -86,7 +86,7 @@ void Headless::processLine( QString line, QString fName )
 		} 
 		QString planFile = fName + ".plan";
 		//		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
-		OmVolume::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
+		OmProject::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
 		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( line.startsWith("seg:") ) {
 		QStringList args = line.split(':');
@@ -109,13 +109,14 @@ void Headless::processLine( QString line, QString fName )
                         printf("please choose segmentation first!\n");
                         return;
                 }
-                OmVolume::GetSegmentation( SegmentationID ).AddSegment();
+                OmProject::GetSegmentation( SegmentationID ).AddSegment();
                 OmProject::Save();
         } else if( line.startsWith("setDataExtent:") ){
-		QStringList args = line.split(':');
-		Vector3<int> maxext = Vector3<int>(StringHelpers::getUInt(args[1]),StringHelpers::getUInt(args[2]),StringHelpers::getUInt(args[3]));
-		OmVolume::SetDataDimensions(maxext);
-                OmProject::Save();
+		assert(false && "don't need this anymore.");
+		//QStringList args = line.split(':');
+		//Vector3<int> maxext = Vector3<int>(StringHelpers::getUInt(args[1]),StringHelpers::getUInt(args[2]),StringHelpers::getUInt(args[3]));
+		//OmProject::SetDataDimensions(maxext);
+                //OmProject::Save();
 	} else if( line.startsWith("create:") ) {
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];
@@ -135,7 +136,7 @@ void Headless::processLine( QString line, QString fName )
 	} else if( line.startsWith("addSegmentationFromHDF5:") ){
 		QStringList args = line.split(':');
 
-		OmSegmentation & added_segmentation = OmVolume::AddSegmentation();
+		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
 		QString hdf5fnp = args[1];
 
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
@@ -262,11 +263,11 @@ void Headless::runMeshPlan( QString headlessLine )
 			segmentationIDs << segmentationID;
 		}
 
-		OmVolume::GetSegmentation( segmentationID ).QueueUpMeshChunk( coord );
+		OmProject::GetSegmentation( segmentationID ).QueueUpMeshChunk( coord );
 	}
 
 	foreach( OmId segID, segmentationIDs){
-		OmVolume::GetSegmentation( segID ).RunMeshQueue();
+		OmProject::GetSegmentation( segID ).RunMeshQueue();
 	}
 }
 

@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "omView2d.h"
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -162,21 +163,21 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 	OmId segmentationID;
 	if( SEGMENTATION == mVolumeType ){
 		segmentationID = mImageId;
-		OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
+		OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 		segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
 		if( 0 == segmentID  ){
 			return NULL;
 		}
 		return new SegmentDataWrapper( segmentationID, segmentID );
 	} else {
-		OmChannel & current_channel = OmVolume::GetChannel(mImageId);
+		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		foreach( OmId id, current_channel.GetValidFilterIds() ) {
 
 			OmFilter2d &filter = current_channel.GetFilter(id);
 
 			if (filter.GetSegmentation() ) {
 				segmentationID = filter.GetSegmentation();
-				OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
+				OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 				segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
 				if( 0 == segmentID  ){
 					return NULL;
@@ -209,7 +210,7 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmVolume::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -221,7 +222,7 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		break;
 	}
 
-	OmId segid = OmVolume::GetSegmentation(segmentation_id).GetVoxelSegmentId(globalDataClickPoint);
+	OmId segid = OmProject::GetSegmentation(segmentation_id).GetVoxelSegmentId(globalDataClickPoint);
 	FillToolFill(segmentation_id, globalDataClickPoint, data_value, segid);
 
 	doRedraw();
@@ -260,7 +261,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			case ADD_VOXEL_MODE:
 				//get value associated to segment id
 				data_value =
-				    OmVolume::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				    OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
@@ -467,7 +468,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 			if (dosubtract) {
 				data_value = NULL_SEGMENT_DATA;
 			} else {
-				data_value = OmVolume::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
 			}
 			BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
 		} else {
@@ -533,7 +534,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmVolume::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -687,7 +688,7 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 void OmView2d::SystemModeChangeEvent()
 {
 	if (mVolumeType == SEGMENTATION) {
-		modified_Ids = OmVolume::GetSegmentation(mImageId).GetSelectedSegmentIds();
+		modified_Ids = OmProject::GetSegmentation(mImageId).GetSelectedSegmentIds();
 		delete_dirty = true;
 		myUpdate();
 	}
@@ -726,7 +727,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 				domerge = true;
 				seg = mImageId;
 			} else {
-				OmChannel & current_channel = OmVolume::GetChannel(mImageId);
+				OmChannel & current_channel = OmProject::GetChannel(mImageId);
 				foreach( OmId id, current_channel.GetValidFilterIds() ) {
 			
                         		OmFilter2d &filter = current_channel.GetFilter(id);
@@ -853,7 +854,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 void OmView2d::resetWindow()
 {
-	SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	SpaceCoord depth = GetVolume().NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 	OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
 	OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
 	OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);

@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "omVoxelSetConnectedAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -38,7 +39,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 	mSeedVoxel = *r_selected_voxels.begin();
 
 	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//valid edit selection, so get dest data value
 	mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
@@ -98,7 +99,7 @@ void OmVoxelSetConnectedAction::Action()
 {
 
 	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//alloc todo set on heap in case very large
 	list < DataCoord > *vox_todo_list = new list < DataCoord >;

@@ -7,6 +7,8 @@
  *
  *	Brett Warne - bwarne@mit.edu - 7/19/09
  */
+class OmVolume;
+#include "volume/omVolume.h"
 #include "omSimpleChunkThreadedCache.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
@@ -26,8 +28,7 @@ enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
 //typedef chunk cache
 typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;
 
-
-class OmMipVolume : public MipChunkThreadedCache {
+class OmMipVolume : public OmVolume, public MipChunkThreadedCache {
 	
 public:
 	OmMipVolume();

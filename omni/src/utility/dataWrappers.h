@@ -1,6 +1,7 @@
 #ifndef DATA_WRAPPERS
 #define DATA_WRAPPERS
 
+#include "segment/omSegment.h"
 #include "common/omException.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"

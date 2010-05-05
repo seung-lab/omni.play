@@ -1,6 +1,7 @@
 #ifndef OM_QT_VIEW_2D_H
 #define OM_QT_VIEW_2D_H 
 
+#include "project/omProject.h"
 #include "drawable.h"
 
 #include <QGLPixelBuffer>
@@ -50,6 +51,15 @@ public:
 	void SetDataSliceToDepth(ViewType viewType, int slice);
 	int GetDepthToDataMax(ViewType viewType);
 	
+	OmVolume & GetVolume() {
+        	if (mVolumeType == CHANNEL) {
+                	OmChannel & current_channel = OmProject::GetChannel(mImageId);
+			return current_channel;
+        	} else {
+                	OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
+			return current_seg;
+		}
+	}
 protected:
 	// GL event methods
 	void initializeGL();

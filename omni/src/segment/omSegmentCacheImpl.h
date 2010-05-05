@@ -55,6 +55,8 @@ public:
 
 	void Save( OmSegment * seg );
 
+	void turnBatchModeOn(const bool batchMode);
+
  protected:
 	QHash<OmId, OmSegment*> mSegIdToSegPtrHash;
 
@@ -79,6 +81,7 @@ public:
 	SEGMENT_DATA_TYPE mMaxValue;
 
 	OmIds getIDsHelper( OmSegment * segment );
+	SegmentDataSet getValuesHelper( OmSegment * segment );
 
 	int maxDirtySegmentsBeforeFlushing();
 
@@ -91,11 +94,15 @@ public:
 
 	void clearCaches( OmSegment * seg );
 	SegmentDataSet cacheOfSelectedSegmentValues;
-	QHash< OmId, OmIds > cacheRootNodeToAllChildren;
+	QHash< OmId, OmIds > cacheRootNodeToAllChildrenIDs;
+	QHash< OmId, SegmentDataSet > cacheRootNodeToAllChildrenValues;
 
 	QSet<OmSegment*> dirtySegments;
 
 	OmSegmentCache * mParentCache;
+
+	bool amInBatchMode;
+	bool needToFlush;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );

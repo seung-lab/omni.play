@@ -492,6 +492,25 @@ void OmSegmentation::Draw(OmVolumeCuller & rCuller)
 {
 	SegmentDataSet values;
 
+	//transform to normal frame
+	glPushMatrix();
+	glMultMatrixf(mNormToSpaceMat.ml);
+
+	//draw volume axis
+	if (rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
+		glDrawPositiveAxis();
+	}
+
+	//return if no chunk level drawing
+	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_CHUNKS)) {
+		glPopMatrix();
+		return;
+	}
+	//form culler for this volume and call draw on all volumes
+	OmVolumeCuller volume_culler =
+		rCuller.GetTransformedCuller(mNormToSpaceMat, mNormToSpaceInvMat);
+
+
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
 		values = mSegmentCache.GetSelectedSegmentValues();
@@ -501,15 +520,20 @@ void OmSegmentation::Draw(OmVolumeCuller & rCuller)
 	}
 
 	if (0 == values.size() ){
+        	glPopMatrix();
 		return;
 	}
 
 	glPushName(GetId());
 
 	//draw relevant data values starting from root chunk
-	DrawChunkRecursive(RootMipChunkCoordinate(), values, true, rCuller, values.size() );
+	DrawChunkRecursive(RootMipChunkCoordinate(), values, true, volume_culler, values.size() );
 
 	glPopName();
+
+        //pop matrix
+        glPopMatrix();
+
 }
 
 /*

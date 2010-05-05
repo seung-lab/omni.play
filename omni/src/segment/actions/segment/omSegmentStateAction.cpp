@@ -1,4 +1,5 @@
 
+#include "project/omProject.h"
 #include "omSegmentStateAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -44,7 +45,7 @@ void
 	mSegmentIds = segmentIds;
 
 	//store old state of all changed segment ids
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(segmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentationId);
 	foreach( OmId id, segmentIds ){
 		mPrevSegmentStates[id] = r_segmentation.IsSegmentEnabled(id);
 	}
@@ -58,7 +59,7 @@ void OmSegmentStateAction::Action()
 {
 
 	//get refs to volume and segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//for all segments in map, set new state of segment
 	map < OmId, bool >::iterator itr;
@@ -76,7 +77,7 @@ void OmSegmentStateAction::UndoAction()
 {
 
 	//get refs to volume and segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//for all segments in map, set old state of segment
 	map < OmId, bool >::iterator itr;

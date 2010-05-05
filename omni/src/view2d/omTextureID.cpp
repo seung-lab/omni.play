@@ -1,4 +1,5 @@
 
+#include "volume/omVolume.h"
 #include "omTextureID.h"
 #include "omThreadedCachingTile.h"
 #include "system/omGarbage.h"

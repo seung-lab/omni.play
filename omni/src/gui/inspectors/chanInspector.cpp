@@ -1,6 +1,6 @@
 #include <QtGui>
+#include "project/omProject.h"
 #include <QThread>
-
 #include "chanInspector.h"
 #include "common/omStd.h"
 #include "volume/omVolume.h"
@@ -29,7 +29,7 @@ ChannelDataWrapper ChanInspector::getChannelDataWrapper()
 
 void ChanInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::GetChannel(cdw.getID()).SetName(nameEdit->text());
+	OmProject::GetChannel(cdw.getID()).SetName(nameEdit->text());
 }
 
 void ChanInspector::on_browseButton_clicked()
@@ -49,7 +49,7 @@ void ChanInspector::on_exportButton_clicked()
 		return;
 	}
 
-	OmVolume::GetChannel(cdw.getID()).ExportInternalData( fileName );
+	OmProject::GetChannel(cdw.getID()).ExportInternalData( fileName );
 }
 QDir ChanInspector::getDir()
 {	
@@ -95,7 +95,7 @@ void ChanInspector::on_patternEdit_textChanged()
 
 void ChanInspector::on_buildButton_clicked()
 {
-	OmChannel & current_channel = OmVolume::GetChannel(cdw.getID());
+	OmChannel & current_channel = OmProject::GetChannel(cdw.getID());
 
 	OmBuildChannel * bc = new OmBuildChannel( &current_channel );
 	bc->setFileNamesAndPaths( getFileInfoList() );
@@ -104,7 +104,7 @@ void ChanInspector::on_buildButton_clicked()
 
 void ChanInspector::on_notesEdit_textChanged()
 {
-	OmVolume::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText());
+	OmProject::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId ChanInspector::getChannelID()

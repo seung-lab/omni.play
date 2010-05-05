@@ -112,9 +112,7 @@ private:
 	float mFetchUpdateInterval;
 	bool mFetchUpdateClearsStack;
 
-	// size of this cache
-	long mCacheSize;
-	long mCacheObjects;
+        // size of objects in this cache
         long mObjectSize;
 
 	/** name/descriptor of Cache for debugging */

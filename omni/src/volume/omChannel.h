@@ -8,8 +8,8 @@
  */
 
 
-#include "omMipVolume.h"
-
+#include "volume/omVolume.h"
+#include "volume/omMipVolume.h"
 #include "system/omManageableObject.h"
 #include "volume/omFilter2d.h"
 #include "volume/omFilter2dManager.h"
@@ -45,6 +45,8 @@ protected:
 private:
 	Vector3f mHueColor;
 	OmFilter2dManager mFilter2dManager;
+
+	friend class OmBuildChannel;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmChannel & );
 	friend QDataStream &operator>>(QDataStream & in, OmChannel & );

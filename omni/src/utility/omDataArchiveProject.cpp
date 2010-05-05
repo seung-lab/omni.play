@@ -30,17 +30,20 @@ void OmDataArchiveProject::ArchiveWrite( OmHdf5Path path, OmProject * project )
 									   ba.data() );
 }
 
-QDataStream &operator<<(QDataStream & out, const OmProject & )
+QDataStream &operator<<(QDataStream & out, const OmProject & p)
 {
 	out << *OmPreferences::Instance();
-	out << *OmVolume::Instance();
+	out << p.mChannelManager;
+	out << p.mSegmentationManager;
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmProject & )
+QDataStream &operator>>(QDataStream & in, OmProject & p)
 {
 	in >> *OmPreferences::Instance();
-	in >> *OmVolume::Instance();
+
+	in >> p.mChannelManager;
+	in >> p.mSegmentationManager;
 
 	return in;
 }
@@ -62,36 +65,6 @@ QDataStream &operator>>(QDataStream & in, OmPreferences & p )
 	in >> p.intPrefs;
 	in >> p.boolPrefs;
 	in >> p.v3fPrefs;
-	return in;
-}
-
-QDataStream &operator<<(QDataStream & out, const OmVolume & v )
-{
-	out << v.mNormToSpaceMat;
-	out << v.mNormToSpaceInvMat;
-	out << v.mDataExtent;
-	out << v.mDataResolution;
-	out << v.mChunkDim;
-	out << v.unitString;
-
-	out << v.mChannelManager;
-	out << v.mSegmentationManager;
-
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in, OmVolume & v )
-{
-	in >> v.mNormToSpaceMat;
-	in >> v.mNormToSpaceInvMat;
-	in >> v.mDataExtent;
-	in >> v.mDataResolution;
-	in >> v.mChunkDim;
-	in >> v.unitString;
-
-	in >> v.mChannelManager;
-	in >> v.mSegmentationManager;
-
 	return in;
 }
 
@@ -139,6 +112,7 @@ QDataStream &operator<<(QDataStream & out, const OmChannel & chan )
 {
 	OmDataArchiveProject::storeOmManageableObject( out, chan );
 	OmDataArchiveProject::storeOmMipVolume( out, chan );
+	OmDataArchiveProject::storeOmVolume( out, chan );
 
 	out << chan.mFilter2dManager;
 
@@ -149,6 +123,7 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan )
 {
 	OmDataArchiveProject::loadOmManageableObject( in, chan );
 	OmDataArchiveProject::loadOmMipVolume( in, chan );
+	OmDataArchiveProject::loadOmVolume( in, chan );
 
 	in >> chan.mFilter2dManager;
 
@@ -270,6 +245,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm 
 QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 {
 	OmDataArchiveProject::storeOmManageableObject( out, seg );
+	OmDataArchiveProject::storeOmVolume( out, seg );
 	OmDataArchiveProject::storeOmMipVolume( out, seg );
 
 	out << seg.mMipMeshManager;
@@ -281,8 +257,9 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 {
 	OmDataArchiveProject::loadOmManageableObject( in, seg );
+	OmDataArchiveProject::loadOmVolume( in, seg );
 	OmDataArchiveProject::loadOmMipVolume( in, seg );
-
+ 
 	in >> seg.mMipMeshManager;
 	in >> seg.mSegmentCache;
 
@@ -390,4 +367,24 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mStoreChunkMetaData;
 
 	in >> m.mBytesPerSample;
+}
+
+void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v )
+{
+	out << v.mNormToSpaceMat;
+	out << v.mNormToSpaceInvMat;
+	out << v.mDataExtent;
+	out << v.mDataResolution;
+	out << v.mChunkDim;
+	out << v.unitString;
+}
+
+void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
+{
+	in >> v.mNormToSpaceMat;
+	in >> v.mNormToSpaceInvMat;
+	in >> v.mDataExtent;
+	in >> v.mDataResolution;
+	in >> v.mChunkDim;
+	in >> v.unitString;
 }

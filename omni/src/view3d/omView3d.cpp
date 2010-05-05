@@ -497,7 +497,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	//initiate volume manager draw tree
-	OmVolume::Draw(culler);
+	OmProject::Draw(culler);
 }
 
 void OmView3d::DrawEditSelectionVoxels()
@@ -510,8 +510,9 @@ void OmView3d::DrawEditSelectionVoxels()
 	glEnable(GL_POLYGON_OFFSET_FILL);
 
 	//check if there are any voxels to draw
-	if (OmSegmentEditor::GetSelectedVoxels().size())
-		OmVolume::DrawEditSelectionVoxels();
+	if (OmSegmentEditor::GetSelectedVoxels().size()) {
+		//OmVolume::DrawEditSelectionVoxels();
+	}
 
 	glPopAttrib();
 }
