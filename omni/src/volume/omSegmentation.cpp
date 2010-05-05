@@ -148,10 +148,10 @@ bool OmSegmentation::IsVolumeDataBuilt()
 
 void OmSegmentation::BuildVolumeData()
 {
+	mSegmentCache.turnBatchModeOn(true);
+
 	//build volume
 	OmMipVolume::Build();
-
-	mSegmentCache.turnBatchModeOn(true);
 
 	// skip root (already done)
 	for (int level = 0; level < GetRootMipLevel(); ++level) {
