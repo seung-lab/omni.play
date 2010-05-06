@@ -6,8 +6,8 @@
 class OmDataPaths
 {
  public:
-	static OmHdf5Path getSegmentValuePath( OmId segmentationID, SEGMENT_DATA_TYPE value );
-	static OmHdf5Path getSegmentPath(OmId segmentationID, OmId segmentID );
+	static OmHdf5Path getValuePagePath( OmId segmentationID, const quint32 pageNum );
+	static OmHdf5Path getSegmentPagePath( OmId segmentationID, const quint32 pageNum );
 
 };
 

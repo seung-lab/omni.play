@@ -19,11 +19,6 @@ OmSegment::OmSegment(OmId segmentID, SEGMENT_DATA_TYPE value, OmSegmentCache* ca
 	parentSegID = 0;
 }
 
-OmSegment::OmSegment(OmSegmentCache * cache) 
-	: mCache(cache)
-{
-}
-
 void OmSegment::Join(OmSegment * childUnknownLevel, double threshold )
 {
 	OmSegment * childRoot = mCache->findRoot( childUnknownLevel );

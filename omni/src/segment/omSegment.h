@@ -18,7 +18,7 @@ class OmSegment {
 
 public:
 	OmSegment(OmId segmentID, SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
-	OmSegment(OmSegmentCache * cache);
+	OmSegment() {}
 
 	void updateChunkCoordInfo( const OmMipChunkCoord & mipCoord );
 	QSet< OmMipChunkCoord > & getChunks();
@@ -71,9 +71,8 @@ private:
 	void SetInitialColor();
 
 	friend class OmSegmentCacheImpl;
-
-	friend QDataStream &operator<<(QDataStream & out, const OmSegment & segment );
-	friend QDataStream &operator>>(QDataStream & in, OmSegment & segment );
+	friend QDataStream &operator<<(QDataStream & out, const QHash<OmId, OmSegment*> & page );
+	friend QDataStream &operator>>(QDataStream & in, QHash<OmId, OmSegment*> & page );
 };
 
 #endif

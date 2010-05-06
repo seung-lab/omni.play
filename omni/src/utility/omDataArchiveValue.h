@@ -8,8 +8,8 @@
 class OmDataArchiveValue
 {
  public:
-	static void ArchiveRead( OmHdf5Path path, OmId * id );
-	static void ArchiveWrite( OmHdf5Path path, OmId * id );
+	static void ArchiveRead( OmHdf5Path path, QHash<SEGMENT_DATA_TYPE, OmId> & page );
+	static void ArchiveWrite( OmHdf5Path path, QHash<SEGMENT_DATA_TYPE, OmId> & page );
 };
 
 #endif

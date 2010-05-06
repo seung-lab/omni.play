@@ -44,7 +44,7 @@ void OmSegmentCache::AddSegmentsFromChunk(const SegmentDataSet & data_values,
 					  const OmMipChunkCoord & mipCoord )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->AddSegmentsFromChunk(data_values, mipCoord );
+	mImpl->AddSegmentsFromChunk(data_values, mipCoord );
 }
 
 bool OmSegmentCache::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value )
@@ -104,13 +104,13 @@ OmIds & OmSegmentCache::GetEnabledSegmentIdsRef()
 void OmSegmentCache::SetAllEnabled(bool enabled)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->SetAllEnabled(enabled);
+	mImpl->SetAllEnabled(enabled);
 }
 
 void OmSegmentCache::SetAllSelected(bool selected)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->SetAllSelected(selected);
+	mImpl->SetAllSelected(selected);
 }
 
 bool OmSegmentCache::isSegmentEnabled( OmId segID )
@@ -128,13 +128,13 @@ bool OmSegmentCache::isSegmentSelected( OmId segID )
 void OmSegmentCache::setSegmentEnabled( OmId segID, bool isEnabled )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->setSegmentEnabled( segID, isEnabled );
+	mImpl->setSegmentEnabled( segID, isEnabled );
 }
 
 void OmSegmentCache::setSegmentSelected( OmId segID, bool isSelected )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->setSegmentSelected( segID, isSelected );
+	mImpl->setSegmentSelected( segID, isSelected );
 }
 
 SegmentDataSet OmSegmentCache::GetSelectedSegmentValues()
@@ -152,7 +152,7 @@ SegmentDataSet OmSegmentCache::GetEnabledSegmentValues()
 void OmSegmentCache::setSegmentName( OmId segID, QString name )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->setSegmentName( segID, name );
+	mImpl->setSegmentName( segID, name );
 }
 
 QString OmSegmentCache::getSegmentName( OmId segID )
@@ -164,7 +164,7 @@ QString OmSegmentCache::getSegmentName( OmId segID )
 void OmSegmentCache::setSegmentNote( OmId segID, QString note )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->setSegmentNote( segID, note );
+	mImpl->setSegmentNote( segID, note );
 }
 
 QString OmSegmentCache::getSegmentNote( OmId segID )
@@ -176,13 +176,13 @@ QString OmSegmentCache::getSegmentNote( OmId segID )
 void OmSegmentCache::addToDirtySegmentList( OmSegment* seg)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->addToDirtySegmentList( seg);
+	mImpl->addToDirtySegmentList( seg);
 }
 
 void OmSegmentCache::flushDirtySegments()
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->flushDirtySegments();
+	mImpl->flushDirtySegments();
 }
 
 SegmentDataSet OmSegmentCache::getValues( OmSegment * segment )
@@ -206,5 +206,5 @@ OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->splitChildLowestThreshold( segment );
+	mImpl->splitChildLowestThreshold( segment );
 }

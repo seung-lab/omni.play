@@ -4,26 +4,6 @@
 #include "omDataArchiveSegment.h"
 #include "omDataArchiveValue.h"
 
-void OmDataArchiveQT::ArchiveRead( OmHdf5Path path, OmId * id )
-{
-	OmDataArchiveValue::ArchiveRead( path, id );
-}
-
-void OmDataArchiveQT::ArchiveWrite( OmHdf5Path path, OmId * id )
-{
-	OmDataArchiveValue::ArchiveWrite( path, id );
-}
-
-void OmDataArchiveQT::ArchiveRead( OmHdf5Path path, OmSegment * segment ) 
-{
-	OmDataArchiveSegment::ArchiveRead( path, segment );
-}
-
-void OmDataArchiveQT::ArchiveWrite( OmHdf5Path path, OmSegment * segment ) 
-{
-	OmDataArchiveSegment::ArchiveWrite( path, segment );
-}
-
 void OmDataArchiveQT::ArchiveRead( OmHdf5Path path, OmMipChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveRead( path, chunk );

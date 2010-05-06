@@ -57,26 +57,14 @@ public:
 
 	void turnBatchModeOn(const bool batchMode);
 
- protected:
-	QHash<OmId, OmSegment*> mSegIdToSegPtrHash;
-
  private:
 	
 	bool mAllSelected;
 	bool mAllEnabled;
 
-	OmSegment* LoadSegment(OmId);
-	OmSegment* doLoadSegment(OmId);
-	OmHdf5Path getSegmentPath( OmId segmentID );
-	OmHdf5Path getSegmentPath( OmSegment * seg );
 	OmId getNextSegmentID();
 	OmId mMaxSegmentID;
 
-	QHash<SEGMENT_DATA_TYPE, OmId> mValueToSegIdHash;
-	OmId LoadValue(SEGMENT_DATA_TYPE);
-	OmId doLoadValue(SEGMENT_DATA_TYPE);
-	OmHdf5Path getValuePath( SEGMENT_DATA_TYPE value );
-	OmHdf5Path getValuePath( OmSegment * seg );
 	SEGMENT_DATA_TYPE getNextValue();
 	SEGMENT_DATA_TYPE mMaxValue;
 
@@ -103,6 +91,15 @@ public:
 
 	bool amInBatchMode;
 	bool needToFlush;
+
+	QHash< quint32, QHash<OmId, OmSegment*> > mSegIdToSegPtrHash;
+	QHash< quint32, QHash<SEGMENT_DATA_TYPE, OmId> > mValueToSegIdHash;
+	quint32 getSegmentPageNum( const OmId segID );
+	quint32 getValuePageNum( const SEGMENT_DATA_TYPE value );
+	bool doesValuePageExist( const quint32 valuePageNum );
+	void LoadValuePage( const quint32 valuePageNum );
+	void LoadSegmentPage( const quint32 segPageNum );
+	void SavePages();
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );

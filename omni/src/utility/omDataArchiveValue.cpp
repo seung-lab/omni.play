@@ -1,7 +1,7 @@
 #include "omDataArchiveValue.h"
 #include <QDataStream>
 
-void OmDataArchiveValue::ArchiveRead( OmHdf5Path path, OmId * id ) 
+void OmDataArchiveValue::ArchiveRead( OmHdf5Path path, QHash<SEGMENT_DATA_TYPE, OmId> & page )
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -10,18 +10,18 @@ void OmDataArchiveValue::ArchiveRead( OmHdf5Path path, OmId * id )
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
-	in >> (*id);
+	in >> page;
 
 	delete p_data;
 }
 
-void OmDataArchiveValue::ArchiveWrite( OmHdf5Path path, OmId * id )
+void OmDataArchiveValue::ArchiveWrite( OmHdf5Path path, QHash<SEGMENT_DATA_TYPE, OmId> & page )
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
 	out.setByteOrder( QDataStream::LittleEndian );
 	out.setVersion(QDataStream::Qt_4_6);
-	out << (*id);
+	out << page;
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
 									   ba.size(), 

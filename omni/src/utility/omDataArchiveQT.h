@@ -10,12 +10,6 @@
 class OmDataArchiveQT
 {
  public:
-	static void ArchiveRead( OmHdf5Path path, OmId * id );
-	static void ArchiveWrite( OmHdf5Path path, OmId * id );
-
-	static void ArchiveRead( OmHdf5Path path, OmSegment * seg);
-	static void ArchiveWrite( OmHdf5Path path, OmSegment * seg);
-
 	static void ArchiveRead( OmHdf5Path path, OmMipChunk * chunk );
 	static void ArchiveWrite( OmHdf5Path path, OmMipChunk * chunk );
 

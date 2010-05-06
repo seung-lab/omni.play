@@ -433,12 +433,12 @@ OmId OmSegmentation::GetNumTopSegments()
 
 bool OmSegmentation::IsSegmentEnabled(OmId id)
 {
-	return mSegmentCache.GetSegmentFromID(id)->IsEnabled();
+	return mSegmentCache.isSegmentEnabled(id);
 }
 
 void OmSegmentation::SetSegmentEnabled(OmId id, bool enable)
 {
-	mSegmentCache.GetSegmentFromID(id)->SetEnabled(enable);
+	mSegmentCache.setSegmentEnabled(id, enable);
 }
 
 const OmIds & OmSegmentation::GetEnabledSegmentIds()
@@ -448,12 +448,12 @@ const OmIds & OmSegmentation::GetEnabledSegmentIds()
 
 bool OmSegmentation::IsSegmentSelected(OmId id)
 {
-	return mSegmentCache.GetSegmentFromID(id)->IsSelected();
+	return mSegmentCache.isSegmentSelected(id);
 }
 
 void OmSegmentation::SetSegmentSelected(OmId id, bool selected)
 {
-	mSegmentCache.GetSegmentFromID(id)->SetSelected(selected);
+	mSegmentCache.setSegmentSelected(id, selected);
 }
 
 void OmSegmentation::SetAllSegmentsSelected(bool selected)

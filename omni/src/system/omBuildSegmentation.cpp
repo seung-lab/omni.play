@@ -62,7 +62,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
 
-	loadDendrogram();
+	//loadDendrogram();
 
 	stopTiming(type);
 }
@@ -100,9 +100,9 @@ void OmBuildSegmentation::loadDendrogram()
 		printf("found dendrogram!\n");
 	}
 
-	//	Vector3 < int > dSize = hdf5reader->dataset_get_dims( fpath );
-	//	printf("dendrogram is %d x %d\n", dSize.x, dSize.y );
-
+	Vector3 < int > dSize = hdf5reader->dataset_get_dims( fpath );
+	printf("dendrogram is %d x %d\n", dSize.x, dSize.y );
+	/*
 	QString dendTextFileName = "/Users/purcaro/Omni/purcaro_testing/d/dend.txt";
 
 	if (!QFile::exists( dendTextFileName )) {
@@ -129,6 +129,7 @@ void OmBuildSegmentation::loadDendrogram()
 
 		parent->Join(child, threshold);
 	}
+	*/
 }
 
 

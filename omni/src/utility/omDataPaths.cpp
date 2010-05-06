@@ -1,21 +1,21 @@
 #include "utility/omDataPaths.h"
 
-OmHdf5Path OmDataPaths::getSegmentPath( OmId segmentationID, OmId segmentID)
+OmHdf5Path OmDataPaths::getSegmentPagePath( OmId segmentationID, const quint32 pageNum )
 {
-        QString p = QString("segmentations/segmentation%1/segments/%2")
+        QString p = QString("segmentations/segmentation%1/segment_page%2")
 		.arg( segmentationID )
-		.arg(segmentID);
+		.arg( pageNum );
 
 	OmHdf5Path path;
 	path.setPathQstr(p);
 	return path;
 }
 
-OmHdf5Path OmDataPaths::getSegmentValuePath( OmId segmentationID, SEGMENT_DATA_TYPE value )
+OmHdf5Path OmDataPaths::getValuePagePath( OmId segmentationID, const quint32 pageNum )
 {
-	QString p = QString( "segmentations/segmentation%1/values/%2" )
+	QString p = QString( "segmentations/segmentation%1/value_page%2" )
 		.arg( segmentationID )
-		.arg( value);
+		.arg( pageNum );
 
         OmHdf5Path path;
         path.setPathQstr( p );

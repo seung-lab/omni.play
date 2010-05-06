@@ -1,9 +1,12 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "utility/omHdf5Path.h"
-#include "utility/omDataArchiveQT.h"
+#include "utility/omDataArchiveSegment.h"
+#include "utility/omDataArchiveValue.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "utility/omDataPaths.h"
+
+static const quint32 divSize = 10000;
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -34,13 +37,26 @@ OmSegment* OmSegmentCacheImpl::AddSegment()
 	return AddSegment( getNextValue() );
 }
 
+inline quint32 OmSegmentCacheImpl::getSegmentPageNum( const OmId segID )
+{
+	return segID / divSize;
+}
+
+inline quint32 OmSegmentCacheImpl::getValuePageNum( const SEGMENT_DATA_TYPE value )
+{
+	return value / divSize;
+}
+
 OmSegment* OmSegmentCacheImpl::AddSegment(SEGMENT_DATA_TYPE value)
 {
-	const OmId segID = getNextSegmentID();
+	OmId segID = getNextSegmentID();
+
+	quint32 segPageNum = getSegmentPageNum(segID);
+	quint32 valuePageNum = getValuePageNum(value);
 
 	OmSegment* seg = new OmSegment( segID, value, mParentCache);
-	mSegIdToSegPtrHash[ segID ] = seg;
-	mValueToSegIdHash[value] = segID;
+	mSegIdToSegPtrHash[ segPageNum ][segID] = seg;
+	mValueToSegIdHash[ valuePageNum ][value] = segID;
 
 	if (mMaxValue < value) {
 		mMaxValue = value;
@@ -67,18 +83,28 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const SegmentDataSet & data_values
         }
 }
 
+bool OmSegmentCacheImpl::doesValuePageExist( const quint32 valuePageNum )
+{
+	OmHdf5Path path = OmDataPaths::getValuePagePath( getSegmentationID(), valuePageNum );
+	return OmProjectData::GetProjectDataReader()->dataset_exists( path );
+}
+
 bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value )
 {
 	if (0 == value) {	// Can't look up value 0 or hdf5 goes crazy in the head.
 		return false;
 	}
 
-	if( mValueToSegIdHash.contains( value ) ){
-		return true;
+	const quint32 valuePageNum = getValuePageNum(value);
+
+	if( !mValueToSegIdHash.contains( valuePageNum ) ){
+		if( !doesValuePageExist( valuePageNum ) ){
+			return false;
+		}
+		LoadValuePage( valuePageNum );
 	}
 
-	bool dataExists = OmProjectData::GetProjectDataReader()->dataset_exists( getValuePath(value) );
-	if( dataExists ) {
+	if( mValueToSegIdHash.value( valuePageNum ).contains( value ) ){
 		return true;
 	}
 
@@ -111,12 +137,13 @@ OmSegment* OmSegmentCacheImpl::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
 		return NULL;
 	}
 
-	OmId segmentID;
-	if (!mValueToSegIdHash.contains(value)) {
-		segmentID = LoadValue(value);
+	const quint32 valuePageNum = getValuePageNum(value);
+
+	if (!mValueToSegIdHash.contains(valuePageNum)) { // page should already be there...
+		LoadValuePage( valuePageNum );
 	}
 
-	segmentID = mValueToSegIdHash.value(value);
+	OmId segmentID = mValueToSegIdHash.value(valuePageNum).value(value);
 
 	return GetSegmentFromID(segmentID);
 }
@@ -127,12 +154,13 @@ OmSegment* OmSegmentCacheImpl::GetSegmentFromID(OmId segmentID)
 		return NULL;
 	}
 
-	if (!mSegIdToSegPtrHash.contains(segmentID)) {
-		OmSegment * segment = LoadSegment( segmentID );
-		return segment;
+	const quint32 pageNum = getSegmentPageNum(segmentID);
+
+	if (!mSegIdToSegPtrHash.contains( pageNum )){
+		LoadSegmentPage( pageNum );
 	}
 
-	return mSegIdToSegPtrHash.value(segmentID);
+	return mSegIdToSegPtrHash.value(pageNum).value(segmentID);
 }
 
 OmId OmSegmentCacheImpl::GetNumSegments()
@@ -154,54 +182,6 @@ OmId OmSegmentCacheImpl::GetNumTopSegments()
 quint32 OmSegmentCacheImpl::numberOfSelectedSegments()
 {
 	return mSelectedSet.size();
-}
-
-OmSegment* OmSegmentCacheImpl::LoadSegment(OmId segmentID)
-{
-	OmSegment * seg = doLoadSegment(segmentID);
-	mSegIdToSegPtrHash[segmentID] = seg;
-	return seg;
-}
-
-OmId OmSegmentCacheImpl::LoadValue(SEGMENT_DATA_TYPE value)
-{
-	OmId segmentID = doLoadValue(value);
-	mValueToSegIdHash[value] = segmentID;
-	return segmentID;
-}
-
-OmSegment* OmSegmentCacheImpl::doLoadSegment(OmId segmentID)
-{
-	OmSegment * segment = new OmSegment(mParentCache);
-	OmDataArchiveQT::ArchiveRead(getSegmentPath(segmentID), segment);
-	return segment;
-}
-
-OmId OmSegmentCacheImpl::doLoadValue(SEGMENT_DATA_TYPE value)
-{
-        OmId id;
-	OmDataArchiveQT::ArchiveRead(getValuePath(value), &id);
-	return id;
-}
-
-OmHdf5Path OmSegmentCacheImpl::getValuePath( SEGMENT_DATA_TYPE value )
-{
-	return OmDataPaths::getSegmentValuePath( getSegmentationID(), value );
-}
-
-OmHdf5Path OmSegmentCacheImpl::getValuePath( OmSegment * seg )
-{
-	return OmDataPaths::getSegmentValuePath( getSegmentationID(), seg->getValue() );
-}
-
-OmHdf5Path OmSegmentCacheImpl::getSegmentPath( OmId segmentID )
-{
-	return OmDataPaths::getSegmentPath( getSegmentationID(), segmentID);
-}
-
-OmHdf5Path OmSegmentCacheImpl::getSegmentPath( OmSegment * seg )
-{
-	return OmDataPaths::getSegmentPath( getSegmentationID(), seg->GetId() );
 }
 
 OmIds & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
@@ -349,9 +329,7 @@ void OmSegmentCacheImpl::flushDirtySegments()
 		printf("flushing all segment metadata; please wait...");
 		time(&time_start);
 
-		foreach( OmSegment* seg, mSegIdToSegPtrHash ){
-			Save( seg );
-		}
+		SavePages();
 
 		time(&time_end);
 		time_dif = difftime(time_end, time_start);
@@ -360,9 +338,8 @@ void OmSegmentCacheImpl::flushDirtySegments()
 
 		needToFlush = false;
 	} else {
-		foreach( OmSegment* seg, dirtySegments ){
-			Save( seg );
-		}
+
+		SavePages();
 		
 		dirtySegments.clear();
 	}
@@ -463,15 +440,49 @@ void OmSegmentCacheImpl::clearCaches( OmSegment * seg )
 	cacheRootNodeToAllChildrenValues.remove( seg->GetId() );
 }
 
-void OmSegmentCacheImpl::Save( OmSegment * seg )
+void OmSegmentCacheImpl::SavePages()
 {
-	OmDataArchiveQT::ArchiveWrite( getSegmentPath( seg ), seg);
+	// TODO: only save dirty pages
 
-	OmId id = seg->GetId();
-	OmDataArchiveQT::ArchiveWrite( getValuePath( seg ), &id );
+	foreach( quint32 segPageNum, mSegIdToSegPtrHash.keys() ){
+		QHash<OmId, OmSegment*> page = mSegIdToSegPtrHash.value( segPageNum );
+		OmDataArchiveSegment::ArchiveWrite( OmDataPaths::getSegmentPagePath( getSegmentationID(), segPageNum ),
+					       page );
+	}
+
+	foreach( quint32 valuePageNum, mValueToSegIdHash.keys() ){
+		QHash<SEGMENT_DATA_TYPE, OmId> page = mValueToSegIdHash.value( valuePageNum );
+		OmDataArchiveValue::ArchiveWrite( OmDataPaths::getValuePagePath( getSegmentationID(), valuePageNum ),
+					       page );
+	}
 }
 
 void OmSegmentCacheImpl::turnBatchModeOn( const bool batchMode )
 {
 	amInBatchMode = batchMode;
+
+	if( batchMode ){
+		printf("segment cache batch mode on\n");
+	} else {
+		printf("segment cache batch mode off\n");
+	}
+}
+
+void OmSegmentCacheImpl::LoadSegmentPage( const quint32 segPageNum )
+{
+	QHash<OmId, OmSegment*> page;
+	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( getSegmentationID(), segPageNum ),
+				      page );
+	foreach( OmSegment * seg, page ){
+		seg->mCache = mParentCache;
+	}
+	mSegIdToSegPtrHash[ segPageNum ] = page;
+}
+
+void OmSegmentCacheImpl::LoadValuePage( const quint32 valuePageNum )
+{
+	QHash<SEGMENT_DATA_TYPE, OmId> page;
+	OmDataArchiveValue::ArchiveRead( OmDataPaths::getValuePagePath( getSegmentationID(), valuePageNum ),
+				      page );
+	mValueToSegIdHash[ valuePageNum ] = page;
 }
