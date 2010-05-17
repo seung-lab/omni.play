@@ -35,10 +35,3 @@ operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
 	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
 	return out;
 }
-
-uint qHash(const OmMipSegmentDataCoord& c)
-{
-	return qHash( QString("%1_%2")
-		      .arg(c.DataValue)
-		      .arg(qHash(c.MipChunkCoord)));
-}

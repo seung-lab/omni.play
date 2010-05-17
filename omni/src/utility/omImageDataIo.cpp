@@ -220,35 +220,6 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	return data;
 }
 
-bool OmImageDataIo::are_file_names_valid( QFileInfoList sourceFilenamesAndPaths )
-{
-	if( sourceFilenamesAndPaths.empty() ){
-		return false;
-	}
-
-	foreach( QFileInfo file, sourceFilenamesAndPaths ){
-		if( !file.exists() ){
-			return false;
-		}
-
-		switch ( om_imagedata_parse_image_type( file.filePath() )){
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-		case HDF5_TYPE:
-			break;
-
-		default:
-			printf("invalid file: %s\n", qPrintable(file.filePath()) );
-			return false;
-		}
-	}
-
-	return true;
-}
-
-
 /*
  *	Destination extent is data extent when not specified.
  */

@@ -34,7 +34,7 @@ OmSegmentMergeAction::OmSegmentMergeAction(OmId mergeSegmentationId)
 	}
 
 	//TODO: prompt user for destination segment?
-	mDestinationSegmentId = base->GetId();
+	mDestinationSegmentId = base->getValue();
 
 }
 

@@ -1,7 +1,9 @@
 #ifndef OM_SEGMENT_CACHE_IMPL_H
 #define OM_SEGMENT_CACHE_IMPL_H
 
-#include "omSegmentCache.h"
+#include "segment/omSegmentCache.h"
+#include "utility/DynamicTree.h"
+#include <QMap>
 
 class OmSegmentCacheImpl {
 public:
@@ -26,14 +28,14 @@ public:
 	void setSegmentEnabled( OmId segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmIds& GetEnabledSegmentIdsRef();
-	SegmentDataSet GetEnabledSegmentValues();
 
 	bool isSegmentSelected( OmId segID );
+	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmId segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmIds& GetSelectedSegmentIdsRef();
-	SegmentDataSet GetSelectedSegmentValues();
 	quint32 numberOfSelectedSegments();
+	bool AreSegmentsSelected();
 
 	QString getSegmentName( OmId segID );
 	void setSegmentName( OmId segID, QString name );
@@ -43,35 +45,39 @@ public:
 
 	OmId getSegmentationID();
 
-	virtual void addToDirtySegmentList( OmSegment* seg);
-	virtual void flushDirtySegments();
-
-	SegmentDataSet getValues( OmSegment * segment  );
-	OmIds getIDs( OmSegment * segment );
+	void addToDirtySegmentList( OmSegment* seg);
+	void flushDirtySegments();
 
 	OmSegment * findRoot( OmSegment * segment );
 
 	void splitChildLowestThreshold( OmSegment * segment );
-
-	void Save( OmSegment * seg );
+	void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+	void splitChildFromParent( OmSegment * child );
 
 	void turnBatchModeOn(const bool batchMode);
+	
+	void Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold);
+	void clearAllJoins();
+
+	quint32 getPageSize() { return mPageSize; }
+
+	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
+					QList< OmSegment* > segmentsToDraw );
+	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
+	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+
+	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, const bool showOnlySelectedSegments );
+
+	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
+			       const int size, const float stopPoint );
 
  private:
-	
 	bool mAllSelected;
 	bool mAllEnabled;
 
-	OmId getNextSegmentID();
-	OmId mMaxSegmentID;
-
 	SEGMENT_DATA_TYPE getNextValue();
 	SEGMENT_DATA_TYPE mMaxValue;
-
-	OmIds getIDsHelper( OmSegment * segment );
-	SegmentDataSet getValuesHelper( OmSegment * segment );
-
-	int maxDirtySegmentsBeforeFlushing();
+	quint32 mNumSegs;
 
 	OmSegmentation * mSegmentation;
 
@@ -80,29 +86,48 @@ public:
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
-	void clearCaches( OmSegment * seg );
-	SegmentDataSet cacheOfSelectedSegmentValues;
-	QHash< OmId, OmIds > cacheRootNodeToAllChildrenIDs;
-	QHash< OmId, SegmentDataSet > cacheRootNodeToAllChildrenValues;
-
-	QSet<OmSegment*> dirtySegments;
+	QSet<quint32> dirtySegmentPages;
 
 	OmSegmentCache * mParentCache;
 
 	bool amInBatchMode;
 	bool needToFlush;
 
-	QHash< quint32, QHash<OmId, OmSegment*> > mSegIdToSegPtrHash;
-	QHash< quint32, QHash<SEGMENT_DATA_TYPE, OmId> > mValueToSegIdHash;
-	quint32 getSegmentPageNum( const OmId segID );
+	quint32 mPageSize;
+	QHash< quint32, OmSegment** > mValueToSegPtrHash;
+	QSet< quint32 > validPageNumbers;
+	QSet< quint32 > loadedPageNumbers;
 	quint32 getValuePageNum( const SEGMENT_DATA_TYPE value );
-	bool doesValuePageExist( const quint32 valuePageNum );
 	void LoadValuePage( const quint32 valuePageNum );
-	void LoadSegmentPage( const quint32 segPageNum );
-	void SavePages();
+	void SaveAllPages();
+	void SaveDirtySegmentPages();
+	void doSaveSegmentPage( const quint32 segPageNum );
+	bool mAllPagesLoaded;
+
+	OmSegment* GetSegmentFromValueFast(SEGMENT_DATA_TYPE value);
+
+	QMap< OmMipChunkCoord, QList< OmSegment* > > cacheDirectSegmentList;
+	void clearCaches();
+	void invalidateCachedRootFreshness();
+	void invalidateCachedColorFreshness();
+	quint32 mCachedRootFreshness;
+	quint32 mCachedColorFreshness;
+
+	DynamicTree<SEGMENT_DATA_TYPE> ** tree;
+	void reloadDynamicTree();
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
+
+	void JoinDynamicTree( const OmId, const OmId, const double );
+
+	int clamp(int c) {
+		if (c > 255) {
+			return 255;
+		}
+		return c;
+	}
+
 };
 
 #endif

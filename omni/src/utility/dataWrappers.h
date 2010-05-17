@@ -75,9 +75,7 @@ class SegmentDataWrapper : public DataWrapper
 	const Vector3 < float >& getColor();
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
-	QString getDataValuesForSegment();
 	QString get_original_mapped_data_value();
-	QString chunkListStr();
  private:
 	OmId mSegmentationID;
 };

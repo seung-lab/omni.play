@@ -130,6 +130,8 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegment.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \
+           src/segment/omSegmentIterator.h \
+           src/segment/omSegmentColorizer.h \
            src/segment/omSegmentContextMenu.h \
            src/segment/omSegmentEditor.h \
            src/system/omAction.h \
@@ -162,7 +164,6 @@ HEADERS += lib/strnatcmp.h \
            src/utility/omDataArchiveProject.h \
            src/utility/omDataArchiveQT.h \
            src/utility/omDataArchiveSegment.h \
-           src/utility/omDataArchiveValue.h \
            src/utility/omDataArchiveVmml.h \
            src/utility/omDataPaths.h \
            src/utility/omDataLayer.h \
@@ -216,6 +217,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
            src/gui/inspectors/segInspector.h \
+           src/gui/inspectors/volInspector.h \
            src/gui/inspectors/segObjectInspector.h \
            src/gui/inspectors/ui_chanInspector.h \
            src/gui/preferences/localPreferences2d.h \
@@ -298,6 +300,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegment.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
+           src/segment/omSegmentIterator.cpp \
+           src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentContextMenu.cpp \
            src/segment/omSegmentEditor.cpp \
            src/system/omAction.cpp \
@@ -329,7 +333,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/omDataArchiveProject.cpp \
            src/utility/omDataArchiveQT.cpp \
            src/utility/omDataArchiveSegment.cpp \
-           src/utility/omDataArchiveValue.cpp \
            src/utility/omDataArchiveVmml.cpp \
            src/utility/omDataPaths.cpp \
            src/utility/omDataLayer.cpp \
@@ -379,6 +382,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/inspectors/filObjectInspector.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
            src/gui/inspectors/segInspector.cpp \
+           src/gui/inspectors/volInspector.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \

@@ -12,6 +12,7 @@
 #include "mesh/omMipMeshManager.h"
 #include "voxel/omMipVoxelationManager.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentIterator.h"
 #include "mesh/meshingManager.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
@@ -35,7 +36,6 @@ public:
 	
 	//data mapping
 	OmId GetSegmentIdMappedToValue( SEGMENT_DATA_TYPE value );
-	SegmentDataSet GetValuesMappedToSegmentId( OmId );
 	SEGMENT_DATA_TYPE GetValueMappedToSegmentId( OmId );
 	
 	//data accessor
@@ -84,14 +84,21 @@ public:
 	
 	//drawing
 	void Draw(OmVolumeCuller &);
-	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, 
-				OmVolumeCuller &, const int numSegments);
-	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, OmVolumeCuller &rCuller);
+	void DrawChunkRecursive(const OmMipChunkCoord &, 
+				OmSegmentIterator iter,
+				bool testVis, 
+				OmVolumeCuller &);
+	void DrawChunk(const OmMipChunkCoord &, QList< OmSegment* > segmentsToDraw, OmVolumeCuller &rCuller);
 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
+	void FlushDend();
+	void ReloadDendrogram( const float threshold);
+
+	void ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+			const bool isSegmentation, unsigned char * data );
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy
@@ -101,13 +108,20 @@ protected:
 	
 private:
 	void KillCacheThreads();
-	QList< OmMipChunkCoord > getMipCoordsInFrustrum(OmVolumeCuller & rCuller);
 
 	MeshingManager * mMeshingMan;
 	
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;
 	OmSegmentCache mSegmentCache;
+
+        quint32 * mDend;
+	int mDendSize;
+        float * mDendValues;
+	int mDendValuesSize;
+	int mDendCount;
+
+	friend class OmBuildSegmentation;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

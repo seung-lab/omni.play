@@ -263,6 +263,21 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mMipMeshManager;
 	in >> seg.mSegmentCache;
 
+        QString dendStr = QString("%1dend")
+                        .arg(seg.GetDirectoryPath());
+        QString dendValStr = QString("%1dendValues")
+                        .arg(seg.GetDirectoryPath());
+        OmHdf5Path path;
+
+        path.setPathQstr(dendStr);
+        if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
+        	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &seg.mDendSize);
+		seg.mDendCount = seg.mDendSize / (sizeof(quint32) * 2); 	// * 2 because there are two values.
+
+        	path.setPathQstr(dendValStr);
+        	seg.mDendValues = (float *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &seg.mDendValuesSize);
+	}
+
 	return in;
 }
 
@@ -295,9 +310,10 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc )
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 {
+	out << sc.validPageNumbers;
+
         out << sc.mAllSelected;
         out << sc.mAllEnabled;
-        out << sc.mMaxSegmentID;
         out << sc.mMaxValue;
 
         out << sc.mEnabledSet;
@@ -305,15 +321,19 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 
 	out << sc.segmentCustomNames;
 	out << sc.segmentNotes;
+	
+	out << sc.mPageSize;
+	out << sc.mNumSegs;
 
 	return out;
 }
 
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 {
+	in >> sc.validPageNumbers;
+
         in >> sc.mAllSelected;
         in >> sc.mAllEnabled;
-        in >> sc.mMaxSegmentID;
         in >> sc.mMaxValue;
 
         in >> sc.mEnabledSet;
@@ -321,6 +341,9 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	in >> sc.segmentCustomNames;
 	in >> sc.segmentNotes;
+
+	in >> sc.mPageSize;
+	in >> sc.mNumSegs;
 
 	return in;
 }

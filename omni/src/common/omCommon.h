@@ -12,6 +12,12 @@
 // elimiate VTK warning
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 
+typedef struct {
+	quint8 red;
+	quint8 green;
+	quint8 blue;
+} OmColor;
+
 /** 
  * vmml-related
  */
@@ -24,7 +30,7 @@ typedef vmml::Vector3<float> NormCoord;
 typedef vmml::Vector3<float> SpaceCoord;
 typedef vmml::Vector2<int> ScreenCoord;
 
-uint qHash(const SpaceCoord& c);
+uint qHash(const DataCoord& c);
 
 typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
 typedef vmml::AxisAlignedBoundingBox<float> NormBbox;

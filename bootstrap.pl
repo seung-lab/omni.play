@@ -111,7 +111,7 @@ sub vtk {
     
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
     if ( isMac() ){
-	`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
+	`echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
     } 
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-${profileOn}g -Wall -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
@@ -401,7 +401,7 @@ sub menu {
     print "8 -- Generate scripts\n";
     print "9 -- Build and tar release!\n";
     print "10 -- Experimental builds...\n";
-    print "11 -- Ubuntu 9.10-64bit library apt-gets...\n\n";
+    print "11 -- Ubuntu library apt-gets...\n\n";
     my $max_answer = 11;
 
     while( 1 ){
@@ -591,7 +591,7 @@ sub doUbuntuAptGets{
     }
 
     print `sudo apt-get -y install $args`;
-    print "Done with the Ubuntu 9.10 apt-gets! \n\n";
+    print "Done with the Ubuntu apt-gets! \n\n";
 }
 
 dealWithCluster();

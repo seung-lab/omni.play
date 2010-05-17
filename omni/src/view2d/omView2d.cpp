@@ -27,8 +27,6 @@
 #include <QPainter>
 #include <QGLFramebufferObject>
 
-#define DEBUG 0
-
 static QGLWidget *sharedwidget = NULL;
 
 /**
@@ -1281,28 +1279,6 @@ void OmView2d::Draw()
 
 	TextureDraw(mTextures);
 	mTextures.clear ();
-}
-
-
-void OmTextureIDUpdate(QExplicitlySharedDataPointer < OmTextureID > gotten_id, const OmTileCoord tileCoord, const GLuint texID,
-		       const int size, int x, int y, const OmIds & containedIds, void *texture, int flags)
-{
-	//debug("FIXME", << "in OmTextureIDUpdate" << endl;
-
-	if (gotten_id->texture) {
-		//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
-		free (gotten_id->texture);
-	}
-	//debug ("genone", "updating texture: %x to be %x\n", gotten_id->texture, texture);
-
-	gotten_id->mTileCoordinate = tileCoord;
-	gotten_id->textureID = texID;
-	gotten_id->mem_size = size;
-	gotten_id->mIdSet = containedIds;
-	gotten_id->flags = flags;
-	gotten_id->texture = texture;
-	gotten_id->x = x;
-	gotten_id->y = y;
 }
 
 int OmView2d::GetDepth(const OmTileCoord & key)

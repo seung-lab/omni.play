@@ -10,6 +10,7 @@ OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
 {
 	mImpl = new OmSegmentCacheImpl(segmentation, this);
 	mSegmentation = segmentation;
+	mPageSize = mImpl->getPageSize();
 }
 
 OmSegmentCache::~OmSegmentCache()
@@ -56,7 +57,7 @@ bool OmSegmentCache::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value )
 bool OmSegmentCache::IsSegmentValid(OmId seg)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->IsSegmentValid(seg);
+	return mImpl->isValueAlreadyMappedToSegment(seg);
 }
 
 OmSegment* OmSegmentCache::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
@@ -68,7 +69,7 @@ OmSegment* OmSegmentCache::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
 OmSegment* OmSegmentCache::GetSegmentFromID(OmId segmentID)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->GetSegmentFromID( segmentID );
+	return mImpl->GetSegmentFromValue( segmentID );
 }
 
 OmId OmSegmentCache::GetNumSegments()
@@ -81,6 +82,12 @@ OmId OmSegmentCache::GetNumTopSegments()
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->GetNumTopSegments();
+}
+
+bool OmSegmentCache::AreSegmentsSelected()
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->AreSegmentsSelected();
 }
 
 quint32 OmSegmentCache::numberOfSelectedSegments()
@@ -137,18 +144,6 @@ void OmSegmentCache::setSegmentSelected( OmId segID, bool isSelected )
 	mImpl->setSegmentSelected( segID, isSelected );
 }
 
-SegmentDataSet OmSegmentCache::GetSelectedSegmentValues()
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->GetSelectedSegmentValues();
-}
-
-SegmentDataSet OmSegmentCache::GetEnabledSegmentValues()
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->GetEnabledSegmentValues();
-}
-
 void OmSegmentCache::setSegmentName( OmId segID, QString name )
 {
 	QMutexLocker locker( &mMutex );
@@ -185,26 +180,58 @@ void OmSegmentCache::flushDirtySegments()
 	mImpl->flushDirtySegments();
 }
 
-SegmentDataSet OmSegmentCache::getValues( OmSegment * segment )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->getValues( segment );
-}
-
-OmIds OmSegmentCache::getIDs( OmSegment * segment )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->getIDs( segment );
-}
-
 OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->findRoot( segment );
 }
 
+void OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+{
+	QMutexLocker locker( &mMutex );
+	mImpl->splitTwoChildren(seg1, seg2);
+}
+
+
 void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->splitChildLowestThreshold( segment );
+}
+
+void OmSegmentCache::clearAllJoins()
+{
+	QMutexLocker locker( &mMutex );
+	mImpl->clearAllJoins();
+}
+
+void OmSegmentCache::setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
+						QList< OmSegment* > segmentsToDraw )
+{
+	QMutexLocker locker( &mMutex );
+	mImpl->setSegmentListDirectCache( chunkCoord, segmentsToDraw );
+}
+
+bool OmSegmentCache::segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->segmentListDirectCacheHasCoord( chunkCoord );
+}
+
+QList< OmSegment* > OmSegmentCache::getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->getSegmentListDirectCache( chunkCoord );
+}
+
+void OmSegmentCache::Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold)
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->Join(parent, childUnknownLevel, threshold);
+}
+
+void OmSegmentCache::reloadDendrogram( const quint32 * dend, const float * dendValues, 
+				       const int size, const float stopPoint )
+{	QMutexLocker locker( &mMutex );
+	return mImpl->reloadDendrogram( dend, dendValues, size, stopPoint );
 }

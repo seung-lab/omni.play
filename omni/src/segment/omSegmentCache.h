@@ -8,6 +8,7 @@
 #include <QSet>
 #include <QHash>
 #include <QMutex>
+#include <QColor>
 
 class OmSegment;
 class OmSegmentation;
@@ -38,14 +39,13 @@ public:
 	void setSegmentEnabled( OmId segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmIds& GetEnabledSegmentIdsRef();
-	SegmentDataSet GetEnabledSegmentValues();
 
 	bool isSegmentSelected( OmId segID );
 	void setSegmentSelected( OmId segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmIds& GetSelectedSegmentIdsRef();
-	SegmentDataSet GetSelectedSegmentValues();
 	quint32 numberOfSelectedSegments();
+	bool AreSegmentsSelected();
 
 	QString getSegmentName( OmId segID );
 	void setSegmentName( OmId segID, QString name );
@@ -58,19 +58,33 @@ public:
 	void addToDirtySegmentList( OmSegment* seg);
 	void flushDirtySegments();
 
-	SegmentDataSet getValues( OmSegment * segment  );
-	OmIds getIDs( OmSegment * segment );
-
 	OmSegment * findRoot( OmSegment * segment );
 
 	void splitChildLowestThreshold( OmSegment * segment );
+        void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+
+	void Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold);
+	void clearAllJoins();
+
+	quint32 getPageSize() { return mPageSize; }
+
+	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
+					QList< OmSegment* > segmentsToDraw );
+	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
+	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+
+
+	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
+			       const int size, const float stopPoint );
 
 private:
 	QMutex mMutex;
 	
 	OmSegmentCacheImpl * mImpl;
 	OmSegmentation * mSegmentation;
+	quint32 mPageSize;
 
+	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 };

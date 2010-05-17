@@ -119,8 +119,6 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 void OmProject::Close()
 {
 	//delete all singletons
-
-
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();
 	OmEventManager::Delete();
@@ -131,6 +129,8 @@ void OmProject::Close()
 	//close project data
 	OmProjectData::Close();
 	OmProjectData::Delete();
+
+	//delete(Instance());
 }
 
 

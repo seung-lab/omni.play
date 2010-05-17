@@ -876,6 +876,20 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 		return;
 	}
 
-	OmSegment * seg = sdw->getSegment();
-	seg->splitChildLowestThreshold();
+	if( SEGMENTATION != mVolumeType ){
+		return;
+	}
+
+	OmSegment * seg1 = sdw->getSegment();
+
+	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
+	OmId segmentationID = mImageId;
+	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
+
+	OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
+	OmSegment * seg2 = segmentation.GetSegment(segid);
+		
+	seg1->splitTwoChildren(seg2);
+
+	OmStateManager::SetSystemModePrev();
 }

@@ -35,7 +35,6 @@ public:
 		    const int &size, 
 		    const int x, 
 		    const int y, 
-		    const OmIds &containedIds, 
 		    OmThreadedCachingTile *cache = NULL, 
 		    void* texture = NULL, 
 		    int flags = 0);
@@ -45,16 +44,12 @@ public:
 	GLuint GetTextureID() const { return textureID; }
 	int GetSize() const { return mem_size; }
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
-	
-	const OmIds GetIds() const { return mIdSet; }
-	bool FindId(OmId f_id);
 		
 	void Flush();
 
 	OmTileCoord mTileCoordinate;
 	GLuint textureID;
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
-	OmIds mIdSet;
 	void * texture;	// Free this once the texture is built.
 	int flags;
 	int x;

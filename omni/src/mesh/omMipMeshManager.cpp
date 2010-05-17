@@ -1,9 +1,7 @@
+#include "common/omDebug.h"
 
-#include "omMipMeshManager.h"
-
-#include "omMipMesh.h"
-
-#include "segment/omSegmentCache.h"
+#include "mesh/omMipMeshManager.h"
+#include "mesh/omMipMesh.h"
 
 #include "volume/omMipChunkCoord.h"
 #include "volume/omDrawOptions.h"
@@ -14,7 +12,8 @@
 
 #include <vtkImageData.h>
 #include <QGLContext>
-#include "common/omDebug.h"
+
+
 
 /////////////////////////////////
 ///////
@@ -109,56 +108,31 @@ bool OmMipMeshManager::InitializeFetchThread()
 /////////////////////////////////
 ///////          Draw
 
-void OmMipMeshManager::DrawMeshes(OmSegmentCache * rSegMgr,
-				  const OmBitfield & drawOps,
+void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
 				  const OmMipChunkCoord & mipCoord, 
-				  const SegmentDataSet & rRelvDataVals)
+				  QList< OmSegment *> segmentsToDraw )
 {
-	bool created = false;
-	bool wasNotCreated = false;
-	//debug("view3d", "in %s, about to draw %d chunks\n", __FUNCTION__, rRelvDataVals.size() );
-
-	//for all relevent data values in chunk
-	foreach( SEGMENT_DATA_TYPE val, rRelvDataVals ){
+	foreach( OmSegment * seg, segmentsToDraw ){
 
 		//get pointer to mesh
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		GetMesh(p_mesh, OmMipMeshCoord(mipCoord, val));
+		GetMesh(p_mesh, OmMipMeshCoord(mipCoord, seg->getValue() ));
 
-		//if null pointer then skip to next mesh
-		if (NULL == p_mesh)
+		if (NULL == p_mesh) {
 			continue;
-
-		//determine which segment this data values belongs to
-		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
-		debug("segment", "drawing: %u:%u\n", r_segment->GetId(), val);
-
-		//apply segment color
-		r_segment->ApplyColor(drawOps);
-
-		//draw mesh
-		glPushName(r_segment->GetId());
-		glPushName(OMGL_NAME_MESH);
-
-		bool wasCreated;
-		if (created) {
-			wasCreated = p_mesh->Draw(false);
-                        if (!wasCreated) {
-                        	wasNotCreated = true;
-                        }
-		} else {
-			wasCreated = p_mesh->Draw(true);
-			if (wasCreated) {
-				created = true;
-			}
 		}
 
+		//apply segment color
+		seg->ApplyColor(drawOps);
+
+		//draw mesh
+		glPushName(seg->getValue());
+		glPushName(OMGL_NAME_MESH);
+
+		p_mesh->Draw(true);
+
 		glPopName();
 		glPopName();
 
-	}
-
-	if (wasNotCreated) {
-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 	}
 }

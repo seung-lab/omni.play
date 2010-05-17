@@ -50,10 +50,6 @@ public:
 	
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
-	friend uint qHash(const OmMipChunkCoord & c);
 };
-
-uint qHash(const OmMipChunkCoord & c);
-
 
 #endif

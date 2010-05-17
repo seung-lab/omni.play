@@ -11,7 +11,8 @@
 
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
                                              const QGLContext * shareContext)
-:OmTile(viewtype, voltype, image_id, vol), TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
+  : OmTile(viewtype, voltype, image_id, vol), 
+    TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
 {
 	// omView2d passes in its own context
 
@@ -26,7 +27,6 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
 {
-	//std::cerr << __FUNCTION__ << endl;
 }
 
 void OmThreadedCachingTile::GetTextureID(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)

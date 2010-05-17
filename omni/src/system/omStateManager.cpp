@@ -31,6 +31,7 @@ OmStateManager::OmStateManager()
 	mpUndoStack = NULL;
 
 	mSystemMode = NAVIGATION_SYSTEM_MODE;
+	mSystemModePrev = NAVIGATION_SYSTEM_MODE;
 	mToolMode = ZOOM_MODE;
 
 	//view slice data
@@ -451,6 +452,11 @@ OmSystemMode OmStateManager::GetSystemMode()
 	return Instance()->mSystemMode;
 }
 
+OmSystemMode OmStateManager::GetSystemModePrev()
+{
+	return Instance()->mSystemModePrev;
+}
+
 void OmStateManager::SetSystemMode(const OmSystemMode new_mode)
 {
 	if (new_mode == Instance()->mSystemMode) {
@@ -465,7 +471,10 @@ void OmStateManager::SetSystemMode(const OmSystemMode new_mode)
 
 void OmStateManager::SetSystemModePrev()
 {
+	OmSystemMode old_mode = Instance()->mSystemMode;
 	Instance()->mSystemMode = Instance()->mSystemModePrev;
+	Instance()->mSystemModePrev = old_mode;
+
 	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
 }
 

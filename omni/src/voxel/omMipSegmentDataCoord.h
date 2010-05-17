@@ -44,6 +44,4 @@ class OmMipSegmentDataCoord {
 
 };
 
-uint qHash(const OmMipSegmentDataCoord& c);
-
 #endif

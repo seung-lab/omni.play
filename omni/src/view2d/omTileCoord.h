@@ -31,9 +31,6 @@ public:
 	
 	friend QDataStream &operator<<(QDataStream & out, const OmTileCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmTileCoord & c );
-
 };
-
-uint qHash(const OmTileCoord& c );
 
 #endif

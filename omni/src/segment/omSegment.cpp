@@ -10,60 +10,53 @@
 #include "utility/stringHelpers.h"
 #include "segment/omSegmentCache.h"
 #include "utility/omDataPaths.h"
+#include "gui/toolbars/dendToolbar.h"
 
-OmSegment::OmSegment(OmId segmentID, SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
-	: mID( segmentID), mValue(value), mCache(cache)
+OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
+	: mValue(value), mCache(cache)
 {
 	assert(cache && "must have cache in the segments");
 	SetInitialColor();
 	parentSegID = 0;
+
+	mParent = NULL;
+
+	mCachedRoot = NULL;
+	mCachedRootFreshness = 0;
+
+	mCachedColor.red = 0;
+	mCachedColor.green = 0;
+	mCachedColor.blue = 0;
+	mCachedColorFreshness = 0;
+}
+
+OmSegment::OmSegment(OmSegmentCache* cache)
+	:  mCache(cache)
+{
+	mParent = NULL;
+	mCachedRoot = NULL;
+	mCachedRootFreshness = 0;
 }
 
 void OmSegment::Join(OmSegment * childUnknownLevel, double threshold )
 {
-	OmSegment * childRoot = mCache->findRoot( childUnknownLevel );
-
-	if( GetId() == childRoot->GetId() ){
-		assert(0);
-	}
-	
-	segmentsJoinedIntoMe.insert( childRoot->GetId() );
-	childRoot->setParent(this, threshold);
-
-	mCache->addToDirtySegmentList(this);
+	mCache->Join( this, childUnknownLevel, threshold );
 }
 
-void OmSegment::setParent(OmSegment * segment, double threshold)
+void OmSegment::setParent(OmSegment * parent, double threshold)
 {
 	if( parentSegID ){
 		assert(0);
 	}
 
-	parentSegID = segment->GetId();
+	parentSegID = parent->getValue();
+	mParent = parent;
 	mThreshold = threshold;
-
-	mCache->addToDirtySegmentList(this);
-}
-
-void OmSegment::clearParent()
-{
-	parentSegID = 0;
-	mThreshold = 0;
 }
 
 SEGMENT_DATA_TYPE OmSegment::getValue()
 {
 	return mValue;
-}
-
-OmIds OmSegment::getIDs()
-{
-	return mCache->getIDs( this );
-}
-
-SegmentDataSet OmSegment::getValues()
-{
-	return mCache->getValues( this );
 }
 
 /////////////////////////////////
@@ -130,29 +123,24 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 
 const Vector3 < float >& OmSegment::GetColor()
 {
-	if( parentSegID ){
+	if(parentSegID) {
 		return mCache->findRoot( this )->GetColor();
 	}
 
 	return mColor;
 }
 
-OmId OmSegment::GetId()
-{
-	return mID;
-}
-
 QString OmSegment::GetNote()
 {
-	QString customNote = mCache->getSegmentNote( GetId() );
+	QString customNote = mCache->getSegmentNote( getValue() );
 
 	if( parentSegID ){
 		customNote += "Parent: " + QString::number(parentSegID) + "; ";
 	}
 
 	if( !segmentsJoinedIntoMe.empty() ){
-		customNote += "Children: ";
-		customNote += StringHelpers::getStringFromIDset(segmentsJoinedIntoMe);
+                customNote += "Number of Children: ";
+                customNote += QString::number( segmentsJoinedIntoMe.size() );
 		customNote += "; ";
 	}
 
@@ -161,52 +149,42 @@ QString OmSegment::GetNote()
 
 void OmSegment::SetNote(QString note)
 {
-	mCache->setSegmentNote( GetId(), note );
+	mCache->setSegmentNote( getValue(), note );
 }
 
 QString OmSegment::GetName()
 {
-	return mCache->getSegmentName( GetId() );
+	return mCache->getSegmentName( getValue() );
 }
 
 void OmSegment::SetName(QString name)
 {
-	mCache->setSegmentName( GetId(), name );
+	mCache->setSegmentName( getValue(), name );
 }
 
 bool OmSegment::IsSelected()
 {
-	return mCache->isSegmentSelected( GetId() );
+	return mCache->isSegmentSelected( getValue() );
 }
 
 void OmSegment::SetSelected( bool isSelected )
 {
-	mCache->setSegmentSelected( GetId(), isSelected );
+	mCache->setSegmentSelected( getValue(), isSelected );
 }
 
 bool OmSegment::IsEnabled()
 {
-	return mCache->isSegmentEnabled( GetId() );
+	return mCache->isSegmentEnabled( getValue() );
 }
 
 void OmSegment::SetEnabled(bool isEnabled)
 {
-	mCache->setSegmentEnabled( GetId(), isEnabled );
+	mCache->setSegmentEnabled( getValue(), isEnabled );
 }
 
 OmId OmSegment::getSegmentationID()
 {
 	return mCache->getSegmentationID();
-}
-
-void OmSegment::updateChunkCoordInfo( const OmMipChunkCoord & mipCoord )
-{
-	chunks.insert( mipCoord );
-}
-
-QSet< OmMipChunkCoord > & OmSegment::getChunks()
-{
-	return chunks;
 }
 
 OmId OmSegment::getParent()
@@ -219,12 +197,12 @@ void OmSegment::splitChildLowestThreshold()
 	mCache->splitChildLowestThreshold( this );
 }
 
+void OmSegment::splitTwoChildren(OmSegment * seg)
+{
+	mCache->splitTwoChildren(this, seg);
+}
+
 double OmSegment::getThreshold()
 {
 	return mThreshold;
-}
-
-void OmSegment::removeChild( OmSegment * segment )
-{
-	segmentsJoinedIntoMe.remove( segment->GetId() );
 }

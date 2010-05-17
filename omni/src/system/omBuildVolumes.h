@@ -14,9 +14,11 @@ class OmBuildVolumes
 
  protected:
 	bool checkSettingsAndTime(QString type);
+	void startTiming(QString type);
 	void stopTiming(QString type);
 
-	QString getSelectedHDF5file();
+
+	bool canDoLoadDendrogram();
 
 	QFileInfoList mFileNamesAndPaths;
 
@@ -26,6 +28,8 @@ class OmBuildVolumes
 	time_t time_start;
 	time_t time_end;
 	double time_dif;
+
+	bool are_file_names_valid();
 };
 
 #endif

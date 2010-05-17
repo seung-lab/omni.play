@@ -17,13 +17,11 @@ class OmSegmentCache;
 class OmSegment {
 
 public:
-	OmSegment(OmId segmentID, SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
-	OmSegment() {}
-
-	void updateChunkCoordInfo( const OmMipChunkCoord & mipCoord );
-	QSet< OmMipChunkCoord > & getChunks();
+	OmSegment(SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
+	OmSegment(OmSegmentCache * cache);
 
 	void splitChildLowestThreshold();
+	void splitTwoChildren(OmSegment * seg);
 
 	//accessors
 	const Vector3<float>& GetColor();
@@ -33,10 +31,7 @@ public:
 	void ApplyColor(const OmBitfield &drawOps);
 
 	SEGMENT_DATA_TYPE getValue();
-	SegmentDataSet getValues();
-	OmIds getIDs();
 
-	OmId GetId();
 	QString GetNote();
 	void SetNote(QString);
 	QString GetName();
@@ -48,31 +43,34 @@ public:
 
 	void Join(OmSegment *, double threshold = 0);
 	void setParent(OmSegment * segment, double threshold);
-	void clearParent();
 	OmId getParent();
-	void removeChild( OmSegment * segment );
 
 	OmId getSegmentationID();
 	double getThreshold();
 
 private:
-	OmId mID;
+
 	SEGMENT_DATA_TYPE mValue;
 	OmSegmentCache * mCache;
 
 	Vector3<float> mColor;
 
-	OmIds segmentsJoinedIntoMe;
+	QList<OmId> segmentsJoinedIntoMe;
 	OmId parentSegID;
+	OmSegment * mParent;
 	double mThreshold;
+
+	OmSegment * mCachedRoot;
+	quint32 mCachedRootFreshness;
+
+	OmColor mCachedColor;
+	quint32 mCachedColorFreshness;
 	
-	QSet< OmMipChunkCoord > chunks;
-		
 	void SetInitialColor();
 
 	friend class OmSegmentCacheImpl;
-	friend QDataStream &operator<<(QDataStream & out, const QHash<OmId, OmSegment*> & page );
-	friend QDataStream &operator>>(QDataStream & in, QHash<OmId, OmSegment*> & page );
+	friend class OmDataArchiveSegment;
+	friend class OmSegmentIterator;
 };
 
 #endif

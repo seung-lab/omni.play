@@ -44,6 +44,9 @@ public:
 	void EditModeMouseDoubleClick(QMouseEvent *event);
 	void EditModeMouseWheel(QWheelEvent *event);
 	void EditModeKeyPress(QKeyEvent *event);
+
+	//dend mode
+	void DendModeMouseReleased(QMouseEvent *event);
 	
 	
 	//camera movement

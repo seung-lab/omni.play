@@ -59,7 +59,7 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 	
 	//check cache
 	if( mCache.contains(key) ) {
-		p_value = mCache[key];
+		p_value = mCache.value(key);
 
 	} else if(blocking) {
 
@@ -117,7 +117,7 @@ OmThreadedCache<KEY,PTR>::Add(const KEY &key, PTR *value)
 	if( mCache.contains(key) ) {
 		
 		//get ref to old value
-		old_value = mCache[key];
+		old_value = mCache.value(key);
 		
 		//then remove from cache
 		mCache.remove(key);
@@ -145,7 +145,7 @@ OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {	
 	QMutexLocker locker( &mCacheMutex );
 
-	QExplicitlySharedDataPointer<PTR> old_value = mCache[key];
+	QExplicitlySharedDataPointer<PTR> old_value = mCache.value(key);
 
 	//then remove from cache
 	mCache.remove(key);
@@ -177,7 +177,7 @@ OmThreadedCache<KEY,PTR>::RemoveOldest()
 		KEY& r_oldest_key = mKeyAccessList.back();
 	
 		//get ref to old value
-		old_value = mCache[r_oldest_key];
+		old_value = mCache.value(r_oldest_key);
 
 		assert(r_oldest_key == mKeyAccessList.back());
 	

@@ -28,7 +28,7 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 void ToolBarManager::updateGuiFromPorjectLoadOrOpen()
 {
 	navAndEditToolBars->updateGuiFromPorjectLoadOrOpen();
-	dendToolBar->updateGuiFromPorjectLoadOrOpen();
+	dendToolBar->updateGuiFromProjectLoadOrOpen();
 }
 
 void ToolBarManager::SystemModeChangeEvent()

@@ -2,6 +2,7 @@
 #include "project/omProject.h"
 #include <QThread>
 #include "chanInspector.h"
+#include "volInspector.h"
 #include "common/omStd.h"
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
@@ -127,6 +128,12 @@ void ChanInspector::populateChannelInspector()
 
 	patternEdit->setText( "*" );
 	patternEdit->setMinimumWidth(200);
+
+
+	OmChannel & current_channel = OmProject::GetChannel(cdw.getID());
+        gridLayout_3->addWidget(new OmVolInspector(&current_channel), 4, 0, 1, 1);
+
+
 
 	notesEdit->setPlainText( cdw.getNote() );
 

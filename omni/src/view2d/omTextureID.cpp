@@ -8,12 +8,19 @@
 #define DEBUG 0
 
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID, const int &size, const int x, const int y,
-			 const OmIds & containedIds, OmThreadedCachingTile * cache, void *texture, int flags)
-	:OmCacheableBase(cache), mTileCoordinate(tileCoord), textureID(texID), mem_size(size), mIdSet(containedIds),
-	 texture(texture), flags(flags), x(x), y(y)
+			 OmThreadedCachingTile * cache, void *texture, int flags)
+	: OmCacheableBase(cache), 
+	  mTileCoordinate(tileCoord), 
+	  textureID(texID), 
+	  mem_size(size),
+	  texture(texture), 
+	  flags(flags), 
+	  x(x), 
+	  y(y)
 {
-	debug("crazycash","texID %i\n", texID); 
-	if (!cache) assert (0);
+	if (!cache){
+		assert (0);
+	}
 
 	//UpdateSize(mem_size);
 	UpdateSize(128 * 128 * 4);
@@ -30,12 +37,6 @@ OmTextureID::~OmTextureID()
 	//remove object size from cache
 	//UpdateSize(-mem_size);
 	UpdateSize(-128 * 128 * 4);
-}
-
-bool OmTextureID::FindId(OmId f_id)
-{
-
-	return (mIdSet.find(f_id) != mIdSet.end());
 }
 
 /////////////////////////////////

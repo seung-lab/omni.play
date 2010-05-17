@@ -29,7 +29,7 @@ void OmBuildChannel::run()
 		return;
 	}
 
-	if( 0 ) {
+        if( 0 ) {
 		newBuild();
 	} else {
 		mChann->SetSourceFilenamesAndPaths( mFileNamesAndPaths );

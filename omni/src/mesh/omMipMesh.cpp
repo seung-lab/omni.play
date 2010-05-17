@@ -76,17 +76,17 @@ OmMipMesh::~OmMipMesh()
 
   //meshes with no data don't have alloc'd data
   if (mpStripOffsetSizeData) {
-    delete[]mpStripOffsetSizeData;
+    free( mpStripOffsetSizeData );
     mpStripOffsetSizeData = NULL;
   }
 
   if (mpVertexIndexData) {
-    delete[]mpVertexIndexData;
+    free(mpVertexIndexData);
     mpVertexIndexData = NULL;
   }
 
   if (mpVertexData) {
-    delete[]mpVertexData;
+    free(mpVertexData);
     mpVertexData = NULL;
   }
 
@@ -105,15 +105,12 @@ void OmMipMesh::Load()
   fpath.setPathQstr( GetDirectoryPath() + "metamesh.dat" );
 
   if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
-    QString msg = QString("mesh not found for segment value %1").arg(mMeshCoordinate.DataValue);
-    printf("%s\n", qPrintable(msg) );
-    OmStateManager::UpdateStatusBar(msg);
     return;
   }
 
   char *meta = (char *)OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath);
   char result = *meta;
-  delete meta;
+  free(meta);
 
   //if meta is zero, then no data so skip
   if (!result) {
@@ -257,10 +254,10 @@ void OmMipMesh::CreateVbo()
 
   //debug("genone","OmMipMesh::CreateVbo(): delete local\n");
   //delete local data
-  delete[]mpVertexData;
+  free(mpVertexData);
   mpVertexData = NULL;
 
-  delete[]mpVertexIndexData;
+  free(mpVertexIndexData);
   mpVertexIndexData = NULL;
 
   //debug("genone","OmMipMesh::CreateVbo(): update size\n");

@@ -290,7 +290,7 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 		r_segment->ApplyColor(drawOps);
 
 		//draw mesh
-		glPushName(r_segment->GetId());
+		glPushName(r_segment->getValue());
 		glPushName(OMGL_NAME_VOXEL);
 
 		p_voxelation->Draw();

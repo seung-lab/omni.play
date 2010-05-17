@@ -41,6 +41,7 @@ public:
 	
 	static void UpdateCacheSize(OmCacheGroup group, int delta);
 	static void UpdateCacheSizeFromLocalPrefs();
+	static unsigned int Freshen(bool freshen);
 	
 	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
@@ -68,6 +69,7 @@ private:
 	//properties map
 	QMutex mCacheMapMutex;
 	QMutex mRealCacheMapMutex;
+	QMutex mFreshnessMutex;
 	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
 	map< OmCacheGroup, CacheGroupProperties > mRemoveCacheMap;
 	

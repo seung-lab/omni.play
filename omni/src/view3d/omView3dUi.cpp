@@ -35,8 +35,8 @@ void
  OmView3dUi::MousePressed(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeMousePressed(event);
 		break;
 
@@ -49,8 +49,10 @@ void
 void OmView3dUi::MouseRelease(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+		DendModeMouseReleased(event);
+		break;
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeMouseRelease(event);
 		break;
 
@@ -67,8 +69,8 @@ void OmView3dUi::MouseMove(QMouseEvent * event)
 		return;
 
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeMouseMove(event);
 		break;
 
@@ -81,8 +83,8 @@ void OmView3dUi::MouseMove(QMouseEvent * event)
 void OmView3dUi::MouseDoubleClick(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeMouseDoubleClick(event);
 		break;
 
@@ -95,8 +97,8 @@ void OmView3dUi::MouseDoubleClick(QMouseEvent * event)
 void OmView3dUi::MouseWheel(QWheelEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeMouseWheel(event);
 		break;
 
@@ -110,8 +112,8 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 {
         if (event->key() == Qt::Key_C) mCPressed = true; 
 	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
 	case DEND_MODE:
+	case NAVIGATION_SYSTEM_MODE:
 		NavigationModeKeyPress(event);
 		break;
 
@@ -119,6 +121,25 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 		EditModeKeyPress(event);
 		break;
 	}
+}
+
+void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
+{
+	debug("dend3d", "OmView3dUi::DendModeMouseReleased\n");
+        //get segment
+        OmId segmentation_id, segment_id;
+        if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
+                mpView3d->updateGL();
+                return;
+        }
+        mpView3d->updateGL();
+
+
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
+	OmSegment * seg = r_segmentation.GetSegment(segment_id);
+
+        seg->splitTwoChildren(seg);
+        OmStateManager::SetSystemModePrev();
 }
 
 /////////////////////////////////
@@ -302,6 +323,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 
 bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segmentationId, OmId & segmentId, int *type)
 {
+	debug("3d", "OmView3dUi::PickSegmentMouse\n");
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
@@ -577,6 +599,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		mpView3d->updateGL();
 		return;
 	}
+	mpView3d->updateGL();
 
         OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));

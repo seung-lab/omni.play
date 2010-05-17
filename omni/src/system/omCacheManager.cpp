@@ -145,3 +145,14 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 		}
 	}
 }
+
+unsigned int OmCacheManager::Freshen(bool freshen)
+{
+	QMutexLocker locker( &Instance()->mFreshnessMutex );
+	static unsigned int freshness = 0;
+       	if (freshen) {
+        	freshness++;
+        }
+        return freshness;
+}
+

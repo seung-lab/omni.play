@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QExplicitlySharedDataPointer>
 #include <QStack>
+#include <QMap>
 
 #include <time.h>
 
@@ -79,7 +80,7 @@ protected:
 	
 private:
 	//key, shared pointer value cache
-	QHash< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
+	QMap< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
 
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;

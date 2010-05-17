@@ -175,13 +175,6 @@ void SegmentDataWrapper::setName( const QString& str )
 	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetName( str );
 }
 
-QString SegmentDataWrapper::getDataValuesForSegment()
-{
-	const SegmentDataSet & data_set = OmProject::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
-	
-	return StringHelpers::getStringFromSegmentSet( data_set );
-}
-
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
 	const SEGMENT_DATA_TYPE value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
@@ -190,20 +183,6 @@ QString SegmentDataWrapper::get_original_mapped_data_value()
 	} else {
 		return QString::number( value );
 	}
-}
-
-QString SegmentDataWrapper::chunkListStr()
-{
-	QStringList strs;
-	foreach( OmMipChunkCoord c, OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getChunks() ){
-		strs << QString("[%1:%2,%3,%4]")
-			.arg(c.getLevel())
-			.arg(c.getCoordinateX())
-			.arg(c.getCoordinateY())
-			.arg(c.getCoordinateZ());
-	}
-	
-	return StringHelpers::getStringFromStringList( strs );
 }
 
 OmSegmentation & SegmentDataWrapper::getSegmentation()

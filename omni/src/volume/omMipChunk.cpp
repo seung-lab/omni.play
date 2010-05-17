@@ -1,5 +1,3 @@
-
-
 #include "omMipChunk.h"
 #include "omMipVolume.h"
 #include "omVolumeCuller.h"
@@ -31,7 +29,8 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
  *	Note: optional cache pointer if this is a cached chunk
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
-:OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume)), mpMipVolume(pMipVolume)
+	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume)), 
+	  mpMipVolume(pMipVolume)
 {
 
 	//debug("genone","OmMipChunk::OmMipChunk()");   
@@ -116,8 +115,6 @@ void OmMipChunk::Open()
 
 	//read volume data
 	ReadVolumeData();
-
-	debug("mipchunk", "read in mpImageData: %i, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
 
 	//set open
 	SetOpen(true);
@@ -233,6 +230,7 @@ void OmMipChunk::ReadVolumeData()
 	}
 
 	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent(), GetBytesPerSample());
+
 	debug("mipchunk", "data: %i, refcount of:%i\n", data, data->GetReferenceCount ());
 
 	//set this image data
@@ -455,38 +453,6 @@ const SegmentDataSet & OmMipChunk::GetDirectDataValues()
 	return mDirectlyContainedValues;
 }
 
-/*
- *	Returns reference to set of values indirectly (spatially) contained
- *	by the bounds of this MipChunk.  That is all the direcly contained
- *	values of the children of this MipChunk.
- */
-const SegmentDataSet & OmMipChunk::GetIndirectDataValues()
-{
-	loadMetadataIfPresent();
-	return mIndirectlyContainedValues;
-}
-
-/*
- *	Returns reference to set of all values directly contained by
- *	the image data of this MipChunk
- */
-SegmentDataSet & OmMipChunk::GetDirectDataValuesInternal()
-{
-	loadMetadataIfPresent();
-	return mDirectlyContainedValues;
-}
-
-/*
- *	Returns reference to set of values indirectly (spatially) contained
- *	by the bounds of this MipChunk.  That is all the direcly contained
- *	values of the children of this MipChunk.
- */
-SegmentDataSet & OmMipChunk::GetIndirectDataValuesInternal()
-{
-	loadMetadataIfPresent();
-	return mIndirectlyContainedValues;
-}
-
 void OmMipChunk::loadMetadataIfPresent()
 {
 	if( containedValuesDataLoaded ){
@@ -504,13 +470,14 @@ void OmMipChunk::loadMetadataIfPresent()
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store 
  *	all values in the DataSegmentId set of the chunk.
  */
-void OmMipChunk::RefreshDirectDataValues()
+void OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
 {
 	//uses mpImageData so ensure chunk is open
 	Open();
 
 	//clear previous segments
-	GetDirectDataValuesInternal().clear();
+	loadMetadataIfPresent();
+	mDirectlyContainedValues.clear();
 
 	//get data extent (varify it is a chunk)
 	int extent[6];
@@ -528,7 +495,7 @@ void OmMipChunk::RefreshDirectDataValues()
 
 					//if non-null insert in set
 					if (NULL_SEGMENT_DATA != *p_scalar_data) {
-						GetDirectDataValuesInternal().insert(*p_scalar_data);
+						mDirectlyContainedValues.insert(*p_scalar_data);
 					}
 					//adv to next scalar
 					++p_scalar_data;
@@ -547,49 +514,13 @@ void OmMipChunk::RefreshDirectDataValues()
 					//if non-null insert in set
 					if ('\0' != *p_scalar_data) {
 						SEGMENT_DATA_TYPE my_scalar_data = (SEGMENT_DATA_TYPE) (*p_scalar_data);
-						GetDirectDataValuesInternal().insert(my_scalar_data);
+						mDirectlyContainedValues.insert(my_scalar_data);
 					}
 					//adv to next scalar
 					++p_scalar_data;
 				}
 			}
 		}
-	}
-
-	//note metadata is dirty
-	setMetaDataDirty();
-}
-
-/*
- *	Update the spacially contained segment information of a chunk associated to a given MipCoord.
- *	Leafs have the have spatial ids set to previously computed data ids.  Chunks with children
- *	have spacial content of union of all children's spacial content.
- */
-void OmMipChunk::RefreshIndirectDataValues()
-{
-
-	//uses mpImageData so ensure chunk is open
-	Open();
-
-	//clear previous segment ids
-	GetIndirectDataValuesInternal().clear();
-
-	//if leaf, then spatial is data
-	if (IsLeaf()) {
-		GetIndirectDataValuesInternal() = GetDirectDataValuesInternal();
-		return;
-	}
-	//for each valid child
-	foreach( OmMipChunkCoord coord, mChildrenCoordinates ){
-
-		//get child
-		QExplicitlySharedDataPointer < OmMipChunk > p_child_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-		mpMipVolume->GetChunk(p_child_chunk, coord );
-		const SegmentDataSet & r_child_indirect_data_values = p_child_chunk->GetIndirectDataValuesInternal();
-
-		//insert spatially contained children
-		GetIndirectDataValuesInternal().unite(r_child_indirect_data_values);
-
 	}
 
 	//note metadata is dirty

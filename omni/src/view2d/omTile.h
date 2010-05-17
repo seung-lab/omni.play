@@ -1,19 +1,18 @@
 #ifndef OM_TILE_H
 #define OM_TILE_H
 
-
 /*
  *	OmTile allows access to 2D image data from the source volume.
  *
  *	Rachel Shearer - rshearer@mit.edu
  */
 
-
 #include "common/omStd.h"
 #include "volume/omMipChunkCoord.h"
 #include "system/omCacheBase.h"
-#include <QExplicitlySharedDataPointer>
+#include "volume/omSegmentation.h"
 
+#include <QExplicitlySharedDataPointer>
 #include <QColor>
 
 class OmMipVolume;
@@ -28,26 +27,23 @@ public:
 	~OmTile();
 	
 	OmTextureID* BindToTextureID(const OmTileCoord &key, OmThreadedCachingTile* cache);
-	// int BindToTextureID(const OmTileCoordinate &key);
 	
 	void AddOverlay(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);
 	void SetNewAlpha(float newval);
 
 	OmMipVolume *mVolume;
-
 	
 // private:	
 	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
 	int GetDepth(const OmTileCoord &key);
-	OmIds setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
-
 	void ReplaceTextureRegion(set< DataCoord > &vox);
+
 private:
+
 	ViewType view_type;
 	ObjectType vol_type;
 	OmId myID;
-
 	
 	ObjectType background_type;
 	OmId backgroundID;
@@ -59,6 +55,8 @@ private:
 	
 	int mBackgroundSamplesPerVoxel;
 	int mBackgroundBytesPerSample;
+
+	void setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 };
 
 #endif

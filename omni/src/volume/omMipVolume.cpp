@@ -276,7 +276,6 @@ void OmMipVolume::UpdateRootLevel()
  */
 Vector3 < int > OmMipVolume::MipLevelDataDimensions(int level)
 {
-
 	//get dimensions
 	DataBbox source_extent = GetExtent();
 	Vector3 < float >source_dims = source_extent.getUnitDimensions();
@@ -284,8 +283,12 @@ Vector3 < int > OmMipVolume::MipLevelDataDimensions(int level)
 	//dims in fraction of pixels
 	Vector3 < float >mip_level_dims = source_dims / OMPOW(2, level);
 
-	return Vector3 < int >(ceil(mip_level_dims.x), ceil(mip_level_dims.y), ceil(mip_level_dims.z));
+	return Vector3 < int >(ceil(mip_level_dims.x), 
+			       ceil(mip_level_dims.y), 
+			       ceil(mip_level_dims.z));
 }
+
+// TODO: this appear to NOT do the right thing for level=0 (purcaro)
 
 /*
  *	Calculate the MipChunkCoord dims required to contain all the chunks of a given level.
@@ -294,7 +297,8 @@ Vector3 < int > OmMipVolume::MipLevelDimensionsInMipChunks(int level)
 {
 	Vector3 < float >data_dims = MipLevelDataDimensions(level);
 	return Vector3 < int >(ceil(data_dims.x / GetChunkDimension()),
-			       ceil(data_dims.y / GetChunkDimension()), ceil(data_dims.z / GetChunkDimension()));
+			       ceil(data_dims.y / GetChunkDimension()), 
+			       ceil(data_dims.z / GetChunkDimension()));
 }
 
 /*
@@ -623,6 +627,7 @@ bool OmMipVolume::BuildVolume()
 
 	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+		printf("building mip level %d...\n", level );
 
 		//dim of miplevel in mipchunks
 		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
@@ -769,6 +774,8 @@ bool OmMipVolume::ImportSourceData()
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmHdf5Path leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
+
+	printf("importing data...\n");
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {

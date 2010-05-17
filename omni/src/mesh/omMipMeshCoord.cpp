@@ -14,8 +14,7 @@ OmMipMeshCoord::OmMipMeshCoord(const OmMipChunkCoord & rMipChunkCoord, SEGMENT_D
 
 }
 
-void
- OmMipMeshCoord::operator=(const OmMipMeshCoord & rhs)
+void OmMipMeshCoord::operator=(const OmMipMeshCoord & rhs)
 {
 	MipChunkCoord = rhs.MipChunkCoord;
 	DataValue = rhs.DataValue;
@@ -43,12 +42,4 @@ ostream & operator<<(ostream & out, const OmMipMeshCoord & in)
 {
 	out << in.MipChunkCoord << " { " << (int)in.DataValue << " } ";
 	return out;
-}
-
-uint qHash(const OmMipMeshCoord & c)
-{
-        return qHash( QString("%1_%2")
-		      .arg(c.DataValue)
-		      .arg(qHash(c.MipChunkCoord)));
-		      
 }

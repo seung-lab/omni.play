@@ -58,7 +58,6 @@ QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk )
 {
 	//meta data
 	out << chunk.mDirectlyContainedValues;
-	out << chunk.mIndirectlyContainedValues;
 	out << chunk.mModifiedVoxelValues;	
 
 	return out;
@@ -67,7 +66,6 @@ QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk )
 QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk )
 {
 	in >> chunk.mDirectlyContainedValues;
-	in >> chunk.mIndirectlyContainedValues;
 	in >> chunk.mModifiedVoxelValues;	
 
 	return in;
@@ -77,7 +75,6 @@ QDataStream &operator<<(QDataStream & out, const OmSimpleChunk & chunk )
 {
 	//meta data
 	out << chunk.mDirectlyContainedValues;
-	out << chunk.mIndirectlyContainedValues;
 	out << chunk.mModifiedVoxelValues;	
 
 	return out;
@@ -86,7 +83,6 @@ QDataStream &operator<<(QDataStream & out, const OmSimpleChunk & chunk )
 QDataStream &operator>>(QDataStream & in, OmSimpleChunk & chunk )
 {
 	in >> chunk.mDirectlyContainedValues;
-	in >> chunk.mIndirectlyContainedValues;
 	in >> chunk.mModifiedVoxelValues;	
 
 	return in;

@@ -354,9 +354,10 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesV
 
 	//if hits < 0, then buffer overflow
 	if (hits < 0) {
-		printf("OmView3d::PickPoint: hit buffer overflow\n");
+		printf("OmView3d::PickPoint: hit buffer overflow: %d\n", hits);
 		return false;
 	}
+
 	//if no hits, success
 	if (hits == 0)
 		return true;

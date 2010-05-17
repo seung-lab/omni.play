@@ -20,6 +20,7 @@ enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE };
 class vtkImageData;
 class OmMipVolume;
 class OmVolumeCuller;
+class OmSegmentCache;
 
 class OmMipChunk : public OmCacheableBase {
 
@@ -29,9 +30,9 @@ public:
 		
 	//overridden datavolume methods so as to notify cache
 	void Open();
-	void OpenForWrite();
+	virtual void OpenForWrite();
 	void Flush();
-	void Close();
+	virtual void Close();
 	bool IsOpen();
 
 	//properties
@@ -44,14 +45,14 @@ public:
 	
 	
 	//data accessors
-	quint32 GetVoxelValue(const DataCoord &vox);
-	void SetVoxelValue(const DataCoord &vox, quint32 value);
+	virtual quint32 GetVoxelValue(const DataCoord &vox);
+	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
 	void SetImageData(vtkImageData *imageData);
 
 	
 	//meta data io
-	void ReadVolumeData();
-	void WriteVolumeData();
+	virtual void ReadVolumeData();
+	virtual void WriteVolumeData();
 	void ReadMetaData();
 	void WriteMetaData();
 	
@@ -62,10 +63,8 @@ public:
 	
 	
 	//mipchunk data accessors
-	const SegmentDataSet& GetDirectDataValues();
-	const SegmentDataSet& GetIndirectDataValues();
-	void RefreshDirectDataValues();
-	void RefreshIndirectDataValues();
+	const SegmentDataSet & GetDirectDataValues();
+	virtual void RefreshDirectDataValues( OmSegmentCache *);
 	
 
 	//chunk extent
@@ -83,7 +82,7 @@ public:
 	
 	//slice
 	AxisAlignedBoundingBox<int> ExtractSliceExtent(OmDataVolumePlane plane, int coord);
-	void* ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
+	virtual void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
 	
 	//meshing
 	vtkImageData* GetMeshImageData();
@@ -97,7 +96,7 @@ public:
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();
 
-private:
+protected:
 	bool mIsOpen;
 	void SetOpen(bool);
 
@@ -108,16 +107,10 @@ private:
 	//mip volume this chunk belongs to
 	OmMipVolume * const mpMipVolume;
 	
-	//image data of chunk
-	vtkImageData *mpImageData;	
-		
 	//cache direct and indirectly contained values for drawing tree
 	bool containedValuesDataLoaded;
 	void loadMetadataIfPresent();
-	SegmentDataSet mDirectlyContainedValues;	
-	SegmentDataSet mIndirectlyContainedValues;
-	SegmentDataSet & GetDirectDataValuesInternal();
-	SegmentDataSet & GetIndirectDataValuesInternal();	
+	SegmentDataSet mDirectlyContainedValues;
 
 	//keep track what needs to be written out
 	bool mChunkVolumeDataDirty;
@@ -142,6 +135,11 @@ private:
 	
 	//voxel management
 	SegmentDataSet mModifiedVoxelValues;
+
+ private:
+
+	//image data of chunk
+	vtkImageData *mpImageData;	
 
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );

@@ -1,4 +1,5 @@
 #include "segInspector.h"
+#include "volInspector.h"
 
 #include "common/omDebug.h"
 #include "volume/omVolume.h"
@@ -19,6 +20,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget 
 	overallContainer->addWidget(makeActionsBox());
 	overallContainer->addWidget(makeToolsBox());
 	overallContainer->addWidget(makeStatsBox());
+	overallContainer->addWidget(makeVolBox());
 	overallContainer->addWidget(makeNotesBox());
 
 	populateSegmentationInspector();
@@ -28,6 +30,12 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget 
 
 	mMeshinatorProc = NULL;
 	mMeshinatorDialog = NULL;
+}
+
+QGroupBox* SegInspector::makeVolBox()
+{
+        OmSegmentation & seg = OmProject::GetSegmentation(sdw.getID());
+	return new OmVolInspector(&seg, this);
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -50,10 +58,9 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
-	labelNumTopSegmentsNum->setText( commaNumTopSegs );
+	//QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
+	labelNumTopSegmentsNum->setText( "disabled" );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
-
 
 	return statsBox;
 }
@@ -102,6 +109,7 @@ QGroupBox* SegInspector::makeActionsBox()
          << "Data"
          << "Mesh"
 	 << "Data & Mesh"
+         << "Load Dendrogram"
          << "Meshinator"
         );
         gridAction->addWidget(buildComboBox, 1, 0);
@@ -271,6 +279,10 @@ void SegInspector::on_buildButton_clicked()
 
 	} else if ("Data & Mesh" == whatOrHowToBuild){
 		bs->buildAndMeshSegmentation();
+		emit segmentationBuilt(sdw.getID());
+
+	} else if ("Load Dendrogram" == whatOrHowToBuild){
+		bs->loadDendrogram();
 		emit segmentationBuilt(sdw.getID());
 
 	} else if( "Meshinator" == whatOrHowToBuild ){

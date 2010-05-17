@@ -28,6 +28,4 @@ class OmMipMeshCoord {
 	friend QDataStream &operator>>(QDataStream & in, OmMipMeshCoord & c );
 };
 
-uint qHash(const OmMipMeshCoord & c);
-
 #endif

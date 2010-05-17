@@ -44,9 +44,9 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	dataValuesList->setText( sdw.getDataValuesForSegment() );
+	dataValuesList->setText( "fixme" );
 	origDataValueList->setText( sdw.get_original_mapped_data_value() );
-	chunkList->setText( sdw.chunkListStr() );
+	chunkList->setText( "disabled" );
 }
 
 void SegObjectInspector::nameEditChanged()

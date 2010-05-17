@@ -242,6 +242,8 @@ void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const ch
 		*size = (int)dataset_size;
 	}
 
+	hid_t dstype = H5Dget_type(dataset_id);
+
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: dataset size is %d\n", __FUNCTION__, (int)dataset_size);
 
 	//Allocate memory to read into
@@ -250,7 +252,7 @@ void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const ch
 		throw OmIoException("Could not allocate memory to read HDF5 dataset.");
 
 	//Reads raw data from a dataset into a buffer. 
-	status = H5Dread(dataset_id, H5T_NATIVE_UCHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
+	status = H5Dread(dataset_id, dstype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
 	if (status < 0)
 		throw OmIoException("Could not read HDF5 dataset.");
 

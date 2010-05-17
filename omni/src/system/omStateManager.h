@@ -81,6 +81,7 @@ public:
 	
 	//system mode
 	static OmSystemMode GetSystemMode();
+	static OmSystemMode GetSystemModePrev();
 	static void SetSystemMode(const OmSystemMode mode);
 	static void SetSystemModePrev();
 	

@@ -42,6 +42,7 @@ void OmBuildSegmentation::run()
 {
 	if( doBuildImage ){
 		do_build_seg_image();
+		loadDendrogram();
 	}
 
 	if( doBuildMesh ){
@@ -62,74 +63,64 @@ void OmBuildSegmentation::do_build_seg_image()
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
 
-	//loadDendrogram();
-
 	stopTiming(type);
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()
 {
 	QString type = "segmentation mesh";
-	if(!checkSettingsAndTime(type) ){
-		return;
-	}
+	startTiming(type);
 
 	mSeg->BuildMeshData();
 
 	stopTiming(type);
 }
-	
+
 void OmBuildSegmentation::loadDendrogram()
 {
-	QString fname = getSelectedHDF5file();
-
-	if( "" == fname ){
+	QString type = "dendrogram";
+	if(!checkSettingsAndTime(type) ){
 		return;
 	}
-	    
-	OmHdf5Path fpath;
-	fpath.setPathQstr( "dend" );
-
-	OmDataLayer dl;
- 	OmDataReader * hdf5reader = dl.getReader( fname, true, true );
-
-	if( !hdf5reader->dataset_exists( fpath ) ){
-		printf("no dendrogram found\n");
+	if(!canDoLoadDendrogram()){
 		return;
-	} else {
-		printf("found dendrogram!\n");
 	}
 
-	Vector3 < int > dSize = hdf5reader->dataset_get_dims( fpath );
-	printf("dendrogram is %d x %d\n", dSize.x, dSize.y );
-	/*
-	QString dendTextFileName = "/Users/purcaro/Omni/purcaro_testing/d/dend.txt";
+	QString fname = mFileNamesAndPaths.at(0).filePath();
 
-	if (!QFile::exists( dendTextFileName )) {
-		printf("could not open dend text file \"%s\"\n", qPrintable(dendTextFileName));
-		exit(1);
-	}
-		
-	QFile file(dendTextFileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		printf("could not read dend text file \"%s\"\n", qPrintable(dendTextFileName));
-		exit(1);
-	}
+        OmDataLayer dl;
+        OmDataReader * hdf5reader = dl.getReader(fname, true, true);
 
-	QTextStream in(&file);
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		QStringList args = line.split(',');
-		const unsigned int childVal =  StringHelpers::getUInt(args[0]);
-		const unsigned int parentVal =  StringHelpers::getUInt(args[1]);
-		const double threshold = StringHelpers::getDouble( args[2] );
-		
-		OmSegment* child = mSeg->GetSegmentFromValue(childVal);
-		OmSegment* parent = mSeg->GetSegmentFromValue(parentVal);
+        OmHdf5Path fpath;
+        fpath.setPathQstr("dend");
+        if( !hdf5reader->dataset_exists(fpath)){
+                printf("no dendrogram found\n");
+                return;
+        } 
+	Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
+	printf("dendrogram is %d x %d\n", dSize.x, dSize.y);
+	int dendSize;
+	quint32 * dend = (quint32 *) hdf5reader->dataset_raw_read(fpath, &dendSize);
 
-		parent->Join(child, threshold);
-	}
-	*/
+        fpath.setPathQstr("dendValues");
+        if(!hdf5reader->dataset_exists(fpath)){
+                printf("no dendrogram values found\n");
+		free(dend);
+                return;
+	} 
+      	Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
+	int dendValuesSize;
+	float * dendValues = (float *) hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
+	printf("dendrogram values is %d x %d\n", dSize.x, dSize.y);
+
+	mSeg->mDendCount = dSize.y;
+	mSeg->mDend = dend;
+	mSeg->mDendSize = dendSize;
+	mSeg->mDendValues = dendValues;
+	mSeg->mDendValuesSize = dendValuesSize;
+	mSeg->FlushDend();
+
+	mSeg->mSegmentCache.reloadDendrogram(mSeg->mDend, mSeg->mDendValues, mSeg->mDendCount, .77);
+
+	stopTiming(type);
 }
-
-

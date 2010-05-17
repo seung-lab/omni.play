@@ -24,19 +24,19 @@ void OmBuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 
 bool OmBuildVolumes::checkSettingsAndTime(QString type )
 {
-	if( mFileNamesAndPaths.empty() ) {
-		printf("\tError: can't build: no files selected\n");
-		return false;
-	}
-
-	if( ! OmImageDataIo::are_file_names_valid(mFileNamesAndPaths)){
+	if( !are_file_names_valid()){
 		printf("\tError: file list contains invalid files\n");
 		return false;
 	}
 
+	startTiming(type);
+	return true;
+}
+
+void OmBuildVolumes::startTiming(QString type)
+{
 	printf("starting %s build...\n", qPrintable(type));
 	time(&time_start);
-	return true;
 }
 
 void OmBuildVolumes::stopTiming(QString type)
@@ -48,20 +48,20 @@ void OmBuildVolumes::stopTiming(QString type)
 	printf("\tdone: %s build performed in (%.2lf secs)\n", qPrintable(type), time_dif );
 }
 
-QString OmBuildVolumes::getSelectedHDF5file()
+bool OmBuildVolumes::canDoLoadDendrogram()
 {
 	if( mFileNamesAndPaths.size() != 1){
-		return "";
+		return false;
 	}
 
 	QString fname = mFileNamesAndPaths.at(0).filePath();
 
 	if( fname.endsWith(".h5")  ||
 	    fname.endsWith(".hdf5")){ 
-		return fname;
+		return true;
 	}
 
-	return "";
+	return false;
 }
 
 void OmBuildVolumes::readImages()
@@ -71,4 +71,34 @@ void OmBuildVolumes::readImages()
 		printf("%s: (%dx%d), %d bytes total; depth %d\n", qPrintable( finfo.filePath() ),
 		       image.width(), image.height(), image.byteCount(), image.depth() );
 	}
+}
+
+bool OmBuildVolumes::are_file_names_valid()
+{
+	if( mFileNamesAndPaths.empty() ){
+		printf("\tError: can't build: no files selected\n");
+		return false;
+	}
+
+	foreach( QFileInfo file, mFileNamesAndPaths ){
+		if( !file.exists() ){
+			printf("file does not exist: %s\n", qPrintable(file.filePath()) );
+			return false;
+		}
+
+		switch ( OmImageDataIo::om_imagedata_parse_image_type( file.filePath() )){
+		case TIFF_TYPE:
+		case JPEG_TYPE:
+		case PNG_TYPE:
+		case VTK_TYPE:
+		case HDF5_TYPE:
+			break;
+
+		default:
+			printf("invalid file: %s\n", qPrintable(file.filePath()) );
+			return false;
+		}
+	}
+
+	return true;
 }

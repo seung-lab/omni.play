@@ -46,9 +46,14 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned
 		offset = 0;
 	}
 
+	// FIXME: this search could become slow; 
 	int counter = 0;
 	for( quint32 i = offset+1; i < mNumSegments; i++) {
-		counter++;
+		
+		if( NULL == segmentation.GetSegmentFromValue( i ) ){
+			continue;
+		}
+		++counter;
 		if( counter > mNumSegmentsPerPage ){
 			break;
 		}

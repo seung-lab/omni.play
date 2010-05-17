@@ -151,13 +151,3 @@ ostream & operator<<(ostream & out, const OmMipChunkCoord & in)
 	out << " ( " << in.Coordinate.x << " " << in.Coordinate.y << " " << in.Coordinate.z << " ) ]";
 	return out;
 }
-
-uint qHash(const OmMipChunkCoord & c)
-{
-        return qHash( QString("%1_%2x%3x%4")
-		      .arg(c.Level)
-		      .arg(c.Coordinate.x)
-		      .arg(c.Coordinate.y)
-		      .arg(c.Coordinate.z));
-		      
-}

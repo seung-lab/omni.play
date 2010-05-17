@@ -17,8 +17,6 @@ class vtkImageData;
 
 class OmImageDataIo {
  public:
-	static bool are_file_names_valid( QFileInfoList sourceFilenamesAndPaths );
-
 	//type
 	static ImageType om_imagedata_parse_image_type(QString fileNameAndPath);
 

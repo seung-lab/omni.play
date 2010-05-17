@@ -5,6 +5,7 @@
 #include "omTextureID.h"
 #include "system/omThreadedCache.h"
 #include "system/omEventManager.h"
+#include "system/omCacheManager.h"
 #include "system/events/omViewEvent.h"
 
 #include "common/omStd.h"
@@ -59,12 +60,12 @@ private:
 class OmCachingThreadedCachingTile
 {
 public:
-	OmCachingThreadedCachingTile (ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, const QGLContext *shareContext)
+	OmCachingThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, const QGLContext *shareContext)
 	{
 
 		static vector<OmCachingThreadedCachingTile*> caches;
 
-		if (NULL == vol) {
+		if(NULL == vol) {
 			mDelete = true;
 			return;
 		}
@@ -76,7 +77,7 @@ public:
 		mCache = NULL;
 		mDelete = false;
 
-		for (unsigned int i = 0; i < caches.size(); i++) {
+		for(unsigned int i = 0; i < caches.size(); i++) {
 			if (caches[i]->mViewtype == mViewtype	&&
 			    caches[i]->mVoltype == mVoltype 	&&
 			    caches[i]->mImage_id == mImage_id	&&
@@ -86,7 +87,7 @@ public:
 			}
 		}
 
-		if (!mCache) {
+		if(!mCache) {
 			mCache = new OmThreadedCachingTile (viewtype, voltype, image_id, vol, shareContext);
 			caches.push_back (this);
 		}
@@ -94,14 +95,11 @@ public:
 
 	}
 
-	static unsigned int Freshen (bool freshen) {
-		static unsigned int freshness = 0;
-		if (freshen) {
-			freshness++;
-		}
-		return freshness;
+	static unsigned int Freshen(bool freshen) {
+		return OmCacheManager::Freshen(freshen);
 	}
-	static void Refresh () {
+
+	static void Refresh() {
 		Freshen (true);
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	}

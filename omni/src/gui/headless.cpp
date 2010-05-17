@@ -52,6 +52,14 @@ void Headless::processLine( QString line, QString fName )
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
 		bs->build_seg_mesh();
 		bs->wait();
+	} else if( "loadDend" == line ) {
+		if( 0 == SegmentationID  ){
+			printf("please choose segmentation first!\n");
+			return;
+		} 
+		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
+		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
+		bs->loadDendrogram();
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
@@ -133,7 +141,7 @@ void Headless::processLine( QString line, QString fName )
 			OmProject::New( projectFileNameAndPath );
 		}
 		
-	} else if( line.startsWith("addSegmentationFromHDF5:") ){
+	} else if( line.startsWith("loadHDF5:") ){
 		QStringList args = line.split(':');
 
 		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
@@ -142,6 +150,20 @@ void Headless::processLine( QString line, QString fName )
 		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
 		bs->addFileNameAndPath( hdf5fnp );
 		bs->build_seg_image();
+		bs->wait();
+		bs->loadDendrogram();
+	} else if( line.startsWith("buildHDF5:") ){
+		QStringList args = line.split(':');
+		QString projectFileName = QFileInfo(args[1]+".omni").fileName();
+		
+		OmProject::New( projectFileName );
+
+		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
+		QString hdf5fnp = args[1];
+
+		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
+		bs->addFileNameAndPath( hdf5fnp );
+		bs->buildAndMeshSegmentation();
 		bs->wait();
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
