@@ -10,6 +10,7 @@
 //init instance pointer
 OmProjectData *OmProjectData::mspInstance = 0;
 
+
 /////////////////////////////////
 ///////
 ///////          OmProjectData
@@ -61,6 +62,13 @@ QString OmProjectData::getAbsoluteFileNameAndPath()
 	return fInfo.absoluteFilePath();
 }
 
+QString OmProjectData::getAbsolutePath()
+{
+	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QFileInfo fInfo(rel_fnpn);
+	return fInfo.absolutePath();
+}
+
 /////////////////////////////////
 ///////          ProjectData Access
 
@@ -86,67 +94,12 @@ void OmProjectData::Close()
 	Instance()->mIsOpen = false;
 }
 
-void OmProjectData::Flush()
-{
-	Close();
-	Open();
-}
-
-/////////////////////////////////
-///////          ProjectData IO
-
-//groups
-
-bool OmProjectData::GroupExists(OmHdf5Path path)
-{
-	return Instance()->dataReader->group_exists( path );
-}
-
-void OmProjectData::GroupDelete(OmHdf5Path path)
-{
-	Instance()->dataWriter->group_delete( path );
-}
-
-bool OmProjectData::DataExists(OmHdf5Path path)
-{
-	return Instance()->dataReader->dataset_exists( path );
-}
-
-//image data io
-
-void OmProjectData::CreateImageData(OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims,
-				    int bytesPerSample)
-{
-	Instance()->dataWriter->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, bytesPerSample);
-}
-
-vtkImageData *OmProjectData::ReadImageData(OmHdf5Path path, const DataBbox & extent, int bytesPerSample)
-{
-	return Instance()->dataReader->dataset_image_read_trim( path, extent, bytesPerSample);
-}
-
-void OmProjectData::WriteImageData(OmHdf5Path path, DataBbox * extent, int bytesPerSample, vtkImageData * data)
-{
-	Instance()->dataWriter->dataset_image_write_trim( path, extent, bytesPerSample, data);
-}
-
-//raw data io
-void *OmProjectData::ReadRawData(OmHdf5Path path, int *size)
-{
-	return Instance()->dataReader->dataset_raw_read( path, size);
-}
-
-void OmProjectData::WriteRawData(OmHdf5Path path, int size, const void *data)
-{
-	Instance()->dataWriter->dataset_raw_create_tree_overwrite( path, size, data);
-}
-
 OmDataLayer * OmProjectData::GetDataLayer()
 {
 	return Instance()->dataLayer;
 }
 
-OmDataReader * OmProjectData::GetDataReader()
+OmDataReader * OmProjectData::GetProjectDataReader()
 {
 	return Instance()->dataReader;
 }

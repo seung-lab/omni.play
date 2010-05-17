@@ -46,7 +46,7 @@ const OmIds & OmSegmentEvent::GetModifiedSegmentIds()
 	return mSegmentIds;
 }
 
-const OmId OmSegmentEvent::GetSegmentJustSelectedID()
+OmId OmSegmentEvent::GetSegmentJustSelectedID()
 {
 	return mSegmentJustSelectedID;
 }
@@ -79,11 +79,11 @@ void OmSegmentEvent::Dispatch(OmEventListener * pListener)
 		return;
 
 	case OmSegmentEvent::SEGMENT_DATA_MODIFICATION:
-		p_cast_listener->SegmentDataModificationEvent(this);
+		p_cast_listener->SegmentDataModificationEvent();
 		return;
 
 	case OmSegmentEvent::SEGMENT_EDIT_SELECTION_CHANGE:
-		p_cast_listener->SegmentEditSelectionChangeEvent(this);
+		p_cast_listener->SegmentEditSelectionChangeEvent();
 		return;
 
 	default:

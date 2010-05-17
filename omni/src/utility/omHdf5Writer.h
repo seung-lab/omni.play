@@ -23,7 +23,7 @@ class OmHdf5Writer : public OmDataWriter
 
 	//data set raw
 	void dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data);
-
+	void dataset_write_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void* imageData);
  private:
 	OmHdf5 * hdf5;
 

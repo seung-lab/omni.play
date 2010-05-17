@@ -7,17 +7,10 @@
  */
 
 
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 #include "system/omEvent.h"
-#include "common/omStd.h"
-
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
+#include "common/omCommon.h"
 
 class OmSegmentAction;
-
 
 class OmSegmentEvent : public OmEvent {
 
@@ -37,7 +30,7 @@ class OmSegmentEvent : public OmEvent {
 	
 	OmId GetModifiedSegmentationId();
 	const OmIds& GetModifiedSegmentIds();
-	const OmId GetSegmentJustSelectedID();
+	OmId GetSegmentJustSelectedID();
 	void* getSender();
 	string getComment();
 
@@ -50,23 +43,19 @@ class OmSegmentEvent : public OmEvent {
 
 };
 
-
-
 class OmSegmentEventListener : public OmEventListener {
 	
 public:	
 	OmSegmentEventListener() : OmEventListener(OmSegmentEvent::CLASS) { };
 	
 	//add/remove segment, change state, change selection
-	//valid methods: GetModifiedSegmentationId(), GetModifiedSegmentIds()
-	virtual void SegmentObjectModificationEvent(OmSegmentEvent *event) { };
+	virtual void SegmentObjectModificationEvent(OmSegmentEvent * event) = 0;
 	
 	//voxels of a segment have changed
-	//valid methods: GetModifiedSegmentationId(), GetModifiedSegmentIds()
-	virtual void SegmentDataModificationEvent(OmSegmentEvent *event) { };
+	virtual void SegmentDataModificationEvent() = 0;
 	
 	//change segment edit selection
-	virtual void SegmentEditSelectionChangeEvent(OmSegmentEvent *event) { };
+	virtual void SegmentEditSelectionChangeEvent() = 0;
 };
 
 

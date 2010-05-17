@@ -9,26 +9,19 @@
  */
 
 #include "omCacheBase.h"
+#include <QSharedData>
 
-
-class OmCacheableBase {
-public:
-	OmCacheableBase( OmCacheBase *cache ) 
-	: mCache(cache) { }
+class OmCacheableBase : public QSharedData 
+{
+ public:
+	OmCacheableBase( OmCacheBase *cache );	
+	virtual void Flush() = 0;
 	
-protected:
+ protected:
+	void UpdateSize(int delta);
 	
-	/*
-	 *	Update the size of the cache.
-	 */
-	void UpdateSize(int delta) {
-		if(mCache) mCache->UpdateSize(delta);
-	}
-	
-private:
+ private:
 	OmCacheBase * const mCache;
 };
-
-
 
 #endif

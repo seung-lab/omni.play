@@ -1,11 +1,11 @@
 #ifndef OM_QT_VIEW_2D_H
 #define OM_QT_VIEW_2D_H 
 
+#include "project/omProject.h"
 #include "drawable.h"
 
 #include <QGLPixelBuffer>
 
-#include "omView2dWidget.h"
 #include "omTile.h"
 #include "omThreadedCachingTile.h"
 
@@ -18,20 +18,11 @@
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
-#include "system/omSystemTypes.h"
 #include "volume/omFilter2d.h"
-
-#include "volume/omVolumeTypes.h"
 #include "volume/omSegmentation.h"
+#include "utility/dataWrappers.h"
 
 #include "common/omStd.h"
-
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
-#include <boost/tuple/tuple_comparison.hpp>
-using boost::tuple;
-#include <boost/progress.hpp>
 
 #include <QGLWidget>
 #include <QtGui> 
@@ -60,6 +51,15 @@ public:
 	void SetDataSliceToDepth(ViewType viewType, int slice);
 	int GetDepthToDataMax(ViewType viewType);
 	
+	OmVolume & GetVolume() {
+        	if (mVolumeType == CHANNEL) {
+                	OmChannel & current_channel = OmProject::GetChannel(mImageId);
+			return current_channel;
+        	} else {
+                	OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
+			return current_seg;
+		}
+	}
 protected:
 	// GL event methods
 	void initializeGL();
@@ -69,20 +69,20 @@ protected:
 	void SetViewSliceOnPan ();						// Helper for panning.
 
 	// paint and draw methods
-	void paintEvent(QPaintEvent *event);	// necessary for using QPainter methods for editing segments
-	QImage safePaintEvent(QPaintEvent *event);	// pbuffered paint.
-	void Draw(int mip=true);
+	void paintEvent(QPaintEvent *);	// necessary for using QPainter methods for editing segments
+	QImage safePaintEvent();	// pbuffered paint.
+	void Draw();
 	void TextureDraw(vector <Drawable*> &textures);
-	void safeTexture(shared_ptr<OmTextureID> gotten_id);
-	void safeDraw(float zoomFactor, int x, int y, int tileLength, shared_ptr<OmTextureID> gotten_id);
+	void safeTexture(QExplicitlySharedDataPointer<OmTextureID> gotten_id);
+	void safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer<OmTextureID> gotten_id);
 	void PreDraw(Vector2f);
-	bool BufferTiles(Vector2f zoomMipVector, bool buffertiles);
+	bool BufferTiles(Vector2f zoomMipVector);
 
 
 	void DrawFromFilter (OmFilter2d&);
 	void DrawFromCache();
 
-	void SendFrameBuffer(QImage * img);
+	void SendFrameBuffer();
 	void DrawCursors();
 
 	// Various Category methods
@@ -100,9 +100,8 @@ protected:
 
 	// Possibly Obsolete methods
 	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
-	OmIds setMyColorMap(OmId segmentation, SEGMENT_DATA_TYPE *imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
-	int GetDepth(const OmTileCoord &key, OmMipVolume *vol);
-	void myBindToTextureID(boost::shared_ptr<OmTextureID>);
+	int GetDepth(const OmTileCoord &key);
+	void myBindToTextureID(QExplicitlySharedDataPointer<OmTextureID>);
 
 	///////////////////////////////////////
 	// OmView2dEvent.cpp:
@@ -127,7 +126,7 @@ protected:
 	void mouseZoomIn();
 	void mouseZoomOut();
 	void mouseZoom(QMouseEvent *event);	
-	void ViewRedrawEvent(OmViewEvent *event);
+	void ViewRedrawEvent();
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 
 	//edit mode
@@ -140,7 +139,7 @@ protected:
 	void mouseMove_NavMode_CamMoving(QMouseEvent *event);
 	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
 	void SetDepth(QMouseEvent *event);
-	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event, const ViewType viewType = XY_VIEW );
+	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event );
 	DataCoord getMouseClickpointGlobalDataCoord( QMouseEvent *event);
 
 	// key events
@@ -148,18 +147,19 @@ protected:
 	
 	// omni events
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
-	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SegmentDataModificationEvent(OmSegmentEvent *event);
+	void SegmentObjectModificationEvent(OmSegmentEvent*);
+	void SegmentDataModificationEvent();
 	
 	// Change to edit selection
-	void SegmentEditSelectionChangeEvent(OmSegmentEvent *event);
-	void SystemModeChangeEvent(OmSystemModeEvent *event);
+	void SegmentEditSelectionChangeEvent();
+	void SystemModeChangeEvent();
 	void VoxelModificationEvent(OmVoxelEvent *event);
-	
+	void VoxelSelectionModificationEvent() {}
+
 	// view events
-	void ViewBoxChangeEvent(OmViewEvent *event);
-	void ViewPosChangeEvent(OmViewEvent *event);
-	void ViewCenterChangeEvent(OmViewEvent *event);
+	void ViewBoxChangeEvent();
+	void ViewPosChangeEvent();
+	void ViewCenterChangeEvent();
 	///////////////////////////////////////
 
 	QSize sizeHint () const;
@@ -173,10 +173,10 @@ private:
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
 	Vector2f ScreenToPanShift(Vector2i screenshift);
-	SpaceCoord ScreenToSpaceCoord(ViewType viewType,const ScreenCoord &screenc);
+	SpaceCoord ScreenToSpaceCoord( const ScreenCoord &screenc);
 	ScreenCoord SpaceToScreenCoord(ViewType viewType,const SpaceCoord &spacec);
 	ScreenCoord DataToScreenCoord(ViewType viewType,const DataCoord &datac);
-	DataCoord ScreenToDataCoord(ViewType viewType,const ScreenCoord &screenc);
+	DataCoord ScreenToDataCoord( const ScreenCoord &screenc);
 	NormCoord ScreenToNormCoord(ViewType viewType,const ScreenCoord &screenc);
         DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
 	Vector2f GetPanDistance(ViewType viewType);
@@ -191,7 +191,7 @@ private:
 	float mDragX, mDragY;
 	bool mDoRefresh;
 	int mBrushToolMaxX, mBrushToolMaxY, mBrushToolMaxZ, mBrushToolMinX, mBrushToolMinY, mBrushToolMinZ;
-	boost::timer* mElapsed;
+	QTime * mElapsed;
 	OmId mCurrentSegmentId;
 	set<DataCoord> mUpdateCoordsSet; 
 	int mBrushToolDiameter;
@@ -212,9 +212,6 @@ private:
         int mBufferTileCountIncomplete;
 
 	Vector2i mMousePoint;
-	
-	// OmCamera2d mCamera;
-	OmGenericManager< OmView2dWidget > mView2dWidgetManager;
 	
 	OmThreadedCachingTile *mCache;
 	double mAlpha;
@@ -280,6 +277,18 @@ private:
 	bool doDisplayInformation();
 
 	void displayInformation( QString & elapsedTime );
+
+	void doSelectSegment( SegmentDataWrapper sdw, bool augment_selection );
+	void resetWindow();
+	void doFindAndSplitSegment(QMouseEvent * event );
+	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
+
+	void doRedraw();
+
+#ifdef WIN32
+	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);
+	GLCOLOR mGlBlendColorFunction;
+#endif
 };
 
 #endif 

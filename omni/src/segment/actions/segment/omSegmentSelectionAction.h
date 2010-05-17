@@ -7,7 +7,6 @@
  */
 
 #include "system/omAction.h"
-#include "system/omSystemTypes.h"
 
 
 class OmSegmentSelectionAction : public OmAction {

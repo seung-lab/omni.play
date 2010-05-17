@@ -4,7 +4,6 @@
 #include <QtGui>
 #include <QWidget> 
 #include "project/omProject.h"
-#include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 
 class FilObjectInspector : public QWidget

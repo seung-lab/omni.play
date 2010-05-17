@@ -30,7 +30,6 @@ static GLuint selectBuf[SELEC_BUFF_SIZE];
 /* start picking from x,y cursor coordinates */
 void startPicking(int x, int y, float perspective[4])
 {
-
 	glSelectBuffer(SELEC_BUFF_SIZE, selectBuf);
 	glRenderMode(GL_SELECT);
 

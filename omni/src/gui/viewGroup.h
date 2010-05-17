@@ -24,7 +24,7 @@ class ViewGroup : public QWidget
 	MainWindow * mMainWindow;
 	const int mID;
  
-	QString getViewName( std::string baseName, ViewType vtype );
+	QString getViewName( QString baseName, ViewType vtype );
 	QDockWidget *makeDockWidget( ViewGroupWidgetInfo * vgw );
 	int getNumDockWidgets();
 

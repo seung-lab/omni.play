@@ -1,14 +1,15 @@
-#ifndef OM_MDF5_LOW_LEVEL_H
-#define OM_MDF5_LOW_LEVEL_H
+#ifndef OM_HDF5_LOW_LEVEL_H
+#define OM_HDF5_LOW_LEVEL_H
 
-#include "volume/omVolumeTypes.h"
-#include "common/omStd.h"
-#include "common/omSerialization.h"
+#ifdef WIN32
+#include <windows.h>
+#include <BaseTsd.h>
+typedef LONG_PTR ssize_t;
+#endif
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
+#include "common/omCommon.h"
 
-#include <hdf5.h>
+#include "hdf5.h"
 
 class vtkImageData;
 
@@ -39,6 +40,9 @@ class OmHdf5LowLevel
 	//image I/O
 	Vector3 < int > om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
 	void om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
+	void* om_hdf5_dataset_read_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
+	void om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  void * imageData);
+	Vector3< int > om_hdf5_dataset_get_dims_with_lock(hid_t fileId, const char *name);
 
  private:
 	hid_t om_hdf5_bytesToHdf5Id(int bytes);

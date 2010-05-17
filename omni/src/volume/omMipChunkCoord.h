@@ -5,19 +5,10 @@
  *	OmMipChunkCoord represents a location in Mip Space given by a level (or mip resolution),
  *	and an x,y,z coordinate.  This is stored in a four element tuple as [level, (x,y,z)].
  *
- *	The boost tuple comparision header allows tuples to be used within STL containers.
- *
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-
-#include "omVolumeTypes.h"
-
 #include "common/omCommon.h"
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
 
 class OmMipChunkCoord {
 
@@ -25,6 +16,8 @@ public:
 	OmMipChunkCoord();
 	OmMipChunkCoord( int, const DataCoord &);
 	OmMipChunkCoord( int level, int, int, int );
+
+	static const OmMipChunkCoord NULL_COORD;
 
 	QString getCoordsAsString();
 
@@ -39,7 +32,10 @@ public:
 	void ChildrenCoords(OmMipChunkCoord *pChildren) const;
 	
 	//access
-	template< size_t M > int get() const;
+	int getLevel(){ return Level; }
+	int getCoordinateX(){ return Coordinate.x; }
+	int getCoordinateY(){ return Coordinate.y; }
+	int getCoordinateZ(){ return Coordinate.z; }
 	
 	//operators
 	void operator=( const OmMipChunkCoord& rhs );
@@ -52,41 +48,8 @@ public:
 	
 	friend ostream& operator<<(ostream &out, const OmMipChunkCoord &in);
 	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
-	
-	static const OmMipChunkCoord NULL_COORD;
+	friend QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
+	friend QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
 };
-
-/* backwards support for previous Om Mip Coordinate type */
-template< size_t M >
-int
-OmMipChunkCoord::get() const {
-	
-	switch(M) {
-		case 0:
-			return Level;
-		case 1:
-			return Coordinate.x;
-		case 2:
-			return Coordinate.y;
-		case 3:
-			return Coordinate.z;
-	}
-	
-}
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmMipChunkCoord, 0)
-
-template<class Archive>
-void 
-OmMipChunkCoord::serialize(Archive & ar, const unsigned int file_version) {
-	ar & Level;
-	ar & Coordinate;
-}
 
 #endif

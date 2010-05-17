@@ -8,9 +8,6 @@
 
 #include "system/omAction.h"
 
-#include "segment/omSegmentTypes.h"
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 
 
 class OmVoxelSetValueAction : public OmAction {

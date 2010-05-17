@@ -1,4 +1,4 @@
-
+#include "project/omProject.h"
 #include "omVoxelSetConnectedAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -6,8 +6,6 @@
 #include "volume/omVolume.h"
 
 #include "system/omStateManager.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////
@@ -41,7 +39,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 	mSeedVoxel = *r_selected_voxels.begin();
 
 	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//valid edit selection, so get dest data value
 	mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
@@ -50,7 +48,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 	mSeedSegmentId = r_segmentation.GetVoxelSegmentId(mSeedVoxel);
 
 	//if voxel selection not valid
-	if (NULL_OM_ID == mSeedSegmentId) {
+	if( 0 == mSeedSegmentId) {
 		cout << "OmVoxelSetConnectedAction: cannot set connected null ids" << endl;
 		OmAction::SetValid(false);
 		return;
@@ -63,13 +61,12 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 /////////////////////////////////
 ///////          Action Methods
 
-void
- OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSegmentation, const DataCoord & srcVox,
-							list < DataCoord > &todoList)
+void OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSegmentation, 
+							    const DataCoord & srcVox,
+							    list < DataCoord > &todoList)
 {
-
-	for (int z = -1; z <= 1; ++z)
-		for (int y = -1; y <= 1; ++y)
+	for (int z = -1; z <= 1; ++z) {
+		for (int y = -1; y <= 1; ++y) {
 			for (int x = -1; x <= 1; ++x) {
 
 				//fast center check
@@ -94,14 +91,15 @@ void
 				}
 
 			}
-
+		}
+	}
 }
 
 void OmVoxelSetConnectedAction::Action()
 {
 
 	//get segmentation
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//alloc todo set on heap in case very large
 	list < DataCoord > *vox_todo_list = new list < DataCoord >;

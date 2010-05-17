@@ -1,29 +1,25 @@
-
 #include "omSegmentation.h"
 #include "omVolume.h"
 #include "omMipChunk.h"
 #include "omVolumeCuller.h"
 
+#include "segment/omSegment.h"
 #include "segment/omSegmentEditor.h"
+#include "segment/omSegmentColorizer.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
-#include "project/omProject.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
-#include "system/omSystemTypes.h"
+
 #include "common/omUtility.h"
 
 #include <vtkImageData.h>
 
-#include <vmmlib/vmmlib.h>
 #include "common/omDebug.h"
 #include <QFile>
 #include <QTextStream>
-using namespace vmml;
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////
@@ -31,31 +27,32 @@ using namespace vmml;
 ///////
 
 OmSegmentation::OmSegmentation()
- : mMipVoxelationManager(this)
+	: mMipVoxelationManager(this), mSegmentCache(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-	/** Set The Name of the Cache */
-        SetCacheName("OmMipMeshManager");
-
+        SetCacheName("OmSegmentation -> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
+
+        mDend = NULL;
+        mDendValues = NULL;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
- : OmManageableObject(id), mMipVoxelationManager(this)
+	: OmManageableObject(id), mMipVoxelationManager(this), mSegmentCache(this)
 {
-
 	//set manageable object name
-	char idchar[25];
-	snprintf(idchar, sizeof(idchar), "%i", id);
-	SetName("segmentation" + string(idchar));
+	SetName( QString("segmentation%1").arg(id));
 
 	//set permenant directory name
-	SetDirectoryPath(string("segmentations/") + GetName() + string("/"));
+	SetDirectoryPath( QString("segmentations/%1/").arg(GetName()) );
+
+	mMipMeshManager.SetDirectoryPath( GetDirectoryPath() );
 
 	//segmenations has SEGMENT_DATA_BYTES_PER_SAMPLE bytes per sample
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
-	//debug("FIXME", << "Setting BPP to " << SEGMENT_DATA_BYTES_PER_SAMPLE << endl;
 
 	//subsample segmentation data using mode
 	SetSubsampleMode(SUBSAMPLE_NONE);
@@ -67,18 +64,25 @@ OmSegmentation::OmSegmentation(OmId id)
 	BuildVolumeData();
 
 	mMeshingMan = NULL;
+
+        mDend = NULL;
+        mDendValues = NULL;
+
+        SetCacheName("OmSegmentation -> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 }
 
-/////////////////////////////////
-///////          Property Accessors
-
-void OmSegmentation::SetDirectoryPath(string dpath)
+OmSegmentation::~OmSegmentation()
 {
-	//call parent
-	OmMipVolume::SetDirectoryPath(dpath);
-	//set associated
-	mSegmentManager.SetDirectoryPath(dpath);
-	mMipMeshManager.SetDirectoryPath(dpath);
+	KillCacheThreads();
+	if(mDend) {
+        	free(mDend);
+	}
+	if(mDendValues){
+        	free(mDendValues);
+	}
+
 }
 
 /////////////////////////////////
@@ -89,44 +93,20 @@ void OmSegmentation::SetDirectoryPath(string dpath)
  */
 OmId OmSegmentation::GetSegmentIdMappedToValue(SEGMENT_DATA_TYPE value)
 {
-	return mSegmentManager.GetSegmentIdMappedToValue(value);
+	OmSegment * seg = mSegmentCache.GetSegmentFromValue(value);
+	if (!seg) {
+		return 0;
+	}
+	return seg->getValue();
 }
 
 /*
  *	Get the set of data values that map to the given Segment OmId.
  */
-const SegmentDataSet & OmSegmentation::GetValuesMappedToSegmentId(OmId omId)
+
+SEGMENT_DATA_TYPE OmSegmentation::GetValueMappedToSegmentId(OmId id)
 {
-	return mSegmentManager.GetValuesMappedToSegmentId(omId);
-}
-
-/*
- *	Returns one of the values mapped to a segment id.
- */
-SEGMENT_DATA_TYPE OmSegmentation::GetValueMappedToSegmentId(OmId omId)
-{
-	//debug("FIXME", << "OmSegmentation::GetValueMappedToSegmentId: " << omId << endl;
-
-	if (IsSegmentValid(omId)) {
-		//if valid return first in set
-		const SegmentDataSet & r_data_set = GetValuesMappedToSegmentId(omId);
-		assert(r_data_set.size());
-		return *(r_data_set.begin());
-	} else {
-		//debug("FIXME", << "OmSegmentation::GetValueMappedToSegmentId: invalid segment id: " << omId << endl;
-		assert(false);
-	}
-
-}
-
-void OmSegmentation::MapValuesToSegmentId(OmId omId, const SegmentDataSet & values)
-{
-	mSegmentManager.MapValuesToSegmentId(omId, values);
-}
-
-void OmSegmentation::UnMapValuesToSegmentId(OmId omId, const SegmentDataSet & values)
-{
-	mSegmentManager.UnMapValuesToSegmentId(omId, values);
+	return mSegmentCache.GetSegmentFromID(id)->getValue();
 }
 
 /////////////////////////////////
@@ -180,34 +160,39 @@ bool OmSegmentation::IsVolumeDataBuilt()
 
 void OmSegmentation::BuildVolumeData()
 {
-
-	//init progress bar
-	//string progress_bar_str = string("Building Segmentation Volume: ") + GetName();
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, progress_bar_str));
+	mSegmentCache.turnBatchModeOn(true);
 
 	//build volume
 	OmMipVolume::Build();
 
-	//hide progress bar
-	//OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	for (int level = 0; level < GetRootMipLevel(); ++level) {
+
+		printf("segment build mip level %d...\n", level );
+
+		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+
+		for (int z = 0; z < mip_coord_dims.z; ++z) {
+			for (int y = 0; y < mip_coord_dims.y; ++y) {
+				for (int x = 0; x < mip_coord_dims.x; ++x) {
+
+					OmMipChunkCoord chunk_coord(level, x, y, z);
+
+					QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+					GetChunk(p_chunk, chunk_coord);
+					const SegmentDataSet & r_root_indirect_data_values = p_chunk->GetDirectDataValues();
+
+					// will already be mappped
+					mSegmentCache.AddSegmentsFromChunk(r_root_indirect_data_values, chunk_coord);
+				}
+			}
+		}
+	}
+	
+	mSegmentCache.flushDirtySegments();
+	mSegmentCache.turnBatchModeOn(false);
 
 	//seg change event
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
-
-	// disable all segments by default
-	SetAllSegmentsSelected(false);
-	SetAllSegmentsEnabled(false);
-
-	OmProject::Save();
-	printf("done building segmentation data\n");
-}
-
-/*
- *	Returns true if BuildMeshData() has previously been called successfully.
- */
-bool OmSegmentation::IsMeshDataBuilt()
-{
-	return mMipMeshManager.IsMeshDataBuilt();
 }
 
 /*
@@ -215,19 +200,13 @@ bool OmSegmentation::IsMeshDataBuilt()
  */
 void OmSegmentation::BuildMeshData()
 {
-
 	if (!IsVolumeDataBuilt()) {
-		throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
-					GetName());
+		throw OmAccessException("Segmentation volume data must be built before mesh data: " +
+					GetName().toStdString() );
 	}
 
 	//build all levels
 	BuildMeshDataInternal();
-
-	//all chunks have been meshed
-	mMipMeshManager.SetMeshDataBuilt(true);
-
-	OmProject::Save();
 }
 
 /**
@@ -235,10 +214,9 @@ void OmSegmentation::BuildMeshData()
  */
 void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
 {
-	QList <OmMipChunk> list;
         if (!IsVolumeDataBuilt())
                 throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
-                                        GetName());
+                                        GetName().toStdString() );
 
     	QFile file(planFile);
     	if ( !file.open(QIODevice::WriteOnly)) {
@@ -256,7 +234,7 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
                 for (int z = mip_coord_dims.z; z >= 0; --z) {
                         for (int y = mip_coord_dims.y; y >= 0; --y) {
                                 for (int x = mip_coord_dims.x; x >= 0; --x) {
-					//stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
+
 					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
                                 }
 			}
@@ -313,38 +291,34 @@ void OmSegmentation::BuildMeshDataInternal()
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 {
-	//debug("FIXME", << "OmSegmentation::BuildChunk(): " << mipCoord << endl;
-
 	//build chunk volume data
 	OmMipVolume::BuildChunk(mipCoord);
 
 	//get pointer to chunk
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, mipCoord);
 
 	//analyze entire chunk segmentation data
-	p_chunk->RefreshDirectDataValues();
-	p_chunk->RefreshIndirectDataValues();
+	p_chunk->RefreshDirectDataValues( &mSegmentCache );
 
 	//if root then update segment manager with spacial content information
 	if (p_chunk->IsRoot()) {
 		//get root spatial segs
-		const SegmentDataSet & r_root_indirect_data_values = p_chunk->GetIndirectDataValues();
-		//debug("FIXME", << "ROOT SEGMENTS:" << r_root_indirect_data_values.size() << endl;
+		const SegmentDataSet & data_values = p_chunk->GetDirectDataValues();
 
 		//add to manager if data isn't already mapped
-		mSegmentManager.AddSegments(r_root_indirect_data_values);
+		mSegmentCache.AddSegmentsFromChunk( data_values, mipCoord);
 	}
 
 	//rebuild mesh data only if entire volume data has been built as well
-	if (IsVolumeDataBuilt() && IsMeshDataBuilt()) {
+	if (IsVolumeDataBuilt() ) {
 		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 		meshingMan->setToOnlyMeshModifiedValues();
 		meshingMan->addToQueue( mipCoord );
 		meshingMan->start();
 		meshingMan->wait();
 
-		shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 		GetChunk(p_chunk, mipCoord);
 
 		const SegmentDataSet & rModifiedValues = p_chunk->GetModifiedVoxelValues();
@@ -353,9 +327,8 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		}
 
 		//remove mesh from cache to force it to reload
-		SegmentDataSet::iterator itr;
-		for (itr = rModifiedValues.begin(); itr != rModifiedValues.end(); itr++) {
-			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, *itr);
+		foreach( SEGMENT_DATA_TYPE val, rModifiedValues ){
+			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
 	}
@@ -376,9 +349,8 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const Segmen
 	}
 
 	//remove mesh from cache to force it to reload
-	SegmentDataSet::iterator itr;
-	for (itr = rModifiedValues.begin(); itr != rModifiedValues.end(); itr++) {
-		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, *itr);
+	foreach( SEGMENT_DATA_TYPE val, rModifiedValues ){
+		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 		mMipMeshManager.UncacheMesh(mip_mesh_coord);
 	}
 
@@ -405,8 +377,8 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 	//for all voxels in the chunk
 	int x, y, z;
-	for (z = extent[0]; z <= extent[1]; z++)
-		for (y = extent[2]; y <= extent[3]; y++)
+	for (z = extent[0]; z <= extent[1]; z++) {
+		for (y = extent[2]; y <= extent[3]; y++) {
 			for (x = extent[4]; x <= extent[5]; x++) {
 
 				//if non-null segment value
@@ -419,15 +391,15 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 				//adv to next scalar
 				++p_scalar_data;
 			}
-
+		}
+	}
 }
 
 /////////////////////////////////
 ///////          Event Handling
 
-void OmSegmentation::SystemModeChangeEvent(OmSystemModeEvent * event)
+void OmSegmentation::SystemModeChangeEvent()
 {
-
 	//if change out of editing mode
 	if (OmStateManager::GetSystemMode() != EDIT_SYSTEM_MODE) {
 		//then build edited chunks
@@ -438,95 +410,80 @@ void OmSegmentation::SystemModeChangeEvent(OmSystemModeEvent * event)
 /////////////////////////////////
 ///////          Segment Management
 
-OmSegment & OmSegmentation::GetSegment(OmId id)
+OmSegment * OmSegmentation::GetSegment(OmId id)
 {
-	return mSegmentManager.GetSegment(id);
+	return mSegmentCache.GetSegmentFromID(id);
 }
 
-OmSegment & OmSegmentation::AddSegment()
+OmSegment* OmSegmentation::GetSegmentFromValue(SEGMENT_DATA_TYPE val)
 {
-	OmSegment& segment = mSegmentManager.AddSegment();
-	OmProject::Save();
+	return mSegmentCache.GetSegmentFromValue(val);
+}
+
+OmSegment * OmSegmentation::AddSegment()
+{
+	OmSegment* segment = mSegmentCache.AddSegment();
 	return segment;
 }
 
-void OmSegmentation::RemoveSegment(OmId id)
+bool OmSegmentation::IsSegmentValid(OmId id)
 {
-	mSegmentManager.RemoveSegment(id);
+	return mSegmentCache.IsSegmentValid(id);
 }
 
-bool OmSegmentation::IsSegmentValid(OmId omId)
+OmId OmSegmentation::GetNumSegments()
 {
-	return mSegmentManager.IsSegmentValid(omId);
+	return mSegmentCache.GetNumSegments();
 }
 
-const set < OmId > & OmSegmentation::GetValidSegmentIds()
+OmId OmSegmentation::GetNumTopSegments()
 {
-	return mSegmentManager.GetValidSegmentIds();
+	return mSegmentCache.GetNumTopSegments();
 }
 
 bool OmSegmentation::IsSegmentEnabled(OmId id)
 {
-	return mSegmentManager.IsSegmentEnabled(id);
+	return mSegmentCache.isSegmentEnabled(id);
 }
 
 void OmSegmentation::SetSegmentEnabled(OmId id, bool enable)
 {
-	mSegmentManager.SetSegmentEnabled(id, enable);
+	mSegmentCache.setSegmentEnabled(id, enable);
 }
 
-const set < OmId > & OmSegmentation::GetEnabledSegmentIds()
+const OmIds & OmSegmentation::GetEnabledSegmentIds()
 {
-	return mSegmentManager.GetEnabledSegmentIds();
+	return mSegmentCache.GetEnabledSegmentIdsRef();
 }
 
 bool OmSegmentation::IsSegmentSelected(OmId id)
 {
-	return mSegmentManager.IsSegmentSelected(id);
+	return mSegmentCache.isSegmentSelected(id);
 }
 
 void OmSegmentation::SetSegmentSelected(OmId id, bool selected)
 {
-	mSegmentManager.SetSegmentSelected(id, selected);
+	mSegmentCache.setSegmentSelected(id, selected);
 }
 
 void OmSegmentation::SetAllSegmentsSelected(bool selected)
 {
-	mSegmentManager.SetAllSegmentsSelected(selected);
+	mSegmentCache.SetAllSelected(selected);
 }
 
 void OmSegmentation::SetAllSegmentsEnabled(bool enabled)
 {
-	mSegmentManager.SetAllSegmentsEnabled(enabled);
+	mSegmentCache.SetAllEnabled(enabled);
 }
 
 const OmIds & OmSegmentation::GetSelectedSegmentIds()
 {
-	return mSegmentManager.GetSelectedSegmentIds();
+	return mSegmentCache.GetSelectedSegmentIdsRef();
 }
 
-/////////////////////////////////
-///////          Segment Data Values Management
-
-const SegmentDataSet & OmSegmentation::GetEnabledSegmentDataValues()
+bool OmSegmentation::AreSegmentsSelected()
 {
-	return mSegmentManager.GetEnabledSegmentDataValues();
-}
-
-const SegmentDataSet & OmSegmentation::GetSelectedSegmentDataValues()
-{
-	return mSegmentManager.GetSelectedSegmentDataValues();
-}
-
-const SegmentDataSet & OmSegmentation::GetUnselectedSegmentDataValues()
-{
-	return mSegmentManager.GetUnselectedSegmentDataValues();
-}
-
-const SegmentDataSet & OmSegmentation::GetVoxelizedSegmentDataValues()
-{
-	static SegmentDataSet empty;
-	return empty;
+	return mSegmentCache.AreSegmentsSelected();
 }
 
 /////////////////////////////////
@@ -537,192 +494,145 @@ const SegmentDataSet & OmSegmentation::GetVoxelizedSegmentDataValues()
  *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be 
  *	drawn depending on culler draw options and passes relevant set to root chunk.
  */
-void OmSegmentation::Draw(const OmVolumeCuller & rCuller)
+void OmSegmentation::Draw(OmVolumeCuller & rCuller)
 {
+	//transform to normal frame
+	glPushMatrix();
+	glMultMatrixf(mNormToSpaceMat.ml);
 
-	//return if mesh data not yet built
-	if (!IsMeshDataBuilt())
+	//draw volume axis
+	if (rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
+		glDrawPositiveAxis();
+	}
+
+	//return if no chunk level drawing
+	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_CHUNKS)) {
+		glPopMatrix();
 		return;
+	}
+	//form culler for this volume and call draw on all volumes
+	OmVolumeCuller volume_culler =
+		rCuller.GetTransformedCuller(mNormToSpaceMat, mNormToSpaceInvMat);
 
-	//initial relevant data values set
-	const SegmentDataSet *p_relv_data_vals;
+	OmSegmentIterator iter(&mSegmentCache);
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
-		//selected segment data values
-		p_relv_data_vals = &mSegmentManager.GetSelectedSegmentDataValues();
-
+		iter.iterOverSelectedIDs();
+		
 	} else if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)) {
-		//unselected segment data values
-		p_relv_data_vals = &mSegmentManager.GetUnselectedSegmentDataValues();
-
-	} else {
-		//else no filtering, so all enabled segment data values
-		p_relv_data_vals = &mSegmentManager.GetEnabledSegmentDataValues();
+		iter.iterOverEnabledIDs();
 	}
 
-	//return if empty data value set
-	if (0 == p_relv_data_vals->size())
+	if( iter.empty() ){
+        	glPopMatrix();
 		return;
+	}
 
-	//push segmentation name
 	glPushName(GetId());
 
 	//draw relevant data values starting from root chunk
-	DrawChunkRecursive(RootMipChunkCoordinate(), *p_relv_data_vals, true, rCuller, p_relv_data_vals->size() );
+	DrawChunkRecursive(RootMipChunkCoordinate(), iter, true, volume_culler );
 
-	//pop seg name
 	glPopName();
+
+        //pop matrix
+        glPopMatrix();
+
 }
+
+
 
 /*
  *	Recursively draw MipChunks within the Segmentation using the MipCoordinate hierarchy.
  *	Uses the OmVolumeCuller to determine the visibility of a MipChunk.  If visible, the
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
-void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, const SegmentDataSet & rRelvDataVals,
-					bool testVis, const OmVolumeCuller & rCuller,
-					const int numSegments )
+void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, 
+					OmSegmentIterator iter,
+					bool testVis, 
+					OmVolumeCuller & rCuller )
 {
-	//get pointer to chunk
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+	// get pointer to chunk
+	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, chunkCoord);
 
-	//TEST FOR CHUNK VISIBILITY IF NECESSARY
+	// TEST FOR CHUNK VISIBILITY IF NECESSARY
 	if (testVis) {
-		//(possible pre-testing optimizations)
-		//check if frustum sphere contains chunk bounding sphere
-		//check if frustom cone contains chunk bounding sphere
-		//check if frustum contains chunk bounding sphere
-
 		//check if frustum contains chunk
 		switch (rCuller.TestChunk(*p_chunk)) {
-		case VISIBILITY_NONE:	//so return from drawing
+		case VISIBILITY_NONE:
 			return;
 
-		case VISIBILITY_PARTIAL:	//continue drawing tree and continue testing children
+		case VISIBILITY_PARTIAL:  //continue drawing tree and continue testing children
 			break;
 
-		case VISIBILITY_FULL:	//continue drawing tree, but assume children are visible
+		case VISIBILITY_FULL:	  //continue drawing tree, but assume children are visible
 			testVis = false;
 			break;
 		}
 	}
-
 	
-	//TEST IF CHUNK SHOULD BE DRAWN
-	//if chunk satisfies draw criteria
-	//	if ( numSegments > 5 && p_chunk->DrawCheck(rCuller) ) {
+	// TEST IF CHUNK SHOULD BE DRAWN
+	// if chunk satisfies draw criteria
 	if ( p_chunk->DrawCheck(rCuller) ) {
-		//intersect enabled segments with data contained segments
-		SegmentDataSet direct_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
-						       direct_relevant_data_set);
 
-		//return if empty
-		if (direct_relevant_data_set.size() == 0)
-			return;
+		QList< OmSegment* > segmentsToDraw;
 
-		//draw data_relevent_segments in this chunk
-		DrawChunk(chunkCoord, direct_relevant_data_set, rCuller);
+		if( mSegmentCache.segmentListDirectCacheHasCoord( chunkCoord ) ){
+			segmentsToDraw = mSegmentCache.getSegmentListDirectCache( chunkCoord );
+		} else {
+			OmIds chunkValues =  p_chunk->GetDirectDataValues();
+			OmSegment * seg = iter.getNextSegment();
+			while( NULL != seg ){
+				SEGMENT_DATA_TYPE val = seg->getValue();
+				if( chunkValues.contains( val ) ){
+					segmentsToDraw.append(seg);
+				}
+				
+				seg = iter.getNextSegment();
+			}
+			mSegmentCache.setSegmentListDirectCache( chunkCoord, segmentsToDraw );
+		}
 
-		//done with chunk
-		return;
+		return DrawChunk(chunkCoord, segmentsToDraw, rCuller);
 	}
-	/*
-	if( !(numSegments > 5) ) {
-		SegmentDataSet direct_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetDirectDataValues(),
-						       direct_relevant_data_set);
 
-		//return if empty
-		if (direct_relevant_data_set.size() == 0)
-			return;
+	// ELSE BREAK DOWN INTO CHILDREN
 
-		//draw data_relevent_segments in this chunk
-		DrawChunk(chunkCoord, direct_relevant_data_set, rCuller);
-	} 
-	*/
-	////ELSE BREAK DOWN INTO CHILDREN
-	//intersect enabled segments with spactially contained segments
-	SegmentDataSet indirect_relevant_data_set;
-	setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, p_chunk->GetIndirectDataValues(),
-						       indirect_relevant_data_set);
-	
-	//return if empty
-	if (indirect_relevant_data_set.size() == 0)
-		return;
-
-	//for each valid child
-	set < OmMipChunkCoord >::iterator itr;
-	for (itr = p_chunk->GetChildrenCoordinates().begin(); itr != p_chunk->GetChildrenCoordinates().end(); itr++) {
+	foreach( OmMipChunkCoord coord, p_chunk->GetChildrenCoordinates() ){
 		//draw child with only relevant segments enabled
-		DrawChunkRecursive(*itr, indirect_relevant_data_set, testVis, rCuller, numSegments);
+		DrawChunkRecursive(coord, iter, testVis, rCuller);
 	}
-
 }
 
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmSegmentation::DrawChunk(const OmMipChunkCoord & chunkCoord, const SegmentDataSet & rRelvDataVals,
-			       const OmVolumeCuller & rCuller)
+void OmSegmentation::DrawChunk(const OmMipChunkCoord & chunkCoord, 
+			       QList< OmSegment * > segmentsToDraw,
+			       OmVolumeCuller & rCuller)
 {
-	//debug ("genone", "OmSegmentation::DrawChunk\n");
+	if( segmentsToDraw.empty() ){
+		return;
+	}
 
-	//get pointer to chunk
-	shared_ptr < OmMipChunk > p_chunk = shared_ptr < OmMipChunk > ();
+	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, chunkCoord);
 
 	//draw extent
 	if (rCuller.CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
 		p_chunk->DrawClippedExtent();
 	}
+
 	//if not set to render segments
 	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_SEGMENT)) {
 		return;
 	}
 
-	//debug ("genone", "OmSegmentation::DrawChunk (isleaf=%i)\n", p_chunk->IsLeaf());
-
-	//if editing and chunk is leaf
-	if ((OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) && p_chunk->IsLeaf()
-						&& GetVoxelizedSegmentDataValues().size()) {
-		//then draw selected as voxels
-		SegmentDataSet selected_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, GetVoxelizedSegmentDataValues(),
-						       selected_relevant_data_set);
-		DrawChunkVoxels(chunkCoord, selected_relevant_data_set, rCuller.GetDrawOptions());
-
-		SegmentDataSet theRest;
-		SegmentDataSet::iterator itr;
-		for (itr = rRelvDataVals.begin(); !(itr == rRelvDataVals.end()); itr++) {
-			if (GetVoxelizedSegmentDataValues().end() ==
-						GetVoxelizedSegmentDataValues().find (*itr)) {
-				theRest.insert (*itr);
-			}
-		}
-		
-
-		//draw un-selected as meshes
-		SegmentDataSet unselected_relevant_data_set;
-		setIntersection < SEGMENT_DATA_TYPE > (rRelvDataVals, theRest,
-						       unselected_relevant_data_set);
-		DrawChunkMeshes(chunkCoord, unselected_relevant_data_set, rCuller.GetDrawOptions());
-
-	} else {
-		//else draw mesh
-		DrawChunkMeshes(chunkCoord, rRelvDataVals, rCuller.GetDrawOptions());
-	}
-}
-
-/*
- *	Draw relavant meshes in MipChunk with specified coordinate.
- */
-void OmSegmentation::DrawChunkMeshes(const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals,
-				     const OmBitfield & drawOps)
-{
-	mMipMeshManager.DrawMeshes(mSegmentManager, drawOps, mipCoord, rRelvDataVals);
+	mMipMeshManager.DrawMeshes(rCuller.GetDrawOptions(), 
+				   chunkCoord, 
+				   segmentsToDraw);
 }
 
 /*
@@ -731,21 +641,7 @@ void OmSegmentation::DrawChunkMeshes(const OmMipChunkCoord & mipCoord, const Seg
 void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const SegmentDataSet & rRelvDataVals,
 				     const OmBitfield & drawOps)
 {
-	//debug ("genone", "OmSegmentation::DrawChunkVoxels\n");
-	mMipVoxelationManager.DrawVoxelations(mSegmentManager, mipCoord, rRelvDataVals, drawOps);
-}
-
-/////////////////////////////////
-///////          Print Methods
-
-void OmSegmentation::Print()
-{
-	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
-
-	if (mSegmentManager.SegmentSize()) {
-		//debug("FIXME", << "\t   Segments:" << endl;
-		mSegmentManager.SegmentCall(&OmSegment::Print);
-	}
+	mMipVoxelationManager.DrawVoxelations(&mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**
@@ -772,9 +668,42 @@ void OmSegmentation::RunMeshQueue()
 	mMeshingMan = NULL;
 }
 
-void OmSegmentation::DeleteCaches()
+void OmSegmentation::KillCacheThreads()
 {
-	mMipMeshManager.KillFetchLoop();
-	mMipVoxelationManager.KillFetchLoop();
-	this->KillFetchLoop();
+	mMipVoxelationManager.KillFetchThread();
+	mMipMeshManager.KillFetchThread();
+	this->KillFetchThread();
+}
+
+void OmSegmentation::FlushDirtySegments()
+{
+	mSegmentCache.flushDirtySegments();
+}
+
+void OmSegmentation::FlushDend()
+{
+	QString dendStr = QString("%1/dend")
+		.arg(GetDirectoryPath());
+	QString dendValStr = QString("%1/dendValues")
+		.arg(GetDirectoryPath());
+	OmHdf5Path path;
+	
+	path.setPathQstr(dendStr);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend);
+
+	path.setPathQstr(dendValStr);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues);
+}
+
+void OmSegmentation::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+		const bool isSegmentation, unsigned char * data )
+{
+	OmSegmentColorizer c(&mSegmentCache);
+
+	c.colorTile( imageData, size, isSegmentation, data );
+}
+
+void OmSegmentation::ReloadDendrogram( const float threshold)
+{
+	mSegmentCache.reloadDendrogram(mDend, mDendValues, mDendCount, threshold);
 }

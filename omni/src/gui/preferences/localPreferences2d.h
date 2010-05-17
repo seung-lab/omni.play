@@ -11,7 +11,7 @@ class LocalPreferences2d : public QWidget
 	LocalPreferences2d(QWidget *parent); 
     
  private slots: 
-	void on_stickyCrosshairMode_stateChanged(int state);
+	void on_stickyCrosshairMode_stateChanged();
 
  private:
  	QGroupBox* makeGeneralPropBox();

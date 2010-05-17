@@ -22,33 +22,27 @@ OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
 
 /////////////////////////////////
 ///////          Accessor Methods
-/*
-const CullingOption& 
-OmVolumeCuller::GetCullingOption() const {
-	return mOption;
-}
- */
-bool OmVolumeCuller::CheckDrawOption(OmBitfield option) const
+bool OmVolumeCuller::CheckDrawOption(OmBitfield option)
 {
 	return mOptionBits & option;
 }
 
-OmBitfield OmVolumeCuller::MaskDrawOptions(OmBitfield mask) const
+OmBitfield OmVolumeCuller::MaskDrawOptions(OmBitfield mask)
 {
 	return mOptionBits & mask;
 }
 
-OmBitfield OmVolumeCuller::GetDrawOptions() const
+OmBitfield OmVolumeCuller::GetDrawOptions()
 {
 	return mOptionBits;
 }
 
-const NormCoord & OmVolumeCuller::GetPosition() const
+NormCoord & OmVolumeCuller::GetPosition()
 {
 	return mPosition;
 }
 
-const NormCoord & OmVolumeCuller::GetFocus() const
+const NormCoord & OmVolumeCuller::GetFocus()
 {
 	return mFocus;
 }
@@ -56,7 +50,7 @@ const NormCoord & OmVolumeCuller::GetFocus() const
 /////////////////////////////////
 ///////          Transform Methods
 
-OmVolumeCuller OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, const Matrix4f & matInv) const
+OmVolumeCuller OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, const Matrix4f & matInv)
 {
 	//compiler should optimize to alloc directly to return address
 	return OmVolumeCuller(mProjModelView * mat, matInv * mPosition, matInv * mFocus, mOptionBits);
@@ -75,40 +69,18 @@ void OmVolumeCuller::TransformCuller(const Matrix4f & mat, const Matrix4f & matI
 /////////////////////////////////
 ///////          Frustum Test Methods
 
-Visibility OmVolumeCuller::TestChunk(const OmMipChunk & rChunk) const
+Visibility OmVolumeCuller::TestChunk(OmMipChunk & rChunk)
 {
 	return mFrustumCuller.testAabb(rChunk.GetNormExtent());
 }
 
-Visibility OmVolumeCuller::VisibilityTestNormBbox(const NormBbox & bbox) const
+Visibility OmVolumeCuller::VisibilityTestNormBbox(const NormBbox & bbox)
 {
 	return mFrustumCuller.testAabb(bbox);
 }
 
-/*
- *	Expensive extraction of projection and modelview matrix from OpenGL.
- *	This should only be performed once per draw loop, all else should be transformed
- *	from another culler.
- */
-
-/*
- void
- OmVolumeCuller::Setup() {
- 
- glGetFloatv(GL_PROJECTION_MATRIX, mProjection.ml);
- glGetFloatv(GL_MODELVIEW_MATRIX, mModelview.ml);
- 
- bool valid;
- mPosition = mModelview.getInverse(valid).getTranslation();
- 
- mFrustumCuller.setup( mProjection * mModelview);
- 
- }
-*/
-
 void OmVolumeCuller::Draw()
 {
-
 	Vector3f v, r, p;
 	int num_pts = 100;
 
@@ -130,20 +102,9 @@ void OmVolumeCuller::Draw()
 
 			glVertex3fv(p.array);
 		}
-
-		//debug("FIXME", << "plane " << plane_idx << " : " << planes[plane_idx] << endl;
-
-		/*
-		   p = planes[plane_idx].projectPointOntoPlane( mPosition );
-		   //debug("FIXME", << "plane " << plane_idx << " : " << p << endl;
-		   glVertex3fv( p.array);
-		 */
 	}
 
 	glEnd();
-
-	//debug("FIXME", << mProjection << endl;
-	//debug("FIXME", << mModelview << endl;
 }
 
 /*

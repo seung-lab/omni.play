@@ -18,7 +18,7 @@ QString OmException::GetName()
 	return QString::fromStdString( mName );
 }
 
-QString OmException::GetMessage()
+QString OmException::GetMsg()
 {
 	return QString::fromStdString( mMessage );
 }

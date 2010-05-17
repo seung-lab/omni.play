@@ -1,12 +1,17 @@
-#include <boost/thread.hpp>
 #include "omSystemInformation.h"
 #include "common/omDebug.h"
 #include <stdio.h>
 
 unsigned int OmSystemInformation::get_num_cores()
 {
-	const unsigned int boost_num_cores = boost::thread::hardware_concurrency();
-	return boost_num_cores;
+	int num_cores = 5;
+#if __APPLE__
+	return num_cores;
+#elif WIN32
+	return num_cores;
+#else	// LINUX DEFAULT?
+	return num_cores;
+#endif
 }
 
 #ifdef __APPLE__
@@ -32,6 +37,12 @@ unsigned int OmSystemInformation::get_num_cores()
 
 		// Convert to megabites
 		return physical_memory / 1024 / 1024;
+	}
+#elif WIN32
+	
+	unsigned int OmSystemInformation::get_total_system_memory_megs()
+	{
+		return 5000;
 	}
 #else
 	#include <sys/sysinfo.h>

@@ -60,7 +60,7 @@ QGroupBox* LocalPreferencesMeshing::makeMeshBox()
   	return groupBox;
 }
 
-void LocalPreferencesMeshing::on_storeMeshesInTempFolder_stateChanged( int state)
+void LocalPreferencesMeshing::on_storeMeshesInTempFolder_stateChanged( int)
 {
 	const bool val = GuiUtils::getBoolState( storeMeshesInTempFolder->checkState() );
 	OmLocalPreferences::setStoreMeshesInTempFolder( val );

@@ -11,6 +11,14 @@
 
 #define DEBUG 0
 
+OmChannel::OmChannel()
+{
+        /** Set The Name of the Cache */
+        SetCacheName("OmChannel --> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim);
+}
+
 OmChannel::OmChannel(OmId id)
  : OmManageableObject(id)
 {
@@ -18,10 +26,10 @@ OmChannel::OmChannel(OmId id)
 	//set manageable object name
 	char idchar[25];
 	snprintf(idchar, sizeof(idchar), "%i", (int)id);
-	SetName("channel" + string(idchar));
+	SetName( QString("channel%1").arg(idchar) );
 
 	//set permenant directory name
-	SetDirectoryPath(string("channels/") + GetName() + string("/"));
+	SetDirectoryPath( QString("channels/%1/").arg(GetName()) );
 
 	//init properties
 	SetHue(Vector3f::ONE);
@@ -39,7 +47,9 @@ OmChannel::OmChannel(OmId id)
 	BuildVolumeData();
 
 	/** Set The Name of the Cache */
-        SetCacheName("OmChannel");
+        SetCacheName("OmChannel --> OmMipVolume");
+        int chunkDim = GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*chunkDim);
 }
 
 /////////////////////////////////
@@ -48,8 +58,7 @@ OmChannel::OmChannel(OmId id)
 /*
  *	Hue color property
  */
-void
- OmChannel::SetHue(const Vector3f & hue)
+void OmChannel::SetHue(const vmml::Vector3< float > & hue)
 {
 	mHueColor = hue;
 }
@@ -70,8 +79,6 @@ bool OmChannel::IsVolumeDataBuilt()
 void OmChannel::BuildVolumeData()
 {
 	OmMipVolume::Build();
-	OmProject::Save();
-	printf("done building channel data\n");
 }
 
 OmFilter2d& OmChannel::AddFilter() {
@@ -84,7 +91,7 @@ OmFilter2d& OmChannel::GetFilter(OmId id) {
         return mFilter2dManager.GetFilter(id);
 }
 
-const set < OmId > & OmChannel::GetValidFilterIds()
+const OmIds & OmChannel::GetValidFilterIds()
 {
 	return mFilter2dManager.GetValidFilterIds();
 }

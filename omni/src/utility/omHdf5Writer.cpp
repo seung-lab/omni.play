@@ -38,3 +38,8 @@ void OmHdf5Writer::dataset_raw_create_tree_overwrite( OmHdf5Path path, int size,
 {
 	hdf5->dataset_raw_create_tree_overwrite( path, size, data);
 }
+
+void OmHdf5Writer::dataset_write_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void* imageData)
+{
+	hdf5->dataset_write_raw_chunk_data( path, dataExtent, bytesPerSample, imageData );
+}

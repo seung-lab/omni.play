@@ -9,8 +9,6 @@
 
 #include "segment/omSegmentContextMenu.h"
 
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 
 #include <QtGui> 
 
@@ -46,6 +44,9 @@ public:
 	void EditModeMouseDoubleClick(QMouseEvent *event);
 	void EditModeMouseWheel(QWheelEvent *event);
 	void EditModeKeyPress(QKeyEvent *event);
+
+	//dend mode
+	void DendModeMouseReleased(QMouseEvent *event);
 	
 	
 	//camera movement
@@ -61,7 +62,7 @@ public:
 	//voxel picking
 	bool PickVoxel(QKeyEvent *keyEvent, QMouseEvent *mouseEvent, bool drag, DataCoord &voxel);
 	bool PickVoxelMouse(QMouseEvent *mouseEvent, bool drag, DataCoord &voxel);
-	bool PickVoxelCameraFocus(QKeyEvent *keyEvent, bool drag, DataCoord &voxel);
+	bool PickVoxelCameraFocus(DataCoord &voxel);
 	
 	
 	//segment actions
@@ -75,7 +76,7 @@ public:
 	void VoxelSelectToggleKey(QKeyEvent *keyEvent, bool augment);
 	
 	void VoxelSetMouse(QMouseEvent *mouseEvent, bool drag);
-	void VoxelSetKey(QKeyEvent *keyEvent, bool augment);
+	void VoxelSetKey(QKeyEvent *, bool augment);
 	
 	
 	//segment context menu
@@ -93,7 +94,7 @@ private:
 
 	void crosshair(QMouseEvent * event);
 	void CenterAxisOfRotation(QMouseEvent * event);
-	bool PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
+	OmId PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
 	bool mCPressed;
 };
 

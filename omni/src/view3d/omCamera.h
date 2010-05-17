@@ -1,3 +1,8 @@
+//
+// TODO: GIVE CREDIT TO Eugene Hsu, this is mostly HIS CODE 
+//       and based on 6.839 demo code for camera!
+//
+
 #ifndef OM_GL_CAMERA_H
 #define OM_GL_CAMERA_H
 
@@ -10,8 +15,6 @@
 #include "common/omStd.h"
 #include "common/omException.h"
 
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 
 class OmCameraArcBall;

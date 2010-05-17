@@ -1,7 +1,7 @@
 #ifndef OM_MIP_CHUNK_H
 #define OM_MIP_CHUNK_H
 
-/*
+/**
  *	MipChunks are designed to associated to volume data set of static dimensions.  While the data can change,
  *	the size cannot.  This simplifies the interface so as to make it easier to add more power to opening
  *	and closing the volume.  Specifically a MipChunk is associated to a MipChunkCache that keeps track of
@@ -10,101 +10,96 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include "omDataVolume.h"
-#include "omVolumeTypes.h"
 #include "omMipChunkCoord.h"
-
-#include "segment/omSegmentTypes.h"
-#include "system/omSystemTypes.h"
 #include "system/omCacheableBase.h"
 
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
 #include <QMutex>
-using namespace vmml;
-
 
 enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE };
-
 
 class vtkImageData;
 class OmMipVolume;
 class OmVolumeCuller;
+class OmSegmentCache;
 
-class OmMipChunk : public OmDataVolume, protected OmCacheableBase {
+class OmMipChunk : public OmCacheableBase {
 
 public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	~OmMipChunk();
-	
-	
+		
 	//overridden datavolume methods so as to notify cache
 	void Open();
-	void OpenForWrite();
+	virtual void OpenForWrite();
 	void Flush();
-	void Close();
-	
+	virtual void Close();
+	bool IsOpen();
+
 	//properties
 	const DataBbox& GetExtent();
 	
 	//dirty accessors
-	bool IsDirty() const;
-	bool IsVolumeDataDirty() const;
-	bool IsMetaDataDirty() const;
+	bool IsDirty();
+	bool IsVolumeDataDirty();
+	bool IsMetaDataDirty();
 	
 	
 	//data accessors
-	uint32_t GetVoxelValue(const DataCoord &vox);
-	void SetVoxelValue(const DataCoord &vox, uint32_t value);
+	virtual quint32 GetVoxelValue(const DataCoord &vox);
+	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
 	void SetImageData(vtkImageData *imageData);
 
 	
 	//meta data io
-	void ReadVolumeData();
-	void WriteVolumeData();
+	virtual void ReadVolumeData();
+	virtual void WriteVolumeData();
 	void ReadMetaData();
 	void WriteMetaData();
 	
 	
 	//meta data accessors
-	const SegmentDataSet& GetModifiedVoxelValues() const;
+	const SegmentDataSet& GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 	
 	
 	//mipchunk data accessors
-	const SegmentDataSet& GetDirectDataValues() const;	
-	const SegmentDataSet& GetIndirectDataValues() const;
-	void RefreshDirectDataValues();
-	void RefreshIndirectDataValues();
+	const SegmentDataSet & GetDirectDataValues();
+	virtual void RefreshDirectDataValues( OmSegmentCache *);
 	
 
 	//chunk extent
-	const NormBbox& GetNormExtent() const;
-	const NormBbox& GetClippedNormExtent() const;
+	const NormBbox& GetNormExtent();
+	const NormBbox& GetClippedNormExtent();
 	
 	
 	//mip properties
-	int GetLevel() const;
-	bool IsRoot() const;
-	bool IsLeaf() const;
+	int GetLevel();
+	bool IsRoot();
+	bool IsLeaf();
 	const OmMipChunkCoord& GetCoordinate();
 	const OmMipChunkCoord& GetParentCoordinate();
 	const set<OmMipChunkCoord>& GetChildrenCoordinates();
 	
 	//slice
 	AxisAlignedBoundingBox<int> ExtractSliceExtent(OmDataVolumePlane plane, int coord);
-	void* ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
+	virtual void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
 	
 	//meshing
 	vtkImageData* GetMeshImageData();
 	
 	
 	//drawing
-	bool DrawCheck( const OmVolumeCuller & );
+	bool DrawCheck( OmVolumeCuller & );
 	void DrawClippedExtent();
 	
-	
-private:
+	int GetBytesPerSample();
+	bool ContainsVoxel(const DataCoord &vox);
+	const Vector3<int> GetDimensions();
+
+protected:
+	bool mIsOpen;
+	void SetOpen(bool);
+
 	QMutex * mOpenLock;
 	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
@@ -112,18 +107,20 @@ private:
 	//mip volume this chunk belongs to
 	OmMipVolume * const mpMipVolume;
 	
-	//image data of chunk
-	vtkImageData *mpImageData;	
-	
-	
 	//cache direct and indirectly contained values for drawing tree
-	SegmentDataSet mDirectlyContainedDataValuesSet;	
-	SegmentDataSet mIndirectlyContainedDataValuesSet;
-	
+	bool containedValuesDataLoaded;
+	void loadMetadataIfPresent();
+	SegmentDataSet mDirectlyContainedValues;
+
 	//keep track what needs to be written out
-	bool mVolumeDataDirty;
-	bool mMetaDataDirty;
-	
+	bool mChunkVolumeDataDirty;
+	bool mChunkMetaDataDirty;
+
+	void setVolDataDirty();
+	void setMetaDataDirty();
+	void setVolDataClean();
+	void setMetaDataClean();
+
 	//octree properties
 	DataBbox mDataExtent;
 	NormBbox mNormExtent;			//extent of chunk in norm space
@@ -131,45 +128,21 @@ private:
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
 	set<OmMipChunkCoord> mChildrenCoordinates;
-	
-	
+		
 	//chunk properties
 	string mFileName;
 	string mDirectoryPath;
 	
 	//voxel management
 	SegmentDataSet mModifiedVoxelValues;
-	
-	
-	//friend class OmMipVolume;
-	friend ostream& operator<<(ostream &out, const OmMipChunk &mc);
-	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+
+ private:
+
+	//image data of chunk
+	vtkImageData *mpImageData;	
+
+	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
+	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 };
-
-
-
-
-
-/////////////////////////////////
-///////		 Serialization
-
-
-BOOST_CLASS_VERSION(OmMipChunk, 0)
-
-template<class Archive>
-void 
-OmMipChunk::serialize(Archive & ar, const unsigned int file_version) {
-
-	//meta data
-	ar & mDirectlyContainedDataValuesSet;
-	ar & mIndirectlyContainedDataValuesSet;
-	ar & mModifiedVoxelValues;
-}
-
-
-
 
 #endif

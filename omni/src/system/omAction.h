@@ -1,13 +1,7 @@
 #ifndef OM_ACTION_H
 #define OM_ACTION_H
 
-/*
- *
- *
- */
-
-#include "common/omStd.h"
-
+#include "common/omCommon.h"
 #include <QUndoCommand>
 
 class OmAction : public QUndoCommand {

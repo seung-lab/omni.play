@@ -1,41 +1,17 @@
-
 #include "omViewBoxWidget.h"
-#include "view3d/omCamera.h"
 
-#include "system/omSystemTypes.h"
 #include "system/omStateManager.h"
 #include "common/omGl.h"
 #include "system/omLocalPreferences.h"
 
-#define DEBUG 0
-
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;
-
-////////////////////////////////////////
-///////         Utility Functions Prototypes
-
-void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, bool wire);
-//void drawBboxSlice(const SpaceBbox &bbox, OmViewBoxPlane plane, float offset, bool wire);
-void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth);
-void drawLines(SpaceCoord depth);
-
-/////////////////////////////////
-///////
-///////          Example Class
-///////
-
-/////////////////////////////////
-///////          Example Methods
 
 /**
  *	Draw the three orthogonal slices from of the view box
  */
-
 void OmViewBoxWidget::Draw()
 {
-	//cout << "in OmViewBoxWidget::Draw()" << endl;
-
 	//push attrs
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -45,30 +21,30 @@ void OmViewBoxWidget::Draw()
 
 	//disable depth buffer
 	glDepthMask(GL_FALSE);
+
 	//disable lighting
 	glDisable(GL_LIGHTING);
+
 	//set line width
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-
-	/*
-	   const SpaceBbox &r_view_bbox = OmStateManager::GetViewBbox();
-	   const SpaceCoord &r_slice_point = OmStateManager::GetViewCenter();
-
-	   drawBboxSlice(r_view_bbox, XY_PLANE, r_slice_point.z, true);
-	   drawBboxSlice(r_view_bbox, XZ_PLANE, r_slice_point.y, true);
-	   drawBboxSlice(r_view_bbox, YZ_PLANE, r_slice_point.x, true);
-	 */
-
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
-		drawSlice(XY_VIEW, OmStateManager::GetViewSliceMin(XY_VIEW), OmStateManager::GetViewSliceMax(XY_VIEW),
- 		  OmStateManager::GetViewSliceDepth(XY_VIEW));
-		drawSlice(XZ_VIEW, OmStateManager::GetViewSliceMin(XZ_VIEW), OmStateManager::GetViewSliceMax(XZ_VIEW),
-		  OmStateManager::GetViewSliceDepth(XZ_VIEW));
-		drawSlice(YZ_VIEW, OmStateManager::GetViewSliceMin(YZ_VIEW), OmStateManager::GetViewSliceMax(YZ_VIEW),
-		  OmStateManager::GetViewSliceDepth(YZ_VIEW));
-	}
+		drawSlice(XY_VIEW, 
+			  OmStateManager::GetViewSliceMin(XY_VIEW), 
+			  OmStateManager::GetViewSliceMax(XY_VIEW),
+			  OmStateManager::GetViewSliceDepth(XY_VIEW));
 
+		drawSlice(XZ_VIEW, 
+			  OmStateManager::GetViewSliceMin(XZ_VIEW), 
+			  OmStateManager::GetViewSliceMax(XZ_VIEW),
+			  OmStateManager::GetViewSliceDepth(XZ_VIEW));
+
+		drawSlice(YZ_VIEW, 
+			  OmStateManager::GetViewSliceMin(YZ_VIEW), 
+			  OmStateManager::GetViewSliceMax(YZ_VIEW),
+			  OmStateManager::GetViewSliceDepth(YZ_VIEW));
+	}
+	
 	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
 		drawLines(OmStateManager::GetViewDepthCoord());
 	}
@@ -76,14 +52,11 @@ void OmViewBoxWidget::Draw()
 	glPopAttrib();
 }
 
-
-
 /**
  *	Draw a rectangle given the verticies in counter-clockwise order
  */
-void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, bool wire)
+void OmViewBoxWidget::drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3)
 {
-
 	glBegin(GL_LINE_STRIP);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);
@@ -93,7 +66,7 @@ void drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3, b
 	glEnd();
 }
 
-void drawLines(SpaceCoord depth)
+void OmViewBoxWidget::drawLines(SpaceCoord depth)
 {
 	SpaceCoord v0, v1;
 
@@ -127,7 +100,7 @@ void drawLines(SpaceCoord depth)
 /**
  *	Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
-void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth)
+void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth)
 {
 
 	SpaceCoord v0, v1, v2, v3;
@@ -135,7 +108,6 @@ void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float
 	switch (plane) {
 	case XY_VIEW:
 		glColor3fv(OMGL_BLUE);
-		//cout << "min: " << min << "   max: " << max << endl;
 		v0 = SpaceCoord(min.x, min.y, depth);
 		v1 = SpaceCoord(max.x, min.y, depth);
 		v2 = SpaceCoord(max.x, max.y, depth);
@@ -159,7 +131,7 @@ void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float
 		break;
 	}
 
-	drawRectangle(v0, v1, v2, v3, true);
+	drawRectangle(v0, v1, v2, v3);
 
 }
 

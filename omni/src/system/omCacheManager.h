@@ -2,10 +2,10 @@
 #define OM_CACHE_MANAGER_H
 
 #include "system/events/omPreferenceEvent.h"
-
-#include "common/omSerialization.h"
-#include "common/omThreads.h"
 #include "common/omStd.h"
+#include "system/omCacheInfo.h"
+
+#include <QMutex>
 
 class OmCacheBase;
 
@@ -25,7 +25,6 @@ struct CacheGroupProperties {
 	unsigned long MaxSize;
         //current size and max size in bytes
         unsigned long Size;
-	pthread_t mRemoveThread;
 	set< OmCacheBase* > CacheSet;
 };
 
@@ -38,9 +37,11 @@ public:
 
 	static void AddCache(OmCacheGroup group, OmCacheBase *base);
 	static void RemoveCache(OmCacheGroup group, OmCacheBase *base);
+	static QList< OmCacheInfo > GetCacheInfo(OmCacheGroup group);
 	
 	static void UpdateCacheSize(OmCacheGroup group, int delta);
 	static void UpdateCacheSizeFromLocalPrefs();
+	static unsigned int Freshen(bool freshen);
 	
 	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
@@ -66,8 +67,9 @@ private:
 	static OmCacheManager* mspInstance;
 		
 	//properties map
-	pthread_mutex_t mCacheMapMutex;
-	pthread_mutex_t mRealCacheMapMutex;
+	QMutex mCacheMapMutex;
+	QMutex mRealCacheMapMutex;
+	QMutex mFreshnessMutex;
 	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
 	map< OmCacheGroup, CacheGroupProperties > mRemoveCacheMap;
 	
@@ -75,20 +77,7 @@ private:
 	float mTargetRatio;
 	bool mCurrentlyCleaning;
 	int mThreadCount;
-	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmCacheManager, 0)
-
-template<class Archive>
-void 
-OmCacheManager::serialize(Archive & ar, const unsigned int file_version) {
-}
 
 #endif

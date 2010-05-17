@@ -26,19 +26,19 @@ void
 	switch (type()) {
 
 	case OmViewEvent::VIEW_BOX_CHANGE:
-		p_cast_listener->ViewBoxChangeEvent(this);
+		p_cast_listener->ViewBoxChangeEvent();
 		return;
 
 	case OmViewEvent::VIEW_CENTER_CHANGE:
-		p_cast_listener->ViewCenterChangeEvent(this);
+		p_cast_listener->ViewCenterChangeEvent();
 		return;
 
 	case OmViewEvent::VIEW_POS_CHANGE:
-		p_cast_listener->ViewPosChangeEvent(this);
+		p_cast_listener->ViewPosChangeEvent();
 		return;
 
 	case OmViewEvent::REDRAW:
-		p_cast_listener->ViewRedrawEvent(this);
+		p_cast_listener->ViewRedrawEvent();
 		return;
 	default:
 		assert(false);

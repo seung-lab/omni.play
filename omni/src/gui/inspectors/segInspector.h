@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QWidget> 
-#include "system/omSystemTypes.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
 
@@ -47,6 +46,7 @@ public:
 	QGroupBox* makeToolsBox();
 	QGroupBox* makeNotesBox();
 	QGroupBox* makeStatsBox();
+	QGroupBox* makeVolBox();
 
 	void doMeshinate( OmSegmentation * current_seg );
 	QProcess* mMeshinatorProc;

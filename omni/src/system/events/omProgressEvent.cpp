@@ -50,23 +50,23 @@ void OmProgressEvent::Dispatch(OmEventListener * pListener)
 	switch (type()) {
 
 	case OmProgressEvent::PROGRESS_SHOW:
-		p_cast_listener->ProgressShow(this);
+		p_cast_listener->ProgressShow();
 		return;
 
 	case OmProgressEvent::PROGRESS_HIDE:
-		p_cast_listener->ProgressHide(this);
+		p_cast_listener->ProgressHide();
 		return;
 
 	case OmProgressEvent::PROGRESS_RANGE:
-		p_cast_listener->ProgressRangeEvent(this);
+		p_cast_listener->ProgressRangeEvent();
 		return;
 
 	case OmProgressEvent::PROGRESS_VALUE:
-		p_cast_listener->ProgressValueEvent(this);
+		p_cast_listener->ProgressValueEvent();
 		return;
 
 	case OmProgressEvent::PROGRESS_INCREMENT:
-		p_cast_listener->ProgressIncrementEvent(this);
+		p_cast_listener->ProgressIncrementEvent();
 		return;
 
 	default:

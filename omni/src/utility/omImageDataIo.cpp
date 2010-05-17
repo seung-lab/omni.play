@@ -1,8 +1,6 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
 #include "utility/omDataLayer.h"
-#include "utility/omDataReader.h"
-#include "utility/omDataWriter.h"
 #include "utility/omHdf5Helpers.h"
 #include "common/omVtk.h"
 
@@ -33,15 +31,13 @@
 
 #include <strnatcmp.h>
 
-#include <hdf5.h>
+#include "utility/omHdf5.h"
 #include "common/omDebug.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////          ImageType Methods
 
-/*
+/**
  *	Return image type based on filename extension
  */
 ImageType OmImageDataIo::om_imagedata_parse_image_type( QString fileNameAndPath )
@@ -100,12 +96,11 @@ vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader(ImageType type)
 	case HDF5_TYPE:
 	case NONE_TYPE:
 		throw OmAccessException("File type not recognized.");
-
 	}
 
 	//read from lowerleft (since it writes from lower left)
 	reader->SetFileLowerLeft(1);
-	//debug("FIXME", << reader->GetFileLowerLeft() << endl;
+
 	return reader;
 }
 
@@ -133,7 +128,7 @@ vtkImageData * OmImageDataIo::om_imagedata_read( QFileInfoList sourceFilenamesAn
 		return om_imagedata_read_vtk( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
 
 	case HDF5_TYPE:
-		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
+		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, dataExtentBbox, bytesPerSample);
 
 	default:
 		assert(false && "Unknown file format");
@@ -210,7 +205,6 @@ vtkImageData * OmImageDataIo::om_imagedata_read_vtk( QFileInfoList sourceFilenam
 }
 
 vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
-						      const DataBbox srcExtentBbox,
 						      const DataBbox dataExtentBbox, 
 						      int bytesPerSample)
 {
@@ -221,39 +215,10 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true, true );
 
 	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
-								   dataExtentBbox, 
-								   bytesPerSample);
+								  dataExtentBbox, 
+								  bytesPerSample);
 	return data;
 }
-
-bool OmImageDataIo::are_file_names_valid( QFileInfoList sourceFilenamesAndPaths )
-{
-	if( sourceFilenamesAndPaths.empty() ){
-		return false;
-	}
-
-	foreach( QFileInfo file, sourceFilenamesAndPaths ){
-		if( !file.exists() ){
-			return false;
-		}
-
-		switch ( om_imagedata_parse_image_type( file.filePath() )){
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-		case HDF5_TYPE:
-			break;
-
-		default:
-			printf("invalid file: %s\n", qPrintable(file.filePath()) );
-			return false;
-		}
-	}
-
-	return true;
-}
-
 
 /*
  *	Destination extent is data extent when not specified.

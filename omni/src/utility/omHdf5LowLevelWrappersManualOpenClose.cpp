@@ -19,6 +19,7 @@ OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(str
 
 OmHdf5LowLevelWrappersManualOpenClose::~OmHdf5LowLevelWrappersManualOpenClose()
 {
+	
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::open()
@@ -136,4 +137,30 @@ Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_wi
 	HDF5_UNWRAP();
 
 	return ret;
+}
+
+void* OmHdf5LowLevelWrappersManualOpenClose::dataset_read_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+{
+	void* ret;
+	HDF5_WRAP();
+	ret = hdfLowLevel.om_hdf5_dataset_read_raw_chunk_data(fileId, name, dataExtent, bytesPerSample);
+	HDF5_UNWRAP();
+	return ret;
+}
+
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData)
+{
+	HDF5_WRAP();
+	hdfLowLevel.om_hdf5_dataset_write_raw_chunk_data(fileId, name, dataExtent, bytesPerSample,  imageData);
+	HDF5_UNWRAP();
+}
+
+Vector3< int > OmHdf5LowLevelWrappersManualOpenClose::dataset_get_dims_with_lock( OmHdf5Path path )
+{
+	Vector3<int> ret;
+	HDF5_WRAP();
+	ret = hdfLowLevel.om_hdf5_dataset_get_dims_with_lock(fileId, name);
+	HDF5_UNWRAP();
+
+	return ret;	
 }

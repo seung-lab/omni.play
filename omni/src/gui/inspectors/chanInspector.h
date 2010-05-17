@@ -3,7 +3,6 @@
 
 #include <QWidget> 
 #include "ui_chanInspector.h" 
-#include "system/omSystemTypes.h"
 #include "utility/dataWrappers.h"
 #include "volume/omChannel.h"
 #include <QFileInfoList>
@@ -19,7 +18,6 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	OmId getChannelID();
 
  	QString raiseFileDialog();
- 	void intermediate_build_call(OmChannel *current_channel);
 	ChannelDataWrapper getChannelDataWrapper();
 
  private slots:
@@ -29,6 +27,7 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
+	void nameEditChanged();
 
  private:
 	ChannelDataWrapper cdw;

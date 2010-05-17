@@ -2,6 +2,8 @@
 
 #include "omTile.h"
 
+#include "volume/omVolume.h"
+#include "project/omProject.h"
 #include "volume/omMipChunk.h"
 #include "system/omStateManager.h"
 
@@ -21,9 +23,6 @@
 
 OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol)
 {
-
-	//debug("genone","OmTile::OmTile()");
-
 	view_type = viewtype;
 	vol_type = voltype;
 
@@ -43,7 +42,6 @@ OmTile::~OmTile()
 
 void OmTile::AddOverlay(ObjectType secondtype, OmId second_id, OmMipVolume * secondvol)
 {
-	//debug("genone","OmTile::AddOverlay()");
 	background_type = secondtype;
 	backgroundID = second_id;
 	mBackgroundVolume = secondvol;
@@ -56,8 +54,6 @@ void OmTile::SetNewAlpha(float newval)
 
 OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
 {
-	//std::cerr << "entering " << __FUNCTION__ << endl;
-
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
 	if (mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
@@ -86,11 +82,9 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingT
 			OmTextureID *textureID;
 
 			if (vol_type == CHANNEL) {
-				OmIds myIdSet;
-
 				textureID =
 				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, cache, vData, OMTILE_NEEDTEXTUREBUILT);
+						    cache, vData, OMTILE_NEEDTEXTUREBUILT);
 			} else {
 				void * out = NULL;
 				if (1 == mBytesPerSample) {
@@ -100,23 +94,22 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingT
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
 					}
-					OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vDataFake), tile_dims, key, &out);
+					setMyColorMap(((SEGMENT_DATA_TYPE *) vDataFake), tile_dims, key, &out);
 					textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
+						    cache, out, OMTILE_NEEDCOLORMAP);
 					free(vDataFake);
 					free(vData);
 				}
-				OmIds myIdSet = setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
+				setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
 				textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    myIdSet, cache, out, OMTILE_NEEDCOLORMAP);
+						    cache, out, OMTILE_NEEDCOLORMAP);
 				free(vData);
 			}
 			return textureID;
 		}
 	}
-	// //debug("FIXME", << "MIP COORD IS INVALID" << endl;
-	OmIds myIdSet;
-	OmTextureID *textureID = new OmTextureID(key, 0, 0, 0, 0, myIdSet, NULL, NULL, OMTILE_COORDINVALID);
+
+	OmTextureID *textureID = new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
 	//glDisable (GL_TEXTURE_2D); /* disable texture mapping */ 
 	return textureID;
 }
@@ -125,26 +118,26 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 {
 	//TODO: pull more data out when chunk is open
 
-	//debug("genone","INSIDE HDF5 ERROR");
+	QExplicitlySharedDataPointer < OmSimpleChunk > my_chunk;
+	vol->GetSimpleChunk(my_chunk, TileToMipCoord(key));
 
-	shared_ptr < OmMipChunk > my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key));
-	////debug("genone","after hdf5 error?");
-	int mDepth = GetDepth(key, vol);
+	int mDepth = GetDepth(key);
 
 	my_chunk->Open();
 
 	int realDepth = mDepth % (vol->GetChunkDimension());
 
 	void *void_data = NULL;
-	if (view_type == XY_VIEW) {
-		////debug("genone","realdepth: " << realDepth);
-		////debug("genone","mipcoord: " << TileToMipCoord(key));
+	switch( view_type ){
+	case XY_VIEW:
 		void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, false);
-	} else if (view_type == XZ_VIEW) {
+		break;
+	case XZ_VIEW:
 		void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, false);
-	} else if (view_type == YZ_VIEW) {
+		break;
+	case YZ_VIEW:
 		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
+		break;
 	}
 
 	return void_data;
@@ -152,20 +145,18 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 {
-
 	// find mip coord
-	NormCoord mNormCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
+	NormCoord mNormCoord = current_seg.SpaceToNormCoord(key.Coordinate);
 	return mVolume->NormToMipCoord(mNormCoord, key.Level);
-
 }
 
-int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
+int OmTile::GetDepth(const OmTileCoord & key)
 {
-	NormCoord normCoord = OmVolume::SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = OmVolume::NormToDataCoord(normCoord);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
+	NormCoord normCoord = current_seg.SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = current_seg.NormToDataCoord(normCoord);
         float factor=OMPOW(2,key.Level);
-
-	debug("tile", "factor:%f\n", factor);
 
 	int ret;
 
@@ -180,116 +171,28 @@ int OmTile::GetDepth(const OmTileCoord & key, OmMipVolume * vol)
 		ret = (int)(dataCoord.x/factor);
 		break;
 	}
+
 	return ret;
 }
 
-int clamp(int c)
+void OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
-	if (c > 255)
-		return 255;
-	return c;
-}
-
-OmIds OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
-{
-	//debug("genone","OmTile::setMyColorMap(imageData)");
-	debug("blank", "going to make it the texture now\n");
-
-	OmIds found_ids;
-
-	DataBbox data_bbox = mVolume->MipCoordToDataBbox(TileToMipCoord(key), 0);
-
 	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
 
-	int ctr = 0;
-	int newctr = 0;
+	// FIXME: is myID always referring to a segmentation ID?
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
 
-	//debug ("genone", "key volume type: %i\n", key.mVolType);
+	bool isSegmentation = (SEGMENTATION == key.mVolType);
+	
+	current_seg.ColorTile( imageData, 
+			       dims.x * dims.y,
+			       isSegmentation,
+			       data );
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
-	bool doValidate = current_seg.GetSelectedSegmentDataValues ().size ();
-	if (SEGMENTATION == key.mVolType) {
-		doValidate = false;	
-	}
-
-	map < SEGMENT_DATA_TYPE, QColor > speedTable;
-	QColor newcolor;
-	SEGMENT_DATA_TYPE lastid = 0;
-
-	// looping through each value of imageData, which is strictly dims.x * dims.y big, no extra because of cast to SEGMENT_DATA_TYPE
-	for (int i = 0; i < dims.x * dims.y; i++) {
-		SEGMENT_DATA_TYPE tmpid = (SEGMENT_DATA_TYPE) imageData[i];
-		map < SEGMENT_DATA_TYPE, QColor >::iterator it = speedTable.find(tmpid);
-
-		if (tmpid != lastid) {
-			if (speedTable.end() == it) {
-
-				//debug("FIXME", << "gotten segment id mapped to value" << endl;
-
-				OmId id = current_seg.GetSegmentIdMappedToValue(tmpid);
-				if (id == 0) {
-					data[ctr] = 0;
-					data[ctr + 1] = 0;
-					data[ctr + 2] = 0;
-					data[ctr + 3] = 255;
-					newcolor = qRgba(0, 0, 0, 255);
-				} else {
-
-					found_ids.insert(id);
-
-					// //debug("FIXME", << "asking for color now" << endl;
-					const Vector3 < float >&color =
-					    OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
-
-					if (current_seg.IsSegmentSelected(id))
-						newcolor =
-						    qRgba(clamp(color.x * 255 * 2.5), clamp(color.y * 255 * 2.5),
-							  clamp(color.z * 255 * 2.5), 100);
-
-					else {
-						if (doValidate)
-							newcolor = qRgba(0, 0, 0, 255);
-						else
-							newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
-					}
-
-					data[ctr] = newcolor.red();
-					data[ctr + 1] = newcolor.green();
-					data[ctr + 2] = newcolor.blue();
-					data[ctr + 3] = 255;
-				}
-
-				speedTable[tmpid] = newcolor;
-				//debug("FIXME", << " adding to speed table" << endl;
-			} else {
-				//debug("FIXME", << " using speed table" << endl;
-				newcolor = (*it).second;
-				data[ctr] = newcolor.red();
-				data[ctr + 1] = newcolor.green();
-				data[ctr + 2] = newcolor.blue();
-				data[ctr + 3] = 255;
-			}
-		} else {
-			data[ctr] = newcolor.red();
-			data[ctr + 1] = newcolor.green();
-			data[ctr + 2] = newcolor.blue();
-			data[ctr + 3] = 255;
-		}
-		newctr = newctr + 1;
-		ctr = ctr + 4;
-		lastid = tmpid;
-	}
-	debug("blank", "going to make it the texture now\n");
 	*rData = data;
-
-	return found_ids;
 }
 
-void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID, 
-				  int dim, 
-				  set < DataCoord > &vox, 
-				  QColor & color,
-				  int tl)
+void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 {
 	// so instead of relying on the color, i want to have *data be filled
 	//   with the appropriate value from channel
@@ -302,7 +205,7 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 
 	set < DataCoord >::iterator itr;
 
-	OmSegmentation & current_seg = OmVolume::GetSegmentation(myID);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
 
 	for (itr = vox.begin(); itr != vox.end(); itr++) {
 
@@ -348,7 +251,9 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 			if (current_seg.IsSegmentSelected(id)) {
 
 				switch (OmStateManager::GetSystemMode()) {
-				case NAVIGATION_SYSTEM_MODE:{
+				case NAVIGATION_SYSTEM_MODE:
+				case DEND_MODE:
+
 					newcolor = qRgba(255, 255, 0, 255);
 
 					data[0] =
@@ -358,12 +263,12 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 					data[2] =
 						(newcolor.blue() * .95) + ((bg_voxel_value) * (1.0 - .95));
 					data[3] = 255;
-				}
+					
 					break;
 
 				case EDIT_SYSTEM_MODE:{
-					const Vector3 < float >&color =
-						OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+					OmSegment * segment = OmProject::GetSegmentation(myID).GetSegment(id);
+					const Vector3 < float >&color = segment->GetColor();
 
 					newcolor =
 						qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
@@ -379,9 +284,8 @@ void OmTile::ReplaceTextureRegion(shared_ptr < OmTextureID > &texID,
 
 				}
 			} else {
-
-				const Vector3 < float >&color =
-					OmVolume::GetSegmentation(myID).GetSegment(id).GetColor();
+				OmSegment * segment = OmProject::GetSegmentation(myID).GetSegment(id);
+				const Vector3 < float >&color = segment->GetColor();
 
 				newcolor = qRgba(color.x * 255, color.y * 255, color.z * 255, 100);
 

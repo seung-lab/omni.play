@@ -14,8 +14,7 @@
 #include "inspectors/inspectorProperties.h"
 
 #include "common/omStd.h"
-#include "system/omSystemTypes.h"
-#include "volume/omFilter.h"
+#include "volume/omFilter2d.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 
@@ -47,18 +46,20 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	static const int USER_DATA_COL = 4;
 
 	void SegmentObjectModificationEvent(OmSegmentEvent * event);
+	void SegmentDataModificationEvent() {}
+	void SegmentEditSelectionChangeEvent() {}
 
  private slots: 
         void addFilter();
 	void nameEditChanged();
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
-	void leftClickOnDataSourceItem(QTreeWidgetItem * current, const int column);
-	void leftClickOnFilterItem(QTreeWidgetItem * current, const int column);
+	void leftClickOnDataSourceItem(QTreeWidgetItem * current);
+	void leftClickOnFilterItem(QTreeWidgetItem * current);
 
 	void selectChannelView(QAction * act);
 	void selectSegmentationView(QAction * act);
-	void addToSplitterDataElementFilter(QTreeWidgetItem * current, const int column);
+	void addToSplitterDataElementFilter(QTreeWidgetItem * current);
 	void addToSplitterDataSource(QTreeWidgetItem * current);
 
 	void doDataSrcContextMenuVolAdd(QAction * act);

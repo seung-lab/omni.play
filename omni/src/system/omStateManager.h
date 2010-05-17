@@ -10,25 +10,18 @@
  */
 
 #include "common/omCommon.h"
-#include "omSystemTypes.h"
-#include "volume/omVolumeTypes.h"
 
 #include <QSize>
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
 
 class QUndoStack;
 class QUndoCommand;
 class QGLWidget;
 class QGLContext;
 class MyInspectorWidget;
-
+class MainWindow;
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
-enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE };
+enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE, DEND_MODE };
 enum OmToolMode { SELECT_MODE,
 		  PAN_MODE,
 		  CROSSHAIR_MODE,
@@ -40,6 +33,8 @@ enum OmToolMode { SELECT_MODE,
 		  VOXELIZE_MODE,
 };
 
+enum OmDendToolMode { SPLIT }; 
+
 
 class OmStateManager {
 
@@ -47,7 +42,9 @@ public:
 	
 	static OmStateManager* Instance();
 	static void Delete();
-	
+
+	static void SetMainWindow( MainWindow *);
+	static void UpdateStatusBar( QString msg );
 
 	//project
 	static const string& GetProjectFileName();
@@ -77,19 +74,22 @@ public:
 	// slices
 	static void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	static void SetViewSliceDataFormat(int bytesPerSample, int samplesPerPixel);
+	static void SetViewSliceDataFormat(int bytesPerSample);
 	static void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
 
 	
 	
 	//system mode
 	static OmSystemMode GetSystemMode();
+	static OmSystemMode GetSystemModePrev();
 	static void SetSystemMode(const OmSystemMode mode);
-	
+	static void SetSystemModePrev();
 	
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolMode(const OmToolMode mode);
+	static OmDendToolMode GetDendToolMode();
+	static void SetDendToolMode(const OmDendToolMode mode);
 	
 	
 	//undostack
@@ -102,7 +102,6 @@ public:
 	static void CreatePrimaryView3dWidget();
 	static const QGLWidget* GetPrimaryView3dWidget();
 	static QGLContext* GetSharedView3dContext();
-	static void MakeContextCurrent(QGLContext* context);
 	
 	//view2d context
 	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
@@ -159,9 +158,11 @@ private:
 	
 	//system mode
 	OmSystemMode mSystemMode;
-	
+	OmSystemMode mSystemModePrev;
+
 	//tool mode
 	OmToolMode mToolMode;
+	OmDendToolMode mDendToolMode;
 	
 	//undostack
 	QUndoStack *mpUndoStack;
@@ -178,6 +179,7 @@ private:
 	bool mParallel;
 
 	MyInspectorWidget * inspectorWidget;
+	MainWindow * mainWindow;
 };
 
 #endif

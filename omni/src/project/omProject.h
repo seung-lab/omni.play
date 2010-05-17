@@ -9,25 +9,14 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-
-
+#include "common/omStd.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
-#include "system/omKeyManager.h"
-#include "system/omTagManager.h"
-#include "volume/omVolume.h"
-
-#include "common/omStd.h"
-#include "common/omSerialization.h"
-
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
-
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
-
 
 class OmProject {
 
@@ -42,12 +31,31 @@ public:
 	static string GetTempDirectoryPath();
 	
 	//project IO
-	static QString New( QString fileNameAndPath, bool amHeadless = false );
+	static QString New( QString fileNameAndPath );
 	static void Save();
 	static void Commit();
 	static void Load( QString fileNameAndPath, const bool autoOpenAndClose = false );
 	static void Close();
 	
+
+        //volume management
+        static OmChannel& GetChannel(OmId id);
+        static OmChannel& AddChannel();
+        static void RemoveChannel(OmId id);
+        static bool IsChannelValid(OmId id);
+        static const OmIds & GetValidChannelIds();
+        static bool IsChannelEnabled(OmId id);
+        static void SetChannelEnabled(OmId id, bool enable);
+        
+        static OmSegmentation& GetSegmentation(OmId id);
+        static OmSegmentation& AddSegmentation();
+        static void RemoveSegmentation(OmId id);
+        static bool IsSegmentationValid(OmId id);
+        static const OmIds & GetValidSegmentationIds();
+        static bool IsSegmentationEnabled(OmId id);
+        static void SetSegmentationEnabled(OmId id, bool enable);
+	static void Draw(OmVolumeCuller & rCuller);
+
 	
 protected:
 	// singleton constructor, copy constructor, assignment operator protected
@@ -65,25 +73,12 @@ private:
 	QString mFileName;
 	QString mDirectoryPath;
 
-	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+        //data managers
+        OmGenericManager<OmChannel> mChannelManager;
+        OmGenericManager<OmSegmentation> mSegmentationManager;
+
+        friend QDataStream &operator<<(QDataStream & out, const OmProject & p );
+        friend QDataStream &operator>>(QDataStream & in, OmProject & p );
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmProject, 1)
-
-template<class Archive>
-void 
-OmProject::serialize(Archive & ar, const unsigned int file_version) {
-
-	ar & *OmPreferences::Instance();
-	ar & *OmKeyManager::Instance();
-	ar & *OmTagManager::Instance();
-	ar & *OmVolume::Instance();
-}
 
 #endif

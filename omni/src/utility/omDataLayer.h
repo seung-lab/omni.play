@@ -1,6 +1,7 @@
 #ifndef OM_DATA_LAYER_H
 #define OM_DATA_LAYER_H
 
+#include "common/omCommon.h"
 #include "utility/omDataReader.h"
 #include "utility/omDataWriter.h"
 

@@ -1,6 +1,7 @@
 #ifndef OM_DUMMY_WRITER_H
 #define OM_DUMMY_WRITER_H
 
+#include "common/omCommon.h"
 #include "utility/omDataWriter.h"
 
 class OmDummyWriter : public OmDataWriter

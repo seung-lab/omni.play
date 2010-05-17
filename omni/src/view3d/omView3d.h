@@ -5,7 +5,6 @@
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
 
-#include "volume/omVolumeTypes.h"
 #include "system/omGenericManager.h"
 
 #include "system/events/omView3dEvent.h"
@@ -15,9 +14,6 @@
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "common/omStd.h"
-#include <boost/progress.hpp>
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
 
 #include <QGLWidget>
 #include <QTimer>
@@ -55,16 +51,19 @@ class OmView3d : public QGLWidget,
 
 	//omni events
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void VoxelModificationEvent(OmVoxelEvent *event);
-	void SegmentDataModificationEvent(OmSegmentEvent *event);
+	void SegmentEditSelectionChangeEvent() {}
+	void VoxelSelectionModificationEvent() {}
+	void VoxelModificationEvent(OmVoxelEvent * event);
+	void SegmentDataModificationEvent();
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
-	void SystemModeChangeEvent(OmSystemModeEvent *event);
-	void ViewBoxChangeEvent(OmViewEvent *event);
-	//void ViewCenterChangeEvent(OmViewEvent *event);
-	void View3dRedrawEvent(OmView3dEvent *event);
-	void View3dRedrawEventFromCache(OmView3dEvent * event);
-	void View3dUpdatePreferencesEvent(OmView3dEvent *event);
-		
+	void SystemModeChangeEvent();
+	void ViewBoxChangeEvent();
+	void View3dRedrawEvent();
+	void View3dRedrawEventFromCache();
+	void View3dUpdatePreferencesEvent();
+	void ViewCenterChangeEvent() {}
+	void ViewPosChangeEvent() {}
+	void ViewRedrawEvent() {}
 		
 	//edit actions
 	void SelectSegment(QMouseEvent *event);
@@ -96,14 +95,13 @@ class OmView3d : public QGLWidget,
 	QSize sizeHint () const;
 		
  private:
-	boost::timer * mElapsed;
+	QTime * mElapsed;
 	QTimer mDrawTimer;
 	OmView3dUi mView3dUi;
 	OmCamera mCamera;
-	OmGenericManager< OmView3dWidget > mView3dWidgetManager;
+	QHash< int, OmView3dWidget* > mView3dWidgetManager;
 		
-	vector<int> mMousePickResult;
-		
+	vector<int> mMousePickResult;	
 		
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;

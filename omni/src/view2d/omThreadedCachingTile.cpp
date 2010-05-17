@@ -1,51 +1,45 @@
-
+#include "volume/omVolume.h"
 #include "omThreadedCachingTile.h"
 
-#include "common/omThreads.h"
-#include "system/omSystemTypes.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
 #include "system/omStateManager.h"
-
-#include "volume/omVolumeTypes.h"
 
 #include <QColor>
 #include <QGLContext>
 #include "common/omDebug.h"
 
-#define DEBUG 0
-
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
-					     const QGLContext * shareContext)
-:OmTile(viewtype, voltype, image_id, vol), TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
+                                             const QGLContext * shareContext)
+  : OmTile(viewtype, voltype, image_id, vol), 
+    TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
 {
 	// omView2d passes in its own context
 
-	mFetchThreadContext = OmStateManager::GetSharedView2dContext(shareContext);
 	mShareContext = shareContext;
 	mVolType = voltype;
 	mImageId = image_id;
 
         SetCacheName("OmThreadedCachingTile");
+        int chunkDim = vol->GetChunkDimension();
+        SetObjectSize(chunkDim*chunkDim*4);
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
 {
-	std::cerr << __FUNCTION__ << endl;
 }
 
-void OmThreadedCachingTile::GetTextureID(shared_ptr < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
+void OmThreadedCachingTile::GetTextureID(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
 {
 	TextureIDThreadedCache::Get(p_value, tileCoord, block);
-	return;
 }
 
 // Called at the highest miplevel will force the entire octree into memory so an initial
 // calling at a medium mip level might be a good idea...
-void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr < OmTextureID > &p_value, const OmTileCoord & tileCoord,
+void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord,
 						int rootLevel, OmTileCoord & retCoord)
 {
-	// Short curcuit because already low as mip level goes.
+	// Short circuit because already low as mip level goes.
 	if (rootLevel == tileCoord.Level) {	
 		retCoord = tileCoord;
 		GetTextureID(p_value, tileCoord);
@@ -59,7 +53,7 @@ void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr < OmTextureID > &p_va
 		// Try directly below current level.
 		mipTileCoord.Level += 1;
 
-		TextureIDThreadedCache::Get(p_value, mipTileCoord);
+		TextureIDThreadedCache::Get(p_value, mipTileCoord, false);
 		if (p_value) {
 			//debug("FIXME", << "tile " << mipTileCoord.Level << " found" << endl;
 			retCoord = mipTileCoord;
@@ -68,8 +62,7 @@ void OmThreadedCachingTile::GetTextureIDDownMip(shared_ptr < OmTextureID > &p_va
 	}
 
 	retCoord = tileCoord;
-	TextureIDThreadedCache::Get(p_value, tileCoord);
-	return;
+	TextureIDThreadedCache::Get(p_value, tileCoord, false);
 }
 
 void OmThreadedCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID)
@@ -104,8 +97,7 @@ void OmThreadedCachingTile::HandleFetchUpdate()
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
-void OmThreadedCachingTile::subImageTex(shared_ptr < OmTextureID > &texID, int dim, set < DataCoord > &vox,
-					QColor & color, int tl)
+void OmThreadedCachingTile::subImageTex( set < DataCoord > &vox )
 {
-	ReplaceTextureRegion(texID, dim, vox, color, tl);
+	ReplaceTextureRegion(vox);
 }

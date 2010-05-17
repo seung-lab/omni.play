@@ -1,5 +1,7 @@
+#include "project/omProject.h"
 #include "dataWrappers.h"
 #include "common/omDebug.h"
+#include "utility/stringHelpers.h"
 
 /*******************************************
  ****** Data Wrapper Container
@@ -44,27 +46,26 @@ bool DataWrapperContainer::isValidContainer()
 ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
 :DataWrapper(ID, CHANNEL)
 {
-	OmChannel & chann = OmVolume::GetChannel(mID);
-	mName = QString::fromStdString(chann.GetName());
-	mEnabled = OmVolume::IsChannelEnabled(mID);
+	OmChannel & chann = OmProject::GetChannel(mID);
+	mName = chann.GetName();
+	mEnabled = OmProject::IsChannelEnabled(mID);
 }
 
 QString ChannelDataWrapper::getNote()
 {
-	const string & str = OmVolume::GetChannel(mID).GetNote();
-	return QString::fromStdString(str);
+	return OmProject::GetChannel(mID).GetNote();
 }
 
 QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 {
 	QHash < OmId, FilterDataWrapper > filters;
 
-	OmChannel & chann = OmVolume::GetChannel(mID);
+	OmChannel & chann = OmProject::GetChannel(mID);
 
 	foreach(OmId filterID, chann.GetValidFilterIds()) {
 		FilterDataWrapper filter(mID,
 					 filterID,
-					 QString::fromStdString(chann.GetFilter(filterID).GetName()),
+					 chann.GetFilter(filterID).GetName(),
 					 chann.IsFilterEnabled(filterID)
 		    );
 		filters[filterID] = filter;
@@ -79,34 +80,24 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
  : DataWrapper(ID, SEGMENTATION)
 {
-	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
-	mName = QString::fromStdString(segmen.GetName());
-	mEnabled = OmVolume::IsSegmentationEnabled(mID);
-}
-
-QList < SegmentDataWrapper > SegmentationDataWrapper::getAllSegmentIDsAndNames()
-{
-	QList < SegmentDataWrapper > segs;
-
-	OmSegmentation & segmen = OmVolume::GetSegmentation(mID);
-
-	foreach(OmId segID, segmen.GetValidSegmentIds()) {
-		SegmentDataWrapper seg(mID, segID);
-		segs << seg;
-	}
-
-	return segs;
+	OmSegmentation & segmen = OmProject::GetSegmentation(mID);
+	mName = segmen.GetName();
+	mEnabled = OmProject::IsSegmentationEnabled(mID);
 }
 
 QString SegmentationDataWrapper::getNote()
 {
-	const string & str = OmVolume::GetSegmentation(mID).GetNote();
-	return QString::fromStdString(str);
+	return OmProject::GetSegmentation(mID).GetNote();
 }
 
 unsigned int SegmentationDataWrapper::getNumberOfSegments()
 {
-	return OmVolume::GetSegmentation(mID).GetValidSegmentIds().size();
+	return OmProject::GetSegmentation(mID).GetNumSegments();
+}
+
+unsigned int SegmentationDataWrapper::getNumberOfTopSegments()
+{
+	return OmProject::GetSegmentation(mID).GetNumTopSegments();
 }
 
 /*******************************************
@@ -116,53 +107,52 @@ SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId seg
  : DataWrapper(segmentID, SEGMENT)
 {
 	mSegmentationID = segmentationID;
-	mName = QString::fromStdString(OmVolume::GetSegmentation(mSegmentationID).GetSegment(segmentID).GetName());
+	mName = OmProject::GetSegmentation(mSegmentationID).GetSegment(segmentID)->GetName();
 }
 
 QString SegmentDataWrapper::getSegmentationName()
 {
-	return QString::fromStdString(OmVolume::GetSegmentation(mSegmentationID).GetName());
+	return OmProject::GetSegmentation(mSegmentationID).GetName();
 }
 
 bool SegmentDataWrapper::isSelected()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
+	return OmProject::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
 }
 
 void SegmentDataWrapper::setSelected(const bool isSelected)
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
 }
 
 void SegmentDataWrapper::toggleSelected()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
 }
 
 bool SegmentDataWrapper::isEnabled()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
+	return OmProject::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
 }
 
 void SegmentDataWrapper::toggleEnabled()
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
 }
 
 void SegmentDataWrapper::setEnabled(const bool enabled)
 {
-	OmVolume::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
+	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
 }
 
 QString SegmentDataWrapper::getNote()
 {
-	const string & str = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetNote();
-	return QString::fromStdString(str);
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetNote();
 }
 
 void SegmentDataWrapper::setNote(QString str)
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetNote(qPrintable(str));
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetNote(str);
 }
 
 QString SegmentDataWrapper::getIDstr()
@@ -172,51 +162,37 @@ QString SegmentDataWrapper::getIDstr()
 
 const Vector3 < float >& SegmentDataWrapper::getColor()
 {
-	return OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).GetColor();
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColor();
 }
 
 void SegmentDataWrapper::setColor(const Vector3 < float >& color)
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetColor( color );
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetColor( color );
 }
 
 void SegmentDataWrapper::setName( const QString& str )
 {
-	OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).SetName( str.toStdString() );
-}
-
-QString SegmentDataWrapper::getDataValuesForSegment()
-{
-	const SegmentDataSet & data_set = OmVolume::GetSegmentation(mSegmentationID).GetValuesMappedToSegmentId(mID);
-	
-	if( data_set.size() == 0 ){
-		return "";
-	}
-
-	QString str;
-	unsigned int counter = 0;
-	OmIds::iterator itr;
-	for( itr = data_set.begin(); itr != data_set.end(); itr++ ){
-		counter++;
-		str += QString::number( *itr );
-		if( counter < data_set.size() ){
-			str += ", ";
-			if( counter > 0 && counter % 8 == 0 ){
-				str += "\n";
-			}
-		}
-	}
-	return str;
+	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetName( str );
 }
 
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
-	const SEGMENT_DATA_TYPE value = OmVolume::GetSegmentation(mSegmentationID).GetSegment(mID).get_original_mapped_data_value();
+	const SEGMENT_DATA_TYPE value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
 	if( 0 == value ){
 		return "<not set>";
 	} else {
 		return QString::number( value );
 	}
+}
+
+OmSegmentation & SegmentDataWrapper::getSegmentation()
+{ 
+	return OmProject::GetSegmentation(mSegmentationID); 
+}
+
+OmSegment * SegmentDataWrapper::getSegment()
+{
+	return getSegmentation().GetSegment( mID );
 }
 
 /*******************************************

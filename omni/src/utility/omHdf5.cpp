@@ -1,4 +1,4 @@
-#include "omHdf5.h"
+#include "utility/omHdf5.h"
 #include "common/omDebug.h"
 #include <stdlib.h>
 
@@ -102,6 +102,20 @@ void* OmHdf5::dataset_raw_read( OmHdf5Path path, int* size)
 	return hdfLowLevelWrap->dataset_raw_read_with_lock( path, size);
 }
 
+void* OmHdf5::dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+{
+	QMutexLocker locker(fileLock);
+	return hdfLowLevelWrap->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );
+
+}
+
+void OmHdf5::dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData)
+{
+
+	hdfLowLevelWrap->dataset_write_raw_chunk_data(path, dataExtent, bytesPerSample, imageData);
+
+}
+
 void OmHdf5::dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data)
 {
 	if (!size){
@@ -117,4 +131,10 @@ Vector3 < int > OmHdf5::dataset_image_get_dims( OmHdf5Path path )
 {
 	QMutexLocker locker(fileLock);
 	return hdfLowLevelWrap->dataset_image_get_dims_with_lock( path );
+}
+
+Vector3< int > OmHdf5::dataset_get_dims( OmHdf5Path path )
+{
+	QMutexLocker locker(fileLock);
+	return hdfLowLevelWrap->dataset_get_dims_with_lock( path );
 }

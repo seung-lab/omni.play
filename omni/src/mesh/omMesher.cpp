@@ -18,18 +18,18 @@
 #include <vtkDiscreteMarchingCubes.h>
 #include <vtkThreshold.h>
 #include "common/omDebug.h"
-#import <vtkCleanPolyData.h>
-#import <vtkSmoothPolyDataFilter.h>
-#import <vtkCleanPolyData.h>
-#import <vtkPolyDataNormals.h>
-#import <vtkStripper.h>
-#import <vtkTriangleFilter.h>
+#include <vtkCleanPolyData.h>
+#include <vtkSmoothPolyDataFilter.h>
+#include <vtkCleanPolyData.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkStripper.h>
+#include <vtkTriangleFilter.h>
 #include <vtkShrinkPolyData.h>
-#import <vtkPolyData.h>
-#import <vtkTransformPolyDataFilter.h>
-#import <vtkQuadricDecimation.h>
+#include <vtkPolyData.h>
+#include <vtkTransformPolyDataFilter.h>
+#include <vtkQuadricDecimation.h>
 
-#import <vtkDecimatePro.h>
+#include <vtkDecimatePro.h>
 
 #define DEBUG 0
 

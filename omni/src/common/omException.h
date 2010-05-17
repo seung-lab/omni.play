@@ -26,7 +26,7 @@ public:
 	OmException(const string &name, OmExceptType type, const string &msg); 
 	
 	QString GetName();
-	QString GetMessage();
+	QString GetMsg();
 	QString GetType();
 
 protected:

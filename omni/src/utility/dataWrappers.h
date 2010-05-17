@@ -1,7 +1,7 @@
 #ifndef DATA_WRAPPERS
 #define DATA_WRAPPERS
 
-#include "system/omSystemTypes.h"
+#include "segment/omSegment.h"
 #include "common/omException.h"
 #include "volume/omChannel.h"
 #include "volume/omVolume.h"
@@ -47,7 +47,7 @@ class SegmentationDataWrapper : public DataWrapper
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
-
+	unsigned int getNumberOfTopSegments();
 	//	QString GetSourceDirectoryPath();
 };
 
@@ -59,6 +59,9 @@ class SegmentDataWrapper : public DataWrapper
 			    const OmId segmentID );
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
+	
+	OmSegmentation & getSegmentation();
+	OmSegment * getSegment();
 	
 	bool isSelected();
 	void toggleSelected();
@@ -72,7 +75,6 @@ class SegmentDataWrapper : public DataWrapper
 	const Vector3 < float >& getColor();
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
-	QString getDataValuesForSegment();
 	QString get_original_mapped_data_value();
  private:
 	OmId mSegmentationID;

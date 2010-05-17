@@ -1,4 +1,5 @@
 
+#include "project/omProject.h"
 #include "omVoxelSetValueAction.h"
 
 #include "segment/omSegmentEditor.h"
@@ -58,7 +59,7 @@ void
  OmVoxelSetValueAction::Action()
 {
 	//set voxel
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//modified voxels
 	set < DataCoord > edited_voxels;
@@ -79,7 +80,7 @@ void
 void OmVoxelSetValueAction::UndoAction()
 {
 	//set voxel
-	OmSegmentation & r_segmentation = OmVolume::GetSegmentation(mSegmentationId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//modified voxels
 	set < DataCoord > edited_voxels;

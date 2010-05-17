@@ -1,14 +1,15 @@
+#include "project/omProject.h"
 #include "meshingChunkThreadManager.h"
 #include "common/omDebug.h"
 #include "volume/omVolume.h"
-#include "segment/omSegmentTypes.h"
 
 MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord ) 
 {
 	mMeshManager = meshManager;
+	mMipCoord = coord;
+	//mCoord = OmMipChunkCoord(0,coord.getCoordinateX(), coord.getCoordinateY(), coord.getCoordinateZ());
 	mCoord = coord;
 	mpCurrentMeshSource = NULL;
-
 	mutex = new QMutex();
 }
 
@@ -28,7 +29,7 @@ SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 
 	//pop value
 	SEGMENT_DATA_TYPE segment_value = *valuesToMesh.begin();
-	valuesToMesh.erase(segment_value);
+	valuesToMesh.remove(segment_value);
 	assert(NULL_SEGMENT_DATA != segment_value);
 
 	unsigned int leftToDo = totalNumValuesToMesh - valuesToMesh.size();
@@ -38,7 +39,7 @@ SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 	return segment_value;
 }
 
-void MeshingChunkThreadManager::setupValuesToMesh( shared_ptr < OmMipChunk > chunk )
+void MeshingChunkThreadManager::setupValuesToMesh( QExplicitlySharedDataPointer < OmMipChunk > chunk )
 {
 	if( mMeshManager->shouldIonlyMeshModifiedValues() ){
 		valuesToMesh = chunk->GetModifiedVoxelValues();
@@ -46,7 +47,7 @@ void MeshingChunkThreadManager::setupValuesToMesh( shared_ptr < OmMipChunk > chu
 		valuesToMesh = chunk->GetDirectDataValues();
 	}
 
-	valuesToMesh.erase(NULL_SEGMENT_DATA);
+	valuesToMesh.remove(NULL_SEGMENT_DATA);
 
 	totalNumValuesToMesh = valuesToMesh.size();
 
@@ -76,8 +77,8 @@ int MeshingChunkThreadManager::numberOfThreadsToUseForThisChunk( const int total
 
 void MeshingChunkThreadManager::run()
 {
-	shared_ptr < OmMipChunk > chunk = shared_ptr < OmMipChunk > ();
-	OmVolume::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
+	QExplicitlySharedDataPointer < OmMipChunk > chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+	OmProject::GetSegmentation( mMeshManager->getSegmentationID() ).GetChunk( chunk, mCoord );
 
 	setupValuesToMesh( chunk );
 
@@ -85,14 +86,14 @@ void MeshingChunkThreadManager::run()
 		getDataAndSpawnWorkerThread( chunk );
         }
 
-	chunk = shared_ptr < OmMipChunk > ();
+	chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 
 	mMeshManager->num_chunk_threads_active->release(1);
 	printf("finished meashing chunk %s; %d left\n", qPrintable( mCoord.getCoordsAsString()),
 	       mMeshManager->numCoordsLeftToMesh() );
 }
 
-void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( shared_ptr < OmMipChunk > chunk )
+void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( QExplicitlySharedDataPointer < OmMipChunk > chunk )
 {
 	chunk->Open();
 

@@ -1,6 +1,6 @@
 #include <QtGui>
-#include "guiUtils.h"
-#include "localPreferences2d.h"
+#include "gui/guiUtils.h"
+#include "gui/preferences/localPreferences2d.h"
 #include "common/omDebug.h"
 #include "system/omLocalPreferences.h"
 
@@ -31,7 +31,7 @@ QGroupBox* LocalPreferences2d::makeGeneralPropBox()
   	return groupBox;
 }
 
-void LocalPreferences2d::on_stickyCrosshairMode_stateChanged( int state)
+void LocalPreferences2d::on_stickyCrosshairMode_stateChanged()
 {
 	const bool val = GuiUtils::getBoolState( stickyCrosshairMode->checkState() );
 	OmLocalPreferences::setStickyCrosshairMode( val );

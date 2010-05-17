@@ -1,4 +1,0 @@
-#ifndef _OM_COLORMAPPERRULE_H_
-#define _OM_COLORMAPPERRULE_H_
-
-#endif

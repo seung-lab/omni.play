@@ -39,8 +39,8 @@ void FilObjectInspector::saveFilterAlphaValue()
 
 void FilObjectInspector::setFilAlpha(int alpha)
 {
-	if( OmVolume::IsChannelValid( mChannelID ) ){
-		OmChannel& channel = OmVolume::GetChannel( mChannelID);
+	if( OmProject::IsChannelValid( mChannelID ) ){
+		OmChannel& channel = OmProject::GetChannel( mChannelID);
 		if( channel.IsFilterValid( mFilterID ) ){
 			//debug("filter", "setting alpha\n");
 			channel.GetFilter( mFilterID).SetAlpha((double)alpha / 100.00);
@@ -51,7 +51,7 @@ void FilObjectInspector::setFilAlpha(int alpha)
 
 void FilObjectInspector::set_initial_values()
 {
-	OmFilter2d & filter = OmVolume::GetChannel(mChannelID).GetFilter(mFilterID);
+	OmFilter2d & filter = OmProject::GetChannel(mChannelID).GetFilter(mFilterID);
 	
 	alphaSlider->setValue(filter.GetAlpha() * 100);
 	chanEdit->setText(QString::number(filter.GetChannel()));
@@ -128,12 +128,12 @@ int FilObjectInspector::getSegmentationIDtoFilter()
 
 void FilObjectInspector::sourceEditChangedChan()
 {
-	OmVolume::GetChannel( mChannelID ).GetFilter( mFilterID ).SetChannel(getChannelIDtoFilter());
+	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetChannel(getChannelIDtoFilter());
 	//	OmProject::Save();
 }
 
 void FilObjectInspector::sourceEditChangedSeg()
 {
-	OmVolume::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(getSegmentationIDtoFilter());
+	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(getSegmentationIDtoFilter());
 	//	OmProject::Save();
 }

@@ -1,15 +1,11 @@
 #include "volumeInspector.h"
 
 #include "volume/omVolume.h"
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
-#include <vmmlib/vmmlib.h>
 #include "common/omDebug.h"
-using namespace vmml;
 
 VolumeInspector::VolumeInspector(QWidget * parent)
  : QWidget(parent)
@@ -58,17 +54,6 @@ QGroupBox* VolumeInspector::makeVolPropBox()
         dimSizeLabel->setObjectName(QString("dimSizeLabel"));
 	SizeLabelUpdate();
 	gridLayout->addWidget(dimSizeLabel, 0, 1, 1, 1);
-
-#if 0
-	QLabel* scaleLabel = new QLabel(groupBox);
-        scaleLabel->setObjectName(QString("scaleLabel"));
-	scaleLabel->setText("Scale:");
-	gridLayout->addWidget(scaleLabel, 0, 0, 1, 1);
-
-	scaleEdit = new QLineEdit(groupBox);
-        scaleEdit->setObjectName(QString("scaleEdit"));
-	gridLayout->addWidget(scaleEdit, 0, 1, 1, 1);
-#endif       
 
         QLabel* resolutionLabel = new QLabel(groupBox);
         resolutionLabel->setObjectName(QString("resolutionLabel"));
@@ -156,33 +141,28 @@ QGroupBox* VolumeInspector::makeSrcPropBox()
 
 void VolumeInspector::init_values()
 {
-	const string & my_name = (*OmVolume::Instance()).GetName();
-	nameEdit->setText(QString::fromStdString(my_name));
 	nameEdit->setMinimumWidth(200);
 
-	const string & my_notes = (*OmVolume::Instance()).GetNote();
-	notesEdit->setPlainText(QString::fromStdString(my_notes));
+	Vector3 < float >res = GetVolume().GetDataResolution();
+	resolutionEdit->setText( QString("[%1 %2 %3]")
+				 .arg(res.x)
+				 .arg(res.y)
+				 .arg(res.z) );
 
-	//Vector3 < float >scale = OmVolume::GetUserScale();
-	//scaleEdit->setText("[" + QString::number(scale.x) + " " + QString::number(scale.y) + " " +
-	//	   QString::number(scale.z) + "]");
+	Vector3i dimen = GetVolume().GetDataDimensions();
+	extentEdit->setText( QString("[%1 %2 %3]")
+			     .arg(dimen.x)
+			     .arg(dimen.y)
+			     .arg(dimen.z) );
 
-	Vector3 < float >res = OmVolume::GetDataResolution();
-	resolutionEdit->setText("[" + QString::number(res.x) + " " + QString::number(res.y) + " " +
-				QString::number(res.z) + "]");
-
-	Vector3i dimen = OmVolume::GetDataDimensions();
-	extentEdit->setText("[" + QString::number(dimen.x) + " " + QString::number(dimen.y) + " " +
-			    QString::number(dimen.z) + "]");
-
-	int my_chunk_size = OmVolume::GetChunkDimension();
+	int my_chunk_size = GetVolume().GetChunkDimension();
 	sizeSlider->setSliderPosition(my_chunk_size / 2);
 	sizeLabel->setNum(my_chunk_size);
 }
 
 void VolumeInspector::on_nameEdit_editingFinished()
 {
-	OmVolume::Instance()->SetName(nameEdit->text().toStdString());
+	//GetVolume().SetName(nameEdit->text());
 }
 
 void VolumeInspector::on_scaleEdit_editingFinished()
@@ -196,7 +176,7 @@ void VolumeInspector::on_scaleEdit_editingFinished()
 	QString z = scale.section(" ", 2, 2);
 
 	Vector3 < float >scale_vec = Vector3 < float >(x.toFloat(), y.toFloat(), z.toFloat());
-	OmVolume::Instance()->SetUserScale(scale_vec);
+	GetVolume().SetUserScale(scale_vec);
 }
 
 void VolumeInspector::on_resolutionEdit_editingFinished()
@@ -210,7 +190,7 @@ void VolumeInspector::on_resolutionEdit_editingFinished()
 	QString z = res.section(" ", 2, 2);
 
 	Vector3 < float >res_vec = Vector3 < float >(x.toFloat(), y.toFloat(), z.toFloat());
-	OmVolume::Instance()->SetDataResolution(res_vec);
+	GetVolume().SetDataResolution(res_vec);
 	SizeLabelUpdate();
 }
 
@@ -226,40 +206,38 @@ void VolumeInspector::on_extentEdit_editingFinished()
 
 	Vector3i data_extent = Vector3i(min_x.toInt(), min_y.toInt(), min_z.toInt());
 
-	OmVolume::Instance()->SetDataDimensions(data_extent);
+	GetVolume().SetDataDimensions(data_extent);
 }
 
 void VolumeInspector::on_unitList_activated()
 {
-	OmVolume::SetUnit(unitList->currentText());
+	GetVolume().SetUnit(unitList->currentText());
 	SizeLabelUpdate();
 }
 
 void VolumeInspector::on_notesEdit_textChanged()
 {
-	OmVolume::Instance()->SetNote(notesEdit->toPlainText().toStdString());
+	//GetVolume().SetNote(notesEdit->toPlainText());
 }
 
 void VolumeInspector::on_sizeSlider_valueChanged()
 {
 	sizeLabel->setNum(sizeSlider->value() * 2);
-	OmVolume::SetChunkDimension(sizeSlider->value() * 2);
+	GetVolume().SetChunkDimension(sizeSlider->value() * 2);
 }
 
 void VolumeInspector::SizeLabelUpdate()
 {
-	Vector3i dataExtent = OmVolume::GetDataDimensions();
-	Vector3f dataResolution = OmVolume::GetDataResolution();
-	Vector3f spaceExtent = OmVolume::GetScale();
-	QString unit = OmVolume::GetUnit();
+	Vector3i dataExtent = GetVolume().GetDataDimensions();
+	Vector3f dataResolution = GetVolume().GetDataResolution();
+	Vector3f spaceExtent = GetVolume().GetScale();
+	QString unit = GetVolume().GetUnit();
 
-	QString messageString = QString::number(spaceExtent.x);
-	messageString.append(" x ");
-	messageString.append(QString::number(spaceExtent.y));
-	messageString.append(" x ");
-	messageString.append(QString::number(spaceExtent.z));
-	messageString.append(" ");
-	messageString.append(unit);
+	QString messageString = QString("%1 x %2 x %3 %4")
+		.arg(spaceExtent.x)
+		.arg(spaceExtent.y)
+		.arg(spaceExtent.z)
+		.arg(unit);
 
 	dimSizeLabel->setText(messageString);
 	return;

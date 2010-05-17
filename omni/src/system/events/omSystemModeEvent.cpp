@@ -24,7 +24,7 @@ void
 	switch (type()) {
 
 	case OmSystemModeEvent::SYSTEM_MODE_CHANGE:
-		p_cast_listener->SystemModeChangeEvent(this);
+		p_cast_listener->SystemModeChangeEvent();
 		return;
 
 	default:

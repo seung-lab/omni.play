@@ -7,7 +7,7 @@ class OmHdf5Helpers
 {
  public:
 	static OmHdf5Path getDefaultDatasetName();
-	static OmHdf5Path getProjectArchiveName();
+	static OmHdf5Path getProjectArchiveNameQT();
 };
 
 #endif

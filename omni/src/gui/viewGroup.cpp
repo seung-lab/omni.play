@@ -1,8 +1,13 @@
-#include "viewGroup.h"
+#include "project/omProject.h"
+#include "gui/viewGroup.h"
 #include "volume/omVolume.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
 #include "gui/mainwindow.h"
+
+static const ViewType UpperLeft  = XY_VIEW;
+static const ViewType UpperRight = YZ_VIEW;
+static const ViewType LowerLeft  = XZ_VIEW;
 
 ViewGroup::ViewGroup( MainWindow * mainWindow )
 	: mMainWindow( mainWindow ), mID(1)
@@ -116,7 +121,7 @@ void ViewGroup::addView3D()
 
 void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 {
-	QString name = getViewName( OmVolume::GetChannel(chan_id).GetName(), vtype );
+	QString name = getViewName( OmProject::GetChannel(chan_id).GetName(), vtype );
 	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_CHAN, vtype );
 
 	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
@@ -132,7 +137,7 @@ void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 
 void ViewGroup::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
 {
-	QString name = getViewName( OmVolume::GetSegmentation(segmentation_id).GetName(), vtype );
+	QString name = getViewName( OmProject::GetSegmentation(segmentation_id).GetName(), vtype );
 	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_SEG, vtype );
 
 	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
@@ -146,12 +151,11 @@ void ViewGroup::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
 	delete(vgw);
 }
 
-QString ViewGroup::getViewName( string baseName, ViewType vtype )
+QString ViewGroup::getViewName( QString baseName, ViewType vtype )
 {
 	debug("viewGroup", "in %s...\n", __FUNCTION__ );
 
-	QString name = QString::fromStdString( baseName );
-	name += " -- " + getViewTypeAsStr(vtype) + " View";
+	QString name = baseName + " -- " + getViewTypeAsStr(vtype) + " View";
 	return name;
 }
 
@@ -178,7 +182,7 @@ QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidgetInfo * vgw )
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 
-	mMainWindow->windowMenu->addAction(dock->toggleViewAction());
+	mMainWindow->mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
 	return dock;
 }
@@ -207,39 +211,37 @@ QDockWidget * ViewGroup::chooseDockToSplit( ViewGroupWidgetInfo * vgw )
 	vgw->dir = Qt::Horizontal;
 
 	if( VIEW2D_CHAN == vgw->widgetType ){
-		if( XY_VIEW == vgw->vtype ){
-			vgw->dir = Qt::Horizontal;
-		} else if( XZ_VIEW == vgw->vtype ){
-			if( doesDockWidgetExist( makeObjectName( CHANNEL, XY_VIEW ) ) ){
-				dock = getDockWidget( makeObjectName( CHANNEL, XY_VIEW ) );
+		if( UpperLeft == vgw->vtype ){
+
+		} else if( UpperRight == vgw->vtype ){
+			if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperLeft ) ) ){
+				dock = getDockWidget( makeObjectName( CHANNEL, UpperLeft ) );
 			}
-			vgw->dir = Qt::Horizontal;
 		} else {
-			if( doesDockWidgetExist( makeObjectName( CHANNEL, XY_VIEW ) ) ){
-				dock = getDockWidget( makeObjectName( CHANNEL, XY_VIEW ) );
+			if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperLeft ) ) ){
+				dock = getDockWidget( makeObjectName( CHANNEL, UpperLeft ) );
 			}
 			vgw->dir = Qt::Vertical;
 		}
 	} else if( VIEW2D_SEG == vgw->widgetType ){
-		if( XY_VIEW == vgw->vtype ){
-			vgw->dir = Qt::Horizontal;
-		} else if( XZ_VIEW == vgw->vtype ){		
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, XY_VIEW ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, XY_VIEW ) );
+		if( UpperLeft == vgw->vtype ){
+
+		} else if( UpperRight == vgw->vtype ){		
+			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperLeft ) ) ){
+				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperLeft ) );
 			}
-			vgw->dir = Qt::Horizontal;
 		} else {
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, XY_VIEW ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, XY_VIEW ) );
+			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperLeft ) ) ){
+				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperLeft ) );
 			}
 			vgw->dir = Qt::Vertical;
 		}
 	} else {
-		if( doesDockWidgetExist( makeObjectName( CHANNEL, XZ_VIEW ) ) ){
-			dock = getDockWidget( makeObjectName( CHANNEL, XZ_VIEW ) );
+		if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperRight ) ) ){
+			dock = getDockWidget( makeObjectName( CHANNEL, UpperRight ) );
 		} else {
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, XZ_VIEW ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, XZ_VIEW ) );
+			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperRight ) ) ){
+				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperRight ) );
 			}
 		}
 		vgw->dir = Qt::Vertical;
@@ -316,16 +318,16 @@ void ViewGroup::addAllViews(OmId channelID, OmId segmentationID )
 		delete(w);
 	}
 
-	if( OmVolume::IsChannelValid(channelID) ){
-		addView2Dchannel( channelID, XY_VIEW);
-		addView2Dchannel( channelID, XZ_VIEW);
-		addView2Dchannel( channelID, YZ_VIEW);
+	if( OmProject::IsChannelValid(channelID) ){
+		addView2Dchannel( channelID, UpperLeft);
+		addView2Dchannel( channelID, UpperRight);
+		addView2Dchannel( channelID, LowerLeft);
 	}
 
-	if( OmVolume::IsSegmentationValid(segmentationID)) {
-		addView2Dsegmentation( segmentationID, XY_VIEW);
-		addView2Dsegmentation( segmentationID, XZ_VIEW);
-		addView2Dsegmentation( segmentationID, YZ_VIEW);
+	if( OmProject::IsSegmentationValid(segmentationID)) {
+		addView2Dsegmentation( segmentationID, UpperLeft);
+		addView2Dsegmentation( segmentationID, UpperRight);
+		addView2Dsegmentation( segmentationID, LowerLeft);
 	}
 
 	addView3D();

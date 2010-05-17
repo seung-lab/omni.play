@@ -7,14 +7,8 @@
  */
 
 
-#include "volume/omVolumeTypes.h"
-#include "system/omSystemTypes.h"
 #include "system/omEvent.h"
-#include "common/omStd.h"
-
-#include <vmmlib/vmmlib.h>
-using namespace vmml;
-
+#include "common/omCommon.h"
 
 class OmSegmentAction;
 
@@ -52,10 +46,10 @@ public:
 
 	//voxels in a segmentation have been modified
 	//valid methods: GetSegmentationId(), GetVoxels()
-	virtual void VoxelModificationEvent(OmVoxelEvent *event) { };
+	virtual void VoxelModificationEvent(OmVoxelEvent * event) = 0;
 	
 	//the voxel selection has been modified
-	virtual void VoxelSelectionModificationEvent(OmVoxelEvent *event) { };
+	virtual void VoxelSelectionModificationEvent() = 0;
 };
 
 

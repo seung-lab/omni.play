@@ -1,3 +1,4 @@
+#include "volume/omVolume.h"
 #include "preferences.h"
 #include "volumeInspector.h"
 #include "preferences3d.h"
@@ -33,7 +34,7 @@ void Preferences::showLocalPreferences()
 void Preferences::showProjectPreferences()
 {
      tabs = new QTabWidget;
-     tabs->addTab(new VolumeInspector(this), "Volume" );
+     //tabs->addTab(new VolumeInspector(this), "Volume" );
      tabs->addTab(new Preferences2d(this), "2D View" );
      tabs->addTab(new Preferences3d(this), "3D View");
      tabs->addTab(new PreferencesMesh(this), "Mesh");

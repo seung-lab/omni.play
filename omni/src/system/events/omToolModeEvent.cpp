@@ -24,7 +24,7 @@ void
 	switch (type()) {
 
 	case OmToolModeEvent::TOOL_MODE_CHANGE:
-		p_cast_listener->ToolModeChangeEvent(this);
+		p_cast_listener->ToolModeChangeEvent();
 		return;
 
 	default:

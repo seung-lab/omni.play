@@ -7,57 +7,70 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "omSegmentTypes.h"
-#include "system/omSystemTypes.h"
+#include "common/omCommon.h"
 #include "system/omManageableObject.h"
+#include "volume/omMipChunkCoord.h"
+#include "utility/omHdf5Path.h"
 
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-using namespace vmml;
+class OmSegmentCache;
 
-class OmSegment : public OmManageableObject {
+class OmSegment {
 
 public:
-	OmSegment();
-	OmSegment(OmId id);
-	
+	OmSegment(SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
+	OmSegment(OmSegmentCache * cache);
+
+	void splitChildLowestThreshold();
+	void splitTwoChildren(OmSegment * seg);
+
 	//accessors
-	const Vector3<float>& GetColor() const;
+	const Vector3<float>& GetColor();
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
-	void set_original_mapped_data_value(const SEGMENT_DATA_TYPE value );
-	SEGMENT_DATA_TYPE get_original_mapped_data_value();
-	
+
+	SEGMENT_DATA_TYPE getValue();
+
+	QString GetNote();
+	void SetNote(QString);
+	QString GetName();
+	void SetName(QString);
+	bool IsSelected();
+	void SetSelected(bool isSelected);
+	bool IsEnabled();
+	void SetEnabled(bool);
+
+	void Join(OmSegment *, double threshold = 0);
+	void setParent(OmSegment * segment, double threshold);
+	OmId getParent();
+
+	OmId getSegmentationID();
+	double getThreshold();
+
 private:
-	//data members
+
+	SEGMENT_DATA_TYPE mValue;
+	OmSegmentCache * mCache;
+
 	Vector3<float> mColor;
-	OmId mJoinId;
-	SEGMENT_DATA_TYPE original_mapped_data_value;
+
+	QList<OmId> segmentsJoinedIntoMe;
+	OmId parentSegID;
+	OmSegment * mParent;
+	double mThreshold;
+
+	OmSegment * mCachedRoot;
+	quint32 mCachedRootFreshness;
+
+	OmColor mCachedColor;
+	quint32 mCachedColorFreshness;
 	
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+	void SetInitialColor();
+
+	friend class OmSegmentCacheImpl;
+	friend class OmDataArchiveSegment;
+	friend class OmSegmentIterator;
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmSegment, 2)
-
-template<class Archive>
-void 
-OmSegment::serialize(Archive & ar, const unsigned int file_version) {
-	ar & boost::serialization::base_object<OmManageableObject>(*this);
-	
-	if (file_version > 0) {
-		ar & mJoinId;
-	}
-	if (file_version > 1) {
-		ar & original_mapped_data_value;
-	}
-	ar & mColor;
-}
 
 #endif

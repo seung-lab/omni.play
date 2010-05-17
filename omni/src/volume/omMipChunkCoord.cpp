@@ -55,7 +55,6 @@ OmMipChunkCoord OmMipChunkCoord::ParentCoord() const
 /* Primary coordinate in the sibling octal */
 OmMipChunkCoord OmMipChunkCoord::PrimarySiblingCoord() const
 {
-
 	int prim_x = ROUNDDOWN(Coordinate.x, 2);
 	int prim_y = ROUNDDOWN(Coordinate.y, 2);
 	int prim_z = ROUNDDOWN(Coordinate.z, 2);
@@ -67,7 +66,6 @@ OmMipChunkCoord OmMipChunkCoord::PrimarySiblingCoord() const
 /* Array of sibling coordinates in octal */
 void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 {
-
 	//return null coordinates if coord is null
 	if (Level < 0) {
 		//set each child to null
@@ -126,30 +124,24 @@ bool OmMipChunkCoord::operator==(const OmMipChunkCoord & rhs) const
 
 bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) const
 {
-	//debug("FIXME", << Level << endl;
-	//debug("FIXME", << rhs.Level << endl;
-	//debug("FIXME", << Coordinate << endl;
-	//debug("FIXME", << rhs.Coordinate << endl;
+	if( Level != rhs.Level ){ 
+		return true;
+	}
 
-	//debug("FIXME", << "+" << Level;
-	//debug("FIXME", << "-" << rhs.Level;
-	/*
-	   if( Level != rhs.Level )
-	   return true;
+	if(Coordinate != rhs.Coordinate) {
+		return true;
+	}
 
-	   if(Coordinate != rhs.Coordinate)
-	   return true;
-
-	   return false;
-	 */
-	return (Level != rhs.Level || Coordinate != rhs.Coordinate);
+	return false;
 }
 
 /* comparitor for stl key usage */
 bool OmMipChunkCoord::operator<(const OmMipChunkCoord & rhs) const
 {
-	if (Level != rhs.Level)
+	if (Level != rhs.Level) {
 		return (Level < rhs.Level);
+	}
+
 	return (Coordinate < rhs.Coordinate);
 }
 

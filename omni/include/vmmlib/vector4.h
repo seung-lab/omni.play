@@ -202,11 +202,11 @@ public:
     // component-component compare
     // returns a size_t with a bitmask of the component comparison results
     // -> if this->xy[k] is smaller a[k], the kth bit will be enabled;
-    const size_t smaller( const Vector4& a ) const;
-    const size_t smaller( const Vector4& a, const size_t axis ) const;
+    size_t smaller( const Vector4& a ) const;
+    size_t smaller( const Vector4& a, const size_t axis ) const;
     // -> if this->xy[k] is greater a[k], the kth bit will be enabled;
-    const size_t greater( const Vector4& a ) const;
-    const size_t greater( const Vector4& a, const size_t axis ) const;
+    size_t greater( const Vector4& a ) const;
+    size_t greater( const Vector4& a, const size_t axis ) const;
 
     // component iterators
     typedef T*                      iterator;
@@ -844,7 +844,7 @@ Vector4< T >::clamp( T lower, T upper )
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector4< T >::smaller( const Vector4< T >& rhs ) const
 {
     size_t result = 0;
@@ -862,7 +862,7 @@ Vector4< T >::smaller( const Vector4< T >& rhs ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector4< T >::smaller( const Vector4< T >& rhs, const size_t axis  ) const
 {
     return ( xyzw[ axis ] < rhs.xyzw[ axis ] ) ? 1 << axis : 0;
@@ -871,7 +871,7 @@ Vector4< T >::smaller( const Vector4< T >& rhs, const size_t axis  ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector4< T >::greater( const Vector4< T >& rhs ) const
 {
     size_t result = 0;
@@ -889,7 +889,7 @@ Vector4< T >::greater( const Vector4< T >& rhs ) const
 
 
 template < typename T > 
-const size_t 
+size_t 
 Vector4< T >::greater( const Vector4< T >& rhs, const size_t axis  ) const
 {
     return ( xyzw[ axis ] > rhs.xyzw[ axis ] ) ? 1 << axis : 0;

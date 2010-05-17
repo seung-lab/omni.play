@@ -15,23 +15,10 @@
 
 #include "omPreferences.h"
 #include "omStateManager.h"
-#include "omKeyManager.h"
-#include "omTagManager.h"
 #include "volume/omVolume.h"
-
 #include "common/omStd.h"
-#include "common/omSerialization.h"
 
-#include <vmmlib/vmmlib.h>
-#include <vmmlib/serialization.h>
-#include <pthread.h>
-#include <QtNetwork/QTcpSocket>
-
-
-using namespace vmml;
-
-
-
+#include <QMutex>
 
 
 class OmGarbage {
@@ -63,7 +50,7 @@ private:
 	
 	//garbage
 	vector <GLuint> mTextures;
-	pthread_mutex_t mTextureMutex;
+	QMutex mTextureMutex;
 };
 
 

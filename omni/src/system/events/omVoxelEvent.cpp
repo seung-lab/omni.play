@@ -9,14 +9,14 @@ OmVoxelEvent::OmVoxelEvent(QEvent::Type type)
 
 }
 
-OmVoxelEvent::OmVoxelEvent(QEvent::Type type, OmId segmentationId, DataCoord & vox)
- : OmEvent(type, CLASS)
+OmVoxelEvent::OmVoxelEvent(QEvent::Type type, OmId, DataCoord & vox)
+	: OmEvent(type, CLASS)
 {
 
 	mVoxels.insert(vox);
 }
 
-OmVoxelEvent::OmVoxelEvent(QEvent::Type type, OmId segmentationId, set < DataCoord > &vox)
+OmVoxelEvent::OmVoxelEvent(QEvent::Type type, OmId, set < DataCoord > &vox)
  : OmEvent(type, CLASS)
 {
 
@@ -51,7 +51,7 @@ void OmVoxelEvent::Dispatch(OmEventListener * pListener)
 		return;
 
 	case VOXEL_SELECTION_MODIFICATION:
-		p_cast_listener->VoxelSelectionModificationEvent(this);
+		p_cast_listener->VoxelSelectionModificationEvent();
 		return;
 
 	default:

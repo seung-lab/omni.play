@@ -11,56 +11,42 @@
 
 #include "mesh/omMipMeshManager.h"
 #include "voxel/omMipVoxelationManager.h"
+#include "segment/omSegmentCache.h"
+#include "segment/omSegmentIterator.h"
 #include "mesh/meshingManager.h"
-#include "segment/omSegmentManager.h"
-#include "system/omSystemTypes.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "system/events/omSystemModeEvent.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "common/omStd.h"
 
-#include <vmmlib/frustumCuller.h>
-using namespace vmml;
-
-
-
 class OmVolumeCuller;
 class OmSegment;
 
-//template < class T > class OmGenericManager;
-
-
-
-class OmSegmentation : public OmMipVolume, public OmManageableObject, public OmSystemModeEventListener {
+class OmSegmentation 
+: public OmMipVolume, 
+	public OmManageableObject, 
+	public OmSystemModeEventListener 
+{
 
 public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
-	
-	//properties
-	void SetDirectoryPath(string dpath);
-	
+	~OmSegmentation();
 	
 	//data mapping
 	OmId GetSegmentIdMappedToValue( SEGMENT_DATA_TYPE value );
-	const SegmentDataSet& GetValuesMappedToSegmentId( OmId );
 	SEGMENT_DATA_TYPE GetValueMappedToSegmentId( OmId );
-	void MapValuesToSegmentId( OmId, const SegmentDataSet & );
-	void UnMapValuesToSegmentId( OmId, const SegmentDataSet & );
-	
 	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
 	OmId GetVoxelSegmentId(const DataCoord &vox);
 	void SetVoxelSegmentId(const DataCoord &vox, OmId omId);
 
-
 	//build methods
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
 	
-	bool IsMeshDataBuilt();
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
@@ -71,47 +57,48 @@ public:
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
 	
-	
-	
 	//export
 	void ExportDataFilter(vtkImageData *);
 	
 	//events
-	void SystemModeChangeEvent(OmSystemModeEvent *event);
+	void SystemModeChangeEvent();
 							
 	//segment management
-	OmSegment& GetSegment(OmId id);
-	OmSegment& AddSegment();
-	void RemoveSegment(OmId id);
+	OmSegment* GetSegment(OmId id);
+	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE id);
+	OmSegment* AddSegment();
 	bool IsSegmentValid(OmId id);
-	const OmIds& GetValidSegmentIds();
 	bool IsSegmentEnabled(OmId id);
 	void SetSegmentEnabled(OmId id, bool enable);
 	void SetAllSegmentsEnabled(bool selected);
-	const OmIds& GetEnabledSegmentIds();
+	const OmIds & GetEnabledSegmentIds();
 	bool IsSegmentSelected(OmId id);
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
 	const OmIds& GetSelectedSegmentIds();
+
+	OmId GetNumSegments();
+	OmId GetNumTopSegments();
 	
-	//segment data management
-	const SegmentDataSet& GetEnabledSegmentDataValues();
-	const SegmentDataSet& GetSelectedSegmentDataValues();
-	const SegmentDataSet& GetUnselectedSegmentDataValues();
-	const SegmentDataSet& GetVoxelizedSegmentDataValues();
-	void DeleteCaches();	
+	bool AreSegmentsSelected();
 	
 	//drawing
-	void Draw(const OmVolumeCuller &);
-	void DrawChunkRecursive(const OmMipChunkCoord &, const SegmentDataSet &, bool testVis, const OmVolumeCuller &, const int numSegments);
-	void DrawChunk(const OmMipChunkCoord &, const SegmentDataSet &, const OmVolumeCuller &rCuller);
-	void DrawChunkMeshes( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
+	void Draw(OmVolumeCuller &);
+	void DrawChunkRecursive(const OmMipChunkCoord &, 
+				OmSegmentIterator iter,
+				bool testVis, 
+				OmVolumeCuller &);
+	void DrawChunk(const OmMipChunkCoord &, QList< OmSegment* > segmentsToDraw, OmVolumeCuller &rCuller);
 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
 	
-	void DrawMeshes( const OmBitfield &, const OmMipChunkCoord &, const SegmentDataSet & ) { }
-	
-	void Print();
 	OmMipMeshManager mMipMeshManager;
+
+	void FlushDirtySegments();
+	void FlushDend();
+	void ReloadDendrogram( const float threshold);
+
+	void ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+			const bool isSegmentation, unsigned char * data );
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy
@@ -120,43 +107,24 @@ protected:
 	
 	
 private:
-	MeshingManager * mMeshingMan;
+	void KillCacheThreads();
 
-	//mesh data exists
-	bool mIsMeshDataBuilt;
+	MeshingManager * mMeshingMan;
 	
 	//managers
-	OmSegmentManager mSegmentManager;
-
 	OmMipVoxelationManager mMipVoxelationManager;
-	
+	OmSegmentCache mSegmentCache;
 
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int file_version);
+        quint32 * mDend;
+	int mDendSize;
+        float * mDendValues;
+	int mDendValuesSize;
+	int mDendCount;
+
+	friend class OmBuildSegmentation;
+
+	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
+	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
 };
-
-
-
-
-
-
-/////////////////////////////////
-///////		 Serialization
-
-
-BOOST_CLASS_VERSION(OmSegmentation, 0)
-
-template<class Archive>
-void 
-OmSegmentation::serialize(Archive & ar, const unsigned int file_version) {
-	ar & boost::serialization::base_object< OmMipVolume >(*this);
-	ar & boost::serialization::base_object<OmManageableObject>(*this);
-	
-	ar & mSegmentManager;
-	ar & mMipMeshManager;
-}
-
-
 
 #endif

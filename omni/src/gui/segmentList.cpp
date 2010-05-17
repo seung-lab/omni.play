@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "segmentList.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "guiUtils.h"
@@ -33,11 +34,10 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId first
 QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
-	OmSegmentation & segmentation = OmVolume::GetSegmentation( sdw.getID() );
-	const OmIds & allSegmentIDs = segmentation.GetValidSegmentIds();
+	OmSegmentation & segmentation = OmProject::GetSegmentation( sdw.getID() );
 	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
 
-	mNumSegments = allSegmentIDs.size();
+	mNumSegments = segmentation.GetNumSegments();
 
 	int offset;
 	if( mNumSegments > in_offset ){
@@ -46,16 +46,18 @@ QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned
 		offset = 0;
 	}
 
-	OmIds::iterator itr = allSegmentIDs.begin();
-	advance( itr, offset );
+	// FIXME: this search could become slow; 
 	int counter = 0;
-	for(; itr != allSegmentIDs.end(); itr++) {
-		counter++;
+	for( quint32 i = offset+1; i < mNumSegments; i++) {
+		
+		if( NULL == segmentation.GetSegmentFromValue( i ) ){
+			continue;
+		}
+		++counter;
 		if( counter > mNumSegmentsPerPage ){
 			break;
 		}
-
-		mysegmentIDs->append((*itr));
+		mysegmentIDs->append(i);
 	}
 	
 	return mysegmentIDs;
@@ -183,6 +185,14 @@ void SegmentList::showSegmentContextMenu()
 	contextMenu->exec(QCursor::pos());
 }
 
+bool SegmentList::isSegmentSelected()
+{
+	if( NULL == dataElementsWidget->currentItem() ) {
+		return false;
+	}
+	return true;
+}
+
 SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
 {
 	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
@@ -193,6 +203,9 @@ SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
 
 void SegmentList::segmentRightClickMenu(QAction * act)
 {
+	if( !isSegmentSelected() ){
+		return;
+	}
 	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
 	if( propAct == act ){
 		addToSplitterDataElementSegment( sdw );
@@ -210,15 +223,16 @@ QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
 
 void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
 {
-	if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-		SegmentDataWrapper sdw = getCurrentlySelectedSegment();
-		addToSplitterDataElementSegment(sdw);
+	if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
+	    inspectorProperties->isVisible() ) {
+		if( isSegmentSelected() ){
+			SegmentDataWrapper sdw = getCurrentlySelectedSegment();
+			addToSplitterDataElementSegment(sdw);
+		}
 	}
 
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-
-	// TODO: make sure list of modified segments is correct....
 
 	if (0 == column) {
 		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
@@ -226,7 +240,7 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 		sendSegmentChangeEvent(sdw, false);
 		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
 	} else {
-		OmSegmentation & segmentation = OmVolume::GetSegmentation(sdw.getSegmentationID());
+		OmSegmentation & segmentation = OmProject::GetSegmentation(sdw.getSegmentationID());
 		segmentation.SetAllSegmentsSelected(false);
 		
 		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
@@ -238,21 +252,11 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 	}
 }
 
-void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
-{
-	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
-
-	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
-						 QString("Segmentation%1: Segment %2")
-						 .arg(sdw.getSegmentationID())
-						 .arg(sdw.getID()) );
-}
-
 void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
 {
 	const OmId segmentationID = sdw.getSegmentationID();
 	const OmId segmentID = sdw.getID();
-	OmSegmentation & segmentation = OmVolume::GetSegmentation(segmentationID);
+	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 
 	OmIds selected_segment_ids;
 	OmIds un_selected_segment_ids;
@@ -262,7 +266,7 @@ void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augm
 	} else {
 		selected_segment_ids.insert(segmentID);
 		un_selected_segment_ids = segmentation.GetSelectedSegmentIds();
-		un_selected_segment_ids.erase(segmentID);
+		un_selected_segment_ids.remove(segmentID);
 	}
 
 	(new OmSegmentSelectAction(segmentationID,
@@ -271,6 +275,16 @@ void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augm
 				   segmentID, 
 				   this,
 				   "segmentList"))->Run();
+}
+
+void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
+{
+	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
+
+	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
+						 QString("Segmentation%1: Segment %2")
+						 .arg(sdw.getSegmentationID())
+						 .arg(sdw.getID()) );
 }
 
 void SegmentList::setupDataElementList()
@@ -342,21 +356,6 @@ void SegmentList::keyPressEvent(QKeyEvent * event)
 	}
 }
 
-void SegmentList::mousePressEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse start\n");
-}
-
-void SegmentList::mouseMoveEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse move\n");
-}
-
-void SegmentList::mouseReleaseEvent(QMouseEvent *event)
-{
-	debug("guimouse", "mouse release\n");
-}
-
 void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
@@ -369,7 +368,7 @@ void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
-	if (!OmVolume::IsSegmentationValid(segmentationID)) {
+	if (!OmProject::IsSegmentationValid(segmentationID)) {
 		if( haveValidSDW ){
 			populateSegmentElementsListWidget();
 		}

@@ -6,9 +6,9 @@
  *
  */
 
-#include "omMipMesh.h"
-#include "omMipMeshCoord.h"
-
+#include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshCoord.h"
+#include "segment/omSegment.h"
 #include "common/omStd.h"
 #include "system/omThreadedCache.h"
 
@@ -17,7 +17,6 @@ typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
 class OmMipChunk;
 class OmMipChunkCoord;
 class OmMeshSource;
-class OmSegmentManager;
 class QGLContext;
 
 class OmMipMeshManager : public MipMeshCache {
@@ -27,50 +26,31 @@ class OmMipMeshManager : public MipMeshCache {
 	~OmMipMeshManager();
 	
 	//accessors
-	const string& GetDirectoryPath() const;
-	void SetDirectoryPath(const string &);
-	
-	bool IsMeshDataBuilt();
-	void SetMeshDataBuilt(bool);
+	const QString& GetDirectoryPath() const;
+	void SetDirectoryPath(const QString &);
 	
 	//meshing
 	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
-	void GetMesh(shared_ptr<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
+	void GetMesh(QExplicitlySharedDataPointer<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
 	
 	//drawing
-	void DrawMeshes(OmSegmentManager &rSegMgr,
-			const OmBitfield &drawOps,
+	void DrawMeshes(const OmBitfield &drawOps,
 			const OmMipChunkCoord &mipCoord,
-			const SegmentDataSet &rRelvDataVals );
+			QList< OmSegment* > segmentsToDraw );
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 	void HandleFetchUpdate();
 	bool InitializeFetchThread();
 	
-	string mDirectoryPath;
-	bool mMeshDataBuilt;
+	QString mDirectoryPath;
 
 	//gl context to load mesh vbos
 	QGLContext* mFetchThreadContext;
 
-	friend class boost::serialization::access;
-	template<class Archive>
-		void serialize(Archive & ar, const unsigned int file_version);
+	friend QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm );
+	friend QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm );
 };
-
-/////////////////////////////////
-///////		 Serialization
-
-BOOST_CLASS_VERSION(OmMipMeshManager, 0)
-
-template<class Archive>
-void 
-OmMipMeshManager::serialize(Archive & ar, const unsigned int file_version) {
-
-	ar & mDirectoryPath;
-	ar & mMeshDataBuilt;
-}
 
 #endif
