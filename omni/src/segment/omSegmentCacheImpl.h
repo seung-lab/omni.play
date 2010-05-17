@@ -1,9 +1,8 @@
 #ifndef OM_SEGMENT_CACHE_IMPL_H
 #define OM_SEGMENT_CACHE_IMPL_H
 
-#include "segment/omSegmentCache.h"
-#include "utility/DynamicTree.h"
-#include <QMap>
+#include "volume/omSegmentation.h"
+#include "utility/DynamicTreeContainer.h"
 
 class OmSegmentCacheImpl {
 public:
@@ -56,7 +55,8 @@ public:
 
 	void turnBatchModeOn(const bool batchMode);
 	
-	void Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold);
+	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
+	void Join( const OmId, const OmId, const float );
 	void clearAllJoins();
 
 	quint32 getPageSize() { return mPageSize; }
@@ -77,7 +77,9 @@ public:
 
 	SEGMENT_DATA_TYPE getNextValue();
 	SEGMENT_DATA_TYPE mMaxValue;
+
 	quint32 mNumSegs;
+	quint32 mNumTopLevelSegs;
 
 	OmSegmentation * mSegmentation;
 
@@ -108,18 +110,15 @@ public:
 
 	QMap< OmMipChunkCoord, QList< OmSegment* > > cacheDirectSegmentList;
 	void clearCaches();
-	void invalidateCachedRootFreshness();
 	void invalidateCachedColorFreshness();
-	quint32 mCachedRootFreshness;
 	quint32 mCachedColorFreshness;
 
-	DynamicTree<SEGMENT_DATA_TYPE> ** tree;
-	void reloadDynamicTree();
-
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
-	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
-
-	void JoinDynamicTree( const OmId, const OmId, const double );
+	DynamicTreeContainer<SEGMENT_DATA_TYPE> * mTree;
+	void initializeDynamicTree();
+	void loadDendrogram( const quint32 * dend, const float * dendValues, 
+			     const int size, const float stopPoint );
+	void doLoadDendrogram();
+	void loadTreeIfNeeded();
 
 	int clamp(int c) {
 		if (c > 255) {
@@ -128,6 +127,8 @@ public:
 		return c;
 	}
 
+	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
+	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
 };
 
 #endif

@@ -157,6 +157,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/biSetMap.h \
            src/utility/dataWrappers.h \
            src/utility/DynamicTree.h \
+           src/utility/DynamicTreeContainer.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omDataArchiveCoords.h \
@@ -260,11 +261,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
            src/segment/actions/voxel/omVoxelSetAction.h \
            src/segment/actions/voxel/omVoxelSetConnectedAction.h \
-           src/segment/actions/voxel/omVoxelSetValueAction.h \
-           src/system/omThreadedCache.cpp \
-           src/system/omFetchingThread.cpp \
-           src/system/omGenericManager.cpp \
-           src/utility/DynamicTree.cpp
+           src/segment/actions/voxel/omVoxelSetValueAction.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -412,7 +409,12 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \
            src/segment/actions/voxel/omVoxelSetAction.cpp \
            src/segment/actions/voxel/omVoxelSetConnectedAction.cpp \
-           src/segment/actions/voxel/omVoxelSetValueAction.cpp
+           src/segment/actions/voxel/omVoxelSetValueAction.cpp \
+           src/system/omThreadedCache.cpp \
+           src/system/omFetchingThread.cpp \
+           src/system/omGenericManager.cpp \
+           src/utility/DynamicTree.cpp \
+           src/utility/DynamicTreeContainer.cpp
 
 RESOURCES += src/gui/resources.qrc
 

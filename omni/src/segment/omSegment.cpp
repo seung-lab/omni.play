@@ -17,12 +17,8 @@ OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
 {
 	assert(cache && "must have cache in the segments");
 	SetInitialColor();
-	parentSegID = 0;
 
-	mParent = NULL;
-
-	mCachedRoot = NULL;
-	mCachedRootFreshness = 0;
+	mParentSegID = 0;
 
 	mCachedColor.red = 0;
 	mCachedColor.green = 0;
@@ -33,24 +29,21 @@ OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
 OmSegment::OmSegment(OmSegmentCache* cache)
 	:  mCache(cache)
 {
-	mParent = NULL;
-	mCachedRoot = NULL;
-	mCachedRootFreshness = 0;
+	mParentSegID = 0;
 }
 
-void OmSegment::Join(OmSegment * childUnknownLevel, double threshold )
+void OmSegment::Join(OmSegment * childUnknownLevel, float threshold )
 {
 	mCache->Join( this, childUnknownLevel, threshold );
 }
 
-void OmSegment::setParent(OmSegment * parent, double threshold)
+void OmSegment::setParent(OmSegment * parent, float threshold)
 {
-	if( parentSegID ){
+	if( mParentSegID ){
 		assert(0);
 	}
 
-	parentSegID = parent->getValue();
-	mParent = parent;
+	mParentSegID = parent->mValue;
 	mThreshold = threshold;
 }
 
@@ -76,7 +69,7 @@ void OmSegment::SetInitialColor()
 
 void OmSegment::SetColor(const Vector3 < float >&rColor)
 {
-	if( parentSegID ){
+	if( mParentSegID ){
 		mCache->findRoot( this )->SetColor(rColor);
 		return;
 	}
@@ -87,7 +80,7 @@ void OmSegment::SetColor(const Vector3 < float >&rColor)
 
 void OmSegment::ApplyColor(const OmBitfield & drawOps)
 {
-	if( parentSegID ){
+	if( mParentSegID ){
 		mCache->findRoot( this )->ApplyColor(drawOps);
 		return;
 	}
@@ -123,7 +116,7 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 
 const Vector3 < float >& OmSegment::GetColor()
 {
-	if(parentSegID) {
+	if(mParentSegID) {
 		return mCache->findRoot( this )->GetColor();
 	}
 
@@ -134,8 +127,8 @@ QString OmSegment::GetNote()
 {
 	QString customNote = mCache->getSegmentNote( getValue() );
 
-	if( parentSegID ){
-		customNote += "Parent: " + QString::number(parentSegID) + "; ";
+	if( mParentSegID ){
+		customNote += "Parent: " + QString::number(mParentSegID) + "; ";
 	}
 
 	if( !segmentsJoinedIntoMe.empty() ){
@@ -189,7 +182,7 @@ OmId OmSegment::getSegmentationID()
 
 OmId OmSegment::getParent()
 {
-	return parentSegID;
+	return mParentSegID;
 }
 
 void OmSegment::splitChildLowestThreshold()
@@ -202,7 +195,7 @@ void OmSegment::splitTwoChildren(OmSegment * seg)
 	mCache->splitTwoChildren(this, seg);
 }
 
-double OmSegment::getThreshold()
+float OmSegment::getThreshold()
 {
 	return mThreshold;
 }

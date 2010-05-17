@@ -58,7 +58,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	//QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
+	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
 	labelNumTopSegmentsNum->setText( "disabled" );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
 

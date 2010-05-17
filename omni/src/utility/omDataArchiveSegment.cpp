@@ -26,10 +26,6 @@ void OmDataArchiveSegment::ArchiveRead( OmHdf5Path path, OmSegment** page, OmSeg
 
                 in >> segment->mValue;
                 in >> segment->mColor;
-                in >> segment->mThreshold;
-
-                in >> segment->segmentsJoinedIntoMe;
-                in >> segment->parentSegID;
 
                 page[ i ] = segment;
         }
@@ -56,10 +52,6 @@ void OmDataArchiveSegment::ArchiveWrite( OmHdf5Path path, OmSegment** page, OmSe
 
                 out << segment->mValue;
                 out << segment->mColor;
-                out << segment->mThreshold;
-
-                out << segment->segmentsJoinedIntoMe;
-                out << segment->parentSegID;
         }
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 

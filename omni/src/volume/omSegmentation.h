@@ -120,8 +120,10 @@ private:
         float * mDendValues;
 	int mDendValuesSize;
 	int mDendCount;
+	float mDendThreshold;
 
 	friend class OmBuildSegmentation;
+	friend class OmSegmentCacheImpl;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

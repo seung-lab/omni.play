@@ -38,6 +38,7 @@ OmSegmentation::OmSegmentation()
 
         mDend = NULL;
         mDendValues = NULL;
+	mDendThreshold = 0.0;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -190,9 +191,6 @@ void OmSegmentation::BuildVolumeData()
 	
 	mSegmentCache.flushDirtySegments();
 	mSegmentCache.turnBatchModeOn(false);
-
-	//seg change event
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
 /*

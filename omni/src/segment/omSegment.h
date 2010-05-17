@@ -41,12 +41,12 @@ public:
 	bool IsEnabled();
 	void SetEnabled(bool);
 
-	void Join(OmSegment *, double threshold = 0);
-	void setParent(OmSegment * segment, double threshold);
+	void Join(OmSegment *, float threshold = 0);
+	void setParent(OmSegment * segment, float threshold);
 	OmId getParent();
 
 	OmId getSegmentationID();
-	double getThreshold();
+	float getThreshold();
 
 private:
 
@@ -56,12 +56,8 @@ private:
 	Vector3<float> mColor;
 
 	QList<OmId> segmentsJoinedIntoMe;
-	OmId parentSegID;
-	OmSegment * mParent;
-	double mThreshold;
-
-	OmSegment * mCachedRoot;
-	quint32 mCachedRootFreshness;
+	OmId mParentSegID;
+	float mThreshold;
 
 	OmColor mCachedColor;
 	quint32 mCachedColorFreshness;
