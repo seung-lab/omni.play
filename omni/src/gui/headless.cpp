@@ -13,6 +13,7 @@
 #include "common/omDebug.h"
 #include "system/omGarbage.h"
 #include "system/omProjectData.h"
+#include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
 #include "utility/stringHelpers.h"
 
@@ -151,7 +152,23 @@ void Headless::processLine( QString line, QString fName )
 		bs->addFileNameAndPath( hdf5fnp );
 		bs->build_seg_image();
 		bs->wait();
-		bs->loadDendrogram();
+	} else if( line.startsWith("loadTIFFchann:") ){
+		QStringList args = line.split(':');
+
+		OmChannel & chann = OmProject::AddChannel();
+		OmBuildChannel * bc = new OmBuildChannel( &chann );
+
+		QDir dir( args[1] );
+		foreach( QFileInfo f, dir.entryInfoList() ){
+			if(!f.isFile()){
+				continue;
+			}
+			printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
+			bc->addFileNameAndPath( f.canonicalFilePath() );
+		}
+		bc->build_channel();
+		bc->wait();
+
 	} else if( line.startsWith("buildHDF5:") ){
 		QStringList args = line.split(':');
 		QString projectFileName = QFileInfo(args[1]+".omni").fileName();
