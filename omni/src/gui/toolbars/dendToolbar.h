@@ -40,6 +40,7 @@ class DendToolBar : public QWidget
 	void addToolbars();
 	void addToThreshold(float num);
 
+	void setThresholdValue();
 
 	// Actions
 	QAction * toolbarSplitAct;

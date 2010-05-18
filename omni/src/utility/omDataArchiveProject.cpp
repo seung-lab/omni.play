@@ -251,6 +251,11 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 	out << seg.mMipMeshManager;
 	out << seg.mSegmentCache;
 
+	out << seg.mDendSize;
+	out << seg.mDendValuesSize;
+	out << seg.mDendCount;
+	out << seg.mDendThreshold;
+
 	return out;
 }
 
@@ -263,6 +268,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mMipMeshManager;
 	in >> seg.mSegmentCache;
 
+	in >> seg.mDendSize;
+	in >> seg.mDendValuesSize;
+	in >> seg.mDendCount;
+	in >> seg.mDendThreshold;
+
         QString dendStr = QString("%1dend")
                         .arg(seg.GetDirectoryPath());
         QString dendValStr = QString("%1dendValues")
@@ -271,11 +281,13 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 
         path.setPathQstr(dendStr);
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
-        	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &seg.mDendSize);
-		seg.mDendCount = seg.mDendSize / (sizeof(quint32) * 2); 	// * 2 because there are two values.
+		int size;
+        	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+		assert( size == seg.mDendSize );
 
         	path.setPathQstr(dendValStr);
-        	seg.mDendValues = (float *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &seg.mDendValuesSize);
+        	seg.mDendValues = (float *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+		assert( size == seg.mDendValuesSize );
 	}
 
 	return in;

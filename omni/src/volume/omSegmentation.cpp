@@ -38,6 +38,9 @@ OmSegmentation::OmSegmentation()
 
         mDend = NULL;
         mDendValues = NULL;
+	mDendSize = 0;
+	mDendValuesSize = 0;
+	mDendCount = 0;
 	mDendThreshold = 0.0;
 }
 
@@ -701,7 +704,7 @@ void OmSegmentation::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 	c.colorTile( imageData, size, isSegmentation, data );
 }
 
-void OmSegmentation::ReloadDendrogram( const float threshold)
+void OmSegmentation::ReloadDendrogram()
 {
-	mSegmentCache.reloadDendrogram(mDend, mDendValues, mDendCount, threshold);
+	mSegmentCache.reloadDendrogram(mDend, mDendValues, mDendCount, mDendThreshold);
 }
