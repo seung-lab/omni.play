@@ -1,5 +1,4 @@
 #include "gui/inspectors/volInspector.h" 
-#include <QLineEdit>
 #include <QPushButton>
 
 OmVolInspector::OmVolInspector(OmVolume * vol, QWidget * parent) : QGroupBox(parent), mVol(vol)
@@ -34,25 +33,20 @@ OmVolInspector::OmVolInspector(OmVolume * vol, QWidget * parent) : QGroupBox(par
 	Vector3f resf = mVol->GetDataResolution(); 
 
         QLineEdit * res = new QLineEdit(this);
+	mResX = res;
         res->setText(QString::number(resf.x));
-        connect(res, SIGNAL(editingFinished()),
-                this, SLOT(xChanged()));
         mGrid->addWidget(res, 1, 1);
 
-        res = new QLineEdit(this);
+        mResY = res = new QLineEdit(this);
         res->setText(QString::number(resf.y));
-        connect(res, SIGNAL(editingFinished()),
-                this, SLOT(yChanged()));
         mGrid->addWidget(res, 2, 1);
 
-        res = new QLineEdit(this);
+        mResZ = res = new QLineEdit(this);
         res->setText(QString::number(resf.z));
-        connect(res, SIGNAL(editingFinished()),
-                this, SLOT(zChanged()));
         mGrid->addWidget(res, 3, 1);
 
 	QPushButton * apply = new QPushButton("Apply");
-        connect(res, SIGNAL(clicked()),
+        connect(apply, SIGNAL(clicked()),
                 this, SLOT(apply()));
 	mGrid->addWidget(apply, 4, 1);
 }
@@ -61,3 +55,13 @@ OmVolInspector::~OmVolInspector()
 {
 }
 
+void OmVolInspector::apply()
+{
+	Vector3f dims;
+
+	dims.x = mResX->text().toFloat();
+	dims.y = mResY->text().toFloat();
+	dims.z = mResZ->text().toFloat();
+
+	mVol->SetDataResolution(dims);
+}

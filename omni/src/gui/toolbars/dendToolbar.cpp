@@ -66,6 +66,16 @@ void DendToolBar::createToolbarActions()
                 this, SLOT(toggledShatter()));
         toolbarShatterAct->setCheckable(true);
 
+        mergeHintAct = new QAction(tr("Show Merge Hints"), mMainWindow);
+        mergeHintAct->setStatusTip(tr("Merge hint mode"));
+        connect(mergeHintAct, SIGNAL(triggered()),
+                this, SLOT(toggledHint()));
+        mergeHintAct->setCheckable(true);
+
+        mHint = new QLineEdit(mMainWindow);
+        value.setNum(1);
+        mHint->setText(value);
+
 }
 
 void DendToolBar::setThresholdValue()
@@ -95,6 +105,8 @@ void DendToolBar::addToolbars()
 	dendToolBar->addAction(increaseThresholdAct);
 	dendToolBar->addAction(joinAct);
 	dendToolBar->addAction(toolbarShatterAct);
+	dendToolBar->addAction(mergeHintAct);
+	dendToolBar->addWidget(mHint);
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -207,6 +219,10 @@ void DendToolBar::toggledShatter()
 	mShatter = !mShatter;
 
 	updateGui();
+}
+
+void DendToolBar::toggledHint()
+{
 }
 
 void DendToolBar::thresholdChanged()

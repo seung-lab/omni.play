@@ -29,6 +29,7 @@ class DendToolBar : public QWidget
 	void thresholdChanged();
 	void join();
 	void toggledShatter();
+	void toggledHint();
 
  private:
 	MainWindow * mMainWindow;
@@ -50,6 +51,8 @@ class DendToolBar : public QWidget
 	QAction * increaseThresholdAct;
 	QAction * joinAct;
 	QAction * toolbarShatterAct;
+	QAction * mergeHintAct;
+	QLineEdit* mHint;
 	
 	void setToolbarDisabled();
 	void resetTool( QAction* tool, const bool enabled );
