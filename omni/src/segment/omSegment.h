@@ -59,12 +59,10 @@ private:
 	OmId mParentSegID;
 	float mThreshold;
 
-	OmColor mCachedColor;
-	quint32 mCachedColorFreshness;
-	
 	void SetInitialColor();
 
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
 };

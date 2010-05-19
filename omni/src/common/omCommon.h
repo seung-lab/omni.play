@@ -31,8 +31,6 @@ typedef vmml::Vector3<float> NormCoord;
 typedef vmml::Vector3<float> SpaceCoord;
 typedef vmml::Vector2<int> ScreenCoord;
 
-uint qHash(const DataCoord& c);
-
 typedef vmml::AxisAlignedBoundingBox<int> DataBbox;
 typedef vmml::AxisAlignedBoundingBox<float> NormBbox;
 typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;

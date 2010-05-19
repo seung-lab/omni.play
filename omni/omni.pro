@@ -425,6 +425,8 @@ LIBS += -lgdi32
 
 INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
 
+INCLUDEPATH += ../external/headers/boost_1_43_0
+
 LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  
 LIBS += -lz
 }

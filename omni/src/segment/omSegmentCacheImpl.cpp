@@ -467,55 +467,6 @@ void OmSegmentCacheImpl::clearCaches()
 	invalidateCachedColorFreshness();
 }
 
-extern bool mShatter;
-OmColor OmSegmentCacheImpl::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, const bool showOnlySelectedSegments )
-{
-	OmColor color = {0,0,0};
-
-	OmSegment * seg = GetSegmentFromValue( val );
-	if( NULL == seg ) {
-		return color;
-	}
-
-	if(mShatter){
-		OmSegment * segRoot = findRoot( seg );
-		if( isSegmentSelected(segRoot)) {
-                	color.red   = seg->mColor.x * 255;
-                	color.green = seg->mColor.y * 255;
-                	color.blue  = seg->mColor.z * 255;
-			return color;
-		} 
-	}
-	
-
-	if(mCachedColorFreshness == seg->mCachedColorFreshness ){
-		return seg->mCachedColor;
-	}
-
-	OmSegment * segRoot = findRoot( seg );
-
-	const Vector3 < float > & sc = segRoot->mColor;
-
-	if( isSegmentSelected(segRoot)) {
-		color.red   = clamp(sc.x * 255 * 2.5);
-		color.green = clamp(sc.y * 255 * 2.5);
-		color.blue  = clamp(sc.z * 255 * 2.5);
-	} else {
-		if (showOnlySelectedSegments) {
-			// don't show
-		} else {
-			color.red   = sc.x * 255;
-			color.green = sc.y * 255;
-			color.blue  = sc.z * 255;
-		}
-	}
-
-	seg->mCachedColor = color;
-	seg->mCachedColorFreshness = mCachedColorFreshness;
-
-	return color;
-}
-
 void OmSegmentCacheImpl::invalidateCachedColorFreshness()
 {
 	mCachedColorFreshness++;

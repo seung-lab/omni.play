@@ -20,6 +20,9 @@
 #include "volume/omSegmentationChunkCoord.h"
 #include "common/omStd.h"
 
+#include "segment/omSegmentColorizer.h"
+#include <boost/tr1/unordered_map.hpp>
+
 class OmVolumeCuller;
 class OmSegment;
 
@@ -105,8 +108,12 @@ public:
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
 
-	void ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-			const bool isSegmentation, unsigned char * data );
+	void ColorTile( SEGMENT_DATA_TYPE *, const int,
+			const ObjectType, unsigned char * );
+
+
+	boost::unordered_map< ObjectType, OmSegmentColorizer * > mColorCaches;
+
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy

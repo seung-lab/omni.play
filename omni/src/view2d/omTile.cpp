@@ -181,14 +181,11 @@ void OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, con
 {
 	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
 
-	// FIXME: is myID always referring to a segmentation ID?
 	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
-
-	bool isSegmentation = (SEGMENTATION == key.mVolType);
 	
 	current_seg.ColorTile( imageData, 
 			       dims.x * dims.y,
-			       isSegmentation,
+			       key.mVolType,
 			       data );
 
 	*rData = data;

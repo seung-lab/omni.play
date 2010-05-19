@@ -16,7 +16,6 @@ public:
 	bool isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value );
 
 	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE);
-	OmSegment* GetSegmentFromID(OmId);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
@@ -65,8 +64,6 @@ public:
 					QList< OmSegment* > segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
 	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
-
-	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, const bool showOnlySelectedSegments );
 
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
@@ -120,12 +117,7 @@ public:
 	void doLoadDendrogram();
 	void loadTreeIfNeeded();
 
-	int clamp(int c) {
-		if (c > 255) {
-			return 255;
-		}
-		return c;
-	}
+	friend class OmSegmentColorizer;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );

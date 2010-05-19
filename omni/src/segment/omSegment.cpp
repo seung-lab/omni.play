@@ -19,11 +19,6 @@ OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
 	SetInitialColor();
 
 	mParentSegID = 0;
-
-	mCachedColor.red = 0;
-	mCachedColor.green = 0;
-	mCachedColor.blue = 0;
-	mCachedColorFreshness = 0;
 }
 
 OmSegment::OmSegment(OmSegmentCache* cache)

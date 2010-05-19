@@ -697,11 +697,15 @@ void OmSegmentation::FlushDend()
 }
 
 void OmSegmentation::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-		const bool isSegmentation, unsigned char * data )
+		const ObjectType objType, unsigned char * data )
 {
-	OmSegmentColorizer c(&mSegmentCache);
-
-	c.colorTile( imageData, size, isSegmentation, data );
+	if( 0 == mColorCaches.count( objType ) ){
+		debug("color", "made new cache for type %d\n", objType );
+		mColorCaches[ objType ] = new OmSegmentColorizer(&mSegmentCache);
+	}
+	
+	const bool isSegmentation = (SEGMENTATION == objType);
+	mColorCaches[ objType ]->colorTile( imageData, size, isSegmentation, data );
 }
 
 void OmSegmentation::ReloadDendrogram()
