@@ -27,11 +27,6 @@ OmSegment::OmSegment(OmSegmentCache* cache)
 	mParentSegID = 0;
 }
 
-void OmSegment::Join(OmSegment * childUnknownLevel, float threshold )
-{
-	mCache->Join( this, childUnknownLevel, threshold );
-}
-
 void OmSegment::setParent(OmSegment * parent, float threshold)
 {
 	if( mParentSegID ){

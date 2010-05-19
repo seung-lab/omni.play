@@ -54,9 +54,7 @@ public:
 
 	void turnBatchModeOn(const bool batchMode);
 	
-	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
-	void Join( const OmId, const OmId, const float );
-	void clearAllJoins();
+	void JoinAllSegmentsInSelectedList();
 
 	quint32 getPageSize() { return mPageSize; }
 
@@ -116,6 +114,10 @@ public:
 			     const int size, const float stopPoint );
 	void doLoadDendrogram();
 	void loadTreeIfNeeded();
+
+	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
+	void Join( const OmId, const OmId, const float );
+	void clearAllJoins();
 
 	friend class OmSegmentColorizer;
 

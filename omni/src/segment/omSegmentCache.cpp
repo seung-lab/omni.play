@@ -66,12 +66,6 @@ OmSegment* OmSegmentCache::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
 	return mImpl->GetSegmentFromValue( value );
 }
 
-OmSegment* OmSegmentCache::GetSegmentFromID(OmId segmentID)
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->GetSegmentFromValue( segmentID );
-}
-
 OmId OmSegmentCache::GetNumSegments()
 {
 	QMutexLocker locker( &mMutex );
@@ -199,12 +193,6 @@ void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
 	mImpl->splitChildLowestThreshold( segment );
 }
 
-void OmSegmentCache::clearAllJoins()
-{
-	QMutexLocker locker( &mMutex );
-	mImpl->clearAllJoins();
-}
-
 void OmSegmentCache::setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
 						QList< OmSegment* > segmentsToDraw )
 {
@@ -224,14 +212,15 @@ QList< OmSegment* > OmSegmentCache::getSegmentListDirectCache( const OmMipChunkC
 	return mImpl->getSegmentListDirectCache( chunkCoord );
 }
 
-void OmSegmentCache::Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold)
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->Join(parent, childUnknownLevel, threshold);
-}
-
 void OmSegmentCache::reloadDendrogram( const quint32 * dend, const float * dendValues, 
 				       const int size, const float stopPoint )
-{	QMutexLocker locker( &mMutex );
+{	
+	QMutexLocker locker( &mMutex );
 	return mImpl->reloadDendrogram( dend, dendValues, size, stopPoint );
+}
+
+void OmSegmentCache::JoinAllSegmentsInSelectedList()
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->JoinAllSegmentsInSelectedList();
 }

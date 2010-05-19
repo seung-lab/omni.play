@@ -90,30 +90,6 @@ OmSegmentation::~OmSegmentation()
 }
 
 /////////////////////////////////
-///////          Data Mapping
-
-/*
- *	Get the Segment OmId mapped to the given data value.
- */
-OmId OmSegmentation::GetSegmentIdMappedToValue(SEGMENT_DATA_TYPE value)
-{
-	OmSegment * seg = mSegmentCache.GetSegmentFromValue(value);
-	if (!seg) {
-		return 0;
-	}
-	return seg->getValue();
-}
-
-/*
- *	Get the set of data values that map to the given Segment OmId.
- */
-
-SEGMENT_DATA_TYPE OmSegmentation::GetValueMappedToSegmentId(OmId id)
-{
-	return mSegmentCache.GetSegmentFromID(id)->getValue();
-}
-
-/////////////////////////////////
 ///////          Data Accessors
 
 /*
@@ -140,8 +116,7 @@ void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
  */
 OmId OmSegmentation::GetVoxelSegmentId(const DataCoord & vox)
 {
-	SEGMENT_DATA_TYPE data_value = GetVoxelValue(vox);
-	return GetSegmentIdMappedToValue(data_value);
+	return GetVoxelValue(vox);
 }
 
 /*
@@ -151,7 +126,7 @@ OmId OmSegmentation::GetVoxelSegmentId(const DataCoord & vox)
 void OmSegmentation::SetVoxelSegmentId(const DataCoord & vox, OmId omId)
 {
 	//set voxel to first value in set
-	SetVoxelValue(vox, GetValueMappedToSegmentId(omId));
+	SetVoxelValue(vox, omId);
 }
 
 /////////////////////////////////
@@ -384,10 +359,8 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 				//if non-null segment value
 				if (NULL_SEGMENT_DATA != *p_scalar_data) {
-					//then look up om id associated to value
-					OmId om_id = GetSegmentIdMappedToValue(*p_scalar_data);
-					//and replace in image data
-					*p_scalar_data = om_id;
+
+					// TODO: get root ID (or something...)
 				}
 				//adv to next scalar
 				++p_scalar_data;
@@ -413,7 +386,7 @@ void OmSegmentation::SystemModeChangeEvent()
 
 OmSegment * OmSegmentation::GetSegment(OmId id)
 {
-	return mSegmentCache.GetSegmentFromID(id);
+	return mSegmentCache.GetSegmentFromValue(id);
 }
 
 OmSegment* OmSegmentation::GetSegmentFromValue(SEGMENT_DATA_TYPE val)
@@ -711,4 +684,9 @@ void OmSegmentation::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 void OmSegmentation::ReloadDendrogram()
 {
 	mSegmentCache.reloadDendrogram(mDend, mDendValues, mDendCount, mDendThreshold);
+}
+
+void OmSegmentation::JoinAllSegmentsInSelectedList()
+{
+	mSegmentCache.JoinAllSegmentsInSelectedList();
 }

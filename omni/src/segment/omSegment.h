@@ -41,7 +41,6 @@ public:
 	bool IsEnabled();
 	void SetEnabled(bool);
 
-	void Join(OmSegment *, float threshold = 0);
 	void setParent(OmSegment * segment, float threshold);
 	OmId getParent();
 

@@ -11,7 +11,7 @@ void OmSegmentIterator::iterOverSelectedIDs()
 {
 	foreach( OmId segID, mCache->GetSelectedSegmentIdsRef() ){
 		//printf("adding selected %d\n", segID );
-		mSegs.append( mCache->GetSegmentFromID( segID ));
+		mSegs.append( mCache->GetSegmentFromValue( segID ));
 	}
 }
 
@@ -19,7 +19,7 @@ void OmSegmentIterator::iterOverEnabledIDs()
 {
 	foreach( OmId segID, mCache->GetEnabledSegmentIdsRef() ){
 		//printf("adding enabled %d\n", segID );
-		mSegs.append( mCache->GetSegmentFromID( segID) );
+		mSegs.append( mCache->GetSegmentFromValue( segID) );
 	}
 }
 
@@ -36,7 +36,7 @@ OmSegment * OmSegmentIterator::getNextSegment()
 
 	OmSegment * segRet = mSegs.takeLast();
 	for( int i = 0; i < segRet->segmentsJoinedIntoMe.size(); ++i){
-		mSegs.append( mCache->GetSegmentFromID( segRet->segmentsJoinedIntoMe.at(i) ) );
+		mSegs.append( mCache->GetSegmentFromValue( segRet->segmentsJoinedIntoMe.at(i) ) );
 	}
 
 	return segRet;

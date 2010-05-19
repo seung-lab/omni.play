@@ -210,7 +210,7 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -260,8 +260,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			switch (OmStateManager::GetToolMode()) {
 			case ADD_VOXEL_MODE:
 				//get value associated to segment id
-				data_value =
-				    OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				data_value = segment_id;
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
@@ -468,7 +467,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 			if (dosubtract) {
 				data_value = NULL_SEGMENT_DATA;
 			} else {
-				data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				data_value = segment_id;
 			}
 			BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
 		} else {
@@ -534,7 +533,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:

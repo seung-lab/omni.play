@@ -237,7 +237,7 @@ void OmTile::ReplaceTextureRegion(set < DataCoord > &vox)
 		// okay so IF fg is 0, then all bg
 		// if fg != 0, then mix
 
-		OmId id = current_seg.GetSegmentIdMappedToValue(fg_voxel_value);
+		OmId id = fg_voxel_value;
 		QColor newcolor;
 
 		if (id == 0) {

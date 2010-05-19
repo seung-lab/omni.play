@@ -499,10 +499,6 @@ void OmSegmentCacheImpl::doLoadDendrogram()
 void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * dendValues, 
 					 const int size, const float stopPoint )
 {
-	if( NULL == dend ){
-		return;
-	}
-
 	initializeDynamicTree();
 
 	quint32 counter = 0;
@@ -524,7 +520,9 @@ void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * den
                 ++counter;
         }
 
-	printf("\t %d join operations performed\n", counter);	
+	clearCaches();
+
+	printf("\t %d join operations performed\n", counter);
 }
 
 void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold)
@@ -563,10 +561,6 @@ OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 
 void OmSegmentCacheImpl::loadTreeIfNeeded()
 {
-	if( NULL == mSegmentation->mDend ){
-		return;
-	}
-
 	if( NULL != mTree ){
 		return;
 	}
@@ -574,3 +568,23 @@ void OmSegmentCacheImpl::loadTreeIfNeeded()
 	doLoadDendrogram();
 }
 
+void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
+{
+	if( mSelectedSet.size() < 2 ){
+		return;
+	}
+
+	OmIds::const_iterator iter = mSelectedSet.constBegin();
+	SEGMENT_DATA_TYPE parentID = *iter;
+	++iter;
+
+	while (iter != mSelectedSet.constEnd()) {
+		printf("joining %d to %d\n", parentID, *iter);
+		Join( parentID, *iter, 0 );
+		++iter;
+	}
+
+	--mNumTopLevelSegs;
+
+	clearCaches();
+}

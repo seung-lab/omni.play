@@ -37,10 +37,6 @@ public:
 	OmSegmentation(OmId id);
 	~OmSegmentation();
 	
-	//data mapping
-	OmId GetSegmentIdMappedToValue( SEGMENT_DATA_TYPE value );
-	SEGMENT_DATA_TYPE GetValueMappedToSegmentId( OmId );
-	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
 	OmId GetVoxelSegmentId(const DataCoord &vox);
@@ -79,6 +75,7 @@ public:
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
 	const OmIds& GetSelectedSegmentIds();
+	void JoinAllSegmentsInSelectedList();
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
@@ -110,7 +107,6 @@ public:
 
 	void ColorTile( SEGMENT_DATA_TYPE *, const int,
 			const ObjectType, unsigned char * );
-
 
 	boost::unordered_map< ObjectType, OmSegmentColorizer * > mColorCaches;
 

@@ -210,8 +210,8 @@ void DendToolBar::join()
         debug("dendbar", "DendToolBar::join\n");
 
 	if (OmProject::IsSegmentationValid(mSeg)) {
-		//		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-		//		seg.joinSelected();
+		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+		seg.JoinAllSegmentsInSelectedList();
 	}
 
 	updateGui();

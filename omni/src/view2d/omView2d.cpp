@@ -662,7 +662,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:

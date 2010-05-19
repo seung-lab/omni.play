@@ -28,7 +28,6 @@ public:
 	bool isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value );
 
 	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE);
-	OmSegment* GetSegmentFromID(OmId);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
@@ -63,8 +62,7 @@ public:
 	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	void Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold);
-	void clearAllJoins();
+	void JoinAllSegmentsInSelectedList();
 
 	quint32 getPageSize() { return mPageSize; }
 

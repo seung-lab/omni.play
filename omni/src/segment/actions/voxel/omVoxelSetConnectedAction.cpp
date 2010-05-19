@@ -42,7 +42,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//valid edit selection, so get dest data value
-	mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
+	mDataValue = mSegmentId;
 
 	//get current voxel id
 	mSeedSegmentId = r_segmentation.GetVoxelSegmentId(mSeedVoxel);
