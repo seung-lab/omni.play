@@ -7,6 +7,11 @@
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;
 
+OmViewBoxWidget::OmViewBoxWidget(OmView3d *view3d, OmViewGroupState * vgs) 
+	: OmView3dWidget(view3d), mViewGroupState(vgs)
+{ 
+};
+
 /**
  *	Draw the three orthogonal slices from of the view box
  */
@@ -30,23 +35,23 @@ void OmViewBoxWidget::Draw()
 
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
 		drawSlice(XY_VIEW, 
-			  OmStateManager::GetViewSliceMin(XY_VIEW), 
-			  OmStateManager::GetViewSliceMax(XY_VIEW),
-			  OmStateManager::GetViewSliceDepth(XY_VIEW));
+			  mViewGroupState->GetViewSliceMin(XY_VIEW), 
+			  mViewGroupState->GetViewSliceMax(XY_VIEW),
+			  mViewGroupState->GetViewSliceDepth(XY_VIEW));
 
 		drawSlice(XZ_VIEW, 
-			  OmStateManager::GetViewSliceMin(XZ_VIEW), 
-			  OmStateManager::GetViewSliceMax(XZ_VIEW),
-			  OmStateManager::GetViewSliceDepth(XZ_VIEW));
+			  mViewGroupState->GetViewSliceMin(XZ_VIEW), 
+			  mViewGroupState->GetViewSliceMax(XZ_VIEW),
+			  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
 
 		drawSlice(YZ_VIEW, 
-			  OmStateManager::GetViewSliceMin(YZ_VIEW), 
-			  OmStateManager::GetViewSliceMax(YZ_VIEW),
-			  OmStateManager::GetViewSliceDepth(YZ_VIEW));
+			  mViewGroupState->GetViewSliceMin(YZ_VIEW), 
+			  mViewGroupState->GetViewSliceMax(YZ_VIEW),
+			  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
 	}
 	
 	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
-		drawLines(OmStateManager::GetViewDepthCoord());
+		drawLines(mViewGroupState->GetViewDepthCoord());
 	}
 
 	glPopAttrib();
@@ -132,6 +137,5 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 	}
 
 	drawRectangle(v0, v1, v2, v3);
-
 }
 

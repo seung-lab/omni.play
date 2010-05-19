@@ -239,7 +239,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/system/events/omVoxelEvent.h \
-           src/system/viewGroup/omViewGroup.h \
+           src/system/viewGroup/omViewGroupState.h \
            src/view3d/widgets/omChunkExtentWidget.h \
            src/view3d/widgets/omInfoWidget.h \
            src/view3d/widgets/omSelectionWidget.h \
@@ -390,7 +390,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
            src/system/events/omVoxelEvent.cpp \
-           src/system/viewGroup/omViewGroup.cpp \
+           src/system/viewGroup/omViewGroupState.cpp \
            src/view3d/widgets/omChunkExtentWidget.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \

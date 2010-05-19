@@ -22,10 +22,10 @@
 ///////          Example Class
 ///////
 
-OmView3dUi::OmView3dUi(OmView3d * view3d)
- : mpView3d(view3d)
+OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
+	: mpView3d(view3d), mViewGroupState(vgs)
 {
-        mCPressed=false;
+        mCPressed = false;
 }
 
 /////////////////////////////////
@@ -607,8 +607,6 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 	mpView3d->updateGL();
 
 	mCPressed = false;
-	
-
 }
 
 void OmView3dUi::crosshair(QMouseEvent * event)
@@ -628,9 +626,9 @@ void OmView3dUi::crosshair(QMouseEvent * event)
         OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 
-	OmStateManager::SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-	OmStateManager::SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-	OmStateManager::SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	
 	debug("view3d", "coordinate is now (%f, %f, %f)\n", 

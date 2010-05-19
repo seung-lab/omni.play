@@ -54,16 +54,16 @@ GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
 /*
  *	Constructs View3d widget that shares with the primary widget.
  */
-OmView3d::OmView3d(QWidget * parent)
+OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), 
-	  mView3dUi(this)
+	  mView3dUi(this, vgs)
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
 
 	//setup widgets
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_SELECTION] = new OmSelectionWidget(this);
-	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this);
+	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this, vgs);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO] = new OmInfoWidget(this);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_CHUNK_EXTENT] = new OmChunkExtentWidget(this);
 

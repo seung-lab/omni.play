@@ -9,14 +9,19 @@ static const ViewType UpperLeft  = XY_VIEW;
 static const ViewType UpperRight = YZ_VIEW;
 static const ViewType LowerLeft  = XZ_VIEW;
 
-ViewGroup::ViewGroup( MainWindow * mainWindow )
-	: mMainWindow( mainWindow ), mID(1)
+ViewGroup::ViewGroup( MainWindow * mainWindow, OmViewGroupState * viewGroupState )
+	: mMainWindow( mainWindow ), mViewGroupState( viewGroupState )
 {
+}
+
+int ViewGroup::getID()
+{
+	return mViewGroupState->GetId();
 }
 
 QString ViewGroup::viewGroupName()
 {
-	return "ViewGroup" + QString::number(mID);
+	return "ViewGroup" + QString::number(getID());
 }
 
 QString ViewGroup::makeObjectName()
@@ -112,7 +117,7 @@ void ViewGroup::addView3D()
 		delete( getDockWidget( makeObjectName( vgw ) ) );
 	}
 
-	vgw->widget = new OmView3d( this );
+	vgw->widget = new OmView3d( this, mViewGroupState );
 
 	insertDockIntoGroup( vgw );
 
@@ -128,7 +133,7 @@ void ViewGroup::addView2Dchannel( OmId chan_id, ViewType vtype)
 		delete( getDockWidget( makeObjectName( vgw ) ) );
 	}
 	
-	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, this );
+	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, this, mViewGroupState );
 
 	insertDockIntoGroup( vgw );
 
@@ -144,7 +149,7 @@ void ViewGroup::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
 		delete( getDockWidget( makeObjectName( vgw ) ) );
 	}
 
-	vgw->widget = new OmView2d(vtype, SEGMENTATION, segmentation_id, this);
+	vgw->widget = new OmView2d(vtype, SEGMENTATION, segmentation_id, this, mViewGroupState);
 
 	insertDockIntoGroup( vgw );
 

@@ -18,6 +18,7 @@
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "volume/omFilter2d.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
@@ -40,7 +41,7 @@ public OmVoxelEventListener
 	Q_OBJECT
 	
 public:
-	OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget *parent);
+	OmView2d(ViewType, ObjectType, OmId, QWidget *, OmViewGroupState *);
  	~OmView2d();
 	
 	OmMipVolume *mVolume;
@@ -165,6 +166,8 @@ protected:
 	QSize sizeHint () const;
 
 private:
+	OmViewGroupState * mViewGroupState;
+
 	///////////////////////////////////////
 	// omView2dConverters.cpp
 	///////////////////////////////////////

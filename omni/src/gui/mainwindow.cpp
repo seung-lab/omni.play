@@ -52,6 +52,8 @@ MainWindow::MainWindow()
 	mViewGroup = NULL;
 	mCacheMonitorDialog = NULL;
 
+	mViewGroupState = NULL;
+
 	updateReadOnlyRelatedWidgets();
 }
 
@@ -74,9 +76,14 @@ void MainWindow::newProject()
 
 		QString fileNameAndPath = OmProject::New( fileName );
 
-		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, 0.0);
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, 0.0);
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, 0.0);
+		if( NULL != mViewGroupState ){
+			delete mViewGroupState;
+		}
+		mViewGroupState = new OmViewGroupState();
+
+		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
+		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
+		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);
 		
 		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 
@@ -233,11 +240,17 @@ void MainWindow::openProject(QString fileNameAndPath)
 		}
 
 #if 0
+		// FIXME open volume at middle.... (purcaro)
 		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 #endif
-		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, 0.0);
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, 0.0);
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, 0.0);		
+		if( NULL != mViewGroupState ){
+			delete mViewGroupState;
+		}
+		mViewGroupState = new OmViewGroupState();
+
+		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
+		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
+		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);		
 
 		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
 
@@ -432,7 +445,7 @@ void MainWindow::resetViewGroup()
 		delete(mViewGroup);
 	}
 
-	mViewGroup = new ViewGroup( this );	
+	mViewGroup = new ViewGroup( this, mViewGroupState );
 }
 
 void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
@@ -444,18 +457,18 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	mMenuBar->addRecentFile(fileName);
 	setProjectOpen( true );
 
-	OmStateManager::Instance()->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	OmStateManager::Instance()->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	OmStateManager::Instance()->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
 
-	OmStateManager::Instance()->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	OmStateManager::Instance()->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	OmStateManager::Instance()->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
+	mViewGroupState->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
 
-	OmStateManager::Instance()->SetZoomLevel(Vector2 < int >(0, 10));
-	OmStateManager::Instance()->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
-	OmStateManager::Instance()->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
-	OmStateManager::Instance()->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
+	mViewGroupState->SetZoomLevel(Vector2 < int >(0, 10));
+	mViewGroupState->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
+	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
+	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
 	mToolBars->setupToolbarInitially();
 	mToolBars->updateGuiFromPorjectLoadOrOpen();

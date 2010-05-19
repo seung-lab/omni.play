@@ -74,6 +74,7 @@ bool OmVolume::SetUserScale(const Vector3 < float >&scale)
 	mSpaceToUserMat.m[0][0] = scale.x;
 	mSpaceToUserMat.m[1][1] = scale.y;
 	mSpaceToUserMat.m[2][2] = scale.z;
+
 	//set inverse and return if invertable
 	return mSpaceToUserMat.getInverse(mSpaceToUserInvMat);
 }
