@@ -15,7 +15,6 @@
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -659,7 +658,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	SEGMENT_DATA_TYPE data_value = 0;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
@@ -678,10 +677,6 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		//assert(false);
 		break;
 	}
-
-	//debug("FIXME", << "first data coord = " << first << endl;
-	//debug("FIXME", << "second data coord = " << second << endl;
-	//debug("FIXME", << endl;
 
 	float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
@@ -1022,9 +1017,12 @@ void OmView2d::myUpdate()
 
 		mTextures.clear();
 
-		int xMipChunk, xSave = -1;
-		int yMipChunk, ySave = -1;
-		int zMipChunk, zSave = -1;
+		int xMipChunk = -1;
+		int xSave = -1;
+		int yMipChunk = -1;
+		int ySave = -1;
+		int zMipChunk = -1;
+		int zSave = -1;
 		int step = 1;
 		for (int x = mBrushToolMinX; x <= mBrushToolMaxX; x = x + step) {
 			for (int y = mBrushToolMinY; y <= mBrushToolMaxY; y = y + step) {
@@ -1300,6 +1298,8 @@ int OmView2d::GetDepth(const OmTileCoord & key)
 		break;
 	case YZ_VIEW:
 		ret = (int)(dataCoord.x/factor);
+	default:
+		assert(0);
 	}
 
 	return ret;
@@ -1318,7 +1318,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
@@ -1338,7 +1338,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	}
 
 	
-	int tileLength;
+	int tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -1444,7 +1444,7 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
@@ -1464,7 +1464,7 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 	}
 
 	
-	int tileLength;
+	int tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();

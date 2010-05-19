@@ -47,7 +47,5 @@ void OmMeshSource::Copy(OmMeshSource & source)
 
 OmMeshSource& OmMeshSource::operator= (const OmMeshSource &)
 {
-	OmMeshSource s;
 	assert (0);
-	return s;
 }

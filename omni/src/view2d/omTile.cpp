@@ -170,6 +170,8 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	case YZ_VIEW:
 		ret = (int)(dataCoord.x/factor);
 		break;
+	default:
+		assert(0);
 	}
 
 	return ret;

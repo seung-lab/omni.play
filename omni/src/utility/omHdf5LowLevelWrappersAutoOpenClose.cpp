@@ -5,10 +5,10 @@
 #define HDF5_WRAP() 								\
 	string pathStr = path.getString();                                      \
 	const char * name = pathStr.c_str();                                    \
-	hid_t fileId;                                                           \
+	hid_t fileId = -1;							\
 	bool opened = false;						        \
 	try { 									\
-	fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName, mReadOnly);	\
+	fileId = hdfLowLevel.om_hdf5_file_open_with_lock (mFileName, mReadOnly); \
 	opened = true;
 
 #define HDF5_UNWRAP() 								\

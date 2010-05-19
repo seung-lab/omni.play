@@ -3,7 +3,6 @@
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 #include "segment/omSegmentEditor.h"
 #include "segment/omSegment.h"
 #include "system/omStateManager.h"
@@ -288,16 +287,13 @@ int OmView2d::GetDepthToDataMax(ViewType viewType)
 
 Vector2f OmView2d::GetPanDistance(ViewType viewType)
 {
-	Vector2f pd;
-	Vector2f better;
         Vector2f mZoomLevel = OmStateManager::GetZoomLevel();
         Vector3f mScale = GetVolume().GetScale();
         Vector2f stretch= GetVolume().GetStretchValues(mViewType);
         float factor = OMPOW(2,mZoomLevel.x);
         float zoomScale = mZoomLevel.y;
 
-
- 	pd = OmStateManager::GetPanDistance(mViewType);
+ 	Vector2f pd = OmStateManager::GetPanDistance(mViewType);
 	debug("pan", "good: x,y:%f,%f\n", pd.x, pd.y);
 
         if (!OmLocalPreferences::getStickyCrosshairMode()){
@@ -317,7 +313,9 @@ Vector2f OmView2d::GetPanDistance(ViewType viewType)
 	float pany = (mTotalViewport.height/2.0)/(zoomScale*stretch.y/10.0);
 
 	debug("pan", "pan:x,y:%f,%f\n", panx, pany);
-	
+
+	Vector2f better;
+
         switch(viewType){
         case XY_VIEW:
 		better.x = (panx-mydataCoord.x/factor);
@@ -332,13 +330,12 @@ Vector2f OmView2d::GetPanDistance(ViewType viewType)
 		better.y = (pany-mydataCoord.y/factor);
 		break;
 	default:
-		break;
+		assert(0);
 	}
 
 	debug("pan", "better: x,y:%f,%f\n", better.x, better.y);
 
 	return better;
-	return pd;
 }
 //\}
 

@@ -79,7 +79,11 @@ int stopPicking()
 void processHits(GLint hits, int **ppNamesRet, int *pNumNamesRet)
 {
 	GLuint *buffer = selectBuf;
-	GLuint names, *ptr, minZ, *ptrNames, numberOfNames;
+	GLuint names = 0;
+	GLuint *ptr = NULL; 
+	GLuint minZ = 0;
+	GLuint *ptrNames = NULL;
+	GLuint numberOfNames = 0;
 
 	//printf ("hits = %d\n", hits);
 	//find closest hit

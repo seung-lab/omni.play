@@ -3,7 +3,6 @@
 
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentStateAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/actions/edit/omEditSelectionSetAction.h"
 
@@ -207,7 +206,7 @@ void OmSegmentContextMenu::SetEditSelection()
 
 void OmSegmentContextMenu::MergeSegments()
 {
-	(new OmSegmentMergeAction(mSegmentationId))->Run();
+	assert(0); //FIXME! (purcaro)
 }
 
 void OmSegmentContextMenu::SetConnectedVoxels()

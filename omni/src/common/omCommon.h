@@ -8,6 +8,7 @@
 #include <QSet>
 
 #include "common/omStd.h"
+#include <assert.h>
 
 // elimiate VTK warning
 #define VTK_EXCLUDE_STRSTREAM_HEADERS

@@ -4,7 +4,6 @@
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 #include "segment/omSegmentEditor.h"
 #include "segment/omSegment.h"
 #include "system/omStateManager.h"
@@ -719,37 +718,6 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		mLevelLock = !mLevelLock;
 		myUpdate();
 		break;
-	case Qt::Key_J:
-		// Toggle joining of a segment.
-		{
-			bool domerge = false;
-			OmId seg;
-			if (mVolumeType == SEGMENTATION) {
-				domerge = true;
-				seg = mImageId;
-			} else {
-				OmChannel & current_channel = OmProject::GetChannel(mImageId);
-				foreach( OmId id, current_channel.GetValidFilterIds() ) {
-			
-                        		OmFilter2d &filter = current_channel.GetFilter(id);
-                        		seg = filter.GetSegmentation ();
-                        		if (seg) {
-						domerge = true;
-						break;
-					}
-				}
-			}
-
-			if (domerge) {
-				(new OmSegmentMergeAction(seg))->Run();
-				Refresh();
-				mTextures.clear();
-			}
-
-			myUpdate();
-		}
-		break;
-
 	case Qt::Key_F:
 		// Toggle fill mode.
 		myUpdate();

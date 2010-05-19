@@ -239,21 +239,13 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/system/events/omVoxelEvent.h \
-           src/system/viewGroup/omColormap.h \
-           src/system/viewGroup/omColormapperRule.h \
-           src/system/viewGroup/omColormaps.h \
-           src/system/viewGroup/omGroup.h \
-           src/system/viewGroup/omGroups.h \
-           src/system/viewGroup/omLayer.h \
            src/system/viewGroup/omViewGroup.h \
-           src/system/viewGroup/omViewList.h \
            src/view3d/widgets/omChunkExtentWidget.h \
            src/view3d/widgets/omInfoWidget.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/segment/actions/edit/omEditSelectionSetAction.h \
-           src/segment/actions/segment/omSegmentMergeAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSelectionAction.h \
            src/segment/actions/segment/omSegmentStateAction.h \
@@ -398,12 +390,12 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
            src/system/events/omVoxelEvent.cpp \
+           src/system/viewGroup/omViewGroup.cpp \
            src/view3d/widgets/omChunkExtentWidget.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/segment/actions/edit/omEditSelectionSetAction.cpp \
-           src/segment/actions/segment/omSegmentMergeAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentStateAction.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \
@@ -418,14 +410,23 @@ SOURCES += lib/strnatcmp.cpp \
 
 RESOURCES += src/gui/resources.qrc
 
+INCLUDEPATH = src include lib
 
+LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF 
 
 win32 {
-INCLUDEPATH = src include c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include lib C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF -lgdi32 
+
+INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
+
+LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  
+LIBS += -lgdi32 
+
 } else {
-INCLUDEPATH = src include ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include lib
-LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF -lz
+
+INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
+
+LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  
+LIBS += -lz
 }
 
 OBJECTS_DIR = build
