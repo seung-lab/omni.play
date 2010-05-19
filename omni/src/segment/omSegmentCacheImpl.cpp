@@ -173,11 +173,13 @@ bool OmSegmentCacheImpl::AreSegmentsSelected()
 
 OmIds & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
 {
+	loadTreeIfNeeded();
         return mSelectedSet;
 }
 
 OmIds & OmSegmentCacheImpl::GetEnabledSegmentIdsRef()
 {
+	loadTreeIfNeeded();
         return mEnabledSet;
 }
 
