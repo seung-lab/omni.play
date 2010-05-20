@@ -231,7 +231,6 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferences3d.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
-           src/gui/preferences/volumeInspector.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -382,7 +381,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/preferences/preferences2d.cpp \
            src/gui/preferences/preferences3d.cpp \
            src/gui/preferences/preferencesMesh.cpp \
-           src/gui/preferences/volumeInspector.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \

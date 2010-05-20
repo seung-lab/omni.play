@@ -414,6 +414,7 @@ void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v 
 	out << v.mDataResolution;
 	out << v.mChunkDim;
 	out << v.unitString;
+	out << v.mDataStretchValues;
 }
 
 void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
@@ -424,4 +425,5 @@ void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
 	in >> v.mDataResolution;
 	in >> v.mChunkDim;
 	in >> v.unitString;
+	in >> v.mDataStretchValues;
 }

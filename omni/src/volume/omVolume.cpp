@@ -198,16 +198,6 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 	return SetScale(mDataResolution * data_dims);
 }
 
-void OmVolume::CheckDataResolution()
-{
-	Vector3f res=mDataResolution;
-	if (res == Vector3i::ZERO){
-		res = Vector3i::ONE;
-
-	}
-	SetDataResolution( res);	
-}	
-		
 int OmVolume::GetChunkDimension()
 {
 	return mChunkDim;

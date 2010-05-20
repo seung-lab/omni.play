@@ -171,9 +171,9 @@ OmId OmSegment::getSegmentationID()
 	return mCache->getSegmentationID();
 }
 
-OmId OmSegment::getParent()
+OmSegment * OmSegment::getParent()
 {
-	return mParentSegID;
+	return mCache->GetSegmentFromValue(mParentSegID);
 }
 
 void OmSegment::splitChildLowestThreshold()

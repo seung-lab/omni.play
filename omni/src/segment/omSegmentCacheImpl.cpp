@@ -314,23 +314,41 @@ void OmSegmentCacheImpl::flushDirtySegments()
 	}
 }
 
+OmSegment * OmSegmentCacheImpl::getNMinuxOne(OmSegment * seg)
+{
+	OmSegment * ret = seg;
+	float threshold = 1.0;
+	while(seg->mParentSegID) {
+		if(threshold > seg->getThreshold()) {
+			ret = seg;
+			threshold = seg->getThreshold();
+		}
+		seg = GetSegmentFromValue(seg->mParentSegID);
+	}
+	return ret;
+}
+
 void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
+	OmSegment * seg;
+	OmSegment * o;
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
 		return;
 	}
 
-	OmSegment * seg;
-	if(seg1->getThreshold() > seg2->getThreshold()){
-		seg = seg1;
+	OmSegment * seg1min = getNMinuxOne(seg1);
+	OmSegment * seg2min = getNMinuxOne(seg2);
+
+	if(seg1min->mThreshold > seg2min->mThreshold) {
+		seg = seg2min;
 	} else {
-		seg = seg2;
+		seg = seg1min;
 	}
 
-	debug("dend", "splitting off %d\n", seg->getValue());
+	debug("dend", "splitting off %d,%f\n", seg->getValue(), seg->getThreshold());
 	
-	splitChildFromParent( seg );
+	splitChildFromParent(seg);
 	clearCaches();
 }
 
@@ -371,7 +389,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	child->mParentSegID = 0;
 	child->mThreshold = 0;
 	
-	if( isSegmentEnabled( parent->getValue() ) ){
+	if( isSegmentSelected( parent->getValue() ) ){
 		mSelectedSet.insert( child->getValue() );
 	}
 

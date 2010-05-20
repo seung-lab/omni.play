@@ -113,7 +113,6 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		OmProjectData::Close();
 		throw OmIoException("error during load of project metadata");
 	}
-
 	//OmVolume::CheckDataResolution();
 }
 

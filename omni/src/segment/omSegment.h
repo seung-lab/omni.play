@@ -42,7 +42,7 @@ public:
 	void SetEnabled(bool);
 
 	void setParent(OmSegment * segment, float threshold);
-	OmId getParent();
+	OmSegment * getParent();
 
 	OmId getSegmentationID();
 	float getThreshold();

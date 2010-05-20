@@ -48,6 +48,7 @@ public:
 
 	OmSegment * findRoot( OmSegment * segment );
 
+	OmSegment * getNMinuxOne(OmSegment * segment);
 	void splitChildLowestThreshold( OmSegment * segment );
 	void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 	void splitChildFromParent( OmSegment * child );
