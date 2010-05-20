@@ -25,6 +25,8 @@ void NavAndEditToolBars::createToolbar()
 
 void NavAndEditToolBars::setupFilterToolbar()
 {
+	QLabel* label = new QLabel("Alpha Level",this); 
+
 	alphaSlider = new QSlider(Qt::Horizontal, this );
 	alphaSlider->setObjectName("alphaSlider");
 
@@ -44,6 +46,7 @@ void NavAndEditToolBars::setupFilterToolbar()
 		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
 	
 	filterToolBar = mMainWindow->addToolBar("Filter");
+	filterToolBar->addWidget(label);
 	filterToolBar->addWidget( alphaSlider );
 }
 

@@ -1599,22 +1599,23 @@ void OmView2d::DrawCursors()
 	switch (mViewType) {
 	case XY_VIEW:
 		painter.setPen(Qt::red);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+		painter.drawLine(mTotalViewport.width/2,0,mTotalViewport.width/2,mTotalViewport.height);
 		painter.setPen(Qt::green);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
 	case XZ_VIEW:
 		painter.setPen(Qt::red);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+ 		painter.drawLine(mTotalViewport.width/2,0,screenc.x,mTotalViewport.height);
 		painter.setPen(Qt::blue);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
 	case YZ_VIEW:
 		painter.setPen(Qt::blue);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+		painter.drawLine(mTotalViewport.width/2,0,screenc.x,mTotalViewport.height);
 		painter.setPen(Qt::green);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
+
 	}
 }
 
