@@ -119,6 +119,7 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 
 void OmProject::Close()
 {
+	// OmProject must be deleted first: it depends on the remaining classes...
 	Delete();
 
 	//delete all singletons
@@ -132,8 +133,6 @@ void OmProject::Close()
 	//close project data
 	OmProjectData::Close();
 	OmProjectData::Delete();
-
-	//delete(Instance());
 }
 
 
