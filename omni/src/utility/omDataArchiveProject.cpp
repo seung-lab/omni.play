@@ -336,6 +336,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	
 	out << sc.mPageSize;
 	out << sc.mNumSegs;
+	out << sc.mNumTopLevelSegs;
 
 	return out;
 }
@@ -356,6 +357,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
+	in >> sc.mNumTopLevelSegs;
 
 	return in;
 }
