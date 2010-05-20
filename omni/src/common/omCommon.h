@@ -19,6 +19,9 @@ typedef struct {
 	quint8 blue;
 } OmColor;
 
+#include "boost/strong_typedef.hpp"
+BOOST_STRONG_TYPEDEF(quint32, OmSegID )
+
 /** 
  * vmml-related
  */
