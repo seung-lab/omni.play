@@ -31,7 +31,7 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation *segmentation, OmSegmentCa
 
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
 {
-	foreach( const quint32 & pageNum, validPageNumbers ){
+	foreach( const quint32 & pageNum, loadedPageNumbers ){
 
 		for( quint32 i = 0; i < mPageSize; ++i ){
 			delete mValueToSegPtrHash.value(pageNum)[i];
