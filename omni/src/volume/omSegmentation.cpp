@@ -571,9 +571,10 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 				seg = iter.getNextSegment();
 			}
 			mSegmentCache.setSegmentListDirectCache( chunkCoord, segmentsToDraw );
+			//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 		}
 
-		return DrawChunk(chunkCoord, segmentsToDraw, rCuller);
+		return DrawChunk(p_chunk, chunkCoord, segmentsToDraw, rCuller);
 	}
 
 	// ELSE BREAK DOWN INTO CHILDREN
@@ -587,16 +588,14 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmSegmentation::DrawChunk(const OmMipChunkCoord & chunkCoord, 
-			       QList< OmSegment * > segmentsToDraw,
-			       OmVolumeCuller & rCuller)
+void OmSegmentation::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
+				const OmMipChunkCoord & chunkCoord,	
+			       	QList< OmSegment * > segmentsToDraw,
+			       	OmVolumeCuller & rCuller)
 {
 	if( segmentsToDraw.empty() ){
 		return;
 	}
-
-	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-	GetChunk(p_chunk, chunkCoord);
 
 	//draw extent
 	if (rCuller.CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {

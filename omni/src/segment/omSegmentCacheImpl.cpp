@@ -314,42 +314,28 @@ void OmSegmentCacheImpl::flushDirtySegments()
 	}
 }
 
-OmSegment * OmSegmentCacheImpl::getNMinuxOne(OmSegment * seg)
-{
-	OmSegment * ret = seg;
-	float threshold = 1.0;
-	while(seg->mParentSegID) {
-		if(threshold > seg->getThreshold()) {
-			ret = seg;
-			threshold = seg->getThreshold();
-		}
-		seg = GetSegmentFromValue(seg->mParentSegID);
-	}
-	return ret;
-}
-
 void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
-	OmSegment * seg;
-	OmSegment * o;
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
 		return;
 	}
 
-	OmSegment * seg1min = getNMinuxOne(seg1);
-	OmSegment * seg2min = getNMinuxOne(seg2);
-
-	if(seg1min->mThreshold > seg2min->mThreshold) {
-		seg = seg2min;
-	} else {
-		seg = seg1min;
+	OmSegment * s1;
+	OmSegment * s2;
+	for(s1 = seg1; 0 != s1->mParentSegID; s1 = GetSegmentFromValue(s1->mParentSegID)) {
+		for(s2 = seg2; 0 != s2->mParentSegID; s2 = GetSegmentFromValue(s2->mParentSegID)) {
+			debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
+			if(s1->mParentSegID == s2->mParentSegID) {
+				if(s1->getThreshold() < s2->getThreshold()){
+					splitChildFromParent(s1);
+				} else {
+					splitChildFromParent(s2);
+				}
+				return;
+			}
+		}
 	}
-
-	debug("dend", "splitting off %d,%f\n", seg->getValue(), seg->getThreshold());
-	
-	splitChildFromParent(seg);
-	clearCaches();
 }
 
 void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
@@ -374,16 +360,17 @@ void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLe
 	splitChildFromParent( segToRemove );
 
 	printf("removed %d from parent\n", segToRemove->getValue() );
-	clearCaches();
 }
 
 void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
+	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u\n", child->getValue());
 	if( !child->mParentSegID ){
 		return;
 	}
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
+	debug("split", "\tparent = %u\n", parent->getValue());
 
 	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
 	child->mParentSegID = 0;
@@ -393,6 +380,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		mSelectedSet.insert( child->getValue() );
 	}
 
+	clearCaches();
 }
 
 void OmSegmentCacheImpl::SaveAllPages()

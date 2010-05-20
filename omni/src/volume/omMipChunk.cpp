@@ -728,6 +728,7 @@ bool OmMipChunk::DrawCheck(OmVolumeCuller & rCuller)
 
 void OmMipChunk::DrawClippedExtent()
 {
+	return;
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPushMatrix();
 
