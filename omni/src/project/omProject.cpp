@@ -40,8 +40,9 @@ OmProject *OmProject::Instance()
 
 void OmProject::Delete()
 {
-	if (mspInstance)
+	if (mspInstance) {
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 
@@ -118,6 +119,8 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 
 void OmProject::Close()
 {
+	Delete();
+
 	//delete all singletons
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();

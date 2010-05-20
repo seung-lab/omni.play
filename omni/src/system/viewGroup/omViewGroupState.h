@@ -4,10 +4,16 @@
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
+#include "segment/omSegmentColorizer.h"
+#include <boost/tr1/unordered_map.hpp>
 
 class OmViewGroupState : public OmManageableObject {
  public:
 	OmViewGroupState();
+
+	void SetSegmentation( SegmentationDataWrapper sdw );
+	void SetChannel( ChannelDataWrapper cdw );
 
 	//viewbox state
 	void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);
@@ -32,7 +38,11 @@ class OmViewGroupState : public OmManageableObject {
 	void SetViewSliceDataFormat(int bytesPerSample);
 	void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
 
+	void ColorTile( SEGMENT_DATA_TYPE *, const int,
+			const ObjectType, unsigned char * );
+
  private:
+
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
 	float mXYPan[2], mYZPan[2], mXZPan[2];
@@ -46,6 +56,11 @@ class OmViewGroupState : public OmManageableObject {
 	int mViewSliceBytesPerSample, mViewSliceSamplesPerPixel;
 	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
 	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
+
+	boost::unordered_map< int, OmSegmentColorizer * > mColorCaches;
+
+	SegmentationDataWrapper m_sdw;
+	ChannelDataWrapper m_cdw;
 
 };
 

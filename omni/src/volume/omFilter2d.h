@@ -13,6 +13,7 @@
 class OmFilter2d : public OmManageableObject {
 
 public:
+	OmFilter2d (OmId segid, OmId chanid, OmId filterid, OmViewGroupState *);
 	OmFilter2d(OmId);
 	OmFilter2d();
 	
@@ -26,11 +27,10 @@ public:
 	OmId GetChannel();
 	void SetChannel (OmId id);
 
-	OmFilter2d (OmId segid, OmId chanid, OmId filterid);
-	
 	OmThreadedCachingTile * GetCache (ViewType);
 	
 private:
+	OmViewGroupState * mViewGroupState;
 	double mAlpha;
 	OmThreadedCachingTile * mCache;
 	OmId mChannel;

@@ -4,35 +4,32 @@
 
 #include <QMutexLocker>
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache)
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
+	: mSegmentCache(cache), 
+	  mSccType(sccType),
+	  mColorCache( NULL ),
+	  mColorCacheFreshness( NULL ),
+	  mSize( 0 )
 {
-	mSegmentCache = cache;
-
-	mSegCacheFreshness = 0;
-
-	mColorCache = NULL;
-	mColorCacheFreshness = NULL;
-	mSize = 0;
 }
 
 void OmSegmentColorizer::setup()
 {
 	mSize = mSegmentCache->mImpl->mMaxValue + 1;
 	mColorCache = new OmColor[ mSize ];
-	mColorCacheFreshness = new int[ mSize ];
-	for( quint32 i = 0; i < mSize; ++i ){
-		mColorCacheFreshness[i] = 0;
-	}
+	mColorCacheFreshness = std::vector<int>( mSize, 0);
 }
 
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-				    const bool isSegmentation, unsigned char * data )
+				    unsigned char * data )
 {
 	if( NULL == mColorCache ){
 		setup();
 	}
 
-	mSegCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
+	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
+
+	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
 
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
 	if ( isSegmentation ) {
@@ -51,11 +48,12 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 		val = (SEGMENT_DATA_TYPE) imageData[i];
 
 		if ( val != lastVal) {
-			if( mSegCacheFreshness != mColorCacheFreshness[ val ] ){
-				newcolor = getVoxelColorForView2d( val, showOnlySelectedSegments );
-			} else {
-				newcolor = mColorCache[ val ];
-			}
+			if( segCacheFreshness != mColorCacheFreshness[ val ] ){
+				mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
+				mColorCacheFreshness[ val ] = segCacheFreshness;
+			} 
+			
+			newcolor = mColorCache[ val ];
 		} 
 
 		data[ctr]     = newcolor.red;
@@ -69,7 +67,6 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 
 }
 
-extern bool mShatter;
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, 
 						    const bool showOnlySelectedSegments)
 {
@@ -84,7 +81,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 
-	if(mShatter){
+	if(SegmentationBreak == mSccType){
 		if( mSegmentCache->mImpl->isSegmentSelected(segRoot)) {
                 	color.red   = seg->mColor.x * 255;
                 	color.green = seg->mColor.y * 255;
@@ -108,9 +105,6 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 			color.blue  = sc.z * 255;
 		}
 	}
-
-	mColorCache[ val ] = color;
-	mColorCacheFreshness[ val ] = mSegCacheFreshness;
 
 	return color;
 }

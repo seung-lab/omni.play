@@ -10,6 +10,7 @@
 
 class SegmentDataWrapper;
 class FilterDataWrapper;
+class OmSegmentCache;
 
 class DataWrapper
 {
@@ -20,14 +21,10 @@ class DataWrapper
 		: mID(ID), mType(Type) {}
 
 	OmId getID()     {    return mID;   }
-	QString getName(){    return mName; }
 	ObjectType getType(){ return mType; }
-	bool isEnabled()    { return mEnabled; }
  protected:
 	OmId mID;
-	QString mName;
 	ObjectType mType;
-	bool mEnabled;
 };
 
 class ChannelDataWrapper : public DataWrapper 
@@ -37,6 +34,8 @@ class ChannelDataWrapper : public DataWrapper
 	ChannelDataWrapper( const OmId mID );
 	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
 	QString getNote();
+	QString getName();
+	bool isEnabled();
 };
 
 class SegmentationDataWrapper : public DataWrapper 
@@ -48,6 +47,9 @@ class SegmentationDataWrapper : public DataWrapper
 	QString getNote();
 	unsigned int getNumberOfSegments();
 	unsigned int getNumberOfTopSegments();
+	OmSegmentCache * getSegmentCache();
+	QString getName();
+	bool isEnabled();
 	//	QString GetSourceDirectoryPath();
 };
 
@@ -57,6 +59,8 @@ class SegmentDataWrapper : public DataWrapper
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
 			    const OmId segmentID );
+	QString getName();
+
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
 	
@@ -85,11 +89,11 @@ class FilterDataWrapper : public DataWrapper
  public:
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
-			   const OmId mID,
-			   const QString name,
-			   const bool enabled );
+			   const OmId mID );
 	OmId getChannelID(){ return mChannelID; }
+	QString getName();
 	QString getNote();
+	bool isEnabled();
  private:
 	OmId mChannelID;
 };
@@ -98,7 +102,7 @@ class FilterDataWrapper : public DataWrapper
 class DataWrapperContainer 
 {
  public:
-	DataWrapperContainer(){}
+	DataWrapperContainer();
 	DataWrapperContainer( const ObjectType obj_type, const OmId obj_id );
 	DataWrapperContainer( SegmentationDataWrapper sdw );
 	ObjectType getType(){ return mType; }

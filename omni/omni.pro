@@ -190,6 +190,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/drawable.h \
            src/view2d/omTextureID.h \
            src/view2d/omThreadedCachingTile.h \
+           src/view2d/omCachingThreadedCachingTile.h \
            src/view2d/omTile.h \
            src/view2d/omTileCoord.h \
            src/view2d/omView2d.h \

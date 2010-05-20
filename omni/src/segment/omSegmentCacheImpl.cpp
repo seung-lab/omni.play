@@ -245,7 +245,6 @@ void OmSegmentCacheImpl::setSegmentSelected( OmId segID, bool isSelected )
 		mSelectedSet.insert( rootID );
 	} else {
 		mSelectedSet.remove( rootID );
-		mSelectedSet.remove( segID ); // FIXME: this shouldn't be necessary....(purcaro)
 	}
 }
 
@@ -543,6 +542,7 @@ void OmSegmentCacheImpl::Join( const OmId parentID, const OmId childUnknownDepth
 	parent->segmentsJoinedIntoMe.append( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
 
+	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
 }
 
@@ -574,17 +574,17 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 		return;
 	}
 
-	OmIds::const_iterator iter = mSelectedSet.constBegin();
+	OmIds set = mSelectedSet;
+
+	OmIds::const_iterator iter = set.constBegin();
 	SEGMENT_DATA_TYPE parentID = *iter;
 	++iter;
 
-	while (iter != mSelectedSet.constEnd()) {
+	while (iter != set.constEnd()) {
 		printf("joining %d to %d\n", parentID, *iter);
 		Join( parentID, *iter, 0 );
 		++iter;
 	}
-
-	--mNumTopLevelSegs;
 
 	clearCaches();
 }

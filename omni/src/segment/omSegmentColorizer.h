@@ -2,25 +2,28 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
+#include <vector>
+
+enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
 
 class OmSegmentCache;
 
 class OmSegmentColorizer 
 {
  public:
-	OmSegmentColorizer( OmSegmentCache *);
+	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
 	void colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-			const bool isSegmentation, unsigned char * data );
+			unsigned char * data );
 
  private:
 	OmSegmentCache * mSegmentCache;
+	const OmSegmentColorCacheType mSccType;
 
 	OmColor * mColorCache;
-	int * mColorCacheFreshness;
+	std::vector<int> mColorCacheFreshness;
 
 	quint32 mSize;
 	int freshness;
-	int mSegCacheFreshness;
 
 	void setup();
 

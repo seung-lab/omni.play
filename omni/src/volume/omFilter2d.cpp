@@ -7,18 +7,26 @@
 #include "system/omPreferenceDefinitions.h"
 #include "volume/omVolume.h"
 #include "view2d/omThreadedCachingTile.h"
+#include "view2d/omCachingThreadedCachingTile.h"
 #include "view2d/omView2d.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 /////////////////////////////////
 ///////
 ///////		OmFilter Class
 ///////
 
-OmFilter2d::OmFilter2d (OmId segid, OmId chanid, OmId filterid)
+OmFilter2d::OmFilter2d (OmId segid, OmId chanid, OmId filterid, OmViewGroupState * vgs )
 {
 	OmFilter2d *repair = new OmFilter2d (filterid);
+	mViewGroupState = vgs;
+
 	mSeg = segid;
+	mViewGroupState->SetSegmentation( SegmentationDataWrapper(mSeg));
+
 	mChannel = chanid;
+	mViewGroupState->SetChannel( ChannelDataWrapper( mChannel ));
+
 	repair->GetCache (XY_VIEW);
 }
 
@@ -29,7 +37,7 @@ OmFilter2d::OmFilter2d() {
 }
 
 OmFilter2d::OmFilter2d(OmId omId) 
-: OmManageableObject(omId) 
+  : OmManageableObject(omId) 
 {
 	mName = QString("filter%1").arg(omId);
 	
@@ -53,16 +61,26 @@ OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype)
 {
 	OmCachingThreadedCachingTile *fastCache = NULL;
 	if (mSeg) {
-		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL);
+
+		mViewGroupState->SetSegmentation( SegmentationDataWrapper(mSeg));
+
+		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, mViewGroupState);
+
 	} else if (mChannel) {
-		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL);
+		
+		mViewGroupState->SetChannel( ChannelDataWrapper( mChannel ));
+
+		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, mViewGroupState);
 	}
 
 	if (fastCache) {
 		mCache = fastCache->mCache;
-		if (fastCache->mDelete) delete fastCache;
-	} else
+		if (fastCache->mDelete) {
+			delete fastCache;
+		}
+	} else {
 		return NULL;
+	}
 
 	return mCache;
 }
@@ -76,11 +94,12 @@ void OmFilter2d::SetSegmentation (OmId id) {
 		mCache = NULL;
 	}
 	try {
-		//OmProject::GetSegmentation (id);
 		mSeg = id;
 	} catch (OmAccessException e) {
 		mSeg = 0;
 	}
+
+	mViewGroupState->SetSegmentation( SegmentationDataWrapper(mSeg));
 }
 
 OmId OmFilter2d::GetChannel () {
@@ -97,4 +116,6 @@ void OmFilter2d::SetChannel (OmId id) {
 	} catch (OmAccessException e) {
 		mChannel = 0;
 	}
+
+	mViewGroupState->SetChannel( ChannelDataWrapper( mChannel ));
 }

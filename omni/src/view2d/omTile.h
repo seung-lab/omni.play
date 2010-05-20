@@ -19,35 +19,30 @@ class OmMipVolume;
 class OmTextureID;
 class OmTileCoord;
 class OmThreadedCachingTile;
+class OmViewGroupState;
 
 class OmTile {
 
 public:
-	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol);
+	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, OmViewGroupState * vgs);
 	~OmTile();
 	
 	OmTextureID* BindToTextureID(const OmTileCoord &key, OmThreadedCachingTile* cache);
 	
-	void AddOverlay(ObjectType secondtype, OmId second_id, OmMipVolume *secondvol);
 	void SetNewAlpha(float newval);
 
 	OmMipVolume *mVolume;
 	
-// private:	
 	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
 	int GetDepth(const OmTileCoord &key);
-	void ReplaceTextureRegion(set< DataCoord > &vox);
 
 private:
+	OmViewGroupState * mViewGroupState;
 
 	ViewType view_type;
 	ObjectType vol_type;
 	OmId myID;
-	
-	ObjectType background_type;
-	OmId backgroundID;
-	OmMipVolume *mBackgroundVolume;
 	
 	float mAlpha;
 	int mSamplesPerVoxel;

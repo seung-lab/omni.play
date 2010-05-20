@@ -71,6 +71,10 @@ OmSegmentation::OmSegmentation(OmId id)
 
         mDend = NULL;
         mDendValues = NULL;
+	mDendSize = 0;
+	mDendValuesSize = 0;
+	mDendCount = 0;
+	mDendThreshold = 0.0;
 
         SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
@@ -667,18 +671,6 @@ void OmSegmentation::FlushDend()
 
 	path.setPathQstr(dendValStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues);
-}
-
-void OmSegmentation::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-		const ObjectType objType, unsigned char * data )
-{
-	if( 0 == mColorCaches.count( objType ) ){
-		debug("color", "made new cache for type %d\n", objType );
-		mColorCaches[ objType ] = new OmSegmentColorizer(&mSegmentCache);
-	}
-	
-	const bool isSegmentation = (SEGMENTATION == objType);
-	mColorCaches[ objType ]->colorTile( imageData, size, isSegmentation, data );
 }
 
 void OmSegmentation::ReloadDendrogram()

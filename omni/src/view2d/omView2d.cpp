@@ -1,6 +1,7 @@
 #include "volume/omVolume.h"
 #include "omView2d.h"
 #include "omTextureID.h"
+#include "view2d/omCachingThreadedCachingTile.h"
 
 #include "system/omStateManager.h"
 #include "project/omProject.h"
@@ -72,11 +73,13 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	assert((mVolumeType == CHANNEL) || (mVolumeType == SEGMENTATION));
 
 	if (mVolumeType == CHANNEL) {
+		mViewGroupState->SetChannel( ChannelDataWrapper( mImageId ));
+
 		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		mVolume = &current_channel;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -85,12 +88,14 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
+		mViewGroupState->SetSegmentation( SegmentationDataWrapper(mImageId));
+
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
 		mVolume = &current_seg;
 		mSeg = &current_seg;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -574,7 +579,6 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE 
 	}
 }
 
-
 // FIXME: what is going on here? why does it work??
 void OmView2d::SetDepth(QMouseEvent * event)
 {
@@ -1010,7 +1014,7 @@ void OmView2d::myUpdate()
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mEditedSegmentation);
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL, mViewGroupState);
 		OmThreadedCachingTile *cache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -1103,7 +1107,7 @@ void OmView2d::DrawFromCache()
 		mVolume = &current_channel;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -1117,7 +1121,7 @@ void OmView2d::DrawFromCache()
 		mVolume = &current_seg;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;

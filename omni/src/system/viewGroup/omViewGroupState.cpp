@@ -1,3 +1,4 @@
+#include "common/omDebug.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
@@ -294,5 +295,50 @@ void OmViewGroupState::SetViewSlice(const OmSlicePlane plane, const Vector3 < in
 	default:
 		assert(false);
 	}
+}
+
+void OmViewGroupState::SetSegmentation( SegmentationDataWrapper sdw ) 
+{ 
+	m_sdw = sdw; 
+}
+
+void OmViewGroupState::SetChannel( ChannelDataWrapper cdw )
+{ 
+	m_cdw = cdw; 
+}
+
+extern bool mShatter;
+void OmViewGroupState::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+				  const ObjectType objType, unsigned char * data )
+{
+	OmSegmentColorCacheType sccTypeEnum;
+
+	switch( objType ){
+	case CHANNEL:
+		if( mShatter ){
+			sccTypeEnum = ChannelBreak;
+		} else {
+			sccTypeEnum = Channel;
+		}
+		break;
+
+	case SEGMENTATION:
+		if( mShatter ) {
+			sccTypeEnum = SegmentationBreak;
+		} else {
+			sccTypeEnum = Segmentation;
+		}
+		break;
+	default:
+		assert(0);
+	}
+
+	int sccTypeInt = (int)sccTypeEnum;
+
+	if( 0 == mColorCaches.count( sccTypeInt ) ){
+		mColorCaches[ sccTypeInt ] = new OmSegmentColorizer( m_sdw.getSegmentCache(), sccTypeEnum);
+	}
+	
+	mColorCaches[ sccTypeInt ]->colorTile( imageData, size, data );
 }
 

@@ -673,11 +673,8 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 		// these voxels are not flat, they are correct for ortho views
 
 		set < DataCoord >::iterator itr;
-
 		for (itr = modVoxels.begin(); itr != modVoxels.end(); itr++) {
-			//debug("genone","data coord = " << *itr);
 			modifiedCoords.insert(*itr);
-
 		}
 
 		myUpdate();
