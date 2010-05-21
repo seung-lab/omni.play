@@ -50,7 +50,7 @@ bool DataWrapperContainer::isValidContainer()
  ****** Channels
  *******************************************/
 ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
-	: DataWrapper(ID, CHANNEL)
+	: mID(ID), mType(CHANNEL)
 {
 }
 
@@ -87,7 +87,7 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
  ****** Segmentations
  *******************************************/
 SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
- : DataWrapper(ID, SEGMENTATION)
+	: mID(ID), mType(SEGMENTATION)
 {
 }
 
@@ -126,7 +126,7 @@ OmSegmentCache * SegmentationDataWrapper::getSegmentCache()
  ****** Segments
  *******************************************/
 SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId segmentID)
-	: DataWrapper(segmentID, SEGMENT), 
+	: mID(segmentID), mType(SEGMENT), 
 	  mSegmentationID( segmentationID )
 {
 }
@@ -224,8 +224,8 @@ OmSegment * SegmentDataWrapper::getSegment()
 /*******************************************
  ****** Filters
  *******************************************/
-FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId mID)
-	: DataWrapper(mID, FILTER), mChannelID(channelID)
+FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId ID)
+	: mID(ID), mType(FILTER), mChannelID(channelID)
 {
 }
 

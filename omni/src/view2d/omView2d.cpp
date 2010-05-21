@@ -73,7 +73,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	assert((mVolumeType == CHANNEL) || (mVolumeType == SEGMENTATION));
 
 	if (mVolumeType == CHANNEL) {
-		mViewGroupState->SetChannel( ChannelDataWrapper( mImageId ));
+		mViewGroupState->SetChannel( mImageId );
 
 		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		mVolume = &current_channel;
@@ -88,7 +88,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
-		mViewGroupState->SetSegmentation( SegmentationDataWrapper(mImageId));
+		mViewGroupState->SetSegmentation( mImageId );
 
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
 		mVolume = &current_seg;

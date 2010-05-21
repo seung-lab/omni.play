@@ -299,14 +299,14 @@ void OmViewGroupState::SetViewSlice(const OmSlicePlane plane, const Vector3 < in
 	}
 }
 
-void OmViewGroupState::SetSegmentation( SegmentationDataWrapper sdw ) 
+void OmViewGroupState::SetSegmentation( const OmId segID ) 
 { 
-	m_sdw = sdw; 
+	m_sdw = SegmentationDataWrapper( segID ); 
 }
 
-void OmViewGroupState::SetChannel( ChannelDataWrapper cdw )
+void OmViewGroupState::SetChannel( const OmId chanID )
 { 
-	m_cdw = cdw; 
+	m_cdw = ChannelDataWrapper( chanID );
 }
 
 extern bool mShatter;

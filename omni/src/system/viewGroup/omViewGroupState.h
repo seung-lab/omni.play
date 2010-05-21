@@ -12,8 +12,8 @@ class OmViewGroupState : public OmManageableObject {
  public:
 	OmViewGroupState();
 
-	void SetSegmentation( SegmentationDataWrapper sdw );
-	void SetChannel( ChannelDataWrapper cdw );
+	void SetSegmentation( const OmId  );
+	void SetChannel( const OmId  );
 
 	//viewbox state
 	void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);

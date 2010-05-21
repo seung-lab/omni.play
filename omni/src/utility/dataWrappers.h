@@ -12,22 +12,7 @@ class SegmentDataWrapper;
 class FilterDataWrapper;
 class OmSegmentCache;
 
-class DataWrapper
-{
- public:
-
-	DataWrapper(){}
-	DataWrapper( const OmId ID, const ObjectType Type )
-		: mID(ID), mType(Type) {}
-
-	OmId getID()     {    return mID;   }
-	ObjectType getType(){ return mType; }
- protected:
-	OmId mID;
-	ObjectType mType;
-};
-
-class ChannelDataWrapper : public DataWrapper 
+class ChannelDataWrapper
 {
  public:
 	ChannelDataWrapper(){}
@@ -36,9 +21,14 @@ class ChannelDataWrapper : public DataWrapper
 	QString getNote();
 	QString getName();
 	bool isEnabled();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
+ private:
+	OmId mID;
+	ObjectType mType;
 };
 
-class SegmentationDataWrapper : public DataWrapper 
+class SegmentationDataWrapper
 {
  public:
 	SegmentationDataWrapper(){}
@@ -51,9 +41,14 @@ class SegmentationDataWrapper : public DataWrapper
 	QString getName();
 	bool isEnabled();
 	//	QString GetSourceDirectoryPath();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
+ private:
+	OmId mID;
+	ObjectType mType;
 };
 
-class SegmentDataWrapper : public DataWrapper 
+class SegmentDataWrapper
 {
  public:
 	SegmentDataWrapper(){}
@@ -80,11 +75,15 @@ class SegmentDataWrapper : public DataWrapper
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
 	QString get_original_mapped_data_value();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
  private:
+	OmId mID;
+	ObjectType mType;
 	OmId mSegmentationID;
 };
 
-class FilterDataWrapper : public DataWrapper 
+class FilterDataWrapper
 {
  public:
 	FilterDataWrapper(){}
@@ -94,10 +93,13 @@ class FilterDataWrapper : public DataWrapper
 	QString getName();
 	QString getNote();
 	bool isEnabled();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
  private:
+	OmId mID;
+	ObjectType mType;
 	OmId mChannelID;
 };
-
 
 class DataWrapperContainer 
 {
@@ -111,6 +113,7 @@ class DataWrapperContainer
 	ChannelDataWrapper getChannelDataWrapper(){ return cDW; }
 
 	bool isValidContainer();
+
  private:
 	SegmentationDataWrapper segmenDW;
 	ChannelDataWrapper cDW;
