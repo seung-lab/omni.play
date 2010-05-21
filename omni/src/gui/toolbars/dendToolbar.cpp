@@ -40,7 +40,7 @@ void DendToolBar::createToolbarActions()
 	toolbarSplitAct->setStatusTip(tr("Split object mode"));
 	connect(toolbarSplitAct, SIGNAL(pressed()), 
 		this, SLOT(split()));
-	toolbarSplitAct->setCheckable(false);
+	toolbarSplitAct->setCheckable(true);
  
 
 	decreaseThresholdAct = new QPushButton(mMainWindow);
