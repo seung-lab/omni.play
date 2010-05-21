@@ -17,7 +17,10 @@ void OmSegmentColorizer::setup()
 {
 	mSize = mSegmentCache->mImpl->mMaxValue + 1;
 	mColorCache = new OmColor[ mSize ];
-	mColorCacheFreshness = std::vector<int>( mSize, 0);
+	mColorCacheFreshness = new int[ mSize ];
+	for( quint32 i = 0; i < mSize; ++i ){
+		mColorCacheFreshness[i] = 0;
+	}
 }
 
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
@@ -27,16 +30,14 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 		setup();
 	}
 
-	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
-
 	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
 
+	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
 	if ( isSegmentation ) {
 		showOnlySelectedSegments = false;	
 	}
 
-	int ctr = 0;
 	OmColor newcolor = {0, 0, 0};
 	SEGMENT_DATA_TYPE lastVal = 0;
 	SEGMENT_DATA_TYPE val;
@@ -56,15 +57,13 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 			newcolor = mColorCache[ val ];
 		} 
 
-		data[ctr]     = newcolor.red;
-		data[ctr + 1] = newcolor.green;
-		data[ctr + 2] = newcolor.blue;
-		data[ctr + 3] = 255;
+		data[i*4]     = newcolor.red;
+		data[i*4 + 1] = newcolor.green;
+		data[i*4 + 2] = newcolor.blue;
+		data[i*4 + 3] = 255;
 
-		ctr = ctr + 4;
 		lastVal = val;
 	}
-
 }
 
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, 
@@ -81,8 +80,10 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 
+	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
+
 	if(SegmentationBreak == mSccType){
-		if( mSegmentCache->mImpl->isSegmentSelected(segRoot)) {
+		if( isSelected ){
                 	color.red   = seg->mColor.x * 255;
                 	color.green = seg->mColor.y * 255;
                 	color.blue  = seg->mColor.z * 255;
@@ -92,7 +93,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 
 	const Vector3 < float > & sc = segRoot->mColor;
 
-	if( mSegmentCache->mImpl->isSegmentSelected(segRoot)) {
+	if( isSelected ){
 		color.red   = clamp(sc.x * 255 * 2.5);
 		color.green = clamp(sc.y * 255 * 2.5);
 		color.blue  = clamp(sc.z * 255 * 2.5);

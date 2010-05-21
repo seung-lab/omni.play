@@ -2,7 +2,6 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
-#include <vector>
 
 enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
 
@@ -20,7 +19,7 @@ class OmSegmentColorizer
 	const OmSegmentColorCacheType mSccType;
 
 	OmColor * mColorCache;
-	std::vector<int> mColorCacheFreshness;
+	int * mColorCacheFreshness;
 
 	quint32 mSize;
 	int freshness;
@@ -29,7 +28,6 @@ class OmSegmentColorizer
 
 	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, 
 					const bool showOnlySelectedSegments );
-
 
 	int clamp(int c) {
 		if (c > 255) {
