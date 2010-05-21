@@ -25,7 +25,6 @@ void DendToolBar::createToolbar()
 {
 	createToolbarActions();
 	addToolbars();
-	//	setToolbarDisabled();
 }
 
 void DendToolBar::setToolbarDisabled()
@@ -227,8 +226,9 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 
 void DendToolBar::split()
 {
+	//toolbarSplitAct->setChecked(!toolbarSplitAct->isChecked());
         debug("dendbar", "DendToolBar::split\n");
-	if(toolbarSplitAct->isDown()) {
+	if(toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
@@ -303,6 +303,7 @@ void DendToolBar::decreaseThreshold()
 
 	updateGui();
 }
+
 void DendToolBar::join()
 {
         debug("dendbar", "DendToolBar::join\n");
