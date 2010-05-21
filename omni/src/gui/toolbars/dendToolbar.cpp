@@ -228,7 +228,7 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 void DendToolBar::split()
 {
         debug("dendbar", "DendToolBar::split\n");
-	if( toolbarSplitAct->isChecked() ) {
+	if(toolbarSplitAct->isDown()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
