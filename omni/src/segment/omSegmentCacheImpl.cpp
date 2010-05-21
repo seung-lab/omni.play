@@ -326,22 +326,28 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 
 	OmSegment * s1;
 	OmSegment * s2;
-	OmSegment * seg = NULL;
-	float thresh = 1.0;
+	float thresh1 = 1.0;
+	float thresh2 = 1.0;
+	int count = 0;
 	for(s1 = seg1; 0 != s1->mParentSegID; s1 = GetSegmentFromValue(s1->mParentSegID)) {
 		for(s2 = seg2; 0 != s2->mParentSegID; s2 = GetSegmentFromValue(s2->mParentSegID)) {
+			count++;
 			debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
 			debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
-			if(s1->getThreshold() < thresh) {
-				thresh = s1->getThreshold();
-				seg = s1;
+			if(s1->getThreshold() < thresh1) {
+				thresh1 = s1->getThreshold();
+				seg1 = s1;
 			}
-			if(s2->getThreshold() < thresh) {
-				thresh = s2->getThreshold();
-				seg = s2;
+			if(s2->getThreshold() < thresh2) {
+				thresh2 = s2->getThreshold();
+				seg2 = s2;
 			}
 			if(s1->mParentSegID == s2->mParentSegID) {
-				splitChildFromParent(seg);
+				if(s1->getThreshold() < s2->getThreshold()) {
+					splitChildFromParent(seg1);
+				} else {
+					splitChildFromParent(seg2);
+				}
 				return;
 			}
 		}
@@ -563,6 +569,9 @@ void OmSegmentCacheImpl::Join( const OmId parentID, const OmId childUnknownDepth
 	parent->segmentsJoinedIntoMe.append( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
 
+        if( isSegmentSelected( childUnknownDepthID ) ){
+                mSelectedSet.insert( parent->mValue );
+        } 
 	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
 }
