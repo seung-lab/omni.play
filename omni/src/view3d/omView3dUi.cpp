@@ -1,4 +1,4 @@
-
+#include "gui/toolbars/dendToolbar.h"
 #include "omView3dUi.h"
 #include "omView3d.h"
 #include "omCamera.h"
@@ -134,12 +134,31 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
         }
         mpView3d->updateGL();
 
+	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
 
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
-	OmSegment * seg = r_segmentation.GetSegment(segment_id);
+#if 1
+	OmId segmentationID, segmentID;
+        if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
+                debug("split", "segmentID=%i\n", segmentID);
+                OmSegment * seg1 = segmentation.GetSegment(segmentID);
+                OmSegment * seg2 = segmentation.GetSegment(segment_id);
 
+                seg1->splitTwoChildren(seg2);
+
+                DendToolBar::SetSplitMode(false);
+                OmStateManager::SetSystemModePrev();
+        } else {
+                debug("split", "segment_id=%i\n", segment_id);
+                if (segment_id) {
+                        DendToolBar::SetSplitMode(segmentationID, segment_id);
+                }
+        }
+#else
+
+	OmSegment * seg = segmentation.GetSegment(segment_id);
         seg->splitTwoChildren(seg);
         OmStateManager::SetSystemModePrev();
+#endif
 }
 
 /////////////////////////////////
