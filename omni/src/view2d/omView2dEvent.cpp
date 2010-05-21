@@ -852,6 +852,10 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 		OmSegment * seg1 = segmentation.GetSegment(segmentID);
 		OmSegment * seg2 = segmentation.GetSegment(segid);
 
+                if(NULL == seg1 || NULL == seg2) {
+                        return;
+                }
+
         	seg1->splitTwoChildren(seg2);
 
 		DendToolBar::SetSplitMode(false);
@@ -859,8 +863,8 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 	} else {
 	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
-		if (segmentID) {
-			DendToolBar::SetSplitMode(segmentationID, segmentID);
+		if (segmentID && segmentation.GetSegment(segmentID)) {
+				DendToolBar::SetSplitMode(segmentationID, segmentID);
 		}
 	}
 

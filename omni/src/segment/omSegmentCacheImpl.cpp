@@ -3,7 +3,6 @@
 #include "utility/omDataArchiveSegment.h"
 #include "system/omProjectData.h"
 #include "system/omCacheManager.h"
-#include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "utility/omDataPaths.h"
 
@@ -320,12 +319,19 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
-		OmStateManager::UpdateStatusBar(QString("can't split disconnected objects."));
 		return;
 	}
 
 	OmSegment * s1;
 	OmSegment * s2;
+
+#if 0
+	for(s1 = seg1; s1->mParentSegID!=seg2->mValue; s1 = GetSegmentFromValue(s1->mParentSegID)) {
+		
+	}
+#endif
+
+
 	OmSegment * small1;
 	OmSegment * small2;
 	float thresh1 = 1.0;
@@ -368,7 +374,6 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 		} while (0 != s2->mParentSegID);
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
 	} while (0 != s1->mParentSegID);
-
 }
 
 void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
@@ -404,7 +409,6 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 	debug("split", "\tparent = %u\n", parent->getValue());
-	OmStateManager::UpdateStatusBar(QString("Split complete."));
 
 	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
         mTree->get( child->mValue )->cut();
