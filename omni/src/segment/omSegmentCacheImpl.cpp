@@ -3,6 +3,7 @@
 #include "utility/omDataArchiveSegment.h"
 #include "system/omProjectData.h"
 #include "system/omCacheManager.h"
+#include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "utility/omDataPaths.h"
 
@@ -245,6 +246,7 @@ void OmSegmentCacheImpl::setSegmentSelected( OmId segID, bool isSelected )
 		mSelectedSet.insert( rootID );
 	} else {
 		mSelectedSet.remove( rootID );
+		mSelectedSet.remove( segID );
 	}
 }
 
@@ -318,6 +320,7 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
+		OmStateManager::UpdateStatusBar(QString("can't split disconnected objects."));
 		return;
 	}
 
@@ -379,6 +382,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 	debug("split", "\tparent = %u\n", parent->getValue());
+	OmStateManager::UpdateStatusBar(QString("Split complete."));
 
 	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
         mTree->get( child->mValue )->cut();
@@ -387,6 +391,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	
 	if( isSegmentSelected( parent->getValue() ) ){
 		mSelectedSet.insert( child->getValue() );
+	} else {
+		mSelectedSet.remove( child->getValue() );
 	}
 
 	clearCaches();
