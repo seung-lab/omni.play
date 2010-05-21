@@ -325,12 +325,28 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 	OmSegment * s1;
 	OmSegment * s2;
 
-#if 0
-	for(s1 = seg1; s1->mParentSegID!=seg2->mValue; s1 = GetSegmentFromValue(s1->mParentSegID)) {
-		
-	}
-#endif
 
+	s1 = seg1; 
+	do {
+		if(s1->mParentSegID == seg2->mValue) {
+			debug("split", "splitting child from a direct parent\n");
+			splitChildFromParent(s1);
+			return;
+		}
+        	s1 = GetSegmentFromValue(s1->mParentSegID);	
+	} while (0 != s1->mParentSegID);
+
+	s2 = seg2; 
+	do {
+		if(s2->mParentSegID == seg1->mValue) {
+			debug("split", "splitting child from a direct parent\n");
+			splitChildFromParent(s2);
+			return;
+		}
+        	s2 = GetSegmentFromValue(s2->mParentSegID);	
+	} while (0 != s2->mParentSegID);
+
+	return;
 
 	OmSegment * small1;
 	OmSegment * small2;
