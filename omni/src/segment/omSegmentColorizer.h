@@ -21,6 +21,9 @@ class OmSegmentColorizer
 	OmColor * mColorCache;
 	int * mColorCacheFreshness;
 
+	float mCurBreakThreshhold;
+	float mPrevBreakThreshhold;
+
 	quint32 mSize;
 	int freshness;
 
@@ -34,6 +37,18 @@ class OmSegmentColorizer
 			return 255;
 		}
 		return c;
+	}
+
+	bool isCacheElementValid( const SEGMENT_DATA_TYPE val, const int currentSegCacheFreshness ){
+		if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
+			return false;
+		}
+
+		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
+			return false;
+		}
+
+		return true;
 	}
 };
 

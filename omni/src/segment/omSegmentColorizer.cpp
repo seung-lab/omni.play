@@ -9,14 +9,18 @@ OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentC
 	  mSccType(sccType),
 	  mColorCache( NULL ),
 	  mColorCacheFreshness( NULL ),
-	  mSize( 0 )
+	  mSize( 0 ),
+	  mCurBreakThreshhold(0),
+	  mPrevBreakThreshhold(0)
 {
 }
 
 void OmSegmentColorizer::setup()
 {
 	mSize = mSegmentCache->mImpl->mMaxValue + 1;
+
 	mColorCache = new OmColor[ mSize ];
+
 	mColorCacheFreshness = new int[ mSize ];
 	for( quint32 i = 0; i < mSize; ++i ){
 		mColorCacheFreshness[i] = 0;
@@ -26,6 +30,9 @@ void OmSegmentColorizer::setup()
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 				    unsigned char * data )
 {
+	//FIXME: mutliple views may access same cache; lock here;
+	//  also: add a lock in OmViewGroupState when we create this Colorizer (purcaro)
+
 	if( NULL == mColorCache ){
 		setup();
 	}
@@ -38,6 +45,7 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 		showOnlySelectedSegments = false;	
 	}
 
+	int offset = 0;
 	OmColor newcolor = {0, 0, 0};
 	SEGMENT_DATA_TYPE lastVal = 0;
 	SEGMENT_DATA_TYPE val;
@@ -49,7 +57,7 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 		val = (SEGMENT_DATA_TYPE) imageData[i];
 
 		if ( val != lastVal) {
-			if( segCacheFreshness != mColorCacheFreshness[ val ] ){
+			if( !isCacheElementValid(val, segCacheFreshness) ){
 				mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
 				mColorCacheFreshness[ val ] = segCacheFreshness;
 			} 
@@ -57,11 +65,12 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 			newcolor = mColorCache[ val ];
 		} 
 
-		data[i*4]     = newcolor.red;
-		data[i*4 + 1] = newcolor.green;
-		data[i*4 + 2] = newcolor.blue;
-		data[i*4 + 3] = 255;
+		data[offset]     = newcolor.red;
+		data[offset + 1] = newcolor.green;
+		data[offset + 2] = newcolor.blue;
+		data[offset + 3] = 255;
 
+		offset += 4;
 		lastVal = val;
 	}
 }

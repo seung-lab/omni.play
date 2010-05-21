@@ -54,13 +54,12 @@ public:
 	
 	OmVolume & GetVolume() {
         	if (mVolumeType == CHANNEL) {
-                	OmChannel & current_channel = OmProject::GetChannel(mImageId);
-			return current_channel;
+                	return OmProject::GetChannel(mImageId);
         	} else {
-                	OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
-			return current_seg;
+                	return OmProject::GetSegmentation(mImageId);
 		}
 	}
+
 protected:
 	// GL event methods
 	void initializeGL();

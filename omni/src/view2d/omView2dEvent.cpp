@@ -793,20 +793,16 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_W:
 	case Qt::Key_PageUp:
-		{
-			MoveUpStackCloserToViewer();
-			if (OmLocalPreferences::getStickyCrosshairMode()){
-				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-			}
+		MoveUpStackCloserToViewer();
+		if (OmLocalPreferences::getStickyCrosshairMode()){
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		}
 		break;
 	case Qt::Key_S:
 	case Qt::Key_PageDown:
-		{
-			MoveDownStackFartherFromViewer();
-			if (OmLocalPreferences::getStickyCrosshairMode()){
-				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-			}
+		MoveDownStackFartherFromViewer();
+		if (OmLocalPreferences::getStickyCrosshairMode()){
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		}
 		break;
 
