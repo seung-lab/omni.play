@@ -326,32 +326,48 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 
 	OmSegment * s1;
 	OmSegment * s2;
+	OmSegment * small1;
+	OmSegment * small2;
 	float thresh1 = 1.0;
 	float thresh2 = 1.0;
 	int count = 0;
-	for(s1 = seg1; 0 != s1->mParentSegID; s1 = GetSegmentFromValue(s1->mParentSegID)) {
-		for(s2 = seg2; 0 != s2->mParentSegID; s2 = GetSegmentFromValue(s2->mParentSegID)) {
+	s1 = seg1; 
+	do {
+		s2 = seg2;
+		do {
 			count++;
 			debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
 			debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
-			if(s1->getThreshold() < thresh1) {
-				thresh1 = s1->getThreshold();
-				seg1 = s1;
-			}
-			if(s2->getThreshold() < thresh2) {
-				thresh2 = s2->getThreshold();
-				seg2 = s2;
-			}
+
 			if(s1->mParentSegID == s2->mParentSegID) {
 				if(s1->getThreshold() < s2->getThreshold()) {
-					splitChildFromParent(seg1);
+					if(0 != small1->mParentSegID) {
+						splitChildFromParent(small1);
+					} else {
+						splitChildFromParent(small2);
+					}
 				} else {
-					splitChildFromParent(seg2);
+					if(0 != small2->mParentSegID) {
+						splitChildFromParent(small2);
+					} else {
+						splitChildFromParent(small1);
+					}
 				}
 				return;
 			}
-		}
-	}
+
+			if(s1->getThreshold() < thresh1) {
+				thresh1 = s1->getThreshold();
+				small1 = s1;
+			}
+			if(s2->getThreshold() < thresh2) {
+				thresh2 = s2->getThreshold();
+				small2 = s2;
+			}
+			s2 = GetSegmentFromValue(s2->mParentSegID);
+		} while (0 != s2->mParentSegID);
+        	s1 = GetSegmentFromValue(s1->mParentSegID);	
+	} while (0 != s1->mParentSegID);
 
 }
 
