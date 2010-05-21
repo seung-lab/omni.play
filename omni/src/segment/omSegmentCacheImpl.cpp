@@ -346,8 +346,6 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
 	} while (0 != s2->mParentSegID);
 
-	return;
-
 	OmSegment * small1;
 	OmSegment * small2;
 	float thresh1 = 1.0;
@@ -358,8 +356,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 		s2 = seg2;
 		do {
 			count++;
-			debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
-			debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
+			//debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
+			//debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
 
 			if(s1->mParentSegID == s2->mParentSegID) {
 				if(s1->getThreshold() < s2->getThreshold()) {
