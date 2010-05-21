@@ -1,6 +1,7 @@
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 #include <QMutexLocker>
 
@@ -28,7 +29,7 @@ void OmSegmentColorizer::setup()
 }
 
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-				    unsigned char * data )
+				    unsigned char * data, OmViewGroupState * vgs )
 {
 	//FIXME: mutliple views may access same cache; lock here;
 	//  also: add a lock in OmViewGroupState when we create this Colorizer (purcaro)
@@ -44,6 +45,9 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 	if ( isSegmentation ) {
 		showOnlySelectedSegments = false;	
 	}
+
+	mPrevBreakThreshhold = mCurBreakThreshhold;
+	mCurBreakThreshhold = vgs->getBreakThreshold();
 
 	int offset = 0;
 	OmColor newcolor = {0, 0, 0};
@@ -93,9 +97,11 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 
 	if(SegmentationBreak == mSccType){
 		if( isSelected ){
-                	color.red   = seg->mColor.x * 255;
-                	color.green = seg->mColor.y * 255;
-                	color.blue  = seg->mColor.z * 255;
+			const Vector3<float> & sc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
+			color.red   = sc.x * 255;
+			color.green = sc.y * 255;
+			color.blue  = sc.z * 255;
+			
 			return color;
 		} 
 	}

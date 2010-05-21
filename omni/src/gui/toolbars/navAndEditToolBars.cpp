@@ -373,7 +373,7 @@ void NavAndEditToolBars::updateReadOnlyRelatedWidgets()
 	toolbarView2D3DopenAct->setEnabled( toBeEnabled );
 }
 
-void NavAndEditToolBars::updateGuiFromPorjectLoadOrOpen()
+void NavAndEditToolBars::updateGuiFromPorjectLoadOrOpen(OmViewGroupState *)
 {
 	updateSilder();
 }

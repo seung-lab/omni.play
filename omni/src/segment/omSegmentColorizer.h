@@ -6,13 +6,15 @@
 enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
 
 class OmSegmentCache;
+class OmViewGroupState;
+class OmSegment;
 
 class OmSegmentColorizer 
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
 	void colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-			unsigned char * data );
+			unsigned char * data, OmViewGroupState * );
 
  private:
 	OmSegmentCache * mSegmentCache;
@@ -21,10 +23,10 @@ class OmSegmentColorizer
 	OmColor * mColorCache;
 	int * mColorCacheFreshness;
 
+	quint32 mSize;
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
 
-	quint32 mSize;
 	int freshness;
 
 	void setup();

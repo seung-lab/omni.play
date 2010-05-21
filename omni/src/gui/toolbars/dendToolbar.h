@@ -6,6 +6,7 @@
 #include <QtGui>
 
 class MainWindow;
+class OmViewGroupState;
 
 class DendToolBar : public QWidget
 {
@@ -17,12 +18,10 @@ class DendToolBar : public QWidget
 	static void SetSplitMode(OmId seg, OmId segment);
 	static void SetSplitMode(bool onoroff);
 
-
-
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
-	void updateGuiFromProjectLoadOrOpen();
+	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 	void SystemModeChangeEvent();
 	void updateGui();
 
@@ -42,7 +41,7 @@ class DendToolBar : public QWidget
 
  private:
 	MainWindow * mMainWindow;
-
+	OmViewGroupState * mViewGroupState;
 	QToolBar * dendToolBar;
 
 	void createToolbar();

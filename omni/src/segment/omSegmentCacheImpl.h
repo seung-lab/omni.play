@@ -67,6 +67,8 @@ public:
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
 
+	const Vector3<float> & GetColorAtThreshold( OmSegment * segment, const float threshold );
+
  private:
 	bool mAllSelected;
 	bool mAllEnabled;

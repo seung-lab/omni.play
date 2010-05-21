@@ -41,7 +41,11 @@ class OmViewGroupState : public OmManageableObject {
 	void ColorTile( SEGMENT_DATA_TYPE *, const int,
 			const ObjectType, unsigned char * );
 
+	void setBreakThreshold(int t){ mBreakThreshold = t; }
+	int getBreakThreshold(){ return mBreakThreshold; }
+
  private:
+	int mBreakThreshold;
 
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];

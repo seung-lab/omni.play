@@ -620,7 +620,7 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 		return;
 	}
 
-	OmIds set = mSelectedSet;
+	OmIds set = mSelectedSet; // Join() will modify mSelectedSet
 
 	OmIds::const_iterator iter = set.constBegin();
 	SEGMENT_DATA_TYPE parentID = *iter;
@@ -633,4 +633,17 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 	}
 
 	clearCaches();
+}
+
+const Vector3<float> & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, const float threshold )
+{
+	debug("colorizer", "%s: figuring out color...\n", __FUNCTION__);
+
+	OmSegment * seg = segment;
+
+	while( 0 != seg->mParentSegID && seg->mThreshold < threshold ){
+		seg = GetSegmentFromValue( seg->mParentSegID );
+	}
+
+	return seg->mColor;
 }

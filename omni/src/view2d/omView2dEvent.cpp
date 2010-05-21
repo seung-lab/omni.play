@@ -125,6 +125,9 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	// if not augmenting slection and selecting segment, then 
 	//  select new segment, and deselect current segment(s)
 	if (!augment_selection && curSegmentNotYetMarkedAsSelected) {
+		OmSegmentSelectAction ssa;
+					    
+
 		OmIds select_segment_ids;
 		select_segment_ids.insert(segmentID);
 		(new OmSegmentSelectAction( segmentation.GetId(),

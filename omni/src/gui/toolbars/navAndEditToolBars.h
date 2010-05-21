@@ -6,6 +6,7 @@
 
 class MainWindow;
 class DendToolBar;
+class OmViewGroupState;
 
 class NavAndEditToolBars : public QWidget
 {
@@ -15,7 +16,7 @@ class NavAndEditToolBars : public QWidget
 	NavAndEditToolBars( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
-	void updateGuiFromPorjectLoadOrOpen();
+	void updateGuiFromPorjectLoadOrOpen(OmViewGroupState * );
 	void SystemModeChangeEvent();
 
  private slots:

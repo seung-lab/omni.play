@@ -23,6 +23,8 @@ OmViewGroupState::OmViewGroupState()
 	mYZPan[1] = 0.0;
 	mXZPan[0] = 0.0;
 	mXZPan[1] = 0.0;
+
+	mBreakThreshold = 0;
 }
 
 
@@ -339,6 +341,6 @@ void OmViewGroupState::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 		mColorCaches[ sccTypeInt ] = new OmSegmentColorizer( m_sdw.getSegmentCache(), sccTypeEnum);
 	}
 	
-	mColorCaches[ sccTypeInt ]->colorTile( imageData, size, data );
+	mColorCaches[ sccTypeInt ]->colorTile( imageData, size, data, this );
 }
 

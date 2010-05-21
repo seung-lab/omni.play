@@ -471,7 +471,7 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
 	mToolBars->setupToolbarInitially();
-	mToolBars->updateGuiFromPorjectLoadOrOpen();
+	mToolBars->updateGuiFromPorjectLoadOrOpen(mViewGroupState);
 
 	windowTitleSet( fileName );
 	openInspector();

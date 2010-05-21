@@ -1,4 +1,3 @@
-
 #include "project/omProject.h"
 #include "omSegmentSelectAction.h"
 
@@ -9,13 +8,31 @@
 #include "system/omEventManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/setUtilities.h"
-
-#define DEBUG 0
+#include "utility/dataWrappers.h"
 
 /////////////////////////////////
 ///////
 ///////          OmSegmentSelectAction
 ///////
+
+void OmSegmentSelectAction::selectJustThisSegment( SegmentDataWrapper sdw )
+{
+	ssegmentsToAddToSelection.clear();
+}
+
+void OmSegmentSelectAction::addSegmentToSelectedSet( SegmentDataWrapper sdw )
+{
+	ssegmentsToAddToSelection.insert( sdw.getID() );
+}
+
+void OmSegmentSelectAction::commitChanges()
+{
+	
+}
+
+OmSegmentSelectAction::OmSegmentSelectAction()
+{
+}
 
 OmSegmentSelectAction::OmSegmentSelectAction(OmId segmentationId,
 					     OmId segmentId,
@@ -110,22 +127,7 @@ void OmSegmentSelectAction::Action()
 
 void OmSegmentSelectAction::UndoAction()
 {
-#if 0
-	//get refs to volume and segmentation
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
-	//for all segments in map, set old state of segment
-	map < OmId, bool >::iterator itr;
-	for (itr = mPrevSegmentStates.begin(); itr != mPrevSegmentStates.end(); itr++) {
-		r_segmentation.SetSegmentSelected(itr->first, mPrevSegmentStates[itr->first]);
-	}
-
-	//send segment selection change event
-	OmIds modified_segment_ids = mSelectIds;
-	modified_segment_ids.unite(mUnselectIds);
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
-						     mSegmentationId, modified_segment_ids));
-#endif
 }
 
 string OmSegmentSelectAction::Description()

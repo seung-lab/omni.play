@@ -2,6 +2,7 @@
 #include "gui/mainwindow.h"
 #include "system/omProjectData.h"
 #include "system/omCacheManager.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 // FIXME
 bool mShatter = false;
@@ -129,7 +130,6 @@ void DendToolBar::setBreakThresholdValue()
 	QString value;
 	value.setNum(0.95);
 
-
 	mBreakThreshold->setText(value);
 }
 
@@ -179,10 +179,6 @@ void DendToolBar::addToolbars()
 	fifthLayout->addWidget(decreaseBreakThresholdAct,3,0,1,1);
 	fifthBox->setLayout(fifthLayout);
 	dendToolBar->addWidget(fifthBox);
-
-
-
-	
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -274,10 +270,7 @@ void DendToolBar::addToBreakThreshold(float num)
         value.setNum(threshold);
         mBreakThreshold->setText(value);
 
-	//if (OmProject::IsSegmentationValid(mSeg)) {
-	//OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-	//seg.SetDendThresholdAndReload(threshold);
-	//}
+	mViewGroupState->setBreakThreshold( threshold );
 }
 
 void DendToolBar::increaseBreakThreshold()
@@ -289,7 +282,7 @@ void DendToolBar::increaseBreakThreshold()
 
 void DendToolBar::decreaseBreakThreshold()
 {
-	debug("dendbar", "DendToolBar::decreaseThreshold\n");
+	debug("dendbar", "DendToolBar::decreaseBreakThreshold\n");
 	addToBreakThreshold(-0.0002);
 
 	updateGui();
@@ -324,6 +317,8 @@ void DendToolBar::join()
 
 void DendToolBar::toggledShatter()
 {
+	debug("dendbar", "DendToolBar::toggle shatter\n");
+
 	OmCacheManager::Freshen(true);
 	mShatter = !mShatter;
 
@@ -349,22 +344,20 @@ void DendToolBar::thresholdChanged()
 
 void DendToolBar::breakThresholdChanged()
 {
-	debug("dendbar", "DendToolBar::thresholdChanged\n");
+	debug("dendbar", "DendToolBar::breakThresholdChanged\n");
 
-	float threshold = mBreakThreshold->text().toFloat();
-	//if (OmProject::IsSegmentationValid(mSeg)) {
-	//OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-	//seg.SetDendThresholdAndReload(threshold);
-	//}
+	const float threshold = mBreakThreshold->text().toFloat();
+	mViewGroupState->setBreakThreshold( threshold );
 
 	updateGui();
 }
 
-void DendToolBar::updateGuiFromProjectLoadOrOpen()
+void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 {
         debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
 
 	setThresholdValue();
+	mViewGroupState = vgs;
 	updateGui();
 }
 
@@ -391,6 +384,7 @@ void DendToolBar::SetSplitMode(bool onoroff)
 {
 	mSplitting = onoroff;
 }
+
 void DendToolBar::SetSplitMode(OmId seg, OmId segment)
 {
 	mSeg = seg;
