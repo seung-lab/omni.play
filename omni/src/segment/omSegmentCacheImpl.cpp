@@ -430,6 +430,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	child->mThreshold = 0;
 	
 	if( isSegmentSelected( parent->getValue() ) ){
+		debug("split", "parent was selected\n");
 		mSelectedSet.insert( child->getValue() );
 	} else {
 		mSelectedSet.remove( child->getValue() );
