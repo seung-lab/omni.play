@@ -140,6 +140,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 	OmId segmentationID, segmentID;
         if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
                 debug("split", "segmentID=%i\n", segmentID);
+                debug("split", "segment_id=%i\n", segment_id);
                 OmSegment * seg1 = segmentation.GetSegment(segmentID);
                 OmSegment * seg2 = segmentation.GetSegment(segment_id);
 

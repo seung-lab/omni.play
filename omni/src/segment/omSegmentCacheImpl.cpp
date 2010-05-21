@@ -323,20 +323,27 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 
 	OmSegment * s1;
 	OmSegment * s2;
+	OmSegment * seg = NULL;
+	float thresh = 1.0;
 	for(s1 = seg1; 0 != s1->mParentSegID; s1 = GetSegmentFromValue(s1->mParentSegID)) {
 		for(s2 = seg2; 0 != s2->mParentSegID; s2 = GetSegmentFromValue(s2->mParentSegID)) {
 			debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
 			debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
+			if(s1->getThreshold() < thresh) {
+				thresh = s1->getThreshold();
+				seg = s1;
+			}
+			if(s2->getThreshold() < thresh) {
+				thresh = s2->getThreshold();
+				seg = s2;
+			}
 			if(s1->mParentSegID == s2->mParentSegID) {
-				if(s1->getThreshold() > s2->getThreshold()){
-					splitChildFromParent(s1);
-				} else {
-					splitChildFromParent(s2);
-				}
+				splitChildFromParent(seg);
 				return;
 			}
 		}
 	}
+
 }
 
 void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
@@ -373,8 +380,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 	debug("split", "\tparent = %u\n", parent->getValue());
 
-        mTree->get( child->mValue )->cut();
 	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
+        mTree->get( child->mValue )->cut();
 	child->mParentSegID = 0;
 	child->mThreshold = 0;
 	
