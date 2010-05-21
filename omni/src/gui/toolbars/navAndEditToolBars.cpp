@@ -25,10 +25,13 @@ void NavAndEditToolBars::createToolbar()
 
 void NavAndEditToolBars::setupFilterToolbar()
 {
-	QLabel* label = new QLabel("Alpha Level",this); 
+	QLabel* label = new QLabel("Alpha Level: ",this); 
 
 	alphaSlider = new QSlider(Qt::Horizontal, this );
 	alphaSlider->setObjectName("alphaSlider");
+	QSize size = alphaSlider->sizeHint();
+	size.setWidth(200);
+	alphaSlider->setMaximumSize(size);
 
 	OmId channelID = 1;
 	OmId filterID = 1;

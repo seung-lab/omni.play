@@ -34,19 +34,23 @@ void DendToolBar::setToolbarDisabled()
 
 void DendToolBar::createToolbarActions()
 {
-	toolbarSplitAct = new QAction(tr("Split"), mMainWindow);
+	toolbarSplitAct = new QPushButton(mMainWindow);
+	toolbarSplitAct->setText(tr("split"));
 	toolbarSplitAct->setStatusTip(tr("Split object mode"));
-	connect(toolbarSplitAct, SIGNAL(triggered()), 
+	connect(toolbarSplitAct, SIGNAL(pressed()), 
 		this, SLOT(split()));
-	toolbarSplitAct->setCheckable(true);
+	toolbarSplitAct->setCheckable(false);
+ 
 
-	decreaseThresholdAct = new QAction(tr("-"), mMainWindow);
+	decreaseThresholdAct = new QPushButton(mMainWindow);
+	decreaseThresholdAct->setText(tr("-"));
 	decreaseThresholdAct->setStatusTip(tr("Split object mode"));
-	connect(decreaseThresholdAct, SIGNAL(triggered()), 
+
+	connect(decreaseThresholdAct, SIGNAL(pressed()), 
 		this, SLOT(decreaseThreshold()));
 
-	thresholdLabel = new QLabel("Threshold",mMainWindow);
-	thresholdLabel->setText("Threshold");
+	thresholdLabel = new QLabel(mMainWindow);
+	thresholdLabel->setText("Overall Threshold");
 
 	mThreshold = new QLineEdit(mMainWindow);
 	QString value;
@@ -55,25 +59,49 @@ void DendToolBar::createToolbarActions()
 	connect(mThreshold, SIGNAL(editingFinished()), 
 		this, SLOT(thresholdChanged()));
 
-	increaseThresholdAct =  new QAction(tr("+"), mMainWindow);
+	increaseThresholdAct =  new QPushButton(mMainWindow);
+	
+	increaseThresholdAct->setText(tr("+"));	
+
 	decreaseThresholdAct->setStatusTip(tr("Split object mode"));
-	connect(increaseThresholdAct, SIGNAL(triggered()), 
+	connect(increaseThresholdAct, SIGNAL(pressed()), 
 		this, SLOT(increaseThreshold()));
 
-        joinAct = new QAction(tr("Join"), mMainWindow);
+        joinAct = new QPushButton(mMainWindow);
+	joinAct->setText("Join");
         joinAct->setStatusTip(tr("Join objects mode"));
-        connect(joinAct, SIGNAL(triggered()),
+        connect(joinAct, SIGNAL(pressed()),
                 this, SLOT(join()));
 
-        toolbarShatterAct = new QAction(tr("Shatter"), mMainWindow);
+        toolbarShatterAct = new QPushButton(mMainWindow);
+	toolbarShatterAct->setText("Break");
         toolbarShatterAct->setStatusTip(tr("Shatter object mode"));
-        connect(toolbarShatterAct, SIGNAL(triggered()),
+        connect(toolbarShatterAct, SIGNAL(pressed()),
                 this, SLOT(toggledShatter()));
         toolbarShatterAct->setCheckable(true);
 
-        mergeHintAct = new QAction(tr("Show Merge Hints"), mMainWindow);
+	mBreakThreshold = new QLineEdit(mMainWindow);
+	setBreakThresholdValue();
+	connect(mBreakThreshold, SIGNAL(editingFinished()), 
+		this, SLOT(breakThresholdChanged()));
+
+	increaseBreakThresholdAct = new QPushButton(mMainWindow);
+	increaseBreakThresholdAct->setText(tr("+"));
+	increaseBreakThresholdAct->setStatusTip(tr("Split object mode"));
+	connect(increaseBreakThresholdAct, SIGNAL(pressed()), 
+		this, SLOT(increaseBreakThreshold()));
+
+	decreaseBreakThresholdAct = new QPushButton(mMainWindow);
+	decreaseBreakThresholdAct->setText(tr("-"));
+	decreaseBreakThresholdAct->setStatusTip(tr("Split object mode"));
+	connect(decreaseBreakThresholdAct, SIGNAL(pressed()), 
+		this, SLOT(decreaseBreakThreshold()));	
+
+
+        mergeHintAct = new QPushButton(mMainWindow);
+	mergeHintAct->setText(tr("Show Merge Hints"));
         mergeHintAct->setStatusTip(tr("Merge hint mode"));
-        connect(mergeHintAct, SIGNAL(triggered()),
+        connect(mergeHintAct, SIGNAL(pressed()),
                 this, SLOT(toggledHint()));
         mergeHintAct->setCheckable(true);
 
@@ -96,22 +124,65 @@ void DendToolBar::setThresholdValue()
 	mThreshold->setText(value);
 }
 
+void DendToolBar::setBreakThresholdValue()
+{
+	QString value;
+	value.setNum(0.95);
+
+
+	mBreakThreshold->setText(value);
+}
+
 void DendToolBar::addToolbars()
 {
 	dendToolBar = new QToolBar( "Dend", this );
 	dendToolBar->setFloatable( true );
 	mMainWindow->addToolBar( Qt::RightToolBarArea, dendToolBar );
 
-	dendToolBar->addAction(toolbarSplitAct);
+	QGroupBox* firstBox = new QGroupBox(this);
+	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);
+	
+	firstLayout->addWidget(toolbarSplitAct);
+	firstBox->setLayout(firstLayout);
+	dendToolBar->addWidget(firstBox);
 
-	dendToolBar->addAction(decreaseThresholdAct);
-	dendToolBar->addWidget(thresholdLabel);
-	dendToolBar->addWidget(mThreshold);
-	dendToolBar->addAction(increaseThresholdAct);
-	dendToolBar->addAction(joinAct);
-	dendToolBar->addAction(toolbarShatterAct);
-	dendToolBar->addAction(mergeHintAct);
-	dendToolBar->addWidget(mHint);
+	QGroupBox* secondBox = new QGroupBox(this);
+	QVBoxLayout* secondLayout = new QVBoxLayout(secondBox);
+	secondBox->setLayout(secondLayout);	
+	secondLayout->addWidget(joinAct);
+	dendToolBar->addWidget(secondBox);
+
+	QGroupBox* thirdBox = new QGroupBox(this);
+	QGridLayout* thirdLayout = new QGridLayout(thirdBox);
+	thirdLayout->addWidget(thresholdLabel,0,0,1,2);
+	thirdLayout->addWidget(decreaseThresholdAct,2,0,1,1);
+	thirdLayout->addWidget(mThreshold,1,0,1,2);
+	thirdLayout->addWidget(increaseThresholdAct,2,1,1,1);
+	thirdBox->setLayout(thirdLayout);
+	dendToolBar->addWidget(thirdBox);
+
+	QGroupBox* fourthBox = new QGroupBox(this);
+	QGridLayout* fourthLayout = new QGridLayout(fourthBox);
+	fourthLayout->addWidget(mergeHintAct,0,0,1,1);
+	fourthLayout->addWidget(mHint,1,0,1,1);
+	fourthBox->setLayout(fourthLayout);
+	dendToolBar->addWidget(fourthBox);
+
+	QGroupBox* fifthBox = new QGroupBox(this);
+	QGridLayout* fifthLayout = new QGridLayout(fifthBox);
+	QLabel* breakThresholdLabel = new QLabel(mMainWindow);
+	breakThresholdLabel->setText("Threshold:");
+	fifthLayout->addWidget(toolbarShatterAct,0,0,1,2);
+	fifthLayout->addWidget(breakThresholdLabel,1,0,1,1);
+	fifthLayout->addWidget(mBreakThreshold,2,0,1,2);
+	fifthLayout->addWidget(increaseBreakThresholdAct,3,1,1,1);
+	fifthLayout->addWidget(decreaseBreakThresholdAct,3,0,1,1);
+	fifthBox->setLayout(fifthLayout);
+	dendToolBar->addWidget(fifthBox);
+
+
+
+	
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -189,6 +260,41 @@ void DendToolBar::addToThreshold(float num)
 	}
 }
 
+void DendToolBar::addToBreakThreshold(float num)
+{
+        QString value = mBreakThreshold->text();
+        float threshold = value.toFloat();
+        threshold += num;
+	if(threshold > 1.0) {
+		threshold = 1.0;
+	}
+	if(threshold < 0.0) {
+		threshold = 0.0;
+	}
+        value.setNum(threshold);
+        mBreakThreshold->setText(value);
+
+	//if (OmProject::IsSegmentationValid(mSeg)) {
+	//OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	//seg.SetDendThresholdAndReload(threshold);
+	//}
+}
+
+void DendToolBar::increaseBreakThreshold()
+{
+	addToBreakThreshold(0.0002);
+
+	updateGui();
+}
+
+void DendToolBar::decreaseBreakThreshold()
+{
+	debug("dendbar", "DendToolBar::decreaseThreshold\n");
+	addToBreakThreshold(-0.0002);
+
+	updateGui();
+}
+
 void DendToolBar::increaseThreshold()
 {
         debug("dendbar", "DendToolBar::increaseThreshold\n");
@@ -204,7 +310,6 @@ void DendToolBar::decreaseThreshold()
 
 	updateGui();
 }
-
 void DendToolBar::join()
 {
         debug("dendbar", "DendToolBar::join\n");
@@ -238,6 +343,19 @@ void DendToolBar::thresholdChanged()
 		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
 		seg.SetDendThresholdAndReload(threshold);
 	}
+
+	updateGui();
+}
+
+void DendToolBar::breakThresholdChanged()
+{
+	debug("dendbar", "DendToolBar::thresholdChanged\n");
+
+	float threshold = mBreakThreshold->text().toFloat();
+	//if (OmProject::IsSegmentationValid(mSeg)) {
+	//OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	//seg.SetDendThresholdAndReload(threshold);
+	//}
 
 	updateGui();
 }

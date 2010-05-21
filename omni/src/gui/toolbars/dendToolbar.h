@@ -32,6 +32,9 @@ class DendToolBar : public QWidget
 	void split();
 	void increaseThreshold();
 	void decreaseThreshold();
+	void increaseBreakThreshold();
+	void decreaseBreakThreshold();
+	void breakThresholdChanged();
 	void thresholdChanged();
 	void join();
 	void toggledShatter();
@@ -46,18 +49,24 @@ class DendToolBar : public QWidget
 	void createToolbarActions();
 	void addToolbars();
 	void addToThreshold(float num);
-
+	void addToBreakThreshold(float num);
 	void setThresholdValue();
+	void setBreakThresholdValue();
 
 	// Actions
-	QAction * toolbarSplitAct;
-	QAction * decreaseThresholdAct;
+	QPushButton * toolbarSplitAct;
+	QPushButton * decreaseThresholdAct;
 	QLabel * thresholdLabel;
+	QLabel* breakThresholdLabel;
 	QLineEdit* mThreshold;
-	QAction * increaseThresholdAct;
-	QAction * joinAct;
-	QAction * toolbarShatterAct;
-	QAction * mergeHintAct;
+	QLineEdit* mBreakThreshold;
+	QPushButton * increaseBreakThresholdAct;
+	QPushButton * decreaseBreakThresholdAct;
+
+	QPushButton * increaseThresholdAct;
+	QPushButton * joinAct;
+	QPushButton * toolbarShatterAct;
+	QPushButton * mergeHintAct;
 	QLineEdit* mHint;
 	
 	void setToolbarDisabled();
