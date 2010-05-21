@@ -228,7 +228,7 @@ void DendToolBar::split()
 {
 	//toolbarSplitAct->setChecked(!toolbarSplitAct->isChecked());
         debug("dendbar", "DendToolBar::split\n");
-	if(toolbarSplitAct->isChecked()) {
+	if(!toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
