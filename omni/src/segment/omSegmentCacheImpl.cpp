@@ -326,10 +326,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
                 return;
         }
 
-
 	OmSegment * s1;
 	OmSegment * s2;
-
 
 	s1 = seg1; 
 	do {
@@ -351,6 +349,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
 	} while (0 != s2->mParentSegID);
 
+	OmSegment * one;
+	OmSegment * two;
 	OmSegment * small1;
 	OmSegment * small2;
 	float thresh1 = 1.0;
@@ -363,14 +363,13 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 			count++;
 			//debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
 			//debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
-
 			if(s1->mParentSegID == s2->mParentSegID) {
 				if(s1->getThreshold() < s2->getThreshold()) {
-					splitChildFromParent(small1);
+					one = small1;
 				} else {
-					splitChildFromParent(small2);
+					one = small2;
 				}
-				return;
+				goto onedone;
 			}
 
 			if(s1->getThreshold() < thresh1) {
@@ -385,6 +384,48 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 		} while (0 != s2->mParentSegID);
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
 	} while (0 != s1->mParentSegID);
+
+onedone:
+
+        thresh1 = 1.0;
+        thresh2 = 1.0;
+        count = 0;
+
+        s1 = seg2;
+        do {
+		s2 = seg1;
+                do {
+                        count++;
+                        //debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
+                        //debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
+                        if(s1->mParentSegID == s2->mParentSegID) {
+                                if(s1->getThreshold() < s2->getThreshold()) {
+                                        two = small1;
+                                } else {
+                                        two = small2;
+                                }
+				goto twodone;
+                        }
+
+                        if(s1->getThreshold() < thresh1) {
+                                thresh1 = s1->getThreshold();
+                                small1 = s1;
+                        }
+                        if(s2->getThreshold() < thresh2) {
+                                thresh2 = s2->getThreshold();
+                                small2 = s2;
+                        }
+                        s2 = GetSegmentFromValue(s2->mParentSegID);
+                } while (0 != s2->mParentSegID);
+                s1 = GetSegmentFromValue(s1->mParentSegID);
+        } while (0 != s1->mParentSegID);
+
+twodone:
+	if(one->mThreshold > two->mThreshold) {
+		splitChildFromParent(one);
+	} else {
+		splitChildFromParent(two);
+	}
 }
 
 void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
@@ -413,7 +454,8 @@ void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLe
 
 void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
-	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u\n", child->getValue());
+	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u,%f\n",
+			child->getValue(), child->mThreshold);
 	if( !child->mParentSegID ){
 		return;
 	}
