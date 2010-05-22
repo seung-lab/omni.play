@@ -3,6 +3,8 @@
 #include "system/omProjectData.h"
 #include "system/omCacheManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "system/events/omToolModeEvent.h"
+#include "system/events/omView3dEvent.h"
 
 // FIXME
 bool mShatter = false;
@@ -374,6 +376,11 @@ bool DendToolBar::GetShatterMode()
 	return mShatter;
 }
 
+bool DendToolBar::GetSplitMode()
+{
+	return mSplitting;
+}
+
 bool DendToolBar::GetSplitMode(OmId & seg, OmId & segment)
 {
 	seg = mSeg;
@@ -384,11 +391,12 @@ bool DendToolBar::GetSplitMode(OmId & seg, OmId & segment)
 void DendToolBar::SetSplitMode(bool onoroff)
 {
 	mSplitting = onoroff;
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 void DendToolBar::SetSplitMode(OmId seg, OmId segment)
 {
 	mSeg = seg;
 	mSegment = segment;
-	mSplitting = true;
+	SetSplitMode(true);
 }

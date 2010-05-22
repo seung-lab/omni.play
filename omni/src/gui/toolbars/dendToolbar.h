@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
+#include "gui/toolbars/dendToolbar.h"
 #include <QtGui>
 
 class MainWindow;
@@ -14,9 +15,11 @@ class DendToolBar : public QWidget
 
  public:
 	static bool GetShatterMode();
+	static bool GetSplitMode();
 	static bool GetSplitMode(OmId & seg, OmId & segment);
 	static void SetSplitMode(OmId seg, OmId segment);
 	static void SetSplitMode(bool onoroff);
+
 
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();

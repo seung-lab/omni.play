@@ -70,13 +70,13 @@ void OmSegment::SetColor(const Vector3 < float >&rColor)
 
 void OmSegment::ApplyColor(const OmBitfield & drawOps)
 {
-	if( mParentSegID ){
+	if( mParentSegID && !DendToolBar::GetSplitMode()){
 		mCache->findRoot( this )->ApplyColor(drawOps);
 		return;
 	}
+	Vector3<float> hyperColor = mColor;
 	//debug("mesh", "applying color\n");
 
-	Vector3<float> hyperColor = mColor;
 	hyperColor.x *= 2.;
 	hyperColor.y *= 2.;
 	hyperColor.z *= 2.;
@@ -94,7 +94,7 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		static int dir = 1;
 		
 		glEnable(GL_BLEND);
-		glColor3fva(hyperColor.array, s/200+.4);
+		glColor3fva(hyperColor.array, (s)/200+.4);
 		s += .1*dir;
 		if (s > 60) dir = -1;
 		if (s < 10) dir = 1;
