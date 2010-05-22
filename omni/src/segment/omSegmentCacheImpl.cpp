@@ -321,6 +321,11 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 		debug("dend", "can't split disconnected objects.\n");
 		return;
 	}
+        if( seg1 == seg2 ){
+                debug("dend", "can't split object from self.\n");
+                return;
+        }
+
 
 	OmSegment * s1;
 	OmSegment * s2;
@@ -361,17 +366,9 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 
 			if(s1->mParentSegID == s2->mParentSegID) {
 				if(s1->getThreshold() < s2->getThreshold()) {
-					if(0 != small1->mParentSegID) {
-						splitChildFromParent(small1);
-					} else {
-						splitChildFromParent(small2);
-					}
+					splitChildFromParent(small1);
 				} else {
-					if(0 != small2->mParentSegID) {
-						splitChildFromParent(small2);
-					} else {
-						splitChildFromParent(small1);
-					}
+					splitChildFromParent(small2);
 				}
 				return;
 			}
