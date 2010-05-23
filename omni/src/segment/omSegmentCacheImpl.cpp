@@ -51,11 +51,6 @@ OmSegment* OmSegmentCacheImpl::AddSegment()
 	return AddSegment( getNextValue() );
 }
 
-inline quint32 OmSegmentCacheImpl::getValuePageNum( const SEGMENT_DATA_TYPE value )
-{
-	return value / mPageSize;
-}
-
 OmSegment* OmSegmentCacheImpl::AddSegment(SEGMENT_DATA_TYPE value)
 {
 	quint32 valuePageNum = getValuePageNum(value);
@@ -131,9 +126,7 @@ OmSegment* OmSegmentCacheImpl::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
 		return NULL;
 	}
 
-	const quint32 valuePageNum = getValuePageNum(value);
-
-	return mValueToSegPtrHash.value( valuePageNum )[ value % mPageSize];
+	return mValueToSegPtrHash.value( getValuePageNum(value) )[ value % mPageSize];
 }
 
 inline OmSegment* OmSegmentCacheImpl::GetSegmentFromValueFast(SEGMENT_DATA_TYPE value)
@@ -144,7 +137,7 @@ inline OmSegment* OmSegmentCacheImpl::GetSegmentFromValueFast(SEGMENT_DATA_TYPE 
 		}
 	}
 
-	return mValueToSegPtrHash.value( value / mPageSize )[ value % mPageSize];
+	return mValueToSegPtrHash.value( getValuePageNum(value) )[ value % mPageSize];
 }
 
 OmId OmSegmentCacheImpl::GetNumSegments()
@@ -609,6 +602,7 @@ void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * den
                 threshold = dendValues[i];
 
 		if(threshold < stopPoint)  {
+			// TODO: deal w/ dust...
 			break;
 		}
 
@@ -621,8 +615,25 @@ void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * den
         }
 
 	clearCaches();
+	rerootSegmentLists();
 
 	printf("\t %d join operations performed\n", counter);
+}
+
+void OmSegmentCacheImpl::rerootSegmentLists()
+{
+	rerootSegmentList( mEnabledSet );
+	rerootSegmentList( mSelectedSet );
+}
+
+void OmSegmentCacheImpl::rerootSegmentList( OmIds & set )
+{
+	OmIds old = set;
+	set.clear();
+
+	foreach( const OmId & id, old ){
+		set.insert( id );
+	}
 }
 
 void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold)

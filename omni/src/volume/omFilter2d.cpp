@@ -16,7 +16,7 @@
 ///////		OmFilter Class
 ///////
 
-OmFilter2d::OmFilter2d (OmId segid, OmId chanid, OmId filterid, OmViewGroupState * vgs )
+OmFilter2d::OmFilter2d (OmId, OmId, OmId filterid, OmViewGroupState * vgs )
 {
 	OmFilter2d *repair = new OmFilter2d (filterid);
 	mViewGroupState = vgs;

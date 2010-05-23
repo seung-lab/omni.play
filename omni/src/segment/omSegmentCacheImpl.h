@@ -97,7 +97,9 @@ public:
 	QHash< quint32, OmSegment** > mValueToSegPtrHash;
 	QSet< quint32 > validPageNumbers;
 	QSet< quint32 > loadedPageNumbers;
-	quint32 getValuePageNum( const SEGMENT_DATA_TYPE value );
+	quint32 getValuePageNum( const SEGMENT_DATA_TYPE value ){
+		return value / mPageSize;
+	}
 	void LoadValuePage( const quint32 valuePageNum );
 	void SaveAllPages();
 	void SaveDirtySegmentPages();
@@ -121,6 +123,8 @@ public:
 	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
 	void Join( const OmId, const OmId, const float );
 	void clearAllJoins();
+	void rerootSegmentLists();
+	void rerootSegmentList( OmIds & set );
 
 	friend class OmSegmentColorizer;
 
