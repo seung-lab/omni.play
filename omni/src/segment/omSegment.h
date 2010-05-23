@@ -24,7 +24,14 @@ public:
 	void splitTwoChildren(OmSegment * seg);
 
 	//accessors
-	const Vector3<float>& GetColor();
+	OmColor GetColorInt(){ return mColorInt; }
+	Vector3<float> GetColorFloat(){
+		Vector3<float> color;
+		color.x = mColorInt.red / 255.;
+		color.y = mColorInt.green / 255.;
+		color.z = mColorInt.blue / 255.;
+		return color;
+	}
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
@@ -52,7 +59,7 @@ private:
 	SEGMENT_DATA_TYPE mValue;
 	OmSegmentCache * mCache;
 
-	Vector3<float> mColor;
+	OmColor mColorInt;
 
 	QList<OmId> segmentsJoinedIntoMe;
 	OmId mParentSegID;

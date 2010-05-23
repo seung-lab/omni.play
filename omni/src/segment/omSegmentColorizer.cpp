@@ -5,6 +5,8 @@
 
 #include <QMutexLocker>
 
+static const OmColor blackColor = {0, 0, 0};
+
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
 	: mSegmentCache(cache), 
 	  mSccType(sccType),
@@ -18,27 +20,39 @@ OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentC
 
 void OmSegmentColorizer::setup()
 {
-	mSize = mSegmentCache->mImpl->mMaxValue + 1;
+	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
+
+	if( mSize > 0 && curSize != mSize ){
+		delete [] mColorCache;
+		mColorCache = NULL;
+		delete [] mColorCacheFreshness;
+		mColorCacheFreshness = NULL;
+	}
+
+	if( NULL != mColorCache ){
+		return;
+	}
+
+	mSize = curSize;
 
 	mColorCache = new OmColor[ mSize ];
 
 	mColorCacheFreshness = new int[ mSize ];
-	for( quint32 i = 0; i < mSize; ++i ){
-		mColorCacheFreshness[i] = 0;
-	}
+	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
 }
 
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 				    unsigned char * data, OmViewGroupState * vgs )
 {
-	//FIXME: mutliple views may access same cache; lock here;
-	//  also: add a lock in OmViewGroupState when we create this Colorizer (purcaro)
+	//FIXME: add a lock in OmViewGroupState when we create this Colorizer (purcaro)
 
-	if( NULL == mColorCache ){
-		setup();
-	}
+	QMutexLocker lock( &mMutex );
+	
+	setup();
 
+	mSegmentCache->mMutex.lock();
 	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
+	mSegmentCache->mMutex.unlock();
 
 	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
@@ -61,12 +75,16 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 		val = (SEGMENT_DATA_TYPE) imageData[i];
 
 		if ( val != lastVal) {
-			if( !isCacheElementValid(val, segCacheFreshness) ){
-				mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
-				mColorCacheFreshness[ val ] = segCacheFreshness;
-			} 
-			
-			newcolor = mColorCache[ val ];
+			if( 0 == val ){
+				newcolor = blackColor;
+			} else{
+				if( !isCacheElementValid(val, segCacheFreshness) ){
+					mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
+					mColorCacheFreshness[ val ] = segCacheFreshness;
+				}
+				
+				newcolor = mColorCache[ val ];
+			}
 		} 
 
 		data[offset]     = newcolor.red;
@@ -79,48 +97,40 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, 
-						    const bool showOnlySelectedSegments)
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE & val, 
+						    const bool & showOnlySelectedSegments)
 {
-	QMutexLocker lock( &mSegmentCache->mMutex );
-
-	OmColor color = {0,0,0};
-
+	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
-		return color;
+		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 3
+		return blackColor;
 	}
-
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
-
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
 	if(SegmentationBreak == mSccType){
 		if( isSelected ){
-			const Vector3<float> & sc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
-			color.red   = sc.x * 255;
-			color.green = sc.y * 255;
-			color.blue  = sc.z * 255;
-			
-			return color;
+			const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
+			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
+			return tsc;
 		} 
 	}
 
-	const Vector3 < float > & sc = segRoot->mColor;
+	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #3 of 3
+
+	const OmColor & sc = segRoot->mColorInt;
 
 	if( isSelected ){
-		color.red   = clamp(sc.x * 255 * 2.5);
-		color.green = clamp(sc.y * 255 * 2.5);
-		color.blue  = clamp(sc.z * 255 * 2.5);
+		OmColor color = { makeSelectedColor(sc.red),
+				  makeSelectedColor(sc.green),
+				  makeSelectedColor(sc.blue) };
+		return color;
 	} else {
 		if (showOnlySelectedSegments) {
-			// don't show
+			return blackColor;
 		} else {
-			color.red   = sc.x * 255;
-			color.green = sc.y * 255;
-			color.blue  = sc.z * 255;
+			return sc;
 		}
 	}
-
-	return color;
 }

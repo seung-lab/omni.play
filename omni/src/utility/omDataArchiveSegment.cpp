@@ -25,7 +25,9 @@ void OmDataArchiveSegment::ArchiveRead( OmHdf5Path path, OmSegment** page, OmSeg
                 OmSegment * segment = new OmSegment(cache);
 
                 in >> segment->mValue;
-                in >> segment->mColor;
+                in >> segment->mColorInt.red;
+                in >> segment->mColorInt.green;
+                in >> segment->mColorInt.blue;
 
                 page[ i ] = segment;
         }
@@ -51,7 +53,9 @@ void OmDataArchiveSegment::ArchiveWrite( OmHdf5Path path, OmSegment** page, OmSe
 		out << true;
 
                 out << segment->mValue;
-                out << segment->mColor;
+                out << segment->mColorInt.red;
+                out << segment->mColorInt.green;
+                out << segment->mColorInt.blue;
         }
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 

@@ -76,9 +76,7 @@ void MainWindow::newProject()
 
 		QString fileNameAndPath = OmProject::New( fileName );
 
-		if( NULL != mViewGroupState ){
-			delete mViewGroupState;
-		}
+		delete mViewGroupState;
 		mViewGroupState = new OmViewGroupState();
 
 		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
@@ -188,6 +186,9 @@ bool MainWindow::closeProjectIfOpen()
 
 	updateReadOnlyRelatedWidgets();
 
+	delete mViewGroupState;
+	mViewGroupState = NULL;
+
 	return true;
 }
 
@@ -243,9 +244,7 @@ void MainWindow::openProject(QString fileNameAndPath)
 		// FIXME open volume at middle.... (purcaro)
 		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 #endif
-		if( NULL != mViewGroupState ){
-			delete mViewGroupState;
-		}
+		delete mViewGroupState;
 		mViewGroupState = new OmViewGroupState();
 
 		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);

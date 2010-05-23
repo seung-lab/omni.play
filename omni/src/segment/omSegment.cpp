@@ -46,25 +46,28 @@ SEGMENT_DATA_TYPE OmSegment::getValue()
 ///////         Color
 void OmSegment::SetInitialColor()
 {
+	Vector3<float> color;
+
 	//initially random color
 	do {
-		mColor.randomize();
-	} while ((mColor.x * 255 > 255 && mColor.y * 255 > 255 && mColor.z * 255 > 255) &&
-		 (mColor.x * 255 < 55 && mColor.y * 255 < 55 && mColor.z * 255 < 55));
+		color.randomize();
+	} while ((color.x * 255 > 255 && color.y * 255 > 255 && color.z * 255 > 255) &&
+		 (color.x * 255 < 55 && color.y * 255 < 55 && color.z * 255 < 55));
 
-	mColor.x /= 2;
-	mColor.y /= 2;
-	mColor.z /= 2;
+	color.x /= 2;
+	color.y /= 2;
+	color.z /= 2;
+
+	mColorInt.red   = color.x * 255;
+	mColorInt.green = color.y * 255;
+	mColorInt.blue  = color.z * 255;
 }
 
-void OmSegment::SetColor(const Vector3 < float >&rColor)
+void OmSegment::SetColor(const Vector3 < float >& color)
 {
-	if( mParentSegID ){
-		mCache->findRoot( this )->SetColor(rColor);
-		return;
-	}
-
-	mColor = rColor;
+	mColorInt.red   = color.x * 255;
+	mColorInt.green = color.y * 255;
+	mColorInt.blue  = color.z * 255;
 	mCache->addToDirtySegmentList(this);
 }
 
@@ -74,7 +77,12 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		mCache->findRoot( this )->ApplyColor(drawOps);
 		return;
 	}
-	Vector3<float> hyperColor = mColor;
+
+	Vector3<float> hyperColor;
+	hyperColor.x = mColorInt.red / 255.;
+	hyperColor.y = mColorInt.green / 255.;
+	hyperColor.z = mColorInt.blue / 255.;
+
 	//debug("mesh", "applying color\n");
 
 	hyperColor.x *= 2.;
@@ -103,15 +111,6 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 	} else {
 		glColor3fv(hyperColor.array);
 	}
-}
-
-const Vector3 < float >& OmSegment::GetColor()
-{
-	if(mParentSegID) {
-		return mCache->findRoot( this )->GetColor();
-	}
-
-	return mColor;
 }
 
 QString OmSegment::GetNote()

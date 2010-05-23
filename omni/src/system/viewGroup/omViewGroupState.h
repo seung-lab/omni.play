@@ -8,6 +8,8 @@
 #include "segment/omSegmentColorizer.h"
 #include <boost/tr1/unordered_map.hpp>
 
+#include <QMutex>
+
 class OmViewGroupState : public OmManageableObject {
  public:
 	OmViewGroupState();
@@ -45,6 +47,8 @@ class OmViewGroupState : public OmManageableObject {
 	int getBreakThreshold(){ return mBreakThreshold; }
 
  private:
+	QMutex mColorCacheMapLock;
+
 	int mBreakThreshold;
 
 	//view event
@@ -61,7 +65,7 @@ class OmViewGroupState : public OmManageableObject {
 	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
 	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
 
-	boost::unordered_map< int, OmSegmentColorizer * > mColorCaches;
+	boost::unordered_map< OmSegmentColorCacheType, OmSegmentColorizer * > mColorCaches;
 
 	SegmentationDataWrapper m_sdw;
 	ChannelDataWrapper m_cdw;

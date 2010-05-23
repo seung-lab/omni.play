@@ -186,9 +186,9 @@ QString SegmentDataWrapper::getIDstr()
 	return QString("%1").arg(getID());
 }
 
-const Vector3 < float >& SegmentDataWrapper::getColor()
+Vector3 < float > SegmentDataWrapper::getColor()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColor();
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColorFloat();
 }
 
 void SegmentDataWrapper::setColor(const Vector3 < float >& color)

@@ -2,12 +2,14 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
-
+#include <QMutex> 
 enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
 
 class OmSegmentCache;
 class OmViewGroupState;
 class OmSegment;
+
+static double selectedSegmentColorMultiFactor = 2.5;
 
 class OmSegmentColorizer 
 {
@@ -17,6 +19,8 @@ class OmSegmentColorizer
 			unsigned char * data, OmViewGroupState * );
 
  private:
+	QMutex mMutex;
+
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 
@@ -27,21 +31,20 @@ class OmSegmentColorizer
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
 
-	int freshness;
-
 	void setup();
 
-	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE val, 
-					const bool showOnlySelectedSegments );
+	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE & val, 
+					const bool & showOnlySelectedSegments );
 
-	int clamp(int c) {
+	int makeSelectedColor(const quint8 & in_c ) {
+		const int c = (double)in_c * selectedSegmentColorMultiFactor;
 		if (c > 255) {
 			return 255;
 		}
 		return c;
 	}
 
-	bool isCacheElementValid( const SEGMENT_DATA_TYPE val, const int currentSegCacheFreshness ){
+	bool isCacheElementValid( const SEGMENT_DATA_TYPE & val, const int & currentSegCacheFreshness ){
 		if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
 			return false;
 		}

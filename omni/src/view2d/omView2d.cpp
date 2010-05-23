@@ -987,11 +987,11 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 
 			if (mentationEditId == mImageId) {
 
-				const Vector3 < float >&color =
-				    OmProject::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColor();
-
+				OmColor color =
+				    OmProject::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColorInt();
+				
 				////debug("genone","SETTING EDIT COLOR");
-				editColor = qRgba(color.x * 255, color.y * 255, color.z * 255, 255);
+				editColor = qRgba(color.red, color.green, color.blue, 255);
 			}
 		}
 	}

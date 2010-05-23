@@ -25,6 +25,8 @@ OmViewGroupState::OmViewGroupState()
 	mXZPan[1] = 0.0;
 
 	mBreakThreshold = 0;
+
+	debug("viewgroupstate", "constructed viewGroupState\n");
 }
 
 
@@ -313,34 +315,34 @@ extern bool mShatter;
 void OmViewGroupState::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 				  const ObjectType objType, unsigned char * data )
 {
-	OmSegmentColorCacheType sccTypeEnum;
+	OmSegmentColorCacheType sccType;
 
 	switch( objType ){
 	case CHANNEL:
 		if( mShatter ){
-			sccTypeEnum = ChannelBreak;
+			sccType = ChannelBreak;
 		} else {
-			sccTypeEnum = Channel;
+			sccType = Channel;
 		}
 		break;
 
 	case SEGMENTATION:
 		if( mShatter ) {
-			sccTypeEnum = SegmentationBreak;
+			sccType = SegmentationBreak;
 		} else {
-			sccTypeEnum = Segmentation;
+			sccType = Segmentation;
 		}
 		break;
 	default:
 		assert(0);
 	}
 
-	int sccTypeInt = (int)sccTypeEnum;
-
-	if( 0 == mColorCaches.count( sccTypeInt ) ){
-		mColorCaches[ sccTypeInt ] = new OmSegmentColorizer( m_sdw.getSegmentCache(), sccTypeEnum);
+	mColorCacheMapLock.lock();
+	if( 0 == mColorCaches.count( sccType ) ){
+		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw.getSegmentCache(), sccType);
 	}
-	
-	mColorCaches[ sccTypeInt ]->colorTile( imageData, size, data, this );
+	mColorCacheMapLock.unlock();	
+
+	mColorCaches[ sccType ]->colorTile( imageData, size, data, this );
 }
 

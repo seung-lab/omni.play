@@ -7,15 +7,24 @@
 #include <QMutexLocker>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
+	: mSegmentation(segmentation)
 {
-	mImpl = new OmSegmentCacheImpl(segmentation, this);
-	mSegmentation = segmentation;
-	mPageSize = mImpl->getPageSize();
+	mImpl = new OmSegmentCacheImpl(segmentation, this); 
 }
 
 OmSegmentCache::~OmSegmentCache()
 {
-	delete(mImpl);
+	delete mImpl;
+}
+
+OmId OmSegmentCache::getSegmentationID()
+{
+	return mSegmentation->GetId();
+}
+
+quint32 OmSegmentCache::getPageSize() 
+{ 
+	return mImpl->getPageSize(); 
 }
 
 void OmSegmentCache::turnBatchModeOn( const bool batchMode )
@@ -23,12 +32,6 @@ void OmSegmentCache::turnBatchModeOn( const bool batchMode )
 	QMutexLocker locker( &mMutex );
 	mImpl->turnBatchModeOn( batchMode );
 }
-
-OmId OmSegmentCache::getSegmentationID()
-{
-	return mImpl->getSegmentationID();
-}
-
 OmSegment* OmSegmentCache::AddSegment()
 {
 	QMutexLocker locker( &mMutex );
@@ -124,6 +127,12 @@ bool OmSegmentCache::isSegmentSelected( OmId segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isSegmentSelected( segID );
+}
+
+bool OmSegmentCache::isSegmentSelected( OmSegment * seg )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->isSegmentSelected( seg );
 }
 
 void OmSegmentCache::setSegmentEnabled( OmId segID, bool isEnabled )
@@ -223,4 +232,10 @@ void OmSegmentCache::JoinAllSegmentsInSelectedList()
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->JoinAllSegmentsInSelectedList();
+}
+
+quint32 OmSegmentCache::getMaxValue()
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->getMaxValue();
 }

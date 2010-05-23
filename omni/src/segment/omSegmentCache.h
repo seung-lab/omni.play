@@ -40,6 +40,7 @@ public:
 	OmIds& GetEnabledSegmentIdsRef();
 
 	bool isSegmentSelected( OmId segID );
+	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmId segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmIds& GetSelectedSegmentIdsRef();
@@ -64,7 +65,7 @@ public:
 
 	void JoinAllSegmentsInSelectedList();
 
-	quint32 getPageSize() { return mPageSize; }
+	quint32 getPageSize();
 
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
 					QList< OmSegment* > segmentsToDraw );
@@ -73,6 +74,8 @@ public:
 
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
+
+	quint32 getMaxValue();
 
 private:
 	QMutex mMutex;

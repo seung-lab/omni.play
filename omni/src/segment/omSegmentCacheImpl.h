@@ -3,6 +3,11 @@
 
 #include "volume/omSegmentation.h"
 #include "utility/DynamicTreeContainer.h"
+#include <boost/tr1/unordered_map.hpp>
+
+#include "boost/strong_typedef.hpp"
+BOOST_STRONG_TYPEDEF(quint32, PageNum )
+
 
 class OmSegmentCacheImpl {
 public:
@@ -67,7 +72,9 @@ public:
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
 
-	const Vector3<float> & GetColorAtThreshold( OmSegment * segment, const float threshold );
+	const OmColor & GetColorAtThreshold( OmSegment * segment, const float threshold );
+
+	quint32 getMaxValue(){ return mMaxValue; }
 
  private:
 	bool mAllSelected;
@@ -86,24 +93,23 @@ public:
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
-	QSet<quint32> dirtySegmentPages;
-
 	OmSegmentCache * mParentCache;
 
 	bool amInBatchMode;
 	bool needToFlush;
 
 	quint32 mPageSize;
-	QHash< quint32, OmSegment** > mValueToSegPtrHash;
-	QSet< quint32 > validPageNumbers;
-	QSet< quint32 > loadedPageNumbers;
-	quint32 getValuePageNum( const SEGMENT_DATA_TYPE value ){
-		return value / mPageSize;
+	boost::unordered_map< PageNum, OmSegment** > mValueToSegPtrHash;
+	QSet< PageNum > validPageNumbers;
+	QSet< PageNum > loadedPageNumbers;
+	QSet< PageNum > dirtySegmentPages;
+	PageNum getValuePageNum( const SEGMENT_DATA_TYPE value ){
+		return PageNum(value / mPageSize);
 	}
-	void LoadValuePage( const quint32 valuePageNum );
+	void LoadValuePage( const PageNum valuePageNum );
 	void SaveAllPages();
 	void SaveDirtySegmentPages();
-	void doSaveSegmentPage( const quint32 segPageNum );
+	void doSaveSegmentPage( const PageNum segPageNum );
 	bool mAllPagesLoaded;
 
 	OmSegment* GetSegmentFromValueFast(SEGMENT_DATA_TYPE value);

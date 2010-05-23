@@ -71,7 +71,7 @@ class SegmentDataWrapper
 	QString getNote();
 	void setNote(QString str);
 	QString getIDstr();
-	const Vector3 < float >& getColor();
+	Vector3 < float > getColor();
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
 	QString get_original_mapped_data_value();
