@@ -44,8 +44,6 @@ void OmSegmentColorizer::setup()
 void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 				    unsigned char * data, OmViewGroupState * vgs )
 {
-	//FIXME: add a lock in OmViewGroupState when we create this Colorizer (purcaro)
-
 	QMutexLocker lock( &mMutex );
 	
 	setup();

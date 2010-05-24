@@ -11,20 +11,19 @@
 #include "segment/omSegmentCache.h"
 #include "utility/omDataPaths.h"
 #include "gui/toolbars/dendToolbar.h"
+#include "volume/omMipChunkCoord.h"
+#include "utility/omHdf5Path.h"
 
-OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
-	: mValue(value), mCache(cache)
+OmSegment::OmSegment( const SEGMENT_DATA_TYPE & value, OmSegmentCache* cache)
+	: mValue(value), mCache(cache), mParentSegID(0)
 {
 	assert(cache && "must have cache in the segments");
 	SetInitialColor();
-
-	mParentSegID = 0;
 }
 
 OmSegment::OmSegment(OmSegmentCache* cache)
-	:  mCache(cache)
+	:  mCache(cache), mParentSegID(0)
 {
-	mParentSegID = 0;
 }
 
 void OmSegment::setParent(OmSegment * parent, float threshold)
@@ -37,7 +36,7 @@ void OmSegment::setParent(OmSegment * parent, float threshold)
 	mThreshold = threshold;
 }
 
-SEGMENT_DATA_TYPE OmSegment::getValue()
+const SEGMENT_DATA_TYPE & OmSegment::getValue()
 {
 	return mValue;
 }
@@ -78,12 +77,7 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		return;
 	}
 
-	Vector3<float> hyperColor;
-	hyperColor.x = mColorInt.red / 255.;
-	hyperColor.y = mColorInt.green / 255.;
-	hyperColor.z = mColorInt.blue / 255.;
-
-	//debug("mesh", "applying color\n");
+	Vector3<float> hyperColor = GetColorFloat();
 
 	hyperColor.x *= 2.;
 	hyperColor.y *= 2.;
@@ -168,11 +162,6 @@ void OmSegment::SetEnabled(bool isEnabled)
 OmId OmSegment::getSegmentationID()
 {
 	return mCache->getSegmentationID();
-}
-
-OmSegment * OmSegment::getParent()
-{
-	return mCache->GetSegmentFromValue(mParentSegID);
 }
 
 void OmSegment::splitChildLowestThreshold()

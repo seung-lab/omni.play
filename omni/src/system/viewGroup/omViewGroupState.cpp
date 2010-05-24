@@ -311,6 +311,7 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 	m_cdw = ChannelDataWrapper( chanID );
 }
 
+//TODO: move mShatter into viewgroupstate
 extern bool mShatter;
 void OmViewGroupState::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 				  const ObjectType objType, unsigned char * data )
@@ -333,6 +334,7 @@ void OmViewGroupState::ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 			sccType = Segmentation;
 		}
 		break;
+
 	default:
 		assert(0);
 	}

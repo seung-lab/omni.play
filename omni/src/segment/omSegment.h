@@ -8,16 +8,14 @@
  */
 
 #include "common/omCommon.h"
-#include "system/omManageableObject.h"
-#include "volume/omMipChunkCoord.h"
-#include "utility/omHdf5Path.h"
 
 class OmSegmentCache;
+class OmMipChunkCoord;
 
 class OmSegment {
 
 public:
-	OmSegment(SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
+	OmSegment(const SEGMENT_DATA_TYPE & value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
 	void splitChildLowestThreshold();
@@ -26,18 +24,16 @@ public:
 	//accessors
 	OmColor GetColorInt(){ return mColorInt; }
 	Vector3<float> GetColorFloat(){
-		Vector3<float> color;
-		color.x = mColorInt.red / 255.;
-		color.y = mColorInt.green / 255.;
-		color.z = mColorInt.blue / 255.;
-		return color;
+		return 	Vector3<float>( mColorInt.red / 255.,
+					mColorInt.green / 255.,
+					mColorInt.blue / 255. );
 	}
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
 
-	SEGMENT_DATA_TYPE getValue();
+	const SEGMENT_DATA_TYPE & getValue();
 
 	QString GetNote();
 	void SetNote(QString);
@@ -49,7 +45,6 @@ public:
 	void SetEnabled(bool);
 
 	void setParent(OmSegment * segment, float threshold);
-	OmSegment * getParent();
 
 	OmId getSegmentationID();
 	float getThreshold();
