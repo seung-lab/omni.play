@@ -41,6 +41,8 @@ class DendToolBar : public QWidget
 	void join();
 	void toggledShatter();
 	void toggledHint();
+        void addGroup();
+        void mapColors();
 
  private:
 	MainWindow * mMainWindow;
@@ -70,6 +72,9 @@ class DendToolBar : public QWidget
 	QPushButton * toolbarShatterAct;
 	QPushButton * mergeHintAct;
 	QLineEdit* mHint;
+
+	QPushButton * addGroupAct;
+        QPushButton * colorMapAct;
 	
 	void setToolbarDisabled();
 	void resetTool( QAction* tool, const bool enabled );

@@ -89,13 +89,13 @@ void DendToolBar::createToolbarActions()
 
 	increaseBreakThresholdAct = new QPushButton(mMainWindow);
 	increaseBreakThresholdAct->setText(tr("+"));
-	increaseBreakThresholdAct->setStatusTip(tr("Split object mode"));
+	increaseBreakThresholdAct->setStatusTip(tr("Increase threshold"));
 	connect(increaseBreakThresholdAct, SIGNAL(pressed()), 
 		this, SLOT(increaseBreakThreshold()));
 
 	decreaseBreakThresholdAct = new QPushButton(mMainWindow);
 	decreaseBreakThresholdAct->setText(tr("-"));
-	decreaseBreakThresholdAct->setStatusTip(tr("Split object mode"));
+	decreaseBreakThresholdAct->setStatusTip(tr("Decrease threshold"));
 	connect(decreaseBreakThresholdAct, SIGNAL(pressed()), 
 		this, SLOT(decreaseBreakThreshold()));	
 
@@ -110,6 +110,19 @@ void DendToolBar::createToolbarActions()
         mHint = new QLineEdit(mMainWindow);
         value.setNum(1);
         mHint->setText(value);
+
+        addGroupAct = new QPushButton(mMainWindow);
+        addGroupAct->setText(tr("Group Selected"));
+        addGroupAct->setStatusTip(tr("group object action"));
+        connect(addGroupAct, SIGNAL(pressed()),
+                this, SLOT(addGroup()));
+
+        colorMapAct = new QPushButton(mMainWindow);
+        colorMapAct->setText(tr("Show Validated Colors"));
+        colorMapAct->setStatusTip(tr("Validated object mode"));
+        connect(colorMapAct, SIGNAL(pressed()),
+                this, SLOT(mapColors()));
+        colorMapAct->setCheckable(true);
 
 }
 
@@ -180,6 +193,17 @@ void DendToolBar::addToolbars()
 	fifthLayout->addWidget(decreaseBreakThresholdAct,3,0,1,1);
 	fifthBox->setLayout(fifthLayout);
 	dendToolBar->addWidget(fifthBox);
+
+        QGroupBox* sixthBox = new QGroupBox(this);
+        QGridLayout* sixthLayout = new QGridLayout(sixthBox);
+        QLabel* groupColorLabel = new QLabel(mMainWindow);
+        groupColorLabel->setText("Groups & Colors:");
+        sixthLayout->addWidget(groupColorLabel,0,0,1,2);
+        sixthLayout->addWidget(addGroupAct,1,0,1,2);
+        sixthLayout->addWidget(colorMapAct,2,0,1,2);
+        sixthBox->setLayout(sixthLayout);
+        dendToolBar->addWidget(sixthBox);
+
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -400,3 +424,12 @@ void DendToolBar::SetSplitMode(OmId seg, OmId segment)
 	mSegment = segment;
 	SetSplitMode(true);
 }
+
+void DendToolBar::addGroup()
+{
+}
+
+void DendToolBar::mapColors()
+{
+}
+
