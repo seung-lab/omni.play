@@ -30,6 +30,8 @@ class NavAndEditToolBars : public QWidget
 	void toolbarFill(bool checked);
 	void toolbarVoxelize(bool checked);
 	void setFilAlpha(int alpha);
+	void filterSegmentationChanged(int segId);
+	void filterChannelChanged(int chanId);
 
  private:
 	MainWindow * mMainWindow;
@@ -71,6 +73,8 @@ class NavAndEditToolBars : public QWidget
 	void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode );
 
 	QSlider *alphaSlider;
+	QComboBox *mSegmentationCombo;
+	QComboBox *mChannelCombo;
 	void setupFilterToolbar();
 	void setFilterToolbarEnabled( bool setEnabled );
 
