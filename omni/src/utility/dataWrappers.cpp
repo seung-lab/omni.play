@@ -203,7 +203,7 @@ void SegmentDataWrapper::setName( const QString& str )
 
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
-	const SEGMENT_DATA_TYPE value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
+	const OmSegID value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
 	if( 0 == value ){
 		return "<not set>";
 	} else {

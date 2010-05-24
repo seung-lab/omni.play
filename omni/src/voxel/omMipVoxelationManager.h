@@ -26,7 +26,7 @@ public:
 	bool IsBoundaryVoxel(const DataCoord &);
 	OmMipVoxelation* CreateMipVoxelation(const OmMipSegmentDataCoord &);
 	void RefreshNeighboringVoxels(const DataCoord &rDataCoord, OmMipVoxelation &rVoxelation);
-	void UpdateVoxel(const DataCoord &rVox, const SEGMENT_DATA_TYPE old_val, const SEGMENT_DATA_TYPE new_val );
+	void UpdateVoxel(const DataCoord &rVox, const OmSegID old_val, const OmSegID new_val );
 	
 	//draw
 	void DrawVoxelations(OmSegmentCache *rSegMgr, const OmMipChunkCoord &mipCoord, const SegmentDataSet &rRelvDataVals, const OmBitfield &drawOps);

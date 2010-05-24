@@ -76,18 +76,18 @@ OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingT
 				void * out = NULL;
 				if (1 == mBytesPerSample) {
 					uint32_t *vDataFake = NULL;
-					vDataFake = (uint32_t*) malloc((tile_dims.x * tile_dims.y) * sizeof(SEGMENT_DATA_TYPE));
-					//memset (vDataFake, '\0', (tile_dims.x * tile_dims.y) * sizeof (SEGMENT_DATA_TYPE));
+					vDataFake = (uint32_t*) malloc((tile_dims.x * tile_dims.y) * sizeof(OmSegID));
+					//memset (vDataFake, '\0', (tile_dims.x * tile_dims.y) * sizeof (OmSegID));
 					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
 						vDataFake[i] = ((unsigned char *)(vData))[i];
 					}
-					setMyColorMap(((SEGMENT_DATA_TYPE *) vDataFake), tile_dims, key, &out);
+					setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
 					textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
 						    cache, out, OMTILE_NEEDCOLORMAP);
 					free(vDataFake);
 					free(vData);
 				}
-				setMyColorMap(((SEGMENT_DATA_TYPE *) vData), tile_dims, key, &out);
+				setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
 				textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
 						    cache, out, OMTILE_NEEDCOLORMAP);
 				free(vData);
@@ -164,7 +164,7 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	return ret;
 }
 
-void OmTile::setMyColorMap(SEGMENT_DATA_TYPE * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
+void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
 	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
 

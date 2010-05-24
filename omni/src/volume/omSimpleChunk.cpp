@@ -276,7 +276,7 @@ void OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 
 	//get pointer to native scalar data
 	if (SEGMENT_DATA_BYTES_PER_SAMPLE == GetBytesPerSample()) {
-		SEGMENT_DATA_TYPE *p_scalar_data = static_cast < SEGMENT_DATA_TYPE * >(mpImageData);
+		OmSegID *p_scalar_data = static_cast < OmSegID * >(mpImageData);
 
 		//for all voxels in the chunk
 		for ( index = 0; index < NumberOfValues; index++) {
@@ -289,13 +289,13 @@ void OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 		}
 	} else if (1 == GetBytesPerSample()) {
 		unsigned char *p_scalar_data = static_cast < unsigned char *>(mpImageData);
-		SEGMENT_DATA_TYPE my_scalar_data;
+		OmSegID my_scalar_data;
 
 		//for all voxels in the chunk
 		for ( index = 0; index < NumberOfValues; index++) {
 			//if non-null insert in set
 			if ('\0' != *p_scalar_data) {
-				my_scalar_data = (SEGMENT_DATA_TYPE) (*p_scalar_data);
+				my_scalar_data = (OmSegID) (*p_scalar_data);
 				mDirectlyContainedValues.insert(my_scalar_data);
 			}
 			//adv to next scalar

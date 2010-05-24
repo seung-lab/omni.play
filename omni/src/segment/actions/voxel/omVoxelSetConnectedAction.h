@@ -33,7 +33,7 @@ private:
 	//dest segment id
 	OmId mSegmentationId, mSegmentId;
 	//dest voxel value
-	SEGMENT_DATA_TYPE mDataValue;
+	OmSegID mDataValue;
 	
 	//source voxel
 	DataCoord mSeedVoxel;

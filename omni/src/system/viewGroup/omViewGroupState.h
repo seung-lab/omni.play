@@ -40,7 +40,7 @@ class OmViewGroupState : public OmManageableObject {
 	void SetViewSliceDataFormat(int bytesPerSample);
 	void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
 
-	void ColorTile( SEGMENT_DATA_TYPE *, const int,
+	void ColorTile( OmSegID *, const int,
 			const ObjectType, unsigned char * );
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }

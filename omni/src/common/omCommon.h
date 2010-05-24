@@ -66,10 +66,10 @@ static const OmId NULL_SEGMENT_ID = 0;
 #define SEGMENT_DATA_BYTES_PER_SAMPLE 4
 #define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
 
-typedef unsigned int SEGMENT_DATA_TYPE;
-typedef QSet< SEGMENT_DATA_TYPE > SegmentDataSet;
+typedef unsigned int OmSegID;
+typedef QSet< OmSegID > SegmentDataSet;
 
-static const SEGMENT_DATA_TYPE NULL_SEGMENT_DATA = 0;
+static const OmSegID  NULL_SEGMENT_DATA = 0;
 
 
 #endif

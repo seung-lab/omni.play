@@ -19,7 +19,7 @@ unsigned int MeshingChunkThreadManager::getNumSegmentValuesLeftToMesh()
 	return valuesToMesh.size();
 }
 
-SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
+OmSegID MeshingChunkThreadManager::getNextSegmentValueToMesh()
 {
 	QMutexLocker locker( mutex );
 
@@ -28,7 +28,7 @@ SEGMENT_DATA_TYPE MeshingChunkThreadManager::getNextSegmentValueToMesh()
 	} 
 
 	//pop value
-	SEGMENT_DATA_TYPE segment_value = *valuesToMesh.begin();
+	OmSegID segment_value = *valuesToMesh.begin();
 	valuesToMesh.remove(segment_value);
 	assert(NULL_SEGMENT_DATA != segment_value);
 

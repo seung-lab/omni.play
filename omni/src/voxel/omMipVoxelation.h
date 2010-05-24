@@ -16,7 +16,7 @@ public:
 	~OmMipVoxelation();
 	
 	//accessors
-	SEGMENT_DATA_TYPE GetSegmentDataValue();
+	OmSegID GetSegmentDataValue();
 	
 	//voxel
 	void AddVoxel(DataCoord &);

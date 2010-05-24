@@ -24,7 +24,7 @@ private:
 	
 	OmId mSegmentationId, mSegmentId;
 	DataCoord mVoxel;
-	SEGMENT_DATA_TYPE mPrevDataValue, mDataValue;
+	OmSegID mPrevDataValue, mDataValue;
 };
 
 

@@ -9,7 +9,7 @@ QString StringHelpers::getStringFromSegmentSet( const SegmentDataSet & data_set 
 	}
 
 	QStringList strs;
-	foreach( SEGMENT_DATA_TYPE val, data_set ){
+	foreach( OmSegID val, data_set ){
 		strs << QString::number( val );
 	}
 

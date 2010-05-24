@@ -90,8 +90,8 @@ protected:
 	DataCoord BrushToolOTGDC(DataCoord off);
 	void PickToolGetColor(QMouseEvent *event);
 	void PickToolAddToSelection (OmId segmentation_id, DataCoord globalDataClickPoint);
-	void FillToolFill (OmId segmentation, DataCoord gCP, SEGMENT_DATA_TYPE fc, SEGMENT_DATA_TYPE bc, int depth=0);
-	void BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE seg);
+	void FillToolFill (OmId segmentation, DataCoord gCP, OmSegID fc, OmSegID bc, int depth=0);
+	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 
 	// EDIT PROPERTIES
 	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second);

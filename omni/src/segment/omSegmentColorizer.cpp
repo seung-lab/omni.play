@@ -41,7 +41,7 @@ void OmSegmentColorizer::setup()
 	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
 }
 
-void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				    unsigned char * data, OmViewGroupState * vgs )
 {
 	QMutexLocker lock( &mMutex );
@@ -63,14 +63,14 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 
 	int offset = 0;
 	OmColor newcolor = {0, 0, 0};
-	SEGMENT_DATA_TYPE lastVal = 0;
-	SEGMENT_DATA_TYPE val;
+	OmSegID lastVal = 0;
+	OmSegID val;
 	
 	// looping through each value of imageData, which is 
-	//   strictly dims.x * dims.y big, no extra because of cast to SEGMENT_DATA_TYPE
+	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
 
-		val = (SEGMENT_DATA_TYPE) imageData[i];
+		val = (OmSegID) imageData[i];
 
 		if ( val != lastVal) {
 			if( 0 == val ){
@@ -95,7 +95,7 @@ void OmSegmentColorizer::colorTile( SEGMENT_DATA_TYPE * imageData, const int siz
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const SEGMENT_DATA_TYPE & val, 
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val, 
 						    const bool & showOnlySelectedSegments)
 {
 	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)

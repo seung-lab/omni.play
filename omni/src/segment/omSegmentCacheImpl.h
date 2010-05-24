@@ -5,9 +5,20 @@
 #include "utility/DynamicTreeContainer.h"
 #include <boost/tr1/unordered_map.hpp>
 
+ //TODO: this was done as proof-of-concept; not sure how much slower struct is compared to simple int POD... (purcaro)
 #include "boost/strong_typedef.hpp"
 BOOST_STRONG_TYPEDEF(quint32, PageNum )
 
+class OmSegPtrList {
+ public:
+	OmSegPtrList()
+		: isValid(false) {}
+	OmSegPtrList( const std::vector<OmSegment*> & L )
+		: isValid(true), list(L) {}
+	
+	bool isValid;
+	std::vector<OmSegment*> list;
+};
 
 class OmSegmentCacheImpl {
 public:
@@ -16,11 +27,11 @@ public:
 
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
-	OmSegment* AddSegment(SEGMENT_DATA_TYPE value);
+	OmSegment* AddSegment(OmSegID value);
 
-	bool isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value );
+	bool isValueAlreadyMappedToSegment( const OmSegID & );
 
-	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE);
+	OmSegment* GetSegmentFromValue( const OmSegID & );
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
@@ -67,7 +78,7 @@ public:
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
 					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	std::vector< OmSegment* > & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	std::vector<OmSegment*> & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
@@ -80,8 +91,8 @@ public:
 	bool mAllSelected;
 	bool mAllEnabled;
 
-	SEGMENT_DATA_TYPE getNextValue();
-	SEGMENT_DATA_TYPE mMaxValue;
+	OmSegID getNextValue();
+	OmSegID mMaxValue;
 
 	quint32 mNumSegs;
 	quint32 mNumTopLevelSegs;
@@ -103,7 +114,7 @@ public:
 	QSet< PageNum > validPageNumbers;
 	QSet< PageNum > loadedPageNumbers;
 	QSet< PageNum > dirtySegmentPages;
-	PageNum getValuePageNum( const SEGMENT_DATA_TYPE value ){
+	PageNum getValuePageNum( const OmSegID value ){
 		return PageNum(value / mPageSize);
 	}
 	void LoadValuePage( const PageNum valuePageNum );
@@ -112,17 +123,24 @@ public:
 	void doSaveSegmentPage( const PageNum segPageNum );
 	bool mAllPagesLoaded;
 
-	OmSegment* GetSegmentFromValueFast(SEGMENT_DATA_TYPE value);
+	OmSegment* GetSegmentFromValueFast(const OmSegID & value) {
+		if( !mAllPagesLoaded ){
+			if ( !isValueAlreadyMappedToSegment( value ) ){
+				return NULL;
+			}
+		}
+		return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
+	}
 
 	boost::unordered_map< int,
 		boost::unordered_map< int,
 		boost::unordered_map< int,
-		boost::unordered_map< int, std::vector<OmSegment*> > > > > cacheDirectSegmentList;
+		boost::unordered_map< int, OmSegPtrList > > > > cacheDirectSegmentList;
 	void clearCaches();
 	void invalidateCachedColorFreshness();
 	quint32 mCachedColorFreshness;
 
-	DynamicTreeContainer<SEGMENT_DATA_TYPE> * mTree;
+	DynamicTreeContainer<OmSegID> * mTree;
 	void initializeDynamicTree();
 	void loadDendrogram( const quint32 * dend, const float * dendValues, 
 			     const int size, const float stopPoint );

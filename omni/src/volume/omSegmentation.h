@@ -61,7 +61,7 @@ public:
 							
 	//segment management
 	OmSegment* GetSegment(OmId id);
-	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE id);
+	OmSegment* GetSegmentFromValue(OmSegID id);
 	OmSegment* AddSegment();
 	bool IsSegmentValid(OmId id);
 	bool IsSegmentEnabled(OmId id);

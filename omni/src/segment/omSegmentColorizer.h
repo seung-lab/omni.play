@@ -15,7 +15,7 @@ class OmSegmentColorizer
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
-	void colorTile( SEGMENT_DATA_TYPE * imageData, const int size,
+	void colorTile( OmSegID * imageData, const int size,
 			unsigned char * data, OmViewGroupState * );
 
  private:
@@ -33,7 +33,7 @@ class OmSegmentColorizer
 
 	void setup();
 
-	OmColor getVoxelColorForView2d( const SEGMENT_DATA_TYPE & val, 
+	OmColor getVoxelColorForView2d( const OmSegID & val, 
 					const bool & showOnlySelectedSegments );
 
 	int makeSelectedColor(const quint8 & in_c ) {
@@ -44,7 +44,7 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const SEGMENT_DATA_TYPE & val, const int & currentSegCacheFreshness ){
+	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness ){
 		if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
 			return false;
 		}

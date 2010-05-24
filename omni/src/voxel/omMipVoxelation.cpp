@@ -29,7 +29,7 @@ OmMipVoxelation::~OmMipVoxelation()
 /////////////////////////////////
 ///////          Accessor Methods
 
-SEGMENT_DATA_TYPE OmMipVoxelation::GetSegmentDataValue()
+OmSegID OmMipVoxelation::GetSegmentDataValue()
 {
 	return mCoordinate.DataValue;
 }

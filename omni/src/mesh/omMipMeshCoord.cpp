@@ -8,7 +8,7 @@ OmMipMeshCoord::OmMipMeshCoord()
 	DataValue = -1;
 }
 
-OmMipMeshCoord::OmMipMeshCoord(const OmMipChunkCoord & rMipChunkCoord, SEGMENT_DATA_TYPE dataValue)
+OmMipMeshCoord::OmMipMeshCoord(const OmMipChunkCoord & rMipChunkCoord, OmSegID dataValue)
 :MipChunkCoord(rMipChunkCoord), DataValue(dataValue)
 {
 

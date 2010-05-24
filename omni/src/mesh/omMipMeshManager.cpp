@@ -113,7 +113,6 @@ void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
 				  std::vector< OmSegment *> & segmentsToDraw )
 {
 	std::vector<OmSegment*>::const_iterator iter;
-	
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 
 		//get pointer to mesh

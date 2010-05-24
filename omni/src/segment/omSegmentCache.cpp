@@ -38,7 +38,7 @@ OmSegment* OmSegmentCache::AddSegment()
 	return mImpl->AddSegment();
 }
 
-OmSegment* OmSegmentCache::AddSegment(SEGMENT_DATA_TYPE value)
+OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->AddSegment(value);
@@ -51,7 +51,7 @@ void OmSegmentCache::AddSegmentsFromChunk(const SegmentDataSet & data_values,
 	mImpl->AddSegmentsFromChunk(data_values, mipCoord );
 }
 
-bool OmSegmentCache::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value )
+bool OmSegmentCache::isValueAlreadyMappedToSegment( OmSegID value )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isValueAlreadyMappedToSegment( value );
@@ -63,7 +63,7 @@ bool OmSegmentCache::IsSegmentValid(OmId seg)
 	return mImpl->isValueAlreadyMappedToSegment(seg);
 }
 
-OmSegment* OmSegmentCache::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
+OmSegment* OmSegmentCache::GetSegmentFromValue(OmSegID value)
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->GetSegmentFromValue( value );

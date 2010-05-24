@@ -496,7 +496,7 @@ static bool BrushTool32[32][32] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE seg)
+void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 {
 	DataCoord off;
 
@@ -599,7 +599,7 @@ void OmView2d::SetDepth(QMouseEvent * event)
 /////////////////////////////////
 ///////          Edit Mode Methods
 
-void OmView2d::FillToolFill(OmId seg, DataCoord gCP, SEGMENT_DATA_TYPE fc, SEGMENT_DATA_TYPE bc, int depth)
+void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int depth)
 {
 
 	DataCoord off;
@@ -662,7 +662,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value = 0;
+	OmSegID data_value = 0;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id

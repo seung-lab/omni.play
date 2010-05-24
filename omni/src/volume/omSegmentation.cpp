@@ -307,7 +307,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		}
 
 		//remove mesh from cache to force it to reload
-		foreach( SEGMENT_DATA_TYPE val, rModifiedValues ){
+		foreach( OmSegID val, rModifiedValues ){
 			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
@@ -329,7 +329,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const Segmen
 	}
 
 	//remove mesh from cache to force it to reload
-	foreach( SEGMENT_DATA_TYPE val, rModifiedValues ){
+	foreach( OmSegID val, rModifiedValues ){
 		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 		mMipMeshManager.UncacheMesh(mip_mesh_coord);
 	}
@@ -353,7 +353,7 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 	//get pointer to native scalar data
 	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
-	SEGMENT_DATA_TYPE *p_scalar_data = static_cast < SEGMENT_DATA_TYPE * >(pImageData->GetScalarPointer());
+	OmSegID *p_scalar_data = static_cast < OmSegID * >(pImageData->GetScalarPointer());
 
 	//for all voxels in the chunk
 	int x, y, z;
@@ -393,7 +393,7 @@ OmSegment * OmSegmentation::GetSegment(OmId id)
 	return mSegmentCache.GetSegmentFromValue(id);
 }
 
-OmSegment* OmSegmentation::GetSegmentFromValue(SEGMENT_DATA_TYPE val)
+OmSegment* OmSegmentation::GetSegmentFromValue(OmSegID val)
 {
 	return mSegmentCache.GetSegmentFromValue(val);
 }
@@ -527,7 +527,7 @@ void OmSegmentation::Draw(OmVolumeCuller & rCuller)
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
 void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, 
-					OmSegmentIterator iter,
+					OmSegmentIterator segIter,
 					bool testVis, 
 					OmVolumeCuller & rCuller )
 {
@@ -558,15 +558,16 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 		std::vector< OmSegment* > segmentsToDraw;
 
 		if( !mSegmentCache.segmentListDirectCacheHasCoord( chunkCoord ) ){
-			OmIds chunkValues =  p_chunk->GetDirectDataValues();
-			OmSegment * seg = iter.getNextSegment();
+			const SegmentDataSet & chunkValues =  p_chunk->GetDirectDataValues();
+			OmSegment * seg = segIter.getNextSegment();
+			OmSegID val;
 			while( NULL != seg ){
-				SEGMENT_DATA_TYPE val = seg->getValue();
+				val = seg->getValue();
 				if( chunkValues.contains( val ) ){
 					segmentsToDraw.push_back(seg);
 				}
 				
-				seg = iter.getNextSegment();
+				seg = segIter.getNextSegment();
 			}
 			mSegmentCache.setSegmentListDirectCache( chunkCoord, segmentsToDraw );
 			//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
@@ -577,9 +578,10 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 
 	// ELSE BREAK DOWN INTO CHILDREN
 
-	foreach( OmMipChunkCoord coord, p_chunk->GetChildrenCoordinates() ){
-		//draw child with only relevant segments enabled
-		DrawChunkRecursive(coord, iter, testVis, rCuller);
+	const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
+	std::set<OmMipChunkCoord>::const_iterator iter;
+	for( iter = coords.begin(); iter != coords.end(); ++iter ){
+		DrawChunkRecursive(*iter, segIter, testVis, rCuller);
 	}
 }
 

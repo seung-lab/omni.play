@@ -23,11 +23,11 @@ public:
 
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
-	OmSegment* AddSegment(SEGMENT_DATA_TYPE value);
+	OmSegment* AddSegment(OmSegID value);
 
-	bool isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value );
+	bool isValueAlreadyMappedToSegment( OmSegID value );
 
-	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE);
+	OmSegment* GetSegmentFromValue(OmSegID);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();

@@ -15,7 +15,7 @@ class OmMipChunkCoord;
 class OmSegment {
 
 public:
-	OmSegment(const SEGMENT_DATA_TYPE & value, OmSegmentCache * cache);
+	OmSegment(const OmSegID & value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
 	void splitChildLowestThreshold();
@@ -33,7 +33,7 @@ public:
 	//drawing
 	void ApplyColor(const OmBitfield &drawOps);
 
-	const SEGMENT_DATA_TYPE & getValue();
+	const OmSegID & getValue();
 
 	QString GetNote();
 	void SetNote(QString);
@@ -51,7 +51,7 @@ public:
 
 private:
 
-	SEGMENT_DATA_TYPE mValue;
+	OmSegID mValue;
 	OmSegmentCache * mCache;
 
 	OmColor mColorInt;

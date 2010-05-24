@@ -13,8 +13,8 @@
 class OmVoxelSetValueAction : public OmAction {
 
 public:
-	OmVoxelSetValueAction(OmId segmentationId, DataCoord &rVoxel, SEGMENT_DATA_TYPE value);
-	OmVoxelSetValueAction(OmId segmentationId, set<DataCoord> &rVoxels, SEGMENT_DATA_TYPE value);
+	OmVoxelSetValueAction(OmId segmentationId, DataCoord &rVoxel, OmSegID value);
+	OmVoxelSetValueAction(OmId segmentationId, set<DataCoord> &rVoxels, OmSegID value);
 
 	
 private:
@@ -26,9 +26,9 @@ private:
 	OmId mSegmentationId;
 	
 	//map of voxels to old values
-	map< DataCoord, SEGMENT_DATA_TYPE > mOldVoxelValues;
+	map< DataCoord, OmSegID > mOldVoxelValues;
 	//new value of voxels
-	SEGMENT_DATA_TYPE mNewValue;
+	OmSegID mNewValue;
 };
 
 

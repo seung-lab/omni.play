@@ -51,7 +51,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment()
 	return AddSegment( getNextValue() );
 }
 
-OmSegment* OmSegmentCacheImpl::AddSegment(SEGMENT_DATA_TYPE value)
+OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
 {
 	const PageNum pageNum = getValuePageNum(value);
 
@@ -80,7 +80,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(SEGMENT_DATA_TYPE value)
 void OmSegmentCacheImpl::AddSegmentsFromChunk(const SegmentDataSet & data_values, 
 					      const OmMipChunkCoord & )
 {
-	foreach( const SEGMENT_DATA_TYPE & value, data_values ){
+	foreach( const OmSegID & value, data_values ){
 
 		OmSegment * seg = GetSegmentFromValue( value );
 
@@ -92,7 +92,7 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const SegmentDataSet & data_values
         }
 }
 
-bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value )
+bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( const OmSegID & value )
 {
 	if (0 == value) {
 		return false;
@@ -115,27 +115,16 @@ bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value 
 	return false;
 }
 
-SEGMENT_DATA_TYPE OmSegmentCacheImpl::getNextValue()
+OmSegID OmSegmentCacheImpl::getNextValue()
 {
 	++mMaxValue;
 	return mMaxValue;
 }
 
-OmSegment* OmSegmentCacheImpl::GetSegmentFromValue(SEGMENT_DATA_TYPE value)
+OmSegment* OmSegmentCacheImpl::GetSegmentFromValue( const OmSegID & value)
 {
 	if ( !isValueAlreadyMappedToSegment( value ) ){
 		return NULL;
-	}
-
-	return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
-}
-
-inline OmSegment* OmSegmentCacheImpl::GetSegmentFromValueFast(SEGMENT_DATA_TYPE value)
-{
-	if( !mAllPagesLoaded ){
-		if ( !isValueAlreadyMappedToSegment( value ) ){
-			return NULL;
-		}
 	}
 
 	return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
@@ -538,35 +527,23 @@ void OmSegmentCacheImpl::clearAllJoins()
 	printf("done\n");
 }
 
+// TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
 void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & c,
 						    std::vector< OmSegment* > & segmentsToDraw )
 {
-	cacheDirectSegmentList[ c.Level ][ c.Coordinate.x ][ c.Coordinate.y ][ c.Coordinate.z ] = segmentsToDraw;
+	cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrList( segmentsToDraw );
 }
 
 bool OmSegmentCacheImpl::segmentListDirectCacheHasCoord( const OmMipChunkCoord & c )
 {
-	// TODO: just let hashes create array....
-
-	if( 0 == cacheDirectSegmentList.count(c.Level)){
-		return false;
-	}
-	if( 0 == cacheDirectSegmentList[c.Level].count(c.Coordinate.x)){
-		return false;
-	}
-	if( 0 == cacheDirectSegmentList[c.Level][c.Coordinate.x].count(c.Coordinate.y)){
-		return false;
-	}
-	if( 0 == cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y].count(c.Coordinate.z)){
-		return false;
-	}
-
-	return true;
+	OmSegPtrList & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	return spList.isValid;
 }
 
-std::vector< OmSegment* > & OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & c )
+std::vector<OmSegment*> & OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & c )
 {
-	return cacheDirectSegmentList[ c.Level ][ c.Coordinate.x ][ c.Coordinate.y ][ c.Coordinate.z ];
+	OmSegPtrList & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	return spList.list;
 }
 
 void OmSegmentCacheImpl::clearCaches()
@@ -585,7 +562,7 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 {
 	delete mTree;
 
-	mTree = new DynamicTreeContainer<SEGMENT_DATA_TYPE>( mMaxValue + 1); // mMaxValue is a valid segment
+	mTree = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
 }
 
 void OmSegmentCacheImpl::reloadDendrogram( const quint32 * dend, const float * dendValues, 
@@ -661,7 +638,7 @@ void OmSegmentCacheImpl::Join( const OmId parentID, const OmId childUnknownDepth
 {
 	loadTreeIfNeeded();
 
-	DynamicTree<SEGMENT_DATA_TYPE> * childRootDT  = mTree->get( childUnknownDepthID )->findRoot();
+	DynamicTree<OmSegID> * childRootDT  = mTree->get( childUnknownDepthID )->findRoot();
 	childRootDT->join( mTree->get( parentID ) );
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
@@ -685,7 +662,7 @@ OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 		return segment;
 	}
 
-	DynamicTree<SEGMENT_DATA_TYPE> * rootDT  = mTree->get( segment->mValue )->findRoot();
+	DynamicTree<OmSegID> * rootDT  = mTree->get( segment->mValue )->findRoot();
 	
 	return GetSegmentFromValue( rootDT->getKey() );
 }
@@ -708,7 +685,7 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 	OmIds set = mSelectedSet; // Join() will modify mSelectedSet
 
 	OmIds::const_iterator iter = set.constBegin();
-	SEGMENT_DATA_TYPE parentID = *iter;
+	OmSegID parentID = *iter;
 	++iter;
 
 	while (iter != set.constEnd()) {

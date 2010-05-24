@@ -209,7 +209,7 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
@@ -259,7 +259,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 				return;
 
 			//switch on tool mode
-			SEGMENT_DATA_TYPE data_value;
+			OmSegID data_value;
 			switch (OmStateManager::GetToolMode()) {
 			case ADD_VOXEL_MODE:
 				//get value associated to segment id
@@ -423,7 +423,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 	bool dosubtract = false;
 	mScribbling = true;
 	
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_MODE:
@@ -532,7 +532,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id

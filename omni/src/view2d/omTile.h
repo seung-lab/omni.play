@@ -51,7 +51,7 @@ private:
 	int mBackgroundSamplesPerVoxel;
 	int mBackgroundBytesPerSample;
 
-	void setMyColorMap(SEGMENT_DATA_TYPE* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
+	void setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 };
 
 #endif

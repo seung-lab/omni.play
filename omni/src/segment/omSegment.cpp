@@ -14,7 +14,7 @@
 #include "volume/omMipChunkCoord.h"
 #include "utility/omHdf5Path.h"
 
-OmSegment::OmSegment( const SEGMENT_DATA_TYPE & value, OmSegmentCache* cache)
+OmSegment::OmSegment( const OmSegID & value, OmSegmentCache* cache)
 	: mValue(value), mCache(cache), mParentSegID(0)
 {
 	assert(cache && "must have cache in the segments");
@@ -36,7 +36,7 @@ void OmSegment::setParent(OmSegment * parent, float threshold)
 	mThreshold = threshold;
 }
 
-const SEGMENT_DATA_TYPE & OmSegment::getValue()
+const OmSegID & OmSegment::getValue()
 {
 	return mValue;
 }

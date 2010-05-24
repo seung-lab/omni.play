@@ -576,7 +576,7 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id

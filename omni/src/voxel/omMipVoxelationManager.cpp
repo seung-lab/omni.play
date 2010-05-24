@@ -76,7 +76,7 @@ bool OmMipVoxelationManager::IsBoundaryVoxel(const DataCoord & rDataCoord)
 {
 
 	//get voxel segment id
-	const SEGMENT_DATA_TYPE voxel_value = mpMipVolume->GetVoxelValue(rDataCoord);
+	const OmSegID voxel_value = mpMipVolume->GetVoxelValue(rDataCoord);
 
 	//null ids are not boundaries
 	if (NULL_SEGMENT_DATA == voxel_value)
@@ -207,7 +207,7 @@ void OmMipVoxelationManager::RefreshNeighboringVoxels(const DataCoord & rVox, Om
  */
 
 void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
-					 const SEGMENT_DATA_TYPE old_val, const SEGMENT_DATA_TYPE new_val)
+					 const OmSegID old_val, const OmSegID new_val)
 {
 
 	//debug("FIXME", << "OmMipVoxelationManager::UpdateVoxel: " << rVox << " old: " << old_val << " new:" << new_val << endl;
@@ -275,7 +275,7 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 	glScalefv(scale.array);
 
 	//for all relevent data values in chunk
-	foreach( SEGMENT_DATA_TYPE val, rRelvDataVals ){
+	foreach( OmSegID val, rRelvDataVals ){
 
 		//get pointer to mesh
 		QExplicitlySharedDataPointer < OmMipVoxelation > p_voxelation;
