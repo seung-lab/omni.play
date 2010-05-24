@@ -19,4 +19,5 @@ QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 QDataStream &operator<<(QDataStream & out, const OmSimpleChunk & chunk );
 QDataStream &operator>>(QDataStream & in, OmSimpleChunk & chunk );
+
 #endif

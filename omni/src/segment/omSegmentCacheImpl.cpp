@@ -684,11 +684,11 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 
 	OmIds set = mSelectedSet; // Join() will modify mSelectedSet
 
-	OmIds::const_iterator iter = set.constBegin();
+	OmIds::const_iterator iter = set.begin();
 	OmSegID parentID = *iter;
 	++iter;
 
-	while (iter != set.constEnd()) {
+	while (iter != set.end()) {
 		printf("joining %d to %d\n", parentID, *iter);
 		Join( parentID, *iter, 0 );
 		++iter;

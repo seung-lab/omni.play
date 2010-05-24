@@ -166,6 +166,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/omDataArchiveQT.h \
            src/utility/omDataArchiveSegment.h \
            src/utility/omDataArchiveVmml.h \
+           src/utility/omDataArchiveBoost.h \
            src/utility/omDataPaths.h \
            src/utility/omDataLayer.h \
            src/utility/omDataReader.h \
@@ -323,6 +324,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/omDataArchiveQT.cpp \
            src/utility/omDataArchiveSegment.cpp \
            src/utility/omDataArchiveVmml.cpp \
+           src/utility/omDataArchiveBoost.cpp \
            src/utility/omDataPaths.cpp \
            src/utility/omDataLayer.cpp \
            src/utility/omDummyWriter.cpp \
@@ -442,4 +444,3 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
-

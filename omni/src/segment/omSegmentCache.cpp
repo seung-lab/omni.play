@@ -17,7 +17,7 @@ OmSegmentCache::~OmSegmentCache()
 	delete mImpl;
 }
 
-OmId OmSegmentCache::getSegmentationID()
+OmSegID OmSegmentCache::getSegmentationID()
 {
 	return mSegmentation->GetId();
 }
@@ -57,7 +57,7 @@ bool OmSegmentCache::isValueAlreadyMappedToSegment( OmSegID value )
 	return mImpl->isValueAlreadyMappedToSegment( value );
 }
 
-bool OmSegmentCache::IsSegmentValid(OmId seg)
+bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isValueAlreadyMappedToSegment(seg);
@@ -69,13 +69,13 @@ OmSegment* OmSegmentCache::GetSegmentFromValue(OmSegID value)
 	return mImpl->GetSegmentFromValue( value );
 }
 
-OmId OmSegmentCache::GetNumSegments()
+OmSegID OmSegmentCache::GetNumSegments()
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->GetNumSegments();
 }
 
-OmId OmSegmentCache::GetNumTopSegments()
+OmSegID OmSegmentCache::GetNumTopSegments()
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->GetNumTopSegments();
@@ -117,13 +117,13 @@ void OmSegmentCache::SetAllSelected(bool selected)
 	mImpl->SetAllSelected(selected);
 }
 
-bool OmSegmentCache::isSegmentEnabled( OmId segID )
+bool OmSegmentCache::isSegmentEnabled( OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isSegmentEnabled( segID );
 }
 
-bool OmSegmentCache::isSegmentSelected( OmId segID )
+bool OmSegmentCache::isSegmentSelected( OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isSegmentSelected( segID );
@@ -135,37 +135,37 @@ bool OmSegmentCache::isSegmentSelected( OmSegment * seg )
 	return mImpl->isSegmentSelected( seg );
 }
 
-void OmSegmentCache::setSegmentEnabled( OmId segID, bool isEnabled )
+void OmSegmentCache::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->setSegmentEnabled( segID, isEnabled );
 }
 
-void OmSegmentCache::setSegmentSelected( OmId segID, bool isSelected )
+void OmSegmentCache::setSegmentSelected( OmSegID segID, bool isSelected )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->setSegmentSelected( segID, isSelected );
 }
 
-void OmSegmentCache::setSegmentName( OmId segID, QString name )
+void OmSegmentCache::setSegmentName( OmSegID segID, QString name )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->setSegmentName( segID, name );
 }
 
-QString OmSegmentCache::getSegmentName( OmId segID )
+QString OmSegmentCache::getSegmentName( OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->getSegmentName( segID );
 }
 
-void OmSegmentCache::setSegmentNote( OmId segID, QString note )
+void OmSegmentCache::setSegmentNote( OmSegID segID, QString note )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->setSegmentNote( segID, note );
 }
 
-QString OmSegmentCache::getSegmentNote( OmId segID )
+QString OmSegmentCache::getSegmentNote( OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->getSegmentNote( segID );

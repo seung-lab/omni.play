@@ -116,7 +116,7 @@ void OmSegmentSelectAction::Action()
 
 	//send segment selection change event
 	OmIds modified_segment_ids = mSelectIds;
-	modified_segment_ids.unite( mUnselectIds );
+	//	modified_segment_ids.unite( mUnselectIds ); //FIXME: don't do this! (purcaro)
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
 						     modified_segment_ids, 

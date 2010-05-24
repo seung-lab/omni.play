@@ -1,4 +1,5 @@
 #include "omDataArchiveMipChunk.h"
+#include "omDataArchiveBoost.h"
 #include <QDataStream>
 
 void OmDataArchiveMipChunk::ArchiveRead( OmHdf5Path path, OmMipChunk * chunk ) 

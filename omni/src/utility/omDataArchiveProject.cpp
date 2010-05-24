@@ -1,6 +1,7 @@
 #include "omDataArchiveProject.h"
 #include "omDataArchiveVmml.h"
 #include "omDataArchiveCoords.h"
+#include "omDataArchiveBoost.h"
 #include <QDataStream>
 
 void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project ) 

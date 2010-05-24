@@ -7,6 +7,10 @@
 #include <QString>
 #include <QSet>
 
+#include <boost/tr1/unordered_map.hpp>
+#include <boost/tr1/unordered_set.hpp>
+#include "boost/strong_typedef.hpp"
+
 #include "common/omStd.h"
 #include <assert.h>
 
@@ -44,7 +48,7 @@ typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
  */
 //id typedefs
 typedef quint32 OmId;
-typedef QSet< OmId > OmIds;
+typedef boost::unordered_set< OmId > OmIds;
 
 //bit field
 typedef unsigned int OmBitfield;
@@ -66,10 +70,11 @@ static const OmId NULL_SEGMENT_ID = 0;
 #define SEGMENT_DATA_BYTES_PER_SAMPLE 4
 #define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
 
-typedef unsigned int OmSegID;
-typedef QSet< OmSegID > SegmentDataSet;
+//BOOST_STRONG_TYPEDEF(quint32, OmSegID )
+typedef quint32 OmSegID;
+typedef boost::unordered_set<OmSegID> SegmentDataSet;
 
-static const OmSegID  NULL_SEGMENT_DATA = 0;
+static const OmSegID NULL_SEGMENT_DATA(0);
 
 
 #endif
