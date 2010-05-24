@@ -68,9 +68,9 @@ public:
 	quint32 getPageSize();
 
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					QList< OmSegment* > segmentsToDraw );
+					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	std::vector< OmSegment* > & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );

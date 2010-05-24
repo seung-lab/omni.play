@@ -538,20 +538,35 @@ void OmSegmentCacheImpl::clearAllJoins()
 	printf("done\n");
 }
 
-void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-						    QList< OmSegment* > segmentsToDraw )
+void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & c,
+						    std::vector< OmSegment* > & segmentsToDraw )
 {
-	cacheDirectSegmentList[ chunkCoord ] = segmentsToDraw;
+	cacheDirectSegmentList[ c.Level ][ c.Coordinate.x ][ c.Coordinate.y ][ c.Coordinate.z ] = segmentsToDraw;
 }
 
-bool OmSegmentCacheImpl::segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord )
+bool OmSegmentCacheImpl::segmentListDirectCacheHasCoord( const OmMipChunkCoord & c )
 {
-	return cacheDirectSegmentList.contains( chunkCoord );
+	// TODO: just let hashes create array....
+
+	if( 0 == cacheDirectSegmentList.count(c.Level)){
+		return false;
+	}
+	if( 0 == cacheDirectSegmentList[c.Level].count(c.Coordinate.x)){
+		return false;
+	}
+	if( 0 == cacheDirectSegmentList[c.Level][c.Coordinate.x].count(c.Coordinate.y)){
+		return false;
+	}
+	if( 0 == cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y].count(c.Coordinate.z)){
+		return false;
+	}
+
+	return true;
 }
 
-QList< OmSegment* > OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord )
+std::vector< OmSegment* > & OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & c )
 {
-	return cacheDirectSegmentList.value( chunkCoord );
+	return cacheDirectSegmentList[ c.Level ][ c.Coordinate.x ][ c.Coordinate.y ][ c.Coordinate.z ];
 }
 
 void OmSegmentCacheImpl::clearCaches()

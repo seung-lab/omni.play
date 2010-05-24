@@ -32,10 +32,10 @@ public:
 	void ChildrenCoords(OmMipChunkCoord *pChildren) const;
 	
 	//access
-	int getLevel(){ return Level; }
-	int getCoordinateX(){ return Coordinate.x; }
-	int getCoordinateY(){ return Coordinate.y; }
-	int getCoordinateZ(){ return Coordinate.z; }
+	const int & getLevel(){ return Level; }
+	const int & getCoordinateX(){ return Coordinate.x; }
+	const int & getCoordinateY(){ return Coordinate.y; }
+	const int & getCoordinateZ(){ return Coordinate.z; }
 	
 	//operators
 	void operator=( const OmMipChunkCoord& rhs );

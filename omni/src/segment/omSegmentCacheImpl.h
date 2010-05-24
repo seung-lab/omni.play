@@ -65,9 +65,9 @@ public:
 	quint32 getPageSize() { return mPageSize; }
 
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					QList< OmSegment* > segmentsToDraw );
+					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	std::vector< OmSegment* > & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
@@ -114,7 +114,10 @@ public:
 
 	OmSegment* GetSegmentFromValueFast(SEGMENT_DATA_TYPE value);
 
-	QMap< OmMipChunkCoord, QList< OmSegment* > > cacheDirectSegmentList;
+	boost::unordered_map< int,
+		boost::unordered_map< int,
+		boost::unordered_map< int,
+		boost::unordered_map< int, std::vector<OmSegment*> > > > > cacheDirectSegmentList;
 	void clearCaches();
 	void invalidateCachedColorFreshness();
 	quint32 mCachedColorFreshness;

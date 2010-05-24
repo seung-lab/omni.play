@@ -555,17 +555,15 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	// if chunk satisfies draw criteria
 	if ( p_chunk->DrawCheck(rCuller) ) {
 
-		QList< OmSegment* > segmentsToDraw;
+		std::vector< OmSegment* > segmentsToDraw;
 
-		if( mSegmentCache.segmentListDirectCacheHasCoord( chunkCoord ) ){
-			segmentsToDraw = mSegmentCache.getSegmentListDirectCache( chunkCoord );
-		} else {
+		if( !mSegmentCache.segmentListDirectCacheHasCoord( chunkCoord ) ){
 			OmIds chunkValues =  p_chunk->GetDirectDataValues();
 			OmSegment * seg = iter.getNextSegment();
 			while( NULL != seg ){
 				SEGMENT_DATA_TYPE val = seg->getValue();
 				if( chunkValues.contains( val ) ){
-					segmentsToDraw.append(seg);
+					segmentsToDraw.push_back(seg);
 				}
 				
 				seg = iter.getNextSegment();
@@ -574,7 +572,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 			//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 		}
 
-		return DrawChunk(p_chunk, chunkCoord, segmentsToDraw, rCuller);
+		return DrawChunk(p_chunk, chunkCoord, mSegmentCache.getSegmentListDirectCache( chunkCoord ), rCuller);
 	}
 
 	// ELSE BREAK DOWN INTO CHILDREN
@@ -589,9 +587,9 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
 void OmSegmentation::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-				const OmMipChunkCoord & chunkCoord,	
-			       	QList< OmSegment * > segmentsToDraw,
-			       	OmVolumeCuller & rCuller)
+			       const OmMipChunkCoord & chunkCoord,	
+			       std::vector< OmSegment * > & segmentsToDraw,
+			       OmVolumeCuller & rCuller)
 {
 	if( segmentsToDraw.empty() ){
 		return;

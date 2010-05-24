@@ -86,8 +86,9 @@ public:
 				bool testVis, 
 				OmVolumeCuller &);
 	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-			const OmMipChunkCoord & chunkCoord,
-			QList< OmSegment* > segmentsToDraw, OmVolumeCuller &rCuller);
+		       const OmMipChunkCoord & chunkCoord,
+		       std::vector< OmSegment* > & segmentsToDraw, 
+		       OmVolumeCuller &rCuller);
 	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;

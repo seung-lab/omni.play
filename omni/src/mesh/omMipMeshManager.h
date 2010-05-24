@@ -37,7 +37,7 @@ class OmMipMeshManager : public MipMeshCache {
 	//drawing
 	void DrawMeshes(const OmBitfield &drawOps,
 			const OmMipChunkCoord &mipCoord,
-			QList< OmSegment* > segmentsToDraw );
+			std::vector< OmSegment* > & segmentsToDraw );
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
