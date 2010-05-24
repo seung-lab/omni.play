@@ -233,9 +233,11 @@ void DendToolBar::SystemModeChangeEvent()
 {
         debug("dendbar", "DendToolBar::SystemModeChangeEvent\n");
 
-	if( DEND_MODE == OmStateManager::GetSystemModePrev() ){
+/*
+	if( DEND_MODE != OmStateManager::GetSystemMode() ){
 		toolbarSplitAct->setChecked( false );
 	}
+*/
 }
 
 void DendToolBar::updateReadOnlyRelatedWidgets()
@@ -253,7 +255,7 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 void DendToolBar::split()
 {
 	//toolbarSplitAct->setChecked(!toolbarSplitAct->isChecked());
-        debug("dendbar", "DendToolBar::split\n");
+        debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
 	if(!toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
@@ -425,11 +427,14 @@ void DendToolBar::SetSplitMode(OmId seg, OmId segment)
 	SetSplitMode(true);
 }
 
+// FIXME: need to be moved to somewhere else.
 void DendToolBar::addGroup()
 {
+	debug("group", "DendToolBar::addGroup\n");
 }
 
 void DendToolBar::mapColors()
 {
+	debug("map", "DendToolBar::mapColors\n");
 }
 
