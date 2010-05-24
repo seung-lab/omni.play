@@ -2,7 +2,7 @@
 
 QDataStream &operator<<(QDataStream & out, const OmIds & set )
 {
-	out << set.size();
+	out << (quint32)set.size();
 
 	OmIds::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
