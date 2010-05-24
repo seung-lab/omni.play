@@ -100,6 +100,7 @@ OmMipMesh::~OmMipMesh()
 
 void OmMipMesh::Load()
 {
+  //debug("load", "in OmMipMesh::Load\n"); 
   //read meta data
   OmHdf5Path fpath;
   fpath.setPathQstr( GetDirectoryPath() + "metamesh.dat" );
