@@ -411,6 +411,6 @@ void * OmSimpleChunk::GetMeshImageData()
 	// without adding a voxel layer.
 	// this would prevent an unnecessary mem-copy
 	// and would result in a faster mesh.
-
-	assert(0);
+	return mpImageData;
+	//assert(0);
 }
