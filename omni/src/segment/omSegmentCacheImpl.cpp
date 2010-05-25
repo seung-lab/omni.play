@@ -704,13 +704,13 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 
 const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, const float threshold )
 {
-	debug("colorizer", "%s: figuring out color...\n", __FUNCTION__);
-
 	OmSegment * seg = segment;
 
-	while( 0 != seg->mParentSegID && seg->mThreshold > threshold ){
+	while( 0 != seg->mParentSegID && seg->mThreshold < threshold ){
 		seg = GetSegmentFromValue( seg->mParentSegID );
 	}
+
+	printf("threshold %f: in %d, out %d\n", threshold, segment->mValue, seg->mValue );
 
 	return seg->mColorInt;
 }

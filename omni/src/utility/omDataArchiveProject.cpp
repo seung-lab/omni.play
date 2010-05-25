@@ -23,7 +23,6 @@ void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project )
 	in >> file_version;
 
 	if( Omni_Version != file_version ){
-		
 		delete p_data;
 
 		throw OmIoException("can not open file: file version is (" 
