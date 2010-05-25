@@ -44,17 +44,7 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness ){
-		if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
-			return false;
-		}
-
-		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
-			return false;
-		}
-
-		return true;
-	}
+	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness );
 };
 
 #endif

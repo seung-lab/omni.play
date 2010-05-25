@@ -12,6 +12,9 @@ bool mSplitting = false;
 OmId mSegment = 0;
 OmId mSeg = 1;
 
+bool mShowGroups = false;
+
+
 
 DendToolBar::DendToolBar( MainWindow * mw )
 	: QWidget(mw)
@@ -441,5 +444,12 @@ void DendToolBar::addGroup()
 void DendToolBar::mapColors()
 {
 	debug("map", "DendToolBar::mapColors\n");
+	mShowGroups = !mShowGroups;
+
+}
+
+bool DendToolBar::GetShowGroupsMode()
+{
+	return mShowGroups;
 }
 

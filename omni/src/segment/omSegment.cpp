@@ -72,12 +72,17 @@ void OmSegment::SetColor(const Vector3 < float >& color)
 
 void OmSegment::ApplyColor(const OmBitfield & drawOps)
 {
-	if( mParentSegID && !DendToolBar::GetSplitMode()){
+	if( mParentSegID && !DendToolBar::GetSplitMode() && !DendToolBar::GetShowGroupsMode()){
 		mCache->findRoot( this )->ApplyColor(drawOps);
 		return;
 	}
 
-	Vector3<float> hyperColor = GetColorFloat();
+	Vector3<float> hyperColor;
+	if(DendToolBar::GetShowGroupsMode()) {
+		hyperColor = {0};
+	} else {
+		hyperColor = GetColorFloat();
+	}
 
 	hyperColor.x *= 2.;
 	hyperColor.y *= 2.;

@@ -20,6 +20,7 @@ class DendToolBar : public QWidget
 	static void SetSplitMode(OmId seg, OmId segment);
 	static void SetSplitMode(bool onoroff);
 
+	static bool GetShowGroupsMode();
 
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();
