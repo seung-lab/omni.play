@@ -1084,7 +1084,7 @@ void OmView2d::myUpdate()
 ///////		 Draw Methods
 void OmView2d::DrawFromFilter(OmFilter2d &filter)
 {
-	OmThreadedCachingTile *cache = filter.GetCache(mViewType);
+	OmThreadedCachingTile *cache = filter.GetCache(mViewType, mViewGroupState);
 	if (!cache)
 		return;
 

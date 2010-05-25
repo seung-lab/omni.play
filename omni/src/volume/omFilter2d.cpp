@@ -16,27 +16,13 @@
 ///////		OmFilter Class
 ///////
 
-OmFilter2d::OmFilter2d (OmId, OmId, OmId filterid, OmViewGroupState * vgs )
-{
-	OmFilter2d *repair = new OmFilter2d (filterid);
-	mViewGroupState = vgs;
-
-	mSeg = 1;
-	mViewGroupState->SetSegmentation( mSeg );
-
-	mChannel = 0;
-	//mViewGroupState->SetChannel( mChannel );
-
-	repair->GetCache (XY_VIEW);
-}
-
 OmFilter2d::OmFilter2d() {
 	mAlpha = 0.0;
 	mSeg = 1;
 	mChannel = 0;
 }
 
-OmFilter2d::OmFilter2d(OmId omId) 
+OmFilter2d::OmFilter2d(OmId omId)
   : OmManageableObject(omId) 
 {
 	mName = QString("filter%1").arg(omId);
@@ -57,19 +43,16 @@ double OmFilter2d::GetAlpha ()
 	return mAlpha;
 }
 
-OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype)
+OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype, OmViewGroupState * vgs)
 {
 	OmCachingThreadedCachingTile *fastCache = NULL;
 	if (mSeg) {
-		//mViewGroupState->SetSegmentation( SegmentationDataWrapper(mSeg));
-
-		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, mViewGroupState);
+		vgs->SetSegmentation(mSeg);
+		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, vgs);
 
 	} else if (mChannel) {
-		
-		//mViewGroupState->SetChannel( ChannelDataWrapper( mChannel ));
-
-		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, mViewGroupState);
+		vgs->SetChannel(mChannel);
+		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, vgs);
 	}
 
 	if (fastCache) {

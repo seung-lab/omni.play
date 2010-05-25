@@ -478,7 +478,8 @@ OmId OmSegmentation::AddGroup()
         OmSegID val;
         while(NULL != seg) {
         	val = seg->getValue();
-        	segmentsToGroup.insert(val);
+        	//seg->SetImmutable();
+                //segmentsToGroup.insert(val);
         	seg = iter.getNextSegment();
         }
 
