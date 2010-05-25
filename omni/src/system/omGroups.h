@@ -3,15 +3,17 @@
 
 #include "system/omManageableObject.h"
 #include "system/omGroup.h"
-#include "volume/omSegmentation.h"
 
 
 #include <QVector>
+class OmSegmentation;
 
 class OmGroups {
 public:
         OmGroups(OmSegmentation * seg);
         ~OmGroups();
+
+	OmId AddGroup(OmIds & segids);
 
 protected:
         OmGroups(const OmGroups&);
@@ -20,7 +22,7 @@ protected:
 private:
 	OmSegmentation * mSegmentation;
 
-        QVector< OmGroup > mGroups;
+        QVector< OmIds > mGroups;
 };
 
 #endif

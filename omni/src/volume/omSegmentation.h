@@ -16,6 +16,7 @@
 #include "mesh/meshingManager.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
+#include "system/omGroups.h"
 #include "system/events/omSystemModeEvent.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "common/omStd.h"
@@ -79,6 +80,10 @@ public:
 	
 	bool AreSegmentsSelected();
 	
+	//group management
+	OmId AddGroup(OmIds &);
+
+
 	//drawing
 	void Draw(OmVolumeCuller &);
 	void DrawChunkRecursive(const OmMipChunkCoord &, 
@@ -121,6 +126,8 @@ private:
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;
 	OmSegmentCache mSegmentCache;
+
+	OmGroups mGroups;
 
         quint32 * mDend;
         float * mDendValues;

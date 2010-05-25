@@ -27,7 +27,7 @@
 ///////
 
 OmSegmentation::OmSegmentation()
-	: mMipVoxelationManager(this), mSegmentCache(this)
+	: mMipVoxelationManager(this), mSegmentCache(this), mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
@@ -45,7 +45,7 @@ OmSegmentation::OmSegmentation()
 }
 
 OmSegmentation::OmSegmentation(OmId id)
-	: OmManageableObject(id), mMipVoxelationManager(this), mSegmentCache(this)
+	: OmManageableObject(id), mMipVoxelationManager(this), mSegmentCache(this), mGroups(this)
 {
 	//set manageable object name
 	SetName( QString("segmentation%1").arg(id));
@@ -463,6 +463,17 @@ bool OmSegmentation::AreSegmentsSelected()
 {
 	return mSegmentCache.AreSegmentsSelected();
 }
+
+
+/////////////////////////////////
+///////          Groups
+OmId OmSegmentation::AddGroup(OmIds & ids)
+{
+	return mGroups.AddGroup(ids);
+}
+
+
+
 
 /////////////////////////////////
 ///////          Draw

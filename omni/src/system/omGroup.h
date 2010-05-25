@@ -6,6 +6,7 @@ public:
 
 
 private:
+	//OmIds mIDs;
 
 };
 
