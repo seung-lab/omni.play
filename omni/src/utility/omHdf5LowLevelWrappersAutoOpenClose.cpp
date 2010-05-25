@@ -16,7 +16,7 @@
 	        if(opened) {                                                    \
  			hdfLowLevel.om_hdf5_file_close_with_lock (fileId);	\
 		}                                                               \
-		throw new OmIoException("died in HDF5!\n");		        \
+		throw OmIoException("died in HDF5!\n");		                \
 	}									\
 	hdfLowLevel.om_hdf5_file_close_with_lock (fileId);			
 
