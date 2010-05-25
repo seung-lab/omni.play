@@ -58,8 +58,6 @@ void DendToolBar::createToolbarActions()
 	thresholdLabel->setText("Overall Threshold");
 
 	mThreshold = new QLineEdit(mMainWindow);
-	QString value;
-
 	setThresholdValue();
 	connect(mThreshold, SIGNAL(editingFinished()), 
 		this, SLOT(thresholdChanged()));
@@ -111,7 +109,8 @@ void DendToolBar::createToolbarActions()
         mergeHintAct->setCheckable(true);
 
         mHint = new QLineEdit(mMainWindow);
-        value.setNum(1);
+	QString value;
+	value.setNum(1);
         mHint->setText(value);
 
         addGroupAct = new QPushButton(mMainWindow);
@@ -148,6 +147,10 @@ void DendToolBar::setBreakThresholdValue()
 	value.setNum(0.95);
 
 	mBreakThreshold->setText(value);
+
+	if( NULL != mViewGroupState ) {
+		mViewGroupState->setBreakThreshold( 0.95 );
+	}
 }
 
 void DendToolBar::addToolbars()
@@ -353,6 +356,9 @@ void DendToolBar::toggledShatter()
 
 	OmCacheManager::Freshen(true);
 	mShatter = !mShatter;
+
+	const float threshold = mBreakThreshold->text().toFloat();
+	mViewGroupState->setBreakThreshold( threshold );
 
 	updateGui();
 }
