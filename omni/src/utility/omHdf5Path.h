@@ -12,7 +12,6 @@ class OmHdf5Path
 	void setPathQstr( QString );
 
 	std::string getString();
-	QString getStringQStr();
 
 	OmHdf5Path & operator=( OmHdf5Path & rhs );
 

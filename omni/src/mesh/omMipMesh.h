@@ -49,6 +49,8 @@ private:
 	OmMipMeshManager * const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
+	QString mPath;
+
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
 	uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount

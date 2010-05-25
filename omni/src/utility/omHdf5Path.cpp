@@ -14,15 +14,9 @@ void OmHdf5Path::setPathQstr( QString str )
         mPath = str;
 }
 
-
 std::string OmHdf5Path::getString()
 {
 	return mPath.toStdString();
-}
-
-QString OmHdf5Path::getStringQStr()
-{
-	return mPath;
 }
 
 OmHdf5Path& OmHdf5Path::operator=( OmHdf5Path & rhs ) {
