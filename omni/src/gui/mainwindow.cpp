@@ -234,12 +234,7 @@ void MainWindow::openProject()
 void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
-		try {
-			OmProject::Load( fileNameAndPath );
-		} catch(...) {
-			throw OmIoException("error during load of OmProject object");
-		}
-
+		OmProject::Load( fileNameAndPath );
 #if 0
 		// FIXME open volume at middle.... (purcaro)
 		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));

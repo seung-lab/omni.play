@@ -2,7 +2,11 @@
 #include "omDataArchiveVmml.h"
 #include "omDataArchiveCoords.h"
 #include "omDataArchiveBoost.h"
+
 #include <QDataStream>
+#include "boost/lexical_cast.hpp"
+
+static const int Omni_Version = 1;
 
 void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project ) 
 {
@@ -13,6 +17,18 @@ void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project )
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
+
+	int file_version;
+	in >> file_version;
+
+	if( Omni_Version != file_version ){
+		throw OmIoException("can not open file: file version is (" 
+				    + boost::lexical_cast<std::string>(file_version)
+				    +"), but Omni expecting ("
+				    + boost::lexical_cast<std::string>(Omni_Version) 
+				    + ")");
+	}
+
 	in >> (*project);
 
 	delete p_data;
@@ -24,6 +40,8 @@ void OmDataArchiveProject::ArchiveWrite( OmHdf5Path path, OmProject * project )
 	QDataStream out(&ba, QIODevice::WriteOnly);
 	out.setByteOrder( QDataStream::LittleEndian );
 	out.setVersion(QDataStream::Qt_4_6);
+
+	out << Omni_Version;
 	out << (*project);
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
@@ -321,6 +339,27 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc )
 	return in;
 }
 
+QDataStream &operator<<(QDataStream & out, const OmSegLogEntry & sle )
+{
+	out << sle.parentID;
+	out << sle.childID;
+	const int logType = static_cast<int>(sle.segLogType);
+	out << logType;
+
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmSegLogEntry & sle )
+{
+	in >> sle.parentID;
+	in >> sle.childID;
+	int logType;
+	in >> logType;
+	sle.segLogType =  static_cast<OmSegLogType>(logType);
+
+	return in;
+}
+
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 {
 	out << sc.validPageNumbers;
@@ -338,6 +377,8 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	out << sc.mPageSize;
 	out << sc.mNumSegs;
 	out << sc.mNumTopLevelSegs;
+
+	out << sc.segLogEntries;
 
 	return out;
 }
@@ -359,6 +400,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
 	in >> sc.mNumTopLevelSegs;
+
+	in >> sc.segLogEntries;
 
 	return in;
 }

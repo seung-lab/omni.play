@@ -111,9 +111,9 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		OmDataArchiveQT::ArchiveRead(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
-		throw OmIoException("error during load of project metadata");
+		throw;
 	}
-	//OmVolume::CheckDataResolution();
+
 }
 
 void OmProject::Close()

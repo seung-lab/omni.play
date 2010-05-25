@@ -41,7 +41,7 @@ OmSegmentCacheImpl::~OmSegmentCacheImpl()
 	}
 }
 
-OmId OmSegmentCacheImpl::getSegmentationID()
+OmSegID OmSegmentCacheImpl::getSegmentationID()
 {
 	return mSegmentation->GetId();
 }
@@ -130,12 +130,12 @@ OmSegment* OmSegmentCacheImpl::GetSegmentFromValue( const OmSegID & value)
 	return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
 }
 
-OmId OmSegmentCacheImpl::GetNumSegments()
+OmSegID OmSegmentCacheImpl::GetNumSegments()
 {
 	return mNumSegs;
 }
 
-OmId OmSegmentCacheImpl::GetNumTopSegments()
+OmSegID OmSegmentCacheImpl::GetNumTopSegments()
 {
 	return mNumTopLevelSegs;
 }
@@ -178,9 +178,9 @@ void OmSegmentCacheImpl::SetAllSelected(bool selected)
 	mSelectedSet.clear();
 }
 
-bool OmSegmentCacheImpl::isSegmentEnabled( OmId segID )
+bool OmSegmentCacheImpl::isSegmentEnabled( OmSegID segID )
 {
-	OmId rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
 	if( mAllEnabled ||
 	    mEnabledSet.contains( rootID ) ){
@@ -190,14 +190,14 @@ bool OmSegmentCacheImpl::isSegmentEnabled( OmId segID )
 	return false;
 }
 
-bool OmSegmentCacheImpl::isSegmentSelected( OmId segID )
+bool OmSegmentCacheImpl::isSegmentSelected( OmSegID segID )
 {
 	return isSegmentSelected( GetSegmentFromValue( segID ) );
 }
 
 bool OmSegmentCacheImpl::isSegmentSelected( OmSegment * seg )
 {
-	OmId rootID = findRoot( seg )->getValue();
+	OmSegID rootID = findRoot( seg )->getValue();
 
 	if( mAllSelected ||
 	    mSelectedSet.contains( rootID ) ){
@@ -207,9 +207,9 @@ bool OmSegmentCacheImpl::isSegmentSelected( OmSegment * seg )
 	return false;
 }
 
-void OmSegmentCacheImpl::setSegmentEnabled( OmId segID, bool isEnabled )
+void OmSegmentCacheImpl::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	OmId rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 	clearCaches();
 
 	if (isEnabled) {
@@ -219,9 +219,9 @@ void OmSegmentCacheImpl::setSegmentEnabled( OmId segID, bool isEnabled )
 	}
 }
 
-void OmSegmentCacheImpl::setSegmentSelected( OmId segID, bool isSelected )
+void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 {
-	OmId rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 	clearCaches();
 
 	if (isSelected) {
@@ -232,12 +232,12 @@ void OmSegmentCacheImpl::setSegmentSelected( OmId segID, bool isSelected )
 	}
 }
 
-void OmSegmentCacheImpl::setSegmentName( OmId segID, QString name )
+void OmSegmentCacheImpl::setSegmentName( OmSegID segID, QString name )
 {
 	segmentCustomNames[ segID ] = name;
 }
 
-QString OmSegmentCacheImpl::getSegmentName( OmId segID )
+QString OmSegmentCacheImpl::getSegmentName( OmSegID segID )
 {
 	if( segmentCustomNames.contains(segID ) ){
 		return segmentCustomNames.value(segID);
@@ -246,12 +246,12 @@ QString OmSegmentCacheImpl::getSegmentName( OmId segID )
 	return QString("segment%1").arg(segID);
 }
 
-void OmSegmentCacheImpl::setSegmentNote( OmId segID, QString note )
+void OmSegmentCacheImpl::setSegmentNote( OmSegID segID, QString note )
 {
 	segmentNotes[ segID ] = note;
 }
 
-QString OmSegmentCacheImpl::getSegmentNote( OmId segID )
+QString OmSegmentCacheImpl::getSegmentNote( OmSegID segID )
 {
 	if( segmentNotes.contains(segID ) ){
 		return segmentNotes.value(segID);
@@ -417,7 +417,7 @@ void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLe
 
 	double minThreshold = 1;
 	OmSegment * segToRemove = NULL;
-	foreach( const OmId & childID, root->segmentsJoinedIntoMe ){
+	foreach( const OmSegID & childID, root->segmentsJoinedIntoMe ){
 		OmSegment * child = GetSegmentFromValue( childID );
 		if( child->getThreshold() < minThreshold){
 			minThreshold = child->getThreshold();
@@ -459,6 +459,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	}
 
 	clearCaches();
+
+	addToLog( parent->mValue, child->mValue, LOG_SPLIT );
 }
 
 void OmSegmentCacheImpl::SaveAllPages()
@@ -572,6 +574,7 @@ void OmSegmentCacheImpl::reloadDendrogram( const quint32 * dend, const float * d
 	loadDendrogram( dend, dendValues, size, stopPoint );
 }
 
+// FIXME: rename
 void OmSegmentCacheImpl::doLoadDendrogram()
 {
 	loadDendrogram( mSegmentation->mDend, 
@@ -624,7 +627,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmIds & set )
 	OmIds old = set;
 	set.clear();
 
-	foreach( const OmId & id, old ){
+	foreach( const OmSegID & id, old ){
 		set.insert( findRoot( GetSegmentFromValue( id) )->getValue() );
 	}
 }
@@ -634,7 +637,7 @@ void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel,
 	Join( parent->getValue(), childUnknownLevel->getValue(), threshold );
 }
 
-void OmSegmentCacheImpl::Join( const OmId parentID, const OmId childUnknownDepthID, const float threshold)
+void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknownDepthID, const float threshold)
 {
 	loadTreeIfNeeded();
 
@@ -652,6 +655,8 @@ void OmSegmentCacheImpl::Join( const OmId parentID, const OmId childUnknownDepth
         } 
 	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
+
+	addToLog( parentID, childRoot->mValue, LOG_JOIN );
 }
 
 OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
@@ -708,4 +713,10 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 	}
 
 	return seg->mColorInt;
+}
+
+void OmSegmentCacheImpl::addToLog( const OmSegID parentID, const OmSegID childID, const OmSegLogType logType )
+{
+	OmSegLogEntry sle = { parentID, childID, logType };
+	segLogEntries.push( sle );
 }

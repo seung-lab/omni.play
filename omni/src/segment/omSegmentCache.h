@@ -29,31 +29,31 @@ public:
 
 	OmSegment* GetSegmentFromValue(OmSegID);
 
-	OmId GetNumSegments();
-	OmId GetNumTopSegments();
+	OmSegID GetNumSegments();
+	OmSegID GetNumTopSegments();
 
-	bool IsSegmentValid(OmId seg);
+	bool IsSegmentValid(OmSegID seg);
 
-	bool isSegmentEnabled( OmId segID );
-	void setSegmentEnabled( OmId segID, bool isEnabled );
+	bool isSegmentEnabled( OmSegID segID );
+	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmIds& GetEnabledSegmentIdsRef();
 
-	bool isSegmentSelected( OmId segID );
+	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
-	void setSegmentSelected( OmId segID, bool isSelected );
+	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmIds& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 
-	QString getSegmentName( OmId segID );
-	void setSegmentName( OmId segID, QString name );
+	QString getSegmentName( OmSegID segID );
+	void setSegmentName( OmSegID segID, QString name );
 
-	QString getSegmentNote( OmId segID );
-	void setSegmentNote( OmId segID, QString note );
+	QString getSegmentNote( OmSegID segID );
+	void setSegmentNote( OmSegID segID, QString note );
 
-	OmId getSegmentationID();
+	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);
 	void flushDirtySegments();
