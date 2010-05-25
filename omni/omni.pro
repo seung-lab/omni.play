@@ -148,6 +148,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/omGarbage.h \
            src/system/omGenericManager.h \
            src/system/omGroups.h \
+           src/system/omGroup.h \
            src/system/omLocalPreferences.h \
            src/system/omManageableObject.h \
            src/system/omPreferenceDefinitions.h \
@@ -408,6 +409,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omFetchingThread.cpp \
            src/system/omGenericManager.cpp \
            src/system/omGroups.cpp \
+           src/system/omGroup.cpp \
            src/utility/DynamicTree.cpp \
            src/utility/DynamicTreeContainer.cpp
 

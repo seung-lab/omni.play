@@ -1,25 +1,26 @@
 #ifndef _OM_GROUPS_H_
 #define _OM_GROUPS_H_
 
-class OmGroups : OmManagableObject {
+#include "system/omManageableObject.h"
+#include "system/omGroup.h"
+#include "volume/omSegmentation.h"
+
+
+#include <QVector>
+
+class OmGroups {
 public:
-        static OmGroups* Instance();
-        static void Delete();
+        OmGroups(OmSegmentation * seg);
+        ~OmGroups();
 
 protected:
-        // singleton constructor, copy constructor, assignment operator protected
-        OmGroups();
-        ~OmGroups();
         OmGroups(const OmGroups&);
         OmGroups& operator= (const OmGroups&);
 
-
 private:
-        //singleton
-        static OmGroups* mspInstance;
+	OmSegmentation * mSegmentation;
 
-        OmGenericManager< OmGroup > mGenericGroupManager;
-
+        QVector< OmGroup > mGroups;
 };
 
 #endif
