@@ -236,11 +236,9 @@ void DendToolBar::SystemModeChangeEvent()
 {
         debug("dendbar", "DendToolBar::SystemModeChangeEvent\n");
 
-/*
-	if( DEND_MODE != OmStateManager::GetSystemMode() ){
-		toolbarSplitAct->setChecked( false );
-	}
-*/
+
+	if( !mSplitting) toolbarSplitAct->setChecked( false );
+	else  toolbarSplitAct->setChecked( true );
 }
 
 void DendToolBar::updateReadOnlyRelatedWidgets()
