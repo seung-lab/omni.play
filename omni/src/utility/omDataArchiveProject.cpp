@@ -6,7 +6,8 @@
 #include <QDataStream>
 #include "boost/lexical_cast.hpp"
 
-static const int Omni_Version = 1;
+static const int Omni_Version = 2;
+static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project ) 
 {
@@ -34,6 +35,15 @@ void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project )
 
 	in >> (*project);
 
+	QString omniPostfix;
+	in >> omniPostfix;
+
+	if( Omni_Postfix != omniPostfix ){
+		delete p_data;
+
+		throw OmIoException("corruption detected in Omni file");
+	}
+
 	delete p_data;
 }
 
@@ -46,7 +56,8 @@ void OmDataArchiveProject::ArchiveWrite( OmHdf5Path path, OmProject * project )
 
 	out << Omni_Version;
 	out << (*project);
-	
+	out << Omni_Postfix;
+
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
 									   ba.size(), 
 									   ba.data() );
