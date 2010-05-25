@@ -482,7 +482,6 @@ OmId OmSegmentation::AddGroup()
         	seg = iter.getNextSegment();
         }
 
-
 	return mGroups.AddGroup(segmentsToGroup);
 }
 

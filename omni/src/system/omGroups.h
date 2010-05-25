@@ -22,7 +22,7 @@ protected:
 private:
 	OmSegmentation * mSegmentation;
 
-        QVector< OmIds > mGroups;
+        QVector< OmGroup* > mGroups;
 };
 
 #endif

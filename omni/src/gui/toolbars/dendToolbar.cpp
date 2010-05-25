@@ -112,13 +112,13 @@ void DendToolBar::createToolbarActions()
         mHint->setText(value);
 
         addGroupAct = new QPushButton(mMainWindow);
-        addGroupAct->setText(tr("Group Selected"));
+        addGroupAct->setText(tr("Create New Group"));
         addGroupAct->setStatusTip(tr("group object action"));
         connect(addGroupAct, SIGNAL(pressed()),
                 this, SLOT(addGroup()));
 
         colorMapAct = new QPushButton(mMainWindow);
-        colorMapAct->setText(tr("Show Validated Colors"));
+        colorMapAct->setText(tr("Show Groups"));
         colorMapAct->setStatusTip(tr("Validated object mode"));
         connect(colorMapAct, SIGNAL(pressed()),
                 this, SLOT(mapColors()));
