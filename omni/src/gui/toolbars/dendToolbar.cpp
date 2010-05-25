@@ -14,12 +14,9 @@ OmId mSeg = 1;
 
 bool mShowGroups = false;
 
-
-
 DendToolBar::DendToolBar( MainWindow * mw )
-	: QWidget(mw)
+	: QWidget(mw), mMainWindow(mw), mViewGroupState(NULL)
 {
-	mMainWindow = mw;
 	createToolbar();
 }
 

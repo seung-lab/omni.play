@@ -18,6 +18,8 @@ class OmSegmentColorizer
 	void colorTile( OmSegID * imageData, const int size,
 			unsigned char * data, OmViewGroupState * );
 
+	void setCurBreakThreshhold( const float t );
+
  private:
 	QMutex mMutex;
 

@@ -55,7 +55,7 @@ bool OmSegmentColorizer::isCacheElementValid( const OmSegID & val, const int & c
 
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data, OmViewGroupState * vgs )
+				    unsigned char * data, OmViewGroupState * )
 {
 	QMutexLocker lock( &mMutex );
 	
@@ -70,9 +70,6 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	if ( isSegmentation ) {
 		showOnlySelectedSegments = false;	
 	}
-
-	mPrevBreakThreshhold = mCurBreakThreshhold;
-	mCurBreakThreshhold = vgs->getBreakThreshold();
 
 	int offset = 0;
 	OmColor newcolor = {0, 0, 0};
@@ -149,4 +146,10 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val,
 			return sc;
 		}
 	}
+}
+
+void OmSegmentColorizer::setCurBreakThreshhold( const float t )
+{
+	mPrevBreakThreshhold = mCurBreakThreshhold;
+	mCurBreakThreshhold = t;
 }
