@@ -4,7 +4,7 @@
 #include <QDataStream>
 #include "segment/omSegment.h"
 
-void OmDataArchiveSegment::ArchiveRead( OmHdf5Path path, OmSegment** page, OmSegmentCache* cache ) 
+void OmDataArchiveSegment::ArchiveRead( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -35,7 +35,7 @@ void OmDataArchiveSegment::ArchiveRead( OmHdf5Path path, OmSegment** page, OmSeg
 	delete p_data;
 }
 
-void OmDataArchiveSegment::ArchiveWrite( OmHdf5Path path, OmSegment** page, OmSegmentCache* cache) 
+void OmDataArchiveSegment::ArchiveWrite( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);

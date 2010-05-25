@@ -2,10 +2,6 @@
 #define OM_DATA_READER_H
 
 #include "utility/omHdf5Path.h"
-
-#include <string>
-
-
 class vtkImageData;
 
 class OmDataReader
@@ -20,21 +16,20 @@ class OmDataReader
 	virtual void close() = 0;
 
 	//group
-	virtual bool group_exists( OmHdf5Path path ) = 0;
+	virtual bool group_exists( const OmHdf5Path & path ) = 0;
 
 	//data set
-	virtual bool dataset_exists( OmHdf5Path path ) = 0;
+	virtual bool dataset_exists( const OmHdf5Path & path ) = 0;
 
 	//image I/O
-	virtual Vector3 < int > dataset_image_get_dims(OmHdf5Path path ) = 0;
-	virtual vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample) = 0;
-	virtual void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)=0;
+	virtual Vector3 < int > dataset_image_get_dims(const OmHdf5Path & path ) = 0;
+	virtual vtkImageData* dataset_image_read_trim( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample) = 0;
+	virtual void* dataset_read_raw_chunk_data( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample)=0;
 
 	//data set raw
-	virtual void* dataset_raw_read( OmHdf5Path path, int* size = NULL) = 0;
+	virtual void* dataset_raw_read( const OmHdf5Path & path, int* size = NULL) = 0;
 
-	virtual Vector3< int > dataset_get_dims(OmHdf5Path path) = 0;
- 
-};
+	virtual Vector3< int > dataset_get_dims(const OmHdf5Path & path) = 0;
+ };
 
 #endif

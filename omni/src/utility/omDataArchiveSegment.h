@@ -7,8 +7,8 @@
 class OmDataArchiveSegment
 {
  public:
-	static void ArchiveRead( OmHdf5Path path, OmSegment**  page, OmSegmentCache* cache);
-	static void ArchiveWrite( OmHdf5Path path, OmSegment** page, OmSegmentCache* cache);
+	static void ArchiveRead( const OmHdf5Path & path, OmSegment**  page, OmSegmentCache* cache);
+	static void ArchiveWrite( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache);
 
 };
 

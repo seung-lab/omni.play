@@ -77,9 +77,9 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		return;
 	}
 
-	Vector3<float> hyperColor;
+	Vector3<float> hyperColor(0,0,0);
 	if(DendToolBar::GetShowGroupsMode()) {
-		hyperColor = {0};
+		// show black
 	} else {
 		hyperColor = GetColorFloat();
 	}

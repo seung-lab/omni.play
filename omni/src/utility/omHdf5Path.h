@@ -11,12 +11,12 @@ class OmHdf5Path
 	void setPath( std::string str );
 	void setPathQstr( QString );
 
-	std::string getString();
+	const std::string & getString() const;
 
 	OmHdf5Path & operator=( OmHdf5Path & rhs );
 
  private:
-	QString mPath;
+	string mPath;
 }; 
 
 #endif

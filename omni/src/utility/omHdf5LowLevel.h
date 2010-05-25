@@ -20,6 +20,7 @@ class OmHdf5LowLevel
 	void om_hdf5_file_create(string fpath);
 	hid_t om_hdf5_file_open_with_lock(string fpath, const bool readOnly);
 	void om_hdf5_file_close_with_lock(hid_t fileId);
+	void om_hdf5_flush_with_lock(const hid_t fileId);
 
 	//group
 	bool om_hdf5_group_exists_with_lock(hid_t fileId, const char* name);

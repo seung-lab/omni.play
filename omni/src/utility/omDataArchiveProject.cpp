@@ -9,7 +9,7 @@
 static const int Omni_Version = 2;
 static const QString Omni_Postfix("OMNI");
 
-void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -46,7 +46,7 @@ void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project )
 	delete p_data;
 }
 
-void OmDataArchiveProject::ArchiveWrite( OmHdf5Path path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveWrite( const OmHdf5Path & path, OmProject * project ) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -305,13 +305,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mDendCount;
 	in >> seg.mDendThreshold;
 
-        QString dendStr = QString("%1dend")
-                        .arg(seg.GetDirectoryPath());
-        QString dendValStr = QString("%1dendValues")
-                        .arg(seg.GetDirectoryPath());
+        QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
+        QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
         OmHdf5Path path;
-
         path.setPathQstr(dendStr);
+
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
 		int size;
         	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);

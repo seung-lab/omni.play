@@ -33,7 +33,7 @@ OmProject::~OmProject()
 OmProject *OmProject::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmProject;
+		mspInstance = new OmProject();
 	}
 	return mspInstance;
 }
@@ -78,12 +78,11 @@ void OmProject::Save()
 
 	//TODO: move this into omProjectData
 
-	foreach( OmId segID, OmProject::GetValidSegmentationIds() ){
+	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 	}
 
 	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
-	
 }
 
 void OmProject::Commit()
@@ -195,9 +194,9 @@ OmSegmentation & OmProject::AddSegmentation()
 
 void OmProject::RemoveSegmentation(OmId id)
 {
-        foreach(OmId channelID, OmProject::GetValidChannelIds()) {
+        foreach( const OmId & channelID, OmProject::GetValidChannelIds()) {
                 OmChannel & channel = OmProject::GetChannel(channelID);
-                foreach(OmId filterID, channel.GetValidFilterIds()) {
+                foreach( const OmId & filterID, channel.GetValidFilterIds()) {
                         OmFilter2d &filter = channel.GetFilter(filterID);
                         if (filter.GetSegmentation() == id){
                                 filter.SetSegmentation(0);
@@ -233,7 +232,7 @@ void OmProject::SetSegmentationEnabled(OmId id, bool enable)
 
 void OmProject::Draw(OmVolumeCuller & rCuller)
 {
-        foreach( OmId id, Instance()->mSegmentationManager.GetEnabledIds() ){
+        foreach( const OmId & id, Instance()->mSegmentationManager.GetEnabledIds() ){
                 GetSegmentation( id ).Draw( rCuller);
         }
 

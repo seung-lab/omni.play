@@ -1,3 +1,5 @@
+#include "utility/omHdf5LowLevel.h"
+#include "utility/omHdf5Path.h"
 #include "omHdf5LowLevelWrappersAutoOpenClose.h"
 #include "common/omException.h"
 #include "common/omDebug.h"
@@ -44,9 +46,14 @@ void OmHdf5LowLevelWrappersAutoOpenClose::file_create()
 	hdfLowLevel.om_hdf5_file_create(mFileName);
 }
 
+void OmHdf5LowLevelWrappersAutoOpenClose::flush()
+{
+	// automatically flushes on close...
+}
+
 /////////////////////////////////
 ///////          Group
-bool OmHdf5LowLevelWrappersAutoOpenClose::group_exists_with_lock(OmHdf5Path path)
+bool OmHdf5LowLevelWrappersAutoOpenClose::group_exists_with_lock(const OmHdf5Path & path)
 {
 	bool exists;
 	HDF5_WRAP();
@@ -55,7 +62,7 @@ bool OmHdf5LowLevelWrappersAutoOpenClose::group_exists_with_lock(OmHdf5Path path
 	return exists;
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::group_delete_with_lock(OmHdf5Path path)
+void OmHdf5LowLevelWrappersAutoOpenClose::group_delete_with_lock(const OmHdf5Path & path)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_group_delete_with_lock(fileId, name);
@@ -65,7 +72,7 @@ void OmHdf5LowLevelWrappersAutoOpenClose::group_delete_with_lock(OmHdf5Path path
 /////////////////////////////////
 ///////          Dataset
 
-bool OmHdf5LowLevelWrappersAutoOpenClose::dataset_exists_with_lock(OmHdf5Path path)
+bool OmHdf5LowLevelWrappersAutoOpenClose::dataset_exists_with_lock(const OmHdf5Path & path)
 {
 	bool exists;
 	HDF5_WRAP();
@@ -74,7 +81,7 @@ bool OmHdf5LowLevelWrappersAutoOpenClose::dataset_exists_with_lock(OmHdf5Path pa
 	return exists;
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_create_tree_overwrite_with_lock(OmHdf5Path path, Vector3<int>* dataDims, Vector3< int>* chunkDims, int bytesPerSample)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_create_tree_overwrite_with_lock(const OmHdf5Path & path, Vector3<int>* dataDims, Vector3< int>* chunkDims, int bytesPerSample)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
@@ -82,7 +89,7 @@ void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_create_tree_overwrite_wi
 	HDF5_UNWRAP();
 }
 
-vtkImageData * OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_read_trim_with_lock(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+vtkImageData * OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_read_trim_with_lock(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample)
 {
 	vtkImageData * ret;
 	HDF5_WRAP();
@@ -91,14 +98,14 @@ vtkImageData * OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_read_trim_with
 	return ret;
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_write_trim_with_lock(OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData * pImageData)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_write_trim_with_lock(const OmHdf5Path & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData * pImageData)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_image_write_trim_with_lock(fileId, name, dataExtent, bytesPerSample, pImageData);
 	HDF5_UNWRAP();
 }
 
-void * OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_read_with_lock(OmHdf5Path path, int *size)
+void * OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_read_with_lock(const OmHdf5Path & path, int *size)
 {
 	void * ret;
 	HDF5_WRAP();
@@ -107,14 +114,14 @@ void * OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_read_with_lock(OmHdf5Pat
 	return ret;
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_create_with_lock(OmHdf5Path path, int size, const void *data)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_create_with_lock(const OmHdf5Path & path, int size, const void *data)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 	HDF5_UNWRAP();
 }
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_create_tree_overwrite_with_lock(OmHdf5Path path, int size, const void* data)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_create_tree_overwrite_with_lock(const OmHdf5Path & path, int size, const void* data)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, name, size, data);
@@ -122,7 +129,7 @@ void OmHdf5LowLevelWrappersAutoOpenClose::dataset_raw_create_tree_overwrite_with
 }
 
 //imageIo
-Vector3 < int > OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_get_dims_with_lock(OmHdf5Path path)
+Vector3 < int > OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_get_dims_with_lock(const OmHdf5Path & path)
 {
 	Vector3<int> ret;
 	HDF5_WRAP();
@@ -131,7 +138,7 @@ Vector3 < int > OmHdf5LowLevelWrappersAutoOpenClose::dataset_image_get_dims_with
 
 	return ret;
 }
-void* OmHdf5LowLevelWrappersAutoOpenClose::dataset_read_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+void* OmHdf5LowLevelWrappersAutoOpenClose::dataset_read_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample)
 {
 	void* ret;
 	HDF5_WRAP();
@@ -140,14 +147,14 @@ void* OmHdf5LowLevelWrappersAutoOpenClose::dataset_read_raw_chunk_data(OmHdf5Pat
 	return ret;
 } 
 
-void OmHdf5LowLevelWrappersAutoOpenClose::dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData)
+void OmHdf5LowLevelWrappersAutoOpenClose::dataset_write_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample, void * imageData)
 {
 	HDF5_WRAP();
 	hdfLowLevel.om_hdf5_dataset_write_raw_chunk_data(fileId, name, dataExtent, bytesPerSample,  imageData);
 	HDF5_UNWRAP();
 }   
 
-Vector3< int > OmHdf5LowLevelWrappersAutoOpenClose::dataset_get_dims_with_lock( OmHdf5Path path )
+Vector3< int > OmHdf5LowLevelWrappersAutoOpenClose::dataset_get_dims_with_lock( const OmHdf5Path & path )
 {
 	Vector3<int> ret;
 	HDF5_WRAP();
