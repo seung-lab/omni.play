@@ -467,9 +467,23 @@ bool OmSegmentation::AreSegmentsSelected()
 
 /////////////////////////////////
 ///////          Groups
-OmId OmSegmentation::AddGroup(OmIds & ids)
+OmId OmSegmentation::AddGroup()
 {
-	return mGroups.AddGroup(ids);
+        OmSegmentIterator iter(&mSegmentCache);
+
+        iter.iterOverSelectedIDs();
+
+	OmIds segmentsToGroup;
+        OmSegment * seg = iter.getNextSegment();
+        OmSegID val;
+        while(NULL != seg) {
+        	val = seg->getValue();
+        	segmentsToGroup.insert(val);
+        	seg = iter.getNextSegment();
+        }
+
+
+	return mGroups.AddGroup(segmentsToGroup);
 }
 
 

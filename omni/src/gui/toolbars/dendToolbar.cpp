@@ -433,7 +433,7 @@ void DendToolBar::addGroup()
 	debug("group", "DendToolBar::addGroup\n");
         if (OmProject::IsSegmentationValid(mSeg)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-                seg.AddGroup((OmIds&) seg.GetSelectedSegmentIds());
+                seg.AddGroup();
         }
 
 }
