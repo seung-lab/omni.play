@@ -39,6 +39,8 @@ OmSegmentCacheImpl::~OmSegmentCacheImpl()
 
 		delete [] mValueToSegPtrHash[pageNum];
 	}
+
+	delete mGraph;
 }
 
 OmSegID OmSegmentCacheImpl::getSegmentationID()
