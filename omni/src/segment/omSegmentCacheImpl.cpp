@@ -486,9 +486,9 @@ OmColor OmSegmentCacheImpl::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 	}
 	
 
-	//	if(mCachedColorFreshness == seg->mCachedColorFreshness ){
-	//return seg->mCachedColor;
-	//}
+	if(mCachedColorFreshness == seg->mCachedColorFreshness ){
+		return seg->mCachedColor;
+	}
 
 	OmSegment * segRoot = findRoot( seg );
 
@@ -508,8 +508,8 @@ OmColor OmSegmentCacheImpl::getVoxelColorForView2d( const SEGMENT_DATA_TYPE val,
 		}
 	}
 
-	//	seg->mCachedColor = color;
-	//	seg->mCachedColorFreshness = mCachedColorFreshness;
+	seg->mCachedColor = color;
+	seg->mCachedColorFreshness = mCachedColorFreshness;
 
 	return color;
 }
