@@ -747,5 +747,5 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
         }
 
 	clearCaches();	
-	printf("\t threshold %f: %d splits performed\n", stopPoint, splitCounter );
+	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
