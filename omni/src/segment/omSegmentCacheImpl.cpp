@@ -433,9 +433,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u,%f\n",
 			child->getValue(), child->mThreshold);
 
-	if( !child->mParentSegID ){
-		return;
-	}
+	assert( child->mParentSegID );
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 	debug("split", "\tparent = %u\n", parent->getValue());
@@ -458,7 +456,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	parent->queue.push(parentElement);
 
 	OmSegQueueElement childElement = { parent->mValue, oldChildThreshold };
-	parent->queue.push(childElement);
+	child->queue.push(childElement);
 
 	clearCaches();
 }
@@ -525,8 +523,14 @@ void OmSegmentCacheImpl::clearAllJoins()
 		seg->mParentSegID = 0;
 		seg->mThreshold = 0;
 		seg->segmentsJoinedIntoMe.clear();
+
+		//OmSegQueueElement sqe;
+		//int counter = 0;
 		while( !seg->queue.empty() ){
+			//sqe = seg->queue.top();
+			//printf("%d: %d: childID %d, at %f\n", i, counter, sqe.segID, sqe.threshold );
 			seg->queue.pop();
+			//++counter;
 		}
 	}
 
@@ -573,11 +577,11 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 	mGraph = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
 }
 
-void OmSegmentCacheImpl::reloadDendrogram( const quint32 * dend, const float * dendValues, 
-					   const int size, const float stopPoint )
+void OmSegmentCacheImpl::reloadDendrogram( const quint32 *, const float *, 
+					   const int , const float stopPoint)
 {
-	clearAllJoins();
-	loadDendrogram( dend, dendValues, size, stopPoint );
+	resetGlobalThreshold( stopPoint );
+	clearCaches();
 }
 
 // FIXME: rename
@@ -722,8 +726,7 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
 	quint32 splitCounter = 0;
-
-	// TODO: deal w/ decrease in threshold (i.e. merging...) (purcaro)
+	quint32 joinCounter = 0;
 
 	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
 
@@ -738,11 +741,52 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		assert(seg);
 
 		if( seg->mThreshold >= stopPoint ){
-			continue;
-		}
+			OmSegQueueElement sqe;
+			while(1){
+				if( seg->queue.empty() ){
+					break;
+				}
+				
+				sqe = seg->queue.top();
+				if( sqe.threshold > stopPoint ){
+					Join( i, sqe.segID, sqe.threshold );
+					seg->queue.pop();
+					
+					OmSegment * otherSeg = GetSegmentFromValue( sqe.segID );
+					assert( otherSeg );
+					assert( !otherSeg->queue.empty() );
 
-		splitChildFromParent( seg );
-                ++splitCounter;
+					// remove correspoding element in other segment
+					QList< OmSegQueueElement > tmp;
+					while(1){
+
+						OmSegQueueElement otherSqe = otherSeg->queue.top();
+						if( otherSqe.segID == i &&
+						    otherSqe.threshold == sqe.threshold ){
+							otherSeg->queue.pop();
+							break;
+						} else {
+							tmp.append( otherSqe );
+							otherSeg->queue.pop();
+						}
+					}
+
+					foreach( const OmSegQueueElement & sqe, tmp ){
+						otherSeg->queue.push( sqe );
+					}
+
+					++joinCounter;
+				} else {
+					break;
+				}
+			} 
+		} else {
+			if( 0 == seg->mParentSegID ){
+				continue;
+			}
+			splitChildFromParent( seg );
+			++splitCounter;
+		}
         }
 	
 	printf("\t threshold %f: %d splits performed\n", stopPoint, splitCounter );
