@@ -46,6 +46,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	mpImageData = NULL;
 	mOpenLock = new QMutex();
 	mChunkVolumeDataDirty = false;
+	mChunkMetaDataDirty = false;
 
 	mIsOpen = false;
 }
