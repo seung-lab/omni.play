@@ -2,10 +2,16 @@
 #include "dataWrappers.h"
 #include "common/omDebug.h"
 #include "utility/stringHelpers.h"
+#include "segment/omSegmentCache.h"
 
 /*******************************************
  ****** Data Wrapper Container
  *******************************************/
+DataWrapperContainer::DataWrapperContainer()
+{
+	mIsValidContainer = false;
+}
+
 DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId obj_id)
 {
 	mIsValidContainer = false;
@@ -44,11 +50,18 @@ bool DataWrapperContainer::isValidContainer()
  ****** Channels
  *******************************************/
 ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
-:DataWrapper(ID, CHANNEL)
+	: mID(ID), mType(CHANNEL)
 {
-	OmChannel & chann = OmProject::GetChannel(mID);
-	mName = chann.GetName();
-	mEnabled = OmProject::IsChannelEnabled(mID);
+}
+
+QString ChannelDataWrapper::getName()
+{
+	return OmProject::GetChannel(mID).GetName();
+}
+
+bool ChannelDataWrapper::isEnabled()
+{
+	return OmProject::IsChannelEnabled(mID);
 }
 
 QString ChannelDataWrapper::getNote()
@@ -63,11 +76,7 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
 	OmChannel & chann = OmProject::GetChannel(mID);
 
 	foreach(OmId filterID, chann.GetValidFilterIds()) {
-		FilterDataWrapper filter(mID,
-					 filterID,
-					 chann.GetFilter(filterID).GetName(),
-					 chann.IsFilterEnabled(filterID)
-		    );
+		FilterDataWrapper filter(mID, filterID);
 		filters[filterID] = filter;
 	}
 
@@ -78,11 +87,18 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
  ****** Segmentations
  *******************************************/
 SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
- : DataWrapper(ID, SEGMENTATION)
+	: mID(ID), mType(SEGMENTATION)
 {
-	OmSegmentation & segmen = OmProject::GetSegmentation(mID);
-	mName = segmen.GetName();
-	mEnabled = OmProject::IsSegmentationEnabled(mID);
+}
+
+QString SegmentationDataWrapper::getName()
+{
+	return OmProject::GetSegmentation(mID).GetName();
+}
+
+bool SegmentationDataWrapper::isEnabled()
+{
+	return OmProject::IsSegmentationEnabled(mID);
 }
 
 QString SegmentationDataWrapper::getNote()
@@ -100,14 +116,24 @@ unsigned int SegmentationDataWrapper::getNumberOfTopSegments()
 	return OmProject::GetSegmentation(mID).GetNumTopSegments();
 }
 
+OmSegmentCache * SegmentationDataWrapper::getSegmentCache()
+{
+	return OmProject::GetSegmentation(mID).GetSegmentCache();
+}
+
+
 /*******************************************
  ****** Segments
  *******************************************/
 SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId segmentID)
- : DataWrapper(segmentID, SEGMENT)
+	: mID(segmentID), mType(SEGMENT), 
+	  mSegmentationID( segmentationID )
 {
-	mSegmentationID = segmentationID;
-	mName = OmProject::GetSegmentation(mSegmentationID).GetSegment(segmentID)->GetName();
+}
+
+QString SegmentDataWrapper::getName()
+{
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetName();
 }
 
 QString SegmentDataWrapper::getSegmentationName()
@@ -160,9 +186,9 @@ QString SegmentDataWrapper::getIDstr()
 	return QString("%1").arg(getID());
 }
 
-const Vector3 < float >& SegmentDataWrapper::getColor()
+Vector3 < float > SegmentDataWrapper::getColor()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColor();
+	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColorFloat();
 }
 
 void SegmentDataWrapper::setColor(const Vector3 < float >& color)
@@ -177,7 +203,7 @@ void SegmentDataWrapper::setName( const QString& str )
 
 QString SegmentDataWrapper::get_original_mapped_data_value()
 {
-	const SEGMENT_DATA_TYPE value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
+	const OmSegID value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
 	if( 0 == value ){
 		return "<not set>";
 	} else {
@@ -198,9 +224,17 @@ OmSegment * SegmentDataWrapper::getSegment()
 /*******************************************
  ****** Filters
  *******************************************/
-FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId mID, const QString name, const bool enabled)
- : DataWrapper(mID, FILTER), mChannelID(channelID)
+FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId ID)
+	: mID(ID), mType(FILTER), mChannelID(channelID)
 {
-	mName = name;
-	mEnabled = enabled;
+}
+
+QString FilterDataWrapper::getName()
+{
+	return OmProject::GetChannel(mChannelID).GetFilter(mID).GetName();
+}
+
+bool FilterDataWrapper::isEnabled()
+{
+	return OmProject::GetChannel(mChannelID).IsFilterEnabled(mID);
 }

@@ -16,27 +16,26 @@
 #include "mesh/meshingManager.h"
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
+#include "system/omGroups.h"
 #include "system/events/omSystemModeEvent.h"
 #include "volume/omSegmentationChunkCoord.h"
-#include "common/omStd.h"
+#include "common/omCommon.h"
 
 class OmVolumeCuller;
 class OmSegment;
+class OmViewGroupState;
 
 class OmSegmentation 
 : public OmMipVolume, 
 	public OmManageableObject, 
-	public OmSystemModeEventListener 
+	public OmSystemModeEventListener,
+	boost::noncopyable
 {
 
 public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
-	
-	//data mapping
-	OmId GetSegmentIdMappedToValue( SEGMENT_DATA_TYPE value );
-	SEGMENT_DATA_TYPE GetValueMappedToSegmentId( OmId );
 	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
@@ -55,7 +54,7 @@ public:
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
+	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDs &rEditedVals);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
@@ -65,7 +64,7 @@ public:
 							
 	//segment management
 	OmSegment* GetSegment(OmId id);
-	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE id);
+	OmSegment* GetSegmentFromValue(OmSegID id);
 	OmSegment* AddSegment();
 	bool IsSegmentValid(OmId id);
 	bool IsSegmentEnabled(OmId id);
@@ -76,43 +75,39 @@ public:
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
 	const OmIds& GetSelectedSegmentIds();
+	void JoinAllSegmentsInSelectedList();
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
 	
 	bool AreSegmentsSelected();
 	
+	//group management
+	OmId AddGroup();
+
+
 	//drawing
-	void Draw(OmVolumeCuller &);
+	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
 	void DrawChunkRecursive(const OmMipChunkCoord &, 
 				OmSegmentIterator iter,
 				bool testVis, 
 				OmVolumeCuller &);
-	void DrawChunk(const OmMipChunkCoord &, QList< OmSegment* > segmentsToDraw, OmVolumeCuller &rCuller);
-	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
+	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
+		       const OmMipChunkCoord & chunkCoord,
+		       const OmSegPtrs & segmentsToDraw, 
+		       OmVolumeCuller &rCuller);
+	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDs &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
 	void FlushDend();
-	void SetDendThreshold( float t ){
-		mDendThreshold = t;
-	}
-	void SetDendThresholdAndReload( float t ){
-		SetDendThreshold(t);
-		ReloadDendrogram();
-	}
+	void SetDendThreshold( float t );
+	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
 
-	void ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
-			const bool isSegmentation, unsigned char * data );
-
-protected:
-	//protected copy constructor and assignment operator to prevent copy
-	OmSegmentation(const OmSegmentation&);
-	OmSegmentation& operator= (const OmSegmentation&);
-	
+	OmSegmentCache * GetSegmentCache(){ return &mSegmentCache; }
 	
 private:
 	void KillCacheThreads();
@@ -122,6 +117,9 @@ private:
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;
 	OmSegmentCache mSegmentCache;
+
+	OmGroups mGroups;
+	OmViewGroupState * mViewGroupState;
 
         quint32 * mDend;
         float * mDendValues;

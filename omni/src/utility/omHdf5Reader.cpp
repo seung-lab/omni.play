@@ -33,37 +33,37 @@ void OmHdf5Reader::close()
 	hdf5->close();
 }
 
-bool OmHdf5Reader::group_exists( OmHdf5Path path )
+bool OmHdf5Reader::group_exists( const OmHdf5Path & path )
 {
 	return hdf5->group_exists( path );
 }
 
-bool OmHdf5Reader::dataset_exists( OmHdf5Path path )
+bool OmHdf5Reader::dataset_exists( const OmHdf5Path & path )
 {
 	return hdf5->dataset_exists( path );
 }
 
-vtkImageData* OmHdf5Reader::dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+vtkImageData* OmHdf5Reader::dataset_image_read_trim( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample)
 {
 	return hdf5->dataset_image_read_trim( path, dataExtent, bytesPerSample);
 }
 
-void* OmHdf5Reader::dataset_raw_read( OmHdf5Path path, int* size)
+void* OmHdf5Reader::dataset_raw_read( const OmHdf5Path & path, int* size)
 {
 	return hdf5->dataset_raw_read( path, size );
 }
 
-Vector3 < int > OmHdf5Reader::dataset_image_get_dims( OmHdf5Path path )
+Vector3 < int > OmHdf5Reader::dataset_image_get_dims( const OmHdf5Path & path )
 {
 	return hdf5->dataset_image_get_dims( path );
 }
 
-void* OmHdf5Reader::dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample)
+void* OmHdf5Reader::dataset_read_raw_chunk_data( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample)
 {
 	return hdf5->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );
 }
 
-Vector3< int > OmHdf5Reader::dataset_get_dims( OmHdf5Path path )
+Vector3< int > OmHdf5Reader::dataset_get_dims( const OmHdf5Path & path )
 {
 	return hdf5->dataset_get_dims( path );
 }

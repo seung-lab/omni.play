@@ -6,6 +6,7 @@
 class MainWindow;
 class NavAndEditToolBars;
 class DendToolBar;
+class OmViewGroupState;
 
 class ToolBarManager : public QWidget
 {
@@ -15,8 +16,10 @@ class ToolBarManager : public QWidget
 	ToolBarManager( MainWindow * mw );
 	virtual void setupToolbarInitially();
 	virtual void updateReadOnlyRelatedWidgets();
-	virtual void updateGuiFromPorjectLoadOrOpen();
+	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 	virtual void SystemModeChangeEvent();
+
+	void SetSplittingOff();
 
  private:
 	MainWindow * mMainWindow;

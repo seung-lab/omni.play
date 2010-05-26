@@ -8,8 +8,8 @@ OmTileCoord::OmTileCoord()
 	Coordinate = SpaceCoord();
 }
 
-OmTileCoord::OmTileCoord(int mLevel, const SpaceCoord & pSpaceCoord, int volType, unsigned int freshness)
-:Level(mLevel), Coordinate(pSpaceCoord), mVolType (volType), mFreshness (freshness)
+OmTileCoord::OmTileCoord(int mLevel, const SpaceCoord & pSpaceCoord, ObjectType volType, unsigned int freshness)
+ :Level(mLevel), Coordinate(pSpaceCoord), mVolType (volType), mFreshness (freshness)
 {
 }
 

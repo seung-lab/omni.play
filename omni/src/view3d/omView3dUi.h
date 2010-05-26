@@ -8,18 +8,16 @@
 
 
 #include "segment/omSegmentContextMenu.h"
-
+#include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui> 
 
 class OmView3d;
 
-
 class OmView3dUi {
 
 public:
-	OmView3dUi(OmView3d *view3d);
-	
+	OmView3dUi(OmView3d * view3d, OmViewGroupState * );
 	
 	//ui events
 	void MousePressed(QMouseEvent *event);
@@ -85,7 +83,8 @@ public:
 	
 private:
 	OmView3d * const mpView3d;
-	
+	OmViewGroupState * mViewGroupState;
+
 	OmSegmentContextMenu mSegmentContextMenu;
 	
 	bool mPrevSelectionState;

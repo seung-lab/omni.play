@@ -9,8 +9,8 @@
 class OmDataArchiveProject
 {
  public:
-	static void ArchiveRead( OmHdf5Path path, OmProject * project );
-	static void ArchiveWrite( OmHdf5Path path, OmProject * project );
+	static void ArchiveRead( const OmHdf5Path & path, OmProject * project );
+	static void ArchiveWrite( const OmHdf5Path & path, OmProject * project );
 
 	static void storeOmManageableObject( QDataStream & out, const OmManageableObject & mo );
 	static void loadOmManageableObject( QDataStream & in, OmManageableObject & mo );

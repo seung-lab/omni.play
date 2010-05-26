@@ -74,6 +74,7 @@ bool OmVolume::SetUserScale(const Vector3 < float >&scale)
 	mSpaceToUserMat.m[0][0] = scale.x;
 	mSpaceToUserMat.m[1][1] = scale.y;
 	mSpaceToUserMat.m[2][2] = scale.z;
+
 	//set inverse and return if invertable
 	return mSpaceToUserMat.getInverse(mSpaceToUserInvMat);
 }
@@ -197,16 +198,6 @@ bool OmVolume::SetDataResolution(const Vector3f & res)
 	return SetScale(mDataResolution * data_dims);
 }
 
-void OmVolume::CheckDataResolution()
-{
-	Vector3f res=mDataResolution;
-	if (res == Vector3i::ZERO){
-		res = Vector3i::ONE;
-
-	}
-	SetDataResolution( res);	
-}	
-		
 int OmVolume::GetChunkDimension()
 {
 	return mChunkDim;

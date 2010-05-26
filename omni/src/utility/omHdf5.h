@@ -28,31 +28,32 @@ class OmHdf5
 	void open();
 	void close();
 	void create();
+	void flush();
 
 	//group
-	bool group_exists( OmHdf5Path path );
-	void group_delete( OmHdf5Path path );
+	bool group_exists( const OmHdf5Path & path );
+	void group_delete( const OmHdf5Path & path );
 
 	//data set
-	bool dataset_exists( OmHdf5Path path );
+	bool dataset_exists( const OmHdf5Path & path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
-	void dataset_image_create_tree_overwrite( OmHdf5Path path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample );
-	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_image_write_trim( OmHdf5Path path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	Vector3 < int > dataset_image_get_dims(const OmHdf5Path & path );
+	void dataset_image_create_tree_overwrite( const OmHdf5Path & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample );
+	vtkImageData* dataset_image_read_trim( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
+	void dataset_image_write_trim( const OmHdf5Path & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 
 	//data set raw
-	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( OmHdf5Path path, int size, const void* data);
-	void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_write_raw_chunk_data(OmHdf5Path path, DataBbox dataExtent, int bytesPerSample, void * imageData);
-	Vector3< int > dataset_get_dims( OmHdf5Path path );
+	void* dataset_raw_read( const OmHdf5Path & path, int* size = NULL);
+	void dataset_raw_create_tree_overwrite( const OmHdf5Path & path, int size, const void* data);
+	void* dataset_read_raw_chunk_data( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
+	void dataset_write_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
+	Vector3< int > dataset_get_dims( const OmHdf5Path & path );
 
  private:
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
-	QMutex * fileLock;
+	QMutex fileLock;
 	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
 	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };

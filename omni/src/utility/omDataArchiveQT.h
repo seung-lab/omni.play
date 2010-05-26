@@ -10,15 +10,14 @@
 class OmDataArchiveQT
 {
  public:
-	static void ArchiveRead( OmHdf5Path path, OmMipChunk * chunk );
-	static void ArchiveWrite( OmHdf5Path path, OmMipChunk * chunk );
+	static void ArchiveRead( const OmHdf5Path & path, OmMipChunk * chunk );
+	static void ArchiveWrite( const OmHdf5Path & path, OmMipChunk * chunk );
 
-	static void ArchiveRead( OmHdf5Path path, OmSimpleChunk * chunk );
-	static void ArchiveWrite( OmHdf5Path path, OmSimpleChunk * chunk );
+	static void ArchiveRead( const OmHdf5Path & path, OmSimpleChunk * chunk );
+	static void ArchiveWrite( const OmHdf5Path & path, OmSimpleChunk * chunk );
 
-	static void ArchiveRead( OmHdf5Path path, OmProject * project );
-	static void ArchiveWrite( OmHdf5Path path, OmProject * project );
-
+	static void ArchiveRead( const OmHdf5Path & path, OmProject * project );
+	static void ArchiveWrite( const OmHdf5Path & path, OmProject * project );
 };
 
 #endif

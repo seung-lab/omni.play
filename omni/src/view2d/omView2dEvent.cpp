@@ -4,7 +4,6 @@
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 #include "segment/omSegmentEditor.h"
 #include "segment/omSegment.h"
 #include "system/omStateManager.h"
@@ -39,7 +38,7 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
 	rememberCoord = ScreenToSpaceCoord(clickPoint);
-	rememberDepthCoord = OmStateManager::GetViewDepthCoord();
+	rememberDepthCoord = mViewGroupState->GetViewDepthCoord();
 
 	switch (OmStateManager::GetSystemMode()) {
 
@@ -126,6 +125,9 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	// if not augmenting slection and selecting segment, then 
 	//  select new segment, and deselect current segment(s)
 	if (!augment_selection && curSegmentNotYetMarkedAsSelected) {
+		OmSegmentSelectAction ssa;
+					    
+
 		OmIds select_segment_ids;
 		select_segment_ids.insert(segmentID);
 		(new OmSegmentSelectAction( segmentation.GetId(),
@@ -207,11 +209,11 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -257,12 +259,11 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 				return;
 
 			//switch on tool mode
-			SEGMENT_DATA_TYPE data_value;
+			OmSegID data_value;
 			switch (OmStateManager::GetToolMode()) {
 			case ADD_VOXEL_MODE:
 				//get value associated to segment id
-				data_value =
-				    OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				data_value = segment_id;
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
@@ -333,7 +334,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 	if (numSteps >= 0) {
 		// ZOOMING IN
 
-		Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
+		Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
 		if (!mLevelLock && (current_zoom.y >= 10) && (current_zoom.x > 0)) {
 			// need to move to previous mip level
@@ -346,7 +347,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 	} else {
 		// ZOOMING OUT
 
-		Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
+		Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
 		if (!mLevelLock && (current_zoom.y <= 6) && (current_zoom.x < mRootLevel)) {
 			// need to move to next mip level
@@ -422,7 +423,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 	bool dosubtract = false;
 	mScribbling = true;
 	
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_MODE:
@@ -469,7 +470,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 			if (dosubtract) {
 				data_value = NULL_SEGMENT_DATA;
 			} else {
-				data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+				data_value = segment_id;
 			}
 			BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
 		} else {
@@ -531,11 +532,11 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -582,7 +583,7 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 
 void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 {
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 	Vector2f current_pan = GetPanDistance(mViewType);
 	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
 	Vector2i thisPoint = Vector2i(event->x(),event->y());
@@ -590,19 +591,19 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	if (OmLocalPreferences::getStickyCrosshairMode()) {
 		SpaceCoord thisCoord = ScreenToSpaceCoord(thisPoint);
 		SpaceCoord difference = thisCoord - rememberCoord;
-	       	SpaceCoord depth = OmStateManager::GetViewDepthCoord() - difference;
-		OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, depth.z);
-		OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, depth.y);
-		OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, depth.x);
+	       	SpaceCoord depth = mViewGroupState->GetViewDepthCoord() - difference;
+		mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
+		mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
+		mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else {
-		OmStateManager::Instance()->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
+		mViewGroupState->SetPanDistance(mViewType,current_pan - ScreenToPanShift(Vector2i(drag.x, drag.y)));
 		SetViewSliceOnPan();
         	debug("cross","current_pan.x: %f current_pan.y %f \n", current_pan.x, current_pan.y);
 		float xdepth,ydepth,zdepth;
-		xdepth = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-		ydepth = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-		zdepth = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		xdepth = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
+		ydepth = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
+		zdepth = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 		SpaceCoord mDepthCoord = Vector3f(xdepth,ydepth,zdepth);
 
 		ScreenCoord crosshairCoord = SpaceToScreenCoord(mViewType, mDepthCoord);
@@ -634,9 +635,9 @@ void OmView2d::ViewCenterChangeEvent()
 {
 	SpaceCoord depth;
 
-	depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-	depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-	depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+	depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
+	depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
+	depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 	
 	ScreenCoord crossCoord = SpaceToScreenCoord(mViewType, depth);
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
@@ -645,7 +646,7 @@ void OmView2d::ViewCenterChangeEvent()
         Vector2f newPan = ScreenToPanShift(centerCoord - crossCoord);
         debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
         newPan += currentPan;
-        OmStateManager::Instance()->SetPanDistance(mViewType, newPan);
+        mViewGroupState->SetPanDistance(mViewType, newPan);
         debug ("cross","view: %i  depth.(x,y,z): (%f,%f,%f)\n",mViewType,depth.x,depth.y,depth.z);
         debug ("cross", "view: %i  currentPan.(x,y): (%f,%f)\n", mViewType,currentPan.x,currentPan.y);
         debug ("cross", "view: %i  newPan.(x,y): (%f,%f)\n", mViewType,newPan.x,newPan.y);
@@ -675,11 +676,8 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 		// these voxels are not flat, they are correct for ortho views
 
 		set < DataCoord >::iterator itr;
-
 		for (itr = modVoxels.begin(); itr != modVoxels.end(); itr++) {
-			//debug("genone","data coord = " << *itr);
 			modifiedCoords.insert(*itr);
-
 		}
 
 		myUpdate();
@@ -719,37 +717,6 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		mLevelLock = !mLevelLock;
 		myUpdate();
 		break;
-	case Qt::Key_J:
-		// Toggle joining of a segment.
-		{
-			bool domerge = false;
-			OmId seg;
-			if (mVolumeType == SEGMENTATION) {
-				domerge = true;
-				seg = mImageId;
-			} else {
-				OmChannel & current_channel = OmProject::GetChannel(mImageId);
-				foreach( OmId id, current_channel.GetValidFilterIds() ) {
-			
-                        		OmFilter2d &filter = current_channel.GetFilter(id);
-                        		seg = filter.GetSegmentation ();
-                        		if (seg) {
-						domerge = true;
-						break;
-					}
-				}
-			}
-
-			if (domerge) {
-				(new OmSegmentMergeAction(seg))->Run();
-				Refresh();
-				mTextures.clear();
-			}
-
-			myUpdate();
-		}
-		break;
-
 	case Qt::Key_F:
 		// Toggle fill mode.
 		myUpdate();
@@ -759,7 +726,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Minus:
 		{
-			Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
+			Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
 			if (!mLevelLock && (current_zoom.y == 6) && (current_zoom.x < mRootLevel)) {
 				Vector2i new_zoom = Vector2 < int >(current_zoom.x + 1, 10);
@@ -775,7 +742,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		break;
 	case Qt::Key_Equal:
 		{
-			Vector2 < int >current_zoom = OmStateManager::Instance()->GetZoomLevel();
+			Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
 			if (!mLevelLock && (current_zoom.y == 10) && (current_zoom.x > 0)) {
 				Vector2i new_zoom = Vector2 < int >(current_zoom.x - 1, 6);
@@ -790,7 +757,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		{
 			Vector2f current_pan = GetPanDistance(mViewType);
 
-			OmStateManager::Instance()->SetPanDistance(mViewType,
+			mViewGroupState->SetPanDistance(mViewType,
 								   Vector2f(current_pan.x + 5, current_pan.y));
 
 			SetViewSliceOnPan();
@@ -801,7 +768,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		{
 			Vector2f current_pan = GetPanDistance(mViewType);
 
-			OmStateManager::Instance()->SetPanDistance(mViewType,
+			mViewGroupState->SetPanDistance(mViewType,
 								   Vector2f(current_pan.x - 5, current_pan.y));
 
 			SetViewSliceOnPan();
@@ -811,7 +778,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		{
 			Vector2 < int >current_pan = GetPanDistance(mViewType);
 
-			OmStateManager::Instance()->SetPanDistance(mViewType,
+			mViewGroupState->SetPanDistance(mViewType,
 								   Vector2 < int >(current_pan.x, current_pan.y + 5));
 
 			SetViewSliceOnPan();
@@ -821,28 +788,24 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		{
 			Vector2f current_pan = GetPanDistance(mViewType);
 
-			OmStateManager::Instance()->SetPanDistance(mViewType,
-								   Vector2f(current_pan.x, current_pan.y - 5));
+			mViewGroupState->SetPanDistance(mViewType,
+							Vector2f(current_pan.x, current_pan.y - 5));
 
 			SetViewSliceOnPan();
 		}
 		break;
 	case Qt::Key_W:
 	case Qt::Key_PageUp:
-		{
-			MoveUpStackCloserToViewer();
-			if (OmLocalPreferences::getStickyCrosshairMode()){
-				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-			}
+		MoveUpStackCloserToViewer();
+		if (OmLocalPreferences::getStickyCrosshairMode()){
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		}
 		break;
 	case Qt::Key_S:
 	case Qt::Key_PageDown:
-		{
-			MoveDownStackFartherFromViewer();
-			if (OmLocalPreferences::getStickyCrosshairMode()){
-				OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-			}
+		MoveDownStackFartherFromViewer();
+		if (OmLocalPreferences::getStickyCrosshairMode()){
+			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 		}
 		break;
 
@@ -856,12 +819,12 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 void OmView2d::resetWindow()
 {
 	SpaceCoord depth = GetVolume().NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-	OmStateManager::SetViewSliceDepth(YZ_VIEW, depth.x);
-	OmStateManager::SetViewSliceDepth(XZ_VIEW, depth.y);
-	OmStateManager::SetViewSliceDepth(XY_VIEW, depth.z);
-	OmStateManager::SetPanDistance(YZ_VIEW, Vector2f(0,0));
-	OmStateManager::SetPanDistance(XZ_VIEW, Vector2f(0,0));
-	OmStateManager::SetPanDistance(XY_VIEW, Vector2f(0,0));			
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
+	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2f(0,0));
+	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2f(0,0));
+	mViewGroupState->SetPanDistance(XY_VIEW, Vector2f(0,0));			
 	if (OmLocalPreferences::getStickyCrosshairMode()){
 		debug("cross","we made it to the great Escape!\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
@@ -882,22 +845,25 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
         DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
        	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 
-	if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
+	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
 		assert(mImageId==segmentationID);
 	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 
 		OmSegment * seg1 = segmentation.GetSegment(segmentID);
 		OmSegment * seg2 = segmentation.GetSegment(segid);
 
+                if(NULL == seg1 || NULL == seg2) {
+                        return;
+                }
+
         	seg1->splitTwoChildren(seg2);
 
-		DendToolBar::SetSplitMode(false);
-        	OmStateManager::SetSystemModePrev();
+		mViewGroupState->SetSplitMode(false);
 	} else {
 	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
-		if (segmentID) {
-			DendToolBar::SetSplitMode(segmentationID, segmentID);
+		if (segmentID && segmentation.GetSegment(segmentID)) {
+				mViewGroupState->SetSplitMode(segmentationID, segmentID);
 		}
 	}
 

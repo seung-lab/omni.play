@@ -1,6 +1,7 @@
 #include "volume/omVolume.h"
 #include "omView2d.h"
 #include "omTextureID.h"
+#include "view2d/omCachingThreadedCachingTile.h"
 
 #include "system/omStateManager.h"
 #include "project/omProject.h"
@@ -15,7 +16,6 @@
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -32,8 +32,8 @@ static QGLWidget *sharedwidget = NULL;
 /**
  *	Constructs View2d widget.
  */
-OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget * parent)
-	: QWidget(parent)
+OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget * parent, OmViewGroupState * vgs)
+	: QWidget(parent), mViewGroupState(vgs)
 {
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget();
 
@@ -73,11 +73,13 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	assert((mVolumeType == CHANNEL) || (mVolumeType == SEGMENTATION));
 
 	if (mVolumeType == CHANNEL) {
+		mViewGroupState->SetChannel( mImageId );
+
 		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		mVolume = &current_channel;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_channel, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -86,12 +88,14 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
+		mViewGroupState->SetSegmentation( mImageId );
+
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
 		mVolume = &current_seg;
 		mSeg = &current_seg;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, image_id, &current_seg, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -208,7 +212,7 @@ void OmView2d::paintEvent(QPaintEvent *)
 
 	QTime t;
 	t.start();
-	float zoomFactor = OmStateManager::Instance()->GetZoomLevel().y / 10.0;
+	float zoomFactor = mViewGroupState->GetZoomLevel().y / 10.0;
 
 	mImage = safePaintEvent();
 	painter.begin(this);
@@ -283,7 +287,7 @@ void OmView2d::displayInformation( QString & elapsedTime )
 		painter.drawText(QPoint(xoffset, mTotalViewport.height - 65), str);
 	}
 
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 	str = QString::number(zoomMipVector.x, 'f', 2) + QString(" Level");
 	painter.drawText(QPoint(xoffset, mTotalViewport.height - 55), str);
 
@@ -492,7 +496,7 @@ static bool BrushTool32[32][32] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE seg)
+void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 {
 	DataCoord off;
 
@@ -575,7 +579,6 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE 
 	}
 }
 
-
 // FIXME: what is going on here? why does it work??
 void OmView2d::SetDepth(QMouseEvent * event)
 {
@@ -585,9 +588,9 @@ void OmView2d::SetDepth(QMouseEvent * event)
 	debug ("cross", "click event x,y (%i, %i)\n", clickPoint.x, clickPoint.y);
 	debug ("cross", "screenc x,y (%i, %i)\n", screenc.x, screenc.y);
 	debug ("cross", "newDepth x,y,z (%f, %f, %f)\n", newDepth.x, newDepth.y,newDepth.z);
-	OmStateManager::Instance()->SetViewSliceDepth(XY_VIEW, newDepth.z);
-	OmStateManager::Instance()->SetViewSliceDepth(XZ_VIEW, newDepth.y);
-	OmStateManager::Instance()->SetViewSliceDepth(YZ_VIEW, newDepth.x);
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, newDepth.z);
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, newDepth.y);
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, newDepth.x);
 
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 }
@@ -596,7 +599,7 @@ void OmView2d::SetDepth(QMouseEvent * event)
 /////////////////////////////////
 ///////          Edit Mode Methods
 
-void OmView2d::FillToolFill(OmId seg, DataCoord gCP, SEGMENT_DATA_TYPE fc, SEGMENT_DATA_TYPE bc, int depth)
+void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int depth)
 {
 
 	DataCoord off;
@@ -659,11 +662,11 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value = 0;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -679,11 +682,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		break;
 	}
 
-	//debug("FIXME", << "first data coord = " << first << endl;
-	//debug("FIXME", << "second data coord = " << second << endl;
-	//debug("FIXME", << endl;
-
-	float mDepth = OmStateManager::Instance()->GetViewSliceDepth(mViewType);
+	float mDepth = mViewGroupState->GetViewSliceDepth(mViewType);
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
 	int mViewDepth = data_coord.z;
 
@@ -829,7 +828,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 void OmView2d::SetViewSliceOnPan()
 {
 	Vector2f translateVector = GetPanDistance(mViewType);
-	Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 
 	float pl = OMPOW(2, zoomMipVector.x);
 	float scaleFactor = zoomMipVector.y / 10.0;
@@ -844,11 +843,11 @@ void OmView2d::SetViewSliceOnPan()
 	SpaceCoord maxSpaceCoord = DataToSpaceCoord(DataCoord(maxCoord.x, maxCoord.y, 0));
 
 	if (mViewType == YZ_VIEW) {
-		OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.y, maxSpaceCoord.x), false);
-		OmStateManager::SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.y, minSpaceCoord.x), false);
+		mViewGroupState->SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.y, maxSpaceCoord.x), false);
+		mViewGroupState->SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.y, minSpaceCoord.x), false);
 	} else {
-		OmStateManager::SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.x, maxSpaceCoord.y), false);
-		OmStateManager::SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.x, minSpaceCoord.y), false);
+		mViewGroupState->SetViewSliceMax(mViewType, Vector2f(maxSpaceCoord.x, maxSpaceCoord.y), false);
+		mViewGroupState->SetViewSliceMin(mViewType, Vector2f(minSpaceCoord.x, minSpaceCoord.y), false);
 	}
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
@@ -861,7 +860,7 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 	Vector2f newPan;
 
 	// Do the Zoom
-	OmStateManager::Instance()->SetZoomLevel(new_zoom);
+	mViewGroupState->SetZoomLevel(new_zoom);
 
 	if (OmLocalPreferences::getStickyCrosshairMode()){
 		SetViewSliceOnPan();
@@ -873,9 +872,9 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
         ViewType vts[] = { XY_VIEW, YZ_VIEW, XZ_VIEW };
 
         for (int i = 0; i < 3; i++) {
-                Vector2 < int >pro_zoom = OmStateManager::Instance()->GetZoomLevel();
-                int widthTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).x;
-                int heightTranslate = OmStateManager::Instance()->GetPanDistance(vts[i]).y;
+                Vector2 < int >pro_zoom = mViewGroupState->GetZoomLevel();
+                int widthTranslate = mViewGroupState->GetPanDistance(vts[i]).x;
+                int heightTranslate = mViewGroupState->GetPanDistance(vts[i]).y;
 
                 if (pro_zoom.x > new_zoom.x) {
                         widthTranslate = widthTranslate / 2;
@@ -885,7 +884,7 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
                         heightTranslate = heightTranslate * 2;
                 }
 
-                OmStateManager::Instance()->SetPanDistance(vts[i], Vector2 < int >(widthTranslate, heightTranslate),
+                mViewGroupState->SetPanDistance(vts[i], Vector2 < int >(widthTranslate, heightTranslate),
                                                            postEvent);
         }
 	SetViewSliceOnPan();
@@ -988,11 +987,11 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 
 			if (mentationEditId == mImageId) {
 
-				const Vector3 < float >&color =
-				    OmProject::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColor();
-
+				OmColor color =
+				    OmProject::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColorInt();
+				
 				////debug("genone","SETTING EDIT COLOR");
-				editColor = qRgba(color.x * 255, color.y * 255, color.z * 255, 255);
+				editColor = qRgba(color.red, color.green, color.blue, 255);
 			}
 		}
 	}
@@ -1010,21 +1009,24 @@ void OmView2d::myUpdate()
 	}
 
 	if (!mDoRefresh && mEditedSegmentation) {
-		Vector2i zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+		Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 		int tileLength = OmProject::GetSegmentation(mEditedSegmentation).GetChunkDimension();
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mEditedSegmentation);
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL, mViewGroupState);
 		OmThreadedCachingTile *cache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
 
 		mTextures.clear();
 
-		int xMipChunk, xSave = -1;
-		int yMipChunk, ySave = -1;
-		int zMipChunk, zSave = -1;
+		int xMipChunk = -1;
+		int xSave = -1;
+		int yMipChunk = -1;
+		int ySave = -1;
+		int zMipChunk = -1;
+		int zSave = -1;
 		int step = 1;
 		for (int x = mBrushToolMinX; x <= mBrushToolMaxX; x = x + step) {
 			for (int y = mBrushToolMinY; y <= mBrushToolMaxY; y = y + step) {
@@ -1082,7 +1084,7 @@ void OmView2d::myUpdate()
 ///////		 Draw Methods
 void OmView2d::DrawFromFilter(OmFilter2d &filter)
 {
-	OmThreadedCachingTile *cache = filter.GetCache(mViewType);
+	OmThreadedCachingTile *cache = filter.GetCache(mViewType, mViewGroupState);
 	if (!cache)
 		return;
 
@@ -1105,7 +1107,7 @@ void OmView2d::DrawFromCache()
 		mVolume = &current_channel;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -1119,7 +1121,7 @@ void OmView2d::DrawFromCache()
 		mVolume = &current_seg;
 
 		OmCachingThreadedCachingTile *fastCache =
-		    new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -1250,7 +1252,7 @@ void OmView2d::Draw()
 {
 	drawComplete = true;
 
-	Vector2f zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2f zoomMipVector = mViewGroupState->GetZoomLevel();
 	if (0) {
 		Vector2f zoom = zoomMipVector;
 		Vector2f translateVector = GetPanDistance(mViewType);
@@ -1263,14 +1265,14 @@ void OmView2d::Draw()
 			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
 			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
 
-			OmStateManager::Instance()->SetPanDistance(mViewType,
+			mViewGroupState->SetPanDistance(mViewType,
 								   Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
 									 translateVector.y / (1 + i - zoomMipVector.x)),
 								   false);
 
 			PreDraw(zoom);
 		}
-		OmStateManager::Instance()->SetPanDistance(mViewType,
+		mViewGroupState->SetPanDistance(mViewType,
 							   Vector2f(translateVector.x, translateVector.y),
 							   false);
 	}
@@ -1286,7 +1288,7 @@ int OmView2d::GetDepth(const OmTileCoord & key)
 	// find depth
 	NormCoord normCoord = GetVolume().SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = GetVolume().NormToDataCoord(normCoord);
-	Vector2f mZoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	Vector2f mZoomMipVector = mViewGroupState->GetZoomLevel();
 	float factor=OMPOW(2,mZoomMipVector.x);
 
 	int ret;
@@ -1300,6 +1302,8 @@ int OmView2d::GetDepth(const OmTileCoord & key)
 		break;
 	case YZ_VIEW:
 		ret = (int)(dataCoord.x/factor);
+	default:
+		assert(0);
 	}
 
 	return ret;
@@ -1311,34 +1315,34 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	unsigned int freshness = 0;
 	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
 
-	//zoomMipVector = OmStateManager::Instance()->GetZoomLevel();
+	//zoomMipVector = mViewGroupState->GetZoomLevel();
 
 	Vector2f translateVector = GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
-		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.z;
 		break;
 	case XZ_VIEW:
-		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.y;
 		break;
 	case YZ_VIEW:
-		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.x;
 		break;
 	}
 
 	
-	int tileLength;
+	int tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -1444,27 +1448,27 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
-		depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.z;
 		break;
 	case XZ_VIEW:
-		depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
+		depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.y;
 		break;
 	case YZ_VIEW:
-		depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
+		depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
 		data_coord = SpaceToDataCoord(depth);
 	        mDataDepth = data_coord.x;
 		break;
 	}
 
 	
-	int tileLength;
+	int tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -1560,7 +1564,7 @@ void OmView2d::TextureDraw(vector < Drawable * >&textures)
 			safeDraw(d->zoomFactor, d->x, d->y, d->tileLength, d->gotten_id);
 			delete (d);
 			if (0 && SEGMENTATION == d->gotten_id->mVolType
-			  && OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
+			    && OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
 				OmTileCoord coord = d->gotten_id->mTileCoordinate;
 				d->gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
 				d->mGood = false;
@@ -1585,9 +1589,9 @@ void OmView2d::DrawCursors()
 {
 	// convert mCenter to data coordinates
 	SpaceCoord depth;
-	depth.x = OmStateManager::Instance()->GetViewSliceDepth(YZ_VIEW);
-	depth.y = OmStateManager::Instance()->GetViewSliceDepth(XZ_VIEW);
-	depth.z = OmStateManager::Instance()->GetViewSliceDepth(XY_VIEW);
+	depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
+	depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
+	depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 
 
 	ScreenCoord screenc = SpaceToScreenCoord(mViewType,depth);
@@ -1595,21 +1599,21 @@ void OmView2d::DrawCursors()
 	switch (mViewType) {
 	case XY_VIEW:
 		painter.setPen(Qt::red);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+		painter.drawLine(mTotalViewport.width/2,0,mTotalViewport.width/2,mTotalViewport.height);
 		painter.setPen(Qt::green);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
 	case XZ_VIEW:
 		painter.setPen(Qt::red);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+ 		painter.drawLine(mTotalViewport.width/2,0,mTotalViewport.width/2,mTotalViewport.height);
 		painter.setPen(Qt::blue);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
 	case YZ_VIEW:
 		painter.setPen(Qt::blue);
-		painter.drawLine(screenc.x,0,screenc.x,mTotalViewport.height);
+		painter.drawLine(mTotalViewport.width/2,0,mTotalViewport.width/2,mTotalViewport.height);
 		painter.setPen(Qt::green);
-		painter.drawLine(0,screenc.y,mTotalViewport.width,screenc.y);
+       		painter.drawLine(0,mTotalViewport.height/2,mTotalViewport.width,mTotalViewport.height/2);
 		break;
 	}
 }

@@ -25,17 +25,17 @@ int SegmentList::getNumSegmentsPerPage()
 	return 100;
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+QList< OmSegID > * SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
 {
 	int offset = firstSegmentID - (firstSegmentID % mNumSegmentsPerPage );
 	return doGetSegmentsToDisplay( offset );
 }
 
-QList< SEGMENT_DATA_TYPE > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
+QList< OmSegID > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	SegmentationDataWrapper sdw = currentSDW;
 	OmSegmentation & segmentation = OmProject::GetSegmentation( sdw.getID() );
-	QList <SEGMENT_DATA_TYPE> * mysegmentIDs = new QList <SEGMENT_DATA_TYPE>();
+	QList <OmSegID> * mysegmentIDs = new QList <OmSegID>();
 
 	mNumSegments = segmentation.GetNumSegments();
 
@@ -77,7 +77,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	QList< SEGMENT_DATA_TYPE > * segs = getSegmentsToDisplay( segmentJustSelectedID );
+	QList< OmSegID > * segs = getSegmentsToDisplay( segmentJustSelectedID );
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();
@@ -86,7 +86,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	foreach(SEGMENT_DATA_TYPE segID, (*segs)) {
+	foreach(OmSegID segID, (*segs)) {
 		SegmentDataWrapper seg(  sdw.getID(), segID );
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);

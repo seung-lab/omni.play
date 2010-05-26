@@ -10,9 +10,9 @@
 #include "common/omDebug.h"
 
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
-                                             const QGLContext * shareContext)
-  : OmTile(viewtype, voltype, image_id, vol), 
-    TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
+                                             const QGLContext * shareContext, OmViewGroupState * vgs)
+	: OmTile(viewtype, voltype, image_id, vol, vgs), 
+	  TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
 {
 	// omView2d passes in its own context
 
@@ -95,9 +95,4 @@ bool OmThreadedCachingTile::InitializeFetchThread()
 void OmThreadedCachingTile::HandleFetchUpdate()
 {
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-}
-
-void OmThreadedCachingTile::subImageTex( set < DataCoord > &vox )
-{
-	ReplaceTextureRegion(vox);
 }

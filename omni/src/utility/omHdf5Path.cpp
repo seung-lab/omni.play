@@ -6,21 +6,15 @@ OmHdf5Path::OmHdf5Path()
 
 void OmHdf5Path::setPath( std::string str )
 {
-	mPath = QString::fromStdString(str);
+	mPath = str;
 }
 
 void OmHdf5Path::setPathQstr( QString str )
 {
-        mPath = str;
+        mPath = str.toStdString();
 }
 
-
-std::string OmHdf5Path::getString()
-{
-	return mPath.toStdString();
-}
-
-QString OmHdf5Path::getStringQStr()
+const std::string & OmHdf5Path::getString() const
 {
 	return mPath;
 }

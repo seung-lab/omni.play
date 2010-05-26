@@ -21,6 +21,7 @@ OmGenericManager<T>::~OmGenericManager()
 	}
 }
 
+extern void myBacktrace(int);
 /*
  *	Get object with given OmId from manager
  */
@@ -32,6 +33,8 @@ OmGenericManager<T>::Get(OmId omId)
 	if( !mMap.contains(omId) ){
 		throw OmAccessException("Cannot get object with id: " + omId);
 	}
+
+	//myBacktrace(0);
 	
 	//else return ref to volume
 	return *mMap[omId];

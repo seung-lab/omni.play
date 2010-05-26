@@ -12,7 +12,7 @@
 class OmMipMeshCoord {
  public:
 	OmMipMeshCoord();
-	OmMipMeshCoord( const OmMipChunkCoord&, SEGMENT_DATA_TYPE );
+	OmMipMeshCoord( const OmMipChunkCoord&, OmSegID );
 	
 	void operator=( const OmMipMeshCoord& rhs );
 	bool operator==( const OmMipMeshCoord& rhs ) const;
@@ -20,7 +20,7 @@ class OmMipMeshCoord {
 	bool operator<( const OmMipMeshCoord& rhs ) const;
 		
 	OmMipChunkCoord MipChunkCoord;
-	SEGMENT_DATA_TYPE DataValue;
+	OmSegID DataValue;
 	
 	friend ostream& operator<<(ostream &out, const OmMipMeshCoord &in);
 	

@@ -10,34 +10,22 @@
 #include "utility/stringHelpers.h"
 #include "segment/omSegmentCache.h"
 #include "utility/omDataPaths.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "volume/omMipChunkCoord.h"
+#include "utility/omHdf5Path.h"
+#include "system/viewGroup/omViewGroupState.h"
 
-OmSegment::OmSegment( SEGMENT_DATA_TYPE value, OmSegmentCache* cache)
-	: mValue(value), mCache(cache)
+OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
+	: mValue(value), mCache(cache), mParentSegID(0)
 {
-	assert(cache && "must have cache in the segments");
 	SetInitialColor();
-
-	mParentSegID = 0;
-
-	mCachedColor.red = 0;
-	mCachedColor.green = 0;
-	mCachedColor.blue = 0;
-	mCachedColorFreshness = 0;
 }
 
-OmSegment::OmSegment(OmSegmentCache* cache)
-	:  mCache(cache)
+OmSegment::OmSegment(OmSegmentCache * cache)
+	:  mCache(cache), mParentSegID(0)
 {
-	mParentSegID = 0;
 }
 
-void OmSegment::Join(OmSegment * childUnknownLevel, float threshold )
-{
-	mCache->Join( this, childUnknownLevel, threshold );
-}
-
-void OmSegment::setParent(OmSegment * parent, float threshold)
+void OmSegment::setParent(OmSegment * parent, const float threshold)
 {
 	if( mParentSegID ){
 		assert(0);
@@ -47,7 +35,7 @@ void OmSegment::setParent(OmSegment * parent, float threshold)
 	mThreshold = threshold;
 }
 
-SEGMENT_DATA_TYPE OmSegment::getValue()
+const OmSegID & OmSegment::getValue()
 {
 	return mValue;
 }
@@ -56,37 +44,41 @@ SEGMENT_DATA_TYPE OmSegment::getValue()
 ///////         Color
 void OmSegment::SetInitialColor()
 {
+	Vector3<float> color;
+
 	//initially random color
 	do {
-		mColor.randomize();
-	} while ((mColor.x * 255 > 255 && mColor.y * 255 > 255 && mColor.z * 255 > 255) &&
-		 (mColor.x * 255 < 55 && mColor.y * 255 < 55 && mColor.z * 255 < 55));
+		color.randomize();
+	} while ((color.x * 255 > 255 && color.y * 255 > 255 && color.z * 255 > 255) &&
+		 (color.x * 255 < 55 && color.y * 255 < 55 && color.z * 255 < 55));
 
-	mColor.x /= 2;
-	mColor.y /= 2;
-	mColor.z /= 2;
+	color.x /= 2;
+	color.y /= 2;
+	color.z /= 2;
+
+	mColorInt.red   = color.x * 255;
+	mColorInt.green = color.y * 255;
+	mColorInt.blue  = color.z * 255;
 }
 
-void OmSegment::SetColor(const Vector3 < float >&rColor)
+void OmSegment::SetColor(const Vector3 < float >& color)
 {
-	if( mParentSegID ){
-		mCache->findRoot( this )->SetColor(rColor);
-		return;
-	}
-
-	mColor = rColor;
+	mColorInt.red   = color.x * 255;
+	mColorInt.green = color.y * 255;
+	mColorInt.blue  = color.z * 255;
 	mCache->addToDirtySegmentList(this);
 }
 
-void OmSegment::ApplyColor(const OmBitfield & drawOps)
+void OmSegment::ApplyColor(const OmBitfield & drawOps, OmViewGroupState * vgs)
 {
-	if( mParentSegID ){
-		mCache->findRoot( this )->ApplyColor(drawOps);
+	if( mParentSegID && !(vgs && vgs->GetSplitMode())){
+		mCache->findRoot( this )->ApplyColor(drawOps, vgs);
 		return;
 	}
-	//debug("mesh", "applying color\n");
 
-	Vector3<float> hyperColor = mColor;
+	Vector3<float> hyperColor;
+	hyperColor = GetColorFloat();
+
 	hyperColor.x *= 2.;
 	hyperColor.y *= 2.;
 	hyperColor.z *= 2.;
@@ -104,7 +96,7 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		static int dir = 1;
 		
 		glEnable(GL_BLEND);
-		glColor3fva(hyperColor.array, s/200+.4);
+		glColor3fva(hyperColor.array, (s)/200+.4);
 		s += .1*dir;
 		if (s > 60) dir = -1;
 		if (s < 10) dir = 1;
@@ -115,75 +107,63 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 	}
 }
 
-const Vector3 < float >& OmSegment::GetColor()
-{
-	if(mParentSegID) {
-		return mCache->findRoot( this )->GetColor();
-	}
-
-	return mColor;
-}
-
 QString OmSegment::GetNote()
 {
-	QString customNote = mCache->getSegmentNote( getValue() );
+	QString customNote = mCache->getSegmentNote( mValue );
 
 	if( mParentSegID ){
-		customNote += "Parent: " + QString::number(mParentSegID) + "; ";
+		customNote += "Parent: " 
+			+ QString::number(mParentSegID) 
+			+ "; ";
 	}
 
 	if( !segmentsJoinedIntoMe.empty() ){
-                customNote += "Number of Children: ";
-                customNote += QString::number( segmentsJoinedIntoMe.size() );
-		customNote += "; ";
+                customNote += "Number of Children: "
+			+ QString::number( segmentsJoinedIntoMe.size() )
+			+ "; ";
 	}
 
 	return customNote;
 }
 
-void OmSegment::SetNote(QString note)
+void OmSegment::SetNote(const QString & note)
 {
-	mCache->setSegmentNote( getValue(), note );
+	mCache->setSegmentNote( mValue, note );
 }
 
 QString OmSegment::GetName()
 {
-	return mCache->getSegmentName( getValue() );
+	return mCache->getSegmentName( mValue );
 }
 
-void OmSegment::SetName(QString name)
+void OmSegment::SetName(const QString & name)
 {
-	mCache->setSegmentName( getValue(), name );
+	mCache->setSegmentName( mValue, name );
 }
 
 bool OmSegment::IsSelected()
 {
-	return mCache->isSegmentSelected( getValue() );
+	return mCache->isSegmentSelected( mValue );
 }
 
-void OmSegment::SetSelected( bool isSelected )
+void OmSegment::SetSelected( const bool isSelected )
 {
-	mCache->setSegmentSelected( getValue(), isSelected );
+	mCache->setSegmentSelected( mValue, isSelected );
 }
 
 bool OmSegment::IsEnabled()
 {
-	return mCache->isSegmentEnabled( getValue() );
+	return mCache->isSegmentEnabled( mValue );
 }
 
-void OmSegment::SetEnabled(bool isEnabled)
+void OmSegment::SetEnabled( const bool isEnabled)
 {
-	mCache->setSegmentEnabled( getValue(), isEnabled );
+	mCache->setSegmentEnabled( mValue, isEnabled );
 }
 
 OmId OmSegment::getSegmentationID()
 {
 	return mCache->getSegmentationID();
-}
-
-OmId OmSegment::getParent()
-{
-	return mParentSegID;
 }
 
 void OmSegment::splitChildLowestThreshold()

@@ -8,63 +8,79 @@
  */
 
 #include "common/omCommon.h"
-#include "system/omManageableObject.h"
-#include "volume/omMipChunkCoord.h"
-#include "utility/omHdf5Path.h"
+#include <queue>
 
 class OmSegmentCache;
+class OmMipChunkCoord;
+class OmViewGroupState;
+
+typedef struct {
+	OmSegID segID;
+	float threshold;
+} OmSegQueueElement;
+
+class OmSegQueueComparator {
+ public:
+	bool operator() (const OmSegQueueElement & lhs, const OmSegQueueElement & rhs) const
+	{
+		return lhs.threshold < rhs.threshold;
+	}
+};
 
 class OmSegment {
 
 public:
-	OmSegment(SEGMENT_DATA_TYPE value, OmSegmentCache * cache);
+	OmSegment(const OmSegID & value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
 	void splitChildLowestThreshold();
 	void splitTwoChildren(OmSegment * seg);
 
 	//accessors
-	const Vector3<float>& GetColor();
+	const OmColor & GetColorInt(){ return mColorInt; }
+	Vector3<float> GetColorFloat(){
+		return 	Vector3<float>( mColorInt.red / 255.,
+					mColorInt.green / 255.,
+					mColorInt.blue / 255. );
+	}
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
-	void ApplyColor(const OmBitfield &drawOps);
+	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs);
 
-	SEGMENT_DATA_TYPE getValue();
+	const OmSegID & getValue();
 
 	QString GetNote();
-	void SetNote(QString);
+	void SetNote(const QString &);
 	QString GetName();
-	void SetName(QString);
+	void SetName(const QString &);
 	bool IsSelected();
-	void SetSelected(bool isSelected);
+	void SetSelected(const bool);
 	bool IsEnabled();
-	void SetEnabled(bool);
+	void SetEnabled( const bool);
 
-	void Join(OmSegment *, float threshold = 0);
-	void setParent(OmSegment * segment, float threshold);
-	OmId getParent();
+	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
 	float getThreshold();
 
 private:
 
-	SEGMENT_DATA_TYPE mValue;
+	OmSegID mValue;
 	OmSegmentCache * mCache;
 
-	Vector3<float> mColor;
+	OmColor mColorInt;
 
-	QList<OmId> segmentsJoinedIntoMe;
+	OmSegIDs segmentsJoinedIntoMe;
+	std::priority_queue< OmSegQueueElement, std::vector<OmSegQueueElement>, OmSegQueueComparator > queue;
+
 	OmId mParentSegID;
 	float mThreshold;
 
-	OmColor mCachedColor;
-	quint32 mCachedColorFreshness;
-	
 	void SetInitialColor();
 
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
 };

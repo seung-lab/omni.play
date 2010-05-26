@@ -9,6 +9,7 @@
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 #include <vtkImageData.h>
 #include <QGLContext>
@@ -110,23 +111,25 @@ bool OmMipMeshManager::InitializeFetchThread()
 
 void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
 				  const OmMipChunkCoord & mipCoord, 
-				  QList< OmSegment *> segmentsToDraw )
+				  const OmSegPtrs  & segmentsToDraw,
+				  OmViewGroupState * vgs)
 {
-	foreach( OmSegment * seg, segmentsToDraw ){
+	std::vector<OmSegment*>::const_iterator iter;
+	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 
 		//get pointer to mesh
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		GetMesh(p_mesh, OmMipMeshCoord(mipCoord, seg->getValue() ));
+		GetMesh(p_mesh, OmMipMeshCoord(mipCoord, (*iter)->getValue() ));
 
 		if (NULL == p_mesh) {
 			continue;
 		}
 
 		//apply segment color
-		seg->ApplyColor(drawOps);
+		(*iter)->ApplyColor(drawOps, vgs);
 
 		//draw mesh
-		glPushName(seg->getValue());
+		glPushName((*iter)->getValue());
 		glPushName(OMGL_NAME_MESH);
 
 		p_mesh->Draw(true);

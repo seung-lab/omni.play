@@ -33,15 +33,16 @@ OmProject::~OmProject()
 OmProject *OmProject::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmProject;
+		mspInstance = new OmProject();
 	}
 	return mspInstance;
 }
 
 void OmProject::Delete()
 {
-	if (mspInstance)
+	if (mspInstance) {
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 
@@ -77,12 +78,13 @@ void OmProject::Save()
 
 	//TODO: move this into omProjectData
 
-	foreach( OmId segID, OmProject::GetValidSegmentationIds() ){
+	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 	}
 
 	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
-	
+
+	OmProjectData::GetDataWriter()->flush();
 }
 
 void OmProject::Commit()
@@ -110,14 +112,16 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		OmDataArchiveQT::ArchiveRead(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
-		throw OmIoException("error during load of project metadata");
+		throw;
 	}
 
-	//OmVolume::CheckDataResolution();
 }
 
 void OmProject::Close()
 {
+	// OmProject must be deleted first: it depends on the remaining classes...
+	Delete();
+
 	//delete all singletons
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();
@@ -129,8 +133,6 @@ void OmProject::Close()
 	//close project data
 	OmProjectData::Close();
 	OmProjectData::Delete();
-
-	//delete(Instance());
 }
 
 
@@ -194,9 +196,9 @@ OmSegmentation & OmProject::AddSegmentation()
 
 void OmProject::RemoveSegmentation(OmId id)
 {
-        foreach(OmId channelID, OmProject::GetValidChannelIds()) {
+        foreach( const OmId & channelID, OmProject::GetValidChannelIds()) {
                 OmChannel & channel = OmProject::GetChannel(channelID);
-                foreach(OmId filterID, channel.GetValidFilterIds()) {
+                foreach( const OmId & filterID, channel.GetValidFilterIds()) {
                         OmFilter2d &filter = channel.GetFilter(filterID);
                         if (filter.GetSegmentation() == id){
                                 filter.SetSegmentation(0);
@@ -230,10 +232,10 @@ void OmProject::SetSegmentationEnabled(OmId id, bool enable)
         Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
 
-void OmProject::Draw(OmVolumeCuller & rCuller)
+void OmProject::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 {
-        foreach( OmId id, Instance()->mSegmentationManager.GetEnabledIds() ){
-                GetSegmentation( id ).Draw( rCuller);
+        foreach( const OmId & id, Instance()->mSegmentationManager.GetEnabledIds() ){
+                GetSegmentation(id).Draw(rCuller, vgs);
         }
 
 

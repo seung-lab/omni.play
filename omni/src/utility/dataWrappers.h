@@ -10,36 +10,25 @@
 
 class SegmentDataWrapper;
 class FilterDataWrapper;
+class OmSegmentCache;
 
-class DataWrapper
-{
- public:
-
-	DataWrapper(){}
-	DataWrapper( const OmId ID, const ObjectType Type )
-		: mID(ID), mType(Type) {}
-
-	OmId getID()     {    return mID;   }
-	QString getName(){    return mName; }
-	ObjectType getType(){ return mType; }
-	bool isEnabled()    { return mEnabled; }
- protected:
-	OmId mID;
-	QString mName;
-	ObjectType mType;
-	bool mEnabled;
-};
-
-class ChannelDataWrapper : public DataWrapper 
+class ChannelDataWrapper
 {
  public:
 	ChannelDataWrapper(){}
 	ChannelDataWrapper( const OmId mID );
 	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
 	QString getNote();
+	QString getName();
+	bool isEnabled();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
+ private:
+	OmId mID;
+	ObjectType mType;
 };
 
-class SegmentationDataWrapper : public DataWrapper 
+class SegmentationDataWrapper
 {
  public:
 	SegmentationDataWrapper(){}
@@ -48,15 +37,25 @@ class SegmentationDataWrapper : public DataWrapper
 	QString getNote();
 	unsigned int getNumberOfSegments();
 	unsigned int getNumberOfTopSegments();
+	OmSegmentCache * getSegmentCache();
+	QString getName();
+	bool isEnabled();
 	//	QString GetSourceDirectoryPath();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
+ private:
+	OmId mID;
+	ObjectType mType;
 };
 
-class SegmentDataWrapper : public DataWrapper 
+class SegmentDataWrapper
 {
  public:
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
 			    const OmId segmentID );
+	QString getName();
+
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
 	
@@ -72,33 +71,40 @@ class SegmentDataWrapper : public DataWrapper
 	QString getNote();
 	void setNote(QString str);
 	QString getIDstr();
-	const Vector3 < float >& getColor();
+	Vector3 < float > getColor();
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
 	QString get_original_mapped_data_value();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
  private:
+	OmId mID;
+	ObjectType mType;
 	OmId mSegmentationID;
 };
 
-class FilterDataWrapper : public DataWrapper 
+class FilterDataWrapper
 {
  public:
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
-			   const OmId mID,
-			   const QString name,
-			   const bool enabled );
+			   const OmId mID );
 	OmId getChannelID(){ return mChannelID; }
+	QString getName();
 	QString getNote();
+	bool isEnabled();
+	OmId getID()     {    return mID;   }
+	ObjectType getType(){ return mType; }
  private:
+	OmId mID;
+	ObjectType mType;
 	OmId mChannelID;
 };
-
 
 class DataWrapperContainer 
 {
  public:
-	DataWrapperContainer(){}
+	DataWrapperContainer();
 	DataWrapperContainer( const ObjectType obj_type, const OmId obj_id );
 	DataWrapperContainer( SegmentationDataWrapper sdw );
 	ObjectType getType(){ return mType; }
@@ -107,6 +113,7 @@ class DataWrapperContainer
 	ChannelDataWrapper getChannelDataWrapper(){ return cDW; }
 
 	bool isValidContainer();
+
  private:
 	SegmentationDataWrapper segmenDW;
 	ChannelDataWrapper cDW;

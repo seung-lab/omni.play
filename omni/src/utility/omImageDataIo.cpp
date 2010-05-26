@@ -78,7 +78,7 @@ vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader(ImageType type)
 {
 
 	//switch for extention type
-	vtkImageReader2 *reader;
+	vtkImageReader2 * reader = NULL;
 	switch (type) {
 
 	case TIFF_TYPE:

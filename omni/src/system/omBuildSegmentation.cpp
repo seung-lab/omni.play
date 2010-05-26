@@ -123,7 +123,5 @@ void OmBuildSegmentation::loadDendrogram()
 	mSeg->mDendValuesSize = dendValuesSize;
 	mSeg->FlushDend();
 
-	mSeg->mSegmentCache.reloadDendrogram(mSeg->mDend, mSeg->mDendValues, mSeg->mDendCount, .77);
-
 	stopTiming(type);
 }

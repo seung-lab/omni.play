@@ -1,4 +1,5 @@
-#include "guiUtils.h"
+#include "gui/guiUtils.h"
+#include "common/omCommon.h"
 
 Qt::CheckState GuiUtils::getCheckState(const bool enabled)
 {
@@ -11,19 +12,17 @@ Qt::CheckState GuiUtils::getCheckState(const bool enabled)
 
 bool GuiUtils::getBoolState(const Qt::CheckState state)
 {
-	bool ret;
-
 	switch(state) {
 	case Qt::Unchecked:
-		ret = false;
+		return false;
 		break;
 	case Qt::PartiallyChecked:
 	case Qt::Checked:
-		ret = true;
+		return true;
 		break;
 	}
 
-	return ret;
+	assert(0);
 }
 
 void GuiUtils::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)

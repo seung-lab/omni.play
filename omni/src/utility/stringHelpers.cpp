@@ -2,14 +2,14 @@
 
 static const int numOfItemsToAddBeforeLinebreak = 8;
 
-QString StringHelpers::getStringFromSegmentSet( const SegmentDataSet & data_set )
+QString StringHelpers::getStringFromSegmentSet( const OmSegIDs & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
 	}
 
 	QStringList strs;
-	foreach( SEGMENT_DATA_TYPE val, data_set ){
+	foreach( OmSegID val, data_set ){
 		strs << QString::number( val );
 	}
 

@@ -25,10 +25,11 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 	dendToolBar->updateReadOnlyRelatedWidgets();
 }
 
-void ToolBarManager::updateGuiFromPorjectLoadOrOpen()
+void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)
 {
-	navAndEditToolBars->updateGuiFromPorjectLoadOrOpen();
-	dendToolBar->updateGuiFromProjectLoadOrOpen();
+	navAndEditToolBars->updateGuiFromProjectLoadOrOpen(vgs);
+	dendToolBar->updateGuiFromProjectLoadOrOpen(vgs);
+	vgs->SetToolBarManager(this);
 }
 
 void ToolBarManager::SystemModeChangeEvent()
@@ -36,3 +37,9 @@ void ToolBarManager::SystemModeChangeEvent()
 	navAndEditToolBars->SystemModeChangeEvent();
 	dendToolBar->SystemModeChangeEvent();
 }
+
+void ToolBarManager::SetSplittingOff()
+{
+	dendToolBar->SetSplittingOff();
+}
+

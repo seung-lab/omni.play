@@ -38,7 +38,7 @@ public:
 	~OmMesher();
 	
 	void InitMeshingPipeline();
-	void ExtractMesh(OmMipMesh*, SEGMENT_DATA_TYPE);
+	void ExtractMesh(OmMipMesh*, OmSegID);
 	
 private:
 	void BuildMeshFromPolyData( vtkPolyData *pPolyData, OmMipMesh* pMesh, vtkPolyData *pPolyDataTriangles=0);

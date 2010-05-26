@@ -127,6 +127,8 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
            src/project/omProject.h \
+           src/segment/DynamicTree.h \
+           src/segment/DynamicTreeContainer.h \
            src/segment/omSegment.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \
@@ -147,6 +149,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/omFetchingThread.h \
            src/system/omGarbage.h \
            src/system/omGenericManager.h \
+           src/system/omGroups.h \
+           src/system/omGroup.h \
            src/system/omLocalPreferences.h \
            src/system/omManageableObject.h \
            src/system/omPreferenceDefinitions.h \
@@ -156,8 +160,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/omThreadedCache.h \
            src/utility/biSetMap.h \
            src/utility/dataWrappers.h \
-           src/utility/DynamicTree.h \
-           src/utility/DynamicTreeContainer.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omDataArchiveCoords.h \
@@ -166,6 +168,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/omDataArchiveQT.h \
            src/utility/omDataArchiveSegment.h \
            src/utility/omDataArchiveVmml.h \
+           src/utility/omDataArchiveBoost.h \
            src/utility/omDataPaths.h \
            src/utility/omDataLayer.h \
            src/utility/omDataReader.h \
@@ -190,6 +193,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/drawable.h \
            src/view2d/omTextureID.h \
            src/view2d/omThreadedCachingTile.h \
+           src/view2d/omCachingThreadedCachingTile.h \
            src/view2d/omTile.h \
            src/view2d/omTileCoord.h \
            src/view2d/omView2d.h \
@@ -230,7 +234,6 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferences3d.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
-           src/gui/preferences/volumeInspector.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -239,21 +242,13 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/system/events/omVoxelEvent.h \
-           src/system/viewGroup/omColormap.h \
-           src/system/viewGroup/omColormapperRule.h \
-           src/system/viewGroup/omColormaps.h \
-           src/system/viewGroup/omGroup.h \
-           src/system/viewGroup/omGroups.h \
-           src/system/viewGroup/omLayer.h \
-           src/system/viewGroup/omViewGroup.h \
-           src/system/viewGroup/omViewList.h \
+           src/system/viewGroup/omViewGroupState.h \
            src/view3d/widgets/omChunkExtentWidget.h \
            src/view3d/widgets/omInfoWidget.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/segment/actions/edit/omEditSelectionSetAction.h \
-           src/segment/actions/segment/omSegmentMergeAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSelectionAction.h \
            src/segment/actions/segment/omSegmentStateAction.h \
@@ -294,6 +289,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/project/omProject.cpp \
+           src/segment/DynamicTree.cpp \
+           src/segment/DynamicTreeContainer.cpp \
            src/segment/omSegment.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
@@ -322,7 +319,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omThreadedCache.cpp \
            src/system/templatedClasses.cpp \
            src/utility/dataWrappers.cpp \
-           src/utility/DynamicTree.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \
            src/utility/omDataArchiveCoords.cpp \
@@ -331,6 +327,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/omDataArchiveQT.cpp \
            src/utility/omDataArchiveSegment.cpp \
            src/utility/omDataArchiveVmml.cpp \
+           src/utility/omDataArchiveBoost.cpp \
            src/utility/omDataPaths.cpp \
            src/utility/omDataLayer.cpp \
            src/utility/omDummyWriter.cpp \
@@ -389,7 +386,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/preferences/preferences2d.cpp \
            src/gui/preferences/preferences3d.cpp \
            src/gui/preferences/preferencesMesh.cpp \
-           src/gui/preferences/volumeInspector.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \
@@ -398,12 +394,12 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
            src/system/events/omVoxelEvent.cpp \
+           src/system/viewGroup/omViewGroupState.cpp \
            src/view3d/widgets/omChunkExtentWidget.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/segment/actions/edit/omEditSelectionSetAction.cpp \
-           src/segment/actions/segment/omSegmentMergeAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentStateAction.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \
@@ -413,19 +409,30 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omThreadedCache.cpp \
            src/system/omFetchingThread.cpp \
            src/system/omGenericManager.cpp \
-           src/utility/DynamicTree.cpp \
-           src/utility/DynamicTreeContainer.cpp
+           src/system/omGroups.cpp \
+           src/system/omGroup.cpp \
 
 RESOURCES += src/gui/resources.qrc
 
+INCLUDEPATH = src include lib
 
+LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF 
 
 win32 {
-INCLUDEPATH = src include c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include lib C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF -lgdi32 
+
+INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
+
+LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  
+LIBS += -lgdi32 
+
 } else {
-INCLUDEPATH = src include ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include lib
-LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF -lz
+
+INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
+
+INCLUDEPATH += ../external/headers/boost_1_43_0
+
+LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  
+LIBS += -lz
 }
 
 OBJECTS_DIR = build
@@ -440,4 +447,3 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
-

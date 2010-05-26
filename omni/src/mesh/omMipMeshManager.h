@@ -8,8 +8,7 @@
 
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
-#include "segment/omSegment.h"
-#include "common/omStd.h"
+#include "segment/omSegmentCache.h"
 #include "system/omThreadedCache.h"
 
 typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
@@ -18,6 +17,7 @@ class OmMipChunk;
 class OmMipChunkCoord;
 class OmMeshSource;
 class QGLContext;
+class OmViewGroupState;
 
 class OmMipMeshManager : public MipMeshCache {
 
@@ -37,7 +37,8 @@ class OmMipMeshManager : public MipMeshCache {
 	//drawing
 	void DrawMeshes(const OmBitfield &drawOps,
 			const OmMipChunkCoord &mipCoord,
-			QList< OmSegment* > segmentsToDraw );
+			const OmSegPtrs & segmentsToDraw,
+			OmViewGroupState * vgs);
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);

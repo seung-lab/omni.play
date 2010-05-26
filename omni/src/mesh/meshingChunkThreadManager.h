@@ -17,11 +17,11 @@ class MeshingChunkThreadManager : public QThread
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;
 
-	SEGMENT_DATA_TYPE getNextSegmentValueToMesh();
+	OmSegID getNextSegmentValueToMesh();
 	unsigned int getNumSegmentValuesLeftToMesh();
 
  private:
-	SegmentDataSet valuesToMesh;
+	OmSegIDs valuesToMesh;
 	OmMipChunkCoord mCoord;
 	OmMipChunkCoord mMipCoord;
 	void setupValuesToMesh( QExplicitlySharedDataPointer < OmMipChunk > chunk );

@@ -26,9 +26,7 @@ public:
 	OmId GetChannel();
 	void SetChannel (OmId id);
 
-	OmFilter2d (OmId segid, OmId chanid, OmId filterid);
-	
-	OmThreadedCachingTile * GetCache (ViewType);
+	OmThreadedCachingTile * GetCache (ViewType, OmViewGroupState *);
 	
 private:
 	double mAlpha;

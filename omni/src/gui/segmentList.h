@@ -62,8 +62,8 @@ private:
 
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
-	QList< SEGMENT_DATA_TYPE > * getSegmentsToDisplay( const OmId firstSegmentID );
-	QList< SEGMENT_DATA_TYPE > * doGetSegmentsToDisplay( const unsigned int offset );
+	QList< OmSegID > * getSegmentsToDisplay( const OmId firstSegmentID );
+	QList< OmSegID > * doGetSegmentsToDisplay( const unsigned int offset );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	QMenu * makeSegmentContextMenu(QTreeWidget * parent);

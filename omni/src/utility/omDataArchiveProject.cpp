@@ -1,9 +1,15 @@
 #include "omDataArchiveProject.h"
 #include "omDataArchiveVmml.h"
 #include "omDataArchiveCoords.h"
-#include <QDataStream>
+#include "omDataArchiveBoost.h"
 
-void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project ) 
+#include <QDataStream>
+#include "boost/lexical_cast.hpp"
+
+static const int Omni_Version = 3;
+static const QString Omni_Postfix("OMNI");
+
+void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -12,19 +18,45 @@ void OmDataArchiveProject::ArchiveRead( OmHdf5Path path, OmProject * project )
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
+
+	int file_version;
+	in >> file_version;
+
+	if( Omni_Version != file_version ){
+		delete p_data;
+
+		throw OmIoException("can not open file: file version is (" 
+				    + boost::lexical_cast<std::string>(file_version)
+				    +"), but Omni expecting ("
+				    + boost::lexical_cast<std::string>(Omni_Version) 
+				    + ")");
+	}
+
 	in >> (*project);
+
+	QString omniPostfix;
+	in >> omniPostfix;
+
+	if( Omni_Postfix != omniPostfix ){
+		delete p_data;
+
+		throw OmIoException("corruption detected in Omni file");
+	}
 
 	delete p_data;
 }
 
-void OmDataArchiveProject::ArchiveWrite( OmHdf5Path path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveWrite( const OmHdf5Path & path, OmProject * project ) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
 	out.setByteOrder( QDataStream::LittleEndian );
 	out.setVersion(QDataStream::Qt_4_6);
+
+	out << Omni_Version;
 	out << (*project);
-	
+	out << Omni_Postfix;
+
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
 									   ba.size(), 
 									   ba.data() );
@@ -273,13 +305,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mDendCount;
 	in >> seg.mDendThreshold;
 
-        QString dendStr = QString("%1dend")
-                        .arg(seg.GetDirectoryPath());
-        QString dendValStr = QString("%1dendValues")
-                        .arg(seg.GetDirectoryPath());
+        QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
+        QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
         OmHdf5Path path;
-
         path.setPathQstr(dendStr);
+
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
 		int size;
         	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -336,6 +366,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	
 	out << sc.mPageSize;
 	out << sc.mNumSegs;
+	out << sc.mNumTopLevelSegs;
 
 	return out;
 }
@@ -356,6 +387,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
+	in >> sc.mNumTopLevelSegs;
 
 	return in;
 }
@@ -412,6 +444,7 @@ void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v 
 	out << v.mDataResolution;
 	out << v.mChunkDim;
 	out << v.unitString;
+	out << v.mDataStretchValues;
 }
 
 void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
@@ -422,4 +455,5 @@ void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
 	in >> v.mDataResolution;
 	in >> v.mChunkDim;
 	in >> v.unitString;
+	in >> v.mDataStretchValues;
 }

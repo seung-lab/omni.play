@@ -3,6 +3,7 @@
 
 #include "common/omStd.h"
 #include "segment/omSegment.h"
+#include "segment/omSegmentCacheImpl.h"
 #include "utility/omHdf5Path.h"
 
 #include <QSet>
@@ -12,7 +13,6 @@
 
 class OmSegment;
 class OmSegmentation;
-class OmSegmentCacheImpl;
 
 class OmSegmentCache {
 public:
@@ -22,38 +22,38 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
-	OmSegment* AddSegment(SEGMENT_DATA_TYPE value);
+	void AddSegmentsFromChunk(const OmSegIDs & values, const OmMipChunkCoord & mipCoord);
+	OmSegment* AddSegment(OmSegID value);
 
-	bool isValueAlreadyMappedToSegment( SEGMENT_DATA_TYPE value );
+	bool isValueAlreadyMappedToSegment( OmSegID value );
 
-	OmSegment* GetSegmentFromValue(SEGMENT_DATA_TYPE);
-	OmSegment* GetSegmentFromID(OmId);
+	OmSegment* GetSegmentFromValue(OmSegID);
 
-	OmId GetNumSegments();
-	OmId GetNumTopSegments();
+	OmSegID GetNumSegments();
+	OmSegID GetNumTopSegments();
 
-	bool IsSegmentValid(OmId seg);
+	bool IsSegmentValid(OmSegID seg);
 
-	bool isSegmentEnabled( OmId segID );
-	void setSegmentEnabled( OmId segID, bool isEnabled );
+	bool isSegmentEnabled( OmSegID segID );
+	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmIds& GetEnabledSegmentIdsRef();
 
-	bool isSegmentSelected( OmId segID );
-	void setSegmentSelected( OmId segID, bool isSelected );
+	bool isSegmentSelected( OmSegID segID );
+	bool isSegmentSelected( OmSegment * seg );
+	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmIds& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 
-	QString getSegmentName( OmId segID );
-	void setSegmentName( OmId segID, QString name );
+	QString getSegmentName( OmSegID segID );
+	void setSegmentName( OmSegID segID, QString name );
 
-	QString getSegmentNote( OmId segID );
-	void setSegmentNote( OmId segID, QString note );
+	QString getSegmentNote( OmSegID segID );
+	void setSegmentNote( OmSegID segID, QString note );
 
-	OmId getSegmentationID();
+	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);
 	void flushDirtySegments();
@@ -63,18 +63,18 @@ public:
 	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	void Join(OmSegment * parent, OmSegment * childUnknownLevel, double threshold);
-	void clearAllJoins();
+	void JoinAllSegmentsInSelectedList();
 
-	quint32 getPageSize() { return mPageSize; }
+	quint32 getPageSize();
 
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					QList< OmSegment* > segmentsToDraw );
+					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
-	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
-			       const int size, const float stopPoint );
+	void resetGlobalThreshold( const float stopPoint );
+
+	quint32 getMaxValue();
 
 private:
 	QMutex mMutex;

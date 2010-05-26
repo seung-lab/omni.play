@@ -31,7 +31,7 @@ void MeshingChunkThread::doMeshStuff()
 	while (true) {
 
 		//get next segment value
-		SEGMENT_DATA_TYPE segment_value = mChunkMan->getNextSegmentValueToMesh();
+		OmSegID segment_value = mChunkMan->getNextSegmentValueToMesh();
 
 		//if null, then no more values in set, so break loop
 		if (NULL_SEGMENT_DATA == segment_value)

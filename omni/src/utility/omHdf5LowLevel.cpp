@@ -62,12 +62,17 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
         return fileId;
 }
 
+void OmHdf5LowLevel::om_hdf5_flush_with_lock(const hid_t fileId)
+{
+	H5Fflush(fileId, H5F_SCOPE_GLOBAL);
+}
+
 void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 {
 	debug("hdf5", "%s: closed HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	H5Fflush(fileId, H5F_SCOPE_GLOBAL);
+	om_hdf5_flush_with_lock( fileId );
         herr_t ret = H5Fclose(fileId);
         if (ret < 0)
                 throw OmIoException("Could not close HDF5 file.");

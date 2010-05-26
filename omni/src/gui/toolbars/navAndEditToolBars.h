@@ -6,6 +6,7 @@
 
 class MainWindow;
 class DendToolBar;
+class OmViewGroupState;
 
 class NavAndEditToolBars : public QWidget
 {
@@ -15,7 +16,7 @@ class NavAndEditToolBars : public QWidget
 	NavAndEditToolBars( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
-	void updateGuiFromPorjectLoadOrOpen();
+	void updateGuiFromProjectLoadOrOpen(OmViewGroupState * );
 	void SystemModeChangeEvent();
 
  private slots:
@@ -29,6 +30,8 @@ class NavAndEditToolBars : public QWidget
 	void toolbarFill(bool checked);
 	void toolbarVoxelize(bool checked);
 	void setFilAlpha(int alpha);
+	void filterSegmentationChanged(int segId);
+	void filterChannelChanged(int chanId);
 
  private:
 	MainWindow * mMainWindow;
@@ -70,6 +73,8 @@ class NavAndEditToolBars : public QWidget
 	void toolbarToolChange(const bool checked, QAction * tool, const OmToolMode mode );
 
 	QSlider *alphaSlider;
+	QComboBox *mSegmentationCombo;
+	QComboBox *mChannelCombo;
 	void setupFilterToolbar();
 	void setFilterToolbarEnabled( bool setEnabled );
 

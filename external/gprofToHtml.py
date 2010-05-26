@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 from http://www.java2s.com/Code/Python/Utility/Transformgprof1outputintousefulHTML.htm
 PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2

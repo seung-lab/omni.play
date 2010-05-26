@@ -2,7 +2,7 @@
 #define OM_SEGMENT_ITERATOR_H
 
 #include "common/omCommon.h"
-#include <QList>
+#include "segment/omSegmentCache.h"
 
 class OmSegment;
 class OmSegmentCache;
@@ -22,7 +22,7 @@ class OmSegmentIterator
  private:
 	OmSegmentCache * mCache;
 
-	QList< OmSegment* > mSegs;
+	OmSegPtrs mSegs;
 };
 
 #endif

@@ -17,7 +17,7 @@
 ///////          OmVoxelSetValueAction Class
 ///////
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rVoxel, SEGMENT_DATA_TYPE value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rVoxel, OmSegID value)
 {
 
 	//store segmentation id
@@ -33,7 +33,7 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rV
 	mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoord > &rVoxels, SEGMENT_DATA_TYPE value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoord > &rVoxels, OmSegID value)
 {
 
 	//store segmentation id
@@ -65,7 +65,7 @@ void
 	set < DataCoord > edited_voxels;
 
 	//for all elements in the map
-	map < DataCoord, SEGMENT_DATA_TYPE >::iterator itr;
+	map < DataCoord, OmSegID >::iterator itr;
 	for (itr = mOldVoxelValues.begin(); itr != mOldVoxelValues.end(); itr++) {
 		//set voxel to new value
 		//cout << "Setting changed voxel" << endl;
@@ -86,7 +86,7 @@ void OmVoxelSetValueAction::UndoAction()
 	set < DataCoord > edited_voxels;
 
 	//for all elements in the map
-	map < DataCoord, SEGMENT_DATA_TYPE >::iterator itr;
+	map < DataCoord, OmSegID >::iterator itr;
 	for (itr = mOldVoxelValues.begin(); itr != mOldVoxelValues.end(); itr++) {
 		//set voxel to prev value
 		r_segmentation.SetVoxelValue(itr->first, itr->second);

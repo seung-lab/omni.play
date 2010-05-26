@@ -1,4 +1,4 @@
-
+#include "gui/toolbars/dendToolbar.h"
 #include "omView3dUi.h"
 #include "omView3d.h"
 #include "omCamera.h"
@@ -22,10 +22,10 @@
 ///////          Example Class
 ///////
 
-OmView3dUi::OmView3dUi(OmView3d * view3d)
- : mpView3d(view3d)
+OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
+	: mpView3d(view3d), mViewGroupState(vgs)
 {
-        mCPressed=false;
+        mCPressed = false;
 }
 
 /////////////////////////////////
@@ -134,12 +134,34 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
         }
         mpView3d->updateGL();
 
+	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
 
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
-	OmSegment * seg = r_segmentation.GetSegment(segment_id);
+#if 1
+	OmId segmentationID, segmentID;
+        if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
+                debug("split", "segmentID=%i\n", segmentID);
+                debug("split", "segment_id=%i\n", segment_id);
+                OmSegment * seg1 = segmentation.GetSegment(segmentID);
+                OmSegment * seg2 = segmentation.GetSegment(segment_id);
+		if(NULL == seg1 || NULL == seg2) {
+			return;
+		}
 
+                seg1->splitTwoChildren(seg2);
+
+                mViewGroupState->SetSplitMode(false);
+        } else {
+                debug("split", "segment_id=%i\n", segment_id);
+                if (segment_id && segmentation.GetSegment(segment_id)) {
+                        mViewGroupState->SetSplitMode(segmentationID, segment_id);
+                }
+        }
+#else
+
+	OmSegment * seg = segmentation.GetSegment(segment_id);
         seg->splitTwoChildren(seg);
         OmStateManager::SetSystemModePrev();
+#endif
 }
 
 /////////////////////////////////
@@ -553,11 +575,11 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 		return;
 
 	//switch on tool mode
-	SEGMENT_DATA_TYPE data_value;
+	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = OmProject::GetSegmentation(segmentation_id).GetValueMappedToSegmentId(segment_id);
+		data_value = segment_id;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -607,8 +629,6 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 	mpView3d->updateGL();
 
 	mCPressed = false;
-	
-
 }
 
 void OmView3dUi::crosshair(QMouseEvent * event)
@@ -628,9 +648,9 @@ void OmView3dUi::crosshair(QMouseEvent * event)
         OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 
-	OmStateManager::SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-	OmStateManager::SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-	OmStateManager::SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	
 	debug("view3d", "coordinate is now (%f, %f, %f)\n", 

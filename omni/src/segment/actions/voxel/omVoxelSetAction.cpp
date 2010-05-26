@@ -41,7 +41,7 @@ OmVoxelSetAction::OmVoxelSetAction(DataCoord & voxel)
 	//switch on tool mode
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
-		mDataValue = r_segmentation.GetValueMappedToSegmentId(mSegmentId);
+		mDataValue = mSegmentId;
 		break;
 
 	case SUBTRACT_VOXEL_MODE:

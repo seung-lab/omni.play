@@ -194,7 +194,7 @@ void
 
 }
 
-void OmMesher::ExtractMesh(OmMipMesh * pMesh, SEGMENT_DATA_TYPE value)
+void OmMesher::ExtractMesh(OmMipMesh * pMesh, OmSegID value)
 {
 
 	//update meshing value

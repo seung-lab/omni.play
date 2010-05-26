@@ -76,7 +76,7 @@ bool OmMipVoxelationManager::IsBoundaryVoxel(const DataCoord & rDataCoord)
 {
 
 	//get voxel segment id
-	const SEGMENT_DATA_TYPE voxel_value = mpMipVolume->GetVoxelValue(rDataCoord);
+	const OmSegID voxel_value = mpMipVolume->GetVoxelValue(rDataCoord);
 
 	//null ids are not boundaries
 	if (NULL_SEGMENT_DATA == voxel_value)
@@ -207,7 +207,7 @@ void OmMipVoxelationManager::RefreshNeighboringVoxels(const DataCoord & rVox, Om
  */
 
 void OmMipVoxelationManager::UpdateVoxel(const DataCoord & rVox,
-					 const SEGMENT_DATA_TYPE old_val, const SEGMENT_DATA_TYPE new_val)
+					 const OmSegID old_val, const OmSegID new_val)
 {
 
 	//debug("FIXME", << "OmMipVoxelationManager::UpdateVoxel: " << rVox << " old: " << old_val << " new:" << new_val << endl;
@@ -264,7 +264,7 @@ void OmMipVoxelationManager::HandleFetchUpdate()
 
 void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 					     const OmMipChunkCoord & mipCoord,
-					     const SegmentDataSet & rRelvDataVals, 
+					     const OmSegIDs & rRelvDataVals, 
 					     const OmBitfield & drawOps)
 {
 	//push modelview matrix
@@ -275,7 +275,7 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 	glScalefv(scale.array);
 
 	//for all relevent data values in chunk
-	foreach( SEGMENT_DATA_TYPE val, rRelvDataVals ){
+	foreach( OmSegID val, rRelvDataVals ){
 
 		//get pointer to mesh
 		QExplicitlySharedDataPointer < OmMipVoxelation > p_voxelation;
@@ -287,7 +287,7 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 
 		//determine which segment this data values belongs to
 		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
-		r_segment->ApplyColor(drawOps);
+		r_segment->ApplyColor(drawOps, NULL);
 
 		//draw mesh
 		glPushName(r_segment->getValue());

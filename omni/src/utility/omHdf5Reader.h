@@ -25,19 +25,19 @@ class OmHdf5Reader : public OmDataReader
 	void close();
 
 	//group
-	bool group_exists( OmHdf5Path path );
+	bool group_exists( const OmHdf5Path & path );
 
 	//data set
-	bool dataset_exists( OmHdf5Path path );
+	bool dataset_exists( const OmHdf5Path & path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(OmHdf5Path path );
-	vtkImageData* dataset_image_read_trim( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-	void* dataset_image_read_simple_trim( OmHdf5Path path, DataBbox dataExtent);
+	Vector3 < int > dataset_image_get_dims(const OmHdf5Path & path );
+	vtkImageData* dataset_image_read_trim( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
+	void* dataset_image_read_simple_trim( const OmHdf5Path & path, DataBbox dataExtent);
 	//data set raw
-	void* dataset_raw_read( OmHdf5Path path, int* size = NULL);
-	void* dataset_read_raw_chunk_data( OmHdf5Path path, DataBbox dataExtent, int bytesPerSample);
-	Vector3< int > dataset_get_dims( OmHdf5Path path );
+	void* dataset_raw_read( const OmHdf5Path & path, int* size = NULL);
+	void* dataset_read_raw_chunk_data( const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
+	Vector3< int > dataset_get_dims( const OmHdf5Path & path );
 
  private:
 	OmHdf5 * hdf5;

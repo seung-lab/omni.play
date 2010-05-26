@@ -3,7 +3,6 @@
 
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentStateAction.h"
-#include "segment/actions/segment/omSegmentMergeAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/actions/edit/omEditSelectionSetAction.h"
 
@@ -192,12 +191,14 @@ void OmSegmentContextMenu::DisableSelected()
 
 void OmSegmentContextMenu::DisableUnselected()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+	printf("%s: should be removed...\n", __FUNCTION__);
+	
+	//	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 
 	//form unselected
-	OmIds unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();
+	//	OmIds unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();
 
-	(new OmSegmentStateAction(mSegmentationId, unselected_segments, false))->Run();
+	//	(new OmSegmentStateAction(mSegmentationId, unselected_segments, false))->Run();
 }
 
 void OmSegmentContextMenu::SetEditSelection()
@@ -207,7 +208,7 @@ void OmSegmentContextMenu::SetEditSelection()
 
 void OmSegmentContextMenu::MergeSegments()
 {
-	(new OmSegmentMergeAction(mSegmentationId))->Run();
+	assert(0); //FIXME! (purcaro)
 }
 
 void OmSegmentContextMenu::SetConnectedVoxels()

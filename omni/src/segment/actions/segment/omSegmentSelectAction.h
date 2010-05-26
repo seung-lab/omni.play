@@ -8,11 +8,18 @@
 
 #include "system/omAction.h"
 
-
+class SegmentDataWrapper;
 
 class OmSegmentSelectAction : public OmAction {
 
 public:
+
+	void selectJustThisSegment( SegmentDataWrapper sdw );
+	void addSegmentToSelectedSet( SegmentDataWrapper sdw );
+	OmSegmentSelectAction();
+	void commitChanges();
+
+
 	OmSegmentSelectAction(OmId segmentationId, 
 			      OmId segmentId, 
 			      bool state, 
@@ -31,6 +38,8 @@ public:
 			      string comment = "");
 	
 private:
+	OmIds ssegmentsToAddToSelection;
+
 	void Initialize(OmId segmentationId, 
 			const OmIds &selectIds, 
 			const OmIds &unselectIds,

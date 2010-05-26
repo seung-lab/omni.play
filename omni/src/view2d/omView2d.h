@@ -18,6 +18,7 @@
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omVoxelEvent.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "volume/omFilter2d.h"
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
@@ -40,7 +41,7 @@ public OmVoxelEventListener
 	Q_OBJECT
 	
 public:
-	OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget *parent);
+	OmView2d(ViewType, ObjectType, OmId, QWidget *, OmViewGroupState *);
  	~OmView2d();
 	
 	OmMipVolume *mVolume;
@@ -53,13 +54,12 @@ public:
 	
 	OmVolume & GetVolume() {
         	if (mVolumeType == CHANNEL) {
-                	OmChannel & current_channel = OmProject::GetChannel(mImageId);
-			return current_channel;
+                	return OmProject::GetChannel(mImageId);
         	} else {
-                	OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
-			return current_seg;
+                	return OmProject::GetSegmentation(mImageId);
 		}
 	}
+
 protected:
 	// GL event methods
 	void initializeGL();
@@ -90,8 +90,8 @@ protected:
 	DataCoord BrushToolOTGDC(DataCoord off);
 	void PickToolGetColor(QMouseEvent *event);
 	void PickToolAddToSelection (OmId segmentation_id, DataCoord globalDataClickPoint);
-	void FillToolFill (OmId segmentation, DataCoord gCP, SEGMENT_DATA_TYPE fc, SEGMENT_DATA_TYPE bc, int depth=0);
-	void BrushToolApplyPaint(OmId segid, DataCoord gDC, SEGMENT_DATA_TYPE seg);
+	void FillToolFill (OmId segmentation, DataCoord gCP, OmSegID fc, OmSegID bc, int depth=0);
+	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 
 	// EDIT PROPERTIES
 	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second);
@@ -165,6 +165,8 @@ protected:
 	QSize sizeHint () const;
 
 private:
+	OmViewGroupState * mViewGroupState;
+
 	///////////////////////////////////////
 	// omView2dConverters.cpp
 	///////////////////////////////////////

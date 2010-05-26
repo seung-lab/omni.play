@@ -5,7 +5,8 @@
 #include <QMap>
 #include <string>
 
-#include "viewGroupWidgetInfo.h"
+#include "gui/viewGroupWidgetInfo.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 class MainWindow;
 class OmView2d;
@@ -14,7 +15,7 @@ class OmView3d;
 class ViewGroup : public QWidget
 {
  public:
-	ViewGroup( MainWindow * mainWindow );
+	ViewGroup( MainWindow * mainWindow, OmViewGroupState * viewGroupState );
 	void addView2Dchannel( OmId chan_id, ViewType vtype);
 	void addView2Dsegmentation( OmId segmentation_id, ViewType vtype);
 	void addView3D();
@@ -22,7 +23,8 @@ class ViewGroup : public QWidget
 
  private:
 	MainWindow * mMainWindow;
-	const int mID;
+	OmViewGroupState * mViewGroupState;
+	int getID();
  
 	QString getViewName( QString baseName, ViewType vtype );
 	QDockWidget *makeDockWidget( ViewGroupWidgetInfo * vgw );

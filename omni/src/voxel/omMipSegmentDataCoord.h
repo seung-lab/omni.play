@@ -21,7 +21,7 @@ class OmMipSegmentDataCoord {
 		DataValue = 0;
 	}
 	
-	OmMipSegmentDataCoord( const OmMipChunkCoord& rMipChunkCoord, SEGMENT_DATA_TYPE dataValue)
+	OmMipSegmentDataCoord( const OmMipChunkCoord& rMipChunkCoord, OmSegID dataValue)
 	: MipChunkCoord(rMipChunkCoord), DataValue(dataValue) { }
 	
 	
@@ -34,7 +34,7 @@ class OmMipSegmentDataCoord {
 	
 	//data members
 	OmMipChunkCoord MipChunkCoord;
-	SEGMENT_DATA_TYPE DataValue;
+	OmSegID DataValue;
 		
 	//stream
 	friend ostream& operator<<(ostream &out, const OmMipSegmentDataCoord &in);

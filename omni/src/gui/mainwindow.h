@@ -24,6 +24,7 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSystemModeEvent.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 #include "gui/preferences/preferences.h"
 
@@ -110,7 +111,7 @@ class MainWindow
 	ViewGroup * mViewGroup;
 	void resetViewGroup();
 
-	void updateGuiFromPorjectLoadOrOpen( QString fileName );
+	void updateGuiFromProjectLoadOrOpen( QString fileName );
 
 	QLabel * statusBarLabel;
 
@@ -118,6 +119,8 @@ class MainWindow
 
 	ToolBarManager * mToolBars;
 	MenuBar * mMenuBar;
+
+	OmViewGroupState * mViewGroupState;
 };
 
 #endif
