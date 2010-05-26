@@ -111,13 +111,13 @@ void DendToolBar::createToolbarActions()
         mHint->setText(value);
 
         addGroupAct = new QPushButton(mMainWindow);
-        addGroupAct->setText(tr("Create New Group"));
-        addGroupAct->setStatusTip(tr("group object action"));
+        addGroupAct->setText(tr("Set Selection Valid"));
+        addGroupAct->setStatusTip(tr("Locking selected objects"));
         connect(addGroupAct, SIGNAL(pressed()),
                 this, SLOT(addGroup()));
 
         colorMapAct = new QPushButton(mMainWindow);
-        colorMapAct->setText(tr("Show Groups"));
+        colorMapAct->setText(tr("Show Validated"));
         colorMapAct->setStatusTip(tr("Validated object mode"));
         connect(colorMapAct, SIGNAL(pressed()),
                 this, SLOT(mapColors()));
@@ -235,10 +235,6 @@ void DendToolBar::resetTool(QAction * tool, const bool enabled)
 void DendToolBar::SystemModeChangeEvent()
 {
         debug("dendbar", "DendToolBar::SystemModeChangeEvent\n");
-
-
-	if( !mSplitting) toolbarSplitAct->setChecked( false );
-	else  toolbarSplitAct->setChecked( true );
 }
 
 void DendToolBar::updateReadOnlyRelatedWidgets()
@@ -255,13 +251,13 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 
 void DendToolBar::split()
 {
-	//toolbarSplitAct->setChecked(!toolbarSplitAct->isChecked());
         debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
 	if(!toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
-		OmStateManager::SetSystemModePrev();
+        	debug("dendbar", "unchecking\n");
+		mViewGroupState->SetSplitMode(false, false);
 	}
 }
 
@@ -401,36 +397,6 @@ void DendToolBar::updateGui()
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
-bool DendToolBar::GetShatterMode()
-{
-	return mShatter;
-}
-
-bool DendToolBar::GetSplitMode()
-{
-	return mSplitting;
-}
-
-bool DendToolBar::GetSplitMode(OmId & seg, OmId & segment)
-{
-	seg = mSeg;
-	segment = mSegment;
-	return mSplitting;
-}
-
-void DendToolBar::SetSplitMode(bool onoroff)
-{
-	mSplitting = onoroff;
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-}
-
-void DendToolBar::SetSplitMode(OmId seg, OmId segment)
-{
-	mSeg = seg;
-	mSegment = segment;
-	SetSplitMode(true);
-}
-
 // FIXME: need to be moved to somewhere else.
 void DendToolBar::addGroup()
 {
@@ -439,18 +405,21 @@ void DendToolBar::addGroup()
                 OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
                 seg.AddGroup();
         }
-
 }
 
 void DendToolBar::mapColors()
 {
 	debug("map", "DendToolBar::mapColors\n");
 	mShowGroups = !mShowGroups;
-
 }
 
 bool DendToolBar::GetShowGroupsMode()
 {
 	return mShowGroups;
+}
+
+void DendToolBar::SetSplittingOff()
+{
+	toolbarSplitAct->setChecked(false);
 }
 

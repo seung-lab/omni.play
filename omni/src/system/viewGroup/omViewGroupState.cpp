@@ -2,6 +2,7 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
+#include "system/events/omView3dEvent.h"
 
 OmViewGroupState::OmViewGroupState()
 {
@@ -25,6 +26,10 @@ OmViewGroupState::OmViewGroupState()
 	mXZPan[1] = 0.0;
 
 	mBreakThreshold = 0;
+        mShatter = false;
+        mSplitting = false;
+        mSplittingSegment = 0;
+        mSplittingSeg = 1;
 
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
@@ -311,8 +316,6 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 	m_cdw = ChannelDataWrapper( chanID );
 }
 
-//TODO: move mShatter into viewgroupstate
-extern bool mShatter;
 void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 				  const ObjectType objType, unsigned char * data )
 {
@@ -346,5 +349,46 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	mColorCacheMapLock.unlock();	
 
 	mColorCaches[ sccType ]->colorTile( imageData, size, data, this );
+}
+
+void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
+{
+	mToolBarManager = tbm;
+}
+
+bool OmViewGroupState::GetShatterMode()
+{
+        return mShatter;
+}
+
+bool OmViewGroupState::GetSplitMode()
+{
+        return mSplitting;
+}
+
+bool OmViewGroupState::GetSplitMode(OmId & seg, OmId & segment)
+{
+        seg = mSplittingSeg;
+        segment = mSplittingSegment;
+        return mSplitting;
+}
+
+void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
+{
+        mSplitting = onoroff;
+	if(false == onoroff){
+		if(postEvent) {
+			mToolBarManager->SetSplittingOff();
+		}
+		OmStateManager::SetSystemModePrev();
+	}
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+}
+
+void OmViewGroupState::SetSplitMode(OmId seg, OmId segment)
+{
+        mSplittingSeg = seg;
+        mSplittingSegment = segment;
+        SetSplitMode(true);
 }
 

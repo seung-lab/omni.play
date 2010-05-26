@@ -497,8 +497,10 @@ OmId OmSegmentation::AddGroup()
  *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be 
  *	drawn depending on culler draw options and passes relevant set to root chunk.
  */
-void OmSegmentation::Draw(OmVolumeCuller & rCuller)
+void OmSegmentation::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 {
+	mViewGroupState = vgs;		// This is hackish because i don;t want to thread this into all the
+					// recursive function calls.
 	//transform to normal frame
 	glPushMatrix();
 	glMultMatrixf(mNormToSpaceMat.ml);
@@ -634,7 +636,7 @@ void OmSegmentation::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chu
 
 	mMipMeshManager.DrawMeshes(rCuller.GetDrawOptions(), 
 				   chunkCoord, 
-				   segmentsToDraw);
+				   segmentsToDraw, mViewGroupState);
 }
 
 /*

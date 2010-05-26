@@ -10,9 +10,9 @@
 #include "utility/stringHelpers.h"
 #include "segment/omSegmentCache.h"
 #include "utility/omDataPaths.h"
-#include "gui/toolbars/dendToolbar.h"
 #include "volume/omMipChunkCoord.h"
 #include "utility/omHdf5Path.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
 	: mValue(value), mCache(cache), mParentSegID(0)
@@ -69,19 +69,15 @@ void OmSegment::SetColor(const Vector3 < float >& color)
 	mCache->addToDirtySegmentList(this);
 }
 
-void OmSegment::ApplyColor(const OmBitfield & drawOps)
+void OmSegment::ApplyColor(const OmBitfield & drawOps, OmViewGroupState * vgs)
 {
-	if( mParentSegID && !DendToolBar::GetSplitMode() && !DendToolBar::GetShowGroupsMode()){
-		mCache->findRoot( this )->ApplyColor(drawOps);
+	if( mParentSegID && !(vgs && vgs->GetSplitMode())){
+		mCache->findRoot( this )->ApplyColor(drawOps, vgs);
 		return;
 	}
 
-	Vector3<float> hyperColor(0,0,0);
-	if(DendToolBar::GetShowGroupsMode()) {
-		// show black
-	} else {
-		hyperColor = GetColorFloat();
-	}
+	Vector3<float> hyperColor;
+	hyperColor = GetColorFloat();
 
 	hyperColor.x *= 2.;
 	hyperColor.y *= 2.;

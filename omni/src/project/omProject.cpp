@@ -232,10 +232,10 @@ void OmProject::SetSegmentationEnabled(OmId id, bool enable)
         Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
 
-void OmProject::Draw(OmVolumeCuller & rCuller)
+void OmProject::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 {
         foreach( const OmId & id, Instance()->mSegmentationManager.GetEnabledIds() ){
-                GetSegmentation( id ).Draw( rCuller);
+                GetSegmentation(id).Draw(rCuller, vgs);
         }
 
 

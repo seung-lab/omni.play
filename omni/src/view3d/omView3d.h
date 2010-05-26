@@ -19,6 +19,8 @@
 #include <QTimer>
 #include <QtGui> 
 
+class OmViewGroupState;
+
 class OmView3d : public QGLWidget, 
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener, 
@@ -95,6 +97,7 @@ class OmView3d : public QGLWidget,
 	QSize sizeHint () const;
 		
  private:
+	OmViewGroupState * mViewGroupState;
 	QTime * mElapsed;
 	QTimer mDrawTimer;
 	OmView3dUi mView3dUi;

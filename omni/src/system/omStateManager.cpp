@@ -346,3 +346,4 @@ void OmStateManager::UpdateStatusBar( QString msg )
 {
 	Instance()->mainWindow->updateStatusBar( msg );
 }
+

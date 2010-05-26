@@ -42,25 +42,33 @@ int firsttime(int argc, char *argv[])
 
 //int backtrace (void **buffer, int size);
 //char ** backtrace_symbols (void *const *buffer, int size);
-void myBacktrace (int)
+void myBacktrace (int sig)
 {
 #ifndef WIN32
        	void *array[1000];
        	size_t size;
        	char **strings;
        	size_t i;
+	FILE * out = stderr;
+
+	if(!sig) {
+		out = stdout;
+	}
      
        	size = backtrace (array, 1000);
        	strings = backtrace_symbols (array, size);
      
-       	fprintf (stderr, "Obtained %zd stack frames.\n", size);
+       	//fprintf (stderr, "Obtained %zd stack frames.\n", size);
+       	fprintf (out, "Obtained %zd stack frames.\n", size);
      
 	for (i = 0; i < size; i++)
-		fprintf (stderr, "%s\n", strings[i]);
+		fprintf (out, "%s\n", strings[i]);
      
 	free (strings);
 
-	exit(0);
+	if(sig) {
+		exit(0);
+	}
 #endif
 }
 

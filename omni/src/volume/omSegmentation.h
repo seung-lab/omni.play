@@ -23,6 +23,7 @@
 
 class OmVolumeCuller;
 class OmSegment;
+class OmViewGroupState;
 
 class OmSegmentation 
 : public OmMipVolume, 
@@ -86,7 +87,7 @@ public:
 
 
 	//drawing
-	void Draw(OmVolumeCuller &);
+	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
 	void DrawChunkRecursive(const OmMipChunkCoord &, 
 				OmSegmentIterator iter,
 				bool testVis, 
@@ -118,6 +119,7 @@ private:
 	OmSegmentCache mSegmentCache;
 
 	OmGroups mGroups;
+	OmViewGroupState * mViewGroupState;
 
         quint32 * mDend;
         float * mDendValues;

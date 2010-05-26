@@ -138,7 +138,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 
 #if 1
 	OmId segmentationID, segmentID;
-        if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
+        if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
                 debug("split", "segmentID=%i\n", segmentID);
                 debug("split", "segment_id=%i\n", segment_id);
                 OmSegment * seg1 = segmentation.GetSegment(segmentID);
@@ -149,12 +149,11 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 
                 seg1->splitTwoChildren(seg2);
 
-                DendToolBar::SetSplitMode(false);
-                OmStateManager::SetSystemModePrev();
+                mViewGroupState->SetSplitMode(false);
         } else {
                 debug("split", "segment_id=%i\n", segment_id);
                 if (segment_id && segmentation.GetSegment(segment_id)) {
-                        DendToolBar::SetSplitMode(segmentationID, segment_id);
+                        mViewGroupState->SetSplitMode(segmentationID, segment_id);
                 }
         }
 #else

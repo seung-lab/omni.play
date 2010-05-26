@@ -14,13 +14,6 @@ class DendToolBar : public QWidget
 	Q_OBJECT
 
  public:
-	static bool GetShatterMode();
-	static bool GetSplitMode();
-	static bool GetSplitMode(OmId & seg, OmId & segment);
-	static void SetSplitMode(OmId seg, OmId segment);
-	static void SetSplitMode(bool onoroff);
-
-	static bool GetShowGroupsMode();
 
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();
@@ -28,6 +21,10 @@ class DendToolBar : public QWidget
 	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 	void SystemModeChangeEvent();
 	void updateGui();
+
+        void SetSplittingOff();
+
+	static bool GetShowGroupsMode();
 
  private slots:
 	void ChangeModeModify(bool checked);

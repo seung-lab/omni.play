@@ -18,6 +18,8 @@
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 
+class OmViewGroupState;
+
 class OmProject {
 
 public:
@@ -54,7 +56,7 @@ public:
         static const OmIds & GetValidSegmentationIds();
         static bool IsSegmentationEnabled(OmId id);
         static void SetSegmentationEnabled(OmId id, bool enable);
-	static void Draw(OmVolumeCuller & rCuller);
+	static void Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs);
 
 	
 protected:

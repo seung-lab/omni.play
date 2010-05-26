@@ -845,7 +845,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
         DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
        	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 
-	if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
+	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
 		assert(mImageId==segmentationID);
 	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 
@@ -858,13 +858,12 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 
         	seg1->splitTwoChildren(seg2);
 
-		DendToolBar::SetSplitMode(false);
-        	OmStateManager::SetSystemModePrev();
+		mViewGroupState->SetSplitMode(false);
 	} else {
 	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
 		if (segmentID && segmentation.GetSegment(segmentID)) {
-				DendToolBar::SetSplitMode(segmentationID, segmentID);
+				mViewGroupState->SetSplitMode(segmentationID, segmentID);
 		}
 	}
 

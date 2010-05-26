@@ -12,6 +12,7 @@
 
 class OmSegmentCache;
 class OmMipChunkCoord;
+class OmViewGroupState;
 
 typedef struct {
 	OmSegID segID;
@@ -45,7 +46,7 @@ public:
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
-	void ApplyColor(const OmBitfield &drawOps);
+	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs);
 
 	const OmSegID & getValue();
 

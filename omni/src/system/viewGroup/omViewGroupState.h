@@ -4,9 +4,11 @@
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
 #include "system/omStateManager.h"
+#include "gui/toolbars/toolbarManager.h"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentColorizer.h"
 #include <boost/tr1/unordered_map.hpp>
+
 
 #include <QMutex>
 
@@ -46,6 +48,13 @@ class OmViewGroupState : public OmManageableObject {
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
 
+	void SetToolBarManager(ToolBarManager * tbm);
+        bool GetShatterMode();
+        bool GetSplitMode();
+        bool GetSplitMode(OmId & seg, OmId & segment);
+        void SetSplitMode(OmId seg, OmId segment);
+        void SetSplitMode(bool onoroff, bool postEvent = true);
+
  private:
 	QMutex mColorCacheMapLock;
 
@@ -69,6 +78,13 @@ class OmViewGroupState : public OmManageableObject {
 
 	SegmentationDataWrapper m_sdw;
 	ChannelDataWrapper m_cdw;
+
+	//toolbar stuff
+	ToolBarManager * mToolBarManager;
+	bool mShatter;
+	bool mSplitting;
+	OmId mSplittingSegment;
+	OmId mSplittingSeg;
 
 };
 

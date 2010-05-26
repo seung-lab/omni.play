@@ -287,7 +287,7 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 
 		//determine which segment this data values belongs to
 		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
-		r_segment->ApplyColor(drawOps);
+		r_segment->ApplyColor(drawOps, NULL);
 
 		//draw mesh
 		glPushName(r_segment->getValue());

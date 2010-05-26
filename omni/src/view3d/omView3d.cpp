@@ -56,7 +56,7 @@ GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
  */
 OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), 
-	  mView3dUi(this, vgs)
+	  mView3dUi(this, vgs), mViewGroupState(vgs)
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
@@ -498,7 +498,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	//initiate volume manager draw tree
-	OmProject::Draw(culler);
+	OmProject::Draw(culler, mViewGroupState);
 }
 
 void OmView3d::DrawEditSelectionVoxels()

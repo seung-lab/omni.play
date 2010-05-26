@@ -17,6 +17,7 @@ class OmMipChunk;
 class OmMipChunkCoord;
 class OmMeshSource;
 class QGLContext;
+class OmViewGroupState;
 
 class OmMipMeshManager : public MipMeshCache {
 
@@ -36,7 +37,8 @@ class OmMipMeshManager : public MipMeshCache {
 	//drawing
 	void DrawMeshes(const OmBitfield &drawOps,
 			const OmMipChunkCoord &mipCoord,
-			const OmSegPtrs & segmentsToDraw );
+			const OmSegPtrs & segmentsToDraw,
+			OmViewGroupState * vgs);
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
