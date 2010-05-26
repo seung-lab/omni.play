@@ -73,7 +73,6 @@ public:
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
 	QList< OmSegment* > getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
-
 	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
 			       const int size, const float stopPoint );
 

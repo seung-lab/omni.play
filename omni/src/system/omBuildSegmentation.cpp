@@ -4,6 +4,7 @@
 #include "utility/omDataLayer.h"
 #include "utility/omDataReader.h"
 #include "utility/stringHelpers.h"
+#include "system/events/omSegmentEvent.h"
 
 #include <QTextStream>
 
@@ -43,6 +44,8 @@ void OmBuildSegmentation::run()
 	if( doBuildImage ){
 		do_build_seg_image();
 		loadDendrogram();
+		
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 	}
 
 	if( doBuildMesh ){

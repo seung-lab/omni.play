@@ -95,7 +95,15 @@ public:
 
 	void FlushDirtySegments();
 	void FlushDend();
-	void ReloadDendrogram( const float threshold);
+	void SetDendThreshold( float t ){
+		mDendThreshold = t;
+	}
+	void SetDendThresholdAndReload( float t ){
+		SetDendThreshold(t);
+		ReloadDendrogram();
+	}
+	float GetDendThreshold(){ return mDendThreshold; }
+	void ReloadDendrogram();
 
 	void ColorTile( SEGMENT_DATA_TYPE * imageData, const int size,
 			const bool isSegmentation, unsigned char * data );
@@ -116,12 +124,14 @@ private:
 	OmSegmentCache mSegmentCache;
 
         quint32 * mDend;
-	int mDendSize;
         float * mDendValues;
+	int mDendSize;
 	int mDendValuesSize;
 	int mDendCount;
+	float mDendThreshold;
 
 	friend class OmBuildSegmentation;
+	friend class OmSegmentCacheImpl;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

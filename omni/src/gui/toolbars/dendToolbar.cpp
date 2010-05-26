@@ -45,8 +45,8 @@ void DendToolBar::createToolbarActions()
 
 	mThreshold = new QLineEdit(mMainWindow);
 	QString value;
-	value.setNum(0.95);
-	mThreshold->setText(value);
+
+	setThresholdValue();
 	connect(mThreshold, SIGNAL(editingFinished()), 
 		this, SLOT(thresholdChanged()));
 
@@ -66,6 +66,29 @@ void DendToolBar::createToolbarActions()
                 this, SLOT(toggledShatter()));
         toolbarShatterAct->setCheckable(true);
 
+        mergeHintAct = new QAction(tr("Show Merge Hints"), mMainWindow);
+        mergeHintAct->setStatusTip(tr("Merge hint mode"));
+        connect(mergeHintAct, SIGNAL(triggered()),
+                this, SLOT(toggledHint()));
+        mergeHintAct->setCheckable(true);
+
+        mHint = new QLineEdit(mMainWindow);
+        value.setNum(1);
+        mHint->setText(value);
+
+}
+
+void DendToolBar::setThresholdValue()
+{
+	QString value;
+
+	if (OmProject::IsSegmentationValid(mSeg)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+		value.setNum( seg.GetDendThreshold() );
+	} else {
+		value.setNum(0.95);
+	}
+	mThreshold->setText(value);
 }
 
 void DendToolBar::addToolbars()
@@ -82,6 +105,8 @@ void DendToolBar::addToolbars()
 	dendToolBar->addAction(increaseThresholdAct);
 	dendToolBar->addAction(joinAct);
 	dendToolBar->addAction(toolbarShatterAct);
+	dendToolBar->addAction(mergeHintAct);
+	dendToolBar->addWidget(mHint);
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -140,7 +165,6 @@ void DendToolBar::split()
 	}
 }
 
-
 void DendToolBar::addToThreshold(float num)
 {
         QString value = mThreshold->text();
@@ -154,8 +178,12 @@ void DendToolBar::addToThreshold(float num)
 	}
         value.setNum(threshold);
         mThreshold->setText(value);
-}
 
+	if (OmProject::IsSegmentationValid(mSeg)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+		seg.SetDendThresholdAndReload(threshold);
+	}
+}
 
 void DendToolBar::increaseThreshold()
 {
@@ -176,29 +204,36 @@ void DendToolBar::decreaseThreshold()
 void DendToolBar::join()
 {
         debug("dendbar", "DendToolBar::join\n");
-        try {
-                if (OmProject::IsSegmentationValid(mSeg)) {
-                        OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-			//seg.joinSelected();
-                }
-                OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 
-        } catch (...) {
-                debug("dendbar", "join in segmentation with id %u failed\n", mSeg);
-        }
+	if (OmProject::IsSegmentationValid(mSeg)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+		//seg.joinSelected();
+	}
 
+	updateGui();
 }
 
 void DendToolBar::toggledShatter()
 {
 	OmCacheManager::Freshen(true);
 	mShatter = !mShatter;
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+
+	updateGui();
+}
+
+void DendToolBar::toggledHint()
+{
 }
 
 void DendToolBar::thresholdChanged()
 {
 	debug("dendbar", "DendToolBar::thresholdChanged\n");
+
+	float threshold = mThreshold->text().toFloat();
+	if (OmProject::IsSegmentationValid(mSeg)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+		seg.SetDendThresholdAndReload(threshold);
+	}
 
 	updateGui();
 }
@@ -207,26 +242,15 @@ void DendToolBar::updateGuiFromProjectLoadOrOpen()
 {
         debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
 
-	//updateGui();
+	setThresholdValue();
+	updateGui();
 }
 
 void DendToolBar::updateGui()
 {
 	debug("dendbar", "DendToolBar::updateGui\n");
 
-	try {
-	        QString value = mThreshold->text();
-        	float threshold = value.toFloat();
-
-		if (OmProject::IsSegmentationValid(mSeg)) {
-			OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-			seg.ReloadDendrogram(threshold);
-		}
-
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} catch(...) {
-		debug("dendbar", "segmentation with id %u failed\n", mSeg);
-	}
+	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 bool DendToolBar::GetShatterMode()
