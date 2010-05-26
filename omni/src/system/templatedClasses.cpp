@@ -14,8 +14,8 @@
 #include "volume/omSegmentation.h"
 
 #include "common/omCommon.h"
-#include "utility/DynamicTree.cpp"
-#include "utility/DynamicTreeContainer.cpp"
+#include "segment/DynamicTree.cpp"
+#include "segment/DynamicTreeContainer.cpp"
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 

@@ -127,6 +127,8 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
            src/project/omProject.h \
+           src/segment/DynamicTree.h \
+           src/segment/DynamicTreeContainer.h \
            src/segment/omSegment.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \
@@ -158,8 +160,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/omThreadedCache.h \
            src/utility/biSetMap.h \
            src/utility/dataWrappers.h \
-           src/utility/DynamicTree.h \
-           src/utility/DynamicTreeContainer.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omDataArchiveCoords.h \
@@ -289,6 +289,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/project/omProject.cpp \
+           src/segment/DynamicTree.cpp \
+           src/segment/DynamicTreeContainer.cpp \
            src/segment/omSegment.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
@@ -317,7 +319,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omThreadedCache.cpp \
            src/system/templatedClasses.cpp \
            src/utility/dataWrappers.cpp \
-           src/utility/DynamicTree.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \
            src/utility/omDataArchiveCoords.cpp \
@@ -410,8 +411,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omGenericManager.cpp \
            src/system/omGroups.cpp \
            src/system/omGroup.cpp \
-           src/utility/DynamicTree.cpp \
-           src/utility/DynamicTreeContainer.cpp
 
 RESOURCES += src/gui/resources.qrc
 

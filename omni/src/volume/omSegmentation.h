@@ -103,7 +103,10 @@ public:
 	void SetDendThreshold( float t ){
 		mDendThreshold = t;
 	}
-	void SetDendThresholdAndReload( float t ){
+	void SetDendThresholdAndReload( const float t ){
+		if( t == mDendThreshold ){
+			return;
+		}
 		SetDendThreshold(t);
 		ReloadDendrogram();
 	}

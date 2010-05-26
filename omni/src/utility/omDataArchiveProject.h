@@ -58,7 +58,4 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
 
-QDataStream &operator<<(QDataStream & out, const OmSegLogEntry & sle );
-QDataStream &operator>>(QDataStream & in, OmSegLogEntry & sle );
-
 #endif

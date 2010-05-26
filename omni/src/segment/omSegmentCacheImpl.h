@@ -2,7 +2,7 @@
 #define OM_SEGMENT_CACHE_IMPL_H
 
 #include "volume/omSegmentation.h"
-#include "utility/DynamicTreeContainer.h"
+#include "segment/DynamicTreeContainer.h"
 #include <boost/tr1/unordered_map.hpp>
 
  //TODO: this was done as proof-of-concept; not sure how much slower struct is compared to simple int POD... (purcaro)
@@ -20,16 +20,8 @@ class OmSegPtrList {
 	std::vector<OmSegment*> list;
 };
 
-enum OmSegLogType { LOG_JOIN, LOG_SPLIT };
-
-typedef struct {
-	OmSegID parentID;
-	OmSegID childID;
-	OmSegLogType segLogType;
-} OmSegLogEntry;
-
 class OmSegmentCacheImpl {
-public:
+ public:
 	OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache);
 	~OmSegmentCacheImpl();
 
@@ -39,7 +31,14 @@ public:
 
 	bool isValueAlreadyMappedToSegment( const OmSegID & );
 
-	OmSegment* GetSegmentFromValue( const OmSegID & );
+	OmSegment* GetSegmentFromValue(const OmSegID & value) {
+		if( !mAllPagesLoaded ){
+			if ( !isValueAlreadyMappedToSegment( value ) ){
+				return NULL;
+			}
+		}
+		return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
+	}
 
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
@@ -126,19 +125,10 @@ public:
 		return PageNum(value / mPageSize);
 	}
 	void LoadValuePage( const PageNum valuePageNum );
-	void SaveAllPages();
+	void SaveAllLoadedPages();
 	void SaveDirtySegmentPages();
 	void doSaveSegmentPage( const PageNum segPageNum );
 	bool mAllPagesLoaded;
-
-	OmSegment* GetSegmentFromValueFast(const OmSegID & value) {
-		if( !mAllPagesLoaded ){
-			if ( !isValueAlreadyMappedToSegment( value ) ){
-				return NULL;
-			}
-		}
-		return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
-	}
 
 	boost::unordered_map< int,
 		boost::unordered_map< int,
@@ -148,7 +138,7 @@ public:
 	void invalidateCachedColorFreshness();
 	quint32 mCachedColorFreshness;
 
-	DynamicTreeContainer<OmSegID> * mTree;
+	DynamicTreeContainer<OmSegID> * mGraph;
 	void initializeDynamicTree();
 	void loadDendrogram( const quint32 * dend, const float * dendValues, 
 			     const int size, const float stopPoint );
@@ -161,8 +151,7 @@ public:
 	void rerootSegmentLists();
 	void rerootSegmentList( OmIds & set );
 
-	void addToLog( const OmSegID parentID, const OmSegID childID, const OmSegLogType logType );
-	QStack<OmSegLogEntry> segLogEntries;
+	void resetGlobalThreshold( const float stopPoint );
 
 	friend class OmSegmentColorizer;
 

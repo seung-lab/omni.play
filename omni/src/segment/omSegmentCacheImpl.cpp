@@ -26,7 +26,7 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentC
 
 	mCachedColorFreshness = 1;
 
-	mTree = NULL;
+	mGraph = NULL;
 }
 
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
@@ -57,7 +57,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
 
 	if( !validPageNumbers.contains( pageNum ) ) {
 		mValueToSegPtrHash[ pageNum ] = new OmSegment*[mPageSize];
-		memset(mValueToSegPtrHash[ pageNum ], '\0', sizeof(OmSegment*) * mPageSize);
+		memset(mValueToSegPtrHash[ pageNum ], 0, sizeof(OmSegment*) * mPageSize);
 		validPageNumbers.insert( pageNum );
 		loadedPageNumbers.insert( pageNum );
 	}
@@ -119,15 +119,6 @@ OmSegID OmSegmentCacheImpl::getNextValue()
 {
 	++mMaxValue;
 	return mMaxValue;
-}
-
-OmSegment* OmSegmentCacheImpl::GetSegmentFromValue( const OmSegID & value)
-{
-	if ( !isValueAlreadyMappedToSegment( value ) ){
-		return NULL;
-	}
-
-	return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
 }
 
 OmSegID OmSegmentCacheImpl::GetNumSegments()
@@ -283,7 +274,7 @@ void OmSegmentCacheImpl::flushDirtySegments()
 		printf("flushing all segment metadata; please wait...");
 		time(&time_start);
 
-		SaveAllPages();
+		SaveAllLoadedPages();
 
 		time(&time_end);
 		time_dif = difftime(time_end, time_start);
@@ -439,6 +430,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
 	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u,%f\n",
 			child->getValue(), child->mThreshold);
+
 	if( !child->mParentSegID ){
 		return;
 	}
@@ -447,8 +439,10 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	debug("split", "\tparent = %u\n", parent->getValue());
 
 	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
-        mTree->get( child->mValue )->cut();
+        mGraph->get( child->mValue )->cut();
 	child->mParentSegID = 0;
+
+	const float oldChildThreshold = child->mThreshold;
 	child->mThreshold = 0;
 	
 	if( isSegmentSelected( parent->getValue() ) ){
@@ -458,12 +452,16 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		mSelectedSet.remove( child->getValue() );
 	}
 
-	clearCaches();
+	OmSegQueueElement parentElement = { child->mValue, oldChildThreshold };
+	parent->queue.push(parentElement);
 
-	addToLog( parent->mValue, child->mValue, LOG_SPLIT );
+	OmSegQueueElement childElement = { parent->mValue, oldChildThreshold };
+	parent->queue.push(childElement);
+
+	clearCaches();
 }
 
-void OmSegmentCacheImpl::SaveAllPages()
+void OmSegmentCacheImpl::SaveAllLoadedPages()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
 		doSaveSegmentPage( pageNum );
@@ -492,7 +490,7 @@ void OmSegmentCacheImpl::turnBatchModeOn( const bool batchMode )
 void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 {
 	OmSegment** page = new OmSegment*[mPageSize];
-	memset(page, '\0', sizeof(OmSegment*) * mPageSize);
+	memset(page, 0, sizeof(OmSegment*) * mPageSize);
 
 	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( getSegmentationID(), pageNum ),
 					   page,
@@ -510,17 +508,23 @@ void OmSegmentCacheImpl::clearAllJoins()
 {
 	printf("clearing old join information...");
 
-	foreach( const PageNum & pageNum, loadedPageNumbers ){
-		
-		for( quint32 i = 0; i < mPageSize; ++i ){
-			if( NULL == mValueToSegPtrHash[pageNum][i] ){
-				continue;
-			}
-			
-			OmSegment * seg = mValueToSegPtrHash[pageNum][i];
-			seg->mParentSegID = 0;
-			seg->mThreshold = 0;
-			seg->segmentsJoinedIntoMe.clear();
+	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
+
+	OmSegment * seg;
+	for( unsigned int i = 1; i < mGraph->getSize(); ++i) {
+
+		if( NULL == treeNodeArray[ i ] ){
+			continue;
+		}
+
+		seg = GetSegmentFromValue( treeNodeArray[ i ]->getKey() );
+		assert(seg);
+
+		seg->mParentSegID = 0;
+		seg->mThreshold = 0;
+		seg->segmentsJoinedIntoMe.clear();
+		while( !seg->queue.empty() ){
+			seg->queue.pop();
 		}
 	}
 
@@ -562,9 +566,9 @@ void OmSegmentCacheImpl::invalidateCachedColorFreshness()
 
 void OmSegmentCacheImpl::initializeDynamicTree()
 {
-	delete mTree;
+	delete mGraph;
 
-	mTree = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
+	mGraph = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
 }
 
 void OmSegmentCacheImpl::reloadDendrogram( const quint32 * dend, const float * dendValues, 
@@ -590,30 +594,30 @@ void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * den
 
 	mNumTopLevelSegs = mNumSegs;
 
-	quint32 counter = 0;
+	quint32 joinCounter = 0;
 	unsigned int childVal;
 	unsigned int parentVal;
 	float threshold;
+	
+	// TODO: deal w/ dust...
+
 	for(int i = 0; i < size; ++i) {
                 threshold = dendValues[i];
-
-		if(threshold < stopPoint)  {
-			// TODO: deal w/ dust...
-			break;
-		}
 
                 childVal = dend[i];
 		parentVal = dend[i + size ];
 
                 Join(parentVal, childVal, threshold);
 
-                ++counter;
+                ++joinCounter;
         }
+
+	printf("loaded entire MST: %d joins performed\n", joinCounter );
+
+	resetGlobalThreshold( stopPoint );
 
 	rerootSegmentLists();
 	clearCaches();
-
-	printf("\t %d join operations performed\n", counter);
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()
@@ -641,8 +645,8 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
 {
 	loadTreeIfNeeded();
 
-	DynamicTree<OmSegID> * childRootDT  = mTree->get( childUnknownDepthID )->findRoot();
-	childRootDT->join( mTree->get( parentID ) );
+	DynamicTree<OmSegID> * childRootDT  = mGraph->get( childUnknownDepthID )->findRoot();
+	childRootDT->join( mGraph->get( parentID ) );
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
 	OmSegment * parent = GetSegmentFromValue( parentID );
@@ -655,8 +659,6 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
         } 
 	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
-
-	addToLog( parentID, childRoot->mValue, LOG_JOIN );
 }
 
 OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
@@ -667,14 +669,14 @@ OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 		return segment;
 	}
 
-	DynamicTree<OmSegID> * rootDT  = mTree->get( segment->mValue )->findRoot();
+	DynamicTree<OmSegID> * rootDT  = mGraph->get( segment->mValue )->findRoot();
 	
 	return GetSegmentFromValue( rootDT->getKey() );
 }
 
 void OmSegmentCacheImpl::loadTreeIfNeeded()
 {
-	if( NULL != mTree ){
+	if( NULL != mGraph ){
 		return;
 	}
 
@@ -715,8 +717,31 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 	return seg->mColorInt;
 }
 
-void OmSegmentCacheImpl::addToLog( const OmSegID parentID, const OmSegID childID, const OmSegLogType logType )
+void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
-	OmSegLogEntry sle = { parentID, childID, logType };
-	segLogEntries.push( sle );
+	quint32 splitCounter = 0;
+
+	// TODO: deal w/ decrease in threshold (i.e. merging...) (purcaro)
+
+	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
+
+	OmSegment * seg;
+	for( unsigned int i = 1; i < mGraph->getSize(); ++i) {
+
+		if( NULL == treeNodeArray[ i ] ){
+			continue;
+		}
+
+		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
+		assert(seg);
+
+		if( seg->mThreshold >= stopPoint ){
+			continue;
+		}
+
+		splitChildFromParent( seg );
+                ++splitCounter;
+        }
+	
+	printf("\t threshold %f: %d splits performed\n", stopPoint, splitCounter );
 }

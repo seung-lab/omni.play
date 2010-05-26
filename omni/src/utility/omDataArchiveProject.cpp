@@ -6,7 +6,7 @@
 #include <QDataStream>
 #include "boost/lexical_cast.hpp"
 
-static const int Omni_Version = 2;
+static const int Omni_Version = 3;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
@@ -350,27 +350,6 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegLogEntry & sle )
-{
-	out << sle.parentID;
-	out << sle.childID;
-	const int logType = static_cast<int>(sle.segLogType);
-	out << logType;
-
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in, OmSegLogEntry & sle )
-{
-	in >> sle.parentID;
-	in >> sle.childID;
-	int logType;
-	in >> logType;
-	sle.segLogType =  static_cast<OmSegLogType>(logType);
-
-	return in;
-}
-
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 {
 	out << sc.validPageNumbers;
@@ -388,8 +367,6 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	out << sc.mPageSize;
 	out << sc.mNumSegs;
 	out << sc.mNumTopLevelSegs;
-
-	out << sc.segLogEntries;
 
 	return out;
 }
@@ -411,8 +388,6 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
 	in >> sc.mNumTopLevelSegs;
-
-	in >> sc.segLogEntries;
 
 	return in;
 }
