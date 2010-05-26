@@ -699,7 +699,7 @@ void OmSegmentation::FlushDend()
 
 void OmSegmentation::ReloadDendrogram()
 {
-	mSegmentCache.reloadDendrogram(mDend, mDendValues, mDendCount, mDendThreshold);
+	mSegmentCache.resetGlobalThreshold(mDendThreshold);
 }
 
 void OmSegmentation::JoinAllSegmentsInSelectedList()

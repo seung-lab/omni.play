@@ -72,8 +72,7 @@ public:
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
 	std::vector< OmSegment* > & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
-	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
-			       const int size, const float stopPoint );
+	void resetGlobalThreshold( const float stopPoint );
 
 	quint32 getMaxValue();
 

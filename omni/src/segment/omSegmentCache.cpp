@@ -221,11 +221,10 @@ std::vector< OmSegment* > & OmSegmentCache::getSegmentListDirectCache( const OmM
 	return mImpl->getSegmentListDirectCache( chunkCoord );
 }
 
-void OmSegmentCache::reloadDendrogram( const quint32 * dend, const float * dendValues, 
-				       const int size, const float stopPoint )
+void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
 {	
 	QMutexLocker locker( &mMutex );
-	return mImpl->reloadDendrogram( dend, dendValues, size, stopPoint );
+	return mImpl->resetGlobalThreshold( stopPoint );
 }
 
 void OmSegmentCache::JoinAllSegmentsInSelectedList()

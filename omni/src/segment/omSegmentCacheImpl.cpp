@@ -504,41 +504,6 @@ void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 	}
 }
 
-void OmSegmentCacheImpl::clearAllJoins()
-{
-	printf("clearing old join information...");
-
-	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
-
-	OmSegment * seg;
-	for( unsigned int i = 1; i < mGraph->getSize(); ++i) {
-
-		if( NULL == treeNodeArray[ i ] ){
-			continue;
-		}
-
-		seg = GetSegmentFromValue( treeNodeArray[ i ]->getKey() );
-		assert(seg);
-
-		seg->mParentSegID = 0;
-		seg->mThreshold = 0;
-		seg->segmentsJoinedIntoMe.clear();
-
-		//OmSegQueueElement sqe;
-		//int counter = 0;
-		while( !seg->queue.empty() ){
-			//sqe = seg->queue.top();
-			//printf("%d: %d: childID %d, at %f\n", i, counter, sqe.segID, sqe.threshold );
-			seg->queue.pop();
-			//++counter;
-		}
-	}
-
-	clearCaches();
-
-	printf("done\n");
-}
-
 // TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
 void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & c,
 						    std::vector< OmSegment* > & segmentsToDraw )
@@ -577,24 +542,16 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 	mGraph = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
 }
 
-void OmSegmentCacheImpl::reloadDendrogram( const quint32 *, const float *, 
-					   const int , const float stopPoint)
+void OmSegmentCacheImpl::loadDendrogram()
 {
-	resetGlobalThreshold( stopPoint );
-	clearCaches();
+	doLoadDendrogram( mSegmentation->mDend, 
+			  mSegmentation->mDendValues, 
+			  mSegmentation->mDendCount, 
+			  mSegmentation->mDendThreshold);
 }
 
-// FIXME: rename
-void OmSegmentCacheImpl::doLoadDendrogram()
-{
-	loadDendrogram( mSegmentation->mDend, 
-			mSegmentation->mDendValues, 
-			mSegmentation->mDendCount, 
-			mSegmentation->mDendThreshold);
-}
-
-void OmSegmentCacheImpl::loadDendrogram( const quint32 * dend, const float * dendValues, 
-					 const int size, const float stopPoint )
+void OmSegmentCacheImpl::doLoadDendrogram( const quint32 * dend, const float * dendValues, 
+					   const int size, const float stopPoint )
 {
 	initializeDynamicTree();
 
@@ -686,7 +643,7 @@ void OmSegmentCacheImpl::loadTreeIfNeeded()
 		return;
 	}
 
-	doLoadDendrogram();
+	loadDendrogram();
 }
 
 void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
@@ -740,7 +697,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
 		assert(seg);
 
-		if( seg->mThreshold >= stopPoint ){
+		if( seg->mThreshold >= stopPoint ){ // merge!
 			OmSegQueueElement sqe;
 			while(1){
 				if( seg->queue.empty() ){
@@ -788,6 +745,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 			++splitCounter;
 		}
         }
-	
+
+	clearCaches();	
 	printf("\t threshold %f: %d splits performed\n", stopPoint, splitCounter );
 }

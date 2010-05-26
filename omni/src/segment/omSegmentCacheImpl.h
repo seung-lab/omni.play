@@ -87,8 +87,7 @@ class OmSegmentCacheImpl {
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
 	std::vector<OmSegment*> & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
-	void reloadDendrogram( const quint32 * dend, const float * dendValues, 
-			       const int size, const float stopPoint );
+	void resetGlobalThreshold( const float stopPoint );
 
 	const OmColor & GetColorAtThreshold( OmSegment * segment, const float threshold );
 
@@ -140,18 +139,15 @@ class OmSegmentCacheImpl {
 
 	DynamicTreeContainer<OmSegID> * mGraph;
 	void initializeDynamicTree();
-	void loadDendrogram( const quint32 * dend, const float * dendValues, 
+	void doLoadDendrogram( const quint32 * dend, const float * dendValues, 
 			     const int size, const float stopPoint );
-	void doLoadDendrogram();
+	void loadDendrogram();
 	void loadTreeIfNeeded();
 
 	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
 	void Join( const OmId, const OmId, const float );
-	void clearAllJoins();
 	void rerootSegmentLists();
 	void rerootSegmentList( OmIds & set );
-
-	void resetGlobalThreshold( const float stopPoint );
 
 	friend class OmSegmentColorizer;
 
