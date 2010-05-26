@@ -8,8 +8,7 @@
 
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
-#include "segment/omSegment.h"
-#include "common/omStd.h"
+#include "segment/omSegmentCache.h"
 #include "system/omThreadedCache.h"
 
 typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
@@ -37,7 +36,7 @@ class OmMipMeshManager : public MipMeshCache {
 	//drawing
 	void DrawMeshes(const OmBitfield &drawOps,
 			const OmMipChunkCoord &mipCoord,
-			std::vector< OmSegment* > & segmentsToDraw );
+			const OmSegPtrs & segmentsToDraw );
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);

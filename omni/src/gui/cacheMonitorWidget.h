@@ -1,14 +1,8 @@
 #ifndef CACHE_MONITOR_WIDGET_H
 #define CACHE_MONITOR_WIDGET_H
 
-#include <QtCore/QVariant>
 #include <QtGui>
-#include <QWidget>
-
-#include "gui/mainwindow.h"
-
-#include "common/omStd.h"
-
+#include "system/omCacheManager.h"
 
 class CacheMonitorWidget : public QWidget 
 {

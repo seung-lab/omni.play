@@ -44,7 +44,7 @@ OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 	return mImpl->AddSegment(value);
 }
 
-void OmSegmentCache::AddSegmentsFromChunk(const SegmentDataSet & data_values, 
+void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDs & data_values, 
 					  const OmMipChunkCoord & mipCoord )
 {
 	QMutexLocker locker( &mMutex );
@@ -215,7 +215,7 @@ bool OmSegmentCache::segmentListDirectCacheHasCoord( const OmMipChunkCoord & chu
 	return mImpl->segmentListDirectCacheHasCoord( chunkCoord );
 }
 
-std::vector< OmSegment* > & OmSegmentCache::getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord )
+const OmSegPtrs & OmSegmentCache::getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->getSegmentListDirectCache( chunkCoord );

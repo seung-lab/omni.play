@@ -19,7 +19,7 @@
 #include "system/omGroups.h"
 #include "system/events/omSystemModeEvent.h"
 #include "volume/omSegmentationChunkCoord.h"
-#include "common/omStd.h"
+#include "common/omCommon.h"
 
 class OmVolumeCuller;
 class OmSegment;
@@ -27,7 +27,8 @@ class OmSegment;
 class OmSegmentation 
 : public OmMipVolume, 
 	public OmManageableObject, 
-	public OmSystemModeEventListener 
+	public OmSystemModeEventListener,
+	boost::noncopyable
 {
 
 public:
@@ -52,7 +53,7 @@ public:
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const SegmentDataSet &rEditedVals);
+	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDs &rEditedVals);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
@@ -92,34 +93,20 @@ public:
 				OmVolumeCuller &);
 	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
 		       const OmMipChunkCoord & chunkCoord,
-		       std::vector< OmSegment* > & segmentsToDraw, 
+		       const OmSegPtrs & segmentsToDraw, 
 		       OmVolumeCuller &rCuller);
-	void DrawChunkVoxels( const OmMipChunkCoord &, const SegmentDataSet &, const OmBitfield & );
+	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDs &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
 	void FlushDend();
-	void SetDendThreshold( float t ){
-		mDendThreshold = t;
-	}
-	void SetDendThresholdAndReload( const float t ){
-		if( t == mDendThreshold ){
-			return;
-		}
-		SetDendThreshold(t);
-		ReloadDendrogram();
-	}
+	void SetDendThreshold( float t );
+	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
 
 	OmSegmentCache * GetSegmentCache(){ return &mSegmentCache; }
-
-protected:
-	//protected copy constructor and assignment operator to prevent copy
-	OmSegmentation(const OmSegmentation&);
-	OmSegmentation& operator= (const OmSegmentation&);
-	
 	
 private:
 	void KillCacheThreads();

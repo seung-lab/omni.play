@@ -281,7 +281,7 @@ void OmMipChunk::WriteMetaData()
 /////////////////////////////////
 ///////          MetaData Accessors
 
-const SegmentDataSet & OmMipChunk::GetModifiedVoxelValues()
+const OmSegIDs & OmMipChunk::GetModifiedVoxelValues()
 {
 	return mModifiedVoxelValues;
 }
@@ -447,7 +447,7 @@ const NormBbox & OmMipChunk::GetClippedNormExtent()
  *	Returns reference to set of all values directly contained by
  *	the image data of this MipChunk
  */
-const SegmentDataSet & OmMipChunk::GetDirectDataValues()
+const OmSegIDs & OmMipChunk::GetDirectDataValues()
 {
 	loadMetadataIfPresent();
 	return mDirectlyContainedValues;

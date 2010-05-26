@@ -1,15 +1,14 @@
 #include "gui/cacheMonitorDialog.h"
-#include "system/omCacheManager.h"
+#include "gui/cacheMonitorWidget.h"
 #include "system/omThreadedCache.h"
 
-
-CacheMonitorDialog::CacheMonitorDialog(MainWindow * parent)
+CacheMonitorDialog::CacheMonitorDialog( QWidget * parent)
 	: QDialog(parent)
 {
-	mParentWindow = parent;
 	mTimer = new QTimer(this);
 	connect(mTimer, SIGNAL(timeout()), this, SLOT(Refresh()));
 	mTimer->start(500);
+
 	mCacheMonitorWidget = new CacheMonitorWidget(this);
 	layout = new QVBoxLayout(this);
 	layout->addWidget(mCacheMonitorWidget);
@@ -22,10 +21,7 @@ CacheMonitorDialog::~CacheMonitorDialog()
 	delete mCacheMonitorWidget;	
 }
 
-
-
-void 
-CacheMonitorDialog::Refresh()
+void CacheMonitorDialog::Refresh()
 {
 	if (mDying){
 		mTimer->stop();
@@ -36,11 +32,9 @@ CacheMonitorDialog::Refresh()
 		layout->addWidget(mCacheMonitorWidget);
 		show();
 	}
-
 }
 
-void 
-CacheMonitorDialog::done()
+void CacheMonitorDialog::done()
 {
 	mDying = true;
 	mTimer->stop();

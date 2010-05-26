@@ -70,7 +70,7 @@ private:
 
 	OmColor mColorInt;
 
-	QList<OmId> segmentsJoinedIntoMe;
+	OmSegIDs segmentsJoinedIntoMe;
 	std::priority_queue< OmSegQueueElement, std::vector<OmSegQueueElement>, OmSegQueueComparator > queue;
 
 	OmId mParentSegID;

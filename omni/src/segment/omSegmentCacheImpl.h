@@ -1,32 +1,38 @@
 #ifndef OM_SEGMENT_CACHE_IMPL_H
 #define OM_SEGMENT_CACHE_IMPL_H
 
-#include "volume/omSegmentation.h"
+#include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
-#include <boost/tr1/unordered_map.hpp>
 
- //TODO: this was done as proof-of-concept; not sure how much slower struct is compared to simple int POD... (purcaro)
-#include "boost/strong_typedef.hpp"
+// TODO: this was done as proof-of-concept; not sure how much slower 
+//  struct constructor is compared to simple int POD... (purcaro)
 BOOST_STRONG_TYPEDEF(quint32, PageNum )
 
-class OmSegPtrList {
+class OmSegment;
+class OmSegmentCache;
+class OmSegmentation;
+class OmMipChunkCoord;
+
+typedef std::vector<OmSegment*> OmSegPtrs;
+
+class OmSegPtrsValid {
  public:
-	OmSegPtrList()
+	OmSegPtrsValid()
 		: isValid(false) {}
-	OmSegPtrList( const std::vector<OmSegment*> & L )
+	OmSegPtrsValid( const OmSegPtrs & L )
 		: isValid(true), list(L) {}
 	
 	bool isValid;
-	std::vector<OmSegment*> list;
+	OmSegPtrs list;
 };
 
 class OmSegmentCacheImpl {
  public:
-	OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache);
+	OmSegmentCacheImpl(OmSegmentation *, OmSegmentCache *);
 	~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
+	void AddSegmentsFromChunk(const OmSegIDs &, const OmMipChunkCoord &);
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( const OmSegID & );
@@ -43,7 +49,7 @@ class OmSegmentCacheImpl {
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
 
-	bool IsSegmentValid(OmSegID seg);
+	bool IsSegmentValid( OmSegID seg);
 
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
@@ -85,7 +91,7 @@ class OmSegmentCacheImpl {
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
 					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	std::vector<OmSegment*> & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
 	void resetGlobalThreshold( const float stopPoint );
 
@@ -132,7 +138,7 @@ class OmSegmentCacheImpl {
 	boost::unordered_map< int,
 		boost::unordered_map< int,
 		boost::unordered_map< int,
-		boost::unordered_map< int, OmSegPtrList > > > > cacheDirectSegmentList;
+		boost::unordered_map< int, OmSegPtrsValid > > > > cacheDirectSegmentList;
 	void clearCaches();
 	void invalidateCachedColorFreshness();
 	quint32 mCachedColorFreshness;

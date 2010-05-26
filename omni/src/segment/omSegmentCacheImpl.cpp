@@ -79,7 +79,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
 	return seg;
 }
 
-void OmSegmentCacheImpl::AddSegmentsFromChunk(const SegmentDataSet & data_values, 
+void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDs & data_values, 
 					      const OmMipChunkCoord & )
 {
 	foreach( const OmSegID & value, data_values ){
@@ -438,7 +438,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 	debug("split", "\tparent = %u\n", parent->getValue());
 
-	parent->segmentsJoinedIntoMe.removeAll( child->getValue() );
+	parent->segmentsJoinedIntoMe.erase( child->getValue() );
         mGraph->get( child->mValue )->cut();
 	child->mParentSegID = 0;
 
@@ -508,18 +508,18 @@ void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & c,
 						    std::vector< OmSegment* > & segmentsToDraw )
 {
-	cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrList( segmentsToDraw );
+	cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
 }
 
 bool OmSegmentCacheImpl::segmentListDirectCacheHasCoord( const OmMipChunkCoord & c )
 {
-	OmSegPtrList & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrsValid & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.isValid;
 }
 
-std::vector<OmSegment*> & OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & c )
+const OmSegPtrs & OmSegmentCacheImpl::getSegmentListDirectCache( const OmMipChunkCoord & c )
 {
-	OmSegPtrList & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	const OmSegPtrsValid & spList = cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.list;
 }
 
@@ -614,7 +614,7 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
 	OmSegment * parent = GetSegmentFromValue( parentID );
 
-	parent->segmentsJoinedIntoMe.append( childRoot->mValue );
+	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
 
         if( isSegmentSelected( childUnknownDepthID ) ){

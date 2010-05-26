@@ -9,7 +9,8 @@
 
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/tr1/unordered_set.hpp>
-#include "boost/strong_typedef.hpp"
+#include <boost/strong_typedef.hpp>
+#include <boost/utility.hpp>
 
 #include "common/omStd.h"
 #include <assert.h>
@@ -72,7 +73,7 @@ static const OmId NULL_SEGMENT_ID = 0;
 
 //BOOST_STRONG_TYPEDEF(quint32, OmSegID )
 typedef quint32 OmSegID;
-typedef boost::unordered_set<OmSegID> SegmentDataSet;
+typedef boost::unordered_set<OmSegID> OmSegIDs;
 
 static const OmSegID NULL_SEGMENT_DATA(0);
 

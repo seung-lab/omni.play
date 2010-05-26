@@ -29,7 +29,7 @@ public:
 	void UpdateVoxel(const DataCoord &rVox, const OmSegID old_val, const OmSegID new_val );
 	
 	//draw
-	void DrawVoxelations(OmSegmentCache *rSegMgr, const OmMipChunkCoord &mipCoord, const SegmentDataSet &rRelvDataVals, const OmBitfield &drawOps);
+	void DrawVoxelations(OmSegmentCache *rSegMgr, const OmMipChunkCoord &mipCoord, const OmSegIDs &rRelvDataVals, const OmBitfield &drawOps);
 	
 private:
 	OmMipVoxelation* HandleCacheMiss(const OmMipSegmentDataCoord &);

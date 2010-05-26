@@ -110,7 +110,7 @@ bool OmMipMeshManager::InitializeFetchThread()
 
 void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
 				  const OmMipChunkCoord & mipCoord, 
-				  std::vector< OmSegment *> & segmentsToDraw )
+				  const OmSegPtrs  & segmentsToDraw )
 {
 	std::vector<OmSegment*>::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){

@@ -3,6 +3,7 @@
 
 #include "common/omStd.h"
 #include "segment/omSegment.h"
+#include "segment/omSegmentCacheImpl.h"
 #include "utility/omHdf5Path.h"
 
 #include <QSet>
@@ -12,7 +13,6 @@
 
 class OmSegment;
 class OmSegmentation;
-class OmSegmentCacheImpl;
 
 class OmSegmentCache {
 public:
@@ -22,7 +22,7 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const SegmentDataSet & values, const OmMipChunkCoord & mipCoord);
+	void AddSegmentsFromChunk(const OmSegIDs & values, const OmMipChunkCoord & mipCoord);
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( OmSegID value );
@@ -70,7 +70,7 @@ public:
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
 					std::vector< OmSegment* > & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	std::vector< OmSegment* > & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 
 	void resetGlobalThreshold( const float stopPoint );
 
