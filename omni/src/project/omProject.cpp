@@ -83,6 +83,8 @@ void OmProject::Save()
 	}
 
 	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+
+	OmProjectData::GetDataWriter()->flush();
 }
 
 void OmProject::Commit()
