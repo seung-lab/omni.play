@@ -1,5 +1,6 @@
 #include "project/omProject.h"
 #include "omView2d.h"
+#include "gui/toolbars/dendToolbar.h"
 #include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
@@ -871,6 +872,36 @@ void OmView2d::resetWindow()
 
 void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 {
+#if 1
+        OmId segmentationID = mImageId;
+	OmId segmentID;
+        if(SEGMENTATION != mVolumeType) {
+                return;
+        }
+
+        DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
+       	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
+
+	if(DendToolBar::GetSplitMode(segmentationID, segmentID)) {
+		assert(mImageId==segmentationID);
+	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
+
+		OmSegment * seg1 = segmentation.GetSegment(segmentID);
+		OmSegment * seg2 = segmentation.GetSegment(segid);
+
+        	seg1->splitTwoChildren(seg2);
+
+		DendToolBar::SetSplitMode(false);
+        	OmStateManager::SetSystemModePrev();
+	} else {
+	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
+		debug("split", "segmentID=%i\n", segmentID);
+		if (segmentID) {
+			DendToolBar::SetSplitMode(segmentationID, segmentID);
+		}
+	}
+
+#else
 	SegmentDataWrapper * sdw = getSelectedSegment( event );
 	if( NULL == sdw ){
 		return;
@@ -892,4 +923,5 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 	seg1->splitTwoChildren(seg2);
 
 	OmStateManager::SetSystemModePrev();
+#endif
 }

@@ -84,6 +84,7 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 		mCache->findRoot( this )->ApplyColor(drawOps);
 		return;
 	}
+	//debug("mesh", "applying color\n");
 
 	Vector3<float> hyperColor = mColor;
 	hyperColor.x *= 2.;

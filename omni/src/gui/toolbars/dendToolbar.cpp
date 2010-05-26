@@ -3,7 +3,12 @@
 #include "system/omProjectData.h"
 #include "system/omCacheManager.h"
 
+// FIXME
 bool mShatter = false;
+bool mSplitting = false;
+OmId mSegment = 0;
+OmId mSeg = 1;
+
 
 DendToolBar::DendToolBar( MainWindow * mw )
 	: QWidget(mw)
@@ -112,7 +117,7 @@ void DendToolBar::addToolbars()
 void DendToolBar::setupToolbarInitially()
 {
         debug("dendbar", "DendToolBar::setupToolbarInitially\n");
-	mSeg = 1;	// Hard code for now.
+	// FIXME tie in the hard code statics.
 }
 
 void DendToolBar::ChangeModeModify(const bool )
@@ -159,7 +164,6 @@ void DendToolBar::split()
 	if( toolbarSplitAct->isChecked() ) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
 		OmStateManager::SetDendToolMode(SPLIT);
-
 	} else {
 		OmStateManager::SetSystemModePrev();
 	}
@@ -258,3 +262,20 @@ bool DendToolBar::GetShatterMode()
 	return mShatter;
 }
 
+bool DendToolBar::GetSplitMode(OmId & seg, OmId & segment)
+{
+	seg = mSeg;
+	segment = mSegment;
+	return mSplitting;
+}
+
+void DendToolBar::SetSplitMode(bool onoroff)
+{
+	mSplitting = onoroff;
+}
+void DendToolBar::SetSplitMode(OmId seg, OmId segment)
+{
+	mSeg = seg;
+	mSegment = segment;
+	mSplitting = true;
+}

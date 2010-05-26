@@ -13,6 +13,12 @@ class DendToolBar : public QWidget
 
  public:
 	static bool GetShatterMode();
+	static bool GetSplitMode(OmId & seg, OmId & segment);
+	static void SetSplitMode(OmId seg, OmId segment);
+	static void SetSplitMode(bool onoroff);
+
+
+
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
@@ -58,7 +64,6 @@ class DendToolBar : public QWidget
 	void resetTool( QAction* tool, const bool enabled );
 	void resetTools( const bool enabled );
 
-	OmId mSeg;
 };
 
 #endif
