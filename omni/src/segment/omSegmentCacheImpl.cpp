@@ -8,7 +8,7 @@
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation *segmentation, OmSegmentCache * cache )
+OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache )
 	: mSegmentation(segmentation), mParentCache( cache )
 {
 	mMaxValue = 0;

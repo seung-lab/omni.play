@@ -8,9 +8,23 @@
  */
 
 #include "common/omCommon.h"
+#include <queue>
 
 class OmSegmentCache;
 class OmMipChunkCoord;
+
+typedef struct {
+	OmSegID segID;
+	float threshold;
+} OmSegQueueElement;
+
+class OmSegQueueComparator {
+ public:
+	bool operator() (const OmSegQueueElement & lhs, const OmSegQueueElement & rhs) const
+	{
+		return lhs.threshold < rhs.threshold;
+	}
+};
 
 class OmSegment {
 
@@ -22,7 +36,7 @@ public:
 	void splitTwoChildren(OmSegment * seg);
 
 	//accessors
-	OmColor GetColorInt(){ return mColorInt; }
+	const OmColor & GetColorInt(){ return mColorInt; }
 	Vector3<float> GetColorFloat(){
 		return 	Vector3<float>( mColorInt.red / 255.,
 					mColorInt.green / 255.,
@@ -36,15 +50,15 @@ public:
 	const OmSegID & getValue();
 
 	QString GetNote();
-	void SetNote(QString);
+	void SetNote(const QString &);
 	QString GetName();
-	void SetName(QString);
+	void SetName(const QString &);
 	bool IsSelected();
-	void SetSelected(bool isSelected);
+	void SetSelected(const bool);
 	bool IsEnabled();
-	void SetEnabled(bool);
+	void SetEnabled( const bool);
 
-	void setParent(OmSegment * segment, float threshold);
+	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
 	float getThreshold();
@@ -57,6 +71,8 @@ private:
 	OmColor mColorInt;
 
 	QList<OmId> segmentsJoinedIntoMe;
+	std::priority_queue< OmSegQueueElement, std::vector<OmSegQueueElement>, OmSegQueueComparator > queue;
+
 	OmId mParentSegID;
 	float mThreshold;
 

@@ -14,19 +14,18 @@
 #include "volume/omMipChunkCoord.h"
 #include "utility/omHdf5Path.h"
 
-OmSegment::OmSegment( const OmSegID & value, OmSegmentCache* cache)
+OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
 	: mValue(value), mCache(cache), mParentSegID(0)
 {
-	assert(cache && "must have cache in the segments");
 	SetInitialColor();
 }
 
-OmSegment::OmSegment(OmSegmentCache* cache)
+OmSegment::OmSegment(OmSegmentCache * cache)
 	:  mCache(cache), mParentSegID(0)
 {
 }
 
-void OmSegment::setParent(OmSegment * parent, float threshold)
+void OmSegment::setParent(OmSegment * parent, const float threshold)
 {
 	if( mParentSegID ){
 		assert(0);
@@ -114,54 +113,56 @@ void OmSegment::ApplyColor(const OmBitfield & drawOps)
 
 QString OmSegment::GetNote()
 {
-	QString customNote = mCache->getSegmentNote( getValue() );
+	QString customNote = mCache->getSegmentNote( mValue );
 
 	if( mParentSegID ){
-		customNote += "Parent: " + QString::number(mParentSegID) + "; ";
+		customNote += "Parent: " 
+			+ QString::number(mParentSegID) 
+			+ "; ";
 	}
 
 	if( !segmentsJoinedIntoMe.empty() ){
-                customNote += "Number of Children: ";
-                customNote += QString::number( segmentsJoinedIntoMe.size() );
-		customNote += "; ";
+                customNote += "Number of Children: "
+			+ QString::number( segmentsJoinedIntoMe.size() )
+			+ "; ";
 	}
 
 	return customNote;
 }
 
-void OmSegment::SetNote(QString note)
+void OmSegment::SetNote(const QString & note)
 {
-	mCache->setSegmentNote( getValue(), note );
+	mCache->setSegmentNote( mValue, note );
 }
 
 QString OmSegment::GetName()
 {
-	return mCache->getSegmentName( getValue() );
+	return mCache->getSegmentName( mValue );
 }
 
-void OmSegment::SetName(QString name)
+void OmSegment::SetName(const QString & name)
 {
-	mCache->setSegmentName( getValue(), name );
+	mCache->setSegmentName( mValue, name );
 }
 
 bool OmSegment::IsSelected()
 {
-	return mCache->isSegmentSelected( getValue() );
+	return mCache->isSegmentSelected( mValue );
 }
 
-void OmSegment::SetSelected( bool isSelected )
+void OmSegment::SetSelected( const bool isSelected )
 {
-	mCache->setSegmentSelected( getValue(), isSelected );
+	mCache->setSegmentSelected( mValue, isSelected );
 }
 
 bool OmSegment::IsEnabled()
 {
-	return mCache->isSegmentEnabled( getValue() );
+	return mCache->isSegmentEnabled( mValue );
 }
 
-void OmSegment::SetEnabled(bool isEnabled)
+void OmSegment::SetEnabled( const bool isEnabled)
 {
-	mCache->setSegmentEnabled( getValue(), isEnabled );
+	mCache->setSegmentEnabled( mValue, isEnabled );
 }
 
 OmId OmSegment::getSegmentationID()
