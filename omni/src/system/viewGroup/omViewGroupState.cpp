@@ -383,6 +383,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		OmStateManager::SetSystemModePrev();
 	}
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 void OmViewGroupState::SetSplitMode(OmId seg, OmId segment)
