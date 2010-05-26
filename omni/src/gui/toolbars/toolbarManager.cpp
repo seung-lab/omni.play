@@ -25,9 +25,9 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 	dendToolBar->updateReadOnlyRelatedWidgets();
 }
 
-void ToolBarManager::updateGuiFromPorjectLoadOrOpen(OmViewGroupState * vgs)
+void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)
 {
-	navAndEditToolBars->updateGuiFromPorjectLoadOrOpen(vgs);
+	navAndEditToolBars->updateGuiFromProjectLoadOrOpen(vgs);
 	dendToolBar->updateGuiFromProjectLoadOrOpen(vgs);
 }
 

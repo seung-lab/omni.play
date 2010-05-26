@@ -111,7 +111,7 @@ class MainWindow
 	ViewGroup * mViewGroup;
 	void resetViewGroup();
 
-	void updateGuiFromPorjectLoadOrOpen( QString fileName );
+	void updateGuiFromProjectLoadOrOpen( QString fileName );
 
 	QLabel * statusBarLabel;
 

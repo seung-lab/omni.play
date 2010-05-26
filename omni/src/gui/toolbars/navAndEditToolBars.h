@@ -16,7 +16,7 @@ class NavAndEditToolBars : public QWidget
 	NavAndEditToolBars( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
-	void updateGuiFromPorjectLoadOrOpen(OmViewGroupState * );
+	void updateGuiFromProjectLoadOrOpen(OmViewGroupState * );
 	void SystemModeChangeEvent();
 
  private slots:

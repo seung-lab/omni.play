@@ -83,7 +83,7 @@ void MainWindow::newProject()
 		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);
 		
-		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
+		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -246,11 +246,12 @@ void MainWindow::openProject(QString fileNameAndPath)
 		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);		
 
-		updateGuiFromPorjectLoadOrOpen( fileNameAndPath );
+		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
+
 }
 
 void MainWindow::closeProject()
@@ -442,7 +443,7 @@ void MainWindow::resetViewGroup()
 	mViewGroup = new ViewGroup( this, mViewGroupState );
 }
 
-void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
+void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 {
 	if( NULL == mToolBars ){
 		mToolBars = new ToolBarManager(this);
@@ -465,7 +466,7 @@ void MainWindow::updateGuiFromPorjectLoadOrOpen( QString fileName )
 	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
 	mToolBars->setupToolbarInitially();
-	mToolBars->updateGuiFromPorjectLoadOrOpen(mViewGroupState);
+	mToolBars->updateGuiFromProjectLoadOrOpen(mViewGroupState);
 
 	windowTitleSet( fileName );
 	openInspector();

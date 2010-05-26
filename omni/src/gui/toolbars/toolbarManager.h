@@ -16,7 +16,7 @@ class ToolBarManager : public QWidget
 	ToolBarManager( MainWindow * mw );
 	virtual void setupToolbarInitially();
 	virtual void updateReadOnlyRelatedWidgets();
-	virtual void updateGuiFromPorjectLoadOrOpen(OmViewGroupState *);
+	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 	virtual void SystemModeChangeEvent();
 
  private:
