@@ -208,7 +208,6 @@ void DendToolBar::addToolbars()
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
-
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -256,7 +255,6 @@ void DendToolBar::split()
         debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
 	if(!toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
-		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
         	debug("dendbar", "unchecking\n");
 		mViewGroupState->SetSplitMode(false, false);

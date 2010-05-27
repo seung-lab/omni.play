@@ -23,7 +23,6 @@ MainWindow::MainWindow()
  : prog_dialog(this)
 {
 	exceptionMessage = new QErrorMessage(this);
-	OmStateManager::SetMainWindow(this);
 
 	setDockOptions(QMainWindow::AllowNestedDocks | QMainWindow::AllowTabbedDocks);
 	setAnimated(false);
@@ -56,6 +55,8 @@ MainWindow::MainWindow()
 	mViewGroupState = NULL;
 
 	updateReadOnlyRelatedWidgets();
+
+	OmStateManager::setMainWindow(this);
 }
 
 // Creates a new project

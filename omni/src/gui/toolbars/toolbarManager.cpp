@@ -10,9 +10,10 @@
 ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)
 	, mMainWindow(mw)
-	, navAndEditToolBars( new NavAndEditToolBars( mMainWindow ) )
-	, dendToolBar( new DendToolBar( mMainWindow ) )
+	, navAndEditToolBars( new NavAndEditToolBars( mw ) )
+	, dendToolBar( new DendToolBar( mw ) )
 {
+	OmStateManager::setDendToolBar( dendToolBar );
 }
 
 void ToolBarManager::setupToolbarInitially()
