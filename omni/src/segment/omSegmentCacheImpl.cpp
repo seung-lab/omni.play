@@ -701,35 +701,34 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
 		assert(seg);
 
+		// try merging...
+		while( !seg->queue.empty() ){
+			
+			sqe = seg->queue.top();
 
-		if( !seg->queue.empty() &&
-		    seg->queue.top().threshold >= stopPoint ){ // merge!
-
-			while( !seg->queue.empty() ){
-				sqe = seg->queue.top();
-
-				if( sqe.threshold >= stopPoint ){
-					Join( i, sqe.segID, sqe.threshold );
-					seg->queue.pop();
-					
-					otherSeg = GetSegmentFromValue( sqe.segID );
-					assert( otherSeg );
-					assert( !otherSeg->queue.empty() );
-
-					numRemoved = otherSeg->queue.remove( i, sqe.threshold );
-					assert( 1 == numRemoved );
-
-					++joinCounter;
-				} else {
-					break;
-				}
-			} 
-		} 
-
-		if( seg->mThreshold < stopPoint ){
-			if( 0 == seg->mParentSegID ){
-				continue;
+			if( sqe.threshold < stopPoint ){
+				break;
 			}
+
+			Join( i, sqe.segID, sqe.threshold );
+			seg->queue.pop();
+					
+			otherSeg = GetSegmentFromValue( sqe.segID );
+			assert( otherSeg );
+			assert( !otherSeg->queue.empty() );
+
+			numRemoved = otherSeg->queue.remove( i, sqe.threshold );
+			assert( 1 == numRemoved );
+
+			++joinCounter;
+		} 
+		
+		// try splitting...
+		if( 0 == seg->mParentSegID ){
+			continue;
+		}
+		
+		if( seg->mThreshold < stopPoint ){
 			splitChildFromParent( seg );
 			++splitCounter;
 		}
