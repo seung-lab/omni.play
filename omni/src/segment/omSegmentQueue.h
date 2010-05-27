@@ -15,8 +15,9 @@ class OmSegmentQueue {
 	OmSegmentQueueElement top();
 	void pop();
 	void push( const OmSegmentQueueElement & e);
-	bool empty();
-	void remove( const OmSegID & segID, const float & threshold );
+	bool empty() { return map.empty(); }
+	int size() { return map.size(); }
+	int remove( const OmSegID & segID, const float & threshold );
 
  private:
 	std::multimap<float, OmSegID, std::greater<float> > map;

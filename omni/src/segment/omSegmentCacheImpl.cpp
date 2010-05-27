@@ -685,6 +685,10 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	quint32 splitCounter = 0;
 	quint32 joinCounter = 0;
 
+	OmSegmentQueueElement sqe;
+	OmSegment * otherSeg;
+	int numRemoved;
+
 	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
 
 	OmSegment * seg;
@@ -697,30 +701,32 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
 		assert(seg);
 
-		if( seg->mThreshold >= stopPoint ){ // merge!
-			OmSegmentQueueElement sqe;
-			while(1){
-				if( seg->queue.empty() ){
-					break;
-				}
-				
+
+		if( !seg->queue.empty() &&
+		    seg->queue.top().threshold >= stopPoint ){ // merge!
+
+			while( !seg->queue.empty() ){
 				sqe = seg->queue.top();
-				if( sqe.threshold > stopPoint ){
+
+				if( sqe.threshold >= stopPoint ){
 					Join( i, sqe.segID, sqe.threshold );
 					seg->queue.pop();
 					
-					OmSegment * otherSeg = GetSegmentFromValue( sqe.segID );
+					otherSeg = GetSegmentFromValue( sqe.segID );
 					assert( otherSeg );
 					assert( !otherSeg->queue.empty() );
 
-					otherSeg->queue.remove( i, sqe.threshold );
+					numRemoved = otherSeg->queue.remove( i, sqe.threshold );
+					assert( 1 == numRemoved );
 
 					++joinCounter;
 				} else {
 					break;
 				}
 			} 
-		} else {
+		} 
+
+		if( seg->mThreshold < stopPoint ){
 			if( 0 == seg->mParentSegID ){
 				continue;
 			}
