@@ -583,7 +583,6 @@ void OmSegmentCacheImpl::doLoadDendrogram( const quint32 * dend, const float * d
 
 	resetGlobalThreshold( stopPoint );
 
-	rerootSegmentLists();
 	clearCaches();
 }
 
@@ -738,6 +737,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		}
         }
 
+	rerootSegmentLists();
 	clearCaches();	
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
