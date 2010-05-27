@@ -24,25 +24,29 @@ public:
 	
 	//managed accessors
 	T& Add();
-	T& Get(OmId omId);
-	void Remove(OmId omId);
+	T& Get( const OmId omId);
+	void Remove( const OmId omId);
 	
 	//valid
-	bool IsValid(OmId omId) const;
+	bool IsValid( const OmId omId) const;
 	const OmIds& GetValidIds() const;
 
 	//enabled
-	bool IsEnabled(OmId omId) const;
-	void SetEnabled(OmId omId, bool enable);
+	bool IsEnabled( const OmId omId) const;
+	void SetEnabled( const OmId omId, const bool enable);
 	const OmIds& GetEnabledIds() const;
 
 private:
-	
-	QHash< OmId, T* > mMap;
-
 	OmId mNextId;
+	unsigned int mSize;
+
+	std::vector< T* > mMap;
+
 	OmIds mValidSet;		// keys in map (fast iteration)
 	OmIds mEnabledSet;		// enabled keys in map
+
+	void findAndSetNextValudID();
+
 
 	friend QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & );
 	friend QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & );
