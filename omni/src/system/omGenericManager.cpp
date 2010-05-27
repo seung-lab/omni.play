@@ -72,7 +72,7 @@ OmGenericManager<T>::findAndSetNextValidID()
 
 	mNextId = mSize;
 	mSize *= 2;
-	mMap.resize( mSize, NULL);
+	mMap.resize( mSize );
 
 	for( unsigned int i = mNextId; i < mSize; ++i){
 		mMap[i] = NULL;
