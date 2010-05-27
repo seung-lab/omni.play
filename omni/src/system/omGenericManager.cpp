@@ -8,8 +8,11 @@ template < class T >
 OmGenericManager<T>::OmGenericManager() 
 	: mNextId(1)
 	, mSize(DEFAULT_MAP_SIZE)
-	, mMap( std::vector<T*>(DEFAULT_MAP_SIZE, NULL) )
+	, mMap( std::vector<T*>(DEFAULT_MAP_SIZE) )
 {
+	for( unsigned int i = 0; i < mSize; ++i){
+		mMap[i] = NULL;
+	}
 }
 
 /**
@@ -70,6 +73,10 @@ OmGenericManager<T>::findAndSetNextValidID()
 	mNextId = mSize;
 	mSize *= 2;
 	mMap.resize( mSize, NULL);
+
+	for( unsigned int i = mNextId; i < mSize; ++i){
+		mMap[i] = NULL;
+	}
 }
 
 template < class T > 
