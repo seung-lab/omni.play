@@ -163,7 +163,7 @@ int OmTile::GetDepth(const OmTileCoord & key)
 
 void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
-	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
+	unsigned char *data = (unsigned char*) malloc(dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE);
 
 	mViewGroupState->ColorTile( imageData, 
 				    dims.x * dims.y,

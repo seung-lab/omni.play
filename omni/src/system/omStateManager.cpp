@@ -327,6 +327,10 @@ void OmStateManager::setInspector( MyInspectorWidget * miw )
 QSize OmStateManager::getViewBoxSizeHint()
 {
 	QWidget * mw = QApplication::activeWindow();
+	if(NULL == mw){
+		printf("FIXME... no window active yet\n");
+		return QSize(0,0);
+	}
 	int w = mw->width();
 	int h = mw->height();
 	
