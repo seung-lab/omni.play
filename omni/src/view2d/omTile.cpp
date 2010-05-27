@@ -10,7 +10,6 @@
 #include "common/omStd.h"
 #include "common/omGl.h"
 #include "volume/omMipVolume.h"
-#include "volume/omVolume.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -139,9 +138,8 @@ OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 
 int OmTile::GetDepth(const OmTileCoord & key)
 {
-	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
-	NormCoord normCoord = current_seg.SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = current_seg.NormToDataCoord(normCoord);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = mVolume->NormToDataCoord(normCoord);
         float factor=OMPOW(2,key.Level);
 
 	int ret;
