@@ -125,9 +125,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
 	in >> cm.mValidSet;
 	in >> cm.mEnabledSet;
 
-	for( unsigned int i = 0; i < cm.mSize; ++i){
-		cm.mMap[i] = NULL;
-	}
+	cm.mMap.resize(cm.mSize, NULL);
 
 	for( unsigned int i = 0; i < cm.mValidSet.size(); ++i ){
 		OmChannel * chan = new OmChannel();
@@ -197,9 +195,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
 	in >> fm.mValidSet;
 	in >> fm.mEnabledSet;
 
-	for( unsigned int i = 0; i < fm.mSize; ++i){
-		fm.mMap[i] = NULL;
-	}
+	fm.mMap.resize(fm.mSize, NULL);
 
 	for( unsigned int i = 0; i < fm.mValidSet.size(); ++i ){
 		OmFilter2d * filter = new OmFilter2d();
@@ -255,9 +251,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm 
 	in >> sm.mValidSet;
 	in >> sm.mEnabledSet;
 
-	for( unsigned int i = 0; i < sm.mSize; ++i){
-		sm.mMap[i] = NULL;
-	}
+	sm.mMap.resize(sm.mSize, NULL);
 
 	for( unsigned int i = 0; i < sm.mValidSet.size(); ++i ){
 		OmSegmentation * seg = new OmSegmentation();
