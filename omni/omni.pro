@@ -130,6 +130,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/DynamicTree.h \
            src/segment/DynamicTreeContainer.h \
            src/segment/omSegment.h \
+           src/segment/omSegmentQueue.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \
            src/segment/omSegmentIterator.h \
@@ -292,6 +293,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/DynamicTree.cpp \
            src/segment/DynamicTreeContainer.cpp \
            src/segment/omSegment.cpp \
+           src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
            src/segment/omSegmentIterator.cpp \

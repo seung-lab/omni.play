@@ -1,7 +1,7 @@
 #ifndef HEADLESS_H
 #define HEADLESS_H
 
-#include "volume/omSegmentationChunkCoord.h"
+class OmSegmentationChunkCoord;
 
 class Headless
 {

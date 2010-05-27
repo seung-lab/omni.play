@@ -8,24 +8,11 @@
  */
 
 #include "common/omCommon.h"
-#include <queue>
+#include "segment/omSegmentQueue.h"
 
 class OmSegmentCache;
 class OmMipChunkCoord;
 class OmViewGroupState;
-
-typedef struct {
-	OmSegID segID;
-	float threshold;
-} OmSegQueueElement;
-
-class OmSegQueueComparator {
- public:
-	bool operator() (const OmSegQueueElement & lhs, const OmSegQueueElement & rhs) const
-	{
-		return lhs.threshold < rhs.threshold;
-	}
-};
 
 class OmSegment {
 
@@ -72,7 +59,7 @@ private:
 	OmColor mColorInt;
 
 	OmSegIDs segmentsJoinedIntoMe;
-	std::priority_queue< OmSegQueueElement, std::vector<OmSegQueueElement>, OmSegQueueComparator > queue;
+	OmSegmentQueue queue;
 
 	OmId mParentSegID;
 	float mThreshold;

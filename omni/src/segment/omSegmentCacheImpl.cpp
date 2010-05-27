@@ -452,10 +452,10 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		mSelectedSet.remove( child->getValue() );
 	}
 
-	OmSegQueueElement parentElement = { child->mValue, oldChildThreshold };
+	OmSegmentQueueElement parentElement = { child->mValue, oldChildThreshold };
 	parent->queue.push(parentElement);
 
-	OmSegQueueElement childElement = { parent->mValue, oldChildThreshold };
+	OmSegmentQueueElement childElement = { parent->mValue, oldChildThreshold };
 	child->queue.push(childElement);
 
 	clearCaches();
@@ -698,7 +698,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		assert(seg);
 
 		if( seg->mThreshold >= stopPoint ){ // merge!
-			OmSegQueueElement sqe;
+			OmSegmentQueueElement sqe;
 			while(1){
 				if( seg->queue.empty() ){
 					break;
@@ -713,24 +713,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 					assert( otherSeg );
 					assert( !otherSeg->queue.empty() );
 
-					// remove correspoding element in other segment
-					QList< OmSegQueueElement > tmp;
-					while(1){
-
-						OmSegQueueElement otherSqe = otherSeg->queue.top();
-						if( otherSqe.segID == i &&
-						    otherSqe.threshold == sqe.threshold ){
-							otherSeg->queue.pop();
-							break;
-						} else {
-							tmp.append( otherSqe );
-							otherSeg->queue.pop();
-						}
-					}
-
-					foreach( const OmSegQueueElement & sqe, tmp ){
-						otherSeg->queue.push( sqe );
-					}
+					otherSeg->queue.remove( i, sqe.threshold );
 
 					++joinCounter;
 				} else {

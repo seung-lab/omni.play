@@ -15,6 +15,7 @@
 #include "system/omProjectData.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
+#include "volume/omSegmentationChunkCoord.h"
 #include "utility/stringHelpers.h"
 
 int argc_global;
