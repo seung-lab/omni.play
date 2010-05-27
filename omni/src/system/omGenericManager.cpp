@@ -2,18 +2,18 @@
 
 #define IS_ID_INVALID()  id < 1 || id >= mSize || NULL == mMap[id]
 
-/*
- *	Constructor initializes first id and default parent.
- */
+static const unsigned int DEFAULT_MAP_SIZE = 10;
+
 template < class T > 
 OmGenericManager<T>::OmGenericManager() 
-	: mNextId(1), mSize(10)
-{ 
-	mMap = std::vector<T*>(mSize, NULL);
+	: mNextId(1)
+	, mSize(DEFAULT_MAP_SIZE)
+	, mMap( std::vector<T*>(DEFAULT_MAP_SIZE, NULL) )
+{
 }
 
-/*
- *	Destructor destroyes all managed objects.
+/**
+ *	Destroy all managed objects
  */
 template < class T > 
 OmGenericManager<T>::~OmGenericManager() 
@@ -44,7 +44,7 @@ T&
 OmGenericManager<T>::Add() 
 {
 	const OmId id = mNextId;
-	findAndSetNextValudID();
+	findAndSetNextValidID();
 
 	mMap[id] = new T(id);
 	
@@ -54,11 +54,12 @@ OmGenericManager<T>::Add()
 	return *mMap[id];
 }
 
-// fill in holes in number map
 template < class T > 
 void
-OmGenericManager<T>::findAndSetNextValudID()
+OmGenericManager<T>::findAndSetNextValidID()
 {
+	// search to fill in holes in number map 
+	//  (holes could be present from object deletion...)
 	for( unsigned int i = 1; i < mSize; ++i ){
 		if( NULL == mMap[i] ){
 			mNextId = i;
@@ -70,7 +71,6 @@ OmGenericManager<T>::findAndSetNextValudID()
 	mSize *= 2;
 	mMap.resize( mSize, NULL);
 }
-
 
 template < class T > 
 void 
@@ -86,15 +86,14 @@ OmGenericManager<T>::Remove(const OmId id)
 	delete mMap[id];
 	mMap[id] = NULL;
 
-	//make sure mNextId is adjusted accordingly
-	findAndSetNextValudID();
+	findAndSetNextValidID();
 }
 
 /////////////////////////////////
 ///////		 Valid
 
-/*
- *	Check if object with given OmId is being managed
+/**
+ * ID is of an object in the manager
  */
 template < class T > 
 bool
@@ -107,9 +106,8 @@ OmGenericManager<T>::IsValid( const OmId id) const
 	return true;
 }
 
-
-/*
- *	Returns set of all valid OmIds (Ids of objects being managed).
+/**
+ *	Set of IDs for objects being managed
  */
 template < class T > 
 const OmIds&
@@ -121,10 +119,6 @@ OmGenericManager<T>::GetValidIds() const
 /////////////////////////////////
 ///////		 Enabled
 
-
-/*
- *	Check if object with given OmId is enabled
- */
 template < class T > 
 bool
 OmGenericManager<T>::IsEnabled(const OmId id) const 
@@ -136,10 +130,6 @@ OmGenericManager<T>::IsEnabled(const OmId id) const
 	return mEnabledSet.contains(id);
 }
 
-
-/*
- *	Set object with given OmId to be enabled/disabled
- */
 template < class T > 
 void
 OmGenericManager<T>::SetEnabled(const OmId id, const bool enable) 
@@ -155,9 +145,6 @@ OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 	}
 }
 
-/*
- *	Returns set of all enabled ids
- */
 template < class T > 
 const OmIds&
 OmGenericManager<T>::GetEnabledIds() const 

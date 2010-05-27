@@ -18,7 +18,6 @@ template < class T >
 class OmGenericManager {
 	
 public:	
-
 	OmGenericManager();
 	~OmGenericManager();
 	
@@ -45,7 +44,7 @@ private:
 	OmIds mValidSet;		// keys in map (fast iteration)
 	OmIds mEnabledSet;		// enabled keys in map
 
-	void findAndSetNextValudID();
+	void findAndSetNextValidID();
 
 
 	friend QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & );
