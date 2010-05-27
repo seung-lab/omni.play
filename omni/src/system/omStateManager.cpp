@@ -332,6 +332,7 @@ QSize OmStateManager::getViewBoxSizeHint()
 	
 	if( Instance()->inspectorWidget != NULL ){
 		w -= Instance()->inspectorWidget->width();
+		// TODO: subtract off dendbar width
 	}
 
 	return QSize( w, h );

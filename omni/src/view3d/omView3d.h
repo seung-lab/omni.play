@@ -78,6 +78,7 @@ class OmView3d : public QGLWidget,
 	//gl actions
 	bool PickPoint(Vector2<int> point, vector<unsigned int> &names);
 	bool UnprojectPoint(Vector2i point2d, Vector3f &point3d, float depth_scale_factor = 1.0f);
+
 	//draw methods
 	void Draw(OmBitfield option);
 	void DrawVolumes(OmBitfield option);
@@ -97,10 +98,10 @@ class OmView3d : public QGLWidget,
 	QSize sizeHint () const;
 		
  private:
+	OmView3dUi mView3dUi;
 	OmViewGroupState * mViewGroupState;
 	QTime * mElapsed;
 	QTimer mDrawTimer;
-	OmView3dUi mView3dUi;
 	OmCamera mCamera;
 	QHash< int, OmView3dWidget* > mView3dWidgetManager;
 		
