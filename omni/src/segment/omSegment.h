@@ -46,13 +46,18 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
+
+	void SetImmutable(bool immutable);
+	bool GetImmutable();
+
+
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
 	float getThreshold();
 
 private:
-
+	bool mImmutable;
 	OmSegID mValue;
 	OmSegmentCache * mCache;
 

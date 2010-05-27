@@ -6,7 +6,7 @@
 #include <QDataStream>
 #include "boost/lexical_cast.hpp"
 
-static const int Omni_Version = 4;
+static const int Omni_Version = 5;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 

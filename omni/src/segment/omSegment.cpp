@@ -18,11 +18,13 @@ OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
 	: mValue(value), mCache(cache), mParentSegID(0)
 {
 	SetInitialColor();
+	mImmutable = false;
 }
 
 OmSegment::OmSegment(OmSegmentCache * cache)
 	:  mCache(cache), mParentSegID(0)
 {
+	mImmutable = false;
 }
 
 void OmSegment::setParent(OmSegment * parent, const float threshold)
@@ -180,3 +182,14 @@ float OmSegment::getThreshold()
 {
 	return mThreshold;
 }
+
+void OmSegment::SetImmutable(bool immutable)
+{
+	mImmutable = immutable;
+}
+
+bool OmSegment::GetImmutable()
+{
+	return mImmutable;
+}
+

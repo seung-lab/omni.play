@@ -221,7 +221,11 @@ void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 		mSelectedSet.insert( rootID );
 	} else {
 		mSelectedSet.remove( rootID );
-		assert( !mSelectedSet.contains( segID ) );
+		if(mSelectedSet.contains( segID )) {
+			printf("%u is selected despite its parent, %u, not being selected\n", segID, rootID);
+			extern void myBacktrace(int);
+			myBacktrace(0);
+		}
 	}
 }
 

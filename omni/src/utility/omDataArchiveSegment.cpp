@@ -28,6 +28,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmHdf5Path & path, OmSegment** pag
                 in >> segment->mColorInt.red;
                 in >> segment->mColorInt.green;
                 in >> segment->mColorInt.blue;
+                in >> segment->mImmutable;
 
                 page[ i ] = segment;
         }
@@ -56,6 +57,7 @@ void OmDataArchiveSegment::ArchiveWrite( const OmHdf5Path & path, OmSegment** pa
                 out << segment->mColorInt.red;
                 out << segment->mColorInt.green;
                 out << segment->mColorInt.blue;
+                out << segment->mImmutable;
         }
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 

@@ -133,9 +133,8 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 {
 	// find mip coord
-	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
-	NormCoord mNormCoord = current_seg.SpaceToNormCoord(key.Coordinate);
-	return mVolume->NormToMipCoord(mNormCoord, key.Level);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
+	return mVolume->NormToMipCoord(normCoord, key.Level);
 }
 
 int OmTile::GetDepth(const OmTileCoord & key)
