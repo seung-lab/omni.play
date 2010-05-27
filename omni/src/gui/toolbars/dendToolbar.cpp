@@ -202,7 +202,7 @@ void DendToolBar::addToolbars()
         QGroupBox* sixthBox = new QGroupBox(this);
         QGridLayout* sixthLayout = new QGridLayout(sixthBox);
         QLabel* groupColorLabel = new QLabel(mMainWindow);
-        groupColorLabel->setText("Groups & Colors:");
+        groupColorLabel->setText("Validation:");
         sixthLayout->addWidget(groupColorLabel,0,0,1,2);
         sixthLayout->addWidget(addGroupAct,1,0,1,2);
         sixthLayout->addWidget(colorMapAct,2,0,1,2);

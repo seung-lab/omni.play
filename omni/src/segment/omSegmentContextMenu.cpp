@@ -164,13 +164,9 @@ void OmSegmentContextMenu::Unselect()
 
 void OmSegmentContextMenu::UnselectOthers()
 {
-
-	//get current selection
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	OmIds selected_segment_ids = r_segmentation.GetSelectedSegmentIds();
-	selected_segment_ids.remove(mSegmentId);
-
-	(new OmSegmentSelectAction(mSegmentationId, selected_segment_ids, false))->Run();
+	r_segmentation.SetAllSegmentsSelected(false);
+	r_segmentation.SetSegmentSelected(mSegmentId, true);
 }
 
 void OmSegmentContextMenu::Disable()
