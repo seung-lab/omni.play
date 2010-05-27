@@ -6,15 +6,14 @@
 #include <qapplication.h>
 #include "common/omDebug.h"
 
-#define DEBUG 0
-
-//init instance pointer
 OmEventManager *OmEventManager::mspInstance = 0;
 
-//constructor
 OmEventManager::OmEventManager()
 {
+}
 
+OmEventManager::~OmEventManager()
+{
 }
 
 //singleton accessor

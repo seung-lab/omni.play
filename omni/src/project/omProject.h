@@ -20,7 +20,7 @@ typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 
 class OmViewGroupState;
 
-class OmProject {
+class OmProject : boost::noncopyable {
 
 public:
 	
@@ -58,16 +58,10 @@ public:
         static void SetSegmentationEnabled(OmId id, bool enable);
 	static void Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs);
 
-	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmProject();
 	~OmProject();
-	OmProject(const OmProject&);
-	OmProject& operator= (const OmProject&);
 
-	
-private:
 	//singleton
 	static OmProject* mspInstance;
 	

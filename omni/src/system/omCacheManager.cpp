@@ -1,10 +1,12 @@
 #include "omCacheManager.h"
 #include "omCacheBase.h"
 
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
+#include "system/events/omPreferenceEvent.h"
+#include "system/omCacheInfo.h"
 #include "system/omLocalPreferences.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
 
 //init instance pointer
 OmCacheManager *OmCacheManager::mspInstance = 0;

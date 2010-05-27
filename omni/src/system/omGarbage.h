@@ -11,17 +11,16 @@
  * 	Matt Wimer mwimer@mit.edu 10/21/09
  */
 
-
+#include "common/omCommon.h"
 
 #include "omPreferences.h"
 #include "omStateManager.h"
 #include "volume/omVolume.h"
-#include "common/omStd.h"
+
 
 #include <QMutex>
 
-
-class OmGarbage {
+class OmGarbage : boost::noncopyable {
 
 public:
 	
@@ -36,15 +35,10 @@ public:
 	static void Unlock ();
 	static void UnlockTextures ();
 	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmGarbage();
 	~OmGarbage();
-	OmGarbage(const OmGarbage&);
-	OmGarbage& operator= (const OmGarbage&);
 
-	
-private:
 	//singleton
 	static OmGarbage* mspInstance;
 	
@@ -52,17 +46,5 @@ private:
 	vector <GLuint> mTextures;
 	QMutex mTextureMutex;
 };
-
-
-
-
-
-
-
-/////////////////////////////////
-///////		 Serialization
-
-
-
 
 #endif
