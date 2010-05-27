@@ -1,22 +1,11 @@
 #include "project/omProject.h"
-#include "omView2d.h"
-#include "gui/toolbars/dendToolbar.h"
-#include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentEditor.h"
-#include "segment/omSegment.h"
-#include "system/omStateManager.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-#include "system/omLocalPreferences.h"
-#include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
-#include "volume/omVolume.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
-
-#include "project/omProject.h"
+#include "system/omEventManager.h"
+#include "system/omLocalPreferences.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "view2d/omView2d.h"
 
 /**
  * \name Mouse Event Handlers 
@@ -818,7 +807,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 void OmView2d::resetWindow()
 {
-	SpaceCoord depth = GetVolume().NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	SpaceCoord depth = mVolume->NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
 	mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);

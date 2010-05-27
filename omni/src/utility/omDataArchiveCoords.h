@@ -5,6 +5,8 @@
 #include "project/omProject.h"
 #include "system/omProjectData.h"
 
+class OmTileCoord;
+
 QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c );
 QDataStream &operator>>(QDataStream & in, OmMipSegmentDataCoord & c );
 

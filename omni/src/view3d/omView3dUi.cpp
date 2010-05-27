@@ -1,26 +1,18 @@
+#include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar.h"
-#include "omView3dUi.h"
-#include "omView3d.h"
 #include "omCamera.h"
-
+#include "omView3d.h"
+#include "omView3dUi.h"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-
-#include "volume/omVolume.h"
-#include "volume/omDrawOptions.h"
-
+#include "segment/omSegmentEditor.h"
+#include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "common/omDebug.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omVolume.h"
 
-#define DEBUG 0
-
-/////////////////////////////////
-///////
-///////          Example Class
-///////
 
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 	: mpView3d(view3d), mViewGroupState(vgs)

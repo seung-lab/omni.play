@@ -5,6 +5,7 @@
 #include "utility/omDataReader.h"
 #include "utility/stringHelpers.h"
 #include "system/events/omSegmentEvent.h"
+#include "system/omEventManager.h"
 
 #include <QTextStream>
 

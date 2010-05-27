@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QTextStream>
 #include <QFile>
+#include <QDir>
 #include <QFileInfo>
 #include <QTime>
 #include <time.h>

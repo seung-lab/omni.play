@@ -1,21 +1,6 @@
-#include "volume/omVolume.h"
-#include "omView2d.h"
-#include "segment/actions/segment/omSegmentSelectionAction.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/omSegmentEditor.h"
-#include "segment/omSegment.h"
-#include "system/omStateManager.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
+#include "view2d/omView2d.h"
 #include "system/omLocalPreferences.h"
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
-#include "volume/omVolume.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
-
-#include "project/omProject.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 /**
  * \name Coordinate Converter Methods
@@ -23,32 +8,32 @@
 //\{
 DataBbox OmView2d::SpaceToDataBbox(const SpaceBbox & spacebox)
 {
-	DataBbox new_data_box = GetVolume().NormToDataBbox(GetVolume().SpaceToNormBbox(spacebox));
+	DataBbox new_data_box = mVolume->NormToDataBbox(mVolume->SpaceToNormBbox(spacebox));
 	return new_data_box;
 }
 
 SpaceBbox OmView2d::DataToSpaceBbox(const DataBbox & databox)
 {
-	SpaceBbox new_space_box = GetVolume().NormToSpaceBbox(GetVolume().DataToNormBbox(databox));
+	SpaceBbox new_space_box = mVolume->NormToSpaceBbox(mVolume->DataToNormBbox(databox));
 	return new_space_box;
 }
 
 DataCoord OmView2d::SpaceToDataCoord(const SpaceCoord & spacec)
 {
-	DataCoord new_data_center = GetVolume().NormToDataCoord(GetVolume().SpaceToNormCoord(spacec));
+	DataCoord new_data_center = mVolume->NormToDataCoord(mVolume->SpaceToNormCoord(spacec));
 
 	return new_data_center;
 }
 
 SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
 {
-	SpaceCoord new_space_center = GetVolume().NormToSpaceCoord(GetVolume().DataToNormCoord(datac));
+	SpaceCoord new_space_center = mVolume->NormToSpaceCoord(mVolume->DataToNormCoord(datac));
 	return new_space_center;
 }
 
 Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
 {
-	Vector2f stretch= GetVolume().GetStretchValues(mViewType);
+	Vector2f stretch= mVolume->GetStretchValues(mViewType);
 	Vector2i zoomLevel = mViewGroupState->GetZoomLevel();
 
 	float zoomScale = zoomLevel.y/10.0;
@@ -65,10 +50,10 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
 	Vector2f mPanDistance = GetPanDistance(mViewType);
 	debug("cross", "pan: %f, %f\n", mPanDistance.x, mPanDistance.y);
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel();         
-	Vector3f mScale = GetVolume().GetScale();                
-	Vector2f stretch = GetVolume().GetStretchValues(mViewType);                  
+	Vector3f mScale = mVolume->GetScale();                
+	Vector2f stretch = mVolume->GetStretchValues(mViewType);                  
 
-	DataBbox extent = GetVolume().GetDataExtent();
+	DataBbox extent = mVolume->GetDataExtent();
 	Vector3f dataScale;
 	Vector3i scale = extent.getMax() - extent.getMin() + Vector3i::ONE;
 	dataScale.x = (float) scale.x;
@@ -85,19 +70,19 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
         case XY_VIEW:                                                                                   
                 normc.x = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.x;    
                 normc.y = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.y;
-		result = GetVolume().NormToSpaceCoord(normc);
+		result = mVolume->NormToSpaceCoord(normc);
 		result.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
                 break;                                                                                  
         case XZ_VIEW:                                                                                   
                 normc.x = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.x;  
                 normc.z = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.z;
-		result = GetVolume().NormToSpaceCoord(normc);
+		result = mVolume->NormToSpaceCoord(normc);
                 result.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
                 break;                                                                                  
         case YZ_VIEW:
                 normc.z = (((float)screenc.x/zoomScale/stretch.x*10.0-mPanDistance.x)*factor)/dataScale.z;                           
                 normc.y = (((float)screenc.y/zoomScale/stretch.y*10.0-mPanDistance.y)*factor)/dataScale.y;
-                result =  GetVolume().NormToSpaceCoord(normc);
+                result =  mVolume->NormToSpaceCoord(normc);
                 result.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);  
                 break;                                                                                  
         default:                                                                                   
@@ -112,9 +97,9 @@ SpaceCoord OmView2d::ScreenToSpaceCoord(const ScreenCoord & screenc)
 
 ScreenCoord OmView2d::SpaceToScreenCoord(ViewType viewType, const SpaceCoord & spacec)
 {
-	NormCoord normCoord = GetVolume().SpaceToNormCoord(spacec);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(spacec);
 
-	DataBbox extent = GetVolume().GetDataExtent();
+	DataBbox extent = mVolume->GetDataExtent();
 	Vector3f scale;
 	scale.x = (float)(extent.getMax().x - extent.getMin().x + 1);
 	scale.y = (float)(extent.getMax().y - extent.getMin().y + 1);
@@ -125,7 +110,7 @@ ScreenCoord OmView2d::SpaceToScreenCoord(ViewType viewType, const SpaceCoord & s
 
 	Vector2f mPanDistance = GetPanDistance(viewType);                  
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel(); 
-	Vector2f stretch= GetVolume().GetStretchValues(mViewType);
+	Vector2f stretch= mVolume->GetStretchValues(mViewType);
 	Vector2i result;
 	float factor = OMPOW(2,mZoomLevel.x);
 	float zoomScale = mZoomLevel.y;
@@ -158,8 +143,8 @@ ScreenCoord OmView2d::DataToScreenCoord(ViewType viewType, const DataCoord & dat
 {
 	Vector2f mPanDistance = GetPanDistance(viewType);                  
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel(); 
-	Vector3f mScale = GetVolume().GetScale();
-	Vector2f stretch= GetVolume().GetStretchValues(mViewType);
+	Vector3f mScale = mVolume->GetScale();
+	Vector2f stretch= mVolume->GetStretchValues(mViewType);
 	Vector2i result;
 	float factor = OMPOW(2,mZoomLevel.x);
 	float zoomScale = mZoomLevel.y;
@@ -192,8 +177,8 @@ DataCoord OmView2d::ScreenToDataCoord(const ScreenCoord & screenc)
 {
 	Vector2f mPanDistance =  GetPanDistance(mViewType);
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel();
-	Vector3f mScale = GetVolume().GetScale();                
-	Vector2f stretch = GetVolume().GetStretchValues(mViewType);                  
+	Vector3f mScale = mVolume->GetScale();                
+	Vector2f stretch = mVolume->GetStretchValues(mViewType);                  
 	float factor = OMPOW(2,mZoomLevel.x);                                                             
         float zoomScale = mZoomLevel.y;                                                                 
         
@@ -276,7 +261,7 @@ int OmView2d::GetDepthToDataMax(ViewType viewType)
 {
 	NormCoord normCoord = NormCoord(1.0,1.0,1.0);
 	
-	DataCoord maxCoord = GetVolume().NormToDataCoord(normCoord);
+	DataCoord maxCoord = mVolume->NormToDataCoord(normCoord);
 	switch(viewType){
 	case XY_VIEW:	return maxCoord.z;
 	case XZ_VIEW:	return maxCoord.y;
@@ -288,8 +273,8 @@ int OmView2d::GetDepthToDataMax(ViewType viewType)
 Vector2f OmView2d::GetPanDistance(ViewType viewType)
 {
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel();
-        Vector3f mScale = GetVolume().GetScale();
-        Vector2f stretch= GetVolume().GetStretchValues(mViewType);
+        Vector3f mScale = mVolume->GetScale();
+        Vector2f stretch= mVolume->GetStretchValues(mViewType);
         float factor = OMPOW(2,mZoomLevel.x);
         float zoomScale = mZoomLevel.y;
 

@@ -8,7 +8,9 @@
  */
 
 #include "system/omManageableObject.h"
-#include "view2d/omThreadedCachingTile.h"
+
+class OmThreadedCachingTile;
+class OmViewGroupState;
 
 class OmFilter2d : public OmManageableObject {
 

@@ -1,15 +1,14 @@
-#include "project/omProject.h"
-#include "volume/omFilter2d.h"
-
-#include "volume/omDrawOptions.h"
 #include "common/omGl.h"
-#include "system/omPreferences.h"
+#include "project/omProject.h"
 #include "system/omPreferenceDefinitions.h"
-#include "volume/omVolume.h"
-#include "view2d/omThreadedCachingTile.h"
-#include "view2d/omCachingThreadedCachingTile.h"
-#include "view2d/omView2d.h"
+#include "system/omPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "view2d/omCachingThreadedCachingTile.h"
+#include "view2d/omThreadedCachingTile.h"
+#include "view2d/omView2d.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omFilter2d.h"
+#include "volume/omVolume.h"
 
 /////////////////////////////////
 ///////

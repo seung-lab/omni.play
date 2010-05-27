@@ -1,10 +1,12 @@
-#include "gui/toolbars/dendToolbar.h"
 #include "gui/mainwindow.h"
-#include "system/omProjectData.h"
-#include "system/omCacheManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "gui/toolbars/dendToolbar.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omView3dEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/omCacheManager.h"
+#include "system/omEventManager.h"
+#include "system/omProjectData.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 // FIXME
 bool mShatter = false;

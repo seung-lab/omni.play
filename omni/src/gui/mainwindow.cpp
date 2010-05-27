@@ -1,20 +1,21 @@
-#include "myInspectorWidget.h"
-#include "mainwindow.h"
-#include "recentFileList.h"
-#include "gui/cacheMonitorDialog.h"
-#include "utility/dataWrappers.h"
-#include "project/omProject.h"
-#include "system/omProjectData.h"
-
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omSystemModeEvent.h"
-#include "system/events/omToolModeEvent.h"
-#include "segment/omSegmentEditor.h"
-
 #include "common/omException.h"
+#include "gui/cacheMonitorDialog.h"
+#include "gui/menubar.h"
+#include "gui/preferences/preferences.h"
+#include "gui/toolbars/toolbarManager.h"
+#include "gui/viewGroup.h"
+#include "mainwindow.h"
+#include "myInspectorWidget.h"
+#include "project/omProject.h"
+#include "recentFileList.h"
+#include "segment/omSegmentEditor.h"
+#include "system/omEventManager.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
+#include "system/omProjectData.h"
+#include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 

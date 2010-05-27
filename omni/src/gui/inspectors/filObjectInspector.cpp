@@ -1,5 +1,7 @@
 #include "filObjectInspector.h"
 #include "common/omDebug.h"
+#include "system/omEventManager.h"
+#include "system/events/omViewEvent.h"
 
 FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper & fdw )
  : QWidget(parent)
@@ -30,7 +32,6 @@ FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper
 	connect(alphaSlider, SIGNAL(sliderReleased()), 
 		this, SLOT(saveFilterAlphaValue()), Qt::DirectConnection);
 }
-
 
 void FilObjectInspector::saveFilterAlphaValue()
 {		

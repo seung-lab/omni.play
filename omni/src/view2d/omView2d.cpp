@@ -1,30 +1,17 @@
 #include "omView2d.h"
-#include "omTextureID.h"
-#include "view2d/omCachingThreadedCachingTile.h"
-
+#include "drawable.h"
 #include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "project/omProject.h"
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
+#include "view2d/omCachingThreadedCachingTile.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
+#include "system/omLocalPreferences.h"
 #include "system/omGarbage.h"
-
-#include "segment/omSegment.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
-
-#include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-#include "system/omLocalPreferences.h"
 #include "segment/omSegmentEditor.h"
-
-#include "common/omGl.h"
-
-#include <QPainter>
-#include <QGLFramebufferObject>
+#include "system/events/omView3dEvent.h"
 
 static QGLWidget *sharedwidget = NULL;
 
@@ -44,7 +31,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	mLevelLock = false;
 	mBrushToolDiameter = 1;
 	mCurrentSegmentId = 0;
-	mCurrentSegmentation = 0;
 	mEditedSegmentation = 0;
 	mElapsed = NULL;
 	mBrushToolMaxX = 0;
@@ -985,11 +971,7 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 		if (OmSegmentEditor::GetEditSelection(mentationEditId, mentEditId)) {
 
 			if (mentationEditId == mImageId) {
-
-				OmColor color =
-				    OmProject::GetSegmentation(mentationEditId).GetSegment(mentEditId)->GetColorInt();
-				
-				////debug("genone","SETTING EDIT COLOR");
+				const OmColor & color = OmProject::GetSegmentation(mImageId).GetSegment(mentEditId)->GetColorInt();
 				editColor = qRgba(color.red, color.green, color.blue, 255);
 			}
 		}
@@ -1091,7 +1073,6 @@ void OmView2d::DrawFromFilter(OmFilter2d &filter)
 	mCache = cache;
 	double alpha = mAlpha;
 	mAlpha = filter.GetAlpha();
-	mCurrentSegmentation = filter.GetSegmentation();
 
 	Draw();
 
@@ -1115,12 +1096,8 @@ void OmView2d::DrawFromCache()
 
 		Draw();
 	} else {
-		mCurrentSegmentation = mImageId;
-		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
-		mVolume = &current_seg;
-
 		OmCachingThreadedCachingTile *fastCache =
-			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_seg, NULL, mViewGroupState);
+			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, mVolume, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
 		if (fastCache->mDelete)
 			delete fastCache;
@@ -1128,7 +1105,6 @@ void OmView2d::DrawFromCache()
 		mCache->SetContinuousUpdate(false);
 		Draw();
 	}
-
 }
 
 extern GGOCTFPointer GGOCTFunction;
@@ -1189,7 +1165,7 @@ void OmView2d::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gotten_i
 
 void OmView2d::safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer < OmTextureID > gotten_id)
 {
-	Vector2f stretch = GetVolume().GetStretchValues(mViewType);
+	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
 	if (mViewType == YZ_VIEW) {
 		glMatrixMode(GL_TEXTURE);
@@ -1245,8 +1221,6 @@ void OmView2d::safeDraw(float zoomFactor, int x, int y, int tileLength, QExplici
 	}
 }
 
-
-
 void OmView2d::Draw()
 {
 	drawComplete = true;
@@ -1258,17 +1232,17 @@ void OmView2d::Draw()
 
 		int lvl = zoomMipVector.x+1;
 
-		for (int i = mRootLevel; i > lvl; i--) {
+		for (int i = mRootLevel; i > lvl; --i) {
 			
 			zoom.x = i;
 			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
 			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
 
 			mViewGroupState->SetPanDistance(mViewType,
-								   Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
-									 translateVector.y / (1 + i - zoomMipVector.x)),
-								   false);
-
+							Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
+								 translateVector.y / (1 + i - zoomMipVector.x)),
+							false);
+			
 			PreDraw(zoom);
 		}
 		mViewGroupState->SetPanDistance(mViewType,
@@ -1285,8 +1259,8 @@ void OmView2d::Draw()
 int OmView2d::GetDepth(const OmTileCoord & key)
 {
 	// find depth
-	NormCoord normCoord = GetVolume().SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = GetVolume().NormToDataCoord(normCoord);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = mVolume->NormToDataCoord(normCoord);
 	Vector2f mZoomMipVector = mViewGroupState->GetZoomLevel();
 	float factor=OMPOW(2,mZoomMipVector.x);
 
@@ -1363,7 +1337,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
 	int yMipChunk;
 	int xval;
 	int yval;
-	Vector2f stretch = GetVolume().GetStretchValues(mViewType);
+	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
 	int pl = OMPOW(2, zoomMipVector.x);
 	int tl = tileLength * OMPOW(2, zoomMipVector.x);
@@ -1410,7 +1384,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
                         	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
 										OmCachingThreadedCachingTile::Freshen(false));
-                        	NormCoord mNormCoord = GetVolume().SpaceToNormCoord(mTileCoord.Coordinate);
+                        	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
                         	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
@@ -1489,7 +1463,7 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 	int yMipChunk;
 	int xval;
 	int yval;
-	Vector2f stretch = GetVolume().GetStretchValues(mViewType);
+	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
 	int pl = OMPOW(2, zoomMipVector.x);
 	int tl = tileLength * OMPOW(2, zoomMipVector.x);
@@ -1520,7 +1494,7 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
-			NormCoord mNormCoord = GetVolume().SpaceToNormCoord(mTileCoord.Coordinate);
+			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 
 			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
