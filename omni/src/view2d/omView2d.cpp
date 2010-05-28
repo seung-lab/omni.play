@@ -1077,7 +1077,12 @@ void OmView2d::DrawFromFilter(OmFilter2d &filter)
 		return;
 
 	OmThreadedCachingTile *sCache = mCache;
+	OmMipVolume * sVolume = mVolume;
+
 	mCache = cache;
+	mVolume = cache->mVolume;
+	
+
 	double alpha = mAlpha;
 	mAlpha = filter.GetAlpha();
 
@@ -1085,6 +1090,7 @@ void OmView2d::DrawFromFilter(OmFilter2d &filter)
 
 	mAlpha = alpha;
 	mCache = sCache;
+	mVolume = sVolume;
 }
 
 void OmView2d::DrawFromCache()
@@ -1103,6 +1109,8 @@ void OmView2d::DrawFromCache()
 
 		Draw();
 	} else {
+		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
+		mVolume = &current_seg;
 		OmCachingThreadedCachingTile *fastCache =
 			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, mVolume, NULL, mViewGroupState);
 		mCache = fastCache->mCache;
