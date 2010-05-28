@@ -1,25 +1,20 @@
 #include "common/omDebug.h"
-
-#include "mesh/omMipMeshManager.h"
 #include "mesh/omMipMesh.h"
-
-#include "volume/omMipChunkCoord.h"
-#include "volume/omDrawOptions.h"
-
-#include "system/omStateManager.h"
-#include "system/omEventManager.h"
+#include "mesh/omMipMeshManager.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omView3dEvent.h"
+#include "system/omEventManager.h"
+#include "system/omStateManager.h"
+#include "system/omThreadedCache.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omMipChunkCoord.h"
 
 #include <vtkImageData.h>
 #include <QGLContext>
 
-
-
 /////////////////////////////////
-///////
 ///////          OmMipMeshManager
-///////
 
 OmMipMeshManager::OmMipMeshManager()
 	: MipMeshCache(VRAM_CACHE_GROUP, true)

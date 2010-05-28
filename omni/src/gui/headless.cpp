@@ -1,21 +1,24 @@
 #include <QApplication>
 #include <QTextStream>
 #include <QFile>
+#include <QDir>
 #include <QFileInfo>
 #include <QTime>
 #include <time.h>
 
-#include "headless.h"
-#include "mainwindow.h"
-#include "volume/omFilter2d.h"
-#include "project/omProject.h"
-#include "volume/omVolume.h"
 #include "common/omDebug.h"
-#include "system/omGarbage.h"
-#include "system/omProjectData.h"
+#include "gui/headless.h"
+#include "gui/mainwindow.h"
+#include "project/omProject.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
+#include "system/omGarbage.h"
+#include "system/omProjectData.h"
 #include "utility/stringHelpers.h"
+#include "volume/omFilter2d.h"
+#include "volume/omSegmentation.h"
+#include "volume/omSegmentationChunkCoord.h"
+#include "volume/omVolume.h"
 
 int argc_global;
 char **argv_global;
@@ -169,7 +172,22 @@ void Headless::processLine( QString line, QString fName )
 		}
 		bc->build_channel();
 		bc->wait();
+        } else if( line.startsWith("loadTIFFseg:") ){
+                QStringList args = line.split(':');
 
+                OmSegmentation & seg = OmProject::AddSegmentation();
+                OmBuildSegmentation * bs = new OmBuildSegmentation( &seg );
+
+                QDir dir( args[1] );
+                foreach( QFileInfo f, dir.entryInfoList() ){
+                        if(!f.isFile()){
+                                continue;
+                        }
+                        printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
+                        bs->addFileNameAndPath( f.canonicalFilePath() );
+                }
+                bs->build_seg_image();
+                bs->wait();
 	} else if( line.startsWith("buildHDF5:") ){
 		QStringList args = line.split(':');
 		QString projectFileName = QFileInfo(args[1]+".omni").fileName();

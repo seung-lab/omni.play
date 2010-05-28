@@ -8,6 +8,7 @@
 #include "events/omToolModeEvent.h"
 #include "gui/myInspectorWidget.h"
 #include "gui/mainwindow.h"
+#include "gui/toolbars/dendToolbar.h"
 
 #include <QHostInfo>
 
@@ -25,7 +26,6 @@ OmStateManager *OmStateManager::mspInstance = 0;
 
 OmStateManager::OmStateManager()
 {
-
 	//view3d
 	mpPrimaryView3dWidget = NULL;
 	mpUndoStack = NULL;
@@ -38,6 +38,7 @@ OmStateManager::OmStateManager()
 
 	inspectorWidget = NULL;
 	mainWindow = NULL;
+	dendToolBar = NULL;
 }
 
 OmStateManager::~OmStateManager()
@@ -208,31 +209,11 @@ void OmStateManager::SetToolMode(const OmToolMode new_mode)
 	OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 }
 
-OmDendToolMode OmStateManager::GetDendToolMode()
-{
-	return Instance()->mDendToolMode;
-}
-
-void OmStateManager::SetDendToolMode(const OmDendToolMode new_mode)
-{
-	//return if no change
-	if (new_mode == Instance()->mDendToolMode)
-		return;
-
-	//set new mode
-	Instance()->mDendToolMode = new_mode;
-
-	//post tool mode change
-	//OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
-}
-
-
 /////////////////////////////////
 ///////          UndoStack
 
 QUndoStack *OmStateManager::GetUndoStack()
 {
-
 	if (NULL == Instance()->mpUndoStack) {
 		Instance()->mpUndoStack = new QUndoStack();
 	}
@@ -324,9 +305,21 @@ void OmStateManager::setInspector( MyInspectorWidget * miw )
 	Instance()->inspectorWidget = miw;
 }
 
+void OmStateManager::setMainWindow( MainWindow * mw )
+{
+	Instance()->mainWindow = mw;
+}
+
 QSize OmStateManager::getViewBoxSizeHint()
 {
-	QWidget * mw = QApplication::activeWindow();
+	QWidget * mw = Instance()->mainWindow;
+	if(NULL == mw){
+		mw = QApplication::activeWindow();
+		if(NULL == mw){
+			printf("warning: assuming window size is 1000x640\n");
+			return QSize(1000, 640);
+		}
+	}
 	int w = mw->width();
 	int h = mw->height();
 	
@@ -334,12 +327,16 @@ QSize OmStateManager::getViewBoxSizeHint()
 		w -= Instance()->inspectorWidget->width();
 	}
 
+	if( Instance()->dendToolBar != NULL ){
+		w -= Instance()->dendToolBar->width();
+	}
+
 	return QSize( w, h );
 }
 
-void OmStateManager::SetMainWindow( MainWindow * mw)
+void OmStateManager::setDendToolBar( DendToolBar * dtb)
 {
-	Instance()->mainWindow = mw;
+	Instance()->dendToolBar = dtb;
 }
 
 void OmStateManager::UpdateStatusBar( QString msg )

@@ -1,42 +1,34 @@
 #ifndef OM_QT_VIEW_2D_H
 #define OM_QT_VIEW_2D_H 
 
-#include "project/omProject.h"
-#include "drawable.h"
-
+#include <QGLFramebufferObject>
 #include <QGLPixelBuffer>
-
-#include "omTile.h"
-#include "omThreadedCachingTile.h"
-
-#include "volume/omMipChunkCoord.h"
-#include "volume/omMipChunk.h"
-
-#include "system/omGenericManager.h"
-#include "system/events/omViewEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omSystemModeEvent.h"
-#include "system/events/omPreferenceEvent.h"
-#include "system/events/omVoxelEvent.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "volume/omFilter2d.h"
-#include "volume/omSegmentation.h"
-#include "utility/dataWrappers.h"
-
-#include "common/omStd.h"
-
 #include <QGLWidget>
+#include <QPainter>
 #include <QtGui> 
 
+#include "system/events/omPreferenceEvent.h"
+#include "system/events/omSegmentEvent.h"
+#include "system/events/omSystemModeEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/events/omVoxelEvent.h"
+
+class Drawable;
 class OmThreadedCachingTile;
 class OmTileCoord;
+class SegmentDataWrapper;
+class OmViewGroupState;
+class OmMipVolume;
+class OmTextureID;
+class OmSegmentation;
+class OmFilter2d;
 
 class OmView2d : public QWidget,
-public OmViewEventListener,
-public OmSegmentEventListener,
-public OmSystemModeEventListener,
-public OmPreferenceEventListener,
-public OmVoxelEventListener
+	public OmPreferenceEventListener,
+	public OmSegmentEventListener,
+	public OmSystemModeEventListener,
+	public OmViewEventListener,
+	public OmVoxelEventListener
 {
 	Q_OBJECT
 	
@@ -51,14 +43,6 @@ public:
 	int GetDepthToDataSlice(ViewType viewType);
 	void SetDataSliceToDepth(ViewType viewType, int slice);
 	int GetDepthToDataMax(ViewType viewType);
-	
-	OmVolume & GetVolume() {
-        	if (mVolumeType == CHANNEL) {
-                	return OmProject::GetChannel(mImageId);
-        	} else {
-                	return OmProject::GetSegmentation(mImageId);
-		}
-	}
 
 protected:
 	// GL event methods
@@ -197,7 +181,6 @@ private:
 	OmId mCurrentSegmentId;
 	set<DataCoord> mUpdateCoordsSet; 
 	int mBrushToolDiameter;
-	OmId mCurrentSegmentation;
 	QImage mImage;
 	QPainter painter;
 	bool mLevelLock;

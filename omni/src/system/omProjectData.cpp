@@ -1,9 +1,12 @@
-#include "omProjectData.h"
-#include "omPreferenceDefinitions.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
-#include "utility/omHdf5Manager.h"
+#include "omPreferenceDefinitions.h"
+#include "omProjectData.h"
+#include "segment/omSegment.h"
 #include "utility/fileHelpers.h"
+#include "utility/omDataLayer.h"
+#include "utility/omHdf5Manager.h"
+
 #include <QFile>
 #include <QFileInfo>
 

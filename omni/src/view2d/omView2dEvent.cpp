@@ -1,22 +1,13 @@
 #include "project/omProject.h"
-#include "omView2d.h"
-#include "gui/toolbars/dendToolbar.h"
-#include "segment/actions/segment/omSegmentSelectionAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentEditor.h"
-#include "segment/omSegment.h"
-#include "system/omStateManager.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-#include "system/omLocalPreferences.h"
-#include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
-#include "volume/omVolume.h"
+#include "system/omEventManager.h"
+#include "system/omLocalPreferences.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "view2d/omView2d.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
-
-#include "project/omProject.h"
+#include "segment/omSegmentSelector.h"
 
 /**
  * \name Mouse Event Handlers 
@@ -112,7 +103,7 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 {
 	OmSegmentation & segmentation = sdw.getSegmentation();
-	OmId segmentID = sdw.getID();
+	const OmId segmentID = sdw.getID();
 
 	if( !segmentation.IsSegmentValid(segmentID)){
 		return;
@@ -120,27 +111,14 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
-	const bool curSegmentNotYetMarkedAsSelected = !(segmentation.IsSegmentSelected(segmentID));
-
-	// if not augmenting slection and selecting segment, then 
-	//  select new segment, and deselect current segment(s)
-	if (!augment_selection && curSegmentNotYetMarkedAsSelected) {
-		OmSegmentSelectAction ssa;
-					    
-
-		OmIds select_segment_ids;
-		select_segment_ids.insert(segmentID);
-		(new OmSegmentSelectAction( segmentation.GetId(),
-					    select_segment_ids,
-					    segmentation.GetSelectedSegmentIds(), 
-					    segmentID))->Run();
+	OmSegmentSelector sel( segmentation.GetId(), this, "view2dEvent" );
+	if( augment_selection ){
+		sel.augmentSelectedSet_toggle( segmentID);
 	} else {
-		(new OmSegmentSelectAction( segmentation.GetId(),
-					    segmentID, 
-					    curSegmentNotYetMarkedAsSelected, 
-					    segmentID))->Run();
+		sel.selectJustThisSegment_toggle( segmentID );
 	}
-
+	sel.sendEvent();
+	
 	Refresh();
 	mTextures.clear();
 	myUpdate();
@@ -818,7 +796,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 void OmView2d::resetWindow()
 {
-	SpaceCoord depth = GetVolume().NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
+	SpaceCoord depth = mVolume->NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
 	mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);

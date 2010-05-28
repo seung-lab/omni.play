@@ -1,16 +1,14 @@
-#include "project/omProject.h"
+#include "common/omDebug.h"
 #include "omSegmentContextMenu.h"
-
+#include "project/omProject.h"
+#include "segment/actions/edit/omEditSelectionSetAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentStateAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
-#include "segment/actions/edit/omEditSelectionSetAction.h"
-
-#include "volume/omVolume.h"
-#include "volume/omSegmentation.h"
-
+#include "segment/omSegmentSelector.h"
 #include "utility/setUtilities.h"
-#include "common/omDebug.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -154,23 +152,24 @@ void OmSegmentContextMenu::AddVoxelAction()
 
 void OmSegmentContextMenu::Select()
 {
-	(new OmSegmentSelectAction(mSegmentationId, mSegmentId, true))->Run();
+	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
+	sel.selectJustThisSegment( mSegmentId, true);
+	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::Unselect()
 {
-	(new OmSegmentSelectAction(mSegmentationId, mSegmentId, false))->Run();
+	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
+	sel.selectJustThisSegment( mSegmentId, false);
+	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::UnselectOthers()
 {
-
-	//get current selection
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	OmIds selected_segment_ids = r_segmentation.GetSelectedSegmentIds();
-	selected_segment_ids.remove(mSegmentId);
-
-	(new OmSegmentSelectAction(mSegmentationId, selected_segment_ids, false))->Run();
+	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
+	sel.selectNoSegments();
+	sel.selectJustThisSegment( mSegmentId, true);
+	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::Disable()

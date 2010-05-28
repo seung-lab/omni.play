@@ -55,12 +55,7 @@ OmSegmentIterator & OmSegmentIterator::operator = (const OmSegmentIterator & oth
 	}
 	
 	mCache = other.mCache;
-
-	const OmSegPtrs & set = other.mSegs;
-	OmSegPtrs::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
-		mSegs.push_back( *iter );
-	}
+	mSegs = other.mSegs;
 
 	return *this;
 }

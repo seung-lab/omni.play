@@ -1,23 +1,28 @@
-#include "omSegmentation.h"
-#include "omVolume.h"
-#include "omMipChunk.h"
-#include "omVolumeCuller.h"
-
+#include "common/omCommon.h"
+#include "common/omDebug.h"
+#include "common/omUtility.h"
+#include "mesh/meshingManager.h"
 #include "segment/omSegment.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
+#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentIterator.h"
+#include "system/events/omProgressEvent.h"
+#include "system/events/omSegmentEvent.h"
+#include "system/events/omView3dEvent.h"
+#include "system/omEventManager.h"
+#include "system/omGenericManager.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "system/omEventManager.h"
-#include "system/events/omProgressEvent.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omSegmentEvent.h"
-
-#include "common/omUtility.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+#include "volume/omMipChunk.h"
+#include "volume/omSegmentation.h"
+#include "volume/omSegmentationChunkCoord.h"
+#include "volume/omVolume.h"
+#include "volume/omVolumeCuller.h"
 
 #include <vtkImageData.h>
-
-#include "common/omDebug.h"
 #include <QFile>
 #include <QTextStream>
 
@@ -27,7 +32,9 @@
 ///////
 
 OmSegmentation::OmSegmentation()
-	: mMipVoxelationManager(this), mSegmentCache(this), mGroups(this)
+	: mMipVoxelationManager(this)
+	, mSegmentCache(new OmSegmentCache(this))
+	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
@@ -45,7 +52,10 @@ OmSegmentation::OmSegmentation()
 }
 
 OmSegmentation::OmSegmentation(OmId id)
-	: OmManageableObject(id), mMipVoxelationManager(this), mSegmentCache(this), mGroups(this)
+	: OmManageableObject(id)
+	, mMipVoxelationManager(this)
+	, mSegmentCache(new OmSegmentCache(this))
+	, mGroups(this)
 {
 	//set manageable object name
 	SetName( QString("segmentation%1").arg(id));
@@ -84,13 +94,15 @@ OmSegmentation::OmSegmentation(OmId id)
 OmSegmentation::~OmSegmentation()
 {
 	KillCacheThreads();
+
+	delete mSegmentCache;
+
 	if(mDend) {
         	free(mDend);
 	}
 	if(mDendValues){
         	free(mDendValues);
 	}
-
 }
 
 /////////////////////////////////
@@ -143,7 +155,7 @@ bool OmSegmentation::IsVolumeDataBuilt()
 
 void OmSegmentation::BuildVolumeData()
 {
-	mSegmentCache.turnBatchModeOn(true);
+	mSegmentCache->turnBatchModeOn(true);
 
 	//build volume
 	OmMipVolume::Build();
@@ -165,14 +177,14 @@ void OmSegmentation::BuildVolumeData()
 					const OmSegIDs & r_root_indirect_data_values = p_chunk->GetDirectDataValues();
 
 					// will already be mappped
-					mSegmentCache.AddSegmentsFromChunk(r_root_indirect_data_values, chunk_coord);
+					mSegmentCache->AddSegmentsFromChunk(r_root_indirect_data_values, chunk_coord);
 				}
 			}
 		}
 	}
 	
-	mSegmentCache.flushDirtySegments();
-	mSegmentCache.turnBatchModeOn(false);
+	mSegmentCache->flushDirtySegments();
+	mSegmentCache->turnBatchModeOn(false);
 }
 
 /*
@@ -279,7 +291,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	GetChunk(p_chunk, mipCoord);
 
 	//analyze entire chunk segmentation data
-	p_chunk->RefreshDirectDataValues( &mSegmentCache );
+	p_chunk->RefreshDirectDataValues( mSegmentCache );
 
 	//if root then update segment manager with spacial content information
 	if (p_chunk->IsRoot()) {
@@ -287,7 +299,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		const OmSegIDs & data_values = p_chunk->GetDirectDataValues();
 
 		//add to manager if data isn't already mapped
-		mSegmentCache.AddSegmentsFromChunk( data_values, mipCoord);
+		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord);
 	}
 
 	//rebuild mesh data only if entire volume data has been built as well
@@ -390,86 +402,90 @@ void OmSegmentation::SystemModeChangeEvent()
 
 OmSegment * OmSegmentation::GetSegment(OmId id)
 {
-	return mSegmentCache.GetSegmentFromValue(id);
+	return mSegmentCache->GetSegmentFromValue(id);
 }
 
 OmSegment* OmSegmentation::GetSegmentFromValue(OmSegID val)
 {
-	return mSegmentCache.GetSegmentFromValue(val);
+	return mSegmentCache->GetSegmentFromValue(val);
 }
 
 OmSegment * OmSegmentation::AddSegment()
 {
-	OmSegment* segment = mSegmentCache.AddSegment();
+	OmSegment* segment = mSegmentCache->AddSegment();
 	return segment;
 }
 
 bool OmSegmentation::IsSegmentValid(OmId id)
 {
-	return mSegmentCache.IsSegmentValid(id);
+	return mSegmentCache->IsSegmentValid(id);
 }
 
 OmId OmSegmentation::GetNumSegments()
 {
-	return mSegmentCache.GetNumSegments();
+	return mSegmentCache->GetNumSegments();
 }
 
 OmId OmSegmentation::GetNumTopSegments()
 {
-	return mSegmentCache.GetNumTopSegments();
+	return mSegmentCache->GetNumTopSegments();
 }
 
 bool OmSegmentation::IsSegmentEnabled(OmId id)
 {
-	return mSegmentCache.isSegmentEnabled(id);
+	return mSegmentCache->isSegmentEnabled(id);
 }
 
 void OmSegmentation::SetSegmentEnabled(OmId id, bool enable)
 {
-	mSegmentCache.setSegmentEnabled(id, enable);
+	mSegmentCache->setSegmentEnabled(id, enable);
 }
 
 const OmIds & OmSegmentation::GetEnabledSegmentIds()
 {
-	return mSegmentCache.GetEnabledSegmentIdsRef();
+	return mSegmentCache->GetEnabledSegmentIdsRef();
 }
 
 bool OmSegmentation::IsSegmentSelected(OmId id)
 {
-	return mSegmentCache.isSegmentSelected(id);
+	return mSegmentCache->isSegmentSelected(id);
 }
 
 void OmSegmentation::SetSegmentSelected(OmId id, bool selected)
 {
-	mSegmentCache.setSegmentSelected(id, selected);
+	mSegmentCache->setSegmentSelected(id, selected);
 }
 
 void OmSegmentation::SetAllSegmentsSelected(bool selected)
 {
-	mSegmentCache.SetAllSelected(selected);
+	mSegmentCache->SetAllSelected(selected);
 }
 
 void OmSegmentation::SetAllSegmentsEnabled(bool enabled)
 {
-	mSegmentCache.SetAllEnabled(enabled);
+	mSegmentCache->SetAllEnabled(enabled);
 }
 
 const OmIds & OmSegmentation::GetSelectedSegmentIds()
 {
-	return mSegmentCache.GetSelectedSegmentIdsRef();
+	return mSegmentCache->GetSelectedSegmentIdsRef();
 }
 
 bool OmSegmentation::AreSegmentsSelected()
 {
-	return mSegmentCache.AreSegmentsSelected();
+	return mSegmentCache->AreSegmentsSelected();
 }
 
+void OmSegmentation::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+{
+	mSegmentCache->UpdateSegmentSelection( ids, setSelected );
+}
 
 /////////////////////////////////
 ///////          Groups
 OmId OmSegmentation::AddGroup()
 {
-        OmSegmentIterator iter(&mSegmentCache);
+        OmSegmentIterator iter(mSegmentCache);
 
         iter.iterOverSelectedIDs();
 
@@ -478,7 +494,7 @@ OmId OmSegmentation::AddGroup()
         OmSegID val;
         while(NULL != seg) {
         	val = seg->getValue();
-        	//seg->SetImmutable();
+        	seg->SetImmutable(true);
                 //segmentsToGroup.insert(val);
         	seg = iter.getNextSegment();
         }
@@ -519,7 +535,7 @@ void OmSegmentation::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 	OmVolumeCuller volume_culler =
 		rCuller.GetTransformedCuller(mNormToSpaceMat, mNormToSpaceInvMat);
 
-	OmSegmentIterator iter(&mSegmentCache);
+	OmSegmentIterator iter(mSegmentCache);
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
@@ -584,7 +600,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 
 		std::vector< OmSegment* > segmentsToDraw;
 
-		if( !mSegmentCache.segmentListDirectCacheHasCoord( chunkCoord ) ){
+		if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
 			const OmSegIDs & chunkValues =  p_chunk->GetDirectDataValues();
 			OmSegment * seg = segIter.getNextSegment();
 			OmSegID val;
@@ -596,11 +612,11 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 				
 				seg = segIter.getNextSegment();
 			}
-			mSegmentCache.setSegmentListDirectCache( chunkCoord, segmentsToDraw );
+			mSegmentCache->setSegmentListDirectCache( chunkCoord, segmentsToDraw );
 			//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 		}
 
-		return DrawChunk(p_chunk, chunkCoord, mSegmentCache.getSegmentListDirectCache( chunkCoord ), rCuller);
+		return DrawChunk(p_chunk, chunkCoord, mSegmentCache->getSegmentListDirectCache( chunkCoord ), rCuller);
 	}
 
 	// ELSE BREAK DOWN INTO CHILDREN
@@ -645,7 +661,7 @@ void OmSegmentation::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chu
 void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const OmSegIDs & rRelvDataVals,
 				     const OmBitfield & drawOps)
 {
-	mMipVoxelationManager.DrawVoxelations(&mSegmentCache, mipCoord, rRelvDataVals, drawOps);
+	mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**
@@ -681,7 +697,7 @@ void OmSegmentation::KillCacheThreads()
 
 void OmSegmentation::FlushDirtySegments()
 {
-	mSegmentCache.flushDirtySegments();
+	mSegmentCache->flushDirtySegments();
 }
 
 void OmSegmentation::FlushDend()
@@ -701,12 +717,12 @@ void OmSegmentation::FlushDend()
 
 void OmSegmentation::ReloadDendrogram()
 {
-	mSegmentCache.resetGlobalThreshold(mDendThreshold);
+	mSegmentCache->resetGlobalThreshold(mDendThreshold);
 }
 
 void OmSegmentation::JoinAllSegmentsInSelectedList()
 {
-	mSegmentCache.JoinAllSegmentsInSelectedList();
+	mSegmentCache->JoinAllSegmentsInSelectedList();
 }
 
 void OmSegmentation::SetDendThreshold( float t ){
@@ -720,3 +736,4 @@ void OmSegmentation::SetDendThresholdAndReload( const float t ){
 	SetDendThreshold(t);
 	ReloadDendrogram();
 }
+

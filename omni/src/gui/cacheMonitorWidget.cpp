@@ -1,6 +1,7 @@
 #include "gui/cacheMonitorWidget.h"
 #include "system/omCacheManager.h"
 #include "system/omThreadedCache.h"
+#include "system/omCacheInfo.h"
 
 CacheMonitorWidget::CacheMonitorWidget(QWidget * parent) : QWidget(parent)
 {

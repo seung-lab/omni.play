@@ -8,18 +8,18 @@
  *	Brett Warne - bwarne@mit.edu - 2/11/09
  */
 
-#include <common/omStd.h>
-
 #include <QObject>
 #include <QEvent>
 
-#include "omEvent.h"
+#include "common/omCommon.h"
+#include "system/omEvent.h"
+
+class OmEventListener;
 
 typedef set< OmEventListener* > EventListenerSet;
 typedef map< OmEventClass, EventListenerSet > EventClassToEventListenerSetMap;
 
-
-class OmEventManager : public QObject {
+class OmEventManager : boost::noncopyable, public QObject {
 
 public:
 	static OmEventManager* Instance();
@@ -31,6 +31,7 @@ public:
 	//EventListener accessors
 	void AddEventListener(OmEventClass, OmEventListener*);
 	void RemoveEventListener(OmEventClass, OmEventListener*);
+
 	//static accessors
 	static void AddListener(OmEventClass, OmEventListener*);
 	static void RemoveListener(OmEventClass, OmEventListener*);
@@ -40,20 +41,15 @@ public:
 	static void PostEvent(OmEvent*);
 	static void FlushPostEvents();
 	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
-	OmEventManager();
-	OmEventManager(const OmEventManager&);
-	OmEventManager& operator= (const OmEventManager&);
-
 private:
+	OmEventManager();
+	~OmEventManager();
+
 	//singleton
 	static OmEventManager* mspInstance;
 	
 	//map events
 	EventClassToEventListenerSetMap mEventClassToListernsMap;
 };
-
-
 
 #endif

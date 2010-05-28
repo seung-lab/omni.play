@@ -1,21 +1,24 @@
-#include "omMipVolume.h"
-#include "omMipChunk.h"
-#include "omVolume.h"
-
+#include "common/omDebug.h"
 #include "common/omException.h"
-#include "system/omProjectData.h"
-#include "system/omEventManager.h"
-#include "system/events/omProgressEvent.h"
-#include "common/omVtk.h"
 #include "common/omStd.h"
+#include "common/omVtk.h"
+#include "system/events/omProgressEvent.h"
+#include "system/omEventManager.h"
+#include "system/omProjectData.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+#include "utility/omHdf5.h"
 #include "utility/omImageDataIo.h"
+#include "utility/sortHelpers.h"
+#include "volume/omMipChunk.h"
+#include "volume/omMipVolume.h"
+#include "volume/omVolume.h"
 
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
-#include "common/omDebug.h"
-#include "utility/omHdf5.h"
 #include <QFile>
+
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
@@ -135,7 +138,7 @@ QString OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 ///////          Source Data Properties
 void OmMipVolume::SetSourceFilenamesAndPaths( QFileInfoList sourceFilenamesAndPaths )
 {
-	mSourceFilenamesAndPaths = sourceFilenamesAndPaths;
+	mSourceFilenamesAndPaths = SortHelpers::sortNaturally(sourceFilenamesAndPaths);
 	sourceFilesWereSet = true;
 }
 

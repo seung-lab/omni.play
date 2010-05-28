@@ -83,6 +83,8 @@ int main(int argc, char *argv[])
 	signal (SIGSEGV, myBacktrace);
 	signal (SIGBUS, myBacktrace);
 	signal (SIGABRT, myBacktrace);
+	signal (SIGFPE, myBacktrace);
+	signal (SIGILL, myBacktrace);
 #endif
 
 	Headless headless;

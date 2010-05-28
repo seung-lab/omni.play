@@ -11,7 +11,7 @@
 #include <QHash>
 #include "common/omCommon.h"
 
-class OmPreferences {
+class OmPreferences : boost::noncopyable {
 
 public:
 	
@@ -36,18 +36,14 @@ public:
 	static Vector3f GetVector3f(const int);
 	static void SetVector3f(const int, Vector3f);
 	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmPreferences();
 	~OmPreferences();
-	OmPreferences(const OmPreferences&);
-	OmPreferences& operator= (const OmPreferences&);
-	
-private:
-	static bool CheckKey(const int key );
-	
+
 	//singleton
 	static OmPreferences* mspInstance;
+
+	static bool CheckKey(const int key );
 	
 	//preference map
 	QHash< int, QString > stringPrefs;

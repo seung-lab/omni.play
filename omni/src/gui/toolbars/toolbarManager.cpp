@@ -1,16 +1,19 @@
+#include "toolbarManager.h"
 #include "gui/toolbars/navAndEditToolBars.h"
 #include "gui/mainwindow.h"
 #include "volume/omVolume.h"
 #include "system/omProjectData.h"
 #include "system/events/omToolModeEvent.h"
 #include "gui/toolbars/dendToolbar.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)
+	, mMainWindow(mw)
+	, navAndEditToolBars( new NavAndEditToolBars( mw ) )
+	, dendToolBar( new DendToolBar( mw ) )
 {
-	mMainWindow = mw;
-	navAndEditToolBars = new NavAndEditToolBars( mMainWindow );
-	dendToolBar = new DendToolBar( mMainWindow );
+	OmStateManager::setDendToolBar( dendToolBar );
 }
 
 void ToolBarManager::setupToolbarInitially()

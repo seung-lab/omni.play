@@ -1,7 +1,7 @@
-#include "omHdf5Path.h"
-#include "omHdf5LowLevelWrappersManualOpenClose.h"
-#include "common/omException.h"
 #include "common/omDebug.h"
+#include "common/omException.h"
+#include "utility/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "utility/omHdf5Path.h"
 
 #define HDF5_WRAP() 								\
 	string pathStr = path.getString();                                      \
@@ -12,15 +12,13 @@
 #define HDF5_UNWRAP()
 
 OmHdf5LowLevelWrappersManualOpenClose::OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly)
-	: mFileName(fileName), mReadOnly(readOnly)
+	: mFileName(fileName), mReadOnly(readOnly), fileId(-1), opened(false)
 {
-	fileId = -1;
-	opened = false;;
 }
 
 OmHdf5LowLevelWrappersManualOpenClose::~OmHdf5LowLevelWrappersManualOpenClose()
 {
-	
+	close();
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::open()
@@ -36,7 +34,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::open()
 void OmHdf5LowLevelWrappersManualOpenClose::close()
 {
 	if(!opened) {
-                throw OmIoException("HDF5 file was not open");
+		return;
 	}
 
 	hdfLowLevel.om_hdf5_file_close_with_lock(fileId);

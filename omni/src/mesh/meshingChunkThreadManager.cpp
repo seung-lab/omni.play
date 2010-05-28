@@ -2,6 +2,7 @@
 #include "meshingChunkThreadManager.h"
 #include "common/omDebug.h"
 #include "volume/omVolume.h"
+#include "volume/omSegmentation.h"
 
 MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord ) 
 {

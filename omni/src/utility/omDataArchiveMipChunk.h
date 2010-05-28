@@ -1,10 +1,9 @@
 #ifndef OM_DATA_ARCHIVE_MIP_CHUNK_H
 #define OM_DATA_ARCHIVE_MIP_CHUNK_H
 
-#include "common/omDebug.h"
-#include "system/omProjectData.h"
-#include "volume/omMipChunk.h"
-#include "volume/omSimpleChunk.h"
+class OmHdf5Path;
+class OmMipChunk;
+class OmSimpleChunk;
 
 class OmDataArchiveMipChunk
 {

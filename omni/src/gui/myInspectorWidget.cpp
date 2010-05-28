@@ -1,22 +1,20 @@
-#include <QtGui>
-#include <QMessageBox>
-#include "myInspectorWidget.h"
-#include "guiUtils.h"
-
+#include "common/omDebug.h"
 #include "common/omStd.h"
+#include "guiUtils.h"
+#include "myInspectorWidget.h"
 #include "project/omProject.h"
-#include "system/omManageableObject.h"
-#include "volume/omVolume.h"
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
 #include "segment/omSegment.h"
-
-
-#include "system/omEventManager.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
+#include "system/omEventManager.h"
+#include "system/omStateManager.h"
+#include "system/omManageableObject.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
-#include "common/omDebug.h"
+#include <QtGui>
+#include <QMessageBox>
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);

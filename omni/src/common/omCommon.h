@@ -5,11 +5,11 @@
 #define QT_USE_FAST_OPERATOR_PLUS
 
 #include <QString>
-#include <QSet>
 
+#include "boost/lexical_cast.hpp"
+#include <boost/strong_typedef.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/tr1/unordered_set.hpp>
-#include <boost/strong_typedef.hpp>
 #include <boost/utility.hpp>
 
 #include "common/omStd.h"

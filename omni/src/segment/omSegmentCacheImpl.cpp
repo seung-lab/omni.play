@@ -1,15 +1,16 @@
 #include "segment/omSegmentCacheImpl.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omDataArchiveSegment.h"
-#include "system/omProjectData.h"
 #include "system/omCacheManager.h"
-#include "volume/omSegmentation.h"
+#include "system/omProjectData.h"
+#include "utility/omDataArchiveSegment.h"
 #include "utility/omDataPaths.h"
+#include "utility/omHdf5Path.h"
+#include "volume/omSegmentation.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
 OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache )
-	: mSegmentation(segmentation), mParentCache( cache )
+	: mSegmentation(segmentation)
+	, mParentCache( cache )
 {
 	mMaxValue = 0;
 
@@ -130,6 +131,7 @@ OmSegID OmSegmentCacheImpl::GetNumSegments()
 
 OmSegID OmSegmentCacheImpl::GetNumTopSegments()
 {
+	loadTreeIfNeeded();
 	return mNumTopLevelSegs;
 }
 
@@ -147,13 +149,13 @@ bool OmSegmentCacheImpl::AreSegmentsSelected()
 	return true;
 }
 
-OmIds & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
+OmSegIDs & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
 {
 	loadTreeIfNeeded();
         return mSelectedSet;
 }
 
-OmIds & OmSegmentCacheImpl::GetEnabledSegmentIdsRef()
+OmSegIDs & OmSegmentCacheImpl::GetEnabledSegmentIdsRef()
 {
 	loadTreeIfNeeded();
         return mEnabledSet;
@@ -221,7 +223,7 @@ void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 		mSelectedSet.insert( rootID );
 	} else {
 		mSelectedSet.remove( rootID );
-		assert( !mSelectedSet.contains( segID ) );
+		assert( !mSelectedSet.contains( segID ));
 	}
 }
 
@@ -444,6 +446,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	const float oldChildThreshold = child->mThreshold;
 	child->mThreshold = 0;
+
+	rootSegs[child->mValue] = 1;
 	
 	if( isSegmentSelected( parent->getValue() ) ){
 		debug("split", "parent was selected\n");
@@ -452,11 +456,13 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		mSelectedSet.remove( child->getValue() );
 	}
 
-	OmSegQueueElement parentElement = { child->mValue, oldChildThreshold };
+	OmSegmentQueueElement parentElement = { child->mValue, oldChildThreshold };
 	parent->queue.push(parentElement);
 
-	OmSegQueueElement childElement = { parent->mValue, oldChildThreshold };
+	OmSegmentQueueElement childElement = { parent->mValue, oldChildThreshold };
 	child->queue.push(childElement);
+
+	++mNumTopLevelSegs;
 
 	clearCaches();
 }
@@ -539,7 +545,12 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 {
 	delete mGraph;
 
-	mGraph = new DynamicTreeContainer<OmSegID>( mMaxValue + 1); // mMaxValue is a valid segment
+	// mMaxValue is a valid segment id, so array needs to be 1 bigger
+	const int size =  mMaxValue + 1;
+	
+	mGraph = new DynamicTreeContainer<OmSegID>( size );
+
+	rootSegs = boost::dynamic_bitset<>( size, 1);
 }
 
 void OmSegmentCacheImpl::loadDendrogram()
@@ -579,7 +590,6 @@ void OmSegmentCacheImpl::doLoadDendrogram( const quint32 * dend, const float * d
 
 	resetGlobalThreshold( stopPoint );
 
-	rerootSegmentLists();
 	clearCaches();
 }
 
@@ -589,17 +599,20 @@ void OmSegmentCacheImpl::rerootSegmentLists()
 	rerootSegmentList( mSelectedSet );
 }
 
-void OmSegmentCacheImpl::rerootSegmentList( OmIds & set )
+void OmSegmentCacheImpl::rerootSegmentList( OmSegIDs & set )
 {
-	OmIds old = set;
+	OmSegIDs old = set;
 	set.clear();
 
+	OmSegID rootSegID;
 	foreach( const OmSegID & id, old ){
-		set.insert( findRoot( GetSegmentFromValue( id) )->getValue() );
+		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
+		set.insert( rootSegID );
+		//printf("inserting %d\n", rootSegID );
 	}
 }
 
-void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold)
+void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, const float threshold)
 {
 	Join( parent->getValue(), childUnknownLevel->getValue(), threshold );
 }
@@ -622,6 +635,12 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
         } 
 	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
+	rootSegs[childRoot->mValue] = 0;
+}
+
+OmSegID OmSegmentCacheImpl::findRootID( const OmSegID segID )
+{
+	return findRoot( GetSegmentFromValue( segID ) )->getValue();
 }
 
 OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
@@ -652,9 +671,9 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 		return;
 	}
 
-	OmIds set = mSelectedSet; // Join() will modify mSelectedSet
+	OmSegIDs set = mSelectedSet; // Join() will modify mSelectedSet
 
-	OmIds::const_iterator iter = set.begin();
+	OmSegIDs::const_iterator iter = set.begin();
 	OmSegID parentID = *iter;
 	++iter;
 
@@ -685,6 +704,10 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	quint32 splitCounter = 0;
 	quint32 joinCounter = 0;
 
+	OmSegmentQueueElement sqe;
+	OmSegment * otherSeg;
+	int numRemoved;
+
 	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
 
 	OmSegment * seg;
@@ -697,55 +720,48 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
 		assert(seg);
 
-		if( seg->mThreshold >= stopPoint ){ // merge!
-			OmSegQueueElement sqe;
-			while(1){
-				if( seg->queue.empty() ){
-					break;
-				}
-				
-				sqe = seg->queue.top();
-				if( sqe.threshold > stopPoint ){
-					Join( i, sqe.segID, sqe.threshold );
-					seg->queue.pop();
-					
-					OmSegment * otherSeg = GetSegmentFromValue( sqe.segID );
-					assert( otherSeg );
-					assert( !otherSeg->queue.empty() );
+		// try merging...
+		while( !seg->queue.empty() ){
+			
+			sqe = seg->queue.top();
 
-					// remove correspoding element in other segment
-					QList< OmSegQueueElement > tmp;
-					while(1){
-
-						OmSegQueueElement otherSqe = otherSeg->queue.top();
-						if( otherSqe.segID == i &&
-						    otherSqe.threshold == sqe.threshold ){
-							otherSeg->queue.pop();
-							break;
-						} else {
-							tmp.append( otherSqe );
-							otherSeg->queue.pop();
-						}
-					}
-
-					foreach( const OmSegQueueElement & sqe, tmp ){
-						otherSeg->queue.push( sqe );
-					}
-
-					++joinCounter;
-				} else {
-					break;
-				}
-			} 
-		} else {
-			if( 0 == seg->mParentSegID ){
-				continue;
+			if( sqe.threshold < stopPoint ){
+				break;
 			}
+
+			Join( i, sqe.segID, sqe.threshold );
+			seg->queue.pop();
+					
+			otherSeg = GetSegmentFromValue( sqe.segID );
+			assert( otherSeg );
+			assert( !otherSeg->queue.empty() );
+
+			numRemoved = otherSeg->queue.remove( i, sqe.threshold );
+			assert( 1 == numRemoved );
+
+			++joinCounter;
+		} 
+		
+		// try splitting...
+		if( 0 == seg->mParentSegID ){
+			continue;
+		}
+		
+		if( seg->mThreshold < stopPoint ){
 			splitChildFromParent( seg );
 			++splitCounter;
 		}
         }
 
+	rerootSegmentLists();
 	clearCaches();	
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
+}
+
+void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+{
+	OmSegIDs::const_iterator iter;
+	for( iter = ids.begin(); iter != ids.end(); ++iter ){
+		setSegmentSelected( *iter, setSelected );
+	}
 }

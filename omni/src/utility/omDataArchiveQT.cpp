@@ -2,6 +2,11 @@
 #include "omDataArchiveProject.h"
 #include "omDataArchiveMipChunk.h"
 #include "omDataArchiveSegment.h"
+#include "common/omDebug.h"
+#include "project/omProject.h"
+#include "system/omProjectData.h"
+#include "volume/omMipChunk.h"
+#include "volume/omSimpleChunk.h"
 
 void OmDataArchiveQT::ArchiveRead( const OmHdf5Path & path, OmMipChunk * chunk ) 
 {

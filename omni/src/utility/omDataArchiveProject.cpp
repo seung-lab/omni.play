@@ -1,12 +1,21 @@
-#include "omDataArchiveProject.h"
-#include "omDataArchiveVmml.h"
-#include "omDataArchiveCoords.h"
-#include "omDataArchiveBoost.h"
+#include "utility/omDataArchiveProject.h"
+#include "utility/omDataArchiveVmml.h"
+#include "utility/omDataArchiveCoords.h"
+#include "utility/omDataArchiveBoost.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+#include "project/omProject.h"
+#include "system/omProjectData.h"
+#include "segment/omSegmentCache.h"
+#include "segment/omSegmentCacheImpl.h"
+#include "common/omException.h"
+#include "system/omPreferences.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 
 #include <QDataStream>
-#include "boost/lexical_cast.hpp"
 
-static const int Omni_Version = 3;
+static const int Omni_Version = 5;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
@@ -107,16 +116,13 @@ QDataStream &operator>>(QDataStream & in, OmPreferences & p )
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & cm )
 {
 	out << cm.mNextId;
-
-	int numChannels = cm.mMap.size();
-	out << numChannels;
-
-	foreach( OmChannel * chan, cm.mMap ){
-		out << *chan;
-	}
-
+	out << cm.mSize;
 	out << cm.mValidSet;
 	out << cm.mEnabledSet;
+
+	foreach( const OmId & id, cm.mValidSet ){
+		out << *cm.mMap[id];
+	}
 
 	return out;
 }
@@ -124,18 +130,17 @@ QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & c
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
 {
 	in >> cm.mNextId;
+	in >> cm.mSize;
+	in >> cm.mValidSet;
+	in >> cm.mEnabledSet;
 
-	int numChannels;
-	in >> numChannels;
+	cm.mMap.resize(cm.mSize, NULL);
 
-	for( int i = 0; i < numChannels; ++i ){
+	for( unsigned int i = 0; i < cm.mValidSet.size(); ++i ){
 		OmChannel * chan = new OmChannel();
 		in >> *chan;
 		cm.mMap[ chan->GetId() ] = chan;
 	}
-
-	in >> cm.mValidSet;
-	in >> cm.mEnabledSet;
 	
 	return in;
 }
@@ -181,16 +186,13 @@ QDataStream &operator>>(QDataStream & in, OmFilter2dManager & fm )
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & fm )
 {
 	out << fm.mNextId;
-
-	int numFilters = fm.mMap.size();
-	out << numFilters;
-
-	foreach( OmFilter2d * filter, fm.mMap ){
-		out << *filter;
-	}
-
+	out << fm.mSize;
 	out << fm.mValidSet;
 	out << fm.mEnabledSet;
+
+	foreach( const OmId & id, fm.mValidSet ){
+		out << *fm.mMap[id];
+	}
 
 	return out;
 }
@@ -198,18 +200,17 @@ QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & 
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
 {
 	in >> fm.mNextId;
+	in >> fm.mSize;
+	in >> fm.mValidSet;
+	in >> fm.mEnabledSet;
 
-	int numFilters;
-	in >> numFilters;
+	fm.mMap.resize(fm.mSize, NULL);
 
-	for( int i = 0; i < numFilters; ++i ){
+	for( unsigned int i = 0; i < fm.mValidSet.size(); ++i ){
 		OmFilter2d * filter = new OmFilter2d();
 		in >> *filter;
 		fm.mMap[ filter->GetId() ] = filter;
 	}
-
-	in >> fm.mValidSet;
-	in >> fm.mEnabledSet;
 	
 	return in;
 }
@@ -241,16 +242,13 @@ QDataStream &operator>>(QDataStream & in, OmFilter2d & f )
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation> & sm )
 {
 	out << sm.mNextId;
-
-	int numSegmentations = sm.mMap.size();
-	out << numSegmentations;
-
-	foreach( OmSegmentation * seg, sm.mMap ){
-		out << *seg;
-	}
-
+	out << sm.mSize;
 	out << sm.mValidSet;
 	out << sm.mEnabledSet;
+
+	foreach( const OmId & id, sm.mValidSet ){
+		out << *sm.mMap[id];
+	}
 
 	return out;
 }
@@ -258,18 +256,17 @@ QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm )
 {
 	in >> sm.mNextId;
+	in >> sm.mSize;
+	in >> sm.mValidSet;
+	in >> sm.mEnabledSet;
 
-	int numSegmentations;
-	in >> numSegmentations;
+	sm.mMap.resize(sm.mSize, NULL);
 
-	for( int i = 0; i < numSegmentations; ++i ){
+	for( unsigned int i = 0; i < sm.mValidSet.size(); ++i ){
 		OmSegmentation * seg = new OmSegmentation();
 		in >> *seg;
 		sm.mMap[ seg->GetId() ] = seg;
 	}
-
-	in >> sm.mValidSet;
-	in >> sm.mEnabledSet;
 	
 	return in;
 }
@@ -281,7 +278,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 	OmDataArchiveProject::storeOmMipVolume( out, seg );
 
 	out << seg.mMipMeshManager;
-	out << seg.mSegmentCache;
+	out << (*seg.mSegmentCache);
 
 	out << seg.mDendSize;
 	out << seg.mDendValuesSize;
@@ -298,7 +295,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	OmDataArchiveProject::loadOmMipVolume( in, seg );
  
 	in >> seg.mMipMeshManager;
-	in >> seg.mSegmentCache;
+	in >> (*seg.mSegmentCache);
 
 	in >> seg.mDendSize;
 	in >> seg.mDendValuesSize;

@@ -58,8 +58,6 @@ private:
 	SegmentationDataWrapper currentSDW;
 	bool haveValidSDW;
 
-	void sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection);
-
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	QList< OmSegID > * getSegmentsToDisplay( const OmId firstSegmentID );

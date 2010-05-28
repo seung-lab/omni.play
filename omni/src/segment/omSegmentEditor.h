@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 
-class OmSegmentEditor {
+class OmSegmentEditor : boost::noncopyable {
 
 public:
 	static OmSegmentEditor* Instance();
@@ -27,16 +27,11 @@ public:
 	//voxel
 	static DataCoord SpaceCoordToEditSelectionVoxel(const SpaceCoord &spaceCoord);
 	static void DrawEditSelectionVoxels();
-	
-
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+		
+private:
 	OmSegmentEditor();
 	~OmSegmentEditor();
-	OmSegmentEditor(const OmSegmentEditor&);
-	OmSegmentEditor& operator= (const OmSegmentEditor&);
-	
-private:
+
 	//singleton
 	static OmSegmentEditor* mspInstance;
 		

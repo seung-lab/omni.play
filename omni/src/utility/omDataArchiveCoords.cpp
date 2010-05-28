@@ -1,5 +1,13 @@
-#include "omDataArchiveCoords.h"
-#include "omDataArchiveVmml.h"
+#include "common/omCommon.h"
+#include "utility/omDataArchiveCoords.h"
+#include "utility/omDataArchiveVmml.h"
+#include "view2d/omTileCoord.h"
+#include "project/omProject.h"
+#include "system/omProjectData.h"
+#include "voxel/omMipSegmentDataCoord.h"
+#include "mesh/omMipMeshCoord.h"
+
+#include <QDataStream>
 
 QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c )
 {

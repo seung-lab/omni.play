@@ -2,7 +2,7 @@
 #define OM_BUILD_SEGMENTATION_H
 
 #include "system/omBuildVolumes.h"
-#include "volume/omSegmentation.h"
+class OmSegmentation;
 
 class OmBuildSegmentation : public OmBuildVolumes, public QThread
 {

@@ -1,15 +1,14 @@
-#include "project/omProject.h"
-#include "volume/omFilter2d.h"
-
-#include "volume/omDrawOptions.h"
 #include "common/omGl.h"
-#include "system/omPreferences.h"
+#include "project/omProject.h"
 #include "system/omPreferenceDefinitions.h"
-#include "volume/omVolume.h"
-#include "view2d/omThreadedCachingTile.h"
-#include "view2d/omCachingThreadedCachingTile.h"
-#include "view2d/omView2d.h"
+#include "system/omPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "view2d/omCachingThreadedCachingTile.h"
+#include "view2d/omThreadedCachingTile.h"
+#include "view2d/omView2d.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omFilter2d.h"
+#include "volume/omVolume.h"
 
 /////////////////////////////////
 ///////
@@ -46,11 +45,11 @@ double OmFilter2d::GetAlpha ()
 OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype, OmViewGroupState * vgs)
 {
 	OmCachingThreadedCachingTile *fastCache = NULL;
-	if (mSeg) {
+	if (OmProject::IsSegmentationValid(mSeg)) {
 		vgs->SetSegmentation(mSeg);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, vgs);
 
-	} else if (mChannel) {
+	} else if (OmProject::IsChannelValid(mChannel)) {
 		vgs->SetChannel(mChannel);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, vgs);
 	}
@@ -73,8 +72,6 @@ OmId OmFilter2d::GetSegmentation () {
 
 void OmFilter2d::SetSegmentation (OmId id) {
 
-	return;
-
 	if (mSeg != id || 0 == id) {
 		mCache = NULL;
 	}
@@ -83,8 +80,6 @@ void OmFilter2d::SetSegmentation (OmId id) {
 	} catch (OmAccessException e) {
 		mSeg = 0;
 	}
-
-	//	mViewGroupState->SetSegmentation( SegmentationDataWrapper(mSeg));
 }
 
 OmId OmFilter2d::GetChannel () {
@@ -93,7 +88,6 @@ OmId OmFilter2d::GetChannel () {
 
 void OmFilter2d::SetChannel (OmId id) {
 
-	return;
 
 	if (mChannel != id) {
 		mCache = NULL;
@@ -104,6 +98,4 @@ void OmFilter2d::SetChannel (OmId id) {
 	} catch (OmAccessException e) {
 		mChannel = 0;
 	}
-
-	//	mViewGroupState->SetChannel( ChannelDataWrapper( mChannel ));
 }

@@ -1,21 +1,18 @@
-#include "utility/omHdf5Manager.h"
-#include "omMipMesh.h"
-#include "omMipMeshManager.h"
-
-#include "segment/omSegmentCache.h"
-#include "system/omProjectData.h"
-#include "system/omLocalPreferences.h"
-#include "project/omProject.h"
-
-#include "utility/omDataLayer.h"
-
 #include "common/omDebug.h"
+#include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshManager.h"
+#include "project/omProject.h"
+#include "segment/omSegmentCache.h"
+#include "system/omLocalPreferences.h"
+#include "system/omProjectData.h"
+#include "system/omStateManager.h"
+#include "utility/omDataLayer.h"
+#include "utility/omHdf5Manager.h"
+
 #include <QFile>
 
 /////////////////////////////////
-///////
 ///////          MipMesh
-///////
 
 #ifdef __WIN32__
 typedef void (*GLDELETEBUFFERS)(GLsizei n, const GLuint *buffers);

@@ -1,10 +1,7 @@
-
 #include "omPreferences.h"
 #include "omEventManager.h"
 #include "events/omPreferenceEvent.h"
 #include "common/omDebug.h"
-
-#define DEBUG 0
 
 //init instance pointer
 OmPreferences *OmPreferences::mspInstance = 0;

@@ -9,6 +9,7 @@
 #include "system/omBuildSegmentation.h"
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
+#include "system/omStateManager.h"
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
  : QWidget(parent)

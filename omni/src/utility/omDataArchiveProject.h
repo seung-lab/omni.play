@@ -1,10 +1,22 @@
 #ifndef OM_DATA_ARCHIVE_PROJECT_H
 #define OM_DATA_ARCHIVE_PROJECT_H
 
-#include "common/omDebug.h"
-#include "project/omProject.h"
-#include "system/omProjectData.h"
-#include "segment/omSegmentCacheImpl.h"
+#include "common/omCommon.h"
+#include "system/omGenericManager.h"
+
+class OmHdf5Path;
+class OmProject;
+class OmManageableObject;
+class OmVolume;
+class OmMipVolume;
+class OmPreferences;
+class OmChannel;
+class OmFilter2dManager;
+class OmFilter2d;
+class OmSegmentation;
+class OmMipMeshManager;
+class OmSegmentCache;
+class OmSegmentCacheImpl;
 
 class OmDataArchiveProject
 {

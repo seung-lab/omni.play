@@ -1,5 +1,7 @@
-#include "omHdf5Manager.h"
+#include "utility/omHdf5Manager.h"
 #include "common/omDebug.h"
+#include "utility/omHdf5.h"
+
 #include <QFileInfo>
 
 //init instance pointer
@@ -12,6 +14,9 @@ OmHdf5Manager::OmHdf5Manager()
 
 OmHdf5Manager::~OmHdf5Manager()
 {
+	foreach( OmHdf5 * hdf, hdf5Files ){
+		delete hdf;
+	}
 }
 
 OmHdf5* OmHdf5Manager::getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, 
@@ -23,15 +28,16 @@ OmHdf5* OmHdf5Manager::getOmHdf5File( QString fileNameAndPath, const bool autoOp
 OmHdf5Manager * OmHdf5Manager::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmHdf5Manager;
+		mspInstance = new OmHdf5Manager();
 	}
 	return mspInstance;
 }
 
 void OmHdf5Manager::Delete()
 {
-	if (mspInstance)
+	if (mspInstance) {
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 

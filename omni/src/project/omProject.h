@@ -9,18 +9,18 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omStd.h"
-#include "system/omPreferences.h"
-#include "system/omStateManager.h"
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
+#include "common/omCommon.h"
+#include "system/omGenericManager.h"
 
+class OmChannel;
+class OmSegmentation;
+class OmVolumeCuller;
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 
 class OmViewGroupState;
 
-class OmProject {
+class OmProject : boost::noncopyable {
 
 public:
 	
@@ -58,16 +58,10 @@ public:
         static void SetSegmentationEnabled(OmId id, bool enable);
 	static void Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs);
 
-	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmProject();
 	~OmProject();
-	OmProject(const OmProject&);
-	OmProject& operator= (const OmProject&);
 
-	
-private:
 	//singleton
 	static OmProject* mspInstance;
 	

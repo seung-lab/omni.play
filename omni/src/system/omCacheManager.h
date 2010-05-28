@@ -1,9 +1,7 @@
 #ifndef OM_CACHE_MANAGER_H
 #define OM_CACHE_MANAGER_H
 
-#include "system/events/omPreferenceEvent.h"
-#include "common/omStd.h"
-#include "system/omCacheInfo.h"
+#include "common/omCommon.h"
 
 #include <QMutex>
 
@@ -28,7 +26,10 @@ struct CacheGroupProperties {
 	set< OmCacheBase* > CacheSet;
 };
 
-class OmCacheManager {
+class OmCacheInfo;
+class OmPreferenceEvent;
+
+class OmCacheManager : boost::noncopyable {
 
 public:
 	
@@ -49,13 +50,6 @@ public:
 	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);
 	
 protected:
-	// singleton constructor, copy constructor, assignment operator protected
-	OmCacheManager();
-	~OmCacheManager();
-	OmCacheManager(const OmCacheManager&);
-	OmCacheManager& operator= (const OmCacheManager&);
-
-	
 	//event handling
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
 	
@@ -63,6 +57,9 @@ protected:
         bool mDelayDelta;
 
 private:
+	OmCacheManager();
+	~OmCacheManager();
+
 	//singleton
 	static OmCacheManager* mspInstance;
 		

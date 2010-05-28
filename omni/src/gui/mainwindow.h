@@ -5,7 +5,6 @@
 #include <QMultiMap>
 #include <QProgressDialog>
 #include <QThread>
-#include <qtconcurrentrun.h>
 #include <QList>
 #include <QMultiMap>
 #include <QUndoStack>
@@ -13,24 +12,19 @@
 #include <QComboBox>
 #include <QErrorMessage>
 
-#include "gui/viewGroup.h"
-#include "gui/toolbars/toolbarManager.h"
-#include "gui/menubar.h"
-#include "common/omStd.h"
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
-#include "system/omGenericManager.h"
-#include "system/omStateManager.h"
-#include "system/events/omSegmentEvent.h"
+#include "common/omCommon.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSystemModeEvent.h"
-#include "system/viewGroup/omViewGroupState.h"
 
-#include "gui/preferences/preferences.h"
-
-class MyInspectorWidget;
-class ViewGroup;
 class CacheMonitorDialog;
+class MenuBar;
+class MyInspectorWidget;
+class OmException;
+class OmSegmentEvent;
+class OmViewGroupState;
+class Preferences;
+class ToolBarManager;
+class ViewGroup;
 
 class MainWindow 
 : public QMainWindow, 	

@@ -1,7 +1,4 @@
-
 #include "omPreferenceEvent.h"
-
-#define DEBUG 0
 
 OmPreferenceEvent::OmPreferenceEvent(QEvent::Type type, int pref)
 :OmEvent(type, CLASS)

@@ -1,26 +1,19 @@
+#include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar.h"
-#include "omView3dUi.h"
-#include "omView3d.h"
-#include "omCamera.h"
-
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-
-#include "volume/omVolume.h"
-#include "volume/omDrawOptions.h"
-
+#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelector.h"
+#include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "common/omDebug.h"
-
-#define DEBUG 0
-
-/////////////////////////////////
-///////
-///////          Example Class
-///////
+#include "view3d/omCamera.h"
+#include "view3d/omView3d.h"
+#include "view3d/omView3dUi.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 	: mpView3d(view3d), mViewGroupState(vgs)
@@ -466,9 +459,9 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
 	//get ids
-	OmId segmentation_id, segment_id;
+	OmId segmentation_id, segmentID;
 	int pick_object_type;
-	if (!PickSegmentMouse(event, drag, segmentation_id, segment_id, &pick_object_type))
+	if (!PickSegmentMouse(event, drag, segmentation_id, segmentID, &pick_object_type))
 		return;
 
 	//if picked type was not a mesh
@@ -476,23 +469,15 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 		return;
 
 	//get segment state
-	bool new_segment_select_state = !(OmProject::GetSegmentation(segmentation_id).IsSegmentSelected(segment_id));
+	OmSegmentSelector sel( segmentation_id, this, "view3dUi" );
 
-	//if not augmenting slection and selecting segment
-	if (!augment_selection && new_segment_select_state) {
-		//get current selection
-		OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
-		//select new segment, deselect current segments
-		OmIds select_segment_ids;
-		select_segment_ids.insert(segment_id);
-		(new
-		 OmSegmentSelectAction(segmentation_id, select_segment_ids,
-				       r_segmentation.GetSelectedSegmentIds()))->Run();
-
+	if( augment_selection ){
+		sel.augmentSelectedSet_toggle( segmentID );
 	} else {
-		//set state of 
-		(new OmSegmentSelectAction(segmentation_id, segment_id, new_segment_select_state))->Run();
+		sel.selectJustThisSegment_toggle( segmentID );
 	}
+	
+	sel.sendEvent();
 }
 
 /////////////////////////////////

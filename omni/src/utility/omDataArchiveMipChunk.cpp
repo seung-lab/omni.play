@@ -1,5 +1,13 @@
-#include "omDataArchiveMipChunk.h"
-#include "omDataArchiveBoost.h"
+#include "common/omCommon.h"
+#include "system/omProjectData.h"
+#include "utility/omDataArchiveBoost.h"
+#include "utility/omDataArchiveMipChunk.h"
+#include "utility/omHdf5Path.h"
+#include "volume/omMipChunk.h"
+#include "volume/omSimpleChunk.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+
 #include <QDataStream>
 
 void OmDataArchiveMipChunk::ArchiveRead( const OmHdf5Path & path, OmMipChunk * chunk ) 

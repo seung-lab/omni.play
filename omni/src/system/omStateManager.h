@@ -19,6 +19,7 @@ class QGLWidget;
 class QGLContext;
 class MyInspectorWidget;
 class MainWindow;
+class DendToolBar;
 
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
 enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE, DEND_MODE };
@@ -33,16 +34,12 @@ enum OmToolMode { SELECT_MODE,
 		  VOXELIZE_MODE,
 };
 
-enum OmDendToolMode { SPLIT }; 
-
-class OmStateManager {
+class OmStateManager : boost::noncopyable {
 
 public:
 	
 	static OmStateManager* Instance();
 	static void Delete();
-
-	static void SetMainWindow( MainWindow *);
 	static void UpdateStatusBar( QString msg );
 
 	//project
@@ -61,9 +58,6 @@ public:
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolMode(const OmToolMode mode);
-	static OmDendToolMode GetDendToolMode();
-	static void SetDendToolMode(const OmDendToolMode mode);
-	
 	
 	//undostack
 	static QUndoStack* GetUndoStack();
@@ -92,17 +86,15 @@ public:
 	static void setParallel(bool parallel);
 
 	static void setInspector( MyInspectorWidget * miw );
+	static void setMainWindow( MainWindow * mw );
+	static void setDendToolBar( DendToolBar * dtb);
+
 	static QSize getViewBoxSizeHint();
 
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmStateManager();
 	~OmStateManager();
-	OmStateManager(const OmStateManager&);
-	OmStateManager& operator= (const OmStateManager&);
 
-	
-private:
 	//singleton
 	static OmStateManager* mspInstance;
 	
@@ -120,7 +112,6 @@ private:
 
 	//tool mode
 	OmToolMode mToolMode;
-	OmDendToolMode mDendToolMode;
 	
 	//undostack
 	QUndoStack *mpUndoStack;
@@ -138,6 +129,7 @@ private:
 
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;
+	DendToolBar * dendToolBar;
 };
 
 #endif

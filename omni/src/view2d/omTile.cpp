@@ -10,7 +10,6 @@
 #include "common/omStd.h"
 #include "common/omGl.h"
 #include "volume/omMipVolume.h"
-#include "volume/omVolume.h"
 
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -133,16 +132,14 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
 {
 	// find mip coord
-	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
-	NormCoord mNormCoord = current_seg.SpaceToNormCoord(key.Coordinate);
-	return mVolume->NormToMipCoord(mNormCoord, key.Level);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
+	return mVolume->NormToMipCoord(normCoord, key.Level);
 }
 
 int OmTile::GetDepth(const OmTileCoord & key)
 {
-	OmSegmentation & current_seg = OmProject::GetSegmentation(myID);
-	NormCoord normCoord = current_seg.SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = current_seg.NormToDataCoord(normCoord);
+	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
+	DataCoord dataCoord = mVolume->NormToDataCoord(normCoord);
         float factor=OMPOW(2,key.Level);
 
 	int ret;
@@ -166,7 +163,7 @@ int OmTile::GetDepth(const OmTileCoord & key)
 
 void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
-	unsigned char *data = new unsigned char[dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE];
+	unsigned char *data = (unsigned char*) malloc(dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE);
 
 	mViewGroupState->ColorTile( imageData, 
 				    dims.x * dims.y,

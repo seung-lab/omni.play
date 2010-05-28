@@ -1,9 +1,12 @@
+#include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omDataArchiveQT.h"
-#include "system/omProjectData.h"
-#include "volume/omSegmentation.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "system/omProjectData.h"
+#include "utility/omDataArchiveQT.h"
+#include "utility/omHdf5Path.h"
+#include "utility/omHdf5Path.h"
+#include "volume/omSegmentation.h"
+
 #include <QMutexLocker>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
@@ -93,13 +96,13 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 	return mImpl->numberOfSelectedSegments();
 }
 
-OmIds & OmSegmentCache::GetSelectedSegmentIdsRef()
+OmSegIDs & OmSegmentCache::GetSelectedSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetSelectedSegmentIdsRef();
 }
 
-OmIds & OmSegmentCache::GetEnabledSegmentIdsRef()
+OmSegIDs & OmSegmentCache::GetEnabledSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetEnabledSegmentIdsRef();
@@ -189,6 +192,12 @@ OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 	return mImpl->findRoot( segment );
 }
 
+OmSegID OmSegmentCache::findRootID( const OmSegID segID )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->findRootID( segID );
+}
+
 void OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	QMutexLocker locker( &mMutex );
@@ -237,4 +246,10 @@ quint32 OmSegmentCache::getMaxValue()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->getMaxValue();
+}
+
+void OmSegmentCache::UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->UpdateSegmentSelection( ids, areSelected );
 }

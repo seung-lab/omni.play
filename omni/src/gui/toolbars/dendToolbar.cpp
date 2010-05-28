@@ -1,10 +1,13 @@
-#include "gui/toolbars/dendToolbar.h"
 #include "gui/mainwindow.h"
-#include "system/omProjectData.h"
-#include "system/omCacheManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "gui/toolbars/dendToolbar.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omView3dEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/omCacheManager.h"
+#include "system/omEventManager.h"
+#include "system/omProjectData.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "volume/omSegmentation.h"
 
 // FIXME
 bool mShatter = false;
@@ -200,13 +203,12 @@ void DendToolBar::addToolbars()
         QGroupBox* sixthBox = new QGroupBox(this);
         QGridLayout* sixthLayout = new QGridLayout(sixthBox);
         QLabel* groupColorLabel = new QLabel(mMainWindow);
-        groupColorLabel->setText("Groups & Colors:");
+        groupColorLabel->setText("Validation:");
         sixthLayout->addWidget(groupColorLabel,0,0,1,2);
         sixthLayout->addWidget(addGroupAct,1,0,1,2);
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
-
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -254,7 +256,6 @@ void DendToolBar::split()
         debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
 	if(!toolbarSplitAct->isChecked()) {
 		OmStateManager::SetSystemMode(DEND_MODE);	
-		OmStateManager::SetDendToolMode(SPLIT);
 	} else {
         	debug("dendbar", "unchecking\n");
 		mViewGroupState->SetSplitMode(false, false);

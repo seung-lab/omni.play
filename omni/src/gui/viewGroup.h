@@ -2,12 +2,11 @@
 #define VIEW_GROUP_H
 
 #include <QtGui>
-#include <QMap>
-#include <string>
 
-#include "gui/viewGroupWidgetInfo.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "common/omCommon.h"
 
+class ViewGroupWidgetInfo;
+class OmViewGroupState;
 class MainWindow;
 class OmView2d;
 class OmView3d;
