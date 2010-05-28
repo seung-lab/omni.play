@@ -360,6 +360,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	mColorCacheMapLock.lock();
 	if( NULL == mColorCaches[ sccType ] ){
+		assert(m_sdw);
 		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw->getSegmentCache(), sccType);
 	}
 	mColorCacheMapLock.unlock();	
