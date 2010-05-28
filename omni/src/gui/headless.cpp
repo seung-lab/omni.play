@@ -6,18 +6,19 @@
 #include <QTime>
 #include <time.h>
 
-#include "headless.h"
-#include "mainwindow.h"
-#include "volume/omFilter2d.h"
-#include "project/omProject.h"
-#include "volume/omVolume.h"
 #include "common/omDebug.h"
-#include "system/omGarbage.h"
-#include "system/omProjectData.h"
+#include "gui/headless.h"
+#include "gui/mainwindow.h"
+#include "project/omProject.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
-#include "volume/omSegmentationChunkCoord.h"
+#include "system/omGarbage.h"
+#include "system/omProjectData.h"
 #include "utility/stringHelpers.h"
+#include "volume/omFilter2d.h"
+#include "volume/omSegmentation.h"
+#include "volume/omSegmentationChunkCoord.h"
+#include "volume/omVolume.h"
 
 int argc_global;
 char **argv_global;

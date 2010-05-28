@@ -2,7 +2,7 @@
 #define OM_SEGMENT_ITERATOR_H
 
 #include "common/omCommon.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegmentPointers.h"
 
 class OmSegment;
 class OmSegmentCache;

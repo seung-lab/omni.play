@@ -1,9 +1,12 @@
+#include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omDataArchiveQT.h"
-#include "system/omProjectData.h"
-#include "volume/omSegmentation.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "system/omProjectData.h"
+#include "utility/omDataArchiveQT.h"
+#include "utility/omHdf5Path.h"
+#include "utility/omHdf5Path.h"
+#include "volume/omSegmentation.h"
+
 #include <QMutexLocker>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
@@ -93,13 +96,13 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 	return mImpl->numberOfSelectedSegments();
 }
 
-OmIds & OmSegmentCache::GetSelectedSegmentIdsRef()
+OmSegIDs & OmSegmentCache::GetSelectedSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetSelectedSegmentIdsRef();
 }
 
-OmIds & OmSegmentCache::GetEnabledSegmentIdsRef()
+OmSegIDs & OmSegmentCache::GetEnabledSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetEnabledSegmentIdsRef();

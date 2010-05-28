@@ -1,10 +1,8 @@
 #ifndef OM_SEGMENT_CACHE_H
 #define OM_SEGMENT_CACHE_H
 
-#include "common/omStd.h"
-#include "segment/omSegment.h"
-#include "segment/omSegmentCacheImpl.h"
-#include "utility/omHdf5Path.h"
+#include "common/omCommon.h"
+#include "segment/omSegmentPointers.h"
 
 #include <QSet>
 #include <QHash>
@@ -12,6 +10,7 @@
 #include <QColor>
 
 class OmSegment;
+class OmSegmentCacheImpl;
 class OmSegmentation;
 
 class OmSegmentCache {
@@ -37,13 +36,13 @@ public:
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmIds& GetEnabledSegmentIdsRef();
+	OmSegIDs & GetEnabledSegmentIdsRef();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmIds& GetSelectedSegmentIdsRef();
+	OmSegIDs & GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 

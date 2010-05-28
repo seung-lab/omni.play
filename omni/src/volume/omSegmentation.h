@@ -6,24 +6,20 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-
-#include "omMipVolume.h"
-
-#include "mesh/omMipMeshManager.h"
 #include "voxel/omMipVoxelationManager.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentIterator.h"
-#include "mesh/meshingManager.h"
-#include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
-#include "system/omGroups.h"
 #include "system/events/omSystemModeEvent.h"
-#include "volume/omSegmentationChunkCoord.h"
-#include "common/omCommon.h"
+#include "mesh/omMipMeshManager.h"
+#include "system/omGroups.h"
+#include "volume/omMipVolume.h"
 
-class OmVolumeCuller;
+class MeshingManager;
 class OmSegment;
+class OmSegmentCache;
+class OmSegmentIterator;
+class OmSegmentationChunkCoord;
 class OmViewGroupState;
+class OmVolumeCuller;
 
 class OmSegmentation 
 : public OmMipVolume, 
@@ -107,7 +103,7 @@ public:
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
 
-	OmSegmentCache * GetSegmentCache(){ return &mSegmentCache; }
+	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
 private:
 	void KillCacheThreads();
@@ -116,7 +112,7 @@ private:
 	
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;
-	OmSegmentCache mSegmentCache;
+	OmSegmentCache * mSegmentCache;
 
 	OmGroups mGroups;
 	OmViewGroupState * mViewGroupState;

@@ -1,8 +1,9 @@
-#include "project/omProject.h"
-#include "dataWrappers.h"
 #include "common/omDebug.h"
-#include "utility/stringHelpers.h"
+#include "project/omProject.h"
 #include "segment/omSegmentCache.h"
+#include "utility/dataWrappers.h"
+#include "utility/stringHelpers.h"
+#include "volume/omSegmentation.h"
 
 /*******************************************
  ****** Data Wrapper Container

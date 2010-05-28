@@ -130,6 +130,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/DynamicTree.h \
            src/segment/DynamicTreeContainer.h \
            src/segment/omSegment.h \
+           src/segment/omSegmentPointers.h \
            src/segment/omSegmentQueue.h \
            src/segment/omSegmentCache.h \
            src/segment/omSegmentCacheImpl.h \

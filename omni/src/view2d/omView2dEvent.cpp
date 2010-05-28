@@ -6,6 +6,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
+#include "volume/omSegmentation.h"
 
 /**
  * \name Mouse Event Handlers 

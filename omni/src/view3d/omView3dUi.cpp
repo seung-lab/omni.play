@@ -1,8 +1,5 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar.h"
-#include "omCamera.h"
-#include "omView3d.h"
-#include "omView3dUi.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
@@ -10,9 +7,12 @@
 #include "segment/omSegmentEditor.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
+#include "view3d/omCamera.h"
+#include "view3d/omView3d.h"
+#include "view3d/omView3dUi.h"
 #include "volume/omDrawOptions.h"
+#include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-
 
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 	: mpView3d(view3d), mViewGroupState(vgs)

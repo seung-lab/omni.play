@@ -8,7 +8,7 @@
 
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
-#include "segment/omSegmentCache.h"
+#include "segment/omSegmentPointers.h"
 #include "system/omThreadedCache.h"
 
 typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;

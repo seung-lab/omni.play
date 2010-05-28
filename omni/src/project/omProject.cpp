@@ -1,5 +1,6 @@
 #include "common/omCommon.h"
 #include "common/omException.h"
+#include "common/omStd.h"
 #include "project/omProject.h"
 #include "segment/omSegmentEditor.h"
 #include "system/omCacheManager.h"
@@ -11,6 +12,9 @@
 #include "system/omStateManager.h"
 #include "utility/omDataArchiveQT.h"
 #include "utility/omDataWriter.h"
+#include "utility/omHdf5Manager.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
 #include <QFile>
@@ -128,10 +132,13 @@ void OmProject::Close()
 	OmGarbage::Delete();
 	OmPreferences::Delete();
 	OmStateManager::Delete();
+	//OmLocalPreferences
 
 	//close project data
 	OmProjectData::Close();
 	OmProjectData::Delete();
+
+	OmHdf5Manager::Delete();
 }
 
 

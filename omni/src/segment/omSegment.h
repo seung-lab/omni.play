@@ -50,7 +50,7 @@ public:
 	void SetImmutable(bool immutable);
 	bool GetImmutable();
 
-
+	OmSegID getParentSegID(){ return mParentSegID; }
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();

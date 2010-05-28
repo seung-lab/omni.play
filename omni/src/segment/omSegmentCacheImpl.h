@@ -3,7 +3,10 @@
 
 #include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
+#include "segment/omSegmentPointers.h"
+
 #include <QSet>
+#include <boost/dynamic_bitset.hpp>
 
 // TODO: this was done as proof-of-concept; not sure how much slower 
 //  struct constructor is compared to simple int POD... (purcaro)
@@ -13,19 +16,6 @@ class OmSegment;
 class OmSegmentCache;
 class OmSegmentation;
 class OmMipChunkCoord;
-
-typedef std::vector<OmSegment*> OmSegPtrs;
-
-class OmSegPtrsValid {
- public:
-	OmSegPtrsValid()
-		: isValid(false) {}
-	OmSegPtrsValid( const OmSegPtrs & L )
-		: isValid(true), list(L) {}
-	
-	bool isValid;
-	OmSegPtrs list;
-};
 
 class OmSegmentCacheImpl {
  public:
@@ -55,13 +45,13 @@ class OmSegmentCacheImpl {
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmIds& GetEnabledSegmentIdsRef();
+	OmSegIDs& GetEnabledSegmentIdsRef();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmIds& GetSelectedSegmentIdsRef();
+	OmSegIDs& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 
@@ -112,8 +102,8 @@ class OmSegmentCacheImpl {
 
 	OmSegmentation * mSegmentation;
 
-        OmIds mEnabledSet;
-        OmIds mSelectedSet;
+        OmSegIDs mEnabledSet;
+        OmSegIDs mSelectedSet;
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
@@ -146,18 +136,19 @@ class OmSegmentCacheImpl {
 
 	DynamicTreeContainer<OmSegID> * mGraph;
 	void initializeDynamicTree();
-	void doLoadDendrogram( const quint32 * dend, const float * dendValues, 
-			     const int size, const float stopPoint );
+	void doLoadDendrogram( const quint32 *, const float *, 
+			       const int, const float );
 	void loadDendrogram();
 	void loadTreeIfNeeded();
 
-	void Join(OmSegment * parent, OmSegment * childUnknownLevel, float threshold);
+	void Join( OmSegment *, OmSegment *, const float );
 	void Join( const OmId, const OmId, const float );
 	void rerootSegmentLists();
-	void rerootSegmentList( OmIds & set );
+	void rerootSegmentList( OmSegIDs & set );
+
+	boost::dynamic_bitset<> rootSegs;
 
 	friend class OmSegmentColorizer;
-
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
 };

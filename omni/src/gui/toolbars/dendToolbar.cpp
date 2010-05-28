@@ -7,6 +7,7 @@
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "volume/omSegmentation.h"
 
 // FIXME
 bool mShatter = false;

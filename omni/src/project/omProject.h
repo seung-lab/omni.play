@@ -9,12 +9,12 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "common/omStd.h"
-#include "system/omPreferences.h"
-#include "system/omStateManager.h"
-#include "volume/omChannel.h"
-#include "volume/omSegmentation.h"
+#include "common/omCommon.h"
+#include "system/omGenericManager.h"
 
+class OmChannel;
+class OmSegmentation;
+class OmVolumeCuller;
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 

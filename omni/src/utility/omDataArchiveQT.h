@@ -1,11 +1,10 @@
 #ifndef OM_DATA_ARCHIVE_QT_H
 #define OM_DATA_ARCHIVE_QT_H
 
-#include "common/omDebug.h"
-#include "project/omProject.h"
-#include "system/omProjectData.h"
-#include "volume/omMipChunk.h"
-#include "volume/omSimpleChunk.h"
+class OmHdf5Path;
+class OmMipChunk;
+class OmSimpleChunk;
+class OmProject;
 
 class OmDataArchiveQT
 {

@@ -1,7 +1,8 @@
 #include "project/omProject.h"
-#include "segmentList.h"
+#include "gui/segmentList.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "guiUtils.h"
+#include "gui/guiUtils.h"
+#include "volume/omSegmentation.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
@@ -48,9 +49,10 @@ QList< OmSegID > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_of
 
 	// FIXME: this search could become slow; 
 	int counter = 0;
+	OmSegment * seg;
 	for( quint32 i = offset+1; i < mNumSegments; i++) {
-		
-		if( NULL == segmentation.GetSegmentFromValue( i ) ){
+		seg =  segmentation.GetSegmentFromValue(i);
+		if( NULL == seg || 0 != seg->getParentSegID() ){
 			continue;
 		}
 		++counter;

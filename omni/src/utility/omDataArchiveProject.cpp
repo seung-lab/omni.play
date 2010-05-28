@@ -6,7 +6,12 @@
 #include "utility/omDataWriter.h"
 #include "project/omProject.h"
 #include "system/omProjectData.h"
+#include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "common/omException.h"
+#include "system/omPreferences.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 
 #include <QDataStream>
 
@@ -273,7 +278,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 	OmDataArchiveProject::storeOmMipVolume( out, seg );
 
 	out << seg.mMipMeshManager;
-	out << seg.mSegmentCache;
+	out << (*seg.mSegmentCache);
 
 	out << seg.mDendSize;
 	out << seg.mDendValuesSize;
@@ -290,7 +295,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	OmDataArchiveProject::loadOmMipVolume( in, seg );
  
 	in >> seg.mMipMeshManager;
-	in >> seg.mSegmentCache;
+	in >> (*seg.mSegmentCache);
 
 	in >> seg.mDendSize;
 	in >> seg.mDendValuesSize;

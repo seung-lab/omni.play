@@ -1,28 +1,24 @@
 #ifndef OM_HDF5_MANAGER_H
 #define OM_HDF5_MANAGER_H
 
-/*
- *
- */
+#include "common/omCommon.h"
 
-#include "omHdf5.h"
 #include <QHash>
+#include <QMutex>
 
-class OmHdf5Manager {
+class OmHdf5;
 
-public:
+class OmHdf5Manager : boost::noncopyable {
+
+ public:
 	static OmHdf5Manager* Instance();
 	static void Delete();
 	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
 	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+ private:
 	OmHdf5Manager();
 	~OmHdf5Manager();
-	OmHdf5Manager(const OmHdf5Manager&);
-	OmHdf5Manager& operator= (const OmHdf5Manager&);
-	
-private:
+
 	static OmHdf5Manager* mspInstance;
 
 	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly );
