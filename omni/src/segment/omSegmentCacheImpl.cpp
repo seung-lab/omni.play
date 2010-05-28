@@ -752,3 +752,15 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	clearCaches();	
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
+
+void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+{
+	OmSegIDs::const_iterator iter;
+	for( iter = ids.begin(); iter != ids.end(); ++iter ){
+		if( setSelected ){
+			mSelectedSet.insert( *iter );
+		} else {
+			mSelectedSet.erase( *iter );
+		}
+	}
+}

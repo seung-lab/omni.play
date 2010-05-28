@@ -3,8 +3,6 @@
 
 #include "common/omCommon.h"
 
-class OmSegmentation;
-
 class OmSegmentSelector
 {
  public:
@@ -15,15 +13,14 @@ class OmSegmentSelector
 	void selectNoSegments();
 	
 private:
+	const OmId mSegmentationID;
+
 	OmSegIDs newlySelectedSegs;
 	OmSegIDs newlyUnselectedSegs;
-
-	OmSegmentation * mSegmentation;
 
 	void * mSender;
 	string mComment;
 	OmId mSegmentJustSelectedID;
-
 };
 
 #endif

@@ -20,6 +20,7 @@ protected:
 	virtual string Description() = 0;
 	
 	bool mUndoable;
+
 private:
 	//wrapped methods
 	void redo();
@@ -28,7 +29,5 @@ private:
 	//action properties
 	bool mValid;
 };
-
-
 
 #endif

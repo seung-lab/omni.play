@@ -476,6 +476,10 @@ bool OmSegmentation::AreSegmentsSelected()
 	return mSegmentCache->AreSegmentsSelected();
 }
 
+void OmSegmentation::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+{
+	mSegmentCache->UpdateSegmentSelection( ids, setSelected );
+}
 
 /////////////////////////////////
 ///////          Groups
@@ -732,3 +736,4 @@ void OmSegmentation::SetDendThresholdAndReload( const float t ){
 	SetDendThreshold(t);
 	ReloadDendrogram();
 }
+

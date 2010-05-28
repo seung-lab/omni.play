@@ -4,19 +4,16 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 
 OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender, const string & cmt )
-	: mSender(sender)
+	: mSegmentationID(segmentationID)
+	, mSender(sender)
 	, mComment(cmt)
 	, mSegmentJustSelectedID(0)
 {
-	mSegmentation = &OmProject::GetSegmentation( segmentationID );
 }
 
 void OmSegmentSelector::selectNoSegments()
 {
-	foreach( const OmSegID & segID, mSegmentation->GetSelectedSegmentIds() ){
-		newlyUnselectedSegs.insert( segID );
-	}
-	mSegmentation->SetAllSegmentsSelected(false);
+	newlyUnselectedSegs = OmProject::GetSegmentation( mSegmentationID ).GetSelectedSegmentIds();
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segID, const bool isSelected )
@@ -24,16 +21,12 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segID, const bool i
 	selectNoSegments();
 
 	if(isSelected) {
-		if( newlyUnselectedSegs.contains( segID ) ){
-			newlyUnselectedSegs.erase( segID );
-		}
+		newlyUnselectedSegs.erase(segID);
 		newlySelectedSegs.insert(segID);
 		mSegmentJustSelectedID = segID;
 	} else {
 		newlyUnselectedSegs.insert(segID);
 	}
-
-	mSegmentation->SetSegmentSelected( segID, isSelected );
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segID, const bool isSelected )
@@ -43,17 +36,17 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segID, const bool isSe
 	} else {
 		newlyUnselectedSegs.insert(segID);	
 	}
-
-	mSegmentation->SetSegmentSelected( segID, isSelected);
 }
 
 void OmSegmentSelector::sendEvent()
 {
-	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
-							    newlySelectedSegs, 
-							    newlyUnselectedSegs,
-							    mSegmentJustSelectedID, 
-							    mSender,
-							    mComment);
+	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentationID,
+							      newlySelectedSegs, 
+							      newlyUnselectedSegs,
+							      mSegmentJustSelectedID, 
+							      mSender,
+							      mComment);
 	a->Run();
+
+	// don't delete--cleanup will be handled by OmAction (hopefully...)
 }

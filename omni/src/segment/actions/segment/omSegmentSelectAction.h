@@ -8,31 +8,29 @@
 
 #include "system/omAction.h"
 
-class SegmentDataWrapper;
-
 class OmSegmentSelectAction : public OmAction {
 
 public:
-	OmSegmentSelectAction(OmId segmentationId, 
+	OmSegmentSelectAction(const OmId segmentationId, 
 			      const OmSegIDs & selectIds, 
 			      const OmSegIDs & unselectIds, 
-			      OmId segmentJustSelected,
+			      const OmId segmentJustSelected,
 			      void* sender,
-			      string comment);
+			      const string & comment);
 	
 private:
 	void Action();
 	void UndoAction();
 	string Description();
 	
-	OmId mSegmentationId;
-	OmSegIDs mSelectIds;
-	OmSegIDs mUnselectIds;
-	OmSegIDs modifiedSegIDs;
+	const OmId mSegmentationId;
+	const OmSegIDs mSelectIds;
+	const OmSegIDs mUnselectIds;
+	const OmId mSegmentJustSelectedID;
+	void * mSender;
+	const string mComment;
 
-	OmId mSegmentJustSelectedID;
-	void* mSender;
-	string mComment;
+	OmSegIDs mModifiedSegIDs;
 };
 
 #endif

@@ -1,14 +1,8 @@
 #include "project/omProject.h"
-#include "omSegmentSelectAction.h"
-
-#include "segment/omSegmentEditor.h"
-#include "volume/omVolume.h"
-#include "volume/omSegmentation.h"
-
-#include "system/omEventManager.h"
+#include "segment/actions/segment/omSegmentSelectAction.h"
 #include "system/events/omSegmentEvent.h"
-#include "utility/setUtilities.h"
-#include "utility/dataWrappers.h"
+#include "system/omEventManager.h"
+#include "volume/omSegmentation.h"
 
 /////////////////////////////////
 ///////          OmSegmentSelectAction
@@ -18,32 +12,36 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 					     const OmSegIDs & unselectIds, 
 					     const OmId segmentJustSelected, 
 					     void * sender, 
-					     string comment )
+					     const string & comment )
+	: mSegmentationId(segmentationId)
+	, mSelectIds(selectIds)
+	, mUnselectIds(unselectIds)
+	, mSegmentJustSelectedID(segmentJustSelected)
+	, mSender(sender)
+	, mComment(comment)
 {
-	mSegmentJustSelectedID = segmentJustSelected;
-	mSegmentationId = segmentationId;
-	mSelectIds = selectIds;
-	mUnselectIds = unselectIds;
-
-	mSender = sender;
-	mComment = comment;
-
 	OmSegIDs::const_iterator iter;
 	for( iter =  mSelectIds.begin(); iter != mSelectIds.end(); ++iter ){
-		modifiedSegIDs.insert(*iter);
+		mModifiedSegIDs.insert(*iter);
 	}
 	for( iter = mUnselectIds.begin(); iter != mUnselectIds.end(); ++iter ){
-		modifiedSegIDs.insert(*iter);
+		mModifiedSegIDs.insert(*iter);
 	}
 }
 
 /////////////////////////////////
 ///////          Action Methods
+
 void OmSegmentSelectAction::Action()
 {
+	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
+
+	mSegmentation.UpdateSegmentSelection( mSelectIds, true );
+	mSegmentation.UpdateSegmentSelection( mUnselectIds, false );
+
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
-						     modifiedSegIDs,
+						     mModifiedSegIDs,
 						     mSegmentJustSelectedID, 
 						     mSender,
 						     mComment));
@@ -51,7 +49,17 @@ void OmSegmentSelectAction::Action()
 
 void OmSegmentSelectAction::UndoAction()
 {
+	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
 
+	mSegmentation.UpdateSegmentSelection( mSelectIds, false );
+	mSegmentation.UpdateSegmentSelection( mUnselectIds, true );
+
+	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
+						     mSegmentationId,
+						     mModifiedSegIDs,
+						     mSegmentJustSelectedID, 
+						     mSender,
+						     mComment));
 }
 
 string OmSegmentSelectAction::Description()
