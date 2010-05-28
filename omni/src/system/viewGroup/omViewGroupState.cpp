@@ -365,7 +365,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	}
 	mColorCacheMapLock.unlock();	
 
-	mColorCaches[ sccType ]->colorTile( imageData, size, data, this );
+	mColorCaches[ sccType ]->colorTile( imageData, size, data );
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)

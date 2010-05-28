@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
+#include "volume/omSegmentation.h" // only needed for friend OmSegmentation::ExportDataFilter()
 
 #include <QSet>
 #include <QHash>
@@ -11,7 +12,7 @@
 
 class OmSegment;
 class OmSegmentCacheImpl;
-class OmSegmentation;
+class vtkImageData;  // only needed for friend OmSegmentation::ExportDataFilter()
 
 class OmSegmentCache {
 public:
@@ -86,7 +87,10 @@ private:
 	OmSegmentation * mSegmentation;
 	quint32 mPageSize;
 
+	OmSegID findRootID_noLock( const OmSegID segID );
+
 	friend class OmSegmentColorizer;
+	friend void OmSegmentation::ExportDataFilter(vtkImageData * pImageData);
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 };

@@ -358,6 +358,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
  */
 void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 {
+	mSegmentCache->mMutex.lock();
 
 	//get data extent (varify it is a chunk)
 	int extent[6];
@@ -365,7 +366,7 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 	//get pointer to native scalar data
 	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
-	OmSegID *p_scalar_data = static_cast < OmSegID * >(pImageData->GetScalarPointer());
+	OmSegID * p_scalar_data = static_cast<OmSegID*>( pImageData->GetScalarPointer() );
 
 	//for all voxels in the chunk
 	int x, y, z;
@@ -375,14 +376,15 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 				//if non-null segment value
 				if (NULL_SEGMENT_DATA != *p_scalar_data) {
-
-					// TODO: get root ID (or something...)
+					*p_scalar_data = mSegmentCache->findRootID_noLock(*p_scalar_data);
 				}
 				//adv to next scalar
 				++p_scalar_data;
 			}
 		}
 	}
+
+	mSegmentCache->mMutex.unlock();
 }
 
 /////////////////////////////////
@@ -391,7 +393,8 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 void OmSegmentation::SystemModeChangeEvent()
 {
 	//if change out of editing mode
-	if (OmStateManager::GetSystemMode() != EDIT_SYSTEM_MODE) {
+	if (OmStateManager::GetSystemMode() != EDIT_SYSTEM_MODE &&
+	    OmStateManager::GetSystemModePrev() == EDIT_SYSTEM_MODE) {
 		//then build edited chunks
 		OmMipVolume::Flush();
 	}

@@ -22,7 +22,7 @@ class OmSegmentColorizer
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
 
 	void colorTile( OmSegID * imageData, const int size,
-			unsigned char * data, OmViewGroupState * );
+			unsigned char * data );
 
 	void setCurBreakThreshhold( const float t ) {
 		mPrevBreakThreshhold = mCurBreakThreshhold;

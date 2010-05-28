@@ -43,7 +43,7 @@ void OmSegmentColorizer::setup()
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data, OmViewGroupState *)
+				    unsigned char * data )
 {
 	QMutexLocker lock( &mMutex );
 	
