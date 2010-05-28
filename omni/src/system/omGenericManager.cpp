@@ -1,4 +1,5 @@
-#include "omGenericManager.h"
+#include "system/omGenericManager.h"
+#include "common/omException.h"
 
 #define IS_ID_INVALID()  id < 1 || id >= mSize || NULL == mMap[id]
 

@@ -8,7 +8,6 @@
  */
 
 #include "common/omCommon.h"
-#include "common/omException.h"
 
 class OmChannel;
 class OmSegmentation;

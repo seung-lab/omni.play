@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
+#include <QSet>
 
 // TODO: this was done as proof-of-concept; not sure how much slower 
 //  struct constructor is compared to simple int POD... (purcaro)
@@ -135,7 +136,7 @@ class OmSegmentCacheImpl {
 	void doSaveSegmentPage( const PageNum segPageNum );
 	bool mAllPagesLoaded;
 
-	boost::unordered_map< int,
+	boost::unordered_map< int, 
 		boost::unordered_map< int,
 		boost::unordered_map< int,
 		boost::unordered_map< int, OmSegPtrsValid > > > > cacheDirectSegmentList;

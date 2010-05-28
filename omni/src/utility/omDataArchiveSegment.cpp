@@ -1,8 +1,14 @@
-#include "omDataArchiveSegment.h"
-#include "omDataArchiveCoords.h"
-#include "omDataArchiveVmml.h"
-#include <QDataStream>
+#include "utility/omDataArchiveSegment.h"
+#include "utility/omDataArchiveCoords.h"
+#include "utility/omDataArchiveVmml.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+#include "utility/omHdf5Path.h"
 #include "segment/omSegment.h"
+#include "system/omProjectData.h"
+#include "segment/omSegmentCache.h"
+
+#include <QDataStream>
 
 void OmDataArchiveSegment::ArchiveRead( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache ) 
 {

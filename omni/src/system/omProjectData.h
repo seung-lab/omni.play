@@ -7,14 +7,15 @@
  *	Brett Warne - bwarne@mit.edu - 3/30/09
  */
 
-#include "utility/omDataLayer.h"
-#include "common/omStd.h"
-#include "segment/omSegment.h"
+#include "common/omCommon.h"
 
-
+class OmDataLayer;
+class OmDataReader;
+class OmDataWriter;
+class OmSegment;
 class vtkImageData;
 
-class OmProjectData {
+class OmProjectData : boost::noncopyable {
 public:
 	static void instantiateProjectData( QString fileNameAndPath, 
 					    const bool autoOpenAndClose);
@@ -36,14 +37,10 @@ public:
 	static OmDataReader * GetProjectDataReader();
 	static OmDataWriter * GetDataWriter();
 		
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+private:
 	OmProjectData();
 	~OmProjectData();
-	OmProjectData(const OmProjectData&);
-	OmProjectData& operator= (const OmProjectData&);
-	
-private:
+
 	//singleton
 	static OmProjectData* mspInstance;
 

@@ -1,6 +1,8 @@
-#include "omDataArchiveCoords.h"
-#include "omDataArchiveVmml.h"
+#include "utility/omDataArchiveCoords.h"
+#include "utility/omDataArchiveVmml.h"
 #include "view2d/omTileCoord.h"
+#include "project/omProject.h"
+#include "system/omProjectData.h"
 
 QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c )
 {

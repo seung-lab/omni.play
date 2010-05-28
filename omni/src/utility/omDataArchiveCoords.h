@@ -2,9 +2,10 @@
 #define OM_DATA_ARCHIVE_COORDS_H
 
 #include "common/omDebug.h"
-#include "project/omProject.h"
-#include "system/omProjectData.h"
 
+class OmMipChunkCoord;
+class OmMipMeshCoord;
+class OmMipSegmentDataCoord;
 class OmTileCoord;
 
 QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c );

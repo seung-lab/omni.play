@@ -2,7 +2,10 @@
 #define OM_DATA_ARCHIVE_SEGMENT_H
 
 #include "common/omDebug.h"
-#include "system/omProjectData.h"
+
+class OmHdf5Path;
+class OmSegment;
+class OmSegmentCache;
 
 class OmDataArchiveSegment
 {

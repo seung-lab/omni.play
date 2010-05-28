@@ -1,10 +1,14 @@
-#include "omDataArchiveProject.h"
-#include "omDataArchiveVmml.h"
-#include "omDataArchiveCoords.h"
-#include "omDataArchiveBoost.h"
+#include "utility/omDataArchiveProject.h"
+#include "utility/omDataArchiveVmml.h"
+#include "utility/omDataArchiveCoords.h"
+#include "utility/omDataArchiveBoost.h"
+#include "utility/omDataReader.h"
+#include "utility/omDataWriter.h"
+#include "project/omProject.h"
+#include "system/omProjectData.h"
+#include "segment/omSegmentCacheImpl.h"
 
 #include <QDataStream>
-#include "boost/lexical_cast.hpp"
 
 static const int Omni_Version = 5;
 static const QString Omni_Postfix("OMNI");
