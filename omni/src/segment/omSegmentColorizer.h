@@ -9,7 +9,8 @@ static const double selectedSegmentColorMultiFactor = 2.5;
 enum OmSegmentColorCacheType { Channel = 0, 
 			       Segmentation, 
 			       ChannelBreak, 
-			       SegmentationBreak };
+			       SegmentationBreak,
+			       Number_SegColorCacheEnums };
 
 class OmSegmentCache;
 class OmViewGroupState;

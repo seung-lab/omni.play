@@ -21,19 +21,6 @@ class MyInspectorWidget;
 class MainWindow;
 class DendToolBar;
 
-enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
-enum OmSystemMode { NAVIGATION_SYSTEM_MODE, EDIT_SYSTEM_MODE, DEND_MODE };
-enum OmToolMode { SELECT_MODE,
-		  PAN_MODE,
-		  CROSSHAIR_MODE,
-		  ZOOM_MODE, 
-		  ADD_VOXEL_MODE, 
-		  SUBTRACT_VOXEL_MODE, 
-		  SELECT_VOXEL_MODE,
-		  FILL_MODE, 
-		  VOXELIZE_MODE,
-};
-
 class OmStateManager : boost::noncopyable {
 
 public:

@@ -1,14 +1,15 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar.h"
+#include "segment/actions/segment/omSegmentJoinAction.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
+#include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
 
 bool mShowGroups = false;
 OmId mSeg = 1;

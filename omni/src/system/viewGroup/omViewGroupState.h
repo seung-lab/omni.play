@@ -1,20 +1,18 @@
 #ifndef OM_VIEW_GROUP_STATE_H
 #define OM_VIEW_GROUP_STATE_H
 
-#include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
-#include "system/omStateManager.h"
-#include "gui/toolbars/toolbarManager.h"
-#include "utility/dataWrappers.h"
-#include "segment/omSegmentColorizer.h"
-#include <boost/tr1/unordered_map.hpp>
-
-
 #include <QMutex>
+
+class OmSegmentColorizer;
+class ToolBarManager;
+class SegmentationDataWrapper;
+class ChannelDataWrapper;
 
 class OmViewGroupState : public OmManageableObject {
  public:
 	OmViewGroupState();
+	~OmViewGroupState();
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
@@ -75,10 +73,10 @@ class OmViewGroupState : public OmManageableObject {
 	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
 	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
 
-	boost::unordered_map< OmSegmentColorCacheType, OmSegmentColorizer * > mColorCaches;
+	std::vector<OmSegmentColorizer*> mColorCaches;
 
-	SegmentationDataWrapper m_sdw;
-	ChannelDataWrapper m_cdw;
+	SegmentationDataWrapper * m_sdw;
+	ChannelDataWrapper * m_cdw;
 
 	//toolbar stuff
 	ToolBarManager * mToolBarManager;
