@@ -20,10 +20,14 @@ class OmSegmentColorizer
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
+
 	void colorTile( OmSegID * imageData, const int size,
 			unsigned char * data, OmViewGroupState * );
 
-	void setCurBreakThreshhold( const float t );
+	void setCurBreakThreshhold( const float t ) {
+		mPrevBreakThreshhold = mCurBreakThreshhold;
+		mCurBreakThreshhold = t;
+	}
 
  private:
 	QMutex mMutex;
@@ -51,8 +55,7 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness )
-	{
+	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness ){
 		if( currentSegCacheFreshness != mColorCacheFreshness[val] ){
 			return false;
 		}

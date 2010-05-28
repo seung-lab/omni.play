@@ -96,12 +96,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val, 
 						    const bool & showOnlySelectedSegments)
 {
-	if(DendToolBar::GetShowGroupsMode()) {
-		OmColor sc;
-		return sc;
-	}
-
 	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)
+
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
 		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 3
@@ -112,6 +108,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val,
 
 	if(SegmentationBreak == mSccType){
 		if( isSelected ){
+			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
 			const OmColor & tsc = seg->mColorInt;
 			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
 			return tsc;
@@ -136,8 +133,3 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val,
 	}
 }
 
-void OmSegmentColorizer::setCurBreakThreshhold( const float t )
-{
-	mPrevBreakThreshhold = mCurBreakThreshhold;
-	mCurBreakThreshhold = t;
-}
