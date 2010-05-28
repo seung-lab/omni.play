@@ -64,5 +64,5 @@ void OmSegmentSelectAction::UndoAction()
 
 string OmSegmentSelectAction::Description()
 {
-	return string("");
+	return string("Yay! We did a selection!!");
 }

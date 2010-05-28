@@ -725,6 +725,16 @@ void OmSegmentation::JoinAllSegmentsInSelectedList()
 	mSegmentCache->JoinAllSegmentsInSelectedList();
 }
 
+void OmSegmentation::JoinTheseSegments(OmIds segmentIds)
+{
+	mSegmentCache->JoinTheseSegments(segmentIds);
+}
+
+void OmSegmentation::UnJoinTheseSegments(OmIds segmentIds)
+{
+	mSegmentCache->UnJoinTheseSegments(segmentIds);
+}
+
 void OmSegmentation::SetDendThreshold( float t ){
 	mDendThreshold = t;
 }

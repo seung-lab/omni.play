@@ -8,6 +8,7 @@
 #include "system/omProjectData.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
+#include "segment/actions/segment/omSegmentJoinAction.h"
 
 // FIXME
 bool mShatter = false;
@@ -336,8 +337,11 @@ void DendToolBar::join()
 
 	if (OmProject::IsSegmentationValid(mSeg)) {
 		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
-		seg.JoinAllSegmentsInSelectedList();
-	}
+		OmIds mIDs = seg.GetSelectedSegmentIds();
+		(new OmSegmentJoinAction(mSeg, mIDs))->Run();
+		//seg.JoinAllSegmentsInSelectedList(mIDs);
+	}	
+
 
 	updateGui();
 }

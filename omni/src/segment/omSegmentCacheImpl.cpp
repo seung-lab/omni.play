@@ -686,6 +686,49 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 	clearCaches();
 }
 
+void OmSegmentCacheImpl::JoinTheseSegments(OmIds segmentList)
+{
+	if( segmentList.size() < 2 ){
+		return;
+	}
+
+	// The first Segment Id is the parent we join to
+	OmIds::const_iterator iter = segmentList.begin();
+	OmSegID parentID = *iter;
+	++iter;
+
+	// We then iterate through the Segment Ids and join
+	// each one to the parent
+	while (iter != segmentList.end()) {
+		
+		Join( parentID, *iter, 0 );
+		++iter;
+	}
+
+	clearCaches();
+}
+
+void OmSegmentCacheImpl::UnJoinTheseSegments(OmIds segmentList)
+{
+	if( segmentList.size() < 2 ){
+		return;
+	}
+
+	// The first Segment Id is the parent we split from
+	OmIds::const_iterator iter = segmentList.begin();
+	OmSegID parentID = *iter;
+	++iter;
+
+	// We then iterate through the Segment Ids and split
+	// each one from the parent
+	while (iter != segmentList.end()) {
+		OmSegment* segment = GetSegmentFromValue(*iter);
+		splitChildFromParent(segment);
+		++iter;
+	}
+
+	clearCaches();
+}
 const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, const float threshold )
 {
 	OmSegment * seg = segment;

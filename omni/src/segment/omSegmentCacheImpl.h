@@ -78,6 +78,8 @@ class OmSegmentCacheImpl {
 	void turnBatchModeOn(const bool batchMode);
 	
 	void JoinAllSegmentsInSelectedList();
+	void JoinTheseSegments(OmIds segmentList);
+	void UnJoinTheseSegments(OmIds segmentList);
 
 	quint32 getPageSize() { return mPageSize; }
 

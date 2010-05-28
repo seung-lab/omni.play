@@ -153,7 +153,7 @@ void OmSegmentCache::setSegmentSelected( OmSegID segID, bool isSelected )
 void OmSegmentCache::setSegmentName( OmSegID segID, QString name )
 {
 	QMutexLocker locker( &mMutex );
-	mImpl->setSegmentName( segID, name );
+	mImpl->setSegmentName(segID, name);
 }
 
 QString OmSegmentCache::getSegmentName( OmSegID segID )
@@ -240,6 +240,18 @@ void OmSegmentCache::JoinAllSegmentsInSelectedList()
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->JoinAllSegmentsInSelectedList();
+}
+
+void OmSegmentCache::JoinTheseSegments(OmIds segmentList)
+{
+	QMutexLocker locker( &mMutex );
+	mImpl->JoinTheseSegments(segmentList);
+}
+
+void OmSegmentCache::UnJoinTheseSegments(OmIds segmentList)
+{
+	QMutexLocker locker( &mMutex );
+	mImpl->UnJoinTheseSegments( segmentList);
 }
 
 quint32 OmSegmentCache::getMaxValue()

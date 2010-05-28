@@ -63,6 +63,7 @@ public:
 	static QUndoStack* GetUndoStack();
 	static void PushUndoCommand(QUndoCommand *);
 	static void ClearUndoStack();
+	static void UndoUndoCommand();
 	
 	
 	//view3d context

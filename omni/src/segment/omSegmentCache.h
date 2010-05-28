@@ -65,6 +65,8 @@ public:
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
 	void JoinAllSegmentsInSelectedList();
+	void JoinTheseSegments(OmIds segmentList);
+	void UnJoinTheseSegments(OmIds segmentList);
 
 	quint32 getPageSize();
 

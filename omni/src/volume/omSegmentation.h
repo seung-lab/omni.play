@@ -72,6 +72,8 @@ public:
 	void SetAllSegmentsSelected(bool selected);
 	const OmIds& GetSelectedSegmentIds();
 	void JoinAllSegmentsInSelectedList();
+	void JoinTheseSegments(OmIds segmentIds);
+	void UnJoinTheseSegments(OmIds segmentIds);
 	void UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected );
 
 	OmId GetNumSegments();
