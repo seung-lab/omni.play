@@ -50,6 +50,7 @@ class OmViewGroupState : public OmManageableObject {
 
 	void SetToolBarManager(ToolBarManager * tbm);
         bool GetShatterMode();
+	void SetShatterMode(bool shatter);
         bool GetSplitMode();
         bool GetSplitMode(OmId & seg, OmId & segment);
         void SetSplitMode(OmId seg, OmId segment);

@@ -356,6 +356,11 @@ void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
 	mToolBarManager = tbm;
 }
 
+void OmViewGroupState::SetShatterMode(bool shatter)
+{
+	mShatter = shatter;
+}
+
 bool OmViewGroupState::GetShatterMode()
 {
         return mShatter;
@@ -382,6 +387,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		}
 		OmStateManager::SetSystemModePrev();
 	}
+	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }

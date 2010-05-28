@@ -10,13 +10,8 @@
 #include "volume/omSegmentation.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 
-// FIXME
-bool mShatter = false;
-bool mSplitting = false;
-OmId mSegment = 0;
-OmId mSeg = 1;
-
 bool mShowGroups = false;
+OmId mSeg = 1;
 
 DendToolBar::DendToolBar( MainWindow * mw )
 	: QWidget(mw), mMainWindow(mw), mViewGroupState(NULL)
@@ -36,6 +31,11 @@ void DendToolBar::createToolbar()
 void DendToolBar::setToolbarDisabled()
 {
 	toolbarSplitAct->setEnabled(false);
+}
+
+OmId DendToolBar::getSegmentationID()
+{
+	return mSeg;
 }
 
 void DendToolBar::createToolbarActions()
@@ -133,8 +133,8 @@ void DendToolBar::setThresholdValue()
 {
 	QString value;
 
-	if (OmProject::IsSegmentationValid(mSeg)) {
-		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	if (OmProject::IsSegmentationValid(getSegmentationID())) {
+		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
 		value.setNum( seg.GetDendThreshold() );
 	} else {
 		value.setNum(0.95);
@@ -277,8 +277,8 @@ void DendToolBar::addToThreshold(float num)
         value.setNum(threshold);
         mThreshold->setText(value);
 
-	if (OmProject::IsSegmentationValid(mSeg)) {
-		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	if (OmProject::IsSegmentationValid(getSegmentationID())) {
+		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
 		seg.SetDendThresholdAndReload(threshold);
 	}
 }
@@ -335,8 +335,8 @@ void DendToolBar::join()
 {
         debug("dendbar", "DendToolBar::join\n");
 
-	if (OmProject::IsSegmentationValid(mSeg)) {
-		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	if (OmProject::IsSegmentationValid(getSegmentationID())) {
+		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
 		OmIds mIDs = seg.GetSelectedSegmentIds();
 		(new OmSegmentJoinAction(mSeg, mIDs))->Run();
 		//seg.JoinAllSegmentsInSelectedList(mIDs);
@@ -351,7 +351,7 @@ void DendToolBar::toggledShatter()
 	debug("dendbar", "DendToolBar::toggle shatter\n");
 
 	OmCacheManager::Freshen(true);
-	mShatter = !mShatter;
+	mViewGroupState->SetShatterMode(!mViewGroupState->GetShatterMode());
 
 	const float threshold = mBreakThreshold->text().toFloat();
 	mViewGroupState->setBreakThreshold( threshold );
@@ -368,8 +368,8 @@ void DendToolBar::thresholdChanged()
 	debug("dendbar", "DendToolBar::thresholdChanged\n");
 
 	float threshold = mThreshold->text().toFloat();
-	if (OmProject::IsSegmentationValid(mSeg)) {
-		OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+	if (OmProject::IsSegmentationValid(getSegmentationID())) {
+		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
 		seg.SetDendThresholdAndReload(threshold);
 	}
 
@@ -406,8 +406,8 @@ void DendToolBar::updateGui()
 void DendToolBar::addGroup()
 {
 	debug("group", "DendToolBar::addGroup\n");
-        if (OmProject::IsSegmentationValid(mSeg)) {
-                OmSegmentation & seg = OmProject::GetSegmentation(mSeg);
+        if (OmProject::IsSegmentationValid(getSegmentationID())) {
+                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.AddGroup();
         }
 }
