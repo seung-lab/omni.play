@@ -3,17 +3,23 @@
 
 #include "common/omCommon.h"
 
+class OmSegmentation;
+
 class OmSegmentSelector
 {
  public:
 	OmSegmentSelector( const OmId segmentationID, void * sender, const string & cmt );
 	void selectJustThisSegment( const OmSegID segID, const bool isSelected );
 	void augmentSelectedSet( const OmSegID segID, const bool isSelected );
+
+	void selectJustThisSegment_toggle( const OmSegID segID );
+	void augmentSelectedSet_toggle( const OmSegID segID );
+
 	void sendEvent();
 	void selectNoSegments();
 	
 private:
-	const OmId mSegmentationID;
+	OmSegmentation * mSegmentation;
 
 	OmSegIDs newlySelectedSegs;
 	OmSegIDs newlyUnselectedSegs;

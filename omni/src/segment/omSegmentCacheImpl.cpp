@@ -638,6 +638,11 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
 	rootSegs[childRoot->mValue] = 0;
 }
 
+OmSegID OmSegmentCacheImpl::findRootID( const OmSegID segID )
+{
+	return findRoot( GetSegmentFromValue( segID ) )->getValue();
+}
+
 OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 {
 	loadTreeIfNeeded();

@@ -469,13 +469,12 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 		return;
 
 	//get segment state
-	const bool new_segment_select_state = !(OmProject::GetSegmentation(segmentation_id).IsSegmentSelected(segmentID));
 	OmSegmentSelector sel( segmentation_id, this, "view3dUi" );
 
 	if( augment_selection ){
-		sel.augmentSelectedSet( segmentID, new_segment_select_state );
+		sel.augmentSelectedSet_toggle( segmentID );
 	} else {
-		sel.selectJustThisSegment( segmentID, new_segment_select_state );
+		sel.selectJustThisSegment_toggle( segmentID );
 	}
 	
 	sel.sendEvent();

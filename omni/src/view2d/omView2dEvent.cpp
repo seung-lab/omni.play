@@ -103,7 +103,7 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 {
 	OmSegmentation & segmentation = sdw.getSegmentation();
-	OmId segmentID = sdw.getID();
+	const OmId segmentID = sdw.getID();
 
 	if( !segmentation.IsSegmentValid(segmentID)){
 		return;
@@ -111,13 +111,11 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
-	const bool new_segment_select_state = !(segmentation.IsSegmentSelected(segmentID));
-
 	OmSegmentSelector sel( segmentation.GetId(), this, "view2dEvent" );
 	if( augment_selection ){
-		sel.augmentSelectedSet( segmentID, new_segment_select_state );
+		sel.augmentSelectedSet_toggle( segmentID);
 	} else {
-		sel.selectJustThisSegment( segmentID, new_segment_select_state );
+		sel.selectJustThisSegment_toggle( segmentID );
 	}
 	sel.sendEvent();
 	
