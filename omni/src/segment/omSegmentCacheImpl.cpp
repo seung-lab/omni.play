@@ -608,7 +608,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDs & set )
 	foreach( const OmSegID & id, old ){
 		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
 		set.insert( rootSegID );
-		printf("inserting %d\n", rootSegID );
+		//printf("inserting %d\n", rootSegID );
 	}
 }
 
@@ -757,10 +757,6 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids, const boo
 {
 	OmSegIDs::const_iterator iter;
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
-		if( setSelected ){
-			mSelectedSet.insert( *iter );
-		} else {
-			mSelectedSet.erase( *iter );
-		}
+		setSegmentSelected( *iter, setSelected );
 	}
 }
