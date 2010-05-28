@@ -5,6 +5,7 @@
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelector.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "view3d/omCamera.h"
@@ -458,9 +459,9 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
 	//get ids
-	OmId segmentation_id, segment_id;
+	OmId segmentation_id, segmentID;
 	int pick_object_type;
-	if (!PickSegmentMouse(event, drag, segmentation_id, segment_id, &pick_object_type))
+	if (!PickSegmentMouse(event, drag, segmentation_id, segmentID, &pick_object_type))
 		return;
 
 	//if picked type was not a mesh
@@ -468,23 +469,16 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 		return;
 
 	//get segment state
-	bool new_segment_select_state = !(OmProject::GetSegmentation(segmentation_id).IsSegmentSelected(segment_id));
+	const bool new_segment_select_state = !(OmProject::GetSegmentation(segmentation_id).IsSegmentSelected(segmentID));
+	OmSegmentSelector sel( segmentation_id, this, "view3dUi" );
 
-	//if not augmenting slection and selecting segment
-	if (!augment_selection && new_segment_select_state) {
-		//get current selection
-		OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation_id);
-		//select new segment, deselect current segments
-		OmIds select_segment_ids;
-		select_segment_ids.insert(segment_id);
-		(new
-		 OmSegmentSelectAction(segmentation_id, select_segment_ids,
-				       r_segmentation.GetSelectedSegmentIds()))->Run();
-
+	if( augment_selection ){
+		sel.augmentSelectedSet( segmentID, new_segment_select_state );
 	} else {
-		//set state of 
-		(new OmSegmentSelectAction(segmentation_id, segment_id, new_segment_select_state))->Run();
+		sel.selectJustThisSegment( segmentID, new_segment_select_state );
 	}
+	
+	sel.sendEvent();
 }
 
 /////////////////////////////////

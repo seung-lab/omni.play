@@ -11,6 +11,7 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 
 static QGLWidget *sharedwidget = NULL;
@@ -120,6 +121,8 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 #ifdef WIN32
 	mGlBlendColorFunction = (GLCOLOR) wglGetProcAddress("glBlendColor");
 #endif
+	
+	resetWindow();
 }
 
 OmView2d::~OmView2d()
@@ -407,9 +410,13 @@ void OmView2d::PickToolGetColor(QMouseEvent * event)
 void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalDataClickPoint)
 {
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
-	int theId = current_seg.GetVoxelSegmentId(globalDataClickPoint);
-	if (theId && !current_seg.IsSegmentSelected(theId)) {
-		(new OmSegmentSelectAction(segmentation_id, theId, true))->Run();
+	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
+	if (segID ) {
+		
+		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
+		sel.augmentSelectedSet( segID, !current_seg.IsSegmentSelected(segID) );
+		sel.sendEvent();
+
 		Refresh();
 	} 
 }

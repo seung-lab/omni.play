@@ -131,6 +131,7 @@ OmSegID OmSegmentCacheImpl::GetNumSegments()
 
 OmSegID OmSegmentCacheImpl::GetNumTopSegments()
 {
+	loadTreeIfNeeded();
 	return mNumTopLevelSegs;
 }
 
@@ -222,11 +223,7 @@ void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 		mSelectedSet.insert( rootID );
 	} else {
 		mSelectedSet.remove( rootID );
-		if(mSelectedSet.contains( segID )) {
-			printf("%u is selected despite its parent, %u, not being selected\n", segID, rootID);
-			extern void myBacktrace(int);
-			myBacktrace(0);
-		}
+		assert( !mSelectedSet.contains( segID ));
 	}
 }
 
@@ -465,6 +462,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegmentQueueElement childElement = { parent->mValue, oldChildThreshold };
 	child->queue.push(childElement);
 
+	++mNumTopLevelSegs;
+
 	clearCaches();
 }
 
@@ -605,8 +604,11 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDs & set )
 	OmSegIDs old = set;
 	set.clear();
 
+	OmSegID rootSegID;
 	foreach( const OmSegID & id, old ){
-		set.insert( findRoot( GetSegmentFromValue( id) )->getValue() );
+		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
+		set.insert( rootSegID );
+		printf("inserting %d\n", rootSegID );
 	}
 }
 

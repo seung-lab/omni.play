@@ -1,6 +1,6 @@
 #include "project/omProject.h"
 #include "gui/segmentList.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/omSegmentSelector.h"
 #include "gui/guiUtils.h"
 #include "volume/omSegmentation.h"
 
@@ -235,48 +235,31 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
+	
+	OmSegmentSelector sel(sdw.getSegmentationID(), this, "segmentList" );
 
 	if (0 == column) {
 		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
 		sdw.setEnabled(isChecked);
-		sendSegmentChangeEvent(sdw, false);
-		dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
+
+		sel.selectJustThisSegment( sdw.getID(), isChecked );
+		sel.sendEvent();
+
+		if( isChecked ) {
+			dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
+		} else {
+			dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Deselect );
+		}
 	} else {
-		OmSegmentation & segmentation = OmProject::GetSegmentation(sdw.getSegmentationID());
-		segmentation.SetAllSegmentsSelected(false);
-		
+		sel.selectNoSegments();
+
 		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
 			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
 			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-			item_sdw.setSelected(true);
+			sel.augmentSelectedSet( item_sdw.getID(), true );
 		}
-		sendSegmentChangeEvent(sdw, true);
+		sel.sendEvent();
 	}
-}
-
-void SegmentList::sendSegmentChangeEvent(SegmentDataWrapper sdw, const bool augment_selection)
-{
-	const OmId segmentationID = sdw.getSegmentationID();
-	const OmId segmentID = sdw.getID();
-	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
-
-	OmIds selected_segment_ids;
-	OmIds un_selected_segment_ids;
-
-	if (augment_selection) {
-		selected_segment_ids = segmentation.GetSelectedSegmentIds();
-	} else {
-		selected_segment_ids.insert(segmentID);
-		un_selected_segment_ids = segmentation.GetSelectedSegmentIds();
-		un_selected_segment_ids.remove(segmentID);
-	}
-
-	(new OmSegmentSelectAction(segmentationID,
-				   selected_segment_ids, 
-				   un_selected_segment_ids, 
-				   segmentID, 
-				   this,
-				   "segmentList"))->Run();
 }
 
 void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )

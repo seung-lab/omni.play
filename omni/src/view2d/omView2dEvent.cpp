@@ -7,6 +7,7 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentSelector.h"
 
 /**
  * \name Mouse Event Handlers 
@@ -110,27 +111,16 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
-	const bool curSegmentNotYetMarkedAsSelected = !(segmentation.IsSegmentSelected(segmentID));
+	const bool new_segment_select_state = !(segmentation.IsSegmentSelected(segmentID));
 
-	// if not augmenting slection and selecting segment, then 
-	//  select new segment, and deselect current segment(s)
-	if (!augment_selection && curSegmentNotYetMarkedAsSelected) {
-		OmSegmentSelectAction ssa;
-					    
-
-		OmIds select_segment_ids;
-		select_segment_ids.insert(segmentID);
-		(new OmSegmentSelectAction( segmentation.GetId(),
-					    select_segment_ids,
-					    segmentation.GetSelectedSegmentIds(), 
-					    segmentID))->Run();
+	OmSegmentSelector sel( segmentation.GetId(), this, "view2dEvent" );
+	if( augment_selection ){
+		sel.augmentSelectedSet( segmentID, new_segment_select_state );
 	} else {
-		(new OmSegmentSelectAction( segmentation.GetId(),
-					    segmentID, 
-					    curSegmentNotYetMarkedAsSelected, 
-					    segmentID))->Run();
+		sel.selectJustThisSegment( segmentID, new_segment_select_state );
 	}
-
+	sel.sendEvent();
+	
 	Refresh();
 	mTextures.clear();
 	myUpdate();

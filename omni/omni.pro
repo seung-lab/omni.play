@@ -136,6 +136,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentCacheImpl.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentColorizer.h \
+           src/segment/omSegmentSelector.h \
            src/segment/omSegmentContextMenu.h \
            src/segment/omSegmentEditor.h \
            src/system/omAction.h \
@@ -299,6 +300,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentCacheImpl.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentColorizer.cpp \
+           src/segment/omSegmentSelector.cpp \
            src/segment/omSegmentContextMenu.cpp \
            src/segment/omSegmentEditor.cpp \
            src/system/omAction.cpp \
