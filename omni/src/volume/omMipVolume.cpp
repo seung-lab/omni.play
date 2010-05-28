@@ -9,6 +9,7 @@
 #include "utility/omDataWriter.h"
 #include "utility/omHdf5.h"
 #include "utility/omImageDataIo.h"
+#include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolume.h"
@@ -137,7 +138,7 @@ QString OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 ///////          Source Data Properties
 void OmMipVolume::SetSourceFilenamesAndPaths( QFileInfoList sourceFilenamesAndPaths )
 {
-	mSourceFilenamesAndPaths = sourceFilenamesAndPaths;
+	mSourceFilenamesAndPaths = SortHelpers::sortNaturally(sourceFilenamesAndPaths);
 	sourceFilesWereSet = true;
 }
 
