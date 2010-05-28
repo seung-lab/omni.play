@@ -10,8 +10,8 @@ public:
 
 	void Load (char * file);
 	void Save (char * file);
-	QColor GetColor (SEGMENT_DATA_TYPE id);
-	void SetColor (SEGMENT_DATA_TYPE id, QColor color);
+	QColor GetColor (OmSegID id);
+	void SetColor (OmSegID id, QColor color);
 
 private:
 	set <OmColormapperRule> mColormapperRules;
