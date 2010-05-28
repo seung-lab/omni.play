@@ -3,13 +3,17 @@
 
 #include "common/omCommon.h"
 #include <QMutex> 
-enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
+
+static const double selectedSegmentColorMultiFactor = 2.5;
+
+enum OmSegmentColorCacheType { Channel = 0, 
+			       Segmentation, 
+			       ChannelBreak, 
+			       SegmentationBreak };
 
 class OmSegmentCache;
 class OmViewGroupState;
 class OmSegment;
-
-static double selectedSegmentColorMultiFactor = 2.5;
 
 class OmSegmentColorizer 
 {
@@ -46,7 +50,16 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness );
+	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness )
+	{
+		if( currentSegCacheFreshness != mColorCacheFreshness[val] ){
+			return false;
+		}
+		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
+			return false;
+		}
+		return true;
+	}
 };
 
 #endif

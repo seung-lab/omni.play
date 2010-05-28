@@ -45,7 +45,8 @@ public:
 	OmSegIDs & GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected );
+	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+				      const OmSegIDs & idsToUnselect );
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -64,9 +65,8 @@ public:
 	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	void JoinAllSegmentsInSelectedList();
-	void JoinTheseSegments(OmIds segmentList);
-	void UnJoinTheseSegments(OmIds segmentList);
+	void JoinTheseSegments( const OmIds & segmentList);
+	void UnJoinTheseSegments( const OmIds & segmentList);
 
 	quint32 getPageSize();
 

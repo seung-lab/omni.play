@@ -42,20 +42,8 @@ void OmSegmentColorizer::setup()
 	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
 }
 
-bool OmSegmentColorizer::isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness )
-{
-	if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
-		return false;
-	}
-	if( mCurBreakThreshhold != mPrevBreakThreshhold ){
-		return false;
-	}
-	return true;
-}
-
-
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data, OmViewGroupState * vgs)
+				    unsigned char * data, OmViewGroupState *)
 {
 	QMutexLocker lock( &mMutex );
 	

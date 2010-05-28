@@ -476,9 +476,10 @@ bool OmSegmentation::AreSegmentsSelected()
 	return mSegmentCache->AreSegmentsSelected();
 }
 
-void OmSegmentation::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+void OmSegmentation::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+					      const OmSegIDs & idsToUnselect )
 {
-	mSegmentCache->UpdateSegmentSelection( ids, setSelected );
+	mSegmentCache->UpdateSegmentSelections(idsToSelect, idsToUnselect );
 }
 
 /////////////////////////////////
@@ -720,17 +721,12 @@ void OmSegmentation::ReloadDendrogram()
 	mSegmentCache->resetGlobalThreshold(mDendThreshold);
 }
 
-void OmSegmentation::JoinAllSegmentsInSelectedList()
-{
-	mSegmentCache->JoinAllSegmentsInSelectedList();
-}
-
-void OmSegmentation::JoinTheseSegments(OmIds segmentIds)
+void OmSegmentation::JoinTheseSegments( const OmIds & segmentIds)
 {
 	mSegmentCache->JoinTheseSegments(segmentIds);
 }
 
-void OmSegmentation::UnJoinTheseSegments(OmIds segmentIds)
+void OmSegmentation::UnJoinTheseSegments( const OmIds & segmentIds)
 {
 	mSegmentCache->UnJoinTheseSegments(segmentIds);
 }

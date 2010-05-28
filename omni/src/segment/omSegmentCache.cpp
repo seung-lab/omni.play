@@ -236,19 +236,13 @@ void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
 	return mImpl->resetGlobalThreshold( stopPoint );
 }
 
-void OmSegmentCache::JoinAllSegmentsInSelectedList()
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->JoinAllSegmentsInSelectedList();
-}
-
-void OmSegmentCache::JoinTheseSegments(OmIds segmentList)
+void OmSegmentCache::JoinTheseSegments( const OmIds & segmentList)
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->JoinTheseSegments(segmentList);
 }
 
-void OmSegmentCache::UnJoinTheseSegments(OmIds segmentList)
+void OmSegmentCache::UnJoinTheseSegments( const OmIds & segmentList)
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->UnJoinTheseSegments( segmentList);
@@ -260,8 +254,9 @@ quint32 OmSegmentCache::getMaxValue()
         return mImpl->getMaxValue();
 }
 
-void OmSegmentCache::UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected )
+void OmSegmentCache::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+					      const OmSegIDs & idsToUnselect )
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->UpdateSegmentSelection( ids, areSelected );
+        return mImpl->UpdateSegmentSelections(idsToSelect, idsToUnselect);
 }

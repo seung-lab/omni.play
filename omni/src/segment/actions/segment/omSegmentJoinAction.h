@@ -5,24 +5,21 @@
  *
  *
  */
+
 #include "system/omAction.h"
 
 class OmSegmentJoinAction : public OmAction {
 
 public:
-	OmSegmentJoinAction(OmId segmentationId, OmIds selectedSegmentIds);
-
+	OmSegmentJoinAction( const OmId segmentationId, const OmIds & selectedSegmentIds);
 
 private:
 	void Action();
 	void UndoAction();
 	string Description();
 
+	const OmId mSegmentationId;
 	OmIds mSelectedSegmentIds;
-	OmId mSegmentationId;
-
 };
-
-
 
 #endif

@@ -14,13 +14,13 @@
 ///////
 ///////          OmSegmentJoinAction
 ///////
-OmSegmentJoinAction::OmSegmentJoinAction(OmId segmentationId, OmIds selectedSegmentIds)
+OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId, 
+					  const OmIds & selectedSegmentIds)
+	: mSegmentationId( segmentationId )
+	, mSelectedSegmentIds( selectedSegmentIds )
 {
-	mSegmentationId = segmentationId;
-	mSelectedSegmentIds = selectedSegmentIds;
 	SetUndoable(true);
 }
-
 
 /////////////////////////////////
 ///////          Action Methods
@@ -36,12 +36,12 @@ void OmSegmentJoinAction::UndoAction()
 	seg.UnJoinTheseSegments(mSelectedSegmentIds);	
 }
 
-
 string OmSegmentJoinAction::Description()
 {
 	QString lineItem = QString("Joined: ");
 	foreach( const OmId segId, mSelectedSegmentIds){
-		lineItem = lineItem + QString("seg %1 + ").arg(segId);
+		lineItem += QString("seg %1 + ").arg(segId);
 	}
+
 	return lineItem.toStdString();
 }
