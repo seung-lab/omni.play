@@ -8,13 +8,13 @@
 static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
-	: mSegmentCache(cache), 
-	  mSccType(sccType),
-	  mColorCache( NULL ),
-	  mColorCacheFreshness( NULL ),
-	  mSize( 0 ),
-	  mCurBreakThreshhold(0),
-	  mPrevBreakThreshhold(0)
+	: mSegmentCache(cache)
+	, mSccType(sccType)
+	, mColorCache( NULL )
+	, mColorCacheFreshness( NULL )
+	, mSize( 0 )
+	, mCurBreakThreshhold(0)
+	, mPrevBreakThreshhold(0)
 {
 }
 
