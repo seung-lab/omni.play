@@ -24,8 +24,7 @@ class OmVolumeCuller;
 class OmSegmentation 
 : public OmMipVolume, 
 	public OmManageableObject, 
-	public OmSystemModeEventListener,
-	boost::noncopyable
+	public OmSystemModeEventListener
 {
 
 public:

@@ -1,9 +1,11 @@
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omDataReader.h"
+#include "project/omProject.h"
 #include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
-#include "project/omProject.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omDataReader.h"
 #include "utility/stringHelpers.h"
 
 #include <vtkImageData.h>

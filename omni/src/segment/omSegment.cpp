@@ -15,16 +15,19 @@
 #include "system/viewGroup/omViewGroupState.h"
 
 OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
-	: mValue(value), mCache(cache), mParentSegID(0)
+	: mValue(value)
+	, mCache(cache)
+	, mParentSegID(0)
+	, mImmutable(false)
 {
 	SetInitialColor();
-	mImmutable = false;
 }
 
 OmSegment::OmSegment(OmSegmentCache * cache)
-	:  mCache(cache), mParentSegID(0)
+	:  mCache(cache)
+	, mParentSegID(0)
+	, mImmutable(false)
 {
-	mImmutable = false;
 }
 
 void OmSegment::setParent(OmSegment * parent, const float threshold)

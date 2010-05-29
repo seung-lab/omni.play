@@ -1,11 +1,12 @@
-#include "toolbarManager.h"
-#include "gui/toolbars/navAndEditToolBars.h"
 #include "gui/mainwindow.h"
-#include "volume/omVolume.h"
-#include "system/omProjectData.h"
-#include "system/events/omToolModeEvent.h"
 #include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/navAndEditToolBars.h"
+#include "system/events/omToolModeEvent.h"
+#include "system/omProjectData.h"
+#include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "toolbarManager.h"
+#include "volume/omVolume.h"
 
 ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)

@@ -2,6 +2,7 @@
 #include "common/omException.h"
 #include "common/omVtk.h"
 #include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"

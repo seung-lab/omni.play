@@ -11,50 +11,45 @@
 
 #include "system/omGenericManager.h"
 #include "system/omManageableObject.h"
-#include "common/omGl.h"
-#include "common/omStd.h"
 
-class OmVolume {
-public:
+class OmVolume : boost::noncopyable {
+
+ public:
 	//transform methods
-	 Vector3<float> GetScale();
-	 bool SetScale(const Vector3<float> &vec);
-	 Vector3<float> GetUserScale();
-	 bool SetUserScale(const Vector3<float> &vec);
+	Vector3<float> GetScale();
+	bool SetScale(const Vector3<float> &vec);
+	Vector3<float> GetUserScale();
+	bool SetUserScale(const Vector3<float> &vec);
 	
 	//data properties
-	 const DataBbox& GetDataExtent();
-	 void SetDataExtent(const DataBbox& extent);
-	 Vector3i GetDataDimensions();
-	 void SetDataDimensions(const Vector3i& dim);
-	 Vector3f GetDataResolution();
-	 bool SetDataResolution(const Vector3f& res);
-	 void CheckDataResolution();
-	 Vector2f GetStretchValues(ViewType plane);
-	 void SetStretchValues();
-	 int GetChunkDimension();
-	 void SetChunkDimension(int);
-	 QString GetUnit();
-	 void SetUnit(QString unit);
+	const DataBbox& GetDataExtent();
+	void SetDataExtent(const DataBbox& extent);
+	Vector3i GetDataDimensions();
+	void SetDataDimensions(const Vector3i& dim);
+	Vector3f GetDataResolution();
+	bool SetDataResolution(const Vector3f& res);
+	void CheckDataResolution();
+	Vector2f GetStretchValues(ViewType plane);
+	void SetStretchValues();
+	int GetChunkDimension();
+	void SetChunkDimension(int);
+	QString GetUnit();
+	void SetUnit(QString unit);
 	
 	//coordinate frame methods
-	 NormCoord DataToNormCoord(const DataCoord &data, bool centered = true);
-	 DataCoord NormToDataCoord(const NormCoord &norm);
-	 SpaceCoord NormToSpaceCoord(const NormCoord &norm);
-	 NormCoord SpaceToNormCoord(const SpaceCoord &spatial);
+	NormCoord DataToNormCoord(const DataCoord &data, bool centered = true);
+	DataCoord NormToDataCoord(const NormCoord &norm);
+	SpaceCoord NormToSpaceCoord(const NormCoord &norm);
+	NormCoord SpaceToNormCoord(const SpaceCoord &spatial);
 	
-	 NormBbox DataToNormBbox(const DataBbox &dataBbox);
-	 DataBbox NormToDataBbox(const NormBbox &normBbox);
-	 SpaceBbox NormToSpaceBbox(const NormBbox &normBbox);
-	 NormBbox SpaceToNormBbox(const SpaceBbox &spacialBbox);
-	
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
+	NormBbox DataToNormBbox(const DataBbox &dataBbox);
+	DataBbox NormToDataBbox(const NormBbox &normBbox);
+	SpaceBbox NormToSpaceBbox(const NormBbox &normBbox);
+	NormBbox SpaceToNormBbox(const SpaceBbox &spacialBbox);
+
+ protected:
 	OmVolume();
 	~OmVolume();
-	OmVolume(const OmVolume&);
-	OmVolume& operator= (const OmVolume&);
-	
 	
 	//transforms from normailzed unit cube external spatial coverage
 	Matrix4<float> mSpaceToUserMat;

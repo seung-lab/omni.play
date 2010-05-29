@@ -237,23 +237,15 @@ void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
 		OmProject::Load( fileNameAndPath );
-#if 0
-		// FIXME open volume at middle.... (purcaro)
-		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-#endif
+
 		delete mViewGroupState;
 		mViewGroupState = new OmViewGroupState();
-
-		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);		
 
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
 }
 
 void MainWindow::closeProject()
@@ -407,8 +399,8 @@ void MainWindow::spawnErrorDialog(OmException & e)
 	//assert (0);
 
 	QString errorMessage = e.GetType() + ": " + e.GetName() + ". " + e.GetMsg();
-	exceptionMessage->showMessage(errorMessage);
-	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
+	exceptionMessage->showMessage(errorMessage, QDateTime::currentDateTime().toString() ); // force user to always see dialog
+	printf("Exception thrown: %s\n", qPrintable(errorMessage) );
 }
 
 void MainWindow::updateReadOnlyRelatedWidgets()
@@ -454,18 +446,7 @@ void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 	mMenuBar->addRecentFile(fileName);
 	setProjectOpen( true );
 
-	mViewGroupState->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
-	mViewGroupState->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
 	mViewGroupState->SetZoomLevel(Vector2 < int >(0, 10));
-	mViewGroupState->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
-	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
-	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
 
 	mToolBars->setupToolbarInitially();
 	mToolBars->updateGuiFromProjectLoadOrOpen(mViewGroupState);

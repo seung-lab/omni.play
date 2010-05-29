@@ -26,7 +26,7 @@ OmGarbage::~OmGarbage()
 OmGarbage *OmGarbage::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmGarbage;
+		mspInstance = new OmGarbage();
 	}
 
 	return mspInstance;

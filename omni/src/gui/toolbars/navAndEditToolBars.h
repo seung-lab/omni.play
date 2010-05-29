@@ -1,8 +1,9 @@
 #ifndef NAV_AND_EDIT_TOOLBARS_H
 #define NAV_AND_EDIT_TOOLBARS_H
 
+#include "common/omCommon.h"
+
 #include <QtGui>
-#include "system/omStateManager.h"
 
 class MainWindow;
 class DendToolBar;

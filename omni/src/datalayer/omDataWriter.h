@@ -1,10 +1,8 @@
 #ifndef OM_DATA_READER_WRITER_H
 #define OM_DATA_READER_WRITER_H
 
-#include "datalayer/omDataPath.h"
-
-
 class vtkImageData;
+class OmDataPath;
 
 class OmDataWriter
 {

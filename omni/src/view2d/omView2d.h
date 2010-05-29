@@ -265,6 +265,7 @@ private:
 
 	void doSelectSegment( SegmentDataWrapper sdw, bool augment_selection );
 	void resetWindow();
+	void resetWindowState();
 	void doFindAndSplitSegment(QMouseEvent * event );
 	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
 

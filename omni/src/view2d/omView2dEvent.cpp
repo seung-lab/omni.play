@@ -796,7 +796,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 //\}
 
-void OmView2d::resetWindow()
+void OmView2d::resetWindowState()
 {
 	SpaceCoord depth = mVolume->NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
@@ -804,7 +804,13 @@ void OmView2d::resetWindow()
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
 	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2f(0,0));
 	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2f(0,0));
-	mViewGroupState->SetPanDistance(XY_VIEW, Vector2f(0,0));			
+	mViewGroupState->SetPanDistance(XY_VIEW, Vector2f(0,0));
+}
+
+void OmView2d::resetWindow()
+{
+	resetWindowState();
+
 	if (OmLocalPreferences::getStickyCrosshairMode()){
 		debug("cross","we made it to the great Escape!\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));

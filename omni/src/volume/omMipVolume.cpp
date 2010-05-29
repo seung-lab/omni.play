@@ -2,18 +2,19 @@
 #include "common/omException.h"
 #include "common/omStd.h"
 #include "common/omVtk.h"
+#include "datalayer/hdf5/omHdf5.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
-#include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolume.h"
-#include "datalayer/omDataPaths.h"
 
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>

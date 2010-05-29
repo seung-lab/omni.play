@@ -1,7 +1,8 @@
-#include "omHdf5Writer.h"
+#include "datalayer/hdf5/omHdf5Writer.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
-#include "common/omDebug.h"
-#include <stdlib.h>
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataWrapper.h"
 
 OmHdf5Writer::OmHdf5Writer( QString fileNameAndPath )
 {

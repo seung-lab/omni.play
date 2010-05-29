@@ -173,6 +173,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataPaths.h \
            src/datalayer/omDataLayer.h \
            src/datalayer/omDataReader.h \
+           src/datalayer/omDataWrapper.h \
            src/datalayer/omDataWriter.h \
            src/datalayer/omDummyWriter.h \
            src/datalayer/hdf5/omHdf5.h \

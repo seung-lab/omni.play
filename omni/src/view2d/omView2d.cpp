@@ -125,7 +125,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	mGlBlendColorFunction = (GLCOLOR) wglGetProcAddress("glBlendColor");
 #endif
 	
-	resetWindow();
+	resetWindowState();
 }
 
 OmView2d::~OmView2d()

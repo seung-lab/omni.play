@@ -5,8 +5,9 @@
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
-#include "volume/omVolume.h"
+#include "system/omStateManager.h"
 #include "volume/omChannel.h"
+#include "volume/omVolume.h"
 
 NavAndEditToolBars::NavAndEditToolBars( MainWindow * mw )
 	: QWidget(mw)

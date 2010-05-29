@@ -57,7 +57,6 @@ public:
 	float getThreshold();
 
 private:
-	bool mImmutable;
 	OmSegID mValue;
 	OmSegmentCache * mCache;
 
@@ -68,6 +67,7 @@ private:
 
 	OmId mParentSegID;
 	float mThreshold;
+	bool mImmutable;
 
 	void SetInitialColor();
 
