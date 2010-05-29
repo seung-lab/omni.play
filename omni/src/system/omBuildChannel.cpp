@@ -2,8 +2,8 @@
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
 #include "project/omProject.h"
-#include "utility/omDataLayer.h"
-#include "utility/omDataReader.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataReader.h"
 #include "utility/stringHelpers.h"
 
 #include <vtkImageData.h>

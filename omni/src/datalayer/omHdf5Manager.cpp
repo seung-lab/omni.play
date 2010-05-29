@@ -1,6 +1,6 @@
-#include "utility/omHdf5Manager.h"
+#include "datalayer/omHdf5Manager.h"
 #include "common/omDebug.h"
-#include "utility/omHdf5.h"
+#include "datalayer/omHdf5.h"
 
 #include <QFileInfo>
 

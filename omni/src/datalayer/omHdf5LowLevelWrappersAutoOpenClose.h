@@ -1,14 +1,14 @@
-#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
-#define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
+#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_AUTO_OPEN_CLOSE_H
+#define OM_MDF5_LOW_LEVEL_WRAPPERS_AUTO_OPEN_CLOSE_H
 
-#include "utility/omHdf5LowLevel.h"
-#include "utility/omHdf5LowLevelWrappersAbstract.h"
+#include "datalayer/omHdf5LowLevel.h"
+#include "datalayer/omHdf5LowLevelWrappersAbstract.h"
 
-class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstract
+class OmHdf5LowLevelWrappersAutoOpenClose : public OmHdf5LowLevelWrappersAbstract
 {
  public:
-	OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly);
-	~OmHdf5LowLevelWrappersManualOpenClose();
+	OmHdf5LowLevelWrappersAutoOpenClose(string fileName, const bool readOnly );
+	~OmHdf5LowLevelWrappersAutoOpenClose();
 
 	void open();
 	void close();
@@ -29,12 +29,13 @@ class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstr
 	void dataset_image_create_tree_overwrite_with_lock(const OmHdf5Path & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
 	vtkImageData* dataset_image_read_trim_with_lock(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
 	void dataset_image_write_trim_with_lock(const OmHdf5Path & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	void* dataset_read_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
+
 	
 	//data set raw
 	void* dataset_raw_read_with_lock(const OmHdf5Path & path, int* size = NULL);
 	void dataset_raw_create_with_lock(const OmHdf5Path & path, int size, const void *data);
 	void dataset_raw_create_tree_overwrite_with_lock(const OmHdf5Path & path, int size, const void* data);
-	void* dataset_read_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample);
 	void dataset_write_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
 	Vector3< int > dataset_get_dims_with_lock( const OmHdf5Path & path );
 
@@ -42,8 +43,6 @@ class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstr
 	OmHdf5LowLevel hdfLowLevel;
 	const string mFileName;
 	const bool mReadOnly;
-	hid_t fileId;
-	bool opened;
 };
 
 #endif

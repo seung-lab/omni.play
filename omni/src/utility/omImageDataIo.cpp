@@ -1,7 +1,7 @@
 #include "omImageDataIo.h"
 #include "common/omException.h"
-#include "utility/omDataLayer.h"
-#include "utility/omHdf5Helpers.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omHdf5Helpers.h"
 #include "common/omVtk.h"
 
 #include <QFile>
@@ -31,7 +31,7 @@
 
 #include <strnatcmp.h>
 
-#include "utility/omHdf5.h"
+#include "datalayer/omHdf5.h"
 #include "common/omDebug.h"
 
 /////////////////////////////////

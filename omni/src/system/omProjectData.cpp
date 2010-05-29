@@ -4,8 +4,8 @@
 #include "omProjectData.h"
 #include "segment/omSegment.h"
 #include "utility/fileHelpers.h"
-#include "utility/omDataLayer.h"
-#include "utility/omHdf5Manager.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omHdf5Manager.h"
 
 #include <QFile>
 #include <QFileInfo>

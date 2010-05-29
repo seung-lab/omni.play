@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
 #include "common/omException.h"
-#include "utility/omHdf5LowLevelWrappersManualOpenClose.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/omHdf5Path.h"
 
 #define HDF5_WRAP() 								\
 	string pathStr = path.getString();                                      \

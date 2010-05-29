@@ -1,9 +1,9 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
-#include "utility/omDataArchiveSegment.h"
-#include "utility/omDataPaths.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omDataArchiveSegment.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omHdf5Path.h"
 #include "volume/omSegmentation.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...

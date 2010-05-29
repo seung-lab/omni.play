@@ -6,8 +6,8 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "utility/omDataLayer.h"
-#include "utility/omHdf5Manager.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omHdf5Manager.h"
 
 #include <QFile>
 

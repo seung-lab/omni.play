@@ -13,7 +13,7 @@
 #include "common/omStd.h"
 #include "common/omGl.h"
 #include "system/omCacheableBase.h"
-#include "utility/omHdf5.h"
+#include "datalayer/omHdf5.h"
 
 class OmMipMesh;
 class OmSegmentManager;

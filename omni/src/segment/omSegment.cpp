@@ -5,13 +5,13 @@
 #include "system/omPreferences.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-#include "utility/omDataArchiveQT.h"
+#include "datalayer/omDataArchiveQT.h"
 #include "common/omDebug.h"
 #include "utility/stringHelpers.h"
 #include "segment/omSegmentCache.h"
-#include "utility/omDataPaths.h"
+#include "datalayer/omDataPaths.h"
 #include "volume/omMipChunkCoord.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omHdf5Path.h"
 #include "system/viewGroup/omViewGroupState.h"
 
 OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)

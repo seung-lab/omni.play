@@ -164,29 +164,29 @@ HEADERS += lib/strnatcmp.h \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
-           src/utility/omDataArchiveCoords.h \
-           src/utility/omDataArchiveMipChunk.h \
-           src/utility/omDataArchiveProject.h \
-           src/utility/omDataArchiveQT.h \
-           src/utility/omDataArchiveSegment.h \
-           src/utility/omDataArchiveVmml.h \
-           src/utility/omDataArchiveBoost.h \
-           src/utility/omDataPaths.h \
-           src/utility/omDataLayer.h \
-           src/utility/omDataReader.h \
-           src/utility/omDataWriter.h \
-           src/utility/omDummyWriter.h \
-           src/utility/omHdf5.h \
-           src/utility/omHdf5Dataset.h \
-           src/utility/omHdf5Helpers.h \
-           src/utility/omHdf5LowLevel.h \
-           src/utility/omHdf5LowLevelWrappersAbstract.h \
-           src/utility/omHdf5LowLevelWrappersAutoOpenClose.h \
-           src/utility/omHdf5LowLevelWrappersManualOpenClose.h \
-           src/utility/omHdf5Manager.h \
-           src/utility/omHdf5Path.h \
-           src/utility/omHdf5Reader.h \
-           src/utility/omHdf5Writer.h \
+           src/datalayer/omDataArchiveCoords.h \
+           src/datalayer/omDataArchiveMipChunk.h \
+           src/datalayer/omDataArchiveProject.h \
+           src/datalayer/omDataArchiveQT.h \
+           src/datalayer/omDataArchiveSegment.h \
+           src/datalayer/omDataArchiveVmml.h \
+           src/datalayer/omDataArchiveBoost.h \
+           src/datalayer/omDataPaths.h \
+           src/datalayer/omDataLayer.h \
+           src/datalayer/omDataReader.h \
+           src/datalayer/omDataWriter.h \
+           src/datalayer/omDummyWriter.h \
+           src/datalayer/omHdf5.h \
+           src/datalayer/omHdf5Dataset.h \
+           src/datalayer/omHdf5Helpers.h \
+           src/datalayer/omHdf5LowLevel.h \
+           src/datalayer/omHdf5LowLevelWrappersAbstract.h \
+           src/datalayer/omHdf5LowLevelWrappersAutoOpenClose.h \
+           src/datalayer/omHdf5LowLevelWrappersManualOpenClose.h \
+           src/datalayer/omHdf5Manager.h \
+           src/datalayer/omHdf5Path.h \
+           src/datalayer/omHdf5Reader.h \
+           src/datalayer/omHdf5Writer.h \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/setUtilities.h \
@@ -326,26 +326,26 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/dataWrappers.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \
-           src/utility/omDataArchiveCoords.cpp \
-           src/utility/omDataArchiveMipChunk.cpp \
-           src/utility/omDataArchiveProject.cpp \
-           src/utility/omDataArchiveQT.cpp \
-           src/utility/omDataArchiveSegment.cpp \
-           src/utility/omDataArchiveVmml.cpp \
-           src/utility/omDataArchiveBoost.cpp \
-           src/utility/omDataPaths.cpp \
-           src/utility/omDataLayer.cpp \
-           src/utility/omDummyWriter.cpp \
-           src/utility/omHdf5.cpp \
-           src/utility/omHdf5Dataset.cpp \
-           src/utility/omHdf5Helpers.cpp \
-           src/utility/omHdf5LowLevel.cpp \
-           src/utility/omHdf5LowLevelWrappersAutoOpenClose.cpp \
-           src/utility/omHdf5LowLevelWrappersManualOpenClose.cpp \
-           src/utility/omHdf5Manager.cpp \
-           src/utility/omHdf5Path.cpp \
-           src/utility/omHdf5Reader.cpp \
-           src/utility/omHdf5Writer.cpp \
+           src/datalayer/omDataArchiveCoords.cpp \
+           src/datalayer/omDataArchiveMipChunk.cpp \
+           src/datalayer/omDataArchiveProject.cpp \
+           src/datalayer/omDataArchiveQT.cpp \
+           src/datalayer/omDataArchiveSegment.cpp \
+           src/datalayer/omDataArchiveVmml.cpp \
+           src/datalayer/omDataArchiveBoost.cpp \
+           src/datalayer/omDataPaths.cpp \
+           src/datalayer/omDataLayer.cpp \
+           src/datalayer/omDummyWriter.cpp \
+           src/datalayer/omHdf5.cpp \
+           src/datalayer/omHdf5Dataset.cpp \
+           src/datalayer/omHdf5Helpers.cpp \
+           src/datalayer/omHdf5LowLevel.cpp \
+           src/datalayer/omHdf5LowLevelWrappersAutoOpenClose.cpp \
+           src/datalayer/omHdf5LowLevelWrappersManualOpenClose.cpp \
+           src/datalayer/omHdf5Manager.cpp \
+           src/datalayer/omHdf5Path.cpp \
+           src/datalayer/omHdf5Reader.cpp \
+           src/datalayer/omHdf5Writer.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
            src/utility/sortHelpers.cpp \

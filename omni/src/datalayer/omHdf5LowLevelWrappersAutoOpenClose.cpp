@@ -1,5 +1,5 @@
-#include "utility/omHdf5LowLevel.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omHdf5LowLevel.h"
+#include "datalayer/omHdf5Path.h"
 #include "omHdf5LowLevelWrappersAutoOpenClose.h"
 #include "common/omException.h"
 #include "common/omDebug.h"

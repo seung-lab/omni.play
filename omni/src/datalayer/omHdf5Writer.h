@@ -1,9 +1,9 @@
 #ifndef OM_HDF_READER_WRITER_H
 #define OM_HDF_READER_WRITER_H
 
-#include "utility/omHdf5.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omDataWriter.h"
+#include "datalayer/omHdf5.h"
+#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataWriter.h"
 
 class OmHdf5Writer : public OmDataWriter
 {

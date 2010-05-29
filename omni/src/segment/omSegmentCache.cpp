@@ -2,9 +2,9 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/omProjectData.h"
-#include "utility/omDataArchiveQT.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omDataArchiveQT.h"
+#include "datalayer/omHdf5Path.h"
+#include "datalayer/omHdf5Path.h"
 #include "volume/omSegmentation.h"
 
 #include <QMutexLocker>

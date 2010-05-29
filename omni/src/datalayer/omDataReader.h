@@ -1,7 +1,7 @@
 #ifndef OM_DATA_READER_H
 #define OM_DATA_READER_H
 
-#include "utility/omHdf5Path.h"
+#include "datalayer/omHdf5Path.h"
 class vtkImageData;
 
 class OmDataReader

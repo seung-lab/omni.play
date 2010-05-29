@@ -5,9 +5,9 @@
 #include <QQueue>
 
 #include "common/omCommon.h"
-#include "utility/omHdf5.h"
-#include "utility/omHdf5Path.h"
-#include "utility/omDataReader.h"
+#include "datalayer/omHdf5.h"
+#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataReader.h"
 
 class vtkImageData;
 

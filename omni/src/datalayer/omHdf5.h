@@ -7,11 +7,11 @@
 using std::string;
 
 #include "common/omCommon.h"
-#include "utility/omHdf5LowLevelWrappersAutoOpenClose.h"
-#include "utility/omHdf5LowLevelWrappersManualOpenClose.h"
-#include "utility/omHdf5Helpers.h"
-#include "utility/omHdf5Dataset.h"
-#include "utility/omHdf5Path.h"
+#include "datalayer/omHdf5LowLevelWrappersAutoOpenClose.h"
+#include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/omHdf5Helpers.h"
+#include "datalayer/omHdf5Dataset.h"
+#include "datalayer/omHdf5Path.h"
 
 class vtkImageData;
 

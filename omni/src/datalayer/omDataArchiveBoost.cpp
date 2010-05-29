@@ -1,4 +1,4 @@
-#include "utility/omDataArchiveBoost.h"
+#include "datalayer/omDataArchiveBoost.h"
 #include <QDataStream>
 
 QDataStream &operator<<(QDataStream & out, const OmIds & set )

@@ -1,4 +1,4 @@
-#include "utility/omDataPaths.h"
+#include "datalayer/omDataPaths.h"
 
 OmHdf5Path OmDataPaths::getSegmentPagePath( OmId segmentationID, const quint32 pageNum )
 {
