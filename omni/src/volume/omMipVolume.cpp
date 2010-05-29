@@ -7,7 +7,7 @@
 #include "system/omProjectData.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
-#include "datalayer/omHdf5.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"

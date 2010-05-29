@@ -5,7 +5,7 @@
 #include <QQueue>
 
 #include "common/omCommon.h"
-#include "datalayer/omHdf5.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 

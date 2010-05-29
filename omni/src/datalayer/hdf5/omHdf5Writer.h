@@ -1,7 +1,7 @@
 #ifndef OM_HDF_READER_WRITER_H
 #define OM_HDF_READER_WRITER_H
 
-#include "datalayer/omHdf5.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataWriter.h"
 

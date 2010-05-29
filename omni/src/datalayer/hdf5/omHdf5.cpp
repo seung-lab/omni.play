@@ -1,5 +1,5 @@
-#include "datalayer/omHdf5.h"
-#include "datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/hdf5/omHdf5.h"
+#include "datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 

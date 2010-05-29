@@ -12,7 +12,7 @@
 #include "system/omStateManager.h"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataWriter.h"
-#include "datalayer/omHdf5Manager.h"
+#include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPaths.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"

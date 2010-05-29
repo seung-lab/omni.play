@@ -1,8 +1,9 @@
-#include "omDataLayer.h"
-#include "omHdf5Manager.h"
-#include "datalayer/omHdf5Reader.h"
-#include "datalayer/omHdf5Writer.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/hdf5/omHdf5Manager.h"
+#include "datalayer/hdf5/omHdf5Reader.h"
+#include "datalayer/hdf5/omHdf5Writer.h"
 #include "datalayer/omDummyWriter.h"
+
 #include <QFileInfo>
 
 OmDataLayer::OmDataLayer()

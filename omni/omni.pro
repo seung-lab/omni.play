@@ -175,13 +175,13 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataReader.h \
            src/datalayer/omDataWriter.h \
            src/datalayer/omDummyWriter.h \
-           src/datalayer/omHdf5.h \
-           src/datalayer/lowLevel/omHdf5LowLevel.h \
-           src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h \
-           src/datalayer/omHdf5Manager.h \
+           src/datalayer/hdf5/omHdf5.h \
+           src/datalayer/hdf5/omHdf5LowLevel.h \
+           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
+           src/datalayer/hdf5/omHdf5Manager.h \
            src/datalayer/omDataPath.h \
-           src/datalayer/omHdf5Reader.h \
-           src/datalayer/omHdf5Writer.h \
+           src/datalayer/hdf5/omHdf5Reader.h \
+           src/datalayer/hdf5/omHdf5Writer.h \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/setUtilities.h \
@@ -331,13 +331,13 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/omDataPaths.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDummyWriter.cpp \
-           src/datalayer/omHdf5.cpp \
-           src/datalayer/lowLevel/omHdf5LowLevel.cpp \
-           src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.cpp \
-           src/datalayer/omHdf5Manager.cpp \
+           src/datalayer/hdf5/omHdf5.cpp \
+           src/datalayer/hdf5/omHdf5LowLevel.cpp \
+           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.cpp \
+           src/datalayer/hdf5/omHdf5Manager.cpp \
            src/datalayer/omDataPath.cpp \
-           src/datalayer/omHdf5Reader.cpp \
-           src/datalayer/omHdf5Writer.cpp \
+           src/datalayer/hdf5/omHdf5Reader.cpp \
+           src/datalayer/hdf5/omHdf5Writer.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
            src/utility/sortHelpers.cpp \

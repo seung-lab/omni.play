@@ -3,7 +3,7 @@
 #include "common/omVtk.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omHdf5.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 
 #include <QFile>

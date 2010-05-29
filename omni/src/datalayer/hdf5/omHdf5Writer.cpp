@@ -1,5 +1,5 @@
 #include "omHdf5Writer.h"
-#include "datalayer/omHdf5Manager.h"
+#include "datalayer/hdf5/omHdf5Manager.h"
 #include "common/omDebug.h"
 #include <stdlib.h>
 
