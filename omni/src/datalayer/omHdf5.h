@@ -4,11 +4,10 @@
 #include <QMutex>
 
 #include "common/omCommon.h"
-#include "datalayer/omHdf5Helpers.h"
-#include "datalayer/omDataPath.h"
 
 class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;
+class OmDataPath;
 
 class OmHdf5 
 {

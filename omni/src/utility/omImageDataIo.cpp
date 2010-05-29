@@ -1,24 +1,23 @@
-#include "omImageDataIo.h"
+#include "common/omDebug.h"
 #include "common/omException.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omHdf5Helpers.h"
 #include "common/omVtk.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omHdf5.h"
+#include "utility/omImageDataIo.h"
 
 #include <QFile>
 #include <QFileInfo>
 
 #include <vtk_tiff.h>
-
 #include <vtkTIFFReader.h>
 #include <vtkJPEGReader.h>
 #include <vtkPNGReader.h>
 #include <vtkImageReader2.h>
-
 #include <vtkTIFFWriter.h>
 #include <vtkJPEGWriter.h>
 #include <vtkPNGWriter.h>
 #include <vtkImageWriter.h>
-
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
@@ -26,13 +25,8 @@
 #include <vtkImageTranslateExtent.h>
 #include <vtkImageAppend.h>
 #include <vtkImageCast.h>
-
 #include <vtkStringArray.h>
 
-#include <strnatcmp.h>
-
-#include "datalayer/omHdf5.h"
-#include "common/omDebug.h"
 
 /////////////////////////////////
 ///////          ImageType Methods
@@ -215,7 +209,7 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
 	hdf5reader->open();
 
-	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmHdf5Helpers::getDefaultDatasetName(),
+	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(),
 								  dataExtentBbox, 
 								  bytesPerSample);
 	hdf5reader->close();
@@ -287,7 +281,7 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 	hdf5reader->open();
 
 	//get dims of image
-	Vector3 < int >dims = hdf5reader->dataset_image_get_dims( OmHdf5Helpers::getDefaultDatasetName() );
+	Vector3 < int >dims = hdf5reader->dataset_image_get_dims( OmDataPaths::getDefaultDatasetName() );
 
 	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
 

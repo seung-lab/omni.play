@@ -13,6 +13,7 @@
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataWriter.h"
 #include "datalayer/omHdf5Manager.h"
+#include "datalayer/omDataPaths.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
@@ -85,7 +86,7 @@ void OmProject::Save()
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 	}
 
-	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
 
 	OmProjectData::GetDataWriter()->flush();
 }
@@ -112,7 +113,7 @@ void OmProject::Load( QString fileNameAndPath  )
 	OmProjectData::Open();
 
 	try {
-		OmDataArchiveQT::ArchiveRead(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+		OmDataArchiveQT::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(), Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;

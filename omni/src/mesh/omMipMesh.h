@@ -74,6 +74,7 @@ private:
 	GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
  	GLuint displayList;
         bool hasDisplayList;
+
 	// ostream
 	friend ostream& operator<<(ostream &out, const OmMipMesh &m);
 	friend class OmMesher;

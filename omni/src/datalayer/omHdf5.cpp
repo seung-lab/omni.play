@@ -1,7 +1,7 @@
 #include "datalayer/omHdf5.h"
-#include "common/omDebug.h"
-#include <stdlib.h>
 #include "datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
 
 OmHdf5::OmHdf5( QString fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)

@@ -13,6 +13,7 @@
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolume.h"
+#include "datalayer/omDataPaths.h"
 
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
@@ -879,7 +880,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 				//write to hdf5 file
 				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
 
-				hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+				hdfExport.dataset_image_write_trim(OmDataPaths::getDefaultDatasetName(),
                                            (DataBbox*)&chunk_data_bbox, GetBytesPerSample(), p_chunk_img_data);
 
 
