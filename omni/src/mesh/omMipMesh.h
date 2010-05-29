@@ -10,11 +10,11 @@
 #include "omMeshTypes.h"
 
 #include "omMipMeshCoord.h"
-#include "common/omStd.h"
+#include "common/omCommon.h"
 #include "common/omGl.h"
 #include "system/omCacheableBase.h"
-#include "datalayer/hdf5/omHdf5.h"
 
+class OmHdf5;
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
