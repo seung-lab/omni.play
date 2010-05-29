@@ -3,16 +3,13 @@
 
 #include <QMutex>
 #include <QQueue>
-#include <string>
-using std::string;
 
 #include "common/omCommon.h"
-#include "datalayer/omHdf5LowLevelWrappersAutoOpenClose.h"
-#include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
 #include "datalayer/omHdf5Helpers.h"
 #include "datalayer/omHdf5Dataset.h"
 #include "datalayer/omHdf5Path.h"
 
+class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;
 
 class OmHdf5 
@@ -54,7 +51,7 @@ class OmHdf5
 	QString m_fileNameAndPath;
 	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex fileLock;
-	OmHdf5LowLevelWrappersAbstract * hdfLowLevelWrap;
+	OmHdf5LowLevelWrappersManualOpenClose * hdfLowLevelWrap;
 	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };
 

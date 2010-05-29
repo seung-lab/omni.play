@@ -180,8 +180,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omHdf5Dataset.h \
            src/datalayer/omHdf5Helpers.h \
            src/datalayer/omHdf5LowLevel.h \
-           src/datalayer/omHdf5LowLevelWrappersAbstract.h \
-           src/datalayer/omHdf5LowLevelWrappersAutoOpenClose.h \
            src/datalayer/omHdf5LowLevelWrappersManualOpenClose.h \
            src/datalayer/omHdf5Manager.h \
            src/datalayer/omHdf5Path.h \
@@ -340,7 +338,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/omHdf5Dataset.cpp \
            src/datalayer/omHdf5Helpers.cpp \
            src/datalayer/omHdf5LowLevel.cpp \
-           src/datalayer/omHdf5LowLevelWrappersAutoOpenClose.cpp \
            src/datalayer/omHdf5LowLevelWrappersManualOpenClose.cpp \
            src/datalayer/omHdf5Manager.cpp \
            src/datalayer/omHdf5Path.cpp \

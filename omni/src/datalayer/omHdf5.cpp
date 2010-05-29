@@ -1,6 +1,7 @@
 #include "datalayer/omHdf5.h"
 #include "common/omDebug.h"
 #include <stdlib.h>
+#include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
 
 OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
 {
@@ -31,7 +32,7 @@ string OmHdf5::getFileNameAndPathString()
 void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly )
 {
 	if( autoOpenAndClose ){
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersAutoOpenClose(getFileNameAndPathString(), readOnly);
+		assert(0);
 	} else {
 		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly);
 	}
@@ -109,14 +110,12 @@ void* OmHdf5::dataset_read_raw_chunk_data( const OmHdf5Path & path, DataBbox dat
 {
 	QMutexLocker locker(&fileLock);
 	return hdfLowLevelWrap->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );
-
 }
 
 void OmHdf5::dataset_write_raw_chunk_data(const OmHdf5Path & path, DataBbox dataExtent, int bytesPerSample, void * imageData)
 {
-
+	QMutexLocker locker(&fileLock);
 	hdfLowLevelWrap->dataset_write_raw_chunk_data(path, dataExtent, bytesPerSample, imageData);
-
 }
 
 void OmHdf5::dataset_raw_create_tree_overwrite( const OmHdf5Path & path, int size, const void* data)
@@ -125,7 +124,6 @@ void OmHdf5::dataset_raw_create_tree_overwrite( const OmHdf5Path & path, int siz
 		return;
 	}
 	
-	debug ("meshercrash", "%p, %s, %i, %p\n", this, path.getString().c_str(), size, data);
 	QMutexLocker locker(&fileLock);
 	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock( path, size, data);
 }

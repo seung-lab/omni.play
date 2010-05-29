@@ -2,9 +2,10 @@
 #define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
 
 #include "datalayer/omHdf5LowLevel.h"
-#include "datalayer/omHdf5LowLevelWrappersAbstract.h"
 
-class OmHdf5LowLevelWrappersManualOpenClose : public OmHdf5LowLevelWrappersAbstract
+class OmHdf5Path;
+
+class OmHdf5LowLevelWrappersManualOpenClose
 {
  public:
 	OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly);
