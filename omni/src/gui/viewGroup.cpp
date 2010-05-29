@@ -6,8 +6,9 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
-#include "volume/omVolume.h"
+#include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
 static const ViewType UpperLeft  = XY_VIEW;
 static const ViewType UpperRight = YZ_VIEW;

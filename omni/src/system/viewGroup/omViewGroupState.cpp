@@ -1,8 +1,13 @@
 #include "common/omDebug.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "system/omEventManager.h"
-#include "system/events/omViewEvent.h"
+#include "gui/toolbars/toolbarManager.h"
+#include "segment/omSegmentColorizer.h"
 #include "system/events/omView3dEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/omEventManager.h"
+#include "system/omGenericManager.h"
+#include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
 
 OmViewGroupState::OmViewGroupState()
 {
@@ -31,9 +36,18 @@ OmViewGroupState::OmViewGroupState()
         mSplittingSegment = 0;
         mSplittingSeg = 1;
 
+	mColorCaches.resize(Number_SegColorCacheEnums, NULL);
+	m_sdw = NULL;
+	m_cdw = NULL;
+
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
 
+OmViewGroupState::~OmViewGroupState()
+{
+	delete m_sdw;
+	delete m_cdw;
+}
 
 /////////////////////////////////
 ///////          View
@@ -308,12 +322,14 @@ void OmViewGroupState::SetViewSlice(const OmSlicePlane plane, const Vector3 < in
 
 void OmViewGroupState::SetSegmentation( const OmId segID ) 
 { 
-	m_sdw = SegmentationDataWrapper( segID ); 
+	delete m_sdw;
+	m_sdw = new SegmentationDataWrapper( segID ); 
 }
 
 void OmViewGroupState::SetChannel( const OmId chanID )
 { 
-	m_cdw = ChannelDataWrapper( chanID );
+	delete m_cdw;
+	m_cdw = new ChannelDataWrapper( chanID );
 }
 
 void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
@@ -343,17 +359,23 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	}
 
 	mColorCacheMapLock.lock();
-	if( 0 == mColorCaches.count( sccType ) ){
-		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw.getSegmentCache(), sccType);
+	if( NULL == mColorCaches[ sccType ] ){
+		assert(m_sdw);
+		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw->getSegmentCache(), sccType);
 	}
 	mColorCacheMapLock.unlock();	
 
-	mColorCaches[ sccType ]->colorTile( imageData, size, data, this );
+	mColorCaches[ sccType ]->colorTile( imageData, size, data );
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
 {
 	mToolBarManager = tbm;
+}
+
+void OmViewGroupState::SetShatterMode(bool shatter)
+{
+	mShatter = shatter;
 }
 
 bool OmViewGroupState::GetShatterMode()
@@ -382,6 +404,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		}
 		OmStateManager::SetSystemModePrev();
 	}
+	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }

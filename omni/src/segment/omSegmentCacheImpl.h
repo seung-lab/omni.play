@@ -54,7 +54,8 @@ class OmSegmentCacheImpl {
 	OmSegIDs& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected );
+	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+				      const OmSegIDs & idsToUnselect );
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -77,7 +78,8 @@ class OmSegmentCacheImpl {
 
 	void turnBatchModeOn(const bool batchMode);
 	
-	void JoinAllSegmentsInSelectedList();
+	void JoinTheseSegments( const OmIds & segmentList);
+	void UnJoinTheseSegments( const OmIds & segmentList);
 
 	quint32 getPageSize() { return mPageSize; }
 
@@ -147,6 +149,8 @@ class OmSegmentCacheImpl {
 	void Join( const OmId, const OmId, const float );
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDs & set );
+	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+	void UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected );
 
 	boost::dynamic_bitset<> rootSegs;
 

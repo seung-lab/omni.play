@@ -1,21 +1,19 @@
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "gui/toolbars/dendToolbar.h"
 
 #include <QMutexLocker>
 
 static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
-	: mSegmentCache(cache), 
-	  mSccType(sccType),
-	  mColorCache( NULL ),
-	  mColorCacheFreshness( NULL ),
-	  mSize( 0 ),
-	  mCurBreakThreshhold(0),
-	  mPrevBreakThreshhold(0)
+	: mSegmentCache(cache)
+	, mSccType(sccType)
+	, mColorCache( NULL )
+	, mColorCacheFreshness( NULL )
+	, mSize( 0 )
+	, mCurBreakThreshhold(0)
+	, mPrevBreakThreshhold(0)
 {
 }
 
@@ -42,20 +40,8 @@ void OmSegmentColorizer::setup()
 	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
 }
 
-bool OmSegmentColorizer::isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness )
-{
-	if( currentSegCacheFreshness != mColorCacheFreshness[ val ] ){
-		return false;
-	}
-	if( mCurBreakThreshhold != mPrevBreakThreshhold ){
-		return false;
-	}
-	return true;
-}
-
-
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data, OmViewGroupState * )
+				    unsigned char * data )
 {
 	QMutexLocker lock( &mMutex );
 	
@@ -75,7 +61,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	OmColor newcolor = {0, 0, 0};
 	OmSegID lastVal = 0;
 	OmSegID val;
-	
+
 	// looping through each value of imageData, which is 
 	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
@@ -108,12 +94,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val, 
 						    const bool & showOnlySelectedSegments)
 {
-	if(DendToolBar::GetShowGroupsMode()) {
-		OmColor sc;
-		return sc;
-	}
-
 	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)
+
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
 		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 3
@@ -124,7 +106,8 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val,
 
 	if(SegmentationBreak == mSccType){
 		if( isSelected ){
-			const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
+			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
+			const OmColor & tsc = seg->mColorInt;
 			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
 			return tsc;
 		} 
@@ -148,8 +131,3 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val,
 	}
 }
 
-void OmSegmentColorizer::setCurBreakThreshhold( const float t )
-{
-	mPrevBreakThreshhold = mCurBreakThreshhold;
-	mCurBreakThreshhold = t;
-}

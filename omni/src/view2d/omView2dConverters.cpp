@@ -1,6 +1,9 @@
 #include "view2d/omView2d.h"
 #include "system/omLocalPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
 /**
  * \name Coordinate Converter Methods

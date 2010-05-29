@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
+#include "volume/omSegmentation.h" // only needed for friend OmSegmentation::ExportDataFilter()
 
 #include <QSet>
 #include <QHash>
@@ -11,7 +12,7 @@
 
 class OmSegment;
 class OmSegmentCacheImpl;
-class OmSegmentation;
+class vtkImageData;  // only needed for friend OmSegmentation::ExportDataFilter()
 
 class OmSegmentCache {
 public:
@@ -45,7 +46,8 @@ public:
 	OmSegIDs & GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected );
+	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+				      const OmSegIDs & idsToUnselect );
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -64,7 +66,8 @@ public:
 	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	void JoinAllSegmentsInSelectedList();
+	void JoinTheseSegments( const OmIds & segmentList);
+	void UnJoinTheseSegments( const OmIds & segmentList);
 
 	quint32 getPageSize();
 
@@ -84,7 +87,10 @@ private:
 	OmSegmentation * mSegmentation;
 	quint32 mPageSize;
 
+	OmSegID findRootID_noLock( const OmSegID segID );
+
 	friend class OmSegmentColorizer;
+	friend void OmSegmentation::ExportDataFilter(vtkImageData * pImageData);
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 };

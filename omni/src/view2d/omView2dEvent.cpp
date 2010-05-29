@@ -1,13 +1,15 @@
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 #include "system/omLocalPreferences.h"
+#include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
 #include "volume/omSegmentation.h"
-#include "segment/omSegmentSelector.h"
 
 /**
  * \name Mouse Event Handlers 

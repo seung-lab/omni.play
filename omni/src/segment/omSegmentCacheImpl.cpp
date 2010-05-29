@@ -216,8 +216,13 @@ void OmSegmentCacheImpl::setSegmentEnabled( OmSegID segID, bool isEnabled )
 
 void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 {
-	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	setSegmentSelectedBatch( segID, isSelected );
 	clearCaches();
+}
+
+void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
+{
+	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
 	if (isSelected) {
 		mSelectedSet.insert( rootID );
@@ -665,21 +670,45 @@ void OmSegmentCacheImpl::loadTreeIfNeeded()
 	loadDendrogram();
 }
 
-void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
+void OmSegmentCacheImpl::JoinTheseSegments( const OmIds & segmentList)
 {
-	if( mSelectedSet.size() < 2 ){
+	if( segmentList.size() < 2 ){
 		return;
 	}
 
-	OmSegIDs set = mSelectedSet; // Join() will modify mSelectedSet
+	OmSegIDs set = segmentList; // Join() could modify list
 
+	// The first Segment Id is the parent we join to
 	OmSegIDs::const_iterator iter = set.begin();
-	OmSegID parentID = *iter;
+	const OmSegID parentID = *iter;
 	++iter;
 
+	// We then iterate through the Segment Ids and join
+	// each one to the parent
 	while (iter != set.end()) {
-		printf("joining %d to %d\n", parentID, *iter);
 		Join( parentID, *iter, 0 );
+		++iter;
+	}
+
+	clearCaches();
+}
+
+void OmSegmentCacheImpl::UnJoinTheseSegments( const OmIds & segmentList)
+{
+	if( segmentList.size() < 2 ){
+		return;
+	}
+
+	OmSegIDs set = segmentList; // split() could modify list
+
+	// The first Segment Id is the parent we split from
+	OmIds::const_iterator iter = set.begin();
+	++iter;
+
+	// We then iterate through the Segment Ids and split
+	// each one from the parent
+	while (iter != set.end()) {
+		splitChildFromParent( GetSegmentFromValue(*iter) );
 		++iter;
 	}
 
@@ -688,6 +717,10 @@ void OmSegmentCacheImpl::JoinAllSegmentsInSelectedList()
 
 const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, const float threshold )
 {
+	//FIXME: this is wrong (purcaro)
+
+	assert(0);
+
 	OmSegment * seg = segment;
 
 	while( 0 != seg->mParentSegID && seg->mThreshold < threshold ){
@@ -762,6 +795,14 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids, const boo
 {
 	OmSegIDs::const_iterator iter;
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
-		setSegmentSelected( *iter, setSelected );
+		setSegmentSelectedBatch( *iter, setSelected );
 	}
+}
+
+void OmSegmentCacheImpl::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
+						  const OmSegIDs & idsToUnselect )
+{
+	UpdateSegmentSelection(idsToSelect, true);
+	UpdateSegmentSelection(idsToUnselect, false);
+	clearCaches();	
 }

@@ -187,22 +187,6 @@ void SegmentList::showSegmentContextMenu()
 	contextMenu->exec(QCursor::pos());
 }
 
-bool SegmentList::isSegmentSelected()
-{
-	if( NULL == dataElementsWidget->currentItem() ) {
-		return false;
-	}
-	return true;
-}
-
-SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
-{
-	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
-	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-	return sdw;
-}
-
 void SegmentList::segmentRightClickMenu(QAction * act)
 {
 	if( !isSegmentSelected() ){
@@ -225,7 +209,7 @@ QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
 
 void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
 {
-	if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
+	if (QApplication::keyboardModifiers() & Qt::AltModifier ||
 	    inspectorProperties->isVisible() ) {
 		if( isSegmentSelected() ){
 			SegmentDataWrapper sdw = getCurrentlySelectedSegment();
@@ -360,8 +344,23 @@ void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 		return;
 	}
 
-	OmIds selection_changed_segmentIDs = event->GetModifiedSegmentIds();
 	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
 
 	makeSegmentationActive(segmentationID, segmentJustSelectedID);
+}
+
+bool SegmentList::isSegmentSelected()
+{
+	if( NULL == dataElementsWidget->currentItem() ) {
+		return false;
+	}
+	return true;
+}
+
+SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
+{
+	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
+	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);
+	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
+	return sdw;
 }

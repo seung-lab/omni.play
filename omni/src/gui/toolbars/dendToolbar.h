@@ -54,6 +54,7 @@ class DendToolBar : public QWidget
 	void addToBreakThreshold(float num);
 	void setThresholdValue();
 	void setBreakThresholdValue();
+	OmId getSegmentationID();
 
 	// Actions
 	QPushButton * toolbarSplitAct;

@@ -36,8 +36,7 @@ void OmSegmentSelectAction::Action()
 {
 	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
 
-	mSegmentation.UpdateSegmentSelection( mSelectIds, true );
-	mSegmentation.UpdateSegmentSelection( mUnselectIds, false );
+	mSegmentation.UpdateSegmentSelections( mSelectIds, mUnselectIds );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
@@ -51,8 +50,7 @@ void OmSegmentSelectAction::UndoAction()
 {
 	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
 
-	mSegmentation.UpdateSegmentSelection( mSelectIds, false );
-	mSegmentation.UpdateSegmentSelection( mUnselectIds, true );
+	mSegmentation.UpdateSegmentSelections( mUnselectIds, mSelectIds );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
@@ -64,5 +62,5 @@ void OmSegmentSelectAction::UndoAction()
 
 string OmSegmentSelectAction::Description()
 {
-	return string("");
+	return string("Yay! We did a selection!!");
 }

@@ -231,6 +231,11 @@ void OmStateManager::ClearUndoStack()
 	GetUndoStack()->clear();
 }
 
+void OmStateManager::UndoUndoCommand()
+{
+	GetUndoStack()->undo();
+}
+
 /////////////////////////////////
 ///////          View3d Context
 

@@ -3,22 +3,31 @@
 
 #include "common/omCommon.h"
 #include <QMutex> 
-enum OmSegmentColorCacheType { Channel = 0, Segmentation, ChannelBreak, SegmentationBreak };
+
+static const double selectedSegmentColorMultiFactor = 2.5;
+
+enum OmSegmentColorCacheType { Channel = 0, 
+			       Segmentation, 
+			       ChannelBreak, 
+			       SegmentationBreak,
+			       Number_SegColorCacheEnums };
 
 class OmSegmentCache;
 class OmViewGroupState;
 class OmSegment;
 
-static double selectedSegmentColorMultiFactor = 2.5;
-
 class OmSegmentColorizer 
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
-	void colorTile( OmSegID * imageData, const int size,
-			unsigned char * data, OmViewGroupState * );
 
-	void setCurBreakThreshhold( const float t );
+	void colorTile( OmSegID * imageData, const int size,
+			unsigned char * data );
+
+	void setCurBreakThreshhold( const float t ) {
+		mPrevBreakThreshhold = mCurBreakThreshhold;
+		mCurBreakThreshhold = t;
+	}
 
  private:
 	QMutex mMutex;
@@ -46,7 +55,15 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness );
+	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness ){
+		if( currentSegCacheFreshness != mColorCacheFreshness[val] ){
+			return false;
+		}
+		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
+			return false;
+		}
+		return true;
+	}
 };
 
 #endif

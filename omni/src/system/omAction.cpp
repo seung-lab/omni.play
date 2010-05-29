@@ -44,7 +44,7 @@ void OmAction::Run()
 
 	//if not undoable
 	if (!mUndoable) {
-		OmStateManager::ClearUndoStack();
+		OmStateManager::UndoUndoCommand();
 	}
 }
 

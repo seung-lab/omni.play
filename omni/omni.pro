@@ -137,7 +137,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentColorizer.h \
            src/segment/omSegmentSelector.h \
-           src/segment/omSegmentContextMenu.h \
            src/segment/omSegmentEditor.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
@@ -205,6 +204,7 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/omView3d.h \
            src/view3d/omView3dUi.h \
            src/view3d/omView3dWidget.h \
+           src/view3d/omSegmentContextMenu.h \
            src/volume/omChannel.h \
            src/volume/omDrawOptions.h \
            src/volume/omFilter2d.h \
@@ -255,6 +255,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSelectionAction.h \
            src/segment/actions/segment/omSegmentStateAction.h \
+           src/segment/actions/segment/omSegmentJoinAction.h \
            src/segment/actions/voxel/omVoxelSelectionAction.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
            src/segment/actions/voxel/omVoxelSetAction.h \
@@ -301,7 +302,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/segment/omSegmentContextMenu.cpp \
            src/segment/omSegmentEditor.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
@@ -362,6 +362,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/omCameraMovement.cpp \
            src/view3d/omView3d.cpp \
            src/view3d/omView3dUi.cpp \
+           src/view3d/omSegmentContextMenu.cpp \
            src/volume/omChannel.cpp \
            src/volume/omFilter2d.cpp \
            src/volume/omFilter2dManager.cpp \
@@ -405,6 +406,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/segment/actions/edit/omEditSelectionSetAction.cpp \
+           src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentStateAction.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \
@@ -450,5 +452,5 @@ DESTDIR = bin
 #QMAKE_LFLAGS += -static
 
 #### for profiling
-#QMAKE_CXXFLAGS += -pg
-#QMAKE_LFLAGS   += -pg
+QMAKE_CXXFLAGS += -pg
+QMAKE_LFLAGS   += -pg

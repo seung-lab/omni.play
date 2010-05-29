@@ -8,6 +8,8 @@
 #include "view2d/omView2d.h"
 #include "volume/omDrawOptions.h"
 #include "volume/omFilter2d.h"
+#include "volume/omChannel.h"
+#include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
 /////////////////////////////////
