@@ -1,7 +1,6 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "common/omUtility.h"
-#include "common/omVtk.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
@@ -14,9 +13,6 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSimpleChunk.h"
 #include "volume/omVolumeCuller.h"
-
-#include <vtkImageData.h>
-#include <vtkType.h>
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
@@ -394,23 +390,7 @@ void * OmSimpleChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vect
 	assert(0);
 }
 
-/////////////////////////////////
-///////          Meshing
-
-/*
- *	Returns new ImageData containing the entire extent of data needed
- *	to form continuous meshes with adjacent MipChunks.  This means an extra
- *	voxel of data is included on each dimensions.
- */
 void * OmSimpleChunk::GetMeshImageData()
 {
-
-	//This function should be reconsidered . . . I'm hoping
-	// Alex's code can be modified such that 
-	// The edges of the volume can be 'covered'
-	// without adding a voxel layer.
-	// this would prevent an unnecessary mem-copy
-	// and would result in a faster mesh.
 	return mpImageData;
-	//assert(0);
 }
