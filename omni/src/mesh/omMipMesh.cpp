@@ -241,19 +241,8 @@ void OmMipMesh::CreateVbo()
   mVertexIndexDataVboId = createVbo(mpVertexIndexData, vertex_index_data_size,
                                     GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 
-  //debug("genone","OmMipMesh::CreateVbo(): delete local\n");
-  //delete local data
-  free(mpVertexData);
-  mpVertexData = NULL;
-
-  free(mpVertexIndexData);
-  mpVertexIndexData = NULL;
-
-  //debug("genone","OmMipMesh::CreateVbo(): update size\n");
   //update cache
   UpdateSize(vertex_data_size + vertex_index_data_size);
-
-  //debug("genone","OmMipMesh::CreateVbo: done\n");
 }
 
 void OmMipMesh::DeleteVbo()
