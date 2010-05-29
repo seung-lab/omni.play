@@ -539,7 +539,7 @@ void OmMipVolume::AllocInternalData()
 
 		//alloc image data
 		
-		OmHdf5Path mip_volume_level_path;
+		OmDataPath mip_volume_level_path;
 		mip_volume_level_path.setPathQstr( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
@@ -562,7 +562,7 @@ void OmMipVolume::DeleteVolumeData()
  */
 void OmMipVolume::DeleteInternalData()
 {
-	OmHdf5Path path;
+	OmDataPath path;
 	path.setPathQstr( mDirectoryPath );
 
 	//TODO: mutex lock this!!!!
@@ -679,7 +679,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	OmHdf5Path source_data_path;
+	OmDataPath source_data_path;
 	source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level - 1) );
 	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
@@ -774,7 +774,7 @@ bool OmMipVolume::ImportSourceData()
 						       MipChunksInMipLevel(0)));
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmHdf5Path leaf_volume_path;
+	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
 	printf("importing data...\n");
@@ -835,12 +835,12 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmHdf5Path mip_volume_path;
+	OmDataPath mip_volume_path;
 	mip_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
         //round up to nearest chunk
 
         OmHdf5 hdfExport( fileNameAndPath, false );
-        OmHdf5Path fpath;
+        OmDataPath fpath;
         fpath.setPath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){

@@ -710,7 +710,7 @@ void OmSegmentation::FlushDend()
 		.arg(GetDirectoryPath());
 	QString dendValStr = QString("%1/dendValues")
 		.arg(GetDirectoryPath());
-	OmHdf5Path path;
+	OmDataPath path;
 	
 	path.setPathQstr(dendStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend);

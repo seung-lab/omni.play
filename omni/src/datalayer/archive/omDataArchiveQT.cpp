@@ -8,32 +8,32 @@
 #include "volume/omMipChunk.h"
 #include "volume/omSimpleChunk.h"
 
-void OmDataArchiveQT::ArchiveRead( const OmHdf5Path & path, OmMipChunk * chunk ) 
+void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveRead( path, chunk );
 }
 
-void OmDataArchiveQT::ArchiveWrite( const OmHdf5Path & path, OmMipChunk * chunk ) 
+void OmDataArchiveQT::ArchiveWrite( const OmDataPath & path, OmMipChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveWrite( path, chunk );
 }
 
-void OmDataArchiveQT::ArchiveRead( const OmHdf5Path & path, OmSimpleChunk * chunk ) 
+void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveRead( path, chunk );
 }
 
-void OmDataArchiveQT::ArchiveWrite( const OmHdf5Path & path, OmSimpleChunk * chunk ) 
+void OmDataArchiveQT::ArchiveWrite( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveWrite( path, chunk );
 }
 
-void OmDataArchiveQT::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
+void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmProject * project ) 
 {
 	OmDataArchiveProject::ArchiveRead( path, project ) ;
 }
 
-void OmDataArchiveQT::ArchiveWrite( const OmHdf5Path & path, OmProject * project ) 
+void OmDataArchiveQT::ArchiveWrite( const OmDataPath & path, OmProject * project ) 
 {
 	OmDataArchiveProject::ArchiveWrite( path, project );
 }

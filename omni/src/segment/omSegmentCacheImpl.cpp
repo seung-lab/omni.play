@@ -3,7 +3,7 @@
 #include "system/omProjectData.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...

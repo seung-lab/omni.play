@@ -4,7 +4,7 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
 
-class OmHdf5Path;
+class OmDataPath;
 class OmProject;
 class OmManageableObject;
 class OmVolume;
@@ -21,8 +21,8 @@ class OmSegmentCacheImpl;
 class OmDataArchiveProject
 {
  public:
-	static void ArchiveRead( const OmHdf5Path & path, OmProject * project );
-	static void ArchiveWrite( const OmHdf5Path & path, OmProject * project );
+	static void ArchiveRead( const OmDataPath & path, OmProject * project );
+	static void ArchiveWrite( const OmDataPath & path, OmProject * project );
 
 	static void storeOmManageableObject( QDataStream & out, const OmManageableObject & mo );
 	static void loadOmManageableObject( QDataStream & in, OmManageableObject & mo );

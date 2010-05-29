@@ -3,14 +3,14 @@
 #include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
-#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataPath.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
 #include "segment/omSegmentCache.h"
 
 #include <QDataStream>
 
-void OmDataArchiveSegment::ArchiveRead( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache ) 
+void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -42,7 +42,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmHdf5Path & path, OmSegment** pag
 	delete p_data;
 }
 
-void OmDataArchiveSegment::ArchiveWrite( const OmHdf5Path & path, OmSegment** page, OmSegmentCache* cache) 
+void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);

@@ -1,13 +1,13 @@
 #ifndef OM_HDF_HELPERS_H
 #define OM_HDF_HELPERS_H
 
-#include "omHdf5Path.h"
+#include "omDataPath.h"
 
 class OmHdf5Helpers 
 {
  public:
-	static OmHdf5Path getDefaultDatasetName();
-	static OmHdf5Path getProjectArchiveNameQT();
+	static OmDataPath getDefaultDatasetName();
+	static OmDataPath getProjectArchiveNameQT();
 };
 
 #endif

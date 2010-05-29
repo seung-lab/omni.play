@@ -78,7 +78,7 @@ void OmBuildChannel::newBuild()
 	//////////////////
 	//////////////////
 	// nuke old data
-	OmHdf5Path volPath;
+	OmDataPath volPath;
 	volPath.setPathQstr( QString("channels/%1/").arg(mChann->GetName()) );
 	if (OmProjectData::GetProjectDataReader()->group_exists(volPath)) {
 		OmProjectData::GetDataWriter()->group_delete(volPath);
@@ -96,7 +96,7 @@ void OmBuildChannel::newBuild()
 								   ROUNDUP(data_dims.y, chunkSize),
 								   ROUNDUP(data_dims.z, chunkSize));
 		
-		OmHdf5Path mip_volume_level_path;
+		OmDataPath mip_volume_level_path;
 		QString mip_path = QString("%1%2/%3")
 			.arg( QString("channels/%1/").arg(mChann->GetName() ) )
 			.arg(i)
@@ -165,7 +165,7 @@ void OmBuildChannel::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	mChann->GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	OmHdf5Path source_data_path;
+	OmDataPath source_data_path;
 	QString mip_path = QString("%1%2/%3")
 		.arg( QString("channels/%1/").arg(mChann->GetName() ) )
 		.arg( rMipCoord.Level - 1)

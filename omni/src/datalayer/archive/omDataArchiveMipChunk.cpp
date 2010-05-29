@@ -2,7 +2,7 @@
 #include "system/omProjectData.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveMipChunk.h"
-#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataPath.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSimpleChunk.h"
 #include "datalayer/omDataReader.h"
@@ -10,7 +10,7 @@
 
 #include <QDataStream>
 
-void OmDataArchiveMipChunk::ArchiveRead( const OmHdf5Path & path, OmMipChunk * chunk ) 
+void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -24,7 +24,7 @@ void OmDataArchiveMipChunk::ArchiveRead( const OmHdf5Path & path, OmMipChunk * c
 	delete p_data;
 }
 
-void OmDataArchiveMipChunk::ArchiveWrite( const OmHdf5Path & path, OmMipChunk * chunk ) 
+void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * chunk ) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -36,7 +36,7 @@ void OmDataArchiveMipChunk::ArchiveWrite( const OmHdf5Path & path, OmMipChunk * 
 									   ba.size(), 
 									   ba.data() );
 }
-void OmDataArchiveMipChunk::ArchiveRead( const OmHdf5Path & path, OmSimpleChunk * chunk ) 
+void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -50,7 +50,7 @@ void OmDataArchiveMipChunk::ArchiveRead( const OmHdf5Path & path, OmSimpleChunk 
 	delete p_data;
 }
 
-void OmDataArchiveMipChunk::ArchiveWrite( const OmHdf5Path & path, OmSimpleChunk * chunk ) 
+void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);

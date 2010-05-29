@@ -18,7 +18,7 @@
 static const int Omni_Version = 5;
 static const QString Omni_Postfix("OMNI");
 
-void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
 {
 	int size;
 	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -55,7 +55,7 @@ void OmDataArchiveProject::ArchiveRead( const OmHdf5Path & path, OmProject * pro
 	delete p_data;
 }
 
-void OmDataArchiveProject::ArchiveWrite( const OmHdf5Path & path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * project ) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -304,7 +304,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 
         QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
         QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
-        OmHdf5Path path;
+        OmDataPath path;
         path.setPathQstr(dendStr);
 
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {

@@ -1,22 +1,21 @@
-#ifndef OM_HDF_PATH_H
-#define OM_HDF_PATH_H
+#ifndef OM_DATA_PATH_H
+#define OM_DATA_PATH_H
 
 #include "common/omCommon.h"
-#include <string>
 
-class OmHdf5Path 
+class OmDataPath 
 {
  public:
-	OmHdf5Path();
+	OmDataPath();
 	void setPath( std::string str );
 	void setPathQstr( QString );
 
 	const std::string & getString() const;
 
-	OmHdf5Path & operator=( OmHdf5Path & rhs );
+	OmDataPath & operator=( OmDataPath & rhs );
 
  private:
-	string mPath;
+	std::string mPath;
 }; 
 
 #endif

@@ -80,7 +80,7 @@ void OmSimpleChunk::OpenForWrite()
 		return;
 	}
 
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
@@ -98,7 +98,7 @@ void OmSimpleChunk::WriteVolumeData()
 		OpenForWrite();
 	}
  
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
 	if (mpImageData) {
@@ -120,7 +120,7 @@ int  OmSimpleChunk::GetSize()
 void OmSimpleChunk::ReadVolumeData()
 {
 	//get path to mip level volume
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
 	//read from project data

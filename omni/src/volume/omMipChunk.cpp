@@ -129,7 +129,7 @@ void OmMipChunk::OpenForWrite()
 		return;
 	}
 
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
@@ -223,7 +223,7 @@ bool OmMipChunk::IsMetaDataDirty()
 void OmMipChunk::ReadVolumeData()
 {
 	//get path to mip level volume
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
 	//read from project data
@@ -250,7 +250,7 @@ void OmMipChunk::WriteVolumeData()
 		OpenForWrite();
 	}
 
-	OmHdf5Path mip_level_vol_path;
+	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
 	if (mpImageData) {
@@ -262,7 +262,7 @@ void OmMipChunk::WriteVolumeData()
 
 void OmMipChunk::ReadMetaData()
 {
-	OmHdf5Path dat_file_path;
+	OmDataPath dat_file_path;
 	dat_file_path.setPathQstr( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
 
 	//read archive if it exists
@@ -273,7 +273,7 @@ void OmMipChunk::ReadMetaData()
 
 void OmMipChunk::WriteMetaData()
 {
-	OmHdf5Path dat_file_path;
+	OmDataPath dat_file_path;
 	dat_file_path.setPathQstr(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	OmDataArchiveQT::ArchiveWrite(dat_file_path, this);

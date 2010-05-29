@@ -101,7 +101,7 @@ void OmMipMesh::Load()
 {
   //debug("load", "in OmMipMesh::Load\n"); 
   //read meta data
-  OmHdf5Path fpath;
+  OmDataPath fpath;
   fpath.setPathQstr( mPath + "metamesh.dat" );
 
   if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
@@ -173,7 +173,7 @@ void OmMipMesh::Save()
   assert(hdf5File);
 
   //write meta data
-  OmHdf5Path fpath;
+  OmDataPath fpath;
   fpath.setPathQstr( mPath + "metamesh.dat" );
   char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
   hdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);

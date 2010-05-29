@@ -160,7 +160,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
            src/system/omThreadedCache.h \
-           src/utility/biSetMap.h \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
@@ -181,7 +180,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/lowLevel/omHdf5LowLevel.h \
            src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h \
            src/datalayer/omHdf5Manager.h \
-           src/datalayer/omHdf5Path.h \
+           src/datalayer/omDataPath.h \
            src/datalayer/omHdf5Reader.h \
            src/datalayer/omHdf5Writer.h \
            src/utility/omImageDataIo.h \
@@ -338,7 +337,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/lowLevel/omHdf5LowLevel.cpp \
            src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.cpp \
            src/datalayer/omHdf5Manager.cpp \
-           src/datalayer/omHdf5Path.cpp \
+           src/datalayer/omDataPath.cpp \
            src/datalayer/omHdf5Reader.cpp \
            src/datalayer/omHdf5Writer.cpp \
            src/utility/omImageDataIo.cpp \

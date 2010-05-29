@@ -1,12 +1,12 @@
 #ifndef OM_DATA_PATHS_H
 #define OM_DATA_PATHS_H
 
-#include "datalayer/omHdf5Path.h"
+class OmDataPath;
 
 class OmDataPaths
 {
  public:
-	static OmHdf5Path getSegmentPagePath( OmId segmentationID, const quint32 pageNum );
+	static OmDataPath getSegmentPagePath( const OmId segmentationID, const quint32 pageNum );
 
 };
 

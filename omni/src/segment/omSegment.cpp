@@ -11,7 +11,7 @@
 #include "segment/omSegmentCache.h"
 #include "datalayer/omDataPaths.h"
 #include "volume/omMipChunkCoord.h"
-#include "datalayer/omHdf5Path.h"
+#include "datalayer/omDataPath.h"
 #include "system/viewGroup/omViewGroupState.h"
 
 OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)

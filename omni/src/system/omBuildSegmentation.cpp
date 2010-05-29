@@ -96,7 +96,7 @@ void OmBuildSegmentation::loadDendrogram()
         OmDataLayer dl;
         OmDataReader * hdf5reader = dl.getReader(fname, true);
 
-        OmHdf5Path fpath;
+        OmDataPath fpath;
         fpath.setPathQstr("dend");
         if( !hdf5reader->dataset_exists(fpath)){
                 printf("no dendrogram found\n");
