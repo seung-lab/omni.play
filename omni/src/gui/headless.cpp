@@ -25,11 +25,11 @@ char **argv_global;
 
 OmId SegmentationID = 0;
 
-void Headless::openProject( QString fName, const bool autoOpenAndClose )
+void Headless::openProject( QString fName )
 {
 	try {
 		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
-		OmProject::Load( fName, autoOpenAndClose );
+		OmProject::Load( fName );
 		printf("opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
 	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
@@ -111,9 +111,9 @@ void Headless::processLine( QString line, QString fName )
 		}
 	} else if( line.startsWith("openFile:") ){
 		QStringList args = line.split(':');
-		openProject( args[1], false );
+		openProject( args[1] );
 	} else if( line.startsWith("open") ){
-		openProject( fName, false );
+		openProject( fName );
 	} else if( line.startsWith("parallel:") ){
 		QStringList args = line.split(':');
 		OmStateManager::setParallel(true);
@@ -140,7 +140,7 @@ void Headless::processLine( QString line, QString fName )
 
 		QFile file( projectFileNameAndPath );
 		if(file.exists()){
-			OmProject::Load( projectFileNameAndPath, false );
+			OmProject::Load( projectFileNameAndPath );
 			
 		} else {
 			OmProject::New( projectFileNameAndPath );
@@ -241,12 +241,12 @@ void Headless::runHeadless( QString headlessCMD, QString fName )
 {	
 	if( "--headless" == headlessCMD ){
 		if( fName != "" ){
-			openProject( fName, false );
+			openProject( fName );
 		}
 		runInteractive( fName );
 	} else {
 		if( fName != "" ){
-			openProject( fName, true );
+			openProject( fName );
 		}
 
 		QString planFileName = headlessCMD;

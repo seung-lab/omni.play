@@ -19,7 +19,6 @@
 #include <vtkImageConstantPad.h>
 #include <QFile>
 
-
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 
@@ -840,7 +839,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	mip_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
         //round up to nearest chunk
 
-        OmHdf5 hdfExport( fileNameAndPath, false, false );
+        OmHdf5 hdfExport( fileNameAndPath, false );
         OmHdf5Path fpath;
         fpath.setPath("main");
 
@@ -1055,7 +1054,6 @@ int OmMipVolume::GetBytesPerSample()
 {
 	return mBytesPerSample;
 }
-
 
 void OmMipVolume::SetBytesPerSample(int bytesPerSample)
 {

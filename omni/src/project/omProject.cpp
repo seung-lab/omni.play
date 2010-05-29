@@ -61,7 +61,7 @@ QString OmProject::New( QString fileNameAndPath )
 	Instance()->mFileName = fileInfo.fileName();
 	Instance()->mDirectoryPath = fileInfo.filePath();
 
-	OmProjectData::instantiateProjectData( fileNameAndPath, false );
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Create();
 	OmProjectData::Open();
 
@@ -96,7 +96,7 @@ void OmProject::Commit()
 	OmStateManager::ClearUndoStack();
 }
 
-void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
+void OmProject::Load( QString fileNameAndPath  )
 {
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
@@ -108,7 +108,7 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		throw OmIoException( qPrintable( err ));
 	}
 	
-	OmProjectData::instantiateProjectData( fileNameAndPath, autoOpenAndClose );
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Open();
 
 	try {

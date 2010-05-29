@@ -36,7 +36,7 @@ public:
 	static QString New( QString fileNameAndPath );
 	static void Save();
 	static void Commit();
-	static void Load( QString fileNameAndPath, const bool autoOpenAndClose = false );
+	static void Load( QString fileNameAndPath );
 	static void Close();
 	
 

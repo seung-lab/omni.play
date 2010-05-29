@@ -9,11 +9,11 @@ class vtkImageData;
 class OmDataWriter
 {
  public:
-
-	virtual void flush() = 0;
-
-	//file
 	virtual void create() = 0;
+
+	virtual void open() = 0;
+	virtual void close() = 0;
+	virtual void flush() = 0;
 
 	//group
 	virtual void group_delete( const OmHdf5Path & path ) = 0;

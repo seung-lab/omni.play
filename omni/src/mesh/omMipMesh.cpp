@@ -161,7 +161,8 @@ void OmMipMesh::Save()
       OmStateManager::getParallel()) {
     OmDataLayer * dl = OmProjectData::GetDataLayer();
     hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ),
-                              true, false );
+                              false );
+    hdf5File->open();
     hdf5File->create();
   } else {
     hdf5File = OmProjectData::GetDataWriter();
@@ -195,6 +196,11 @@ void OmMipMesh::Save()
   fpath.setPathQstr( mPath + "vertex.dat" );
   size = 6 * mVertexCount * sizeof(GLfloat);
   hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
+
+  if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
+      OmStateManager::getParallel()) {
+    hdf5File->close();
+  }
 }
 
 string OmMipMesh::GetFileName()

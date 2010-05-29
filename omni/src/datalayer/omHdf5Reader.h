@@ -14,7 +14,7 @@ class vtkImageData;
 class OmHdf5Reader : public OmDataReader
 {
  public:
-	OmHdf5Reader( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
+	OmHdf5Reader( QString fileNameAndPath, const bool readOnly);
 	~OmHdf5Reader();
 
 	std::string getFileNameAndPathString();

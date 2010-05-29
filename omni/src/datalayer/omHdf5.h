@@ -2,7 +2,6 @@
 #define OM_HDF_H
 
 #include <QMutex>
-#include <QQueue>
 
 #include "common/omCommon.h"
 #include "datalayer/omHdf5Helpers.h"
@@ -15,7 +14,7 @@ class vtkImageData;
 class OmHdf5 
 {
  public:
-	OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
+	OmHdf5( QString fileNameAndPath, const bool readOnly);
 	~OmHdf5();
 
 	string getFileNameAndPathString();
@@ -49,10 +48,8 @@ class OmHdf5
 
  private:
 	QString m_fileNameAndPath;
-	QQueue <OmHdf5DataSet*> mQueue;
 	QMutex fileLock;
 	OmHdf5LowLevelWrappersManualOpenClose * hdfLowLevelWrap;
-	void setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly );
 };
 
 #endif

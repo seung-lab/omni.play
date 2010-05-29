@@ -3,13 +3,24 @@
 #include "common/omDebug.h"
 #include <stdlib.h>
 
-OmHdf5Writer::OmHdf5Writer( QString fileNameAndPath, const bool autoOpenAndClose )
+OmHdf5Writer::OmHdf5Writer( QString fileNameAndPath )
 {
-	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, autoOpenAndClose, false );
+	hdf5 = OmHdf5Manager::getOmHdf5File( fileNameAndPath, false );
 }
 
 OmHdf5Writer::~OmHdf5Writer()
 {
+	close();
+}
+
+void OmHdf5Writer::open()
+{
+	hdf5->open();
+}
+
+void OmHdf5Writer::close()
+{
+	hdf5->close();
 }
 
 void OmHdf5Writer::flush()

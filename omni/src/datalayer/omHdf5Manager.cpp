@@ -19,10 +19,9 @@ OmHdf5Manager::~OmHdf5Manager()
 	}
 }
 
-OmHdf5* OmHdf5Manager::getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, 
-				      const bool readOnly )
+OmHdf5* OmHdf5Manager::getOmHdf5File( QString fileNameAndPath, const bool readOnly )
 {
-	return Instance()->doGetOmHdf5File( fileNameAndPath, autoOpenAndClose, readOnly );
+	return Instance()->doGetOmHdf5File( fileNameAndPath, readOnly );
 }
 
 OmHdf5Manager * OmHdf5Manager::Instance()
@@ -41,8 +40,7 @@ void OmHdf5Manager::Delete()
 	mspInstance = NULL;
 }
 
-OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, 
-					const bool readOnly )
+OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool readOnly )
 {
 	QMutexLocker locker(&lock);
 
@@ -53,7 +51,7 @@ OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool auto
 		return hdf5Files.value( abs_fnpn );
 	}
 
-	OmHdf5 * hdf5File = new OmHdf5(fileNameAndPath, autoOpenAndClose, readOnly );
+	OmHdf5 * hdf5File = new OmHdf5(fileNameAndPath, readOnly );
 	hdf5Files.insert( abs_fnpn, hdf5File );
 	return hdf5File;
 }

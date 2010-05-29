@@ -8,9 +8,11 @@
 class OmHdf5Writer : public OmDataWriter
 {
  public:
-	OmHdf5Writer( QString fileNameAndPath, const bool autoOpenAndClose);
+	OmHdf5Writer( QString fileNameAndPath);
 	~OmHdf5Writer();
 
+	void open();
+	void close();
 	void flush();
 
 	//file

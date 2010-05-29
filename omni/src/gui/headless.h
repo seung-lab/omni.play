@@ -10,7 +10,7 @@ class Headless
 
  private:
 
-	void openProject( QString fName, const bool autoOpenAndClose );
+	void openProject( QString fName );
 	void processLine( QString line, QString fName );
 	void runInteractive( QString fName );
 	void runScript( const QString scriptFileName, QString fName );

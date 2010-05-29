@@ -94,7 +94,7 @@ void OmBuildSegmentation::loadDendrogram()
 	QString fname = mFileNamesAndPaths.at(0).filePath();
 
         OmDataLayer dl;
-        OmDataReader * hdf5reader = dl.getReader(fname, true, true);
+        OmDataReader * hdf5reader = dl.getReader(fname, true);
 
         OmHdf5Path fpath;
         fpath.setPathQstr("dend");
@@ -124,6 +124,8 @@ void OmBuildSegmentation::loadDendrogram()
 	mSeg->mDendValues = dendValues;
 	mSeg->mDendValuesSize = dendValuesSize;
 	mSeg->FlushDend();
+
+	hdf5reader->close();
 
 	stopTiming(type);
 }

@@ -7,9 +7,11 @@
 class OmDummyWriter : public OmDataWriter
 {
  public:
-	OmDummyWriter( QString fileNameAndPath, const bool autoOpenAndClose );
+	OmDummyWriter( QString fileNameAndPath );
 	~OmDummyWriter();
 
+	void open(){};
+	void close(){};
 	void flush();
 
 	//file

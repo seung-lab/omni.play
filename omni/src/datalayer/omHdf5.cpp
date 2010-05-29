@@ -3,19 +3,17 @@
 #include <stdlib.h>
 #include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
 
-OmHdf5::OmHdf5( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly )
+OmHdf5::OmHdf5( QString fileNameAndPath, const bool readOnly )
+	: m_fileNameAndPath(fileNameAndPath)
+	, hdfLowLevelWrap( new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly) )
 {
-	m_fileNameAndPath = fileNameAndPath;
-	setHDF5fileAsAutoOpenAndClose( autoOpenAndClose, readOnly );
 }
 
 OmHdf5::~OmHdf5()
 {
-	debug ("meshercrash", "deleting %p %s\n", this, qPrintable(m_fileNameAndPath));
 	delete hdfLowLevelWrap;
 }
 
-// filename and path accessors
 QString OmHdf5::getFileNameAndPath()
 {
 	return m_fileNameAndPath;
@@ -23,19 +21,7 @@ QString OmHdf5::getFileNameAndPath()
 
 string OmHdf5::getFileNameAndPathString()
 {
-	debug ("meshercrash", "%s\n", m_fileNameAndPath.toStdString().c_str());
 	return m_fileNameAndPath.toStdString();
-}
-
-// set whether HDF file should be kept opened, 
-//  or automatically closed, between calls into the file
-void OmHdf5::setHDF5fileAsAutoOpenAndClose( const bool autoOpenAndClose, const bool readOnly )
-{
-	if( autoOpenAndClose ){
-		assert(0);
-	} else {
-		hdfLowLevelWrap = new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly);
-	}
 }
 
 void OmHdf5::create()

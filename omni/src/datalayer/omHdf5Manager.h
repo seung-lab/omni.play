@@ -13,7 +13,7 @@ class OmHdf5Manager : boost::noncopyable {
  public:
 	static OmHdf5Manager* Instance();
 	static void Delete();
-	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly);
+	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool readOnly);
 	
  private:
 	OmHdf5Manager();
@@ -21,7 +21,7 @@ class OmHdf5Manager : boost::noncopyable {
 
 	static OmHdf5Manager* mspInstance;
 
-	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool autoOpenAndClose, const bool readOnly );
+	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool readOnly );
 	QHash<QString, OmHdf5*> hdf5Files;
 	QMutex lock;
 };

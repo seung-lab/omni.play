@@ -24,14 +24,14 @@ OmProjectData::OmProjectData()
 	mIsReadOnly = false;
 }
 
-void OmProjectData::instantiateProjectData( QString fileNameAndPath, const bool autoOpenAndClose )
+void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 {
 	if (NULL != mspInstance) {
 		delete mspInstance;
-		mspInstance = new OmProjectData;
+		mspInstance = new OmProjectData();
 	}
 	
-	Instance()->setupDataLayer( fileNameAndPath, autoOpenAndClose );
+	Instance()->setupDataLayer( fileNameAndPath );
 }
 
 OmProjectData::~OmProjectData()
@@ -112,10 +112,10 @@ OmDataWriter * OmProjectData::GetDataWriter()
 	return Instance()->dataWriter;
 }
 
-void OmProjectData::setupDataLayer( QString fileNameAndPath, const bool autoOpenAndClose)
+void OmProjectData::setupDataLayer( QString fileNameAndPath )
 {
 	dataLayer = new OmDataLayer();
 	mIsReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
-	dataReader = dataLayer->getReader( fileNameAndPath, autoOpenAndClose, mIsReadOnly );
-	dataWriter = dataLayer->getWriter( fileNameAndPath, autoOpenAndClose, mIsReadOnly );
+	dataReader = dataLayer->getReader( fileNameAndPath, mIsReadOnly );
+	dataWriter = dataLayer->getWriter( fileNameAndPath, mIsReadOnly );
 }

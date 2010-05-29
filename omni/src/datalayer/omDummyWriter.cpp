@@ -2,7 +2,7 @@
 #include "common/omDebug.h"
 #include <stdlib.h>
 
-OmDummyWriter::OmDummyWriter( QString fileNameAndPath, const bool )
+OmDummyWriter::OmDummyWriter( QString fileNameAndPath )
 {
 	mFileNameAndPath = fileNameAndPath;
 }
