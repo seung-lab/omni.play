@@ -177,7 +177,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataWriter.h \
            src/datalayer/omDummyWriter.h \
            src/datalayer/omHdf5.h \
-           src/datalayer/omHdf5Dataset.h \
            src/datalayer/omHdf5Helpers.h \
            src/datalayer/lowLevel/omHdf5LowLevel.h \
            src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h \
@@ -335,7 +334,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDummyWriter.cpp \
            src/datalayer/omHdf5.cpp \
-           src/datalayer/omHdf5Dataset.cpp \
            src/datalayer/omHdf5Helpers.cpp \
            src/datalayer/lowLevel/omHdf5LowLevel.cpp \
            src/datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.cpp \

@@ -5,7 +5,6 @@
 
 #include "common/omCommon.h"
 #include "datalayer/omHdf5Helpers.h"
-#include "datalayer/omHdf5Dataset.h"
 #include "datalayer/omHdf5Path.h"
 
 class OmHdf5LowLevelWrappersManualOpenClose;
