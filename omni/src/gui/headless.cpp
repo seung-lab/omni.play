@@ -201,6 +201,19 @@ void Headless::processLine( QString line, QString fName )
 		bs->addFileNameAndPath( hdf5fnp );
 		bs->buildAndMeshSegmentation();
 		bs->wait();
+	} else if( line.startsWith("loadChunk") ){
+		if( 0 == SegmentationID  ){
+                        printf("please choose segmentation first!\n");
+                        return;
+                }
+		
+		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
+		OmMipChunkCoord chunk_coord(0,0,0,0);
+		
+		QExplicitlySharedDataPointer < OmSimpleChunk > p_chunk = QExplicitlySharedDataPointer < OmSimpleChunk > ();
+		segmen.GetSimpleChunk(p_chunk, chunk_coord);
+		p_chunk->Open();
+		
         } else {
 		printf("could not parse \"%s\"\n", qPrintable(line) );
 	}

@@ -313,7 +313,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		}
 
 		//remove mesh from cache to force it to reload
-		foreach( OmSegID val, rModifiedValues ){
+		foreach( const OmSegID & val, rModifiedValues ){
 			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
@@ -335,7 +335,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	}
 
 	//remove mesh from cache to force it to reload
-	foreach( OmSegID val, rModifiedValues ){
+	foreach( const OmSegID & val, rModifiedValues ){
 		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
 		mMipMeshManager.UncacheMesh(mip_mesh_coord);
 	}

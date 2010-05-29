@@ -249,6 +249,8 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 
 	hid_t dstype = H5Dget_type(dataset_id);
 
+	//printTypeInfo( dstype );
+
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: dataset size is %d\n", __FUNCTION__, (int)dataset_size);
 
 	//Allocate memory to read into
@@ -260,6 +262,8 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 	status = H5Dread(dataset_id, dstype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
 	if (status < 0)
 		throw OmIoException("Could not read HDF5 dataset.");
+
+	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace. 
 	status = H5Sclose(dataspace_id);
@@ -273,6 +277,32 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 
 	OmDataWrapperPtr ret( new OmDataWrapper( dataset_data ) );
 	return ret;
+}
+
+void OmHdf5LowLevel::printTypeInfo( hid_t dstype )
+{
+	switch( H5Tget_class( dstype ) ){
+	case H5T_INTEGER:
+		printf("type is int; ");
+		if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
+			printf("subtype is UCHAR; ");
+		} else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
+			printf("subtype is UINT; ");
+		}else {
+			printf("subtype is unknown; ");
+		}
+		break;
+	case H5T_FLOAT:
+		printf("type is float");
+		printf("subtype is unknown; ");
+		break;
+	default:
+		printf("type is unknown");
+		break;
+	}
+
+	printf("precision %d\n", H5Tget_precision(dstype));
+
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char *name, int size, const void *data)
@@ -854,6 +884,12 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
+
+
+	hid_t dstype = H5Dget_type(dataset_id);
+	//printTypeInfo( dstype );
+	H5Tclose( dstype );
+
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
