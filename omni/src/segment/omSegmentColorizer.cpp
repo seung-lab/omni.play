@@ -2,7 +2,6 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "gui/toolbars/dendToolbar.h"
 
 #include <QMutexLocker>
 
