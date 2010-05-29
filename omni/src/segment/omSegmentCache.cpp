@@ -2,7 +2,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/omProjectData.h"
-#include "datalayer/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omHdf5Path.h"
 #include "datalayer/omHdf5Path.h"
 #include "volume/omSegmentation.h"

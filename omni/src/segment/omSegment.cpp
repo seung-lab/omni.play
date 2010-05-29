@@ -5,7 +5,7 @@
 #include "system/omPreferences.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
-#include "datalayer/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveQT.h"
 #include "common/omDebug.h"
 #include "utility/stringHelpers.h"
 #include "segment/omSegmentCache.h"

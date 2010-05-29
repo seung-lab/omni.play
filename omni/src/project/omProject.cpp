@@ -10,7 +10,7 @@
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "datalayer/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataWriter.h"
 #include "datalayer/omHdf5Manager.h"
 #include "volume/omChannel.h"

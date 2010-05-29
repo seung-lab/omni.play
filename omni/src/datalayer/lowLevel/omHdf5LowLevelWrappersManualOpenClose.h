@@ -1,7 +1,7 @@
 #ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
 #define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
 
-#include "datalayer/omHdf5LowLevel.h"
+#include "datalayer/lowLevel/omHdf5LowLevel.h"
 
 class OmHdf5Path;
 

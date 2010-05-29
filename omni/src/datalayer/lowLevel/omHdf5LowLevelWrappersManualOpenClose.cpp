@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "common/omException.h"
-#include "datalayer/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/lowLevel/omHdf5LowLevelWrappersManualOpenClose.h"
 #include "datalayer/omHdf5Path.h"
 
 #define HDF5_CHECK() 						\

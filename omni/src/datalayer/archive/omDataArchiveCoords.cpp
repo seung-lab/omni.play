@@ -1,6 +1,6 @@
 #include "common/omCommon.h"
-#include "datalayer/omDataArchiveCoords.h"
-#include "datalayer/omDataArchiveVmml.h"
+#include "datalayer/archive/omDataArchiveCoords.h"
+#include "datalayer/archive/omDataArchiveVmml.h"
 #include "view2d/omTileCoord.h"
 #include "project/omProject.h"
 #include "system/omProjectData.h"

@@ -5,7 +5,7 @@
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "datalayer/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "utility/omImageDataIo.h"

@@ -1,7 +1,7 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
-#include "datalayer/omDataArchiveSegment.h"
+#include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omHdf5Path.h"
 #include "volume/omSegmentation.h"
