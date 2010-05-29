@@ -2,6 +2,7 @@
 #define OM_SIMPLE_CHUNK_H
 
 #include "omMipChunk.h"
+#include "datalayer/omDataWrapper.h"
 
 class OmSimpleChunk : public OmMipChunk {
 
@@ -27,8 +28,8 @@ public:
 	void *GetMeshImageData();
 
  private:
-	void * mpImageData;
-
+	OmDataWrapperPtr mpImageData;
+	
 	friend QDataStream &operator<<(QDataStream & out, const OmSimpleChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmSimpleChunk & chunk );
 };

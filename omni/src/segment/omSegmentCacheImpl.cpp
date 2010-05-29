@@ -560,8 +560,8 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 
 void OmSegmentCacheImpl::loadDendrogram()
 {
-	doLoadDendrogram( mSegmentation->mDend, 
-			  mSegmentation->mDendValues, 
+	doLoadDendrogram( mSegmentation->mDend->getQuint32Ptr(), 
+			  mSegmentation->mDendValues->getFloatPtr(), 
 			  mSegmentation->mDendCount, 
 			  mSegmentation->mDendThreshold);
 }

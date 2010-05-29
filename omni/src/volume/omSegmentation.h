@@ -12,6 +12,7 @@
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
 #include "volume/omMipVolume.h"
+#include "datalayer/omDataWrapper.h"
 
 class MeshingManager;
 class OmSegment;
@@ -119,8 +120,8 @@ private:
 	OmGroups mGroups;
 	OmViewGroupState * mViewGroupState;
 
-        quint32 * mDend;
-        float * mDendValues;
+        OmDataWrapperPtr mDend;
+        OmDataWrapperPtr mDendValues;
 	int mDendSize;
 	int mDendValuesSize;
 	int mDendCount;

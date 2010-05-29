@@ -100,7 +100,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(c
 	hdfLowLevel.om_hdf5_dataset_image_write_trim_with_lock(fileId, name, dataExtent, bytesPerSample, pImageData);
 }
 
-void * OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(const OmDataPath & path, int *size)
+OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(const OmDataPath & path, int *size)
 {
 	HDF5_CHECK();
 	return hdfLowLevel.om_hdf5_dataset_raw_read_with_lock(fileId, name, size);
@@ -125,7 +125,7 @@ Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_wi
 	return hdfLowLevel.om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 }
 
-void* OmHdf5LowLevelWrappersManualOpenClose::dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
 {
 	HDF5_CHECK();
 	return hdfLowLevel.om_hdf5_dataset_read_raw_chunk_data(fileId, name, dataExtent, bytesPerSample);

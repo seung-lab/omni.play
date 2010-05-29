@@ -2,6 +2,7 @@
 #define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
 
 #include "datalayer/hdf5/omHdf5LowLevel.h"
+#include "datalayer/omDataWrapper.h"
 
 class OmDataPath;
 
@@ -32,10 +33,10 @@ class OmHdf5LowLevelWrappersManualOpenClose
 	void dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 	
 	//data set raw
-	void* dataset_raw_read_with_lock(const OmDataPath & path, int* size = NULL);
+	OmDataWrapperPtr dataset_raw_read_with_lock(const OmDataPath & path, int* size = NULL);
 	void dataset_raw_create_with_lock(const OmDataPath & path, int size, const void *data);
 	void dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const void* data);
-	void* dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
+	OmDataWrapperPtr dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
 	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
 	Vector3< int > dataset_get_dims_with_lock( const OmDataPath & path );
 

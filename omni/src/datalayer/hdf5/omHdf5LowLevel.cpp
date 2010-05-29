@@ -221,7 +221,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 /**
  * method used to read meshes and .dat files from disk
  */
-void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char *name, int *size)
+OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char *name, int *size)
 {
 	debug("hdf5verbose", "\nOmHDF5LowLevel: in %s...\n", __FUNCTION__);
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
@@ -271,7 +271,8 @@ void * OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const ch
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
-	return dataset_data;
+	OmDataWrapperPtr ret( new OmDataWrapper( dataset_data ) );
+	return ret;
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char *name, int size, const void *data)
@@ -842,7 +843,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 		throw OmIoException("Could not close HDF5 dataset.");
 }
 
-void * OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -920,7 +921,8 @@ void * OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t fileId, c
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
-	return imageData;
+	OmDataWrapperPtr pret( new OmDataWrapper( imageData ) );
+	return pret;
 }
 
 /////////////////////////////////

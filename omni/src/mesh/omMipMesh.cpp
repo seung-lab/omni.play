@@ -44,6 +44,10 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
   mStripCount = 0;
   mpStripOffsetSizeData = NULL;
 
+  mpStripOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+  mpVertexIndexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+  mpVertexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+
   mVertexIndexCount = 0;
   mpVertexIndexData = NULL;
 
@@ -62,37 +66,16 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
 
 OmMipMesh::~OmMipMesh()
 {
-
-  //debug("FIXME", << "OmMipMesh::~OmMipMesh()" << endl;
-
   //if was vbo, then delete vbos
   if (IsVbo()) {
     DeleteVbo();
-
-    //assert this local data was erased
-    assert(mpVertexIndexData == NULL);
-    assert(mpVertexData == NULL);
-  }
-
-  //meshes with no data don't have alloc'd data
-  if (mpStripOffsetSizeData) {
-    free( mpStripOffsetSizeData );
-    mpStripOffsetSizeData = NULL;
-  }
-
-  if (mpVertexIndexData) {
-    free(mpVertexIndexData);
-    mpVertexIndexData = NULL;
-  }
-
-  if (mpVertexData) {
-    free(mpVertexData);
-    mpVertexData = NULL;
   }
 
   if (mHdf5File) {
     delete mHdf5File;
   }
+
+  // OmDataWrapperPtr will take care of image data destruction...
 }
 
 /////////////////////////////////
@@ -109,33 +92,32 @@ void OmMipMesh::Load()
     return;
   }
 
-  char *meta = (char *)OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath);
-  char result = *meta;
-  free(meta);
+  OmDataWrapperPtr result = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath);
 
   //if meta is zero, then no data so skip
-  if (!result) {
+  if (NULL == result->getCharPtr() ){
     return;
   }
 
   int size;
 
-  //read strip offset/size data
+  //read strip offset/size data  (uint32_t *)
   fpath.setPathQstr( mPath + "stripoffset.dat" );
-  mpStripOffsetSizeData = (uint32_t *)OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpStripOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpStripOffsetSizeData = mpStripOffsetSizeDataWrap->getUInt32Ptr();
   mStripCount = size / (2 * sizeof(uint32_t));
 
-  //read vertex offset data
+  //read vertex offset data (GLuint *)
   fpath.setPathQstr( mPath + "vertexoffset.dat" );
-  mpVertexIndexData = (GLuint *)OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpVertexIndexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpVertexIndexData = mpVertexIndexDataWrap->getGLuintPtr();
   mVertexIndexCount = size / sizeof(GLuint);
 
-  //read strip offset/size data
+  //read strip offset/size data (GLfloat *)
   fpath.setPathQstr( mPath + "vertex.dat" );
-  mpVertexData = (GLfloat *)OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpVertexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpVertexData = mpVertexDataWrap->getGLfloatPtr();
   mVertexCount = size / (6 * sizeof(GLfloat));
-
-  //debug("genone","OmMipMesh::Load: got mesh from disk\n");
 }
 
 string OmMipMesh::GetLocalPathForHd5fChunk()

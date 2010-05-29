@@ -13,9 +13,9 @@
 void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache ) 
 {
 	int size;
-	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 	
-	QByteArray ba = QByteArray::fromRawData( p_data, size );
+	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
@@ -38,8 +38,6 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, OmSegment** pag
 
                 page[ i ] = segment;
         }
-
-	delete p_data;
 }
 
 void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache) 

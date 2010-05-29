@@ -4,6 +4,7 @@
 #include <QMutex>
 
 #include "common/omCommon.h"
+#include "datalayer/omDataWrapper.h"
 
 class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;
@@ -38,9 +39,9 @@ class OmHdf5
 	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
 
 	//data set raw
-	void* dataset_raw_read( const OmDataPath & path, int* size = NULL);
+	OmDataWrapperPtr dataset_raw_read( const OmDataPath & path, int* size = NULL);
 	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const void* data);
-	void* dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
+	OmDataWrapperPtr dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
 	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
 	Vector3< int > dataset_get_dims( const OmDataPath & path );
 

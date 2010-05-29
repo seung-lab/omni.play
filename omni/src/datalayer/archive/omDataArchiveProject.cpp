@@ -21,9 +21,9 @@ static const QString Omni_Postfix("OMNI");
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
 {
 	int size;
-	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 	
-	QByteArray ba = QByteArray::fromRawData( p_data, size );
+	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
@@ -32,8 +32,6 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	in >> file_version;
 
 	if( Omni_Version != file_version ){
-		delete p_data;
-
 		throw OmIoException("can not open file: file version is (" 
 				    + boost::lexical_cast<std::string>(file_version)
 				    +"), but Omni expecting ("
@@ -47,12 +45,8 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	in >> omniPostfix;
 
 	if( Omni_Postfix != omniPostfix ){
-		delete p_data;
-
 		throw OmIoException("corruption detected in Omni file");
 	}
-
-	delete p_data;
 }
 
 void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * project ) 
@@ -309,11 +303,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
 		int size;
-        	seg.mDend = (quint32 *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+        	seg.mDend = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 		assert( size == seg.mDendSize );
 
         	path.setPathQstr(dendValStr);
-        	seg.mDendValues = (float *) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+        	seg.mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 		assert( size == seg.mDendValuesSize );
 	}
 

@@ -86,13 +86,13 @@ void OmHdf5::dataset_image_write_trim( const OmDataPath & path, DataBbox *dataEx
 	hdfLowLevelWrap->dataset_image_write_trim_with_lock( path, dataExtent, bytesPerSample, pImageData);
 }
 
-void* OmHdf5::dataset_raw_read( const OmDataPath & path, int* size)
+OmDataWrapperPtr OmHdf5::dataset_raw_read( const OmDataPath & path, int* size)
 {
 	QMutexLocker locker(&fileLock);
 	return hdfLowLevelWrap->dataset_raw_read_with_lock( path, size);
 }
 
-void* OmHdf5::dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5::dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
 {
 	QMutexLocker locker(&fileLock);
 	return hdfLowLevelWrap->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );

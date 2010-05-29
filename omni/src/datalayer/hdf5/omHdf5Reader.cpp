@@ -1,7 +1,7 @@
 #include "omHdf5Reader.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
-#include "common/omDebug.h"
-#include <stdlib.h>
+#include "datalayer/omDataWrapper.h"
 
 OmHdf5Reader::OmHdf5Reader( QString fileNameAndPath, const bool readOnly )
 {
@@ -48,7 +48,7 @@ vtkImageData* OmHdf5Reader::dataset_image_read_trim( const OmDataPath & path, Da
 	return hdf5->dataset_image_read_trim( path, dataExtent, bytesPerSample);
 }
 
-void* OmHdf5Reader::dataset_raw_read( const OmDataPath & path, int* size)
+OmDataWrapperPtr OmHdf5Reader::dataset_raw_read( const OmDataPath & path, int* size)
 {
 	return hdf5->dataset_raw_read( path, size );
 }
@@ -58,7 +58,7 @@ Vector3 < int > OmHdf5Reader::dataset_image_get_dims( const OmDataPath & path )
 	return hdf5->dataset_image_get_dims( path );
 }
 
-void* OmHdf5Reader::dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5Reader::dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
 {
 	return hdf5->dataset_read_raw_chunk_data( path, dataExtent, bytesPerSample );
 }

@@ -2,14 +2,15 @@
 #define OM_HDF_READER_H
 
 #include <QMutex>
-#include <QQueue>
 
 #include "common/omCommon.h"
-#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
+#include "datalayer/omDataWrapper.h"
 
 class vtkImageData;
+class OmDataPath;
+class OmHdf5;
 
 class OmHdf5Reader : public OmDataReader
 {
@@ -33,10 +34,10 @@ class OmHdf5Reader : public OmDataReader
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
 	vtkImageData* dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
-	void* dataset_image_read_simple_trim( const OmDataPath & path, DataBbox dataExtent);
+
 	//data set raw
-	void* dataset_raw_read( const OmDataPath & path, int* size = NULL);
-	void* dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
+	boost::shared_ptr<OmDataWrapper> dataset_raw_read( const OmDataPath & path, int* size = NULL);
+	boost::shared_ptr<OmDataWrapper> dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
 	Vector3< int > dataset_get_dims( const OmDataPath & path );
 
  private:

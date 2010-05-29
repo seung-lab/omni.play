@@ -13,6 +13,8 @@
 #include "common/omCommon.h"
 #include "common/omGl.h"
 #include "system/omCacheableBase.h"
+#include "datalayer/omDataWrapper.h"
+
 
 class OmHdf5;
 class OmMipMesh;
@@ -53,16 +55,20 @@ private:
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
+	OmDataWrapperPtr mpStripOffsetSizeDataWrap; //dim = 2 * mStripCount
 	uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount
 
 	// offsets for vectors in geometry data (specifies geometry)
 	uint32_t mVertexIndexCount;
+	OmDataWrapperPtr mpVertexIndexDataWrap; //dim = mVertexIndexCount with 2 bytes check 65K limit
 	GLuint *mpVertexIndexData; //dim = mVertexIndexCount with 2 bytes check 65K limit
+
 	uint32_t m2VertexIndexCount;
 	GLuint *mp2VertexIndexData;
 
 	// interleved vertex and normal data (raw data)
 	uint32_t mVertexCount;
+	OmDataWrapperPtr mpVertexDataWrap;	//dim = 6 * mVertexCount 4 bytes
 	GLfloat *mpVertexData;	//dim = 6 * mVertexCount 4 bytes
 
 	GLuint mVertexDataVboId;

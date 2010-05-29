@@ -8,6 +8,7 @@ typedef LONG_PTR ssize_t;
 #endif
 
 #include "common/omCommon.h"
+#include "datalayer/omDataWrapper.h"
 
 #include "hdf5.h"
 
@@ -34,14 +35,14 @@ class OmHdf5LowLevel
 	void om_hdf5_dataset_delete_create_tree_with_lock(hid_t fileId, const char *name);
 
 	//data set raw
-	void * om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char* name, int* size = NULL);
+	OmDataWrapperPtr om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char* name, int* size = NULL);
 	void om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char* name, int size, const void* data);
 	void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data);
 
 	//image I/O
 	Vector3 < int > om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
 	void om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
-	void* om_hdf5_dataset_read_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
+	OmDataWrapperPtr om_hdf5_dataset_read_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
 	void om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  void * imageData);
 	Vector3< int > om_hdf5_dataset_get_dims_with_lock(hid_t fileId, const char *name);
 

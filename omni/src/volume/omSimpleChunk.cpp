@@ -28,7 +28,6 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 OmSimpleChunk::OmSimpleChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
 	: OmMipChunk( rMipCoord, pMipVolume )
 {
-	mpImageData = NULL;
 }
 
 OmSimpleChunk::~OmSimpleChunk()
@@ -49,8 +48,6 @@ OmSimpleChunk::~OmSimpleChunk()
  */
 void OmSimpleChunk::Close()
 {
-	//debug("genone","OmSimpleChunk::Close()\n");
-
 	//ignore if already closed
 	if (!IsOpen())
 		return;
@@ -62,16 +59,9 @@ void OmSimpleChunk::Close()
 	//close
 	SetOpen(false);
 
-	//assert image data exists
-	assert(mpImageData);
-
 	//remove image data size from cache (convert to bytes)
 	int est_mem_bytes = GetSize();
 	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
-
-	//delete image data
-	free(mpImageData);
-	mpImageData = NULL;
 }
 
 void OmSimpleChunk::OpenForWrite()
@@ -85,9 +75,9 @@ void OmSimpleChunk::OpenForWrite()
 	
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
 	int size = GetSize();
-	void *data = OmProjectData::GetProjectDataReader()->dataset_raw_read( mip_level_vol_path, &size);
+	mpImageData = OmProjectData::GetProjectDataReader()->dataset_raw_read( mip_level_vol_path, &size);
 
-	SetImageData(data);
+	SetImageData(NULL);
 
 	SetOpen(true);
 }
@@ -101,9 +91,7 @@ void OmSimpleChunk::WriteVolumeData()
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
-	if (mpImageData) {
-		OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( mip_level_vol_path, GetSize(), mpImageData);
-	}
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( mip_level_vol_path, GetSize(), mpImageData->getPtr());
 
 	setVolDataClean();
 }
@@ -129,15 +117,15 @@ void OmSimpleChunk::ReadVolumeData()
 		throw OmIoException("no MIP data found");
 	}
 
-	void *data = OmProjectData::GetProjectDataReader()->dataset_read_raw_chunk_data(mip_level_vol_path, GetExtent(), GetBytesPerSample());
+	mpImageData = OmProjectData::GetProjectDataReader()->dataset_read_raw_chunk_data(mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
-	if( NULL == data ){
+	if( NULL == mpImageData->getPtr() ){
 		// TODO: how does this affect the class that owns the OmSimpleChunk object?
 		delete this;
 	}
 
 	//set this image data
-	SetImageData(data);
+	SetImageData(NULL);
 
 	// Need to undo the side effect caused by setting the image data. Don't want to write out the data just
 	// because we set the newly loaded data.
@@ -173,8 +161,8 @@ void OmSimpleChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 	int index = offset.z*dimensions.y*dimensions.x + offset.y*dimensions.x + offset.x; 
 
 	// create two difft types of pointers to this data;
-	quint8* char_ptr = (quint8*) mpImageData;
-	uint32_t* int_ptr = (uint32_t*) mpImageData;
+	quint8* char_ptr = mpImageData->getQuint8Ptr();
+	uint32_t* int_ptr = mpImageData->getUInt32Ptr();
 
 	//cast to appropriate type and return as uint
 	switch (GetBytesPerSample()) {
@@ -209,8 +197,8 @@ uint32_t OmSimpleChunk::GetVoxelValue(const DataCoord & voxel)
 	int index = offset.z*dimensions.y*dimensions.x + offset.y*dimensions.x + offset.x; 
 
 	// create two difft types of pointers to this data;
-	quint8* char_ptr = (quint8*) mpImageData;
-	uint32_t* int_ptr = (uint32_t*) mpImageData;
+	quint8* char_ptr = mpImageData->getQuint8Ptr();
+	uint32_t* int_ptr = mpImageData->getUInt32Ptr();
 
 	//cast to appropriate type and return as uint
 	switch (GetBytesPerSample()) {
@@ -228,22 +216,8 @@ uint32_t OmSimpleChunk::GetVoxelValue(const DataCoord & voxel)
  *	Set the image data of this MipChunk to data at the given pointer.
  *	Closes if already open and sets MipChunk to be open and dirty.
  */
-void OmSimpleChunk::SetImageData(void * pImageData)
+void OmSimpleChunk::SetImageData(void *)
 {
-
-	//assert valid pointer
-	assert(pImageData);
-
-	//forget about making sure given image data has expected dimensions
-
-	if (mpImageData) {
-		free(mpImageData);
-		mpImageData=NULL;
-	}
-
-	//set this image data to given
-	mpImageData = pImageData;
-
 	//set data causes chunk to be open and dirty
 	SetOpen(true);
 	setVolDataDirty();
@@ -272,7 +246,7 @@ void OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 
 	//get pointer to native scalar data
 	if (SEGMENT_DATA_BYTES_PER_SAMPLE == GetBytesPerSample()) {
-		OmSegID *p_scalar_data = static_cast < OmSegID * >(mpImageData);
+		OmSegID *p_scalar_data = static_cast < OmSegID * >(mpImageData->getUInt32Ptr());
 
 		//for all voxels in the chunk
 		for ( index = 0; index < NumberOfValues; index++) {
@@ -284,7 +258,7 @@ void OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 			++p_scalar_data;
 		}
 	} else if (1 == GetBytesPerSample()) {
-		unsigned char *p_scalar_data = static_cast < unsigned char *>(mpImageData);
+		unsigned char *p_scalar_data = static_cast < unsigned char *>(mpImageData->getQuint8Ptr());
 		OmSegID my_scalar_data;
 
 		//for all voxels in the chunk
@@ -331,9 +305,6 @@ void * OmSimpleChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vect
 
 	Vector2i imageIncrement;
 	int imageIndex;
-	// create two difft types of pointers to this data;
-	quint8* char_ptr = (quint8*) mpImageData;
-	uint32_t* int_ptr = (uint32_t*) mpImageData;
 
 	//form result dims
 	switch (plane) {
@@ -361,6 +332,10 @@ void * OmSimpleChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vect
 	default:
 		assert(false);
 	}
+
+	// create two difft types of pointers to this data;
+	quint8* char_ptr = mpImageData->getQuint8Ptr();
+	uint32_t* int_ptr =  mpImageData->getUInt32Ptr();
 
 	// create the two possible resulting arrays
 	quint8* char_result = (quint8*) malloc(sliceDims.x*sliceDims.y);
@@ -392,5 +367,5 @@ void * OmSimpleChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vect
 
 void * OmSimpleChunk::GetMeshImageData()
 {
-	return mpImageData;
+	return mpImageData->getPtr();
 }

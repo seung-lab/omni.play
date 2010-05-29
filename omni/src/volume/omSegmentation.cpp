@@ -43,9 +43,9 @@ OmSegmentation::OmSegmentation()
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
-
-        mDend = NULL;
-        mDendValues = NULL;
+	
+	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mDendValues = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
@@ -80,8 +80,8 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	mMeshingMan = NULL;
 
-        mDend = NULL;
-        mDendValues = NULL;
+	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mDendValues = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
@@ -97,13 +97,6 @@ OmSegmentation::~OmSegmentation()
 	KillCacheThreads();
 
 	delete mSegmentCache;
-
-	if(mDend) {
-        	free(mDend);
-	}
-	if(mDendValues){
-        	free(mDendValues);
-	}
 }
 
 /////////////////////////////////
@@ -714,10 +707,10 @@ void OmSegmentation::FlushDend()
 	OmDataPath path;
 	
 	path.setPathQstr(dendStr);
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend->getCharPtr());
 
 	path.setPathQstr(dendValStr);
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues->getFloatPtr());
 }
 
 void OmSegmentation::ReloadDendrogram()

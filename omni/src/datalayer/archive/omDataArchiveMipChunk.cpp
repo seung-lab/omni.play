@@ -13,15 +13,13 @@
 void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk ) 
 {
 	int size;
-	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 	
-	QByteArray ba = QByteArray::fromRawData( p_data, size );
+	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 	in >> (*chunk);
-
-	delete p_data;
 }
 
 void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * chunk ) 
@@ -39,15 +37,13 @@ void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * 
 void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	int size;
-	char* p_data = (char*) OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 	
-	QByteArray ba = QByteArray::fromRawData( p_data, size );
+	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 	in >> (*chunk);
-
-	delete p_data;
 }
 
 void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmSimpleChunk * chunk ) 

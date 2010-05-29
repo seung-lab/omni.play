@@ -3,6 +3,7 @@
 #include "project/omProject.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataReader.h"
+#include "datalayer/omDataWrapper.h"
 #include "utility/stringHelpers.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
@@ -95,6 +96,7 @@ void OmBuildSegmentation::loadDendrogram()
 
         OmDataLayer dl;
         OmDataReader * hdf5reader = dl.getReader(fname, true);
+	hdf5reader->open();
 
         OmDataPath fpath;
         fpath.setPathQstr("dend");
@@ -105,17 +107,16 @@ void OmBuildSegmentation::loadDendrogram()
 	Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
 	printf("dendrogram is %d x %d\n", dSize.x, dSize.y);
 	int dendSize;
-	quint32 * dend = (quint32 *) hdf5reader->dataset_raw_read(fpath, &dendSize);
+	OmDataWrapperPtr dend = hdf5reader->dataset_raw_read(fpath, &dendSize);
 
         fpath.setPathQstr("dendValues");
         if(!hdf5reader->dataset_exists(fpath)){
                 printf("no dendrogram values found\n");
-		free(dend);
                 return;
 	} 
       	Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
 	int dendValuesSize;
-	float * dendValues = (float *) hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
+	OmDataWrapperPtr dendValues = hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
 	printf("dendrogram values is %d x %d\n", dSize.x, dSize.y);
 
 	mSeg->mDendCount = dSize.y;
