@@ -94,8 +94,10 @@ void OmMipMesh::Load()
 
   OmDataWrapperPtr result = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath);
 
+  char noData = *(result->getCharPtr());
+
   //if meta is zero, then no data so skip
-  if (NULL == result->getCharPtr() ){
+  if ( 0 == noData ){
     return;
   }
 
