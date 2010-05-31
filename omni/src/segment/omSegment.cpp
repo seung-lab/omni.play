@@ -74,10 +74,10 @@ void OmSegment::SetColor(const Vector3 < float >& color)
 	mCache->addToDirtySegmentList(this);
 }
 
-void OmSegment::ApplyColor(const OmBitfield & drawOps, OmViewGroupState * vgs)
+void OmSegment::ApplyColor(const OmBitfield & drawOps, OmViewGroupState * vgs, OmSegmentColorCacheType sccType)
 {
-	if( mParentSegID && !(vgs && vgs->GetSplitMode())){
-		mCache->findRoot( this )->ApplyColor(drawOps, vgs);
+	if( mParentSegID && sccType != SegmentationBreak){
+		mCache->findRoot( this )->ApplyColor(drawOps, vgs, sccType);
 		return;
 	}
 

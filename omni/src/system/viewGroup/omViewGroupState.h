@@ -2,6 +2,7 @@
 #define OM_VIEW_GROUP_STATE_H
 
 #include "system/omManageableObject.h"
+#include "segment/omSegment.h"
 #include <QMutex>
 
 class OmSegmentColorizer;
@@ -42,6 +43,8 @@ class OmViewGroupState : public OmManageableObject {
 
 	void ColorTile( OmSegID *, const int,
 			const ObjectType, unsigned char * );
+	void ColorMesh(const OmBitfield & drawOps, OmSegment * segment);
+
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
@@ -53,6 +56,8 @@ class OmViewGroupState : public OmManageableObject {
         bool GetSplitMode(OmId & seg, OmId & segment);
         void SetSplitMode(OmId seg, OmId segment);
         void SetSplitMode(bool onoroff, bool postEvent = true);
+	void SetBreakOnSplitMode(bool mode);
+
 
  private:
 	QMutex mColorCacheMapLock;
@@ -82,6 +87,7 @@ class OmViewGroupState : public OmManageableObject {
 	ToolBarManager * mToolBarManager;
 	bool mShatter;
 	bool mSplitting;
+	bool mBreakOnSplit;
 	OmId mSplittingSegment;
 	OmId mSplittingSeg;
 

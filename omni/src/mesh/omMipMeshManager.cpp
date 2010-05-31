@@ -121,7 +121,8 @@ void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
 		}
 
 		//apply segment color
-		(*iter)->ApplyColor(drawOps, vgs);
+		//(*iter)->ApplyColor(drawOps, vgs);
+		vgs->ColorMesh(drawOps, *iter);
 
 		//draw mesh
 		glPushName((*iter)->getValue());

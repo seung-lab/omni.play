@@ -33,6 +33,7 @@ OmViewGroupState::OmViewGroupState()
 	mBreakThreshold = 0;
         mShatter = false;
         mSplitting = false;
+	mBreakOnSplit = true;
         mSplittingSegment = 0;
         mSplittingSeg = 1;
 
@@ -347,7 +348,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 		break;
 
 	case SEGMENTATION:
-		if( mShatter ) {
+		if( mShatter || (mSplitting && mBreakOnSplit) ) {
 			sccType = SegmentationBreak;
 		} else {
 			sccType = Segmentation;
@@ -367,6 +368,20 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	mColorCaches[ sccType ]->colorTile( imageData, size, data );
 }
+
+void OmViewGroupState::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
+{
+        OmSegmentColorCacheType sccType;
+
+        if( mShatter || (mSplitting && mBreakOnSplit) ) {
+        	sccType = SegmentationBreak;
+        } else {
+        	sccType = Segmentation;
+        }
+
+	segment->ApplyColor(drawOps, this, sccType);
+}
+
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
 {
@@ -416,3 +431,7 @@ void OmViewGroupState::SetSplitMode(OmId seg, OmId segment)
         SetSplitMode(true);
 }
 
+void OmViewGroupState::SetBreakOnSplitMode(bool mode)
+{
+	mBreakOnSplit = mode;
+}

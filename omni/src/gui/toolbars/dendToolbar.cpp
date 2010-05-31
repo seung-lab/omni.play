@@ -47,7 +47,13 @@ void DendToolBar::createToolbarActions()
 	connect(toolbarSplitAct, SIGNAL(pressed()), 
 		this, SLOT(split()));
 	toolbarSplitAct->setCheckable(true);
- 
+
+	autoBreakCheckbox = new QCheckBox(mMainWindow);
+	autoBreakCheckbox->setText(tr("Show Breaks"));
+	autoBreakCheckbox->setChecked(true);
+        connect(autoBreakCheckbox, SIGNAL(stateChanged(int)),
+                this, SLOT(autoBreakChecked()));
+
 
 	decreaseThresholdAct = new QPushButton(mMainWindow);
 	decreaseThresholdAct->setText(tr("-"));
@@ -64,7 +70,7 @@ void DendToolBar::createToolbarActions()
 	connect(mThreshold, SIGNAL(editingFinished()), 
 		this, SLOT(thresholdChanged()));
 
-	increaseThresholdAct =  new QPushButton(mMainWindow);
+	increaseThresholdAct = new QPushButton(mMainWindow);
 	
 	increaseThresholdAct->setText(tr("+"));	
 
@@ -165,6 +171,7 @@ void DendToolBar::addToolbars()
 	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);
 	
 	firstLayout->addWidget(toolbarSplitAct);
+	firstLayout->addWidget(autoBreakCheckbox);
 	firstBox->setLayout(firstLayout);
 	dendToolBar->addWidget(firstBox);
 
@@ -429,3 +436,8 @@ void DendToolBar::SetSplittingOff()
 	toolbarSplitAct->setChecked(false);
 }
 
+void DendToolBar::autoBreakChecked()
+{
+	debug("dendbar", "DendToolBar::autoBreakChecked\n");
+	mViewGroupState->SetBreakOnSplitMode(autoBreakCheckbox->isChecked());
+}

@@ -9,6 +9,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentQueue.h"
+#include "segment/omSegmentColorizer.h"
 
 class OmSegmentCache;
 class OmMipChunkCoord;
@@ -33,7 +34,7 @@ public:
 	void SetColor(const Vector3<float> &);
 	
 	//drawing
-	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs);
+	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs, OmSegmentColorCacheType sccType);
 
 	const OmSegID & getValue();
 

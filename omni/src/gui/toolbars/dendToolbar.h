@@ -30,6 +30,7 @@ class DendToolBar : public QWidget
 	void ChangeModeModify(bool checked);
 	void toolbarSplit(bool checked);
 	void split();
+	void autoBreakChecked();
 	void increaseThreshold();
 	void decreaseThreshold();
 	void increaseBreakThreshold();
@@ -58,6 +59,7 @@ class DendToolBar : public QWidget
 
 	// Actions
 	QPushButton * toolbarSplitAct;
+	QCheckBox * autoBreakCheckbox;
 	QPushButton * decreaseThresholdAct;
 	QLabel * thresholdLabel;
 	QLabel* breakThresholdLabel;
