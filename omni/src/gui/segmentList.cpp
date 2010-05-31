@@ -3,22 +3,21 @@
 #include "segment/omSegmentSelector.h"
 #include "gui/guiUtils.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentCache.h"
+
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 SegmentList::SegmentList( QWidget * parent, 
 			  InspectorProperties * in_inspectorProperties,
 			  ElementListBox * in_elementListBox ) 
-  : QWidget( parent )
+	: QWidget( parent )
+	, dataElementsWidget( NULL )
+	, inspectorProperties( in_inspectorProperties )
+	, elementListBox( in_elementListBox )
+	, haveValidSDW( false )
+	, currentPageNum( 0 )
 {
-	inspectorProperties = in_inspectorProperties;
-	elementListBox = in_elementListBox;
-	haveValidSDW = false;
-	dataElementsWidget = NULL;
-
-	mNumSegmentsPerPage = getNumSegmentsPerPage();
-	currentPageNum = 0;
-	mNumSegments = 0;
 }
 
 int SegmentList::getNumSegmentsPerPage()
@@ -26,43 +25,30 @@ int SegmentList::getNumSegmentsPerPage()
 	return 100;
 }
 
-QList< OmSegID > * SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+quint32 SegmentList::getMaxSegmentValue()
 {
-	int offset = firstSegmentID - (firstSegmentID % mNumSegmentsPerPage );
+	assert( haveValidSDW );
+	return currentSDW.getMaxSegmentValue();
+}
+
+boost::shared_ptr<OmSegIDs> SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+{
+	int offset = firstSegmentID - (firstSegmentID % getNumSegmentsPerPage() );
 	return doGetSegmentsToDisplay( offset );
 }
 
-QList< OmSegID > * SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
+boost::shared_ptr<OmSegIDs> SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
-	SegmentationDataWrapper sdw = currentSDW;
-	OmSegmentation & segmentation = OmProject::GetSegmentation( sdw.getID() );
-	QList <OmSegID> * mysegmentIDs = new QList <OmSegID>();
+	assert( haveValidSDW );
 
-	mNumSegments = segmentation.GetNumSegments();
-
-	int offset;
-	if( mNumSegments > in_offset ){
+	unsigned int offset = 0;
+	if( getMaxSegmentValue() > in_offset ){
 		offset = in_offset;
-	} else {
-		offset = 0;
 	}
 
-	// FIXME: this search could become slow; 
-	int counter = 0;
-	OmSegment * seg;
-	for( quint32 i = offset+1; i < mNumSegments; i++) {
-		seg =  segmentation.GetSegmentFromValue(i);
-		if( NULL == seg || 0 != seg->getParentSegID() ){
-			continue;
-		}
-		++counter;
-		if( counter > mNumSegmentsPerPage ){
-			break;
-		}
-		mysegmentIDs->append(i);
-	}
+	OmSegIDs * ret = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
 	
-	return mysegmentIDs;
+	return boost::shared_ptr<OmSegIDs>( ret );
 }
 
 void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
@@ -79,7 +65,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	QList< OmSegID > * segs = getSegmentsToDisplay( segmentJustSelectedID );
+	boost::shared_ptr<OmSegIDs> segs = getSegmentsToDisplay( segmentJustSelectedID );
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();
@@ -102,8 +88,6 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 			rowToJumpTo = row;
 		}
 	}
-
-	delete(segs);
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
 
@@ -145,10 +129,10 @@ void SegmentList::dealWithButtons()
 void SegmentList::goToNextPage()
 {
 	currentPageNum++;
-	unsigned int offset = currentPageNum * mNumSegmentsPerPage;
-	if( offset > mNumSegments ){
+	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
+	if( offset > getMaxSegmentValue() ){
 		currentPageNum--;
-		offset = currentPageNum * mNumSegmentsPerPage;
+		offset = currentPageNum * getNumSegmentsPerPage();
 	}
 	populateSegmentElementsListWidget( false, offset );
 }
@@ -159,7 +143,7 @@ void SegmentList::goToPrevPage()
 	if( currentPageNum < 0 ){
 		currentPageNum = 0;
 	}
-	int offset = currentPageNum * mNumSegmentsPerPage;
+	int offset = currentPageNum * getNumSegmentsPerPage();
 	populateSegmentElementsListWidget( false, offset );
 }
 

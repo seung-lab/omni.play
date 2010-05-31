@@ -92,6 +92,8 @@ class OmSegmentCacheImpl {
 
 	quint32 getMaxValue(){ return mMaxValue; }
 
+	OmIds * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+
  private:
 	bool mAllSelected;
 	bool mAllEnabled;

@@ -122,6 +122,10 @@ OmSegmentCache * SegmentationDataWrapper::getSegmentCache()
 	return OmProject::GetSegmentation(mID).GetSegmentCache();
 }
 
+quint32 SegmentationDataWrapper::getMaxSegmentValue()
+{
+	return OmProject::GetSegmentation(mID).GetSegmentCache()->getMaxValue();
+}
 
 /*******************************************
  ****** Segments

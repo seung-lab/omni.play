@@ -43,6 +43,7 @@ class SegmentationDataWrapper
 	//	QString GetSourceDirectoryPath();
 	OmId getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
+	quint32 getMaxSegmentValue();
  private:
 	OmId mID;
 	ObjectType mType;

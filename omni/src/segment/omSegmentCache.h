@@ -79,6 +79,8 @@ public:
 
 	quint32 getMaxValue();
 
+	OmIds * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+
 private:
 	QMutex mMutex;
 	

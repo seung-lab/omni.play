@@ -175,7 +175,7 @@ void OmSegmentCacheImpl::SetAllSelected(bool selected)
 
 bool OmSegmentCacheImpl::isSegmentEnabled( OmSegID segID )
 {
-	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
 	if( mAllEnabled ||
 	    mEnabledSet.contains( rootID ) ){
@@ -192,7 +192,7 @@ bool OmSegmentCacheImpl::isSegmentSelected( OmSegID segID )
 
 bool OmSegmentCacheImpl::isSegmentSelected( OmSegment * seg )
 {
-	OmSegID rootID = findRoot( seg )->getValue();
+	const OmSegID rootID = findRoot( seg )->getValue();
 
 	if( mAllSelected ||
 	    mSelectedSet.contains( rootID ) ){
@@ -204,7 +204,7 @@ bool OmSegmentCacheImpl::isSegmentSelected( OmSegment * seg )
 
 void OmSegmentCacheImpl::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 	clearCaches();
 
 	if (isEnabled) {
@@ -222,7 +222,7 @@ void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 
 void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
 {
-	OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
 	if (isSelected) {
 		mSelectedSet.insert( rootID );
@@ -794,5 +794,33 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids )
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
 		setSegmentSelectedBatch( *iter, true );
 	}
+
 	clearCaches();	
+}
+
+// FIXME: this search could become slow.... (purcaro)
+OmIds * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+{
+	OmIds * ret = new OmIds();
+
+	printf("offset: %d, numToGet: %d\n", offset, numToGet );
+
+	OmSegment * seg;
+	int counter = 0;
+	for( quint32 i = offset; i < mMaxValue; ++i ){
+
+		seg = GetSegmentFromValue( i );
+		if( NULL == seg || 0 != seg->mParentSegID ){
+			continue;
+		}
+
+		ret->insert( i );
+
+		++counter;
+		if( counter > numToGet ){
+			break;
+		}	
+	}
+	
+	return ret;
 }
