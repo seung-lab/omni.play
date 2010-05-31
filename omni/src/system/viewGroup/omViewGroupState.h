@@ -9,14 +9,22 @@ class OmSegmentColorizer;
 class ToolBarManager;
 class SegmentationDataWrapper;
 class ChannelDataWrapper;
+class MainWindow;
+class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
  public:
-	OmViewGroupState();
+	OmViewGroupState( MainWindow * mw );
 	~OmViewGroupState();
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
+
+	// GUI state
+	void addView2Dchannel( OmId chan_id, ViewType vtype);
+	void addView2Dsegmentation( OmId segmentation_id, ViewType vtype);
+	void addView3D();
+	void addAllViews( OmId channelID, OmId segmentationID );
 
 	//viewbox state
 	void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);
@@ -61,6 +69,9 @@ class OmViewGroupState : public OmManageableObject {
 
  private:
 	QMutex mColorCacheMapLock;
+
+	MainWindow * mMainWindow;
+	ViewGroup * mViewGroup;
 
 	int mBreakThreshold;
 

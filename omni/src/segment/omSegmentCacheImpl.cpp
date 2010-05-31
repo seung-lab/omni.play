@@ -95,7 +95,7 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDs & data_values,
         }
 }
 
-bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( const OmSegID & value )
+bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( const OmSegID value )
 {
 	if (0 == value) {
 		return false;

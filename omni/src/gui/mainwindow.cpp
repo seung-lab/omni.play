@@ -3,7 +3,6 @@
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
 #include "gui/toolbars/toolbarManager.h"
-#include "gui/viewGroup.h"
 #include "mainwindow.h"
 #include "myInspectorWidget.h"
 #include "project/omProject.h"
@@ -49,7 +48,6 @@ MainWindow::MainWindow()
 	setProjectOpen( false );
 	omniInspector = NULL;
 	undoView = NULL;
-	mViewGroup = NULL;
 	mCacheMonitorDialog = NULL;
 
 	mViewGroupState = NULL;
@@ -78,13 +76,6 @@ void MainWindow::newProject()
 
 		QString fileNameAndPath = OmProject::New( fileName );
 
-		delete mViewGroupState;
-		mViewGroupState = new OmViewGroupState();
-
-		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);
-		
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
@@ -237,10 +228,6 @@ void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
 		OmProject::Load( fileNameAndPath );
-
-		delete mViewGroupState;
-		mViewGroupState = new OmViewGroupState();
-
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
@@ -273,8 +260,6 @@ void MainWindow::openInspector()
 		if (!isProjectOpen()) {
 			return;
 		}
-
-		resetViewGroup();
 
 		omniInspector = new MyInspectorWidget( this );
 		omniInspector->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
@@ -326,7 +311,7 @@ void MainWindow::open3dView()
 			return;
 		}
 
-		mViewGroup->addView3D();
+		mViewGroupState->addView3D();
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -336,7 +321,7 @@ void MainWindow::open3dView()
 void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 {
 	try {
-		mViewGroup->addView2Dchannel( chan_id, vtype);
+		mViewGroupState->addView2Dchannel( chan_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -346,7 +331,7 @@ void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 {
 	try {
-		mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
+		mViewGroupState->addView2Dsegmentation( segmentation_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -428,25 +413,17 @@ void MainWindow::windowTitleClear()
 	setWindowTitle(tr("Omni"));
 }
 
-void MainWindow::resetViewGroup()
-{
-	if( mViewGroup != NULL ){
-		delete(mViewGroup);
-	}
-
-	mViewGroup = new ViewGroup( this, mViewGroupState );
-}
-
 void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 {
+	delete mViewGroupState;
+	mViewGroupState = new OmViewGroupState(this);
+	
 	if( NULL == mToolBars ){
 		mToolBars = new ToolBarManager(this);
 	}
 
 	mMenuBar->addRecentFile(fileName);
 	setProjectOpen( true );
-
-	mViewGroupState->SetZoomLevel(Vector2 < int >(0, 10));
 
 	mToolBars->setupToolbarInitially();
 	mToolBars->updateGuiFromProjectLoadOrOpen(mViewGroupState);
@@ -461,7 +438,7 @@ void MainWindow::open2Dand3dViews()
 	OmId channelID = 1;
 	OmId segmentationID = 1;
 
-	mViewGroup->addAllViews( channelID, segmentationID );
+	mViewGroupState->addAllViews( channelID, segmentationID );
 }
 
 void MainWindow::openCacheMonitor()

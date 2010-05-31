@@ -25,9 +25,9 @@ class OmSegmentCacheImpl {
 	void AddSegmentsFromChunk(const OmSegIDs &, const OmMipChunkCoord &);
 	OmSegment* AddSegment(OmSegID value);
 
-	bool isValueAlreadyMappedToSegment( const OmSegID & );
+	bool isValueAlreadyMappedToSegment( const OmSegID );
 
-	OmSegment* GetSegmentFromValue(const OmSegID & value) {
+	OmSegment* GetSegmentFromValue(const OmSegID value ) {
 		if( !mAllPagesLoaded ){
 			if ( !isValueAlreadyMappedToSegment( value ) ){
 				return NULL;

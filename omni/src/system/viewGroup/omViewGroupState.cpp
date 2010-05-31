@@ -8,8 +8,10 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
+#include "gui/viewGroup.h"
 
-OmViewGroupState::OmViewGroupState()
+OmViewGroupState::OmViewGroupState( MainWindow * mw)
+	: mMainWindow(mw)
 {
 	mViewSliceDataXY = NULL;
 	mViewSliceDataYZ = NULL;
@@ -37,9 +39,13 @@ OmViewGroupState::OmViewGroupState()
         mSplittingSegment = 0;
         mSplittingSeg = 1;
 
+	zoom_level = Vector2 < int >(0, 10);
+
 	mColorCaches.resize(Number_SegColorCacheEnums, NULL);
 	m_sdw = NULL;
 	m_cdw = NULL;
+
+	mViewGroup = new ViewGroup( mMainWindow, this );
 
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
@@ -48,6 +54,28 @@ OmViewGroupState::~OmViewGroupState()
 {
 	delete m_sdw;
 	delete m_cdw;
+	delete mViewGroup;
+}
+
+// GUI state
+void OmViewGroupState::addView2Dchannel( OmId chan_id, ViewType vtype)
+{
+	mViewGroup->addView2Dchannel( chan_id, vtype);
+}
+
+void OmViewGroupState::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
+{
+	mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
+}
+
+void OmViewGroupState::addView3D()
+{
+	mViewGroup->addView3D();
+}
+
+void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
+{
+	mViewGroup->addAllViews( channelID, segmentationID );
 }
 
 /////////////////////////////////

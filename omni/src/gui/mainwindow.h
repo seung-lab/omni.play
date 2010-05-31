@@ -102,7 +102,6 @@ class MainWindow
 	void windowTitleClear();
 	void updateReadOnlyRelatedWidgets();
 
-	ViewGroup * mViewGroup;
 	void resetViewGroup();
 
 	void updateGuiFromProjectLoadOrOpen( QString fileName );
