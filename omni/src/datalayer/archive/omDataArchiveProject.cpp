@@ -15,7 +15,7 @@
 
 #include <QDataStream>
 
-static const int Omni_Version = 5;
+static const int Omni_Version = 6;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 

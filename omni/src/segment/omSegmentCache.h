@@ -22,7 +22,8 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord);
+	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord,
+				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( OmSegID value );

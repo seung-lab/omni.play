@@ -81,14 +81,20 @@ OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
 }
 
 void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
-					      const OmMipChunkCoord & )
+					      const OmMipChunkCoord &,
+					      boost::unordered_map< OmSegID, unsigned int> * sizes )
 {
-	foreach( const OmSegID & value, data_values ){
+	OmSegIDsSet::const_iterator iter;
+	for( iter = data_values.begin(); iter != data_values.end(); ++iter ){
 
-		OmSegment * seg = GetSegmentFromValue( value );
+		OmSegment * seg = GetSegmentFromValue( *iter );
 
                 if( NULL == seg ) {
-			seg = AddSegment( value );
+			seg = AddSegment( *iter );
+		}
+
+		if( NULL != sizes ){
+			seg->mSize += sizes->at(*iter);
 		}
 
 		addToDirtySegmentList(seg);

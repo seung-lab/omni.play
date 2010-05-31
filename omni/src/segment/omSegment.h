@@ -47,6 +47,7 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
+	quint64 getSize(){ return mSize; }
 
 	void SetImmutable(bool immutable);
 	bool GetImmutable();
@@ -69,6 +70,8 @@ private:
 	OmId mParentSegID;
 	float mThreshold;
 	bool mImmutable;
+
+	quint64 mSize;
 
 	void SetInitialColor();
 

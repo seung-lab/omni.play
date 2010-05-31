@@ -154,29 +154,6 @@ void OmSegmentation::BuildVolumeData()
 	//build volume
 	OmMipVolume::Build();
 
-	for (int level = 0; level < GetRootMipLevel(); ++level) {
-
-		printf("segment build mip level %d...\n", level );
-
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		for (int z = 0; z < mip_coord_dims.z; ++z) {
-			for (int y = 0; y < mip_coord_dims.y; ++y) {
-				for (int x = 0; x < mip_coord_dims.x; ++x) {
-
-					OmMipChunkCoord chunk_coord(level, x, y, z);
-
-					QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-					GetChunk(p_chunk, chunk_coord);
-					const OmSegIDsSet & r_root_indirect_data_values = p_chunk->GetDirectDataValues();
-
-					// will already be mappped
-					mSegmentCache->AddSegmentsFromChunk(r_root_indirect_data_values, chunk_coord);
-				}
-			}
-		}
-	}
-	
 	mSegmentCache->flushDirtySegments();
 	mSegmentCache->turnBatchModeOn(false);
 }
@@ -285,16 +262,15 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	GetChunk(p_chunk, mipCoord);
 
 	//analyze entire chunk segmentation data
-	p_chunk->RefreshDirectDataValues( mSegmentCache );
+	boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunk->RefreshDirectDataValues( mSegmentCache );
 
-	//if root then update segment manager with spacial content information
-	if (p_chunk->IsRoot()) {
-		//get root spatial segs
+	//if LEAF (i.e. MIP 0) then have segment manager add any unmapped segment values
+	if (p_chunk->IsLeaf()) {
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-
-		//add to manager if data isn't already mapped
-		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord);
+		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes);
 	}
+
+	delete sizes;
 
 	//rebuild mesh data only if entire volume data has been built as well
 	if (IsVolumeDataBuilt() ) {

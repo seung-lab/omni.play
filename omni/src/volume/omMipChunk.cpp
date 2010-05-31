@@ -472,8 +472,10 @@ void OmMipChunk::loadMetadataIfPresent()
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store 
  *	all values in the DataSegmentId set of the chunk.
  */
-void OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
+boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
 {
+	boost::unordered_map< OmSegID, unsigned int> * sizes = new boost::unordered_map< OmSegID, unsigned int>();
+
 	//uses mpImageData so ensure chunk is open
 	Open();
 
@@ -498,6 +500,7 @@ void OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
 					//if non-null insert in set
 					if (NULL_SEGMENT_DATA != *p_scalar_data) {
 						mDirectlyContainedValues.insert(*p_scalar_data);
+						++(sizes->operator[](*p_scalar_data));
 					}
 					//adv to next scalar
 					++p_scalar_data;
@@ -517,6 +520,7 @@ void OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
 					if ('\0' != *p_scalar_data) {
 						OmSegID my_scalar_data = (OmSegID) (*p_scalar_data);
 						mDirectlyContainedValues.insert(my_scalar_data);
+						++(sizes->operator[](my_scalar_data));
 					}
 					//adv to next scalar
 					++p_scalar_data;
@@ -527,6 +531,8 @@ void OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
 
 	//note metadata is dirty
 	setMetaDataDirty();
+
+	return sizes;
 }
 
 /////////////////////////////////

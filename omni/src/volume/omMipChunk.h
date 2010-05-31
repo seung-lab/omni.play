@@ -26,7 +26,7 @@ class OmMipChunk : public OmCacheableBase {
 
 public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
-	~OmMipChunk();
+	virtual ~OmMipChunk();
 		
 	//overridden datavolume methods so as to notify cache
 	void Open();
@@ -64,7 +64,7 @@ public:
 	
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
-	virtual void RefreshDirectDataValues( OmSegmentCache *);
+	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues( OmSegmentCache *);
 	
 
 	//chunk extent

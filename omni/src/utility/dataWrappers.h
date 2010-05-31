@@ -78,6 +78,7 @@ class SegmentDataWrapper
 	QString get_original_mapped_data_value();
 	OmId getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
+	quint64 getSize();
  private:
 	OmId mID;
 	ObjectType mType;

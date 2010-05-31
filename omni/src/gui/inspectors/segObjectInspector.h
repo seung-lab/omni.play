@@ -26,7 +26,7 @@ private:
 	QLineEdit *tagsEdit;
 	QPushButton *colorButton;
 	QPlainTextEdit *notesEdit;
-	QLabel* dataValuesList;
+	QLabel* size;
 	QLabel* origDataValueList;
 	QLabel* chunkList;
 

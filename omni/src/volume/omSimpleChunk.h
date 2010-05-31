@@ -21,7 +21,7 @@ public:
 
 	void SetImageData(void * pImageData);
 
-	virtual void RefreshDirectDataValues( OmSegmentCache *);
+	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues( OmSegmentCache *);
 
 	virtual void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
 

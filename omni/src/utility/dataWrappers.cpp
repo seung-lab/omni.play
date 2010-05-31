@@ -226,6 +226,11 @@ OmSegment * SegmentDataWrapper::getSegment()
 	return getSegmentation().GetSegment( mID );
 }
 
+quint64 SegmentDataWrapper::getSize()
+{
+	return getSegmentation().GetSegment( mID )->getSize();
+}
+
 /*******************************************
  ****** Filters
  *******************************************/

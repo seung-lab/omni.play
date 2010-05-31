@@ -44,7 +44,7 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	dataValuesList->setText( "fixme" );
+	size->setText( QString::number( sdw.getSize() ));
 	origDataValueList->setText( sdw.get_original_mapped_data_value() );
 	chunkList->setText( "disabled" );
 }
@@ -128,14 +128,14 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	origDataValueList->setObjectName(QString::fromUtf8("origDataValueList"));
         grid->addWidget(origDataValueList, 4, 1);
 
-	QLabel* dataValuesLabel = new QLabel(sourceBox);
-	dataValuesLabel->setObjectName(QString::fromUtf8("dataValuesLabel"));
-	dataValuesLabel->setText( "Data values:" );
-        grid->addWidget(dataValuesLabel, 5, 0);
+	QLabel* sizeLabel = new QLabel(sourceBox);
+	sizeLabel->setObjectName(QString::fromUtf8("sizeLabel"));
+	sizeLabel->setText( "Size (voxels):" );
+        grid->addWidget(sizeLabel, 5, 0);
 
-	dataValuesList = new QLabel(sourceBox);
-	dataValuesList->setObjectName(QString::fromUtf8("dataValuesList"));
-        grid->addWidget(dataValuesList, 5, 1);
+	size = new QLabel(sourceBox);
+	size->setObjectName(QString::fromUtf8("size"));
+        grid->addWidget(size, 5, 1);
 
 	QLabel* chunkLabel = new QLabel(sourceBox);
 	chunkLabel->setObjectName(QString::fromUtf8("chunkLabel"));

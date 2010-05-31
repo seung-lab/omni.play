@@ -48,10 +48,11 @@ OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 }
 
 void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
-					  const OmMipChunkCoord & mipCoord )
+					  const OmMipChunkCoord & mipCoord,
+					  boost::unordered_map< OmSegID, unsigned int> * sizes )
 {
 	QMutexLocker locker( &mMutex );
-	mImpl->AddSegmentsFromChunk(data_values, mipCoord );
+	mImpl->AddSegmentsFromChunk(data_values, mipCoord, sizes );
 }
 
 bool OmSegmentCache::isValueAlreadyMappedToSegment( OmSegID value )

@@ -22,7 +22,8 @@ class OmSegmentCacheImpl {
 	~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &);
+	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
+				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( const OmSegID );

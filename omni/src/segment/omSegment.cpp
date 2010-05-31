@@ -19,6 +19,7 @@ OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
 	, mCache(cache)
 	, mParentSegID(0)
 	, mImmutable(false)
+	, mSize(0)
 {
 	SetInitialColor();
 }
@@ -27,6 +28,7 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	:  mCache(cache)
 	, mParentSegID(0)
 	, mImmutable(false)
+	, mSize(0)
 {
 }
 
