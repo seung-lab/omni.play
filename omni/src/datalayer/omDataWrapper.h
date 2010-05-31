@@ -3,7 +3,7 @@
 
 #include "common/omGl.h"
 
-class OmDataWrapper
+class OmDataWrapper : boost::noncopyable
 {
  public:
 	OmDataWrapper( void * ptr )

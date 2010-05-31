@@ -801,7 +801,7 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 // FIXME: this search could become slow.... (purcaro)
 OmSegIDsListPtr OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
 {
-	OmSegIDsList * ret = new OmSegIDsList();
+	OmSegIDsListPtr ret( new OmSegIDsList() );
 
 	OmSegment * seg;
 	int counter = 0;
@@ -820,5 +820,5 @@ OmSegIDsListPtr OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offse
 		}	
 	}
 	
-	return OmSegIDsListPtr( ret );
+	return ret;
 }
