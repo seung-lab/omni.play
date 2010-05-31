@@ -1,7 +1,6 @@
 #ifndef OM_DATA_WRAPPER_H
 #define OM_DATA_WRAPPER_H
 
-#include <boost/shared_ptr.hpp>
 #include "common/omGl.h"
 
 class OmDataWrapper

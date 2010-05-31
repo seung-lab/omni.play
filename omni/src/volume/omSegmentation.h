@@ -50,7 +50,7 @@ public:
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDs &rEditedVals);
+	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
@@ -66,14 +66,14 @@ public:
 	bool IsSegmentEnabled(OmId id);
 	void SetSegmentEnabled(OmId id, bool enable);
 	void SetAllSegmentsEnabled(bool selected);
-	const OmIds & GetEnabledSegmentIds();
+	const OmIDsSet & GetEnabledSegmentIds();
 	bool IsSegmentSelected(OmId id);
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
-	const OmIds& GetSelectedSegmentIds();
-	void JoinTheseSegments( const OmIds & segmentIds);
-	void UnJoinTheseSegments( const OmIds & segmentIds);
-	void UpdateSegmentSelection( const OmSegIDs & idsToSelect);
+	const OmIDsSet& GetSelectedSegmentIds();
+	void JoinTheseSegments( const OmIDsSet & segmentIds);
+	void UnJoinTheseSegments( const OmIDsSet & segmentIds);
+	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
@@ -94,7 +94,7 @@ public:
 		       const OmMipChunkCoord & chunkCoord,
 		       const OmSegPtrs & segmentsToDraw, 
 		       OmVolumeCuller &rCuller);
-	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDs &, const OmBitfield & );
+	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
 

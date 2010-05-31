@@ -6,10 +6,10 @@
 class OmGroup {
 public:
         OmGroup();
-        OmGroup(OmIds & segids);
+        OmGroup(OmIDsSet & segids);
         ~OmGroup();
 
-        void AddIds(OmIds & segids);
+        void AddIds(OmIDsSet & segids);
 
 protected:
 	OmColor GetRandomColor();
@@ -18,7 +18,7 @@ protected:
         OmGroup& operator= (const OmGroup&);
 
 private:
-	OmIds mIDs;
+	OmIDsSet mIDs;
 	OmColor mColor;
 
 };

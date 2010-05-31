@@ -1,6 +1,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
+#include "system/events/omSegmentEvent.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
@@ -285,10 +286,7 @@ void DendToolBar::addToThreshold(float num)
         value.setNum(threshold);
         mThreshold->setText(value);
 
-	if (OmProject::IsSegmentationValid(getSegmentationID())) {
-		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		seg.SetDendThresholdAndReload(threshold);
-	}
+	haveSegmentationChangeThreshold( threshold );
 }
 
 void DendToolBar::addToBreakThreshold(float num)
@@ -345,7 +343,7 @@ void DendToolBar::join()
 
 	if (OmProject::IsSegmentationValid(getSegmentationID())) {
 		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		OmIds mIDs = seg.GetSelectedSegmentIds();
+		OmIDsSet mIDs = seg.GetSelectedSegmentIds();
 		(new OmSegmentJoinAction(mSeg, mIDs))->Run();
 		//seg.JoinAllSegmentsInSelectedList(mIDs);
 	}	
@@ -371,15 +369,20 @@ void DendToolBar::toggledHint()
 {
 }
 
+void DendToolBar::haveSegmentationChangeThreshold( const float threshold )
+{
+	if (OmProject::IsSegmentationValid(getSegmentationID())) {
+		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
+		seg.SetDendThresholdAndReload(threshold);
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+	}
+}
+
 void DendToolBar::thresholdChanged()
 {
 	debug("dendbar", "DendToolBar::thresholdChanged\n");
 
-	float threshold = mThreshold->text().toFloat();
-	if (OmProject::IsSegmentationValid(getSegmentationID())) {
-		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		seg.SetDendThresholdAndReload(threshold);
-	}
+	haveSegmentationChangeThreshold( mThreshold->text().toFloat() );
 
 	updateGui();
 }

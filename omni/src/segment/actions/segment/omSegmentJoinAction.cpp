@@ -15,7 +15,7 @@
 ///////          OmSegmentJoinAction
 ///////
 OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId, 
-					  const OmIds & selectedSegmentIds)
+					  const OmSegIDsSet & selectedSegmentIds)
 	: mSegmentationId( segmentationId )
 	, mSelectedSegmentIds( selectedSegmentIds )
 {

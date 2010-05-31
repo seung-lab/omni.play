@@ -22,7 +22,7 @@ class OmSegmentCacheImpl {
 	~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDs &, const OmMipChunkCoord &);
+	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &);
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( const OmSegID );
@@ -44,16 +44,16 @@ class OmSegmentCacheImpl {
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmSegIDs& GetEnabledSegmentIdsRef();
+	OmSegIDsSet& GetEnabledSegmentIdsRef();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmSegIDs& GetSelectedSegmentIdsRef();
+	OmSegIDsSet& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDs & ids);
+	void UpdateSegmentSelection( const OmSegIDsSet & ids);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -76,8 +76,8 @@ class OmSegmentCacheImpl {
 
 	void turnBatchModeOn(const bool batchMode);
 	
-	void JoinTheseSegments( const OmIds & segmentList);
-	void UnJoinTheseSegments( const OmIds & segmentList);
+	void JoinTheseSegments( const OmSegIDsSet & segmentList);
+	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	quint32 getPageSize() { return mPageSize; }
 
@@ -92,7 +92,7 @@ class OmSegmentCacheImpl {
 
 	quint32 getMaxValue(){ return mMaxValue; }
 
-	OmIds * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegIDsListPtr getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
  private:
 	bool mAllSelected;
@@ -106,8 +106,8 @@ class OmSegmentCacheImpl {
 
 	OmSegmentation * mSegmentation;
 
-        OmSegIDs mEnabledSet;
-        OmSegIDs mSelectedSet;
+        OmSegIDsSet mEnabledSet;
+        OmSegIDsSet mSelectedSet;
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
@@ -148,7 +148,7 @@ class OmSegmentCacheImpl {
 	void Join( OmSegment *, OmSegment *, const float );
 	void Join( const OmId, const OmId, const float );
 	void rerootSegmentLists();
-	void rerootSegmentList( OmSegIDs & set );
+	void rerootSegmentList( OmSegIDsSet & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
 
 	friend class OmSegmentColorizer;

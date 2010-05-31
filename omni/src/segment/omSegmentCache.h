@@ -22,7 +22,7 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDs & values, const OmMipChunkCoord & mipCoord);
+	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord);
 	OmSegment* AddSegment(OmSegID value);
 
 	bool isValueAlreadyMappedToSegment( OmSegID value );
@@ -37,16 +37,16 @@ public:
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmSegIDs & GetEnabledSegmentIdsRef();
+	OmSegIDsSet & GetEnabledSegmentIdsRef();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmSegIDs & GetSelectedSegmentIdsRef();
+	OmSegIDsSet & GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDs & idsToSelect);
+	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -65,8 +65,8 @@ public:
 	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	void JoinTheseSegments( const OmIds & segmentList);
-	void UnJoinTheseSegments( const OmIds & segmentList);
+	void JoinTheseSegments( const OmSegIDsSet & segmentList);
+	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	quint32 getPageSize();
 
@@ -79,7 +79,7 @@ public:
 
 	quint32 getMaxValue();
 
-	OmIds * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegIDsListPtr getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
 private:
 	QMutex mMutex;

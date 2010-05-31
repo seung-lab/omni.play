@@ -63,7 +63,7 @@ private:
 
 	OmColor mColorInt;
 
-	OmSegIDs segmentsJoinedIntoMe;
+	OmSegIDsSet segmentsJoinedIntoMe;
 	OmSegmentQueue queue;
 
 	OmId mParentSegID;

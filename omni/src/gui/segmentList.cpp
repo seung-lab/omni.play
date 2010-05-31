@@ -31,13 +31,13 @@ quint32 SegmentList::getMaxSegmentValue()
 	return currentSDW.getMaxSegmentValue();
 }
 
-boost::shared_ptr<OmSegIDs> SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+OmSegIDsListPtr SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
 {
 	int offset = firstSegmentID - (firstSegmentID % getNumSegmentsPerPage() );
 	return doGetSegmentsToDisplay( offset );
 }
 
-boost::shared_ptr<OmSegIDs> SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
+OmSegIDsListPtr SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	assert( haveValidSDW );
 
@@ -46,9 +46,7 @@ boost::shared_ptr<OmSegIDs> SegmentList::doGetSegmentsToDisplay( const unsigned 
 		offset = in_offset;
 	}
 
-	OmSegIDs * ret = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
-	
-	return boost::shared_ptr<OmSegIDs>( ret );
+	return currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
 }
 
 void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
@@ -65,7 +63,7 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	SegmentationDataWrapper sdw = currentSDW;
-	boost::shared_ptr<OmSegIDs> segs = getSegmentsToDisplay( segmentJustSelectedID );
+	OmSegIDsListPtr segs = getSegmentsToDisplay( segmentJustSelectedID );
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();

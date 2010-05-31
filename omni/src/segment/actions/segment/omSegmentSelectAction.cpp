@@ -8,8 +8,8 @@
 ///////          OmSegmentSelectAction
 
 OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
-					     const OmSegIDs & newSelectedIdSet,
-					     const OmSegIDs & oldSelectedIdSet, 
+					     const OmSegIDsSet & newSelectedIdSet,
+					     const OmSegIDsSet & oldSelectedIdSet, 
 					     const OmId segmentJustSelected, 
 					     void * sender, 
 					     const string & comment )

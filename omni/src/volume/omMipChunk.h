@@ -58,12 +58,12 @@ public:
 	
 	
 	//meta data accessors
-	const OmSegIDs & GetModifiedVoxelValues();
+	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 	
 	
 	//mipchunk data accessors
-	const OmSegIDs & GetDirectDataValues();
+	const OmSegIDsSet & GetDirectDataValues();
 	virtual void RefreshDirectDataValues( OmSegmentCache *);
 	
 
@@ -110,7 +110,7 @@ protected:
 	//cache direct and indirectly contained values for drawing tree
 	bool containedValuesDataLoaded;
 	void loadMetadataIfPresent();
-	OmSegIDs mDirectlyContainedValues;
+	OmSegIDsSet mDirectlyContainedValues;
 
 	//keep track what needs to be written out
 	bool mChunkVolumeDataDirty;
@@ -134,7 +134,7 @@ protected:
 	string mDirectoryPath;
 	
 	//voxel management
-	OmSegIDs mModifiedVoxelValues;
+	OmSegIDsSet mModifiedVoxelValues;
 
  private:
 

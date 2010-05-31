@@ -351,7 +351,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 	if (!valid_pick || (result.size() != 3))
 		return false;
 
-	//ensure valid OmIds
+	//ensure valid OmIDsSet
 	if (!OmProject::IsSegmentationValid(result[0]))
 		return false;
 	if (!OmProject::GetSegmentation(result[0]).IsSegmentValid(result[1]))

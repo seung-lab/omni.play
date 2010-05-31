@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 
-QDataStream &operator<<(QDataStream & out, const OmIds & set );
-QDataStream &operator>>(QDataStream & in, OmIds & set );
+QDataStream &operator<<(QDataStream & out, const OmIDsSet & set );
+QDataStream &operator>>(QDataStream & in, OmIDsSet & set );
 
 #endif

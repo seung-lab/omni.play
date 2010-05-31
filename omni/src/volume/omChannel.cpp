@@ -91,7 +91,7 @@ OmFilter2d& OmChannel::GetFilter(OmId id) {
         return mFilter2dManager.GetFilter(id);
 }
 
-const OmIds & OmChannel::GetValidFilterIds()
+const OmIDsSet & OmChannel::GetValidFilterIds()
 {
 	return mFilter2dManager.GetValidFilterIds();
 }

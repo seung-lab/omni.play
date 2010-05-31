@@ -172,7 +172,7 @@ bool OmProject::IsChannelValid(OmId id)
         return Instance()->mChannelManager.IsValid(id);
 }
 
-const OmIds & OmProject::GetValidChannelIds()
+const OmIDsSet & OmProject::GetValidChannelIds()
 {
         return Instance()->mChannelManager.GetValidIds();
 }
@@ -226,7 +226,7 @@ bool OmProject::IsSegmentationValid(OmId id)
         return Instance()->mSegmentationManager.IsValid(id);
 }
 
-const OmIds & OmProject::GetValidSegmentationIds()
+const OmIDsSet & OmProject::GetValidSegmentationIds()
 {
         return Instance()->mSegmentationManager.GetValidIds();
 }

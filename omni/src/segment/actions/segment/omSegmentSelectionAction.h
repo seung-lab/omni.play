@@ -15,7 +15,7 @@ public:
 	OmSegmentSelectionAction(OmId segmentationId, OmId segmentId, 
 							 bool state, bool append);
 	
-	//OmSegmentSelectionAction(OmId segmentationId, OmIds segmentIds, bool state);
+	//OmSegmentSelectionAction(OmId segmentationId, OmSegIDsSet segmentIds, bool state);
 	
 private:	
 	void Action();
@@ -28,7 +28,7 @@ private:
 	bool mPrevState;
 	bool mAppend;
 
-	OmIds mPrevSelectedSegments;
+	OmSegIDsSet mPrevSelectedSegments;
 
 };
 

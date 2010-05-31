@@ -25,8 +25,8 @@ private:
 	void * mSender;
 	string mComment;
 
-	const OmSegIDs oldSelectedIDs;
-	OmSegIDs newSelectedIDs;
+	const OmSegIDsSet oldSelectedIDs;
+	OmSegIDsSet newSelectedIDs;
 };
 
 #endif

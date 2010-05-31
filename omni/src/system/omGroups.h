@@ -13,7 +13,7 @@ public:
         OmGroups(OmSegmentation * seg);
         ~OmGroups();
 
-	OmId AddGroup(OmIds & segids);
+	OmId AddGroup(OmIDsSet & segids);
 
 protected:
         OmGroups(const OmGroups&);

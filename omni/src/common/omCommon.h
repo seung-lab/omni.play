@@ -6,7 +6,8 @@
 
 #include <QString>
 
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/strong_typedef.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/tr1/unordered_set.hpp>
@@ -49,7 +50,7 @@ typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
  */
 //id typedefs
 typedef quint32 OmId;
-typedef boost::unordered_set< OmId > OmIds;
+typedef boost::unordered_set< OmId > OmIDsSet;
 
 //bit field
 typedef unsigned int OmBitfield;
@@ -73,7 +74,9 @@ static const OmId NULL_SEGMENT_ID = 0;
 
 //BOOST_STRONG_TYPEDEF(quint32, OmSegID )
 typedef quint32 OmSegID;
-typedef boost::unordered_set<OmSegID> OmSegIDs;
+typedef boost::unordered_set<OmSegID> OmSegIDsSet;
+typedef std::vector<OmSegID> OmSegIDsList;
+typedef boost::shared_ptr<OmSegIDsList> OmSegIDsListPtr;
 
 static const OmSegID NULL_SEGMENT_DATA(0);
 

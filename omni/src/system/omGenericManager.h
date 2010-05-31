@@ -27,12 +27,12 @@ public:
 	
 	//valid
 	bool IsValid( const OmId omId) const;
-	const OmIds& GetValidIds() const;
+	const OmIDsSet& GetValidIds() const;
 
 	//enabled
 	bool IsEnabled( const OmId omId) const;
 	void SetEnabled( const OmId omId, const bool enable);
-	const OmIds& GetEnabledIds() const;
+	const OmIDsSet& GetEnabledIds() const;
 
 private:
 	OmId mNextId;
@@ -40,8 +40,8 @@ private:
 
 	std::vector< T* > mMap;
 
-	OmIds mValidSet;		// keys in map (fast iteration)
-	OmIds mEnabledSet;		// enabled keys in map
+	OmIDsSet mValidSet;		// keys in map (fast iteration)
+	OmIDsSet mEnabledSet;		// enabled keys in map
 
 	void findAndSetNextValidID();
 

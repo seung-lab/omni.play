@@ -168,7 +168,7 @@ void OmSegmentation::BuildVolumeData()
 
 					QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 					GetChunk(p_chunk, chunk_coord);
-					const OmSegIDs & r_root_indirect_data_values = p_chunk->GetDirectDataValues();
+					const OmSegIDsSet & r_root_indirect_data_values = p_chunk->GetDirectDataValues();
 
 					// will already be mappped
 					mSegmentCache->AddSegmentsFromChunk(r_root_indirect_data_values, chunk_coord);
@@ -290,7 +290,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	//if root then update segment manager with spacial content information
 	if (p_chunk->IsRoot()) {
 		//get root spatial segs
-		const OmSegIDs & data_values = p_chunk->GetDirectDataValues();
+		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
 
 		//add to manager if data isn't already mapped
 		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord);
@@ -307,7 +307,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 		GetChunk(p_chunk, mipCoord);
 
-		const OmSegIDs & rModifiedValues = p_chunk->GetModifiedVoxelValues();
+		const OmSegIDsSet & rModifiedValues = p_chunk->GetModifiedVoxelValues();
 		if (rModifiedValues.size() == 0) {
 			return;
 		}
@@ -320,7 +320,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	}
 }
 
-void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDs & rModifiedValues)
+void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
 {
 
 	//build chunk volume data and analyze data
@@ -438,7 +438,7 @@ void OmSegmentation::SetSegmentEnabled(OmId id, bool enable)
 	mSegmentCache->setSegmentEnabled(id, enable);
 }
 
-const OmIds & OmSegmentation::GetEnabledSegmentIds()
+const OmIDsSet & OmSegmentation::GetEnabledSegmentIds()
 {
 	return mSegmentCache->GetEnabledSegmentIdsRef();
 }
@@ -463,7 +463,7 @@ void OmSegmentation::SetAllSegmentsEnabled(bool enabled)
 	mSegmentCache->SetAllEnabled(enabled);
 }
 
-const OmIds & OmSegmentation::GetSelectedSegmentIds()
+const OmIDsSet & OmSegmentation::GetSelectedSegmentIds()
 {
 	return mSegmentCache->GetSelectedSegmentIdsRef();
 }
@@ -473,7 +473,7 @@ bool OmSegmentation::AreSegmentsSelected()
 	return mSegmentCache->AreSegmentsSelected();
 }
 
-void OmSegmentation::UpdateSegmentSelection( const OmSegIDs & idsToSelect )
+void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
 {
 	mSegmentCache->UpdateSegmentSelection(idsToSelect);
 }
@@ -486,7 +486,7 @@ OmId OmSegmentation::AddGroup()
 
         iter.iterOverSelectedIDs();
 
-	OmIds segmentsToGroup;
+	OmIDsSet segmentsToGroup;
         OmSegment * seg = iter.getNextSegment();
         OmSegID val;
         while(NULL != seg) {
@@ -598,7 +598,7 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 		std::vector< OmSegment* > segmentsToDraw;
 
 		if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
-			const OmSegIDs & chunkValues =  p_chunk->GetDirectDataValues();
+			const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 			OmSegment * seg = segIter.getNextSegment();
 			OmSegID val;
 			while( NULL != seg ){
@@ -655,7 +655,7 @@ void OmSegmentation::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chu
 /*
  *	Draw voxelated representation of the MipChunk.
  */
-void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const OmSegIDs & rRelvDataVals,
+void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rRelvDataVals,
 				     const OmBitfield & drawOps)
 {
 	mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
@@ -717,12 +717,12 @@ void OmSegmentation::ReloadDendrogram()
 	mSegmentCache->resetGlobalThreshold(mDendThreshold);
 }
 
-void OmSegmentation::JoinTheseSegments( const OmIds & segmentIds)
+void OmSegmentation::JoinTheseSegments( const OmIDsSet & segmentIds)
 {
 	mSegmentCache->JoinTheseSegments(segmentIds);
 }
 
-void OmSegmentation::UnJoinTheseSegments( const OmIds & segmentIds)
+void OmSegmentation::UnJoinTheseSegments( const OmIDsSet & segmentIds)
 {
 	mSegmentCache->UnJoinTheseSegments(segmentIds);
 }

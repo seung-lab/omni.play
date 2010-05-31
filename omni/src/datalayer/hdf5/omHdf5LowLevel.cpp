@@ -275,8 +275,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 	if (status < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
-	OmDataWrapperPtr ret( new OmDataWrapper( dataset_data ) );
-	return ret;
+	return OmDataWrapperPtr( new OmDataWrapper( dataset_data ) );
 }
 
 void OmHdf5LowLevel::printTypeInfo( hid_t dstype )
@@ -301,7 +300,7 @@ void OmHdf5LowLevel::printTypeInfo( hid_t dstype )
 		break;
 	}
 
-	printf("precision %d\n", H5Tget_precision(dstype));
+	printf("precision %lu\n", (long unsigned) H5Tget_precision(dstype));
 
 }
 
@@ -957,8 +956,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
 
-	OmDataWrapperPtr pret( new OmDataWrapper( imageData ) );
-	return pret;
+	return OmDataWrapperPtr( new OmDataWrapper( imageData ) );
 }
 
 /////////////////////////////////

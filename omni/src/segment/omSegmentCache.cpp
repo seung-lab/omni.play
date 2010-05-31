@@ -47,7 +47,7 @@ OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 	return mImpl->AddSegment(value);
 }
 
-void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDs & data_values, 
+void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
 					  const OmMipChunkCoord & mipCoord )
 {
 	QMutexLocker locker( &mMutex );
@@ -96,13 +96,13 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 	return mImpl->numberOfSelectedSegments();
 }
 
-OmSegIDs & OmSegmentCache::GetSelectedSegmentIdsRef()
+OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetSelectedSegmentIdsRef();
 }
 
-OmSegIDs & OmSegmentCache::GetEnabledSegmentIdsRef()
+OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIdsRef()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetEnabledSegmentIdsRef();
@@ -240,13 +240,13 @@ void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
 	return mImpl->resetGlobalThreshold( stopPoint );
 }
 
-void OmSegmentCache::JoinTheseSegments( const OmIds & segmentList)
+void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->JoinTheseSegments(segmentList);
 }
 
-void OmSegmentCache::UnJoinTheseSegments( const OmIds & segmentList)
+void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->UnJoinTheseSegments( segmentList);
@@ -258,13 +258,13 @@ quint32 OmSegmentCache::getMaxValue()
         return mImpl->getMaxValue();
 }
 
-void OmSegmentCache::UpdateSegmentSelection( const OmSegIDs & idsToSelect)
+void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->UpdateSegmentSelection(idsToSelect);
 }
 
-OmIds * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+OmSegIDsListPtr OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->getRootLevelSegIDs(offset, numToGet);

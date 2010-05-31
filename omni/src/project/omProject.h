@@ -45,7 +45,7 @@ public:
         static OmChannel& AddChannel();
         static void RemoveChannel(OmId id);
         static bool IsChannelValid(OmId id);
-        static const OmIds & GetValidChannelIds();
+        static const OmIDsSet & GetValidChannelIds();
         static bool IsChannelEnabled(OmId id);
         static void SetChannelEnabled(OmId id, bool enable);
         
@@ -53,7 +53,7 @@ public:
         static OmSegmentation& AddSegmentation();
         static void RemoveSegmentation(OmId id);
         static bool IsSegmentationValid(OmId id);
-        static const OmIds & GetValidSegmentationIds();
+        static const OmIDsSet & GetValidSegmentationIds();
         static bool IsSegmentationEnabled(OmId id);
         static void SetSegmentationEnabled(OmId id, bool enable);
 	static void Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs);

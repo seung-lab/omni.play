@@ -11,7 +11,7 @@
 class OmSegmentJoinAction : public OmAction {
 
 public:
-	OmSegmentJoinAction( const OmId segmentationId, const OmIds & selectedSegmentIds);
+	OmSegmentJoinAction( const OmId segmentationId, const OmSegIDsSet & selectedSegmentIds);
 
 private:
 	void Action();
@@ -19,7 +19,7 @@ private:
 	string Description();
 
 	const OmId mSegmentationId;
-	OmIds mSelectedSegmentIds;
+	OmSegIDsSet mSelectedSegmentIds;
 };
 
 #endif

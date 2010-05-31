@@ -12,8 +12,8 @@ class OmSegmentSelectAction : public OmAction {
 
 public:
 	OmSegmentSelectAction(const OmId segmentationId, 
-			      const OmSegIDs & mNewSelectedIdSet, 
-			      const OmSegIDs & mOldSelectedIdSet, 
+			      const OmSegIDsSet & mNewSelectedIdSet, 
+			      const OmSegIDsSet & mOldSelectedIdSet, 
 			      const OmId segmentJustSelected,
 			      void* sender,
 			      const string & comment);
@@ -24,8 +24,8 @@ private:
 	string Description();
 	
 	const OmId mSegmentationId;
-	const OmSegIDs mNewSelectedIdSet;
-	const OmSegIDs mOldSelectedIdSet;
+	const OmSegIDsSet mNewSelectedIdSet;
+	const OmSegIDsSet mOldSelectedIdSet;
 	const OmId mSegmentJustSelectedID;
 	void * mSender;
 	const string mComment;

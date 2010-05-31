@@ -111,7 +111,7 @@ OmGenericManager<T>::IsValid( const OmId id) const
  *	Set of IDs for objects being managed
  */
 template < class T > 
-const OmIds&
+const OmIDsSet&
 OmGenericManager<T>::GetValidIds() const 
 {
 	return mValidSet;
@@ -147,7 +147,7 @@ OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 }
 
 template < class T > 
-const OmIds&
+const OmIDsSet&
 OmGenericManager<T>::GetEnabledIds() const 
 {
 	return mEnabledSet;

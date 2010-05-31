@@ -22,7 +22,7 @@ OmSegmentSelectionAction::OmSegmentSelectionAction(OmId segmentationId, OmId seg
 	/*
 	   cout << "OmSegmentSelectionAction" << endl;
 	   cout << "WARNING: this method will be changed to:" << endl;
-	   cout << "OmSegmentSelectionAction(OmId segmentationId, OmIds segmentIds, bool state)" << endl;
+	   cout << "OmSegmentSelectionAction(OmId segmentationId, OmSegIDsSet segmentIds, bool state)" << endl;
 	 */
 
 	//store ids
@@ -73,7 +73,7 @@ void OmSegmentSelectionAction::UndoAction()
 	//if not appending, 
 	if (!mAppend) {
 		//then restore all selected segments
-		OmIds::iterator itr;
+		OmSegIDsSet::iterator itr;
 		for (itr = mPrevSelectedSegments.begin(); itr != mPrevSelectedSegments.end(); itr++) {
 			r_segmentation.SetSegmentSelected(*itr, true);
 		}

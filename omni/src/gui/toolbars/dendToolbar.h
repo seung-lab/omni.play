@@ -81,6 +81,7 @@ class DendToolBar : public QWidget
 	void resetTool( QAction* tool, const bool enabled );
 	void resetTools( const bool enabled );
 
+	void haveSegmentationChangeThreshold( const float threshold );
 };
 
 #endif

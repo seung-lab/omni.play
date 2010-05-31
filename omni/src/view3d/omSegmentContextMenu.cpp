@@ -197,7 +197,7 @@ void OmSegmentContextMenu::DisableUnselected()
 	//	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 
 	//form unselected
-	//	OmIds unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();
+	//	OmIDsSet unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();
 
 	//	(new OmSegmentStateAction(mSegmentationId, unselected_segments, false))->Run();
 }

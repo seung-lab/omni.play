@@ -6,7 +6,7 @@ OmGroup::OmGroup()
 	mColor = GetRandomColor();
 }
 
-OmGroup::OmGroup(OmIds & ids)
+OmGroup::OmGroup(OmIDsSet & ids)
 {
 	mColor = GetRandomColor();
 	AddIds(ids);
@@ -38,7 +38,7 @@ OmColor OmGroup::GetRandomColor()
 	return colorInt;
 }
 
-void OmGroup::AddIds(OmIds & ids)
+void OmGroup::AddIds(OmIDsSet & ids)
 {
 	// FIXME need to add not replace...
 	debug("groups", "FIXME, replacing current ids instead of adding.\n");

@@ -9,8 +9,8 @@ OmSegmentIterator::OmSegmentIterator( OmSegmentCache * cache )
 
 void OmSegmentIterator::iterOverSelectedIDs()
 {
-	const OmSegIDs & set = mCache->GetSelectedSegmentIdsRef();
-	OmSegIDs::const_iterator iter;
+	const OmSegIDsSet & set = mCache->GetSelectedSegmentIdsRef();
+	OmSegIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){ 
 		mSegs.push_back( mCache->GetSegmentFromValue( *iter ));
 	}
@@ -18,8 +18,8 @@ void OmSegmentIterator::iterOverSelectedIDs()
 
 void OmSegmentIterator::iterOverEnabledIDs()
 {
-	const OmSegIDs & set = mCache->GetEnabledSegmentIdsRef();
-	OmSegIDs::const_iterator iter;
+	const OmSegIDsSet & set = mCache->GetEnabledSegmentIdsRef();
+	OmSegIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){ 
 		mSegs.push_back( mCache->GetSegmentFromValue( *iter ) );
 	}
@@ -39,8 +39,8 @@ OmSegment * OmSegmentIterator::getNextSegment()
 	OmSegment * segRet = mSegs.back();
 	mSegs.pop_back();
 
-	const OmSegIDs & set = segRet->segmentsJoinedIntoMe;
-	OmSegIDs::const_iterator iter;
+	const OmSegIDsSet & set = segRet->segmentsJoinedIntoMe;
+	OmSegIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
 		mSegs.push_back( mCache->GetSegmentFromValue( *iter ));
 	}

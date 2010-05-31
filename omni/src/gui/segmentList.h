@@ -12,8 +12,6 @@
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
 
-#include <boost/shared_ptr.hpp>
-
 class SegmentList : public QWidget
 {
 	Q_OBJECT
@@ -62,8 +60,8 @@ private:
 
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
-	boost::shared_ptr<OmSegIDs> getSegmentsToDisplay( const OmId firstSegmentID );
-	boost::shared_ptr<OmSegIDs> doGetSegmentsToDisplay( const unsigned int offset );
+	OmSegIDsListPtr getSegmentsToDisplay( const OmId firstSegmentID );
+	OmSegIDsListPtr doGetSegmentsToDisplay( const unsigned int offset );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	QMenu * makeSegmentContextMenu(QTreeWidget * parent);

@@ -14,7 +14,7 @@ OmGroups::~OmGroups()
 	}
 }
 
-OmId OmGroups::AddGroup(OmIds & ids)
+OmId OmGroups::AddGroup(OmIDsSet & ids)
 {
 	debug("groups", "adding group for seg\n");
 	OmGroup * group = new OmGroup(ids);

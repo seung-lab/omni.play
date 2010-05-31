@@ -2,7 +2,7 @@
 
 static const int numOfItemsToAddBeforeLinebreak = 8;
 
-QString StringHelpers::getStringFromSegmentSet( const OmSegIDs & data_set )
+QString StringHelpers::getStringFromSegmentSet( const OmSegIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
@@ -16,7 +16,7 @@ QString StringHelpers::getStringFromSegmentSet( const OmSegIDs & data_set )
 	return getStringFromStringList( strs );
 }
 
-QString StringHelpers::getStringFromIDset( const OmIds & data_set )
+QString StringHelpers::getStringFromIDset( const OmIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";

@@ -1,11 +1,11 @@
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include <QDataStream>
 
-QDataStream &operator<<(QDataStream & out, const OmIds & set )
+QDataStream &operator<<(QDataStream & out, const OmIDsSet & set )
 {
 	out << (quint32)set.size();
 
-	OmIds::const_iterator iter;
+	OmIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
 		out << *iter;
 	}
@@ -13,7 +13,7 @@ QDataStream &operator<<(QDataStream & out, const OmIds & set )
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmIds & set )
+QDataStream &operator>>(QDataStream & in, OmIDsSet & set )
 {
 	quint32 size;
 	in >> size;

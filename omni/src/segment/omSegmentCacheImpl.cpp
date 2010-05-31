@@ -80,7 +80,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
 	return seg;
 }
 
-void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDs & data_values, 
+void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
 					      const OmMipChunkCoord & )
 {
 	foreach( const OmSegID & value, data_values ){
@@ -149,13 +149,13 @@ bool OmSegmentCacheImpl::AreSegmentsSelected()
 	return true;
 }
 
-OmSegIDs & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
+OmSegIDsSet & OmSegmentCacheImpl::GetSelectedSegmentIdsRef()
 {
 	loadTreeIfNeeded();
         return mSelectedSet;
 }
 
-OmSegIDs & OmSegmentCacheImpl::GetEnabledSegmentIdsRef()
+OmSegIDsSet & OmSegmentCacheImpl::GetEnabledSegmentIdsRef()
 {
 	loadTreeIfNeeded();
         return mEnabledSet;
@@ -600,9 +600,9 @@ void OmSegmentCacheImpl::rerootSegmentLists()
 	rerootSegmentList( mSelectedSet );
 }
 
-void OmSegmentCacheImpl::rerootSegmentList( OmSegIDs & set )
+void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 {
-	OmSegIDs old = set;
+	OmSegIDsSet old = set;
 	set.clear();
 
 	OmSegID rootSegID;
@@ -665,16 +665,16 @@ void OmSegmentCacheImpl::loadTreeIfNeeded()
 	loadDendrogram();
 }
 
-void OmSegmentCacheImpl::JoinTheseSegments( const OmIds & segmentList)
+void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	if( segmentList.size() < 2 ){
 		return;
 	}
 
-	OmSegIDs set = segmentList; // Join() could modify list
+	OmSegIDsSet set = segmentList; // Join() could modify list
 
 	// The first Segment Id is the parent we join to
-	OmSegIDs::const_iterator iter = set.begin();
+	OmSegIDsSet::const_iterator iter = set.begin();
 	const OmSegID parentID = *iter;
 	++iter;
 
@@ -688,16 +688,16 @@ void OmSegmentCacheImpl::JoinTheseSegments( const OmIds & segmentList)
 	clearCaches();
 }
 
-void OmSegmentCacheImpl::UnJoinTheseSegments( const OmIds & segmentList)
+void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	if( segmentList.size() < 2 ){
 		return;
 	}
 
-	OmSegIDs set = segmentList; // split() could modify list
+	OmSegIDsSet set = segmentList; // split() could modify list
 
 	// The first Segment Id is the parent we split from
-	OmIds::const_iterator iter = set.begin();
+	OmSegIDsSet::const_iterator iter = set.begin();
 	++iter;
 
 	// We then iterate through the Segment Ids and split
@@ -786,11 +786,11 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
 
-void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids )
+void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 {
 	mSelectedSet.clear();
 
-	OmSegIDs::const_iterator iter;
+	OmSegIDsSet::const_iterator iter;
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
 		setSegmentSelectedBatch( *iter, true );
 	}
@@ -799,11 +799,9 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids )
 }
 
 // FIXME: this search could become slow.... (purcaro)
-OmIds * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+OmSegIDsListPtr OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
 {
-	OmIds * ret = new OmIds();
-
-	printf("offset: %d, numToGet: %d\n", offset, numToGet );
+	OmSegIDsList * ret = new OmSegIDsList();
 
 	OmSegment * seg;
 	int counter = 0;
@@ -814,7 +812,7 @@ OmIds * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const
 			continue;
 		}
 
-		ret->insert( i );
+		ret->push_back( i );
 
 		++counter;
 		if( counter > numToGet ){
@@ -822,5 +820,5 @@ OmIds * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const
 		}	
 	}
 	
-	return ret;
+	return OmSegIDsListPtr( ret );
 }

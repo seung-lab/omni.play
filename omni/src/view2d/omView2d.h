@@ -214,7 +214,7 @@ private:
 	
 	QColor editColor;
 	
-	OmIds modified_Ids;
+	OmIDsSet modified_Ids;
 	bool delete_dirty;
 	
 	// slice props - spatial coords
