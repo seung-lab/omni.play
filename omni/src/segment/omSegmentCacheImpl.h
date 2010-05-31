@@ -6,7 +6,6 @@
 #include "segment/omSegmentPointers.h"
 
 #include <QSet>
-#include <boost/dynamic_bitset.hpp>
 
 // TODO: this was done as proof-of-concept; not sure how much slower 
 //  struct constructor is compared to simple int POD... (purcaro)
@@ -54,8 +53,7 @@ class OmSegmentCacheImpl {
 	OmSegIDs& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-				      const OmSegIDs & idsToUnselect );
+	void UpdateSegmentSelection( const OmSegIDs & ids);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -150,9 +148,6 @@ class OmSegmentCacheImpl {
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDs & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
-	void UpdateSegmentSelection( const OmSegIDs & ids, const bool areSelected );
-
-	boost::dynamic_bitset<> rootSegs;
 
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

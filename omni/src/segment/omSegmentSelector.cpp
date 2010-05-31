@@ -1,20 +1,22 @@
-#include "segment/omSegmentSelector.h"
 #include "project/omProject.h"
-#include "volume/omSegmentation.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
+#include "volume/omSegmentation.h"
 
 OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender, const string & cmt )
 	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
+	, mSegmentJustSelectedID(0)
 	, mSender(sender)
 	, mComment(cmt)
-	, mSegmentJustSelectedID(0)
+	, oldSelectedIDs( mSegmentation->GetSelectedSegmentIds() )
+	, newSelectedIDs( oldSelectedIDs )
 {
 }
 
 void OmSegmentSelector::selectNoSegments()
 {
-	newlyUnselectedSegs = mSegmentation->GetSelectedSegmentIds();
+	newSelectedIDs.clear();
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, const bool isSelected )
@@ -24,11 +26,8 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, 
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 
 	if(isSelected) {
-		newlyUnselectedSegs.erase(segID);
-		newlySelectedSegs.insert(segID);
+		newSelectedIDs.insert( segID );
 		mSegmentJustSelectedID = segID;
-	} else {
-		newlyUnselectedSegs.insert(segID);
 	}
 }
 
@@ -37,9 +36,9 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 
 	if(isSelected) {
-		newlySelectedSegs.insert(segID);
+		newSelectedIDs.insert(segID);
 	} else {
-		newlyUnselectedSegs.insert(segID);	
+		newSelectedIDs.erase(segID);	
 	}
 }
 
@@ -60,8 +59,8 @@ void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLev
 void OmSegmentSelector::sendEvent()
 {
 	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
-							      newlySelectedSegs, 
-							      newlyUnselectedSegs,
+							      newSelectedIDs, 
+							      oldSelectedIDs,
 							      mSegmentJustSelectedID, 
 							      mSender,
 							      mComment);

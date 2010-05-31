@@ -250,7 +250,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/edit/omEditSelectionSetAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSelectionAction.h \
-           src/segment/actions/segment/omSegmentStateAction.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
            src/segment/actions/voxel/omVoxelSelectionAction.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
@@ -401,7 +400,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/actions/edit/omEditSelectionSetAction.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
-           src/segment/actions/segment/omSegmentStateAction.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \
            src/segment/actions/voxel/omVoxelSetAction.cpp \
            src/segment/actions/voxel/omVoxelSetConnectedAction.cpp \

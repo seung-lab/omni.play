@@ -265,7 +265,7 @@ void OmMipVoxelationManager::HandleFetchUpdate()
 void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 					     const OmMipChunkCoord & mipCoord,
 					     const OmSegIDs & rRelvDataVals, 
-					     const OmBitfield & drawOps)
+					     const OmBitfield & /*drawOps*/)
 {
 	//push modelview matrix
 	glPushMatrix();

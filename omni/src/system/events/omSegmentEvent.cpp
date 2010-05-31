@@ -1,49 +1,38 @@
-
 #include "omSegmentEvent.h"
 
-#define DEBUG 0
-
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
- : OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
+	, mSegmentJustSelectedID(0)
+	, mSender(NULL)
+	, mComment("unknown")
 {
-	mSegmentJustSelectedID = -1;
-	mSender = NULL;
-	mComment = "unknown";
 }
 
-OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId, const OmIds & segIds)
-:OmEvent(type, CLASS)
+OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId)
+	: OmEvent(type, CLASS)
+	, mSegmentationId(segmentationId)
+	, mSegmentJustSelectedID(0)
+	, mSender(NULL)
+	, mComment("unknown")
 {
-	mSegmentationId = segmentationId;
-	mSegmentIds = segIds;
-	mSegmentJustSelectedID = -1;
-	mSender = NULL;
-	mComment = "unknown";
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 			       OmId segmentationId,
-			       const OmIds & segIds, 
 			       const OmId segmentJustSelectedID, 
 			       void* sender, 
 			       string comment)
-:OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
+	, mSegmentationId( segmentationId )
+	, mSegmentJustSelectedID( segmentJustSelectedID )
+	, mSender( sender )
+	, mComment( comment )
 {
-	mSegmentationId = segmentationId;
-	mSegmentIds = segIds;
-	mSegmentJustSelectedID = segmentJustSelectedID;
-	mSender = sender;
-	mComment = comment;
 }
 
 OmId OmSegmentEvent::GetModifiedSegmentationId()
 {
 	return mSegmentationId;
-}
-
-const OmIds & OmSegmentEvent::GetModifiedSegmentIds()
-{
-	return mSegmentIds;
 }
 
 OmId OmSegmentEvent::GetSegmentJustSelectedID()

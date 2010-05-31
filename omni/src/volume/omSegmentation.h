@@ -73,8 +73,7 @@ public:
 	const OmIds& GetSelectedSegmentIds();
 	void JoinTheseSegments( const OmIds & segmentIds);
 	void UnJoinTheseSegments( const OmIds & segmentIds);
-	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-				      const OmSegIDs & idsToUnselect );
+	void UpdateSegmentSelection( const OmSegIDs & idsToSelect);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();

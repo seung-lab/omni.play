@@ -21,12 +21,12 @@ class OmSegmentSelector
 private:
 	OmSegmentation * mSegmentation;
 
-	OmSegIDs newlySelectedSegs;
-	OmSegIDs newlyUnselectedSegs;
-
+	OmId mSegmentJustSelectedID;
 	void * mSender;
 	string mComment;
-	OmId mSegmentJustSelectedID;
+
+	const OmSegIDs oldSelectedIDs;
+	OmSegIDs newSelectedIDs;
 };
 
 #endif

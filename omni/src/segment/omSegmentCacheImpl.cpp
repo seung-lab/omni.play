@@ -452,8 +452,6 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	const float oldChildThreshold = child->mThreshold;
 	child->mThreshold = 0;
 
-	rootSegs[child->mValue] = 1;
-	
 	if( isSegmentSelected( parent->getValue() ) ){
 		debug("split", "parent was selected\n");
 		mSelectedSet.insert( child->getValue() );
@@ -554,8 +552,6 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 	const int size =  mMaxValue + 1;
 	
 	mGraph = new DynamicTreeContainer<OmSegID>( size );
-
-	rootSegs = boost::dynamic_bitset<>( size, 1);
 }
 
 void OmSegmentCacheImpl::loadDendrogram()
@@ -640,7 +636,6 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
         } 
 	mSelectedSet.remove( childUnknownDepthID );
 	--mNumTopLevelSegs;
-	rootSegs[childRoot->mValue] = 0;
 }
 
 OmSegID OmSegmentCacheImpl::findRootID( const OmSegID segID )
@@ -791,18 +786,13 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
 
-void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids, const bool setSelected )
+void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDs & ids )
 {
+	mSelectedSet.clear();
+
 	OmSegIDs::const_iterator iter;
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
-		setSegmentSelectedBatch( *iter, setSelected );
+		setSegmentSelectedBatch( *iter, true );
 	}
-}
-
-void OmSegmentCacheImpl::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-						  const OmSegIDs & idsToUnselect )
-{
-	UpdateSegmentSelection(idsToSelect, true);
-	UpdateSegmentSelection(idsToUnselect, false);
 	clearCaches();	
 }

@@ -3,7 +3,6 @@
 #include "project/omProject.h"
 #include "segment/actions/edit/omEditSelectionSetAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/segment/omSegmentStateAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/omSegmentSelector.h"
 #include "utility/setUtilities.h"
@@ -174,18 +173,21 @@ void OmSegmentContextMenu::UnselectOthers()
 
 void OmSegmentContextMenu::Disable()
 {
-	(new OmSegmentStateAction(mSegmentationId, mSegmentId, false))->Run();
+	printf("%s: should be removed...\n", __FUNCTION__);
+	//(new OmSegmentStateAction(mSegmentationId, mSegmentId, false))->Run();
 }
 
 void OmSegmentContextMenu::Enable()
 {
-	(new OmSegmentStateAction(mSegmentationId, mSegmentId, true))->Run();
+	printf("%s: should be removed...\n", __FUNCTION__);
+	//(new OmSegmentStateAction(mSegmentationId, mSegmentId, true))->Run();
 }
 
 void OmSegmentContextMenu::DisableSelected()
 {
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	(new OmSegmentStateAction(mSegmentationId, r_segmentation.GetSelectedSegmentIds(), false))->Run();
+	printf("%s: should be removed...\n", __FUNCTION__);
+	//	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+	//(new OmSegmentStateAction(mSegmentationId, r_segmentation.GetSelectedSegmentIds(), false))->Run();
 }
 
 void OmSegmentContextMenu::DisableUnselected()

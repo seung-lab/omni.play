@@ -46,8 +46,7 @@ public:
 	OmSegIDs & GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-				      const OmSegIDs & idsToUnselect );
+	void UpdateSegmentSelection( const OmSegIDs & idsToSelect);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );

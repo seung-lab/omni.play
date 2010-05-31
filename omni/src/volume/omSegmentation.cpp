@@ -473,10 +473,9 @@ bool OmSegmentation::AreSegmentsSelected()
 	return mSegmentCache->AreSegmentsSelected();
 }
 
-void OmSegmentation::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-					      const OmSegIDs & idsToUnselect )
+void OmSegmentation::UpdateSegmentSelection( const OmSegIDs & idsToSelect )
 {
-	mSegmentCache->UpdateSegmentSelections(idsToSelect, idsToUnselect );
+	mSegmentCache->UpdateSegmentSelection(idsToSelect);
 }
 
 /////////////////////////////////

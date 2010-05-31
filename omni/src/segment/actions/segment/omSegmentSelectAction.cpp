@@ -8,25 +8,18 @@
 ///////          OmSegmentSelectAction
 
 OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
-					     const OmSegIDs & selectIds,
-					     const OmSegIDs & unselectIds, 
+					     const OmSegIDs & newSelectedIdSet,
+					     const OmSegIDs & oldSelectedIdSet, 
 					     const OmId segmentJustSelected, 
 					     void * sender, 
 					     const string & comment )
 	: mSegmentationId(segmentationId)
-	, mSelectIds(selectIds)
-	, mUnselectIds(unselectIds)
+	, mNewSelectedIdSet(newSelectedIdSet)
+	, mOldSelectedIdSet(oldSelectedIdSet)
 	, mSegmentJustSelectedID(segmentJustSelected)
 	, mSender(sender)
 	, mComment(comment)
 {
-	OmSegIDs::const_iterator iter;
-	for( iter =  mSelectIds.begin(); iter != mSelectIds.end(); ++iter ){
-		mModifiedSegIDs.insert(*iter);
-	}
-	for( iter = mUnselectIds.begin(); iter != mUnselectIds.end(); ++iter ){
-		mModifiedSegIDs.insert(*iter);
-	}
 }
 
 /////////////////////////////////
@@ -36,11 +29,10 @@ void OmSegmentSelectAction::Action()
 {
 	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
 
-	mSegmentation.UpdateSegmentSelections( mSelectIds, mUnselectIds );
+	mSegmentation.UpdateSegmentSelection( mNewSelectedIdSet );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
-						     mModifiedSegIDs,
 						     mSegmentJustSelectedID, 
 						     mSender,
 						     mComment));
@@ -50,11 +42,10 @@ void OmSegmentSelectAction::UndoAction()
 {
 	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
 
-	mSegmentation.UpdateSegmentSelections( mUnselectIds, mSelectIds );
+	mSegmentation.UpdateSegmentSelection( mOldSelectedIdSet );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
-						     mModifiedSegIDs,
 						     mSegmentJustSelectedID, 
 						     mSender,
 						     mComment));

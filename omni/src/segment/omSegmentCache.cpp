@@ -258,9 +258,8 @@ quint32 OmSegmentCache::getMaxValue()
         return mImpl->getMaxValue();
 }
 
-void OmSegmentCache::UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-					      const OmSegIDs & idsToUnselect )
+void OmSegmentCache::UpdateSegmentSelection( const OmSegIDs & idsToSelect)
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->UpdateSegmentSelections(idsToSelect, idsToUnselect);
+        return mImpl->UpdateSegmentSelection(idsToSelect);
 }
