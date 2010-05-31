@@ -100,7 +100,7 @@ protected:
 	bool mIsOpen;
 	void SetOpen(bool);
 
-	QMutex * mOpenLock;
+	QMutex mOpenLock;
 	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 	

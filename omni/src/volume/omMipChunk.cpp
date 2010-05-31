@@ -46,7 +46,6 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	UpdateSize(sizeof(OmMipChunk));
 
 	mpImageData = NULL;
-	mOpenLock = new QMutex();
 	mChunkVolumeDataDirty = false;
 	mChunkMetaDataDirty = false;
 
@@ -74,7 +73,6 @@ OmMipChunk::~OmMipChunk()
 void
  OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 {
-
 	//set coordinate
 	mCoordinate = rMipCoord;
 
@@ -110,7 +108,7 @@ void
  */
 void OmMipChunk::Open()
 {
-        QMutexLocker locker(mOpenLock);
+        QMutexLocker locker(&mOpenLock);
 
 	//ignore if already open
 	if (IsOpen())
@@ -692,7 +690,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 
 				//copy intersected data from src to mesh
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
-				QMutexLocker locker(mOpenLock);
+				QMutexLocker locker(&mOpenLock);
 				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 				
 				p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();

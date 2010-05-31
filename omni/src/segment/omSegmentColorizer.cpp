@@ -91,8 +91,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val, 
-						    const bool & showOnlySelectedSegments)
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
+						    const bool showOnlySelectedSegments)
 {
 	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)
 
