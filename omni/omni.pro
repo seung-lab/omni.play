@@ -249,7 +249,6 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/segment/actions/edit/omEditSelectionSetAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
-           src/segment/actions/segment/omSegmentSelectionAction.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
            src/segment/actions/voxel/omVoxelSelectionAction.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
@@ -443,5 +442,5 @@ DESTDIR = bin
 #QMAKE_LFLAGS += -static
 
 #### for profiling
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS   += -pg
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS   += -pg

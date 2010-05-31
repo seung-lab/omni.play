@@ -1,24 +1,18 @@
+#include "common/omDebug.h"
+#include "common/omGl.h"
 #include "omView3d.h"
-
+#include "project/omProject.h"
+#include "segment/omSegmentEditor.h"
+#include "system/omEventManager.h"
+#include "system/omLocalPreferences.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
+#include "system/omStateManager.h"
+#include "volume/omVolumeCuller.h"
+#include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
-#include "widgets/omChunkExtentWidget.h"
-
-#include "segment/omSegmentEditor.h"
-#include "segment/actions/segment/omSegmentSelectionAction.h"
-
-#include "volume/omVolumeCuller.h"
-
-#include "system/omStateManager.h"
-#include "project/omProject.h"
-#include "system/omEventManager.h"
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-#include "system/omLocalPreferences.h"
-
-#include "common/omGl.h"
-#include "common/omDebug.h"
 
 enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 0,
