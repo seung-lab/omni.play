@@ -3,6 +3,10 @@
 #include "system/omStateManager.h"
 #include "common/omGl.h"
 #include "system/omLocalPreferences.h"
+#include "project/omProject.h"
+#include "common/omCommon.h"
+#include "volume/omChannel.h"
+#include "view2d/drawable.h"
 
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;
@@ -33,23 +37,28 @@ void OmViewBoxWidget::Draw()
 	//set line width
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
+
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
+		//drawChannelData(XY_VIEW, OmStateManager::GetViewDrawable(XY_VIEW));
 		drawSlice(XY_VIEW, 
 			  mViewGroupState->GetViewSliceMin(XY_VIEW), 
 			  mViewGroupState->GetViewSliceMax(XY_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XY_VIEW));
-
+		//drawChannelData(XZ_VIEW, OmStateManager::GetViewDrawable(XZ_VIEW));
 		drawSlice(XZ_VIEW, 
 			  mViewGroupState->GetViewSliceMin(XZ_VIEW), 
 			  mViewGroupState->GetViewSliceMax(XZ_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
-
+		//drawChannelData(YZ_VIEW, OmStateManager::GetViewDrawable(YZ_VIEW));
 		drawSlice(YZ_VIEW, 
 			  mViewGroupState->GetViewSliceMin(YZ_VIEW), 
 			  mViewGroupState->GetViewSliceMax(YZ_VIEW),
 			  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
 	}
 	
+
+
+
 	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
 		drawLines(mViewGroupState->GetViewDepthCoord());
 	}
@@ -62,7 +71,7 @@ void OmViewBoxWidget::Draw()
  */
 void OmViewBoxWidget::drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3)
 {
-	glBegin(GL_LINE_STRIP);
+	glBegin(GL_QUADS);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);
 	glVertex3fv(v2.array);
@@ -139,3 +148,74 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 	drawRectangle(v0, v1, v2, v3);
 }
 
+void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawables)
+{
+	glColor3fv(OMGL_WHITE);
+        glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	OmChannel& channel = OmProject::GetChannel( 1);
+
+	Vector2f stretch = channel.GetStretchValues(plane);
+
+	for (vector < Drawable * >::iterator it = drawables.begin(); drawables.end() != it; it++) {
+		Drawable *d = *it;
+
+		SpaceCoord thisCoord = d->tileCoord.Coordinate;
+		Vector3f tileLength = channel.GetDataResolution()*128.0;
+		/*if (mViewType == YZ_VIEW) {
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
+		glTranslatef(0.5, 0.5, 0.0);
+		glRotatef(-90, 0.0, 0.0, 1.0);
+		glTranslatef(-0.5, -0.5, 0.0);
+		glMatrixMode(GL_MODELVIEW);
+		}*/
+	debug ("chandata", "thisCoord.(x,y,z): (%f,%f,%f)\n", thisCoord.x,thisCoord.y,thisCoord.z);
+	glBindTexture(GL_TEXTURE_2D, d->gotten_id->GetTextureID());
+	glBegin(GL_QUADS);
+
+	if (plane == XY_VIEW) {
+		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
+		glVertex3f((thisCoord.x + tileLength.x),thisCoord.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
+		glVertex3f((thisCoord.x + tileLength.x), (thisCoord.y + tileLength.y),thisCoord.z);
+
+		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y + tileLength.y,thisCoord.z);
+		glEnd();
+	} else if (plane == XZ_VIEW) {
+		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
+		glVertex3f(thisCoord.x+tileLength.x, thisCoord.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
+		glVertex3f(thisCoord.x+tileLength.x, thisCoord.y,thisCoord.z+tileLength.z);
+
+		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y,thisCoord.z+tileLength.z);
+		glEnd();
+	} else if (plane == YZ_VIEW) {
+		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y +tileLength.y,thisCoord.z);
+
+		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y+ tileLength.y,thisCoord.z+tileLength.z);
+
+		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
+		glVertex3f(thisCoord.x, thisCoord.y,thisCoord.z+tileLength.z);
+		glEnd();
+	}
+
+	}
+	glDisable(GL_TEXTURE_2D);
+}

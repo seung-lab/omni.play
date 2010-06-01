@@ -186,6 +186,7 @@ private:
 	bool mLevelLock;
 	bool mNewDraw;
 	vector <Drawable*> mTextures;
+	vector <Drawable*> mThreeTextures;
 	bool mHaveFirstSegId;
 	bool mHaveSecondSegId;
 	OmId mFirstSegId;
@@ -270,6 +271,7 @@ private:
 	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
 
 	void doRedraw();
+	bool mDrawFromChannel;
 
 #ifdef WIN32
 	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);

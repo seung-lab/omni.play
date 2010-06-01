@@ -118,6 +118,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 	iSentIt = false;
 	mInitialized = false;
+	mDrawFromChannel = false;
 
 	OmCachingThreadedCachingTile::Refresh();
 
@@ -1099,6 +1100,7 @@ void OmView2d::DrawFromFilter(OmFilter2d &filter)
 void OmView2d::DrawFromCache()
 {
 	if (mVolumeType == CHANNEL) {
+		mDrawFromChannel = true;
 		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		mVolume = &current_channel;
 
@@ -1111,6 +1113,7 @@ void OmView2d::DrawFromCache()
 		mCache->SetContinuousUpdate(false);
 
 		Draw();
+		mDrawFromChannel = false;
 	} else {
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
 		mVolume = &current_seg;
@@ -1269,7 +1272,8 @@ void OmView2d::Draw()
 	}
 
 	PreDraw(zoomMipVector);
-
+	if (mDrawFromChannel) OmStateManager::SetViewDrawable(mViewType, mThreeTextures);
+	mThreeTextures.clear();
 	TextureDraw(mTextures);
 	mTextures.clear ();
 }
@@ -1525,6 +1529,7 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 				if (gotten_id) {
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
+					mThreeTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
 					mTileCountIncomplete++;
 					complete = false;

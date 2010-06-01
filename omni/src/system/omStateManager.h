@@ -20,6 +20,7 @@ class QGLContext;
 class MyInspectorWidget;
 class MainWindow;
 class DendToolBar;
+class Drawable;
 
 class OmStateManager : boost::noncopyable {
 
@@ -78,6 +79,8 @@ public:
 	static void setDendToolBar( DendToolBar * dtb);
 
 	static QSize getViewBoxSizeHint();
+	static void SetViewDrawable(ViewType viewType, vector<Drawable*> & drawable);
+	static vector<Drawable*> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -118,6 +121,10 @@ private:
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
+
+	vector<Drawable*> mDrawableXY;
+	vector<Drawable*> mDrawableXZ;
+	vector<Drawable*> mDrawableYZ;
 };
 
 #endif

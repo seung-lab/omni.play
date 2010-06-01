@@ -349,3 +349,34 @@ void OmStateManager::UpdateStatusBar( QString msg )
 	Instance()->mainWindow->updateStatusBar( msg );
 }
 
+void OmStateManager::SetViewDrawable(ViewType viewType, vector<Drawable*> &drawable)
+{
+	switch(viewType){
+	case XY_VIEW:
+		Instance()->mDrawableXY = drawable;
+		break;
+	case XZ_VIEW:
+		Instance()->mDrawableXZ = drawable;
+		break;
+	case YZ_VIEW:
+		Instance()->mDrawableYZ = drawable;
+		break;
+	default:
+		assert(false);
+	}
+}
+
+vector<Drawable*> 
+OmStateManager::GetViewDrawable(ViewType viewType)
+{
+	switch(viewType){
+	case XY_VIEW:
+		return Instance()->mDrawableXY;
+	case XZ_VIEW:
+		return Instance()->mDrawableXZ;
+	case YZ_VIEW:
+		return Instance()->mDrawableYZ;
+	default:
+		assert(false);
+	}	
+}
