@@ -127,6 +127,15 @@ void DendToolBar::createToolbarActions()
         connect(addGroupAct, SIGNAL(pressed()),
                 this, SLOT(addGroup()));
 
+/*
+        invalidateAct = new QPushButton(mMainWindow);
+        invalidateAct->setText(tr("Set Selection Not Valid"));
+        invalidateAct->setStatusTip(tr("Unlock selected objects"));
+        connect(invalidateAct, SIGNAL(pressed()),
+                this, SLOT(deleteGroup()));
+*/
+
+
         colorMapAct = new QPushButton(mMainWindow);
         colorMapAct->setText(tr("Show Validated"));
         colorMapAct->setStatusTip(tr("Validated object mode"));
@@ -215,7 +224,8 @@ void DendToolBar::addToolbars()
         groupColorLabel->setText("Validation:");
         sixthLayout->addWidget(groupColorLabel,0,0,1,2);
         sixthLayout->addWidget(addGroupAct,1,0,1,2);
-        sixthLayout->addWidget(colorMapAct,2,0,1,2);
+        //sixthLayout->addWidget(invalidateAct,2,0,1,2);
+        sixthLayout->addWidget(colorMapAct,3,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 }

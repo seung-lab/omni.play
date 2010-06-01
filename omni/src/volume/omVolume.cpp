@@ -27,10 +27,11 @@ OmVolume::OmVolume()
         SetDataDimensions(Vector3i(128, 128, 128));
 
         SetUserScale(Vector3i(1, 1, 1));
-        SetScale(Vector3i(10, 10, 10));
 
         mDataResolution = Vector3f::ONE;
         SetStretchValues();
+
+	SetDataResolution(mDataResolution);
 
         unitString = "";
 }
@@ -230,7 +231,7 @@ Vector2f OmVolume::GetStretchValues(ViewType plane)
 
 void OmVolume::SetStretchValues()
 {
-	Vector3f res =mDataResolution;
+	Vector3f res = mDataResolution;
 	if ((res.x<=res.y)&&(res.x<=res.z)){
 		mDataStretchValues.x = 1.0;
 		mDataStretchValues.y = res.y/res.x;
