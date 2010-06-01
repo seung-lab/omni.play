@@ -51,8 +51,9 @@ GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
  *	Constructs View3d widget that shares with the primary widget.
  */
 OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
-	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget()), 
-	  mView3dUi(this, vgs), mViewGroupState(vgs)
+	: QGLWidget(parent, OmStateManager::GetPrimaryView3dWidget())
+	, mView3dUi(this, vgs)
+	, mViewGroupState(vgs)
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
@@ -71,10 +72,12 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
+	// TODO: make OmLocalPreferences cache, so we don't have to prime...(purcaro)
 	OmLocalPreferences::getDefault2DViewFrameIn3D();
 	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
 	OmLocalPreferences::getDefaultCrosshairValue();
 	OmLocalPreferences::getDefaultDoDiscoBall();
+
 	mElapsed = new QTime();
 	mElapsed->start();
 
