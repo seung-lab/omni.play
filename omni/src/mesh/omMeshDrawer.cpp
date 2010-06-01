@@ -7,6 +7,14 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omVolumeCuller.h"
 
+static unsigned int mFreshness = 0;
+static boost::unordered_map< int, 
+	boost::unordered_map< int,
+	 boost::unordered_map< int,
+	  boost::unordered_map< int, OmSegPtrsValid > > > > mSegmentListCache;
+
+// NOTE: I am assuming this class is only being used in a single-threaded fashion..
+
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSeg(&OmProject::GetSegmentation(segmentationID))
 	, mSegmentCache(mSeg->mSegmentCache)
@@ -34,6 +42,8 @@ OmMeshDrawer::~OmMeshDrawer()
  */
 void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 {
+	checkCache();
+
 	//transform to normal frame
 	glPushMatrix();
 	glMultMatrixf(mSeg->mNormToSpaceMat.ml);
@@ -147,7 +157,7 @@ void OmMeshDrawer::populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk
 		seg = segIter.getNextSegment();
 	}
 
-	mSegmentCache->setSegmentListDirectCache( chunkCoord, segmentsToDraw );
+	setSegmentListDirectCache( chunkCoord, segmentsToDraw );
 	//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 }
 
@@ -158,11 +168,11 @@ void OmMeshDrawer::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk
 			     const OmMipChunkCoord & chunkCoord)
 {
 	// figure out which segments to draw
-	if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
+	if( !segmentListDirectCacheHasCoord( chunkCoord ) ){
 		populateSegIDsCache( p_chunk, chunkCoord );
 	}
 
-	const OmSegPtrs & segmentsToDraw = mSegmentCache->getSegmentListDirectCache( chunkCoord );
+	const OmSegPtrs & segmentsToDraw = getSegmentListDirectCache( chunkCoord );
 
 	if( segmentsToDraw.empty() ){
 		return;
@@ -238,4 +248,33 @@ bool OmMeshDrawer::DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk
 	//if distance too large, just draw it - else keep breaking it down
 	debug("vol", "cam,dist:%f,%f\n", camera_to_center, distance);
 	return (camera_to_center > distance);
+}
+
+// TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
+void OmMeshDrawer::setSegmentListDirectCache( const OmMipChunkCoord & c,
+					      const OmSegPtrs & segmentsToDraw )
+{
+	mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
+}
+
+bool OmMeshDrawer::segmentListDirectCacheHasCoord( const OmMipChunkCoord & c )
+{
+	OmSegPtrsValid & spList = mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	return spList.isValid;
+}
+
+const OmSegPtrs & OmMeshDrawer::getSegmentListDirectCache( const OmMipChunkCoord & c )
+{
+	const OmSegPtrsValid & spList = mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	return spList.list;
+}
+
+void OmMeshDrawer::checkCache()
+{
+	const unsigned int currentFreshness = OmCacheManager::Freshen(false);
+
+	if( currentFreshness != mFreshness ){
+		mSegmentListCache.clear();
+		mFreshness = currentFreshness;
+	}
 }

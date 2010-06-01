@@ -71,11 +71,6 @@ public:
 
 	quint32 getPageSize();
 
-	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					const OmSegPtrs & segmentsToDraw );
-	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
-
 	void resetGlobalThreshold( const float stopPoint );
 
 	quint32 getMaxValue();

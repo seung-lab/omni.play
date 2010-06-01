@@ -3,7 +3,6 @@
 
 #include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
-#include "segment/omSegmentPointers.h"
 
 #include <QSet>
 
@@ -82,11 +81,6 @@ class OmSegmentCacheImpl {
 
 	quint32 getPageSize() { return mPageSize; }
 
-	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					const OmSegPtrs & segmentsToDraw );
-	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
-
 	void resetGlobalThreshold( const float stopPoint );
 
 	const OmColor & GetColorAtThreshold( OmSegment * segment, const float threshold );
@@ -131,10 +125,6 @@ class OmSegmentCacheImpl {
 	void doSaveSegmentPage( const PageNum segPageNum );
 	bool mAllPagesLoaded;
 
-	boost::unordered_map< int, 
-		boost::unordered_map< int,
-		boost::unordered_map< int,
-		boost::unordered_map< int, OmSegPtrsValid > > > > cacheDirectSegmentList;
 	void clearCaches();
 	void invalidateCachedColorFreshness();
 	quint32 mCachedColorFreshness;

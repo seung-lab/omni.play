@@ -24,6 +24,12 @@ class OmMeshDrawer : boost::noncopyable
 
  private:
 
+	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
+					const OmSegPtrs & segmentsToDraw );
+	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
+	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
+	void checkCache();
+
 	OmSegmentation * mSeg;
 	OmSegmentCache * mSegmentCache;
 	OmViewGroupState * mViewGroupState;

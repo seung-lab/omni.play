@@ -216,25 +216,6 @@ void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
 	mImpl->splitChildLowestThreshold( segment );
 }
 
-void OmSegmentCache::setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-						const OmSegPtrs & segmentsToDraw )
-{
-	QMutexLocker locker( &mMutex );
-	mImpl->setSegmentListDirectCache( chunkCoord, segmentsToDraw );
-}
-
-bool OmSegmentCache::segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->segmentListDirectCacheHasCoord( chunkCoord );
-}
-
-const OmSegPtrs & OmSegmentCache::getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->getSegmentListDirectCache( chunkCoord );
-}
-
 void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
 {	
 	QMutexLocker locker( &mMutex );
