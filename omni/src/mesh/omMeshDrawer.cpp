@@ -4,8 +4,8 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 #include "volume/omMipChunk.h"
-#include "volume/omVolumeCuller.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "volume/omVolumeCuller.h"
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSeg(&OmProject::GetSegmentation(segmentationID))
@@ -15,7 +15,11 @@ OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	assert(mSeg);
 	assert(mSegmentCache);
 	assert(mViewGroupState);
-	
+}
+
+OmMeshDrawer::~OmMeshDrawer()
+{
+	delete mVolumeCuller;
 }
 
 /////////////////////////////////
@@ -42,9 +46,10 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 		glPopMatrix();
 		return;
 	}
+
 	//form culler for this volume and call draw on all volumes
-	OmVolumeCuller volume_culler =
-		rCuller.GetTransformedCuller(mSeg->mNormToSpaceMat, mSeg->mNormToSpaceInvMat);
+	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->mNormToSpaceMat, 
+						     mSeg->mNormToSpaceInvMat);
 
 	OmSegmentIterator iter(mSegmentCache);
 
@@ -64,13 +69,12 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 	glPushName(mSeg->GetId());
 
 	//draw relevant data values starting from root chunk
-	DrawChunkRecursive(mSeg->RootMipChunkCoordinate(), iter, true, volume_culler );
+	DrawChunkRecursive(mSeg->RootMipChunkCoordinate(), iter, true );
 
 	glPopName();
 
         //pop matrix
         glPopMatrix();
-
 }
 
 /*
@@ -80,8 +84,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
  */
 void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, 
 					OmSegmentIterator segIter,
-					bool testVis, 
-					OmVolumeCuller & rCuller )
+					bool testVis)
 {
 	// get pointer to chunk
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
@@ -90,7 +93,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	// TEST FOR CHUNK VISIBILITY IF NECESSARY
 	if (testVis) {
 		//check if frustum contains chunk
-		switch (rCuller.TestChunk(*p_chunk)) {
+		switch (mVolumeCuller->TestChunk(*p_chunk)) {
 		case VISIBILITY_NONE:
 			return;
 
@@ -105,9 +108,9 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	
 	// TEST IF CHUNK SHOULD BE DRAWN
 	// if chunk satisfies draw criteria
-	if ( p_chunk->DrawCheck(rCuller) ) {
+	if ( p_chunk->DrawCheck(*mVolumeCuller) ) {
 
-		std::vector< OmSegment* > segmentsToDraw;
+		OmSegPtrs segmentsToDraw;
 
 		// TODO: refactor segmentListDirectCacheHasCoord into this class
 		if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
@@ -130,7 +133,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 			//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 		}
 
-		return DrawChunk(p_chunk, chunkCoord, mSegmentCache->getSegmentListDirectCache( chunkCoord ), rCuller);
+		return DrawChunk(p_chunk, chunkCoord, mSegmentCache->getSegmentListDirectCache( chunkCoord ));
 	}
 
 	// ELSE BREAK DOWN INTO CHILDREN
@@ -138,7 +141,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
 	std::set<OmMipChunkCoord>::const_iterator iter;
 	for( iter = coords.begin(); iter != coords.end(); ++iter ){
-		DrawChunkRecursive(*iter, segIter, testVis, rCuller);
+		DrawChunkRecursive(*iter, segIter, testVis);
 	}
 }
 
@@ -146,25 +149,24 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
 void OmMeshDrawer::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-			       const OmMipChunkCoord & chunkCoord,	
-			       const OmSegPtrs & segmentsToDraw,
-			       OmVolumeCuller & rCuller)
+			     const OmMipChunkCoord & chunkCoord,
+			     const OmSegPtrs & segmentsToDraw)
 {
 	if( segmentsToDraw.empty() ){
 		return;
 	}
 
 	//draw extent
-	if (rCuller.CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
+	if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
 		p_chunk->DrawClippedExtent();
 	}
 
 	//if not set to render segments
-	if (!rCuller.CheckDrawOption(DRAWOP_LEVEL_SEGMENT)) {
+	if (!mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT)) {
 		return;
 	}
 
-	DrawMeshes(rCuller.GetDrawOptions(), 
+	DrawMeshes(mVolumeCuller->GetDrawOptions(), 
 		   chunkCoord, 
 		   segmentsToDraw);
 }
@@ -174,9 +176,9 @@ void OmMeshDrawer::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk
 
 void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
 			      const OmMipChunkCoord & mipCoord, 
-			      const OmSegPtrs  & segmentsToDraw )
+			      const OmSegPtrs & segmentsToDraw )
 {
-	std::vector<OmSegment*>::const_iterator iter;
+	OmSegPtrs::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 
 		//get pointer to mesh
@@ -188,7 +190,6 @@ void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
 		}
 
 		//apply segment color
-		//(*iter)->ApplyColor(drawOps, vgs);
 		mViewGroupState->ColorMesh(drawOps, *iter);
 
 		//draw mesh
