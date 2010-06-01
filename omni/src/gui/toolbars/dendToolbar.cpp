@@ -264,6 +264,7 @@ void DendToolBar::split()
 {
         debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
 	if(!toolbarSplitAct->isChecked()) {
+		mViewGroupState->SetShowSplitMode(true);
 		OmStateManager::SetSystemMode(DEND_MODE);	
 	} else {
         	debug("dendbar", "unchecking\n");

@@ -370,7 +370,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	switch( objType ){
 	case CHANNEL:
-		if(!mShowValid && (mShatter || (mSplitting && mBreakOnSplit)) ){
+		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ){
 			sccType = FilterBreak;
 		} else if(mShowValid) {
 			sccType = FilterValid;
@@ -380,7 +380,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 		break;
 
 	case SEGMENTATION:
-		if(!mShowValid && (mShatter || (mSplitting && mBreakOnSplit)) ) {
+		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ) {
 			sccType = SegmentationBreak;
 		} else if(mShowValid) {
 			sccType = SegmentationValid;
@@ -407,7 +407,7 @@ void OmViewGroupState::ColorMesh(const OmBitfield & drawOps, OmSegment * segment
 {
         OmSegmentColorCacheType sccType;
 
-        if( mShatter || (mSplitting && mBreakOnSplit) ) {
+        if( mShatter || (mShowSplit && mBreakOnSplit) ) {
         	sccType = SegmentationBreak;
         } else {
         	sccType = Segmentation;
@@ -451,6 +451,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		if(postEvent) {
 			mToolBarManager->SetSplittingOff();
 		}
+		SetShowSplitMode(false);
 		OmStateManager::SetSystemModePrev();
 	}
 	OmCacheManager::Freshen(true);
@@ -478,3 +479,10 @@ void OmViewGroupState::SetShowValidMode(bool mode)
 	mShowValid = mode;
 }
 
+void OmViewGroupState::SetShowSplitMode(bool mode)
+{
+	OmCacheManager::Freshen(true);
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	mShowSplit = mode;
+}

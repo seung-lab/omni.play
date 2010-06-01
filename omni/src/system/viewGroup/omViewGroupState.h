@@ -67,6 +67,8 @@ class OmViewGroupState : public OmManageableObject {
 	void SetBreakOnSplitMode(bool mode);
 
 	void SetShowValidMode(bool mode);
+	void SetShowSplitMode(bool mode);
+
 
  private:
 	QMutex mColorCacheMapLock;
@@ -103,6 +105,7 @@ class OmViewGroupState : public OmManageableObject {
 	OmId mSplittingSegment;
 	OmId mSplittingSeg;
 	bool mShowValid;
+	bool mShowSplit;
 
 };
 
