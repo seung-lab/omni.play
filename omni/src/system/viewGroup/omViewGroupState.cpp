@@ -39,6 +39,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mBreakOnSplit = true;
         mSplittingSegment = 0;
         mSplittingSeg = 1;
+        mShowValid = false;
 
 	zoom_level = Vector2 < int >(0, 10);
 
@@ -369,16 +370,20 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	switch( objType ){
 	case CHANNEL:
-		if( mShatter ){
-			sccType = ChannelBreak;
+		if(!mShowValid && (mShatter || (mSplitting && mBreakOnSplit)) ){
+			sccType = FilterBreak;
+		} else if(mShowValid) {
+			sccType = FilterValid;
 		} else {
-			sccType = Channel;
+			sccType = Filter;
 		}
 		break;
 
 	case SEGMENTATION:
-		if( mShatter || (mSplitting && mBreakOnSplit) ) {
+		if(!mShowValid && (mShatter || (mSplitting && mBreakOnSplit)) ) {
 			sccType = SegmentationBreak;
+		} else if(mShowValid) {
+			sccType = SegmentationValid;
 		} else {
 			sccType = Segmentation;
 		}
@@ -464,3 +469,12 @@ void OmViewGroupState::SetBreakOnSplitMode(bool mode)
 {
 	mBreakOnSplit = mode;
 }
+
+void OmViewGroupState::SetShowValidMode(bool mode)
+{
+	OmCacheManager::Freshen(true);
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	mShowValid = mode;
+}
+

@@ -55,7 +55,6 @@ void DendToolBar::createToolbarActions()
         connect(autoBreakCheckbox, SIGNAL(stateChanged(int)),
                 this, SLOT(autoBreakChecked()));
 
-
 	decreaseThresholdAct = new QPushButton(mMainWindow);
 	decreaseThresholdAct->setText(tr("-"));
 	decreaseThresholdAct->setStatusTip(tr("Split object mode"));
@@ -416,7 +415,7 @@ void DendToolBar::updateGui()
 // FIXME: need to be moved to somewhere else.
 void DendToolBar::addGroup()
 {
-	debug("group", "DendToolBar::addGroup\n");
+	debug("dendbar", "DendToolBar::addGroup\n");
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.AddGroup();
@@ -425,13 +424,9 @@ void DendToolBar::addGroup()
 
 void DendToolBar::mapColors()
 {
-	debug("map", "DendToolBar::mapColors\n");
-	mShowGroups = !mShowGroups;
-}
-
-bool DendToolBar::GetShowGroupsMode()
-{
-	return mShowGroups;
+	debug("dendbar", "DendToolBar::mapColors(%i)\n", colorMapAct->isChecked());
+	// Using !(not) because check happens after this fuction.
+	mViewGroupState->SetShowValidMode(!colorMapAct->isChecked());
 }
 
 void DendToolBar::SetSplittingOff()

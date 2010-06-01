@@ -191,6 +191,7 @@ float OmSegment::getThreshold()
 void OmSegment::SetImmutable(bool immutable)
 {
 	mImmutable = immutable;
+	mCache->addToDirtySegmentList(this);
 }
 
 bool OmSegment::GetImmutable()

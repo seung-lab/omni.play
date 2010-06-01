@@ -51,7 +51,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
 	mSegmentCache->mMutex.unlock();
 
-	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
+	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType || SegmentationValid == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
 	if ( isSegmentation ) {
 		showOnlySelectedSegments = false;	
@@ -103,6 +103,17 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
+
+	if(SegmentationValid == mSccType || FilterValid == mSccType){
+			if(seg->GetImmutable()) {
+                        	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
+                        	return segRoot->mColorInt;
+			} else {
+                        	const OmColor & tsc = {0, 0, 0};
+                        	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
+				return tsc;
+			}
+	}
 
 	if(SegmentationBreak == mSccType){
 		if( isSelected ){

@@ -6,10 +6,12 @@
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
-enum OmSegmentColorCacheType { Channel = 0, 
+enum OmSegmentColorCacheType { Filter = 0, 
+			       FilterBreak, 
+			       FilterValid,
 			       Segmentation, 
-			       ChannelBreak, 
 			       SegmentationBreak,
+			       SegmentationValid,
 			       Number_SegColorCacheEnums };
 
 class OmSegmentCache;
