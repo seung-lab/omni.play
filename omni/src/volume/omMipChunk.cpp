@@ -660,7 +660,7 @@ void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 
  */
 vtkImageData *OmMipChunk::GetMeshImageData()
 {
-	Open ();
+	Open();
 
 	DataCoord data_dims;
 	mpImageData->GetDimensions(data_dims.array);
@@ -718,29 +718,6 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 
 /////////////////////////////////
 ///////          Drawing
-
-/*
- *	Given that the chunk is visible, determine if it should be drawn
- *	or if we should continue refining so as to draw children.
- */
-
-bool OmMipChunk::DrawCheck(OmVolumeCuller & rCuller)
-{
-	//draw if leaf
-	if (IsLeaf()) {
-		return true;
-	}
-
-	NormCoord camera = rCuller.GetPosition();
-	NormCoord center = mClippedNormExtent.getCenter();
-
-	float camera_to_center = center.distance(camera);
-	float distance = (mNormExtent.getMax() - mNormExtent.getCenter()).length();
-
-	//if distance too large, just draw it - else keep breaking it down
-	debug("vol", "cam,dist:%f,%f\n", camera_to_center, distance);
-	return (camera_to_center > distance);
-}
 
 void OmMipChunk::DrawClippedExtent()
 {

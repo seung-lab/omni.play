@@ -87,9 +87,7 @@ public:
 	//meshing
 	vtkImageData* GetMeshImageData();
 	
-	
 	//drawing
-	bool DrawCheck( OmVolumeCuller & );
 	void DrawClippedExtent();
 	
 	int GetBytesPerSample();
@@ -123,8 +121,8 @@ protected:
 
 	//octree properties
 	DataBbox mDataExtent;
-	NormBbox mNormExtent;			//extent of chunk in norm space
-	NormBbox mClippedNormExtent;	//extent of contained data in norm space
+	NormBbox mNormExtent;		// extent of chunk in norm space
+	NormBbox mClippedNormExtent;	// extent of contained data in norm space
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
 	set<OmMipChunkCoord> mChildrenCoordinates;

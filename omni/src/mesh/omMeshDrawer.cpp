@@ -108,7 +108,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	
 	// TEST IF CHUNK SHOULD BE DRAWN
 	// if chunk satisfies draw criteria
-	if ( p_chunk->DrawCheck(*mVolumeCuller) ) {
+	if ( DrawCheck(p_chunk) ) {
 
 		OmSegPtrs segmentsToDraw;
 
@@ -201,6 +201,30 @@ void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
 
 		glPopName();
 		glPopName();
-
 	}
+}
+
+/*
+ *	Given that the chunk is visible, determine if it should be drawn
+ *	or if we should continue refining so as to draw children.
+ */
+bool OmMeshDrawer::DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk)
+{
+	//draw if leaf
+	if(p_chunk->IsLeaf()) {
+		return true;
+	}
+	
+	const NormBbox & normExtent = p_chunk->GetNormExtent();
+	const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
+
+	NormCoord camera = mVolumeCuller->GetPosition();
+	NormCoord center = clippedNormExtent.getCenter();
+
+	float camera_to_center = center.distance(camera);
+	float distance = (normExtent.getMax() - normExtent.getCenter()).length();
+
+	//if distance too large, just draw it - else keep breaking it down
+	debug("vol", "cam,dist:%f,%f\n", camera_to_center, distance);
+	return (camera_to_center > distance);
 }

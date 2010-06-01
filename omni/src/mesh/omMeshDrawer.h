@@ -41,6 +41,7 @@ class OmMeshDrawer
 			const OmMipChunkCoord & mipCoord, 
 			const OmSegPtrs  & segmentsToDraw );
 
+	bool DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk);
 };
 
 #endif
