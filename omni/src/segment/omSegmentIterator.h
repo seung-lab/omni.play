@@ -10,7 +10,10 @@ class OmSegmentCache;
 class OmSegmentIterator
 {
  public:
-	OmSegmentIterator( OmSegmentCache * cache );
+	OmSegmentIterator( OmSegmentCache *, 
+			   const bool iterOverSelectedIDs = false, 
+			   const bool iterOverEnabledIDs = false );
+ 
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
 

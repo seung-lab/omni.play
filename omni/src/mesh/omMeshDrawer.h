@@ -29,19 +29,22 @@ class OmMeshDrawer
 	OmViewGroupState * mViewGroupState;
 	OmVolumeCuller * mVolumeCuller;
 
-	void DrawChunkRecursive(const OmMipChunkCoord &, 
-				OmSegmentIterator iter,
-				bool testVis );
+	bool mIterOverSelectedIDs;
+	bool mIterOverEnabledIDs;
+
+	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
 
 	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-		       const OmMipChunkCoord & chunkCoord,
-		       const OmSegPtrs & segmentsToDraw);
+		       const OmMipChunkCoord & chunkCoord);
 
 	void DrawMeshes(const OmBitfield & drawOps,
 			const OmMipChunkCoord & mipCoord, 
 			const OmSegPtrs  & segmentsToDraw );
 
 	bool DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk);
+	
+	void populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
+				 const OmMipChunkCoord & chunkCoord);
 };
 
 #endif
