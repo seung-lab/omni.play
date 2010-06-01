@@ -1,5 +1,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/toolbarManager.h"
+#include "gui/viewGroup.h"
+#include "segment/omSegment.h"
 #include "segment/omSegmentColorizer.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
@@ -8,7 +10,6 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
-#include "gui/viewGroup.h"
 
 OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	: mMainWindow(mw)

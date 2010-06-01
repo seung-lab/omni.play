@@ -2,14 +2,14 @@
 #define OM_VIEW_GROUP_STATE_H
 
 #include "system/omManageableObject.h"
-#include "segment/omSegment.h"
 #include <QMutex>
 
-class OmSegmentColorizer;
-class ToolBarManager;
-class SegmentationDataWrapper;
 class ChannelDataWrapper;
 class MainWindow;
+class OmSegment;
+class OmSegmentColorizer;
+class SegmentationDataWrapper;
+class ToolBarManager;
 class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
