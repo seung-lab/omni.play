@@ -54,8 +54,12 @@ OmSegment* OmSegmentCacheImpl::AddSegment()
 	return AddSegment( getNextValue() );
 }
 
-OmSegment* OmSegmentCacheImpl::AddSegment(OmSegID value)
+OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 {
+	if( 0 == value ){
+		return NULL;
+	}
+
 	const PageNum pageNum = getValuePageNum(value);
 
 	if( !validPageNumbers.contains( pageNum ) ) {
@@ -87,11 +91,17 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 	OmSegIDsSet::const_iterator iter;
 	for( iter = data_values.begin(); iter != data_values.end(); ++iter ){
 
+		if( 0 == *iter ){
+			continue;
+		}
+
 		OmSegment * seg = GetSegmentFromValue( *iter );
 
                 if( NULL == seg ) {
 			seg = AddSegment( *iter );
 		}
+
+		assert(seg);
 
 		if( NULL != sizes ){
 			seg->mSize += sizes->at(*iter);

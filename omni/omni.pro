@@ -124,6 +124,7 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMeshSource.h \
            src/mesh/omMeshTypes.h \
            src/mesh/omMipMesh.h \
+           src/mesh/omMeshDrawer.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
            src/project/omProject.h \
@@ -284,6 +285,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMesher.cpp \
            src/mesh/omMeshSource.cpp \
            src/mesh/omMipMesh.cpp \
+           src/mesh/omMeshDrawer.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/project/omProject.cpp \

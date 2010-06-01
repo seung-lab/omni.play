@@ -83,17 +83,9 @@ public:
 	//group management
 	OmId AddGroup();
 
-
 	//drawing
 	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
-	void DrawChunkRecursive(const OmMipChunkCoord &, 
-				OmSegmentIterator iter,
-				bool testVis, 
-				OmVolumeCuller &);
-	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-		       const OmMipChunkCoord & chunkCoord,
-		       const OmSegPtrs & segmentsToDraw, 
-		       OmVolumeCuller &rCuller);
+
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
@@ -117,7 +109,6 @@ private:
 	OmSegmentCache * mSegmentCache;
 
 	OmGroups mGroups;
-	OmViewGroupState * mViewGroupState;
 
         OmDataWrapperPtr mDend;
         OmDataWrapperPtr mDendValues;
@@ -128,6 +119,7 @@ private:
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;
+	friend class OmMeshDrawer;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
