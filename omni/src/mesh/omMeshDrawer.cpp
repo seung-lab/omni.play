@@ -110,6 +110,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 
 		std::vector< OmSegment* > segmentsToDraw;
 
+		// TODO: refactor segmentListDirectCacheHasCoord into this class...
 		if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
 			const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 			OmSegment * seg = segIter.getNextSegment();
