@@ -72,7 +72,7 @@ public:
 	quint32 getPageSize();
 
 	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					std::vector< OmSegment* > & segmentsToDraw );
+					const OmSegPtrs & segmentsToDraw );
 	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
 	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
 

@@ -13,7 +13,7 @@ class OmMipChunk;
 class OmSegmentation;
 class OmVolumeCuller;
 
-class OmMeshDrawer 
+class OmMeshDrawer : boost::noncopyable
 {
  public:
 	OmMeshDrawer(const OmId, OmViewGroupState *);

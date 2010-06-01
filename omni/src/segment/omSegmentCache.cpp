@@ -217,7 +217,7 @@ void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
 }
 
 void OmSegmentCache::setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-						std::vector< OmSegment* > & segmentsToDraw )
+						const OmSegPtrs & segmentsToDraw )
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->setSegmentListDirectCache( chunkCoord, segmentsToDraw );

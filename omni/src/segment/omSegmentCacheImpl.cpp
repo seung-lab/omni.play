@@ -531,7 +531,7 @@ void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 
 // TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
 void OmSegmentCacheImpl::setSegmentListDirectCache( const OmMipChunkCoord & c,
-						    std::vector< OmSegment* > & segmentsToDraw )
+						    const OmSegPtrs & segmentsToDraw )
 {
 	cacheDirectSegmentList[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
 }

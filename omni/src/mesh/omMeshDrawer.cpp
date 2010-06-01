@@ -127,11 +127,13 @@ void OmMeshDrawer::populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk
 {
 	// TODO: refactor segmentListDirectCacheHasCoord out of SegmentCache....
 
-	OmSegPtrs segmentsToDraw;
 	const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mSegmentCache, mIterOverSelectedIDs, mIterOverEnabledIDs );
 	OmSegment * seg = segIter.getNextSegment();
 	OmSegID val;
+
+	OmSegPtrs segmentsToDraw;
+
 	while( NULL != seg ){
 		val = seg->getValue();
 		if( chunkValues.contains( val ) ){
@@ -144,6 +146,7 @@ void OmMeshDrawer::populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk
 				
 		seg = segIter.getNextSegment();
 	}
+
 	mSegmentCache->setSegmentListDirectCache( chunkCoord, segmentsToDraw );
 	//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
 }
