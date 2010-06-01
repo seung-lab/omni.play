@@ -83,8 +83,8 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
 void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, 
-					OmSegmentIterator segIter,
-					bool testVis)
+				      OmSegmentIterator segIter,
+				      bool testVis)
 {
 	// get pointer to chunk
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
@@ -141,6 +141,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 	const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
 	std::set<OmMipChunkCoord>::const_iterator iter;
 	for( iter = coords.begin(); iter != coords.end(); ++iter ){
+		// make sure next recursive call get a COPY of the segIter
 		DrawChunkRecursive(*iter, segIter, testVis);
 	}
 }
