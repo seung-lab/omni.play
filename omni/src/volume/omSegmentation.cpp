@@ -478,8 +478,8 @@ OmId OmSegmentation::AddGroup()
 
 void OmSegmentation::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 {
-	OmMeshDrawer drawer(this);
-	drawer.Draw( rCuller, vgs );
+	OmMeshDrawer drawer(this, vgs);
+	drawer.Draw( rCuller );
 }
 
 /*

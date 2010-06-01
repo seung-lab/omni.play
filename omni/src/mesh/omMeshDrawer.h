@@ -15,10 +15,10 @@ class OmSegmentation;
 class OmMeshDrawer 
 {
  public:
-	OmMeshDrawer(OmSegmentation * seg);
+	OmMeshDrawer(OmSegmentation * seg, OmViewGroupState * vgs);
 
 	//drawing
-	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
+	void Draw(OmVolumeCuller &);
 
  private:
 
@@ -35,6 +35,11 @@ class OmMeshDrawer
 		       const OmMipChunkCoord & chunkCoord,
 		       const OmSegPtrs & segmentsToDraw, 
 		       OmVolumeCuller &rCuller);
+
+	void DrawMeshes(const OmBitfield & drawOps,
+			const OmMipChunkCoord & mipCoord, 
+			const OmSegPtrs  & segmentsToDraw );
+
 };
 
 #endif

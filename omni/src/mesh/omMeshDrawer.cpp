@@ -4,11 +4,17 @@
 #include "segment/omSegmentIterator.h"
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
+#include "system/viewGroup/omViewGroupState.h"
 
-OmMeshDrawer::OmMeshDrawer(OmSegmentation * seg)
+OmMeshDrawer::OmMeshDrawer(OmSegmentation * seg, OmViewGroupState * vgs )
 	: mSeg(seg)
 	, mSegmentCache(seg->mSegmentCache)
+	, mViewGroupState(vgs)
 {
+	assert(mSeg);
+	assert(mSegmentCache);
+	assert(mViewGroupState);
+	
 }
 
 /////////////////////////////////
@@ -19,10 +25,8 @@ OmMeshDrawer::OmMeshDrawer(OmSegmentation * seg)
  *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be 
  *	drawn depending on culler draw options and passes relevant set to root chunk.
  */
-void OmMeshDrawer::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
+void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 {
-	mViewGroupState = vgs;		// This is hackish because i don;t want to thread this into all the
-					// recursive function calls.
 	//transform to normal frame
 	glPushMatrix();
 	glMultMatrixf(mSeg->mNormToSpaceMat.ml);
@@ -160,7 +164,41 @@ void OmMeshDrawer::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk
 		return;
 	}
 
-	mSeg->mMipMeshManager.DrawMeshes(rCuller.GetDrawOptions(), 
-					chunkCoord, 
-					segmentsToDraw, mViewGroupState);
+	DrawMeshes(rCuller.GetDrawOptions(), 
+		   chunkCoord, 
+		   segmentsToDraw);
+}
+
+////////////////////////////////
+///////          Draw
+
+void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
+			      const OmMipChunkCoord & mipCoord, 
+			      const OmSegPtrs  & segmentsToDraw )
+{
+	std::vector<OmSegment*>::const_iterator iter;
+	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
+
+		//get pointer to mesh
+		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
+		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(mipCoord, (*iter)->getValue() ));
+
+		if (NULL == p_mesh) {
+			continue;
+		}
+
+		//apply segment color
+		//(*iter)->ApplyColor(drawOps, vgs);
+		mViewGroupState->ColorMesh(drawOps, *iter);
+
+		//draw mesh
+		glPushName((*iter)->getValue());
+		glPushName(OMGL_NAME_MESH);
+
+		p_mesh->Draw(true);
+
+		glPopName();
+		glPopName();
+
+	}
 }
