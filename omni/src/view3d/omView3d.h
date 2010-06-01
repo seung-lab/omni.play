@@ -5,15 +5,13 @@
 #include "omView3dWidget.h"
 #include "omView3dUi.h"
 
-#include "system/omGenericManager.h"
-
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
-#include "common/omStd.h"
+#include "common/omCommon.h"
 
 #include <QGLWidget>
 #include <QTimer>
@@ -103,7 +101,7 @@ class OmView3d : public QGLWidget,
 	QTime * mElapsed;
 	QTimer mDrawTimer;
 	OmCamera mCamera;
-	QHash< int, OmView3dWidget* > mView3dWidgetManager;
+	std::vector< OmView3dWidget* > mView3dWidgetManager;
 		
 	vector<int> mMousePickResult;	
 		

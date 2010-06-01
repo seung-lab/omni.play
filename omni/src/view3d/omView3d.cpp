@@ -19,7 +19,8 @@ enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 0,
 	VIEW3D_WIDGET_ID_VIEWBOX,
 	VIEW3D_WIDGET_ID_INFO,
-	VIEW3D_WIDGET_ID_CHUNK_EXTENT
+	VIEW3D_WIDGET_ID_CHUNK_EXTENT,
+	NUMBER_VIEW3D_WIDGET_IDS
 };
 
 /////////////////////////////////////////
@@ -57,6 +58,7 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	setFocusPolicy(Qt::ClickFocus);
 
 	//setup widgets
+	mView3dWidgetManager.resize(NUMBER_VIEW3D_WIDGET_IDS, NULL);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_SELECTION] = new OmSelectionWidget(this);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_VIEWBOX] = new OmViewBoxWidget(this, vgs);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO] = new OmInfoWidget(this);
@@ -64,7 +66,6 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
-
 
         mDrawTimer.stop();
         connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
@@ -95,6 +96,12 @@ OmView3d::~OmView3d()
 {
         if (mDrawTimer.isActive()) {
         	mDrawTimer.stop();
+	}
+
+	delete mElapsed;
+
+	for( int i = 0; i < NUMBER_VIEW3D_WIDGET_IDS; ++i ){
+		delete mView3dWidgetManager[i];
 	}
 }
 
@@ -199,8 +206,6 @@ void OmView3d::doTimedDraw()
 		mDrawTimer.setSingleShot(true);
 	}
 }
-
-
 
 /////////////////////////////////
 ///////          QEvent Methods
@@ -313,7 +318,6 @@ void OmView3d::ViewBoxChangeEvent()
 
 void OmView3d::View3dRedrawEvent()
 {
-
 	myUpdate();
 }
 
@@ -380,7 +384,6 @@ bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesV
 
 bool OmView3d::UnprojectPoint(Vector2i point2d, Vector3f & point3d, float z_scale_factor)
 {
-
 	//apply camera modelview matrix
 	mCamera.ApplyModelview();
 
@@ -399,7 +402,6 @@ bool OmView3d::UnprojectPoint(Vector2i point2d, Vector3f & point3d, float z_scal
 
 void OmView3d::UpdateEnabledWidgets()
 {
-
 	//set widgets enabled
 	bool highlight_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_SELECTION]->enabled = highlight_widget_state;
@@ -412,7 +414,6 @@ void OmView3d::UpdateEnabledWidgets()
 
 	bool extent_widget = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_CHUNK_EXTENT]->enabled = extent_widget;
-
 }
 
 /////////////////////////////////
@@ -484,7 +485,6 @@ void OmView3d::Draw(OmBitfield cullerOptions)
  */
 void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 {
-
 	//draw focus axis
 	mCamera.DrawFocusAxis();
 
@@ -492,7 +492,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 	OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
-	//initiate volume manager draw tree
+	// Draw meshes!
 	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
 	OmIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
@@ -503,7 +503,6 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 
 void OmView3d::DrawEditSelectionVoxels()
 {
-
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
 	//offset selection voxels to be on top
@@ -529,7 +528,6 @@ void OmView3d::SetBackgroundColor()
 
 void OmView3d::SetCameraPerspective()
 {
-
 	float mynear = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
 	float myfar = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
 	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
@@ -542,10 +540,11 @@ void OmView3d::SetCameraPerspective()
 
 void OmView3d::SetBlending()
 {
-	if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL))
+	if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 		glEnable(GL_BLEND);
-	else
+	} else {
 		glDisable(GL_BLEND);
+	}
 }
 
 /*
@@ -553,7 +552,10 @@ void OmView3d::SetBlending()
  */
 void OmView3d::DrawWidgets()
 {
-	foreach( OmView3dWidget* w, mView3dWidgetManager ){
+	OmView3dWidget * w;
+
+	for( int i = 0; i < NUMBER_VIEW3D_WIDGET_IDS; ++i ){
+		w = mView3dWidgetManager[i];
 		if( w->enabled ){
 			w->Draw();
 		}
@@ -594,5 +596,7 @@ void initLights()
 QSize OmView3d::sizeHint () const
 {
 	QSize s = OmStateManager::getViewBoxSizeHint();
-	return QSize( s.width(), s.height() - 76 );
+	const int offset = 76;
+	// TODO: offset is only 76 if tabs are present in the upper-right dock widget...
+	return QSize( s.width(), s.height() - offset );
 }
