@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
-#include "omView3d.h"
+#include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
 #include "segment/omSegmentEditor.h"
 #include "system/omEventManager.h"
@@ -8,6 +8,7 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
+#include "view3d/omView3d.h"
 #include "volume/omVolumeCuller.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
@@ -492,7 +493,12 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	//initiate volume manager draw tree
-	OmProject::Draw(culler, mViewGroupState);
+	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
+	OmIDsSet::const_iterator iter;
+	for( iter = set.begin(); iter != set.end(); ++iter ){
+		OmMeshDrawer drawer( *iter, mViewGroupState);
+		drawer.Draw( culler );
+        }
 }
 
 void OmView3d::DrawEditSelectionVoxels()

@@ -56,7 +56,6 @@ public:
         static const OmIDsSet & GetValidSegmentationIds();
         static bool IsSegmentationEnabled(OmId id);
         static void SetSegmentationEnabled(OmId id, bool enable);
-	static void Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs);
 
 private:
 	OmProject();
