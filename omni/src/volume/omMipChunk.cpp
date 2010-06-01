@@ -472,9 +472,12 @@ void OmMipChunk::loadMetadataIfPresent()
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store 
  *	all values in the DataSegmentId set of the chunk.
  */
-boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( OmSegmentCache * )
+boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
 {
-	boost::unordered_map< OmSegID, unsigned int> * sizes = new boost::unordered_map< OmSegID, unsigned int>();
+	boost::unordered_map< OmSegID, unsigned int> * sizes = NULL;
+	if( computeSizes ){
+		sizes = new boost::unordered_map< OmSegID, unsigned int>();
+	}
 
 	//uses mpImageData so ensure chunk is open
 	Open();
@@ -500,7 +503,9 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 					//if non-null insert in set
 					if (NULL_SEGMENT_DATA != *p_scalar_data) {
 						mDirectlyContainedValues.insert(*p_scalar_data);
-						++(sizes->operator[](*p_scalar_data));
+						if( computeSizes ){
+							++(sizes->operator[](*p_scalar_data));
+						}
 					}
 					//adv to next scalar
 					++p_scalar_data;
@@ -512,15 +517,18 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 
 		//for all voxels in the chunk
 		int x, y, z;
+		OmSegID my_scalar_data;
 		for (z = extent[0]; z <= extent[1]; z++) {
 			for (y = extent[2]; y <= extent[3]; y++) {
 				for (x = extent[4]; x <= extent[5]; x++) {
 
 					//if non-null insert in set
 					if ('\0' != *p_scalar_data) {
-						OmSegID my_scalar_data = (OmSegID) (*p_scalar_data);
+						my_scalar_data = (OmSegID) (*p_scalar_data);
 						mDirectlyContainedValues.insert(my_scalar_data);
-						++(sizes->operator[](my_scalar_data));
+						if( computeSizes ){
+							++(sizes->operator[](my_scalar_data));
+						}
 					}
 					//adv to next scalar
 					++p_scalar_data;

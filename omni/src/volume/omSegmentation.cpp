@@ -257,15 +257,15 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	//build chunk volume data
 	OmMipVolume::BuildChunk(mipCoord);
 
-	//get pointer to chunk
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, mipCoord);
+	
+	const bool isMIPzero = p_chunk->IsLeaf();
 
-	//analyze entire chunk segmentation data
-	boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunk->RefreshDirectDataValues( mSegmentCache );
+	// refresh values even if not MIP 0
+	boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunk->RefreshDirectDataValues( isMIPzero );
 
-	//if LEAF (i.e. MIP 0) then have segment manager add any unmapped segment values
-	if (p_chunk->IsLeaf()) {
+	if(isMIPzero){
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
 		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes);
 	}

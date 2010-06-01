@@ -64,7 +64,7 @@ public:
 	
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
-	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues( OmSegmentCache *);
+	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
 	
 
 	//chunk extent
