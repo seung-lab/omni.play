@@ -809,19 +809,27 @@ OmSegIDsListPtr OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offse
 {
 	OmSegIDsListPtr ret( new OmSegIDsList() );
 
+	const unsigned int numToSkipBeforeAdding = offset;
+	const unsigned int numToFindBeforeStopping = offset + numToGet;
+
 	OmSegment * seg;
 	int counter = 0;
-	for( quint32 i = offset; i < mMaxValue; ++i ){
+	for( quint32 i = 1; i < mMaxValue; ++i ){
 
 		seg = GetSegmentFromValue( i );
 		if( NULL == seg || 0 != seg->mParentSegID ){
 			continue;
 		}
 
+		++counter;
+
+		if( counter < numToSkipBeforeAdding ){
+			continue;
+		}
+
 		ret->push_back( i );
 
-		++counter;
-		if( counter > numToGet ){
+		if( counter > numToFindBeforeStopping ){
 			break;
 		}	
 	}
