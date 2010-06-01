@@ -147,7 +147,7 @@ OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 }
 
 template < class T > 
-const OmIDsSet&
+const OmIDsSet &
 OmGenericManager<T>::GetEnabledIds() const 
 {
 	return mEnabledSet;

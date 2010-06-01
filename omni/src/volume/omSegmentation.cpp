@@ -5,7 +5,6 @@
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "mesh/meshingManager.h"
-#include "mesh/omMeshDrawer.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
@@ -474,12 +473,6 @@ OmId OmSegmentation::AddGroup()
         }
 
 	return mGroups.AddGroup(segmentsToGroup);
-}
-
-void OmSegmentation::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
-{
-	OmMeshDrawer drawer(this, vgs);
-	drawer.Draw( rCuller );
 }
 
 /*

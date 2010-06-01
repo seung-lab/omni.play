@@ -15,7 +15,7 @@ class OmSegmentation;
 class OmMeshDrawer 
 {
  public:
-	OmMeshDrawer(OmSegmentation * seg, OmViewGroupState * vgs);
+	OmMeshDrawer(const OmId, OmViewGroupState *);
 
 	//drawing
 	void Draw(OmVolumeCuller &);

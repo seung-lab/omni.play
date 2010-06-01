@@ -7,6 +7,7 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
+#include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
 #include "segment/omSegmentEditor.h"
 #include "system/omCacheManager.h"
@@ -243,9 +244,10 @@ void OmProject::SetSegmentationEnabled(OmId id, bool enable)
 
 void OmProject::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
 {
-        foreach( const OmId & id, Instance()->mSegmentationManager.GetEnabledIds() ){
-                GetSegmentation(id).Draw(rCuller, vgs);
+	OmIDsSet::const_iterator iter;
+	const OmIDsSet & set = Instance()->mSegmentationManager.GetEnabledIds();
+	for( iter = set.begin(); iter != set.end(); ++iter ){
+		OmMeshDrawer drawer( *iter, vgs);
+		drawer.Draw( rCuller );
         }
-
-
 }

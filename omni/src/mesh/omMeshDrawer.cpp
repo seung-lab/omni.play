@@ -1,14 +1,15 @@
 #include "mesh/omMeshDrawer.h"
 #include "common/omGl.h"
+#include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
 #include "system/viewGroup/omViewGroupState.h"
 
-OmMeshDrawer::OmMeshDrawer(OmSegmentation * seg, OmViewGroupState * vgs )
-	: mSeg(seg)
-	, mSegmentCache(seg->mSegmentCache)
+OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
+	: mSeg(&OmProject::GetSegmentation(segmentationID))
+	, mSegmentCache(mSeg->mSegmentCache)
 	, mViewGroupState(vgs)
 {
 	assert(mSeg);
@@ -72,8 +73,6 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 
 }
 
-
-
 /*
  *	Recursively draw MipChunks within the Segmentation using the MipCoordinate hierarchy.
  *	Uses the OmVolumeCuller to determine the visibility of a MipChunk.  If visible, the
@@ -110,7 +109,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 
 		std::vector< OmSegment* > segmentsToDraw;
 
-		// TODO: refactor segmentListDirectCacheHasCoord into this class...
+		// TODO: refactor segmentListDirectCacheHasCoord into this class
 		if( !mSegmentCache->segmentListDirectCacheHasCoord( chunkCoord ) ){
 			const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 			OmSegment * seg = segIter.getNextSegment();

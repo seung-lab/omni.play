@@ -84,8 +84,6 @@ public:
 	OmId AddGroup();
 
 	//drawing
-	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
-
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
