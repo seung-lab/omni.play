@@ -233,6 +233,8 @@ void OmSimpleChunk::SetImageData(void *)
  */
 boost::unordered_map< OmSegID, unsigned int> * OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 {
+	assert(0); // GUI crashes when using this method instead of the one in OmMipChunk (purcaro)
+
 	boost::unordered_map< OmSegID, unsigned int> * sizes = new boost::unordered_map< OmSegID, unsigned int>();
 
 	//uses mpImageData so ensure chunk is open

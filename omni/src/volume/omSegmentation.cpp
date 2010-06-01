@@ -580,7 +580,11 @@ void OmSegmentation::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord,
 			while( NULL != seg ){
 				val = seg->getValue();
 				if( chunkValues.contains( val ) ){
-					segmentsToDraw.push_back(seg);
+					// TODO: wire size threshold into gui (purcaro)
+					//  make sure to clear the segmentListDirectCacheHasCoord if needed!
+					if( seg->getSize() > 100 ){
+						segmentsToDraw.push_back(seg);
+					}
 				}
 				
 				seg = segIter.getNextSegment();
