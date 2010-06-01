@@ -19,14 +19,21 @@ void OmSegmentSelector::selectNoSegments()
 	newSelectedIDs.clear();
 }
 
-void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, const bool )
+void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, const bool isSelected )
 {
 	selectNoSegments();
 
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 
-	newSelectedIDs.insert( segID );
-	mSegmentJustSelectedID = segID;
+	if( oldSelectedIDs.size() > 1 ){
+		newSelectedIDs.insert( segID );
+		mSegmentJustSelectedID = segID;
+	} else {
+		if( isSelected ){
+			newSelectedIDs.insert( segID );
+			mSegmentJustSelectedID = segID;
+		}
+	}
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, const bool isSelected )
