@@ -34,6 +34,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mXZPan[1] = 0.0;
 
 	mBreakThreshold = 0;
+	mDustThreshold = 90;
         mShatter = false;
         mSplitting = false;
 	mBreakOnSplit = true;

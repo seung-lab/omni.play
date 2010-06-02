@@ -186,7 +186,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 		
 		// TODO: wire size threshold into gui (purcaro)
-		if( (*iter)->getSize() < 100 ){
+		if( (*iter)->getSize() < mViewGroupState->getDustThreshold() ){
 			continue;
 		}
 

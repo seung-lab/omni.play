@@ -13,10 +13,12 @@
 #include "volume/omSegmentation.h"
 
 bool mShowGroups = false;
-OmId mSeg = 1;
+static OmId mSeg = 1;
 
 DendToolBar::DendToolBar( MainWindow * mw )
-	: QWidget(mw), mMainWindow(mw), mViewGroupState(NULL)
+	: QWidget(mw)
+	, mMainWindow(mw)
+	, mViewGroupState(NULL)
 {
 	createToolbar();
 }
@@ -145,7 +147,7 @@ void DendToolBar::createToolbarActions()
         mDustThreshold = new QLineEdit(mMainWindow);
         setDustThresholdValue();
         connect(mDustThreshold, SIGNAL(editingFinished()),
-                this, SLOT(breakThresholdChanged()));
+                this, SLOT(dustThresholdChanged()));
 
         increaseDustThresholdAct = new QPushButton(mMainWindow);
         increaseDustThresholdAct->setText(tr("+"));
@@ -188,16 +190,13 @@ void DendToolBar::setBreakThresholdValue()
 
 void DendToolBar::setDustThresholdValue()
 {
-        QString value;
-        value.setNum(90);
-
-        mDustThreshold->setText(value);
-
+	float dThreshold = 90;
         if( NULL != mViewGroupState ) {
-                mViewGroupState->setDustThreshold( 90 );
-        }
-}
+		dThreshold = mViewGroupState->getDustThreshold();
+	}
 
+        mDustThreshold->setText( QString::number(dThreshold));
+}
 
 void DendToolBar::addToolbars()
 {
@@ -395,7 +394,6 @@ void DendToolBar::join()
 		//seg.JoinAllSegmentsInSelectedList(mIDs);
 	}	
 
-
 	updateGui();
 }
 
@@ -448,8 +446,11 @@ void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 {
         debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
 
-	setThresholdValue();
 	mViewGroupState = vgs;
+
+	setThresholdValue();
+	setDustThresholdValue();
+
 	updateGui();
 }
 
@@ -479,7 +480,6 @@ void DendToolBar::deleteGroup()
                 seg.DeleteGroup();
         }
 }
-
 
 void DendToolBar::mapColors()
 {
@@ -511,7 +511,7 @@ void DendToolBar::addToDustThreshold(float num)
         value.setNum(threshold);
         mDustThreshold->setText(value);
 
-        mViewGroupState->setDustThreshold( threshold );
+	dustThresholdChanged();
 }
 
 void DendToolBar::increaseDustThreshold()

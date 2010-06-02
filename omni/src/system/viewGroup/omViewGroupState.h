@@ -57,8 +57,8 @@ class OmViewGroupState : public OmManageableObject {
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
 
-	void setDustThreshold(int t){ mDustThreshold = t; }
-	int getDustThreshold(){ return mDustThreshold; }
+	void setDustThreshold(unsigned int t){ mDustThreshold = t; }
+	unsigned int getDustThreshold(){ return mDustThreshold; }
 
 	void SetToolBarManager(ToolBarManager * tbm);
         bool GetShatterMode();
@@ -80,7 +80,7 @@ class OmViewGroupState : public OmManageableObject {
 	ViewGroup * mViewGroup;
 
 	int mBreakThreshold;
-	int mDustThreshold;
+	unsigned int mDustThreshold;
 
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
