@@ -14,6 +14,7 @@ class OmSegmentColorizer
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
+	~OmSegmentColorizer();
 
 	void colorTile( OmSegID * imageData, const int size,
 			unsigned char * data );
@@ -29,8 +30,8 @@ class OmSegmentColorizer
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 
-	OmColor * mColorCache;
-	int * mColorCacheFreshness;
+	std::vector<OmColor> mColorCache;
+	std::vector<int> mColorCacheFreshness;
 
 	quint32 mSize;
 	float mCurBreakThreshhold;

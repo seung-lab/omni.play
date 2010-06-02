@@ -152,7 +152,7 @@ unsigned int OmCacheManager::Freshen(bool freshen)
 {
 	QMutexLocker locker( &Instance()->mFreshnessMutex );
 
-	static unsigned int freshness = 0;
+	static unsigned int freshness = 1;
 
        	if (freshen) {
         	++freshness;

@@ -9,11 +9,13 @@ static const OmColor blackColor = {0, 0, 0};
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
-	, mColorCache( NULL )
-	, mColorCacheFreshness( NULL )
 	, mSize( 0 )
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
+{
+}
+
+OmSegmentColorizer::~OmSegmentColorizer()
 {
 }
 
@@ -21,23 +23,14 @@ void OmSegmentColorizer::setup()
 {
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
-	if( mSize > 0 && curSize != mSize ){
-		delete [] mColorCache;
-		mColorCache = NULL;
-		delete [] mColorCacheFreshness;
-		mColorCacheFreshness = NULL;
-	}
-
-	if( NULL != mColorCache ){
+	if( curSize == mSize ){
 		return;
 	}
 
 	mSize = curSize;
 
-	mColorCache = new OmColor[ mSize ];
-
-	mColorCacheFreshness = new int[ mSize ];
-	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
+	mColorCache.resize( mSize );
+	mColorCacheFreshness.resize( mSize, 0 );
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
