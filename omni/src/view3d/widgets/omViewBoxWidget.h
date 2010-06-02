@@ -18,6 +18,8 @@ private:
 	void drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth);
 	void drawLines(SpaceCoord depth);
 	void drawChannelData(ViewType plane, vector<Drawable*> drawables);
+	bool GetTextureMax(Vector3f coord,ViewType plane, Vector2f & dataMax, Vector2f & spaceMax ); 
+	bool GetTextureMin(Vector3f coord, ViewType plane,  Vector2f & dataMin, Vector2f & spaceMin);
 	OmViewGroupState * mViewGroupState;
 };
 
