@@ -96,11 +96,10 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
 						    const bool showOnlySelectedSegments)
 {
-	mSegmentCache->mMutex.lock(); // LOCK (6 unlock possibilities)
+	QMutexLocker locker(&mSegmentCache->mMutex);
 
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
-		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 6
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
@@ -108,10 +107,8 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->GetImmutable()) {
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 6
 			return segRoot->mColorInt;
 		} else {
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #3 of 6
 			return blackColor;
 		}
 	}
@@ -119,16 +116,13 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	if( SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
-			const OmColor & tsc = seg->mColorInt;
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #4 of 6
-			return tsc;
+			return seg->mColorInt;
 		} else {
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #5 of 6
 			return blackColor;
 		}
 	}
 
-	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #6 of 6
+	locker.unlock();
 
 	const OmColor & sc = segRoot->mColorInt;
 
