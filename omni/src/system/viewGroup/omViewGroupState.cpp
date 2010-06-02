@@ -40,6 +40,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
         mSplittingSegment = 0;
         mSplittingSeg = 1;
         mShowValid = false;
+	mShowSplit = false;
 
 	zoom_level = Vector2 < int >(0, 10);
 
