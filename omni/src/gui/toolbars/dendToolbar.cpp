@@ -127,13 +127,11 @@ void DendToolBar::createToolbarActions()
         connect(addGroupAct, SIGNAL(pressed()),
                 this, SLOT(addGroup()));
 
-/*
-        invalidateAct = new QPushButton(mMainWindow);
-        invalidateAct->setText(tr("Set Selection Not Valid"));
-        invalidateAct->setStatusTip(tr("Unlock selected objects"));
-        connect(invalidateAct, SIGNAL(pressed()),
+        deleteGroupAct = new QPushButton(mMainWindow);
+        deleteGroupAct->setText(tr("Set Selection Not Valid"));
+        deleteGroupAct->setStatusTip(tr("Unlock selected objects"));
+        connect(deleteGroupAct, SIGNAL(pressed()),
                 this, SLOT(deleteGroup()));
-*/
 
 
         colorMapAct = new QPushButton(mMainWindow);
@@ -224,7 +222,7 @@ void DendToolBar::addToolbars()
         groupColorLabel->setText("Validation:");
         sixthLayout->addWidget(groupColorLabel,0,0,1,2);
         sixthLayout->addWidget(addGroupAct,1,0,1,2);
-        //sixthLayout->addWidget(invalidateAct,2,0,1,2);
+        sixthLayout->addWidget(deleteGroupAct,2,0,1,2);
         sixthLayout->addWidget(colorMapAct,3,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
@@ -432,6 +430,17 @@ void DendToolBar::addGroup()
                 seg.AddGroup();
         }
 }
+
+// FIXME: need to be moved to somewhere else.
+void DendToolBar::deleteGroup()
+{
+        debug("dendbar", "DendToolBar::addGroup\n");
+        if (OmProject::IsSegmentationValid(getSegmentationID())) {
+                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
+                seg.DeleteGroup();
+        }
+}
+
 
 void DendToolBar::mapColors()
 {

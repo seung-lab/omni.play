@@ -82,6 +82,8 @@ public:
 	
 	//group management
 	OmId AddGroup();
+	void DeleteGroup();
+
 
 	//drawing
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );

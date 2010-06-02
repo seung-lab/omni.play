@@ -475,6 +475,24 @@ OmId OmSegmentation::AddGroup()
 	return mGroups.AddGroup(segmentsToGroup);
 }
 
+void OmSegmentation::DeleteGroup()
+{
+        OmSegmentIterator iter(mSegmentCache);
+
+        iter.iterOverSelectedIDs();
+
+        OmIDsSet segmentsToGroup;
+        OmSegment * seg = iter.getNextSegment();
+        OmSegID val;
+        while(NULL != seg) {
+                val = seg->getValue();
+                seg->SetImmutable(false);
+                //segmentsToGroup.insert(val);
+                seg = iter.getNextSegment();
+        }
+}
+
+
 /*
  *	Draw voxelated representation of the MipChunk.
  */
