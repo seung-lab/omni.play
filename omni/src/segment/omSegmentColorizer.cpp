@@ -116,7 +116,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	if( SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			// return mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
-			return segRootColor;
+			return seg->mColorInt;;
 		} else {
 			return blackColor;
 		}
