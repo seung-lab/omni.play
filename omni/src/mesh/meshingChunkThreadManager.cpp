@@ -90,8 +90,10 @@ void MeshingChunkThreadManager::run()
 	chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 
 	mMeshManager->num_chunk_threads_active->release(1);
-	printf("finished meashing chunk %s; %d left\n", qPrintable( mCoord.getCoordsAsString()),
-	       mMeshManager->numCoordsLeftToMesh() );
+	printf("\tfinished meashing chunk %s; %d left\n", qPrintable( mCoord.getCoordsAsString()),
+	       mMeshManager->numCoordsLeftToMesh() + 
+	       mMeshManager->getMaxAllowedNumberOfActiveChunks() -
+	       mMeshManager->num_chunk_threads_active->available() );
 }
 
 void MeshingChunkThreadManager::getDataAndSpawnWorkerThread( QExplicitlySharedDataPointer < OmMipChunk > chunk )
