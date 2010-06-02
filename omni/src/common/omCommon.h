@@ -98,4 +98,15 @@ enum OmToolMode { SELECT_MODE,
 };
 
 
+/** 
+ * color cache enum
+ */
+enum OmSegmentColorCacheType { Filter = 0, 
+			       FilterBreak, 
+			       FilterValid,
+			       Segmentation, 
+			       SegmentationBreak,
+			       SegmentationValid,
+			       Number_SegColorCacheEnums };
+
 #endif

@@ -2,13 +2,12 @@
 #define OM_MESH_DRAWER_H
 
 #include "segment/omSegmentPointers.h"
-#include "volume/omSegmentation.h"
 #include "volume/omMipChunkPtr.h"
 
-class OmSegmentIterator;
-class OmViewGroupState;
 class OmMipChunkCoord;
+class OmSegmentIterator;
 class OmSegmentation;
+class OmViewGroupState;
 class OmVolumeCuller;
 
 class OmMeshDrawer : boost::noncopyable

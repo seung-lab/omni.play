@@ -9,7 +9,6 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentQueue.h"
-#include "segment/omSegmentColorizer.h"
 
 class OmSegmentCache;
 
@@ -27,12 +26,11 @@ public:
 	// color
 	void reRandomizeColor();
 	const OmColor & GetColorInt(){ return mColorInt; }
-	Vector3<float> GetColorFloat(){
-		return 	Vector3<float>( mColorInt.red / 255.,
-					mColorInt.green / 255.,
-					mColorInt.blue / 255. );
-	}
-	void SetColor(const Vector3<float> &);
+	Vector3f GetColorFloat(){
+		return Vector3f( mColorInt.red   / 255.,
+				 mColorInt.green / 255.,
+				 mColorInt.blue  / 255. ); }
+	void SetColor(const Vector3f &);
 	
 	QString GetNote();
 	void SetNote(const QString &);
