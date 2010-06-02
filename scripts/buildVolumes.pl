@@ -8,20 +8,20 @@ my $scriptFolder = $omniDir . "/scripts/BuildScripts";
 my $cmdGeneric = $omniExec." --headless=".$scriptFolder;
 
 sub buildRabbit {
-    printTitle("rabbit");
     my $cmd = $cmdGeneric."/buildRabbit.omni.cmd";
+    printTitle("rabbit", $cmd);
     system $cmd;
 }
 
 sub build150 {
-    printTitle("150^3");
     my $cmd = $cmdGeneric."/build150.omni.cmd";
+    printTitle("150^3", $cmd);
     system $cmd;
 }
 
 sub build512 {
-    printTitle("512^3");
     my $cmd = $cmdGeneric."/build512.omni.cmd";
+    printTitle("512^3", $cmd );
     system $cmd;
 }
 
@@ -33,6 +33,8 @@ sub buildAll {
 
 sub printTitle {
     my $title = $_[0];
+    my $cmd = $_[1];
+    print "Running...(".$cmd.")\n";
     printLine();
     print "Building ".$title.":\n";
 }

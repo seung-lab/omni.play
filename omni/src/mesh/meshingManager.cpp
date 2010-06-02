@@ -65,7 +65,7 @@ int MeshingManager::numCoordsLeftToMesh()
 void MeshingManager::run()
 {
 	const int numChunksToProcess = mChunkCoords.size();
-	printf("going to process %d chunks...\n", numChunksToProcess );
+	printf("\tgoing to process %d chunks...\n", numChunksToProcess );
 
 	const int maxNumChunkThreadManagers = getMaxAllowedNumberOfActiveChunks();
 	const int maxNumberWorkerThreads = getMaxAllowedNumberOfWorkerThreads();

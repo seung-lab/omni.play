@@ -779,7 +779,8 @@ bool OmMipVolume::ImportSourceData()
 	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
-	//	printf("importing data...\n");
+	printf("\timporting data...");
+	fflush(stdout);
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
@@ -820,7 +821,8 @@ bool OmMipVolume::ImportSourceData()
 	}
 
 	//hide progress bar
-	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	printf("done\n");
 	return true;
 }
 

@@ -112,7 +112,7 @@ void OmBuildSegmentation::doLoadDendrogram()
                 return;
         } 
 	Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
-	printf("dendrogram is %d x %d\n", dSize.x, dSize.y);
+	printf("\tdendrogram is %d x %d\n", dSize.x, dSize.y);
 	int dendSize;
 	OmDataWrapperPtr dend = hdf5reader->dataset_raw_read(fpath, &dendSize);
 
@@ -124,7 +124,7 @@ void OmBuildSegmentation::doLoadDendrogram()
       	Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
 	int dendValuesSize;
 	OmDataWrapperPtr dendValues = hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
-	printf("dendrogram values is %d x %d\n", vSize.x, vSize.y);
+	//	printf("\tdendrogram values is %d x %d\n", vSize.x, vSize.y);
 
 	assert( 2 == dSize.x );
 	assert( 0 == vSize.y );
