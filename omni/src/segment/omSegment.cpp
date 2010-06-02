@@ -2,9 +2,6 @@
 #include "volume/omDrawOptions.h"
 #include "common/omGl.h"
 #include "system/omProjectData.h"
-#include "system/omPreferences.h"
-#include "system/omLocalPreferences.h"
-#include "system/omPreferenceDefinitions.h"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "common/omDebug.h"
 #include "utility/stringHelpers.h"
@@ -20,15 +17,18 @@ OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
 	, mParentSegID(0)
 	, mImmutable(false)
 	, mSize(0)
+	, mSizeOfAllChildren(0)
 {
 	SetInitialColor();
 }
 
 OmSegment::OmSegment(OmSegmentCache * cache)
-	:  mCache(cache)
+	: mValue(0)
+	, mCache(cache)
 	, mParentSegID(0)
 	, mImmutable(false)
 	, mSize(0)
+	, mSizeOfAllChildren(0)
 {
 }
 
@@ -74,44 +74,6 @@ void OmSegment::SetColor(const Vector3 < float >& color)
 	mColorInt.green = color.y * 255;
 	mColorInt.blue  = color.z * 255;
 	mCache->addToDirtySegmentList(this);
-}
-
-void OmSegment::ApplyColor(const OmBitfield & drawOps, OmViewGroupState * vgs, OmSegmentColorCacheType sccType)
-{
-	if( mParentSegID && sccType != SegmentationBreak){
-		mCache->findRoot( this )->ApplyColor(drawOps, vgs, sccType);
-		return;
-	}
-
-	Vector3<float> hyperColor;
-	hyperColor = GetColorFloat();
-
-	hyperColor.x *= 2.;
-	hyperColor.y *= 2.;
-	hyperColor.z *= 2.;
-
-	//check coloring options
-	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
-		glColor3fv(OmPreferences::GetVector3f(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
-
-	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
-		glColor3fva(hyperColor.array, 
-			    OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
-
-	} else if (OmLocalPreferences::getDoDiscoBall()) {
-		static float s = 10.0;
-		static int dir = 1;
-		
-		glEnable(GL_BLEND);
-		glColor3fva(hyperColor.array, (s)/200+.4);
-		s += .1*dir;
-		if (s > 60) dir = -1;
-		if (s < 10) dir = 1;
-		glMaterialf(GL_FRONT, GL_SHININESS, 100-s);
-
-	} else {
-		glColor3fv(hyperColor.array);
-	}
 }
 
 QString OmSegment::GetNote()

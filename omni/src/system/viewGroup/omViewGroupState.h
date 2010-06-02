@@ -51,8 +51,6 @@ class OmViewGroupState : public OmManageableObject {
 
 	void ColorTile( OmSegID *, const int,
 			const ObjectType, unsigned char * );
-	void ColorMesh(const OmBitfield & drawOps, OmSegment * segment);
-
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
@@ -71,7 +69,7 @@ class OmViewGroupState : public OmManageableObject {
 
 	void SetShowValidMode(bool mode);
 	void SetShowSplitMode(bool mode);
-
+	bool shouldMeshBeShownBroken();
 
  private:
 	QMutex mColorCacheMapLock;

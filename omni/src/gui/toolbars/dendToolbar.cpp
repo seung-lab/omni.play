@@ -391,7 +391,6 @@ void DendToolBar::join()
 		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
 		OmIDsSet mIDs = seg.GetSelectedSegmentIds();
 		(new OmSegmentJoinAction(mSeg, mIDs))->Run();
-		//seg.JoinAllSegmentsInSelectedList(mIDs);
 	}	
 
 	updateGui();
@@ -498,7 +497,6 @@ void DendToolBar::autoBreakChecked()
 	debug("dendbar", "DendToolBar::autoBreakChecked\n");
 	mViewGroupState->SetBreakOnSplitMode(autoBreakCheckbox->isChecked());
 }
-
 
 void DendToolBar::addToDustThreshold(float num)
 {

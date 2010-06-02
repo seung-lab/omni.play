@@ -1,10 +1,13 @@
-#include "mesh/omMeshDrawer.h"
 #include "common/omGl.h"
+#include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
-#include "volume/omMipChunk.h"
+#include "system/omLocalPreferences.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
 
 static unsigned int mFreshness = 0;
@@ -199,7 +202,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		}
 
 		//apply segment color
-		mViewGroupState->ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
+		ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
 		glPushName((*iter)->getValue());
@@ -298,3 +301,53 @@ void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 	glPopAttrib();
 }
 
+void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
+{
+        OmSegmentColorCacheType sccType;
+
+        if( mViewGroupState->shouldMeshBeShownBroken() ) {
+        	sccType = SegmentationBreak;
+        } else {
+        	sccType = Segmentation;
+        }
+
+	ApplyColor( segment, drawOps, sccType);
+}
+
+void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps, 
+			      const OmSegmentColorCacheType sccType)
+{
+	if( seg->getParentSegID() && sccType != SegmentationBreak){
+		ApplyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
+		return;
+	}
+
+	Vector3<float> hyperColor = seg->GetColorFloat();
+
+	hyperColor.x *= 2.;
+	hyperColor.y *= 2.;
+	hyperColor.z *= 2.;
+
+	//check coloring options
+	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
+		glColor3fv(OmPreferences::GetVector3f(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
+
+	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
+		glColor3fva(hyperColor.array, 
+			    OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+
+	} else if (OmLocalPreferences::getDoDiscoBall()) {
+		static float s = 10.0;
+		static int dir = 1;
+		
+		glEnable(GL_BLEND);
+		glColor3fva(hyperColor.array, (s)/200+.4);
+		s += .1*dir;
+		if (s > 60) dir = -1;
+		if (s < 10) dir = 1;
+		glMaterialf(GL_FRONT, GL_SHININESS, 100-s);
+
+	} else {
+		glColor3fv(hyperColor.array);
+	}
+}

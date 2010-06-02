@@ -405,20 +405,6 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	mColorCaches[ sccType ]->colorTile( imageData, size, data );
 }
 
-void OmViewGroupState::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
-{
-        OmSegmentColorCacheType sccType;
-
-        if( mShatter || (mShowSplit && mBreakOnSplit) ) {
-        	sccType = SegmentationBreak;
-        } else {
-        	sccType = Segmentation;
-        }
-
-	segment->ApplyColor(drawOps, this, sccType);
-}
-
-
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
 {
 	mToolBarManager = tbm;
@@ -487,4 +473,9 @@ void OmViewGroupState::SetShowSplitMode(bool mode)
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	mShowSplit = mode;
+}
+
+bool OmViewGroupState::shouldMeshBeShownBroken()
+{
+	return mShatter || (mShowSplit && mBreakOnSplit);
 }

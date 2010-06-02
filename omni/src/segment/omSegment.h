@@ -33,9 +33,6 @@ public:
 	}
 	void SetColor(const Vector3<float> &);
 	
-	//drawing
-	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs, OmSegmentColorCacheType sccType);
-
 	const OmSegID & getValue();
 
 	QString GetNote();
@@ -72,6 +69,7 @@ private:
 	bool mImmutable;
 
 	quint64 mSize;
+	quint64 mSizeOfAllChildren; // excludes mSize
 
 	void SetInitialColor();
 
