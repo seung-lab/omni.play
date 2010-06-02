@@ -1,17 +1,7 @@
-#include "omSegment.h"
-#include "volume/omDrawOptions.h"
-#include "common/omGl.h"
-#include "system/omProjectData.h"
-#include "datalayer/archive/omDataArchiveQT.h"
-#include "common/omDebug.h"
-#include "utility/stringHelpers.h"
+#include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "datalayer/omDataPaths.h"
-#include "volume/omMipChunkCoord.h"
-#include "datalayer/omDataPath.h"
-#include "system/viewGroup/omViewGroupState.h"
 
-OmSegment::OmSegment( const OmSegID & value, OmSegmentCache * cache)
+OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	: mValue(value)
 	, mCache(cache)
 	, mParentSegID(0)
@@ -40,11 +30,6 @@ void OmSegment::setParent(OmSegment * parent, const float threshold)
 
 	mParentSegID = parent->mValue;
 	mThreshold = threshold;
-}
-
-const OmSegID & OmSegment::getValue()
-{
-	return mValue;
 }
 
 /////////////////////////////////
@@ -145,19 +130,9 @@ void OmSegment::splitTwoChildren(OmSegment * seg)
 	mCache->splitTwoChildren(this, seg);
 }
 
-float OmSegment::getThreshold()
-{
-	return mThreshold;
-}
-
 void OmSegment::SetImmutable(bool immutable)
 {
 	mImmutable = immutable;
 	mCache->addToDirtySegmentList(this);
-}
-
-bool OmSegment::GetImmutable()
-{
-	return mImmutable;
 }
 

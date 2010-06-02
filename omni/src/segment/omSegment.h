@@ -12,13 +12,11 @@
 #include "segment/omSegmentColorizer.h"
 
 class OmSegmentCache;
-class OmMipChunkCoord;
-class OmViewGroupState;
 
 class OmSegment {
 
 public:
-	OmSegment(const OmSegID & value, OmSegmentCache * cache);
+	OmSegment( const OmSegID value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
 	void splitChildLowestThreshold();
@@ -33,7 +31,7 @@ public:
 	}
 	void SetColor(const Vector3<float> &);
 	
-	const OmSegID & getValue();
+	const OmSegID & getValue(){ return mValue; }
 
 	QString GetNote();
 	void SetNote(const QString &);
@@ -47,13 +45,13 @@ public:
 	quint64 getSize(){ return mSize; }
 
 	void SetImmutable(bool immutable);
-	bool GetImmutable();
+	bool GetImmutable(){ return mImmutable; }
 
 	OmSegID getParentSegID(){ return mParentSegID; }
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
-	float getThreshold();
+	float getThreshold(){ return mThreshold; }
 
 private:
 	OmSegID mValue;
