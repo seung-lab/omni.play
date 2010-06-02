@@ -717,6 +717,8 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
+	loadTreeIfNeeded();
+
 	quint32 splitCounter = 0;
 	quint32 joinCounter = 0;
 
