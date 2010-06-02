@@ -1,15 +1,13 @@
 #ifndef OM_MESH_DRAWER_H
 #define OM_MESH_DRAWER_H
 
-#include <QExplicitlySharedDataPointer>
-
 #include "segment/omSegmentPointers.h"
 #include "volume/omSegmentation.h"
+#include "volume/omMipChunkPtr.h"
 
 class OmSegmentIterator;
 class OmViewGroupState;
 class OmMipChunkCoord;
-class OmMipChunk;
 class OmSegmentation;
 class OmVolumeCuller;
 
@@ -18,18 +16,12 @@ class OmMeshDrawer : boost::noncopyable
  public:
 	OmMeshDrawer(const OmId, OmViewGroupState *);
 	~OmMeshDrawer();
+	void Init();
 
-	//drawing
 	void Draw(OmVolumeCuller &);
 
  private:
-
-	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					const OmSegPtrs & segmentsToDraw );
-	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
-	void checkCache();
-
+	const OmId mSegmentationID;
 	OmSegmentation * mSeg;
 	OmSegmentCache * mSegmentCache;
 	OmViewGroupState * mViewGroupState;
@@ -38,19 +30,17 @@ class OmMeshDrawer : boost::noncopyable
 	bool mIterOverSelectedIDs;
 	bool mIterOverEnabledIDs;
 
+	void checkCache();
+
+	void addToCache( const OmMipChunkCoord &, const OmSegPtrs & );
+	bool cacheHasCoord( const OmMipChunkCoord &);
+	const OmSegPtrs & getFromCache( const OmMipChunkCoord & );
+	void makeSegmentListForCache(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord);
+
 	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
-
-	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-		       const OmMipChunkCoord & chunkCoord);
-
-	void DrawMeshes(const OmBitfield & drawOps,
-			const OmMipChunkCoord & mipCoord, 
-			const OmSegPtrs  & segmentsToDraw );
-
-	bool DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk);
-	
-	void populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-				 const OmMipChunkCoord & chunkCoord);
+	void DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord);
+	bool ShouldChunkBeDrawn(OmMipChunkPtr p_chunk);
+	void DrawClippedExtent(OmMipChunkPtr p_chunk);
 };
 
 #endif

@@ -716,38 +716,6 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	return p_mesh_data;
 }
 
-/////////////////////////////////
-///////          Drawing
-
-void OmMipChunk::DrawClippedExtent()
-{
-	return;
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glPushMatrix();
-
-	//disable lighting for lines
-	glDisable(GL_LIGHTING);
-
-	//translate and scale to chunk norm extent
-	Vector3f translate = mClippedNormExtent.getMin();
-	Vector3f scale = mClippedNormExtent.getMax() - mClippedNormExtent.getMin();
-
-	//transform model view
-	glTranslatefv(translate.array);
-	glScalefv(scale.array);
-
-	glTranslatef(0.5, 0.5, 0.5);
-	glColor3f(0.5, 0.5, 0.5);
-	//omglWireCube(1);
-	glTranslatef(-0.5, -0.5, -0.5);
-
-	//glScalefv( (Vector3f::ONE/scale).array);
-	//glTranslatefv( (-translate).array);
-
-	glPopMatrix();
-	glPopAttrib();
-}
-
 bool OmMipChunk::IsOpen()
 {
 	return mIsOpen;

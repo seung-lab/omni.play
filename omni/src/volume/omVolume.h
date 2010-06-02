@@ -47,6 +47,9 @@ class OmVolume : boost::noncopyable {
 	SpaceBbox NormToSpaceBbox(const NormBbox &normBbox);
 	NormBbox SpaceToNormBbox(const SpaceBbox &spacialBbox);
 
+	const Matrix4<float> & GetNormToSpaceMatrix(){ return mNormToSpaceMat; }
+	const Matrix4<float> & GetNormToSpaceInvMatrix(){ return mNormToSpaceInvMat; }
+
  protected:
 	OmVolume();
 	~OmVolume();

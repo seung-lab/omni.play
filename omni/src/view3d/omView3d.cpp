@@ -500,6 +500,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 	OmIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
 		OmMeshDrawer drawer( *iter, mViewGroupState);
+		drawer.Init();
 		drawer.Draw( culler );
         }
 }

@@ -117,7 +117,6 @@ private:
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;
-	friend class OmMeshDrawer;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

@@ -207,6 +207,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omFilter2d.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
+           src/volume/omMipChunkPtr.h \
            src/volume/omMipChunkCoord.h \
            src/volume/omMipVolume.h \
            src/volume/omSegmentation.h \

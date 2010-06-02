@@ -87,9 +87,6 @@ public:
 	//meshing
 	vtkImageData* GetMeshImageData();
 	
-	//drawing
-	void DrawClippedExtent();
-	
 	int GetBytesPerSample();
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();

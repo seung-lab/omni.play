@@ -8,28 +8,38 @@
 #include "volume/omVolumeCuller.h"
 
 static unsigned int mFreshness = 0;
-static boost::unordered_map< int, 
-	boost::unordered_map< int,
+static boost::unordered_map< OmId, 
+        boost::unordered_map< int, 
 	 boost::unordered_map< int,
-	  boost::unordered_map< int, OmSegPtrsValid > > > > mSegmentListCache;
+	  boost::unordered_map< int,
+ 	   boost::unordered_map< int, OmSegPtrsValid > > > > > mSegmentListCache;
 
 // NOTE: I am assuming this class is only being used in a single-threaded fashion..
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
-	: mSeg(&OmProject::GetSegmentation(segmentationID))
-	, mSegmentCache(mSeg->mSegmentCache)
+	: mSegmentationID( segmentationID )
+	, mSeg( NULL )
+	, mSegmentCache( NULL )
 	, mViewGroupState(vgs)
 	, mIterOverSelectedIDs( false )
 	, mIterOverEnabledIDs( false )
 {
-	assert(mSeg);
-	assert(mSegmentCache);
-	assert(mViewGroupState);
 }
 
 OmMeshDrawer::~OmMeshDrawer()
 {
 	delete mVolumeCuller;
+}
+
+void OmMeshDrawer::Init()
+{
+	mSeg = &OmProject::GetSegmentation(mSegmentationID);
+	mSegmentCache = mSeg->GetSegmentCache();
+	assert(mSeg);
+	assert(mSegmentCache);
+	assert(mViewGroupState);
+
+	checkCache();
 }
 
 /////////////////////////////////
@@ -42,11 +52,9 @@ OmMeshDrawer::~OmMeshDrawer()
  */
 void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 {
-	checkCache();
-
 	//transform to normal frame
 	glPushMatrix();
-	glMultMatrixf(mSeg->mNormToSpaceMat.ml);
+	glMultMatrixf(mSeg->GetNormToSpaceMatrix().ml);
 
 	//draw volume axis
 	if (rCuller.CheckDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
@@ -60,9 +68,8 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 	}
 
 	//form culler for this volume and call draw on all volumes
-	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->mNormToSpaceMat, 
-						     mSeg->mNormToSpaceInvMat);
-
+	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->GetNormToSpaceMatrix(), 
+						     mSeg->GetNormToSpaceInvMatrix());
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
@@ -78,7 +85,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 		return;
 	}
 
-	glPushName(mSeg->GetId());
+	glPushName( mSegmentationID );
 
 	//draw relevant data values starting from root chunk
 	DrawChunkRecursive(mSeg->RootMipChunkCoordinate(), true );
@@ -97,10 +104,10 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool testVis)
 {
 	// get pointer to chunk
-	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+	OmMipChunkPtr p_chunk = OmMipChunkPtr ();
 	mSeg->GetChunk(p_chunk, chunkCoord);
 
-	// TEST FOR CHUNK VISIBILITY IF NECESSARY
+	// test for chunk visibility (if necessary)
 	if (testVis) {
 		//check if frustum contains chunk
 		switch (mVolumeCuller->TestChunk(*p_chunk)) {
@@ -116,27 +123,25 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 		}
 	}
 	
-	// TEST IF CHUNK SHOULD BE DRAWN
-	// if chunk satisfies draw criteria
-	if ( DrawCheck(p_chunk) ) {
-		DrawChunk( p_chunk, chunkCoord );
-		return;
-	}
+	if ( ShouldChunkBeDrawn(p_chunk) ) {
+		
+		// if allowed to render segments
+		// TODO: do we really need this option? (purcaro)
+		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
+			DrawChunk( p_chunk, chunkCoord );
+		}
 
-	// ELSE BREAK DOWN INTO CHILDREN
-
-	const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
-	std::set<OmMipChunkCoord>::const_iterator iter;
-	for( iter = coords.begin(); iter != coords.end(); ++iter ){
-		DrawChunkRecursive(*iter, testVis);
+	} else {
+		const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
+		std::set<OmMipChunkCoord>::const_iterator iter;
+		for( iter = coords.begin(); iter != coords.end(); ++iter ){
+			DrawChunkRecursive(*iter, testVis);
+		}
 	}
 }
 
-void OmMeshDrawer::populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-				       const OmMipChunkCoord & chunkCoord)
+void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
 {
-	// TODO: refactor segmentListDirectCacheHasCoord out of SegmentCache....
-
 	const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mSegmentCache, mIterOverSelectedIDs, mIterOverEnabledIDs );
 	OmSegment * seg = segIter.getNextSegment();
@@ -147,72 +152,52 @@ void OmMeshDrawer::populateSegIDsCache(QExplicitlySharedDataPointer < OmMipChunk
 	while( NULL != seg ){
 		val = seg->getValue();
 		if( chunkValues.contains( val ) ){
-			// TODO: wire size threshold into gui (purcaro)
-			//  make sure to clear the segmentListDirectCacheHasCoord if needed!
-			if( seg->getSize() > 100 ){
-				segmentsToDraw.push_back(seg);
-			}
+			segmentsToDraw.push_back(seg);
 		}
 				
 		seg = segIter.getNextSegment();
 	}
 
-	setSegmentListDirectCache( chunkCoord, segmentsToDraw );
-	//printf("segmentsToDraw=%i\n", segmentsToDraw.size());
+	addToCache( chunkCoord, segmentsToDraw );
 }
 
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmMeshDrawer::DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-			     const OmMipChunkCoord & chunkCoord)
+void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
 {
-	// figure out which segments to draw
-	if( !segmentListDirectCacheHasCoord( chunkCoord ) ){
-		populateSegIDsCache( p_chunk, chunkCoord );
+	if( !cacheHasCoord( chunkCoord ) ){
+		makeSegmentListForCache( p_chunk, chunkCoord );
 	}
 
-	const OmSegPtrs & segmentsToDraw = getSegmentListDirectCache( chunkCoord );
+	const OmSegPtrs & segmentsToDraw = getFromCache( chunkCoord );
 
 	if( segmentsToDraw.empty() ){
 		return;
 	}
 
-	//draw extent
 	if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
-		p_chunk->DrawClippedExtent();
+		DrawClippedExtent( p_chunk );
 	}
 
-	//if not set to render segments
-	if (!mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT)) {
-		return;
-	}
-
-	DrawMeshes(mVolumeCuller->GetDrawOptions(), 
-		   chunkCoord, 
-		   segmentsToDraw);
-}
-
-////////////////////////////////
-///////          Draw
-
-void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
-			      const OmMipChunkCoord & mipCoord, 
-			      const OmSegPtrs & segmentsToDraw )
-{
 	OmSegPtrs::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
+		
+		// TODO: wire size threshold into gui (purcaro)
+		if( (*iter)->getSize() < 100 ){
+			continue;
+		}
 
 		//get pointer to mesh
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(mipCoord, (*iter)->getValue() ));
+		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
 
 		if (NULL == p_mesh) {
 			continue;
 		}
 
 		//apply segment color
-		mViewGroupState->ColorMesh(drawOps, *iter);
+		mViewGroupState->ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
 		glPushName((*iter)->getValue());
@@ -229,7 +214,7 @@ void OmMeshDrawer::DrawMeshes(const OmBitfield & drawOps,
  *	Given that the chunk is visible, determine if it should be drawn
  *	or if we should continue refining so as to draw children.
  */
-bool OmMeshDrawer::DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk)
+bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 {
 	//draw if leaf
 	if(p_chunk->IsLeaf()) {
@@ -251,21 +236,21 @@ bool OmMeshDrawer::DrawCheck(QExplicitlySharedDataPointer < OmMipChunk > p_chunk
 }
 
 // TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
-void OmMeshDrawer::setSegmentListDirectCache( const OmMipChunkCoord & c,
-					      const OmSegPtrs & segmentsToDraw )
+void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
+			     const OmSegPtrs & segmentsToDraw )
 {
-	mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
+	mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
 }
 
-bool OmMeshDrawer::segmentListDirectCacheHasCoord( const OmMipChunkCoord & c )
+bool OmMeshDrawer::cacheHasCoord( const OmMipChunkCoord & c )
 {
-	OmSegPtrsValid & spList = mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrsValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.isValid;
 }
 
-const OmSegPtrs & OmMeshDrawer::getSegmentListDirectCache( const OmMipChunkCoord & c )
+const OmSegPtrs & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c )
 {
-	const OmSegPtrsValid & spList = mSegmentListCache[c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	const OmSegPtrsValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.list;
 }
 
@@ -278,3 +263,36 @@ void OmMeshDrawer::checkCache()
 		mFreshness = currentFreshness;
 	}
 }
+
+void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
+{
+	return;
+
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glPushMatrix();
+
+	//disable lighting for lines
+	glDisable(GL_LIGHTING);
+
+	const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
+
+	//translate and scale to chunk norm extent
+	Vector3f translate = clippedNormExtent.getMin();
+	Vector3f scale = clippedNormExtent.getMax() - clippedNormExtent.getMin();
+
+	//transform model view
+	glTranslatefv(translate.array);
+	glScalefv(scale.array);
+
+	glTranslatef(0.5, 0.5, 0.5);
+	glColor3f(0.5, 0.5, 0.5);
+	//omglWireCube(1);
+	glTranslatef(-0.5, -0.5, -0.5);
+
+	//glScalefv( (Vector3f::ONE/scale).array);
+	//glTranslatefv( (-translate).array);
+
+	glPopMatrix();
+	glPopAttrib();
+}
+
