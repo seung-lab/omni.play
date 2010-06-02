@@ -39,17 +39,17 @@ void OmViewBoxWidget::Draw()
 
 
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
-		//drawChannelData(XY_VIEW, OmStateManager::GetViewDrawable(XY_VIEW));
+		drawChannelData(XY_VIEW, OmStateManager::GetViewDrawable(XY_VIEW));
 		drawSlice(XY_VIEW, 
 			  mViewGroupState->GetViewSliceMin(XY_VIEW), 
 			  mViewGroupState->GetViewSliceMax(XY_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XY_VIEW));
-		//drawChannelData(XZ_VIEW, OmStateManager::GetViewDrawable(XZ_VIEW));
+		drawChannelData(XZ_VIEW, OmStateManager::GetViewDrawable(XZ_VIEW));
 		drawSlice(XZ_VIEW, 
 			  mViewGroupState->GetViewSliceMin(XZ_VIEW), 
 			  mViewGroupState->GetViewSliceMax(XZ_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
-		//drawChannelData(YZ_VIEW, OmStateManager::GetViewDrawable(YZ_VIEW));
+		drawChannelData(YZ_VIEW, OmStateManager::GetViewDrawable(YZ_VIEW));
 		drawSlice(YZ_VIEW, 
 			  mViewGroupState->GetViewSliceMin(YZ_VIEW), 
 			  mViewGroupState->GetViewSliceMax(YZ_VIEW),
@@ -71,7 +71,7 @@ void OmViewBoxWidget::Draw()
  */
 void OmViewBoxWidget::drawRectangle(SpaceCoord v0, SpaceCoord v1, SpaceCoord v2, SpaceCoord v3)
 {
-	glBegin(GL_QUADS);
+	glBegin(GL_LINE_STRIP);
 	glVertex3fv(v0.array);
 	glVertex3fv(v1.array);
 	glVertex3fv(v2.array);
@@ -152,8 +152,10 @@ void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawable
 {
 	glColor3fv(OMGL_WHITE);
         glEnable(GL_TEXTURE_2D);
-	//glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	glDepthMask(GL_TRUE);
+	glEnable(GL_BLEND);
+	//glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_ONE, GL_DST_ALPHA);	
 	OmChannel& channel = OmProject::GetChannel( 1);
 
 	Vector2f stretch = channel.GetStretchValues(plane);
@@ -217,5 +219,8 @@ void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawable
 	}
 
 	}
+	//glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 }
