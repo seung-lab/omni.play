@@ -22,14 +22,13 @@ void OmBuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 	mFileNamesAndPaths = fileNamesAndPaths;
 }
 
-bool OmBuildVolumes::checkSettingsAndTime(QString type )
+bool OmBuildVolumes::checkSettings(QString type )
 {
 	if( !are_file_names_valid()){
 		printf("\tError: file list contains invalid files\n");
 		return false;
 	}
 
-	startTiming(type);
 	return true;
 }
 
@@ -45,7 +44,8 @@ void OmBuildVolumes::stopTiming(QString type)
 	time_dif = difftime(time_end, time_start);
 
 	OmProject::Save();
-	printf("\tdone: %s build performed in (%.2lf secs)\n", qPrintable(type), time_dif );
+	printf("done: %s build performed in (%.2lf secs)\n", qPrintable(type), time_dif );
+	printf("************\n");
 }
 
 bool OmBuildVolumes::canDoLoadDendrogram()

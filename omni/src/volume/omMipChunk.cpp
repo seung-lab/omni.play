@@ -146,7 +146,6 @@ void OmMipChunk::Flush()
 {
 	//only write if dirty
 	if (IsVolumeDataDirty()) {
-		printf("flushing chunk\n");
 		WriteVolumeData();
 	}
 

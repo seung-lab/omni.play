@@ -178,7 +178,7 @@ void Headless::processLine( QString line, QString fName )
 			if(!f.isFile()){
 				continue;
 			}
-			printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
+			//printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
 			bc.addFileNameAndPath( f.canonicalFilePath() );
 		}
 		bc.build_channel();
@@ -195,7 +195,7 @@ void Headless::processLine( QString line, QString fName )
                         if(!f.isFile()){
                                 continue;
                         }
-                        printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
+                        //printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
                         bs.addFileNameAndPath( f.canonicalFilePath() );
                 }
                 bs.build_seg_image();

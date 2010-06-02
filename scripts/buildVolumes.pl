@@ -8,23 +8,42 @@ my $scriptFolder = $omniDir . "/scripts/BuildScripts";
 my $cmdGeneric = $omniExec." --headless=".$scriptFolder;
 
 sub buildRabbit {
+    printTitle("rabbit");
     my $cmd = $cmdGeneric."/buildRabbit.omni.cmd";
-    print `$cmd`;
+    system $cmd;
 }
 
 sub build150 {
+    printTitle("150^3");
     my $cmd = $cmdGeneric."/build150.omni.cmd";
-    print `$cmd`;
+    system $cmd;
 }
 
 sub build512 {
+    printTitle("512^3");
     my $cmd = $cmdGeneric."/build512.omni.cmd";
-    print `$cmd`;
+    system $cmd;
+}
+
+sub buildAll {
+    buildRabbit();
+    build150();
+    build512();
+}
+
+sub printTitle {
+    my $title = $_[0];
+    printLine();
+    print "Building ".$title.":\n";
+}
+
+sub printLine {
+    print "\n**********************************************\n";
 }
 
 sub menu {
     print "Build volumes menu:\n";
-    print "0 -- exit\n";
+    print "0 -- build all\n";
     print "1 -- Build rabbit\n";
     print "2 -- Build 150^3\n";
     print "3 -- Build 512^3\n";
@@ -37,18 +56,18 @@ sub menu {
 
 	if( $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
-		runBuildVolume( $answer );
+		runMenuEntry( $answer );
 		exit();
 	    }
 	}
     }
 }
 
-sub runBuildVolume {
+sub runMenuEntry {
     my $entry = $_[0];
 
     if( 0 == $entry ){
-        return();
+	buildAll();
     }elsif( 1 == $entry ){
 	buildRabbit();
     }elsif( 2 == $entry ){
@@ -58,8 +77,12 @@ sub runBuildVolume {
     }
 }
 
-sub main {
-    menu();
+sub checkCmdLineArgs {
+    if ( 1 == @ARGV ) {
+	runMenuEntry( $ARGV[0] );
+    } else {
+	menu();
+    }
 }
 
-main();
+checkCmdLineArgs();

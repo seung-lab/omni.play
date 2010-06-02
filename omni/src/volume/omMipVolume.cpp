@@ -230,7 +230,7 @@ void OmMipVolume::UpdateMipProperties()
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
-			printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
+			//			printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
 
 			//update volume dimensions
 			OmVolume::SetDataDimensions(source_dims);
@@ -595,7 +595,7 @@ void OmMipVolume::Build()
 
 	//if source data valid
 	if (!IsSourceValid()) {
-		printf("OmMipVolume::Build: blank build complete\n");
+		//		printf("OmMipVolume::Build: blank build complete\n");
 		SetBuildState(MIPVOL_BUILT);
 		return;
 	}
@@ -631,7 +631,7 @@ bool OmMipVolume::BuildVolume()
 
 	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-		printf("building mip level %d...\n", level );
+		printf("\tbuilding mip level %d...\n", level );
 
 		//dim of miplevel in mipchunks
 		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
@@ -772,14 +772,14 @@ bool OmMipVolume::ImportSourceData()
 
 	//init progress bar
 	int prog_count = 0;
-	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
-						       MipChunksInMipLevel(0)));
+	//	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
+	//						       MipChunksInMipLevel(0)));
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
-	printf("importing data...\n");
+	//	printf("importing data...\n");
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {

@@ -289,26 +289,11 @@ void OmSegmentCacheImpl::flushDirtySegments()
 		if( !needToFlush ){
 			return;
 		}
-
-		time_t time_start;
-		time_t time_end;
-		double time_dif;
-
-		printf("flushing all segment metadata; please wait...");
-		time(&time_start);
-
 		SaveAllLoadedPages();
-
-		time(&time_end);
-		time_dif = difftime(time_end, time_start);
-
-		printf("done (%.2lf secs)\n", time_dif);
-
 		needToFlush = false;
 	} else {
 		SaveDirtySegmentPages();
 		dirtySegmentPages.clear();
-
 	}
 }
 

@@ -27,9 +27,11 @@ void OmBuildChannel::build_channel()
 void OmBuildChannel::run()
 {
 	QString type = "channel";
-	if(!checkSettingsAndTime(type) ){
+	if(!checkSettings(type) ){
 		return;
 	}
+
+	startTiming(type);
 
         if( 0 ) {
 		newBuild();
