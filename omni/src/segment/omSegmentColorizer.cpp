@@ -101,7 +101,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
-	const OmColor & segRootColor = segRoot->mColorInt;
+	const OmColor segRootColor = segRoot->mColorInt;
 
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
@@ -137,4 +137,3 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		}
 	}
 }
-

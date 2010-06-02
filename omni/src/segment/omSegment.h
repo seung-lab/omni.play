@@ -25,7 +25,7 @@ public:
 
 	// color
 	void reRandomizeColor();
-	const OmColor & GetColorInt(){ return mColorInt; }
+	OmColor GetColorInt(){ return mColorInt; }
 	Vector3f GetColorFloat(){
 		return Vector3f( mColorInt.red   / 255.,
 				 mColorInt.green / 255.,
