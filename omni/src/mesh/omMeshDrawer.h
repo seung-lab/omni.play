@@ -32,9 +32,9 @@ class OmMeshDrawer : boost::noncopyable
 
 	void checkCache();
 
-	void addToCache( const OmMipChunkCoord &, const OmSegPtrs & );
+	void addToCache( const OmMipChunkCoord &, const OmSegPtrList & );
 	bool cacheHasCoord( const OmMipChunkCoord &);
-	const OmSegPtrs & getFromCache( const OmMipChunkCoord & );
+	const OmSegPtrList & getFromCache( const OmMipChunkCoord & );
 	void makeSegmentListForCache(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord);
 
 	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );

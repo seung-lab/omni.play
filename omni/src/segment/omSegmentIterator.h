@@ -25,7 +25,7 @@ class OmSegmentIterator
  private:
 	OmSegmentCache * mCache;
 
-	OmSegPtrs mSegs;
+	OmSegPtrList mSegs;
 };
 
 #endif

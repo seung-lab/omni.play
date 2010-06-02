@@ -12,7 +12,7 @@ static boost::unordered_map< OmId,
         boost::unordered_map< int, 
 	 boost::unordered_map< int,
 	  boost::unordered_map< int,
- 	   boost::unordered_map< int, OmSegPtrsValid > > > > > mSegmentListCache;
+ 	   boost::unordered_map< int, OmSegPtrListValid > > > > > mSegmentListCache;
 
 // NOTE: I am assuming this class is only being used in a single-threaded fashion..
 
@@ -34,9 +34,11 @@ OmMeshDrawer::~OmMeshDrawer()
 void OmMeshDrawer::Init()
 {
 	mSeg = &OmProject::GetSegmentation(mSegmentationID);
-	mSegmentCache = mSeg->GetSegmentCache();
 	assert(mSeg);
+
+	mSegmentCache = mSeg->GetSegmentCache();
 	assert(mSegmentCache);
+
 	assert(mViewGroupState);
 
 	checkCache();
@@ -147,7 +149,7 @@ void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, const OmMipChu
 	OmSegment * seg = segIter.getNextSegment();
 	OmSegID val;
 
-	OmSegPtrs segmentsToDraw;
+	OmSegPtrList segmentsToDraw;
 
 	while( NULL != seg ){
 		val = seg->getValue();
@@ -170,7 +172,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		makeSegmentListForCache( p_chunk, chunkCoord );
 	}
 
-	const OmSegPtrs & segmentsToDraw = getFromCache( chunkCoord );
+	const OmSegPtrList & segmentsToDraw = getFromCache( chunkCoord );
 
 	if( segmentsToDraw.empty() ){
 		return;
@@ -180,7 +182,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		DrawClippedExtent( p_chunk );
 	}
 
-	OmSegPtrs::const_iterator iter;
+	OmSegPtrList::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 		
 		// TODO: wire size threshold into gui (purcaro)
@@ -237,20 +239,20 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 
 // TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
 void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
-			     const OmSegPtrs & segmentsToDraw )
+			       const OmSegPtrList & segmentsToDraw )
 {
-	mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrsValid( segmentsToDraw );
+	mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid( segmentsToDraw );
 }
 
 bool OmMeshDrawer::cacheHasCoord( const OmMipChunkCoord & c )
 {
-	OmSegPtrsValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.isValid;
 }
 
-const OmSegPtrs & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c )
+const OmSegPtrList & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c )
 {
-	const OmSegPtrsValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	const OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.list;
 }
 

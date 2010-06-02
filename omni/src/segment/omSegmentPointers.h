@@ -3,17 +3,17 @@
 
 #include "segment/omSegment.h"
 
-typedef std::vector<OmSegment*> OmSegPtrs;
+typedef std::vector<OmSegment*> OmSegPtrList;
 
-class OmSegPtrsValid {
+class OmSegPtrListValid {
  public:
-	OmSegPtrsValid()
+	OmSegPtrListValid()
 		: isValid(false) {}
-	OmSegPtrsValid( const OmSegPtrs & L )
+	OmSegPtrListValid( const OmSegPtrList & L )
 		: isValid(true), list(L) {}
 	
 	bool isValid;
-	OmSegPtrs list;
+	OmSegPtrList list;
 };
 
 
