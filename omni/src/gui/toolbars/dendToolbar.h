@@ -36,6 +36,9 @@ class DendToolBar : public QWidget
 	void increaseBreakThreshold();
 	void decreaseBreakThreshold();
 	void breakThresholdChanged();
+	void increaseDustThreshold();
+	void decreaseDustThreshold();
+	void dustThresholdChanged();
 	void thresholdChanged();
 	void join();
 	void toggledShatter();
@@ -54,8 +57,10 @@ class DendToolBar : public QWidget
 	void addToolbars();
 	void addToThreshold(float num);
 	void addToBreakThreshold(float num);
+	void addToDustThreshold(float num);
 	void setThresholdValue();
 	void setBreakThresholdValue();
+	void setDustThresholdValue();
 	OmId getSegmentationID();
 
 	// Actions
@@ -78,6 +83,10 @@ class DendToolBar : public QWidget
 	QPushButton * addGroupAct;
 	QPushButton * deleteGroupAct;
         QPushButton * colorMapAct;
+
+	QLineEdit* mDustThreshold;
+	QPushButton * increaseDustThresholdAct;
+	QPushButton * decreaseDustThresholdAct;
 	
 	void setToolbarDisabled();
 	void resetTool( QAction* tool, const bool enabled );

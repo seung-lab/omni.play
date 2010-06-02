@@ -141,6 +141,24 @@ void DendToolBar::createToolbarActions()
                 this, SLOT(mapColors()));
         colorMapAct->setCheckable(true);
 
+
+        mDustThreshold = new QLineEdit(mMainWindow);
+        setDustThresholdValue();
+        connect(mDustThreshold, SIGNAL(editingFinished()),
+                this, SLOT(breakThresholdChanged()));
+
+        increaseDustThresholdAct = new QPushButton(mMainWindow);
+        increaseDustThresholdAct->setText(tr("+"));
+        increaseDustThresholdAct->setStatusTip(tr("Increase threshold"));
+        connect(increaseDustThresholdAct, SIGNAL(pressed()),
+                this, SLOT(increaseDustThreshold()));
+
+        decreaseDustThresholdAct = new QPushButton(mMainWindow);
+        decreaseDustThresholdAct->setText(tr("-"));
+        decreaseDustThresholdAct->setStatusTip(tr("Decrease threshold"));
+        connect(decreaseDustThresholdAct, SIGNAL(pressed()),
+                this, SLOT(decreaseDustThreshold()));
+
 }
 
 void DendToolBar::setThresholdValue()
@@ -167,6 +185,19 @@ void DendToolBar::setBreakThresholdValue()
 		mViewGroupState->setBreakThreshold( 0.95 );
 	}
 }
+
+void DendToolBar::setDustThresholdValue()
+{
+        QString value;
+        value.setNum(90);
+
+        mDustThreshold->setText(value);
+
+        if( NULL != mViewGroupState ) {
+                mViewGroupState->setDustThreshold( 90 );
+        }
+}
+
 
 void DendToolBar::addToolbars()
 {
@@ -217,15 +248,23 @@ void DendToolBar::addToolbars()
 	dendToolBar->addWidget(fifthBox);
 
         QGroupBox* sixthBox = new QGroupBox(this);
+	sixthBox->setTitle("Validation");
         QGridLayout* sixthLayout = new QGridLayout(sixthBox);
-        QLabel* groupColorLabel = new QLabel(mMainWindow);
-        groupColorLabel->setText("Validation:");
-        sixthLayout->addWidget(groupColorLabel,0,0,1,2);
-        sixthLayout->addWidget(addGroupAct,1,0,1,2);
-        sixthLayout->addWidget(deleteGroupAct,2,0,1,2);
-        sixthLayout->addWidget(colorMapAct,3,0,1,2);
+        sixthLayout->addWidget(addGroupAct,0,0,1,2);
+        sixthLayout->addWidget(deleteGroupAct,1,0,1,2);
+        sixthLayout->addWidget(colorMapAct,2,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
+
+        QGroupBox* seventhBox = new QGroupBox(this);
+	seventhBox->setTitle("Dust Threshold");
+        QGridLayout* seventhLayout = new QGridLayout(seventhBox);
+        seventhLayout->addWidget(mDustThreshold,0,0,1,2);
+        seventhLayout->addWidget(increaseDustThresholdAct,1,1,1,1);
+        seventhLayout->addWidget(decreaseDustThresholdAct,1,0,1,1);
+        seventhBox->setLayout(seventhLayout);
+        dendToolBar->addWidget(seventhBox);
+
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -459,3 +498,44 @@ void DendToolBar::autoBreakChecked()
 	debug("dendbar", "DendToolBar::autoBreakChecked\n");
 	mViewGroupState->SetBreakOnSplitMode(autoBreakCheckbox->isChecked());
 }
+
+
+void DendToolBar::addToDustThreshold(float num)
+{
+        QString value = mDustThreshold->text();
+        float threshold = value.toFloat();
+        threshold += num;
+        if(threshold < 0.0) {
+                threshold = 0.0;
+        }
+        value.setNum(threshold);
+        mDustThreshold->setText(value);
+
+        mViewGroupState->setDustThreshold( threshold );
+}
+
+void DendToolBar::increaseDustThreshold()
+{
+        addToDustThreshold(10);
+
+        updateGui();
+}
+
+void DendToolBar::decreaseDustThreshold()
+{
+        debug("dendbar", "DendToolBar::decreaseDustThreshold\n");
+        addToDustThreshold(-10);
+
+        updateGui();
+}
+
+void DendToolBar::dustThresholdChanged()
+{
+        debug("dendbar", "DendToolBar::dustThresholdChanged\n");
+
+        const float threshold = mDustThreshold->text().toFloat();
+        mViewGroupState->setDustThreshold( threshold );
+
+        updateGui();
+}
+
