@@ -53,11 +53,19 @@ void OmSegment::SetInitialColor()
 	mColorInt.blue  = color.z * 255;
 }
 
+void OmSegment::reRandomizeColor()
+{
+	SetInitialColor();
+	
+	mCache->addToDirtySegmentList(this);
+}
+
 void OmSegment::SetColor(const Vector3 < float >& color)
 {
 	mColorInt.red   = color.x * 255;
 	mColorInt.green = color.y * 255;
 	mColorInt.blue  = color.z * 255;
+
 	mCache->addToDirtySegmentList(this);
 }
 
@@ -133,6 +141,11 @@ void OmSegment::splitTwoChildren(OmSegment * seg)
 void OmSegment::SetImmutable(bool immutable)
 {
 	mImmutable = immutable;
+
 	mCache->addToDirtySegmentList(this);
 }
 
+quint64 OmSegment::getSizeWithChlidren()
+{
+	return mSize + mSizeOfAllChildren;
+}

@@ -19,10 +19,13 @@ public:
 	OmSegment( const OmSegID value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
+	const OmSegID & getValue(){ return mValue; }
+
 	void splitChildLowestThreshold();
 	void splitTwoChildren(OmSegment * seg);
 
-	//accessors
+	// color
+	void reRandomizeColor();
 	const OmColor & GetColorInt(){ return mColorInt; }
 	Vector3<float> GetColorFloat(){
 		return 	Vector3<float>( mColorInt.red / 255.,
@@ -31,8 +34,6 @@ public:
 	}
 	void SetColor(const Vector3<float> &);
 	
-	const OmSegID & getValue(){ return mValue; }
-
 	QString GetNote();
 	void SetNote(const QString &);
 	QString GetName();
@@ -43,6 +44,7 @@ public:
 	void SetEnabled( const bool);
 
 	quint64 getSize(){ return mSize; }
+	quint64 getSizeWithChlidren();
 
 	void SetImmutable(bool immutable);
 	bool GetImmutable(){ return mImmutable; }
