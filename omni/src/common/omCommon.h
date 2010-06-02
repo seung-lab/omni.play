@@ -101,12 +101,12 @@ enum OmToolMode { SELECT_MODE,
 /** 
  * color cache enum
  */
-enum OmSegmentColorCacheType { Filter = 0, 
-			       FilterBreak, 
-			       FilterValid,
-			       Segmentation, 
-			       SegmentationBreak,
-			       SegmentationValid,
-			       Number_SegColorCacheEnums };
+enum OmSegmentColorCacheType { SCC_FILTER = 0, 
+			       SCC_FILTER_BREAK, 
+			       SCC_FILTER_VALID,
+			       SCC_SEGMENTATION, 
+			       SCC_SEGMENTATION_BREAK,
+			       SCC_SEGMENTATION_VALID,
+			       SCC_NUMBER_OF_ENUMS };
 
 #endif

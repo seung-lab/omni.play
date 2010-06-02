@@ -306,9 +306,9 @@ void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
         OmSegmentColorCacheType sccType;
 
         if( mViewGroupState->shouldMeshBeShownBroken() ) {
-        	sccType = SegmentationBreak;
+        	sccType = SCC_SEGMENTATION_BREAK;
         } else {
-        	sccType = Segmentation;
+        	sccType = SCC_SEGMENTATION;
         }
 
 	ApplyColor( segment, drawOps, sccType);
@@ -317,7 +317,7 @@ void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
 void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps, 
 			      const OmSegmentColorCacheType sccType)
 {
-	if( seg->getParentSegID() && sccType != SegmentationBreak){
+	if( seg->getParentSegID() && sccType != SCC_SEGMENTATION_BREAK){
 		ApplyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
 		return;
 	}

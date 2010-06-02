@@ -51,7 +51,9 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
 	mSegmentCache->mMutex.unlock();
 
-	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType || SegmentationValid == mSccType);
+	const bool isSegmentation = (SCC_SEGMENTATION == mSccType || 
+				     SCC_SEGMENTATION_BREAK == mSccType || 
+				     SCC_SEGMENTATION_VALID == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
 	if ( isSegmentation ) {
 		showOnlySelectedSegments = false;	
@@ -94,36 +96,39 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
 						    const bool showOnlySelectedSegments)
 {
-	mSegmentCache->mMutex.lock(); // LOCK (5 unlock possibilities)
+	mSegmentCache->mMutex.lock(); // LOCK (6 unlock possibilities)
 
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
-		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 5
+		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 6
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
-	if(SegmentationValid == mSccType || FilterValid == mSccType){
+	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->GetImmutable()) {
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 5
+			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 6
 			return segRoot->mColorInt;
 		} else {
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #3 of 5
+			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #3 of 6
 			return blackColor;
 		}
 	}
 
-	if(SegmentationBreak == mSccType){
+	if( SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
 			const OmColor & tsc = seg->mColorInt;
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #4 of 5
+			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #4 of 6
 			return tsc;
-		} 
+		} else {
+			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #5 of 6
+			return blackColor;
+		}
 	}
 
-	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #5 of 5
+	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #6 of 6
 
 	const OmColor & sc = segRoot->mColorInt;
 

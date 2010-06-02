@@ -45,7 +45,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 
 	zoom_level = Vector2 < int >(0, 10);
 
-	mColorCaches.resize(Number_SegColorCacheEnums, NULL);
+	mColorCaches.resize( SCC_NUMBER_OF_ENUMS, NULL);
 	m_sdw = NULL;
 	m_cdw = NULL;
 
@@ -373,21 +373,21 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	switch( objType ){
 	case CHANNEL:
 		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ){
-			sccType = FilterBreak;
+			sccType = SCC_FILTER_BREAK;
 		} else if(mShowValid) {
-			sccType = FilterValid;
+			sccType = SCC_FILTER_VALID;
 		} else {
-			sccType = Filter;
+			sccType = SCC_FILTER;
 		}
 		break;
 
 	case SEGMENTATION:
 		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ) {
-			sccType = SegmentationBreak;
+			sccType = SCC_SEGMENTATION_BREAK;
 		} else if(mShowValid) {
-			sccType = SegmentationValid;
+			sccType = SCC_SEGMENTATION_VALID;
 		} else {
-			sccType = Segmentation;
+			sccType = SCC_SEGMENTATION;
 		}
 		break;
 
