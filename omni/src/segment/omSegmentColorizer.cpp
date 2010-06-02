@@ -103,10 +103,11 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
+
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
-		if(seg->GetImmutable()) {
+		if(seg->mImmutable) {
 			return segRoot->mColorInt;
 		} else {
 			return blackColor;
@@ -115,7 +116,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 
 	if( SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
-			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
+			// return mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
 			return seg->mColorInt;
 		} else {
 			return blackColor;
