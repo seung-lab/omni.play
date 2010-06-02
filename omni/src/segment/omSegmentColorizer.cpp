@@ -101,12 +101,13 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
+	const OmColor & segRootColor = segRoot->mColorInt;
 
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->mImmutable) {
-			return segRoot->mColorInt;
+			return segRootColor;
 		} else {
 			return blackColor;
 		}
@@ -115,7 +116,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	if( SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			// return mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
-			return seg->mColorInt;
+			return segRootColor;
 		} else {
 			return blackColor;
 		}
@@ -123,18 +124,16 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 
 	locker.unlock(); // done w/ lock
 
-	const OmColor & sc = segRoot->mColorInt;
-
 	if( isSelected ){
-		OmColor color = { makeSelectedColor(sc.red),
-				  makeSelectedColor(sc.green),
-				  makeSelectedColor(sc.blue) };
+		OmColor color = { makeSelectedColor(segRootColor.red),
+				  makeSelectedColor(segRootColor.green),
+				  makeSelectedColor(segRootColor.blue) };
 		return color;
 	} else {
 		if (showOnlySelectedSegments) {
 			return blackColor;
 		} else {
-			return sc;
+			return segRootColor;
 		}
 	}
 }
