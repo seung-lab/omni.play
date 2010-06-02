@@ -25,8 +25,6 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentC
 	mPageSize = 10000;
 	mAllPagesLoaded = false;
 
-	mCachedColorFreshness = 1;
-
 	mGraph = NULL;
 }
 
@@ -532,12 +530,6 @@ void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 void OmSegmentCacheImpl::clearCaches()
 {
 	OmCacheManager::Freshen(true);
-	invalidateCachedColorFreshness();
-}
-
-void OmSegmentCacheImpl::invalidateCachedColorFreshness()
-{
-	mCachedColorFreshness++;
 }
 
 void OmSegmentCacheImpl::initializeDynamicTree()

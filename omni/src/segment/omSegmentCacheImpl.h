@@ -127,7 +127,6 @@ class OmSegmentCacheImpl {
 
 	void clearCaches();
 	void invalidateCachedColorFreshness();
-	quint32 mCachedColorFreshness;
 
 	DynamicTreeContainer<OmSegID> * mGraph;
 	void initializeDynamicTree();

@@ -43,13 +43,11 @@ void OmSegmentColorizer::setup()
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				    unsigned char * data )
 {
-	QMutexLocker lock( &mMutex );
+	QMutexLocker lock( &mMutex ); // TODO: use lock-free hash and shorten locking time
 	
 	setup();
 
-	mSegmentCache->mMutex.lock();
-	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
-	mSegmentCache->mMutex.unlock();
+	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
 	const bool isSegmentation = (SCC_SEGMENTATION == mSccType || 
 				     SCC_SEGMENTATION_BREAK == mSccType || 
@@ -123,7 +121,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		}
 	}
 
-	locker.unlock();
+	locker.unlock(); // done w/ lock
 
 	const OmColor & sc = segRoot->mColorInt;
 
