@@ -19,7 +19,7 @@ public:
 	OmSegment( const OmSegID value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
-	const OmSegID & getValue(){ return mValue; }
+	OmSegID getValue(){ return mValue; }
 
 	void splitChildLowestThreshold();
 	void splitTwoChildren(OmSegment * seg);
@@ -46,7 +46,7 @@ public:
 	quint64 getSize(){ return mSize; }
 	quint64 getSizeWithChlidren();
 
-	void SetImmutable(bool immutable);
+	void SetImmutable( const bool immutable);
 	bool GetImmutable(){ return mImmutable; }
 
 	OmSegID getParentSegID(){ return mParentSegID; }

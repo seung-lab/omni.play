@@ -138,7 +138,7 @@ void OmSegment::splitTwoChildren(OmSegment * seg)
 	mCache->splitTwoChildren(this, seg);
 }
 
-void OmSegment::SetImmutable(bool immutable)
+void OmSegment::SetImmutable( const bool immutable)
 {
 	mImmutable = immutable;
 
