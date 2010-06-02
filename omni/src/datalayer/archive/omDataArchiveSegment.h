@@ -10,8 +10,8 @@ class OmSegmentCache;
 class OmDataArchiveSegment
 {
  public:
-	static void ArchiveRead( const OmDataPath & path, OmSegment**  page, OmSegmentCache* cache);
-	static void ArchiveWrite( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache);
+	static void ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> &, OmSegmentCache* cache);
+	static void ArchiveWrite( const OmDataPath & path, const std::vector<OmSegment*> &, OmSegmentCache* cache);
 
 };
 

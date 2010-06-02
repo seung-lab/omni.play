@@ -10,7 +10,7 @@
 
 #include <QDataStream>
 
-void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache ) 
+void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache ) 
 {
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -41,7 +41,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, OmSegment** pag
         }
 }
 
-void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, OmSegment** page, OmSegmentCache* cache) 
+void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vector<OmSegment*> & page, OmSegmentCache* cache) 
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);

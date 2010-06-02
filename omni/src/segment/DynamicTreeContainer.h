@@ -11,9 +11,6 @@ class DynamicTreeContainer {
 		for( unsigned int i = 0; i < mSize; ++i ){
 			delete mNodeArray[ i ];
 		}
-		
-		delete [] mNodeArray;
-		mNodeArray = NULL;
 	}
  
 	DynamicTree<T> * get( const unsigned int index ){
@@ -26,11 +23,11 @@ class DynamicTreeContainer {
 	}
 
 	unsigned int getSize(){ return mSize; }
-	DynamicTree<T>* * getTreeNodeArray(){ return mNodeArray; }
+	const std::vector<DynamicTree<T>*> & getTreeNodeArray(){ return mNodeArray; }
 
  private:
 	const unsigned int mSize;
-	DynamicTree<T>* * mNodeArray;
+	std::vector<DynamicTree<T>*> mNodeArray;
 };
 
 #endif

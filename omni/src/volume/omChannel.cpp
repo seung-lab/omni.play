@@ -1,15 +1,10 @@
-
-#include "omChannel.h"
-#include "omVolume.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omProgressEvent.h"
-
-#include "volume/omFilter2d.h"
 #include "common/omDebug.h"
 #include "project/omProject.h"
-
-#define DEBUG 0
+#include "system/events/omProgressEvent.h"
+#include "system/omEventManager.h"
+#include "volume/omChannel.h"
+#include "volume/omFilter2d.h"
+#include "volume/omVolume.h"
 
 OmChannel::OmChannel()
 {
@@ -20,7 +15,7 @@ OmChannel::OmChannel()
 }
 
 OmChannel::OmChannel(OmId id)
- : OmManageableObject(id)
+	: OmManageableObject(id)
 {
 
 	//set manageable object name
@@ -50,6 +45,8 @@ OmChannel::OmChannel(OmId id)
         SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim);
+
+	AddFilter();	
 }
 
 /////////////////////////////////

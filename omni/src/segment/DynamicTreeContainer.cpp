@@ -2,7 +2,7 @@
 
 template <typename T>
 DynamicTreeContainer<T>::DynamicTreeContainer( const unsigned int size )
-	: mSize(size), mNodeArray( new DynamicTree<T> * [ size ] )
+	: mSize(size)
 {
-	memset( mNodeArray, 0, sizeof(DynamicTree<T>*) * mSize);
+	mNodeArray.resize( size, NULL );
 }

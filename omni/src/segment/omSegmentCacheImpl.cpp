@@ -31,14 +31,12 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentC
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
-
+		
 		for( quint32 i = 0; i < mPageSize; ++i ){
 			delete mValueToSegPtrHash[pageNum][i];
 		}
-
-		delete [] mValueToSegPtrHash[pageNum];
 	}
-
+	
 	delete mGraph;
 }
 
@@ -61,8 +59,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 	const PageNum pageNum = getValuePageNum(value);
 
 	if( !validPageNumbers.contains( pageNum ) ) {
-		mValueToSegPtrHash[ pageNum ] = new OmSegment*[mPageSize];
-		memset(mValueToSegPtrHash[ pageNum ], 0, sizeof(OmSegment*) * mPageSize);
+		mValueToSegPtrHash[ pageNum ].resize(mPageSize, NULL);
 		validPageNumbers.insert( pageNum );
 		loadedPageNumbers.insert( pageNum );
 	}
@@ -257,7 +254,7 @@ QString OmSegmentCacheImpl::getSegmentName( OmSegID segID )
 		return segmentCustomNames.value(segID);
 	}
 
-	return QString("segment%1").arg(segID);
+	return ""; //QString("segment%1").arg(segID);
 }
 
 void OmSegmentCacheImpl::setSegmentNote( OmSegID segID, QString note )
@@ -485,7 +482,7 @@ void OmSegmentCacheImpl::SaveDirtySegmentPages()
 
 void OmSegmentCacheImpl::doSaveSegmentPage( const PageNum pageNum )
 {
-	OmSegment** page = mValueToSegPtrHash[ pageNum ];
+	const std::vector<OmSegment*> & page = mValueToSegPtrHash[ pageNum ];
 	OmDataArchiveSegment::ArchiveWrite( OmDataPaths::getSegmentPagePath( getSegmentationID(), pageNum ),
 					    page, mParentCache );
 }
@@ -497,14 +494,13 @@ void OmSegmentCacheImpl::turnBatchModeOn( const bool batchMode )
 
 void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
 {
-	OmSegment** page = new OmSegment*[mPageSize];
-	memset(page, 0, sizeof(OmSegment*) * mPageSize);
+	std::vector<OmSegment*> & page = mValueToSegPtrHash[ pageNum ];
+	page.resize( mPageSize, NULL );
 
 	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( getSegmentationID(), pageNum ),
 					   page,
 					   mParentCache);
 	
-	mValueToSegPtrHash[ pageNum ] = page;
 	loadedPageNumbers.insert( pageNum );
 
 	if( loadedPageNumbers == validPageNumbers ){
@@ -711,7 +707,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	OmSegment * otherSeg;
 	int numRemoved;
 
-	DynamicTree<OmSegID> ** treeNodeArray = mGraph->getTreeNodeArray();
+	const std::vector<DynamicTree<OmSegID>*> & treeNodeArray = mGraph->getTreeNodeArray();
 
 	OmSegment * seg;
 	for( unsigned int i = 1; i < mGraph->getSize(); ++i) {

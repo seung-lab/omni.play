@@ -112,7 +112,7 @@ class OmSegmentCacheImpl {
 	bool needToFlush;
 
 	quint32 mPageSize;
-	boost::unordered_map< PageNum, OmSegment** > mValueToSegPtrHash;
+	boost::unordered_map< PageNum, std::vector<OmSegment*> > mValueToSegPtrHash;
 	QSet< PageNum > validPageNumbers;
 	QSet< PageNum > loadedPageNumbers;
 	QSet< PageNum > dirtySegmentPages;
