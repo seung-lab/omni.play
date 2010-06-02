@@ -54,17 +54,17 @@ void Headless::processLine( QString line, QString fName )
 			return;
 		} 
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
-		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
-		bs->build_seg_mesh();
-		bs->wait();
+		OmBuildSegmentation bs( &added_segmentation );
+		bs.build_seg_mesh();
+		bs.wait();
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");
 			return;
 		} 
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
-		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
-		bs->loadDendrogram();
+		OmBuildSegmentation bs( &added_segmentation );
+		bs.loadDendrogram();
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
@@ -146,21 +146,32 @@ void Headless::processLine( QString line, QString fName )
 			OmProject::New( projectFileNameAndPath );
 		}
 		
-	} else if( line.startsWith("loadHDF5:") ){
+	} else if( line.startsWith("loadHDF5seg:") ){
 		QStringList args = line.split(':');
 
 		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
+		SegmentationID = added_segmentation.GetId();
 		QString hdf5fnp = args[1];
 
-		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
-		bs->addFileNameAndPath( hdf5fnp );
-		bs->build_seg_image();
-		bs->wait();
+		OmBuildSegmentation bs( &added_segmentation );
+		bs.addFileNameAndPath( hdf5fnp );
+		bs.build_seg_image();
+		bs.wait();
+	} else if( line.startsWith("loadHDF5chann:") ){
+		QStringList args = line.split(':');
+
+		OmChannel & chann = OmProject::AddChannel();
+		QString hdf5fnp = args[1];
+
+		OmBuildChannel bc( &chann );
+		bc.addFileNameAndPath( hdf5fnp );
+		bc.build_channel();
+		bc.wait();
 	} else if( line.startsWith("loadTIFFchann:") ){
 		QStringList args = line.split(':');
 
 		OmChannel & chann = OmProject::AddChannel();
-		OmBuildChannel * bc = new OmBuildChannel( &chann );
+		OmBuildChannel bc( &chann );
 
 		QDir dir( args[1] );
 		foreach( QFileInfo f, dir.entryInfoList() ){
@@ -168,15 +179,16 @@ void Headless::processLine( QString line, QString fName )
 				continue;
 			}
 			printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
-			bc->addFileNameAndPath( f.canonicalFilePath() );
+			bc.addFileNameAndPath( f.canonicalFilePath() );
 		}
-		bc->build_channel();
-		bc->wait();
+		bc.build_channel();
+		bc.wait();
         } else if( line.startsWith("loadTIFFseg:") ){
                 QStringList args = line.split(':');
 
                 OmSegmentation & seg = OmProject::AddSegmentation();
-                OmBuildSegmentation * bs = new OmBuildSegmentation( &seg );
+		SegmentationID = seg.GetId();
+                OmBuildSegmentation bs( &seg );
 
                 QDir dir( args[1] );
                 foreach( QFileInfo f, dir.entryInfoList() ){
@@ -184,10 +196,10 @@ void Headless::processLine( QString line, QString fName )
                                 continue;
                         }
                         printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
-                        bs->addFileNameAndPath( f.canonicalFilePath() );
+                        bs.addFileNameAndPath( f.canonicalFilePath() );
                 }
-                bs->build_seg_image();
-                bs->wait();
+                bs.build_seg_image();
+                bs.wait();
 	} else if( line.startsWith("buildHDF5:") ){
 		QStringList args = line.split(':');
 		QString projectFileName = QFileInfo(args[1]+".omni").fileName();
@@ -197,10 +209,10 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
 		QString hdf5fnp = args[1];
 
-		OmBuildSegmentation * bs = new OmBuildSegmentation( &added_segmentation );
-		bs->addFileNameAndPath( hdf5fnp );
-		bs->buildAndMeshSegmentation();
-		bs->wait();
+		OmBuildSegmentation bs( &added_segmentation );
+		bs.addFileNameAndPath( hdf5fnp );
+		bs.buildAndMeshSegmentation();
+		bs.wait();
 	} else if( line.startsWith("loadChunk") ){
 		if( 0 == SegmentationID  ){
                         printf("please choose segmentation first!\n");
