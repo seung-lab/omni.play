@@ -389,8 +389,8 @@ void DendToolBar::join()
 
 	if (OmProject::IsSegmentationValid(getSegmentationID())) {
 		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		OmIDsSet mIDs = seg.GetSelectedSegmentIds();
-		(new OmSegmentJoinAction(mSeg, mIDs))->Run();
+		OmIDsSet ids = seg.GetSelectedSegmentIds();
+		(new OmSegmentJoinAction(mSeg, ids))->Run();
 	}	
 
 	updateGui();

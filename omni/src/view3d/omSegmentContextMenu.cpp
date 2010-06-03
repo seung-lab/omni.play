@@ -3,6 +3,7 @@
 #include "project/omProject.h"
 #include "segment/actions/edit/omEditSelectionSetAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/omSegmentSelector.h"
 #include "utility/setUtilities.h"
@@ -215,11 +216,14 @@ void OmSegmentContextMenu::SetEditSelection()
 
 void OmSegmentContextMenu::MergeSegments()
 {
-	assert(0); //FIXME! (purcaro)
+        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+        OmIDsSet ids = seg.GetSelectedSegmentIds();
+	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
 
 void OmSegmentContextMenu::SetConnectedVoxels()
 {
+
 	(new OmVoxelSetConnectedAction())->Run();
 }
 
