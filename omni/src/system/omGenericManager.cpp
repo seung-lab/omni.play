@@ -9,8 +9,8 @@ template < class T >
 OmGenericManager<T>::OmGenericManager() 
 	: mNextId(1)
 	, mSize(DEFAULT_MAP_SIZE)
-	, mMap( std::vector<T*>(DEFAULT_MAP_SIZE, NULL) )
 {
+	mMap.resize(DEFAULT_MAP_SIZE, NULL);
 }
 
 /**

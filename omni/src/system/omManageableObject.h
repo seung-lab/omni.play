@@ -13,7 +13,7 @@ class OmManageableObject {
 public:
 	OmManageableObject();
 	
-	OmManageableObject(const OmId id);
+	explicit OmManageableObject(const OmId id);
 		
 	OmId GetId();
 	
