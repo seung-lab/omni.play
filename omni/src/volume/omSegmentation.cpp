@@ -8,7 +8,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentIterator.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"

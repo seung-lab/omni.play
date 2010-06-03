@@ -1,10 +1,7 @@
 #include "project/omProject.h"
 #include "omSegmentJoinAction.h"
-
-#include "segment/omSegmentEditor.h"
 #include "volume/omVolume.h"
 #include "volume/omSegmentation.h"
-
 #include "system/omEventManager.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/setUtilities.h"

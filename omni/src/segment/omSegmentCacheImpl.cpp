@@ -1,4 +1,5 @@
 #include "segment/omSegmentCacheImpl.h"
+#include "segment/omSegmentEdge.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
@@ -542,16 +543,14 @@ void OmSegmentCacheImpl::doLoadDendrogram( const quint32 * dend, const float * d
 	unsigned int childVal;
 	unsigned int parentVal;
 	float threshold;
-	
-	// TODO: deal w/ dust...
 
 	for(int i = 0; i < size; ++i) {
-                threshold = dendValues[i];
-
                 childVal = dend[i];
 		parentVal = dend[i + size ];
+                threshold = dendValues[i];
 
-                Join(parentVal, childVal, threshold);
+                OmSegmentEdge * edge = Join(parentVal, childVal, threshold);
+		edgeList.append( edge );
 
                 ++joinCounter;
         }
@@ -582,16 +581,16 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	}
 }
 
-void OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, const float threshold)
+OmSegmentEdge * OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel, const float threshold)
 {
-	Join( parent->getValue(), childUnknownLevel->getValue(), threshold );
+	return Join( parent->getValue(), childUnknownLevel->getValue(), threshold );
 }
 
-void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknownDepthID, const float threshold)
+OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknownDepthID, const float threshold)
 {
 	loadTreeIfNeeded();
 
-	DynamicTree<OmSegID> * childRootDT  = mGraph->get( childUnknownDepthID )->findRoot();
+	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
 	childRootDT->join( mGraph->get( parentID ) );
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
@@ -604,7 +603,10 @@ void OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknow
                 mSelectedSet.insert( parent->mValue );
         } 
 	mSelectedSet.remove( childUnknownDepthID );
+
 	--mNumTopLevelSegs;
+
+	return new OmSegmentEdge( parentID, childRoot->mValue, threshold);
 }
 
 OmSegID OmSegmentCacheImpl::findRootID( const OmSegID segID )

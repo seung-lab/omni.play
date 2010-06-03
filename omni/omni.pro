@@ -131,6 +131,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/DynamicTree.h \
            src/segment/DynamicTreeContainer.h \
            src/segment/omSegment.h \
+           src/segment/omSegmentEdge.h \
            src/segment/omSegmentPointers.h \
            src/segment/omSegmentQueue.h \
            src/segment/omSegmentCache.h \
@@ -138,7 +139,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentColorizer.h \
            src/segment/omSegmentSelector.h \
-           src/segment/omSegmentEditor.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildVolumes.h \
@@ -252,6 +252,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/edit/omEditSelectionSetAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
+           src/segment/actions/omSegmentEditor.h \
            src/segment/actions/voxel/omVoxelSelectionAction.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
            src/segment/actions/voxel/omVoxelSetAction.h \
@@ -299,7 +300,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/segment/omSegmentEditor.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildVolumes.cpp \
@@ -399,6 +399,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
+           src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/edit/omEditSelectionSetAction.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \

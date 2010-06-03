@@ -1,9 +1,5 @@
-
 #include "omEditSelectionSetAction.h"
-
-#include "segment/omSegmentEditor.h"
-
-#define DEBUG 0
+#include "segment/actions/omSegmentEditor.h"
 
 /////////////////////////////////
 ///////

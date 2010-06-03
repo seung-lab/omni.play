@@ -4,7 +4,7 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
@@ -16,7 +16,8 @@
 #include "volume/omVolume.h"
 
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
-	: mpView3d(view3d), mViewGroupState(vgs)
+	: mpView3d(view3d)
+	, mViewGroupState(vgs)
 {
         mCPressed = false;
 }

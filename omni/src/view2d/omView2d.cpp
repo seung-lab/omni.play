@@ -3,7 +3,7 @@
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omGarbage.h"

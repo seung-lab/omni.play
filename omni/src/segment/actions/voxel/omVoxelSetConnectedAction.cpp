@@ -1,7 +1,7 @@
 #include "project/omProject.h"
 #include "omVoxelSetConnectedAction.h"
 
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 

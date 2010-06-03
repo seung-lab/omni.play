@@ -4,13 +4,16 @@
 #include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
 
+#include <QHash>
 #include <QSet>
+#include <QLinkedList>
 
 // TODO: this was done as proof-of-concept; not sure how much slower 
 //  struct constructor is compared to simple int POD... (purcaro)
 BOOST_STRONG_TYPEDEF(quint32, PageNum )
 
 class OmSegment;
+class OmSegmentEdge;
 class OmSegmentCache;
 class OmSegmentation;
 class OmMipChunkCoord;
@@ -135,8 +138,10 @@ class OmSegmentCacheImpl {
 	void loadDendrogram();
 	void loadTreeIfNeeded();
 
-	void Join( OmSegment *, OmSegment *, const float );
-	void Join( const OmId, const OmId, const float );
+	QLinkedList<OmSegmentEdge*> edgeList;
+
+	OmSegmentEdge * Join( OmSegment *, OmSegment *, const float );
+	OmSegmentEdge * Join( const OmId, const OmId, const float );
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );

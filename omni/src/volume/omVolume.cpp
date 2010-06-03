@@ -1,17 +1,7 @@
-#include "omVolume.h"
-#include "omVolumeCuller.h"
-
-#include "segment/omSegmentEditor.h"
-#include "common/omGl.h"
-#include "common/omDebug.h"
-#include "project/omProject.h"
-
-#define DEBUG 0
+#include "volume/omVolume.h"
 
 /////////////////////////////////
-///////
 ///////         OmVolume
-///////
 
 OmVolume::OmVolume()
 {
@@ -58,6 +48,7 @@ bool OmVolume::SetScale(const Vector3 < float >&scale)
 	mNormToSpaceMat.m[0][0] = scale.x;
 	mNormToSpaceMat.m[1][1] = scale.y;
 	mNormToSpaceMat.m[2][2] = scale.z;
+
 	//set inverse and return if invertable
 	return mNormToSpaceMat.getInverse(mNormToSpaceInvMat);
 }

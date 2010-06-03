@@ -8,7 +8,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omGarbage.h"

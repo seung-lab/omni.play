@@ -1,13 +1,11 @@
-#include "project/omProject.h"
 #include "omVoxelSetAction.h"
-
-#include "segment/omSegmentEditor.h"
+#include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
+#include "system/events/omVoxelEvent.h"
+#include "system/omEventManager.h"
+#include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-
-#include "system/omStateManager.h"
-#include "system/omEventManager.h"
-#include "system/events/omVoxelEvent.h"
 
 /////////////////////////////////
 ///////
@@ -21,7 +19,7 @@
  */
 
 OmVoxelSetAction::OmVoxelSetAction(DataCoord & voxel)
- : mVoxel(voxel)
+	: mVoxel(voxel)
 {
 
 	//store current selection
