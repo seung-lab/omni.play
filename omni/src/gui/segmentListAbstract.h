@@ -4,15 +4,13 @@
 #include <QtGui>
 #include <QWidget> 
 
-#include "inspectors/inspectorProperties.h"
-#include "inspectors/segObjectInspector.h"
-#include "common/omStd.h"
 #include "utility/dataWrappers.h"
-#include "system/events/omSegmentEvent.h"
-#include "common/omDebug.h"
-#include "gui/elementListBox.h"
 
+class ElementListBox;
+class InspectorProperties;
+class OmSegmentEvent;
 class OmTreeWidget;
+class SegObjectInspector;
 
 class SegmentListAbstract : public QWidget
 {
@@ -42,7 +40,8 @@ protected slots:
 	void segmentLeftClick();
 
 protected:
-	void keyPressEvent (QKeyEvent *event);
+	virtual QString getTabTitle() = 0;
+	virtual bool shouldSegmentBeAdded( SegmentDataWrapper & seg ) = 0;
 
 	static const int ENABLED_COL = 0;
 	static const int NAME_COL = 1;

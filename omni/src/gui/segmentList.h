@@ -10,6 +10,9 @@ class SegmentList : public SegmentListAbstract
 public:
 	SegmentList( QWidget * , InspectorProperties *, ElementListBox * );
 
+ private:
+	QString getTabTitle();
+	bool shouldSegmentBeAdded( SegmentDataWrapper & seg );
 };
 
 #endif

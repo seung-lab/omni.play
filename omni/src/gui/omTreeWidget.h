@@ -13,6 +13,8 @@ class OmTreeWidget : public QTreeWidget {
  signals:
 	void leftClicked();
 	void rightClicked();
+	void keyboardUpArrowPressed();
+	void  keyboardDownArrowPressed();
 
  private:
 	void mousePressEvent(QMouseEvent * event);

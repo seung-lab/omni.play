@@ -1,11 +1,16 @@
-#include "project/omProject.h"
-#include "gui/segmentListAbstract.h"
-#include "segment/omSegmentSelector.h"
+#include "common/omCommon.h"
+#include "common/omDebug.h"
+#include "gui/elementListBox.h"
 #include "gui/guiUtils.h"
-#include "volume/omSegmentation.h"
-#include "segment/omSegmentCache.h"
 #include "gui/omTreeWidget.h"
-
+#include "gui/segmentListAbstract.h"
+#include "inspectors/inspectorProperties.h"
+#include "inspectors/segObjectInspector.h"
+#include "project/omProject.h"
+#include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
+#include "system/events/omSegmentEvent.h"
+#include "volume/omSegmentation.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
@@ -80,7 +85,8 @@ void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollT
 
 	foreach(OmSegID segID, (*segs)) {
 		SegmentDataWrapper seg(  sdw.getID(), segID );
-		if(seg.getSegment()->GetImmutable()) {
+
+		if( !shouldSegmentBeAdded( seg ) ){
 			continue;
 		}
 
@@ -110,7 +116,8 @@ void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollT
 	layout->addWidget(dataElementsWidget);
 	dataElementsWidget->setUpdatesEnabled( true);
 
-	elementListBox->addTab(0, QString("Segmentation %1").arg(sdw.getID()), this, QString("All Segments") );
+	elementListBox->addTab(0, QString("Segmentation %1").arg(sdw.getID()), 
+			       this, getTabTitle() );
 
 	setFocusPolicy(Qt::StrongFocus);
 }
@@ -270,23 +277,9 @@ void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID)
 }
 
 void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID,
-					   const OmId segmentJustAddedID)
+					     const OmId segmentJustAddedID)
 {
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
-}
-
-void SegmentListAbstract::keyPressEvent(QKeyEvent * event)
-{
-	printf("hi\n");
-
-	switch (event->key()) {
-	case Qt::Key_Up:
-		printf("hi from keyup\n");
-		break;
-	case Qt::Key_Down:
-		printf("hi from keyup\n");
-		break;
-	}
 }
 
 void SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
