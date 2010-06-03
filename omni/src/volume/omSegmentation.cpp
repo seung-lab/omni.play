@@ -456,11 +456,15 @@ void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
 
 /////////////////////////////////
 ///////          Groups
-OmId OmSegmentation::AddGroup()
+OmId OmSegmentation::AddGroup(OmSegID id)
 {
         OmSegmentIterator iter(mSegmentCache);
 
-        iter.iterOverSelectedIDs();
+	if(0 == id) {
+        	iter.iterOverSelectedIDs();
+	} else {
+        	iter.iterOverSegmentIDs(id);
+	}
 
 	OmIDsSet segmentsToGroup;
         OmSegment * seg = iter.getNextSegment();
@@ -475,11 +479,15 @@ OmId OmSegmentation::AddGroup()
 	return mGroups.AddGroup(segmentsToGroup);
 }
 
-void OmSegmentation::DeleteGroup()
+void OmSegmentation::DeleteGroup(OmSegID id)
 {
         OmSegmentIterator iter(mSegmentCache);
 
-        iter.iterOverSelectedIDs();
+        if(0 == id) {
+                iter.iterOverSelectedIDs();
+        } else {
+                iter.iterOverSegmentIDs(id);
+        }
 
         OmIDsSet segmentsToGroup;
         OmSegment * seg = iter.getNextSegment();

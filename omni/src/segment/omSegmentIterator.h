@@ -16,6 +16,8 @@ class OmSegmentIterator
  
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
+	void iterOverSegmentIDs(OmSegID seg);
+
 
 	OmSegment * getNextSegment();
 	bool empty();

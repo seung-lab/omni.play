@@ -81,8 +81,8 @@ public:
 	bool AreSegmentsSelected();
 	
 	//group management
-	OmId AddGroup();
-	void DeleteGroup();
+	OmId AddGroup(OmSegID = 0);
+	void DeleteGroup(OmSegID = 0);
 
 
 	//drawing

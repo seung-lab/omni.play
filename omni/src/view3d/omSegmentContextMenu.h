@@ -21,6 +21,7 @@ protected:
 	void AddDendActions();
 	void AddVoxelAction();
 	void AddColorActions();
+	void AddGroupActions();
 
 	
 private slots:
@@ -38,6 +39,8 @@ private slots:
 	void SetConnectedVoxels();
 	void splitSegments();
 	void randomizeColor();
+	void addGroup();
+	void deleteGroup();
 	
 private:
 	OmId mSegmentationId;

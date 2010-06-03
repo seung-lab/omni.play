@@ -26,54 +26,19 @@ void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId, OmViewGr
 	//clear old menu actions
 	clear();
 
-	//SELECTION NAMES
 	AddSelectionNames();
-
-	//-------------
 	addSeparator();
 
-	//UN/SELECT SEGMENT
 	AddSelectionAction();
-
         addSeparator();
 
         AddColorActions();
-
-
-	//-------------
-	//addSeparator();
-
-	//DISABLE
-	//AddDisableActions();
-
-	//SELECT ALL
-	//AddAllSelectionAction();
-
-	/*
-	   //-------------
-	   addSeparator();
-	   addAction( QString("Copy Segment") );
-	   addAction( QString("Paste Segment") );       
-	   addAction( QString("Delete Segment") );
-	 */
-	//-------------
 	addSeparator();
 
-	//AddEditSelectionAction();
-
 	AddDendActions();
+	addSeparator();
 
-
-	//AddVoxelAction();
-
-	/*
-	   sendBackAction = new QAction(QIcon(":/images/sendtoback.png"),
-	   tr("Send to &Back"), this);
-	   sendBackAction->setShortcut(tr("Ctrl+B"));
-	   sendBackAction->setStatusTip(tr("Send item to back"));
-	   connect(sendBackAction, SIGNAL(triggered()),
-	   this, SLOT(sendToBack()));
-	 */
+	AddGroupActions();
 }
 
 void OmSegmentContextMenu::AddSelectionNames()
@@ -242,9 +207,13 @@ void OmSegmentContextMenu::SetConnectedVoxels()
 
 void OmSegmentContextMenu::AddColorActions()
 {
-
-        string action_str = string("Randomize Segment Color");
         addAction(QString("Randomize Segment Color"), this, SLOT(randomizeColor()));
+}
+
+void OmSegmentContextMenu::AddGroupActions()
+{
+        addAction(QString("Set Segment Valid"), this, SLOT(addGroup()));
+        addAction(QString("Set Segment Not Valid"), this, SLOT(deleteGroup()));
 }
 
 void OmSegmentContextMenu::randomizeColor()
@@ -254,3 +223,22 @@ void OmSegmentContextMenu::randomizeColor()
 
 	r_segment->reRandomizeColor();
 }
+
+void OmSegmentContextMenu::addGroup()
+{
+        debug("validate", "OmSegmentContextMenu::addGroup\n");
+        if (OmProject::IsSegmentationValid(mSegmentationId)) {
+                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+                seg.AddGroup(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+        }
+}
+
+void OmSegmentContextMenu::deleteGroup()
+{
+        debug("validate", "OmSegmentContextMenu::addGroup\n");
+        if (OmProject::IsSegmentationValid(mSegmentationId)) {
+                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+                seg.DeleteGroup(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+        }
+}
+

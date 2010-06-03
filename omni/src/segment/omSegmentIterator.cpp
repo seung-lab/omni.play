@@ -34,6 +34,12 @@ void OmSegmentIterator::iterOverEnabledIDs()
 	}
 }
 
+void OmSegmentIterator::iterOverSegmentIDs(OmSegID id)
+{
+	mSegs.push_back( mCache->GetSegmentFromValue(id) );
+}
+
+
 bool OmSegmentIterator::empty()
 {
 	return mSegs.empty();
