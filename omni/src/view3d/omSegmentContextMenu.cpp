@@ -67,6 +67,7 @@ void OmSegmentContextMenu::AddSelectionAction()
 	//if segment is already selected
 	if (is_segment_selected) {
 		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
+		addAction(QString("Deselect Only This Segment"), this, SLOT(Unselect()));
 	} else {
 		addAction(QString("Select Segment"), this, SLOT(Select()));
 	}
@@ -136,7 +137,7 @@ void OmSegmentContextMenu::Select()
 void OmSegmentContextMenu::Unselect()
 {
 	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
-	sel.selectJustThisSegment( mSegmentId, false);
+	sel.augmentSelectedSet(mSegmentId, false);
 	sel.sendEvent();
 }
 
@@ -144,7 +145,7 @@ void OmSegmentContextMenu::UnselectOthers()
 {
 	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
 	sel.selectNoSegments();
-	sel.selectJustThisSegment( mSegmentId, true);
+	sel.selectJustThisSegment(mSegmentId, true);
 	sel.sendEvent();
 }
 
