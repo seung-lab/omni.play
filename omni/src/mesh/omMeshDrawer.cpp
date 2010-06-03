@@ -11,6 +11,8 @@
 #include "volume/omVolumeCuller.h"
 
 static unsigned int mFreshness = 0;
+
+// TODO: make better; this is (segID by MIPlevel by X by Y by Z)
 static boost::unordered_map< OmId, 
         boost::unordered_map< int, 
 	 boost::unordered_map< int,
