@@ -22,14 +22,18 @@ void ElementListBox::clear()
 	groupBox->setTitle( "" );
 }
 
-void ElementListBox::addTab(QString boxTitle, QWidget * tab, QString tabTitle)
+void ElementListBox::addTab(int index, QString boxTitle, QWidget * tab, QString tabTitle)
 {
 	if( NULL == dataElementsTabs ){
 		setupBox();
 	}
+
+	if(-1 != dataElementsTabs->indexOf(tab)){
+		return;
+	}
 	
 	groupBox->setTitle(boxTitle);
-	dataElementsTabs->addTab(tab, tabTitle);	
+	dataElementsTabs->insertTab(index, tab, tabTitle);	
 }
 
 void ElementListBox::setupBox()
@@ -42,8 +46,4 @@ void ElementListBox::setupBox()
 	overallContainer->addWidget( buttonBox );
 	QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
 	
-	prevButton = new QPushButton("<", this);
-	buttons->addWidget( prevButton );
-	nextButton = new QPushButton(">", this);
-	buttons->addWidget( nextButton );
 }

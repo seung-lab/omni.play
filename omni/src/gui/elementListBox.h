@@ -10,12 +10,9 @@ class ElementListBox : public QWidget
 
 public:
 	ElementListBox( QWidget *, QVBoxLayout * );
-	void addTab(QString boxTitle, QWidget * tab, QString tabTitle);
+	void addTab(int index, QString boxTitle, QWidget * tab, QString tabTitle);
 	void clear();
 
-	QPushButton * prevButton;
-	QPushButton * nextButton;
-	
 public slots:
 
 private slots: 

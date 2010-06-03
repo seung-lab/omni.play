@@ -19,7 +19,10 @@ SegmentList::SegmentList( QWidget * parent,
 	, haveValidSDW( false )
 	, currentPageNum( 0 )
 {
-	
+        layout = new QVBoxLayout(this);
+        prevButton = new QPushButton("<");
+        nextButton = new QPushButton(">");
+	dealWithButtons();
 }
 
 int SegmentList::getNumSegmentsPerPage()
@@ -104,26 +107,30 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
 	}
-
+	layout->addWidget(dataElementsWidget);
 	dataElementsWidget->setUpdatesEnabled( true);
 
-	elementListBox->addTab( QString("Segmentation %1").arg(sdw.getID()),
-				       dataElementsWidget,
-				       QString("All Segments") );
-	dealWithButtons();
+	elementListBox->addTab(0, QString("Segmentation %1").arg(sdw.getID()), this, QString("All Segments") );
 
 	setFocusPolicy(Qt::StrongFocus);
 }
 
 void SegmentList::dealWithButtons()
 {
-	elementListBox->prevButton->disconnect(SIGNAL( released() ));
-	connect( elementListBox->prevButton, SIGNAL( released()  ), 
-		 this, SLOT( goToPrevPage() ), Qt::DirectConnection);
+        QGroupBox * buttonBox = new QGroupBox("");
+        buttonBox->setFlat(true);
+        layout->addWidget( buttonBox );
+        QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
 
-	elementListBox->nextButton->disconnect(SIGNAL( released() ));
-	connect( elementListBox->nextButton, SIGNAL( released()  ), 
-		 this, SLOT( goToNextPage() ), Qt::DirectConnection);
+        prevButton->disconnect(SIGNAL( released() ));
+        connect( prevButton, SIGNAL( released()  ),
+                 this, SLOT( goToPrevPage() ), Qt::DirectConnection);
+
+        nextButton->disconnect(SIGNAL( released() ));
+        connect( nextButton, SIGNAL( released()  ),
+                 this, SLOT( goToNextPage() ), Qt::DirectConnection);
+        buttons->addWidget(prevButton);
+        buttons->addWidget(nextButton);
 }
 
 void SegmentList::goToNextPage()

@@ -52,7 +52,9 @@ private:
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
 
-	
+        QVBoxLayout * layout;
+        QPushButton * prevButton;
+        QPushButton * nextButton;
 
 	OmTreeWidget * dataElementsWidget;
  	InspectorProperties * inspectorProperties;

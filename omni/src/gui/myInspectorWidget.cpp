@@ -106,7 +106,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
 	elementListBox->clear();
-	elementListBox->addTab( QString("Channel %1").arg(cdw.getID()), 
+	elementListBox->addTab(0, QString("Channel %1").arg(cdw.getID()), 
 				      setupFilterList(), 
 				       "Filters" );
 				      

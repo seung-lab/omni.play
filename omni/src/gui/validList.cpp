@@ -11,13 +11,17 @@ Q_DECLARE_METATYPE(SegmentDataWrapper);
 ValidList::ValidList( QWidget * parent, 
 			  InspectorProperties * in_inspectorProperties,
 			  ElementListBox * in_elementListBox ) 
-	: QWidget( parent )
+	: QWidget ( parent )
 	, dataElementsWidget( NULL )
 	, inspectorProperties( in_inspectorProperties )
 	, elementListBox( in_elementListBox )
 	, haveValidSDW( false )
 	, currentPageNum( 0 )
 {
+	layout = new QVBoxLayout(this);
+	prevButton = new QPushButton("<");
+	nextButton = new QPushButton(">");
+	dealWithButtons();
 }
 
 int ValidList::getNumSegmentsPerPage()
@@ -108,25 +112,32 @@ void ValidList::populateSegmentElementsListWidget(const bool doScrollToSelectedS
 		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
 	}
 
+        layout->addWidget(dataElementsWidget);
 	dataElementsWidget->setUpdatesEnabled( true);
 
-	elementListBox->addTab( QString("Segmentation %1").arg(sdw.getID()),
-				       dataElementsWidget,
+	elementListBox->addTab(1, QString("Segmentation %1").arg(sdw.getID()),
+				       this,
 				       QString("Valid Segments") );
-	dealWithButtons();
 
 	setFocusPolicy(Qt::StrongFocus);
 }
 
 void ValidList::dealWithButtons()
 {
-	elementListBox->prevButton->disconnect(SIGNAL( released() ));
-	connect( elementListBox->prevButton, SIGNAL( released()  ), 
+        QGroupBox * buttonBox = new QGroupBox("");
+        buttonBox->setFlat(true);
+        layout->addWidget( buttonBox );
+        QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
+
+	prevButton->disconnect(SIGNAL( released() ));
+	connect( prevButton, SIGNAL( released()  ), 
 		 this, SLOT( goToPrevPage() ), Qt::DirectConnection);
 
-	elementListBox->nextButton->disconnect(SIGNAL( released() ));
-	connect( elementListBox->nextButton, SIGNAL( released()  ), 
+	nextButton->disconnect(SIGNAL( released() ));
+	connect( nextButton, SIGNAL( released()  ), 
 		 this, SLOT( goToNextPage() ), Qt::DirectConnection);
+	buttons->addWidget(prevButton);
+	buttons->addWidget(nextButton);
 }
 
 void ValidList::goToNextPage()
