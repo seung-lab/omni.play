@@ -594,7 +594,7 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 	mpView3d->updateGL();
 
 	//refersh context menu and display
-	mSegmentContextMenu.Refresh(segmentation_id, segment_id);
+	mSegmentContextMenu.Refresh(segmentation_id, segment_id, mViewGroupState);
 	mSegmentContextMenu.exec(event->globalPos());
 }
 

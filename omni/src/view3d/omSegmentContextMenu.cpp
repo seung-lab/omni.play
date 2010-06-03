@@ -9,16 +9,19 @@
 #include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "system/omStateManager.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
 
-void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId)
+void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId, OmViewGroupState * vgs)
 {
 
 	//store ids
 	mSegmentationId = segmentationId;
 	mSegmentId = segmentId;
+	mViewGroupState = vgs;
 
 	//clear old menu actions
 	clear();
@@ -56,11 +59,12 @@ void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId)
 	//-------------
 	addSeparator();
 
-	AddEditSelectionAction();
+	//AddEditSelectionAction();
 
-	AddMergeAction();
+	AddDendActions();
 
-	AddVoxelAction();
+
+	//AddVoxelAction();
 
 	/*
 	   sendBackAction = new QAction(QIcon(":/images/sendtoback.png"),
@@ -140,9 +144,10 @@ void OmSegmentContextMenu::AddEditSelectionAction()
 /*
  *	Merge Segments
  */
-void OmSegmentContextMenu::AddMergeAction()
+void OmSegmentContextMenu::AddDendActions()
 {
-	addAction(QString("Merge Selected"), this, SLOT(MergeSegments()));
+	addAction(QString("Merge Selected Segments"), this, SLOT(MergeSegments()));
+	addAction(QString("Split Segments"), this, SLOT(splitSegments()));
 }
 
 /*
@@ -220,6 +225,14 @@ void OmSegmentContextMenu::MergeSegments()
         OmIDsSet ids = seg.GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
+
+void OmSegmentContextMenu::splitSegments()
+{
+	mViewGroupState->SetShowSplitMode(true);
+        OmStateManager::SetSystemMode(DEND_MODE);
+	mViewGroupState->SetSplitMode(mSegmentationId, mSegmentId);
+}
+
 
 void OmSegmentContextMenu::SetConnectedVoxels()
 {

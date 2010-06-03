@@ -4,12 +4,13 @@
 #include "common/omCommon.h"
 #include <QMenu>
 
+class OmViewGroupState;
 class OmSegmentContextMenu : public QMenu {
 
 	Q_OBJECT
 	
 public:
-	void Refresh(OmId segmentationId, OmId segmentId);
+	void Refresh(OmId segmentationId, OmId segmentId, OmViewGroupState * vgs);
 	
 	
 protected:
@@ -17,7 +18,7 @@ protected:
 	void AddEditSelectionAction();
 	void AddSelectionAction();
 	void AddDisableActions();
-	void AddMergeAction();
+	void AddDendActions();
 	void AddVoxelAction();
 	void AddColorActions();
 
@@ -35,11 +36,13 @@ private slots:
 	void SetEditSelection();
 	void MergeSegments();
 	void SetConnectedVoxels();
+	void splitSegments();
 	void randomizeColor();
 	
 private:
 	OmId mSegmentationId;
 	OmId mSegmentId;
+	OmViewGroupState * mViewGroupState;
 };
 
 #endif
