@@ -19,6 +19,8 @@ protected:
 	void AddDisableActions();
 	void AddMergeAction();
 	void AddVoxelAction();
+	void AddColorActions();
+
 	
 private slots:
 	void Select();
@@ -33,6 +35,7 @@ private slots:
 	void SetEditSelection();
 	void MergeSegments();
 	void SetConnectedVoxels();
+	void randomizeColor();
 	
 private:
 	OmId mSegmentationId;

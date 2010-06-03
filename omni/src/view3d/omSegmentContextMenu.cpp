@@ -31,6 +31,11 @@ void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId)
 	//UN/SELECT SEGMENT
 	AddSelectionAction();
 
+        addSeparator();
+
+        AddColorActions();
+
+
 	//-------------
 	//addSeparator();
 
@@ -216,4 +221,19 @@ void OmSegmentContextMenu::MergeSegments()
 void OmSegmentContextMenu::SetConnectedVoxels()
 {
 	(new OmVoxelSetConnectedAction())->Run();
+}
+
+void OmSegmentContextMenu::AddColorActions()
+{
+
+        string action_str = string("Randomize Segment Color");
+        addAction(QString("Randomize Segment Color"), this, SLOT(randomizeColor()));
+}
+
+void OmSegmentContextMenu::randomizeColor()
+{
+        OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+        OmSegment * r_segment = r_segmentation.GetSegment(r_segmentation.GetSegment(mSegmentId)->getRootSegID());
+
+	r_segment->reRandomizeColor();
 }
