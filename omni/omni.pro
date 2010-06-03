@@ -115,6 +115,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/recentFileList.h \
            src/gui/searchInspector.h \
            src/gui/segmentList.h \
+           src/gui/segmentListAbstract.h \
            src/gui/validList.h \
            src/gui/viewGroup.h \
            src/gui/viewGroupWidgetInfo.h \
@@ -282,6 +283,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \
            src/gui/segmentList.cpp \
+           src/gui/segmentListAbstract.cpp \
            src/gui/validList.cpp \
            src/gui/viewGroup.cpp \
            src/gui/omTreeWidget.cpp \

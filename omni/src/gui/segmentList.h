@@ -1,85 +1,15 @@
 #ifndef SEGMENT_LIST_H
 #define SEGMENT_LIST_H
 
-#include <QtGui>
-#include <QWidget> 
+#include "gui/segmentListAbstract.h"
 
-#include "inspectors/inspectorProperties.h"
-#include "inspectors/segObjectInspector.h"
-#include "common/omStd.h"
-#include "utility/dataWrappers.h"
-#include "system/events/omSegmentEvent.h"
-#include "common/omDebug.h"
-#include "gui/elementListBox.h"
-
-class OmTreeWidget;
-
-class SegmentList : public QWidget
+class SegmentList : public SegmentListAbstract
 {
 	Q_OBJECT
 
 public:
 	SegmentList( QWidget * , InspectorProperties *, ElementListBox * );
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment =
-					       false, const OmId segmentJustSelectedID = 0);
 
-	void makeSegmentationActive(const OmId segmentationID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw);
-	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
-
-	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
-	void dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
-
-public slots:
-	void rebuildSegmentList(const OmId segmentationID);
-	void goToNextPage();
-	void goToPrevPage();
-
-private slots: 
-	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
-	void segmentRightClick();
-	void segmentLeftClick();
-
-protected:
-	void keyPressEvent (QKeyEvent *event);
-
-
-private:
-	static const int ENABLED_COL = 0;
-	static const int NAME_COL = 1;
-	static const int ID_COL = 2;
-	static const int NOTE_COL = 3;
-	static const int USER_DATA_COL = 4;
-
-        QVBoxLayout * layout;
-        QPushButton * prevButton;
-        QPushButton * nextButton;
-
-	OmTreeWidget * dataElementsWidget;
- 	InspectorProperties * inspectorProperties;
-	ElementListBox * elementListBox;
-	SegObjectInspector * segObjectInspectorWidget;
-
-	SegmentationDataWrapper currentSDW;
-	bool haveValidSDW;
-
-	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
-
-	OmSegIDsListPtr getSegmentsToDisplay( const OmId firstSegmentID );
-	OmSegIDsListPtr doGetSegmentsToDisplay( const unsigned int offset );
-
-	SegmentDataWrapper getCurrentlySelectedSegment();
-
-	void setupDataElementList();
-	QMenu * contextMenu;
-	QAction * propAct;
-	int getNumSegmentsPerPage();
-	void dealWithButtons();
-	bool isSegmentSelected();
-
-	int currentPageNum;
-	quint32 getMaxSegmentValue();
 };
 
 #endif
