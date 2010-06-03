@@ -12,7 +12,8 @@
 #include "utility/dataWrappers.h"
 
 OmViewGroupState::OmViewGroupState( MainWindow * mw)
-	: mMainWindow(mw)
+	: OmManageableObject()
+	, mMainWindow(mw)
 {
 	mViewSliceDataXY = NULL;
 	mViewSliceDataYZ = NULL;
