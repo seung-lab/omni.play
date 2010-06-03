@@ -149,3 +149,9 @@ quint64 OmSegment::getSizeWithChlidren()
 {
 	return mSize + mSizeOfAllChildren;
 }
+
+OmSegID OmSegment::getRootSegID()
+{
+	return mCache->findRoot(this)->getValue();
+}
+

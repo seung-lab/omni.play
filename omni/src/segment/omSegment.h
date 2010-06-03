@@ -48,6 +48,7 @@ public:
 	bool GetImmutable(){ return mImmutable; }
 
 	OmSegID getParentSegID(){ return mParentSegID; }
+	OmSegID getRootSegID();
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();

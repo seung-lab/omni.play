@@ -72,7 +72,8 @@ void OmSegmentContextMenu::AddSelectionNames()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
 
-	addAction( r_segment->GetName() );
+	addAction( QString("Segment ") + QString::number(r_segment->getValue()) +
+			QString(" (Root ") + QString::number(r_segment->getRootSegID()) + QString(")"));
 	addAction( r_segmentation.GetName() );
 }
 
