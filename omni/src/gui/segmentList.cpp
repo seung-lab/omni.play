@@ -4,6 +4,7 @@
 #include "gui/guiUtils.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"
+#include "gui/omTreeWidget.h"
 
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
@@ -18,6 +19,7 @@ SegmentList::SegmentList( QWidget * parent,
 	, haveValidSDW( false )
 	, currentPageNum( 0 )
 {
+	
 }
 
 int SegmentList::getNumSegmentsPerPage()
@@ -68,7 +70,6 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();
-	dataElementsWidget->blockSignals(true);
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
@@ -93,16 +94,11 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
-	dataElementsWidget->blockSignals(false);
-
-	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
-	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-		this, SLOT(leftClickOnSegment(QTreeWidgetItem *, int)));
-
-	dataElementsWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(dataElementsWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
-		this, SLOT(showContextMenu(const QPoint &)));
-
+	//////////////////////////////
+	dataElementsWidget->disconnect(SIGNAL(leftClicked()));
+	connect(dataElementsWidget, SIGNAL(leftClicked()),
+		this, SLOT(segmentLeftClick()));
+	///////////////////////////////
 	GuiUtils::autoResizeColumnWidths(dataElementsWidget, 3);
 
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
@@ -151,52 +147,23 @@ void SegmentList::goToPrevPage()
 	populateSegmentElementsListWidget( false, offset );
 }
 
-void SegmentList::showContextMenu(const QPoint & menuPoint)
-{
-	QTreeWidgetItem * segmentItem = dataElementsWidget->itemAt(menuPoint);
-	if (!segmentItem) {	// right click occured in "white space" of widget
-		/*
-		connect(makeSegmentContextMenu(dataElementsWidget), SIGNAL(triggered(QAction *)), 
-			this, SLOT(doDataSrcContextMenuVolAdd(QAction *)));
 
-		contextMenu->exec(dataElementsWidget->mapToGlobal(menuPoint));
-		*/
-		return;
-	}
 
-	showSegmentContextMenu();
-}
 
-void SegmentList::showSegmentContextMenu()
-{
-	connect(makeSegmentContextMenu(dataElementsWidget), SIGNAL(triggered(QAction *)), 
-		this, SLOT(segmentRightClickMenu(QAction *)));
-
-	contextMenu->exec(QCursor::pos());
-}
-
-void SegmentList::segmentRightClickMenu(QAction * act)
+void SegmentList::segmentRightClick()
 {
 	if( !isSegmentSelected() ){
 		return;
 	}
 	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
-	if( propAct == act ){
-		addToSplitterDataElementSegment( sdw );
-	} 
+	
+	addToSplitterDataElementSegment( sdw ); 
 }
 
-QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
+void SegmentList::segmentLeftClick()
 {
-	propAct = new QAction(tr("&Properties"), parent);
-	contextMenu = new QMenu(parent);
-	contextMenu->addAction(propAct);
-
-	return contextMenu;
-}
-
-void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
-{
+	QTreeWidgetItem * current = dataElementsWidget->currentItem();
+	int column = dataElementsWidget->currentColumn();
 	if (QApplication::keyboardModifiers() & Qt::AltModifier ||
 	    inspectorProperties->isVisible() ) {
 		if( isSegmentSelected() ){
@@ -246,10 +213,12 @@ void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 
 void SegmentList::setupDataElementList()
 {
-	dataElementsWidget = new QTreeWidget(this);
+	dataElementsWidget = new OmTreeWidget(this);
 	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	dataElementsWidget->setAlternatingRowColors(true);
 	dataElementsWidget->setColumnCount(3);
+
+	connect(dataElementsWidget,SIGNAL(rightClicked()),this,SLOT(segmentRightClick()));
 
 	QStringList headers;
 	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");

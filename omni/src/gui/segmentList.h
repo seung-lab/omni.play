@@ -12,6 +12,8 @@
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
 
+class OmTreeWidget;
+
 class SegmentList : public QWidget
 {
 	Q_OBJECT
@@ -35,13 +37,13 @@ public slots:
 	void goToPrevPage();
 
 private slots: 
-	void leftClickOnSegment(QTreeWidgetItem * current, const int column);
 	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
-	void showContextMenu(const QPoint & menuPoint);
-	void segmentRightClickMenu(QAction * act);
+	void segmentRightClick();
+	void segmentLeftClick();
 
 protected:
 	void keyPressEvent (QKeyEvent *event);
+
 
 private:
 	static const int ENABLED_COL = 0;
@@ -50,7 +52,9 @@ private:
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
 
-	QTreeWidget * dataElementsWidget;
+	
+
+	OmTreeWidget * dataElementsWidget;
  	InspectorProperties * inspectorProperties;
 	ElementListBox * elementListBox;
 	SegObjectInspector * segObjectInspectorWidget;
@@ -64,11 +68,10 @@ private:
 	OmSegIDsListPtr doGetSegmentsToDisplay( const unsigned int offset );
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
-	QMenu * makeSegmentContextMenu(QTreeWidget * parent);
+
 	void setupDataElementList();
 	QMenu * contextMenu;
 	QAction * propAct;
-	void showSegmentContextMenu();
 	int getNumSegmentsPerPage();
 	void dealWithButtons();
 	bool isSegmentSelected();
