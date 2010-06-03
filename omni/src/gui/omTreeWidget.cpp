@@ -14,13 +14,14 @@ OmTreeWidget::~OmTreeWidget()
 void
 OmTreeWidget::mousePressEvent(QMouseEvent* event)
 {
+	QTreeWidget::mousePressEvent(event);
         if (event->button() == Qt::LeftButton) {
 		emit leftClicked();
 	}
 	if (event->button() == Qt::RightButton) {
 		emit rightClicked();
 	}
-	QTreeWidget::mousePressEvent(event);
+
 	
 }
 
