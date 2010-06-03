@@ -115,6 +115,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/recentFileList.h \
            src/gui/searchInspector.h \
            src/gui/segmentList.h \
+           src/gui/validList.h \
            src/gui/viewGroup.h \
            src/gui/viewGroupWidgetInfo.h \
            src/mesh/meshingChunkThread.h \
@@ -280,6 +281,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \
            src/gui/segmentList.cpp \
+           src/gui/validList.cpp \
            src/gui/viewGroup.cpp \
            src/mesh/meshingChunkThread.cpp \
            src/mesh/meshingChunkThreadManager.cpp \

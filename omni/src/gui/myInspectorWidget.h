@@ -7,6 +7,7 @@
 
 #include "gui/mainwindow.h"
 #include "gui/segmentList.h"
+#include "gui/validList.h"
 #include "gui/elementListBox.h"
 #include "inspectors/segInspector.h"
 #include "inspectors/chanInspector.h"
@@ -118,6 +119,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	InspectorProperties * inspectorProperties;
 	SegmentList * segmentList;
+	ValidList * validList;
 	ElementListBox * elementListBox;
 
 	ViewType getViewType(QAction * act);

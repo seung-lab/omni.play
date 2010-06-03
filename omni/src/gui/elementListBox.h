@@ -10,7 +10,7 @@ class ElementListBox : public QWidget
 
 public:
 	ElementListBox( QWidget *, QVBoxLayout * );
-	void setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle );
+	void addTab(QString boxTitle, QWidget * tab, QString tabTitle);
 	void clear();
 
 	QPushButton * prevButton;

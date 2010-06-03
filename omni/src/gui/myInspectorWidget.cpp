@@ -35,6 +35,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
 
 	elementListBox = new ElementListBox(this, verticalLayout);
 	segmentList = new SegmentList(this, inspectorProperties, elementListBox);
+	validList = new ValidList(this, inspectorProperties, elementListBox);
 	channelInspectorWidget=NULL;
 	segInspectorWidget=NULL;
 
@@ -104,7 +105,8 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	elementListBox->setTabEnabled( QString("Channel %1").arg(cdw.getID()), 
+	elementListBox->clear();
+	elementListBox->addTab( QString("Channel %1").arg(cdw.getID()), 
 				      setupFilterList(), 
 				       "Filters" );
 				      
@@ -142,6 +144,11 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
 		segmentList, SLOT(rebuildSegmentList(OmId)));
 	
+	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
+		validList, SLOT(rebuildSegmentList(OmId)));
+	
+	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
+	
 	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
 
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
@@ -177,7 +184,11 @@ void MyInspectorWidget::addSegmentationToVolume()
 	populateDataSrcListWidget();
 
 	SegmentationDataWrapper sdw( added_segmentation.GetId() );
+
+	elementListBox->clear();
 	segmentList->makeSegmentationActive( sdw );
+	validList->makeSegmentationActive( sdw );
+
 	addSegmentationToSplitter( sdw);
 }
 
@@ -250,12 +261,14 @@ void MyInspectorWidget::nameEditChanged()
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	segmentList->dealWithSegmentObjectModificationEvent(event);
+	validList->dealWithSegmentObjectModificationEvent(event);
 }
 
 void MyInspectorWidget::refreshWidgetData()
 {
 	populateDataSrcListWidget();
 	segmentList->populateSegmentElementsListWidget();
+	validList->populateSegmentElementsListWidget();
 }
 
 void MyInspectorWidget::addSegment()
@@ -263,6 +276,7 @@ void MyInspectorWidget::addSegment()
 	const OmId segmentationID = segInspectorWidget->getSegmentationID();
 	OmSegment * added_segment = OmProject::GetSegmentation(segmentationID).AddSegment();
 	segmentList->rebuildSegmentList(segmentationID, added_segment->getValue());
+	validList->rebuildSegmentList(segmentationID, added_segment->getValue());
 }
 
 //////////////////////////////
@@ -394,6 +408,7 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
 		break;
 	case SEGMENTATION:
 		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		validList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
 		break;
 	case VOLUME:
 	case SEGMENT:
@@ -431,6 +446,7 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 {
 	SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
 	segmentList->makeSegmentationActive(sdw);
+	validList->makeSegmentationActive(sdw);
 
 	if( propAct == act ){
 		addSegmentationToSplitter(sdw);

@@ -1,5 +1,5 @@
 #include "project/omProject.h"
-#include "gui/segmentList.h"
+#include "gui/validList.h"
 #include "segment/omSegmentSelector.h"
 #include "gui/guiUtils.h"
 #include "volume/omSegmentation.h"
@@ -8,7 +8,7 @@
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
-SegmentList::SegmentList( QWidget * parent, 
+ValidList::ValidList( QWidget * parent, 
 			  InspectorProperties * in_inspectorProperties,
 			  ElementListBox * in_elementListBox ) 
 	: QWidget( parent )
@@ -20,24 +20,24 @@ SegmentList::SegmentList( QWidget * parent,
 {
 }
 
-int SegmentList::getNumSegmentsPerPage()
+int ValidList::getNumSegmentsPerPage()
 {
 	return 100;
 }
 
-quint32 SegmentList::getMaxSegmentValue()
+quint32 ValidList::getMaxSegmentValue()
 {
 	assert( haveValidSDW );
 	return currentSDW.getMaxSegmentValue();
 }
 
-OmSegIDsListPtr SegmentList::getSegmentsToDisplay( const OmId firstSegmentID )
+OmSegIDsListPtr ValidList::getSegmentsToDisplay( const OmId firstSegmentID )
 {
 	int offset = firstSegmentID - (firstSegmentID % getNumSegmentsPerPage() );
 	return doGetSegmentsToDisplay( offset );
 }
 
-OmSegIDsListPtr SegmentList::doGetSegmentsToDisplay( const unsigned int in_offset )
+OmSegIDsListPtr ValidList::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	assert( haveValidSDW );
 
@@ -46,11 +46,11 @@ OmSegIDsListPtr SegmentList::doGetSegmentsToDisplay( const unsigned int in_offse
 		offset = in_offset;
 	}
 
-	printf("seg offset=%i, seg:%u\n", offset, currentSDW.getID());
+        printf("valid offset=%i, seg:%u\n", offset, currentSDW.getID());
 	return currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
 }
 
-void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+void ValidList::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 						    const OmId segmentJustSelectedID)
 {
 	debug("guievent", "in %s...\n", __FUNCTION__ );
@@ -68,7 +68,6 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	dataElementsWidget->setUpdatesEnabled( false );
 	dataElementsWidget->clear();
-	dataElementsWidget->blockSignals(true);
 	dataElementsWidget->selectionModel()->blockSignals(true);
 	dataElementsWidget->selectionModel()->clearSelection();
 
@@ -91,7 +90,6 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	}
 
 	dataElementsWidget->selectionModel()->blockSignals(false);
-	dataElementsWidget->blockSignals(false);
 
 	dataElementsWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataElementsWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
@@ -111,13 +109,13 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 
 	elementListBox->addTab( QString("Segmentation %1").arg(sdw.getID()),
 				       dataElementsWidget,
-				       QString("All Segments") );
+				       QString("Valid Segments") );
 	dealWithButtons();
 
 	setFocusPolicy(Qt::StrongFocus);
 }
 
-void SegmentList::dealWithButtons()
+void ValidList::dealWithButtons()
 {
 	elementListBox->prevButton->disconnect(SIGNAL( released() ));
 	connect( elementListBox->prevButton, SIGNAL( released()  ), 
@@ -128,7 +126,7 @@ void SegmentList::dealWithButtons()
 		 this, SLOT( goToNextPage() ), Qt::DirectConnection);
 }
 
-void SegmentList::goToNextPage()
+void ValidList::goToNextPage()
 {
 	currentPageNum++;
 	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
@@ -139,7 +137,7 @@ void SegmentList::goToNextPage()
 	populateSegmentElementsListWidget( false, offset );
 }
 
-void SegmentList::goToPrevPage()
+void ValidList::goToPrevPage()
 {
 	currentPageNum--;
 	if( currentPageNum < 0 ){
@@ -149,7 +147,7 @@ void SegmentList::goToPrevPage()
 	populateSegmentElementsListWidget( false, offset );
 }
 
-void SegmentList::showContextMenu(const QPoint & menuPoint)
+void ValidList::showContextMenu(const QPoint & menuPoint)
 {
 	QTreeWidgetItem * segmentItem = dataElementsWidget->itemAt(menuPoint);
 	if (!segmentItem) {	// right click occured in "white space" of widget
@@ -165,7 +163,7 @@ void SegmentList::showContextMenu(const QPoint & menuPoint)
 	showSegmentContextMenu();
 }
 
-void SegmentList::showSegmentContextMenu()
+void ValidList::showSegmentContextMenu()
 {
 	connect(makeSegmentContextMenu(dataElementsWidget), SIGNAL(triggered(QAction *)), 
 		this, SLOT(segmentRightClickMenu(QAction *)));
@@ -173,7 +171,7 @@ void SegmentList::showSegmentContextMenu()
 	contextMenu->exec(QCursor::pos());
 }
 
-void SegmentList::segmentRightClickMenu(QAction * act)
+void ValidList::segmentRightClickMenu(QAction * act)
 {
 	if( !isSegmentSelected() ){
 		return;
@@ -184,7 +182,7 @@ void SegmentList::segmentRightClickMenu(QAction * act)
 	} 
 }
 
-QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
+QMenu * ValidList::makeSegmentContextMenu(QTreeWidget * parent)
 {
 	propAct = new QAction(tr("&Properties"), parent);
 	contextMenu = new QMenu(parent);
@@ -193,7 +191,7 @@ QMenu * SegmentList::makeSegmentContextMenu(QTreeWidget * parent)
 	return contextMenu;
 }
 
-void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
+void ValidList::leftClickOnSegment(QTreeWidgetItem * current, const int column)
 {
 	if (QApplication::keyboardModifiers() & Qt::AltModifier ||
 	    inspectorProperties->isVisible() ) {
@@ -232,7 +230,7 @@ void SegmentList::leftClickOnSegment(QTreeWidgetItem * current, const int column
 	}
 }
 
-void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
+void ValidList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 {
 	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
 
@@ -242,7 +240,7 @@ void SegmentList::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 						 .arg(sdw.getID()) );
 }
 
-void SegmentList::setupDataElementList()
+void ValidList::setupDataElementList()
 {
 	dataElementsWidget = new QTreeWidget(this);
 	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -256,48 +254,48 @@ void SegmentList::setupDataElementList()
 	dataElementsWidget->setFocusPolicy(Qt::ClickFocus);
 }
 
-void SegmentList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
+void ValidList::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 	row->setCheckState(ENABLED_COL, checkState);
 }
 
-void SegmentList::makeSegmentationActive(const OmId segmentationID)
+void ValidList::makeSegmentationActive(const OmId segmentationID)
 {
 	makeSegmentationActive( SegmentationDataWrapper(segmentationID) );
 }
 
-void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw)
+void ValidList::makeSegmentationActive(SegmentationDataWrapper sdw)
 {
 	currentSDW = sdw;
 	haveValidSDW = true;
 	populateSegmentElementsListWidget();
 }
 
-void SegmentList::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
+void ValidList::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
 	makeSegmentationActive( SegmentationDataWrapper(segmentationID), segmentJustSelectedID);
 }
 
-void SegmentList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
+void ValidList::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
 {
 	currentSDW = sdw;
 	haveValidSDW = true;
 	populateSegmentElementsListWidget(true, segmentJustSelectedID);
 }
 
-void SegmentList::rebuildSegmentList(const OmId segmentationID)
+void ValidList::rebuildSegmentList(const OmId segmentationID)
 {
 	makeSegmentationActive(segmentationID);
 }
 
-void SegmentList::rebuildSegmentList(const OmId segmentationID,
+void ValidList::rebuildSegmentList(const OmId segmentationID,
 					   const OmId segmentJustAddedID)
 {
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
-void SegmentList::keyPressEvent(QKeyEvent * event)
+void ValidList::keyPressEvent(QKeyEvent * event)
 {
 	printf("hi\n");
 
@@ -311,15 +309,15 @@ void SegmentList::keyPressEvent(QKeyEvent * event)
 	}
 }
 
-void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+void ValidList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
 	if (this == event->getSender()) {
-		debug("guievent", "in SegmentList:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("guievent", "in ValidList:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 		return;
 	} else {
-		debug("guievent", "in SegmentList:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		debug("guievent", "in ValidList:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
@@ -335,7 +333,7 @@ void SegmentList::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 	makeSegmentationActive(segmentationID, segmentJustSelectedID);
 }
 
-bool SegmentList::isSegmentSelected()
+bool ValidList::isSegmentSelected()
 {
 	if( NULL == dataElementsWidget->currentItem() ) {
 		return false;
@@ -343,7 +341,7 @@ bool SegmentList::isSegmentSelected()
 	return true;
 }
 
-SegmentDataWrapper SegmentList::getCurrentlySelectedSegment()
+SegmentDataWrapper ValidList::getCurrentlySelectedSegment()
 {
 	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
 	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);

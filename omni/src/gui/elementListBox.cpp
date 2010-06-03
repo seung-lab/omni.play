@@ -22,16 +22,14 @@ void ElementListBox::clear()
 	groupBox->setTitle( "" );
 }
 
-void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
+void ElementListBox::addTab(QString boxTitle, QWidget * tab, QString tabTitle)
 {
 	if( NULL == dataElementsTabs ){
 		setupBox();
 	}
 	
-	dataElementsTabs->clear();
-	dataElementsTabs->addTab( tab, tabTitle );	
-
-	groupBox->setTitle( boxTitle );
+	groupBox->setTitle(boxTitle);
+	dataElementsTabs->addTab(tab, tabTitle);	
 }
 
 void ElementListBox::setupBox()
