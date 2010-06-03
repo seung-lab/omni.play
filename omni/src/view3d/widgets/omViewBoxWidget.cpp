@@ -150,7 +150,9 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 
 void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawables)
 {
-
+	if(!OmProject::IsChannelValid(1)) {
+		return;
+	}
 	OmChannel& channel = OmProject::GetChannel( 1);
 	Vector3f resolution = channel.GetDataResolution();
 	Vector3f tileLength = resolution*128.0;
