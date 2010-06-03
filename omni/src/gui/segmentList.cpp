@@ -75,8 +75,10 @@ void SegmentList::populateSegmentElementsListWidget(const bool doScrollToSelecte
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
 	foreach(OmSegID segID, (*segs)) {
-
 		SegmentDataWrapper seg(  sdw.getID(), segID );
+		if(seg.getSegment()->GetImmutable()) {
+			continue;
+		}
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
 		row->setText(NAME_COL, seg.getName());
