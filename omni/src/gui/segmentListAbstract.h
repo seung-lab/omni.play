@@ -42,6 +42,7 @@ protected slots:
 protected:
 	virtual QString getTabTitle() = 0;
 	virtual bool shouldSegmentBeAdded( SegmentDataWrapper & seg ) = 0;
+	QString getGroupBoxTitle();
 
 	static const int ENABLED_COL = 0;
 	static const int NAME_COL = 1;
@@ -72,7 +73,7 @@ protected:
 	QMenu * contextMenu;
 	QAction * propAct;
 	int getNumSegmentsPerPage();
-	void dealWithButtons();
+	void setupPageButtons();
 	bool isSegmentSelected();
 
 	int currentPageNum;

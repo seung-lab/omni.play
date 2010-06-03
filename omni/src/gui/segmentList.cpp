@@ -9,7 +9,7 @@ SegmentList::SegmentList( QWidget * parent,
 
 QString SegmentList::getTabTitle()
 {
-	return QString("All Segments");
+	return QString("All");
 }
 
 bool SegmentList::shouldSegmentBeAdded( SegmentDataWrapper & seg )

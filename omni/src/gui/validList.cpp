@@ -9,7 +9,7 @@ ValidList::ValidList( QWidget * parent,
 
 QString ValidList::getTabTitle()
 {
-	return QString("Valid Segments");
+	return QString("Valid");
 }
 
 bool ValidList::shouldSegmentBeAdded( SegmentDataWrapper & seg )
