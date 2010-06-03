@@ -42,7 +42,7 @@ void OmSegment::SetInitialColor()
 	do {
 		color.randomize();
 	} while ((color.x * 255 > 255 && color.y * 255 > 255 && color.z * 255 > 255) &&
-		 (color.x * 255 < 55 && color.y * 255 < 55 && color.z * 255 < 55));
+		 (color.x * 255 < 85 && color.y * 255 < 85 && color.z * 255 < 85));
 
 	color.x /= 2;
 	color.y /= 2;
