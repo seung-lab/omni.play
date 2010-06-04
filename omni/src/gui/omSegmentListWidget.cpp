@@ -24,11 +24,6 @@ OmSegmentListWidget::OmSegmentListWidget(QWidget * parent, InspectorProperties *
 	setFocusPolicy(Qt::ClickFocus);
 }
 
-OmSegmentListWidget::~OmSegmentListWidget()
-{
-
-}
-
 void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							    const OmId segmentJustSelectedID,
 							    SegmentationDataWrapper segmentationDW,

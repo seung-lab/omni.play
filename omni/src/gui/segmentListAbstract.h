@@ -41,7 +41,7 @@ protected slots:
 protected:
 	virtual QString getTabTitle() = 0;
 	virtual bool shouldSegmentBeAdded( OmSegment * seg ) = 0;
-	QString getGroupBoxTitle();
+	virtual int getPreferredTabIndex() = 0;
 
         QVBoxLayout * layout;
         QPushButton * prevButton;

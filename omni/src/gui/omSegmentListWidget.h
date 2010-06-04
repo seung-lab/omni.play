@@ -15,7 +15,6 @@ class OmSegmentListWidget : public QTreeWidget {
 
  public:
 	OmSegmentListWidget(QWidget* parent, InspectorProperties *);
-	~OmSegmentListWidget();
 
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 					       const OmId segmentJustSelectedID,
@@ -41,7 +40,6 @@ class OmSegmentListWidget : public QTreeWidget {
 	static const int ID_COL = 2;
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
-
 };
 
 #endif

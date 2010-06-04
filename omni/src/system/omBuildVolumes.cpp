@@ -22,7 +22,7 @@ void OmBuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 	mFileNamesAndPaths = fileNamesAndPaths;
 }
 
-bool OmBuildVolumes::checkSettings(QString type )
+bool OmBuildVolumes::checkSettings()
 {
 	if( !are_file_names_valid()){
 		printf("\tError: file list contains invalid files\n");

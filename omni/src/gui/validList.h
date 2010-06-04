@@ -13,6 +13,7 @@ class ValidList : public SegmentListAbstract
  private:
 	QString getTabTitle();
 	bool shouldSegmentBeAdded( OmSegment * );
+	int getPreferredTabIndex(){ return 1; }
 };
 
 #endif

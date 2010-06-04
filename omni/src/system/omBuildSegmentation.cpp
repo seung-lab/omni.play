@@ -62,7 +62,7 @@ void OmBuildSegmentation::do_build_seg_image()
 {
 	QString type = "segmentation data";
 
-	if(!checkSettings(type) ){
+	if( !checkSettings() ){
 		return;
 	}
 
@@ -76,7 +76,7 @@ void OmBuildSegmentation::do_build_seg_image()
 
 void OmBuildSegmentation::do_build_seg_mesh()
 {
-	QString type = "segmentation mesh";
+	const QString type = "segmentation mesh";
 	startTiming(type);
 
 	mSeg->BuildMeshData();
@@ -86,7 +86,7 @@ void OmBuildSegmentation::do_build_seg_mesh()
 
 void OmBuildSegmentation::loadDendrogram()
 {
-	QString type = "dendrogram";
+	const QString type = "dendrogram";
 	if(!canDoLoadDendrogram()){
 		printf("no dendrogram found\n");
 		printf("************\n");

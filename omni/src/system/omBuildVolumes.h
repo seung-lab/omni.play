@@ -13,7 +13,7 @@ class OmBuildVolumes
 	void addFileNameAndPath( QString fnp );
 
  protected:
-	bool checkSettings(QString type);
+	bool checkSettings();
 	void startTiming(QString type);
 	void stopTiming(QString type);
 

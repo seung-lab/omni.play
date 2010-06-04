@@ -13,6 +13,7 @@ public:
  private:
 	QString getTabTitle();
 	bool shouldSegmentBeAdded( OmSegment * );
+	int getPreferredTabIndex(){ return 0; }
 };
 
 #endif

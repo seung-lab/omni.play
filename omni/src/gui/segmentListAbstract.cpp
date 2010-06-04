@@ -82,8 +82,7 @@ void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollT
 
 	delete segs;
 
-	elementListBox->addTab(0, getGroupBoxTitle(),
-			       this, getTabTitle() );
+	elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
 }
 
 void SegmentListAbstract::setupPageButtons()
@@ -185,10 +184,4 @@ void SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent 
 	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
 
 	makeSegmentationActive(segmentationID, segmentJustSelectedID);
-}
-
-
-QString SegmentListAbstract::getGroupBoxTitle()
-{
-	return QString("Segmentation %1: Segments").arg(currentSDW.getID());
 }

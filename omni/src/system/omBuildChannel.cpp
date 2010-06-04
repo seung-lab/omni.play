@@ -26,8 +26,8 @@ void OmBuildChannel::build_channel()
 
 void OmBuildChannel::run()
 {
-	QString type = "channel";
-	if(!checkSettings(type) ){
+	const QString type = "channel";
+	if( !checkSettings() ){
 		return;
 	}
 
