@@ -76,7 +76,6 @@ static const OmId NULL_SEGMENT_ID = 0;
 typedef quint32 OmSegID;
 typedef boost::unordered_set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
-typedef boost::shared_ptr<OmSegIDsList> OmSegIDsListPtr;
 
 static const OmSegID NULL_SEGMENT_DATA(0);
 

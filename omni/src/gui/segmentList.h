@@ -12,7 +12,7 @@ public:
 
  private:
 	QString getTabTitle();
-	bool shouldSegmentBeAdded( SegmentDataWrapper & seg );
+	bool shouldSegmentBeAdded( OmSegment * );
 };
 
 #endif

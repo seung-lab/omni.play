@@ -1,33 +1,27 @@
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
-#include "gui/guiUtils.h"
-#include "gui/omTreeWidget.h"
+#include "gui/omSegmentListWidget.h"
 #include "gui/segmentListAbstract.h"
-#include "inspectors/inspectorProperties.h"
-#include "inspectors/segObjectInspector.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "segment/omSegmentSelector.h"
 #include "system/events/omSegmentEvent.h"
 #include "volume/omSegmentation.h"
 
-Q_DECLARE_METATYPE(SegmentDataWrapper);
-
 SegmentListAbstract::SegmentListAbstract( QWidget * parent, 
-					  InspectorProperties * in_inspectorProperties,
-					  ElementListBox * in_elementListBox ) 
-	: QWidget( parent )
-	, dataElementsWidget( NULL )
-	, inspectorProperties( in_inspectorProperties )
-	, elementListBox( in_elementListBox )
-	, haveValidSDW( false )
-	, currentPageNum( 0 )
+					  InspectorProperties * ip,
+					  ElementListBox * eb ) 
+	: QWidget(parent)
+	, segmentListWidget(NULL)
+	, elementListBox(eb)
+	, haveValidSDW(false)
+	, currentPageNum(0)
 {
         layout = new QVBoxLayout(this);
 
-	setupDataElementList();
-
+	segmentListWidget = new OmSegmentListWidget(this, ip);
+	layout->addWidget(segmentListWidget);
+	
 	setupPageButtons();
 }
 
@@ -42,13 +36,15 @@ quint32 SegmentListAbstract::getMaxSegmentValue()
 	return currentSDW.getMaxSegmentValue();
 }
 
-OmSegIDsListPtr SegmentListAbstract::getSegmentsToDisplay( const OmId firstSegmentID )
+OmSegPtrList * SegmentListAbstract::getSegmentsToDisplay( const OmId firstSegmentID )
 {
+	assert( haveValidSDW );
+
 	int offset = firstSegmentID - (firstSegmentID % getNumSegmentsPerPage() );
 	return doGetSegmentsToDisplay( offset );
 }
 
-OmSegIDsListPtr SegmentListAbstract::doGetSegmentsToDisplay( const unsigned int in_offset )
+OmSegPtrList * SegmentListAbstract::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	assert( haveValidSDW );
 
@@ -57,61 +53,37 @@ OmSegIDsListPtr SegmentListAbstract::doGetSegmentsToDisplay( const unsigned int 
 		offset = in_offset;
 	}
 
-	return currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
+	OmSegPtrList * segIDsAll = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
+
+	OmSegPtrList * ret = new OmSegPtrList();
+
+	OmSegPtrList::const_iterator iter;
+	for( iter = segIDsAll->begin(); iter != segIDsAll->end(); ++iter){
+		if( !shouldSegmentBeAdded( *iter ) ){
+			continue;
+		}
+		ret->push_back( *iter );
+	}
+
+	delete segIDsAll;
+
+	return ret;
 }
 
 void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							    const OmId segmentJustSelectedID)
 {
 	assert( haveValidSDW );
+	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID );
+	segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment, 
+							     segmentJustSelectedID, 
+							     currentSDW,
+							     segs );
 
-	SegmentationDataWrapper sdw = currentSDW;
-	OmSegIDsListPtr segs = getSegmentsToDisplay( segmentJustSelectedID );
-
-	dataElementsWidget->setUpdatesEnabled( false );
-	dataElementsWidget->clear();
-	dataElementsWidget->selectionModel()->blockSignals(true);
-	dataElementsWidget->selectionModel()->clearSelection();
-
-	QTreeWidgetItem *rowToJumpTo = NULL;
-
-	foreach(OmSegID segID, (*segs)) {
-		SegmentDataWrapper seg(  sdw.getID(), segID );
-
-		if( !shouldSegmentBeAdded( seg ) ){
-			continue;
-		}
-
-		QTreeWidgetItem *row = new QTreeWidgetItem(dataElementsWidget);
-		row->setText(NAME_COL, seg.getName());
-		row->setText(ID_COL, seg.getIDstr());
-		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(seg));
-		//		row->setText(NOTE_COL, seg.getNote());
-		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg.isEnabled()));
-		row->setSelected(seg.isSelected());
-		if (doScrollToSelectedSegment && seg.getID() == segmentJustSelectedID) {
-			rowToJumpTo = row;
-		}
-	}
-
-	dataElementsWidget->selectionModel()->blockSignals(false);
-	//////////////////////////////
-	dataElementsWidget->disconnect(SIGNAL(leftClicked()));
-	connect(dataElementsWidget, SIGNAL(leftClicked()),
-		this, SLOT(segmentLeftClick()));
-	///////////////////////////////
-	GuiUtils::autoResizeColumnWidths(dataElementsWidget, 3);
-
-	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
-		dataElementsWidget->scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
-	}
-
-	dataElementsWidget->setUpdatesEnabled( true);
+	delete segs;
 
 	elementListBox->addTab(0, getGroupBoxTitle(),
 			       this, getTabTitle() );
-	
-	setFocusPolicy(Qt::StrongFocus);
 }
 
 void SegmentListAbstract::setupPageButtons()
@@ -119,20 +91,20 @@ void SegmentListAbstract::setupPageButtons()
         prevButton = new QPushButton("<");
         nextButton = new QPushButton(">");
 
-        QGroupBox * buttonBox = new QGroupBox("");
-        buttonBox->setFlat(true);
-        layout->addWidget( buttonBox );
-        QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
-
-        prevButton->disconnect(SIGNAL( released() ));
         connect( prevButton, SIGNAL( released()  ),
                  this, SLOT( goToPrevPage() ), Qt::DirectConnection);
 
-        nextButton->disconnect(SIGNAL( released() ));
         connect( nextButton, SIGNAL( released()  ),
                  this, SLOT( goToNextPage() ), Qt::DirectConnection);
+
+        QGroupBox * buttonBox = new QGroupBox("");
+        buttonBox->setFlat(true);
+        QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
+
         buttons->addWidget(prevButton);
         buttons->addWidget(nextButton);
+
+        layout->addWidget( buttonBox );
 }
 
 void SegmentListAbstract::goToNextPage()
@@ -154,86 +126,6 @@ void SegmentListAbstract::goToPrevPage()
 	}
 	int offset = currentPageNum * getNumSegmentsPerPage();
 	populateSegmentElementsListWidget( false, offset );
-}
-
-void SegmentListAbstract::segmentRightClick()
-{
-	if( !isSegmentSelected() ){
-		return;
-	}
-	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
-	
-	addToSplitterDataElementSegment( sdw ); 
-}
-
-void SegmentListAbstract::segmentLeftClick()
-{
-	QTreeWidgetItem * current = dataElementsWidget->currentItem();
-	int column = dataElementsWidget->currentColumn();
-
-	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-	
-	OmSegmentSelector sel(sdw.getSegmentationID(), this, "segmentList" );
-
-	if (0 == column) {
-		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
-		sdw.setEnabled(isChecked);
-
-		sel.selectJustThisSegment( sdw.getID(), isChecked );
-		sel.sendEvent();
-
-		if( isChecked ) {
-			dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Select );
-		} else {
-			dataElementsWidget->setCurrentItem( current, 0, QItemSelectionModel::Deselect );
-		}
-	} else {
-		sel.selectNoSegments();
-
-		foreach(QTreeWidgetItem * item, dataElementsWidget->selectedItems()) {
-			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
-			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-			sel.augmentSelectedSet( item_sdw.getID(), true );
-		}
-		sel.sendEvent();
-	}
-}
-
-void SegmentListAbstract::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
-{
-	segObjectInspectorWidget = new SegObjectInspector(sdw, this);
-
-	inspectorProperties->setOrReplaceWidget( segObjectInspectorWidget, 
-						 QString("Segmentation%1: Segment %2")
-						 .arg(sdw.getSegmentationID())
-						 .arg(sdw.getID()) );
-}
-
-void SegmentListAbstract::setupDataElementList()
-{
-	dataElementsWidget = new OmTreeWidget(this);
-	dataElementsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	dataElementsWidget->setAlternatingRowColors(true);
-	dataElementsWidget->setColumnCount(3);
-
-	connect(dataElementsWidget, SIGNAL(rightClicked()),
-		this, SLOT(segmentRightClick()));
-
-	QStringList headers;
-	//	headers << tr("enabled") << tr("Name") << tr("ID") << tr("Notes");
-	headers << tr("enabled") << tr("Name") << tr("ID");
-	dataElementsWidget->setHeaderLabels(headers);
-
-	dataElementsWidget->setFocusPolicy(Qt::ClickFocus);
-
-	layout->addWidget(dataElementsWidget);
-}
-
-void SegmentListAbstract::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
-{
-	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-	row->setCheckState(ENABLED_COL, checkState);
 }
 
 void SegmentListAbstract::makeSegmentationActive(const OmId segmentationID)
@@ -295,21 +187,6 @@ void SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent 
 	makeSegmentationActive(segmentationID, segmentJustSelectedID);
 }
 
-bool SegmentListAbstract::isSegmentSelected()
-{
-	if( NULL == dataElementsWidget->currentItem() ) {
-		return false;
-	}
-	return true;
-}
-
-SegmentDataWrapper SegmentListAbstract::getCurrentlySelectedSegment()
-{
-	QTreeWidgetItem * segmentItem = dataElementsWidget->currentItem();
-	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-	return sdw;
-}
 
 QString SegmentListAbstract::getGroupBoxTitle()
 {

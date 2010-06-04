@@ -246,7 +246,7 @@ void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
         return mImpl->UpdateSegmentSelection(idsToSelect);
 }
 
-OmSegIDsListPtr OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+OmSegPtrList * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->getRootLevelSegIDs(offset, numToGet);

@@ -5,11 +5,12 @@
 #include <QWidget> 
 
 #include "utility/dataWrappers.h"
+#include "segment/omSegmentPointers.h"
 
 class ElementListBox;
 class InspectorProperties;
 class OmSegmentEvent;
-class OmTreeWidget;
+class OmSegmentListWidget;
 class SegObjectInspector;
 
 class SegmentListAbstract : public QWidget
@@ -35,47 +36,31 @@ public slots:
 	void goToPrevPage();
 
 protected slots: 
-	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
-	void segmentRightClick();
-	void segmentLeftClick();
+
 
 protected:
 	virtual QString getTabTitle() = 0;
-	virtual bool shouldSegmentBeAdded( SegmentDataWrapper & seg ) = 0;
+	virtual bool shouldSegmentBeAdded( OmSegment * seg ) = 0;
 	QString getGroupBoxTitle();
-
-	static const int ENABLED_COL = 0;
-	static const int NAME_COL = 1;
-	static const int ID_COL = 2;
-	static const int NOTE_COL = 3;
-	static const int USER_DATA_COL = 4;
 
         QVBoxLayout * layout;
         QPushButton * prevButton;
         QPushButton * nextButton;
 
-	OmTreeWidget * dataElementsWidget;
- 	InspectorProperties * inspectorProperties;
+	OmSegmentListWidget * segmentListWidget;
 	ElementListBox * elementListBox;
-	SegObjectInspector * segObjectInspectorWidget;
 
 	SegmentationDataWrapper currentSDW;
 	bool haveValidSDW;
 
-	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
+	OmSegPtrList * getSegmentsToDisplay( const OmId firstSegmentID );
+	OmSegPtrList * doGetSegmentsToDisplay( const unsigned int offset );
 
-	OmSegIDsListPtr getSegmentsToDisplay( const OmId firstSegmentID );
-	OmSegIDsListPtr doGetSegmentsToDisplay( const unsigned int offset );
-
-	SegmentDataWrapper getCurrentlySelectedSegment();
-
-	void setupDataElementList();
 	QMenu * contextMenu;
 	QAction * propAct;
 	int getNumSegmentsPerPage();
 	void setupPageButtons();
-	bool isSegmentSelected();
-
+	
 	int currentPageNum;
 	quint32 getMaxSegmentValue();
 };

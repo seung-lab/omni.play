@@ -238,6 +238,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
            src/gui/omTreeWidget.h \
+           src/gui/omSegmentListWidget.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -287,6 +288,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/validList.cpp \
            src/gui/viewGroup.cpp \
            src/gui/omTreeWidget.cpp \
+           src/gui/omSegmentListWidget.cpp \
            src/mesh/meshingChunkThread.cpp \
            src/mesh/meshingChunkThreadManager.cpp \
            src/mesh/meshingManager.cpp \

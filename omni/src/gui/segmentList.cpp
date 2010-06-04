@@ -12,9 +12,9 @@ QString SegmentList::getTabTitle()
 	return QString("All");
 }
 
-bool SegmentList::shouldSegmentBeAdded( SegmentDataWrapper & seg )
+bool SegmentList::shouldSegmentBeAdded( OmSegment * seg )
 {
-	if(seg.getSegment()->GetImmutable()) {
+	if( seg->GetImmutable() ) {
 		return false;
 	}
 

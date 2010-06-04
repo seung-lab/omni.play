@@ -75,7 +75,7 @@ public:
 
 	quint32 getMaxValue();
 
-	OmSegIDsListPtr getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
 private:
 	QMutex mMutex;

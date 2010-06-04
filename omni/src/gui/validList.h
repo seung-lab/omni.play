@@ -12,7 +12,7 @@ class ValidList : public SegmentListAbstract
 
  private:
 	QString getTabTitle();
-	bool shouldSegmentBeAdded( SegmentDataWrapper & seg );
+	bool shouldSegmentBeAdded( OmSegment * );
 };
 
 #endif

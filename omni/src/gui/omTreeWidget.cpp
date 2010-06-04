@@ -1,5 +1,4 @@
 #include "omTreeWidget.h"
-#include "common/omCommon.h"
 
 OmTreeWidget::OmTreeWidget(QWidget * parent) : QTreeWidget(parent)
 {

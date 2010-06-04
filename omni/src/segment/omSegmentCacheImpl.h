@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/DynamicTreeContainer.h"
+#include "segment/omSegmentPointers.h"
 
 #include <QHash>
 #include <QSet>
@@ -12,11 +13,11 @@
 //  struct constructor is compared to simple int POD... (purcaro)
 BOOST_STRONG_TYPEDEF(quint32, PageNum )
 
-class OmSegment;
-class OmSegmentEdge;
-class OmSegmentCache;
-class OmSegmentation;
 class OmMipChunkCoord;
+class OmSegment;
+class OmSegmentCache;
+class OmSegmentEdge;
+class OmSegmentation;
 
 class OmSegmentCacheImpl {
  public:
@@ -90,7 +91,7 @@ class OmSegmentCacheImpl {
 
 	quint32 getMaxValue(){ return mMaxValue; }
 
-	OmSegIDsListPtr getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
  private:
 	bool mAllSelected;

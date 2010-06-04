@@ -12,9 +12,9 @@ QString ValidList::getTabTitle()
 	return QString("Valid");
 }
 
-bool ValidList::shouldSegmentBeAdded( SegmentDataWrapper & seg )
+bool ValidList::shouldSegmentBeAdded( OmSegment * seg )
 {
-	if(!seg.getSegment()->GetImmutable()) {
+	if( !seg->GetImmutable() ) {
 		return false;
 	}
 
