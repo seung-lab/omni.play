@@ -28,7 +28,7 @@ public:
 	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
 
 	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
-	void dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
+	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
 public slots:
 	void rebuildSegmentList(const OmId segmentationID);

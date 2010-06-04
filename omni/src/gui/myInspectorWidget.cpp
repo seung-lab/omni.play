@@ -105,7 +105,8 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	elementListBox->reset(QString("Channel %1").arg(cdw.getID()));
+	elementListBox->reset();
+	elementListBox->setTitle(QString("Channel %1").arg(cdw.getID()));
 	elementListBox->addTab(0, setupFilterList(), "Filters" );
 				      
 	filterListWidget->clear();
@@ -187,10 +188,7 @@ void MyInspectorWidget::addSegmentationToVolume()
 	populateDataSrcListWidget();
 
 	SegmentationDataWrapper sdw( added_segmentation.GetId() );
-
-	elementListBox->reset(getSegmentationGroupBoxTitle(sdw));
-	segmentList->makeSegmentationActive( sdw );
-	validList->makeSegmentationActive( sdw );
+	updateSegmentListBox( sdw );
 
 	addSegmentationToSplitter( sdw);
 }
@@ -259,12 +257,6 @@ void MyInspectorWidget::nameEditChanged()
 	   else if(FILTER == item_type)
 	   proxyModel->setData(view->currentIndex(), QVariant(filObjectInspectorWidget->nameEdit->text()), Qt::EditRole);
 	 */
-}
-
-void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
-{
-	segmentList->dealWithSegmentObjectModificationEvent(event);
-	validList->dealWithSegmentObjectModificationEvent(event);
 }
 
 void MyInspectorWidget::refreshWidgetData()
@@ -410,8 +402,7 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
 		populateFilterListWidget(dwc.getChannelDataWrapper());
 		break;
 	case SEGMENTATION:
-		segmentList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
-		validList->makeSegmentationActive(dwc.getSegmentationDataWrapper());
+		updateSegmentListBox( dwc.getSegmentationDataWrapper() );
 		break;
 	case VOLUME:
 	case SEGMENT:
@@ -448,8 +439,7 @@ SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
 void MyInspectorWidget::selectSegmentationView(QAction * act)
 {
 	SegmentationDataWrapper sdw = getCurrentlySelectedSegmentation();
-	segmentList->makeSegmentationActive(sdw);
-	validList->makeSegmentationActive(sdw);
+	updateSegmentListBox( sdw );
 
 	if( propAct == act ){
 		addSegmentationToSplitter(sdw);
@@ -482,7 +472,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
         if (ret == QMessageBox::Yes){
 
-		elementListBox->reset("");
+		elementListBox->reset();
 		
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
 		foreach(OmId channelID, OmProject::GetValidChannelIds()) {
@@ -514,9 +504,33 @@ void MyInspectorWidget::deleteChannel(ChannelDataWrapper cdw)
 
         if (ret == QMessageBox::Yes){
             inspectorProperties->closeDialog();
-            elementListBox->reset("");
+            elementListBox->reset();
             mParentWindow->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());
             OmProject::RemoveChannel(cdw.getID());
             populateDataSrcListWidget();
         }
 }
+
+void MyInspectorWidget::updateSegmentListBox( SegmentationDataWrapper sdw )
+{
+	elementListBox->reset();
+	elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
+	segmentList->makeSegmentationActive( sdw );
+	validList->makeSegmentationActive( sdw );
+
+}
+
+void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
+{
+	elementListBox->reset();
+	elementListBox->setTitle("");
+
+	const OmId segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
+	const OmId segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
+	
+	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
+		SegmentationDataWrapper sdw(segmentationID1);
+		elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
+	}
+}
+

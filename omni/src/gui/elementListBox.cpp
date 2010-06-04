@@ -11,10 +11,14 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * parentVLayout )
 	overallContainer->addWidget( dataElementsTabs );
 }
 
-void ElementListBox::reset(const QString & boxTitle)
+void ElementListBox::reset()
 {
-	setTitle(boxTitle);
 	dataElementsTabs->clear();
+}
+
+void ElementListBox::setTitle(const QString & boxTitle)
+{
+	QGroupBox::setTitle(boxTitle);
 }
 
 void ElementListBox::addTab(int index, QWidget * tab, QString tabTitle)

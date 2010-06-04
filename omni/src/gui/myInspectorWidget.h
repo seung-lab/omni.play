@@ -126,7 +126,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	QVBoxLayout * verticalLayout;
 	QString getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw);
-	
+	void updateSegmentListBox( SegmentationDataWrapper sdw );
 };
 
 #endif

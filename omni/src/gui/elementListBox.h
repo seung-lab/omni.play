@@ -11,7 +11,8 @@ class ElementListBox : public QGroupBox
 public:
 	ElementListBox( QWidget *, QVBoxLayout * );
 	void addTab(int index, QWidget * tab, QString tabTitle);
-	void reset(const QString & boxTitle);
+	void reset();
+	void setTitle(const QString & boxTitle);
 
 private:
 	QTabWidget * dataElementsTabs;

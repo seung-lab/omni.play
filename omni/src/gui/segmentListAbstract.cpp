@@ -162,26 +162,25 @@ void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID,
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
-void SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+int SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// quick hack; assumes userData is pointer to sender (and we're the only
 	//  ones to set the sender...)
 	if (this == event->getSender()) {
-		debug("guievent", "in SegmentList:%s: i sent it! (%s)\n", __FUNCTION__, event->getComment().c_str());
-		return;
-	} else {
-		debug("guievent", "in SegmentList:%s: i did NOT send it! (%s)\n", __FUNCTION__, event->getComment().c_str());
+		return 0;
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
-	if (!OmProject::IsSegmentationValid(segmentationID)) {
+
+	if (OmProject::IsSegmentationValid(segmentationID)) {
+		const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
+		makeSegmentationActive(segmentationID, segmentJustSelectedID);
+		return segmentationID;
+	} else {
 		if( haveValidSDW ){
 			populateSegmentElementsListWidget();
+			return currentSDW.getID();
 		}
-		return;
+		return 0;
 	}
-
-	const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
-
-	makeSegmentationActive(segmentationID, segmentJustSelectedID);
 }
