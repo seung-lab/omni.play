@@ -11,6 +11,9 @@
 #include "volume/omVolume.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "system/omStateManager.h"
+#include "system/omCacheManager.h"
+#include "system/events/omViewEvent.h"
+#include "system/omEventManager.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -223,6 +226,8 @@ void OmSegmentContextMenu::randomizeColor()
         OmSegment * r_segment = r_segmentation.GetSegment(r_segmentation.GetSegment(mSegmentId)->getRootSegID());
 
 	r_segment->reRandomizeColor();
+	OmCacheManager::Freshen(true);
+	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
 void OmSegmentContextMenu::addGroup()
