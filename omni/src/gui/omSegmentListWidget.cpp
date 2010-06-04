@@ -12,16 +12,6 @@ OmSegmentListWidget::OmSegmentListWidget(QWidget * parent, InspectorProperties *
 	: QTreeWidget(parent)
 	, inspectorProperties(ip)
 {
-	setupDataElementList();
-}
-
-OmSegmentListWidget::~OmSegmentListWidget()
-{
-
-}
-
-void OmSegmentListWidget::setupDataElementList()
-{
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	setAlternatingRowColors(true);
 	setColumnCount(3);
@@ -32,6 +22,11 @@ void OmSegmentListWidget::setupDataElementList()
 	setHeaderLabels(headers);
 
 	setFocusPolicy(Qt::ClickFocus);
+}
+
+OmSegmentListWidget::~OmSegmentListWidget()
+{
+
 }
 
 void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
@@ -82,25 +77,25 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 void OmSegmentListWidget::segmentLeftClick()
 {
 	QTreeWidgetItem * current = currentItem();
-	int column = currentColumn();
 
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 	
 	OmSegmentSelector sel(sdw.getSegmentationID(), this, "segmentList" );
 
+	const int column = currentColumn();
 	if (0 == column) {
 		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
 		sdw.setEnabled(isChecked);
 
 		sel.selectJustThisSegment( sdw.getID(), isChecked );
-		sel.sendEvent();
 
 		if( isChecked ) {
 			setCurrentItem( current, 0, QItemSelectionModel::Select );
 		} else {
 			setCurrentItem( current, 0, QItemSelectionModel::Deselect );
 		}
+
 	} else {
 		sel.selectNoSegments();
 
@@ -109,8 +104,9 @@ void OmSegmentListWidget::segmentLeftClick()
 			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
 			sel.augmentSelectedSet( item_sdw.getID(), true );
 		}
-		sel.sendEvent();
 	}
+
+	sel.sendEvent();
 }
 
 void OmSegmentListWidget::mousePressEvent(QMouseEvent* event)
@@ -131,9 +127,7 @@ void OmSegmentListWidget::segmentRightClick()
 		return;
 	}
 
-	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
-
-	addToSplitterDataElementSegment( sdw ); 
+	addToSplitterDataElementSegment( getCurrentlySelectedSegment() );
 }
 
 bool OmSegmentListWidget::isSegmentSelected()
@@ -148,8 +142,7 @@ SegmentDataWrapper OmSegmentListWidget::getCurrentlySelectedSegment()
 {
 	QTreeWidgetItem * segmentItem = currentItem();
 	QVariant result = segmentItem->data(USER_DATA_COL, Qt::UserRole);
-	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-	return sdw;
+	return result.value < SegmentDataWrapper > ();
 }
 
 void OmSegmentListWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState)
@@ -160,6 +153,7 @@ void OmSegmentListWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::Ch
 
 void OmSegmentListWidget::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 {
+	assert(inspectorProperties);
 	inspectorProperties->setOrReplaceWidget( new SegObjectInspector(sdw, this), 
 						 QString("Segmentation%1: Segment %2")
 						 .arg(sdw.getSegmentationID())

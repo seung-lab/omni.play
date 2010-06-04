@@ -32,7 +32,6 @@ class OmSegmentListWidget : public QTreeWidget {
 	bool isSegmentSelected();
 	void segmentRightClick();
 	void segmentLeftClick();
-	void setupDataElementList();
 
 	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
