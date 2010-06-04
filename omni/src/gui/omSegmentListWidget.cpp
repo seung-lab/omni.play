@@ -168,10 +168,10 @@ void OmSegmentListWidget::keyPressEvent(QKeyEvent* event)
 
 	switch (event->key()) {
 	case Qt::Key_Up:
-		//		emit keyboardUpArrowPressed();
+		// TODO: move up segment list
 		break;
 	case Qt::Key_Down:
-		//		emit keyboardDownArrowPressed();
+		// TODO: move down segment list
 		break;
 	}
 }
