@@ -164,8 +164,7 @@ void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID,
 
 int SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
-	// quick hack; assumes userData is pointer to sender (and we're the only
-	//  ones to set the sender...)
+	// if we sent this signal, just ignore...
 	if (this == event->getSender()) {
 		return 0;
 	}
