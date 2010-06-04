@@ -36,7 +36,7 @@ void OmSegmentListWidget::setupDataElementList()
 
 void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							    const OmId segmentJustSelectedID,
-							    SegmentationDataWrapper sdw,
+							    SegmentationDataWrapper segmentationDW,
 							    OmSegPtrList * segs )
 {
 	setUpdatesEnabled( false );
@@ -46,18 +46,22 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 	
+	OmSegment * seg;
 	OmSegPtrList::iterator iter;
 	for( iter = segs->begin(); iter != segs->end(); ++iter){
-		SegmentDataWrapper seg(  sdw.getID(), (*iter)->getValue()  );
+		seg = (*iter);
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);
-		row->setText(NAME_COL, seg.getName());
-		row->setText(ID_COL, seg.getIDstr());
-		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(seg));
+		row->setText(NAME_COL, seg->GetName());
+		row->setText(ID_COL, QString::number( seg->getValue() ) );
+
+		SegmentDataWrapper segDW( segmentationDW.getID(), seg->getValue() );
+		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
+
 		//row->setText(NOTE_COL, seg.getNote());
-		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg.isEnabled()));
-		row->setSelected(seg.isSelected());
-		if (doScrollToSelectedSegment && seg.getID() == segmentJustSelectedID) {
+		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg->IsEnabled()));
+		row->setSelected(seg->IsSelected());
+		if (doScrollToSelectedSegment && seg->getValue() == segmentJustSelectedID) {
 			rowToJumpTo = row;
 		}
 	}
