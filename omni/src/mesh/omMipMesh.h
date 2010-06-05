@@ -32,7 +32,7 @@ public:
 	void Flush();
 
 	string GetFileName();
-	QString GetDirectoryPath();
+	string GetDirectoryPath();
 	string GetLocalPathForHd5fChunk();
 
 	bool IsVbo();
@@ -54,7 +54,7 @@ private:
 	OmMipMeshCoord mMeshCoordinate;
 
 	bool mHasData;
-	QString mPath;
+	string mPath;
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;

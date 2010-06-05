@@ -6,7 +6,9 @@
 class OmDataPath 
 {
  public:
-	OmDataPath();
+ 	OmDataPath();
+ 	OmDataPath( string s ) : mPath(s) {}
+
 	void setPath( std::string str );
 	void setPathQstr( QString );
 
