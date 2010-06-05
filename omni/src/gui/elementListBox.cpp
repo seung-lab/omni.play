@@ -1,10 +1,8 @@
 #include "elementListBox.h"
 
-ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * parentVLayout )
+ElementListBox::ElementListBox( QWidget * parent )
 	: QGroupBox( "", parent )
 {
-	parentVLayout->addWidget(this);
-
 	dataElementsTabs = new QTabWidget( this );
 
 	overallContainer = new QVBoxLayout( this );
@@ -17,7 +15,7 @@ void ElementListBox::reset()
 	setTitle("");
 }
 
-void ElementListBox::addTab(int index, QWidget * tab, QString tabTitle)
+void ElementListBox::addTab( const int index, QWidget * tab, const QString & tabTitle)
 {
 	if( -1 != dataElementsTabs->indexOf(tab) ){
 		return;

@@ -9,8 +9,8 @@ class ElementListBox : public QGroupBox
 	Q_OBJECT
 
 public:
-	ElementListBox( QWidget *, QVBoxLayout * );
-	void addTab(int index, QWidget * tab, QString tabTitle);
+	ElementListBox( QWidget * );
+	void addTab( const int index, QWidget * tab, const QString & tabTitle);
 	void reset();
 
 private:

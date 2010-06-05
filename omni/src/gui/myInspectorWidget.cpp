@@ -1,17 +1,22 @@
 #include "common/omDebug.h"
-#include "common/omStd.h"
-#include "guiUtils.h"
-#include "myInspectorWidget.h"
+#include "gui/elementListBox.h"
+#include "gui/guiUtils.h"
+#include "gui/mainwindow.h"
+#include "gui/myInspectorWidget.h"
+#include "gui/segmentListAll.h"
+#include "gui/segmentListValid.h"
+#include "inspectors/chanInspector.h"
+#include "inspectors/filObjectInspector.h"
+#include "inspectors/inspectorProperties.h"
+#include "inspectors/segInspector.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "system/omManageableObject.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 
 #include <QtGui>
 #include <QMessageBox>
@@ -33,9 +38,11 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
 
 	inspectorProperties = new InspectorProperties( this );
 
-	elementListBox = new ElementListBox(this, verticalLayout);
-	segmentList = new SegmentList(this, inspectorProperties, elementListBox);
-	validList = new ValidList(this, inspectorProperties, elementListBox);
+	elementListBox = new ElementListBox(this);
+	verticalLayout->addWidget(elementListBox);
+
+	segmentList = new SegmentListAll(this, inspectorProperties, elementListBox);
+	validList = new SegmentListValid(this, inspectorProperties, elementListBox);
 	channelInspectorWidget=NULL;
 	segInspectorWidget=NULL;
 

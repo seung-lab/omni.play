@@ -1,5 +1,5 @@
-#ifndef SEGMENT_LIST_ABSTRACT_H
-#define SEGMENT_LIST_ABSTRACT_H
+#ifndef SEGMENT_LIST_BASE_H
+#define SEGMENT_LIST_BASE_H
 
 #include <QtGui>
 #include <QWidget> 
@@ -13,14 +13,14 @@ class OmSegmentEvent;
 class OmSegmentListWidget;
 class SegObjectInspector;
 
-class SegmentListAbstract : public QWidget
+class SegmentListBase : public QWidget
 {
 	Q_OBJECT
 
 public:
-	SegmentListAbstract( QWidget * , InspectorProperties *, ElementListBox * );
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment =
-					       false, const OmId segmentJustSelectedID = 0);
+	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
+	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false, 
+					       const OmId segmentJustSelectedID = 0);
 
 	void makeSegmentationActive(const OmId segmentationID);
 	void makeSegmentationActive(SegmentationDataWrapper sdw);
@@ -34,9 +34,6 @@ public slots:
 	void rebuildSegmentList(const OmId segmentationID);
 	void goToNextPage();
 	void goToPrevPage();
-
-protected slots: 
-
 
 protected:
 	virtual QString getTabTitle() = 0;

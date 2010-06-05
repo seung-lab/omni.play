@@ -2,17 +2,16 @@
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
 #include "gui/omSegmentListWidget.h"
-#include "gui/segmentListAbstract.h"
+#include "gui/segmentListBase.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "volume/omSegmentation.h"
 
-SegmentListAbstract::SegmentListAbstract( QWidget * parent, 
-					  InspectorProperties * ip,
-					  ElementListBox * eb ) 
+SegmentListBase::SegmentListBase( QWidget * parent, 
+				  InspectorProperties * ip,
+				  ElementListBox * eb ) 
 	: QWidget(parent)
-	, segmentListWidget(NULL)
 	, elementListBox(eb)
 	, haveValidSDW(false)
 	, currentPageNum(0)
@@ -25,18 +24,18 @@ SegmentListAbstract::SegmentListAbstract( QWidget * parent,
 	setupPageButtons();
 }
 
-int SegmentListAbstract::getNumSegmentsPerPage()
+int SegmentListBase::getNumSegmentsPerPage()
 {
 	return 100;
 }
 
-quint32 SegmentListAbstract::getMaxSegmentValue()
+quint32 SegmentListBase::getMaxSegmentValue()
 {
 	assert( haveValidSDW );
 	return currentSDW.getMaxSegmentValue();
 }
 
-OmSegPtrList * SegmentListAbstract::getSegmentsToDisplay( const OmId firstSegmentID )
+OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const OmId firstSegmentID )
 {
 	assert( haveValidSDW );
 
@@ -44,7 +43,7 @@ OmSegPtrList * SegmentListAbstract::getSegmentsToDisplay( const OmId firstSegmen
 	return doGetSegmentsToDisplay( offset );
 }
 
-OmSegPtrList * SegmentListAbstract::doGetSegmentsToDisplay( const unsigned int in_offset )
+OmSegPtrList * SegmentListBase::doGetSegmentsToDisplay( const unsigned int in_offset )
 {
 	assert( haveValidSDW );
 
@@ -70,7 +69,7 @@ OmSegPtrList * SegmentListAbstract::doGetSegmentsToDisplay( const unsigned int i
 	return ret;
 }
 
-void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							    const OmId segmentJustSelectedID)
 {
 	assert( haveValidSDW );
@@ -85,7 +84,7 @@ void SegmentListAbstract::populateSegmentElementsListWidget(const bool doScrollT
 	elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
 }
 
-void SegmentListAbstract::setupPageButtons()
+void SegmentListBase::setupPageButtons()
 {
         prevButton = new QPushButton("<");
         nextButton = new QPushButton(">");
@@ -106,7 +105,7 @@ void SegmentListAbstract::setupPageButtons()
         layout->addWidget( buttonBox );
 }
 
-void SegmentListAbstract::goToNextPage()
+void SegmentListBase::goToNextPage()
 {
 	currentPageNum++;
 	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
@@ -117,7 +116,7 @@ void SegmentListAbstract::goToNextPage()
 	populateSegmentElementsListWidget( false, offset );
 }
 
-void SegmentListAbstract::goToPrevPage()
+void SegmentListBase::goToPrevPage()
 {
 	currentPageNum--;
 	if( currentPageNum < 0 ){
@@ -127,42 +126,42 @@ void SegmentListAbstract::goToPrevPage()
 	populateSegmentElementsListWidget( false, offset );
 }
 
-void SegmentListAbstract::makeSegmentationActive(const OmId segmentationID)
+void SegmentListBase::makeSegmentationActive(const OmId segmentationID)
 {
 	makeSegmentationActive( SegmentationDataWrapper(segmentationID) );
 }
 
-void SegmentListAbstract::makeSegmentationActive(SegmentationDataWrapper sdw)
+void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw)
 {
 	currentSDW = sdw;
 	haveValidSDW = true;
 	populateSegmentElementsListWidget();
 }
 
-void SegmentListAbstract::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
+void SegmentListBase::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
 {
 	makeSegmentationActive( SegmentationDataWrapper(segmentationID), segmentJustSelectedID);
 }
 
-void SegmentListAbstract::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
+void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
 {
 	currentSDW = sdw;
 	haveValidSDW = true;
 	populateSegmentElementsListWidget(true, segmentJustSelectedID);
 }
 
-void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID)
+void SegmentListBase::rebuildSegmentList(const OmId segmentationID)
 {
 	makeSegmentationActive(segmentationID);
 }
 
-void SegmentListAbstract::rebuildSegmentList(const OmId segmentationID,
+void SegmentListBase::rebuildSegmentList(const OmId segmentationID,
 					     const OmId segmentJustAddedID)
 {
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
-int SegmentListAbstract::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
+int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
 	// if we sent this signal, just ignore...
 	if (this == event->getSender()) {

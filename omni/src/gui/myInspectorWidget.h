@@ -5,22 +5,18 @@
 #include <QtGui>
 #include <QWidget>
 
-#include "gui/mainwindow.h"
-#include "gui/segmentList.h"
-#include "gui/validList.h"
-#include "gui/elementListBox.h"
-#include "inspectors/segInspector.h"
-#include "inspectors/chanInspector.h"
-#include "inspectors/filObjectInspector.h"
-#include "inspectors/inspectorProperties.h"
-
-#include "common/omStd.h"
-#include "volume/omFilter2d.h"
+#include "common/omCommon.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 
 class SegInspector;
 class ChanInspector;
+class FilObjectInspector;
+class SegmentListAll;
+class SegmentListValid;
+class ElementListBox;
+class InspectorProperties;
+class MainWindow;
 
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
@@ -67,10 +63,9 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addSegment();
 	void deleteSegmentation(SegmentationDataWrapper sdw);
 	void deleteChannel(ChannelDataWrapper cdw);
+
  private:
 
-	///////////////////////////////
-	// new inspector elements
 	QTreeWidget *dataSrcListWidget;
 	QTreeWidget *filterListWidget;
 	void populateDataSrcListWidget();
@@ -96,8 +91,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	MainWindow* mParentWindow;
 
-	///////////////////////////////
-
 	QAction *xyAct;
 	QAction *xzAct;
 	QAction *yzAct;
@@ -118,8 +111,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	InspectorProperties * inspectorProperties;
-	SegmentList * segmentList;
-	ValidList * validList;
+	SegmentListAll * segmentList;
+	SegmentListValid * validList;
 	ElementListBox * elementListBox;
 
 	ViewType getViewType(QAction * act);
