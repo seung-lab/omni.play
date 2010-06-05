@@ -23,15 +23,9 @@ OmMipSegmentDataCoord::operator!=( const OmMipSegmentDataCoord& rhs ) const {
 bool 
 OmMipSegmentDataCoord::operator<( const OmMipSegmentDataCoord& rhs ) const 
 { 
-	if(MipChunkCoord != rhs.MipChunkCoord) return (MipChunkCoord <  rhs.MipChunkCoord);
+	if(MipChunkCoord != rhs.MipChunkCoord) {
+		return (MipChunkCoord <  rhs.MipChunkCoord);
+	}
+
 	return (DataValue < rhs.DataValue);
 }	
-
-/////////////////////////////////
-///////		 stream
-
-ostream& 
-operator<<(ostream &out, const OmMipSegmentDataCoord &in) {
-	out << in.MipChunkCoord << " { " << (int) in.DataValue << " } ";
-	return out;
-}

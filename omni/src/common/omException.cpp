@@ -9,8 +9,11 @@ static string OmExceptTypeStrings[] = { "Note",
 };
 
 OmException::OmException(const string & name, OmExceptType type, const string & msg)
-	: mName(name), mType(type), mMessage(msg)
+	: mName(name)
+	, mType(type)
+	, mMessage(msg)
 {
+	printf("OmException: %s\n", msg.c_str() );
 }
 
 QString OmException::GetName()

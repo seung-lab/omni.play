@@ -6,7 +6,6 @@
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/omSegmentSelector.h"
-#include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 #include "system/viewGroup/omViewGroupState.h"

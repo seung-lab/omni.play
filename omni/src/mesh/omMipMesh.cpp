@@ -255,8 +255,9 @@ void OmMipMesh::DeleteVbo()
     glDeleteLists(displayList, 1);
   }
 
-  if (!IsVbo())
+  if (!IsVbo()) {
     assert(false);
+  }
 
   glDeleteBuffersARB(1, &mVertexDataVboId);
   glDeleteBuffersARB(1, &mVertexIndexDataVboId);
@@ -275,8 +276,9 @@ bool OmMipMesh::Draw(bool doCreateVbo)
   bool ret = false;
 
   //ignore empty meshes
-  if (IsEmptyMesh())
+  if (IsEmptyMesh()) {
     return ret;
+  }
 
   //if(!IsVbo()) assert(false);
   if (!IsVbo()) {
@@ -323,7 +325,7 @@ bool OmMipMesh::Draw(bool doCreateVbo)
 
     //// draw mesh elements
     debug("elements", "going to draw elements\n");
-    for (uint32_t idx = 0; idx < mStripCount; idx++) {
+    for (uint32_t idx = 0; idx < mStripCount; ++idx) {
       glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
                      mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
                      GL_UNSIGNED_INT,	//type
@@ -346,17 +348,6 @@ bool OmMipMesh::Draw(bool doCreateVbo)
   glCallList(displayList);
 
   return ret;
-}
-
-/////////////////////////////////
-///////          ostream
-
-ostream & operator<<(ostream & out, const OmMipMesh & m)
-{
-  out << "Strip Count: \t" << m.mStripCount << "\n";
-  out << "Vertex Index Count: \t" << m.mVertexIndexCount << "\n";
-  out << "Vertex Count: \t" << m.mVertexCount << "\n";
-  return out;
 }
 
 /////////////////////////////////

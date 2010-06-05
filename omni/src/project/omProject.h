@@ -29,8 +29,6 @@ public:
 	
 	//project properties
 	static QString GetFileName() {return Instance()->mFileName;}
-	static const string& GetDirectoryPath();
-	static string GetTempDirectoryPath();
 	
 	//project IO
 	static QString New( QString fileNameAndPath );

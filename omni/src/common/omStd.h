@@ -22,11 +22,6 @@ using std::sort;
 
 #include <assert.h>
 
-#include <iostream>
-using std::cout;
-using std::endl;
-using std::ostream;
-
 #include <map>
 using std::map;
 
@@ -37,9 +32,6 @@ using std::set;
 
 #include <string>
 using std::string;
-
-#include <sstream>
-using std::ostringstream;
 
 #include <vector>
 using std::vector;

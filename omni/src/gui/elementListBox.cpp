@@ -13,12 +13,8 @@ ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * parentVLayout )
 
 void ElementListBox::reset()
 {
-	dataElementsTabs->clear();
-}
-
-void ElementListBox::setTitle(const QString & boxTitle)
-{
-	QGroupBox::setTitle(boxTitle);
+	dataElementsTabs->clear();	
+	setTitle("");
 }
 
 void ElementListBox::addTab(int index, QWidget * tab, QString tabTitle)

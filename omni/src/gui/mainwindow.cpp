@@ -16,8 +16,6 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
-Q_DECLARE_METATYPE(SegmentDataWrapper);
-
 MainWindow::MainWindow()
  : prog_dialog(this)
 {

@@ -1,8 +1,6 @@
 #include <signal.h>
 
-#include "mainwindow.h"
 #include "headless.h"
-#include "project/omProject.h"
 
 #ifndef WIN32
 #include <execinfo.h>
@@ -10,7 +8,7 @@
 #endif
 
 
-GGOCTFPointer GGOCTFunction = 0;
+//GGOCTFPointer GGOCTFunction = 0;
 
 /*
 int firsttime(int argc, char *argv[])

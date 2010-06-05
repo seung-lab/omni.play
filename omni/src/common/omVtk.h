@@ -7,9 +7,8 @@
  *  Brett Warne - bwarne@mit.edu - 3/8/09
  */
 
-
+#include <assert.h>
 #include <vtkType.h>
-
 
 inline
 int
@@ -24,8 +23,6 @@ bytesToVtkScalarType(int bytes) {
 			assert(false);
 	}
 }
-
-
 
 inline
 int

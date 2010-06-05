@@ -81,8 +81,6 @@ private:
  	GLuint displayList;
         bool hasDisplayList;
 
-	// ostream
-	friend ostream& operator<<(ostream &out, const OmMipMesh &m);
 	friend class OmMesher;
 };
 

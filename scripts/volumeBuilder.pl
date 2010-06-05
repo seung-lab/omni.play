@@ -1,8 +1,15 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Cwd 'abs_path';
+use File::Basename;
+use POSIX;
 
-my $omniDir = "/home/purcaro/omni.staging";
+(my $scriptName, my $scriptPath, my $scriptSuffix) = fileparse( abs_path( $0 ) );
+
+my $omniDir = $scriptPath;
+$omniDir =~ s/\/scripts\///;
+
 my $omniExec = $omniDir . "/omni/bin/omni ";
 my $scriptFolder = $omniDir . "/scripts/BuildScripts";
 my $cmdGeneric = $omniExec." --headless=".$scriptFolder;

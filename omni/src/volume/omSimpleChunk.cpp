@@ -1,6 +1,5 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
-#include "common/omUtility.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
@@ -17,9 +16,7 @@
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
 /////////////////////////////////
-///////
-///////         OmSimpleChunk Class
-///////
+///////         OmSimpleChunk
 
 /*
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
@@ -233,7 +230,7 @@ void OmSimpleChunk::SetImageData(void *)
  */
 boost::unordered_map< OmSegID, unsigned int> * OmSimpleChunk::RefreshDirectDataValues( OmSegmentCache * )
 {
-	assert(0); // GUI crashes when using this method instead of the one in OmMipChunk (purcaro)
+	assert(0); // GUI crashes when viewing a file built using this method instead of the one in OmMipChunk (purcaro)
 
 	boost::unordered_map< OmSegID, unsigned int> * sizes = new boost::unordered_map< OmSegID, unsigned int>();
 

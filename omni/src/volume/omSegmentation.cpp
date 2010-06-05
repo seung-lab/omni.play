@@ -1,6 +1,5 @@
 #include "common/omCommon.h"
 #include "common/omDebug.h"
-#include "common/omUtility.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"

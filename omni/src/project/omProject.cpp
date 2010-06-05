@@ -20,6 +20,7 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 
@@ -62,7 +63,15 @@ QString OmProject::New( QString fileNameAndPath )
 
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.filePath();
+	Instance()->mDirectoryPath = fileInfo.absolutePath();
+
+	QDir dir(Instance()->mDirectoryPath);
+	if( !dir.exists() ){
+		if( !dir.mkpath(Instance()->mDirectoryPath) ){
+			QString err = "could not make path " + Instance()->mDirectoryPath;
+			throw OmIoException( qPrintable(err) );
+		}
+	}
 
 	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Create();
@@ -103,7 +112,7 @@ void OmProject::Load( QString fileNameAndPath  )
 {
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.filePath();
+	Instance()->mDirectoryPath = fileInfo.absolutePath();
 
 	QFile projectFile( fileNameAndPath );
 	if( !projectFile.exists() ){
@@ -143,7 +152,6 @@ void OmProject::Close()
 
 	OmHdf5Manager::Delete();
 }
-
 
 /////////////////////////////////
 ///////          Channel Manager Method

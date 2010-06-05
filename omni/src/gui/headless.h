@@ -1,6 +1,8 @@
 #ifndef HEADLESS_H
 #define HEADLESS_H
 
+#include "common/omCommon.h"
+
 class OmSegmentationChunkCoord;
 
 class Headless

@@ -1,5 +1,4 @@
 #include "common/omGl.h"
-#include "common/omUtility.h"
 #include "common/omVtk.h"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"

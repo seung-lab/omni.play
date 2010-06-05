@@ -98,7 +98,6 @@ HEADERS += lib/strnatcmp.h \
            src/common/omException.h \
            src/common/omGl.h \
            src/common/omStd.h \
-           src/common/omUtility.h \
            src/common/omVtk.h \
            src/gui/cacheMonitorDialog.h \
            src/gui/cacheMonitorWidget.h \

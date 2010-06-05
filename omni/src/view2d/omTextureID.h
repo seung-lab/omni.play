@@ -58,8 +58,6 @@ public:
 	ObjectType mVolType;
 	bool mRemoveMe;
 	OmThreadedCachingTile *mCache;
-		
-	friend ostream& operator<<(ostream &out, const OmTextureID &tid);
 
 	friend class myQGLWidget;
 	friend class OmView2d;
