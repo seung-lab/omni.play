@@ -67,7 +67,7 @@ int MeshingChunkThreadManager::numberOfThreadsToUseForThisChunk( const int total
 	const int maxNumWorkerThreads = mMeshManager->getMaxAllowedNumberOfWorkerThreads();
 	int num_threads_to_use = 1;
 	if( totalNumValuesToMesh > 50 ){
-		num_threads_to_use = totalNumValuesToMesh / 50.0 + 1;
+		num_threads_to_use = static_cast<int>(totalNumValuesToMesh / 50.0 + 1);
 		if (num_threads_to_use > maxNumWorkerThreads ) {
 			num_threads_to_use = maxNumWorkerThreads;
 		}

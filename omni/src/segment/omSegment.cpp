@@ -48,9 +48,9 @@ void OmSegment::SetInitialColor()
 	color.y /= 2;
 	color.z /= 2;
 
-	mColorInt.red   = color.x * 255;
-	mColorInt.green = color.y * 255;
-	mColorInt.blue  = color.z * 255;
+	mColorInt.red   = static_cast<quint8>(color.x * 255);
+	mColorInt.green = static_cast<quint8>(color.y * 255);
+	mColorInt.blue  = static_cast<quint8>(color.z * 255);
 }
 
 void OmSegment::reRandomizeColor()
@@ -62,9 +62,9 @@ void OmSegment::reRandomizeColor()
 
 void OmSegment::SetColor(const Vector3 < float >& color)
 {
-	mColorInt.red   = color.x * 255;
-	mColorInt.green = color.y * 255;
-	mColorInt.blue  = color.z * 255;
+	mColorInt.red   = static_cast<quint8>(color.x * 255);
+	mColorInt.green = static_cast<quint8>(color.y * 255);
+	mColorInt.blue  = static_cast<quint8>(color.z * 255);
 
 	mCache->addToDirtySegmentList(this);
 }

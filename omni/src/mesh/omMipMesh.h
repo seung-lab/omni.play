@@ -25,7 +25,7 @@ class OmMipMesh : public OmCacheableBase {
 
 public:
 	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *pMipMeshManager);
-	~OmMipMesh();
+	virtual ~OmMipMesh();
 
 	void Load();
 	void Save();
@@ -45,12 +45,15 @@ public:
         void setSegmentationID(OmId sid);
         OmId getSegmentationID();
 
+	bool hasData(){ return mHasData; }
+
 private:
 	OmId mSegmentationID;
 	OmHdf5 * mHdf5File;
 	OmMipMeshManager * const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
+	bool mHasData;
 	QString mPath;
 
 	// interleved strip offset (into vertex data) and strip size data

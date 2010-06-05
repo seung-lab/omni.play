@@ -38,6 +38,7 @@ extern GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
 OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager)
   : OmCacheableBase(pMipMeshManager), mpMipMeshManager(pMipMeshManager), mMeshCoordinate(id)
 {
+  mHasData = false;
   displayList = 0;
   hasDisplayList = false;
   //init mesh data
@@ -98,9 +99,11 @@ void OmMipMesh::Load()
 
   //if meta is zero, then no data so skip
   if ( 0 == noData ){
+    mHasData = false;
     return;
   }
 
+  mHasData = true;
   int size;
 
   //read strip offset/size data  (uint32_t *)

@@ -38,7 +38,7 @@ public:
 		    OmThreadedCachingTile *cache = NULL, 
 		    void* texture = NULL, 
 		    int flags = 0);
-	~OmTextureID();
+	virtual ~OmTextureID();
 	
 	//texture ID property accessors;
 	GLuint GetTextureID() const { return textureID; }

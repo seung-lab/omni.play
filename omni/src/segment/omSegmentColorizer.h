@@ -43,7 +43,7 @@ class OmSegmentColorizer
 					const bool showOnlySelectedSegments );
 
 	int makeSelectedColor(const quint8 in_c ) {
-		const int c = (double)in_c * selectedSegmentColorMultiFactor;
+		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
 		if (c > 255) {
 			return 255;
 		}

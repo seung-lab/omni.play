@@ -199,7 +199,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
 		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
 
-		if (NULL == p_mesh) {
+		if ( !p_mesh->hasData() ) {
 			continue;
 		}
 
