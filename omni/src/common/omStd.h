@@ -20,8 +20,6 @@ using std::max;
 using std::swap;
 using std::sort;
 
-#include <assert.h>
-
 #include <map>
 using std::map;
 

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "omProgressEvent.h"
 
 bool OmProgressEvent::mWasCanceled = false;

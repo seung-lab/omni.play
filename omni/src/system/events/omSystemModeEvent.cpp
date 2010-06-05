@@ -1,10 +1,8 @@
-
+#include <assert.h>
 #include "omSystemModeEvent.h"
 
-#define DEBUG 0
-
 OmSystemModeEvent::OmSystemModeEvent(QEvent::Type type)
- : OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 
 }
@@ -13,10 +11,8 @@ OmSystemModeEvent::OmSystemModeEvent(QEvent::Type type)
  *	Dispatch event based on event type.
  */
 
-void
- OmSystemModeEvent::Dispatch(OmEventListener * pListener)
+void OmSystemModeEvent::Dispatch(OmEventListener * pListener)
 {
-
 	//cast to proper listener
 	OmSystemModeEventListener *p_cast_listener = dynamic_cast < OmSystemModeEventListener * >(pListener);
 	assert(p_cast_listener);
