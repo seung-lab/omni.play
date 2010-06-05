@@ -153,10 +153,9 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
 		validList, SLOT(rebuildSegmentList(OmId)));
 	
-	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
+	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
+		this, SLOT(addSegment()));
 	
-	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), this, SLOT(addSegment()));
-
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 
