@@ -965,7 +965,7 @@ Vector3< int > OmHdf5LowLevel::om_hdf5_dataset_get_dims_with_lock(hid_t fileId, 
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	Vector3 < hsize_t > dims;
+	Vector3 < hsize_t > dims(0,0,0);
 
 	herr_t status;
 

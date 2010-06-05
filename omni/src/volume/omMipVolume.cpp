@@ -631,7 +631,8 @@ bool OmMipVolume::BuildVolume()
 
 	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-		printf("\tbuilding mip level %d...\n", level );
+		printf("\tbuilding mip level %d...", level );
+		fflush(stdout);
 
 		//dim of miplevel in mipchunks
 		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
@@ -657,6 +658,7 @@ bool OmMipVolume::BuildVolume()
 
 		//flush cache so that all chunks of this level are flushed to disk
 		Flush();
+		printf("done\n");
 	}
 
 	//hide progress bar
