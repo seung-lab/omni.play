@@ -326,85 +326,41 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
 	} 
 
-	OmSegment * one = seg1;
-	OmSegment * two = seg2;
-	OmSegment * small1 = seg1;
-	OmSegment * small2 = seg2;
-	float thresh1 = 1.0;
-	float thresh2 = 1.0;
-	int count = 0;
-	s1 = seg1; 
-	while (0 != s1->mParentSegID){
-		s2 = seg2;
-		while (0 != s2->mParentSegID){
-			count++;
-			//debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
-			//debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
-			if(s1->mParentSegID == s2->mParentSegID) {
-				if(s1->getThreshold() < s2->getThreshold()) {
-					one = small1;
-				} else {
-					one = small2;
-				}
-				goto onedone;
-			}
+        OmSegment * nearestCommonPred = 0;
+        OmSegment * one;
+        OmSegment * two;
 
-			if(s1->getThreshold() < thresh1) {
-				thresh1 = s1->getThreshold();
-				small1 = s1;
-			}
-			if(s2->getThreshold() < thresh2) {
-				thresh2 = s2->getThreshold();
-				small2 = s2;
-			}
-			s2 = GetSegmentFromValue(s2->mParentSegID);
-		} 
-        	s1 = GetSegmentFromValue(s1->mParentSegID);	
-	}
+        for (quint32 oneID = seg1->mValue, twoID; oneID != 0; oneID = one->mParentSegID) {
+          	one = GetSegmentFromValue(oneID);
+          	for (twoID = seg2->mValue; twoID != 0 && oneID != twoID; twoID = two->mParentSegID) {
+            		two = GetSegmentFromValue(twoID);
+          	}
+          	if (oneID == twoID) {
+              		nearestCommonPred = one;
+              	break;
+          	}
+        }
 
-onedone:
+        assert(nearestCommonPred != 0);
 
-        thresh1 = 1.0;
-        thresh2 = 1.0;
-        count = 0;
+        float minThresh = 1.0;
+        OmSegment * minChild = 0;
+        for (one = seg1; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
+          	if (one->mThreshold < minThresh) {
+            		minThresh = one->mThreshold;
+            		minChild = one;
+          	}
+        }
 
-        s1 = seg2;
-	while (0 != s1->mParentSegID){
-		s2 = seg1;
-                while (0 != s2->mParentSegID){
-                        count++;
-                        //debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
-                        //debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
-                        if(s1->mParentSegID == s2->mParentSegID) {
-                                if(s1->getThreshold() < s2->getThreshold()) {
-                                        two = small1;
-                                } else {
-                                        two = small2;
-                                }
-				goto twodone;
-                        }
+        for (one = seg2; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
+          	if (one->mThreshold < minThresh) {
+            		minThresh = one->mThreshold;
+            		minChild = one;
+          	}
+        }
 
-                        if(s1->getThreshold() < thresh1) {
-                                thresh1 = s1->getThreshold();
-                                small1 = s1;
-                        }
-                        if(s2->getThreshold() < thresh2) {
-                                thresh2 = s2->getThreshold();
-                                small2 = s2;
-                        }
-                        s2 = GetSegmentFromValue(s2->mParentSegID);
-                } 
-                s1 = GetSegmentFromValue(s1->mParentSegID);
-        } 
-
-twodone:
-	assert(one);
-	assert(two);
-	if(one->mThreshold > two->mThreshold) {
-		splitChildFromParent(one);
-	} else {
-		splitChildFromParent(two);
-	}
+        assert(minChild != 0);
+        splitChildFromParent(minChild);
 }
 
 void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
