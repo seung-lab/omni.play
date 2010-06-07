@@ -17,6 +17,7 @@ class OmSegmentation;
 class OmMipMeshManager;
 class OmSegmentCache;
 class OmSegmentCacheImpl;
+class OmSegmentEdge;
 
 class OmDataArchiveProject
 {
@@ -69,5 +70,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se );
+QDataStream &operator>>(QDataStream & in, OmSegmentEdge & sc );
 
 #endif

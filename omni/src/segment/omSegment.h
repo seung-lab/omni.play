@@ -11,6 +11,7 @@
 #include "segment/omSegmentQueue.h"
 
 class OmSegmentCache;
+class OmSegmentEdge;
 
 class OmSegment {
 
@@ -71,6 +72,7 @@ private:
 	quint64 mSizeOfAllChildren; // excludes mSize
 
 	int mEdgeNumber; // index of edge in main edge list
+	OmSegmentEdge * mCustomMergeEdge;
 
 	void SetInitialColor();
 

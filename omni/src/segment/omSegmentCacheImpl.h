@@ -150,10 +150,11 @@ class OmSegmentCacheImpl {
 			   const float threshold, const int edgeNumber);
 	bool splitChildFromParentInternal( const OmSegID childID );
 
-	QLinkedList<OmSegmentEdge*> edgeList;
+	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
 
-	OmSegmentEdge * Join( OmSegment *, OmSegment *, const float );
-	OmSegmentEdge * Join( const OmId, const OmId, const float );
+	void Join( OmSegmentEdge * e );
+	OmSegmentEdge * Join( OmSegment *, OmSegment * );
+	OmSegmentEdge * Join( const OmId, const OmId );
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );

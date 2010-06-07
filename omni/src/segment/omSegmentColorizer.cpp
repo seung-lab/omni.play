@@ -110,8 +110,6 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		if( isSelected ){
 			// return mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
 			return seg->mColorInt;;
-		} else {
-			return blackColor;
 		}
 	}
 

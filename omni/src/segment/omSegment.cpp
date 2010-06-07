@@ -9,6 +9,7 @@ OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	, mSize(0)
 	, mSizeOfAllChildren(0)
 	, mEdgeNumber(-1)
+	, mCustomMergeEdge(NULL)
 {
 	SetInitialColor();
 }
@@ -21,6 +22,7 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	, mSize(0)
 	, mSizeOfAllChildren(0)
 	, mEdgeNumber(-1)
+	, mCustomMergeEdge(NULL)
 {
 }
 

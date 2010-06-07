@@ -1,15 +1,16 @@
+#include "common/omException.h"
+#include "datalayer/archive/omDataArchiveBoost.h"
+#include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/archive/omDataArchiveVmml.h"
-#include "datalayer/archive/omDataArchiveCoords.h"
-#include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
-#include "system/omProjectData.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
-#include "common/omException.h"
+#include "segment/omSegmentEdge.h"
 #include "system/omPreferences.h"
+#include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 
@@ -374,6 +375,12 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	out << sc.mNumSegs;
 	out << sc.mNumTopLevelSegs;
 
+	int size = sc.mManualUserMergeEdgeList.size();
+	out << size;
+	foreach( OmSegmentEdge * e, sc.mManualUserMergeEdgeList ){
+		out << *e;
+	}
+
 	return out;
 }
 
@@ -394,6 +401,32 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
 	in >> sc.mNumTopLevelSegs;
+
+	int size;
+	in >> size;
+	for( int i = 0; i < size; ++i ){
+		OmSegmentEdge * e = new OmSegmentEdge();
+		in >> (*e);
+		sc.mManualUserMergeEdgeList.push_back(e);
+	}
+
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se )
+{
+	out << se.parentID;
+	out << se.childID;
+	out << se.threshold;
+
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
+{
+	in >> se.parentID;
+	in >> se.childID;
+	in >> se.threshold;
 
 	return in;
 }
