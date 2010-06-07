@@ -922,6 +922,10 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
 	OmSegment * parent = GetSegmentFromValue( parentID );
+
+	if( childRoot == findRoot( parent ) ){
+		return false;
+	}
 	
 	if( childRoot->mImmutable != parent->mImmutable ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
