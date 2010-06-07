@@ -6,6 +6,7 @@
 #include <QTime>
 #include <time.h>
 
+#include "gui/recentFileList.h"
 #include "common/omDebug.h"
 #include "gui/headless.h"
 #include "gui/mainwindow.h"
@@ -133,7 +134,9 @@ void Headless::processLine( QString line, QString fName )
 	} else if( line.startsWith("create:") ) {
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];
-                OmProject::New( projectFileNameAndPath );
+                const QString fname = OmProject::New( projectFileNameAndPath );
+		RecentFileList::prependFileToFS(fname);
+
 	} else if( line.startsWith("createOrOpen:") ) {
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];

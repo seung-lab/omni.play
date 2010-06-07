@@ -112,6 +112,9 @@ private:
 
         OmDataWrapperPtr mDend;
         OmDataWrapperPtr mDendValues;
+	OmDataWrapperPtr mEdgeDisabledByUser;
+	OmDataWrapperPtr mEdgeWasJoined;
+	OmDataWrapperPtr mEdgeForceJoin;
 	int mDendSize;
 	int mDendValuesSize;
 	int mDendCount;

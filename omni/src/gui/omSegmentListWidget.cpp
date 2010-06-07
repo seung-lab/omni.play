@@ -35,6 +35,11 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	selectionModel()->clearSelection();
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
+
+	if( 100 < segs->size() ){
+		printf("number of segments retrieved: %d\n", segs->size()  );
+		assert( 0 );
+	}
 	
 	OmSegment * seg;
 	OmSegPtrList::iterator iter;

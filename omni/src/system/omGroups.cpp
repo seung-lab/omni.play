@@ -1,7 +1,10 @@
 #include "system/omGroups.h"
 #include "common/omDebug.h"
+#include "system/omManageableObject.h"
+#include "system/omGroup.h"
 
-OmGroups::OmGroups(OmSegmentation * seg) : mSegmentation(seg)
+OmGroups::OmGroups(OmSegmentation * seg) 
+	: mSegmentation(seg)
 {
 	debug("groups", "construting group for seg\n");
 }
@@ -14,7 +17,7 @@ OmGroups::~OmGroups()
 	}
 }
 
-OmId OmGroups::AddGroup(OmIDsSet & ids)
+OmId OmGroups::AddGroup(OmSegIDsList & ids)
 {
 	debug("groups", "adding group for seg\n");
 	OmGroup * group = new OmGroup(ids);

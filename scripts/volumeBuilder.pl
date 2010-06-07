@@ -26,9 +26,21 @@ sub build150 {
     system $cmd;
 }
 
+sub build150noMeshes {
+    my $cmd = $cmdGeneric."/build150.noMeshes.omni.cmd";
+    printTitle("150^3 no meshes", $cmd);
+    system $cmd;
+}
+
 sub build512 {
     my $cmd = $cmdGeneric."/build512.omni.cmd";
     printTitle("512^3", $cmd );
+    system $cmd;
+}
+
+sub build512noMeshes {
+    my $cmd = $cmdGeneric."/build512.noMeshes.omni.cmd";
+    printTitle("512^3 no meshes", $cmd );
     system $cmd;
 }
 
@@ -56,8 +68,10 @@ sub menu {
     print "1 -- Build rabbit\n";
     print "2 -- Build 150^3\n";
     print "3 -- Build 512^3\n";
+    print "4 -- Build 150^3 (no meshes)\n";
+    print "5 -- Build 512^3 (no meshes)\n";
     print "\n";
-    my $max_answer = 3;
+    my $max_answer = 5;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -83,6 +97,10 @@ sub runMenuEntry {
 	build150();
     }elsif( 3 == $entry ){
 	build512();
+    }elsif( 4 == $entry ){
+	build150noMeshes();
+    }elsif( 5 == $entry ){
+	build512noMeshes();
     }
 }
 

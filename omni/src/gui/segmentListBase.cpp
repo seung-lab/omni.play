@@ -163,8 +163,10 @@ void SegmentListBase::rebuildSegmentList(const OmId segmentationID,
 
 int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
+	// FIXME: does this work anymore? this is no longer myinspectorwidget... (purcaro)
 	// if we sent this signal, just ignore...
 	if (this == event->getSender()) {
+		//printf("event comment was %s\n", event->getComment().c_str() );
 		return 0;
 	}
 

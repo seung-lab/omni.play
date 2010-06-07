@@ -61,7 +61,7 @@ private:
 	OmColor mColorInt;
 
 	OmSegIDsSet segmentsJoinedIntoMe;
-	OmSegmentQueue queue;
+	//OmSegmentQueue queue;
 
 	OmId mParentSegID;
 	float mThreshold;
@@ -69,6 +69,8 @@ private:
 
 	quint64 mSize;
 	quint64 mSizeOfAllChildren; // excludes mSize
+
+	int mEdgeNumber; // index of edge in main edge list
 
 	void SetInitialColor();
 

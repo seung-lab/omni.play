@@ -45,6 +45,9 @@ OmSegmentation::OmSegmentation()
 	
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendValues = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeDisabledByUser = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeWasJoined = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeForceJoin = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
@@ -81,6 +84,9 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendValues = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeDisabledByUser = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeWasJoined = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+	mEdgeForceJoin = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
@@ -465,15 +471,17 @@ OmId OmSegmentation::AddGroup(OmSegID id)
         	iter.iterOverSegmentIDs(id);
 	}
 
-	OmIDsSet segmentsToGroup;
+	OmSegIDsList segmentsToGroup;
         OmSegment * seg = iter.getNextSegment();
         OmSegID val;
         while(NULL != seg) {
-        	val = seg->getValue();
         	seg->SetImmutable(true);
-                //segmentsToGroup.insert(val);
+        	val = seg->getValue();
+                segmentsToGroup.push_back(val);
         	seg = iter.getNextSegment();
         }
+
+	mSegmentCache->setAsValidated( segmentsToGroup );
 
 	return mGroups.AddGroup(segmentsToGroup);
 }
@@ -488,15 +496,17 @@ void OmSegmentation::DeleteGroup(OmSegID id)
                 iter.iterOverSegmentIDs(id);
         }
 
-        OmIDsSet segmentsToGroup;
+        OmSegIDsList segmentsToGroup;
         OmSegment * seg = iter.getNextSegment();
         OmSegID val;
         while(NULL != seg) {
-                val = seg->getValue();
                 seg->SetImmutable(false);
-                //segmentsToGroup.insert(val);
+                val = seg->getValue();
+                segmentsToGroup.push_back(val);
                 seg = iter.getNextSegment();
         }
+
+	mSegmentCache->unsetAsValidated( segmentsToGroup );
 }
 
 
@@ -547,17 +557,23 @@ void OmSegmentation::FlushDirtySegments()
 
 void OmSegmentation::FlushDend()
 {
-	QString dendStr = QString("%1/dend")
-		.arg(GetDirectoryPath());
-	QString dendValStr = QString("%1/dendValues")
-		.arg(GetDirectoryPath());
 	OmDataPath path;
 	
+	QString dendStr = QString("%1/dend").arg(GetDirectoryPath());
 	path.setPathQstr(dendStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend->getCharPtr());
 
+	QString dendValStr = QString("%1/dendValues").arg(GetDirectoryPath());
 	path.setPathQstr(dendValStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues->getFloatPtr());
+
+	QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(GetDirectoryPath());
+	path.setPathQstr(dendEdgeDisabledByUser);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeDisabledByUser->getQuint8Ptr());
+
+	QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(GetDirectoryPath());
+	path.setPathQstr(dendEdgeForceJoin);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
 }
 
 void OmSegmentation::ReloadDendrogram()

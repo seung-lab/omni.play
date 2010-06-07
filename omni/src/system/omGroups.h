@@ -1,23 +1,18 @@
 #ifndef _OM_GROUPS_H_
 #define _OM_GROUPS_H_
 
-#include "system/omManageableObject.h"
-#include "system/omGroup.h"
-
-
+#include "common/omCommon.h"
 #include <QVector>
-class OmSegmentation;
 
-class OmGroups {
+class OmSegmentation;
+class OmGroup;
+
+class OmGroups : boost::noncopyable {
 public:
         OmGroups(OmSegmentation * seg);
         ~OmGroups();
 
-	OmId AddGroup(OmIDsSet & segids);
-
-protected:
-        OmGroups(const OmGroups&);
-        OmGroups& operator= (const OmGroups&);
+	OmId AddGroup(OmSegIDsList & segids);
 
 private:
 	OmSegmentation * mSegmentation;

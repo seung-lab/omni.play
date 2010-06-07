@@ -93,6 +93,9 @@ class OmSegmentCacheImpl {
 
 	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
+	void setAsValidated( const OmSegIDsList & segmentsToGroup );
+	void unsetAsValidated( const OmSegIDsList & segmentsToGroup );
+
  private:
 	bool mAllSelected;
 	bool mAllEnabled;
@@ -134,10 +137,18 @@ class OmSegmentCacheImpl {
 
 	DynamicTreeContainer<OmSegID> * mGraph;
 	void initializeDynamicTree();
-	void doLoadDendrogram( const quint32 *, const float *, 
-			       const int, const float );
 	void loadDendrogram();
 	void loadTreeIfNeeded();
+	void doResetGlobalThreshold( const quint32 * dend, 
+				     const float * dendValues, 
+				     quint8 * edgeDisabledByUser,
+				     quint8 * edgeWasJoined,
+				     quint8 * edgeForceJoin,
+				     const int size, 
+				     const float stopPoint );
+	bool JoinInternal( const OmSegID parentID, const OmSegID childUnknownDepthID, 
+			   const float threshold, const int edgeNumber);
+	bool splitChildFromParentInternal( const OmSegID childID );
 
 	QLinkedList<OmSegmentEdge*> edgeList;
 

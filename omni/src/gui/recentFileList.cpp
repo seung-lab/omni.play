@@ -87,3 +87,16 @@ void RecentFileList::writeRecentlyUsedFileListToFS()
 {
 	OmLocalPreferences::setRecentlyUsedFilesNames( recentFiles );
 }
+
+void RecentFileList::prependFileToFS( const QString & rel_fnpn)
+{
+	QStringList allFiles = OmLocalPreferences::getRecentlyUsedFilesNames();
+
+	QFileInfo fInfo(rel_fnpn);
+	QString fnpn = fInfo.absoluteFilePath();
+
+	allFiles.removeAll( fnpn );
+	allFiles.prepend(fnpn);
+
+	OmLocalPreferences::setRecentlyUsedFilesNames( allFiles );
+}

@@ -77,6 +77,9 @@ public:
 
 	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
+	void setAsValidated( const OmSegIDsList & segmentsToGroup );
+	void unsetAsValidated( const OmSegIDsList & segmentsToGroup );
+
 private:
 	QMutex mMutex;
 	

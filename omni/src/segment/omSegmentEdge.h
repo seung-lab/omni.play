@@ -9,7 +9,7 @@ class OmSegmentEdge {
 		: parentID(p)
 		, childID(c)
 		, threshold(t)
-		, isJoined(true)
+		, hasBeenJoined(false)
 	{
 	}
 	
@@ -17,7 +17,7 @@ class OmSegmentEdge {
 	OmSegID childID;
 	float threshold;
 
-	bool isJoined;
+	bool hasBeenJoined;
 };
 
 #endif

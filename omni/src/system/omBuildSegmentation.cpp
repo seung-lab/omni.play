@@ -8,6 +8,8 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
 #include "volume/omSegmentation.h"
+#include "segment/DynamicTreeContainer.h"
+#include "segment/omSegmentCache.h"
 
 #include <QTextStream>
 
@@ -129,13 +131,61 @@ void OmBuildSegmentation::doLoadDendrogram()
 	assert( 2 == dSize.x );
 	assert( 0 == vSize.y );
 	assert( vSize.x == dSize.y );
+	
+	quint8 * userDisabledEdge = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
+	memset(userDisabledEdge, 0, sizeof(quint8) * dendValuesSize );
+	OmDataWrapperPtr edgeDisabledByUser = OmDataWrapperPtr( new OmDataWrapper( userDisabledEdge ) );
+
+	// this is just a temporary object--should be refactored... (purcaro)
+	quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
+	memset(edgeJoined, 0, sizeof(quint8) * dendValuesSize );
+	OmDataWrapperPtr edgeWasJoined = OmDataWrapperPtr( new OmDataWrapper( edgeJoined ) );
+
+	quint8 * edgeForce = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
+	memset(edgeForce, 0, sizeof(quint8) * dendValuesSize );
+	OmDataWrapperPtr edgeForceJoin = OmDataWrapperPtr( new OmDataWrapper( edgeForce ) );
 
 	mSeg->mDendCount = dSize.y;
 	mSeg->mDend = dend;
 	mSeg->mDendSize = dendSize;
 	mSeg->mDendValues = dendValues;
 	mSeg->mDendValuesSize = dendValuesSize;
+	mSeg->mEdgeDisabledByUser = edgeDisabledByUser;
+	mSeg->mEdgeForceJoin = edgeForceJoin;
+	mSeg->mEdgeWasJoined = edgeWasJoined;
+
+	convertToEdgeList( mSeg->mDend->getQuint32Ptr(), 
+			   mSeg->mDendValues->getFloatPtr(), 
+			   mSeg->mDendCount );
+
 	mSeg->FlushDend();
 
 	hdf5reader->close();
+}
+
+// rewrite child node IDs in MST, converting it to edge list
+void OmBuildSegmentation::convertToEdgeList( quint32 * dend, 
+					     float * dendValues, 
+					     const int numDendRows )
+{
+	const int maxNumSegs =  mSeg->GetSegmentCache()->getMaxValue() + 1;
+	DynamicTreeContainer<OmSegID> * mGraph = new DynamicTreeContainer<OmSegID>( maxNumSegs );
+	
+	unsigned int childUnknownDepthID;
+	unsigned int parentID;
+	float threshold;
+	
+	for(int i = 0; i < numDendRows; ++i) {
+                childUnknownDepthID = dend[i];
+		parentID = dend[i + numDendRows ];
+                threshold = dendValues[i];
+		
+		DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
+		childRootDT->join( mGraph->get( parentID ) );
+
+		// set child ID to root value found by graph...
+		dend[i] = childRootDT->getKey();
+        }
+
+	delete mGraph;
 }

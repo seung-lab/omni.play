@@ -440,13 +440,20 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	assert( child->mParentSegID );
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
+
+	if( child->mImmutable != parent->mImmutable ){
+		printf("not splitting child %d from parent %d: child immutability is %d, but parent's is %d\n",
+		       child->mValue, parent->mValue, child->mImmutable, parent->mImmutable );
+		return;
+	}
+
 	debug("split", "\tparent = %u\n", parent->getValue());
 
 	parent->segmentsJoinedIntoMe.erase( child->getValue() );
         mGraph->get( child->mValue )->cut();
 	child->mParentSegID = 0;
 
-	const float oldChildThreshold = child->mThreshold;
+	//const float oldChildThreshold = child->mThreshold;
 	child->mThreshold = 0;
 
 	if( isSegmentSelected( parent->getValue() ) ){
@@ -456,11 +463,13 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		mSelectedSet.remove( child->getValue() );
 	}
 
+	/*
 	OmSegmentQueueElement parentElement = { child->mValue, oldChildThreshold };
 	parent->queue.push(parentElement);
 
 	OmSegmentQueueElement childElement = { parent->mValue, oldChildThreshold };
 	child->queue.push(childElement);
+	*/
 
 	++mNumTopLevelSegs;
 
@@ -526,40 +535,9 @@ void OmSegmentCacheImpl::initializeDynamicTree()
 
 void OmSegmentCacheImpl::loadDendrogram()
 {
-	doLoadDendrogram( mSegmentation->mDend->getQuint32Ptr(), 
-			  mSegmentation->mDendValues->getFloatPtr(), 
-			  mSegmentation->mDendCount, 
-			  mSegmentation->mDendThreshold);
-}
-
-void OmSegmentCacheImpl::doLoadDendrogram( const quint32 * dend, const float * dendValues, 
-					   const int size, const float stopPoint )
-{
 	initializeDynamicTree();
-
 	mNumTopLevelSegs = mNumSegs;
-
-	quint32 joinCounter = 0;
-	unsigned int childVal;
-	unsigned int parentVal;
-	float threshold;
-
-	for(int i = 0; i < size; ++i) {
-                childVal = dend[i];
-		parentVal = dend[i + size ];
-                threshold = dendValues[i];
-
-                OmSegmentEdge * edge = Join(parentVal, childVal, threshold);
-		edgeList.append( edge );
-
-                ++joinCounter;
-        }
-
-	printf("loaded entire MST: %d joins performed\n", joinCounter );
-
-	resetGlobalThreshold( stopPoint );
-
-	clearCaches();
+	resetGlobalThreshold( mSegmentation->mDendThreshold );
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()
@@ -591,10 +569,17 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID 
 	loadTreeIfNeeded();
 
 	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-	childRootDT->join( mGraph->get( parentID ) );
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
 	OmSegment * parent = GetSegmentFromValue( parentID );
+	
+	if( childRoot->mImmutable != parent->mImmutable ){
+		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
+		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
+		return NULL;
+	}
+
+	childRootDT->join( mGraph->get( parentID ) );
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
@@ -698,6 +683,7 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 	return seg->mColorInt;
 }
 
+/*
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
 	loadTreeIfNeeded();
@@ -758,6 +744,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	clearCaches();	
 	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
 }
+*/
 
 void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 {
@@ -786,13 +773,173 @@ OmSegPtrList * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset
 		if( NULL == seg || 0 != seg->mParentSegID ){
 			continue;
 		}
-
+		
 		ret->push_back( seg );
+		++counter;
 
-		if( counter > numToGet ){
+		if( counter >= numToGet ){
 			break;
 		}
 	}
 	
 	return ret;
+}
+
+void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
+{
+	printf("setting global threshold to %f...\n", stopPoint);
+
+	doResetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
+				mSegmentation->mDendValues->getFloatPtr(), 
+				mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
+				mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
+				mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
+				mSegmentation->mDendCount, 
+				stopPoint);
+
+	mSelectedSet.clear(); // nuke selected set for now...
+	//rerootSegmentLists();
+	clearCaches();
+
+	printf("done\n");
+}
+
+// TODO: store more threshold info in the segment cache, and reduce size of walk...
+// NOTE: assuming incoming data is an edge list
+void OmSegmentCacheImpl::doResetGlobalThreshold( const quint32 * nodes, 
+						 const float * thresholds, 
+						 quint8 * edgeDisabledByUser,
+						 quint8 * edgeWasJoined,
+						 quint8 * edgeForceJoin,
+						 const int numEdges, 
+						 const float stopThreshold )
+{
+	printf("\t %d edges...", numEdges);
+	fflush(stdout);
+
+	OmSegID childID;
+	OmSegID parentID;
+	float threshold;
+
+	for(int i = 0; i < numEdges; ++i) {
+		if( 1 == edgeDisabledByUser[i] ){
+			continue;
+		}
+
+		childID = nodes[i];
+		threshold = thresholds[i];
+		
+		if( threshold >= stopThreshold ||
+		    1 == edgeForceJoin[i] ){ // join
+			if( 1 == edgeWasJoined[i] ){
+				continue;
+			}
+			parentID = nodes[i + numEdges ];
+			if( JoinInternal( parentID, childID, threshold, i) ){
+				edgeWasJoined[i] = 1;
+			} else {
+				edgeDisabledByUser[i] = 1;
+			}
+		} else { // split
+			if( 0 == edgeWasJoined[i] ){
+				continue;
+			}
+			if( splitChildFromParentInternal( childID ) ){
+				edgeWasJoined[i] = 0;
+			} else {
+				edgeForceJoin[i] = 1;
+			}
+		}
+        }
+
+	printf("done\n");
+}
+
+bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID, 
+				       const OmSegID childUnknownDepthID, 
+				       const float threshold,
+				       const int edgeNumber )
+{
+	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
+
+	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
+	OmSegment * parent = GetSegmentFromValue( parentID );
+	
+	if( childRoot->mImmutable != parent->mImmutable ){
+		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
+		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
+		return false;
+	}
+
+	childRootDT->join( mGraph->get( parentID ) );
+
+	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
+	childRoot->setParent(parent, threshold);
+	childRoot->mEdgeNumber = edgeNumber;
+
+	--mNumTopLevelSegs;
+	
+	return true;
+}
+
+bool OmSegmentCacheImpl::splitChildFromParentInternal( const OmSegID childID )
+{
+	OmSegment * child = GetSegmentFromValue( childID );
+
+	assert( child->mParentSegID );
+
+	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
+
+	if( child->mImmutable == parent->mImmutable &&
+	    1 == child->mImmutable ){
+		printf("not splitting child %d from parent %d: child immutability is %d, but parent's is %d\n",
+		       child->mValue, parent->mValue, child->mImmutable, parent->mImmutable );
+		return false;
+	}
+
+	parent->segmentsJoinedIntoMe.erase( child->mValue );
+        mGraph->get( child->mValue )->cut();
+	child->mParentSegID = 0;
+	child->mEdgeNumber = -1;
+
+	++mNumTopLevelSegs;
+
+	return true;
+}
+
+
+void OmSegmentCacheImpl::setAsValidated( const OmSegIDsList & segs )
+{
+	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
+
+	OmSegment * seg;
+
+	OmSegIDsList::const_iterator iter;
+	for( iter=segs.begin(); iter != segs.end(); ++iter ){
+		seg = GetSegmentFromValue( *iter );
+
+		if( -1 == seg->mEdgeNumber ){
+			continue;
+		}
+
+		edgeForceJoin[ seg->mEdgeNumber ] = 1;
+	}
+}
+
+void OmSegmentCacheImpl::unsetAsValidated( const OmSegIDsList & segs )
+{
+	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
+
+	OmSegment * seg;
+
+	OmSegIDsList::const_iterator iter;
+	for( iter=segs.begin(); iter != segs.end(); ++iter ){
+		seg = GetSegmentFromValue( *iter );
+
+		if( -1 == seg->mEdgeNumber ){
+			continue;
+		}
+
+		edgeForceJoin[ seg->mEdgeNumber ] = 0;
+	}
 }

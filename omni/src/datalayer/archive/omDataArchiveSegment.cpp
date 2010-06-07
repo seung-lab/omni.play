@@ -1,6 +1,5 @@
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
-#include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "datalayer/omDataPath.h"

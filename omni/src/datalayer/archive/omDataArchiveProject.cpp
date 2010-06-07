@@ -15,7 +15,7 @@
 
 #include <QDataStream>
 
-static const int Omni_Version = 6;
+static const int Omni_Version = 7;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
@@ -297,8 +297,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mDendThreshold;
 
         QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
-        QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
-        OmDataPath path;
+	OmDataPath path;
         path.setPathQstr(dendStr);
 
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
@@ -306,8 +305,24 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
         	seg.mDend = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 		assert( size == seg.mDendSize );
 
+		QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
         	path.setPathQstr(dendValStr);
         	seg.mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+		assert( size == seg.mDendValuesSize );
+
+		QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(seg.GetDirectoryPath());
+		path.setPathQstr(dendEdgeDisabledByUser);
+		seg.mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+		assert( size == seg.mDendValuesSize );
+
+		// this is just a temporary object--should be refactored... (purcaro)
+		quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * seg.mDendValuesSize );
+		memset(edgeJoined, 0, sizeof(quint8) * seg.mDendValuesSize );
+		seg.mEdgeWasJoined = OmDataWrapperPtr( new OmDataWrapper( edgeJoined ) );
+
+		QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(seg.GetDirectoryPath());
+		path.setPathQstr(dendEdgeForceJoin);
+		seg.mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 		assert( size == seg.mDendValuesSize );
 	}
 

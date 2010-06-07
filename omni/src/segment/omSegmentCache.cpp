@@ -251,3 +251,15 @@ OmSegPtrList * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, co
 	QMutexLocker locker( &mMutex );
         return mImpl->getRootLevelSegIDs(offset, numToGet);
 }
+
+void OmSegmentCache::setAsValidated( const OmSegIDsList & segmentsToGroup )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->setAsValidated( segmentsToGroup );
+}
+
+void OmSegmentCache::unsetAsValidated( const OmSegIDsList & segmentsToGroup )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->unsetAsValidated( segmentsToGroup );
+}

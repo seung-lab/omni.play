@@ -3,23 +3,19 @@
 
 #include "common/omCommon.h"
 
-class OmGroup {
+class OmGroup : boost::noncopyable {
 public:
         OmGroup();
-        OmGroup(OmIDsSet & segids);
+        OmGroup(const OmSegIDsList & segids);
         ~OmGroup();
 
-        void AddIds(OmIDsSet & segids);
-
-protected:
-	OmColor GetRandomColor();
-
-        OmGroup(const OmGroup&);
-        OmGroup& operator= (const OmGroup&);
+        void AddIds( const OmSegIDsList & segids);
 
 private:
-	OmIDsSet mIDs;
+	OmSegIDsList mIDs;
 	OmColor mColor;
+
+	OmColor GetRandomColor();
 
 };
 
