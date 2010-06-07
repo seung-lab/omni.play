@@ -132,11 +132,6 @@ OmId OmSegment::getSegmentationID()
 	return mCache->getSegmentationID();
 }
 
-void OmSegment::splitChildLowestThreshold()
-{
-	mCache->splitChildLowestThreshold( this );
-}
-
 void OmSegment::splitTwoChildren(OmSegment * seg)
 {
 	mCache->splitTwoChildren(this, seg);

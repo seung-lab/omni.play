@@ -307,7 +307,6 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         }
 
 	OmSegment * s1 = seg1;
-
 	while (0 != s1->mParentSegID) {
 		if(s1->mParentSegID == seg2->mValue) {
 			debug("split", "splitting child from a direct parent\n");
@@ -408,30 +407,6 @@ twodone:
 	}
 }
 
-void OmSegmentCacheImpl::splitChildLowestThreshold( OmSegment * segmentUnknownLevel )
-{
-	OmSegment * root = findRoot(segmentUnknownLevel);
-
-	double minThreshold = 1;
-	OmSegment * segToRemove = NULL;
-	foreach( const OmSegID & childID, root->segmentsJoinedIntoMe ){
-		OmSegment * child = GetSegmentFromValue( childID );
-		if( child->getThreshold() < minThreshold){
-			minThreshold = child->getThreshold();
-			segToRemove = child;
-		}
-	}
-	
-	if( NULL == segToRemove ){
-		printf("no children to remove\n");
-		return;
-	}
-
-	splitChildFromParent( segToRemove );
-
-	printf("removed %d from parent\n", segToRemove->getValue() );
-}
-
 void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
 	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u,%f\n",
@@ -443,7 +418,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( child->mImmutable == parent->mImmutable &&
 	    1 == child->mImmutable ){
-		printf("not splitting child %d from parent %d: child immutability is %d, but parent's is %d\n",
+		printf("not splitting child %d from parent %d: child immutability is %d and parent's is %d\n",
 		       child->mValue, parent->mValue, child->mImmutable, parent->mImmutable );
 		return;
 	}
@@ -454,7 +429,6 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
         mGraph->get( child->mValue )->cut();
 	child->mParentSegID = 0;
 
-	//const float oldChildThreshold = child->mThreshold;
 	child->mThreshold = 0;
 
 	if( isSegmentSelected( parent->getValue() ) ){
@@ -463,14 +437,6 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	} else {
 		mSelectedSet.remove( child->getValue() );
 	}
-
-	/*
-	OmSegmentQueueElement parentElement = { child->mValue, oldChildThreshold };
-	parent->queue.push(parentElement);
-
-	OmSegmentQueueElement childElement = { parent->mValue, oldChildThreshold };
-	child->queue.push(childElement);
-	*/
 
 	++mNumTopLevelSegs;
 
@@ -580,7 +546,6 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	foreach( const OmSegID & id, old ){
 		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
 		set.insert( rootSegID );
-		//printf("inserting %d\n", rootSegID );
 	}
 }
 
@@ -741,69 +706,6 @@ const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, co
 	return seg->mColorInt;
 }
 
-/*
-void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
-{
-	loadTreeIfNeeded();
-
-	quint32 splitCounter = 0;
-	quint32 joinCounter = 0;
-
-	OmSegmentQueueElement sqe;
-	OmSegment * otherSeg;
-	int numRemoved;
-
-	const std::vector<DynamicTree<OmSegID>*> & treeNodeArray = mGraph->getTreeNodeArray();
-
-	OmSegment * seg;
-	for( unsigned int i = 1; i < mGraph->getSize(); ++i) {
-
-		if( NULL == treeNodeArray[ i ] ){
-			continue;
-		}
-
-		seg = GetSegmentFromValue( treeNodeArray[i]->getKey() );
-		assert(seg);
-
-		// try merging...
-		while( !seg->queue.empty() ){
-			
-			sqe = seg->queue.top();
-
-			if( sqe.threshold < stopPoint ){
-				break;
-			}
-
-			Join( i, sqe.segID, sqe.threshold );
-			seg->queue.pop();
-					
-			otherSeg = GetSegmentFromValue( sqe.segID );
-			assert( otherSeg );
-			assert( !otherSeg->queue.empty() );
-
-			numRemoved = otherSeg->queue.remove( i, sqe.threshold );
-			assert( 1 == numRemoved );
-
-			++joinCounter;
-		} 
-		
-		// try splitting...
-		if( 0 == seg->mParentSegID ){
-			continue;
-		}
-		
-		if( seg->mThreshold < stopPoint ){
-			splitChildFromParent( seg );
-			++splitCounter;
-		}
-        }
-
-	rerootSegmentLists();
-	clearCaches();	
-	printf("\t threshold %f: %d splits, %d joins performed\n", stopPoint, splitCounter, joinCounter );
-}
-*/
-
 void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 {
 	mSelectedSet.clear();
@@ -948,18 +850,18 @@ bool OmSegmentCacheImpl::splitChildFromParentInternal( const OmSegID childID )
 {
 	OmSegment * child = GetSegmentFromValue( childID );
 
+	if( child->mThreshold > 1 ){
+		return false;
+	}
+
 	assert( child->mParentSegID );
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 
 	if( child->mImmutable == parent->mImmutable &&
 	    1 == child->mImmutable ){
-		printf("not splitting child %d from parent %d: child immutability is %d, but parent's is %d\n",
+		printf("not splitting child %d from parent %d: child immutability is %d and parent's is %d\n",
 		       child->mValue, parent->mValue, child->mImmutable, parent->mImmutable );
-		return false;
-	}
-	
-	if( child->mThreshold > 1 ){
 		return false;
 	}
 	

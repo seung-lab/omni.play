@@ -210,12 +210,6 @@ void OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 	mImpl->splitTwoChildren(seg1, seg2);
 }
 
-void OmSegmentCache::splitChildLowestThreshold( OmSegment * segment )
-{
-	QMutexLocker locker( &mMutex );
-	mImpl->splitChildLowestThreshold( segment );
-}
-
 void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
 {	
 	QMutexLocker locker( &mMutex );

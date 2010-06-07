@@ -63,7 +63,6 @@ public:
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegID findRootID( const OmSegID segID );
 
-	void splitChildLowestThreshold( OmSegment * segment );
         void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);

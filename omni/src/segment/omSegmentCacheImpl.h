@@ -74,7 +74,6 @@ class OmSegmentCacheImpl {
 	OmSegID findRootID( const OmSegID segID );
 
 	OmSegment * getNMinuxOne(OmSegment * segment);
-	void splitChildLowestThreshold( OmSegment * segment );
 	void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 	void splitChildFromParent( OmSegment * child );
 

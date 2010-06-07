@@ -8,7 +8,6 @@
  */
 
 #include "common/omCommon.h"
-#include "segment/omSegmentQueue.h"
 
 class OmSegmentCache;
 class OmSegmentEdge;
@@ -21,7 +20,6 @@ public:
 
 	OmSegID getValue(){ return mValue; }
 
-	void splitChildLowestThreshold();
 	void splitTwoChildren(OmSegment * seg);
 
 	// color
@@ -62,7 +60,6 @@ private:
 	OmColor mColorInt;
 
 	OmSegIDsSet segmentsJoinedIntoMe;
-	//OmSegmentQueue queue;
 
 	OmId mParentSegID;
 	float mThreshold;
