@@ -306,10 +306,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
                 return;
         }
 
-	OmSegment * s1;
-	OmSegment * s2;
+	OmSegment * s1 = seg1;
 
-	s1 = seg1; 
 	while (0 != s1->mParentSegID) {
 		if(s1->mParentSegID == seg2->mValue) {
 			debug("split", "splitting child from a direct parent\n");
@@ -319,7 +317,7 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
 	} 
 	
-	s2 = seg2; 
+	OmSegment * s2 = seg2;
 	while (0 != s2->mParentSegID) {
 		if(s2->mParentSegID == seg1->mValue) {
 			debug("split", "splitting child from a direct parent\n");
@@ -329,17 +327,17 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
 	} 
 
-	OmSegment * one;
-	OmSegment * two;
-	OmSegment * small1;
-	OmSegment * small2;
+	OmSegment * one = seg1;
+	OmSegment * two = seg2;
+	OmSegment * small1 = seg1;
+	OmSegment * small2 = seg2;
 	float thresh1 = 1.0;
 	float thresh2 = 1.0;
 	int count = 0;
 	s1 = seg1; 
-	do {
+	while (0 != s1->mParentSegID){
 		s2 = seg2;
-		do {
+		while (0 != s2->mParentSegID){
 			count++;
 			//debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
 			//debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
@@ -361,9 +359,9 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 				small2 = s2;
 			}
 			s2 = GetSegmentFromValue(s2->mParentSegID);
-		} while (0 != s2->mParentSegID);
+		} 
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
-	} while (0 != s1->mParentSegID);
+	}
 
 onedone:
 
@@ -372,9 +370,9 @@ onedone:
         count = 0;
 
         s1 = seg2;
-        do {
+	while (0 != s1->mParentSegID){
 		s2 = seg1;
-                do {
+                while (0 != s2->mParentSegID){
                         count++;
                         //debug("split", "s1 = %u, s2 = %u\n", s1->getValue(), s2->getValue());
                         //debug("split", "s1 = %f, s2 = %f\n", s1->getThreshold(), s2->getThreshold());
@@ -396,11 +394,13 @@ onedone:
                                 small2 = s2;
                         }
                         s2 = GetSegmentFromValue(s2->mParentSegID);
-                } while (0 != s2->mParentSegID);
+                } 
                 s1 = GetSegmentFromValue(s1->mParentSegID);
-        } while (0 != s1->mParentSegID);
+        } 
 
 twodone:
+	assert(one);
+	assert(two);
 	if(one->mThreshold > two->mThreshold) {
 		splitChildFromParent(one);
 	} else {
