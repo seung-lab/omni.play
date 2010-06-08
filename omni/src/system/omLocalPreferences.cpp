@@ -228,6 +228,7 @@ bool OmLocalPreferences::getDefault2DViewFrameIn3D()
 	Instance()->m2DViewFrameIn3D = readSettingBool("2DViewFrameIn3D", defaultRet );
 	return get2DViewFrameIn3D();
 }
+
 bool OmLocalPreferences::get2DViewFrameIn3D()
 {
 	return Instance()->m2DViewFrameIn3D;
@@ -244,6 +245,24 @@ bool OmLocalPreferences::getDefaultDrawCrosshairsIn3D()
 	const bool defaultRet = false;
 	Instance()->mDrawCrosshairsIn3D = readSettingBool( "DrawCrosshairsIn3D", defaultRet );
 	return getDrawCrosshairsIn3D();
+}
+
+bool OmLocalPreferences::get2DViewPaneIn3D()
+{
+        return Instance()->m2DViewPaneIn3D;
+}
+
+bool OmLocalPreferences::getDefault2DViewPaneIn3D()
+{
+        const bool defaultRet = false;
+        Instance()->m2DViewPaneIn3D = readSettingBool("2DViewPaneIn3D", defaultRet );
+        return get2DViewPaneIn3D();
+}
+
+void OmLocalPreferences::set2DViewPaneIn3D(const bool value)
+{
+        Instance()->m2DViewPaneIn3D = value;
+        writeSettingBool("2DViewPaneIn3D", value);
 }
 
 bool OmLocalPreferences::getDrawCrosshairsIn3D()

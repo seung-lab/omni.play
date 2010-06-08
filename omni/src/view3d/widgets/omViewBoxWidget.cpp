@@ -150,12 +150,16 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 
 void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawables)
 {
+	if(!OmLocalPreferences::get2DViewPaneIn3D())
+	{
+		return;
+	}
 	if(!OmProject::IsChannelValid(1)) {
 		return;
 	}
-	OmChannel& channel = OmProject::GetChannel( 1);
+	OmChannel& channel = OmProject::GetChannel(1);
 	Vector3f resolution = channel.GetDataResolution();
-	Vector3f tileLength = resolution*128.0;
+	Vector3i extents = channel.GetDataDimensions();
 
 	glColor3fv(OMGL_WHITE);
         glEnable(GL_TEXTURE_2D);
@@ -169,9 +173,15 @@ void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawable
 	for (vector < Drawable * >::iterator it = drawables.begin(); drawables.end() != it; it++) {
 		Drawable *d = *it;
 
-		SpaceCoord thisCoord = d->tileCoord.Coordinate;
+		int level = d->tileCoord.Level;
+		Vector3f tileLength = resolution*128.0*OMPOW(2,level);
 
-		debug ("chandata", "thisCoord.(x,y,z): (%f,%f,%f)\n", thisCoord.x,thisCoord.y,thisCoord.z);
+		SpaceCoord thisCoord = d->tileCoord.Coordinate;
+		debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
+		NormCoord normCoord = channel.SpaceToNormCoord(d->tileCoord.Coordinate);
+		//thisCoord = channel.NormToDataCoord(normCoord);
+
+		debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
 		glBindTexture(GL_TEXTURE_2D, d->gotten_id->GetTextureID());
 		glBegin(GL_QUADS);
 
@@ -238,6 +248,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawable
 			dataMin.x = 0.0;
 			dataMin.y = 0.0;
 		}
+
 		debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
 		debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
 		debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);

@@ -34,6 +34,10 @@ public:
 	static bool getDefault2DViewFrameIn3D();
 	static void set2DViewFrameIn3D(const bool);
 
+	static bool get2DViewPaneIn3D();
+	static bool getDefault2DViewPaneIn3D();
+	static void set2DViewPaneIn3D(const bool);
+
 	static bool getDrawCrosshairsIn3D();
 	static bool getDefaultDrawCrosshairsIn3D();
 	static void setDrawCrosshairsIn3D(const bool);
@@ -80,6 +84,7 @@ private:
 	// Thus bypassing any file I/O
 	bool * stickyCrosshairMode;
 	bool m2DViewFrameIn3D;
+	bool m2DViewPaneIn3D;
 	bool mDrawCrosshairsIn3D;
 	bool mDoDiscoBall;
 	int mCrosshairValue;

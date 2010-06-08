@@ -22,6 +22,8 @@ LocalPreferences3d::LocalPreferences3d(QWidget * parent)
 		this, SLOT(on_crosshairSlider_valueChanged()));
 	connect(viewSquareCheckBox, SIGNAL(stateChanged(int)), 
 		this, SLOT(on_viewSquareCheckBox_stateChanged()));
+	connect(viewPaneCheckBox, SIGNAL(stateChanged(int)), 
+		this, SLOT(on_viewPaneCheckBox_stateChanged()));
 	connect(crosshairCheckBox, SIGNAL(stateChanged(int)), 
 		this, SLOT(on_crosshairCheckBox_stateChanged()));
 }
@@ -39,24 +41,30 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox()
 	viewSquareCheckBox->setChecked(viewSquare);
         gridLayout->addWidget(viewSquareCheckBox, 1, 0, 1, 1);
 
+	viewPaneCheckBox = new QCheckBox(groupBox);
+	viewPaneCheckBox->setText("2D Panes in 3D View");
+	bool viewPane = OmLocalPreferences::getDefault2DViewPaneIn3D();
+	viewPaneCheckBox->setChecked(viewPane);
+        gridLayout->addWidget(viewPaneCheckBox, 2, 0, 1, 1);
+
 	// Draw Crosshairs in 3D CheckBox
 	crosshairCheckBox = new QCheckBox(groupBox);
 	crosshairCheckBox->setText("3D Crosshairs");
 	bool crosshair = OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
 	crosshairCheckBox->setChecked(crosshair);
-        gridLayout->addWidget(crosshairCheckBox, 2, 0, 1, 1);
+        gridLayout->addWidget(crosshairCheckBox, 3, 0, 1, 1);
 
 	// Size of Crosshair
 	crosshairLabel = new QLabel(groupBox);
 	crosshairLabel->setText("Crosshair Size: ");
 	crosshairLabel->setEnabled(crosshair);
-	gridLayout->addWidget(crosshairLabel, 3, 0, 1, 1);
+	gridLayout->addWidget(crosshairLabel, 4, 0, 1, 1);
 
 	crosshairValue = new QLabel(groupBox);
 	unsigned int value = OmLocalPreferences::getDefaultCrosshairValue();
 	crosshairValue->setNum(((float)value)/20.0);
 	crosshairValue->setEnabled(crosshair);
-	gridLayout->addWidget(crosshairValue, 3, 1, 1, 1);  
+	gridLayout->addWidget(crosshairValue, 4, 1, 1, 1);  
 
 	crosshairSlider = new QSlider(groupBox);
 	crosshairSlider->setObjectName(QString::fromUtf8("crosshairSlider"));
@@ -68,15 +76,14 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox()
 	crosshairSlider->setValue(value);
 	crosshairSlider->setEnabled(crosshair);
 
-	gridLayout->addWidget(crosshairSlider, 4, 0, 1, 3);
-
+	gridLayout->addWidget(crosshairSlider, 5, 0, 1, 3);
 
         // 3D Disco Ball CheckBox
         discoCheckBox = new QCheckBox(groupBox);
         discoCheckBox->setText("Partial Transparency in 3D");
         bool discoBall = OmLocalPreferences::getDefaultDoDiscoBall();
         discoCheckBox->setChecked(discoBall);
-        gridLayout->addWidget(discoCheckBox, 5, 0, 1, 1);
+        gridLayout->addWidget(discoCheckBox, 6, 0, 1, 1);
 
 
   	return groupBox;
@@ -97,6 +104,14 @@ LocalPreferences3d::on_viewSquareCheckBox_stateChanged()
 {
         const bool val = GuiUtils::getBoolState( viewSquareCheckBox->checkState() );
         OmLocalPreferences::set2DViewFrameIn3D( val );
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+}
+
+void
+LocalPreferences3d::on_viewPaneCheckBox_stateChanged()
+{
+        const bool val = GuiUtils::getBoolState( viewPaneCheckBox->checkState() );
+        OmLocalPreferences::set2DViewPaneIn3D( val );
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
