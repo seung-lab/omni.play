@@ -576,6 +576,19 @@ void OmSegmentation::FlushDend()
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
 }
 
+void OmSegmentation::FlushDendUserEdges()
+{
+	OmDataPath path;
+
+	QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(GetDirectoryPath());
+	path.setPathQstr(dendEdgeDisabledByUser);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeDisabledByUser->getQuint8Ptr());
+
+	QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(GetDirectoryPath());
+	path.setPathQstr(dendEdgeForceJoin);
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
+}
+
 void OmSegmentation::ReloadDendrogram()
 {
 	mSegmentCache->resetGlobalThreshold(mDendThreshold);

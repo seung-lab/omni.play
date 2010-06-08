@@ -95,6 +95,7 @@ void OmProject::Save()
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
+		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
 
 	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());

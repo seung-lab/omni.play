@@ -92,6 +92,7 @@ public:
 
 	void FlushDirtySegments();
 	void FlushDend();
+	void FlushDendUserEdges();
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
