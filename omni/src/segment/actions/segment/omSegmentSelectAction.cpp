@@ -2,6 +2,7 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
+#include "system/events/omViewEvent.h"
 #include "volume/omSegmentation.h"
 
 /////////////////////////////////

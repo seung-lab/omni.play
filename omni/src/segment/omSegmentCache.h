@@ -74,6 +74,8 @@ public:
 
 	quint32 getMaxValue();
 
+	OmSegmentCacheImpl * GetCacheImpl();
+
 	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 
 	void setAsValidated( const OmSegIDsList & segmentsToGroup );

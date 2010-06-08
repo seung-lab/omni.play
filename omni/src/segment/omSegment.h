@@ -77,6 +77,7 @@ private:
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
+	friend class OmSegmentSplitAction;
 };
 
 #endif

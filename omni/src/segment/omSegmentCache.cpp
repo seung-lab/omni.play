@@ -228,6 +228,10 @@ void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 	mImpl->UnJoinTheseSegments( segmentList);
 }
 
+OmSegmentCacheImpl* OmSegmentCache::GetCacheImpl( )
+{
+	return mImpl;
+}
 quint32 OmSegmentCache::getMaxValue()
 {
 	QMutexLocker locker( &mMutex );

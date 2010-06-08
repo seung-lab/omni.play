@@ -1,4 +1,5 @@
 #include "segment/omSegmentCacheImpl.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/omSegmentEdge.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
@@ -310,7 +311,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 	while (0 != s1->mParentSegID) {
 		if(s1->mParentSegID == seg2->mValue) {
 			debug("split", "splitting child from a direct parent\n");
-			splitChildFromParent(s1);
+			(new OmSegmentSplitAction(s1, s1->getSegmentationID()))->Run();
+			//splitChildFromParent(s1);
 			return;
 		}
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
@@ -320,7 +322,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 	while (0 != s2->mParentSegID) {
 		if(s2->mParentSegID == seg1->mValue) {
 			debug("split", "splitting child from a direct parent\n");
-			splitChildFromParent(s2);
+			(new OmSegmentSplitAction(s2, s2->getSegmentationID()))->Run();
+			//splitChildFromParent(s2);
 			return;
 		}
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
@@ -360,7 +363,8 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         }
 
         assert(minChild != 0);
-        splitChildFromParent(minChild);
+	(new OmSegmentSplitAction(minChild, minChild->getSegmentationID()))->Run();
+        //splitChildFromParent(minChild);
 }
 
 void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
