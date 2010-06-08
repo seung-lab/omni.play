@@ -1,11 +1,10 @@
-#include "omSegmentSplitAction.h"
-#include "segment/omSegment.h"
-#include "volume/omSegmentation.h"
 #include "project/omProject.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "segment/omSegment.h"
 #include "segment/omSegmentEdge.h"
-#include "system/omEventManager.h"
-#include "system/events/omViewEvent.h"
 #include "system/events/omSegmentEvent.h"
+#include "system/omEventManager.h"
+#include "volume/omSegmentation.h"
 
 /////////////////////////////////
 ///////
@@ -24,7 +23,9 @@ OmSegmentSplitAction::OmSegmentSplitAction(OmSegment * seg1, OmSegment * seg2 )
 ///////          Action Methods
 void OmSegmentSplitAction::Action()
 {
-	edge = mSeg1->splitTwoChildren(mSeg2);
+	OmSegmentation & segmentation = OmProject::GetSegmentation( mSeg1->getSegmentationID() );
+	edge = segmentation.splitTwoChildren(mSeg1, mSeg2);
+
 	if( NULL == edge ){
 		desc = "Segments not in same tree";
 	} else {

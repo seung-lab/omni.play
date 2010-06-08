@@ -567,13 +567,7 @@ void OmSegmentation::FlushDend()
 	path.setPathQstr(dendValStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mDendValues->getFloatPtr());
 
-	QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(GetDirectoryPath());
-	path.setPathQstr(dendEdgeDisabledByUser);
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeDisabledByUser->getQuint8Ptr());
-
-	QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(GetDirectoryPath());
-	path.setPathQstr(dendEdgeForceJoin);
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
+	FlushDendUserEdges();
 }
 
 void OmSegmentation::FlushDendUserEdges()
@@ -604,11 +598,13 @@ void OmSegmentation::UnJoinTheseSegments( const OmIDsSet & segmentIds)
 	mSegmentCache->UnJoinTheseSegments(segmentIds);
 }
 
-void OmSegmentation::SetDendThreshold( float t ){
+void OmSegmentation::SetDendThreshold( float t )
+{
 	mDendThreshold = t;
 }
 
-void OmSegmentation::SetDendThresholdAndReload( const float t ){
+void OmSegmentation::SetDendThresholdAndReload( const float t )
+{
 	if( t == mDendThreshold ){
 		return;
 	}
@@ -620,3 +616,9 @@ OmSegmentEdge * OmSegmentation::JoinEdge( OmSegmentEdge * e )
 {
 	return mSegmentCache->JoinEdge(e);
 }
+
+OmSegmentEdge * OmSegmentation::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+{
+	return mSegmentCache->splitTwoChildren(seg1, seg2);
+}
+

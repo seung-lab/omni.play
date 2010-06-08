@@ -20,8 +20,6 @@ public:
 
 	OmSegID getValue(){ return mValue; }
 
-	OmSegmentEdge * splitTwoChildren(OmSegment * seg);
-
 	// color
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return mColorInt; }
