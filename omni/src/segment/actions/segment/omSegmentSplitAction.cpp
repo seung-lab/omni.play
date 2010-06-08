@@ -23,7 +23,7 @@ OmSegmentSplitAction::OmSegmentSplitAction(OmSegment* child, OmId segmentationId
 void OmSegmentSplitAction::Action()
 {
 	OmSegmentation& segmentation = OmProject::GetSegmentation(mSegmentationId);
-	mParentId = mChild->mParentSegID; 
+	mParentId = mChild->getParentSegID(); 
 	segmentation.GetSegmentCache()->GetCacheImpl()->splitChildFromParent(mChild);
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	
@@ -44,7 +44,8 @@ string OmSegmentSplitAction::Description()
 {
 	QString lineItem = QString("Split: ");
 
-	
-	lineItem += QString("seg %1 from %2").arg(mChild->getValue()).arg(mParentId);
+
+	debug("splitz","child->mParentSegID %i \n",mChild->getParentSegID());	
+	lineItem += QString("seg %1 from %2").arg(mChild->getValue()).arg(mChild->getParentSegID());
 	return lineItem.toStdString();
 }

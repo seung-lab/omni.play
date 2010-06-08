@@ -373,6 +373,7 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 			child->getValue(), child->mThreshold);
 
 	assert( child->mParentSegID );
+	debug("splitz","child->mParentSegID %i \n",child->mParentSegID);
 
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
 
