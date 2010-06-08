@@ -1,5 +1,4 @@
 #include "segment/omSegmentCacheImpl.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/omSegmentEdge.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
@@ -296,24 +295,22 @@ void OmSegmentCacheImpl::flushDirtySegments()
 	}
 }
 
-void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge * OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
-		return;
+		return NULL;
 	}
         if( seg1 == seg2 ){
                 debug("dend", "can't split object from self.\n");
-                return;
+                return NULL;
         }
 
 	OmSegment * s1 = seg1;
 	while (0 != s1->mParentSegID) {
 		if(s1->mParentSegID == seg2->mValue) {
 			debug("split", "splitting child from a direct parent\n");
-			(new OmSegmentSplitAction(s1, s1->getSegmentationID()))->Run();
-			//splitChildFromParent(s1);
-			return;
+			return splitChildFromParent(s1);
 		}
         	s1 = GetSegmentFromValue(s1->mParentSegID);	
 	} 
@@ -322,9 +319,7 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 	while (0 != s2->mParentSegID) {
 		if(s2->mParentSegID == seg1->mValue) {
 			debug("split", "splitting child from a direct parent\n");
-			(new OmSegmentSplitAction(s2, s2->getSegmentationID()))->Run();
-			//splitChildFromParent(s2);
-			return;
+			return splitChildFromParent(s2);
 		}
         	s2 = GetSegmentFromValue(s2->mParentSegID);	
 	} 
@@ -340,7 +335,7 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
           	}
           	if (oneID == twoID) {
               		nearestCommonPred = one;
-              	break;
+			break;
           	}
         }
 
@@ -363,11 +358,10 @@ void OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
         }
 
         assert(minChild != 0);
-	(new OmSegmentSplitAction(minChild, minChild->getSegmentationID()))->Run();
-        //splitChildFromParent(minChild);
+        return splitChildFromParent(minChild);
 }
 
-void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
+OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
 	debug("split", "OmSegmentCacheImpl::splitChildFromParent=%u,%f\n",
 			child->getValue(), child->mThreshold);
@@ -381,10 +375,12 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	    1 == child->mImmutable ){
 		printf("not splitting child %d from parent %d: child immutability is %d and parent's is %d\n",
 		       child->mValue, parent->mValue, child->mImmutable, parent->mImmutable );
-		return;
+		return NULL;
 	}
 
 	debug("split", "\tparent = %u\n", parent->getValue());
+
+	OmSegmentEdge * edgeThatGotBroken = new OmSegmentEdge( parent, child, child->mThreshold );
 
 	parent->segmentsJoinedIntoMe.erase( child->getValue() );
         mGraph->get( child->mValue )->cut();
@@ -420,6 +416,8 @@ void OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	}
 
 	clearCaches();
+
+	return edgeThatGotBroken;
 }
 
 void OmSegmentCacheImpl::SaveAllLoadedPages()
@@ -510,7 +508,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	}
 }
 
-void OmSegmentCacheImpl::Join( OmSegmentEdge * e )
+OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 {
 	DynamicTree<OmSegID> * childRootDT = mGraph->get( e->childID )->findRoot();
 
@@ -520,7 +518,7 @@ void OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 	if( childRoot->mImmutable != parent->mImmutable ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
 		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
-		return;
+		return NULL;
 	}
 
 	childRootDT->join( mGraph->get( e->parentID ) );
@@ -535,6 +533,8 @@ void OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 	mSelectedSet.remove( e->childID );
 
 	--mNumTopLevelSegs;
+
+	return new OmSegmentEdge( parent, childRoot, e->threshold );
 }
 
 OmSegmentEdge * OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel )

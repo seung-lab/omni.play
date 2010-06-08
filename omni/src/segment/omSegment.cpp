@@ -132,9 +132,9 @@ OmId OmSegment::getSegmentationID()
 	return mCache->getSegmentationID();
 }
 
-void OmSegment::splitTwoChildren(OmSegment * seg)
+OmSegmentEdge * OmSegment::splitTwoChildren(OmSegment * seg)
 {
-	mCache->splitTwoChildren(this, seg);
+	return mCache->splitTwoChildren(this, seg);
 }
 
 void OmSegment::SetImmutable( const bool immutable)

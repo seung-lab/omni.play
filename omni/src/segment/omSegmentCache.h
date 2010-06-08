@@ -63,8 +63,9 @@ public:
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegID findRootID( const OmSegID segID );
 
-        void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+        OmSegmentEdge * splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
+	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
@@ -73,8 +74,6 @@ public:
 	void resetGlobalThreshold( const float stopPoint );
 
 	quint32 getMaxValue();
-
-	OmSegmentCacheImpl * GetCacheImpl();
 
 	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
 

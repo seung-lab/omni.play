@@ -37,7 +37,6 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
 	if( 100 < segs->size() ){
-		printf("number of segments retrieved: %d\n", segs->size()  );
 		assert( 0 );
 	}
 	

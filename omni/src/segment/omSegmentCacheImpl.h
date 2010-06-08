@@ -74,11 +74,12 @@ class OmSegmentCacheImpl {
 	OmSegID findRootID( const OmSegID segID );
 
 	OmSegment * getNMinuxOne(OmSegment * segment);
-	void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
-	void splitChildFromParent( OmSegment * child );
+	OmSegmentEdge * splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+	OmSegmentEdge * splitChildFromParent( OmSegment * child );
 
 	void turnBatchModeOn(const bool batchMode);
 	
+	OmSegmentEdge * Join( OmSegmentEdge * e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
@@ -151,7 +152,6 @@ class OmSegmentCacheImpl {
 
 	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
 
-	void Join( OmSegmentEdge * e );
 	OmSegmentEdge * Join( OmSegment *, OmSegment * );
 	OmSegmentEdge * Join( const OmId, const OmId );
 	void rerootSegmentLists();

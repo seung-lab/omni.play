@@ -204,10 +204,10 @@ OmSegID OmSegmentCache::findRootID_noLock( const OmSegID segID )
 	return mImpl->findRootID( segID );
 }
 
-void OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge * OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	QMutexLocker locker( &mMutex );
-	mImpl->splitTwoChildren(seg1, seg2);
+	return mImpl->splitTwoChildren(seg1, seg2);
 }
 
 void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
@@ -228,10 +228,6 @@ void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 	mImpl->UnJoinTheseSegments( segmentList);
 }
 
-OmSegmentCacheImpl* OmSegmentCache::GetCacheImpl( )
-{
-	return mImpl;
-}
 quint32 OmSegmentCache::getMaxValue()
 {
 	QMutexLocker locker( &mMutex );
@@ -260,4 +256,10 @@ void OmSegmentCache::unsetAsValidated( const OmSegIDsList & segmentsToGroup )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->unsetAsValidated( segmentsToGroup );
+}
+
+OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->Join( e );
 }

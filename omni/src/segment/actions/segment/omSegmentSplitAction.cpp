@@ -2,18 +2,20 @@
 #include "segment/omSegment.h"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentCacheImpl.h"
+#include "segment/omSegmentEdge.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
+#include "system/events/omSegmentEvent.h"
 
 /////////////////////////////////
 ///////
 ///////          OmSegmentSplitAction
 ///////
-OmSegmentSplitAction::OmSegmentSplitAction(OmSegment* child, OmId segmentationId)
-	: mSegmentationId( segmentationId ),
-	  mChild(child)
+OmSegmentSplitAction::OmSegmentSplitAction(OmSegment * seg1, OmSegment * seg2 )
+	: mSeg1(seg1)
+	, mSeg2(seg2)
+	, edge(NULL)
+	, desc("Splitting: ")
 {
 	SetUndoable(true);
 }
@@ -22,30 +24,34 @@ OmSegmentSplitAction::OmSegmentSplitAction(OmSegment* child, OmId segmentationId
 ///////          Action Methods
 void OmSegmentSplitAction::Action()
 {
-	OmSegmentation& segmentation = OmProject::GetSegmentation(mSegmentationId);
-	mParentId = mChild->getParentSegID(); 
-	segmentation.GetSegmentCache()->GetCacheImpl()->splitChildFromParent(mChild);
-        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	
+	edge = mSeg1->splitTwoChildren(mSeg2);
+	if( NULL == edge ){
+		desc = "Segments not in same tree";
+	} else {
+		desc = QString("Split seg %1 from %2")
+			.arg(edge->childID)
+			.arg(edge->parentID);
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+	}
 }
 
 void OmSegmentSplitAction::UndoAction()
 {
-	OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
-	OmSegIDsSet segIds;
-	segIds.insert(mParentId);
-	segIds.insert(mChild->getValue());
-	segmentation.JoinTheseSegments(segIds);	
-             OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	if( NULL == edge ){
+		return;
+	}
 
+	OmSegmentation & segmentation = OmProject::GetSegmentation( mSeg1->getSegmentationID() );
+	edge = segmentation.JoinEdge( edge );
+
+	desc = QString("Joined seg %1 to %2")
+		.arg(edge->childID)
+		.arg(edge->parentID);
+
+	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
 string OmSegmentSplitAction::Description()
 {
-	QString lineItem = QString("Split: ");
-
-
-	debug("splitz","child->mParentSegID %i \n",mChild->getParentSegID());	
-	lineItem += QString("seg %1 from %2").arg(mChild->getValue()).arg(mChild->getParentSegID());
-	return lineItem.toStdString();
+	return desc.toStdString();
 }

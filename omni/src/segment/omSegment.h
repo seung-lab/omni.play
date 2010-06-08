@@ -20,7 +20,7 @@ public:
 
 	OmSegID getValue(){ return mValue; }
 
-	void splitTwoChildren(OmSegment * seg);
+	OmSegmentEdge * splitTwoChildren(OmSegment * seg);
 
 	// color
 	void reRandomizeColor();
@@ -77,7 +77,6 @@ private:
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
-	friend class OmSegmentSplitAction;
 };
 
 #endif

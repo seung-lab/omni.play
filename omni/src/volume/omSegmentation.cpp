@@ -616,3 +616,7 @@ void OmSegmentation::SetDendThresholdAndReload( const float t ){
 	ReloadDendrogram();
 }
 
+OmSegmentEdge * OmSegmentation::JoinEdge( OmSegmentEdge * e )
+{
+	return mSegmentCache->JoinEdge(e);
+}

@@ -2,6 +2,7 @@
 #include "gui/toolbars/dendToolbar.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -130,7 +131,6 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 
 	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
 
-#if 1
 	OmId segmentationID, segmentID;
         if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
                 debug("split", "segmentID=%i\n", segmentID);
@@ -141,7 +141,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 			return;
 		}
 
-                seg1->splitTwoChildren(seg2);
+		(new OmSegmentSplitAction(seg1, seg2))->Run();
 
                 mViewGroupState->SetSplitMode(false);
         } else {
@@ -150,12 +150,6 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
                         mViewGroupState->SetSplitMode(segmentationID, segment_id);
                 }
         }
-#else
-
-	OmSegment * seg = segmentation.GetSegment(segment_id);
-        seg->splitTwoChildren(seg);
-        OmStateManager::SetSystemModePrev();
-#endif
 }
 
 /////////////////////////////////

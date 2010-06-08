@@ -71,13 +71,13 @@ public:
 	void SetSegmentSelected(OmId id, bool selected);
 	void SetAllSegmentsSelected(bool selected);
 	const OmIDsSet& GetSelectedSegmentIds();
+	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
 	void JoinTheseSegments( const OmIDsSet & segmentIds);
 	void UnJoinTheseSegments( const OmIDsSet & segmentIds);
 	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
 
 	OmId GetNumSegments();
 	OmId GetNumTopSegments();
-	
 	bool AreSegmentsSelected();
 	
 	//group management

@@ -1,5 +1,6 @@
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
@@ -821,7 +822,6 @@ void OmView2d::resetWindow()
 
 void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 {
-#if 1
         OmId segmentationID = mImageId;
 	OmId segmentID;
         if(SEGMENTATION != mVolumeType) {
@@ -842,7 +842,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
                         return;
                 }
 
-        	seg1->splitTwoChildren(seg2);
+		(new OmSegmentSplitAction(seg1, seg2))->Run();
 
 		mViewGroupState->SetSplitMode(false);
 	} else {
@@ -853,27 +853,4 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 		}
 	}
 
-#else
-	SegmentDataWrapper * sdw = getSelectedSegment( event );
-	if( NULL == sdw ){
-		return;
-	}
-
-	if( SEGMENTATION != mVolumeType ){
-		return;
-	}
-
-	OmSegment * seg1 = sdw->getSegment();
-
-	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-	OmId segmentationID = mImageId;
-	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
-
-	OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
-	OmSegment * seg2 = segmentation.GetSegment(segid);
-		
-	seg1->splitTwoChildren(seg2);
-
-	OmStateManager::SetSystemModePrev();
-#endif
 }
