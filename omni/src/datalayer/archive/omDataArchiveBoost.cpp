@@ -26,3 +26,33 @@ QDataStream &operator>>(QDataStream & in, OmIDsSet & set )
 
 	return in;
 }
+
+QDataStream &operator<<(QDataStream & out, const OmSegIDsIntMap & map )
+{
+        out << (quint32)map.size();
+
+        OmSegIDsIntMap::const_iterator iter;
+        for( iter = map.begin(); iter != map.end(); ++iter ){
+                out << (*iter).first;
+                out << (*iter).second;
+        }
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmSegIDsIntMap & map )
+{
+        quint32 size;
+        in >> size;
+
+	quint64 myInt;
+	OmSegID segid;
+        for( quint32 i = 0; i < size; ++i ){
+                in >> myInt;
+                in >> segid;
+                map.insert(OmSegIDIntPair(myInt, segid));
+        }
+
+        return in;
+}
+

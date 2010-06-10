@@ -522,6 +522,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		mEditedSegmentation = segid;
 		mCurrentSegmentId = seg;
 		mUpdateCoordsSet.insert(gDC);
+		Refresh();
 		if (gDC.x > mBrushToolMaxX) {
 			mBrushToolMaxX = gDC.x;
 		}
@@ -1000,7 +1001,7 @@ void OmView2d::myUpdate()
 		mUpdateCoordsSet.clear();
 	}
 
-	if (!mDoRefresh && mEditedSegmentation) {
+	if (mDoRefresh && mEditedSegmentation) {
 		Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 		int tileLength = OmProject::GetSegmentation(mEditedSegmentation).GetChunkDimension();
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mEditedSegmentation);
@@ -1045,8 +1046,7 @@ void OmView2d::myUpdate()
 						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen (false));
 
 						cache->Remove(tileCoord);
-						//debug("FIXME", << tileCoord << endl;
-						//debug("FIXME", << "here " << endl;
+						//debug("FIXME", "tileCoord\n");
 					}
 					//debug("FIXME", << " x,y,z a:" << x << ", "  << y << ", " << z << endl;
 

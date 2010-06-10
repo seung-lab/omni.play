@@ -12,11 +12,3 @@ QString SegmentListValid::getTabTitle()
 	return QString("Valid");
 }
 
-bool SegmentListValid::shouldSegmentBeAdded( OmSegment * seg )
-{
-	if( !seg->GetImmutable() ) {
-		return false;
-	}
-
-	return true;
-}

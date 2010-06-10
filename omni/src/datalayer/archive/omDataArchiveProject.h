@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
+#include "system/omGroups.h"
 
 class OmDataPath;
 class OmProject;
@@ -73,5 +74,12 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se );
 QDataStream &operator>>(QDataStream & in, OmSegmentEdge & sc );
+
+QDataStream &operator<<(QDataStream & out, const OmGroups & g );
+QDataStream &operator>>(QDataStream & in, OmGroups & g );
+
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & );
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & );
+
 
 #endif

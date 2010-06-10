@@ -35,32 +35,25 @@ quint32 SegmentListBase::getMaxSegmentValue()
 	return currentSDW.getMaxSegmentValue();
 }
 
-OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const OmId firstSegmentID )
+
+OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset, const bool useOffset)
 {
 	assert( haveValidSDW );
 
-	int offset = firstSegmentID - (firstSegmentID % getNumSegmentsPerPage() );
-	return doGetSegmentsToDisplay( offset );
-}
-
-OmSegPtrList * SegmentListBase::doGetSegmentsToDisplay( const unsigned int in_offset )
-{
-	assert( haveValidSDW );
-
-	unsigned int offset = 0;
-	if( getMaxSegmentValue() > in_offset ){
-		offset = in_offset;
+	unsigned int offset = in_offset - (in_offset % getNumSegmentsPerPage() );
+	OmSegID startSeg = 0;
+	if(!useOffset){
+		startSeg = in_offset;
 	}
 
-	OmSegPtrList * segIDsAll = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage() );
+	OmSegPtrListWithPage * segIDsAll = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage(), getRootSegType(), startSeg);
+	currentPageNum = segIDsAll->mPageOffset;
+	printf("currentPageNum %i\n", currentPageNum);
 
 	OmSegPtrList * ret = new OmSegPtrList();
 
 	OmSegPtrList::const_iterator iter;
-	for( iter = segIDsAll->begin(); iter != segIDsAll->end(); ++iter){
-		if( !shouldSegmentBeAdded( *iter ) ){
-			continue;
-		}
+	for( iter = segIDsAll->list.begin(); iter != segIDsAll->list.end(); ++iter){
 		ret->push_back( *iter );
 	}
 
@@ -70,10 +63,11 @@ OmSegPtrList * SegmentListBase::doGetSegmentsToDisplay( const unsigned int in_of
 }
 
 void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							    const OmId segmentJustSelectedID)
+							    const OmId segmentJustSelectedID, 
+							    const bool useOffset)
 {
 	assert( haveValidSDW );
-	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID );
+	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
 	segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment, 
 							     segmentJustSelectedID, 
 							     currentSDW,
@@ -113,7 +107,7 @@ void SegmentListBase::goToNextPage()
 		currentPageNum--;
 		offset = currentPageNum * getNumSegmentsPerPage();
 	}
-	populateSegmentElementsListWidget( false, offset );
+	populateSegmentElementsListWidget( false, offset, true);
 }
 
 void SegmentListBase::goToPrevPage()
@@ -123,7 +117,7 @@ void SegmentListBase::goToPrevPage()
 		currentPageNum = 0;
 	}
 	int offset = currentPageNum * getNumSegmentsPerPage();
-	populateSegmentElementsListWidget( false, offset );
+	populateSegmentElementsListWidget( false, offset, true);
 }
 
 void SegmentListBase::makeSegmentationActive(const OmId segmentationID)

@@ -234,7 +234,9 @@ void OmSegmentContextMenu::addGroup()
         debug("validate", "OmSegmentContextMenu::addGroup\n");
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                seg.AddGroup(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+                OmSegIDsSet set;
+		set.insert(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+                seg.SetGroup(set, VALIDROOT, QString("Valid"));
         }
 }
 
@@ -243,7 +245,9 @@ void OmSegmentContextMenu::deleteGroup()
         debug("validate", "OmSegmentContextMenu::addGroup\n");
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                seg.DeleteGroup(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+                OmSegIDsSet set;
+                set.insert(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+                seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
         }
 }
 

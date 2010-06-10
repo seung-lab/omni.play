@@ -1,7 +1,7 @@
 #include "system/omGroup.h"
 #include "common/omDebug.h"
 
-OmGroup::OmGroup()
+OmGroup::OmGroup(OmId id)
 {
 	mColor = GetRandomColor();
 }

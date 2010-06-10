@@ -16,6 +16,7 @@
 #include "common/omCommon.h"
 #include "segment/DynamicTree.cpp"
 #include "segment/DynamicTreeContainer.cpp"
+#include "system/omGroup.h"
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
@@ -36,6 +37,7 @@ template class OmGenericManager< OmFilter2d >;
 template class OmGenericManager< OmChannel >;
 template class OmGenericManager< OmSegmentation >;
 template class OmGenericManager< OmManageableObject >;
+template class OmGenericManager< OmGroup >;
 
 template class DynamicTree<OmId>;
 template class DynamicTreeContainer<OmId>;

@@ -34,6 +34,8 @@ OmSegSize,
 #include <QHash>
 #include <QSet>
 #include <QLinkedList>
+#include <map>
+
 
 // TODO: this was done as proof-of-concept; not sure how much slower 
 //  struct constructor is compared to simple int POD... (purcaro)
@@ -117,10 +119,10 @@ class OmSegmentCacheImpl {
 
 	quint32 getMaxValue(){ return mMaxValue; }
 
-	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID starSeg = 0);
 
-	void setAsValidated( const OmSegIDsList & segmentsToGroup );
-	void unsetAsValidated( const OmSegIDsList & segmentsToGroup );
+	void setAsValidated(const OmSegIDsSet & set, const bool valid);
+        void BuildRootLists();
 
  private:
 	bool mAllSelected;
@@ -136,6 +138,11 @@ class OmSegmentCacheImpl {
 
         OmSegIDsSet mEnabledSet;
         OmSegIDsSet mSelectedSet;
+	OmSegIDsIntMap mValidRootSizesMap;
+	OmSegIDsIntMap mRootSizesMap;
+	OmSegIDsSet mValidRootSet;
+	OmSegIDsSet mRootSet;
+
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
@@ -183,6 +190,14 @@ class OmSegmentCacheImpl {
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+
+	void eraseValueFromMap(OmSegIDsIntMap * map, OmSegment * seg);
+	void MutateOnValid(OmSegment * seg, bool valid);
+	void PreserveMutationOnJoin(OmSegment * seg);
+	void PreserveMutationOnSplit(OmSegment * seg);
+
+
+
 
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

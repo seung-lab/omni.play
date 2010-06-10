@@ -16,5 +16,15 @@ class OmSegPtrListValid {
 	OmSegPtrList list;
 };
 
+class OmSegPtrListWithPage {
+ public:
+	OmSegPtrListWithPage( const OmSegPtrList & L, int pageOffset )
+		: mPageOffset(pageOffset)
+		, list(L) {}
+	
+	int mPageOffset;
+	OmSegPtrList list;
+};
+
 
 #endif

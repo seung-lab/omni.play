@@ -20,7 +20,8 @@ class SegmentListBase : public QWidget
 public:
 	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false, 
-					       const OmId segmentJustSelectedID = 0);
+					       const OmId segmentJustSelectedID = 0,
+					       const bool useOffset = false);
 
 	void makeSegmentationActive(const OmId segmentationID);
 	void makeSegmentationActive(SegmentationDataWrapper sdw);
@@ -37,7 +38,7 @@ public slots:
 
 protected:
 	virtual QString getTabTitle() = 0;
-	virtual bool shouldSegmentBeAdded( OmSegment * seg ) = 0;
+	virtual OmSegIDRootType getRootSegType() = 0;
 	virtual int getPreferredTabIndex() = 0;
 
         QVBoxLayout * layout;
@@ -50,8 +51,7 @@ protected:
 	SegmentationDataWrapper currentSDW;
 	bool haveValidSDW;
 
-	OmSegPtrList * getSegmentsToDisplay( const OmId firstSegmentID );
-	OmSegPtrList * doGetSegmentsToDisplay( const unsigned int offset );
+	OmSegPtrList * getSegmentsToDisplay( const OmId firstSegmentID, const bool  );
 
 	QMenu * contextMenu;
 	QAction * propAct;

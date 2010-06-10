@@ -75,10 +75,11 @@ public:
 
 	quint32 getMaxValue();
 
-	OmSegPtrList * getRootLevelSegIDs( const unsigned int offset, const int numToGet );
+	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg = 0);
 
-	void setAsValidated( const OmSegIDsList & segmentsToGroup );
-	void unsetAsValidated( const OmSegIDsList & segmentsToGroup );
+	void setAsValidated(const OmSegIDsSet & set, const bool valid);
+
+        void BuildRootLists();
 
 private:
 	QMutex mMutex;

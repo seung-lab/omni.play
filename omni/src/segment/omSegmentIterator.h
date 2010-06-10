@@ -16,7 +16,7 @@ class OmSegmentIterator
  
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
-	void iterOverSegmentIDs(OmSegID seg);
+	void iterOverSegmentIDs(const OmSegIDsSet & set);
 
 
 	OmSegment * getNextSegment();

@@ -9,14 +9,6 @@ SegmentListAll::SegmentListAll( QWidget * parent,
 
 QString SegmentListAll::getTabTitle()
 {
-	return QString("All");
+	return QString("Root Segments");
 }
 
-bool SegmentListAll::shouldSegmentBeAdded( OmSegment * seg )
-{
-	if( seg->GetImmutable() ) {
-		return false;
-	}
-
-	return true;
-}

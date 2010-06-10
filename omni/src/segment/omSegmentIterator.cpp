@@ -34,9 +34,12 @@ void OmSegmentIterator::iterOverEnabledIDs()
 	}
 }
 
-void OmSegmentIterator::iterOverSegmentIDs(OmSegID id)
+void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
-	mSegs.push_back( mCache->GetSegmentFromValue(id) );
+        OmSegIDsSet::const_iterator iter;
+        for( iter = set.begin(); iter != set.end(); ++iter ){
+                mSegs.push_back( mCache->GetSegmentFromValue( *iter ) );
+        }
 }
 
 

@@ -13,6 +13,7 @@
 #include "system/omGroups.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/omDataWrapper.h"
+#include "segment/omSegmentIterator.h"
 
 class MeshingManager;
 class OmSegment;
@@ -83,7 +84,7 @@ public:
 	bool AreSegmentsSelected();
 	
 	//group management
-	OmId AddGroup(OmSegID = 0);
+	OmGroup & SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);
 
 
@@ -99,6 +100,7 @@ public:
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
+	void BuildRootLists();
 
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
@@ -125,6 +127,7 @@ private:
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentIterator;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

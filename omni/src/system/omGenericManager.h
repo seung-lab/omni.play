@@ -12,6 +12,7 @@
 class OmChannel;
 class OmSegmentation;
 class OmFilter2d;
+class OmGroup;
 
 template < class T >
 class OmGenericManager {
@@ -54,6 +55,9 @@ private:
 
 	friend QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & );
 	friend QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & );
+
+	friend QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & );
+	friend QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & );
 
 };
 

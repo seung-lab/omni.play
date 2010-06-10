@@ -240,22 +240,16 @@ void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
         return mImpl->UpdateSegmentSelection(idsToSelect);
 }
 
-OmSegPtrList * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg)
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->getRootLevelSegIDs(offset, numToGet);
+        return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);
 }
 
-void OmSegmentCache::setAsValidated( const OmSegIDsList & segmentsToGroup )
+void OmSegmentCache::setAsValidated(const OmSegIDsSet & set, const bool valid)
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->setAsValidated( segmentsToGroup );
-}
-
-void OmSegmentCache::unsetAsValidated( const OmSegIDsList & segmentsToGroup )
-{
-	QMutexLocker locker( &mMutex );
-        return mImpl->unsetAsValidated( segmentsToGroup );
+        return mImpl->setAsValidated(set, valid);
 }
 
 OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
@@ -263,3 +257,10 @@ OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
 	QMutexLocker locker( &mMutex );
         return mImpl->Join( e );
 }
+
+void OmSegmentCache::BuildRootLists()
+{
+        QMutexLocker locker( &mMutex );
+        return mImpl->BuildRootLists();
+}
+

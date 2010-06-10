@@ -13,10 +13,12 @@
 #include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "system/omGroups.h"
+#include "system/omGroup.h"
 
 #include <QDataStream>
 
-static const int Omni_Version = 7;
+static const int Omni_Version = 8;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
@@ -279,6 +281,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 	out << seg.mDendValuesSize;
 	out << seg.mDendCount;
 	out << seg.mDendThreshold;
+	out << seg.mGroups;
 
 	return out;
 }
@@ -296,6 +299,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mDendValuesSize;
 	in >> seg.mDendCount;
 	in >> seg.mDendThreshold;
+	in >> seg.mGroups;
 
         QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
 	OmDataPath path;
@@ -381,6 +385,11 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 		out << *e;
 	}
 
+	out << sc.mRootSizesMap;
+	out << sc.mValidRootSizesMap;
+	out << sc.mRootSet;
+	out << sc.mValidRootSet;
+
 	return out;
 }
 
@@ -409,6 +418,11 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 		in >> (*e);
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
+
+        in >> sc.mRootSizesMap;
+        in >> sc.mValidRootSizesMap;
+        in >> sc.mRootSet;
+        in >> sc.mValidRootSet;
 
 	return in;
 }
@@ -496,3 +510,66 @@ void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
 	in >> v.unitString;
 	in >> v.mDataStretchValues;
 }
+
+QDataStream &operator<<(QDataStream & out, const OmGroups & g )
+{
+        out << g.mGroupManager;
+        out << g.mGroupsByName;
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmGroups & g )
+{
+        in >> g.mGroupManager;
+        in >> g.mGroupsByName;
+
+        return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & gm)
+{
+        out << gm.mNextId;
+        out << gm.mSize;
+        out << gm.mValidSet;
+        out << gm.mEnabledSet;
+
+        foreach( const OmId & id, gm.mValidSet ){
+                out << *gm.mMap[id];
+        }
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
+{
+        in >> gm.mNextId;
+        in >> gm.mSize;
+        in >> gm.mValidSet;
+        in >> gm.mEnabledSet;
+
+        gm.mMap.resize(gm.mSize, NULL);
+
+        for( unsigned int i = 0; i < gm.mValidSet.size(); ++i ){
+                OmGroup * group = new OmGroup(0);
+                in >> *group;
+                gm.mMap[ group->GetId() ] = group;
+        }
+
+        return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmGroup & g )
+{
+        out << g.mName;
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmGroup & g )
+{
+        in >> g.mName;
+
+        return in;
+}
+

@@ -49,6 +49,7 @@ void OmBuildSegmentation::run()
 	if( doBuildImage ){
 		do_build_seg_image();
 		loadDendrogram();
+		mSeg->BuildRootLists();
 		
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 	}

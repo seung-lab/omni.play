@@ -432,6 +432,7 @@ bool OmSegmentation::IsSegmentSelected(OmId id)
 void OmSegmentation::SetSegmentSelected(OmId id, bool selected)
 {
 	mSegmentCache->setSegmentSelected(id, selected);
+	OmSegmentEditor::SetEditSelection(this->GetId(), id);
 }
 
 void OmSegmentation::SetAllSegmentsSelected(bool selected)
@@ -461,52 +462,25 @@ void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
 
 /////////////////////////////////
 ///////          Groups
-OmId OmSegmentation::AddGroup(OmSegID id)
+OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
         OmSegmentIterator iter(mSegmentCache);
+        iter.iterOverSegmentIDs(set);
 
-	if(0 == id) {
-        	iter.iterOverSelectedIDs();
+	if(VALIDROOT == type) {
+		mSegmentCache->setAsValidated(set, true);
+	} else if(NOTVALIDROOT == type) {
+		mSegmentCache->setAsValidated(set, false);
+	} else if(GROUPROOT == type) {
+		return mGroups.SetGroup(set, name);
 	} else {
-        	iter.iterOverSegmentIDs(id);
+		assert(0 && "group type is not correctly set.\n");
 	}
-
-	OmSegIDsList segmentsToGroup;
-        OmSegment * seg = iter.getNextSegment();
-        OmSegID val;
-        while(NULL != seg) {
-        	seg->SetImmutable(true);
-        	val = seg->getValue();
-                segmentsToGroup.push_back(val);
-        	seg = iter.getNextSegment();
-        }
-
-	mSegmentCache->setAsValidated( segmentsToGroup );
-
-	return mGroups.AddGroup(segmentsToGroup);
 }
 
-void OmSegmentation::DeleteGroup(OmSegID id)
+void OmSegmentation::DeleteGroup(OmGroupID id)
 {
-        OmSegmentIterator iter(mSegmentCache);
-
-        if(0 == id) {
-                iter.iterOverSelectedIDs();
-        } else {
-                iter.iterOverSegmentIDs(id);
-        }
-
-        OmSegIDsList segmentsToGroup;
-        OmSegment * seg = iter.getNextSegment();
-        OmSegID val;
-        while(NULL != seg) {
-                seg->SetImmutable(false);
-                val = seg->getValue();
-                segmentsToGroup.push_back(val);
-                seg = iter.getNextSegment();
-        }
-
-	mSegmentCache->unsetAsValidated( segmentsToGroup );
+	printf("FIXME delete group not supported\n");
 }
 
 
@@ -622,3 +596,7 @@ OmSegmentEdge * OmSegmentation::splitTwoChildren(OmSegment * seg1, OmSegment * s
 	return mSegmentCache->splitTwoChildren(seg1, seg2);
 }
 
+void OmSegmentation::BuildRootLists()
+{
+	mSegmentCache->BuildRootLists();
+}

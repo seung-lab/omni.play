@@ -75,6 +75,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 		mMaxValue = value;
 	}
 
+
 	addToDirtySegmentList(seg);
 
 	return seg;
@@ -388,6 +389,8 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	child->mThreshold = 0;
 
+	PreserveMutationOnSplit(child);
+
 	if( isSegmentSelected( parent->getValue() ) ){
 		debug("split", "parent was selected\n");
 		mSelectedSet.insert( child->getValue() );
@@ -484,6 +487,7 @@ void OmSegmentCacheImpl::loadDendrogram()
 	mNumTopLevelSegs = mNumSegs;
 
 	resetGlobalThreshold( mSegmentation->mDendThreshold );
+	//BuildRootLists();
 
 	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
 		Join(e);
@@ -532,6 +536,8 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
         } 
 	mSelectedSet.remove( e->childID );
 
+	PreserveMutationOnJoin(childRoot);
+
 	--mNumTopLevelSegs;
 
 	return new OmSegmentEdge( parent, childRoot, e->threshold );
@@ -569,6 +575,8 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID 
         } 
 	mSelectedSet.remove( childUnknownDepthID );
 
+	PreserveMutationOnJoin(childRoot);
+
 	--mNumTopLevelSegs;
 
 	OmSegmentEdge * edge = new OmSegmentEdge( parentID, childRoot->mValue, threshold);
@@ -598,7 +606,7 @@ OmSegment * OmSegmentCacheImpl::findRoot( OmSegment * segment )
 
 void OmSegmentCacheImpl::loadTreeIfNeeded()
 {
-	if( NULL != mGraph ){
+	if( NULL != mGraph && mGraph->getSize() == mMaxValue+1){
 		return;
 	}
 
@@ -680,31 +688,54 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 }
 
 // FIXME: this search could become slow.... (purcaro)
-OmSegPtrList * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet )
+OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet, const OmSegIDRootType type, OmSegID startSeg)
 {
 	loadTreeIfNeeded();
 
-	OmSegPtrList * ret = new OmSegPtrList();
+	OmSegIDsIntMap * roots;
+	if(VALIDROOT == type) {
+		roots = &mValidRootSizesMap;
+	} else if(NOTVALIDROOT == type) {
+		roots = &mRootSizesMap;
+	} else {
+		assert(0 && "Shouldn't call this function to do non special group code.\n");
+	}
+
+	OmSegPtrList ret = OmSegPtrList();
+        OmSegIDsIntMap::const_reverse_iterator iter = roots->rbegin();
+
+	printf("start=%u\n", startSeg);
+	int counter = 0;
+	int page = 0;
+	if(0 == startSeg) {
+		//for( quint32 i = 0; i < offset && iter != roots->rend(); ++i, iter++ ){ }
+		advance(iter, offset);
+	 	page = offset / numToGet;
+	} else {
+        	for(iter = roots->rbegin(); iter != roots->rend(); iter++) {
+			++counter;
+			printf("counter %i, ntg=%i\n", counter, numToGet);
+                	if(iter->second == startSeg) {
+	 			page = counter / numToGet;
+                        	break;
+                	}
+		}
+		printf("COUNTER %i, ntg=%i\n", counter, numToGet);
+	 	page = counter / numToGet;
+	 	advance(iter, -(counter % numToGet));
+        }
 
 	OmSegment * seg;
-	int counter = 0;
-	for( quint32 i = offset; i < mMaxValue; ++i ){
+	for(int i = 0; i < numToGet && iter != roots->rend(); ++i, iter++ ){
 
-		seg = GetSegmentFromValue( i );
-		if( NULL == seg || 0 != seg->mParentSegID ){
-			continue;
-		}
-		
-		ret->push_back( seg );
-		++counter;
-
-		if( counter >= numToGet ){
-			break;
-		}
+		seg = GetSegmentFromValue(iter->second);
+		//printf("size=%u, %u\n", (quint32) iter->first, iter->second);
+		ret.push_back( seg );
 	}
-	
-	return ret;
+	printf("page %i\n", page);
+	return new OmSegPtrListWithPage(ret, page);
 }
+
 
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
@@ -721,6 +752,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 	mSelectedSet.clear(); // nuke selected set for now...
 	//rerootSegmentLists();
 	clearCaches();
+
 
 	printf("done\n");
 }
@@ -781,6 +813,8 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 				       const float threshold,
 				       const int edgeNumber )
 {
+	loadTreeIfNeeded();
+
 	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
@@ -803,7 +837,9 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 	childRoot->mEdgeNumber = edgeNumber;
 
 	--mNumTopLevelSegs;
-	
+
+	PreserveMutationOnJoin(childRoot);
+
 	return true;
 }
 
@@ -833,41 +869,99 @@ bool OmSegmentCacheImpl::splitChildFromParentInternal( const OmSegID childID )
 
 	++mNumTopLevelSegs;
 
+        PreserveMutationOnSplit(child);
+
 	return true;
 }
 
-void OmSegmentCacheImpl::setAsValidated( const OmSegIDsList & segs )
+void OmSegmentCacheImpl::setAsValidated(const OmSegIDsSet & set, const bool valid)
 {
 	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
+        OmSegmentIterator iter(mParentCache);
+        iter.iterOverSegmentIDs(set);
 
-	OmSegment * seg;
+        OmSegment * seg = iter.getNextSegment();
+        OmSegID val;
+        while(NULL != seg) {
+                val = seg->getValue();
+                seg = iter.getNextSegment();
+                seg->SetImmutable(valid);
+                if( -1 == seg->mEdgeNumber ){
+                        continue;
+                }
+		edgeForceJoin[ seg->mEdgeNumber ] = valid;
+        }
 
-	OmSegIDsList::const_iterator iter;
-	for( iter=segs.begin(); iter != segs.end(); ++iter ){
-		seg = GetSegmentFromValue( *iter );
+	OmSegIDsSet::const_iterator roots;
+	for(roots = set.begin(); roots != set.end(); ++roots){
+		seg = GetSegmentFromValue(*roots);
 
-		if( -1 == seg->mEdgeNumber ){
-			continue;
-		}
-
-		edgeForceJoin[ seg->mEdgeNumber ] = 1;
+		MutateOnValid(seg, valid);
 	}
 }
 
-void OmSegmentCacheImpl::unsetAsValidated( const OmSegIDsList & segs )
+void OmSegmentCacheImpl::eraseValueFromMap(OmSegIDsIntMap * map, OmSegment * seg)
 {
-	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
-
-	OmSegment * seg;
-
-	OmSegIDsList::const_iterator iter;
-	for( iter=segs.begin(); iter != segs.end(); ++iter ){
-		seg = GetSegmentFromValue( *iter );
-
-		if( -1 == seg->mEdgeNumber ){
-			continue;
+	
+	printf("erasing %u %u\n", seg->mValue, (quint32)seg->mSize);
+	OmSegIDsIntMap::iterator iter;
+	for(iter = map->find(seg->mSize); iter != map->end(); iter++) {
+	//for(iter = map->begin(); iter != map->end(); iter++) {
+		//printf("E %u %u\n", (quint32)iter->first, iter->second);
+		if(iter->second == seg->mValue) {
+			map->erase(iter);
 		}
-
-		edgeForceJoin[ seg->mEdgeNumber ] = 0;
 	}
 }
+
+void OmSegmentCacheImpl::MutateOnValid(OmSegment * seg, bool valid)
+{
+	if(!valid) {
+		mRootSizesMap.insert(OmSegIDIntPair(seg->mSize, seg->mValue));
+		mRootSet.insert(seg->mValue);
+		printf("add to working %u %u\n", seg->mValue, (quint32)seg->mSize);
+
+		mValidRootSet.erase(seg->mValue);
+		eraseValueFromMap(&mValidRootSizesMap, seg);
+	} else {
+		mValidRootSizesMap.insert(OmSegIDIntPair(seg->mSize, seg->mValue));
+		mValidRootSet.insert(seg->mValue);
+
+		mRootSet.erase(seg->mValue);
+		eraseValueFromMap(&mRootSizesMap, seg);
+	}
+}
+
+void OmSegmentCacheImpl::PreserveMutationOnJoin(OmSegment * seg)
+{
+	printf("F joining ...\n");
+	mRootSet.erase(seg->mValue);
+	mValidRootSet.erase(seg->mValue);
+	eraseValueFromMap(&mValidRootSizesMap, seg);
+	eraseValueFromMap(&mRootSizesMap, seg);
+}
+
+void OmSegmentCacheImpl::PreserveMutationOnSplit(OmSegment * seg)
+{
+	MutateOnValid(seg, seg->mImmutable);
+}
+
+void OmSegmentCacheImpl::BuildRootLists()
+{
+	loadTreeIfNeeded();
+
+	OmSegment * seg;
+	for( quint32 i = 0; i <= mMaxValue; ++i ){
+		seg = GetSegmentFromValue( i );
+                if( NULL == seg) {
+			continue;
+		} 
+		//if( mGraph->get( seg->mValue )->getKey() == mGraph->get( seg->mValue )->findRoot()->getKey()) {
+		if(0 == seg->mParentSegID) {
+                	MutateOnValid(seg, false);
+		} else {
+			printf("skipping\n");
+		}
+	}
+}
+

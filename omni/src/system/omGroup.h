@@ -2,10 +2,11 @@
 #define _OM_GROUP_H_
 
 #include "common/omCommon.h"
+#include "system/omManageableObject.h"
 
-class OmGroup : boost::noncopyable {
+class OmGroup : public OmManageableObject {
 public:
-        OmGroup();
+        OmGroup(OmId);
         OmGroup(const OmSegIDsList & segids);
         ~OmGroup();
 
@@ -16,6 +17,12 @@ private:
 	OmColor mColor;
 
 	OmColor GetRandomColor();
+
+	OmGroupName mName;
+	friend class OmGroups;
+
+	friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
+	friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
 
 };
 

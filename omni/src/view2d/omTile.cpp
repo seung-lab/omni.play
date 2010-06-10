@@ -104,8 +104,9 @@ void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmM
 {
 	//TODO: pull more data out when chunk is open
 
-	QExplicitlySharedDataPointer < OmSimpleChunk > my_chunk;
-	vol->GetSimpleChunk(my_chunk, TileToMipCoord(key));
+	QExplicitlySharedDataPointer < OmMipChunk > my_chunk;
+	//vol->GetSimpleChunk(my_chunk, TileToMipCoord(key));
+	vol->GetChunk(my_chunk, TileToMipCoord(key));
 
 	int mDepth = GetDepth(key);
 

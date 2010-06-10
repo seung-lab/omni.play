@@ -317,6 +317,8 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 
 	//get pointer to data and copy bytes
 	void *p_scalar = mpImageData->GetScalarPointer(offset.x, offset.y, offset.z);
+	void *p = mpImageData->GetScalarPointer();
+	debug("FIXME", "%p\n", p);
 
 	//cast to appropriate type and return as uint
 	switch (GetBytesPerSample()) {

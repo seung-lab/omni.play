@@ -2,6 +2,7 @@
 #define SEGMENT_LIST_VALID_H
 
 #include "gui/segmentListBase.h"
+#include "common/omCommon.h"
 
 class SegmentListValid : public SegmentListBase
 {
@@ -12,7 +13,7 @@ class SegmentListValid : public SegmentListBase
 
  private:
 	QString getTabTitle();
-	bool shouldSegmentBeAdded( OmSegment * );
+	OmSegIDRootType getRootSegType(){ return VALIDROOT; }
 	int getPreferredTabIndex(){ return 1; }
 };
 
