@@ -5,6 +5,32 @@
 #include "segment/DynamicTreeContainer.h"
 #include "segment/omSegmentPointers.h"
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/indexed_by.hpp>
+#include <boost/multi_index/member.hpp>
+
+struct OmSegSize
+{
+	OmSegID segID;
+	quint64 segSize;
+
+	OmSegSize( const OmSegID segID_, const quint64 segSize_ ) 
+	: segID(segID_), segSize(segSize_){}
+};
+
+struct segID{};
+struct segSize{};
+
+
+typedef boost::multi_index_container<
+OmSegSize,
+	boost::multi_index::indexed_by<
+	boost::multi_index::ordered_unique<
+	boost::multi_index::tag<segID>,  BOOST_MULTI_INDEX_MEMBER(OmSegSize,OmSegID,segID)>,
+	      boost::multi_index::ordered_non_unique<
+	      boost::multi_index::tag<segSize>, BOOST_MULTI_INDEX_MEMBER(OmSegSize,quint64,segSize)> >
+	      > OmSegSizes;
+
 #include <QHash>
 #include <QSet>
 #include <QLinkedList>
