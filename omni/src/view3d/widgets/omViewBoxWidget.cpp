@@ -312,6 +312,8 @@ OmViewBoxWidget::GetTextureMax(Vector3f coord,ViewType plane, Vector2f & dataMax
 		result = ((coord.y + tileLength.y) < spaceMax.x);
 		result = result && ((coord.z + tileLength.z) < spaceMax.y);
 		break;
+	default:
+		assert(0);
 	}
 	return result;
 }
@@ -355,6 +357,8 @@ OmViewBoxWidget::GetTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin
 		result = (coord.z > spaceMin.y);
 		result = result && (coord.y > spaceMin.x);
 		break;
+	default:
+		assert(0);
 	}
 	return result;
 }
