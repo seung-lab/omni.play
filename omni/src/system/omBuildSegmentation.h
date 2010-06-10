@@ -8,7 +8,6 @@ class OmBuildSegmentation : public OmBuildVolumes, public QThread
 {
  public:
 	OmBuildSegmentation( OmSegmentation * );
-
 	void buildAndMeshSegmentation();
 	void build_seg_image();
 	void build_seg_mesh();
