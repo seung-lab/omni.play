@@ -903,7 +903,6 @@ void OmSegmentCacheImpl::setAsValidated(const OmSegIDsSet & set, const bool vali
 void OmSegmentCacheImpl::eraseValueFromMap(OmSegIDsIntMap * map, OmSegment * seg)
 {
 	
-	printf("erasing %u %u\n", seg->mValue, (quint32)seg->mSize);
 	OmSegIDsIntMap::iterator iter;
 	for(iter = map->find(seg->mSize); iter != map->end(); iter++) {
 	//for(iter = map->begin(); iter != map->end(); iter++) {
@@ -934,7 +933,6 @@ void OmSegmentCacheImpl::MutateOnValid(OmSegment * seg, bool valid)
 
 void OmSegmentCacheImpl::PreserveMutationOnJoin(OmSegment * seg)
 {
-	printf("F joining ...\n");
 	mRootSet.erase(seg->mValue);
 	mValidRootSet.erase(seg->mValue);
 	eraseValueFromMap(&mValidRootSizesMap, seg);
@@ -960,7 +958,7 @@ void OmSegmentCacheImpl::BuildRootLists()
 		if(0 == seg->mParentSegID) {
                 	MutateOnValid(seg, false);
 		} else {
-			printf("skipping\n");
+			//printf("skipping\n");
 		}
 	}
 }
