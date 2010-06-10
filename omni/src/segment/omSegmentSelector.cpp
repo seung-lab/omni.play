@@ -27,13 +27,13 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, 
 
 	if( oldSelectedIDs.size() > 1 ){
 		newSelectedIDs.insert( segID );
-		mSegmentJustSelectedID = segID;
 	} else {
 		if( isSelected ){
 			newSelectedIDs.insert( segID );
-			mSegmentJustSelectedID = segID;
 		}
 	}
+	
+	mSegmentJustSelectedID = segID;
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, const bool isSelected )
@@ -45,6 +45,8 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 	} else {
 		newSelectedIDs.erase(segID);	
 	}
+
+	mSegmentJustSelectedID = segID;
 }
 
 void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
@@ -68,8 +70,9 @@ void OmSegmentSelector::sendEvent()
 							      oldSelectedIDs,
 							      mSegmentJustSelectedID, 
 							      mSender,
-							      mComment);
+							      mComment,
+							      true );
 	a->Run();
 
-	// don't delete--cleanup will be handled by OmAction (hopefully...)
+	// don't delete--cleanup will be handled by OmAction
 }

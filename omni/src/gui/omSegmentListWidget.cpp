@@ -73,6 +73,11 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	setFocusPolicy(Qt::StrongFocus);
 }
 
+string OmSegmentListWidget::eventSenderName()
+{
+	return "segmentList";
+}
+
 void OmSegmentListWidget::segmentLeftClick()
 {
 	QTreeWidgetItem * current = currentItem();
@@ -80,7 +85,7 @@ void OmSegmentListWidget::segmentLeftClick()
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 	
-	OmSegmentSelector sel(sdw.getSegmentationID(), this, "segmentList" );
+	OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
 
 	const int column = currentColumn();
 	if (0 == column) {
@@ -101,7 +106,21 @@ void OmSegmentListWidget::segmentLeftClick()
 		foreach(QTreeWidgetItem * item, selectedItems()) {
 			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
 			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-			sel.augmentSelectedSet( item_sdw.getID(), true );
+			
+			if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
+			    QApplication::keyboardModifiers() & Qt::ShiftModifier ){
+				sel.augmentSelectedSet( item_sdw.getID(), true );
+			} else {
+				if( selectedItems().size() > 1 ){
+					if( item_sdw.getID() == sdw.getID() ){
+						sel.augmentSelectedSet( item_sdw.getID(), true );
+					} else {
+						sel.augmentSelectedSet( item_sdw.getID(), false );
+					}
+				} else {
+					sel.augmentSelectedSet( item_sdw.getID(), !item_sdw.isSelected() );
+				}
+			}
 		}
 	}
 

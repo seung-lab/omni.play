@@ -20,6 +20,7 @@ class OmSegmentListWidget : public QTreeWidget {
 					       const OmId segmentJustSelectedID,
 					       SegmentationDataWrapper seg,
 					       OmSegPtrList * segs );
+	static string eventSenderName();
 
  private:
 	void mousePressEvent(QMouseEvent * event);

@@ -19,20 +19,19 @@ class SegmentListBase : public QWidget
 
 public:
 	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
+
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false, 
-					       const OmId segmentJustSelectedID = 0,
+					       const OmSegID segmentJustSelectedID = 0,
 					       const bool useOffset = false);
 
-	void makeSegmentationActive(const OmId segmentationID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw);
-	void makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID);
-	void makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID);
+	void makeSegmentationActive(SegmentationDataWrapper sdw, 
+				    const OmSegID segmentJustSelectedID,
+				    const bool doScroll = true );
 
-	void rebuildSegmentList(const OmId segmentationID, const OmId segmentJustAddedID);
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
 public slots:
-	void rebuildSegmentList(const OmId segmentationID);
+	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID = 0);
 	void goToNextPage();
 	void goToPrevPage();
 

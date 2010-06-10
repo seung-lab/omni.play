@@ -13,13 +13,15 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 					     const OmSegIDsSet & oldSelectedIdSet, 
 					     const OmId segmentJustSelected, 
 					     void * sender, 
-					     const string & comment )
+					     const string & comment,
+					     const bool doScroll )
 	: mSegmentationId(segmentationId)
 	, mNewSelectedIdSet(newSelectedIdSet)
 	, mOldSelectedIdSet(oldSelectedIdSet)
 	, mSegmentJustSelectedID(segmentJustSelected)
 	, mSender(sender)
 	, mComment(comment)
+	, mDoScroll(doScroll)
 {
 }
 
@@ -36,7 +38,8 @@ void OmSegmentSelectAction::Action()
 						     mSegmentationId,
 						     mSegmentJustSelectedID, 
 						     mSender,
-						     mComment));
+						     mComment,
+						     mDoScroll));
 }
 
 void OmSegmentSelectAction::UndoAction()
@@ -49,7 +52,8 @@ void OmSegmentSelectAction::UndoAction()
 						     mSegmentationId,
 						     mSegmentJustSelectedID, 
 						     mSender,
-						     mComment));
+						     mComment,
+						     mDoScroll));
 }
 
 string OmSegmentSelectAction::Description()

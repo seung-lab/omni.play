@@ -478,7 +478,7 @@ OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type
 	}
 }
 
-void OmSegmentation::DeleteGroup(OmGroupID id)
+void OmSegmentation::DeleteGroup(OmGroupID)
 {
 	printf("FIXME delete group not supported\n");
 }

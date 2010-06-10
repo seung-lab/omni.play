@@ -48,7 +48,6 @@ OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offs
 
 	OmSegPtrListWithPage * segIDsAll = currentSDW.getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage(), getRootSegType(), startSeg);
 	currentPageNum = segIDsAll->mPageOffset;
-	printf("currentPageNum %i\n", currentPageNum);
 
 	OmSegPtrList * ret = new OmSegPtrList();
 
@@ -63,8 +62,8 @@ OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offs
 }
 
 void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							    const OmId segmentJustSelectedID, 
-							    const bool useOffset)
+							const OmSegID segmentJustSelectedID, 
+							const bool useOffset)
 {
 	assert( haveValidSDW );
 	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
@@ -101,10 +100,10 @@ void SegmentListBase::setupPageButtons()
 
 void SegmentListBase::goToNextPage()
 {
-	currentPageNum++;
+	++currentPageNum;
 	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
 	if( offset > getMaxSegmentValue() ){
-		currentPageNum--;
+		--currentPageNum;
 		offset = currentPageNum * getNumSegmentsPerPage();
 	}
 	populateSegmentElementsListWidget( false, offset, true);
@@ -112,7 +111,7 @@ void SegmentListBase::goToNextPage()
 
 void SegmentListBase::goToPrevPage()
 {
-	currentPageNum--;
+	--currentPageNum;
 	if( currentPageNum < 0 ){
 		currentPageNum = 0;
 	}
@@ -120,55 +119,35 @@ void SegmentListBase::goToPrevPage()
 	populateSegmentElementsListWidget( false, offset, true);
 }
 
-void SegmentListBase::makeSegmentationActive(const OmId segmentationID)
-{
-	makeSegmentationActive( SegmentationDataWrapper(segmentationID) );
-}
-
-void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw)
+void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw, 
+					     const OmSegID segmentJustSelectedID,
+					     const bool doScroll )
 {
 	currentSDW = sdw;
 	haveValidSDW = true;
-	populateSegmentElementsListWidget();
-}
-
-void SegmentListBase::makeSegmentationActive(const OmId segmentationID, const OmId segmentJustSelectedID)
-{
-	makeSegmentationActive( SegmentationDataWrapper(segmentationID), segmentJustSelectedID);
-}
-
-void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw, const OmId segmentJustSelectedID)
-{
-	currentSDW = sdw;
-	haveValidSDW = true;
-	populateSegmentElementsListWidget(true, segmentJustSelectedID);
-}
-
-void SegmentListBase::rebuildSegmentList(const OmId segmentationID)
-{
-	makeSegmentationActive(segmentationID);
+	populateSegmentElementsListWidget(doScroll, segmentJustSelectedID);
 }
 
 void SegmentListBase::rebuildSegmentList(const OmId segmentationID,
-					     const OmId segmentJustAddedID)
+					 const OmSegID segmentJustAddedID)
 {
 	makeSegmentationActive(segmentationID, segmentJustAddedID );
 }
 
 int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * event)
 {
-	// FIXME: does this work anymore? this is no longer myinspectorwidget... (purcaro)
-	// if we sent this signal, just ignore...
-	if (this == event->getSender()) {
-		//printf("event comment was %s\n", event->getComment().c_str() );
-		return 0;
+	bool doScroll = event->getDoScroll();
+
+	// if we sent event, don't scroll
+	if( event->getComment() == OmSegmentListWidget::eventSenderName() ){
+		doScroll = false;
 	}
 
 	const OmId segmentationID = event->GetModifiedSegmentationId();
 
 	if (OmProject::IsSegmentationValid(segmentationID)) {
-		const OmId segmentJustSelectedID = event->GetSegmentJustSelectedID();
-		makeSegmentationActive(segmentationID, segmentJustSelectedID);
+		const OmSegID segmentJustSelectedID = event->GetSegmentJustSelectedID();
+		makeSegmentationActive(segmentationID, segmentJustSelectedID, doScroll );
 		return segmentationID;
 	} else {
 		if( haveValidSDW ){

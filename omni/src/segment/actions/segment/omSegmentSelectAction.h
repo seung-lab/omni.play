@@ -16,7 +16,8 @@ public:
 			      const OmSegIDsSet & mOldSelectedIdSet, 
 			      const OmId segmentJustSelected,
 			      void* sender,
-			      const string & comment);
+			      const string & comment,
+			      const bool doScroll );
 	
 private:
 	void Action();
@@ -29,6 +30,7 @@ private:
 	const OmId mSegmentJustSelectedID;
 	void * mSender;
 	const string mComment;
+	const bool mDoScroll;
 };
 
 #endif

@@ -704,38 +704,30 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 	OmSegPtrList ret = OmSegPtrList();
         OmSegIDsIntMap::const_reverse_iterator iter = roots->rbegin();
 
-	printf("start=%u\n", startSeg);
 	int counter = 0;
 	int page = 0;
 	if(0 == startSeg) {
-		//for( quint32 i = 0; i < offset && iter != roots->rend(); ++i, iter++ ){ }
 		advance(iter, offset);
 	 	page = offset / numToGet;
 	} else {
         	for(iter = roots->rbegin(); iter != roots->rend(); iter++) {
 			++counter;
-			printf("counter %i, ntg=%i\n", counter, numToGet);
                 	if(iter->second == startSeg) {
-	 			page = counter / numToGet;
                         	break;
                 	}
 		}
-		printf("COUNTER %i, ntg=%i\n", counter, numToGet);
-	 	page = counter / numToGet;
 	 	advance(iter, -(counter % numToGet));
+	 	page = counter / numToGet;
         }
 
 	OmSegment * seg;
 	for(int i = 0; i < numToGet && iter != roots->rend(); ++i, iter++ ){
-
 		seg = GetSegmentFromValue(iter->second);
-		//printf("size=%u, %u\n", (quint32) iter->first, iter->second);
 		ret.push_back( seg );
 	}
-	printf("page %i\n", page);
+
 	return new OmSegPtrListWithPage(ret, page);
 }
-
 
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
 {
