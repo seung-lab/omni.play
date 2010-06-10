@@ -21,7 +21,7 @@ OmSegmentListWidget::OmSegmentListWidget(QWidget * parent, InspectorProperties *
 	headers << tr("enabled") << tr("Name") << tr("ID");
 	setHeaderLabels(headers);
 
-	setFocusPolicy(Qt::ClickFocus);
+	setFocusPolicy(Qt::StrongFocus);
 }
 
 void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
@@ -37,7 +37,7 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
 	if( 100 < segs->size() ){
-		assert( 0 );
+		assert(0 && "too many segments returned" );
 	}
 	
 	OmSegment * seg;
@@ -69,8 +69,6 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	}
 
 	setUpdatesEnabled( true);
-
-	setFocusPolicy(Qt::StrongFocus);
 }
 
 string OmSegmentListWidget::eventSenderName()
@@ -81,7 +79,6 @@ string OmSegmentListWidget::eventSenderName()
 void OmSegmentListWidget::segmentLeftClick()
 {
 	QTreeWidgetItem * current = currentItem();
-
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 	
@@ -181,13 +178,16 @@ void OmSegmentListWidget::addToSplitterDataElementSegment( SegmentDataWrapper sd
 void OmSegmentListWidget::keyPressEvent(QKeyEvent* event)
 {
 	QTreeWidget::keyPressEvent(event);	
-
+	
 	switch (event->key()) {
 	case Qt::Key_Up:
-		// TODO: move up segment list
-		break;
 	case Qt::Key_Down:
-		// TODO: move down segment list
+		QTreeWidgetItem * current = currentItem();
+		QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
+		SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
+
+		OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
+		sel.selectJustThisSegment( sdw.getID(), true );
 		break;
 	}
 }
