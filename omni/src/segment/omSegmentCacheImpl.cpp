@@ -713,6 +713,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
         	for(iter = roots->rbegin(); iter != roots->rend(); iter++) {
 			++counter;
                 	if(iter->second == startSeg) {
+				iter--;
                         	break;
                 	}
 		}
