@@ -5,6 +5,7 @@
 #include "gui/myInspectorWidget.h"
 #include "gui/segmentListAll.h"
 #include "gui/segmentListValid.h"
+#include "gui/segmentListRecent.h"
 #include "inspectors/chanInspector.h"
 #include "inspectors/filObjectInspector.h"
 #include "inspectors/inspectorProperties.h"
@@ -43,6 +44,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
 
 	segmentList = new SegmentListAll(this, inspectorProperties, elementListBox);
 	validList = new SegmentListValid(this, inspectorProperties, elementListBox);
+	recentList = new SegmentListRecent(this, inspectorProperties, elementListBox);
 	channelInspectorWidget=NULL;
 	segInspectorWidget=NULL;
 
@@ -152,6 +154,15 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 	
 	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
 		validList, SLOT(rebuildSegmentList(OmId)));
+	
+	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
+		recentList, SLOT(rebuildSegmentList(OmId)));
+	
+	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
+		this, SLOT(addSegment()));
+	
+	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 	
 	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
 		this, SLOT(addSegment()));
@@ -270,6 +281,7 @@ void MyInspectorWidget::refreshWidgetData()
 	populateDataSrcListWidget();
 	segmentList->populateSegmentElementsListWidget();
 	validList->populateSegmentElementsListWidget();
+	recentList->populateSegmentElementsListWidget();
 }
 
 void MyInspectorWidget::addSegment()
@@ -278,6 +290,7 @@ void MyInspectorWidget::addSegment()
 	OmSegment * added_segment = OmProject::GetSegmentation(segmentationID).AddSegment();
 	segmentList->rebuildSegmentList(segmentationID, added_segment->getValue());
 	validList->rebuildSegmentList(segmentationID, added_segment->getValue());
+	recentList->rebuildSegmentList(segmentationID, added_segment->getValue());
 }
 
 //////////////////////////////
@@ -523,6 +536,7 @@ void MyInspectorWidget::updateSegmentListBox( SegmentationDataWrapper sdw )
 	elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
 	segmentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
 	validList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
+	recentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
 }
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
@@ -532,6 +546,7 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 
 	const OmId segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
 	const OmId segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
+	const OmId segmentationID3 = recentList->dealWithSegmentObjectModificationEvent(event);
 	
 	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
 		SegmentationDataWrapper sdw(segmentationID1);

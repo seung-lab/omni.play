@@ -81,7 +81,7 @@ typedef std::vector<OmSegID> OmSegIDsList;
 typedef std::multimap<quint64, OmSegID> OmSegIDsIntMap;
 typedef std::pair<quint64, OmSegID> OmSegIDIntPair;
 
-enum OmSegIDRootType {NOTVALIDROOT, VALIDROOT, GROUPROOT};
+enum OmSegIDRootType {NOTVALIDROOT, VALIDROOT, RECENTROOT, GROUPROOT};
 typedef QString OmGroupName;
 
 static const OmSegID NULL_SEGMENT_DATA(0);

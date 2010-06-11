@@ -113,6 +113,7 @@ class OmSegmentCacheImpl {
 
         OmSegIDsSet mEnabledSet;
         OmSegIDsSet mSelectedSet;
+	OmSegIDsIntMap mRecentRootActivityMap;
 	OmSegIDsIntMap mValidRootSizesMap;
 	OmSegIDsIntMap mRootSizesMap;
 	OmSegIDsSet mValidRootSet;
@@ -171,6 +172,12 @@ class OmSegmentCacheImpl {
 	void PreserveMutationOnJoin(OmSegment * seg);
 	void PreserveMutationOnSplit(OmSegment * seg);
 
+	void doSelectedSetInsert(OmSegID segID);
+	void doSelectedSetRemove(OmSegID segID);
+
+	void eraseActivityFromMap(OmSegIDsIntMap * map, OmSegment * seg);
+	quint64 getRecentActivity();
+	void addToRecentMap(OmSegID segID);
 
 
 	friend class OmSegmentColorizer;

@@ -227,6 +227,18 @@ void OmSegmentCacheImpl::setSegmentEnabled( OmSegID segID, bool isEnabled )
 	}
 }
 
+void OmSegmentCacheImpl::doSelectedSetInsert(OmSegID segID)
+{
+	mSelectedSet.insert( segID );
+	addToRecentMap(segID);
+}
+
+void OmSegmentCacheImpl::doSelectedSetRemove(OmSegID segID)
+{
+	mSelectedSet.remove( segID );
+	addToRecentMap(segID);
+}
+
 void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
 {
 	setSegmentSelectedBatch( segID, isSelected );
@@ -238,9 +250,9 @@ void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected
 	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
 	if (isSelected) {
-		mSelectedSet.insert( rootID );
+		doSelectedSetInsert( rootID );
 	} else {
-		mSelectedSet.remove( rootID );
+		doSelectedSetRemove( rootID );
 		assert( !mSelectedSet.contains( segID ));
 	}
 }
@@ -393,9 +405,9 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( isSegmentSelected( parent->getValue() ) ){
 		debug("split", "parent was selected\n");
-		mSelectedSet.insert( child->getValue() );
+		doSelectedSetInsert( child->getValue() );
 	} else {
-		mSelectedSet.remove( child->getValue() );
+		doSelectedSetRemove( child->getValue() );
 	}
 
 	++mNumTopLevelSegs;
@@ -532,9 +544,9 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 	childRoot->mCustomMergeEdge = e;
 
         if( isSegmentSelected( e->childID ) ){
-                mSelectedSet.insert( parent->mValue );
+                doSelectedSetInsert( parent->mValue );
         } 
-	mSelectedSet.remove( e->childID );
+	doSelectedSetRemove( e->childID );
 
 	PreserveMutationOnJoin(childRoot);
 
@@ -571,9 +583,9 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID 
 	childRoot->setParent(parent, threshold);
 
         if( isSegmentSelected( childUnknownDepthID ) ){
-                mSelectedSet.insert( parent->mValue );
+                doSelectedSetInsert( parent->mValue );
         } 
-	mSelectedSet.remove( childUnknownDepthID );
+	doSelectedSetRemove( childUnknownDepthID );
 
 	PreserveMutationOnJoin(childRoot);
 
@@ -697,6 +709,8 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 		roots = &mValidRootSizesMap;
 	} else if(NOTVALIDROOT == type) {
 		roots = &mRootSizesMap;
+	} else if(RECENTROOT == type) {
+		roots = &mRecentRootActivityMap;
 	} else {
 		assert(0 && "Shouldn't call this function to do non special group code.\n");
 	}
@@ -954,5 +968,32 @@ void OmSegmentCacheImpl::BuildRootLists()
 			//printf("skipping\n");
 		}
 	}
+}
+
+quint64 OmSegmentCacheImpl::getRecentActivity()
+{
+	static quint64 activity = 0;
+	activity++;
+	return activity;
+}
+
+void OmSegmentCacheImpl::eraseActivityFromMap(OmSegIDsIntMap * map, OmSegment * seg)
+{
+
+        OmSegIDsIntMap::iterator iter;
+        for(iter = map->begin(); iter != map->end(); iter++) {
+        //for(iter = map->begin(); iter != map->end(); iter++) {
+                //printf("E %u %u\n", (quint32)iter->first, iter->second);
+                if(iter->second == seg->mValue) {
+                        map->erase(iter);
+                }
+        }
+}
+
+void OmSegmentCacheImpl::addToRecentMap(OmSegID segID)
+{
+	OmSegment * seg = GetSegmentFromValue( segID );
+	eraseActivityFromMap(&mRecentRootActivityMap, seg);
+	mRecentRootActivityMap.insert(OmSegIDIntPair(getRecentActivity(), seg->mValue));
 }
 

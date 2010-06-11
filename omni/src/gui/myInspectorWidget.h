@@ -14,6 +14,7 @@ class ChanInspector;
 class FilObjectInspector;
 class SegmentListAll;
 class SegmentListValid;
+class SegmentListRecent;
 class ElementListBox;
 class InspectorProperties;
 class MainWindow;
@@ -111,9 +112,10 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	InspectorProperties * inspectorProperties;
+	ElementListBox * elementListBox;
 	SegmentListAll * segmentList;
 	SegmentListValid * validList;
-	ElementListBox * elementListBox;
+	SegmentListRecent * recentList;
 
 	ViewType getViewType(QAction * act);
 

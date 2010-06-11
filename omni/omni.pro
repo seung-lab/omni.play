@@ -116,6 +116,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/segmentListAll.h \
            src/gui/segmentListBase.h \
            src/gui/segmentListValid.h \
+           src/gui/segmentListRecent.h \
            src/gui/viewGroup.h \
            src/gui/viewGroupWidgetInfo.h \
            src/mesh/meshingChunkThread.h \
@@ -286,6 +287,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/segmentListAll.cpp \
            src/gui/segmentListBase.cpp \
            src/gui/segmentListValid.cpp \
+           src/gui/segmentListRecent.cpp \
            src/gui/viewGroup.cpp \
            src/gui/omSegmentListWidget.cpp \
            src/mesh/meshingChunkThread.cpp \
