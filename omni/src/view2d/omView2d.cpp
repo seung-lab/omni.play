@@ -515,6 +515,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 	}
 
 	if (1 == mBrushToolDiameter) {
+		debug("brush", "%i,%i,%i\n", DEBUGV3(gDC));
 		//(new OmVoxelSetValueAction(segid, gDC, seg))->Run();
 		if (segid != 1 && segid != 0) {
 			//debug("FIXME", << segid << " is the seg id" << endl;
@@ -542,7 +543,6 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		if (gDC.z < mBrushToolMinZ) {
 			mBrushToolMinZ = gDC.z;
 		}
-
 	} else if (32 == mBrushToolDiameter && 0) {
 		int savedDia = mBrushToolDiameter;
 		mBrushToolDiameter = 1;
