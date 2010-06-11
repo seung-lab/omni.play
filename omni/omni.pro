@@ -140,6 +140,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentColorizer.h \
            src/segment/omSegmentSelector.h \
+           src/segment/helpers/omSegmentListBySize.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildVolumes.h \
