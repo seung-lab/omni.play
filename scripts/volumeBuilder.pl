@@ -44,7 +44,7 @@ sub build512noMeshes {
     system $cmd;
 }
 
-sub build512noMeshes {
+sub build512useMeshinator {
     my $cmd = $cmdGeneric."/build512useMeshinator.omni.cmd";
     printTitle("512^3 use Meshinator", $cmd );
     system $cmd;
