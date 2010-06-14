@@ -44,6 +44,12 @@ sub build512noMeshes {
     system $cmd;
 }
 
+sub build512noMeshes {
+    my $cmd = $cmdGeneric."/build512useMeshinator.omni.cmd";
+    printTitle("512^3 use Meshinator", $cmd );
+    system $cmd;
+}
+
 sub buildAll {
     buildRabbit();
     build150();
@@ -70,8 +76,9 @@ sub menu {
     print "3 -- Build 512^3\n";
     print "4 -- Build 150^3 (no meshes)\n";
     print "5 -- Build 512^3 (no meshes)\n";
+    print "6 -- Build 512^3 (use meshinator)\n";
     print "\n";
-    my $max_answer = 5;
+    my $max_answer = 6;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -101,6 +108,8 @@ sub runMenuEntry {
 	build150noMeshes();
     }elsif( 5 == $entry ){
 	build512noMeshes();
+    }elsif( 6 == $entry ){
+	build512useMeshinator();
     }
 }
 
