@@ -5,6 +5,7 @@
 #include "segment/DynamicTreeContainer.h"
 #include "segment/omSegmentPointers.h"
 #include "segment/helpers/omSegmentListBySize.h"
+#include "segment/helpers/omSegmentListByMRU.h"
 
 #include <QHash>
 #include <QSet>
@@ -163,14 +164,13 @@ class OmSegmentCacheImpl {
 
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
-	OmSegmentListBySize mRecentRootActivityMap;
+	OmSegmentListByMRU mRecentRootActivityMap;
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 
-	void doSelectedSetInsert(OmSegID segID);
-	void doSelectedSetRemove(OmSegID segID);
-	void eraseActivityFromMap(OmSegmentListBySize * map, OmSegment * seg);
+	void doSelectedSetInsert( const OmSegID segID);
+	void doSelectedSetRemove( const OmSegID segID);
 	quint64 getRecentActivity();
-	void addToRecentMap(OmSegID segID);
+	void addToRecentMap( const OmSegID segID);
 	
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

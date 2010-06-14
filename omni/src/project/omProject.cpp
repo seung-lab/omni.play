@@ -101,6 +101,8 @@ void OmProject::Save()
 	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
 
 	OmProjectData::GetDataWriter()->flush();
+
+	printf("omni project saved!\n");
 }
 
 void OmProject::Commit()

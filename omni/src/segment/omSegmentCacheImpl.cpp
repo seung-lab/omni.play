@@ -885,13 +885,13 @@ void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * root, OmSegment * 
 	mValidListBySize.updateFromJoin( root, child );
 }
 
-void OmSegmentCacheImpl::doSelectedSetInsert(OmSegID segID)
+void OmSegmentCacheImpl::doSelectedSetInsert( const OmSegID segID)
 {
 	mSelectedSet.insert( segID );
 	addToRecentMap(segID);
 }
  		
-void OmSegmentCacheImpl::doSelectedSetRemove(OmSegID segID)
+void OmSegmentCacheImpl::doSelectedSetRemove( const OmSegID segID)
 {
 	mSelectedSet.remove( segID );
 	addToRecentMap(segID);
@@ -900,30 +900,11 @@ void OmSegmentCacheImpl::doSelectedSetRemove(OmSegID segID)
 quint64 OmSegmentCacheImpl::getRecentActivity()
 {
 	static quint64 activity = 0;
-	activity++;
+	++activity;
 	return activity;
 }
 	
-void OmSegmentCacheImpl::eraseActivityFromMap( OmSegmentListBySize * map, OmSegment * seg)
+void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
 {
-	printf("fixme!\n");
-	/*
-	OmSegIDsIntMap::iterator iter;
-	for(iter = map->begin(); iter != map->end(); iter++) {
-	        //for(iter = map->begin(); iter != map->end(); iter++) {
-		//printf("E %u %u\n", (quint32)iter->first, iter->second);
-		if(iter->second == seg->mValue) {
-			map->erase(iter);
-		}
-		}*/
-}
-	
-void OmSegmentCacheImpl::addToRecentMap(OmSegID segID)
-{
-	printf("fixme!\n");
-	/*
-	OmSegment * seg = GetSegmentFromValue( segID );
-	eraseActivityFromMap(&mRecentRootActivityMap, seg);
-	mRecentRootActivityMap.insert(OmSegIDIntPair(getRecentActivity(), seg->mValue));
-	*/
+	mRecentRootActivityMap.touch( segID, getRecentActivity() );
 }
