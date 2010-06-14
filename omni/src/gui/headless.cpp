@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QTime>
+#include <QProcess>
 #include <time.h>
 
 #include "gui/recentFileList.h"
@@ -37,6 +38,23 @@ void Headless::openProject( QString fName )
 	}
 }
 
+void doMeshinate( OmSegmentation * current_seg )
+{
+        QString abs_fnpn = OmProjectData::getAbsoluteFileNameAndPath();
+        QString fnpnPlan = abs_fnpn + ".plan";
+        current_seg->BuildMeshDataPlan( fnpnPlan );
+
+	QString& GetScriptCmd (QString arg);
+        QString script = GetScriptCmd (fnpnPlan);
+        debug ("meshinator", "%s\n", qPrintable (script));
+
+        QProcess * meshinatorProc = new QProcess ();
+        meshinatorProc->start(script);
+        meshinatorProc->waitForFinished(-1);
+
+        OmProject::Save();
+}
+
 void Headless::processLine( QString line, QString fName )
 {
 	time_t start;
@@ -58,6 +76,13 @@ void Headless::processLine( QString line, QString fName )
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.build_seg_mesh();
 		bs.wait();
+        } else if( "meshinator" == line ) {
+                if( 0 == SegmentationID  ){
+                        printf("please choose segmentation first!\n");
+                        return;
+                }
+                OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
+		doMeshinate(&added_segmentation);
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");
