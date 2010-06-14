@@ -515,7 +515,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 	}
 
 	if (1 == mBrushToolDiameter) {
-		debug("brush", "%i,%i,%i\n", DEBUGV3(gDC));
+		//debug("brush", "%i,%i,%i\n", DEBUGV3(gDC));
 		//(new OmVoxelSetValueAction(segid, gDC, seg))->Run();
 		if (segid != 1 && segid != 0) {
 			//debug("FIXME", << segid << " is the seg id" << endl;
@@ -647,6 +647,23 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 	}
 }
 
+void myBreak(){}
+void checkDC (char * s, DataCoord dc)
+{
+	if(dc.x == dc.y) {
+		debug("brush", "%s: xy: %i = %i\n", s, dc.x, dc.y);
+		myBreak();
+	}
+	if(dc.x == dc.z) {
+		debug("brush", "%s: xz: %i = %i\n", s, dc.x, dc.z);
+		myBreak();
+	}
+	if(dc.y == dc.z) {
+		debug("brush", "%s: yz: %i = %i\n", s, dc.y, dc.z);
+		myBreak();
+	}
+}
+
 void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second)
 {
 	//store current selection
@@ -682,11 +699,29 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	float mDepth = mViewGroupState->GetViewSliceDepth(mViewType);
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
 	int mViewDepth = data_coord.z;
+        DataCoord globalDC;
+	int y1, y0, x1, x0;
 
-	int y1 = second.y;
-	int y0 = first.y;
-	int x1 = second.x;
-	int x0 = first.x;
+        switch (mViewType) {
+        case XY_VIEW:
+		y1 = second.y;
+		y0 = first.y;
+		x1 = second.x;
+		x0 = first.x;
+                break;
+        case XZ_VIEW:
+		y1 = second.z;
+		y0 = first.z;
+		x1 = second.x;
+		x0 = first.x;
+                break;
+        case YZ_VIEW:
+		y1 = second.y;
+		y0 = first.y;
+		x1 = second.z;
+		x0 = first.z;
+                break;
+        }
 
 	int dy = y1 - y0;
 	int dx = x1 - x0;
@@ -707,29 +742,15 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	dy <<= 1;		// dy is now 2*dy
 	dx <<= 1;		// dx is now 2*dx
 
-	// modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-	DataCoord myDC = DataCoord(x0, y0, mViewDepth);
+	debug("brush", "coords: %i,%i,%i\n", x0, y0, mViewDepth);
+	debug("brush", "mDepth = %f\n", mDepth);
 
-	// myDC is flat, only valid for XY view.  This is not correct.
 
-	DataCoord globalDC;
-	switch (mViewType) {
-	case XY_VIEW:
-		globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-		break;
-	case XZ_VIEW:
-		globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-		break;
-	case YZ_VIEW:
-		globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-		break;
+	if(!doselection) {
+		//BrushToolApplyPaint(segmentation_id, first, data_value);
+	} else {
+		PickToolAddToSelection(segmentation_id, first);
 	}
-	//debug("FIXME", << "global click point: " << globalDC << endl;
-
-	if (!doselection)
-		BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-	else
-		PickToolAddToSelection(segmentation_id, globalDC);
 
 	// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 
@@ -742,24 +763,21 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			}
 			x0 += stepx;
 			fraction += dy;	// same as fraction -= 2*dy
-			//modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-			DataCoord myDC = DataCoord(x0, y0, mViewDepth);
-
-			// myDC is flat, only valid for XY view.  This is not correct.
 
 			DataCoord globalDC;
 			switch (mViewType) {
 			case XY_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
+				globalDC = DataCoord(x0, y0, second.z);
 				break;
 			case XZ_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
+				globalDC = DataCoord(x0, second.y, y0);
 				break;
 			case YZ_VIEW:
-				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
+				globalDC = DataCoord(second.x, y0, x0);
 				break;
 			}
-			//debug("FIXME", << "global click point: " << globalDC << endl;
+
+			checkDC("3", globalDC);
 
 			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
@@ -783,24 +801,20 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			y0 += stepy;
 			fraction += dx;
 
-			//modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-			DataCoord myDC = DataCoord(x0, y0, mViewDepth);
+                        DataCoord globalDC;
+                        switch (mViewType) {
+                        case XY_VIEW:
+                                globalDC = DataCoord(x0, y0, second.z);
+                                break;
+                        case XZ_VIEW:
+                                globalDC = DataCoord(x0, second.y, y0);
+                                break;
+                        case YZ_VIEW:
+                                globalDC = DataCoord(second.x, y0, x0);
+                                break;
+                        }
 
-			// myDC is flat, only valid for XY view.  This is not correct.
-
-			DataCoord globalDC;
-			switch (mViewType) {
-			case XY_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-				break;
-			case XZ_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-				break;
-			case YZ_VIEW:
-				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-				break;
-			}
-			//debug("FIXME", << "global click point: " << globalDC << endl;
+			checkDC("4", globalDC);
 
 			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
@@ -1413,7 +1427,7 @@ bool OmView2d::BufferTiles(Vector2f zoomMipVector)
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
                                 	if (gotten_id) {
                                         	safeTexture(gotten_id);
-                                	} else {
+					} else {
 						mTileCountIncomplete++;
                                         	if (mTileCountIncomplete >= mTileCount) {
 							return false;
@@ -1530,6 +1544,10 @@ void OmView2d::PreDraw(Vector2f zoomMipVector)
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 					mThreeTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
+				} else if(mScribbling) {
+                                	mCache->GetTextureID(gotten_id, mTileCoord, true);
+                                        safeTexture(gotten_id);
+					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else {
 					mTileCountIncomplete++;
 					complete = false;
