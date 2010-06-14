@@ -27,6 +27,7 @@ QDataStream &operator>>(QDataStream & in, OmIDsSet & set )
 	return in;
 }
 
+/*
 QDataStream &operator<<(QDataStream & out, const OmSegIDsIntMap & map )
 {
         out << (quint32)map.size();
@@ -56,3 +57,4 @@ QDataStream &operator>>(QDataStream & in, OmSegIDsIntMap & map )
         return in;
 }
 
+*/

@@ -75,7 +75,6 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 		mMaxValue = value;
 	}
 
-
 	addToDirtySegmentList(seg);
 
 	return seg;
@@ -225,18 +224,6 @@ void OmSegmentCacheImpl::setSegmentEnabled( OmSegID segID, bool isEnabled )
 	} else {
 		mEnabledSet.remove( rootID );
 	}
-}
-
-void OmSegmentCacheImpl::doSelectedSetInsert(OmSegID segID)
-{
-	mSelectedSet.insert( segID );
-	addToRecentMap(segID);
-}
-
-void OmSegmentCacheImpl::doSelectedSetRemove(OmSegID segID)
-{
-	mSelectedSet.remove( segID );
-	addToRecentMap(segID);
 }
 
 void OmSegmentCacheImpl::setSegmentSelected( OmSegID segID, bool isSelected )
@@ -401,8 +388,6 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	child->mThreshold = 0;
 
-	PreserveMutationOnSplit(child);
-
 	if( isSegmentSelected( parent->getValue() ) ){
 		debug("split", "parent was selected\n");
 		doSelectedSetInsert( child->getValue() );
@@ -543,12 +528,12 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 	childRoot->setParent(parent, e->threshold);
 	childRoot->mCustomMergeEdge = e;
 
+	updateSizeListsFromJoin( findRoot(parent), childRoot );
+
         if( isSegmentSelected( e->childID ) ){
                 doSelectedSetInsert( parent->mValue );
         } 
 	doSelectedSetRemove( e->childID );
-
-	PreserveMutationOnJoin(childRoot);
 
 	--mNumTopLevelSegs;
 
@@ -582,12 +567,12 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
 
+	updateSizeListsFromJoin( findRoot(parent), childRoot );
+
         if( isSegmentSelected( childUnknownDepthID ) ){
                 doSelectedSetInsert( parent->mValue );
         } 
 	doSelectedSetRemove( childUnknownDepthID );
-
-	PreserveMutationOnJoin(childRoot);
 
 	--mNumTopLevelSegs;
 
@@ -699,49 +684,33 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 	clearCaches();	
 }
 
-// FIXME: this search could become slow.... (purcaro)
 OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet, const OmSegIDRootType type, OmSegID startSeg)
 {
 	loadTreeIfNeeded();
 
-	OmSegIDsIntMap * roots;
+	OmSegIDsListWithPage * ids;
 	if(VALIDROOT == type) {
-		roots = &mValidRootSizesMap;
+		ids = mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(NOTVALIDROOT == type) {
-		roots = &mRootSizesMap;
+		ids = mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(RECENTROOT == type) {
-		roots = &mRecentRootActivityMap;
+		ids = mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else {
 		assert(0 && "Shouldn't call this function to do non special group code.\n");
 	}
 
-	OmSegPtrList ret = OmSegPtrList();
-        OmSegIDsIntMap::const_reverse_iterator iter = roots->rbegin();
-
-	int counter = 0;
-	int page = 0;
-	if(0 == startSeg) {
-		advance(iter, offset);
-	 	page = offset / numToGet;
-	} else {
-        	for(iter = roots->rbegin(); iter != roots->rend(); iter++) {
-			++counter;
-                	if(iter->second == startSeg) {
-				iter--;
-                        	break;
-                	}
-		}
-	 	advance(iter, -(counter % numToGet));
-	 	page = counter / numToGet;
-        }
-
-	OmSegment * seg;
-	for(int i = 0; i < numToGet && iter != roots->rend(); ++i, iter++ ){
-		seg = GetSegmentFromValue(iter->second);
-		ret.push_back( seg );
+	OmSegPtrList retPtrs = OmSegPtrList();
+	
+	OmSegIDsList::const_iterator iter;
+	for( iter = ids->list.begin(); iter != ids->list.end(); ++iter ){
+		retPtrs.push_back( GetSegmentFromValue(*iter) );
 	}
 
-	return new OmSegPtrListWithPage(ret, page);
+	OmSegPtrListWithPage * ret = new OmSegPtrListWithPage( retPtrs, ids->mPageOffset );
+
+	delete ids;
+
+	return ret;
 }
 
 void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
@@ -836,7 +805,7 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
 		return false;
 	}
-
+ 
 	childRootDT->join( mGraph->get( parentID ) );
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
@@ -844,8 +813,6 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 	childRoot->mEdgeNumber = edgeNumber;
 
 	--mNumTopLevelSegs;
-
-	PreserveMutationOnJoin(childRoot);
 
 	return true;
 }
@@ -876,8 +843,6 @@ bool OmSegmentCacheImpl::splitChildFromParentInternal( const OmSegID childID )
 
 	++mNumTopLevelSegs;
 
-        PreserveMutationOnSplit(child);
-
 	return true;
 }
 
@@ -898,76 +863,38 @@ void OmSegmentCacheImpl::setAsValidated(const OmSegIDsSet & set, const bool vali
                 }
 		edgeForceJoin[ seg->mEdgeNumber ] = valid;
         }
-
-	OmSegIDsSet::const_iterator roots;
-	for(roots = set.begin(); roots != set.end(); ++roots){
-		seg = GetSegmentFromValue(*roots);
-
-		MutateOnValid(seg, valid);
-	}
 }
 
-void OmSegmentCacheImpl::eraseValueFromMap(OmSegIDsIntMap * map, OmSegment * seg)
-{
-	
-	OmSegIDsIntMap::iterator iter;
-	for(iter = map->find(seg->mSize); iter != map->end(); iter++) {
-	//for(iter = map->begin(); iter != map->end(); iter++) {
-		//printf("E %u %u\n", (quint32)iter->first, iter->second);
-		if(iter->second == seg->mValue) {
-			map->erase(iter);
-		}
-	}
-}
-
-void OmSegmentCacheImpl::MutateOnValid(OmSegment * seg, bool valid)
-{
-	if(!valid) {
-		mRootSizesMap.insert(OmSegIDIntPair(seg->mSize, seg->mValue));
-		mRootSet.insert(seg->mValue);
-		printf("add to working %u %u\n", seg->mValue, (quint32)seg->mSize);
-
-		mValidRootSet.erase(seg->mValue);
-		eraseValueFromMap(&mValidRootSizesMap, seg);
-	} else {
-		mValidRootSizesMap.insert(OmSegIDIntPair(seg->mSize, seg->mValue));
-		mValidRootSet.insert(seg->mValue);
-
-		mRootSet.erase(seg->mValue);
-		eraseValueFromMap(&mRootSizesMap, seg);
-	}
-}
-
-void OmSegmentCacheImpl::PreserveMutationOnJoin(OmSegment * seg)
-{
-	mRootSet.erase(seg->mValue);
-	mValidRootSet.erase(seg->mValue);
-	eraseValueFromMap(&mValidRootSizesMap, seg);
-	eraseValueFromMap(&mRootSizesMap, seg);
-}
-
-void OmSegmentCacheImpl::PreserveMutationOnSplit(OmSegment * seg)
-{
-	MutateOnValid(seg, seg->mImmutable);
-}
-
-void OmSegmentCacheImpl::BuildRootLists()
+void OmSegmentCacheImpl::buildSegmentSizeLists()
 {
 	loadTreeIfNeeded();
-
+       
 	OmSegment * seg;
 	for( quint32 i = 0; i <= mMaxValue; ++i ){
 		seg = GetSegmentFromValue( i );
                 if( NULL == seg) {
 			continue;
 		} 
-		//if( mGraph->get( seg->mValue )->getKey() == mGraph->get( seg->mValue )->findRoot()->getKey()) {
-		if(0 == seg->mParentSegID) {
-                	MutateOnValid(seg, false);
-		} else {
-			//printf("skipping\n");
-		}
+		mRootListBySize.insertSegment( seg );
 	}
+}
+
+void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * root, OmSegment * child )
+{
+	mRootListBySize.updateFromJoin( root, child );
+	mValidListBySize.updateFromJoin( root, child );
+}
+
+void OmSegmentCacheImpl::doSelectedSetInsert(OmSegID segID)
+{
+	mSelectedSet.insert( segID );
+	addToRecentMap(segID);
+}
+ 		
+void OmSegmentCacheImpl::doSelectedSetRemove(OmSegID segID)
+{
+	mSelectedSet.remove( segID );
+	addToRecentMap(segID);
 }
 
 quint64 OmSegmentCacheImpl::getRecentActivity()
@@ -976,24 +903,27 @@ quint64 OmSegmentCacheImpl::getRecentActivity()
 	activity++;
 	return activity;
 }
-
-void OmSegmentCacheImpl::eraseActivityFromMap(OmSegIDsIntMap * map, OmSegment * seg)
+	
+void OmSegmentCacheImpl::eraseActivityFromMap( OmSegmentListBySize * map, OmSegment * seg)
 {
-
-        OmSegIDsIntMap::iterator iter;
-        for(iter = map->begin(); iter != map->end(); iter++) {
-        //for(iter = map->begin(); iter != map->end(); iter++) {
-                //printf("E %u %u\n", (quint32)iter->first, iter->second);
-                if(iter->second == seg->mValue) {
-                        map->erase(iter);
-                }
-        }
+	printf("fixme!\n");
+	/*
+	OmSegIDsIntMap::iterator iter;
+	for(iter = map->begin(); iter != map->end(); iter++) {
+	        //for(iter = map->begin(); iter != map->end(); iter++) {
+		//printf("E %u %u\n", (quint32)iter->first, iter->second);
+		if(iter->second == seg->mValue) {
+			map->erase(iter);
+		}
+		}*/
 }
-
+	
 void OmSegmentCacheImpl::addToRecentMap(OmSegID segID)
 {
+	printf("fixme!\n");
+	/*
 	OmSegment * seg = GetSegmentFromValue( segID );
 	eraseActivityFromMap(&mRecentRootActivityMap, seg);
 	mRecentRootActivityMap.insert(OmSegIDIntPair(getRecentActivity(), seg->mValue));
+	*/
 }
-

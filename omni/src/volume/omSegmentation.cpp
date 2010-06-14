@@ -51,7 +51,7 @@ OmSegmentation::OmSegmentation()
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.0;
+	mDendThreshold = 1.0;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -90,7 +90,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.0;
+	mDendThreshold = 1.0;
 
         SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
@@ -473,9 +473,9 @@ OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type
 		mSegmentCache->setAsValidated(set, false);
 	} else if(GROUPROOT == type) {
 		return mGroups.SetGroup(set, name);
-	} else {
-		assert(0 && "group type is not correctly set.\n");
 	}
+		
+	assert(0 && "group type is not correctly set.\n");
 }
 
 void OmSegmentation::DeleteGroup(OmGroupID)

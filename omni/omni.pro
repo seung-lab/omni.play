@@ -309,6 +309,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentSelector.cpp \
+           src/segment/helpers/omSegmentListBySize.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildVolumes.cpp \

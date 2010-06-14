@@ -7,7 +7,6 @@ OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	, mParentSegID(0)
 	, mImmutable(false)
 	, mSize(0)
-	, mSizeOfAllChildren(0)
 	, mEdgeNumber(-1)
 	, mCustomMergeEdge(NULL)
 {
@@ -20,7 +19,6 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	, mParentSegID(0)
 	, mImmutable(false)
 	, mSize(0)
-	, mSizeOfAllChildren(0)
 	, mEdgeNumber(-1)
 	, mCustomMergeEdge(NULL)
 {
@@ -141,7 +139,7 @@ void OmSegment::SetImmutable( const bool immutable)
 
 quint64 OmSegment::getSizeWithChlidren()
 {
-	return mSize + mSizeOfAllChildren;
+	return 0;
 }
 
 OmSegID OmSegment::getRootSegID()

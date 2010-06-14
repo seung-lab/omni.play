@@ -26,5 +26,15 @@ class OmSegPtrListWithPage {
 	OmSegPtrList list;
 };
 
+class OmSegIDsListWithPage {
+ public:
+	OmSegIDsListWithPage( const OmSegIDsList & L, int pageOffset )
+		: mPageOffset(pageOffset)
+		, list(L) {}
+	
+	int mPageOffset;
+	OmSegIDsList list;
+};
+
 
 #endif

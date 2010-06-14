@@ -18,7 +18,7 @@
 
 #include <QDataStream>
 
-static const int Omni_Version = 8;
+static const int Omni_Version = 9;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
@@ -385,11 +385,12 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 		out << *e;
 	}
 
+	/*
 	out << sc.mRootSizesMap;
 	out << sc.mValidRootSizesMap;
 	out << sc.mRootSet;
 	out << sc.mValidRootSet;
-
+	*/
 	return out;
 }
 
@@ -419,10 +420,12 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
+	/*
         in >> sc.mRootSizesMap;
         in >> sc.mValidRootSizesMap;
         in >> sc.mRootSet;
         in >> sc.mValidRootSet;
+	*/
 
 	return in;
 }

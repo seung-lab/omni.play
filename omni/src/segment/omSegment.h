@@ -64,13 +64,13 @@ private:
 	bool mImmutable;
 
 	quint64 mSize;
-	quint64 mSizeOfAllChildren; // excludes mSize
 
 	int mEdgeNumber; // index of edge in main edge list
 	OmSegmentEdge * mCustomMergeEdge;
 
 	void SetInitialColor();
 
+	friend class OmSegmentListBySize;
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
