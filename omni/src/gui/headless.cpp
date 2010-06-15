@@ -21,6 +21,9 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
+#include "system/omLocalPreferences.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPaths.h"
 
 int argc_global;
 char **argv_global;
@@ -48,9 +51,13 @@ void doMeshinate( OmSegmentation * current_seg )
         QString script = GetScriptCmd (fnpnPlan);
         debug ("meshinator", "%s\n", qPrintable (script));
 
+	printf("here 2\n");
+
         QProcess * meshinatorProc = new QProcess ();
         meshinatorProc->start(script);
         meshinatorProc->waitForFinished(-1);
+
+	printf("here 3\n");
 
         OmProject::Save();
 }
@@ -81,7 +88,9 @@ void Headless::processLine( QString line, QString fName )
                         printf("please choose segmentation first!\n");
                         return;
                 }
+		printf("here\n");
                 OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
+		OmProject::Save();
 		doMeshinate(&added_segmentation);
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
@@ -97,14 +106,27 @@ void Headless::processLine( QString line, QString fName )
 		SegmentationID = StringHelpers::getUInt( args[1] );
 		unsigned int mipLevel = StringHelpers::getUInt( args[2] );
 		QStringList coords = args[3].split(',');
-		unsigned int x = StringHelpers::getUInt( coords[0] );
-		unsigned int y = StringHelpers::getUInt( coords[1] );
-		unsigned int z = StringHelpers::getUInt( coords[2] );
+		int x = StringHelpers::getUInt( coords[0] );
+		int y = StringHelpers::getUInt( coords[1] );
+		int z = StringHelpers::getUInt( coords[2] );
+
+		OmMipMeshCoord mipChunkCoord = OmMipMeshCoord(OmMipChunkCoord(mipLevel, x, y, z), SegmentationID);
+		OmDataWriter * hdf5File;
+
+  		if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
+			OmDataLayer * dl = OmProjectData::GetDataLayer();
+    			hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
+			hdf5File->create();
+			hdf5File->open();
+                }
 		
 		int numThreads=0;
 		if( 5 == args.size() ){
 			numThreads = StringHelpers::getUInt( args[4] );
 			printf("over-road edfault number of threads...\n");
+		}
+		if( 0 == numThreads) {
+			numThreads = 4;
 		}
 		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
 		time (&start);
@@ -112,6 +134,11 @@ void Headless::processLine( QString line, QString fName )
 		time (&end);
 		dif = difftime (end,start);
 		printf("meshing done (%.2lf secs)\n", dif );
+
+		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
+      			OmStateManager::getParallel()) {
+    			hdf5File->close();
+  		}
 	} else if( line.startsWith("runMeshPlan:") ) {
 		time (&start);
 		runMeshPlan( line );
@@ -332,11 +359,11 @@ int Headless::start(int argc, char *argv[])
 		fName = QString::fromStdString( argv[ args.fileArgIndex ] );
 	}
 
+	setOmniExecutablePath( QString( argv[0] ) );
 	if( args.runHeadless ){
 		runHeadless( args.headlessCMD, fName );
 		return 0;
 	} else {
-		setOmniExecutablePath( QString( argv[0] ) );
 		QApplication app(argc, argv);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;

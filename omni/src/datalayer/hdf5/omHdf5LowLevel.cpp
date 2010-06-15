@@ -18,8 +18,10 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
         QFile file(QString::fromStdString(fpath));
         if(!file.exists()){
 		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
-		if (fileId < 0)
+		if (fileId < 0) {
+			fprintf(stderr, "Could not create HDF5 file: %s\n", fpath.c_str());
 			throw OmIoException("Could not create HDF5 file.");
+		}
 		
 		om_hdf5_file_close_with_lock(fileId);
         }
@@ -54,6 +56,7 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
 	}
 	
 	if (fileId < 0) {
+		printf("Could not open HDF5 file: %s\n", fpath.c_str());
                 throw OmIoException("Could not open HDF5 file.");
 	}
 

@@ -2,6 +2,10 @@
 #include "datalayer/omDataPaths.h"
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMeshManager.h"
+#include "project/omProject.h"
+#include "system/omStateManager.h"
+#include "system/omLocalPreferences.h"
+
 
 OmDataPath OmDataPaths::getDefaultDatasetName()
 {
@@ -41,3 +45,21 @@ string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoordinate )
 	return str( boost::format("mesh.%1%.dat")
 		    %meshCoordinate.DataValue);
 }
+
+string OmDataPaths::getLocalPathForHd5fChunk(OmMipMeshCoord & meshCoordinate, const OmId segmentationID)
+{
+  QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
+    .arg(segmentationID)
+    .arg(meshCoordinate.MipChunkCoord.Level)
+    .arg(meshCoordinate.MipChunkCoord.Coordinate.x)
+    .arg(meshCoordinate.MipChunkCoord.Coordinate.y)
+    .arg(meshCoordinate.MipChunkCoord.Coordinate.z)
+    .arg( OmProject::GetFileName() )
+    .arg( OmStateManager::getPID() );
+
+  QString ret = OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
+  debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
+  fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
+  return ret.toStdString();
+}
+
