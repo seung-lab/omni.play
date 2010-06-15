@@ -40,6 +40,26 @@ void OmSegmentListBySize::do_insertSegment( const OmSegID segID_, const quint64 
 	mList.insert( OmSegSize(segID_, size_ ) );
 }
 
+void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::iterator & iterSize, const int offset)
+{
+	int direction = 1;
+	if(offset < 0) {
+		direction = -1;
+	}
+	
+	if(1 == direction) {
+		for(int i = 0; i < offset*direction && iterSize != sizeIndex.end(); i++)
+		{
+		 	++iterSize;
+		}
+	} else {
+		for(int i = 0; i < offset*direction && iterSize != sizeIndex.begin(); i++)
+		{
+		 	--iterSize;
+		}
+	}
+}
+
 OmSegIDsListWithPage * 
 OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const int numToGet, const OmSegID startSeg)
 {
@@ -51,7 +71,7 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
 	int counter = 0;
 	int page = 0;
 	if(0 == startSeg) {
-		advance(iterSize, offset);
+		advanceIter(sizeIndex, iterSize, offset);
 	 	page = offset / numToGet;
 	} else {
         	for(; iterSize != sizeIndex.end(); ++iterSize) {
@@ -60,7 +80,7 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
                 	}
 			++counter;
 		}
-	 	advance(iterSize, -(counter % numToGet));
+	 	advanceIter(sizeIndex, iterSize, -(counter % numToGet));
 	 	page = counter / numToGet;
         }
 	

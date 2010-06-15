@@ -24,11 +24,13 @@ class OmSegmentListBySize
 
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
 
+
  protected:
 
 	void do_incrementSegSize( const OmSegID segID_, const quint64 addedSize );
 	void do_removeSegment( const OmSegID segID_ );
 	void do_insertSegment( const OmSegID segID_, const quint64 size_ );
+
 
 	struct OmSegSize {
 		OmSegID segID;
@@ -52,6 +54,9 @@ class OmSegmentListBySize
 	typedef OmSegSizes::index<segID>::type List_by_ID;
 
 	OmSegSizes mList;
+
+ private:
+	void advanceIter(List_by_size & sizeIndex, List_by_size::iterator & iterSize, const int offset);
 };
 
 #endif
