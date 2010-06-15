@@ -79,6 +79,10 @@ string OmSegmentListWidget::eventSenderName()
 void OmSegmentListWidget::segmentLeftClick()
 {
 	QTreeWidgetItem * current = currentItem();
+	if(NULL == current) {
+		printf("FIXME: current segment not set\n");
+		return;
+	}
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 	
