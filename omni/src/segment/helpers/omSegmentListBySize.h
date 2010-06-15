@@ -19,6 +19,7 @@ class OmSegmentListBySize
 	OmSegmentListBySize(){}
 
 	void insertSegment( OmSegment * seg );
+	void removeSegment( OmSegment * seg );
 	void updateFromJoin( OmSegment * root, OmSegment * child );
 
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);

@@ -5,6 +5,11 @@ void OmSegmentListBySize::insertSegment( OmSegment * seg )
 	do_insertSegment( seg->mValue, seg->mSize );
 }
 
+void OmSegmentListBySize::removeSegment( OmSegment * seg )
+{
+        do_removeSegment( seg->mValue );
+}
+
 void OmSegmentListBySize::updateFromJoin( OmSegment * root, OmSegment * child )
 {
 	do_incrementSegSize( root->mValue, child->mSize );

@@ -856,6 +856,13 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
         	return;
         } else {
 		edgeForceJoin[ seg->mEdgeNumber ] = valid;
+		if(valid) {
+			mValidListBySize.insertSegment(seg);
+			mRootListBySize.removeSegment(seg);
+		} else {
+			mRootListBySize.insertSegment(seg);
+			mValidListBySize.removeSegment(seg);
+		}
         }
 }
 
