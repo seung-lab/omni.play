@@ -464,18 +464,25 @@ void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
 ///////          Groups
 OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
-        OmSegmentIterator iter(mSegmentCache);
-        iter.iterOverSegmentIDs(set);
 
+	bool valid;
 	if(VALIDROOT == type) {
-		mSegmentCache->setAsValidated(set, true);
+		valid = true;
 	} else if(NOTVALIDROOT == type) {
-		mSegmentCache->setAsValidated(set, false);
+		valid = false;
 	} else if(GROUPROOT == type) {
 		return mGroups.SetGroup(set, name);
 	}
-		
-	assert(0 && "group type is not correctly set.\n");
+
+        OmSegmentIterator iter(mSegmentCache);
+        iter.iterOverSegmentIDs(set);
+
+        OmSegment * seg = iter.getNextSegment();
+        while(NULL != seg) {
+                seg->SetImmutable(valid);
+		mSegmentCache->setAsValidated(seg, valid);
+                seg = iter.getNextSegment();
+        }
 }
 
 void OmSegmentation::DeleteGroup(OmGroupID)

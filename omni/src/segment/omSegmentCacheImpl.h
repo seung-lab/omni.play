@@ -96,7 +96,7 @@ class OmSegmentCacheImpl {
 
 	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID starSeg = 0);
 
-	void setAsValidated(const OmSegIDsSet & set, const bool valid);
+	void setAsValidated(OmSegment * segment, const bool valid);
 	void buildSegmentSizeLists();
 
  private:

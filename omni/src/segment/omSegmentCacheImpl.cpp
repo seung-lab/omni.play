@@ -848,21 +848,13 @@ bool OmSegmentCacheImpl::splitChildFromParentInternal( const OmSegID childID )
 	return true;
 }
 
-void OmSegmentCacheImpl::setAsValidated(const OmSegIDsSet & set, const bool valid)
+void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
-        OmSegmentIterator iter(mParentCache);
-        iter.iterOverSegmentIDs(set);
 
-        OmSegment * seg = iter.getNextSegment();
-        OmSegID val;
-        while(NULL != seg) {
-                val = seg->getValue();
-                seg = iter.getNextSegment();
-                seg->SetImmutable(valid);
-                if( -1 == seg->mEdgeNumber ){
-                        continue;
-                }
+        if( -1 == seg->mEdgeNumber ){
+        	return;
+        } else {
 		edgeForceJoin[ seg->mEdgeNumber ] = valid;
         }
 }

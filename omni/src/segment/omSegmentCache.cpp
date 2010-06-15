@@ -246,10 +246,10 @@ OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs( const unsigned int of
         return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);
 }
 
-void OmSegmentCache::setAsValidated(const OmSegIDsSet & set, const bool valid)
+void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->setAsValidated(set, valid);
+        return mImpl->setAsValidated(segment, valid);
 }
 
 OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )

@@ -77,7 +77,7 @@ public:
 
 	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg = 0);
 
-	void setAsValidated(const OmSegIDsSet & set, const bool valid);
+	void setAsValidated(OmSegment * segment, const bool valid);
 
 private:
 	QMutex mMutex;
