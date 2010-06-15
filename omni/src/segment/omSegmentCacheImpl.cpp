@@ -483,8 +483,9 @@ void OmSegmentCacheImpl::loadDendrogram()
 	initializeDynamicTree();
 	mNumTopLevelSegs = mNumSegs;
 
+	buildSegmentSizeLists();
+
 	resetGlobalThreshold( mSegmentation->mDendThreshold );
-	//BuildRootLists();
 
 	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
 		Join(e);
@@ -701,6 +702,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 
 	OmSegPtrList retPtrs = OmSegPtrList();
 	
+	// TODO: make a little stuct of the data the GUI needs...
 	OmSegIDsList::const_iterator iter;
 	for( iter = ids->list.begin(); iter != ids->list.end(); ++iter ){
 		retPtrs.push_back( GetSegmentFromValue(*iter) );
@@ -865,20 +867,6 @@ void OmSegmentCacheImpl::setAsValidated(const OmSegIDsSet & set, const bool vali
         }
 }
 
-void OmSegmentCacheImpl::buildSegmentSizeLists()
-{
-	loadTreeIfNeeded();
-       
-	OmSegment * seg;
-	for( quint32 i = 0; i <= mMaxValue; ++i ){
-		seg = GetSegmentFromValue( i );
-                if( NULL == seg) {
-			continue;
-		} 
-		mRootListBySize.insertSegment( seg );
-	}
-}
-
 void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * root, OmSegment * child )
 {
 	mRootListBySize.updateFromJoin( root, child );
@@ -907,4 +895,18 @@ quint64 OmSegmentCacheImpl::getRecentActivity()
 void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
 {
 	mRecentRootActivityMap.touch( segID, getRecentActivity() );
+}
+
+void OmSegmentCacheImpl::buildSegmentSizeLists()
+{
+	loadTreeIfNeeded();
+       
+	OmSegment * seg;
+	for( quint32 i = 0; i <= mMaxValue; ++i ){
+		seg = GetSegmentFromValue( i );
+                if( NULL == seg) {
+			continue;
+		} 
+		mRootListBySize.insertSegment( seg );
+	}
 }

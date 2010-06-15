@@ -100,7 +100,6 @@ public:
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
 	void ReloadDendrogram();
-	void BuildRootLists();
 
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	

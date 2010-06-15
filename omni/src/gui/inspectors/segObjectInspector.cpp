@@ -4,11 +4,12 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
+#include "utility/stringHelpers.h"
 
-SegObjectInspector::SegObjectInspector(SegmentDataWrapper incoming_sdw, QWidget* parent)
+SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
  : QWidget(parent)
 {
-	sdw = incoming_sdw;
+	sdw = sdw_;
 
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
@@ -44,7 +45,7 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	size->setText( QString::number( sdw.getSize() ));
+	size->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
 	origDataValueList->setText( sdw.get_original_mapped_data_value() );
 	chunkList->setText( "disabled" );
 }

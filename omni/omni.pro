@@ -263,7 +263,8 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/voxel/omVoxelSelectionSetAction.h \
            src/segment/actions/voxel/omVoxelSetAction.h \
            src/segment/actions/voxel/omVoxelSetConnectedAction.h \
-           src/segment/actions/voxel/omVoxelSetValueAction.h
+           src/segment/actions/voxel/omVoxelSetValueAction.h \
+           tests/utility/stringHelpersTest.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -425,6 +426,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omGenericManager.cpp \
            src/system/omGroups.cpp \
            src/system/omGroup.cpp \
+           tests/utility/stringHelpersTest.cpp
 
 RESOURCES += src/gui/resources.qrc
 

@@ -79,8 +79,6 @@ public:
 
 	void setAsValidated(const OmSegIDsSet & set, const bool valid);
 
-        void BuildRootLists();
-
 private:
 	QMutex mMutex;
 	

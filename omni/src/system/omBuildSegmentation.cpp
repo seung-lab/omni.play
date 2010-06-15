@@ -71,7 +71,6 @@ void OmBuildSegmentation::do_build_seg_image()
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
 	loadDendrogram();
-	mSeg->BuildRootLists();
 
 	stopTiming(type);
 }

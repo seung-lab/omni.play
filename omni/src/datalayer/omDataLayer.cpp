@@ -1,5 +1,4 @@
 #include "datalayer/omDataLayer.h"
-#include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/hdf5/omHdf5Reader.h"
 #include "datalayer/hdf5/omHdf5Writer.h"
 #include "datalayer/omDummyWriter.h"

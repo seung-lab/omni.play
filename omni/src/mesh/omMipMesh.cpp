@@ -7,7 +7,6 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "datalayer/omDataLayer.h"
-#include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
 

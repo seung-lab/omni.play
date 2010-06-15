@@ -595,8 +595,3 @@ OmSegmentEdge * OmSegmentation::splitTwoChildren(OmSegment * seg1, OmSegment * s
 {
 	return mSegmentCache->splitTwoChildren(seg1, seg2);
 }
-
-void OmSegmentation::BuildRootLists()
-{
-	mSegmentCache->BuildRootLists();
-}

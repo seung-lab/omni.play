@@ -257,10 +257,3 @@ OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
 	QMutexLocker locker( &mMutex );
         return mImpl->Join( e );
 }
-
-void OmSegmentCache::BuildRootLists()
-{
-        QMutexLocker locker( &mMutex );
-	return mImpl->buildSegmentSizeLists();
-}
-

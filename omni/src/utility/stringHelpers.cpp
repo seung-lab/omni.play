@@ -61,7 +61,7 @@ QString StringHelpers::commaDeliminateNumber( const int num )
 	QString rawNumAsStr = QString::number( num );
 
 	QString str;
-	QString::iterator i;
+	QString::const_iterator i;
 	int counter = 0;
 	for (i = rawNumAsStr.end()-1; i != rawNumAsStr.begin()-1; i-- ){
 		counter++;
