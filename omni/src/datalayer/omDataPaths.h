@@ -17,6 +17,9 @@ class OmDataPaths
 					    OmMipMeshManager * const mipMeshManager );
 
 	static string getMeshFileName( const OmMipMeshCoord & meshCoordinate );
+	static string getLocalPathForHd5fChunk(OmMipMeshCoord & meshCoordinate, const OmId segmentationID);
+
+
 
 };
 

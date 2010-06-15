@@ -253,12 +253,14 @@ QString& GetScriptCmd (QString arg)
 	static QString cmd;
 
 	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
-	debug ("meshinator", "%s\n", qPrintable (omniPath));
+	debug ("meshinator", "omni: %s\n", qPrintable (omniPath));
 	QString cmdPath = omniPath; 
 
 	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
 	cmd = cmdPath;
 	cmd += "/scripts/cluster/headnodemesher.pl " + arg;
+
+	debug ("meshinator", "script: %s\n", qPrintable (cmd));
 
 	return cmd;
 }

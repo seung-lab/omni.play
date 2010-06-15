@@ -55,3 +55,4 @@ OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool read
 	hdf5Files.insert( abs_fnpn, hdf5File );
 	return hdf5File;
 }
+

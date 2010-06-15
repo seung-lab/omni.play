@@ -125,33 +125,14 @@ void OmMipMesh::Load()
   mVertexCount = size / (6 * sizeof(GLfloat));
 }
 
-string OmMipMesh::GetLocalPathForHd5fChunk()
-{
-  QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
-    .arg(getSegmentationID())
-    .arg(mMeshCoordinate.MipChunkCoord.Level)
-    .arg(mMeshCoordinate.MipChunkCoord.Coordinate.x)
-    .arg(mMeshCoordinate.MipChunkCoord.Coordinate.y)
-    .arg(mMeshCoordinate.MipChunkCoord.Coordinate.z)
-    .arg( OmProject::GetFileName() )
-    .arg( OmStateManager::getPID() );
-
-  QString ret = OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
-  debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
-  return ret.toStdString();
-}
-
 void OmMipMesh::Save()
 {
   OmDataWriter * hdf5File;
 
-  if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
-      OmStateManager::getParallel()) {
+  if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
     OmDataLayer * dl = OmProjectData::GetDataLayer();
-    hdf5File = dl->getWriter( QString::fromStdString( GetLocalPathForHd5fChunk() ),
+    hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate, mSegmentationID) ),
                               false );
-    hdf5File->open();
-    hdf5File->create();
   } else {
     hdf5File = OmProjectData::GetDataWriter();
   }
@@ -185,9 +166,7 @@ void OmMipMesh::Save()
   size = 6 * mVertexCount * sizeof(GLfloat);
   hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
 
-  if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
-      OmStateManager::getParallel()) {
-    hdf5File->close();
+  if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
   }
 }
 
