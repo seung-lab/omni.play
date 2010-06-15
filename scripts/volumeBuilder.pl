@@ -50,10 +50,36 @@ sub build512useMeshinator {
     system $cmd;
 }
 
+###########################################
+
+sub buildRegionGraphNew150 {
+    my $cmd = $cmdGeneric."/regionGraphs/new150graph.omni.cmd";
+    printTitle("new 150 w/ region graph", $cmd);
+    system $cmd;
+}
+
+sub buildRegionI1088150 {
+    my $cmd = $cmdGeneric."/regionGraphs/build.i1088_150_graph.omni.cmd";
+    printTitle("i1088 150 w/ region graph", $cmd);
+    system $cmd;
+}
+
+sub buildRegionI1088250 {
+    my $cmd = $cmdGeneric."/regionGraphs/build.i1088_250_graph.omni.cmd";
+    printTitle("i1088 250 w/ region graph", $cmd);
+    system $cmd;
+}
+
 sub buildAll {
     buildRabbit();
     build150();
     build512();
+}
+
+sub buildAllRegion {
+    buildRegionGraphNew150();
+    buildRegionI1088150();
+    buildRegionI1088250();
 }
 
 sub printTitle {
@@ -77,8 +103,12 @@ sub menu {
     print "4 -- Build 150^3 (no meshes)\n";
     print "5 -- Build 512^3 (no meshes)\n";
     print "6 -- Build 512^3 (use meshinator)\n";
+    print "7 -- Build all region graphs\n";
+    print "8 -- Build new150graph w/ region graphs\n";
+    print "9 -- Build i1088_150 w/ region graphs\n";
+    print "10 -- Build i1088_250 w/ region graphs\n";
     print "\n";
-    my $max_answer = 6;
+    my $max_answer = 10;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -110,6 +140,14 @@ sub runMenuEntry {
 	build512noMeshes();
     }elsif( 6 == $entry ){
 	build512useMeshinator();
+    }elsif( 7 == $entry ){
+	buildAllRegion();
+    }elsif( 8 == $entry ){
+	buildRegionGraphNew150();
+    }elsif( 9 == $entry ){
+	buildRegionI1088150();	
+    }elsif( 10 == $entry ){
+	buildRegionI1088250();	
     }
 }
 
