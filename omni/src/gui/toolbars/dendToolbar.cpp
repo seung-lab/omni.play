@@ -467,6 +467,7 @@ void DendToolBar::addGroup()
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 

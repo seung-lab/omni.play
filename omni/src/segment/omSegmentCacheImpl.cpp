@@ -852,17 +852,19 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
 
+	if(valid) {
+		mValidListBySize.insertSegment(seg);
+		mRootListBySize.removeSegment(seg);
+	} else {
+		mRootListBySize.insertSegment(seg);
+		mValidListBySize.removeSegment(seg);
+	}
+
         if( -1 == seg->mEdgeNumber ){
         	return;
         } else {
 		edgeForceJoin[ seg->mEdgeNumber ] = valid;
-		if(valid) {
-			mValidListBySize.insertSegment(seg);
-			mRootListBySize.removeSegment(seg);
-		} else {
-			mRootListBySize.insertSegment(seg);
-			mValidListBySize.removeSegment(seg);
-		}
+
         }
 }
 
