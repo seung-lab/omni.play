@@ -157,7 +157,8 @@ void OmSegmentation::BuildVolumeData()
 	mSegmentCache->turnBatchModeOn(true);
 
 	//build volume
-	OmMipVolume::Build();
+	OmDataPath dataset = OmDataPath("main");
+	OmMipVolume::Build(dataset);
 
 	mSegmentCache->flushDirtySegments();
 	mSegmentCache->turnBatchModeOn(false);
@@ -462,7 +463,7 @@ void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
 
 /////////////////////////////////
 ///////          Groups
-OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
 
 	bool valid;
@@ -471,7 +472,8 @@ OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		return mGroups.SetGroup(set, name);
+		mGroups.SetGroup(set, name);
+		return;
 	}
 
         OmSegmentIterator iter(mSegmentCache);
@@ -484,6 +486,17 @@ OmGroup & OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type
                 seg = iter.getNextSegment();
         }
 }
+
+void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+{
+
+        if(GROUPROOT == type) {
+                return mGroups.UnsetGroup(set, name);
+        } else {
+		assert(0 && "only unset regular groups");
+	}
+}
+
 
 void OmSegmentation::DeleteGroup(OmGroupID)
 {

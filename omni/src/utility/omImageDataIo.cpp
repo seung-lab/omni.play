@@ -110,7 +110,7 @@ vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader( QString fname)
 vtkImageData * OmImageDataIo::om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
 						 const DataBbox srcExtentBbox,
 						 const DataBbox dataExtentBbox, 
-						 int bytesPerSample)
+						 int bytesPerSample, const OmDataPath dataset)
 {
 
 	assert(sourceFilenamesAndPaths.size() && "No files to read.");
@@ -123,7 +123,7 @@ vtkImageData * OmImageDataIo::om_imagedata_read( QFileInfoList sourceFilenamesAn
 		return om_imagedata_read_vtk( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
 
 	case HDF5_TYPE:
-		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, dataExtentBbox, bytesPerSample);
+		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, dataExtentBbox, bytesPerSample, dataset);
 
 	default:
 		assert(false && "Unknown file format");
@@ -201,7 +201,7 @@ vtkImageData * OmImageDataIo::om_imagedata_read_vtk( QFileInfoList sourceFilenam
 
 vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
 						      const DataBbox dataExtentBbox, 
-						      int bytesPerSample)
+						      int bytesPerSample, const OmDataPath dataset)
 {
 	//FIXME: don't assert, or check before calling me!
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
@@ -210,9 +210,17 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
 	hdf5reader->open();
 
-	vtkImageData *data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(),
+	vtkImageData *data;
+        if(hdf5reader->dataset_exists(dataset)){
+		data = hdf5reader->dataset_image_read_trim( dataset,
 								  dataExtentBbox, 
 								  bytesPerSample);
+	} else {
+		data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(),
+								  dataExtentBbox, 
+								  bytesPerSample);
+	}
+
 	hdf5reader->close();
 
 	return data;
@@ -224,7 +232,7 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 
 /////////////////////////////////
 ///////          Dimensions Functions
-Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths )
+Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
 {
 	assert(sourceFilenamesAndPaths.size() && "No files specified");
 
@@ -237,7 +245,7 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilena
 		return om_imagedata_get_dims_vtk( sourceFilenamesAndPaths );
 
 	case HDF5_TYPE:
-		return om_imagedata_get_dims_hdf5( sourceFilenamesAndPaths );
+		return om_imagedata_get_dims_hdf5( sourceFilenamesAndPaths, dataset );
 
 	default:
 		assert(false && "Unknown file format");
@@ -272,7 +280,7 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_vtk( QFileInfoList sourceFi
 	return src_dims;
 }
 
-Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths )
+Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
@@ -282,7 +290,12 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 	hdf5reader->open();
 
 	//get dims of image
-	Vector3 < int >dims = hdf5reader->dataset_image_get_dims( OmDataPaths::getDefaultDatasetName() );
+	Vector3 < int >dims;
+	if(hdf5reader->dataset_exists(dataset)){
+		dims = hdf5reader->dataset_image_get_dims( dataset );
+	} else {
+		dims = hdf5reader->dataset_image_get_dims( OmDataPaths::getDefaultDatasetName() );
+	}
 
 	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
 

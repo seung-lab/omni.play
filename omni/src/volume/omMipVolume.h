@@ -12,6 +12,7 @@ class OmVolume;
 #include "omSimpleChunkThreadedCache.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
+#include "datalayer/omDataPath.h"
 #include "common/omStd.h"
 
 #include <QFileInfo>
@@ -65,7 +66,7 @@ public:
 	bool IsBuilt();
 	bool IsBuilding();
 	
-	void UpdateMipProperties();
+	void UpdateMipProperties(OmDataPath&);
 		
 	//TODO: move to volume
 	//mip level method
@@ -96,14 +97,14 @@ public:
 	void SetVoxelValue(const DataCoord &vox, quint32 value);
 
 	//build methods
-	void Build();
+	void Build(OmDataPath & dataset);
 	bool BuildVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
 	void BuildEditedLeafChunks();
 	
 	//io
-	bool ImportSourceData();
+	bool ImportSourceData(OmDataPath & dataset);
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);
 	virtual void ExportDataFilter(vtkImageData *) { }

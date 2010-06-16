@@ -84,7 +84,8 @@ public:
 	bool AreSegmentsSelected();
 	
 	//group management
-	OmGroup & SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+ 	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);
 
 

@@ -75,7 +75,8 @@ bool OmChannel::IsVolumeDataBuilt()
 
 void OmChannel::BuildVolumeData()
 {
-	OmMipVolume::Build();
+	OmDataPath path = OmDataPath("chan");
+	OmMipVolume::Build(path);
 }
 
 OmFilter2d& OmChannel::AddFilter() {

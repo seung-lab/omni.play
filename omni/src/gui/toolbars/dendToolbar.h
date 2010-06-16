@@ -83,6 +83,7 @@ class DendToolBar : public QWidget
 	QPushButton * addGroupAct;
 	QPushButton * deleteGroupAct;
         QPushButton * colorMapAct;
+	QLineEdit* mGroupName;
 
 	QLineEdit* mDustThreshold;
 	QPushButton * increaseDustThresholdAct;

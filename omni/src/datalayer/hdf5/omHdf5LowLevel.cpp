@@ -120,6 +120,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
+	printf("%s is the name\n", name);
+
 	//get dims
 	Vector3 < int >dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 

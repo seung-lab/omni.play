@@ -143,6 +143,8 @@ void DendToolBar::createToolbarActions()
                 this, SLOT(mapColors()));
         colorMapAct->setCheckable(true);
 
+        mGroupName = new QLineEdit(mMainWindow);
+        mGroupName->setText("Valid");
 
         mDustThreshold = new QLineEdit(mMainWindow);
         setDustThresholdValue();
@@ -252,6 +254,7 @@ void DendToolBar::addToolbars()
         sixthLayout->addWidget(addGroupAct,0,0,1,2);
         sixthLayout->addWidget(deleteGroupAct,1,0,1,2);
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
+        sixthLayout->addWidget(mGroupName,3,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 
@@ -468,6 +471,7 @@ void DendToolBar::addGroup()
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+                seg.SetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
         }
 }
 
@@ -478,6 +482,7 @@ void DendToolBar::deleteGroup()
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
+                seg.UnsetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
         }
 }
 

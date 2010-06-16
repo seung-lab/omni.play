@@ -21,9 +21,10 @@ public:
 
 	OmGroupID GetIDFromName(OmGroupName);
 	OmGroup & SetGroup(const OmSegIDsSet & set, OmGroupName name);
+	void UnsetGroup(const OmSegIDsSet & set, OmGroupName name);
 
 private:
-        OmGroup & setGroupIDs(const OmSegIDsSet & set, OmGroup & group);
+        OmGroup & setGroupIDs(const OmSegIDsSet & set, OmGroup & group, bool doSet);
 
 	OmSegmentation * mSegmentation;
 	OmGenericManager<OmGroup> mGroupManager;

@@ -220,11 +220,11 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
 /*
  *	Refresh dependent variables.
  */
-void OmMipVolume::UpdateMipProperties()
+void OmMipVolume::UpdateMipProperties(OmDataPath & dataset)
 {
 	if (IsSourceValid()) {
 		//get source dimensions
-		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths );
+		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths, dataset );
 
 		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
@@ -579,13 +579,13 @@ void OmMipVolume::DeleteInternalData()
 /*
  *	Build all MipLevel resolutions of the MipVolume.
  */
-void OmMipVolume::Build()
+void OmMipVolume::Build(OmDataPath & dataset)
 {
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
 	
 	//update properties
-	UpdateMipProperties();
+	UpdateMipProperties(dataset);
 
 	//delete old
 	DeleteInternalData();
@@ -600,7 +600,7 @@ void OmMipVolume::Build()
 		return;
 	}
 	//copy source data
-	if (!ImportSourceData()) {
+	if (!ImportSourceData(dataset)) {
 		DeleteInternalData();
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
@@ -768,7 +768,7 @@ void OmMipVolume::BuildEditedLeafChunks()
  *	Given a valid source data volume, thes copies entire source volume to
  *	the leaf mip level of this mip volume.
  */
-bool OmMipVolume::ImportSourceData()
+bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 {
 	//debug("genone","OmMipVolume::ImportSourceData()");
 
@@ -799,7 +799,7 @@ bool OmMipVolume::ImportSourceData()
 					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
 									 GetExtent(), 
 									 chunk_data_bbox, 
-									 GetBytesPerSample());
+									 GetBytesPerSample(), dataset);
 				
 				//write to project data
 				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
