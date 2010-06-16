@@ -202,7 +202,6 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge * e )
 
 OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
 {
-	
 	DynamicTree<OmSegID> * childRootDT = mGraph->get( e->childID )->findRoot();
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
@@ -351,4 +350,47 @@ void OmSegmentCacheImpl::loadDendrogram()
 	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
 		JoinEdge(e);
 	}
+}
+
+void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
+{
+       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+
+       if (isSelected) {
+               doSelectedSetInsert( rootID );
+       } else {
+               doSelectedSetRemove( rootID );
+               assert( !mSelectedSet.contains( segID ));
+       }
+}
+
+void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
+{
+	OmSegment * root = findRoot(parent);
+	mRootListBySize.updateFromJoin( root, child );
+	mValidListBySize.updateFromJoin( root, child );
+}
+
+void OmSegmentCacheImpl::doSelectedSetInsert( const OmSegID segID)
+{
+	mSelectedSet.insert( segID );
+	addToRecentMap(segID);
+}
+ 		
+void OmSegmentCacheImpl::doSelectedSetRemove( const OmSegID segID)
+{
+	mSelectedSet.remove( segID );
+	addToRecentMap(segID);
+}
+
+quint64 OmSegmentCacheImpl::getRecentActivity()
+{
+	static quint64 activity = 0;
+	++activity;
+	return activity;
+}
+	
+void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
+{
+	mRecentRootActivityMap.touch( segID, getRecentActivity() );
 }

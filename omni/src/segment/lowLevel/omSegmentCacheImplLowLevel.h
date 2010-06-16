@@ -86,17 +86,12 @@ class OmSegmentCacheImplLowLevel {
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 
-	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+	virtual void setSegmentSelectedBatch( OmSegID segID, bool isSelected ) = 0;
+	virtual void updateSizeListsFromJoin( OmSegment * root, OmSegment * child ) = 0;
 
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
-	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
-
 	OmSegmentListByMRU mRecentRootActivityMap;
-	void doSelectedSetInsert( const OmSegID segID);
-	void doSelectedSetRemove( const OmSegID segID);
-	quint64 getRecentActivity();
-	void addToRecentMap( const OmSegID segID);
 
 	void buildSegmentSizeLists();
 

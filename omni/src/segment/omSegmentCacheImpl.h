@@ -35,12 +35,21 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	void refreshTree();
 
+
  private:
 	void loadDendrogram();
 	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
 	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
 
 	OmSegmentEdge * JoinFromUserAction( const OmId, const OmId );
+
+	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+
+	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
+	void doSelectedSetInsert( const OmSegID segID);
+	void doSelectedSetRemove( const OmSegID segID);
+	quint64 getRecentActivity();
+	void addToRecentMap( const OmSegID segID);
 	
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

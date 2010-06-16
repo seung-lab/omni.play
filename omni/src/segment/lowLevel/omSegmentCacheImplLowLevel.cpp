@@ -228,48 +228,6 @@ void OmSegmentCacheImplLowLevel::clearCaches()
 	OmCacheManager::Freshen(true);
 }
 
-void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
-{
-       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
-
-       if (isSelected) {
-               doSelectedSetInsert( rootID );
-       } else {
-               doSelectedSetRemove( rootID );
-               assert( !mSelectedSet.contains( segID ));
-       }
-}
-
-void OmSegmentCacheImplLowLevel::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
-{
-	OmSegment * root = findRoot(parent);
-	mRootListBySize.updateFromJoin( root, child );
-	mValidListBySize.updateFromJoin( root, child );
-}
-
-void OmSegmentCacheImplLowLevel::doSelectedSetInsert( const OmSegID segID)
-{
-	mSelectedSet.insert( segID );
-	addToRecentMap(segID);
-}
- 		
-void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
-{
-	mSelectedSet.remove( segID );
-	addToRecentMap(segID);
-}
-
-quint64 OmSegmentCacheImplLowLevel::getRecentActivity()
-{
-	static quint64 activity = 0;
-	++activity;
-	return activity;
-}
-	
-void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
-{
-	mRecentRootActivityMap.touch( segID, getRecentActivity() );
-}
 
 ///////////////////////////
 ////// Tree-stuff
@@ -299,18 +257,6 @@ void OmSegmentCacheImplLowLevel::rerootSegmentList( OmSegIDsSet & set )
 	foreach( const OmSegID & id, old ){
 		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
 		set.insert( rootSegID );
-	}
-}
-
-void OmSegmentCacheImplLowLevel::buildSegmentSizeLists()
-{
-	OmSegment * seg;
-	for( quint32 i = 0; i <= mMaxValue; ++i ){
-		seg = GetSegmentFromValue( i );
-                if( NULL == seg) {
-			continue;
-		} 
-		mRootListBySize.insertSegment( seg );
 	}
 }
 
@@ -411,7 +357,7 @@ bool OmSegmentCacheImplLowLevel::JoinInternal( const OmSegID parentID,
 	childRoot->setParent(parent, threshold);
 	childRoot->mEdgeNumber = edgeNumber;
 
-	updateSizeListsFromJoin( findRoot(parent), childRoot );
+	updateSizeListsFromJoin( parent, childRoot );
 
 	--mNumTopLevelSegs;
 
@@ -446,3 +392,16 @@ bool OmSegmentCacheImplLowLevel::splitChildFromParentInternal( const OmSegID chi
 
 	return true;
 }
+
+void OmSegmentCacheImplLowLevel::buildSegmentSizeLists()
+{
+	OmSegment * seg;
+	for( quint32 i = 0; i <= mMaxValue; ++i ){
+		seg = GetSegmentFromValue( i );
+                if( NULL == seg) {
+			continue;
+		} 
+		mRootListBySize.insertSegment( seg );
+	}
+}
+
