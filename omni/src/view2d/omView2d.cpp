@@ -648,18 +648,18 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 }
 
 void myBreak(){}
-void checkDC (char * s, DataCoord dc)
+void checkDC (string s, DataCoord dc)
 {
 	if(dc.x == dc.y) {
-		debug("brush", "%s: xy: %i = %i\n", s, dc.x, dc.y);
+		debug("brush", "%s: xy: %i = %i\n", s.c_str(), dc.x, dc.y);
 		myBreak();
 	}
 	if(dc.x == dc.z) {
-		debug("brush", "%s: xz: %i = %i\n", s, dc.x, dc.z);
+		debug("brush", "%s: xz: %i = %i\n", s.c_str(), dc.x, dc.z);
 		myBreak();
 	}
 	if(dc.y == dc.z) {
-		debug("brush", "%s: yz: %i = %i\n", s, dc.y, dc.z);
+		debug("brush", "%s: yz: %i = %i\n", s.c_str(), dc.y, dc.z);
 		myBreak();
 	}
 }
