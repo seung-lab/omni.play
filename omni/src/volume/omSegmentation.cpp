@@ -550,11 +550,6 @@ void OmSegmentation::FlushDendUserEdges()
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
 }
 
-void OmSegmentation::ReloadDendrogram()
-{
-	mSegmentCache->resetGlobalThreshold(mDendThreshold);
-}
-
 void OmSegmentation::JoinTheseSegments( const OmIDsSet & segmentIds)
 {
 	mSegmentCache->JoinTheseSegments(segmentIds);
@@ -576,7 +571,7 @@ void OmSegmentation::SetDendThresholdAndReload( const float t )
 		return;
 	}
 	SetDendThreshold(t);
-	ReloadDendrogram();
+	mSegmentCache->refreshTree();
 }
 
 OmSegmentEdge * OmSegmentation::JoinEdge( OmSegmentEdge * e )

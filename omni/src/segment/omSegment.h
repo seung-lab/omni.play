@@ -72,10 +72,10 @@ private:
 
 	friend class OmSegmentListBySize;
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
-	//	friend class OmPagingStore;
 };
 
 #endif

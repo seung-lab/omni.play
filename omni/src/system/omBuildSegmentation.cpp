@@ -71,6 +71,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
 	loadDendrogram();
+	mSeg->GetSegmentCache()->refreshTree();
 
 	stopTiming(type);
 }

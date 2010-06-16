@@ -230,12 +230,6 @@ OmSegmentEdge * OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * s
 	return mImpl->splitTwoChildren(seg1, seg2);
 }
 
-void OmSegmentCache::resetGlobalThreshold( const float stopPoint )
-{	
-	QMutexLocker locker( &mMutex );
-	return mImpl->resetGlobalThreshold( stopPoint );
-}
-
 void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	QMutexLocker locker( &mMutex );
@@ -276,4 +270,10 @@ OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->JoinFromUserAction( e );
+}
+
+void OmSegmentCache::refreshTree()
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->refreshTree();
 }

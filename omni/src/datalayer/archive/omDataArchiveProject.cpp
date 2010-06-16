@@ -294,6 +294,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
  
 	in >> seg.mMipMeshManager;
 	in >> (*seg.mSegmentCache);
+	seg.mSegmentCache->refreshTree();
 
 	in >> seg.mDendSize;
 	in >> seg.mDendValuesSize;

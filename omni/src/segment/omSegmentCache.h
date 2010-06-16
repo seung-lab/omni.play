@@ -67,8 +67,6 @@ public:
 
 	quint32 getPageSize();
 
-	void resetGlobalThreshold( const float stopPoint );
-
 	quint32 getMaxValue();
 
 	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg = 0);
@@ -76,6 +74,8 @@ public:
 	void setAsValidated(OmSegment * segment, const bool valid);
 
 	void ExportDataFilter(vtkImageData * pImageData);
+
+	void refreshTree();
 
 private:
 	QMutex mMutex;

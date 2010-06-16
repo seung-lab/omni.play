@@ -100,7 +100,6 @@ public:
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
-	void ReloadDendrogram();
 
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
@@ -127,6 +126,7 @@ private:
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );

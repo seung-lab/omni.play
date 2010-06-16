@@ -19,8 +19,9 @@ void OmHdf5LowLevel::om_hdf5_file_create(string fpath)
         if(!file.exists()){
 		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
 		if (fileId < 0) {
-			fprintf(stderr, "Could not create HDF5 file: %s\n", fpath.c_str());
-			throw OmIoException("Could not create HDF5 file.");
+			const string errMsg = "Could not create HDF5 file: " + fpath + "\n";
+			fprintf(stderr, "%s", errMsg.c_str());
+			throw OmIoException(errMsg);
 		}
 		
 		om_hdf5_file_close_with_lock(fileId);
