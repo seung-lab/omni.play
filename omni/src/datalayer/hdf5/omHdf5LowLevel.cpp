@@ -120,7 +120,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	printf("%s is the name\n", name);
+	//printf("%s is the name\n", name);
 
 	//get dims
 	Vector3 < int >dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
@@ -604,6 +604,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	if (dataset_id < 0)
 		throw OmIoException("Could not open HDF5 dataset.");
 
+	hid_t dstype = H5Dget_type(dataset_id); 
+
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
@@ -639,10 +641,43 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	imageData = OmImageDataIo::allocImageData(extent_dims, bytesPerSample);
 
 	//Reads raw data from a dataset into a buffer. 
-	hid_t mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
-	ret =
-	    H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		    imageData->GetScalarPointer());
+	hid_t mem_type_id;
+	//printf("%s = %i\n", name, bytesPerSample);
+	if(0 == strcmp(name, "chan") && 1 == bytesPerSample){
+		//printf("%i = %i\n", H5T_NATIVE_FLOAT, dstype);
+		if(H5T_NATIVE_FLOAT == dstype || 1) {
+			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
+			ret = H5Dread(dataset_id, H5T_NATIVE_FLOAT, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+		    			myImageData->GetScalarPointer());
+			
+			int i = 0;
+			int dims[3];
+			myImageData->GetDimensions (dims);
+			unsigned char * dest = (unsigned char*) imageData->GetScalarPointer();
+			float * src = (float*) myImageData->GetScalarPointer();
+			for(int x = 0; x < dims[0]; x++) {
+				for(int y = 0; y < dims[1]; y++) {
+					for(int z = 0; z < dims[2]; z++) {
+						dest[i] = src[i] * 255;
+						//printf("%u:%f ", dest[i], src[i]);
+						i++;
+					}
+					//printf("\n");
+				}
+			}
+		} else {
+			mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
+			ret =
+	    			H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+		    			imageData->GetScalarPointer());
+		}
+		
+	} else {
+		mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
+		ret =
+	    		H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+		    		imageData->GetScalarPointer());
+	}
 	if (ret < 0)
 		throw OmIoException("Could not read HDF5 dataset.");
 
