@@ -1,6 +1,7 @@
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "system/omCacheManager.h"
 
 #include <QMutexLocker>
 

@@ -6,41 +6,32 @@
 #include "segment/omSegmentPointers.h"
 #include "segment/helpers/omSegmentListBySize.h"
 #include "segment/helpers/omSegmentListByMRU.h"
+#include "segment/lowLevel/omPagingStore.h"
+#include "segment/omSegment.h"
 
 #include <QHash>
 #include <QSet>
-#include <QLinkedList>
 #include <map>
 
-// TODO: this was done as proof-of-concept; not sure how much slower 
-//  struct constructor is compared to simple int POD... (purcaro)
-BOOST_STRONG_TYPEDEF(quint32, PageNum )
-
 class OmMipChunkCoord;
-class OmSegment;
 class OmSegmentCache;
 class OmSegmentEdge;
 class OmSegmentation;
 
 class OmSegmentCacheImpl {
  public:
-	OmSegmentCacheImpl(OmSegmentation *, OmSegmentCache *);
+	OmSegmentCacheImpl( OmSegmentation *, OmSegmentCache *);
 	~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
 				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
-
-	bool isValueAlreadyMappedToSegment( const OmSegID );
-
+	bool isValueAlreadyMappedToSegment(const OmSegID value){
+		return mSegments->IsValueAlreadyMapped( value );
+	}
 	OmSegment* GetSegmentFromValue(const OmSegID value ) {
-		if( !mAllPagesLoaded ){
-			if ( !isValueAlreadyMappedToSegment( value ) ){
-				return NULL;
-			}
-		}
-		return mValueToSegPtrHash[ getValuePageNum(value) ][ value % mPageSize];
+		return mSegments->GetSegmentFromValue( value );
 	}
 
 	OmSegID GetNumSegments();
@@ -86,20 +77,20 @@ class OmSegmentCacheImpl {
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
-	quint32 getPageSize() { return mPageSize; }
+	quint32 getPageSize() { return mSegments->getPageSize(); }
 
 	void resetGlobalThreshold( const float stopPoint );
 
-	const OmColor & GetColorAtThreshold( OmSegment * segment, const float threshold );
-
 	quint32 getMaxValue(){ return mMaxValue; }
 
-	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID starSeg = 0);
+	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, const OmSegIDRootType type, const OmSegID starSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
 	void buildSegmentSizeLists();
 
  private:
+	OmSegmentation * mSegmentation;
+
 	bool mAllSelected;
 	bool mAllEnabled;
 
@@ -109,8 +100,6 @@ class OmSegmentCacheImpl {
 	quint32 mNumSegs;
 	quint32 mNumTopLevelSegs;
 
-	OmSegmentation * mSegmentation;
-
         OmSegIDsSet mEnabledSet;
         OmSegIDsSet mSelectedSet;
 
@@ -119,22 +108,7 @@ class OmSegmentCacheImpl {
 
 	OmSegmentCache * mParentCache;
 
-	bool amInBatchMode;
-	bool needToFlush;
-
-	quint32 mPageSize;
-	boost::unordered_map< PageNum, std::vector<OmSegment*> > mValueToSegPtrHash;
-	QSet< PageNum > validPageNumbers;
-	QSet< PageNum > loadedPageNumbers;
-	QSet< PageNum > dirtySegmentPages;
-	PageNum getValuePageNum( const OmSegID value ){
-		return PageNum(value / mPageSize);
-	}
-	void LoadValuePage( const PageNum valuePageNum );
-	void SaveAllLoadedPages();
-	void SaveDirtySegmentPages();
-	void doSaveSegmentPage( const PageNum segPageNum );
-	bool mAllPagesLoaded;
+	OmPagingStore<OmSegment> * mSegments;
 
 	void clearCaches();
 	void invalidateCachedColorFreshness();
@@ -164,9 +138,9 @@ class OmSegmentCacheImpl {
 
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
-	OmSegmentListByMRU mRecentRootActivityMap;
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 
+	OmSegmentListByMRU mRecentRootActivityMap;
 	void doSelectedSetInsert( const OmSegID segID);
 	void doSelectedSetRemove( const OmSegID segID);
 	quint64 getRecentActivity();

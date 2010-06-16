@@ -143,6 +143,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentSelector.h \
            src/segment/helpers/omSegmentListBySize.h \
            src/segment/helpers/omSegmentListByMRU.h \
+           src/segment/lowLevel/omPagingStore.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildVolumes.h \
@@ -313,6 +314,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentSelector.cpp \
            src/segment/helpers/omSegmentListBySize.cpp \
            src/segment/helpers/omSegmentListByMRU.cpp \
+           src/segment/lowLevel/omPagingStore.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildVolumes.cpp \

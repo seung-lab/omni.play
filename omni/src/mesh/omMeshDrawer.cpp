@@ -9,6 +9,7 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
+#include "volume/omSegmentation.h"
 
 static unsigned int mFreshness = 0;
 

@@ -546,7 +546,7 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 
 	const OmId segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
 	const OmId segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
-	const OmId segmentationID3 = recentList->dealWithSegmentObjectModificationEvent(event);
+	recentList->dealWithSegmentObjectModificationEvent(event);
 	
 	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
 		SegmentationDataWrapper sdw(segmentationID1);

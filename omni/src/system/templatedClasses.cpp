@@ -18,6 +18,8 @@
 #include "segment/DynamicTreeContainer.cpp"
 #include "system/omGroup.h"
 
+#include "segment/lowLevel/omPagingStore.cpp"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
@@ -41,3 +43,5 @@ template class OmGenericManager< OmGroup >;
 
 template class DynamicTree<OmId>;
 template class DynamicTreeContainer<OmId>;
+
+template class OmPagingStore<OmSegment>;

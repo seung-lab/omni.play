@@ -18,7 +18,7 @@
 
 #include <QDataStream>
 
-static const int Omni_Version = 9;
+static const int Omni_Version = 10;
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
@@ -363,7 +363,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc )
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 {
-	out << sc.validPageNumbers;
+	out << (*sc.mSegments);
 
         out << sc.mAllSelected;
         out << sc.mAllEnabled;
@@ -375,7 +375,6 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	out << sc.segmentCustomNames;
 	out << sc.segmentNotes;
 	
-	out << sc.mPageSize;
 	out << sc.mNumSegs;
 	out << sc.mNumTopLevelSegs;
 
@@ -385,18 +384,12 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 		out << *e;
 	}
 
-	/*
-	out << sc.mRootSizesMap;
-	out << sc.mValidRootSizesMap;
-	out << sc.mRootSet;
-	out << sc.mValidRootSet;
-	*/
 	return out;
 }
 
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 {
-	in >> sc.validPageNumbers;
+	in >> (*sc.mSegments);
 
         in >> sc.mAllSelected;
         in >> sc.mAllEnabled;
@@ -408,7 +401,6 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	in >> sc.segmentCustomNames;
 	in >> sc.segmentNotes;
 
-	in >> sc.mPageSize;
 	in >> sc.mNumSegs;
 	in >> sc.mNumTopLevelSegs;
 
@@ -420,13 +412,22 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
-	/*
-        in >> sc.mRootSizesMap;
-        in >> sc.mValidRootSizesMap;
-        in >> sc.mRootSet;
-        in >> sc.mValidRootSet;
-	*/
+	return in;
+}
 
+template< class T2 > 
+QDataStream &operator<<(QDataStream & out, const OmPagingStore<T2> & ps )
+{
+	out << ps.validPageNumbers;
+	out << ps.mPageSize;
+	return out;
+}
+
+template< class T2 > 
+QDataStream &operator>>(QDataStream & in, OmPagingStore<T2> & ps )
+{
+	in >> ps.validPageNumbers;
+	in >> ps.mPageSize;
 	return in;
 }
 

@@ -2,16 +2,15 @@
 #include "segment/omSegmentEdge.h"
 #include "system/omCacheManager.h"
 #include "system/omProjectData.h"
-#include "datalayer/archive/omDataArchiveSegment.h"
-#include "datalayer/omDataPaths.h"
-#include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
+#include "project/omProject.h" //TODO: remove me
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentCache * cache )
+OmSegmentCacheImpl::OmSegmentCacheImpl( OmSegmentation * segmentation, OmSegmentCache * cache )
 	: mSegmentation(segmentation)
 	, mParentCache( cache )
+	, mSegments( new OmPagingStore<OmSegment>( segmentation, cache ) )
 {
 	mMaxValue = 0;
 
@@ -21,23 +20,12 @@ OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation, OmSegmentC
         mAllSelected = false;
         mAllEnabled = false;
 
-	amInBatchMode = false;
-	needToFlush = false;
-	mPageSize = 10000;
-	mAllPagesLoaded = false;
-
 	mGraph = NULL;
 }
 
 OmSegmentCacheImpl::~OmSegmentCacheImpl()
 {
-	foreach( const PageNum & pageNum, loadedPageNumbers ){
-		
-		for( quint32 i = 0; i < mPageSize; ++i ){
-			delete mValueToSegPtrHash[pageNum][i];
-		}
-	}
-	
+	delete mSegments;
 	delete mGraph;
 }
 
@@ -57,16 +45,8 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 		return NULL;
 	}
 
-	const PageNum pageNum = getValuePageNum(value);
-
-	if( !validPageNumbers.contains( pageNum ) ) {
-		mValueToSegPtrHash[ pageNum ].resize(mPageSize, NULL);
-		validPageNumbers.insert( pageNum );
-		loadedPageNumbers.insert( pageNum );
-	}
-
 	OmSegment * seg = new OmSegment( value, mParentCache);
-	mValueToSegPtrHash[ pageNum ][value % mPageSize] = seg;
+	mSegments->AddItem( seg );
 
 	++mNumSegs;
 	++mNumTopLevelSegs;
@@ -105,29 +85,6 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 
 		addToDirtySegmentList(seg);
         }
-}
-
-bool OmSegmentCacheImpl::isValueAlreadyMappedToSegment( const OmSegID value )
-{
-	if (0 == value) {
-		return false;
-	}
-
-	const PageNum pageNum = getValuePageNum(value);
-
-	if( !validPageNumbers.contains( pageNum ) ){
-		return false;
-	}
-
-	if( !loadedPageNumbers.contains( pageNum ) ){
-		LoadValuePage( pageNum );
-	}
-
-	if( NULL != mValueToSegPtrHash[pageNum][value % mPageSize]){
-		return true;
-	}
-
-	return false;
 }
 
 OmSegID OmSegmentCacheImpl::getNextValue()
@@ -274,25 +231,12 @@ QString OmSegmentCacheImpl::getSegmentNote( OmSegID segID )
 
 void OmSegmentCacheImpl::addToDirtySegmentList( OmSegment* seg)
 {
-	if( amInBatchMode ){
-		needToFlush = true;
-	} else {
-		dirtySegmentPages.insert( getValuePageNum( seg->getValue() ) );
-	}
+	mSegments->AddToDirtyList( seg->mValue );
 }
 
 void OmSegmentCacheImpl::flushDirtySegments()
 {
-	if( amInBatchMode ){
-		if( !needToFlush ){
-			return;
-		}
-		SaveAllLoadedPages();
-		needToFlush = false;
-	} else {
-		SaveDirtySegmentPages();
-		dirtySegmentPages.clear();
-	}
+	mSegments->FlushDirtyItems();
 }
 
 OmSegmentEdge * OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
@@ -420,46 +364,9 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	return edgeThatGotBroken;
 }
 
-void OmSegmentCacheImpl::SaveAllLoadedPages()
-{
-	foreach( const PageNum & pageNum, loadedPageNumbers ){
-		doSaveSegmentPage( pageNum );
-	}
-}
-
-void OmSegmentCacheImpl::SaveDirtySegmentPages()
-{
-	foreach( const PageNum & pageNum, dirtySegmentPages ){
-		doSaveSegmentPage( pageNum );
-	}
-}
-
-void OmSegmentCacheImpl::doSaveSegmentPage( const PageNum pageNum )
-{
-	const std::vector<OmSegment*> & page = mValueToSegPtrHash[ pageNum ];
-	OmDataArchiveSegment::ArchiveWrite( OmDataPaths::getSegmentPagePath( getSegmentationID(), pageNum ),
-					    page, mParentCache );
-}
-
 void OmSegmentCacheImpl::turnBatchModeOn( const bool batchMode )
 {
-	amInBatchMode = batchMode;
-}
-
-void OmSegmentCacheImpl::LoadValuePage( const PageNum pageNum )
-{
-	std::vector<OmSegment*> & page = mValueToSegPtrHash[ pageNum ];
-	page.resize( mPageSize, NULL );
-
-	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( getSegmentationID(), pageNum ),
-					   page,
-					   mParentCache);
-	
-	loadedPageNumbers.insert( pageNum );
-
-	if( loadedPageNumbers == validPageNumbers ){
-		mAllPagesLoaded = true;
-	}
+	mSegments->SetBatchMode(batchMode);
 }
 
 void OmSegmentCacheImpl::clearCaches()
@@ -656,23 +563,6 @@ void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 	clearCaches();
 }
 
-const OmColor & OmSegmentCacheImpl::GetColorAtThreshold( OmSegment * segment, const float threshold )
-{
-	//FIXME: this is wrong (purcaro)
-
-	assert(0);
-
-	OmSegment * seg = segment;
-
-	while( 0 != seg->mParentSegID && seg->mThreshold < threshold ){
-		seg = GetSegmentFromValue( seg->mParentSegID );
-	}
-
-	printf("threshold %f: in %d, out %d\n", threshold, segment->mValue, seg->mValue );
-
-	return seg->mColorInt;
-}
-
 void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 {
 	mSelectedSet.clear();
@@ -685,7 +575,10 @@ void OmSegmentCacheImpl::UpdateSegmentSelection( const OmSegIDsSet & ids )
 	clearCaches();	
 }
 
-OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, const int numToGet, const OmSegIDRootType type, OmSegID startSeg)
+OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, 
+							       const int numToGet, 
+							       const OmSegIDRootType type, 
+							       const OmSegID startSeg)
 {
 	loadTreeIfNeeded();
 

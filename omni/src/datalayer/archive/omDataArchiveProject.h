@@ -4,7 +4,9 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
 #include "system/omGroups.h"
+#include "segment/lowLevel/omPagingStore.h"
 
+class OmSegment;
 class OmDataPath;
 class OmProject;
 class OmManageableObject;
@@ -71,6 +73,9 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
+
+template< class T2 > QDataStream &operator<<(QDataStream & out, const OmPagingStore<T2> & ps );
+template< class T2 > QDataStream &operator>>(QDataStream & in, OmPagingStore<T2> & ps );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se );
 QDataStream &operator>>(QDataStream & in, OmSegmentEdge & sc );

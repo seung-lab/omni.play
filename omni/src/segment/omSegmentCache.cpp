@@ -8,11 +8,12 @@
 #include "volume/omSegmentation.h"
 
 #include <QMutexLocker>
+#include <vtkImageData.h>
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
+	, mImpl(new OmSegmentCacheImpl(segmentation, this))
 {
-	mImpl = new OmSegmentCacheImpl(segmentation, this); 
 }
 
 OmSegmentCache::~OmSegmentCache()
@@ -28,6 +29,36 @@ OmSegID OmSegmentCache::getSegmentationID()
 quint32 OmSegmentCache::getPageSize() 
 { 
 	return mImpl->getPageSize(); 
+}
+
+// FIXME: this needs to get refactored into some sort of helper...
+void OmSegmentCache::ExportDataFilter(vtkImageData * pImageData)
+{
+	QMutexLocker locker( &mMutex );
+
+	//get data extent (varify it is a chunk)
+	int extent[6];
+	pImageData->GetExtent(extent);
+
+	//get pointer to native scalar data
+	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
+	OmSegID * p_scalar_data = static_cast<OmSegID*>( pImageData->GetScalarPointer() );
+
+	//for all voxels in the chunk
+	int x, y, z;
+	for (z = extent[0]; z <= extent[1]; z++) {
+		for (y = extent[2]; y <= extent[3]; y++) {
+			for (x = extent[4]; x <= extent[5]; x++) {
+
+				//if non-null segment value
+				if (NULL_SEGMENT_DATA != *p_scalar_data) {
+					*p_scalar_data = mImpl->findRootID( *p_scalar_data );
+				}
+				//adv to next scalar
+				++p_scalar_data;
+			}
+		}
+	}
 }
 
 void OmSegmentCache::turnBatchModeOn( const bool batchMode )
@@ -53,12 +84,6 @@ void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 {
 	QMutexLocker locker( &mMutex );
 	mImpl->AddSegmentsFromChunk(data_values, mipCoord, sizes );
-}
-
-bool OmSegmentCache::isValueAlreadyMappedToSegment( OmSegID value )
-{
-	QMutexLocker locker( &mMutex );
-	return mImpl->isValueAlreadyMappedToSegment( value );
 }
 
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)
@@ -196,11 +221,6 @@ OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 OmSegID OmSegmentCache::findRootID( const OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->findRootID( segID );
-}
-
-OmSegID OmSegmentCache::findRootID_noLock( const OmSegID segID ) 
-{
 	return mImpl->findRootID( segID );
 }
 

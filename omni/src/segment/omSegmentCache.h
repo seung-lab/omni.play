@@ -3,16 +3,14 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
-#include "volume/omSegmentation.h" // only needed for friend OmSegmentation::ExportDataFilter()
 
-#include <QSet>
-#include <QHash>
 #include <QMutex>
-#include <QColor>
 
+class OmMipChunkCoord;
 class OmSegment;
 class OmSegmentCacheImpl;
-class vtkImageData;  // only needed for friend OmSegmentation::ExportDataFilter()
+class OmSegmentation;
+class vtkImageData;
 
 class OmSegmentCache {
 public:
@@ -25,8 +23,6 @@ public:
 	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord,
 				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
-
-	bool isValueAlreadyMappedToSegment( OmSegID value );
 
 	OmSegment* GetSegmentFromValue(OmSegID);
 
@@ -79,17 +75,15 @@ public:
 
 	void setAsValidated(OmSegment * segment, const bool valid);
 
+	void ExportDataFilter(vtkImageData * pImageData);
+
 private:
 	QMutex mMutex;
-	
-	OmSegmentCacheImpl * mImpl;
 	OmSegmentation * mSegmentation;
-	quint32 mPageSize;
-
-	OmSegID findRootID_noLock( const OmSegID segID );
+	OmSegmentCacheImpl * mImpl;
 
 	friend class OmSegmentColorizer;
-	friend void OmSegmentation::ExportDataFilter(vtkImageData * pImageData);
+
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 };

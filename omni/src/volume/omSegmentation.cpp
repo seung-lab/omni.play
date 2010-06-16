@@ -58,7 +58,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
 	, mMipVoxelationManager(this)
 	, mSegmentCache(new OmSegmentCache(this))
-	, mGroups(this)
+  	, mGroups(this)
 {
 	//set manageable object name
 	SetName( QString("segmentation%1").arg(id));
@@ -77,9 +77,6 @@ OmSegmentation::OmSegmentation(OmId id)
 	//uses meta data
 	mStoreChunkMetaData = true;
 
-	//build blank data
-	BuildVolumeData();
-
 	mMeshingMan = NULL;
 
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -95,12 +92,14 @@ OmSegmentation::OmSegmentation(OmId id)
         SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
+
+	//build blank data
+	BuildVolumeData();
 }
 
 OmSegmentation::~OmSegmentation()
 {
 	KillCacheThreads();
-
 	delete mSegmentCache;
 }
 
@@ -334,33 +333,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
  */
 void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 {
-	mSegmentCache->mMutex.lock();
-
-	//get data extent (varify it is a chunk)
-	int extent[6];
-	pImageData->GetExtent(extent);
-
-	//get pointer to native scalar data
-	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
-	OmSegID * p_scalar_data = static_cast<OmSegID*>( pImageData->GetScalarPointer() );
-
-	//for all voxels in the chunk
-	int x, y, z;
-	for (z = extent[0]; z <= extent[1]; z++) {
-		for (y = extent[2]; y <= extent[3]; y++) {
-			for (x = extent[4]; x <= extent[5]; x++) {
-
-				//if non-null segment value
-				if (NULL_SEGMENT_DATA != *p_scalar_data) {
-					*p_scalar_data = mSegmentCache->findRootID_noLock(*p_scalar_data);
-				}
-				//adv to next scalar
-				++p_scalar_data;
-			}
-		}
-	}
-
-	mSegmentCache->mMutex.unlock();
+	mSegmentCache->ExportDataFilter(pImageData);
 }
 
 /////////////////////////////////
