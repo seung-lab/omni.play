@@ -275,5 +275,5 @@ void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
 OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->Join( e );
+        return mImpl->JoinFromUserAction( e );
 }

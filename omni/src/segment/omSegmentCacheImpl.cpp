@@ -395,7 +395,7 @@ void OmSegmentCacheImpl::loadDendrogram()
 	resetGlobalThreshold( mSegmentation->mDendThreshold );
 
 	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
-		Join(e);
+		JoinEdge(e);
 	}
 }
 
@@ -417,8 +417,17 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	}
 }
 
-OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
+OmSegmentEdge * OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge * e )
 {
+	OmSegmentEdge * edge = JoinEdge( e );
+	mManualUserMergeEdgeList.push_back( edge );
+	return edge;
+}
+
+OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
+{
+	loadTreeIfNeeded();
+
 	DynamicTree<OmSegID> * childRootDT = mGraph->get( e->childID )->findRoot();
 
 	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
@@ -436,59 +445,21 @@ OmSegmentEdge * OmSegmentCacheImpl::Join( OmSegmentEdge * e )
 	childRoot->setParent(parent, e->threshold);
 	childRoot->mCustomMergeEdge = e;
 
-	updateSizeListsFromJoin( findRoot(parent), childRoot );
-
         if( isSegmentSelected( e->childID ) ){
                 doSelectedSetInsert( parent->mValue );
         } 
 	doSelectedSetRemove( e->childID );
 
+	updateSizeListsFromJoin( parent, childRoot );
 	--mNumTopLevelSegs;
 
 	return new OmSegmentEdge( parent, childRoot, e->threshold );
 }
 
-OmSegmentEdge * OmSegmentCacheImpl::Join(OmSegment * parent, OmSegment * childUnknownLevel )
+OmSegmentEdge * OmSegmentCacheImpl::JoinFromUserAction( const OmSegID parentID, const OmSegID childUnknownDepthID )
 {
-	return Join( parent->getValue(), childUnknownLevel->getValue() );
-}
-
-OmSegmentEdge * OmSegmentCacheImpl::Join( const OmSegID parentID, const OmSegID childUnknownDepthID )
-{
-	loadTreeIfNeeded();
-
 	const float threshold = 2.0f;
-
-	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-
-	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
-	OmSegment * parent = GetSegmentFromValue( parentID );
-	
-	if( childRoot->mImmutable != parent->mImmutable ){
-		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
-		return NULL;
-	}
-
-	childRootDT->join( mGraph->get( parentID ) );
-
-	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
-	childRoot->setParent(parent, threshold);
-
-	updateSizeListsFromJoin( findRoot(parent), childRoot );
-
-        if( isSegmentSelected( childUnknownDepthID ) ){
-                doSelectedSetInsert( parent->mValue );
-        } 
-	doSelectedSetRemove( childUnknownDepthID );
-
-	--mNumTopLevelSegs;
-
-	OmSegmentEdge * edge = new OmSegmentEdge( parentID, childRoot->mValue, threshold);
-	mManualUserMergeEdgeList.push_back( edge );
-	childRoot->mCustomMergeEdge = edge;
-
-	return edge;
+	return JoinFromUserAction( new OmSegmentEdge( parentID, childUnknownDepthID, threshold) );
 }
 
 OmSegID OmSegmentCacheImpl::findRootID( const OmSegID segID )
@@ -534,7 +505,7 @@ void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
 	// We then iterate through the Segment Ids and join
 	// each one to the parent
 	while (iter != set.end()) {
-		Join( parentID, *iter );
+		JoinFromUserAction( parentID, *iter );
 		++iter;
 	}
 
@@ -707,6 +678,8 @@ bool OmSegmentCacheImpl::JoinInternal( const OmSegID parentID,
 	childRoot->setParent(parent, threshold);
 	childRoot->mEdgeNumber = edgeNumber;
 
+	updateSizeListsFromJoin( findRoot(parent), childRoot );
+
 	--mNumTopLevelSegs;
 
 	return true;
@@ -746,8 +719,8 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
 
 	if(valid) {
-		mValidListBySize.insertSegment(seg);
 		mRootListBySize.removeSegment(seg);
+		mValidListBySize.insertSegment(seg);
 	} else {
 		mRootListBySize.insertSegment(seg);
 		mValidListBySize.removeSegment(seg);
@@ -761,8 +734,9 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
         }
 }
 
-void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * root, OmSegment * child )
+void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
 {
+	OmSegment * root = findRoot(parent);
 	mRootListBySize.updateFromJoin( root, child );
 	mValidListBySize.updateFromJoin( root, child );
 }

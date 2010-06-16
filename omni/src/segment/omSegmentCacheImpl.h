@@ -73,7 +73,7 @@ class OmSegmentCacheImpl {
 
 	void turnBatchModeOn(const bool batchMode);
 	
-	OmSegmentEdge * Join( OmSegmentEdge * e );
+	OmSegmentEdge * JoinFromUserAction( OmSegmentEdge * e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
@@ -124,14 +124,14 @@ class OmSegmentCacheImpl {
 				     quint8 * edgeForceJoin,
 				     const int size, 
 				     const float stopPoint );
+	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
 	bool JoinInternal( const OmSegID parentID, const OmSegID childUnknownDepthID, 
 			   const float threshold, const int edgeNumber);
 	bool splitChildFromParentInternal( const OmSegID childID );
 
 	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
 
-	OmSegmentEdge * Join( OmSegment *, OmSegment * );
-	OmSegmentEdge * Join( const OmId, const OmId );
+	OmSegmentEdge * JoinFromUserAction( const OmId, const OmId );
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
