@@ -294,7 +294,6 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
  
 	in >> seg.mMipMeshManager;
 	in >> (*seg.mSegmentCache);
-	seg.mSegmentCache->refreshTree();
 
 	in >> seg.mDendSize;
 	in >> seg.mDendValuesSize;
@@ -331,6 +330,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 		seg.mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 		assert( size == seg.mDendValuesSize );
 	}
+
+	seg.mSegmentCache->refreshTree();
 
 	return in;
 }
