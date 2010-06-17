@@ -314,8 +314,6 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
-	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
-
 	if(valid) {
 		mRootListBySize.removeSegment(seg);
 		mValidListBySize.insertSegment(seg);
@@ -326,26 +324,27 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 
         if( -1 == seg->mEdgeNumber ){
         	return;
-        } else {
-		edgeForceJoin[ seg->mEdgeNumber ] = valid;
+	}
 
-        }
+	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
+	edgeForceJoin[ seg->mEdgeNumber ] = valid;
 }
 
 void OmSegmentCacheImpl::refreshTree()
 {
-	loadDendrogram();
+	if( NULL == mGraph || mGraph->getSize() != mMaxValue+1 ){
+		loadDendrogram();
+	}
+	
+	resetGlobalThreshold( mSegmentation->mDendThreshold );
 }
 
-// TODO: make clear this is only the INTIAL load
 void OmSegmentCacheImpl::loadDendrogram()
 {
 	initializeDynamicTree();
 	mNumTopLevelSegs = mNumSegs;
 
 	buildSegmentSizeLists();
-
-	resetGlobalThreshold( mSegmentation->mDendThreshold );
 
 	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
 		JoinEdge(e);

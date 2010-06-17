@@ -34,8 +34,6 @@ OmGenericManager<T>::Get( const OmId id)
 		throw OmAccessException("Cannot get object with id: " + id);
 	}
 
-	//myBacktrace(0);
-	
 	// return ref
 	return *mMap[id];
 }
@@ -45,9 +43,8 @@ T&
 OmGenericManager<T>::Add() 
 {
 	const OmId id = mNextId;
-	findAndSetNextValidID();
-
 	mMap[id] = new T(id);
+	findAndSetNextValidID();
 	
 	mValidSet.insert(id);
 	mEnabledSet.insert(id);
