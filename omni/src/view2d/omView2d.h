@@ -5,30 +5,31 @@
 #include <QGLPixelBuffer>
 #include <QGLWidget>
 #include <QPainter>
-#include <QtGui> 
 
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omSystemModeEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omVoxelEvent.h"
+#include "view2d/omView2dImpl.h"
 
 class Drawable;
-class OmThreadedCachingTile;
 class OmTileCoord;
 class SegmentDataWrapper;
-class OmViewGroupState;
+
 class OmMipVolume;
 class OmTextureID;
 class OmSegmentation;
 class OmFilter2d;
 
-class OmView2d : public QWidget,
+class OmView2d : 
+	public OmView2dImpl,
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
 	public OmSystemModeEventListener,
 	public OmViewEventListener,
 	public OmVoxelEventListener
+	
 {
 	Q_OBJECT
 	
@@ -36,9 +37,9 @@ public:
 	OmView2d(ViewType, ObjectType, OmId, QWidget *, OmViewGroupState *);
  	~OmView2d();
 	
-	OmMipVolume *mVolume;
+
 	OmSegmentation *mSeg;
-	QGLPixelBuffer *  pbuffer;
+
 
 	int GetDepthToDataSlice(ViewType viewType);
 	void SetDataSliceToDepth(ViewType viewType, int slice);
@@ -46,7 +47,7 @@ public:
 
 protected:
 	// GL event methods
-	void initializeGL();
+
 	void resizeGL(int width, int height);
 	void resizeEvent (QResizeEvent * event);
 	void PanAndZoom(Vector2<int> new_zoom, bool postEvent = true);	// Helper for zooming.
@@ -54,25 +55,13 @@ protected:
 
 	// paint and draw methods
 	void paintEvent(QPaintEvent *);	// necessary for using QPainter methods for editing segments
-	QImage safePaintEvent();	// pbuffered paint.
-	void Draw();
-	void TextureDraw(vector <Drawable*> &textures);
-	void safeTexture(QExplicitlySharedDataPointer<OmTextureID> gotten_id);
-	void safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer<OmTextureID> gotten_id);
-	void PreDraw(Vector2f);
-	bool BufferTiles(Vector2f zoomMipVector);
 
-
-	void DrawFromFilter (OmFilter2d&);
-	void DrawFromCache();
-
-	void SendFrameBuffer();
 	void DrawCursors();
 
 	// Various Category methods
 	void setBrushToolDiameter();
 	DataCoord BrushToolOTGDC(DataCoord off);
-	void PickToolGetColor(QMouseEvent *event);
+
 	void PickToolAddToSelection (OmId segmentation_id, DataCoord globalDataClickPoint);
 	void FillToolFill (OmId segmentation, DataCoord gCP, OmSegID fc, OmSegID bc, int depth=0);
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
@@ -81,11 +70,6 @@ protected:
 	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second);
 	void myUpdate ();
 	void Refresh ();
-
-	// Possibly Obsolete methods
-	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
-	int GetDepth(const OmTileCoord &key);
-	void myBindToTextureID(QExplicitlySharedDataPointer<OmTextureID>);
 
 	///////////////////////////////////////
 	// OmView2dEvent.cpp:
@@ -149,27 +133,21 @@ protected:
 	QSize sizeHint () const;
 
 private:
-	OmViewGroupState * mViewGroupState;
+
 
 	///////////////////////////////////////
 	// omView2dConverters.cpp
 	///////////////////////////////////////
 	DataBbox SpaceToDataBbox(const SpaceBbox &spacebox);
 	SpaceBbox DataToSpaceBbox(const DataBbox &databox);
-	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
-	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
+
 	Vector2f ScreenToPanShift(Vector2i screenshift);
 	SpaceCoord ScreenToSpaceCoord( const ScreenCoord &screenc);
 	ScreenCoord SpaceToScreenCoord(ViewType viewType,const SpaceCoord &spacec);
 	ScreenCoord DataToScreenCoord(ViewType viewType,const DataCoord &datac);
 	DataCoord ScreenToDataCoord( const ScreenCoord &screenc);
 	NormCoord ScreenToNormCoord(ViewType viewType,const ScreenCoord &screenc);
-        DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
-	Vector2f GetPanDistance(ViewType viewType);
-	///////////////////////////////////////
 
-
-	// Global variables
 	OmId mEditedSegmentation;
 	bool mMIP;
         unsigned int mSlide;
@@ -185,29 +163,21 @@ private:
 	QPainter painter;
 	bool mLevelLock;
 	bool mNewDraw;
-	vector <Drawable*> mTextures;
-	vector <Drawable*> mThreeTextures;
+
 	bool mHaveFirstSegId;
 	bool mHaveSecondSegId;
 	OmId mFirstSegId;
 	OmId mSecondSegId;
-	
-	int mTileCount;
-	int mTileCountIncomplete;
+
         int mBufferTileCount;
         int mBufferTileCountIncomplete;
 
 	Vector2i mMousePoint;
-	
-	OmThreadedCachingTile *mCache;
-	double mAlpha;
+
 	bool mJoiningSegmentToggled;
-	
-	ViewType mViewType;
-	ObjectType mVolumeType;
-	OmId mImageId;
+
 	bool iSentIt;
-	bool mScribbling;
+
 	bool mInitialized;
 	
 	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
@@ -221,7 +191,7 @@ private:
 	// slice props - spatial coords
 	
 	// corresponds to window viewport - is not modified except through window resizes
-	Vector4i mTotalViewport;			//lower left x, lower left y, width, height
+
 	
 	// corresponds to slice viewport - is not modified except through window resizes
 	Vector4i mLocalViewport;
@@ -240,23 +210,15 @@ private:
 	bool cameraMoving;
 	bool firstResize;
 	
-	int mNearClip;
-	int mFarClip;
-	
 	Vector2i mMin;
 	Vector2i mMax;
-	
-	int mZoomLevel;
-	
-	int mRootLevel;
 	
 	bool firstPaintEvent;
 	
 	int depthCache;
 	int sidesCache;
 	int mipCache;
-	
-	bool drawComplete;
+
 	bool sentTexture;
 
 	bool amInFillMode();
@@ -271,7 +233,7 @@ private:
 	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
 
 	void doRedraw();
-	bool mDrawFromChannel;
+
 
 #ifdef WIN32
 	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);

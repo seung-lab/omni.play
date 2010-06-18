@@ -41,6 +41,11 @@ class OmVolume : boost::noncopyable {
 	DataCoord NormToDataCoord(const NormCoord &norm);
 	SpaceCoord NormToSpaceCoord(const NormCoord &norm);
 	NormCoord SpaceToNormCoord(const SpaceCoord &spatial);
+
+	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
+	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
+	DataBbox SpaceToDataBbox(const SpaceBbox & spacebox);
+	SpaceBbox DataToSpaceBbox(const DataBbox & databox);
 	
 	NormBbox DataToNormBbox(const DataBbox &dataBbox);
 	DataBbox NormToDataBbox(const NormBbox &normBbox);

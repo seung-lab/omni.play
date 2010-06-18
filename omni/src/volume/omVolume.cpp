@@ -239,3 +239,23 @@ void OmVolume::SetStretchValues()
 		}
 	}
 }
+
+DataCoord OmVolume::SpaceToDataCoord(const SpaceCoord & spacec)
+{
+	return NormToDataCoord(SpaceToNormCoord(spacec));
+}
+
+SpaceCoord OmVolume::DataToSpaceCoord(const DataCoord & datac)
+{
+	return NormToSpaceCoord(DataToNormCoord(datac));
+}
+
+DataBbox OmVolume::SpaceToDataBbox(const SpaceBbox & spacebox)
+{
+	return NormToDataBbox(SpaceToNormBbox(spacebox));
+}
+
+SpaceBbox OmVolume::DataToSpaceBbox(const DataBbox & databox)
+{
+	return NormToSpaceBbox(DataToNormBbox(databox));
+}

@@ -11,27 +11,12 @@
 //\{
 DataBbox OmView2d::SpaceToDataBbox(const SpaceBbox & spacebox)
 {
-	DataBbox new_data_box = mVolume->NormToDataBbox(mVolume->SpaceToNormBbox(spacebox));
-	return new_data_box;
+	return mVolume->SpaceToDataBbox(spacebox);
 }
 
 SpaceBbox OmView2d::DataToSpaceBbox(const DataBbox & databox)
 {
-	SpaceBbox new_space_box = mVolume->NormToSpaceBbox(mVolume->DataToNormBbox(databox));
-	return new_space_box;
-}
-
-DataCoord OmView2d::SpaceToDataCoord(const SpaceCoord & spacec)
-{
-	DataCoord new_data_center = mVolume->NormToDataCoord(mVolume->SpaceToNormCoord(spacec));
-
-	return new_data_center;
-}
-
-SpaceCoord OmView2d::DataToSpaceCoord(const DataCoord & datac)
-{
-	SpaceCoord new_space_center = mVolume->NormToSpaceCoord(mVolume->DataToNormCoord(datac));
-	return new_space_center;
+	return mVolume->DataToSpaceBbox(databox);
 }
 
 Vector2f OmView2d::ScreenToPanShift(Vector2i screenshift)
@@ -207,23 +192,6 @@ DataCoord OmView2d::ScreenToDataCoord(const ScreenCoord & screenc)
         return result; 
 }
 
-DataCoord OmView2d::ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth)
-{
-	DataCoord this_data_coord;
-	switch (mViewType) {
-	case XY_VIEW:
-		this_data_coord = DataCoord(xMipChunk, yMipChunk, mDataDepth);
-		break;
-	case XZ_VIEW:
-		this_data_coord = DataCoord(xMipChunk, mDataDepth, yMipChunk);
-		break;
-	case YZ_VIEW:
-		this_data_coord = DataCoord(mDataDepth, yMipChunk, xMipChunk);
-		break;
-	}
-	return this_data_coord;
-}
-
 int OmView2d::GetDepthToDataSlice(ViewType viewType)
 {
 	SpaceCoord depthCoord = mViewGroupState->GetViewDepthCoord();
@@ -273,57 +241,5 @@ int OmView2d::GetDepthToDataMax(ViewType viewType)
 	}
 }
 
-Vector2f OmView2d::GetPanDistance(ViewType viewType)
-{
-        Vector2f mZoomLevel = mViewGroupState->GetZoomLevel();
-        Vector3f mScale = mVolume->GetScale();
-        Vector2f stretch= mVolume->GetStretchValues(mViewType);
-        float factor = OMPOW(2,mZoomLevel.x);
-        float zoomScale = mZoomLevel.y;
-
- 	Vector2f pd = mViewGroupState->GetPanDistance(mViewType);
-	debug("pan", "good: x,y:%f,%f\n", pd.x, pd.y);
-
-        if (!OmLocalPreferences::getStickyCrosshairMode()){
-		return pd;
-	}
-
-	// Else we are in sticky crosshair mode.
-	float x = mViewGroupState->GetViewSliceDepth(YZ_VIEW); 
-	float y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
-	float z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
-
-	SpaceCoord mydepth = SpaceCoord(x, y, z);
-	DataCoord mydataCoord = SpaceToDataCoord(mydepth);
-	debug("pan", "1: dc:x,y,z:%i,%i,%i\n", mydataCoord.x, mydataCoord.y, mydataCoord.z);
-
-	float panx = (mTotalViewport.width/2.0)/(zoomScale*stretch.x/10.0);
-	float pany = (mTotalViewport.height/2.0)/(zoomScale*stretch.y/10.0);
-
-	debug("pan", "pan:x,y:%f,%f\n", panx, pany);
-
-	Vector2f better;
-
-        switch(viewType){
-        case XY_VIEW:
-		better.x = (panx-mydataCoord.x/factor);
-		better.y = (pany-mydataCoord.y/factor);
-		break;
-	case XZ_VIEW:
-		better.x = (panx-mydataCoord.x/factor);
-		better.y = (pany-mydataCoord.z/factor);
-		break;
-	case YZ_VIEW:
-		better.x = (panx-mydataCoord.z/factor);
-		better.y = (pany-mydataCoord.y/factor);
-		break;
-	default:
-		assert(0);
-	}
-
-	debug("pan", "better: x,y:%f,%f\n", better.x, better.y);
-
-	return better;
-}
 //\}
 

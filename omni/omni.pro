@@ -202,6 +202,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/omTile.h \
            src/view2d/omTileCoord.h \
            src/view2d/omView2d.h \
+           src/view2d/omView2dImpl.h \
            src/view3d/omCamera.h \
            src/view3d/omCameraMovement.h \
            src/view3d/omView3d.h \
@@ -367,6 +368,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view2d/omTile.cpp \
            src/view2d/omTileCoord.cpp \
            src/view2d/omView2d.cpp \
+           src/view2d/omView2dImpl.cpp \
            src/view2d/omView2dConverters.cpp \
            src/view2d/omView2dEvent.cpp \
            src/view3d/omCamera.cpp \

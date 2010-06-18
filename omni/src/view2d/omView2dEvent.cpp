@@ -552,7 +552,6 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 	switch (OmStateManager::GetSystemMode()) {
 	case NAVIGATION_SYSTEM_MODE:
 		cameraMoving = false;
-		PickToolGetColor(event);
 		break;
 	case DEND_MODE:
 		break;
