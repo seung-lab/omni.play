@@ -45,7 +45,11 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 				mouseNavModeLeftButton(event);
 			}
 		} else if (event->button() == Qt::RightButton) {
-			mouseSelectSegment(event);
+			if(event->modifiers() & Qt::ShiftModifier) {
+				mouseSelectSegment(event);
+			} else {
+				mouseShowSegmentContextMenu(event);
+			}
 		}
 			
 		cameraMoving = true;
@@ -125,6 +129,19 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	Refresh();
 	mTextures.clear();
 	myUpdate();
+}
+
+void OmView2d::mouseShowSegmentContextMenu(QMouseEvent * event)
+{
+	SegmentDataWrapper * sdw = getSelectedSegment(event);
+	if(sdw) {
+		const OmId segmentationID = sdw->getSegmentation().GetId();
+		const OmId segmentID = sdw->getID();
+
+        	mSegmentContextMenu.Refresh(segmentationID, segmentID, mViewGroupState);
+        	mSegmentContextMenu.exec(event->globalPos());
+	} else {
+	}
 }
 
 void OmView2d::mouseSelectSegment(QMouseEvent * event)

@@ -7,7 +7,7 @@
  */
 
 
-#include "view3d/omSegmentContextMenu.h"
+#include "gui/omSegmentContextMenu.h"
 #include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui> 

@@ -12,6 +12,7 @@
 #include "system/events/omViewEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "view2d/omView2dImpl.h"
+#include "gui/omSegmentContextMenu.h"
 
 class Drawable;
 class OmTileCoord;
@@ -233,6 +234,9 @@ private:
 	SegmentDataWrapper * getSelectedSegment( QMouseEvent * event );
 
 	void doRedraw();
+
+	OmSegmentContextMenu mSegmentContextMenu;
+	void mouseShowSegmentContextMenu(QMouseEvent * event);
 
 
 #ifdef WIN32

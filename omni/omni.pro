@@ -208,7 +208,6 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/omView3d.h \
            src/view3d/omView3dUi.h \
            src/view3d/omView3dWidget.h \
-           src/view3d/omSegmentContextMenu.h \
            src/volume/omChannel.h \
            src/volume/omDrawOptions.h \
            src/volume/omFilter2d.h \
@@ -243,6 +242,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
            src/gui/omSegmentListWidget.h \
+           src/gui/omSegmentContextMenu.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -294,6 +294,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/segmentListValid.cpp \
            src/gui/segmentListRecent.cpp \
            src/gui/viewGroup.cpp \
+           src/gui/omSegmentContextMenu.cpp \
            src/gui/omSegmentListWidget.cpp \
            src/mesh/meshingChunkThread.cpp \
            src/mesh/meshingChunkThreadManager.cpp \
@@ -375,7 +376,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/omCameraMovement.cpp \
            src/view3d/omView3d.cpp \
            src/view3d/omView3dUi.cpp \
-           src/view3d/omSegmentContextMenu.cpp \
            src/volume/omChannel.cpp \
            src/volume/omFilter2d.cpp \
            src/volume/omFilter2dManager.cpp \
