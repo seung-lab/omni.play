@@ -5,6 +5,8 @@
 #include "utility/dataWrappers.h"
 #include "inspectors/inspectorProperties.h"
 #include "inspectors/segObjectInspector.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "gui/omSegmentContextMenu.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
@@ -136,17 +138,29 @@ void OmSegmentListWidget::mousePressEvent(QMouseEvent* event)
 		segmentLeftClick();
 	}
 	if (event->button() == Qt::RightButton) {
-		segmentRightClick();
+		segmentRightClick(event);
 	}
 }
 
-void OmSegmentListWidget::segmentRightClick()
+void OmSegmentListWidget::segmentRightClick(QMouseEvent* event)
 {
 	if( !isSegmentSelected() ){
 		return;
 	}
 
 	addToSplitterDataElementSegment( getCurrentlySelectedSegment() );
+	segmentShowContexMenu(event);
+}
+
+void OmSegmentListWidget::segmentShowContexMenu(QMouseEvent* event)
+{
+	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
+
+        const OmId segmentationID = sdw.getSegmentation().GetId();
+        const OmId segmentID = sdw.getID();
+
+        mSegmentContextMenu.Refresh(segmentationID, segmentID, inspectorProperties->getViewGroupState());
+        mSegmentContextMenu.exec(event->globalPos());
 }
 
 bool OmSegmentListWidget::isSegmentSelected()

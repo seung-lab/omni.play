@@ -259,7 +259,7 @@ void MainWindow::openInspector()
 			return;
 		}
 
-		omniInspector = new MyInspectorWidget( this );
+		omniInspector = new MyInspectorWidget( this, mViewGroupState );
 		omniInspector->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
 
 		QDockWidget *dock = new QDockWidget(tr("Inspector"), this);

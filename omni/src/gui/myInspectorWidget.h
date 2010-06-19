@@ -18,12 +18,13 @@ class SegmentListRecent;
 class ElementListBox;
 class InspectorProperties;
 class MainWindow;
+class OmViewGroupState;
 
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
  
  public:
-	 MyInspectorWidget( MainWindow* parent);
+	 MyInspectorWidget( MainWindow* parent, OmViewGroupState * vgs);
 	~MyInspectorWidget();
 
 	void addChannelToVolume();
@@ -122,6 +123,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QVBoxLayout * verticalLayout;
 	QString getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw);
 	void updateSegmentListBox( SegmentationDataWrapper sdw );
+
+	OmViewGroupState * mViewGroupState;
 };
 
 #endif

@@ -18,6 +18,7 @@
 #include "system/omStateManager.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui>
 #include <QMessageBox>
@@ -25,8 +26,8 @@
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
-MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
- : QWidget(parent)
+MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs)
+ : QWidget(parent), mViewGroupState(vgs)
 {
 
 	mParentWindow = parent;
@@ -37,7 +38,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent)
 
 	currentDataSrc = DataWrapperContainer();
 
-	inspectorProperties = new InspectorProperties( this );
+	inspectorProperties = new InspectorProperties( this, mViewGroupState);
 
 	elementListBox = new ElementListBox(this);
 	verticalLayout->addWidget(elementListBox);

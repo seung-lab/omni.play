@@ -1,6 +1,7 @@
 #include "inspectorProperties.h"
+#include "system/viewGroup/omViewGroupState.h"
 
-InspectorProperties::InspectorProperties(QWidget *parent) : QDialog(parent)
+InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs) : QDialog(parent), mViewGroupState(vgs)
 {
 	mWidget = NULL;
 	
@@ -31,4 +32,9 @@ void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QStr
 void InspectorProperties::closeDialog()
 {
 	QDialog::done(0);
+}
+
+OmViewGroupState * InspectorProperties::getViewGroupState()
+{
+	return mViewGroupState;
 }

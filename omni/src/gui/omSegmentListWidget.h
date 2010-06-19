@@ -4,6 +4,8 @@
 #include <QtGui>
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
+#include "gui/omSegmentContextMenu.h"
+#include "volume/omSegmentation.h"
 
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
@@ -30,17 +32,21 @@ class OmSegmentListWidget : public QTreeWidget {
 	
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	bool isSegmentSelected();
-	void segmentRightClick();
+	void segmentRightClick(QMouseEvent* event);
 	void segmentLeftClick();
 
 	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
+
+	void segmentShowContexMenu(QMouseEvent* event);
 
 	static const int ENABLED_COL = 0;
 	static const int NAME_COL = 1;
 	static const int ID_COL = 2;
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
+
+	OmSegmentContextMenu mSegmentContextMenu;
 };
 
 #endif

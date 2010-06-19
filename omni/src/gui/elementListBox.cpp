@@ -1,4 +1,5 @@
 #include "elementListBox.h"
+#include "system/viewGroup/omViewGroupState.h"
 
 ElementListBox::ElementListBox( QWidget * parent )
 	: QGroupBox( "", parent )
