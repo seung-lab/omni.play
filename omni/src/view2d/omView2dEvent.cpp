@@ -45,7 +45,7 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 				mouseNavModeLeftButton(event);
 			}
 		} else if (event->button() == Qt::RightButton) {
-			if(event->modifiers() & Qt::ShiftModifier) {
+			if(event->modifiers() & Qt::ControlModifier) {
 				mouseSelectSegment(event);
 			} else {
 				mouseShowSegmentContextMenu(event);
