@@ -7,6 +7,8 @@ InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs
 	
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
+
+	mViewGroupState->SetInspectorProperties(this);
 }
 
 void InspectorProperties::setOrReplaceWidget(QWidget *incomingWidget, const QString title)

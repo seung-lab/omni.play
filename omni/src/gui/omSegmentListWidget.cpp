@@ -148,7 +148,7 @@ void OmSegmentListWidget::segmentRightClick(QMouseEvent* event)
 		return;
 	}
 
-	addToSplitterDataElementSegment( getCurrentlySelectedSegment() );
+	//addToSplitterDataElementSegment( getCurrentlySelectedSegment() );
 	segmentShowContexMenu(event);
 }
 

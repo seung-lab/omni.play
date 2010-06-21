@@ -13,6 +13,7 @@
 #include "system/omCacheManager.h"
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
+#include "gui/inspectors/segObjectInspector.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -41,6 +42,9 @@ void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId, OmViewGr
 	addSeparator();
 
 	AddGroupActions();
+	addSeparator();
+
+	AddPropertiesActions();
 }
 
 void OmSegmentContextMenu::AddSelectionNames()
@@ -72,6 +76,7 @@ void OmSegmentContextMenu::AddSelectionAction()
 		addAction(QString("Deselect Only This Segment"), this, SLOT(Unselect()));
 	} else {
 		addAction(QString("Select Segment"), this, SLOT(Select()));
+		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
 	}
 
 	//	addAction(QString("Select All"));
@@ -132,7 +137,7 @@ void OmSegmentContextMenu::AddVoxelAction()
 void OmSegmentContextMenu::Select()
 {
 	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
-	sel.selectJustThisSegment( mSegmentId, true);
+	sel.augmentSelectedSet( mSegmentId, true);
 	sel.sendEvent();
 }
 
@@ -251,3 +256,22 @@ void OmSegmentContextMenu::deleteGroup()
         }
 }
 
+void OmSegmentContextMenu::showProperties()
+{
+        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+	OmSegID segid;
+
+	segid = seg.GetSegment(mSegmentId)->getRootSegID();
+
+	mViewGroupState->GetInspectorProperties()->setOrReplaceWidget( new SegObjectInspector(
+						 SegmentDataWrapper(mSegmentationId, segid), this),
+                                                 QString("Segmentation%1: Segment %2")
+                                                 .arg(mSegmentationId)
+                                                 .arg(segid) );
+
+}
+
+void OmSegmentContextMenu::AddPropertiesActions()
+{
+        addAction(QString("Show Segment Properties"), this, SLOT(showProperties()));
+}

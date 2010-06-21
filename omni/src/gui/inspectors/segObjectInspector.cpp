@@ -4,6 +4,7 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
+#include "system/omCacheManager.h"
 #include "utility/stringHelpers.h"
 
 SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
@@ -70,9 +71,10 @@ void SegObjectInspector::setSegObjColor()
 	colorButton->update();
 	current_color = color;
 
-	Vector3 < float >color_vector(color.redF(), color.greenF(), color.blueF());
+	Vector3 < float >color_vector(color.redF()/2, color.greenF()/2, color.blueF()/2);
 	sdw.setColor(color_vector);
 
+	OmCacheManager::Freshen(true);
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 

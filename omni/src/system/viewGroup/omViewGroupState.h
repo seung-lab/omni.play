@@ -2,6 +2,7 @@
 #define OM_VIEW_GROUP_STATE_H
 
 #include "system/omManageableObject.h"
+#include "gui/inspectors/inspectorProperties.h"
 #include <QMutex>
 
 class ChannelDataWrapper;
@@ -16,6 +17,9 @@ class OmViewGroupState : public OmManageableObject {
  public:
 	OmViewGroupState( MainWindow * mw );
 	~OmViewGroupState();
+
+	void SetInspectorProperties(InspectorProperties * ip) {mInspectorProperties = ip; }
+	InspectorProperties * GetInspectorProperties() { return mInspectorProperties; }
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
@@ -76,6 +80,7 @@ class OmViewGroupState : public OmManageableObject {
 
 	MainWindow * mMainWindow;
 	ViewGroup * mViewGroup;
+	InspectorProperties * mInspectorProperties;
 
 	int mBreakThreshold;
 	unsigned int mDustThreshold;
