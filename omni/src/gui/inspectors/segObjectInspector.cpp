@@ -46,7 +46,9 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	size->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
+	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
+	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSizeWithChildren()));
+	
 	origDataValueList->setText( sdw.get_original_mapped_data_value() );
 	chunkList->setText( "disabled" );
 }
@@ -131,23 +133,32 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	origDataValueList->setObjectName(QString::fromUtf8("origDataValueList"));
         grid->addWidget(origDataValueList, 4, 1);
 
-	QLabel* sizeLabel = new QLabel(sourceBox);
-	sizeLabel->setObjectName(QString::fromUtf8("sizeLabel"));
-	sizeLabel->setText( "Size (voxels):" );
-        grid->addWidget(sizeLabel, 5, 0);
+	QLabel* sizeLabelNoChildren = new QLabel(sourceBox);
+	sizeLabelNoChildren->setObjectName(QString::fromUtf8("sizeLabelNoChildren"));
+	sizeLabelNoChildren->setText( "Size (voxels--no children):" );
+        grid->addWidget(sizeLabelNoChildren, 5, 0);
 
-	size = new QLabel(sourceBox);
-	size->setObjectName(QString::fromUtf8("size"));
-        grid->addWidget(size, 5, 1);
+	sizeNoChildren = new QLabel(sourceBox);
+	sizeNoChildren->setObjectName(QString::fromUtf8("sizeNoChildren"));
+        grid->addWidget(sizeNoChildren, 5, 1);
+
+	QLabel* sizeLabelWithChildren = new QLabel(sourceBox);
+	sizeLabelWithChildren->setObjectName(QString::fromUtf8("sizeLabelWithChildren"));
+	sizeLabelWithChildren->setText( "Size (voxels--with children):" );
+        grid->addWidget(sizeLabelWithChildren, 6, 0);
+
+	sizeWithChildren = new QLabel(sourceBox);
+	sizeWithChildren->setObjectName(QString::fromUtf8("sizeWithChildren"));
+        grid->addWidget(sizeWithChildren, 6, 1);
 
 	QLabel* chunkLabel = new QLabel(sourceBox);
 	chunkLabel->setObjectName(QString::fromUtf8("chunkLabel"));
 	chunkLabel->setText( "Chunks" );
-        grid->addWidget(chunkLabel, 6, 0);
+        grid->addWidget(chunkLabel, 7, 0);
 
 	chunkList = new QLabel(sourceBox);
 	chunkList->setObjectName(QString::fromUtf8("chunkList"));
-        grid->addWidget(chunkList, 6, 1);
+        grid->addWidget(chunkList, 7, 1);
 
 	return sourceBox;
 }

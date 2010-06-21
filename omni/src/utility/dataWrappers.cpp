@@ -237,6 +237,11 @@ quint64 SegmentDataWrapper::getSize()
 	return getSegmentation().GetSegment( mID )->getSize();
 }
 
+quint64 SegmentDataWrapper::getSizeWithChildren()
+{
+	return getSegmentation().GetSegment( mID )->getSizeWithChildren();
+}
+
 /*******************************************
  ****** Filters
  *******************************************/

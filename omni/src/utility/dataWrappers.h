@@ -81,6 +81,7 @@ class SegmentDataWrapper
 	OmId getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
 	quint64 getSize();
+	quint64 getSizeWithChildren();
  private:
 	OmId mID;
 	ObjectType mType;

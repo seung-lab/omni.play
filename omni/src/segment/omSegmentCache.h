@@ -78,6 +78,8 @@ public:
 
 	void refreshTree();
 
+	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
+
 private:
 	QMutex mMutex;
 	OmSegmentation * mSegmentation;

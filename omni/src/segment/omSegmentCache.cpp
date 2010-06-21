@@ -284,3 +284,9 @@ void OmSegmentCache::refreshTree()
 	QMutexLocker locker( &mMutex );
         return mImpl->refreshTree();
 }
+
+quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
+}

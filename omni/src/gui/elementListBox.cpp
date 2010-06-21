@@ -30,11 +30,10 @@ void ElementListBox::addTab( const int preferredIndex, QWidget * tab, const QStr
 	
 	const int insertedIndex = mDataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
 	
-	if( -1 == mCurrentlyActiveTab ){ 
-		// first time here
+	if( -1 == mCurrentlyActiveTab ){ // first time here
 		mCurrentlyActiveTab = insertedIndex;
-	} else {
-		// keep the tab widget fixed on the user-specified tab
-		mDataElementsTabs->setCurrentIndex( mCurrentlyActiveTab );
-	}
+	} 
+
+	// keep the tab widget fixed on the user-specified tab
+	mDataElementsTabs->setCurrentIndex( mCurrentlyActiveTab );
 }

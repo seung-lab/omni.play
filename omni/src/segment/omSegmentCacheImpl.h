@@ -34,6 +34,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void setAsValidated(OmSegment * segment, const bool valid);
 
 	void refreshTree();
+	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
         quint64 getSegmentListSize(OmSegIDRootType type);
 

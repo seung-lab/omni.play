@@ -22,11 +22,14 @@ class OmSegmentListBySize
 	void removeSegment( OmSegment * seg );
 	void updateFromJoin( OmSegment * root, OmSegment * child );
 	void updateFromSplit( OmSegment * root, OmSegment * child );
+
 	static void swapSegment( OmSegment * seg, OmSegmentListBySize * one, OmSegmentListBySize * two );
 
-
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
+	quint64 getSegmentSize( const OmSegID segID_ );
 
+	quint32 size(){ return mList.size(); }
+	void dump();
 	int getSize();
 
  protected:
@@ -46,6 +49,7 @@ class OmSegmentListBySize
 	struct segID{};
 	struct segSize{};
 
+	// TODO: change segID to be hash...
 	typedef boost::multi_index_container
 	< OmSegSize,
 	  indexed_by <

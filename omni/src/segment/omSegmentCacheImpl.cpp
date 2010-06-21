@@ -414,3 +414,14 @@ void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
 {
 	mRecentRootActivityMap.touch( segID, getRecentActivity() );
 }
+
+quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
+{
+	OmSegment * seg = findRoot( segUnknownDepth );
+
+	if( seg->mImmutable ) {
+		return mValidListBySize.getSegmentSize( seg->mValue );
+	} 
+
+	return mRootListBySize.getSegmentSize( seg->mValue );
+}

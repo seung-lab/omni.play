@@ -154,3 +154,7 @@ OmSegID OmSegment::getRootSegID()
 	return mCache->findRoot(this)->getValue();
 }
 
+quint64 OmSegment::getSizeWithChildren()
+{
+	return mCache->getSizeRootAndAllChildren(this);
+}
