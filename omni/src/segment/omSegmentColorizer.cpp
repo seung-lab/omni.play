@@ -107,9 +107,8 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		}
 	}
 
-	if( SCC_SEGMENTATION_BREAK == mSccType){
+	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
-			// return mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
 			return seg->mColorInt;;
 		}
 	}
