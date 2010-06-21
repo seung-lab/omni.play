@@ -12,7 +12,6 @@ SegmentListBase::SegmentListBase( QWidget * parent,
 				  InspectorProperties * ip,
 				  ElementListBox * eb ) 
 	: QWidget(parent)
-	, currentTabIndex(-1)
 	, elementListBox(eb)
 	, haveValidSDW(false)
 	, currentPageNum(0)
@@ -74,7 +73,7 @@ void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSel
 
 	delete segs;
 
-	currentTabIndex = elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
+	elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
 }
 
 void SegmentListBase::setupPageButtons()
@@ -158,16 +157,7 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 	}
 }
 
-int SegmentListBase::getTabIndex()
-{
-	if( -1 != currentTabIndex ){
-		return currentTabIndex;
-	}
-	
-	return getPreferredTabIndex();
-}
-
 void SegmentListBase::userJustClickedInThisSegmentList()
 {
-	elementListBox->setActiveTab( getTabIndex() );
+	elementListBox->setActiveTab( this );
 }

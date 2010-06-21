@@ -3,40 +3,38 @@
 
 ElementListBox::ElementListBox( QWidget * parent )
 	: QGroupBox( "", parent )
-	, currentlyActiveTab(-1)
+	, mCurrentlyActiveTab(-1)
 {
-	dataElementsTabs = new QTabWidget( this );
+	mDataElementsTabs = new QTabWidget( this );
 
-	overallContainer = new QVBoxLayout( this );
-	overallContainer->addWidget( dataElementsTabs );
+	mOverallContainer = new QVBoxLayout( this );
+	mOverallContainer->addWidget( mDataElementsTabs );
 }
 
 void ElementListBox::reset()
 {
-	dataElementsTabs->clear();	
+	mDataElementsTabs->clear();
 	setTitle("");
 }
 
-int ElementListBox::addTab( const int preferredIndex, QWidget * tab, const QString & tabTitle)
+void ElementListBox::setActiveTab( QWidget * tab )
 {
-	const int curIndex = dataElementsTabs->indexOf(tab);
-
-	if( -1 != curIndex ){ // tab was already added
-		return curIndex;
-	}
-	
-	const int actualIndex = dataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
-	
-	if( -1 == currentlyActiveTab ){
-		currentlyActiveTab = actualIndex;
-	} else {
-		dataElementsTabs->setCurrentIndex( currentlyActiveTab );
-	}
-
-	return actualIndex;
+	mCurrentlyActiveTab = mDataElementsTabs->indexOf(tab);
 }
 
-void ElementListBox::setActiveTab( const int index )
+void ElementListBox::addTab( const int preferredIndex, QWidget * tab, const QString & tabTitle)
 {
-	currentlyActiveTab = index;
+	if( -1 != mDataElementsTabs->indexOf(tab) ){ 
+		return; // tab was already added, don't add again
+	}
+	
+	const int insertedIndex = mDataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
+	
+	if( -1 == mCurrentlyActiveTab ){ 
+		// first time here
+		mCurrentlyActiveTab = insertedIndex;
+	} else {
+		// keep the tab widget fixed on the user-specified tab
+		mDataElementsTabs->setCurrentIndex( mCurrentlyActiveTab );
+	}
 }

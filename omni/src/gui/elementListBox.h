@@ -10,14 +10,14 @@ class ElementListBox : public QGroupBox
 
 public:
 	ElementListBox( QWidget * );
-	int addTab( const int index, QWidget * tab, const QString & tabTitle);
+	void addTab( const int index, QWidget * tab, const QString & tabTitle);
 	void reset();
-	void setActiveTab( const int index );
+	void setActiveTab( QWidget * tab );
 
 private:
-	QTabWidget * dataElementsTabs;
-	QVBoxLayout * overallContainer;
-	int currentlyActiveTab;
+	QTabWidget * mDataElementsTabs;
+	QVBoxLayout * mOverallContainer;
+	int mCurrentlyActiveTab;
 };
 
 #endif

@@ -42,9 +42,6 @@ protected:
 	virtual OmSegIDRootType getRootSegType() = 0;
 	virtual int getPreferredTabIndex() = 0;
 
-	int currentTabIndex;
-	int getTabIndex();
-
         QVBoxLayout * layout;
         QPushButton * prevButton;
         QPushButton * nextButton;
