@@ -36,6 +36,8 @@ public slots:
 	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID = 0);
 	void goToNextPage();
 	void goToPrevPage();
+	void goToEndPage();
+	void goToStartPage();
 
 protected:
 	virtual QString getTabTitle() = 0;
@@ -45,6 +47,8 @@ protected:
         QVBoxLayout * layout;
         QPushButton * prevButton;
         QPushButton * nextButton;
+        QPushButton * startButton;
+        QPushButton * endButton;
 
 	OmSegmentListWidget * segmentListWidget;
 	ElementListBox * elementListBox;

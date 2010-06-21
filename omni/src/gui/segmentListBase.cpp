@@ -78,8 +78,18 @@ void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSel
 
 void SegmentListBase::setupPageButtons()
 {
+	int x = 30, y = 30;
+        startButton = new QPushButton("|<<");
+	startButton->setFixedSize(x, y);
         prevButton = new QPushButton("<");
+	prevButton->setFixedSize(x, y);
         nextButton = new QPushButton(">");
+	nextButton->setFixedSize(x, y);
+        endButton = new QPushButton(">>|");
+	endButton->setFixedSize(x, y);
+
+        connect( startButton, SIGNAL( released()  ),
+                 this, SLOT( goToStartPage() ), Qt::DirectConnection);
 
         connect( prevButton, SIGNAL( released()  ),
                  this, SLOT( goToPrevPage() ), Qt::DirectConnection);
@@ -87,14 +97,26 @@ void SegmentListBase::setupPageButtons()
         connect( nextButton, SIGNAL( released()  ),
                  this, SLOT( goToNextPage() ), Qt::DirectConnection);
 
+        connect( endButton, SIGNAL( released()  ),
+                 this, SLOT( goToEndPage() ), Qt::DirectConnection);
+
         QGroupBox * buttonBox = new QGroupBox("");
         buttonBox->setFlat(true);
         QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
 
+        buttons->addWidget(startButton);
         buttons->addWidget(prevButton);
         buttons->addWidget(nextButton);
+        buttons->addWidget(endButton);
 
         layout->addWidget( buttonBox );
+}
+
+void SegmentListBase::goToStartPage()
+{
+        currentPageNum = 0;
+        int offset = currentPageNum * getNumSegmentsPerPage();
+        populateSegmentElementsListWidget( false, offset, true);
 }
 
 void SegmentListBase::goToNextPage()
@@ -116,6 +138,13 @@ void SegmentListBase::goToPrevPage()
 	}
 	int offset = currentPageNum * getNumSegmentsPerPage();
 	populateSegmentElementsListWidget( false, offset, true);
+}
+
+void SegmentListBase::goToEndPage()
+{
+        currentPageNum = 0;
+        int offset = currentPageNum * getNumSegmentsPerPage();
+        populateSegmentElementsListWidget( false, offset, true);
 }
 
 void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw, 
