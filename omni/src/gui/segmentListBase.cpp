@@ -7,6 +7,7 @@
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentSelector.h"
 
 SegmentListBase::SegmentListBase( QWidget * parent, 
 				  InspectorProperties * ip,
@@ -199,8 +200,15 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 
 void SegmentListBase::searchChanged()
 {
-	int offset = searchEdit->text().toInt();
-	populateSegmentElementsListWidget( false, offset, false);	
+	OmSegID segmenID = searchEdit->text().toInt();
+	
+	if(!currentSDW.getSegmentCache()->IsSegmentValid(segmenID)) {
+		return;
+	}
+
+	OmSegmentSelector sel(currentSDW.getID(), NULL, "segmentlistbase");
+	sel.selectJustThisSegment(segmenID, true);
+	sel.sendEvent();
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()
