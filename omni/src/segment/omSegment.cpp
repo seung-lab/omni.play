@@ -1,5 +1,6 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentIterator.h"
 
 OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	: mValue(value)
@@ -137,9 +138,15 @@ void OmSegment::SetImmutable( const bool immutable)
 	mCache->addToDirtySegmentList(this);
 }
 
-quint64 OmSegment::getSizeWithChlidren()
+quint64 OmSegment::computeSizeWithChildren()
 {
-	return 0;
+	quint64 size = 0;
+	OmSegmentIterator iter(mCache);
+	iter.iterOverSegmentIDs(OmSegIDsSet(mValue));
+	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
+		size += seg->mSize;
+	}
+	return size;
 }
 
 OmSegID OmSegment::getRootSegID()

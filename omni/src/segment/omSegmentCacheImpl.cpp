@@ -317,11 +317,9 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	if(valid) {
-		mRootListBySize.removeSegment(seg);
-		mValidListBySize.insertSegment(seg);
+		OmSegmentListBySize::swapSegment(seg, &mRootListBySize, &mValidListBySize);
 	} else {
-		mRootListBySize.insertSegment(seg);
-		mValidListBySize.removeSegment(seg);
+		OmSegmentListBySize::swapSegment(seg, &mValidListBySize, &mRootListBySize);
 	}
 
         if( -1 == seg->mEdgeNumber ){

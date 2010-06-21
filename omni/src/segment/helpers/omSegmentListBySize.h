@@ -22,6 +22,7 @@ class OmSegmentListBySize
 	void removeSegment( OmSegment * seg );
 	void updateFromJoin( OmSegment * root, OmSegment * child );
 	void updateFromSplit( OmSegment * root, OmSegment * child );
+	static void swapSegment( OmSegment * seg, OmSegmentListBySize * one, OmSegmentListBySize * two );
 
 
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);

@@ -39,7 +39,7 @@ public:
 	void SetEnabled( const bool);
 
 	quint64 getSize(){ return mSize; }
-	quint64 getSizeWithChlidren();
+	quint64 computeSizeWithChildren();
 
 	void SetImmutable( const bool immutable);
 	bool GetImmutable(){ return mImmutable; }

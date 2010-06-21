@@ -5,6 +5,16 @@ void OmSegmentListBySize::insertSegment( OmSegment * seg )
 	do_insertSegment( seg->mValue, seg->mSize );
 }
 
+void OmSegmentListBySize::swapSegment( OmSegment * seg, OmSegmentListBySize * one, OmSegmentListBySize * two )
+{
+        List_by_ID & idIndex = one->mList.get<segID>();
+        List_by_ID::iterator iter = idIndex.find(seg->mValue);
+        if(iter != idIndex.end() ){
+		two->do_insertSegment(seg->mValue, iter->segSize);
+                idIndex.erase(iter);
+        }
+}
+
 void OmSegmentListBySize::removeSegment( OmSegment * seg )
 {
         do_removeSegment( seg->mValue );
@@ -18,8 +28,9 @@ void OmSegmentListBySize::updateFromJoin( OmSegment * root, OmSegment * child )
 
 void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child )
 {
-        do_incrementSegSize( root->mValue, -child->mSize );
-        do_insertSegment( child->mValue, child->mSize );
+        quint64 size = child->computeSizeWithChildren();
+        do_incrementSegSize( root->mValue, -size );
+        do_insertSegment( child->mValue, size );
 }
 	
 void OmSegmentListBySize::do_incrementSegSize( const OmSegID segID_, const quint64 addedSize )
