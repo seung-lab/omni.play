@@ -455,7 +455,9 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
         OmSegment * seg = iter.getNextSegment();
         while(NULL != seg) {
                 seg->SetImmutable(valid);
-		mSegmentCache->setAsValidated(seg, valid);
+		if(!seg->getParentSegID()) {
+			mSegmentCache->setAsValidated(seg, valid);
+		}
                 seg = iter.getNextSegment();
         }
 }
