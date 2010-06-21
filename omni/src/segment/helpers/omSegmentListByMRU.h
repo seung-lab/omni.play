@@ -3,7 +3,7 @@
 
 #include "segment/helpers/omSegmentListBySize.h"
 
-class OmSegmentListByMRU : private OmSegmentListBySize {
+class OmSegmentListByMRU : public OmSegmentListBySize {
  public:
 	OmSegmentListByMRU();
 

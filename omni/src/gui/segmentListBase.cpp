@@ -32,7 +32,7 @@ int SegmentListBase::getNumSegmentsPerPage()
 quint32 SegmentListBase::getMaxSegmentValue()
 {
 	assert( haveValidSDW );
-	return currentSDW.getMaxSegmentValue();
+	return currentSDW.getSegmentListSize(getRootSegType());
 }
 
 OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset, const bool useOffset)
@@ -142,7 +142,10 @@ void SegmentListBase::goToPrevPage()
 
 void SegmentListBase::goToEndPage()
 {
-        currentPageNum = 0;
+        currentPageNum = (getMaxSegmentValue() / getNumSegmentsPerPage()) - 1;
+	if(currentPageNum < 0) {
+		currentPageNum = 0;
+	}
         int offset = currentPageNum * getNumSegmentsPerPage();
         populateSegmentElementsListWidget( false, offset, true);
 }

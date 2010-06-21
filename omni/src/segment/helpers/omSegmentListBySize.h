@@ -27,6 +27,7 @@ class OmSegmentListBySize
 
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
 
+	int getSize();
 
  protected:
 

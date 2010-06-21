@@ -107,3 +107,8 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
 	
 	return new OmSegIDsListWithPage(ret, page);
 }
+
+int OmSegmentListBySize::getSize()
+{
+	return mList.size();
+}

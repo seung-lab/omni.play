@@ -314,6 +314,21 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 	return ret;
 }
 
+quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
+{
+        if(VALIDROOT == type) {
+                return mValidListBySize.getSize();
+        } else if(NOTVALIDROOT == type) {
+                return mRootListBySize.getSize();
+        } else if(RECENTROOT == type) {
+                return mRecentRootActivityMap.getSize();
+	}
+
+	assert(0 && "shouldn't reach here, type incorrect\n");
+	return 0;
+}
+
+
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	if(valid) {

@@ -127,6 +127,12 @@ quint32 SegmentationDataWrapper::getMaxSegmentValue()
 	return OmProject::GetSegmentation(mID).GetSegmentCache()->getMaxValue();
 }
 
+quint64 SegmentationDataWrapper::getSegmentListSize(OmSegIDRootType type)
+{
+        return OmProject::GetSegmentation(mID).GetSegmentCache()->getSegmentListSize(type);
+}
+
+
 /*******************************************
  ****** Segments
  *******************************************/

@@ -248,6 +248,13 @@ quint32 OmSegmentCache::getMaxValue()
         return mImpl->getMaxValue();
 }
 
+quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->getSegmentListSize(type);
+}
+
+
 void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
 {
 	QMutexLocker locker( &mMutex );

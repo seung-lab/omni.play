@@ -35,6 +35,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	void refreshTree();
 
+        quint64 getSegmentListSize(OmSegIDRootType type);
 
  private:
 	void loadDendrogram();
