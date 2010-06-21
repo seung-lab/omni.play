@@ -77,7 +77,7 @@ sub buildAll {
 }
 
 sub buildAllRegion {
-    buildRegionGraphNew150();
+#    buildRegionGraphNew150();
     buildRegionI1088150();
     buildRegionI1088250();
 }

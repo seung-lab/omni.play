@@ -30,6 +30,8 @@ public:
 
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
+	void userJustClickedInThisSegmentList();
+
 public slots:
 	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID = 0);
 	void goToNextPage();
@@ -39,6 +41,9 @@ protected:
 	virtual QString getTabTitle() = 0;
 	virtual OmSegIDRootType getRootSegType() = 0;
 	virtual int getPreferredTabIndex() = 0;
+
+	int currentTabIndex;
+	int getTabIndex();
 
         QVBoxLayout * layout;
         QPushButton * prevButton;

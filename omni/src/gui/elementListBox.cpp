@@ -3,6 +3,7 @@
 
 ElementListBox::ElementListBox( QWidget * parent )
 	: QGroupBox( "", parent )
+	, currentlyActiveTab(-1)
 {
 	dataElementsTabs = new QTabWidget( this );
 
@@ -16,11 +17,26 @@ void ElementListBox::reset()
 	setTitle("");
 }
 
-void ElementListBox::addTab( const int index, QWidget * tab, const QString & tabTitle)
+int ElementListBox::addTab( const int preferredIndex, QWidget * tab, const QString & tabTitle)
 {
-	if( -1 != dataElementsTabs->indexOf(tab) ){
-		return;
+	const int curIndex = dataElementsTabs->indexOf(tab);
+
+	if( -1 != curIndex ){ // tab was already added
+		return curIndex;
 	}
 	
-	dataElementsTabs->insertTab(index, tab, tabTitle);	
+	const int actualIndex = dataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
+	
+	if( -1 == currentlyActiveTab ){
+		currentlyActiveTab = actualIndex;
+	} else {
+		dataElementsTabs->setCurrentIndex( currentlyActiveTab );
+	}
+
+	return actualIndex;
+}
+
+void ElementListBox::setActiveTab( const int index )
+{
+	currentlyActiveTab = index;
 }

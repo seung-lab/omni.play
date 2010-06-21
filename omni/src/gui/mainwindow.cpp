@@ -40,7 +40,7 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	windowTitleClear();
-	resize(1000, 800);
+	resize(1000, 1000);
 
 	preferences = NULL;
 	setProjectOpen( false );

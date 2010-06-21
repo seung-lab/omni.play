@@ -10,13 +10,14 @@
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class InspectorProperties;
+class SegmentListBase;
 
 class OmSegmentListWidget : public QTreeWidget {
 
  Q_OBJECT
 
  public:
-	OmSegmentListWidget(QWidget* parent, InspectorProperties *);
+	OmSegmentListWidget(SegmentListBase*, InspectorProperties *);
 
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 					       const OmId segmentJustSelectedID,
@@ -28,8 +29,9 @@ class OmSegmentListWidget : public QTreeWidget {
 	void mousePressEvent(QMouseEvent * event);
 	void keyPressEvent(QKeyEvent * event);
 
+	SegmentListBase * segmentListBase;
  	InspectorProperties * inspectorProperties;
-	
+
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	bool isSegmentSelected();
 	void segmentRightClick(QMouseEvent* event);

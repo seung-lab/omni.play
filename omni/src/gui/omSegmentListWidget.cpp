@@ -1,17 +1,20 @@
 #include "common/omCommon.h"
+#include "gui/segmentListBase.h"
 #include "gui/guiUtils.h"
+#include "gui/omSegmentContextMenu.h"
 #include "gui/omSegmentListWidget.h"
-#include "segment/omSegmentSelector.h"
-#include "utility/dataWrappers.h"
 #include "inspectors/inspectorProperties.h"
 #include "inspectors/segObjectInspector.h"
+#include "segment/omSegmentSelector.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "gui/omSegmentContextMenu.h"
+#include "utility/dataWrappers.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
-OmSegmentListWidget::OmSegmentListWidget(QWidget * parent, InspectorProperties * ip) 
-	: QTreeWidget(parent)
+OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
+					 InspectorProperties * ip) 
+	: QTreeWidget(slist)
+	, segmentListBase(slist)
 	, inspectorProperties(ip)
 {
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -80,6 +83,8 @@ string OmSegmentListWidget::eventSenderName()
 
 void OmSegmentListWidget::segmentLeftClick()
 {
+	segmentListBase->userJustClickedInThisSegmentList();
+
 	QTreeWidgetItem * current = currentItem();
 	if(NULL == current) {
 		printf("FIXME: current segment not set\n");
@@ -136,8 +141,7 @@ void OmSegmentListWidget::mousePressEvent(QMouseEvent* event)
 
         if (event->button() == Qt::LeftButton) {
 		segmentLeftClick();
-	}
-	if (event->button() == Qt::RightButton) {
+	} else if (event->button() == Qt::RightButton) {
 		segmentRightClick(event);
 	}
 }
