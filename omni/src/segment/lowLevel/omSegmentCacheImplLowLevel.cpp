@@ -401,7 +401,13 @@ void OmSegmentCacheImplLowLevel::buildSegmentSizeLists()
                 if( NULL == seg) {
 			continue;
 		} 
-		mRootListBySize.insertSegment( seg );
+		if(0 == seg->mParentSegID) {
+			if(seg->mImmutable) {
+				mValidListBySize.insertSegment( seg );
+			} else {
+				mRootListBySize.insertSegment( seg );
+			}
+		} 
 	}
 }
 

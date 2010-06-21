@@ -9,6 +9,6 @@ SegmentListAll::SegmentListAll( QWidget * parent,
 
 QString SegmentListAll::getTabTitle()
 {
-	return QString("Root Segments");
+	return QString("Working");
 }
 
