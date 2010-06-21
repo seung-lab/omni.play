@@ -15,6 +15,12 @@ void OmSegmentListBySize::updateFromJoin( OmSegment * root, OmSegment * child )
 	do_incrementSegSize( root->mValue, child->mSize );
 	do_removeSegment( child->mValue );
 }
+
+void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child )
+{
+        do_incrementSegSize( root->mValue, -child->mSize );
+        do_insertSegment( child->mValue, child->mSize );
+}
 	
 void OmSegmentListBySize::do_incrementSegSize( const OmSegID segID_, const quint64 addedSize )
 {

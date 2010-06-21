@@ -45,6 +45,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
 
+	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 	void doSelectedSetInsert( const OmSegID segID);
 	void doSelectedSetRemove( const OmSegID segID);

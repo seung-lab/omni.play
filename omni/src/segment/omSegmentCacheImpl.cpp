@@ -188,6 +188,8 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		child->mCustomMergeEdge = NULL;
 	}
 
+	updateSizeListsFromSplit( parent, child );
+
 	clearCaches();
 
 	return edgeThatGotBroken;
@@ -361,6 +363,13 @@ void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected
                doSelectedSetRemove( rootID );
                assert( !mSelectedSet.contains( segID ));
        }
+}
+
+void OmSegmentCacheImpl::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
+{
+	OmSegment * root = findRoot(parent);
+	mRootListBySize.updateFromSplit( root, child );
+	mValidListBySize.updateFromSplit( root, child );
 }
 
 void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
