@@ -38,6 +38,7 @@ public slots:
 	void goToPrevPage();
 	void goToEndPage();
 	void goToStartPage();
+	void searchChanged();
 
 protected:
 	virtual QString getTabTitle() = 0;
@@ -49,6 +50,7 @@ protected:
         QPushButton * nextButton;
         QPushButton * startButton;
         QPushButton * endButton;
+        QLineEdit * searchEdit;
 
 	OmSegmentListWidget * segmentListWidget;
 	ElementListBox * elementListBox;

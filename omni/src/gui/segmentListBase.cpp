@@ -88,6 +88,10 @@ void SegmentListBase::setupPageButtons()
         endButton = new QPushButton(">>|");
 	endButton->setFixedSize(x, y);
 
+	searchEdit = new QLineEdit();
+        connect(searchEdit, SIGNAL(editingFinished()),
+                this, SLOT(searchChanged()));
+
         connect( startButton, SIGNAL( released()  ),
                  this, SLOT( goToStartPage() ), Qt::DirectConnection);
 
@@ -100,12 +104,16 @@ void SegmentListBase::setupPageButtons()
         connect( endButton, SIGNAL( released()  ),
                  this, SLOT( goToEndPage() ), Qt::DirectConnection);
 
+        connect( endButton, SIGNAL( released()  ),
+                 this, SLOT( goToEndPage() ), Qt::DirectConnection);
+
         QGroupBox * buttonBox = new QGroupBox("");
         buttonBox->setFlat(true);
         QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
 
         buttons->addWidget(startButton);
         buttons->addWidget(prevButton);
+        buttons->addWidget(searchEdit);
         buttons->addWidget(nextButton);
         buttons->addWidget(endButton);
 
@@ -187,6 +195,12 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 		}
 		return 0;
 	}
+}
+
+void SegmentListBase::searchChanged()
+{
+	int offset = searchEdit->text().toInt();
+	populateSegmentElementsListWidget( false, offset, false);	
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()
