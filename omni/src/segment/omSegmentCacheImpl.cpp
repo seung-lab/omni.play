@@ -369,7 +369,6 @@ void OmSegmentCacheImpl::updateSizeListsFromSplit( OmSegment * parent, OmSegment
 {
 	OmSegment * root = findRoot(parent);
 	mRootListBySize.updateFromSplit( root, child );
-	mValidListBySize.updateFromSplit( root, child );
 }
 
 void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
