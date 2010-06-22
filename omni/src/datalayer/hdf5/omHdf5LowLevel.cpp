@@ -1,8 +1,9 @@
-#include "datalayer/hdf5/omHdf5LowLevel.h"
-#include "utility/omImageDataIo.h"
+#include "common/omDebug.h"
 #include "common/omException.h"
 #include "common/omVtk.h"
-#include "common/omDebug.h"
+#include "datalayer/hdf5/omHdf5LowLevel.h"
+#include "datalayer/omDataPaths.h"
+#include "utility/omImageDataIo.h"
 #include "utility/omSystemInformation.h"
 
 #include <vtkImageData.h>
@@ -643,9 +644,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	//Reads raw data from a dataset into a buffer. 
 	hid_t mem_type_id;
-	//printf("%s = %i\n", name, bytesPerSample);
-	if(0 == strcmp(name, "chan") && 1 == bytesPerSample){
-		//printf("%i = %i\n", H5T_NATIVE_FLOAT, dstype);
+
+	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
 		if(H5T_NATIVE_FLOAT == dstype || 1) {
 			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
 			ret = H5Dread(dataset_id, H5T_NATIVE_FLOAT, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
@@ -656,14 +656,12 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 			myImageData->GetDimensions (dims);
 			unsigned char * dest = (unsigned char*) imageData->GetScalarPointer();
 			float * src = (float*) myImageData->GetScalarPointer();
-			for(int x = 0; x < dims[0]; x++) {
-				for(int y = 0; y < dims[1]; y++) {
-					for(int z = 0; z < dims[2]; z++) {
+			for(int x = 0; x < dims[0]; ++x) {
+				for(int y = 0; y < dims[1]; ++y) {
+					for(int z = 0; z < dims[2]; ++z) {
 						dest[i] = src[i] * 255;
-						//printf("%u:%f ", dest[i], src[i]);
-						i++;
+						++i;
 					}
-					//printf("\n");
 				}
 			}
 		} else {
@@ -1045,3 +1043,9 @@ Vector3< int > OmHdf5LowLevel::om_hdf5_dataset_get_dims_with_lock(hid_t fileId, 
 	return dims;
 }
 
+bool OmHdf5LowLevel::isDatasetPathNameAChannel( const char *name )
+{
+	const string defaultName = OmDataPaths::getDefaultHDF5channelDatasetName();
+	
+	return (0 == defaultName.compare(name));
+}

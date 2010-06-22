@@ -6,6 +6,10 @@
 #include "system/omStateManager.h"
 #include "system/omLocalPreferences.h"
 
+string OmDataPaths::getDefaultHDF5channelDatasetName()
+{
+	return "chanSingle";
+}
 
 OmDataPath OmDataPaths::getDefaultDatasetName()
 {

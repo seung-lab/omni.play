@@ -8,6 +8,8 @@ class OmMipMeshCoord;
 class OmDataPaths
 {
  public:
+	static string getDefaultHDF5channelDatasetName();
+
 	static OmDataPath getDefaultDatasetName();
 	static OmDataPath getProjectArchiveNameQT();
 

@@ -1,4 +1,5 @@
 #include "common/omDebug.h"
+#include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
@@ -75,7 +76,7 @@ bool OmChannel::IsVolumeDataBuilt()
 
 void OmChannel::BuildVolumeData()
 {
-	OmDataPath path = OmDataPath("chan");
+	OmDataPath path = OmDataPath(OmDataPaths::getDefaultHDF5channelDatasetName());
 	OmMipVolume::Build(path);
 }
 
