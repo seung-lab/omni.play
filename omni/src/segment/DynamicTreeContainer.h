@@ -6,14 +6,14 @@
 template < typename T >
 class DynamicTreeContainer {
  public:
-	DynamicTreeContainer( const unsigned int size );
+	DynamicTreeContainer( const quint32 size );
 	~DynamicTreeContainer(){
-		for( unsigned int i = 0; i < mSize; ++i ){
+		for( quint32 i = 0; i < mSize; ++i ){
 			delete mNodeArray[ i ];
 		}
 	}
  
-	DynamicTree<T> * get( const unsigned int index ){
+	DynamicTree<T> * get( const quint32 index ){
 		assert( index );
 		assert( index < mSize );
 		if( NULL == mNodeArray[ index ] ){
@@ -22,11 +22,11 @@ class DynamicTreeContainer {
 		return mNodeArray[ index ];
 	}
 
-	unsigned int getSize(){ return mSize; }
+	quint32 getSize(){ return mSize; }
 	const std::vector<DynamicTree<T>*> & getTreeNodeArray(){ return mNodeArray; }
 
  private:
-	const unsigned int mSize;
+	const quint32 mSize;
 	std::vector<DynamicTree<T>*> mNodeArray;
 };
 

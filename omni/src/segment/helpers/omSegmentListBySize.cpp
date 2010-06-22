@@ -130,7 +130,12 @@ void OmSegmentListBySize::dump()
 	}
 }
 
-int OmSegmentListBySize::getSize()
+quint32 OmSegmentListBySize::size()
 {
 	return mList.size();
+}
+
+void OmSegmentListBySize::clear()
+{
+	mList.clear();
 }

@@ -11,7 +11,6 @@ OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel( OmSegmentation * segment
 	, mSegments( new OmPagingStore<OmSegment>( segmentation, cache ) )
 	, mMaxValue(0)
 	, mNumSegs(0)
-	, mNumTopLevelSegs(0)
 	, mAllSelected(false)
 	, mAllEnabled(false)
 {
@@ -39,7 +38,7 @@ OmSegID OmSegmentCacheImplLowLevel::GetNumSegments()
 
 OmSegID OmSegmentCacheImplLowLevel::GetNumTopSegments()
 {
-	return mNumTopLevelSegs;
+	return mSegmentGraph.getNumTopLevelSegs();
 }
 
 bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
@@ -228,9 +227,9 @@ void OmSegmentCacheImplLowLevel::clearCaches()
 ///////////////////////////
 ////// Tree-stuff
 
-void OmSegmentCacheImplLowLevel::initializeDynamicTree()
+void OmSegmentCacheImplLowLevel::initialize()
 {
-	mSegmentGraph.initializeDynamicTree( mMaxValue );
+	mSegmentGraph.initialize( mMaxValue );
 }
 
 void OmSegmentCacheImplLowLevel::rerootSegmentLists()
@@ -349,8 +348,6 @@ bool OmSegmentCacheImplLowLevel::JoinInternal( const OmSegID parentID,
 
 	updateSizeListsFromJoin( parent, childRoot );
 
-	--mNumTopLevelSegs;
-
 	return true;
 }
 
@@ -378,13 +375,14 @@ bool OmSegmentCacheImplLowLevel::splitChildFromParentInternal( const OmSegID chi
 	child->mParentSegID = 0;
 	child->mEdgeNumber = -1;
 
-	++mNumTopLevelSegs;
-
 	return true;
 }
 
 void OmSegmentCacheImplLowLevel::buildSegmentSizeLists()
 {
+	mValidListBySize.clear();
+	mRootListBySize.clear();
+
 	OmSegment * seg;
 	for( quint32 i = 0; i <= mMaxValue; ++i ){
 		seg = GetSegmentFromValue( i );

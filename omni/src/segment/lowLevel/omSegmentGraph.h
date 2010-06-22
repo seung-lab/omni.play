@@ -9,13 +9,15 @@ class OmSegmentGraph {
 	OmSegmentGraph();
 	~OmSegmentGraph();
 
-	void initializeDynamicTree( const quint32 maxValue );
+	void initialize( const quint32 maxValue );
 
 	bool doesGraphNeedToBeRefreshed( const quint32 maxValue ); 
 
 	OmSegID getRootID( const OmSegID segID );
 	void cut( const OmSegID segID );
 	void join( const OmSegID childRootID, const OmSegID parentRootID );
+	
+	quint32 getNumTopLevelSegs();
 
  private:
 	DynamicTreeContainer<OmSegID> * mGraph;

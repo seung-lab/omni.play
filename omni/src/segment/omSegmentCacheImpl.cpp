@@ -30,7 +30,6 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 	mSegments->AddItem( seg );
 
 	++mNumSegs;
-	++mNumTopLevelSegs;
 
 	if (mMaxValue < value) {
 		mMaxValue = value;
@@ -168,8 +167,6 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		doSelectedSetRemove( child->getValue() );
 	}
 
-	++mNumTopLevelSegs;
-
 	if( -1 != child->mEdgeNumber ){
 		const int e = child->mEdgeNumber;
 		quint8 * edgeDisabledByUser = mSegmentation->mEdgeDisabledByUser->getQuint8Ptr();
@@ -226,7 +223,6 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
 	doSelectedSetRemove( e->childID );
 
 	updateSizeListsFromJoin( parent, childRoot );
-	--mNumTopLevelSegs;
 
 	return new OmSegmentEdge( parent, childRoot, e->threshold );
 }
@@ -316,11 +312,11 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 {
         if(VALIDROOT == type) {
-                return mValidListBySize.getSize();
+                return mValidListBySize.size();
         } else if(NOTVALIDROOT == type) {
-                return mRootListBySize.getSize();
+                return mRootListBySize.size();
         } else if(RECENTROOT == type) {
-                return mRecentRootActivityMap.getSize();
+                return mRecentRootActivityMap.size();
 	}
 
 	assert(0 && "shouldn't reach here, type incorrect\n");
@@ -355,8 +351,7 @@ void OmSegmentCacheImpl::refreshTree()
 
 void OmSegmentCacheImpl::loadDendrogram()
 {
-	initializeDynamicTree();
-	mNumTopLevelSegs = mNumSegs;
+	initialize();
 
 	buildSegmentSizeLists();
 

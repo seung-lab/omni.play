@@ -30,12 +30,17 @@ bool OmSegmentGraph::doesGraphNeedToBeRefreshed( const quint32 maxValue )
 	return (NULL == mGraph || mGraph->getSize() != maxValue+1 );
 }
 
-void OmSegmentGraph::initializeDynamicTree( const quint32 maxValue )
+void OmSegmentGraph::initialize( const quint32 maxValue )
 {
 	delete mGraph;
-
+		
 	// maxValue is a valid segment id, so array needs to be 1 bigger
-	const int size = maxValue + 1;
+	const quint32 size = maxValue + 1;
 	
 	mGraph = new DynamicTreeContainer<OmSegID>( size );
+}
+
+quint32 OmSegmentGraph::getNumTopLevelSegs()
+{
+	return 0;
 }

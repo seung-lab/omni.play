@@ -18,7 +18,9 @@
 
 #include <QDataStream>
 
+//TODO: remove mNumTopLevelSegs (below) when someone increments version to 11 (purcaro)
 static const int Omni_Version = 10;
+
 static const QString Omni_Postfix("OMNI");
 
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
@@ -378,7 +380,9 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	out << sc.segmentNotes;
 	
 	out << sc.mNumSegs;
-	out << sc.mNumTopLevelSegs;
+	
+	quint32 mNumTopLevelSegs = 0;
+	out << mNumTopLevelSegs;
 
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
@@ -404,7 +408,9 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	in >> sc.segmentNotes;
 
 	in >> sc.mNumSegs;
-	in >> sc.mNumTopLevelSegs;
+
+	quint32 mNumTopLevelSegs;
+	in >> mNumTopLevelSegs;
 
 	int size;
 	in >> size;

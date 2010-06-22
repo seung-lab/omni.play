@@ -66,7 +66,6 @@ class OmSegmentCacheImplLowLevel {
 	OmSegID getNextValue();
 
 	quint32 mNumSegs;
-	quint32 mNumTopLevelSegs;
 
 	bool mAllSelected;
 	bool mAllEnabled;
@@ -80,7 +79,7 @@ class OmSegmentCacheImplLowLevel {
 	void clearCaches();
 
 	OmSegmentGraph mSegmentGraph;
-	void initializeDynamicTree();
+	void initialize();
 	void resetGlobalThreshold( const float stopPoint );
 
 	void rerootSegmentLists();

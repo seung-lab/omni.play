@@ -28,9 +28,9 @@ class OmSegmentListBySize
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
 	quint64 getSegmentSize( const OmSegID segID_ );
 
-	quint32 size(){ return mList.size(); }
+	quint32 size();
 	void dump();
-	int getSize();
+	void clear();
 
  protected:
 
