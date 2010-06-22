@@ -470,8 +470,8 @@ void DendToolBar::addGroup()
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
-		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
                 seg.SetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 
@@ -483,6 +483,7 @@ void DendToolBar::deleteGroup()
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
                 seg.UnsetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 
