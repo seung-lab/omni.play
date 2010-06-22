@@ -2,10 +2,10 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/DynamicTreeContainer.h"
 #include "segment/helpers/omSegmentListByMRU.h"
 #include "segment/helpers/omSegmentListBySize.h"
 #include "segment/lowLevel/omPagingStore.h"
+#include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 
 #include <QHash>
@@ -79,7 +79,7 @@ class OmSegmentCacheImplLowLevel {
 
 	void clearCaches();
 
-	DynamicTreeContainer<OmSegID> * mGraph;
+	OmSegmentGraph mSegmentGraph;
 	void initializeDynamicTree();
 	void resetGlobalThreshold( const float stopPoint );
 

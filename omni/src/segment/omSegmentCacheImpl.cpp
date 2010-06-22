@@ -156,7 +156,7 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegmentEdge * edgeThatGotBroken = new OmSegmentEdge( parent, child, child->mThreshold );
 
 	parent->segmentsJoinedIntoMe.erase( child->getValue() );
-        mGraph->get( child->mValue )->cut();
+        mSegmentGraph.cut(child->mValue);
 	child->mParentSegID = 0;
 
 	child->mThreshold = 0;
@@ -204,9 +204,8 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge * e )
 
 OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
 {
-	DynamicTree<OmSegID> * childRootDT = mGraph->get( e->childID )->findRoot();
-
-	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
+	const OmSegID childRootID = mSegmentGraph.getRootID(e->childID);
+	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( e->parentID );
 	
 	if( childRoot->mImmutable != parent->mImmutable ){
@@ -215,7 +214,7 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
 		return NULL;
 	}
 
-	childRootDT->join( mGraph->get( e->parentID ) );
+	mSegmentGraph.join(childRootID, e->parentID);
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, e->threshold);
@@ -347,7 +346,7 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 
 void OmSegmentCacheImpl::refreshTree()
 {
-	if( NULL == mGraph || mGraph->getSize() != mMaxValue+1 ){
+	if( mSegmentGraph.doesGraphNeedToBeRefreshed(mMaxValue) ){
 		loadDendrogram();
 	}
 	

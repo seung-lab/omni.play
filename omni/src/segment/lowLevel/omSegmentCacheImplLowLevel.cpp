@@ -14,14 +14,12 @@ OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel( OmSegmentation * segment
 	, mNumTopLevelSegs(0)
 	, mAllSelected(false)
 	, mAllEnabled(false)
-	, mGraph(NULL)
 {
 }
 
 OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
 {
 	delete mSegments;
-	delete mGraph;
 }
 
 bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID value)
@@ -187,10 +185,8 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 	if(0 == segment->mParentSegID) {
 		return segment;
 	}
-
-	DynamicTree<OmSegID> * rootDT  = mGraph->get( segment->mValue )->findRoot();
 	
-	return GetSegmentFromValue( rootDT->getKey() );
+	return GetSegmentFromValue( mSegmentGraph.getRootID( segment->mValue ) );
 }
 
 OmSegID OmSegmentCacheImplLowLevel::findRootID( const OmSegID segID )
@@ -234,12 +230,7 @@ void OmSegmentCacheImplLowLevel::clearCaches()
 
 void OmSegmentCacheImplLowLevel::initializeDynamicTree()
 {
-	delete mGraph;
-
-	// mMaxValue is a valid segment id, so array needs to be 1 bigger
-	const int size =  mMaxValue + 1;
-	
-	mGraph = new DynamicTreeContainer<OmSegID>( size );
+	mSegmentGraph.initializeDynamicTree( mMaxValue );
 }
 
 void OmSegmentCacheImplLowLevel::rerootSegmentLists()
@@ -336,9 +327,8 @@ bool OmSegmentCacheImplLowLevel::JoinInternal( const OmSegID parentID,
 				       const float threshold,
 				       const int edgeNumber )
 {
-	DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-
-	OmSegment * childRoot = GetSegmentFromValue( childRootDT->getKey() );
+	const OmSegID childRootID = mSegmentGraph.getRootID(childUnknownDepthID);
+	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( parentID );
 
 	if( childRoot == findRoot( parent ) ){
@@ -351,7 +341,7 @@ bool OmSegmentCacheImplLowLevel::JoinInternal( const OmSegID parentID,
 		return false;
 	}
  
-	childRootDT->join( mGraph->get( parentID ) );
+	mSegmentGraph.join(childRootID, parentID);
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
@@ -384,7 +374,7 @@ bool OmSegmentCacheImplLowLevel::splitChildFromParentInternal( const OmSegID chi
 	}
 	
 	parent->segmentsJoinedIntoMe.erase( child->mValue );
-        mGraph->get( child->mValue )->cut();
+        mSegmentGraph.cut(child->mValue);
 	child->mParentSegID = 0;
 	child->mEdgeNumber = -1;
 
