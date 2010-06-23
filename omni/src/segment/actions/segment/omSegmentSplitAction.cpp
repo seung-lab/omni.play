@@ -13,7 +13,6 @@
 OmSegmentSplitAction::OmSegmentSplitAction(OmSegment * seg1, OmSegment * seg2 )
 	: mSeg1(seg1)
 	, mSeg2(seg2)
-	, edge(NULL)
 	, desc("Splitting: ")
 {
 	SetUndoable(true);
