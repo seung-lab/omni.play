@@ -1,4 +1,5 @@
 #include "segment/lowLevel/omSegmentGraph.h"
+#include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
@@ -43,4 +44,23 @@ void OmSegmentGraph::initialize( const quint32 maxValue )
 quint32 OmSegmentGraph::getNumTopLevelSegs()
 {
 	return mRootListBySize.size();
+}
+
+void OmSegmentGraph::buildSegmentSizeLists( OmSegmentCacheImplLowLevel * cache )
+{
+	mValidListBySize.clear();
+	mRootListBySize.clear();
+
+	OmSegmentIteratorLowLevel iter(cache);
+	iter.iterOverAllSegments();
+
+	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
+		if(0 == seg->mParentSegID) {
+			if(seg->mImmutable) {
+				mValidListBySize.insertSegment( seg );
+			} else {
+				mRootListBySize.insertSegment( seg );
+			}
+		} 
+	}
 }

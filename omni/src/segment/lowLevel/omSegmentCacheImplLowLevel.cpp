@@ -380,22 +380,6 @@ bool OmSegmentCacheImplLowLevel::splitChildFromParentInternal( const OmSegID chi
 
 void OmSegmentCacheImplLowLevel::buildSegmentSizeLists()
 {
-	mValidListBySize.clear();
-	mSegmentGraph.mRootListBySize.clear();
-
-	OmSegment * seg;
-	for( quint32 i = 0; i <= mMaxValue; ++i ){
-		seg = GetSegmentFromValue( i );
-                if( NULL == seg) {
-			continue;
-		} 
-		if(0 == seg->mParentSegID) {
-			if(seg->mImmutable) {
-				mValidListBySize.insertSegment( seg );
-			} else {
-				mSegmentGraph.mRootListBySize.insertSegment( seg );
-			}
-		} 
-	}
+	mSegmentGraph.buildSegmentSizeLists(this);
 }
 

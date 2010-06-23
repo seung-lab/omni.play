@@ -4,36 +4,30 @@
 #include "common/omCommon.h"
 #include <QMenu>
 
+class SegmentDataWrapper;
+
 class OmViewGroupState;
 class OmSegmentContextMenu : public QMenu {
 
 	Q_OBJECT
 	
 public:
-	void Refresh(OmId segmentationId, OmId segmentId, OmViewGroupState * vgs);
-	
+	void Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs);
 	
 protected:
 	void AddSelectionNames();
 	void AddEditSelectionAction();
 	void AddSelectionAction();
-	void AddDisableActions();
 	void AddDendActions();
 	void AddVoxelAction();
 	void AddColorActions();
 	void AddGroupActions();
 	void AddPropertiesActions();
 
-	
 private slots:
 	void Select();
 	void Unselect();
 	void UnselectOthers();
-	
-	void Disable();
-	void Enable();
-	void DisableSelected();
-	void DisableUnselected();
 	
 	void SetEditSelection();
 	void MergeSegments();

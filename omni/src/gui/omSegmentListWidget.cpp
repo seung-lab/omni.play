@@ -159,10 +159,7 @@ void OmSegmentListWidget::segmentShowContexMenu(QMouseEvent* event)
 {
 	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
 
-        const OmId segmentationID = sdw.getSegmentation().GetId();
-        const OmId segmentID = sdw.getID();
-
-        mSegmentContextMenu.Refresh(segmentationID, segmentID, inspectorProperties->getViewGroupState());
+        mSegmentContextMenu.Refresh( sdw, inspectorProperties->getViewGroupState());
         mSegmentContextMenu.exec(event->globalPos());
 }
 

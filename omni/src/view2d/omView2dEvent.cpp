@@ -135,12 +135,8 @@ void OmView2d::mouseShowSegmentContextMenu(QMouseEvent * event)
 {
 	SegmentDataWrapper * sdw = getSelectedSegment(event);
 	if(sdw) {
-		const OmId segmentationID = sdw->getSegmentation().GetId();
-		const OmId segmentID = sdw->getID();
-
-        	mSegmentContextMenu.Refresh(segmentationID, segmentID, mViewGroupState);
+        	mSegmentContextMenu.Refresh(*sdw, mViewGroupState);
         	mSegmentContextMenu.exec(event->globalPos());
-	} else {
 	}
 }
 

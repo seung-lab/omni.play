@@ -5,6 +5,8 @@
 #include "segment/lowLevel/DynamicTreeContainer.h"
 #include "segment/lowLevel/omSegmentListBySize.h"
 
+class OmSegmentCacheImplLowLevel;
+
 class OmSegmentGraph {
  public:
 	OmSegmentGraph();
@@ -20,7 +22,9 @@ class OmSegmentGraph {
 	
 	quint32 getNumTopLevelSegs();
 
+	void buildSegmentSizeLists( OmSegmentCacheImplLowLevel * );
 	OmSegmentListBySize mRootListBySize;
+	OmSegmentListBySize mValidListBySize;
 
  private:
 	DynamicTreeContainer<OmSegID> * mGraph;

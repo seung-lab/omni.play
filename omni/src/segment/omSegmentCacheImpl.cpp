@@ -279,7 +279,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 {
 	OmSegIDsListWithPage * ids;
 	if(VALIDROOT == type) {
-		ids = mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
+		ids = mSegmentGraph.mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(NOTVALIDROOT == type) {
 		ids = mSegmentGraph.mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(RECENTROOT == type) {
@@ -306,7 +306,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 {
         if(VALIDROOT == type) {
-                return mValidListBySize.size();
+                return mSegmentGraph.mValidListBySize.size();
         } else if(NOTVALIDROOT == type) {
                 return mSegmentGraph.mRootListBySize.size();
         } else if(RECENTROOT == type) {
@@ -320,9 +320,9 @@ quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	if(valid) {
-		OmSegmentListBySize::swapSegment(seg, mSegmentGraph.mRootListBySize, mValidListBySize);
+		OmSegmentListBySize::swapSegment(seg, mSegmentGraph.mRootListBySize, mSegmentGraph.mValidListBySize);
 	} else {
-		OmSegmentListBySize::swapSegment(seg, mValidListBySize, mSegmentGraph.mRootListBySize);
+		OmSegmentListBySize::swapSegment(seg, mSegmentGraph.mValidListBySize, mSegmentGraph.mRootListBySize);
 	}
 
         if( -1 == seg->mEdgeNumber ){
@@ -387,7 +387,7 @@ void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment 
 {
 	OmSegment * root = findRoot(parent);
 	mSegmentGraph.mRootListBySize.updateFromJoin( root, child );
-	mValidListBySize.updateFromJoin( root, child );
+	mSegmentGraph.mValidListBySize.updateFromJoin( root, child );
 }
 
 void OmSegmentCacheImpl::doSelectedSetInsert( const OmSegID segID)
@@ -412,7 +412,7 @@ quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDep
 	OmSegment * seg = findRoot( segUnknownDepth );
 
 	if( seg->mImmutable ) {
-		return mValidListBySize.getSegmentSize( seg );
+		return mSegmentGraph.mValidListBySize.getSegmentSize( seg );
 	} 
 
 	return mSegmentGraph.mRootListBySize.getSegmentSize( seg );

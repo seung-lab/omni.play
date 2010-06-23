@@ -3,7 +3,6 @@
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/omSegmentListByMRU.h"
-#include "segment/lowLevel/omSegmentListBySize.h"
 #include "segment/lowLevel/omPagingStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
@@ -88,7 +87,6 @@ class OmSegmentCacheImplLowLevel {
 	virtual void setSegmentSelectedBatch( OmSegID segID, bool isSelected ) = 0;
 	virtual void updateSizeListsFromJoin( OmSegment * root, OmSegment * child ) = 0;
 
-	OmSegmentListBySize mValidListBySize;
 	OmSegmentListByMRU mRecentRootActivityMap;
 
 	void buildSegmentSizeLists();

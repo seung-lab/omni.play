@@ -1,14 +1,15 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar.h"
 #include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
@@ -19,15 +20,14 @@
 OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 	: mpView3d(view3d)
 	, mViewGroupState(vgs)
+	, mCPressed(false)
 {
-        mCPressed = false;
 }
 
 /////////////////////////////////
 ///////          Example Methods
 
-void
- OmView3dUi::MousePressed(QMouseEvent * event)
+void OmView3dUi::MousePressed(QMouseEvent * event)
 {
 	switch (OmStateManager::GetSystemMode()) {
 	case DEND_MODE:
@@ -163,7 +163,7 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 	}
 
 	bool control_modifier = event->modifiers() & Qt::ControlModifier;
-	debug("hey","%i  %i \n\n",control_modifier,mCPressed);
+
 	if (event->buttons() & Qt::LeftButton && control_modifier) {
 		crosshair(event);
 	} else if ((event->buttons() & Qt::LeftButton) && mCPressed){
@@ -185,7 +185,6 @@ void OmView3dUi::NavigationModeMouseMove(QMouseEvent * event)
 
 void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent *)
 {
-	//SegmentSelectToggleMouse(event, false);
 }
 
 void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
@@ -202,12 +201,12 @@ void OmView3dUi::NavigationModeKeyPress(QKeyEvent *)
 
 void OmView3dUi::EditModeMousePressed(QMouseEvent * event)
 {
-
 	//if right click and no modifiers
 	if (event->buttons() & Qt::RightButton && !event->modifiers()) {
 		ShowSegmentContextMenu(event);
 		return;
 	}
+
 	//otherwise check modifiers
 	switch (event->modifiers() & (Qt::ControlModifier | Qt::MetaModifier)) {
 	case Qt::ControlModifier:
@@ -222,25 +221,15 @@ void OmView3dUi::EditModeMousePressed(QMouseEvent * event)
 		CameraMovementMouseStart(event);
 		return;
 	}
-
 }
 
 void OmView3dUi::EditModeMouseRelease(QMouseEvent * event)
 {
-
 	CameraMovementMouseEnd(event);
-#if 0
-	switch (event->modifiers() & (Qt::ControlModifier)) {
-	case Qt::ControlModifier:
-		CameraMovementMouseEnd(event);
-		return;
-	}
-#endif
 }
 
 void OmView3dUi::EditModeMouseMove(QMouseEvent * event)
 {
-
 	switch (event->modifiers() & (Qt::ControlModifier)) {
 	case Qt::ControlModifier:
 		VoxelEditMouse(event, true);
@@ -261,7 +250,6 @@ void OmView3dUi::EditModeMouseWheel(QWheelEvent * event)
 {
 	CameraMovementMouseWheel(event);
 }
-
 
 void OmView3dUi::EditModeKeyPress(QKeyEvent * event)
 {
@@ -310,7 +298,6 @@ void OmView3dUi::CameraMovementMouseUpdate(QMouseEvent * event)
 
 void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 {
-	//debug("view3d", "in %s...\n", __FUNCTION__ );
 	Vector2f point = Vector2f(event->x(), event->y());
 	mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
 
@@ -378,7 +365,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 
 /////////////////////////////////
 ///////          Pick Voxel Methods
-
 
 bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVoxel)
 {
@@ -465,13 +451,11 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 
 	//get segment state
 	OmSegmentSelector sel( segmentation_id, this, "view3dUi" );
-
 	if( augment_selection ){
 		sel.augmentSelectedSet_toggle( segmentID );
 	} else {
 		sel.selectJustThisSegment_toggle( segmentID );
 	}
-	
 	sel.sendEvent();
 }
 
@@ -579,17 +563,17 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
-
 	//get segment
-	OmId segmentation_id, segment_id;
-	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
+	OmId segmentationID, segmentID;
+	if (!PickSegmentMouse(event, false, segmentationID, segmentID)) {
 		mpView3d->updateGL();
 		return;
 	}
 	mpView3d->updateGL();
 
 	//refersh context menu and display
-	mSegmentContextMenu.Refresh(segmentation_id, segment_id, mViewGroupState);
+	SegmentDataWrapper sdw(segmentationID, segmentID);
+	mSegmentContextMenu.Refresh( sdw, mViewGroupState);
 	mSegmentContextMenu.exec(event->globalPos());
 }
 

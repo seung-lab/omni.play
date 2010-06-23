@@ -5,12 +5,14 @@
 #include "segment/omSegmentPointers.h"
 
 class OmSegment;
-class OmSegmentCacheImpl;
+class OmSegmentCacheImplLowLevel;
 
 class OmSegmentIteratorLowLevel {
 
  public:
-	OmSegmentIteratorLowLevel( OmSegmentCacheImpl * );
+	OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel * );
+
+	void iterOverAllSegments();
 	void iterOverSegmentID(const OmSegID segID);
 
 	OmSegment * getNextSegment();
@@ -19,8 +21,14 @@ class OmSegmentIteratorLowLevel {
 	OmSegmentIteratorLowLevel & operator = (const OmSegmentIteratorLowLevel & other);
 
  private:
-	OmSegmentCacheImpl * mCache;
+	OmSegmentCacheImplLowLevel * mCache;
 	OmSegPtrList mSegs;
+
+	bool mIterOverAll;
+	OmSegID mCurSegID;
+
+	OmSegment * getNextSegmentFromFullList();
+	OmSegment * getNextSegmentFromSet();
 };
 
 #endif

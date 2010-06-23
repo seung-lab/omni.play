@@ -77,6 +77,7 @@ private:
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
 	friend class OmSegmentIteratorLowLevel;
+	friend class OmSegmentGraph;
 };
 
 #endif

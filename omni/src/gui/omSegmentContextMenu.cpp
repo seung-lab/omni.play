@@ -1,29 +1,28 @@
 #include "common/omDebug.h"
+#include "gui/inspectors/segObjectInspector.h"
 #include "omSegmentContextMenu.h"
 #include "project/omProject.h"
 #include "segment/actions/edit/omEditSelectionSetAction.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
+#include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/omSegmentSelector.h"
+#include "system/events/omViewEvent.h"
+#include "system/omCacheManager.h"
+#include "system/omEventManager.h"
+#include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "system/omStateManager.h"
-#include "system/omCacheManager.h"
-#include "system/events/omViewEvent.h"
-#include "system/omEventManager.h"
-#include "gui/inspectors/segObjectInspector.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
 
-void OmSegmentContextMenu::Refresh(OmId segmentationId, OmId segmentId, OmViewGroupState * vgs)
+void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs)
 {
-
-	//store ids
-	mSegmentationId = segmentationId;
-	mSegmentId = segmentId;
+	mSegmentationId = sdw.getSegmentationID();
+	mSegmentId = sdw.getID();
 	mViewGroupState = vgs;
 
 	//clear old menu actions
@@ -82,33 +81,6 @@ void OmSegmentContextMenu::AddSelectionAction()
 	//	addAction(QString("Select All"));
 }
 
-/*
- *	Adds Disable Segment Actions
- */
-void OmSegmentContextMenu::AddDisableActions()
-{
-
-	//is segment selected
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	bool is_segment_enabled = r_segmentation.IsSegmentEnabled(mSegmentId);
-
-	//if segment is already selected
-	if (is_segment_enabled) {
-		string action_str = string("Disable Segment");
-		addAction(QString(action_str.c_str()), this, SLOT(Disable()));
-
-	} else {
-		string action_str = string("Enable Segment");
-		addAction(QString("Enable Segment"), this, SLOT(Enable()));
-	}
-
-	//addAction( QString("Disable Selected"), this, SLOT(DisableSelected()));
-
-	addAction(QString("Disable Unselected"), this, SLOT(DisableUnselected()));
-
-	addAction(QString("Enable All"), this, SLOT(EnableAll()));
-}
-
 void OmSegmentContextMenu::AddEditSelectionAction()
 {
 	addAction(QString("Set Edit Selection"), this, SLOT(SetEditSelection()));
@@ -156,37 +128,6 @@ void OmSegmentContextMenu::UnselectOthers()
 	sel.sendEvent();
 }
 
-void OmSegmentContextMenu::Disable()
-{
-	printf("%s: should be removed...\n", __FUNCTION__);
-	//(new OmSegmentStateAction(mSegmentationId, mSegmentId, false))->Run();
-}
-
-void OmSegmentContextMenu::Enable()
-{
-	printf("%s: should be removed...\n", __FUNCTION__);
-	//(new OmSegmentStateAction(mSegmentationId, mSegmentId, true))->Run();
-}
-
-void OmSegmentContextMenu::DisableSelected()
-{
-	printf("%s: should be removed...\n", __FUNCTION__);
-	//	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	//(new OmSegmentStateAction(mSegmentationId, r_segmentation.GetSelectedSegmentIds(), false))->Run();
-}
-
-void OmSegmentContextMenu::DisableUnselected()
-{
-	printf("%s: should be removed...\n", __FUNCTION__);
-	
-	//	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-
-	//form unselected
-	//	OmIDsSet unselected_segments = seg.GetEnabledSegmentIds() - seg.GetSelectedSegmentIds();
-
-	//	(new OmSegmentStateAction(mSegmentationId, unselected_segments, false))->Run();
-}
-
 void OmSegmentContextMenu::SetEditSelection()
 {
 	(new OmEditSelectionSetAction(mSegmentationId, mSegmentId))->Run();
@@ -206,10 +147,8 @@ void OmSegmentContextMenu::splitSegments()
 	mViewGroupState->SetSplitMode(mSegmentationId, mSegmentId);
 }
 
-
 void OmSegmentContextMenu::SetConnectedVoxels()
 {
-
 	(new OmVoxelSetConnectedAction())->Run();
 }
 
@@ -273,5 +212,5 @@ void OmSegmentContextMenu::showProperties()
 
 void OmSegmentContextMenu::AddPropertiesActions()
 {
-        addAction(QString("Show Segment Properties"), this, SLOT(showProperties()));
+        addAction(QString("Properties"), this, SLOT(showProperties()));
 }
