@@ -14,8 +14,8 @@
 #include "volume/omSegmentation.h"
 
 #include "common/omCommon.h"
-#include "segment/DynamicTree.cpp"
-#include "segment/DynamicTreeContainer.cpp"
+#include "segment/lowLevel/DynamicTree.cpp"
+#include "segment/lowLevel/DynamicTreeContainer.cpp"
 #include "system/omGroup.h"
 
 #include "segment/lowLevel/omPagingStore.cpp"

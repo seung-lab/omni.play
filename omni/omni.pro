@@ -130,8 +130,8 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
            src/project/omProject.h \
-           src/segment/DynamicTree.h \
-           src/segment/DynamicTreeContainer.h \
+           src/segment/lowLevel/DynamicTree.h \
+           src/segment/lowLevel/DynamicTreeContainer.h \
            src/segment/omSegment.h \
            src/segment/omSegmentEdge.h \
            src/segment/omSegmentPointers.h \
@@ -141,8 +141,8 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentColorizer.h \
            src/segment/omSegmentSelector.h \
-           src/segment/helpers/omSegmentListBySize.h \
-           src/segment/helpers/omSegmentListByMRU.h \
+           src/segment/lowLevel/omSegmentListBySize.h \
+           src/segment/lowLevel/omSegmentListByMRU.h \
            src/segment/lowLevel/omPagingStore.h \
            src/segment/lowLevel/omSegmentGraph.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
@@ -307,8 +307,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/project/omProject.cpp \
-           src/segment/DynamicTree.cpp \
-           src/segment/DynamicTreeContainer.cpp \
+           src/segment/lowLevel/DynamicTree.cpp \
+           src/segment/lowLevel/DynamicTreeContainer.cpp \
            src/segment/omSegment.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentCache.cpp \
@@ -316,8 +316,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/segment/helpers/omSegmentListBySize.cpp \
-           src/segment/helpers/omSegmentListByMRU.cpp \
+           src/segment/lowLevel/omSegmentListBySize.cpp \
+           src/segment/lowLevel/omSegmentListByMRU.cpp \
            src/segment/lowLevel/omPagingStore.cpp \
            src/segment/lowLevel/omSegmentGraph.cpp \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.cpp \

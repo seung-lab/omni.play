@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_TREE_CONTAINER
 #define DYNAMIC_TREE_CONTAINER
 
-#include "segment/DynamicTree.h"
+#include "segment/lowLevel/DynamicTree.h"
 
 template < typename T >
 class DynamicTreeContainer {

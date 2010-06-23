@@ -1,4 +1,4 @@
-#include "segment/helpers/omSegmentListBySize.h"
+#include "segment/lowLevel/omSegmentListBySize.h"
 
 void OmSegmentListBySize::insertSegment( OmSegment * seg )
 {

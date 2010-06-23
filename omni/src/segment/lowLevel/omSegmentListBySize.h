@@ -49,7 +49,7 @@ class OmSegmentListBySize
 	struct segID{};
 	struct segSize{};
 
-	// TODO: change segID to be hash...
+	// TODO: change segID to be hash index...
 	typedef boost::multi_index_container
 	< OmSegSize,
 	  indexed_by <

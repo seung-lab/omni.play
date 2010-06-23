@@ -51,7 +51,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 	void doSelectedSetInsert( const OmSegID segID);
 	void doSelectedSetRemove( const OmSegID segID);
-	quint64 getRecentActivity();
+
 	void addToRecentMap( const OmSegID segID);
 	
 	friend class OmSegmentColorizer;

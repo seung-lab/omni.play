@@ -2,8 +2,8 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/helpers/omSegmentListByMRU.h"
-#include "segment/helpers/omSegmentListBySize.h"
+#include "segment/lowLevel/omSegmentListByMRU.h"
+#include "segment/lowLevel/omSegmentListBySize.h"
 #include "segment/lowLevel/omPagingStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"

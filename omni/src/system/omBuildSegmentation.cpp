@@ -8,7 +8,7 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
 #include "volume/omSegmentation.h"
-#include "segment/DynamicTreeContainer.h"
+#include "segment/lowLevel/DynamicTreeContainer.h"
 #include "segment/omSegmentCache.h"
 
 #include <QTextStream>

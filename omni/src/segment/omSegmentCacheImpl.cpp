@@ -396,17 +396,10 @@ void OmSegmentCacheImpl::doSelectedSetRemove( const OmSegID segID)
 	mSelectedSet.remove( segID );
 	addToRecentMap(segID);
 }
-
-quint64 OmSegmentCacheImpl::getRecentActivity()
-{
-	static quint64 activity = 0;
-	++activity;
-	return activity;
-}
 	
 void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
 {
-	mRecentRootActivityMap.touch( segID, getRecentActivity() );
+	mRecentRootActivityMap.touch( segID );
 }
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
