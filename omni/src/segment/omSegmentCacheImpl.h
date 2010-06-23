@@ -47,6 +47,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
+	void setGlobalThreshold( const float stopPoint );
 	void resetGlobalThreshold( const float stopPoint );
 
 	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );

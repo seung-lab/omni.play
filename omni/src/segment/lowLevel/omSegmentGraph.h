@@ -24,13 +24,20 @@ class OmSegmentGraph {
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
 
-	void doResetGlobalThreshold( const quint32 * dend, 
-				     const float * dendValues, 
-				     quint8 * edgeDisabledByUser,
-				     quint8 * edgeWasJoined,
-				     quint8 * edgeForceJoin,
-				     const int size, 
-				     const float stopPoint );
+	void setGlobalThreshold( const quint32 * dend, 
+				 const float * dendValues, 
+				 quint8 * edgeDisabledByUser,
+				 quint8 * edgeWasJoined,
+				 quint8 * edgeForceJoin,
+				 const int size, 
+				 const float stopPoint );
+	void resetGlobalThreshold( const quint32 * dend, 
+				   const float * dendValues, 
+				   quint8 * edgeDisabledByUser,
+				   quint8 * edgeWasJoined,
+				   quint8 * edgeForceJoin,
+				   const int size, 
+				   const float stopPoint );
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 
  private:

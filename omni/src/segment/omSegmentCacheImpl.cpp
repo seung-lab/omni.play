@@ -381,25 +381,41 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	}
 }
 
-void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
+void OmSegmentCacheImpl::setGlobalThreshold( const float stopPoint )
 {
 	printf("setting global threshold to %f...\n", stopPoint);
 
-	mSegmentGraph.doResetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
-					      mSegmentation->mDendValues->getFloatPtr(), 
-					      mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
-					      mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
-					      mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
-					      mSegmentation->mDendCount, 
-					      stopPoint);
+	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
+					  mSegmentation->mDendValues->getFloatPtr(), 
+					  mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
+					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
+					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
+					  mSegmentation->mDendCount, 
+					  stopPoint);
 	
-	mSelectedSet.clear(); // nuke selected set for now...
-	//rerootSegmentLists();
+	mSelectedSet.clear();
 	clearCaches();
 
 	printf("done\n");
 }
 
+void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
+{
+	printf("resetting global threshold to %f...\n", stopPoint);
+
+	mSegmentGraph.resetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
+					    mSegmentation->mDendValues->getFloatPtr(), 
+					    mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
+					    mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
+					    mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
+					    mSegmentation->mDendCount, 
+					    stopPoint);
+	
+	rerootSegmentLists();
+	clearCaches();
+
+	printf("done\n");
+}
 void OmSegmentCacheImpl::refreshTree()
 {
 	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
@@ -407,7 +423,8 @@ void OmSegmentCacheImpl::refreshTree()
 		foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
 			JoinEdgeFromUser(e);
 		}
+		setGlobalThreshold( mSegmentation->mDendThreshold );
+	} else {
+		resetGlobalThreshold( mSegmentation->mDendThreshold );
 	}
-	
-	resetGlobalThreshold( mSegmentation->mDendThreshold );
 }
