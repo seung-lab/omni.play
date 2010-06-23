@@ -88,7 +88,6 @@ class OmSegmentCacheImplLowLevel {
 	virtual void setSegmentSelectedBatch( OmSegID segID, bool isSelected ) = 0;
 	virtual void updateSizeListsFromJoin( OmSegment * root, OmSegment * child ) = 0;
 
-	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
 	OmSegmentListByMRU mRecentRootActivityMap;
 

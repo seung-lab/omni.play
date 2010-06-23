@@ -30,7 +30,7 @@ int SegmentListBase::getNumSegmentsPerPage()
 	return 100;
 }
 
-quint32 SegmentListBase::getMaxSegmentValue()
+quint32 SegmentListBase::getTotalNumberOfSegments()
 {
 	assert( haveValidSDW );
 	return currentSDW.getSegmentListSize(getRootSegType());
@@ -132,7 +132,7 @@ void SegmentListBase::goToNextPage()
 {
 	++currentPageNum;
 	unsigned int offset = currentPageNum * getNumSegmentsPerPage();
-	if( offset > getMaxSegmentValue() ){
+	if( offset > getTotalNumberOfSegments() ){
 		--currentPageNum;
 		offset = currentPageNum * getNumSegmentsPerPage();
 	}
@@ -151,7 +151,7 @@ void SegmentListBase::goToPrevPage()
 
 void SegmentListBase::goToEndPage()
 {
-        currentPageNum = (getMaxSegmentValue() / getNumSegmentsPerPage()) - 1;
+        currentPageNum = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
 	if(currentPageNum < 0) {
 		currentPageNum = 0;
 	}

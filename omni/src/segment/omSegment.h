@@ -40,7 +40,6 @@ public:
 
 	quint64 getSize(){ return mSize; }
 	quint64 getSizeWithChildren();
-	quint64 computeSizeWithChildren();
 
 	void SetImmutable( const bool immutable);
 	bool GetImmutable(){ return mImmutable; }
@@ -77,6 +76,7 @@ private:
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
+	friend class OmSegmentIteratorLowLevel;
 };
 
 #endif

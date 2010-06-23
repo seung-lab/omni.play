@@ -51,6 +51,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 	void doSelectedSetInsert( const OmSegID segID);
 	void doSelectedSetRemove( const OmSegID segID);
+	quint64 computeSegmentSizeWithChildren(const OmSegID segID );
 
 	void addToRecentMap( const OmSegID segID);
 	

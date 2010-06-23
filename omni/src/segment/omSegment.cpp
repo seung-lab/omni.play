@@ -138,17 +138,6 @@ void OmSegment::SetImmutable( const bool immutable)
 	mCache->addToDirtySegmentList(this);
 }
 
-quint64 OmSegment::computeSizeWithChildren()
-{
-	quint64 size = 0;
-	OmSegmentIterator iter(mCache);
-	iter.iterOverSegmentIDs(OmSegIDsSet(mValue));
-	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		size += seg->mSize;
-	}
-	return size;
-}
-
 OmSegID OmSegment::getRootSegID()
 {
 	return mCache->findRoot(this)->getValue();

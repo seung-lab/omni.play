@@ -146,6 +146,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/lowLevel/omPagingStore.h \
            src/segment/lowLevel/omSegmentGraph.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
+           src/segment/lowLevel/omSegmentIteratorLowLevel.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildVolumes.h \
@@ -321,6 +322,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/lowLevel/omPagingStore.cpp \
            src/segment/lowLevel/omSegmentGraph.cpp \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.cpp \
+           src/segment/lowLevel/omSegmentIteratorLowLevel.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildVolumes.cpp \

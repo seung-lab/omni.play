@@ -42,5 +42,5 @@ void OmSegmentGraph::initialize( const quint32 maxValue )
 
 quint32 OmSegmentGraph::getNumTopLevelSegs()
 {
-	return 0;
+	return mRootListBySize.size();
 }

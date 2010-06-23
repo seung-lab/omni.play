@@ -254,7 +254,6 @@ quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
         return mImpl->getSegmentListSize(type);
 }
 
-
 void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
 {
 	QMutexLocker locker( &mMutex );

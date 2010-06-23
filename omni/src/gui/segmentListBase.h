@@ -66,7 +66,7 @@ protected:
 	void setupPageButtons();
 	
 	int currentPageNum;
-	quint32 getMaxSegmentValue();
+	quint32 getTotalNumberOfSegments();
 };
 
 #endif

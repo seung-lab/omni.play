@@ -5,12 +5,12 @@ void OmSegmentListBySize::insertSegment( OmSegment * seg )
 	do_insertSegment( seg->mValue, seg->mSize );
 }
 
-void OmSegmentListBySize::swapSegment( OmSegment * seg, OmSegmentListBySize * one, OmSegmentListBySize * two )
+void OmSegmentListBySize::swapSegment( OmSegment * seg, OmSegmentListBySize & one, OmSegmentListBySize & two )
 {
-        List_by_ID & idIndex = one->mList.get<segID>();
+        List_by_ID & idIndex = one.mList.get<segID>();
         List_by_ID::iterator iter = idIndex.find(seg->mValue);
         if(iter != idIndex.end() ){
-		two->do_insertSegment(seg->mValue, iter->segSize);
+		two.do_insertSegment(seg->mValue, iter->segSize);
                 idIndex.erase(iter);
         }
 }
@@ -22,15 +22,14 @@ void OmSegmentListBySize::removeSegment( OmSegment * seg )
 
 void OmSegmentListBySize::updateFromJoin( OmSegment * root, OmSegment * child )
 {
-	do_incrementSegSize( root->mValue, getSegmentSize(child->mValue) );
+	do_incrementSegSize( root->mValue, getSegmentSize(child) );
 	do_removeSegment( child->mValue );
 }
 
-void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child )
+void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child, const quint64 newChildSize )
 {
-        quint64 size = child->computeSizeWithChildren();
-        do_incrementSegSize( root->mValue, -size );
-        do_insertSegment( child->mValue, size );
+        do_incrementSegSize( root->mValue, -newChildSize );
+        do_insertSegment( child->mValue, newChildSize );
 }
 	
 void OmSegmentListBySize::do_incrementSegSize( const OmSegID segID_, const quint64 addedSize )
@@ -109,15 +108,15 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
 	return new OmSegIDsListWithPage(ret, page);
 }
 
-quint64 OmSegmentListBySize::getSegmentSize( const OmSegID segID_ )
+quint64 OmSegmentListBySize::getSegmentSize( OmSegment * seg )
 {
 	List_by_ID & idIndex = mList.get<segID>();
-	List_by_ID::iterator iter = idIndex.find(segID_);
+	List_by_ID::iterator iter = idIndex.find(seg->getValue());
 	if(iter != idIndex.end() ){
 		return iter->segSize;
 	}
 
-	return 0;
+	return seg->getSize();
 }
 
 void OmSegmentListBySize::dump()

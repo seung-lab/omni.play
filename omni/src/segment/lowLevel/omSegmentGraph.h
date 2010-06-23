@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/DynamicTreeContainer.h"
+#include "segment/lowLevel/omSegmentListBySize.h"
 
 class OmSegmentGraph {
  public:
@@ -18,6 +19,8 @@ class OmSegmentGraph {
 	void join( const OmSegID childRootID, const OmSegID parentRootID );
 	
 	quint32 getNumTopLevelSegs();
+
+	OmSegmentListBySize mRootListBySize;
 
  private:
 	DynamicTreeContainer<OmSegID> * mGraph;
