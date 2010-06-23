@@ -8,9 +8,9 @@
  */
 
 #include "common/omCommon.h"
+#include "segment/omSegmentEdge.h"
 
 class OmSegmentCache;
-class OmSegmentEdge;
 
 class OmSegment {
 
@@ -66,7 +66,7 @@ private:
 	quint64 mSize;
 
 	int mEdgeNumber; // index of edge in main edge list
-	OmSegmentEdge * mCustomMergeEdge;
+	OmSegmentEdge mCustomMergeEdge;
 
 	void SetInitialColor();
 

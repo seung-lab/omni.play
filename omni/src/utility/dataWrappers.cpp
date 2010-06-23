@@ -109,12 +109,12 @@ QString SegmentationDataWrapper::getNote()
 
 unsigned int SegmentationDataWrapper::getNumberOfSegments()
 {
-	return OmProject::GetSegmentation(mID).GetNumSegments();
+	return OmProject::GetSegmentation(mID).GetSegmentCache()->GetNumSegments();
 }
 
 unsigned int SegmentationDataWrapper::getNumberOfTopSegments()
 {
-	return OmProject::GetSegmentation(mID).GetNumTopSegments();
+	return OmProject::GetSegmentation(mID).GetSegmentCache()->GetNumTopSegments();
 }
 
 OmSegmentCache * SegmentationDataWrapper::getSegmentCache()
@@ -136,60 +136,62 @@ quint64 SegmentationDataWrapper::getSegmentListSize(OmSegIDRootType type)
 /*******************************************
  ****** Segments
  *******************************************/
-SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmId segmentID)
-	: mID(segmentID), mType(SEGMENT), 
-	  mSegmentationID( segmentationID )
+SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmSegID segmentID)
+	: mID(segmentID)
+	, mType(SEGMENT)
+	, mSegmentationID( segmentationID )
 {
+}
+
+bool SegmentDataWrapper::isValid()
+{
+	return OmProject::IsSegmentationValid(mSegmentationID) &&
+		getSegmentCache()->IsSegmentValid(mID);
 }
 
 QString SegmentDataWrapper::getName()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetName();
+	return getSegment()->GetName();
 }
 
 QString SegmentDataWrapper::getSegmentationName()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetName();
+	return getSegmentation().GetName();
 }
 
 bool SegmentDataWrapper::isSelected()
 {
-	return OmProject::GetSegmentation(mSegmentationID).IsSegmentSelected(mID);
+	return getSegmentCache()->IsSegmentSelected(mID);
 }
 
 void SegmentDataWrapper::setSelected(const bool isSelected)
 {
-	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, isSelected);
+	getSegmentCache()->setSegmentSelected(mID, isSelected);
 }
 
 void SegmentDataWrapper::toggleSelected()
 {
-	OmProject::GetSegmentation(mSegmentationID).SetSegmentSelected(mID, !isSelected());
+	getSegmentCache()->setSegmentSelected(mID, !isSelected());
 }
 
 bool SegmentDataWrapper::isEnabled()
 {
-	return OmProject::GetSegmentation(mSegmentationID).IsSegmentEnabled(mID);
-}
-
-void SegmentDataWrapper::toggleEnabled()
-{
-	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, !isEnabled());
+	return getSegmentCache()->isSegmentEnabled(mID);
 }
 
 void SegmentDataWrapper::setEnabled(const bool enabled)
 {
-	OmProject::GetSegmentation(mSegmentationID).SetSegmentEnabled(mID, enabled );
+	getSegmentCache()->setSegmentEnabled(mID, enabled );
 }
 
 QString SegmentDataWrapper::getNote()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetNote();
+	return getSegment()->GetNote();
 }
 
 void SegmentDataWrapper::setNote(QString str)
 {
-	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetNote(str);
+	getSegment()->SetNote(str);
 }
 
 QString SegmentDataWrapper::getIDstr()
@@ -197,29 +199,24 @@ QString SegmentDataWrapper::getIDstr()
 	return QString("%1").arg(getID());
 }
 
-Vector3 < float > SegmentDataWrapper::getColor()
+OmColor SegmentDataWrapper::getColorInt()
 {
-	return OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->GetColorFloat();
+	return getSegment()->GetColorInt();
+}
+
+Vector3 < float > SegmentDataWrapper::getColorFloat()
+{
+	return getSegment()->GetColorFloat();
 }
 
 void SegmentDataWrapper::setColor(const Vector3 < float >& color)
 {
-	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetColor( color );
+	getSegment()->SetColor( color );
 }
 
 void SegmentDataWrapper::setName( const QString& str )
 {
-	OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->SetName( str );
-}
-
-QString SegmentDataWrapper::get_original_mapped_data_value()
-{
-	const OmSegID value = OmProject::GetSegmentation(mSegmentationID).GetSegment(mID)->getValue();
-	if( 0 == value ){
-		return "<not set>";
-	} else {
-		return QString::number( value );
-	}
+	getSegment()->SetName( str );
 }
 
 OmSegmentation & SegmentDataWrapper::getSegmentation()
@@ -229,17 +226,22 @@ OmSegmentation & SegmentDataWrapper::getSegmentation()
 
 OmSegment * SegmentDataWrapper::getSegment()
 {
-	return getSegmentation().GetSegment( mID );
+	return getSegmentation().GetSegmentCache()->GetSegment( mID );
+}
+
+OmSegmentCache * SegmentDataWrapper::getSegmentCache()
+{
+	return getSegmentation().GetSegmentCache();
 }
 
 quint64 SegmentDataWrapper::getSize()
 {
-	return getSegmentation().GetSegment( mID )->getSize();
+	return getSegment()->getSize();
 }
 
 quint64 SegmentDataWrapper::getSizeWithChildren()
 {
-	return getSegmentation().GetSegment( mID )->getSizeWithChildren();
+	return getSegment()->getSizeWithChildren();
 }
 
 /*******************************************

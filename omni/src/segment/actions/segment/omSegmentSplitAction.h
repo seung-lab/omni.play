@@ -8,9 +8,9 @@
 
 class OmSegmentation;
 class OmSegment;
-class OmSegmentEdge;
 
 #include "system/omAction.h"
+#include "segment/omSegmentEdge.h"
 
 class OmSegmentSplitAction : public OmAction {
 
@@ -25,7 +25,7 @@ private:
 	OmSegment * mSeg1;
 	OmSegment * mSeg2;
 
-	OmSegmentEdge * edge;
+	OmSegmentEdge edge;
 
 	QString desc;
 };

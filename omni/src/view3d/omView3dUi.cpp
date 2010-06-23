@@ -7,6 +7,7 @@
 #include "segment/actions/voxel/omVoxelSelectionAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentCache.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
@@ -135,8 +136,8 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
         if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
                 debug("split", "segmentID=%i\n", segmentID);
                 debug("split", "segment_id=%i\n", segment_id);
-                OmSegment * seg1 = segmentation.GetSegment(segmentID);
-                OmSegment * seg2 = segmentation.GetSegment(segment_id);
+                OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
+                OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segment_id);
 		if(NULL == seg1 || NULL == seg2) {
 			return;
 		}
@@ -146,7 +147,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
                 mViewGroupState->SetSplitMode(false);
         } else {
                 debug("split", "segment_id=%i\n", segment_id);
-                if (segment_id && segmentation.GetSegment(segment_id)) {
+                if (segment_id && segmentation.GetSegmentCache()->GetSegment(segment_id)) {
                         mViewGroupState->SetSplitMode(segmentationID, segment_id);
                 }
         }
@@ -334,9 +335,10 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//ensure valid OmIDsSet
-	if (!OmProject::IsSegmentationValid(result[0]))
+	const OmId segmentationID = result[0];
+	if (!OmProject::IsSegmentationValid(segmentationID))
 		return false;
-	if (!OmProject::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
 		return false;
 
 	//check if dragging
@@ -531,19 +533,18 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 	//(new OmVoxelSetAction(picked_voxel))->Run();
 
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();	
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid()){
 		return;
+	}
 
 	//switch on tool mode
 	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
-		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -555,7 +556,7 @@ void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 	}
 
 	//run action
-	(new OmVoxelSetValueAction(segmentation_id, picked_voxel, data_value))->Run();
+	(new OmVoxelSetValueAction(sdw.getSegmentationID(), picked_voxel, data_value))->Run();
 }
 
 /////////////////////////////////
@@ -642,9 +643,10 @@ OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 	if(!valid_pick || result.size() != 3)
 		return 0;
 
-        if (!OmProject::IsSegmentationValid(result[0]))
+	const OmId segmentationID = result[0];
+        if (!OmProject::IsSegmentationValid(segmentationID))
                 return 0;
-        if (!OmProject::GetSegmentation(result[0]).IsSegmentValid(result[1]))
+        if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
                 return 0;
 
         //unproject to point3d

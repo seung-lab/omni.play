@@ -19,10 +19,10 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
 				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 
-	OmSegmentEdge * splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
-	OmSegmentEdge * splitChildFromParent( OmSegment * child );
+	OmSegmentEdge splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+	OmSegmentEdge findClosestCommonEdgeBetweenTwoChildren(OmSegment *, OmSegment *);
 
-	OmSegmentEdge * JoinFromUserAction( OmSegmentEdge * e );
+	OmSegmentEdge JoinFromUserAction( OmSegmentEdge e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
@@ -39,16 +39,17 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
         quint64 getSegmentListSize(OmSegIDRootType type);
 
  private:
-	OmSegmentEdge * JoinEdgeFromUser( OmSegmentEdge * e );
-	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
+	OmSegmentEdge splitChildFromParent( OmSegment * child );
 
-	OmSegmentEdge * JoinFromUserAction( const OmId, const OmId );
+	OmSegmentEdge JoinEdgeFromUser( OmSegmentEdge e );
+	QList<OmSegmentEdge> mManualUserMergeEdgeList;
 
+	OmSegmentEdge JoinFromUserAction( const OmId, const OmId );
 
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
-	void setGlobalThreshold( const float stopPoint );
-	void resetGlobalThreshold( const float stopPoint );
+	void setGlobalThreshold();
+	void resetGlobalThreshold();
 
 	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
 

@@ -1,6 +1,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omView3dEvent.h"
@@ -392,7 +393,7 @@ void DendToolBar::join()
 
 	if (OmProject::IsSegmentationValid(getSegmentationID())) {
 		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		OmIDsSet ids = seg.GetSelectedSegmentIds();
+		OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 		(new OmSegmentJoinAction(mSeg, ids))->Run();
 	}	
 
@@ -469,8 +470,8 @@ void DendToolBar::addGroup()
 	debug("dendbar", "DendToolBar::addGroup\n");
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-                seg.SetGroup(seg.GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
-                seg.SetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
+                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
@@ -481,8 +482,8 @@ void DendToolBar::deleteGroup()
         debug("dendbar", "DendToolBar::addGroup\n");
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-                seg.SetGroup(seg.GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
-                seg.UnsetGroup(seg.GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
+                seg.UnsetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }

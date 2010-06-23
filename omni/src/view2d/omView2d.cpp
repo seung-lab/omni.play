@@ -6,6 +6,7 @@
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
@@ -15,6 +16,7 @@
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "utility/dataWrappers.h"
 
 static QGLWidget *sharedwidget = NULL;
 
@@ -319,7 +321,7 @@ void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalData
 	if (segID ) {
 		
 		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
-		sel.augmentSelectedSet( segID, !current_seg.IsSegmentSelected(segID) );
+		sel.augmentSelectedSet_toggle( segID );
 		sel.sendEvent();
 
 		Refresh();
@@ -511,20 +513,21 @@ void checkDC (string s, DataCoord dc)
 void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second)
 {
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 	bool doselection = false;
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid())
 		return;
+
+	const OmId segmentation_id = sdw.getSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -835,13 +838,11 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 	if (mVolumeType == SEGMENTATION) {
 		// need to myUpdate paintbrush, not anything on the screen 
 
-		OmId mentationEditId;
-		OmId mentEditId;
-
-		if (OmSegmentEditor::GetEditSelection(mentationEditId, mentEditId)) {
-
-			if (mentationEditId == mImageId) {
-				const OmColor & color = OmProject::GetSegmentation(mImageId).GetSegment(mentEditId)->GetColorInt();
+		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	
+		if( sdw.isValid()) {
+			if (sdw.getSegmentationID() == mImageId) {
+				const OmColor & color = sdw.getColorInt();
 				editColor = qRgba(color.red, color.green, color.blue, 255);
 			}
 		}

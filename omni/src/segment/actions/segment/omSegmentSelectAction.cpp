@@ -1,8 +1,9 @@
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
+#include "system/omEventManager.h"
 #include "volume/omSegmentation.h"
 
 /////////////////////////////////
@@ -30,9 +31,7 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 
 void OmSegmentSelectAction::Action()
 {
-	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
-
-	mSegmentation.UpdateSegmentSelection( mNewSelectedIdSet );
+	OmProject::GetSegmentation( mSegmentationId ).GetSegmentCache()->UpdateSegmentSelection( mNewSelectedIdSet );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
@@ -44,9 +43,7 @@ void OmSegmentSelectAction::Action()
 
 void OmSegmentSelectAction::UndoAction()
 {
-	OmSegmentation & mSegmentation = OmProject::GetSegmentation( mSegmentationId );
-
-	mSegmentation.UpdateSegmentSelection( mOldSelectedIdSet );
+	OmProject::GetSegmentation( mSegmentationId ).GetSegmentCache()->UpdateSegmentSelection( mOldSelectedIdSet );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,

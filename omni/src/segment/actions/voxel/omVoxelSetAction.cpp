@@ -1,11 +1,13 @@
 #include "omVoxelSetAction.h"
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omVoxelEvent.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "utility/dataWrappers.h"
 
 /////////////////////////////////
 ///////
@@ -21,12 +23,12 @@
 OmVoxelSetAction::OmVoxelSetAction(DataCoord & voxel)
 	: mVoxel(voxel)
 {
-
-	//store current selection
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(mSegmentationId, mSegmentId);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	mSegmentationId = sdw.getSegmentationID();
+	mSegmentId = sdw.getID();
 
 	//if edit selection not valid
-	if (!valid_edit_selection) {
+	if (!sdw.isValid()) {
 		OmAction::SetValid(false);
 		return;
 	}
@@ -88,7 +90,7 @@ string OmVoxelSetAction::Description()
 	} else {
 		//get segmentation
 		OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-		OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
+		OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
 
 		return string("Set Voxel To ") + r_segment->GetName().toStdString();
 	}

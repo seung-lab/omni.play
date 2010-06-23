@@ -4,6 +4,7 @@
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "utility/dataWrappers.h"
 
 /////////////////////////////////
 ///////          OmVoxelSetAction
@@ -11,10 +12,12 @@
 OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 {
 	//store current selection
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(mSegmentationId, mSegmentId);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	mSegmentationId = sdw.getSegmentationID();
+	mSegmentId = sdw.getID();
 
 	//if edit selection not valid
-	if (!valid_edit_selection) {
+	if (!sdw.isValid() ) {
 		printf("OmVoxelSetConnectedAction: edit selection not valid\n");
 		OmAction::SetValid(false);
 		return;
@@ -76,15 +79,11 @@ void OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSe
 
 				//if voxel seg id matches, then add to list
 				if (rSegmentation.GetVoxelSegmentId(offset_vox) == mSeedSegmentId) {
-					//cout << endl;
-					//cout << srcSegId << endl;
-					//cout << rSegmentation.GetVoxelSegmentId(offset_vox) << endl;
 
 					//set voxel to new data value
 					rSegmentation.SetVoxelValue(offset_vox, mDataValue);
 					todoList.push_back(offset_vox);
 				}
-
 			}
 		}
 	}
@@ -92,7 +91,6 @@ void OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSe
 
 void OmVoxelSetConnectedAction::Action()
 {
-
 	//get segmentation
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 

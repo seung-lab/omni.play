@@ -350,91 +350,6 @@ void OmSegmentation::SystemModeChangeEvent()
 }
 
 /////////////////////////////////
-///////          Segment Management
-
-OmSegment * OmSegmentation::GetSegment(OmId id)
-{
-	return mSegmentCache->GetSegmentFromValue(id);
-}
-
-OmSegment* OmSegmentation::GetSegmentFromValue(OmSegID val)
-{
-	return mSegmentCache->GetSegmentFromValue(val);
-}
-
-OmSegment * OmSegmentation::AddSegment()
-{
-	OmSegment* segment = mSegmentCache->AddSegment();
-	return segment;
-}
-
-bool OmSegmentation::IsSegmentValid(OmId id)
-{
-	return mSegmentCache->IsSegmentValid(id);
-}
-
-OmId OmSegmentation::GetNumSegments()
-{
-	return mSegmentCache->GetNumSegments();
-}
-
-OmId OmSegmentation::GetNumTopSegments()
-{
-	return mSegmentCache->GetNumTopSegments();
-}
-
-bool OmSegmentation::IsSegmentEnabled(OmId id)
-{
-	return mSegmentCache->isSegmentEnabled(id);
-}
-
-void OmSegmentation::SetSegmentEnabled(OmId id, bool enable)
-{
-	mSegmentCache->setSegmentEnabled(id, enable);
-}
-
-const OmIDsSet & OmSegmentation::GetEnabledSegmentIds()
-{
-	return mSegmentCache->GetEnabledSegmentIdsRef();
-}
-
-bool OmSegmentation::IsSegmentSelected(OmId id)
-{
-	return mSegmentCache->isSegmentSelected(id);
-}
-
-void OmSegmentation::SetSegmentSelected(OmId id, bool selected)
-{
-	mSegmentCache->setSegmentSelected(id, selected);
-	OmSegmentEditor::SetEditSelection(this->GetId(), id);
-}
-
-void OmSegmentation::SetAllSegmentsSelected(bool selected)
-{
-	mSegmentCache->SetAllSelected(selected);
-}
-
-void OmSegmentation::SetAllSegmentsEnabled(bool enabled)
-{
-	mSegmentCache->SetAllEnabled(enabled);
-}
-
-const OmIDsSet & OmSegmentation::GetSelectedSegmentIds()
-{
-	return mSegmentCache->GetSelectedSegmentIdsRef();
-}
-
-bool OmSegmentation::AreSegmentsSelected()
-{
-	return mSegmentCache->AreSegmentsSelected();
-}
-
-void OmSegmentation::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect )
-{
-	mSegmentCache->UpdateSegmentSelection(idsToSelect);
-}
-
-/////////////////////////////////
 ///////          Groups
 void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
@@ -552,16 +467,6 @@ void OmSegmentation::FlushDendUserEdges()
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendValuesSize, mEdgeForceJoin->getQuint8Ptr());
 }
 
-void OmSegmentation::JoinTheseSegments( const OmIDsSet & segmentIds)
-{
-	mSegmentCache->JoinTheseSegments(segmentIds);
-}
-
-void OmSegmentation::UnJoinTheseSegments( const OmIDsSet & segmentIds)
-{
-	mSegmentCache->UnJoinTheseSegments(segmentIds);
-}
-
 void OmSegmentation::SetDendThreshold( float t )
 {
 	mDendThreshold = t;
@@ -574,14 +479,4 @@ void OmSegmentation::SetDendThresholdAndReload( const float t )
 	}
 	SetDendThreshold(t);
 	mSegmentCache->refreshTree();
-}
-
-OmSegmentEdge * OmSegmentation::JoinEdge( OmSegmentEdge * e )
-{
-	return mSegmentCache->JoinEdge(e);
-}
-
-OmSegmentEdge * OmSegmentation::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
-{
-	return mSegmentCache->splitTwoChildren(seg1, seg2);
 }

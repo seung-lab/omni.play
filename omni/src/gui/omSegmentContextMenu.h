@@ -16,7 +16,6 @@ public:
 	
 protected:
 	void AddSelectionNames();
-	void AddEditSelectionAction();
 	void AddSelectionAction();
 	void AddDendActions();
 	void AddVoxelAction();
@@ -29,7 +28,6 @@ private slots:
 	void Unselect();
 	void UnselectOthers();
 	
-	void SetEditSelection();
 	void MergeSegments();
 	void SetConnectedVoxels();
 	void splitSegments();

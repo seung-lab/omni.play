@@ -1,12 +1,12 @@
-#include "project/omProject.h"
-#include "omSegmentEditor.h"
-
-#include "volume/omVolume.h"
-#include "volume/omSegmentation.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omSegmentEvent.h"
 #include "common/omDebug.h"
+#include "omSegmentEditor.h"
+#include "project/omProject.h"
+#include "segment/omSegmentCache.h"
+#include "system/events/omSegmentEvent.h"
+#include "system/omEventManager.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
+#include "utility/dataWrappers.h"
 
 //init instance pointer
 OmSegmentEditor *OmSegmentEditor::mspInstance = 0;
@@ -17,9 +17,9 @@ OmSegmentEditor *OmSegmentEditor::mspInstance = 0;
 ///////
 
 OmSegmentEditor::OmSegmentEditor()
+	: mEditSegmentation(0)
+	, mEditSegment(0)
 {
-	mEditSegmentation = 0;
-	mEditSegment = 0;
 }
 
 OmSegmentEditor::~OmSegmentEditor()
@@ -30,7 +30,7 @@ OmSegmentEditor::~OmSegmentEditor()
 OmSegmentEditor *OmSegmentEditor::Instance()
 {
 	if (NULL == mspInstance) {
-		mspInstance = new OmSegmentEditor;
+		mspInstance = new OmSegmentEditor();
 	}
 	return mspInstance;
 }
@@ -53,22 +53,10 @@ void OmSegmentEditor::SetEditSelection(OmId segmentation, OmId segment)
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_EDIT_SELECTION_CHANGE));
 }
 
-bool OmSegmentEditor::GetEditSelection(OmId & segmentation, OmId & segment)
+SegmentDataWrapper OmSegmentEditor::GetEditSelection()
 {
-	segmentation = Instance()->mEditSegmentation;
-	segment = Instance()->mEditSegment;
-
-	//check for segmentation validity
-	if (!OmProject::IsSegmentationValid(segmentation))
-		return false;
-
-	//check for segment validity
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(segmentation);
-	if (!r_segmentation.IsSegmentValid(segment))
-		return false;
-
-	//both valid
-	return true;
+	return SegmentDataWrapper( Instance()->mEditSegmentation,
+				   Instance()->mEditSegment );
 }
 
 /////////////////////////////////

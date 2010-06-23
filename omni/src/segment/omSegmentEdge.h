@@ -2,29 +2,24 @@
 #define OM_SEGMENT_EDGE_H
 
 #include "common/omCommon.h"
-#include "segment/omSegment.h"
+
+class OmSegment;
 
 class OmSegmentEdge {
  public:
-	OmSegmentEdge(){}
+	OmSegmentEdge();
+	explicit OmSegmentEdge( OmSegment * c );
+	OmSegmentEdge( const OmSegID p, const OmSegID c, const float t );
+ 	OmSegmentEdge( OmSegment * p, OmSegment * c, const float t );
 
- 	OmSegmentEdge( const OmSegID p, const OmSegID c, const float t )
-		: parentID(p)
-		, childID(c)
-		, threshold(t)
-	{
-	}
+	bool operator==( const OmSegmentEdge& rhs ) const;
 
- 	OmSegmentEdge( OmSegment * p, OmSegment * c, const float t )
-		: parentID(p->getValue())
-		, childID(c->getValue())
-		, threshold(t)
-	{
-	}
-	
+	bool isValid();
+
 	OmSegID parentID;
 	OmSegID childID;
 	float threshold;
+	bool valid;
 };
 
 #endif

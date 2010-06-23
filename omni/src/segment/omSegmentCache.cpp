@@ -92,7 +92,7 @@ bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 	return mImpl->isValueAlreadyMappedToSegment(seg);
 }
 
-OmSegment* OmSegmentCache::GetSegmentFromValue(OmSegID value)
+OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->GetSegmentFromValue( value );
@@ -122,13 +122,13 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 	return mImpl->numberOfSelectedSegments();
 }
 
-OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIdsRef()
+OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIds()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetSelectedSegmentIdsRef();
 }
 
-OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIdsRef()
+OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIds()
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->GetEnabledSegmentIdsRef();
@@ -152,13 +152,13 @@ bool OmSegmentCache::isSegmentEnabled( OmSegID segID )
 	return mImpl->isSegmentEnabled( segID );
 }
 
-bool OmSegmentCache::isSegmentSelected( OmSegID segID )
+bool OmSegmentCache::IsSegmentSelected( OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isSegmentSelected( segID );
 }
 
-bool OmSegmentCache::isSegmentSelected( OmSegment * seg )
+bool OmSegmentCache::IsSegmentSelected( OmSegment * seg )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->isSegmentSelected( seg );
@@ -218,13 +218,19 @@ OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 	return mImpl->findRoot( segment );
 }
 
+OmSegment * OmSegmentCache::FindRoot( const OmSegID segID )
+{
+	QMutexLocker locker( &mMutex );
+	return mImpl->findRoot( GetSegment(segID) );
+}
+
 OmSegID OmSegmentCache::findRootID( const OmSegID segID )
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->findRootID( segID );
 }
 
-OmSegmentEdge * OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	QMutexLocker locker( &mMutex );
 	return mImpl->splitTwoChildren(seg1, seg2);
@@ -272,7 +278,7 @@ void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
         return mImpl->setAsValidated(segment, valid);
 }
 
-OmSegmentEdge * OmSegmentCache::JoinEdge( OmSegmentEdge * e )
+OmSegmentEdge OmSegmentCache::JoinEdge( OmSegmentEdge e )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->JoinFromUserAction( e );

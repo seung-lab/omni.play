@@ -37,7 +37,7 @@ void SegObjectInspector::set_initial_values()
 
 	notesEdit->setPlainText( sdw.getNote() );
 
-	const Vector3 < float >&color = sdw.getColor();
+	const Vector3 < float >&color = sdw.getColorFloat();
 
 	QPixmap *pixm = new QPixmap(40, 30);
 	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
@@ -49,7 +49,7 @@ void SegObjectInspector::set_initial_values()
 	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
 	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSizeWithChildren()));
 	
-	origDataValueList->setText( sdw.get_original_mapped_data_value() );
+	origDataValueList->setText( sdw.getIDstr() );
 	chunkList->setText( "disabled" );
 }
 

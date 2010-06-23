@@ -3,6 +3,7 @@
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 #include "system/omLocalPreferences.h"
@@ -110,11 +111,12 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 {
 	OmSegmentation & segmentation = sdw.getSegmentation();
-	const OmId segmentID = sdw.getID();
 
-	if( !segmentation.IsSegmentValid(segmentID)){
+	if( !sdw.isValid() ){
 		return;
 	}
+
+	const OmId segmentID = sdw.getID();
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
@@ -195,19 +197,19 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid() ){
 		return;
+	}
 
 	//switch on tool mode
 	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -219,8 +221,8 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		break;
 	}
 
-	OmId segid = OmProject::GetSegmentation(segmentation_id).GetVoxelSegmentId(globalDataClickPoint);
-	FillToolFill(segmentation_id, globalDataClickPoint, data_value, segid);
+	const OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+	FillToolFill( sdw.getSegmentationID(), globalDataClickPoint, data_value, segid);
 
 	doRedraw();
 }
@@ -245,19 +247,18 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 			//store current selection
-			OmId segmentation_id, segment_id;
-			bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+			SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 			//return if not valid
-			if (!valid_edit_selection)
+			if (!sdw.isValid()){
 				return;
+			}
 
 			//switch on tool mode
 			OmSegID data_value;
 			switch (OmStateManager::GetToolMode()) {
 			case ADD_VOXEL_MODE:
-				//get value associated to segment id
-				data_value = segment_id;
+				data_value = sdw.getID();
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
@@ -274,10 +275,11 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			}
 
 			//run action
-			if (!doselection)
-				BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
-			else
-				PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+			if (!doselection) {
+				BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
+			} else {
+				PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
+			}
 
 			lastDataPoint = dataClickPoint;
 
@@ -457,18 +459,18 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 	}
 
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-	OmId segmentation_id, segment_id;
-	if (OmSegmentEditor::GetEditSelection(segmentation_id, segment_id)) {
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	if ( sdw.isValid() ) {
 		//run action
 		if (!doselection) {
 			if (dosubtract) {
 				data_value = NULL_SEGMENT_DATA;
 			} else {
-				data_value = segment_id;
+				data_value = sdw.getID();
 			}
-			BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
+			BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
 		} else {
-			PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+			PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
 		}
 	} else {
 		debug("genone", "No segment_id in edit selection\n");
@@ -518,11 +520,10 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid())
 		return;
 
 	//switch on tool mode
@@ -530,7 +531,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -548,11 +549,11 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 	if (!doselection) {
 		//run action
-		BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
+		BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
 		bresenhamLineDraw(lastDataPoint, dataClickPoint);
 	} else {
 		// TODO: bug here; ask MattW
-		PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+		PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
 	}
 
 	lastDataPoint = dataClickPoint;
@@ -680,7 +681,7 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 void OmView2d::SystemModeChangeEvent()
 {
 	if (mVolumeType == SEGMENTATION) {
-		modified_Ids = OmProject::GetSegmentation(mImageId).GetSelectedSegmentIds();
+		modified_Ids = OmProject::GetSegmentation(mImageId).GetSegmentCache()->GetSelectedSegmentIds();
 		delete_dirty = true;
 		myUpdate();
 	}
@@ -847,8 +848,8 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 		assert(mImageId==segmentationID);
 	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 
-		OmSegment * seg1 = segmentation.GetSegment(segmentID);
-		OmSegment * seg2 = segmentation.GetSegment(segid);
+		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
+		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segid);
 
                 if(NULL == seg1 || NULL == seg2) {
                         return;
@@ -860,7 +861,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 	} else {
 	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
-		if (segmentID && segmentation.GetSegment(segmentID)) {
+		if (segmentID && segmentation.GetSegmentCache()->GetSegment(segmentID)) {
 				mViewGroupState->SetSplitMode(segmentationID, segmentID);
 		}
 	}

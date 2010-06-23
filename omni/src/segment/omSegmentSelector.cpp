@@ -9,7 +9,7 @@ OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender, 
 	, mSegmentJustSelectedID(0)
 	, mSender(sender)
 	, mComment(cmt)
-	, oldSelectedIDs( mSegmentation->GetSelectedSegmentIds() )
+	, oldSelectedIDs( mSegmentation->GetSegmentCache()->GetSelectedSegmentIds() )
 	, newSelectedIDs( oldSelectedIDs )
 {
 }
@@ -52,14 +52,14 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
-	const bool isSelected = mSegmentation->IsSegmentSelected( segID );
+	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	selectJustThisSegment( segID, !isSelected );
 }
 
 void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
-	const bool isSelected = mSegmentation->IsSegmentSelected( segID );
+	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	augmentSelectedSet( segID, !isSelected );
 }
 

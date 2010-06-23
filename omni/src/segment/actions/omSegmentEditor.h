@@ -3,17 +3,17 @@
 
 #include "common/omCommon.h"
 
+class SegmentDataWrapper;
+
 class OmSegmentEditor : boost::noncopyable {
 
 public:
 	static OmSegmentEditor* Instance();
 	static void Delete();
 	
-	
 	//edit selection
 	static void SetEditSelection(OmId segmentation, OmId segment);
-	static bool GetEditSelection(OmId &segmentation, OmId &segment);
-	
+	static SegmentDataWrapper GetEditSelection();
 	
 	//voxel selection
 	static void SetSelectedVoxels(const set< DataCoord > &voxels);

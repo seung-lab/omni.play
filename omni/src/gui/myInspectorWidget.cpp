@@ -12,6 +12,7 @@
 #include "inspectors/segInspector.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
+#include "segment/omSegmentCache.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
@@ -27,7 +28,7 @@ Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
 MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs)
- : QWidget(parent), mViewGroupState(vgs)
+	: QWidget(parent), mViewGroupState(vgs)
 {
 
 	mParentWindow = parent;
@@ -288,7 +289,7 @@ void MyInspectorWidget::refreshWidgetData()
 void MyInspectorWidget::addSegment()
 {
 	const OmId segmentationID = segInspectorWidget->getSegmentationID();
-	OmSegment * added_segment = OmProject::GetSegmentation(segmentationID).AddSegment();
+	OmSegment * added_segment = OmProject::GetSegmentation(segmentationID).GetSegmentCache()->AddSegment();
 	segmentList->rebuildSegmentList(segmentationID, added_segment->getValue());
 	validList->rebuildSegmentList(segmentationID, added_segment->getValue());
 	recentList->rebuildSegmentList(segmentationID, added_segment->getValue());

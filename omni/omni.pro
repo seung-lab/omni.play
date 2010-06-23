@@ -259,7 +259,6 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
-           src/segment/actions/edit/omEditSelectionSetAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
@@ -311,6 +310,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/lowLevel/DynamicTree.cpp \
            src/segment/lowLevel/DynamicTreeContainer.cpp \
            src/segment/omSegment.cpp \
+           src/segment/omSegmentEdge.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
@@ -423,7 +423,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/segment/actions/omSegmentEditor.cpp \
-           src/segment/actions/edit/omEditSelectionSetAction.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentSplitAction.cpp \

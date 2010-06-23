@@ -60,34 +60,12 @@ public:
 	void SystemModeChangeEvent();
 							
 	//segment management
-	OmSegment* GetSegment(OmId id);
-	OmSegment* GetSegmentFromValue(OmSegID id);
-	OmSegment* AddSegment();
-	bool IsSegmentValid(OmId id);
-	bool IsSegmentEnabled(OmId id);
-	void SetSegmentEnabled(OmId id, bool enable);
-	void SetAllSegmentsEnabled(bool selected);
-	const OmIDsSet & GetEnabledSegmentIds();
-	bool IsSegmentSelected(OmId id);
-	void SetSegmentSelected(OmId id, bool selected);
-	void SetAllSegmentsSelected(bool selected);
-	const OmIDsSet& GetSelectedSegmentIds();
-
-	OmSegmentEdge * splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
-	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
-	void JoinTheseSegments( const OmIDsSet & segmentIds);
-	void UnJoinTheseSegments( const OmIDsSet & segmentIds);
-	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
-
-	OmId GetNumSegments();
-	OmId GetNumTopSegments();
-	bool AreSegmentsSelected();
+	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
 	//group management
  	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);
-
 
 	//drawing
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
@@ -100,8 +78,6 @@ public:
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
-
-	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
 private:
 	void KillCacheThreads();

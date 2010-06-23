@@ -7,13 +7,17 @@
 #include <QProcess>
 #include <time.h>
 
-#include "gui/recentFileList.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPaths.h"
 #include "gui/headless.h"
 #include "gui/mainwindow.h"
+#include "gui/recentFileList.h"
 #include "project/omProject.h"
+#include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
+#include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/stringHelpers.h"
@@ -21,9 +25,6 @@
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
-#include "system/omLocalPreferences.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omDataPaths.h"
 
 int argc_global;
 char **argv_global;
@@ -175,7 +176,7 @@ void Headless::processLine( QString line, QString fName )
                         printf("please choose segmentation first!\n");
                         return;
                 }
-                OmProject::GetSegmentation( SegmentationID ).AddSegment();
+                OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
                 OmProject::Save();
         } else if( line.startsWith("setDataExtent:") ){
 		assert(false && "don't need this anymore.");

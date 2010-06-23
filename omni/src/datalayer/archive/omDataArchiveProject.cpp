@@ -386,8 +386,8 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
-	foreach( OmSegmentEdge * e, sc.mManualUserMergeEdgeList ){
-		out << *e;
+	foreach( const OmSegmentEdge & e, sc.mManualUserMergeEdgeList ){
+		out << e;
 	}
 
 	return out;
@@ -415,8 +415,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	int size;
 	in >> size;
 	for( int i = 0; i < size; ++i ){
-		OmSegmentEdge * e = new OmSegmentEdge();
-		in >> (*e);
+		OmSegmentEdge e;
+		in >> e;
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 

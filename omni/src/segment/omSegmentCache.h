@@ -24,7 +24,7 @@ public:
 				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
 
-	OmSegment* GetSegmentFromValue(OmSegID);
+	OmSegment* GetSegment(const OmSegID);
 
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
@@ -34,13 +34,13 @@ public:
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmSegIDsSet & GetEnabledSegmentIdsRef();
+	OmSegIDsSet & GetEnabledSegmentIds();
 
-	bool isSegmentSelected( OmSegID segID );
-	bool isSegmentSelected( OmSegment * seg );
+	bool IsSegmentSelected( OmSegID segID );
+	bool IsSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmSegIDsSet & GetSelectedSegmentIdsRef();
+	OmSegIDsSet & GetSelectedSegmentIds();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
 	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
@@ -57,11 +57,12 @@ public:
 	void flushDirtySegments();
 
 	OmSegment * findRoot( OmSegment * segment );
+	OmSegment * FindRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
 
-        OmSegmentEdge * splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+        OmSegmentEdge splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
 
-	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
+	OmSegmentEdge JoinEdge( OmSegmentEdge e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 

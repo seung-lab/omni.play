@@ -2,10 +2,10 @@
 #include "gui/inspectors/segObjectInspector.h"
 #include "omSegmentContextMenu.h"
 #include "project/omProject.h"
-#include "segment/actions/edit/omEditSelectionSetAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetConnectedAction.h"
+#include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omViewEvent.h"
 #include "system/omCacheManager.h"
@@ -50,10 +50,11 @@ void OmSegmentContextMenu::AddSelectionNames()
 {
 	//get segmentation and segment
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	OmSegment * r_segment = r_segmentation.GetSegment(mSegmentId);
+	OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
 
-	addAction( QString("Segment ") + QString::number(r_segment->getValue()) +
-			QString(" (Root ") + QString::number(r_segment->getRootSegID()) + QString(")"));
+	addAction( "Segment " + QString::number(r_segment->getValue()) 
+		   + " (Root " + QString::number(r_segment->getRootSegID()) 
+		   + ")" );
 	addAction( r_segmentation.GetName() );
 }
 
@@ -66,7 +67,7 @@ void OmSegmentContextMenu::AddSelectionAction()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//is segment selected
-	bool is_segment_selected = r_segmentation.IsSegmentSelected(mSegmentId);
+	bool is_segment_selected = r_segmentation.GetSegmentCache()->IsSegmentSelected(mSegmentId);
 
 	//if segment is already selected
 	if (is_segment_selected) {
@@ -76,11 +77,6 @@ void OmSegmentContextMenu::AddSelectionAction()
 		addAction(QString("Select Segment"), this, SLOT(Select()));
 		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
 	}
-}
-
-void OmSegmentContextMenu::AddEditSelectionAction()
-{
-	addAction(QString("Set Edit Selection"), this, SLOT(SetEditSelection()));
 }
 
 /*
@@ -125,15 +121,10 @@ void OmSegmentContextMenu::UnselectOthers()
 	sel.sendEvent();
 }
 
-void OmSegmentContextMenu::SetEditSelection()
-{
-	(new OmEditSelectionSetAction(mSegmentationId, mSegmentId))->Run();
-}
-
 void OmSegmentContextMenu::MergeSegments()
 {
         OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-        OmIDsSet ids = seg.GetSelectedSegmentIds();
+        OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
 
@@ -163,7 +154,7 @@ void OmSegmentContextMenu::AddGroupActions()
 void OmSegmentContextMenu::randomizeColor()
 {
         OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-        OmSegment * r_segment = r_segmentation.GetSegment(r_segmentation.GetSegment(mSegmentId)->getRootSegID());
+        OmSegment * r_segment = r_segmentation.GetSegmentCache()->FindRoot( mSegmentId );
 
 	r_segment->reRandomizeColor();
 	OmCacheManager::Freshen(true);
@@ -176,7 +167,7 @@ void OmSegmentContextMenu::addGroup()
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
                 OmSegIDsSet set;
-		set.insert(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, VALIDROOT, QString("Valid"));
         }
 }
@@ -187,7 +178,7 @@ void OmSegmentContextMenu::deleteGroup()
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
                 OmSegIDsSet set;
-                set.insert(seg.GetSegment(seg.GetSegment(mSegmentId)->getRootSegID())->getValue());
+                set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
         }
 }
@@ -197,7 +188,7 @@ void OmSegmentContextMenu::showProperties()
         OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	OmSegID segid;
 
-	segid = seg.GetSegment(mSegmentId)->getRootSegID();
+	segid = seg.GetSegmentCache()->findRootID(mSegmentId);
 
 	mViewGroupState->GetInspectorProperties()->setOrReplaceWidget( new SegObjectInspector(
 						 SegmentDataWrapper(mSegmentationId, segid), this),

@@ -8,19 +8,21 @@ const OmMipChunkCoord OmMipChunkCoord::NULL_COORD(-1, -1, -1, -1);
 ///////          OmMipChunkCoord
 
 OmMipChunkCoord::OmMipChunkCoord()
- : Level(-1), Coordinate(DataCoord(-1, -1, -1))
+	: Level(-1)
+	, Coordinate(DataCoord(-1, -1, -1))
 {
 }
 
 OmMipChunkCoord::OmMipChunkCoord(int Level, const DataCoord & rDataCoord)
-:Level(Level), Coordinate(rDataCoord)
+	: Level(Level)
+	, Coordinate(rDataCoord)
 {
 }
 
 OmMipChunkCoord::OmMipChunkCoord(int level, int x, int y, int z)
-:Level(level), Coordinate(DataCoord(x, y, z))
+	: Level(level)
+	, Coordinate(DataCoord(x, y, z))
 {
-
 }
 
 QString OmMipChunkCoord::getCoordsAsString()
@@ -28,7 +30,6 @@ QString OmMipChunkCoord::getCoordsAsString()
 	QString ret = QString("%1:%2,%3,%4").arg(Level).arg(Coordinate.x).arg(Coordinate.y).arg(Coordinate.z);
 	return ret;
 }
-
 
 /////////////////////////////////
 ///////          Property
@@ -95,7 +96,6 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 /* Primary child coordinate of octal children */
 OmMipChunkCoord OmMipChunkCoord::PrimaryChildCoord() const
 {
-
 	//return primary child (prev level, double coordinates)
 	return OmMipChunkCoord(Level - 1, Coordinate.x * 2, Coordinate.y * 2, Coordinate.z * 2);
 }

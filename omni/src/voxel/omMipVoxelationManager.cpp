@@ -286,7 +286,8 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 			continue;
 
 		//determine which segment this data values belongs to
-		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
+		OmSegment * r_segment = rSegMgr->GetSegment(val);
+
 		//r_segment->ApplyColor(drawOps, NULL);
 		printf("FIXME: voxelation manager has been gutte\n");
 

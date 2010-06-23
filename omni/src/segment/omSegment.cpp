@@ -9,7 +9,6 @@ OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
-	, mCustomMergeEdge(NULL)
 {
 	SetInitialColor();
 }
@@ -21,7 +20,6 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
-	, mCustomMergeEdge(NULL)
 {
 }
 
@@ -108,7 +106,7 @@ void OmSegment::SetName(const QString & name)
 
 bool OmSegment::IsSelected()
 {
-	return mCache->isSegmentSelected( mValue );
+	return mCache->IsSegmentSelected( mValue );
 }
 
 void OmSegment::SetSelected( const bool isSelected )
