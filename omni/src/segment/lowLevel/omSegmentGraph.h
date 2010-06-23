@@ -39,8 +39,10 @@ class OmSegmentGraph {
 				   const int size, 
 				   const float stopPoint );
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
+	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
 
  private:
+
 	DynamicTreeContainer<OmSegID> * mGraph;
 	OmSegmentCacheImplLowLevel * mCache;
 
@@ -50,6 +52,8 @@ class OmSegmentGraph {
 			   const float threshold, const int edgeNumber);
 
 	bool splitChildFromParentInternal( const OmSegID childID );
+
+	quint64 computeSegmentSizeWithChildren(const OmSegID segID );
 };
 
 #endif

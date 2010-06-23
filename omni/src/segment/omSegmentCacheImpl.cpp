@@ -183,7 +183,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		child->mCustomMergeEdge.valid = false;
 	}
 
-	updateSizeListsFromSplit( parent, child );
+	mSegmentGraph.updateSizeListsFromSplit( parent, child );
 
 	clearCaches();
 
@@ -335,24 +335,6 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 
 	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
 	edgeForceJoin[ seg->mEdgeNumber ] = valid;
-}
-
-void OmSegmentCacheImpl::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
-{
-	OmSegment * root = findRoot(parent);
-	quint64 newChildSize = computeSegmentSizeWithChildren( child->mValue );
-	mSegmentGraph.mRootListBySize.updateFromSplit( root, child, newChildSize );
-}
-
-quint64 OmSegmentCacheImpl::computeSegmentSizeWithChildren( const OmSegID segID )
-{
-	quint64 size = 0;
-	OmSegmentIteratorLowLevel iter(this);
-	iter.iterOverSegmentID( segID );
-	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		size += seg->mSize;
-	}
-	return size;
 }
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )

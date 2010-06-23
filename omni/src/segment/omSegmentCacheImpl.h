@@ -50,11 +50,6 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setGlobalThreshold();
 	void resetGlobalThreshold();
-
-	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
-
-	quint64 computeSegmentSizeWithChildren(const OmSegID segID );
-
 	
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

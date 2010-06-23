@@ -222,6 +222,8 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	child->mParentSegID = 0;
 	child->mEdgeNumber = -1;
 
+	updateSizeListsFromSplit( parent, child );
+
 	return true;
 }
 
@@ -230,4 +232,22 @@ void OmSegmentGraph::updateSizeListsFromJoin( OmSegment * parent, OmSegment * ch
 	OmSegment * root = mCache->findRoot(parent);
 	mRootListBySize.updateFromJoin( root, child );
 	mValidListBySize.updateFromJoin( root, child );
+}
+
+void OmSegmentGraph::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
+{
+	OmSegment * root = mCache->findRoot(parent);
+	quint64 newChildSize = computeSegmentSizeWithChildren( child->mValue );
+	mRootListBySize.updateFromSplit( root, child, newChildSize );
+}
+
+quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
+{
+	quint64 size = 0;
+	OmSegmentIteratorLowLevel iter(mCache);
+	iter.iterOverSegmentID( segID );
+	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
+		size += seg->mSize;
+	}
+	return size;
 }
