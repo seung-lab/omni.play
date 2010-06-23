@@ -366,8 +366,23 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 	}
 }
 
+void OmSegmentCacheImpl::refreshTree()
+{
+	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
+		mSegmentGraph.initialize(this);
+		foreach( const OmSegmentEdge & e, mManualUserMergeEdgeList ){
+			JoinEdgeFromUser(e);
+		}
+		setGlobalThreshold();
+	} else {
+		resetGlobalThreshold();
+	}
+}
+
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
+	const quint64 dustAutoMergeThreshold = 50;
+
 	printf("setting global threshold to %f...\n", mSegmentation->mDendThreshold);
 
 	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
@@ -376,7 +391,8 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
 					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
 					  mSegmentation->mDendCount, 
-					  mSegmentation->mDendThreshold);
+					  mSegmentation->mDendThreshold,
+					  dustAutoMergeThreshold );
 	
 	mSelectedSet.clear();
 	clearCaches();
@@ -402,15 +418,4 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 	printf("done\n");
 }
 
-void OmSegmentCacheImpl::refreshTree()
-{
-	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
-		mSegmentGraph.initialize(this);
-		foreach( const OmSegmentEdge & e, mManualUserMergeEdgeList ){
-			JoinEdgeFromUser(e);
-		}
-		setGlobalThreshold();
-	} else {
-		resetGlobalThreshold();
-	}
-}
+

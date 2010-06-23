@@ -80,12 +80,14 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 					 quint8 * edgeWasJoined,
 					 quint8 * edgeForceJoin,
 					 const int numEdges, 
-					 const float stopThreshold )
+					 const float stopThreshold,
+					 const quint64 dustAutoMergeThreshold )
 {
 	printf("\t %d edges...", numEdges);
 	fflush(stdout);
 
 	OmSegID childID;
+	OmSegment * child;
 	OmSegID parentID;
 	float threshold;
 
@@ -95,10 +97,12 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 		}
 
 		childID = nodes[i];
+		child = mCache->GetSegmentFromValue( childID );
 		threshold = thresholds[i];
 		
 		if( threshold >= stopThreshold ||
-		    1 == edgeForceJoin[i] ){ // join
+		    1 == edgeForceJoin[i]      ||
+		    child->mSize < dustAutoMergeThreshold ){ // join
 			if( 1 == edgeWasJoined[i] ){
 				continue;
 			}
