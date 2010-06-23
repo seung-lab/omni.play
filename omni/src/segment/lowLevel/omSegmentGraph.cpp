@@ -1,5 +1,6 @@
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
+#include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
 
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
@@ -11,39 +12,36 @@ OmSegmentGraph::~OmSegmentGraph()
 	delete mGraph;
 }
 
-void OmSegmentGraph::cut( const OmSegID segID )
+void OmSegmentGraph::graph_cut( const OmSegID segID )
 {
 	mGraph->get(segID)->cut();
 }
 
-OmSegID OmSegmentGraph::getRootID( const OmSegID segID )
+OmSegID OmSegmentGraph::graph_getRootID( const OmSegID segID )
 {
 	return mGraph->get(segID)->findRoot()->getKey();
 }
 
-void OmSegmentGraph::join( const OmSegID childRootID, const OmSegID parentRootID )
+void OmSegmentGraph::graph_join( const OmSegID childRootID, const OmSegID parentRootID )
 {
 	mGraph->get(childRootID)->join(mGraph->get(parentRootID));
 }
 
-bool OmSegmentGraph::doesGraphNeedToBeRefreshed( const quint32 maxValue )
+bool OmSegmentGraph::graph_doesGraphNeedToBeRefreshed( const quint32 maxValue )
 {
 	return (NULL == mGraph || mGraph->getSize() != maxValue+1 );
 }
 
-void OmSegmentGraph::initialize( const quint32 maxValue )
+void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 {
 	delete mGraph;
 		
 	// maxValue is a valid segment id, so array needs to be 1 bigger
-	const quint32 size = maxValue + 1;
+	const quint32 size = 1 + cache->getMaxValue();
 	
 	mGraph = new DynamicTreeContainer<OmSegID>( size );
-}
 
-quint32 OmSegmentGraph::getNumTopLevelSegs()
-{
-	return mRootListBySize.size();
+	buildSegmentSizeLists( cache );
 }
 
 void OmSegmentGraph::buildSegmentSizeLists( OmSegmentCacheImplLowLevel * cache )
@@ -63,4 +61,9 @@ void OmSegmentGraph::buildSegmentSizeLists( OmSegmentCacheImplLowLevel * cache )
 			}
 		} 
 	}
+}
+
+quint32 OmSegmentGraph::getNumTopLevelSegs()
+{
+	return mRootListBySize.size() + mValidListBySize.size();
 }

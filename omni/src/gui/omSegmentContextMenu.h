@@ -5,8 +5,8 @@
 #include <QMenu>
 
 class SegmentDataWrapper;
-
 class OmViewGroupState;
+
 class OmSegmentContextMenu : public QMenu {
 
 	Q_OBJECT

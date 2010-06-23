@@ -78,7 +78,6 @@ class OmSegmentCacheImplLowLevel {
 	void clearCaches();
 
 	OmSegmentGraph mSegmentGraph;
-	void initialize();
 	void resetGlobalThreshold( const float stopPoint );
 
 	void rerootSegmentLists();
@@ -88,8 +87,6 @@ class OmSegmentCacheImplLowLevel {
 	virtual void updateSizeListsFromJoin( OmSegment * root, OmSegment * child ) = 0;
 
 	OmSegmentListByMRU mRecentRootActivityMap;
-
-	void buildSegmentSizeLists();
 
  private:
 	void doResetGlobalThreshold( const quint32 * dend, 

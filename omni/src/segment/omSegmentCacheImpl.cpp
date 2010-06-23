@@ -150,7 +150,7 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegmentEdge * edgeThatGotBroken = new OmSegmentEdge( parent, child, child->mThreshold );
 
 	parent->segmentsJoinedIntoMe.erase( child->getValue() );
-        mSegmentGraph.cut(child->mValue);
+        mSegmentGraph.graph_cut(child->mValue);
 	child->mParentSegID = 0;
 
 	child->mThreshold = 0;
@@ -188,14 +188,14 @@ OmSegmentEdge * OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 OmSegmentEdge * OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge * e )
 {
-	OmSegmentEdge * edge = JoinEdge( e );
+	OmSegmentEdge * edge = JoinEdgeFromUser( e );
 	mManualUserMergeEdgeList.push_back( edge );
 	return edge;
 }
 
-OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
+OmSegmentEdge * OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge * e )
 {
-	const OmSegID childRootID = mSegmentGraph.getRootID(e->childID);
+	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e->childID);
 	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( e->parentID );
 	
@@ -205,7 +205,7 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinEdge( OmSegmentEdge * e )
 		return NULL;
 	}
 
-	mSegmentGraph.join(childRootID, e->parentID);
+	mSegmentGraph.graph_join(childRootID, e->parentID);
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, e->threshold);
@@ -335,22 +335,14 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 
 void OmSegmentCacheImpl::refreshTree()
 {
-	if( mSegmentGraph.doesGraphNeedToBeRefreshed(mMaxValue) ){
-		loadDendrogram();
+	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
+		mSegmentGraph.initialize(this);
+		foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
+			JoinEdgeFromUser(e);
+		}
 	}
 	
 	resetGlobalThreshold( mSegmentation->mDendThreshold );
-}
-
-void OmSegmentCacheImpl::loadDendrogram()
-{
-	initialize();
-
-	buildSegmentSizeLists();
-
-	foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
-		JoinEdge(e);
-	}
 }
 
 void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected )

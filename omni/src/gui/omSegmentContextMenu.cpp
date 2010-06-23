@@ -62,7 +62,6 @@ void OmSegmentContextMenu::AddSelectionNames()
  */
 void OmSegmentContextMenu::AddSelectionAction()
 {
-
 	//get segmentation and segment
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
@@ -77,8 +76,6 @@ void OmSegmentContextMenu::AddSelectionAction()
 		addAction(QString("Select Segment"), this, SLOT(Select()));
 		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
 	}
-
-	//	addAction(QString("Select All"));
 }
 
 void OmSegmentContextMenu::AddEditSelectionAction()
@@ -207,7 +204,6 @@ void OmSegmentContextMenu::showProperties()
                                                  QString("Segmentation%1: Segment %2")
                                                  .arg(mSegmentationId)
                                                  .arg(segid) );
-
 }
 
 void OmSegmentContextMenu::AddPropertiesActions()

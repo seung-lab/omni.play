@@ -39,8 +39,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
         quint64 getSegmentListSize(OmSegIDRootType type);
 
  private:
-	void loadDendrogram();
-	OmSegmentEdge * JoinEdge( OmSegmentEdge * e );
+	OmSegmentEdge * JoinEdgeFromUser( OmSegmentEdge * e );
 	QList<OmSegmentEdge*> mManualUserMergeEdgeList;
 
 	OmSegmentEdge * JoinFromUserAction( const OmId, const OmId );

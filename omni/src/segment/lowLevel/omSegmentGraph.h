@@ -12,22 +12,22 @@ class OmSegmentGraph {
 	OmSegmentGraph();
 	~OmSegmentGraph();
 
-	void initialize( const quint32 maxValue );
+	void initialize( OmSegmentCacheImplLowLevel * cache );
 
-	bool doesGraphNeedToBeRefreshed( const quint32 maxValue ); 
+	bool graph_doesGraphNeedToBeRefreshed( const quint32 maxValue ); 
 
-	OmSegID getRootID( const OmSegID segID );
-	void cut( const OmSegID segID );
-	void join( const OmSegID childRootID, const OmSegID parentRootID );
+	OmSegID graph_getRootID( const OmSegID segID );
+	void graph_cut( const OmSegID segID );
+	void graph_join( const OmSegID childRootID, const OmSegID parentRootID );
 	
 	quint32 getNumTopLevelSegs();
 
-	void buildSegmentSizeLists( OmSegmentCacheImplLowLevel * );
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
 
  private:
 	DynamicTreeContainer<OmSegID> * mGraph;
+	void buildSegmentSizeLists( OmSegmentCacheImplLowLevel * );
 };
 
 #endif
