@@ -15,7 +15,6 @@ class OmSegmentGraph {
 	void initialize( OmSegmentCacheImplLowLevel * cache );
 
 	bool graph_doesGraphNeedToBeRefreshed( const quint32 maxValue ); 
-
 	OmSegID graph_getRootID( const OmSegID segID );
 	void graph_cut( const OmSegID segID );
 	void graph_join( const OmSegID childRootID, const OmSegID parentRootID );
@@ -25,9 +24,25 @@ class OmSegmentGraph {
 	OmSegmentListBySize mRootListBySize;
 	OmSegmentListBySize mValidListBySize;
 
+	void doResetGlobalThreshold( const quint32 * dend, 
+				     const float * dendValues, 
+				     quint8 * edgeDisabledByUser,
+				     quint8 * edgeWasJoined,
+				     quint8 * edgeForceJoin,
+				     const int size, 
+				     const float stopPoint );
+	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
+
  private:
 	DynamicTreeContainer<OmSegID> * mGraph;
-	void buildSegmentSizeLists( OmSegmentCacheImplLowLevel * );
+	OmSegmentCacheImplLowLevel * mCache;
+
+	void buildSegmentSizeLists();
+
+	bool JoinInternal( const OmSegID parentID, const OmSegID childUnknownDepthID, 
+			   const float threshold, const int edgeNumber);
+
+	bool splitChildFromParentInternal( const OmSegID childID );
 };
 
 #endif

@@ -44,15 +44,15 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	OmSegmentEdge * JoinFromUserAction( const OmId, const OmId );
 
-	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+
+	void rerootSegmentLists();
+	void rerootSegmentList( OmSegIDsSet & set );
+	void resetGlobalThreshold( const float stopPoint );
 
 	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
-	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
-	void doSelectedSetInsert( const OmSegID segID);
-	void doSelectedSetRemove( const OmSegID segID);
+
 	quint64 computeSegmentSizeWithChildren(const OmSegID segID );
 
-	void addToRecentMap( const OmSegID segID);
 	
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

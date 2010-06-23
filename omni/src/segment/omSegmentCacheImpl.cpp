@@ -68,6 +68,7 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
         }
 }
 
+
 OmSegmentEdge * OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
@@ -216,7 +217,7 @@ OmSegmentEdge * OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge * e )
         } 
 	doSelectedSetRemove( e->childID );
 
-	updateSizeListsFromJoin( parent, childRoot );
+	mSegmentGraph.updateSizeListsFromJoin( parent, childRoot );
 
 	return new OmSegmentEdge( parent, childRoot, e->threshold );
 }
@@ -333,30 +334,6 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 	edgeForceJoin[ seg->mEdgeNumber ] = valid;
 }
 
-void OmSegmentCacheImpl::refreshTree()
-{
-	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
-		mSegmentGraph.initialize(this);
-		foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
-			JoinEdgeFromUser(e);
-		}
-	}
-	
-	resetGlobalThreshold( mSegmentation->mDendThreshold );
-}
-
-void OmSegmentCacheImpl::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
-{
-       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
-
-       if (isSelected) {
-               doSelectedSetInsert( rootID );
-       } else {
-               doSelectedSetRemove( rootID );
-               assert( !mSelectedSet.contains( segID ));
-       }
-}
-
 void OmSegmentCacheImpl::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
 {
 	OmSegment * root = findRoot(parent);
@@ -375,30 +352,6 @@ quint64 OmSegmentCacheImpl::computeSegmentSizeWithChildren( const OmSegID segID 
 	return size;
 }
 
-void OmSegmentCacheImpl::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
-{
-	OmSegment * root = findRoot(parent);
-	mSegmentGraph.mRootListBySize.updateFromJoin( root, child );
-	mSegmentGraph.mValidListBySize.updateFromJoin( root, child );
-}
-
-void OmSegmentCacheImpl::doSelectedSetInsert( const OmSegID segID)
-{
-	mSelectedSet.insert( segID );
-	addToRecentMap(segID);
-}
- 		
-void OmSegmentCacheImpl::doSelectedSetRemove( const OmSegID segID)
-{
-	mSelectedSet.remove( segID );
-	addToRecentMap(segID);
-}
-	
-void OmSegmentCacheImpl::addToRecentMap( const OmSegID segID )
-{
-	mRecentRootActivityMap.touch( segID );
-}
-
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
 	OmSegment * seg = findRoot( segUnknownDepth );
@@ -408,4 +361,53 @@ quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDep
 	} 
 
 	return mSegmentGraph.mRootListBySize.getSegmentSize( seg );
+}
+
+void OmSegmentCacheImpl::rerootSegmentLists()
+{
+	rerootSegmentList( mEnabledSet );
+	rerootSegmentList( mSelectedSet );
+}
+
+void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
+{
+	OmSegIDsSet old = set;
+	set.clear();
+
+	OmSegID rootSegID;
+	foreach( const OmSegID & id, old ){
+		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
+		set.insert( rootSegID );
+	}
+}
+
+void OmSegmentCacheImpl::resetGlobalThreshold( const float stopPoint )
+{
+	printf("setting global threshold to %f...\n", stopPoint);
+
+	mSegmentGraph.doResetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
+					      mSegmentation->mDendValues->getFloatPtr(), 
+					      mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
+					      mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
+					      mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
+					      mSegmentation->mDendCount, 
+					      stopPoint);
+	
+	mSelectedSet.clear(); // nuke selected set for now...
+	//rerootSegmentLists();
+	clearCaches();
+
+	printf("done\n");
+}
+
+void OmSegmentCacheImpl::refreshTree()
+{
+	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
+		mSegmentGraph.initialize(this);
+		foreach( OmSegmentEdge * e, mManualUserMergeEdgeList ){
+			JoinEdgeFromUser(e);
+		}
+	}
+	
+	resetGlobalThreshold( mSegmentation->mDendThreshold );
 }

@@ -23,6 +23,9 @@ class OmSegmentCacheImplLowLevel {
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
 
+	OmSegment * findRoot( OmSegment * segment );
+	OmSegID findRootID( const OmSegID segID );
+
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
@@ -30,11 +33,11 @@ class OmSegmentCacheImplLowLevel {
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
-	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
 	OmSegIDsSet& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
+	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void UpdateSegmentSelection( const OmSegIDsSet & ids);
 
 	QString getSegmentName( OmSegID segID );
@@ -47,9 +50,6 @@ class OmSegmentCacheImplLowLevel {
 
 	void addToDirtySegmentList( OmSegment* seg);
 	void flushDirtySegments();
-
-	OmSegment * findRoot( OmSegment * segment );
-	OmSegID findRootID( const OmSegID segID );
 
 	void turnBatchModeOn(const bool batchMode);
 
@@ -75,30 +75,18 @@ class OmSegmentCacheImplLowLevel {
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
+	void doSelectedSetInsert( const OmSegID segID);
+	void doSelectedSetRemove( const OmSegID segID);	
+
 	void clearCaches();
 
 	OmSegmentGraph mSegmentGraph;
-	void resetGlobalThreshold( const float stopPoint );
-
-	void rerootSegmentLists();
-	void rerootSegmentList( OmSegIDsSet & set );
-
-	virtual void setSegmentSelectedBatch( OmSegID segID, bool isSelected ) = 0;
-	virtual void updateSizeListsFromJoin( OmSegment * root, OmSegment * child ) = 0;
 
 	OmSegmentListByMRU mRecentRootActivityMap;
+	void addToRecentMap( const OmSegID segID);
 
  private:
-	void doResetGlobalThreshold( const quint32 * dend, 
-				     const float * dendValues, 
-				     quint8 * edgeDisabledByUser,
-				     quint8 * edgeWasJoined,
-				     quint8 * edgeForceJoin,
-				     const int size, 
-				     const float stopPoint );
-	bool JoinInternal( const OmSegID parentID, const OmSegID childUnknownDepthID, 
-			   const float threshold, const int edgeNumber);
-	bool splitChildFromParentInternal( const OmSegID childID );
+	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
 
 };
 
