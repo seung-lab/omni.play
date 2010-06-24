@@ -60,9 +60,10 @@ public:
 	OmSegment * FindRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
 
-        OmSegmentEdge splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
-	OmSegmentEdge JoinEdge( OmSegmentEdge e );
+	OmSegmentEdge JoinEdge( const OmSegmentEdge & e );
+	OmSegmentEdge SplitEdge( const OmSegmentEdge & e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 

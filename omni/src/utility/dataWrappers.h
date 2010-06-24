@@ -32,7 +32,9 @@ class SegmentationDataWrapper
 {
  public:
 	SegmentationDataWrapper(){}
-	SegmentationDataWrapper( const OmId mID );
+	explicit SegmentationDataWrapper( const OmId mID );
+	explicit SegmentationDataWrapper( OmSegment * );
+
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
@@ -57,6 +59,8 @@ class SegmentDataWrapper
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
 			    const OmSegID segmentID );
+	SegmentDataWrapper( OmSegment * seg );
+
 	QString getName();
 
 	OmId getSegmentationID(){ return mSegmentationID; }

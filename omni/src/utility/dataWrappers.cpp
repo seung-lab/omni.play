@@ -88,7 +88,14 @@ QHash < OmId, FilterDataWrapper > ChannelDataWrapper::getAllFilterIDsAndNames()
  ****** Segmentations
  *******************************************/
 SegmentationDataWrapper::SegmentationDataWrapper(const OmId ID)
-	: mID(ID), mType(SEGMENTATION)
+	: mID(ID)
+	, mType(SEGMENTATION)
+{
+}
+
+SegmentationDataWrapper::SegmentationDataWrapper( OmSegment * seg )
+	: mID(seg->getSegmentationID())
+	, mType(SEGMENTATION)
 {
 }
 
@@ -140,6 +147,13 @@ SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmSegID 
 	: mID(segmentID)
 	, mType(SEGMENT)
 	, mSegmentationID( segmentationID )
+{
+}
+
+SegmentDataWrapper::SegmentDataWrapper( OmSegment * seg )
+	: mID(seg->getValue())
+	, mType(SEGMENT)
+	, mSegmentationID( seg->getSegmentationID() )
 {
 }
 

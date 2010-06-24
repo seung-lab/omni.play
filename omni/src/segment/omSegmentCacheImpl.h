@@ -19,10 +19,10 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
 				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 
-	OmSegmentEdge splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
-	OmSegmentEdge findClosestCommonEdgeBetweenTwoChildren(OmSegment *, OmSegment *);
+	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
 	OmSegmentEdge JoinFromUserAction( OmSegmentEdge e );
+	OmSegmentEdge SplitEdgeUserAction( OmSegmentEdge e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 

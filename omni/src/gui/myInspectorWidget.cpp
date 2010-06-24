@@ -536,9 +536,9 @@ void MyInspectorWidget::updateSegmentListBox( SegmentationDataWrapper sdw )
 {
 	elementListBox->reset();
 	elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
-	segmentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
-	validList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
-	recentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID );
+	segmentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID, true );
+	validList->makeSegmentationActive( sdw, NULL_SEGMENT_ID, true );
+	recentList->makeSegmentationActive( sdw, NULL_SEGMENT_ID, true );
 }
 
 void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)

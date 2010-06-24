@@ -230,10 +230,10 @@ OmSegID OmSegmentCache::findRootID( const OmSegID segID )
 	return mImpl->findRootID( segID );
 }
 
-OmSegmentEdge OmSegmentCache::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
 {
 	QMutexLocker locker( &mMutex );
-	return mImpl->splitTwoChildren(seg1, seg2);
+	return mImpl->findClosestCommonEdge(seg1, seg2);
 }
 
 void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
@@ -278,10 +278,16 @@ void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
         return mImpl->setAsValidated(segment, valid);
 }
 
-OmSegmentEdge OmSegmentCache::JoinEdge( OmSegmentEdge e )
+OmSegmentEdge OmSegmentCache::JoinEdge( const OmSegmentEdge & e )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->JoinFromUserAction( e );
+}
+
+OmSegmentEdge OmSegmentCache::SplitEdge( const OmSegmentEdge & e )
+{
+	QMutexLocker locker( &mMutex );
+        return mImpl->SplitEdgeUserAction( e );
 }
 
 void OmSegmentCache::refreshTree()

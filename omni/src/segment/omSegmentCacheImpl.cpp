@@ -68,14 +68,7 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
         }
 }
 
-
-OmSegmentEdge OmSegmentCacheImpl::splitTwoChildren(OmSegment * seg1, OmSegment * seg2)
-{
-	OmSegmentEdge edgeToBreak = findClosestCommonEdgeBetweenTwoChildren( seg1, seg2 );
-	return splitChildFromParent( GetSegmentFromValue( edgeToBreak.childID ));
-}
-
-OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdgeBetweenTwoChildren(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
@@ -139,6 +132,11 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdgeBetweenTwoChildren(OmSegm
 
         assert(minChild != 0);
         return OmSegmentEdge(minChild);
+}
+
+OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
+{
+	return splitChildFromParent( GetSegmentFromValue( e.childID ));
 }
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )

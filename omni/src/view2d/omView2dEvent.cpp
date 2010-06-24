@@ -855,7 +855,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
                         return;
                 }
 
-		(new OmSegmentSplitAction(seg1, seg2))->Run();
+		OmSegmentSplitAction::RunIfSplittable(seg1, seg2);
 
 		mViewGroupState->SetSplitMode(false);
 	} else {

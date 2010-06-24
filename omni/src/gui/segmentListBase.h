@@ -26,7 +26,7 @@ public:
 
 	void makeSegmentationActive(SegmentationDataWrapper sdw, 
 				    const OmSegID segmentJustSelectedID,
-				    const bool doScroll = true );
+				    const bool doScroll );
 
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
