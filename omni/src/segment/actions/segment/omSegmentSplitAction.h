@@ -10,12 +10,12 @@ class OmSegment;
 class OmSegmentSplitAction : public OmAction {
 
 public:
-	OmSegmentSplitAction( const SegmentationDataWrapper & sdw, 
-			      const OmSegmentEdge & edge );
-
 	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
 
 private:
+	OmSegmentSplitAction( const SegmentationDataWrapper & sdw, 
+			      const OmSegmentEdge & edge );
+
 	void Run();
 
 	void Action();
