@@ -5,11 +5,13 @@
 #include "segment/omSegmentCache.h"
 #include "volume/omSegmentation.h"
 
+static const quint32 DEFAULT_PAGE_SIZE = 100000;
+
 template< class T >
 OmPagingStore<T>::OmPagingStore(OmSegmentation * segmentation, OmSegmentCache * cache)
 	: mSegmentation(segmentation)
 	, mParentCache(cache)
-	, mPageSize(10000)
+	, mPageSize(DEFAULT_PAGE_SIZE)
 	, mAllPagesLoaded(false)
 	, amInBatchMode(false)
 	, needToFlush(false)

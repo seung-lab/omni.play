@@ -30,8 +30,8 @@ class OmSegmentGraph {
 				 quint8 * edgeWasJoined,
 				 quint8 * edgeForceJoin,
 				 const int size, 
-				 const float stopPoint,
-				 const quint64 dustAutoMergeThreshold);
+				 const float stopPoint);
+
 	void resetGlobalThreshold( const quint32 * dend, 
 				   const float * dendValues, 
 				   quint8 * edgeDisabledByUser,
@@ -39,6 +39,7 @@ class OmSegmentGraph {
 				   quint8 * edgeForceJoin,
 				   const int size, 
 				   const float stopPoint );
+
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
 

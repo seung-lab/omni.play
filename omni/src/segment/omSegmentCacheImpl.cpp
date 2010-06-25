@@ -379,8 +379,6 @@ void OmSegmentCacheImpl::refreshTree()
 
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
-	const quint64 dustAutoMergeThreshold = 50;
-
 	printf("setting global threshold to %f...\n", mSegmentation->mDendThreshold);
 
 	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
@@ -389,8 +387,7 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
 					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
 					  mSegmentation->mDendCount, 
-					  mSegmentation->mDendThreshold,
-					  dustAutoMergeThreshold );
+					  mSegmentation->mDendThreshold);
 	
 	mSelectedSet.clear();
 	clearCaches();
