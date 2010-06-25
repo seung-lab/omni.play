@@ -267,9 +267,9 @@ void DendToolBar::addToolbars()
         sixthLayout->addWidget(addGroupAct,0,0,1,2);
         sixthLayout->addWidget(deleteGroupAct,1,0,1,2);
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
-        sixthLayout->addWidget(showValid,3,0,1,2);
-        sixthLayout->addWidget(dontShowValid,4,0,1,2);
-        sixthLayout->addWidget(mGroupName,5,0,1,2);
+        sixthLayout->addWidget(showValid,3,0,1,1);
+        sixthLayout->addWidget(dontShowValid,3,1,1,1);
+        sixthLayout->addWidget(mGroupName,4,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 
