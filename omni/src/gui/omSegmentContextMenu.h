@@ -39,6 +39,7 @@ private slots:
 private:
 	OmId mSegmentationId;
 	OmId mSegmentId;
+	bool mImmutable;
 	OmViewGroupState * mViewGroupState;
 };
 

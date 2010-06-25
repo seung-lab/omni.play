@@ -23,8 +23,11 @@
 void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs)
 {
 	mSegmentationId = sdw.getSegmentationID();
+        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	mSegmentId = sdw.getID();
 	mViewGroupState = vgs;
+	OmSegID rootId = seg.GetSegmentCache()->findRootID(mSegmentId);
+	mImmutable = seg.GetSegmentCache()->GetSegment(rootId)->GetImmutable();
 
 	//clear old menu actions
 	clear();
@@ -38,8 +41,10 @@ void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * v
         AddColorActions();
 	addSeparator();
 
-	AddDendActions();
-	addSeparator();
+	if(!mImmutable) {
+		AddDendActions();
+		addSeparator();
+	}
 
 	AddGroupActions();
 	addSeparator();
@@ -56,7 +61,13 @@ void OmSegmentContextMenu::AddSelectionNames()
 	addAction( "Segment " + QString::number(r_segment->getValue()) 
 		   + " (Root " + QString::number(r_segment->getRootSegID()) 
 		   + ")" );
-	addAction( r_segmentation.GetName() );
+	QString validText;
+	if(mImmutable) {
+		validText = "Valid in ";
+	} else {
+		validText = "Not valid in ";
+	}
+	addAction( validText + r_segmentation.GetName() );
 }
 
 /*
