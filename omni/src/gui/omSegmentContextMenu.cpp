@@ -86,8 +86,8 @@ void OmSegmentContextMenu::AddSelectionAction()
 		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
 		addAction(QString("Deselect Only This Segment"), this, SLOT(Unselect()));
 	} else {
-		addAction(QString("Select Segment"), this, SLOT(Select()));
 		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
+		addAction(QString("Select Segment"), this, SLOT(Select()));
 	}
 }
 

@@ -904,7 +904,22 @@ void OmView2d::myUpdate()
 						SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen (false));
 
+						if(CHANNEL == mVolumeType) {
+						
+                        				OmChannel & current_channel = OmProject::GetChannel(mImageId);
+                        				foreach( OmId id, current_channel.GetValidFilterIds() ) {
+                                				OmFilter2d &filter = current_channel.GetFilter( id );
+								if(filter.GetSegmentation() != mEditedSegmentation) {
+									continue;
+								}
+        							OmThreadedCachingTile *filterCache = filter.GetCache(mViewType, mViewGroupState);
+        							if (filterCache) {
+									filterCache->Remove(tileCoord);
+								}
+                        				}
+						}
 						cache->Remove(tileCoord);
+
 						//debug("FIXME", "tileCoord\n");
 					}
 					//debug("FIXME", << " x,y,z a:" << x << ", "  << y << ", " << z << endl;
@@ -916,7 +931,8 @@ void OmView2d::myUpdate()
 			}
 		}
 		//debug("FIXME", << "exit" << endl;
-	} else if (mDoRefresh) {
+	} 
+	if (mDoRefresh) {
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
