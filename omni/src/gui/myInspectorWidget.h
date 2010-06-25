@@ -12,7 +12,7 @@
 class SegInspector;
 class ChanInspector;
 class FilObjectInspector;
-class SegmentListAll;
+class SegmentListWorking;
 class SegmentListValid;
 class SegmentListRecent;
 class ElementListBox;
@@ -114,7 +114,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	InspectorProperties * inspectorProperties;
 	ElementListBox * elementListBox;
-	SegmentListAll * segmentList;
+	SegmentListWorking * segmentList;
 	SegmentListValid * validList;
 	SegmentListRecent * recentList;
 

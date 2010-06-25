@@ -4,12 +4,12 @@
 #include "gui/segmentListBase.h"
 #include "common/omCommon.h"
 
-class SegmentListAll : public SegmentListBase
+class SegmentListWorking : public SegmentListBase
 {
 	Q_OBJECT
 
 public:
-	SegmentListAll( QWidget * , InspectorProperties *, ElementListBox * );
+	SegmentListWorking( QWidget * , InspectorProperties *, ElementListBox * );
 
  private:
 	QString getTabTitle();

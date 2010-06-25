@@ -113,7 +113,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/myInspectorWidget.h \
            src/gui/recentFileList.h \
            src/gui/searchInspector.h \
-           src/gui/segmentListAll.h \
+           src/gui/segmentListWorking.h \
            src/gui/segmentListBase.h \
            src/gui/segmentListValid.h \
            src/gui/segmentListRecent.h \
@@ -290,7 +290,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \
-           src/gui/segmentListAll.cpp \
+           src/gui/segmentListWorking.cpp \
            src/gui/segmentListBase.cpp \
            src/gui/segmentListValid.cpp \
            src/gui/segmentListRecent.cpp \

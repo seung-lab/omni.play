@@ -3,7 +3,7 @@
 #include "gui/guiUtils.h"
 #include "gui/mainwindow.h"
 #include "gui/myInspectorWidget.h"
-#include "gui/segmentListAll.h"
+#include "gui/segmentListWorking.h"
 #include "gui/segmentListValid.h"
 #include "gui/segmentListRecent.h"
 #include "inspectors/chanInspector.h"
@@ -44,7 +44,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 	elementListBox = new ElementListBox(this);
 	verticalLayout->addWidget(elementListBox);
 
-	segmentList = new SegmentListAll(this, inspectorProperties, elementListBox);
+	segmentList = new SegmentListWorking(this, inspectorProperties, elementListBox);
 	validList = new SegmentListValid(this, inspectorProperties, elementListBox);
 	recentList = new SegmentListRecent(this, inspectorProperties, elementListBox);
 	channelInspectorWidget=NULL;
