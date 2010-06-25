@@ -46,6 +46,7 @@ class DendToolBar : public QWidget
         void addGroup();
         void deleteGroup();
         void mapColors();
+        void changeMapColors();
 
  private:
 	MainWindow * mMainWindow;
@@ -83,6 +84,9 @@ class DendToolBar : public QWidget
 	QPushButton * addGroupAct;
 	QPushButton * deleteGroupAct;
         QPushButton * colorMapAct;
+	QButtonGroup * validGroup;
+        QRadioButton * showValid;
+        QRadioButton * dontShowValid;
 	QLineEdit* mGroupName;
 
 	QLineEdit* mDustThreshold;

@@ -144,6 +144,18 @@ void DendToolBar::createToolbarActions()
                 this, SLOT(mapColors()));
         colorMapAct->setCheckable(true);
 
+	validGroup = new QButtonGroup();
+	showValid = new QRadioButton("In Color");
+	validGroup->addButton(showValid);
+        connect(showValid, SIGNAL(toggled(bool)),
+                this, SLOT(changeMapColors()));
+
+	dontShowValid = new QRadioButton("As Black");
+	dontShowValid->setChecked(true);
+	validGroup->addButton(dontShowValid);
+        connect(dontShowValid, SIGNAL(toggled(bool)),
+                this, SLOT(changeMapColors()));
+
         mGroupName = new QLineEdit(mMainWindow);
         mGroupName->setText("Valid");
 
@@ -255,7 +267,9 @@ void DendToolBar::addToolbars()
         sixthLayout->addWidget(addGroupAct,0,0,1,2);
         sixthLayout->addWidget(deleteGroupAct,1,0,1,2);
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
-        sixthLayout->addWidget(mGroupName,3,0,1,2);
+        sixthLayout->addWidget(showValid,3,0,1,2);
+        sixthLayout->addWidget(dontShowValid,4,0,1,2);
+        sixthLayout->addWidget(mGroupName,5,0,1,2);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 
@@ -490,9 +504,16 @@ void DendToolBar::deleteGroup()
 
 void DendToolBar::mapColors()
 {
-	debug("dendbar", "DendToolBar::mapColors(%i)\n", colorMapAct->isChecked());
+	debug("valid", "DendToolBar::mapColors(%i)\n", colorMapAct->isChecked());
 	// Using !(not) because check happens after this fuction.
-	mViewGroupState->SetShowValidMode(!colorMapAct->isChecked());
+	mViewGroupState->SetShowValidMode(!colorMapAct->isChecked(), showValid->isChecked());
+}
+
+void DendToolBar::changeMapColors()
+{
+	debug("valid", "DendToolBar::mapColors(%i)\n", colorMapAct->isChecked());
+	// Using !(not) because check happens after this fuction.
+	mViewGroupState->SetShowValidMode(colorMapAct->isChecked(), showValid->isChecked());
 }
 
 void DendToolBar::SetSplittingOff()

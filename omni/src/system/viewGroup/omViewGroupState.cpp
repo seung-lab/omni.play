@@ -43,6 +43,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
         mSplittingSeg = 1;
         mShowValid = false;
 	mShowSplit = false;
+	mShowValidInColor = false;
 
 	zoom_level = Vector2 < int >(0, 10);
 
@@ -376,7 +377,11 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ){
 			sccType = SCC_FILTER_BREAK;
 		} else if(mShowValid) {
-			sccType = SCC_FILTER_VALID;
+			if(mShowValidInColor){
+				sccType = SCC_FILTER_VALID;
+			} else {
+				sccType = SCC_FILTER_VALID_BLACK;
+			}
 		} else {
 			sccType = SCC_FILTER;
 		}
@@ -386,7 +391,11 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ) {
 			sccType = SCC_SEGMENTATION_BREAK;
 		} else if(mShowValid) {
-			sccType = SCC_SEGMENTATION_VALID;
+			if(mShowValidInColor){
+				sccType = SCC_SEGMENTATION_VALID;
+			} else {
+				sccType = SCC_SEGMENTATION_VALID_BLACK;
+			}
 		} else {
 			sccType = SCC_SEGMENTATION;
 		}
@@ -460,12 +469,14 @@ void OmViewGroupState::SetBreakOnSplitMode(bool mode)
 	mBreakOnSplit = mode;
 }
 
-void OmViewGroupState::SetShowValidMode(bool mode)
+void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 {
+	debug("valid", "OmViewGroupState::SetShowValidMode(bool mode=%i, bool inColor=%i)\n", mode, inColor);
 	OmCacheManager::Freshen(true);
+	mShowValid = mode;
+	mShowValidInColor = inColor;
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	mShowValid = mode;
 }
 
 void OmViewGroupState::SetShowSplitMode(bool mode)

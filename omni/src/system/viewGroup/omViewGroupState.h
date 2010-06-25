@@ -71,7 +71,7 @@ class OmViewGroupState : public OmManageableObject {
         void SetSplitMode(bool onoroff, bool postEvent = true);
 	void SetBreakOnSplitMode(bool mode);
 
-	void SetShowValidMode(bool mode);
+	void SetShowValidMode(bool mode, bool incolor);
 	void SetShowSplitMode(bool mode);
 	bool shouldMeshBeShownBroken();
 
@@ -113,6 +113,7 @@ class OmViewGroupState : public OmManageableObject {
 	OmId mSplittingSeg;
 	bool mShowValid;
 	bool mShowSplit;
+	bool mShowValidInColor;
 
 };
 
