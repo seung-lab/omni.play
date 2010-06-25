@@ -15,6 +15,7 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "system/events/omSegmentEvent.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -169,6 +170,7 @@ void OmSegmentContextMenu::addGroup()
                 OmSegIDsSet set;
 		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, VALIDROOT, QString("Valid"));
+                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 
@@ -180,6 +182,7 @@ void OmSegmentContextMenu::deleteGroup()
                 OmSegIDsSet set;
                 set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
+                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 

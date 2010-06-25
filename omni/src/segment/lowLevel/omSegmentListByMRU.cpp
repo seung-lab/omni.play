@@ -12,8 +12,7 @@ void OmSegmentListByMRU::touch( const OmSegID segID_ )
 	List_by_ID & idIndex = mList.get<segID>();
 	List_by_ID::iterator iter = idIndex.find(segID_);
 	if(iter != idIndex.end() ){
-		const quint64 newSize = iter->segSize + activity;
-		idIndex.replace( iter, OmSegSize(segID_, newSize) );
+		idIndex.replace( iter, OmSegSize(segID_, activity) );
 	} else {
 		mList.insert( OmSegSize(segID_, activity ) );
 	}
