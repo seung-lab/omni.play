@@ -15,6 +15,7 @@ class SegmentListRecent : public SegmentListBase
 	QString getTabTitle();
 	OmSegIDRootType getRootSegType(){ return RECENTROOT; }
 	int getPreferredTabIndex(){ return 2; }
+	void makeTabActiveIfContainsJumpedToSegment();
 };
 
 #endif

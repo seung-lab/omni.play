@@ -29,11 +29,13 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
 	setFocusPolicy(Qt::StrongFocus);
 }
 
-void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 							    const OmId segmentJustSelectedID,
 							    SegmentationDataWrapper segmentationDW,
 							    OmSegPtrList * segs )
 {
+	bool shouldSuggestThisTabBeMadeActive = false;
+
 	setUpdatesEnabled( false );
 	clear();
 	selectionModel()->blockSignals(true);
@@ -62,6 +64,7 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 		row->setSelected(seg->IsSelected());
 		if (doScrollToSelectedSegment && seg->getValue() == segmentJustSelectedID) {
 			rowToJumpTo = row;
+			shouldSuggestThisTabBeMadeActive = true;
 		}
 	}
 
@@ -74,6 +77,8 @@ void OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	}
 
 	setUpdatesEnabled( true);
+
+	return shouldSuggestThisTabBeMadeActive;
 }
 
 string OmSegmentListWidget::eventSenderName()

@@ -15,6 +15,7 @@ class SegmentListValid : public SegmentListBase
 	QString getTabTitle();
 	OmSegIDRootType getRootSegType(){ return VALIDROOT; }
 	int getPreferredTabIndex(){ return 1; }
+	void makeTabActiveIfContainsJumpedToSegment();
 };
 
 #endif

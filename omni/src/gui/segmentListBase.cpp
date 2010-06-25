@@ -67,12 +67,16 @@ void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSel
 {
 	assert( haveValidSDW );
 	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
-	segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment, 
-							     segmentJustSelectedID, 
-							     currentSDW,
-							     segs );
-
+	const bool shouldThisTabBeMadeActive = segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment, 
+												    segmentJustSelectedID, 
+												    currentSDW,
+												    segs );
+	
 	delete segs;
+
+	if(shouldThisTabBeMadeActive){
+		makeTabActiveIfContainsJumpedToSegment();
+	}
 
 	elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
 }
@@ -116,7 +120,6 @@ void SegmentListBase::setupPageButtons()
         buttons->addWidget(prevButton);
         buttons->addWidget(nextButton);
         buttons->addWidget(endButton);
-
         layout->addWidget( buttonBox );
 
         QGroupBox * searchBox = new QGroupBox("");

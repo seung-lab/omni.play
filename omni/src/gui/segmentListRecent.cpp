@@ -12,3 +12,8 @@ QString SegmentListRecent::getTabTitle()
 	return QString("Recent");
 }
 
+
+void SegmentListRecent::makeTabActiveIfContainsJumpedToSegment()
+{
+	// don't jump to this tab
+}

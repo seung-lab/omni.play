@@ -1,4 +1,5 @@
 #include "gui/segmentListValid.h"
+#include "gui/elementListBox.h"
 
 SegmentListValid::SegmentListValid( QWidget * parent, 
 				    InspectorProperties * ip,
@@ -12,3 +13,7 @@ QString SegmentListValid::getTabTitle()
 	return QString("Valid");
 }
 
+void SegmentListValid::makeTabActiveIfContainsJumpedToSegment()
+{
+	elementListBox->setActiveTab( this );
+}

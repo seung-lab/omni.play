@@ -15,6 +15,7 @@ public:
 	QString getTabTitle();
 	OmSegIDRootType getRootSegType(){ return NOTVALIDROOT; }
 	int getPreferredTabIndex(){ return 0; }
+	void makeTabActiveIfContainsJumpedToSegment();
 };
 
 #endif

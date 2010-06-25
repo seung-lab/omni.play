@@ -44,6 +44,7 @@ protected:
 	virtual QString getTabTitle() = 0;
 	virtual OmSegIDRootType getRootSegType() = 0;
 	virtual int getPreferredTabIndex() = 0;
+	virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
 
         QVBoxLayout * layout;
         QPushButton * prevButton;

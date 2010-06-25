@@ -19,7 +19,7 @@ class OmSegmentListWidget : public QTreeWidget {
  public:
 	OmSegmentListWidget(SegmentListBase*, InspectorProperties *);
 
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
+	bool populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
 					       const OmId segmentJustSelectedID,
 					       SegmentationDataWrapper seg,
 					       OmSegPtrList * segs );
