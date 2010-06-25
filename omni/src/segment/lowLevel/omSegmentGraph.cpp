@@ -112,15 +112,6 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 			} else {
 				edgeDisabledByUser[i] = 1;
 			}
-		} else { // split
-			if( 0 == edgeWasJoined[i] ){
-				continue;
-			}
-			if( splitChildFromParentInternal( childID ) ){
-				edgeWasJoined[i] = 0;
-			} else {
-				edgeForceJoin[i] = 1;
-			}
 		}
         }
 

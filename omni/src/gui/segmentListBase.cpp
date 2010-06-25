@@ -114,11 +114,16 @@ void SegmentListBase::setupPageButtons()
 
         buttons->addWidget(startButton);
         buttons->addWidget(prevButton);
-        buttons->addWidget(searchEdit);
         buttons->addWidget(nextButton);
         buttons->addWidget(endButton);
 
         layout->addWidget( buttonBox );
+
+        QGroupBox * searchBox = new QGroupBox("");
+        searchBox->setFlat(true);
+        QHBoxLayout * searchLayout = new QHBoxLayout( searchBox );
+        searchLayout->addWidget(searchEdit);
+	layout->addWidget( searchBox );
 }
 
 void SegmentListBase::goToStartPage()
