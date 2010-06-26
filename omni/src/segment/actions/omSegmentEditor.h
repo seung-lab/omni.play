@@ -22,11 +22,6 @@ public:
 	
 	static void SetSelectedVoxelState(const DataCoord &dataCoord, bool selected);
 	static bool GetSelectedVoxelState(const DataCoord &dataCoord);
-
-	
-	//voxel
-	static DataCoord SpaceCoordToEditSelectionVoxel(const SpaceCoord &spaceCoord);
-	static void DrawEditSelectionVoxels();
 		
 private:
 	OmSegmentEditor();
