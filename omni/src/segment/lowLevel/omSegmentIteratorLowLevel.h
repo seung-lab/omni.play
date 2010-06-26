@@ -7,7 +7,7 @@
 class OmSegment;
 class OmSegmentCacheImplLowLevel;
 
-class OmSegmentIteratorLowLevel {
+class OmSegmentIteratorLowLevel : boost::noncopyable {
 
  public:
 	OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel * );
@@ -18,8 +18,6 @@ class OmSegmentIteratorLowLevel {
 	OmSegment * getNextSegment();
 	bool empty();
 	
-	OmSegmentIteratorLowLevel & operator = (const OmSegmentIteratorLowLevel & other);
-
  private:
 	OmSegmentCacheImplLowLevel * mCache;
 	OmSegPtrList mSegs;

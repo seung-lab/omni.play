@@ -12,10 +12,12 @@ OmSegmentIteratorLowLevel::OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel
 void OmSegmentIteratorLowLevel::iterOverAllSegments()
 {
 	mIterOverAll = true;
+	mSegs.clear();
 }
 
 void OmSegmentIteratorLowLevel::iterOverSegmentID(const OmSegID segID )
 {
+	mIterOverAll = false;
 	mSegs.push_back( mCache->GetSegmentFromValue(segID) );
 }
 
@@ -65,16 +67,4 @@ OmSegment * OmSegmentIteratorLowLevel::getNextSegmentFromSet()
 	}
 
 	return segRet;
-}
-
-OmSegmentIteratorLowLevel & OmSegmentIteratorLowLevel::operator = (const OmSegmentIteratorLowLevel & other)
-{
-	if (this == &other) {
-		return *this; 
-	}
-	
-	mCache = other.mCache;
-	mSegs = other.mSegs;
-
-	return *this;
 }
