@@ -10,14 +10,14 @@ function downsmapleImage(data)
     
     for ind = 1:zSize
         fprintf('downsampling slice %d...', ind);
-        newData(:,:,ind) = uint8((double(data(1:2:end,1:2:end,ind)) + ...
-                                  double(data(2:2:end,1:2:end,ind)) + ...
-                                  double(data(1:2:end,2:2:end,ind)) + ...
-                                  double(data(2:2:end,2:2:end,ind)))/4);
+        newData(:,:,ind) = uint8((uint16(data(1:2:end,1:2:end,ind)) + ...
+                                  uint16(data(2:2:end,1:2:end,ind)) + ...
+                                  uint16(data(1:2:end,2:2:end,ind)) + ...
+                                  uint16(data(2:2:end,2:2:end,ind)))/4);
         fprintf('done\n');
     end
 
     fprintf('writing h5 file...');
-    hdf5write('downsampled.h5', '/chan', newData);
+    hdf5write('zebraFishImgStack.downsmapled2.h5', '/chanSingle', newData);
     fprintf('done\n');
 end
