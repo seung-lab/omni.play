@@ -63,7 +63,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth = 0;
+	float mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -83,7 +83,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 	}
 
 	
-	int tileLength = 0;
+	float tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -101,13 +101,13 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 	
 	bool complete = true;
-	int xMipChunk;
-	int yMipChunk;
-	int xval;
-	int yval;
+	float xMipChunk;
+	float yMipChunk;
+	float xval;
+	float yval;
 	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
-	int pl = OMPOW(2, zoomMipVector.x);
+	float pl = OMPOW(2, zoomMipVector.x);
 	int tl = tileLength * OMPOW(2, zoomMipVector.x);
 
 	if (translateVector.y < 0) {
@@ -118,18 +118,18 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		yval = translateVector.y;
 	}
 
-	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
 	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
 		if (translateVector.x < 0) {
-			xMipChunk = ((abs((int)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((int)translateVector.x) % tl));
+			xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
+			xval = (-1 * (abs((float)translateVector.x) % tl));
 		} else {
 			xMipChunk = 0;
 			xval = translateVector.x;
 		}
 
-		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
@@ -233,7 +233,7 @@ SpaceCoord OmView2dImpl::DataToSpaceCoord(const DataCoord & datac)
 	return mVolume->DataToSpaceCoord(datac);
 }
 
-DataCoord OmView2dImpl::ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth)
+DataCoord OmView2dImpl::ToDataCoord(float xMipChunk, float yMipChunk, float mDataDepth)
 {
 	switch (mViewType) {
 	case XY_VIEW:
@@ -314,7 +314,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	int mDataDepth = 0;
+	float mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -334,7 +334,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 	}
 
 	
-	int tileLength = 0;
+	float tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
 		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
@@ -352,13 +352,13 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 
 	
 	bool complete = true;
-	int xMipChunk;
-	int yMipChunk;
-	int xval;
-	int yval;
+	float xMipChunk;
+	float yMipChunk;
+	float xval;
+	float yval;
 	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
-	int pl = OMPOW(2, zoomMipVector.x);
+	float pl = OMPOW(2, zoomMipVector.x);
 	int tl = tileLength * OMPOW(2, zoomMipVector.x);
 
 	if (translateVector.y < 0) {
@@ -369,12 +369,12 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		yval = translateVector.y;
 	}
 
-	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
 	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
 		if (translateVector.x < 0) {
-			xMipChunk = ((abs((int)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((int)translateVector.x) % tl));
+			xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
+			xval = (-1 * (abs((float)translateVector.x) % tl));
 		} else {
 			xMipChunk = 0;
 			xval = translateVector.x;
@@ -395,10 +395,10 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
 #endif
 
-		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
-			for (int count = -5; count < 6; count++) {
+			for (float count = -5; count < 6; count++) {
                         	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
                         	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
@@ -445,7 +445,7 @@ void OmView2dImpl::TextureDraw(vector < Drawable * >&textures)
 	}
 }
 
-void OmView2dImpl::safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer < OmTextureID > gotten_id)
+void OmView2dImpl::safeDraw(float zoomFactor, float x, float y, int tileLength, QExplicitlySharedDataPointer < OmTextureID > gotten_id)
 {
 	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 

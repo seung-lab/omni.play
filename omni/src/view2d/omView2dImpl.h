@@ -26,7 +26,7 @@ class OmView2dImpl : public QWidget
 	Vector2f GetPanDistance(ViewType viewType);
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
-        DataCoord ToDataCoord(int xMipChunk, int yMipChunk, int mDataDepth);
+        DataCoord ToDataCoord(float xMipChunk, float yMipChunk, float mDataDepth);
 
 	bool drawComplete;
 	ViewType mViewType;
@@ -61,7 +61,7 @@ class OmView2dImpl : public QWidget
 
 	void PreDraw(Vector2f zoomMipVector);
 	void TextureDraw(vector <Drawable*> &textures);
-	void safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer<OmTextureID> gotten_id);
+	void safeDraw(float zoomFactor, float x, float y, int tileLength, QExplicitlySharedDataPointer<OmTextureID> gotten_id);
 	void safeTexture(QExplicitlySharedDataPointer<OmTextureID> gotten_id);
 	bool BufferTiles(Vector2f zoomMipVector);
 

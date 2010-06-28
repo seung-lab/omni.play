@@ -594,12 +594,17 @@ void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
 	Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 	Vector2f current_pan = GetPanDistance(mViewType);
 	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
-	Vector2i thisPoint = Vector2i(event->x(),event->y());
+
+	SpaceCoord dragCoord = ScreenToSpaceCoord(drag);
+	SpaceCoord zeroCoord = ScreenToSpaceCoord(Vector2i(0,0));
+
+	//debug("jitterbug", "testCoord4: %f,%f,%f\n", DEBUGV3(testCoord4));
+	//debug("jitterbug", "testCoord5: %f,%f,%f\n", DEBUGV3(testCoord5));
 
 	if (OmLocalPreferences::getStickyCrosshairMode()) {
-		SpaceCoord thisCoord = ScreenToSpaceCoord(thisPoint);
-		SpaceCoord difference = thisCoord - rememberCoord;
-	       	SpaceCoord depth = mViewGroupState->GetViewDepthCoord() - difference;
+		SpaceCoord difference = zeroCoord - dragCoord;
+	       	SpaceCoord oldDepth = mViewGroupState->GetViewDepthCoord();
+	       	SpaceCoord depth = oldDepth - difference;
 		mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
 		mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
