@@ -12,6 +12,7 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
+#include "gui/toolbars/dendToolbarButtons.h"
 
 bool mShowGroups = false;
 static OmId mSeg = 1;
@@ -20,6 +21,7 @@ DendToolBar::DendToolBar( MainWindow * mw )
 	: QWidget(mw)
 	, mMainWindow(mw)
 	, mViewGroupState(NULL)
+	, splitButton(NULL)
 {
 	createToolbar();
 }
@@ -35,7 +37,7 @@ void DendToolBar::createToolbar()
 
 void DendToolBar::setToolbarDisabled()
 {
-	toolbarSplitAct->setEnabled(false);
+	splitButton->setEnabled(false);
 }
 
 OmId DendToolBar::getSegmentationID()
@@ -45,12 +47,10 @@ OmId DendToolBar::getSegmentationID()
 
 void DendToolBar::createToolbarActions()
 {
-	toolbarSplitAct = new QPushButton(mMainWindow);
-	toolbarSplitAct->setText(tr("split"));
-	toolbarSplitAct->setStatusTip(tr("Split object mode"));
-	connect(toolbarSplitAct, SIGNAL(pressed()), 
-		this, SLOT(split()));
-	toolbarSplitAct->setCheckable(true);
+	splitButton = new SplitButton( mMainWindow, 
+				       "split",
+				       "Split object mode",
+				       true );
 
 	autoBreakCheckbox = new QCheckBox(mMainWindow);
 	autoBreakCheckbox->setText(tr("Show Breaks"));
@@ -222,7 +222,7 @@ void DendToolBar::addToolbars()
 	QGroupBox* firstBox = new QGroupBox(this);
 	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);
 	
-	firstLayout->addWidget(toolbarSplitAct);
+	firstLayout->addWidget(splitButton);
 	firstLayout->addWidget(autoBreakCheckbox);
 	firstBox->setLayout(firstLayout);
 	dendToolBar->addWidget(firstBox);
@@ -295,11 +295,6 @@ void DendToolBar::ChangeModeModify(const bool )
         debug("dendbar", "DendToolBar::ChangeModeModify\n");
 }
 
-void DendToolBar::toolbarSplit(const bool )
-{
-        debug("dendbar", "DendToolBar::toolbarSplit\n");
-}
-
 void DendToolBar::resetTool(QAction * tool, const bool enabled)
 {
         debug("dendbar", "DendToolBar::resetTool\n");
@@ -321,19 +316,7 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 		toBeEnabled = true;
 	}
 
-	toolbarSplitAct->setEnabled(toBeEnabled);
-}
-
-void DendToolBar::split()
-{
-        debug("dendbar", "DendToolBar::split(%i)\n", toolbarSplitAct->isChecked());
-	if(!toolbarSplitAct->isChecked()) {
-		mViewGroupState->SetShowSplitMode(true);
-		OmStateManager::SetSystemMode(DEND_MODE);	
-	} else {
-        	debug("dendbar", "unchecking\n");
-		mViewGroupState->SetSplitMode(false, false);
-	}
+	splitButton->setEnabled(toBeEnabled);
 }
 
 void DendToolBar::addToThreshold(float num)
@@ -518,7 +501,7 @@ void DendToolBar::changeMapColors()
 
 void DendToolBar::SetSplittingOff()
 {
-	toolbarSplitAct->setChecked(false);
+	splitButton->setChecked(false);
 }
 
 void DendToolBar::autoBreakChecked()
@@ -565,4 +548,5 @@ void DendToolBar::dustThresholdChanged()
 
         updateGui();
 }
+
 

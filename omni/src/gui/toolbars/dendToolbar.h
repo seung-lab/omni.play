@@ -7,6 +7,7 @@
 #include <QtGui>
 
 class MainWindow;
+class SplitButton;
 class OmViewGroupState;
 
 class DendToolBar : public QWidget
@@ -28,8 +29,6 @@ class DendToolBar : public QWidget
 
  private slots:
 	void ChangeModeModify(bool checked);
-	void toolbarSplit(bool checked);
-	void split();
 	void autoBreakChecked();
 	void increaseThreshold();
 	void decreaseThreshold();
@@ -65,7 +64,7 @@ class DendToolBar : public QWidget
 	OmId getSegmentationID();
 
 	// Actions
-	QPushButton * toolbarSplitAct;
+	SplitButton * splitButton;
 	QCheckBox * autoBreakCheckbox;
 	QPushButton * decreaseThresholdAct;
 	QLabel * thresholdLabel;

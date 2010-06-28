@@ -108,7 +108,9 @@ HEADERS += lib/strnatcmp.h \
            src/gui/mainwindow.h \
            src/gui/toolbars/toolbarManager.h \
            src/gui/toolbars/navAndEditToolBars.h \
+           src/gui/widgets/omButton.h \
            src/gui/toolbars/dendToolbar.h \
+           src/gui/toolbars/dendToolbarButtons.h \
            src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
            src/gui/recentFileList.h \
@@ -286,7 +288,9 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/mainwindow.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/toolbars/navAndEditToolBars.cpp \
+           src/gui/widgets/omButton.cpp \
            src/gui/toolbars/dendToolbar.cpp \
+           src/gui/toolbars/dendToolbarButtons.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \

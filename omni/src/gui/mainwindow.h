@@ -43,6 +43,8 @@ class MainWindow
 	void updateStatusBar( QString msg );
 
 	bool isProjectOpen();
+
+	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
 	
 	friend class ViewGroup;
 
