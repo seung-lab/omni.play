@@ -1,7 +1,7 @@
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
-#include "gui/omSegmentListWidget.h"
+#include "gui/widgets/omSegmentListWidget.h"
 #include "gui/segmentListBase.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
