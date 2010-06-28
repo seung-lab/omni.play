@@ -68,7 +68,7 @@ protected:
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 
 	// EDIT PROPERTIES
-	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second);
+	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second, bool doselection = false);
 	void myUpdate ();
 	void Refresh ();
 

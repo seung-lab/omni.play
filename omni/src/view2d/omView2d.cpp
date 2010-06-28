@@ -319,9 +319,10 @@ void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalData
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
 	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
 	if (segID ) {
+		//printf("here 2\n");
 		
 		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
-		sel.augmentSelectedSet_toggle( segID );
+		sel.augmentSelectedSet( segID, true );
 		sel.sendEvent();
 
 		Refresh();
@@ -510,11 +511,10 @@ void checkDC (string s, DataCoord dc)
 	}
 }
 
-void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second)
+void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second, bool doselection)
 {
 	//store current selection
 	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
-	bool doselection = false;
 
 	//return if not valid
 	if (!sdw.isValid())
@@ -629,6 +629,8 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
+				else
+					PickToolAddToSelection(segmentation_id, globalDC);
 			} else if (doselection || mBrushToolDiameter < 4) {
 				if (!doselection)
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
@@ -666,6 +668,8 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
 				if (!doselection)
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
+				else
+					PickToolAddToSelection(segmentation_id, globalDC);
 			} else if (doselection || mBrushToolDiameter < 4) {
 				if (!doselection)
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);

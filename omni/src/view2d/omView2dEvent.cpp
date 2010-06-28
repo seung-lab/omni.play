@@ -198,6 +198,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 {
 
+
 	mScribbling = false;
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
@@ -271,7 +272,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 				data_value = NULL_SEGMENT_DATA;
 				break;
 
-			case SELECT_VOXEL_MODE:
+			case SELECT_MODE:
 				doselection = true;
 				break;
 
@@ -477,6 +478,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 			BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
 		} else {
 			PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
+			bresenhamLineDraw(lastDataPoint, globalDataClickPoint, true);
 		}
 	} else {
 		debug("genone", "No segment_id in edit selection\n");
@@ -496,16 +498,21 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 	// http://qt.nokia.com/doc/4.5/qt.html#MouseButton-enum
 	if (event->buttons() != Qt::LeftButton) {
 		// do nothing
+		//printf("nothing?\n");
 	} else {
+		//printf("something?\n");
 
 		switch (OmStateManager::GetSystemMode()) {
 		case NAVIGATION_SYSTEM_MODE:
-			if (cameraMoving) {
-				if (PAN_MODE == OmStateManager::GetToolMode()) {
-					mouseMove_NavMode_CamMoving(event);
-					OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-				}
-			}
+			//printf("moving? %i, %i\n", cameraMoving, OmStateManager::GetToolMode());
+			if (cameraMoving && PAN_MODE == OmStateManager::GetToolMode()) {
+				mouseMove_NavMode_CamMoving(event);
+				OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+			} else if(cameraMoving && SELECT_MODE == OmStateManager::GetToolMode()){
+				//printf("scribling?\n");
+                        	EditMode_MouseMove_LeftButton_Scribbling(event);
+                        }
+
 			break;
 		case DEND_MODE:
 			break;
@@ -544,7 +551,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 		data_value = NULL_SEGMENT_DATA;
 		break;
 
-	case SELECT_VOXEL_MODE:
+	case SELECT_MODE:
 		doselection = true;
 		break;
 
@@ -559,6 +566,7 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 		bresenhamLineDraw(lastDataPoint, dataClickPoint);
 	} else {
 		// TODO: bug here; ask MattW
+		bresenhamLineDraw(lastDataPoint, dataClickPoint, doselection);
 		PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
 	}
 
