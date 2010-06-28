@@ -302,11 +302,6 @@ void DendToolBar::resetTool(QAction * tool, const bool enabled)
 	tool->setEnabled(enabled);
 }
 
-void DendToolBar::SystemModeChangeEvent()
-{
-        debug("dendbar", "DendToolBar::SystemModeChangeEvent\n");
-}
-
 void DendToolBar::updateReadOnlyRelatedWidgets()
 {
         debug("dendbar", "DendToolBar::updateReadOnlyRelatedWidgets\n");
