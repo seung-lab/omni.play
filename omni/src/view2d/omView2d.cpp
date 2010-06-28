@@ -319,7 +319,6 @@ void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalData
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
 	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
 	if (segID ) {
-		//printf("here 2\n");
 		
 		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
 		sel.augmentSelectedSet( segID, true );
