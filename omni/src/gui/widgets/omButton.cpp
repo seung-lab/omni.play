@@ -1,19 +1,21 @@
 #include "gui/widgets/omButton.h"
 #include "gui/mainwindow.h"
 
-OmButton::OmButton( MainWindow * mw, 
+template < class T >
+OmButton<T>::OmButton( T * mw, 
 		    const QString & title, 
 		    const QString & statusTip,
 		    const bool isCheckable )
 	: QPushButton(mw)
-	, mMainWindow(mw)
+	, mParent(mw)
 {
 	setText(title);
 	setStatusTip(statusTip);
 	setCheckable(isCheckable);
 }
 
-void OmButton::mousePressEvent(QMouseEvent* event)
+template < class T >
+void OmButton<T>::mousePressEvent(QMouseEvent* event)
 {
 	QPushButton::mousePressEvent(event);
 

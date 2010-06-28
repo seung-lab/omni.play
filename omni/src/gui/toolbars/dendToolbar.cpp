@@ -47,7 +47,7 @@ OmId DendToolBar::getSegmentationID()
 
 void DendToolBar::createToolbarActions()
 {
-	splitButton = new SplitButton( mMainWindow, 
+	splitButton = new SplitButton( this, 
 				       "split",
 				       "Split object mode",
 				       true );

@@ -4,13 +4,14 @@
 #include <QtGui>
 class MainWindow;
 
+template < class T >
 class OmButton : public QPushButton {
  public:
-	OmButton( MainWindow *, const QString &, 
+	OmButton( T *, const QString &, 
 		    const QString &, const bool );
 
  protected:
-	MainWindow *const mMainWindow;
+	T *const mParent;
 	virtual void doAction() = 0;
 
  private:

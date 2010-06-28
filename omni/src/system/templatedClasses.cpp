@@ -20,6 +20,9 @@
 
 #include "segment/lowLevel/omPagingStore.cpp"
 
+#include "gui/widgets/omButton.cpp"
+#include "gui/toolbars/dendToolbar.h"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
@@ -45,3 +48,5 @@ template class DynamicTree<OmId>;
 template class DynamicTreeContainer<OmId>;
 
 template class OmPagingStore<OmSegment>;
+
+template class OmButton<DendToolBar>;

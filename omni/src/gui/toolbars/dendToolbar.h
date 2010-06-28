@@ -25,6 +25,8 @@ class DendToolBar : public QWidget
 
         void SetSplittingOff();
 
+	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
+
 	static bool GetShowGroupsMode();
 
  private slots:
