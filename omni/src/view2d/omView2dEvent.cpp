@@ -73,7 +73,11 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 				mouseEditModeLeftButton(event);
 			}
 		} else if (event->button() == Qt::RightButton) {
-			mouseSelectSegment(event);
+                        if(event->modifiers() & Qt::ControlModifier) {
+                                mouseSelectSegment(event);
+                        } else {
+                                mouseShowSegmentContextMenu(event);
+                        }
 		}
 		
 		break;
@@ -113,10 +117,12 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	OmSegmentation & segmentation = sdw.getSegmentation();
 
 	if( !sdw.isValid() ){
+		printf("not valid\n");
 		return;
 	}
 
 	const OmId segmentID = sdw.getID();
+	printf("valid\n");
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 

@@ -27,6 +27,8 @@ private:
 
 	const OmSegIDsSet oldSelectedIDs;
 	OmSegIDsSet newSelectedIDs;
+
+	void setEditSelection(const OmSegID segID);
 };
 
 #endif

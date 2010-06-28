@@ -89,6 +89,7 @@ void OmMipMesh::Load()
   //read meta data
   OmDataPath fpath( mPath + "metamesh.dat" );
 
+try {
   if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
     return;
   }
@@ -123,6 +124,9 @@ void OmMipMesh::Load()
   mpVertexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
   mpVertexData = mpVertexDataWrap->getGLfloatPtr();
   mVertexCount = size / (6 * sizeof(GLfloat));
+} catch (...) {
+  return;
+}
 }
 
 void OmMipMesh::Save()
