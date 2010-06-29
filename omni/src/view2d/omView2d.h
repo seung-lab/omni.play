@@ -199,8 +199,6 @@ private:
 	
 	// cursor props
 	ScreenCoord clickPoint;
-	SpaceCoord rememberCoord;
-	SpaceCoord rememberDepthCoord;
 
 	// These coords are accurate for orthogonal views, not flat coordinates.
 	set<DataCoord> modifiedCoords;

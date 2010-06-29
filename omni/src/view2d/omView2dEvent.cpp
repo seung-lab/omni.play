@@ -32,8 +32,6 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 {
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
-	rememberCoord = ScreenToSpaceCoord(clickPoint);
-	rememberDepthCoord = mViewGroupState->GetViewDepthCoord();
 
 	switch (OmStateManager::GetSystemMode()) {
 
@@ -180,7 +178,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 
 			OmFilter2d &filter = current_channel.GetFilter(id);
 
-			if (filter.GetSegmentation() ) {
+			if (OmProject::IsSegmentationValid(filter.GetSegmentation()) ) {
 				segmentationID = filter.GetSegmentation();
 				OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 				segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
