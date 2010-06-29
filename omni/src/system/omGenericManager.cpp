@@ -31,6 +31,7 @@ T&
 OmGenericManager<T>::Get( const OmId id) 
 {	
 	if( IS_ID_INVALID() ){
+		assert(0);
 		throw OmAccessException("Cannot get object with id: " + id);
 	}
 
@@ -75,6 +76,7 @@ void
 OmGenericManager<T>::Remove(const OmId id) 
 {
 	if( IS_ID_INVALID() ){
+		assert(0);
 		throw OmAccessException("Cannot remove object with id: " + id); 
 	}
 	
