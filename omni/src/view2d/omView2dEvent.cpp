@@ -195,8 +195,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 
 void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 {
-
-
+	printf("HERE 0\n");
 	mScribbling = false;
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
@@ -212,13 +211,9 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 	//switch on tool mode
 	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
-	case ADD_VOXEL_MODE:
+	case FILL_MODE:
 		//get value associated to segment id
 		data_value = sdw.getID();
-		break;
-
-	case SUBTRACT_VOXEL_MODE:
-		data_value = NULL_SEGMENT_DATA;
 		break;
 
 	default:
@@ -226,7 +221,9 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		break;
 	}
 
-	const OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+	OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+       	segid = sdw.getSegmentation().GetSegmentCache()->findRoot(sdw.getSegmentation().GetSegmentCache()->GetSegment(segid))->getValue();
+	printf("HERE 1\n");
 	FillToolFill( sdw.getSegmentationID(), globalDataClickPoint, data_value, segid);
 
 	doRedraw();
@@ -460,6 +457,7 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		return;
 		break;
 	default:
+		return;
 		break;
 	}
 

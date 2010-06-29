@@ -303,7 +303,7 @@ void NavAndEditToolBars::toolbarEraser(const bool checked)
 
 void NavAndEditToolBars::toolbarFill(const bool checked)
 {
-	toolbarToolChange(checked, toolbarFillAct, SELECT_VOXEL_MODE);
+	toolbarToolChange(checked, toolbarFillAct, FILL_MODE);
 }
 
 void NavAndEditToolBars::resetTools(const OmSystemMode sys_mode)
@@ -375,6 +375,7 @@ void NavAndEditToolBars::SystemModeChangeEvent()
 		toolbarToolChange(true, toolbarVoxelizeAct, VOXELIZE_MODE);
 		break;
 	case FILL_MODE:
+		toolbarToolChange(true, toolbarVoxelizeAct, FILL_MODE);
 		// TODO???
 		break;
 	}

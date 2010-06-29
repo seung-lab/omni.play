@@ -446,17 +446,24 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 {
 
 	DataCoord off;
+	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	OmId segid = OmProject::GetSegmentation(seg).GetVoxelSegmentId(gCP);
 
-	if (!segid)
+
+	if (!segid) {
 		return;
+	}
+	debug("fill", "OmView2d::FillToolFill, segid, fc, bc, depth %i, %i, %i, %i\n", segid, fc, bc, depth);
+	segid = current_seg.GetSegmentCache()->findRoot(current_seg.GetSegmentCache()->GetSegment(segid))->getValue();
+
 	if (depth > 5000)
 		return;
 	depth++;
 
 	//debug("FIXME", << gCP << " filling... in " << segid << " with fc of " << fc << "  and bc of " << bc <<  " at " << depth << endl;
 
-	if (segid != fc && segid == bc) {
+
+	if (segid == bc && segid != fc) {
 
 		switch (mViewType) {
 		case XY_VIEW:
@@ -478,18 +485,29 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 
 		(new OmVoxelSetValueAction(seg, gCP, fc))->Run();
 		//delete new OmVoxelSetValueAction(seg, gCP, fc);
+		//printf("here\n");
+
+		debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
+			DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
 
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y++;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x--;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x--;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y--;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y--;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
+		off.x++;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
+	} else {
+		debug("fill", "not entering %i, %i, segid:%i != fc:%i, bc=%i\n", segid == bc, segid != fc, segid, fc, bc);
 	}
 }
 
@@ -913,8 +931,8 @@ void OmView2d::DrawCursors()
 
 bool OmView2d::amInFillMode()
 {
-	// FIXME
-	return false;
+	bool inFill = OmStateManager::GetToolMode() == FILL_MODE;
+	return inFill;
 }
 
 bool OmView2d::doDisplayInformation()
