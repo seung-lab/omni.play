@@ -646,10 +646,11 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	hid_t mem_type_id;
 
 	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
-		if(H5T_NATIVE_FLOAT == dstype || 1) {
+		if(H5T_FLOAT == H5Tget_class( dstype )) {
+			printf("\timporting float data; scalling by 255\n");
 			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
 			ret = H5Dread(dataset_id, H5T_NATIVE_FLOAT, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		    			myImageData->GetScalarPointer());
+				      myImageData->GetScalarPointer());
 			
 			int i = 0;
 			int dims[3];
@@ -666,19 +667,19 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 			}
 		} else {
 			mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
-			ret =
-	    			H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		    			imageData->GetScalarPointer());
+			ret = H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+				      imageData->GetScalarPointer());
 		}
 		
 	} else {
 		mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
-		ret =
-	    		H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		    		imageData->GetScalarPointer());
+		ret = H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
+			      imageData->GetScalarPointer());
 	}
 	if (ret < 0)
 		throw OmIoException("Could not read HDF5 dataset.");
+
+	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
