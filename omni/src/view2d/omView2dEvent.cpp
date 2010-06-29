@@ -222,6 +222,9 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 	}
 
 	OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+	if(!segid) {
+		return;
+	}
        	segid = sdw.getSegmentation().GetSegmentCache()->findRoot(sdw.getSegmentation().GetSegmentCache()->GetSegment(segid))->getValue();
 	printf("HERE 1\n");
 	FillToolFill( sdw.getSegmentationID(), globalDataClickPoint, data_value, segid);
