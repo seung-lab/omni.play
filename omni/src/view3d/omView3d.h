@@ -9,7 +9,6 @@
 #include "system/events/omViewEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omVoxelEvent.h"
-#include "system/events/omSystemModeEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "common/omCommon.h"
 
@@ -23,7 +22,6 @@ class OmView3d : public QGLWidget,
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener, 
 	public OmVoxelEventListener,
-	public OmSystemModeEventListener,
 	public OmView3dEventListener, 
 	public OmViewEventListener
 {
@@ -56,7 +54,6 @@ class OmView3d : public QGLWidget,
 	void VoxelModificationEvent(OmVoxelEvent * event);
 	void SegmentDataModificationEvent();
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
-	void SystemModeChangeEvent();
 	void ViewBoxChangeEvent();
 	void View3dRedrawEvent();
 	void View3dRedrawEventFromCache();

@@ -482,11 +482,6 @@ void MainWindow::updateStatusBar( QString msg )
 	statusBarLabel->setText(msg);
 }
 
-void MainWindow::SystemModeChangeEvent()
-{
-	mToolBars->SystemModeChangeEvent();
-}
-
 bool MainWindow::isProjectOpen()
 {
 	return mIsProjectOpen;

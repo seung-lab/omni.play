@@ -337,15 +337,6 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 }
 
 /////////////////////////////////
-///////          Event Handling
-
-void OmSegmentation::SystemModeChangeEvent()
-{
-	printf("OmSegmentation::SystemModeChangeEvent()::fixme!!!!!\n");
-	//OmMipVolume::Flush();
-}
-
-/////////////////////////////////
 ///////          Groups
 void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {

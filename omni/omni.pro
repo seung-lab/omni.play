@@ -257,7 +257,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
-           src/system/events/omSystemModeEvent.h \
            src/system/events/omToolModeEvent.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
@@ -430,7 +429,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \
-           src/system/events/omSystemModeEvent.cpp \
            src/system/events/omToolModeEvent.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \

@@ -1,5 +1,4 @@
 #include "common/omDebug.h"
-#include "events/omSystemModeEvent.h"
 #include "events/omToolModeEvent.h"
 #include "events/omView3dEvent.h"
 #include "events/omViewEvent.h"

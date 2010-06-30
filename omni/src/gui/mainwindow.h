@@ -14,7 +14,6 @@
 
 #include "common/omCommon.h"
 #include "system/events/omProgressEvent.h"
-#include "system/events/omSystemModeEvent.h"
 
 class CacheMonitorDialog;
 class MenuBar;
@@ -27,9 +26,8 @@ class ToolBarManager;
 class ViewGroup;
 
 class MainWindow 
-: public QMainWindow, 	
+: public QMainWindow
   //  public OmProgressEventListener,
-  public OmSystemModeEventListener
 {
  Q_OBJECT
  
@@ -57,7 +55,6 @@ class MainWindow
 	void closeEvent(QCloseEvent *event); 
 		
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SystemModeChangeEvent();		
 
  public slots:
 	void spawnErrorDialog(OmException &e);

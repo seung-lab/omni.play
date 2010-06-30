@@ -8,7 +8,6 @@
 
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omSegmentEvent.h"
-#include "system/events/omSystemModeEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "view2d/omView2dImpl.h"
@@ -27,7 +26,6 @@ class OmView2d :
 	public OmView2dImpl,
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
-	public OmSystemModeEventListener,
 	public OmViewEventListener,
 	public OmVoxelEventListener
 	
@@ -69,8 +67,8 @@ protected:
 
 	// EDIT PROPERTIES
 	void bresenhamLineDraw(const DataCoord &first, const DataCoord &second, bool doselection = false);
-	void myUpdate ();
-	void Refresh ();
+	void myUpdate();
+	void Refresh();
 
 	///////////////////////////////////////
 	// OmView2dEvent.cpp:
@@ -80,7 +78,6 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
-	void mouseDoubleClickEvent(QMouseEvent *event);
 	
 	// event
 	void mouseLeftButton(QMouseEvent *event);
@@ -120,7 +117,6 @@ protected:
 	
 	// Change to edit selection
 	void SegmentEditSelectionChangeEvent();
-	void SystemModeChangeEvent();
 	void VoxelModificationEvent(OmVoxelEvent *event);
 	void VoxelSelectionModificationEvent() {}
 

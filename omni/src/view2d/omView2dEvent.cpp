@@ -18,10 +18,6 @@
  */
 
 //\{
-void OmView2d::mouseDoubleClickEvent(QMouseEvent*)
-{
-}
-
 void OmView2d::mousePressEvent(QMouseEvent * event)
 {
 	clickPoint.x = event->x();
@@ -642,14 +638,6 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 	}
 }
 
-void OmView2d::SystemModeChangeEvent()
-{
-	if (mVolumeType == SEGMENTATION) {
-		modified_Ids = OmProject::GetSegmentation(mImageId).GetSegmentCache()->GetSelectedSegmentIds();
-		delete_dirty = true;
-		myUpdate();
-	}
-}
 //\}
 
 /**

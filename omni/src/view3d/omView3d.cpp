@@ -309,11 +309,6 @@ void OmView3d::SegmentDataModificationEvent()
 	myUpdate();
 }
 
-void OmView3d::SystemModeChangeEvent()
-{
-	myUpdate();
-}
-
 void OmView3d::ViewBoxChangeEvent()
 {
 	myUpdate();

@@ -8,7 +8,6 @@
 
 #include "voxel/omMipVoxelationManager.h"
 #include "system/omManageableObject.h"
-#include "system/events/omSystemModeEvent.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
 #include "volume/omMipVolume.h"
@@ -23,13 +22,8 @@ class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
 
-class OmSegmentation 
-: public OmMipVolume, 
-	public OmManageableObject, 
-	public OmSystemModeEventListener
-{
-
-public:
+class OmSegmentation : public OmMipVolume, public OmManageableObject {
+ public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
@@ -55,9 +49,6 @@ public:
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
-	
-	//events
-	void SystemModeChangeEvent();
 							
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
