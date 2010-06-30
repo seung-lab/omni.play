@@ -1,9 +1,9 @@
 #include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
-#include "segment/actions/omSegmentEditor.h"
-#include "segment/omSegmentSelector.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 #include "system/omLocalPreferences.h"
@@ -27,62 +27,30 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
 
-	switch (OmStateManager::GetToolMode()) {
-	case SPLIT_MODE:
+	if( SPLIT_MODE == OmStateManager::GetToolMode()){
 		if (event->button() == Qt::LeftButton) {
 			doFindAndSplitSegment( event );
 			doRedraw();
+			return;
 		}
-		break;
-
-	case SELECT_MODE:
-	case CROSSHAIR_MODE:
-	case PAN_MODE:
-	case ZOOM_MODE:
-		if( event->button() == Qt::LeftButton) {
-			const bool crosshair = event->modifiers() & Qt::ControlModifier;
-			if( crosshair ){
-				mouseSetCrosshair(event);
-			} else {
-				mouseNavModeLeftButton(event);
-			}
-		} else if (event->button() == Qt::RightButton) {
-			if(event->modifiers() & Qt::ControlModifier) {
-				mouseSelectSegment(event);
-			} else {
-				mouseShowSegmentContextMenu(event);
-			}
-		}
-			
-		cameraMoving = true;
-			
-		break;
-
-	case ADD_VOXEL_MODE:
-	case SUBTRACT_VOXEL_MODE:
-	case FILL_MODE:
-		if(event->button() == Qt::LeftButton){
-			const bool crosshair = event->modifiers() & Qt::ControlModifier;
-			if( crosshair ){
-				mouseSetCrosshair(event);
-			} else {
-				mouseEditModeLeftButton(event);
-			}
-		} else if (event->button() == Qt::RightButton) {
-                        if(event->modifiers() & Qt::ControlModifier) {
-                                mouseSelectSegment(event);
-                        } else {
-                                mouseShowSegmentContextMenu(event);
-                        }
-		}
-		
-		break;
-
-	case SELECT_VOXEL_MODE:
-	case VOXELIZE_MODE:
-		assert(0 && "not implemented");
-		break;
 	}
+
+	if( event->button() == Qt::LeftButton) {
+		const bool crosshair = event->modifiers() & Qt::ControlModifier;
+		if( crosshair ){
+			mouseSetCrosshair(event);
+		} else {
+			mouseLeftButton(event);
+		}
+	} else if (event->button() == Qt::RightButton) {
+		if(event->modifiers() & Qt::ControlModifier) {
+			mouseSelectSegment(event);
+		} else {
+			mouseShowSegmentContextMenu(event);
+		}
+	}
+			
+	cameraMoving = true;
 }
 
 void OmView2d::doRedraw() 
@@ -297,8 +265,6 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 void OmView2d::EditModeMouseMove(QMouseEvent * event)
 {
 	// KEEP PAINTING
-	//debug ("genone", "scribbling? %i!\n", mScribbling);
-
 	
 	if (PAN_MODE == OmStateManager::GetToolMode()) {
 		mouseMove_NavMode_CamMoving(event);
@@ -309,8 +275,6 @@ void OmView2d::EditModeMouseMove(QMouseEvent * event)
 }
 void OmView2d::wheelEvent(QWheelEvent * event)
 {
-	//debug("genone","OmView2d::wheelEvent -- " << mViewType);
-
 	const int numDegrees = event->delta() / 8;
 	const int numSteps = numDegrees / 15;
 
@@ -389,36 +353,7 @@ void OmView2d::mouseZoom(QMouseEvent * event)
 	}
 }
 
-void OmView2d::mouseNavModeLeftButton(QMouseEvent * event)
-{
-	switch (OmStateManager::GetToolMode()) {
-	case SELECT_MODE:
-		mouseSelectSegment(event);
-		break;
-	case PAN_MODE:
-		// dealt with in mouseMoveEvent()
-		break;
-	case CROSSHAIR_MODE:
-		mouseSetCrosshair(event);
-		break;
-	case ZOOM_MODE:
-		mouseZoom(event);
-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-		break;
-	case ADD_VOXEL_MODE:
-		break;
-	case SUBTRACT_VOXEL_MODE:
-		break;
-	case SELECT_VOXEL_MODE:
-		break;
-	case VOXELIZE_MODE:
-		break;
-	default:
-		break;
-	}
-}
-
-void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
+void OmView2d::mouseLeftButton(QMouseEvent * event)
 {
 	debug ("view2d", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
 	bool doselection = false;

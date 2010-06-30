@@ -51,8 +51,8 @@ protected:
 
 	void resizeGL(int width, int height);
 	void resizeEvent (QResizeEvent * event);
-	void PanAndZoom(Vector2<int> new_zoom, bool postEvent = true);	// Helper for zooming.
-	void SetViewSliceOnPan ();						// Helper for panning.
+	void PanAndZoom(Vector2<int> new_zoom, bool postEvent = true);
+	void SetViewSliceOnPan ();
 
 	// paint and draw methods
 	void paintEvent(QPaintEvent *);	// necessary for using QPainter methods for editing segments
@@ -83,8 +83,7 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *event);
 	
 	// event
-	void mouseNavModeLeftButton(QMouseEvent *event);
-	void mouseEditModeLeftButton(QMouseEvent *event);
+	void mouseLeftButton(QMouseEvent *event);
 	void mouseSelectSegment(QMouseEvent *event);
 	void mouseSetCrosshair(QMouseEvent *event);
 	void wheelEvent ( QWheelEvent * event );
