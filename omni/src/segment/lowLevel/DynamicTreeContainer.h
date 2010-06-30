@@ -1,6 +1,7 @@
 #ifndef DYNAMIC_TREE_CONTAINER
 #define DYNAMIC_TREE_CONTAINER
 
+#include "common/omCommon.h"
 #include "segment/lowLevel/DynamicTree.h"
 
 template < typename T >
