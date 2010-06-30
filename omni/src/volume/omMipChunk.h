@@ -82,7 +82,7 @@ public:
 	
 	//slice
 	AxisAlignedBoundingBox<int> ExtractSliceExtent(OmDataVolumePlane plane, int coord);
-	virtual void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
+	void * ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast = false);
 	
 	//meshing
 	vtkImageData* GetMeshImageData();
@@ -135,6 +135,9 @@ protected:
 
 	//image data of chunk
 	vtkImageData *mpImageData;	
+
+	OmDataVolumePlane getVolPlane(const ViewType viewType);
+	void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast);
 
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );

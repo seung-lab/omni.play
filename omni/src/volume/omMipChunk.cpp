@@ -583,6 +583,25 @@ AxisAlignedBoundingBox < int > OmMipChunk::ExtractSliceExtent(OmDataVolumePlane 
 	return slice_bbox;
 }
 
+OmDataVolumePlane OmMipChunk::getVolPlane(const ViewType viewType)
+{
+	switch( viewType ){
+	case XY_VIEW:
+		return VOL_XY_PLANE;
+		break;
+	case XZ_VIEW:
+		return VOL_XZ_PLANE;
+		break;
+	case YZ_VIEW:
+		return VOL_YZ_PLANE;
+		break;
+	}
+}
+void * OmMipChunk::ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast)
+{
+	return ExtractDataSlice(getVolPlane(viewType),offset, sliceDims, fast);
+}
+
 /*
  *	Returns a pointer to an allocated array of data representing the values
  *	on an orthogonal slice given the slice plane and depth.

@@ -44,90 +44,82 @@ void OmTile::SetNewAlpha(float newval)
 	mAlpha = newval;
 }
 
-OmTextureID *OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
+OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
 {
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
-	if (mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
-
-		int mcc_x = mMipChunkCoord.Coordinate.x;
-		int mcc_y = mMipChunkCoord.Coordinate.y;
-		int mcc_z = mMipChunkCoord.Coordinate.z;
-
-		if ((mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0)) {
-			mSamplesPerVoxel = 1;
-			mBytesPerSample = mVolume->GetBytesPerSample();
-			Vector2<int> tile_dims;
-			void *vData = NULL;
-
-			vData = GetImageData(key, tile_dims, mVolume);
-			//debug("FIXME", << "mBytesPerSample: " << mBytesPerSample << endl;;
-
-			Vector2<int> tile_bg_dims;
-
-			OmTextureID *textureID;
-
-			if (vol_type == CHANNEL) {
-				textureID =
-				    new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    cache, vData, OMTILE_NEEDTEXTUREBUILT);
-			} else {
-				void * out = NULL;
-				if (1 == mBytesPerSample) {
-					uint32_t *vDataFake = NULL;
-					vDataFake = (uint32_t*) malloc((tile_dims.x * tile_dims.y) * sizeof(OmSegID));
-					//memset (vDataFake, '\0', (tile_dims.x * tile_dims.y) * sizeof (OmSegID));
-					for (int i = 0; i < (tile_dims.x * tile_dims.y); i++) {
-						vDataFake[i] = ((unsigned char *)(vData))[i];
-					}
-					setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
-					textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
-					free(vDataFake);
-					free(vData);
-				}
-				setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
-				textureID = new OmTextureID(key, 0, (tile_dims.x * tile_dims.y), tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
-				free(vData);
-			}
-			return textureID;
-		}
+	if(!mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
+		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
 	}
 
-	OmTextureID *textureID = new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
-	//glDisable (GL_TEXTURE_2D); /* disable texture mapping */ 
+	const int mcc_x = mMipChunkCoord.Coordinate.x;
+	const int mcc_y = mMipChunkCoord.Coordinate.y;
+	const int mcc_z = mMipChunkCoord.Coordinate.z;
+
+	const bool legalCoord = (mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0);
+	
+	if(!legalCoord){
+		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
+	}
+
+	return doBindToTextureID(key, cache);
+}
+
+OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
+{
+	mSamplesPerVoxel = 1;
+	mBytesPerSample = mVolume->GetBytesPerSample();
+
+	Vector2<int> tile_dims;
+	void * vData = GetImageData(key, tile_dims, mVolume);
+
+	OmTextureID *textureID;
+			
+	const int dataSize = tile_dims.x * tile_dims.y;
+
+	if (vol_type == CHANNEL) {
+		textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
+					    cache, vData, OMTILE_NEEDTEXTUREBUILT);
+		// don't free vData
+	} else {
+		void * out = NULL;
+
+		if (1 == mBytesPerSample) {
+					
+			uint32_t * vDataFake = (uint32_t*) malloc( dataSize * sizeof(OmSegID));
+
+			for (int i = 0; i < dataSize; ++i) {
+				vDataFake[i] = ((unsigned char *)(vData))[i];
+			}
+
+			setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
+
+			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
+						    cache, out, OMTILE_NEEDCOLORMAP);
+			free(vDataFake);
+		} else {
+			setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
+			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
+						    cache, out, OMTILE_NEEDCOLORMAP);
+		}
+		free(vData);
+	}
+
 	return textureID;
 }
 
-void *OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmMipVolume * vol)
+void * OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmMipVolume * vol)
 {
-	//TODO: pull more data out when chunk is open
-
 	QExplicitlySharedDataPointer < OmMipChunk > my_chunk;
-	//vol->GetSimpleChunk(my_chunk, TileToMipCoord(key));
 	vol->GetChunk(my_chunk, TileToMipCoord(key));
 
-	int mDepth = GetDepth(key);
+	const int mDepth = GetDepth(key);
 
 	my_chunk->Open();
 
-	int realDepth = mDepth % (vol->GetChunkDimension());
+	const int realDepth = mDepth % (vol->GetChunkDimension());
 
-	void *void_data = NULL;
-	switch( view_type ){
-	case XY_VIEW:
-		void_data = my_chunk->ExtractDataSlice(VOL_XY_PLANE, realDepth, sliceDims, false);
-		break;
-	case XZ_VIEW:
-		void_data = my_chunk->ExtractDataSlice(VOL_XZ_PLANE, realDepth, sliceDims, false);
-		break;
-	case YZ_VIEW:
-		void_data = my_chunk->ExtractDataSlice(VOL_YZ_PLANE, realDepth, sliceDims, false);
-		break;
-	}
-
-	return void_data;
+	return my_chunk->ExtractDataSlice(view_type, realDepth, sliceDims, false);
 }
 
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
@@ -141,7 +133,7 @@ int OmTile::GetDepth(const OmTileCoord & key)
 {
 	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
 	DataCoord dataCoord = mVolume->NormToDataCoord(normCoord);
-        float factor=OMPOW(2,key.Level);
+        const float factor = OMPOW(2,key.Level);
 
 	int ret;
 

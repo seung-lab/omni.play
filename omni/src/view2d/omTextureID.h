@@ -45,7 +45,7 @@ public:
 	int GetSize() const { return mem_size; }
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
 		
-	void Flush();
+	void Flush(){}
 
 	OmTileCoord mTileCoordinate;
 	GLuint textureID;
