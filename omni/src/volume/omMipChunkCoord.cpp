@@ -83,9 +83,13 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 	//primary child is in first position
 	OmMipChunkCoord primary_coord = PrimarySiblingCoord();
 
-	int x = Coordinate.x;
-	int y = Coordinate.y;
-	int z = Coordinate.z;
+	int x = primary_coord.Coordinate.x;
+	int y = primary_coord.Coordinate.y;
+	int z = primary_coord.Coordinate.z;
+
+	assert(Coordinate.x == primary_coord.Coordinate.x);
+	assert(Coordinate.y == primary_coord.Coordinate.y);
+	assert(Coordinate.z == primary_coord.Coordinate.z);
 
 	pSiblings[0] = primary_coord;
 	pSiblings[1] = OmMipChunkCoord(Level, x + 1, y, z);
