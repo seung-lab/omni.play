@@ -106,7 +106,13 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
-        if (event->key() == Qt::Key_C) mCPressed = true; 
+        if (event->key() == Qt::Key_C) {
+		mCPressed = true; 
+	} 
+        if (event->key() == Qt::Key_Escape) {
+		resetWindow();
+	} 
+
 	switch (OmStateManager::GetSystemMode()) {
 	case DEND_MODE:
 	case NAVIGATION_SYSTEM_MODE:
@@ -670,4 +676,14 @@ OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
         //return success with voxel
         rVoxel = voxel;
         return result[0];
+}
+
+void OmView3dUi::resetWindow()
+{	
+	SpaceCoord coord = SpaceCoord(0,0,0);	
+
+	mpView3d->mCamera.SetFocus(coord);
+	mpView3d->mCamera.SetDistance(300.0);
+
+	mpView3d->updateGL();
 }
