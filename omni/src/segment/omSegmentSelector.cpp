@@ -85,8 +85,12 @@ void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLev
 	augmentSelectedSet( segID, !isSelected );
 }
 
-void OmSegmentSelector::sendEvent()
+bool OmSegmentSelector::sendEvent()
 {
+	if( oldSelectedIDs == newSelectedIDs ){
+		return false;
+	}
+
 	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
 							      newSelectedIDs, 
 							      oldSelectedIDs,
@@ -95,6 +99,7 @@ void OmSegmentSelector::sendEvent()
 							      mComment,
 							      true );
 	a->Run();
-
 	// don't delete--cleanup will be handled by OmAction
+
+	return true;
 }

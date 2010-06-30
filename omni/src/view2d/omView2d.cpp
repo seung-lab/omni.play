@@ -719,8 +719,9 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	}
 	
 	if (doselection) {
-		sel.sendEvent();
-		Refresh();
+		if(sel.sendEvent()){
+			Refresh();
+		}
 	}
 }
 

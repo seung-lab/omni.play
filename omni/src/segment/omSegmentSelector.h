@@ -15,7 +15,7 @@ class OmSegmentSelector
 	void selectJustThisSegment_toggle( const OmSegID segID );
 	void augmentSelectedSet_toggle( const OmSegID segID );
 
-	void sendEvent();
+	bool sendEvent();
 	void selectNoSegments();
 	
 private:
