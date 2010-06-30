@@ -450,7 +450,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 			mToolBarManager->SetSplittingOff();
 		}
 		SetShowSplitMode(false);
-		OmStateManager::SetSystemModePrev();
+		OmStateManager::SetOldToolModeAndSendEvent();
 	}
 	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));

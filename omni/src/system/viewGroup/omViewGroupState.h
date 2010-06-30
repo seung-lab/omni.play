@@ -95,9 +95,14 @@ class OmViewGroupState : public OmManageableObject {
 	
 	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
 	
-	int mViewSliceBytesPerSample, mViewSliceSamplesPerPixel;
-	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
-	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
+	int mViewSliceBytesPerSample;
+	int mViewSliceSamplesPerPixel;
+	Vector3i mViewSliceDimXY;
+	Vector3i mViewSliceDimYZ;
+	Vector3i mViewSliceDimXZ;
+	unsigned char * mViewSliceDataXY;
+	unsigned char * mViewSliceDataYZ;
+	unsigned char * mViewSliceDataXZ;
 
 	std::vector<OmSegmentColorizer*> mColorCaches;
 

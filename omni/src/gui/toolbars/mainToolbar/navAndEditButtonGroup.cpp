@@ -59,9 +59,7 @@ void NavAndEditButtonGroup::buttonWasClicked(const int id)
 
 void NavAndEditButtonGroup::makeToolActive(ToolButton* button)
 {
-	printf("hi\n");
-	OmStateManager::SetToolMode(button->getToolMode());
-	OmEvents::ToolChange();
+	OmStateManager::SetToolModeAndSendEvent(button->getToolMode());
 }
 
 void NavAndEditButtonGroup::setReadOnlyWidgetsEnabled(const bool toBeEnabled)

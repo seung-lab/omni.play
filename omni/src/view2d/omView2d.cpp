@@ -214,9 +214,13 @@ void OmView2d::paintEvent(QPaintEvent *)
 
 	painter.setPen(the_pen);
 
+	const bool inEditMode = OmStateManager::GetToolMode() == ADD_VOXEL_MODE ||
+		OmStateManager::GetToolMode() == SUBTRACT_VOXEL_MODE ||
+		OmStateManager::GetToolMode() == FILL_MODE;
+		
 	if (amInFillMode()) {
 		painter.drawRoundedRect(QRect(mMousePoint.x, mMousePoint.y, 20, 20), 5, 5);
-	} else if (OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
+	} else if (inEditMode){
 		painter.drawEllipse(QRectF
 				    (mMousePoint.x - 0.5 * mBrushToolDiameter * zoomFactor,
 				     mMousePoint.y - 0.5 * mBrushToolDiameter * zoomFactor,

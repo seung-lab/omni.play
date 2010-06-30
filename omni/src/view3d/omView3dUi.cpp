@@ -1,5 +1,5 @@
 #include "common/omDebug.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -30,32 +30,22 @@ OmView3dUi::OmView3dUi(OmView3d * view3d, OmViewGroupState * vgs )
 
 void OmView3dUi::MousePressed(QMouseEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
-	case NAVIGATION_SYSTEM_MODE:
-		NavigationModeMousePressed(event);
-		break;
+	NavigationModeMousePressed(event);
 
-	case EDIT_SYSTEM_MODE:
-		EditModeMousePressed(event);
-		break;
-	}
+	//EditModeMousePressed(event);
 }
 
 void OmView3dUi::MouseRelease(QMouseEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
+	switch (OmStateManager::GetToolMode()) {
+	case SPLIT_MODE:
 		DendModeMouseReleased(event);
 		break;
-	case NAVIGATION_SYSTEM_MODE:
+	default:
 		NavigationModeMouseRelease(event);
 		break;
-
-	case EDIT_SYSTEM_MODE:
-		EditModeMouseRelease(event);
-		break;
 	}
+	//EditModeMouseRelease(event);
 }
 
 void OmView3dUi::MouseMove(QMouseEvent * event)
@@ -64,44 +54,20 @@ void OmView3dUi::MouseMove(QMouseEvent * event)
 	if (!event->buttons())
 		return;
 
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
-	case NAVIGATION_SYSTEM_MODE:
-		NavigationModeMouseMove(event);
-		break;
-
-	case EDIT_SYSTEM_MODE:
-		EditModeMouseMove(event);
-		break;
-	}
+	NavigationModeMouseMove(event);
+	//EditModeMouseMove(event);
 }
 
 void OmView3dUi::MouseDoubleClick(QMouseEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
-	case NAVIGATION_SYSTEM_MODE:
-		NavigationModeMouseDoubleClick(event);
-		break;
-
-	case EDIT_SYSTEM_MODE:
-		EditModeMouseDoubleClick(event);
-		break;
-	}
+	NavigationModeMouseDoubleClick(event);
+	//EditModeMouseDoubleClick(event);
 }
 
 void OmView3dUi::MouseWheel(QWheelEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
-	case NAVIGATION_SYSTEM_MODE:
-		NavigationModeMouseWheel(event);
-		break;
-
-	case EDIT_SYSTEM_MODE:
-		EditModeMouseWheel(event);
-		break;
-	}
+	NavigationModeMouseWheel(event);
+	//EditModeMouseWheel(event);
 }
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
@@ -119,16 +85,8 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 		doZoom(1);
 	} 
 
-	switch (OmStateManager::GetSystemMode()) {
-	case DEND_MODE:
-	case NAVIGATION_SYSTEM_MODE:
-		NavigationModeKeyPress(event);
-		break;
-
-	case EDIT_SYSTEM_MODE:
-		EditModeKeyPress(event);
-		break;
-	}
+	NavigationModeKeyPress(event);
+	//EditModeKeyPress(event);
 }
 
 void OmView3dUi::doZoom(int direction)
@@ -502,6 +460,7 @@ void OmView3dUi::VoxelEditMouse(QMouseEvent * mouseEvent, bool drag)
 	case ZOOM_MODE:
 	case FILL_MODE:
 	case VOXELIZE_MODE:
+	case SPLIT_MODE:
 		break;
 	}
 

@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include <QtGui>
 
 class MainWindow;

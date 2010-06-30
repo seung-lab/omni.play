@@ -2,7 +2,7 @@
 #define DEND_TOOLBAR_BUTTONS_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 
 class SplitButton : public OmButton<DendToolBar> {
  public:

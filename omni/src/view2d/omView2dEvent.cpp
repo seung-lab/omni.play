@@ -20,12 +20,6 @@
 //\{
 void OmView2d::mouseDoubleClickEvent(QMouseEvent*)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
-	case DEND_MODE:
-	case EDIT_SYSTEM_MODE:
-		break;
-	}
 }
 
 void OmView2d::mousePressEvent(QMouseEvent * event)
@@ -33,10 +27,19 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
 
-	switch (OmStateManager::GetSystemMode()) {
-
-	case NAVIGATION_SYSTEM_MODE: 
+	switch (OmStateManager::GetToolMode()) {
+	case SPLIT_MODE:
 		if (event->button() == Qt::LeftButton) {
+			doFindAndSplitSegment( event );
+			doRedraw();
+		}
+		break;
+
+	case SELECT_MODE:
+	case CROSSHAIR_MODE:
+	case PAN_MODE:
+	case ZOOM_MODE:
+		if( event->button() == Qt::LeftButton) {
 			const bool crosshair = event->modifiers() & Qt::ControlModifier;
 			if( crosshair ){
 				mouseSetCrosshair(event);
@@ -54,16 +57,11 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 		cameraMoving = true;
 			
 		break;
-			
-  	case DEND_MODE: 
-		if (event->button() == Qt::LeftButton) {
-			doFindAndSplitSegment( event );
-			doRedraw();
-		}
-		break;
-		
-	case EDIT_SYSTEM_MODE: 
-		if (event->button() == Qt::LeftButton) {
+
+	case ADD_VOXEL_MODE:
+	case SUBTRACT_VOXEL_MODE:
+	case FILL_MODE:
+		if(event->button() == Qt::LeftButton){
 			const bool crosshair = event->modifiers() & Qt::ControlModifier;
 			if( crosshair ){
 				mouseSetCrosshair(event);
@@ -79,10 +77,15 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 		}
 		
 		break;
+
+	case SELECT_VOXEL_MODE:
+	case VOXELIZE_MODE:
+		assert(0 && "not implemented");
+		break;
 	}
 }
 
-void OmView2d::doRedraw()
+void OmView2d::doRedraw() 
 {
 	Refresh();
 	mTextures.clear();
@@ -95,8 +98,7 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 
 	SetDepth(event);
 
-	OmStateManager::SetToolMode(PAN_MODE);
-	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+	OmStateManager::SetToolModeAndSendEvent(PAN_MODE);
 }
 
 DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event)
@@ -490,33 +492,38 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 
 void OmView2d::mouseMoveEvent(QMouseEvent * event)
 {
-
 	mMousePoint = Vector2f(event->x(), event->y());
 
 	// http://qt.nokia.com/doc/4.5/qt.html#MouseButton-enum
 	if (event->buttons() != Qt::LeftButton) {
 		// do nothing
-		//printf("nothing?\n");
 	} else {
-		//printf("something?\n");
+		switch (OmStateManager::GetToolMode()) {
+		case SPLIT_MODE:
+			break;
 
-		switch (OmStateManager::GetSystemMode()) {
-		case NAVIGATION_SYSTEM_MODE:
-			//printf("moving? %i, %i\n", cameraMoving, OmStateManager::GetToolMode());
+		case SELECT_MODE:
+		case CROSSHAIR_MODE:
+		case PAN_MODE:
+		case ZOOM_MODE:
 			if (cameraMoving && PAN_MODE == OmStateManager::GetToolMode()) {
 				mouseMove_NavMode_CamMoving(event);
 				OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 			} else if(cameraMoving && SELECT_MODE == OmStateManager::GetToolMode()){
-				//printf("scribling?\n");
                         	EditMode_MouseMove_LeftButton_Scribbling(event);
                         }
 
 			break;
-		case DEND_MODE:
-			break;
-		case EDIT_SYSTEM_MODE:
+
+		case ADD_VOXEL_MODE:
+		case SUBTRACT_VOXEL_MODE:
+		case FILL_MODE:
 			EditModeMouseMove(event);
 			break;
+
+		case SELECT_VOXEL_MODE:
+		case VOXELIZE_MODE:
+			assert(0 && "not implemented");
 		}
 	}
 
@@ -575,14 +582,26 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
+	switch (OmStateManager::GetToolMode()) {
+	case SPLIT_MODE:
+		break;
+
+	case SELECT_MODE:
+	case CROSSHAIR_MODE:
+	case PAN_MODE:
+	case ZOOM_MODE:
 		cameraMoving = false;
 		break;
-	case DEND_MODE:
-		break;
-	case EDIT_SYSTEM_MODE:
+
+	case ADD_VOXEL_MODE:
+	case SUBTRACT_VOXEL_MODE:
+	case FILL_MODE:
 		EditModeMouseRelease(event);
+		break;
+
+	case SELECT_VOXEL_MODE:
+	case VOXELIZE_MODE:
+		assert(0 && "not implemented");
 		break;
 	}
 }

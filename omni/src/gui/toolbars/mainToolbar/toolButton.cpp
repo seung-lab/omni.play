@@ -17,7 +17,6 @@ ToolButton::ToolButton(QWidget * parent,
 
 void ToolButton::doAction()
 {
-	OmStateManager::SetToolMode(mTool);
-	OmEvents::ToolChange();
+	OmStateManager::SetToolModeAndSendEvent(mTool);
 }
 

@@ -21,7 +21,7 @@
 #include "segment/lowLevel/omPagingStore.cpp"
 
 #include "gui/widgets/omButton.cpp"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/mainwindow.h"
 #include <QWidget>

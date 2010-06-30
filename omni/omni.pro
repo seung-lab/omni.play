@@ -109,8 +109,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/toolbarManager.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/widgets/omButton.h \
-           src/gui/toolbars/dendToolbar.h \
-           src/gui/toolbars/dendToolbarButtons.h \
+           src/gui/toolbars/dendToolbar/dendToolbar.h \
+           src/gui/toolbars/dendToolbar/splitButton.h \
            src/gui/toolbars/mainToolbar/navButtons.h \
            src/gui/toolbars/mainToolbar/saveButton.h \
            src/gui/toolbars/mainToolbar/toolButton.h \
@@ -296,8 +296,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/widgets/omButton.cpp \
-           src/gui/toolbars/dendToolbar.cpp \
-           src/gui/toolbars/dendToolbarButtons.cpp \
+           src/gui/toolbars/dendToolbar/dendToolbar.cpp \
+           src/gui/toolbars/dendToolbar/splitButton.cpp \
            src/gui/toolbars/mainToolbar/navButtons.cpp \
            src/gui/toolbars/mainToolbar/saveButton.cpp \
            src/gui/toolbars/mainToolbar/toolButton.cpp \

@@ -35,18 +35,12 @@ public:
 	static void SetProjectFileName(const string &);
 	static const string& GetProjectDirectoryPath();
 	static void SetProjectDirectoryPath(const string &);
-	
-	
-	//system mode
-	static OmSystemMode GetSystemMode();
-	static OmSystemMode GetSystemModePrev();
-	static void SetSystemMode(const OmSystemMode mode);
-	static void SetSystemModePrev();
-	
+		
 	//tool mode
 	static OmToolMode GetToolMode();
-	static void SetToolMode(const OmToolMode mode);
-	
+	static void SetToolModeAndSendEvent(const OmToolMode mode);
+	static void SetOldToolModeAndSendEvent();
+
 	//undostack
 	static QUndoStack* GetUndoStack();
 	static void PushUndoCommand(QUndoCommand *);
@@ -97,12 +91,9 @@ private:
 	Vector3< OmId > mEditSelection;	//volume, segmentation, segment
 	set< DataCoord > mEditSelectionCoords;
 	
-	//system mode
-	OmSystemMode mSystemMode;
-	OmSystemMode mSystemModePrev;
-
 	//tool mode
-	OmToolMode mToolMode;
+	OmToolMode mCurToolMode;
+	OmToolMode mPrevToolMode;
 	
 	//undostack
 	QUndoStack *mpUndoStack;

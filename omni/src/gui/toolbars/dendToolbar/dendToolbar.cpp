@@ -1,5 +1,5 @@
 #include "gui/mainwindow.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
@@ -12,7 +12,7 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
-#include "gui/toolbars/dendToolbarButtons.h"
+#include "gui/toolbars/dendToolbar/splitButton.h"
 
 bool mShowGroups = false;
 static OmId mSeg = 1;

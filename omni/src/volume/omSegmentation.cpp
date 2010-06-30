@@ -341,12 +341,8 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 
 void OmSegmentation::SystemModeChangeEvent()
 {
-	//if change out of editing mode
-	if (OmStateManager::GetSystemMode() != EDIT_SYSTEM_MODE &&
-	    OmStateManager::GetSystemModePrev() == EDIT_SYSTEM_MODE) {
-		//then build edited chunks
-		OmMipVolume::Flush();
-	}
+	printf("OmSegmentation::SystemModeChangeEvent()::fixme!!!!!\n");
+	//OmMipVolume::Flush();
 }
 
 /////////////////////////////////

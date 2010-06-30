@@ -143,7 +143,7 @@ void OmSegmentContextMenu::MergeSegments()
 void OmSegmentContextMenu::splitSegments()
 {
 	mViewGroupState->SetShowSplitMode(true);
-        OmStateManager::SetSystemMode(DEND_MODE);
+	OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
 	mViewGroupState->SetSplitMode(mSegmentationId, mSegmentId);
 }
 
