@@ -502,6 +502,11 @@ void MainWindow::addToolbarWidget(QWidget * b)
 	mToolToolBar->addWidget(b);
 }
 
+void MainWindow::addToolbarRight(QToolBar * b)
+{
+	addToolBar(Qt::RightToolBarArea, b);
+}
+
 void MainWindow::addToolbarSeperator()
 {
 	mToolToolBar->addSeparator();

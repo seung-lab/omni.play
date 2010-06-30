@@ -217,7 +217,7 @@ void DendToolBar::addToolbars()
 {
 	dendToolBar = new QToolBar( "Dend", this );
 	dendToolBar->setFloatable( true );
-	mMainWindow->addToolBar( Qt::RightToolBarArea, dendToolBar );
+	mMainWindow->addToolbarRight(dendToolBar);
 
 	QGroupBox* firstBox = new QGroupBox(this);
 	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);

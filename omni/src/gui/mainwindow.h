@@ -48,6 +48,8 @@ class MainWindow
 
 	void addToolbarWidget(QWidget * b);
 	void addToolbarSeperator();
+
+	void addToolbarRight(QToolBar * b);
 	
 	friend class ViewGroup;
 
