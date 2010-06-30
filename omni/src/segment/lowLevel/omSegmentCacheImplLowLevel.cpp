@@ -32,6 +32,10 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 
 OmSegID OmSegmentCacheImplLowLevel::findRootID( const OmSegID segID )
 {
+	if(!segID){
+		return 0;
+	}
+
 	return findRoot( GetSegmentFromValue( segID ) )->getValue();
 }
 
