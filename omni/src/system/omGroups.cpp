@@ -24,17 +24,16 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 	return group;
 }
 
-OmGroup & OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup & group, bool doSet)
+void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet)
 {
-	return group;
 }
 
-OmGroup & OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
+void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
 {
 	if(!mGroupsByName[name]) {
-		return setGroupIDs(set, AddGroup(name), true);
+		setGroupIDs(set, &AddGroup(name), true);
 	} else {
-		return setGroupIDs(set, GetGroup(name), true);
+		setGroupIDs(set, &GetGroup(name), true);
 	}
 }
 
@@ -43,7 +42,7 @@ void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
         if(!mGroupsByName[name]) {
                 return;
         } else {
-                setGroupIDs(set, GetGroup(name), false);
+                setGroupIDs(set, &GetGroup(name), false);
         }
 }
 

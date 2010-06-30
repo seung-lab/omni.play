@@ -156,8 +156,13 @@ void DendToolBar::createToolbarActions()
         connect(dontShowValid, SIGNAL(toggled(bool)),
                 this, SLOT(changeMapColors()));
 
+	specialGroupAct = new QPushButton(mMainWindow);
+	specialGroupAct->setText(tr("Group As:"));
+        connect(specialGroupAct, SIGNAL(pressed()),
+                this, SLOT(specialGroupAdd()));
+
         mGroupName = new QLineEdit(mMainWindow);
-        mGroupName->setText("Valid");
+        mGroupName->setText("Glia");
 
         mDustThreshold = new QLineEdit(mMainWindow);
         setDustThresholdValue();
@@ -269,7 +274,8 @@ void DendToolBar::addToolbars()
         sixthLayout->addWidget(colorMapAct,2,0,1,2);
         sixthLayout->addWidget(showValid,3,0,1,1);
         sixthLayout->addWidget(dontShowValid,3,1,1,1);
-        sixthLayout->addWidget(mGroupName,4,0,1,2);
+        sixthLayout->addWidget(specialGroupAct,4,0,1,1);
+        sixthLayout->addWidget(mGroupName,4,1,1,1);
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 
@@ -463,8 +469,17 @@ void DendToolBar::addGroup()
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
-                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+        }
+}
+
+void DendToolBar::specialGroupAdd()
+{
+        debug("dendbar", "DendToolBar::specialGroupAdd\n");
+        if (OmProject::IsSegmentationValid(getSegmentationID())) {
+                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
+                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }
 
@@ -475,7 +490,6 @@ void DendToolBar::deleteGroup()
         if (OmProject::IsSegmentationValid(getSegmentationID())) {
                 OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
                 seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
-                seg.UnsetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
 		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
         }
 }

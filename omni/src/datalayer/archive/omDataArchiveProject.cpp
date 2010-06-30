@@ -19,7 +19,8 @@
 #include <QDataStream>
 
 //TODO: remove mNumTopLevelSegs (below) when someone increments version to 11 (purcaro)
-static const int Omni_Version = 10;
+const int Omni_Version = 11;
+int Omni_File_Version;
 
 static const QString Omni_Postfix("OMNI");
 
@@ -33,14 +34,13 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 
-	int file_version;
-	in >> file_version;
+	in >> Omni_File_Version;
 
-	if( Omni_Version != file_version ){
+	if( Omni_File_Version < 10 ){
 		throw OmIoException("can not open file: file version is (" 
-				    + boost::lexical_cast<std::string>(file_version)
-				    +"), but Omni expecting ("
-				    + boost::lexical_cast<std::string>(Omni_Version) 
+				    + boost::lexical_cast<std::string>(Omni_File_Version)
+				    +"), but Omni expecting ( 10 or 11 "
+				    //+ boost::lexical_cast<std::string>(Omni_Version) 
 				    + ")");
 	}
 
@@ -563,7 +563,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
         gm.mMap.resize(gm.mSize, NULL);
 
         for( unsigned int i = 0; i < gm.mValidSet.size(); ++i ){
-                OmGroup * group = new OmGroup(0);
+                OmGroup * group = new OmGroup();
                 in >> *group;
                 gm.mMap[ group->GetId() ] = group;
         }
@@ -574,6 +574,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 QDataStream &operator<<(QDataStream & out, const OmGroup & g )
 {
         out << g.mName;
+        out << g.mIDs;
 
         return out;
 }
@@ -581,6 +582,9 @@ QDataStream &operator<<(QDataStream & out, const OmGroup & g )
 QDataStream &operator>>(QDataStream & in, OmGroup & g )
 {
         in >> g.mName;
+	if(Omni_Version == Omni_File_Version) {
+        	in >> g.mIDs;
+	}
 
         return in;
 }

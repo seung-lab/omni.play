@@ -6,14 +6,15 @@
 
 class OmGroup : public OmManageableObject {
 public:
+        OmGroup();
         OmGroup(OmId);
-        OmGroup(const OmSegIDsList & segids);
+        OmGroup(const OmSegIDsSet & segids);
         ~OmGroup();
 
-        void AddIds( const OmSegIDsList & segids);
+        void AddIds( const OmSegIDsSet & segids);
 
 private:
-	OmSegIDsList mIDs;
+	OmSegIDsSet mIDs;
 	OmColor mColor;
 
 	OmColor GetRandomColor();

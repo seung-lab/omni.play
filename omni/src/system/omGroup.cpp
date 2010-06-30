@@ -1,12 +1,16 @@
 #include "system/omGroup.h"
 #include "common/omDebug.h"
 
-OmGroup::OmGroup(OmId id)
+OmGroup::OmGroup()
+{
+}
+
+OmGroup::OmGroup(OmId id) : OmManageableObject(id)
 {
 	mColor = GetRandomColor();
 }
 
-OmGroup::OmGroup(const OmSegIDsList & ids)
+OmGroup::OmGroup(const OmSegIDsSet & ids)
 {
 	mColor = GetRandomColor();
 	AddIds(ids);
@@ -38,11 +42,13 @@ OmColor OmGroup::GetRandomColor()
 	return colorInt;
 }
 
-void OmGroup::AddIds(const OmSegIDsList & ids)
+void OmGroup::AddIds(const OmSegIDsSet & ids)
 {
-	// FIXME need to add not replace...
-	debug("groups", "FIXME, replacing current ids instead of adding.\n");
-	mIDs = ids;
+	foreach(OmSegID segid, ids) {
+		if(!mIDs.contains(segid)) {
+			mIDs.insert(segid);
+		}
+	}
 }
 
 
