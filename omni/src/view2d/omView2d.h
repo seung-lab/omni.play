@@ -98,14 +98,14 @@ protected:
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 
 	//edit mode
-	void EditModeMouseRelease(QMouseEvent *event);
-	void EditModeMouseMove(QMouseEvent *event);
-	void EditModeMouseDoubleClick(QMouseEvent *event);
-	void EditModeKeyPress(QKeyEvent *event);	
-	void EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent *event);
-	void EditMode_MouseRelease_LeftButton_Filling(QMouseEvent *event);
-	void mouseMove_NavMode_CamMoving(QMouseEvent *event);
-	void EditMode_MousePressed_LeftButton(QMouseEvent *event);
+	void MouseRelease(QMouseEvent *event);
+	void MouseMove(QMouseEvent *event);
+	void MouseDoubleClick(QMouseEvent *event);
+	void KeyPress(QKeyEvent *event);	
+	void MouseMove_LeftButton_Scribbling(QMouseEvent *event);
+	void MouseRelease_LeftButton_Filling(QMouseEvent *event);
+	void mouseMove_CamMoving(QMouseEvent *event);
+	void MousePressed_LeftButton(QMouseEvent *event);
 	void SetDepth(QMouseEvent *event);
 	DataCoord getMouseClickpointLocalDataCoord( QMouseEvent *event );
 	DataCoord getMouseClickpointGlobalDataCoord( QMouseEvent *event);
