@@ -5,11 +5,11 @@
 #include "gui/mainwindow.h"
 #include "gui/myInspectorWidget.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "omEventManager.h"
-#include "omStateManager.h"
 #include "project/omProject.h"
+#include "system/omEventManager.h"
 #include "system/omEvents.h"
 #include "system/omLocalPreferences.h"
+#include "system/omStateManager.h"
 
 #include <QHostInfo>
 
@@ -239,8 +239,8 @@ const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
  */
 QGLContext *OmStateManager::GetSharedView3dContext()
 {
-
 	return NULL;
+
 	//create primary widget if it does not exist yet
 	if (Instance()->mpPrimaryView3dWidget == NULL)
 		CreatePrimaryView3dWidget();
@@ -274,7 +274,6 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 {
 	Instance()->TRANSPARANCY_ALPHA = alpha;
 }
-
 
 void OmStateManager::setInspector( MyInspectorWidget * miw )
 {
@@ -337,8 +336,7 @@ void OmStateManager::SetViewDrawable(ViewType viewType, vector<Drawable*> &drawa
 	}
 }
 
-vector<Drawable*> 
-OmStateManager::GetViewDrawable(ViewType viewType)
+vector<Drawable*> OmStateManager::GetViewDrawable(ViewType viewType)
 {
 	switch(viewType){
 	case XY_VIEW:

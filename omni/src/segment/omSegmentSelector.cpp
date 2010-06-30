@@ -25,6 +25,9 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, 
 	selectNoSegments();
 
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	if(!segID){
+		return;
+	}
 
 	if( oldSelectedIDs.size() > 1 ){
 		newSelectedIDs.insert( segID );
@@ -47,6 +50,10 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 
+	if(!segID){
+		return;
+	}
+
 	if(isSelected) {
 		newSelectedIDs.insert(segID);
 	} else {
@@ -59,6 +66,10 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	if(!segID){
+		return;
+	}
+
 	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	selectJustThisSegment( segID, !isSelected );
 }
@@ -66,6 +77,10 @@ void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknown
 void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	if(!segID){
+		return;
+	}
+
 	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	augmentSelectedSet( segID, !isSelected );
 }

@@ -16,11 +16,11 @@
 class Drawable;
 class OmTileCoord;
 class SegmentDataWrapper;
-
 class OmMipVolume;
 class OmTextureID;
 class OmSegmentation;
 class OmFilter2d;
+class OmSegmentSelector;
 
 class OmView2d : 
 	public OmView2dImpl,
@@ -61,7 +61,10 @@ protected:
 	void setBrushToolDiameter();
 	DataCoord BrushToolOTGDC(DataCoord off);
 
-	void PickToolAddToSelection (OmId segmentation_id, DataCoord globalDataClickPoint);
+	void PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint);
+	void PickToolAddToSelection( OmSegmentSelector & sel, 
+				     OmSegmentation & current_seg,
+				     DataCoord globalDataClickPoint);
 	void FillToolFill (OmId segmentation, DataCoord gCP, OmSegID fc, OmSegID bc, int depth=0);
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 

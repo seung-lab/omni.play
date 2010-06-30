@@ -318,17 +318,27 @@ void OmView2d::Refresh()
 	mDoRefresh = true;
 }
 
-void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalDataClickPoint)
+void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint)
 {
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
+        const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
+        if (segID ) {
+               
+               OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
+               sel.augmentSelectedSet( segID, true );
+               sel.sendEvent();
+
+               Refresh();
+        } 
+}
+
+void OmView2d::PickToolAddToSelection( OmSegmentSelector & sel, 
+				       OmSegmentation & current_seg,
+				       DataCoord globalDataClickPoint)
+{
 	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
 	if (segID ) {
-		
-		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
 		sel.augmentSelectedSet( segID, true );
-		sel.sendEvent();
-
-		Refresh();
 	} 
 }
 
@@ -518,6 +528,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 void myBreak(){}
 void checkDC (string s, DataCoord dc)
 {
+#if 0
 	if(dc.x == dc.y) {
 		debug("brush", "%s: xy: %i = %i\n", s.c_str(), dc.x, dc.y);
 		myBreak();
@@ -530,6 +541,7 @@ void checkDC (string s, DataCoord dc)
 		debug("brush", "%s: yz: %i = %i\n", s.c_str(), dc.y, dc.z);
 		myBreak();
 	}
+#endif
 }
 
 void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second, bool doselection)
@@ -613,11 +625,13 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	debug("brush", "coords: %i,%i,%i\n", x0, y0, mViewDepth);
 	debug("brush", "mDepth = %f\n", mDepth);
 
+	OmSegmentSelector sel(segmentation_id, this, "view2d_selector" );
+	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
 
 	if(!doselection) {
 		//BrushToolApplyPaint(segmentation_id, first, data_value);
 	} else {
-		PickToolAddToSelection(segmentation_id, first);
+		PickToolAddToSelection(sel, current_seg, first);
 	}
 
 	// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
@@ -648,15 +662,17 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			checkDC("3", globalDC);
 
 			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
-				if (!doselection)
+				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			} else if (doselection || mBrushToolDiameter < 4) {
-				if (!doselection)
+				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			}
 			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
@@ -687,20 +703,25 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			checkDC("4", globalDC);
 
 			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
-				if (!doselection)
+				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			} else if (doselection || mBrushToolDiameter < 4) {
-				if (!doselection)
+				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			}
-			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
 	}
-
+	
+	if (doselection) {
+		sel.sendEvent();
+		Refresh();
+	}
 }
 
 
