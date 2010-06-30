@@ -112,6 +112,12 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
         if (event->key() == Qt::Key_Escape) {
 		resetWindow();
 	} 
+        if (event->key() == Qt::Key_Minus) {
+		doZoom(-1);
+	} 
+        if (event->key() == Qt::Key_Equal) {
+		doZoom(1);
+	} 
 
 	switch (OmStateManager::GetSystemMode()) {
 	case DEND_MODE:
@@ -123,6 +129,13 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 		EditModeKeyPress(event);
 		break;
 	}
+}
+
+void OmView3dUi::doZoom(int direction)
+{
+	float dist = mpView3d->mCamera.GetDistance();
+	mpView3d->mCamera.SetDistance(dist - (.3 * dist * direction));
+        mpView3d->updateGL();
 }
 
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)

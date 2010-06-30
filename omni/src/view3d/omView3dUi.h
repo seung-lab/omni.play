@@ -95,6 +95,8 @@ private:
 	void CenterAxisOfRotation(QMouseEvent * event);
 	OmId PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
 	void resetWindow();
+	void doZoom(int direction);
+
 
 	bool mCPressed;
 };
