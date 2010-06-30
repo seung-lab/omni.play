@@ -166,7 +166,7 @@ void OmSegmentContextMenu::AddGroupActions()
 void OmSegmentContextMenu::randomizeColor()
 {
         OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-        OmSegment * r_segment = r_segmentation.GetSegmentCache()->FindRoot( mSegmentId );
+        OmSegment * r_segment = r_segmentation.GetSegmentCache()->findRoot(mSegmentId);
 
 	r_segment->reRandomizeColor();
 	OmCacheManager::Freshen(true);

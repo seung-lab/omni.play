@@ -596,10 +596,13 @@ OmDataVolumePlane OmMipChunk::getVolPlane(const ViewType viewType)
 		return VOL_YZ_PLANE;
 		break;
 	}
+
+	assert(0);
 }
+
 void * OmMipChunk::ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast)
 {
-	return ExtractDataSlice(getVolPlane(viewType),offset, sliceDims, fast);
+	return ExtractDataSlice(getVolPlane(viewType), offset, sliceDims, fast);
 }
 
 /*

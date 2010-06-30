@@ -57,7 +57,7 @@ public:
 	void flushDirtySegments();
 
 	OmSegment * findRoot( OmSegment * segment );
-	OmSegment * FindRoot( const OmSegID segID );
+	OmSegment * findRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);

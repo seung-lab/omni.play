@@ -218,11 +218,10 @@ OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
 	return mImpl->findRoot( segment );
 }
 
-OmSegment * OmSegmentCache::FindRoot( const OmSegID segID )
+OmSegment * OmSegmentCache::findRoot( const OmSegID segID )
 {
-	OmSegment * seg = GetSegment(segID);
 	QMutexLocker locker( &mMutex );
-	return mImpl->findRoot( seg );
+	return mImpl->findRoot( segID );
 }
 
 OmSegID OmSegmentCache::findRootID( const OmSegID segID )
