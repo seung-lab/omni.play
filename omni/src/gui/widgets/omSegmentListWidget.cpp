@@ -43,9 +43,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	if( 100 < segs->size() ){
-		assert(0 && "too many segments returned" );
-	}
+	assert( 100 >= segs->size() && "too many segments returned" );
 	
 	OmSegment * seg;
 	OmSegPtrList::iterator iter;

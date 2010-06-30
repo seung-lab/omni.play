@@ -49,7 +49,7 @@ MainWindow::MainWindow()
 	mCacheMonitorDialog = NULL;
 
 	mViewGroupState = NULL;
-
+	mToolToolBar = addToolBar("Tools");
 	updateReadOnlyRelatedWidgets();
 
 	OmStateManager::setMainWindow(this);
@@ -431,14 +431,6 @@ void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 	updateReadOnlyRelatedWidgets();
 }
 
-void MainWindow::open2Dand3dViews()
-{
-	OmId channelID = 1;
-	OmId segmentationID = 1;
-
-	mViewGroupState->addAllViews( channelID, segmentationID );
-}
-
 void MainWindow::openCacheMonitor()
 {
 	mCacheMonitorDialog = new CacheMonitorDialog( this );
@@ -503,4 +495,14 @@ bool MainWindow::isProjectOpen()
 void MainWindow::setProjectOpen(bool open)
 {
 	mIsProjectOpen = open;
+}
+
+void MainWindow::addToolbarWidget(QWidget * b)
+{
+	mToolToolBar->addWidget(b);
+}
+
+void MainWindow::addToolbarSeperator()
+{
+	mToolToolBar->addSeparator();
 }

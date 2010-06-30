@@ -107,10 +107,16 @@ HEADERS += lib/strnatcmp.h \
            src/gui/headless.h \
            src/gui/mainwindow.h \
            src/gui/toolbars/toolbarManager.h \
-           src/gui/toolbars/navAndEditToolBars.h \
+           src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/widgets/omButton.h \
            src/gui/toolbars/dendToolbar.h \
            src/gui/toolbars/dendToolbarButtons.h \
+           src/gui/toolbars/mainToolbar/navButtons.h \
+           src/gui/toolbars/mainToolbar/saveButton.h \
+           src/gui/toolbars/mainToolbar/toolButton.h \
+           src/gui/toolbars/mainToolbar/filterWidget.h \
+           src/gui/toolbars/mainToolbar/openViewGroupButton.h \
+           src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
            src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
            src/gui/recentFileList.h \
@@ -158,6 +164,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/omCacheBase.h \
            src/system/omCacheManager.h \
            src/system/omEvent.h \
+           src/system/omEvents.h \
            src/system/omEventManager.h \
            src/system/omFetchingThread.h \
            src/system/omGarbage.h \
@@ -287,10 +294,16 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/toolbars/toolbarManager.cpp \
-           src/gui/toolbars/navAndEditToolBars.cpp \
+           src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/widgets/omButton.cpp \
            src/gui/toolbars/dendToolbar.cpp \
            src/gui/toolbars/dendToolbarButtons.cpp \
+           src/gui/toolbars/mainToolbar/navButtons.cpp \
+           src/gui/toolbars/mainToolbar/saveButton.cpp \
+           src/gui/toolbars/mainToolbar/toolButton.cpp \
+           src/gui/toolbars/mainToolbar/filterWidget.cpp \
+           src/gui/toolbars/mainToolbar/openViewGroupButton.cpp \
+           src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/recentFileList.cpp \
@@ -335,6 +348,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omCacheableBase.cpp \
            src/system/omCacheManager.cpp \
            src/system/omEvent.cpp \
+           src/system/omEvents.cpp \
            src/system/omEventManager.cpp \
            src/system/omFetchingThread.cpp \
            src/system/omGarbage.cpp \

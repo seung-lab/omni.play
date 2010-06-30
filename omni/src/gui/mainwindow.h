@@ -45,6 +45,9 @@ class MainWindow
 	bool isProjectOpen();
 
 	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
+
+	void addToolbarWidget(QWidget * b);
+	void addToolbarSeperator();
 	
 	friend class ViewGroup;
 
@@ -57,7 +60,6 @@ class MainWindow
  public slots:
 	void spawnErrorDialog(OmException &e);
 	void saveProject();
-	void open2Dand3dViews();
 
  private slots:
 	void newProject();
@@ -116,6 +118,8 @@ class MainWindow
 	MenuBar * mMenuBar;
 
 	OmViewGroupState * mViewGroupState;
+	QToolBar *mToolToolBar;
+
 };
 
 #endif

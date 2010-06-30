@@ -262,8 +262,30 @@ quint64 SegmentDataWrapper::getSizeWithChildren()
  ****** Filters
  *******************************************/
 FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId ID)
-	: mID(ID), mType(FILTER), mChannelID(channelID)
+	: mID(ID)
+	, mType(FILTER)
+	, mChannelID(channelID)
 {
+}
+
+bool FilterDataWrapper::isValid()
+{
+	if( OmProject::IsChannelValid( mChannelID ) ){
+		if( OmProject::GetChannel(mChannelID).IsFilterValid(mID) ){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+OmFilter2d * FilterDataWrapper::getFilter()
+{
+	if(!isValid()){
+		return NULL;
+	}
+	
+	return &OmProject::GetChannel(mChannelID).GetFilter(mID);
 }
 
 QString FilterDataWrapper::getName()

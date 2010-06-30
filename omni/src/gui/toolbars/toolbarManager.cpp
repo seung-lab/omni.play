@@ -1,44 +1,38 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar.h"
-#include "gui/toolbars/navAndEditToolBars.h"
-#include "system/events/omToolModeEvent.h"
-#include "system/omProjectData.h"
+#include "gui/toolbars/mainToolbar/mainToolbar.h"
+#include "gui/toolbars/toolbarManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "toolbarManager.h"
-#include "volume/omVolume.h"
 
 ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)
 	, mMainWindow(mw)
-	, navAndEditToolBars( new NavAndEditToolBars( mw ) )
-	, dendToolBar( new DendToolBar( mw ) )
+	, mainToolbar(new MainToolbar(mw))
+	, dendToolBar(new DendToolBar(mw))
 {
 	OmStateManager::setDendToolBar( dendToolBar );
 }
 
 void ToolBarManager::setupToolbarInitially()
 {
-	navAndEditToolBars->setupToolbarInitially();
 	dendToolBar->setupToolbarInitially();
 }
 
 void ToolBarManager::updateReadOnlyRelatedWidgets()
 {
-	navAndEditToolBars->updateReadOnlyRelatedWidgets();
 	dendToolBar->updateReadOnlyRelatedWidgets();
 }
 
 void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)
 {
-	navAndEditToolBars->updateGuiFromProjectLoadOrOpen(vgs);
+	mainToolbar->updateToolbar();
 	dendToolBar->updateGuiFromProjectLoadOrOpen(vgs);
 	vgs->SetToolBarManager(this);
 }
 
 void ToolBarManager::SystemModeChangeEvent()
 {
-	navAndEditToolBars->SystemModeChangeEvent();
 	dendToolBar->SystemModeChangeEvent();
 }
 

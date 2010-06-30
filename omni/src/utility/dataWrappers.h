@@ -100,6 +100,8 @@ class FilterDataWrapper
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
 			   const OmId mID );
+	bool isValid();
+	OmFilter2d * getFilter();
 	OmId getChannelID(){ return mChannelID; }
 	QString getName();
 	QString getNote();

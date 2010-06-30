@@ -4,7 +4,7 @@
 #include <QtGui>
 
 class MainWindow;
-class NavAndEditToolBars;
+class MainToolbar;
 class DendToolBar;
 class OmViewGroupState;
 
@@ -23,7 +23,7 @@ class ToolBarManager : public QWidget
 
  private:
 	MainWindow * mMainWindow;
-	NavAndEditToolBars * navAndEditToolBars;
+	MainToolbar * mainToolbar;
 	DendToolBar * dendToolBar;
 };
 

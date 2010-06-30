@@ -30,7 +30,12 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->mValue ) );
 }
 
-OmSegID OmSegmentCacheImplLowLevel::findRootID( const OmSegID segID )
+OmSegment * OmSegmentCacheImplLowLevel::findRoot(const OmSegID segID)
+{
+	return findRoot(GetSegmentFromValue(segID));
+}
+
+OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
 {
 	if(!segID){
 		return 0;

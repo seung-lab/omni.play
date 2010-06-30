@@ -23,3 +23,9 @@ void OmButton<T>::mousePressEvent(QMouseEvent* event)
 		doAction();
 	}
 }
+
+template < class T >
+void OmButton<T>::setKeyboardShortcut(const QString & shortcut)
+{
+	setShortcut(QKeySequence(shortcut));
+}

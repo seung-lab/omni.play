@@ -24,6 +24,7 @@ class OmSegmentCacheImplLowLevel {
 	OmSegID GetNumTopSegments();
 
 	OmSegment * findRoot( OmSegment * segment );
+	OmSegment * findRoot(const OmSegID segID);
 	OmSegID findRootID( const OmSegID segID );
 
 	bool isSegmentEnabled( OmSegID segID );

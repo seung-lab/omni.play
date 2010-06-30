@@ -22,7 +22,9 @@
 
 #include "gui/widgets/omButton.cpp"
 #include "gui/toolbars/dendToolbar.h"
-#include "gui/toolbars/navAndEditToolBars.h"
+#include "gui/toolbars/mainToolbar/mainToolbar.h"
+#include "gui/mainwindow.h"
+#include <QWidget>
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
@@ -51,4 +53,6 @@ template class DynamicTreeContainer<OmId>;
 template class OmPagingStore<OmSegment>;
 
 template class OmButton<DendToolBar>;
-template class OmButton<NavAndEditToolBars>;
+template class OmButton<MainToolbar>;
+template class OmButton<MainWindow>;
+template class OmButton<QWidget>;

@@ -10,6 +10,8 @@ class OmButton : public QPushButton {
 	OmButton( T *, const QString &, 
 		    const QString &, const bool );
 
+	void setKeyboardShortcut(const QString & shortcut);
+
  protected:
 	T *const mParent;
 	virtual void doAction() = 0;

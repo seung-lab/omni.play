@@ -195,7 +195,6 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 
 void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 {
-	printf("HERE 0\n");
 	mScribbling = false;
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
