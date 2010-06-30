@@ -853,15 +853,16 @@ void OmView2d::resetWindow()
 
 void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 {
-        OmId segmentationID = mImageId;
-	OmId segmentID;
-        if(SEGMENTATION != mVolumeType) {
+	SegmentDataWrapper * sdw = getSelectedSegment( event );
+
+        if(NULL == sdw) {
                 return;
         }
 
         DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-       	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
+       	OmSegmentation & segmentation = sdw->getSegmentation();
 
+	OmId segmentationID, segmentID;
 	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
 		assert(mImageId==segmentationID);
 	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
