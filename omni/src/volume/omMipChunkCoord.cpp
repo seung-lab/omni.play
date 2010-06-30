@@ -48,8 +48,12 @@ OmMipChunkCoord OmMipChunkCoord::ParentCoord() const
 	//get primary coordinate of octal containing given coordinate
 	OmMipChunkCoord primary_coord = PrimarySiblingCoord();
 
+	int x = primary_coord.Coordinate.x;
+	int y = primary_coord.Coordinate.y;
+	int z = primary_coord.Coordinate.z;	
+
 	//return parent (next level, half coordinates)
-	return OmMipChunkCoord(Level + 1, Coordinate.x / 2, Coordinate.y / 2, Coordinate.z / 2);
+	return OmMipChunkCoord(Level + 1, x / 2, y / 2, z / 2);
 
 }
 
