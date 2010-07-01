@@ -119,6 +119,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/viewGroupWidgetInfo.h \
            src/gui/widgets/omButton.h \
            src/gui/widgets/omSegmentListWidget.h \
+           src/gui/widgets/thresholdGroup/omThresholdButtonDecrease.h \
+           src/gui/widgets/thresholdGroup/omThresholdButtonIncrease.h \
            src/mesh/meshingChunkThread.h \
            src/mesh/meshingChunkThreadManager.h \
            src/mesh/meshingManager.h \
@@ -267,6 +269,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/widgets/omSegmentContextMenu.cpp \
+           src/gui/widgets/thresholdGroup/omThresholdButtonDecrease.cpp \
+           src/gui/widgets/thresholdGroup/omThresholdButtonIncrease.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \
            src/gui/preferences/localPreferencesMeshing.cpp \
@@ -282,8 +286,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/segmentListWorking.cpp \
            src/gui/toolbars/dendToolbar/dendToolbar.cpp \
            src/gui/toolbars/dendToolbar/splitButton.cpp \
-           src/gui/toolbars/dendToolbar/thresholdButtonDecrease.cpp \
-           src/gui/toolbars/dendToolbar/thresholdButtonIncrease.cpp \
            src/gui/toolbars/dendToolbar/thresholdGroup.cpp \
            src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \

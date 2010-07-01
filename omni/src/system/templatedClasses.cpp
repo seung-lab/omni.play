@@ -27,6 +27,9 @@
 #include "gui/mainwindow.h"
 #include <QWidget>
 
+#include "gui/widgets/thresholdGroup/omThresholdButtonDecrease.cpp"
+#include "gui/widgets/thresholdGroup/omThresholdButtonIncrease.cpp"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
@@ -58,3 +61,6 @@ template class OmButton<MainToolbar>;
 template class OmButton<MainWindow>;
 template class OmButton<QWidget>;
 template class OmButton<ThresholdGroup>;
+
+template class OmThresholdButtonIncrease<ThresholdGroup>;
+template class OmThresholdButtonDecrease<ThresholdGroup>;
