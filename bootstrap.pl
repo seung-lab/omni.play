@@ -141,9 +141,11 @@ sub vtk {
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
     
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    if ( isMac() ){
-	`echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    } 
+    if ( isMacLeopard() ){
+	`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    } else {
+        `echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
+    }
     `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-${profileOn}g -Wall -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
     `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
@@ -369,7 +371,7 @@ sub qt46 {
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
     my $args = "-debug -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
-    if ( isMac() ){
+    if ( isMacSnowLeopard() ){
 	$args .= " -arch x86_64 ";
     }
 
