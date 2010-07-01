@@ -30,7 +30,7 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 				       ":/toolbars/mainToolbar/icons/1277962354_package-purge.png"));
 	addModifyButton(new ToolButton(parent, "Fill", 
 				       "Paint Can", FILL_MODE,
-				       ":/toolbars/mainToolbar/icons/1277962298_krita_kra.png"));
+				       ":/toolbars/mainToolbar/icons/1278015539_color_fill.png"));
 
 	connect( this, SIGNAL(buttonClicked(int)), 
 		 this, SLOT(buttonWasClicked(int)),
