@@ -44,11 +44,11 @@ sub getMacOSXversionNum {
 }
 
 sub isMacLeopard {
-    return (5 == getMacOSXversionNum());
+    return isMac() && (5 == getMacOSXversionNum());
 }
 
 sub isMacSnowLeopard {
-    return (6 == getMacOSXversionNum());
+    return isMac() && (6 == getMacOSXversionNum());
 }
 
 sub checkForMac {
