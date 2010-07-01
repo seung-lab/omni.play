@@ -88,7 +88,6 @@ class OmSegmentCacheImplLowLevel {
 
  private:
 	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
-
 };
 
 #endif

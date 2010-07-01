@@ -1,15 +1,84 @@
 QT += opengl network
 TEMPLATE = app
 
-# headers that must be processed by QT moc (i.e. contain Q_OBJECT)
-HEADERS += src/gui/cacheMonitorDialog.h  \
-           src/gui/cacheMonitorWidget.h \ \
+DEPENDPATH += . \
+           include \
+           include/vmmlib \
+           lib \
+           src \
+           src/common \
+           src/datalayer \
+           src/datalayer/archive \
+           src/datalayer/hdf5 \
+           src/gui \
+           src/gui/images \
+           src/gui/inspectors \
+           src/gui/preferences \
+           src/gui/toolbars \
+           src/gui/toolbars/dendToolbar \
+           src/gui/toolbars/mainToolbar \
+           src/gui/widgets \
+           src/mesh \
+           src/project \
+           src/segment \
+           src/segment/actions \
+           src/segment/actions/segment \
+           src/segment/actions/voxel \
+           src/segment/lowLevel \
+           src/system \
+           src/system/events \
+           src/system/viewGroup \
+           src/utility \
+           src/utility/bin \
+           src/utility/build \
+           src/view2d \
+           src/view3d \
+           src/view3d/widgets \
+           src/volume \
+           src/voxel \
+           tests \
+           tests/segment \
+           tests/segment/helpers \
+           tests/utility
+
+HEADERS += lib/strnatcmp.h \
+           src/common/omCommon.h \
+           src/common/omDebug.h \
+           src/common/omException.h \
+           src/common/omGl.h \
+           src/common/omStd.h \
+           src/common/omVtk.h \
+           src/datalayer/archive/omDataArchiveBoost.h \
+           src/datalayer/archive/omDataArchiveCoords.h \
+           src/datalayer/archive/omDataArchiveMipChunk.h \
+           src/datalayer/archive/omDataArchiveProject.h \
+           src/datalayer/archive/omDataArchiveQT.h \
+           src/datalayer/archive/omDataArchiveSegment.h \
+           src/datalayer/archive/omDataArchiveVmml.h \
+           src/datalayer/hdf5/omHdf5.h \
+           src/datalayer/hdf5/omHdf5LowLevel.h \
+           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
+           src/datalayer/hdf5/omHdf5Manager.h \
+           src/datalayer/hdf5/omHdf5Reader.h \
+           src/datalayer/hdf5/omHdf5Writer.h \
+           src/datalayer/omDataLayer.h \
+           src/datalayer/omDataPath.h \
+           src/datalayer/omDataPaths.h \
+           src/datalayer/omDataReader.h \
+           src/datalayer/omDataWrapper.h \
+           src/datalayer/omDataWriter.h \
+           src/datalayer/omDummyWriter.h \
+           src/gui/cacheMonitorDialog.h \
+           src/gui/cacheMonitorWidget.h \
            src/gui/elementListBox.h \
+           src/gui/guiUtils.h \
+           src/gui/headless.h \
            src/gui/inspectors/chanInspector.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
            src/gui/inspectors/segInspector.h \
            src/gui/inspectors/segObjectInspector.h \
+           src/gui/inspectors/ui_chanInspector.h \
            src/gui/inspectors/volInspector.h \
            src/gui/mainwindow.h \
            src/gui/menubar.h \
@@ -19,23 +88,140 @@ HEADERS += src/gui/cacheMonitorDialog.h  \
            src/gui/preferences/localPreferences3d.h \
            src/gui/preferences/localPreferencesMeshing.h \
            src/gui/preferences/localPreferencesSystem.h \
+           src/gui/preferences/preferences.h \
            src/gui/preferences/preferences2d.h \
            src/gui/preferences/preferences3d.h \
-           src/gui/preferences/preferences.h \
            src/gui/preferences/preferencesMesh.h \
+           src/gui/preferences/ui_preferences3d.h \
+           src/gui/recentFileList.h \
+           src/gui/searchInspector.h \
            src/gui/segmentListBase.h \
            src/gui/segmentListRecent.h \
            src/gui/segmentListValid.h \
            src/gui/segmentListWorking.h \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
+           src/gui/toolbars/dendToolbar/splitButton.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
+           src/gui/toolbars/mainToolbar/navButtons.h \
+           src/gui/toolbars/mainToolbar/openViewGroupButton.h \
+           src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
+           src/gui/toolbars/mainToolbar/saveButton.h \
+           src/gui/toolbars/mainToolbar/toolButton.h \
+           src/gui/toolbars/mainToolbar/volumeComboBoxes.h \
            src/gui/toolbars/toolbarManager.h \
+           src/gui/viewGroup.h \
+           src/gui/viewGroupWidgetInfo.h \
+           src/gui/widgets/omButton.h \
            src/gui/widgets/omSegmentListWidget.h \
+           src/mesh/meshingChunkThread.h \
+           src/mesh/meshingChunkThreadManager.h \
+           src/mesh/meshingManager.h \
+           src/mesh/omMeshDrawer.h \
+           src/mesh/omMeshSource.h \
+           src/mesh/omMeshTypes.h \
+           src/mesh/omMesher.h \
+           src/mesh/omMipMesh.h \
+           src/mesh/omMipMeshCoord.h \
+           src/mesh/omMipMeshManager.h \
+           src/project/omProject.h \
+           src/segment/actions/omSegmentEditor.h \
+           src/segment/actions/segment/omSegmentJoinAction.h \
+           src/segment/actions/segment/omSegmentSelectAction.h \
+           src/segment/actions/segment/omSegmentSplitAction.h \
+           src/segment/actions/voxel/omVoxelSelectionAction.h \
+           src/segment/actions/voxel/omVoxelSelectionSetAction.h \
+           src/segment/actions/voxel/omVoxelSetAction.h \
+           src/segment/actions/voxel/omVoxelSetConnectedAction.h \
+           src/segment/actions/voxel/omVoxelSetValueAction.h \
+           src/segment/lowLevel/DynamicTree.h \
+           src/segment/lowLevel/DynamicTreeContainer.h \
+           src/segment/lowLevel/omPagingStore.h \
+           src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
+           src/segment/lowLevel/omSegmentGraph.h \
+           src/segment/lowLevel/omSegmentIteratorLowLevel.h \
+           src/segment/lowLevel/omSegmentListByMRU.h \
+           src/segment/lowLevel/omSegmentListBySize.h \
+           src/segment/omSegment.h \
+           src/segment/omSegmentCache.h \
+           src/segment/omSegmentCacheImpl.h \
+           src/segment/omSegmentColorizer.h \
+           src/segment/omSegmentEdge.h \
+           src/segment/omSegmentIterator.h \
+           src/segment/omSegmentPointers.h \
+           src/segment/omSegmentQueue.h \
+           src/segment/omSegmentSelector.h \
+           src/system/events/omPreferenceEvent.h \
+           src/system/events/omProgressEvent.h \
+           src/system/events/omSegmentEvent.h \
+           src/system/events/omToolModeEvent.h \
+           src/system/events/omView3dEvent.h \
+           src/system/events/omViewEvent.h \
+           src/system/events/omVoxelEvent.h \
+           src/system/omAction.h \
+           src/system/omAnimate.h \
+           src/system/omBuildChannel.h \
+           src/system/omBuildSegmentation.h \
+           src/system/omBuildVolumes.h \
+           src/system/omCacheBase.h \
+           src/system/omCacheInfo.h \
+           src/system/omCacheManager.h \
+           src/system/omCacheableBase.h \
+           src/system/omEvent.h \
+           src/system/omGroup.h \
+           src/system/omGroups.h \
+           src/system/omLocalPreferences.h \
+           src/system/omManageableObject.h \
+           src/system/omPreferenceDefinitions.h \
+           src/system/omPreferences.h \
+           src/system/omProjectData.h \
+           src/system/omStateManager.h \
+           src/system/omThreadedCache.h \
+           src/system/viewGroup/omViewGroupState.h \
+           src/utility/dataWrappers.h \
+           src/utility/fileHelpers.h \
+           src/utility/localPrefFiles.h \
+           src/utility/omImageDataIo.h \
+           src/utility/omSystemInformation.h \
+           src/utility/setUtilities.h \
+           src/utility/sortHelpers.h \
+           src/utility/stringHelpers.h \
+           src/view2d/drawable.h \
+           src/view2d/omCachingThreadedCachingTile.h \
+           src/view2d/omTextureID.h \
+           src/view2d/omThreadedCachingTile.h \
+           src/view2d/omTile.h \
+           src/view2d/omTileCoord.h \
            src/view2d/omView2d.h \
            src/view2d/omView2dImpl.h \
-           src/view3d/omView3d.h
+           src/view3d/omCamera.h \
+           src/view3d/omCameraMovement.h \
+           src/view3d/omView3d.h \
+           src/view3d/omView3dUi.h \
+           src/view3d/omView3dWidget.h \
+           src/view3d/widgets/omChunkExtentWidget.h \
+           src/view3d/widgets/omInfoWidget.h \
+           src/view3d/widgets/omSelectionWidget.h \
+           src/view3d/widgets/omViewBoxWidget.h \
+           src/view3d/widgets/omVolumeAxisWidget.h \
+           src/volume/omChannel.h \
+           src/volume/omDrawOptions.h \
+           src/volume/omFilter2d.h \
+           src/volume/omFilter2dManager.h \
+           src/volume/omMipChunk.h \
+           src/volume/omMipChunkCoord.h \
+           src/volume/omMipChunkPtr.h \
+           src/volume/omMipVolume.h \
+           src/volume/omSegmentation.h \
+           src/volume/omSegmentationChunkCoord.h \
+           src/volume/omSimpleChunk.h \
+           src/volume/omSimpleChunkThreadedCache.h \
+           src/volume/omVolume.h \
+           src/volume/omVolumeCuller.h \
+           src/voxel/omMipSegmentDataCoord.h \
+           src/voxel/omMipVoxelation.h \
+           src/voxel/omMipVoxelationManager.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \

@@ -26,10 +26,10 @@ public:
 
 	OmSegment* GetSegment(const OmSegID);
 
+	bool IsSegmentValid(OmSegID seg);
+
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
-
-	bool IsSegmentValid(OmSegID seg);
 
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
@@ -72,7 +72,10 @@ public:
 	quint32 getMaxValue();
 	quint64 getSegmentListSize(OmSegIDRootType type);
 
-	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg = 0);
+	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset, 
+						  const int numToGet, 
+						  OmSegIDRootType type, 
+						  OmSegID startSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
 
@@ -84,8 +87,8 @@ public:
 
 private:
 	QMutex mMutex;
-	OmSegmentation * mSegmentation;
-	OmSegmentCacheImpl * mImpl;
+	OmSegmentation *const mSegmentation;
+	OmSegmentCacheImpl *const mImpl;
 
 	friend class OmSegmentColorizer;
 
