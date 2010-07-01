@@ -34,6 +34,16 @@ sub isMac {
     return ("darwin" eq $^O);
 }
 
+sub isMacLeopard {
+    my $sys_version = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
+    return ("5" eq $sys_version);
+}
+
+sub isMacSnowLeopard {
+    my $sys_version = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
+    return ("6" eq $sys_version);
+}
+
 sub isLinux {
     return ("linux" eq $^O);
 }
