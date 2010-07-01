@@ -444,7 +444,7 @@ sub menu {
 	print "Please make selection: ";
 	my $answer = <STDIN>;
 
-	if( $answer =~ /^\d+$/ ) {
+	if( $answer && $answer =~ /^\d+$/ ) {
 	    if( ($answer > -1) and ($answer < (1+$max_answer))){
 		runMenuEntry( $answer );
 		exit();
