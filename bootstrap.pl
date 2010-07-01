@@ -9,6 +9,7 @@
 #  on older computers!
 
 use strict;
+use File::Path;
 
 my $basePath = `pwd`;
 chomp $basePath;
@@ -92,11 +93,13 @@ sub dealWithCluster {
 }
 
 sub makeDirPaths {
-    # Create build path if it doesn't exist yet.
-    print `mkdir $buildPath` if (!-e $buildPath);
-    
-    # Create srcs path if it doesn't exist yet.
-    print `mkdir $srcPath` if (!-e $srcPath);
+    if( !-e $buildPath && !-l $buildPath){
+	mkpath($buildPath) or die "could not create $buildPath";
+    }
+
+    if( !-e $srcPath && !-l $srcPath){
+	mkpath($srcPath) or die "could not create $srcPath";
+    }
 }
 
 sub genOmniScript {
