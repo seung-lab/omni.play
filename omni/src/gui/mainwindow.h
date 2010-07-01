@@ -69,6 +69,8 @@ class MainWindow
 	void openInspector();
 	void openUndoView();
 	void openCacheMonitor();
+	void openGroupsTable();
+
 		
 	void open3dView();
 	void openChannelView(OmId chan_id, ViewType vtype);

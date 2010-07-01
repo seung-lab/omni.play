@@ -39,6 +39,7 @@ void MenuBar::createMenus()
 	toolMenu->addAction(openOmniInspector);
 	toolMenu->addAction(openUndoViewAct);
 	toolMenu->addAction(openCacheMonitorAct);
+	toolMenu->addAction(openGroupsTableAct);
 
 	windowMenu = mMainWindow->menuBar()->addMenu(tr("&Window"));
 	windowMenu->addAction(open3DAct);
@@ -109,6 +110,11 @@ void MenuBar::createActions()
 	openCacheMonitorAct = new QAction(tr("&Cache Monitor"), mMainWindow);
 	openUndoViewAct->setStatusTip(tr("Opens the Cache Monitor Tool"));
 	connect(openCacheMonitorAct, SIGNAL(triggered()), mMainWindow, SLOT(openCacheMonitor()));
+
+	openGroupsTableAct = new QAction(tr("Inspect &Groups"), mMainWindow);
+	openGroupsTableAct->setStatusTip(tr("Opens the Groups Table"));
+	connect(openGroupsTableAct, SIGNAL(triggered()), mMainWindow, SLOT(openGroupsTable()));
+
 
 	// Window
 	open3DAct = new QAction(tr("Open &3D View"), mMainWindow);

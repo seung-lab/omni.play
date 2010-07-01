@@ -1,4 +1,5 @@
 #include "common/omException.h"
+#include "gui/groupsTable.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
@@ -301,6 +302,26 @@ void MainWindow::openUndoView()
 		spawnErrorDialog(e);
 	}
 }
+
+void MainWindow::openGroupsTable()
+{
+        try {
+                GroupsTable * groupsTable = new GroupsTable();
+
+                QDockWidget *dock = new QDockWidget(tr("Groups"), this);
+                dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+                groupsTable->setParent(dock);
+                dock->setWidget(groupsTable);
+
+                addDockWidget(Qt::TopDockWidgetArea, dock);
+                mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
+
+        } catch(OmException & e) {
+                spawnErrorDialog(e);
+        }
+}
+
 
 void MainWindow::open3dView()
 {
