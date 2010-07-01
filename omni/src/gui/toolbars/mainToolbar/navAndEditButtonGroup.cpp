@@ -11,10 +11,10 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 				    ""));
 	addNavButton(new ToolButton(parent, "Crosshair", 
 				    "Recenter Dispaly", CROSSHAIR_MODE,
-				    ""));
+				    ":/toolbars/mainToolbar/icons/1277962376_target.png"));
 	addNavButton(new ToolButton(parent, "Pan", 
 				    "Move Image", PAN_MODE,
-				    ""));
+				    ":/toolbars/mainToolbar/icons/1277962397_cursor_hand.png"));
 	addNavButton(new ToolButton(parent, "Zoom", 
 				    "Zoom", ZOOM_MODE,
 				    ""));
@@ -24,13 +24,13 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 
 	addModifyButton(new ToolButton(parent, "Brush", 
 				       "Paint", ADD_VOXEL_MODE,
-				       ""));
+				       ":/toolbars/mainToolbar/icons/1277962300_paint.png"));
 	addModifyButton(new ToolButton(parent, "Eraser", 
 				       "Paint Black Voxel", SUBTRACT_VOXEL_MODE,
-				       ""));
+				       ":/toolbars/mainToolbar/icons/1277962354_package-purge.png"));
 	addModifyButton(new ToolButton(parent, "Fill", 
 				       "Paint Can", FILL_MODE,
-				       ""));
+				       ":/toolbars/mainToolbar/icons/1277962300_paint.png"));
 
 	connect( this, SIGNAL(buttonClicked(int)), 
 		 this, SLOT(buttonWasClicked(int)),

@@ -14,7 +14,11 @@ ToolButton::ToolButton(QWidget * parent,
 	, mTool(tool)
 {
 	setFlat(true);
+
 	setIcon(QIcon(iconPath));
+	if( !icon().isNull() ){
+		setText("");
+	}
 }
 
 void ToolButton::doAction()
