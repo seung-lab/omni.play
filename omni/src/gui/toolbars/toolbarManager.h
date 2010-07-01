@@ -17,7 +17,6 @@ class ToolBarManager : public QWidget
 	virtual void setupToolbarInitially();
 	virtual void updateReadOnlyRelatedWidgets();
 	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
-	virtual void SystemModeChangeEvent();
 
 	void SetSplittingOff();
 

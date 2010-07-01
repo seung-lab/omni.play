@@ -31,11 +31,6 @@ void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)
 	vgs->SetToolBarManager(this);
 }
 
-void ToolBarManager::SystemModeChangeEvent()
-{
-	dendToolBar->SystemModeChangeEvent();
-}
-
 void ToolBarManager::SetSplittingOff()
 {
 	dendToolBar->SetSplittingOff();

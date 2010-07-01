@@ -20,7 +20,6 @@ class DendToolBar : public QWidget
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
 	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
-	void SystemModeChangeEvent(){} // TODO: delete me (purcaro)
 	void updateGui();
 
         void SetSplittingOff();

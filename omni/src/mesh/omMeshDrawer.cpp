@@ -307,7 +307,7 @@ void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
 {
         OmSegmentColorCacheType sccType;
 
-        if( mViewGroupState->shouldMeshBeShownBroken() ) {
+        if( mViewGroupState->shouldVolumeBeShownBroken() ) {
         	sccType = SCC_SEGMENTATION_BREAK;
         } else {
         	sccType = SCC_SEGMENTATION;

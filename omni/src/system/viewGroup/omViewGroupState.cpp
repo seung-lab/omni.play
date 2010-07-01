@@ -15,10 +15,6 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
 {
-	mViewSliceDataXY = NULL;
-	mViewSliceDataYZ = NULL;
-	mViewSliceDataXZ = NULL;
-
 	mXYSliceEnabled = false;
 	mYZSliceEnabled = false;
 	mXZSliceEnabled = false;
@@ -298,63 +294,6 @@ void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
 	}
 }
 
-/*
- *	Sets the data format for the slice image data.  This will automatically clear
- *	any image data previously set.
- */
-void OmViewGroupState::SetViewSliceDataFormat(int bytesPerSample)
-{
-	SetViewSlice(SLICE_XY_PLANE, Vector3 < int >::ZERO, NULL);
-	SetViewSlice(SLICE_YZ_PLANE, Vector3 < int >::ZERO, NULL);
-	SetViewSlice(SLICE_XZ_PLANE, Vector3 < int >::ZERO, NULL);
-
-	mViewSliceBytesPerSample = bytesPerSample;
-}
-
-/*
- *	Sets slice dimensions and copies image data (deletes old image data if necessary).  
- *	note: Uses previously specified format to perform deep copy of given data.
- */
-void OmViewGroupState::SetViewSlice(const OmSlicePlane plane, const Vector3 < int >&dim, unsigned char *p_data)
-{
-	//get size of image data
-	unsigned int data_size = mViewSliceBytesPerSample * dim.x * dim.y * dim.z;
-
-	//alloc and copy
-	unsigned char *p_data_copy = new unsigned char[data_size];
-	memcpy(p_data_copy, p_data, data_size);
-
-	switch (plane) {
-
-	case SLICE_XY_PLANE:
-		mViewSliceDimXY = dim;
-		if (mViewSliceDataXY) {
-			delete mViewSliceDataXY;
-		}
-		mViewSliceDataXY = p_data_copy;
-		break;
-
-	case SLICE_YZ_PLANE:
-		mViewSliceDimYZ = dim;
-		if (mViewSliceDataYZ) {
-			delete mViewSliceDataYZ;
-		}
-		mViewSliceDataYZ = p_data_copy;
-		break;
-
-	case SLICE_XZ_PLANE:
-		mViewSliceDimXZ = dim;
-		if (mViewSliceDataXZ) {
-			delete mViewSliceDataXZ;
-		}
-		mViewSliceDataXZ = p_data_copy;
-		break;
-
-	default:
-		assert(false);
-	}
-}
-
 void OmViewGroupState::SetSegmentation( const OmId segID ) 
 { 
 	delete m_sdw;
@@ -374,7 +313,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	switch( objType ){
 	case CHANNEL:
-		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ){
+		if( !mShowValid && shouldVolumeBeShownBroken() ){
 			sccType = SCC_FILTER_BREAK;
 		} else if(mShowValid) {
 			if(mShowValidInColor){
@@ -388,7 +327,7 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 		break;
 
 	case SEGMENTATION:
-		if(!mShowValid && (mShatter || (mShowSplit && mBreakOnSplit)) ) {
+		if( !mShowValid && shouldVolumeBeShownBroken() ){
 			sccType = SCC_SEGMENTATION_BREAK;
 		} else if(mShowValid) {
 			if(mShowValidInColor){
@@ -487,7 +426,7 @@ void OmViewGroupState::SetShowSplitMode(bool mode)
 	mShowSplit = mode;
 }
 
-bool OmViewGroupState::shouldMeshBeShownBroken()
+bool OmViewGroupState::shouldVolumeBeShownBroken()
 {
 	return mShatter || (mShowSplit && mBreakOnSplit);
 }

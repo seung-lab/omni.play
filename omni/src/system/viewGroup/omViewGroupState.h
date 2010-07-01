@@ -50,9 +50,6 @@ class OmViewGroupState : public OmManageableObject {
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	void SetViewSliceDataFormat(int bytesPerSample);
-	void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
-
 	void ColorTile( OmSegID *, const int,
 			const ObjectType, unsigned char * );
 
@@ -73,7 +70,7 @@ class OmViewGroupState : public OmManageableObject {
 
 	void SetShowValidMode(bool mode, bool incolor);
 	void SetShowSplitMode(bool mode);
-	bool shouldMeshBeShownBroken();
+	bool shouldVolumeBeShownBroken();
 
  private:
 	QMutex mColorCacheMapLock;
@@ -100,9 +97,6 @@ class OmViewGroupState : public OmManageableObject {
 	Vector3i mViewSliceDimXY;
 	Vector3i mViewSliceDimYZ;
 	Vector3i mViewSliceDimXZ;
-	unsigned char * mViewSliceDataXY;
-	unsigned char * mViewSliceDataYZ;
-	unsigned char * mViewSliceDataXZ;
 
 	std::vector<OmSegmentColorizer*> mColorCaches;
 

@@ -37,14 +37,12 @@ void OmView3dUi::MousePressed(QMouseEvent * event)
 
 void OmView3dUi::MouseRelease(QMouseEvent * event)
 {
-	switch (OmStateManager::GetToolMode()) {
-	case SPLIT_MODE:
+	if( SPLIT_MODE == OmStateManager::GetToolMode()){
 		DendModeMouseReleased(event);
-		break;
-	default:
-		NavigationModeMouseRelease(event);
-		break;
+		return;
 	}
+
+	NavigationModeMouseRelease(event);
 	//EditModeMouseRelease(event);
 }
 
@@ -74,14 +72,11 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 {
         if (event->key() == Qt::Key_C) {
 		mCPressed = true; 
-	} 
-        if (event->key() == Qt::Key_Escape) {
+	} else if (event->key() == Qt::Key_Escape) {
 		resetWindow();
-	} 
-        if (event->key() == Qt::Key_Minus) {
+	} else if (event->key() == Qt::Key_Minus) {
 		doZoom(-1);
-	} 
-        if (event->key() == Qt::Key_Equal) {
+	} else if (event->key() == Qt::Key_Equal) {
 		doZoom(1);
 	} 
 
@@ -347,7 +342,6 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 
 bool OmView3dUi::PickVoxelMouse(QMouseEvent * event, bool drag, DataCoord & rVoxel)
 {
-
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
 
@@ -443,7 +437,6 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 
 void OmView3dUi::VoxelEditMouse(QMouseEvent * mouseEvent, bool drag)
 {
-
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_VOXEL_MODE:
 		VoxelSelectToggleMouse(mouseEvent, drag);
@@ -463,12 +456,10 @@ void OmView3dUi::VoxelEditMouse(QMouseEvent * mouseEvent, bool drag)
 	case SPLIT_MODE:
 		break;
 	}
-
 }
 
 void OmView3dUi::VoxelSelectToggleMouse(QMouseEvent * mouseEvent, bool drag)
 {
-
 	//augment if shift pressed
 	bool augment_selection = mouseEvent->modifiers() & Qt::ShiftModifier;
 
@@ -492,7 +483,6 @@ void OmView3dUi::VoxelSelectToggleMouse(QMouseEvent * mouseEvent, bool drag)
 
 void OmView3dUi::VoxelSetMouse(QMouseEvent * mouseEvent, bool drag)
 {
-
 	//pick voxel
 	DataCoord picked_voxel;
 	if (!PickVoxelMouse(mouseEvent, drag, picked_voxel))

@@ -1,5 +1,5 @@
-#ifndef NAV_AND_EDIT_TOOLBARS_H
-#define NAV_AND_EDIT_TOOLBARS_H
+#ifndef MAIN_TOOLBAR_H
+#define MAIN_TOOLBAR_H
 
 #include "common/omCommon.h"
 
