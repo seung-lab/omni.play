@@ -1,5 +1,5 @@
-#ifndef NAV_BUTTONS_H
-#define NAV_BUTTONS_H
+#ifndef NAV_AND_EDIT_BUTTONS_H
+#define NAV_AND_EDIT_BUTTONS_H
 
 #include "common/omCommon.h"
 #include <QWidget>

@@ -11,6 +11,7 @@ class NavAndEditButtons;
 class OmViewGroupState;
 class OpenViewGroupButton;
 class SaveButton;
+class VolumeRefreshButton;
 
 class MainToolbar : public QWidget {
  Q_OBJECT
@@ -27,6 +28,7 @@ class MainToolbar : public QWidget {
 	NavAndEditButtons *const buttons;
 	OpenViewGroupButton *const openViewGroupButton;
 	FilterWidget *const filterWidget;
+	VolumeRefreshButton *const volumeRefreshButton;
 
 	void addWidgetToToolbar( QWidget * widget );
 	void addSeperatorToToolbar();

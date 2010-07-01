@@ -1,5 +1,5 @@
-#ifndef DEND_TOOLBAR_BUTTONS_H
-#define DEND_TOOLBAR_BUTTONS_H
+#ifndef SPLIT_BUTTON_H
+#define SPLIT_BUTTON_H
 
 #include "gui/widgets/omButton.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
@@ -10,6 +10,7 @@ class SplitButton : public OmButton<DendToolBar> {
 		    const QString & title, 
 		    const QString & statusTip,
 		    const bool isCheckable );
+
  private:
 	void doAction();
 };

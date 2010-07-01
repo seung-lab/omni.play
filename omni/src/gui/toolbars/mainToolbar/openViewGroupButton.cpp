@@ -8,7 +8,6 @@ OpenViewGroupButton::OpenViewGroupButton(MainWindow * mw)
 				"Display Views", 
 				"Open the 2D and 3D views", 
 				false)
-	, mMainWindow(mw)
 {
 	setFlat(true);
 }
@@ -18,5 +17,5 @@ void OpenViewGroupButton::doAction()
 	const OmId channelID = 1;
 	const OmId segmentationID = 1;
 
-	mMainWindow->getViewGroupState()->addAllViews( channelID, segmentationID );
+	mParent->getViewGroupState()->addAllViews( channelID, segmentationID );
 }

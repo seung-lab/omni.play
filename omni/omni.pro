@@ -104,11 +104,12 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
-           src/gui/toolbars/mainToolbar/navButtons.h \
+           src/gui/toolbars/mainToolbar/navAndEditButtons.h \
            src/gui/toolbars/mainToolbar/openViewGroupButton.h \
            src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
            src/gui/toolbars/mainToolbar/saveButton.h \
            src/gui/toolbars/mainToolbar/toolButton.h \
+           src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
            src/gui/toolbars/mainToolbar/volumeComboBoxes.h \
            src/gui/toolbars/toolbarManager.h \
            src/gui/viewGroup.h \
@@ -280,10 +281,11 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
-           src/gui/toolbars/mainToolbar/navButtons.cpp \
+           src/gui/toolbars/mainToolbar/navAndEditButtons.cpp \
            src/gui/toolbars/mainToolbar/openViewGroupButton.cpp \
            src/gui/toolbars/mainToolbar/saveButton.cpp \
            src/gui/toolbars/mainToolbar/toolButton.cpp \
+           src/gui/toolbars/mainToolbar/refreshVolumeButton.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/viewGroup.cpp \
            src/gui/widgets/omButton.cpp \

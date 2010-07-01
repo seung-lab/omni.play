@@ -10,7 +10,6 @@ class OpenViewGroupButton : public OmButton<MainWindow> {
 	OpenViewGroupButton(MainWindow * mw);
  private:
 	void doAction();
-	MainWindow * mMainWindow;
 };
 
 #endif

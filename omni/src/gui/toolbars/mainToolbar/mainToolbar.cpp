@@ -1,8 +1,9 @@
 #include "gui/mainwindow.h"
+#include "gui/toolbars/mainToolbar/filterWidget.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/mainToolbar/navButtons.h"
-#include "gui/toolbars/mainToolbar/filterWidget.h"
 #include "gui/toolbars/mainToolbar/openViewGroupButton.h"
+#include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "system/omProjectData.h"
 
@@ -11,14 +12,16 @@ MainToolbar::MainToolbar( MainWindow * mw )
 	, mMainWindow(mw)
 	, saveButton(new SaveButton(this))
 	, buttons(new NavAndEditButtons(mw))
-	, openViewGroupButton(new OpenViewGroupButton(mMainWindow))
-	, filterWidget(new FilterWidget(mMainWindow))
+	, openViewGroupButton(new OpenViewGroupButton(mw))
+	, filterWidget(new FilterWidget(mw))
+	, volumeRefreshButton(new VolumeRefreshButton(mw))
 {
 	addWidgetToToolbar(saveButton);
 	addSeperatorToToolbar();
 	buttons->addTheButtons();
 	addSeperatorToToolbar();
 	addWidgetToToolbar(openViewGroupButton);
+	addWidgetToToolbar(volumeRefreshButton);
 	addSeperatorToToolbar();
 	addWidgetToToolbar(new QLabel("Alpha Level: ",this));
 	addWidgetToToolbar(filterWidget);

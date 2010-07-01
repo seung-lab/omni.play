@@ -1,12 +1,10 @@
 #ifndef NAV_AND_EDIT_BUTTON_GROUP_H
 #define NAV_AND_EDIT_BUTTON_GROUP_H
 
-#include "gui/toolbars/mainToolbar/navButtons.h"
+#include "gui/toolbars/mainToolbar/toolButton.h"
 
 #include <QButtonGroup>
 #include <QHash>
-
-class ToolButton;
 
 class NavAndEditButtonGroup : public QButtonGroup {
  Q_OBJECT

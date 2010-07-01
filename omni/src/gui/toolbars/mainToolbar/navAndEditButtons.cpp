@@ -1,6 +1,6 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
-#include "gui/toolbars/mainToolbar/navButtons.h"
+#include "gui/toolbars/mainToolbar/navAndEditButtons.h"
 #include "gui/toolbars/mainToolbar/toolButton.h"
 
 NavAndEditButtons::NavAndEditButtons(MainWindow * mw)

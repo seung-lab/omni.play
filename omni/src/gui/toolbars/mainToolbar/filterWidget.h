@@ -17,7 +17,6 @@ class FilterWidget : public QSlider {
 	void setFilAlpha(int alpha);
 
  private:
-	MainWindow * mMainWindow;
 	OmId getChannelID();
 	OmId getFilterID();
 };

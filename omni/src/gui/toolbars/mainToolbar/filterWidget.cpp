@@ -10,7 +10,6 @@
 
 FilterWidget::FilterWidget(MainWindow * mw)
 	: QSlider(Qt::Horizontal, mw)
-	, mMainWindow(mw)
 {
 	QSize size = sizeHint();
 	size.setWidth(200);
