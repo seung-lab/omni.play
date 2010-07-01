@@ -57,8 +57,7 @@ void DendToolBar::createToolbarActions()
 {
 	splitButton = new SplitButton( this, 
 				       "split",
-				       "Split object mode",
-				       true );
+				       "Split object mode" );
 
 	autoBreakCheckbox = new QCheckBox(mMainWindow);
 	autoBreakCheckbox->setText(tr("Show Breaks"));

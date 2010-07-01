@@ -4,24 +4,26 @@
 #include <QtGui>
 
 class DendToolBar;
+class ThresholdButtonIncrease;
+class ThresholdButtonDecrease;
 
 class ThresholdGroup : public QGroupBox {
  Q_OBJECT 
  public:
 	ThresholdGroup(DendToolBar * parent);
+	void decreaseThresholdByEpsilon();
+	void increaseThresholdByEpsilon();
+	void updateGui();
 
  private slots:
-	void increaseThreshold();
-	void decreaseThreshold();
 	void thresholdChanged();
 
  private:
 	DendToolBar * mDendToolbar;
-	QPushButton * decreaseThresholdAct;
-	QPushButton * increaseThresholdAct;
+	ThresholdButtonDecrease *const thresholdButtonDecrease;
+	ThresholdButtonIncrease *const thresholdButtonIncrease;
 	QLineEdit* mThreshold;
 
-	void updateGui();
 	void addToThreshold(const float num);
 	void setThresholdValue();
 	void haveSegmentationChangeThreshold( const float threshold );

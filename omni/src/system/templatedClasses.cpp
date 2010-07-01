@@ -23,6 +23,7 @@
 #include "gui/widgets/omButton.cpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
+#include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "gui/mainwindow.h"
 #include <QWidget>
 
@@ -56,3 +57,4 @@ template class OmButton<DendToolBar>;
 template class OmButton<MainToolbar>;
 template class OmButton<MainWindow>;
 template class OmButton<QWidget>;
+template class OmButton<ThresholdGroup>;

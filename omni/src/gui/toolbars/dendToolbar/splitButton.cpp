@@ -6,9 +6,8 @@
 
 SplitButton::SplitButton(DendToolBar * mw, 
 			 const QString & title, 
-			 const QString & statusTip,
-			 const bool isCheckable )
-	: OmButton<DendToolBar>( mw, title, statusTip, isCheckable)
+			 const QString & statusTip)
+	: OmButton<DendToolBar>( mw, title, statusTip, true)
 {
 }
 
@@ -23,5 +22,4 @@ void SplitButton::doAction()
 		mParent->getViewGroupState()->SetSplitMode(false, false);
 		OmStateManager::SetOldToolModeAndSendEvent();
 	}
-
 }

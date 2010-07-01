@@ -101,6 +101,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/segmentListWorking.h \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
            src/gui/toolbars/dendToolbar/splitButton.h \
+           src/gui/toolbars/dendToolbar/thresholdButtonDecrease.h \
+           src/gui/toolbars/dendToolbar/thresholdButtonIncrease.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
@@ -280,6 +282,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/segmentListWorking.cpp \
            src/gui/toolbars/dendToolbar/dendToolbar.cpp \
            src/gui/toolbars/dendToolbar/splitButton.cpp \
+           src/gui/toolbars/dendToolbar/thresholdButtonDecrease.cpp \
+           src/gui/toolbars/dendToolbar/thresholdButtonIncrease.cpp \
            src/gui/toolbars/dendToolbar/thresholdGroup.cpp \
            src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \

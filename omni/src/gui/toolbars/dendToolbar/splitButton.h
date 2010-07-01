@@ -8,8 +8,7 @@ class SplitButton : public OmButton<DendToolBar> {
  public:
 	SplitButton(DendToolBar * mw, 
 		    const QString & title, 
-		    const QString & statusTip,
-		    const bool isCheckable );
+		    const QString & statusTip );
 
  private:
 	void doAction();
