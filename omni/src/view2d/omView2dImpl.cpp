@@ -12,7 +12,17 @@ OmView2dImpl::OmView2dImpl(QWidget * parent)
 	: QWidget(parent)
 {
 	// drawComplete = true; // this was never initialized! set it here?
+	
+	setBackgroundColor();
+}
 
+void OmView2dImpl::setBackgroundColor()
+{
+	// http://wiki.forum.nokia.com/index.php/CS001348_-_Changing_QWidget_background_colour
+	// Set background colour to black
+	QPalette p(palette());
+	p.setColor(QPalette::Background, Qt::black);
+	setPalette(p);
 }
 
 void OmView2dImpl::Draw()

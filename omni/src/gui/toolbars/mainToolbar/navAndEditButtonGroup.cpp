@@ -7,23 +7,30 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 	: QButtonGroup(parent)
 {
 	addNavButton(new ToolButton(parent, "Select", 
-				 "Select Object", SELECT_MODE));
+				    "Select Object", SELECT_MODE,
+				    ""));
 	addNavButton(new ToolButton(parent, "Crosshair", 
-				 "Recenter Dispaly", CROSSHAIR_MODE));
+				    "Recenter Dispaly", CROSSHAIR_MODE,
+				    ""));
 	addNavButton(new ToolButton(parent, "Pan", 
-				 "Move Image", PAN_MODE));
+				    "Move Image", PAN_MODE,
+				    ""));
 	addNavButton(new ToolButton(parent, "Zoom", 
-				 "Zoom", ZOOM_MODE));
+				    "Zoom", ZOOM_MODE,
+				    ""));
 
 	//	addButton(new ToolButton(parent, "Voxelize", 
 	//			 "Voxelize", VOXELIZE_MODE));
 
 	addModifyButton(new ToolButton(parent, "Brush", 
-				 "Paint", ADD_VOXEL_MODE));
+				       "Paint", ADD_VOXEL_MODE,
+				       ""));
 	addModifyButton(new ToolButton(parent, "Eraser", 
-				 "Paint Black Voxel", SUBTRACT_VOXEL_MODE));
+				       "Paint Black Voxel", SUBTRACT_VOXEL_MODE,
+				       ""));
 	addModifyButton(new ToolButton(parent, "Fill", 
-				 "Paint Can", FILL_MODE));
+				       "Paint Can", FILL_MODE,
+				       ""));
 
 	connect( this, SIGNAL(buttonClicked(int)), 
 		 this, SLOT(buttonWasClicked(int)),

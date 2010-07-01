@@ -9,7 +9,8 @@ class ToolButton : public OmButton<QWidget> {
 	ToolButton(QWidget*,
 		   const QString & title, 
 		   const QString & statusTip,
-		   const OmToolMode tool);
+		   const OmToolMode tool,
+		   const QString & iconPath);
 
 	OmToolMode getToolMode(){ return mTool; }
  private:

@@ -11,7 +11,7 @@
 #include "system/events/omViewEvent.h"
 #include "system/events/omVoxelEvent.h"
 #include "view2d/omView2dImpl.h"
-#include "gui/omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 
 class Drawable;
 class OmTileCoord;
@@ -36,9 +36,7 @@ public:
 	OmView2d(ViewType, ObjectType, OmId, QWidget *, OmViewGroupState *);
  	~OmView2d();
 	
-
 	OmSegmentation *mSeg;
-
 
 	int GetDepthToDataSlice(ViewType viewType);
 	void SetDataSliceToDepth(ViewType viewType, int slice);

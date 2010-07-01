@@ -2,7 +2,7 @@
 #include "gui/guiUtils.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segObjectInspector.h"
-#include "gui/omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/segmentListBase.h"
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/omSegmentSelector.h"

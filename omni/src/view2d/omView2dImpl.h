@@ -50,10 +50,12 @@ class OmView2dImpl : public QWidget
 
 	int mNearClip;
 	int mFarClip;
-	QGLPixelBuffer *  pbuffer;
+	QGLPixelBuffer * pbuffer;
 	QImage safePaintEvent();	// pbuffered paint.
 
  private:
+	void setBackgroundColor();
+
 	void initializeGL();
 
 	void DrawFromCache();
@@ -66,8 +68,6 @@ class OmView2dImpl : public QWidget
 	bool BufferTiles(Vector2f zoomMipVector);
 
 	Vector2f GetPanDistanceStickyMode(ViewType viewType);
-
-	
 };
 
 #endif

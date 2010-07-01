@@ -7,7 +7,7 @@
  */
 
 
-#include "gui/omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui> 
@@ -82,7 +82,7 @@ public:
 	
 	
 private:
-	OmView3d * const mpView3d;
+	OmView3d *const mpView3d;
 	OmViewGroupState * mViewGroupState;
 
 	OmSegmentContextMenu mSegmentContextMenu;

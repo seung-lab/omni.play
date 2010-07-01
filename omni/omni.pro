@@ -83,7 +83,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/mainwindow.h \
            src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
-           src/gui/omSegmentContextMenu.h \
+           src/gui/widgets/omSegmentContextMenu.h \
            src/gui/preferences/localPreferences2d.h \
            src/gui/preferences/localPreferences3d.h \
            src/gui/preferences/localPreferencesMeshing.h \
@@ -94,7 +94,6 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
            src/gui/recentFileList.h \
-           src/gui/searchInspector.h \
            src/gui/segmentListBase.h \
            src/gui/segmentListRecent.h \
            src/gui/segmentListValid.h \
@@ -262,7 +261,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/mainwindow.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
-           src/gui/omSegmentContextMenu.cpp \
+           src/gui/widgets/omSegmentContextMenu.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \
            src/gui/preferences/localPreferencesMeshing.cpp \

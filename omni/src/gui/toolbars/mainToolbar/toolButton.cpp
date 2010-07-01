@@ -5,7 +5,8 @@
 ToolButton::ToolButton(QWidget * parent,
 		       const QString & title, 
 		       const QString & statusTip,
-		       const OmToolMode tool)
+		       const OmToolMode tool,
+		       const QString & iconPath)
 	: OmButton<QWidget>( parent, 
 			     title,
 			     statusTip,
@@ -13,6 +14,7 @@ ToolButton::ToolButton(QWidget * parent,
 	, mTool(tool)
 {
 	setFlat(true);
+	setIcon(QIcon(iconPath));
 }
 
 void ToolButton::doAction()

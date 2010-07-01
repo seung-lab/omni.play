@@ -4,7 +4,7 @@
 #include <QtGui>
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
-#include "gui/omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "volume/omSegmentation.h"
 
 class SegmentDataWrapper;
