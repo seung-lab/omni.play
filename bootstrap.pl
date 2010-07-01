@@ -34,14 +34,22 @@ sub isMac {
     return ("darwin" eq $^O);
 }
 
+sub getMacOSXversionNum {
+    return `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
+}
+
 sub isMacLeopard {
-    my $sys_version = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
-    return ("5" eq $sys_version);
+    return ("5" eq getMacOSXversionNum());
 }
 
 sub isMacSnowLeopard {
-    my $sys_version = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
-    return ("6" eq $sys_version);
+    return ("6" eq getMacOSXversionNum());
+}
+
+sub checkForMac {
+    if(isMac()){
+	print "Mac OS X version is: ".getMacOSXversionNum()."\n";
+    }
 }
 
 sub isLinux {
@@ -604,6 +612,7 @@ sub doUbuntuAptGets{
     print "Done with the Ubuntu apt-gets! \n\n";
 }
 
+checkForMac();
 dealWithCluster();
 makeDirPaths();
 checkCmdLineArgs();
