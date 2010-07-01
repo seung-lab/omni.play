@@ -17,11 +17,16 @@ public:
 	OmGroup & AddGroup(OmGroupName);
 	OmGroup & GetGroup(OmGroupID);
 	OmGroup & GetGroup(OmGroupName);
-	void SetName(OmGroupName);
 
 	OmGroupID GetIDFromName(OmGroupName);
 	void SetGroup(const OmSegIDsSet & set, OmGroupName name);
 	void UnsetGroup(const OmSegIDsSet & set, OmGroupName name);
+
+	OmGroupIDsSet GetGroups();
+
+	OmId getSegmentationID();
+	void populateGroupsList();
+
 
 private:
         void setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet);

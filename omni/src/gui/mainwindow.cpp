@@ -306,7 +306,7 @@ void MainWindow::openUndoView()
 void MainWindow::openGroupsTable()
 {
         try {
-                GroupsTable * groupsTable = new GroupsTable();
+                GroupsTable * groupsTable = new GroupsTable(mViewGroupState);
 
                 QDockWidget *dock = new QDockWidget(tr("Groups"), this);
                 dock->setAllowedAreas(Qt::AllDockWidgetAreas);

@@ -52,8 +52,11 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 							
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
+
+
 	
 	//group management
+        OmGroups * GetGroups(){ return &mGroups; }
  	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);

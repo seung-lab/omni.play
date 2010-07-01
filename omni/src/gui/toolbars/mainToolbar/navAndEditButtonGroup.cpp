@@ -8,7 +8,7 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 {
 	addNavButton(new ToolButton(parent, "Select", 
 				    "Select Object", SELECT_MODE,
-				    ""));
+				    ":/toolbars/mainToolbar/icons/1278008858_cursor_arrow.png"));
 	addNavButton(new ToolButton(parent, "Crosshair", 
 				    "Recenter Dispaly", CROSSHAIR_MODE,
 				    ":/toolbars/mainToolbar/icons/1277962376_target.png"));

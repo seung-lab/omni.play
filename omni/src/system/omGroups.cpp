@@ -26,6 +26,8 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 
 void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet)
 {
+	printf("adding ids\n");
+	group->AddIds(set);
 }
 
 void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
@@ -51,4 +53,18 @@ OmGroup & OmGroups::GetGroup(OmGroupName name)
 	return mGroupManager.Get(mGroupsByName[name]);
 }
 
+OmGroup & OmGroups::GetGroup(OmGroupID id)
+{
+        return mGroupManager.Get(id);
+}
+
+OmGroupIDsSet OmGroups::GetGroups()
+{
+	OmGroupIDsSet set;
+	foreach(OmGroupID id, mGroupsByName) {
+		set.insert(id);
+		printf("got\n");
+	}
+	return set;
+}
 
