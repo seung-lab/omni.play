@@ -35,20 +35,33 @@ sub isMac {
 }
 
 sub getMacOSXversionNum {
-    return `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version' | cut -d1 -f2 | cut -d' ' -f1 | cut -d. -f2`;
+    my $versionStr = `/usr/sbin/system_profiler SPSoftwareDataType | grep 'System Version'`;
+    my $ret = 0;
+    if ($versionStr =~ m/.*10\.([\d])\..*/){
+	$ret = $1;
+    }
+    return $ret;
 }
 
 sub isMacLeopard {
-    return ("5" eq getMacOSXversionNum());
+    return (5 == getMacOSXversionNum());
 }
 
 sub isMacSnowLeopard {
-    return ("6" eq getMacOSXversionNum());
+    return (6 == getMacOSXversionNum());
 }
 
 sub checkForMac {
     if(isMac()){
-	print "Mac OS X version is: ".getMacOSXversionNum()."\n";
+	print "Mac OS X version is: ".getMacOSXversionNum();
+	if(isMacLeopard()){
+	    print " (Leopard)";
+	}elsif(isMacSnowLeopard()){
+	    print " (Snow Leopard)";
+	}else{
+	    print " (unknown)";
+	}
+	print "\n";
     }
 }
 
@@ -522,9 +535,10 @@ sub numberOfCores {
     }
 
     if( isMac() ){
-	$numCores = `/usr/sbin/system_profiler SPHardwareDataType | grep Total | cut -f2 -d:`;
-	chomp($numCores);
-	$numCores =~ s/ //g;
+	my $numCoreStr = `/usr/sbin/system_profiler SPHardwareDataType | grep 'Total Number Of Cores'`;
+	if ($numCoreStr =~ m/.*:.*([\d*])/) {
+	    $numCores = $1;
+	}
     }
 
     if( $numCores < 2 ){
