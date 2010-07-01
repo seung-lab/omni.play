@@ -17,7 +17,7 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 				    ":/toolbars/mainToolbar/icons/1277962397_cursor_hand.png"));
 	addNavButton(new ToolButton(parent, "Zoom", 
 				    "Zoom", ZOOM_MODE,
-				    ""));
+				    ":/toolbars/mainToolbar/icons/1278008421_search.png"));
 
 	//	addButton(new ToolButton(parent, "Voxelize", 
 	//			 "Voxelize", VOXELIZE_MODE));
@@ -30,7 +30,7 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget * parent)
 				       ":/toolbars/mainToolbar/icons/1277962354_package-purge.png"));
 	addModifyButton(new ToolButton(parent, "Fill", 
 				       "Paint Can", FILL_MODE,
-				       ":/toolbars/mainToolbar/icons/1277962300_paint.png"));
+				       ":/toolbars/mainToolbar/icons/1277962298_krita_kra.png"));
 
 	connect( this, SIGNAL(buttonClicked(int)), 
 		 this, SLOT(buttonWasClicked(int)),
