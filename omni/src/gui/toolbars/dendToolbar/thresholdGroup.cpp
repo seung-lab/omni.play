@@ -1,7 +1,5 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "gui/toolbars/dendToolbar/thresholdButtonDecrease.h"
-#include "gui/toolbars/dendToolbar/thresholdButtonIncrease.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
@@ -12,8 +10,8 @@ static const float thresholdEpsilon = 0.02;
 ThresholdGroup::ThresholdGroup(DendToolBar * d)
 	: QGroupBox("Overall Threshold", d)
 	, mDendToolbar(d)
-	, thresholdButtonDecrease(new ThresholdButtonDecrease(this,"-",""))
-	, thresholdButtonIncrease(new ThresholdButtonIncrease(this,"+",""))
+	, thresholdButtonDecrease(new OmThresholdButtonDecrease<ThresholdGroup>(this,"-",""))
+	, thresholdButtonIncrease(new OmThresholdButtonIncrease<ThresholdGroup>(this,"+",""))
 {
 	mThreshold = new QLineEdit(this);
 	setThresholdValue();

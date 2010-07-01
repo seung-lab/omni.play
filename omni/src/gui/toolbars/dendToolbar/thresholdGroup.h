@@ -4,8 +4,8 @@
 #include <QtGui>
 
 class DendToolBar;
-class ThresholdButtonIncrease;
-class ThresholdButtonDecrease;
+#include "gui/widgets/thresholdGroup/omThresholdButtonDecrease.h"
+#include "gui/widgets/thresholdGroup/omThresholdButtonIncrease.h"
 
 class ThresholdGroup : public QGroupBox {
  Q_OBJECT 
@@ -20,8 +20,8 @@ class ThresholdGroup : public QGroupBox {
 
  private:
 	DendToolBar * mDendToolbar;
-	ThresholdButtonDecrease *const thresholdButtonDecrease;
-	ThresholdButtonIncrease *const thresholdButtonIncrease;
+	OmThresholdButtonDecrease<ThresholdGroup> *const thresholdButtonDecrease;
+	OmThresholdButtonIncrease<ThresholdGroup> *const thresholdButtonIncrease;
 	QLineEdit* mThreshold;
 
 	void addToThreshold(const float num);
