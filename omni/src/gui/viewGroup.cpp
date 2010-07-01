@@ -327,7 +327,7 @@ void ViewGroup::addAllViews(const OmId channelID, const OmId segmentationID )
 
 	if( OmProject::IsChannelValid(channelID) ){
 		addView2Dchannel( channelID, UpperLeft);
-		upperRight = addView2Dchannel( channelID, UpperRight);
+		addView2Dchannel( channelID, UpperRight);
 		addView2Dchannel( channelID, LowerLeft);
 	}
 
@@ -338,8 +338,4 @@ void ViewGroup::addAllViews(const OmId channelID, const OmId segmentationID )
 	}
 
 	addView3D();
-
-	if(upperRight){
-		upperRight->show();
-	}
 }
