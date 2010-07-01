@@ -11,6 +11,7 @@ class OmButton : public QPushButton {
 		    const QString &, const bool );
 
 	void setKeyboardShortcut(const QString & shortcut);
+	void setIconAndText(const QString & iconPath);
 
  protected:
 	T *const mParent;

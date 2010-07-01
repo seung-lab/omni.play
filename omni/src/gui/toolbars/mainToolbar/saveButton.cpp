@@ -9,8 +9,7 @@ SaveButton::SaveButton(MainToolbar * parent)
 {
 	setFlat(true);
 	setKeyboardShortcut("Ctrl+S");
-	setIcon(QIcon(":/toolbars/mainToolbar/icons/1277961998_3floppy_unmount.png"));
-	setText("");
+	setIconAndText(":/toolbars/mainToolbar/icons/1277961998_3floppy_unmount.png");
 }
 
 void SaveButton::doAction()

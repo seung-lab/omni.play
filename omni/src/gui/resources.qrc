@@ -5,7 +5,6 @@
 <file>toolbars/mainToolbar/icons/1278015539_color_fill.png</file>
 <file>toolbars/mainToolbar/icons/1277962300_paint.png</file>
 <file>toolbars/mainToolbar/icons/1277962354_package-purge.png</file>
-<file>toolbars/mainToolbar/icons/1277962365_eraser.png</file>
 <file>toolbars/mainToolbar/icons/1277962376_target.png</file>
 <file>toolbars/mainToolbar/icons/1277962393_poke.png</file>
 <file>toolbars/mainToolbar/icons/1277962397_cursor_hand.png</file>
@@ -13,5 +12,6 @@
 <file>toolbars/mainToolbar/icons/1278008421_search.png</file>
 <file>toolbars/mainToolbar/icons/1278008858_cursor_arrow.png</file>
 <file>toolbars/mainToolbar/icons/1278009384_kllckety.png</file>
+<file>toolbars/mainToolbar/icons/1278008555_agt_softwareD.png</file>
 </qresource>
 </RCC>

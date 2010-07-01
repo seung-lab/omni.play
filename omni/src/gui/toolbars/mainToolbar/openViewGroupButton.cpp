@@ -10,8 +10,7 @@ OpenViewGroupButton::OpenViewGroupButton(MainWindow * mw)
 				false)
 {
 	setFlat(true);
-        setIcon(QIcon(":/toolbars/mainToolbar/icons/1278009384_kllckety.png"));
-        setText("");
+	setIconAndText(":/toolbars/mainToolbar/icons/1278009384_kllckety.png");
 }
 
 void OpenViewGroupButton::doAction()

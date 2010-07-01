@@ -8,6 +8,7 @@ VolumeRefreshButton::VolumeRefreshButton(MainWindow * parent)
 				false)
 {
 	setFlat(true);
+	setIconAndText(":/toolbars/mainToolbar/icons/1278008555_agt_softwareD.png");
 }
 
 void VolumeRefreshButton::doAction()

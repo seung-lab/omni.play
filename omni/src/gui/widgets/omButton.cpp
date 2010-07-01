@@ -29,3 +29,12 @@ void OmButton<T>::setKeyboardShortcut(const QString & shortcut)
 {
 	setShortcut(QKeySequence(shortcut));
 }
+
+template < class T >
+void OmButton<T>::setIconAndText(const QString & iconPath)
+{
+	setIcon(QIcon(iconPath));
+	if( !icon().isNull() ){
+		setText("");
+	}
+}
