@@ -323,8 +323,6 @@ void ViewGroup::addAllViews(const OmId channelID, const OmId segmentationID )
 		delete w;
 	}
 
-	QWidget * upperRight = NULL;
-
 	if( OmProject::IsChannelValid(channelID) ){
 		addView2Dchannel( channelID, UpperLeft);
 		addView2Dchannel( channelID, UpperRight);

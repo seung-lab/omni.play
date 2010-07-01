@@ -35,6 +35,9 @@ class SegmentationDataWrapper
 	explicit SegmentationDataWrapper( const OmId mID );
 	explicit SegmentationDataWrapper( OmSegment * );
 
+	bool isValid();
+	OmSegmentation & getSegmentation();
+
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();

@@ -8,11 +8,14 @@
 #include "system/events/omViewEvent.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
+#include "project/omProject.h"
+#include "utility/dataWrappers.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
+#include "gui/toolbars/dendToolbar/thresholdGroup.h"
 
 bool mShowGroups = false;
 static OmId mSeg = 1;
@@ -45,6 +48,11 @@ OmId DendToolBar::getSegmentationID()
 	return mSeg;
 }
 
+SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
+{
+	return SegmentationDataWrapper(mSeg);
+}
+
 void DendToolBar::createToolbarActions()
 {
 	splitButton = new SplitButton( this, 
@@ -58,28 +66,6 @@ void DendToolBar::createToolbarActions()
         connect(autoBreakCheckbox, SIGNAL(stateChanged(int)),
                 this, SLOT(autoBreakChecked()));
 
-	decreaseThresholdAct = new QPushButton(mMainWindow);
-	decreaseThresholdAct->setText(tr("-"));
-	decreaseThresholdAct->setStatusTip(tr("Split object mode"));
-
-	connect(decreaseThresholdAct, SIGNAL(pressed()), 
-		this, SLOT(decreaseThreshold()));
-
-	thresholdLabel = new QLabel(mMainWindow);
-	thresholdLabel->setText("Overall Threshold");
-
-	mThreshold = new QLineEdit(mMainWindow);
-	setThresholdValue();
-	connect(mThreshold, SIGNAL(editingFinished()), 
-		this, SLOT(thresholdChanged()));
-
-	increaseThresholdAct = new QPushButton(mMainWindow);
-	
-	increaseThresholdAct->setText(tr("+"));	
-
-	decreaseThresholdAct->setStatusTip(tr("Split object mode"));
-	connect(increaseThresholdAct, SIGNAL(pressed()), 
-		this, SLOT(increaseThreshold()));
 
         joinAct = new QPushButton(mMainWindow);
 	joinAct->setText("Join");
@@ -183,19 +169,6 @@ void DendToolBar::createToolbarActions()
 
 }
 
-void DendToolBar::setThresholdValue()
-{
-	QString value;
-
-	if (OmProject::IsSegmentationValid(getSegmentationID())) {
-		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		value.setNum( seg.GetDendThreshold() );
-	} else {
-		value.setNum(0.95);
-	}
-	mThreshold->setText(value);
-}
-
 void DendToolBar::setBreakThresholdValue()
 {
 	QString value;
@@ -238,14 +211,7 @@ void DendToolBar::addToolbars()
 	secondLayout->addWidget(joinAct);
 	dendToolBar->addWidget(secondBox);
 
-	QGroupBox* thirdBox = new QGroupBox(this);
-	QGridLayout* thirdLayout = new QGridLayout(thirdBox);
-	thirdLayout->addWidget(thresholdLabel,0,0,1,2);
-	thirdLayout->addWidget(decreaseThresholdAct,2,0,1,1);
-	thirdLayout->addWidget(mThreshold,1,0,1,2);
-	thirdLayout->addWidget(increaseThresholdAct,2,1,1,1);
-	thirdBox->setLayout(thirdLayout);
-	dendToolBar->addWidget(thirdBox);
+	dendToolBar->addWidget(new ThresholdGroup(this));
 
 	QGroupBox* fourthBox = new QGroupBox(this);
 	QGridLayout* fourthLayout = new QGridLayout(fourthBox);
@@ -320,22 +286,6 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 	splitButton->setEnabled(toBeEnabled);
 }
 
-void DendToolBar::addToThreshold(float num)
-{
-        QString value = mThreshold->text();
-        float threshold = value.toFloat();
-        threshold += num;
-	if(threshold > 1.0) {
-		threshold = 1.0;
-	}
-	if(threshold < 0.0) {
-		threshold = 0.0;
-	}
-        value.setNum(threshold);
-        mThreshold->setText(value);
-
-	haveSegmentationChangeThreshold( threshold );
-}
 
 void DendToolBar::addToBreakThreshold(float num)
 {
@@ -354,36 +304,7 @@ void DendToolBar::addToBreakThreshold(float num)
 	mViewGroupState->setBreakThreshold( threshold );
 }
 
-void DendToolBar::increaseBreakThreshold()
-{
-	addToBreakThreshold(0.0002);
 
-	updateGui();
-}
-
-void DendToolBar::decreaseBreakThreshold()
-{
-	debug("dendbar", "DendToolBar::decreaseBreakThreshold\n");
-	addToBreakThreshold(-0.0002);
-
-	updateGui();
-}
-
-void DendToolBar::increaseThreshold()
-{
-        debug("dendbar", "DendToolBar::increaseThreshold\n");
-	addToThreshold(0.0002);
-
-	updateGui();
-}
-
-void DendToolBar::decreaseThreshold()
-{
-	debug("dendbar", "DendToolBar::decreaseThreshold\n");
-	addToThreshold(-0.0002);
-
-	updateGui();
-}
 
 void DendToolBar::join()
 {
@@ -415,24 +336,6 @@ void DendToolBar::toggledHint()
 {
 }
 
-void DendToolBar::haveSegmentationChangeThreshold( const float threshold )
-{
-	if (OmProject::IsSegmentationValid(getSegmentationID())) {
-		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		seg.SetDendThresholdAndReload(threshold);
-		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
-	}
-}
-
-void DendToolBar::thresholdChanged()
-{
-	debug("dendbar", "DendToolBar::thresholdChanged\n");
-
-	haveSegmentationChangeThreshold( mThreshold->text().toFloat() );
-
-	updateGui();
-}
-
 void DendToolBar::breakThresholdChanged()
 {
 	debug("dendbar", "DendToolBar::breakThresholdChanged\n");
@@ -449,7 +352,7 @@ void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 
 	mViewGroupState = vgs;
 
-	setThresholdValue();
+	//	setThresholdValue();
 	setDustThresholdValue();
 
 	updateGui();
@@ -558,4 +461,19 @@ void DendToolBar::dustThresholdChanged()
         updateGui();
 }
 
+
+void DendToolBar::increaseBreakThreshold()
+{
+       addToBreakThreshold(0.0002);
+ 
+       updateGui();
+}
+ 
+void DendToolBar::decreaseBreakThreshold()
+{
+       debug("dendbar", "DendToolBar::decreaseBreakThreshold\n");
+       addToBreakThreshold(-0.0002);
+
+       updateGui();
+}
 

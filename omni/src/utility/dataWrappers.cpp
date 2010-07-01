@@ -99,6 +99,16 @@ SegmentationDataWrapper::SegmentationDataWrapper( OmSegment * seg )
 {
 }
 
+bool SegmentationDataWrapper::isValid()
+{
+	return OmProject::IsSegmentationValid(mID);
+}
+
+OmSegmentation & SegmentationDataWrapper::getSegmentation()
+{
+	return OmProject::GetSegmentation(mID);
+}
+
 QString SegmentationDataWrapper::getName()
 {
 	return OmProject::GetSegmentation(mID).GetName();

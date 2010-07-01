@@ -5,6 +5,7 @@ class OmEvents {
  public:
 	static void ToolChange();
 	static void Redraw();
+	static void SegmentModified();
 };
 
 #endif

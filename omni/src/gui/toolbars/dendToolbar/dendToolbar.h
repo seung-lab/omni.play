@@ -2,13 +2,13 @@
 #define DEND_TOOLBAR_H
 
 #include "common/omCommon.h"
-#include "project/omProject.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+
 #include <QtGui>
 
 class MainWindow;
 class SplitButton;
 class OmViewGroupState;
+class SegmentationDataWrapper;
 
 class DendToolBar : public QWidget
 {
@@ -25,21 +25,19 @@ class DendToolBar : public QWidget
         void SetSplittingOff();
 
 	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
-
+	SegmentationDataWrapper getSegmentationDataWrapper();
 	static bool GetShowGroupsMode();
 
  private slots:
 	void ChangeModeModify(bool checked);
 	void autoBreakChecked();
-	void increaseThreshold();
-	void decreaseThreshold();
 	void increaseBreakThreshold();
 	void decreaseBreakThreshold();
 	void breakThresholdChanged();
 	void increaseDustThreshold();
 	void decreaseDustThreshold();
 	void dustThresholdChanged();
-	void thresholdChanged();
+
 	void join();
 	void toggledShatter();
 	void toggledHint();
@@ -57,10 +55,10 @@ class DendToolBar : public QWidget
 	void createToolbar();
 	void createToolbarActions();
 	void addToolbars();
-	void addToThreshold(float num);
+
 	void addToBreakThreshold(float num);
 	void addToDustThreshold(float num);
-	void setThresholdValue();
+
 	void setBreakThresholdValue();
 	void setDustThresholdValue();
 	OmId getSegmentationID();
@@ -68,15 +66,13 @@ class DendToolBar : public QWidget
 	// Actions
 	SplitButton * splitButton;
 	QCheckBox * autoBreakCheckbox;
-	QPushButton * decreaseThresholdAct;
 	QLabel * thresholdLabel;
 	QLabel* breakThresholdLabel;
-	QLineEdit* mThreshold;
+
 	QLineEdit* mBreakThreshold;
 	QPushButton * increaseBreakThresholdAct;
 	QPushButton * decreaseBreakThresholdAct;
 
-	QPushButton * increaseThresholdAct;
 	QPushButton * joinAct;
 	QPushButton * toolbarShatterAct;
 	QPushButton * mergeHintAct;
@@ -99,7 +95,7 @@ class DendToolBar : public QWidget
 	void resetTool( QAction* tool, const bool enabled );
 	void resetTools( const bool enabled );
 
-	void haveSegmentationChangeThreshold( const float threshold );
+
 };
 
 #endif
