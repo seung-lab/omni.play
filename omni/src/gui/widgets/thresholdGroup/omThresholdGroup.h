@@ -10,7 +10,7 @@ class DendToolBar;
 class OmThresholdGroup : public QGroupBox {
  Q_OBJECT 
  public:
-	OmThresholdGroup(DendToolBar *);
+	OmThresholdGroup(DendToolBar *, const QString &);
 
 	void increaseThresholdButtonWasPressed();
 	void decreaseThresholdButtonWasPressed();

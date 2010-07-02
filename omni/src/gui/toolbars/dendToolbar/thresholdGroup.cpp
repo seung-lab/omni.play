@@ -8,7 +8,7 @@
 static const float thresholdEpsilon = 0.02;
 
 ThresholdGroup::ThresholdGroup(DendToolBar * d)
-	: OmThresholdGroup(d)
+	: OmThresholdGroup(d, "Overall Threshold")
 {
 	setThresholdValue();
 }
