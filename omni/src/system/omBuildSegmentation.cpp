@@ -180,11 +180,13 @@ void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
 		parentID = dend[i + numDendRows ];
                 threshold = dendValues[i];
 		
-		DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-		childRootDT->join( mGraph->get( parentID ) );
+		if(childUnknownDepthID <= maxNumSegs) {
+			DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
+			childRootDT->join( mGraph->get( parentID ) );
 
-		// set child ID to root value found by graph...
-		dend[i] = childRootDT->getKey();
+			// set child ID to root value found by graph...
+			dend[i] = childRootDT->getKey();
+		}
         }
 
 	delete mGraph;
