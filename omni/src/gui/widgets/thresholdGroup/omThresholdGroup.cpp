@@ -2,8 +2,6 @@
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
 
-static const float thresholdEpsilon = 0.02;
-
 OmThresholdGroup::OmThresholdGroup(DendToolBar * d, const QString & boxName)
 	: QGroupBox(boxName, d)
 	, mDendToolbar(d)
@@ -23,7 +21,7 @@ OmThresholdGroup::OmThresholdGroup(DendToolBar * d, const QString & boxName)
 void OmThresholdGroup::thresholdChanged()
 {
 	debug("dendbar", "OmThresholdGroup::thresholdChanged\n");
-	haveSegmentationChangeThreshold( mThreshold->text().toFloat() );
+	actUponThresholdChange( mThreshold->text().toFloat() );
 	updateGui();
 }
 
@@ -34,13 +32,13 @@ void OmThresholdGroup::updateGui()
 
 void OmThresholdGroup::increaseThresholdButtonWasPressed()
 {
-	addToThreshold(thresholdEpsilon);
+	addToThreshold(getThresholdEpsilon());
 	updateGui();
 }
 
 void OmThresholdGroup::decreaseThresholdButtonWasPressed()
 {
-	addToThreshold(-thresholdEpsilon);
+	addToThreshold(-getThresholdEpsilon());
 	updateGui();
 }
 
@@ -49,14 +47,11 @@ void OmThresholdGroup::addToThreshold(const float num)
         QString value = mThreshold->text();
         float threshold = value.toFloat();
         threshold += num;
-	if(threshold > 1.0) {
-		threshold = 1.0;
-	}
-	if(threshold < 0.0) {
-		threshold = 0.0;
-	}
+
+	threshold = filterUserEnteredThreshold(threshold);
+
         value.setNum(threshold);
         mThreshold->setText(value);
 
-	haveSegmentationChangeThreshold( threshold );
+	actUponThresholdChange( threshold );
 }

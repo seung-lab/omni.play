@@ -369,6 +369,11 @@ bool OmViewGroupState::GetShatterMode()
         return mShatter;
 }
 
+void OmViewGroupState::ToggleShatterMode()
+{
+	mShatter = !mShatter;
+}
+
 bool OmViewGroupState::GetSplitMode()
 {
         return mSplitting;

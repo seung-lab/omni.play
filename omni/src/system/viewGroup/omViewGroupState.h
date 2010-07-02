@@ -63,6 +63,8 @@ class OmViewGroupState : public OmManageableObject {
         bool GetShatterMode();
 	void SetShatterMode(bool shatter);
         bool GetSplitMode();
+	void ToggleShatterMode();
+
         bool GetSplitMode(OmId & seg, OmId & segment);
         void SetSplitMode(OmId seg, OmId segment);
         void SetSplitMode(bool onoroff, bool postEvent = true);

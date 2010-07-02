@@ -1,12 +1,12 @@
-#ifndef THRESHOLD_GROUP_H
-#define THRESHOLD_GROUP_H
+#ifndef DUST_3D_THRESHOLD_GROUP_H
+#define DUST_3D_THRESHOLD_GROUP_H
 
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
 
-class ThresholdGroup : public OmThresholdGroup {
+class Dust3DThresholdGroup : public OmThresholdGroup {
  Q_OBJECT 
  public:
-	ThresholdGroup(DendToolBar * parent);
+	Dust3DThresholdGroup(DendToolBar * parent);
 	float getThresholdEpsilon();
 
  private:

@@ -1,12 +1,12 @@
-#ifndef THRESHOLD_GROUP_H
-#define THRESHOLD_GROUP_H
+#ifndef BREAK_THRESHOLD_GROUP_H
+#define BREAK_THRESHOLD_GROUP_H
 
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
 
-class ThresholdGroup : public OmThresholdGroup {
+class BreakThresholdGroup : public OmThresholdGroup {
  Q_OBJECT 
  public:
-	ThresholdGroup(DendToolBar * parent);
+	BreakThresholdGroup(DendToolBar * parent);
 	float getThresholdEpsilon();
 
  private:

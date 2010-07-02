@@ -1,12 +1,12 @@
-#ifndef SPLIT_BUTTON_H
-#define SPLIT_BUTTON_H
+#ifndef BREAK_BUTTON_H
+#define BREAK_BUTTON_H
 
 #include "gui/widgets/omButton.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 
-class SplitButton : public OmButton<DendToolBar> {
+class BreakButton : public OmButton<DendToolBar> {
  public:
-	SplitButton(DendToolBar *);
+	BreakButton(DendToolBar *);
 
  private:
 	void doAction();

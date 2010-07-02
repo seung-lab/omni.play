@@ -5,15 +5,18 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-static const float thresholdEpsilon = 0.02;
-
 ThresholdGroup::ThresholdGroup(DendToolBar * d)
 	: OmThresholdGroup(d, "Overall Threshold")
 {
 	setThresholdValue();
 }
 
-void ThresholdGroup::haveSegmentationChangeThreshold( const float threshold )
+float ThresholdGroup::getThresholdEpsilon()
+{
+	return 0.02;
+}
+
+void ThresholdGroup::actUponThresholdChange( const float threshold )
 {
 	SegmentationDataWrapper sdw = mDendToolbar->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
@@ -35,4 +38,18 @@ void ThresholdGroup::setThresholdValue()
 		value.setNum(0.95);
 	}
 	mThreshold->setText(value);
+}
+
+float ThresholdGroup::filterUserEnteredThreshold(const float threshold)
+{
+	float ret = threshold;
+
+	if(threshold > 1.0) {
+		ret = 1.0;
+	}
+	if(threshold < 0.0) {
+		ret = 0.0;
+	}
+
+	return ret;
 }

@@ -15,7 +15,10 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
+#include "gui/toolbars/dendToolbar/breakButton.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
+#include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
+#include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
 
 bool mShowGroups = false;
 static OmId mSeg = 1;
@@ -55,9 +58,7 @@ SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 
 void DendToolBar::createToolbarActions()
 {
-	splitButton = new SplitButton( this, 
-				       "split",
-				       "Split object mode" );
+	
 
 	autoBreakCheckbox = new QCheckBox(mMainWindow);
 	autoBreakCheckbox->setText(tr("Show Breaks"));
@@ -72,42 +73,6 @@ void DendToolBar::createToolbarActions()
         connect(joinAct, SIGNAL(pressed()),
                 this, SLOT(join()));
 
-        toolbarShatterAct = new QPushButton(mMainWindow);
-	toolbarShatterAct->setText("Break");
-        toolbarShatterAct->setStatusTip(tr("Shatter object mode"));
-        connect(toolbarShatterAct, SIGNAL(pressed()),
-                this, SLOT(toggledShatter()));
-        toolbarShatterAct->setCheckable(true);
-
-	mBreakThreshold = new QLineEdit(mMainWindow);
-	setBreakThresholdValue();
-	connect(mBreakThreshold, SIGNAL(editingFinished()), 
-		this, SLOT(breakThresholdChanged()));
-
-	increaseBreakThresholdAct = new QPushButton(mMainWindow);
-	increaseBreakThresholdAct->setText(tr("+"));
-	increaseBreakThresholdAct->setStatusTip(tr("Increase threshold"));
-	connect(increaseBreakThresholdAct, SIGNAL(pressed()), 
-		this, SLOT(increaseBreakThreshold()));
-
-	decreaseBreakThresholdAct = new QPushButton(mMainWindow);
-	decreaseBreakThresholdAct->setText(tr("-"));
-	decreaseBreakThresholdAct->setStatusTip(tr("Decrease threshold"));
-	connect(decreaseBreakThresholdAct, SIGNAL(pressed()), 
-		this, SLOT(decreaseBreakThreshold()));	
-
-
-        mergeHintAct = new QPushButton(mMainWindow);
-	mergeHintAct->setText(tr("Show Merge Hints"));
-        mergeHintAct->setStatusTip(tr("Merge hint mode"));
-        connect(mergeHintAct, SIGNAL(pressed()),
-                this, SLOT(toggledHint()));
-        mergeHintAct->setCheckable(true);
-
-        mHint = new QLineEdit(mMainWindow);
-	QString value;
-	value.setNum(1);
-        mHint->setText(value);
 
         addGroupAct = new QPushButton(mMainWindow);
         addGroupAct->setText(tr("Set Selection Valid"));
@@ -149,45 +114,7 @@ void DendToolBar::createToolbarActions()
         mGroupName = new QLineEdit(mMainWindow);
         mGroupName->setText("Glia");
 
-        mDustThreshold = new QLineEdit(mMainWindow);
-        setDustThresholdValue();
-        connect(mDustThreshold, SIGNAL(editingFinished()),
-                this, SLOT(dustThresholdChanged()));
 
-        increaseDustThresholdAct = new QPushButton(mMainWindow);
-        increaseDustThresholdAct->setText(tr("+"));
-        increaseDustThresholdAct->setStatusTip(tr("Increase threshold"));
-        connect(increaseDustThresholdAct, SIGNAL(pressed()),
-                this, SLOT(increaseDustThreshold()));
-
-        decreaseDustThresholdAct = new QPushButton(mMainWindow);
-        decreaseDustThresholdAct->setText(tr("-"));
-        decreaseDustThresholdAct->setStatusTip(tr("Decrease threshold"));
-        connect(decreaseDustThresholdAct, SIGNAL(pressed()),
-                this, SLOT(decreaseDustThreshold()));
-
-}
-
-void DendToolBar::setBreakThresholdValue()
-{
-	QString value;
-	value.setNum(0.95);
-
-	mBreakThreshold->setText(value);
-
-	if( NULL != mViewGroupState ) {
-		mViewGroupState->setBreakThreshold( 0.95 );
-	}
-}
-
-void DendToolBar::setDustThresholdValue()
-{
-	float dThreshold = 90;
-        if( NULL != mViewGroupState ) {
-		dThreshold = mViewGroupState->getDustThreshold();
-	}
-
-        mDustThreshold->setText( QString::number(dThreshold));
 }
 
 void DendToolBar::addToolbars()
@@ -198,8 +125,10 @@ void DendToolBar::addToolbars()
 
 	QGroupBox* firstBox = new QGroupBox(this);
 	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);
-	
+
+	splitButton = new SplitButton(this);
 	firstLayout->addWidget(splitButton);
+
 	firstLayout->addWidget(autoBreakCheckbox);
 	firstBox->setLayout(firstLayout);
 	dendToolBar->addWidget(firstBox);
@@ -212,24 +141,9 @@ void DendToolBar::addToolbars()
 
 	dendToolBar->addWidget(new ThresholdGroup(this));
 
-	QGroupBox* fourthBox = new QGroupBox(this);
-	QGridLayout* fourthLayout = new QGridLayout(fourthBox);
-	fourthLayout->addWidget(mergeHintAct,0,0,1,1);
-	fourthLayout->addWidget(mHint,1,0,1,1);
-	fourthBox->setLayout(fourthLayout);
-	dendToolBar->addWidget(fourthBox);
-
-	QGroupBox* fifthBox = new QGroupBox(this);
-	QGridLayout* fifthLayout = new QGridLayout(fifthBox);
-	QLabel* breakThresholdLabel = new QLabel(mMainWindow);
-	breakThresholdLabel->setText("Threshold:");
-	fifthLayout->addWidget(toolbarShatterAct,0,0,1,2);
-	fifthLayout->addWidget(breakThresholdLabel,1,0,1,1);
-	fifthLayout->addWidget(mBreakThreshold,2,0,1,2);
-	fifthLayout->addWidget(increaseBreakThresholdAct,3,1,1,1);
-	fifthLayout->addWidget(decreaseBreakThresholdAct,3,0,1,1);
-	fifthBox->setLayout(fifthLayout);
-	dendToolBar->addWidget(fifthBox);
+	breakButton = new BreakButton(this);
+	dendToolBar->addWidget(breakButton);
+	//dendToolBar->addWidget(new BreakThresholdGroup(this));
 
         QGroupBox* sixthBox = new QGroupBox(this);
 	sixthBox->setTitle("Validation");
@@ -244,15 +158,7 @@ void DendToolBar::addToolbars()
         sixthBox->setLayout(sixthLayout);
         dendToolBar->addWidget(sixthBox);
 
-        QGroupBox* seventhBox = new QGroupBox(this);
-	seventhBox->setTitle("Dust Threshold");
-        QGridLayout* seventhLayout = new QGridLayout(seventhBox);
-        seventhLayout->addWidget(mDustThreshold,0,0,1,2);
-        seventhLayout->addWidget(increaseDustThresholdAct,1,1,1,1);
-        seventhLayout->addWidget(decreaseDustThresholdAct,1,0,1,1);
-        seventhBox->setLayout(seventhLayout);
-        dendToolBar->addWidget(seventhBox);
-
+	dendToolBar->addWidget(new Dust3DThresholdGroup(this));
 }
 
 void DendToolBar::setupToolbarInitially()
@@ -285,26 +191,6 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 	splitButton->setEnabled(toBeEnabled);
 }
 
-
-void DendToolBar::addToBreakThreshold(float num)
-{
-        QString value = mBreakThreshold->text();
-        float threshold = value.toFloat();
-        threshold += num;
-	if(threshold > 1.0) {
-		threshold = 1.0;
-	}
-	if(threshold < 0.0) {
-		threshold = 0.0;
-	}
-        value.setNum(threshold);
-        mBreakThreshold->setText(value);
-
-	mViewGroupState->setBreakThreshold( threshold );
-}
-
-
-
 void DendToolBar::join()
 {
         debug("dendbar", "DendToolBar::join\n");
@@ -318,41 +204,11 @@ void DendToolBar::join()
 	updateGui();
 }
 
-void DendToolBar::toggledShatter()
-{
-	debug("dendbar", "DendToolBar::toggle shatter\n");
-
-	OmCacheManager::Freshen(true);
-	mViewGroupState->SetShatterMode(!mViewGroupState->GetShatterMode());
-
-	const float threshold = mBreakThreshold->text().toFloat();
-	mViewGroupState->setBreakThreshold( threshold );
-
-	updateGui();
-}
-
-void DendToolBar::toggledHint()
-{
-}
-
-void DendToolBar::breakThresholdChanged()
-{
-	debug("dendbar", "DendToolBar::breakThresholdChanged\n");
-
-	const float threshold = mBreakThreshold->text().toFloat();
-	mViewGroupState->setBreakThreshold( threshold );
-
-	updateGui();
-}
-
 void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 {
         debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
 
 	mViewGroupState = vgs;
-
-	//	setThresholdValue();
-	setDustThresholdValue();
 
 	updateGui();
 }
@@ -420,59 +276,3 @@ void DendToolBar::autoBreakChecked()
 	debug("dendbar", "DendToolBar::autoBreakChecked\n");
 	mViewGroupState->SetBreakOnSplitMode(autoBreakCheckbox->isChecked());
 }
-
-void DendToolBar::addToDustThreshold(float num)
-{
-        QString value = mDustThreshold->text();
-        float threshold = value.toFloat();
-        threshold += num;
-        if(threshold < 0.0) {
-                threshold = 0.0;
-        }
-        value.setNum(threshold);
-        mDustThreshold->setText(value);
-
-	dustThresholdChanged();
-}
-
-void DendToolBar::increaseDustThreshold()
-{
-        addToDustThreshold(10);
-
-        updateGui();
-}
-
-void DendToolBar::decreaseDustThreshold()
-{
-        debug("dendbar", "DendToolBar::decreaseDustThreshold\n");
-        addToDustThreshold(-10);
-
-        updateGui();
-}
-
-void DendToolBar::dustThresholdChanged()
-{
-        debug("dendbar", "DendToolBar::dustThresholdChanged\n");
-
-        const float threshold = mDustThreshold->text().toFloat();
-        mViewGroupState->setDustThreshold( threshold );
-
-        updateGui();
-}
-
-
-void DendToolBar::increaseBreakThreshold()
-{
-       addToBreakThreshold(0.0002);
- 
-       updateGui();
-}
- 
-void DendToolBar::decreaseBreakThreshold()
-{
-       debug("dendbar", "DendToolBar::decreaseBreakThreshold\n");
-       addToBreakThreshold(-0.0002);
-
-       updateGui();
-}
-

@@ -6,16 +6,14 @@
 #include <QtGui>
 
 class MainWindow;
+class BreakButton;
 class SplitButton;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 
-class DendToolBar : public QWidget
-{
-	Q_OBJECT
-
+class DendToolBar : public QWidget {
+ Q_OBJECT
  public:
-
 	DendToolBar( MainWindow * mw );
 	void setupToolbarInitially();
 	void updateReadOnlyRelatedWidgets();
@@ -31,16 +29,8 @@ class DendToolBar : public QWidget
  private slots:
 	void ChangeModeModify(bool checked);
 	void autoBreakChecked();
-	void increaseBreakThreshold();
-	void decreaseBreakThreshold();
-	void breakThresholdChanged();
-	void increaseDustThreshold();
-	void decreaseDustThreshold();
-	void dustThresholdChanged();
 
 	void join();
-	void toggledShatter();
-	void toggledHint();
         void addGroup();
         void deleteGroup();
         void mapColors();
@@ -56,27 +46,17 @@ class DendToolBar : public QWidget
 	void createToolbarActions();
 	void addToolbars();
 
-	void addToBreakThreshold(float num);
-	void addToDustThreshold(float num);
-
-	void setBreakThresholdValue();
-	void setDustThresholdValue();
 	OmId getSegmentationID();
 
 	// Actions
 	SplitButton * splitButton;
+	BreakButton * breakButton;
+
 	QCheckBox * autoBreakCheckbox;
 	QLabel * thresholdLabel;
-	QLabel* breakThresholdLabel;
 
-	QLineEdit* mBreakThreshold;
-	QPushButton * increaseBreakThresholdAct;
-	QPushButton * decreaseBreakThresholdAct;
 
 	QPushButton * joinAct;
-	QPushButton * toolbarShatterAct;
-	QPushButton * mergeHintAct;
-	QLineEdit* mHint;
 
 	QPushButton * addGroupAct;
 	QPushButton * deleteGroupAct;
@@ -87,15 +67,9 @@ class DendToolBar : public QWidget
         QPushButton * specialGroupAct;
 	QLineEdit* mGroupName;
 
-	QLineEdit* mDustThreshold;
-	QPushButton * increaseDustThresholdAct;
-	QPushButton * decreaseDustThresholdAct;
-	
 	void setToolbarDisabled();
 	void resetTool( QAction* tool, const bool enabled );
 	void resetTools( const bool enabled );
-
-
 };
 
 #endif

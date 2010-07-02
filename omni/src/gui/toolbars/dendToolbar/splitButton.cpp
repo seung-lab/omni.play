@@ -4,10 +4,11 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 
-SplitButton::SplitButton(DendToolBar * mw, 
-			 const QString & title, 
-			 const QString & statusTip)
-	: OmButton<DendToolBar>( mw, title, statusTip, true)
+SplitButton::SplitButton(DendToolBar * d)
+	: OmButton<DendToolBar>( d, 
+				 "Split", 
+				 "Split object mode", 
+				 true)
 {
 }
 
