@@ -479,7 +479,6 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
 	
-	out << m.mSubsampleMode;
 	out << m.mBuildState;
 	out << m.mStoreChunkMetaData;
 
@@ -492,7 +491,6 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
 	
-	in >> m.mSubsampleMode;
 	in >> m.mBuildState;
 	in >> m.mStoreChunkMetaData;
 

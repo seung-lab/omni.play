@@ -1,5 +1,5 @@
 /** @mainpage
- *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer, Michael Purcaro, Clay Didier 
+ *  @author Brett Warme, Rachel Welles Shearer, Matthew Wimer, Michael Purcaro, Clay Didier, Aleksandar Zlateski, Tan Zong Xuan 
  * 
  *
  *  \n\n

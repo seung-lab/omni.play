@@ -43,7 +43,6 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
-	mSubsampleMode = SUBSAMPLE_NONE;
 	mCompleteDelete=false;
 
 	mSimpleChunkThreadedCache = new OmSimpleChunkThreadedCache(this);
@@ -180,16 +179,6 @@ int OmMipVolume::GetChunkDimension()
 Vector3 < int > OmMipVolume::GetChunkDimensions()
 {
 	return Vector3 < int >(GetChunkDimension(), GetChunkDimension(), GetChunkDimension());
-}
-
-void OmMipVolume::SetSubsampleMode(int subMode)
-{
-	mSubsampleMode = (SubsampleMode) subMode;
-}
-
-int OmMipVolume::GetSubsampleMode()
-{
-	return mSubsampleMode;
 }
 
 void OmMipVolume::SetChunksStoreMetaData(bool state)
@@ -699,10 +688,10 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	//switch on scalar type
 	switch (GetBytesPerSample()) {
 	case 1:
-		p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data, GetSubsampleMode());
+		p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
 		break;
 	case 4:
-		p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data, GetSubsampleMode());
+		p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
 		break;
 	default:
 		assert(false);
@@ -907,7 +896,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
  *
  *	The source image data is required to have even sized dimensions.
  */
-template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageData * srcData, int subsampleMode)
+template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageData * srcData)
 {
 	//debug("FIXME", << "OmMipVolume::SubsampleImageData" << endl;
 
@@ -936,9 +925,6 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 	T *dest_data_ptr = static_cast < T * >(p_dest_data->GetScalarPointer());
 	Vector3 < int >src_voxel, dest_voxel;
 
-	//alloc octal values
-	static T octal_values[8];
-
 	//for all voxels in destination data
 	for (dest_voxel.z = 0; dest_voxel.z < dest_dims.z; ++dest_voxel.z) {
 		for (dest_voxel.y = 0; dest_voxel.y < dest_dims.y; ++dest_voxel.y) {
@@ -947,53 +933,9 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 				//get voxel position in source
 				src_voxel = dest_voxel * 2;
 
-				//store octal values from source
-				octal_values[0] =
-				    *static_cast <
+				//do direct subsample (take first voxel, ignore other 7)
+				*dest_data_ptr = *static_cast <
 				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y, src_voxel.z));
-				octal_values[1] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y, src_voxel.z));
-				octal_values[2] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y + 1, src_voxel.z));
-				octal_values[3] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y + 1, src_voxel.z));
-				octal_values[4] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y, src_voxel.z + 1));
-				octal_values[5] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y, src_voxel.z + 1));
-				octal_values[6] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y + 1, src_voxel.z + 1));
-				octal_values[7] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y + 1, src_voxel.z + 1));
-
-				//switch on subsample mode
-				switch (subsampleMode) {
-				case SUBSAMPLE_MEAN:
-					*dest_data_ptr = CalculateAverage < T > (octal_values, 8);
-					break;
-
-				case SUBSAMPLE_MODE:
-					*dest_data_ptr = CalculateMode < T > (octal_values, 8);
-					break;
-
-				case SUBSAMPLE_RANDOM:
-					*dest_data_ptr = octal_values[rand() % 8];
-					break;
-
-				case SUBSAMPLE_NONE:
-					*dest_data_ptr = octal_values[0];
-					break;
-
-				default:
-					assert(false);
-				}
 
 				//adv to next voxel (1 sample per voxel)
 				++dest_data_ptr;

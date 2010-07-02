@@ -20,9 +20,6 @@ class OmVolume;
 class OmMipChunk;
 class vtkImageData;
 
-//enum subsampling methods
-enum SubsampleMode { SUBSAMPLE_MEAN = 0, SUBSAMPLE_MODE, SUBSAMPLE_RANDOM, SUBSAMPLE_NONE };
-
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
 
@@ -56,9 +53,6 @@ public:
 	const DataBbox& GetExtent();
 	int GetChunkDimension();
 	Vector3<int> GetChunkDimensions();
-	
-	void SetSubsampleMode(int);
-	int GetSubsampleMode();
 	
 	void SetChunksStoreMetaData(bool);
 	bool GetChunksStoreMetaData();
@@ -134,7 +128,6 @@ protected:
 	int mBuildState;
 	int mMipLeafDim;			//must be even
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
-	int mSubsampleMode;		//method to use when subsampling	
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
@@ -150,7 +143,7 @@ private:
 	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
 	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
 	
-	template< typename T> vtkImageData* SubsampleImageData(vtkImageData* srcData, int subsampleMode);
+	template< typename T> vtkImageData* SubsampleImageData(vtkImageData* srcData);
 	template< typename T > T CalculateMode( T* array, int size);
 	template< typename T > T CalculateAverage( T* array, int size);
 	

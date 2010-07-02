@@ -71,9 +71,6 @@ OmSegmentation::OmSegmentation(OmId id)
 	//segmenations has SEGMENT_DATA_BYTES_PER_SAMPLE bytes per sample
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-	//subsample segmentation data using mode
-	SetSubsampleMode(SUBSAMPLE_NONE);
-
 	//uses meta data
 	mStoreChunkMetaData = true;
 
@@ -299,6 +296,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
 	}
+
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)

@@ -33,9 +33,6 @@ OmChannel::OmChannel(OmId id)
 	//channels have 1 byte per sample
 	SetBytesPerSample(1);
 
-	//interpolate channel data
-	SetSubsampleMode(SUBSAMPLE_NONE);
-
 	//do not use meta data
 	mStoreChunkMetaData = false;
 
