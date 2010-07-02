@@ -1,24 +1,17 @@
 #include "gui/mainwindow.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omToolModeEvent.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/omCacheManager.h"
-#include "system/omEventManager.h"
-#include "project/omProject.h"
-#include "utility/dataWrappers.h"
-#include "system/omProjectData.h"
-#include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "volume/omSegmentation.h"
-#include "gui/toolbars/dendToolbar/splitButton.h"
 #include "gui/toolbars/dendToolbar/breakButton.h"
-#include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
+#include "gui/toolbars/dendToolbar/joinButton.h"
+#include "gui/toolbars/dendToolbar/splitButton.h"
+#include "gui/toolbars/dendToolbar/thresholdGroup.h"
+#include "segment/omSegmentCache.h"
+#include "system/omEvents.h"
+#include "system/omProjectData.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
+#include "volume/omSegmentation.h"
 
 bool mShowGroups = false;
 static OmId mSeg = 1;
@@ -58,21 +51,11 @@ SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 
 void DendToolBar::createToolbarActions()
 {
-	
-
 	autoBreakCheckbox = new QCheckBox(mMainWindow);
 	autoBreakCheckbox->setText(tr("Show Breaks"));
 	autoBreakCheckbox->setChecked(true);
         connect(autoBreakCheckbox, SIGNAL(stateChanged(int)),
                 this, SLOT(autoBreakChecked()));
-
-
-        joinAct = new QPushButton(mMainWindow);
-	joinAct->setText("Join");
-        joinAct->setStatusTip(tr("Join objects mode"));
-        connect(joinAct, SIGNAL(pressed()),
-                this, SLOT(join()));
-
 
         addGroupAct = new QPushButton(mMainWindow);
         addGroupAct->setText(tr("Set Selection Valid"));
@@ -133,11 +116,8 @@ void DendToolBar::addToolbars()
 	firstBox->setLayout(firstLayout);
 	dendToolBar->addWidget(firstBox);
 
-	QGroupBox* secondBox = new QGroupBox(this);
-	QVBoxLayout* secondLayout = new QVBoxLayout(secondBox);
-	secondBox->setLayout(secondLayout);	
-	secondLayout->addWidget(joinAct);
-	dendToolBar->addWidget(secondBox);
+	joinButton = new JoinButton(this);
+	dendToolBar->addWidget(joinButton);
 
 	dendToolBar->addWidget(new ThresholdGroup(this));
 
@@ -163,20 +143,10 @@ void DendToolBar::addToolbars()
 
 void DendToolBar::setupToolbarInitially()
 {
-        debug("dendbar", "DendToolBar::setupToolbarInitially\n");
-	// FIXME tie in the hard code statics.
 }
 
 void DendToolBar::ChangeModeModify(const bool )
 {
-        debug("dendbar", "DendToolBar::ChangeModeModify\n");
-}
-
-void DendToolBar::resetTool(QAction * tool, const bool enabled)
-{
-        debug("dendbar", "DendToolBar::resetTool\n");
-	tool->setChecked(false);
-	tool->setEnabled(enabled);
 }
 
 void DendToolBar::updateReadOnlyRelatedWidgets()
@@ -191,19 +161,6 @@ void DendToolBar::updateReadOnlyRelatedWidgets()
 	splitButton->setEnabled(toBeEnabled);
 }
 
-void DendToolBar::join()
-{
-        debug("dendbar", "DendToolBar::join\n");
-
-	if (OmProject::IsSegmentationValid(getSegmentationID())) {
-		OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-		OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
-		(new OmSegmentJoinAction(mSeg, ids))->Run();
-	}	
-
-	updateGui();
-}
-
 void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 {
         debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
@@ -215,41 +172,48 @@ void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
 
 void DendToolBar::updateGui()
 {
-	debug("dendbar", "DendToolBar::updateGui\n");
-
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	OmEvents::Redraw();
 }
 
 // FIXME: need to be moved to somewhere else.
 void DendToolBar::addGroup()
 {
 	debug("dendbar", "DendToolBar::addGroup\n");
-        if (OmProject::IsSegmentationValid(getSegmentationID())) {
-                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
-		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
-        }
+	SegmentationDataWrapper sdw = getSegmentationDataWrapper();
+	if(!sdw.isValid()){
+		return;
+	}
+	
+	OmSegmentation & seg = sdw.getSegmentation();
+	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
+	OmEvents::SegmentModified();
 }
 
 void DendToolBar::specialGroupAdd()
 {
         debug("dendbar", "DendToolBar::specialGroupAdd\n");
-        if (OmProject::IsSegmentationValid(getSegmentationID())) {
-                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
-                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
-        }
+	SegmentationDataWrapper sdw = getSegmentationDataWrapper();
+	if(!sdw.isValid()){
+		return;
+	}
+	
+	OmSegmentation & seg = sdw.getSegmentation();
+	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mGroupName->text());
+	OmEvents::SegmentModified();
 }
 
 // FIXME: need to be moved to somewhere else.
 void DendToolBar::deleteGroup()
 {
-        debug("dendbar", "DendToolBar::addGroup\n");
-        if (OmProject::IsSegmentationValid(getSegmentationID())) {
-                OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-                seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
-		OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
-        }
+        debug("dendbar", "DendToolBar::deleteGroup\n");
+	SegmentationDataWrapper sdw = getSegmentationDataWrapper();
+	if(!sdw.isValid()){
+		return;
+	}
+
+	OmSegmentation & seg = sdw.getSegmentation();
+	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), NOTVALIDROOT, QString("Not Valid"));
+	OmEvents::SegmentModified();
 }
 
 void DendToolBar::mapColors()

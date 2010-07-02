@@ -7,6 +7,7 @@
 
 class MainWindow;
 class BreakButton;
+class JoinButton;
 class SplitButton;
 class OmViewGroupState;
 class SegmentationDataWrapper;
@@ -30,7 +31,6 @@ class DendToolBar : public QWidget {
 	void ChangeModeModify(bool checked);
 	void autoBreakChecked();
 
-	void join();
         void addGroup();
         void deleteGroup();
         void mapColors();
@@ -51,12 +51,10 @@ class DendToolBar : public QWidget {
 	// Actions
 	SplitButton * splitButton;
 	BreakButton * breakButton;
+	JoinButton * joinButton;
 
 	QCheckBox * autoBreakCheckbox;
 	QLabel * thresholdLabel;
-
-
-	QPushButton * joinAct;
 
 	QPushButton * addGroupAct;
 	QPushButton * deleteGroupAct;
@@ -68,8 +66,6 @@ class DendToolBar : public QWidget {
 	QLineEdit* mGroupName;
 
 	void setToolbarDisabled();
-	void resetTool( QAction* tool, const bool enabled );
-	void resetTools( const bool enabled );
 };
 
 #endif

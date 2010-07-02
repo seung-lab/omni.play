@@ -101,6 +101,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/segmentListWorking.h \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
            src/gui/toolbars/dendToolbar/breakButton.h \
+           src/gui/toolbars/dendToolbar/joinButton.h \
            src/gui/toolbars/dendToolbar/splitButton.h \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
@@ -289,6 +290,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/segmentListWorking.cpp \
            src/gui/toolbars/dendToolbar/dendToolbar.cpp \
            src/gui/toolbars/dendToolbar/breakButton.cpp \
+           src/gui/toolbars/dendToolbar/joinButton.cpp \
            src/gui/toolbars/dendToolbar/splitButton.cpp \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.cpp \
