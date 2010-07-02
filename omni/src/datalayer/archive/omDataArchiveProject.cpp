@@ -18,6 +18,8 @@
 
 #include <QDataStream>
 
+//TODO: Someday, delete subsamplemode and numtoplevel variables
+
 const int Omni_Version = 12;
 int Omni_File_Version;
 
@@ -479,6 +481,8 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
 	
+	int subsamplemode = 0;
+	out << subsamplemode;
 	out << m.mBuildState;
 	out << m.mStoreChunkMetaData;
 
@@ -491,6 +495,8 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
 	
+	int subsamplemode;
+	in >> subsamplemode;
 	in >> m.mBuildState;
 	in >> m.mStoreChunkMetaData;
 
