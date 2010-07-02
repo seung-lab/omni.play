@@ -103,6 +103,10 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/dendToolbar/breakButton.h \
            src/gui/toolbars/dendToolbar/joinButton.h \
            src/gui/toolbars/dendToolbar/splitButton.h \
+           src/gui/toolbars/dendToolbar/groupButtonAdd.h \
+           src/gui/toolbars/dendToolbar/groupButtonTag.h \
+           src/gui/toolbars/dendToolbar/groupButtonDelete.h \
+           src/gui/toolbars/dendToolbar/showValidatedButton.h \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
@@ -289,6 +293,10 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/breakButton.cpp \
            src/gui/toolbars/dendToolbar/joinButton.cpp \
            src/gui/toolbars/dendToolbar/splitButton.cpp \
+           src/gui/toolbars/dendToolbar/groupButtonAdd.cpp \
+           src/gui/toolbars/dendToolbar/groupButtonTag.cpp \
+           src/gui/toolbars/dendToolbar/groupButtonDelete.cpp \
+           src/gui/toolbars/dendToolbar/showValidatedButton.cpp \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/thresholdGroup.cpp \

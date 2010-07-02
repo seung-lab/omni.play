@@ -5,12 +5,16 @@
 
 #include <QtGui>
 
-class SplitButton;
+class GroupButtonAdd;
+class GroupButtonDelete;
+class GroupButtonTag;
 class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
+class ShowValidatedButton;
+class SplitButton;
 
-class DendToolBar : public QWidget {
+class DendToolBar : public QToolBar {
  Q_OBJECT
  public:
 	DendToolBar( MainWindow * mw );
@@ -23,14 +27,12 @@ class DendToolBar : public QWidget {
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	static bool GetShowGroupsMode();
 
+	QString getGroupNameFromGUI();
+	bool isShowValidChecked();
+	
  private slots:
 	void autoBreakChecked();
-
-        void addGroup();
-        void deleteGroup();
-        void mapColors();
         void changeMapColors();
-        void specialGroupAdd();
 
  private:
 	MainWindow * mMainWindow;
@@ -45,16 +47,15 @@ class DendToolBar : public QWidget {
 	QCheckBox * autoBreakCheckbox;
 	QLabel * thresholdLabel;
 
-	QPushButton * addGroupAct;
-	QPushButton * deleteGroupAct;
-        QPushButton * colorMapAct;
+	GroupButtonAdd * groupButtonAdd;
+	GroupButtonDelete * groupButtonDelete;
+	GroupButtonTag * groupButtonTag;
+	ShowValidatedButton * showValidatedButton;
+
 	QButtonGroup * validGroup;
         QRadioButton * showValid;
         QRadioButton * dontShowValid;
-        QPushButton * specialGroupAct;
 	QLineEdit* mGroupName;
-
-	OmId getSegmentationID();
 };
 
 #endif
