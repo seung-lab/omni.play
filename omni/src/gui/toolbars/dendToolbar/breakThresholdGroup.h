@@ -7,13 +7,10 @@ class BreakThresholdGroup : public OmThresholdGroup {
  Q_OBJECT 
  public:
 	BreakThresholdGroup(DendToolBar * parent);
-	float getThresholdEpsilon();
 
  private:
-	void addToThreshold(const float num);
-	void setThresholdValue();
+	void setInitialGUIThresholdValue();
 	void actUponThresholdChange( const float threshold );
-	float filterUserEnteredThreshold(const float threshold);
 };
 
 #endif

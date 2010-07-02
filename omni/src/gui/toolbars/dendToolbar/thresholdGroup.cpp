@@ -8,12 +8,9 @@
 ThresholdGroup::ThresholdGroup(DendToolBar * d)
 	: OmThresholdGroup(d, "Overall Threshold")
 {
-	setThresholdValue();
-}
-
-float ThresholdGroup::getThresholdEpsilon()
-{
-	return 0.02;
+	setSingleStep(0.02);
+	setMaximum(1.0);
+	setInitialGUIThresholdValue();
 }
 
 void ThresholdGroup::actUponThresholdChange( const float threshold )
@@ -27,29 +24,14 @@ void ThresholdGroup::actUponThresholdChange( const float threshold )
 	OmEvents::SegmentModified();
 }
 
-void ThresholdGroup::setThresholdValue()
+void ThresholdGroup::setInitialGUIThresholdValue()
 {
-	QString value;
+	double threshold = 0.95;
 
 	SegmentationDataWrapper sdw = mDendToolbar->getSegmentationDataWrapper();
 	if(sdw.isValid()){
-		value.setNum( sdw.getSegmentation().GetDendThreshold() );
-	} else {
-		value.setNum(0.95);
-	}
-	mThreshold->setText(value);
-}
+		threshold = sdw.getSegmentation().GetDendThreshold();
+	} 
 
-float ThresholdGroup::filterUserEnteredThreshold(const float threshold)
-{
-	float ret = threshold;
-
-	if(threshold > 1.0) {
-		ret = 1.0;
-	}
-	if(threshold < 0.0) {
-		ret = 0.0;
-	}
-
-	return ret;
+        setGUIvalue(threshold);
 }

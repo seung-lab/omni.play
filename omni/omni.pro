@@ -123,8 +123,6 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/thresholdGroup/omThresholdGroup.h \
-           src/gui/widgets/thresholdGroup/omThresholdButtonDecrease.h \
-           src/gui/widgets/thresholdGroup/omThresholdButtonIncrease.h \
            src/mesh/meshingChunkThread.h \
            src/mesh/meshingChunkThreadManager.h \
            src/mesh/meshingManager.h \
@@ -274,8 +272,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/widgets/omSegmentContextMenu.cpp \
            src/gui/widgets/thresholdGroup/omThresholdGroup.cpp \
-           src/gui/widgets/thresholdGroup/omThresholdButtonDecrease.cpp \
-           src/gui/widgets/thresholdGroup/omThresholdButtonIncrease.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \
            src/gui/preferences/localPreferencesMeshing.cpp \

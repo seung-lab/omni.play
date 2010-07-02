@@ -3,25 +3,17 @@
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
 
 OmThresholdGroup::OmThresholdGroup(DendToolBar * d, const QString & boxName)
-	: QGroupBox(boxName, d)
+	: QDoubleSpinBox(d)
 	, mDendToolbar(d)
-	, thresholdButtonDecrease(new OmThresholdButtonDecrease<OmThresholdGroup>(this,"-",""))
-	, thresholdButtonIncrease(new OmThresholdButtonIncrease<OmThresholdGroup>(this,"+",""))
 {
-	mThreshold = new QLineEdit(this);
-	connect(mThreshold, SIGNAL(editingFinished()), 
-		this, SLOT(thresholdChanged()));
-
-	QGridLayout* thirdLayout = new QGridLayout(this);
-	thirdLayout->addWidget(thresholdButtonDecrease,2,0,1,1);
-	thirdLayout->addWidget(mThreshold,1,0,1,2);
-	thirdLayout->addWidget(thresholdButtonIncrease,2,1,1,1);
+	connect(this, SIGNAL(valueChanged(double)), 
+		this, SLOT(thresholdChanged(double)));
 }
 
-void OmThresholdGroup::thresholdChanged()
+void OmThresholdGroup::thresholdChanged(const double valueFromGUI)
 {
 	debug("dendbar", "OmThresholdGroup::thresholdChanged\n");
-	actUponThresholdChange( mThreshold->text().toFloat() );
+	actUponThresholdChange(valueFromGUI);
 	updateGui();
 }
 
@@ -30,28 +22,12 @@ void OmThresholdGroup::updateGui()
 	mDendToolbar->updateGui();
 }
 
-void OmThresholdGroup::increaseThresholdButtonWasPressed()
+double OmThresholdGroup::getGUIvalue()
 {
-	addToThreshold(getThresholdEpsilon());
-	updateGui();
+	return value();
 }
 
-void OmThresholdGroup::decreaseThresholdButtonWasPressed()
+void OmThresholdGroup::setGUIvalue(const double newThreshold)
 {
-	addToThreshold(-getThresholdEpsilon());
-	updateGui();
-}
-
-void OmThresholdGroup::addToThreshold(const float num)
-{
-        QString value = mThreshold->text();
-        float threshold = value.toFloat();
-        threshold += num;
-
-	threshold = filterUserEnteredThreshold(threshold);
-
-        value.setNum(threshold);
-        mThreshold->setText(value);
-
-	actUponThresholdChange( threshold );
+	setValue(newThreshold);
 }

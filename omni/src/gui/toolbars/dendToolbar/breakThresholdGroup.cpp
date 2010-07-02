@@ -6,12 +6,9 @@
 BreakThresholdGroup::BreakThresholdGroup(DendToolBar * d)
 	: OmThresholdGroup(d, "Break Threshold")
 {
-	setThresholdValue();
-}
-
-float BreakThresholdGroup::getThresholdEpsilon()
-{
-	return 0.02;
+	setSingleStep(0.02);
+	setMaximum(1.0);
+	setInitialGUIThresholdValue();
 }
 
 void BreakThresholdGroup::actUponThresholdChange( const float threshold )
@@ -21,28 +18,13 @@ void BreakThresholdGroup::actUponThresholdChange( const float threshold )
 	}
 }
 
-void BreakThresholdGroup::setThresholdValue()
+void BreakThresholdGroup::setInitialGUIThresholdValue()
 {
-	QString value;
-	value.setNum(0.95);
+	const double defaultThreshold = 0.95;
 
-	mThreshold->setText(value);
+	setGUIvalue(defaultThreshold);
 
 	if( NULL != mDendToolbar->getViewGroupState() ) {
-		mDendToolbar->getViewGroupState()->setBreakThreshold( 0.95 );
+		mDendToolbar->getViewGroupState()->setBreakThreshold(defaultThreshold);
 	}
-}
-
-float BreakThresholdGroup::filterUserEnteredThreshold(const float threshold)
-{
-	float ret = threshold;
-
-	if(threshold > 1.0) {
-		ret = 1.0;
-	}
-	if(threshold < 0.0) {
-		ret = 0.0;
-	}
-
-	return ret;
 }

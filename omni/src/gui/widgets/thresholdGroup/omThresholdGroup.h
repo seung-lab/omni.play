@@ -4,34 +4,25 @@
 #include <QtGui>
 
 class DendToolBar;
-#include "gui/widgets/thresholdGroup/omThresholdButtonDecrease.h"
-#include "gui/widgets/thresholdGroup/omThresholdButtonIncrease.h"
 
-class OmThresholdGroup : public QGroupBox {
+class OmThresholdGroup : public QDoubleSpinBox {
  Q_OBJECT 
  public:
 	OmThresholdGroup(DendToolBar *, const QString &);
 
-	void increaseThresholdButtonWasPressed();
-	void decreaseThresholdButtonWasPressed();
 	void updateGui();
 
- protected slots:
-	void thresholdChanged();
+ private slots:
+	void thresholdChanged(const double valueFromGUI);
 
  protected:
 	DendToolBar *const mDendToolbar;
 
-	OmThresholdButtonDecrease<OmThresholdGroup> *const thresholdButtonDecrease;
-	OmThresholdButtonIncrease<OmThresholdGroup> *const thresholdButtonIncrease;
-	QLineEdit* mThreshold;
+	double getGUIvalue();
+	void setGUIvalue(const double newThreshold);
 
-	void addToThreshold(const float num);
-	virtual void setThresholdValue() = 0;
+	virtual void setInitialGUIThresholdValue() = 0;
 	virtual void actUponThresholdChange( const float threshold ) = 0;
-	virtual float getThresholdEpsilon() = 0;
-	virtual float filterUserEnteredThreshold(const float threshold) = 0;
-
 };
 
 #endif
