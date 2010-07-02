@@ -18,8 +18,7 @@
 
 #include <QDataStream>
 
-//TODO: remove mNumTopLevelSegs (below) when someone increments version to 11 (purcaro)
-const int Omni_Version = 11;
+const int Omni_Version = 12;
 int Omni_File_Version;
 
 static const QString Omni_Postfix("OMNI");
@@ -39,8 +38,8 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	if( Omni_File_Version < 10 ){
 		throw OmIoException("can not open file: file version is (" 
 				    + boost::lexical_cast<std::string>(Omni_File_Version)
-				    +"), but Omni expecting ( 10 or 11 "
-				    //+ boost::lexical_cast<std::string>(Omni_Version) 
+				    +"), but Omni expecting ("
+				    + boost::lexical_cast<std::string>(Omni_Version) 
 				    + ")");
 	}
 
@@ -381,9 +380,6 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 	
 	out << sc.mNumSegs;
 	
-	quint32 mNumTopLevelSegs = 0;
-	out << mNumTopLevelSegs;
-
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
 	foreach( const OmSegmentEdge & e, sc.mManualUserMergeEdgeList ){
@@ -409,8 +405,10 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	in >> sc.mNumSegs;
 
-	quint32 mNumTopLevelSegs;
-	in >> mNumTopLevelSegs;
+	if(Omni_File_Version < 12) {
+		quint32 mNumTopLevelSegs;
+		in >> mNumTopLevelSegs;
+	}
 
 	int size;
 	in >> size;
@@ -548,6 +546,7 @@ QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & gm)
 
         foreach( const OmId & id, gm.mValidSet ){
                 out << *gm.mMap[id];
+		printf("id=%i\n", id);
         }
 
         return out;
@@ -566,6 +565,8 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
                 OmGroup * group = new OmGroup();
                 in >> *group;
                 gm.mMap[ group->GetId() ] = group;
+	
+		printf("in id=%i\n", group->GetId());
         }
 
         return in;
@@ -573,6 +574,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 
 QDataStream &operator<<(QDataStream & out, const OmGroup & g )
 {
+	OmDataArchiveProject::storeOmManageableObject( out, g );
         out << g.mName;
         out << g.mIDs;
 
@@ -581,9 +583,12 @@ QDataStream &operator<<(QDataStream & out, const OmGroup & g )
 
 QDataStream &operator>>(QDataStream & in, OmGroup & g )
 {
+	if(Omni_File_Version > 11) {
+		OmDataArchiveProject::loadOmManageableObject( in, g );
+	}
         in >> g.mName;
-	if(Omni_Version == Omni_File_Version) {
-        	in >> g.mIDs;
+	if(Omni_File_Version > 11) {
+       		in >> g.mIDs;
 	}
 
         return in;
