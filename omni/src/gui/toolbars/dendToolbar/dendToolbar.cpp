@@ -95,9 +95,7 @@ void DendToolBar::addToolbars()
 	dendToolBar->addWidget(firstBox);
 	
 	dendToolBar->addWidget(new JoinButton(this));
-	
 	dendToolBar->addWidget(new ThresholdGroup(this));
-	
 	dendToolBar->addWidget(new BreakButton(this));
 	//dendToolBar->addWidget(new BreakThresholdGroup(this));
 
@@ -115,18 +113,6 @@ void DendToolBar::addToolbars()
         dendToolBar->addWidget(sixthBox);
 
 	dendToolBar->addWidget(new Dust3DThresholdGroup(this));
-}
-
-void DendToolBar::setupToolbarInitially()
-{
-}
-
-void DendToolBar::ChangeModeModify(const bool )
-{
-}
-
-void DendToolBar::updateReadOnlyRelatedWidgets()
-{
 }
 
 void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )

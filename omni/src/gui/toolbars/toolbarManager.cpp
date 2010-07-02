@@ -16,12 +16,10 @@ ToolBarManager::ToolBarManager( MainWindow * mw )
 
 void ToolBarManager::setupToolbarInitially()
 {
-	dendToolBar->setupToolbarInitially();
 }
 
 void ToolBarManager::updateReadOnlyRelatedWidgets()
 {
-	dendToolBar->updateReadOnlyRelatedWidgets();
 }
 
 void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)

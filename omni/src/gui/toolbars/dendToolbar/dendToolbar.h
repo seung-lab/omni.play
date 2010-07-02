@@ -14,8 +14,6 @@ class DendToolBar : public QWidget {
  Q_OBJECT
  public:
 	DendToolBar( MainWindow * mw );
-	void setupToolbarInitially();
-	void updateReadOnlyRelatedWidgets();
 	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 	void updateGui();
 
@@ -26,7 +24,6 @@ class DendToolBar : public QWidget {
 	static bool GetShowGroupsMode();
 
  private slots:
-	void ChangeModeModify(bool checked);
 	void autoBreakChecked();
 
         void addGroup();
