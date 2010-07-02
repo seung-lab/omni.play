@@ -26,9 +26,7 @@ OmThresholdGroup::OmThresholdGroup(DendToolBar * d)
 void OmThresholdGroup::thresholdChanged()
 {
 	debug("dendbar", "OmThresholdGroup::thresholdChanged\n");
-
 	haveSegmentationChangeThreshold( mThreshold->text().toFloat() );
-
 	updateGui();
 }
 
@@ -47,4 +45,21 @@ void OmThresholdGroup::decreaseThresholdButtonWasPressed()
 {
 	addToThreshold(-thresholdEpsilon);
 	updateGui();
+}
+
+void OmThresholdGroup::addToThreshold(const float num)
+{
+        QString value = mThreshold->text();
+        float threshold = value.toFloat();
+        threshold += num;
+	if(threshold > 1.0) {
+		threshold = 1.0;
+	}
+	if(threshold < 0.0) {
+		threshold = 0.0;
+	}
+        value.setNum(threshold);
+        mThreshold->setText(value);
+
+	haveSegmentationChangeThreshold( threshold );
 }

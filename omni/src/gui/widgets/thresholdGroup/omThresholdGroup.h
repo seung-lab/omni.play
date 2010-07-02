@@ -12,12 +12,12 @@ class OmThresholdGroup : public QGroupBox {
  public:
 	OmThresholdGroup(DendToolBar *);
 
-	virtual void increaseThresholdButtonWasPressed();
-	virtual void decreaseThresholdButtonWasPressed();
-	virtual void updateGui();
+	void increaseThresholdButtonWasPressed();
+	void decreaseThresholdButtonWasPressed();
+	void updateGui();
 
  protected slots:
-	virtual void thresholdChanged();
+	void thresholdChanged();
 
  protected:
 	DendToolBar * mDendToolbar;
@@ -25,7 +25,7 @@ class OmThresholdGroup : public QGroupBox {
 	OmThresholdButtonIncrease<OmThresholdGroup> *const thresholdButtonIncrease;
 	QLineEdit* mThreshold;
 
-	virtual void addToThreshold(const float num) = 0;
+	void addToThreshold(const float num);
 	virtual void setThresholdValue() = 0;
 	virtual void haveSegmentationChangeThreshold( const float threshold ) = 0;
 };

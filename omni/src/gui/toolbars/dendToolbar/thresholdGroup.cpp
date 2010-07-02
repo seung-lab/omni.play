@@ -24,23 +24,6 @@ void ThresholdGroup::haveSegmentationChangeThreshold( const float threshold )
 	OmEvents::SegmentModified();
 }
 
-void ThresholdGroup::addToThreshold(const float num)
-{
-        QString value = mThreshold->text();
-        float threshold = value.toFloat();
-        threshold += num;
-	if(threshold > 1.0) {
-		threshold = 1.0;
-	}
-	if(threshold < 0.0) {
-		threshold = 0.0;
-	}
-        value.setNum(threshold);
-        mThreshold->setText(value);
-
-	haveSegmentationChangeThreshold( threshold );
-}
-
 void ThresholdGroup::setThresholdValue()
 {
 	QString value;
