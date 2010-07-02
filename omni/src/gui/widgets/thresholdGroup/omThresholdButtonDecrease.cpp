@@ -11,6 +11,5 @@ OmThresholdButtonDecrease<T>::OmThresholdButtonDecrease(T * parent,
 template < class T >
 void OmThresholdButtonDecrease<T>::doAction()
 {
-	OmButton<T>::mParent->decreaseThresholdByEpsilon();
-	OmButton<T>::mParent->updateGui();
+	OmButton<T>::mParent->decreaseThresholdButtonWasPressed();
 }

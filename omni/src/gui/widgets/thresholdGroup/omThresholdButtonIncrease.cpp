@@ -11,6 +11,5 @@ OmThresholdButtonIncrease<T>::OmThresholdButtonIncrease(T * parent,
 template < class T >
 void OmThresholdButtonIncrease<T>::doAction()
 {
-	OmButton<T>::mParent->increaseThresholdByEpsilon();
-	OmButton<T>::mParent->updateGui();
+	OmButton<T>::mParent->increaseThresholdButtonWasPressed();
 }

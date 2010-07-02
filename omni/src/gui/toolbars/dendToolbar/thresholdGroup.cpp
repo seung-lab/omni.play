@@ -8,29 +8,9 @@
 static const float thresholdEpsilon = 0.02;
 
 ThresholdGroup::ThresholdGroup(DendToolBar * d)
-	: QGroupBox("Overall Threshold", d)
-	, mDendToolbar(d)
-	, thresholdButtonDecrease(new OmThresholdButtonDecrease<ThresholdGroup>(this,"-",""))
-	, thresholdButtonIncrease(new OmThresholdButtonIncrease<ThresholdGroup>(this,"+",""))
+	: OmThresholdGroup(d)
 {
-	mThreshold = new QLineEdit(this);
 	setThresholdValue();
-	connect(mThreshold, SIGNAL(editingFinished()), 
-		this, SLOT(thresholdChanged()));
-
-	QGridLayout* thirdLayout = new QGridLayout(this);
-	thirdLayout->addWidget(thresholdButtonDecrease,2,0,1,1);
-	thirdLayout->addWidget(mThreshold,1,0,1,2);
-	thirdLayout->addWidget(thresholdButtonIncrease,2,1,1,1);
-}
-
-void ThresholdGroup::thresholdChanged()
-{
-	debug("dendbar", "ThresholdGroup::thresholdChanged\n");
-
-	haveSegmentationChangeThreshold( mThreshold->text().toFloat() );
-
-	updateGui();
 }
 
 void ThresholdGroup::haveSegmentationChangeThreshold( const float threshold )
@@ -42,11 +22,6 @@ void ThresholdGroup::haveSegmentationChangeThreshold( const float threshold )
 	
 	sdw.getSegmentation().SetDendThresholdAndReload(threshold);
 	OmEvents::SegmentModified();
-}
-
-void ThresholdGroup::updateGui()
-{
-	mDendToolbar->updateGui();
 }
 
 void ThresholdGroup::addToThreshold(const float num)
@@ -77,14 +52,4 @@ void ThresholdGroup::setThresholdValue()
 		value.setNum(0.95);
 	}
 	mThreshold->setText(value);
-}
-
-void ThresholdGroup::increaseThresholdByEpsilon()
-{
-	addToThreshold(thresholdEpsilon);
-}
-
-void ThresholdGroup::decreaseThresholdByEpsilon()
-{
-	addToThreshold(-thresholdEpsilon);
 }
