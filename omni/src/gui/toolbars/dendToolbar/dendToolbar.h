@@ -5,10 +5,8 @@
 
 #include <QtGui>
 
-class MainWindow;
-class BreakButton;
-class JoinButton;
 class SplitButton;
+class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 
@@ -42,16 +40,10 @@ class DendToolBar : public QWidget {
 	OmViewGroupState * mViewGroupState;
 	QToolBar * dendToolBar;
 
-	void createToolbar();
+	SplitButton * splitButton;
+
 	void createToolbarActions();
 	void addToolbars();
-
-	OmId getSegmentationID();
-
-	// Actions
-	SplitButton * splitButton;
-	BreakButton * breakButton;
-	JoinButton * joinButton;
 
 	QCheckBox * autoBreakCheckbox;
 	QLabel * thresholdLabel;
@@ -65,7 +57,7 @@ class DendToolBar : public QWidget {
         QPushButton * specialGroupAct;
 	QLineEdit* mGroupName;
 
-	void setToolbarDisabled();
+	OmId getSegmentationID();
 };
 
 #endif

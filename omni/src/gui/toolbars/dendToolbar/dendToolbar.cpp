@@ -13,40 +13,24 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-bool mShowGroups = false;
-static OmId mSeg = 1;
-
 DendToolBar::DendToolBar( MainWindow * mw )
 	: QWidget(mw)
 	, mMainWindow(mw)
 	, mViewGroupState(NULL)
-	, splitButton(NULL)
-{
-	createToolbar();
-}
-
-////////////////////////////////////////////////////////////
-// Toolbars
-////////////////////////////////////////////////////////////
-void DendToolBar::createToolbar()
+	, splitButton(new SplitButton(this))
 {
 	createToolbarActions();
 	addToolbars();
 }
 
-void DendToolBar::setToolbarDisabled()
-{
-	splitButton->setEnabled(false);
-}
-
 OmId DendToolBar::getSegmentationID()
 {
-	return mSeg;
+	return 1;
 }
 
 SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 {
-	return SegmentationDataWrapper(mSeg);
+	return SegmentationDataWrapper(getSegmentationID());
 }
 
 void DendToolBar::createToolbarActions()
@@ -68,7 +52,6 @@ void DendToolBar::createToolbarActions()
         deleteGroupAct->setStatusTip(tr("Unlock selected objects"));
         connect(deleteGroupAct, SIGNAL(pressed()),
                 this, SLOT(deleteGroup()));
-
 
         colorMapAct = new QPushButton(mMainWindow);
         colorMapAct->setText(tr("Show Validated"));
@@ -96,8 +79,6 @@ void DendToolBar::createToolbarActions()
 
         mGroupName = new QLineEdit(mMainWindow);
         mGroupName->setText("Glia");
-
-
 }
 
 void DendToolBar::addToolbars()
@@ -105,24 +86,19 @@ void DendToolBar::addToolbars()
 	dendToolBar = new QToolBar( "Dend", this );
 	dendToolBar->setFloatable( true );
 	mMainWindow->addToolbarRight(dendToolBar);
-
+	
 	QGroupBox* firstBox = new QGroupBox(this);
 	QVBoxLayout* firstLayout = new QVBoxLayout(firstBox);
-
-	splitButton = new SplitButton(this);
 	firstLayout->addWidget(splitButton);
-
 	firstLayout->addWidget(autoBreakCheckbox);
 	firstBox->setLayout(firstLayout);
 	dendToolBar->addWidget(firstBox);
-
-	joinButton = new JoinButton(this);
-	dendToolBar->addWidget(joinButton);
-
+	
+	dendToolBar->addWidget(new JoinButton(this));
+	
 	dendToolBar->addWidget(new ThresholdGroup(this));
-
-	breakButton = new BreakButton(this);
-	dendToolBar->addWidget(breakButton);
+	
+	dendToolBar->addWidget(new BreakButton(this));
 	//dendToolBar->addWidget(new BreakThresholdGroup(this));
 
         QGroupBox* sixthBox = new QGroupBox(this);
@@ -151,14 +127,6 @@ void DendToolBar::ChangeModeModify(const bool )
 
 void DendToolBar::updateReadOnlyRelatedWidgets()
 {
-        debug("dendbar", "DendToolBar::updateReadOnlyRelatedWidgets\n");
-	bool toBeEnabled = false;
-
-	if ( mMainWindow->isProjectOpen() && !OmProjectData::IsReadOnly() ){
-		toBeEnabled = true;
-	}
-
-	splitButton->setEnabled(toBeEnabled);
 }
 
 void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
