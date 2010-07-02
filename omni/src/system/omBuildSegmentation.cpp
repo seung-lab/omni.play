@@ -180,12 +180,19 @@ void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
 		parentID = dend[i + numDendRows ];
                 threshold = dendValues[i];
 		
-		if(childUnknownDepthID <= maxNumSegs) {
+		// Data may have values that don't exist in the volume... warn user.
+		if(childUnknownDepthID <= (unsigned int) maxNumSegs && parentID <= (unsigned int) maxNumSegs) {
 			DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
 			childRootDT->join( mGraph->get( parentID ) );
 
 			// set child ID to root value found by graph...
 			dend[i] = childRootDT->getKey();
+		} else {
+			static bool warned = false;
+			if(!warned) {
+				printf("warning: dend has values that don't exist in the volume data.\n");
+				warned = true;
+			}
 		}
         }
 
