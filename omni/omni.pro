@@ -121,6 +121,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/viewGroupWidgetInfo.h \
            src/gui/widgets/omButton.h \
            src/gui/widgets/omSegmentListWidget.h \
+           src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/thresholdGroup/omThresholdGroup.h \
            src/gui/widgets/thresholdGroup/omThresholdButtonDecrease.h \
            src/gui/widgets/thresholdGroup/omThresholdButtonIncrease.h \
@@ -306,6 +307,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/viewGroup.cpp \
            src/gui/widgets/omButton.cpp \
+           src/gui/widgets/omGroupListWidget.cpp \
            src/gui/widgets/omSegmentListWidget.cpp \
            src/mesh/meshingChunkThread.cpp \
            src/mesh/meshingChunkThreadManager.cpp \

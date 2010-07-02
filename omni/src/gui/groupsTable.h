@@ -7,8 +7,9 @@
 #include "common/omCommon.h"
 #include "project/omProject.h"
 #include "system/omGroups.h"
+#include "gui/widgets/omGroupListWidget.h"
 
-#include <QTableView>
+#include <QTableWidget>
 #include <QGridLayout>
 #include <QTreeWidget>
 #include <QTableView>
@@ -21,15 +22,18 @@ class GroupsTable : public QWidget
 public:
         GroupsTable(OmViewGroupState * vgs);
 
-        OmId getSegmentationID();
-        void populateGroupsList();
+	void populateGroupTable(OmGroupID id);
 
 private:
+        OmId getSegmentationID();
+
+        void populateGroupsList();
+
 	OmViewGroupState * mViewGroupState;
 
         QGridLayout * mLayout;
-	QTreeWidget * mGroupsList;
-	QTableView * mGroupsTable;
+	OmGroupListWidget * mGroupsList;
+	QTableWidget * mGroupsTable;
 };
 #endif
 

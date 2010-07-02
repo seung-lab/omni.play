@@ -13,6 +13,7 @@ public:
 
         void AddIds( const OmSegIDsSet & segids);
 	OmGroupName GetName() {return mName;}
+	const OmSegIDsSet & GetIDs() {return mIDs;}
 
 private:
 	OmSegIDsSet mIDs;

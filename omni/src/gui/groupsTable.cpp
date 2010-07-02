@@ -1,6 +1,7 @@
 #include "gui/groupsTable.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentCache.h"
 #include "common/omCommon.h"
 #include "system/omGroup.h"
 #include <QTreeWidgetItem>
@@ -12,10 +13,12 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	mLayout = new QGridLayout();
 	this->setLayout(mLayout);
 
-	mGroupsList = new QTreeWidget();
+	mGroupsList = new OmGroupListWidget(this);
 	mLayout->addWidget(mGroupsList,0,0,1,1);
 
-	mGroupsTable = new QTableView();
+	mGroupsTable = new QTableWidget();
+	mGroupsTable->setRowCount(10);
+	mGroupsTable->setColumnCount(2);
 	mLayout->addWidget(mGroupsTable,0,1,1,1);
 
 	populateGroupsList();
@@ -28,18 +31,34 @@ OmId GroupsTable::getSegmentationID()
 
 void GroupsTable::populateGroupsList()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
-	OmGroups * groups = seg.GetGroups();
+	if(!OmProject::IsSegmentationValid(getSegmentationID())) {
+		return;
+	}
+	mGroupsList->populate(OmProject::GetSegmentation(getSegmentationID()));
+}
 
-	OmGroupIDsSet set = groups->GetGroups();
+void GroupsTable::populateGroupTable(OmGroupID id)
+{
+	if(!OmProject::IsSegmentationValid(getSegmentationID())) {
+		return;
+	}
+        OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
+        OmGroup & group = seg.GetGroups()->GetGroup(id);
+	OmSegmentCache * cache = seg.GetSegmentCache();
 
-	foreach(OmGroupID id, set) {
-                QTreeWidgetItem *row = new QTreeWidgetItem(mGroupsList);
-                OmGroup & group = groups->GetGroup(id);
-                row->setText(0, group.GetName());
-                row->setData(0, Qt::UserRole, qVariantFromValue(id));
-        	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+	const OmSegIDsSet & set = group.GetIDs();
+	int count = 0;
+	foreach(OmSegID id, set) {
+		OmSegment * segment = cache->GetSegment(id);
+		OmColor color = segment->GetColorInt();
+		printf("HI! %i\n", id);
+		QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
+		mGroupsTable->setCellWidget(count, 0, segmentButton);
+		QPushButton * colorButton = new QPushButton();
 
-		printf("here\n");
+		colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }").arg(color.red).arg(color.green).arg(color.blue));
+		mGroupsTable->setCellWidget(count, 1, colorButton);
+		count++;
 	}
 }
+
