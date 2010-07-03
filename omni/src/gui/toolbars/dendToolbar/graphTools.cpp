@@ -31,7 +31,6 @@ QWidget* GraphTools::thresholdBox()
 
 	QHBoxLayout* layout = new QHBoxLayout(widget);
 	layout->addWidget(thresholdBox);
-	widget->setLayout(layout);
 	
 	return widget;
 }
