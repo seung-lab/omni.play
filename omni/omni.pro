@@ -108,6 +108,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/dendToolbar/groupButtonDelete.h \
            src/gui/toolbars/dendToolbar/showValidatedButton.h \
            src/gui/toolbars/dendToolbar/validationGroup.h \
+           src/gui/toolbars/dendToolbar/graphTools.h \
+           src/gui/toolbars/dendToolbar/displayTools.h \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
@@ -301,6 +303,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/groupButtonDelete.cpp \
            src/gui/toolbars/dendToolbar/showValidatedButton.cpp \
            src/gui/toolbars/dendToolbar/validationGroup.cpp \
+           src/gui/toolbars/dendToolbar/graphTools.cpp \
+           src/gui/toolbars/dendToolbar/displayTools.cpp \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/thresholdGroup.cpp \

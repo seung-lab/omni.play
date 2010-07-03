@@ -1,11 +1,12 @@
 #include "common/omDebug.h"
 #include "gui/mainwindow.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 
-SplitButton::SplitButton(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+SplitButton::SplitButton(GraphTools * d)
+	: OmButton<GraphTools>( d, 
 				 "Split", 
 				 "Split object mode", 
 				 true)

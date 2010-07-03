@@ -1,12 +1,13 @@
 #include "common/omDebug.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-ThresholdGroup::ThresholdGroup(DendToolBar * d)
-	: OmThresholdGroup(d, "Overall Threshold")
+ThresholdGroup::ThresholdGroup(GraphTools * d)
+	: OmThresholdGroup(d)
+	, mParent(d)
 {
 	setSingleStep(0.02);
 	setMaximum(1.0);
@@ -15,7 +16,7 @@ ThresholdGroup::ThresholdGroup(DendToolBar * d)
 
 void ThresholdGroup::actUponThresholdChange( const float threshold )
 {
-	SegmentationDataWrapper sdw = mDendToolbar->getSegmentationDataWrapper();
+	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;
 	}
@@ -28,7 +29,7 @@ void ThresholdGroup::setInitialGUIThresholdValue()
 {
 	double threshold = 0.95;
 
-	SegmentationDataWrapper sdw = mDendToolbar->getSegmentationDataWrapper();
+	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(sdw.isValid()){
 		threshold = sdw.getSegmentation().GetDendThreshold();
 	} 

@@ -2,11 +2,11 @@
 #define BREAK_BUTTON_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+class GraphTools;
 
-class BreakButton : public OmButton<DendToolBar> {
+class BreakButton : public OmButton<GraphTools> {
  public:
-	BreakButton(DendToolBar *);
+	BreakButton(GraphTools *);
 
  private:
 	void doAction();

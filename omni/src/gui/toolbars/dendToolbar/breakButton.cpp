@@ -2,9 +2,10 @@
 #include "gui/toolbars/dendToolbar/breakButton.h"
 #include "system/omCacheManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 
-BreakButton::BreakButton(DendToolBar * d)
-	: OmButton<DendToolBar>( d,
+BreakButton::BreakButton(GraphTools * d)
+	: OmButton<GraphTools>( d,
 				 "Break", 
 				 "Shatter object mode", 
 				 true)

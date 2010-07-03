@@ -2,11 +2,11 @@
 #define JOIn_BUTTON_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+class GraphTools;
 
-class JoinButton : public OmButton<DendToolBar> {
+class JoinButton : public OmButton<GraphTools> {
  public:
-	JoinButton(DendToolBar *);
+	JoinButton(GraphTools *);
 
  private:
 	void doAction();

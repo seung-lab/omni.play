@@ -3,12 +3,15 @@
 
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
 
+class GraphTools;
+
 class ThresholdGroup : public OmThresholdGroup {
  Q_OBJECT 
  public:
-	ThresholdGroup(DendToolBar * parent);
+	ThresholdGroup(GraphTools * parent);
 
  private:
+	GraphTools *const mParent;
 	void setInitialGUIThresholdValue();
 	void actUponThresholdChange( const float threshold );
 };

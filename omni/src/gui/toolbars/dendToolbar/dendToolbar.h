@@ -5,11 +5,10 @@
 
 #include <QtGui>
 
-class AutoBreakCheckbox;
 class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
-class SplitButton;
+class GraphTools;
 
 class DendToolBar : public QToolBar {
  Q_OBJECT
@@ -25,15 +24,9 @@ class DendToolBar : public QToolBar {
 	static bool GetShowGroupsMode();
 	
  private:
-	MainWindow * mMainWindow;
+	MainWindow *const mMainWindow;
 	OmViewGroupState * mViewGroupState;
-
-	SplitButton * splitButton;
-
-	void addToolbars();
-
-	AutoBreakCheckbox * autoBreakCheckbox;
-	QLabel * thresholdLabel;
+	GraphTools * graphTools;
 };
 
 #endif

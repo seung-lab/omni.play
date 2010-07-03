@@ -3,12 +3,12 @@
 
 #include <QtGui>
 
-class DendToolBar;
+class GraphTools;
 
 class OmThresholdGroup : public QDoubleSpinBox {
  Q_OBJECT 
  public:
-	OmThresholdGroup(DendToolBar *, const QString &);
+	OmThresholdGroup(QWidget *);
 
 	void updateGui();
 
@@ -16,8 +16,6 @@ class OmThresholdGroup : public QDoubleSpinBox {
 	void thresholdChanged(const double valueFromGUI);
 
  protected:
-	DendToolBar *const mDendToolbar;
-
 	double getGUIvalue();
 	void setGUIvalue(const double newThreshold);
 

@@ -11,7 +11,7 @@ class ShowValidatedButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
 
-class ValidationGroup : public QGroupBox{
+class ValidationGroup : public QGroupBox {
  Q_OBJECT
  public:
 	ValidationGroup(DendToolBar *);

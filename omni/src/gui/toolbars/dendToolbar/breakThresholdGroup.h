@@ -2,13 +2,15 @@
 #define BREAK_THRESHOLD_GROUP_H
 
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
+class GraphTools;
 
 class BreakThresholdGroup : public OmThresholdGroup {
  Q_OBJECT 
  public:
-	BreakThresholdGroup(DendToolBar * parent);
+	BreakThresholdGroup(GraphTools * parent);
 
  private:
+	GraphTools *const mParent;
 	void setInitialGUIThresholdValue();
 	void actUponThresholdChange( const float threshold );
 };

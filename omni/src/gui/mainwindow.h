@@ -48,7 +48,7 @@ class MainWindow
 	void addToolbarSeperator();
 
 	void addToolbarRight(QToolBar * b);
-	
+
 	friend class ViewGroup;
 
  protected: 

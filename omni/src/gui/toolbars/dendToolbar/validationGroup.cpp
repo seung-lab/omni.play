@@ -52,7 +52,6 @@ QString ValidationGroup::getGroupNameFromGUI()
 	return mGroupName->text();
 }
 
-
 bool ValidationGroup::isShowValidChecked()
 {
 	return showValid->isChecked();

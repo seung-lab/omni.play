@@ -3,11 +3,11 @@
 
 #include "gui/widgets/omCheckbox.h"
 
-class DendToolBar;
+class GraphTools;
 
-class AutoBreakCheckbox : public OmCheckBox<DendToolBar> {
+class AutoBreakCheckbox : public OmCheckBox<GraphTools> {
  public:
-	AutoBreakCheckbox(DendToolBar*);
+	AutoBreakCheckbox(GraphTools*);
 
  private:
 	void doAction();

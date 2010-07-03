@@ -1,10 +1,10 @@
 #include "common/omDebug.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/widgets/thresholdGroup/omThresholdGroup.h"
+#include "system/omEvents.h"
 
-OmThresholdGroup::OmThresholdGroup(DendToolBar * d, const QString & boxName)
+OmThresholdGroup::OmThresholdGroup(QWidget * d)
 	: QDoubleSpinBox(d)
-	, mDendToolbar(d)
 {
 	connect(this, SIGNAL(valueChanged(double)), 
 		this, SLOT(thresholdChanged(double)));
@@ -19,7 +19,7 @@ void OmThresholdGroup::thresholdChanged(const double valueFromGUI)
 
 void OmThresholdGroup::updateGui()
 {
-	mDendToolbar->updateGui();
+	OmEvents::Redraw();
 }
 
 double OmThresholdGroup::getGUIvalue()

@@ -1,10 +1,10 @@
 #include "gui/toolbars/dendToolbar/autoBreakCheckbox.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 #include "common/omDebug.h"
 #include "system/viewGroup/omViewGroupState.h"
 
-AutoBreakCheckbox::AutoBreakCheckbox( DendToolBar * d )
-	: OmCheckBox<DendToolBar>(d, "Show Breaks")
+AutoBreakCheckbox::AutoBreakCheckbox( GraphTools * d )
+	: OmCheckBox<GraphTools>(d, "Show Breaks")
 {
 	setCheckState(Qt::Checked);
 }

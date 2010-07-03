@@ -4,9 +4,10 @@
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentCache.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
+#include "gui/toolbars/dendToolbar/graphTools.h"
 
-JoinButton::JoinButton(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+JoinButton::JoinButton(GraphTools * d)
+	: OmButton<GraphTools>( d, 
 				 "Join", 
 				 "Join objects", 
 				 false)

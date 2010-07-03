@@ -2,11 +2,12 @@
 #define SPLIT_BUTTON_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
 
-class SplitButton : public OmButton<DendToolBar> {
+class GraphTools;
+
+class SplitButton : public OmButton<GraphTools> {
  public:
-	SplitButton(DendToolBar *);
+	SplitButton(GraphTools *);
 
  private:
 	void doAction();
