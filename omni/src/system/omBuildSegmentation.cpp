@@ -168,12 +168,14 @@ void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
 					     float * dendValues, 
 					     const int numDendRows )
 {
-	const int maxNumSegs =  mSeg->GetSegmentCache()->getMaxValue() + 1;
-	DynamicTreeContainer<OmSegID> * mGraph = new DynamicTreeContainer<OmSegID>( maxNumSegs );
+	const quint32 maxSegValue =  mSeg->GetSegmentCache()->getMaxValue() + 1;
+	DynamicTreeContainer<OmSegID> * mGraph = new DynamicTreeContainer<OmSegID>(maxSegValue);
 	
-	unsigned int childUnknownDepthID;
-	unsigned int parentID;
+	quint32 childUnknownDepthID;
+	quint32 parentID;
 	float threshold;
+	DynamicTree<OmSegID> * childRootDT;
+	int numBadSegValues = 0;
 	
 	for(int i = 0; i < numDendRows; ++i) {
                 childUnknownDepthID = dend[i];
@@ -181,20 +183,20 @@ void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
                 threshold = dendValues[i];
 		
 		// Data may have values that don't exist in the volume... warn user.
-		if(childUnknownDepthID <= (unsigned int) maxNumSegs && parentID <= (unsigned int) maxNumSegs) {
-			DynamicTree<OmSegID> * childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
+		if(childUnknownDepthID < maxSegValue && parentID < maxSegValue) {
+			childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
 			childRootDT->join( mGraph->get( parentID ) );
 
 			// set child ID to root value found by graph...
 			dend[i] = childRootDT->getKey();
 		} else {
-			static bool warned = false;
-			if(!warned) {
-				printf("warning: dend has values that don't exist in the volume data.\n");
-				warned = true;
-			}
+			++numBadSegValues;
 		}
         }
+
+	if(0 != numBadSegValues){
+		printf("warning: dend has %d values that don't exist in the volume data.\n", numBadSegValues);
+	}
 
 	delete mGraph;
 }
