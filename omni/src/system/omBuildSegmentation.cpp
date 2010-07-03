@@ -1,15 +1,16 @@
-#include "system/omBuildSegmentation.h"
-#include "utility/omImageDataIo.h"
-#include "project/omProject.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
-#include "utility/stringHelpers.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
-#include "volume/omSegmentation.h"
+#include "project/omProject.h"
 #include "segment/lowLevel/DynamicTreeContainer.h"
 #include "segment/omSegmentCache.h"
+#include "system/events/omSegmentEvent.h"
+#include "system/omBuildSegmentation.h"
+#include "system/omEventManager.h"
+#include "utility/omImageDataIo.h"
+#include "utility/stringHelpers.h"
+#include "utility/stringHelpers.h"
+#include "volume/omSegmentation.h"
 
 #include <QTextStream>
 
@@ -70,10 +71,10 @@ void OmBuildSegmentation::do_build_seg_image()
 
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
+	stopTiming(type);
+
 	loadDendrogram();
 	mSeg->GetSegmentCache()->refreshTree();
-
-	stopTiming(type);
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()
@@ -114,7 +115,9 @@ void OmBuildSegmentation::doLoadDendrogram()
                 return;
         } 
 	Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
-	printf("\tdendrogram is %d x %d\n", dSize.x, dSize.y);
+	printf("\tdendrogram is %s x %s\n", 
+	       qPrintable(StringHelpers::commaDeliminateNumber(dSize.x)), 
+	       qPrintable(StringHelpers::commaDeliminateNumber(dSize.y)));
 	int dendSize;
 	OmDataWrapperPtr dend = hdf5reader->dataset_raw_read(fpath, &dendSize);
 
@@ -126,7 +129,9 @@ void OmBuildSegmentation::doLoadDendrogram()
       	Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
 	int dendValuesSize;
 	OmDataWrapperPtr dendValues = hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
-	printf("\tdendrogram values is %d x %d\n", vSize.x, vSize.y);
+	printf("\tdendrogram values is %s x %s\n", 
+	       qPrintable(StringHelpers::commaDeliminateNumber(vSize.x)), 
+	       qPrintable(StringHelpers::commaDeliminateNumber(vSize.y)));
 
 	assert( 2 == dSize.x );
 	assert( 0 == vSize.y );

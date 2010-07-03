@@ -1,4 +1,4 @@
-#include "stringHelpers.h"
+#include "utility/stringHelpers.h"
 
 static const int numOfItemsToAddBeforeLinebreak = 8;
 
