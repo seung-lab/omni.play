@@ -2,11 +2,11 @@
 #define SHOW_VALIDATED_BUTTON_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/validationGroup.h"
 
-class ShowValidatedButton : public OmButton<DendToolBar> {
+class ShowValidatedButton : public OmButton<ValidationGroup> {
  public:
-	ShowValidatedButton(DendToolBar *);
+	ShowValidatedButton(ValidationGroup *);
 
  private:
 	void doAction();

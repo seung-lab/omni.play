@@ -2,11 +2,11 @@
 #define GROUP_BUTTON_TAG_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/validationGroup.h"
 
-class GroupButtonTag : public OmButton<DendToolBar> {
+class GroupButtonTag : public OmButton<ValidationGroup> {
  public:
-	GroupButtonTag(DendToolBar *);
+	GroupButtonTag(ValidationGroup *);
 
  private:
 	void doAction();

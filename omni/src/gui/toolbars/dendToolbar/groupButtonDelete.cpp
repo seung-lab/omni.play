@@ -5,8 +5,8 @@
 #include "system/omEvents.h"
 #include "segment/omSegmentCache.h"
 
-GroupButtonDelete::GroupButtonDelete(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+GroupButtonDelete::GroupButtonDelete(ValidationGroup * d)
+	: OmButton<ValidationGroup>( d, 
 				 "Set Selection Not Valid", 
 				 "Unlock selected objects", 
 				 false)
@@ -15,7 +15,7 @@ GroupButtonDelete::GroupButtonDelete(DendToolBar * d)
 
 void GroupButtonDelete::doAction()
 {
-        debug("dendbar", "DendToolBar::deleteGroup\n");
+        debug("dendbar", "ValidationGroup::deleteGroup\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

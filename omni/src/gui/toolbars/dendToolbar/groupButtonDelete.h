@@ -2,11 +2,11 @@
 #define GROUP_BUTTON_DELETE_H
 
 #include "gui/widgets/omButton.h"
-#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "gui/toolbars/dendToolbar/validationGroup.h"
 
-class GroupButtonDelete : public OmButton<DendToolBar> {
+class GroupButtonDelete : public OmButton<ValidationGroup> {
  public:
-	GroupButtonDelete(DendToolBar *);
+	GroupButtonDelete(ValidationGroup *);
 
  private:
 	void doAction();

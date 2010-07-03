@@ -5,8 +5,8 @@
 #include "system/omEvents.h"
 #include "segment/omSegmentCache.h"
 
-GroupButtonTag::GroupButtonTag(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+GroupButtonTag::GroupButtonTag(ValidationGroup * d)
+	: OmButton<ValidationGroup>( d, 
 				 "Group As:", 
 				 "",
 				 false)
@@ -15,7 +15,7 @@ GroupButtonTag::GroupButtonTag(DendToolBar * d)
 
 void GroupButtonTag::doAction()
 {
-	debug("dendbar", "DendToolBar::specialGroupAdd\n");
+	debug("dendbar", "ValidationGroup::specialGroupAdd\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

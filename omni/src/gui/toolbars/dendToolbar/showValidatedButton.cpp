@@ -4,8 +4,8 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 
-ShowValidatedButton::ShowValidatedButton(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+ShowValidatedButton::ShowValidatedButton(ValidationGroup * d)
+	: OmButton<ValidationGroup>( d, 
 				 "Show Validated", 
 				 "Validated object mode", 
 				 true)

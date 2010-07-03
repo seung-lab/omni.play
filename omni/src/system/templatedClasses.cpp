@@ -25,6 +25,7 @@
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/mainwindow.h"
 #include <QWidget>
+#include "gui/toolbars/dendToolbar/validationGroup.h"
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
@@ -56,3 +57,4 @@ template class OmButton<DendToolBar>;
 template class OmButton<MainToolbar>;
 template class OmButton<MainWindow>;
 template class OmButton<QWidget>;
+template class OmButton<ValidationGroup>;

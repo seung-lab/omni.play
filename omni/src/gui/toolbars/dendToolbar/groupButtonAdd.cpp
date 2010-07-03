@@ -5,8 +5,8 @@
 #include "system/omEvents.h"
 #include "segment/omSegmentCache.h"
 
-GroupButtonAdd::GroupButtonAdd(DendToolBar * d)
-	: OmButton<DendToolBar>( d, 
+GroupButtonAdd::GroupButtonAdd(ValidationGroup * d)
+	: OmButton<ValidationGroup>( d, 
 				 "Set Selection Valid", 
 				 "Locking selected objects", 
 				 false)
@@ -15,7 +15,7 @@ GroupButtonAdd::GroupButtonAdd(DendToolBar * d)
 
 void GroupButtonAdd::doAction()
 {
-	debug("dendbar", "DendToolBar::addGroup\n");
+	debug("dendbar", "ValidationGroup::addGroup\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;
