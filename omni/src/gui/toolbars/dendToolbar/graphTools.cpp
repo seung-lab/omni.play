@@ -16,12 +16,24 @@ GraphTools::GraphTools(DendToolBar * d)
 	, splitButton(new SplitButton(this))
 {
 	QVBoxLayout* box = new QVBoxLayout(this);
-	box->addWidget(new ThresholdGroup(this));
+	box->addWidget(thresholdBox());
 	box->addWidget(new JoinButton(this));
 	box->addWidget(splitButton);
 	//	box->addWidget(autoBreakCheckbox);
 	autoBreakCheckbox->hide();
 	box->addWidget(new BreakButton(this));
+}
+
+QWidget* GraphTools::thresholdBox()
+{
+	QGroupBox* widget = new QGroupBox("Overall Threshold", this);
+	ThresholdGroup* thresholdBox = new ThresholdGroup(this);
+
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(thresholdBox);
+	widget->setLayout(layout);
+	
+	return widget;
 }
 
 void GraphTools::SetSplittingOff()

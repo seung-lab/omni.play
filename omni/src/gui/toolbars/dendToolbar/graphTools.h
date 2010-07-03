@@ -23,6 +23,9 @@ class GraphTools : public QGroupBox {
 	DendToolBar *const mParent;
 	AutoBreakCheckbox * autoBreakCheckbox;
 	SplitButton * splitButton;
+
+	QWidget* thresholdBox();
+
 };
 
 #endif

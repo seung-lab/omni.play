@@ -4,7 +4,7 @@
 #include "system/viewGroup/omViewGroupState.h"
 
 BreakThresholdGroup::BreakThresholdGroup(GraphTools * d)
-	: OmThresholdGroup(d)
+	: OmThresholdGroup(d, false)
 	, mParent(d)
 {
 	setSingleStep(0.02);

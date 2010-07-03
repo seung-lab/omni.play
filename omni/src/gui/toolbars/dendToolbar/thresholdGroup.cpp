@@ -6,7 +6,7 @@
 #include "volume/omSegmentation.h"
 
 ThresholdGroup::ThresholdGroup(GraphTools * d)
-	: OmThresholdGroup(d)
+	: OmThresholdGroup(d, false)
 	, mParent(d)
 {
 	setSingleStep(0.02);

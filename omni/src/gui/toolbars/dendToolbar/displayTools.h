@@ -17,6 +17,8 @@ class DisplayTools : public QGroupBox {
 
  private:
 	DendToolBar *const mParent;
+
+	QWidget* thresholdBox();
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include <limits>
 
 Dust3DThresholdGroup::Dust3DThresholdGroup(DisplayTools * d)
-	: OmThresholdGroup(d)
+	: OmThresholdGroup(d, true)
 	, mParent(d)
 {
 	setSingleStep(5);

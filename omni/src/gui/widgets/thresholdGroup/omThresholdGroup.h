@@ -3,17 +3,15 @@
 
 #include <QtGui>
 
-class GraphTools;
-
 class OmThresholdGroup : public QDoubleSpinBox {
  Q_OBJECT 
  public:
-	OmThresholdGroup(QWidget *);
+	OmThresholdGroup(QWidget *, const bool updateAsType);
 
 	void updateGui();
 
  private slots:
-	void thresholdChanged(const double valueFromGUI);
+	void thresholdChanged();
 
  protected:
 	double getGUIvalue();

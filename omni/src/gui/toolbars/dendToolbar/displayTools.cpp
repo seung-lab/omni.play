@@ -10,7 +10,19 @@ DisplayTools::DisplayTools(DendToolBar * d)
 	, mParent(d)
 {
 	QVBoxLayout* box = new QVBoxLayout(this);
-	box->addWidget(new Dust3DThresholdGroup(this));
+	box->addWidget(thresholdBox());
+}
+
+QWidget* DisplayTools::thresholdBox()
+{
+	QGroupBox* widget = new QGroupBox("3D Dust Threshold", this);
+	Dust3DThresholdGroup* thresholdBox = new Dust3DThresholdGroup(this);
+
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(thresholdBox);
+	widget->setLayout(layout);
+	
+	return widget;
 }
 
 OmViewGroupState * DisplayTools::getViewGroupState()
