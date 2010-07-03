@@ -5,6 +5,7 @@
 
 #include <QtGui>
 
+class AutoBreakCheckbox;
 class MainWindow;
 class OmViewGroupState;
 class SegmentationDataWrapper;
@@ -23,9 +24,6 @@ class DendToolBar : public QToolBar {
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	static bool GetShowGroupsMode();
 	
- private slots:
-	void autoBreakChecked();
-
  private:
 	MainWindow * mMainWindow;
 	OmViewGroupState * mViewGroupState;
@@ -34,7 +32,7 @@ class DendToolBar : public QToolBar {
 
 	void addToolbars();
 
-	QCheckBox * autoBreakCheckbox;
+	AutoBreakCheckbox * autoBreakCheckbox;
 	QLabel * thresholdLabel;
 };
 

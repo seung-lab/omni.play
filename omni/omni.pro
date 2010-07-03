@@ -121,10 +121,12 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/mainToolbar/toolButton.h \
            src/gui/toolbars/mainToolbar/refreshVolumeButton.h \
            src/gui/toolbars/mainToolbar/volumeComboBoxes.h \
+           src/gui/toolbars/dendToolbar/autoBreakCheckbox.h \
            src/gui/toolbars/toolbarManager.h \
            src/gui/viewGroup.h \
            src/gui/viewGroupWidgetInfo.h \
            src/gui/widgets/omButton.h \
+           src/gui/widgets/omCheckBox.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/thresholdGroup/omThresholdGroup.h \
@@ -302,6 +304,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/breakThresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/thresholdGroup.cpp \
+           src/gui/toolbars/dendToolbar/autoBreakCheckbox.cpp \
            src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
@@ -313,6 +316,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/viewGroup.cpp \
            src/gui/widgets/omButton.cpp \
+           src/gui/widgets/omCheckBox.cpp \
            src/gui/widgets/omGroupListWidget.cpp \
            src/gui/widgets/omSegmentListWidget.cpp \
            src/mesh/meshingChunkThread.cpp \

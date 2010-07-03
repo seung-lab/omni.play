@@ -3,6 +3,8 @@
 
 #include "gui/widgets/omButton.h"
 
+class MainWindow;
+
 class VolumeRefreshButton : public OmButton<MainWindow> {
 
  public:

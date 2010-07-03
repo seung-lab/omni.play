@@ -27,6 +27,8 @@
 #include <QWidget>
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 
+#include "gui/widgets/omCheckbox.cpp"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
@@ -58,3 +60,5 @@ template class OmButton<MainToolbar>;
 template class OmButton<MainWindow>;
 template class OmButton<QWidget>;
 template class OmButton<ValidationGroup>;
+
+template class OmCheckBox<DendToolBar>;

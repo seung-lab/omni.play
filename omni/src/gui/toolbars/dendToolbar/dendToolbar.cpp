@@ -1,4 +1,5 @@
 #include "gui/mainwindow.h"
+#include "gui/toolbars/dendToolbar/autoBreakCheckbox.h"
 #include "gui/toolbars/dendToolbar/breakButton.h"
 #include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
@@ -6,13 +7,9 @@
 #include "gui/toolbars/dendToolbar/joinButton.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
-#include "segment/omSegmentCache.h"
-#include "system/omEvents.h"
-#include "system/omProjectData.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
+#include "system/omEvents.h"
+#include "utility/dataWrappers.h"
 
 DendToolBar::DendToolBar( MainWindow * mw )
 	: QToolBar("Dend", mw)
@@ -33,11 +30,7 @@ SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 
 void DendToolBar::addToolbars()
 {
-	autoBreakCheckbox = new QCheckBox(mMainWindow);
-	autoBreakCheckbox->setText(tr("Show Breaks"));
-	autoBreakCheckbox->setChecked(true);
-        connect(autoBreakCheckbox, SIGNAL(stateChanged(int)),
-                this, SLOT(autoBreakChecked()));
+	autoBreakCheckbox = new AutoBreakCheckbox(this);
 
 	splitButton = new SplitButton(this);
 	QGroupBox* firstBox = new QGroupBox(this);
@@ -70,10 +63,4 @@ void DendToolBar::updateGui()
 void DendToolBar::SetSplittingOff()
 {
 	splitButton->setChecked(false);
-}
-
-void DendToolBar::autoBreakChecked()
-{
-	debug("dendbar", "DendToolBar::autoBreakChecked\n");
-	mViewGroupState->SetBreakOnSplitMode(autoBreakCheckbox->isChecked());
 }

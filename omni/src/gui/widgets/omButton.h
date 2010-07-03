@@ -2,13 +2,12 @@
 #define OM_BUTTON_H
 
 #include <QtGui>
-class MainWindow;
 
 template < class T >
 class OmButton : public QPushButton {
  public:
 	OmButton( T *, const QString &, 
-		    const QString &, const bool );
+		  const QString &, const bool );
 
 	void setKeyboardShortcut(const QString & shortcut);
 	void setIconAndText(const QString & iconPath);
