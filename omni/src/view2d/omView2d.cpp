@@ -1,22 +1,23 @@
-#include "drawable.h"
-#include "omView2d.h"
+#include "gui/widgets/omCursors.h"
 #include "project/omProject.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/actions/omSegmentEditor.h"
-#include "segment/omSegmentSelector.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
+#include "view2d/drawable.h"
 #include "view2d/omCachingThreadedCachingTile.h"
+#include "view2d/omView2d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-#include "utility/dataWrappers.h"
 
 static QGLWidget *sharedwidget = NULL;
 
@@ -969,4 +970,9 @@ bool OmView2d::doDisplayInformation()
 QSize OmView2d::sizeHint () const
 {
 	return OmStateManager::getViewBoxSizeHint();
+}
+
+void OmView2d::ToolModeChangeEvent()
+{
+	OmCursors::setToolCursor(this);
 }

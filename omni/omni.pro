@@ -85,6 +85,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
            src/gui/widgets/omSegmentContextMenu.h \
+           src/gui/widgets/omCursors.h \
            src/gui/preferences/localPreferences2d.h \
            src/gui/preferences/localPreferences3d.h \
            src/gui/preferences/localPreferencesMeshing.h \
@@ -131,7 +132,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omCheckBox.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
-           src/gui/widgets/thresholdGroup/omThresholdGroup.h \
+           src/gui/widgets/omThresholdGroup.h \
            src/mesh/meshingChunkThread.h \
            src/mesh/meshingChunkThreadManager.h \
            src/mesh/meshingManager.h \
@@ -280,7 +281,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/widgets/omSegmentContextMenu.cpp \
-           src/gui/widgets/thresholdGroup/omThresholdGroup.cpp \
+           src/gui/widgets/omCursors.cpp \
+           src/gui/widgets/omThresholdGroup.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \
            src/gui/preferences/localPreferencesMeshing.cpp \

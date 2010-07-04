@@ -1,7 +1,7 @@
 #ifndef DUST_3D_THRESHOLD_GROUP_H
 #define DUST_3D_THRESHOLD_GROUP_H
 
-#include "gui/widgets/thresholdGroup/omThresholdGroup.h"
+#include "gui/widgets/omThresholdGroup.h"
 class DisplayTools;
 
 class Dust3DThresholdGroup : public OmThresholdGroup {

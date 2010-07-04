@@ -14,8 +14,9 @@ class ToolButton : public OmButton<QWidget> {
 
 	OmToolMode getToolMode(){ return mTool; }
  private:
-	void doAction();
 	OmToolMode mTool;
+		  
+	void doAction();
 };
 
 #endif

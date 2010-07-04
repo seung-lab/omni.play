@@ -10,6 +10,7 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omVoxelEvent.h"
+#include "system/events/omToolModeEvent.h"
 #include "view2d/omView2dImpl.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 
@@ -27,8 +28,8 @@ class OmView2d :
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
 	public OmViewEventListener,
-	public OmVoxelEventListener
-	
+	public OmVoxelEventListener,
+	public OmToolModeEventListener
 {
 	Q_OBJECT
 	
@@ -231,7 +232,8 @@ private:
 
 	OmSegmentContextMenu mSegmentContextMenu;
 	void mouseShowSegmentContextMenu(QMouseEvent * event);
-
+	
+	void ToolModeChangeEvent();
 
 #ifdef WIN32
 	typedef void (*GLCOLOR)(GLfloat, GLfloat, GLfloat, GLfloat);

@@ -1,7 +1,7 @@
 #ifndef BREAK_THRESHOLD_GROUP_H
 #define BREAK_THRESHOLD_GROUP_H
 
-#include "gui/widgets/thresholdGroup/omThresholdGroup.h"
+#include "gui/widgets/omThresholdGroup.h"
 class GraphTools;
 
 class BreakThresholdGroup : public OmThresholdGroup {

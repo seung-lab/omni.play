@@ -1,5 +1,6 @@
 #include "common/omDebug.h"
-#include "gui/widgets/thresholdGroup/omThresholdGroup.h"
+#include "gui/widgets/omCursors.h"
+#include "gui/widgets/omThresholdGroup.h"
 #include "system/omEvents.h"
 
 OmThresholdGroup::OmThresholdGroup(QWidget * d, const bool updateAsType)
@@ -17,11 +18,11 @@ OmThresholdGroup::OmThresholdGroup(QWidget * d, const bool updateAsType)
 void OmThresholdGroup::thresholdChanged()
 {
 	debug("dendbar", "OmThresholdGroup::thresholdChanged\n");
-	
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	OmBusyCursorWrapper busyCursorWrapper();
+
 	actUponThresholdChange(getGUIvalue());
 	updateGui();
-	QApplication::restoreOverrideCursor();
 }
 
 void OmThresholdGroup::updateGui()

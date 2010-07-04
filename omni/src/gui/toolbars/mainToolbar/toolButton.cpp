@@ -21,4 +21,3 @@ void ToolButton::doAction()
 {
 	OmStateManager::SetToolModeAndSendEvent(mTool);
 }
-
