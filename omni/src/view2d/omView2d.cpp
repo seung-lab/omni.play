@@ -131,6 +131,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 #endif
 	
 	resetWindowState();
+	OmCursors::setToolCursor(this);
 }
 
 OmView2d::~OmView2d()
