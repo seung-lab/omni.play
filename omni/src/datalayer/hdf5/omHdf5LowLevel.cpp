@@ -647,7 +647,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 
 	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
 		if(H5T_FLOAT == H5Tget_class( dstype )) {
-			printf("\timporting float data; scalling by 255\n");
+			printf("\timporting float data; scaling by 255\n");
 			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
 			ret = H5Dread(dataset_id, H5T_NATIVE_FLOAT, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 				      myImageData->GetScalarPointer());

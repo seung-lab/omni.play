@@ -770,7 +770,7 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
-	printf("\timporting data...");
+	printf("\timporting data...\n");
 	fflush(stdout);
 
 	//for all coords
