@@ -28,7 +28,7 @@ class DynamicTreeContainer {
 	void growIfNeeded(const quint32 size);
 	
  private:
-	const quint32 mSize;
+	quint32 mSize;
 	std::vector<DynamicTree<T>*> mNodeArray;
 };
 

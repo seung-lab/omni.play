@@ -14,5 +14,6 @@ void DynamicTreeContainer<T>::growIfNeeded(const quint32 size)
 
 	if(size > mSize){
 		mNodeArray.resize( size, NULL );
+		mSize = size;
 	}
 }
