@@ -71,7 +71,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	GuiUtils::autoResizeColumnWidths(this, 3);
 
 	if (doScrollToSelectedSegment && rowToJumpTo != NULL) {
-		scrollToItem(rowToJumpTo, QAbstractItemView::PositionAtCenter);
+		scrollToItem(rowToJumpTo);
 	}
 
 	setUpdatesEnabled( true);

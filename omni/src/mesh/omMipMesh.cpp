@@ -312,7 +312,7 @@ bool OmMipMesh::Draw(bool doCreateVbo)
                      GL_UNSIGNED_INT,	//type
                      (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
     }
-    printf("strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
+    debug("tri","strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
     debug("elements", "done drawing %i elements\n", mStripCount);
 
     //disable client state
