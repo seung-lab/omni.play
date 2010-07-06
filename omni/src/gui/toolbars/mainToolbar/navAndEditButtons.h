@@ -15,6 +15,7 @@ class NavAndEditButtons : public QWidget {
 	void addTheButtons();
 	void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
 	void setModifyWidgetsEnabled(const bool toBeEnabled);
+	void setTool(const OmToolMode tool);
 
  private:
 	MainWindow * mMainWindow;

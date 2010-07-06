@@ -90,3 +90,20 @@ void NavAndEditButtonGroup::setModifyWidgetsEnabled(const bool toBeEnabled)
 		button->setEnabled(toBeEnabled);
 	}
 }
+
+void NavAndEditButtonGroup::setTool(const OmToolMode tool)
+{
+	int id = 0;
+
+	if(mNavToolIDsByToolType.contains(tool)){
+		id = mNavToolIDsByToolType.value(tool);
+	} else if(mModifyToolIDsByToolType.contains(tool)){
+		id = mModifyToolIDsByToolType.value(tool);
+	} else {
+		assert(0 && "tool not found!");
+	}
+
+	ToolButton * button = mAllToolsByID.value(id);
+	button->setChecked(true);
+	makeToolActive(button);
+}

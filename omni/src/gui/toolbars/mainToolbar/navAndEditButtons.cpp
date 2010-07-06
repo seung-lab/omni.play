@@ -31,3 +31,8 @@ void NavAndEditButtons::setModifyWidgetsEnabled(const bool toBeEnabled)
 {
 	mButtonGroup->setModifyWidgetsEnabled(toBeEnabled);
 }
+
+void NavAndEditButtons::setTool(const OmToolMode tool)
+{
+	mButtonGroup->setTool(tool);
+}

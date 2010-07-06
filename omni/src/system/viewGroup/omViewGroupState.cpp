@@ -435,3 +435,8 @@ bool OmViewGroupState::shouldVolumeBeShownBroken()
 {
 	return mShatter || (mShowSplit && mBreakOnSplit);
 }
+
+void OmViewGroupState::setTool(const OmToolMode tool)
+{
+	mToolBarManager->setTool(tool);
+}

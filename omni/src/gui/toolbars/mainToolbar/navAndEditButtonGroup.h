@@ -14,6 +14,7 @@ class NavAndEditButtonGroup : public QButtonGroup {
 
 	void setReadOnlyWidgetsEnabled(const bool toBeEnabled);
 	void setModifyWidgetsEnabled(const bool toBeEnabled);
+	void setTool(const OmToolMode tool);
 
  private slots:
 	void buttonWasClicked(const int id);

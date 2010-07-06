@@ -69,3 +69,8 @@ void MainToolbar::updateToolbar()
 	setReadOnlyWidgetsEnabled();
 	setModifyWidgetsEnabled();
 }
+
+void MainToolbar::setTool(const OmToolMode tool)
+{
+	buttons->setTool(tool);
+}

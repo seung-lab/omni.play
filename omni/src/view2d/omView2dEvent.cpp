@@ -62,7 +62,7 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 
 	SetDepth(event);
 
-	OmStateManager::SetToolModeAndSendEvent(PAN_MODE);
+	mViewGroupState->setTool(PAN_MODE);
 }
 
 DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event)

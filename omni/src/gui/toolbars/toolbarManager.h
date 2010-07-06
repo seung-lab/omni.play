@@ -1,6 +1,8 @@
 #ifndef TOOLBAR_MANAGER_H
 #define TOOLBAR_MANAGER_H
 
+#include "common/omCommon.h"
+
 #include <QtGui>
 
 class MainWindow;
@@ -19,6 +21,7 @@ class ToolBarManager : public QWidget
 	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
 
 	void SetSplittingOff();
+	void setTool(const OmToolMode tool);
 
  private:
 	MainWindow * mMainWindow;

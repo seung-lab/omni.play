@@ -20,7 +20,8 @@ class MainToolbar : public QWidget {
 	MainToolbar( MainWindow * mw );
 
 	void updateToolbar();
-
+	void setTool(const OmToolMode tool);
+	
  private:
 	MainWindow *const mMainWindow;
 

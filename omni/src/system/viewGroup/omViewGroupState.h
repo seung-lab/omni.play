@@ -74,6 +74,8 @@ class OmViewGroupState : public OmManageableObject {
 	void SetShowSplitMode(bool mode);
 	bool shouldVolumeBeShownBroken();
 
+	void setTool(const OmToolMode tool);
+
  private:
 	QMutex mColorCacheMapLock;
 

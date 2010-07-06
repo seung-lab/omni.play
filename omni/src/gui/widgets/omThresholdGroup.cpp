@@ -8,10 +8,12 @@ OmThresholdGroup::OmThresholdGroup(QWidget * d, const bool updateAsType)
 {
 	if(updateAsType){
 		connect(this, SIGNAL(valueChanged(double)), 
-			this, SLOT(thresholdChanged()));
+			this, SLOT(thresholdChanged()),
+			Qt::DirectConnection );
 	} else {
-	connect(this, SIGNAL(editingFinished()), 
-		this, SLOT(thresholdChanged()));
+		connect(this, SIGNAL(editingFinished()), 
+			this, SLOT(thresholdChanged()),
+			Qt::DirectConnection );
 	}
 }
 
