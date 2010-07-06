@@ -1,6 +1,8 @@
 #ifndef OM_BUILD_VOLUMES_H
 #define OM_BUILD_VOLUMES_H
 
+#include "utility/omTimer.h"
+
 #include <QFileInfoList>
 #include <QString>
 #include <QThread>
@@ -25,9 +27,7 @@ class OmBuildVolumes
 	void readImages();
 
  private:
-	time_t time_start;
-	time_t time_end;
-	double time_dif;
+	OmTimer build_timer;
 
 	bool are_file_names_valid();
 };

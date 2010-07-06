@@ -173,7 +173,7 @@ const DataBbox & OmMipVolume::GetExtent()
 
 int OmMipVolume::GetChunkDimension()
 {
-	return OmVolume::GetChunkDimension();
+	return OmVolume:: GetChunkDimension();
 }
 
 Vector3 < int > OmMipVolume::GetChunkDimensions()
@@ -610,6 +610,7 @@ void OmMipVolume::Build(OmDataPath & dataset)
  */
 bool OmMipVolume::BuildVolume()
 {
+
 	//debug("FIXME", << "OmMipVolume::BuildVolume()" << endl;
 	//init progress bar
 	int prog_count = 0;
@@ -617,6 +618,19 @@ bool OmMipVolume::BuildVolume()
 	    PostEvent(new
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
 				      MipChunksInVolume()));
+
+	if (isDebugCategoryEnabled("perftest")){
+
+			//timer start
+			mip_timer.start();
+			chunk_total = 0;
+			chunk_timer.stop();
+			segchunk_total = 0;
+			segchunk_timer.stop();
+			subsmp_total = 0;
+			subsmp_timer.stop();
+
+	}
 
 	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
@@ -650,6 +664,26 @@ bool OmMipVolume::BuildVolume()
 		printf("done\n");
 	}
 
+	if (isDebugCategoryEnabled("perftest")){
+
+		//timer end
+		mip_timer.stop();
+
+		double extratime;
+
+		if (segchunk_total > 0 ){
+			extratime = segchunk_total - chunk_total;
+		} else {
+			extratime = 0;
+		}
+
+		printf("OmMipVolume:BuildVolume() done : %.6f secs\n",mip_timer.s_elapsed());
+		printf("OmMipVolume:BuildChunk() total time: %.6f secs\n",chunk_total);
+		printf("OmMipVolume:SubsampleImageData() total time: %.6f secs\n",subsmp_total);
+		printf("OmSegmentation:BuildChunk() extra time: %.6f secs\n",extratime);
+
+	}
+
 	//hide progress bar
 	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 	return true;
@@ -661,6 +695,10 @@ bool OmMipVolume::BuildVolume()
  */
 void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 {
+	//timer start
+	if (isDebugCategoryEnabled("perftest"))
+	    chunk_timer.start();
+
 	//debug("genone","OmMipVolume::BuildChunk()\n");
 
 	//leaf chunks are skipped since no children to build from
@@ -685,6 +723,10 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	//subsample
 	vtkImageData *p_subsampled_data = NULL;
 
+	//subsample timer start
+	if (isDebugCategoryEnabled("perftest"))
+	    subsmp_timer.start();
+
 	//switch on scalar type
 	switch (GetBytesPerSample()) {
 	case 1:
@@ -697,12 +739,21 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 		assert(false);
 	}
 
+	//subsample timer end
+	if (isDebugCategoryEnabled("perftest"))
+		subsmp_total += subsmp_timer.s_elapsed();
+
 	//set or replace image data (chunk now owns pointer)
 	p_chunk->SetImageData(p_subsampled_data);
 
 	//delete source data
 	p_source_data->Delete();
 	p_source_data = NULL;
+
+	//timer end
+	if (isDebugCategoryEnabled("perftest"))
+		chunk_total += chunk_timer.s_elapsed();
+
 }
 
 /*
@@ -748,6 +799,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 
 	//edited chunks clean
 	mEditedLeafChunks.clear();
+	
 }
 
 /////////////////////////////////
@@ -772,6 +824,10 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 
 	printf("\timporting data...\n");
 	fflush(stdout);
+
+	//timer start
+	OmTimer import_timer;
+	import_timer.start();
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
@@ -811,9 +867,12 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 		}
 	}
 
+	//timer end
+	import_timer.stop();
+
 	//hide progress bar
 	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
-	printf("done\n");
+	printf("done in %.6f\n",import_timer.s_elapsed());
 	return true;
 }
 

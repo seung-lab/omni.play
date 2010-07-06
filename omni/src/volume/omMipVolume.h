@@ -14,6 +14,7 @@ class OmVolume;
 #include "system/omThreadedCache.h"
 #include "datalayer/omDataPath.h"
 #include "common/omStd.h"
+#include "utility/omTimer.h"
 
 #include <QFileInfo>
 
@@ -29,9 +30,9 @@ typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;
 class OmMipVolume : public OmVolume, public MipChunkThreadedCache {
 	
 public:
-	OmMipVolume();
+        OmMipVolume();
 	~OmMipVolume();
-	
+
 	void Flush();
 	void PrepareForCompleteDelete();
 
@@ -111,6 +112,17 @@ public:
 	//Simple Chunk Stuff
 	OmSimpleChunkThreadedCache* GetSimpleChunkThreadedCache();
 
+	//timer variables
+	OmTimer mip_timer;
+
+	OmTimer chunk_timer;
+	double chunk_total;
+
+	OmTimer segchunk_timer;
+	double segchunk_total;
+
+	OmTimer subsmp_timer;
+	double subsmp_total;
 	
 protected:		
 	//state

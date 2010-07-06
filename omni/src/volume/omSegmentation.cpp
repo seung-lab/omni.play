@@ -256,6 +256,9 @@ void OmSegmentation::BuildMeshDataInternal()
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 {
+	//timer start
+	segchunk_timer.start();
+
 	//build chunk volume data
 	OmMipVolume::BuildChunk(mipCoord);
 
@@ -296,6 +299,9 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
 	}
+
+	//timer end
+	segchunk_total += segchunk_timer.s_elapsed();
 
 }
 

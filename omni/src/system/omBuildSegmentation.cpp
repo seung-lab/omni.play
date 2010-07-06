@@ -95,9 +95,13 @@ void OmBuildSegmentation::loadDendrogram()
 		printf("************\n");
 		return;
 	}
-	startTiming(type);
+
+	OmTimer dendro_timer;
+
+	dendro_timer.start();
 	doLoadDendrogram();
-	stopTiming(type);
+	dendro_timer.stop();
+	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), dendro_timer.s_elapsed());
 }
 
 void OmBuildSegmentation::doLoadDendrogram()
