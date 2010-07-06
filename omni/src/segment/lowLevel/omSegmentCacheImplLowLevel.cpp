@@ -51,7 +51,7 @@ bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID val
 
 OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value ) 
 {
-	return mSegments->GetSegmentFromValue( value );
+	return mSegments->GetItemFromValue( value );
 }
 
 OmSegID OmSegmentCacheImplLowLevel::GetNumSegments()

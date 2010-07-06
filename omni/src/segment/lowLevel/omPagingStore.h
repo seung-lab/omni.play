@@ -5,9 +5,7 @@
 
 #include <QSet>
 
-// TODO: this was done as proof-of-concept; not sure how much slower 
-//  struct constructor is compared to simple int POD... (purcaro)
-BOOST_STRONG_TYPEDEF(quint32, PageNum )
+typedef quint32 PageNum;
 
 class OmSegmentation;
 class OmSegmentCache;
@@ -25,29 +23,31 @@ class OmPagingStore {
 	bool IsValueAlreadyMapped( const OmSegID );
 
 	void SaveAllLoadedPages();
-	void SaveDirtySegmentPages();
+	void SaveDirtyPages();
 	void AddToDirtyList( const OmSegID );
 	void FlushDirtyItems();
 	void SetBatchMode( const bool );
 
-	T* GetSegmentFromValue(const OmSegID value );
+	T* GetItemFromValue(const OmSegID value );
 
  private:
-	OmSegmentation * mSegmentation;
-	OmSegmentCache * mParentCache;
+	OmSegmentation *const mSegmentation;
+	OmSegmentCache *const mParentCache;
 
 	quint32 mPageSize;
-	boost::unordered_map< PageNum, std::vector<T*> > mValueToSegPtrHash;
+	std::vector< std::vector<T*> > mValueToSegPtr;
 	QSet< PageNum > validPageNumbers;
 	QSet< PageNum > loadedPageNumbers;
-	QSet< PageNum > dirtySegmentPages;
-	PageNum getValuePageNum( const OmSegID value );
-	void LoadValuePage( const PageNum valuePageNum );
-	void doSaveSegmentPage( const PageNum segPageNum );
+	QSet< PageNum > dirtyPages;
 	bool mAllPagesLoaded;
 
 	bool amInBatchMode;
 	bool needToFlush;
+
+	PageNum getValuePageNum( const OmSegID value );
+	void resizeVectorIfNeeded(const PageNum pageNum );
+	void LoadValuePage( const PageNum valuePageNum );
+	void doSavePage( const PageNum segPageNum );
 
 	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingStore<T2> & ps );
 	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingStore<T2> & ps );
