@@ -18,7 +18,7 @@
 #include "segment/lowLevel/DynamicTreeContainer.cpp"
 #include "system/omGroup.h"
 
-#include "segment/lowLevel/omPagingStore.cpp"
+#include "segment/lowLevel/omPagingPtrStore.cpp"
 
 #include "gui/widgets/omButton.cpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
@@ -55,7 +55,7 @@ template class OmGenericManager< OmGroup >;
 template class DynamicTree<OmId>;
 template class DynamicTreeContainer<OmId>;
 
-template class OmPagingStore<OmSegment>;
+template class OmPagingPtrStore<OmSegment>;
 
 template class OmButton<DendToolBar>;
 template class OmButton<MainToolbar>;

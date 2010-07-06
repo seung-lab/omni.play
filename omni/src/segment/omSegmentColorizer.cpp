@@ -31,8 +31,8 @@ void OmSegmentColorizer::setup()
 		return;
 	}
 
-	mSize = curSize;
 	mColorCache.resize(mSize);
+	mSize = curSize;
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
@@ -50,7 +50,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 
 	int offset = 0;
-	OmColor newcolor = {0, 0, 0};
+	OmColor newcolor = blackColor;
 	OmSegID lastVal = 0;
 	OmSegID val;
 

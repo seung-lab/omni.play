@@ -1,4 +1,4 @@
-#include "segment/lowLevel/omPagingStore.h"
+#include "segment/lowLevel/omPagingPtrStore.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataPath.h"
@@ -9,7 +9,7 @@ static const quint32 DEFAULT_PAGE_SIZE = 100000;
 static const quint32 DEFAULT_VECTOR_SIZE = DEFAULT_PAGE_SIZE;
 
 template< class T >
-OmPagingStore<T>::OmPagingStore(OmSegmentation * segmentation, OmSegmentCache * cache)
+OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation, OmSegmentCache * cache)
 	: mSegmentation(segmentation)
 	, mParentCache(cache)
 	, mPageSize(DEFAULT_PAGE_SIZE)
@@ -21,7 +21,7 @@ OmPagingStore<T>::OmPagingStore(OmSegmentation * segmentation, OmSegmentCache * 
 }
 
 template< class T >
-OmPagingStore<T>::~OmPagingStore()
+OmPagingPtrStore<T>::~OmPagingPtrStore()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
 		for( quint32 i = 0; i < mPageSize; ++i ){
@@ -31,7 +31,7 @@ OmPagingStore<T>::~OmPagingStore()
 }
 
 template< class T >
-void OmPagingStore<T>::SaveAllLoadedPages()
+void OmPagingPtrStore<T>::SaveAllLoadedPages()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
 		doSavePage( pageNum );
@@ -39,7 +39,7 @@ void OmPagingStore<T>::SaveAllLoadedPages()
 }
 
 template< class T >
-void OmPagingStore<T>::SaveDirtyPages()
+void OmPagingPtrStore<T>::SaveDirtyPages()
 {
 	foreach( const PageNum & pageNum, dirtyPages ){
 		doSavePage( pageNum );
@@ -48,7 +48,7 @@ void OmPagingStore<T>::SaveDirtyPages()
 }
 
 template< class T >
-void OmPagingStore<T>::doSavePage( const PageNum pageNum )
+void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 {
 	const std::vector<T*> & page = mValueToSegPtr[ pageNum ];
 	OmDataArchiveSegment::ArchiveWrite( OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
@@ -56,7 +56,7 @@ void OmPagingStore<T>::doSavePage( const PageNum pageNum )
 }
 
 template< class T >
-void OmPagingStore<T>::LoadValuePage( const PageNum pageNum )
+void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 {
 	resizeVectorIfNeeded(pageNum);
 
@@ -74,7 +74,7 @@ void OmPagingStore<T>::LoadValuePage( const PageNum pageNum )
 }
 
 template< class T >
-void OmPagingStore<T>::AddItem( T* item )
+void OmPagingPtrStore<T>::AddItem( T* item )
 {
 	const OmSegID value = item->getValue();
 
@@ -91,7 +91,7 @@ void OmPagingStore<T>::AddItem( T* item )
 }
 
 template< class T >
-bool OmPagingStore<T>::IsValueAlreadyMapped( const OmSegID value )
+bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 {
 	if (0 == value) {
 		return false;
@@ -115,7 +115,7 @@ bool OmPagingStore<T>::IsValueAlreadyMapped( const OmSegID value )
 }
 
 template< class T >
-void OmPagingStore<T>::AddToDirtyList( const OmSegID value )
+void OmPagingPtrStore<T>::AddToDirtyList( const OmSegID value )
 {
 	if( amInBatchMode ){
 		needToFlush = true;
@@ -125,7 +125,7 @@ void OmPagingStore<T>::AddToDirtyList( const OmSegID value )
 }
 
 template< class T >
-void OmPagingStore<T>::FlushDirtyItems()
+void OmPagingPtrStore<T>::FlushDirtyItems()
 {
 	if( amInBatchMode ){
 		if( !needToFlush ){
@@ -139,13 +139,13 @@ void OmPagingStore<T>::FlushDirtyItems()
 }
 
 template< class T >
-void OmPagingStore<T>::SetBatchMode( const bool batchMode )
+void OmPagingPtrStore<T>::SetBatchMode( const bool batchMode )
 {
 	amInBatchMode = batchMode;
 }
 
 template< class T >
-T* OmPagingStore<T>::GetItemFromValue(const OmSegID value ) 
+T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value ) 
 {
 	if( !mAllPagesLoaded ){
 		if ( !IsValueAlreadyMapped( value ) ){
@@ -156,13 +156,13 @@ T* OmPagingStore<T>::GetItemFromValue(const OmSegID value )
 }
 
 template< class T >
-PageNum OmPagingStore<T>::getValuePageNum( const OmSegID value )
+PageNum OmPagingPtrStore<T>::getValuePageNum( const OmSegID value )
 {
 	return PageNum(value / mPageSize);
 }
 
 template< class T >
-void OmPagingStore<T>::resizeVectorIfNeeded(const PageNum pageNum )
+void OmPagingPtrStore<T>::resizeVectorIfNeeded(const PageNum pageNum )
 {
 	if( pageNum >= mValueToSegPtr.size() ){
 		mValueToSegPtr.resize(pageNum*2);

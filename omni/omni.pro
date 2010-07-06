@@ -156,7 +156,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/voxel/omVoxelSetValueAction.h \
            src/segment/lowLevel/DynamicTree.h \
            src/segment/lowLevel/DynamicTreeContainer.h \
-           src/segment/lowLevel/omPagingStore.h \
+           src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
            src/segment/lowLevel/omSegmentGraph.h \
            src/segment/lowLevel/omSegmentIteratorLowLevel.h \
@@ -347,7 +347,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/actions/voxel/omVoxelSetValueAction.cpp \
            src/segment/lowLevel/DynamicTree.cpp \
            src/segment/lowLevel/DynamicTreeContainer.cpp \
-           src/segment/lowLevel/omPagingStore.cpp \
+           src/segment/lowLevel/omPagingPtrStore.cpp \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.cpp \
            src/segment/lowLevel/omSegmentGraph.cpp \
            src/segment/lowLevel/omSegmentIteratorLowLevel.cpp \

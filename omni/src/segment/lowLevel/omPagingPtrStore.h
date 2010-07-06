@@ -11,10 +11,10 @@ class OmSegmentation;
 class OmSegmentCache;
 
 template < class T >
-class OmPagingStore {
+class OmPagingPtrStore {
  public:
-	OmPagingStore( OmSegmentation *, OmSegmentCache *);
-	~OmPagingStore();
+	OmPagingPtrStore( OmSegmentation *, OmSegmentCache *);
+	~OmPagingPtrStore();
 
 	quint32 getPageSize() { return mPageSize; }
 	void SetSegmentationID( const OmId );
@@ -49,8 +49,8 @@ class OmPagingStore {
 	void LoadValuePage( const PageNum valuePageNum );
 	void doSavePage( const PageNum segPageNum );
 
-	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingStore<T2> & ps );
-	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingStore<T2> & ps );
+	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingPtrStore<T2> & ps );
+	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingPtrStore<T2> & ps );
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/lowLevel/omSegmentListByMRU.h"
-#include "segment/lowLevel/omPagingStore.h"
+#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 
@@ -62,7 +62,7 @@ class OmSegmentCacheImplLowLevel {
  protected:
 	OmSegmentation * mSegmentation;
 	OmSegmentCache * mParentCache;
-	OmPagingStore<OmSegment> * mSegments;
+	OmPagingPtrStore<OmSegment> * mSegments;
 
 	OmSegID mMaxValue;
 	OmSegID getNextValue();
