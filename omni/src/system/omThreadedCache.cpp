@@ -360,11 +360,10 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 
 			//add to access list
 			mKeyAccessList.push_front(fetch_key);
-			mCacheMutex.unlock();
-			
-			
 			//key has been fetched, so remove from currently fetching
 			mCurrentlyFetching.clear();
+
+			mCacheMutex.unlock();
 			
 			//send update if needed
 			if(FetchUpdateCheck()) {

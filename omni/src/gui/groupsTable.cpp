@@ -17,7 +17,6 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	mLayout->addWidget(mGroupsList,0,0,1,1);
 
 	mGroupsTable = new QTableWidget();
-	mGroupsTable->setRowCount(10000000);
 	mGroupsTable->setColumnCount(4);
 	mLayout->addWidget(mGroupsTable,0,1,1,1);
 
@@ -47,6 +46,7 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 	OmSegmentCache * cache = seg.GetSegmentCache();
 
 	const OmSegIDsSet & set = group.GetIDs();
+	mGroupsTable->setRowCount(set.size());
 	int count = 0;
 	foreach(OmSegID id, set) {
 		OmSegment * segment = cache->GetSegment(id);
