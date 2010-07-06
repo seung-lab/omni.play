@@ -18,7 +18,9 @@ OmSegmentCacheImpl::~OmSegmentCacheImpl()
 
 OmSegment* OmSegmentCacheImpl::AddSegment()
 {
-       return AddSegment( getNextValue() );
+	OmSegment * newSeg = AddSegment(getNextValue());
+	growGraphIfNeeded(newSeg);
+	return newSeg;
 }
 
 OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)

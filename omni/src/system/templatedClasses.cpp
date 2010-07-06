@@ -29,6 +29,7 @@
 
 #include "gui/widgets/omCheckbox.cpp"
 #include "gui/toolbars/dendToolbar/graphTools.h"
+#include "gui/inspectors/segInspector.h"
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
@@ -62,5 +63,7 @@ template class OmButton<MainWindow>;
 template class OmButton<QWidget>;
 template class OmButton<ValidationGroup>;
 template class OmButton<GraphTools>;
+template class OmButton<SegInspector>;
 
 template class OmCheckBox<GraphTools>;
+

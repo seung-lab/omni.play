@@ -50,7 +50,6 @@ class SegmentationDataWrapper
 	ObjectType getType(){ return mType; }
 	quint32 getMaxSegmentValue();
 	quint64 getSegmentListSize(OmSegIDRootType type);
-
  private:
 	OmId mID;
 	ObjectType mType;

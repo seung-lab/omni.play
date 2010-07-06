@@ -151,23 +151,8 @@ void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
 	segInspectorWidget = new SegInspector( sdw, this);
 	
-	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
-		segmentList, SLOT(rebuildSegmentList(OmId)));
-	
-	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
-		validList, SLOT(rebuildSegmentList(OmId)));
-	
-	connect(segInspectorWidget, SIGNAL(segmentationBuilt(OmId)), 
-		recentList, SLOT(rebuildSegmentList(OmId)));
-	
-	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
-		this, SLOT(addSegment()));
-	
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-	
-	connect(segInspectorWidget->addSegmentButton, SIGNAL(clicked()), 
-		this, SLOT(addSegment()));
 	
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
@@ -286,13 +271,11 @@ void MyInspectorWidget::refreshWidgetData()
 	recentList->populateSegmentElementsListWidget();
 }
 
-void MyInspectorWidget::addSegment()
+void MyInspectorWidget::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
 {
-	const OmId segmentationID = segInspectorWidget->getSegmentationID();
-	OmSegment * added_segment = OmProject::GetSegmentation(segmentationID).GetSegmentCache()->AddSegment();
-	segmentList->rebuildSegmentList(segmentationID, added_segment->getValue());
-	validList->rebuildSegmentList(segmentationID, added_segment->getValue());
-	recentList->rebuildSegmentList(segmentationID, added_segment->getValue());
+	segmentList->rebuildSegmentList(segmentationID, segID);
+	validList->rebuildSegmentList(segmentationID, segID);
+	recentList->rebuildSegmentList(segmentationID, segID);
 }
 
 //////////////////////////////

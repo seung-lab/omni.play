@@ -31,6 +31,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addSegmentationToVolume();
 
 	void refreshWidgetData();
+	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
 
  signals: 
 	void triggerChannelView(OmId chan_id, ViewType vtype);
@@ -62,7 +63,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addToSplitterDataSource(QTreeWidgetItem * current);
 
 	void doDataSrcContextMenuVolAdd(QAction * act);
-	void addSegment();
 	void deleteSegmentation(SegmentationDataWrapper sdw);
 	void deleteChannel(ChannelDataWrapper cdw);
 

@@ -7,12 +7,15 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, 
+					const OmSegmentColorCacheType sccType,
+					const bool isSegmentation)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize( 0 )
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
+	, mIsSegmentation(isSegmentation)
 {
 }
 
@@ -43,12 +46,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
-	const bool isSegmentation = (SCC_SEGMENTATION == mSccType || 
-				     SCC_SEGMENTATION_BREAK == mSccType || 
-				     SCC_SEGMENTATION_VALID == mSccType || 
-				     SCC_SEGMENTATION_VALID_BLACK == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
-	if ( isSegmentation ) {
+	if(mIsSegmentation) {
 		showOnlySelectedSegments = false;	
 	}
 

@@ -17,6 +17,8 @@ class OmSegmentCacheImplLowLevel {
 	OmSegmentCacheImplLowLevel( OmSegmentation *, OmSegmentCache *);
 	virtual ~OmSegmentCacheImplLowLevel();
 
+	void growGraphIfNeeded(OmSegment * newSeg);
+
 	bool isValueAlreadyMappedToSegment(const OmSegID value);
 	OmSegment* GetSegmentFromValue(const OmSegID value );
 

@@ -78,6 +78,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
            src/gui/inspectors/segInspector.h \
+           src/gui/inspectors/segmentation/addSegmentButton.h \
            src/gui/inspectors/segObjectInspector.h \
            src/gui/inspectors/ui_chanInspector.h \
            src/gui/inspectors/volInspector.h \
@@ -274,6 +275,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/inspectors/filObjectInspector.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
            src/gui/inspectors/segInspector.cpp \
+           src/gui/inspectors/segmentation/addSegmentButton.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
            src/gui/inspectors/volInspector.cpp \
            src/gui/main.cpp \

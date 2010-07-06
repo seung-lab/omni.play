@@ -149,7 +149,6 @@ quint64 SegmentationDataWrapper::getSegmentListSize(OmSegIDRootType type)
         return OmProject::GetSegmentation(mID).GetSegmentCache()->getSegmentListSize(type);
 }
 
-
 /*******************************************
  ****** Segments
  *******************************************/

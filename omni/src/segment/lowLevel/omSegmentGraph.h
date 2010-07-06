@@ -13,6 +13,7 @@ class OmSegmentGraph {
 	~OmSegmentGraph();
 
 	void initialize( OmSegmentCacheImplLowLevel * cache );
+	void growGraphIfNeeded(OmSegment * newSeg);
 
 	bool graph_doesGraphNeedToBeRefreshed( const quint32 maxValue ); 
 	OmSegID graph_getRootID( const OmSegID segID );

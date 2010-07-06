@@ -31,9 +31,9 @@ public:
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
 	void userJustClickedInThisSegmentList();
+	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID);
 
 public slots:
-	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID = 0);
 	void goToNextPage();
 	void goToPrevPage();
 	void goToEndPage();

@@ -260,3 +260,8 @@ void OmSegmentCacheImplLowLevel::clearCaches()
 {
 	OmCacheManager::Freshen(true);
 }
+
+void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
+{
+	mSegmentGraph.growGraphIfNeeded(newSeg);
+}

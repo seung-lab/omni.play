@@ -25,7 +25,8 @@ class DynamicTreeContainer {
 
 	quint32 getSize(){ return mSize; }
 	const std::vector<DynamicTree<T>*> & getTreeNodeArray(){ return mNodeArray; }
-
+	void growIfNeeded(const quint32 size);
+	
  private:
 	const quint32 mSize;
 	std::vector<DynamicTree<T>*> mNodeArray;

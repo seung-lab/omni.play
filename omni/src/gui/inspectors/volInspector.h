@@ -6,15 +6,16 @@
 #include <QGridLayout>
 #include <QLineEdit>
 
-
 class OmVolInspector : public QGroupBox {
-	Q_OBJECT
-public:
-	OmVolInspector(OmVolume * vol, QWidget * parent=0);
+ Q_OBJECT
+ public:
+	OmVolInspector(OmVolume * vol, QWidget * parent);
 	~OmVolInspector();
-private slots:
+
+ private slots:
 	void apply();
-private:
+
+ private:
         QGridLayout *mGrid;
 	OmVolume * mVol;
 	QLineEdit * mResX;

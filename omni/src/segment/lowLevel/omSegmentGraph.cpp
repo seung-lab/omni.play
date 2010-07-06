@@ -47,6 +47,14 @@ void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 	buildSegmentSizeLists();
 }
 
+void OmSegmentGraph::growGraphIfNeeded(OmSegment * newSeg)
+{
+	// maxValue is a valid segment id, so array needs to be 1 bigger
+	const quint32 size = 1 + mCache->getMaxValue();
+	mGraph->growIfNeeded(size);
+	mRootListBySize.insertSegment( newSeg );
+}
+
 void OmSegmentGraph::buildSegmentSizeLists()
 {
 	mValidListBySize.clear();
