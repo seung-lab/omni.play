@@ -302,14 +302,17 @@ bool OmMipMesh::Draw(bool doCreateVbo)
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
 
+    int size = 0;
     //// draw mesh elements
     debug("elements", "going to draw elements\n");
     for (uint32_t idx = 0; idx < mStripCount; ++idx) {
+      size += mpStripOffsetSizeData[2 * idx + 1];
       glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
                      mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
                      GL_UNSIGNED_INT,	//type
                      (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
     }
+    printf("strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
     debug("elements", "done drawing %i elements\n", mStripCount);
 
     //disable client state

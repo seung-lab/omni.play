@@ -17,8 +17,8 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	mLayout->addWidget(mGroupsList,0,0,1,1);
 
 	mGroupsTable = new QTableWidget();
-	mGroupsTable->setRowCount(10);
-	mGroupsTable->setColumnCount(2);
+	mGroupsTable->setRowCount(10000000);
+	mGroupsTable->setColumnCount(4);
 	mLayout->addWidget(mGroupsTable,0,1,1,1);
 
 	populateGroupsList();
@@ -56,8 +56,11 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 		mGroupsTable->setCellWidget(count, 0, segmentButton);
 		QPushButton * colorButton = new QPushButton();
 
-		colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }").arg(color.red).arg(color.green).arg(color.blue));
+		colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }")
+						.arg(color.red).arg(color.green).arg(color.blue));
 		mGroupsTable->setCellWidget(count, 1, colorButton);
+		mGroupsTable->setItem(count, 2, new QTableWidgetItem(QString::number(segment->getSizeWithChildren()), 0));
+		mGroupsTable->setItem(count, 3, new QTableWidgetItem(QString::number(segment->getSize()), 0));
 		count++;
 	}
 }

@@ -31,6 +31,9 @@ string OmGroupListWidget::eventSenderName()
 void OmGroupListWidget::populateTable()
 {
 	QTreeWidgetItem * current = currentItem();
+	if(!current){
+		return;
+	}
 	QVariant result = current->data(0, Qt::UserRole);
 	printf("group: %i\n", result.toUInt());
 	mGroupsTable->populateGroupTable(result.toUInt());

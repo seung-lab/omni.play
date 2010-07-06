@@ -86,7 +86,6 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	}
 
 	const OmId segmentID = sdw.getID();
-	printf("valid\n");
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
