@@ -37,7 +37,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	mAlpha = 1;
 	mJoiningSegmentToggled = false;
 	mLevelLock = false;
-	mBrushToolDiameter = 1;
 	mCurrentSegmentId = 0;
 	mEditedSegmentation = 0;
 	mElapsed = NULL;
@@ -223,11 +222,13 @@ void OmView2d::paintEvent(QPaintEvent *)
 	if (amInFillMode()) {
 		painter.drawRoundedRect(QRect(mMousePoint.x, mMousePoint.y, 20, 20), 5, 5);
 	} else if (inEditMode){
+		const double offset = 0.5 * mViewGroupState->getView2DBrushToolDiameter() * zoomFactor;
+		const double width = 1.0 * mViewGroupState->getView2DBrushToolDiameter() * zoomFactor;
 		painter.drawEllipse(QRectF
-				    (mMousePoint.x - 0.5 * mBrushToolDiameter * zoomFactor,
-				     mMousePoint.y - 0.5 * mBrushToolDiameter * zoomFactor,
-				     1.0 * mBrushToolDiameter * zoomFactor, 
-				     1.0 * mBrushToolDiameter * zoomFactor));
+				    (mMousePoint.x - offset,
+				     mMousePoint.y - offset,
+				     width, 
+				     width ));
 	}
 	
 	if (hasFocus()){
@@ -391,7 +392,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		break;
 	}
 
-	if (1 == mBrushToolDiameter) {
+	if (1 == mViewGroupState->getView2DBrushToolDiameter() ) {
 		//debug("brush", "%i,%i,%i\n", DEBUGV3(gDC));
 		//(new OmVoxelSetValueAction(segid, gDC, seg))->Run();
 		if (segid != 1 && segid != 0) {
@@ -421,8 +422,8 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 			mBrushToolMinZ = gDC.z;
 		}
 	} else {
-		int savedDia = mBrushToolDiameter;
-		mBrushToolDiameter = 1;
+		const int savedDia = mViewGroupState->getView2DBrushToolDiameter();
+		mViewGroupState->setView2DBrushToolDiameter(1);
 		for (int i = 0; i < savedDia; i++) {
 			for (int j = 0; j < savedDia; j++) {
 				DataCoord myoff = off;
@@ -435,7 +436,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 				}
 			}
 		}
-		mBrushToolDiameter = savedDia;
+		mViewGroupState->setView2DBrushToolDiameter(savedDia);
 	}
 }
 
@@ -663,13 +664,13 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 			checkDC("3", globalDC);
 
-			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
+			if (mViewGroupState->getView2DBrushToolDiameter() > 4 && (x1 == x0 || abs(x1 - x0) % (mViewGroupState->getView2DBrushToolDiameter() / 4) == 0)) {
 				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 				} else {
 					PickToolAddToSelection(sel, current_seg, globalDC);
 				}
-			} else if (doselection || mBrushToolDiameter < 4) {
+			} else if (doselection || mViewGroupState->getView2DBrushToolDiameter() < 4) {
 				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 				} else {
@@ -704,13 +705,13 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 
 			checkDC("4", globalDC);
 
-			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
+			if (mViewGroupState->getView2DBrushToolDiameter() > 4 && (y1 == y0 || abs(y1 - y0) % (mViewGroupState->getView2DBrushToolDiameter() / 4) == 0)) {
 				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 				} else {
 					PickToolAddToSelection(sel, current_seg, globalDC);
 				}
-			} else if (doselection || mBrushToolDiameter < 4) {
+			} else if (doselection || mViewGroupState->getView2DBrushToolDiameter() < 4) {
 				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
 				} else {
@@ -799,14 +800,22 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 
 void OmView2d::setBrushToolDiameter()
 {
-	if (1 == mBrushToolDiameter) {
-		mBrushToolDiameter = 2;
-	} else if (2 == mBrushToolDiameter) {
-		mBrushToolDiameter = 8;
-	} else if (8 == mBrushToolDiameter) {
-		mBrushToolDiameter = 32;
-	} else if (32 == mBrushToolDiameter) {
-		mBrushToolDiameter = 1;
+	switch(mViewGroupState->getView2DBrushToolDiameter()){
+	case 1:
+		mViewGroupState->setView2DBrushToolDiameter(2);
+		break;
+	case 2:
+		mViewGroupState->setView2DBrushToolDiameter(8);
+		break;
+	case 8:
+		mViewGroupState->setView2DBrushToolDiameter(16);
+		break;
+	case 16:
+		mViewGroupState->setView2DBrushToolDiameter(32);
+		break;
+	case 32:
+		mViewGroupState->setView2DBrushToolDiameter(1);
+		break;
 	}
 }
 

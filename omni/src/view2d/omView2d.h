@@ -156,7 +156,6 @@ private:
 	QTime * mElapsed;
 	OmId mCurrentSegmentId;
 	set<DataCoord> mUpdateCoordsSet; 
-	int mBrushToolDiameter;
 	QImage mImage;
 	QPainter painter;
 	bool mLevelLock;

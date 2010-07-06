@@ -76,6 +76,9 @@ class OmViewGroupState : public OmManageableObject {
 
 	void setTool(const OmToolMode tool);
 
+	int getView2DBrushToolDiameter();
+	void setView2DBrushToolDiameter(const int size);
+
  private:
 	QMutex mColorCacheMapLock;
 
@@ -118,6 +121,7 @@ class OmViewGroupState : public OmManageableObject {
 	bool mShowSplit;
 	bool mShowValidInColor;
 
+	int view2DBrushToolDiameter_;
 };
 
 #endif

@@ -49,6 +49,8 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 
 	mViewGroup = new ViewGroup( mMainWindow, this );
 
+	view2DBrushToolDiameter_ = 8;
+
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
 
@@ -441,4 +443,14 @@ bool OmViewGroupState::shouldVolumeBeShownBroken()
 void OmViewGroupState::setTool(const OmToolMode tool)
 {
 	mToolBarManager->setTool(tool);
+}
+
+int OmViewGroupState::getView2DBrushToolDiameter()
+{
+	return view2DBrushToolDiameter_;
+}
+
+void OmViewGroupState::setView2DBrushToolDiameter(const int size)
+{
+	view2DBrushToolDiameter_ = size;
 }
