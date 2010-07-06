@@ -203,6 +203,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/localPrefFiles.h \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
+           src/utility/omTimer.h \
            src/utility/setUtilities.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
@@ -398,6 +399,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/localPrefFiles.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
+           src/utility/omTimer.cpp \
            src/utility/sortHelpers.cpp \
            src/utility/stringHelpers.cpp \
            src/view2d/drawable.cpp \
