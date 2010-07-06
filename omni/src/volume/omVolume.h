@@ -74,6 +74,10 @@ class OmVolume : boost::noncopyable {
 	QString unitString;
 	
 	friend class OmDataArchiveProject;
+
+private:
+	bool Update();
+
 };
 
 #endif

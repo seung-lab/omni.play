@@ -13,15 +13,10 @@ OmVolume::OmVolume()
         mSpaceToUserInvMat = Matrix4 < float >::IDENTITY;
 
         //defaults
+        mDataResolution = Vector3f::ONE;
         SetChunkDimension(128);
         SetDataDimensions(Vector3i(128, 128, 128));
-
         SetUserScale(Vector3i(1, 1, 1));
-
-        mDataResolution = Vector3f::ONE;
-        SetStretchValues();
-
-	SetDataResolution(mDataResolution);
 
         unitString = "";
 }
@@ -66,6 +61,8 @@ bool OmVolume::SetUserScale(const Vector3 < float >&scale)
 	mSpaceToUserMat.m[0][0] = scale.x;
 	mSpaceToUserMat.m[1][1] = scale.y;
 	mSpaceToUserMat.m[2][2] = scale.z;
+
+	Update();
 
 	//set inverse and return if invertable
 	return mSpaceToUserMat.getInverse(mSpaceToUserInvMat);
@@ -163,6 +160,7 @@ void OmVolume::SetDataExtent(const DataBbox & extent)
 {
 	assert(false);
 	mDataExtent = extent;
+	Update();
 }
 
 Vector3i OmVolume::GetDataDimensions()
@@ -173,6 +171,7 @@ Vector3i OmVolume::GetDataDimensions()
 void OmVolume::SetDataDimensions(const Vector3i & dim)
 {
 	mDataExtent = DataBbox(Vector3i::ZERO, dim - Vector3i::ONE);
+	Update();
 }
 
 Vector3f OmVolume::GetDataResolution()
@@ -183,7 +182,11 @@ Vector3f OmVolume::GetDataResolution()
 bool OmVolume::SetDataResolution(const Vector3f & res)
 {
 	mDataResolution = res;
+	Update();
+}
 
+bool OmVolume::Update()
+{
 	//update scale
 	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3 < int >::ONE;
 	SetStretchValues();
