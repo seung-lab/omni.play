@@ -12,7 +12,7 @@ OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache,
 					const bool isSegmentation)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
-	, mSize( 0 )
+	, mSize(0)
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
 	, mIsSegmentation(isSegmentation)
@@ -32,9 +32,7 @@ void OmSegmentColorizer::setup()
 	}
 
 	mSize = curSize;
-
-	mColorCache.resize( mSize );
-	mColorCacheFreshness.resize( mSize, 0 );
+	mColorCache.resize(mSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
@@ -67,11 +65,11 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				newcolor = blackColor;
 			} else{
 				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
-					mColorCacheFreshness[ val ] = segCacheFreshness;
+					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
+					mColorCache[ val ].freshness = segCacheFreshness;
 				}
 				
-				newcolor = mColorCache[ val ];
+				newcolor = mColorCache[ val ].color;
 			}
 		} 
 

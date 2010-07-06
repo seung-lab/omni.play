@@ -6,6 +6,11 @@
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
+typedef struct {
+	OmColor color;
+	int freshness;
+} OmColorWithFreshness;
+
 class OmSegmentCache;
 class OmViewGroupState;
 class OmSegment;
@@ -34,8 +39,7 @@ class OmSegmentColorizer
 	float mPrevBreakThreshhold;
 	const bool mIsSegmentation;
 
-	std::vector<OmColor> mColorCache;
-	std::vector<int> mColorCacheFreshness;
+	std::vector<OmColorWithFreshness> mColorCache;
 
 	void setup();
 
@@ -51,7 +55,7 @@ class OmSegmentColorizer
 	}
 
 	bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
-		if( currentSegCacheFreshness != mColorCacheFreshness[val] ){
+		if( currentSegCacheFreshness != mColorCache[val].freshness ){
 			return false;
 		}
 		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
