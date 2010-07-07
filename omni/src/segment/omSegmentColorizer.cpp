@@ -31,8 +31,8 @@ void OmSegmentColorizer::setup()
 		return;
 	}
 
-	mColorCache.resize(mSize);
 	mSize = curSize;
+	mColorCache.resize(mSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
