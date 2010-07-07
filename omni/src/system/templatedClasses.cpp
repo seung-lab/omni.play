@@ -31,6 +31,8 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/inspectors/segInspector.h"
 
+#include "system/omHandleCacheMissThreaded.cpp"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
@@ -38,6 +40,12 @@ template class OmThreadedCache<OmMipMeshCoord, OmMipMesh>;
 template class OmThreadedCache<OmTileCoord, OmTextureID>;
 template class OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>;
 template class OmThreadedCache<OmMipChunkCoord, OmSimpleChunk>;
+
+template class HandleCacheMissThreaded<OmThreadedCache<OmMipChunkCoord, OmMipChunk>, OmMipChunkCoord, OmMipChunk>;
+template class HandleCacheMissThreaded<OmThreadedCache<OmMipMeshCoord, OmMipMesh>, OmMipMeshCoord, OmMipMesh>;
+template class HandleCacheMissThreaded<OmThreadedCache<OmTileCoord, OmTextureID>, OmTileCoord, OmTextureID>;
+template class HandleCacheMissThreaded<OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>, OmMipSegmentDataCoord, OmMipVoxelation>;
+template class HandleCacheMissThreaded<OmThreadedCache<OmMipChunkCoord, OmSimpleChunk>, OmMipChunkCoord, OmSimpleChunk>;
 
 #if 0
 template class OmFetchingThread<OmMipChunkCoord, OmMipChunk>;

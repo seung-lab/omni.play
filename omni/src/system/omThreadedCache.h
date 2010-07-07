@@ -73,10 +73,12 @@ class OmThreadedCache : public OmCacheBase, public QThread
 	void SetCacheName(const char* name);
 	char* GetCacheName();
 
+	void HandleFetchUpdate(KEY fetch_key, PTR * fetch_value);
+
 	void run();
+	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 	
 protected:
-	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 	
 private:
 	//key, shared pointer value cache

@@ -1,4 +1,5 @@
 #include "omThreadedCache.h"
+#include "omHandleCacheMissThreaded.h"
 
 /**
  *	Constructor initializes and starts the fetch thread.
@@ -278,6 +279,8 @@ OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
 {
         mObjectSize = size;
 }
+
+
 /**
  *	This loop is only performed by the Fetch Thread.  It waits on the
  *	conditional variable triggered by the main thread when a new element
@@ -346,8 +349,12 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			mCurrentlyFetching.append(fetch_key);
 			
 			mCacheMutex.unlock();
+
+			(new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key))->run();
+
 			// debug("FIXME", << "OmThreadedCache<KEY,PTR>::FetchLoop(): unlock mutex" << endl;
 			
+#if 0
 			//init returned pointer from cache miss call
 			PTR* fetch_value = NULL;
 			
@@ -369,6 +376,7 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			if(FetchUpdateCheck()) {
 				HandleFetchUpdate();
 			}
+#endif 
 		} 
 	
 		
@@ -384,6 +392,25 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 	mFetchThreadAlive = false;	
 	//die
 	debug("thread","%s cache thread # %p is out of fetch loop . . . should die soon.\n",mCacheName,threadSelf);
+}
+
+template < typename KEY, typename PTR  > 
+void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_value) {
+	mCacheMutex.lock();
+	//add to cache map
+	mCache[fetch_key] = QExplicitlySharedDataPointer<PTR>(fetch_value);
+
+	//add to access list
+	mKeyAccessList.push_front(fetch_key);
+	//key has been fetched, so remove from currently fetching
+	mCurrentlyFetching.removeAt(mCurrentlyFetching.indexOf(fetch_key));
+
+	mCacheMutex.unlock();
+
+	//send update if needed
+	if(FetchUpdateCheck()) {
+		HandleFetchUpdate();
+	}
 }
 
 

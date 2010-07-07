@@ -350,12 +350,12 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 	debug ("view2d", "OmView2d::mouseLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
 	bool doselection = false;
 	bool dosubtract = false;
-	mScribbling = true;
 	
 	OmSegID data_value;
 
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_MODE:
+		mScribbling = true;
 		mouseSelectSegment(event);
 		return;
 		break;
@@ -376,8 +376,10 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 		return;
 		break;
 	case ADD_VOXEL_MODE:
+		mScribbling = true;
 		break;
 	case SUBTRACT_VOXEL_MODE:
+		mScribbling = true;
 		dosubtract = true;
 		break;
 	case SELECT_VOXEL_MODE:	
@@ -505,6 +507,8 @@ void OmView2d::MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 {
+	mScribbling = false;
+
 	switch (OmStateManager::GetToolMode()) {
 	case SPLIT_MODE:
 		break;

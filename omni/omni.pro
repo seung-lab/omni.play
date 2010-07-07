@@ -197,6 +197,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
            src/system/omThreadedCache.h \
+           src/system/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
@@ -392,6 +393,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \
            src/system/omThreadedCache.cpp \
+           src/system/omHandleCacheMissThreaded.cpp \
            src/system/templatedClasses.cpp \
            src/system/viewGroup/omViewGroupState.cpp \
            src/utility/dataWrappers.cpp \
