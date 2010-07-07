@@ -2,6 +2,7 @@
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
 	: OmEvent(type, CLASS)
+	, mSegmentationId(0)
 	, mSegmentJustSelectedID(0)
 	, mSender(NULL)
 	, mComment("unknown")

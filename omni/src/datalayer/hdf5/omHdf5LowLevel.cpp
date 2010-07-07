@@ -58,8 +58,8 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
 	}
 	
 	if (fileId < 0) {
-		printf("Could not open HDF5 file: %s\n", fpath.c_str());
-                throw OmIoException("Could not open HDF5 file.");
+		const string errMsg = "Could not open HDF5 file: " + fpath + "\n";
+                throw OmIoException(errMsg);
 	}
 
 	printfFileCacheSize( fileId );
@@ -79,8 +79,9 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 
 	om_hdf5_flush_with_lock( fileId );
         herr_t ret = H5Fclose(fileId);
-        if (ret < 0)
+        if (ret < 0) {
                 throw OmIoException("Could not close HDF5 file.");
+	}
 }
 
 /////////////////////////////////
@@ -238,15 +239,18 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		const string errMsg = "Could not open HDF5 dataset " + string(name);
+		throw OmIoException(errMsg);
+	}
 
 	printfDatasetCacheSize( dataset_id );
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not get HDF5 dataspace.");
+	}
 
 	//Returns the amount of storage required for a dataset. 
 	hsize_t dataset_size = H5Dget_storage_size(dataset_id);
@@ -262,25 +266,30 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 
 	//Allocate memory to read into
 	dataset_data = malloc(dataset_size);
-	if (NULL == dataset_data)
+	if (NULL == dataset_data) {
 		throw OmIoException("Could not allocate memory to read HDF5 dataset.");
+	}
 
 	//Reads raw data from a dataset into a buffer. 
 	status = H5Dread(dataset_id, dstype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
-	if (status < 0)
-		throw OmIoException("Could not read HDF5 dataset.");
+	if (status < 0) {
+		const string errMsg = "Could not open HDF5 dataset " + string(name);
+		throw OmIoException(errMsg);
+	}
 
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace. 
 	status = H5Sclose(dataspace_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataspace.");
+	}
 
 	//Closes the specified dataset. 
 	status = H5Dclose(dataset_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataset.");
+	}
 
 	return OmDataWrapperPtr( new OmDataWrapper( dataset_data ) );
 }
@@ -349,12 +358,14 @@ void OmHdf5LowLevel::om_hdf5_group_create_with_lock(hid_t fileId, const char *na
 
         //Creates a new empty group and links it into the file.
         hid_t group_id = H5Gcreate2(fileId, name, 0, H5P_DEFAULT, H5P_DEFAULT);
-        if (group_id < 0)
+        if (group_id < 0) {
                 throw OmIoException("Could not create HDF5 group.");
+	}
 
         herr_t status = H5Gclose(group_id);
-        if (status < 0)
+        if (status < 0) {
                 throw OmIoException("Could not close HDF5 group.");
+	}
 }
 
 /**
@@ -383,8 +394,9 @@ void OmHdf5LowLevel::om_hdf5_group_delete_with_lock(hid_t fileId, const char *na
 
 	//Closes the specified group. 
 	herr_t err = H5Gunlink(fileId, name);
-	if (err < 0)
-		throw OmIoException("Could not unlink HDF5 group.");
+	if (err < 0) {
+		throw OmIoException("Could not unlink HDF5 group " + string(name));
+	}
 }
 
 /////////////////////////////////
@@ -407,8 +419,9 @@ bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *
 	
 	//Closes the specified dataset. 
 	herr_t ret = H5Dclose(dataset_id);
-	if (ret < 0)
-		throw OmIoException("Could not close HDF5 dataset.");
+	if (ret < 0) {
+		throw OmIoException("Could not close HDF5 dataset " + string(name));
+	}
 
 	return true;
 }
@@ -419,8 +432,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *
 
         //Removes the link to an object from a group.
         herr_t err = H5Gunlink(fileId, name);
-        if (err < 0)
-                throw OmIoException("Could not unlink HDF5 dataset.");
+        if (err < 0) {
+                throw OmIoException("Could not unlink HDF5 dataset " + string(name));
+	}
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_delete_create_tree_with_lock(hid_t fileId, const char *name)
@@ -464,13 +478,15 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 	// TODO: fixme! use the max dim!
 	hsize_t max = dim;
 	hid_t dataspace_id = H5Screate_simple(rank, &dim, &max);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not create HDF5 dataspace.");
+	}
 
 	//Creates a dataset at the specified location. 
 	hid_t dataset_id = H5Dcreate2(fileId, name, H5T_NATIVE_UCHAR, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not create HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not create HDF5 dataset " + string(name));
+	}
 
 	//if given data, then write it into new dataset
 	if (NULL != data) {
@@ -481,13 +497,15 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const ch
 
 	//Closes the specified dataset. 
 	status = H5Dclose(dataset_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataset.");
+	}
 
 	//Releases and terminates access to a dataspace. 
 	status = H5Sclose(dataspace_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataspace.");
+	}
 }
 
 /////////////////////////////////
@@ -502,36 +520,44 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + string(name));
+	}
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not get HDF5 dataspace.");
+	}
 
 	//Determines the dimensionality of a dataspace. 
 	int rank = H5Sget_simple_extent_ndims(dataspace_id);
-	if (rank < 0)
+	if (rank < 0) {
 		throw OmIoException("Could not determine rank of HDF5 dataspace.");
-	if (rank != 3)
+	}
+
+	if (rank != 3){
 		throw OmIoException("HDF5 dataspace not of rank 3.");
+	}
 
 	//Retrieves dataspace dimension size and maximum size.
 	Vector3 < hsize_t > maxdims;
 	rank = H5Sget_simple_extent_dims(dataspace_id, dims.array, maxdims.array);
-	if (rank < 0)
+	if (rank < 0) {
 		throw OmIoException("Could not determine dimensions of HDF5 dataspace.");
+	}
 
 	//Releases and terminates access to a dataspace.  
 	status = H5Sclose(dataspace_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataspace.");
+	}
 
 	//Closes the specified dataset. 
 	status = H5Dclose(dataset_id);
-	if (status < 0)
+	if (status < 0) {
 		throw OmIoException("Could not close HDF5 dataset.");
+	}
 
 	debug("hdf5image", "dims are %d:%d:%d; maxdims are %d:%d:%d\n", 
 	      DEBUGV3(dims), DEBUGV3(maxdims));
@@ -552,14 +578,16 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 
 	//Creates a new property as an instance of a property list class.
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
-	if (plist_id < 0)
+	if (plist_id < 0) {
 		throw OmIoException("Could not create HDF5 property list.");
+	}
 
 	//Sets the size of the chunks used to store a chunked layout dataset. 
 	Vector3 < hsize_t > flipped_chunk_dim(chunkDims->z, chunkDims->y, chunkDims->x);
 	ret = H5Pset_chunk(plist_id, rank, flipped_chunk_dim.array);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not set HDF5 chunk size.");
+	}
 
 	//data dims
 	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
@@ -569,29 +597,34 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not create HDF5 dataspace.");
+	}
 
 	//Creates a dataset at the specified location. 
 	hid_t type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
 	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not create HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not create HDF5 dataset " + string(name));
+	}
 
 	//Terminates access to a property list. 
 	ret = H5Pclose(plist_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 property list.");
+	}
 
 	//Releases and terminates access to a dataspace. 
 	ret = H5Sclose(dataspace_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 dataspace.");
+	}
 
 	//Closes the specified dataset. 
 	ret = H5Dclose(dataset_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 dataset.");
+	}
 }
 
 vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample)
@@ -603,16 +636,18 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + string(name));
+	}
 
 	hid_t dstype = H5Dget_type(dataset_id); 
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not get HDF5 dataspace.");
+	}
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
@@ -630,13 +665,15 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	herr_t ret =
 	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
 				block_flipped.array);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not select HDF5 hyperslab.");
+	}
 
 	//Creates a new simple dataspace and opens it for access. 
 	hid_t mem_dataspace_id = H5Screate_simple(3, block.array, NULL);
-	if (mem_dataspace_id < 0)
+	if (mem_dataspace_id < 0) {
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
+	}
 
 	//setup image data
 	Vector3 < int >extent_dims = extent.getUnitDimensions();
@@ -676,26 +713,30 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 		ret = H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 			      imageData->GetScalarPointer());
 	}
-	if (ret < 0)
-		throw OmIoException("Could not read HDF5 dataset.");
+	if (ret < 0) {
+		throw OmIoException("Could not read HDF5 dataset " + string(name));
+	}
 
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
 	ret = H5Sclose(mem_dataspace_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 scratch dataspace.");
+	}
 
 	ret = H5Sclose(dataspace_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 dataspace.");
+	}
 
 	//Closes the specified dataset. 
 	//herr_t H5Dclose(hid_t dataset_id  ) 
 	ret = H5Dclose(dataset_id);
-	if (ret < 0)
+	if (ret < 0) {
 		throw OmIoException("Could not close HDF5 dataset.");
+	}
 
 	return imageData;
 }
@@ -711,8 +752,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + string(name));
+	}
 
 	//Returns an identifier for a copy of the datatype for a dataset. 
 	//hid_t H5Dget_type(hid_t dataset_id  )
@@ -768,8 +810,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
 	mem_type_id = om_hdf5_bytesToHdf5Id(imageData->GetScalarSize());
 	ret = H5Dwrite(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT, image_data_scalar_pointer);
-	if (ret < 0)
-		throw OmIoException("Could not read HDF5 dataset.");
+	if (ret < 0) {
+		throw OmIoException("Could not read HDF5 dataset " + string(name));
+	}
 
  doclose:
 	//Releases and terminates access to a dataspace. 
@@ -833,8 +876,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + string(name));
+	}
 
 	//Returns an identifier for a copy of the datatype for a dataset. 
 	//hid_t H5Dget_type(hid_t dataset_id  )
@@ -846,8 +890,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	//hid_t H5Dget_space(hid_t dataset_id  ) 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if (dataspace_id < 0)
+	if (dataspace_id < 0) {
 		throw OmIoException("Could not get HDF5 dataspace.");
+	}
 	
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
@@ -892,8 +937,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	//herr_t H5Dread(hid_t dataset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t xfer_plist_id, void * buf  )
 	mem_type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
 	ret = H5Dwrite(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT, imageData);
-	if (ret < 0)
-		throw OmIoException("Could not read HDF5 dataset.");
+	if (ret < 0) {
+		throw OmIoException("Could not read HDF5 dataset " + string(name));
+	}
 
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
@@ -922,8 +968,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
-
+		throw OmIoException("Could not open HDF5 dataset " + string(name) );
 
 	hid_t dstype = H5Dget_type(dataset_id);
 	//printTypeInfo( dstype );
@@ -977,8 +1022,9 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 	ret =
 	    H5Dread(dataset_id, mem_type_id, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 		    imageData);
-	if (ret < 0)
-		throw OmIoException("Could not read HDF5 dataset.");
+	if (ret < 0) {
+		throw OmIoException("Could not read HDF5 dataset " + string(name));
+	}
 
 	//Releases and terminates access to a dataspace. 
 	//herr_t H5Sclose(hid_t space_id  ) 
@@ -1011,8 +1057,9 @@ Vector3< int > OmHdf5LowLevel::om_hdf5_dataset_get_dims_with_lock(hid_t fileId, 
 
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset.");
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + string(name));
+	}
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
