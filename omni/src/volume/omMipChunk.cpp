@@ -729,8 +729,8 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				QMutexLocker locker(&mOpenLock);
 				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
 				
-				p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();
-				mpMipVolume->Remove(mip_coord);
+				//p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();
+				//mpMipVolume->Remove(mip_coord);
 			}
 		}
 	}

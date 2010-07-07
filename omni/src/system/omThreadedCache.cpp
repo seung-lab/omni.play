@@ -1,6 +1,8 @@
 #include "omThreadedCache.h"
 #include "omHandleCacheMissThreaded.h"
 
+#define MAX_FETCHING (200)
+
 /**
  *	Constructor initializes and starts the fetch thread.
  */
@@ -83,7 +85,7 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 		if( !mFetchStack.contains(key)        && 
 		    !mCurrentlyFetching.contains(key) ){
 
-			if (mFetchStack.size () > 200 ) {
+			if (mFetchStack.size () > MAX_FETCHING) {
 				mFetchStack.clear ();
 			}
 
@@ -352,31 +354,6 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 
 			(new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key))->run();
 
-			// debug("FIXME", << "OmThreadedCache<KEY,PTR>::FetchLoop(): unlock mutex" << endl;
-			
-#if 0
-			//init returned pointer from cache miss call
-			PTR* fetch_value = NULL;
-			
-			//any exception causes cache to skip
-			fetch_value = HandleCacheMiss(fetch_key);
-			
-			mCacheMutex.lock();
-			//add to cache map
-			mCache[fetch_key] = QExplicitlySharedDataPointer<PTR>(fetch_value);
-
-			//add to access list
-			mKeyAccessList.push_front(fetch_key);
-			//key has been fetched, so remove from currently fetching
-			mCurrentlyFetching.removeAt(mCurrentlyFetching.indexOf(fetch_key));
-
-			mCacheMutex.unlock();
-			
-			//send update if needed
-			if(FetchUpdateCheck()) {
-				HandleFetchUpdate();
-			}
-#endif 
 		} 
 	
 		
