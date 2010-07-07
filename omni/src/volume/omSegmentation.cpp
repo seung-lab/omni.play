@@ -51,7 +51,7 @@ OmSegmentation::OmSegmentation()
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 1.0;
+	mDendThreshold = 0.1;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -84,7 +84,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 1.0;
+	mDendThreshold = 0.1;
 
         SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
