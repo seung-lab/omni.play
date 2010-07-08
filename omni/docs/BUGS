@@ -2299,3 +2299,36 @@ Breakpoint 1, 0x00007ffff3f33ac0 in fprintf () from /lib/libc.so.6
 #3  0x00007ffff3f02ac4 in __libc_start_main () from /lib/libc.so.6
 #4  0x000000000063b619 in _start () at ../sysdeps/x86_64/elf/start.S:113
 
+
+when selecting and displaying a very large segment in 3d on mac:
+Thu Jul  8 09:42:14 macbookpro.local omni[77637] <Error>: kCGErrorTypeCheck: CGSDispatchDatagramsFromStream : Bad datagram type 1073807360
+Thu Jul  8 09:42:14 macbookpro.local omni[77637] <Error>: kCGErrorIllegalArgument: CGSGetPortStreamData
+
+Program received signal EXC_BAD_ACCESS, Could not access memory.
+Reason: KERN_INVALID_ADDRESS at address: 0x0000000145640000
+0x00007fff80753a24 in CGEventCreateFromDataAndSource ()
+(gdb) bt
+#0  0x00007fff80753a24 in CGEventCreateFromDataAndSource ()
+#1  0x00007fff8075372b in CGSDecodeEventRecord ()
+#2  0x00007fff807535c4 in CGSDispatchDatagramsFromStream ()
+#3  0x00007fff80752fa9 in snarfEvents ()
+#4  0x00007fff80752d2e in CGSGetNextEventRecordInternal ()
+#5  0x00007fff80752c60 in CGEventCreateNextEvent ()
+#6  0x00007fff86e3f36e in PullEventsFromWindowServerOnConnection ()
+#7  0x00007fff82ec7bce in __CFMachPortPerform ()
+#8  0x00007fff82ea0171 in __CFRunLoopRun ()
+#9  0x00007fff82e9e84f in CFRunLoopRunSpecific ()
+#10 0x00007fff86e6191a in RunCurrentEventLoopInMode ()
+#11 0x00007fff86e6171f in ReceiveNextEventCommon ()
+#12 0x00007fff86e615d8 in BlockUntilNextEventMatchingListInMode ()
+#13 0x00007fff820cc29e in _DPSNextEvent ()
+#14 0x00007fff820cbbed in -[NSApplication nextEventMatchingMask:untilDate:inMode:dequeue:] ()
+#15 0x00007fff820918d3 in -[NSApplication run] ()
+#16 0x00000001012aad95 in QEventDispatcherMac::processEvents ()
+#17 0x0000000102076084 in QEventLoop::processEvents ()
+#18 0x0000000102076394 in QEventLoop::exec ()
+#19 0x000000010207777c in QCoreApplication::exec ()
+#20 0x0000000100042fa8 in Headless::start (this=0x7fff5fbff97f, argc=1, argv=0x7fff5fbff9a8) at src/gui/headless.cpp:377
+#21 0x000000010005238f in main (argc=1, argv=0x7fff5fbff9a8) at src/gui/main.cpp:89
+(gdb) 
+
