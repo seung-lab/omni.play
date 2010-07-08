@@ -260,8 +260,11 @@ void OmMipVolume::UpdateRootLevel()
 		mMipRootLevel = 0;
 	} else {
 		//use log base 2 to determine levels needed to contain source dims
-		mMipRootLevel = ceil(log((float) (max_source_dim) / GetChunkDimension()) / log((float)2));
-	}
+		double numPowsOfTwo = log((float) (max_source_dim) / GetChunkDimension()) / log((float)2);
+		//round to closest integer
+		mMipRootLevel = (int) floor(numPowsOfTwo);
+		if (numPowsOfTwo-mMipRootLevel >= 0.5){mMipRootLevel++;}
+	}       
 }
 
 /*
