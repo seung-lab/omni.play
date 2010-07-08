@@ -31,6 +31,7 @@ class OmView3d : public QGLWidget,
 	OmView3d(QWidget *, OmViewGroupState * );
 	~OmView3d();
 	OmCamera& GetCamera();
+
 	
  protected:
 	//gl events
@@ -46,6 +47,9 @@ class OmView3d : public QGLWidget,
 	void mouseWheelEvent(QWheelEvent * event);
 	void wheelEvent(QWheelEvent * event );
 	void keyPressEvent (QKeyEvent *);
+
+	//bool event(QEvent *e);
+
 
 	//omni events
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
@@ -93,6 +97,7 @@ class OmView3d : public QGLWidget,
 	QSize sizeHint () const;
 		
  private:
+	bool gestureEvent(QGestureEvent *event);
 	OmView3dUi mView3dUi;
 	OmViewGroupState * mViewGroupState;
 	QTime * mElapsed;

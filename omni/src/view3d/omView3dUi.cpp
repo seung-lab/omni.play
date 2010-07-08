@@ -156,8 +156,9 @@ void OmView3dUi::NavigationModeMouseMove(QMouseEvent * event)
 	CameraMovementMouseUpdate(event);
 }
 
-void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent *)
+void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
 {
+	CenterAxisOfRotation(event);
 }
 
 void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)

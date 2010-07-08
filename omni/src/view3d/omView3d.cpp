@@ -57,6 +57,7 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
+	setAttribute(Qt::WA_AcceptTouchEvents);
 
 	//setup widgets
 	mView3dWidgetManager.resize(NUMBER_VIEW3D_WIDGET_IDS, NULL);
@@ -93,6 +94,8 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	glGetBufferParameterivARBFunction = (GLGETBUFFERPARAIV) wglGetProcAddress("glGetBufferParameterivARB");
 	assert(glGetBufferParameterivARBFunction);
 #endif
+
+	grabGesture(Qt::PinchGesture);
 }
 
 OmView3d::~OmView3d()
@@ -599,3 +602,22 @@ QSize OmView3d::sizeHint () const
 	// TODO: offset is only 76 if tabs are present in the upper-right dock widget...
 	return QSize( s.width(), s.height() - offset );
 }
+
+bool OmView3d::gestureEvent(QGestureEvent *event)
+{
+	printf ("%p", event->gesture(Qt::PinchGesture));
+
+	if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+		update();
+	}
+	return true;
+}
+
+#if 0
+bool OmView3d::event(QEvent *e)
+{
+	if (e->type() == QEvent::Gesture)
+		return gestureEvent(static_cast<QGestureEvent*>(e));
+	return QWidget::event(e);
+}
+#endif
