@@ -20,6 +20,11 @@ public:
 	OmView3dUi(OmView3d * view3d, OmViewGroupState * );
 	
 	//ui events
+        void pinchTriggered(QPinchGesture *gesture);
+	void panTriggered(QPanGesture*);
+ 	void swipeTriggered(QSwipeGesture *gesture);
+        bool gestureEvent(QGestureEvent *event);
+
 	void MousePressed(QMouseEvent *event);
 	void MouseRelease(QMouseEvent *event);
 	void MouseMove(QMouseEvent *event);

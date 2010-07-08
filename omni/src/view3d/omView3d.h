@@ -48,7 +48,8 @@ class OmView3d : public QGLWidget,
 	void wheelEvent(QWheelEvent * event );
 	void keyPressEvent (QKeyEvent *);
 
-	//bool event(QEvent *e);
+	bool event(QEvent *e);
+	void pinchTriggered(QPinchGesture *gesture);
 
 
 	//omni events

@@ -95,7 +95,9 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	assert(glGetBufferParameterivARBFunction);
 #endif
 
+	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
+     	grabGesture(Qt::SwipeGesture);
 }
 
 OmView3d::~OmView3d()
@@ -176,6 +178,7 @@ void OmView3d::initializeGL()
  */
 void OmView3d::resizeGL(int width, int height)
 {
+	printf("resizing\n");
 	mCamera.ApplyReshape(Vector2 < int >(width, height));
 }
 
@@ -603,21 +606,11 @@ QSize OmView3d::sizeHint () const
 	return QSize( s.width(), s.height() - offset );
 }
 
-bool OmView3d::gestureEvent(QGestureEvent *event)
-{
-	printf ("%p", event->gesture(Qt::PinchGesture));
-
-	if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
-		update();
-	}
-	return true;
-}
-
-#if 0
 bool OmView3d::event(QEvent *e)
 {
-	if (e->type() == QEvent::Gesture)
-		return gestureEvent(static_cast<QGestureEvent*>(e));
-	return QWidget::event(e);
+	if (e->type() == QEvent::Gesture) {
+		return mView3dUi.gestureEvent(static_cast<QGestureEvent*>(e));
+	}
+
+	return QGLWidget::event(e);
 }
-#endif

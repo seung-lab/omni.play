@@ -272,6 +272,8 @@ void OmView3dUi::CameraMovementMouseUpdate(QMouseEvent * event)
 
 void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 {
+	//assert(0);
+	//printf("wheel\n");
 	Vector2f point = Vector2f(event->x(), event->y());
 	mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
 
@@ -650,3 +652,71 @@ void OmView3dUi::resetWindow()
 
 	mpView3d->updateGL();
 }
+
+
+void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
+{
+        QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
+        if (changeFlags & QPinchGesture::RotationAngleChanged) {
+                printf("1\n");
+                qreal value = gesture->property("rotationAngle").toReal();
+                qreal lastValue = gesture->property("lastRotationAngle").toReal();
+                //rotationAngle += value - lastValue;
+        }
+        if (changeFlags & QPinchGesture::ScaleFactorChanged) {
+                qreal value = gesture->property("scaleFactor").toReal();
+                //printf("2 : %f\n", value);
+                //currentStepScaleFactor = value;
+        }
+        if (gesture->state() == Qt::GestureFinished) {
+                qreal value = gesture->property("scaleFactor").toReal();
+                printf("3 : %f\n", value);
+                //scaleFactor *= currentStepScaleFactor;
+                //currentStepScaleFactor = 1;
+		if(value < 1) {
+			doZoom(-1);
+		} else {
+			doZoom(1);
+		}
+        }
+        mpView3d->update();
+ }
+
+void OmView3dUi::panTriggered(QPanGesture *gesture)
+{
+     	QPointF delta = gesture->delta();
+	printf("pan: %f, %f\n", delta.x(), delta.y());
+     	mpView3d->update();
+}
+
+void OmView3dUi::swipeTriggered(QSwipeGesture *gesture)
+{
+     if (gesture->state() == Qt::GestureFinished) {
+         if (gesture->horizontalDirection() == QSwipeGesture::Left
+             || gesture->verticalDirection() == QSwipeGesture::Up) {
+		printf("swipe 1\n");
+             //goPrevImage();
+	} else {
+		printf("swipe 2\n");
+             //goNextImage();
+	}
+        mpView3d->update();
+     }
+}
+
+
+bool OmView3dUi::gestureEvent(QGestureEvent *event)
+{
+        if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+                pinchTriggered(static_cast<QPinchGesture *>(pinch));
+        }
+        if (QGesture *pan = event->gesture(Qt::PanGesture)) {
+                panTriggered(static_cast<QPanGesture *>(pan));
+	}
+        if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
+                swipeTriggered(static_cast<QSwipeGesture *>(swipe));
+	}
+	printf("type %i\n", event->type());
+        return true;
+}
+
