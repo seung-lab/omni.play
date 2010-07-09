@@ -10,16 +10,24 @@ class OmSegPtrListValid {
  	OmSegPtrListValid()
 		: isValid(false) 
 		, freshness(0)
-		{}
+		, isFetching(false)
+	{}
+ 	explicit OmSegPtrListValid(const bool isFetching)
+		: isValid(false) 
+		, freshness(0)
+		, isFetching(isFetching)
+	{}
  	OmSegPtrListValid( const OmSegPtrList & L, const quint32 f )
 		: isValid(true)
 		, list(L) 
 		, freshness(f)
+		, isFetching(false)
 	{}
 	
 	bool isValid;
 	OmSegPtrList list;
 	quint32 freshness;
+	bool isFetching;
 };
 
 class OmSegPtrListWithPage {

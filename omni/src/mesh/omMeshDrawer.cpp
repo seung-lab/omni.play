@@ -150,6 +150,8 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, OmSegment * rootSeg,
 					   const OmMipChunkCoord & chunkCoord)
 {
+	letCacheKnowWeAreFetching( chunkCoord, rootSeg );
+
 	const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mSegmentCache);
 	segIter.iterOverSegmentID(rootSeg->getValue());
@@ -185,7 +187,11 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		rootSeg = (*iter);
 		rootSegID = rootSeg->getValue();
 
-		clearFromCacheIfFreshnessInvalid(chunkCoord, rootSeg);		
+		if(isCacheFetching(chunkCoord, rootSeg)){
+			continue;
+		}
+		
+		clearFromCacheIfFreshnessInvalid(chunkCoord, rootSeg);
 
 		if(!cacheHasCoord( chunkCoord, rootSegID )){
 			makeSegmentListForCache( p_chunk, rootSeg, chunkCoord );
@@ -266,13 +272,35 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 	return (camera_to_center > distance);
 }
 
-// TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
+void OmMeshDrawer::letCacheKnowWeAreFetching( const OmMipChunkCoord & c,
+					      OmSegment * rootSeg )
+{
+	mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid(true);
+	debug("meshDrawer", "let cache know we are fetching\n");
+}
+
+bool OmMeshDrawer::isCacheFetching( const OmMipChunkCoord & c,
+				    OmSegment * rootSeg )
+{
+	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	return spList.isFetching;
+}
+
 void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
 			       OmSegment * rootSeg,
 			       const OmSegPtrList & segmentsToDraw )
 {
+	/*
+	debug("meshDrawer", "added to cache\n");
+	debug("meshDrawerVerbose", "added to cache: key is: %d, %d, %d, %d, %d, %d\n",
+	      mSegmentationID,
+	      rootSeg->getValue(),
+	      c.Level,
+	      c.Coordinate.x,
+	      c.Coordinate.y,
+	      c.Coordinate.z);
+	*/
 	mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
-	debug("meshDrawer", "added to cache");
 }
 
 void OmMeshDrawer::clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
@@ -286,10 +314,11 @@ void OmMeshDrawer::clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
 		return;
 	}
 	
-	if(currentFreshness != spList.freshness){
+	if(currentFreshness != spList.freshness &&
+	   !spList.isFetching){
 		spList.list.clear();
 		spList.isValid = false;
-		debug("meshDrawer", "%s: currentFreshness is %i, cache is %i", __FUNCTION__,
+		debug("meshDrawer", "%s: currentFreshness is %i, cache is %i\n", __FUNCTION__,
 		      currentFreshness, spList.freshness);
 	}
 }
