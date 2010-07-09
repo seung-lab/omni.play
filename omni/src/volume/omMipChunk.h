@@ -96,6 +96,7 @@ protected:
 	void SetOpen(bool);
 
 	QMutex mOpenLock;
+	QMutex mDirectDataValueLock;
 	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 	

@@ -19,6 +19,7 @@
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "mesh/omMeshSegmentList.h"
 
 #include <QDir>
 #include <QFile>
@@ -141,6 +142,7 @@ void OmProject::Close()
 	Delete();
 
 	//delete all singletons
+	OmMeshSegmentList::Delete();
 	OmSegmentEditor::Delete();
 	OmCacheManager::Delete();
 	OmEventManager::Delete();

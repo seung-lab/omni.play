@@ -451,6 +451,8 @@ const NormBbox & OmMipChunk::GetClippedNormExtent()
  */
 const OmSegIDsSet & OmMipChunk::GetDirectDataValues()
 {
+	//TODO: change to shared reader writer lock (purcaro)
+	QMutexLocker lock(&mDirectDataValueLock);
 	loadMetadataIfPresent();
 	return mDirectlyContainedValues;
 }

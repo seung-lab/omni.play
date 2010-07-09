@@ -5,12 +5,12 @@
 #include "volume/omMipChunkPtr.h"
 #include "volume/omMipChunkCoord.h"
 
-#include <QThread>
+#include <QRunnable>
 
 class OmSegment;
 class OmSegmentCache;
 
-class OmMeshSegmentListThread : public QThread {
+class OmMeshSegmentListThread : public QRunnable {
  public:
 	OmMeshSegmentListThread( OmMipChunkPtr p_chunk, 
 				 OmSegment * rootSeg,

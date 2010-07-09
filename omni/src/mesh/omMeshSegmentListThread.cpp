@@ -3,6 +3,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 #include "volume/omMipChunk.h"
+#include "mesh/omMeshSegmentList.h"
 
 OmMeshSegmentListThread::OmMeshSegmentListThread( OmMipChunkPtr p_chunk, 
 						  OmSegment * rootSeg,
@@ -37,7 +38,5 @@ void OmMeshSegmentListThread::run()
 		seg = segIter.getNextSegment();
 	}
 
-	OmMeshDrawer::addToCache( mChunkCoord, mRootSeg, segmentsToDraw, mSegmentationID );
-
-	delete this;
+	OmMeshSegmentList::addToCache( mChunkCoord, mRootSeg, segmentsToDraw, mSegmentationID );
 }

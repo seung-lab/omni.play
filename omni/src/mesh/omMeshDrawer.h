@@ -16,15 +16,9 @@ class OmMeshDrawer : boost::noncopyable
  public:
 	OmMeshDrawer(const OmId, OmViewGroupState *);
 	~OmMeshDrawer();
+
 	void Init();
-
 	void Draw(OmVolumeCuller &);
-
-	static void letCacheKnowWeAreFetching( const OmMipChunkCoord & c,
-					       OmSegment * rootSeg,
-					       const OmId mSegmentationID );
-	static void addToCache( const OmMipChunkCoord &, OmSegment *, const OmSegPtrList &,
-				const OmId mSegmentationID );
 
  private:
 	const OmId mSegmentationID;
@@ -34,20 +28,6 @@ class OmMeshDrawer : boost::noncopyable
 	OmVolumeCuller * mVolumeCuller;
 
 	OmSegPtrList mRootSegsToDraw;
-
-	static bool cacheHasCoord( const OmMipChunkCoord &, const OmSegID,
-				   const OmId mSegmentationID);
-	static const OmSegPtrList & getFromCache( const OmMipChunkCoord &, const OmSegID,
-						  const OmId mSegmentationID);
-	static void makeSegmentListForCache(OmMipChunkPtr, OmSegment *, const OmMipChunkCoord &,
-					    OmSegmentCache *,
-					    const OmId mSegmentationID );
-	static void clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
-						      OmSegment * rootSeg,
-						      const OmId mSegmentationID);
-	static bool isCacheFetching( const OmMipChunkCoord & c,
-				     OmSegment * rootSeg,
-				     const OmId mSegmentationID );
 
 	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
 	void DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord);
