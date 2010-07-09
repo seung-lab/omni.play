@@ -12,6 +12,5 @@ template < typename TC, typename KEY, typename PTR >
 void HandleCacheMissThreaded<TC, KEY, PTR>::run()
 {
 	mTC->HandleFetchUpdate(mKey, mTC->HandleCacheMiss(mKey));
-	delete this;
 }
 

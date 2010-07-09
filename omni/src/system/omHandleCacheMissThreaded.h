@@ -1,15 +1,16 @@
-#ifndef __HANDLE_CACHE_MISS_THREADED_H__
-#define __HANDLE_CACHE_MISS_THREADED_H__
+#ifndef OM_HANDLE_CACHE_MISS_THREADED_H
+#define OM_HANDLE_CACHE_MISS_THREADED_H
 
-#include <QThread>
+#include <QRunnable>
 
 template < typename TC, typename KEY, typename PTR >
-class HandleCacheMissThreaded : public QThread
+class HandleCacheMissThreaded : public QRunnable
 {
-public:
+ public:
         HandleCacheMissThreaded(TC * tc, KEY key);
         void run();
-private:
+
+ private:
 	TC * const mTC;
 	KEY const mKey;
 
