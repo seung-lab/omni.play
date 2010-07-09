@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
+#include <deque>
 
 class OmSegment;
 class OmSegmentCache;
@@ -27,7 +28,7 @@ class OmSegmentIterator
  private:
 	OmSegmentCache * mCache;
 
-	OmSegPtrList mSegs;
+	std::deque<OmSegment*> mSegs;
 };
 
 #endif
