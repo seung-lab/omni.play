@@ -144,6 +144,7 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMesh.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
+           src/mesh/omMeshSegmentListThread.h \
            src/project/omProject.h \
            src/segment/actions/omSegmentEditor.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
@@ -338,6 +339,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMesh.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
+           src/mesh/omMeshSegmentListThread.cpp \
            src/project/omProject.cpp \
            src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
