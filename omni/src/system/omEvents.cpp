@@ -3,6 +3,7 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omToolModeEvent.h"
 #include "system/events/omViewEvent.h"
+#include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 
 void OmEvents::ToolChange()
@@ -13,6 +14,11 @@ void OmEvents::ToolChange()
 void OmEvents::Redraw()
 {
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+}
+
+void OmEvents::Redraw3d()
+{
+	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
 void OmEvents::SegmentModified()

@@ -4,6 +4,7 @@
 #include "segment/omSegmentIterator.h"
 #include "volume/omMipChunk.h"
 #include "mesh/omMeshSegmentList.h"
+#include "system/omEvents.h"
 
 OmMeshSegmentListThread::OmMeshSegmentListThread( OmMipChunkPtr p_chunk, 
 						  OmSegment * rootSeg,
@@ -39,4 +40,6 @@ void OmMeshSegmentListThread::run()
 	}
 
 	OmMeshSegmentList::addToCache( mChunkCoord, mRootSeg, segmentsToDraw, mSegmentationID );
+	OmEvents::Redraw3d();
+	printf("done..(%u)\n", mRootSeg->getValue());
 }

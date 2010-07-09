@@ -59,7 +59,14 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 {
   	OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 	
-	mCacheMutex.lock();
+	if(!blocking) {
+		if(!mCacheMutex.tryLock()) {
+			p_value = QExplicitlySharedDataPointer<PTR>();
+			return;
+		}
+	} else {
+		 mCacheMutex.lock();
+	}
 	
 	//check cache
 	if( mCache.contains(key) ) {
@@ -321,7 +328,9 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 		}
 		
 		//if destructing, kill thread
-		if(mKillingFetchThread) break;
+		if(mKillingFetchThread) {
+			break;
+		}
 		
 		//free mutex and wait for signal
 		// debug("FIXME", << "OmThreadedCache<KEY,PTR>::FetchLoop(): sleeping " << endl;
@@ -330,7 +339,9 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 		//lock mutex and continue
 		
 		//if destructing, kill thread
-		if(mKillingFetchThread) break;
+		if(mKillingFetchThread) {
+			break;
+		}
 		
 		//loop until deque is empty
 		mFetchThreadCalledClean = false;
@@ -340,7 +351,9 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 
 		do {
 			//if destructing, break loop
-			if(mKillingFetchThread) break;
+			if(mKillingFetchThread) {
+				break;
+			}
 			
 			//get and pop next in queue
 			//debug("FIXME", << "OmThreadedCache<KEY,PTR>::FetchLoop(): lock mutex" << endl;
@@ -372,6 +385,9 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 	
 	//alert main thread that fetch is good as dead
 	mFetchThreadAlive = false;	
+	mFetchThreadMutex.unlock();
+	mFetchThreadCv.wakeAll();
+
 	//die
 	debug("thread","%s cache thread # %p is out of fetch loop . . . should die soon.\n",mCacheName,threadSelf);
 }
