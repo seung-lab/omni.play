@@ -20,8 +20,6 @@ OmMeshSegmentListThread::OmMeshSegmentListThread( OmMipChunkPtr p_chunk,
 
 void OmMeshSegmentListThread::run()
 {
-	OmMeshDrawer::letCacheKnowWeAreFetching( mChunkCoord, mRootSeg, mSegmentationID );
-
 	const OmSegIDsSet & chunkValues =  mChunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mSegmentCache);
 	segIter.iterOverSegmentID(mRootSeg->getValue());

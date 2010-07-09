@@ -149,16 +149,19 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 	}
 }
 
-void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, OmSegment * rootSeg,
+void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, 
+					   OmSegment * rootSeg,
 					   const OmMipChunkCoord & chunkCoord,
 					   OmSegmentCache * mSegmentCache,
-					   const OmId mSegmentationID)
+					   const OmId segmentationID)
 {
+	OmMeshDrawer::letCacheKnowWeAreFetching( chunkCoord, rootSeg, segmentationID );
+
 	(new OmMeshSegmentListThread(p_chunk, 
 				     rootSeg,
 				     chunkCoord,
 				     mSegmentCache,
-				     mSegmentationID))->run();
+				     segmentationID))->run();
 }
 
 /*
