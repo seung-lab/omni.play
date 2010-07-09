@@ -53,8 +53,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 
-
-	
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
  	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
@@ -80,7 +78,7 @@ private:
 	
 	//managers
 	OmMipVoxelationManager mMipVoxelationManager;
-	OmSegmentCache * mSegmentCache;
+	OmSegmentCache *const mSegmentCache;
 
 	OmGroups mGroups;
 
