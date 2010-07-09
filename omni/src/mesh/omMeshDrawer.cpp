@@ -2,7 +2,6 @@
 #include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "segment/omSegmentIterator.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -10,6 +9,7 @@
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
 #include "volume/omSegmentation.h"
+#include "mesh/omMeshSegmentListThread.h"
 
 // TODO: make better; this is (segID by MIPlevel by X by Y by Z)
 static boost::unordered_map< OmId, 
@@ -18,6 +18,8 @@ static boost::unordered_map< OmId,
 	  boost::unordered_map< int,
 	   boost::unordered_map< int,
   	    boost::unordered_map< int, OmSegPtrListValid > > > > > > mSegmentListCache;
+
+static QMutex mCacheLock;
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
@@ -148,28 +150,15 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 }
 
 void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, OmSegment * rootSeg,
-					   const OmMipChunkCoord & chunkCoord)
+					   const OmMipChunkCoord & chunkCoord,
+					   OmSegmentCache * mSegmentCache,
+					   const OmId mSegmentationID)
 {
-	letCacheKnowWeAreFetching( chunkCoord, rootSeg );
-
-	const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
-	OmSegmentIterator segIter(mSegmentCache);
-	segIter.iterOverSegmentID(rootSeg->getValue());
-	OmSegment * seg = segIter.getNextSegment();
-	OmSegID val;
-
-	OmSegPtrList segmentsToDraw;
-
-	while( NULL != seg ){
-		val = seg->getValue();
-		if( chunkValues.contains( val ) ){
-			segmentsToDraw.push_back(seg);
-		}
-				
-		seg = segIter.getNextSegment();
-	}
-
-	addToCache( chunkCoord, rootSeg, segmentsToDraw );
+	(new OmMeshSegmentListThread(p_chunk, 
+				     rootSeg,
+				     chunkCoord,
+				     mSegmentCache,
+				     mSegmentationID))->run();
 }
 
 /*
@@ -187,17 +176,18 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		rootSeg = (*iter);
 		rootSegID = rootSeg->getValue();
 
-		if(isCacheFetching(chunkCoord, rootSeg)){
+		if(isCacheFetching(chunkCoord, rootSeg, mSegmentationID)){
 			continue;
 		}
 		
-		clearFromCacheIfFreshnessInvalid(chunkCoord, rootSeg);
+		clearFromCacheIfFreshnessInvalid(chunkCoord, rootSeg, mSegmentationID);
 
-		if(!cacheHasCoord( chunkCoord, rootSegID )){
-			makeSegmentListForCache( p_chunk, rootSeg, chunkCoord );
+		if(!cacheHasCoord( chunkCoord, rootSegID, mSegmentationID )){
+			makeSegmentListForCache( p_chunk, rootSeg, chunkCoord, mSegmentCache, mSegmentationID );
+			continue;
 		}
 
-		const OmSegPtrList & segmentsToDraw = getFromCache(chunkCoord, rootSegID);
+		const OmSegPtrList & segmentsToDraw = getFromCache(chunkCoord, rootSegID, mSegmentationID);
 
 		if(segmentsToDraw.empty()){
 			continue;
@@ -273,23 +263,29 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 }
 
 void OmMeshDrawer::letCacheKnowWeAreFetching( const OmMipChunkCoord & c,
-					      OmSegment * rootSeg )
+					      OmSegment * rootSeg,
+					      const OmId mSegmentationID)
 {
+	QMutexLocker lock(&mCacheLock);
 	mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid(true);
 	debug("meshDrawer", "let cache know we are fetching\n");
 }
 
 bool OmMeshDrawer::isCacheFetching( const OmMipChunkCoord & c,
-				    OmSegment * rootSeg )
+				    OmSegment * rootSeg,
+				    const OmId mSegmentationID )
 {
+	QMutexLocker lock(&mCacheLock);
 	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.isFetching;
 }
 
 void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
 			       OmSegment * rootSeg,
-			       const OmSegPtrList & segmentsToDraw )
+			       const OmSegPtrList & segmentsToDraw,
+			       const OmId mSegmentationID )
 {
+	QMutexLocker lock(&mCacheLock);
 	/*
 	debug("meshDrawer", "added to cache\n");
 	debug("meshDrawerVerbose", "added to cache: key is: %d, %d, %d, %d, %d, %d\n",
@@ -304,8 +300,10 @@ void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
 }
 
 void OmMeshDrawer::clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
-						     OmSegment * rootSeg)
+						     OmSegment * rootSeg,
+						     const OmId mSegmentationID)
 {
+	QMutexLocker lock(&mCacheLock);
 	const unsigned int currentFreshness = rootSeg->getFreshnessForMeshes();
 
 	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
@@ -323,21 +321,25 @@ void OmMeshDrawer::clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
 	}
 }
 
-bool OmMeshDrawer::cacheHasCoord( const OmMipChunkCoord & c, const OmSegID rootSegID )
+bool OmMeshDrawer::cacheHasCoord( const OmMipChunkCoord & c, const OmSegID rootSegID,
+				  const OmId mSegmentationID )
 {
+	QMutexLocker lock(&mCacheLock);
 	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSegID][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.isValid;
 }
 
-const OmSegPtrList & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c, const OmSegID rootSegID )
+const OmSegPtrList & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c, const OmSegID rootSegID,
+						 const OmId mSegmentationID )
 {
+	QMutexLocker lock(&mCacheLock);
 	const OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSegID][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
 	return spList.list;
 }
 
 void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 {
-	return;
+	return; // FIXME!
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPushMatrix();
