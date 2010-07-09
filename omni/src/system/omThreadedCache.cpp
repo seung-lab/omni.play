@@ -336,15 +336,18 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 		mFetchThreadCalledClean = false;
 		mFetchThreadQueuing = true;
 		
-		while (!IsFetchStackEmpty ()) {
 
 
+		do {
 			//if destructing, break loop
 			if(mKillingFetchThread) break;
 			
 			//get and pop next in queue
 			//debug("FIXME", << "OmThreadedCache<KEY,PTR>::FetchLoop(): lock mutex" << endl;
 			mCacheMutex.lock();
+			if(mFetchStack.empty()) {
+				break;
+			}
 			
 			//fetch stack still non-empty since fetch update could not yet have cleared it
 			KEY fetch_key = mFetchStack.top();
@@ -356,7 +359,7 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* thread = 
 				new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key);
 			QThreadPool::globalInstance()->start(thread);
-		} 
+		} while (!IsFetchStackEmpty ());
 	
 		
 		//out of while loop
