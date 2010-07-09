@@ -224,6 +224,7 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	child->mEdgeNumber = -1;
 
 	mCache->findRoot(parent)->mFreshnessForMeshes++;
+	child->mFreshnessForMeshes++;
 
 	updateSizeListsFromSplit( parent, child );
 

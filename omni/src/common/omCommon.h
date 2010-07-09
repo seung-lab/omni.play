@@ -77,8 +77,8 @@ static const OmId NULL_SEGMENT_ID = 0;
 typedef quint32 OmSegID;
 typedef quint32 OmGroupID;
 typedef boost::unordered_set<OmSegID> OmSegIDsSet;
-typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
+typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
 enum OmSegIDRootType {NOTVALIDROOT, VALIDROOT, RECENTROOT, GROUPROOT};
 typedef QString OmGroupName;

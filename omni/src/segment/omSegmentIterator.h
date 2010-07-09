@@ -11,14 +11,12 @@ class OmSegmentCache;
 class OmSegmentIterator
 {
  public:
-	OmSegmentIterator( OmSegmentCache *, 
-			   const bool iterOverSelectedIDs = false, 
-			   const bool iterOverEnabledIDs = false );
+	OmSegmentIterator( OmSegmentCache *);
  
+	void iterOverSegmentID(const OmSegID segID);
+	void iterOverSegmentIDs(const OmSegIDsSet & set);
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
-	void iterOverSegmentIDs(const OmSegIDsSet & set);
-
 
 	OmSegment * getNextSegment();
 	bool empty();

@@ -2,18 +2,14 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 
-OmSegmentIterator::OmSegmentIterator( OmSegmentCache * cache, 
-				      const bool in_iterOverSelectedIDs, 
-				      const bool in_iterOverEnabledIDs )
+OmSegmentIterator::OmSegmentIterator( OmSegmentCache * cache)
+	: mCache(cache)
 {
-	mCache = cache;
-	if( in_iterOverSelectedIDs ){
-		iterOverSelectedIDs();
-	} 
+}
 
-	if( in_iterOverEnabledIDs ){
-		iterOverEnabledIDs();
-	}
+void OmSegmentIterator::iterOverSegmentID(const OmSegID segID)
+{
+	mSegs.push_back(mCache->GetSegment(segID));
 }
 
 void OmSegmentIterator::iterOverSelectedIDs()

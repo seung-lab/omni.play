@@ -161,6 +161,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	child->mThreshold = 0;
 
 	findRoot(parent)->mFreshnessForMeshes++;
+	child->mFreshnessForMeshes++;
 
 	if( isSegmentSelected( parent->getValue() ) ){
 		doSelectedSetInsert( child->getValue() );

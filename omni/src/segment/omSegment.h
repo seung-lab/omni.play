@@ -51,6 +51,8 @@ public:
 	OmId getSegmentationID();
 	float getThreshold(){ return mThreshold; }
 
+	quint32 getFreshnessForMeshes(){return mFreshnessForMeshes;}
+
 private:
 	OmSegID mValue;
 	OmSegmentCache * mCache;
