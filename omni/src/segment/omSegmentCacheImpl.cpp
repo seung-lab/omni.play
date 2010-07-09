@@ -160,6 +160,8 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	child->mThreshold = 0;
 
+	findRoot(parent)->mFreshnessForMeshes++;
+
 	if( isSegmentSelected( parent->getValue() ) ){
 		doSelectedSetInsert( child->getValue() );
 	} else {
@@ -214,6 +216,8 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, e.threshold);
 	childRoot->mCustomMergeEdge = e;
+
+	findRoot(parent)->mFreshnessForMeshes++;
 
         if( isSegmentSelected( e.childID ) ){
                 doSelectedSetInsert( parent->mValue );

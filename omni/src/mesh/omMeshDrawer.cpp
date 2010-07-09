@@ -20,8 +20,6 @@ static boost::unordered_map< OmId,
 	  boost::unordered_map< int,
  	   boost::unordered_map< int, OmSegPtrListValid > > > > > mSegmentListCache;
 
-// NOTE: I am assuming this class is only being used in a single-threaded fashion..
-
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
 	, mSeg( NULL )

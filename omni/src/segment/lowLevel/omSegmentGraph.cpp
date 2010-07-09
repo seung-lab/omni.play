@@ -194,6 +194,8 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 	childRoot->setParent(parent, threshold);
 	childRoot->mEdgeNumber = edgeNumber;
 
+	mCache->findRoot(parent)->mFreshnessForMeshes++;
+
 	updateSizeListsFromJoin( parent, childRoot );
 
 	return true;
@@ -220,6 +222,8 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
         graph_cut(child->mValue);
 	child->mParentSegID = 0;
 	child->mEdgeNumber = -1;
+
+	mCache->findRoot(parent)->mFreshnessForMeshes++;
 
 	updateSizeListsFromSplit( parent, child );
 

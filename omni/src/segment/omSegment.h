@@ -70,6 +70,8 @@ private:
 
 	void SetInitialColor();
 
+	quint32 mFreshnessForMeshes;
+
 	friend class OmSegmentListBySize;
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentCacheImplLowLevel;
