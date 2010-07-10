@@ -44,8 +44,6 @@ OmMipVolume::OmMipVolume()
 
 	mBytesPerSample = 1;
 	mCompleteDelete=false;
-
-	mSimpleChunkThreadedCache = new OmSimpleChunkThreadedCache(this);
 }
 
 OmMipVolume::~OmMipVolume()
@@ -441,13 +439,6 @@ void OmMipVolume::GetChunk(QExplicitlySharedDataPointer < OmMipChunk > &p_value,
 	MipChunkThreadedCache::Get(p_value, rMipCoord, block);
 }
 
-void OmMipVolume::GetSimpleChunk(QExplicitlySharedDataPointer < OmSimpleChunk > &p_value, const OmMipChunkCoord & rMipCoord, bool block)
-{
-	//ensure either built or building
-	assert(mBuildState != MIPVOL_UNBUILT);
-
-	mSimpleChunkThreadedCache->Get(p_value, rMipCoord, block);
-}
 /*
  *	Store chunk by adding it to the cache.
  */
@@ -1068,10 +1059,4 @@ int OmMipVolume::GetBytesPerSample()
 void OmMipVolume::SetBytesPerSample(int bytesPerSample)
 {
 	mBytesPerSample = bytesPerSample;
-}
-
-OmSimpleChunkThreadedCache* 
-OmMipVolume::GetSimpleChunkThreadedCache()
-{
-	return mSimpleChunkThreadedCache;
 }

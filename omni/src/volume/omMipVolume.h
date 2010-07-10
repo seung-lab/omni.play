@@ -9,7 +9,6 @@
  */
 class OmVolume;
 #include "volume/omVolume.h"
-#include "omSimpleChunkThreadedCache.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
 #include "datalayer/omDataPath.h"
@@ -84,7 +83,6 @@ public:
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &mipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
 	void GetChunk(QExplicitlySharedDataPointer<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
-	void GetSimpleChunk(QExplicitlySharedDataPointer<OmSimpleChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
 	
 	//mip data accessors
@@ -108,9 +106,6 @@ public:
 	bool ContainsVoxel(const DataCoord &vox);
 	int GetBytesPerSample();
 	void SetBytesPerSample(int);
-
-	//Simple Chunk Stuff
-	OmSimpleChunkThreadedCache* GetSimpleChunkThreadedCache();
 
 	//timer variables
 	OmTimer mip_timer;
@@ -147,7 +142,6 @@ protected:
 	
 private:
 	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
-	OmSimpleChunkThreadedCache* mSimpleChunkThreadedCache;
 
 	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	

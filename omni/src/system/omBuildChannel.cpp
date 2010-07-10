@@ -1,3 +1,4 @@
+#include "volume/omMipChunk.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"

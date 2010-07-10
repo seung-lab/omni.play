@@ -238,8 +238,6 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipVolume.h \
            src/volume/omSegmentation.h \
            src/volume/omSegmentationChunkCoord.h \
-           src/volume/omSimpleChunk.h \
-           src/volume/omSimpleChunkThreadedCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
            src/voxel/omMipSegmentDataCoord.h \
@@ -385,7 +383,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
-           src/system/omFetchingThread.cpp \
            src/system/omGarbage.cpp \
            src/system/omGenericManager.cpp \
            src/system/omGroup.cpp \
@@ -433,8 +430,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipVolume.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationChunkCoord.cpp \
-           src/volume/omSimpleChunk.cpp \
-           src/volume/omSimpleChunkThreadedCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
            src/voxel/omMipSegmentDataCoord.cpp \

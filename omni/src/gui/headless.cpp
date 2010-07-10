@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <time.h>
 
+#include "volume/omMipChunk.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
@@ -278,8 +279,8 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
 		
-		QExplicitlySharedDataPointer < OmSimpleChunk > p_chunk = QExplicitlySharedDataPointer < OmSimpleChunk > ();
-		segmen.GetSimpleChunk(p_chunk, chunk_coord);
+		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+		segmen.GetChunk(p_chunk, chunk_coord);
 		p_chunk->Open();
 		
         } else {
