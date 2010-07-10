@@ -2,7 +2,6 @@
 #include "mesh/omMeshSegmentListThread.h"
 #include "common/omDebug.h"
 #include "volume/omMipChunk.h"
-#include <QThreadPool>
 
 OmMeshSegmentList* OmMeshSegmentList::mspInstance = NULL;
 
@@ -95,7 +94,7 @@ void OmMeshSegmentList::doMakeSegmentListForCache(OmMipChunkPtr p_chunk,
 								      chunkCoord,
 								      mSegmentCache,
 								      segmentationID);
-	QThreadPool::globalInstance()->start(thread);
+	threads.start(thread);
 }
 
 void OmMeshSegmentList::doLetCacheKnowWeAreFetching( const OmMipChunkCoord & c,

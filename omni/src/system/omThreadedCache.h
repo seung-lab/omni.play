@@ -12,6 +12,7 @@
 #include <QExplicitlySharedDataPointer>
 #include <QStack>
 #include <QMap>
+#include <QThreadPool>
 
 #include <time.h>
 
@@ -81,6 +82,9 @@ class OmThreadedCache : public OmCacheBase, public QThread
 protected:
 	
 private:
+
+	//QThreadPool threads;
+
 	//key, shared pointer value cache
 	QMap< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
 

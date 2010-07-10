@@ -1,6 +1,5 @@
 #include "omThreadedCache.h"
 #include "omHandleCacheMissThreaded.h"
-#include <QThreadPool>
 
 #define MAX_FETCHING (200)
 
@@ -367,12 +366,12 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			mFetchStack.pop();
 			mCurrentlyFetching.append(fetch_key);
 
+			mCacheMutex.unlock();
+
 			HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* thread = 
 				new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key);
-			QThreadPool::globalInstance()->start(thread, QThread::LowestPriority);
-			//thread->start();
-
-			mCacheMutex.unlock();
+			thread->run();
+			//threads.start(thread, QThread::LowestPriority);
 
 		} while (!IsFetchStackEmpty ());
 	

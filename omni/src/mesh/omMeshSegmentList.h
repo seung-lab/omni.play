@@ -8,6 +8,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QThreadPool>
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -45,6 +46,8 @@ class OmMeshSegmentList : boost::noncopyable{
 
 	std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
 	
+	QThreadPool threads;
+
 	QMutex mCacheLock;
 
 	bool doIsSegmentListReadyInCache(OmMipChunkPtr, 
