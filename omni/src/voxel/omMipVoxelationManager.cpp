@@ -1,29 +1,21 @@
-
-#include "omMipVoxelationManager.h"
-
-#include "omMipVoxelation.h"
-#include "voxel/omMipSegmentDataCoord.h"
-
-#include "segment/omSegmentCache.h"
-#include "volume/omDrawOptions.h"
-#include "volume/omMipVolume.h"
-
-#include "system/omStateManager.h"
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
-
 #include "common/omDebug.h"
 #include "common/omGl.h"
-
-#define DEBUG 0
+#include "segment/omSegmentCache.h"
+#include "system/events/omView3dEvent.h"
+#include "system/omEventManager.h"
+#include "system/omStateManager.h"
+#include "volume/omDrawOptions.h"
+#include "volume/omMipVolume.h"
+#include "voxel/omMipSegmentDataCoord.h"
+#include "voxel/omMipVoxelation.h"
+#include "voxel/omMipVoxelationManager.h"
 
 /////////////////////////////////
-///////
 ///////          OmMipVoxelationManager
-///////
 
 OmMipVoxelationManager::OmMipVoxelationManager(OmMipVolume * pMipVolume)
- : MipVoxelationCache(VRAM_CACHE_GROUP, false), mpMipVolume(pMipVolume)
+ : OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>(VRAM_CACHE_GROUP, false)
+ , mpMipVolume(pMipVolume)
 {
 	debug("genone", "OmMipVoxelationManager::OmMipVoxelationManager\n");
 	//set cache properties
@@ -37,11 +29,7 @@ OmMipVoxelationManager::OmMipVoxelationManager(OmMipVolume * pMipVolume)
 
 OmMipVoxelationManager::~OmMipVoxelationManager()
 {
-
 }
-
-/////////////////////////////////
-///////          Property Accessors
 
 /////////////////////////////////
 ///////          Voxelation Accessors
@@ -49,17 +37,17 @@ OmMipVoxelationManager::~OmMipVoxelationManager()
 void
 OmMipVoxelationManager::GetVoxelation(QExplicitlySharedDataPointer < OmMipVoxelation > &p_value, const OmMipSegmentDataCoord & coord)
 {
-	MipVoxelationCache::Get(p_value, coord, false);
+	OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>::Get(p_value, coord, false);
 }
 
 bool OmMipVoxelationManager::ContainsVoxelation(const OmMipSegmentDataCoord & coord)
 {
-	return MipVoxelationCache::Contains(coord);
+	return OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>::Contains(coord);
 }
 
 void OmMipVoxelationManager::RemoveVoxelation(const OmMipSegmentDataCoord & coord)
 {
-	MipVoxelationCache::Remove(coord);
+	OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>::Remove(coord);
 }
 
 /////////////////////////////////

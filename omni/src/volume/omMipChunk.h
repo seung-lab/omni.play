@@ -28,11 +28,10 @@ public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	virtual ~OmMipChunk();
 		
-	//overridden datavolume methods so as to notify cache
 	void Open();
-	virtual void OpenForWrite();
+	void OpenForWrite();
 	void Flush();
-	virtual void Close();
+	void Close();
 	bool IsOpen();
 
 	//properties

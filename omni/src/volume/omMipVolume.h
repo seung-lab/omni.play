@@ -23,10 +23,7 @@ class vtkImageData;
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
 
-//typedef chunk cache
-typedef OmThreadedCache< OmMipChunkCoord, OmMipChunk > MipChunkThreadedCache;
-
-class OmMipVolume : public OmVolume, public MipChunkThreadedCache {
+class OmMipVolume : public OmVolume, public OmThreadedCache<OmMipChunkCoord, OmMipChunk> {
 	
 public:
         OmMipVolume();

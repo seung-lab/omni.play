@@ -17,7 +17,7 @@
 ///////          OmMipMeshManager
 
 OmMipMeshManager::OmMipMeshManager()
-	: MipMeshCache(VRAM_CACHE_GROUP, true)
+	: OmThreadedCache<OmMipMeshCoord, OmMipMesh>(VRAM_CACHE_GROUP, true)
 {
 	// set cache properties
 	SetFetchUpdateInterval(0.5f);
@@ -61,12 +61,12 @@ OmMipMesh *OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
  */
 void OmMipMeshManager::GetMesh(QExplicitlySharedDataPointer < OmMipMesh > &p_value, const OmMipMeshCoord & coord)
 {
-	MipMeshCache::Get(p_value, coord, false);
+	OmThreadedCache<OmMipMeshCoord, OmMipMesh>::Get(p_value, coord, false);
 }
 
 void OmMipMeshManager::UncacheMesh(const OmMipMeshCoord & coord)
 {
-	MipMeshCache::Remove(coord);
+	OmThreadedCache<OmMipMeshCoord, OmMipMesh>::Remove(coord);
 }
 
 /////////////////////////////////

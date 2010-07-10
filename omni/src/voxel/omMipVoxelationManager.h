@@ -9,9 +9,8 @@ class OmMipSegmentDataCoord;
 class OmSegmentCache;
 class OmMipVolume;
 
-typedef OmThreadedCache< OmMipSegmentDataCoord, OmMipVoxelation > MipVoxelationCache;
-
-class OmMipVoxelationManager : public MipVoxelationCache {
+class OmMipVoxelationManager 
+: public OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation> {
 
 public:
 	OmMipVoxelationManager(OmMipVolume *);

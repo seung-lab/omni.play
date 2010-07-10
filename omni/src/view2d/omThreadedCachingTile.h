@@ -16,8 +16,6 @@
 class OmCachingThreadedCachingTile;
 class OmViewGroupState;
 
-typedef OmThreadedCache< OmTileCoord, OmTextureID > TextureIDThreadedCache;
-
 class QGLContext;
 
 
@@ -27,8 +25,7 @@ class QGLContext;
  *	Rachel Shearer - rshearer@mit.edu
  */
 
-class OmThreadedCachingTile 
-: public OmTile, public TextureIDThreadedCache {
+class OmThreadedCachingTile : public OmTile, public OmThreadedCache<OmTileCoord, OmTextureID> {
 	
 public:	
 	OmThreadedCachingTile(ViewType, ObjectType, OmId, OmMipVolume *, const QGLContext *, OmViewGroupState * );

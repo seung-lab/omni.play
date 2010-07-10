@@ -30,7 +30,7 @@ static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 ///////
 
 OmMipVolume::OmMipVolume()
- : MipChunkThreadedCache(RAM_CACHE_GROUP)
+ : OmThreadedCache<OmMipChunkCoord, OmMipChunk>(RAM_CACHE_GROUP)
 {
 	sourceFilesWereSet = false;
 
@@ -55,8 +55,9 @@ OmMipVolume::~OmMipVolume()
 
 	//clear cache before destructing since chunks depend on existance 
 	//of parent mipvolume
-	if (!mCompleteDelete) MipChunkThreadedCache::Clear();
-
+	if (!mCompleteDelete){
+		OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Clear();
+	}
 }
 
 void OmMipVolume::PrepareForCompleteDelete()
@@ -78,7 +79,7 @@ void
 	BuildEditedLeafChunks();
 
 	//flush all chunks in the cache
-	MipChunkThreadedCache::Flush();
+	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Flush();
 }
 
 /////////////////////////////////
@@ -436,7 +437,7 @@ void OmMipVolume::GetChunk(QExplicitlySharedDataPointer < OmMipChunk > &p_value,
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
-	MipChunkThreadedCache::Get(p_value, rMipCoord, block);
+	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Get(p_value, rMipCoord, block);
 }
 
 /*
@@ -447,7 +448,7 @@ void OmMipVolume::StoreChunk(const OmMipChunkCoord & rMipCoord, OmMipChunk * pMi
 
 	assert(ContainsMipChunkCoord(rMipCoord));
 
-	MipChunkThreadedCache::Add(rMipCoord, pMipChunk);
+	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Add(rMipCoord, pMipChunk);
 }
 
 /*

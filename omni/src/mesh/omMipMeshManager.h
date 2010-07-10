@@ -11,15 +11,13 @@
 #include "segment/omSegmentPointers.h"
 #include "system/omThreadedCache.h"
 
-typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
-
 class OmMipChunk;
 class OmMipChunkCoord;
 class OmMeshSource;
 class QGLContext;
 class OmViewGroupState;
 
-class OmMipMeshManager : public MipMeshCache {
+class OmMipMeshManager : public OmThreadedCache<OmMipMeshCoord, OmMipMesh> {
 
  public:
 	OmMipMeshManager();

@@ -2,7 +2,7 @@
 #define OM_CACHE_BASE_H
 
 /*
- *	Base class of all caches (GenericCache and ThreadedCache).  Base class allows
+ *	Base class of all caches.  Base class allows
  *	for the CacheManager to organize caches into groups which can be emptied all at once.
  *	UpdateSize() method forwards the update to the manager with appropriate group information.
  *

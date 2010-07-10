@@ -12,7 +12,7 @@
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
                                              const QGLContext * shareContext, OmViewGroupState * vgs)
 	: OmTile(viewtype, voltype, image_id, vol, vgs), 
-	  TextureIDThreadedCache(VRAM_CACHE_GROUP, true)
+	  OmThreadedCache<OmTileCoord, OmTextureID>(VRAM_CACHE_GROUP, true)
 {
 	// omView2d passes in its own context
 
@@ -31,7 +31,7 @@ OmThreadedCachingTile::~OmThreadedCachingTile()
 
 void OmThreadedCachingTile::GetTextureID(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
 {
-	TextureIDThreadedCache::Get(p_value, tileCoord, block);
+	OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, tileCoord, block);
 }
 
 // Called at the highest miplevel will force the entire octree into memory so an initial
@@ -53,7 +53,7 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 		// Try directly below current level.
 		mipTileCoord.Level += 1;
 
-		TextureIDThreadedCache::Get(p_value, mipTileCoord, false);
+		OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, mipTileCoord, false);
 		if (p_value) {
 			//debug("FIXME", << "tile " << mipTileCoord.Level << " found" << endl;
 			retCoord = mipTileCoord;
@@ -62,17 +62,17 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 	}
 
 	retCoord = tileCoord;
-	TextureIDThreadedCache::Get(p_value, tileCoord, false);
+	OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, tileCoord, false);
 }
 
 void OmThreadedCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID)
 {
-	TextureIDThreadedCache::Add(tileCoord, texID);
+	OmThreadedCache<OmTileCoord, OmTextureID>::Add(tileCoord, texID);
 }
 
 void OmThreadedCachingTile::Remove(const OmTileCoord & tileCoord)
 {
-	TextureIDThreadedCache::Remove(tileCoord);
+	OmThreadedCache<OmTileCoord, OmTextureID>::Remove(tileCoord);
 }
 
 OmTextureID *OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord & key)
