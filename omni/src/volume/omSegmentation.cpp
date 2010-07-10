@@ -26,10 +26,10 @@
 #include <QFile>
 #include <QTextStream>
 
+static const float DefaultThresholdSize = 0.1;
+
 /////////////////////////////////
-///////
 ///////         OmSegmentation
-///////
 
 OmSegmentation::OmSegmentation()
 	: mMipVoxelationManager(this)
@@ -51,7 +51,7 @@ OmSegmentation::OmSegmentation()
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.1;
+	mDendThreshold = DefaultThresholdSize;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
@@ -84,7 +84,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.1;
+	mDendThreshold = DefaultThresholdSize;
 
         SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();

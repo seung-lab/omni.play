@@ -65,6 +65,7 @@ private:
 	~OmCacheManager();
 
 	QThreadPool threads;
+	//QThreadPool managerThreads;
 
 	//singleton
 	static OmCacheManager* mspInstance;

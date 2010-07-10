@@ -168,6 +168,6 @@ void OmCacheManager::addThread(QRunnable * runnable, int priority)
 
 void OmCacheManager::addManagerThread(QRunnable * runnable)
 {
-	Instance()->threads.reserveThread();
-	Instance()->threads.start(runnable);
+	//	Instance()->managerThreads.reserveThread();
+	//	Instance()->managerThreads.start(runnable);
 }
