@@ -11,6 +11,7 @@ HandleCacheMissThreaded<TC, KEY, PTR>::HandleCacheMissThreaded(TC * tc, KEY key)
 template < typename TC, typename KEY, typename PTR >
 void HandleCacheMissThreaded<TC, KEY, PTR>::run()
 {
-	mTC->HandleFetchUpdate(mKey, mTC->HandleCacheMiss(mKey));
+	PTR * ret = mTC->HandleCacheMiss(mKey);
+	mTC->HandleFetchUpdate(mKey, ret);
 }
 

@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 
+#include <QThreadPool>
 #include <QMutex>
 
 class OmCacheBase;
@@ -43,6 +44,9 @@ public:
 	static void UpdateCacheSize(OmCacheGroup group, int delta);
 	static void UpdateCacheSizeFromLocalPrefs();
 	static unsigned int Freshen(bool freshen);
+
+	static void addThread(QRunnable * runnable, int priority = 0);
+	static void addManagerThread(QRunnable * runnable);
 	
 	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
@@ -59,6 +63,8 @@ protected:
 private:
 	OmCacheManager();
 	~OmCacheManager();
+
+	QThreadPool threads;
 
 	//singleton
 	static OmCacheManager* mspInstance;

@@ -9,10 +9,10 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <QThread>
+#include <QRunnable>
 #include <QExplicitlySharedDataPointer>
 #include <QStack>
 #include <QMap>
-#include <QThreadPool>
 
 #include <time.h>
 
@@ -33,7 +33,7 @@
  */
 
 template < typename KEY, typename PTR  >
-class OmThreadedCache : public OmCacheBase, public QThread
+	class OmThreadedCache : public OmCacheBase, public QThread /*QRunnable*/
 {	
  public:
 	
@@ -83,8 +83,6 @@ protected:
 	
 private:
 
-	//QThreadPool threads;
-
 	//key, shared pointer value cache
 	QMap< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
 
@@ -124,9 +122,8 @@ private:
 
 	/** name/descriptor of Cache for debugging */
 	char mCacheName[40];
-	void * threadSelf;
 
-
+	void spawnWorkerThread(KEY fetch_key);
 };
 
 #endif
