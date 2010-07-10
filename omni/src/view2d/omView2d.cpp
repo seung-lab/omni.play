@@ -331,7 +331,7 @@ void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord glob
                sel.augmentSelectedSet( segID, true );
                sel.sendEvent();
 
-               Refresh();
+               //Refresh();
         } 
 }
 
@@ -723,7 +723,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	
 	if (doselection) {
 		if(sel.sendEvent()){
-			Refresh();
+			//Refresh();
 		}
 	}
 }
@@ -875,7 +875,7 @@ void OmView2d::SegmentObjectModificationEvent(OmSegmentEvent*)
 	//add/remove segment, change state, change selection
 	//valid methods: GetModifiedSegmentIds()
 
-	Refresh ();
+	//Refresh ();
 	myUpdate();
 }
 

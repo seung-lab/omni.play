@@ -59,7 +59,7 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 {
   	OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 	
-	if(!blocking) {
+	if( 0 && !blocking) {
 		if(!mCacheMutex.tryLock()) {
 			p_value = QExplicitlySharedDataPointer<PTR>();
 			return;
@@ -366,12 +366,14 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 			KEY fetch_key = mFetchStack.top();
 			mFetchStack.pop();
 			mCurrentlyFetching.append(fetch_key);
-			
-			mCacheMutex.unlock();
 
 			HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* thread = 
 				new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key);
-			QThreadPool::globalInstance()->start(thread);
+			QThreadPool::globalInstance()->start(thread, QThread::LowestPriority);
+			//thread->start();
+
+			mCacheMutex.unlock();
+
 		} while (!IsFetchStackEmpty ());
 	
 		
@@ -379,14 +381,13 @@ OmThreadedCache<KEY,PTR>::FetchLoop() {
 		mFetchThreadQueuing = false;
 
 		//deque empty so send update
-		HandleFetchUpdate();
+		//HandleFetchUpdate();
 	}
 	
 	
 	//alert main thread that fetch is good as dead
 	mFetchThreadAlive = false;	
 	mFetchThreadMutex.unlock();
-	mFetchThreadCv.wakeAll();
 
 	//die
 	debug("thread","%s cache thread # %p is out of fetch loop . . . should die soon.\n",mCacheName,threadSelf);
