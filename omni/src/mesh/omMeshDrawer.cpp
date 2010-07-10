@@ -154,14 +154,8 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		rootSeg = (*iter);
 		rootSegID = rootSeg->getValue();
 
-		if(OmMeshSegmentList::isCacheFetching(chunkCoord, rootSeg, mSegmentationID)){
-			continue;
-		}
-		
-		OmMeshSegmentList::clearFromCacheIfFreshnessInvalid(chunkCoord, rootSeg, mSegmentationID);
-
-		if(!OmMeshSegmentList::cacheHasCoord( chunkCoord, rootSegID, mSegmentationID )){
-			OmMeshSegmentList::makeSegmentListForCache( p_chunk, rootSeg, chunkCoord, mSegmentCache, mSegmentationID );
+		if(!OmMeshSegmentList::isSegmentListReadyInCache(p_chunk, rootSeg, chunkCoord, 
+								 mSegmentCache, mSegmentationID )){
 			continue;
 		}
 

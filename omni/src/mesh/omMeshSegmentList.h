@@ -21,33 +21,20 @@ class OmMeshSegmentList : boost::noncopyable{
  public:
 	static void Delete();
 
-	static bool cacheHasCoord( const OmMipChunkCoord &, const OmSegID,
-				   const OmId mSegmentationID);
-
 	static const OmSegPtrList & getFromCache( const OmMipChunkCoord &, 
 						  const OmSegID,
-						  const OmId mSegmentationID);
+						  const OmId);
+	
+	static bool isSegmentListReadyInCache(OmMipChunkPtr, 
+					      OmSegment *,
+					      const OmMipChunkCoord &,
+					      OmSegmentCache *,
+					      const OmId );
 
-	static void makeSegmentListForCache(OmMipChunkPtr, OmSegment *, const OmMipChunkCoord &,
-					    OmSegmentCache *,
-					    const OmId mSegmentationID );
-
-	static void clearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
-						      OmSegment * rootSeg,
-						      const OmId mSegmentationID);
-
-	static bool isCacheFetching( const OmMipChunkCoord & c,
-				     OmSegment * rootSeg,
-				     const OmId mSegmentationID );
-
-	static void letCacheKnowWeAreFetching( const OmMipChunkCoord & c,
-					       OmSegment * rootSeg,
-					       const OmId mSegmentationID );
-
-	static void addToCache( const OmMipChunkCoord &, OmSegment *, const OmSegPtrList &,
-				const OmId mSegmentationID );
-
-
+	static void addToCache( const OmMipChunkCoord &, 
+				OmSegment *, 
+				const OmSegPtrList &,
+				const OmId );
  private:
 	OmMeshSegmentList();
 	~OmMeshSegmentList();
@@ -60,31 +47,41 @@ class OmMeshSegmentList : boost::noncopyable{
 	
 	QMutex mCacheLock;
 
-	bool doCacheHasCoord( const OmMipChunkCoord &, const OmSegID,
-			      const OmId mSegmentationID);
+	bool doIsSegmentListReadyInCache(OmMipChunkPtr, 
+					 OmSegment *,
+					 const OmMipChunkCoord &,
+					 OmSegmentCache *,
+					 const OmId );
+	
+	bool doCacheHasCoord( const OmMipChunkCoord &, 
+			      const OmSegID,
+			      const OmId );
 
 	const OmSegPtrList & doGetFromCache( const OmMipChunkCoord &, 
 					     const OmSegID,
-					     const OmId mSegmentationID);
+					     const OmId );
 
-	void doMakeSegmentListForCache(OmMipChunkPtr, OmSegment *, const OmMipChunkCoord &,
+	void doMakeSegmentListForCache(OmMipChunkPtr, OmSegment *, 
+				       const OmMipChunkCoord &,
 				       OmSegmentCache *,
-				       const OmId mSegmentationID );
+				       const OmId  );
 
 	void doClearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
 						 OmSegment * rootSeg,
-						 const OmId mSegmentationID);
+						 const OmId );
 
 	bool doIsCacheFetching( const OmMipChunkCoord & c,
 				OmSegment * rootSeg,
-				const OmId mSegmentationID );
+				const OmId  );
 	
 	void doLetCacheKnowWeAreFetching( const OmMipChunkCoord & c,
 					  OmSegment * rootSeg,
-					  const OmId mSegmentationID );
+					  const OmId  );
 
-	void doAddToCache( const OmMipChunkCoord &, OmSegment *, const OmSegPtrList &,
-			   const OmId mSegmentationID );
+	void doAddToCache( const OmMipChunkCoord &, 
+			   OmSegment *, 
+			   const OmSegPtrList &,
+			   const OmId  );
 };
 
 #endif
