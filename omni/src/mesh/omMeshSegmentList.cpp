@@ -37,7 +37,7 @@ bool OmMeshSegmentList::isSegmentListReadyInCache(OmMipChunkPtr p_chunk,
 						  OmSegmentCache * mSegmentCache,
 						  const OmId segmentationID)
 {
-	return Instance()->isSegmentListReadyInCache(p_chunk, 
+	return Instance()->doIsSegmentListReadyInCache(p_chunk, 
 						     rootSeg,
 						     chunkCoord,
 						     mSegmentCache,

@@ -41,5 +41,5 @@ void OmMeshSegmentListThread::run()
 
 	OmMeshSegmentList::addToCache( mChunkCoord, mRootSeg, segmentsToDraw, mSegmentationID );
 	OmEvents::Redraw3d();
-	printf("done..(%u)\n", mRootSeg->getValue());
+	//	printf("done..(%u)\n", mRootSeg->getValue());
 }
