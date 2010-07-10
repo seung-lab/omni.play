@@ -82,8 +82,6 @@ const OmSegPtrList & OmMeshSegmentList::getFromCache( const OmMipChunkCoord & c,
 	return Instance()->doGetFromCache( c, rootSegID, mSegmentationID );
 }
 
-
-
 void OmMeshSegmentList::doMakeSegmentListForCache(OmMipChunkPtr p_chunk, 
 					   OmSegment * rootSeg,
 					   const OmMipChunkCoord & chunkCoord,
@@ -105,7 +103,8 @@ void OmMeshSegmentList::doLetCacheKnowWeAreFetching( const OmMipChunkCoord & c,
 					      const OmId mSegmentationID)
 {
 	QMutexLocker lock(&mCacheLock);
-	mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid(true);
+	mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSeg->getValue(), c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)] 
+		= OmSegPtrListValid(true);
 	debug("meshDrawer", "let cache know we are fetching\n");
 }
 
@@ -114,7 +113,7 @@ bool OmMeshSegmentList::doIsCacheFetching( const OmMipChunkCoord & c,
 				    const OmId mSegmentationID )
 {
 	QMutexLocker lock(&mCacheLock);
-	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrListValid & spList = mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSeg->getValue(), c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)];
 	return spList.isFetching;
 }
 
@@ -134,7 +133,8 @@ void OmMeshSegmentList::doAddToCache( const OmMipChunkCoord & c,
 	      c.Coordinate.y,
 	      c.Coordinate.z);
 	*/
-	mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
+	mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSeg->getValue(), c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)] 
+		= OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
 }
 
 void OmMeshSegmentList::doClearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
@@ -144,7 +144,7 @@ void OmMeshSegmentList::doClearFromCacheIfFreshnessInvalid( const OmMipChunkCoor
 	QMutexLocker lock(&mCacheLock);
 	const unsigned int currentFreshness = rootSeg->getFreshnessForMeshes();
 
-	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSeg->getValue()][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrListValid & spList = mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSeg->getValue(), c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)];
 
 	if(!spList.isValid){
 		return;
@@ -163,7 +163,7 @@ bool OmMeshSegmentList::doCacheHasCoord( const OmMipChunkCoord & c, const OmSegI
 				  const OmId mSegmentationID )
 {
 	QMutexLocker lock(&mCacheLock);
-	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSegID][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	OmSegPtrListValid & spList = mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSegID, c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)];
 	return spList.isValid;
 }
 
@@ -171,6 +171,6 @@ const OmSegPtrList & OmMeshSegmentList::doGetFromCache( const OmMipChunkCoord & 
 						 const OmId mSegmentationID )
 {
 	QMutexLocker lock(&mCacheLock);
-	const OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][rootSegID][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
+	const OmSegPtrListValid & spList = mSegmentListCache[OmMeshSegListKey(mSegmentationID, rootSegID, c.Level, c.Coordinate.x, c.Coordinate.y, c.Coordinate.z)];
 	return spList.list;
 }

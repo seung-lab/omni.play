@@ -1,7 +1,7 @@
-#include "system/omGroups.h"
 #include "common/omDebug.h"
-#include "system/omManageableObject.h"
 #include "system/omGroup.h"
+#include "system/omGroups.h"
+#include "system/omManageableObject.h"
 
 OmGroups::OmGroups(OmSegmentation * seg) 
 	: mSegmentation(seg)
@@ -24,7 +24,7 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 	return group;
 }
 
-void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet)
+void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool)
 {
 	printf("adding ids\n");
 	group->AddIds(set);

@@ -659,8 +659,8 @@ void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
         QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
         if (changeFlags & QPinchGesture::RotationAngleChanged) {
                 printf("1\n");
-                qreal value = gesture->property("rotationAngle").toReal();
-                qreal lastValue = gesture->property("lastRotationAngle").toReal();
+                //qreal value = gesture->property("rotationAngle").toReal();
+                //qreal lastValue = gesture->property("lastRotationAngle").toReal();
                 //rotationAngle += value - lastValue;
         }
         if (changeFlags & QPinchGesture::ScaleFactorChanged) {

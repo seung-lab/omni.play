@@ -9,6 +9,10 @@
 #include <QThread>
 #include <QMutex>
 
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+typedef boost::tuple<OmId,OmSegID,int,int,int,int> OmMeshSegListKey;
+
 class OmSegment;
 class OmSegmentCache;
 class OmMeshSegmentListThread;
@@ -52,13 +56,7 @@ class OmMeshSegmentList : boost::noncopyable{
 	//singleton
 	static OmMeshSegmentList* mspInstance;
 
-	// TODO: make better; this is (segID by MIPlevel by X by Y by Z)
-	boost::unordered_map< OmId, 
-		boost::unordered_map< OmSegID, 
-		boost::unordered_map< int, 
-		boost::unordered_map< int,
-		boost::unordered_map< int,
-		boost::unordered_map< int, OmSegPtrListValid > > > > > > mSegmentListCache;
+	std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
 	
 	QMutex mCacheLock;
 
