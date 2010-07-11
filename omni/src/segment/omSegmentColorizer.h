@@ -2,7 +2,7 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
-#include <QMutex> 
+#include <QReadWriteLock> 
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -30,7 +30,7 @@ class OmSegmentColorizer
 	}
 
  private:
-	mutable QMutex mMutex;
+	mutable QReadWriteLock mRWlock;
 
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;

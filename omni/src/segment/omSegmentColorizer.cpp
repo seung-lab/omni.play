@@ -25,7 +25,7 @@ OmSegmentColorizer::~OmSegmentColorizer()
 
 void OmSegmentColorizer::setup()
 {
-	QMutexLocker lock(&mMutex);
+	QWriteLocker lock(&mRWlock);
 
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
@@ -64,13 +64,16 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 			if( 0 == val ){
 				newcolor = blackColor;
 			} else{
-				mMutex.lock(); // TODO: use lock-free hash?
+				mRWlock.lockForWrite();
 				if( !isCacheElementValid(val, segCacheFreshness) ){
 					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
-				mMutex.unlock();
+				mRWlock.unlock();
+				
+				mRWlock.lockForRead();
 				newcolor = mColorCache[ val ].color;
+				mRWlock.unlock();
 			}
 		} 
 
