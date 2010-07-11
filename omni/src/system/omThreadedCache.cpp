@@ -33,6 +33,8 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
+	OmCacheManager::clearWorkerThreads();
+
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
 	mFetchThreadCv.wakeAll();
@@ -444,5 +446,5 @@ void OmThreadedCache<KEY,PTR>::spawnWorkerThread(KEY fetch_key)
 
 	//thread->run(); //doesn't actually start thread
 	//QThreadPool::globalInstance()->start(thread, QThread::LowestPriority);
-	OmCacheManager::addThread(thread, QThread::LowestPriority);
+	OmCacheManager::addWorkerThread(thread, QThread::LowestPriority);
 }
