@@ -28,7 +28,8 @@ public:
 	
 	static OmStateManager* Instance();
 	static void Delete();
-	static void UpdateStatusBar( QString msg );
+
+	static void UpdateStatusBar( const QString & msg );
 
 	//project
 	static const string& GetProjectFileName();
@@ -46,7 +47,6 @@ public:
 	static void PushUndoCommand(QUndoCommand *);
 	static void ClearUndoStack();
 	static void UndoUndoCommand();
-	
 	
 	//view3d context
 	static void CreatePrimaryView3dWidget();
@@ -73,6 +73,7 @@ public:
 	static void setDendToolBar( DendToolBar * dtb);
 
 	static QSize getViewBoxSizeHint();
+
 	static void SetViewDrawable(ViewType viewType, vector<Drawable*> & drawable);
 	static vector<Drawable*> GetViewDrawable(ViewType viewType);
 
