@@ -140,11 +140,11 @@ void OmProject::Close()
 {
 	// OmProject must be deleted first: it depends on the remaining classes...
 	Delete();
+	OmCacheManager::Delete();
 
 	//delete all singletons
 	OmMeshSegmentList::Delete();
 	OmSegmentEditor::Delete();
-	OmCacheManager::Delete();
 	OmEventManager::Delete();
 	OmGarbage::Delete();
 	OmPreferences::Delete();

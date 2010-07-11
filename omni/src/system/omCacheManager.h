@@ -72,9 +72,9 @@ private:
 	static OmCacheManager* mspInstance;
 		
 	//properties map
-	QMutex mCacheMapMutex;
-	QMutex mRealCacheMapMutex;
-	QMutex mFreshnessMutex;
+	mutable QMutex mCacheMapMutex;
+	mutable QMutex mRealCacheMapMutex;
+	mutable QMutex mFreshnessMutex;
 	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
 	map< OmCacheGroup, CacheGroupProperties > mRemoveCacheMap;
 	

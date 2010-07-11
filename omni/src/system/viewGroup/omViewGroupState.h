@@ -80,7 +80,7 @@ class OmViewGroupState : public OmManageableObject {
 	void setView2DBrushToolDiameter(const int size);
 
  private:
-	QMutex mColorCacheMapLock;
+	mutable QMutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
 	ViewGroup * mViewGroup;

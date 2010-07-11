@@ -47,7 +47,7 @@ class OmHdf5
 
  private:
 	QString m_fileNameAndPath;
-	QMutex fileLock;
+	mutable QMutex fileLock;
 	OmHdf5LowLevelWrappersManualOpenClose * hdfLowLevelWrap;
 };
 

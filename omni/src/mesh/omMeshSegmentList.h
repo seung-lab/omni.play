@@ -48,7 +48,7 @@ class OmMeshSegmentList : boost::noncopyable{
 	
 	QThreadPool threads;
 
-	QMutex mCacheLock;
+	mutable QMutex mCacheLock;
 
 	bool doIsSegmentListReadyInCache(OmMipChunkPtr, 
 					 OmSegment *,

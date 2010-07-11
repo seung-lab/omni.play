@@ -30,7 +30,7 @@ class OmSegmentColorizer
 	}
 
  private:
-	QMutex mMutex;
+	mutable QMutex mMutex;
 
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;

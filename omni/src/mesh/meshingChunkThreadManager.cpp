@@ -11,18 +11,17 @@ MeshingChunkThreadManager::MeshingChunkThreadManager( MeshingManager* meshManage
 	//mCoord = OmMipChunkCoord(0,coord.getCoordinateX(), coord.getCoordinateY(), coord.getCoordinateZ());
 	mCoord = coord;
 	mpCurrentMeshSource = NULL;
-	mutex = new QMutex();
 }
 
 unsigned int MeshingChunkThreadManager::getNumSegmentValuesLeftToMesh()
 {
-	QMutexLocker locker( mutex );
+	QMutexLocker locker(&mutex);
 	return valuesToMesh.size();
 }
 
 OmSegID MeshingChunkThreadManager::getNextSegmentValueToMesh()
 {
-	QMutexLocker locker( mutex );
+	QMutexLocker locker(&mutex);
 
 	if( valuesToMesh.empty() ) {
 		return NULL_SEGMENT_DATA;

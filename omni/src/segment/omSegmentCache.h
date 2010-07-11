@@ -86,7 +86,7 @@ public:
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
 private:
-	QMutex mMutex;
+	mutable QMutex mMutex;
 	OmSegmentation *const mSegmentation;
 	OmSegmentCacheImpl *const mImpl;
 

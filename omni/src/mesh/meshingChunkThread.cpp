@@ -20,12 +20,12 @@ void MeshingChunkThread::run()
 
 void MeshingChunkThread::doMeshStuff()
 {		
-	mChunkMan->mutex->lock();
+	mChunkMan->mutex.lock();
 	OmMeshSource *mpCurrentMeshSource = mChunkMan->mpCurrentMeshSource;
 	assert (mpCurrentMeshSource);
 	OmMesher mesher(*mpCurrentMeshSource);
 	assert (mpCurrentMeshSource);
-	mChunkMan->mutex->unlock();
+	mChunkMan->mutex.unlock();
 
 	//loop for each available segment value
 	while (true) {

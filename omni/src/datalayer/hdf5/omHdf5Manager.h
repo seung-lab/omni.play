@@ -23,7 +23,7 @@ class OmHdf5Manager : boost::noncopyable {
 
 	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool readOnly );
 	QHash<QString, OmHdf5*> hdf5Files;
-	QMutex lock;
+	mutable QMutex lock;
 };
 
 #endif

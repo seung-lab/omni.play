@@ -40,7 +40,7 @@ private:
 	
 	//garbage
 	vector <GLuint> mTextures;
-	QMutex mTextureMutex;
+	mutable QMutex mTextureMutex;
 };
 
 #endif

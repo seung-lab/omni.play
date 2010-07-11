@@ -103,11 +103,11 @@ private:
 	
 
 	//mutex for cache
-	QMutex mCacheMutex;
+	mutable QMutex mCacheMutex;
 
 	//fetch thread
 	QThread mFetchThread;
-	QMutex mFetchThreadMutex;
+	mutable QMutex mFetchThreadMutex;
 	QWaitCondition mFetchThreadCv;
 	
 	//fetch thread update

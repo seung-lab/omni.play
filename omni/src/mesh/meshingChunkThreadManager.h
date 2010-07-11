@@ -12,7 +12,7 @@ class MeshingChunkThreadManager : public QThread
 	MeshingChunkThreadManager( MeshingManager* meshManager, OmMipChunkCoord coord );
 	void run();
 
-	QMutex * mutex;
+	mutable QMutex mutex;
 	MeshingManager* mMeshManager;
 	OmMeshSource *mpCurrentMeshSource;
 	OmMipChunkCoord mCurrentMipCoord;

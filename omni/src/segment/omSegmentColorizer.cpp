@@ -25,6 +25,8 @@ OmSegmentColorizer::~OmSegmentColorizer()
 
 void OmSegmentColorizer::setup()
 {
+	QMutexLocker lock( &mMutex ); // TODO: use lock-free hash and shorten locking time
+
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
 	if( curSize == mSize ){
@@ -38,8 +40,6 @@ void OmSegmentColorizer::setup()
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				    unsigned char * data )
 {
-	QMutexLocker lock( &mMutex ); // TODO: use lock-free hash and shorten locking time
-	
 	setup();
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
@@ -57,6 +57,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	// looping through each value of imageData, which is 
 	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
+		
+		QMutexLocker lock( &mMutex );
 
 		val = (OmSegID) imageData[i];
 

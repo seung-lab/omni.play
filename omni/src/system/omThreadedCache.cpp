@@ -33,7 +33,7 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
-	OmCacheManager::clearWorkerThreads();
+	//	OmCacheManager::clearWorkerThreads();
 
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
