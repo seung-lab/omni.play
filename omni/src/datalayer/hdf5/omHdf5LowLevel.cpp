@@ -682,7 +682,8 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	//Reads raw data from a dataset into a buffer. 
 	hid_t mem_type_id;
 
-	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
+	//	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
+	if( 1 == bytesPerSample){
 		if(H5T_FLOAT == H5Tget_class( dstype )) {
 			printf("\timporting float data; scaling by 255\n");
 			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
