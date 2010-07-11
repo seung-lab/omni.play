@@ -43,9 +43,13 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
   displayList = 0;
   hasDisplayList = false;
   //init mesh data
+  mTrianCount = 0;
+  mpTrianOffsetSizeData = NULL;
+
   mStripCount = 0;
   mpStripOffsetSizeData = NULL;
 
+  mpTrianOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpStripOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpVertexIndexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpVertexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -85,7 +89,7 @@ OmMipMesh::~OmMipMesh()
 
 void OmMipMesh::Load()
 {
-  //debug("load", "in OmMipMesh::Load\n"); 
+  //debug("load", "in OmMipMesh::Load\n");
   //read meta data
   OmDataPath fpath( mPath + "metamesh.dat" );
 
@@ -106,6 +110,12 @@ try {
 
   mHasData = true;
   int size;
+
+  //read triangles offset/size data  (uint32_t *)
+  fpath.setPath( mPath + "trianoffset.dat" );
+  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpTrianOffsetSizeData = mpTrianOffsetSizeDataWrap->getUInt32Ptr();
+  mTrianCount = size / (2 * sizeof(uint32_t));
 
   //read strip offset/size data  (uint32_t *)
   fpath.setPath( mPath + "stripoffset.dat" );
@@ -154,6 +164,11 @@ void OmMipMesh::Save()
   //if meta is zero then skip mesh
   if (!meta)
     return;
+
+  //write trian offset/size data
+  fpath.setPath( mPath + "trianoffset.dat" );
+  size = 2 * mTrianCount * sizeof(uint32_t);
+  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpTrianOffsetSizeData);
 
   //write strip offset/size data
   fpath.setPath( mPath + "stripoffset.dat" );
@@ -311,6 +326,12 @@ bool OmMipMesh::Draw(bool doCreateVbo)
                      mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
                      GL_UNSIGNED_INT,	//type
                      (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
+    }
+    for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
+ 	      glDrawElements(GL_TRIANGLES,      //triangle trian
+              mpTrianOffsetSizeData[2 * idx + 1],        //elements in trian
+	      GL_UNSIGNED_INT,   //type
+ 	      (GLuint *) 0 + mpTrianOffsetSizeData[2 * idx]);    //trian offset
     }
     debug("tri","strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
     debug("elements", "done drawing %i elements\n", mStripCount);
