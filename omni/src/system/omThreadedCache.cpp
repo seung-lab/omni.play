@@ -3,7 +3,7 @@
 #include <QThreadPool>
 
 static const int MAX_FETCHING = 200;
-static const int MAX_NUM_WORKER_THREADS = 3;
+
 /**
  *	Constructor initializes and starts the fetch thread.
  */
@@ -16,7 +16,7 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
 
-	mMaxNumWorkers.release(MAX_NUM_WORKER_THREADS);
+	mMaxNumWorkers.release(OmCacheManager::minNumberOfThreadsPerCache());
 
 	start();
 }

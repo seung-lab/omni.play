@@ -8,6 +8,8 @@
 
 class OmCacheBase;
 
+static const int MAX_NUM_WORKER_THREADS = 3;
+
 //caches
 enum OmCacheGroup {
 	RAM_CACHE_GROUP = 1,
@@ -47,6 +49,8 @@ public:
 
 	static bool addWorkerThread(QRunnable * runnable, int priority = 0);
 	static void clearWorkerThreads();
+
+	static int minNumberOfThreadsPerCache(){ return MAX_NUM_WORKER_THREADS; }
 	
 	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
@@ -68,6 +72,8 @@ private:
 
 	QThreadPool threads;
 
+	int mMinNumOfThreadsForAllCaches;
+
 	mutable QMutex mCacheMapMutex;
 	mutable QMutex mRealCacheMapMutex;
 	mutable QMutex mFreshnessMutex;
@@ -78,6 +84,8 @@ private:
 	float mTargetRatio;
 	bool mCurrentlyCleaning;
 	int mThreadCount;
+
+	void doAddCache(OmCacheGroup group, OmCacheBase *base);
 };
 
 #endif

@@ -18,6 +18,8 @@ OmCacheManager *OmCacheManager::mspInstance = 0;
 
 OmCacheManager::OmCacheManager()
 {
+	mMinNumOfThreadsForAllCaches = 0;
+
 	//init vars
 	mTargetRatio = 0.99;
 	mCurrentlyCleaning = false;
@@ -75,11 +77,24 @@ void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
  */
 void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
 {
-	Instance()->mCacheMapMutex.lock();
-	Instance()->mRealCacheMapMutex.lock();
-	Instance()->mCacheMap[group].CacheSet.insert(base);
-	Instance()->mRealCacheMapMutex.unlock();
-	Instance()->mCacheMapMutex.unlock();
+	Instance()->doAddCache(group, base);
+}
+
+void OmCacheManager::doAddCache(OmCacheGroup group, OmCacheBase * base)
+{
+	mCacheMapMutex.lock();
+	mRealCacheMapMutex.lock();
+
+	mCacheMap[group].CacheSet.insert(base);
+
+	mMinNumOfThreadsForAllCaches += minNumberOfThreadsPerCache();
+	if(threads.maxThreadCount() < mMinNumOfThreadsForAllCaches ){
+		threads.setMaxThreadCount(mMinNumOfThreadsForAllCaches);
+		printf("up to %d threads...\n", mMinNumOfThreadsForAllCaches);
+	}
+
+	mRealCacheMapMutex.unlock();
+	mCacheMapMutex.unlock();
 }
 
 /*
