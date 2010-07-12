@@ -17,9 +17,8 @@ OmCacheManager *OmCacheManager::mspInstance = 0;
 ///////
 
 OmCacheManager::OmCacheManager()
+	: mMinNumOfThreadsForAllCaches(0)
 {
-	mMinNumOfThreadsForAllCaches = 0;
-
 	//init vars
 	mTargetRatio = 0.99;
 	mCurrentlyCleaning = false;
@@ -29,10 +28,6 @@ OmCacheManager::OmCacheManager()
 	mThreadCount = 0;
 
 	doUpdateCacheSizeFromLocalPrefs();
-
-	if(threads.maxThreadCount() < 16){
-		threads.setMaxThreadCount(16);
-	}
 }
 
 OmCacheManager::~OmCacheManager()
@@ -90,7 +85,7 @@ void OmCacheManager::doAddCache(OmCacheGroup group, OmCacheBase * base)
 	mMinNumOfThreadsForAllCaches += minNumberOfThreadsPerCache();
 	if(threads.maxThreadCount() < mMinNumOfThreadsForAllCaches ){
 		threads.setMaxThreadCount(mMinNumOfThreadsForAllCaches);
-		printf("up to %d threads...\n", mMinNumOfThreadsForAllCaches);
+		//printf("up to %d threads...\n", mMinNumOfThreadsForAllCaches);
 	}
 
 	mRealCacheMapMutex.unlock();
@@ -181,7 +176,7 @@ unsigned int OmCacheManager::Freshen(bool freshen)
         return freshness;
 }
 
-bool OmCacheManager::addWorkerThread(QRunnable * runnable, int priority)
+bool OmCacheManager::addWorkerThread(QRunnable * runnable, int)
 {
 	return Instance()->threads.tryStart(runnable);
 }
