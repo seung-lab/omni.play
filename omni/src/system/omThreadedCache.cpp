@@ -10,14 +10,11 @@
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 	: OmCacheBase(group) 
+	, mKillingFetchThread(false)
+	, mLastUpdateTime(0)
 { 
-	//fetch prefs
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
-	
-	//init state variables
-	mLastUpdateTime = 0;
-	mKillingFetchThread = false;
 
 	start();
 }
@@ -29,7 +26,10 @@ template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
 	//send signal to kill fetch thread
+	mCacheMutex.lock();
 	mKillingFetchThread = true;
+	mCacheMutex.unlock();
+
 	mFetchThreadCv.wakeAll();
 
 	wait();
@@ -268,7 +268,7 @@ OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
 template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::FetchLoop() 
 {
-	QMutexLocker bigLocker(&mCacheMutex);
+	QMutexLocker lock(&mCacheMutex);
 
 	while(true) {
 
@@ -285,16 +285,13 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 				return;
 			}
 			
-			if(mFetchStack.empty()) {
-				break;
-			}
-			
+			//TODO: decide if we have too many runnables for the thread pool already...
+
 			KEY fetch_key = mFetchStack.top();
 			mFetchStack.pop();
 			mCurrentlyFetching.append(fetch_key);
 			
 			spawnWorkerThread(fetch_key);
-			
 		}
 	}
 }
@@ -330,9 +327,8 @@ void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_valu
  *	Check if a FetchUpdate needs to be sent.
  */
 template < typename KEY, typename PTR  > 
-bool 
-OmThreadedCache<KEY,PTR>::FetchUpdateCheck() {
-	
+bool OmThreadedCache<KEY,PTR>::FetchUpdateCheck() 
+{
 	//get current time
 	time_t current_time;
 	time( &current_time );
