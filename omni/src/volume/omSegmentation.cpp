@@ -34,8 +34,8 @@ static const float DefaultThresholdSize = 0.1;
 ///////         OmSegmentation
 
 OmSegmentation::OmSegmentation()
-	: mMipVoxelationManager(this)
-	, mSegmentCache(new OmSegmentCache(this))
+	//: mMipVoxelationManager(this)
+	: mSegmentCache(new OmSegmentCache(this))
 	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
@@ -57,7 +57,7 @@ OmSegmentation::OmSegmentation()
 
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
-	, mMipVoxelationManager(this)
+	  //, mMipVoxelationManager(this)
 	, mSegmentCache(new OmSegmentCache(this))
   	, mGroups(this)
 {
@@ -111,13 +111,14 @@ void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
 	//debug("FIXME", << "OmSegmentation::SetVoxelValue: " << rVox << " , " << val << endl;
 
 	//get old value
-	uint32_t old_val = GetVoxelValue(rVox);
+	//	uint32_t old_val = GetVoxelValue(rVox);
 
 	//update data
 	OmMipVolume::SetVoxelValue(rVox, val);
 
 	//change voxel in voxelation
-	mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
+	assert(0);
+	//mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
 }
 
 /*
@@ -389,10 +390,13 @@ void OmSegmentation::DeleteGroup(OmGroupID)
 /*
  *	Draw voxelated representation of the MipChunk.
  */
-void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rRelvDataVals,
-				     const OmBitfield & drawOps)
+void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & //mipCoord
+				     , const OmSegIDsSet & //rRelvDataVals
+				     , const OmBitfield & //drawOps
+				     )
 {
-	mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
+	assert(0);
+	//mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**

@@ -6,7 +6,7 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "voxel/omMipVoxelationManager.h"
+//#include "voxel/omMipVoxelationManager.h"
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
@@ -77,7 +77,7 @@ private:
 	MeshingManager * mMeshingMan;
 	
 	//managers
-	OmMipVoxelationManager mMipVoxelationManager;
+	//	OmMipVoxelationManager mMipVoxelationManager;
 	OmSegmentCache *const mSegmentCache;
 
 	OmGroups mGroups;
