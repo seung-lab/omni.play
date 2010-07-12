@@ -64,5 +64,7 @@ class OmHdf5LowLevel
 	static void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name);
 
 	static bool isDatasetPathNameAChannel( const char *name );
+
+	static bool checkIfLinkExists(hid_t fileId, const char *name);
 };
 #endif

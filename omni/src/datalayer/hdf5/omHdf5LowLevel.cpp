@@ -84,22 +84,16 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 	}
 }
 
+bool OmHdf5LowLevel::checkIfLinkExists(hid_t fileID, const char *name)
+{
+	return H5Lexists(fileID, name, H5P_DEFAULT);
+}
+
 /////////////////////////////////
 ///////          Group
 bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *name)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	//Try to open a group
-	//Turn off error printing idea from http://www.fiberbundle.net/index.html
-	H5E_BEGIN_TRY {
-		herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
-		if( ret < 0 ){
-			return false;
-		}
-	} H5E_END_TRY
-
-	return true;
+	return checkIfLinkExists(fileId, name);
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, 
@@ -233,6 +227,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 {
 	debug("hdf5verbose", "\nOmHDF5LowLevel: in %s...\n", __FUNCTION__);
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
+
+	if(!om_hdf5_group_exists_with_lock(fileId, name)){
+		*size = 0;
+		return OmDataWrapperPtr(new OmDataWrapper(NULL));
+	}
 	
 	void *dataset_data;
 	herr_t status;
@@ -240,11 +239,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0) {
-		const string errMsg = "Could not open HDF5 dataset " + string(name);
+		const string errMsg = "Could not open HDF5 dataset (even though it existed)" + string(name);
 		throw OmIoException(errMsg);
 	}
 
-	printfDatasetCacheSize( dataset_id );
+	//printfDatasetCacheSize( dataset_id );
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
@@ -403,27 +402,7 @@ void OmHdf5LowLevel::om_hdf5_group_delete_with_lock(hid_t fileId, const char *na
 ///////          Dataset private
 bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *name)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	hid_t dataset_id;
-
-	//Try to open a data set
-	//Turn off error printing idea from http://www.fiberbundle.net/index.html
-	H5E_BEGIN_TRY {
-		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	} H5E_END_TRY
-	
-	//if failure, then assume doesn't exist
-	if (dataset_id < 0)
-		return false;
-	
-	//Closes the specified dataset. 
-	herr_t ret = H5Dclose(dataset_id);
-	if (ret < 0) {
-		throw OmIoException("Could not close HDF5 dataset " + string(name));
-	}
-
-	return true;
+	return checkIfLinkExists(fileId, name);
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name)
