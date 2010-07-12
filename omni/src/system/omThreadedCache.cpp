@@ -25,11 +25,11 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
-	//send signal to kill fetch thread
 	mCacheMutex.lock();
 	mKillingFetchThread = true;
 	mCacheMutex.unlock();
 
+	//send signal to kill fetch thread
 	mFetchThreadCv.wakeAll();
 
 	wait();
@@ -45,7 +45,7 @@ OmThreadedCache<KEY,PTR>::~OmThreadedCache()
  *	Get value from cache associated with given key.
  *	Specify if Get should block calling thread.
  *
- *	note: blocking chace does not switch threads
+ *	note: blocking chache does not switch threads
  */
 template < typename KEY, typename PTR  > 
 void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
