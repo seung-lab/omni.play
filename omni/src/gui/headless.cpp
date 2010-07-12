@@ -366,7 +366,8 @@ int Headless::start(int argc, char *argv[])
 		runHeadless( args.headlessCMD, fName );
 		return 0;
 	} else {
-		QApplication app(argc, argv);
+		// This is leaking the app, and it is not being freed before app death.
+		QApplication * app = new QApplication(argc, argv);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;
 		mainWin.show();
@@ -375,7 +376,7 @@ int Headless::start(int argc, char *argv[])
 			mainWin.openProject( fName );
 		}
 		
-		return app.exec();
+		return app->exec();
 	}
 }
 
