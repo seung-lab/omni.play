@@ -156,7 +156,7 @@ unsigned int OmCacheManager::Freshen(bool freshen)
 
        	if (freshen) {
         	++freshness;
-		printf("freshness:%u\n", freshness);
+		//printf("freshness:%u\n", freshness);
         }
 
         return freshness;
