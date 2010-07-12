@@ -48,8 +48,7 @@ OmThreadedCache<KEY,PTR>::~OmThreadedCache()
  *	note: blocking chace does not switch threads
  */
 template < typename KEY, typename PTR  > 
-void 
-OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
+void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 			      const KEY &key, bool blocking) 
 {
   	OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
@@ -275,7 +274,9 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 		if(mKillingFetchThread) {
 			return;
 		}
+
 		mFetchThreadCv.wait(&mCacheMutex);
+
 		if(mKillingFetchThread) {
 			return;
 		}
@@ -285,13 +286,16 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 				return;
 			}
 			
-			//TODO: decide if we have too many runnables for the thread pool already...
-
 			KEY fetch_key = mFetchStack.top();
-			mFetchStack.pop();
-			mCurrentlyFetching.append(fetch_key);
 			
-			spawnWorkerThread(fetch_key);
+			if(spawnWorkerThread(fetch_key)){
+				mFetchStack.pop();
+				mCurrentlyFetching.append(fetch_key);
+			} else {
+				// pool too busy for task
+				unsigned long timeoutInMS = 100; // voodoo constant
+				mFetchThreadCv.wait(&mCacheMutex, timeoutInMS);
+			}
 		}
 	}
 }
@@ -368,14 +372,17 @@ void OmThreadedCache<KEY,PTR>::Flush()
 }
 
 template < typename KEY, typename PTR  >
-void OmThreadedCache<KEY,PTR>::spawnWorkerThread(KEY fetch_key) 
+bool OmThreadedCache<KEY,PTR>::spawnWorkerThread(KEY fetch_key) 
 {
-	HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* thread = 
+	HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* task = 
 		new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key);
 
-	//thread->run(); //doesn't actually start thread
-	//QThreadPool::globalInstance()->start(thread, QThread::LowestPriority);
-	OmCacheManager::addWorkerThread(thread, QThread::LowestPriority);
+	if(!OmCacheManager::addWorkerThread(task, QThread::LowestPriority)){
+		delete task; // pool too full
+		return false;
+	}
+
+	return true;
 }
 
 template < typename KEY, typename PTR  >

@@ -103,7 +103,7 @@ private:
         // size of objects in this cache
         long mObjectSize;
 
-	void spawnWorkerThread(KEY fetch_key);
+	bool spawnWorkerThread(KEY fetch_key);
 };
 
 #endif

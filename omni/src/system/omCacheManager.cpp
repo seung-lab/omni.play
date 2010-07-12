@@ -161,9 +161,9 @@ unsigned int OmCacheManager::Freshen(bool freshen)
         return freshness;
 }
 
-void OmCacheManager::addWorkerThread(QRunnable * runnable, int priority)
+bool OmCacheManager::addWorkerThread(QRunnable * runnable, int priority)
 {
-	Instance()->threads.start(runnable, priority);
+	return Instance()->threads.tryStart(runnable);
 }
 
 void OmCacheManager::clearWorkerThreads()

@@ -45,7 +45,7 @@ public:
 	static void UpdateCacheSizeFromLocalPrefs();
 	static unsigned int Freshen(bool freshen);
 
-	static void addWorkerThread(QRunnable * runnable, int priority = 0);
+	static bool addWorkerThread(QRunnable * runnable, int priority = 0);
 	static void clearWorkerThreads();
 	
 	void doUpdateCacheSizeFromLocalPrefs();
