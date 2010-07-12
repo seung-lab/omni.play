@@ -145,7 +145,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
 			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
+			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 
@@ -411,8 +411,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 			for (float count = -5; count < 6; count++) {
                         	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
-										OmCachingThreadedCachingTile::Freshen(false));
+                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
                         	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
                         	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
