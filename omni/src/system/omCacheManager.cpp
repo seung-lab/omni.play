@@ -27,6 +27,10 @@ OmCacheManager::OmCacheManager()
 	mThreadCount = 0;
 
 	doUpdateCacheSizeFromLocalPrefs();
+
+	if(threads.maxThreadCount() < 16){
+		threads.setMaxThreadCount(16);
+	}
 }
 
 OmCacheManager::~OmCacheManager()

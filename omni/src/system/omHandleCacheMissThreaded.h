@@ -7,13 +7,11 @@ template < typename TC, typename KEY, typename PTR >
 class HandleCacheMissThreaded : public QRunnable
 {
  public:
-        HandleCacheMissThreaded(TC * tc, KEY key);
+        HandleCacheMissThreaded(TC * tc);
         void run();
 
  private:
 	TC * const mTC;
-	KEY const mKey;
-
 };
 
 #endif

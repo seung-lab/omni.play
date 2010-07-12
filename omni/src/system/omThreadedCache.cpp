@@ -2,8 +2,8 @@
 #include "omHandleCacheMissThreaded.h"
 #include <QThreadPool>
 
-#define MAX_FETCHING (200)
-
+static const int MAX_FETCHING = 200;
+static const int MAX_NUM_WORKER_THREADS = 3;
 /**
  *	Constructor initializes and starts the fetch thread.
  */
@@ -15,6 +15,8 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 { 
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
+
+	mMaxNumWorkers.release(MAX_NUM_WORKER_THREADS);
 
 	start();
 }
@@ -270,33 +272,23 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 
 	while(true) {
 
-		if(mKillingFetchThread) {
-			return;
-		}
+		if(mKillingFetchThread){return;}
 
 		mFetchThreadCv.wait(&mCacheMutex);
+
 		lock.unlock();
   		OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 		lock.relock();
 
-		if(mKillingFetchThread) {
-			return;
-		}
+		if(mKillingFetchThread){return;}
 		
 		while(!mFetchStack.empty()){
-			if(mKillingFetchThread) {
-				return;
-			}
+			if(mKillingFetchThread){return;}
 			
-			KEY fetch_key = mFetchStack.top();
-			
-			if(spawnWorkerThread(fetch_key)){
-				mFetchStack.pop();
-				mCurrentlyFetching.append(fetch_key);
-			} else {
-				// pool too busy for task
-				unsigned long timeoutInMS = 100; // voodoo constant
-				mFetchThreadCv.wait(&mCacheMutex, timeoutInMS);
+			if(mMaxNumWorkers.available()){
+				spawnWorkerThread();
+			}else{
+				break;
 			}
 		}
 	}
@@ -374,17 +366,21 @@ void OmThreadedCache<KEY,PTR>::Flush()
 }
 
 template < typename KEY, typename PTR  >
-bool OmThreadedCache<KEY,PTR>::spawnWorkerThread(KEY fetch_key) 
+bool OmThreadedCache<KEY,PTR>::spawnWorkerThread() 
 {
 	HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* task = 
-		new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, fetch_key);
+		new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this);
 
-	if(!OmCacheManager::addWorkerThread(task, QThread::LowestPriority)){
-		delete task; // pool too full
-		return false;
+	if(mMaxNumWorkers.tryAcquire(1)){
+		if(OmCacheManager::addWorkerThread(task, QThread::LowestPriority)){
+			return true;
+		} else {
+			mMaxNumWorkers.release(1);
+			delete task; // pool too full
+		}
 	}
 
-	return true;
+	return false;
 }
 
 template < typename KEY, typename PTR  >

@@ -12,7 +12,7 @@
 #include <QExplicitlySharedDataPointer>
 #include <QStack>
 #include <QMap>
-
+#include <QSemaphore>
 #include <time.h>
 
 #define OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK 0
@@ -71,7 +71,15 @@ template < typename KEY, typename PTR  >
 	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 
 	void HandleFetchUpdate(KEY fetch_key, PTR * fetch_value);
-	
+
+	// FIXME: don't make public...
+	QSemaphore mMaxNumWorkers;
+	mutable QMutex mCacheMutex;
+	bool mKillingFetchThread;	//note that fetch thread needs to die
+	QStack< KEY > mFetchStack;	 // keys to be fetched
+	QList< KEY > mCurrentlyFetching; // keys currently being fetched
+	QWaitCondition mFetchThreadCv;
+
 protected:
 	
 private:
@@ -82,16 +90,7 @@ private:
 
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;
-		
-	QStack< KEY > mFetchStack;	 // keys to be fetched
-	QList< KEY > mCurrentlyFetching; // keys currently being fetched
-	
-	bool mKillingFetchThread;	//note that fetch thread needs to die
-	
-	//mutex for cache
-	mutable QMutex mCacheMutex;
 
-	QWaitCondition mFetchThreadCv;
 	
 	//fetch thread update
 	time_t mLastUpdateTime;
@@ -103,7 +102,7 @@ private:
         // size of objects in this cache
         long mObjectSize;
 
-	bool spawnWorkerThread(KEY fetch_key);
+	bool spawnWorkerThread();
 };
 
 #endif
