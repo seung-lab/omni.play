@@ -51,7 +51,6 @@ template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 			      const KEY &key, bool blocking) 
 {
-  	OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 	
 	mCacheMutex.lock();
 	
@@ -276,6 +275,9 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 		}
 
 		mFetchThreadCv.wait(&mCacheMutex);
+		lock.unlock();
+  		OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
+		lock.relock();
 
 		if(mKillingFetchThread) {
 			return;
