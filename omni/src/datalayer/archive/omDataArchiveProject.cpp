@@ -569,8 +569,6 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
                 OmGroup * group = new OmGroup();
                 in >> *group;
                 gm.mMap[ group->GetId() ] = group;
-	
-		printf("in id=%i\n", group->GetId());
         }
 
         return in;
