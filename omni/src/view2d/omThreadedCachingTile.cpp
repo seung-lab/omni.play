@@ -12,7 +12,7 @@
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
                                              const QGLContext * shareContext, OmViewGroupState * vgs)
 	: OmTile(viewtype, voltype, image_id, vol, vgs), 
-	  OmThreadedCache<OmTileCoord, OmTextureID>(VRAM_CACHE_GROUP, true)
+	  OmThreadedCache<OmTileCoord, OmTextureID>(VRAM_CACHE_GROUP)
 {
 	// omView2d passes in its own context
 
@@ -20,7 +20,6 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mVolType = voltype;
 	mImageId = image_id;
 
-        SetCacheName("OmThreadedCachingTile");
         int chunkDim = vol->GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*4);
 }

@@ -17,15 +17,13 @@
 ///////          OmMipMeshManager
 
 OmMipMeshManager::OmMipMeshManager()
-	: OmThreadedCache<OmMipMeshCoord, OmMipMesh>(VRAM_CACHE_GROUP, true)
+	: OmThreadedCache<OmMipMeshCoord, OmMipMesh>(VRAM_CACHE_GROUP)
 {
 	// set cache properties
 	SetFetchUpdateInterval(0.5f);
 
 	// flushes fetch stack so it doesn't waste time fetching old requests
 	SetFetchUpdateClearsFetchStack(true);
-
-        SetCacheName("OmMipMeshManager");
 }
 
 OmMipMeshManager::~OmMipMeshManager()
@@ -94,9 +92,4 @@ OmMipMesh * OmMipMeshManager::HandleCacheMiss(const OmMipMeshCoord & coord)
 void OmMipMeshManager::HandleFetchUpdate()
 {
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW_CACHE));
-}
-
-bool OmMipMeshManager::InitializeFetchThread()
-{
-	return true;
 }

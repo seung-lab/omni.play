@@ -9,7 +9,6 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <QThread>
-#include <QRunnable>
 #include <QExplicitlySharedDataPointer>
 #include <QStack>
 #include <QMap>
@@ -33,11 +32,11 @@
  */
 
 template < typename KEY, typename PTR  >
-	class OmThreadedCache : public OmCacheBase, public QThread /*QRunnable*/
+	class OmThreadedCache : public OmCacheBase, private QThread
 {	
  public:
 	
-	OmThreadedCache(OmCacheGroup group, bool initFetchThread = false);
+	OmThreadedCache(OmCacheGroup group);
 	virtual ~OmThreadedCache();
 		
 	//value accessors
@@ -51,13 +50,12 @@ template < typename KEY, typename PTR  >
 	void Clear();
 	void Flush();
 
+	bool shouldThreadDie();
+
 	//fetch thread
-	bool IsFetchStackEmpty();
 	void FetchLoop();
 	bool FetchUpdateCheck();
-	virtual void HandleFetchUpdate() { };
-	virtual bool InitializeFetchThread();
-	virtual bool KillFetchThread(); 
+	virtual void HandleFetchUpdate(){};
 	
 	//fetch properties
 	void SetFetchUpdateInterval(float);
@@ -70,18 +68,14 @@ template < typename KEY, typename PTR  >
 	long GetCacheSize();
         void SetObjectSize(long size);
 
-	/**Name function for debugging */
-	void SetCacheName(const char* name);
-	char* GetCacheName();
+	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 
 	void HandleFetchUpdate(KEY fetch_key, PTR * fetch_value);
-
-	void run();
-	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 	
 protected:
 	
 private:
+	void run();
 
 	//key, shared pointer value cache
 	QMap< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
@@ -89,25 +83,14 @@ private:
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;
 		
-	QStack< KEY > mFetchStack;	//stack of keys to be fetched
-	QList< KEY > mCurrentlyFetching;	//set of keys currently being fetched
+	QStack< KEY > mFetchStack;	 // keys to be fetched
+	QList< KEY > mCurrentlyFetching; // keys currently being fetched
 	
-	bool mFetchThreadAlive;
-	bool mInitializeFetchThread;
 	bool mKillingFetchThread;	//note that fetch thread needs to die
-
-	bool mFetchThreadQueuing;	//note if fetch thread is currently looping through queue
-					//Clean() should be ignored while queuing so queue doesn't wipe
-					//away it's own work
-	bool mFetchThreadCalledClean;
 	
-
 	//mutex for cache
 	mutable QMutex mCacheMutex;
 
-	//fetch thread
-	QThread mFetchThread;
-	mutable QMutex mFetchThreadMutex;
 	QWaitCondition mFetchThreadCv;
 	
 	//fetch thread update
@@ -119,9 +102,6 @@ private:
 
         // size of objects in this cache
         long mObjectSize;
-
-	/** name/descriptor of Cache for debugging */
-	char mCacheName[40];
 
 	void spawnWorkerThread(KEY fetch_key);
 };

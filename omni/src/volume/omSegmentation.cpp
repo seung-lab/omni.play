@@ -38,7 +38,6 @@ OmSegmentation::OmSegmentation()
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-        SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
@@ -86,8 +85,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendCount = 0;
 	mDendThreshold = DefaultThresholdSize;
 
-        SetCacheName("OmSegmentation -> OmMipVolume");
-        int chunkDim = GetChunkDimension();
+        const int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 
 	//build blank data
@@ -96,7 +94,6 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
-	KillCacheThreads();
 	delete mSegmentCache;
 }
 
@@ -416,13 +413,6 @@ void OmSegmentation::RunMeshQueue()
 	mMeshingMan->wait();
 	delete(mMeshingMan);
 	mMeshingMan = NULL;
-}
-
-void OmSegmentation::KillCacheThreads()
-{
-	mMipVoxelationManager.KillFetchThread();
-	mMipMeshManager.KillFetchThread();
-	this->KillFetchThread();
 }
 
 void OmSegmentation::FlushDirtySegments()

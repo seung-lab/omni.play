@@ -9,8 +9,6 @@
 
 OmChannel::OmChannel()
 {
-        /** Set The Name of the Cache */
-        SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim);
 }
@@ -39,8 +37,6 @@ OmChannel::OmChannel(OmId id)
 	//build blank data
 	BuildVolumeData();
 
-	/** Set The Name of the Cache */
-        SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim);
 

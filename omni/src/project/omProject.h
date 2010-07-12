@@ -39,21 +39,21 @@ public:
 	
 
         //volume management
-        static OmChannel& GetChannel(OmId id);
+        static OmChannel& GetChannel(const OmId id);
         static OmChannel& AddChannel();
-        static void RemoveChannel(OmId id);
-        static bool IsChannelValid(OmId id);
+        static void RemoveChannel(const OmId id);
+        static bool IsChannelValid(const OmId id);
         static const OmIDsSet & GetValidChannelIds();
-        static bool IsChannelEnabled(OmId id);
-        static void SetChannelEnabled(OmId id, bool enable);
+        static bool IsChannelEnabled(const OmId id);
+        static void SetChannelEnabled(const OmId id, const bool enable);
         
-        static OmSegmentation& GetSegmentation(OmId id);
+        static OmSegmentation& GetSegmentation(const OmId id);
         static OmSegmentation& AddSegmentation();
-        static void RemoveSegmentation(OmId id);
-        static bool IsSegmentationValid(OmId id);
+        static void RemoveSegmentation(const OmId id);
+        static bool IsSegmentationValid(const OmId id);
         static const OmIDsSet & GetValidSegmentationIds();
-        static bool IsSegmentationEnabled(OmId id);
-        static void SetSegmentationEnabled(OmId id, bool enable);
+        static bool IsSegmentationEnabled(const OmId id);
+        static void SetSegmentationEnabled(const OmId id, const bool enable);
 
 private:
 	OmProject();

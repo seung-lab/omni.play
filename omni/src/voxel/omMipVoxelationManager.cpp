@@ -14,17 +14,14 @@
 ///////          OmMipVoxelationManager
 
 OmMipVoxelationManager::OmMipVoxelationManager(OmMipVolume * pMipVolume)
- : OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>(VRAM_CACHE_GROUP, false)
+ : OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>(VRAM_CACHE_GROUP)
  , mpMipVolume(pMipVolume)
 {
-	debug("genone", "OmMipVoxelationManager::OmMipVoxelationManager\n");
 	//set cache properties
 	SetFetchUpdateInterval(0.5f);
+
 	//flushes fetch stack so it doesn't waste time fetching old requests
 	SetFetchUpdateClearsFetchStack(false);
-
-	/** Set The Name of the Cache */
-        SetCacheName("OmMipVoxelationManager");
 }
 
 OmMipVoxelationManager::~OmMipVoxelationManager()

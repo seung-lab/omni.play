@@ -1,27 +1,26 @@
 #include "common/omDebug.h"
 #include "common/omException.h"
+#include "datalayer/hdf5/omHdf5Manager.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPath.h"
 #include "omPreferenceDefinitions.h"
 #include "omProjectData.h"
 #include "segment/omSegment.h"
 #include "utility/fileHelpers.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/hdf5/omHdf5Manager.h"
 
 #include <QFile>
 #include <QFileInfo>
 
 //init instance pointer
-OmProjectData *OmProjectData::mspInstance = 0;
+OmProjectData *OmProjectData::mspInstance = NULL;
 
 
 /////////////////////////////////
-///////
 ///////          OmProjectData
-///////
 
 OmProjectData::OmProjectData()
+	: mIsReadOnly(false)
 {
-	mIsReadOnly = false;
 }
 
 void OmProjectData::instantiateProjectData( QString fileNameAndPath )
@@ -95,6 +94,17 @@ void OmProjectData::Close()
 {
 	Instance()->dataReader->close();
 	Instance()->mIsOpen = false;
+}
+
+/**
+ *	Deletes all data on disk associated with path if it exists.
+ */
+void OmProjectData::DeleteInternalData(const OmDataPath & path)
+{
+	//TODO: mutex lock this!!!!
+	if (OmProjectData::GetProjectDataReader()->group_exists(path)) {
+		OmProjectData::GetDataWriter()->group_delete(path);
+	}
 }
 
 OmDataLayer * OmProjectData::GetDataLayer()

@@ -34,8 +34,6 @@ OmMipVolume::OmMipVolume()
 {
 	sourceFilesWereSet = false;
 
-        SetCacheName("OmMipVolume");
-
 	//init
 	SetFilename(MIP_VOLUME_FILENAME);
 	SetDirectoryPath("default/");
@@ -43,27 +41,11 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
-	mCompleteDelete=false;
 }
 
 OmMipVolume::~OmMipVolume()
 {
-	//debug("genone","OmMipVolume::~OmMipVolume()");
-
-	//flush edits
-	if (!mCompleteDelete) Flush();
-
-	//clear cache before destructing since chunks depend on existance 
-	//of parent mipvolume
-	if (!mCompleteDelete){
-		OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Clear();
-	}
-}
-
-void OmMipVolume::PrepareForCompleteDelete()
-{
-	mCompleteDelete=true;
-	this->KillFetchThread();
+	Flush();
 }
 
 /////////////////////////////////
@@ -72,8 +54,7 @@ void OmMipVolume::PrepareForCompleteDelete()
 /*
  *	Flush all changes to disk
  */
-void
- OmMipVolume::Flush()
+void OmMipVolume::Flush()
 {
 	//build any edited leaf chunks
 	BuildEditedLeafChunks();
@@ -539,22 +520,10 @@ void OmMipVolume::AllocInternalData()
 
 void OmMipVolume::DeleteVolumeData()
 {
-	DeleteInternalData();
-}
-
-
-/**
- *	Deletes all data on disk associated with this MipVolume if it exists.
- */
-void OmMipVolume::DeleteInternalData()
-{
 	OmDataPath path;
 	path.setPathQstr( mDirectoryPath );
 
-	//TODO: mutex lock this!!!!
-	if (OmProjectData::GetProjectDataReader()->group_exists(path)) {
-		OmProjectData::GetDataWriter()->group_delete(path);
-	}
+	OmProjectData::DeleteInternalData(path);
 }
 
 /////////////////////////////////
@@ -572,26 +541,28 @@ void OmMipVolume::Build(OmDataPath & dataset)
 	UpdateMipProperties(dataset);
 
 	//delete old
-	DeleteInternalData();
+	DeleteVolumeData();
 
 	//alloc new
 	AllocInternalData();
 
 	//if source data valid
 	if (!IsSourceValid()) {
-		//		printf("OmMipVolume::Build: blank build complete\n");
+		// printf("OmMipVolume::Build: blank build complete\n");
 		SetBuildState(MIPVOL_BUILT);
 		return;
 	}
+
 	//copy source data
 	if (!ImportSourceData(dataset)) {
-		DeleteInternalData();
+		DeleteVolumeData();
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
 	}
+
 	//build volume
 	if (!BuildVolume()) {
-		DeleteInternalData();
+		DeleteVolumeData();
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
 	}

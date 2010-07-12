@@ -21,9 +21,10 @@ struct CacheGroupProperties {
 		MaxSize = 0;
 	}
 	
-	unsigned long MaxSize;
         //current size and max size in bytes
         unsigned long Size;
+	unsigned long MaxSize;
+
 	set< OmCacheBase* > CacheSet;
 };
 
@@ -33,7 +34,6 @@ class OmPreferenceEvent;
 class OmCacheManager : boost::noncopyable {
 
 public:
-	
 	static OmCacheManager* Instance();
 	static void Delete();
 
@@ -46,7 +46,6 @@ public:
 	static unsigned int Freshen(bool freshen);
 
 	static void addWorkerThread(QRunnable * runnable, int priority = 0);
-	static void addManagerThread(QRunnable * runnable);
 	static void clearWorkerThreads();
 	
 	void doUpdateCacheSizeFromLocalPrefs();
@@ -62,16 +61,13 @@ protected:
         bool mDelayDelta;
 
 private:
+	//singleton
+	static OmCacheManager* mspInstance;
 	OmCacheManager();
 	~OmCacheManager();
 
 	QThreadPool threads;
-	//QThreadPool managerThreads;
 
-	//singleton
-	static OmCacheManager* mspInstance;
-		
-	//properties map
 	mutable QMutex mCacheMapMutex;
 	mutable QMutex mRealCacheMapMutex;
 	mutable QMutex mFreshnessMutex;
@@ -82,7 +78,6 @@ private:
 	float mTargetRatio;
 	bool mCurrentlyCleaning;
 	int mThreadCount;
-
 };
 
 #endif

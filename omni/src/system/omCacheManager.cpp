@@ -102,7 +102,7 @@ QList< OmCacheInfo > OmCacheManager::GetCacheInfo(OmCacheGroup group)
 	foreach( OmCacheBase * c, Instance()->mCacheMap[group].CacheSet ){
 		OmCacheInfo info;
 		info.cacheSize = c->GetCacheSize();
-		info.cacheName = c->GetCacheName();
+		info.cacheName = "fixme";//c->GetCacheName();
 		infos << info;
 	}
 	
@@ -164,12 +164,6 @@ unsigned int OmCacheManager::Freshen(bool freshen)
 void OmCacheManager::addWorkerThread(QRunnable * runnable, int priority)
 {
 	Instance()->threads.start(runnable, priority);
-}
-
-void OmCacheManager::addManagerThread(QRunnable * /*runnable*/)
-{
-	//	Instance()->managerThreads.reserveThread();
-	//	Instance()->managerThreads.start(runnable);
 }
 
 void OmCacheManager::clearWorkerThreads()

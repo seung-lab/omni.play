@@ -9,9 +9,7 @@
  *	Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
-
 #include "omCacheManager.h"
-
 
 class OmCacheBase {
 
@@ -29,7 +27,6 @@ public:
 		OmCacheManager::RemoveCache(mCacheGroup, this);
 	}
 	
-	
 	//update group size
 	void UpdateSize(int delta) {
 		if (!mDelayDelta) {
@@ -45,17 +42,11 @@ public:
 	virtual unsigned int GetFetchStackSize() = 0;
 	virtual long GetCacheSize() = 0;
 
-	/**Name function for debugging */
-	virtual void SetCacheName(const char* name) = 0;
-	virtual char* GetCacheName() = 0;
-
 protected:
 	int mSavedDelta;
 	bool mDelayDelta;
 	
 	OmCacheGroup mCacheGroup;
-private:
-
 };
 
 

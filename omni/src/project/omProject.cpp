@@ -162,7 +162,7 @@ void OmProject::Close()
 /////////////////////////////////
 ///////          Channel Manager Method
 
-OmChannel & OmProject::GetChannel(OmId id)
+OmChannel & OmProject::GetChannel(const OmId id)
 {
         return Instance()->mChannelManager.Get(id);
 }
@@ -174,14 +174,21 @@ OmChannel & OmProject::AddChannel()
         return r_channel;
 }
 
-void OmProject::RemoveChannel(OmId id)
+void OmProject::RemoveChannel(const OmId id)
 {
-        Instance()->mChannelManager.Get(id).DeleteVolumeData();
+	OmCacheManager::clearWorkerThreads();
+
+	OmDataPath path;
+	path.setPathQstr(GetChannel(id).GetDirectoryPath());
+
         Instance()->mChannelManager.Remove(id);
+
+	OmProjectData::DeleteInternalData(path);
+
         OmProject::Save();
 }
 
-bool OmProject::IsChannelValid(OmId id)
+bool OmProject::IsChannelValid(const OmId id)
 {
         return Instance()->mChannelManager.IsValid(id);
 }
@@ -191,12 +198,12 @@ const OmIDsSet & OmProject::GetValidChannelIds()
         return Instance()->mChannelManager.GetValidIds();
 }
 
-bool OmProject::IsChannelEnabled(OmId id)
+bool OmProject::IsChannelEnabled(const OmId id)
 {
         return Instance()->mChannelManager.IsEnabled(id);
 }
 
-void OmProject::SetChannelEnabled(OmId id, bool enable)
+void OmProject::SetChannelEnabled(const OmId id, bool enable)
 {
         Instance()->mChannelManager.SetEnabled(id, enable);
 }
@@ -204,7 +211,7 @@ void OmProject::SetChannelEnabled(OmId id, bool enable)
 /////////////////////////////////
 ///////          Segmentation Manager Method
 
-OmSegmentation & OmProject::GetSegmentation(OmId id)
+OmSegmentation & OmProject::GetSegmentation(const OmId id)
 {
         Instance()->mSegmentationManager.Get(id).SetBytesPerSample(4);
         return Instance()->mSegmentationManager.Get(id);
@@ -217,11 +224,11 @@ OmSegmentation & OmProject::AddSegmentation()
         return r_segmentation;
 }
 
-void OmProject::RemoveSegmentation(OmId id)
+void OmProject::RemoveSegmentation(const OmId id)
 {
-        foreach( const OmId & channelID, OmProject::GetValidChannelIds()) {
+        foreach( OmId channelID, OmProject::GetValidChannelIds()) {
                 OmChannel & channel = OmProject::GetChannel(channelID);
-                foreach( const OmId & filterID, channel.GetValidFilterIds()) {
+                foreach( OmId filterID, channel.GetValidFilterIds()) {
                         OmFilter2d &filter = channel.GetFilter(filterID);
                         if (filter.GetSegmentation() == id){
                                 filter.SetSegmentation(0);
@@ -229,13 +236,19 @@ void OmProject::RemoveSegmentation(OmId id)
                 }
         }
 
-        Instance()->mSegmentationManager.Get(id).PrepareForCompleteDelete();
-        Instance()->mSegmentationManager.Get(id).DeleteVolumeData();
+	OmCacheManager::clearWorkerThreads();
+
+	OmDataPath path;
+	path.setPathQstr(GetSegmentation(id).GetDirectoryPath());
+
         Instance()->mSegmentationManager.Remove(id);
+
+	OmProjectData::DeleteInternalData(path);
+
         OmProject::Save();
 }
 
-bool OmProject::IsSegmentationValid(OmId id)
+bool OmProject::IsSegmentationValid(const OmId id)
 {
         return Instance()->mSegmentationManager.IsValid(id);
 }
@@ -245,12 +258,12 @@ const OmIDsSet & OmProject::GetValidSegmentationIds()
         return Instance()->mSegmentationManager.GetValidIds();
 }
 
-bool OmProject::IsSegmentationEnabled(OmId id)
+bool OmProject::IsSegmentationEnabled(const OmId id)
 {
         return Instance()->mSegmentationManager.IsEnabled(id);
 }
 
-void OmProject::SetSegmentationEnabled(OmId id, bool enable)
+void OmProject::SetSegmentationEnabled(const OmId id, const bool enable)
 {
         Instance()->mSegmentationManager.SetEnabled(id, enable);
 }

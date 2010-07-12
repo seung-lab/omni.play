@@ -7,7 +7,7 @@
  *
  *	Brett Warne - bwarne@mit.edu - 7/19/09
  */
-class OmVolume;
+
 #include "volume/omVolume.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
@@ -17,6 +17,7 @@ class OmVolume;
 
 #include <QFileInfo>
 
+class OmVolume;
 class OmMipChunk;
 class vtkImageData;
 
@@ -30,7 +31,6 @@ public:
 	~OmMipVolume();
 
 	void Flush();
-	void PrepareForCompleteDelete();
 
 	void SetFilename(const QString &);
 	QString GetFilename();
@@ -122,7 +122,6 @@ protected:
 	
 	//mipvolume disk data
 	void AllocInternalData();
-	void DeleteInternalData();
 	void UpdateRootMipLevel();
 	
 	//mip properties
@@ -153,7 +152,6 @@ private:
 	QString mDirectoryPath;          // ex. "./" or "images/out/"
 	QString mFilename;
 	bool sourceFilesWereSet;
-	bool mCompleteDelete;
 
 	friend class OmDataArchiveProject;
 };

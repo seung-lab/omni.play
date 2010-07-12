@@ -8,23 +8,18 @@
  *	Constructor initializes and starts the fetch thread.
  */
 template < typename KEY, typename PTR  >
-OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group, bool initFetch)
+OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 	: OmCacheBase(group) 
 { 
 	//fetch prefs
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
-	mInitializeFetchThread = initFetch;
 	
 	//init state variables
 	mLastUpdateTime = 0;
-	mFetchThreadAlive = false;
 	mKillingFetchThread = false;
-	
-	SetCacheName("blank");
 
 	start();
-	//	OmCacheManager::addManagerThread(this);
 }
 
 /**
@@ -33,14 +28,13 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group, bool initFetch)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
-	//	OmCacheManager::clearWorkerThreads();
-
 	//send signal to kill fetch thread
 	mKillingFetchThread = true;
 	mFetchThreadCv.wakeAll();
 
-	//spin until done killing
-	while(mFetchThreadAlive) { }
+	wait();
+
+	OmCacheManager::clearWorkerThreads();
 }
 
 /////////////////////////////////
@@ -70,15 +64,13 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 
 		mCacheMutex.unlock();
 
-		QExplicitlySharedDataPointer<PTR> tmp = QExplicitlySharedDataPointer<PTR>(HandleCacheMiss(key));
+		p_value = QExplicitlySharedDataPointer<PTR>(HandleCacheMiss(key));
 
 		mCacheMutex.lock();
 
-		mCache[key] = tmp;
+		mCache[key] = p_value;
 		mKeyAccessList.push_front(key);
-		
-		p_value = tmp;
-		
+				
 	} else {
 		//not in cache so return null pointer
 		p_value = QExplicitlySharedDataPointer<PTR>();
@@ -88,7 +80,7 @@ OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 		    !mCurrentlyFetching.contains(key) ){
 
 			if (mFetchStack.size () > MAX_FETCHING) {
-				mFetchStack.clear ();
+				mFetchStack.clear();
 			}
 
 			mFetchStack.push(key);
@@ -143,8 +135,7 @@ void OmThreadedCache<KEY,PTR>::Add(const KEY &key, PTR *value)
  *	throws: modification exception if key is in use
  */
 template < typename KEY, typename PTR  > 
-void
-OmThreadedCache<KEY,PTR>::Remove(const KEY &key) 
+void OmThreadedCache<KEY,PTR>::Remove(const KEY &key) 
 {	
 	QMutexLocker locker( &mCacheMutex );
 
@@ -163,8 +154,7 @@ OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
  *	throws: if in use, the key is moved to head of access list
  */
 template < typename KEY, typename PTR  > 
-void
-OmThreadedCache<KEY,PTR>::RemoveOldest() 
+void OmThreadedCache<KEY,PTR>::RemoveOldest() 
 {
 	QMutexLocker locker( &mCacheMutex );
 
@@ -198,11 +188,9 @@ OmThreadedCache<KEY,PTR>::RemoveOldest()
  *	Checks if value is in cache.
  */
 template < typename KEY, typename PTR  > 
-bool
-OmThreadedCache<KEY,PTR>::Contains(const KEY &key) 
+bool OmThreadedCache<KEY,PTR>::Contains(const KEY &key) 
 {
 	QMutexLocker locker( &mCacheMutex );
-
 	return mCache.contains(key);
 }
 
@@ -210,9 +198,9 @@ OmThreadedCache<KEY,PTR>::Contains(const KEY &key)
  *	Clear all elements from the cache
  */
 template < typename KEY, typename PTR > 
-void
-OmThreadedCache<KEY,PTR>::Clear() 
+void OmThreadedCache<KEY,PTR>::Clear() 
 {
+	printf("FIXME: OmThreadedCache<KEY,PTR>::Clear()\n");
 	//FIXME: this is all broken! must be, at least, mutex protected...
 	//while map contains values
 	//while(mCache.size()) 
@@ -251,13 +239,6 @@ bool OmThreadedCache<KEY,PTR>::GetFetchUpdateClearsFetchStack()
 ///////		 Fetching
 
 template < typename KEY, typename PTR  >
-bool OmThreadedCache<KEY,PTR>::IsFetchStackEmpty() 
-{
-	QMutexLocker locker( &mCacheMutex );
-	return mFetchStack.empty();
-}
-
-template < typename KEY, typename PTR  >
 unsigned int
 OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 {
@@ -287,36 +268,21 @@ OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
 template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::FetchLoop() 
 {
-	mFetchThreadAlive = true;
-	
-	//if calling init fetch thread method, wait until successfully called 
-	//  overriden function in child
-	while(!mKillingFetchThread && mInitializeFetchThread && !InitializeFetchThread()) { 
-		//FIXME: don't spin wait (purcaro)
-	}
-	
-	mFetchThreadMutex.lock();
-	
+	QMutexLocker bigLocker(&mCacheMutex);
+
 	while(true) {
 
 		if(mKillingFetchThread) {
-			break;
+			return;
 		}
-		
-		mFetchThreadCv.wait(&mFetchThreadMutex);
-		
+		mFetchThreadCv.wait(&mCacheMutex);
 		if(mKillingFetchThread) {
-			break;
+			return;
 		}
 		
-		mFetchThreadCalledClean = false;
-		mFetchThreadQueuing = true;
-
-		do {
-			QMutexLocker lock(&mCacheMutex);
-
+		while(!mFetchStack.empty()){
 			if(mKillingFetchThread) {
-				break;
+				return;
 			}
 			
 			if(mFetchStack.empty()) {
@@ -326,23 +292,21 @@ void OmThreadedCache<KEY,PTR>::FetchLoop()
 			KEY fetch_key = mFetchStack.top();
 			mFetchStack.pop();
 			mCurrentlyFetching.append(fetch_key);
-
+			
 			spawnWorkerThread(fetch_key);
-
-		} while(!IsFetchStackEmpty());
-	
-		
-		mFetchThreadQueuing = false;
+			
+		}
 	}
-	
-	mFetchThreadAlive = false;
-	mFetchThreadMutex.unlock();
 }
 
 template < typename KEY, typename PTR  > 
 void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_value) 
 {
-	mCacheMutex.lock();
+	QMutexLocker lock(&mCacheMutex);
+
+	if(mKillingFetchThread){
+		return;
+	}
 
 	//add to cache map
 	mCache[fetch_key] = QExplicitlySharedDataPointer<PTR>(fetch_value);
@@ -353,7 +317,7 @@ void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_valu
 	//key has been fetched, so remove from currently fetching
 	mCurrentlyFetching.removeAt(mCurrentlyFetching.indexOf(fetch_key));
 
-	mCacheMutex.unlock();
+	lock.unlock();
 
 	//send update if needed
 	if(FetchUpdateCheck()) {
@@ -391,37 +355,6 @@ OmThreadedCache<KEY,PTR>::FetchUpdateCheck() {
 	return false;
 }
 
-template < typename KEY, typename PTR  > 
-bool OmThreadedCache<KEY,PTR>::InitializeFetchThread() 
-{ 
-	return false;
-}
-
-template < typename KEY, typename PTR  > 
-bool OmThreadedCache<KEY,PTR>::KillFetchThread() 
-{ 
-	//send signal to kill fetch thread
-	mKillingFetchThread = true;
-	mFetchThreadCv.wakeAll();
-
-	//spin until done killing
-	while(mFetchThreadAlive) { }	
-	return true;
-}
-
-
-template < typename KEY, typename PTR  > 
-void OmThreadedCache<KEY,PTR>::SetCacheName( const char* name) 
-{
-	strncpy (mCacheName,name,40);
-}
-
-template < typename KEY, typename PTR  > 
-char* OmThreadedCache<KEY,PTR>::GetCacheName() 
-{
-	return mCacheName;
-}
-
 template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::run()
 {
@@ -447,4 +380,11 @@ void OmThreadedCache<KEY,PTR>::spawnWorkerThread(KEY fetch_key)
 	//thread->run(); //doesn't actually start thread
 	//QThreadPool::globalInstance()->start(thread, QThread::LowestPriority);
 	OmCacheManager::addWorkerThread(thread, QThread::LowestPriority);
+}
+
+template < typename KEY, typename PTR  >
+bool OmThreadedCache<KEY,PTR>::shouldThreadDie()
+{
+	QMutexLocker lock(&mCacheMutex);
+	return mKillingFetchThread;
 }

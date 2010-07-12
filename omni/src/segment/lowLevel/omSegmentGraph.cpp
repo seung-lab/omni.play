@@ -1,3 +1,4 @@
+#include "utility/stringHelpers.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
@@ -90,7 +91,7 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 					 const int numEdges, 
 					 const float stopThreshold )
 {
-	printf("\t %d edges...", numEdges);
+	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
 	fflush(stdout);
 
 	OmSegID childID;

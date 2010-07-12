@@ -35,7 +35,6 @@ class OmMipMeshManager : public OmThreadedCache<OmMipMeshCoord, OmMipMesh> {
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 	void HandleFetchUpdate();
-	bool InitializeFetchThread();
 	
 	QString mDirectoryPath;
 
