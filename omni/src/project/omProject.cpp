@@ -139,6 +139,7 @@ void OmProject::Load( QString fileNameAndPath  )
 void OmProject::Close()
 {
 	// OmProject must be deleted first: it depends on the remaining classes...
+	OmCacheManager::clearWorkerThreads();
 	Delete();
 	OmCacheManager::Delete();
 
