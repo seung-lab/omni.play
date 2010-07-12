@@ -19,7 +19,7 @@ OmCacheManager *OmCacheManager::mspInstance = 0;
 OmCacheManager::OmCacheManager()
 {
 	//init vars
-	mTargetRatio = 0.75;
+	mTargetRatio = 0.99;
 	mCurrentlyCleaning = false;
 
 	mDelayDelta = false;
@@ -156,6 +156,7 @@ unsigned int OmCacheManager::Freshen(bool freshen)
 
        	if (freshen) {
         	++freshness;
+		printf("freshness:%u\n", freshness);
         }
 
         return freshness;

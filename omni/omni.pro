@@ -149,6 +149,8 @@ HEADERS += lib/strnatcmp.h \
            src/project/omProject.h \
            src/segment/actions/omSegmentEditor.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
+           src/segment/actions/segment/omSegmentValidateAction.h \
+           src/segment/actions/segment/omSegmentGroupAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
            src/segment/actions/voxel/omVoxelSelectionAction.h \
@@ -343,6 +345,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/project/omProject.cpp \
            src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
+           src/segment/actions/segment/omSegmentValidateAction.cpp \
+           src/segment/actions/segment/omSegmentGroupAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentSplitAction.cpp \
            src/segment/actions/voxel/omVoxelSelectionAction.cpp \

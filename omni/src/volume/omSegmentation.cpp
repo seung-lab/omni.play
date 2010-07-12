@@ -8,6 +8,8 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
 #include "segment/actions/omSegmentEditor.h"
+#include "segment/actions/segment/omSegmentGroupAction.h"
+#include "segment/actions/segment/omSegmentValidateAction.h"
 #include "segment/omSegmentIterator.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -348,7 +350,8 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		mGroups.SetGroup(set, name);
+		//mGroups.SetGroup(set, name);
+		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
 		return;
 	}
 
@@ -356,13 +359,13 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
         iter.iterOverSegmentIDs(set);
 
         OmSegment * seg = iter.getNextSegment();
+	OmSegIDsSet newSet;
         while(NULL != seg) {
-                seg->SetImmutable(valid);
-		if(!seg->getParentSegID()) {
-			mSegmentCache->setAsValidated(seg, valid);
-		}
+		newSet.insert(seg->getValue());
                 seg = iter.getNextSegment();
         }
+
+	(new OmSegmentValidateAction(GetId(), newSet, true))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
@@ -370,6 +373,7 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 
         if(GROUPROOT == type) {
                 return mGroups.UnsetGroup(set, name);
+		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
         } else {
 		assert(0 && "only unset regular groups");
 	}
