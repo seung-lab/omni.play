@@ -178,7 +178,6 @@ void OmView3d::initializeGL()
  */
 void OmView3d::resizeGL(int width, int height)
 {
-	printf("resizing\n");
 	mCamera.ApplyReshape(Vector2 < int >(width, height));
 }
 
