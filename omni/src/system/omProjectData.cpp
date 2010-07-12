@@ -92,6 +92,9 @@ void OmProjectData::Open()
 
 void OmProjectData::Close()
 {
+	if(!IsOpen()){
+		return;
+	}
 	Instance()->dataReader->close();
 	Instance()->mIsOpen = false;
 }

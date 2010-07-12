@@ -133,7 +133,6 @@ void OmProject::Load( QString fileNameAndPath  )
 		OmProjectData::Close();
 		throw;
 	}
-
 }
 
 void OmProject::Close()
