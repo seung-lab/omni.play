@@ -685,7 +685,11 @@ void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
 void OmView3dUi::panTriggered(QPanGesture *gesture)
 {
      	QPointF delta = gesture->delta();
-	printf("pan: %f, %f\n", delta.x(), delta.y());
+	//printf("pan: %f, %f\n", delta.x(), delta.y());
+	mpView3d->mCamera.MovementStart(CAMERA_PAN, Vector2f(0,0));
+        mpView3d->mCamera.MovementUpdate(Vector2i(delta.x(),delta.y()));
+        mpView3d->mCamera.MovementEnd(Vector2i(delta.x(),delta.y()));
+
      	mpView3d->update();
 }
 
@@ -716,7 +720,7 @@ bool OmView3dUi::gestureEvent(QGestureEvent *event)
         if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
                 swipeTriggered(static_cast<QSwipeGesture *>(swipe));
 	}
-	printf("type %i\n", event->type());
+	//printf("type %i\n", event->type());
         return true;
 }
 
