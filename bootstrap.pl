@@ -381,6 +381,22 @@ sub qt46 {
     prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
+sub qt47 {
+    # new qt buidls has several messages:
+    # requires zlib;
+    # suggests --no-excpetion to reduce gcc-induced memory footprint increases
+    # disable postgres/sqlite
+    # debug not enabled?
+    my $baseFileName = "qt-everywhere-opensource-src-4.7.0-beta2";
+    my $args = "-debug -no-framework -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
+    if ( isMacSnowLeopard() ){
+        $args .= " -arch x86_64 ";
+    }
+
+    prepareAndBuild( $baseFileName, "Qt", $args );
+}
+
+
 sub omni {
     printTitle("omni");
     genOmniScript();
@@ -573,8 +589,9 @@ sub experimentalMenu {
     print "experimental build menu:\n";
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
+    print "2 -- Build qt 4.7\n";
     print "\n";
-    my $max_answer = 1;
+    my $max_answer = 2;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -600,6 +617,8 @@ sub runExperimentalMenuEntry {
 	$globalMakeOptions .= " VERBOSE=1 ";
 	genOmniScript();
 	omni();
+    } elsif( 2 == $entry ){
+	qt47();
     }
 }
 
