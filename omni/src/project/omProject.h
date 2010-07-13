@@ -12,17 +12,17 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
 
+#include <QSemaphore>
+
 class OmChannel;
 class OmSegmentation;
 class OmVolumeCuller;
+class OmViewGroupState;
 
 typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 
-class OmViewGroupState;
-
 class OmProject : boost::noncopyable {
-
-public:
+ public:
 	
 	static OmProject* Instance();
 	static void Delete();
@@ -36,7 +36,7 @@ public:
 	static void Commit();
 	static void Load( QString fileNameAndPath );
 	static void Close();
-	
+	static bool isProjectIsClosing();
 
         //volume management
         static OmChannel& GetChannel(const OmId id);
@@ -55,13 +55,14 @@ public:
         static bool IsSegmentationEnabled(const OmId id);
         static void SetSegmentationEnabled(const OmId id, const bool enable);
 
-private:
+ private:
+	//singleton
 	OmProject();
 	~OmProject();
-
-	//singleton
 	static OmProject* mspInstance;
 	
+	QSemaphore mProjectIsClosing;
+ 
 	//project
 	QString mFileName;
 	QString mDirectoryPath;

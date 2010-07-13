@@ -135,8 +135,15 @@ void OmProject::Load( QString fileNameAndPath  )
 	}
 }
 
+bool OmProject::isProjectIsClosing()
+{
+	return Instance()->mProjectIsClosing.available();
+}
+
 void OmProject::Close()
 {
+	Instance()->mProjectIsClosing.release(1);
+
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::clearWorkerThreads();
 	Delete();
@@ -156,6 +163,8 @@ void OmProject::Close()
 	OmProjectData::Delete();
 
 	OmHdf5Manager::Delete();
+
+	Instance()->mProjectIsClosing.acquire(1);
 }
 
 /////////////////////////////////

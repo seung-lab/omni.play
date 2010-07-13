@@ -4,6 +4,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
@@ -222,12 +223,6 @@ void OmMipChunk::ReadVolumeData()
 	//get path to mip level volume
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-
-	//read from project data
-	if (!OmProjectData::GetProjectDataReader()->dataset_exists(mip_level_vol_path)) {
-		assert(0);
-		throw OmIoException("no MIP data found");
-	}
 
 	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
