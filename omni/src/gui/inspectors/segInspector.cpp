@@ -4,6 +4,7 @@
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "system/omBuildSegmentation.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
@@ -315,7 +316,7 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 	connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
 	mMeshinatorDialog->exec();
 
-	OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }
 
 void SegInspector::on_notesEdit_textChanged()

@@ -15,6 +15,7 @@
 #include "gui/mainwindow.h"
 #include "gui/recentFileList.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
@@ -53,15 +54,15 @@ void doMeshinate( OmSegmentation * current_seg )
         QString script = GetScriptCmd (fnpnPlan);
         debug ("meshinator", "%s\n", qPrintable (script));
 
-	printf("here 2\n");
+	//printf("here 2\n");
 
         QProcess * meshinatorProc = new QProcess ();
         meshinatorProc->start(script);
         meshinatorProc->waitForFinished(-1);
 
-	printf("here 3\n");
+	//printf("here 3\n");
 
-        OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }
 
 void Headless::processLine( QString line, QString fName )
@@ -75,7 +76,7 @@ void Headless::processLine( QString line, QString fName )
 		OmProject::Close();
 		exit(0);
 	} else if( "save" == line ) {
-		OmProject::Save();
+		(new OmProjectSaveAction())->Run();
 	} else if( "mesh" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("please choose segmentation first!\n");
@@ -90,9 +91,8 @@ void Headless::processLine( QString line, QString fName )
                         printf("please choose segmentation first!\n");
                         return;
                 }
-		printf("here\n");
                 OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
-		OmProject::Save();
+		(new OmProjectSaveAction())->Run();
 		doMeshinate(&added_segmentation);
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
@@ -178,13 +178,12 @@ void Headless::processLine( QString line, QString fName )
                         return;
                 }
                 OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
-                OmProject::Save();
+		(new OmProjectSaveAction())->Run();
         } else if( line.startsWith("setDataExtent:") ){
 		assert(false && "don't need this anymore.");
 		//QStringList args = line.split(':');
 		//Vector3<int> maxext = Vector3<int>(StringHelpers::getUInt(args[1]),StringHelpers::getUInt(args[2]),StringHelpers::getUInt(args[3]));
 		//OmProject::SetDataDimensions(maxext);
-                //OmProject::Save();
 	} else if( line.startsWith("create:") ) {
 		QStringList args = line.split(':');
 		QString projectFileNameAndPath = args[1];

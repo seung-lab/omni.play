@@ -1,6 +1,7 @@
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "volume/omChannel.h"
@@ -75,7 +76,7 @@ void OmChannel::BuildVolumeData()
 
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();
-	OmProject::Save();
+	(new OmProjectSaveAction())->Run();
         return filter;
 }
 

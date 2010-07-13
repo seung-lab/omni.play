@@ -8,6 +8,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
@@ -178,7 +179,7 @@ OmChannel & OmProject::GetChannel(const OmId id)
 OmChannel & OmProject::AddChannel()
 {
         OmChannel & r_channel = Instance()->mChannelManager.Add();
-        OmProject::Save();
+        (new OmProjectSaveAction())->Run();
         return r_channel;
 }
 
@@ -193,7 +194,7 @@ void OmProject::RemoveChannel(const OmId id)
 
 	OmProjectData::DeleteInternalData(path);
 
-        OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }
 
 bool OmProject::IsChannelValid(const OmId id)
@@ -228,7 +229,7 @@ OmSegmentation & OmProject::GetSegmentation(const OmId id)
 OmSegmentation & OmProject::AddSegmentation()
 {
         OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
-        OmProject::Save();
+	(new OmProjectSaveAction())->Run();
         return r_segmentation;
 }
 
@@ -253,7 +254,7 @@ void OmProject::RemoveSegmentation(const OmId id)
 
 	OmProjectData::DeleteInternalData(path);
 
-        OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }
 
 bool OmProject::IsSegmentationValid(const OmId id)

@@ -1,5 +1,6 @@
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 
 SaveButton::SaveButton(MainToolbar * parent)
 	: OmButton<MainToolbar>( parent, 
@@ -14,5 +15,5 @@ SaveButton::SaveButton(MainToolbar * parent)
 
 void SaveButton::doAction()
 {
-	OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }

@@ -2,6 +2,7 @@
 #include "common/omDebug.h"
 #include "utility/omImageDataIo.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataReader.h"
 #include "utility/stringHelpers.h"
@@ -43,7 +44,7 @@ void OmBuildVolumes::stopTiming(QString type)
 {
 	build_timer.stop();
 
-	OmProject::Save();
+        (new OmProjectSaveAction())->Run();
 	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), build_timer.s_elapsed() );
 	printf("************\n");
 }
