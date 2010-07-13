@@ -720,6 +720,7 @@ bool OmView3dUi::gestureEvent(QGestureEvent *event)
         if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
                 swipeTriggered(static_cast<QSwipeGesture *>(swipe));
 	}
+	event->accept();
 	//printf("type %i\n", event->type());
         return true;
 }
