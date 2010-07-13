@@ -13,6 +13,7 @@
 #include <QGridLayout>
 #include <QTreeWidget>
 #include <QTableView>
+#include <QMenu>
 
 class OmViewGroupState;
 
@@ -24,6 +25,9 @@ public:
 
 	void populateGroupTable(OmGroupID id);
 
+private slots:
+	void doDeleteAction();
+
 private:
         OmId getSegmentationID();
 
@@ -34,6 +38,7 @@ private:
         QGridLayout * mLayout;
 	OmGroupListWidget * mGroupsList;
 	QTableWidget * mGroupsTable;
+	QMenu * mMenu;
 };
 #endif
 
