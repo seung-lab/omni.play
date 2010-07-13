@@ -658,7 +658,7 @@ void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
 {
         QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
         if (changeFlags & QPinchGesture::RotationAngleChanged) {
-                printf("1\n");
+                //printf("1\n");
                 //qreal value = gesture->property("rotationAngle").toReal();
                 //qreal lastValue = gesture->property("lastRotationAngle").toReal();
                 //rotationAngle += value - lastValue;
@@ -670,7 +670,7 @@ void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
         }
         if (gesture->state() == Qt::GestureFinished) {
                 qreal value = gesture->property("scaleFactor").toReal();
-                printf("3 : %f\n", value);
+                //printf("3 : %f\n", value);
                 //scaleFactor *= currentStepScaleFactor;
                 //currentStepScaleFactor = 1;
 		if(value < 1) {
@@ -704,6 +704,7 @@ void OmView3dUi::swipeTriggered(QSwipeGesture *gesture)
 		printf("swipe 2\n");
              //goNextImage();
 	}
+	printf("swipe 3\n");
         mpView3d->update();
      }
 }
