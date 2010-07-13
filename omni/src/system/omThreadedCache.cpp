@@ -283,12 +283,13 @@ void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_valu
 	//key has been fetched, so remove from currently fetching
 	mCurrentlyFetching.removeAt(mCurrentlyFetching.indexOf(fetch_key));
 
-
+#if 0
 	//send update if needed
 	if(FetchUpdateCheck()) {
 		lock.unlock();
 		HandleFetchUpdate();
 	}
+#endif
 }
 
 
