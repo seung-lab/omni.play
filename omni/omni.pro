@@ -148,6 +148,7 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMeshSegmentList.h \
            src/mesh/omMeshSegmentListThread.h \
            src/project/omProject.h \
+           src/project/omProjectSaveAction.h \
            src/segment/actions/omSegmentEditor.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
            src/segment/actions/segment/omSegmentValidateAction.h \
@@ -345,6 +346,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMeshSegmentList.cpp \
            src/mesh/omMeshSegmentListThread.cpp \
            src/project/omProject.cpp \
+           src/project/omProjectSaveAction.cpp \
            src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentValidateAction.cpp \

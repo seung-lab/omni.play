@@ -17,6 +17,8 @@ class OmVoxelSetAction;
 class OmVoxelSetConnectedAction;
 class OmVoxelSetValueAction;
 
+class OmProjectSaveAction;
+
 class OmAction;
 
 class OmActionLoggerFS {
@@ -35,6 +37,8 @@ class OmActionLoggerFS {
 	void save(OmVoxelSetAction*, const std::string &);
 	void save(OmVoxelSetConnectedAction*, const std::string &);
 	void save(OmVoxelSetValueAction*, const std::string &);
+
+	void save(OmProjectSaveAction*, const std::string &);
 
  private:
 	QDir mLogFolder;

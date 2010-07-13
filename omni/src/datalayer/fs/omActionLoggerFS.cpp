@@ -1,5 +1,6 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -116,3 +117,6 @@ void OmActionLoggerFS::save(OmVoxelSetValueAction* action, const std::string &)
 {
 }
 
+void OmActionLoggerFS::save(OmProjectSaveAction* action, const std::string &)
+{
+}
