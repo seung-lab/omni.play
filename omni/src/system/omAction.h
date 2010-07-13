@@ -13,6 +13,8 @@ protected:
 	OmAction();
 	void SetValid(bool);
 	void SetUndoable(bool);
+	void SetActivate(bool);
+	bool GetActivate();
 	
 	//action interface
 	virtual void Action() = 0;
@@ -29,6 +31,7 @@ private:
 	
 	//action properties
 	bool mValid;
+	bool mActivate;
 };
 
 #endif

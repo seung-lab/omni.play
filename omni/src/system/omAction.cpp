@@ -11,6 +11,7 @@ OmAction::OmAction()
 
 	//assume undoable
 	mUndoable = true;
+	mActivate = true;	// Actions are activated by default.
 }
 
 void OmAction::SetValid(bool state)
@@ -21,6 +22,16 @@ void OmAction::SetValid(bool state)
 void OmAction::SetUndoable(bool state)
 {
 	mUndoable = state;
+}
+
+void OmAction::SetActivate(bool state)
+{
+	mActivate = state;
+}
+
+bool OmAction::GetActivate()
+{
+	return mActivate;
 }
 
 /*
@@ -50,9 +61,15 @@ void OmAction::Run()
 
 void OmAction::redo()
 {
-	Action();
 	setText(QString::fromStdString(Description()));
-	save("redo");
+
+	// Only do the action if the action is activated.
+	if(GetActivate()) {
+		Action();
+		save("redo");
+	} else {
+		SetActivate(true);
+	}
 }
 
 void OmAction::undo()
