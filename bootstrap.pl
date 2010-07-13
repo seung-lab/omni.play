@@ -363,7 +363,11 @@ sub hdf5_18 {
 }
 
 sub qt {
-    qt46();
+    if(isMac()){
+	qt47();
+    } else {
+	qt46();
+    }
 }
 
 sub qt46 {
