@@ -2,6 +2,8 @@
 #define OM_ACTION_LOGGER_H
 
 #include "common/omCommon.h"
+#include <QDir>
+#include <QDataStream>
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -15,22 +17,31 @@ class OmVoxelSetAction;
 class OmVoxelSetConnectedAction;
 class OmVoxelSetValueAction;
 
+class OmAction;
+
 class OmActionLoggerFS {
  public:
-	static void save(OmSegmentSplitAction*, const std::string &);
-	static void save(OmSegmentGroupAction*, const std::string &);
-	static void save(OmSegmentJoinAction*, const std::string &);
-	static void save(OmSegmentSelectAction*, const std::string &);
-	static void save(OmSegmentValidateAction*, const std::string &);
+	OmActionLoggerFS();
+	~OmActionLoggerFS();
 
-	static void save(OmVoxelSelectionAction*, const std::string &);
-	static void save(OmEditSelectionApplyAction*, const std::string &);
-	static void save(OmVoxelSetAction*, const std::string &);
-	static void save(OmVoxelSetConnectedAction*, const std::string &);
-	static void save(OmVoxelSetValueAction*, const std::string &);
+	void save(OmSegmentSplitAction*, const std::string &);
+	void save(OmSegmentGroupAction*, const std::string &);
+	void save(OmSegmentJoinAction*, const std::string &);
+	void save(OmSegmentSelectAction*, const std::string &);
+	void save(OmSegmentValidateAction*, const std::string &);
+
+	void save(OmVoxelSelectionAction*, const std::string &);
+	void save(OmEditSelectionApplyAction*, const std::string &);
+	void save(OmVoxelSetAction*, const std::string &);
+	void save(OmVoxelSetConnectedAction*, const std::string &);
+	void save(OmVoxelSetValueAction*, const std::string &);
 
  private:
+	QDir mLogFolder;
 
+	void setupLogDir();
+	QString getFileNameAndPath();
+	void doSave(OmAction * action);
 };
 
 #endif

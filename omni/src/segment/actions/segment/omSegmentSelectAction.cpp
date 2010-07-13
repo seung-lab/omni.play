@@ -66,5 +66,5 @@ string OmSegmentSelectAction::Description()
 
 void OmSegmentSelectAction::save(const string & comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS().save(this, comment);
 }
