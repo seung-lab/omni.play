@@ -313,6 +313,9 @@ void OmView2dImpl::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gott
 
 bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 {
+#define BUFFERCOUNT 10
+	int boff[BUFFERCOUNT] = {1, -1, 2, -2, 3, -3, 4, -4, 5, -5};
+
 	drawComplete = true;
 	unsigned int freshness = 0;
 	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
@@ -379,37 +382,37 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		yval = translateVector.y;
 	}
 
-	for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
-	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
+	for (int count = 0; count < BUFFERCOUNT; count++) {
+		for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	     		y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
-		if (translateVector.x < 0) {
-			xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((float)translateVector.x) % tl));
-		} else {
-			xMipChunk = 0;
-			xval = translateVector.x;
-		}
+			if (translateVector.x < 0) {
+				xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
+				xval = (-1 * (abs((float)translateVector.x) % tl));
+			} else {
+				xMipChunk = 0;
+				xval = translateVector.x;
+			}
 
 #if 0
-		debug("view2d","mDataDepth = %i\n",mDataDepth);
-		debug("view2d", "tl = %i\n", tl);
-		debug("view2d", "pl = %i\n", pl);
-		//debug("view2d", "x = %i\n", x);
-		debug("view2d", "y = %i\n", y);
-		debug("view2d", "xval = %i\n", xval);
-		debug("view2d", "yval = %i\n", yval);
-		debug("view2d", "translateVector.x = %i\n", translateVector.x);
-		debug("view2d", "translateVector.y = %i\n", translateVector.y);
-		debug("view2d", "xMipChunk = %i\n", xMipChunk);
-		debug("view2d", "yMipChunk = %i\n", yMipChunk);
-		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
+			debug("view2d","mDataDepth = %i\n",mDataDepth);
+			debug("view2d", "tl = %i\n", tl);
+			debug("view2d", "pl = %i\n", pl);
+			//debug("view2d", "x = %i\n", x);
+			debug("view2d", "y = %i\n", y);
+			debug("view2d", "xval = %i\n", xval);
+			debug("view2d", "yval = %i\n", yval);
+			debug("view2d", "translateVector.x = %i\n", translateVector.x);
+			debug("view2d", "translateVector.y = %i\n", translateVector.y);
+			debug("view2d", "xMipChunk = %i\n", xMipChunk);
+			debug("view2d", "yMipChunk = %i\n", yMipChunk);
+			debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
 #endif
 
-		for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
-		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
+			for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		     			x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
-			for (float count = -5; count < 6; count++) {
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+boff[count]);;
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
                         	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
                         	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
