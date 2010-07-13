@@ -10,6 +10,8 @@
 #include "volume/omVolumeCuller.h"
 #include "volume/omSegmentation.h"
 #include "mesh/omMeshSegmentList.h"
+#include "system/omEvents.h"
+
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
@@ -191,7 +193,11 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
 		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
 
-		if ( !p_mesh || !p_mesh->hasData() ) {
+		if( !p_mesh ) {
+		        OmEvents::Redraw3d();
+			continue;
+		}
+		if( !p_mesh->hasData() ) {
 			continue;
 		}
 
