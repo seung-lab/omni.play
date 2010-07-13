@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/omSegment.h"
@@ -51,4 +52,9 @@ void OmSegmentSplitAction::UndoAction()
 string OmSegmentSplitAction::Description()
 {
 	return desc.toStdString();
+}
+
+void OmSegmentSplitAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

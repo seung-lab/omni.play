@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "omVoxelSetValueAction.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -100,4 +101,9 @@ string OmVoxelSetValueAction::Description()
 	} else {
 		return string("Set Voxel") + plurlize;
 	}
+}
+
+void OmVoxelSetValueAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

@@ -52,10 +52,12 @@ void OmAction::redo()
 {
 	Action();
 	setText(QString::fromStdString(Description()));
+	save("redo");
 }
 
 void OmAction::undo()
 {
 	UndoAction();
 	setText(QString::fromStdString(Description()));
+	save("undo");
 }

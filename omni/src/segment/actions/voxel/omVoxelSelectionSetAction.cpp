@@ -86,3 +86,8 @@ string OmEditSelectionApplyAction::Description()
 {
 	return "Apply Edit Selection";
 }
+
+void OmVoxelSelectionAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
+}

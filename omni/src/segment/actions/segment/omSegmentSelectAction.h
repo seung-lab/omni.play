@@ -23,6 +23,7 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string &);
 	
 	const OmId mSegmentationId;
 	const OmSegIDsSet mNewSelectedIdSet;

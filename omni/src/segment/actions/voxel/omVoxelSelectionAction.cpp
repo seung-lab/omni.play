@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "omVoxelSelectionAction.h"
 #include "segment/actions/omSegmentEditor.h"
 
@@ -49,9 +50,13 @@ void OmVoxelSelectionAction::UndoAction()
 
 string OmVoxelSelectionAction::Description()
 {
-
 	if (mNewState)
 		return "Voxel Selected";
 	else
 		return "Voxel Unselected";
+}
+
+void OmVoxelSelectionAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

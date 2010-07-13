@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "omVoxelSetConnectedAction.h"
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -127,4 +128,9 @@ void OmVoxelSetConnectedAction::UndoAction()
 string OmVoxelSetConnectedAction::Description()
 {
 	return "Set Connected Voxels";
+}
+
+void OmVoxelSetConnectedAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

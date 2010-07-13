@@ -20,7 +20,7 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
-	
+	void save(const string&);
 	
 	OmId mSegmentationId, mSegmentId;
 	DataCoord mVoxel;

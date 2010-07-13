@@ -18,7 +18,8 @@ protected:
 	virtual void Action() = 0;
 	virtual void UndoAction() = 0;
 	virtual string Description() = 0;
-	
+	virtual void save(const string & comment ) = 0;
+
 	bool mUndoable;
 
 private:

@@ -8,27 +8,21 @@
 
 #include "system/omAction.h"
 
-
-
-
 #include <list>
 using std::list;
 
-
 class OmSegmentation;
-
-
 
 class OmVoxelSetConnectedAction : public OmAction {
 
 public:
 	OmVoxelSetConnectedAction();
-
 	
 private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string&);
 	
 	//dest segment id
 	OmId mSegmentationId, mSegmentId;

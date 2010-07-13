@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "omVoxelSetAction.h"
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -94,4 +95,9 @@ string OmVoxelSetAction::Description()
 
 		return string("Set Voxel To ") + r_segment->GetName().toStdString();
 	}
+}
+
+void OmVoxelSetAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

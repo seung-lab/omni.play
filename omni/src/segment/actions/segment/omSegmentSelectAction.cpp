@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/omSegmentCache.h"
@@ -61,4 +62,9 @@ string OmSegmentSelectAction::Description()
         }
 
         return lineItem.toStdString();
+}
+
+void OmSegmentSelectAction::save(const string & comment)
+{
+	OmActionLoggerFS::save(this, comment);
 }

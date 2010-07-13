@@ -8,8 +8,6 @@
 
 #include "system/omAction.h"
 
-
-
 class OmVoxelSetValueAction : public OmAction {
 
 public:
@@ -21,6 +19,7 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string&);
 	
 	//segmentation of voxels
 	OmId mSegmentationId;
