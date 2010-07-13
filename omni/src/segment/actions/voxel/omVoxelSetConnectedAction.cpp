@@ -132,5 +132,5 @@ string OmVoxelSetConnectedAction::Description()
 
 void OmVoxelSetConnectedAction::save(const string & comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS().save(this, comment);
 }
