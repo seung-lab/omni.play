@@ -47,7 +47,6 @@ template < typename KEY, typename PTR  >
 	void Remove(const KEY &key);
 	void RemoveOldest();
 	bool Contains(const KEY &key);
-	void Clear();
 	void Flush();
 
 	bool shouldThreadDie();
@@ -90,7 +89,6 @@ private:
 
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;
-
 	
 	//fetch thread update
 	time_t mLastUpdateTime;

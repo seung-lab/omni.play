@@ -47,7 +47,7 @@ OmThreadedCache<KEY,PTR>::~OmThreadedCache()
  *	Get value from cache associated with given key.
  *	Specify if Get should block calling thread.
  *
- *	note: blocking chache does not switch threads
+ *	note: blocking cache does not switch threads
  */
 template < typename KEY, typename PTR  > 
 void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
@@ -139,48 +139,35 @@ void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {	
 	QMutexLocker locker( &mCacheMutex );
 
-	QExplicitlySharedDataPointer<PTR> old_value = mCache.value(key);
-
-	//then remove from cache
-	mCache.remove(key);
 	mKeyAccessList.removeAll(key);
-	
+
+	QExplicitlySharedDataPointer<PTR> old_value = mCache.value(key);
+	mCache.remove(key);
+
+	locker.unlock();
 	old_value.reset();
 }
 
 /**
  *	Removes oldest value from the cache.
- *
- *	throws: if in use, the key is moved to head of access list
  */
 template < typename KEY, typename PTR  > 
 void OmThreadedCache<KEY,PTR>::RemoveOldest() 
 {
 	QMutexLocker locker( &mCacheMutex );
 
-	//so as to destroy value outside of mutex
-	QExplicitlySharedDataPointer<PTR> old_value = QExplicitlySharedDataPointer<PTR> ();
-	
-	if( mCache.empty() ) {
+	if( mCache.empty() ||
+	    mKeyAccessList.size() < 20){
 		return;
 	}
 	
-	if (mKeyAccessList.size() > 20) {
-		//get oldest key
-		KEY& r_oldest_key = mKeyAccessList.back();
+	KEY& r_oldest_key = mKeyAccessList.back();
+	mKeyAccessList.pop_back();
 	
-		//get ref to old value
-		old_value = mCache.value(r_oldest_key);
+	QExplicitlySharedDataPointer<PTR> old_value = mCache.value(r_oldest_key);
+	mCache.remove(r_oldest_key);
 
-		assert(r_oldest_key == mKeyAccessList.back());
-	
-		//then remove oldest from cache
-		mCache.remove(r_oldest_key);
-
-		//remove oldest from access list
-		mKeyAccessList.pop_back();
-	}
-
+	locker.unlock();
 	old_value.reset();
 }
 
@@ -192,19 +179,6 @@ bool OmThreadedCache<KEY,PTR>::Contains(const KEY &key)
 {
 	QMutexLocker locker( &mCacheMutex );
 	return mCache.contains(key);
-}
-
-/**
- *	Clear all elements from the cache
- */
-template < typename KEY, typename PTR > 
-void OmThreadedCache<KEY,PTR>::Clear() 
-{
-	printf("FIXME: OmThreadedCache<KEY,PTR>::Clear()\n");
-	//FIXME: this is all broken! must be, at least, mutex protected...
-	//while map contains values
-	//while(mCache.size()) 
-	//	RemoveOldest();
 }
 
 /////////////////////////////////
@@ -239,23 +213,20 @@ bool OmThreadedCache<KEY,PTR>::GetFetchUpdateClearsFetchStack()
 ///////		 Fetching
 
 template < typename KEY, typename PTR  >
-unsigned int
-OmThreadedCache<KEY,PTR>::GetFetchStackSize()
+unsigned int OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 {
 	return mFetchStack.size();
 }
 
 // Get Estimate of RAM size occupied by this cache
 template < typename KEY, typename PTR  >
-long
-OmThreadedCache<KEY,PTR>::GetCacheSize()
+long OmThreadedCache<KEY,PTR>::GetCacheSize()
 {
         return mCache.size() * mObjectSize;
 }
 
 template < typename KEY, typename PTR  >
-void
-OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
+void OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
 {
         mObjectSize = size;
 }
@@ -312,10 +283,10 @@ void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_valu
 	//key has been fetched, so remove from currently fetching
 	mCurrentlyFetching.removeAt(mCurrentlyFetching.indexOf(fetch_key));
 
-	lock.unlock();
 
 	//send update if needed
 	if(FetchUpdateCheck()) {
+		lock.unlock();
 		HandleFetchUpdate();
 	}
 }
@@ -327,7 +298,6 @@ void OmThreadedCache<KEY,PTR>::HandleFetchUpdate(KEY fetch_key, PTR * fetch_valu
 template < typename KEY, typename PTR  > 
 bool OmThreadedCache<KEY,PTR>::FetchUpdateCheck() 
 {
-	//get current time
 	time_t current_time;
 	time( &current_time );
 	
@@ -337,9 +307,9 @@ bool OmThreadedCache<KEY,PTR>::FetchUpdateCheck()
 		mLastUpdateTime = current_time;
 		
 		//clear fetch stack so that new relevant keys are requested
-		mCacheMutex.lock();
-		if(mFetchUpdateClearsStack) mFetchStack.clear();
-		mCacheMutex.unlock();
+		if(mFetchUpdateClearsStack) {
+			mFetchStack.clear();
+		}
 		
 		//return that fetch update should be called
 		return true;
