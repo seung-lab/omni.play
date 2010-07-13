@@ -70,7 +70,6 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 		//printf("HI! %i\n", id);
 		QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
 		segmentButton->setMenu(mMenu);
-        	connect(segmentButton, SIGNAL(showMenu()), this, SLOT(doDeleteAction()));
 
 		mGroupsTable->setCellWidget(count, 0, segmentButton);
 
