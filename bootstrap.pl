@@ -110,6 +110,11 @@ cd $basePath/omni
 ../external/libs/Qt/bin/qmake omni.pro
 make $globalMakeOptions
 END
+
+    if(isMac()) {
+        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0-beta2/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+    }
+
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $omniScriptFile`;
