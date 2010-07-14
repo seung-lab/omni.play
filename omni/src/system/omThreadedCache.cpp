@@ -63,6 +63,7 @@ void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 	} else if(blocking) {
 
 		mCacheMutex.unlock();
+  		OmCacheManager::Instance()->CleanCacheGroup(mCacheGroup);
 
 		p_value = QExplicitlySharedDataPointer<PTR>(HandleCacheMiss(key));
 
