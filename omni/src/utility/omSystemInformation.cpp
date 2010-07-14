@@ -5,7 +5,11 @@
 
 unsigned int OmSystemInformation::get_num_cores()
 {
+#ifdef __APPLE__
+	return 3;
+#else
 	return zi::System::getCPUCount();
+#endif
 }
 
 #ifdef __APPLE__

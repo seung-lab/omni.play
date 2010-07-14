@@ -26,6 +26,8 @@ class OmActionLoggerFS {
 	OmActionLoggerFS();
 	~OmActionLoggerFS();
 
+	void doSave(OmAction * action);
+
 	void save(OmSegmentSplitAction*, const std::string &);
 	void save(OmSegmentGroupAction*, const std::string &);
 	void save(OmSegmentJoinAction*, const std::string &);
@@ -45,7 +47,6 @@ class OmActionLoggerFS {
 
 	void setupLogDir();
 	QString getFileNameAndPath();
-	void doSave(OmAction * action);
 };
 
 #endif
