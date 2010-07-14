@@ -25,7 +25,7 @@ OmSegmentColorizer::~OmSegmentColorizer()
 
 void OmSegmentColorizer::setup()
 {
-	QMutexLocker lock(&mMutex);
+	QWriteLocker mapResizeLock(&mMapResizeMutex);
 
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
@@ -41,6 +41,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				    unsigned char * data )
 {
 	setup();
+
+	QReadLocker mapResizeLock(&mMapResizeMutex);
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
@@ -64,14 +66,14 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 			if( 0 == val ){
 				newcolor = blackColor;
 			} else{
-				mMutex.lock(); // TODO: use lock-free hash?
+				mColorUpdateMutex.lock(); // TODO: use lock-free hash?
 				if( !isCacheElementValid(val, segCacheFreshness) ){
 					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
+				mColorUpdateMutex.unlock();
 
 				newcolor = mColorCache[ val ].color;
-				mMutex.unlock(); // lock here, to avoid a potential race, where mColorCache gets resized due to a user segment add action...
 			}
 		} 
 

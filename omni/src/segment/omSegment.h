@@ -23,7 +23,7 @@ public:
 	// color
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return mColorInt; }
-	Vector3f GetColorFloat(){
+	inline Vector3f GetColorFloat(){
 		return Vector3f( mColorInt.red   / 255.,
 				 mColorInt.green / 255.,
 				 mColorInt.blue  / 255. ); }
