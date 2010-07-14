@@ -36,6 +36,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	//build methods
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
+	bool BuildVolume();
 	
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);

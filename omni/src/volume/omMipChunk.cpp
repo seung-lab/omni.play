@@ -21,6 +21,7 @@
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
+
 /////////////////////////////////
 ///////
 ///////         OmMipChunk Class
@@ -357,6 +358,15 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 	default:
 		assert(false);
 	}
+}
+
+/*
+ *	Returns pointer to image data
+ */
+
+vtkImageData* OmMipChunk::GetImageData()
+{
+	return mpImageData;
 }
 
 /*

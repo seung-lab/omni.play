@@ -46,6 +46,7 @@ public:
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
+	vtkImageData* GetImageData();
 	void SetImageData(vtkImageData *imageData);
 
 	
@@ -97,7 +98,7 @@ protected:
 	mutable QMutex mOpenLock;
 	mutable QMutex mDirectDataValueLock;
 	int mEstMemBytes;
-	void InitChunk(const OmMipChunkCoord &rMipCoord);
+	virtual void InitChunk(const OmMipChunkCoord &rMipCoord);
 	
 	//mip volume this chunk belongs to
 	OmMipVolume * const mpMipVolume;

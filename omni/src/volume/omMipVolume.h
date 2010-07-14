@@ -9,6 +9,7 @@
  */
 
 #include "volume/omVolume.h"
+#include "omThreadChunkThreadedCache.h"
 #include "omMipChunkCoord.h"
 #include "system/omThreadedCache.h"
 #include "datalayer/omDataPath.h"
@@ -16,10 +17,13 @@
 #include "utility/omTimer.h"
 
 #include <QFileInfo>
+#include <QList>
 
 class OmVolume;
 class OmMipChunk;
+class OmThreadChunkLevel;
 class vtkImageData;
+class OmMipThread;
 
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
@@ -35,8 +39,8 @@ public:
 	void SetFilename(const QString &);
 	QString GetFilename();
 	virtual void SetDirectoryPath(const QString &);
-	QString GetDirectoryPath();
-	
+	QString GetDirectoryPath();	
+
 	QString MipLevelInternalDataPath(int level);
 	QString MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 	
@@ -44,8 +48,7 @@ public:
 	void SetSourceFilenamesAndPaths( QFileInfoList );
 	QFileInfoList GetSourceFilenamesAndPaths();
 	bool IsSourceValid();
-	
-	
+		
 	// data properties
 	const DataBbox& GetExtent();
 	int GetChunkDimension();
@@ -67,31 +70,48 @@ public:
 	Vector3<int> MipLevelDimensionsInMipChunks(int level);
 	int MipChunksInMipLevel(int level);
 	int MipChunksInVolume();
+
+	//thread chunk methods
+	int GetThreadChunkDimension();
+	Vector3<int> GetThreadChunkDimensions();
+	Vector3<int> MipVolumeDimensionsInThreadChunks();
+	int ThreadChunksInVolume();
 	
 	//mip coord
 	OmMipChunkCoord DataToMipCoord(const DataCoord &vox, int level);
 	OmMipChunkCoord NormToMipCoord(const NormCoord &normCoord, int level);
 	DataBbox MipCoordToDataBbox(const OmMipChunkCoord &, int level);
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);
+       	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
 	
 	//mip chunk methods
 	OmMipChunkCoord RootMipChunkCoordinate();
 	int MipChunkDimension(int level);
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &mipCoord);
+	bool ContainsThreadChunkCoord(const OmMipChunkCoord &mipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
 	void GetChunk(QExplicitlySharedDataPointer<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
+	void GetThreadChunkLevel(QExplicitlySharedDataPointer<OmThreadChunkLevel> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
 	
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);
 	void SetVoxelValue(const DataCoord &vox, quint32 value);
-
+	
 	//build methods
 	void Build(OmDataPath & dataset);
-	bool BuildVolume();
+	virtual bool BuildVolume();
+	bool BuildSerialVolume();
+	bool BuildThreadedVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
-	void BuildEditedLeafChunks();
+	void BuildEditedLeafChunks();	
+	vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
+	void BuildThreadChunk(const OmMipChunkCoord &, vtkImageData *p_source_data);
+
+	//comparison methods
+	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
+	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
 	
 	//io
 	bool ImportSourceData(OmDataPath & dataset);
@@ -104,17 +124,11 @@ public:
 	int GetBytesPerSample();
 	void SetBytesPerSample(int);
 
-	//timer variables
-	OmTimer mip_timer;
+	//Thread Chunk Stuff
+	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
-	OmTimer chunk_timer;
-	double chunk_total;
-
-	OmTimer segchunk_timer;
-	double segchunk_total;
-
-	OmTimer subsmp_timer;
-	double subsmp_total;
+	//List of threads
+	QList< OmMipThread* > mMipThreads;
 	
 protected:		
 	//state
@@ -134,10 +148,10 @@ protected:
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
-
 	
 private:
 	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
+	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
 	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	

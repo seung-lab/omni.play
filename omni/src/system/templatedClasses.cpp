@@ -35,6 +35,7 @@
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
+template class OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>;
 template class OmThreadedCache<OmMipMeshCoord, OmMipMesh>;
 template class OmThreadedCache<OmTileCoord, OmTextureID>;
 template class OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>;

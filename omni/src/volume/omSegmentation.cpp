@@ -161,6 +161,38 @@ void OmSegmentation::BuildVolumeData()
 }
 
 /*
+ *	Overridden BuildVolume method to build mipmaps and then build segmentations from
+ *	chunks in a second pass
+ */
+bool OmSegmentation::BuildVolume()
+{
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+		//timer start	
+		vol_timer.start();
+	}
+
+	//build mipmaps
+	if (!BuildThreadedVolume()) {
+		return false;
+	}
+
+	//build segmentation
+	if (!BuildSerialVolume()) {
+		return false;
+	}
+
+	if (isDebugCategoryEnabled("perftest")){
+		//timer end
+		vol_timer.stop();
+		printf("OmSegmentation:BuildSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
+	}
+
+	return true;
+}
+
+/*
  *	Build all meshes in all chunks of the MipVolume.
  */
 void OmSegmentation::BuildMeshData()
@@ -252,15 +284,10 @@ void OmSegmentation::BuildMeshDataInternal()
 
 /*
  *	Overridden BuildChunk method so that the mesh data for a chunk will
- *	also be rebuilt if needed.
+ *	also be rebuilt if needed, and segments are added from the chunk.
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 {
-	//timer start
-	segchunk_timer.start();
-
-	//build chunk volume data
-	OmMipVolume::BuildChunk(mipCoord);
 
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, mipCoord);
@@ -299,9 +326,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 			mMipMeshManager.UncacheMesh(mip_mesh_coord);
 		}
 	}
-
-	//timer end
-	segchunk_total += segchunk_timer.s_elapsed();
 
 }
 

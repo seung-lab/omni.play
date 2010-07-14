@@ -102,6 +102,27 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.loadDendrogram();
+	} else if( line.startsWith("comparechannels:") ) {
+		// format: comparechannels:id1,id2:verbose
+		QStringList args = line.split(':');
+		QStringList channelIDs = args[1].split(',');
+		int id1 = StringHelpers::getUInt( channelIDs[0] );
+		int id2 = StringHelpers::getUInt( channelIDs[1] );
+		bool verbose = (bool) StringHelpers::getUInt( args[2] );
+
+		if( !OmProject::IsChannelValid(id1) && !OmProject::IsChannelValid(id2) ) {
+			if( id1 == id2 ){
+				printf("Channel %i is not a valid channel.\n",id1);
+			} else {
+				printf("Channels %i and %i are not valid channels.\n",id1,id2);
+			}
+		} else if( !OmProject::IsChannelValid(id1) ) {
+			printf("Channel %i is not a valid channel.\n",id1);
+		} else if( !OmProject::IsChannelValid(id2) ) {
+			printf("Channel %i is not a valid channel.\n",id2);
+		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
+			printf("Channel %i and Channel %i are identical.\n",id1,id2);
+		}
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z
 		QStringList args = line.split(':');
@@ -130,7 +151,7 @@ void Headless::processLine( QString line, QString fName )
 		if( 0 == numThreads) {
 			numThreads = 4;
 		}
-		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
+		printf("meshing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
 		time (&start);
 		OmProject::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
 		time (&end);

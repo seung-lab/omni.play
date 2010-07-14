@@ -13,6 +13,9 @@
 #include "utility/omImageDataIo.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
+#include "volume/omThreadChunkLevel.h"
+#include "volume/omMipThread.h"
+#include "volume/omMipThreadManager.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolume.h"
 
@@ -41,6 +44,8 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
+
+	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
 }
 
 OmMipVolume::~OmMipVolume()
@@ -61,6 +66,7 @@ void OmMipVolume::Flush()
 
 	//flush all chunks in the cache
 	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Flush();
+	mThreadChunkThreadedCache->Flush();
 }
 
 /////////////////////////////////
@@ -230,7 +236,6 @@ int OmMipVolume::GetRootMipLevel()
  */
 void OmMipVolume::UpdateRootLevel()
 {
-
 	//determine max level
 	Vector3 < int >source_dims = GetExtent().getUnitDimensions();
 	int max_source_dim = source_dims.getMaxComponent();
@@ -302,6 +307,46 @@ int OmMipVolume::MipChunksInVolume()
 }
 
 /////////////////////////////////
+///////          Thread Chunk Methods
+
+
+/*
+ *	Gets dimension of a thread chunk, which incrceases with num of mip levels,
+ *	but is at least as large as a mip chunk.
+ */
+int OmMipVolume::GetThreadChunkDimension()
+{
+	return max(OMPOW(2, mMipRootLevel), GetChunkDimension());
+}
+
+Vector3 < int > OmMipVolume::GetThreadChunkDimensions()
+{
+	return Vector3 < int >(GetThreadChunkDimension(), GetThreadChunkDimension(), GetThreadChunkDimension());
+}
+
+/*
+ *	Calculate the MipChunkCoord dims required to contain all the thread chunks in a volume.
+ */
+Vector3 < int > OmMipVolume::MipVolumeDimensionsInThreadChunks()
+{
+	DataBbox source_extent = GetExtent();
+	Vector3 < float >source_dims = source_extent.getUnitDimensions();
+
+	return Vector3 < int >(ceil(source_dims.x / GetThreadChunkDimension()),
+			       ceil(source_dims.y / GetThreadChunkDimension()), 
+			       ceil(source_dims.z / GetThreadChunkDimension()));
+}
+
+/*
+ *	Returns the number of ThreadChunks in a given MipLevel of the MipVolume.
+ */
+int OmMipVolume::ThreadChunksInVolume()
+{
+	Vector3 < int >thread_dims = MipVolumeDimensionsInThreadChunks();
+	return thread_dims.x * thread_dims.y * thread_dims.z;
+}
+
+/////////////////////////////////
 ///////          MipCoordinate Methods
 
 /*
@@ -351,6 +396,20 @@ NormBbox OmMipVolume::MipCoordToNormBbox(const OmMipChunkCoord & rMipCoord)
 	return OmVolume::DataToNormBbox(MipCoordToDataBbox(rMipCoord, 0));
 }
 
+/*
+ *	Returns the extent of a thread chunk at the level of the mip coord
+ */
+DataBbox OmMipVolume::MipCoordToThreadDataBbox(const OmMipChunkCoord & rMipCoord)
+{
+	int thread_dim = GetThreadChunkDimension() / OMPOW(2, rMipCoord.Level);
+	Vector3 < int >thread_dims = GetThreadChunkDimensions() / OMPOW(2, rMipCoord.Level);
+
+	//min of extent in parent data coordinates
+	DataCoord thread_min_coord = rMipCoord.Coordinate * thread_dim;
+
+	return DataBbox(thread_min_coord, thread_dims.x, thread_dims.y, thread_dims.z);
+}
+
 /////////////////////////////////
 ///////          MipChunk Methods
 
@@ -379,6 +438,28 @@ bool OmMipVolume::ContainsMipChunkCoord(const OmMipChunkCoord & mipCoord)
 	mip_coord_data_bbox.intersect(GetExtent());
 	if (mip_coord_data_bbox.isEmpty())
 		return false;
+
+	//else valid mip coord
+	return true;
+}
+
+/*
+ *	Returns true if coordinate of thread chunk is a valid coordinate within the MipVolume.
+ */
+bool OmMipVolume::ContainsThreadChunkCoord(const OmMipChunkCoord & mipCoord)
+{
+
+	//if level is greater than root level
+	if (mipCoord.Level > GetRootMipLevel())
+		return false;
+
+	//check if coord is in volume
+	DataCoord thread_coord_dims = MipVolumeDimensionsInThreadChunks();
+	if (mipCoord.Coordinate.x > thread_coord_dims.x ||
+	    mipCoord.Coordinate.y > thread_coord_dims.y ||
+	    mipCoord.Coordinate.z > thread_coord_dims.z){
+		return false;
+	}
 
 	//else valid mip coord
 	return true;
@@ -422,6 +503,14 @@ void OmMipVolume::GetChunk(QExplicitlySharedDataPointer < OmMipChunk > &p_value,
 	assert(mBuildState != MIPVOL_UNBUILT);
 
 	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Get(p_value, rMipCoord, block);
+}
+
+void OmMipVolume::GetThreadChunkLevel(QExplicitlySharedDataPointer < OmThreadChunkLevel > &p_value, const OmMipChunkCoord & rMipCoord, bool block)
+{
+	//ensure either built or building
+	assert(mBuildState != MIPVOL_UNBUILT);
+
+	mThreadChunkThreadedCache->Get(p_value, rMipCoord, block);
 }
 
 /*
@@ -575,9 +664,18 @@ void OmMipVolume::Build(OmDataPath & dataset)
 }
 
 /*
- *	Build all chunks in MipLevel of this MipVolume
+ *	Build all chunks in MipLevel of this MipVolume.
+ *	For channel builds, simply use multithreading.
  */
 bool OmMipVolume::BuildVolume()
+{
+	return BuildThreadedVolume();
+}
+
+/*
+ *	Old way of building volume on a single thread, still used by OmSegmentation.
+ */
+bool OmMipVolume::BuildSerialVolume()
 {
 
 	//debug("FIXME", << "OmMipVolume::BuildVolume()" << endl;
@@ -587,18 +685,11 @@ bool OmMipVolume::BuildVolume()
 	    PostEvent(new
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
 				      MipChunksInVolume()));
+	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
-
-			//timer start
-			mip_timer.start();
-			chunk_total = 0;
-			chunk_timer.stop();
-			segchunk_total = 0;
-			segchunk_timer.stop();
-			subsmp_total = 0;
-			subsmp_timer.stop();
-
+		//timer start
+		vol_timer.start();
 	}
 
 	//for each level
@@ -634,22 +725,55 @@ bool OmMipVolume::BuildVolume()
 	}
 
 	if (isDebugCategoryEnabled("perftest")){
+		//timer end
+		vol_timer.stop();
+		printf("OmMipVolume:BuildSerialVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+	}
+
+	//hide progress bar
+	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	return true;
+}
+
+/*
+ *	Build all chunks in MipLevel of this MipVolume with multithreading
+ */
+bool OmMipVolume::BuildThreadedVolume()
+{
+
+	//debug("FIXME", << "OmMipVolume::BuildThreadedVolume()" << endl;
+	//init progress bar
+	//int prog_count = 0;
+	//TODO: Use prog_count to display progress somehow
+	OmEventManager::
+	    PostEvent(new
+		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
+				      ThreadChunksInVolume()));
+
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+       		//timer start	
+       		vol_timer.start();
+	}
+
+	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,false);
+	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
+	mipThreadManager->run();
+	mipThreadManager->StartThreads();
+	mipThreadManager->wait();
+	mipThreadManager->StopThreads();
+	delete mipThreadManager;
+
+	//flush cache so that all thread chunks are flushed to disk
+	mThreadChunkThreadedCache->Flush();
+	printf("done\n");
+
+	if (isDebugCategoryEnabled("perftest")){
 
 		//timer end
-		mip_timer.stop();
-
-		double extratime;
-
-		if (segchunk_total > 0 ){
-			extratime = segchunk_total - chunk_total;
-		} else {
-			extratime = 0;
-		}
-
-		printf("OmMipVolume:BuildVolume() done : %.6f secs\n",mip_timer.s_elapsed());
-		printf("OmMipVolume:BuildChunk() total time: %.6f secs\n",chunk_total);
-		printf("OmMipVolume:SubsampleImageData() total time: %.6f secs\n",subsmp_total);
-		printf("OmSegmentation:BuildChunk() extra time: %.6f secs\n",extratime);
+		vol_timer.stop();
+		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
 
 	}
 
@@ -664,9 +788,6 @@ bool OmMipVolume::BuildVolume()
  */
 void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 {
-	//timer start
-	if (isDebugCategoryEnabled("perftest"))
-	    chunk_timer.start();
 
 	//debug("genone","OmMipVolume::BuildChunk()\n");
 
@@ -692,10 +813,6 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	//subsample
 	vtkImageData *p_subsampled_data = NULL;
 
-	//subsample timer start
-	if (isDebugCategoryEnabled("perftest"))
-	    subsmp_timer.start();
-
 	//switch on scalar type
 	switch (GetBytesPerSample()) {
 	case 1:
@@ -708,20 +825,12 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 		assert(false);
 	}
 
-	//subsample timer end
-	if (isDebugCategoryEnabled("perftest"))
-		subsmp_total += subsmp_timer.s_elapsed();
-
 	//set or replace image data (chunk now owns pointer)
 	p_chunk->SetImageData(p_subsampled_data);
 
 	//delete source data
 	p_source_data->Delete();
 	p_source_data = NULL;
-
-	//timer end
-	if (isDebugCategoryEnabled("perftest"))
-		chunk_total += chunk_timer.s_elapsed();
 
 }
 
@@ -769,6 +878,252 @@ void OmMipVolume::BuildEditedLeafChunks()
 	//edited chunks clean
 	mEditedLeafChunks.clear();
 	
+}
+
+/*
+ *	Build one level of a thread chunk and return image data for use by next level
+ */
+vtkImageData* OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
+{
+	//no need to subsample for mip level 0, just read data
+	if (rMipCoord.Level == 0){
+
+		//read original data
+		OmDataPath source_data_path;
+		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
+		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
+
+		//read and get pointer to data
+		vtkImageData *p_leaf_data =
+			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
+										       source_data_bbox, 
+										       GetBytesPerSample());
+
+		return p_leaf_data;
+
+	} else {
+
+		//otherwise chunk is a parent, so get pointer to chunk
+		QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
+		GetThreadChunkLevel(p_chunklevel, rMipCoord);
+
+		//subsample
+		vtkImageData *p_subsampled_data = NULL;
+
+		//switch on scalar type
+		switch (GetBytesPerSample()) {
+		case 1:
+			p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
+			break;
+		case 4:
+			p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
+			break;
+		default:
+			assert(false);
+		}
+
+		//set or replace image data (chunk now owns pointer)
+		p_chunklevel->SetImageData(p_subsampled_data);
+
+		//delete source data if not used by a chunk
+		if (rMipCoord.Level == 1){
+			p_source_data->Delete();
+		}
+		p_source_data = NULL;
+
+		return p_subsampled_data;
+
+	}
+}
+
+/*
+ *	Recursively build thread chunk levels with minimal IO by passing image data from
+ *	the previous level build to the next level build
+ */
+void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
+{
+	//build level
+	vtkImageData *p_image_data = BuildThreadChunkLevel(rMipCoord,p_source_data);
+
+	//if mipCoord is not root
+	if (rMipCoord.Level != mMipRootLevel) {
+
+		//get parent
+		OmMipChunkCoord parent_coord = rMipCoord;
+		parent_coord.Level++;
+		
+		//build parent chunk and recurse
+		BuildThreadChunk(parent_coord,p_image_data);
+	}
+}
+
+/////////////////////////////////
+///////        Comparison
+
+/*
+ *	Returns true if two given volumes are exactly the same.
+ *	Prints all positions where volumes differ if verbose flag is set.
+ */
+bool OmMipVolume::CompareVolumes(OmMipVolume *pMipVolume1, OmMipVolume *pMipVolume2, bool verbose)
+{
+
+	//check if dimensions are the same
+	if (pMipVolume1->GetExtent().getUnitDimensions() != pMipVolume2->GetExtent().getUnitDimensions()){
+		printf("Volumes differ: Different dimensions.\n");
+		return false;
+	}	
+
+	bool diff = false;
+
+	//root mip level should be the same if data dimensions are the same
+	assert(pMipVolume1->GetRootMipLevel() == pMipVolume2->GetRootMipLevel());
+
+	//loop through levels
+	for (int level = 0; level <= pMipVolume1->GetRootMipLevel(); ++level) {
+
+		if (verbose){
+			printf("Comparing mip level %i\n",level);
+		}
+
+		//dim of miplevel in mipchunks
+		Vector3 < int > mip_coord_dims = pMipVolume1->MipLevelDimensionsInMipChunks(level);
+
+		//for all coords
+		for (int z = 0; z < mip_coord_dims.z; ++z){
+			for (int y = 0; y < mip_coord_dims.y; ++y){
+				for (int x = 0; x < mip_coord_dims.x; ++x){
+					
+					if (verbose){
+						printf("Comparing chunks at (%i,%i,%i,%i)\n",level,x,y,z);
+					}
+
+					//construct mip chunks
+					OmMipChunk *pMipChunk1 = new OmMipChunk(OmMipChunkCoord(level, x, y, z),pMipVolume1);
+					OmMipChunk *pMipChunk2 = new OmMipChunk(OmMipChunkCoord(level, x, y, z),pMipVolume2);
+ 
+					if(!CompareChunks(pMipChunk1,pMipChunk2,verbose)){
+						printf("Volumes differ: Chunks at (%i,%i,%i,%i) are different.\n",level,x,y,z);
+
+						//delete chunks
+						delete pMipChunk1;
+						delete pMipChunk2;
+
+						if (verbose){
+							//set diff flag, don't return
+							diff = true;
+						} else {
+							return false;
+						}
+					} else {				      
+						//delete chunks
+						delete pMipChunk1;
+						delete pMipChunk2;
+					}
+
+				}
+			}
+		}
+	}
+
+	if (diff){ return false; } else { return true; }
+
+}
+
+/*
+ *	Returns true if two given chunks contain the exact same image data
+ *	Returns true even if chunk position differs
+ */
+bool OmMipVolume::CompareChunks(OmMipChunk *pMipChunk1, OmMipChunk *pMipChunk2, bool verbose)
+{
+	//check if mip level is the same
+	if (pMipChunk1->GetCoordinate().Level != pMipChunk2->GetCoordinate().Level){
+		printf("Chunks differ: Different mip levels.\n");
+		return false;
+	}
+
+	//check if dimensions are the same
+	if (pMipChunk1->GetDimensions() != pMipChunk2->GetDimensions()){
+		printf("Chunks differ: Different dimensions.\n");
+		return false;
+	}
+
+	//uses mpImageData so ensure chunks are open
+	pMipChunk1->Open();
+	pMipChunk2->Open();
+
+	//get extents
+	int extent1[6];
+	int extent2[6];
+	pMipChunk1->GetImageData()->GetExtent(extent1);
+	pMipChunk2->GetImageData()->GetExtent(extent2);
+
+	//check if scalar size is the same
+	int scalarSize1 = pMipChunk1->GetImageData()->GetScalarSize();
+	int scalarSize2 = pMipChunk2->GetImageData()->GetScalarSize();
+
+	//Set flag if chunks differ
+	bool diff = false;
+
+	if (scalarSize1 != scalarSize2){
+		printf("Chunks differ: Different scalar types.\n");
+		return false;
+	} else if (scalarSize1 == 4){
+		quint32 *p_scalar_data1 = static_cast < quint32* >(pMipChunk1->GetImageData()->GetScalarPointer());
+		quint32 *p_scalar_data2 = static_cast < quint32* >(pMipChunk2->GetImageData()->GetScalarPointer());
+
+		//check if each voxel is the same as the corresponding voxel in the other chunk
+		//if verbose, loop through and print positions of all differing voxels
+		for (int z1 = extent1[0], z2 = extent2[0]; (z1 <= extent1[1]) && (z2 <= extent2[1]); z1++, z2++){
+			for (int y1 = extent1[2], y2 = extent2[2]; (y1 <= extent1[3]) && (y2 <= extent2[3]); y1++, y2++){
+				for (int x1 = extent1[4], x2 = extent2[4]; (x1 <= extent1[5]) && (x2 <= extent2[5]); x1++, x2++){
+
+					if (*p_scalar_data1 != *p_scalar_data2){
+						printf("Voxel (%i,%i,%i) in Chunk 1 differs from Voxel (%i,%i,%i) in Chunk 2.\n",x1,y1,z1,x2,y2,z2);
+						if (verbose){
+							//set diff flag, don't return
+							diff = true;
+						} else {
+							return false;
+						}
+					}
+
+					//advance to next scalars
+					++p_scalar_data1;
+					++p_scalar_data2;
+
+				}
+			}
+		}
+	} else if (scalarSize1 == 1){
+		quint8 *p_scalar_data1 = static_cast < quint8* >(pMipChunk1->GetImageData()->GetScalarPointer());
+		quint8 *p_scalar_data2 = static_cast < quint8* >(pMipChunk2->GetImageData()->GetScalarPointer());
+
+		//check if each voxel is the same as the corresponding voxel in the other chunk
+		//if verbose, loop through and print positions of all differing voxels
+		for (int z1 = extent1[0], z2 = extent2[0]; (z1 <= extent1[1]) && (z2 <= extent2[1]); z1++, z2++){
+			for (int y1 = extent1[2], y2 = extent2[2]; (y1 <= extent1[3]) && (y2 <= extent2[3]); y1++, y2++){
+				for (int x1 = extent1[4], x2 = extent2[4]; (x1 <= extent1[5]) && (x2 <= extent2[5]); x1++, x2++){
+
+					if (*p_scalar_data1 != *p_scalar_data2){
+						printf("Voxel (%i,%i,%i) in Chunk 1 differs from Voxel (%i,%i,%i) in Chunk 2.\n",x1,y1,z1,x2,y2,z2);
+						if (verbose){
+							//set diff flag, don't return
+							diff = true;
+						} else {
+							return false;
+						}
+					}
+
+					//advance to next scalars
+					++p_scalar_data1;
+					++p_scalar_data2;
+
+				}
+			}
+		}
+	}
+
+	if (diff){ return false; } else { return true; }
 }
 
 /////////////////////////////////
@@ -841,7 +1196,7 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 
 	//hide progress bar
 	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
-	printf("done in %.6f\n",import_timer.s_elapsed());
+	printf("done in %.6f secs\n",import_timer.s_elapsed());
 	return true;
 }
 
@@ -1034,4 +1389,9 @@ int OmMipVolume::GetBytesPerSample()
 void OmMipVolume::SetBytesPerSample(int bytesPerSample)
 {
 	mBytesPerSample = bytesPerSample;
+}
+
+OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
+{
+	return mThreadChunkThreadedCache;
 }
