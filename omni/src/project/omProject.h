@@ -12,8 +12,6 @@
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
 
-#include <QSemaphore>
-
 class OmChannel;
 class OmSegmentation;
 class OmVolumeCuller;
@@ -36,7 +34,6 @@ class OmProject : boost::noncopyable {
 	static void Commit();
 	static void Load( QString fileNameAndPath );
 	static void Close();
-	static bool isProjectIsClosing();
 
         //volume management
         static OmChannel& GetChannel(const OmId id);
@@ -61,8 +58,6 @@ class OmProject : boost::noncopyable {
 	~OmProject();
 	static OmProject* mspInstance;
 	
-	QSemaphore mProjectIsClosing;
- 
 	//project
 	QString mFileName;
 	QString mDirectoryPath;
