@@ -21,6 +21,8 @@ class OmProjectSaveAction;
 
 class OmAction;
 
+class QUndoStack;
+
 class OmActionLoggerFS {
  public:
 	OmActionLoggerFS();
@@ -48,5 +50,8 @@ class OmActionLoggerFS {
 	void setupLogDir();
 	QString getFileNameAndPath();
 };
+
+QDataStream &operator<<(QDataStream & out, const QUndoStack & s );
+QDataStream &operator>>(QDataStream & in, QUndoStack & s );
 
 #endif

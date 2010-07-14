@@ -1,6 +1,9 @@
 #include "datalayer/fs/omActionLoggerFS.h"
+#include "datalayer/archive/omDataArchiveBoost.h"
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
+#include "system/omStateManager.h"
+
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -74,6 +77,8 @@ void OmActionLoggerFS::doSave(OmAction * action)
 	out << Omni_Log_Version;
 	
 	out << Omni_Postfix;
+
+	out << (*OmStateManager::GetUndoStack());
 }
 
 void OmActionLoggerFS::save(OmSegmentSplitAction* action, const std::string &)
@@ -120,3 +125,29 @@ void OmActionLoggerFS::save(OmVoxelSetValueAction* action, const std::string &)
 void OmActionLoggerFS::save(OmProjectSaveAction* action, const std::string &)
 {
 }
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
+{
+        //meta data
+        out << a.mSelectedSegmentIds;
+        out << a.mCreate;
+        out << a.mSegmentationId;
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
+{
+        in >> a.mSelectedSegmentIds;
+        in >> a.mCreate;
+        in >> a.mSegmentationId;
+
+	a.SetActivate(false);
+
+        return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const QUndoStack & s )
+{
+}
+

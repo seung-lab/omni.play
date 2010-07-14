@@ -20,9 +20,12 @@ private:
 	string Description();
 	void save(const string &);
 
-	const OmId mSegmentationId;
-	const bool mCreate;
+	OmId mSegmentationId;
+	bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;
+
+        friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
+        friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
 };
 
 #endif
