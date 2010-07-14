@@ -15,10 +15,12 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	this->setLayout(mLayout);
 
 	mGroupsList = new OmGroupListWidget(this);
+	mGroupsList->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	mLayout->addWidget(mGroupsList,0,0,1,1);
 
 	mGroupsTable = new QTableWidget();
 	mGroupsTable->setColumnCount(4);
+	mGroupsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	mLayout->addWidget(mGroupsTable,0,1,1,1);
 
 	mMenu = new QMenu ();
@@ -70,6 +72,9 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 		//printf("HI! %i\n", id);
 		QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
 		segmentButton->setMenu(mMenu);
+	        connect(segmentButton, SIGNAL(clicked(bool)),
+                	this, SLOT(doDeleteAction()));
+
 
 		mGroupsTable->setCellWidget(count, 0, segmentButton);
 
