@@ -73,7 +73,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	float mDataDepth = 0;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -144,7 +144,6 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
@@ -314,7 +313,7 @@ void OmView2dImpl::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gott
 bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 {
 #define BUFFERCOUNT 10
-	int boff[BUFFERCOUNT] = {1, -1, 2, -2, 3, -3, 4, -4, 5, -5};
+	int boff[BUFFERCOUNT] = {5, -5, 4, -4, 3, -3, 2, -2, 1, -1};
 
 	drawComplete = true;
 	unsigned int freshness = 0;
@@ -327,7 +326,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	float mDataDepth = 0;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -363,26 +362,27 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		break;
 	}
 
-	
 	bool complete = true;
-	float xMipChunk;
-	float yMipChunk;
-	float xval;
-	float yval;
-	Vector2f stretch = mVolume->GetStretchValues(mViewType);
-
-	float pl = OMPOW(2, zoomMipVector.x);
-	int tl = tileLength * OMPOW(2, zoomMipVector.x);
-
-	if (translateVector.y < 0) {
-		yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
-		yval = (-1 * (abs((int)translateVector.y) % tl));
-	} else {
-		yMipChunk = 0;
-		yval = translateVector.y;
-	}
-
+	debug("genone", "in buffering: %i\n", mDataDepth);
 	for (int count = 0; count < BUFFERCOUNT; count++) {
+		float xMipChunk;
+		float yMipChunk;
+		float xval;
+		float yval;
+		Vector2f stretch = mVolume->GetStretchValues(mViewType);
+
+		float pl = OMPOW(2, zoomMipVector.x);
+		int tl = tileLength * OMPOW(2, zoomMipVector.x);
+
+		if (translateVector.y < 0) {
+			yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
+			yval = (-1 * (abs((int)translateVector.y) % tl));
+		} else {
+			yMipChunk = 0;
+			yval = translateVector.y;
+		}
+
+		//printf("count=%i\n", count);
 		for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
 	     		y = y + tileLength, yMipChunk = yMipChunk + tl) {
 
@@ -412,7 +412,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 			for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
 		     			x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+boff[count]);;
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+boff[count]);
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
                         	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
                         	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
@@ -420,6 +420,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
+					debug("genone", "buffering: %i, %i\n", count, boff[count]);
                                 	if (gotten_id) {
                                         	safeTexture(gotten_id);
 					} else {
@@ -439,6 +440,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	}
 
+	debug("genone", "done buffering\n");
 	return complete;
 }
 
