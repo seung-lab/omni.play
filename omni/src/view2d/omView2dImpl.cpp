@@ -425,6 +425,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 					} else {
 						mTileCountIncomplete++;
                                         	if (mTileCountIncomplete >= mTileCount) {
+							OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 							return false;
 						}
                                         	complete = false;
