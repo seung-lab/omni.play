@@ -71,9 +71,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
-				mColorUpdateMutex.unlock();
-
 				newcolor = mColorCache[ val ].color;
+				mColorUpdateMutex.unlock();
 			}
 		} 
 
