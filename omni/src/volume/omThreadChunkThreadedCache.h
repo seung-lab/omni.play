@@ -5,13 +5,11 @@
 #include "system/omThreadedCache.h"
 #include "omThreadChunkLevel.h"
 
-typedef OmThreadedCache< OmMipChunkCoord, OmThreadChunkLevel > ThreadChunkThreadedCache;
-
 /*
  *	A Cache that stores OmThreadChunkLevels
 */
 
-class OmThreadChunkThreadedCache : public ThreadChunkThreadedCache {
+class OmThreadChunkThreadedCache : public OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel> {
 
  public:
 	OmThreadChunkThreadedCache(OmMipVolume* volume);
