@@ -28,13 +28,13 @@ OmActionLoggerFS::~OmActionLoggerFS()
 
 QString OmActionLoggerFS::getFileNameAndPath(const QString & actionName)
 {
-	QDateTime curDT = QDateTime::currentDateTime();
-	QString time = curDT.toString("yyyy.MM") +
-		curDT.toString("MMM.dd--hh-mm-ss-zzz");
+	const QDateTime curDT = QDateTime::currentDateTime();
+	const QString date = curDT.toString("yyyy.MM") + curDT.toString("MMM.dd");
+	const QString time = curDT.toString("hh.mm.ss.zzz");
+	const QString omniFN = OmProject::GetFileName().replace(".omni", "");
 
-	QString omniFN = OmProject::GetFileName().replace(".omni", "");
+	const QString fn = date+"--"+time+"--"+omniFN+"--"+actionName+".log";
 
-	QString fn = time+"--"+omniFN+"--"+actionName+".log";
 	return mLogFolder.filePath(fn);
 }
 
