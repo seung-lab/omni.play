@@ -3,12 +3,9 @@
 
 #include "common/omCommon.h"
 
-#include <QThreadPool>
 #include <QMutex>
 
 class OmCacheBase;
-
-static const int MAX_NUM_WORKER_THREADS = 3;
 
 //caches
 enum OmCacheGroup {
@@ -47,11 +44,8 @@ public:
 	static void UpdateCacheSizeFromLocalPrefs();
 	static unsigned int Freshen(bool freshen);
 
-	static bool addWorkerThread(QRunnable * runnable, int priority = 0);
-	static void clearWorkerThreads();
+	static void SignalCachesToCloseDown();
 
-	static int minNumberOfThreadsPerCache(){ return MAX_NUM_WORKER_THREADS; }
-	
 	void doUpdateCacheSizeFromLocalPrefs();
 	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
 	void CleanCacheGroup(OmCacheGroup group);
@@ -69,10 +63,6 @@ private:
 	static OmCacheManager* mspInstance;
 	OmCacheManager();
 	~OmCacheManager();
-
-	QThreadPool threads;
-
-	int mMinNumOfThreadsForAllCaches;
 
 	mutable QMutex mCacheMapMutex;
 	mutable QMutex mRealCacheMapMutex;

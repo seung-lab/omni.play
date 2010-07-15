@@ -34,35 +34,17 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	const unsigned int totalCacheSizeMB = OmSystemInformation::get_total_system_memory_megs() / 20;
-		
-	// number of elements (objects) in the raw data chunk cache (default 521)
-	//  should be a prime number (due to simplistic hashing algorithm)
-	size_t rdcc_nelmts = 2011; 
-	
-	size_t rdcc_nbytes = totalCacheSizeMB * 1024 * 1024; // total size of the raw data chunk cache (default 1MB)
-	double rdcc_w0 = 0.75;  // preemption policy (default 0.75)
-	int    mdc_nelmts  = 0;    // no longer used
-
-	hid_t fapl = H5Pcreate(H5P_FILE_ACCESS); // defaults
-	herr_t err = H5Pset_cache( fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0 );
-	if(err < 0) {
-                throw OmIoException("Could not setup HDF5 file cache.");
-	}
-
 	hid_t fileId;
 	if( readOnly ) {
-		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, fapl);
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
 	} else {
-		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
+		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
 	}
 	
 	if (fileId < 0) {
 		const string errMsg = "Could not open HDF5 file: " + fpath + "\n";
                 throw OmIoException(errMsg);
 	}
-
-	printfFileCacheSize( fileId );
 
         return fileId;
 }

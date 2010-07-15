@@ -41,12 +41,15 @@ public:
 	virtual void RemoveOldest() = 0;
 	virtual unsigned int GetFetchStackSize() = 0;
 	virtual long GetCacheSize() = 0;
+	virtual void closeDownThreads() = 0;
+
+	OmCacheGroup mCacheGroup;
 
 protected:
 	int mSavedDelta;
 	bool mDelayDelta;
 	
-	OmCacheGroup mCacheGroup;
+
 };
 
 

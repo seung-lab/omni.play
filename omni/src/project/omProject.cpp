@@ -139,7 +139,7 @@ void OmProject::Load( QString fileNameAndPath  )
 void OmProject::Close()
 {
 	// OmProject must be deleted first: it depends on the remaining classes...
-	OmCacheManager::clearWorkerThreads();
+	OmCacheManager::SignalCachesToCloseDown();
 	Delete();
 	OmCacheManager::Delete();
 
@@ -176,7 +176,7 @@ OmChannel & OmProject::AddChannel()
 
 void OmProject::RemoveChannel(const OmId id)
 {
-	OmCacheManager::clearWorkerThreads();
+	GetChannel(id).closeDownThreads();
 
 	OmDataPath path;
 	path.setPathQstr(GetChannel(id).GetDirectoryPath());
@@ -236,7 +236,7 @@ void OmProject::RemoveSegmentation(const OmId id)
                 }
         }
 
-	OmCacheManager::clearWorkerThreads();
+	GetSegmentation(id).closeDownThreads();
 
 	OmDataPath path;
 	path.setPathQstr(GetSegmentation(id).GetDirectoryPath());

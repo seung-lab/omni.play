@@ -6,6 +6,7 @@
 #include "common/omException.h"
 #include "common/omDebug.h"
 
+#include <QThreadPool>
 #include <QWaitCondition>
 #include <QMutex>
 #include <QThread>
@@ -32,7 +33,7 @@
  */
 
 template < typename KEY, typename PTR  >
-	class OmThreadedCache : public OmCacheBase, private QThread
+	class OmThreadedCache : public OmCacheBase
 {	
  public:
 	
@@ -49,13 +50,8 @@ template < typename KEY, typename PTR  >
 	bool Contains(const KEY &key);
 	void Flush();
 
-	bool shouldThreadDie();
+	void closeDownThreads();
 
-	//fetch thread
-	void FetchLoop();
-	bool FetchUpdateCheck();
-	virtual void HandleFetchUpdate(){};
-	
 	//fetch properties
 	void SetFetchUpdateInterval(float);
 	float GetFetchUpdateInterval();
@@ -69,26 +65,21 @@ template < typename KEY, typename PTR  >
 
 	virtual PTR* HandleCacheMiss(const KEY &key) = 0;
 
-	void HandleFetchUpdate(KEY fetch_key, PTR * fetch_value);
-
 	// FIXME: don't make public...
-	QSemaphore mMaxNumWorkers;
 	mutable QMutex mCacheMutex;
 	bool mKillingFetchThread;	//note that fetch thread needs to die
 	QStack< KEY > mFetchStack;	 // keys to be fetched
 	QList< KEY > mCurrentlyFetching; // keys currently being fetched
 	QWaitCondition mFetchThreadCv;
-
-protected:
-	
-private:
-	void run();
-
-	//key, shared pointer value cache
 	QMap< KEY, QExplicitlySharedDataPointer< PTR > > mCache;
 
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;
+
+protected:
+	
+private:
+	QThreadPool threads;
 	
 	//fetch thread update
 	time_t mLastUpdateTime;
@@ -100,7 +91,7 @@ private:
         // size of objects in this cache
         long mObjectSize;
 
-	bool spawnWorkerThread();
+	bool mThreadsClosedDownProperly;
 };
 
 #endif

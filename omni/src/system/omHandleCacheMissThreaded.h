@@ -12,6 +12,9 @@ class HandleCacheMissThreaded : public QRunnable
 
  private:
 	TC * const mTC;
+	KEY mKey;
+
+	void HandleFetchUpdate(PTR * fetch_value);
 };
 
 #endif

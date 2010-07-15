@@ -17,7 +17,6 @@ OmCacheManager *OmCacheManager::mspInstance = 0;
 ///////
 
 OmCacheManager::OmCacheManager()
-	: mMinNumOfThreadsForAllCaches(0)
 {
 	//init vars
 	mTargetRatio = 0.99;
@@ -81,12 +80,6 @@ void OmCacheManager::doAddCache(OmCacheGroup group, OmCacheBase * base)
 	mRealCacheMapMutex.lock();
 
 	mCacheMap[group].CacheSet.insert(base);
-
-	mMinNumOfThreadsForAllCaches += minNumberOfThreadsPerCache();
-	if(threads.maxThreadCount() < mMinNumOfThreadsForAllCaches ){
-		threads.setMaxThreadCount(mMinNumOfThreadsForAllCaches);
-		//printf("up to %d threads...\n", mMinNumOfThreadsForAllCaches);
-	}
 
 	mRealCacheMapMutex.unlock();
 	mCacheMapMutex.unlock();
@@ -176,12 +169,15 @@ unsigned int OmCacheManager::Freshen(bool freshen)
         return freshness;
 }
 
-bool OmCacheManager::addWorkerThread(QRunnable * runnable, int)
+void OmCacheManager::SignalCachesToCloseDown()
 {
-	return Instance()->threads.tryStart(runnable);
-}
+	//	QMutexLocker locker( &Instance()->mCacheMapMutex );
 
-void OmCacheManager::clearWorkerThreads()
-{
-	Instance()->threads.waitForDone();
+	foreach( OmCacheBase * cache, Instance()->mCacheMap[VRAM_CACHE_GROUP].CacheSet ) {
+		cache->closeDownThreads();
+	}
+
+	foreach( OmCacheBase * cache, Instance()->mCacheMap[RAM_CACHE_GROUP].CacheSet ) {
+		cache->closeDownThreads();
+	}
 }
