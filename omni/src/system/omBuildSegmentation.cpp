@@ -61,17 +61,19 @@ void OmBuildSegmentation::run()
 
 void OmBuildSegmentation::do_build_seg_image()
 {
-	QString type = "segmentation data";
+	const QString type = "segmentation data";
 
 	if( !checkSettings() ){
 		return;
 	}
 
-	startTiming(type);
+	OmTimer build_timer;
+	startTiming(type, build_timer);
 
 	mSeg->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
 	mSeg->BuildVolumeData();
-	stopTiming(type);
+
+	stopTimingAndSave(type, build_timer);
 
 	loadDendrogram();
 	mSeg->GetSegmentCache()->refreshTree();
@@ -80,11 +82,13 @@ void OmBuildSegmentation::do_build_seg_image()
 void OmBuildSegmentation::do_build_seg_mesh()
 {
 	const QString type = "segmentation mesh";
-	startTiming(type);
+
+	OmTimer build_timer;
+	startTiming(type, build_timer);
 
 	mSeg->BuildMeshData();
 
-	stopTiming(type);
+	stopTimingAndSave(type, build_timer);
 }
 
 void OmBuildSegmentation::loadDendrogram()
@@ -96,12 +100,12 @@ void OmBuildSegmentation::loadDendrogram()
 		return;
 	}
 
-	OmTimer dendro_timer;
+	OmTimer build_timer;
+	startTiming(type, build_timer);
 
-	dendro_timer.start();
 	doLoadDendrogram();
-	dendro_timer.stop();
-	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), dendro_timer.s_elapsed());
+
+	stopTimingAndSave(type, build_timer);
 }
 
 void OmBuildSegmentation::doLoadDendrogram()
