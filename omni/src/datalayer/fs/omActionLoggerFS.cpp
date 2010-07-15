@@ -87,15 +87,6 @@ QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
         return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const QUndoStack & s )
-{
-	for(int i = 0; i < s.count(); i++) {
-		out << s.command(i);
-	}
-
-	return out;
-}
-
 QDataStream &operator>>(QDataStream & in, const QUndoStack & s )
 {
 	return in;
