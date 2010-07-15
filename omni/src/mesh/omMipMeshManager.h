@@ -22,6 +22,10 @@ class OmMipMeshManager : public OmThreadedCache<OmMipMeshCoord, OmMipMesh> {
  public:
 	OmMipMeshManager();
 	~OmMipMeshManager();
+
+	void CloseDownThreads(){
+		closeDownThreads();
+	}
 	
 	//accessors
 	const QString& GetDirectoryPath() const;

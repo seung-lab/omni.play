@@ -27,6 +27,11 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
+
+	void CloseDownThreads(){
+		mMipMeshManager.CloseDownThreads();
+		closeDownThreads();
+	}
 	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);

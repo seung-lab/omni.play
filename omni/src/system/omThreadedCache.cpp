@@ -32,7 +32,6 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
-	closeDownThreads();
 }
 
 /*

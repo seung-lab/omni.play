@@ -176,7 +176,7 @@ OmChannel & OmProject::AddChannel()
 
 void OmProject::RemoveChannel(const OmId id)
 {
-	GetChannel(id).closeDownThreads();
+	GetChannel(id).CloseDownThreads();
 
 	OmDataPath path;
 	path.setPathQstr(GetChannel(id).GetDirectoryPath());
@@ -236,7 +236,7 @@ void OmProject::RemoveSegmentation(const OmId id)
                 }
         }
 
-	GetSegmentation(id).closeDownThreads();
+	GetSegmentation(id).CloseDownThreads();
 
 	OmDataPath path;
 	path.setPathQstr(GetSegmentation(id).GetDirectoryPath());

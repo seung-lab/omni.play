@@ -50,7 +50,6 @@ template < typename KEY, typename PTR  >
 	bool Contains(const KEY &key);
 	void Flush();
 
-	void closeDownThreads();
 
 	//fetch properties
 	void SetFetchUpdateInterval(float);
@@ -77,6 +76,7 @@ template < typename KEY, typename PTR  >
 	QList< KEY > mKeyAccessList;
 
 protected:
+	void closeDownThreads();
 	
 private:
 	QThreadPool threads;
