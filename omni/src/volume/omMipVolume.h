@@ -17,13 +17,11 @@
 #include "utility/omTimer.h"
 
 #include <QFileInfo>
-#include <QList>
 
 class OmVolume;
 class OmMipChunk;
 class OmThreadChunkLevel;
 class vtkImageData;
-class OmMipThread;
 
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
@@ -124,12 +122,9 @@ public:
 	int GetBytesPerSample();
 	void SetBytesPerSample(int);
 
-	//Thread Chunk Stuff
+	//Thread Chunk Cache
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
-	//List of threads
-	QList< OmMipThread* > mMipThreads;
-	
 protected:		
 	//state
 	void SetBuildState(MipVolumeBuildState);

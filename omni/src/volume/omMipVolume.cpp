@@ -14,7 +14,6 @@
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
 #include "volume/omThreadChunkLevel.h"
-#include "volume/omMipThread.h"
 #include "volume/omMipThreadManager.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolume.h"
@@ -23,6 +22,8 @@
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
 #include <QFile>
+
+//TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
@@ -743,8 +744,6 @@ bool OmMipVolume::BuildThreadedVolume()
 
 	//debug("FIXME", << "OmMipVolume::BuildThreadedVolume()" << endl;
 	//init progress bar
-	//int prog_count = 0;
-	//TODO: Use prog_count to display progress somehow
 	OmEventManager::
 	    PostEvent(new
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
@@ -760,7 +759,6 @@ bool OmMipVolume::BuildThreadedVolume()
 	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,false);
 	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
 	mipThreadManager->run();
-	mipThreadManager->StartThreads();
 	mipThreadManager->wait();
 	mipThreadManager->StopThreads();
 	delete mipThreadManager;

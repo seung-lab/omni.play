@@ -20,6 +20,13 @@ void OmMipThread::AddEnqueuedThreadChunk(OmMipChunkCoord mipCoord)
 	mNumEnqueuedThreadChunks.release();
 }
 
+/*
+ *	For use in updating progress
+ */
+int OmMipThread::GetThreadChunksDone()
+{
+	return mThreadChunksDone;
+}
 
 /*
  *	Downsamples thread chunks in queue. Waits on queue if empty, but stops if num of
@@ -27,7 +34,7 @@ void OmMipThread::AddEnqueuedThreadChunk(OmMipChunkCoord mipCoord)
  */
 void OmMipThread::run()
 {
-	for (int i=0; i < mNumTotalThreadChunks; i++){
+	for (mThreadChunksDone=0; mThreadChunksDone < mNumTotalThreadChunks; mThreadChunksDone++){
 
 		mNumEnqueuedThreadChunks.acquire();		
 		assert(!mMipCoords.isEmpty());

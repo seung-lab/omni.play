@@ -27,26 +27,17 @@ int OmMipThreadManager::ChunksPerThread(int threadNum, int numThreadChunksToMip)
 }
 
 /*
- *	Creates threads in the parent MipVolume.
+ *	Creates and starts MipThreads using QThreadPool
  */
 void OmMipThreadManager::SpawnThreads(int numThreadChunksToMip)
 {
+	mMipThreadPool.setMaxThreadCount(mNumTotalThreads);
 	for (int i = 0; i < mNumTotalThreads; i++){
 
 		OmMipThread* thread = new OmMipThread(mpMipVolume,i,
 						      ChunksPerThread(i,numThreadChunksToMip));
-		mpMipVolume->mMipThreads.append(thread);
-
-	}
-}
-
-/*
- *	Starts threads in parent MipVolume.
- */
-void OmMipThreadManager::StartThreads()
-{
-	foreach(OmMipThread* thread, mpMipVolume->mMipThreads){
-		thread->start();
+		mMipThreads.append(thread);
+		mMipThreadPool.start(thread);		
 	}
 }
 
@@ -55,17 +46,14 @@ void OmMipThreadManager::StartThreads()
  */
 void OmMipThreadManager::StopThreads()
 {
-	foreach(OmMipThread* thread, mpMipVolume->mMipThreads){
-		thread->wait();
-		delete(thread);
-	}
-	//Clear the list
-	mpMipVolume->mMipThreads.clear();	
+	mMipThreadPool.waitForDone();
+	mMipThreads.clear();
 }
 
 
 /*
  *	Distributes MipChunkCoords of ThreadChunks to threads for them to downsample.
+ *	Assumes MipThreads are still alive.
  */
 void OmMipThreadManager::DistributeThreadChunks()
 {
@@ -76,7 +64,7 @@ void OmMipThreadManager::DistributeThreadChunks()
 		//Loop through set of edited thread chunks
 		//set <OmMipChunkCoord>::iterator itr;
 		//for(itr = mpMipVolume->mEditedThreadChunks.begin(); itr!= mEditedThreadChunks.end; itr++){
-		//	mpMipVolume->mMipThreads[threadNum]->AddEnqueuedThreadChunk(*itr);
+		//	mMipThreads[threadNum]->AddEnqueuedThreadChunk(*itr);
 		//	//Loop through threads
 		//	threadNum++;
 		//	if (threadNum == mNumTotalThreads){threadNum = 0;}
@@ -87,9 +75,8 @@ void OmMipThreadManager::DistributeThreadChunks()
 		Vector3 < int > thread_coord_dims = mpMipVolume->MipVolumeDimensionsInThreadChunks();
 		for (int z = 0; z < thread_coord_dims.z; ++z){
 			for (int y = 0; y < thread_coord_dims.y; ++y){
-				for (int x = 0; x < thread_coord_dims.x; ++x){
- 					//Assign mip granule to thread
-					mpMipVolume->mMipThreads[threadNum]->AddEnqueuedThreadChunk(OmMipChunkCoord(0, x, y, z));
+				for (int x = 0; x < thread_coord_dims.x; ++x){ 	
+					mMipThreads[threadNum]->AddEnqueuedThreadChunk(OmMipChunkCoord(0, x, y, z));
 					//Loop through threads
 					threadNum++;
 					if (threadNum == mNumTotalThreads){threadNum = 0;}
