@@ -31,9 +31,9 @@ QString OmActionLoggerFS::getFileNameAndPath()
 	QDateTime curDT = QDateTime::currentDateTime();
 	QString time = curDT.toString("yyyy-MM") +
 		curDT.toString("MMM-dd.hh-mm-ss-zzz");
-	QString newending = "."+time+".log";
+	QString newending = time+"-";
 
-	QString fn = OmProject::GetFileName().replace(".omni", newending);
+	QString fn = newending + OmProject::GetFileName().replace(".omni", ".log");
 	return mLogFolder.filePath(fn);
 }
 
@@ -51,11 +51,11 @@ void OmActionLoggerFS::setupLogDir()
 		return;
 	} 
 
-	if( QDir::home().mkdir( omniFolderName ) ){
+	if( QDir::home().mkdir( omniFolderPath ) ){
 		printf("made folder %s\n", qPrintable(omniFolderPath) );
 		mLogFolder = dir;
 	} else {
-		const string errMsg = "could not make folder "+omniFolderName.toStdString() + "\n";
+		const string errMsg = "could not make folder "+omniFolderPath.toStdString() + "\n";
 		throw OmIoException(errMsg);
 	}
 
