@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 
+#include <QReadWriteLock>
 #include <QMutex>
 
 class OmCacheBase;
@@ -64,18 +65,15 @@ private:
 	OmCacheManager();
 	~OmCacheManager();
 
-	mutable QMutex mCacheMapMutex;
-	mutable QMutex mRealCacheMapMutex;
+	mutable QReadWriteLock mCacheMutex;
+
 	mutable QMutex mFreshnessMutex;
 	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
-	map< OmCacheGroup, CacheGroupProperties > mRemoveCacheMap;
 	
 	//cleaning
 	float mTargetRatio;
 	bool mCurrentlyCleaning;
 	int mThreadCount;
-
-	void doAddCache(OmCacheGroup group, OmCacheBase *base);
 };
 
 #endif

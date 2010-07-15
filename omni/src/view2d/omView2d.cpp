@@ -76,8 +76,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
 		mViewGroupState->SetSegmentation( mImageId );
@@ -92,12 +90,9 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		mRootLevel = current_seg.GetRootMipLevel();
 	}
 
-	//debug("FIXME", << "conversion = " << endl;
 	DataCoord test = DataCoord(0, 0, 0);
 	SpaceCoord test2 = DataToSpaceCoord(test);
 	//debug("FIXME", << "0 ---> " << test2.z << endl;

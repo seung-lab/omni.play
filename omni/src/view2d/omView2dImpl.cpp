@@ -626,8 +626,6 @@ void OmView2dImpl::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		Draw();
 		mDrawFromChannel = false;
 	} else {
@@ -639,7 +637,6 @@ void OmView2dImpl::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
 		Draw();
 	}
 }

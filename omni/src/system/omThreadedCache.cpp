@@ -12,11 +12,7 @@ template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 	: OmCacheBase(group) 
 	, mKillingFetchThread(false)
-	, mLastUpdateTime(0)
 { 
-	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
-	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
-
 	threads.setMaxThreadCount(MAX_THREADS);
 	for(int i = 0; i < MAX_THREADS; ++i){
 		HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>* task = 
@@ -173,39 +169,12 @@ bool OmThreadedCache<KEY,PTR>::Contains(const KEY &key)
 }
 
 /////////////////////////////////
-///////		 Fetch Properties
-
-template < typename KEY, typename PTR  >
-void OmThreadedCache<KEY,PTR>::SetFetchUpdateInterval(float interval) 
-{
-	mFetchUpdateInterval = interval;
-}
-
-template < typename KEY, typename PTR  >
-float OmThreadedCache<KEY,PTR>::GetFetchUpdateInterval() 
-{
-	return mFetchUpdateInterval; 
-}
-
-template < typename KEY, typename PTR  >
-void OmThreadedCache<KEY,PTR>::SetFetchUpdateClearsFetchStack(bool state) 
-{
-	mFetchUpdateClearsStack = state;
-}
-
-template < typename KEY, typename PTR  >
-bool OmThreadedCache<KEY,PTR>::GetFetchUpdateClearsFetchStack() 
-{
-	return mFetchUpdateClearsStack;
-}
-
-
-/////////////////////////////////
 ///////		 Fetching
 
 template < typename KEY, typename PTR  >
 unsigned int OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 {
+	QMutexLocker locker( &mCacheMutex );
 	return mFetchStack.size();
 }
 
@@ -213,12 +182,14 @@ unsigned int OmThreadedCache<KEY,PTR>::GetFetchStackSize()
 template < typename KEY, typename PTR  >
 long OmThreadedCache<KEY,PTR>::GetCacheSize()
 {
+	QMutexLocker locker( &mCacheMutex );
         return mCache.size() * mObjectSize;
 }
 
 template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::SetObjectSize(long size)
 {
+	QMutexLocker locker( &mCacheMutex );
         mObjectSize = size;
 }
 
@@ -244,4 +215,3 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 
 	threads.waitForDone();
 }
-

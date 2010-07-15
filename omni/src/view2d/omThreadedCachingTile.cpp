@@ -79,18 +79,3 @@ OmTextureID *OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord & key)
 	//return mesh to cache
 	return BindToTextureID(key, this);
 }
-
-void OmThreadedCachingTile::SetContinuousUpdate(bool setUpdate)
-{
-	SetFetchUpdateClearsFetchStack(setUpdate);
-}
-
-bool OmThreadedCachingTile::InitializeFetchThread()
-{
-	return true;
-}
-
-void OmThreadedCachingTile::HandleFetchUpdate()
-{
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-}

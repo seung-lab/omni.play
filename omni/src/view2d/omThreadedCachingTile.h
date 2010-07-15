@@ -40,16 +40,11 @@ public:
 	//cache actions
 	void Remove(const OmTileCoord &tileCoord);
 
-	//void ClearCache();
-	void SetContinuousUpdate(bool);
-	
 	ObjectType mVolType;
 	OmId mImageId;
 
 private:
 	OmTextureID* HandleCacheMiss(const OmTileCoord &key);
-	void HandleFetchUpdate();
-	bool InitializeFetchThread();
 	
 	const QGLContext* mShareContext;
 };

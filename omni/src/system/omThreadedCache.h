@@ -16,9 +16,6 @@
 #include <QSemaphore>
 #include <time.h>
 
-#define OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK 0
-#define OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS 0.5f
-
 /**
  *	A templated non-blocking threaded cache system that retains most recently used objects.
  *
@@ -33,13 +30,11 @@
  */
 
 template < typename KEY, typename PTR  >
-	class OmThreadedCache : public OmCacheBase
-{	
+class OmThreadedCache : public OmCacheBase {	
  public:
-	
 	OmThreadedCache(OmCacheGroup group);
 	virtual ~OmThreadedCache();
-		
+	
 	//value accessors
 	void Get(QExplicitlySharedDataPointer<PTR> &p_value,
 		 const KEY &key, 
@@ -50,12 +45,6 @@ template < typename KEY, typename PTR  >
 	bool Contains(const KEY &key);
 	void Flush();
 
-
-	//fetch properties
-	void SetFetchUpdateInterval(float);
-	float GetFetchUpdateInterval();
-	void SetFetchUpdateClearsFetchStack(bool);
-	bool GetFetchUpdateClearsFetchStack();
 
 	//get info about the cache 
 	unsigned int GetFetchStackSize();
@@ -80,13 +69,6 @@ protected:
 	
 private:
 	QThreadPool threads;
-	
-	//fetch thread update
-	time_t mLastUpdateTime;
-	
-	//fetch update prefs
-	float mFetchUpdateInterval;
-	bool mFetchUpdateClearsStack;
 
         // size of objects in this cache
         long mObjectSize;

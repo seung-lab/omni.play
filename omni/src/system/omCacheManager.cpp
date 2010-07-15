@@ -71,18 +71,8 @@ void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
  */
 void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
 {
-	Instance()->doAddCache(group, base);
-}
-
-void OmCacheManager::doAddCache(OmCacheGroup group, OmCacheBase * base)
-{
-	mCacheMapMutex.lock();
-	mRealCacheMapMutex.lock();
-
-	mCacheMap[group].CacheSet.insert(base);
-
-	mRealCacheMapMutex.unlock();
-	mCacheMapMutex.unlock();
+	QWriteLocker locker(&Instance()->mCacheMutex);
+	Instance()->mCacheMap[group].CacheSet.insert(base);
 }
 
 /*
@@ -90,19 +80,16 @@ void OmCacheManager::doAddCache(OmCacheGroup group, OmCacheBase * base)
  */
 void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
 {
-	Instance()->mCacheMapMutex.lock();
-	Instance()->mRealCacheMapMutex.lock();
+	QWriteLocker locker(&Instance()->mCacheMutex);
+
 	Instance()->mDelayDelta = true;
 	Instance()->mCacheMap[group].CacheSet.erase(base);
 	Instance()->mDelayDelta = false;
-	Instance()->mRealCacheMapMutex.unlock();
-	Instance()->mCacheMapMutex.unlock();
 }
 
 QList< OmCacheInfo > OmCacheManager::GetCacheInfo(OmCacheGroup group)
 {
-	// TODO: mutex lock
-	//QMutexLocker locker( &mCacheMapMutex );
+	QReadLocker locker(&Instance()->mCacheMutex);
 
 	QList< OmCacheInfo > infos;
 	
@@ -129,7 +116,7 @@ void OmCacheManager::UpdateCacheSize(OmCacheGroup group, int delta)
  */
 void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 {
-	QMutexLocker locker( &mRealCacheMapMutex );
+	QWriteLocker locker(&Instance()->mCacheMutex);
 	Instance()->mCacheMap[group].Size += delta;
 }
 
@@ -137,12 +124,12 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 ///////          Cleaning Methods
 void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
-	QMutexLocker locker( &mCacheMapMutex );
+	QReadLocker locker(&Instance()->mCacheMutex);
 
 	//compute target size for group
-	unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
+	const unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
 
-	for (int count = 0; count < 2; count++) {
+	for(int count = 0; count < 2; count++) {
 		foreach( OmCacheBase * ptr, mCacheMap[group].CacheSet ) {
 			
 			//return if target reached
@@ -171,7 +158,7 @@ unsigned int OmCacheManager::Freshen(bool freshen)
 
 void OmCacheManager::SignalCachesToCloseDown()
 {
-	//	QMutexLocker locker( &Instance()->mCacheMapMutex );
+	QReadLocker locker(&Instance()->mCacheMutex);
 
 	foreach( OmCacheBase * cache, Instance()->mCacheMap[VRAM_CACHE_GROUP].CacheSet ) {
 		cache->closeDownThreads();
