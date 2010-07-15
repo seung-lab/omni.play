@@ -21,6 +21,7 @@ protected:
 	virtual void UndoAction() = 0;
 	virtual string Description() = 0;
 	virtual void save(const string & comment ) = 0;
+	virtual QString classNameForLogFile() = 0;
 
 	bool mUndoable;
 

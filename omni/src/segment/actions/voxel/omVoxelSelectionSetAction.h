@@ -20,11 +20,12 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmEditSelectionApplyAction";}
 
 	OmId mSegmentationId, mSegmentId;
 	map< DataCoord, OmId > mVoxelMap;
+
+	friend class OmActionLoggerFS;
 };
-
-
 
 #endif

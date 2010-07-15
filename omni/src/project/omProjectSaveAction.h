@@ -18,6 +18,9 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmProjectSaveAction";}
+
+	friend class OmActionLoggerFS;
 };
 
 #endif

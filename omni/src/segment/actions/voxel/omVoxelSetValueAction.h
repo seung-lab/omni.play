@@ -20,6 +20,7 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string&);
+	QString classNameForLogFile(){return "OmVoxelSetValueAction";}
 	
 	//segmentation of voxels
 	OmId mSegmentationId;
@@ -28,8 +29,8 @@ private:
 	map< DataCoord, OmSegID > mOldVoxelValues;
 	//new value of voxels
 	OmSegID mNewValue;
+
+	friend class OmActionLoggerFS;
 };
-
-
 
 #endif

@@ -20,6 +20,7 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmVoxelSelectionAction";}
 	
 	DataCoord mVoxel;
 	
@@ -30,6 +31,8 @@ private:
 	//set< DataCoord > mVoxels;
 	map< DataCoord, bool > mVoxelsToPrevStateMap;
 	set< DataCoord > mPrevSelectedVoxels;
+
+	friend class OmActionLoggerFS;
 
 };
 

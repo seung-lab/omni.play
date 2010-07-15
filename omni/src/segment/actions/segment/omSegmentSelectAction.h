@@ -24,6 +24,7 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentSelectAction";}
 	
 	const OmId mSegmentationId;
 	const OmSegIDsSet mNewSelectedIdSet;
@@ -32,6 +33,9 @@ private:
 	void * mSender;
 	const string mComment;
 	const bool mDoScroll;
+
+	friend class OmActionLoggerFS;
+
 };
 
 #endif

@@ -23,6 +23,7 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string&);
+	QString classNameForLogFile(){return "OmVoxelSetConnectedAction";}
 	
 	//dest segment id
 	OmId mSegmentationId, mSegmentId;
@@ -34,8 +35,8 @@ private:
 	OmId mSeedSegmentId;
 	
 	void AddConnectedNeighborsToList(OmSegmentation &rSegmentation, const DataCoord &srcVox, list< DataCoord >& todoList);
+
+	friend class OmActionLoggerFS;
 };
-
-
 
 #endif

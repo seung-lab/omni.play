@@ -18,9 +18,12 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentJoinAction";}
 
 	const OmId mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
+
+	friend class OmActionLoggerFS;
 };
 
 #endif

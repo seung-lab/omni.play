@@ -19,6 +19,7 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentValidateAction";}
 
 	OmId mSegmentationId;
 	bool mCreate;
@@ -26,6 +27,8 @@ private:
 
         friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
         friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
+
+	friend class OmActionLoggerFS;
 };
 
 #endif

@@ -22,11 +22,14 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string & comment);
+	QString classNameForLogFile(){return "OmSegmentSplitAction";}
 
 	OmSegmentEdge mEdge;
 	SegmentationDataWrapper m_sdw;
 
 	QString desc;
+
+	friend class OmActionLoggerFS;
 };
 
 #endif

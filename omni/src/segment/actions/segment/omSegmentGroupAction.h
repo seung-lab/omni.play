@@ -19,11 +19,15 @@ private:
 	void UndoAction();
 	string Description();
 	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
 	const OmId mSegmentationId;
 	const OmGroupName mName;
 	const bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;
+
+	friend class OmActionLoggerFS;
+
 };
 
 #endif

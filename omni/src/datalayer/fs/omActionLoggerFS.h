@@ -37,7 +37,7 @@ class OmActionLoggerFS {
 	QDir mLogFolder;
 
 	void setupLogDir();
-	QString getFileNameAndPath();
+	QString getFileNameAndPath(const QString & actionName );
 };
 
 template <class T>
@@ -45,7 +45,7 @@ void OmActionLoggerFS::save(T * action, const std::string &)
 {
 	setupLogDir();
 
-	QFile file(getFileNameAndPath());
+	QFile file(getFileNameAndPath(action->classNameForLogFile()));
 	file.open(QIODevice::WriteOnly);
 	QDataStream out(&file);
 	out.setByteOrder( QDataStream::LittleEndian );

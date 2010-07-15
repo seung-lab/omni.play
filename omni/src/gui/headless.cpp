@@ -446,8 +446,18 @@ int Headless::start(int argc, char *argv[])
 		fName = QString::fromStdString( argv[ args.fileArgIndex ] );
 	}
 
+#ifdef Q_WS_X11
+	bool useGUI = getenv("DISPLAY") != 0;
+#else
+	bool useGUI = true;
+#endif
+	
 	setOmniExecutablePath( QString( argv[0] ) );
-	if( args.runHeadless ){
+	if(!useGUI){
+		printf("no GUI detected; running headless....\n");
+		runHeadless("--headless", fName);
+		return 0;
+	} else if( args.runHeadless ){
 		runHeadless( args.headlessCMD, fName );
 		return 0;
 	} else {
