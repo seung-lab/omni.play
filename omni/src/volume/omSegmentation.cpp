@@ -161,38 +161,6 @@ void OmSegmentation::BuildVolumeData()
 }
 
 /*
- *	Overridden BuildVolume method to build mipmaps and then build segmentations from
- *	chunks in a second pass
- */
-bool OmSegmentation::BuildVolume()
-{
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer start	
-		vol_timer.start();
-	}
-
-	//build mipmaps
-	if (!BuildThreadedVolume()) {
-		return false;
-	}
-
-	//build segmentation
-	if (!BuildSerialVolume()) {
-		return false;
-	}
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer end
-		vol_timer.stop();
-		printf("OmSegmentation:BuildSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
-	}
-
-	return true;
-}
-
-/*
  *	Build all meshes in all chunks of the MipVolume.
  */
 void OmSegmentation::BuildMeshData()
@@ -351,6 +319,73 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 	//call redraw to force mesh to reload
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+}
+
+/*
+ *	Overridden BuildThreadChunkLevel method so that segments will be added from the
+ *	thread chunk level as well.
+ */
+vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
+{
+	//get pointer to thread chunk level
+	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
+	GetThreadChunkLevel(p_chunklevel, rMipCoord);
+
+	//no need to subsample for mip level 0
+	if (rMipCoord.Level == 0){
+
+		//get sizes if mip level 0
+       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
+
+		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
+		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
+
+		delete sizes;
+
+		//read original data
+		OmDataPath source_data_path;
+		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
+		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
+
+		vtkImageData *p_leaf_data =
+			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
+										       source_data_bbox, 
+										       GetBytesPerSample());
+
+		return p_leaf_data;
+
+	} else {
+
+		//don't get sizes if not mip level 0
+       		p_chunklevel->RefreshDirectDataValues(false);
+
+		//subsample
+		vtkImageData *p_subsampled_data = NULL;
+
+		//switch on scalar type
+		switch (GetBytesPerSample()) {
+		case 1:
+			p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
+			break;
+		case 4:
+			p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
+			break;
+		default:
+			assert(false);
+		}
+
+		//set or replace image data (chunk level now owns pointer)
+		p_chunklevel->SetImageData(p_subsampled_data);
+
+		//delete source data if not used by a chunk level
+		if (rMipCoord.Level == 1){
+			p_source_data->Delete();
+		}
+		p_source_data = NULL;
+
+		return p_subsampled_data;
+
+	}
 }
 
 /////////////////////////////////

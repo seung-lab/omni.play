@@ -98,13 +98,13 @@ public:
 	
 	//build methods
 	void Build(OmDataPath & dataset);
-	virtual bool BuildVolume();
+	bool BuildVolume();
 	bool BuildSerialVolume();
 	bool BuildThreadedVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
 	void BuildEditedLeafChunks();	
-	vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
+	virtual vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
 	void BuildThreadChunk(const OmMipChunkCoord &, vtkImageData *p_source_data);
 
 	//comparison methods
@@ -141,14 +141,6 @@ protected:
 	int mMipLeafDim;			//must be even
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
 	bool mStoreChunkMetaData;		//do chunks have metadata
-
-	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
-	
-private:
-	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
-	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
-
-	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	
 	//subsample data methods
 	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
@@ -157,6 +149,14 @@ private:
 	template< typename T> vtkImageData* SubsampleImageData(vtkImageData* srcData);
 	template< typename T > T CalculateMode( T* array, int size);
 	template< typename T > T CalculateAverage( T* array, int size);
+
+	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
+	
+private:
+	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
+	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
+
+	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	
 	QString mDirectoryPath;          // ex. "./" or "images/out/"
 	QString mFilename;

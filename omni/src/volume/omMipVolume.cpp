@@ -891,7 +891,6 @@ vtkImageData* OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoo
 		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
 		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
 
-		//read and get pointer to data
 		vtkImageData *p_leaf_data =
 			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
 										       source_data_bbox, 
@@ -901,7 +900,7 @@ vtkImageData* OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoo
 
 	} else {
 
-		//otherwise chunk is a parent, so get pointer to chunk
+		//otherwise get pointer to thread chunk level
 		QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
 		GetThreadChunkLevel(p_chunklevel, rMipCoord);
 
@@ -920,10 +919,10 @@ vtkImageData* OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoo
 			assert(false);
 		}
 
-		//set or replace image data (chunk now owns pointer)
+		//set or replace image data (chunk level now owns pointer)
 		p_chunklevel->SetImageData(p_subsampled_data);
 
-		//delete source data if not used by a chunk
+		//delete source data if not used by a chunk level
 		if (rMipCoord.Level == 1){
 			p_source_data->Delete();
 		}
@@ -946,11 +945,11 @@ void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, vtkImageDa
 	//if mipCoord is not root
 	if (rMipCoord.Level != mMipRootLevel) {
 
-		//get parent
+		//get parent level
 		OmMipChunkCoord parent_coord = rMipCoord;
 		parent_coord.Level++;
 		
-		//build parent chunk and recurse
+		//build parent chunk level and recurse
 		BuildThreadChunk(parent_coord,p_image_data);
 	}
 }

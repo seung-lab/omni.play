@@ -36,11 +36,11 @@ OmId SegmentationID = 0;
 void Headless::openProject( QString fName )
 {
 	try {
-		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
+		printf("Please wait: Opening project \"%s\"...\n", qPrintable( fName ));
 		OmProject::Load( fName );
-		printf("opened project \"%s\"\n", qPrintable( fName ));
+		printf("Opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
-	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
+	        printf("Error while loading project \"%s\"\n", qPrintable( fName ));
 	}
 }
 
@@ -100,8 +100,8 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.loadDendrogram();
-	} else if( line.startsWith("comparechannels:") ) {
-		// format: comparechannels:id1,id2[:verbose]
+	} else if( line.startsWith("compareChannels:") ) {
+		// format: compareChannels:id1,id2[:verbose]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		
 		if ( args.size() < 2 ){
@@ -137,6 +137,44 @@ void Headless::processLine( QString line, QString fName )
 			printf("Channel %i is not a valid channel.\n",id2);
 		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
+		}
+	} else if( line.startsWith("compareSegmentations:") ) {
+		// format: compareSegmentations:id1,id2[:verbose]
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		
+		if ( args.size() < 2 ){
+			printf("Please specify segmentation IDs.\n");
+			return;
+		}
+
+		QStringList segmentationIDs = args[1].split(',',QString::SkipEmptyParts);
+
+		if ( segmentationIDs.size() < 2 ){
+			printf("Not enough segmentation IDs specified. Please specify as 'id1,id2'.\n");
+			return;
+		}
+
+		int id1 = StringHelpers::getUInt( segmentationIDs[0] );
+		int id2 = StringHelpers::getUInt( segmentationIDs[1] );
+
+		bool verbose = 0;
+
+		if ( 3 == args.size() ){
+			verbose = (bool) StringHelpers::getUInt( args[2] );
+		}
+
+		if( !OmProject::IsSegmentationValid(id1) && !OmProject::IsSegmentationValid(id2) ) {
+			if( id1 == id2 ){
+				printf("Segmentation %i is not a valid channel.\n",id1);
+			} else {
+				printf("Segmentations %i and %i are not valid channels.\n",id1,id2);
+			}
+		} else if( !OmProject::IsSegmentationValid(id1) ) {
+			printf("Segmentation %i is not a valid channel.\n",id1);
+		} else if( !OmProject::IsSegmentationValid(id2) ) {
+			printf("Segmentation %i is not a valid channel.\n",id2);
+		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
+			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
 		}
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
@@ -227,7 +265,7 @@ void Headless::processLine( QString line, QString fName )
 		OmStateManager::setParallel(true);
         } else if( line.startsWith("addSegment") ){
                 if( 0 == SegmentationID  ){
-                        printf("please choose segmentation first!\n");
+                        printf("Please choose segmentation first!\n");
                         return;
                 }
                 OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
@@ -387,13 +425,13 @@ void Headless::runInteractive( QString fName )
 void Headless::runScript( const QString scriptFileName, QString fName )
 {
 	if (!QFile::exists( scriptFileName )) {
-		printf("could not open plan file \"%s\"\n", qPrintable(scriptFileName));
+		printf("Could not open plan file \"%s\"\n", qPrintable(scriptFileName));
 		exit(1);
 	}
 		
 	QFile file(scriptFileName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		printf("could not read plan file \"%s\"\n", qPrintable(scriptFileName));
+		printf("Could not read plan file \"%s\"\n", qPrintable(scriptFileName));
 		exit(1);
 	}
 		
@@ -454,7 +492,7 @@ int Headless::start(int argc, char *argv[])
 	
 	setOmniExecutablePath( QString( argv[0] ) );
 	if(!useGUI){
-		printf("no GUI detected; running headless....\n");
+		printf("No GUI detected; Running headless....\n");
 		runHeadless("--headless", fName);
 		return 0;
 	} else if( args.runHeadless ){
@@ -482,7 +520,7 @@ void Headless::runMeshPlan( QString headlessLine )
 
 	QFile file( planName );
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		throw OmIoException( "could not read file" );
+		throw OmIoException( "Could not read file" );
 	}
 	
 	QSet<OmId> segmentationIDs;

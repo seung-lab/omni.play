@@ -36,7 +36,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	//build methods
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
-	bool BuildVolume();
 	
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
@@ -47,6 +46,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
+	virtual vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
