@@ -18,9 +18,6 @@
 #include <QDateTime>
 #include <QFile>
 
-static const int Omni_Log_Version = 1;
-static const QString Omni_Postfix("OMNI_LOG");
-
 OmActionLoggerFS::OmActionLoggerFS()
 {
 }
@@ -64,71 +61,11 @@ void OmActionLoggerFS::setupLogDir()
 
 }
 
-void OmActionLoggerFS::doSave(OmAction * action)
-{
-	setupLogDir();
-
-	QFile file(getFileNameAndPath());
-	file.open(QIODevice::WriteOnly);
-	QDataStream out(&file);
-	out.setByteOrder( QDataStream::LittleEndian );
-	out.setVersion(QDataStream::Qt_4_6);
-
-	out << Omni_Log_Version;
-	
-	out << Omni_Postfix;
-
-	out << (*OmStateManager::GetUndoStack());
-}
-
-void OmActionLoggerFS::save(OmSegmentSplitAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmSegmentGroupAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmSegmentJoinAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmSegmentSelectAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmSegmentValidateAction* action, const std::string &)
-{
-}
-
-
-void OmActionLoggerFS::save(OmVoxelSelectionAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmEditSelectionApplyAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmVoxelSetAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmVoxelSetConnectedAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmVoxelSetValueAction* action, const std::string &)
-{
-}
-
-void OmActionLoggerFS::save(OmProjectSaveAction* action, const std::string &)
-{
-}
-
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
 {
         //meta data
+	int version = 1;
+	out << version;
         out << a.mSelectedSegmentIds;
         out << a.mCreate;
         out << a.mSegmentationId;
@@ -138,6 +75,8 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
 
 QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
 {
+	int version;
+	in >> version;
         in >> a.mSelectedSegmentIds;
         in >> a.mCreate;
         in >> a.mSegmentationId;
@@ -154,5 +93,110 @@ QDataStream &operator<<(QDataStream & out, const QUndoStack & s )
 	}
 
 	return out;
+}
+
+QDataStream &operator>>(QDataStream & in, const QUndoStack & s )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSelectionAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmVoxelSelectionAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmEditSelectionApplyAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmEditSelectionApplyAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetAction & a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,   OmVoxelSetConnectedAction& a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a )
+{
+	return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a )
+{
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a )
+{ 
+	return in;
 }
 

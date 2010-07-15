@@ -4,6 +4,8 @@
 #include "common/omCommon.h"
 #include <QDir>
 #include <QDataStream>
+static const int Omni_Log_Version = 1;
+static const QString Omni_Postfix("OMNI_LOG");
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -28,21 +30,8 @@ class OmActionLoggerFS {
 	OmActionLoggerFS();
 	~OmActionLoggerFS();
 
-	void doSave(OmAction * action);
-
-	void save(OmSegmentSplitAction*, const std::string &);
-	void save(OmSegmentGroupAction*, const std::string &);
-	void save(OmSegmentJoinAction*, const std::string &);
-	void save(OmSegmentSelectAction*, const std::string &);
-	void save(OmSegmentValidateAction*, const std::string &);
-
-	void save(OmVoxelSelectionAction*, const std::string &);
-	void save(OmEditSelectionApplyAction*, const std::string &);
-	void save(OmVoxelSetAction*, const std::string &);
-	void save(OmVoxelSetConnectedAction*, const std::string &);
-	void save(OmVoxelSetValueAction*, const std::string &);
-
-	void save(OmProjectSaveAction*, const std::string &);
+	template <class T>
+	void save(T * action, const std::string &);
 
  private:
 	QDir mLogFolder;
@@ -51,7 +40,59 @@ class OmActionLoggerFS {
 	QString getFileNameAndPath();
 };
 
+template <class T>
+void OmActionLoggerFS::save(T * action, const std::string &)
+{
+	setupLogDir();
+
+	QFile file(getFileNameAndPath());
+	file.open(QIODevice::WriteOnly);
+	QDataStream out(&file);
+	out.setByteOrder( QDataStream::LittleEndian );
+	out.setVersion(QDataStream::Qt_4_6);
+
+	out << Omni_Log_Version;
+	out << (*action);
+	out << Omni_Postfix;
+}
+
 QDataStream &operator<<(QDataStream & out, const QUndoStack & s );
 QDataStream &operator>>(QDataStream & in, QUndoStack & s );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
+QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
+QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
+QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );
+QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a );
+QDataStream &operator>>(QDataStream & in,  OmSegmentValidateAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSelectionAction & a );
+QDataStream &operator>>(QDataStream & in,  OmVoxelSelectionAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmEditSelectionApplyAction & a );
+QDataStream &operator>>(QDataStream & in,  OmEditSelectionApplyAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetAction & a );
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a );
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a );
+QDataStream &operator>>(QDataStream & in,   OmVoxelSetConnectedAction& a );
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a );
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetConnectedAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a );
+QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a );
 
 #endif
