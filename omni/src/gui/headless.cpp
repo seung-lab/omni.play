@@ -173,7 +173,7 @@ void Headless::processLine( QString line, QString fName )
 		int numThreads=0;
 		if( 5 == args.size() ){
 			numThreads = StringHelpers::getUInt( args[4] );
-			printf("Overwrote default number of threads...\n");
+			printf("Overrode default number of threads...\n");
 		}
 		if( 0 == numThreads) {
 			numThreads = 4;
