@@ -90,8 +90,6 @@ private:
 
         // size of objects in this cache
         long mObjectSize;
-
-	bool mThreadsClosedDownProperly;
 };
 
 #endif

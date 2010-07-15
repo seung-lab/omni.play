@@ -13,7 +13,6 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 	: OmCacheBase(group) 
 	, mKillingFetchThread(false)
 	, mLastUpdateTime(0)
-	, mThreadsClosedDownProperly(false)
 { 
 	mFetchUpdateInterval = OM_DEFAULT_FETCH_UPDATE_INTERVAL_SECONDS;
 	mFetchUpdateClearsStack = OM_DEFAULT_FETCH_UPDATE_CLEARS_FETCH_STACK;
@@ -33,7 +32,7 @@ OmThreadedCache<KEY,PTR>::OmThreadedCache(OmCacheGroup group)
 template < typename KEY, typename PTR  >
 OmThreadedCache<KEY,PTR>::~OmThreadedCache() 
 {
-	assert(mThreadsClosedDownProperly);
+	closeDownThreads();
 }
 
 /*
@@ -245,7 +244,5 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 	mFetchThreadCv.wakeAll();
 
 	threads.waitForDone();
-
-	mThreadsClosedDownProperly = true;
 }
 
