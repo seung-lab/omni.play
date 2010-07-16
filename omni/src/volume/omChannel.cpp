@@ -1,3 +1,5 @@
+#include "datalayer/omDataPath.h"
+#include "volume/omMipVolumeCache.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
@@ -11,7 +13,7 @@
 OmChannel::OmChannel()
 {
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim);
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
 }
 
 OmChannel::OmChannel(OmId id)
@@ -39,7 +41,7 @@ OmChannel::OmChannel(OmId id)
 	BuildVolumeData();
 
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim);
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
 
 	AddFilter();	
 }
@@ -105,4 +107,9 @@ bool OmChannel::IsFilterEnabled(OmId id)
 void OmChannel::Print()
 {
 	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
+}
+
+void OmChannel::CloseDownThreads()
+{
+	mDataCache->closeDownThreads();
 }

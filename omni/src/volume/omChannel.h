@@ -26,9 +26,7 @@ public:
 	void SetHue(const vmml::Vector3< float > &);
 	const Vector3f& GetHue();
 
-	void CloseDownThreads(){
-		closeDownThreads();
-	}
+	void CloseDownThreads();
 	
 	//accessor
 	bool IsVolumeDataBuilt();

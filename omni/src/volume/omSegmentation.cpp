@@ -1,3 +1,4 @@
+#include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -23,6 +24,7 @@
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
+#include "volume/omMipVolumeCache.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -41,7 +43,7 @@ OmSegmentation::OmSegmentation()
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
 	
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -88,7 +90,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendThreshold = DefaultThresholdSize;
 
         const int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 
 	//build blank data
 	BuildVolumeData();
@@ -527,4 +529,10 @@ void OmSegmentation::SetDendThresholdAndReload( const float t )
 	}
 	SetDendThreshold(t);
 	mSegmentCache->refreshTree();
+}
+
+void OmSegmentation::CloseDownThreads()
+{
+	mMipMeshManager.CloseDownThreads();
+	mDataCache->closeDownThreads();
 }

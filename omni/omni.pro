@@ -235,6 +235,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipThread.h \
            src/volume/omMipThreadManager.h \
            src/volume/omSegmentation.h \
+           src/volume/omMipVolumeCache.h \
            src/volume/omSegmentationThresholdChangeAction.h \
            src/volume/omSegmentationChunkCoord.h \
            src/volume/omThreadChunkLevel.h \
@@ -427,6 +428,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipVolume.cpp \
            src/volume/omMipThread.cpp \
            src/volume/omMipThreadManager.cpp \
+           src/volume/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
            src/volume/omSegmentationChunkCoord.cpp \

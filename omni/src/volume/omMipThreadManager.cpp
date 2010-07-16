@@ -2,6 +2,7 @@
 #include "omMipThreadManager.h"
 #include "omMipVolume.h"
 #include "system/omLocalPreferences.h"
+#include "volume/omMipChunkCoord.h"
 
 OmMipThreadManager::OmMipThreadManager(OmMipVolume* pMipVolume, bool buildEdited)
 {

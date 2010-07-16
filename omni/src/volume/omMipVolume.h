@@ -9,24 +9,24 @@
  */
 
 #include "volume/omVolume.h"
-#include "omThreadChunkThreadedCache.h"
-#include "omMipChunkCoord.h"
-#include "system/omThreadedCache.h"
-#include "datalayer/omDataPath.h"
-#include "common/omStd.h"
-#include "utility/omTimer.h"
+#include "common/omCommon.h"
 
 #include <QFileInfo>
+#include <QExplicitlySharedDataPointer>
 
-class OmVolume;
+class OmMipChunkCoord;
+class OmDataPath;
 class OmMipChunk;
+class OmMipVolumeCache;
 class OmThreadChunkLevel;
+class OmThreadChunkThreadedCache;
+class OmVolume;
 class vtkImageData;
 
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
 
-class OmMipVolume : public OmVolume, public OmThreadedCache<OmMipChunkCoord, OmMipChunk> {
+class OmMipVolume : public OmVolume {
 	
 public:
         OmMipVolume();
@@ -126,6 +126,8 @@ public:
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
 protected:		
+	OmMipVolumeCache *const mDataCache;
+
 	//state
 	void SetBuildState(MipVolumeBuildState);
 	
@@ -153,7 +155,6 @@ protected:
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 	
 private:
-	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
 	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)

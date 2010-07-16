@@ -4,18 +4,22 @@
 #include "common/omVtk.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
+#include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "omThreadChunkThreadedCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
+#include "utility/omTimer.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
-#include "volume/omThreadChunkLevel.h"
 #include "volume/omMipThreadManager.h"
 #include "volume/omMipVolume.h"
+#include "volume/omMipVolumeCache.h"
+#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 
 #include <vtkImageData.h>
@@ -34,7 +38,7 @@ static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 ///////
 
 OmMipVolume::OmMipVolume()
- : OmThreadedCache<OmMipChunkCoord, OmMipChunk>(RAM_CACHE_GROUP)
+	: mDataCache(new OmMipVolumeCache(this))
 {
 	sourceFilesWereSet = false;
 
@@ -52,6 +56,7 @@ OmMipVolume::OmMipVolume()
 OmMipVolume::~OmMipVolume()
 {
 	Flush();
+	delete mDataCache;
 }
 
 /////////////////////////////////
@@ -66,7 +71,7 @@ void OmMipVolume::Flush()
 	BuildEditedLeafChunks();
 
 	//flush all chunks in the cache
-	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Flush();
+	mDataCache->Flush();
 	mThreadChunkThreadedCache->Flush();
 }
 
@@ -503,7 +508,7 @@ void OmMipVolume::GetChunk(QExplicitlySharedDataPointer < OmMipChunk > &p_value,
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
-	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Get(p_value, rMipCoord, block);
+	mDataCache->Get(p_value, rMipCoord, block);
 }
 
 void OmMipVolume::GetThreadChunkLevel(QExplicitlySharedDataPointer < OmThreadChunkLevel > &p_value, const OmMipChunkCoord & rMipCoord, bool block)
@@ -522,18 +527,7 @@ void OmMipVolume::StoreChunk(const OmMipChunkCoord & rMipCoord, OmMipChunk * pMi
 
 	assert(ContainsMipChunkCoord(rMipCoord));
 
-	OmThreadedCache<OmMipChunkCoord, OmMipChunk>::Add(rMipCoord, pMipChunk);
-}
-
-/*
- *	A cache miss causes an initialization of a chunk.
- */
-OmMipChunk *OmMipVolume::HandleCacheMiss(const OmMipChunkCoord & rMipCoord)
-{
-
-	assert(ContainsMipChunkCoord(rMipCoord));
-
-	return new OmMipChunk(rMipCoord, this);
+	mDataCache->Add(rMipCoord, pMipChunk);
 }
 
 /////////////////////////////////

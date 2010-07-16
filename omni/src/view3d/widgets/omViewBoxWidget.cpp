@@ -1,12 +1,12 @@
-#include "omViewBoxWidget.h"
-
-#include "system/omStateManager.h"
-#include "common/omGl.h"
-#include "system/omLocalPreferences.h"
-#include "project/omProject.h"
 #include "common/omCommon.h"
-#include "volume/omChannel.h"
+#include "common/omDebug.h"
+#include "common/omGl.h"
+#include "omViewBoxWidget.h"
+#include "project/omProject.h"
+#include "system/omLocalPreferences.h"
+#include "system/omStateManager.h"
 #include "view2d/drawable.h"
+#include "volume/omChannel.h"
 
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;

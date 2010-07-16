@@ -6,7 +6,6 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-//#include "voxel/omMipVoxelationManager.h"
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
@@ -28,10 +27,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	OmSegmentation(OmId id);
 	~OmSegmentation();
 
-	void CloseDownThreads(){
-		mMipMeshManager.CloseDownThreads();
-		closeDownThreads();
-	}
+	void CloseDownThreads();
 	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
@@ -81,9 +77,7 @@ private:
 	void KillCacheThreads();
 
 	MeshingManager * mMeshingMan;
-	
-	//managers
-	//	OmMipVoxelationManager mMipVoxelationManager;
+
 	OmSegmentCache *const mSegmentCache;
 
 	OmGroups mGroups;

@@ -45,7 +45,6 @@ class OmThreadedCache : public OmCacheBase {
 	bool Contains(const KEY &key);
 	void Flush();
 
-
 	//get info about the cache 
 	unsigned int GetFetchStackSize();
 	long GetCacheSize();
@@ -64,7 +63,6 @@ class OmThreadedCache : public OmCacheBase {
 	//least recently accessed at head of list
 	QList< KEY > mKeyAccessList;
 
-protected:
 	void closeDownThreads();
 	
 private:

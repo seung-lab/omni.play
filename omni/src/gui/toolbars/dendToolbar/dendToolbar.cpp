@@ -1,3 +1,4 @@
+#include "common/omDebug.h"
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"

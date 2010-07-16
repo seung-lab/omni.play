@@ -1,3 +1,4 @@
+#include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "gui/inspectors/segInspector.h"
 #include "gui/mainwindow.h"
