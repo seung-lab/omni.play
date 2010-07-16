@@ -57,6 +57,10 @@ MainWindow::MainWindow()
 	OmStateManager::setMainWindow(this);
 }
 
+MainWindow::~MainWindow()
+{
+}
+
 // Creates a new project
 // Prompts the user for a directory in which to create the new project
 // Internally, this sets the current working directory where the Volume will be serialized
@@ -358,17 +362,11 @@ void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 	}
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
+void MainWindow::closeEvent(QCloseEvent *)
 {
 	try {
 		// QMainWindow::saveState() and restoreState()
-
-		if (isProjectOpen()) {
-			if (!checkForSave()) {
-				event->ignore();
-			}
-		}
-
+		closeProjectIfOpen();
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
