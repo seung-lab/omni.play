@@ -11,6 +11,7 @@
 #include "volume/omSegmentation.h"
 #include "mesh/omMeshSegmentList.h"
 #include "system/omEvents.h"
+#include "system/omGarbage.h"
 
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
@@ -47,6 +48,8 @@ void OmMeshDrawer::Init()
  */
 void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 {
+	OmGarbage::safeCleanGenlistIds();
+
 	//transform to normal frame
 	glPushMatrix();
 	glMultMatrixf(mSeg->GetNormToSpaceMatrix().ml);

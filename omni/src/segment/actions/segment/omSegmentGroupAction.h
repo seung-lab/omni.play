@@ -21,12 +21,16 @@ private:
 	void save(const string &);
 	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
-	const OmId mSegmentationId;
-	const OmGroupName mName;
-	const bool mCreate;
+	OmId mSegmentationId;
+	OmGroupName mName;
+	bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;
 
 	friend class OmActionLoggerFS;
+	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
+	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
+
+
 
 };
 

@@ -24,12 +24,16 @@ public:
 	static void Delete();
 	
 	static void asOmTextureId(GLuint);
+	static void asOmGenlistId(GLuint);
 	static void safeCleanTextureIds ();
+	static void safeCleanGenlistIds ();
 	
 	static void Lock ();
 	static vector<GLuint>& LockTextures ();
+	static vector<GLuint>& LockGenlists ();
 	static void Unlock ();
 	static void UnlockTextures ();
+	static void UnlockGenlists ();
 	
 private:
 	OmGarbage();
@@ -40,7 +44,9 @@ private:
 	
 	//garbage
 	vector <GLuint> mTextures;
+	vector <GLuint> mGenlists;
 	mutable QMutex mTextureMutex;
+	mutable QMutex mGenlistMutex;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "system/omGarbage.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
@@ -246,7 +247,7 @@ void OmMipMesh::DeleteVbo()
 
   if (hasDisplayList) {
     hasDisplayList = false;
-    glDeleteLists(displayList, 1);
+    OmGarbage::asOmGenlistId(displayList);
   }
 
   if (!IsVbo()) {
