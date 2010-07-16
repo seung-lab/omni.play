@@ -306,6 +306,7 @@ void Headless::processLine( QString line, QString fName )
 		QString projectFileNameAndPath = args[1];      
                 const QString fname = OmProject::New( projectFileNameAndPath );
 		RecentFileList::prependFileToFS(fname);
+		printf("Created and opened %s\n",qPrintable(projectFileNameAndPath));
 
 	} else if( line.startsWith("createOrOpen:") ) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
