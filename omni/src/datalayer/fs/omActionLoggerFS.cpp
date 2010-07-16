@@ -175,10 +175,16 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
 
 QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a )
 {
+        int version = 1;
+        out << version;
+
 	return out;
 }
 
 QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a )
 {
+        int version;
+        in >> version;
+
 	return in;
 }
