@@ -151,11 +151,25 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a )
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a )
 {
+        int version = 1;
+        out << version;
+        out << a.mSegmentationId;
+        out << a.mNewSelectedIdSet;
+        out << a.mOldSelectedIdSet;
+        out << a.mSegmentJustSelectedID;
+
 	return out;
 }
 
 QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
 {
+        int version;
+        in >> version;
+        in >> a.mSegmentationId;
+        in >> a.mNewSelectedIdSet;
+        in >> a.mOldSelectedIdSet;
+        in >> a.mSegmentJustSelectedID;
+
 	return in;
 }
 
