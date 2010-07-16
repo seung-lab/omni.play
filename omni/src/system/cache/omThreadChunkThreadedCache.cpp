@@ -1,15 +1,15 @@
-#include "omMipVolume.h"
-#include "omMipChunk.h"
-#include "omThreadChunkLevel.h"
-#include "omVolume.h"
-#include "omThreadChunkThreadedCache.h"
+#include "volume/omMipVolume.h"
+#include "volume/omMipChunk.h"
+#include "volume/omThreadChunkLevel.h"
+#include "volume/omVolume.h"
+#include "system/cache/omThreadChunkThreadedCache.h"
 
-OmThreadChunkThreadedCache::OmThreadChunkThreadedCache(OmMipVolume * volume) : OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>(RAM_CACHE_GROUP)
+OmThreadChunkThreadedCache::OmThreadChunkThreadedCache(OmMipVolume * volume) 
+	: OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>(RAM_CACHE_GROUP)
+	, mMipVolume(volume)
 {
         int chunkDim = volume->GetThreadChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim*volume->GetBytesPerSample());
-	mMipVolume = volume;
-
 }
 
 OmThreadChunkThreadedCache::~OmThreadChunkThreadedCache()
