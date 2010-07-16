@@ -170,9 +170,9 @@ void Headless::processLine( QString line, QString fName )
 				printf("Segmentations %i and %i are not valid channels.\n",id1,id2);
 			}
 		} else if( !OmProject::IsSegmentationValid(id1) ) {
-			printf("Segmentation %i is not a valid channel.\n",id1);
+			printf("Segmentation %i is not a valid segmentation.\n",id1);
 		} else if( !OmProject::IsSegmentationValid(id2) ) {
-			printf("Segmentation %i is not a valid channel.\n",id2);
+			printf("Segmentation %i is not a valid segmentation.\n",id2);
 		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
 			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
 		}
@@ -335,7 +335,7 @@ void Headless::processLine( QString line, QString fName )
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
 		if ( args.size() < 2 ){
-			printf("Please enter a filename.\n");
+			printf("Please enter a path to a directory.\n");
 			return;
 		}
 
@@ -356,7 +356,7 @@ void Headless::processLine( QString line, QString fName )
                 QStringList args = line.split(':',QString::SkipEmptyParts);
 
 		if ( args.size() < 2 ){
-			printf("Please enter a filename.\n");
+			printf("Please enter a path to a directory.\n");
 			return;
 		}
 
@@ -405,7 +405,42 @@ void Headless::processLine( QString line, QString fName )
 		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 		segmen.GetChunk(p_chunk, chunk_coord);
 		p_chunk->Open();
-		
+        } else if( line.startsWith("removeChann:") ){
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a channel id.\n");
+			return;
+		}
+
+		int channID = StringHelpers::getUInt( args[1] );		
+
+		if ( !OmProject::IsChannelValid(channID) ){
+			printf("Channel %i is not a valid channel.\n",channID);
+			return;
+		} else {
+			OmProject::RemoveChannel(channID);
+			printf("Channel %i removed.\n",channID);
+			return;
+		}
+	} else if( line.startsWith("removeSeg:") ){
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a segmentation id.\n");
+			return;
+		}
+
+		int segID = StringHelpers::getUInt( args[1] );		
+
+		if ( !OmProject::IsSegmentationValid(segID) ){
+			printf("Segmentation %i is not a valid segmentation.\n",segID);
+			return;
+		} else {
+			OmProject::RemoveSegmentation(segID);
+			printf("Segmentation %i removed.\n",segID);
+			return;
+		}
         } else {
 		printf("Could not parse \"%s\"\n", qPrintable(line) );
 	}
