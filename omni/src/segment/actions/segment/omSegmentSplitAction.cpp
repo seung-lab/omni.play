@@ -10,7 +10,7 @@
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw, 
 					    const OmSegmentEdge & edge )
 	: mEdge(edge)
-	, m_sdw(sdw)
+	, mSegmentationID(sdw.getSegmentationID())
 	, desc("Splitting: ")
 {
 	SetUndoable(true);
@@ -30,7 +30,8 @@ void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 
 void OmSegmentSplitAction::Action()
 {
-	mEdge = m_sdw.getSegmentCache()->SplitEdge(mEdge);
+	SegmentationDataWrapper sdw(mSegmentationID);
+	mEdge = sdw.getSegmentCache()->SplitEdge(mEdge);
 
 	desc = QString("Split seg %1 from %2")
 		.arg(mEdge.childID)
@@ -40,7 +41,8 @@ void OmSegmentSplitAction::Action()
 
 void OmSegmentSplitAction::UndoAction()
 {
-	mEdge = m_sdw.getSegmentCache()->JoinEdge(mEdge);
+	SegmentationDataWrapper sdw(mSegmentationID);
+	mEdge = sdw.getSegmentCache()->JoinEdge(mEdge);
 
 	desc = QString("Joined seg %1 to %2")
 		.arg(mEdge.childID)

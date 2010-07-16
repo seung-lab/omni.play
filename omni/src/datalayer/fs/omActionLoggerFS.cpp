@@ -83,11 +83,10 @@ QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a )
 {
-	OmId segmentationID = a.m_sdw.getSegmentationID();
         int version = 1;
         out << version;
         out << a.mEdge;
-        out << segmentationID;
+        out << a.mSegmentationID;
         out << a.desc;
 
 	return out;
@@ -95,11 +94,10 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a )
 
 QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a )
 {
-	OmId segmentationID;
 	int version;
 	in >> version;
         in >> a.mEdge;
-        in >> segmentationID;		// FIXME.
+        in >> a.mSegmentationID;
         in >> a.desc;
 
 	return in;
@@ -173,7 +171,7 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a )
+QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & )
 {
         int version = 1;
         out << version;
@@ -181,7 +179,7 @@ QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a )
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a )
+QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction&  )
 {
         int version;
         in >> version;

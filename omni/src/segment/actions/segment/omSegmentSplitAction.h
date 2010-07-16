@@ -25,7 +25,8 @@ private:
 	QString classNameForLogFile(){return "OmSegmentSplitAction";}
 
 	OmSegmentEdge mEdge;
-	SegmentationDataWrapper m_sdw;
+	OmId mSegmentationID;
+	//SegmentationDataWrapper m_sdw;
 
 	QString desc;
 
