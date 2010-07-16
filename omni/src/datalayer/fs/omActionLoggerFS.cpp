@@ -9,6 +9,7 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/segment/omSegmentValidateAction.h"
+#include "volume/omSegmentationThresholdChangeAction.h"
 
 #include <QDateTime>
 #include <QFile>
@@ -186,3 +187,24 @@ QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction&  )
 
 	return in;
 }
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentationThresholdChangeAction & a )
+{
+        int version = 1;
+        out << version;
+	out << a.mThreshold;
+	out << a.mOldThreshold;
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmSegmentationThresholdChangeAction & a )
+{
+        int version;
+        in >> version;
+	in >> a.mThreshold;
+	in >> a.mOldThreshold;
+
+        return in;
+}
+
