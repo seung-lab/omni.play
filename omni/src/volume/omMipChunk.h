@@ -11,7 +11,7 @@
  */
 
 #include "omMipChunkCoord.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
 
 #include <QMutex>
 

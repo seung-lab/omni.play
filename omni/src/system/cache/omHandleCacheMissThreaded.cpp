@@ -1,5 +1,6 @@
-#include "system/omHandleCacheMissThreaded.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omHandleCacheMissThreaded.h"
+#include "system/cache/omCacheManager.h"
+#include <QExplicitlySharedDataPointer>
 
 template < typename TC, typename KEY, typename PTR>
 HandleCacheMissThreaded<TC, KEY, PTR>::HandleCacheMissThreaded(TC * tc) 
@@ -40,7 +41,6 @@ void HandleCacheMissThreaded<TC, KEY, PTR>::run()
 		PTR * ret = mTC->HandleCacheMiss(mKey);
 		HandleFetchUpdate(ret);
 	}
-
 }
 
 template < typename TC, typename KEY, typename PTR>

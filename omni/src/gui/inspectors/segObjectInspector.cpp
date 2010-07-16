@@ -4,7 +4,7 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "utility/stringHelpers.h"
 
 SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)

@@ -7,7 +7,7 @@
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
 #include "system/omGenericManager.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"

@@ -3,9 +3,9 @@
 
 #include "omTile.h"
 #include "omTextureID.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 #include "system/omEventManager.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/events/omViewEvent.h"
 #include "common/omStd.h"
 #include "omTileCoord.h"

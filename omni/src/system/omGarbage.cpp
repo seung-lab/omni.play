@@ -1,10 +1,8 @@
-
+#include "common/omDebug.h"
+#include "common/omException.h"
 #include "omGarbage.h"
 #include "omPreferenceDefinitions.h"
-#include "omCacheManager.h"
-
-#include "common/omException.h"
-#include "common/omDebug.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 
 //init instance pointer

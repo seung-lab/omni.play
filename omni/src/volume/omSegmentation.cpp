@@ -24,7 +24,7 @@
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
-#include "volume/omMipVolumeCache.h"
+#include "system/cache/omMipVolumeCache.h"
 
 #include <vtkImageData.h>
 #include <QFile>

@@ -12,7 +12,7 @@
 
 #include "common/omStd.h"
 #include "common/omGl.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
 #include "system/omGenericManager.h"
 #include "omTileCoord.h"
 

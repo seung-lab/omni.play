@@ -1,6 +1,6 @@
 #include "gui/cacheMonitorDialog.h"
 #include "gui/cacheMonitorWidget.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 
 CacheMonitorDialog::CacheMonitorDialog( QWidget * parent)
 	: QDialog(parent)

@@ -9,7 +9,7 @@
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
 #include "segment/omSegmentPointers.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 
 class OmMeshSource;
 class OmMipChunk;

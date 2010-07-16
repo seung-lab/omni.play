@@ -3,7 +3,7 @@
 
 #include "common/omDebug.h"
 #include "system/events/omPreferenceEvent.h"
-#include "system/omCacheInfo.h"
+#include "system/cache/omCacheInfo.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"

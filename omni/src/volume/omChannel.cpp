@@ -1,5 +1,5 @@
 #include "datalayer/omDataPath.h"
-#include "volume/omMipVolumeCache.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"

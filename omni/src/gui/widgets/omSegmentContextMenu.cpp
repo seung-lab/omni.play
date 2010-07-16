@@ -7,7 +7,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omViewEvent.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"

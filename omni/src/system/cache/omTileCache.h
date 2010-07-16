@@ -1,7 +1,7 @@
 #ifndef OM_TILE_CACHE_H
 #define OM_TILE_CACHE_H
 
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 #include "view2d/omTileCoord.h"
 #include "view2d/omTextureID.h"
 

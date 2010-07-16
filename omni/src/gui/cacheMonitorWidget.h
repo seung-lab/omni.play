@@ -2,7 +2,7 @@
 #define CACHE_MONITOR_WIDGET_H
 
 #include <QtGui>
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 
 class CacheMonitorWidget : public QWidget 
 {

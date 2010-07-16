@@ -1,5 +1,5 @@
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 

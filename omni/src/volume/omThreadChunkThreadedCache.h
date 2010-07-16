@@ -2,7 +2,7 @@
 #define OM_THREAD_CHUNK_THREADED_CACHE_H
 
 #include "omMipChunkCoord.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 #include "omThreadChunkLevel.h"
 
 /*

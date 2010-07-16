@@ -181,10 +181,10 @@ HEADERS += lib/strnatcmp.h \
            src/system/omBuildChannel.h \
            src/system/omBuildSegmentation.h \
            src/system/omBuildVolumes.h \
-           src/system/omCacheBase.h \
-           src/system/omCacheInfo.h \
-           src/system/omCacheManager.h \
-           src/system/omCacheableBase.h \
+           src/system/cache/omCacheBase.h \
+           src/system/cache/omCacheInfo.h \
+           src/system/cache/omCacheManager.h \
+           src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
            src/system/omGroups.h \
@@ -194,8 +194,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/omPreferences.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
-           src/system/omThreadedCache.h \
-           src/system/omHandleCacheMissThreaded.h \
+           src/system/cache/omThreadedCache.h \
+           src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
@@ -236,7 +236,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipThread.h \
            src/volume/omMipThreadManager.h \
            src/volume/omSegmentation.h \
-           src/volume/omMipVolumeCache.h \
+           src/system/cache/omMipVolumeCache.h \
            src/volume/omSegmentationThresholdChangeAction.h \
            src/volume/omSegmentationChunkCoord.h \
            src/volume/omThreadChunkLevel.h \
@@ -365,7 +365,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/system/OmCacheInfo.cpp \
+           src/system/cache/omCacheInfo.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \
@@ -377,8 +377,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omBuildChannel.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
-           src/system/omCacheManager.cpp \
-           src/system/omCacheableBase.cpp \
+           src/system/cache/omCacheManager.cpp \
+           src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
@@ -392,8 +392,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \
-           src/system/omThreadedCache.cpp \
-           src/system/omHandleCacheMissThreaded.cpp \
+           src/system/cache/omThreadedCache.cpp \
+           src/system/cache/omHandleCacheMissThreaded.cpp \
            src/system/templatedClasses.cpp \
            src/system/viewGroup/omViewGroupState.cpp \
            src/utility/dataWrappers.cpp \
@@ -430,7 +430,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipVolume.cpp \
            src/volume/omMipThread.cpp \
            src/volume/omMipThreadManager.cpp \
-           src/volume/omMipVolumeCache.cpp \
+           src/system/cache/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
            src/volume/omSegmentationChunkCoord.cpp \

@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/breakButton.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 

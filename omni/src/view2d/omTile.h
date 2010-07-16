@@ -9,7 +9,7 @@
 
 #include "common/omStd.h"
 #include "volume/omMipChunkCoord.h"
-#include "system/omCacheBase.h"
+#include "system/cache/omCacheBase.h"
 #include "volume/omSegmentation.h"
 
 #include <QExplicitlySharedDataPointer>

@@ -18,7 +18,7 @@
 #include "volume/omMipChunk.h"
 #include "volume/omMipThreadManager.h"
 #include "volume/omMipVolume.h"
-#include "volume/omMipVolumeCache.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 

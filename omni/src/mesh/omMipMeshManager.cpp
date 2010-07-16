@@ -5,7 +5,7 @@
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omThreadedCache.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omDrawOptions.h"
 #include "volume/omMipChunkCoord.h"

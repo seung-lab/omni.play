@@ -1,5 +1,5 @@
 #include "volume/omMipVolume.h"
-#include "volume/omMipVolumeCache.h"
+#include "system/cache/omMipVolumeCache.h"
 
 OmMipVolumeCache::OmMipVolumeCache(OmMipVolume * parent) 
 	: OmThreadedCache<OmMipChunkCoord, OmMipChunk>(RAM_CACHE_GROUP)

@@ -12,7 +12,7 @@
 #include "omMipMeshCoord.h"
 #include "common/omCommon.h"
 #include "common/omGl.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
 #include "datalayer/omDataWrapper.h"
 
 class ziMeshingChunk;
