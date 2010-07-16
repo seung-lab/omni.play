@@ -269,13 +269,13 @@ void Headless::processLine( QString line, QString fName )
 		printf("Project closed.\n");
 	} else if( "pwd" == line ){
 		printf("%s\n", qPrintable( QDir::currentPath() ));	
-	} else if( line.startsWith("cd:") ){
-		QStringList args = line.split(':',QString::SkipEmptyParts);
-		if ( args.size() < 2 ){
+	} else if( line.startsWith("cd ") ){
+		QStringList args = line.split("cd ", QString::SkipEmptyParts);
+		if ( args.size() < 1 ){
 			printf("Please enter a pathname.\n");
 			return;
 		}
-		QString path = args[1];
+		QString path = args[0];
 		if ( !QDir::QDir(path).exists() ){
 			printf("Directory does not exist.\n");
 			return;
@@ -285,6 +285,14 @@ void Headless::processLine( QString line, QString fName )
 	        QStringList entrylist = QDir::current().entryList();
 		foreach (QString str, entrylist){
 			printf("%s\n",qPrintable(str));
+		}
+	} else if( "ls -l" == line ){
+	        QFileInfoList entrylist = QDir::current().entryInfoList();
+		foreach(QFileInfo f, entrylist){
+			QString line = QString("%1%2")
+				.arg(f.fileName(), -20, ' ')
+				.arg(QString::number((double)f.size()/BYTES_PER_MB, 'f', 3));
+			printf("%s\n", qPrintable(line));
 		}
 	} else if( "parallel" == line ){
 		OmStateManager::setParallel(true);
@@ -475,8 +483,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 		printf("ID\tName\n");
 		FOR_EACH(iter,channset){
-			ChannelDataWrapper cdw;
-			cdw = ChannelDataWrapper(*iter);
+			ChannelDataWrapper cdw(*iter);
 			printf("%i\t%s\n", *iter, qPrintable( cdw.getName() ));
 		}		
 	} else if( "lsSeg" == line ){
@@ -487,8 +494,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 		printf("ID\tName\n");
 		FOR_EACH(iter,segset){
-			SegmentationDataWrapper sdw;
-			sdw = SegmentationDataWrapper(*iter);
+			SegmentationDataWrapper sdw(*iter);
 			printf("%i\t%s\n", *iter, qPrintable( sdw.getName() ));
 		}
         } else {
