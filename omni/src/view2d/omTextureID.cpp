@@ -3,10 +3,11 @@
 #include "omThreadedCachingTile.h"
 #include "system/omGarbage.h"
 #include "common/omDebug.h"
+#include "system/cache/omTileCache.h"
 
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 			 const int &size, const int x, const int y,
-			 OmThreadedCachingTile * cache, void *texture, 
+			 OmTileCache * cache, void *texture, 
 			 int flags)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)

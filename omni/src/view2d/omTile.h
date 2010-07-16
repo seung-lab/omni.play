@@ -18,7 +18,7 @@
 class OmMipVolume;
 class OmTextureID;
 class OmTileCoord;
-class OmThreadedCachingTile;
+class OmTileCache;
 class OmViewGroupState;
 
 class OmTile {
@@ -27,7 +27,7 @@ public:
 	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, OmViewGroupState * vgs);
 	~OmTile();
 	
-	OmTextureID* BindToTextureID(const OmTileCoord &key, OmThreadedCachingTile* cache);
+	OmTextureID* BindToTextureID(const OmTileCoord &key, OmTileCache * cache);
 	
 	void SetNewAlpha(float newval);
 
@@ -53,7 +53,7 @@ private:
 
 	void setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
 
-	OmTextureID * doBindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache);
+	OmTextureID * doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
 };
 

@@ -1,18 +1,18 @@
-#include "volume/omVolume.h"
-#include "omThreadedCachingTile.h"
-
-#include "system/omEventManager.h"
+#include "system/cache/omTileCache.h"
+#include "common/omDebug.h"
 #include "system/events/omViewEvent.h"
+#include "system/omEventManager.h"
 #include "system/omStateManager.h"
+#include "view2d/omThreadedCachingTile.h"
+#include "volume/omVolume.h"
 
 #include <QColor>
 #include <QGLContext>
-#include "common/omDebug.h"
 
 OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
                                              const QGLContext * shareContext, OmViewGroupState * vgs)
-	: OmTile(viewtype, voltype, image_id, vol, vgs), 
-	  OmThreadedCache<OmTileCoord, OmTextureID>(VRAM_CACHE_GROUP)
+	: OmTile(viewtype, voltype, image_id, vol, vgs)
+	, mDataCache(new OmTileCache(this))
 {
 	// omView2d passes in its own context
 
@@ -21,16 +21,17 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mImageId = image_id;
 
         int chunkDim = vol->GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*4);
+        mDataCache->SetObjectSize(chunkDim*chunkDim*4);
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
 {
+	delete mDataCache;
 }
 
 void OmThreadedCachingTile::GetTextureID(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
 {
-	OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, tileCoord, block);
+	mDataCache->Get(p_value, tileCoord, block);
 }
 
 // Called at the highest miplevel will force the entire octree into memory so an initial
@@ -52,7 +53,7 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 		// Try directly below current level.
 		mipTileCoord.Level += 1;
 
-		OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, mipTileCoord, false);
+		mDataCache->Get(p_value, mipTileCoord, false);
 		if (p_value) {
 			//debug("FIXME", << "tile " << mipTileCoord.Level << " found" << endl;
 			retCoord = mipTileCoord;
@@ -61,21 +62,15 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 	}
 
 	retCoord = tileCoord;
-	OmThreadedCache<OmTileCoord, OmTextureID>::Get(p_value, tileCoord, false);
+	mDataCache->Get(p_value, tileCoord, false);
 }
 
 void OmThreadedCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID)
 {
-	OmThreadedCache<OmTileCoord, OmTextureID>::Add(tileCoord, texID);
+	mDataCache->Add(tileCoord, texID);
 }
 
 void OmThreadedCachingTile::Remove(const OmTileCoord & tileCoord)
 {
-	OmThreadedCache<OmTileCoord, OmTextureID>::Remove(tileCoord);
-}
-
-OmTextureID *OmThreadedCachingTile::HandleCacheMiss(const OmTileCoord & key)
-{
-	//return mesh to cache
-	return BindToTextureID(key, this);
+	mDataCache->Remove(tileCoord);
 }

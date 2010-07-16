@@ -208,6 +208,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/stringHelpers.h \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
+           src/system/cache/omTileCache.h \
            src/view2d/omTextureID.h \
            src/view2d/omThreadedCachingTile.h \
            src/view2d/omTile.h \
@@ -406,6 +407,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view2d/drawable.cpp \
            src/view2d/omTextureID.cpp \
            src/view2d/omThreadedCachingTile.cpp \
+           src/system/cache/omTileCache.cpp \
            src/view2d/omTile.cpp \
            src/view2d/omTileCoord.cpp \
            src/view2d/omView2d.cpp \

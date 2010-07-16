@@ -7,13 +7,11 @@
 #include "system/omEventManager.h"
 #include "system/omCacheManager.h"
 #include "system/events/omViewEvent.h"
-
 #include "common/omStd.h"
 #include "omTileCoord.h"
-
 #include "volume/omMipVolume.h"
 
-class OmCachingThreadedCachingTile;
+class OmTileCache;
 class OmViewGroupState;
 
 class QGLContext;
@@ -25,7 +23,7 @@ class QGLContext;
  *	Rachel Shearer - rshearer@mit.edu
  */
 
-class OmThreadedCachingTile : public OmTile, public OmThreadedCache<OmTileCoord, OmTextureID> {
+class OmThreadedCachingTile : public OmTile {
 	
 public:	
 	OmThreadedCachingTile(ViewType, ObjectType, OmId, OmMipVolume *, const QGLContext *, OmViewGroupState * );
@@ -44,7 +42,7 @@ public:
 	OmId mImageId;
 
 private:
-	OmTextureID* HandleCacheMiss(const OmTileCoord &key);
+	OmTileCache *const mDataCache;
 	
 	const QGLContext* mShareContext;
 };
