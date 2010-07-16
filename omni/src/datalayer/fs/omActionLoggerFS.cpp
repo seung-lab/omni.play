@@ -3,6 +3,7 @@
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "system/omStateManager.h"
+#include "volume/omSegmentation.h"
 
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
@@ -64,7 +65,6 @@ void OmActionLoggerFS::setupLogDir()
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
 {
-        //meta data
 	int version = 1;
 	out << version;
         out << a.mSelectedSegmentIds;
@@ -87,18 +87,28 @@ QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
         return in;
 }
 
-QDataStream &operator>>(QDataStream & in, const QUndoStack & s )
-{
-	return in;
-}
-
 QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a )
 {
+	OmId segmentationID = a.m_sdw.getSegmentationID();
+        int version = 1;
+        out << version;
+        out << a.mEdge;
+        out << segmentationID;
+        out << a.desc;
+
 	return out;
 }
 
 QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a )
 {
+	OmId segmentationID;
+	int version;
+	in >> version;
+        in >> a.mEdge;
+        in >> segmentationID;
+        in >> a.desc;
+
+
 	return in;
 }
 

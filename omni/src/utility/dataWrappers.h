@@ -37,6 +37,7 @@ class SegmentationDataWrapper
 
 	bool isValid();
 	OmSegmentation & getSegmentation();
+	OmId getSegmentationID() const { return mID; }
 
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();

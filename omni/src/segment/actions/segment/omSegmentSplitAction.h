@@ -30,6 +30,9 @@ private:
 	QString desc;
 
 	friend class OmActionLoggerFS;
+	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
+	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
+
 };
 
 #endif
