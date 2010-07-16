@@ -12,18 +12,8 @@ class OmSegmentGroupAction;
 class OmSegmentJoinAction;
 class OmSegmentSelectAction;
 class OmSegmentValidateAction;
-
-class OmVoxelSelectionAction;
-class OmEditSelectionApplyAction;
-class OmVoxelSetAction;
-class OmVoxelSetConnectedAction;
-class OmVoxelSetValueAction;
-
 class OmProjectSaveAction;
-
 class OmAction;
-
-class QUndoStack;
 
 class OmActionLoggerFS {
  public:
@@ -56,9 +46,6 @@ void OmActionLoggerFS::save(T * action, const std::string &)
 	out << Omni_Postfix;
 }
 
-QDataStream &operator<<(QDataStream & out, const QUndoStack & s );
-QDataStream &operator>>(QDataStream & in, QUndoStack & s );
-
 QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
 QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
 
@@ -73,24 +60,6 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a );
 QDataStream &operator>>(QDataStream & in,  OmSegmentValidateAction & a );
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSelectionAction & a );
-QDataStream &operator>>(QDataStream & in,  OmVoxelSelectionAction & a );
-
-QDataStream &operator<<(QDataStream & out, const OmEditSelectionApplyAction & a );
-QDataStream &operator>>(QDataStream & in,  OmEditSelectionApplyAction & a );
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetAction & a );
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetAction & a );
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a );
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a );
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a );
-QDataStream &operator>>(QDataStream & in,   OmVoxelSetConnectedAction& a );
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a );
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetConnectedAction & a );
 
 QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a );
 QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a );

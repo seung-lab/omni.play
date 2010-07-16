@@ -2,7 +2,6 @@
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
@@ -495,12 +494,8 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 			break;
 		}
 
-		(new OmVoxelSetValueAction(seg, gCP, fc))->Run();
-		//delete new OmVoxelSetValueAction(seg, gCP, fc);
-		//printf("here\n");
-
-		debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
-			DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
+		//debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
+		//	DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
 
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
@@ -907,12 +902,6 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 
 void OmView2d::myUpdate()
 {
-
-	if (mEditedSegmentation) {
-		(new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
-		mUpdateCoordsSet.clear();
-	}
-
 	if (mDoRefresh) {
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;

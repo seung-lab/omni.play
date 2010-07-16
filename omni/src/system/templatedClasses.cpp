@@ -22,8 +22,6 @@
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
-#include "voxel/omMipSegmentDataCoord.h"
-#include "voxel/omMipVoxelation.h"
 #include <QWidget>
 
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
@@ -32,13 +30,6 @@ template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
 template class OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>;
 template class OmThreadedCache<OmMipMeshCoord, OmMipMesh>;
 template class OmThreadedCache<OmTileCoord, OmTextureID>;
-template class OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>;
-
-template class HandleCacheMissThreaded<OmThreadedCache<OmMipChunkCoord, OmMipChunk>, OmMipChunkCoord, OmMipChunk>;
-template class HandleCacheMissThreaded<OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>, OmMipChunkCoord, OmThreadChunkLevel>;
-template class HandleCacheMissThreaded<OmThreadedCache<OmMipMeshCoord, OmMipMesh>, OmMipMeshCoord, OmMipMesh>;
-template class HandleCacheMissThreaded<OmThreadedCache<OmTileCoord, OmTextureID>, OmTileCoord, OmTextureID>;
-template class HandleCacheMissThreaded<OmThreadedCache<OmMipSegmentDataCoord, OmMipVoxelation>, OmMipSegmentDataCoord, OmMipVoxelation>;
 
 template class OmGenericManager< OmFilter2d >;
 template class OmGenericManager< OmChannel >;

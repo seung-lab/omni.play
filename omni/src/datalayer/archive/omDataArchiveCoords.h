@@ -5,11 +5,7 @@
 
 class OmMipChunkCoord;
 class OmMipMeshCoord;
-class OmMipSegmentDataCoord;
 class OmTileCoord;
-
-QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c );
-QDataStream &operator>>(QDataStream & in, OmMipSegmentDataCoord & c );
 
 QDataStream &operator<<(QDataStream & out, const OmMipMeshCoord & c );
 QDataStream &operator>>(QDataStream & in, OmMipMeshCoord & c );

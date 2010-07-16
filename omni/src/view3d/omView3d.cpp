@@ -304,11 +304,6 @@ void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent *)
 	myUpdate();
 }
 
-void OmView3d::VoxelModificationEvent(OmVoxelEvent *)
-{
-	myUpdate();
-}
-
 void OmView3d::SegmentDataModificationEvent()
 {
 	myUpdate();

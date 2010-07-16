@@ -27,7 +27,7 @@ class OmVolume : boost::noncopyable {
 	Vector3i GetDataDimensions();
 	void SetDataDimensions(const Vector3i& dim);
 	Vector3f GetDataResolution();
-	bool SetDataResolution(const Vector3f& res);
+	void SetDataResolution(const Vector3f& res);
 	void CheckDataResolution();
 	Vector2f GetStretchValues(ViewType plane);
 	void SetStretchValues();

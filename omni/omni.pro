@@ -23,7 +23,6 @@ DEPENDPATH += . \
            src/segment \
            src/segment/actions \
            src/segment/actions/segment \
-           src/segment/actions/voxel \
            src/segment/lowLevel \
            src/system \
            src/system/events \
@@ -35,7 +34,6 @@ DEPENDPATH += . \
            src/view3d \
            src/view3d/widgets \
            src/volume \
-           src/voxel \
            tests \
            tests/segment \
            tests/segment/helpers \
@@ -155,11 +153,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/segment/omSegmentGroupAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
-           src/segment/actions/voxel/omVoxelSelectionAction.h \
-           src/segment/actions/voxel/omVoxelSelectionSetAction.h \
-           src/segment/actions/voxel/omVoxelSetAction.h \
-           src/segment/actions/voxel/omVoxelSetConnectedAction.h \
-           src/segment/actions/voxel/omVoxelSetValueAction.h \
            src/segment/lowLevel/DynamicTree.h \
            src/segment/lowLevel/DynamicTreeContainer.h \
            src/segment/lowLevel/omPagingPtrStore.h \
@@ -183,7 +176,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omToolModeEvent.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
-           src/system/events/omVoxelEvent.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildChannel.h \
@@ -248,9 +240,6 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omThreadChunkThreadedCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
-           src/voxel/omMipSegmentDataCoord.h \
-           src/voxel/omMipVoxelation.h \
-           src/voxel/omMipVoxelationManager.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -357,10 +346,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/actions/segment/omSegmentGroupAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentSplitAction.cpp \
-           src/segment/actions/voxel/omVoxelSelectionAction.cpp \
-           src/segment/actions/voxel/omVoxelSetAction.cpp \
-           src/segment/actions/voxel/omVoxelSetConnectedAction.cpp \
-           src/segment/actions/voxel/omVoxelSetValueAction.cpp \
            src/segment/lowLevel/DynamicTree.cpp \
            src/segment/lowLevel/DynamicTreeContainer.cpp \
            src/segment/lowLevel/omPagingPtrStore.cpp \
@@ -384,7 +369,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omToolModeEvent.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
-           src/system/events/omVoxelEvent.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildChannel.cpp \
@@ -448,9 +432,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omThreadChunkThreadedCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
-           src/voxel/omMipSegmentDataCoord.cpp \
-           src/voxel/omMipVoxelation.cpp \
-           src/voxel/omMipVoxelationManager.cpp \
            tests/utility/stringHelpersTest.cpp
 
 RESOURCES += src/gui/resources.qrc

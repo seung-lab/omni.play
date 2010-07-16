@@ -179,7 +179,7 @@ Vector3f OmVolume::GetDataResolution()
 	return mDataResolution;
 }
 
-bool OmVolume::SetDataResolution(const Vector3f & res)
+void OmVolume::SetDataResolution(const Vector3f & res)
 {
 	mDataResolution = res;
 	Update();

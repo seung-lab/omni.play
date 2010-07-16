@@ -18,7 +18,6 @@ protected:
 	void AddSelectionNames();
 	void AddSelectionAction();
 	void AddDendActions();
-	void AddVoxelAction();
 	void AddColorActions();
 	void AddGroupActions();
 	void AddPropertiesActions();
@@ -29,7 +28,6 @@ private slots:
 	void UnselectOthers();
 	
 	void MergeSegments();
-	void SetConnectedVoxels();
 	void splitSegments();
 	void randomizeColor();
 	void addGroup();

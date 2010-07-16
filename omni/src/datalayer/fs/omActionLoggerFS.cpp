@@ -4,17 +4,11 @@
 #include "project/omProjectSaveAction.h"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
-
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/segment/omSegmentValidateAction.h"
-#include "segment/actions/voxel/omVoxelSelectionAction.h"
-#include "segment/actions/voxel/omVoxelSelectionSetAction.h"
-#include "segment/actions/voxel/omVoxelSetAction.h"
-#include "segment/actions/voxel/omVoxelSetConnectedAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
 
 #include <QDateTime>
 #include <QFile>
@@ -155,46 +149,6 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmVoxelSelectionAction & a )
-{
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in,  OmVoxelSelectionAction & a )
-{
-	return in;
-}
-
-QDataStream &operator<<(QDataStream & out, const OmEditSelectionApplyAction & a )
-{
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in,  OmEditSelectionApplyAction & a )
-{
-	return in;
-}
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetAction & a )
-{
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetAction & a )
-{
-	return in;
-}
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetConnectedAction & a )
-{
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in,   OmVoxelSetConnectedAction& a )
-{
-	return in;
-}
-
 QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a )
 {
 	return out;
@@ -204,14 +158,3 @@ QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a )
 {
 	return in;
 }
-
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a )
-{
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a )
-{ 
-	return in;
-}
-
