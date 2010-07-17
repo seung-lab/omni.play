@@ -68,7 +68,8 @@ private:
 	mutable QReadWriteLock mCacheMutex;
 
 	mutable QMutex mFreshnessMutex;
-	map< OmCacheGroup, CacheGroupProperties > mCacheMap;
+	CacheGroupProperties mRamCacheMap;
+	CacheGroupProperties mVramCacheMap;
 	
 	//cleaning
 	float mTargetRatio;

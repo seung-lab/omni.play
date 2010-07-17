@@ -57,9 +57,10 @@ void OmCacheManager::UpdateCacheSizeFromLocalPrefs()
 
 void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
 {
-	mCacheMap[RAM_CACHE_GROUP].MaxSize =
+	QWriteLocker locker(&mCacheMutex);
+	mRamCacheMap.MaxSize =
 	    OmLocalPreferences::getRamCacheSizeMB() * float (BYTES_PER_MB);
-	mCacheMap[VRAM_CACHE_GROUP].MaxSize =
+	mVramCacheMap.MaxSize =
 	    OmLocalPreferences::getVRamCacheSizeMB() * float (BYTES_PER_MB);
 }
 
@@ -72,7 +73,11 @@ void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
 void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
 {
 	QWriteLocker locker(&Instance()->mCacheMutex);
-	Instance()->mCacheMap[group].CacheSet.insert(base);
+	if(RAM_CACHE_GROUP == group){
+		Instance()->mRamCacheMap.CacheSet.insert(base);
+	} else {
+		Instance()->mVramCacheMap.CacheSet.insert(base);
+	}
 }
 
 /*
@@ -83,7 +88,11 @@ void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
 	QWriteLocker locker(&Instance()->mCacheMutex);
 
 	Instance()->mDelayDelta = true;
-	Instance()->mCacheMap[group].CacheSet.erase(base);
+	if(RAM_CACHE_GROUP == group){
+		Instance()->mRamCacheMap.CacheSet.erase(base);
+	} else {
+		Instance()->mVramCacheMap.CacheSet.erase(base);
+	}
 	Instance()->mDelayDelta = false;
 }
 
@@ -93,11 +102,20 @@ QList< OmCacheInfo > OmCacheManager::GetCacheInfo(OmCacheGroup group)
 
 	QList< OmCacheInfo > infos;
 	
-	foreach( OmCacheBase * c, Instance()->mCacheMap[group].CacheSet ){
-		OmCacheInfo info;
-		info.cacheSize = c->GetCacheSize();
-		info.cacheName = "fixme";//c->GetCacheName();
-		infos << info;
+	if(RAM_CACHE_GROUP == group){
+		foreach( OmCacheBase * c, Instance()->mRamCacheMap.CacheSet ){
+			OmCacheInfo info;
+			info.cacheSize = c->GetCacheSize();
+			info.cacheName = "fixme";//c->GetCacheName();
+			infos << info;
+		}
+	} else {
+		foreach( OmCacheBase * c, Instance()->mVramCacheMap.CacheSet ){
+			OmCacheInfo info;
+			info.cacheSize = c->GetCacheSize();
+			info.cacheName = "fixme";//c->GetCacheName();
+			infos << info;
+		}
 	}
 	
 	return infos;
@@ -117,7 +135,11 @@ void OmCacheManager::UpdateCacheSize(OmCacheGroup group, int delta)
 void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 {
 	QWriteLocker locker(&Instance()->mCacheMutex);
-	Instance()->mCacheMap[group].Size += delta;
+	if(RAM_CACHE_GROUP == group){
+		Instance()->mRamCacheMap.Size += delta;
+	} else {
+		Instance()->mVramCacheMap.Size += delta;
+	}
 }
 
 /////////////////////////////////
@@ -127,17 +149,24 @@ void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 	QReadLocker locker(&Instance()->mCacheMutex);
 
 	//compute target size for group
-	const unsigned long target_size = (mTargetRatio) * mCacheMap[group].MaxSize;
 
 	for(int count = 0; count < 2; count++) {
-		foreach( OmCacheBase * ptr, mCacheMap[group].CacheSet ) {
-			
-			//return if target reached
-			if (mCacheMap[group].Size <= target_size){
-				return;
+		if(RAM_CACHE_GROUP == group){
+			const unsigned long target_size = (mTargetRatio) * mRamCacheMap.MaxSize;
+			foreach( OmCacheBase * ptr, mRamCacheMap.CacheSet ) {
+				if(mRamCacheMap.Size <= target_size){
+					return;
+				}
+				ptr->RemoveOldest();
 			}
-			
-			ptr->RemoveOldest();
+		} else {
+			const unsigned long target_size = (mTargetRatio) * mVramCacheMap.MaxSize;
+			foreach( OmCacheBase * ptr, mVramCacheMap.CacheSet ) {
+				if(mVramCacheMap.Size <= target_size){
+					return;
+				}
+				ptr->RemoveOldest();
+			}
 		}
 	}
 }
@@ -160,11 +189,11 @@ void OmCacheManager::SignalCachesToCloseDown()
 {
 	QReadLocker locker(&Instance()->mCacheMutex);
 
-	foreach( OmCacheBase * cache, Instance()->mCacheMap[VRAM_CACHE_GROUP].CacheSet ) {
+	foreach( OmCacheBase * cache, Instance()->mVramCacheMap.CacheSet ) {
 		cache->closeDownThreads();
 	}
 
-	foreach( OmCacheBase * cache, Instance()->mCacheMap[RAM_CACHE_GROUP].CacheSet ) {
+	foreach( OmCacheBase * cache, Instance()->mRamCacheMap.CacheSet ) {
 		cache->closeDownThreads();
 	}
 }
