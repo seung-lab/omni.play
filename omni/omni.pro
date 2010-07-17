@@ -241,6 +241,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omSegmentationChunkCoord.h \
            src/volume/omThreadChunkLevel.h \
            src/system/cache/omThreadChunkThreadedCache.h \
+           src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
 
@@ -436,6 +437,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omSegmentationChunkCoord.cpp \
            src/volume/omThreadChunkLevel.cpp \
            src/system/cache/omThreadChunkThreadedCache.cpp \
+           src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
            tests/utility/stringHelpersTest.cpp

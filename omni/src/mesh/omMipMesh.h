@@ -21,11 +21,12 @@ class OmHdf5;
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
+class OmMeshCache;
 
 class OmMipMesh : public OmCacheableBase {
 
 public:
-	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *pMipMeshManager);
+	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *, OmMeshCache *);
 	virtual ~OmMipMesh();
 
 	void Load();

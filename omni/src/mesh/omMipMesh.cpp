@@ -36,8 +36,9 @@ extern GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
 #define glGetBufferParameterivARB glGetBufferParameterivARBFunction;
 #endif
 
-OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager)
-  : OmCacheableBase(pMipMeshManager), mpMipMeshManager(pMipMeshManager)
+OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager, OmMeshCache * cache)
+  : OmCacheableBase(cache)
+  , mpMipMeshManager(pMipMeshManager)
   , mMeshCoordinate(id)
 {
   mHasData = false;
