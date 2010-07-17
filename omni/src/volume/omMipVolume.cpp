@@ -1427,12 +1427,13 @@ bool OmMipVolume::ImportSourceDataQT()
 	//should happen after setBytesPerSample....
 	AllocInternalData();
 
+	const int maxThreads=1;
 	QThreadPool threads;
-	threads.setMaxThreadCount(4);
+	threads.setMaxThreadCount(maxThreads);
 
 	mSliceNum = 0;
 
-	for(int i=0; i<4; ++i){
+	for(int i=0; i<maxThreads; ++i){
 		OmLoadImageThread* t = new OmLoadImageThread(this);
 		threads.start(t);
 	}
