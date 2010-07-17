@@ -32,8 +32,10 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
  *	Note: optional cache pointer if this is a cached chunk
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
-	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume)), 
-	  mpMipVolume(pMipVolume)
+	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume))
+	, mIsRawChunkOpen(false)
+	, mpMipVolume(pMipVolume)
+	, mFile(NULL)
 {
 
 	//debug("genone","OmMipChunk::OmMipChunk()");   
@@ -154,6 +156,8 @@ void OmMipChunk::Flush()
 	if (IsMetaDataDirty()) {
 		WriteMetaData();
 	}
+
+	dealWithCrazyNewStuff();
 }
 
 /*
@@ -161,7 +165,7 @@ void OmMipChunk::Flush()
  */
 void OmMipChunk::Close()
 {
-	//debug("genone","OmMipChunk::Close()\n");
+	dealWithCrazyNewStuff();
 
 	//ignore if already closed
 	if (!IsOpen())
@@ -366,6 +370,7 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 
 vtkImageData* OmMipChunk::GetImageData()
 {
+	assert(mpImageData);
 	return mpImageData;
 }
 
@@ -384,7 +389,7 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	pImageData->GetDimensions(dims.array);
 	assert(dims == GetDimensions());
 
-	if (mpImageData) {
+	if(mpImageData){
 		mpImageData->Delete ();
 	}
 
@@ -395,7 +400,6 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	SetOpen(true);
 	setVolDataDirty();
 
-	//remove image data size from cache (convert to bytes)
 	int est_mem_bytes = mpImageData->GetEstimatedMemorySize() * 1024;
 	UpdateSize(float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 }
@@ -788,4 +792,125 @@ void OmMipChunk::setVolDataClean()
 void OmMipChunk::setMetaDataClean()
 {
 	mChunkMetaDataDirty = false;
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHAR()
+{
+        QMutexLocker locker(&mOpenLock);
+	if(!mIsRawChunkOpen){
+		OmDataPath path;
+		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+
+		mRawChunk = 
+			OmProjectData::GetProjectDataReader()->
+			dataset_read_raw_chunk_data(path, 
+						    GetExtent(), 
+						    1);
+		mIsRawChunkOpen=true;
+	}
+	
+	return mRawChunk;
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
+{
+        QMutexLocker locker(&mOpenLock);
+	if(!mIsRawChunkOpen){
+
+		OmDataPath path;
+		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+		
+		mRawChunk = 
+			OmProjectData::GetProjectDataReader()->
+			dataset_read_raw_chunk_data(path, 
+						    GetExtent(), 
+						    4);
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
+void OmMipChunk::RawWriteChunkData(unsigned char * data)
+{
+        QMutexLocker locker(&mOpenLock);
+	//get path to mip level volume
+	OmDataPath path;
+	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+								      GetExtent(),
+								      1,
+								      data);
+	printf("wrote %s: %d (%dx%dx%d)\n",
+	       path.getString().c_str(),
+	       GetLevel(),
+	       mCoordinate.getCoordinateX(),
+	       mCoordinate.getCoordinateY(),
+	       mCoordinate.getCoordinateZ());
+}
+
+void OmMipChunk::RawWriteChunkData(quint32* data)
+{
+	assert(0);
+        QMutexLocker locker(&mOpenLock);
+	
+	OmDataPath path;
+	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+								      GetExtent(),
+								      4,
+								      data);
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(!mIsRawChunkOpen){
+		const QString fn=QString("%1_chunk_mip%2_%3x%4x%5.bytes%6.raw")
+			.arg("chann")
+			.arg(GetLevel())
+			.arg(mCoordinate.getCoordinateX())
+			.arg(mCoordinate.getCoordinateY())
+			.arg(mCoordinate.getCoordinateZ())
+			.arg(1);
+	
+		const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
+		mFile = new QFile(fnp);
+		if(!mFile->open(QIODevice::ReadWrite)){
+			printf("could not create chunk file %s\n", fnp.toStdString().c_str());
+			assert(0);
+		}
+		const int size = 128*128*128*1;
+		if(mFile->size() != size){
+			mFile->resize(size);
+		}
+		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(mFile->map(0, size)));
+		
+		mFile->close();
+
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
+void OmMipChunk::dealWithCrazyNewStuff()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(mIsRawChunkOpen){
+		if(mFile){
+			mFile->close();
+			delete mFile;
+			mFile=NULL;
+		} else {
+			//	RawWriteChunkData(mRawChunk->getQuint8Ptr());
+		}
+		mIsRawChunkOpen=false;
+		mRawChunk=OmDataWrapperPtr(new OmDataWrapper(NULL));
+		return;
+	}
 }

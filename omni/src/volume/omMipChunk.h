@@ -12,8 +12,10 @@
 
 #include "omMipChunkCoord.h"
 #include "system/cache/omCacheableBase.h"
+#include "datalayer/omDataWrapper.h"
 
 #include <QMutex>
+#include <QFile>
 
 enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE };
 
@@ -42,6 +44,15 @@ public:
 	bool IsVolumeDataDirty();
 	bool IsMetaDataDirty();
 	
+
+	void RawWriteChunkData(unsigned char * data);
+	OmDataWrapperPtr RawReadChunkDataUCHAR();
+	void RawWriteChunkData(quint32* data);
+	OmDataWrapperPtr RawReadChunkDataUINT32();
+	bool mIsRawChunkOpen;
+	OmDataWrapperPtr mRawChunk;
+	OmDataWrapperPtr RawReadChunkDataUCHARmapped();
+	void dealWithCrazyNewStuff();
 	
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
@@ -61,7 +72,7 @@ public:
 	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 	
-	
+
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
@@ -133,6 +144,8 @@ protected:
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
+
+	QFile * mFile;
 
 	//image data of chunk
 	vtkImageData *mpImageData;	

@@ -213,7 +213,6 @@ void OmProject::SetChannelEnabled(const OmId id, bool enable)
 
 OmSegmentation & OmProject::GetSegmentation(const OmId id)
 {
-        Instance()->mSegmentationManager.Get(id).SetBytesPerSample(4);
         return Instance()->mSegmentationManager.Get(id);
 }
 

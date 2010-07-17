@@ -9,6 +9,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QImage>
 
 #include <vtk_tiff.h>
 #include <vtkTIFFReader.h>
@@ -254,30 +255,12 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilena
 
 Vector3 < int > OmImageDataIo::om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths )
 {
-	////use vtk to determine properties
-	vtkImageData *data = vtkImageData::New();
+	QImage img(sourceFilenamesAndPaths[0].absoluteFilePath());
+	Vector3i dims(img.width(), img.height(), sourceFilenamesAndPaths.size());
 
-	//set reader props
-	vtkImageReader2 *reader = om_imagedata_get_reader( sourceFilenamesAndPaths[0].filePath() );
-	string firstFileNameAndPath = sourceFilenamesAndPaths[0].filePath().toStdString();
-	reader->SetFileName( firstFileNameAndPath.c_str() );
-	reader->SetOutput(data);
-	reader->Update();
+	printf("dims are %dx%dx%d\n", DEBUGV3(dims));
 
-	//get dim information
-	Vector3 < int >src_dims;
-
-	//set slice dimensions
-	data->GetDimensions(src_dims.array);
-
-	//set num slices
-	src_dims.z = sourceFilenamesAndPaths.size();
-
-	//delete image and reader
-	data->Delete();
-	reader->Delete();
-
-	return src_dims;
+	return dims;
 }
 
 Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )

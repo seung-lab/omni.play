@@ -42,3 +42,8 @@ void OmDummyWriter::dataset_raw_create_tree_overwrite( const OmDataPath &, int, 
 {
 	printf("%s: write operation should not have happened...\n", __FUNCTION__);
 }
+
+void OmDummyWriter::dataset_write_raw_chunk_data(const OmDataPath &, DataBbox, int, void *)
+{
+	printf("%s: write operation should not have happened...\n", __FUNCTION__);
+}

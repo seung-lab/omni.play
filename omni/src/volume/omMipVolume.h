@@ -13,6 +13,8 @@
 
 #include <QFileInfo>
 #include <QExplicitlySharedDataPointer>
+#include <QImage>
+#include <QMutex>
 
 class OmMipChunkCoord;
 class OmDataPath;
@@ -113,6 +115,14 @@ public:
 	
 	//io
 	bool ImportSourceData(OmDataPath & dataset);
+	bool ImportSourceDataQT();
+	bool ImportSourceDataVTK(OmDataPath & dataset);
+	void copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy);
+	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
+	std::set<OmMipChunkCoord> chunksToCopy;;
+	std::pair<int,QString> getNextImgToProcess();
+	int mSliceNum;
+
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);
 	virtual void ExportDataFilter(vtkImageData *) { }
@@ -124,6 +134,8 @@ public:
 
 	//Thread Chunk Cache
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
+
+	mutable QMutex mChunkCoords;
 
 protected:		
 	OmMipVolumeCache *const mDataCache;

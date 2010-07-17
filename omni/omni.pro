@@ -244,6 +244,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
+           src/volume/omLoadImageThread.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -440,6 +441,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
+           src/volume/omLoadImageThread.cpp \
            tests/utility/stringHelpersTest.cpp
 
 RESOURCES += src/gui/resources.qrc

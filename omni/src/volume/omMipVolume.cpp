@@ -1,3 +1,5 @@
+#include "volume/omLoadImageThread.h"
+#include "utility/stringHelpers.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "common/omStd.h"
@@ -25,7 +27,10 @@
 #include <vtkImageData.h>
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
+
 #include <QFile>
+#include <QImage>
+#include <QThreadPool>
 
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
@@ -630,9 +635,6 @@ void OmMipVolume::Build(OmDataPath & dataset)
 	//delete old
 	DeleteVolumeData();
 
-	//alloc new
-	AllocInternalData();
-
 	//if source data valid
 	if (!IsSourceValid()) {
 		// printf("OmMipVolume::Build: blank build complete\n");
@@ -1121,77 +1123,6 @@ bool OmMipVolume::CompareChunks(OmMipChunk *pMipChunk1, OmMipChunk *pMipChunk2, 
 ///////          IO
 
 /*
- *	Given a valid source data volume, thes copies entire source volume to
- *	the leaf mip level of this mip volume.
- */
-bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
-{
-	//debug("genone","OmMipVolume::ImportSourceData()");
-
-	//init progress bar
-	int prog_count = 0;
-	//	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
-	//						       MipChunksInMipLevel(0)));
-	//dim of leaf coords
-	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmDataPath leaf_volume_path;
-	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
-
-	printf("\timporting data...\n");
-	fflush(stdout);
-
-	//timer start
-	OmTimer import_timer;
-	import_timer.start();
-
-	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z) {
-		for (int y = 0; y < leaf_mip_dims.y; ++y) {
-			for (int x = 0; x < leaf_mip_dims.x; ++x) {
-
-				//get chunk data bbox
-				OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
-				DataBbox chunk_data_bbox = MipCoordToDataBbox(chunk_coord, 0);
-				//debug("FIXME", << "OmMipVolume::ImportSourceData: " << chunk_data_bbox << endl;
-
-				//read chunk image data from source
-				vtkImageData *p_img_data =
-					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
-									 GetExtent(), 
-									 chunk_data_bbox, 
-									 GetBytesPerSample(), dataset);
-				
-				//write to project data
-				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
-											 &chunk_data_bbox, 
-											 GetBytesPerSample(),
-											 p_img_data);
-
-				//delete read data
-				p_img_data->Delete();
-
-				//check for cancel (auto hides on cancel)
-				if (OmProgressEvent::GetWasCanceled()){
-					return false;
-				}
-
-				//update progress
-				OmEventManager::
-				    PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_VALUE, ++prog_count));
-			}
-		}
-	}
-
-	//timer end
-	import_timer.stop();
-
-	//hide progress bar
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
-	printf("done in %.6f secs\n",import_timer.s_elapsed());
-	return true;
-}
-
-/*
  *	Export leaf volume data to HDF5 format.  Calls ExportImageDataFilter so subclass can 
  *	post-process the image data before it is written.
  */
@@ -1385,4 +1316,166 @@ void OmMipVolume::SetBytesPerSample(int bytesPerSample)
 OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
 {
 	return mThreadChunkThreadedCache;
+}
+
+/*
+ *	Given a valid source data volume, thes copies entire source volume to
+ *	the leaf mip level of this mip volume.
+ */
+bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
+{
+	const bool useQT = 0;
+	
+	if( useQT ){
+		return ImportSourceDataQT();
+	} 
+
+	// required for VTK build chain....
+	AllocInternalData();
+
+	return ImportSourceDataVTK(dataset);
+}
+
+bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
+{
+	//debug("genone","OmMipVolume::ImportSourceData()");
+
+	//init progress bar
+	int prog_count = 0;
+	//	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
+	//						       MipChunksInMipLevel(0)));
+	//dim of leaf coords
+	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+	OmDataPath leaf_volume_path;
+	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
+
+	printf("\timporting data...\n");
+	fflush(stdout);
+
+	//timer start
+	OmTimer import_timer;
+	import_timer.start();
+
+	//for all coords
+	for (int z = 0; z < leaf_mip_dims.z; ++z) {
+		for (int y = 0; y < leaf_mip_dims.y; ++y) {
+			for (int x = 0; x < leaf_mip_dims.x; ++x) {
+
+				//get chunk data bbox
+				OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
+				DataBbox chunk_data_bbox = MipCoordToDataBbox(chunk_coord, 0);
+
+				DataBbox b = chunk_data_bbox;
+				assert(b.getMin().x+127 == b.getMax().x);
+				assert(b.getMin().y+127 == b.getMax().y);
+
+
+				//read chunk image data from source
+				vtkImageData *p_img_data =
+					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
+									 GetExtent(), 
+									 chunk_data_bbox, 
+									 GetBytesPerSample(), dataset);
+				
+				//write to project data
+				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
+											 &chunk_data_bbox, 
+											 GetBytesPerSample(),
+											 p_img_data);
+
+				//delete read data
+				p_img_data->Delete();
+
+				//check for cancel (auto hides on cancel)
+				if (OmProgressEvent::GetWasCanceled()){
+					return false;
+				}
+
+				//update progress
+				OmEventManager::
+				    PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_VALUE, ++prog_count));
+			}
+		}
+	}
+
+	//timer end
+	import_timer.stop();
+
+	//hide progress bar
+	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	printf("done in %.6f secs\n",import_timer.s_elapsed());
+	return true;
+}
+
+bool OmMipVolume::ImportSourceDataQT()
+{
+	printf("\timporting data...\n");
+	fflush(stdout);
+
+	//timer start
+	OmTimer import_timer;
+	import_timer.start();
+	
+	const int depth = QImage(mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
+	
+	int numberOfBytes = 1;
+	if(32 == depth){
+		numberOfBytes=4;
+	}
+	SetBytesPerSample(numberOfBytes);
+
+	//alloc new
+	AllocInternalData();
+
+	QThreadPool threads;
+	threads.setMaxThreadCount(4);
+
+	mSliceNum = 0;
+
+	for(int i=0; i<4; ++i){
+		OmLoadImageThread* t = new OmLoadImageThread(this);
+		threads.start(t);
+	}
+
+	threads.waitForDone();
+
+	copyDataIn(chunksToCopy);
+
+	import_timer.stop();
+
+	printf("done in %.6f secs\n",import_timer.s_elapsed());
+	return true;
+}
+
+std::pair<int,QString> OmMipVolume::getNextImgToProcess()
+{
+	QMutexLocker lock(&mChunkCoords);
+
+	if(mSourceFilenamesAndPaths.size() == mSliceNum){
+		return std::pair<int,QString>(-1,"");
+	}
+
+	const QString ret = mSourceFilenamesAndPaths[mSliceNum].absoluteFilePath();
+
+	return std::pair<int,QString>(mSliceNum++, ret);
+}
+
+void OmMipVolume::addToChunkCoords(const OmMipChunkCoord chunk_coord)
+{
+	QMutexLocker lock(&mChunkCoords);
+	chunksToCopy.insert(chunk_coord);
+}
+
+void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
+{
+	foreach(const OmMipChunkCoord & c, chunksToCopy){
+		QExplicitlySharedDataPointer<OmMipChunk> chunk = 
+			QExplicitlySharedDataPointer<OmMipChunk>();
+		GetChunk(chunk, c);
+
+		OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
+		unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
+		
+		chunk->RawWriteChunkData(dataMapped);
+	}
 }
