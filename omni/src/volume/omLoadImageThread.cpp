@@ -45,20 +45,22 @@ void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 
 void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 {
-	//const int totalChunksInSlice = m_leaf_mip_dims.x * m_leaf_mip_dims.y;
+	const bool verbose = false;
 	int chunkNum=0;
+	
+	const int totalChunksInSlice = m_leaf_mip_dims.x * m_leaf_mip_dims.y;
 
 	const int z = floor(sliceNum/128);
 	for(int y = 0; y < m_leaf_mip_dims.y; ++y) {
 		for(int x = 0; x < m_leaf_mip_dims.x; ++x) {
 			
 			const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
-			const DataBbox chunk_data_bbox = mMipVolume->MipCoordToDataBbox(chunk_coord, 0);
+			const DataBbox chunk_bbox = mMipVolume->MipCoordToDataBbox(chunk_coord, 0);
 
 			mMipVolume->addToChunkCoords(chunk_coord);
 
-			const int startX = chunk_data_bbox.getMin().x;
-			const int startY = chunk_data_bbox.getMin().y;
+			const int startX = chunk_bbox.getMin().x;
+			const int startY = chunk_bbox.getMin().y;
 			const int h = 128;
 			const int w = 128;
 			
@@ -70,14 +72,13 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 			const int advance = (128*128*(sliceNum%128));
 
 			if(4 == m_numberOfBytes){
-				assert(0);
+				assert(0 && "not yet tested");
 				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
 				quint32* data = dataPtr->getQuint32Ptr();
 
 				QRgb* bits32 = (QRgb*)tile.bits();
-				for(int i=0; i<128*128; ++i){
-					data[advance+i] = bits32[i];
-				}
+				memcpy(data+advance, bits32, 128*128*4);
+
 			} else{
 				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHARmapped();
 				unsigned char* data = dataPtr->getQuint8Ptr();
@@ -85,13 +86,14 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 				
 				memcpy(data+advance, bits8, 128*128*1);
 			}
-			++chunkNum;
 
-			/*
+			if(!verbose){
+				continue;
+			}
+			++chunkNum;
 			printf("\r\t%s of %s tiles copied...", 
 			       qPrintable(StringHelpers::commaDeliminateNumber(chunkNum)), 
 			       qPrintable(StringHelpers::commaDeliminateNumber(totalChunksInSlice)));
-			*/
 		}
 	}
 }
