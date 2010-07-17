@@ -1424,7 +1424,7 @@ bool OmMipVolume::ImportSourceDataQT()
 	}
 	SetBytesPerSample(numberOfBytes);
 
-	//alloc new
+	//should happen after setBytesPerSample....
 	AllocInternalData();
 
 	QThreadPool threads;

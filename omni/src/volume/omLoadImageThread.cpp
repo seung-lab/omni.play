@@ -8,27 +8,23 @@
 
 OmLoadImageThread::OmLoadImageThread(OmMipVolume * p)
 	: mMipVolume(p)
+	, m_leaf_mip_dims(mMipVolume->MipLevelDimensionsInMipChunks(0))
+	, m_numberOfBytes(mMipVolume->GetBytesPerSample())
 {
 }
 
 void OmLoadImageThread::run()
 {
-	const Vector3i leaf_mip_dims = mMipVolume->MipLevelDimensionsInMipChunks(0);
-	const int bytes = mMipVolume->GetBytesPerSample();
-
 	while(1){
 		const std::pair<int,QString> f = mMipVolume->getNextImgToProcess();
 		if(-1==f.first){
 			return;
 		}
-		processSlice(f.second, f.first, leaf_mip_dims, bytes);
+		processSlice(f.second, f.first);
 	}
 }
 
-void OmLoadImageThread::processSlice(const QString & fn, 
-			       const int sliceNum, 
-			       const Vector3i leaf_mip_dims,
-			       const int numberOfBytes)
+void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 {
 	OmTimer slice_timer;
 	slice_timer.start();
@@ -37,29 +33,24 @@ void OmLoadImageThread::processSlice(const QString & fn,
 
 	QImage img(fn);
 	if(img.isNull()){
+		printf("could not open %s\n", qPrintable(fn));
 		assert(0 && "bad image?");
 	}		
 
-	doProcessSlice(img,
-		     sliceNum, 
-		     leaf_mip_dims,
-		     numberOfBytes);
+	doProcessSlice(img, sliceNum);
 
 	slice_timer.stop();
 	printf("completed %s in %.6f secs\n", qPrintable(fn), slice_timer.s_elapsed());
 }
 
-void OmLoadImageThread::doProcessSlice(const QImage & img, 
-			       const int sliceNum, 
-			       const Vector3i leaf_mip_dims,
-			       const int numberOfBytes)
+void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 {
-	//const int totalChunksInSlice = leaf_mip_dims.x * leaf_mip_dims.y;
+	//const int totalChunksInSlice = m_leaf_mip_dims.x * m_leaf_mip_dims.y;
 	int chunkNum=0;
 
 	const int z = floor(sliceNum/128);
-	for(int y = 0; y < leaf_mip_dims.y; ++y) {
-		for(int x = 0; x < leaf_mip_dims.x; ++x) {
+	for(int y = 0; y < m_leaf_mip_dims.y; ++y) {
+		for(int x = 0; x < m_leaf_mip_dims.x; ++x) {
 			
 			const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
 			const DataBbox chunk_data_bbox = mMipVolume->MipCoordToDataBbox(chunk_coord, 0);
@@ -78,7 +69,7 @@ void OmLoadImageThread::doProcessSlice(const QImage & img,
 			QImage tile = img.copy(startX,startY,w,h);
 			const int advance = (128*128*(sliceNum%128));
 
-			if(4 == numberOfBytes){
+			if(4 == m_numberOfBytes){
 				assert(0);
 				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
 				quint32* data = dataPtr->getQuint32Ptr();
@@ -92,7 +83,7 @@ void OmLoadImageThread::doProcessSlice(const QImage & img,
 				unsigned char* data = dataPtr->getQuint8Ptr();
 				uchar* bits8 = tile.bits();
 				
-				memcpy(data+advance, bits8, 128*128);
+				memcpy(data+advance, bits8, 128*128*1);
 			}
 			++chunkNum;
 

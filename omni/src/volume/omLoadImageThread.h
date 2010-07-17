@@ -15,15 +15,12 @@ class OmLoadImageThread : public QRunnable
 
  private:
 	OmMipVolume *const mMipVolume;
+	
+	const Vector3i m_leaf_mip_dims;
+	const int m_numberOfBytes;
 
-	void processSlice(const QString & fn, 
-			  const int sliceNum, 
-			  const Vector3i leaf_mip_dims,
-			  const int numberOfBytes);
-	void doProcessSlice(const QImage & img, 
-			    const int sliceNum, 
-			    const Vector3i leaf_mip_dims,
-			    const int numberOfBytes);
+	void processSlice(const QString &, const int);
+	void doProcessSlice(const QImage &, const int);
 };
 
 #endif
