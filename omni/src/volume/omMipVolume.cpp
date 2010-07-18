@@ -1388,11 +1388,13 @@ bool OmMipVolume::ImportSourceDataQT()
 	}
 	threads.waitForDone();
 
+	printf("\ndone with image import; copying to HDF5 file...\n");
+
 	copyDataIn(chunksToCopy);
 
 	import_timer.stop();
 
-	printf("done in %.6f secs\n",import_timer.s_elapsed());
+	printf("done in %.2f secs\n",import_timer.s_elapsed());
 	return true;
 }
 
@@ -1434,15 +1436,14 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 			unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
 			chunk->RawWriteChunkData(dataMapped);
 		}
-		
+
+		++counter;		
 		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
 		       chunk->GetCoordinate().Coordinate.x,
 		       chunk->GetCoordinate().Coordinate.y,
 		       chunk->GetCoordinate().Coordinate.z,
 		       counter, total);
 		fflush(stdout);
-
-		++counter;
 	}
 	printf("\n");
 }
@@ -1452,6 +1453,7 @@ void OmMipVolume::AllocMemMapFiles()
 	QMutexLocker lock(&mChunkCoords);
 
 	mFileVec.resize(GetRootMipLevel()+1);
+	mFileMapPtr.resize(GetRootMipLevel()+1);
 
 	for (int i = 0; i <= GetRootMipLevel(); i++) {
 
@@ -1470,8 +1472,9 @@ void OmMipVolume::AllocMemMapFiles()
 
 		assert(size);
 
-		printf("mip %d: size is: %llu (%d,%d,%d)\n",
-		       i, size, rdims.x, rdims.y, rdims.z);
+		printf("mip %d: size is: %s (%dx%dx%d)\n",
+		       i, qPrintable(StringHelpers::commaDeliminateNumber(size)), 
+		       rdims.x, rdims.y, rdims.z);
 
 		const QString fn=QString("%1_%2_mip%3_%4bit.raw")
 			.arg(OmProject::GetFileName().replace(".omni",""))
@@ -1487,6 +1490,7 @@ void OmMipVolume::AllocMemMapFiles()
 			assert(0);
 		}
 		file->resize(size);
+		mFileMapPtr[i] = file->map(0,size);
 	}
 }
 
@@ -1503,8 +1507,6 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 			 ROUNDUP(data_dims.y, GetChunkDimension()),
 			 ROUNDUP(data_dims.z, GetChunkDimension()));
 	
-	QFile* f=mFileVec[level];
-
 	const qint64 x = (qint64)coord.getCoordinateX();
 	const qint64 y = (qint64)coord.getCoordinateY();
 	const qint64 z = (qint64)coord.getCoordinateZ();
@@ -1522,7 +1524,7 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset, 
 	      DEBUGV3(rdims), DEBUGV3(coord.Coordinate));
 
-	return f->map(offset, cSize);
+	return mFileMapPtr[level]+offset;
 }
 
 Vector3i OmMipVolume::get_dims(const OmDataPath dataset )

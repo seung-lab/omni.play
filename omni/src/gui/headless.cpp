@@ -582,7 +582,7 @@ int Headless::start(int argc, char *argv[])
 #endif
 	
 	setOmniExecutablePath( QString( argv[0] ) );
-	if(!useGUI){
+	if(!useGUI && !args.runHeadless){
 		printf("No GUI detected; Running headless....\n");
 		runHeadless("--headless", fName);
 		return 0;

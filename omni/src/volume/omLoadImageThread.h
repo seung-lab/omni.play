@@ -19,6 +19,9 @@ class OmLoadImageThread : public QRunnable
 	const Vector3i m_leaf_mip_dims;
 	const int m_numberOfBytes;
 
+	QString mMsg;
+	const int mTotalNumImages;
+
 	void processSlice(const QString &, const int);
 	void doProcessSlice(const QImage &, const int);
 };

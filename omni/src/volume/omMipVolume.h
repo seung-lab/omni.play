@@ -123,6 +123,7 @@ public:
 	std::pair<int,QString> getNextImgToProcess();
 	int mSliceNum;
 	std::vector<QFile*> mFileVec;
+	std::vector<uchar*> mFileMapPtr;
 	void AllocMemMapFiles();
 	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
 	void figureOutNumberOfBytesImg();
@@ -142,6 +143,8 @@ public:
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
 	mutable QMutex mChunkCoords;
+	//mip properties
+	QFileInfoList mSourceFilenamesAndPaths;
 
 protected:		
 	OmMipVolumeCache *const mDataCache;
@@ -152,9 +155,6 @@ protected:
 	//mipvolume disk data
 	void AllocInternalData();
 	void UpdateRootMipLevel();
-	
-	//mip properties
-	QFileInfoList mSourceFilenamesAndPaths;
 	
 	//mip data
 	int mBuildState;

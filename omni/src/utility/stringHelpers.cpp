@@ -56,7 +56,7 @@ QString StringHelpers::getStringFromStringList( const QStringList & data_set )
 	return str;
 }
 
-QString StringHelpers::commaDeliminateNumber( const int num )
+QString StringHelpers::commaDeliminateNumber( const long long num )
 {
 	QString rawNumAsStr = QString::number( num );
 

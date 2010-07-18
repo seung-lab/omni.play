@@ -10,6 +10,7 @@ OmLoadImageThread::OmLoadImageThread(OmMipVolume * p)
 	: mMipVolume(p)
 	, m_leaf_mip_dims(mMipVolume->MipLevelDimensionsInMipChunks(0))
 	, m_numberOfBytes(mMipVolume->GetBytesPerSample())
+	, mTotalNumImages(mMipVolume->mSourceFilenamesAndPaths.size())
 {
 }
 
@@ -29,7 +30,9 @@ void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 	OmTimer slice_timer;
 	slice_timer.start();
 
-	printf("loading image %s...\n", qPrintable(fn));
+	mMsg = QString("\r(%1 of %2) loading image %3...").arg(sliceNum+1).arg(mTotalNumImages).arg(fn);
+	printf("\n%s", qPrintable(fn));
+	fflush(stdout);
 
 	QImage img(fn);
 	if(img.isNull()){
@@ -40,12 +43,11 @@ void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 	doProcessSlice(img, sliceNum);
 
 	slice_timer.stop();
-	printf("\tcompleted %s in %.6f secs\n", qPrintable(fn), slice_timer.s_elapsed());
+	printf("completed in %.2f secs", slice_timer.s_elapsed());
 }
 
 void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 {
-	const bool verbose = false;
 	int chunkNum=0;
 	
 	const int totalChunksInSlice = m_leaf_mip_dims.x * m_leaf_mip_dims.y;
@@ -86,13 +88,11 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 				memcpy(data+advance, bits8, 128*128*1);
 			}
 
-			if(!verbose){
-				continue;
-			}
 			++chunkNum;
-			printf("\r\t%s of %s tiles copied...", 
-			       qPrintable(StringHelpers::commaDeliminateNumber(chunkNum)), 
-			       qPrintable(StringHelpers::commaDeliminateNumber(totalChunksInSlice)));
+			QString numTiles = QString("%1 of %2 tiles copied...")
+				.arg(StringHelpers::commaDeliminateNumber(chunkNum))
+				.arg(StringHelpers::commaDeliminateNumber(totalChunksInSlice));
+			printf("%s", qPrintable(QString(mMsg+numTiles)));
 		}
 	}
 }
