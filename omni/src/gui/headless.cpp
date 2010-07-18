@@ -169,9 +169,9 @@ void Headless::processLine( QString line, QString fName )
 
 		if( !OmProject::IsSegmentationValid(id1) && !OmProject::IsSegmentationValid(id2) ) {
 			if( id1 == id2 ){
-				printf("Segmentation %i is not a valid channel.\n",id1);
+				printf("Segmentation %i is not a valid segmentation.\n",id1);
 			} else {
-				printf("Segmentations %i and %i are not valid channels.\n",id1,id2);
+				printf("Segmentations %i and %i are not valid segmentation.\n",id1,id2);
 			}
 		} else if( !OmProject::IsSegmentationValid(id1) ) {
 			printf("Segmentation %i is not a valid segmentation.\n",id1);

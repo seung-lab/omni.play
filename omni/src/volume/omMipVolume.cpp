@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "volume/omLoadImageThread.h"
 #include "utility/stringHelpers.h"
 #include "common/omDebug.h"
@@ -31,6 +32,8 @@
 #include <QFile>
 #include <QImage>
 #include <QThreadPool>
+
+static const bool useQT = 0;
 
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
@@ -1329,8 +1332,6 @@ OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
  */
 bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 {
-	const bool useQT = 0;
-	
 	if( useQT ){
 		return ImportSourceDataQT();
 	} 
@@ -1506,10 +1507,11 @@ void OmMipVolume::AllocMemMapFiles()
 		const qint64 size = 
 			rdims.x*rdims.y*rdims.z*GetBytesPerSample();
 
-		printf("size is: %llu (%d,%d,%d)\n",
-		       size, rdims.x, rdims.y, rdims.z);
+		printf("mip %d: size is: %llu (%d,%d,%d)\n",
+		       i, size, rdims.x, rdims.y, rdims.z);
 
-		const QString fn=QString("%1_mip%2_%3bit.raw")
+		const QString fn=QString("%1_%2_mip%3_%4bit.raw")
+			.arg(OmProject::GetFileName().replace(".omni",""))
 			.arg("chann")
 			.arg(i)
 			.arg(8*GetBytesPerSample());
@@ -1525,15 +1527,10 @@ void OmMipVolume::AllocMemMapFiles()
 	}
 }
 
-QFile* OmMipVolume::getMemMapFileForMipLevel(const quint32 level)
-{
-	QMutexLocker lock(&mChunkCoords);
-	assert(level < mFileVec.size());
-	return mFileVec[level];
-}
-
 unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 {
+	QMutexLocker lock(&mChunkCoords);
+
 	const int level = coord.getLevel();
 	Vector3 < int >data_dims = MipLevelDataDimensions(level);
 	
@@ -1543,15 +1540,19 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 			 ROUNDUP(data_dims.y, GetChunkDimension()),
 			 ROUNDUP(data_dims.z, GetChunkDimension()));
 	
-	QFile* f =getMemMapFileForMipLevel(level);
+	QFile* f=mFileVec[level];
 
 	const int x = coord.getCoordinateX();
 	const int y = coord.getCoordinateY();
 	const int z = coord.getCoordinateZ();
-		
-	const qint64 slabSize = rdims.x*rdims.y*128*GetBytesPerSample();
-	const qint64 rowSize = rdims.x*128*128*GetBytesPerSample();
-	const qint64 cSize = 128*128*128*GetBytesPerSample();
+
+	const int xWidth  = 128;
+	const int yDepth  = 128;
+	const int zHeight = 128;
+
+	const qint64 slabSize = rdims.x * rdims.y * zHeight * GetBytesPerSample();
+	const qint64 rowSize =  rdims.x * yDepth  * zHeight * GetBytesPerSample();
+	const qint64 cSize =    xWidth  * yDepth  * zHeight * GetBytesPerSample();
 
 	const qint64 offset = slabSize*z + rowSize*y + cSize*x;
 	

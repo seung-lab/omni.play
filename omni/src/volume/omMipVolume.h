@@ -124,7 +124,6 @@ public:
 	int mSliceNum;
 	std::vector<QFile*> mFileVec;
 	void AllocMemMapFiles();
-	QFile* getMemMapFileForMipLevel(const quint32 level);
 	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
 
 	void ImportSourceDataSlice();
