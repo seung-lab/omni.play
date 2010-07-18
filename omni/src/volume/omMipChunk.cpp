@@ -702,8 +702,8 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	//alloc new mesh volume data
 	vtkImageData *p_mesh_data = vtkImageData::New();
 	p_mesh_data->SetDimensions(mesh_data_dims.array);
-	p_mesh_data->SetScalarType(bytesToVtkScalarType(SEGMENT_DATA_BYTES_PER_SAMPLE));
-	p_mesh_data->SetNumberOfScalarComponents(SEGMENT_DATA_SAMPLES_PER_PIXEL);
+	p_mesh_data->SetScalarType(bytesToVtkScalarType(GetBytesPerSample()));
+	p_mesh_data->SetNumberOfScalarComponents(GetBytesPerSample());
 	p_mesh_data->AllocateScalars();
 
 	//initialize data
@@ -842,12 +842,6 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 								      GetExtent(),
 								      1,
 								      data);
-	printf("wrote %s: %d (%dx%dx%d)\n",
-	       path.getString().c_str(),
-	       GetLevel(),
-	       mCoordinate.getCoordinateX(),
-	       mCoordinate.getCoordinateY(),
-	       mCoordinate.getCoordinateZ());
 }
 
 void OmMipChunk::RawWriteChunkData(quint32* data)
