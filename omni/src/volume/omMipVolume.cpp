@@ -1455,9 +1455,9 @@ void OmMipVolume::AllocMemMapFiles()
 	mFileVec.resize(GetRootMipLevel()+1);
 	mFileMapPtr.resize(GetRootMipLevel()+1);
 
-	for (int i = 0; i <= GetRootMipLevel(); i++) {
+	for (int level = 0; level <= GetRootMipLevel(); level++) {
 
-		Vector3 < int >data_dims = MipLevelDataDimensions(i);
+		Vector3 < int >data_dims = MipLevelDataDimensions(level);
 
 		//round up to nearest chunk
 		Vector3i rdims = 
@@ -1473,24 +1473,24 @@ void OmMipVolume::AllocMemMapFiles()
 		assert(size);
 
 		printf("mip %d: size is: %s (%dx%dx%d)\n",
-		       i, qPrintable(StringHelpers::commaDeliminateNumber(size)), 
+		       level, qPrintable(StringHelpers::commaDeliminateNumber(size)), 
 		       rdims.x, rdims.y, rdims.z);
 
 		const QString fn=QString("%1_%2_mip%3_%4bit.raw")
 			.arg(OmProject::GetFileName().replace(".omni",""))
-			.arg("chann")
-			.arg(i)
+			.arg(GetDirectoryPath().replace("channels/","").replace("segmentations/","").replace("/",""))
+			.arg(level)
 			.arg(8*GetBytesPerSample());
 		
 		const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
-		QFile* file = mFileVec[i] = new QFile(fnp);
+		QFile* file = mFileVec[level] = new QFile(fnp);
 		file->remove();
 		if(!file->open(QIODevice::ReadWrite)){
 			printf("could not create chunk file %s\n", fnp.toStdString().c_str());
 			assert(0);
 		}
 		file->resize(size);
-		mFileMapPtr[i] = file->map(0,size);
+		mFileMapPtr[level] = file->map(0,size);
 	}
 }
 
