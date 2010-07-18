@@ -1486,11 +1486,12 @@ void OmMipVolume::AllocMemMapFiles()
 		QFile* file = mFileVec[level] = new QFile(fnp);
 		file->remove();
 		if(!file->open(QIODevice::ReadWrite)){
-			printf("could not create chunk file %s\n", fnp.toStdString().c_str());
+			printf("could not create chunk file %s\n", qPrintable(fnp));
 			assert(0);
 		}
 		file->resize(size);
 		mFileMapPtr[level] = file->map(0,size);
+		file->close();
 	}
 }
 
