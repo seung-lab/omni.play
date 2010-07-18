@@ -1314,7 +1314,6 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 	printf("\timporting data...\n");
 	fflush(stdout);
 
-	//timer start
 	OmTimer import_timer;
 	import_timer.start();
 
@@ -1346,7 +1345,6 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 		}
 	}
 
-	//timer end
 	import_timer.stop();
 
 	printf("done in %.6f secs\n",import_timer.s_elapsed());
@@ -1375,7 +1373,7 @@ bool OmMipVolume::ImportSourceDataQT()
 
 	figureOutNumberOfBytesImg();
 
-	//should happen after setBytesPerSample....
+	// alloc must happen after setBytesPerSample....
 	AllocInternalData();
 	AllocMemMapFiles();
 
@@ -1446,6 +1444,7 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 
 		++counter;
 	}
+	printf("\n");
 }
 
 void OmMipVolume::AllocMemMapFiles()
