@@ -10,7 +10,7 @@
 #include "datalayer/omDataPath.h"
 #include <QFileInfoList>
 
-enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE };
+
 
 class vtkImageReader2;
 class vtkImageWriter;
@@ -18,9 +18,6 @@ class vtkImageData;
 
 class OmImageDataIo {
  public:
-	//type
-	static ImageType om_imagedata_parse_image_type(QString fileNameAndPath);
-
 	static void clearImageData(vtkImageData *data);
 
 	static vtkImageData * allocImageData(Vector3<int> dims, int bytesPerSample);
@@ -36,34 +33,20 @@ class OmImageDataIo {
 	static void copyIntersectedImageDataFromOffset(vtkImageData *dstData, 
 						       vtkImageData *srcData, 
 						       const Vector3<int> &srcOffset);
+	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
 
-	static Vector3<int> om_imagedata_get_dims(QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
-
-	static vtkImageData * om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
-						 const DataBbox srcExtentBbox, 
-						 const DataBbox dataExtentBbox, 
-						 int bytesPerSample, const OmDataPath dataset);
+	static vtkImageData * om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths, 
+						     const DataBbox dataExtentBbox, 
+						     int bytesPerSample, const OmDataPath dataset);
  private:
 	
-	//vtk io
-	static vtkImageReader2 * om_imagedata_get_reader(ImageType);
-	static vtkImageReader2 * om_imagedata_get_reader(QString fname);
-
 	//reading
 	static vtkImageData * om_imagedata_read_vtk(QFileInfoList sourceFilenamesAndPaths, 
 						    const DataBbox srcExtentBbox, 
 						    const DataBbox dataExtentBbox, 
 						    int bytesPerSample);
-	static vtkImageData * om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths, 
-						     const DataBbox dataExtentBbox, 
-						     int bytesPerSample, const OmDataPath dataset);
-
-	//determine dimensions
-	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList sourceFilenamesAndPaths);
-	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
-
-	/////////////////////////////////
-	///////		 vtkImageData Utility Functions
+	
+	// vtkImageData Utility Functions
 	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb, int extent[]);
 	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[], AxisAlignedBoundingBox<int>& aabb);
 

@@ -33,8 +33,6 @@
 #include <QImage>
 #include <QThreadPool>
 
-static const bool useQT = 0;
-
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
@@ -218,7 +216,7 @@ void OmMipVolume::UpdateMipProperties(OmDataPath & dataset)
 {
 	if (IsSourceValid()) {
 		//get source dimensions
-		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths, dataset );
+		Vector3 < int >source_dims = get_dims(dataset);
 
 		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
@@ -1326,20 +1324,30 @@ OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
 	return mThreadChunkThreadedCache;
 }
 
+bool OmMipVolume::areImportFilesImages()
+{
+	if( mSourceFilenamesAndPaths[0].fileName().endsWith(".h5", Qt::CaseInsensitive) ||
+	    mSourceFilenamesAndPaths[0].fileName().endsWith(".hdf5", Qt::CaseInsensitive)){
+		return false;
+	}
+
+	return true;
+}
+
 /*
  *	Given a valid source data volume, thes copies entire source volume to
  *	the leaf mip level of this mip volume.
  */
 bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 {
-	if( useQT ){
-		return ImportSourceDataQT();
-	} 
+	// use VTK for HDF5 import...
+	if(!areImportFilesImages()){
+		figureOutNumberOfBytes();
+		AllocInternalData();
+		return ImportSourceDataVTK(dataset);
+	}
 
-	// required for VTK build chain....
-	AllocInternalData();
-
-	return ImportSourceDataVTK(dataset);
+	return ImportSourceDataQT();
 }
 
 bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
@@ -1378,10 +1386,10 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 
 				//read chunk image data from source
 				vtkImageData *p_img_data =
-					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
-									 GetExtent(), 
-									 chunk_data_bbox, 
-									 GetBytesPerSample(), dataset);
+					OmImageDataIo::om_imagedata_read_hdf5(mSourceFilenamesAndPaths, 
+									      GetExtent(), 
+									      GetBytesPerSample(), 
+									      dataset);
 				
 				//write to project data
 				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
@@ -1413,6 +1421,17 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 	return true;
 }
 
+void OmMipVolume::figureOutNumberOfBytes()
+{
+	const int depth = QImage(mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
+	
+	int numberOfBytes = 1;
+	if(32 == depth){
+		numberOfBytes=4;
+	}
+	SetBytesPerSample(numberOfBytes);
+}
+
 bool OmMipVolume::ImportSourceDataQT()
 {
 	printf("\timporting data...\n");
@@ -1422,29 +1441,21 @@ bool OmMipVolume::ImportSourceDataQT()
 	OmTimer import_timer;
 	import_timer.start();
 	
-	const int depth = QImage(mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
-	
-	int numberOfBytes = 1;
-	if(32 == depth){
-		numberOfBytes=4;
-	}
-	SetBytesPerSample(numberOfBytes);
+	figureOutNumberOfBytes();
 
 	//should happen after setBytesPerSample....
 	AllocInternalData();
 	AllocMemMapFiles();
 
-	const int maxThreads=1;
-	QThreadPool threads;
-	threads.setMaxThreadCount(maxThreads);
-
 	mSliceNum = 0;
 
+	const int maxThreads=4;
+	QThreadPool threads;
+	threads.setMaxThreadCount(maxThreads);
 	for(int i=0; i<maxThreads; ++i){
 		OmLoadImageThread* t = new OmLoadImageThread(this);
 		threads.start(t);
 	}
-
 	threads.waitForDone();
 
 	copyDataIn(chunksToCopy);
@@ -1476,6 +1487,9 @@ void OmMipVolume::addToChunkCoords(const OmMipChunkCoord chunk_coord)
 
 void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 {
+	int counter=0;
+	const int total = chunksToCopy.size();
+
 	foreach(const OmMipChunkCoord & c, chunksToCopy){
 		QExplicitlySharedDataPointer<OmMipChunk> chunk = 
 			QExplicitlySharedDataPointer<OmMipChunk>();
@@ -1485,6 +1499,14 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
 		
 		chunk->RawWriteChunkData(dataMapped);
+		
+		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)\n",
+		       chunk->GetCoordinate().Coordinate.x,
+		       chunk->GetCoordinate().Coordinate.y,
+		       chunk->GetCoordinate().Coordinate.z,
+		       counter, total);
+
+		++counter;
 	}
 }
 
@@ -1550,9 +1572,9 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 	const qint64 y = (qint64)coord.getCoordinateY();
 	const qint64 z = (qint64)coord.getCoordinateZ();
 
-	const int xWidth  = 128;
-	const int yDepth  = 128;
-	const int zHeight = 128;
+	const qint64 xWidth  = 128;
+	const qint64 yDepth  = 128;
+	const qint64 zHeight = 128;
 
 	const qint64 slabSize = (qint64)rdims.x * (qint64)rdims.y * (qint64)zHeight * (qint64)GetBytesPerSample();
 	const qint64 rowSize =  (qint64)rdims.x * (qint64)yDepth  * (qint64)zHeight * (qint64)GetBytesPerSample();
@@ -1564,4 +1586,16 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 	      DEBUGV3(rdims), DEBUGV3(coord.Coordinate));
 
 	return f->map(offset, cSize);
+}
+
+Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
+{
+	if(areImportFilesImages()){
+		QImage img(mSourceFilenamesAndPaths[0].absoluteFilePath());
+		Vector3i dims(img.width(), img.height(), mSourceFilenamesAndPaths.size());
+		printf("dims are %dx%dx%d\n", DEBUGV3(dims));
+		return dims;
+	}
+
+	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
 }

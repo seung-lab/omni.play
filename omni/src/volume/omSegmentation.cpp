@@ -36,7 +36,6 @@ static const float DefaultThresholdSize = 0.1;
 ///////         OmSegmentation
 
 OmSegmentation::OmSegmentation()
-	//: mMipVoxelationManager(this)
 	: mSegmentCache(new OmSegmentCache(this))
 	, mGroups(this)
 {

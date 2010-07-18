@@ -72,15 +72,15 @@ bool OmBuildVolumes::are_file_names_valid()
 			return false;
 		}
 
-		switch ( OmImageDataIo::om_imagedata_parse_image_type( file.filePath() )){
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-		case HDF5_TYPE:
-			break;
+		const QString ext = file.suffix().toLower();
+		if( "tif" == ext ||
+		    "tiff" == ext ||
+		    "jpg" == ext ||
+		    "png" == ext ||
+		    "h5" == ext ||
+		    "hdf5" == ext ){
 
-		default:
+		} else {
 			printf("invalid file: %s\n", qPrintable(file.filePath()) );
 			return false;
 		}

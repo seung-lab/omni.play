@@ -125,7 +125,10 @@ public:
 	std::vector<QFile*> mFileVec;
 	void AllocMemMapFiles();
 	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
-
+	void figureOutNumberOfBytes();
+	bool areImportFilesImages();
+	Vector3i get_dims(const OmDataPath dataset );
+	
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);
 	virtual void ExportDataFilter(vtkImageData *) { }
