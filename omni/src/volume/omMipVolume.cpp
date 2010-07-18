@@ -1504,8 +1504,12 @@ void OmMipVolume::AllocMemMapFiles()
 				 ROUNDUP(data_dims.y, GetChunkDimension()),
 				 ROUNDUP(data_dims.z, GetChunkDimension()));
 		
-		const qint64 size = 
-			rdims.x*rdims.y*rdims.z*GetBytesPerSample();
+		const qint64 size = (qint64)rdims.x
+			*(qint64)rdims.y
+			*(qint64)rdims.z
+			*(qint64)GetBytesPerSample();
+
+		assert(size);
 
 		printf("mip %d: size is: %llu (%d,%d,%d)\n",
 		       i, size, rdims.x, rdims.y, rdims.z);
@@ -1542,17 +1546,17 @@ unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 	
 	QFile* f=mFileVec[level];
 
-	const int x = coord.getCoordinateX();
-	const int y = coord.getCoordinateY();
-	const int z = coord.getCoordinateZ();
+	const qint64 x = (qint64)coord.getCoordinateX();
+	const qint64 y = (qint64)coord.getCoordinateY();
+	const qint64 z = (qint64)coord.getCoordinateZ();
 
 	const int xWidth  = 128;
 	const int yDepth  = 128;
 	const int zHeight = 128;
 
-	const qint64 slabSize = rdims.x * rdims.y * zHeight * GetBytesPerSample();
-	const qint64 rowSize =  rdims.x * yDepth  * zHeight * GetBytesPerSample();
-	const qint64 cSize =    xWidth  * yDepth  * zHeight * GetBytesPerSample();
+	const qint64 slabSize = (qint64)rdims.x * (qint64)rdims.y * (qint64)zHeight * (qint64)GetBytesPerSample();
+	const qint64 rowSize =  (qint64)rdims.x * (qint64)yDepth  * (qint64)zHeight * (qint64)GetBytesPerSample();
+	const qint64 cSize =    (qint64)xWidth  * (qint64)yDepth  * (qint64)zHeight * (qint64)GetBytesPerSample();
 
 	const qint64 offset = slabSize*z + rowSize*y + cSize*x;
 	
