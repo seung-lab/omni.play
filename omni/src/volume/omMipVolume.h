@@ -122,6 +122,10 @@ public:
 	std::set<OmMipChunkCoord> chunksToCopy;;
 	std::pair<int,QString> getNextImgToProcess();
 	int mSliceNum;
+	std::vector<QFile*> mFileVec;
+	void AllocMemMapFiles();
+	QFile* getMemMapFileForMipLevel(const quint32 level);
+	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
 
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);

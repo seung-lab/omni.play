@@ -869,28 +869,9 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
         QMutexLocker locker(&mOpenLock);
 
 	if(!mIsRawChunkOpen){
-		const QString fn=QString("%1_chunk_mip%2_%3x%4x%5.bytes%6.raw")
-			.arg("chann")
-			.arg(GetLevel())
-			.arg(mCoordinate.getCoordinateX())
-			.arg(mCoordinate.getCoordinateY())
-			.arg(mCoordinate.getCoordinateZ())
-			.arg(1);
-	
-		const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
-		mFile = new QFile(fnp);
-		if(!mFile->open(QIODevice::ReadWrite)){
-			printf("could not create chunk file %s\n", fnp.toStdString().c_str());
-			assert(0);
-		}
-		const int size = 128*128*128*1;
-		if(mFile->size() != size){
-			mFile->resize(size);
-		}
-		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(mFile->map(0, size)));
-		
-		mFile->close();
+		unsigned char * data = mpMipVolume->getChunkPtr(mCoordinate);
 
+		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
 		mIsRawChunkOpen=true;
 	}
 

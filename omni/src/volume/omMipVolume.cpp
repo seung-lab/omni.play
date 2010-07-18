@@ -62,6 +62,11 @@ OmMipVolume::~OmMipVolume()
 {
 	Flush();
 	delete mDataCache;
+
+	foreach(QFile * f, mFileVec){
+		delete f;
+		f = NULL;
+	}
 }
 
 /////////////////////////////////
@@ -1426,6 +1431,7 @@ bool OmMipVolume::ImportSourceDataQT()
 
 	//should happen after setBytesPerSample....
 	AllocInternalData();
+	AllocMemMapFiles();
 
 	const int maxThreads=1;
 	QThreadPool threads;
@@ -1479,4 +1485,78 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		
 		chunk->RawWriteChunkData(dataMapped);
 	}
+}
+
+void OmMipVolume::AllocMemMapFiles()
+{
+	QMutexLocker lock(&mChunkCoords);
+
+	mFileVec.resize(GetRootMipLevel()+1);
+
+	for (int i = 0; i <= GetRootMipLevel(); i++) {
+
+		Vector3 < int >data_dims = MipLevelDataDimensions(i);
+
+		//round up to nearest chunk
+		Vector3i rdims = 
+			Vector3i(ROUNDUP(data_dims.x, GetChunkDimension()),
+				 ROUNDUP(data_dims.y, GetChunkDimension()),
+				 ROUNDUP(data_dims.z, GetChunkDimension()));
+		
+		const qint64 size = 
+			rdims.x*rdims.y*rdims.z*GetBytesPerSample();
+
+		printf("size is: %llu (%d,%d,%d)\n",
+		       size, rdims.x, rdims.y, rdims.z);
+
+		const QString fn=QString("%1_mip%2_%3bit.raw")
+			.arg("chann")
+			.arg(i)
+			.arg(8*GetBytesPerSample());
+		
+		const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
+		QFile* file = mFileVec[i] = new QFile(fnp);
+		file->remove();
+		if(!file->open(QIODevice::ReadWrite)){
+			printf("could not create chunk file %s\n", fnp.toStdString().c_str());
+			assert(0);
+		}
+		file->resize(size);
+	}
+}
+
+QFile* OmMipVolume::getMemMapFileForMipLevel(const quint32 level)
+{
+	QMutexLocker lock(&mChunkCoords);
+	assert(level < mFileVec.size());
+	return mFileVec[level];
+}
+
+unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
+{
+	const int level = coord.getLevel();
+	Vector3 < int >data_dims = MipLevelDataDimensions(level);
+	
+	//round up to nearest chunk
+	Vector3i rdims = 
+		Vector3i(ROUNDUP(data_dims.x, GetChunkDimension()),
+			 ROUNDUP(data_dims.y, GetChunkDimension()),
+			 ROUNDUP(data_dims.z, GetChunkDimension()));
+	
+	QFile* f =getMemMapFileForMipLevel(level);
+
+	const int x = coord.getCoordinateX();
+	const int y = coord.getCoordinateY();
+	const int z = coord.getCoordinateZ();
+		
+	const qint64 slabSize = rdims.x*rdims.y*128*GetBytesPerSample();
+	const qint64 rowSize = rdims.x*128*128*GetBytesPerSample();
+	const qint64 cSize = 128*128*128*GetBytesPerSample();
+
+	const qint64 offset = slabSize*z + rowSize*y + cSize*x;
+	
+	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset, 
+	      DEBUGV3(rdims), DEBUGV3(coord.Coordinate));
+
+	return f->map(offset, cSize);
 }
