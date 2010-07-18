@@ -74,10 +74,16 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
 
 OmMipMesh::~OmMipMesh()
 {
-  //if was vbo, then delete vbos
-  if (IsVbo()) {
-    DeleteVbo();
+  if (hasDisplayList) {
+    hasDisplayList = false;
+    OmGarbage::asOmGenlistId(displayList);
   }
+
+  //if was vbo, then delete vbos
+  //not save to do in a sub thread.
+  //if (IsVbo()) {
+  //  DeleteVbo();
+  //}
 
   if (mHdf5File) {
     delete mHdf5File;
@@ -210,6 +216,7 @@ bool OmMipMesh::IsEmptyMesh()
 /////////////////////////////////
 ///////          VBO Methods
 
+
 bool OmMipMesh::IsVbo()
 {
   return (NULL_VBO_ID != mVertexDataVboId) || (NULL_VBO_ID != mVertexIndexDataVboId);
@@ -245,12 +252,6 @@ void OmMipMesh::CreateVbo()
 
 void OmMipMesh::DeleteVbo()
 {
-
-  if (hasDisplayList) {
-    hasDisplayList = false;
-    OmGarbage::asOmGenlistId(displayList);
-  }
-
   if (!IsVbo()) {
     assert(false);
   }
@@ -262,6 +263,9 @@ void OmMipMesh::DeleteVbo()
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
   UpdateSize(-(vertex_data_size + vertex_index_data_size));
+
+  mVertexDataVboId = NULL_VBO_ID;
+  mVertexIndexDataVboId = NULL_VBO_ID;
 }
 
 /////////////////////////////////
@@ -276,27 +280,12 @@ bool OmMipMesh::Draw(bool doCreateVbo)
     return ret;
   }
 
-  //if(!IsVbo()) assert(false);
-  if (!IsVbo()) {
-    debug("vbo", "going to create vbo\n");
-    if (doCreateVbo) {
-      CreateVbo();
-      ret = true;
-    } else {
-      debug("vbo", "not creating vbo\n");
-      return ret;
-    }
-
-    debug("vbo", "done to creating vbo\n");
-  }
-
-  //debug("genone","OmMipMesh::Draw()");
-
   if (!hasDisplayList) {
     displayList = glGenLists(1);
     hasDisplayList = true;
     glNewList(displayList, GL_COMPILE);
 
+    CreateVbo();
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -345,6 +334,8 @@ bool OmMipMesh::Draw(bool doCreateVbo)
     // release VBOs: gl*Pointer() return to normal
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+
+    DeleteVbo();
 
     glPopAttrib();
     glEndList();
