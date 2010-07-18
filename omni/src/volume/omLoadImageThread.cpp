@@ -75,7 +75,7 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32mapped();
 				quint32* data = dataPtr->getQuint32Ptr();
 
-				QRgb* bits32 = (QRgb*)tile.bits();
+				quint32* bits32 = (quint32*)tile.bits();
 				memcpy(data+advance, bits32, 128*128*4);
 
 			} else{

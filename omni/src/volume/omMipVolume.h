@@ -125,7 +125,7 @@ public:
 	std::vector<QFile*> mFileVec;
 	void AllocMemMapFiles();
 	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
-	void figureOutNumberOfBytes();
+	void figureOutNumberOfBytesImg();
 	bool areImportFilesImages();
 	Vector3i get_dims(const OmDataPath dataset );
 	

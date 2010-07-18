@@ -1296,7 +1296,6 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 {
 	// use VTK for HDF5 import...
 	if(!areImportFilesImages()){
-		figureOutNumberOfBytes();
 		AllocInternalData();
 		return ImportSourceDataVTK(dataset);
 	}
@@ -1334,7 +1333,7 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 									      chunk_data_bbox, 
 									      GetBytesPerSample(), 
 									      dataset);
-				
+
 				//write to project data
 				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
 											 &chunk_data_bbox, 
@@ -1354,7 +1353,7 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 	return true;
 }
 
-void OmMipVolume::figureOutNumberOfBytes()
+void OmMipVolume::figureOutNumberOfBytesImg()
 {
 	const int depth = QImage(mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
 	
@@ -1373,8 +1372,8 @@ bool OmMipVolume::ImportSourceDataQT()
 	//timer start
 	OmTimer import_timer;
 	import_timer.start();
-	
-	figureOutNumberOfBytes();
+
+	figureOutNumberOfBytesImg();
 
 	//should happen after setBytesPerSample....
 	AllocInternalData();
