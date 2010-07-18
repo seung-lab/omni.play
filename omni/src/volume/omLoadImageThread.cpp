@@ -40,7 +40,7 @@ void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 	doProcessSlice(img, sliceNum);
 
 	slice_timer.stop();
-	printf("completed %s in %.6f secs\n", qPrintable(fn), slice_timer.s_elapsed());
+	printf("\tcompleted %s in %.6f secs\n", qPrintable(fn), slice_timer.s_elapsed());
 }
 
 void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
@@ -72,8 +72,7 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 			const int advance = (128*128*(sliceNum%128));
 
 			if(4 == m_numberOfBytes){
-				assert(0 && "not yet tested");
-				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
+				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32mapped();
 				quint32* data = dataPtr->getQuint32Ptr();
 
 				QRgb* bits32 = (QRgb*)tile.bits();

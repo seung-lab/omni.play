@@ -787,7 +787,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	Vector3 < int >extent_dims = extent->getUnitDimensions();
 	int data_dims[3];
 	imageData->GetDimensions(data_dims);
-	assert(data_dims[0] == extent_dims.x && data_dims[1] == extent_dims.y && data_dims[2] == extent_dims.z);
+	assert(data_dims[0] == extent_dims.x);
+	assert(data_dims[1] == extent_dims.y);
+	assert(data_dims[2] == extent_dims.z);
 
 	//assert(1 == imageData->GetNumberOfScalarComponents());
 	if (1 != imageData->GetNumberOfScalarComponents())

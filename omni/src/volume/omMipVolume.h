@@ -167,8 +167,6 @@ protected:
 	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
 	
 	template< typename T> vtkImageData* SubsampleImageData(vtkImageData* srcData);
-	template< typename T > T CalculateMode( T* array, int size);
-	template< typename T > T CalculateAverage( T* array, int size);
 
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 	

@@ -1258,52 +1258,6 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 	return p_dest_data;
 }
 
-template < typename T > T OmMipVolume::CalculateAverage(T * array, int size)
-{
-	unsigned long sum = 0;
-	//for each element in the array
-	for (int i = 0; i < size; ++i) {
-		sum += array[i];
-	}
-	return round(float (sum) / size);
-}
-
-template < typename T > T OmMipVolume::CalculateMode(T * array, int size)
-{
-
-	//to avoid thrashing the stack
-	static std::map < T, int >frequency_map;
-	frequency_map.clear();
-
-	T cur_value = 0;
-	int cur_freq = 0;
-	T max_freq_value = 0;
-	int max_freq = 0;
-
-	//for each element in the array
-	for (int i = 0; i < size; ++i) {
-
-		cur_value = array[i];
-
-		//if element already exists
-		if (frequency_map.count(cur_value)) {
-			cur_freq = ++frequency_map[cur_value];
-		} else {
-			//add to map
-			frequency_map[cur_value] = 1;
-			cur_freq = 1;
-		}
-
-		//update max value if necessary
-		if (cur_freq > max_freq) {
-			max_freq = cur_freq;
-			max_freq_value = cur_value;
-		}
-	}
-
-	return max_freq_value;
-}
-
 bool OmMipVolume::ContainsVoxel(const DataCoord & vox)
 {
 	return GetExtent().contains(vox);
@@ -1352,14 +1306,9 @@ bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 
 bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 {
-	//debug("genone","OmMipVolume::ImportSourceData()");
-
-	//init progress bar
-	int prog_count = 0;
-	//	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
-	//						       MipChunksInMipLevel(0)));
 	//dim of leaf coords
-	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+
 	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
@@ -1376,18 +1325,13 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 				//get chunk data bbox
-				OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
+				const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
 				DataBbox chunk_data_bbox = MipCoordToDataBbox(chunk_coord, 0);
-
-				DataBbox b = chunk_data_bbox;
-				assert(b.getMin().x+127 == b.getMax().x);
-				assert(b.getMin().y+127 == b.getMax().y);
-
 
 				//read chunk image data from source
 				vtkImageData *p_img_data =
 					OmImageDataIo::om_imagedata_read_hdf5(mSourceFilenamesAndPaths, 
-									      GetExtent(), 
+									      chunk_data_bbox, 
 									      GetBytesPerSample(), 
 									      dataset);
 				
@@ -1399,15 +1343,6 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 
 				//delete read data
 				p_img_data->Delete();
-
-				//check for cancel (auto hides on cancel)
-				if (OmProgressEvent::GetWasCanceled()){
-					return false;
-				}
-
-				//update progress
-				OmEventManager::
-				    PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_VALUE, ++prog_count));
 			}
 		}
 	}
@@ -1415,8 +1350,6 @@ bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
 	//timer end
 	import_timer.stop();
 
-	//hide progress bar
-	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 	printf("done in %.6f secs\n",import_timer.s_elapsed());
 	return true;
 }
@@ -1449,7 +1382,7 @@ bool OmMipVolume::ImportSourceDataQT()
 
 	mSliceNum = 0;
 
-	const int maxThreads=4;
+	const int maxThreads=1;
 	QThreadPool threads;
 	threads.setMaxThreadCount(maxThreads);
 	for(int i=0; i<maxThreads; ++i){
@@ -1495,16 +1428,22 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 			QExplicitlySharedDataPointer<OmMipChunk>();
 		GetChunk(chunk, c);
 
-		OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-		unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
+		if(4 == GetBytesPerSample()){
+			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
+			quint32* dataMapped = dataPtrMapped->getQuint32Ptr();
+			chunk->RawWriteChunkData(dataMapped);
+		} else {
+			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
+			unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
+			chunk->RawWriteChunkData(dataMapped);
+		}
 		
-		chunk->RawWriteChunkData(dataMapped);
-		
-		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)\n",
+		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
 		       chunk->GetCoordinate().Coordinate.x,
 		       chunk->GetCoordinate().Coordinate.y,
 		       chunk->GetCoordinate().Coordinate.z,
 		       counter, total);
+		fflush(stdout);
 
 		++counter;
 	}

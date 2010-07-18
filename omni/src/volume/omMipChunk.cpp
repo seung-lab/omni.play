@@ -35,7 +35,6 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume))
 	, mIsRawChunkOpen(false)
 	, mpMipVolume(pMipVolume)
-	, mFile(NULL)
 {
 
 	//debug("genone","OmMipChunk::OmMipChunk()");   
@@ -834,6 +833,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
 void OmMipChunk::RawWriteChunkData(unsigned char * data)
 {
         QMutexLocker locker(&mOpenLock);
+
 	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
@@ -846,9 +846,9 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 
 void OmMipChunk::RawWriteChunkData(quint32* data)
 {
-	assert(0);
         QMutexLocker locker(&mOpenLock);
-	
+
+	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 	
@@ -872,20 +872,26 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
 	return mRawChunk;
 }
 
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(!mIsRawChunkOpen){
+		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
+		
+		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
 void OmMipChunk::dealWithCrazyNewStuff()
 {
         QMutexLocker locker(&mOpenLock);
 
 	if(mIsRawChunkOpen){
-		if(mFile){
-			mFile->close();
-			delete mFile;
-			mFile=NULL;
-		} else {
-			//	RawWriteChunkData(mRawChunk->getQuint8Ptr());
-		}
 		mIsRawChunkOpen=false;
 		mRawChunk=OmDataWrapperPtr(new OmDataWrapper(NULL));
-		return;
 	}
 }

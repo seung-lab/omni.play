@@ -15,7 +15,6 @@
 #include "datalayer/omDataWrapper.h"
 
 #include <QMutex>
-#include <QFile>
 
 enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE };
 
@@ -53,6 +52,7 @@ public:
 	OmDataWrapperPtr mRawChunk;
 	OmDataWrapperPtr RawReadChunkDataUCHARmapped();
 	void dealWithCrazyNewStuff();
+	OmDataWrapperPtr RawReadChunkDataUINT32mapped();
 	
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
@@ -144,9 +144,6 @@ protected:
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
-
-	QFile * mFile;
-
 	//image data of chunk
 	vtkImageData *mpImageData;	
 
