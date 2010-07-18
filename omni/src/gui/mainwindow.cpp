@@ -362,11 +362,13 @@ void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 	}
 }
 
-void MainWindow::closeEvent(QCloseEvent *)
+void MainWindow::closeEvent(QCloseEvent * event)
 {
 	try {
 		// QMainWindow::saveState() and restoreState()
-		closeProjectIfOpen();
+		if(!closeProjectIfOpen()){
+			event->ignore();
+		}
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
