@@ -157,7 +157,7 @@ bool OmMipVolume::IsSourceValid()
 		return false;
 	}
 
-	foreach( QFileInfo fi, mSourceFilenamesAndPaths ){
+	foreach( const QFileInfo & fi, mSourceFilenamesAndPaths ){
 		if( !fi.exists() ){
 			return false;
 		}
