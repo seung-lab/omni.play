@@ -1517,6 +1517,36 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 	assert(-1 != GlobalHDF5id);
 	printf("hdf5 id is :%d\n", GlobalHDF5id);
 
+	OmDataPath path;
+	path.setPathQstr( MipLevelInternalDataPath(0 ) );
+
+	hid_t mem_type_id;
+
+	//Opens an existing dataset.
+	//hid_t H5Dopen(hid_t loc_id, const char *name  ) 
+	hid_t dataset_id = H5Dopen2(GlobalHDF5id, path.getString().c_str(), H5P_DEFAULT);
+	if (dataset_id < 0) {
+		throw OmIoException("Could not open HDF5 dataset " + path.getString());
+	}
+
+
+	//Returns an identifier for a copy of the datatype for a dataset. 
+	//hid_t H5Dget_type(hid_t dataset_id  )
+	hid_t dataset_type_id = H5Dget_type(dataset_id);
+
+	//assert that dest datatype size matches desired size
+	assert(H5Tget_size(dataset_type_id) == (unsigned int)GetBytesPerSample());
+
+	//Returns an identifier for a copy of the dataspace for a dataset. 
+	//hid_t H5Dget_space(hid_t dataset_id  ) 
+	hid_t dataspace_id = H5Dget_space(dataset_id);
+	if (dataspace_id < 0) {
+		throw OmIoException("Could not get HDF5 dataspace.");
+	}
+
+
+
+
 	int counter=0;
 	const int total = chunksToCopy.size();
 
@@ -1526,13 +1556,55 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		GetChunk(chunk, c);
 
 		if(4 == GetBytesPerSample()){
-			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
-			quint32* dataMapped = dataPtrMapped->getQuint32Ptr();
-			chunk->RawWriteChunkData(dataMapped);
+			assert(0);
 		} else {
 			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-			unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
-			chunk->RawWriteChunkData(dataMapped);
+			unsigned char* imageData = dataPtrMapped->getQuint8Ptr();
+
+			DataBbox extent = chunk->GetExtent();
+
+			//create start, stride, count, block
+			//flip coordinates cuz thats how hdf5 likes it
+			Vector3 < hsize_t > start = extent.getMin();
+			Vector3 < hsize_t > end   = extent.getMax();
+			Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+
+			Vector3 < hsize_t > stride = Vector3i::ONE;
+			Vector3 < hsize_t > count = Vector3i::ONE;
+
+			Vector3 < hsize_t > block = extent.getUnitDimensions();
+			Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+
+			herr_t ret = H5Sselect_hyperslab(dataspace_id, 
+							 H5S_SELECT_SET, 
+							 start_flipped.array, 
+							 stride.array, 
+							 count.array,
+							 block_flipped.array);
+			if (ret < 0)
+				throw OmIoException("Could not select HDF5 hyperslab.");
+
+			hid_t mem_dataspace_id = H5Screate_simple(3, block.array, block.array);
+			if (mem_dataspace_id < 0)
+				throw OmIoException("Could not create scratch HDF5 dataspace.");
+
+			Vector3 < int >extent_dims = extent.getUnitDimensions();
+
+			mem_type_id = 1 == GetBytesPerSample() ?  H5T_NATIVE_UCHAR : H5T_NATIVE_UINT;
+			ret = H5Dwrite(dataset_id, 
+				       mem_type_id, 
+				       mem_dataspace_id, 
+				       dataspace_id, 
+				       H5P_DEFAULT, 
+				       imageData);
+			if (ret < 0) {
+				throw OmIoException("Could not write HDF5 dataset "+path.getString());
+			}
+
+			
+			ret = H5Sclose(mem_dataspace_id);
+			if (ret < 0)
+				throw OmIoException("Could not close HDF5 scratch dataspace.");
 		}
 
 		++counter;		
@@ -1543,6 +1615,16 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		       counter, total);
 		fflush(stdout);
 	}
+
+	herr_t ret = H5Sclose(dataspace_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataspace.");
+
+	//Closes the specified dataset. 
+	//herr_t H5Dclose(hid_t dataset_id  ) 
+	ret = H5Dclose(dataset_id);
+	if (ret < 0)
+		throw OmIoException("Could not close HDF5 dataset.");
+
 	printf("\n");
 }
-
