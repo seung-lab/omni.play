@@ -1460,6 +1460,12 @@ void OmMipVolume::AllocMemMapFiles()
 			assert(0);
 		}
 		file->resize(size);
+		
+		for( qint64 i=0; i < size; i+=4096){
+			file->seek(i);
+			file->putChar(0);
+		}
+		file->flush();
 		mFileMapPtr[level] = file->map(0,size);
 		file->close();
 	}
