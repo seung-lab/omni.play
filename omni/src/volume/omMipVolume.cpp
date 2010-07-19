@@ -1461,7 +1461,7 @@ void OmMipVolume::AllocMemMapFiles()
 		}
 		file->resize(size);
 		
-		for( qint64 i=0; i < size; i+=4096){
+		for( qint64 i=0; i < size; i+=(qint64)4096){
 			file->seek(i);
 			file->putChar(0);
 		}
