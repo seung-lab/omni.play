@@ -1460,6 +1460,7 @@ void OmMipVolume::AllocMemMapFiles()
 			assert(0);
 		}
 		file->resize(size);
+		/*
 		printf("\tpre-allocating...\n");
 		for( qint64 i=0; i < size; i+=(qint64)4096){
 			file->seek(i);
@@ -1467,6 +1468,7 @@ void OmMipVolume::AllocMemMapFiles()
 		}
 		printf("\tflushing...\n");
 		file->flush();
+		*/
 		mFileMapPtr[level] = file->map(0,size);
 		file->close();
 	}
