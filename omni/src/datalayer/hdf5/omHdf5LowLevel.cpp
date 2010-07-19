@@ -913,15 +913,6 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	Vector3 < hsize_t > end   = extent.getMax();
 	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
 
-	/*
-	hsize_t* dims;
-	hsize_t* maxdims;
-	if(H5Sget_simple_extent_dims(dataspace_id, dims, maxdims) < 0)
-		throw OmIoException("Could not get HDF5 data extent.");
-        if ((dims[0]<end.z)&&(dims[1]<end.y)&&(dims[2]<end.z))
-		throw OmIoException("Tried to write data outside of Dataspace extent.");
-	*/
-
 	Vector3 < hsize_t > stride = Vector3i::ONE;
 	Vector3 < hsize_t > count = Vector3i::ONE;
 
@@ -930,9 +921,12 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 
 	//Selects a hyperslab region to add to the current selected region. 
 	//herr_t H5Sselect_hyperslab(hid_t space_id, H5S_seloper_t op, const hsize_t *start, const hsize_t *stride, const hsize_t *count, const hsize_t *block  ) 
-	herr_t ret =
-	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
-				block_flipped.array);
+	herr_t ret = H5Sselect_hyperslab(dataspace_id, 
+					 H5S_SELECT_SET, 
+					 start_flipped.array, 
+					 stride.array, 
+					 count.array,
+					 block_flipped.array);
 	if (ret < 0)
 		throw OmIoException("Could not select HDF5 hyperslab.");
 

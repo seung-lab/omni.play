@@ -1,3 +1,4 @@
+#include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
 #include "volume/omLoadImageThread.h"
 #include "utility/stringHelpers.h"
@@ -1417,37 +1418,6 @@ void OmMipVolume::addToChunkCoords(const OmMipChunkCoord chunk_coord)
 	chunksToCopy.insert(chunk_coord);
 }
 
-void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
-{
-	int counter=0;
-	const int total = chunksToCopy.size();
-
-	foreach(const OmMipChunkCoord & c, chunksToCopy){
-		QExplicitlySharedDataPointer<OmMipChunk> chunk = 
-			QExplicitlySharedDataPointer<OmMipChunk>();
-		GetChunk(chunk, c);
-
-		if(4 == GetBytesPerSample()){
-			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
-			quint32* dataMapped = dataPtrMapped->getQuint32Ptr();
-			chunk->RawWriteChunkData(dataMapped);
-		} else {
-			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-			unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
-			chunk->RawWriteChunkData(dataMapped);
-		}
-
-		++counter;		
-		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
-		       chunk->GetCoordinate().Coordinate.x,
-		       chunk->GetCoordinate().Coordinate.y,
-		       chunk->GetCoordinate().Coordinate.z,
-		       counter, total);
-		fflush(stdout);
-	}
-	printf("\n");
-}
-
 void OmMipVolume::AllocMemMapFiles()
 {
 	QMutexLocker lock(&mChunkCoords);
@@ -1539,3 +1509,40 @@ Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
 
 	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
 }
+
+void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
+{
+	extern hid_t GlobalHDF5id;
+
+	assert(-1 != GlobalHDF5id);
+	printf("hdf5 id is :%d\n", GlobalHDF5id);
+
+	int counter=0;
+	const int total = chunksToCopy.size();
+
+	foreach(const OmMipChunkCoord & c, chunksToCopy){
+		QExplicitlySharedDataPointer<OmMipChunk> chunk = 
+			QExplicitlySharedDataPointer<OmMipChunk>();
+		GetChunk(chunk, c);
+
+		if(4 == GetBytesPerSample()){
+			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
+			quint32* dataMapped = dataPtrMapped->getQuint32Ptr();
+			chunk->RawWriteChunkData(dataMapped);
+		} else {
+			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
+			unsigned char* dataMapped = dataPtrMapped->getQuint8Ptr();
+			chunk->RawWriteChunkData(dataMapped);
+		}
+
+		++counter;		
+		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
+		       chunk->GetCoordinate().Coordinate.x,
+		       chunk->GetCoordinate().Coordinate.y,
+		       chunk->GetCoordinate().Coordinate.z,
+		       counter, total);
+		fflush(stdout);
+	}
+	printf("\n");
+}
+
