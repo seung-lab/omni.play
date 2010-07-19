@@ -1473,7 +1473,7 @@ void OmMipVolume::AllocMemMapFiles()
 
 unsigned char * OmMipVolume::getChunkPtr( OmMipChunkCoord & coord)
 {
-	QMutexLocker lock(&mChunkCoords);
+	//	QMutexLocker lock(&mChunkCoords);
 
 	const int level = coord.getLevel();
 	Vector3 < int >data_dims = MipLevelDataDimensions(level);
