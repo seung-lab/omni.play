@@ -35,7 +35,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::open()
 	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName, mReadOnly);
 	opened = true;
 	GlobalHDF5id = fileId;
-	printf("real HDF5 id is %d\n", fileId);
+	debug("hdf5verbose","Real HDF5 id is %d\n", fileId);
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::close()
