@@ -1,14 +1,14 @@
 #include "common/omException.h"
+#include "gui/groupsTable.h"
 #include "gui/cacheMonitorDialog.h"
 #include "gui/menubar.h"
 #include "gui/preferences/preferences.h"
 #include "gui/toolbars/toolbarManager.h"
-#include "gui/viewGroup.h"
 #include "mainwindow.h"
 #include "myInspectorWidget.h"
 #include "project/omProject.h"
 #include "recentFileList.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "system/omEventManager.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -16,8 +16,6 @@
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
-
-Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 MainWindow::MainWindow()
  : prog_dialog(this)
@@ -43,17 +41,16 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	windowTitleClear();
-	resize(1000, 800);
+	resize(1000, 1000);
 
 	preferences = NULL;
 	setProjectOpen( false );
 	omniInspector = NULL;
 	undoView = NULL;
-	mViewGroup = NULL;
 	mCacheMonitorDialog = NULL;
 
 	mViewGroupState = NULL;
-
+	mToolToolBar = addToolBar("Tools");
 	updateReadOnlyRelatedWidgets();
 
 	OmStateManager::setMainWindow(this);
@@ -78,13 +75,6 @@ void MainWindow::newProject()
 
 		QString fileNameAndPath = OmProject::New( fileName );
 
-		delete mViewGroupState;
-		mViewGroupState = new OmViewGroupState();
-
-		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);
-		
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
@@ -237,23 +227,11 @@ void MainWindow::openProject(QString fileNameAndPath)
 {
 	try {
 		OmProject::Load( fileNameAndPath );
-#if 0
-		// FIXME open volume at middle.... (purcaro)
-		SpaceCoord depth = OmVolume::NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
-#endif
-		delete mViewGroupState;
-		mViewGroupState = new OmViewGroupState();
-
-		mViewGroupState->SetViewSliceDepth(XY_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(XZ_VIEW, 0.0);
-		mViewGroupState->SetViewSliceDepth(YZ_VIEW, 0.0);		
-
 		updateGuiFromProjectLoadOrOpen( fileNameAndPath );
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
-
 }
 
 void MainWindow::closeProject()
@@ -282,9 +260,7 @@ void MainWindow::openInspector()
 			return;
 		}
 
-		resetViewGroup();
-
-		omniInspector = new MyInspectorWidget( this );
+		omniInspector = new MyInspectorWidget( this, mViewGroupState );
 		omniInspector->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
 
 		QDockWidget *dock = new QDockWidget(tr("Inspector"), this);
@@ -327,6 +303,26 @@ void MainWindow::openUndoView()
 	}
 }
 
+void MainWindow::openGroupsTable()
+{
+        try {
+                GroupsTable * groupsTable = new GroupsTable(mViewGroupState);
+
+                QDockWidget *dock = new QDockWidget(tr("Groups"), this);
+                dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+                groupsTable->setParent(dock);
+                dock->setWidget(groupsTable);
+
+                addDockWidget(Qt::TopDockWidgetArea, dock);
+                mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
+
+        } catch(OmException & e) {
+                spawnErrorDialog(e);
+        }
+}
+
+
 void MainWindow::open3dView()
 {
 	try {
@@ -334,7 +330,7 @@ void MainWindow::open3dView()
 			return;
 		}
 
-		mViewGroup->addView3D();
+		mViewGroupState->addView3D();
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -344,7 +340,7 @@ void MainWindow::open3dView()
 void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 {
 	try {
-		mViewGroup->addView2Dchannel( chan_id, vtype);
+		mViewGroupState->addView2Dchannel( chan_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -354,7 +350,7 @@ void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
 {
 	try {
-		mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
+		mViewGroupState->addView2Dsegmentation( segmentation_id, vtype);
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -407,8 +403,8 @@ void MainWindow::spawnErrorDialog(OmException & e)
 	//assert (0);
 
 	QString errorMessage = e.GetType() + ": " + e.GetName() + ". " + e.GetMsg();
-	exceptionMessage->showMessage(errorMessage);
-	printf("something bad happened in %s:, \n\t%s\n", __FUNCTION__, qPrintable(errorMessage) );
+	exceptionMessage->showMessage(errorMessage, QDateTime::currentDateTime().toString() ); // force user to always see dialog
+	printf("Exception thrown: %s\n", qPrintable(errorMessage) );
 }
 
 void MainWindow::updateReadOnlyRelatedWidgets()
@@ -436,17 +432,11 @@ void MainWindow::windowTitleClear()
 	setWindowTitle(tr("Omni"));
 }
 
-void MainWindow::resetViewGroup()
-{
-	if( mViewGroup != NULL ){
-		delete(mViewGroup);
-	}
-
-	mViewGroup = new ViewGroup( this, mViewGroupState );
-}
-
 void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 {
+	delete mViewGroupState;
+	mViewGroupState = new OmViewGroupState(this);
+	
 	if( NULL == mToolBars ){
 		mToolBars = new ToolBarManager(this);
 	}
@@ -454,33 +444,12 @@ void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 	mMenuBar->addRecentFile(fileName);
 	setProjectOpen( true );
 
-	mViewGroupState->SetViewSliceMin(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMin(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMin(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
-	mViewGroupState->SetViewSliceMax(XY_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMax(XZ_VIEW, Vector2 < float >(0.0, 0.0));
-	mViewGroupState->SetViewSliceMax(YZ_VIEW, Vector2 < float >(0.0, 0.0));
-
-	mViewGroupState->SetZoomLevel(Vector2 < int >(0, 10));
-	mViewGroupState->SetPanDistance(XY_VIEW, Vector2 < int >(0, 0));
-	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2 < int >(0, 0));
-	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2 < int >(0, 0));
-
 	mToolBars->setupToolbarInitially();
 	mToolBars->updateGuiFromProjectLoadOrOpen(mViewGroupState);
 
 	windowTitleSet( fileName );
 	openInspector();
 	updateReadOnlyRelatedWidgets();
-}
-
-void MainWindow::open2Dand3dViews()
-{
-	OmId channelID = 1;
-	OmId segmentationID = 1;
-
-	mViewGroup->addAllViews( channelID, segmentationID );
 }
 
 void MainWindow::openCacheMonitor()
@@ -534,11 +503,6 @@ void MainWindow::updateStatusBar( QString msg )
 	statusBarLabel->setText(msg);
 }
 
-void MainWindow::SystemModeChangeEvent()
-{
-	mToolBars->SystemModeChangeEvent();
-}
-
 bool MainWindow::isProjectOpen()
 {
 	return mIsProjectOpen;
@@ -547,4 +511,19 @@ bool MainWindow::isProjectOpen()
 void MainWindow::setProjectOpen(bool open)
 {
 	mIsProjectOpen = open;
+}
+
+void MainWindow::addToolbarWidget(QWidget * b)
+{
+	mToolToolBar->addWidget(b);
+}
+
+void MainWindow::addToolbarRight(QToolBar * b)
+{
+	addToolBar(Qt::RightToolBarArea, b);
+}
+
+void MainWindow::addToolbarSeperator()
+{
+	mToolToolBar->addSeparator();
 }

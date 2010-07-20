@@ -5,33 +5,33 @@
 #include <QtGui>
 #include <QWidget>
 
-#include "gui/mainwindow.h"
-#include "gui/segmentList.h"
-#include "gui/elementListBox.h"
-#include "inspectors/segInspector.h"
-#include "inspectors/chanInspector.h"
-#include "inspectors/filObjectInspector.h"
-#include "inspectors/inspectorProperties.h"
-
-#include "common/omStd.h"
-#include "volume/omFilter2d.h"
+#include "common/omCommon.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
 
 class SegInspector;
 class ChanInspector;
+class FilObjectInspector;
+class SegmentListWorking;
+class SegmentListValid;
+class SegmentListRecent;
+class ElementListBox;
+class InspectorProperties;
+class MainWindow;
+class OmViewGroupState;
 
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT 
  
  public:
-	 MyInspectorWidget( MainWindow* parent);
+	 MyInspectorWidget( MainWindow* parent, OmViewGroupState * vgs);
 	~MyInspectorWidget();
 
 	void addChannelToVolume();
 	void addSegmentationToVolume();
 
 	void refreshWidgetData();
+	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
 
  signals: 
 	void triggerChannelView(OmId chan_id, ViewType vtype);
@@ -63,13 +63,11 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addToSplitterDataSource(QTreeWidgetItem * current);
 
 	void doDataSrcContextMenuVolAdd(QAction * act);
-	void addSegment();
 	void deleteSegmentation(SegmentationDataWrapper sdw);
 	void deleteChannel(ChannelDataWrapper cdw);
+
  private:
 
-	///////////////////////////////
-	// new inspector elements
 	QTreeWidget *dataSrcListWidget;
 	QTreeWidget *filterListWidget;
 	void populateDataSrcListWidget();
@@ -95,8 +93,6 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	MainWindow* mParentWindow;
 
-	///////////////////////////////
-
 	QAction *xyAct;
 	QAction *xzAct;
 	QAction *yzAct;
@@ -117,12 +113,18 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	InspectorProperties * inspectorProperties;
-	SegmentList * segmentList;
 	ElementListBox * elementListBox;
+	SegmentListWorking * segmentList;
+	SegmentListValid * validList;
+	SegmentListRecent * recentList;
 
 	ViewType getViewType(QAction * act);
 
 	QVBoxLayout * verticalLayout;
+	QString getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw);
+	void updateSegmentListBox( SegmentationDataWrapper sdw );
+
+	OmViewGroupState * mViewGroupState;
 };
 
 #endif

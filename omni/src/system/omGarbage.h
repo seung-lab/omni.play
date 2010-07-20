@@ -12,11 +12,7 @@
  */
 
 #include "common/omCommon.h"
-
-#include "omPreferences.h"
-#include "omStateManager.h"
-#include "volume/omVolume.h"
-
+#include "common/omGl.h"
 
 #include <QMutex>
 

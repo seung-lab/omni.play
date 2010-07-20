@@ -35,9 +35,6 @@ class OmMipSegmentDataCoord {
 	//data members
 	OmMipChunkCoord MipChunkCoord;
 	OmSegID DataValue;
-		
-	//stream
-	friend ostream& operator<<(ostream &out, const OmMipSegmentDataCoord &in);
 	
 	friend QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmMipSegmentDataCoord & c );

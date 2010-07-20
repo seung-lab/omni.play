@@ -12,11 +12,12 @@ class OmSegmentSelectAction : public OmAction {
 
 public:
 	OmSegmentSelectAction(const OmId segmentationId, 
-			      const OmSegIDs & selectIds, 
-			      const OmSegIDs & unselectIds, 
+			      const OmSegIDsSet & mNewSelectedIdSet, 
+			      const OmSegIDsSet & mOldSelectedIdSet, 
 			      const OmId segmentJustSelected,
 			      void* sender,
-			      const string & comment);
+			      const string & comment,
+			      const bool doScroll );
 	
 private:
 	void Action();
@@ -24,13 +25,12 @@ private:
 	string Description();
 	
 	const OmId mSegmentationId;
-	const OmSegIDs mSelectIds;
-	const OmSegIDs mUnselectIds;
+	const OmSegIDsSet mNewSelectedIdSet;
+	const OmSegIDsSet mOldSelectedIdSet;
 	const OmId mSegmentJustSelectedID;
 	void * mSender;
 	const string mComment;
-
-	OmSegIDs mModifiedSegIDs;
+	const bool mDoScroll;
 };
 
 #endif

@@ -1,10 +1,8 @@
-
+#include <assert.h>
 #include "omToolModeEvent.h"
 
-#define DEBUG 0
-
 OmToolModeEvent::OmToolModeEvent(QEvent::Type type)
- : OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 
 }
@@ -13,8 +11,7 @@ OmToolModeEvent::OmToolModeEvent(QEvent::Type type)
  *	Dispatch event based on event type.
  */
 
-void
- OmToolModeEvent::Dispatch(OmEventListener * pListener)
+void OmToolModeEvent::Dispatch(OmEventListener * pListener)
 {
 
 	//cast to proper listener

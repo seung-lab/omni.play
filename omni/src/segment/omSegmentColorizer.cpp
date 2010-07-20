@@ -1,19 +1,25 @@
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
+#include "system/omCacheManager.h"
 
 #include <QMutexLocker>
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, const OmSegmentColorCacheType sccType)
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, 
+					const OmSegmentColorCacheType sccType,
+					const bool isSegmentation)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
-	, mColorCache( NULL )
-	, mColorCacheFreshness( NULL )
-	, mSize( 0 )
+	, mSize(0)
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
+	, mIsSegmentation(isSegmentation)
+{
+}
+
+OmSegmentColorizer::~OmSegmentColorizer()
 {
 }
 
@@ -21,44 +27,30 @@ void OmSegmentColorizer::setup()
 {
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
-	if( mSize > 0 && curSize != mSize ){
-		delete [] mColorCache;
-		mColorCache = NULL;
-		delete [] mColorCacheFreshness;
-		mColorCacheFreshness = NULL;
-	}
-
-	if( NULL != mColorCache ){
+	if( curSize == mSize ){
 		return;
 	}
 
 	mSize = curSize;
-
-	mColorCache = new OmColor[ mSize ];
-
-	mColorCacheFreshness = new int[ mSize ];
-	memset(mColorCacheFreshness, 0, sizeof(int) * mSize);
+	mColorCache.resize(mSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				    unsigned char * data )
 {
-	QMutexLocker lock( &mMutex );
+	QMutexLocker lock( &mMutex ); // TODO: use lock-free hash and shorten locking time
 	
 	setup();
 
-	mSegmentCache->mMutex.lock();
-	const int segCacheFreshness = mSegmentCache->mImpl->mCachedColorFreshness;
-	mSegmentCache->mMutex.unlock();
+	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
-	const bool isSegmentation = (Segmentation == mSccType || SegmentationBreak == mSccType);
 	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
-	if ( isSegmentation ) {
+	if(mIsSegmentation) {
 		showOnlySelectedSegments = false;	
 	}
 
 	int offset = 0;
-	OmColor newcolor = {0, 0, 0};
+	OmColor newcolor = blackColor;
 	OmSegID lastVal = 0;
 	OmSegID val;
 
@@ -73,11 +65,11 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				newcolor = blackColor;
 			} else{
 				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ] = getVoxelColorForView2d( val, showOnlySelectedSegments );
-					mColorCacheFreshness[ val ] = segCacheFreshness;
+					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
+					mColorCache[ val ].freshness = segCacheFreshness;
 				}
 				
-				newcolor = mColorCache[ val ];
+				newcolor = mColorCache[ val ].color;
 			}
 		} 
 
@@ -91,43 +83,53 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID & val, 
-						    const bool & showOnlySelectedSegments)
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
+						    const bool showOnlySelectedSegments)
 {
-	mSegmentCache->mMutex.lock(); // LOCK (3 unlock possibilities)
+	QMutexLocker locker(&mSegmentCache->mMutex);
 
 	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
 	if( NULL == seg ) {
-		mSegmentCache->mMutex.unlock(); //UNLOCK possibility #1 of 3
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
+	const OmColor segRootColor = segRoot->mColorInt;
+
 	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
 
-	if(SegmentationBreak == mSccType){
-		if( isSelected ){
-			// const OmColor & tsc = mSegmentCache->mImpl->GetColorAtThreshold( seg, mCurBreakThreshhold );
-			const OmColor & tsc = seg->mColorInt;
-			mSegmentCache->mMutex.unlock(); //UNLOCK possibility #2 of 3
-			return tsc;
-		} 
+	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
+		if(seg->mImmutable) {
+			return segRootColor;
+		} else {
+			return blackColor;
+		}
+	}
+	if( SCC_SEGMENTATION_VALID_BLACK == mSccType || SCC_FILTER_VALID_BLACK == mSccType){
+		if(seg->mImmutable) {
+			return blackColor;
+		} else {
+			return segRootColor;
+		}
 	}
 
-	mSegmentCache->mMutex.unlock(); //UNLOCK possibility #3 of 3
+	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
+		if( isSelected ){
+			return seg->mColorInt;;
+		}
+	}
 
-	const OmColor & sc = segRoot->mColorInt;
+	locker.unlock(); // done w/ lock
 
 	if( isSelected ){
-		OmColor color = { makeSelectedColor(sc.red),
-				  makeSelectedColor(sc.green),
-				  makeSelectedColor(sc.blue) };
+		OmColor color = { makeSelectedColor(segRootColor.red),
+				  makeSelectedColor(segRootColor.green),
+				  makeSelectedColor(segRootColor.blue) };
 		return color;
 	} else {
 		if (showOnlySelectedSegments) {
 			return blackColor;
 		} else {
-			return sc;
+			return segRootColor;
 		}
 	}
 }
-

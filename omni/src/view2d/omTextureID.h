@@ -38,14 +38,14 @@ public:
 		    OmThreadedCachingTile *cache = NULL, 
 		    void* texture = NULL, 
 		    int flags = 0);
-	~OmTextureID();
+	virtual ~OmTextureID();
 	
 	//texture ID property accessors;
 	GLuint GetTextureID() const { return textureID; }
 	int GetSize() const { return mem_size; }
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
 		
-	void Flush();
+	void Flush(){}
 
 	OmTileCoord mTileCoordinate;
 	GLuint textureID;
@@ -58,8 +58,6 @@ public:
 	ObjectType mVolType;
 	bool mRemoveMe;
 	OmThreadedCachingTile *mCache;
-		
-	friend ostream& operator<<(ostream &out, const OmTextureID &tid);
 
 	friend class myQGLWidget;
 	friend class OmView2d;

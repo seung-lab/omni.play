@@ -153,6 +153,10 @@ public:
     // returns a normalized copy of *this
     Vector3 getNormalized() const;
 
+    // returns the minimum of each element out of two Vectors
+    Vector3 compareMinimum(const Vector3& rhs);
+    Vector3 compareMaximum(const Vector3& rhs);
+
     void scale( T scale_factor );
 
     // result = vec1.cross( vec2 ) => vec1 x vec2
@@ -1044,7 +1048,25 @@ Vector3< T >::randomize()
 }
 
 
+template < typename T > 
+Vector3< T > Vector3< T >::compareMinimum(const Vector3& rhs)
+{
+	Vector3< T > tmp;
+	tmp.x = x < rhs.x ? x : rhs.x;
+	tmp.y = y < rhs.y ? y : rhs.y;
+	tmp.z = z < rhs.z ? z : rhs.z;
+	return tmp;
+}
 
+template < typename T > 
+Vector3< T > Vector3< T >::compareMaximum(const Vector3& rhs)
+{
+	Vector3< T > tmp;
+	tmp.x = x > rhs.x ? x : rhs.x;
+	tmp.y = y > rhs.y ? y : rhs.y;
+	tmp.z = z > rhs.z ? z : rhs.z;
+	return tmp;
+}
 // writes the values into param result, delimited by param 'delimiter'.
 // returns false if it failed, true if it (seems to have) succeeded.
 template< typename T >

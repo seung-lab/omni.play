@@ -1,18 +1,21 @@
-#include "segInspector.h"
-#include "volInspector.h"
-
 #include "common/omDebug.h"
-#include "volume/omVolume.h"
+#include "gui/inspectors/segInspector.h"
+#include "gui/inspectors/segmentation/addSegmentButton.h"
+#include "gui/inspectors/volInspector.h"
+#include "gui/myInspectorWidget.h"
 #include "project/omProject.h"
+#include "system/omBuildSegmentation.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "system/omBuildSegmentation.h"
+#include "system/omStateManager.h"
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
-#include "system/omStateManager.h"
+#include "volume/omSegmentation.h"
+#include "volume/omVolume.h"
 
-SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget * parent)
- : QWidget(parent)
+SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspectorWidget* parent)
+	: QWidget(parent)
+	, mParent(parent)
 {
 	sdw = incoming_sdw;
 
@@ -35,8 +38,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, QWidget 
 
 QGroupBox* SegInspector::makeVolBox()
 {
-        OmSegmentation & seg = OmProject::GetSegmentation(sdw.getID());
-	return new OmVolInspector(&seg, this);
+	return new OmVolInspector(&sdw.getSegmentation(), this);
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -83,9 +85,7 @@ QGroupBox* SegInspector::makeToolsBox()
 	QGroupBox* segmentBox = new QGroupBox("Tools");
 	QGridLayout *gridSegment = new QGridLayout( segmentBox );
 
-	addSegmentButton = new QPushButton(segmentBox);
-        addSegmentButton->setObjectName(QString::fromUtf8("addSegmentButton"));
-        addSegmentButton->setText("Add Segment");
+	addSegmentButton = new AddSegmentButton(this);
         gridSegment->addWidget(addSegmentButton, 0, 0);
 
 	return segmentBox;
@@ -253,12 +253,14 @@ QString& GetScriptCmd (QString arg)
 	static QString cmd;
 
 	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
-	debug ("meshinator", "%s\n", qPrintable (omniPath));
+	debug ("meshinator", "omni: %s\n", qPrintable (omniPath));
 	QString cmdPath = omniPath; 
 
 	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
 	cmd = cmdPath;
 	cmd += "/scripts/cluster/headnodemesher.pl " + arg;
+
+	debug ("meshinator", "script: %s\n", qPrintable (cmd));
 
 	return cmd;
 }
@@ -273,18 +275,18 @@ void SegInspector::on_buildButton_clicked()
 	QString whatOrHowToBuild = buildComboBox->currentText();
 	if ("Data" == whatOrHowToBuild ){
 		bs->build_seg_image();
-		emit segmentationBuilt(sdw.getID());
+		rebuildSegmentLists(sdw.getID(), 0);
 
 	} else if ( "Mesh" == whatOrHowToBuild ){
 		bs->build_seg_mesh();
 
 	} else if ("Data & Mesh" == whatOrHowToBuild){
 		bs->buildAndMeshSegmentation();
-		emit segmentationBuilt(sdw.getID());
+		rebuildSegmentLists(sdw.getID(), 0);
 
 	} else if ("Load Dendrogram" == whatOrHowToBuild){
 		bs->loadDendrogram();
-		emit segmentationBuilt(sdw.getID());
+		rebuildSegmentLists(sdw.getID(), 0);
 
 	} else if( "Meshinator" == whatOrHowToBuild ){
 		doMeshinate( &current_seg );
@@ -345,4 +347,9 @@ void SegInspector::populateSegmentationInspector()
 	notesEdit->setPlainText( sdw.getNote() );
 
 	updateFileList();
+}
+
+void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
+{
+	mParent->rebuildSegmentLists(segmentationID, segID);
 }

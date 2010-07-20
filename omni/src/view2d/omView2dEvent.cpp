@@ -1,6 +1,8 @@
 #include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
@@ -16,65 +18,38 @@
  */
 
 //\{
-void OmView2d::mouseDoubleClickEvent(QMouseEvent*)
-{
-	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
-	case DEND_MODE:
-	case EDIT_SYSTEM_MODE:
-		break;
-	}
-}
-
 void OmView2d::mousePressEvent(QMouseEvent * event)
 {
 	clickPoint.x = event->x();
 	clickPoint.y = event->y();
-	rememberCoord = ScreenToSpaceCoord(clickPoint);
-	rememberDepthCoord = mViewGroupState->GetViewDepthCoord();
 
-	switch (OmStateManager::GetSystemMode()) {
-
-	case NAVIGATION_SYSTEM_MODE: 
-		if (event->button() == Qt::LeftButton) {
-			const bool crosshair = event->modifiers() & Qt::ControlModifier;
-			if( crosshair ){
-				mouseSetCrosshair(event);
-			} else {
-				mouseNavModeLeftButton(event);
-			}
-		} else if (event->button() == Qt::RightButton) {
-			mouseSelectSegment(event);
-		}
-			
-		cameraMoving = true;
-			
-		break;
-			
-  	case DEND_MODE: 
+	if( SPLIT_MODE == OmStateManager::GetToolMode()){
 		if (event->button() == Qt::LeftButton) {
 			doFindAndSplitSegment( event );
 			doRedraw();
+			return;
 		}
-		break;
-		
-	case EDIT_SYSTEM_MODE: 
-		if (event->button() == Qt::LeftButton) {
-			const bool crosshair = event->modifiers() & Qt::ControlModifier;
-			if( crosshair ){
-				mouseSetCrosshair(event);
-			} else {
-				mouseEditModeLeftButton(event);
-			}
-		} else if (event->button() == Qt::RightButton) {
-			mouseSelectSegment(event);
-		}
-		
-		break;
 	}
+
+	if( event->button() == Qt::LeftButton) {
+		const bool crosshair = event->modifiers() & Qt::ControlModifier;
+		if( crosshair ){
+			mouseSetCrosshair(event);
+		} else {
+			mouseLeftButton(event);
+		}
+	} else if (event->button() == Qt::RightButton) {
+		if(event->modifiers() & Qt::ControlModifier) {
+			mouseSelectSegment(event);
+		} else {
+			mouseShowSegmentContextMenu(event);
+		}
+	}
+			
+	cameraMoving = true;
 }
 
-void OmView2d::doRedraw()
+void OmView2d::doRedraw() 
 {
 	Refresh();
 	mTextures.clear();
@@ -87,8 +62,7 @@ void OmView2d::mouseSetCrosshair(QMouseEvent * event)
 
 	SetDepth(event);
 
-	OmStateManager::SetToolMode(PAN_MODE);
-	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
+	mViewGroupState->setTool(PAN_MODE);
 }
 
 DataCoord OmView2d::getMouseClickpointLocalDataCoord(QMouseEvent * event)
@@ -105,11 +79,13 @@ DataCoord OmView2d::getMouseClickpointGlobalDataCoord(QMouseEvent * event)
 void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 {
 	OmSegmentation & segmentation = sdw.getSegmentation();
-	const OmId segmentID = sdw.getID();
 
-	if( !segmentation.IsSegmentValid(segmentID)){
+	if( !sdw.isValid() ){
+		printf("not valid\n");
 		return;
 	}
+
+	const OmId segmentID = sdw.getID();
 
 	OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
 
@@ -124,6 +100,15 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	Refresh();
 	mTextures.clear();
 	myUpdate();
+}
+
+void OmView2d::mouseShowSegmentContextMenu(QMouseEvent * event)
+{
+	SegmentDataWrapper * sdw = getSelectedSegment(event);
+	if(sdw) {
+        	mSegmentContextMenu.Refresh(*sdw, mViewGroupState);
+        	mSegmentContextMenu.exec(event->globalPos());
+	}
 }
 
 void OmView2d::mouseSelectSegment(QMouseEvent * event)
@@ -158,7 +143,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 
 			OmFilter2d &filter = current_channel.GetFilter(id);
 
-			if (filter.GetSegmentation() ) {
+			if (OmProject::IsSegmentationValid(filter.GetSegmentation()) ) {
 				segmentationID = filter.GetSegmentation();
 				OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
 				segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
@@ -173,31 +158,26 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 	return NULL;
 }
 
-void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
+void OmView2d::MouseRelease_LeftButton_Filling(QMouseEvent * event)
 {
-
 	mScribbling = false;
 	DataCoord dataClickPoint = getMouseClickpointLocalDataCoord(event);
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid() ){
 		return;
+	}
 
 	//switch on tool mode
 	OmSegID data_value;
 	switch (OmStateManager::GetToolMode()) {
-	case ADD_VOXEL_MODE:
+	case FILL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
-		break;
-
-	case SUBTRACT_VOXEL_MODE:
-		data_value = NULL_SEGMENT_DATA;
+		data_value = sdw.getID();
 		break;
 
 	default:
@@ -205,13 +185,17 @@ void OmView2d::EditMode_MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		break;
 	}
 
-	OmId segid = OmProject::GetSegmentation(segmentation_id).GetVoxelSegmentId(globalDataClickPoint);
-	FillToolFill(segmentation_id, globalDataClickPoint, data_value, segid);
+	const OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+	if(!segid) {
+		return;
+	}
+       	const OmSegID rootSegID = sdw.getSegmentation().GetSegmentCache()->findRootID(segid);
+	FillToolFill( sdw.getSegmentationID(), globalDataClickPoint, data_value, rootSegID );
 
 	doRedraw();
 }
 
-void OmView2d::EditModeMouseRelease(QMouseEvent * event)
+void OmView2d::MouseRelease(QMouseEvent * event)
 {
 	// END PAINTING
 
@@ -223,7 +207,7 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 
 	if (event->button() == Qt::LeftButton) {
 		if (amInFillMode()) {
-			EditMode_MouseRelease_LeftButton_Filling(event);
+			MouseRelease_LeftButton_Filling(event);
 		} else if (mScribbling) {
 
 			mScribbling = false;
@@ -231,26 +215,25 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 			//store current selection
-			OmId segmentation_id, segment_id;
-			bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+			SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 			//return if not valid
-			if (!valid_edit_selection)
+			if (!sdw.isValid()){
 				return;
+			}
 
 			//switch on tool mode
 			OmSegID data_value;
 			switch (OmStateManager::GetToolMode()) {
 			case ADD_VOXEL_MODE:
-				//get value associated to segment id
-				data_value = segment_id;
+				data_value = sdw.getID();
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
 				data_value = NULL_SEGMENT_DATA;
 				break;
 
-			case SELECT_VOXEL_MODE:
+			case SELECT_MODE:
 				doselection = true;
 				break;
 
@@ -260,10 +243,11 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 			}
 
 			//run action
-			if (!doselection)
-				BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
-			else
-				PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+			if (!doselection) {
+				BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
+			} else {
+				PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
+			}
 
 			lastDataPoint = dataClickPoint;
 
@@ -272,23 +256,19 @@ void OmView2d::EditModeMouseRelease(QMouseEvent * event)
 	}
 }
 
-void OmView2d::EditModeMouseMove(QMouseEvent * event)
+void OmView2d::MouseMove(QMouseEvent * event)
 {
 	// KEEP PAINTING
-	//debug ("genone", "scribbling? %i!\n", mScribbling);
-
 	
 	if (PAN_MODE == OmStateManager::GetToolMode()) {
-		mouseMove_NavMode_CamMoving(event);
+		mouseMove_CamMoving(event);
 	} else if (mScribbling) {
-		EditMode_MouseMove_LeftButton_Scribbling(event);
+		MouseMove_LeftButton_Scribbling(event);
 		return;
 	}
 }
 void OmView2d::wheelEvent(QWheelEvent * event)
 {
-	//debug("genone","OmView2d::wheelEvent -- " << mViewType);
-
 	const int numDegrees = event->delta() / 8;
 	const int numSteps = numDegrees / 15;
 
@@ -311,8 +291,7 @@ void OmView2d::wheelEvent(QWheelEvent * event)
 
 void OmView2d::MouseWheelZoom(const int numSteps)
 {
-	if (numSteps >= 0) {
-		// ZOOMING IN
+	if (numSteps >= 0) { // ZOOMING IN
 
 		Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
@@ -324,8 +303,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 			Vector2 <int> new_zoom=Vector2i(current_zoom.x,current_zoom.y+ (1 * numSteps));
 		        PanAndZoom(new_zoom);
 		}
-	} else {
-		// ZOOMING OUT
+	} else { // ZOOMING OUT
 
 		Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
 
@@ -367,47 +345,17 @@ void OmView2d::mouseZoom(QMouseEvent * event)
 	}
 }
 
-void OmView2d::mouseNavModeLeftButton(QMouseEvent * event)
+void OmView2d::mouseLeftButton(QMouseEvent * event)
 {
-	switch (OmStateManager::GetToolMode()) {
-	case SELECT_MODE:
-		mouseSelectSegment(event);
-		break;
-	case PAN_MODE:
-		// dealt with in mouseMoveEvent()
-		break;
-	case CROSSHAIR_MODE:
-		mouseSetCrosshair(event);
-		break;
-	case ZOOM_MODE:
-		mouseZoom(event);
-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-		break;
-	case ADD_VOXEL_MODE:
-		break;
-	case SUBTRACT_VOXEL_MODE:
-		break;
-	case SELECT_VOXEL_MODE:
-		break;
-	case VOXELIZE_MODE:
-		break;
-	default:
-		break;
-	}
-}
-
-void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
-{
-	debug ("view2d", "OmView2d::mouseEditModeLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
+	debug ("view2d", "OmView2d::mouseLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
 	bool doselection = false;
 	bool dosubtract = false;
-	mScribbling = true;
 	
 	OmSegID data_value;
 
 	switch (OmStateManager::GetToolMode()) {
 	case SELECT_MODE:
-		// debug ("genone", "Here!\n");
+		mScribbling = true;
 		mouseSelectSegment(event);
 		return;
 		break;
@@ -428,8 +376,10 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		return;
 		break;
 	case ADD_VOXEL_MODE:
+		mScribbling = true;
 		break;
 	case SUBTRACT_VOXEL_MODE:
+		mScribbling = true;
 		dosubtract = true;
 		break;
 	case SELECT_VOXEL_MODE:	
@@ -439,22 +389,24 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 		return;
 		break;
 	default:
+		return;
 		break;
 	}
 
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-	OmId segmentation_id, segment_id;
-	if (OmSegmentEditor::GetEditSelection(segmentation_id, segment_id)) {
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	if ( sdw.isValid() ) {
 		//run action
 		if (!doselection) {
 			if (dosubtract) {
 				data_value = NULL_SEGMENT_DATA;
 			} else {
-				data_value = segment_id;
+				data_value = sdw.getID();
 			}
-			BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
+			BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
 		} else {
-			PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+			PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
+			bresenhamLineDraw(lastDataPoint, globalDataClickPoint, true);
 		}
 	} else {
 		debug("genone", "No segment_id in edit selection\n");
@@ -463,40 +415,47 @@ void OmView2d::mouseEditModeLeftButton(QMouseEvent * event)
 	lastDataPoint = getMouseClickpointLocalDataCoord(event);;
 
 	myUpdate();
-
 }
 
 void OmView2d::mouseMoveEvent(QMouseEvent * event)
 {
-
 	mMousePoint = Vector2f(event->x(), event->y());
 
 	// http://qt.nokia.com/doc/4.5/qt.html#MouseButton-enum
-	if (event->buttons() != Qt::LeftButton) {
-		// do nothing
-	} else {
+	if (event->buttons() == Qt::LeftButton) {
+		switch (OmStateManager::GetToolMode()) {
+		case SPLIT_MODE:
+			break;
 
-		switch (OmStateManager::GetSystemMode()) {
-		case NAVIGATION_SYSTEM_MODE:
-			if (cameraMoving) {
-				if (PAN_MODE == OmStateManager::GetToolMode()) {
-					mouseMove_NavMode_CamMoving(event);
-					OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-				}
-			}
+		case SELECT_MODE:
+		case CROSSHAIR_MODE:
+		case PAN_MODE:
+		case ZOOM_MODE:
+			if (cameraMoving && PAN_MODE == OmStateManager::GetToolMode()) {
+				mouseMove_CamMoving(event);
+				OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+			} else if(cameraMoving && SELECT_MODE == OmStateManager::GetToolMode()){
+                        	MouseMove_LeftButton_Scribbling(event);
+                        }
+
 			break;
-		case DEND_MODE:
+
+		case ADD_VOXEL_MODE:
+		case SUBTRACT_VOXEL_MODE:
+		case FILL_MODE:
+			MouseMove(event);
 			break;
-		case EDIT_SYSTEM_MODE:
-			EditModeMouseMove(event);
-			break;
+
+		case SELECT_VOXEL_MODE:
+		case VOXELIZE_MODE:
+			assert(0 && "not implemented");
 		}
 	}
 
 	myUpdate();
 }
 
-void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
+void OmView2d::MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 {
 	bool doselection = false;
 
@@ -504,11 +463,10 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
 
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid())
 		return;
 
 	//switch on tool mode
@@ -516,14 +474,14 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
 		data_value = NULL_SEGMENT_DATA;
 		break;
 
-	case SELECT_VOXEL_MODE:
+	case SELECT_MODE:
 		doselection = true;
 		break;
 
@@ -534,11 +492,12 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 	if (!doselection) {
 		//run action
-		BrushToolApplyPaint(segmentation_id, globalDataClickPoint, data_value);
+		BrushToolApplyPaint(sdw.getSegmentationID(), globalDataClickPoint, data_value);
 		bresenhamLineDraw(lastDataPoint, dataClickPoint);
 	} else {
 		// TODO: bug here; ask MattW
-		PickToolAddToSelection(segmentation_id, globalDataClickPoint);
+		bresenhamLineDraw(lastDataPoint, dataClickPoint, doselection);
+		PickToolAddToSelection(sdw.getSegmentationID(), globalDataClickPoint);
 	}
 
 	lastDataPoint = dataClickPoint;
@@ -548,30 +507,48 @@ void OmView2d::EditMode_MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 
 void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 {
-	switch (OmStateManager::GetSystemMode()) {
-	case NAVIGATION_SYSTEM_MODE:
+	mScribbling = false;
+
+	switch (OmStateManager::GetToolMode()) {
+	case SPLIT_MODE:
+		break;
+
+	case SELECT_MODE:
+	case CROSSHAIR_MODE:
+	case PAN_MODE:
+	case ZOOM_MODE:
 		cameraMoving = false;
-		PickToolGetColor(event);
 		break;
-	case DEND_MODE:
+
+	case ADD_VOXEL_MODE:
+	case SUBTRACT_VOXEL_MODE:
+	case FILL_MODE:
+		MouseRelease(event);
 		break;
-	case EDIT_SYSTEM_MODE:
-		EditModeMouseRelease(event);
+
+	case SELECT_VOXEL_MODE:
+	case VOXELIZE_MODE:
+		assert(0 && "not implemented");
 		break;
 	}
 }
 
-void OmView2d::mouseMove_NavMode_CamMoving(QMouseEvent * event)
+void OmView2d::mouseMove_CamMoving(QMouseEvent * event)
 {
 	Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
 	Vector2f current_pan = GetPanDistance(mViewType);
 	Vector2i drag = Vector2i((clickPoint.x - event->x()), clickPoint.y - event->y());
-	Vector2i thisPoint = Vector2i(event->x(),event->y());
+
+	SpaceCoord dragCoord = ScreenToSpaceCoord(drag);
+	SpaceCoord zeroCoord = ScreenToSpaceCoord(Vector2i(0,0));
+
+	//debug("jitterbug", "testCoord4: %f,%f,%f\n", DEBUGV3(testCoord4));
+	//debug("jitterbug", "testCoord5: %f,%f,%f\n", DEBUGV3(testCoord5));
 
 	if (OmLocalPreferences::getStickyCrosshairMode()) {
-		SpaceCoord thisCoord = ScreenToSpaceCoord(thisPoint);
-		SpaceCoord difference = thisCoord - rememberCoord;
-	       	SpaceCoord depth = mViewGroupState->GetViewDepthCoord() - difference;
+		SpaceCoord difference = zeroCoord - dragCoord;
+	       	SpaceCoord oldDepth = mViewGroupState->GetViewDepthCoord();
+	       	SpaceCoord depth = oldDepth - difference;
 		mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
 		mViewGroupState->SetViewSliceDepth(XZ_VIEW, depth.y);
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
@@ -664,14 +641,6 @@ void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
 	}
 }
 
-void OmView2d::SystemModeChangeEvent()
-{
-	if (mVolumeType == SEGMENTATION) {
-		modified_Ids = OmProject::GetSegmentation(mImageId).GetSelectedSegmentIds();
-		delete_dirty = true;
-		myUpdate();
-	}
-}
 //\}
 
 /**
@@ -796,7 +765,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 //\}
 
-void OmView2d::resetWindow()
+void OmView2d::resetWindowState()
 {
 	SpaceCoord depth = mVolume->NormToSpaceCoord( NormCoord(0.5, 0.5, 0.5));
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, depth.x);
@@ -804,7 +773,13 @@ void OmView2d::resetWindow()
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, depth.z);
 	mViewGroupState->SetPanDistance(YZ_VIEW, Vector2f(0,0));
 	mViewGroupState->SetPanDistance(XZ_VIEW, Vector2f(0,0));
-	mViewGroupState->SetPanDistance(XY_VIEW, Vector2f(0,0));			
+	mViewGroupState->SetPanDistance(XY_VIEW, Vector2f(0,0));
+}
+
+void OmView2d::resetWindow()
+{
+	resetWindowState();
+
 	if (OmLocalPreferences::getStickyCrosshairMode()){
 		debug("cross","we made it to the great Escape!\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
@@ -815,59 +790,36 @@ void OmView2d::resetWindow()
 
 void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 {
-#if 1
-        OmId segmentationID = mImageId;
-	OmId segmentID;
-        if(SEGMENTATION != mVolumeType) {
+	SegmentDataWrapper * sdw = getSelectedSegment( event );
+
+        if(NULL == sdw) {
                 return;
         }
 
         DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-       	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
+       	OmSegmentation & segmentation = sdw->getSegmentation();
 
+	OmId segmentationID, segmentID;
 	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
 		assert(mImageId==segmentationID);
 	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 
-		OmSegment * seg1 = segmentation.GetSegment(segmentID);
-		OmSegment * seg2 = segmentation.GetSegment(segid);
+		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
+		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segid);
 
                 if(NULL == seg1 || NULL == seg2) {
                         return;
                 }
 
-        	seg1->splitTwoChildren(seg2);
+		OmSegmentSplitAction::RunIfSplittable(seg1, seg2);
 
 		mViewGroupState->SetSplitMode(false);
 	} else {
 	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
-		if (segmentID && segmentation.GetSegment(segmentID)) {
+		if (segmentID && segmentation.GetSegmentCache()->GetSegment(segmentID)) {
 				mViewGroupState->SetSplitMode(segmentationID, segmentID);
 		}
 	}
 
-#else
-	SegmentDataWrapper * sdw = getSelectedSegment( event );
-	if( NULL == sdw ){
-		return;
-	}
-
-	if( SEGMENTATION != mVolumeType ){
-		return;
-	}
-
-	OmSegment * seg1 = sdw->getSegment();
-
-	DataCoord globalDataClickPoint = getMouseClickpointGlobalDataCoord(event);
-	OmId segmentationID = mImageId;
-	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
-
-	OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
-	OmSegment * seg2 = segmentation.GetSegment(segid);
-		
-	seg1->splitTwoChildren(seg2);
-
-	OmStateManager::SetSystemModePrev();
-#endif
 }

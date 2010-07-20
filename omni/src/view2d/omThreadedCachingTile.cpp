@@ -67,7 +67,6 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 
 void OmThreadedCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID)
 {
-	std::cerr << __FUNCTION__ << endl;
 	TextureIDThreadedCache::Add(tileCoord, texID);
 }
 

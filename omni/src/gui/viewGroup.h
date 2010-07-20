@@ -15,10 +15,10 @@ class ViewGroup : public QWidget
 {
  public:
 	ViewGroup( MainWindow * mainWindow, OmViewGroupState * viewGroupState );
-	void addView2Dchannel( OmId chan_id, ViewType vtype);
-	void addView2Dsegmentation( OmId segmentation_id, ViewType vtype);
+	QWidget * addView2Dchannel( const OmId chan_id, ViewType vtype);
+	void addView2Dsegmentation( const OmId segmentation_id, ViewType vtype);
 	void addView3D();
-	void addAllViews( OmId channelID, OmId segmentationID );
+	void addAllViews( const OmId channelID, const OmId segmentationID );
 
  private:
 	MainWindow * mMainWindow;

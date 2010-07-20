@@ -18,8 +18,9 @@ class OmVolumeCuller {
 
 public:
 	OmVolumeCuller(const Matrix4f& projmodelview, 
-					 const NormCoord& pos, const NormCoord& focus, 
-					 OmBitfield options);
+		       const NormCoord& pos, 
+		       const NormCoord& focus, 
+		       OmBitfield options);
 	
 	//accessors
 	bool CheckDrawOption(OmBitfield option);
@@ -31,13 +32,12 @@ public:
 	
 	//transform
 	OmVolumeCuller GetTransformed(const Matrix4f&, const Matrix4f&);
-	OmVolumeCuller GetTransformedCuller(const Matrix4f&, const Matrix4f&);
+	OmVolumeCuller * GetTransformedCuller(const Matrix4f&, const Matrix4f&);
 	void TransformCuller(const Matrix4f& mat, const Matrix4f& matInv);
 
 	//tests
 	Visibility TestChunk( OmMipChunk &);
 	Visibility VisibilityTestNormBbox(const NormBbox &);
-	
 	
 	//temp
 	void Draw();
@@ -51,7 +51,5 @@ private:
 	
 	FrustumCullerf mFrustumCuller;
 };
-
-
 
 #endif

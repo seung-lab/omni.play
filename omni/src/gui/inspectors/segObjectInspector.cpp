@@ -4,11 +4,13 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
+#include "system/omCacheManager.h"
+#include "utility/stringHelpers.h"
 
-SegObjectInspector::SegObjectInspector(SegmentDataWrapper incoming_sdw, QWidget* parent)
+SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
  : QWidget(parent)
 {
-	sdw = incoming_sdw;
+	sdw = sdw_;
 
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
@@ -35,7 +37,7 @@ void SegObjectInspector::set_initial_values()
 
 	notesEdit->setPlainText( sdw.getNote() );
 
-	const Vector3 < float >&color = sdw.getColor();
+	const Vector3 < float >&color = sdw.getColorFloat();
 
 	QPixmap *pixm = new QPixmap(40, 30);
 	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
@@ -44,8 +46,10 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	dataValuesList->setText( "fixme" );
-	origDataValueList->setText( sdw.get_original_mapped_data_value() );
+	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
+	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSizeWithChildren()));
+	
+	origDataValueList->setText( sdw.getIDstr() );
 	chunkList->setText( "disabled" );
 }
 
@@ -69,9 +73,10 @@ void SegObjectInspector::setSegObjColor()
 	colorButton->update();
 	current_color = color;
 
-	Vector3 < float >color_vector(color.redF(), color.greenF(), color.blueF());
+	Vector3 < float >color_vector(color.redF()/2, color.greenF()/2, color.blueF()/2);
 	sdw.setColor(color_vector);
 
+	OmCacheManager::Freshen(true);
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
@@ -128,23 +133,32 @@ QGroupBox* SegObjectInspector::makeSourcesBox()
 	origDataValueList->setObjectName(QString::fromUtf8("origDataValueList"));
         grid->addWidget(origDataValueList, 4, 1);
 
-	QLabel* dataValuesLabel = new QLabel(sourceBox);
-	dataValuesLabel->setObjectName(QString::fromUtf8("dataValuesLabel"));
-	dataValuesLabel->setText( "Data values:" );
-        grid->addWidget(dataValuesLabel, 5, 0);
+	QLabel* sizeLabelNoChildren = new QLabel(sourceBox);
+	sizeLabelNoChildren->setObjectName(QString::fromUtf8("sizeLabelNoChildren"));
+	sizeLabelNoChildren->setText( "Size (voxels--no children):" );
+        grid->addWidget(sizeLabelNoChildren, 5, 0);
 
-	dataValuesList = new QLabel(sourceBox);
-	dataValuesList->setObjectName(QString::fromUtf8("dataValuesList"));
-        grid->addWidget(dataValuesList, 5, 1);
+	sizeNoChildren = new QLabel(sourceBox);
+	sizeNoChildren->setObjectName(QString::fromUtf8("sizeNoChildren"));
+        grid->addWidget(sizeNoChildren, 5, 1);
+
+	QLabel* sizeLabelWithChildren = new QLabel(sourceBox);
+	sizeLabelWithChildren->setObjectName(QString::fromUtf8("sizeLabelWithChildren"));
+	sizeLabelWithChildren->setText( "Size (voxels--with children):" );
+        grid->addWidget(sizeLabelWithChildren, 6, 0);
+
+	sizeWithChildren = new QLabel(sourceBox);
+	sizeWithChildren->setObjectName(QString::fromUtf8("sizeWithChildren"));
+        grid->addWidget(sizeWithChildren, 6, 1);
 
 	QLabel* chunkLabel = new QLabel(sourceBox);
 	chunkLabel->setObjectName(QString::fromUtf8("chunkLabel"));
 	chunkLabel->setText( "Chunks" );
-        grid->addWidget(chunkLabel, 6, 0);
+        grid->addWidget(chunkLabel, 7, 0);
 
 	chunkList = new QLabel(sourceBox);
 	chunkList->setObjectName(QString::fromUtf8("chunkList"));
-        grid->addWidget(chunkList, 6, 1);
+        grid->addWidget(chunkList, 7, 1);
 
 	return sourceBox;
 }

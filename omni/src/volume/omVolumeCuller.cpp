@@ -1,11 +1,7 @@
-
 #include "omVolumeCuller.h"
 #include "omMipChunk.h"
-
 #include "common/omGl.h"
 #include "common/omDebug.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////
@@ -13,10 +9,14 @@
 ///////
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
-			       const NormCoord & pos, const NormCoord & focus, OmBitfield option)
-:mProjModelView(projmodelview), mPosition(pos), mFocus(focus), mOptionBits(option)
+			       const NormCoord & pos, 
+			       const NormCoord & focus, 
+			       OmBitfield option)
+	: mProjModelView(projmodelview)
+	, mPosition(pos)
+	, mFocus(focus)
+	, mOptionBits(option)
 {
-
 	mFrustumCuller.setup(mProjModelView);
 }
 
@@ -50,10 +50,13 @@ const NormCoord & OmVolumeCuller::GetFocus()
 /////////////////////////////////
 ///////          Transform Methods
 
-OmVolumeCuller OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, const Matrix4f & matInv)
+OmVolumeCuller * OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, 
+						      const Matrix4f & matInv)
 {
-	//compiler should optimize to alloc directly to return address
-	return OmVolumeCuller(mProjModelView * mat, matInv * mPosition, matInv * mFocus, mOptionBits);
+	return new OmVolumeCuller(mProjModelView * mat, 
+				  matInv * mPosition, 
+				  matInv * mFocus, 
+				  mOptionBits);
 }
 
 void OmVolumeCuller::TransformCuller(const Matrix4f & mat, const Matrix4f & matInv)

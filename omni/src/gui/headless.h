@@ -1,6 +1,8 @@
 #ifndef HEADLESS_H
 #define HEADLESS_H
 
+#include "common/omCommon.h"
+
 class OmSegmentationChunkCoord;
 
 class Headless
@@ -10,7 +12,7 @@ class Headless
 
  private:
 
-	void openProject( QString fName, const bool autoOpenAndClose );
+	void openProject( QString fName );
 	void processLine( QString line, QString fName );
 	void runInteractive( QString fName );
 	void runScript( const QString scriptFileName, QString fName );

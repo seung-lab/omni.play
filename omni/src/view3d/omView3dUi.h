@@ -7,7 +7,7 @@
  */
 
 
-#include "view3d/omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui> 
@@ -82,7 +82,7 @@ public:
 	
 	
 private:
-	OmView3d * const mpView3d;
+	OmView3d *const mpView3d;
 	OmViewGroupState * mViewGroupState;
 
 	OmSegmentContextMenu mSegmentContextMenu;
@@ -94,6 +94,10 @@ private:
 	void crosshair(QMouseEvent * event);
 	void CenterAxisOfRotation(QMouseEvent * event);
 	OmId PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
+	void resetWindow();
+	void doZoom(int direction);
+
+
 	bool mCPressed;
 };
 

@@ -10,11 +10,13 @@
 #include "omMeshTypes.h"
 
 #include "omMipMeshCoord.h"
-#include "common/omStd.h"
+#include "common/omCommon.h"
 #include "common/omGl.h"
 #include "system/omCacheableBase.h"
-#include "utility/omHdf5.h"
+#include "datalayer/omDataWrapper.h"
 
+
+class OmHdf5;
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
@@ -23,14 +25,14 @@ class OmMipMesh : public OmCacheableBase {
 
 public:
 	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *pMipMeshManager);
-	~OmMipMesh();
+	virtual ~OmMipMesh();
 
 	void Load();
 	void Save();
 	void Flush();
 
 	string GetFileName();
-	QString GetDirectoryPath();
+	string GetDirectoryPath();
 	string GetLocalPathForHd5fChunk();
 
 	bool IsVbo();
@@ -43,26 +45,33 @@ public:
         void setSegmentationID(OmId sid);
         OmId getSegmentationID();
 
+	bool hasData(){ return mHasData; }
+
 private:
 	OmId mSegmentationID;
 	OmHdf5 * mHdf5File;
 	OmMipMeshManager * const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
-	QString mPath;
+	bool mHasData;
+	string mPath;
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
+	OmDataWrapperPtr mpStripOffsetSizeDataWrap; //dim = 2 * mStripCount
 	uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount
 
 	// offsets for vectors in geometry data (specifies geometry)
 	uint32_t mVertexIndexCount;
+	OmDataWrapperPtr mpVertexIndexDataWrap; //dim = mVertexIndexCount with 2 bytes check 65K limit
 	GLuint *mpVertexIndexData; //dim = mVertexIndexCount with 2 bytes check 65K limit
+
 	uint32_t m2VertexIndexCount;
 	GLuint *mp2VertexIndexData;
 
 	// interleved vertex and normal data (raw data)
 	uint32_t mVertexCount;
+	OmDataWrapperPtr mpVertexDataWrap;	//dim = 6 * mVertexCount 4 bytes
 	GLfloat *mpVertexData;	//dim = 6 * mVertexCount 4 bytes
 
 	GLuint mVertexDataVboId;
@@ -74,8 +83,7 @@ private:
 	GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
  	GLuint displayList;
         bool hasDisplayList;
-	// ostream
-	friend ostream& operator<<(ostream &out, const OmMipMesh &m);
+
 	friend class OmMesher;
 };
 

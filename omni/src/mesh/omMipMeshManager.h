@@ -33,12 +33,6 @@ class OmMipMeshManager : public MipMeshCache {
 	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
 	void GetMesh(QExplicitlySharedDataPointer<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
-	
-	//drawing
-	void DrawMeshes(const OmBitfield &drawOps,
-			const OmMipChunkCoord &mipCoord,
-			const OmSegPtrs & segmentsToDraw,
-			OmViewGroupState * vgs);
 		
  private:
 	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);

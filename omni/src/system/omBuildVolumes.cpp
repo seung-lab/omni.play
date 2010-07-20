@@ -1,8 +1,9 @@
 #include "omBuildVolumes.h"
+#include "common/omDebug.h"
 #include "utility/omImageDataIo.h"
 #include "project/omProject.h"
-#include "utility/omDataLayer.h"
-#include "utility/omDataReader.h"
+#include "datalayer/omDataLayer.h"
+#include "datalayer/omDataReader.h"
 #include "utility/stringHelpers.h"
 
 #include <QTextStream>
@@ -22,30 +23,29 @@ void OmBuildVolumes::setFileNamesAndPaths( QFileInfoList fileNamesAndPaths )
 	mFileNamesAndPaths = fileNamesAndPaths;
 }
 
-bool OmBuildVolumes::checkSettingsAndTime(QString type )
+bool OmBuildVolumes::checkSettings()
 {
 	if( !are_file_names_valid()){
 		printf("\tError: file list contains invalid files\n");
 		return false;
 	}
 
-	startTiming(type);
 	return true;
 }
 
 void OmBuildVolumes::startTiming(QString type)
 {
 	printf("starting %s build...\n", qPrintable(type));
-	time(&time_start);
+	build_timer.start();
 }
 
 void OmBuildVolumes::stopTiming(QString type)
 {
-	time(&time_end);
-	time_dif = difftime(time_end, time_start);
+	build_timer.stop();
 
 	OmProject::Save();
-	printf("\tdone: %s build performed in (%.2lf secs)\n", qPrintable(type), time_dif );
+	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), build_timer.s_elapsed() );
+	printf("************\n");
 }
 
 bool OmBuildVolumes::canDoLoadDendrogram()

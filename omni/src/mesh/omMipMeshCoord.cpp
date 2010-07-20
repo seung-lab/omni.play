@@ -9,7 +9,8 @@ OmMipMeshCoord::OmMipMeshCoord()
 }
 
 OmMipMeshCoord::OmMipMeshCoord(const OmMipChunkCoord & rMipChunkCoord, OmSegID dataValue)
-:MipChunkCoord(rMipChunkCoord), DataValue(dataValue)
+	: MipChunkCoord(rMipChunkCoord)
+	, DataValue(dataValue)
 {
 
 }
@@ -33,13 +34,9 @@ bool OmMipMeshCoord::operator!=(const OmMipMeshCoord & rhs) const
 /* comparitor for key usage */
 bool OmMipMeshCoord::operator<(const OmMipMeshCoord & rhs) const
 {
-	if (MipChunkCoord != rhs.MipChunkCoord)
+	if (MipChunkCoord != rhs.MipChunkCoord) {
 		return (MipChunkCoord < rhs.MipChunkCoord);
-	return (DataValue < rhs.DataValue);
-}
+	}
 
-ostream & operator<<(ostream & out, const OmMipMeshCoord & in)
-{
-	out << in.MipChunkCoord << " { " << (int)in.DataValue << " } ";
-	return out;
+	return (DataValue < rhs.DataValue);
 }

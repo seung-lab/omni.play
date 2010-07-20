@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "omPreferenceEvent.h"
 
 OmPreferenceEvent::OmPreferenceEvent(QEvent::Type type, int pref)

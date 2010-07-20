@@ -26,7 +26,7 @@ class OmMipChunk : public OmCacheableBase {
 
 public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
-	~OmMipChunk();
+	virtual ~OmMipChunk();
 		
 	//overridden datavolume methods so as to notify cache
 	void Open();
@@ -58,13 +58,13 @@ public:
 	
 	
 	//meta data accessors
-	const OmSegIDs & GetModifiedVoxelValues();
+	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 	
 	
 	//mipchunk data accessors
-	const OmSegIDs & GetDirectDataValues();
-	virtual void RefreshDirectDataValues( OmSegmentCache *);
+	const OmSegIDsSet & GetDirectDataValues();
+	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
 	
 
 	//chunk extent
@@ -82,15 +82,10 @@ public:
 	
 	//slice
 	AxisAlignedBoundingBox<int> ExtractSliceExtent(OmDataVolumePlane plane, int coord);
-	virtual void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast = false);
+	void * ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast = false);
 	
 	//meshing
 	vtkImageData* GetMeshImageData();
-	
-	
-	//drawing
-	bool DrawCheck( OmVolumeCuller & );
-	void DrawClippedExtent();
 	
 	int GetBytesPerSample();
 	bool ContainsVoxel(const DataCoord &vox);
@@ -100,7 +95,7 @@ protected:
 	bool mIsOpen;
 	void SetOpen(bool);
 
-	QMutex * mOpenLock;
+	QMutex mOpenLock;
 	int mEstMemBytes;
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 	
@@ -110,7 +105,7 @@ protected:
 	//cache direct and indirectly contained values for drawing tree
 	bool containedValuesDataLoaded;
 	void loadMetadataIfPresent();
-	OmSegIDs mDirectlyContainedValues;
+	OmSegIDsSet mDirectlyContainedValues;
 
 	//keep track what needs to be written out
 	bool mChunkVolumeDataDirty;
@@ -123,8 +118,8 @@ protected:
 
 	//octree properties
 	DataBbox mDataExtent;
-	NormBbox mNormExtent;			//extent of chunk in norm space
-	NormBbox mClippedNormExtent;	//extent of contained data in norm space
+	NormBbox mNormExtent;		// extent of chunk in norm space
+	NormBbox mClippedNormExtent;	// extent of contained data in norm space
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
 	set<OmMipChunkCoord> mChildrenCoordinates;
@@ -134,12 +129,15 @@ protected:
 	string mDirectoryPath;
 	
 	//voxel management
-	OmSegIDs mModifiedVoxelValues;
+	OmSegIDsSet mModifiedVoxelValues;
 
  private:
 
 	//image data of chunk
 	vtkImageData *mpImageData;	
+
+	OmDataVolumePlane getVolPlane(const ViewType viewType);
+	void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast);
 
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );

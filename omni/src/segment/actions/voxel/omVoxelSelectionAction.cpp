@@ -1,9 +1,5 @@
-
 #include "omVoxelSelectionAction.h"
-
-#include "segment/omSegmentEditor.h"
-
-#define DEBUG 0
+#include "segment/actions/omSegmentEditor.h"
 
 /////////////////////////////////
 ///////
@@ -11,7 +7,9 @@
 ///////
 
 OmVoxelSelectionAction::OmVoxelSelectionAction(const DataCoord & voxel, bool state, bool append)
-:mVoxel(voxel), mNewState(state), mAppend(append)
+	: mVoxel(voxel)
+	, mNewState(state)
+	, mAppend(append)
 {
 
 	//store prev voxel state

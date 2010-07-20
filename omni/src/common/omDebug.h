@@ -7,7 +7,7 @@
 #include "omCommon.h"
 
 
-#ifdef NO_DEBUG
+#ifdef NDEBUG
 #define debug(x, ...) ;
 #else
 #define debug(x, ...) actual_debug(x, __VA_ARGS__)

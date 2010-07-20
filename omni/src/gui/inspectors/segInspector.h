@@ -1,19 +1,24 @@
-#ifndef SEGINSPECTOR_H
-#define SEGINSPECTOR_H
+#ifndef SEG_INSPECTOR_H
+#define SEG_INSPECTOR_H
 
 #include <QtGui>
-#include <QWidget> 
-#include "volume/omSegmentation.h"
+
+#include "common/omCommon.h"
 #include "utility/dataWrappers.h"
+
+class AddSegmentButton;
+class OmSegmentation;
+class MyInspectorWidget;
 
 class SegInspector : public QWidget
 { 
     Q_OBJECT 
 	
 public: 
-	SegInspector( const SegmentationDataWrapper sdw, QWidget *parent); 
+	SegInspector( const SegmentationDataWrapper sdw, MyInspectorWidget* parent); 
 	
 	OmId getSegmentationID();
+	SegmentationDataWrapper getSegmentationDataWrapper(){ return sdw;}
 	
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -22,7 +27,8 @@ public:
 	QComboBox *buildComboBox;
 	QPlainTextEdit *notesEdit;
 	QLineEdit *directoryEdit ;
-	QPushButton *addSegmentButton;
+
+	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
 
  private slots:
 	void on_nameEdit_editingFinished();
@@ -34,10 +40,11 @@ public:
 		
  signals:
 	void meshBuilt(OmId seg_id);
-	void segmentationBuilt( OmId segmen_id );
 	
  private:
 	SegmentationDataWrapper sdw;
+	MyInspectorWidget *const mParent;
+
 	void populateSegmentationInspector();
 	void updateFileList();
 
@@ -56,5 +63,6 @@ public:
 	QStringList getFileList();
 	QFileInfoList getFileInfoList();
 
+	AddSegmentButton *addSegmentButton;
 }; 
 #endif

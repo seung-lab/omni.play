@@ -1,8 +1,8 @@
-#include "stringHelpers.h"
+#include "utility/stringHelpers.h"
 
 static const int numOfItemsToAddBeforeLinebreak = 8;
 
-QString StringHelpers::getStringFromSegmentSet( const OmSegIDs & data_set )
+QString StringHelpers::getStringFromSegmentSet( const OmSegIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
@@ -16,7 +16,7 @@ QString StringHelpers::getStringFromSegmentSet( const OmSegIDs & data_set )
 	return getStringFromStringList( strs );
 }
 
-QString StringHelpers::getStringFromIDset( const OmIds & data_set )
+QString StringHelpers::getStringFromIDset( const OmIDsSet & data_set )
 {
 	if( data_set.size() == 0 ){
 		return "";
@@ -61,7 +61,7 @@ QString StringHelpers::commaDeliminateNumber( const int num )
 	QString rawNumAsStr = QString::number( num );
 
 	QString str;
-	QString::iterator i;
+	QString::const_iterator i;
 	int counter = 0;
 	for (i = rawNumAsStr.end()-1; i != rawNumAsStr.begin()-1; i-- ){
 		counter++;

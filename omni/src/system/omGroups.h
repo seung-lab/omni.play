@@ -1,28 +1,42 @@
 #ifndef _OM_GROUPS_H_
 #define _OM_GROUPS_H_
 
-#include "system/omManageableObject.h"
-#include "system/omGroup.h"
-
-
+#include "common/omCommon.h"
+#include "system/omGenericManager.h"
 #include <QVector>
-class OmSegmentation;
+#include <QHash>
 
-class OmGroups {
+class OmSegmentation;
+class OmGroup;
+
+class OmGroups : boost::noncopyable {
 public:
         OmGroups(OmSegmentation * seg);
         ~OmGroups();
 
-	OmId AddGroup(OmIds & segids);
+	OmGroup & AddGroup(OmGroupName);
+	OmGroup & GetGroup(OmGroupID);
+	OmGroup & GetGroup(OmGroupName);
 
-protected:
-        OmGroups(const OmGroups&);
-        OmGroups& operator= (const OmGroups&);
+	OmGroupID GetIDFromName(OmGroupName);
+	void SetGroup(const OmSegIDsSet & set, OmGroupName name);
+	void UnsetGroup(const OmSegIDsSet & set, OmGroupName name);
+
+	OmGroupIDsSet GetGroups();
+
+	OmId getSegmentationID();
+	void populateGroupsList();
+
 
 private:
-	OmSegmentation * mSegmentation;
+        void setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet);
 
-        QVector< OmGroup* > mGroups;
+	OmSegmentation * mSegmentation;
+	OmGenericManager<OmGroup> mGroupManager;
+	QHash<OmGroupName, OmGroupID> mGroupsByName;
+
+        friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
+        friend QDataStream &operator>>(QDataStream & in, OmGroups &);
 };
 
 #endif

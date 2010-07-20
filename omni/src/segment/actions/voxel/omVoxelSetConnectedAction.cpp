@@ -1,26 +1,24 @@
-#include "project/omProject.h"
 #include "omVoxelSetConnectedAction.h"
-
-#include "segment/omSegmentEditor.h"
+#include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
+#include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-
-#include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
 
 /////////////////////////////////
-///////
-///////          OmVoxelSetAction Class
-///////
+///////          OmVoxelSetAction
 
 OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 {
-
 	//store current selection
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(mSegmentationId, mSegmentId);
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	mSegmentationId = sdw.getSegmentationID();
+	mSegmentId = sdw.getID();
 
 	//if edit selection not valid
-	if (!valid_edit_selection) {
-		cout << "OmVoxelSetConnectedAction: edit selection not valid" << endl;
+	if (!sdw.isValid() ) {
+		printf("OmVoxelSetConnectedAction: edit selection not valid\n");
 		OmAction::SetValid(false);
 		return;
 	}
@@ -30,7 +28,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 
 	//if voxel selection not valid
 	if (1 != r_selected_voxels.size()) {
-		cout << "OmVoxelSetConnectedAction: select only one voxel" << endl;
+		printf("OmVoxelSetConnectedAction: select only one voxel\n");
 		OmAction::SetValid(false);
 		return;
 	}
@@ -49,7 +47,7 @@ OmVoxelSetConnectedAction::OmVoxelSetConnectedAction()
 
 	//if voxel selection not valid
 	if( 0 == mSeedSegmentId) {
-		cout << "OmVoxelSetConnectedAction: cannot set connected null ids" << endl;
+		printf("OmVoxelSetConnectedAction: cannot set connected null ids\n");
 		OmAction::SetValid(false);
 		return;
 	}
@@ -81,15 +79,11 @@ void OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSe
 
 				//if voxel seg id matches, then add to list
 				if (rSegmentation.GetVoxelSegmentId(offset_vox) == mSeedSegmentId) {
-					//cout << endl;
-					//cout << srcSegId << endl;
-					//cout << rSegmentation.GetVoxelSegmentId(offset_vox) << endl;
 
 					//set voxel to new data value
 					rSegmentation.SetVoxelValue(offset_vox, mDataValue);
 					todoList.push_back(offset_vox);
 				}
-
 			}
 		}
 	}
@@ -97,7 +91,6 @@ void OmVoxelSetConnectedAction::AddConnectedNeighborsToList(OmSegmentation & rSe
 
 void OmVoxelSetConnectedAction::Action()
 {
-
 	//get segmentation
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
@@ -109,8 +102,6 @@ void OmVoxelSetConnectedAction::Action()
 	//while voxels todo
 	DataCoord cur_vox;
 	while (vox_todo_list->size()) {
-
-		cout << vox_todo_list->size() << endl;
 
 		//get front
 		cur_vox = vox_todo_list->front();

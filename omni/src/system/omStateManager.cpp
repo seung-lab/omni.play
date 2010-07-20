@@ -1,14 +1,15 @@
-#include "omStateManager.h"
-#include "omEventManager.h"
-#include "project/omProject.h"
-#include "system/omLocalPreferences.h"
-#include "events/omViewEvent.h"
-#include "events/omView3dEvent.h"
-#include "events/omSystemModeEvent.h"
+#include "common/omDebug.h"
 #include "events/omToolModeEvent.h"
-#include "gui/myInspectorWidget.h"
+#include "events/omView3dEvent.h"
+#include "events/omViewEvent.h"
 #include "gui/mainwindow.h"
-#include "gui/toolbars/dendToolbar.h"
+#include "gui/myInspectorWidget.h"
+#include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "project/omProject.h"
+#include "system/omEventManager.h"
+#include "system/omEvents.h"
+#include "system/omLocalPreferences.h"
+#include "system/omStateManager.h"
 
 #include <QHostInfo>
 
@@ -19,7 +20,6 @@
 //view3d context
 #include <QtOpenGL/qgl.h>
 #include <QtOpenGL/QGLFormat>
-#include "common/omDebug.h"
 
 //init instance pointer
 OmStateManager *OmStateManager::mspInstance = 0;
@@ -30,9 +30,8 @@ OmStateManager::OmStateManager()
 	mpPrimaryView3dWidget = NULL;
 	mpUndoStack = NULL;
 
-	mSystemMode = NAVIGATION_SYSTEM_MODE;
-	mSystemModePrev = NAVIGATION_SYSTEM_MODE;
-	mToolMode = ZOOM_MODE;
+	mPrevToolMode = PAN_MODE;
+	mCurToolMode = PAN_MODE;
 
 	mParallel = false;
 
@@ -155,58 +154,30 @@ void OmStateManager::setParallel(bool parallel)
 }
 
 /////////////////////////////////
-///////          System Mode
-
-OmSystemMode OmStateManager::GetSystemMode()
-{
-	return Instance()->mSystemMode;
-}
-
-OmSystemMode OmStateManager::GetSystemModePrev()
-{
-	return Instance()->mSystemModePrev;
-}
-
-void OmStateManager::SetSystemMode(const OmSystemMode new_mode)
-{
-	if (new_mode == Instance()->mSystemMode) {
-		return;
-	}
-
-	Instance()->mSystemModePrev = Instance()->mSystemMode;
-	Instance()->mSystemMode = new_mode;
-
-	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-}
-
-void OmStateManager::SetSystemModePrev()
-{
-	OmSystemMode old_mode = Instance()->mSystemMode;
-	Instance()->mSystemMode = Instance()->mSystemModePrev;
-	Instance()->mSystemModePrev = old_mode;
-
-	OmEventManager::PostEvent(new OmSystemModeEvent(OmSystemModeEvent::SYSTEM_MODE_CHANGE));
-}
-
-/////////////////////////////////
 ///////          Tool Mode
 
 OmToolMode OmStateManager::GetToolMode()
 {
-	return Instance()->mToolMode;
+	return Instance()->mCurToolMode;
 }
 
-void OmStateManager::SetToolMode(const OmToolMode new_mode)
+void OmStateManager::SetToolModeAndSendEvent(const OmToolMode tool)
 {
-	//return if no change
-	if (new_mode == Instance()->mToolMode)
+	if (tool == Instance()->mCurToolMode){
 		return;
+	}
 
-	//set new mode
-	Instance()->mToolMode = new_mode;
+	Instance()->mPrevToolMode = Instance()->mCurToolMode;
+	Instance()->mCurToolMode = tool;
 
-	//post tool mode change
-	OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+	OmEvents::ToolChange();
+}
+
+void OmStateManager::SetOldToolModeAndSendEvent()
+{
+	std::swap(Instance()->mPrevToolMode, Instance()->mCurToolMode );
+
+	OmEvents::ToolChange();
 }
 
 /////////////////////////////////
@@ -268,8 +239,8 @@ const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
  */
 QGLContext *OmStateManager::GetSharedView3dContext()
 {
-
 	return NULL;
+
 	//create primary widget if it does not exist yet
 	if (Instance()->mpPrimaryView3dWidget == NULL)
 		CreatePrimaryView3dWidget();
@@ -303,7 +274,6 @@ void OmStateManager::SetTransparencyAlpha(float alpha)
 {
 	Instance()->TRANSPARANCY_ALPHA = alpha;
 }
-
 
 void OmStateManager::setInspector( MyInspectorWidget * miw )
 {
@@ -349,3 +319,33 @@ void OmStateManager::UpdateStatusBar( QString msg )
 	Instance()->mainWindow->updateStatusBar( msg );
 }
 
+void OmStateManager::SetViewDrawable(ViewType viewType, vector<Drawable*> &drawable)
+{
+	switch(viewType){
+	case XY_VIEW:
+		Instance()->mDrawableXY = drawable;
+		break;
+	case XZ_VIEW:
+		Instance()->mDrawableXZ = drawable;
+		break;
+	case YZ_VIEW:
+		Instance()->mDrawableYZ = drawable;
+		break;
+	default:
+		assert(false);
+	}
+}
+
+vector<Drawable*> OmStateManager::GetViewDrawable(ViewType viewType)
+{
+	switch(viewType){
+	case XY_VIEW:
+		return Instance()->mDrawableXY;
+	case XZ_VIEW:
+		return Instance()->mDrawableXZ;
+	case YZ_VIEW:
+		return Instance()->mDrawableYZ;
+	default:
+		assert(false);
+	}	
+}

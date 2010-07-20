@@ -16,8 +16,8 @@ class OmSegmentEvent : public OmEvent {
 
  public:
 	OmSegmentEvent(QEvent::Type type);	
-	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &);
-	OmSegmentEvent(QEvent::Type type, OmId, const OmIds &, OmId, void* sender, string comment );
+	OmSegmentEvent(QEvent::Type type, OmId);
+	OmSegmentEvent(QEvent::Type type, OmId, OmId, void*, string, const bool );
 	void Dispatch(OmEventListener *);
 	
 	//class
@@ -29,18 +29,17 @@ class OmSegmentEvent : public OmEvent {
 	static const QEvent::Type SEGMENT_EDIT_SELECTION_CHANGE = (QEvent::Type) (CLASS + 3);
 	
 	OmId GetModifiedSegmentationId();
-	const OmIds& GetModifiedSegmentIds();
 	OmId GetSegmentJustSelectedID();
 	void* getSender();
 	string getComment();
+	bool getDoScroll();
 
  private:
 	OmId  mSegmentationId;
-	OmIds mSegmentIds;
 	OmId  mSegmentJustSelectedID;
 	void* mSender;
 	string mComment;
-
+	bool mDoScroll;
 };
 
 class OmSegmentEventListener : public OmEventListener {
@@ -57,7 +56,5 @@ public:
 	//change segment edit selection
 	virtual void SegmentEditSelectionChangeEvent() = 0;
 };
-
-
 
 #endif

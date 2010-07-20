@@ -4,13 +4,17 @@
 #include <QtGui>
 #include <QWidget> 
 
+class OmViewGroupState;
+
 class InspectorProperties : public QDialog
 {
 	Q_OBJECT
 
 public:
-	InspectorProperties(QWidget *parent);
+	InspectorProperties(QWidget *parent, OmViewGroupState * vgs);
 	void setOrReplaceWidget(QWidget *incomingWidget, const QString title);
+	OmViewGroupState * getViewGroupState();
+
 
 public slots:
 	void closeDialog();
@@ -18,6 +22,7 @@ public slots:
 private:
 	QWidget* mWidget;
 	QVBoxLayout *mainLayout;
+	OmViewGroupState * mViewGroupState;
 };
 
 #endif

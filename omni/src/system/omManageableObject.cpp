@@ -1,17 +1,17 @@
 #include "omManageableObject.h"
 
 OmManageableObject::OmManageableObject() 
-{ 
-	mId = 0;
-	mName = "";
-	mNote = "";
+	: mId( 1 )
+	, mName("")
+	, mNote("")
+{
 }
 
-OmManageableObject::OmManageableObject(OmId id)
+OmManageableObject::OmManageableObject(const OmId id)
+	: mId( id )
+	, mName("")
+	, mNote("")
 {
-	mId = id;
-	mName = "";
-	mNote = "";
 }
 		
 OmId OmManageableObject::GetId() 

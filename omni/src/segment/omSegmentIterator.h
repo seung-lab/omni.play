@@ -10,9 +10,14 @@ class OmSegmentCache;
 class OmSegmentIterator
 {
  public:
-	OmSegmentIterator( OmSegmentCache * cache );
+	OmSegmentIterator( OmSegmentCache *, 
+			   const bool iterOverSelectedIDs = false, 
+			   const bool iterOverEnabledIDs = false );
+ 
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
+	void iterOverSegmentIDs(const OmSegIDsSet & set);
+
 
 	OmSegment * getNextSegment();
 	bool empty();
@@ -22,7 +27,7 @@ class OmSegmentIterator
  private:
 	OmSegmentCache * mCache;
 
-	OmSegPtrs mSegs;
+	OmSegPtrList mSegs;
 };
 
 #endif

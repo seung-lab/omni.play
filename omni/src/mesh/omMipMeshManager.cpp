@@ -100,37 +100,3 @@ bool OmMipMeshManager::InitializeFetchThread()
 {
 	return true;
 }
-
-/////////////////////////////////
-///////          Draw
-
-void OmMipMeshManager::DrawMeshes(const OmBitfield & drawOps,
-				  const OmMipChunkCoord & mipCoord, 
-				  const OmSegPtrs  & segmentsToDraw,
-				  OmViewGroupState * vgs)
-{
-	std::vector<OmSegment*>::const_iterator iter;
-	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
-
-		//get pointer to mesh
-		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		GetMesh(p_mesh, OmMipMeshCoord(mipCoord, (*iter)->getValue() ));
-
-		if (NULL == p_mesh) {
-			continue;
-		}
-
-		//apply segment color
-		(*iter)->ApplyColor(drawOps, vgs);
-
-		//draw mesh
-		glPushName((*iter)->getValue());
-		glPushName(OMGL_NAME_MESH);
-
-		p_mesh->Draw(true);
-
-		glPopName();
-		glPopName();
-
-	}
-}

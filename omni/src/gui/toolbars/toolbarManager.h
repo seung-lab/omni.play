@@ -1,10 +1,12 @@
 #ifndef TOOLBAR_MANAGER_H
 #define TOOLBAR_MANAGER_H
 
+#include "common/omCommon.h"
+
 #include <QtGui>
 
 class MainWindow;
-class NavAndEditToolBars;
+class MainToolbar;
 class DendToolBar;
 class OmViewGroupState;
 
@@ -17,13 +19,13 @@ class ToolBarManager : public QWidget
 	virtual void setupToolbarInitially();
 	virtual void updateReadOnlyRelatedWidgets();
 	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
-	virtual void SystemModeChangeEvent();
 
 	void SetSplittingOff();
+	void setTool(const OmToolMode tool);
 
  private:
 	MainWindow * mMainWindow;
-	NavAndEditToolBars * navAndEditToolBars;
+	MainToolbar * mainToolbar;
 	DendToolBar * dendToolBar;
 };
 

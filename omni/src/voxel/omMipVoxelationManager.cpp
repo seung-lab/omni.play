@@ -264,8 +264,8 @@ void OmMipVoxelationManager::HandleFetchUpdate()
 
 void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 					     const OmMipChunkCoord & mipCoord,
-					     const OmSegIDs & rRelvDataVals, 
-					     const OmBitfield & drawOps)
+					     const OmSegIDsSet & rRelvDataVals, 
+					     const OmBitfield & /*drawOps*/)
 {
 	//push modelview matrix
 	glPushMatrix();
@@ -286,8 +286,10 @@ void OmMipVoxelationManager::DrawVoxelations(OmSegmentCache * rSegMgr,
 			continue;
 
 		//determine which segment this data values belongs to
-		OmSegment * r_segment = rSegMgr->GetSegmentFromValue(val);
-		r_segment->ApplyColor(drawOps, NULL);
+		OmSegment * r_segment = rSegMgr->GetSegment(val);
+
+		//r_segment->ApplyColor(drawOps, NULL);
+		printf("FIXME: voxelation manager has been gutte\n");
 
 		//draw mesh
 		glPushName(r_segment->getValue());

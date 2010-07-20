@@ -2,12 +2,14 @@
 #include "common/omException.h"
 #include "common/omStd.h"
 #include "common/omVtk.h"
+#include "datalayer/hdf5/omHdf5.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
-#include "utility/omDataReader.h"
-#include "utility/omDataWriter.h"
-#include "utility/omHdf5.h"
 #include "utility/omImageDataIo.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
@@ -18,7 +20,6 @@
 #include <vtkExtractVOI.h>
 #include <vtkImageConstantPad.h>
 #include <QFile>
-
 
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
@@ -42,7 +43,6 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
-	mSubsampleMode = SUBSAMPLE_NONE;
 	mCompleteDelete=false;
 
 	mSimpleChunkThreadedCache = new OmSimpleChunkThreadedCache(this);
@@ -173,22 +173,12 @@ const DataBbox & OmMipVolume::GetExtent()
 
 int OmMipVolume::GetChunkDimension()
 {
-	return OmVolume::GetChunkDimension();
+	return OmVolume:: GetChunkDimension();
 }
 
 Vector3 < int > OmMipVolume::GetChunkDimensions()
 {
 	return Vector3 < int >(GetChunkDimension(), GetChunkDimension(), GetChunkDimension());
-}
-
-void OmMipVolume::SetSubsampleMode(int subMode)
-{
-	mSubsampleMode = (SubsampleMode) subMode;
-}
-
-int OmMipVolume::GetSubsampleMode()
-{
-	return mSubsampleMode;
 }
 
 void OmMipVolume::SetChunksStoreMetaData(bool state)
@@ -219,17 +209,17 @@ void OmMipVolume::SetBuildState(MipVolumeBuildState state)
 /*
  *	Refresh dependent variables.
  */
-void OmMipVolume::UpdateMipProperties()
+void OmMipVolume::UpdateMipProperties(OmDataPath & dataset)
 {
 	if (IsSourceValid()) {
 		//get source dimensions
-		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths );
+		Vector3 < int >source_dims = OmImageDataIo::om_imagedata_get_dims( mSourceFilenamesAndPaths, dataset );
 
 		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
-			printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
+			//			printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
 
 			//update volume dimensions
 			OmVolume::SetDataDimensions(source_dims);
@@ -540,7 +530,7 @@ void OmMipVolume::AllocInternalData()
 
 		//alloc image data
 		
-		OmHdf5Path mip_volume_level_path;
+		OmDataPath mip_volume_level_path;
 		mip_volume_level_path.setPathQstr( MipLevelInternalDataPath(i) );;
 
 		//debug("genone","OmMipVolume::AllocInternalData: %s \n", mip_volume_level_path.data());
@@ -563,7 +553,7 @@ void OmMipVolume::DeleteVolumeData()
  */
 void OmMipVolume::DeleteInternalData()
 {
-	OmHdf5Path path;
+	OmDataPath path;
 	path.setPathQstr( mDirectoryPath );
 
 	//TODO: mutex lock this!!!!
@@ -578,13 +568,13 @@ void OmMipVolume::DeleteInternalData()
 /*
  *	Build all MipLevel resolutions of the MipVolume.
  */
-void OmMipVolume::Build()
+void OmMipVolume::Build(OmDataPath & dataset)
 {
 	//unbuild
 	SetBuildState(MIPVOL_BUILDING);
 	
 	//update properties
-	UpdateMipProperties();
+	UpdateMipProperties(dataset);
 
 	//delete old
 	DeleteInternalData();
@@ -594,12 +584,12 @@ void OmMipVolume::Build()
 
 	//if source data valid
 	if (!IsSourceValid()) {
-		printf("OmMipVolume::Build: blank build complete\n");
+		//		printf("OmMipVolume::Build: blank build complete\n");
 		SetBuildState(MIPVOL_BUILT);
 		return;
 	}
 	//copy source data
-	if (!ImportSourceData()) {
+	if (!ImportSourceData(dataset)) {
 		DeleteInternalData();
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
@@ -620,6 +610,7 @@ void OmMipVolume::Build()
  */
 bool OmMipVolume::BuildVolume()
 {
+
 	//debug("FIXME", << "OmMipVolume::BuildVolume()" << endl;
 	//init progress bar
 	int prog_count = 0;
@@ -628,9 +619,23 @@ bool OmMipVolume::BuildVolume()
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
 				      MipChunksInVolume()));
 
+	if (isDebugCategoryEnabled("perftest")){
+
+			//timer start
+			mip_timer.start();
+			chunk_total = 0;
+			chunk_timer.stop();
+			segchunk_total = 0;
+			segchunk_timer.stop();
+			subsmp_total = 0;
+			subsmp_timer.stop();
+
+	}
+
 	//for each level
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-		printf("building mip level %d...\n", level );
+		printf("\tbuilding mip level %d...", level );
+		fflush(stdout);
 
 		//dim of miplevel in mipchunks
 		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
@@ -656,6 +661,27 @@ bool OmMipVolume::BuildVolume()
 
 		//flush cache so that all chunks of this level are flushed to disk
 		Flush();
+		printf("done\n");
+	}
+
+	if (isDebugCategoryEnabled("perftest")){
+
+		//timer end
+		mip_timer.stop();
+
+		double extratime;
+
+		if (segchunk_total > 0 ){
+			extratime = segchunk_total - chunk_total;
+		} else {
+			extratime = 0;
+		}
+
+		printf("OmMipVolume:BuildVolume() done : %.6f secs\n",mip_timer.s_elapsed());
+		printf("OmMipVolume:BuildChunk() total time: %.6f secs\n",chunk_total);
+		printf("OmMipVolume:SubsampleImageData() total time: %.6f secs\n",subsmp_total);
+		printf("OmSegmentation:BuildChunk() extra time: %.6f secs\n",extratime);
+
 	}
 
 	//hide progress bar
@@ -669,6 +695,10 @@ bool OmMipVolume::BuildVolume()
  */
 void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 {
+	//timer start
+	if (isDebugCategoryEnabled("perftest"))
+	    chunk_timer.start();
+
 	//debug("genone","OmMipVolume::BuildChunk()\n");
 
 	//leaf chunks are skipped since no children to build from
@@ -680,7 +710,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	OmHdf5Path source_data_path;
+	OmDataPath source_data_path;
 	source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level - 1) );
 	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
@@ -693,17 +723,25 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	//subsample
 	vtkImageData *p_subsampled_data = NULL;
 
+	//subsample timer start
+	if (isDebugCategoryEnabled("perftest"))
+	    subsmp_timer.start();
+
 	//switch on scalar type
 	switch (GetBytesPerSample()) {
 	case 1:
-		p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data, GetSubsampleMode());
+		p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
 		break;
 	case 4:
-		p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data, GetSubsampleMode());
+		p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
 		break;
 	default:
 		assert(false);
 	}
+
+	//subsample timer end
+	if (isDebugCategoryEnabled("perftest"))
+		subsmp_total += subsmp_timer.s_elapsed();
 
 	//set or replace image data (chunk now owns pointer)
 	p_chunk->SetImageData(p_subsampled_data);
@@ -711,6 +749,11 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	//delete source data
 	p_source_data->Delete();
 	p_source_data = NULL;
+
+	//timer end
+	if (isDebugCategoryEnabled("perftest"))
+		chunk_total += chunk_timer.s_elapsed();
+
 }
 
 /*
@@ -756,6 +799,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 
 	//edited chunks clean
 	mEditedLeafChunks.clear();
+	
 }
 
 /////////////////////////////////
@@ -765,20 +809,25 @@ void OmMipVolume::BuildEditedLeafChunks()
  *	Given a valid source data volume, thes copies entire source volume to
  *	the leaf mip level of this mip volume.
  */
-bool OmMipVolume::ImportSourceData()
+bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
 {
 	//debug("genone","OmMipVolume::ImportSourceData()");
 
 	//init progress bar
 	int prog_count = 0;
-	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
-						       MipChunksInMipLevel(0)));
+	//	OmEventManager::PostEvent( new OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Importing data..."), 0,
+	//						       MipChunksInMipLevel(0)));
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmHdf5Path leaf_volume_path;
+	OmDataPath leaf_volume_path;
 	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
 
-	printf("importing data...\n");
+	printf("\timporting data...\n");
+	fflush(stdout);
+
+	//timer start
+	OmTimer import_timer;
+	import_timer.start();
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
@@ -795,7 +844,7 @@ bool OmMipVolume::ImportSourceData()
 					OmImageDataIo::om_imagedata_read(mSourceFilenamesAndPaths, 
 									 GetExtent(), 
 									 chunk_data_bbox, 
-									 GetBytesPerSample());
+									 GetBytesPerSample(), dataset);
 				
 				//write to project data
 				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path, 
@@ -818,8 +867,12 @@ bool OmMipVolume::ImportSourceData()
 		}
 	}
 
+	//timer end
+	import_timer.stop();
+
 	//hide progress bar
-	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	//OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	printf("done in %.6f\n",import_timer.s_elapsed());
 	return true;
 }
 
@@ -836,12 +889,12 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 
 	//dim of leaf coords
 	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmHdf5Path mip_volume_path;
+	OmDataPath mip_volume_path;
 	mip_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
         //round up to nearest chunk
 
-        OmHdf5 hdfExport( fileNameAndPath, false, false );
-        OmHdf5Path fpath;
+        OmHdf5 hdfExport( fileNameAndPath, false );
+        OmDataPath fpath;
         fpath.setPath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){
@@ -880,7 +933,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 				//write to hdf5 file
 				//debug("FIXME", << "OmMipVolume::Export:" << chunk_data_bbox << endl;
 
-				hdfExport.dataset_image_write_trim(OmHdf5Helpers::getDefaultDatasetName(),
+				hdfExport.dataset_image_write_trim(OmDataPaths::getDefaultDatasetName(),
                                            (DataBbox*)&chunk_data_bbox, GetBytesPerSample(), p_chunk_img_data);
 
 
@@ -902,7 +955,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
  *
  *	The source image data is required to have even sized dimensions.
  */
-template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageData * srcData, int subsampleMode)
+template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageData * srcData)
 {
 	//debug("FIXME", << "OmMipVolume::SubsampleImageData" << endl;
 
@@ -931,9 +984,6 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 	T *dest_data_ptr = static_cast < T * >(p_dest_data->GetScalarPointer());
 	Vector3 < int >src_voxel, dest_voxel;
 
-	//alloc octal values
-	static T octal_values[8];
-
 	//for all voxels in destination data
 	for (dest_voxel.z = 0; dest_voxel.z < dest_dims.z; ++dest_voxel.z) {
 		for (dest_voxel.y = 0; dest_voxel.y < dest_dims.y; ++dest_voxel.y) {
@@ -942,53 +992,9 @@ template < typename T > vtkImageData * OmMipVolume::SubsampleImageData(vtkImageD
 				//get voxel position in source
 				src_voxel = dest_voxel * 2;
 
-				//store octal values from source
-				octal_values[0] =
-				    *static_cast <
+				//do direct subsample (take first voxel, ignore other 7)
+				*dest_data_ptr = *static_cast <
 				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y, src_voxel.z));
-				octal_values[1] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y, src_voxel.z));
-				octal_values[2] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y + 1, src_voxel.z));
-				octal_values[3] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y + 1, src_voxel.z));
-				octal_values[4] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y, src_voxel.z + 1));
-				octal_values[5] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y, src_voxel.z + 1));
-				octal_values[6] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x + 1, src_voxel.y + 1, src_voxel.z + 1));
-				octal_values[7] =
-				    *static_cast <
-				    T * >(srcData->GetScalarPointer(src_voxel.x, src_voxel.y + 1, src_voxel.z + 1));
-
-				//switch on subsample mode
-				switch (subsampleMode) {
-				case SUBSAMPLE_MEAN:
-					*dest_data_ptr = CalculateAverage < T > (octal_values, 8);
-					break;
-
-				case SUBSAMPLE_MODE:
-					*dest_data_ptr = CalculateMode < T > (octal_values, 8);
-					break;
-
-				case SUBSAMPLE_RANDOM:
-					*dest_data_ptr = octal_values[rand() % 8];
-					break;
-
-				case SUBSAMPLE_NONE:
-					*dest_data_ptr = octal_values[0];
-					break;
-
-				default:
-					assert(false);
-				}
 
 				//adv to next voxel (1 sample per voxel)
 				++dest_data_ptr;
@@ -1055,7 +1061,6 @@ int OmMipVolume::GetBytesPerSample()
 {
 	return mBytesPerSample;
 }
-
 
 void OmMipVolume::SetBytesPerSample(int bytesPerSample)
 {

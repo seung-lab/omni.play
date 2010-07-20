@@ -1,51 +1,39 @@
 #include "elementListBox.h"
+#include "system/viewGroup/omViewGroupState.h"
 
-ElementListBox::ElementListBox( QWidget * parent, QVBoxLayout * in_verticalLayout )
-  : QWidget( parent )
+ElementListBox::ElementListBox( QWidget * parent )
+	: QGroupBox( "", parent )
+	, mCurrentlyActiveTab(-1)
 {
-	verticalLayout = in_verticalLayout;
+	mDataElementsTabs = new QTabWidget( this );
 
-	dataElementsTabs = NULL;
-
-	groupBox = new QGroupBox("");
-	overallContainer = new QVBoxLayout( groupBox );
-	verticalLayout->addWidget( groupBox );
+	mOverallContainer = new QVBoxLayout( this );
+	mOverallContainer->addWidget( mDataElementsTabs );
 }
 
-void ElementListBox::clear()
+void ElementListBox::reset()
 {
-	if( NULL == dataElementsTabs ){
-		return;
+	mDataElementsTabs->clear();
+	setTitle("");
+}
+
+void ElementListBox::setActiveTab( QWidget * tab )
+{
+	mCurrentlyActiveTab = mDataElementsTabs->indexOf(tab);
+}
+
+void ElementListBox::addTab( const int preferredIndex, QWidget * tab, const QString & tabTitle)
+{
+	if( -1 != mDataElementsTabs->indexOf(tab) ){ 
+		return; // tab was already added, don't add again
 	}
-
-	dataElementsTabs->clear();
-	groupBox->setTitle( "" );
-}
-
-void ElementListBox::setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle )
-{
-	if( NULL == dataElementsTabs ){
-		setupBox();
-	}
 	
-	dataElementsTabs->clear();
-	dataElementsTabs->addTab( tab, tabTitle );	
-
-	groupBox->setTitle( boxTitle );
-}
-
-void ElementListBox::setupBox()
-{
-	dataElementsTabs = new QTabWidget( this );
-	overallContainer->addWidget( dataElementsTabs );
+	const int insertedIndex = mDataElementsTabs->insertTab(preferredIndex, tab, tabTitle);
 	
-	QGroupBox * buttonBox = new QGroupBox("");
-	buttonBox->setFlat(true);
-	overallContainer->addWidget( buttonBox );
-	QHBoxLayout * buttons = new QHBoxLayout( buttonBox );
-	
-	prevButton = new QPushButton("<", this);
-	buttons->addWidget( prevButton );
-	nextButton = new QPushButton(">", this);
-	buttons->addWidget( nextButton );
+	if( -1 == mCurrentlyActiveTab ){ // first time here
+		mCurrentlyActiveTab = insertedIndex;
+	} 
+
+	// keep the tab widget fixed on the user-specified tab
+	mDataElementsTabs->setCurrentIndex( mCurrentlyActiveTab );
 }

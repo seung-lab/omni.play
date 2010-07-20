@@ -1,8 +1,14 @@
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omStd.h"
+#include "datalayer/archive/omDataArchiveQT.h"
+#include "datalayer/hdf5/omHdf5Manager.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "system/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omGarbage.h"
@@ -10,13 +16,11 @@
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "utility/omDataArchiveQT.h"
-#include "utility/omDataWriter.h"
-#include "utility/omHdf5Manager.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 
@@ -59,9 +63,17 @@ QString OmProject::New( QString fileNameAndPath )
 
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.filePath();
+	Instance()->mDirectoryPath = fileInfo.absolutePath();
 
-	OmProjectData::instantiateProjectData( fileNameAndPath, false );
+	QDir dir(Instance()->mDirectoryPath);
+	if( !dir.exists() ){
+		if( !dir.mkpath(Instance()->mDirectoryPath) ){
+			QString err = "could not make path " + Instance()->mDirectoryPath;
+			throw OmIoException( qPrintable(err) );
+		}
+	}
+
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Create();
 	OmProjectData::Open();
 
@@ -83,11 +95,14 @@ void OmProject::Save()
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
+		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
 
-	OmDataArchiveQT::ArchiveWrite(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
 
 	OmProjectData::GetDataWriter()->flush();
+
+	printf("omni project saved!\n");
 }
 
 void OmProject::Commit()
@@ -96,11 +111,11 @@ void OmProject::Commit()
 	OmStateManager::ClearUndoStack();
 }
 
-void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
+void OmProject::Load( QString fileNameAndPath  )
 {
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.filePath();
+	Instance()->mDirectoryPath = fileInfo.absolutePath();
 
 	QFile projectFile( fileNameAndPath );
 	if( !projectFile.exists() ){
@@ -108,11 +123,11 @@ void OmProject::Load( QString fileNameAndPath, const bool autoOpenAndClose )
 		throw OmIoException( qPrintable( err ));
 	}
 	
-	OmProjectData::instantiateProjectData( fileNameAndPath, autoOpenAndClose );
+	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Open();
 
 	try {
-		OmDataArchiveQT::ArchiveRead(OmHdf5Helpers::getProjectArchiveNameQT(), Instance());
+		OmDataArchiveQT::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(), Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;
@@ -141,7 +156,6 @@ void OmProject::Close()
 	OmHdf5Manager::Delete();
 }
 
-
 /////////////////////////////////
 ///////          Channel Manager Method
 
@@ -169,7 +183,7 @@ bool OmProject::IsChannelValid(OmId id)
         return Instance()->mChannelManager.IsValid(id);
 }
 
-const OmIds & OmProject::GetValidChannelIds()
+const OmIDsSet & OmProject::GetValidChannelIds()
 {
         return Instance()->mChannelManager.GetValidIds();
 }
@@ -223,7 +237,7 @@ bool OmProject::IsSegmentationValid(OmId id)
         return Instance()->mSegmentationManager.IsValid(id);
 }
 
-const OmIds & OmProject::GetValidSegmentationIds()
+const OmIDsSet & OmProject::GetValidSegmentationIds()
 {
         return Instance()->mSegmentationManager.GetValidIds();
 }
@@ -236,13 +250,4 @@ bool OmProject::IsSegmentationEnabled(OmId id)
 void OmProject::SetSegmentationEnabled(OmId id, bool enable)
 {
         Instance()->mSegmentationManager.SetEnabled(id, enable);
-}
-
-void OmProject::Draw(OmVolumeCuller & rCuller, OmViewGroupState * vgs)
-{
-        foreach( const OmId & id, Instance()->mSegmentationManager.GetEnabledIds() ){
-                GetSegmentation(id).Draw(rCuller, vgs);
-        }
-
-
 }

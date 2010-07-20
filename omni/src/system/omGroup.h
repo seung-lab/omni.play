@@ -2,24 +2,30 @@
 #define _OM_GROUP_H_
 
 #include "common/omCommon.h"
+#include "system/omManageableObject.h"
 
-class OmGroup {
+class OmGroup : public OmManageableObject {
 public:
         OmGroup();
-        OmGroup(OmIds & segids);
+        OmGroup(OmId);
+        OmGroup(const OmSegIDsSet & segids);
         ~OmGroup();
 
-        void AddIds(OmIds & segids);
-
-protected:
-	OmColor GetRandomColor();
-
-        OmGroup(const OmGroup&);
-        OmGroup& operator= (const OmGroup&);
+        void AddIds( const OmSegIDsSet & segids);
+	OmGroupName GetName() {return mName;}
+	const OmSegIDsSet & GetIDs() {return mIDs;}
 
 private:
-	OmIds mIDs;
+	OmSegIDsSet mIDs;
 	OmColor mColor;
+
+	OmColor GetRandomColor();
+
+	OmGroupName mName;
+	friend class OmGroups;
+
+	friend QDataStream &operator<<(QDataStream & out, const OmGroup & g );
+	friend QDataStream &operator>>(QDataStream & in, OmGroup & g );
 
 };
 

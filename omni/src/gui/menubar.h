@@ -45,6 +45,7 @@ class MenuBar : public QWidget
 	QAction *openOmniInspector;
 	QAction *openUndoViewAct;
 	QAction *openCacheMonitorAct;
+	QAction *openGroupsTableAct;
 		
 	QAction *open3DAct;
 

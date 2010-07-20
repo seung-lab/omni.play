@@ -28,7 +28,7 @@ OmFilter2d& OmFilter2dManager::GetFilter(OmId id)
 	return mGenericFilterManager.Get(id);
 }
 
-const OmIds & OmFilter2dManager::GetValidFilterIds()
+const OmIDsSet & OmFilter2dManager::GetValidFilterIds()
 {
 	return mGenericFilterManager.GetValidIds();
 }

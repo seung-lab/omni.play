@@ -14,7 +14,6 @@
 
 #include "common/omCommon.h"
 #include "system/events/omProgressEvent.h"
-#include "system/events/omSystemModeEvent.h"
 
 class CacheMonitorDialog;
 class MenuBar;
@@ -27,9 +26,8 @@ class ToolBarManager;
 class ViewGroup;
 
 class MainWindow 
-: public QMainWindow, 	
+: public QMainWindow
   //  public OmProgressEventListener,
-  public OmSystemModeEventListener
 {
  Q_OBJECT
  
@@ -43,19 +41,24 @@ class MainWindow
 	void updateStatusBar( QString msg );
 
 	bool isProjectOpen();
-	
+
+	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
+
+	void addToolbarWidget(QWidget * b);
+	void addToolbarSeperator();
+
+	void addToolbarRight(QToolBar * b);
+
 	friend class ViewGroup;
 
  protected: 
 	void closeEvent(QCloseEvent *event); 
 		
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
-	void SystemModeChangeEvent();		
 
  public slots:
 	void spawnErrorDialog(OmException &e);
 	void saveProject();
-	void open2Dand3dViews();
 
  private slots:
 	void newProject();
@@ -66,6 +69,8 @@ class MainWindow
 	void openInspector();
 	void openUndoView();
 	void openCacheMonitor();
+	void openGroupsTable();
+
 		
 	void open3dView();
 	void openChannelView(OmId chan_id, ViewType vtype);
@@ -102,7 +107,6 @@ class MainWindow
 	void windowTitleClear();
 	void updateReadOnlyRelatedWidgets();
 
-	ViewGroup * mViewGroup;
 	void resetViewGroup();
 
 	void updateGuiFromProjectLoadOrOpen( QString fileName );
@@ -115,6 +119,8 @@ class MainWindow
 	MenuBar * mMenuBar;
 
 	OmViewGroupState * mViewGroupState;
+	QToolBar *mToolToolBar;
+
 };
 
 #endif

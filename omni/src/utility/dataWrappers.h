@@ -32,7 +32,12 @@ class SegmentationDataWrapper
 {
  public:
 	SegmentationDataWrapper(){}
-	SegmentationDataWrapper( const OmId mID );
+	explicit SegmentationDataWrapper( const OmId mID );
+	explicit SegmentationDataWrapper( OmSegment * );
+
+	bool isValid();
+	OmSegmentation & getSegmentation();
+
 	QList < SegmentDataWrapper > getAllSegmentIDsAndNames();
 	QString getNote();
 	unsigned int getNumberOfSegments();
@@ -43,6 +48,8 @@ class SegmentationDataWrapper
 	//	QString GetSourceDirectoryPath();
 	OmId getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
+	quint32 getMaxSegmentValue();
+	quint64 getSegmentListSize(OmSegIDRootType type);
  private:
 	OmId mID;
 	ObjectType mType;
@@ -53,12 +60,16 @@ class SegmentDataWrapper
  public:
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID, 
-			    const OmId segmentID );
+			    const OmSegID segmentID );
+	SegmentDataWrapper( OmSegment * seg );
+
 	QString getName();
 
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
 	
+	bool isValid();
+
 	OmSegmentation & getSegmentation();
 	OmSegment * getSegment();
 	
@@ -67,18 +78,20 @@ class SegmentDataWrapper
 	void setSelected( const bool isSelected );
 	bool isEnabled();
 	void setEnabled(const bool);
-	void toggleEnabled();
 	QString getNote();
 	void setNote(QString str);
 	QString getIDstr();
-	Vector3 < float > getColor();
+	OmColor getColorInt();
+	Vector3 < float > getColorFloat();
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
-	QString get_original_mapped_data_value();
-	OmId getID()     {    return mID;   }
+	OmSegID getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
+	quint64 getSize();
+	quint64 getSizeWithChildren();
+	OmSegmentCache * getSegmentCache();
  private:
-	OmId mID;
+	OmSegID mID;
 	ObjectType mType;
 	OmId mSegmentationID;
 };
@@ -89,6 +102,8 @@ class FilterDataWrapper
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
 			   const OmId mID );
+	bool isValid();
+	OmFilter2d * getFilter();
 	OmId getChannelID(){ return mChannelID; }
 	QString getName();
 	QString getNote();

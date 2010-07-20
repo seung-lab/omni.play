@@ -46,8 +46,6 @@ public:
 	int Level;
 	DataCoord Coordinate;
 	
-	friend ostream& operator<<(ostream &out, const OmMipChunkCoord &in);
-	
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
 };

@@ -4,28 +4,20 @@
 #include <QtGui>
 #include <QWidget> 
 
-class ElementListBox : public QWidget
+class ElementListBox : public QGroupBox
 {
 	Q_OBJECT
 
 public:
-	ElementListBox( QWidget *, QVBoxLayout * );
-	void setTabEnabled( QString boxTitle, QWidget * tab, QString tabTitle );
-	void clear();
-
-	QPushButton * prevButton;
-	QPushButton * nextButton;
-	
-public slots:
-
-private slots: 
+	ElementListBox( QWidget * );
+	void addTab( const int index, QWidget * tab, const QString & tabTitle);
+	void reset();
+	void setActiveTab( QWidget * tab );
 
 private:
-	QTabWidget * dataElementsTabs;
-	QGroupBox * groupBox;
-	QVBoxLayout * verticalLayout;
-	QVBoxLayout* overallContainer;
-	void setupBox();
+	QTabWidget * mDataElementsTabs;
+	QVBoxLayout * mOverallContainer;
+	int mCurrentlyActiveTab;
 };
 
 #endif

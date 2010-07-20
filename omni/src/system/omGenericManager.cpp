@@ -9,8 +9,8 @@ template < class T >
 OmGenericManager<T>::OmGenericManager() 
 	: mNextId(1)
 	, mSize(DEFAULT_MAP_SIZE)
-	, mMap( std::vector<T*>(DEFAULT_MAP_SIZE, NULL) )
 {
+	mMap.resize(DEFAULT_MAP_SIZE, NULL);
 }
 
 /**
@@ -31,11 +31,10 @@ T&
 OmGenericManager<T>::Get( const OmId id) 
 {	
 	if( IS_ID_INVALID() ){
+		assert(0);
 		throw OmAccessException("Cannot get object with id: " + id);
 	}
 
-	//myBacktrace(0);
-	
 	// return ref
 	return *mMap[id];
 }
@@ -45,9 +44,8 @@ T&
 OmGenericManager<T>::Add() 
 {
 	const OmId id = mNextId;
-	findAndSetNextValidID();
-
 	mMap[id] = new T(id);
+	findAndSetNextValidID();
 	
 	mValidSet.insert(id);
 	mEnabledSet.insert(id);
@@ -78,6 +76,7 @@ void
 OmGenericManager<T>::Remove(const OmId id) 
 {
 	if( IS_ID_INVALID() ){
+		assert(0);
 		throw OmAccessException("Cannot remove object with id: " + id); 
 	}
 	
@@ -111,7 +110,7 @@ OmGenericManager<T>::IsValid( const OmId id) const
  *	Set of IDs for objects being managed
  */
 template < class T > 
-const OmIds&
+const OmIDsSet&
 OmGenericManager<T>::GetValidIds() const 
 {
 	return mValidSet;
@@ -147,7 +146,7 @@ OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 }
 
 template < class T > 
-const OmIds&
+const OmIDsSet &
 OmGenericManager<T>::GetEnabledIds() const 
 {
 	return mEnabledSet;

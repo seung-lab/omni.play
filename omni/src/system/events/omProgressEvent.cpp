@@ -1,25 +1,23 @@
-
+#include <assert.h>
 #include "omProgressEvent.h"
-
-#define DEBUG 0
 
 bool OmProgressEvent::mWasCanceled = false;
 
 OmProgressEvent::OmProgressEvent(QEvent::Type type)
- : OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 
 }
 
 OmProgressEvent::OmProgressEvent(QEvent::Type type, int value)
-:OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 	mValue = value;
 }
 
 //PROGRESS_RANGE
 OmProgressEvent::OmProgressEvent(QEvent::Type type, int min, int max, int value)
-:OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 	mMinimum = min;
 	mMaximum = max;
@@ -28,7 +26,7 @@ OmProgressEvent::OmProgressEvent(QEvent::Type type, int min, int max, int value)
 
 //PROGRESS_SHOW
 OmProgressEvent::OmProgressEvent(QEvent::Type type, string text, int min, int max)
-:OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 	mText = text;
 	mMinimum = min;
@@ -70,7 +68,6 @@ void OmProgressEvent::Dispatch(OmEventListener * pListener)
 		return;
 
 	default:
-		cout << type() << endl;
 		assert(false);
 	}
 

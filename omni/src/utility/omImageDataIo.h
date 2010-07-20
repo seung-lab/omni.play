@@ -7,6 +7,7 @@
  */
 
 #include "common/omCommon.h"
+#include "datalayer/omDataPath.h"
 #include <QFileInfoList>
 
 enum ImageType { TIFF_TYPE, JPEG_TYPE, PNG_TYPE, VTK_TYPE, HDF5_TYPE, NONE_TYPE };
@@ -36,12 +37,12 @@ class OmImageDataIo {
 						       vtkImageData *srcData, 
 						       const Vector3<int> &srcOffset);
 
-	static Vector3<int> om_imagedata_get_dims(QFileInfoList sourceFilenamesAndPaths);
+	static Vector3<int> om_imagedata_get_dims(QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
 
 	static vtkImageData * om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
 						 const DataBbox srcExtentBbox, 
 						 const DataBbox dataExtentBbox, 
-						 int bytesPerSample);
+						 int bytesPerSample, const OmDataPath dataset);
  private:
 	
 	//vtk io
@@ -55,11 +56,11 @@ class OmImageDataIo {
 						    int bytesPerSample);
 	static vtkImageData * om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths, 
 						     const DataBbox dataExtentBbox, 
-						     int bytesPerSample);
+						     int bytesPerSample, const OmDataPath dataset);
 
 	//determine dimensions
 	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList sourceFilenamesAndPaths);
-	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths );
+	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
 
 	/////////////////////////////////
 	///////		 vtkImageData Utility Functions

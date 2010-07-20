@@ -33,7 +33,7 @@ public:
 	void Print();
 	OmFilter2d& AddFilter();
 	OmFilter2d& GetFilter(OmId id);
-	const OmIds & GetValidFilterIds();
+	const OmIDsSet & GetValidFilterIds();
 	bool IsFilterEnabled(OmId id);
 	bool IsFilterValid(const OmId id);
 	

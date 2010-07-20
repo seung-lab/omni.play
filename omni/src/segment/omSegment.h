@@ -8,35 +8,27 @@
  */
 
 #include "common/omCommon.h"
-#include "segment/omSegmentQueue.h"
+#include "segment/omSegmentEdge.h"
 
 class OmSegmentCache;
-class OmMipChunkCoord;
-class OmViewGroupState;
 
 class OmSegment {
 
 public:
-	OmSegment(const OmSegID & value, OmSegmentCache * cache);
+	OmSegment( const OmSegID value, OmSegmentCache * cache);
 	OmSegment(OmSegmentCache * cache);
 
-	void splitChildLowestThreshold();
-	void splitTwoChildren(OmSegment * seg);
+	OmSegID getValue(){ return mValue; }
 
-	//accessors
-	const OmColor & GetColorInt(){ return mColorInt; }
-	Vector3<float> GetColorFloat(){
-		return 	Vector3<float>( mColorInt.red / 255.,
-					mColorInt.green / 255.,
-					mColorInt.blue / 255. );
-	}
-	void SetColor(const Vector3<float> &);
+	// color
+	void reRandomizeColor();
+	OmColor GetColorInt(){ return mColorInt; }
+	Vector3f GetColorFloat(){
+		return Vector3f( mColorInt.red   / 255.,
+				 mColorInt.green / 255.,
+				 mColorInt.blue  / 255. ); }
+	void SetColor(const Vector3f &);
 	
-	//drawing
-	void ApplyColor(const OmBitfield &drawOps, OmViewGroupState * vgs);
-
-	const OmSegID & getValue();
-
 	QString GetNote();
 	void SetNote(const QString &);
 	QString GetName();
@@ -46,35 +38,46 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
+	quint64 getSize(){ return mSize; }
+	quint64 getSizeWithChildren();
 
-	void SetImmutable(bool immutable);
-	bool GetImmutable();
+	void SetImmutable( const bool immutable);
+	bool GetImmutable(){ return mImmutable; }
 
 	OmSegID getParentSegID(){ return mParentSegID; }
+	OmSegID getRootSegID();
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
-	float getThreshold();
+	float getThreshold(){ return mThreshold; }
 
 private:
-	bool mImmutable;
 	OmSegID mValue;
 	OmSegmentCache * mCache;
 
 	OmColor mColorInt;
 
-	OmSegIDs segmentsJoinedIntoMe;
-	OmSegmentQueue queue;
+	OmSegIDsSet segmentsJoinedIntoMe;
 
 	OmId mParentSegID;
 	float mThreshold;
+	bool mImmutable;
+
+	quint64 mSize;
+
+	int mEdgeNumber; // index of edge in main edge list
+	OmSegmentEdge mCustomMergeEdge;
 
 	void SetInitialColor();
 
+	friend class OmSegmentListBySize;
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
 	friend class OmSegmentIterator;
+	friend class OmSegmentIteratorLowLevel;
+	friend class OmSegmentGraph;
 };
 
 #endif

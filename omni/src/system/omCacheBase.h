@@ -25,7 +25,7 @@ public:
 	}
 
 	//destructor
-	~OmCacheBase() {
+	virtual ~OmCacheBase() {
 		OmCacheManager::RemoveCache(mCacheGroup, this);
 	}
 	

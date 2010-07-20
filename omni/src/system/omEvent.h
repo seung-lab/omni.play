@@ -1,5 +1,5 @@
-#ifndef OM_EVENTS_H
-#define OM_EVENTS_H
+#ifndef OM_EVENT_H
+#define OM_EVENT_H
 
 /*
  *

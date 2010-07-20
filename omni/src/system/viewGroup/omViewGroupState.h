@@ -2,20 +2,33 @@
 #define OM_VIEW_GROUP_STATE_H
 
 #include "system/omManageableObject.h"
+#include "gui/inspectors/inspectorProperties.h"
 #include <QMutex>
 
-class OmSegmentColorizer;
-class ToolBarManager;
-class SegmentationDataWrapper;
 class ChannelDataWrapper;
+class MainWindow;
+class OmSegment;
+class OmSegmentColorizer;
+class SegmentationDataWrapper;
+class ToolBarManager;
+class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
  public:
-	OmViewGroupState();
+	OmViewGroupState( MainWindow * mw );
 	~OmViewGroupState();
+
+	void SetInspectorProperties(InspectorProperties * ip) {mInspectorProperties = ip; }
+	InspectorProperties * GetInspectorProperties() { return mInspectorProperties; }
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
+
+	// GUI state
+	void addView2Dchannel( OmId chan_id, ViewType vtype);
+	void addView2Dsegmentation( OmId segmentation_id, ViewType vtype);
+	void addView3D();
+	void addAllViews( OmId channelID, OmId segmentationID );
 
 	//viewbox state
 	void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);
@@ -37,27 +50,44 @@ class OmViewGroupState : public OmManageableObject {
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	void SetViewSliceDataFormat(int bytesPerSample);
-	void SetViewSlice(const OmSlicePlane plane, const Vector3<int> &dim, unsigned char *data);
-
 	void ColorTile( OmSegID *, const int,
 			const ObjectType, unsigned char * );
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
 
+	void setDustThreshold(unsigned int t){ mDustThreshold = t; }
+	unsigned int getDustThreshold(){ return mDustThreshold; }
+
 	void SetToolBarManager(ToolBarManager * tbm);
         bool GetShatterMode();
 	void SetShatterMode(bool shatter);
         bool GetSplitMode();
+	void ToggleShatterMode();
+
         bool GetSplitMode(OmId & seg, OmId & segment);
         void SetSplitMode(OmId seg, OmId segment);
         void SetSplitMode(bool onoroff, bool postEvent = true);
+	void SetBreakOnSplitMode(bool mode);
+
+	void SetShowValidMode(bool mode, bool incolor);
+	void SetShowSplitMode(bool mode);
+	bool shouldVolumeBeShownBroken();
+
+	void setTool(const OmToolMode tool);
+
+	int getView2DBrushToolDiameter();
+	void setView2DBrushToolDiameter(const int size);
 
  private:
 	QMutex mColorCacheMapLock;
 
+	MainWindow * mMainWindow;
+	ViewGroup * mViewGroup;
+	InspectorProperties * mInspectorProperties;
+
 	int mBreakThreshold;
+	unsigned int mDustThreshold;
 
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
@@ -69,9 +99,11 @@ class OmViewGroupState : public OmManageableObject {
 	
 	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
 	
-	int mViewSliceBytesPerSample, mViewSliceSamplesPerPixel;
-	Vector3i mViewSliceDimXY, mViewSliceDimYZ, mViewSliceDimXZ;
-	unsigned char *mViewSliceDataXY, *mViewSliceDataYZ, *mViewSliceDataXZ;
+	int mViewSliceBytesPerSample;
+	int mViewSliceSamplesPerPixel;
+	Vector3i mViewSliceDimXY;
+	Vector3i mViewSliceDimYZ;
+	Vector3i mViewSliceDimXZ;
 
 	std::vector<OmSegmentColorizer*> mColorCaches;
 
@@ -82,9 +114,14 @@ class OmViewGroupState : public OmManageableObject {
 	ToolBarManager * mToolBarManager;
 	bool mShatter;
 	bool mSplitting;
+	bool mBreakOnSplit;
 	OmId mSplittingSegment;
 	OmId mSplittingSeg;
+	bool mShowValid;
+	bool mShowSplit;
+	bool mShowValidInColor;
 
+	int view2DBrushToolDiameter_;
 };
 
 #endif

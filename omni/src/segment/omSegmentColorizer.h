@@ -6,11 +6,10 @@
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
-enum OmSegmentColorCacheType { Channel = 0, 
-			       Segmentation, 
-			       ChannelBreak, 
-			       SegmentationBreak,
-			       Number_SegColorCacheEnums };
+typedef struct {
+	OmColor color;
+	int freshness;
+} OmColorWithFreshness;
 
 class OmSegmentCache;
 class OmViewGroupState;
@@ -19,7 +18,8 @@ class OmSegment;
 class OmSegmentColorizer 
 {
  public:
-	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType);
+	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType, const bool);
+	~OmSegmentColorizer();
 
 	void colorTile( OmSegID * imageData, const int size,
 			unsigned char * data );
@@ -34,29 +34,28 @@ class OmSegmentColorizer
 
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
-
-	OmColor * mColorCache;
-	int * mColorCacheFreshness;
-
 	quint32 mSize;
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
+	const bool mIsSegmentation;
+
+	std::vector<OmColorWithFreshness> mColorCache;
 
 	void setup();
 
-	OmColor getVoxelColorForView2d( const OmSegID & val, 
-					const bool & showOnlySelectedSegments );
+	OmColor getVoxelColorForView2d( const OmSegID val, 
+					const bool showOnlySelectedSegments );
 
-	int makeSelectedColor(const quint8 & in_c ) {
-		const int c = (double)in_c * selectedSegmentColorMultiFactor;
+	int makeSelectedColor(const quint8 in_c ) {
+		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
 		if (c > 255) {
 			return 255;
 		}
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID & val, const int & currentSegCacheFreshness ){
-		if( currentSegCacheFreshness != mColorCacheFreshness[val] ){
+	bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
+		if( currentSegCacheFreshness != mColorCache[val].freshness ){
 			return false;
 		}
 		if( mCurBreakThreshhold != mPrevBreakThreshhold ){

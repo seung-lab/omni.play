@@ -8,10 +8,11 @@
 
 #include "voxel/omMipVoxelationManager.h"
 #include "system/omManageableObject.h"
-#include "system/events/omSystemModeEvent.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
 #include "volume/omMipVolume.h"
+#include "datalayer/omDataWrapper.h"
+#include "segment/omSegmentIterator.h"
 
 class MeshingManager;
 class OmSegment;
@@ -21,14 +22,8 @@ class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
 
-class OmSegmentation 
-: public OmMipVolume, 
-	public OmManageableObject, 
-	public OmSystemModeEventListener,
-	boost::noncopyable
-{
-
-public:
+class OmSegmentation : public OmMipVolume, public OmManageableObject {
+ public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
@@ -50,63 +45,33 @@ public:
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDs &rEditedVals);
+	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
-	
-	//events
-	void SystemModeChangeEvent();
 							
 	//segment management
-	OmSegment* GetSegment(OmId id);
-	OmSegment* GetSegmentFromValue(OmSegID id);
-	OmSegment* AddSegment();
-	bool IsSegmentValid(OmId id);
-	bool IsSegmentEnabled(OmId id);
-	void SetSegmentEnabled(OmId id, bool enable);
-	void SetAllSegmentsEnabled(bool selected);
-	const OmIds & GetEnabledSegmentIds();
-	bool IsSegmentSelected(OmId id);
-	void SetSegmentSelected(OmId id, bool selected);
-	void SetAllSegmentsSelected(bool selected);
-	const OmIds& GetSelectedSegmentIds();
-	void JoinTheseSegments( const OmIds & segmentIds);
-	void UnJoinTheseSegments( const OmIds & segmentIds);
-	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-				      const OmSegIDs & idsToUnselect );
+	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 
-	OmId GetNumSegments();
-	OmId GetNumTopSegments();
-	
-	bool AreSegmentsSelected();
+
 	
 	//group management
-	OmId AddGroup();
-
+        OmGroups * GetGroups(){ return &mGroups; }
+ 	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+	void DeleteGroup(OmSegID = 0);
 
 	//drawing
-	void Draw(OmVolumeCuller &, OmViewGroupState * vgs);
-	void DrawChunkRecursive(const OmMipChunkCoord &, 
-				OmSegmentIterator iter,
-				bool testVis, 
-				OmVolumeCuller &);
-	void DrawChunk(QExplicitlySharedDataPointer < OmMipChunk > p_chunk,
-		       const OmMipChunkCoord & chunkCoord,
-		       const OmSegPtrs & segmentsToDraw, 
-		       OmVolumeCuller &rCuller);
-	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDs &, const OmBitfield & );
+	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
 	
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
 	void FlushDend();
+	void FlushDendUserEdges();
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
-	void ReloadDendrogram();
-
-	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 	
 private:
 	void KillCacheThreads();
@@ -118,10 +83,12 @@ private:
 	OmSegmentCache * mSegmentCache;
 
 	OmGroups mGroups;
-	OmViewGroupState * mViewGroupState;
 
-        quint32 * mDend;
-        float * mDendValues;
+        OmDataWrapperPtr mDend;
+        OmDataWrapperPtr mDendValues;
+	OmDataWrapperPtr mEdgeDisabledByUser;
+	OmDataWrapperPtr mEdgeWasJoined;
+	OmDataWrapperPtr mEdgeForceJoin;
 	int mDendSize;
 	int mDendValuesSize;
 	int mDendCount;
@@ -129,6 +96,8 @@ private:
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;
+	friend class OmSegmentCacheImplLowLevel;
+	friend class OmSegmentIterator;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

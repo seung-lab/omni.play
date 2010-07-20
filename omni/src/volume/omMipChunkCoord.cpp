@@ -8,19 +8,21 @@ const OmMipChunkCoord OmMipChunkCoord::NULL_COORD(-1, -1, -1, -1);
 ///////          OmMipChunkCoord
 
 OmMipChunkCoord::OmMipChunkCoord()
- : Level(-1), Coordinate(DataCoord(-1, -1, -1))
+	: Level(-1)
+	, Coordinate(DataCoord(-1, -1, -1))
 {
 }
 
 OmMipChunkCoord::OmMipChunkCoord(int Level, const DataCoord & rDataCoord)
-:Level(Level), Coordinate(rDataCoord)
+	: Level(Level)
+	, Coordinate(rDataCoord)
 {
 }
 
 OmMipChunkCoord::OmMipChunkCoord(int level, int x, int y, int z)
-:Level(level), Coordinate(DataCoord(x, y, z))
+	: Level(level)
+	, Coordinate(DataCoord(x, y, z))
 {
-
 }
 
 QString OmMipChunkCoord::getCoordsAsString()
@@ -28,7 +30,6 @@ QString OmMipChunkCoord::getCoordsAsString()
 	QString ret = QString("%1:%2,%3,%4").arg(Level).arg(Coordinate.x).arg(Coordinate.y).arg(Coordinate.z);
 	return ret;
 }
-
 
 /////////////////////////////////
 ///////          Property
@@ -47,8 +48,12 @@ OmMipChunkCoord OmMipChunkCoord::ParentCoord() const
 	//get primary coordinate of octal containing given coordinate
 	OmMipChunkCoord primary_coord = PrimarySiblingCoord();
 
+	int x = primary_coord.Coordinate.x;
+	int y = primary_coord.Coordinate.y;
+	int z = primary_coord.Coordinate.z;	
+
 	//return parent (next level, half coordinates)
-	return OmMipChunkCoord(Level + 1, Coordinate.x / 2, Coordinate.y / 2, Coordinate.z / 2);
+	return OmMipChunkCoord(Level + 1, x / 2, y / 2, z / 2);
 
 }
 
@@ -78,9 +83,13 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 	//primary child is in first position
 	OmMipChunkCoord primary_coord = PrimarySiblingCoord();
 
-	int x = Coordinate.x;
-	int y = Coordinate.y;
-	int z = Coordinate.z;
+	int x = primary_coord.Coordinate.x;
+	int y = primary_coord.Coordinate.y;
+	int z = primary_coord.Coordinate.z;
+
+	assert(Coordinate.x == primary_coord.Coordinate.x);
+	assert(Coordinate.y == primary_coord.Coordinate.y);
+	assert(Coordinate.z == primary_coord.Coordinate.z);
 
 	pSiblings[0] = primary_coord;
 	pSiblings[1] = OmMipChunkCoord(Level, x + 1, y, z);
@@ -95,7 +104,6 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 /* Primary child coordinate of octal children */
 OmMipChunkCoord OmMipChunkCoord::PrimaryChildCoord() const
 {
-
 	//return primary child (prev level, double coordinates)
 	return OmMipChunkCoord(Level - 1, Coordinate.x * 2, Coordinate.y * 2, Coordinate.z * 2);
 }
@@ -143,11 +151,4 @@ bool OmMipChunkCoord::operator<(const OmMipChunkCoord & rhs) const
 	}
 
 	return (Coordinate < rhs.Coordinate);
-}
-
-ostream & operator<<(ostream & out, const OmMipChunkCoord & in)
-{
-	out << "[ " << in.Level;
-	out << " ( " << in.Coordinate.x << " " << in.Coordinate.y << " " << in.Coordinate.z << " ) ]";
-	return out;
 }

@@ -20,6 +20,8 @@ class RecentFileList
 	void loadRecentlyUsedFilesListFromFS();
 	int getMaxNumberOfRecentlyUsedFilesToDisplay();
 
+	static void prependFileToFS( const QString & rel_fnpn);
+
  private:
 	QStringList getRecentFiles();
 	int getNumberOfFilesToShow();

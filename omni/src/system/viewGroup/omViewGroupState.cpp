@@ -1,5 +1,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/toolbarManager.h"
+#include "gui/viewGroup.h"
+#include "segment/omSegment.h"
 #include "segment/omSegmentColorizer.h"
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
@@ -9,12 +11,10 @@
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
-OmViewGroupState::OmViewGroupState()
+OmViewGroupState::OmViewGroupState( MainWindow * mw)
+	: OmManageableObject()
+	, mMainWindow(mw)
 {
-	mViewSliceDataXY = NULL;
-	mViewSliceDataYZ = NULL;
-	mViewSliceDataXZ = NULL;
-
 	mXYSliceEnabled = false;
 	mYZSliceEnabled = false;
 	mXZSliceEnabled = false;
@@ -31,14 +31,25 @@ OmViewGroupState::OmViewGroupState()
 	mXZPan[1] = 0.0;
 
 	mBreakThreshold = 0;
+	mDustThreshold = 90;
         mShatter = false;
         mSplitting = false;
+	mBreakOnSplit = true;
         mSplittingSegment = 0;
         mSplittingSeg = 1;
+        mShowValid = false;
+	mShowSplit = false;
+	mShowValidInColor = false;
 
-	mColorCaches.resize(Number_SegColorCacheEnums, NULL);
+	zoom_level = Vector2 < int >(0, 10);
+
+	mColorCaches.resize( SCC_NUMBER_OF_ENUMS, NULL);
 	m_sdw = NULL;
 	m_cdw = NULL;
+
+	mViewGroup = new ViewGroup( mMainWindow, this );
+
+	view2DBrushToolDiameter_ = 8;
 
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
@@ -47,6 +58,28 @@ OmViewGroupState::~OmViewGroupState()
 {
 	delete m_sdw;
 	delete m_cdw;
+	delete mViewGroup;
+}
+
+// GUI state
+void OmViewGroupState::addView2Dchannel( OmId chan_id, ViewType vtype)
+{
+	mViewGroup->addView2Dchannel( chan_id, vtype);
+}
+
+void OmViewGroupState::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
+{
+	mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
+}
+
+void OmViewGroupState::addView3D()
+{
+	mViewGroup->addView3D();
+}
+
+void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
+{
+	mViewGroup->addAllViews( channelID, segmentationID );
 }
 
 /////////////////////////////////
@@ -263,63 +296,6 @@ void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
 	}
 }
 
-/*
- *	Sets the data format for the slice image data.  This will automatically clear
- *	any image data previously set.
- */
-void OmViewGroupState::SetViewSliceDataFormat(int bytesPerSample)
-{
-	SetViewSlice(SLICE_XY_PLANE, Vector3 < int >::ZERO, NULL);
-	SetViewSlice(SLICE_YZ_PLANE, Vector3 < int >::ZERO, NULL);
-	SetViewSlice(SLICE_XZ_PLANE, Vector3 < int >::ZERO, NULL);
-
-	mViewSliceBytesPerSample = bytesPerSample;
-}
-
-/*
- *	Sets slice dimensions and copies image data (deletes old image data if necessary).  
- *	note: Uses previously specified format to perform deep copy of given data.
- */
-void OmViewGroupState::SetViewSlice(const OmSlicePlane plane, const Vector3 < int >&dim, unsigned char *p_data)
-{
-	//get size of image data
-	unsigned int data_size = mViewSliceBytesPerSample * dim.x * dim.y * dim.z;
-
-	//alloc and copy
-	unsigned char *p_data_copy = new unsigned char[data_size];
-	memcpy(p_data_copy, p_data, data_size);
-
-	switch (plane) {
-
-	case SLICE_XY_PLANE:
-		mViewSliceDimXY = dim;
-		if (mViewSliceDataXY) {
-			delete mViewSliceDataXY;
-		}
-		mViewSliceDataXY = p_data_copy;
-		break;
-
-	case SLICE_YZ_PLANE:
-		mViewSliceDimYZ = dim;
-		if (mViewSliceDataYZ) {
-			delete mViewSliceDataYZ;
-		}
-		mViewSliceDataYZ = p_data_copy;
-		break;
-
-	case SLICE_XZ_PLANE:
-		mViewSliceDimXZ = dim;
-		if (mViewSliceDataXZ) {
-			delete mViewSliceDataXZ;
-		}
-		mViewSliceDataXZ = p_data_copy;
-		break;
-
-	default:
-		assert(false);
-	}
-}
-
 void OmViewGroupState::SetSegmentation( const OmId segID ) 
 { 
 	delete m_sdw;
@@ -339,18 +315,30 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 
 	switch( objType ){
 	case CHANNEL:
-		if( mShatter ){
-			sccType = ChannelBreak;
+		if( !mShowValid && shouldVolumeBeShownBroken() ){
+			sccType = SCC_FILTER_BREAK;
+		} else if(mShowValid) {
+			if(mShowValidInColor){
+				sccType = SCC_FILTER_VALID;
+			} else {
+				sccType = SCC_FILTER_VALID_BLACK;
+			}
 		} else {
-			sccType = Channel;
+			sccType = SCC_FILTER;
 		}
 		break;
 
 	case SEGMENTATION:
-		if( mShatter ) {
-			sccType = SegmentationBreak;
+		if( !mShowValid && shouldVolumeBeShownBroken() ){
+			sccType = SCC_SEGMENTATION_BREAK;
+		} else if(mShowValid) {
+			if(mShowValidInColor){
+				sccType = SCC_SEGMENTATION_VALID;
+			} else {
+				sccType = SCC_SEGMENTATION_VALID_BLACK;
+			}
 		} else {
-			sccType = Segmentation;
+			sccType = SCC_SEGMENTATION;
 		}
 		break;
 
@@ -361,7 +349,9 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	mColorCacheMapLock.lock();
 	if( NULL == mColorCaches[ sccType ] ){
 		assert(m_sdw);
-		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw->getSegmentCache(), sccType);
+		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw->getSegmentCache(), 
+								  sccType,
+								  SEGMENTATION == objType);
 	}
 	mColorCacheMapLock.unlock();	
 
@@ -383,6 +373,11 @@ bool OmViewGroupState::GetShatterMode()
         return mShatter;
 }
 
+void OmViewGroupState::ToggleShatterMode()
+{
+	mShatter = !mShatter;
+}
+
 bool OmViewGroupState::GetSplitMode()
 {
         return mSplitting;
@@ -402,7 +397,8 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		if(postEvent) {
 			mToolBarManager->SetSplittingOff();
 		}
-		OmStateManager::SetSystemModePrev();
+		SetShowSplitMode(false);
+		OmStateManager::SetOldToolModeAndSendEvent();
 	}
 	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
@@ -416,3 +412,45 @@ void OmViewGroupState::SetSplitMode(OmId seg, OmId segment)
         SetSplitMode(true);
 }
 
+void OmViewGroupState::SetBreakOnSplitMode(bool mode)
+{
+	mBreakOnSplit = mode;
+}
+
+void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
+{
+	debug("valid", "OmViewGroupState::SetShowValidMode(bool mode=%i, bool inColor=%i)\n", mode, inColor);
+	OmCacheManager::Freshen(true);
+	mShowValid = mode;
+	mShowValidInColor = inColor;
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+}
+
+void OmViewGroupState::SetShowSplitMode(bool mode)
+{
+	OmCacheManager::Freshen(true);
+        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	mShowSplit = mode;
+}
+
+bool OmViewGroupState::shouldVolumeBeShownBroken()
+{
+	return mShatter || (mShowSplit && mBreakOnSplit);
+}
+
+void OmViewGroupState::setTool(const OmToolMode tool)
+{
+	mToolBarManager->setTool(tool);
+}
+
+int OmViewGroupState::getView2DBrushToolDiameter()
+{
+	return view2DBrushToolDiameter_;
+}
+
+void OmViewGroupState::setView2DBrushToolDiameter(const int size)
+{
+	view2DBrushToolDiameter_ = size;
+}

@@ -1,17 +1,7 @@
-#include "omVolume.h"
-#include "omVolumeCuller.h"
-
-#include "segment/omSegmentEditor.h"
-#include "common/omGl.h"
-#include "common/omDebug.h"
-#include "project/omProject.h"
-
-#define DEBUG 0
+#include "volume/omVolume.h"
 
 /////////////////////////////////
-///////
 ///////         OmVolume
-///////
 
 OmVolume::OmVolume()
 {
@@ -23,14 +13,10 @@ OmVolume::OmVolume()
         mSpaceToUserInvMat = Matrix4 < float >::IDENTITY;
 
         //defaults
+        mDataResolution = Vector3f::ONE;
         SetChunkDimension(128);
         SetDataDimensions(Vector3i(128, 128, 128));
-
         SetUserScale(Vector3i(1, 1, 1));
-        SetScale(Vector3i(10, 10, 10));
-
-        mDataResolution = Vector3f::ONE;
-        SetStretchValues();
 
         unitString = "";
 }
@@ -57,6 +43,7 @@ bool OmVolume::SetScale(const Vector3 < float >&scale)
 	mNormToSpaceMat.m[0][0] = scale.x;
 	mNormToSpaceMat.m[1][1] = scale.y;
 	mNormToSpaceMat.m[2][2] = scale.z;
+
 	//set inverse and return if invertable
 	return mNormToSpaceMat.getInverse(mNormToSpaceInvMat);
 }
@@ -74,6 +61,8 @@ bool OmVolume::SetUserScale(const Vector3 < float >&scale)
 	mSpaceToUserMat.m[0][0] = scale.x;
 	mSpaceToUserMat.m[1][1] = scale.y;
 	mSpaceToUserMat.m[2][2] = scale.z;
+
+	Update();
 
 	//set inverse and return if invertable
 	return mSpaceToUserMat.getInverse(mSpaceToUserInvMat);
@@ -171,6 +160,7 @@ void OmVolume::SetDataExtent(const DataBbox & extent)
 {
 	assert(false);
 	mDataExtent = extent;
+	Update();
 }
 
 Vector3i OmVolume::GetDataDimensions()
@@ -181,6 +171,7 @@ Vector3i OmVolume::GetDataDimensions()
 void OmVolume::SetDataDimensions(const Vector3i & dim)
 {
 	mDataExtent = DataBbox(Vector3i::ZERO, dim - Vector3i::ONE);
+	Update();
 }
 
 Vector3f OmVolume::GetDataResolution()
@@ -191,7 +182,11 @@ Vector3f OmVolume::GetDataResolution()
 bool OmVolume::SetDataResolution(const Vector3f & res)
 {
 	mDataResolution = res;
+	Update();
+}
 
+bool OmVolume::Update()
+{
 	//update scale
 	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3 < int >::ONE;
 	SetStretchValues();
@@ -230,7 +225,7 @@ Vector2f OmVolume::GetStretchValues(ViewType plane)
 
 void OmVolume::SetStretchValues()
 {
-	Vector3f res =mDataResolution;
+	Vector3f res = mDataResolution;
 	if ((res.x<=res.y)&&(res.x<=res.z)){
 		mDataStretchValues.x = 1.0;
 		mDataStretchValues.y = res.y/res.x;
@@ -246,4 +241,24 @@ void OmVolume::SetStretchValues()
 			mDataStretchValues.z = 1.0;
 		}
 	}
+}
+
+DataCoord OmVolume::SpaceToDataCoord(const SpaceCoord & spacec)
+{
+	return NormToDataCoord(SpaceToNormCoord(spacec));
+}
+
+SpaceCoord OmVolume::DataToSpaceCoord(const DataCoord & datac)
+{
+	return NormToSpaceCoord(DataToNormCoord(datac));
+}
+
+DataBbox OmVolume::SpaceToDataBbox(const SpaceBbox & spacebox)
+{
+	return NormToDataBbox(SpaceToNormBbox(spacebox));
+}
+
+SpaceBbox OmVolume::DataToSpaceBbox(const DataBbox & databox)
+{
+	return NormToSpaceBbox(DataToNormBbox(databox));
 }

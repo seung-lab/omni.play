@@ -1,16 +1,11 @@
-
 #include "project/omProject.h"
 #include "omVoxelSetValueAction.h"
-
-#include "segment/omSegmentEditor.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-
 #include "system/omStateManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omVoxelEvent.h"
-
-#define DEBUG 0
 
 /////////////////////////////////
 ///////
@@ -19,7 +14,6 @@
 
 OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rVoxel, OmSegID value)
 {
-
 	//store segmentation id
 	mSegmentationId = segmentationId;
 
@@ -35,7 +29,6 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rV
 
 OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoord > &rVoxels, OmSegID value)
 {
-
 	//store segmentation id
 	mSegmentationId = segmentationId;
 
@@ -55,8 +48,7 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoor
 /////////////////////////////////
 ///////          Action Methods
 
-void
- OmVoxelSetValueAction::Action()
+void OmVoxelSetValueAction::Action()
 {
 	//set voxel
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
@@ -99,7 +91,6 @@ void OmVoxelSetValueAction::UndoAction()
 
 string OmVoxelSetValueAction::Description()
 {
-
 	string plurlize;
 	if (mOldVoxelValues.size() > 1)
 		plurlize = "s";

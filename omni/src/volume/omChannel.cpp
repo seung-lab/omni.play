@@ -1,15 +1,11 @@
-
-#include "omChannel.h"
-#include "omVolume.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omProgressEvent.h"
-
-#include "volume/omFilter2d.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
-
-#define DEBUG 0
+#include "system/events/omProgressEvent.h"
+#include "system/omEventManager.h"
+#include "volume/omChannel.h"
+#include "volume/omFilter2d.h"
+#include "volume/omVolume.h"
 
 OmChannel::OmChannel()
 {
@@ -20,7 +16,7 @@ OmChannel::OmChannel()
 }
 
 OmChannel::OmChannel(OmId id)
- : OmManageableObject(id)
+	: OmManageableObject(id)
 {
 
 	//set manageable object name
@@ -37,9 +33,6 @@ OmChannel::OmChannel(OmId id)
 	//channels have 1 byte per sample
 	SetBytesPerSample(1);
 
-	//interpolate channel data
-	SetSubsampleMode(SUBSAMPLE_NONE);
-
 	//do not use meta data
 	mStoreChunkMetaData = false;
 
@@ -50,6 +43,8 @@ OmChannel::OmChannel(OmId id)
         SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
         SetObjectSize(chunkDim*chunkDim*chunkDim);
+
+	AddFilter();	
 }
 
 /////////////////////////////////
@@ -78,7 +73,8 @@ bool OmChannel::IsVolumeDataBuilt()
 
 void OmChannel::BuildVolumeData()
 {
-	OmMipVolume::Build();
+	OmDataPath path = OmDataPath(OmDataPaths::getDefaultHDF5channelDatasetName());
+	OmMipVolume::Build(path);
 }
 
 OmFilter2d& OmChannel::AddFilter() {
@@ -91,7 +87,7 @@ OmFilter2d& OmChannel::GetFilter(OmId id) {
         return mFilter2dManager.GetFilter(id);
 }
 
-const OmIds & OmChannel::GetValidFilterIds()
+const OmIDsSet & OmChannel::GetValidFilterIds()
 {
 	return mFilter2dManager.GetValidFilterIds();
 }

@@ -1,20 +1,23 @@
-#include "segment/omSegmentSelector.h"
 #include "project/omProject.h"
-#include "volume/omSegmentation.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
+#include "volume/omSegmentation.h"
 
 OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender, const string & cmt )
 	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
+	, mSegmentJustSelectedID(0)
 	, mSender(sender)
 	, mComment(cmt)
-	, mSegmentJustSelectedID(0)
+	, oldSelectedIDs( mSegmentation->GetSegmentCache()->GetSelectedSegmentIds() )
+	, newSelectedIDs( oldSelectedIDs )
 {
 }
 
 void OmSegmentSelector::selectNoSegments()
 {
-	newlyUnselectedSegs = mSegmentation->GetSelectedSegmentIds();
+	newSelectedIDs.clear();
 }
 
 void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, const bool isSelected )
@@ -22,50 +25,81 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, 
 	selectNoSegments();
 
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
-
-	if(isSelected) {
-		newlyUnselectedSegs.erase(segID);
-		newlySelectedSegs.insert(segID);
-		mSegmentJustSelectedID = segID;
-	} else {
-		newlyUnselectedSegs.insert(segID);
+	if(!segID){
+		return;
 	}
+
+	if( oldSelectedIDs.size() > 1 ){
+		newSelectedIDs.insert( segID );
+	} else {
+		if( isSelected ){
+			newSelectedIDs.insert( segID );
+		}
+	}
+
+	setEditSelection(segID);
+}
+
+void OmSegmentSelector::setEditSelection(const OmSegID segID)
+{
+        OmSegmentEditor::SetEditSelection(mSegmentation->GetId(), segID);
+	mSegmentJustSelectedID = segID;
 }
 
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, const bool isSelected )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 
-	if(isSelected) {
-		newlySelectedSegs.insert(segID);
-	} else {
-		newlyUnselectedSegs.insert(segID);	
+	if(!segID){
+		return;
 	}
+
+	if(isSelected) {
+		newSelectedIDs.insert(segID);
+	} else {
+		newSelectedIDs.erase(segID);	
+	}
+
+	setEditSelection(segID);
 }
 
 void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
-	const bool isSelected = mSegmentation->IsSegmentSelected( segID );
+	if(!segID){
+		return;
+	}
+
+	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	selectJustThisSegment( segID, !isSelected );
 }
 
 void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
-	const bool isSelected = mSegmentation->IsSegmentSelected( segID );
+	if(!segID){
+		return;
+	}
+
+	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
 	augmentSelectedSet( segID, !isSelected );
 }
 
-void OmSegmentSelector::sendEvent()
+bool OmSegmentSelector::sendEvent()
 {
+	if( oldSelectedIDs == newSelectedIDs ){
+		return false;
+	}
+
 	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
-							      newlySelectedSegs, 
-							      newlyUnselectedSegs,
+							      newSelectedIDs, 
+							      oldSelectedIDs,
 							      mSegmentJustSelectedID, 
 							      mSender,
-							      mComment);
+							      mComment,
+							      true );
 	a->Run();
+	// don't delete--cleanup will be handled by OmAction
 
-	// don't delete--cleanup will be handled by OmAction (hopefully...)
+	return true;
 }

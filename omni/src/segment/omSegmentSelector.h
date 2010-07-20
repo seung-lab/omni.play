@@ -15,18 +15,20 @@ class OmSegmentSelector
 	void selectJustThisSegment_toggle( const OmSegID segID );
 	void augmentSelectedSet_toggle( const OmSegID segID );
 
-	void sendEvent();
+	bool sendEvent();
 	void selectNoSegments();
 	
 private:
 	OmSegmentation * mSegmentation;
 
-	OmSegIDs newlySelectedSegs;
-	OmSegIDs newlyUnselectedSegs;
-
+	OmId mSegmentJustSelectedID;
 	void * mSender;
 	string mComment;
-	OmId mSegmentJustSelectedID;
+
+	const OmSegIDsSet oldSelectedIDs;
+	OmSegIDsSet newSelectedIDs;
+
+	void setEditSelection(const OmSegID segID);
 };
 
 #endif

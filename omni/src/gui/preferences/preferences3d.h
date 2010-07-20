@@ -32,4 +32,5 @@ public:
 	
 	void alphaSliderValueChanged(int val);
 }; 
+
 #endif

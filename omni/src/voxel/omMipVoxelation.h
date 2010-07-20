@@ -13,7 +13,7 @@ class OmMipVoxelation : public OmCacheableBase {
 
 public:
 	OmMipVoxelation(const OmMipSegmentDataCoord &mipSegDataCoord, OmMipVoxelationManager *cache);
-	~OmMipVoxelation();
+	virtual ~OmMipVoxelation();
 	
 	//accessors
 	OmSegID GetSegmentDataValue();

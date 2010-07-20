@@ -27,8 +27,6 @@ public:
 	ObjectType mVolType;
 	unsigned int mFreshness;
 		
-	friend ostream& operator<<(ostream &out, const OmTileCoord &in);
-	
 	friend QDataStream &operator<<(QDataStream & out, const OmTileCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmTileCoord & c );
 };

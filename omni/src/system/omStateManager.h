@@ -20,6 +20,7 @@ class QGLContext;
 class MyInspectorWidget;
 class MainWindow;
 class DendToolBar;
+class Drawable;
 
 class OmStateManager : boost::noncopyable {
 
@@ -34,18 +35,12 @@ public:
 	static void SetProjectFileName(const string &);
 	static const string& GetProjectDirectoryPath();
 	static void SetProjectDirectoryPath(const string &);
-	
-	
-	//system mode
-	static OmSystemMode GetSystemMode();
-	static OmSystemMode GetSystemModePrev();
-	static void SetSystemMode(const OmSystemMode mode);
-	static void SetSystemModePrev();
-	
+		
 	//tool mode
 	static OmToolMode GetToolMode();
-	static void SetToolMode(const OmToolMode mode);
-	
+	static void SetToolModeAndSendEvent(const OmToolMode mode);
+	static void SetOldToolModeAndSendEvent();
+
 	//undostack
 	static QUndoStack* GetUndoStack();
 	static void PushUndoCommand(QUndoCommand *);
@@ -78,6 +73,8 @@ public:
 	static void setDendToolBar( DendToolBar * dtb);
 
 	static QSize getViewBoxSizeHint();
+	static void SetViewDrawable(ViewType viewType, vector<Drawable*> & drawable);
+	static vector<Drawable*> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -94,12 +91,9 @@ private:
 	Vector3< OmId > mEditSelection;	//volume, segmentation, segment
 	set< DataCoord > mEditSelectionCoords;
 	
-	//system mode
-	OmSystemMode mSystemMode;
-	OmSystemMode mSystemModePrev;
-
 	//tool mode
-	OmToolMode mToolMode;
+	OmToolMode mCurToolMode;
+	OmToolMode mPrevToolMode;
 	
 	//undostack
 	QUndoStack *mpUndoStack;
@@ -118,6 +112,10 @@ private:
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
+
+	vector<Drawable*> mDrawableXY;
+	vector<Drawable*> mDrawableXZ;
+	vector<Drawable*> mDrawableYZ;
 };
 
 #endif

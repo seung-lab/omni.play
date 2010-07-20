@@ -3,16 +3,14 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
-#include "volume/omSegmentation.h" // only needed for friend OmSegmentation::ExportDataFilter()
 
-#include <QSet>
-#include <QHash>
 #include <QMutex>
-#include <QColor>
 
+class OmMipChunkCoord;
 class OmSegment;
 class OmSegmentCacheImpl;
-class vtkImageData;  // only needed for friend OmSegmentation::ExportDataFilter()
+class OmSegmentation;
+class vtkImageData;
 
 class OmSegmentCache {
 public:
@@ -22,32 +20,30 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDs & values, const OmMipChunkCoord & mipCoord);
+	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord,
+				  boost::unordered_map< OmSegID, unsigned int> * sizes );
 	OmSegment* AddSegment(OmSegID value);
 
-	bool isValueAlreadyMappedToSegment( OmSegID value );
+	OmSegment* GetSegment(const OmSegID);
 
-	OmSegment* GetSegmentFromValue(OmSegID);
+	bool IsSegmentValid(OmSegID seg);
 
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();
 
-	bool IsSegmentValid(OmSegID seg);
-
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
-	OmSegIDs & GetEnabledSegmentIdsRef();
+	OmSegIDsSet & GetEnabledSegmentIds();
 
-	bool isSegmentSelected( OmSegID segID );
-	bool isSegmentSelected( OmSegment * seg );
+	bool IsSegmentSelected( OmSegID segID );
+	bool IsSegmentSelected( OmSegment * seg );
 	void setSegmentSelected( OmSegID segID, bool isSelected );
 	void SetAllSelected(bool);
-	OmSegIDs & GetSelectedSegmentIdsRef();
+	OmSegIDsSet & GetSelectedSegmentIds();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelections( const OmSegIDs & idsToSelect,
-				      const OmSegIDs & idsToUnselect );
+	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -61,36 +57,41 @@ public:
 	void flushDirtySegments();
 
 	OmSegment * findRoot( OmSegment * segment );
+	OmSegment * findRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
 
-	void splitChildLowestThreshold( OmSegment * segment );
-        void splitTwoChildren(OmSegment * seg1, OmSegment * seg2);
+	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
-	void JoinTheseSegments( const OmIds & segmentList);
-	void UnJoinTheseSegments( const OmIds & segmentList);
+	OmSegmentEdge JoinEdge( const OmSegmentEdge & e );
+	OmSegmentEdge SplitEdge( const OmSegmentEdge & e );
+	void JoinTheseSegments( const OmSegIDsSet & segmentList);
+	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	quint32 getPageSize();
 
-	void setSegmentListDirectCache( const OmMipChunkCoord & chunkCoord,
-					std::vector< OmSegment* > & segmentsToDraw );
-	bool segmentListDirectCacheHasCoord( const OmMipChunkCoord & chunkCoord );
-	const OmSegPtrs & getSegmentListDirectCache( const OmMipChunkCoord & chunkCoord );
-
-	void resetGlobalThreshold( const float stopPoint );
-
 	quint32 getMaxValue();
+	quint64 getSegmentListSize(OmSegIDRootType type);
+
+	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset, 
+						  const int numToGet, 
+						  OmSegIDRootType type, 
+						  OmSegID startSeg = 0);
+
+	void setAsValidated(OmSegment * segment, const bool valid);
+
+	void ExportDataFilter(vtkImageData * pImageData);
+
+	void refreshTree();
+
+	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
 private:
 	QMutex mMutex;
-	
-	OmSegmentCacheImpl * mImpl;
-	OmSegmentation * mSegmentation;
-	quint32 mPageSize;
-
-	OmSegID findRootID_noLock( const OmSegID segID );
+	OmSegmentation *const mSegmentation;
+	OmSegmentCacheImpl *const mImpl;
 
 	friend class OmSegmentColorizer;
-	friend void OmSegmentation::ExportDataFilter(vtkImageData * pImageData);
+
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 };

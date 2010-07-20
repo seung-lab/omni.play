@@ -964,7 +964,7 @@ def get_svninfo(target):
 	try:
         	key, value = L.split(": ", 1)
 	except:
-		print L
+		"""print L"""
         info[key] = value.strip()
     _cache_svninfo[target] = info
     return info

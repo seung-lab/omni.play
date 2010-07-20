@@ -1,13 +1,11 @@
-
+#include <assert.h>
 #include "omViewEvent.h"
-
-#define DEBUG 0
 
 /*
  *	Construct and initialize references.
  */
 OmViewEvent::OmViewEvent(QEvent::Type type)
- : OmEvent(type, CLASS)
+	: OmEvent(type, CLASS)
 {
 
 }
@@ -15,8 +13,7 @@ OmViewEvent::OmViewEvent(QEvent::Type type)
 /*
  *	Dispatch event based on event type.
  */
-void
- OmViewEvent::Dispatch(OmEventListener * pListener)
+void OmViewEvent::Dispatch(OmEventListener * pListener)
 {
 
 	//cast to proper listener

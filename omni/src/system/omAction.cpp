@@ -51,9 +51,11 @@ void OmAction::Run()
 void OmAction::redo()
 {
 	Action();
+	setText(QString::fromStdString(Description()));
 }
 
 void OmAction::undo()
 {
 	UndoAction();
+	setText(QString::fromStdString(Description()));
 }

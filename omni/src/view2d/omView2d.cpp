@@ -1,18 +1,20 @@
-#include "drawable.h"
-#include "omView2d.h"
+#include "gui/widgets/omCursors.h"
 #include "project/omProject.h"
+#include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/actions/voxel/omVoxelSetValueAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
-#include "system/omGarbage.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
+#include "view2d/drawable.h"
 #include "view2d/omCachingThreadedCachingTile.h"
+#include "view2d/omView2d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
@@ -23,8 +25,10 @@ static QGLWidget *sharedwidget = NULL;
  *	Constructs View2d widget.
  */
 OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget * parent, OmViewGroupState * vgs)
-	: QWidget(parent), mViewGroupState(vgs)
+	: OmView2dImpl(parent)
+	
 {
+	mViewGroupState = vgs;
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget();
 
 	mViewType = viewtype;
@@ -33,7 +37,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	mAlpha = 1;
 	mJoiningSegmentToggled = false;
 	mLevelLock = false;
-	mBrushToolDiameter = 1;
 	mCurrentSegmentId = 0;
 	mEditedSegmentation = 0;
 	mElapsed = NULL;
@@ -118,6 +121,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 	iSentIt = false;
 	mInitialized = false;
+	mDrawFromChannel = false;
 
 	OmCachingThreadedCachingTile::Refresh();
 
@@ -125,7 +129,8 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 	mGlBlendColorFunction = (GLCOLOR) wglGetProcAddress("glBlendColor");
 #endif
 	
-	resetWindow();
+	resetWindowState();
+	OmCursors::setToolCursor(this);
 }
 
 OmView2d::~OmView2d()
@@ -136,28 +141,6 @@ OmView2d::~OmView2d()
 /////////////////////////////////
 ///////          GL Event Methods
 
-// The initializeGL() function is called just once, before paintGL() is called.
-// More importantly this function is called before "make current" calls.
-void OmView2d::initializeGL()
-{
-	// IMPORTANT: To cooperate fully with QPainter, we defer matrix stack operations and attribute initialization until
-	// the widget needs to be myUpdated.
-	//debug("genone","OmView2d::initializeGL        " << "(" << size().width() << ", " << size().height() << ")");
-	//debug("genone","viewtype = " << mViewType);
-
-	mTotalViewport.lowerLeftX = 0;
-	mTotalViewport.lowerLeftY = 0;
-	mTotalViewport.width = size().width();
-	mTotalViewport.height = size().height();
-
-	// //debug("FIXME", << "mtotalviewport = " << mTotalViewport << endl;
-
-	mNearClip = -1;
-	mFarClip = 1;
-	mZoomLevel = 0;
-
-	// //debug("FIXME", << "mTotalViewport = " << mTotalViewport << endl;
-}
 
 void OmView2d::resizeEvent(QResizeEvent * event)
 {
@@ -232,14 +215,20 @@ void OmView2d::paintEvent(QPaintEvent *)
 
 	painter.setPen(the_pen);
 
+	const bool inEditMode = OmStateManager::GetToolMode() == ADD_VOXEL_MODE ||
+		OmStateManager::GetToolMode() == SUBTRACT_VOXEL_MODE ||
+		OmStateManager::GetToolMode() == FILL_MODE;
+		
 	if (amInFillMode()) {
 		painter.drawRoundedRect(QRect(mMousePoint.x, mMousePoint.y, 20, 20), 5, 5);
-	} else if (OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
+	} else if (inEditMode){
+		const double offset = 0.5 * mViewGroupState->getView2DBrushToolDiameter() * zoomFactor;
+		const double width = 1.0 * mViewGroupState->getView2DBrushToolDiameter() * zoomFactor;
 		painter.drawEllipse(QRectF
-				    (mMousePoint.x - 0.5 * mBrushToolDiameter * zoomFactor,
-				     mMousePoint.y - 0.5 * mBrushToolDiameter * zoomFactor,
-				     1.0 * mBrushToolDiameter * zoomFactor, 
-				     1.0 * mBrushToolDiameter * zoomFactor));
+				    (mMousePoint.x - offset,
+				     mMousePoint.y - offset,
+				     width, 
+				     width ));
 	}
 	
 	if (hasFocus()){
@@ -252,7 +241,7 @@ void OmView2d::paintEvent(QPaintEvent *)
 			 mTotalViewport.height - 1);
 
 	if ((!cameraMoving) && drawComplete && (!sentTexture)) {
-		SendFrameBuffer();
+		sentTexture = true;
 	} else if (!drawComplete) {
 		sentTexture = false;
 	}
@@ -324,72 +313,6 @@ void OmView2d::displayInformation( QString & elapsedTime )
 	}
 }
 
-QImage OmView2d::safePaintEvent()
-{
-	mTextures.clear();
-
-	mTileCount = 0;
-	mTileCountIncomplete = 0;
-	initializeGL();
-	pbuffer->makeCurrent();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glPushMatrix(); {
-
-		glMatrixMode(GL_PROJECTION);
-		glViewport(mTotalViewport.lowerLeftX, mTotalViewport.lowerLeftY, mTotalViewport.width,
-			   mTotalViewport.height);
-		glLoadIdentity();
-
-		glOrtho(mTotalViewport.lowerLeftX,	/* left */
-			mTotalViewport.width,	/* right */
-			mTotalViewport.height,	/* bottom */
-			mTotalViewport.lowerLeftY,	/* top */
-			mNearClip, mFarClip);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		glEnable(GL_TEXTURE_2D);
-		OmGarbage::safeCleanTextureIds();
-
-		if (CHANNEL == mVolumeType) {
-			float alpha = 0;
-
-			glDisable(GL_BLEND);
-			DrawFromCache();
-
-			OmChannel & current_channel = OmProject::GetChannel(mImageId);
-			foreach( OmId id, current_channel.GetValidFilterIds() ) {
-        			OmFilter2d &filter = current_channel.GetFilter( id );
-
-				alpha = filter.GetAlpha();
-				glEnable(GL_BLEND);	// enable blending for transparency
-				glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
-#if WIN32
-				mGlBlendColorFunction(1.f, 1.f, 1.f, (1.f - alpha));
-#else
-				glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
-#endif
-
-				DrawFromFilter(filter);
-				glDisable(GL_BLEND);	// enable blending for transparency
-			}
-
-		} else {
-			DrawFromCache();
-		}
-	}
-
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-
-	pbuffer->doneCurrent();
-	return pbuffer->toImage();
-}
-
 /////////////////////////////////
 ///////          MouseEvent Methods
 
@@ -398,29 +321,27 @@ void OmView2d::Refresh()
 	mDoRefresh = true;
 }
 
-void OmView2d::PickToolGetColor(QMouseEvent * event)
-{
-	QRgb p;
-	int r, g, b, a;
-
-	p = mImage.pixel(event->pos());
-	r = qRed(mImage.pixel(event->pos()));
-	g = qGreen(mImage.pixel(event->pos()));
-	b = qBlue(mImage.pixel(event->pos()));
-	a = qAlpha(mImage.pixel(event->pos()));
-}
-
-void OmView2d::PickToolAddToSelection(OmId segmentation_id, DataCoord globalDataClickPoint)
+void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint)
 {
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
+        const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
+        if (segID ) {
+               
+               OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
+               sel.augmentSelectedSet( segID, true );
+               sel.sendEvent();
+
+               Refresh();
+        } 
+}
+
+void OmView2d::PickToolAddToSelection( OmSegmentSelector & sel, 
+				       OmSegmentation & current_seg,
+				       DataCoord globalDataClickPoint)
+{
 	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
 	if (segID ) {
-		
-		OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
-		sel.augmentSelectedSet( segID, !current_seg.IsSegmentSelected(segID) );
-		sel.sendEvent();
-
-		Refresh();
+		sel.augmentSelectedSet( segID, true );
 	} 
 }
 
@@ -449,48 +370,6 @@ DataCoord OmView2d::BrushToolOTGDC(DataCoord off)
 	return ret;
 }
 
-static bool BrushTool32[32][32] = {
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-
-	{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-	{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-	{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-
-	{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-
-	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-	{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-	{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-	{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-
-	{0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-};
-
 void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 {
 	DataCoord off;
@@ -513,7 +392,8 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		break;
 	}
 
-	if (1 == mBrushToolDiameter) {
+	if (1 == mViewGroupState->getView2DBrushToolDiameter() ) {
+		//debug("brush", "%i,%i,%i\n", DEBUGV3(gDC));
 		//(new OmVoxelSetValueAction(segid, gDC, seg))->Run();
 		if (segid != 1 && segid != 0) {
 			//debug("FIXME", << segid << " is the seg id" << endl;
@@ -521,6 +401,7 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		mEditedSegmentation = segid;
 		mCurrentSegmentId = seg;
 		mUpdateCoordsSet.insert(gDC);
+		Refresh();
 		if (gDC.x > mBrushToolMaxX) {
 			mBrushToolMaxX = gDC.x;
 		}
@@ -540,24 +421,9 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		if (gDC.z < mBrushToolMinZ) {
 			mBrushToolMinZ = gDC.z;
 		}
-
-	} else if (32 == mBrushToolDiameter && 0) {
-		int savedDia = mBrushToolDiameter;
-		mBrushToolDiameter = 1;
-		for (int i = 0; i < 32; i++) {
-			for (int j = 0; j < 32; j++) {
-				DataCoord myoff = off;
-				if (BrushTool32[i][j]) {
-					myoff.x += i - 16;
-					myoff.y += j - 16;
-					BrushToolApplyPaint(segid, BrushToolOTGDC(myoff), seg);
-				}
-			}
-		}
-		mBrushToolDiameter = savedDia;
 	} else {
-		int savedDia = mBrushToolDiameter;
-		mBrushToolDiameter = 1;
+		const int savedDia = mViewGroupState->getView2DBrushToolDiameter();
+		mViewGroupState->setView2DBrushToolDiameter(1);
 		for (int i = 0; i < savedDia; i++) {
 			for (int j = 0; j < savedDia; j++) {
 				DataCoord myoff = off;
@@ -570,11 +436,10 @@ void OmView2d::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 				}
 			}
 		}
-		mBrushToolDiameter = savedDia;
+		mViewGroupState->setView2DBrushToolDiameter(savedDia);
 	}
 }
 
-// FIXME: what is going on here? why does it work??
 void OmView2d::SetDepth(QMouseEvent * event)
 {
 	ScreenCoord screenc = ScreenCoord(event->x(),event->y());
@@ -598,17 +463,24 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 {
 
 	DataCoord off;
+	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	OmId segid = OmProject::GetSegmentation(seg).GetVoxelSegmentId(gCP);
 
-	if (!segid)
+
+	if (!segid) {
 		return;
+	}
+	debug("fill", "OmView2d::FillToolFill, segid, fc, bc, depth %i, %i, %i, %i\n", segid, fc, bc, depth);
+	segid = current_seg.GetSegmentCache()->findRoot(current_seg.GetSegmentCache()->GetSegment(segid))->getValue();
+
 	if (depth > 5000)
 		return;
 	depth++;
 
 	//debug("FIXME", << gCP << " filling... in " << segid << " with fc of " << fc << "  and bc of " << bc <<  " at " << depth << endl;
 
-	if (segid != fc && segid == bc) {
+
+	if (segid == bc && segid != fc) {
 
 		switch (mViewType) {
 		case XY_VIEW:
@@ -630,38 +502,68 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 
 		(new OmVoxelSetValueAction(seg, gCP, fc))->Run();
 		//delete new OmVoxelSetValueAction(seg, gCP, fc);
+		//printf("here\n");
+
+		debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
+			DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
 
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y++;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x--;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x--;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y--;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.y--;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
+		off.x++;
+		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
+	} else {
+		debug("fill", "not entering %i, %i, segid:%i != fc:%i, bc=%i\n", segid == bc, segid != fc, segid, fc, bc);
 	}
 }
 
-void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second)
+void myBreak(){}
+void checkDC (string s, DataCoord dc)
+{
+#if 0
+	if(dc.x == dc.y) {
+		debug("brush", "%s: xy: %i = %i\n", s.c_str(), dc.x, dc.y);
+		myBreak();
+	}
+	if(dc.x == dc.z) {
+		debug("brush", "%s: xz: %i = %i\n", s.c_str(), dc.x, dc.z);
+		myBreak();
+	}
+	if(dc.y == dc.z) {
+		debug("brush", "%s: yz: %i = %i\n", s.c_str(), dc.y, dc.z);
+		myBreak();
+	}
+#endif
+}
+
+void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & second, bool doselection)
 {
 	//store current selection
-	OmId segmentation_id, segment_id;
-	bool valid_edit_selection = OmSegmentEditor::GetEditSelection(segmentation_id, segment_id);
-	bool doselection = false;
+	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!valid_edit_selection)
+	if (!sdw.isValid())
 		return;
+
+	const OmId segmentation_id = sdw.getSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;
 	switch (OmStateManager::GetToolMode()) {
 	case ADD_VOXEL_MODE:
 		//get value associated to segment id
-		data_value = segment_id;
+		data_value = sdw.getID();
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
@@ -680,11 +582,29 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	float mDepth = mViewGroupState->GetViewSliceDepth(mViewType);
 	DataCoord data_coord = SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
 	int mViewDepth = data_coord.z;
+        DataCoord globalDC;
+	int y1, y0, x1, x0;
 
-	int y1 = second.y;
-	int y0 = first.y;
-	int x1 = second.x;
-	int x0 = first.x;
+        switch (mViewType) {
+        case XY_VIEW:
+		y1 = second.y;
+		y0 = first.y;
+		x1 = second.x;
+		x0 = first.x;
+                break;
+        case XZ_VIEW:
+		y1 = second.z;
+		y0 = first.z;
+		x1 = second.x;
+		x0 = first.x;
+                break;
+        case YZ_VIEW:
+		y1 = second.y;
+		y0 = first.y;
+		x1 = second.z;
+		x0 = first.z;
+                break;
+        }
 
 	int dy = y1 - y0;
 	int dx = x1 - x0;
@@ -705,29 +625,17 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	dy <<= 1;		// dy is now 2*dy
 	dx <<= 1;		// dx is now 2*dx
 
-	// modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-	DataCoord myDC = DataCoord(x0, y0, mViewDepth);
+	debug("brush", "coords: %i,%i,%i\n", x0, y0, mViewDepth);
+	debug("brush", "mDepth = %f\n", mDepth);
 
-	// myDC is flat, only valid for XY view.  This is not correct.
+	OmSegmentSelector sel(segmentation_id, this, "view2d_selector" );
+	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
 
-	DataCoord globalDC;
-	switch (mViewType) {
-	case XY_VIEW:
-		globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-		break;
-	case XZ_VIEW:
-		globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-		break;
-	case YZ_VIEW:
-		globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-		break;
+	if(!doselection) {
+		//BrushToolApplyPaint(segmentation_id, first, data_value);
+	} else {
+		PickToolAddToSelection(sel, current_seg, first);
 	}
-	//debug("FIXME", << "global click point: " << globalDC << endl;
-
-	if (!doselection)
-		BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-	else
-		PickToolAddToSelection(segmentation_id, globalDC);
 
 	// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 
@@ -740,33 +648,34 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			}
 			x0 += stepx;
 			fraction += dy;	// same as fraction -= 2*dy
-			//modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-			DataCoord myDC = DataCoord(x0, y0, mViewDepth);
-
-			// myDC is flat, only valid for XY view.  This is not correct.
 
 			DataCoord globalDC;
 			switch (mViewType) {
 			case XY_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
+				globalDC = DataCoord(x0, y0, second.z);
 				break;
 			case XZ_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
+				globalDC = DataCoord(x0, second.y, y0);
 				break;
 			case YZ_VIEW:
-				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
+				globalDC = DataCoord(second.x, y0, x0);
 				break;
 			}
-			//debug("FIXME", << "global click point: " << globalDC << endl;
 
-			if (mBrushToolDiameter > 4 && (x1 == x0 || abs(x1 - x0) % (mBrushToolDiameter / 4) == 0)) {
-				if (!doselection)
+			checkDC("3", globalDC);
+
+			if (mViewGroupState->getView2DBrushToolDiameter() > 4 && (x1 == x0 || abs(x1 - x0) % (mViewGroupState->getView2DBrushToolDiameter() / 4) == 0)) {
+				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-			} else if (doselection || mBrushToolDiameter < 4) {
-				if (!doselection)
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
+			} else if (doselection || mViewGroupState->getView2DBrushToolDiameter() < 4) {
+				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			}
 			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
@@ -781,38 +690,42 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			y0 += stepy;
 			fraction += dx;
 
-			//modifiedCoords.insert(DataCoord(x0, y0, mViewDepth));
-			DataCoord myDC = DataCoord(x0, y0, mViewDepth);
+                        DataCoord globalDC;
+                        switch (mViewType) {
+                        case XY_VIEW:
+                                globalDC = DataCoord(x0, y0, second.z);
+                                break;
+                        case XZ_VIEW:
+                                globalDC = DataCoord(x0, second.y, y0);
+                                break;
+                        case YZ_VIEW:
+                                globalDC = DataCoord(second.x, y0, x0);
+                                break;
+                        }
 
-			// myDC is flat, only valid for XY view.  This is not correct.
+			checkDC("4", globalDC);
 
-			DataCoord globalDC;
-			switch (mViewType) {
-			case XY_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.y, myDC.z);
-				break;
-			case XZ_VIEW:
-				globalDC = DataCoord(myDC.x, myDC.z, myDC.y);
-				break;
-			case YZ_VIEW:
-				globalDC = DataCoord(myDC.z, myDC.y, myDC.x);
-				break;
-			}
-			//debug("FIXME", << "global click point: " << globalDC << endl;
-
-			if (mBrushToolDiameter > 4 && (y1 == y0 || abs(y1 - y0) % (mBrushToolDiameter / 4) == 0)) {
-				if (!doselection)
+			if (mViewGroupState->getView2DBrushToolDiameter() > 4 && (y1 == y0 || abs(y1 - y0) % (mViewGroupState->getView2DBrushToolDiameter() / 4) == 0)) {
+				if (!doselection) {
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-			} else if (doselection || mBrushToolDiameter < 4) {
-				if (!doselection)
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
+			} else if (doselection || mViewGroupState->getView2DBrushToolDiameter() < 4) {
+				if (!doselection){
 					BrushToolApplyPaint(segmentation_id, globalDC, data_value);
-				else
-					PickToolAddToSelection(segmentation_id, globalDC);
+				} else {
+					PickToolAddToSelection(sel, current_seg, globalDC);
+				}
 			}
-			// //debug("FIXME", << "insert: " << DataCoord(x0, y0, 0) << endl;
 		}
 	}
-
+	
+	if (doselection) {
+		if(sel.sendEvent()){
+			Refresh();
+		}
+	}
 }
 
 
@@ -887,14 +800,22 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 
 void OmView2d::setBrushToolDiameter()
 {
-	if (1 == mBrushToolDiameter) {
-		mBrushToolDiameter = 2;
-	} else if (2 == mBrushToolDiameter) {
-		mBrushToolDiameter = 8;
-	} else if (8 == mBrushToolDiameter) {
-		mBrushToolDiameter = 32;
-	} else if (32 == mBrushToolDiameter) {
-		mBrushToolDiameter = 1;
+	switch(mViewGroupState->getView2DBrushToolDiameter()){
+	case 1:
+		mViewGroupState->setView2DBrushToolDiameter(2);
+		break;
+	case 2:
+		mViewGroupState->setView2DBrushToolDiameter(8);
+		break;
+	case 8:
+		mViewGroupState->setView2DBrushToolDiameter(16);
+		break;
+	case 16:
+		mViewGroupState->setView2DBrushToolDiameter(32);
+		break;
+	case 32:
+		mViewGroupState->setView2DBrushToolDiameter(1);
+		break;
 	}
 }
 
@@ -975,13 +896,11 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 	if (mVolumeType == SEGMENTATION) {
 		// need to myUpdate paintbrush, not anything on the screen 
 
-		OmId mentationEditId;
-		OmId mentEditId;
-
-		if (OmSegmentEditor::GetEditSelection(mentationEditId, mentEditId)) {
-
-			if (mentationEditId == mImageId) {
-				const OmColor & color = OmProject::GetSegmentation(mImageId).GetSegment(mentEditId)->GetColorInt();
+		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	
+		if( sdw.isValid()) {
+			if (sdw.getSegmentationID() == mImageId) {
+				const OmColor & color = sdw.getColorInt();
 				editColor = qRgba(color.red, color.green, color.blue, 255);
 			}
 		}
@@ -999,64 +918,7 @@ void OmView2d::myUpdate()
 		mUpdateCoordsSet.clear();
 	}
 
-	if (!mDoRefresh && mEditedSegmentation) {
-		Vector2i zoomMipVector = mViewGroupState->GetZoomLevel();
-		int tileLength = OmProject::GetSegmentation(mEditedSegmentation).GetChunkDimension();
-		OmSegmentation & current_seg = OmProject::GetSegmentation(mEditedSegmentation);
-
-		OmCachingThreadedCachingTile *fastCache =
-			new OmCachingThreadedCachingTile(mViewType, SEGMENTATION, mEditedSegmentation, &current_seg, NULL, mViewGroupState);
-		OmThreadedCachingTile *cache = fastCache->mCache;
-		if (fastCache->mDelete)
-			delete fastCache;
-
-		mTextures.clear();
-
-		int xMipChunk = -1;
-		int xSave = -1;
-		int yMipChunk = -1;
-		int ySave = -1;
-		int zMipChunk = -1;
-		int zSave = -1;
-		int step = 1;
-		for (int x = mBrushToolMinX; x <= mBrushToolMaxX; x = x + step) {
-			for (int y = mBrushToolMinY; y <= mBrushToolMaxY; y = y + step) {
-				for (int z = mBrushToolMinZ; z <= mBrushToolMaxZ; z = z + step) {
-
-					if (mViewType == XY_VIEW) {
-						xMipChunk = ((int)(x / tileLength)) * tileLength;
-						yMipChunk = ((int)(y / tileLength)) * tileLength;
-						zMipChunk = z;
-					} else if (mViewType == XZ_VIEW) {
-						xMipChunk = ((int)(x / tileLength)) * tileLength;
-						yMipChunk = ((int)(z / tileLength)) * tileLength;
-						zMipChunk = y;
-					} else if (mViewType == YZ_VIEW) {
-						xMipChunk = ((int)(z / tileLength)) * tileLength;
-						yMipChunk = ((int)(y / tileLength)) * tileLength;
-						zMipChunk = x;
-					}
-
-					if (xMipChunk != xSave || yMipChunk != ySave || zMipChunk != zSave) {
-						DataCoord this_data_coord =
-						    ToDataCoord(xMipChunk, yMipChunk, zMipChunk);
-						SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-						OmTileCoord tileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen (false));
-
-						cache->Remove(tileCoord);
-						//debug("FIXME", << tileCoord << endl;
-						//debug("FIXME", << "here " << endl;
-					}
-					//debug("FIXME", << " x,y,z a:" << x << ", "  << y << ", " << z << endl;
-
-					xSave = xMipChunk;
-					ySave = yMipChunk;
-					zSave = zMipChunk;
-				}
-			}
-		}
-		//debug("FIXME", << "exit" << endl;
-	} else if (mDoRefresh) {
+	if (mDoRefresh) {
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
@@ -1071,511 +933,6 @@ void OmView2d::myUpdate()
 	update();
 }
 
-/////////////////////////////////
-///////		 Draw Methods
-void OmView2d::DrawFromFilter(OmFilter2d &filter)
-{
-	OmThreadedCachingTile *cache = filter.GetCache(mViewType, mViewGroupState);
-	if (!cache)
-		return;
-
-	OmThreadedCachingTile *sCache = mCache;
-	OmMipVolume * sVolume = mVolume;
-
-	mCache = cache;
-	mVolume = cache->mVolume;
-	
-
-	double alpha = mAlpha;
-	mAlpha = filter.GetAlpha();
-
-	Draw();
-
-	mAlpha = alpha;
-	mCache = sCache;
-	mVolume = sVolume;
-}
-
-void OmView2d::DrawFromCache()
-{
-	if (mVolumeType == CHANNEL) {
-		OmChannel & current_channel = OmProject::GetChannel(mImageId);
-		mVolume = &current_channel;
-
-		OmCachingThreadedCachingTile *fastCache =
-			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, &current_channel, NULL, mViewGroupState);
-		mCache = fastCache->mCache;
-		if (fastCache->mDelete)
-			delete fastCache;
-
-		mCache->SetContinuousUpdate(false);
-
-		Draw();
-	} else {
-		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
-		mVolume = &current_seg;
-		OmCachingThreadedCachingTile *fastCache =
-			new OmCachingThreadedCachingTile(mViewType, mVolumeType, mImageId, mVolume, NULL, mViewGroupState);
-		mCache = fastCache->mCache;
-		if (fastCache->mDelete)
-			delete fastCache;
-
-		mCache->SetContinuousUpdate(false);
-		Draw();
-	}
-}
-
-extern GGOCTFPointer GGOCTFunction;
-
-void OmView2d::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gotten_id)
-{
-	if (OMTILE_NEEDCOLORMAP == gotten_id->flags) {
-		GLuint texture;
-		glGenTextures(1, &texture);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gotten_id->x, gotten_id->y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-			     gotten_id->texture);
-
-		gotten_id->flags = OMTILE_GOOD;
-		gotten_id->textureID = texture;
-		if (gotten_id->texture) {
-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
-			free(gotten_id->texture);
-		}
-		gotten_id->texture = NULL;
-
-		debug("genone", "texture = %i\n", gotten_id->GetTextureID());
-
-	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->flags) {
-		GLuint texture;
-		glGenTextures(1, &texture);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-		//debug("FIXME", << "texture " << (int)((unsigned char*)gotten_id->texture)[0] << endl;
-		//debug("FIXME", << "x " << gotten_id->x << endl;
-		//debug("FIXME", << "y " << gotten_id->y << endl;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, gotten_id->x, gotten_id->y, 0, GL_LUMINANCE,
-			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->texture));
-
-		gotten_id->flags = OMTILE_GOOD;
-		gotten_id->textureID = texture;
-
-		if (gotten_id->texture) {
-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
-			free(gotten_id->texture);
-		}
-		gotten_id->texture = NULL;
-	}
-}
-
-void OmView2d::safeDraw(float zoomFactor, int x, int y, int tileLength, QExplicitlySharedDataPointer < OmTextureID > gotten_id)
-{
-	Vector2f stretch = mVolume->GetStretchValues(mViewType);
-
-	if (mViewType == YZ_VIEW) {
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
-		glTranslatef(0.5, 0.5, 0.0);
-		glRotatef(-90, 0.0, 0.0, 1.0);
-		glTranslatef(-0.5, -0.5, 0.0);
-		glMatrixMode(GL_MODELVIEW);
-	}
-
-	glBindTexture(GL_TEXTURE_2D, gotten_id->GetTextureID());
-	glBegin(GL_QUADS);
-
-	if (mViewType == XY_VIEW) {
-		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
-		glVertex2f(x * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-
-		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
-		glVertex2f(x * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-		glEnd();
-	} else if (mViewType == XZ_VIEW) {
-		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
-		glVertex2f(x * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-
-		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
-		glVertex2f(x * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-		glEnd();
-	} else if (mViewType == YZ_VIEW) {
-		glTexCoord2f(0.0f, 0.0f);	/* lower left corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 0.0f);	/* lower right corner of image */
-		glVertex2f(x * zoomFactor, y * zoomFactor);
-
-		glTexCoord2f(1.0f, 1.0f);	/* upper right corner of image */
-		glVertex2f(x * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-
-		glTexCoord2f(0.0f, 1.0f);	/* upper left corner of image */
-		glVertex2f((x + tileLength*stretch.x) * zoomFactor, (y + tileLength*stretch.y) * zoomFactor);
-		glEnd();
-	}
-}
-
-void OmView2d::Draw()
-{
-	drawComplete = true;
-
-	Vector2f zoomMipVector = mViewGroupState->GetZoomLevel();
-	if (0) {
-		Vector2f zoom = zoomMipVector;
-		Vector2f translateVector = GetPanDistance(mViewType);
-
-		int lvl = zoomMipVector.x+1;
-
-		for (int i = mRootLevel; i > lvl; --i) {
-			
-			zoom.x = i;
-			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
-			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
-
-			mViewGroupState->SetPanDistance(mViewType,
-							Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
-								 translateVector.y / (1 + i - zoomMipVector.x)),
-							false);
-			
-			PreDraw(zoom);
-		}
-		mViewGroupState->SetPanDistance(mViewType,
-							   Vector2f(translateVector.x, translateVector.y),
-							   false);
-	}
-
-	PreDraw(zoomMipVector);
-
-	TextureDraw(mTextures);
-	mTextures.clear ();
-}
-
-int OmView2d::GetDepth(const OmTileCoord & key)
-{
-	// find depth
-	NormCoord normCoord = mVolume->SpaceToNormCoord(key.Coordinate);
-	DataCoord dataCoord = mVolume->NormToDataCoord(normCoord);
-	Vector2f mZoomMipVector = mViewGroupState->GetZoomLevel();
-	float factor=OMPOW(2,mZoomMipVector.x);
-
-	int ret;
-
-	switch(mViewType){
-	case XY_VIEW:
-		ret = (int)(dataCoord.z/factor);
-		break;
-	case XZ_VIEW:
-		ret = (int)(dataCoord.y/factor);
-		break;
-	case YZ_VIEW:
-		ret = (int)(dataCoord.x/factor);
-	default:
-		assert(0);
-	}
-
-	return ret;
-}
-
-bool OmView2d::BufferTiles(Vector2f zoomMipVector)
-{
-	drawComplete = true;
-	unsigned int freshness = 0;
-	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
-
-	//zoomMipVector = mViewGroupState->GetZoomLevel();
-
-	Vector2f translateVector = GetPanDistance(mViewType);
-	float zoomFactor = (zoomMipVector.y / 10.0);
-	
-	Vector3f depth = Vector3f( 0, 0, 0);
-	DataCoord data_coord;
-	int mDataDepth = 0;
-	switch (mViewType){
-	case XY_VIEW:
-		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.z;
-		break;
-	case XZ_VIEW:
-		depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.y;
-		break;
-	case YZ_VIEW:
-		depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.x;
-		break;
-	}
-
-	
-	int tileLength = 0;
-	switch (mCache->mVolType) {
-	case CHANNEL:
-		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
-		break;
-	case SEGMENTATION:
-		tileLength = OmProject::GetSegmentation(mCache->mImageId).GetChunkDimension();
-		freshness = OmCachingThreadedCachingTile::Freshen(false);
-		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
-	}
-
-	
-	bool complete = true;
-	int xMipChunk;
-	int yMipChunk;
-	int xval;
-	int yval;
-	Vector2f stretch = mVolume->GetStretchValues(mViewType);
-
-	int pl = OMPOW(2, zoomMipVector.x);
-	int tl = tileLength * OMPOW(2, zoomMipVector.x);
-
-	if (translateVector.y < 0) {
-		yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
-		yval = (-1 * (abs((int)translateVector.y) % tl));
-	} else {
-		yMipChunk = 0;
-		yval = translateVector.y;
-	}
-
-	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
-	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
-
-		if (translateVector.x < 0) {
-			xMipChunk = ((abs((int)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((int)translateVector.x) % tl));
-		} else {
-			xMipChunk = 0;
-			xval = translateVector.x;
-		}
-
-#if 0
-		debug("view2d","mDataDepth = %i\n",mDataDepth);
-		debug("view2d", "tl = %i\n", tl);
-		debug("view2d", "pl = %i\n", pl);
-		//debug("view2d", "x = %i\n", x);
-		debug("view2d", "y = %i\n", y);
-		debug("view2d", "xval = %i\n", xval);
-		debug("view2d", "yval = %i\n", yval);
-		debug("view2d", "translateVector.x = %i\n", translateVector.x);
-		debug("view2d", "translateVector.y = %i\n", translateVector.y);
-		debug("view2d", "xMipChunk = %i\n", xMipChunk);
-		debug("view2d", "yMipChunk = %i\n", yMipChunk);
-		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
-#endif
-
-		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
-		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
-
-			for (int count = -5; count < 6; count++) {
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
-                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
-										OmCachingThreadedCachingTile::Freshen(false));
-                        	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
-                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
-                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
-                                	if (gotten_id) {
-                                        	safeTexture(gotten_id);
-                                	} else {
-						mTileCountIncomplete++;
-                                        	if (mTileCountIncomplete >= mTileCount) {
-							return false;
-						}
-                                        	complete = false;
-                                	}
-				}
-			}
-		}
-	}
-	if (!complete) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} else {
-		//debug ("genone", "complete in predraw\n");
-	}
-	return complete;
-}
-
-
-void OmView2d::PreDraw(Vector2f zoomMipVector)
-{
-	drawComplete = true;
-	unsigned int freshness = 0;
-
-	Vector2f translateVector = GetPanDistance(mViewType);
-	float zoomFactor = (zoomMipVector.y / 10.0);
-	
-	Vector3f depth = Vector3f( 0, 0, 0);
-	DataCoord data_coord;
-	int mDataDepth = 0;
-	switch (mViewType){
-	case XY_VIEW:
-		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.z;
-		break;
-	case XZ_VIEW:
-		depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.y;
-		break;
-	case YZ_VIEW:
-		depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.x;
-		break;
-	}
-
-	
-	int tileLength = 0;
-	switch (mCache->mVolType) {
-	case CHANNEL:
-		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
-		break;
-	case SEGMENTATION:
-		tileLength = OmProject::GetSegmentation(mCache->mImageId).GetChunkDimension();
-		freshness = OmCachingThreadedCachingTile::Freshen(false);
-		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
-	}
-
-	
-	bool complete = true;
-	int xMipChunk;
-	int yMipChunk;
-	int xval;
-	int yval;
-	Vector2f stretch = mVolume->GetStretchValues(mViewType);
-
-	int pl = OMPOW(2, zoomMipVector.x);
-	int tl = tileLength * OMPOW(2, zoomMipVector.x);
-
-	if (translateVector.y < 0) {
-		yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
-		yval = (-1 * (abs((int)translateVector.y) % tl));
-	} else {
-		yMipChunk = 0;
-		yval = translateVector.y;
-	}
-
-	for (int y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
-	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
-
-		if (translateVector.x < 0) {
-			xMipChunk = ((abs((int)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((int)translateVector.x) % tl));
-		} else {
-			xMipChunk = 0;
-			xval = translateVector.x;
-		}
-
-		for (int x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
-		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
-
-			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
-			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
-			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
-			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 
-			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
-			debug ("postdraw", "coord.(x,y,z): (%f,%f,%f)\n", coord.Coordinate.x,coord.Coordinate.y,coord.Coordinate.z);
-
-			QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
-                        if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-				mCache->GetTextureID(gotten_id, mTileCoord, false);
-				mTileCount++;
-				if (gotten_id) {
-					safeTexture(gotten_id);
-					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
-				} else {
-					mTileCountIncomplete++;
-					complete = false;
-				}
-			}
-			else debug("predrawverbose", "bad coordinates\n");
-		}
-	}
-	if (!complete) {
-		//debug ("genone", "not complete yet in predraw\n");
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} else {
-		BufferTiles(zoomMipVector);
-		//debug ("genone", "complete in predraw\n");
-	}
-}
-
-
-/*
-
-
-*/
-void OmView2d::TextureDraw(vector < Drawable * >&textures)
-{
-	for (vector < Drawable * >::iterator it = textures.begin(); textures.end() != it; it++) {
-		Drawable *d = *it;
-		if (d->mGood) {
-			safeDraw(d->zoomFactor, d->x, d->y, d->tileLength, d->gotten_id);
-			delete (d);
-			if (0 && SEGMENTATION == d->gotten_id->mVolType
-			    && OmStateManager::GetSystemMode() == EDIT_SYSTEM_MODE) {
-				OmTileCoord coord = d->gotten_id->mTileCoordinate;
-				d->gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
-				d->mGood = false;
-				mCache->Remove(coord);
-				//debug("FIXME", << "x: " << d->x << " y: " << d->y << endl;
-			}
-		} else {
-			// Find a mip map that can be drawn in for now...TODO.
-		}
-	}
-}
-
-void OmView2d::SendFrameBuffer()
-{
-	sentTexture = true;
-}
-
-/*
- *	Draw cursors.
- */
 void OmView2d::DrawCursors()
 {
 	// convert mCenter to data coordinates
@@ -1611,8 +968,8 @@ void OmView2d::DrawCursors()
 
 bool OmView2d::amInFillMode()
 {
-	// FIXME
-	return false;
+	bool inFill = OmStateManager::GetToolMode() == FILL_MODE;
+	return inFill;
 }
 
 bool OmView2d::doDisplayInformation()
@@ -1623,4 +980,9 @@ bool OmView2d::doDisplayInformation()
 QSize OmView2d::sizeHint () const
 {
 	return OmStateManager::getViewBoxSizeHint();
+}
+
+void OmView2d::ToolModeChangeEvent()
+{
+	OmCursors::setToolCursor(this);
 }

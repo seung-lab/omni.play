@@ -17,8 +17,8 @@ class vtkImageData;
 
 class OmProjectData : boost::noncopyable {
 public:
-	static void instantiateProjectData( QString fileNameAndPath, 
-					    const bool autoOpenAndClose);
+	static void instantiateProjectData( QString fileNameAndPath );
+
 	static OmProjectData* Instance();
 	static void Delete();
 	
@@ -48,7 +48,7 @@ private:
 
 	bool mIsReadOnly;
 
-	void setupDataLayer( QString fileNameAndPath, const bool autoOpenAndClose);
+	void setupDataLayer( QString fileNameAndPath );
 	OmDataLayer  * dataLayer;
 	OmDataReader * dataReader;
 	OmDataWriter * dataWriter;
