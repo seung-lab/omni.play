@@ -702,7 +702,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	vtkImageData *p_mesh_data = vtkImageData::New();
 	p_mesh_data->SetDimensions(mesh_data_dims.array);
 	p_mesh_data->SetScalarType(bytesToVtkScalarType(GetBytesPerSample()));
-	p_mesh_data->SetNumberOfScalarComponents(GetBytesPerSample());
+	p_mesh_data->SetNumberOfScalarComponents(SEGMENT_DATA_SAMPLES_PER_PIXEL);
 	p_mesh_data->AllocateScalars();
 
 	//initialize data
