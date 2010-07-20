@@ -23,7 +23,7 @@ void Dust3DThresholdGroup::actUponThresholdChange( const float threshold )
 
 void Dust3DThresholdGroup::setInitialGUIThresholdValue()
 {
-	float dThreshold = 9000;
+	float dThreshold = 900;
 
         if( NULL != mParent->getViewGroupState() ) {
 		dThreshold = mParent->getViewGroupState()->getDustThreshold();
