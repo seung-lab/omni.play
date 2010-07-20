@@ -355,14 +355,6 @@ vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 	//no need to subsample for mip level 0
 	if (rMipCoord.Level == 0){
 
-		//get sizes if mip level 0
-       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
-
-		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
-		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
-
-		delete sizes;
-
 		//read original data
 		OmDataPath source_data_path;
 		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
@@ -373,12 +365,17 @@ vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 										       source_data_bbox, 
 										       GetBytesPerSample());
 
+		//get sizes if mip level 0
+       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
+
+		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
+		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
+
+		delete sizes;
+
 		return p_leaf_data;
 
 	} else {
-
-		//don't get sizes if not mip level 0
-       		p_chunklevel->RefreshDirectDataValues(false);
 
 		//subsample
 		vtkImageData *p_subsampled_data = NULL;
@@ -397,6 +394,9 @@ vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 
 		//set or replace image data (chunk level now owns pointer)
 		p_chunklevel->SetImageData(p_subsampled_data);
+
+		//don't get sizes if not mip level 0
+       		p_chunklevel->RefreshDirectDataValues(false);
 
 		//delete source data if not used by a chunk level
 		if (rMipCoord.Level == 1){
