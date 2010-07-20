@@ -1,6 +1,6 @@
 /*
  * Standard Header File
- * 
+ *
  * Structure and code adopted from PBRT by Matt Pharr and Greg Humphreys
  *
  * Brett Warne - bwarne@mit.edu - 10/31/08
@@ -38,18 +38,20 @@ using std::vector;
 
 // Platform-Dependent Definitions
 #ifdef __APPLE__
-#define powf pow
-#define sinf sin
-#define cosf cos
-#define tanf tan
-#define asinf asin
-#define acosf acos
-#define atanf atan
-#define atan2f atan2
-#define logf log
-#define log10f log10
-#define expf exp
-#define sqrtf sqrt
+# define powf pow
+# define sinf sin
+# define cosf cos
+# define tanf tan
+# define asinf asin
+# define acosf acos
+# define atanf atan
+# define atan2f atan2
+# define logf log
+# define log10f log10
+# define expf exp
+# define sqrtf sqrt
+#else
+# define HAVE_CLOCK_GETTIME
 #endif // __APPLE__
 
 #ifdef WIN32
@@ -91,12 +93,12 @@ typedef quint64 qulonglong;
 inline quint32 ROUNDDOWN (quint32 a, quint32 n)
 {
 	quint32 __a = (quint32) (a);
-	return (__a - __a % (n)); 
+	return (__a - __a % (n));
 }
 inline quint32 ROUNDUP (quint32 a, quint32 n)
 {
 	quint32 __n = (quint32) (n);
-	return (ROUNDDOWN((quint32) (a) + __n - 1, __n));	
+	return (ROUNDDOWN((quint32) (a) + __n - 1, __n));
 }
 
 #else

@@ -25,6 +25,7 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
 #include "system/cache/omMipVolumeCache.h"
+#include "mesh/ziMesher.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -230,25 +231,44 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThrea
 
 void OmSegmentation::BuildMeshDataInternal()
 {
-	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+	const bool useZImesher = false;
 
-	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		for (int z = 0; z < mip_coord_dims.z; ++z) {
-			for (int y = 0; y < mip_coord_dims.y; ++y) {
-				for (int x = 0; x < mip_coord_dims.x; ++x) {
-					OmMipChunkCoord chunk_coord(level, x, y, z);
-					meshingMan->addToQueue( chunk_coord );
+	if(useZImesher){
+		ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+		Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
+		
+		for (int z = 0; z < mc.z; ++z) {
+			for (int y = 0; y < mc.y; ++y) {
+				for (int x = 0; x < mc.x; ++x) {
+					OmMipChunkCoord chunk_coord(0, x, y, z);
+					mesher.addChunkCoord(chunk_coord);
 				}
 			}
 		}
-	}
+		
+		mesher.mesh();
+		
+	} else {
+		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+
+			for (int z = 0; z < mip_coord_dims.z; ++z) {
+				for (int y = 0; y < mip_coord_dims.y; ++y) {
+					for (int x = 0; x < mip_coord_dims.x; ++x) {
+						OmMipChunkCoord chunk_coord(level, x, y, z);
+						meshingMan->addToQueue( chunk_coord );
+						// printf("L: %d :: %d %d %d\n", level, z, y, x);
+					}
+				}
+			}
+		}
 	
-	meshingMan->start();
-	meshingMan->wait();
-	delete(meshingMan);
+		meshingMan->start();
+		meshingMan->wait();
+		delete(meshingMan);
+	}
 }
 
 /*
@@ -328,13 +348,14 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
  */
 vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
 {
+	//do normal mipping and get image data
+	vtkImageData *p_image_data = OmMipVolume::BuildThreadChunkLevel(rMipCoord,p_source_data);
+
 	//get pointer to thread chunk level
 	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
 	GetThreadChunkLevel(p_chunklevel, rMipCoord);
 
-	//no need to subsample for mip level 0
 	if (rMipCoord.Level == 0){
-
 		//get sizes if mip level 0
        		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
 
@@ -342,51 +363,12 @@ vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
 
 		delete sizes;
-
-		//read original data
-		OmDataPath source_data_path;
-		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
-		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
-
-		vtkImageData *p_leaf_data =
-			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
-										       source_data_bbox, 
-										       GetBytesPerSample());
-
-		return p_leaf_data;
-
 	} else {
-
 		//don't get sizes if not mip level 0
        		p_chunklevel->RefreshDirectDataValues(false);
-
-		//subsample
-		vtkImageData *p_subsampled_data = NULL;
-
-		//switch on scalar type
-		switch (GetBytesPerSample()) {
-		case 1:
-			p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
-			break;
-		case 4:
-			p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
-			break;
-		default:
-			assert(false);
-		}
-
-		//set or replace image data (chunk level now owns pointer)
-		p_chunklevel->SetImageData(p_subsampled_data);
-
-		//delete source data if not used by a chunk level
-		if (rMipCoord.Level == 1){
-			p_source_data->Delete();
-		}
-		p_source_data = NULL;
-
-		return p_subsampled_data;
-
 	}
+
+	return p_image_data;
 }
 
 /////////////////////////////////

@@ -74,9 +74,8 @@ void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 			}
 
 			mFetchStack.push(key);
-
-			mFetchThreadCv.wakeOne();
 		}
+		mFetchThreadCv.wakeOne();
 	}
 }
 

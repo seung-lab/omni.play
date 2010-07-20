@@ -142,6 +142,12 @@ try {
   mpVertexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
   mpVertexData = mpVertexDataWrap->getGLfloatPtr();
   mVertexCount = size / (6 * sizeof(GLfloat));
+
+  int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
+  int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
+  //update cache
+  UpdateSize(vertex_data_size + vertex_index_data_size);
+
 } catch (...) {
   return;
 }
@@ -245,9 +251,6 @@ void OmMipMesh::CreateVbo()
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
   mVertexIndexDataVboId = createVbo(mpVertexIndexData, vertex_index_data_size,
                                     GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
-
-  //update cache
-  UpdateSize(vertex_data_size + vertex_index_data_size);
 }
 
 void OmMipMesh::DeleteVbo()
@@ -271,7 +274,7 @@ void OmMipMesh::DeleteVbo()
 /////////////////////////////////
 ///////          Draw Methods
 
-bool OmMipMesh::Draw(bool doCreateVbo)
+bool OmMipMesh::Draw(bool)
 {
   bool ret = false;
 

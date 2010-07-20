@@ -16,22 +16,22 @@ OmSegmentGraph::~OmSegmentGraph()
 
 void OmSegmentGraph::graph_cut( const OmSegID segID )
 {
-	mGraph->get(segID)->cut();
+	mGraph->cut(segID);
 }
 
 OmSegID OmSegmentGraph::graph_getRootID( const OmSegID segID )
 {
-	return mGraph->get(segID)->findRoot()->getKey();
+	return mGraph->root(segID);
 }
 
 void OmSegmentGraph::graph_join( const OmSegID childRootID, const OmSegID parentRootID )
 {
-	mGraph->get(childRootID)->join(mGraph->get(parentRootID));
+	mGraph->join(childRootID, parentRootID);
 }
 
 bool OmSegmentGraph::graph_doesGraphNeedToBeRefreshed( const quint32 maxValue )
 {
-	return (NULL == mGraph || mGraph->getSize() != maxValue+1 );
+	return (NULL == mGraph || mGraph->size() != maxValue+1 );
 }
 
 void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
@@ -43,7 +43,7 @@ void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
 	
-	mGraph = new DynamicTreeContainer<OmSegID>( size );
+	mGraph = new zi::DynamicForestPool<uint32_t>( size );
 
 	buildSegmentSizeLists();
 }
@@ -52,7 +52,7 @@ void OmSegmentGraph::growGraphIfNeeded(OmSegment * newSeg)
 {
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
-	mGraph->growIfNeeded(size);
+	mGraph->resize(size);
 	mRootListBySize.insertSegment( newSeg );
 }
 

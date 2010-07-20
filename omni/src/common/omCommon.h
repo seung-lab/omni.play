@@ -63,27 +63,26 @@ enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW };
 enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER };
 
 
-
 /**
  * "segment" types
  */
-static const OmId NULL_SEGMENT_ID = 0;
-
 //internal storage size of segment data
 #define SEGMENT_DATA_BYTES_PER_SAMPLE 4
 #define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
 
-//BOOST_STRONG_TYPEDEF(quint32, OmSegID )
-typedef quint32 OmSegID;
-typedef quint32 OmGroupID;
+typedef uint32_t OmSegID;
+static const OmSegID NULL_SEGMENT_VALUE(0);
 typedef boost::unordered_set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
-typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
+
+/**
+ * "group" types
+ */
+typedef quint32 OmGroupID;
 enum OmSegIDRootType {NOTVALIDROOT, VALIDROOT, RECENTROOT, GROUPROOT};
 typedef QString OmGroupName;
-
-static const OmSegID NULL_SEGMENT_DATA(0);
+typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
 
 /** 

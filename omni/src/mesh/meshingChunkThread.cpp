@@ -34,11 +34,20 @@ void MeshingChunkThread::doMeshStuff()
 		OmSegID segment_value = mChunkMan->getNextSegmentValueToMesh();
 
 		//if null, then no more values in set, so break loop
-		if (NULL_SEGMENT_DATA == segment_value)
+		if (NULL_SEGMENT_VALUE == segment_value)
 			break;
 		
 		//get mesh coordiante
 		OmMipMeshCoord mesh_coord = OmMipMeshCoord( mChunkMan->mCurrentMipCoord, segment_value);
+
+		/*
+		printf("Meshing This chunk: %d %d %d %d, %d\n",
+		       mChunkMan->mCurrentMipCoord.getLevel(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateX(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateY(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateZ(),
+		       segment_value);
+		*/
 
 		//get alloc'd mesh
 		OmMipMesh *p_mesh = mChunkMan->mMeshManager->mMipMeshManager->AllocMesh( mesh_coord);

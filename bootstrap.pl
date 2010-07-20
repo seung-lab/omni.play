@@ -405,6 +405,9 @@ sub qt47 {
     prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
+sub apacheThrift {
+    prepareAndBuild( "thrift-0.2.0", "thrift");
+}
 
 sub omni {
     printTitle("omni");
@@ -454,6 +457,7 @@ sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
+    print "2 -- Build Apache Thrift\n";
     print "3 -- Build qt\n";
     print "4 -- Build vtk\n";
     print "5 -- Build omni\n";
@@ -480,6 +484,7 @@ sub menu {
 
 sub buildAll {
 	smallLibraries();
+	apacheThrift();
 	qt();
 	vtk();
 	omni();
@@ -492,6 +497,8 @@ sub runMenuEntry {
 	return();
     }elsif( 1 == $entry ){
 	smallLibraries();
+    }elsif( 2 == $entry ){
+	apacheThrift();
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
@@ -648,7 +655,7 @@ sub doUbuntuAptGets{
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++ 
 	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev 
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
-	libgl1-mesa-glx-dbg);
+	libgl1-mesa-glx-dbg libboost-dev flex bison);
 
     my $args = "";
     foreach (@packages){

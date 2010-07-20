@@ -172,7 +172,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		}
 	}
 	if (!complete) {
-		//debug ("genone", "not complete yet in predraw\n");
+		debug ("spin", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
 		BufferTiles(zoomMipVector);
