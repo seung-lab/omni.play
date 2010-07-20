@@ -348,23 +348,14 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
  */
 vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
 {
+	//do normal mipping and get image data
+	vtkImageData *p_image_data = OmMipVolume::BuildThreadChunkLevel(rMipCoord,p_source_data);
+
 	//get pointer to thread chunk level
 	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
 	GetThreadChunkLevel(p_chunklevel, rMipCoord);
 
-	//no need to subsample for mip level 0
 	if (rMipCoord.Level == 0){
-
-		//read original data
-		OmDataPath source_data_path;
-		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
-		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
-
-		vtkImageData *p_leaf_data =
-			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
-										       source_data_bbox, 
-										       GetBytesPerSample());
-
 		//get sizes if mip level 0
        		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
 
@@ -372,41 +363,12 @@ vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
 
 		delete sizes;
-
-		return p_leaf_data;
-
 	} else {
-
-		//subsample
-		vtkImageData *p_subsampled_data = NULL;
-
-		//switch on scalar type
-		switch (GetBytesPerSample()) {
-		case 1:
-			p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
-			break;
-		case 4:
-			p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
-			break;
-		default:
-			assert(false);
-		}
-
-		//set or replace image data (chunk level now owns pointer)
-		p_chunklevel->SetImageData(p_subsampled_data);
-
 		//don't get sizes if not mip level 0
        		p_chunklevel->RefreshDirectDataValues(false);
-
-		//delete source data if not used by a chunk level
-		if (rMipCoord.Level == 1){
-			p_source_data->Delete();
-		}
-		p_source_data = NULL;
-
-		return p_subsampled_data;
-
 	}
+
+	return p_image_data;
 }
 
 /////////////////////////////////
