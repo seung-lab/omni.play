@@ -147,13 +147,14 @@ public:
   // we can only grow, shrinking doesn't make sense!!!
   void resize(size_t s) {
     assert(s > size_);
-    x_ = realloc(x_, s + s * sizeof(Node));
+    x_ = (Node*)realloc(x_, s + s * sizeof(Node));
     memset((char*)(&x_[size_+1]), 0, s - size_);
     size_ = s;
   }
 
+  // 0 is not a valid n
   void cut(T n) {
-    assert(n < size_ && n >= 0);
+    assert(n < size_ && n > 0);
     access_(n+1);
     if (x_[n+1].l_) {
       x_[x_[n+1].l_].p_ = 0;
@@ -163,8 +164,8 @@ public:
   }
 
   void join(T n, T w) {
-    assert(n < size_ && n >= 0);
-    assert(w < size_ && w >= 0);
+    assert(n < size_ && n > 0);
+    assert(w < size_ && w > 0);
 
     access_(n+1);
     assert(x_[n+1].l_ == 0);
@@ -175,7 +176,7 @@ public:
   }
 
   T root(T n) {
-    assert(n < size_ && n >= 0);
+    assert(n < size_ && n > 0);
 
     access_(n+1);
     T v = n+1;

@@ -511,7 +511,7 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 				for (x = extent[4]; x <= extent[5]; x++) {
 
 					//if non-null insert in set
-					if (NULL_SEGMENT_DATA != *p_scalar_data) {
+					if (NULL_SEGMENT_VALUE != *p_scalar_data) {
 						mDirectlyContainedValues.insert(*p_scalar_data);
 						if( computeSizes ){
 							++(sizes->operator[](*p_scalar_data));

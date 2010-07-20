@@ -34,7 +34,7 @@ void MeshingChunkThread::doMeshStuff()
 		OmSegID segment_value = mChunkMan->getNextSegmentValueToMesh();
 
 		//if null, then no more values in set, so break loop
-		if (NULL_SEGMENT_DATA == segment_value)
+		if (NULL_SEGMENT_VALUE == segment_value)
 			break;
 		
 		//get mesh coordiante

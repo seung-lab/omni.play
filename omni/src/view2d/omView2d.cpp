@@ -557,7 +557,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
-		data_value = NULL_SEGMENT_DATA;
+		data_value = NULL_SEGMENT_VALUE;
 		break;
 
 	case SELECT_VOXEL_MODE:

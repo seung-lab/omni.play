@@ -51,7 +51,7 @@ void OmSegmentCache::ExportDataFilter(vtkImageData * pImageData)
 			for (x = extent[4]; x <= extent[5]; x++) {
 
 				//if non-null segment value
-				if (NULL_SEGMENT_DATA != *p_scalar_data) {
+				if (NULL_SEGMENT_VALUE != *p_scalar_data) {
 					*p_scalar_data = mImpl->findRootID( *p_scalar_data );
 				}
 				//adv to next scalar

@@ -2,7 +2,7 @@
 #define OM_SEGMENT_GRAPH_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/DynamicTreeContainer.h"
+#include "segment/lowLevel/DynamicForestPool.hpp"
 #include "segment/lowLevel/omSegmentListBySize.h"
 
 class OmSegmentCacheImplLowLevel;
@@ -46,7 +46,7 @@ class OmSegmentGraph {
 
  private:
 
-	DynamicTreeContainer<OmSegID> * mGraph;
+	zi::DynamicForestPool<uint32_t> * mGraph;
 	OmSegmentCacheImplLowLevel * mCache;
 
 	void buildSegmentSizeLists();

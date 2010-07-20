@@ -159,6 +159,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
            src/segment/lowLevel/DynamicTree.h \
            src/segment/lowLevel/DynamicTreeContainer.h \
+           src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
            src/segment/lowLevel/omSegmentGraph.h \

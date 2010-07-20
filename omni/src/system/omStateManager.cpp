@@ -11,7 +11,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
 
-#include <QHostInfo>
+#include <zi/system>
 
 //undostack
 #include <QUndoStack>
@@ -134,11 +134,7 @@ QString OmStateManager::getPID()
 
 QString OmStateManager::getHostname()
 {
-#ifdef WIN32
-	return QString("localhost");
-#else
-	return QHostInfo::localHostName();
-#endif
+	return QString::fromStdString(zi::System::getHostname());
 }
 
 bool OmStateManager::getParallel()

@@ -24,13 +24,13 @@ OmSegID MeshingChunkThreadManager::getNextSegmentValueToMesh()
 	QMutexLocker locker(&mutex);
 
 	if( valuesToMesh.empty() ) {
-		return NULL_SEGMENT_DATA;
+		return NULL_SEGMENT_VALUE;
 	} 
 
 	//pop value
 	OmSegID segment_value = *valuesToMesh.begin();
 	valuesToMesh.remove(segment_value);
-	assert(NULL_SEGMENT_DATA != segment_value);
+	assert(NULL_SEGMENT_VALUE != segment_value);
 
 	unsigned int leftToDo = totalNumValuesToMesh - valuesToMesh.size();
 	debug("meshverbose", "MeshingChunkThreadManager: in %s: for chunk (%s), %d of %d values given out\n", 
@@ -47,7 +47,7 @@ void MeshingChunkThreadManager::setupValuesToMesh( QExplicitlySharedDataPointer 
 		valuesToMesh = chunk->GetDirectDataValues();
 	}
 
-	valuesToMesh.remove(NULL_SEGMENT_DATA);
+	valuesToMesh.remove(NULL_SEGMENT_VALUE);
 
 	totalNumValuesToMesh = valuesToMesh.size();
 

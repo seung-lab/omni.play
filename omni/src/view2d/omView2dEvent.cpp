@@ -230,7 +230,7 @@ void OmView2d::MouseRelease(QMouseEvent * event)
 				break;
 
 			case SUBTRACT_VOXEL_MODE:
-				data_value = NULL_SEGMENT_DATA;
+				data_value = NULL_SEGMENT_VALUE;
 				break;
 
 			case SELECT_MODE:
@@ -396,7 +396,7 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 		//run action
 		if (!doselection) {
 			if (dosubtract) {
-				data_value = NULL_SEGMENT_DATA;
+				data_value = NULL_SEGMENT_VALUE;
 			} else {
 				data_value = sdw.getID();
 			}
@@ -474,7 +474,7 @@ void OmView2d::MouseMove_LeftButton_Scribbling(QMouseEvent * event)
 		break;
 
 	case SUBTRACT_VOXEL_MODE:
-		data_value = NULL_SEGMENT_DATA;
+		data_value = NULL_SEGMENT_VALUE;
 		break;
 
 	case SELECT_MODE:
