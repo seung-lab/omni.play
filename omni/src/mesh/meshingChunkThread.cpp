@@ -40,6 +40,13 @@ void MeshingChunkThread::doMeshStuff()
 		//get mesh coordiante
 		OmMipMeshCoord mesh_coord = OmMipMeshCoord( mChunkMan->mCurrentMipCoord, segment_value);
 
+		printf("Meshing This chunk: %d %d %d %d, %d\n",
+		       mChunkMan->mCurrentMipCoord.getLevel(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateX(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateY(),
+		       mChunkMan->mCurrentMipCoord.getCoordinateZ(),
+		       segment_value);
+
 		//get alloc'd mesh
 		OmMipMesh *p_mesh = mChunkMan->mMeshManager->mMipMeshManager->AllocMesh( mesh_coord);
 		p_mesh->setSegmentationID(mChunkMan->mMeshManager->getSegmentationID());

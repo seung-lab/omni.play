@@ -146,6 +146,9 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMeshManager.h \
            src/mesh/omMeshSegmentList.h \
            src/mesh/omMeshSegmentListThread.h \
+           src/mesh/ziMesher.h \
+           src/mesh/ziMesherManager.h \
+           src/mesh/ziMeshingChunk.h \
            src/project/omProject.h \
            src/project/omProjectSaveAction.h \
            src/segment/actions/omSegmentEditor.h \
@@ -245,7 +248,29 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
-           src/volume/omLoadImageThread.h
+           src/volume/omLoadImageThread.h \
+           src/zi/base/base.h \
+           src/zi/base/bash.h \
+           src/zi/base/omni.h \
+           src/zi/base/strings.h \
+           src/zi/base/thrift.h \
+           src/zi/base/time.h \
+           src/zi/base/usages.h \
+           src/zi/mesh/MarchingCubesTables.h \
+           src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
+           src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
+           src/zi/mesh/ext/TriStrip/TriStripper.h \
+           src/zi/old_mesh/MarchingCubesTables.h \
+           src/zi/thread/Exception.h \
+           src/zi/thread/Monitor.h \
+           src/zi/thread/Mutex.h \
+           src/zi/thread/Thread.h \
+           src/zi/thread/ThreadFactory.h \
+           src/zi/thread/ThreadManager.h \
+           src/zi/thread/Util.h \
+           src/zi/thread/Win32.h \
+           src/zi/thread/Win32Pthread.h \
+           src/zi/zunit/zunit.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -344,6 +369,9 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMeshManager.cpp \
            src/mesh/omMeshSegmentList.cpp \
            src/mesh/omMeshSegmentListThread.cpp \
+           src/mesh/ziMesher.cpp \
+           src/mesh/ziMesherManager.cpp \
+           src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
            src/project/omProjectSaveAction.cpp \
            src/segment/actions/omSegmentEditor.cpp \
@@ -443,7 +471,16 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
            src/volume/omLoadImageThread.cpp \
-           tests/utility/stringHelpersTest.cpp
+           tests/utility/stringHelpersTest.cpp \
+           src/zi/mesh/MarchingCubes.cpp \
+           src/zi/mesh/QuadraticErrorSimplification.cpp \
+           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
+           src/zi/thread/Monitor.cpp \
+           src/zi/thread/Mutex.cpp \
+           src/zi/thread/Thread.cpp \
+           src/zi/thread/ThreadFactory.cpp \
+           src/zi/thread/ThreadManager.cpp \
+           src/zi/thread/Win32Pthread.cpp
 
 RESOURCES += src/gui/resources.qrc
 

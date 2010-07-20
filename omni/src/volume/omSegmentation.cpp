@@ -25,6 +25,7 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
 #include "system/cache/omMipVolumeCache.h"
+#include "mesh/ziMesher.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -230,25 +231,44 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThrea
 
 void OmSegmentation::BuildMeshDataInternal()
 {
-	MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+	const bool useZImesher = false;
 
-	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		for (int z = 0; z < mip_coord_dims.z; ++z) {
-			for (int y = 0; y < mip_coord_dims.y; ++y) {
-				for (int x = 0; x < mip_coord_dims.x; ++x) {
-					OmMipChunkCoord chunk_coord(level, x, y, z);
-					meshingMan->addToQueue( chunk_coord );
+	if(useZImesher){
+		ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+		Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
+		
+		for (int z = 0; z < mc.z; ++z) {
+			for (int y = 0; y < mc.y; ++y) {
+				for (int x = 0; x < mc.x; ++x) {
+					OmMipChunkCoord chunk_coord(0, x, y, z);
+					mesher.addChunkCoord(chunk_coord);
 				}
 			}
 		}
-	}
+		
+		mesher.mesh();
+		
+	} else {
+		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+
+			for (int z = 0; z < mip_coord_dims.z; ++z) {
+				for (int y = 0; y < mip_coord_dims.y; ++y) {
+					for (int x = 0; x < mip_coord_dims.x; ++x) {
+						OmMipChunkCoord chunk_coord(level, x, y, z);
+						meshingMan->addToQueue( chunk_coord );
+						// printf("L: %d :: %d %d %d\n", level, z, y, x);
+					}
+				}
+			}
+		}
 	
-	meshingMan->start();
-	meshingMan->wait();
-	delete(meshingMan);
+		meshingMan->start();
+		meshingMan->wait();
+		delete(meshingMan);
+	}
 }
 
 /*
