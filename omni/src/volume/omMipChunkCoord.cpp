@@ -1,5 +1,4 @@
-
-#include "omMipChunkCoord.h"
+#include "volume/omMipChunkCoord.h"
 #include "common/omDebug.h"
 
 const OmMipChunkCoord OmMipChunkCoord::NULL_COORD(-1, -1, -1, -1);
@@ -87,6 +86,8 @@ void OmMipChunkCoord::SiblingCoords(OmMipChunkCoord * pSiblings) const
 	int y = primary_coord.Coordinate.y;
 	int z = primary_coord.Coordinate.z;
 
+	//This should be removed if this function is ever going to be called
+	//in a way other than how it already is
 	assert(Coordinate.x == primary_coord.Coordinate.x);
 	assert(Coordinate.y == primary_coord.Coordinate.y);
 	assert(Coordinate.z == primary_coord.Coordinate.z);

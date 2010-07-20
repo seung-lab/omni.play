@@ -1,9 +1,10 @@
-#include "omBuildVolumes.h"
 #include "common/omDebug.h"
-#include "utility/omImageDataIo.h"
-#include "project/omProject.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataReader.h"
+#include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
+#include "system/omBuildVolumes.h"
+#include "utility/omImageDataIo.h"
 #include "utility/stringHelpers.h"
 
 #include <QTextStream>
@@ -31,21 +32,6 @@ bool OmBuildVolumes::checkSettings()
 	}
 
 	return true;
-}
-
-void OmBuildVolumes::startTiming(QString type)
-{
-	printf("starting %s build...\n", qPrintable(type));
-	build_timer.start();
-}
-
-void OmBuildVolumes::stopTiming(QString type)
-{
-	build_timer.stop();
-
-	OmProject::Save();
-	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), build_timer.s_elapsed() );
-	printf("************\n");
 }
 
 bool OmBuildVolumes::canDoLoadDendrogram()
@@ -86,19 +72,33 @@ bool OmBuildVolumes::are_file_names_valid()
 			return false;
 		}
 
-		switch ( OmImageDataIo::om_imagedata_parse_image_type( file.filePath() )){
-		case TIFF_TYPE:
-		case JPEG_TYPE:
-		case PNG_TYPE:
-		case VTK_TYPE:
-		case HDF5_TYPE:
-			break;
+		const QString ext = file.suffix().toLower();
+		if( "tif" == ext ||
+		    "tiff" == ext ||
+		    "jpg" == ext ||
+		    "png" == ext ||
+		    "h5" == ext ||
+		    "hdf5" == ext ){
 
-		default:
+		} else {
 			printf("invalid file: %s\n", qPrintable(file.filePath()) );
 			return false;
 		}
 	}
 
 	return true;
+}
+
+void OmBuildVolumes::startTiming(const QString & type, OmTimer & timer)
+{
+	printf("starting %s build...\n", qPrintable(type));
+	timer.start();
+}
+
+void OmBuildVolumes::stopTimingAndSave(const QString & type, OmTimer & timer)
+{
+        (new OmProjectSaveAction())->Run();
+	timer.stop();
+	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), timer.s_elapsed() );
+	printf("************\n");
 }

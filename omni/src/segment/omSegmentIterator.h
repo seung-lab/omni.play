@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
+#include <deque>
 
 class OmSegment;
 class OmSegmentCache;
@@ -10,14 +11,12 @@ class OmSegmentCache;
 class OmSegmentIterator
 {
  public:
-	OmSegmentIterator( OmSegmentCache *, 
-			   const bool iterOverSelectedIDs = false, 
-			   const bool iterOverEnabledIDs = false );
+	OmSegmentIterator( OmSegmentCache *);
  
+	void iterOverSegmentID(const OmSegID segID);
+	void iterOverSegmentIDs(const OmSegIDsSet & set);
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
-	void iterOverSegmentIDs(const OmSegIDsSet & set);
-
 
 	OmSegment * getNextSegment();
 	bool empty();
@@ -27,7 +26,7 @@ class OmSegmentIterator
  private:
 	OmSegmentCache * mCache;
 
-	OmSegPtrList mSegs;
+	std::deque<OmSegment*> mSegs;
 };
 
 #endif

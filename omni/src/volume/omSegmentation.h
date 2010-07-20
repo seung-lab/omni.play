@@ -6,7 +6,6 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "voxel/omMipVoxelationManager.h"
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
@@ -27,6 +26,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
+
+	void CloseDownThreads();
 	
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
@@ -46,6 +47,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
+	virtual vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
 	
 	//export
 	void ExportDataFilter(vtkImageData *);
@@ -53,8 +55,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 
-
-	
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
  	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
@@ -77,10 +77,8 @@ private:
 	void KillCacheThreads();
 
 	MeshingManager * mMeshingMan;
-	
-	//managers
-	OmMipVoxelationManager mMipVoxelationManager;
-	OmSegmentCache * mSegmentCache;
+
+	OmSegmentCache *const mSegmentCache;
 
 	OmGroups mGroups;
 

@@ -1,3 +1,4 @@
+#include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -8,6 +9,8 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
 #include "segment/actions/omSegmentEditor.h"
+#include "segment/actions/segment/omSegmentGroupAction.h"
+#include "segment/actions/segment/omSegmentValidateAction.h"
 #include "segment/omSegmentIterator.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -21,26 +24,25 @@
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
+#include "system/cache/omMipVolumeCache.h"
 
 #include <vtkImageData.h>
 #include <QFile>
 #include <QTextStream>
 
+static const float DefaultThresholdSize = 0.1;
+
 /////////////////////////////////
-///////
 ///////         OmSegmentation
-///////
 
 OmSegmentation::OmSegmentation()
-	: mMipVoxelationManager(this)
-	, mSegmentCache(new OmSegmentCache(this))
+	: mSegmentCache(new OmSegmentCache(this))
 	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-        SetCacheName("OmSegmentation -> OmMipVolume");
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
 	
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -51,12 +53,12 @@ OmSegmentation::OmSegmentation()
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.1;
+	mDendThreshold = DefaultThresholdSize;
 }
 
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
-	, mMipVoxelationManager(this)
+	  //, mMipVoxelationManager(this)
 	, mSegmentCache(new OmSegmentCache(this))
   	, mGroups(this)
 {
@@ -84,11 +86,10 @@ OmSegmentation::OmSegmentation(OmId id)
 	mDendSize = 0;
 	mDendValuesSize = 0;
 	mDendCount = 0;
-	mDendThreshold = 0.1;
+	mDendThreshold = DefaultThresholdSize;
 
-        SetCacheName("OmSegmentation -> OmMipVolume");
-        int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
+        const int chunkDim = GetChunkDimension();
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 
 	//build blank data
 	BuildVolumeData();
@@ -96,7 +97,6 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
-	KillCacheThreads();
 	delete mSegmentCache;
 }
 
@@ -112,13 +112,14 @@ void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
 	//debug("FIXME", << "OmSegmentation::SetVoxelValue: " << rVox << " , " << val << endl;
 
 	//get old value
-	uint32_t old_val = GetVoxelValue(rVox);
+	//	uint32_t old_val = GetVoxelValue(rVox);
 
 	//update data
 	OmMipVolume::SetVoxelValue(rVox, val);
 
 	//change voxel in voxelation
-	mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
+	assert(0);
+	//mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
 }
 
 /*
@@ -252,15 +253,10 @@ void OmSegmentation::BuildMeshDataInternal()
 
 /*
  *	Overridden BuildChunk method so that the mesh data for a chunk will
- *	also be rebuilt if needed.
+ *	also be rebuilt if needed, and segments are added from the chunk.
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 {
-	//timer start
-	segchunk_timer.start();
-
-	//build chunk volume data
-	OmMipVolume::BuildChunk(mipCoord);
 
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, mipCoord);
@@ -300,9 +296,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 		}
 	}
 
-	//timer end
-	segchunk_total += segchunk_timer.s_elapsed();
-
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
@@ -329,6 +322,73 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
+/*
+ *	Overridden BuildThreadChunkLevel method so that segments will be added from the
+ *	thread chunk level as well.
+ */
+vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
+{
+	//get pointer to thread chunk level
+	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
+	GetThreadChunkLevel(p_chunklevel, rMipCoord);
+
+	//no need to subsample for mip level 0
+	if (rMipCoord.Level == 0){
+
+		//get sizes if mip level 0
+       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
+
+		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
+		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
+
+		delete sizes;
+
+		//read original data
+		OmDataPath source_data_path;
+		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
+		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
+
+		vtkImageData *p_leaf_data =
+			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, 
+										       source_data_bbox, 
+										       GetBytesPerSample());
+
+		return p_leaf_data;
+
+	} else {
+
+		//don't get sizes if not mip level 0
+       		p_chunklevel->RefreshDirectDataValues(false);
+
+		//subsample
+		vtkImageData *p_subsampled_data = NULL;
+
+		//switch on scalar type
+		switch (GetBytesPerSample()) {
+		case 1:
+			p_subsampled_data = SubsampleImageData < unsigned char >(p_source_data);
+			break;
+		case 4:
+			p_subsampled_data = SubsampleImageData < unsigned int >(p_source_data);
+			break;
+		default:
+			assert(false);
+		}
+
+		//set or replace image data (chunk level now owns pointer)
+		p_chunklevel->SetImageData(p_subsampled_data);
+
+		//delete source data if not used by a chunk level
+		if (rMipCoord.Level == 1){
+			p_source_data->Delete();
+		}
+		p_source_data = NULL;
+
+		return p_subsampled_data;
+
+	}
+}
+
 /////////////////////////////////
 ///////          Export
 
@@ -351,7 +411,8 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		mGroups.SetGroup(set, name);
+		//mGroups.SetGroup(set, name);
+		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
 		return;
 	}
 
@@ -359,13 +420,13 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
         iter.iterOverSegmentIDs(set);
 
         OmSegment * seg = iter.getNextSegment();
+	OmSegIDsSet newSet;
         while(NULL != seg) {
-                seg->SetImmutable(valid);
-		if(!seg->getParentSegID()) {
-			mSegmentCache->setAsValidated(seg, valid);
-		}
+		newSet.insert(seg->getValue());
                 seg = iter.getNextSegment();
         }
+
+	(new OmSegmentValidateAction(GetId(), newSet, true))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
@@ -373,6 +434,7 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 
         if(GROUPROOT == type) {
                 return mGroups.UnsetGroup(set, name);
+		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
         } else {
 		assert(0 && "only unset regular groups");
 	}
@@ -388,10 +450,13 @@ void OmSegmentation::DeleteGroup(OmGroupID)
 /*
  *	Draw voxelated representation of the MipChunk.
  */
-void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rRelvDataVals,
-				     const OmBitfield & drawOps)
+void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & //mipCoord
+				     , const OmSegIDsSet & //rRelvDataVals
+				     , const OmBitfield & //drawOps
+				     )
 {
-	mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
+	assert(0);
+	//mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**
@@ -416,13 +481,6 @@ void OmSegmentation::RunMeshQueue()
 	mMeshingMan->wait();
 	delete(mMeshingMan);
 	mMeshingMan = NULL;
-}
-
-void OmSegmentation::KillCacheThreads()
-{
-	mMipVoxelationManager.KillFetchThread();
-	mMipMeshManager.KillFetchThread();
-	this->KillFetchThread();
 }
 
 void OmSegmentation::FlushDirtySegments()
@@ -470,4 +528,10 @@ void OmSegmentation::SetDendThresholdAndReload( const float t )
 	}
 	SetDendThreshold(t);
 	mSegmentCache->refreshTree();
+}
+
+void OmSegmentation::CloseDownThreads()
+{
+	mMipMeshManager.CloseDownThreads();
+	mDataCache->closeDownThreads();
 }

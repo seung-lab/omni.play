@@ -11,7 +11,8 @@
  */
 
 #include "omMipChunkCoord.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
+#include "datalayer/omDataWrapper.h"
 
 #include <QMutex>
 
@@ -28,11 +29,10 @@ public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	virtual ~OmMipChunk();
 		
-	//overridden datavolume methods so as to notify cache
 	void Open();
-	virtual void OpenForWrite();
+	void OpenForWrite();
 	void Flush();
-	virtual void Close();
+	void Close();
 	bool IsOpen();
 
 	//properties
@@ -43,10 +43,21 @@ public:
 	bool IsVolumeDataDirty();
 	bool IsMetaDataDirty();
 	
+
+	void RawWriteChunkData(unsigned char * data);
+	OmDataWrapperPtr RawReadChunkDataUCHAR();
+	void RawWriteChunkData(quint32* data);
+	OmDataWrapperPtr RawReadChunkDataUINT32();
+	bool mIsRawChunkOpen;
+	OmDataWrapperPtr mRawChunk;
+	OmDataWrapperPtr RawReadChunkDataUCHARmapped();
+	void dealWithCrazyNewStuff();
+	OmDataWrapperPtr RawReadChunkDataUINT32mapped();
 	
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
+	vtkImageData* GetImageData();
 	void SetImageData(vtkImageData *imageData);
 
 	
@@ -61,7 +72,7 @@ public:
 	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 	
-	
+
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
@@ -95,9 +106,10 @@ protected:
 	bool mIsOpen;
 	void SetOpen(bool);
 
-	QMutex mOpenLock;
+	mutable QMutex mOpenLock;
+	mutable QMutex mDirectDataValueLock;
 	int mEstMemBytes;
-	void InitChunk(const OmMipChunkCoord &rMipCoord);
+	virtual void InitChunk(const OmMipChunkCoord &rMipCoord);
 	
 	//mip volume this chunk belongs to
 	OmMipVolume * const mpMipVolume;
@@ -132,7 +144,6 @@ protected:
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
-
 	//image data of chunk
 	vtkImageData *mpImageData;	
 

@@ -2,7 +2,7 @@
 #include "stddef.h"
 #include <stdio.h>
 #include "utility/omSystemInformation.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
 #include "common/omDebug.h"

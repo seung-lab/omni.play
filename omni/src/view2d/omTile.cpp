@@ -44,7 +44,7 @@ void OmTile::SetNewAlpha(float newval)
 	mAlpha = newval;
 }
 
-OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
+OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
@@ -65,7 +65,7 @@ OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmThreadedCaching
 	return doBindToTextureID(key, cache);
 }
 
-OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmThreadedCachingTile* cache)
+OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	mSamplesPerVoxel = 1;
 	mBytesPerSample = mVolume->GetBytesPerSample();

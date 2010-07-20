@@ -7,6 +7,7 @@
 #include "system/events/omViewEvent.h"
 #include "system/omEventManager.h"
 #include "system/omGenericManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
@@ -400,6 +401,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		SetShowSplitMode(false);
 		OmStateManager::SetOldToolModeAndSendEvent();
 	}
+	
 	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));

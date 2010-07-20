@@ -4,6 +4,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
@@ -20,6 +21,7 @@
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
+
 /////////////////////////////////
 ///////
 ///////         OmMipChunk Class
@@ -30,8 +32,9 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
  *	Note: optional cache pointer if this is a cached chunk
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
-	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume)), 
-	  mpMipVolume(pMipVolume)
+	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume))
+	, mIsRawChunkOpen(false)
+	, mpMipVolume(pMipVolume)
 {
 
 	//debug("genone","OmMipChunk::OmMipChunk()");   
@@ -152,6 +155,8 @@ void OmMipChunk::Flush()
 	if (IsMetaDataDirty()) {
 		WriteMetaData();
 	}
+
+	dealWithCrazyNewStuff();
 }
 
 /*
@@ -159,7 +164,7 @@ void OmMipChunk::Flush()
  */
 void OmMipChunk::Close()
 {
-	//debug("genone","OmMipChunk::Close()\n");
+	dealWithCrazyNewStuff();
 
 	//ignore if already closed
 	if (!IsOpen())
@@ -222,12 +227,6 @@ void OmMipChunk::ReadVolumeData()
 	//get path to mip level volume
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-
-	//read from project data
-	if (!OmProjectData::GetProjectDataReader()->dataset_exists(mip_level_vol_path)) {
-		assert(0);
-		throw OmIoException("no MIP data found");
-	}
 
 	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
@@ -365,6 +364,16 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 }
 
 /*
+ *	Returns pointer to image data
+ */
+
+vtkImageData* OmMipChunk::GetImageData()
+{
+	assert(mpImageData);
+	return mpImageData;
+}
+
+/*
  *	Set the image data of this MipChunk to data at the given pointer.
  *	Closes if already open and sets MipChunk to be open and dirty.
  */
@@ -379,7 +388,7 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	pImageData->GetDimensions(dims.array);
 	assert(dims == GetDimensions());
 
-	if (mpImageData) {
+	if(mpImageData){
 		mpImageData->Delete ();
 	}
 
@@ -390,7 +399,6 @@ void OmMipChunk::SetImageData(vtkImageData * pImageData)
 	SetOpen(true);
 	setVolDataDirty();
 
-	//remove image data size from cache (convert to bytes)
 	int est_mem_bytes = mpImageData->GetEstimatedMemorySize() * 1024;
 	UpdateSize(float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 }
@@ -451,6 +459,8 @@ const NormBbox & OmMipChunk::GetClippedNormExtent()
  */
 const OmSegIDsSet & OmMipChunk::GetDirectDataValues()
 {
+	//TODO: change to shared reader writer lock (purcaro)
+	QMutexLocker lock(&mDirectDataValueLock);
 	loadMetadataIfPresent();
 	return mDirectlyContainedValues;
 }
@@ -691,8 +701,8 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 	//alloc new mesh volume data
 	vtkImageData *p_mesh_data = vtkImageData::New();
 	p_mesh_data->SetDimensions(mesh_data_dims.array);
-	p_mesh_data->SetScalarType(bytesToVtkScalarType(SEGMENT_DATA_BYTES_PER_SAMPLE));
-	p_mesh_data->SetNumberOfScalarComponents(SEGMENT_DATA_SAMPLES_PER_PIXEL);
+	p_mesh_data->SetScalarType(bytesToVtkScalarType(GetBytesPerSample()));
+	p_mesh_data->SetNumberOfScalarComponents(GetBytesPerSample());
 	p_mesh_data->AllocateScalars();
 
 	//initialize data
@@ -781,4 +791,107 @@ void OmMipChunk::setVolDataClean()
 void OmMipChunk::setMetaDataClean()
 {
 	mChunkMetaDataDirty = false;
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHAR()
+{
+        QMutexLocker locker(&mOpenLock);
+	if(!mIsRawChunkOpen){
+		OmDataPath path;
+		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+
+		mRawChunk = 
+			OmProjectData::GetProjectDataReader()->
+			dataset_read_raw_chunk_data(path, 
+						    GetExtent(), 
+						    1);
+		mIsRawChunkOpen=true;
+	}
+	
+	return mRawChunk;
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
+{
+        QMutexLocker locker(&mOpenLock);
+	if(!mIsRawChunkOpen){
+
+		OmDataPath path;
+		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+		
+		mRawChunk = 
+			OmProjectData::GetProjectDataReader()->
+			dataset_read_raw_chunk_data(path, 
+						    GetExtent(), 
+						    4);
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
+void OmMipChunk::RawWriteChunkData(unsigned char * data)
+{
+        QMutexLocker locker(&mOpenLock);
+
+	//get path to mip level volume
+	OmDataPath path;
+	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+								      GetExtent(),
+								      1,
+								      data);
+}
+
+void OmMipChunk::RawWriteChunkData(quint32* data)
+{
+        QMutexLocker locker(&mOpenLock);
+
+	//get path to mip level volume
+	OmDataPath path;
+	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+								      GetExtent(),
+								      4,
+								      data);
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(!mIsRawChunkOpen){
+		unsigned char * data = mpMipVolume->getChunkPtr(mCoordinate);
+
+		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
+OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(!mIsRawChunkOpen){
+		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
+		
+		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
+		mIsRawChunkOpen=true;
+	}
+
+	return mRawChunk;
+}
+
+void OmMipChunk::dealWithCrazyNewStuff()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	if(mIsRawChunkOpen){
+		mIsRawChunkOpen=false;
+		mRawChunk=OmDataWrapperPtr(new OmDataWrapper(NULL));
+	}
 }

@@ -1,3 +1,4 @@
+#include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "utility/dataWrappers.h"

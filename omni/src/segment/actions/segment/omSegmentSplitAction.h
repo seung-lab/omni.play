@@ -21,11 +21,19 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string & comment);
+	QString classNameForLogFile(){return "OmSegmentSplitAction";}
 
 	OmSegmentEdge mEdge;
-	SegmentationDataWrapper m_sdw;
+	OmId mSegmentationID;
+	//SegmentationDataWrapper m_sdw;
 
 	QString desc;
+
+	friend class OmActionLoggerFS;
+	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
+	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
+
 };
 
 #endif

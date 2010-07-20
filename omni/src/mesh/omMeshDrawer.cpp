@@ -2,7 +2,6 @@
 #include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "segment/omSegmentIterator.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -10,25 +9,16 @@
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeCuller.h"
 #include "volume/omSegmentation.h"
+#include "mesh/omMeshSegmentList.h"
+#include "system/omEvents.h"
+#include "system/omGarbage.h"
 
-static unsigned int mFreshness = 0;
-
-// TODO: make better; this is (segID by MIPlevel by X by Y by Z)
-static boost::unordered_map< OmId, 
-        boost::unordered_map< int, 
-	 boost::unordered_map< int,
-	  boost::unordered_map< int,
- 	   boost::unordered_map< int, OmSegPtrListValid > > > > > mSegmentListCache;
-
-// NOTE: I am assuming this class is only being used in a single-threaded fashion..
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
 	, mSeg( NULL )
 	, mSegmentCache( NULL )
 	, mViewGroupState(vgs)
-	, mIterOverSelectedIDs( false )
-	, mIterOverEnabledIDs( false )
 {
 }
 
@@ -46,8 +36,6 @@ void OmMeshDrawer::Init()
 	assert(mSegmentCache);
 
 	assert(mViewGroupState);
-
-	checkCache();
 }
 
 /////////////////////////////////
@@ -60,6 +48,8 @@ void OmMeshDrawer::Init()
  */
 void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 {
+	OmGarbage::safeCleanGenlistIds();
+
 	//transform to normal frame
 	glPushMatrix();
 	glMultMatrixf(mSeg->GetNormToSpaceMatrix().ml);
@@ -81,14 +71,20 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
-		mIterOverSelectedIDs = true;
-		
+		const OmSegIDsSet & set = mSegmentCache->GetSelectedSegmentIds();
+		OmSegIDsSet::const_iterator iter;
+		for( iter = set.begin(); iter != set.end(); ++iter ){ 
+			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
+		}
 	} else if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)) {
-		mIterOverEnabledIDs = true;
+		const OmSegIDsSet & set = mSegmentCache->GetEnabledSegmentIds();
+		OmSegIDsSet::const_iterator iter;
+		for( iter = set.begin(); iter != set.end(); ++iter ){ 
+			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
+		}
 	}
 
-	OmSegmentIterator iter(mSegmentCache, mIterOverSelectedIDs, mIterOverEnabledIDs );
-	if( iter.empty() ){
+	if( mRootSegsToDraw.empty() ){
         	glPopMatrix();
 		return;
 	}
@@ -148,46 +144,47 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 	}
 }
 
-void OmMeshDrawer::makeSegmentListForCache(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
-{
-	const OmSegIDsSet & chunkValues =  p_chunk->GetDirectDataValues();
-	OmSegmentIterator segIter(mSegmentCache, mIterOverSelectedIDs, mIterOverEnabledIDs );
-	OmSegment * seg = segIter.getNextSegment();
-	OmSegID val;
-
-	OmSegPtrList segmentsToDraw;
-
-	while( NULL != seg ){
-		val = seg->getValue();
-		if( chunkValues.contains( val ) ){
-			segmentsToDraw.push_back(seg);
-		}
-				
-		seg = segIter.getNextSegment();
-	}
-
-	addToCache( chunkCoord, segmentsToDraw );
-}
-
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
 void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
 {
-	if( !cacheHasCoord( chunkCoord ) ){
-		makeSegmentListForCache( p_chunk, chunkCoord );
+	bool segsWereFound = false;
+
+	OmSegment * rootSeg;
+	OmSegID rootSegID;
+
+	OmSegPtrList::const_iterator iter;
+	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){ 
+		rootSeg = (*iter);
+		rootSegID = rootSeg->getValue();
+
+		if(!OmMeshSegmentList::isSegmentListReadyInCache(p_chunk, rootSeg, chunkCoord, 
+								 mSegmentCache, mSegmentationID )){
+			continue;
+		}
+
+		const OmSegPtrList & segmentsToDraw = OmMeshSegmentList::getFromCache(chunkCoord, rootSegID, mSegmentationID);
+
+		if(segmentsToDraw.empty()){
+			continue;
+		}
+
+		segsWereFound = true;
+		doDrawChunk(chunkCoord, segmentsToDraw);
 	}
 
-	const OmSegPtrList & segmentsToDraw = getFromCache( chunkCoord );
-
-	if( segmentsToDraw.empty() ){
-		return;
+	if(segsWereFound){
+		if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
+			// draw bounding box around chunk
+			DrawClippedExtent( p_chunk );
+		}
 	}
+}
 
-	if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
-		DrawClippedExtent( p_chunk );
-	}
-
+void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
+			       const OmSegPtrList & segmentsToDraw )
+{
 	OmSegPtrList::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
 		
@@ -199,7 +196,11 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
 		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
 
-		if ( !p_mesh || !p_mesh->hasData() ) {
+		if( !p_mesh ) {
+		        OmEvents::Redraw3d();
+			continue;
+		}
+		if( !p_mesh->hasData() ) {
 			continue;
 		}
 
@@ -242,38 +243,9 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 	return (camera_to_center > distance);
 }
 
-// TODO: hashes could just be replaced by 3D array, where each dimension is the number of chunks in that dimension (purcaro)
-void OmMeshDrawer::addToCache( const OmMipChunkCoord & c,
-			       const OmSegPtrList & segmentsToDraw )
-{
-	mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z] = OmSegPtrListValid( segmentsToDraw );
-}
-
-bool OmMeshDrawer::cacheHasCoord( const OmMipChunkCoord & c )
-{
-	OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
-	return spList.isValid;
-}
-
-const OmSegPtrList & OmMeshDrawer::getFromCache( const OmMipChunkCoord & c )
-{
-	const OmSegPtrListValid & spList = mSegmentListCache[ mSegmentationID ][c.Level][c.Coordinate.x][c.Coordinate.y][c.Coordinate.z];
-	return spList.list;
-}
-
-void OmMeshDrawer::checkCache()
-{
-	const unsigned int currentFreshness = OmCacheManager::Freshen(false);
-
-	if( currentFreshness != mFreshness ){
-		mSegmentListCache.clear();
-		mFreshness = currentFreshness;
-	}
-}
-
 void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 {
-	return;
+	return; // FIXME!
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPushMatrix();

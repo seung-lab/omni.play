@@ -20,6 +20,10 @@ class OmSegmentEdge {
 	OmSegID childID;
 	float threshold;
 	bool valid;
+
+	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & e );
+	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentEdge & e );
+
 };
 
 #endif

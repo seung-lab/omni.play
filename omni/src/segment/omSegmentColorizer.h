@@ -2,7 +2,9 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
+
 #include <QMutex> 
+#include <QReadWriteLock>
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -30,7 +32,8 @@ class OmSegmentColorizer
 	}
 
  private:
-	QMutex mMutex;
+	mutable QMutex mColorUpdateMutex;
+	mutable QReadWriteLock mMapResizeMutex;
 
 	OmSegmentCache * mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
@@ -46,7 +49,7 @@ class OmSegmentColorizer
 	OmColor getVoxelColorForView2d( const OmSegID val, 
 					const bool showOnlySelectedSegments );
 
-	int makeSelectedColor(const quint8 in_c ) {
+	inline int makeSelectedColor(const quint8 in_c ) {
 		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
 		if (c > 255) {
 			return 255;
@@ -54,7 +57,7 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
+	inline bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
 		if( currentSegCacheFreshness != mColorCache[val].freshness ){
 			return false;
 		}

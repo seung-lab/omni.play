@@ -4,24 +4,9 @@
 #include "view2d/omTileCoord.h"
 #include "project/omProject.h"
 #include "system/omProjectData.h"
-#include "voxel/omMipSegmentDataCoord.h"
 #include "mesh/omMipMeshCoord.h"
 
 #include <QDataStream>
-
-QDataStream &operator<<(QDataStream & out, const OmMipSegmentDataCoord & c )
-{
- 	out << c.MipChunkCoord;
-	out << c.DataValue;
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in, OmMipSegmentDataCoord & c )
-{
- 	in >> c.MipChunkCoord;
-	in >> c.DataValue;
-	return in;
-}
 
 QDataStream &operator<<(QDataStream & out, const OmMipMeshCoord & c )
 {

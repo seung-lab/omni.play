@@ -20,6 +20,8 @@ class OmDataWriter
 	virtual void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample ) = 0;
 	virtual void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData) = 0;
 
+	virtual void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData) = 0;
+
 	//data set raw
 	virtual void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const void* data) = 0;
 };

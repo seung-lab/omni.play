@@ -1,10 +1,8 @@
-
+#include "common/omDebug.h"
+#include "common/omException.h"
 #include "omGarbage.h"
 #include "omPreferenceDefinitions.h"
-#include "omCacheManager.h"
-
-#include "common/omException.h"
-#include "common/omDebug.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 
 //init instance pointer
@@ -47,6 +45,25 @@ void OmGarbage::asOmTextureId(GLuint texture)
 	OmGarbage::Instance()->Unlock();
 }
 
+void OmGarbage::asOmGenlistId(GLuint genlist)
+{
+        OmGarbage::Instance()->LockGenlists();
+        OmGarbage::Instance()->mGenlists.push_back(genlist);
+        OmGarbage::Instance()->UnlockGenlists();
+}
+
+
+vector < GLuint > & OmGarbage::LockGenlists()
+{
+	OmGarbage::Instance()->mGenlistMutex.lock();
+	return OmGarbage::Instance()->mGenlists;
+}
+
+void OmGarbage::UnlockGenlists()
+{
+	OmGarbage::Instance()->mGenlistMutex.unlock();
+}
+
 void OmGarbage::Lock()
 {
 	OmGarbage::Instance()->mTextureMutex.lock();
@@ -78,5 +95,19 @@ void OmGarbage::safeCleanTextureIds()
 	OmGarbage::Instance()->mTextures.clear();
 
 	OmGarbage::Instance()->Unlock();
+}
+
+
+void OmGarbage::safeCleanGenlistIds()
+{
+	OmGarbage::Instance()->LockGenlists();
+
+	vector <GLuint>::iterator iter;
+	for(iter = OmGarbage::Instance()->mGenlists.begin(); iter != OmGarbage::Instance()->mGenlists.end(); iter++) {
+		glDeleteLists((*iter), 1);
+	}
+	OmGarbage::Instance()->mGenlists.clear();
+
+	OmGarbage::Instance()->UnlockGenlists();
 }
 

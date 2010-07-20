@@ -9,6 +9,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QImage>
 
 #include <vtk_tiff.h>
 #include <vtkTIFFReader.h>
@@ -28,176 +29,8 @@
 #include <vtkImageCast.h>
 #include <vtkStringArray.h>
 
-
-/////////////////////////////////
-///////          ImageType Methods
-
-/**
- *	Return image type based on filename extension
- */
-ImageType OmImageDataIo::om_imagedata_parse_image_type( QString fileNameAndPath )
-{
-	QString extension = QFileInfo(fileNameAndPath).suffix();
-
-	//extract file extension
-	string ext = "." + extension.toStdString();
-
-	//switch for extention type
-	if (".tif" == ext || ".tiff" == ext) {
-		return TIFF_TYPE;
-
-	} else if (".jpg" == ext) {
-		return JPEG_TYPE;
-
-	} else if (".png" == ext) {
-		return PNG_TYPE;
-
-	} else if (".vtk" == ext) {
-		return VTK_TYPE;
-
-	} else if (".h5" == ext || ".hdf5" == ext) {
-		return HDF5_TYPE;
-
-	} else {
-		return NONE_TYPE;
-	}
-}
-
 /////////////////////////////////
 ///////          VTK IO Methods
-
-/*
- *	Return pointer to new image reader given an image type.
- */
-vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader(ImageType type)
-{
-
-	//switch for extention type
-	vtkImageReader2 * reader = NULL;
-	switch (type) {
-
-	case TIFF_TYPE:
-		reader = vtkTIFFReader::New();
-		break;
-	case JPEG_TYPE:
-		reader = vtkJPEGReader::New();
-		break;
-	case PNG_TYPE:
-		reader = vtkPNGReader::New();
-		break;
-	case VTK_TYPE:
-		reader = vtkImageReader2::New();
-		break;
-	case HDF5_TYPE:
-	case NONE_TYPE:
-		throw OmAccessException("File type not recognized.");
-	}
-
-	//read from lowerleft (since it writes from lower left)
-	reader->SetFileLowerLeft(1);
-
-	return reader;
-}
-
-vtkImageReader2 * OmImageDataIo::om_imagedata_get_reader( QString fname)
-{
-	return om_imagedata_get_reader(om_imagedata_parse_image_type( fname ) );
-}
-
-/////////////////////////////////
-///////          Reading Functions
-
-vtkImageData * OmImageDataIo::om_imagedata_read( QFileInfoList sourceFilenamesAndPaths, 
-						 const DataBbox srcExtentBbox,
-						 const DataBbox dataExtentBbox, 
-						 int bytesPerSample, const OmDataPath dataset)
-{
-
-	assert(sourceFilenamesAndPaths.size() && "No files to read.");
-
-	switch (om_imagedata_parse_image_type( sourceFilenamesAndPaths[0].filePath() )){
-	case TIFF_TYPE:
-	case JPEG_TYPE:
-	case PNG_TYPE:
-	case VTK_TYPE:
-		return om_imagedata_read_vtk( sourceFilenamesAndPaths, srcExtentBbox, dataExtentBbox, bytesPerSample);
-
-	case HDF5_TYPE:
-		return om_imagedata_read_hdf5( sourceFilenamesAndPaths, dataExtentBbox, bytesPerSample, dataset);
-
-	default:
-		assert(false && "Unknown file format");
-	}
-}
-
-vtkImageData * OmImageDataIo::om_imagedata_read_vtk( QFileInfoList sourceFilenamesAndPaths, 
-						     const DataBbox srcExtentBbox,
-						     const DataBbox dataExtentBbox, 
-						     int bytesPerSample)
-{
-	//alloc dynamic image data
-	vtkImageData *data = vtkImageData::New();
-
-	//get image reader for name specified file type
-	vtkImageReader2 *p_reader = om_imagedata_get_reader( sourceFilenamesAndPaths[0].filePath() );
-
-	//generate vtkStringArray
-	vtkStringArray *vtk_fpaths_stings = vtkStringArray::New();
-	foreach( QFileInfo fi, sourceFilenamesAndPaths ){
-		string fnp = fi.filePath().toStdString();
-		vtk_fpaths_stings->InsertNextValue( fnp );
-	}
-
-	//set filenames
-	p_reader->SetFileNames(vtk_fpaths_stings);
-
-	//source extent to read from
-	int vtk_src_extent[6];
-	getVtkExtentFromAxisAlignedBoundingBox(srcExtentBbox, vtk_src_extent);
-	p_reader->SetDataExtent(vtk_src_extent);
-
-	//set scalar type
-	p_reader->SetDataScalarType(bytesToVtkScalarType(bytesPerSample));
-
-	//cast to propert type
-	//http://www.vtk.org/doc/release/5.0/html/a02398.html#a11
-	vtkImageCast *p_caster = vtkImageCast::New();
-	p_caster->SetInput(p_reader->GetOutput());
-	p_caster->SetOutputScalarType(bytesToVtkScalarType(bytesPerSample));
-
-	//local extent to extract from
-	int vtk_local_extent[6];
-	getVtkExtentFromAxisAlignedBoundingBox(dataExtentBbox, vtk_local_extent);
-
-	//extract volume of interest in given extent
-	vtkExtractVOI *voi_extractor = vtkExtractVOI::New();
-	voi_extractor->SetInput(p_caster->GetOutput());
-	voi_extractor->SetVOI(vtk_local_extent);
-
-	//pad extent cut by voi extractor
-	vtkImageConstantPad *padder = vtkImageConstantPad::New();
-	padder->SetInput(voi_extractor->GetOutput());
-	padder->SetOutputWholeExtent(vtk_local_extent);
-
-	//normalize extent
-	vtkImageTranslateExtent *extent_translator = vtkImageTranslateExtent::New();
-	extent_translator->SetInput(padder->GetOutput());
-	Vector3 < int >translation = -dataExtentBbox.getMin();
-	extent_translator->SetTranslation(translation.array);
-	extent_translator->SetOutput(data);
-	extent_translator->Update();
-
-
-	//delete all but image
-	p_reader->Delete();
-	vtk_fpaths_stings->Delete();
-	p_caster->Delete();
-	voi_extractor->Delete();
-	padder->Delete();
-	extent_translator->Delete();
-
-	return data;
-}
 
 vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
 						      const DataBbox dataExtentBbox, 
@@ -224,60 +57,6 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	hdf5reader->close();
 
 	return data;
-}
-
-/*
- *	Destination extent is data extent when not specified.
- */
-
-/////////////////////////////////
-///////          Dimensions Functions
-Vector3 < int > OmImageDataIo::om_imagedata_get_dims( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
-{
-	assert(sourceFilenamesAndPaths.size() && "No files specified");
-
-	//use first name in list to determine filetype
-	switch (om_imagedata_parse_image_type( sourceFilenamesAndPaths[0].filePath() )){
-	case TIFF_TYPE:
-	case JPEG_TYPE:
-	case PNG_TYPE:
-	case VTK_TYPE:
-		return om_imagedata_get_dims_vtk( sourceFilenamesAndPaths );
-
-	case HDF5_TYPE:
-		return om_imagedata_get_dims_hdf5( sourceFilenamesAndPaths, dataset );
-
-	default:
-		assert(false && "Unknown file format");
-	}
-}
-
-Vector3 < int > OmImageDataIo::om_imagedata_get_dims_vtk( QFileInfoList sourceFilenamesAndPaths )
-{
-	////use vtk to determine properties
-	vtkImageData *data = vtkImageData::New();
-
-	//set reader props
-	vtkImageReader2 *reader = om_imagedata_get_reader( sourceFilenamesAndPaths[0].filePath() );
-	string firstFileNameAndPath = sourceFilenamesAndPaths[0].filePath().toStdString();
-	reader->SetFileName( firstFileNameAndPath.c_str() );
-	reader->SetOutput(data);
-	reader->Update();
-
-	//get dim information
-	Vector3 < int >src_dims;
-
-	//set slice dimensions
-	data->GetDimensions(src_dims.array);
-
-	//set num slices
-	src_dims.z = sourceFilenamesAndPaths.size();
-
-	//delete image and reader
-	data->Delete();
-	reader->Delete();
-
-	return src_dims;
 }
 
 Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
@@ -504,7 +283,8 @@ void OmImageDataIo::copyImageData(vtkImageData * dstData, const DataBbox & dstCo
 	}
 }
 
-void OmImageDataIo::copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * srcData, const Vector3 < int >&srcOffset)
+void OmImageDataIo::copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * srcData, 
+						       const Vector3 < int >&srcOffset)
 {
 
 	//bbox of source and destination

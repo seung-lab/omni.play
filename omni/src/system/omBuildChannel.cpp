@@ -7,6 +7,7 @@
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
 #include "utility/stringHelpers.h"
+#include "volume/omMipChunk.h"
 
 #include <vtkImageData.h>
 
@@ -27,11 +28,13 @@ void OmBuildChannel::build_channel()
 void OmBuildChannel::run()
 {
 	const QString type = "channel";
+
 	if( !checkSettings() ){
 		return;
 	}
 
-	startTiming(type);
+	OmTimer build_timer;
+	startTiming(type, build_timer);
 
         if( 0 ) {
 		newBuild();
@@ -40,7 +43,7 @@ void OmBuildChannel::run()
 		mChann->BuildVolumeData();
 	}
 
-	stopTiming(type);
+	stopTimingAndSave(type, build_timer);
 }
 
 void OmBuildChannel::newBuild()

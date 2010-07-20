@@ -6,7 +6,6 @@
 #include "project/omProject.h"
 #include "system/omProjectData.h"
 #include "volume/omMipChunk.h"
-#include "volume/omSimpleChunk.h"
 
 void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk ) 
 {
@@ -14,16 +13,6 @@ void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk )
 }
 
 void OmDataArchiveQT::ArchiveWrite( const OmDataPath & path, OmMipChunk * chunk ) 
-{
-	OmDataArchiveMipChunk::ArchiveWrite( path, chunk );
-}
-
-void OmDataArchiveQT::ArchiveRead( const OmDataPath & path, OmSimpleChunk * chunk ) 
-{
-	OmDataArchiveMipChunk::ArchiveRead( path, chunk );
-}
-
-void OmDataArchiveQT::ArchiveWrite( const OmDataPath & path, OmSimpleChunk * chunk ) 
 {
 	OmDataArchiveMipChunk::ArchiveWrite( path, chunk );
 }

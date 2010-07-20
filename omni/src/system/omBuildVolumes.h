@@ -15,20 +15,16 @@ class OmBuildVolumes
 	void addFileNameAndPath( QString fnp );
 
  protected:
-	bool checkSettings();
-	void startTiming(QString type);
-	void stopTiming(QString type);
-
-
-	bool canDoLoadDendrogram();
-
 	QFileInfoList mFileNamesAndPaths;
 
+	bool checkSettings();
+	bool canDoLoadDendrogram();
 	void readImages();
 
- private:
-	OmTimer build_timer;
+	void startTiming(const QString & type, OmTimer & timer);
+	void stopTimingAndSave(const QString & type, OmTimer & timer);
 
+ private:
 	bool are_file_names_valid();
 };
 

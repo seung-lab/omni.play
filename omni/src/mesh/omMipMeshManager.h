@@ -6,24 +6,21 @@
  *
  */
 
-#include "mesh/omMipMesh.h"
-#include "mesh/omMipMeshCoord.h"
 #include "segment/omSegmentPointers.h"
-#include "system/omThreadedCache.h"
+#include "system/cache/omMeshCache.h"
 
-typedef OmThreadedCache< OmMipMeshCoord, OmMipMesh > MipMeshCache;
-
+class OmMeshSource;
 class OmMipChunk;
 class OmMipChunkCoord;
-class OmMeshSource;
-class QGLContext;
 class OmViewGroupState;
+class QGLContext;
 
-class OmMipMeshManager : public MipMeshCache {
-
- public:
+class OmMipMeshManager {
+public:
 	OmMipMeshManager();
 	~OmMipMeshManager();
+
+	void CloseDownThreads();
 	
 	//accessors
 	const QString& GetDirectoryPath() const;
@@ -34,10 +31,10 @@ class OmMipMeshManager : public MipMeshCache {
 	void GetMesh(QExplicitlySharedDataPointer<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
 		
- private:
-	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
+private:
+	OmMeshCache *const mDataCache;
+	
 	void HandleFetchUpdate();
-	bool InitializeFetchThread();
 	
 	QString mDirectoryPath;
 

@@ -4,6 +4,7 @@ TEMPLATE = app
 DEPENDPATH += . \
            include \
            include/vmmlib \
+           include/zi_lib \
            lib \
            src \
            src/common \
@@ -23,7 +24,6 @@ DEPENDPATH += . \
            src/segment \
            src/segment/actions \
            src/segment/actions/segment \
-           src/segment/actions/voxel \
            src/segment/lowLevel \
            src/system \
            src/system/events \
@@ -35,7 +35,6 @@ DEPENDPATH += . \
            src/view3d \
            src/view3d/widgets \
            src/volume \
-           src/voxel \
            tests \
            tests/segment \
            tests/segment/helpers \
@@ -55,6 +54,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveQT.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/archive/omDataArchiveVmml.h \
+           src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/hdf5/omHdf5.h \
            src/datalayer/hdf5/omHdf5LowLevel.h \
            src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
@@ -144,16 +144,16 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMesh.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
+           src/mesh/omMeshSegmentList.h \
+           src/mesh/omMeshSegmentListThread.h \
            src/project/omProject.h \
+           src/project/omProjectSaveAction.h \
            src/segment/actions/omSegmentEditor.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
+           src/segment/actions/segment/omSegmentValidateAction.h \
+           src/segment/actions/segment/omSegmentGroupAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
-           src/segment/actions/voxel/omVoxelSelectionAction.h \
-           src/segment/actions/voxel/omVoxelSelectionSetAction.h \
-           src/segment/actions/voxel/omVoxelSetAction.h \
-           src/segment/actions/voxel/omVoxelSetConnectedAction.h \
-           src/segment/actions/voxel/omVoxelSetValueAction.h \
            src/segment/lowLevel/DynamicTree.h \
            src/segment/lowLevel/DynamicTreeContainer.h \
            src/segment/lowLevel/omPagingPtrStore.h \
@@ -177,16 +177,15 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omToolModeEvent.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
-           src/system/events/omVoxelEvent.h \
            src/system/omAction.h \
            src/system/omAnimate.h \
            src/system/omBuildChannel.h \
            src/system/omBuildSegmentation.h \
            src/system/omBuildVolumes.h \
-           src/system/omCacheBase.h \
-           src/system/omCacheInfo.h \
-           src/system/omCacheManager.h \
-           src/system/omCacheableBase.h \
+           src/system/cache/omCacheBase.h \
+           src/system/cache/omCacheInfo.h \
+           src/system/cache/omCacheManager.h \
+           src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
            src/system/omGroups.h \
@@ -196,8 +195,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/omPreferences.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
-           src/system/omThreadedCache.h \
-           src/system/omHandleCacheMissThreaded.h \
+           src/system/cache/omThreadedCache.h \
+           src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
@@ -210,6 +209,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/stringHelpers.h \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
+           src/system/cache/omTileCache.h \
            src/view2d/omTextureID.h \
            src/view2d/omThreadedCachingTile.h \
            src/view2d/omTile.h \
@@ -234,15 +234,18 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipChunkCoord.h \
            src/volume/omMipChunkPtr.h \
            src/volume/omMipVolume.h \
+           src/volume/omMipThread.h \
+           src/volume/omMipThreadManager.h \
            src/volume/omSegmentation.h \
+           src/system/cache/omMipVolumeCache.h \
+           src/volume/omSegmentationThresholdChangeAction.h \
            src/volume/omSegmentationChunkCoord.h \
-           src/volume/omSimpleChunk.h \
-           src/volume/omSimpleChunkThreadedCache.h \
+           src/volume/omThreadChunkLevel.h \
+           src/system/cache/omThreadChunkThreadedCache.h \
+           src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
-           src/voxel/omMipSegmentDataCoord.h \
-           src/voxel/omMipVoxelation.h \
-           src/voxel/omMipVoxelationManager.h
+           src/volume/omLoadImageThread.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -257,6 +260,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveQT.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
+           src/datalayer/fs/omActionLoggerFS.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
            src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.cpp \
@@ -338,15 +342,16 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/omMipMesh.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
+           src/mesh/omMeshSegmentList.cpp \
+           src/mesh/omMeshSegmentListThread.cpp \
            src/project/omProject.cpp \
+           src/project/omProjectSaveAction.cpp \
            src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
+           src/segment/actions/segment/omSegmentValidateAction.cpp \
+           src/segment/actions/segment/omSegmentGroupAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentSplitAction.cpp \
-           src/segment/actions/voxel/omVoxelSelectionAction.cpp \
-           src/segment/actions/voxel/omVoxelSetAction.cpp \
-           src/segment/actions/voxel/omVoxelSetConnectedAction.cpp \
-           src/segment/actions/voxel/omVoxelSetValueAction.cpp \
            src/segment/lowLevel/DynamicTree.cpp \
            src/segment/lowLevel/DynamicTreeContainer.cpp \
            src/segment/lowLevel/omPagingPtrStore.cpp \
@@ -363,25 +368,23 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/system/OmCacheInfo.cpp \
+           src/system/cache/omCacheInfo.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \
            src/system/events/omToolModeEvent.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
-           src/system/events/omVoxelEvent.cpp \
            src/system/omAction.cpp \
            src/system/omAnimate.cpp \
            src/system/omBuildChannel.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
-           src/system/omCacheManager.cpp \
-           src/system/omCacheableBase.cpp \
+           src/system/cache/omCacheManager.cpp \
+           src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
-           src/system/omFetchingThread.cpp \
            src/system/omGarbage.cpp \
            src/system/omGenericManager.cpp \
            src/system/omGroup.cpp \
@@ -392,8 +395,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \
-           src/system/omThreadedCache.cpp \
-           src/system/omHandleCacheMissThreaded.cpp \
+           src/system/cache/omThreadedCache.cpp \
+           src/system/cache/omHandleCacheMissThreaded.cpp \
            src/system/templatedClasses.cpp \
            src/system/viewGroup/omViewGroupState.cpp \
            src/utility/dataWrappers.cpp \
@@ -407,6 +410,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view2d/drawable.cpp \
            src/view2d/omTextureID.cpp \
            src/view2d/omThreadedCachingTile.cpp \
+           src/system/cache/omTileCache.cpp \
            src/view2d/omTile.cpp \
            src/view2d/omTileCoord.cpp \
            src/view2d/omView2d.cpp \
@@ -427,15 +431,18 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipChunk.cpp \
            src/volume/omMipChunkCoord.cpp \
            src/volume/omMipVolume.cpp \
+           src/volume/omMipThread.cpp \
+           src/volume/omMipThreadManager.cpp \
+           src/system/cache/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
+           src/volume/omSegmentationThresholdChangeAction.cpp \
            src/volume/omSegmentationChunkCoord.cpp \
-           src/volume/omSimpleChunk.cpp \
-           src/volume/omSimpleChunkThreadedCache.cpp \
+           src/volume/omThreadChunkLevel.cpp \
+           src/system/cache/omThreadChunkThreadedCache.cpp \
+           src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
-           src/voxel/omMipSegmentDataCoord.cpp \
-           src/voxel/omMipVoxelation.cpp \
-           src/voxel/omMipVoxelationManager.cpp \
+           src/volume/omLoadImageThread.cpp \
            tests/utility/stringHelpersTest.cpp
 
 RESOURCES += src/gui/resources.qrc
@@ -444,21 +451,19 @@ INCLUDEPATH = src include lib
 
 LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF 
 
+INCLUDEPATH += ./include/zi_lib
+
+#### Windows
 win32 {
-
-INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-
-LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  
-LIBS += -lgdi32 
-
+   INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
+   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  
+   LIBS += -lgdi32 
 } else {
-
-INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
-
-INCLUDEPATH += ../external/headers/boost_1_43_0
-
-LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/  
-LIBS += -lz
+### Linux or MacOS
+   INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
+   INCLUDEPATH += ../external/headers/boost_1_43_0
+   LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/
+   LIBS += -lz
 }
 
 OBJECTS_DIR = build

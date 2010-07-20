@@ -1,6 +1,6 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
@@ -160,6 +160,9 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	child->mThreshold = 0;
 
+	findRoot(parent)->mFreshnessForMeshes++;
+	child->mFreshnessForMeshes++;
+
 	if( isSegmentSelected( parent->getValue() ) ){
 		doSelectedSetInsert( child->getValue() );
 	} else {
@@ -214,6 +217,8 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, e.threshold);
 	childRoot->mCustomMergeEdge = e;
+
+	findRoot(parent)->mFreshnessForMeshes++;
 
         if( isSegmentSelected( e.childID ) ){
                 doSelectedSetInsert( parent->mValue );

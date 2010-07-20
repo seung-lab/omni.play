@@ -10,7 +10,7 @@ class StringHelpers
 	static QString getStringFromSegmentSet( const OmSegIDsSet & data_set );
 	static QString getStringFromIDset( const OmIDsSet & data_set );
 	static QString getStringFromStringList( const QStringList & data_set );
-	static QString commaDeliminateNumber( const int num );
+	static QString commaDeliminateNumber( const long long num );
 	static unsigned int getUInt( QString arg );
 	static double getDouble( QString arg );
 };

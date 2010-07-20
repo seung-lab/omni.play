@@ -9,7 +9,6 @@
 #include "system/events/omPreferenceEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omViewEvent.h"
-#include "system/events/omVoxelEvent.h"
 #include "system/events/omToolModeEvent.h"
 #include "view2d/omView2dImpl.h"
 #include "gui/widgets/omSegmentContextMenu.h"
@@ -28,7 +27,6 @@ class OmView2d :
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
 	public OmViewEventListener,
-	public OmVoxelEventListener,
 	public OmToolModeEventListener
 {
 	Q_OBJECT
@@ -119,7 +117,6 @@ protected:
 	
 	// Change to edit selection
 	void SegmentEditSelectionChangeEvent();
-	void VoxelModificationEvent(OmVoxelEvent *event);
 	void VoxelSelectionModificationEvent() {}
 
 	// view events

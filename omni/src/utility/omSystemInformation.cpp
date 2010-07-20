@@ -1,16 +1,14 @@
 #include "omSystemInformation.h"
 #include "common/omDebug.h"
 #include <stdio.h>
+#include "src/zi/base/system.h"
 
 unsigned int OmSystemInformation::get_num_cores()
 {
-	int num_cores = 5;
-#if __APPLE__
-	return num_cores;
-#elif WIN32
-	return num_cores;
-#else	// LINUX DEFAULT?
-	return num_cores;
+#ifdef __APPLE__
+	return 3;
+#else
+	return zi::System::getCPUCount();
 #endif
 }
 

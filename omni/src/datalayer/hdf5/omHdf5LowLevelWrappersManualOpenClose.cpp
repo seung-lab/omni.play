@@ -3,6 +3,8 @@
 #include "datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h"
 #include "datalayer/omDataPath.h"
 
+hid_t GlobalHDF5id = -1;
+
 #define HDF5_CHECK() 						\
 	string pathStr = path.getString();                      \
 	const char * name = pathStr.c_str();                    \
@@ -32,6 +34,8 @@ void OmHdf5LowLevelWrappersManualOpenClose::open()
 
 	fileId = hdfLowLevel.om_hdf5_file_open_with_lock(mFileName, mReadOnly);
 	opened = true;
+	GlobalHDF5id = fileId;
+	printf("real HDF5 id is %d\n", fileId);
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::close()

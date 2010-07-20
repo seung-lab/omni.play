@@ -4,11 +4,10 @@
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetConnectedAction.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omViewEvent.h"
-#include "system/omCacheManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
@@ -100,13 +99,6 @@ void OmSegmentContextMenu::AddDendActions()
 	addAction(QString("Split Segments"), this, SLOT(splitSegments()));
 }
 
-/*
- *	Merge Segments
- */
-void OmSegmentContextMenu::AddVoxelAction()
-{
-	addAction(QString("Set Connected Voxels"), this, SLOT(SetConnectedVoxels()));
-}
 
 /////////////////////////////////
 ///////          Context Menu Slots Methods
@@ -145,11 +137,6 @@ void OmSegmentContextMenu::splitSegments()
 	mViewGroupState->SetShowSplitMode(true);
 	OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
 	mViewGroupState->SetSplitMode(mSegmentationId, mSegmentId);
-}
-
-void OmSegmentContextMenu::SetConnectedVoxels()
-{
-	(new OmVoxelSetConnectedAction())->Run();
 }
 
 void OmSegmentContextMenu::AddColorActions()

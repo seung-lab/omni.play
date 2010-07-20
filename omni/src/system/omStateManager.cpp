@@ -314,7 +314,7 @@ void OmStateManager::setDendToolBar( DendToolBar * dtb)
 	Instance()->dendToolBar = dtb;
 }
 
-void OmStateManager::UpdateStatusBar( QString msg )
+void OmStateManager::UpdateStatusBar( const QString & msg )
 {
 	Instance()->mainWindow->updateStatusBar( msg );
 }

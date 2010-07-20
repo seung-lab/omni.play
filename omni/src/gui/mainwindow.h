@@ -33,6 +33,7 @@ class MainWindow
  
   public:
 	MainWindow();
+	~MainWindow();
 
 	void openProject( QString fileNameAndPath );
 	void openProject( QString fileName, QString pathName );

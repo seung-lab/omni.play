@@ -23,7 +23,7 @@ public:
 	// color
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return mColorInt; }
-	Vector3f GetColorFloat(){
+	inline Vector3f GetColorFloat(){
 		return Vector3f( mColorInt.red   / 255.,
 				 mColorInt.green / 255.,
 				 mColorInt.blue  / 255. ); }
@@ -51,6 +51,8 @@ public:
 	OmId getSegmentationID();
 	float getThreshold(){ return mThreshold; }
 
+	quint32 getFreshnessForMeshes(){return mFreshnessForMeshes;}
+
 private:
 	OmSegID mValue;
 	OmSegmentCache * mCache;
@@ -69,6 +71,8 @@ private:
 	OmSegmentEdge mCustomMergeEdge;
 
 	void SetInitialColor();
+
+	quint32 mFreshnessForMeshes;
 
 	friend class OmSegmentListBySize;
 	friend class OmSegmentCacheImpl;

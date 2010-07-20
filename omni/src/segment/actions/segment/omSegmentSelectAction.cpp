@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/omSegmentCache.h"
@@ -55,5 +56,15 @@ void OmSegmentSelectAction::UndoAction()
 
 string OmSegmentSelectAction::Description()
 {
-	return string("Yay! We did a selection!!");
+        QString lineItem = QString("Selected: ");
+        foreach(const OmSegID segId, mNewSelectedIdSet){
+                lineItem += QString("seg %1 + ").arg(segId);
+        }
+
+        return lineItem.toStdString();
+}
+
+void OmSegmentSelectAction::save(const string & comment)
+{
+	OmActionLoggerFS().save(this, comment);
 }

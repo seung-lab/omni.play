@@ -8,7 +8,6 @@
 #include "system/events/omView3dEvent.h"
 #include "system/events/omViewEvent.h"
 #include "system/events/omSegmentEvent.h"
-#include "system/events/omVoxelEvent.h"
 #include "system/events/omPreferenceEvent.h"
 #include "common/omCommon.h"
 
@@ -21,7 +20,6 @@ class OmViewGroupState;
 class OmView3d : public QGLWidget, 
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener, 
-	public OmVoxelEventListener,
 	public OmView3dEventListener, 
 	public OmViewEventListener
 {
@@ -31,6 +29,7 @@ class OmView3d : public QGLWidget,
 	OmView3d(QWidget *, OmViewGroupState * );
 	~OmView3d();
 	OmCamera& GetCamera();
+
 	
  protected:
 	//gl events
@@ -47,11 +46,13 @@ class OmView3d : public QGLWidget,
 	void wheelEvent(QWheelEvent * event );
 	void keyPressEvent (QKeyEvent *);
 
+	bool event(QEvent *e);
+	void pinchTriggered(QPinchGesture *gesture);
+
+
 	//omni events
 	void SegmentObjectModificationEvent(OmSegmentEvent *event);
 	void SegmentEditSelectionChangeEvent() {}
-	void VoxelSelectionModificationEvent() {}
-	void VoxelModificationEvent(OmVoxelEvent * event);
 	void SegmentDataModificationEvent();
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
 	void ViewBoxChangeEvent();
@@ -93,6 +94,7 @@ class OmView3d : public QGLWidget,
 	QSize sizeHint () const;
 		
  private:
+	bool gestureEvent(QGestureEvent *event);
 	OmView3dUi mView3dUi;
 	OmViewGroupState * mViewGroupState;
 	QTime * mElapsed;

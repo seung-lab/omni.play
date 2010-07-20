@@ -12,19 +12,21 @@
 #include "omMipMeshCoord.h"
 #include "common/omCommon.h"
 #include "common/omGl.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
 #include "datalayer/omDataWrapper.h"
 
+class ziMeshingChunk;
 
 class OmHdf5;
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
+class OmMeshCache;
 
 class OmMipMesh : public OmCacheableBase {
 
 public:
-	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *pMipMeshManager);
+	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *, OmMeshCache *);
 	virtual ~OmMipMesh();
 
 	void Load();
@@ -61,6 +63,10 @@ private:
 	OmDataWrapperPtr mpStripOffsetSizeDataWrap; //dim = 2 * mStripCount
 	uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount
 
+	uint32_t mTrianCount;
+	OmDataWrapperPtr mpTrianOffsetSizeDataWrap; //dim = 2 * mTrianCount
+	uint32_t *mpTrianOffsetSizeData; //dim = 2 * mTrianCount
+
 	// offsets for vectors in geometry data (specifies geometry)
 	uint32_t mVertexIndexCount;
 	OmDataWrapperPtr mpVertexIndexDataWrap; //dim = mVertexIndexCount with 2 bytes check 65K limit
@@ -85,6 +91,7 @@ private:
         bool hasDisplayList;
 
 	friend class OmMesher;
+        friend class ziMeshingChunk;
 };
 
 #endif

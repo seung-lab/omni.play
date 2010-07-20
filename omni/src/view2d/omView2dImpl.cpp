@@ -73,7 +73,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	float mDataDepth = 0;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -144,8 +144,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-			//debug ("genone", "mVolumeType: %i\n", mVolumeType);
-			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, OmCachingThreadedCachingTile::Freshen(false));
+			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 
@@ -313,6 +312,9 @@ void OmView2dImpl::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gott
 
 bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 {
+#define BUFFERCOUNT 10
+	int boff[BUFFERCOUNT] = {5, -5, 4, -4, 3, -3, 2, -2, 1, -1};
+
 	drawComplete = true;
 	unsigned int freshness = 0;
 	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
@@ -324,7 +326,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 	
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
-	float mDataDepth = 0;
+	int mDataDepth = 0;
 	switch (mViewType){
 	case XY_VIEW:
 		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
@@ -360,69 +362,71 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		break;
 	}
 
-	
 	bool complete = true;
-	float xMipChunk;
-	float yMipChunk;
-	float xval;
-	float yval;
-	Vector2f stretch = mVolume->GetStretchValues(mViewType);
+	debug("genone", "in buffering: %i\n", mDataDepth);
+	for (int count = 0; count < BUFFERCOUNT; count++) {
+		float xMipChunk;
+		float yMipChunk;
+		float xval;
+		float yval;
+		Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
-	float pl = OMPOW(2, zoomMipVector.x);
-	int tl = tileLength * OMPOW(2, zoomMipVector.x);
+		float pl = OMPOW(2, zoomMipVector.x);
+		int tl = tileLength * OMPOW(2, zoomMipVector.x);
 
-	if (translateVector.y < 0) {
-		yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
-		yval = (-1 * (abs((int)translateVector.y) % tl));
-	} else {
-		yMipChunk = 0;
-		yval = translateVector.y;
-	}
-
-	for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
-	     y = y + tileLength, yMipChunk = yMipChunk + tl) {
-
-		if (translateVector.x < 0) {
-			xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
-			xval = (-1 * (abs((float)translateVector.x) % tl));
+		if (translateVector.y < 0) {
+			yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
+			yval = (-1 * (abs((int)translateVector.y) % tl));
 		} else {
-			xMipChunk = 0;
-			xval = translateVector.x;
+			yMipChunk = 0;
+			yval = translateVector.y;
 		}
 
+		//printf("count=%i\n", count);
+		for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
+	     		y = y + tileLength, yMipChunk = yMipChunk + tl) {
+
+			if (translateVector.x < 0) {
+				xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
+				xval = (-1 * (abs((float)translateVector.x) % tl));
+			} else {
+				xMipChunk = 0;
+				xval = translateVector.x;
+			}
+
 #if 0
-		debug("view2d","mDataDepth = %i\n",mDataDepth);
-		debug("view2d", "tl = %i\n", tl);
-		debug("view2d", "pl = %i\n", pl);
-		//debug("view2d", "x = %i\n", x);
-		debug("view2d", "y = %i\n", y);
-		debug("view2d", "xval = %i\n", xval);
-		debug("view2d", "yval = %i\n", yval);
-		debug("view2d", "translateVector.x = %i\n", translateVector.x);
-		debug("view2d", "translateVector.y = %i\n", translateVector.y);
-		debug("view2d", "xMipChunk = %i\n", xMipChunk);
-		debug("view2d", "yMipChunk = %i\n", yMipChunk);
-		debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
+			debug("view2d","mDataDepth = %i\n",mDataDepth);
+			debug("view2d", "tl = %i\n", tl);
+			debug("view2d", "pl = %i\n", pl);
+			//debug("view2d", "x = %i\n", x);
+			debug("view2d", "y = %i\n", y);
+			debug("view2d", "xval = %i\n", xval);
+			debug("view2d", "yval = %i\n", yval);
+			debug("view2d", "translateVector.x = %i\n", translateVector.x);
+			debug("view2d", "translateVector.y = %i\n", translateVector.y);
+			debug("view2d", "xMipChunk = %i\n", xMipChunk);
+			debug("view2d", "yMipChunk = %i\n", yMipChunk);
+			debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
 #endif
 
-		for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
-		     x = x + tileLength, xMipChunk = xMipChunk + tl) {
+			for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
+		     			x = x + tileLength, xMipChunk = xMipChunk + tl) {
 
-			for (float count = -5; count < 6; count++) {
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+count);;
+                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+boff[count]);
                         	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType,
-										OmCachingThreadedCachingTile::Freshen(false));
+                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
                         	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
                         	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
+					debug("genone", "buffering: %i, %i\n", count, boff[count]);
                                 	if (gotten_id) {
                                         	safeTexture(gotten_id);
 					} else {
 						mTileCountIncomplete++;
                                         	if (mTileCountIncomplete >= mTileCount) {
+							OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 							return false;
 						}
                                         	complete = false;
@@ -436,6 +440,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	}
 
+	debug("genone", "done buffering\n");
 	return complete;
 }
 
@@ -525,6 +530,9 @@ QImage OmView2dImpl::safePaintEvent()
 	initializeGL();
 	pbuffer->makeCurrent();
 
+	//glDepthMask(true);
+	//glColorMask (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix(); {
@@ -618,8 +626,6 @@ void OmView2dImpl::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		Draw();
 		mDrawFromChannel = false;
 	} else {
@@ -631,7 +637,6 @@ void OmView2dImpl::DrawFromCache()
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
 		Draw();
 	}
 }

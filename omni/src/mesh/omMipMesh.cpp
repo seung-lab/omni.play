@@ -6,6 +6,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "system/omGarbage.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
@@ -35,17 +36,22 @@ extern GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
 #define glGetBufferParameterivARB glGetBufferParameterivARBFunction;
 #endif
 
-OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager)
-  : OmCacheableBase(pMipMeshManager), mpMipMeshManager(pMipMeshManager)
+OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager, OmMeshCache * cache)
+  : OmCacheableBase(cache)
+  , mpMipMeshManager(pMipMeshManager)
   , mMeshCoordinate(id)
 {
   mHasData = false;
   displayList = 0;
   hasDisplayList = false;
   //init mesh data
+  mTrianCount = 0;
+  mpTrianOffsetSizeData = NULL;
+
   mStripCount = 0;
   mpStripOffsetSizeData = NULL;
 
+  mpTrianOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpStripOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpVertexIndexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
   mpVertexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -68,10 +74,16 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
 
 OmMipMesh::~OmMipMesh()
 {
-  //if was vbo, then delete vbos
-  if (IsVbo()) {
-    DeleteVbo();
+  if (hasDisplayList) {
+    hasDisplayList = false;
+    OmGarbage::asOmGenlistId(displayList);
   }
+
+  //if was vbo, then delete vbos
+  //not save to do in a sub thread.
+  //if (IsVbo()) {
+  //  DeleteVbo();
+  //}
 
   if (mHdf5File) {
     delete mHdf5File;
@@ -85,7 +97,7 @@ OmMipMesh::~OmMipMesh()
 
 void OmMipMesh::Load()
 {
-  //debug("load", "in OmMipMesh::Load\n"); 
+  //debug("load", "in OmMipMesh::Load\n");
   //read meta data
   OmDataPath fpath( mPath + "metamesh.dat" );
 
@@ -106,6 +118,12 @@ try {
 
   mHasData = true;
   int size;
+
+  //read triangles offset/size data  (uint32_t *)
+  fpath.setPath( mPath + "trianoffset.dat" );
+  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
+  mpTrianOffsetSizeData = mpTrianOffsetSizeDataWrap->getUInt32Ptr();
+  mTrianCount = size / (2 * sizeof(uint32_t));
 
   //read strip offset/size data  (uint32_t *)
   fpath.setPath( mPath + "stripoffset.dat" );
@@ -155,6 +173,11 @@ void OmMipMesh::Save()
   if (!meta)
     return;
 
+  //write trian offset/size data
+  fpath.setPath( mPath + "trianoffset.dat" );
+  size = 2 * mTrianCount * sizeof(uint32_t);
+  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpTrianOffsetSizeData);
+
   //write strip offset/size data
   fpath.setPath( mPath + "stripoffset.dat" );
   size = 2 * mStripCount * sizeof(uint32_t);
@@ -193,6 +216,7 @@ bool OmMipMesh::IsEmptyMesh()
 /////////////////////////////////
 ///////          VBO Methods
 
+
 bool OmMipMesh::IsVbo()
 {
   return (NULL_VBO_ID != mVertexDataVboId) || (NULL_VBO_ID != mVertexIndexDataVboId);
@@ -228,12 +252,6 @@ void OmMipMesh::CreateVbo()
 
 void OmMipMesh::DeleteVbo()
 {
-
-  if (hasDisplayList) {
-    hasDisplayList = false;
-    glDeleteLists(displayList, 1);
-  }
-
   if (!IsVbo()) {
     assert(false);
   }
@@ -245,6 +263,9 @@ void OmMipMesh::DeleteVbo()
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
   UpdateSize(-(vertex_data_size + vertex_index_data_size));
+
+  mVertexDataVboId = NULL_VBO_ID;
+  mVertexIndexDataVboId = NULL_VBO_ID;
 }
 
 /////////////////////////////////
@@ -259,27 +280,12 @@ bool OmMipMesh::Draw(bool doCreateVbo)
     return ret;
   }
 
-  //if(!IsVbo()) assert(false);
-  if (!IsVbo()) {
-    debug("vbo", "going to create vbo\n");
-    if (doCreateVbo) {
-      CreateVbo();
-      ret = true;
-    } else {
-      debug("vbo", "not creating vbo\n");
-      return ret;
-    }
-
-    debug("vbo", "done to creating vbo\n");
-  }
-
-  //debug("genone","OmMipMesh::Draw()");
-
   if (!hasDisplayList) {
     displayList = glGenLists(1);
     hasDisplayList = true;
     glNewList(displayList, GL_COMPILE);
 
+    CreateVbo();
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -312,6 +318,12 @@ bool OmMipMesh::Draw(bool doCreateVbo)
                      GL_UNSIGNED_INT,	//type
                      (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
     }
+    for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
+ 	      glDrawElements(GL_TRIANGLES,      //triangle trian
+              mpTrianOffsetSizeData[2 * idx + 1],        //elements in trian
+	      GL_UNSIGNED_INT,   //type
+ 	      (GLuint *) 0 + mpTrianOffsetSizeData[2 * idx]);    //trian offset
+    }
     debug("tri","strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
     debug("elements", "done drawing %i elements\n", mStripCount);
 
@@ -322,6 +334,8 @@ bool OmMipMesh::Draw(bool doCreateVbo)
     // release VBOs: gl*Pointer() return to normal
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+
+    DeleteVbo();
 
     glPopAttrib();
     glEndList();

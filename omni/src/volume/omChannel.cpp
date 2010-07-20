@@ -1,6 +1,9 @@
+#include "datalayer/omDataPath.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "volume/omChannel.h"
@@ -9,10 +12,8 @@
 
 OmChannel::OmChannel()
 {
-        /** Set The Name of the Cache */
-        SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim);
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
 }
 
 OmChannel::OmChannel(OmId id)
@@ -39,10 +40,8 @@ OmChannel::OmChannel(OmId id)
 	//build blank data
 	BuildVolumeData();
 
-	/** Set The Name of the Cache */
-        SetCacheName("OmChannel --> OmMipVolume");
         int chunkDim = GetChunkDimension();
-        SetObjectSize(chunkDim*chunkDim*chunkDim);
+        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
 
 	AddFilter();	
 }
@@ -79,7 +78,7 @@ void OmChannel::BuildVolumeData()
 
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();
-	OmProject::Save();
+	(new OmProjectSaveAction())->Run();
         return filter;
 }
 
@@ -108,4 +107,9 @@ bool OmChannel::IsFilterEnabled(OmId id)
 void OmChannel::Print()
 {
 	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
+}
+
+void OmChannel::CloseDownThreads()
+{
+	mDataCache->closeDownThreads();
 }

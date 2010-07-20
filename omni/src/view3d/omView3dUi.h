@@ -5,14 +5,12 @@
  *
  *	Brett Warne - bwarne@mit.edu - 4/21/09
  */
-
-
 #include "gui/widgets/omSegmentContextMenu.h"
-#include "system/viewGroup/omViewGroupState.h"
 
 #include <QtGui> 
 
 class OmView3d;
+class OmViewGroupState;
 
 class OmView3dUi {
 
@@ -20,6 +18,11 @@ public:
 	OmView3dUi(OmView3d * view3d, OmViewGroupState * );
 	
 	//ui events
+        void pinchTriggered(QPinchGesture *gesture);
+	void panTriggered(QPanGesture*);
+ 	void swipeTriggered(QSwipeGesture *gesture);
+        bool gestureEvent(QGestureEvent *event);
+
 	void MousePressed(QMouseEvent *event);
 	void MouseRelease(QMouseEvent *event);
 	void MouseMove(QMouseEvent *event);
@@ -35,17 +38,8 @@ public:
 	void NavigationModeMouseWheel(QWheelEvent *event);
 	void NavigationModeKeyPress(QKeyEvent *event);
 	
-	//edit mode
-	void EditModeMousePressed(QMouseEvent *event);
-	void EditModeMouseRelease(QMouseEvent *event);
-	void EditModeMouseMove(QMouseEvent *event);
-	void EditModeMouseDoubleClick(QMouseEvent *event);
-	void EditModeMouseWheel(QWheelEvent *event);
-	void EditModeKeyPress(QKeyEvent *event);
-
 	//dend mode
 	void DendModeMouseReleased(QMouseEvent *event);
-	
 	
 	//camera movement
 	void CameraMovementMouseStart(QMouseEvent *event);
@@ -54,32 +48,16 @@ public:
 	void CameraMovementMouseWheel(QWheelEvent *event);
 	
 	//segment picking
-	bool PickSegmentMouse(QMouseEvent *event, bool drag, OmId &segmentationId, 
-			      OmId &segmentId, int *pickName = NULL);      
-	
-	//voxel picking
-	bool PickVoxel(QKeyEvent *keyEvent, QMouseEvent *mouseEvent, bool drag, DataCoord &voxel);
-	bool PickVoxelMouse(QMouseEvent *mouseEvent, bool drag, DataCoord &voxel);
-	bool PickVoxelCameraFocus(DataCoord &voxel);
-	
-	
+	bool PickSegmentMouse(QMouseEvent *event, bool drag, 
+			      OmId &segmentationId, 
+			      OmId &segmentId, 
+			      int *pickName = NULL);      
+		
 	//segment actions
 	void SegmentSelectToggleMouse(QMouseEvent *event, bool drag);
 	
-	
-	//voxel actions
-	void VoxelEditMouse(QMouseEvent *mouseEvent, bool drag);
-	
-	void VoxelSelectToggleMouse(QMouseEvent *mouseEvent, bool drag);
-	void VoxelSelectToggleKey(QKeyEvent *keyEvent, bool augment);
-	
-	void VoxelSetMouse(QMouseEvent *mouseEvent, bool drag);
-	void VoxelSetKey(QKeyEvent *, bool augment);
-	
-	
 	//segment context menu
 	void ShowSegmentContextMenu(QMouseEvent *event);
-	
 	
 private:
 	OmView3d *const mpView3d;
@@ -96,7 +74,6 @@ private:
 	OmId PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
 	void resetWindow();
 	void doZoom(int direction);
-
 
 	bool mCPressed;
 };

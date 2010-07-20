@@ -1,3 +1,4 @@
+#include "datalayer/fs/omActionLoggerFS.h"
 #include "omSegmentJoinAction.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
@@ -42,4 +43,9 @@ string OmSegmentJoinAction::Description()
 	}
 
 	return lineItem.toStdString();
+}
+
+void OmSegmentJoinAction::save(const string & comment)
+{
+	OmActionLoggerFS().save(this, comment);
 }

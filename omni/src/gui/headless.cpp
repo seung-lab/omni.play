@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <time.h>
 
+#include "volume/omMipChunk.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
@@ -14,6 +15,7 @@
 #include "gui/mainwindow.h"
 #include "gui/recentFileList.h"
 #include "project/omProject.h"
+#include "project/omProjectSaveAction.h"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
@@ -21,10 +23,12 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/stringHelpers.h"
+#include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
+#include "zi/base/base.h"
 
 int argc_global;
 char **argv_global;
@@ -34,11 +38,13 @@ OmId SegmentationID = 0;
 void Headless::openProject( QString fName )
 {
 	try {
-		printf("please wait: opening project \"%s\"...\n", qPrintable( fName ));
+		printf("Please wait: Opening project \"%s\"...\n", qPrintable( fName ));
 		OmProject::Load( fName );
-		printf("opened project \"%s\"\n", qPrintable( fName ));
+		//Set current working directory to file path
+		QDir::setCurrent( QFileInfo(fName).absolutePath() );
+		printf("Opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
-	        printf("error while loading project \"%s\"\n", qPrintable( fName ));
+	        printf("Error while loading project \"%s\"\n", qPrintable( fName ));
 	}
 }
 
@@ -52,32 +58,30 @@ void doMeshinate( OmSegmentation * current_seg )
         QString script = GetScriptCmd (fnpnPlan);
         debug ("meshinator", "%s\n", qPrintable (script));
 
-	printf("here 2\n");
+	//printf("here 2\n");
 
         QProcess * meshinatorProc = new QProcess ();
         meshinatorProc->start(script);
         meshinatorProc->waitForFinished(-1);
 
-	printf("here 3\n");
+	//printf("here 3\n");
 
-        OmProject::Save();
+	(new OmProjectSaveAction())->Run();
 }
 
 void Headless::processLine( QString line, QString fName )
 {
-	time_t start;
-	time_t end;
-	double dif;
+	OmTimer timer;
 
 	if( line == "q" || line == "quit" ){
-		printf("exiting...\n");
+		printf("Exiting...\n");
 		OmProject::Close();
 		exit(0);
 	} else if( "save" == line ) {
-		OmProject::Save();
+		(new OmProjectSaveAction())->Run();
 	} else if( "mesh" == line ) {
 		if( 0 == SegmentationID  ){
-			printf("please choose segmentation first!\n");
+			printf("Please choose segmentation first!\n");
 			return;
 		} 
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
@@ -86,27 +90,114 @@ void Headless::processLine( QString line, QString fName )
 		bs.wait();
         } else if( "meshinator" == line ) {
                 if( 0 == SegmentationID  ){
-                        printf("please choose segmentation first!\n");
+                        printf("Please choose segmentation first!\n");
                         return;
                 }
-		printf("here\n");
                 OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
-		OmProject::Save();
+		(new OmProjectSaveAction())->Run();
 		doMeshinate(&added_segmentation);
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
-			printf("please choose segmentation first!\n");
+			printf("Please choose segmentation first!\n");
 			return;
 		} 
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.loadDendrogram();
+	} else if( line.startsWith("compareChannels:") ) {
+		// format: compareChannels:id1,id2[:verbose]
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		
+		if ( args.size() < 2 ){
+			printf("Please specify channel IDs.\n");
+			return;
+		}
+
+		QStringList channelIDs = args[1].split(',',QString::SkipEmptyParts);
+
+		if ( channelIDs.size() < 2 ){
+			printf("Not enough channel IDs specified. Please specify as 'id1,id2'.\n");
+			return;
+		}
+
+		int id1 = StringHelpers::getUInt( channelIDs[0] );
+		int id2 = StringHelpers::getUInt( channelIDs[1] );
+
+		bool verbose = 0;
+
+		if ( 3 == args.size() ){
+			verbose = (bool) StringHelpers::getUInt( args[2] );
+		}
+
+		if( !OmProject::IsChannelValid(id1) && !OmProject::IsChannelValid(id2) ) {
+			if( id1 == id2 ){
+				printf("Channel %i is not a valid channel.\n",id1);
+			} else {
+				printf("Channels %i and %i are not valid channels.\n",id1,id2);
+			}
+		} else if( !OmProject::IsChannelValid(id1) ) {
+			printf("Channel %i is not a valid channel.\n",id1);
+		} else if( !OmProject::IsChannelValid(id2) ) {
+			printf("Channel %i is not a valid channel.\n",id2);
+		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
+			printf("Channel %i and Channel %i are identical.\n",id1,id2);
+		}
+	} else if( line.startsWith("compareSegmentations:") ) {
+		// format: compareSegmentations:id1,id2[:verbose]
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		
+		if ( args.size() < 2 ){
+			printf("Please specify segmentation IDs.\n");
+			return;
+		}
+
+		QStringList segmentationIDs = args[1].split(',',QString::SkipEmptyParts);
+
+		if ( segmentationIDs.size() < 2 ){
+			printf("Not enough segmentation IDs specified. Please specify as 'id1,id2'.\n");
+			return;
+		}
+
+		int id1 = StringHelpers::getUInt( segmentationIDs[0] );
+		int id2 = StringHelpers::getUInt( segmentationIDs[1] );
+
+		bool verbose = 0;
+
+		if ( 3 == args.size() ){
+			verbose = (bool) StringHelpers::getUInt( args[2] );
+		}
+
+		if( !OmProject::IsSegmentationValid(id1) && !OmProject::IsSegmentationValid(id2) ) {
+			if( id1 == id2 ){
+				printf("Segmentation %i is not a valid segmentation.\n",id1);
+			} else {
+				printf("Segmentations %i and %i are not valid segmentation.\n",id1,id2);
+			}
+		} else if( !OmProject::IsSegmentationValid(id1) ) {
+			printf("Segmentation %i is not a valid segmentation.\n",id1);
+		} else if( !OmProject::IsSegmentationValid(id2) ) {
+			printf("Segmentation %i is not a valid segmentation.\n",id2);
+		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
+			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
+		}
 	} else if( line.startsWith("meshchunk:") ) {
-		// format: meshchunk:segmentationID:mipLevel:x,y,z
-		QStringList args = line.split(':');
+		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		
+		if ( args.size() < 4 ){
+			printf("Invalid format. Did you forget some arguments?\n");
+			return;
+		}
+
 		SegmentationID = StringHelpers::getUInt( args[1] );
 		unsigned int mipLevel = StringHelpers::getUInt( args[2] );
-		QStringList coords = args[3].split(',');
+		QStringList coords = args[3].split(',',QString::SkipEmptyParts);
+
+		if ( args.size() < 3 ){
+			printf("Not enough coordinates specified. Please specify as 'x,y,z'.\n");
+			return;
+		}
+
 		int x = StringHelpers::getUInt( coords[0] );
 		int y = StringHelpers::getUInt( coords[1] );
 		int z = StringHelpers::getUInt( coords[2] );
@@ -124,74 +215,115 @@ void Headless::processLine( QString line, QString fName )
 		int numThreads=0;
 		if( 5 == args.size() ){
 			numThreads = StringHelpers::getUInt( args[4] );
-			printf("over-road edfault number of threads...\n");
+			printf("Overrode default number of threads...\n");
 		}
 		if( 0 == numThreads) {
 			numThreads = 4;
 		}
-		printf("meashing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
-		time (&start);
+		printf("Meshing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
+		timer.start();
 		OmProject::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
-		time (&end);
-		dif = difftime (end,start);
-		printf("meshing done (%.2lf secs)\n", dif );
+		timer.stop();
+		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
 
 		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
       			OmStateManager::getParallel()) {
     			hdf5File->close();
   		}
-	} else if( line.startsWith("runMeshPlan:") ) {
-		time (&start);
+	} else if( line.startsWith("runMeshPlan") ) {
+		timer.start();
+		//runMeshPlan("runMeshPlan")????
 		runMeshPlan( line );
-		time (&end);
-		dif = difftime (end,start);
-		printf("meshing done (%.2lf secs)\n", dif );
+		timer.stop();
+		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
 	} else if( "meshplan" == line ) {
 		if( 0 == SegmentationID  ){
-			printf("please choose segmentation first!\n");
+			printf("Please choose segmentation first!\n");
 			return;
 		} 
 		QString planFile = fName + ".plan";
 		//		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
 		OmProject::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
-		printf("wrote plan to \"%s\"\n", qPrintable( planFile ) );
+		printf("Wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( line.startsWith("seg:") ) {
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
 		SegmentationID = StringHelpers::getUInt( args[1] );
 		if( SegmentationID > 0 ){
-			printf("segmentationID set to %d\n", SegmentationID );
+			printf("SegmentationID set to %d\n", SegmentationID );
 		} else {
-			printf("invalid segmentation\n");
+			printf("Invalid segmentation\n");
 		}
-	} else if( line.startsWith("openFile:") ){
-		QStringList args = line.split(':');
+	} else if( line.startsWith("open:") ){
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}	
 		openProject( args[1] );
-	} else if( line.startsWith("open") ){
-		openProject( fName );
-	} else if( line.startsWith("parallel:") ){
-		QStringList args = line.split(':');
+	} else if( "close" == line ){
+		OmProject::Close();
+		printf("Project closed.\n");
+	} else if( "pwd" == line ){
+		printf("%s\n", qPrintable( QDir::currentPath() ));	
+	} else if( line.startsWith("cd ") ){
+		QStringList args = line.split("cd ", QString::SkipEmptyParts);
+		if ( args.size() < 1 ){
+			printf("Please enter a pathname.\n");
+			return;
+		}
+		QString path = args[0];
+		if ( !QDir::QDir(path).exists() ){
+			printf("Directory does not exist.\n");
+			return;
+		}
+		QDir::setCurrent(path);
+	} else if( "ls" == line ){
+	        QStringList entrylist = QDir::current().entryList();
+		foreach (QString str, entrylist){
+			printf("%s\n",qPrintable(str));
+		}
+	} else if( "ls -l" == line ){
+	        QFileInfoList entrylist = QDir::current().entryInfoList();
+		foreach(QFileInfo f, entrylist){
+			QString line = QString("%1%2")
+				.arg(f.fileName(), -20, ' ')
+				.arg(QString::number((double)f.size()/BYTES_PER_MB, 'f', 3));
+			printf("%s\n", qPrintable(line));
+		}
+	} else if( "parallel" == line ){
 		OmStateManager::setParallel(true);
-        } else if( line.startsWith("addSegment:") ){
+        } else if( line.startsWith("addSegment") ){
                 if( 0 == SegmentationID  ){
-                        printf("please choose segmentation first!\n");
+                        printf("Please choose segmentation first!\n");
                         return;
                 }
                 OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
-                OmProject::Save();
-        } else if( line.startsWith("setDataExtent:") ){
-		assert(false && "don't need this anymore.");
-		//QStringList args = line.split(':');
-		//Vector3<int> maxext = Vector3<int>(StringHelpers::getUInt(args[1]),StringHelpers::getUInt(args[2]),StringHelpers::getUInt(args[3]));
-		//OmProject::SetDataDimensions(maxext);
-                //OmProject::Save();
+		(new OmProjectSaveAction())->Run();
 	} else if( line.startsWith("create:") ) {
-		QStringList args = line.split(':');
-		QString projectFileNameAndPath = args[1];
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
+
+		QString projectFileNameAndPath = args[1];      
                 const QString fname = OmProject::New( projectFileNameAndPath );
 		RecentFileList::prependFileToFS(fname);
+		printf("Created and opened %s.\n",qPrintable(fname));
 
 	} else if( line.startsWith("createOrOpen:") ) {
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
+
 		QString projectFileNameAndPath = args[1];
 
 		QFile file( projectFileNameAndPath );
@@ -203,7 +335,12 @@ void Headless::processLine( QString line, QString fName )
 		}
 		
 	} else if( line.startsWith("loadHDF5seg:") ){
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
 
 		OmSegmentation & added_segmentation = OmProject::AddSegmentation();
 		SegmentationID = added_segmentation.GetId();
@@ -214,7 +351,12 @@ void Headless::processLine( QString line, QString fName )
 		bs.build_seg_image();
 		bs.wait();
 	} else if( line.startsWith("loadHDF5chann:") ){
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
 
 		OmChannel & chann = OmProject::AddChannel();
 		QString hdf5fnp = args[1];
@@ -224,7 +366,12 @@ void Headless::processLine( QString line, QString fName )
 		bc.build_channel();
 		bc.wait();
 	} else if( line.startsWith("loadTIFFchann:") ){
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a path to a directory.\n");
+			return;
+		}
 
 		OmChannel & chann = OmProject::AddChannel();
 		OmBuildChannel bc( &chann );
@@ -240,7 +387,12 @@ void Headless::processLine( QString line, QString fName )
 		bc.build_channel();
 		bc.wait();
         } else if( line.startsWith("loadTIFFseg:") ){
-                QStringList args = line.split(':');
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a path to a directory.\n");
+			return;
+		}
 
                 OmSegmentation & seg = OmProject::AddSegmentation();
 		SegmentationID = seg.GetId();
@@ -257,7 +409,13 @@ void Headless::processLine( QString line, QString fName )
                 bs.build_seg_image();
                 bs.wait();
 	} else if( line.startsWith("buildHDF5:") ){
-		QStringList args = line.split(':');
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a filename.\n");
+			return;
+		}
+
 		QString projectFileName = QFileInfo(args[1]+".omni").fileName();
 		
 		OmProject::New( projectFileName );
@@ -269,21 +427,78 @@ void Headless::processLine( QString line, QString fName )
 		bs.addFileNameAndPath( hdf5fnp );
 		bs.buildAndMeshSegmentation();
 		bs.wait();
-	} else if( line.startsWith("loadChunk") ){
-		if( 0 == SegmentationID  ){
-                        printf("please choose segmentation first!\n");
+	} else if( "loadChunk" == line ){
+		if( 0 == SegmentationID ){
+                        printf("Please choose segmentation first!\n");
                         return;
                 }
 		
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
 		
-		QExplicitlySharedDataPointer < OmSimpleChunk > p_chunk = QExplicitlySharedDataPointer < OmSimpleChunk > ();
-		segmen.GetSimpleChunk(p_chunk, chunk_coord);
+		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+		segmen.GetChunk(p_chunk, chunk_coord);
 		p_chunk->Open();
+        } else if( line.startsWith("removeChann:") ){
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a channel id.\n");
+			return;
+		}
+
+		int channID = StringHelpers::getUInt( args[1] );		
+
+		if ( !OmProject::IsChannelValid(channID) ){
+			printf("Channel %i is not a valid channel.\n",channID);
+			return;
+		}
 		
+		OmProject::RemoveChannel(channID);
+		printf("Channel %i removed.\n",channID);
+		
+	} else if( line.startsWith("removeSeg:") ){
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if ( args.size() < 2 ){
+			printf("Please enter a segmentation id.\n");
+			return;
+		}
+
+		int segID = StringHelpers::getUInt( args[1] );		
+
+		if ( !OmProject::IsSegmentationValid(segID) ){
+			printf("Segmentation %i is not a valid segmentation.\n",segID);
+			return;
+		}
+		
+		OmProject::RemoveSegmentation(segID);
+		printf("Segmentation %i removed.\n",segID);
+			
+	} else if( "lsChann" == line ){
+		OmIDsSet channset = OmProject::GetValidChannelIds();		
+		if ( channset.empty() ){
+			printf("No channels present.\n");
+			return;
+		}
+		printf("ID\tName\n");
+		FOR_EACH(iter,channset){
+			ChannelDataWrapper cdw(*iter);
+			printf("%i\t%s\n", *iter, qPrintable( cdw.getName() ));
+		}		
+	} else if( "lsSeg" == line ){
+		OmIDsSet segset = OmProject::GetValidSegmentationIds();		
+		if ( segset.empty() ){
+			printf("No segmentations present.\n");
+			return;
+		}
+		printf("ID\tName\n");
+		FOR_EACH(iter,segset){
+			SegmentationDataWrapper sdw(*iter);
+			printf("%i\t%s\n", *iter, qPrintable( sdw.getName() ));
+		}
         } else {
-		printf("could not parse \"%s\"\n", qPrintable(line) );
+		printf("Could not parse \"%s\".\n", qPrintable(line) );
 	}
 }
 
@@ -301,13 +516,13 @@ void Headless::runInteractive( QString fName )
 void Headless::runScript( const QString scriptFileName, QString fName )
 {
 	if (!QFile::exists( scriptFileName )) {
-		printf("could not open plan file \"%s\"\n", qPrintable(scriptFileName));
+		printf("Could not open plan file \"%s\"\n", qPrintable(scriptFileName));
 		exit(1);
 	}
 		
 	QFile file(scriptFileName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		printf("could not read plan file \"%s\"\n", qPrintable(scriptFileName));
+		printf("Could not read plan file \"%s\"\n", qPrintable(scriptFileName));
 		exit(1);
 	}
 		
@@ -360,12 +575,23 @@ int Headless::start(int argc, char *argv[])
 		fName = QString::fromStdString( argv[ args.fileArgIndex ] );
 	}
 
+#ifdef Q_WS_X11
+	bool useGUI = getenv("DISPLAY") != 0;
+#else
+	bool useGUI = true;
+#endif
+	
 	setOmniExecutablePath( QString( argv[0] ) );
-	if( args.runHeadless ){
+	if(!useGUI && !args.runHeadless){
+		printf("No GUI detected; Running headless....\n");
+		runHeadless("--headless", fName);
+		return 0;
+	} else if( args.runHeadless ){
 		runHeadless( args.headlessCMD, fName );
 		return 0;
 	} else {
-		QApplication app(argc, argv);
+		// This is leaking the app, and it is not being freed before app death.
+		QApplication * app = new QApplication(argc, argv);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;
 		mainWin.show();
@@ -374,7 +600,7 @@ int Headless::start(int argc, char *argv[])
 			mainWin.openProject( fName );
 		}
 		
-		return app.exec();
+		return app->exec();
 	}
 }
 
@@ -385,7 +611,7 @@ void Headless::runMeshPlan( QString headlessLine )
 
 	QFile file( planName );
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		throw OmIoException( "could not read file" );
+		throw OmIoException( "Could not read file" );
 	}
 	
 	QSet<OmId> segmentationIDs;

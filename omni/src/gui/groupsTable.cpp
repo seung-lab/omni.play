@@ -5,6 +5,7 @@
 #include "common/omCommon.h"
 #include "system/omGroup.h"
 #include <QTreeWidgetItem>
+#include <QMenu>
 
 static OmId mSeg = 1; //FIXME!
 
@@ -14,13 +15,30 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	this->setLayout(mLayout);
 
 	mGroupsList = new OmGroupListWidget(this);
+	mGroupsList->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	mLayout->addWidget(mGroupsList,0,0,1,1);
 
 	mGroupsTable = new QTableWidget();
 	mGroupsTable->setColumnCount(4);
+	mGroupsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	mLayout->addWidget(mGroupsTable,0,1,1,1);
 
+	mMenu = new QMenu ();
+	mMenu->addSeparator();
+	QAction * delAction = new QAction(QString("Remove"), this);
+/*
+        connect(delAction, SIGNAL(triggered(bool)),
+                this, SLOT(doDeleteAction()));
+*/
+
+	mMenu->addAction(delAction);
+
 	populateGroupsList();
+}
+
+void GroupsTable::doDeleteAction()
+{
+	printf("here %p %p\n", QObject::sender(), mMenu);
 }
 
 OmId GroupsTable::getSegmentationID()
@@ -51,11 +69,16 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 	foreach(OmSegID id, set) {
 		OmSegment * segment = cache->GetSegment(id);
 		OmColor color = segment->GetColorInt();
-		printf("HI! %i\n", id);
+		//printf("HI! %i\n", id);
 		QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
-		mGroupsTable->setCellWidget(count, 0, segmentButton);
-		QPushButton * colorButton = new QPushButton();
+		segmentButton->setMenu(mMenu);
+	        connect(segmentButton, SIGNAL(clicked(bool)),
+                	this, SLOT(doDeleteAction()));
 
+
+		mGroupsTable->setCellWidget(count, 0, segmentButton);
+
+		QPushButton * colorButton = new QPushButton();
 		colorButton->setStyleSheet(QString("* { background-color: rgb(%1,%2,%3) }")
 						.arg(color.red).arg(color.green).arg(color.blue));
 		mGroupsTable->setCellWidget(count, 1, colorButton);

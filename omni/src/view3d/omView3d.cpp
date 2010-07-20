@@ -57,6 +57,7 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 {
 	//set keyboard policy
 	setFocusPolicy(Qt::ClickFocus);
+	setAttribute(Qt::WA_AcceptTouchEvents);
 
 	//setup widgets
 	mView3dWidgetManager.resize(NUMBER_VIEW3D_WIDGET_IDS, NULL);
@@ -93,6 +94,10 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	glGetBufferParameterivARBFunction = (GLGETBUFFERPARAIV) wglGetProcAddress("glGetBufferParameterivARB");
 	assert(glGetBufferParameterivARBFunction);
 #endif
+
+	grabGesture(Qt::PanGesture);
+	grabGesture(Qt::PinchGesture);
+     	grabGesture(Qt::SwipeGesture);
 }
 
 OmView3d::~OmView3d()
@@ -295,11 +300,6 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 }
 
 void OmView3d::SegmentObjectModificationEvent(OmSegmentEvent *)
-{
-	myUpdate();
-}
-
-void OmView3d::VoxelModificationEvent(OmVoxelEvent *)
 {
 	myUpdate();
 }
@@ -598,4 +598,13 @@ QSize OmView3d::sizeHint () const
 	const int offset = 76;
 	// TODO: offset is only 76 if tabs are present in the upper-right dock widget...
 	return QSize( s.width(), s.height() - offset );
+}
+
+bool OmView3d::event(QEvent *e)
+{
+	if (e->type() == QEvent::Gesture) {
+		return mView3dUi.gestureEvent(static_cast<QGestureEvent*>(e));
+	}
+
+	return QGLWidget::event(e);
 }

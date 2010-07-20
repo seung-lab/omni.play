@@ -17,9 +17,15 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentJoinAction";}
 
-	const OmId mSegmentationId;
+	OmId mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
+
+	friend class OmActionLoggerFS;
+	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
+	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
 };
 
 #endif

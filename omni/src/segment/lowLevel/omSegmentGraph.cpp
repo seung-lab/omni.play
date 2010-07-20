@@ -1,3 +1,4 @@
+#include "utility/stringHelpers.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
@@ -90,7 +91,7 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 					 const int numEdges, 
 					 const float stopThreshold )
 {
-	printf("\t %d edges...", numEdges);
+	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
 	fflush(stdout);
 
 	OmSegID childID;
@@ -194,6 +195,8 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 	childRoot->setParent(parent, threshold);
 	childRoot->mEdgeNumber = edgeNumber;
 
+	mCache->findRoot(parent)->mFreshnessForMeshes++;
+
 	updateSizeListsFromJoin( parent, childRoot );
 
 	return true;
@@ -220,6 +223,9 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
         graph_cut(child->mValue);
 	child->mParentSegID = 0;
 	child->mEdgeNumber = -1;
+
+	mCache->findRoot(parent)->mFreshnessForMeshes++;
+	child->mFreshnessForMeshes++;
 
 	updateSizeListsFromSplit( parent, child );
 

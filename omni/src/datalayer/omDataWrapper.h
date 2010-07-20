@@ -1,6 +1,7 @@
 #ifndef OM_DATA_WRAPPER_H
 #define OM_DATA_WRAPPER_H
 
+#include "common/omCommon.h"
 #include "common/omGl.h"
 
 class OmDataWrapper : boost::noncopyable
@@ -9,17 +10,21 @@ class OmDataWrapper : boost::noncopyable
 	OmDataWrapper()
 		: mData(NULL)
 		, isValid(false)
+		, okToDelete(true)
 	{
 	}
 
 	OmDataWrapper( void * ptr )
 		: mData(ptr)
 		, isValid( true )
+		, okToDelete(true)
 	{
 	}
 
 	~OmDataWrapper(){
-		free(mData); // from malloc in hdf5...
+		if(okToDelete){
+			free(mData); // from malloc in hdf5...
+		}
 	}
 
 	char * getCharPtr(){ assert(isValid); return (char*)mData; }
@@ -31,12 +36,33 @@ class OmDataWrapper : boost::noncopyable
 	float * getFloatPtr(){ assert(isValid); return (float*)mData; }
 	void * getPtr(){ assert(isValid); return mData; }
 
- private:	
+ protected:	
 	void * mData;
 	const bool isValid;
+	bool okToDelete;
 };
 
 typedef boost::shared_ptr<OmDataWrapper> OmDataWrapperPtr;
+
+class OmDataWrapperMemmap : public OmDataWrapper
+{
+ public:
+	OmDataWrapperMemmap()
+		: OmDataWrapper()
+		{
+			okToDelete = false;
+		}
+
+	OmDataWrapperMemmap( void * ptr )
+		: OmDataWrapper(ptr)
+	{
+		okToDelete = false;
+	}
+
+	~OmDataWrapperMemmap(){
+	}
+};
+
 
 #endif
 

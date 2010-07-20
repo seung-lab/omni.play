@@ -34,22 +34,22 @@ hid_t OmHdf5LowLevel::om_hdf5_file_open_with_lock(string fpath, const bool readO
 	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	const unsigned int totalCacheSizeMB = OmSystemInformation::get_total_system_memory_megs() / 20;
-		
+	const unsigned int totalCacheSizeMB = 256;
+	 	                
 	// number of elements (objects) in the raw data chunk cache (default 521)
 	//  should be a prime number (due to simplistic hashing algorithm)
 	size_t rdcc_nelmts = 2011; 
-	
+	 	        
 	size_t rdcc_nbytes = totalCacheSizeMB * 1024 * 1024; // total size of the raw data chunk cache (default 1MB)
 	double rdcc_w0 = 0.75;  // preemption policy (default 0.75)
 	int    mdc_nelmts  = 0;    // no longer used
-
+	 	
 	hid_t fapl = H5Pcreate(H5P_FILE_ACCESS); // defaults
 	herr_t err = H5Pset_cache( fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0 );
 	if(err < 0) {
-                throw OmIoException("Could not setup HDF5 file cache.");
+		throw OmIoException("Could not setup HDF5 file cache.");
 	}
-
+	 	
 	hid_t fileId;
 	if( readOnly ) {
 		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, fapl);
@@ -84,22 +84,23 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 	}
 }
 
+bool OmHdf5LowLevel::checkIfLinkExists(hid_t fileID, const char *name)
+{
+	return H5Lexists(fileID, name, H5P_DEFAULT);
+}
+
 /////////////////////////////////
 ///////          Group
 bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *name)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	//Try to open a group
-	//Turn off error printing idea from http://www.fiberbundle.net/index.html
-	H5E_BEGIN_TRY {
-		herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
-		if( ret < 0 ){
-			return false;
-		}
-	} H5E_END_TRY
-
-	return true;
+        H5E_BEGIN_TRY {
+ 		herr_t ret = H5Gget_objinfo(fileId, name, 0, NULL);
+ 		if( ret < 0 ){
+ 			return false;
+ 		}
+ 	} H5E_END_TRY
+ 		
+ 	return true;
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char *name, 
@@ -233,6 +234,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 {
 	debug("hdf5verbose", "\nOmHDF5LowLevel: in %s...\n", __FUNCTION__);
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
+
+	if(!om_hdf5_group_exists_with_lock(fileId, name)){
+		*size = 0;
+		return OmDataWrapperPtr(new OmDataWrapper(NULL));
+	}
 	
 	void *dataset_data;
 	herr_t status;
@@ -240,11 +246,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
 	if (dataset_id < 0) {
-		const string errMsg = "Could not open HDF5 dataset " + string(name);
+		const string errMsg = "Could not open HDF5 dataset (even though it existed)" + string(name);
 		throw OmIoException(errMsg);
 	}
 
-	printfDatasetCacheSize( dataset_id );
+	//printfDatasetCacheSize( dataset_id );
 
 	//Returns an identifier for a copy of the dataspace for a dataset. 
 	hid_t dataspace_id = H5Dget_space(dataset_id);
@@ -403,27 +409,27 @@ void OmHdf5LowLevel::om_hdf5_group_delete_with_lock(hid_t fileId, const char *na
 ///////          Dataset private
 bool OmHdf5LowLevel::om_hdf5_dataset_exists_with_lock(hid_t fileId, const char *name)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	hid_t dataset_id;
-
-	//Try to open a data set
-	//Turn off error printing idea from http://www.fiberbundle.net/index.html
-	H5E_BEGIN_TRY {
-		dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
-	} H5E_END_TRY
-	
-	//if failure, then assume doesn't exist
-	if (dataset_id < 0)
-		return false;
-	
-	//Closes the specified dataset. 
-	herr_t ret = H5Dclose(dataset_id);
-	if (ret < 0) {
-		throw OmIoException("Could not close HDF5 dataset " + string(name));
-	}
-
-	return true;
+         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+ 
+         hid_t dataset_id;
+ 
+         //Try to open a data set
+         //Turn off error printing idea from http://www.fiberbundle.net/index.html
+         H5E_BEGIN_TRY {
+                 dataset_id = H5Dopen2(fileId, name, H5P_DEFAULT);
+         } H5E_END_TRY
+         
+         //if failure, then assume doesn't exist
+         if (dataset_id < 0)
+                 return false;
+         
+         //Closes the specified dataset. 
+         herr_t ret = H5Dclose(dataset_id);
+         if (ret < 0) {
+                 throw OmIoException("Could not close HDF5 dataset " + string(name));
+         }
+ 
+         return true;
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name)
@@ -588,6 +594,10 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	if (ret < 0) {
 		throw OmIoException("Could not set HDF5 chunk size.");
 	}
+	hid_t whenAlloc = H5Pset_alloc_time( plist_id, H5D_ALLOC_TIME_EARLY);
+	if (whenAlloc < 0) {
+		throw OmIoException("Could not set HDF5 alloc time.");
+	}
 
 	//data dims
 	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
@@ -600,7 +610,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	if (dataspace_id < 0) {
 		throw OmIoException("Could not create HDF5 dataspace.");
 	}
-
+	
 	//Creates a dataset at the specified location. 
 	hid_t type_id = om_hdf5_bytesToHdf5Id(bytesPerSample);
 	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -682,9 +692,10 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t fileId
 	//Reads raw data from a dataset into a buffer. 
 	hid_t mem_type_id;
 
-	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
+	//	if( isDatasetPathNameAChannel(name) && 1 == bytesPerSample){
+	if( 1 == bytesPerSample){
 		if(H5T_FLOAT == H5Tget_class( dstype )) {
-			printf("\timporting float data; scaling by 255\n");
+			debug("hdf5verbose", "\timporting float data; scaling by 255\n");
 			vtkImageData * myImageData = OmImageDataIo::allocImageData(extent_dims, sizeof(float));
 			ret = H5Dread(dataset_id, H5T_NATIVE_FLOAT, mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 				      myImageData->GetScalarPointer());
@@ -798,7 +809,9 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	Vector3 < int >extent_dims = extent->getUnitDimensions();
 	int data_dims[3];
 	imageData->GetDimensions(data_dims);
-	assert(data_dims[0] == extent_dims.x && data_dims[1] == extent_dims.y && data_dims[2] == extent_dims.z);
+	assert(data_dims[0] == extent_dims.x);
+	assert(data_dims[1] == extent_dims.y);
+	assert(data_dims[2] == extent_dims.z);
 
 	//assert(1 == imageData->GetNumberOfScalarComponents());
 	if (1 != imageData->GetNumberOfScalarComponents())
@@ -900,15 +913,6 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	Vector3 < hsize_t > end   = extent.getMax();
 	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
 
-	/*
-	hsize_t* dims;
-	hsize_t* maxdims;
-	if(H5Sget_simple_extent_dims(dataspace_id, dims, maxdims) < 0)
-		throw OmIoException("Could not get HDF5 data extent.");
-        if ((dims[0]<end.z)&&(dims[1]<end.y)&&(dims[2]<end.z))
-		throw OmIoException("Tried to write data outside of Dataspace extent.");
-	*/
-
 	Vector3 < hsize_t > stride = Vector3i::ONE;
 	Vector3 < hsize_t > count = Vector3i::ONE;
 
@@ -917,9 +921,12 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 
 	//Selects a hyperslab region to add to the current selected region. 
 	//herr_t H5Sselect_hyperslab(hid_t space_id, H5S_seloper_t op, const hsize_t *start, const hsize_t *stride, const hsize_t *count, const hsize_t *block  ) 
-	herr_t ret =
-	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
-				block_flipped.array);
+	herr_t ret = H5Sselect_hyperslab(dataspace_id, 
+					 H5S_SELECT_SET, 
+					 start_flipped.array, 
+					 stride.array, 
+					 count.array,
+					 block_flipped.array);
 	if (ret < 0)
 		throw OmIoException("Could not select HDF5 hyperslab.");
 

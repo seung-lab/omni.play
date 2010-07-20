@@ -9,6 +9,7 @@
 
 #include "common/omCommon.h"
 
+class OmDataPath;
 class OmDataLayer;
 class OmDataReader;
 class OmDataWriter;
@@ -29,6 +30,7 @@ public:
 	static void Create();
 	static void Open();
 	static void Close();
+	static void DeleteInternalData(const OmDataPath & path);
 	
 	static bool IsOpen() {return Instance()->mIsOpen;}
 	static bool IsReadOnly() {return Instance()->mIsReadOnly;}

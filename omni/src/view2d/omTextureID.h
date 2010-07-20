@@ -12,7 +12,7 @@
 
 #include "common/omStd.h"
 #include "common/omGl.h"
-#include "system/omCacheableBase.h"
+#include "system/cache/omCacheableBase.h"
 #include "system/omGenericManager.h"
 #include "omTileCoord.h"
 
@@ -23,21 +23,20 @@
 #define OMTILE_GOOD		3
 #define OMTILE_NEEDCOLORMAP 	4
 
-class OmThreadedCachingTile;
-
-class OmTextureID;
+class OmTileCache;
 
 class OmTextureID : public OmCacheableBase {
 	
 public:
-	OmTextureID(const OmTileCoord &tileCoord, 
-		    const GLuint &texID, 
-		    const int &size, 
+	OmTextureID(const OmTileCoord & tileCoord, 
+		    const GLuint & texID, 
+		    const int & size, 
 		    const int x, 
 		    const int y, 
-		    OmThreadedCachingTile *cache = NULL, 
-		    void* texture = NULL, 
-		    int flags = 0);
+		    OmTileCache* cache, 
+		    void* texture, 
+		    int flags);
+
 	virtual ~OmTextureID();
 	
 	//texture ID property accessors;
@@ -57,12 +56,6 @@ public:
 
 	ObjectType mVolType;
 	bool mRemoveMe;
-	OmThreadedCachingTile *mCache;
-
-	friend class myQGLWidget;
-	friend class OmView2d;
-	friend class DOmView2d;
-
 };
 
 #endif

@@ -23,14 +23,20 @@ private:
 	void Action();
 	void UndoAction();
 	string Description();
+	void save(const string &);
+	QString classNameForLogFile(){return "OmSegmentSelectAction";}
 	
-	const OmId mSegmentationId;
-	const OmSegIDsSet mNewSelectedIdSet;
-	const OmSegIDsSet mOldSelectedIdSet;
-	const OmId mSegmentJustSelectedID;
+	OmId mSegmentationId;
+	OmSegIDsSet mNewSelectedIdSet;
+	OmSegIDsSet mOldSelectedIdSet;
+	OmId mSegmentJustSelectedID;
 	void * mSender;
 	const string mComment;
 	const bool mDoScroll;
+
+	friend class OmActionLoggerFS;
+	friend QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );
+	friend QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
 };
 
 #endif

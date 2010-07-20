@@ -2,7 +2,6 @@
 #include "project/omProject.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/voxel/omVoxelSetValueAction.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "system/events/omView3dEvent.h"
@@ -76,8 +75,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		mRootLevel = current_channel.GetRootMipLevel();
 	} else {
 		mViewGroupState->SetSegmentation( mImageId );
@@ -92,12 +89,9 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 		if (fastCache->mDelete)
 			delete fastCache;
 
-		mCache->SetContinuousUpdate(false);
-
 		mRootLevel = current_seg.GetRootMipLevel();
 	}
 
-	//debug("FIXME", << "conversion = " << endl;
 	DataCoord test = DataCoord(0, 0, 0);
 	SpaceCoord test2 = DataToSpaceCoord(test);
 	//debug("FIXME", << "0 ---> " << test2.z << endl;
@@ -331,7 +325,7 @@ void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord glob
                sel.augmentSelectedSet( segID, true );
                sel.sendEvent();
 
-               Refresh();
+               //Refresh();
         } 
 }
 
@@ -500,12 +494,8 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 			break;
 		}
 
-		(new OmVoxelSetValueAction(seg, gCP, fc))->Run();
-		//delete new OmVoxelSetValueAction(seg, gCP, fc);
-		//printf("here\n");
-
-		debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
-			DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
+		//debug("fill", "OmView2d::FillToolFill, off: %i, %i, %i __ %i, %i, %i __ %i, %i, %i\n",
+		//	DEBUGV3(off), DEBUGV3(BrushToolOTGDC(off)), DEBUGV3(gCP));
 
 		off.x++;
 		FillToolFill(seg, BrushToolOTGDC(off), fc, bc, depth);
@@ -529,7 +519,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 }
 
 void myBreak(){}
-void checkDC (string s, DataCoord dc)
+void checkDC (string /*s*/, DataCoord /*dc*/)
 {
 #if 0
 	if(dc.x == dc.y) {
@@ -723,7 +713,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 	
 	if (doselection) {
 		if(sel.sendEvent()){
-			Refresh();
+			//Refresh();
 		}
 	}
 }
@@ -875,7 +865,7 @@ void OmView2d::SegmentObjectModificationEvent(OmSegmentEvent*)
 	//add/remove segment, change state, change selection
 	//valid methods: GetModifiedSegmentIds()
 
-	Refresh ();
+	//Refresh ();
 	myUpdate();
 }
 
@@ -912,12 +902,6 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 
 void OmView2d::myUpdate()
 {
-
-	if (mEditedSegmentation) {
-		(new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
-		mUpdateCoordsSet.clear();
-	}
-
 	if (mDoRefresh) {
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;

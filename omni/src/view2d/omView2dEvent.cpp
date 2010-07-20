@@ -385,9 +385,6 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 	case SELECT_VOXEL_MODE:	
 		return;
 		break;
-	case VOXELIZE_MODE:
-		return;
-		break;
 	default:
 		return;
 		break;
@@ -447,7 +444,6 @@ void OmView2d::mouseMoveEvent(QMouseEvent * event)
 			break;
 
 		case SELECT_VOXEL_MODE:
-		case VOXELIZE_MODE:
 			assert(0 && "not implemented");
 		}
 	}
@@ -527,7 +523,6 @@ void OmView2d::mouseReleaseEvent(QMouseEvent * event)
 		break;
 
 	case SELECT_VOXEL_MODE:
-	case VOXELIZE_MODE:
 		assert(0 && "not implemented");
 		break;
 	}
@@ -619,26 +614,6 @@ void OmView2d::ViewCenterChangeEvent()
 void OmView2d::ViewRedrawEvent()
 {
 	myUpdate();
-}
-
-void OmView2d::VoxelModificationEvent(OmVoxelEvent * event)
-{
-	//voxels in a segmentation have been modified
-	//valid methods: GetSegmentationId(), GetVoxels()
-
-	if ((mVolumeType == SEGMENTATION) && (event->GetSegmentationId() == mImageId)) {
-
-		set < DataCoord > modVoxels = event->GetVoxels();
-
-		// these voxels are not flat, they are correct for ortho views
-
-		set < DataCoord >::iterator itr;
-		for (itr = modVoxels.begin(); itr != modVoxels.end(); itr++) {
-			modifiedCoords.insert(*itr);
-		}
-
-		myUpdate();
-	}
 }
 
 //\}

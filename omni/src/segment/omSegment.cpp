@@ -9,6 +9,7 @@ OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
+	, mFreshnessForMeshes(0)
 {
 	SetInitialColor();
 }
@@ -20,6 +21,7 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
+	, mFreshnessForMeshes(0)
 {
 }
 

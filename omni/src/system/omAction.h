@@ -13,12 +13,16 @@ protected:
 	OmAction();
 	void SetValid(bool);
 	void SetUndoable(bool);
+	void SetActivate(bool);
+	bool GetActivate();
 	
 	//action interface
 	virtual void Action() = 0;
 	virtual void UndoAction() = 0;
 	virtual string Description() = 0;
-	
+	virtual void save(const string & comment ) = 0;
+	virtual QString classNameForLogFile() = 0;
+
 	bool mUndoable;
 
 private:
@@ -28,6 +32,7 @@ private:
 	
 	//action properties
 	bool mValid;
+	bool mActivate;
 };
 
 #endif
