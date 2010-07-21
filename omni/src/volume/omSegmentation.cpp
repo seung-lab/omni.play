@@ -231,7 +231,7 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThrea
 
 void OmSegmentation::BuildMeshDataInternal()
 {
-	const bool useZImesher = false;
+	const bool useZImesher = true;
 
 	if(useZImesher){
 		ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
