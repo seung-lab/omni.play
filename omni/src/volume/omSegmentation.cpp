@@ -162,6 +162,19 @@ void OmSegmentation::BuildVolumeData()
 	mSegmentCache->turnBatchModeOn(false);
 }
 
+bool OmSegmentation::BuildThreadedVolume()
+{
+	if (!OmMipVolume::BuildThreadedVolume()){
+		return false;
+	}
+
+	if (!OmMipVolume::BuildSerialVolume()){
+		return false;
+	}
+
+	return true;
+}
+
 /*
  *	Build all meshes in all chunks of the MipVolume.
  */
@@ -340,35 +353,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 	//call redraw to force mesh to reload
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-}
-
-/*
- *	Overridden BuildThreadChunkLevel method so that segments will be added from the
- *	thread chunk level as well.
- */
-vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
-{
-	//do normal mipping and get image data
-	vtkImageData *p_image_data = OmMipVolume::BuildThreadChunkLevel(rMipCoord,p_source_data);
-
-	//get pointer to thread chunk level
-	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
-	GetThreadChunkLevel(p_chunklevel, rMipCoord);
-
-	if (rMipCoord.Level == 0){
-		//get sizes if mip level 0
-       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
-
-		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
-		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
-
-		delete sizes;
-	} else {
-		//don't get sizes if not mip level 0
-       		p_chunklevel->RefreshDirectDataValues(false);
-	}
-
-	return p_image_data;
 }
 
 /////////////////////////////////

@@ -102,11 +102,11 @@ public:
 	void Build(OmDataPath & dataset);
 	bool BuildVolume();
 	bool BuildSerialVolume();
-	bool BuildThreadedVolume();
+	virtual bool BuildThreadedVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
 	void BuildEditedLeafChunks();	
-	virtual vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
+	vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
 	void BuildThreadChunk(const OmMipChunkCoord &, vtkImageData *p_source_data);
 
 	//comparison methods
