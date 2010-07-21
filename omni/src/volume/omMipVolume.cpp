@@ -873,7 +873,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 		BuildChunkAndParents(*itr);
 
 		//clear modified values
-		p_chunk->ClearModifiedVoxelValues();
+		if(p_chunk) p_chunk->ClearModifiedVoxelValues();
 	}
 
 	//edited chunks clean

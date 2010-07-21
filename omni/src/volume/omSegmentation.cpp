@@ -119,7 +119,7 @@ void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
 	OmMipVolume::SetVoxelValue(rVox, val);
 
 	//change voxel in voxelation
-	assert(0);
+	//assert(0);
 	//mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
 }
 

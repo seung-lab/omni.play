@@ -17,6 +17,7 @@
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "volume/omVoxelSetValueAction.h"
 
 static QGLWidget *sharedwidget = NULL;
 
@@ -903,6 +904,8 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 void OmView2d::myUpdate()
 {
 	if (mDoRefresh) {
+                (new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
+                mUpdateCoordsSet.clear();
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
