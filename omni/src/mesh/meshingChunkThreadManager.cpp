@@ -54,6 +54,7 @@ void MeshingChunkThreadManager::setupValuesToMesh( QExplicitlySharedDataPointer 
 	if( totalNumValuesToMesh > 50000 ){
 		printf("warning: meshing chunk (%s) with %d values...\n", qPrintable( mCoord.getCoordsAsString()), totalNumValuesToMesh );
 	}
+	printf("meshing chunk (%s) with %d values...\n", qPrintable( mCoord.getCoordsAsString()), totalNumValuesToMesh );
 }
 
 int MeshingChunkThreadManager::numberOfThreadsToUseForThisChunk( const int totalNumValuesToMesh )

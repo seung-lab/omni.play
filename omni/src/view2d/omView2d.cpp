@@ -904,8 +904,11 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 void OmView2d::myUpdate()
 {
 	if (mDoRefresh) {
-                (new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
-                mUpdateCoordsSet.clear();
+		if(mEditedSegmentation) {
+                	(new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
+                	mUpdateCoordsSet.clear();
+			mEditedSegmentation = 0;
+		}
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
