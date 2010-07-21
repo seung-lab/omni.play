@@ -19,7 +19,7 @@ public:
 
 	static const OmMipChunkCoord NULL_COORD;
 
-	QString getCoordsAsString();
+	QString getCoordsAsString() const;
 
 	//property
 	bool IsLeaf() const;
