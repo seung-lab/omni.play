@@ -748,7 +748,7 @@ bool OmMipVolume::BuildThreadedVolume()
        		vol_timer.start();
 	}
 
-	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,false);
+	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,false);
 	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
 	mipThreadManager->run();
 	mipThreadManager->wait();

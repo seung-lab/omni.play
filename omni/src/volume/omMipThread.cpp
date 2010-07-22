@@ -1,31 +1,32 @@
 #include "omMipThread.h"
 #include "omMipVolume.h"
 
-OmMipThread::OmMipThread(OmMipVolume *pMipVolume, const int threadNum, int numTotalThreadChunks)
+OmMipThread::OmMipThread(OmMipVolume *pMipVolume, const int threadNum, ChunkType chunkType, int numTotalChunks)
 	: mThreadNum(threadNum)
-	, mNumTotalThreadChunks(numTotalThreadChunks)
 {
 	mpMipVolume = pMipVolume;
+	mChunkType = chunkType;
+	mNumTotalChunks = numTotalChunks;
 }
 
 
 /*
- *	Adds a MipChunkCoord of a ThreadChunk to the queue to downsample.
+ *	Adds a MipChunkCoord of a chunk to the queue to downsample.
  */
-void OmMipThread::AddEnqueuedThreadChunk(OmMipChunkCoord mipCoord)
+void OmMipThread::EnqueueChunk(OmMipChunkCoord mipCoord)
 {
 	mutex.lock();
 	mMipCoords.enqueue(mipCoord);
 	mutex.unlock();
-	mNumEnqueuedThreadChunks.release();
+	mNumEnqueuedChunks.release();
 }
 
 /*
  *	For use in updating progress
  */
-int OmMipThread::GetThreadChunksDone()
+int OmMipThread::GetNumChunksDone()
 {
-	return mThreadChunksDone;
+	return mNumChunksDone;
 }
 
 /*
@@ -34,13 +35,17 @@ int OmMipThread::GetThreadChunksDone()
  */
 void OmMipThread::run()
 {
-	for (mThreadChunksDone=0; mThreadChunksDone < mNumTotalThreadChunks; mThreadChunksDone++){
+	for (mNumChunksDone=0; mNumChunksDone < mNumTotalChunks; mNumChunksDone++){
 
-		mNumEnqueuedThreadChunks.acquire();		
+		mNumEnqueuedChunks.acquire();		
 		assert(!mMipCoords.isEmpty());
 		mutex.lock();
 		OmMipChunkCoord mipCoord = mMipCoords.dequeue();
 		mutex.unlock();
-		mpMipVolume->BuildThreadChunk(mipCoord,NULL);
+		if (THREAD_CHUNK == mChunkType){
+			mpMipVolume->BuildThreadChunk(mipCoord,NULL);
+		} else if (MIP_CHUNK == mChunkType){
+			mpMipVolume->BuildChunk(mipCoord);
+		}
 	}
 }

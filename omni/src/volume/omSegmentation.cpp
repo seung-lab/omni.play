@@ -1,17 +1,18 @@
-#include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "mesh/meshingManager.h"
-#include "segment/omSegment.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentColorizer.h"
+#include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentValidateAction.h"
+#include "segment/omSegment.h"
+#include "segment/omSegmentCache.h"
+#include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentIterator.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omView3dEvent.h"
@@ -19,13 +20,14 @@
 #include "system/omGenericManager.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "utility/omTimer.h"
 #include "volume/omMipChunk.h"
+#include "volume/omMipThreadManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
+#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
-#include "system/cache/omMipVolumeCache.h"
-#include "mesh/ziMesher.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -164,15 +166,70 @@ void OmSegmentation::BuildVolumeData()
 
 bool OmSegmentation::BuildThreadedVolume()
 {
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+		//timer start
+		vol_timer.start();
+	}
+
 	if (!OmMipVolume::BuildThreadedVolume()){
 		return false;
 	}
 
-	if (!OmMipVolume::BuildSerialVolume()){
+	if (!BuildThreadedSegmentation()){
 		return false;
 	}
 
+	if (isDebugCategoryEnabled("perftest")){
+		//timer stop
+		vol_timer.stop();
+		printf("OmSegmentation::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+	}
+
 	return true;
+}
+
+bool OmSegmentation::BuildThreadedSegmentation()
+{
+
+	//debug("FIXME", << "OmMipVolume::BuildThreadedVolume()" << endl;
+	//init progress bar
+	OmEventManager::
+	    PostEvent(new
+		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
+				      MipChunksInVolume()));
+
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+       		//timer start	
+       		vol_timer.start();
+	}
+
+	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,false);
+	mipThreadManager->SpawnThreads(MipChunksInVolume());
+	mipThreadManager->run();
+	mipThreadManager->wait();
+	mipThreadManager->StopThreads();
+	delete mipThreadManager;
+
+	//flush cache so that all thread chunks are flushed to disk
+	Flush();
+	printf("done\n");
+
+	if (isDebugCategoryEnabled("perftest")){
+
+		//timer end
+		vol_timer.stop();
+		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
+
+	}
+
+	//hide progress bar
+	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	return true;
+
 }
 
 /*
