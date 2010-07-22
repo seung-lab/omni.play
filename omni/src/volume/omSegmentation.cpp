@@ -305,30 +305,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	}
 
 	delete sizes;
-
-	//rebuild mesh data only if entire volume data has been built as well
-	if (IsVolumeDataBuilt() ) {
-		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-		meshingMan->setToOnlyMeshModifiedValues();
-		meshingMan->addToQueue( mipCoord );
-		meshingMan->start();
-		meshingMan->wait();
-
-		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-		GetChunk(p_chunk, mipCoord);
-
-		const OmSegIDsSet & rModifiedValues = p_chunk->GetModifiedVoxelValues();
-		if (rModifiedValues.size() == 0) {
-			return;
-		}
-
-		//remove mesh from cache to force it to reload
-		foreach( const OmSegID & val, rModifiedValues ){
-			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
-			mMipMeshManager.UncacheMesh(mip_mesh_coord);
-		}
-	}
-
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)

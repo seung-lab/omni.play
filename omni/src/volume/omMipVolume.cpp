@@ -531,17 +531,6 @@ void OmMipVolume::GetThreadChunkLevel(QExplicitlySharedDataPointer < OmThreadChu
 	mThreadChunkThreadedCache->Get(p_value, rMipCoord, block);
 }
 
-/*
- *	Store chunk by adding it to the cache.
- */
-void OmMipVolume::StoreChunk(const OmMipChunkCoord & rMipCoord, OmMipChunk * pMipChunk)
-{
-
-	assert(ContainsMipChunkCoord(rMipCoord));
-
-	mDataCache->Add(rMipCoord, pMipChunk);
-}
-
 /////////////////////////////////
 ///////          Data Accessors
 

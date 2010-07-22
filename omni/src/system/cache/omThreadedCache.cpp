@@ -80,56 +80,17 @@ void OmThreadedCache<KEY,PTR>::Get(QExplicitlySharedDataPointer<PTR> &p_value,
 }
 
 /**
- *	Add key value pair to cache.
+ *     Removes value from the cache.
  *
- *	Although Add does not increase the size of the cache, it does
- *	destruct a value.  This destructor may call UpdateSize() which
- *	may try to clean the cache.  This means we need to destruct the
- *	value outside of the cache lock.
+ *     throws: modification exception if key is in use
  */
-template < typename KEY, typename PTR  > 
-void OmThreadedCache<KEY,PTR>::Add(const KEY &key, PTR *value) 
+template < typename KEY, typename PTR  >
+void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {
 	QMutexLocker locker( &mCacheMutex );
-
-	//if there was an older vaue with same key
-	QExplicitlySharedDataPointer<PTR> old_value;
-	
-	//if already in cache
-	if( mCache.contains(key) ) {
-		
-		//get ref to old value
-		old_value = mCache.value(key);
-		
-		//then remove from cache
-		mCache.remove(key);
-		mKeyAccessList.removeAll(key);
-	}
-	
-	//add to cache map
-	mCache[key] = QExplicitlySharedDataPointer<PTR>(value);
-
-	//add to access list
-	mKeyAccessList.push_front(key);
-	
-	old_value.reset();
-}
-
-/**
- *	Removes value from the cache.
- *
- *	throws: modification exception if key is in use
- */
-template < typename KEY, typename PTR  > 
-void OmThreadedCache<KEY,PTR>::Remove(const KEY &key) 
-{	
-	QMutexLocker locker( &mCacheMutex );
-
 	mKeyAccessList.removeAll(key);
-
 	QExplicitlySharedDataPointer<PTR> old_value = mCache.value(key);
 	mCache.remove(key);
-
 	locker.unlock();
 	old_value.reset();
 }
@@ -155,16 +116,6 @@ void OmThreadedCache<KEY,PTR>::RemoveOldest()
 
 	locker.unlock();
 	old_value.reset();
-}
-
-/**
- *	Checks if value is in cache.
- */
-template < typename KEY, typename PTR  > 
-bool OmThreadedCache<KEY,PTR>::Contains(const KEY &key) 
-{
-	QMutexLocker locker( &mCacheMutex );
-	return mCache.contains(key);
 }
 
 /////////////////////////////////

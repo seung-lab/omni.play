@@ -92,7 +92,6 @@ public:
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
 	void GetChunk(QExplicitlySharedDataPointer<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
 	void GetThreadChunkLevel(QExplicitlySharedDataPointer<OmThreadChunkLevel> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
-	void StoreChunk(const OmMipChunkCoord &, OmMipChunk *);
 	
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);

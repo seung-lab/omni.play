@@ -33,10 +33,6 @@ public:
 	// texture ID
 	virtual void GetTextureID(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
 	void GetTextureIDDownMip(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
-	void StoreTextureID(const OmTileCoord &tileCoord, OmTextureID* texID);
-	
-	//cache actions
-	void Remove(const OmTileCoord &tileCoord);
 
 	ObjectType mVolType;
 	OmId mImageId;

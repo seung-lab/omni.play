@@ -64,13 +64,3 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 	retCoord = tileCoord;
 	mDataCache->Get(p_value, tileCoord, false);
 }
-
-void OmThreadedCachingTile::StoreTextureID(const OmTileCoord & tileCoord, OmTextureID * texID)
-{
-	mDataCache->Add(tileCoord, texID);
-}
-
-void OmThreadedCachingTile::Remove(const OmTileCoord & tileCoord)
-{
-	mDataCache->Remove(tileCoord);
-}
