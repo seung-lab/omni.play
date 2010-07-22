@@ -739,14 +739,14 @@ bool OmMipVolume::BuildThreadedVolume()
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
 				      ThreadChunksInVolume()));
 
+	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
+
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
        		//timer start	
        		vol_timer.start();
 	}
-
-	threadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
 
 	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,false);
 	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
@@ -756,10 +756,8 @@ bool OmMipVolume::BuildThreadedVolume()
 	delete mipThreadManager;
 
 	//flush cache so that all thread chunks are flushed to disk
-	threadChunkThreadedCache->Flush();
+	mThreadChunkThreadedCache->Flush();
 	printf("done\n");
-
-	delete threadChunkThreadedCache;
 
 	if (isDebugCategoryEnabled("perftest")){
 
@@ -768,6 +766,8 @@ bool OmMipVolume::BuildThreadedVolume()
 		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
 
 	}
+
+	delete mThreadChunkThreadedCache;
 
 	//hide progress bar
 	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
