@@ -766,6 +766,7 @@ bool OmMipVolume::BuildThreadedVolume()
 
 	}
 
+	mThreadChunkThreadedCache->closeDownThreads();
 	delete mThreadChunkThreadedCache;
 
 	//hide progress bar
