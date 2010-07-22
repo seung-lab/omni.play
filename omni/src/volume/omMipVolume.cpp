@@ -82,7 +82,6 @@ void OmMipVolume::Flush()
 
 	//flush all chunks in the cache
 	mDataCache->Flush();
-	mThreadChunkThreadedCache->Flush();
 }
 
 /////////////////////////////////
