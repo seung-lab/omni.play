@@ -56,8 +56,6 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
-
-	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
 }
 
 OmMipVolume::~OmMipVolume()
@@ -748,6 +746,8 @@ bool OmMipVolume::BuildThreadedVolume()
        		vol_timer.start();
 	}
 
+	threadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
+
 	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,false);
 	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
 	mipThreadManager->run();
@@ -756,8 +756,10 @@ bool OmMipVolume::BuildThreadedVolume()
 	delete mipThreadManager;
 
 	//flush cache so that all thread chunks are flushed to disk
-	mThreadChunkThreadedCache->Flush();
+	threadChunkThreadedCache->Flush();
 	printf("done\n");
+
+	delete threadChunkThreadedCache;
 
 	if (isDebugCategoryEnabled("perftest")){
 

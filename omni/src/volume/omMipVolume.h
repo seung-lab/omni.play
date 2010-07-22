@@ -170,8 +170,6 @@ protected:
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 	
 private:
-	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
-
 	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	
 	QString mDirectoryPath;          // ex. "./" or "images/out/"
