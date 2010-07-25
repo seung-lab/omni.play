@@ -30,7 +30,7 @@ function mattsQWS
 					LoThreshold=0.1;
 					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);
 
-					f = sprintf ('newtest2-%d-%d-%f-%f', 550-inc, SizeThreshold, HiThreshold, absLowThreshold);
+					f = sprintf ('newtest3-%d-%d-%f-%f', 550-inc, SizeThreshold, HiThreshold, absLowThreshold);
 					fname = sprintf ('/home/mwimer/%s.h5', f);
 					fprintf (fid, 'create:/home/mwimer/%s.omni\n', f);
 					fprintf (fid, 'loadHDF5seg:/home/mwimer/%s.h5\n', f);
