@@ -1,3 +1,6 @@
+% The test plan tests the watershed generation parameters
+% call then run:
+% ../omni/bin/omni --headless=mattsBuild.cmd
 
 function mattsQWS
 	fid = fopen('mattsBuild.cmd', 'w');
@@ -12,19 +15,27 @@ function mattsQWS
 		% Careful, these need to be on the outside most loop.
 		chan = chan(1:550-inc,1:550-inc,1:550-inc,:);
 		conn = conn(1:550-inc,1:550-inc,1:550-inc,:);
+	
+		%filter = conn;
+		%for q = 1:1:10
+			%temp = resample(conn, 1, q);
+			%filter = filter +resample(temp, q, 1);
+		%end
+		%filter = filter / 10;
+		%conn = filter;
+	
+		for SizeThreshold = [30 300 3000 9000 1 15]
+			for HiThreshold = [.985 .9985 .999 1] 
+				for absLowThreshold = [.2 .3 .4 .5 .6 .7 .85]
+					LoThreshold=0.1;
+					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);
 
-		for absmin = [0.9 .6 .3]
-			for hithres = [.995 .982 1.0] 
-				for threshold = [30 3000 300 60 15]
-					LoThreshold=0.1, HiThreshold=hithres, SizeThreshold=threshold;
-					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absmin);
-
-					f = sprintf ('test-%d-%d-%f-%f', 550-inc, threshold, hithres, absmin);
+					f = sprintf ('newtest-%d-%d-%f-%f', 550-inc, SizeThreshold, HiThreshold, absLowThreshold);
 					fname = sprintf ('/home/mwimer/%s.h5', f);
 					fprintf (fid, 'create:/home/mwimer/%s.omni\n', f);
 					fprintf (fid, 'loadHDF5seg:/home/mwimer/%s.h5\n', f);
 					fprintf (fid, 'mesh\n');
-					fprintf (fid, 'loadHDF5chan:/home/mwimer/%s.h5\n', f);
+					fprintf (fid, 'loadHDF5chann:/home/mwimer/%s.h5\n', f);
 					fprintf (fid, 'close\n');
 
 					hdf5write(fname, '/main', seg, '/dend', dend, '/graph', graph, '/dendValues', dendValues, '/chanSingle', chan, '/affGraphSingle', conn);
@@ -34,8 +45,5 @@ function mattsQWS
 	end
 end
 
-%format
-%create:/Users/purcaro/Omni/purcaro_testing/regionGraphs/i1088_150_graph.omni
-%loadHDF5seg:/Users/purcaro/Omni/data/regionGraphs/i1088_150_graph.h5
-%mesh
+
 
