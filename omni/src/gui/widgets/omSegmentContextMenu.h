@@ -33,6 +33,7 @@ private slots:
 	void addGroup();
 	void deleteGroup();
 	void showProperties();
+	void printChildren();
 	
 private:
 	OmId mSegmentationId;

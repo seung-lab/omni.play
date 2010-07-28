@@ -4,6 +4,7 @@
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
+#include <zi/utility>
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -43,7 +44,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 	return seg;
 }
 
-void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
+void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 					      const OmMipChunkCoord &,
 					      boost::unordered_map< OmSegID, unsigned int> * sizes )
 {
@@ -72,6 +73,12 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 
 OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
 {
+
+
+  printf("Trying to split %d and %d\n", seg1->mValue, seg2->mValue);
+  printf("Roots           %d and %d\n", findRoot(seg1)->mValue, findRoot(seg2)->mValue);
+
+
 	if( findRoot(seg1) != findRoot(seg2) ){
 		debug("dend", "can't split disconnected objects.\n");
 		return OmSegmentEdge();
@@ -81,23 +88,26 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
                 return OmSegmentEdge();
         }
 
+
 	OmSegment * s1 = seg1;
 	while (0 != s1->mParentSegID) {
 		if(s1->mParentSegID == seg2->mValue) {
-			debug("split", "splitting child from a direct parent\n");
-			return OmSegmentEdge(s1);
+		  debug("split", "splitting seg1 child from a direct parent\n");
+		  return OmSegmentEdge(s1);
 		}
-        	s1 = GetSegmentFromValue(s1->mParentSegID);	
-	} 
-	
+        	s1 = GetSegmentFromValue(s1->mParentSegID);
+	}
+
 	OmSegment * s2 = seg2;
+	int pathLen = 0;
 	while (0 != s2->mParentSegID) {
 		if(s2->mParentSegID == seg1->mValue) {
-			debug("split", "splitting child from a direct parent\n");
-			return OmSegmentEdge(s2);
+		  debug("split", "splitting seg2 child from a direct parent, len %d\n", pathLen);
+		  return OmSegmentEdge(s2);
 		}
-        	s2 = GetSegmentFromValue(s2->mParentSegID);	
-	} 
+        	s2 = GetSegmentFromValue(s2->mParentSegID);
+		++pathLen;
+	}
 
         OmSegment * nearestCommonPred = 0;
         OmSegment * one;
@@ -138,18 +148,41 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 
 OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
 {
-	return splitChildFromParent( GetSegmentFromValue( e.childID ));
+  printf("The one we found %d %d\n", e.childID, e.parentID);
+  return splitChildFromParent( GetSegmentFromValue( e.childID ));
 }
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
 	assert( child->mParentSegID );
 
+	printf("splitting %d from %d\n", child->mValue, child->mParentSegID);
+
 	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
+
+	printf("splitting %d from %d\n", child->mValue, parent->mValue);
 
 	if( child->mImmutable == parent->mImmutable &&
 	    1 == child->mImmutable ){
 		return OmSegmentEdge();
+	}
+
+	OmSegmentIteratorLowLevel iter(this);
+	iter.iterOverSegmentID(mSegmentGraph.mGraph->root(child->mValue));
+
+	OmSegment * seg = iter.getNextSegment();
+	std::vector<OmSegment *> slist;
+	while(NULL != seg) {
+	  printf("%u : %u", seg->getValue(), mSegmentGraph.mGraph->root(seg->mValue));
+
+	  OmSegment * s2 = seg;
+	  while (0 != s2->mParentSegID)
+	    s2 = GetSegmentFromValue(s2->mParentSegID);
+
+	  printf(" : %u\n", s2->mValue);
+	  slist.push_back(seg);
+	  seg = iter.getNextSegment();
+
 	}
 
 	OmSegmentEdge edgeThatGotBroken( parent, child, child->mThreshold );
@@ -157,8 +190,55 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	parent->segmentsJoinedIntoMe.erase( child->getValue() );
         mSegmentGraph.graph_cut(child->mValue);
 	child->mParentSegID = 0;
-
 	child->mThreshold = 0;
+
+	FOR_EACH (it, slist) {
+	  OmSegment * seg = *it;
+	  printf("%u : %u", seg->getValue(), mSegmentGraph.mGraph->root(seg->mValue));
+
+	  OmSegment * s2 = seg;
+	  while (0 != s2->mParentSegID)
+	    s2 = GetSegmentFromValue(s2->mParentSegID);
+
+	  printf(" : %u\n", s2->mValue);
+	}
+
+	{
+	  printf("TEST OLD CHILD\n\n");
+	  OmSegmentIteratorLowLevel iter(this);
+	  iter.iterOverSegmentID(mSegmentGraph.mGraph->root(child->mValue));
+
+	  OmSegment * seg = iter.getNextSegment();
+	  while(NULL != seg) {
+	    printf("%u : %u", seg->getValue(), mSegmentGraph.mGraph->root(seg->mValue));
+	    OmSegment * s2 = seg;
+	    while (0 != s2->mParentSegID)
+	      s2 = GetSegmentFromValue(s2->mParentSegID);
+
+	    printf(" : %u\n", s2->mValue);
+	    seg = iter.getNextSegment();
+	  }
+	}
+
+
+	{
+	  printf("TEST OLD ROOT\n\n");
+	  OmSegmentIteratorLowLevel iter(this);
+	  iter.iterOverSegmentID(mSegmentGraph.mGraph->root(parent->mValue));
+
+	  OmSegment * seg = iter.getNextSegment();
+	  while(NULL != seg) {
+	    printf("%u : %u", seg->getValue(), mSegmentGraph.mGraph->root(seg->mValue));
+	    OmSegment * s2 = seg;
+	    while (0 != s2->mParentSegID)
+	      s2 = GetSegmentFromValue(s2->mParentSegID);
+
+	    printf(" : %u\n", s2->mValue);
+	    seg = iter.getNextSegment();
+	  }
+	}
+
+
 
 	findRoot(parent)->mFreshnessForMeshes++;
 	child->mFreshnessForMeshes++;
@@ -179,7 +259,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		edgeWasJoined[e] = 0;
 		edgeForceJoin[e] = 0;
 		child->mEdgeNumber = -1;
-	}	
+	}
 
 	if( child->mCustomMergeEdge.isValid() ){
 		mManualUserMergeEdgeList.removeAll( child->mCustomMergeEdge );
@@ -205,7 +285,7 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
 	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( e.parentID );
-	
+
 	if( childRoot->mImmutable != parent->mImmutable ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
 		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
@@ -222,7 +302,7 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 
         if( isSegmentSelected( e.childID ) ){
                 doSelectedSetInsert( parent->mValue );
-        } 
+        }
 	doSelectedSetRemove( e.childID );
 
 	mSegmentGraph.updateSizeListsFromJoin( parent, childRoot );
@@ -281,9 +361,9 @@ void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 	clearCaches();
 }
 
-OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset, 
-							       const int numToGet, 
-							       const OmSegIDRootType type, 
+OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset,
+							       const int numToGet,
+							       const OmSegIDRootType type,
 							       const OmSegID startSeg)
 {
 	OmSegIDsListWithPage * ids;
@@ -298,7 +378,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 	}
 
 	OmSegPtrList retPtrs = OmSegPtrList();
-	
+
 	// TODO: make a little stuct of the data the GUI needs...
 	OmSegIDsList::const_iterator iter;
 	for( iter = ids->list.begin(); iter != ids->list.end(); ++iter ){
@@ -348,7 +428,7 @@ quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDep
 
 	if( seg->mImmutable ) {
 		return mSegmentGraph.mValidListBySize.getSegmentSize( seg );
-	} 
+	}
 
 	return mSegmentGraph.mRootListBySize.getSegmentSize( seg );
 }
@@ -388,14 +468,14 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 {
 	printf("setting global threshold to %f...\n", mSegmentation->mDendThreshold);
 
-	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
-					  mSegmentation->mDendValues->getFloatPtr(), 
-					  mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
-					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
-					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
-					  mSegmentation->mDendCount, 
+	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(),
+					  mSegmentation->mDendValues->getFloatPtr(),
+					  mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(),
+					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(),
+					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(),
+					  mSegmentation->mDendCount,
 					  mSegmentation->mDendThreshold);
-	
+
 	mSelectedSet.clear();
 	clearCaches();
 
@@ -406,14 +486,14 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 {
 	printf("resetting global threshold to %f...\n", mSegmentation->mDendThreshold);
 
-	mSegmentGraph.resetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(), 
-					    mSegmentation->mDendValues->getFloatPtr(), 
-					    mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(), 
-					    mSegmentation->mEdgeWasJoined->getQuint8Ptr(), 
-					    mSegmentation->mEdgeForceJoin->getQuint8Ptr(), 
-					    mSegmentation->mDendCount, 
+	mSegmentGraph.resetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(),
+					    mSegmentation->mDendValues->getFloatPtr(),
+					    mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(),
+					    mSegmentation->mEdgeWasJoined->getQuint8Ptr(),
+					    mSegmentation->mEdgeForceJoin->getQuint8Ptr(),
+					    mSegmentation->mDendCount,
 					    mSegmentation->mDendThreshold);
-	
+
 	rerootSegmentLists();
 	clearCaches();
 

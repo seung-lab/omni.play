@@ -3,7 +3,7 @@
 
 /*
  *	Segment Object
- *	
+ *
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
@@ -28,7 +28,7 @@ public:
 				 mColorInt.green / 255.,
 				 mColorInt.blue  / 255. ); }
 	void SetColor(const Vector3f &);
-	
+
 	QString GetNote();
 	void SetNote(const QString &);
 	QString GetName();
@@ -62,6 +62,7 @@ private:
 	OmSegIDsSet segmentsJoinedIntoMe;
 
 	OmId mParentSegID;
+	OmId mJoinRootID;
 	float mThreshold;
 	bool mImmutable;
 
