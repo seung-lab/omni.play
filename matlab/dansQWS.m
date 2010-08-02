@@ -3,15 +3,16 @@
 % ../omni/bin/omni --headless=dansBuild.cmd
 
 function dansQWS
+	outdir = '/home/scratch';
 	fid = fopen('dansBuild.cmd', 'w');
 
-	conn = hdf5read('/home/mwimer/danielsData.h5', '/main');
+	conn = hdf5read('/Users/mwimer/danielsData.h5', '/main');
 	conn = conn(15:200+15,15:200+15,15:200+15,:);
 
-	chan = hdf5read('/home/mwimer/danielsChan.h5', '/main');
+	chan = hdf5read('/Users/mwimer/danielsChan.h5', '/main');
 	chan = chan(15:200+15,15:200+15,15:200+15,:);
 
-	for inc = 200:100:200
+	for inc = 000:100:100
 		% Careful, these need to be on the outside most loop.
 		chan = chan(1:200-inc,1:200-inc,1:200-inc,:);
 		conn = conn(1:200-inc,1:200-inc,1:200-inc,:);
@@ -24,18 +25,18 @@ function dansQWS
 		%filter = filter / 10;
 		%conn = filter;
 	
-		for SizeThreshold = [6000 30000]
+		for SizeThreshold = [600 3000]
 			for HiThreshold = [.80 .81 .85] 
 				for absLowThreshold = [.3 .35]
 					LoThreshold=0.1;
 					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);
 
 					f = sprintf ('dans-%d-%d-%f-%d', 200-inc, SizeThreshold, HiThreshold, absLowThreshold);
-					fname = sprintf ('/home/mwimer/%s.h5', f);
-					fprintf (fid, 'create:/home/mwimer/%s.omni\n', f);
-					fprintf (fid, 'loadHDF5seg:/home/mwimer/%s.h5\n', f);
+					fname = sprintf ('%s/%s.h5', outdir, f);
+					fprintf (fid, 'create:%s/%s.omni\n', outdir, f);
+					fprintf (fid, 'loadHDF5seg:%s/%s.h5\n', outdir, f);
 					fprintf (fid, 'mesh\n');
-					fprintf (fid, 'loadHDF5chann:/home/mwimer/%s.h5\n', f);
+					fprintf (fid, 'loadHDF5chann:%s/%s.h5\n', outdir, f);
 					fprintf (fid, 'close\n');
 
 					hdf5write(fname, '/main', seg, '/dend', dend, '/graph', graph, '/dendValues', dendValues, '/chanSingle', chan, '/affGraphSingle', conn);
