@@ -24,13 +24,13 @@ function mattsQWS
 		%filter = filter / 10;
 		%conn = filter;
 	
-		for SizeThreshold = [3000 6000 9000 18000]
-			for HiThreshold = [.985 .9985 .999 1] 
-				for absLowThreshold = [3 4 5 6 7 8 9 10]
+		for SizeThreshold = [18000 30 60000]
+			for HiThreshold = [1 .999 .9999] 
+				for absLowThreshold = [.3]
 					LoThreshold=0.1;
 					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);
 
-					f = sprintf ('newtest3-%d-%d-%f-%f', 550-inc, SizeThreshold, HiThreshold, absLowThreshold);
+					f = sprintf ('newtest12-%d-%d-%f-%d', 550-inc, SizeThreshold, HiThreshold, absLowThreshold);
 					fname = sprintf ('/home/mwimer/%s.h5', f);
 					fprintf (fid, 'create:/home/mwimer/%s.omni\n', f);
 					fprintf (fid, 'loadHDF5seg:/home/mwimer/%s.h5\n', f);
