@@ -8,6 +8,7 @@
 #include "MarchingCubes.hpp"
 #include "zi/vector/Vec.hpp"
 #include "zi/base/base.h"
+#include "MarchingCubesTables.h"
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>

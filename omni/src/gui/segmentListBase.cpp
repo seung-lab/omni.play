@@ -9,9 +9,9 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
 
-SegmentListBase::SegmentListBase( QWidget * parent, 
+SegmentListBase::SegmentListBase( QWidget * parent,
 				  InspectorProperties * ip,
-				  ElementListBox * eb ) 
+				  ElementListBox * eb )
 	: QWidget(parent)
 	, elementListBox(eb)
 	, haveValidSDW(false)
@@ -21,7 +21,7 @@ SegmentListBase::SegmentListBase( QWidget * parent,
 
 	segmentListWidget = new OmSegmentListWidget(this, ip);
 	layout->addWidget(segmentListWidget);
-	
+
 	setupPageButtons();
 }
 
@@ -62,16 +62,16 @@ OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offs
 }
 
 void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							const OmSegID segmentJustSelectedID, 
+							const OmSegID segmentJustSelectedID,
 							const bool useOffset)
 {
 	assert( haveValidSDW );
 	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
-	const bool shouldThisTabBeMadeActive = segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment, 
-												    segmentJustSelectedID, 
+	const bool shouldThisTabBeMadeActive = segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment,
+												    segmentJustSelectedID,
 												    currentSDW,
 												    segs );
-	
+
 	delete segs;
 
 	if(shouldThisTabBeMadeActive){
@@ -167,7 +167,7 @@ void SegmentListBase::goToEndPage()
         populateSegmentElementsListWidget( false, offset, true);
 }
 
-void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw, 
+void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
 					     const OmSegID segmentJustSelectedID,
 					     const bool doScroll )
 {
@@ -179,8 +179,8 @@ void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
 void SegmentListBase::rebuildSegmentList(const OmId segmentationID,
 					 const OmSegID segmentJustAddedID)
 {
-	makeSegmentationActive(SegmentationDataWrapper(segmentationID), 
-			       segmentJustAddedID, 
+	makeSegmentationActive(SegmentationDataWrapper(segmentationID),
+			       segmentJustAddedID,
 			       true );
 }
 
@@ -197,8 +197,8 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 
 	if (OmProject::IsSegmentationValid(segmentationID)) {
 		const OmSegID segmentJustSelectedID = event->GetSegmentJustSelectedID();
-		makeSegmentationActive(SegmentationDataWrapper(segmentationID), 
-				       segmentJustSelectedID, 
+		makeSegmentationActive(SegmentationDataWrapper(segmentationID),
+				       segmentJustSelectedID,
 				       doScroll );
 		return segmentationID;
 	} else {
@@ -213,7 +213,7 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 void SegmentListBase::searchChanged()
 {
 	OmSegID segmenID = searchEdit->text().toInt();
-	
+
 	if(!currentSDW.getSegmentCache()->IsSegmentValid(segmenID)) {
 		return;
 	}
@@ -221,6 +221,8 @@ void SegmentListBase::searchChanged()
 	OmSegmentSelector sel(currentSDW.getID(), NULL, "segmentlistbase");
 	sel.selectJustThisSegment(segmenID, true);
 	sel.sendEvent();
+
+	makeSegmentationActive(currentSDW, segmenID, true);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()

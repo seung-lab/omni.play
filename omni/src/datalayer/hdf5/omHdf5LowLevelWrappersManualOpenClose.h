@@ -28,16 +28,16 @@ class OmHdf5LowLevelWrappersManualOpenClose
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims_with_lock(const OmDataPath & path);
-	void dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
-	vtkImageData* dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	void dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type);
+	OmDataWrapperPtr dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent);
+	void dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
 	
 	//data set raw
 	OmDataWrapperPtr dataset_raw_read_with_lock(const OmDataPath & path, int* size = NULL);
-	void dataset_raw_create_with_lock(const OmDataPath & path, int size, const void *data);
-	void dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const void* data);
-	OmDataWrapperPtr dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
+	void dataset_raw_create_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	void dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	OmDataWrapperPtr dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent);
+	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
 	Vector3< int > dataset_get_dims_with_lock( const OmDataPath & path );
 
  private:

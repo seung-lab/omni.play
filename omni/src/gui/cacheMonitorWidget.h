@@ -17,7 +17,7 @@ Q_OBJECT
 	void triggerCacheView();
 
  private:
-	QGroupBox* ShowDisplay( QString cacheType, OmCacheGroup cacheGroup );
+	QGroupBox* ShowDisplay( QString cacheType, OmCacheGroupEnum cacheGroup );
 };
 
 #endif

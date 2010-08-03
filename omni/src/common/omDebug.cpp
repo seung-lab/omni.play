@@ -3,14 +3,14 @@
 #include <stdarg.h>
 #include <string.h>
 #include "common/omDebug.h"
-#include <QImage>                                                     
-#include <QPainter>                                                  
-#include <QDialog>                                              
-#include <QLabel>                                                     
-#include <QPixmap>                                                    
-#include <QWidget>                                                     
-#include <QGridLayout>                                                    
-#include <QMessageBox>     
+#include <QImage>
+#include <QPainter>
+#include <QDialog>
+#include <QLabel>
+#include <QPixmap>
+#include <QWidget>
+#include <QGridLayout>
+#include <QMessageBox>
 
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
@@ -63,7 +63,7 @@ int debugParseArg(char *stringInput,int action)
 	for (i=0;i<=length;i++){
 		if ((stringInput[i]==',')||(stringInput[i]=='\0')) {
 			//categoryLength=i-position;
-			if (i-position <= OM_DEBUG_STRING_SIZE) { 
+			if (i-position <= OM_DEBUG_STRING_SIZE) {
 				for (j=position;j<i;j++){
 					category[j-position]=stringInput[j];
 				}
@@ -71,11 +71,11 @@ int debugParseArg(char *stringInput,int action)
 					category[j]='\0';
 				}
 				if (action==OM_DEBUG_ADD) debugAddCategory(category,i-position+1);
-				else debugRemoveCategory(category,i-position+1); 
+				else debugRemoveCategory(category,i-position+1);
 			} else 	return -1;
 			position=i+1;
 		}
-		
+
 	}
 	return 0;
 }
@@ -119,12 +119,12 @@ int parseEnvironment()
 	if (inputString != NULL){
 		if(inputString[0] == '-') {
 			if (!strncmp(inputString,"--debug=",8)){
-				if (-1==debugParseArg(&inputString[8],OM_DEBUG_ADD)) return -1; 
+				if (-1==debugParseArg(&inputString[8],OM_DEBUG_ADD)) return -1;
 			} else {
 				if (!strncmp(inputString,"-d ",3)){
 					if (-1==debugParseArg(&inputString[3],OM_DEBUG_ADD)) return -1;
 			        } else {
-					if (!strncmp(inputString,"-d",2)){ 
+					if (!strncmp(inputString,"-d",2)){
 						if (-1==debugParseArg(&inputString[2],OM_DEBUG_ADD)) return -1;
 					} else {
 						printf("Format error in the environment variable OMNI_DEBUG\n");
@@ -135,7 +135,7 @@ int parseEnvironment()
 						return 0;
 					}
 				}
-			 }
+			}
 		} else if (-1==debugParseArg(inputString,OM_DEBUG_ADD)) return -1;
 		return 1;
 	} else return 0;
@@ -219,7 +219,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 				fileArgIndex = -2;
 				break;
 			}
-			
+
 		} else {
 			if (!fileArgIndex){
 				fileArgIndex=i;
@@ -235,7 +235,7 @@ CmdLineArgs parseArgs(int argc, char *argv[])
 }
 
 CmdLineArgs parseAnythingYouCan(int argc, char *argv[])
-{	
+{
 	int result;
 	result   = parseEnvironment();
 
@@ -259,49 +259,17 @@ CmdLineArgs parseAnythingYouCan(int argc, char *argv[])
 	return args;
 }
 
-void usage() 
+void usage()
 {
-	printf("Usage: omni [OPTION] [FILE]\n\nOptions:\n"); 
-	printf("   --debug=<category>    Add <category> to the list of strings which\n"); 
+	printf("Usage: omni [OPTION] [FILE]\n\nOptions:\n");
+	printf("   --debug=<category>    Add <category> to the list of strings which\n");
 	printf("                         are used to determine what debug output is\n");
 	printf("                         acceptable.\n");
 	printf("   -d <category>         Same as --debug=<category>\n");
 	printf("   -d<category>          Same as --debug=<category>\n");
-	printf("   --nodebug=<category>  Remove<category> from the list of strings which\n"); 
+	printf("   --nodebug=<category>  Remove<category> from the list of strings which\n");
 	printf("                         are used to determine what debug output is\n");
 	printf("                         acceptable.\n");
 	printf("   -n <category>         Same as --nodebug=<category>\n");
 	printf("   -n<category>          Same as --nodebug=<category>\n\n");
-}
-
-bool ToggleShowMeAnImageEnabler()
-{
-        ViewerIsEnabled=!ViewerIsEnabled;
-        return ViewerIsEnabled;
-}
-
-
-void ShowMeAnImage(char *        data_buffer,
-                int     dx,
-                int     dy)
-{
-        if (ViewerIsEnabled){
-                QImage image((uchar*)data_buffer,dx,dy,QImage::Format_Indexed8);
-                for (int ii=0;ii<255;ii++) {image.setColor(ii,qRgb(ii,ii,ii));}
-
-                QDialog* dialog = new QDialog(NULL,Qt::Popup);
-                QGridLayout* gridLayout = new QGridLayout(dialog);
-                QPixmap pixmap;
-                QLabel *label = new QLabel();
-                gridLayout->addWidget(label);
-
-                label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-                label->setScaledContents(true);
-
-                dialog->resize(dx+30,dy+30);
-                label->setPixmap(QPixmap::fromImage(image));
-
-                dialog->exec();
-                return;
-        }
 }

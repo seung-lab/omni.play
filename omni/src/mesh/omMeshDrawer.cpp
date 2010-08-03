@@ -43,7 +43,7 @@ void OmMeshDrawer::Init()
 
 /*
  *	Draw the entire Segmentation.  Starts the recursive processes of drawing MipChunks
- *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be 
+ *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be
  *	drawn depending on culler draw options and passes relevant set to root chunk.
  */
 void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
@@ -66,20 +66,20 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 	}
 
 	//form culler for this volume and call draw on all volumes
-	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->GetNormToSpaceMatrix(), 
+	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->GetNormToSpaceMatrix(),
 						     mSeg->GetNormToSpaceInvMatrix());
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
 		const OmSegIDsSet & set = mSegmentCache->GetSelectedSegmentIds();
 		OmSegIDsSet::const_iterator iter;
-		for( iter = set.begin(); iter != set.end(); ++iter ){ 
+		for( iter = set.begin(); iter != set.end(); ++iter ){
 			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
 		}
 	} else if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)) {
 		const OmSegIDsSet & set = mSegmentCache->GetEnabledSegmentIds();
 		OmSegIDsSet::const_iterator iter;
-		for( iter = set.begin(); iter != set.end(); ++iter ){ 
+		for( iter = set.begin(); iter != set.end(); ++iter ){
 			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
 		}
 	}
@@ -109,7 +109,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 {
 	// get pointer to chunk
 	OmMipChunkPtr p_chunk = OmMipChunkPtr ();
-	mSeg->GetChunk(p_chunk, chunkCoord);
+	mSeg->GetChunk(p_chunk, chunkCoord, true);
 
 	// test for chunk visibility (if necessary)
 	if (testVis) {
@@ -126,9 +126,9 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 			break;
 		}
 	}
-	
+
 	if ( ShouldChunkBeDrawn(p_chunk) ) {
-		
+
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
 		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
@@ -155,11 +155,11 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 	OmSegID rootSegID;
 
 	OmSegPtrList::const_iterator iter;
-	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){ 
+	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){
 		rootSeg = (*iter);
 		rootSegID = rootSeg->getValue();
 
-		if(!OmMeshSegmentList::isSegmentListReadyInCache(p_chunk, rootSeg, chunkCoord, 
+		if(!OmMeshSegmentList::isSegmentListReadyInCache(p_chunk, rootSeg, chunkCoord,
 								 mSegmentCache, mSegmentationID )){
 			continue;
 		}
@@ -187,14 +187,14 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
 {
 	OmSegPtrList::const_iterator iter;
 	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
-		
+
 		if( (*iter)->getSize() < mViewGroupState->getDustThreshold() ){
 			continue;
 		}
 
-		//get pointer to mesh
-		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
+		OmMipMeshPtr p_mesh;
+		mSeg->mMipMeshManager.GetMesh(p_mesh,
+					      OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
 
 		if( !p_mesh ) {
 		        OmEvents::Redraw3d();
@@ -228,7 +228,7 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 	if(p_chunk->IsLeaf()) {
 		return true;
 	}
-	
+
 	const NormBbox & normExtent = p_chunk->GetNormExtent();
 	const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
 
@@ -288,7 +288,7 @@ void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
 	ApplyColor( segment, drawOps, sccType);
 }
 
-void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps, 
+void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 			      const OmSegmentColorCacheType sccType)
 {
 	if( seg->getParentSegID() && sccType != SCC_SEGMENTATION_BREAK){
@@ -307,13 +307,13 @@ void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 		glColor3fv(OmPreferences::GetVector3f(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
 
 	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
-		glColor3fva(hyperColor.array, 
+		glColor3fva(hyperColor.array,
 			    OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else if (OmLocalPreferences::getDoDiscoBall()) {
 		static float s = 10.0;
 		static int dir = 1;
-		
+
 		glEnable(GL_BLEND);
 		glColor3fva(hyperColor.array, (s)/200+.4);
 		s += .1*dir;

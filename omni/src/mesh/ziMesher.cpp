@@ -4,11 +4,10 @@
 #include "zi/base/base.h"
 #include <map>
 #include "ziMeshingChunk.h"
-#include "zi/thread/Thread.h"
-#include "zi/thread/ThreadManager.h"
+#include <zi/threads>
+#include <zi/system>
 
 using boost::shared_ptr;
-using namespace zi::Threads;
 
 void ziMesher::addChunkCoord(const OmMipChunkCoord &c) {
   levelZeroChunks_.push_back(c);
@@ -21,10 +20,10 @@ ziMesher::ziMesher(const OmId &segId, OmMipMeshManager *mmManager,
     rootMipLevel_(rootLevel),
     levelZeroChunks_()
 {
-
 }
 
 void ziMesher::mesh() {
+  numOfChunksToProcess.set(levelZeroChunks_.size());
   std::map<OmMipChunkCoord, shared_ptr<GrowingMeshes> > allChunks_;
   std::vector<shared_ptr<ziMeshingChunk> > workers;
 
@@ -33,7 +32,8 @@ void ziMesher::mesh() {
     double error = 1e-5;
     OmMipChunkCoord c = *it;
     shared_ptr<ziMeshingChunk> worker(new ziMeshingChunk(segmentationId_, c,
-                                                         mipMeshManager_));
+                                                         mipMeshManager_,
+							 this));
     workers.push_back(worker);
     allChunks_[c] = shared_ptr<GrowingMeshes>(new GrowingMeshes(c));
     worker->deliverTo(allChunks_[c], error);
@@ -52,10 +52,10 @@ void ziMesher::mesh() {
 
   }
 
-  shared_ptr<ThreadFactory> factory(new ThreadFactory());
+  shared_ptr<zi::ThreadFactory> factory(new zi::ThreadFactory());
   factory->setDetached(false);
-  shared_ptr<ThreadManager> manager =
-    shared_ptr<ThreadManager>(new ThreadManager(factory, getQueueSize()));
+  shared_ptr<zi::ThreadManager> manager =
+    shared_ptr<zi::ThreadManager>(new zi::ThreadManager(factory, getQueueSize()));
 
   manager->start();
 
@@ -69,5 +69,10 @@ int ziMesher::getQueueSize() {
   //TODO: retrieve from omLocalPreferences... (purcaro)
   //Update by aleks: this actually shouldn't be too big, since
   // each thread eats a lot of memory (pre loads the data)
-  return 12;
+  int idealNum = zi::System::GetTotalGB() / 2;
+  if( idealNum < 2){
+    idealNum = 2;
+  }
+  printf("ziMesher: will use %d threads\n", idealNum);
+  return idealNum;
 }

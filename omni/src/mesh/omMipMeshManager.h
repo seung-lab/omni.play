@@ -28,7 +28,7 @@ public:
 	
 	//meshing
 	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
-	void GetMesh(QExplicitlySharedDataPointer<OmMipMesh> &p_value, const OmMipMeshCoord &coord );
+	void GetMesh(OmMipMeshPtr& p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
 		
 private:

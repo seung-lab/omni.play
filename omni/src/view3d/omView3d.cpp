@@ -199,7 +199,7 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
+	//	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
 	if (mElapsed->elapsed() > 5000) {
 		mElapsed->restart();
 		updateGL();
@@ -418,7 +418,7 @@ void OmView3d::UpdateEnabledWidgets()
 ///////          Draw Methods
 
 /*
- *	Root of drawing tree.  
+ *	Root of drawing tree.
  *	Called from myUpdate() and picking calls.
  */
 void OmView3d::Draw(OmBitfield cullerOptions)

@@ -81,7 +81,7 @@ QString OmProject::New( QString fileNameAndPath )
 
 	//load default project preferences
 	omSetDefaultAllPreferences();
-	
+
 	Save();
 
 	return fileInfo.absoluteFilePath();
@@ -124,7 +124,7 @@ void OmProject::Load( QString fileNameAndPath  )
 		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
 		throw OmIoException( qPrintable( err ));
 	}
-	
+
 	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Open();
 

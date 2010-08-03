@@ -1,6 +1,5 @@
 #include <QtGui>
 #include "project/omProject.h"
-#include <QThread>
 #include "chanInspector.h"
 #include "volInspector.h"
 #include "common/omStd.h"

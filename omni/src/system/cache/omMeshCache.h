@@ -5,13 +5,15 @@
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMesh.h"
 
+typedef boost::shared_ptr<OmMipMesh> OmMipMeshPtr;
+
 class OmMipMeshManager;
 
-class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMesh> {
+class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {
 public:
 	OmMeshCache(OmMipMeshManager * parent);
 	
-	OmMipMesh* HandleCacheMiss(const OmMipMeshCoord &meshCoord);
+	OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 
 private:
 	OmMipMeshManager *const mOmMipMeshManager;

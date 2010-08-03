@@ -1,6 +1,7 @@
 #include "omCacheManager.h"
 #include "omCacheBase.h"
 
+#include "system/cache/omCacheGroup.h"
 #include "common/omDebug.h"
 #include "system/events/omPreferenceEvent.h"
 #include "system/cache/omCacheInfo.h"
@@ -8,192 +9,93 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 
-//init instance pointer
-OmCacheManager *OmCacheManager::mspInstance = 0;
-
-/////////////////////////////////
-///////
-///////          OmStateManager
-///////
-
 OmCacheManager::OmCacheManager()
+	: mRamCacheMap(new OmCacheGroup())
+	, mVramCacheMap(new OmCacheGroup())
 {
-	//init vars
-	mTargetRatio = 0.99;
-	mCurrentlyCleaning = false;
+	mRamCacheMap->SetMaxSizeMB(OmLocalPreferences::getRamCacheSizeMB());
+	mVramCacheMap->SetMaxSizeMB(OmLocalPreferences::getVRamCacheSizeMB());
 
-	mDelayDelta = false;
-	mSavedDelta = 0;
-	mThreadCount = 0;
+	const int64_t loopTimeSecs = 30;
+	const int64_t loopTimeMS = loopTimeSecs * 1000;
 
-	doUpdateCacheSizeFromLocalPrefs();
+	threadFactory_.setDetached(false);
+	threadFactory_.poopThread(boost::shared_ptr<zi::Runner>
+				  (new zi::Runner(this,
+						  &OmCacheManager::CacheManagerCleaner, loopTimeMS)))->start();
 }
 
 OmCacheManager::~OmCacheManager()
 {
 }
 
-OmCacheManager *OmCacheManager::Instance()
-{
-	if (NULL == mspInstance) {
-		mspInstance = new OmCacheManager();
-	}
-	return mspInstance;
-}
-
 void OmCacheManager::Delete()
 {
-	if (mspInstance) {
-		delete mspInstance;
-	}
-
-	mspInstance = NULL;
+	GetCache(RAM_CACHE_GROUP)->Clear();
+	GetCache(VRAM_CACHE_GROUP)->Clear();
 }
 
 void OmCacheManager::UpdateCacheSizeFromLocalPrefs()
 {
-	Instance()->doUpdateCacheSizeFromLocalPrefs();
+	GetCache(RAM_CACHE_GROUP)->
+		SetMaxSizeMB(OmLocalPreferences::getRamCacheSizeMB());
+
+	GetCache(VRAM_CACHE_GROUP)->
+		SetMaxSizeMB(OmLocalPreferences::getVRamCacheSizeMB());
 }
 
-void OmCacheManager::doUpdateCacheSizeFromLocalPrefs()
+void OmCacheManager::AddCache(OmCacheGroupEnum group, OmCacheBase * base)
 {
-	QWriteLocker locker(&mCacheMutex);
-	mRamCacheMap.MaxSize =
-	    OmLocalPreferences::getRamCacheSizeMB() * float (BYTES_PER_MB);
-	mVramCacheMap.MaxSize =
-	    OmLocalPreferences::getVRamCacheSizeMB() * float (BYTES_PER_MB);
+	GetCache(group)->AddCache(base);
 }
 
-/////////////////////////////////
-///////          Accessors Methods
-
-/*
- *	Registers a cache associated with a group with this manager
- */
-void OmCacheManager::AddCache(OmCacheGroup group, OmCacheBase * base)
+void OmCacheManager::RemoveCache(OmCacheGroupEnum group, OmCacheBase * base)
 {
-	QWriteLocker locker(&Instance()->mCacheMutex);
-	if(RAM_CACHE_GROUP == group){
-		Instance()->mRamCacheMap.CacheSet.insert(base);
-	} else {
-		Instance()->mVramCacheMap.CacheSet.insert(base);
-	}
+	GetCache(group)->RemoveCache(base);
 }
 
-/*
- *	Removes a registered cache associated with a group from this manager
- */
-void OmCacheManager::RemoveCache(OmCacheGroup group, OmCacheBase * base)
+QList<OmCacheInfo> OmCacheManager::GetCacheInfo(OmCacheGroupEnum group)
 {
-	QWriteLocker locker(&Instance()->mCacheMutex);
-
-	Instance()->mDelayDelta = true;
-	if(RAM_CACHE_GROUP == group){
-		Instance()->mRamCacheMap.CacheSet.erase(base);
-	} else {
-		Instance()->mVramCacheMap.CacheSet.erase(base);
-	}
-	Instance()->mDelayDelta = false;
+	return GetCache(group)->GetCacheInfo();
 }
 
-QList< OmCacheInfo > OmCacheManager::GetCacheInfo(OmCacheGroup group)
+int OmCacheManager::CleanCacheGroup(OmCacheGroupEnum group)
 {
-	QReadLocker locker(&Instance()->mCacheMutex);
-
-	QList< OmCacheInfo > infos;
-	
-	if(RAM_CACHE_GROUP == group){
-		foreach( OmCacheBase * c, Instance()->mRamCacheMap.CacheSet ){
-			OmCacheInfo info;
-			info.cacheSize = c->GetCacheSize();
-			info.cacheName = "fixme";//c->GetCacheName();
-			infos << info;
-		}
-	} else {
-		foreach( OmCacheBase * c, Instance()->mVramCacheMap.CacheSet ){
-			OmCacheInfo info;
-			info.cacheSize = c->GetCacheSize();
-			info.cacheName = "fixme";//c->GetCacheName();
-			infos << info;
-		}
-	}
-	
-	return infos;
-}
-
-/*
- *	Static wrapper to update the size of a cache group
- */
-void OmCacheManager::UpdateCacheSize(OmCacheGroup group, int delta)
-{
-	Instance()->UpdateCacheSizeInternal(group, delta);
-}
-
-/*
- *	Updates the size of a cache group.  Cleans if cache group size becomes too large.
- */
-void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
-{
-	QWriteLocker locker(&Instance()->mCacheMutex);
-	if(RAM_CACHE_GROUP == group){
-		Instance()->mRamCacheMap.Size += delta;
-	} else {
-		Instance()->mVramCacheMap.Size += delta;
-	}
-}
-
-/////////////////////////////////
-///////          Cleaning Methods
-void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
-{
-	QReadLocker locker(&Instance()->mCacheMutex);
-
-	//compute target size for group
-
-	for(int count = 0; count < 2; count++) {
-		if(RAM_CACHE_GROUP == group){
-			const unsigned long target_size = (mTargetRatio) * mRamCacheMap.MaxSize;
-			foreach( OmCacheBase * ptr, mRamCacheMap.CacheSet ) {
-				if(mRamCacheMap.Size <= target_size){
-					return;
-				}
-				ptr->RemoveOldest();
-			}
-		} else {
-			const unsigned long target_size = (mTargetRatio) * mVramCacheMap.MaxSize;
-			foreach( OmCacheBase * ptr, mVramCacheMap.CacheSet ) {
-				if(mVramCacheMap.Size <= target_size){
-					return;
-				}
-				ptr->RemoveOldest();
-			}
-		}
-	}
-}
-
-unsigned int OmCacheManager::Freshen(bool freshen)
-{
-	QMutexLocker locker( &Instance()->mFreshnessMutex );
-
-	static unsigned int freshness = 1;
-
-       	if (freshen) {
-        	++freshness;
-		//printf("freshness:%u\n", freshness);
-        }
-
-        return freshness;
+	return GetCache(group)->Clean();
 }
 
 void OmCacheManager::SignalCachesToCloseDown()
 {
-	QReadLocker locker(&Instance()->mCacheMutex);
+	Instance().amClosingDown.set(true);
+	GetCache(RAM_CACHE_GROUP)->SignalCachesToCloseDown();
+	GetCache(VRAM_CACHE_GROUP)->SignalCachesToCloseDown();
+}
 
-	foreach( OmCacheBase * cache, Instance()->mVramCacheMap.CacheSet ) {
-		cache->closeDownThreads();
+unsigned int OmCacheManager::Freshen(const bool freshen)
+{
+	static zi::Mutex mutex;
+	static unsigned int freshness = 1;
+	{
+		zi::Guard g(mutex);
+		if (freshen) ++freshness;
+		//printf("freshness:%u\n", freshness);
+		return freshness;
+	}
+}
+
+bool OmCacheManager::CacheManagerCleaner()
+{
+	if(amClosingDown.get()){
+		return false;
 	}
 
-	foreach( OmCacheBase * cache, Instance()->mRamCacheMap.CacheSet ) {
-		cache->closeDownThreads();
+
+	int numItemsRemoved = OmCacheManager::CleanCacheGroup(RAM_CACHE_GROUP);
+	numItemsRemoved    += OmCacheManager::CleanCacheGroup(VRAM_CACHE_GROUP);
+
+	if( numItemsRemoved > 0 ){
+		printf("cleaned cache; removed %d items...\n", numItemsRemoved);
 	}
+
+	return true;
 }

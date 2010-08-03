@@ -7,8 +7,9 @@
 
 class Drawable {
 public:
-        Drawable (int x, int y, int tileLength, OmTileCoord tileCoord, float zoomFactor, 
-		  QExplicitlySharedDataPointer<OmTextureID> gotten_id);
+        Drawable (int x, int y, int tileLength, 
+		  OmTileCoord tileCoord, float zoomFactor, 
+		  OmTextureIDPtr gotten_id);
 
 	~Drawable ();
 
@@ -17,7 +18,7 @@ public:
 	int tileLength;
 	OmTileCoord tileCoord;
 	float zoomFactor;
-        QExplicitlySharedDataPointer<OmTextureID> gotten_id;
+        OmTextureIDPtr gotten_id;
 
 	bool mGood;
 };

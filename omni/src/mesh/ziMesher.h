@@ -6,6 +6,7 @@
 #include "omMipMeshManager.h"
 #include "common/omCommon.h"
 #include "ziMeshingChunk.h"
+#include "utility/omLockedObjects.h"
 
 class ziMesher {
 public:
@@ -15,6 +16,8 @@ public:
 
   void mesh();
   void addChunkCoord(const OmMipChunkCoord &c);
+
+  LockedInt64 numOfChunksToProcess;
 
 private:
   OmId               segmentationId_;

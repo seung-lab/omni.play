@@ -44,12 +44,14 @@ void OmTile::SetNewAlpha(float newval)
 	mAlpha = newval;
 }
 
-OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cache)
+OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
 	if(!mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
-		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
+		return OmTextureIDPtr(new OmTextureID(key, 0, 0, 0, 0,
+						      NULL, NULL,
+						      OMTILE_COORDINVALID));
 	}
 
 	const int mcc_x = mMipChunkCoord.Coordinate.x;
@@ -57,15 +59,17 @@ OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cach
 	const int mcc_z = mMipChunkCoord.Coordinate.z;
 
 	const bool legalCoord = (mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0);
-	
+
 	if(!legalCoord){
-		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
+		return OmTextureIDPtr(new OmTextureID(key, 0, 0, 0, 0,
+						      NULL, NULL,
+						      OMTILE_COORDINVALID));
 	}
 
 	return doBindToTextureID(key, cache);
 }
 
-OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
+OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	mSamplesPerVoxel = 1;
 	mBytesPerSample = mVolume->GetBytesPerSample();
@@ -73,19 +77,19 @@ OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* ca
 	Vector2<int> tile_dims;
 	void * vData = GetImageData(key, tile_dims, mVolume);
 
-	OmTextureID *textureID;
-			
+	OmTextureIDPtr textureID;
+
 	const int dataSize = tile_dims.x * tile_dims.y;
 
 	if (vol_type == CHANNEL) {
-		textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-					    cache, vData, OMTILE_NEEDTEXTUREBUILT);
+		textureID = OmTextureIDPtr(new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
+							   cache, vData, OMTILE_NEEDTEXTUREBUILT));
 		// don't free vData
 	} else {
 		void * out = NULL;
 
 		if (1 == mBytesPerSample) {
-					
+
 			uint32_t * vDataFake = (uint32_t*) malloc( dataSize * sizeof(OmSegID));
 
 			for (int i = 0; i < dataSize; ++i) {
@@ -94,13 +98,13 @@ OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* ca
 
 			setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
 
-			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
+			textureID = OmTextureIDPtr(new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
+								   cache, out, OMTILE_NEEDCOLORMAP));
 			free(vDataFake);
 		} else {
 			setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
-			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
+			textureID = OmTextureIDPtr(new OmTextureID(key, 0, 4*dataSize, tile_dims.x, tile_dims.y,
+								   cache, out, OMTILE_NEEDCOLORMAP));
 		}
 		free(vData);
 	}
@@ -110,16 +114,16 @@ OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* ca
 
 void * OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmMipVolume * vol)
 {
-	QExplicitlySharedDataPointer < OmMipChunk > my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key));
+	OmMipChunkPtr my_chunk;
+	vol->GetChunk(my_chunk, TileToMipCoord(key), true);
 
 	const int mDepth = GetDepth(key);
 
 	my_chunk->Open();
 
 	const int realDepth = mDepth % (vol->GetChunkDimension());
-
-	return my_chunk->ExtractDataSlice(view_type, realDepth, sliceDims, false);
+	sliceDims = my_chunk->GetSliceDims();
+	return my_chunk->ExtractDataSlice(view_type, realDepth);
 }
 
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
@@ -158,10 +162,10 @@ void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileC
 {
 	unsigned char *data = (unsigned char*) malloc(dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE);
 
-	mViewGroupState->ColorTile( imageData, 
+	mViewGroupState->ColorTile( imageData,
 				    dims.x * dims.y,
 				    key.mVolType,
 				    data );
-	
+
 	*rData = data;
 }

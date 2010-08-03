@@ -43,7 +43,7 @@ void OmThreadChunkLevel::InitChunk(const OmMipChunkCoord & rMipCoord)
 	}
 
 	//get extent from coord
-	mDataExtent = mpMipVolume->MipCoordToThreadDataBbox(rMipCoord);
+	mDataExtent = mpMipVolume->MipCoordToThreadLevelDataBbox(rMipCoord);
 
 	//set if mipvolume uses metadata
 	setMetaDataClean();	

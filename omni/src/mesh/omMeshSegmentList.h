@@ -2,9 +2,9 @@
 #define OM_MESH_SEGMENT_LIST_H
 
 #include "common/omCommon.h"
-#include "volume/omMipChunkPtr.h"
 #include "volume/omMipChunkCoord.h"
 #include "segment/omSegmentPointers.h"
+#include "volume/omMipVolume.h"
 
 #include <QThread>
 #include <QMutex>

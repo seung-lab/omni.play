@@ -47,6 +47,7 @@ HEADERS += lib/strnatcmp.h \
            src/common/omGl.h \
            src/common/omStd.h \
            src/common/omVtk.h \
+           src/datalayer/omMST.h \
            src/datalayer/archive/omDataArchiveBoost.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
@@ -134,13 +135,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/omThresholdGroup.h \
-           src/mesh/meshingChunkThread.h \
-           src/mesh/meshingChunkThreadManager.h \
-           src/mesh/meshingManager.h \
            src/mesh/omMeshDrawer.h \
-           src/mesh/omMeshSource.h \
            src/mesh/omMeshTypes.h \
-           src/mesh/omMesher.h \
            src/mesh/omMipMesh.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
@@ -189,6 +185,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omCacheBase.h \
            src/system/cache/omCacheInfo.h \
            src/system/cache/omCacheManager.h \
+           src/system/cache/omCacheGroup.h \
            src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
@@ -211,6 +208,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/setUtilities.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
+           src/utility/OmThreadPool.hpp \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
            src/system/cache/omTileCache.h \
@@ -237,7 +235,6 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
            src/volume/omMipChunkCoord.h \
-           src/volume/omMipChunkPtr.h \
            src/volume/omMipVolume.h \
            src/volume/omMipThread.h \
            src/volume/omMipThreadManager.h \
@@ -262,16 +259,6 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
-           src/zi/old_mesh/MarchingCubesTables.h \
-           src/zi/thread/Exception.h \
-           src/zi/thread/Monitor.h \
-           src/zi/thread/Mutex.h \
-           src/zi/thread/Thread.h \
-           src/zi/thread/ThreadFactory.h \
-           src/zi/thread/ThreadManager.h \
-           src/zi/thread/Util.h \
-           src/zi/thread/Win32.h \
-           src/zi/thread/Win32Pthread.h \
            src/zi/zunit/zunit.h
 
 SOURCES += lib/strnatcmp.cpp \
@@ -280,6 +267,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/common/omException.cpp \
            src/common/omGl.cpp \
            src/common/omStd.cpp \
+           src/datalayer/omMST.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
@@ -360,12 +348,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/widgets/omCheckBox.cpp \
            src/gui/widgets/omGroupListWidget.cpp \
            src/gui/widgets/omSegmentListWidget.cpp \
-           src/mesh/meshingChunkThread.cpp \
-           src/mesh/meshingChunkThreadManager.cpp \
-           src/mesh/meshingManager.cpp \
            src/mesh/omMeshDrawer.cpp \
-           src/mesh/omMeshSource.cpp \
-           src/mesh/omMesher.cpp \
            src/mesh/omMipMesh.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
@@ -411,6 +394,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
+           src/system/cache/omCacheGroup.cpp \
            src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
@@ -477,27 +461,21 @@ SOURCES += lib/strnatcmp.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
-           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
-           src/zi/thread/Monitor.cpp \
-           src/zi/thread/Mutex.cpp \
-           src/zi/thread/Thread.cpp \
-           src/zi/thread/ThreadFactory.cpp \
-           src/zi/thread/ThreadManager.cpp \
-           src/zi/thread/Win32Pthread.cpp
+           src/zi/mesh/ext/TriStrip/TriStripper.cpp
 
 RESOURCES += src/gui/resources.qrc
 
 INCLUDEPATH = src include lib
 
-LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF 
+LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF
 
 INCLUDEPATH += ./include/zi_lib
 
 #### Windows
 win32 {
    INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/  
-   LIBS += -lgdi32 
+   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/
+   LIBS += -lgdi32
 } else {
 ### Linux or MacOS
    INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
@@ -518,3 +496,5 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
+
+#QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter

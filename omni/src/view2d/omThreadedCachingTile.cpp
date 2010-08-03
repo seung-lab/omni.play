@@ -9,8 +9,12 @@
 #include <QColor>
 #include <QGLContext>
 
-OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol,
-                                             const QGLContext * shareContext, OmViewGroupState * vgs)
+OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, 
+					     ObjectType voltype, 
+					     OmId image_id, 
+					     OmMipVolume * vol,
+                                             const QGLContext * shareContext,
+					     OmViewGroupState * vgs)
 	: OmTile(viewtype, voltype, image_id, vol, vgs)
 	, mDataCache(new OmTileCache(this))
 {
@@ -19,9 +23,6 @@ OmThreadedCachingTile::OmThreadedCachingTile(ViewType viewtype, ObjectType volty
 	mShareContext = shareContext;
 	mVolType = voltype;
 	mImageId = image_id;
-
-        int chunkDim = vol->GetChunkDimension();
-        mDataCache->SetObjectSize(chunkDim*chunkDim*4);
 }
 
 OmThreadedCachingTile::~OmThreadedCachingTile()
@@ -29,15 +30,19 @@ OmThreadedCachingTile::~OmThreadedCachingTile()
 	delete mDataCache;
 }
 
-void OmThreadedCachingTile::GetTextureID(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord, bool block)
+void OmThreadedCachingTile::GetTextureID(OmTextureIDPtr& p_value, 
+					 const OmTileCoord & tileCoord, 
+					 bool block)
 {
 	mDataCache->Get(p_value, tileCoord, block);
 }
 
 // Called at the highest miplevel will force the entire octree into memory so an initial
 // calling at a medium mip level might be a good idea...
-void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < OmTextureID > &p_value, const OmTileCoord & tileCoord,
-						int rootLevel, OmTileCoord & retCoord)
+void OmThreadedCachingTile::GetTextureIDDownMip(OmTextureIDPtr& p_value, 
+						const OmTileCoord & tileCoord,
+						int rootLevel, 
+						OmTileCoord & retCoord)
 {
 	// Short circuit because already low as mip level goes.
 	if (rootLevel == tileCoord.Level) {	
@@ -48,7 +53,6 @@ void OmThreadedCachingTile::GetTextureIDDownMip(QExplicitlySharedDataPointer < O
 	OmTileCoord mipTileCoord = tileCoord;
 
 	while (rootLevel >= mipTileCoord.Level) {
-		//debug("FIXME", << "Looking for tile for" << mipTileCoord.Level << endl;
 
 		// Try directly below current level.
 		mipTileCoord.Level += 1;

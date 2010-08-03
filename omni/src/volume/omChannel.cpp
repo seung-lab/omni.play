@@ -1,3 +1,4 @@
+#include "common/omCommon.h"
 #include "datalayer/omDataPath.h"
 #include "system/cache/omMipVolumeCache.h"
 #include "common/omDebug.h"
@@ -9,16 +10,26 @@
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
 #include "volume/omVolume.h"
+#include "utility/omTimer.h"
+#include "volume/omMipChunk.h"
+#include "volume/omMipThreadManager.h"
+#include "volume/omThreadChunkLevel.h"
+#include <float.h>
+
 
 OmChannel::OmChannel()
 {
-        int chunkDim = GetChunkDimension();
-        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
+        mMaxVal = FLT_MIN;
+        mMinVal = FLT_MAX;
+	mWasBounded = false;
 }
 
 OmChannel::OmChannel(OmId id)
 	: OmManageableObject(id)
 {
+        mMaxVal = FLT_MIN;
+        mMinVal = FLT_MAX;
+	mWasBounded = false;
 
 	//set manageable object name
 	char idchar[25];
@@ -40,10 +51,7 @@ OmChannel::OmChannel(OmId id)
 	//build blank data
 	BuildVolumeData();
 
-        int chunkDim = GetChunkDimension();
-        mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim);
-
-	AddFilter();	
+	AddFilter();
 }
 
 /////////////////////////////////
@@ -75,6 +83,93 @@ void OmChannel::BuildVolumeData()
 	OmDataPath path = OmDataPath(OmDataPaths::getDefaultHDF5channelDatasetName());
 	OmMipVolume::Build(path);
 }
+
+bool OmChannel::BuildThreadedVolume()
+{
+        OmTimer vol_timer;
+
+        if (isDebugCategoryEnabled("perftest")){
+                //timer start
+                vol_timer.start();
+        }
+
+        if (!OmMipVolume::BuildThreadedVolume()){
+                return false;
+        }
+
+        if (!BuildThreadedChannel()){
+                return false;
+        }
+
+        if (isDebugCategoryEnabled("perftest")){
+                //timer stop
+                vol_timer.stop();
+                printf("OmChannel::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+        }
+
+        return true;
+}
+
+bool OmChannel::BuildThreadedChannel()
+{
+
+        //init progress bar
+        OmEventManager::
+            PostEvent(new
+                      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
+                                      MipChunksInVolume()));
+
+        OmTimer vol_timer;
+
+        if (isDebugCategoryEnabled("perftest")){
+                //timer start
+                vol_timer.start();
+        }
+
+        OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
+        mipThreadManager->SpawnThreads(MipChunksInVolume());
+        mipThreadManager->run();
+        mipThreadManager->wait();
+        mipThreadManager->StopThreads();
+        delete mipThreadManager;
+
+        //flush cache so that all thread chunks are flushed to disk
+        Flush();
+        printf("done\n");
+
+        if (isDebugCategoryEnabled("perftest")){
+
+                //timer end
+                vol_timer.stop();
+                printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
+
+        }
+
+        //hide progress bar
+        OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+
+	mWasBounded = true;
+
+	debug("chanbuild", "max=%f min=%f\n", mMaxVal, mMinVal);
+
+        return true;
+
+}
+
+void OmChannel::BuildChunk(const OmMipChunkCoord & mipCoord)
+{
+	debug("chanbuild", "in OmChannel::BuildChunk\n");
+        OmMipChunkPtr p_chunk;
+        GetChunk(p_chunk, mipCoord);
+
+        const bool isMIPzero = p_chunk->IsLeaf();
+
+	if(isMIPzero) {
+		//mMaxVal = std::max(p_chunk->getMax(), mMaxVal);
+		//mMinVal = std::min(p_chunk->getMin(), mMinVal);
+	}
+}
+
 
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();

@@ -1,9 +1,11 @@
 #include "common/omGl.h"
 #include "common/omVtk.h"
+#include "utility/image/omImage.hpp"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omDataWrapper.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
@@ -21,33 +23,20 @@
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
-
-/////////////////////////////////
-///////
-///////         OmMipChunk Class
-///////
-
-/*
+/**
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
  *	Note: optional cache pointer if this is a cached chunk
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
-	: OmCacheableBase(dynamic_cast < OmCacheBase * >(pMipVolume))
+	: OmCacheableBase(pMipVolume->mDataCache)
 	, mIsRawChunkOpen(false)
 	, mpMipVolume(pMipVolume)
 {
-
-	//debug("genone","OmMipChunk::OmMipChunk()");   
-
 	//init chunk properties
 	InitChunk(rMipCoord);
 
 	containedValuesDataLoaded = false;
 
-	//update cache size
-	UpdateSize(sizeof(OmMipChunk));
-
-	mpImageData = NULL;
 	mChunkVolumeDataDirty = false;
 	mChunkMetaDataDirty = false;
 
@@ -64,9 +53,6 @@ OmMipChunk::~OmMipChunk()
 	if (IsOpen()) {
 		Close();
 	}
-
-	//remove object size from cache
-	UpdateSize(-int (sizeof(OmMipChunk)));
 }
 
 /*
@@ -99,7 +85,7 @@ void
 	mClippedNormExtent.intersect(AxisAlignedBoundingBox < float >::UNITBOX);
 
 	//set if mipvolume uses metadata
-	setMetaDataClean();	
+	setMetaDataClean();
 }
 
 /////////////////////////////////
@@ -120,6 +106,8 @@ void OmMipChunk::Open()
 	//read volume data
 	ReadVolumeData();
 
+	UpdateSize(128*128*128*GetBytesPerSample());
+
 	//set open
 	SetOpen(true);
 }
@@ -132,9 +120,9 @@ void OmMipChunk::OpenForWrite()
 
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-	
+
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent(), GetBytesPerSample());
+	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent());
 
 	SetImageData(data);
 
@@ -177,18 +165,7 @@ void OmMipChunk::Close()
 	//close
 	SetOpen(false);
 
-	//assert image data exists
-	assert(mpImageData);
-
-	//remove image data size from cache (convert to bytes)
-	int est_mem_bytes = mpImageData->GetEstimatedMemorySize() * 1024;
-	UpdateSize(-float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
-
-	//delete image data
-	debug("mipchunk", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
-	debug("meshercrash", "freeing mpImageData: %p, rc:%i\n", mpImageData, mpImageData->GetReferenceCount());
-	mpImageData->Delete();
-	mpImageData = NULL;
+	UpdateSize(-128*128*128*GetBytesPerSample());
 }
 
 /////////////////////////////////
@@ -215,7 +192,7 @@ bool OmMipChunk::IsVolumeDataDirty()
 bool OmMipChunk::IsMetaDataDirty()
 {
 	//TODO: why isn't this OR (ie. ||)?
-	return mpMipVolume->GetChunksStoreMetaData() 
+	return mpMipVolume->GetChunksStoreMetaData()
 		&& mChunkMetaDataDirty;
 }
 
@@ -228,9 +205,7 @@ void OmMipChunk::ReadVolumeData()
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
-	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent(), GetBytesPerSample());
-
-	debug("mipchunk", "data: %i, refcount of:%i\n", data, data->GetReferenceCount ());
+	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent());
 
 	//set this image data
 	SetImageData(data);
@@ -249,8 +224,8 @@ void OmMipChunk::WriteVolumeData()
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
-	if (mpImageData) {
-		OmProjectData::GetDataWriter()->dataset_image_write_trim( mip_level_vol_path, (DataBbox*)&GetExtent(), GetBytesPerSample(), mpImageData);
+	if (mData->getVTKPtr()) {
+		OmProjectData::GetDataWriter()->dataset_image_write_trim(mip_level_vol_path, (DataBbox*)&GetExtent(), mData);
 	}
 
 	setVolDataClean();
@@ -315,21 +290,12 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 	DataCoord offset = voxel - GetExtent().getMin();
 
 	//get pointer to data and copy bytes
-	void *p_scalar = mpImageData->GetScalarPointer(offset.x, offset.y, offset.z);
-	void *p = mpImageData->GetScalarPointer();
+	void *p_scalar = mData->getVTKPtr()->GetScalarPointer(offset.x, offset.y, offset.z);
+	void *p = mData->getVTKPtr()->GetScalarPointer();
 	debug("FIXME", "%p\n", p);
 
 	//cast to appropriate type and return as uint
-	switch (GetBytesPerSample()) {
-	case 1:
-		*((quint8 *) p_scalar) = (quint8) val;
-		break;
-	case 4:
-		*((uint32_t *) p_scalar) = val;
-		break;
-	default:
-		break;
-	}
+	memcpy(p_scalar, &val, mData->getSizeof());
 
 	//data volume now dirty
 	setVolDataDirty();
@@ -350,7 +316,7 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 	DataCoord offset = voxel - GetExtent().getMin();
 
 	//get pointer to data and copy bytes
-	void *p_scalar = mpImageData->GetScalarPointer(offset.x, offset.y, offset.z);
+	void *p_scalar = mData->getVTKPtr()->GetScalarPointer(offset.x, offset.y, offset.z);
 
 	//cast to appropriate type and return as uint
 	switch (GetBytesPerSample()) {
@@ -369,38 +335,26 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
 
 vtkImageData* OmMipChunk::GetImageData()
 {
-	assert(mpImageData);
-	return mpImageData;
+	return mData->getVTKPtr();
+}
+
+OmDataWrapperPtr OmMipChunk::GetImageDataWrapper()
+{
+	return mData;
 }
 
 /*
  *	Set the image data of this MipChunk to data at the given pointer.
  *	Closes if already open and sets MipChunk to be open and dirty.
  */
-void OmMipChunk::SetImageData(vtkImageData * pImageData)
+void OmMipChunk::SetImageData(OmDataWrapperPtr data)
 {
-
-	//assert valid pointer
-	assert(pImageData);
-
-	//make sure given image data has expected dimensions
-	Vector3 < int >dims;
-	pImageData->GetDimensions(dims.array);
-	assert(dims == GetDimensions());
-
-	if(mpImageData){
-		mpImageData->Delete ();
-	}
-
 	//set this image data to given
-	mpImageData = pImageData;
+	mData = data;
 
 	//set data causes chunk to be open and dirty
 	SetOpen(true);
 	setVolDataDirty();
-
-	int est_mem_bytes = mpImageData->GetEstimatedMemorySize() * 1024;
-	UpdateSize(float (est_mem_bytes) * MIP_CHUNK_DATA_SIZE_SCALE_FACTOR);
 }
 
 /////////////////////////////////
@@ -479,7 +433,7 @@ void OmMipChunk::loadMetadataIfPresent()
 }
 
 /*
- *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store 
+ *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store
  *	all values in the DataSegmentId set of the chunk.
  */
 boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
@@ -489,7 +443,7 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 		sizes = new boost::unordered_map< OmSegID, unsigned int>();
 	}
 
-	//uses mpImageData so ensure chunk is open
+	//uses mData->getVTKPtr() so ensure chunk is open
 	Open();
 
 	//clear previous segments
@@ -498,50 +452,34 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 
 	//get data extent (varify it is a chunk)
 	int extent[6];
-	mpImageData->GetExtent(extent);
+	mData->getVTKPtr()->GetExtent(extent);
 
 	//get pointer to native scalar data
-	if (SEGMENT_DATA_BYTES_PER_SAMPLE == mpImageData->GetScalarSize()) {
-		OmSegID *p_scalar_data = static_cast < OmSegID * >(mpImageData->GetScalarPointer());
+	if (SEGMENT_DATA_BYTES_PER_SAMPLE == mData->getVTKPtr()->GetScalarSize()) {
+		OmSegID *p_scalar_data = static_cast < OmSegID * >(mData->getVTKPtr()->GetScalarPointer());
 
 		//for all voxels in the chunk
-		int x, y, z;
-		for (z = extent[0]; z <= extent[1]; z++) {
-			for (y = extent[2]; y <= extent[3]; y++) {
-				for (x = extent[4]; x <= extent[5]; x++) {
-
-					//if non-null insert in set
-					if (NULL_SEGMENT_VALUE != *p_scalar_data) {
-						mDirectlyContainedValues.insert(*p_scalar_data);
-						if( computeSizes ){
-							++(sizes->operator[](*p_scalar_data));
-						}
-					}
-					//adv to next scalar
-					++p_scalar_data;
+		// todo: change if default volume chunk size gets changed
+		const int vSize = 128*128*128;
+		for (int i = 0; i < vSize; ++i) {
+			if (NULL_SEGMENT_VALUE != p_scalar_data[i]) {
+				mDirectlyContainedValues.insert(p_scalar_data[i]);
+				if( computeSizes ) {
+					++((*sizes)[p_scalar_data[i]]);
 				}
 			}
 		}
-	} else if (1 == mpImageData->GetScalarSize()) {
-		unsigned char *p_scalar_data = static_cast < unsigned char *>(mpImageData->GetScalarPointer());
+	} else if (1 == mData->getVTKPtr()->GetScalarSize()) {
+		unsigned char *p_scalar_data = static_cast < unsigned char *>(mData->getVTKPtr()->GetScalarPointer());
 
 		//for all voxels in the chunk
-		int x, y, z;
-		OmSegID my_scalar_data;
-		for (z = extent[0]; z <= extent[1]; z++) {
-			for (y = extent[2]; y <= extent[3]; y++) {
-				for (x = extent[4]; x <= extent[5]; x++) {
-
-					//if non-null insert in set
-					if ('\0' != *p_scalar_data) {
-						my_scalar_data = (OmSegID) (*p_scalar_data);
-						mDirectlyContainedValues.insert(my_scalar_data);
-						if( computeSizes ){
-							++(sizes->operator[](my_scalar_data));
-						}
-					}
-					//adv to next scalar
-					++p_scalar_data;
+		// todo: change if default volume chunk size gets changed
+		const int vSize = 128*128*128;
+		for (int i = 0; i < vSize; ++i) {
+			if ('\0' != p_scalar_data[i]) {
+				mDirectlyContainedValues.insert(p_scalar_data[i]);
+				if( computeSizes ){
+					++((*sizes)[p_scalar_data[i]]);
 				}
 			}
 		}
@@ -553,199 +491,106 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 	return sizes;
 }
 
-/////////////////////////////////
-///////          Slice Data Access
-
-/*
- *	Returns a bounding box that represents a slice of the volume
- *	along the specified plane at the specified coordinate.
- */
-
-AxisAlignedBoundingBox < int > OmMipChunk::ExtractSliceExtent(OmDataVolumePlane plane, int coord)
+Vector2i OmMipChunk::GetSliceDims()
 {
-	//ensure open
-	Open();
-
-	//create slice bounding box
-	AxisAlignedBoundingBox < int >slice_bbox;
-
-	//get min max of current extent
-	const Vector3 < int >&data_extent_min = GetExtent().getMin();
-	const Vector3 < int >&data_extent_max = GetExtent().getMax();
-
-	switch (plane) {
-	case VOL_XY_PLANE:
-		slice_bbox.setMin(Vector3 < int >(data_extent_min.x, data_extent_min.y, coord));
-		slice_bbox.setMax(Vector3 < int >(data_extent_max.x, data_extent_max.y, coord));
-		break;
-
-	case VOL_XZ_PLANE:
-		slice_bbox.setMin(Vector3 < int >(data_extent_min.x, coord, data_extent_min.z));
-		slice_bbox.setMax(Vector3 < int >(data_extent_max.x, coord, data_extent_max.z));
-		break;
-
-	case VOL_YZ_PLANE:
-		slice_bbox.setMin(Vector3 < int >(coord, data_extent_min.y, data_extent_min.z));
-		slice_bbox.setMax(Vector3 < int >(coord, data_extent_max.y, data_extent_max.z));
-		break;
-	}
-
-	return slice_bbox;
+  return Vector2i(128,128);
 }
 
-OmDataVolumePlane OmMipChunk::getVolPlane(const ViewType viewType)
+void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 {
-	switch( viewType ){
-	case XY_VIEW:
-		return VOL_XY_PLANE;
-		break;
-	case XZ_VIEW:
-		return VOL_XZ_PLANE;
-		break;
-	case YZ_VIEW:
-		return VOL_YZ_PLANE;
-		break;
+	Open();
+
+	//	printf("type is %s...\n", mData->getTypeAsString().c_str());
+
+	if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
+	  OmImage<float, 3> chunk(OmExtents[128][128][128],
+				  RawReadChunkDataUINT32()->getPtr<float>());
+	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
+	  float mn = 0.0;
+	  float mx = 1.0;
+	  mpMipVolume->GetBounds(mx, mn);
+	  OmImage<unsigned char, 2> slice =
+		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
+	  return slice.getMallocCopyOfData();
+
+	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
+		  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
+	  OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
+				     RawReadChunkDataUINT32()->getPtr<uint32_t>());
+	  OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
+	  return slice.getMallocCopyOfData();
+
+	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
+		  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
+	  OmImage<unsigned char, 3> chunk(OmExtents[128][128][128],
+					  RawReadChunkDataUCHAR()->getPtr<unsigned char>());
+	  OmImage<unsigned char, 2> slice = chunk.getSlice(plane, offset);
+	  return slice.getMallocCopyOfData();
 	}
 
 	assert(0);
 }
 
-void * OmMipChunk::ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast)
-{
-	return ExtractDataSlice(getVolPlane(viewType), offset, sliceDims, fast);
-}
-
-/*
- *	Returns a pointer to an allocated array of data representing the values
- *	on an orthogonal slice given the slice plane and depth.
- *
- *  plane is the VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE that intersects the volume
- *  offset is the relative depth that the given plane intersects the data extent
- *  memSize returns the size in bytes of the allocated array
- *	sliceDims is the dimensions of the resulting slice
- *
- *	NOTE: This returns ownership of the array so it MUST BE DELETED after use.
+/**
+ *      Returns new ImageData containing the entire extent of data needed
+ *      to form continuous meshes with adjacent MipChunks.  This means an extra
+ *      voxel of data is included on each dimensions.
  */
-void *OmMipChunk::ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2 < int >&sliceDims, bool fast)
+OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 {
-	//debug("genone","OmMipChunk::ExtractDataSlice()\n");
+  Open();
 
-	if (!IsOpen() && fast)	// If we want to extract fast leave fast if not open.
-		return NULL;
+  OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
-	//ensure open
-	Open();
+  for (int z = 0; z < 2; z++) {
+    for (int y = 0; y < 2; y++) {
+      for (int x = 0; x < 2; x++) {
 
-	//get global slice coordinate
-	int slice_coord;
-	switch (plane) {
-	case VOL_XY_PLANE:
-		slice_coord = GetExtent().getMin().z + offset;
-		break;
-	case VOL_XZ_PLANE:
-		slice_coord = GetExtent().getMin().y + offset;
-		break;
-	case VOL_YZ_PLANE:
-		slice_coord = GetExtent().getMin().x + offset;
-		break;
-	default:
-		assert(false);
+        int lenZ = z ? 1 : 128;
+        int lenY = y ? 1 : 128;
+        int lenX = x ? 1 : 128;
+
+        //form mip coord
+        OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
+                                  mCoordinate.getCoordinateX() + x,
+                                  mCoordinate.getCoordinateY() + y,
+                                  mCoordinate.getCoordinateZ() + z);
+
+        //skip invalid mip coord
+        if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
+          continue;
+
+        //else get chunk
+        OmMipChunkPtr p_chunk;
+        mpMipVolume->GetChunk(p_chunk, mip_coord);
+
+        p_chunk->Open();
+
+	OmImage<uint32_t, 3> chunkImage;
+
+	if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
+	   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
+	  chunkImage = OmImage<uint32_t, 3>(OmExtents[128][128][128],
+					    p_chunk->RawReadChunkDataUINT32()
+					    ->getPtr<uint32_t>());
+	} else if (mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR) {
+	  OmImage<unsigned char, 3> chunk8(OmExtents[128][128][128],
+					   RawReadChunkDataUCHAR()->getPtr<unsigned char>());
+	  chunkImage = chunk8.recast<uint32_t>();
+	} else {
+	  printf("type was %s...\n", p_chunk->mData->getTypeAsString().c_str());
+	  assert(0 && "unrecognized type");
 	}
 
-	//get bbox for slice
-	AxisAlignedBoundingBox < int >slice_extent = ExtractSliceExtent(plane, slice_coord);
-	Vector3 < int >slice_dims = slice_extent.getUnitDimensions();
+        retImage.copyFrom(chunkImage, OmExtents[z*128][y*128][x*128],
+                          OmExtents[0][0][0], OmExtents[lenZ][lenY][lenX]);
 
-	//form result dims
-	switch (plane) {
-	case VOL_XY_PLANE:
-		sliceDims.x = slice_dims.x;
-		sliceDims.y = slice_dims.y;
-		break;
-	case VOL_XZ_PLANE:
-		sliceDims.x = slice_dims.x;
-		sliceDims.y = slice_dims.z;
-		break;
-	case VOL_YZ_PLANE:
-		sliceDims.x = slice_dims.y;
-		sliceDims.y = slice_dims.z;
-		break;
-	default:
-		assert(false);
-	}
+      }
+    }
+  }
 
-	//convert to extent relative to chunk image data
-	AxisAlignedBoundingBox < int >relative_slice_bbox = slice_extent;
-	relative_slice_bbox.offset(-GetExtent().getMin());
+  return retImage;
 
-	//return pointer to data
-	return OmImageDataIo::copyImageData(mpImageData, relative_slice_bbox);
-}
-
-/////////////////////////////////
-///////          Meshing
-
-/*
- *	Returns new ImageData containing the entire extent of data needed
- *	to form continuous meshes with adjacent MipChunks.  This means an extra
- *	voxel of data is included on each dimensions.
- */
-vtkImageData *OmMipChunk::GetMeshImageData()
-{
-	Open();
-
-	DataCoord data_dims;
-	mpImageData->GetDimensions(data_dims.array);
-	DataCoord mesh_data_dims = data_dims + DataCoord::ONE;
-
-	//alloc new mesh volume data
-	vtkImageData *p_mesh_data = vtkImageData::New();
-	p_mesh_data->SetDimensions(mesh_data_dims.array);
-	p_mesh_data->SetScalarType(bytesToVtkScalarType(GetBytesPerSample()));
-	p_mesh_data->SetNumberOfScalarComponents(SEGMENT_DATA_SAMPLES_PER_PIXEL);
-	p_mesh_data->AllocateScalars();
-
-	//initialize data
-	OmImageDataIo::clearImageData(p_mesh_data);
-
-	//for all 8 adjacent chunks
-	for (int z = 0; z < 2; z++) {
-		for (int y = 0; y < 2; y++) {
-			for (int x = 0; x < 2; x++) {
-
-				//form mip coord
-				OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
-							  mCoordinate.getCoordinateX() + x,
-							  mCoordinate.getCoordinateY() + y, 
-							  mCoordinate.getCoordinateZ() + z);
-
-				//skip invalid mip coord
-				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
-					continue;
-
-				//else get chunk
-				QExplicitlySharedDataPointer < OmMipChunk > p_chunk;
-				mpMipVolume->GetChunk(p_chunk, mip_coord);
-
-				p_chunk->Open();
-
-				debug("mipchunk", "got mpImageData: %i, rc:%i\n", p_chunk->mpImageData, p_chunk->mpImageData->GetReferenceCount());
-
-				//get dim size
-				int chunk_dim = mpMipVolume->GetChunkDimension();
-
-				//copy intersected data from src to mesh
-				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
-				QMutexLocker locker(&mOpenLock);
-				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
-				
-				//p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();
-				//mpMipVolume->Remove(mip_coord);
-			}
-		}
-	}
-
-	return p_mesh_data;
 }
 
 bool OmMipChunk::IsOpen()
@@ -800,14 +645,12 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHAR()
 		OmDataPath path;
 		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
-		mRawChunk = 
+		mRawChunk =
 			OmProjectData::GetProjectDataReader()->
-			dataset_read_raw_chunk_data(path, 
-						    GetExtent(), 
-						    1);
+			dataset_read_raw_chunk_data(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
-	
+
 	return mRawChunk;
 }
 
@@ -818,12 +661,10 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
 
 		OmDataPath path;
 		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-		
-		mRawChunk = 
+
+		mRawChunk =
 			OmProjectData::GetProjectDataReader()->
-			dataset_read_raw_chunk_data(path, 
-						    GetExtent(), 
-						    4);
+			dataset_read_raw_chunk_data(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
 
@@ -837,11 +678,10 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
-	
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
-								      1,
-								      data);
+								      OmDataWrapperRaw(data));
 }
 
 void OmMipChunk::RawWriteChunkData(quint32* data)
@@ -851,11 +691,10 @@ void OmMipChunk::RawWriteChunkData(quint32* data)
 	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
-	
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
-								      4,
-								      data);
+								      OmDataWrapperUint(data));
 }
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
@@ -865,7 +704,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
 	if(!mIsRawChunkOpen){
 		unsigned char * data = mpMipVolume->getChunkPtr(mCoordinate);
 
-		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
+		mRawChunk = OmDataWrapper<unsigned char>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
 		mIsRawChunkOpen=true;
 	}
 
@@ -878,8 +717,8 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
 
 	if(!mIsRawChunkOpen){
 		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
-		
-		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
+
+		mRawChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
 		mIsRawChunkOpen=true;
 	}
 
@@ -892,6 +731,15 @@ void OmMipChunk::dealWithCrazyNewStuff()
 
 	if(mIsRawChunkOpen){
 		mIsRawChunkOpen=false;
-		mRawChunk=OmDataWrapperPtr(new OmDataWrapper(NULL));
+		mRawChunk=OmDataWrapperInvalid();
 	}
 }
+
+void OmMipChunk::GetBounds(float & maxout, float & minout) {
+	Open();
+	float * data = static_cast < float * >(mData->getVTKPtr()->GetScalarPointer());
+	OmImage<float, 3> chunk(OmExtents[128][128][128], data);
+	maxout = chunk.getMax();
+	minout = chunk.getMin();
+}
+

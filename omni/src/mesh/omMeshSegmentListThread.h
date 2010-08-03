@@ -2,7 +2,6 @@
 #define OM_MESH_SEGMENT_LIST_THREAD_H
 
 #include "common/omCommon.h"
-#include "volume/omMipChunkPtr.h"
 #include "volume/omMipChunkCoord.h"
 
 #include <QRunnable>

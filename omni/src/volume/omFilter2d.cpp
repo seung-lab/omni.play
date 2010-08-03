@@ -24,10 +24,10 @@ OmFilter2d::OmFilter2d() {
 }
 
 OmFilter2d::OmFilter2d(OmId omId)
-  : OmManageableObject(omId) 
+  : OmManageableObject(omId)
 {
 	mName = QString("filter%1").arg(omId);
-	
+
 	//initially transparent.
 	mAlpha = 0.0;
 	mSeg = 1;
@@ -72,32 +72,34 @@ OmId OmFilter2d::GetSegmentation () {
 	return mSeg;
 }
 
-void OmFilter2d::SetSegmentation (OmId id) {
+void OmFilter2d::SetSegmentation (OmId id)
+{
 
 	if (mSeg != id || 0 == id) {
 		mCache = NULL;
 	}
-	try {
+
+	if(OmProject::IsSegmentationValid(id)){
 		mSeg = id;
-	} catch (OmAccessException e) {
+	} else{
 		mSeg = 0;
 	}
 }
 
-OmId OmFilter2d::GetChannel () {
+OmId OmFilter2d::GetChannel ()
+{
 	return mChannel;
 }
 
-void OmFilter2d::SetChannel (OmId id) {
-
-
+void OmFilter2d::SetChannel (OmId id)
+{
 	if (mChannel != id) {
 		mCache = NULL;
 	}
-	try {
-		OmProject::GetChannel (id);
+
+	if(OmProject::IsChannelValid(id)){
 		mChannel = id;
-	} catch (OmAccessException e) {
+	} else{
 		mChannel = 0;
 	}
 }

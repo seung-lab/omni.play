@@ -12,7 +12,7 @@ OmView2dImpl::OmView2dImpl(QWidget * parent)
 	: QWidget(parent)
 {
 	// drawComplete = true; // this was never initialized! set it here?
-	
+
 	setBackgroundColor();
 }
 
@@ -37,7 +37,7 @@ void OmView2dImpl::Draw()
 		int lvl = zoomMipVector.x+1;
 
 		for (int i = mRootLevel; i > lvl; --i) {
-			
+
 			zoom.x = i;
 			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
 			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
@@ -46,7 +46,7 @@ void OmView2dImpl::Draw()
 							Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
 								 translateVector.y / (1 + i - zoomMipVector.x)),
 							false);
-			
+
 			PreDraw(zoom);
 		}
 		mViewGroupState->SetPanDistance(mViewType,
@@ -70,7 +70,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 	Vector2f translateVector = GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
-	
+
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
 	int mDataDepth = 0;
@@ -92,7 +92,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		break;
 	}
 
-	
+
 	float tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
@@ -109,7 +109,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		break;
 	}
 
-	
+
 	bool complete = true;
 	float xMipChunk;
 	float yMipChunk;
@@ -147,11 +147,12 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 
+			/*
+			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z);
 			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
 			debug ("postdraw", "coord.(x,y,z): (%f,%f,%f)\n", coord.Coordinate.x,coord.Coordinate.y,coord.Coordinate.z);
-
-			QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
+			*/
+			OmTextureIDPtr gotten_id;
                         if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
 				mCache->GetTextureID(gotten_id, mTileCoord, false);
 				mTileCount++;
@@ -168,11 +169,11 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 					complete = false;
 				}
 			}
-			else debug("predrawverbose", "bad coordinates\n");
+			//			else debug("predrawverbose", "bad coordinates\n");
 		}
 	}
 	if (!complete) {
-		debug ("spin", "not complete yet in predraw\n");
+		//		debug ("spin", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
 		BufferTiles(zoomMipVector);
@@ -185,30 +186,30 @@ Vector2f OmView2dImpl::GetPanDistance(ViewType viewType)
 {
         if(OmLocalPreferences::getStickyCrosshairMode()){
 		return GetPanDistanceStickyMode(viewType);
-	} 
+	}
 
  	return mViewGroupState->GetPanDistance(mViewType);
 }
 
-Vector2f OmView2dImpl::GetPanDistanceStickyMode(ViewType viewType)
+inline Vector2f OmView2dImpl::GetPanDistanceStickyMode(ViewType viewType)
 {
         Vector2f mZoomLevel = mViewGroupState->GetZoomLevel();
         Vector2f stretch= mVolume->GetStretchValues(mViewType);
         float factor = OMPOW(2,mZoomLevel.x);
         float zoomScale = mZoomLevel.y;
 
-	float x = mViewGroupState->GetViewSliceDepth(YZ_VIEW); 
+	float x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
 	float y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
 	float z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
 
 	SpaceCoord mydepth = SpaceCoord(x, y, z);
 	DataCoord mydataCoord = SpaceToDataCoord(mydepth);
-	debug("pan", "1: dc:x,y,z:%i,%i,%i\n", mydataCoord.x, mydataCoord.y, mydataCoord.z);
+	//	debug("pan", "1: dc:x,y,z:%i,%i,%i\n", mydataCoord.x, mydataCoord.y, mydataCoord.z);
 
 	float panx = (mTotalViewport.width/2.0)/(zoomScale*stretch.x/10.0);
 	float pany = (mTotalViewport.height/2.0)/(zoomScale*stretch.y/10.0);
 
-	debug("pan", "pan:x,y:%f,%f\n", panx, pany);
+	//	debug("pan", "pan:x,y:%f,%f\n", panx, pany);
 
 	Vector2f better;
 
@@ -227,7 +228,7 @@ Vector2f OmView2dImpl::GetPanDistanceStickyMode(ViewType viewType)
 		break;
 	}
 
-	debug("pan", "better: x,y:%f,%f\n", better.x, better.y);
+	//	debug("pan", "better: x,y:%f,%f\n", better.x, better.y);
 
 	return better;
 }
@@ -256,7 +257,7 @@ DataCoord OmView2dImpl::ToDataCoord(float xMipChunk, float yMipChunk, float mDat
 	assert(0);
 }
 
-void OmView2dImpl::safeTexture(QExplicitlySharedDataPointer < OmTextureID > gotten_id)
+void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 {
 	if (OMTILE_NEEDCOLORMAP == gotten_id->flags) {
 		GLuint texture;
@@ -323,7 +324,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 
 	Vector2f translateVector = GetPanDistance(mViewType);
 	float zoomFactor = (zoomMipVector.y / 10.0);
-	
+
 	Vector3f depth = Vector3f( 0, 0, 0);
 	DataCoord data_coord;
 	int mDataDepth = 0;
@@ -345,7 +346,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
 		break;
 	}
 
-	
+
 	float tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
@@ -417,7 +418,7 @@ bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
                         	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
                         	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
                         	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-				QExplicitlySharedDataPointer < OmTextureID > gotten_id = QExplicitlySharedDataPointer < OmTextureID > ();
+				OmTextureIDPtr gotten_id;
                         	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, false);
 					debug("genone", "buffering: %i, %i\n", count, boff[count]);
@@ -460,7 +461,8 @@ void OmView2dImpl::TextureDraw(vector < Drawable * >&textures)
 	}
 }
 
-void OmView2dImpl::safeDraw(float zoomFactor, float x, float y, int tileLength, QExplicitlySharedDataPointer < OmTextureID > gotten_id)
+void OmView2dImpl::safeDraw(float zoomFactor, float x, float y,
+			    int tileLength, OmTextureIDPtr gotten_id)
 {
 	Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
@@ -475,9 +477,9 @@ void OmView2dImpl::safeDraw(float zoomFactor, float x, float y, int tileLength, 
 
 	glBindTexture(GL_TEXTURE_2D, gotten_id->GetTextureID());
 	glBegin(GL_QUADS);
-	
+
 	GLfloat xLowerLeft, yLowerLeft, xLowerRight, yLowerRight, xUpperRight, yUpperRight, xUpperLeft, yUpperLeft;
-	
+
 	if (mViewType == XY_VIEW) {
 		xLowerLeft  = x * zoomFactor;
 		yLowerLeft  = y * zoomFactor;
@@ -485,7 +487,7 @@ void OmView2dImpl::safeDraw(float zoomFactor, float x, float y, int tileLength, 
 		yLowerRight = y * zoomFactor;
 		xUpperRight = (x + tileLength*stretch.x) * zoomFactor;
 		yUpperRight = (y + tileLength*stretch.y) * zoomFactor;
-		xUpperLeft  = x * zoomFactor; 
+		xUpperLeft  = x * zoomFactor;
 		yUpperLeft  = (y + tileLength*stretch.y) * zoomFactor;
 	} else if (mViewType == XZ_VIEW) {
 		xLowerLeft  = x * zoomFactor;
@@ -652,7 +654,7 @@ void OmView2dImpl::DrawFromFilter(OmFilter2d &filter)
 
 	mCache = cache;
 	mVolume = cache->mVolume;
-	
+
 
 	double alpha = mAlpha;
 	mAlpha = filter.GetAlpha();

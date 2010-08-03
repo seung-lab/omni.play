@@ -4,10 +4,11 @@
 #include "system/omLocalPreferences.h"
 #include "volume/omMipChunkCoord.h"
 
-OmMipThreadManager::OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, bool buildEdited)
+OmMipThreadManager::OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, int initLevel, bool buildEdited)
 {
 	mpMipVolume = pMipVolume;
 	mChunkType = chunkType;
+	mInitLevel = initLevel;
 	mBuildEdited = buildEdited;
 	mNumTotalThreads = OmLocalPreferences::numAllowedWorkerThreads();
 }
@@ -74,11 +75,11 @@ void OmMipThreadManager::DistributeThreadChunks()
 		
 	} else {		
 		//Dimensions of mip volume in thread chunks
-		Vector3 < int > thread_coord_dims = mpMipVolume->MipVolumeDimensionsInThreadChunks();
+		Vector3 < int > thread_coord_dims = mpMipVolume->MipLevelDimensionsInThreadChunks(mInitLevel);
 		for (int z = 0; z < thread_coord_dims.z; ++z){
 			for (int y = 0; y < thread_coord_dims.y; ++y){
 				for (int x = 0; x < thread_coord_dims.x; ++x){ 	
-					mMipThreads[threadNum]->EnqueueChunk(OmMipChunkCoord(0, x, y, z));
+					mMipThreads[threadNum]->EnqueueChunk(OmMipChunkCoord(mInitLevel, x, y, z));
 					//Loop through threads
 					threadNum++;
 					if (threadNum == mNumTotalThreads){threadNum = 0;}

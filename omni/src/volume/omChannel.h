@@ -31,6 +31,10 @@ public:
 	//accessor
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
+	bool BuildThreadedVolume();
+	bool BuildThreadedChannel();
+	void BuildChunk(const OmMipChunkCoord&);
+
 	
 	void Print();
 	OmFilter2d& AddFilter();
@@ -38,6 +42,8 @@ public:
 	const OmIDsSet & GetValidFilterIds();
 	bool IsFilterEnabled(OmId id);
 	bool IsFilterValid(const OmId id);
+
+	bool GetBounds(float & mx, float & mn) { if(mWasBounded) {mx = mMaxVal; mn = mMinVal;} return mWasBounded;}
 	
 protected:
 	//protected copy constructor and assignment operator to prevent copy
@@ -47,6 +53,10 @@ protected:
 private:
 	Vector3f mHueColor;
 	OmFilter2dManager mFilter2dManager;
+
+	float mMaxVal;
+	float mMinVal;
+	bool mWasBounded;
 
 	friend class OmBuildChannel;
 

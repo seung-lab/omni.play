@@ -33,11 +33,11 @@ class OmHdf5Reader : public OmDataReader
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
-	vtkImageData* dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
+	OmDataWrapperPtr dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent);
 
 	//data set raw
-	boost::shared_ptr<OmDataWrapper> dataset_raw_read( const OmDataPath & path, int* size = NULL);
-	boost::shared_ptr<OmDataWrapper> dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
+	OmDataWrapperPtr dataset_raw_read( const OmDataPath & path, int* size = NULL);
+	OmDataWrapperPtr dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent);
 	Vector3< int > dataset_get_dims( const OmDataPath & path );
 
  private:

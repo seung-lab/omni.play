@@ -6,6 +6,7 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
+#include "datalayer/omMST.h"
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
@@ -13,7 +14,6 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
-class MeshingManager;
 class OmSegment;
 class OmSegmentCache;
 class OmSegmentIterator;
@@ -28,7 +28,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	~OmSegmentation();
 
 	void CloseDownThreads();
-	
+
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
 	OmId GetVoxelSegmentId(const DataCoord &vox);
@@ -44,16 +44,16 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
-	void BuildMeshDataInternal();	
+	void BuildMeshDataInternal();
 	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
-	
+
 	//export
-	void ExportDataFilter(vtkImageData *);
-							
+	void ExportDataFilter(OmDataWrapperPtr);
+
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 
@@ -65,7 +65,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	//drawing
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
-	
+
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
@@ -73,26 +73,16 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void FlushDendUserEdges();
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
-	float GetDendThreshold(){ return mDendThreshold; }
-	
+	float GetDendThreshold(){ return mst.mDendThreshold; }
+
 private:
 	void KillCacheThreads();
-
-	MeshingManager * mMeshingMan;
 
 	OmSegmentCache *const mSegmentCache;
 
 	OmGroups mGroups;
 
-        OmDataWrapperPtr mDend;
-        OmDataWrapperPtr mDendValues;
-	OmDataWrapperPtr mEdgeDisabledByUser;
-	OmDataWrapperPtr mEdgeWasJoined;
-	OmDataWrapperPtr mEdgeForceJoin;
-	int mDendSize;
-	int mDendValuesSize;
-	int mDendCount;
-	float mDendThreshold;
+	OmMST mst;
 
 	friend class OmBuildSegmentation;
 	friend class OmSegmentCacheImpl;

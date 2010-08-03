@@ -1,3 +1,4 @@
+#include "common/omDebug.h"
 #include "omMipThread.h"
 #include "omMipVolume.h"
 
@@ -37,14 +38,17 @@ void OmMipThread::run()
 {
 	for (mNumChunksDone=0; mNumChunksDone < mNumTotalChunks; mNumChunksDone++){
 
-		mNumEnqueuedChunks.acquire();		
+		mNumEnqueuedChunks.acquire();
 		assert(!mMipCoords.isEmpty());
 		mutex.lock();
 		OmMipChunkCoord mipCoord = mMipCoords.dequeue();
 		mutex.unlock();
+
 		if (THREAD_CHUNK == mChunkType){
-			mpMipVolume->BuildThreadChunk(mipCoord,NULL);
+ 			debug("mipthread","Thread %i building thread chunk at (%s).\n",mThreadNum,qPrintable( mipCoord.getCoordsAsString() ));
+			mpMipVolume->BuildThreadChunk(mipCoord,OmDataWrapperInvalid(),true);
 		} else if (MIP_CHUNK == mChunkType){
+ 			debug("mipthread","Thread %i building mip chunk at (%s).\n",mThreadNum,qPrintable( mipCoord.getCoordsAsString() ));
 			mpMipVolume->BuildChunk(mipCoord);
 		}
 	}

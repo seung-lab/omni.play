@@ -12,7 +12,7 @@ class OmMipVolume;
 class OmMipThreadManager: public QThread
 {
  public:
-	OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, bool buildEdited);
+	OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, int initLevel,  bool buildEdited);
 	void run();
 	void SpawnThreads(int numTotalChunks);
 	void StopThreads();
@@ -27,6 +27,7 @@ class OmMipThreadManager: public QThread
 	QThreadPool mMipThreadPool;
 	QList<OmMipThread*> mMipThreads;
 	int mNumTotalThreads;
+	int mInitLevel;
 	bool mBuildEdited; //If set, build only edited granules instead of all granules
 };
 

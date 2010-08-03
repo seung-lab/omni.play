@@ -28,7 +28,7 @@ typedef struct {
 
 
 
-/** 
+/**
  * vmml-related
  */
 #include <vmmlib/vmmlib.h>
@@ -85,33 +85,42 @@ typedef QString OmGroupName;
 typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
 
-/** 
+
+/**
  * System-state related
  **/
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
 enum OmToolMode { SELECT_MODE,
 		  PAN_MODE,
 		  CROSSHAIR_MODE,
-		  ZOOM_MODE, 
-		  ADD_VOXEL_MODE, 
-		  SUBTRACT_VOXEL_MODE, 
+		  ZOOM_MODE,
+		  ADD_VOXEL_MODE,
+		  SUBTRACT_VOXEL_MODE,
 		  SELECT_VOXEL_MODE,
-		  FILL_MODE, 
+		  FILL_MODE,
 		  SPLIT_MODE
 };
 
 
-/** 
+/**
  * color cache enum
  */
-enum OmSegmentColorCacheType { SCC_FILTER = 0, 
-			       SCC_FILTER_BREAK, 
+enum OmSegmentColorCacheType { SCC_FILTER = 0,
+			       SCC_FILTER_BREAK,
 			       SCC_FILTER_VALID,
 			       SCC_FILTER_VALID_BLACK,
-			       SCC_SEGMENTATION, 
+			       SCC_SEGMENTATION,
 			       SCC_SEGMENTATION_BREAK,
 			       SCC_SEGMENTATION_VALID,
 			       SCC_SEGMENTATION_VALID_BLACK,
 			       SCC_NUMBER_OF_ENUMS };
+
+/**
+ * cache-type enum
+ */
+enum OmCacheGroupEnum {
+	RAM_CACHE_GROUP = 1,
+	VRAM_CACHE_GROUP
+};
 
 #endif

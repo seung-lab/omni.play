@@ -4,6 +4,7 @@
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
+#include "datalayer/omDataWrapper.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 
@@ -29,12 +30,9 @@
 #include <vtkImageCast.h>
 #include <vtkStringArray.h>
 
-/////////////////////////////////
-///////          VTK IO Methods
-
-vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths, 
-						      const DataBbox dataExtentBbox, 
-						      int bytesPerSample, const OmDataPath dataset)
+OmDataWrapperPtr OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
+						      const DataBbox dataExtentBbox,
+						      const OmDataPath dataset)
 {
 	//FIXME: don't assert, or check before calling me!
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
@@ -43,15 +41,11 @@ vtkImageData * OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilena
 	OmDataReader * hdf5reader = dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
 	hdf5reader->open();
 
-	vtkImageData *data;
+	OmDataWrapperPtr data;
         if(hdf5reader->dataset_exists(dataset)){
-		data = hdf5reader->dataset_image_read_trim( dataset,
-								  dataExtentBbox, 
-								  bytesPerSample);
+		data = hdf5reader->dataset_image_read_trim( dataset, dataExtentBbox);
 	} else {
-		data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(),
-								  dataExtentBbox, 
-								  bytesPerSample);
+		data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(), dataExtentBbox);
 	}
 
 	hdf5reader->close();
@@ -115,38 +109,40 @@ void OmImageDataIo::clearImageData(vtkImageData * data)
 	memset(scalar_pointer, 0, bytes_per_sample * samples_per_voxel * dims[0] * dims[1] * dims[2]);
 }
 
-vtkImageData * OmImageDataIo::allocImageData(Vector3 < int >dims, int bytesPerSample)
+OmDataWrapperPtr OmImageDataIo::allocImageData(Vector3 < int >dims, OmDataWrapperPtr old)
 {
 	//alloc data
 	vtkImageData *data = vtkImageData::New();
 	debug ("meshercrash", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
 	data->SetDimensions(dims.x, dims.y, dims.z);
-	data->SetScalarType(bytesToVtkScalarType(bytesPerSample));
+	data->SetScalarType(bytesToVtkScalarType(old->getSizeof()));
 	data->SetNumberOfScalarComponents(1);
 	data->AllocateScalars();
 	data->Update();
 
 	data->ReleaseDataFlagOn();
 
-	return data;
+	return old->newWrapper(data);
 }
 
-vtkImageData * OmImageDataIo::createBlankImageData(Vector3 < int >dims, int bytesPerSample, char value)
+OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3 < int >dims, OmDataWrapperPtr old, char value)
 {
 	//alloc data
-	vtkImageData *data = allocImageData(dims, bytesPerSample);
+	OmDataWrapperPtr data = allocImageData(dims, old);
 
 	//clear data
-	void *scalar_pointer = data->GetScalarPointer();
-	memset(scalar_pointer, value, bytesPerSample * dims.x * dims.y * dims.z);
+	void *scalar_pointer = data->getVTKPtr()->GetScalarPointer();
+	memset(scalar_pointer, value, old->getSizeof() * dims.x * dims.y * dims.z);
+
 	return data;
 }
 
 /*
  *	Returns pointer to array of copied data from specified source and bbox.
  */
-void * OmImageDataIo::copyImageData(vtkImageData * srcData, const DataBbox & srcCopyBbox)
+void * OmImageDataIo::copyImageData(OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
 {
+	vtkImageData * srcData = srcInData->getVTKPtr();
 
 	//get vtk formatted copy extent
 	int src_copy_extent[6];
@@ -206,9 +202,11 @@ void * OmImageDataIo::copyImageData(vtkImageData * srcData, const DataBbox & src
 	return p_out_data;
 }
 
-void OmImageDataIo::copyImageData(vtkImageData * dstData, const DataBbox & dstCopyBbox,
-				  vtkImageData * srcData, const DataBbox & srcCopyBbox)
+void OmImageDataIo::copyImageData(OmDataWrapperPtr dstInData, const DataBbox & dstCopyBbox,
+				  OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
 {
+	vtkImageData * dstData = dstInData->getVTKPtr();
+	vtkImageData * srcData = srcInData->getVTKPtr();
 
 	//get vtk formatted extent
 	int src_copy_extent[6], dst_copy_extent[6];
@@ -283,9 +281,11 @@ void OmImageDataIo::copyImageData(vtkImageData * dstData, const DataBbox & dstCo
 	}
 }
 
-void OmImageDataIo::copyIntersectedImageDataFromOffset(vtkImageData * dstData, vtkImageData * srcData, 
+void OmImageDataIo::copyIntersectedImageDataFromOffset(OmDataWrapperPtr dstInData, OmDataWrapperPtr srcInData,
 						       const Vector3 < int >&srcOffset)
 {
+	vtkImageData * dstData = dstInData->getVTKPtr();
+	vtkImageData * srcData = srcInData->getVTKPtr();
 
 	//bbox of source and destination
 	DataBbox src_bbox, dst_bbox;
@@ -316,7 +316,7 @@ void OmImageDataIo::copyIntersectedImageDataFromOffset(vtkImageData * dstData, v
 	 */
 
 	//copy intersected data
-	copyImageData(dstData, dst_intersection, srcData, src_intersection);
+	copyImageData(dstInData, dst_intersection, srcInData, src_intersection);
 }
 
 /*
@@ -352,3 +352,5 @@ void OmImageDataIo::appendImageDataPairs(vtkImageData ** inputImageData, vtkImag
 		inputImageData[2 * i + 1]->Delete();
 	}
 }
+
+

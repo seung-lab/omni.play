@@ -7,11 +7,11 @@
 
 class OmThreadedCachingTile;
 
-class OmTileCache : public OmThreadedCache<OmTileCoord, OmTextureID> {
+class OmTileCache : public OmThreadedCache<OmTileCoord, OmTextureIDPtr> {
 public:
 	OmTileCache(OmThreadedCachingTile * parent);
 	
-	OmTextureID* HandleCacheMiss(const OmTileCoord &key);
+	OmTextureIDPtr HandleCacheMiss(const OmTileCoord &key);
 
 private:
 	OmThreadedCachingTile *const mOmThreadedCachingTile;

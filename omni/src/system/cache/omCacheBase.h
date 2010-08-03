@@ -1,57 +1,37 @@
 #ifndef OM_CACHE_BASE_H
 #define OM_CACHE_BASE_H
 
-/*
- *	Base class of all caches.  Base class allows
- *	for the CacheManager to organize caches into groups which can be emptied all at once.
- *	UpdateSize() method forwards the update to the manager with appropriate group information.
- *
+/**
+ *	Base class of all caches.
  *	Brett Warne - bwarne@mit.edu - 7/15/09
  */
 
-#include "omCacheManager.h"
+#include "common/omCommon.h"
+
+class OmCacheableBase;
 
 class OmCacheBase {
-
 public:
-	//constructor
-	OmCacheBase(OmCacheGroup group) {
-		mDelayDelta = false;
-		mSavedDelta = 0;
-		mCacheGroup = group;
-		OmCacheManager::AddCache(mCacheGroup, this);
-	}
+	OmCacheBase(OmCacheGroupEnum group)
+		: mCacheGroup(group) {}
 
-	//destructor
-	virtual ~OmCacheBase() {
-		OmCacheManager::RemoveCache(mCacheGroup, this);
-	}
-	
-	//update group size
-	void UpdateSize(int delta) {
-		if (!mDelayDelta) {
-			OmCacheManager::UpdateCacheSize(mCacheGroup, delta+mSavedDelta);
-			mSavedDelta = 0;
-		} else {
-			mSavedDelta += delta;
-		}
-	}
-	
-	//remove single element from cache
+	virtual ~OmCacheBase(){}
+
+	virtual void UpdateSize(const qint64 delta) = 0;
+	virtual void Remove(OmCacheableBase * base) = 0;
 	virtual void RemoveOldest() = 0;
-	virtual unsigned int GetFetchStackSize() = 0;
-	virtual long GetCacheSize() = 0;
+	virtual int GetFetchStackSize() = 0;
+	virtual qint64 GetCacheSize() = 0;
 	virtual void closeDownThreads() = 0;
 
-	OmCacheGroup mCacheGroup;
+	std::string getGroupName(){
+		if(mCacheGroup == RAM_CACHE_GROUP){
+			return "RAM_CACHE";
+		}
+		return "VRAM_CACHE";
+	}
 
-protected:
-	int mSavedDelta;
-	bool mDelayDelta;
-	
-
+	const OmCacheGroupEnum mCacheGroup;
 };
-
-
 
 #endif

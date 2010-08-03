@@ -1,8 +1,8 @@
 #ifndef OM_MESH_DRAWER_H
 #define OM_MESH_DRAWER_H
 
+#include "volume/omMipVolume.h"
 #include "segment/omSegmentPointers.h"
-#include "volume/omMipChunkPtr.h"
 
 class OmSegment;
 class OmMipChunkCoord;

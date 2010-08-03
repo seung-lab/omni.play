@@ -27,23 +27,23 @@ void OmDummyWriter::group_delete( const OmDataPath & )
 }
 
 void OmDummyWriter::dataset_image_create_tree_overwrite( const OmDataPath &, Vector3<int>*, 
-						  Vector3<int>*, int ) 
+						  Vector3<int>*, OmHdf5Type) 
 {
 	printf("%s: write operation should not have happened...\n", __FUNCTION__);
 }
 
 void OmDummyWriter::dataset_image_write_trim( const OmDataPath & , DataBbox *, 
-				       int, vtkImageData *)
+				       OmDataWrapperPtr)
 {
 	printf("%s: write operation should not have happened...\n", __FUNCTION__);
 }
 
-void OmDummyWriter::dataset_raw_create_tree_overwrite( const OmDataPath &, int, const void* )
+void OmDummyWriter::dataset_raw_create_tree_overwrite( const OmDataPath &, int, OmDataWrapperPtr)
 {
 	printf("%s: write operation should not have happened...\n", __FUNCTION__);
 }
 
-void OmDummyWriter::dataset_write_raw_chunk_data(const OmDataPath &, DataBbox, int, void *)
+void OmDummyWriter::dataset_write_raw_chunk_data(const OmDataPath &, DataBbox, OmDataWrapperPtr)
 {
 	printf("%s: write operation should not have happened...\n", __FUNCTION__);
 }

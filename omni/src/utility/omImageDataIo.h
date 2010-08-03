@@ -1,16 +1,10 @@
 #ifndef OM_IMAGE_IO_H
 #define OM_IMAGE_IO_H
 
-/*
- *
- *
- */
-
 #include "common/omCommon.h"
 #include "datalayer/omDataPath.h"
+#include "datalayer/omDataWrapper.h"
 #include <QFileInfoList>
-
-
 
 class vtkImageReader2;
 class vtkImageWriter;
@@ -20,37 +14,34 @@ class OmImageDataIo {
  public:
 	static void clearImageData(vtkImageData *data);
 
-	static vtkImageData * allocImageData(Vector3<int> dims, int bytesPerSample);
-	static vtkImageData * createBlankImageData(Vector3<int> dims, 
-						   int bytesPerSample, 
-						   char value = 0);
+	static OmDataWrapperPtr allocImageData(Vector3<int> dims, OmDataWrapperPtr);
+	static OmDataWrapperPtr createBlankImageData(Vector3<int> dims, OmDataWrapperPtr old, char value = 0);
 
-	static void copyImageData(vtkImageData *dstData, const DataBbox &dstCopyBbox,
-				  vtkImageData *srcData, const DataBbox &srcCopyBbox);
+	static void copyImageData(OmDataWrapperPtr dstData, const DataBbox &dstCopyBbox,
+				  OmDataWrapperPtr srcData, const DataBbox &srcCopyBbox);
 
-	static void * copyImageData(vtkImageData *srcData, const DataBbox &srcCopyBbox);
+	static void * copyImageData(OmDataWrapperPtr srcData, const DataBbox &srcCopyBbox);
 
-	static void copyIntersectedImageDataFromOffset(vtkImageData *dstData, 
-						       vtkImageData *srcData, 
+	static void copyIntersectedImageDataFromOffset(OmDataWrapperPtr dstData,
+						       OmDataWrapperPtr srcData,
 						       const Vector3<int> &srcOffset);
 	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
 
-	static vtkImageData * om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths, 
-						     const DataBbox dataExtentBbox, 
-						     int bytesPerSample, const OmDataPath dataset);
+	static OmDataWrapperPtr om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths,
+						     const DataBbox dataExtentBbox,
+						     const OmDataPath dataset);
  private:
-	
-	//reading
-	static vtkImageData * om_imagedata_read_vtk(QFileInfoList sourceFilenamesAndPaths, 
-						    const DataBbox srcExtentBbox, 
-						    const DataBbox dataExtentBbox, 
-						    int bytesPerSample);
-	
-	// vtkImageData Utility Functions
-	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb, int extent[]);
-	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[], AxisAlignedBoundingBox<int>& aabb);
 
-	static void appendImageDataPairs(vtkImageData **inputImageData, vtkImageData **outputImageData, int num_pairs, int axis);
+	//determine dimensions
+	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList sourceFilenamesAndPaths);
+
+	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb, int extent[]);
+	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[],
+							   AxisAlignedBoundingBox<int>& aabb);
+
+	static void appendImageDataPairs(vtkImageData **inputImageData,
+					 vtkImageData **outputImageData,
+					 int num_pairs, int axis);
 };
 
 #endif

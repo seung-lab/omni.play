@@ -18,9 +18,6 @@ class OmBuildSegmentation : public OmBuildVolumes, public QThread
 
 	bool doBuildImage;
 	bool doBuildMesh;
-	void doLoadDendrogram();
-	void convertToEdgeList( quint32 * dend, float * dendValues, 
-				const int size );
 
 	void run();
 	void reset();

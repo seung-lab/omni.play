@@ -7,7 +7,7 @@
 
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 			 const int &size, const int x, const int y,
-			 OmTileCache * cache, void *texture, 
+			 OmTileCache * cache, void *texture,
 			 int flags)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)
@@ -18,9 +18,7 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 	, x(x)
 	, y(y)
 {
-	assert(cache);
-
-	UpdateSize(128 * 128 * 4);
+	UpdateSize(mem_size);
 }
 
 OmTextureID::~OmTextureID()
@@ -28,5 +26,5 @@ OmTextureID::~OmTextureID()
 	OmGarbage::asOmTextureId(textureID);
 
 	//remove object size from cache
-	UpdateSize(-128 * 128 * 4);
+	UpdateSize(-mem_size);
 }

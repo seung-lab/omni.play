@@ -84,24 +84,23 @@ bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(const OmDat
 }
 
 void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, int bytesPerSample)
+					    Vector3<int>* chunkDims, OmHdf5Type type)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
-	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, bytesPerSample);
+	hdfLowLevel.om_hdf5_dataset_image_create_with_lock(fileId, name, dataDims, chunkDims, type);
 }
 
-vtkImageData * OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent)
 {
 	HDF5_CHECK();
-	return hdfLowLevel.om_hdf5_dataset_image_read_trim_with_lock(fileId, name, dataExtent, bytesPerSample);
+	return hdfLowLevel.om_hdf5_dataset_image_read_trim_with_lock(fileId, name, dataExtent);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample,
-				 vtkImageData * pImageData)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data)
 {
 	HDF5_CHECK();
-	hdfLowLevel.om_hdf5_dataset_image_write_trim_with_lock(fileId, name, dataExtent, bytesPerSample, pImageData);
+	hdfLowLevel.om_hdf5_dataset_image_write_trim_with_lock(fileId, name, dataExtent, data);
 }
 
 OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lock(const OmDataPath & path, int *size)
@@ -110,13 +109,13 @@ OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_read_with_lo
 	return hdfLowLevel.om_hdf5_dataset_raw_read_with_lock(fileId, name, size);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_with_lock(const OmDataPath & path, int size, const void *data)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_raw_create_with_lock(fileId, name, size, data);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const void* data)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_raw_create_tree_overwrite_with_lock(fileId, name, size, data);
@@ -129,16 +128,16 @@ Vector3 < int > OmHdf5LowLevelWrappersManualOpenClose::dataset_image_get_dims_wi
 	return hdfLowLevel.om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 }
 
-OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample)
+OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent)
 {
 	HDF5_CHECK();
-	return hdfLowLevel.om_hdf5_dataset_read_raw_chunk_data(fileId, name, dataExtent, bytesPerSample);
+	return hdfLowLevel.om_hdf5_dataset_read_raw_chunk_data(fileId, name, dataExtent);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data)
 {
 	HDF5_CHECK();
-	hdfLowLevel.om_hdf5_dataset_write_raw_chunk_data(fileId, name, dataExtent, bytesPerSample,  imageData);
+	hdfLowLevel.om_hdf5_dataset_write_raw_chunk_data(fileId, name, dataExtent, data);
 }
 
 Vector3< int > OmHdf5LowLevelWrappersManualOpenClose::dataset_get_dims_with_lock( const OmDataPath & path )

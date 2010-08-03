@@ -14,7 +14,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmS
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 	
-	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
+	QByteArray ba = QByteArray::fromRawData( dw->getPtr<char>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
@@ -67,5 +67,5 @@ void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vec
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
 									   ba.size(), 
-									   ba.data() );
+									   OmDataWrapperRaw(ba.data()));
 }

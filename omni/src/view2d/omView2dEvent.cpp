@@ -14,7 +14,7 @@
 #include "volume/omSegmentation.h"
 
 /**
- * \name Mouse Event Handlers 
+ * \name Mouse Event Handlers
  */
 
 //\{
@@ -45,11 +45,11 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 			mouseShowSegmentContextMenu(event);
 		}
 	}
-			
+
 	cameraMoving = true;
 }
 
-void OmView2d::doRedraw() 
+void OmView2d::doRedraw()
 {
 	Refresh();
 	mTextures.clear();
@@ -96,7 +96,7 @@ void OmView2d::doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 		sel.selectJustThisSegment_toggle( segmentID );
 	}
 	sel.sendEvent();
-	
+
 	Refresh();
 	mTextures.clear();
 	myUpdate();
@@ -154,7 +154,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 			}
 		}
 	}
-	
+
 	return NULL;
 }
 
@@ -259,7 +259,7 @@ void OmView2d::MouseRelease(QMouseEvent * event)
 void OmView2d::MouseMove(QMouseEvent * event)
 {
 	// KEEP PAINTING
-	
+
 	if (PAN_MODE == OmStateManager::GetToolMode()) {
 		mouseMove_CamMoving(event);
 	} else if (mScribbling) {
@@ -310,7 +310,7 @@ void OmView2d::MouseWheelZoom(const int numSteps)
 		if (!mLevelLock && (current_zoom.y <= 6) && (current_zoom.x < mRootLevel)) {
 			// need to move to next mip level
 			Vector2i new_zoom = Vector2i(current_zoom.x + 1, 10);
-			PanAndZoom(new_zoom);	
+			PanAndZoom(new_zoom);
 		}
 
 		else if (current_zoom.y > 1) {
@@ -350,7 +350,7 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 	debug ("view2d", "OmView2d::mouseLeftButton %i,%i\n", SELECT_MODE, OmStateManager::GetToolMode());
 	bool doselection = false;
 	bool dosubtract = false;
-	
+
 	OmSegID data_value;
 
 	switch (OmStateManager::GetToolMode()) {
@@ -382,7 +382,7 @@ void OmView2d::mouseLeftButton(QMouseEvent * event)
 		mScribbling = true;
 		dosubtract = true;
 		break;
-	case SELECT_VOXEL_MODE:	
+	case SELECT_VOXEL_MODE:
 		return;
 		break;
 	default:
@@ -590,7 +590,7 @@ void OmView2d::ViewCenterChangeEvent()
 	depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
 	depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
 	depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
-	
+
 	ScreenCoord crossCoord = SpaceToScreenCoord(mViewType, depth);
 	ScreenCoord centerCoord= Vector2i(mTotalViewport.width/2,mTotalViewport.height/2);
 
@@ -670,7 +670,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 			if (!mLevelLock && (current_zoom.y == 10) && (current_zoom.x > 0)) {
 				Vector2i new_zoom = Vector2 < int >(current_zoom.x - 1, 6);
-				
+
 			} else	{
 				Vector2i new_zoom = Vector2 < int >(current_zoom.x, current_zoom.y + 1);
 				PanAndZoom(new_zoom);
@@ -759,7 +759,7 @@ void OmView2d::resetWindow()
 		debug("cross","we made it to the great Escape!\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	}
-		
+
 	doRedraw();
 }
 

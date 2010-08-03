@@ -2,17 +2,16 @@
 #define OM_VIEW_2D_IMPL_H
 
 #include "common/omCommon.h"
+#include "view2d/omTile.h"
 
-#include <QExplicitlySharedDataPointer>
 #include <QImage>
 #include <QGLPixelBuffer>
-#include <QtGui> 
+#include <QtGui>
 
 class OmFilter2d;
 class Drawable;
 class OmTextureID;
 class OmThreadedCachingTile;
-class OmMipVolume;
 class OmViewGroupState;
 
 class OmView2dImpl : public QWidget
@@ -63,8 +62,9 @@ class OmView2dImpl : public QWidget
 
 	void PreDraw(Vector2f zoomMipVector);
 	void TextureDraw(vector <Drawable*> &textures);
-	void safeDraw(float zoomFactor, float x, float y, int tileLength, QExplicitlySharedDataPointer<OmTextureID> gotten_id);
-	void safeTexture(QExplicitlySharedDataPointer<OmTextureID> gotten_id);
+	void safeDraw(float zoomFactor, float x, float y, int tileLength,
+		      OmTextureIDPtr gotten_id);
+	void safeTexture(OmTextureIDPtr gotten_id);
 	bool BufferTiles(Vector2f zoomMipVector);
 
 	Vector2f GetPanDistanceStickyMode(ViewType viewType);

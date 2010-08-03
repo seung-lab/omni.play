@@ -11,12 +11,12 @@
  */
 
 #include "omMipChunkCoord.h"
-#include "system/cache/omCacheableBase.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataWrapper.h"
+#include "system/cache/omCacheableBase.h"
+#include "utility/image/omImage.hpp"
 
 #include <QMutex>
-
-enum OmDataVolumePlane { VOL_XY_PLANE, VOL_XZ_PLANE, VOL_YZ_PLANE };
 
 class vtkImageData;
 class OmMipVolume;
@@ -28,7 +28,7 @@ class OmMipChunk : public OmCacheableBase {
 public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	virtual ~OmMipChunk();
-		
+
 	void Open();
 	void OpenForWrite();
 	void Flush();
@@ -37,12 +37,12 @@ public:
 
 	//properties
 	const DataBbox& GetExtent();
-	
+
 	//dirty accessors
 	bool IsDirty();
 	bool IsVolumeDataDirty();
 	bool IsMetaDataDirty();
-	
+
 
 	void RawWriteChunkData(unsigned char * data);
 	OmDataWrapperPtr RawReadChunkDataUCHAR();
@@ -53,36 +53,38 @@ public:
 	OmDataWrapperPtr RawReadChunkDataUCHARmapped();
 	void dealWithCrazyNewStuff();
 	OmDataWrapperPtr RawReadChunkDataUINT32mapped();
-	
+
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
 	vtkImageData* GetImageData();
-	void SetImageData(vtkImageData *imageData);
+	OmDataWrapperPtr GetImageDataWrapper();
+	void GetBounds(float & maxout, float & minout);
+	void SetImageData(OmDataWrapperPtr data);
 
-	
+
 	//meta data io
 	virtual void ReadVolumeData();
 	virtual void WriteVolumeData();
 	void ReadMetaData();
 	void WriteMetaData();
-	
-	
+
+
 	//meta data accessors
 	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
-	
+
 
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
-	
+
 
 	//chunk extent
 	const NormBbox& GetNormExtent();
 	const NormBbox& GetClippedNormExtent();
-	
-	
+
+
 	//mip properties
 	int GetLevel();
 	bool IsRoot();
@@ -90,14 +92,14 @@ public:
 	const OmMipChunkCoord& GetCoordinate();
 	const OmMipChunkCoord& GetParentCoordinate();
 	const set<OmMipChunkCoord>& GetChildrenCoordinates();
-	
+
 	//slice
-	AxisAlignedBoundingBox<int> ExtractSliceExtent(OmDataVolumePlane plane, int coord);
-	void * ExtractDataSlice(const ViewType viewType, int offset, Vector2 < int >&sliceDims, bool fast = false);
-	
+        Vector2i GetSliceDims();
+        void * ExtractDataSlice(const ViewType, int offset);
+
 	//meshing
-	vtkImageData* GetMeshImageData();
-	
+        OmImage<uint32_t, 3> GetMeshOmImageData();
+
 	int GetBytesPerSample();
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();
@@ -110,10 +112,10 @@ protected:
 	mutable QMutex mDirectDataValueLock;
 	int mEstMemBytes;
 	virtual void InitChunk(const OmMipChunkCoord &rMipCoord);
-	
+
 	//mip volume this chunk belongs to
 	OmMipVolume * const mpMipVolume;
-	
+
 	//cache direct and indirectly contained values for drawing tree
 	bool containedValuesDataLoaded;
 	void loadMetadataIfPresent();
@@ -135,20 +137,17 @@ protected:
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
 	set<OmMipChunkCoord> mChildrenCoordinates;
-		
+
 	//chunk properties
 	string mFileName;
 	string mDirectoryPath;
-	
+
 	//voxel management
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
 	//image data of chunk
-	vtkImageData *mpImageData;	
-
-	OmDataVolumePlane getVolPlane(const ViewType viewType);
-	void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast);
+	OmDataWrapperPtr mData;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );

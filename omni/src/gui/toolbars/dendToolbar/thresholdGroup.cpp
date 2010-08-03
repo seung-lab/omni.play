@@ -4,6 +4,7 @@
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "volume/omSegmentationThresholdChangeAction.h"
 
 ThresholdGroup::ThresholdGroup(GraphTools * d)
 	: OmThresholdGroup(d, false)
@@ -21,8 +22,7 @@ void ThresholdGroup::actUponThresholdChange( const float threshold )
 		return;
 	}
 	
-	sdw.getSegmentation().SetDendThresholdAndReload(threshold);
-	OmEvents::SegmentModified();
+	(new OmSegmentationThresholdChangeAction(sdw.getSegmentationID(), threshold))->Run();
 }
 
 void ThresholdGroup::setInitialGUIThresholdValue()

@@ -30,8 +30,8 @@ public:
   DynamicForestPool(size_t s): size_(s) {
     // enough to set everything to zero
     // no need to call the constructors
-    x_ = (Node*)malloc(s + s * sizeof(Node));
-    memset((char*)x_, 0, s + s * sizeof(Node));
+    x_ = (Node*)malloc((s+1) * sizeof(Node));
+    memset((char*)x_, 0, (s+1) * sizeof(Node));
   }
   ~DynamicForestPool() {
     free(x_);
@@ -147,7 +147,7 @@ public:
   // we can only grow, shrinking doesn't make sense!!!
   void resize(size_t s) {
     assert(s > size_);
-    x_ = (Node*)realloc(x_, s + s * sizeof(Node));
+    x_ = (Node*)realloc(x_, (s+1) * sizeof(Node));
     memset((char*)(&x_[size_+1]), 0, s - size_);
     size_ = s;
   }
