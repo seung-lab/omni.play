@@ -174,7 +174,6 @@ void OmBuildSegmentation::doLoadDendrogram()
 			   mSeg->mDendValues->getFloatPtr(),
 			   mSeg->mDendCount );
 
-
 	mSeg->FlushDend();
 
 	hdf5reader->close();
@@ -202,11 +201,10 @@ void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
 		// Data may have values that don't exist in the volume... warn user.
 		if(childUnknownDepthID < maxSegValue && parentID < maxSegValue) {
 			childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-			childRootDT->join( mGraph->get( parentID )->findRoot() );
+			childRootDT->join( mGraph->get( parentID ) );
 
 			// set child ID to root value found by graph...
 			dend[i] = childRootDT->getKey();
-			dend[i+numDendRows] = mGraph->get( parentID )->findRoot()->getKey();
 		} else {
 			++numBadSegValues;
 		}

@@ -6,7 +6,6 @@ OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
 	: mValue(value)
 	, mCache(cache)
 	, mParentSegID(0)
-	, mJoinRootID(value)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
@@ -19,7 +18,6 @@ OmSegment::OmSegment(OmSegmentCache * cache)
 	: mValue(0)
 	, mCache(cache)
 	, mParentSegID(0)
-	, mJoinRootID(0)
 	, mImmutable(false)
 	, mSize(0)
 	, mEdgeNumber(-1)
@@ -61,7 +59,7 @@ void OmSegment::SetInitialColor()
 void OmSegment::reRandomizeColor()
 {
 	SetInitialColor();
-
+	
 	mCache->addToDirtySegmentList(this);
 }
 
@@ -79,8 +77,8 @@ QString OmSegment::GetNote()
 	QString customNote = mCache->getSegmentNote( mValue );
 
 	if( mParentSegID ){
-		customNote += "Parent: "
-			+ QString::number(mParentSegID)
+		customNote += "Parent: " 
+			+ QString::number(mParentSegID) 
 			+ "; ";
 	}
 

@@ -24,8 +24,8 @@ function mattsQWS
 		%filter = filter / 10;
 		%conn = filter;
 	
-		for SizeThreshold = [18000 30 60000]
-			for HiThreshold = [1 .999 .9999] 
+		for SizeThreshold = [30 50 250 600]
+			for HiThreshold = [.9999 .9995 .995] 
 				for absLowThreshold = [.3]
 					LoThreshold=0.1;
 					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);

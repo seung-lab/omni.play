@@ -26,8 +26,6 @@ OmSegID OmSegmentGraph::graph_getRootID( const OmSegID segID )
 
 void OmSegmentGraph::graph_join( const OmSegID childRootID, const OmSegID parentRootID )
 {
-	printf("%u\t%u\n", childRootID, parentRootID);
-	//printf("2: %u\t%u\n", mGraph->root(childRootID), parentRootID);
 	mGraph->join(childRootID, parentRootID);
 }
 
@@ -41,10 +39,10 @@ void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 	mCache = cache;
 
 	delete mGraph;
-
+		
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
-
+	
 	mGraph = new zi::DynamicForestPool<uint32_t>( size );
 
 	buildSegmentSizeLists();
@@ -73,7 +71,7 @@ void OmSegmentGraph::buildSegmentSizeLists()
 			} else {
 				mRootListBySize.insertSegment( seg );
 			}
-		}
+		} 
 	}
 }
 
@@ -85,12 +83,12 @@ quint32 OmSegmentGraph::getNumTopLevelSegs()
 
 // TODO: store more threshold info in the segment cache, and reduce size of walk...
 // NOTE: assuming incoming data is an edge list
-void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
-					 const float * thresholds,
+void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes, 
+					 const float * thresholds, 
 					 quint8 * edgeDisabledByUser,
 					 quint8 * edgeWasJoined,
 					 quint8 * edgeForceJoin,
-					 const int numEdges,
+					 const int numEdges, 
 					 const float stopThreshold )
 {
 	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
@@ -107,7 +105,7 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 
 		childID = nodes[i];
 		threshold = thresholds[i];
-
+		
 		if( threshold >= stopThreshold ||
 		    1 == edgeForceJoin[i]      ){ // join
 			if( 1 == edgeWasJoined[i] ){
@@ -125,16 +123,14 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 	printf("done\n");
 }
 
-void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes,
-					   const float * thresholds,
+void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes, 
+					   const float * thresholds, 
 					   quint8 * edgeDisabledByUser,
 					   quint8 * edgeWasJoined,
 					   quint8 * edgeForceJoin,
-					   const int numEdges,
+					   const int numEdges, 
 					   const float stopThreshold )
 {
-
-
 	printf("\t %d edges...", numEdges);
 	fflush(stdout);
 
@@ -142,54 +138,58 @@ void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes,
 	OmSegID parentID;
 	float threshold;
 
-	{
-	  OmSegment* seg;
-	  for(uint32_t i = 1; i <= mGraph->size(); ++i){
-	    seg = mCache->GetSegmentFromValue(i);
-	    if(NULL == seg){
-	      continue;
-	    }
-	    if(seg->mParentSegID){
-	      splitChildFromParentInternal(i);
-	    }
-	  }
-	}
-
 	for(int i = 0; i < numEdges; ++i) {
-	  childID = nodes[i];
-	  threshold = thresholds[i];
+		if( 1 == edgeDisabledByUser[i] ){
+			continue;
+		}
 
-	  if( threshold >= stopThreshold){
-	    parentID = nodes[i + numEdges ];
-	    if( JoinInternal( parentID, childID, threshold, i)){
-	      } else {
-		assert(0);
-	      }
-	  }
+		childID = nodes[i];
+		threshold = thresholds[i];
+		
+		if( threshold >= stopThreshold ||
+		    1 == edgeForceJoin[i] ){ // join
+			if( 1 == edgeWasJoined[i] ){
+				continue;
+			}
+			parentID = nodes[i + numEdges ];
+			if( JoinInternal( parentID, childID, threshold, i) ){
+				edgeWasJoined[i] = 1;
+			} else {
+				edgeDisabledByUser[i] = 1;
+			}
+		} else { // split
+			if( 0 == edgeWasJoined[i] ){
+				continue;
+			}
+			if( splitChildFromParentInternal( childID ) ){
+				edgeWasJoined[i] = 0;
+			} else {
+				edgeForceJoin[i] = 1;
+			}
+		}
         }
 
 	printf("done\n");
 }
 
-bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
-				   const OmSegID childUnknownDepthID,
+bool OmSegmentGraph::JoinInternal( const OmSegID parentID, 
+				   const OmSegID childUnknownDepthID, 
 				   const float threshold,
 				   const int edgeNumber )
 {
 	const OmSegID childRootID = graph_getRootID(childUnknownDepthID);
 	OmSegment * childRoot = mCache->GetSegmentFromValue(childRootID);
-
-	OmSegment * parent = mCache->GetSegmentFromValue( graph_getRootID(parentID) );
+	OmSegment * parent = mCache->GetSegmentFromValue( parentID );
 
 	if( childRoot == mCache->findRoot( parent ) ){
 		return false;
 	}
-
+	
 	if( childRoot->mImmutable != parent->mImmutable ){
 		return false;
 	}
-
-	graph_join(childRootID, graph_getRootID(parentID));
+ 
+	graph_join(childRootID, parentID);
 
 	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
 	childRoot->setParent(parent, threshold);
@@ -210,13 +210,15 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 		return false;
 	}
 
+	assert( child->mParentSegID );
+
 	OmSegment * parent = mCache->GetSegmentFromValue( child->mParentSegID );
 
 	if( child->mImmutable == parent->mImmutable &&
 	    1 == child->mImmutable ){
 		return false;
 	}
-
+	
 	parent->segmentsJoinedIntoMe.erase( child->mValue );
         graph_cut(child->mValue);
 	child->mParentSegID = 0;

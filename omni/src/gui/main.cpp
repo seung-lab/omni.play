@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #endif
 
+
 //GGOCTFPointer GGOCTFunction = 0;
 
 /*
@@ -51,16 +52,16 @@ void myBacktrace (int sig)
 	if(!sig) {
 		out = stdout;
 	}
-
+     
        	size = backtrace (array, 1000);
        	strings = backtrace_symbols (array, size);
-
+     
        	//fprintf (stderr, "Obtained %zd stack frames.\n", size);
        	fprintf (out, "Obtained %zd stack frames.\n", size);
-
+     
 	for (i = 0; i < size; i++)
 		fprintf (out, "%s\n", strings[i]);
-
+     
 	free (strings);
 
 	if(sig) {

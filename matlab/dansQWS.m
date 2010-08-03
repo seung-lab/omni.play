@@ -25,13 +25,13 @@ function dansQWS
 		%filter = filter / 10;
 		%conn = filter;
 	
-		for SizeThreshold = [600 3000]
-			for HiThreshold = [.80 .81 .85] 
-				for absLowThreshold = [.3 .35]
+		for SizeThreshold = [70000 30000 6000]
+			for HiThreshold = [.90 .86 .88 .95] 
+				for absLowThreshold = [.5 .35 .4]
 					LoThreshold=0.1;
 					[seg graph graphValues dend dendValues] = QuickieWS(conn, LoThreshold, HiThreshold, SizeThreshold, absLowThreshold);
 
-					f = sprintf ('dans-%d-%d-%f-%d', 200-inc, SizeThreshold, HiThreshold, absLowThreshold);
+					f = sprintf ('danstest2-%d-%d-%f-%d', 200-inc, SizeThreshold, HiThreshold, absLowThreshold);
 					fname = sprintf ('%s/%s.h5', outdir, f);
 					fprintf (fid, 'create:%s/%s.omni\n', outdir, f);
 					fprintf (fid, 'loadHDF5seg:%s/%s.h5\n', outdir, f);
