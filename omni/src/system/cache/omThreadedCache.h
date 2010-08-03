@@ -39,10 +39,8 @@ class OmThreadedCache : public OmCacheBase {
 	void Get(QExplicitlySharedDataPointer<PTR> &p_value,
 		 const KEY &key, 
 		 bool blocking);
-	void Add(const KEY &key, PTR *value);
 	void Remove(const KEY &key);
 	void RemoveOldest();
-	bool Contains(const KEY &key);
 	void Flush();
 
 	//get info about the cache 

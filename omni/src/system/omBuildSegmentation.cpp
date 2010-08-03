@@ -56,6 +56,9 @@ void OmBuildSegmentation::run()
 		do_build_seg_mesh();
 	}
 
+	printf("Segmentation build COMPLETELY done\n");
+	printf("************************\n");
+
 	reset();
 }
 
@@ -121,10 +124,10 @@ void OmBuildSegmentation::doLoadDendrogram()
         if( !hdf5reader->dataset_exists(fpath)){
                 printf("no dendrogram dataset found\n");
                 return;
-        } 
+        }
 	Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
-	printf("\tdendrogram is %s x %s\n", 
-	       qPrintable(StringHelpers::commaDeliminateNumber(dSize.x)), 
+	printf("\tdendrogram is %s x %s\n",
+	       qPrintable(StringHelpers::commaDeliminateNumber(dSize.x)),
 	       qPrintable(StringHelpers::commaDeliminateNumber(dSize.y)));
 	int dendSize;
 	OmDataWrapperPtr dend = hdf5reader->dataset_raw_read(fpath, &dendSize);
@@ -133,18 +136,18 @@ void OmBuildSegmentation::doLoadDendrogram()
         if(!hdf5reader->dataset_exists(fpath)){
                 printf("no dendrogram values dataset found\n");
                 return;
-	} 
+	}
       	Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
 	int dendValuesSize;
 	OmDataWrapperPtr dendValues = hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
-	printf("\tdendrogram values is %s x %s\n", 
-	       qPrintable(StringHelpers::commaDeliminateNumber(vSize.x)), 
+	printf("\tdendrogram values is %s x %s\n",
+	       qPrintable(StringHelpers::commaDeliminateNumber(vSize.x)),
 	       qPrintable(StringHelpers::commaDeliminateNumber(vSize.y)));
 
 	assert( 2 == dSize.x );
 	assert( 0 == vSize.y );
 	assert( vSize.x == dSize.y );
-	
+
 	quint8 * userDisabledEdge = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
 	memset(userDisabledEdge, 0, sizeof(quint8) * dendValuesSize );
 	OmDataWrapperPtr edgeDisabledByUser = OmDataWrapperPtr( new OmDataWrapper( userDisabledEdge ) );
@@ -167,8 +170,8 @@ void OmBuildSegmentation::doLoadDendrogram()
 	mSeg->mEdgeForceJoin = edgeForceJoin;
 	mSeg->mEdgeWasJoined = edgeWasJoined;
 
-	convertToEdgeList( mSeg->mDend->getQuint32Ptr(), 
-			   mSeg->mDendValues->getFloatPtr(), 
+	convertToEdgeList( mSeg->mDend->getQuint32Ptr(),
+			   mSeg->mDendValues->getFloatPtr(),
 			   mSeg->mDendCount );
 
 	mSeg->FlushDend();
@@ -177,24 +180,24 @@ void OmBuildSegmentation::doLoadDendrogram()
 }
 
 // rewrite child node IDs in MST, converting it to edge list
-void OmBuildSegmentation::convertToEdgeList( quint32 * dend, 
-					     float * dendValues, 
+void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
+					     float * dendValues,
 					     const int numDendRows )
 {
 	const quint32 maxSegValue =  mSeg->GetSegmentCache()->getMaxValue() + 1;
 	DynamicTreeContainer<OmSegID> * mGraph = new DynamicTreeContainer<OmSegID>(maxSegValue);
-	
+
 	quint32 childUnknownDepthID;
 	quint32 parentID;
 	float threshold;
 	DynamicTree<OmSegID> * childRootDT;
 	int numBadSegValues = 0;
-	
+
 	for(int i = 0; i < numDendRows; ++i) {
                 childUnknownDepthID = dend[i];
 		parentID = dend[i + numDendRows ];
                 threshold = dendValues[i];
-		
+
 		// Data may have values that don't exist in the volume... warn user.
 		if(childUnknownDepthID < maxSegValue && parentID < maxSegValue) {
 			childRootDT = mGraph->get( childUnknownDepthID )->findRoot();

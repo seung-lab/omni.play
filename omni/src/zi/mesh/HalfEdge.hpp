@@ -552,7 +552,7 @@ struct Mesh {
     dX /= 2.0; dY /= 2.0; dZ /= 2.0;
     boost::unordered_map<int64_t, Vertex<T>* > vertices;
     FOR_EACH(it, qm) {
-      int64_t v[3] = {it->get<0>(), it->get<1>(), it->get<2>()};
+      int64_t v[3] = {it->template get<0>(), it->template get<1>(), it->template get<2>()};
       for (int i=0;i<3;++i)
         if (vertices.find(v[i]) == vertices.end()) {
           Vertex<T> *newV = new Vertex<T>(T(Qpt_x(v[i]) * dX,

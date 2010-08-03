@@ -10,6 +10,7 @@
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/actions/segment/omSegmentValidateAction.h"
 #include "volume/omSegmentationThresholdChangeAction.h"
+#include "volume/omVoxelSetValueAction.h"
 
 #include <QDateTime>
 #include <QFile>
@@ -204,6 +205,28 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentationThresholdChangeAction &
         in >> version;
 	in >> a.mThreshold;
 	in >> a.mOldThreshold;
+
+        return in;
+}
+
+QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a )
+{
+        int version = 1;
+        out << version;
+        out << a.mSegmentationId;
+        //out << a.mOldVoxelValues;	//FIXME
+        out << a.mNewValue;
+
+        return out;
+}
+
+QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a )
+{
+        int version;
+        in >> version;
+        in >> a.mSegmentationId;
+        //in >> a.mOldVoxelValues;	//FIXME
+        in >> a.mNewValue;
 
         return in;
 }

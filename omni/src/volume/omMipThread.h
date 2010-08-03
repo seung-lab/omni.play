@@ -13,20 +13,28 @@ class OmMipVolume;
 class OmMipThread: public QRunnable
 {
  public:
-	OmMipThread(OmMipVolume* pMipVolume, const int threadNum, int numTotalThreadChunks);
-	int GetThreadChunksDone();
-	void AddEnqueuedThreadChunk(OmMipChunkCoord mipCoord);
+	enum ChunkType
+	{
+		MIP_CHUNK,
+		THREAD_CHUNK
+	};
+
+	OmMipThread(OmMipVolume* pMipVolume, const int threadNum, ChunkType chunkType, int numTotalChunks);
+	int GetNumChunksDone();
+	void EnqueueChunk(OmMipChunkCoord mipCoord);
 	void run();
 
  private:
 	OmMipVolume* mpMipVolume;
 	const int mThreadNum;
 
+	ChunkType mChunkType;
+
 	QQueue<OmMipChunkCoord> mMipCoords;
-	int mThreadChunksDone;
-	int mNumTotalThreadChunks;
+	int mNumChunksDone;
+	int mNumTotalChunks;
 	
-	mutable QSemaphore mNumEnqueuedThreadChunks;
+	mutable QSemaphore mNumEnqueuedChunks;
 	mutable QMutex mutex;
 };
 

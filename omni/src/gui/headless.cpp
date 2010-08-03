@@ -104,8 +104,8 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.loadDendrogram();
-	} else if( line.startsWith("compareChannels:") ) {
-		// format: compareChannels:id1,id2[:verbose]
+	} else if( line.startsWith("compareChanns:") ) {
+		// format: compareChanns:id1,id2[:verbose]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		
 		if ( args.size() < 2 ){
@@ -142,8 +142,8 @@ void Headless::processLine( QString line, QString fName )
 		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
 		}
-	} else if( line.startsWith("compareSegmentations:") ) {
-		// format: compareSegmentations:id1,id2[:verbose]
+	} else if( line.startsWith("compareSegs:") ) {
+		// format: compareSegs:id1,id2[:verbose]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		
 		if ( args.size() < 2 ){

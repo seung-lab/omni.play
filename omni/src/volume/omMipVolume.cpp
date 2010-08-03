@@ -56,8 +56,6 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 
 	mBytesPerSample = 1;
-
-	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
 }
 
 OmMipVolume::~OmMipVolume()
@@ -84,7 +82,6 @@ void OmMipVolume::Flush()
 
 	//flush all chunks in the cache
 	mDataCache->Flush();
-	mThreadChunkThreadedCache->Flush();
 }
 
 /////////////////////////////////
@@ -531,17 +528,6 @@ void OmMipVolume::GetThreadChunkLevel(QExplicitlySharedDataPointer < OmThreadChu
 	mThreadChunkThreadedCache->Get(p_value, rMipCoord, block);
 }
 
-/*
- *	Store chunk by adding it to the cache.
- */
-void OmMipVolume::StoreChunk(const OmMipChunkCoord & rMipCoord, OmMipChunk * pMipChunk)
-{
-
-	assert(ContainsMipChunkCoord(rMipCoord));
-
-	mDataCache->Add(rMipCoord, pMipChunk);
-}
-
 /////////////////////////////////
 ///////          Data Accessors
 
@@ -752,6 +738,8 @@ bool OmMipVolume::BuildThreadedVolume()
 		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
 				      ThreadChunksInVolume()));
 
+	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
+
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
@@ -759,7 +747,7 @@ bool OmMipVolume::BuildThreadedVolume()
        		vol_timer.start();
 	}
 
-	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,false);
+	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,false);
 	mipThreadManager->SpawnThreads(ThreadChunksInVolume());
 	mipThreadManager->run();
 	mipThreadManager->wait();
@@ -777,6 +765,9 @@ bool OmMipVolume::BuildThreadedVolume()
 		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
 
 	}
+
+	mThreadChunkThreadedCache->closeDownThreads();
+	delete mThreadChunkThreadedCache;
 
 	//hide progress bar
 	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
@@ -873,7 +864,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 		BuildChunkAndParents(*itr);
 
 		//clear modified values
-		p_chunk->ClearModifiedVoxelValues();
+		if(p_chunk) p_chunk->ClearModifiedVoxelValues();
 	}
 
 	//edited chunks clean

@@ -311,17 +311,17 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
         if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
 		int size;
         	seg.mDend = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		assert( size == seg.mDendSize );
+		//assert( size == seg.mDendSize );
 
 		QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
         	path.setPathQstr(dendValStr);
         	seg.mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		assert( size == seg.mDendValuesSize );
+		//assert( size == seg.mDendValuesSize );
 
 		QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(seg.GetDirectoryPath());
 		path.setPathQstr(dendEdgeDisabledByUser);
 		seg.mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		assert( size == seg.mDendValuesSize );
+		//assert( size == seg.mDendValuesSize );
 
 		// this is just a temporary object--should be refactored... (purcaro)
 		quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * seg.mDendValuesSize );
@@ -331,7 +331,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 		QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(seg.GetDirectoryPath());
 		path.setPathQstr(dendEdgeForceJoin);
 		seg.mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		assert( size == seg.mDendValuesSize );
+		//assert( size == seg.mDendValuesSize );
 	}
 
 	seg.mSegmentCache->refreshTree();

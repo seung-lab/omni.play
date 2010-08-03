@@ -1,25 +1,29 @@
 #ifndef OM_MIP_THREAD_MANAGER_H
 #define OM_MIP_THREAD_MANAGER_H
 
+#include "omMipThread.h"
+
 #include <QThreadPool>
 #include <QThread>
 #include <QList>
 
 class OmMipVolume;
-class OmMipThread;
 
 class OmMipThreadManager: public QThread
 {
  public:
-	OmMipThreadManager(OmMipVolume* pMipVolume, bool buildEdited);
+	OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, bool buildEdited);
 	void run();
-	void SpawnThreads(int numThreadChunksToMip);
+	void SpawnThreads(int numTotalChunks);
 	void StopThreads();
  private:
 	void DistributeThreadChunks();
-	int ChunksPerThread(int threadNum, int numThreadChunksToMip);
+	void DistributeMipChunks();
+	int ChunksPerThread(int threadNum, int numTotalChunks);
 
-	OmMipVolume* mpMipVolume;
+	OmMipVolume* mpMipVolume;	
+	OmMipThread::ChunkType mChunkType;
+
 	QThreadPool mMipThreadPool;
 	QList<OmMipThread*> mMipThreads;
 	int mNumTotalThreads;

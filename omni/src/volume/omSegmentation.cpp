@@ -1,17 +1,18 @@
-#include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "mesh/meshingManager.h"
-#include "segment/omSegment.h"
-#include "segment/omSegmentCache.h"
-#include "segment/omSegmentColorizer.h"
+#include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentValidateAction.h"
+#include "segment/omSegment.h"
+#include "segment/omSegmentCache.h"
+#include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentIterator.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omView3dEvent.h"
@@ -19,13 +20,14 @@
 #include "system/omGenericManager.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "utility/omTimer.h"
 #include "volume/omMipChunk.h"
+#include "volume/omMipThreadManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
+#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
-#include "system/cache/omMipVolumeCache.h"
-#include "mesh/ziMesher.h"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -119,7 +121,7 @@ void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
 	OmMipVolume::SetVoxelValue(rVox, val);
 
 	//change voxel in voxelation
-	assert(0);
+	//assert(0);
 	//mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
 }
 
@@ -160,6 +162,74 @@ void OmSegmentation::BuildVolumeData()
 
 	mSegmentCache->flushDirtySegments();
 	mSegmentCache->turnBatchModeOn(false);
+}
+
+bool OmSegmentation::BuildThreadedVolume()
+{
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+		//timer start
+		vol_timer.start();
+	}
+
+	if (!OmMipVolume::BuildThreadedVolume()){
+		return false;
+	}
+
+	if (!BuildThreadedSegmentation()){
+		return false;
+	}
+
+	if (isDebugCategoryEnabled("perftest")){
+		//timer stop
+		vol_timer.stop();
+		printf("OmSegmentation::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+	}
+
+	return true;
+}
+
+bool OmSegmentation::BuildThreadedSegmentation()
+{
+
+	//debug("FIXME", << "OmMipVolume::BuildThreadedVolume()" << endl;
+	//init progress bar
+	OmEventManager::
+	    PostEvent(new
+		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
+				      MipChunksInVolume()));
+
+	OmTimer vol_timer;
+
+	if (isDebugCategoryEnabled("perftest")){
+       		//timer start	
+       		vol_timer.start();
+	}
+
+	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,false);
+	mipThreadManager->SpawnThreads(MipChunksInVolume());
+	mipThreadManager->run();
+	mipThreadManager->wait();
+	mipThreadManager->StopThreads();
+	delete mipThreadManager;
+
+	//flush cache so that all thread chunks are flushed to disk
+	Flush();
+	printf("done\n");
+
+	if (isDebugCategoryEnabled("perftest")){
+
+		//timer end
+		vol_timer.stop();
+		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
+
+	}
+
+	//hide progress bar
+	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
+	return true;
+
 }
 
 /*
@@ -231,7 +301,7 @@ void OmSegmentation::BuildMeshChunk(int level, int x, int y, int z, int numThrea
 
 void OmSegmentation::BuildMeshDataInternal()
 {
-	const bool useZImesher = false;
+	const bool useZImesher = true;
 
 	if(useZImesher){
 		ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
@@ -292,30 +362,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	}
 
 	delete sizes;
-
-	//rebuild mesh data only if entire volume data has been built as well
-	if (IsVolumeDataBuilt() ) {
-		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-		meshingMan->setToOnlyMeshModifiedValues();
-		meshingMan->addToQueue( mipCoord );
-		meshingMan->start();
-		meshingMan->wait();
-
-		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-		GetChunk(p_chunk, mipCoord);
-
-		const OmSegIDsSet & rModifiedValues = p_chunk->GetModifiedVoxelValues();
-		if (rModifiedValues.size() == 0) {
-			return;
-		}
-
-		//remove mesh from cache to force it to reload
-		foreach( const OmSegID & val, rModifiedValues ){
-			OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
-			mMipMeshManager.UncacheMesh(mip_mesh_coord);
-		}
-	}
-
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
@@ -340,35 +386,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 	//call redraw to force mesh to reload
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-}
-
-/*
- *	Overridden BuildThreadChunkLevel method so that segments will be added from the
- *	thread chunk level as well.
- */
-vtkImageData* OmSegmentation::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, vtkImageData *p_source_data)
-{
-	//do normal mipping and get image data
-	vtkImageData *p_image_data = OmMipVolume::BuildThreadChunkLevel(rMipCoord,p_source_data);
-
-	//get pointer to thread chunk level
-	QExplicitlySharedDataPointer < OmThreadChunkLevel > p_chunklevel = QExplicitlySharedDataPointer < OmThreadChunkLevel > ();
-	GetThreadChunkLevel(p_chunklevel, rMipCoord);
-
-	if (rMipCoord.Level == 0){
-		//get sizes if mip level 0
-       		boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunklevel->RefreshDirectDataValues(true);
-
-		const OmSegIDsSet & data_values = p_chunklevel->GetDirectDataValues();
-		mSegmentCache->AddSegmentsFromChunk( data_values, rMipCoord, sizes);
-
-		delete sizes;
-	} else {
-		//don't get sizes if not mip level 0
-       		p_chunklevel->RefreshDirectDataValues(false);
-	}
-
-	return p_image_data;
 }
 
 /////////////////////////////////

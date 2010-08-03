@@ -53,6 +53,8 @@ void ziMeshingChunk::run()
   boost::shared_ptr<boost::unordered_map<int, QuickMesh> > qMeshes =
     zi::QuickMarchingCubes(dims.z-1, dims.y-1, dims.x-1, (int*)pScalarData);
 
+  pImageData->Delete();
+
   std::cout << threadId << ": Marching Cubes Done "
             << "(" << ztimer.dLap() << ") :: (" << ztimer.dTotal() << ")\n";
 
