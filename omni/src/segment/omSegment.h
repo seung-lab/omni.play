@@ -3,7 +3,7 @@
 
 /*
  *	Segment Object
- *	
+ *
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
@@ -28,13 +28,13 @@ public:
 				 mColorInt.green / 255.,
 				 mColorInt.blue  / 255. ); }
 	void SetColor(const Vector3f &);
-	
+
 	QString GetNote();
 	void SetNote(const QString &);
 	QString GetName();
 	void SetName(const QString &);
 	bool IsSelected();
-	void SetSelected(const bool);
+	void SetSelected(const bool, const bool);
 	bool IsEnabled();
 	void SetEnabled( const bool);
 

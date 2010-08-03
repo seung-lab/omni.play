@@ -187,14 +187,10 @@ bool SegmentDataWrapper::isSelected()
 	return getSegmentCache()->IsSegmentSelected(mID);
 }
 
-void SegmentDataWrapper::setSelected(const bool isSelected)
+void SegmentDataWrapper::setSelected(const bool isSelected,
+				     const bool addToRecentList)
 {
-	getSegmentCache()->setSegmentSelected(mID, isSelected);
-}
-
-void SegmentDataWrapper::toggleSelected()
-{
-	getSegmentCache()->setSegmentSelected(mID, !isSelected());
+	getSegmentCache()->setSegmentSelected(mID, isSelected, addToRecentList);
 }
 
 bool SegmentDataWrapper::isEnabled()
@@ -243,8 +239,8 @@ void SegmentDataWrapper::setName( const QString& str )
 }
 
 OmSegmentation & SegmentDataWrapper::getSegmentation()
-{ 
-	return OmProject::GetSegmentation(mSegmentationID); 
+{
+	return OmProject::GetSegmentation(mSegmentationID);
 }
 
 OmSegment * SegmentDataWrapper::getSegment()
@@ -293,7 +289,7 @@ OmFilter2d * FilterDataWrapper::getFilter()
 	if(!isValid()){
 		return NULL;
 	}
-	
+
 	return &OmProject::GetChannel(mChannelID).GetFilter(mID);
 }
 

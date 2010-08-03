@@ -11,21 +11,22 @@
 class OmSegmentSelectAction : public OmAction {
 
 public:
-	OmSegmentSelectAction(const OmId segmentationId, 
-			      const OmSegIDsSet & mNewSelectedIdSet, 
-			      const OmSegIDsSet & mOldSelectedIdSet, 
+	OmSegmentSelectAction(const OmId segmentationId,
+			      const OmSegIDsSet & mNewSelectedIdSet,
+			      const OmSegIDsSet & mOldSelectedIdSet,
 			      const OmId segmentJustSelected,
 			      void* sender,
 			      const string & comment,
-			      const bool doScroll );
-	
+			      const bool doScroll,
+			      const bool addToRecentList);
+
 private:
 	void Action();
 	void UndoAction();
 	string Description();
 	void save(const string &);
 	QString classNameForLogFile(){return "OmSegmentSelectAction";}
-	
+
 	OmId mSegmentationId;
 	OmSegIDsSet mNewSelectedIdSet;
 	OmSegIDsSet mOldSelectedIdSet;
@@ -33,6 +34,7 @@ private:
 	void * mSender;
 	const string mComment;
 	const bool mDoScroll;
+	const bool mAddToRecentList;
 
 	friend class OmActionLoggerFS;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );

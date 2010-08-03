@@ -38,12 +38,12 @@ public:
 
 	bool IsSegmentSelected( OmSegID segID );
 	bool IsSegmentSelected( OmSegment * seg );
-	void setSegmentSelected( OmSegID segID, bool isSelected );
+	void setSegmentSelected( OmSegID segID, const bool, const bool );
 	void SetAllSelected(bool);
 	OmSegIDsSet & GetSelectedSegmentIds();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect);
+	void UpdateSegmentSelection( const OmSegIDsSet & idsToSelect, const bool);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -72,9 +72,9 @@ public:
 	quint32 getMaxValue();
 	quint64 getSegmentListSize(OmSegIDRootType type);
 
-	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset, 
-						  const int numToGet, 
-						  OmSegIDRootType type, 
+	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset,
+						  const int numToGet,
+						  OmSegIDRootType type,
 						  OmSegID startSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);

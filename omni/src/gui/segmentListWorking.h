@@ -16,6 +16,7 @@ public:
 	OmSegIDRootType getRootSegType(){ return NOTVALIDROOT; }
 	int getPreferredTabIndex(){ return 0; }
 	void makeTabActiveIfContainsJumpedToSegment();
+	bool shouldSelectedSegmentsBeAddedToRecentList(){ return true; }
 };
 
 #endif

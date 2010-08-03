@@ -12,6 +12,7 @@ OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender, 
 	, mComment(cmt)
 	, oldSelectedIDs( mSegmentation->GetSegmentCache()->GetSelectedSegmentIds() )
 	, newSelectedIDs( oldSelectedIDs )
+	, mAddToRecentList(true)
 {
 }
 
@@ -57,7 +58,7 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, con
 	if(isSelected) {
 		newSelectedIDs.insert(segID);
 	} else {
-		newSelectedIDs.erase(segID);	
+		newSelectedIDs.erase(segID);
 	}
 
 	setEditSelection(segID);
@@ -92,14 +93,20 @@ bool OmSegmentSelector::sendEvent()
 	}
 
 	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
-							      newSelectedIDs, 
+							      newSelectedIDs,
 							      oldSelectedIDs,
-							      mSegmentJustSelectedID, 
+							      mSegmentJustSelectedID,
 							      mSender,
 							      mComment,
-							      true );
+							      true,
+							      mAddToRecentList);
 	a->Run();
 	// don't delete--cleanup will be handled by OmAction
 
 	return true;
+}
+
+void OmSegmentSelector::setAddToRecentList(const bool shouldAdd)
+{
+	mAddToRecentList = shouldAdd;
 }

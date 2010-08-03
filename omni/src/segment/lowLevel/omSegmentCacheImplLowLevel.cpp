@@ -26,7 +26,7 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 	if(0 == segment->mParentSegID) {
 		return segment;
 	}
-	
+
 	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->mValue ) );
 }
 
@@ -49,7 +49,7 @@ bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID val
 	return mSegments->IsValueAlreadyMapped( value );
 }
 
-OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value ) 
+OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value )
 {
 	return mSegments->GetItemFromValue( value );
 }
@@ -98,7 +98,7 @@ OmSegIDsSet & OmSegmentCacheImplLowLevel::GetEnabledSegmentIdsRef()
 {
         return mEnabledSet;
 }
- 
+
 bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegment * seg )
 {
 	const OmSegID rootID = findRoot( seg )->getValue();
@@ -110,7 +110,7 @@ bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegment * seg )
 
 	return false;
 }
- 
+
 bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegID segID )
 {
  	return isSegmentSelected( GetSegmentFromValue( segID ) );
@@ -121,31 +121,36 @@ void OmSegmentCacheImplLowLevel::SetAllSelected(bool selected)
         mAllSelected = selected;
  	mSelectedSet.clear();
 }
- 
-void OmSegmentCacheImplLowLevel::setSegmentSelected( OmSegID segID, bool isSelected )
-{
-	setSegmentSelectedBatch( segID, isSelected );
-	clearCaches();
-} 
 
-void OmSegmentCacheImplLowLevel::UpdateSegmentSelection( const OmSegIDsSet & ids )
+void OmSegmentCacheImplLowLevel::setSegmentSelected( OmSegID segID,
+						     const bool isSelected,
+						     const bool addToRecentList)
+{
+	setSegmentSelectedBatch( segID, isSelected, addToRecentList );
+	clearCaches();
+}
+
+void OmSegmentCacheImplLowLevel::UpdateSegmentSelection( const OmSegIDsSet & ids,
+							 const bool addToRecentList)
 {
 	mSelectedSet.clear();
 
 	OmSegIDsSet::const_iterator iter;
 	for( iter = ids.begin(); iter != ids.end(); ++iter ){
-		setSegmentSelectedBatch( *iter, true );
+		setSegmentSelectedBatch( *iter, true, addToRecentList);
 	}
 
-	clearCaches();	
+	clearCaches();
 }
- 
-void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID, bool isSelected )
+
+void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID,
+							  const bool isSelected,
+							  const bool addToRecentList)
 {
        const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
 
        if (isSelected) {
-               doSelectedSetInsert( rootID );
+               doSelectedSetInsert( rootID, addToRecentList);
        } else {
                doSelectedSetRemove( rootID );
                assert( !mSelectedSet.contains( segID ));
@@ -155,13 +160,13 @@ void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID, bool is
 OmSegIDsSet & OmSegmentCacheImplLowLevel::GetSelectedSegmentIdsRef()
 {
         return mSelectedSet;
-} 
- 
+}
+
 quint32 OmSegmentCacheImplLowLevel::numberOfSelectedSegments()
 {
 	return mSelectedSet.size();
 }
- 
+
 bool OmSegmentCacheImplLowLevel::AreSegmentsSelected()
 {
 	if( 0 == numberOfSelectedSegments() ){
@@ -171,18 +176,21 @@ bool OmSegmentCacheImplLowLevel::AreSegmentsSelected()
 	return true;
 }
 
-void OmSegmentCacheImplLowLevel::doSelectedSetInsert( const OmSegID segID)
+void OmSegmentCacheImplLowLevel::doSelectedSetInsert( const OmSegID segID,
+						      const bool addToRecentList)
 {
 	mSelectedSet.insert( segID );
-	addToRecentMap(segID);
+	if(addToRecentList) {
+		addToRecentMap(segID);
+	}
 }
- 		
+
 void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 {
 	mSelectedSet.remove( segID );
 	addToRecentMap(segID);
 }
-	
+
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
 	mRecentRootActivityMap.touch( segID );
@@ -236,18 +244,18 @@ void OmSegmentCacheImplLowLevel::turnBatchModeOn( const bool batchMode )
 	mSegments->SetBatchMode(batchMode);
 }
 
-quint32 OmSegmentCacheImplLowLevel::getPageSize() 
-{ 
-	return mSegments->getPageSize(); 
+quint32 OmSegmentCacheImplLowLevel::getPageSize()
+{
+	return mSegments->getPageSize();
 }
 
 quint32 OmSegmentCacheImplLowLevel::getMaxValue()
-{ 
-	return mMaxValue; 
+{
+	return mMaxValue;
 }
 
 ///////////////////////////
-////// Private 
+////// Private
 ///////////////////////////
 
 OmSegID OmSegmentCacheImplLowLevel::getNextValue()

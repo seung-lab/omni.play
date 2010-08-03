@@ -59,7 +59,7 @@ void OmSegment::SetInitialColor()
 void OmSegment::reRandomizeColor()
 {
 	SetInitialColor();
-	
+
 	mCache->addToDirtySegmentList(this);
 }
 
@@ -77,8 +77,8 @@ QString OmSegment::GetNote()
 	QString customNote = mCache->getSegmentNote( mValue );
 
 	if( mParentSegID ){
-		customNote += "Parent: " 
-			+ QString::number(mParentSegID) 
+		customNote += "Parent: "
+			+ QString::number(mParentSegID)
 			+ "; ";
 	}
 
@@ -111,9 +111,9 @@ bool OmSegment::IsSelected()
 	return mCache->IsSegmentSelected( mValue );
 }
 
-void OmSegment::SetSelected( const bool isSelected )
+void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList )
 {
-	mCache->setSegmentSelected( mValue, isSelected );
+	mCache->setSegmentSelected( mValue, isSelected, addToRecentList );
 }
 
 bool OmSegment::IsEnabled()
