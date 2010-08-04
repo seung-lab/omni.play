@@ -12,7 +12,9 @@
 class OmSegmentValidateAction : public OmAction {
 
 public:
-	OmSegmentValidateAction( const OmId segmentationId, const OmSegIDsSet & selectedSegmentIdsSet, const bool create);
+	OmSegmentValidateAction( const OmId segmentationId,
+				 const OmSegIDsSet & selectedSegmentIdsSet,
+				 const bool create);
 
 private:
 	void Action();

@@ -46,12 +46,9 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
-	bool showOnlySelectedSegments =
+	mAreThereAnySegmentsSelected =
 		mSegmentCache->AreSegmentsSelected() ||
 		mSegmentCache->AreSegmentsEnabled();
-	if(mIsSegmentation) {
-		showOnlySelectedSegments = false;
-	}
 
 	int offset = 0;
 	OmColor newcolor = blackColor;
@@ -68,9 +65,9 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 			if( 0 == val ){
 				newcolor = blackColor;
 			} else{
-				mColorUpdateMutex.lock(); // TODO: use lock-free hash?
+				mColorUpdateMutex.lock(); // TODO: use lock pages
 				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
+					mColorCache[ val ].color = getVoxelColorForView2d(val);
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
 				newcolor = mColorCache[ val ].color;
@@ -88,8 +85,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
-						    const bool showOnlySelectedSegments)
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 {
 	QMutexLocker locker(&mSegmentCache->mMutex);
 
@@ -103,6 +99,8 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	const bool isSelected =
 		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
 		mSegmentCache->mImpl->isSegmentEnabled(segRoot->mValue);
+
+	locker.unlock(); // done w/ lock
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->mImmutable) {
@@ -125,15 +123,13 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 		}
 	}
 
-	locker.unlock(); // done w/ lock
-
 	if( isSelected ){
 		OmColor color = { makeSelectedColor(segRootColor.red),
 				  makeSelectedColor(segRootColor.green),
 				  makeSelectedColor(segRootColor.blue) };
 		return color;
 	} else {
-		if (showOnlySelectedSegments) {
+		if(SCC_FILTER_BLACK == mSccType && mAreThereAnySegmentsSelected){
 			return blackColor;
 		} else {
 			return segRootColor;

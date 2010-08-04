@@ -11,8 +11,8 @@
 ///////
 ///////          OmSegmentValidateAction
 ///////
-OmSegmentValidateAction::OmSegmentValidateAction( const OmId segmentationId, 
-					  const OmSegIDsSet & selectedSegmentIds, 
+OmSegmentValidateAction::OmSegmentValidateAction( const OmId segmentationId,
+					  const OmSegIDsSet & selectedSegmentIds,
 					  const bool create)
 	: mSegmentationId( segmentationId )
 	, mCreate(create)
@@ -30,6 +30,7 @@ void OmSegmentValidateAction::Action()
         	OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
 		segment->SetImmutable(mCreate);
         	seg.GetSegmentCache()->setAsValidated(segment, mCreate);
+		printf("set %d as valid=%d\n", id, mCreate);
 	}
 }
 
