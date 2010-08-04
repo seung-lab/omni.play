@@ -5,8 +5,8 @@
 
 static const unsigned int DEFAULT_MAP_SIZE = 10;
 
-template < class T > 
-OmGenericManager<T>::OmGenericManager() 
+template < class T >
+OmGenericManager<T>::OmGenericManager()
 	: mNextId(1)
 	, mSize(DEFAULT_MAP_SIZE)
 {
@@ -16,8 +16,8 @@ OmGenericManager<T>::OmGenericManager()
 /**
  *	Destroy all managed objects
  */
-template < class T > 
-OmGenericManager<T>::~OmGenericManager() 
+template < class T >
+OmGenericManager<T>::~OmGenericManager()
 {
 	for( unsigned int i = 1; i < mSize; ++i){
 		delete mMap[i];
@@ -26,12 +26,12 @@ OmGenericManager<T>::~OmGenericManager()
 
 extern void myBacktrace(int);
 
-template < class T > 
+template < class T >
 T&
-OmGenericManager<T>::Get( const OmId id) 
-{	
+OmGenericManager<T>::Get( const OmId id)
+{
 	if( IS_ID_INVALID() ){
-		assert(0);
+		assert(0 && "invalid ID");
 		throw OmAccessException("Cannot get object with id: " + id);
 	}
 
@@ -39,25 +39,25 @@ OmGenericManager<T>::Get( const OmId id)
 	return *mMap[id];
 }
 
-template < class T > 
-T& 
-OmGenericManager<T>::Add() 
+template < class T >
+T&
+OmGenericManager<T>::Add()
 {
 	const OmId id = mNextId;
 	mMap[id] = new T(id);
 	findAndSetNextValidID();
-	
+
 	mValidSet.insert(id);
 	mEnabledSet.insert(id);
-	
+
 	return *mMap[id];
 }
 
-template < class T > 
+template < class T >
 void
 OmGenericManager<T>::findAndSetNextValidID()
 {
-	// search to fill in holes in number map 
+	// search to fill in holes in number map
 	//  (holes could be present from object deletion...)
 	for( unsigned int i = 1; i < mSize; ++i ){
 		if( NULL == mMap[i] ){
@@ -71,18 +71,18 @@ OmGenericManager<T>::findAndSetNextValidID()
 	mMap.resize( mSize, NULL );
 }
 
-template < class T > 
-void 
-OmGenericManager<T>::Remove(const OmId id) 
+template < class T >
+void
+OmGenericManager<T>::Remove(const OmId id)
 {
 	if( IS_ID_INVALID() ){
-		assert(0);
-		throw OmAccessException("Cannot remove object with id: " + id); 
+		assert(0 && "invalid ID");
+		throw OmAccessException("Cannot remove object with id: " + id);
 	}
-	
+
 	mValidSet.remove(id);
 	mEnabledSet.remove(id);
-	
+
 	delete mMap[id];
 	mMap[id] = NULL;
 
@@ -95,9 +95,9 @@ OmGenericManager<T>::Remove(const OmId id)
 /**
  * ID is of an object in the manager
  */
-template < class T > 
+template < class T >
 bool
-OmGenericManager<T>::IsValid( const OmId id) const 
+OmGenericManager<T>::IsValid( const OmId id) const
 {
 	if( IS_ID_INVALID() ){
 		return false;
@@ -109,9 +109,9 @@ OmGenericManager<T>::IsValid( const OmId id) const
 /**
  *	Set of IDs for objects being managed
  */
-template < class T > 
+template < class T >
 const OmIDsSet&
-OmGenericManager<T>::GetValidIds() const 
+OmGenericManager<T>::GetValidIds() const
 {
 	return mValidSet;
 }
@@ -119,25 +119,25 @@ OmGenericManager<T>::GetValidIds() const
 /////////////////////////////////
 ///////		 Enabled
 
-template < class T > 
+template < class T >
 bool
-OmGenericManager<T>::IsEnabled(const OmId id) const 
+OmGenericManager<T>::IsEnabled(const OmId id) const
 {
 	if( IS_ID_INVALID() ){
-		throw OmAccessException("Given id is not valid: " + id); 
+		throw OmAccessException("Given id is not valid: " + id);
 	}
 
 	return mEnabledSet.contains(id);
 }
 
-template < class T > 
+template < class T >
 void
-OmGenericManager<T>::SetEnabled(const OmId id, const bool enable) 
+OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 {
 	if( IS_ID_INVALID() ){
-		throw OmAccessException("Given id is not valid: " + id); 
+		throw OmAccessException("Given id is not valid: " + id);
 	}
-	
+
 	if(enable) {
 		mEnabledSet.insert(id);
 	} else {
@@ -145,9 +145,9 @@ OmGenericManager<T>::SetEnabled(const OmId id, const bool enable)
 	}
 }
 
-template < class T > 
+template < class T >
 const OmIDsSet &
-OmGenericManager<T>::GetEnabledIds() const 
+OmGenericManager<T>::GetEnabledIds() const
 {
 	return mEnabledSet;
 }
