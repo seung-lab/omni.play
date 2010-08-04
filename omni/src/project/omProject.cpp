@@ -81,7 +81,7 @@ QString OmProject::New( QString fileNameAndPath )
 
 	//load default project preferences
 	omSetDefaultAllPreferences();
-	
+
 	Save();
 
 	return fileInfo.absoluteFilePath();
@@ -96,6 +96,7 @@ void OmProject::Save()
 	//TODO: move this into omProjectData
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
+		OmProject::GetSegmentation( segID ).Flush();
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
@@ -124,7 +125,7 @@ void OmProject::Load( QString fileNameAndPath  )
 		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
 		throw OmIoException( qPrintable( err ));
 	}
-	
+
 	OmProjectData::instantiateProjectData( fileNameAndPath );
 	OmProjectData::Open();
 

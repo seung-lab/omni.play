@@ -10,6 +10,7 @@
 #include "utility/omImageDataIo.h"
 #include "utility/stringHelpers.h"
 #include "utility/stringHelpers.h"
+#include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 
 #include <QTextStream>
@@ -170,49 +171,18 @@ void OmBuildSegmentation::doLoadDendrogram()
 	mSeg->mEdgeForceJoin = edgeForceJoin;
 	mSeg->mEdgeWasJoined = edgeWasJoined;
 
-	convertToEdgeList( mSeg->mDend->getQuint32Ptr(),
-			   mSeg->mDendValues->getFloatPtr(),
-			   mSeg->mDendCount );
-
 	mSeg->FlushDend();
 
 	hdf5reader->close();
 }
 
-// rewrite child node IDs in MST, converting it to edge list
-void OmBuildSegmentation::convertToEdgeList( quint32 * dend,
-					     float * dendValues,
-					     const int numDendRows )
+void OmBuildSegmentation::buildBlankVolume()
 {
-	const quint32 maxSegValue =  mSeg->GetSegmentCache()->getMaxValue() + 1;
-	DynamicTreeContainer<OmSegID> * mGraph = new DynamicTreeContainer<OmSegID>(maxSegValue);
+	assert(OmProject::IsChannelValid(1));
+	OmChannel & chann = OmProject::GetChannel(1);
 
-	quint32 childUnknownDepthID;
-	quint32 parentID;
-	float threshold;
-	DynamicTree<OmSegID> * childRootDT;
-	int numBadSegValues = 0;
+	mSeg->BuildBlankVolume( chann.MipLevelDataDimensions(0) );
+	mSeg->GetSegmentCache()->refreshTree();
 
-	for(int i = 0; i < numDendRows; ++i) {
-                childUnknownDepthID = dend[i];
-		parentID = dend[i + numDendRows ];
-                threshold = dendValues[i];
-
-		// Data may have values that don't exist in the volume... warn user.
-		if(childUnknownDepthID < maxSegValue && parentID < maxSegValue) {
-			childRootDT = mGraph->get( childUnknownDepthID )->findRoot();
-			childRootDT->join( mGraph->get( parentID ) );
-
-			// set child ID to root value found by graph...
-			dend[i] = childRootDT->getKey();
-		} else {
-			++numBadSegValues;
-		}
-        }
-
-	if(0 != numBadSegValues){
-		printf("warning: dend has %d values that don't exist in the volume data.\n", numBadSegValues);
-	}
-
-	delete mGraph;
+	printf("allocated blank volume\n");
 }
