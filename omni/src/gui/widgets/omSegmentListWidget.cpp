@@ -2,10 +2,11 @@
 #include "gui/guiUtils.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segObjectInspector.h"
-#include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/segmentListBase.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/omSegmentSelector.h"
+#include "system/omEvents.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
@@ -59,6 +60,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 		//row->setText(NOTE_COL, seg.getNote());
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg->IsEnabled()));
+
 		row->setSelected(seg->IsSelected());
 		if (doScrollToSelectedSegment && seg->getValue() == segmentJustSelectedID) {
 			rowToJumpTo = row;
@@ -101,10 +103,13 @@ void OmSegmentListWidget::segmentLeftClick()
 
 	const int column = currentColumn();
 	if (0 == column) {
-		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
-		sdw.setEnabled(!isChecked);
 
-		//		sel.selectJustThisSegment( sdw.getID(), isChecked );
+		const bool isCurrentlyChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
+		const bool shouldBeChecked = !isCurrentlyChecked;
+
+		sdw.setEnabled(shouldBeChecked);
+		OmEvents::Redraw();
+		OmEvents::Redraw3d();
 
 		/*
 		if( isChecked ) {

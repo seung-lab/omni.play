@@ -35,6 +35,7 @@ public:
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmSegIDsSet & GetEnabledSegmentIds();
+	bool AreSegmentsEnabled();
 
 	bool IsSegmentSelected( OmSegID segID );
 	bool IsSegmentSelected( OmSegment * seg );

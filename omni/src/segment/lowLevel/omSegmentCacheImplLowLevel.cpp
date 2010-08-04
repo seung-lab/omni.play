@@ -167,9 +167,23 @@ quint32 OmSegmentCacheImplLowLevel::numberOfSelectedSegments()
 	return mSelectedSet.size();
 }
 
+uint32_t OmSegmentCacheImplLowLevel::numberOfEnabledSegments()
+{
+	return mEnabledSet.size();
+}
+
 bool OmSegmentCacheImplLowLevel::AreSegmentsSelected()
 {
 	if( 0 == numberOfSelectedSegments() ){
+		return false;
+	}
+
+	return true;
+}
+
+bool OmSegmentCacheImplLowLevel::AreSegmentsEnabled()
+{
+	if( 0 == numberOfEnabledSegments() ){
 		return false;
 	}
 

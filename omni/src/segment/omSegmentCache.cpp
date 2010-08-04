@@ -304,3 +304,8 @@ quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 	QMutexLocker locker( &mMutex );
         return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
 }
+
+bool OmSegmentCache::AreSegmentsEnabled(){
+	QMutexLocker locker( &mMutex );
+	return mImpl->AreSegmentsEnabled();
+}

@@ -33,6 +33,8 @@ class OmSegmentCacheImplLowLevel {
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmSegIDsSet& GetEnabledSegmentIdsRef();
+	bool AreSegmentsEnabled();
+	uint32_t numberOfEnabledSegments();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );

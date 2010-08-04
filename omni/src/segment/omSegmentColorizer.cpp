@@ -7,7 +7,7 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, 
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache,
 					const OmSegmentColorCacheType sccType,
 					const bool isSegmentation)
 	: mSegmentCache(cache)
@@ -46,9 +46,11 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
-	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
+	bool showOnlySelectedSegments =
+		mSegmentCache->AreSegmentsSelected() ||
+		mSegmentCache->AreSegmentsEnabled();
 	if(mIsSegmentation) {
-		showOnlySelectedSegments = false;	
+		showOnlySelectedSegments = false;
 	}
 
 	int offset = 0;
@@ -56,7 +58,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	OmSegID lastVal = 0;
 	OmSegID val;
 
-	// looping through each value of imageData, which is 
+	// looping through each value of imageData, which is
 	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
 
@@ -74,7 +76,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 				newcolor = mColorCache[ val ].color;
 				mColorUpdateMutex.unlock();
 			}
-		} 
+		}
 
 		data[offset]     = newcolor.red;
 		data[offset + 1] = newcolor.green;
@@ -86,7 +88,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 						    const bool showOnlySelectedSegments)
 {
 	QMutexLocker locker(&mSegmentCache->mMutex);
@@ -98,7 +100,9 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 	const OmColor segRootColor = segRoot->mColorInt;
 
-	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
+	const bool isSelected =
+		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
+		mSegmentCache->mImpl->isSegmentEnabled(segRoot->mValue);
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->mImmutable) {
