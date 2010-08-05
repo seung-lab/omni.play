@@ -425,7 +425,7 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
                 seg = iter.getNextSegment();
         }
 
-	(new OmSegmentValidateAction(GetId(), newSet, true))->Run();
+	(new OmSegmentValidateAction(GetId(), newSet, valid))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
