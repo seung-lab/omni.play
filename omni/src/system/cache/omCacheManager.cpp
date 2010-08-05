@@ -146,7 +146,7 @@ void OmCacheManager::UpdateCacheSizeInternal(OmCacheGroup group, int delta)
 ///////          Cleaning Methods
 void OmCacheManager::CleanCacheGroup(OmCacheGroup group)
 {
-	QReadLocker locker(&Instance()->mCacheMutex);
+  //	QReadLocker locker(&Instance()->mCacheMutex);
 
 	//compute target size for group
 

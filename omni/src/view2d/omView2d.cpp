@@ -805,6 +805,9 @@ void OmView2d::setBrushToolDiameter()
 		mViewGroupState->setView2DBrushToolDiameter(32);
 		break;
 	case 32:
+		mViewGroupState->setView2DBrushToolDiameter(64);
+		break;
+	case 64:
 		mViewGroupState->setView2DBrushToolDiameter(1);
 		break;
 	}
