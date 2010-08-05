@@ -1,0 +1,10 @@
+Features:
+- Progress bar for view 2d loading 
+- Progress bar for meshing 
+- Slider for brush size
+- OK, Cancel and default buttons on dialogs
+Bugs:
+ - In Pan mode, mouse wheel scroll should zoon in/out with cursor position as reference
+ - Mesh chunks only that have changed
+ - Fill mode
+ - Slow painting
