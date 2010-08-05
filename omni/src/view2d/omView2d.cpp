@@ -26,7 +26,7 @@ static QGLWidget *sharedwidget = NULL;
  */
 OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget * parent, OmViewGroupState * vgs)
 	: OmView2dImpl(parent)
-	
+
 {
 	mViewGroupState = vgs;
 	sharedwidget = (QGLWidget *) OmStateManager::GetPrimaryView3dWidget();
@@ -123,7 +123,7 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 #ifdef WIN32
 	mGlBlendColorFunction = (GLCOLOR) wglGetProcAddress("glBlendColor");
 #endif
-	
+
 	resetWindowState();
 	OmCursors::setToolCursor(this);
 }
@@ -213,7 +213,7 @@ void OmView2d::paintEvent(QPaintEvent *)
 	const bool inEditMode = OmStateManager::GetToolMode() == ADD_VOXEL_MODE ||
 		OmStateManager::GetToolMode() == SUBTRACT_VOXEL_MODE ||
 		OmStateManager::GetToolMode() == FILL_MODE;
-		
+
 	if (amInFillMode()) {
 		painter.drawRoundedRect(QRect(mMousePoint.x, mMousePoint.y, 20, 20), 5, 5);
 	} else if (inEditMode){
@@ -222,16 +222,16 @@ void OmView2d::paintEvent(QPaintEvent *)
 		painter.drawEllipse(QRectF
 				    (mMousePoint.x - offset,
 				     mMousePoint.y - offset,
-				     width, 
+				     width,
 				     width ));
 	}
-	
+
 	if (hasFocus()){
 		the_pen.setWidth(5);
 	}
 
-	painter.drawRect(mTotalViewport.lowerLeftX, 
-			 mTotalViewport.lowerLeftY, 
+	painter.drawRect(mTotalViewport.lowerLeftX,
+			 mTotalViewport.lowerLeftY,
 			 mTotalViewport.width - 1,
 			 mTotalViewport.height - 1);
 
@@ -321,23 +321,23 @@ void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord glob
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
         const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
         if (segID ) {
-               
+
                OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
                sel.augmentSelectedSet( segID, true );
                sel.sendEvent();
 
                //Refresh();
-        } 
+        }
 }
 
-void OmView2d::PickToolAddToSelection( OmSegmentSelector & sel, 
+void OmView2d::PickToolAddToSelection( OmSegmentSelector & sel,
 				       OmSegmentation & current_seg,
 				       DataCoord globalDataClickPoint)
 {
 	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
 	if (segID ) {
 		sel.augmentSelectedSet( segID, true );
-	} 
+	}
 }
 
 DataCoord OmView2d::BrushToolOTGDC(DataCoord off)
@@ -711,7 +711,7 @@ void OmView2d::bresenhamLineDraw(const DataCoord & first, const DataCoord & seco
 			}
 		}
 	}
-	
+
 	if (doselection) {
 		if(sel.sendEvent()){
 			//Refresh();
@@ -812,15 +812,21 @@ void OmView2d::setBrushToolDiameter()
 
 void OmView2d::MoveUpStackCloserToViewer()
 {
-	int depth = GetDepthToDataSlice(mViewType);
-	SetDataSliceToDepth(mViewType, depth+1);	
-   
+	const int depth = GetDepthToDataSlice(mViewType);
+	const int mipLevel = mViewGroupState->GetZoomLevel().x;
+	const int numberOfSlicestoAdvance = OMPOW(2, mipLevel);
+
+	SetDataSliceToDepth(mViewType, depth+numberOfSlicestoAdvance);
 }
 
 void OmView2d::MoveDownStackFartherFromViewer()
 {
-	int depth = GetDepthToDataSlice(mViewType);
-	SetDataSliceToDepth(mViewType, depth-1);      
+	const int depth = GetDepthToDataSlice(mViewType);
+	const int mipLevel = mViewGroupState->GetZoomLevel().x;
+	const int numberOfSlicestoAdvance = OMPOW(2, mipLevel);
+
+	SetDataSliceToDepth(mViewType, depth-numberOfSlicestoAdvance);
+
 }
 
 /////////////////////////////////
@@ -830,7 +836,7 @@ void OmView2d::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
 
 	switch (event->GetPreference()) {
-		
+
 	case OM_PREF_VIEW2D_SHOW_INFO_BOOL:
 		myUpdate();
 		break;
@@ -885,10 +891,10 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 	debug("view2d","OmView2d::SegmentEditSelectionChangeEvent\n");
 
 	if (mVolumeType == SEGMENTATION) {
-		// need to myUpdate paintbrush, not anything on the screen 
+		// need to myUpdate paintbrush, not anything on the screen
 
 		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
-	
+
 		if( sdw.isValid()) {
 			if (sdw.getSegmentationID() == mImageId) {
 				const OmColor & color = sdw.getColorInt();
