@@ -55,7 +55,8 @@ protected:
 	void DrawCursors();
 
 	// Various Category methods
-	void setBrushToolDiameter();
+	void setBrushToolDiameterUp();
+	void setBrushToolDiameterDown();
 	DataCoord BrushToolOTGDC(DataCoord off);
 
 	void PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint);

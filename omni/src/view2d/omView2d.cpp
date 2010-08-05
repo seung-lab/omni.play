@@ -789,7 +789,7 @@ void OmView2d::PanAndZoom(Vector2 <int> new_zoom, bool postEvent)
 	SetViewSliceOnPan();
 }
 
-void OmView2d::setBrushToolDiameter()
+void OmView2d::setBrushToolDiameterUp()
 {
 	switch(mViewGroupState->getView2DBrushToolDiameter()){
 	case 1:
@@ -808,7 +808,31 @@ void OmView2d::setBrushToolDiameter()
 		mViewGroupState->setView2DBrushToolDiameter(64);
 		break;
 	case 64:
+		mViewGroupState->setView2DBrushToolDiameter(64);
+		break;
+	}
+}
+
+void OmView2d::setBrushToolDiameterDown()
+{
+	switch(mViewGroupState->getView2DBrushToolDiameter()){
+	case 1:
 		mViewGroupState->setView2DBrushToolDiameter(1);
+		break;
+	case 2:
+		mViewGroupState->setView2DBrushToolDiameter(1);
+		break;
+	case 8:
+		mViewGroupState->setView2DBrushToolDiameter(2);
+		break;
+	case 16:
+		mViewGroupState->setView2DBrushToolDiameter(8);
+		break;
+	case 32:
+		mViewGroupState->setView2DBrushToolDiameter(16);
+		break;
+	case 64:
+		mViewGroupState->setView2DBrushToolDiameter(32);
 		break;
 	}
 }
