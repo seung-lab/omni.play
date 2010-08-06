@@ -102,7 +102,7 @@ public:
 	bool BuildVolume();
 	bool BuildSerialVolume();
 	virtual bool BuildThreadedVolume();
-	virtual void BuildChunk(const OmMipChunkCoord &);
+	virtual void BuildChunk(const OmMipChunkCoord &, bool remesh=false);
 	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
 	void BuildEditedLeafChunks();
 	vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);

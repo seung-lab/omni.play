@@ -782,7 +782,7 @@ bool OmMipVolume::BuildThreadedVolume()
  *	Build chunk data from children.
  *	rMipCoord: specifies the chunk to be built
  */
-void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
+void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 {
 
 	//debug("genone","OmMipVolume::BuildChunk()\n");
@@ -839,7 +839,7 @@ void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
 {
 	//build the chunk
 	OmMipVolume::BuildChunk(rMipCoord);
-	BuildChunk(rMipCoord);
+	BuildChunk(rMipCoord, true);
 
 	//if mipCoord is not root
 	if (rMipCoord.Level != mMipRootLevel) {

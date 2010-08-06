@@ -48,7 +48,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
-	void BuildChunk( const OmMipChunkCoord &mipCoord);
+	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
 	
 	//export
