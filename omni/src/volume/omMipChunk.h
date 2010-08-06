@@ -150,6 +150,7 @@ protected:
 	OmDataVolumePlane getVolPlane(const ViewType viewType);
 	void * ExtractDataSlice(OmDataVolumePlane plane, int offset, Vector2<int> &sliceDims, bool fast);
 
+	friend class OmMipVolume;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 };

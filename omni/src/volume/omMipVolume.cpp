@@ -824,6 +824,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 	p_source_data->Delete();
 	p_source_data = NULL;
 
+	p_chunk->setVolDataDirty();
 }
 
 /*
@@ -833,6 +834,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
 {
 	//build the chunk
+	OmMipVolume::BuildChunk(rMipCoord);
 	BuildChunk(rMipCoord);
 
 	//if mipCoord is not root
@@ -862,7 +864,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 		BuildChunkAndParents(*itr);
 
 		//clear modified values
-		if(p_chunk) p_chunk->ClearModifiedVoxelValues();
+		p_chunk->ClearModifiedVoxelValues();
 	}
 
 	//edited chunks clean

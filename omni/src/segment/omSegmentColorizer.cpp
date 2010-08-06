@@ -120,6 +120,8 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			return seg->mColorInt;;
+		} else {
+			return blackColor;
 		}
 	}
 
