@@ -12,11 +12,12 @@
 
 OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 					     const OmSegIDsSet & newSelectedIdSet,
-					     const OmSegIDsSet & oldSelectedIdSet, 
-					     const OmId segmentJustSelected, 
-					     void * sender, 
+					     const OmSegIDsSet & oldSelectedIdSet,
+					     const OmId segmentJustSelected,
+					     void * sender,
 					     const string & comment,
-					     const bool doScroll )
+					     const bool doScroll,
+					     const bool addToRecentList)
 	: mSegmentationId(segmentationId)
 	, mNewSelectedIdSet(newSelectedIdSet)
 	, mOldSelectedIdSet(oldSelectedIdSet)
@@ -24,6 +25,7 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 	, mSender(sender)
 	, mComment(comment)
 	, mDoScroll(doScroll)
+	, mAddToRecentList(addToRecentList)
 {
 }
 
@@ -32,11 +34,13 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 
 void OmSegmentSelectAction::Action()
 {
-	OmProject::GetSegmentation( mSegmentationId ).GetSegmentCache()->UpdateSegmentSelection( mNewSelectedIdSet );
+	OmProject::GetSegmentation( mSegmentationId ).
+		GetSegmentCache()->
+		UpdateSegmentSelection( mNewSelectedIdSet, mAddToRecentList );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
-						     mSegmentJustSelectedID, 
+						     mSegmentJustSelectedID,
 						     mSender,
 						     mComment,
 						     mDoScroll));
@@ -44,11 +48,13 @@ void OmSegmentSelectAction::Action()
 
 void OmSegmentSelectAction::UndoAction()
 {
-	OmProject::GetSegmentation( mSegmentationId ).GetSegmentCache()->UpdateSegmentSelection( mOldSelectedIdSet );
+	OmProject::GetSegmentation( mSegmentationId ).
+		GetSegmentCache()->
+		UpdateSegmentSelection( mOldSelectedIdSet, mAddToRecentList );
 
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
 						     mSegmentationId,
-						     mSegmentJustSelectedID, 
+						     mSegmentJustSelectedID,
 						     mSender,
 						     mComment,
 						     mDoScroll));

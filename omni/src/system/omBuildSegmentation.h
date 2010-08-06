@@ -12,6 +12,7 @@ class OmBuildSegmentation : public OmBuildVolumes, public QThread
 	void build_seg_image();
 	void build_seg_mesh();
 	void loadDendrogram();
+	void buildBlankVolume();
 
  private:
 	OmSegmentation * mSeg;

@@ -161,8 +161,22 @@ bool MainWindow::closeProjectIfOpen()
 		return true;
 	}
 
-	if (!checkForSave()) {
+	const int ret = checkForSave();
+	bool doSave;
+	switch (ret) {
+	case QMessageBox::Save:
+		(new OmProjectSaveAction())->Run();
+		doSave = true;
+		break;
+	case QMessageBox::Discard:
+		// Don't Save was clicked
+		doSave = false;
+		break;
+	case QMessageBox::Cancel:
 		return false;
+		break;
+	default:
+		break;
 	}
 
 	setProjectOpen( false );
@@ -178,7 +192,7 @@ bool MainWindow::closeProjectIfOpen()
 		preferences = NULL;
 	}
 
-	OmProject::Close();
+	OmProject::Close(doSave);
 	windowTitleClear();
 
 	updateReadOnlyRelatedWidgets();
@@ -374,30 +388,16 @@ void MainWindow::closeEvent(QCloseEvent * event)
 	}
 }
 
-bool MainWindow::checkForSave()
+int MainWindow::checkForSave()
 {
 	QMessageBox msgBox;
 	msgBox.setText("Do you want to save your current project?");
 	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 	msgBox.setDefaultButton(QMessageBox::Save);
 	
-	const int ret = msgBox.exec();
-	switch (ret) {
-	case QMessageBox::Save:
-		(new OmProjectSaveAction())->Run();
-		break;
-	case QMessageBox::Discard:
-		// Don't Save was clicked
-		break;
-	case QMessageBox::Cancel:
-		return false;
-		break;
-	default:
-		break;
-	}
-	
-	return true;
+	return msgBox.exec();
 }
+
 
 void MainWindow::spawnErrorDialog(OmException & e)
 {

@@ -16,6 +16,7 @@ class SegmentListRecent : public SegmentListBase
 	OmSegIDRootType getRootSegType(){ return RECENTROOT; }
 	int getPreferredTabIndex(){ return 2; }
 	void makeTabActiveIfContainsJumpedToSegment();
+	bool shouldSelectedSegmentsBeAddedToRecentList(){ return false; }
 };
 
 #endif

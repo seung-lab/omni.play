@@ -89,7 +89,6 @@ bool OmCacheManager::CacheManagerCleaner()
 		return false;
 	}
 
-
 	int numItemsRemoved = OmCacheManager::CleanCacheGroup(RAM_CACHE_GROUP);
 	numItemsRemoved    += OmCacheManager::CleanCacheGroup(VRAM_CACHE_GROUP);
 

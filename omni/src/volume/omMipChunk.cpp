@@ -134,6 +134,10 @@ void OmMipChunk::OpenForWrite()
  */
 void OmMipChunk::Flush()
 {
+	if(!OmProject::GetCanFlush()) {
+		return;
+	}
+
 	//only write if dirty
 	if (IsVolumeDataDirty()) {
 		WriteVolumeData();

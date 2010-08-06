@@ -17,7 +17,9 @@ class OmSegmentSelector
 
 	bool sendEvent();
 	void selectNoSegments();
-	
+
+	void setAddToRecentList(const bool shouldAdd);
+
 private:
 	OmSegmentation * mSegmentation;
 
@@ -27,6 +29,8 @@ private:
 
 	const OmSegIDsSet oldSelectedIDs;
 	OmSegIDsSet newSelectedIDs;
+
+	bool mAddToRecentList;
 
 	void setEditSelection(const OmSegID segID);
 };

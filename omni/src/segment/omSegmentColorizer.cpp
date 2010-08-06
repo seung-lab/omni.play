@@ -7,7 +7,7 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache, 
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache * cache,
 					const OmSegmentColorCacheType sccType,
 					const bool isSegmentation)
 	: mSegmentCache(cache)
@@ -46,17 +46,16 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
 
-	bool showOnlySelectedSegments = mSegmentCache->AreSegmentsSelected();
-	if(mIsSegmentation) {
-		showOnlySelectedSegments = false;	
-	}
+	mAreThereAnySegmentsSelected =
+		mSegmentCache->AreSegmentsSelected() ||
+		mSegmentCache->AreSegmentsEnabled();
 
 	int offset = 0;
 	OmColor newcolor = blackColor;
 	OmSegID lastVal = 0;
 	OmSegID val;
 
-	// looping through each value of imageData, which is 
+	// looping through each value of imageData, which is
 	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
 
@@ -66,15 +65,15 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 			if( 0 == val ){
 				newcolor = blackColor;
 			} else{
-				mColorUpdateMutex.lock(); // TODO: use lock-free hash?
+				mColorUpdateMutex.lock(); // TODO: use lock pages
 				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ].color = getVoxelColorForView2d( val, showOnlySelectedSegments );
+					mColorCache[ val ].color = getVoxelColorForView2d(val);
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
 				newcolor = mColorCache[ val ].color;
 				mColorUpdateMutex.unlock();
 			}
-		} 
+		}
 
 		data[offset]     = newcolor.red;
 		data[offset + 1] = newcolor.green;
@@ -86,8 +85,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val, 
-						    const bool showOnlySelectedSegments)
+OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 {
 	QMutexLocker locker(&mSegmentCache->mMutex);
 
@@ -98,7 +96,11 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
 	const OmColor segRootColor = segRoot->mColorInt;
 
-	const bool isSelected = mSegmentCache->mImpl->isSegmentSelected(segRoot);
+	const bool isSelected =
+		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
+		mSegmentCache->mImpl->isSegmentEnabled(segRoot->mValue);
+
+	locker.unlock(); // done w/ lock
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
 		if(seg->mImmutable) {
@@ -118,10 +120,10 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
 			return seg->mColorInt;;
+		} else {
+			return blackColor;
 		}
 	}
-
-	locker.unlock(); // done w/ lock
 
 	if( isSelected ){
 		OmColor color = { makeSelectedColor(segRootColor.red),
@@ -129,7 +131,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val,
 				  makeSelectedColor(segRootColor.blue) };
 		return color;
 	} else {
-		if (showOnlySelectedSegments) {
+		if(SCC_FILTER_BLACK == mSccType && mAreThereAnySegmentsSelected){
 			return blackColor;
 		} else {
 			return segRootColor;

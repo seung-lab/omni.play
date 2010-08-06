@@ -1,10 +1,11 @@
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "project/omProject.h"
+#include "volume/omSegmentation.h"
 
 VolumeRefreshButton::VolumeRefreshButton(MainWindow * parent)
-	: OmButton<MainWindow>( parent, 
-				"Rebuild", 
-				"Rebuild image and mesh data", 
+	: OmButton<MainWindow>( parent,
+				"Rebuild",
+				"Rebuild image and mesh data",
 				false)
 {
 	setFlat(true);
@@ -13,6 +14,9 @@ VolumeRefreshButton::VolumeRefreshButton(MainWindow * parent)
 
 void VolumeRefreshButton::doAction()
 {
-	printf("VolumeRefreshButton::doAction(): fixme!\n");
-	//OmMipVolume::Flush();
+	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
+	OmIDsSet::const_iterator iter;
+	for( iter = set.begin(); iter != set.end(); ++iter ){
+		OmProject::GetSegmentation(*iter).Flush();
+        }
 }

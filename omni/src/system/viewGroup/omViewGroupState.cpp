@@ -23,7 +23,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mYZSlice[4] = 0.0;
 	mXZSlice[4] = 0.0;
 	mXYSlice[4] = 0.0;
-	
+
 	mXYPan[0] = 0.0;
 	mXYPan[1] = 0.0;
 	mYZPan[0] = 0.0;
@@ -273,7 +273,7 @@ Vector2f OmViewGroupState::GetPanDistance(ViewType plane)
 	}
 }
 
-/*	
+/*
  *	Enable/disable orthogonal slice.
  */
 void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
@@ -297,14 +297,14 @@ void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
 	}
 }
 
-void OmViewGroupState::SetSegmentation( const OmId segID ) 
-{ 
+void OmViewGroupState::SetSegmentation( const OmId segID )
+{
 	delete m_sdw;
-	m_sdw = new SegmentationDataWrapper( segID ); 
+	m_sdw = new SegmentationDataWrapper( segID );
 }
 
 void OmViewGroupState::SetChannel( const OmId chanID )
-{ 
+{
 	delete m_cdw;
 	m_cdw = new ChannelDataWrapper( chanID );
 }
@@ -325,7 +325,11 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 				sccType = SCC_FILTER_VALID_BLACK;
 			}
 		} else {
-			sccType = SCC_FILTER;
+			if(GetShowFilterMode()){
+				sccType = SCC_FILTER_COLOR;
+			} else {
+				sccType = SCC_FILTER_BLACK;
+			}
 		}
 		break;
 
@@ -350,11 +354,12 @@ void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
 	mColorCacheMapLock.lock();
 	if( NULL == mColorCaches[ sccType ] ){
 		assert(m_sdw);
-		mColorCaches[ sccType ] = new OmSegmentColorizer( m_sdw->getSegmentCache(), 
-								  sccType,
-								  SEGMENTATION == objType);
+		mColorCaches[ sccType ] =
+			new OmSegmentColorizer( m_sdw->getSegmentCache(),
+						sccType,
+						SEGMENTATION == objType );
 	}
-	mColorCacheMapLock.unlock();	
+	mColorCacheMapLock.unlock();
 
 	mColorCaches[ sccType ]->colorTile( imageData, size, data );
 }
@@ -401,7 +406,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		SetShowSplitMode(false);
 		OmStateManager::SetOldToolModeAndSendEvent();
 	}
-	
+
 	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
@@ -426,6 +431,18 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 	mShowValid = mode;
 	mShowValidInColor = inColor;
         OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+}
+
+bool OmViewGroupState::GetShowFilterMode()
+{
+	return mShowFilterInColor;
+}
+
+void OmViewGroupState::SetShowFilterMode(const bool inColor)
+{
+	mShowFilterInColor = inColor;
+	OmCacheManager::Freshen(true);
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 

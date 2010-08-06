@@ -113,6 +113,7 @@ QGroupBox* SegInspector::makeActionsBox()
 	 << "Data & Mesh"
          << "Load Dendrogram"
          << "Meshinator"
+         << "Blank Volume"
         );
         gridAction->addWidget(buildComboBox, 1, 0);
 
@@ -208,7 +209,7 @@ void SegInspector::on_exportButton_clicked()
 }
 
 QDir SegInspector::getDir()
-{	
+{
 	QString regex = patternEdit->text();
 	QDir dir( directoryEdit->text() );
 
@@ -255,7 +256,7 @@ QString& GetScriptCmd (QString arg)
 
 	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
 	debug ("meshinator", "omni: %s\n", qPrintable (omniPath));
-	QString cmdPath = omniPath; 
+	QString cmdPath = omniPath;
 
 	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
 	cmd = cmdPath;
@@ -291,6 +292,9 @@ void SegInspector::on_buildButton_clicked()
 
 	} else if( "Meshinator" == whatOrHowToBuild ){
 		doMeshinate( &current_seg );
+
+	} else if( "Blank Volume" == whatOrHowToBuild ){
+		bs->buildBlankVolume();
 	}
 }
 
@@ -305,7 +309,7 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 	if (mMeshinatorProc) {
 		delete mMeshinatorProc;
 	}
-		
+
 	mMeshinatorProc = new QProcess ();
 	mMeshinatorProc->start(script);
 

@@ -60,7 +60,7 @@ class SegmentDataWrapper
 {
  public:
 	SegmentDataWrapper(){}
-	SegmentDataWrapper( const OmId segmentationID, 
+	SegmentDataWrapper( const OmId segmentationID,
 			    const OmSegID segmentID );
 	SegmentDataWrapper( OmSegment * seg );
 
@@ -68,15 +68,14 @@ class SegmentDataWrapper
 
 	OmId getSegmentationID(){ return mSegmentationID; }
 	QString getSegmentationName();
-	
+
 	bool isValid();
 
 	OmSegmentation & getSegmentation();
 	OmSegment * getSegment();
-	
+
 	bool isSelected();
-	void toggleSelected();
-	void setSelected( const bool isSelected );
+	void setSelected( const bool, const bool addToRecentList);
 	bool isEnabled();
 	void setEnabled(const bool);
 	QString getNote();
@@ -117,7 +116,7 @@ class FilterDataWrapper
 	OmId mChannelID;
 };
 
-class DataWrapperContainer 
+class DataWrapperContainer
 {
  public:
 	DataWrapperContainer();

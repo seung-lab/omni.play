@@ -16,6 +16,7 @@ class SegmentListValid : public SegmentListBase
 	OmSegIDRootType getRootSegType(){ return VALIDROOT; }
 	int getPreferredTabIndex(){ return 1; }
 	void makeTabActiveIfContainsJumpedToSegment();
+	bool shouldSelectedSegmentsBeAddedToRecentList(){ return true; }
 };
 
 #endif

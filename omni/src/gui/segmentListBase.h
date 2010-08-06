@@ -2,7 +2,7 @@
 #define SEGMENT_LIST_BASE_H
 
 #include <QtGui>
-#include <QWidget> 
+#include <QWidget>
 
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentPointers.h"
@@ -20,11 +20,11 @@ class SegmentListBase : public QWidget
 public:
 	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
 
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false, 
+	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false,
 					       const OmSegID segmentJustSelectedID = 0,
 					       const bool useOffset = false);
 
-	void makeSegmentationActive(SegmentationDataWrapper sdw, 
+	void makeSegmentationActive(SegmentationDataWrapper sdw,
 				    const OmSegID segmentJustSelectedID,
 				    const bool doScroll );
 
@@ -32,6 +32,8 @@ public:
 
 	void userJustClickedInThisSegmentList();
 	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID);
+
+	virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
 public slots:
 	void goToNextPage();
@@ -65,7 +67,7 @@ protected:
 	QAction * propAct;
 	int getNumSegmentsPerPage();
 	void setupPageButtons();
-	
+
 	int currentPageNum;
 	quint32 getTotalNumberOfSegments();
 };

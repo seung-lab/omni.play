@@ -85,7 +85,6 @@ typedef QString OmGroupName;
 typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
 
-
 /**
  * System-state related
  **/
@@ -105,7 +104,8 @@ enum OmToolMode { SELECT_MODE,
 /**
  * color cache enum
  */
-enum OmSegmentColorCacheType { SCC_FILTER = 0,
+enum OmSegmentColorCacheType { SCC_FILTER_BLACK = 0,
+			       SCC_FILTER_COLOR,
 			       SCC_FILTER_BREAK,
 			       SCC_FILTER_VALID,
 			       SCC_FILTER_VALID_BLACK,

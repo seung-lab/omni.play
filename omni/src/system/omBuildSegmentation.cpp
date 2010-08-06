@@ -1,6 +1,9 @@
 #include "datalayer/omMST.h"
 #include "system/omEvents.h"
+#include "project/omProject.h"
+#include "segment/omSegmentCache.h"
 #include "system/omBuildSegmentation.h"
+#include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationThresholdChangeAction.h"
 
@@ -102,4 +105,15 @@ void OmBuildSegmentation::loadDendrogram()
 	mSeg->mst.import(*mSeg, fname);
 
 	stopTimingAndSave(type, build_timer);
+}
+
+void OmBuildSegmentation::buildBlankVolume()
+{
+	assert(OmProject::IsChannelValid(1));
+	OmChannel & chann = OmProject::GetChannel(1);
+
+	mSeg->BuildBlankVolume( chann.MipLevelDataDimensions(0) );
+	mSeg->GetSegmentCache()->refreshTree();
+
+	printf("allocated blank volume\n");
 }

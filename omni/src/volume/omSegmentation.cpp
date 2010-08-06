@@ -284,7 +284,7 @@ void OmSegmentation::BuildMeshDataInternal()
  *	Overridden BuildChunk method so that the mesh data for a chunk will
  *	also be rebuilt if needed, and segments are added from the chunk.
  */
-void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
+void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 {
 	OmMipChunkPtr p_chunk;
 	GetChunk(p_chunk, mipCoord);
@@ -297,6 +297,11 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord)
 	if(isMIPzero){
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
 		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes);
+		if(remesh) {
+                	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+                	mesher.addChunkCoord(mipCoord);
+                	mesher.mesh();
+		}
 	}
 
 	delete sizes;
@@ -366,7 +371,7 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
                 seg = iter.getNextSegment();
         }
 
-	(new OmSegmentValidateAction(GetId(), newSet, true))->Run();
+	(new OmSegmentValidateAction(GetId(), newSet, valid))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)

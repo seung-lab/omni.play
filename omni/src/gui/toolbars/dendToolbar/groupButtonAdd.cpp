@@ -6,9 +6,9 @@
 #include "segment/omSegmentCache.h"
 
 GroupButtonAdd::GroupButtonAdd(ValidationGroup * d)
-	: OmButton<ValidationGroup>( d, 
-				 "Set Selection Valid", 
-				 "Locking selected objects", 
+	: OmButton<ValidationGroup>( d,
+				 "Set Selection Valid",
+				 "Locking selected objects",
 				 false)
 {
 }
@@ -20,7 +20,7 @@ void GroupButtonAdd::doAction()
 	if(!sdw.isValid()){
 		return;
 	}
-	
+
 	OmSegmentation & seg = sdw.getSegmentation();
 	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
 	OmEvents::SegmentModified();

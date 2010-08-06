@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 
-#include <QMutex> 
+#include <QMutex>
 #include <QReadWriteLock>
 
 static const double selectedSegmentColorMultiFactor = 2.5;
@@ -17,7 +17,7 @@ class OmSegmentCache;
 class OmViewGroupState;
 class OmSegment;
 
-class OmSegmentColorizer 
+class OmSegmentColorizer
 {
  public:
 	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType, const bool);
@@ -41,13 +41,13 @@ class OmSegmentColorizer
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
 	const bool mIsSegmentation;
+	bool mAreThereAnySegmentsSelected;
 
 	std::vector<OmColorWithFreshness> mColorCache;
 
 	void setup();
 
-	OmColor getVoxelColorForView2d( const OmSegID val, 
-					const bool showOnlySelectedSegments );
+	OmColor getVoxelColorForView2d( const OmSegID val );
 
 	inline int makeSelectedColor(const quint8 in_c ) {
 		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);

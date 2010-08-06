@@ -79,6 +79,10 @@ OmMipVolume::~OmMipVolume()
  */
 void OmMipVolume::Flush()
 {
+	if(!OmProject::GetCanFlush()) {
+		return;
+	}
+
 	//build any edited leaf chunks
 	BuildEditedLeafChunks();
 
@@ -120,7 +124,7 @@ QString OmMipVolume::MipLevelInternalDataPath(int level)
 		.arg( mFilename );
 }
 
-/*
+/**
  *	Returns path to MetaData of specified chunk
  */
 QString OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
@@ -885,7 +889,7 @@ bool OmMipVolume::BuildThreadedVolume()
  *	Build chunk data from children.
  *	rMipCoord: specifies the chunk to be built
  */
-void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
+void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 {
 
 	//debug("genone","OmMipVolume::BuildChunk()\n");
@@ -915,6 +919,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
 
 	//set or replace image data (chunk now owns pointer)
 	p_chunk->SetImageData(p_subsampled_data);
+	p_chunk->setVolDataDirty();
 }
 
 /*
@@ -923,9 +928,9 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord)
  */
 void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
 {
-
 	//build the chunk
-	BuildChunk(rMipCoord);
+	OmMipVolume::BuildChunk(rMipCoord);
+	BuildChunk(rMipCoord, true);
 
 	//if mipCoord is not root
 	if (rMipCoord.Level != mMipRootLevel) {
@@ -943,7 +948,6 @@ void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
  */
 void OmMipVolume::BuildEditedLeafChunks()
 {
-
 	//first build all the edited leaf chunks
 	set < OmMipChunkCoord >::iterator itr;
 	for (itr = mEditedLeafChunks.begin(); itr != mEditedLeafChunks.end(); itr++) {
@@ -955,12 +959,11 @@ void OmMipVolume::BuildEditedLeafChunks()
 		BuildChunkAndParents(*itr);
 
 		//clear modified values
-		if(p_chunk) p_chunk->ClearModifiedVoxelValues();
+		p_chunk->ClearModifiedVoxelValues();
 	}
 
 	//edited chunks clean
 	mEditedLeafChunks.clear();
-
 }
 
 /*
@@ -1014,7 +1017,7 @@ void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, OmDataWrap
 			//get parent level
 			OmMipChunkCoord parent_coord = rMipCoord;
 			parent_coord.Level++;
-		
+
 			//build parent chunk level and recurse
 			//not initial call
 			BuildThreadChunk(parent_coord, p_image_data, false);
@@ -1638,4 +1641,17 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		throw OmIoException("Could not close HDF5 dataset.");
 
 	printf("\n");
+}
+
+void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
+{
+	SetBuildState(MIPVOL_BUILDING);
+
+	OmVolume::SetDataDimensions(dims);
+	UpdateRootLevel();
+
+	DeleteVolumeData();
+	AllocInternalData(OmDataWrapper<unsigned int>::produceNull());
+
+	SetBuildState(MIPVOL_BUILT);
 }

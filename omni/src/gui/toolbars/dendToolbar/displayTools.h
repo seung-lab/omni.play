@@ -15,9 +15,17 @@ class DisplayTools : public QGroupBox {
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	void updateGui();
 
+ private slots:
+        void changeMapColors();
+
  private:
 	DendToolBar *const mParent;
 
+	QButtonGroup * validGroup;
+        QRadioButton * showValid;
+        QRadioButton * dontShowValid;
+
+	QWidget* filterShowNonSelectedSegmentsBox();
 	QWidget* thresholdBox();
 };
 

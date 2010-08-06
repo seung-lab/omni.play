@@ -2,17 +2,18 @@
 #include "gui/guiUtils.h"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segObjectInspector.h"
-#include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/segmentListBase.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/omSegmentSelector.h"
+#include "system/omEvents.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
-					 InspectorProperties * ip) 
+					 InspectorProperties * ip)
 	: QTreeWidget(slist)
 	, segmentListBase(slist)
 	, inspectorProperties(ip)
@@ -44,7 +45,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
 	assert( 100 >= segs->size() && "too many segments returned" );
-	
+
 	OmSegment * seg;
 	OmSegPtrList::iterator iter;
 	for( iter = segs->begin(); iter != segs->end(); ++iter){
@@ -59,6 +60,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 		//row->setText(NOTE_COL, seg.getNote());
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg->IsEnabled()));
+
 		row->setSelected(seg->IsSelected());
 		if (doScrollToSelectedSegment && seg->getValue() == segmentJustSelectedID) {
 			rowToJumpTo = row;
@@ -95,29 +97,34 @@ void OmSegmentListWidget::segmentLeftClick()
 	}
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
-	
+
 	OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
+	sel.setAddToRecentList( segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
 	const int column = currentColumn();
 	if (0 == column) {
-		const bool isChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
-		sdw.setEnabled(isChecked);
 
-		sel.selectJustThisSegment( sdw.getID(), isChecked );
+		const bool isCurrentlyChecked = GuiUtils::getBoolState( current->checkState( ENABLED_COL ) );
+		const bool shouldBeChecked = !isCurrentlyChecked;
 
+		sdw.setEnabled(shouldBeChecked);
+		OmEvents::Redraw();
+		OmEvents::Redraw3d();
+
+		/*
 		if( isChecked ) {
 			setCurrentItem( current, 0, QItemSelectionModel::Select );
 		} else {
 			setCurrentItem( current, 0, QItemSelectionModel::Deselect );
 		}
-
+		*/
 	} else {
 		sel.selectNoSegments();
 
 		foreach(QTreeWidgetItem * item, selectedItems()) {
 			QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
 			SegmentDataWrapper item_sdw = result.value < SegmentDataWrapper > ();
-			
+
 			if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
 			    QApplication::keyboardModifiers() & Qt::ShiftModifier ){
 				sel.augmentSelectedSet( item_sdw.getID(), true );
@@ -190,7 +197,7 @@ void OmSegmentListWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::Ch
 void OmSegmentListWidget::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
 {
 	assert(inspectorProperties);
-	inspectorProperties->setOrReplaceWidget( new SegObjectInspector(sdw, this), 
+	inspectorProperties->setOrReplaceWidget( new SegObjectInspector(sdw, this),
 						 QString("Segmentation%1: Segment %2")
 						 .arg(sdw.getSegmentationID())
 						 .arg(sdw.getID()) );
@@ -198,8 +205,8 @@ void OmSegmentListWidget::addToSplitterDataElementSegment( SegmentDataWrapper sd
 
 void OmSegmentListWidget::keyPressEvent(QKeyEvent* event)
 {
-	QTreeWidget::keyPressEvent(event);	
-	
+	QTreeWidget::keyPressEvent(event);
+
 	switch (event->key()) {
 	case Qt::Key_Up:
 	case Qt::Key_Down:

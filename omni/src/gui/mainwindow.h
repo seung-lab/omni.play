@@ -82,7 +82,7 @@ class MainWindow
 	void addSegmentationToVolume();
 				
  private:
-	bool checkForSave();
+	int checkForSave();
 		
 	QFrame *loadingDock;
 				

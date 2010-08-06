@@ -164,7 +164,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	child->mFreshnessForMeshes++;
 
 	if( isSegmentSelected( parent->getValue() ) ){
-		doSelectedSetInsert( child->getValue() );
+		doSelectedSetInsert( child->getValue(), true );
 	} else {
 		doSelectedSetRemove( child->getValue() );
 	}
@@ -221,7 +221,7 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 	findRoot(parent)->mFreshnessForMeshes++;
 
         if( isSegmentSelected( e.childID ) ){
-                doSelectedSetInsert( parent->mValue );
+                doSelectedSetInsert( parent->mValue, true );
         }
 	doSelectedSetRemove( e.childID );
 
@@ -392,7 +392,6 @@ void OmSegmentCacheImpl::setGlobalThreshold()
   }
 
   printf("setting global threshold to %f...\n", mSegmentation->mst.mDendThreshold);
-
   mSegmentGraph.setGlobalThreshold( mSegmentation->mst.mDend->getPtr<unsigned int>(),
 				    mSegmentation->mst.mDendValues->getPtr<float>(),
 				    mSegmentation->mst.mEdgeDisabledByUser->getPtr<unsigned char>(),

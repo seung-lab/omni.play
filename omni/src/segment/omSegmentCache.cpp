@@ -26,9 +26,9 @@ OmSegID OmSegmentCache::getSegmentationID()
 	return mSegmentation->GetId();
 }
 
-quint32 OmSegmentCache::getPageSize() 
-{ 
-	return mImpl->getPageSize(); 
+quint32 OmSegmentCache::getPageSize()
+{
+	return mImpl->getPageSize();
 }
 
 // FIXME: this needs to get refactored into some sort of helper...
@@ -78,7 +78,7 @@ OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 	return mImpl->AddSegment(value);
 }
 
-void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values, 
+void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 					  const OmMipChunkCoord & mipCoord,
 					  boost::unordered_map< OmSegID, unsigned int> * sizes )
 {
@@ -170,10 +170,12 @@ void OmSegmentCache::setSegmentEnabled( OmSegID segID, bool isEnabled )
 	mImpl->setSegmentEnabled( segID, isEnabled );
 }
 
-void OmSegmentCache::setSegmentSelected( OmSegID segID, bool isSelected )
+void OmSegmentCache::setSegmentSelected( OmSegID segID,
+					 const bool isSelected,
+					 const bool addToRecentList)
 {
 	QMutexLocker locker( &mMutex );
-	mImpl->setSegmentSelected( segID, isSelected );
+	mImpl->setSegmentSelected( segID, isSelected, addToRecentList );
 }
 
 void OmSegmentCache::setSegmentName( OmSegID segID, QString name )
@@ -260,10 +262,11 @@ quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
         return mImpl->getSegmentListSize(type);
 }
 
-void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect)
+void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
+					     const bool addToRecentList)
 {
 	QMutexLocker locker( &mMutex );
-        return mImpl->UpdateSegmentSelection(idsToSelect);
+        return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
 OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg)
@@ -300,4 +303,9 @@ quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
 	QMutexLocker locker( &mMutex );
         return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
+}
+
+bool OmSegmentCache::AreSegmentsEnabled(){
+	QMutexLocker locker( &mMutex );
+	return mImpl->AreSegmentsEnabled();
 }

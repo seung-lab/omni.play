@@ -633,9 +633,15 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 	case Qt::Key_M:
 		mEmitMovie = !mEmitMovie;
 		break;
-	case Qt::Key_P:
-		setBrushToolDiameter();
+	case Qt::Key_P: {
+	        bool augment_selection = event->modifiers() & Qt::ShiftModifier;
+                if (augment_selection) {
+                   setBrushToolDiameterUp();
+                } else {
+		   setBrushToolDiameterDown ();
+		}
 		myUpdate();
+                }
 		break;
 	case Qt::Key_L:
 		mLevelLock = !mLevelLock;

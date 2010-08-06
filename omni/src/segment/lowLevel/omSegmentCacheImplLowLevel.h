@@ -33,6 +33,8 @@ class OmSegmentCacheImplLowLevel {
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
 	void SetAllEnabled(bool);
 	OmSegIDsSet& GetEnabledSegmentIdsRef();
+	bool AreSegmentsEnabled();
+	uint32_t numberOfEnabledSegments();
 
 	bool isSegmentSelected( OmSegID segID );
 	bool isSegmentSelected( OmSegment * seg );
@@ -40,8 +42,8 @@ class OmSegmentCacheImplLowLevel {
 	OmSegIDsSet& GetSelectedSegmentIdsRef();
 	quint32 numberOfSelectedSegments();
 	bool AreSegmentsSelected();
-	void setSegmentSelected( OmSegID segID, bool isSelected );
-	void UpdateSegmentSelection( const OmSegIDsSet & ids);
+	void setSegmentSelected( OmSegID segID, const bool, const bool  );
+	void UpdateSegmentSelection( const OmSegIDsSet & ids, const bool);
 
 	QString getSegmentName( OmSegID segID );
 	void setSegmentName( OmSegID segID, QString name );
@@ -78,8 +80,8 @@ class OmSegmentCacheImplLowLevel {
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
 
-	void doSelectedSetInsert( const OmSegID segID);
-	void doSelectedSetRemove( const OmSegID segID);	
+	void doSelectedSetInsert( const OmSegID segID, const bool);
+	void doSelectedSetRemove( const OmSegID segID);
 
 	void clearCaches();
 
@@ -89,7 +91,7 @@ class OmSegmentCacheImplLowLevel {
 	void addToRecentMap( const OmSegID segID);
 
  private:
-	void setSegmentSelectedBatch( OmSegID segID, bool isSelected );
+	void setSegmentSelectedBatch( OmSegID segID, const bool, const bool );
 };
 
 #endif

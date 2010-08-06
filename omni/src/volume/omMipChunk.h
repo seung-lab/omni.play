@@ -149,6 +149,7 @@ protected:
 	//image data of chunk
 	OmDataWrapperPtr mData;
 
+	friend class OmMipVolume;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 };

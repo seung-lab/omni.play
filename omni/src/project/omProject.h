@@ -33,7 +33,7 @@ class OmProject : boost::noncopyable {
 	static void Save();
 	static void Commit();
 	static void Load( QString fileNameAndPath );
-	static void Close();
+	static void Close(bool doSave = true);
 
         //volume management
         static OmChannel& GetChannel(const OmId id);
@@ -51,6 +51,8 @@ class OmProject : boost::noncopyable {
         static const OmIDsSet & GetValidSegmentationIds();
         static bool IsSegmentationEnabled(const OmId id);
         static void SetSegmentationEnabled(const OmId id, const bool enable);
+	static void SetCanFlush(bool canflush);
+	static bool GetCanFlush();
 
  private:
 	//singleton
@@ -61,6 +63,7 @@ class OmProject : boost::noncopyable {
 	//project
 	QString mFileName;
 	QString mDirectoryPath;
+	bool mCanFlush;
 
         //data managers
         OmGenericManager<OmChannel> mChannelManager;

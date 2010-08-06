@@ -107,7 +107,7 @@ public:
 	bool BuildVolume();
 	bool BuildSerialVolume();
 	virtual bool BuildThreadedVolume();
-	virtual void BuildChunk(const OmMipChunkCoord &);
+	virtual void BuildChunk(const OmMipChunkCoord &, bool remesh=false);
 	void BuildChunkAndParents(const OmMipChunkCoord &);
 	void BuildEditedLeafChunks();
 
@@ -153,6 +153,8 @@ public:
 	QFileInfoList mSourceFilenamesAndPaths;
 
 protected:
+	void BuildBlankVolume(const Vector3i & dims);
+
 	OmMipVolumeCache *const mDataCache;
 
 	//state
@@ -171,17 +173,12 @@ protected:
 	//subsample data methods
 	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
 	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
-
-	template< typename T> vtkImageData* SubsampleImageData(OmDataWrapperPtr srcData);
-
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
 	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
-
-	//subsample data methods
 	QString mDirectoryPath;          // ex. "./" or "images/out/"
 	QString mFilename;
 	bool sourceFilesWereSet;

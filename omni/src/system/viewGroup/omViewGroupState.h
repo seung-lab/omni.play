@@ -33,20 +33,20 @@ class OmViewGroupState : public OmManageableObject {
 	//viewbox state
 	void SetViewSliceMin(ViewType, Vector2<float>, bool postEvent = true);
 	Vector2<float> GetViewSliceMin(ViewType);
-	
+
 	void SetViewSliceMax(ViewType, Vector2<float>, bool postEvent = true);
 	Vector2<float> GetViewSliceMax(ViewType);
 
-	SpaceCoord GetViewDepthCoord();	
+	SpaceCoord GetViewDepthCoord();
 	void SetViewSliceDepth(ViewType, float, bool postEvent = true);
 	float GetViewSliceDepth(ViewType);
-	
+
 	void SetZoomLevel(Vector2<int>);
 	Vector2<int> GetZoomLevel();
-	
+
 	void SetPanDistance(ViewType, Vector2f, bool postEvent = true);
 	Vector2f GetPanDistance(ViewType);
-		
+
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
@@ -79,6 +79,9 @@ class OmViewGroupState : public OmManageableObject {
 	int getView2DBrushToolDiameter();
 	void setView2DBrushToolDiameter(const int size);
 
+	void SetShowFilterMode(const bool inColor);
+	bool GetShowFilterMode();
+
  private:
 	mutable QMutex mColorCacheMapLock;
 
@@ -92,13 +95,13 @@ class OmViewGroupState : public OmManageableObject {
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
 	float mXYPan[2], mYZPan[2], mXZPan[2];
-	Vector2<int> zoom_level;
-	
+	Vector2i zoom_level;
+
 	SpaceBbox mViewBbox;
 	SpaceCoord mViewCenter;
-	
+
 	bool mXYSliceEnabled, mYZSliceEnabled, mXZSliceEnabled;
-	
+
 	int mViewSliceBytesPerSample;
 	int mViewSliceSamplesPerPixel;
 	Vector3i mViewSliceDimXY;
@@ -120,6 +123,8 @@ class OmViewGroupState : public OmManageableObject {
 	bool mShowValid;
 	bool mShowSplit;
 	bool mShowValidInColor;
+
+	bool mShowFilterInColor;
 
 	int view2DBrushToolDiameter_;
 };
