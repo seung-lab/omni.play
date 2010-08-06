@@ -10,10 +10,10 @@ class OmViewGroupState;
 class OmSegmentContextMenu : public QMenu {
 
 	Q_OBJECT
-	
+
 public:
 	void Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs);
-	
+
 protected:
 	void AddSelectionNames();
 	void AddSelectionAction();
@@ -26,14 +26,15 @@ private slots:
 	void Select();
 	void Unselect();
 	void UnselectOthers();
-	
+
 	void MergeSegments();
 	void splitSegments();
 	void randomizeColor();
 	void addGroup();
 	void deleteGroup();
 	void showProperties();
-	
+	void printChildren();
+
 private:
 	OmId mSegmentationId;
 	OmId mSegmentId;
