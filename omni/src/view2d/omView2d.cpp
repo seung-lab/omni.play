@@ -941,6 +941,11 @@ void OmView2d::myUpdate()
                 	mUpdateCoordsSet.clear();
 			mEditedSegmentation = 0;
 		}
+#if 0
+		FOR_EACH(itr, mUpdateCoordsSet) {
+			mCache
+		}
+#endif
 		OmCachingThreadedCachingTile::Refresh();
 		mDoRefresh = false;
 	}
