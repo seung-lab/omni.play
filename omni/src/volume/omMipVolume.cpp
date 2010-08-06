@@ -77,6 +77,10 @@ OmMipVolume::~OmMipVolume()
  */
 void OmMipVolume::Flush()
 {
+	if(!OmProject::GetCanFlush()) {
+		return;
+	}
+
 	//build any edited leaf chunks
 	BuildEditedLeafChunks();
 
