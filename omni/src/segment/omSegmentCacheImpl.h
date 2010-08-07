@@ -21,14 +21,14 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
-	OmSegmentEdge JoinFromUserAction( OmSegmentEdge e );
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction( OmSegmentEdge e );
 	OmSegmentEdge SplitEdgeUserAction( OmSegmentEdge e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
-	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset, 
-						   const int numToGet, 
-						   const OmSegIDRootType type, 
+	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset,
+						   const int numToGet,
+						   const OmSegIDRootType type,
 						   const OmSegID starSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
@@ -41,16 +41,16 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
  private:
 	OmSegmentEdge splitChildFromParent( OmSegment * child );
 
-	OmSegmentEdge JoinEdgeFromUser( OmSegmentEdge e );
 	QList<OmSegmentEdge> mManualUserMergeEdgeList;
 
-	OmSegmentEdge JoinFromUserAction( const OmId, const OmId );
+	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser( OmSegmentEdge e );
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction( const OmId, const OmId );
 
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setGlobalThreshold();
 	void resetGlobalThreshold();
-	
+
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
