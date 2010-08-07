@@ -21,8 +21,8 @@ class MainWindow;
 class OmViewGroupState;
 
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
- Q_OBJECT 
- 
+ Q_OBJECT
+
  public:
 	 MyInspectorWidget( MainWindow* parent, OmViewGroupState * vgs);
 	~MyInspectorWidget();
@@ -33,7 +33,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void refreshWidgetData();
 	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
 
- signals: 
+ signals:
 	void triggerChannelView(OmId chan_id, ViewType vtype);
 	void triggerSegmentationView(OmId primary_id, ViewType vtype);
 
@@ -49,7 +49,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void SegmentDataModificationEvent() {}
 	void SegmentEditSelectionChangeEvent() {}
 
- private slots: 
+ private slots:
         void addFilter();
 	void nameEditChanged();
 
@@ -77,7 +77,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void showChannelContextMenu();
 	void showSegmentationContextMenu();
 	void doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem );
-	QMenu *makeContextMenuBase(QTreeWidget * parent);
+	QMenu* makeContextMenuBase(QTreeWidget * parent);
+	QMenu* makeSegmentationContextMenu(QTreeWidget* parent);
 
 	void populateFilterListWidget(ChannelDataWrapper cdw);
 
@@ -98,6 +99,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	QAction *yzAct;
 	QAction *propAct;
 	QAction *delAct;
+	QAction *examMSTAct;
 
 	QAction *addChannelAct;
 	QAction *addSegmentationAct;
@@ -125,6 +127,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void updateSegmentListBox( SegmentationDataWrapper sdw );
 
 	OmViewGroupState * mViewGroupState;
+
+	void showMSTtable(SegmentationDataWrapper sdw);
 };
 
 #endif

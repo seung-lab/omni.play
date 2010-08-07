@@ -2,7 +2,6 @@
 #define MARCHINGCUBES_H_
 
 #include "HalfEdge.hpp"
-#include "MarchingCubesTables.h"
 #include "zi/vector/Vec.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>

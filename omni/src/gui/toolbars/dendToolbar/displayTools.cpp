@@ -9,7 +9,6 @@ DisplayTools::DisplayTools(DendToolBar * d)
 	: QGroupBox("Display Tools", d)
 	, mParent(d)
 {
-
 	QVBoxLayout* box = new QVBoxLayout(this);
 	box->addWidget(thresholdBox());
 	box->addWidget(filterShowNonSelectedSegmentsBox());

@@ -28,7 +28,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	~OmSegmentation();
 
 	void CloseDownThreads();
-	
+
 	//data accessor
 	void SetVoxelValue(const DataCoord &, uint32_t);
 	OmId GetVoxelSegmentId(const DataCoord &vox);
@@ -44,16 +44,16 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void BuildMeshData();
 	void BuildMeshDataPlan(const QString &);
 	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
-	void BuildMeshDataInternal();	
+	void BuildMeshDataInternal();
 	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
-	
+
 	//export
 	void ExportDataFilter(vtkImageData *);
-							
+
 	//segment management
 	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
 
@@ -65,7 +65,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	//drawing
 	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
-	
+
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
@@ -74,7 +74,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
-	
+
 private:
 	void KillCacheThreads();
 
@@ -98,6 +98,7 @@ private:
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;
+	friend class MstViewerImpl;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
