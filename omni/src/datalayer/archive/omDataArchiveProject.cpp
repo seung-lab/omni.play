@@ -25,11 +25,11 @@ int Omni_File_Version;
 
 static const QString Omni_Postfix("OMNI");
 
-void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project )
 {
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-	
+
 	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
@@ -38,10 +38,10 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	in >> Omni_File_Version;
 
 	if( Omni_File_Version < 10 ){
-		throw OmIoException("can not open file: file version is (" 
+		throw OmIoException("can not open file: file version is ("
 				    + boost::lexical_cast<std::string>(Omni_File_Version)
 				    +"), but Omni expecting ("
-				    + boost::lexical_cast<std::string>(Omni_Version) 
+				    + boost::lexical_cast<std::string>(Omni_Version)
 				    + ")");
 	}
 
@@ -55,7 +55,7 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	}
 }
 
-void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * project ) 
+void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * project )
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -66,8 +66,8 @@ void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * pr
 	out << (*project);
 	out << Omni_Postfix;
 
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
-									   ba.size(), 
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
+									   ba.size(),
 									   ba.data() );
 }
 
@@ -91,7 +91,7 @@ QDataStream &operator>>(QDataStream & in, OmProject & p)
 
 QDataStream &operator<<(QDataStream & out, const OmPreferences & p )
 {
-	out << p.stringPrefs; 
+	out << p.stringPrefs;
 	out << p.floatPrefs;
 	out << p.intPrefs;
 	out << p.boolPrefs;
@@ -101,7 +101,7 @@ QDataStream &operator<<(QDataStream & out, const OmPreferences & p )
 
 QDataStream &operator>>(QDataStream & in, OmPreferences & p )
 {
-	in >> p.stringPrefs; 
+	in >> p.stringPrefs;
 	in >> p.floatPrefs;
 	in >> p.intPrefs;
 	in >> p.boolPrefs;
@@ -141,7 +141,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
 		in >> *chan;
 		cm.mMap[ chan->GetId() ] = chan;
 	}
-	
+
 	return in;
 }
 
@@ -211,7 +211,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
 		in >> *filter;
 		fm.mMap[ filter->GetId() ] = filter;
 	}
-	
+
 	return in;
 }
 
@@ -267,7 +267,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm 
 		in >> *seg;
 		sm.mMap[ seg->GetId() ] = seg;
 	}
-	
+
 	return in;
 }
 
@@ -294,7 +294,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	OmDataArchiveProject::loadOmManageableObject( in, seg );
 	OmDataArchiveProject::loadOmVolume( in, seg );
 	OmDataArchiveProject::loadOmMipVolume( in, seg );
- 
+
 	in >> seg.mMipMeshManager;
 	in >> (*seg.mSegmentCache);
 
@@ -379,9 +379,9 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 
 	out << sc.segmentCustomNames;
 	out << sc.segmentNotes;
-	
+
 	out << sc.mNumSegs;
-	
+
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
 	foreach( const OmSegmentEdge & e, sc.mManualUserMergeEdgeList ){
@@ -417,13 +417,22 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	for( int i = 0; i < size; ++i ){
 		OmSegmentEdge e;
 		in >> e;
+		if( 0 == e.childID  ||
+		    0 == e.parentID ||
+		    std::isnan(e.threshold)){
+		  printf("warning: bad edge found: %d, %d, %f\n",
+			 e.parentID,
+			 e.childID,
+			 e.threshold);
+		  continue;
+		}
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
 	return in;
 }
 
-template< class T2 > 
+template< class T2 >
 QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps )
 {
 	out << ps.validPageNumbers;
@@ -431,7 +440,7 @@ QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps )
 	return out;
 }
 
-template< class T2 > 
+template< class T2 >
 QDataStream &operator>>(QDataStream & in, OmPagingPtrStore<T2> & ps )
 {
 	in >> ps.validPageNumbers;
@@ -453,6 +462,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
 	in >> se.parentID;
 	in >> se.childID;
 	in >> se.threshold;
+
 
 	return in;
 }
@@ -480,7 +490,7 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 	out << m.mDirectoryPath;
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
-	
+
 	int subsamplemode = 0;
 	out << subsamplemode;
 	out << m.mBuildState;
@@ -494,7 +504,7 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mDirectoryPath;
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
-	
+
 	int subsamplemode;
 	in >> subsamplemode;
 	in >> m.mBuildState;
