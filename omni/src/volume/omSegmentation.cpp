@@ -546,3 +546,59 @@ void OmSegmentation::CloseDownThreads()
 	mMipMeshManager.CloseDownThreads();
 	mDataCache->closeDownThreads();
 }
+
+Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
+{
+	DataBbox box;
+	bool found = false;
+        QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
+
+
+        OmSegmentIterator iter(mSegmentCache);
+        iter.iterOverSelectedIDs();
+
+        OmSegment * seg = iter.getNextSegment();
+        OmSegIDsSet newSet;
+	unsigned int counter = 0;
+        while(NULL != seg) {
+
+		{
+		int level = 0;
+
+			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+                        for (int z = 0; z < mip_coord_dims.z; ++z) {
+                                for (int y = 0; y < mip_coord_dims.y; ++y) {
+                                        for (int x = 0; x < mip_coord_dims.x; ++x) {
+                                                OmMipChunkCoord chunk_coord(level, x, y, z);
+						GetChunk(p_chunk, chunk_coord);
+
+                				const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
+						if(data_values.contains(seg->getValue())) {
+
+							if(!found) {
+								found = true;
+								box = p_chunk->GetExtent();
+							} else {
+								box = DataBbox(box, p_chunk->GetExtent());
+								counter++;
+							}
+						}
+                                        }
+                                }
+                        }
+		}
+
+                seg = iter.getNextSegment();
+		if(counter > 5000) {
+			break;
+		}
+        }
+
+	if(!found) {
+		return Vector3<int> (0,0,0);
+		//assert(0 && "segments must be selected before calling this function");
+	}
+	return (box.getMin() + box.getMax()) / 2;
+}
+
+

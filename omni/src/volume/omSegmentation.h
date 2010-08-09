@@ -75,6 +75,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mDendThreshold; }
 
+	Vector3<int> FindCenterOfSelectedSegments();
+
+
 private:
 	void KillCacheThreads();
 

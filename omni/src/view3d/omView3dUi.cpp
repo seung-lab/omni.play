@@ -64,7 +64,21 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
         if (event->key() == Qt::Key_C) {
-		mCPressed = true; 
+		OmId seg = 1;
+        	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+
+		Vector3<int> voxel = current_seg.FindCenterOfSelectedSegments();
+
+        	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
+
+        	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+        	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+        	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+
+        	mpView3d->mCamera.SetFocus(picked_voxel);
+        	mpView3d->updateGL();
+
+        	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else if (event->key() == Qt::Key_Escape) {
 		resetWindow();
 	} else if (event->key() == Qt::Key_Minus) {
