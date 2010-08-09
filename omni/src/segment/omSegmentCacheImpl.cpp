@@ -210,6 +210,12 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( e.parentID );
 
+	if( childRoot == findRoot( parent ) ){
+		printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
+		       e.childID, e.parentID, e.threshold);
+		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+	}
+
 	if( childRoot->mImmutable != parent->mImmutable ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
 		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
