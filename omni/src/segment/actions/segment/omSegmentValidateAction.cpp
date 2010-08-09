@@ -4,6 +4,7 @@
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
+#include "system/cache/omCacheManager.h"
 #include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 
@@ -32,6 +33,7 @@ void OmSegmentValidateAction::Action()
         	seg.GetSegmentCache()->setAsValidated(segment, mCreate);
 		printf("set %d as valid=%d\n", id, mCreate);
 	}
+	OmCacheManager::Freshen(true);
 }
 
 void OmSegmentValidateAction::UndoAction()
@@ -42,6 +44,7 @@ void OmSegmentValidateAction::UndoAction()
 		segment->SetImmutable(!mCreate);
         	seg.GetSegmentCache()->setAsValidated(segment, !mCreate);
 	}
+	OmCacheManager::Freshen(true);
 }
 
 string OmSegmentValidateAction::Description()
