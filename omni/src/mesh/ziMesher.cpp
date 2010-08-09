@@ -3,6 +3,7 @@
 #include "boost/shared_ptr.hpp"
 #include "zi/base/base.h"
 #include <map>
+#include <zi/system>
 #include "ziMeshingChunk.h"
 #include "zi/thread/Thread.h"
 #include "zi/thread/ThreadManager.h"
@@ -66,8 +67,13 @@ void ziMesher::mesh() {
 }
 
 int ziMesher::getQueueSize() {
-  //TODO: retrieve from omLocalPreferences... (purcaro)
+  //TODO: retrieve from omLocalPreferences? (purcaro)
   //Update by aleks: this actually shouldn't be too big, since
   // each thread eats a lot of memory (pre loads the data)
-  return 12;
+  int idealNum = zi::System::GetTotalGB() / 2;
+  if( idealNum < 2){
+    idealNum = 2;
+  }
+  printf("ziMesher: will use %d threads\n", idealNum);
+  return idealNum;
 }
