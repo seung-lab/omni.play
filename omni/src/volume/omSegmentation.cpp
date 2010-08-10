@@ -106,11 +106,6 @@ OmSegmentation::~OmSegmentation()
 /////////////////////////////////
 ///////          Build Methods
 
-bool OmSegmentation::IsVolumeDataBuilt()
-{
-	return OmMipVolume::IsBuilt();
-}
-
 void OmSegmentation::BuildVolumeData()
 {
 	mSegmentCache->turnBatchModeOn(true);
@@ -362,11 +357,12 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 /////////////////////////////////
 ///////          Export
 
-/*
- *	Replace each value in the volume with its associated OmId.
+/**
+ *	Replace each segment value in the volume with its root segment ID
  */
 void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 {
+	// TODO: refactor out of segment cache
 	mSegmentCache->ExportDataFilter(pImageData);
 }
 
@@ -374,14 +370,12 @@ void OmSegmentation::ExportDataFilter(vtkImageData * pImageData)
 ///////          Groups
 void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
-
 	bool valid;
 	if(VALIDROOT == type) {
 		valid = true;
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		//mGroups.SetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
 		return;
 	}
@@ -401,7 +395,6 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
-
         if(GROUPROOT == type) {
                 return mGroups.UnsetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
@@ -414,19 +407,6 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 void OmSegmentation::DeleteGroup(OmGroupID)
 {
 	printf("FIXME delete group not supported\n");
-}
-
-
-/*
- *	Draw voxelated representation of the MipChunk.
- */
-void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & //mipCoord
-				     , const OmSegIDsSet & //rRelvDataVals
-				     , const OmBitfield & //drawOps
-				     )
-{
-	assert(0);
-	//mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**

@@ -214,7 +214,7 @@ void OmSegmentContextMenu::printChildren()
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
-			printf("%u : %u, %f, %lu\n",
+			printf("%u : %u, %f, %llu\n",
 			       seg->getValue(),
 			       seg->getParentSegID(),
 			       seg->getThreshold(),

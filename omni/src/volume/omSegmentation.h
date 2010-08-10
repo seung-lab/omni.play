@@ -30,7 +30,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void CloseDownThreads();
 
 	//build methods
-	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
 
 	bool BuildThreadedVolume();
@@ -57,9 +56,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
  	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);
-
-	//drawing
-	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
 
 	OmMipMeshManager mMipMeshManager;
 
