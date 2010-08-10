@@ -29,11 +29,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void CloseDownThreads();
 
-	//data accessor
-	void SetVoxelValue(const DataCoord &, uint32_t);
-	OmId GetVoxelSegmentId(const DataCoord &vox);
-	void SetVoxelSegmentId(const DataCoord &vox, OmId omId);
-
 	//build methods
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();

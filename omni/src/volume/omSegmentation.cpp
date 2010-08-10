@@ -47,7 +47,7 @@ OmSegmentation::OmSegmentation()
         int chunkDim = GetChunkDimension();
         mDataCache->SetObjectSize(chunkDim*chunkDim*chunkDim*GetBytesPerSample());
 	mMeshingMan = NULL;
-	
+
 	mDend = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mDendValues = OmDataWrapperPtr( new OmDataWrapper( NULL) );
 	mEdgeDisabledByUser = OmDataWrapperPtr( new OmDataWrapper( NULL) );
@@ -101,47 +101,6 @@ OmSegmentation::OmSegmentation(OmId id)
 OmSegmentation::~OmSegmentation()
 {
 	delete mSegmentCache;
-}
-
-/////////////////////////////////
-///////          Data Accessors
-
-/*
- *	Overridden so as to update MipVoxelationManager
- */
-void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
-{
-
-	//debug("FIXME", << "OmSegmentation::SetVoxelValue: " << rVox << " , " << val << endl;
-
-	//get old value
-	//	uint32_t old_val = GetVoxelValue(rVox);
-
-	//update data
-	OmMipVolume::SetVoxelValue(rVox, val);
-
-	//change voxel in voxelation
-	//assert(0);
-	//mMipVoxelationManager.UpdateVoxel(rVox, old_val, val);
-}
-
-/*
- *	Use the first data value of the voxel to determine which
- *	SegmentId the voxel is mapped to.
- */
-OmId OmSegmentation::GetVoxelSegmentId(const DataCoord & vox)
-{
-	return GetVoxelValue(vox);
-}
-
-/*
- *	Convienence method that sets the data value of the voxel to
- *	any value that is mapped to the given SegmentId
- */
-void OmSegmentation::SetVoxelSegmentId(const DataCoord & vox, OmId omId)
-{
-	//set voxel to first value in set
-	SetVoxelValue(vox, omId);
 }
 
 /////////////////////////////////
@@ -203,7 +162,7 @@ bool OmSegmentation::BuildThreadedSegmentation()
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
-       		//timer start	
+       		//timer start
        		vol_timer.start();
 	}
 
@@ -306,7 +265,7 @@ void OmSegmentation::BuildMeshDataInternal()
 	if(useZImesher){
 		ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
 		Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
-		
+
 		for (int z = 0; z < mc.z; ++z) {
 			for (int y = 0; y < mc.y; ++y) {
 				for (int x = 0; x < mc.x; ++x) {
@@ -315,9 +274,9 @@ void OmSegmentation::BuildMeshDataInternal()
 				}
 			}
 		}
-		
+
 		mesher.mesh();
-		
+
 	} else {
 		MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
 		for (int level = 0; level <= GetRootMipLevel(); ++level) {
@@ -334,7 +293,7 @@ void OmSegmentation::BuildMeshDataInternal()
 				}
 			}
 		}
-	
+
 		meshingMan->start();
 		meshingMan->wait();
 		delete(meshingMan);
@@ -350,7 +309,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 
 	QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
 	GetChunk(p_chunk, mipCoord);
-	
+
 	const bool isMIPzero = p_chunk->IsLeaf();
 
 	// refresh values even if not MIP 0
@@ -502,7 +461,7 @@ void OmSegmentation::FlushDirtySegments()
 void OmSegmentation::FlushDend()
 {
 	OmDataPath path;
-	
+
 	QString dendStr = QString("%1/dend").arg(GetDirectoryPath());
 	path.setPathQstr(dendStr);
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite(path, mDendSize, mDend->getCharPtr());
