@@ -17,19 +17,19 @@ DendToolBar::DendToolBar(MainWindow* mw, OmViewGroupState* vgs)
 	validationGroup = new ValidationGroup(this);
 	displayTools = new DisplayTools(this);
 
-	/*
 	mMainWindow->addToolbarRight(this);
 	addWidget(wrapWithGroupBox(graphTools));
 	addWidget(wrapWithGroupBox(validationGroup));
 	addWidget(wrapWithGroupBox(displayTools));
-	*/
+
 	//addWidget(new BreakThresholdGroup(this));
 
+	/*
 	graphToolsDock = makeDockWidget(graphTools);
 	validationGroupDock = makeDockWidget(validationGroup);
 	displayToolsDock = makeDockWidget(displayTools);
-
 	updateToolBarsPos(QPoint(0,0));
+	*/
 }
 
 QDockWidget* DendToolBar::makeDockWidget(OmWidget* widget)
