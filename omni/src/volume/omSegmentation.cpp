@@ -1,3 +1,4 @@
+#include "volume/build/omVolumeImporter.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -472,4 +473,8 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 	return (box.getMin() + box.getMax()) / 2;
 }
 
-
+bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
+{
+	OmVolumeImporter<OmSegmentation> importer(this);
+	return importer.import(dataset);
+}

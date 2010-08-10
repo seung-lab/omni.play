@@ -229,6 +229,8 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
+           src/volume/build/omVolumeBuilder.hpp \
+           src/volume/build/omVolumeImporter.hpp \
            src/volume/omChannel.h \
            src/volume/omVoxelSetValueAction.h \
            src/volume/omDrawOptions.h \
@@ -441,6 +443,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
+           src/volume/build/omVolumeBuilder.cpp \
+           src/volume/build/omVolumeImporter.cpp \
            src/volume/omChannel.cpp \
            src/volume/omVoxelSetValueAction.cpp \
            src/volume/omFilter2d.cpp \

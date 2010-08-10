@@ -1,3 +1,5 @@
+#include "volume/omLoadImageThread.cpp"
+#include "volume/build/omVolumeImporter.cpp"
 #include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "gui/inspectors/segInspector.h"
@@ -52,3 +54,8 @@ template class OmButton<GraphTools>;
 template class OmButton<SegInspector>;
 
 template class OmCheckBox<GraphTools>;
+
+template class OmVolumeImporter<OmChannel>;
+template class OmVolumeImporter<OmSegmentation>;
+template class OmLoadImageThread<OmChannel>;
+template class OmLoadImageThread<OmSegmentation>;

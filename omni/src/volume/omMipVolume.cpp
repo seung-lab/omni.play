@@ -1,13 +1,11 @@
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
-#include "volume/omLoadImageThread.h"
 #include "utility/stringHelpers.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "common/omStd.h"
 #include "common/omVtk.h"
 #include "datalayer/hdf5/omHdf5.h"
-#include "datalayer/omDataPath.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataReader.h"
@@ -30,8 +28,6 @@
 #include <vtkImageConstantPad.h>
 
 #include <QFile>
-#include <QImage>
-#include <QThreadPool>
 
 //Maximum number of powers of 2 that thread chunk is linearly larger than a chunk
 #define MAX_THREAD_CHUNK_EXPONENT 2
@@ -350,7 +346,7 @@ int OmMipVolume::GetMaxConsecutiveSubsamples()
 
 /*
  *	Gets dimension of a thread chunk level, which depends on the mipcoord level
- *	but flows over and loops back if it gets too small 
+ *	but flows over and loops back if it gets too small
  */
 int OmMipVolume::GetThreadChunkLevelDimension(int level)
 {
@@ -376,7 +372,7 @@ Vector3 < int > OmMipVolume::MipLevelDimensionsInThreadChunks(int level)
 	Vector3 < float >data_dims = MipLevelDataDimensions(level);
 
 	return Vector3 < int >(ceil(data_dims.x / GetThreadChunkDimension()),
-			       ceil(data_dims.y / GetThreadChunkDimension()), 
+			       ceil(data_dims.y / GetThreadChunkDimension()),
 			       ceil(data_dims.z / GetThreadChunkDimension()));
 }
 
@@ -388,7 +384,7 @@ Vector3 < int > OmMipVolume::MipLevelDimensionsInThreadChunkLevels(int level)
 	Vector3 < float >data_dims = MipLevelDataDimensions(level);
 
 	return Vector3 < int >(ceil(data_dims.x / GetThreadChunkLevelDimension(level)),
-			       ceil(data_dims.y / GetThreadChunkLevelDimension(level)), 
+			       ceil(data_dims.y / GetThreadChunkLevelDimension(level)),
 			       ceil(data_dims.z / GetThreadChunkLevelDimension(level)));
 }
 
@@ -661,7 +657,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 
 /*
  *	Allocate the image data for all mip level volumes.
- *	Note: root level, leaf dim, bytes per sample must already be set
+ *	Note: root level and leaf dim must already be set
  */
 void OmMipVolume::AllocInternalData(OmDataWrapperPtr data)
 {
@@ -839,27 +835,27 @@ bool OmMipVolume::BuildThreadedVolume()
 
  	//Distribute and subsample thread chunks as much as possible before redistributing
  	for (int initLevel = 0; initLevel < GetRootMipLevel(); initLevel += GetMaxConsecutiveSubsamples()){
- 
+
  		printf("Reading mip level %i, ",initLevel);
  		if ( (initLevel+1) == min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()) ){
  			printf("building mip level %i...\n",initLevel+1);
  		} else {
  			printf("building mip levels %i-%i...\n",initLevel+1,min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()));
  		}
- 
+
  		OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,initLevel,false);
  		mipThreadManager->SpawnThreads(ThreadChunksInMipLevel(initLevel));
  		mipThreadManager->run();
  		mipThreadManager->wait();
  		mipThreadManager->StopThreads();
  		delete mipThreadManager;
- 
+
  		//flush cache so that all thread chunks are flushed to disk
  		printf("Flushing thread chunks...\n");
- 		mThreadChunkThreadedCache->Flush();       
- 
+ 		mThreadChunkThreadedCache->Flush();
+
  	}
- 
+
  	printf("done.\n");
 
 	if (isDebugCategoryEnabled("perftest")){
@@ -1005,7 +1001,7 @@ void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, OmDataWrap
 	//continue only if image is large enough to subsample
 	//this assumes initial calls get image data which is large enough
 	if ( GetThreadChunkLevelDimension(rMipCoord.Level) >= 2 || initCall ) {
-		//if mipCoord is not root	
+		//if mipCoord is not root
 		if ( rMipCoord.Level != mMipRootLevel ) {
 			//get parent level
 			OmMipChunkCoord parent_coord = rMipCoord;
@@ -1275,153 +1271,6 @@ OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
 	return mThreadChunkThreadedCache;
 }
 
-bool OmMipVolume::areImportFilesImages()
-{
-	if( mSourceFilenamesAndPaths[0].fileName().endsWith(".h5", Qt::CaseInsensitive) ||
-	    mSourceFilenamesAndPaths[0].fileName().endsWith(".hdf5", Qt::CaseInsensitive)){
-		return false;
-	}
-
-	return true;
-}
-
-/*
- *	Given a valid source data volume, thes copies entire source volume to
- *	the leaf mip level of this mip volume.
- */
-bool OmMipVolume::ImportSourceData(OmDataPath & dataset)
-{
-	// use VTK for HDF5 import...
-	if(!areImportFilesImages()){
-		return ImportSourceDataVTK(dataset);
-	}
-
-	return ImportSourceDataQT();
-}
-
-bool OmMipVolume::ImportSourceDataVTK(OmDataPath & dataset)
-{
-	//dim of leaf coords
-	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-
-	OmDataPath leaf_volume_path;
-	leaf_volume_path.setPathQstr( MipLevelInternalDataPath(0) );
-
-	printf("\timporting data...\n");
-	fflush(stdout);
-
-	OmTimer import_timer;
-	import_timer.start();
-
-	bool initialized = false;
-
-	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z) {
-		for (int y = 0; y < leaf_mip_dims.y; ++y) {
-			for (int x = 0; x < leaf_mip_dims.x; ++x) {
-
-				//get chunk data bbox
-				const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
-				DataBbox chunk_data_bbox = MipCoordToDataBbox(chunk_coord, 0);
-
-				//read chunk image data from source
-				OmDataWrapperPtr p_img_data =
-					OmImageDataIo::om_imagedata_read_hdf5(mSourceFilenamesAndPaths,
-									      chunk_data_bbox,
-									      dataset);
-				if(!initialized) {
-					initialized = true;
-					AllocInternalData(p_img_data);
-				}
-
-				//write to project data
-				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path,
-											 &chunk_data_bbox,
-											 p_img_data);
-			}
-		}
-	}
-
-	import_timer.stop();
-
-	printf("done in %.6f secs\n",import_timer.s_elapsed());
-	return true;
-}
-
-void OmMipVolume::figureOutNumberOfBytesImg()
-{
-	const int depth = QImage(mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
-
-	int numberOfBytes = 1;
-	if(32 == depth){
-		numberOfBytes=4;
-	}
-	SetBytesPerSample(numberOfBytes);
-}
-
-bool OmMipVolume::ImportSourceDataQT()
-{
-	printf("\timporting data...\n");
-	fflush(stdout);
-
-	//timer start
-	OmTimer import_timer;
-	import_timer.start();
-
-	figureOutNumberOfBytesImg();
-
-	// alloc must happen after setBytesPerSample....
-	AllocMemMapFiles();
-
-	mSliceNum = 0;
-
-	const int maxThreads=1;
-	QThreadPool threads;
-	threads.setMaxThreadCount(maxThreads);
-	for(int i=0; i<maxThreads; ++i){
-		OmLoadImageThread* t = new OmLoadImageThread(this);
-		threads.start(t);
-	}
-	threads.waitForDone();
-
-	printf("\ndone with image import; copying to HDF5 file...\n");
-
-	// silly way to allocate internal data
-	foreach(const OmMipChunkCoord & c, chunksToCopy){
-		OmMipChunkPtr chunk;
-		GetChunk(chunk, c);
-		OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-		AllocInternalData(dataPtrMapped);
-		break;
-	}
-
-	copyDataIn(chunksToCopy);
-
-	import_timer.stop();
-
-	printf("done in %.2f secs\n",import_timer.s_elapsed());
-	return true;
-}
-
-std::pair<int,QString> OmMipVolume::getNextImgToProcess()
-{
-	QMutexLocker lock(&mChunkCoords);
-
-	if(mSourceFilenamesAndPaths.size() == mSliceNum){
-		return std::pair<int,QString>(-1,"");
-	}
-
-	const QString ret = mSourceFilenamesAndPaths[mSliceNum].absoluteFilePath();
-
-	return std::pair<int,QString>(mSliceNum++, ret);
-}
-
-void OmMipVolume::addToChunkCoords(const OmMipChunkCoord chunk_coord)
-{
-	QMutexLocker lock(&mChunkCoords);
-	chunksToCopy.insert(chunk_coord);
-}
-
 void OmMipVolume::AllocMemMapFiles()
 {
 	QMutexLocker lock(&mChunkCoords);
@@ -1530,31 +1379,6 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 	assert(-1 != GlobalHDF5id);
 	printf("hdf5 id is :%d\n", GlobalHDF5id);
 
-	OmDataPath path;
-	path.setPathQstr( MipLevelInternalDataPath(0 ) );
-
-	//Opens an existing dataset.
-	//hid_t H5Dopen(hid_t loc_id, const char *name  )
-	hid_t dataset_id = H5Dopen2(GlobalHDF5id, path.getString().c_str(), H5P_DEFAULT);
-	if (dataset_id < 0) {
-		throw OmIoException("Could not open HDF5 dataset " + path.getString());
-	}
-
-
-	//Returns an identifier for a copy of the datatype for a dataset.
-	//hid_t H5Dget_type(hid_t dataset_id  )
-	hid_t dataset_type_id = H5Dget_type(dataset_id);
-
-	//assert that dest datatype size matches desired size
-	assert(H5Tget_size(dataset_type_id) == (unsigned int)GetBytesPerSample());
-
-	//Returns an identifier for a copy of the dataspace for a dataset.
-	//hid_t H5Dget_space(hid_t dataset_id  )
-	hid_t dataspace_id = H5Dget_space(dataset_id);
-	if (dataspace_id < 0) {
-		throw OmIoException("Could not get HDF5 dataspace.");
-	}
-
 	int counter=0;
 	const int total = chunksToCopy.size();
 
@@ -1563,55 +1387,13 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		GetChunk(chunk, c);
 
 		if(4 == GetBytesPerSample()){
-			assert(0);
+			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
+			quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
+			chunk->RawWriteChunkData(dataMapped);
 		} else {
 			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-			unsigned char* imageData = dataPtrMapped->getPtr<unsigned char>();
-
-			DataBbox extent = chunk->GetExtent();
-
-			//create start, stride, count, block
-			//flip coordinates cuz thats how hdf5 likes it
-			Vector3 < hsize_t > start = extent.getMin();
-			Vector3 < hsize_t > end   = extent.getMax();
-			Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
-
-			Vector3 < hsize_t > stride = Vector3i::ONE;
-			Vector3 < hsize_t > count = Vector3i::ONE;
-
-			Vector3 < hsize_t > block = extent.getUnitDimensions();
-			Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
-
-			herr_t ret = H5Sselect_hyperslab(dataspace_id,
-							 H5S_SELECT_SET,
-							 start_flipped.array,
-							 stride.array,
-							 count.array,
-							 block_flipped.array);
-			if (ret < 0)
-				throw OmIoException("Could not select HDF5 hyperslab.");
-
-			hid_t mem_dataspace_id = H5Screate_simple(3, block.array, block.array);
-			if (mem_dataspace_id < 0)
-				throw OmIoException("Could not create scratch HDF5 dataspace.");
-
-			Vector3 < int >extent_dims = extent.getUnitDimensions();
-
-			hid_t mem_type_id = 1 == GetBytesPerSample() ?  H5T_NATIVE_UCHAR : H5T_NATIVE_UINT;
-			ret = H5Dwrite(dataset_id,
-				       mem_type_id,
-				       mem_dataspace_id,
-				       dataspace_id,
-				       H5P_DEFAULT,
-				       imageData);
-			if (ret < 0) {
-				throw OmIoException("Could not write HDF5 dataset "+path.getString());
-			}
-
-
-			ret = H5Sclose(mem_dataspace_id);
-			if (ret < 0)
-				throw OmIoException("Could not close HDF5 scratch dataspace.");
+			unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
+			chunk->RawWriteChunkData(dataMapped);
 		}
 
 		++counter;
@@ -1622,17 +1404,6 @@ void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
 		       counter, total);
 		fflush(stdout);
 	}
-
-	herr_t ret = H5Sclose(dataspace_id);
-	if (ret < 0)
-		throw OmIoException("Could not close HDF5 dataspace.");
-
-	//Closes the specified dataset.
-	//herr_t H5Dclose(hid_t dataset_id  )
-	ret = H5Dclose(dataset_id);
-	if (ret < 0)
-		throw OmIoException("Could not close HDF5 dataset.");
-
 	printf("\n");
 }
 
@@ -1647,4 +1418,14 @@ void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
 	AllocInternalData(OmDataWrapper<unsigned int>::produceNull());
 
 	SetBuildState(MIPVOL_BUILT);
+}
+
+bool OmMipVolume::areImportFilesImages()
+{
+	if( mSourceFilenamesAndPaths[0].fileName().endsWith(".h5", Qt::CaseInsensitive) ||
+	    mSourceFilenamesAndPaths[0].fileName().endsWith(".hdf5", Qt::CaseInsensitive)){
+		return false;
+	}
+
+	return true;
 }

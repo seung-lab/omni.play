@@ -68,6 +68,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	Vector3<int> FindCenterOfSelectedSegments();
 
+	bool ImportSourceData(OmDataPath & dataset);
+
 private:
 	void KillCacheThreads();
 
@@ -78,6 +80,8 @@ private:
 	OmMST mst;
 
 	friend class OmBuildSegmentation;
+	template <class T> friend class OmVolumeImporter;
+
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;

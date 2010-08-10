@@ -118,21 +118,20 @@ public:
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
 	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
 
+
+
 	//io
-	bool ImportSourceData(OmDataPath & dataset);
-	bool ImportSourceDataQT();
-	bool ImportSourceDataVTK(OmDataPath & dataset);
 	void copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy);
-	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
-	std::set<OmMipChunkCoord> chunksToCopy;;
-	std::pair<int,QString> getNextImgToProcess();
-	int mSliceNum;
+
+
+	bool areImportFilesImages();
+
 	std::vector<QFile*> mFileVec;
 	std::vector<uchar*> mFileMapPtr;
 	void AllocMemMapFiles();
 	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
-	void figureOutNumberOfBytesImg();
-	bool areImportFilesImages();
+
+
 	Vector3i get_dims(const OmDataPath dataset );
 	virtual bool GetBounds(float & , float &) { assert(0 && "the data for this mip volume has no bounds."); }
 
@@ -159,6 +158,8 @@ protected:
 
 	//state
 	void SetBuildState(MipVolumeBuildState);
+
+	virtual bool ImportSourceData(OmDataPath & dataset) = 0;
 
 	//mipvolume disk data
 	void AllocInternalData(OmDataWrapperPtr);

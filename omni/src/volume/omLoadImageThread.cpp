@@ -6,18 +6,21 @@
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.h"
 
-OmLoadImageThread::OmLoadImageThread(OmMipVolume * p)
-	: mMipVolume(p)
+template <typename T>
+OmLoadImageThread<T>::OmLoadImageThread(OmVolumeImporter<T>* importer, T* p)
+	: importer(importer)
+	, mMipVolume(p)
 	, m_leaf_mip_dims(mMipVolume->MipLevelDimensionsInMipChunks(0))
 	, m_numberOfBytes(mMipVolume->GetBytesPerSample())
 	, mTotalNumImages(mMipVolume->mSourceFilenamesAndPaths.size())
 {
 }
 
-void OmLoadImageThread::run()
+template <typename T>
+void OmLoadImageThread<T>::run()
 {
 	while(1){
-		const std::pair<int,QString> f = mMipVolume->getNextImgToProcess();
+		const std::pair<int,QString> f = importer->getNextImgToProcess();
 		if(-1==f.first){
 			return;
 		}
@@ -25,7 +28,8 @@ void OmLoadImageThread::run()
 	}
 }
 
-void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
+template <typename T>
+void OmLoadImageThread<T>::processSlice(const QString & fn, const int sliceNum )
 {
 	OmTimer slice_timer;
 	slice_timer.start();
@@ -46,7 +50,8 @@ void OmLoadImageThread::processSlice(const QString & fn, const int sliceNum )
 	printf("completed in %.2f secs", slice_timer.s_elapsed());
 }
 
-void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
+template <typename T>
+void OmLoadImageThread<T>::doProcessSlice(const QImage & img, const int sliceNum)
 {
 	int chunkNum=0;
 
@@ -59,7 +64,7 @@ void OmLoadImageThread::doProcessSlice(const QImage & img, const int sliceNum)
 			const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
 			const DataBbox chunk_bbox = mMipVolume->MipCoordToDataBbox(chunk_coord, 0);
 
-			mMipVolume->addToChunkCoords(chunk_coord);
+			importer->addToChunkCoords(chunk_coord);
 
 			const int startX = chunk_bbox.getMin().x;
 			const int startY = chunk_bbox.getMin().y;

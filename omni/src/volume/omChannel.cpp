@@ -1,21 +1,22 @@
 #include "common/omCommon.h"
-#include "datalayer/omDataPath.h"
-#include "system/cache/omMipVolumeCache.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
+#include "utility/omTimer.h"
+#include "volume/build/omVolumeImporter.hpp"
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
-#include "volume/omVolume.h"
-#include "utility/omTimer.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipThreadManager.h"
 #include "volume/omThreadChunkLevel.h"
-#include <float.h>
+#include "volume/omVolume.h"
 
+#include <float.h>
 
 OmChannel::OmChannel()
 {
@@ -60,7 +61,7 @@ OmChannel::OmChannel(OmId id)
 /*
  *	Hue color property
  */
-void OmChannel::SetHue(const vmml::Vector3< float > & hue)
+void OmChannel::SetHue(const Vector3f & hue)
 {
 	mHueColor = hue;
 }
@@ -207,4 +208,10 @@ void OmChannel::Print()
 void OmChannel::CloseDownThreads()
 {
 	mDataCache->closeDownThreads();
+}
+
+bool OmChannel::ImportSourceData(OmDataPath & dataset)
+{
+	OmVolumeImporter<OmChannel> importer(this);
+	return importer.import(dataset);
 }

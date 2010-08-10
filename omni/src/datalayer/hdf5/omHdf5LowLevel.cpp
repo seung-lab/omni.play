@@ -881,7 +881,8 @@ void OmHdf5LowLevel::printfFileCacheSize( const hid_t fileId )
 	printf("file cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, OmDataWrapperPtr data)
+void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name,
+							  DataBbox extent, OmDataWrapperPtr data)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -930,7 +931,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 	//Reads raw data from a dataset into a buffer.
 	ret = H5Dwrite(dataset_id, data->getHdf5MemoryType(),
 		       mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		       data->getVTKPtr()->GetScalarPointer());
+		       data->getVoidPtr());
 	if (ret < 0) {
 		throw OmIoException("Could not read HDF5 dataset " + string(name));
 	}
