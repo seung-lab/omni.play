@@ -106,7 +106,9 @@ void OmMipChunk::Open()
 	//read volume data
 	ReadVolumeData();
 
-	UpdateSize(128*128*128*GetBytesPerSample());
+	const int64_t size = 128*128*128*GetBytesPerSample();
+	UpdateSize(size);
+	std::cout << "increasing cache size by " << size << "\n";
 
 	//set open
 	SetOpen(true);
@@ -169,7 +171,9 @@ void OmMipChunk::Close()
 	//close
 	SetOpen(false);
 
-	UpdateSize(-128*128*128*GetBytesPerSample());
+	const int64_t size = -128*128*128*GetBytesPerSample();
+	UpdateSize(size);
+	std::cout << "decreasing cache size by " << size << "\n";
 }
 
 /////////////////////////////////
