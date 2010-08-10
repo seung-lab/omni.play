@@ -6,7 +6,7 @@
 #include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
 
 DisplayTools::DisplayTools(DendToolBar * d)
-	: QGroupBox("Display Tools", d)
+	: OmWidget(d)
 	, mParent(d)
 {
 	QVBoxLayout* box = new QVBoxLayout(this);

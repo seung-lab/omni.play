@@ -92,12 +92,12 @@ void MainWindow::showEditPreferencesDialog()
 	if (!isProjectOpen() ) {
 		return;
 	}
-	
+
 	if (preferences) {
 		preferences->close();
 		delete(preferences);
 		preferences = NULL;
-	} 
+	}
 
 	preferences = new Preferences(this);
 	preferences->showProjectPreferences();
@@ -112,7 +112,7 @@ void MainWindow::showEditLocalPreferencesDialog()
 		preferences->close();
 		delete(preferences);
 		preferences = NULL;
-	} 
+	}
 
 	preferences = new Preferences(this);
 	preferences->showLocalPreferences();
@@ -131,7 +131,7 @@ void MainWindow::addChannelToVolume()
 		if (omniInspector) {
 			omniInspector->addChannelToVolume();
 		}
-		
+
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
 	}
@@ -181,7 +181,7 @@ bool MainWindow::closeProjectIfOpen()
 
 	setProjectOpen( false );
 
-	// get rid of QDockWidget that may contain Inspector, History, View, etc widgets        
+	// get rid of QDockWidget that may contain Inspector, History, View, etc widgets
 	foreach( QDockWidget * dw, this->findChildren<QDockWidget *>() ){
 		delete(dw);
 	}
@@ -394,7 +394,7 @@ int MainWindow::checkForSave()
 	msgBox.setText("Do you want to save your current project?");
 	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 	msgBox.setDefaultButton(QMessageBox::Save);
-	
+
 	return msgBox.exec();
 }
 
@@ -420,11 +420,11 @@ void MainWindow::updateReadOnlyRelatedWidgets()
 void MainWindow::windowTitleSet(QString title)
 {
 	QString str = "Omni - " + title;
-	
+
 	if( OmProjectData::IsReadOnly() ){
 		str = "[READ-ONLY] " + str;
 	}
-	
+
 	setWindowTitle( str );
 }
 
@@ -437,7 +437,7 @@ void MainWindow::updateGuiFromProjectLoadOrOpen( QString fileName )
 {
 	delete mViewGroupState;
 	mViewGroupState = new OmViewGroupState(this);
-	
+
 	if( NULL == mToolBars ){
 		mToolBars = new ToolBarManager(this);
 	}
@@ -486,7 +486,7 @@ void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmId objectId )
 
 	foreach( QDockWidget * dw, this->findChildren<QDockWidget *>() ){
 
-		if (dw->windowTitle().startsWith(unwantedView2DTitle) ){		   
+		if (dw->windowTitle().startsWith(unwantedView2DTitle) ){
 			delete(dw);
 		}
 	}
@@ -527,4 +527,19 @@ void MainWindow::addToolbarRight(QToolBar * b)
 void MainWindow::addToolbarSeperator()
 {
 	mToolToolBar->addSeparator();
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+	if( mToolBars != NULL ){
+		mToolBars->windowResized(QPoint(event->oldSize().width(),
+						event->oldSize().height()));
+	}
+}
+
+void MainWindow::moveEvent(QMoveEvent* event)
+{
+	if( mToolBars != NULL ){
+		mToolBars->windowMoved(event->oldPos());
+	}
 }

@@ -13,12 +13,14 @@ class OmViewGroupState;
 class ToolBarManager : public QWidget
 {
 	Q_OBJECT
-		
- public:
+
+public:
 	ToolBarManager( MainWindow * mw );
-	virtual void setupToolbarInitially();
-	virtual void updateReadOnlyRelatedWidgets();
-	virtual void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
+	void setupToolbarInitially();
+	void updateReadOnlyRelatedWidgets();
+	void updateGuiFromProjectLoadOrOpen(OmViewGroupState *);
+	void windowResized(QPoint oldPos);
+	void windowMoved(QPoint oldPos);
 
 	void SetSplittingOff();
 	void setTool(const OmToolMode tool);
