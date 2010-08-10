@@ -26,7 +26,6 @@ void MstViewerImpl::populate()
 	setRowCount(numEdges);
 
 	for( int i = 0; i < numEdges; ++i){
-		int colNum = 0;
 		const OmSegID node1ID  = nodes[i];
 		const OmSegID node2ID  = nodes[i + numEdges ];
 		const float threshold  = thresholds[i];
@@ -34,6 +33,7 @@ void MstViewerImpl::populate()
 		OmSegment* node1 = segmentation.GetSegmentCache()->GetSegment(node1ID);
 		OmSegment* node2 = segmentation.GetSegmentCache()->GetSegment(node2ID);
 
+		int colNum = 0;
 		setCell(i, colNum, i);
 		setCell(i, colNum, node1ID);
 		setCell(i, colNum, node2ID);

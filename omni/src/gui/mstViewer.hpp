@@ -14,13 +14,14 @@ private:
 
 	template <typename T>
 	void setCell(const int rowNum, int& colNum, const T num){
+		// auto-incremented column number
 		setItem(rowNum, colNum++, makeTableItem(num));
 	}
 
 	template <typename T>
 	QTableWidgetItem* makeTableItem(const T num){
 		QTableWidgetItem* item = new QTableWidgetItem();
-		item->setData(0, num);
+		item->setData(0, num); // allows columns to be sorted numerically
 		return item;
 	}
 };
