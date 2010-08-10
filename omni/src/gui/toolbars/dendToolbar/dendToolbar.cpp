@@ -39,8 +39,6 @@ QDockWidget* DendToolBar::makeDockWidget(OmWidget* widget)
 	toolDock->setWidget(widget);
 	widget->setParent(toolDock);
 
-	toolDock->show();
-
 	return toolDock;
 }
 
@@ -66,6 +64,7 @@ QPoint DendToolBar::recalcPos(QPoint newPos, const int height)
 int DendToolBar::moveToolDock(QDockWidget* toolDock, QPoint newPos )
 {
 	toolDock->move(mapToGlobal(newPos));
+	toolDock->show();
 	return toolDock->height();
 }
 
