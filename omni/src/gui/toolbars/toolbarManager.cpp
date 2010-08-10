@@ -9,7 +9,7 @@ ToolBarManager::ToolBarManager( MainWindow * mw )
 	: QWidget(mw)
 	, mMainWindow(mw)
 	, mainToolbar(new MainToolbar(mw))
-	, dendToolBar(new DendToolBar(mw))
+	, dendToolBar(NULL)
 {
 	OmStateManager::setDendToolBar( dendToolBar );
 }
@@ -22,19 +22,37 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 {
 }
 
-void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState * vgs)
+void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
 {
 	mainToolbar->updateToolbar();
-	dendToolBar->updateGuiFromProjectLoadOrOpen(vgs);
+	dendToolBar = new DendToolBar(mMainWindow, vgs);
 	vgs->SetToolBarManager(this);
 }
 
 void ToolBarManager::SetSplittingOff()
 {
-	dendToolBar->SetSplittingOff();
+	if(dendToolBar){
+		dendToolBar->SetSplittingOff();
+	}
 }
 
 void ToolBarManager::setTool(const OmToolMode tool)
 {
 	mainToolbar->setTool(tool);
+}
+
+void ToolBarManager::windowResized(QPoint oldPos)
+{
+	//	printf("toolbarManager:: resizing to %d, %d\n", oldPos.x(), oldPos.y());
+	if(dendToolBar){
+		dendToolBar->updateToolBarsPos(oldPos);
+	}
+}
+
+void ToolBarManager::windowMoved(QPoint oldPos)
+{
+	//	printf("toolbarManager:: moving to %d, %d\n", oldPos.x(), oldPos.y());
+	if(dendToolBar){
+		dendToolBar->updateToolBarsPos(oldPos);
+	}
 }

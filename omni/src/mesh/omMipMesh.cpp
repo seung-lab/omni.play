@@ -389,7 +389,6 @@ GLuint OmMipMesh::createVbo(const void *data, int dataSize, GLenum target, GLenu
 
 void OmMipMesh::Flush()
 {
-  printf("FIXME: should I write something to disk?\n");
 }
 
 void OmMipMesh::setSegmentationID(OmId sid)

@@ -29,6 +29,7 @@ static const QString Omni_Postfix("OMNI");
 void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project )
 {
 	int size;
+
 	OmDataWrapperPtr dw =
 		OmProjectData::GetProjectDataReader()->
 		dataset_raw_read(path, &size);
@@ -400,6 +401,15 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 	for( int i = 0; i < size; ++i ){
 		OmSegmentEdge e;
 		in >> e;
+		if( 0 == e.childID  ||
+		    0 == e.parentID ||
+		    std::isnan(e.threshold)){
+		  printf("warning: bad edge found: %d, %d, %f\n",
+			 e.parentID,
+			 e.childID,
+			 e.threshold);
+		  continue;
+		}
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
@@ -436,6 +446,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
 	in >> se.parentID;
 	in >> se.childID;
 	in >> se.threshold;
+
 
 	return in;
 }

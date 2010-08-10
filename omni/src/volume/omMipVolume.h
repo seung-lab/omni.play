@@ -55,7 +55,7 @@ public:
 	void SetChunksStoreMetaData(bool);
 	bool GetChunksStoreMetaData();
 
-	bool IsBuilt();
+	bool IsVolumeDataBuilt();
 	bool IsBuilding();
 
 	void UpdateMipProperties(OmDataPath&);

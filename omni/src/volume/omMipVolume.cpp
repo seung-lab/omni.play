@@ -178,9 +178,9 @@ int OmMipVolume::GetChunkDimension()
 	return OmVolume:: GetChunkDimension();
 }
 
-Vector3 < int > OmMipVolume::GetChunkDimensions()
+Vector3i OmMipVolume::GetChunkDimensions()
 {
-	return Vector3 < int >(GetChunkDimension(), GetChunkDimension(), GetChunkDimension());
+	return Vector3i(GetChunkDimension(), GetChunkDimension(), GetChunkDimension());
 }
 
 void OmMipVolume::SetChunksStoreMetaData(bool state)
@@ -193,7 +193,7 @@ bool OmMipVolume::GetChunksStoreMetaData()
 	return mStoreChunkMetaData;
 }
 
-bool OmMipVolume::IsBuilt()
+bool OmMipVolume::IsVolumeDataBuilt()
 {
 	return MIPVOL_BUILT == mBuildState;
 }
@@ -261,13 +261,6 @@ void OmMipVolume::UpdateRootLevel()
 		mMipRootLevel = 0;
 	} else {
                 mMipRootLevel = ceil(log((float) (max_source_dim) / GetChunkDimension()) / log((float)2));
-#if 0
-		//use log base 2 to determine levels needed to contain source dims
-		double numPowsOfTwo = log((float) (max_source_dim) / GetChunkDimension()) / log((float)2);
-		//round to closest integer
-		mMipRootLevel = (int) floor(numPowsOfTwo);
-		if (numPowsOfTwo-mMipRootLevel >= 0.5){mMipRootLevel++;}
-#endif
 	}
 }
 

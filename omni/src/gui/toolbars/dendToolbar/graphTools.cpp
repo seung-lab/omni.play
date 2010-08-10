@@ -10,7 +10,7 @@
 #include "utility/dataWrappers.h"
 
 GraphTools::GraphTools(DendToolBar * d)
-	: QGroupBox("Graph Tools", d)
+	: OmWidget(d)
 	, mParent(d)
 	, autoBreakCheckbox(new AutoBreakCheckbox(this))
 	, splitButton(new SplitButton(this))
@@ -31,7 +31,7 @@ QWidget* GraphTools::thresholdBox()
 
 	QHBoxLayout* layout = new QHBoxLayout(widget);
 	layout->addWidget(thresholdBox);
-	
+
 	return widget;
 }
 
@@ -42,7 +42,7 @@ void GraphTools::SetSplittingOff()
 
 OmViewGroupState * GraphTools::getViewGroupState()
 {
-	return mParent->getViewGroupState(); 
+	return mParent->getViewGroupState();
 }
 
 void GraphTools::updateGui()

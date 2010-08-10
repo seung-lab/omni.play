@@ -368,7 +368,7 @@ sub hdf5_18 {
 }
 
 sub qt {
-    if(isMac()){
+    if(isMacLeopard()){
 	qt47();
     } else {
 	qt46();

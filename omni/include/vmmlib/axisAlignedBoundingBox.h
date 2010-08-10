@@ -20,6 +20,8 @@ public:
 	/* bwarne: for easer construction */
 	AxisAlignedBoundingBox( const Vector3< T >& pMin, T dimX, T dimY, T dimZ );
 	AxisAlignedBoundingBox( const Vector3< T >& pMin, T dim);
+
+    AxisAlignedBoundingBox( const AxisAlignedBoundingBox &, const AxisAlignedBoundingBox &);
     
     inline bool contains( const Vector3< T >& pos ) const;
     inline bool containsIn2d( const Vector3< T >& pos ); // only x and y components are checked
@@ -69,6 +71,18 @@ protected:
 	
 };
 
+template< typename T > 
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(const AxisAlignedBoundingBox & one, const AxisAlignedBoundingBox & two) 
+    : _min(Vector3< T >(min(one.getMin().x, two.getMin().x),
+			min(one.getMin().y, two.getMin().y),
+			min(one.getMin().z, two.getMin().z)))
+    , _max(Vector3< T >(max(one.getMax().x, two.getMax().x),
+			max(one.getMax().y, two.getMax().y),
+			max(one.getMax().z, two.getMax().z)))
+    , _dirty( false )
+    , _empty( false )
+{
+}
 
 /* bwarne */
 template< typename T > 

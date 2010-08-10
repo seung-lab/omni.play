@@ -63,7 +63,7 @@ public:
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
-	OmSegmentEdge JoinEdge( const OmSegmentEdge & e );
+	std::pair<bool, OmSegmentEdge> JoinEdge( const OmSegmentEdge & e );
 	OmSegmentEdge SplitEdge( const OmSegmentEdge & e );
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);

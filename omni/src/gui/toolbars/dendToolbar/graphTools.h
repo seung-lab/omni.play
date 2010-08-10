@@ -2,6 +2,7 @@
 #define GRAPH_TOOLS_H
 
 #include <QtGui>
+#include "gui/widgets/omWidget.hpp"
 
 class DendToolBar;
 class AutoBreakCheckbox;
@@ -9,7 +10,7 @@ class SplitButton;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 
-class GraphTools : public QGroupBox {
+class GraphTools : public OmWidget {
  Q_OBJECT
  public:
 	GraphTools(DendToolBar *);
@@ -18,6 +19,8 @@ class GraphTools : public QGroupBox {
 	OmViewGroupState * getViewGroupState();
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	void updateGui();
+
+	QString getName(){ return "Graph Tools"; }
 
  private:
 	DendToolBar *const mParent;

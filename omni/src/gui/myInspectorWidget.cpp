@@ -1,3 +1,4 @@
+#include "gui/mstViewer.hpp"
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
 #include "gui/guiUtils.h"
@@ -34,7 +35,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 	mParentWindow = parent;
 
 	verticalLayout = new QVBoxLayout(this);
-	
+
 	verticalLayout->addWidget(setupDataSrcList());
 
 	currentDataSrc = DataWrapperContainer();
@@ -108,7 +109,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 	dataSrcListWidget->disconnect(SIGNAL(itemClicked(QTreeWidgetItem *, int)));
 	connect(dataSrcListWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
 		this, SLOT(leftClickOnDataSourceItem(QTreeWidgetItem *)));
-	
+
 	GuiUtils::autoResizeColumnWidths(dataSrcListWidget, 3);
 
 	dataSrcListWidget->update();
@@ -119,7 +120,7 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 	elementListBox->reset();
 	elementListBox->setTitle(QString("Channel %1").arg(cdw.getID()));
 	elementListBox->addTab(0, setupFilterList(), "Filters" );
-				      
+
 	filterListWidget->clear();
 
 	filterListWidget->selectionModel()->blockSignals(true);
@@ -150,14 +151,14 @@ void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 void MyInspectorWidget::addSegmentationToSplitter(SegmentationDataWrapper sdw)
 {
 	segInspectorWidget = new SegInspector( sdw, this);
-	
-	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
-		this, SLOT(nameEditChanged()), Qt::DirectConnection);
-	
+
 	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
 		this, SLOT(nameEditChanged()), Qt::DirectConnection);
 
-	inspectorProperties->setOrReplaceWidget( segInspectorWidget, 
+	connect(segInspectorWidget->nameEdit, SIGNAL(editingFinished()),
+		this, SLOT(nameEditChanged()), Qt::DirectConnection);
+
+	inspectorProperties->setOrReplaceWidget( segInspectorWidget,
 						 QString("Segmentation %1 Inspector").arg(sdw.getID()) );
 }
 
@@ -168,7 +169,7 @@ void MyInspectorWidget::addToSplitterDataElementFilter(QTreeWidgetItem * current
 
 	filObjectInspectorWidget = new FilObjectInspector(this, fdw);
 
-	inspectorProperties->setOrReplaceWidget( filObjectInspectorWidget, 
+	inspectorProperties->setOrReplaceWidget( filObjectInspectorWidget,
 						 QString("Filter %1 Inspector").arg(fdw.getID()) );
 }
 
@@ -351,8 +352,16 @@ void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
 
 void MyInspectorWidget::showChannelContextMenu()
 {
-	connect(makeContextMenuBase(dataSrcListWidget), SIGNAL(triggered(QAction *)), 
+	connect(makeContextMenuBase(dataSrcListWidget), SIGNAL(triggered(QAction *)),
 		this, SLOT(selectChannelView(QAction *)));
+
+	contextMenu->exec(QCursor::pos());
+}
+
+void MyInspectorWidget::showSegmentationContextMenu()
+{
+	connect(makeSegmentationContextMenu(dataSrcListWidget), SIGNAL(triggered(QAction *)),
+		this, SLOT(selectSegmentationView(QAction *)));
 
 	contextMenu->exec(QCursor::pos());
 }
@@ -382,6 +391,17 @@ QMenu *MyInspectorWidget::makeContextMenuBase(QTreeWidget * parent)
 	contextMenu->addAction(delAct);
 
 	return contextMenu;
+}
+
+QMenu* MyInspectorWidget::makeSegmentationContextMenu(QTreeWidget* parent)
+{
+	examMSTAct = new QAction(tr("&Examine MST"), parent);
+	examMSTAct->setStatusTip(tr("View the MST table"));
+
+	QMenu* menu = makeContextMenuBase(parent);
+	menu->addAction(examMSTAct);
+
+	return menu;
 }
 
 void MyInspectorWidget::selectChannelView(QAction * act)
@@ -424,14 +444,6 @@ ChannelDataWrapper MyInspectorWidget::getCurrentlySelectedChannel()
 	return dwc.getChannelDataWrapper();
 }
 
-void MyInspectorWidget::showSegmentationContextMenu()
-{
-	connect(makeContextMenuBase(dataSrcListWidget), SIGNAL(triggered(QAction *)), 
-		this, SLOT(selectSegmentationView(QAction *)));
-
-	contextMenu->exec(QCursor::pos());
-}
-
 SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
 {
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
@@ -449,6 +461,8 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 		addSegmentationToSplitter(sdw);
 	} else if (delAct == act) {
 		deleteSegmentation(sdw);
+	} else if (examMSTAct == act ){
+		showMSTtable(sdw);
 	} else {
 		emit triggerSegmentationView( sdw.getID(), getViewType(act));
 	}
@@ -457,11 +471,11 @@ void MyInspectorWidget::selectSegmentationView(QAction * act)
 void MyInspectorWidget::addChannelToSplitter(ChannelDataWrapper cdw)
 {
 	channelInspectorWidget = new ChanInspector( cdw, this);
-	
-	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()), 
+
+	connect(channelInspectorWidget->addFilterButton, SIGNAL(clicked()),
 		this, SLOT(addFilter()));
-	
-	inspectorProperties->setOrReplaceWidget( channelInspectorWidget, 
+
+	inspectorProperties->setOrReplaceWidget( channelInspectorWidget,
 						 QString("Channel %1 Inspector").arg(cdw.getID()) );
 }
 
@@ -477,7 +491,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
         if (ret == QMessageBox::Yes){
 
 		elementListBox->reset();
-		
+
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
 		foreach(OmId channelID, OmProject::GetValidChannelIds()) {
 			OmChannel & channel = OmProject::GetChannel(channelID);
@@ -491,7 +505,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 		mParentWindow->cleanViewsOnVolumeChange(SEGMENTATION, sdw.getID());
 
 		inspectorProperties->closeDialog();
-	    
+
 		OmProject::RemoveSegmentation(sdw.getID());
 		populateDataSrcListWidget();
         }
@@ -532,10 +546,14 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 	const OmId segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
 	const OmId segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
 	recentList->dealWithSegmentObjectModificationEvent(event);
-	
+
 	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
 		SegmentationDataWrapper sdw(segmentationID1);
 		elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
 	}
 }
 
+void MyInspectorWidget::showMSTtable(SegmentationDataWrapper sdw)
+{
+	new MstViewer(this, sdw);
+}

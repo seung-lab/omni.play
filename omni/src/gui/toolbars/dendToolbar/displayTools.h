@@ -2,11 +2,13 @@
 #define DISPLAY_TOOLS_H
 
 #include <QtGui>
+#include "gui/widgets/omWidget.hpp"
+
 class DendToolBar;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 
-class DisplayTools : public QGroupBox {
+class DisplayTools : public OmWidget {
  Q_OBJECT
  public:
 	DisplayTools(DendToolBar *);
@@ -14,6 +16,8 @@ class DisplayTools : public QGroupBox {
 	OmViewGroupState * getViewGroupState();
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	void updateGui();
+
+	QString getName(){ return "Display Tools"; }
 
  private slots:
         void changeMapColors();

@@ -29,13 +29,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void CloseDownThreads();
 
-	//data accessor
-	void SetVoxelValue(const DataCoord &, uint32_t);
-	OmId GetVoxelSegmentId(const DataCoord &vox);
-	void SetVoxelSegmentId(const DataCoord &vox, OmId omId);
-
 	//build methods
-	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
 
 	bool BuildThreadedVolume();
@@ -63,9 +57,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
 	void DeleteGroup(OmSegID = 0);
 
-	//drawing
-	void DrawChunkVoxels( const OmMipChunkCoord &, const OmSegIDsSet &, const OmBitfield & );
-
 	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
@@ -74,6 +65,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold(){ return mst.mDendThreshold; }
+
+	Vector3<int> FindCenterOfSelectedSegments();
 
 private:
 	void KillCacheThreads();
@@ -88,6 +81,7 @@ private:
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;
+	friend class MstViewerImpl;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );

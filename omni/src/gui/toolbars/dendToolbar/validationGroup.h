@@ -2,6 +2,7 @@
 #define VALIDATION_GROUP_H
 
 #include <QtGui>
+#include "gui/widgets/omWidget.hpp"
 
 class DendToolBar;
 class GroupButtonAdd;
@@ -11,7 +12,7 @@ class ShowValidatedButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
 
-class ValidationGroup : public QGroupBox {
+class ValidationGroup : public OmWidget {
  Q_OBJECT
  public:
 	ValidationGroup(DendToolBar *);
@@ -20,6 +21,8 @@ class ValidationGroup : public QGroupBox {
 
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	OmViewGroupState * getViewGroupState();
+
+	QString getName(){ return "Validation"; }
 
  private slots:
         void changeMapColors();

@@ -72,42 +72,7 @@ OmSegmentation::~OmSegmentation()
 }
 
 /////////////////////////////////
-///////          Data Accessors
-
-/*
- *	Overridden so as to update MipVoxelationManager
- */
-void OmSegmentation::SetVoxelValue(const DataCoord & rVox, uint32_t val)
-{
-	OmMipVolume::SetVoxelValue(rVox, val);
-}
-
-/*
- *	Use the first data value of the voxel to determine which
- *	SegmentId the voxel is mapped to.
- */
-OmId OmSegmentation::GetVoxelSegmentId(const DataCoord & vox)
-{
-	return GetVoxelValue(vox);
-}
-
-/*
- *	Convienence method that sets the data value of the voxel to
- *	any value that is mapped to the given SegmentId
- */
-void OmSegmentation::SetVoxelSegmentId(const DataCoord & vox, OmId omId)
-{
-	//set voxel to first value in set
-	SetVoxelValue(vox, omId);
-}
-
-/////////////////////////////////
 ///////          Build Methods
-
-bool OmSegmentation::IsVolumeDataBuilt()
-{
-	return OmMipVolume::IsBuilt();
-}
 
 void OmSegmentation::BuildVolumeData()
 {
@@ -344,11 +309,12 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 /////////////////////////////////
 ///////          Export
 
-/*
- *	Replace each value in the volume with its associated OmId.
+/**
+ *	Replace each segment value in the volume with its root segment ID
  */
 void OmSegmentation::ExportDataFilter(OmDataWrapperPtr data)
 {
+	// TODO: refactor out of segment cache
 	mSegmentCache->ExportDataFilter(data->getVTKPtr());
 }
 
@@ -356,14 +322,12 @@ void OmSegmentation::ExportDataFilter(OmDataWrapperPtr data)
 ///////          Groups
 void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
-
 	bool valid;
 	if(VALIDROOT == type) {
 		valid = true;
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		//mGroups.SetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
 		return;
 	}
@@ -383,7 +347,6 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
-
         if(GROUPROOT == type) {
                 return mGroups.UnsetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
@@ -396,19 +359,6 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 void OmSegmentation::DeleteGroup(OmGroupID)
 {
 	printf("FIXME delete group not supported\n");
-}
-
-
-/*
- *	Draw voxelated representation of the MipChunk.
- */
-void OmSegmentation::DrawChunkVoxels(const OmMipChunkCoord & //mipCoord
-				     , const OmSegIDsSet & //rRelvDataVals
-				     , const OmBitfield & //drawOps
-				     )
-{
-	assert(0);
-	//mMipVoxelationManager.DrawVoxelations(mSegmentCache, mipCoord, rRelvDataVals, drawOps);
 }
 
 /**
@@ -471,3 +421,58 @@ void OmSegmentation::CloseDownThreads()
 	mMipMeshManager.CloseDownThreads();
 	mDataCache->closeDownThreads();
 }
+
+Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
+{
+	DataBbox box;
+	bool found = false;
+        OmMipChunkPtr p_chunk;
+
+        OmSegmentIterator iter(mSegmentCache);
+        iter.iterOverSelectedIDs();
+
+        OmSegment * seg = iter.getNextSegment();
+        OmSegIDsSet newSet;
+	unsigned int counter = 0;
+        while(NULL != seg) {
+
+		{
+		int level = 0;
+
+			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+                        for (int z = 0; z < mip_coord_dims.z; ++z) {
+                                for (int y = 0; y < mip_coord_dims.y; ++y) {
+                                        for (int x = 0; x < mip_coord_dims.x; ++x) {
+                                                OmMipChunkCoord chunk_coord(level, x, y, z);
+						GetChunk(p_chunk, chunk_coord);
+
+                				const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
+						if(data_values.contains(seg->getValue())) {
+
+							if(!found) {
+								found = true;
+								box = p_chunk->GetExtent();
+							} else {
+								box = DataBbox(box, p_chunk->GetExtent());
+								counter++;
+							}
+						}
+                                        }
+                                }
+                        }
+		}
+
+                seg = iter.getNextSegment();
+		if(counter > 5000) {
+			break;
+		}
+        }
+
+	if(!found) {
+		return Vector3<int> (0,0,0);
+		//assert(0 && "segments must be selected before calling this function");
+	}
+	return (box.getMin() + box.getMax()) / 2;
+}
+
+

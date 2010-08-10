@@ -9,7 +9,7 @@
 #include "system/viewGroup/omViewGroupState.h"
 
 ValidationGroup::ValidationGroup(DendToolBar * d)
-	: QGroupBox("Validation", d)
+	: OmWidget(d)
 	, mDendToolBar(d)
 	, groupButtonAdd(new GroupButtonAdd(this))
 	, groupButtonDelete(new GroupButtonDelete(this))
@@ -65,5 +65,5 @@ SegmentationDataWrapper ValidationGroup::getSegmentationDataWrapper()
 
 OmViewGroupState * ValidationGroup::getViewGroupState()
 {
-	return mDendToolBar->getViewGroupState(); 
+	return mDendToolBar->getViewGroupState();
 }

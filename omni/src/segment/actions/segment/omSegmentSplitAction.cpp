@@ -7,7 +7,7 @@
 #include "system/omEventManager.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw, 
+OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 					    const OmSegmentEdge & edge )
 	: mEdge(edge)
 	, mSegmentationID(sdw.getSegmentationID())
@@ -42,7 +42,10 @@ void OmSegmentSplitAction::Action()
 void OmSegmentSplitAction::UndoAction()
 {
 	SegmentationDataWrapper sdw(mSegmentationID);
-	mEdge = sdw.getSegmentCache()->JoinEdge(mEdge);
+	std::pair<bool, OmSegmentEdge> edge = sdw.getSegmentCache()->JoinEdge(mEdge);
+
+	assert(edge.first && "edge could not be rejoined...");
+	mEdge = edge.second;
 
 	desc = QString("Joined seg %1 to %2")
 		.arg(mEdge.childID)

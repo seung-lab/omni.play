@@ -100,40 +100,42 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 	}
 
         OmSegment * nearestCommonPred = 0;
-        OmSegment * one;
-        OmSegment * two;
 
-        for (quint32 oneID = seg1->mValue, twoID; oneID != 0; oneID = one->mParentSegID) {
-          	one = GetSegmentFromValue(oneID);
-          	for (twoID = seg2->mValue; twoID != 0 && oneID != twoID; twoID = two->mParentSegID) {
-            		two = GetSegmentFromValue(twoID);
-          	}
-          	if (oneID == twoID) {
-              		nearestCommonPred = one;
-			break;
-          	}
-        }
+	OmSegment * one;
+	OmSegment * two;
 
-        assert(nearestCommonPred != 0);
+	for (quint32 oneID = seg1->mValue, twoID; oneID != 0; oneID = one->mParentSegID) {
+	  one = GetSegmentFromValue(oneID);
+	  for (twoID = seg2->mValue; twoID != 0 && oneID != twoID; twoID = two->mParentSegID) {
+	    two = GetSegmentFromValue(twoID);
+	  }
+	  if (oneID == twoID) {
+	    nearestCommonPred = one;
+	    break;
+	  }
+	}
 
-        float minThresh = 1.0;
+	assert(nearestCommonPred != 0);
+
+        float minThresh = 100.0;
         OmSegment * minChild = 0;
         for (one = seg1; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
-          	if (one->mThreshold < minThresh) {
-            		minThresh = one->mThreshold;
-            		minChild = one;
-          	}
+	  if (one->mThreshold < minThresh) {
+	    minThresh = one->mThreshold;
+	    minChild = one;
+	  }
         }
 
         for (one = seg2; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
-          	if (one->mThreshold < minThresh) {
-            		minThresh = one->mThreshold;
-            		minChild = one;
-          	}
+	  if (one->mThreshold < minThresh) {
+	    minThresh = one->mThreshold;
+	    minChild = one;
+	  }
         }
 
         assert(minChild != 0);
         return OmSegmentEdge(minChild);
+
 }
 
 OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
@@ -193,23 +195,31 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	return edgeThatGotBroken;
 }
 
-OmSegmentEdge OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge e )
+std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge e )
 {
-	OmSegmentEdge edge = JoinEdgeFromUser( e );
-	mManualUserMergeEdgeList.push_back( edge );
+	std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser( e );
+	if(edge.first){
+	  mManualUserMergeEdgeList.push_back( edge.second );
+	}
 	return edge;
 }
 
-OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
+std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 {
 	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
 	OmSegment * childRoot = GetSegmentFromValue(childRootID);
 	OmSegment * parent = GetSegmentFromValue( e.parentID );
 
+	if( childRoot == findRoot( parent ) ){
+		printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
+		       e.childID, e.parentID, e.threshold);
+		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+	}
+
 	if( childRoot->mImmutable != parent->mImmutable ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
 		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
-		return OmSegmentEdge();
+		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
 	mSegmentGraph.graph_join(childRootID, e.parentID);
@@ -227,10 +237,13 @@ OmSegmentEdge OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 
 	mSegmentGraph.updateSizeListsFromJoin( parent, childRoot );
 
-	return OmSegmentEdge( parent, childRoot, e.threshold );
+	return std::pair<bool, OmSegmentEdge>(true,
+					      OmSegmentEdge( parent,
+							     childRoot,
+							     e.threshold ));
 }
 
-OmSegmentEdge OmSegmentCacheImpl::JoinFromUserAction( const OmSegID parentID, const OmSegID childUnknownDepthID )
+std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( const OmSegID parentID, const OmSegID childUnknownDepthID )
 {
 	const float threshold = 2.0f;
 	return JoinFromUserAction( OmSegmentEdge( parentID, childUnknownDepthID, threshold) );
@@ -252,7 +265,11 @@ void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
 	// We then iterate through the Segment Ids and join
 	// each one to the parent
 	while (iter != set.end()) {
-		JoinFromUserAction( parentID, *iter );
+		std::pair<bool, OmSegmentEdge> edge =
+		  JoinFromUserAction( parentID, *iter );
+		if(!edge.first){
+		  printf("WARNING: could not join edge; was a segment validated?\n");
+		}
 		++iter;
 	}
 

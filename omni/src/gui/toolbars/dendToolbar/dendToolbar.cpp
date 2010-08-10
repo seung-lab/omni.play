@@ -8,31 +8,80 @@
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 
-DendToolBar::DendToolBar( MainWindow * mw )
+DendToolBar::DendToolBar(MainWindow* mw, OmViewGroupState* vgs)
 	: QToolBar("Dend", mw)
 	, mMainWindow(mw)
-	, mViewGroupState(NULL)
-	, graphTools(new GraphTools(this))
+	, mViewGroupState(vgs)
 {
-	mMainWindow->addToolbarRight(this);
+	graphTools = new GraphTools(this);
+	validationGroup = new ValidationGroup(this);
+	displayTools = new DisplayTools(this);
 
+	/*
+	mMainWindow->addToolbarRight(this);
+	addWidget(wrapWithGroupBox(graphTools));
+	addWidget(wrapWithGroupBox(validationGroup));
+	addWidget(wrapWithGroupBox(displayTools));
+	*/
 	//addWidget(new BreakThresholdGroup(this));
-	addWidget(graphTools);
-	addWidget(new ValidationGroup(this));
-	addWidget(new DisplayTools(this));
+
+	graphToolsDock = makeDockWidget(graphTools);
+	validationGroupDock = makeDockWidget(validationGroup);
+	displayToolsDock = makeDockWidget(displayTools);
+
+	updateToolBarsPos(QPoint(0,0));
+}
+
+QDockWidget* DendToolBar::makeDockWidget(OmWidget* widget)
+{
+	QDockWidget* toolDock = new QDockWidget(widget->getName(), this, Qt::Tool );
+
+	toolDock->setWidget(widget);
+	widget->setParent(toolDock);
+
+	return toolDock;
+}
+
+void DendToolBar::updateToolBarsPos(QPoint)
+{
+	QPoint newPos = QPoint(mMainWindow->width(), 0);
+	const int extraVerticalPadding = 22;
+
+	int height = 0;
+	height += moveToolDock(graphToolsDock, recalcPos(newPos, height));
+	height += extraVerticalPadding;
+	height += moveToolDock(validationGroupDock, recalcPos(newPos, height));
+	height += extraVerticalPadding;
+	height += moveToolDock(displayToolsDock, recalcPos(newPos, height));
+}
+
+QPoint DendToolBar::recalcPos(QPoint newPos, const int height)
+{
+	return QPoint(newPos.x(),
+		      newPos.y() + height);
+}
+
+int DendToolBar::moveToolDock(QDockWidget* toolDock, QPoint newPos )
+{
+	toolDock->move(mapToGlobal(newPos));
+	toolDock->show();
+	return toolDock->height();
+}
+
+QWidget* DendToolBar::wrapWithGroupBox(OmWidget* widget)
+{
+	QGroupBox* gbox = new QGroupBox(widget->getName(), this);
+	QVBoxLayout* vbox = new QVBoxLayout(gbox);
+	vbox->addWidget(widget);
+	gbox->setContentsMargins(0,0,0,0);
+
+	return gbox;
 }
 
 SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 {
 	const OmId segmentationID = 1;
 	return SegmentationDataWrapper(segmentationID);
-}
-
-void DendToolBar::updateGuiFromProjectLoadOrOpen( OmViewGroupState * vgs )
-{
-        debug("dendbar", "DendToolBar::updateGuiFromProjectLoadOrOpen\n");
-	mViewGroupState = vgs;
-	updateGui();
 }
 
 void DendToolBar::updateGui()

@@ -69,6 +69,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataWrapper.h \
            src/datalayer/omDataWriter.h \
            src/datalayer/omDummyWriter.h \
+           src/gui/mstViewer.hpp \
            src/gui/cacheMonitorDialog.h \
            src/gui/groupsTable.h \
            src/gui/cacheMonitorWidget.h \
@@ -287,6 +288,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/omDataPaths.cpp \
            src/datalayer/omDummyWriter.cpp \
            src/gui/groupsTable.cpp \
+           src/gui/mstViewer.cpp \
            src/gui/cacheMonitorDialog.cpp \
            src/gui/cacheMonitorWidget.cpp \
            src/gui/elementListBox.cpp \

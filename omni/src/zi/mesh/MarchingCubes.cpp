@@ -6,6 +6,7 @@
  */
 
 #include "MarchingCubes.hpp"
+#include "MarchingCubesTables.h"
 #include "zi/vector/Vec.hpp"
 #include "zi/base/base.h"
 #include "MarchingCubesTables.h"

@@ -2,9 +2,12 @@
 #include "segment/omSegment.h"
 
 OmSegmentEdge::OmSegmentEdge()
-	: valid(false)
+  : parentID(0)
+  , childID(0)
+  , threshold(-100)
+  , valid(false)
 {}
-	
+
 OmSegmentEdge::OmSegmentEdge( OmSegment * c )
 	: parentID(c->getParentSegID())
 	, childID(c->getValue())
@@ -28,15 +31,15 @@ OmSegmentEdge::OmSegmentEdge( OmSegment * p, OmSegment * c, const float t )
 	, valid(true)
 {
 }
-	
+
 bool OmSegmentEdge::isValid()
-{ 
-	return valid; 
+{
+	return valid;
 }
 
 bool OmSegmentEdge::operator==(const OmSegmentEdge & rhs) const
 {
-	return (parentID == rhs.parentID && 
+	return (parentID == rhs.parentID &&
 		childID == rhs.childID &&
 		threshold == rhs.threshold &&
 		valid == rhs.valid );

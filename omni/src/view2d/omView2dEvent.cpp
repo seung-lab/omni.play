@@ -132,7 +132,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 	if( SEGMENTATION == mVolumeType ){
 		segmentationID = mImageId;
 		OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
-		segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
+		segmentID = segmentation.GetVoxelValue(dataClickPoint);
 		if( 0 == segmentID  ){
 			return NULL;
 		}
@@ -146,7 +146,7 @@ SegmentDataWrapper * OmView2d::getSelectedSegment( QMouseEvent * event )
 			if (OmProject::IsSegmentationValid(filter.GetSegmentation()) ) {
 				segmentationID = filter.GetSegmentation();
 				OmSegmentation & segmentation = OmProject::GetSegmentation(segmentationID);
-				segmentID = segmentation.GetVoxelSegmentId(dataClickPoint);
+				segmentID = segmentation.GetVoxelValue(dataClickPoint);
 				if( 0 == segmentID  ){
 					return NULL;
 				}
@@ -185,7 +185,7 @@ void OmView2d::MouseRelease_LeftButton_Filling(QMouseEvent * event)
 		break;
 	}
 
-	const OmSegID segid = sdw.getSegmentation().GetVoxelSegmentId(globalDataClickPoint);
+	const OmSegID segid = sdw.getSegmentation().GetVoxelValue(globalDataClickPoint);
 	if(!segid) {
 		return;
 	}
@@ -783,7 +783,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 	OmId segmentationID, segmentID;
 	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
 		assert(mImageId==segmentationID);
-	        OmId segid = segmentation.GetVoxelSegmentId(globalDataClickPoint);
+	        OmId segid = segmentation.GetVoxelValue(globalDataClickPoint);
 
 		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
 		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segid);
@@ -796,7 +796,7 @@ void OmView2d::doFindAndSplitSegment(QMouseEvent * event )
 
 		mViewGroupState->SetSplitMode(false);
 	} else {
-	        segmentID = segmentation.GetVoxelSegmentId(globalDataClickPoint);
+	        segmentID = segmentation.GetVoxelValue(globalDataClickPoint);
 		debug("split", "segmentID=%i\n", segmentID);
 		if (segmentID && segmentation.GetSegmentCache()->GetSegment(segmentID)) {
 				mViewGroupState->SetSplitMode(segmentationID, segmentID);

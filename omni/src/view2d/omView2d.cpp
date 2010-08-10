@@ -319,7 +319,7 @@ void OmView2d::Refresh()
 void OmView2d::PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint)
 {
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
-        const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
+        const OmSegID segID = current_seg.GetVoxelValue(globalDataClickPoint);
         if (segID ) {
 
                OmSegmentSelector sel(segmentation_id, this, "view2dpick" );
@@ -334,7 +334,7 @@ void OmView2d::PickToolAddToSelection( OmSegmentSelector & sel,
 				       OmSegmentation & current_seg,
 				       DataCoord globalDataClickPoint)
 {
-	const OmSegID segID = current_seg.GetVoxelSegmentId(globalDataClickPoint);
+	const OmSegID segID = current_seg.GetVoxelValue(globalDataClickPoint);
 	if (segID ) {
 		sel.augmentSelectedSet( segID, true );
 	}
@@ -459,7 +459,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 
 	DataCoord off;
 	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
-	OmId segid = OmProject::GetSegmentation(seg).GetVoxelSegmentId(gCP);
+	OmId segid = OmProject::GetSegmentation(seg).GetVoxelValue(gCP);
 
 
 	if (!segid) {
