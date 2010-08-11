@@ -4,6 +4,7 @@
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
+#include "utility/omTimer.h"
 
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
@@ -96,6 +97,9 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
 	fflush(stdout);
 
+	OmTimer timer;
+	timer.start();
+
 	OmSegID childID;
 	OmSegID parentID;
 	float threshold;
@@ -122,7 +126,8 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 		}
         }
 
-	printf("done\n");
+	timer.stop();
+	printf("done (%f secs)\n", timer.s_elapsed() );
 }
 
 void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes,
