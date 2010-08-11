@@ -310,7 +310,7 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 	} else if(NOTVALIDROOT == type) {
 		ids = getSegmentLists()->mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(RECENTROOT == type) {
-		ids = mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
+		ids = getSegmentLists()->mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else {
 		assert(0 && "Shouldn't call this function to do non special group code.\n");
 	}
@@ -337,7 +337,7 @@ quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
         } else if(NOTVALIDROOT == type) {
                 return getSegmentLists()->mRootListBySize.size();
         } else if(RECENTROOT == type) {
-                return mRecentRootActivityMap.size();
+                return getSegmentLists()->mRecentRootActivityMap.size();
 	}
 
 	assert(0 && "shouldn't reach here, type incorrect\n");
@@ -347,13 +347,9 @@ quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	if(valid) {
-		OmSegmentListBySize::swapSegment(seg,
-						 getSegmentLists()->mRootListBySize,
-						 getSegmentLists()->mValidListBySize);
+		getSegmentLists()->moveSegmentFromRootToValid(seg);
 	} else {
-		OmSegmentListBySize::swapSegment(seg,
-						 getSegmentLists()->mValidListBySize,
-						 getSegmentLists()->mRootListBySize);
+		getSegmentLists()->moveSegmentFromValidToRoot(seg);
 	}
 
         if( -1 == seg->mEdgeNumber ){

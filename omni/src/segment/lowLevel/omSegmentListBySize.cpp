@@ -31,7 +31,7 @@ void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child, 
         do_incrementSegSize( root->mValue, -newChildSize );
         do_insertSegment( child->mValue, newChildSize );
 }
-	
+
 void OmSegmentListBySize::do_incrementSegSize( const OmSegID segID_, const quint64 addedSize )
 {
 	List_by_ID & idIndex = mList.get<segID>();
@@ -63,7 +63,7 @@ void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::it
 	if(offset < 0) {
 		direction = -1;
 	}
-	
+
 	if(1 == direction) {
 		for(int i = 0; i < offset*direction && iterSize != sizeIndex.end(); i++)
 		{
@@ -77,7 +77,7 @@ void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::it
 	}
 }
 
-OmSegIDsListWithPage * 
+OmSegIDsListWithPage *
 OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const int numToGet, const OmSegID startSeg)
 {
 	OmSegIDsList ret = OmSegIDsList();
@@ -100,11 +100,11 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
 	 	advanceIter(sizeIndex, iterSize, -(counter % numToGet));
 	 	page = counter / numToGet;
         }
-	
+
 	for( int i = 0; i < numToGet && iterSize != sizeIndex.end(); ++i, ++iterSize ){
 		ret.push_back( iterSize->segID );
 	}
-	
+
 	return new OmSegIDsListWithPage(ret, page);
 }
 
@@ -129,7 +129,7 @@ void OmSegmentListBySize::dump()
 	}
 }
 
-quint32 OmSegmentListBySize::size()
+size_t OmSegmentListBySize::size()
 {
 	return mList.size();
 }

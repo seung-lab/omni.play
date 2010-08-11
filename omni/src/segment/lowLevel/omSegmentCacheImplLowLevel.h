@@ -2,7 +2,6 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/omSegmentListByMRU.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
@@ -88,7 +87,6 @@ class OmSegmentCacheImplLowLevel {
 
 	OmSegmentGraph mSegmentGraph;
 
-	OmSegmentListByMRU mRecentRootActivityMap;
 	void addToRecentMap( const OmSegID segID);
 
  private:

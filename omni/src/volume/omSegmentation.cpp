@@ -41,7 +41,7 @@ static const float DefaultThresholdSize = 0.1;
 
 OmSegmentation::OmSegmentation()
 	: mSegmentCache(new OmSegmentCache(this))
-	, mSegmentLists(new OmSegmentLists(this))
+	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
@@ -64,7 +64,7 @@ OmSegmentation::OmSegmentation()
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
 	, mSegmentCache(new OmSegmentCache(this))
-	, mSegmentLists(new OmSegmentLists(this))
+	, mSegmentLists(new OmSegmentLists())
   	, mGroups(this)
 {
 	//set manageable object name
