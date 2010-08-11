@@ -18,13 +18,6 @@ void OmSegmentListByMRU::touch( const OmSegID segID_ )
 	}
 }
 
-OmSegIDsListWithPage * OmSegmentListByMRU::getAPageWorthOfSegmentIDs( const unsigned int offset,
-								      const int numToGet,
-								      const OmSegID startSeg)
-{
-	return OmSegmentListBySize::getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
-}
-
 quint64 OmSegmentListByMRU::getRecentActivity()
 {
 	static quint64 activity = 0;

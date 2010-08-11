@@ -19,12 +19,12 @@ public:
 	size_t size(){
 		return list.size();
 	}
-	void updateFromJoin(OmSegment* root, OmSegment* child ){
+	void updateFromJoin(OmSegment* root, OmSegment* child){
 		list.updateFromJoin(root, child);
 	}
-	OmSegIDsListWithPage* getAPageWorthOfSegmentIDs( const unsigned int offset,
-							 const int numToGet,
-							 const OmSegID startSeg){
+	OmSegIDsListWithPage* getAPageWorthOfSegmentIDs(const uint32_t offset,
+							const int numToGet,
+							const OmSegID startSeg){
 		return list.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	}
 	void updateFromSplit(OmSegment* root, OmSegment* child, const quint64 newChildSize){

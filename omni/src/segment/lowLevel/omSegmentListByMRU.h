@@ -8,7 +8,6 @@ class OmSegmentListByMRU : public OmSegmentListBySize {
 	OmSegmentListByMRU();
 
 	void touch( const OmSegID segID );
-	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
 
  private:
 	quint64 getRecentActivity();
