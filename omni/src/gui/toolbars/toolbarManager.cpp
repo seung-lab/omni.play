@@ -25,7 +25,13 @@ void ToolBarManager::updateReadOnlyRelatedWidgets()
 void ToolBarManager::updateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs)
 {
 	mainToolbar->updateToolbar();
+
+	if(dendToolBar){
+		mMainWindow->removeToolBar(dendToolBar);
+		delete dendToolBar;
+	}
 	dendToolBar = new DendToolBar(mMainWindow, vgs);
+
 	vgs->SetToolBarManager(this);
 }
 
