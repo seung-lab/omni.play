@@ -504,7 +504,7 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 	unsigned int counter = 0;
         while(NULL != seg) {
 
-		if(Omni_File_Version < 13) {
+		if(seg->getBounds().isEmpty()) {
 			int level = 0;
 
 			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
