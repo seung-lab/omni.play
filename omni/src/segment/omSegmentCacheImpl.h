@@ -17,7 +17,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
-				  boost::unordered_map< OmSegID, unsigned int> * sizes );
+				  boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds );
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 

@@ -319,7 +319,8 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 
 	if(isMIPzero){
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes);
+		boost::unordered_map< OmSegID, DataBbox> & bounds = p_chunk->GetDirectDataBounds();
+		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes, bounds);
 
 		if(0 && remesh) {
                 	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
@@ -487,6 +488,7 @@ void OmSegmentation::CloseDownThreads()
 	mDataCache->closeDownThreads();
 }
 
+extern int Omni_File_Version;
 Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 {
 	DataBbox box;
@@ -502,8 +504,8 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 	unsigned int counter = 0;
         while(NULL != seg) {
 
-		{
-		int level = 0;
+		if(Omni_File_Version < 13) {
+			int level = 0;
 
 			Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
                         for (int z = 0; z < mip_coord_dims.z; ++z) {
@@ -526,6 +528,14 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
                                         }
                                 }
                         }
+		} else {
+                	if(!found) {
+                		found = true;
+                		box = seg->getBounds();
+                	} else {
+                		box.merge(seg->getBounds());
+                		counter++;
+                	}
 		}
 
                 seg = iter.getNextSegment();

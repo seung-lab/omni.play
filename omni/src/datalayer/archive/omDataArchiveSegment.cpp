@@ -1,4 +1,5 @@
 #include "datalayer/archive/omDataArchiveSegment.h"
+#include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
@@ -8,6 +9,10 @@
 #include "segment/omSegmentCache.h"
 
 #include <QDataStream>
+
+extern int Omni_File_Version;
+
+
 
 void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache ) 
 {
@@ -36,6 +41,10 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmS
                 in >> segment->mImmutable;
                 in >> segment->mSize;
 
+		if(Omni_File_Version >= 13) {
+			in >> segment->mBounds;
+		}
+
                 page[ i ] = segment;
         }
 }
@@ -63,6 +72,7 @@ void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vec
                 out << segment->mColorInt.blue;
                 out << segment->mImmutable;
                 out << segment->mSize;
+		out << segment->mBounds;
         }
 	
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 

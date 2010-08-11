@@ -518,7 +518,15 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 					if (NULL_SEGMENT_VALUE != *p_scalar_data) {
 						mDirectlyContainedValues.insert(*p_scalar_data);
 						if( computeSizes ){
-							++(sizes->operator[](*p_scalar_data));
+							++((*sizes)[*p_scalar_data]);
+							if (mBounds[*p_scalar_data].isEmpty()) {
+								mBounds[*p_scalar_data] = DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
+												   GetExtent().getMin() + Vector3<int>(x,y,z));
+							} else {
+                                                                mBounds[*p_scalar_data].merge(DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
+												       GetExtent().getMin() + Vector3<int>(x,y,z)));
+                                                                                                   
+							}
 						}
 					}
 					//adv to next scalar

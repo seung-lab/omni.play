@@ -50,10 +50,12 @@ public:
 
 	OmId getSegmentationID();
 	float getThreshold(){ return mThreshold; }
+	DataBbox & getBounds() { return mBounds; }
 
 	quint32 getFreshnessForMeshes(){return mFreshnessForMeshes;}
 
 private:
+	DataBbox mBounds;
 	OmSegID mValue;
 	OmSegmentCache * mCache;
 

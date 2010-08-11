@@ -20,8 +20,8 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-const int Omni_Version = 12;
-int Omni_File_Version;
+const int Omni_Version = 13;
+int Omni_File_Version = 13;	// This gets reset on load of lower version file.
 
 static const QString Omni_Postfix("OMNI");
 
