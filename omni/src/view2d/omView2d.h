@@ -130,6 +130,8 @@ protected:
 
 private:
 
+	void RemoveTile(OmThreadedCachingTile * cache);
+
 
 	///////////////////////////////////////
 	// omView2dConverters.cpp

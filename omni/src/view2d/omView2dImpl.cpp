@@ -144,7 +144,10 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
+			//printf("showing %f, %f,%f,%f, %i, %i\n", zoomMipVector.x, DEBUGV3(this_space_coord), mVolumeType, freshness);
+			//printf("showing %f, %i,%i,%i, %i, %i\n", zoomMipVector.x, DEBUGV3(this_data_coord), mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
 			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z); 

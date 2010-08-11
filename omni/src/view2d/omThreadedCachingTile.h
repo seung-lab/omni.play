@@ -1,6 +1,7 @@
 #ifndef OM_CACHING_TILE_H
 #define OM_CACHING_TILE_H
 
+#include "omTileCoord.h"
 #include "omTile.h"
 #include "omTextureID.h"
 #include "system/cache/omThreadedCache.h"
@@ -8,10 +9,10 @@
 #include "system/cache/omCacheManager.h"
 #include "system/events/omViewEvent.h"
 #include "common/omStd.h"
-#include "omTileCoord.h"
 #include "volume/omMipVolume.h"
 
 class OmTileCache;
+class OmTileCoord;
 class OmViewGroupState;
 
 class QGLContext;
@@ -36,6 +37,8 @@ public:
 
 	ObjectType mVolType;
 	OmId mImageId;
+
+	void Remove(const OmTileCoord & coord);
 
 private:
 	OmTileCache *const mDataCache;
