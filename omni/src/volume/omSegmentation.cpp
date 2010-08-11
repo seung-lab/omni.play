@@ -28,6 +28,7 @@
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
+#include "segment/omSegmentLists.hpp"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -40,6 +41,7 @@ static const float DefaultThresholdSize = 0.1;
 
 OmSegmentation::OmSegmentation()
 	: mSegmentCache(new OmSegmentCache(this))
+	, mSegmentLists(new OmSegmentLists(this))
 	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
@@ -61,8 +63,8 @@ OmSegmentation::OmSegmentation()
 
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
-	  //, mMipVoxelationManager(this)
 	, mSegmentCache(new OmSegmentCache(this))
+	, mSegmentLists(new OmSegmentLists(this))
   	, mGroups(this)
 {
 	//set manageable object name
@@ -100,7 +102,6 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
-	delete mSegmentCache;
 }
 
 /////////////////////////////////

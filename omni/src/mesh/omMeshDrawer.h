@@ -23,7 +23,7 @@ class OmMeshDrawer : boost::noncopyable
  private:
 	const OmId mSegmentationID;
 	OmSegmentation * mSeg;
-	OmSegmentCache * mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	OmViewGroupState * mViewGroupState;
 	OmVolumeCuller * mVolumeCuller;
 
@@ -35,7 +35,7 @@ class OmMeshDrawer : boost::noncopyable
 	bool ShouldChunkBeDrawn(OmMipChunkPtr p_chunk);
 	void DrawClippedExtent(OmMipChunkPtr p_chunk);
 	void ColorMesh(const OmBitfield & drawOps, OmSegment * segment);
-	void ApplyColor(OmSegment * seg, const OmBitfield & drawOps, 
+	void ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 			const OmSegmentColorCacheType sccType);
 };
 

@@ -51,6 +51,8 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void setGlobalThreshold();
 	void resetGlobalThreshold();
 
+	inline boost::shared_ptr<OmSegmentLists> getSegmentLists();
+
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );

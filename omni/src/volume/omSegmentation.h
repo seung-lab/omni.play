@@ -13,6 +13,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
+class OmSegmentLists;
 class MeshingManager;
 class OmSegment;
 class OmSegmentCache;
@@ -49,7 +50,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void ExportDataFilter(vtkImageData *);
 
 	//segment management
-	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
+	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
+	boost::shared_ptr<OmSegmentLists> getSegmentLists(){ return mSegmentLists; }
 
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
@@ -74,7 +76,8 @@ private:
 
 	MeshingManager * mMeshingMan;
 
-	OmSegmentCache *const mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
+	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 
 	OmGroups mGroups;
 

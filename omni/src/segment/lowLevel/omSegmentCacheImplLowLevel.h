@@ -51,6 +51,7 @@ class OmSegmentCacheImplLowLevel {
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
+	OmSegmentation* getSegmentation() { return mSegmentation; }
 	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);

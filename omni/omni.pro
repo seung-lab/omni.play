@@ -176,6 +176,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentPointers.h \
            src/segment/omSegmentQueue.h \
            src/segment/omSegmentSelector.h \
+           src/segment/omSegmentLists.hpp \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -401,6 +402,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
            src/system/cache/omCacheInfo.cpp \
+           src/segment/omSegmentLists.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \

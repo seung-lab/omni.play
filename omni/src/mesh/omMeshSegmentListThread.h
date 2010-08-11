@@ -12,10 +12,10 @@ class OmSegmentCache;
 
 class OmMeshSegmentListThread : public QRunnable {
  public:
-	OmMeshSegmentListThread( OmMipChunkPtr p_chunk, 
+	OmMeshSegmentListThread( OmMipChunkPtr p_chunk,
 				 OmSegment * rootSeg,
 				 const OmMipChunkCoord & chunkCoord,
-				 OmSegmentCache * segmentCache,
+				 boost::shared_ptr<OmSegmentCache> segmentCache,
 				 const OmId segmentationID);
 
 	void run();
@@ -24,7 +24,7 @@ class OmMeshSegmentListThread : public QRunnable {
 	OmMipChunkPtr mChunk;
 	OmSegment *const mRootSeg;
 	const OmMipChunkCoord mChunkCoord;
-	OmSegmentCache *const mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmId mSegmentationID;
 };
 

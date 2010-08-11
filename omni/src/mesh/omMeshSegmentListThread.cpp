@@ -6,10 +6,10 @@
 #include "mesh/omMeshSegmentList.h"
 #include "system/omEvents.h"
 
-OmMeshSegmentListThread::OmMeshSegmentListThread( OmMipChunkPtr p_chunk, 
+OmMeshSegmentListThread::OmMeshSegmentListThread( OmMipChunkPtr p_chunk,
 						  OmSegment * rootSeg,
 						  const OmMipChunkCoord & chunkCoord,
-						  OmSegmentCache * segmentCache,
+						  boost::shared_ptr<OmSegmentCache> segmentCache,
 						  const OmId segmentationID)
 	: mChunk(p_chunk)
 	, mRootSeg(rootSeg)
@@ -35,7 +35,7 @@ void OmMeshSegmentListThread::run()
 		if( chunkValues.contains( val ) ){
 			segmentsToDraw.push_back(seg);
 		}
-				
+
 		seg = segIter.getNextSegment();
 	}
 

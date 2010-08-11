@@ -22,18 +22,18 @@ class OmMeshSegmentList : boost::noncopyable{
  public:
 	static void Delete();
 
-	static const OmSegPtrList & getFromCache( const OmMipChunkCoord &, 
+	static const OmSegPtrList & getFromCache( const OmMipChunkCoord &,
 						  const OmSegID,
 						  const OmId);
-	
-	static bool isSegmentListReadyInCache(OmMipChunkPtr, 
+
+	static bool isSegmentListReadyInCache(OmMipChunkPtr,
 					      OmSegment *,
 					      const OmMipChunkCoord &,
-					      OmSegmentCache *,
+					      boost::shared_ptr<OmSegmentCache>,
 					      const OmId );
 
-	static void addToCache( const OmMipChunkCoord &, 
-				OmSegment *, 
+	static void addToCache( const OmMipChunkCoord &,
+				OmSegment *,
 				const OmSegPtrList &,
 				const OmId );
  private:
@@ -45,28 +45,28 @@ class OmMeshSegmentList : boost::noncopyable{
 	static OmMeshSegmentList* mspInstance;
 
 	std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
-	
+
 	QThreadPool threads;
 
 	mutable QMutex mCacheLock;
 
-	bool doIsSegmentListReadyInCache(OmMipChunkPtr, 
+	bool doIsSegmentListReadyInCache(OmMipChunkPtr,
 					 OmSegment *,
 					 const OmMipChunkCoord &,
-					 OmSegmentCache *,
+					 boost::shared_ptr<OmSegmentCache>,
 					 const OmId );
-	
-	bool doCacheHasCoord( const OmMipChunkCoord &, 
+
+	bool doCacheHasCoord( const OmMipChunkCoord &,
 			      const OmSegID,
 			      const OmId );
 
-	const OmSegPtrList & doGetFromCache( const OmMipChunkCoord &, 
+	const OmSegPtrList & doGetFromCache( const OmMipChunkCoord &,
 					     const OmSegID,
 					     const OmId );
 
-	void doMakeSegmentListForCache(OmMipChunkPtr, OmSegment *, 
+	void doMakeSegmentListForCache(OmMipChunkPtr, OmSegment *,
 				       const OmMipChunkCoord &,
-				       OmSegmentCache *,
+				       boost::shared_ptr<OmSegmentCache>,
 				       const OmId  );
 
 	void doClearFromCacheIfFreshnessInvalid( const OmMipChunkCoord & c,
@@ -76,13 +76,13 @@ class OmMeshSegmentList : boost::noncopyable{
 	bool doIsCacheFetching( const OmMipChunkCoord & c,
 				OmSegment * rootSeg,
 				const OmId  );
-	
+
 	void doLetCacheKnowWeAreFetching( const OmMipChunkCoord & c,
 					  OmSegment * rootSeg,
 					  const OmId  );
 
-	void doAddToCache( const OmMipChunkCoord &, 
-			   OmSegment *, 
+	void doAddToCache( const OmMipChunkCoord &,
+			   OmSegment *,
 			   const OmSegPtrList &,
 			   const OmId  );
 };

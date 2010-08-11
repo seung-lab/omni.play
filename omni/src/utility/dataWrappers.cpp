@@ -134,7 +134,7 @@ unsigned int SegmentationDataWrapper::getNumberOfTopSegments()
 	return OmProject::GetSegmentation(mID).GetSegmentCache()->GetNumTopSegments();
 }
 
-OmSegmentCache * SegmentationDataWrapper::getSegmentCache()
+boost::shared_ptr<OmSegmentCache> SegmentationDataWrapper::getSegmentCache()
 {
 	return OmProject::GetSegmentation(mID).GetSegmentCache();
 }
@@ -248,7 +248,7 @@ OmSegment * SegmentDataWrapper::getSegment()
 	return getSegmentation().GetSegmentCache()->GetSegment( mID );
 }
 
-OmSegmentCache * SegmentDataWrapper::getSegmentCache()
+boost::shared_ptr<OmSegmentCache> SegmentDataWrapper::getSegmentCache()
 {
 	return getSegmentation().GetSegmentCache();
 }

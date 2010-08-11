@@ -20,7 +20,7 @@ class OmSegment;
 class OmSegmentColorizer
 {
  public:
-	OmSegmentColorizer( OmSegmentCache *, const OmSegmentColorCacheType, const bool);
+	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>, const OmSegmentColorCacheType, const bool);
 	~OmSegmentColorizer();
 
 	void colorTile( OmSegID * imageData, const int size,
@@ -35,7 +35,7 @@ class OmSegmentColorizer
 	mutable QMutex mColorUpdateMutex;
 	mutable QReadWriteLock mMapResizeMutex;
 
-	OmSegmentCache * mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 	quint32 mSize;
 	float mCurBreakThreshhold;
