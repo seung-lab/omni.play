@@ -2,9 +2,10 @@
 #define  ZIMESHINGCHUNK_H_
 
 #include "zi/base/omni.h"
-#include "zi/thread/Thread.h"
+#include <zi/threads>
 #include "mesh/omMipMeshManager.h"
 #include "volume/omMipChunk.h"
+#include "volume/omMipVolume.h"
 #include "volume/omMipChunkCoord.h"
 #include "boost/shared_ptr.hpp"
 #include "ziMesherManager.h"
@@ -12,10 +13,12 @@
 #include <utility>
 #include <vtkImageData.h>
 
+class ziMesher;
 
-class ziMeshingChunk : public zi::Threads::Runnable {
+class ziMeshingChunk : public zi::Runnable {
 public:
-  ziMeshingChunk(int segId, OmMipChunkCoord c, OmMipMeshManager *mmm);
+  ziMeshingChunk(int segId, OmMipChunkCoord c,
+		 OmMipMeshManager *mmm, ziMesher *mesher);
   virtual ~ziMeshingChunk() {}
   void run();
   void deliverTo(boost::shared_ptr<GrowingMeshes> level,
@@ -26,6 +29,7 @@ private:
   int                           segmentationId_;
   OmMipChunkCoord               mipCoord_;
   OmMipMeshManager              *mipMeshManager_;
+  ziMesher                      *mesher_;
   Qshared_ptr<OmMipChunk>       chunk_;
   vtkImageData                  *pImageData_;
   AxisAlignedBoundingBox<int>   srcBbox_;

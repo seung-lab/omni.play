@@ -2,10 +2,9 @@
 
 #include <iostream>
 #include "ziMesherManager.h"
-#include "zi/thread/Mutex.h"
+#include <zi/mutex>
 #include "zi/base/base.h"
 
-using namespace zi::Threads;
 using namespace std;
 using boost::shared_ptr;
 
@@ -15,7 +14,7 @@ StrippedMesh::addStrips(const Tri::tri_stripper::primitives_vector &ptrs,
                         zi::vector::Vec3d scale, zi::vector::Vec3d trans)
 {
   {
-    Synchronized s(monitor_);
+    zi::Synchronized s(monitor_);
     while (!free_) {
       waiting_++;
       monitor_.wait();
@@ -59,7 +58,7 @@ StrippedMesh::addStrips(const Tri::tri_stripper::primitives_vector &ptrs,
   totalVertices_ += vertices.size();
 
   {
-    Synchronized s(monitor_);
+    zi::Synchronized s(monitor_);
     if (waiting_)
       monitor_.notify();
   }
@@ -82,7 +81,7 @@ void GrowingMeshes::receive
   FOR_EACH(it, stripified) {
     boost::shared_ptr<StrippedMesh> p;
     {
-      Guard g(mutex_);
+      zi::Guard g(mutex_);
       if (strippeds_->find(it->first) == strippeds_->end()) {
         (*strippeds_)[it->first] =
           boost::shared_ptr<StrippedMesh>(new StrippedMesh());
@@ -95,7 +94,7 @@ void GrowingMeshes::receive
   }
 
   {
-    Guard g(mutex_);
+    zi::Guard g(mutex_);
     remainingDeliveries_--;
   }
 
