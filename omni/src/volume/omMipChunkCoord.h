@@ -23,29 +23,31 @@ public:
 
 	//property
 	bool IsLeaf() const;
-	
+
 	//family coordinate methods
 	OmMipChunkCoord	ParentCoord() const;
 	OmMipChunkCoord PrimarySiblingCoord() const;
 	void SiblingCoords(OmMipChunkCoord *pSiblings) const;
 	OmMipChunkCoord PrimaryChildCoord() const;
 	void ChildrenCoords(OmMipChunkCoord *pChildren) const;
-	
+
 	//access
 	const int & getLevel(){ return Level; }
 	const int & getCoordinateX(){ return Coordinate.x; }
 	const int & getCoordinateY(){ return Coordinate.y; }
 	const int & getCoordinateZ(){ return Coordinate.z; }
-	
+
 	//operators
 	void operator=( const OmMipChunkCoord& rhs );
 	bool operator==( const OmMipChunkCoord& rhs ) const;
 	bool operator!=( const OmMipChunkCoord& rhs ) const;
 	bool operator<( const OmMipChunkCoord& rhs ) const;
-	
+
 	int Level;
 	DataCoord Coordinate;
-	
+
+	friend std::ostream& operator<<(std::ostream &out, const OmMipChunkCoord &in);
+
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
 };

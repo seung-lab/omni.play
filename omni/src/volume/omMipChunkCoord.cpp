@@ -49,7 +49,7 @@ OmMipChunkCoord OmMipChunkCoord::ParentCoord() const
 
 	int x = primary_coord.Coordinate.x;
 	int y = primary_coord.Coordinate.y;
-	int z = primary_coord.Coordinate.z;	
+	int z = primary_coord.Coordinate.z;
 
 	//return parent (next level, half coordinates)
 	return OmMipChunkCoord(Level + 1, x / 2, y / 2, z / 2);
@@ -133,7 +133,7 @@ bool OmMipChunkCoord::operator==(const OmMipChunkCoord & rhs) const
 
 bool OmMipChunkCoord::operator!=(const OmMipChunkCoord & rhs) const
 {
-	if( Level != rhs.Level ){ 
+	if( Level != rhs.Level ){
 		return true;
 	}
 
@@ -152,4 +152,10 @@ bool OmMipChunkCoord::operator<(const OmMipChunkCoord & rhs) const
 	}
 
 	return (Coordinate < rhs.Coordinate);
+}
+
+std::ostream& operator<<(std::ostream &out, const OmMipChunkCoord &c) {
+	out << "[" << c.Level;
+	out << " (" << c.Coordinate.x << ", " << c.Coordinate.y << ", " << c.Coordinate.z << ")]";
+	return out;
 }

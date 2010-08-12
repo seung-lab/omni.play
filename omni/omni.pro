@@ -205,6 +205,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
            src/utility/dataWrappers.h \
+           src/utility/OmThreadPool.hpp \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omImageDataIo.h \
@@ -264,16 +265,6 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
-           src/zi/old_mesh/MarchingCubesTables.h \
-           src/zi/thread/Exception.h \
-           src/zi/thread/Monitor.h \
-           src/zi/thread/Mutex.h \
-           src/zi/thread/Thread.h \
-           src/zi/thread/ThreadFactory.h \
-           src/zi/thread/ThreadManager.h \
-           src/zi/thread/Util.h \
-           src/zi/thread/Win32.h \
-           src/zi/thread/Win32Pthread.h \
            src/zi/zunit/zunit.h
 
 SOURCES += lib/strnatcmp.cpp \
@@ -481,13 +472,7 @@ SOURCES += lib/strnatcmp.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
-           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
-           src/zi/thread/Monitor.cpp \
-           src/zi/thread/Mutex.cpp \
-           src/zi/thread/Thread.cpp \
-           src/zi/thread/ThreadFactory.cpp \
-           src/zi/thread/ThreadManager.cpp \
-           src/zi/thread/Win32Pthread.cpp
+           src/zi/mesh/ext/TriStrip/TriStripper.cpp
 
 RESOURCES += src/gui/resources.qrc
 
