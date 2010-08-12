@@ -2,7 +2,6 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/omSegmentListByMRU.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
@@ -51,6 +50,7 @@ class OmSegmentCacheImplLowLevel {
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
+	OmSegmentation* getSegmentation() { return mSegmentation; }
 	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);
@@ -87,7 +87,6 @@ class OmSegmentCacheImplLowLevel {
 
 	OmSegmentGraph mSegmentGraph;
 
-	OmSegmentListByMRU mRecentRootActivityMap;
 	void addToRecentMap( const OmSegID segID);
 
  private:

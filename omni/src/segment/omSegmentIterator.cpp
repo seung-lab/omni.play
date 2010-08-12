@@ -2,7 +2,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 
-OmSegmentIterator::OmSegmentIterator( OmSegmentCache * cache)
+OmSegmentIterator::OmSegmentIterator(boost::shared_ptr<OmSegmentCache> cache)
 	: mCache(cache)
 {
 }
@@ -16,7 +16,7 @@ void OmSegmentIterator::iterOverSelectedIDs()
 {
 	const OmSegIDsSet & set = mCache->GetSelectedSegmentIds();
 	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){ 
+	for( iter = set.begin(); iter != set.end(); ++iter ){
 		mSegs.push_back( mCache->GetSegment( *iter ));
 	}
 }
@@ -25,7 +25,7 @@ void OmSegmentIterator::iterOverEnabledIDs()
 {
 	const OmSegIDsSet & set = mCache->GetEnabledSegmentIds();
 	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){ 
+	for( iter = set.begin(); iter != set.end(); ++iter ){
 		mSegs.push_back( mCache->GetSegment( *iter ) );
 	}
 }
@@ -64,9 +64,9 @@ OmSegment * OmSegmentIterator::getNextSegment()
 OmSegmentIterator & OmSegmentIterator::operator = (const OmSegmentIterator & other)
 {
 	if (this == &other) {
-		return *this; 
+		return *this;
 	}
-	
+
 	mCache = other.mCache;
 	mSegs = other.mSegs;
 

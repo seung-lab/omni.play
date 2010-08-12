@@ -1,9 +1,10 @@
+#include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
+#include "segment/omSegmentLists.hpp"
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
-#include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -45,7 +46,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 
 void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 					      const OmMipChunkCoord &,
-					      boost::unordered_map< OmSegID, unsigned int> * sizes )
+					      boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds )
 {
 	OmSegIDsSet::const_iterator iter;
 	for( iter = data_values.begin(); iter != data_values.end(); ++iter ){
@@ -64,6 +65,11 @@ void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 
 		if( NULL != sizes ){
 			seg->mSize += sizes->at(*iter);
+			if (seg->mBounds.isEmpty()) {
+                        	seg->mBounds = bounds.at(*iter);
+                        } else {
+                        	seg->mBounds.merge(bounds.at(*iter));
+			}
 		}
 
 		addToDirtySegmentList(seg);
@@ -305,11 +311,11 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 {
 	OmSegIDsListWithPage * ids;
 	if(VALIDROOT == type) {
-		ids = mSegmentGraph.mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
+		ids = getSegmentLists()->mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(NOTVALIDROOT == type) {
-		ids = mSegmentGraph.mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
+		ids = getSegmentLists()->mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else if(RECENTROOT == type) {
-		ids = mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
+		ids = getSegmentLists()->mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
 	} else {
 		assert(0 && "Shouldn't call this function to do non special group code.\n");
 	}
@@ -332,11 +338,11 @@ OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned in
 quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 {
         if(VALIDROOT == type) {
-                return mSegmentGraph.mValidListBySize.size();
+                return getSegmentLists()->mValidListBySize.size();
         } else if(NOTVALIDROOT == type) {
-                return mSegmentGraph.mRootListBySize.size();
+                return getSegmentLists()->mRootListBySize.size();
         } else if(RECENTROOT == type) {
-                return mRecentRootActivityMap.size();
+                return getSegmentLists()->mRecentRootActivityMap.size();
 	}
 
 	assert(0 && "shouldn't reach here, type incorrect\n");
@@ -346,9 +352,9 @@ quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
 void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 {
 	if(valid) {
-		OmSegmentListBySize::swapSegment(seg, mSegmentGraph.mRootListBySize, mSegmentGraph.mValidListBySize);
+		getSegmentLists()->moveSegmentFromRootToValid(seg);
 	} else {
-		OmSegmentListBySize::swapSegment(seg, mSegmentGraph.mValidListBySize, mSegmentGraph.mRootListBySize);
+		getSegmentLists()->moveSegmentFromValidToRoot(seg);
 	}
 
         if( -1 == seg->mEdgeNumber ){
@@ -364,10 +370,10 @@ quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDep
 	OmSegment * seg = findRoot( segUnknownDepth );
 
 	if( seg->mImmutable ) {
-		return mSegmentGraph.mValidListBySize.getSegmentSize( seg );
+		return getSegmentLists()->mValidListBySize.getSegmentSize( seg );
 	}
 
-	return mSegmentGraph.mRootListBySize.getSegmentSize( seg );
+	return getSegmentLists()->mRootListBySize.getSegmentSize( seg );
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()
@@ -441,4 +447,6 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 	printf("done\n");
 }
 
-
+boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
+	return getSegmentation()->getSegmentLists();
+}

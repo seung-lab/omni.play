@@ -467,13 +467,30 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 		OmSegID *p_scalar_data = static_cast < OmSegID * >(mData->getVTKPtr()->GetScalarPointer());
 
 		//for all voxels in the chunk
-		// todo: change if default volume chunk size gets changed
-		const int vSize = 128*128*128;
-		for (int i = 0; i < vSize; ++i) {
-			if (NULL_SEGMENT_VALUE != p_scalar_data[i]) {
-				mDirectlyContainedValues.insert(p_scalar_data[i]);
-				if( computeSizes ) {
-					++((*sizes)[p_scalar_data[i]]);
+
+		int x, y, z;
+		for (z = extent[0]; z <= extent[1]; z++) {
+			for (y = extent[2]; y <= extent[3]; y++) {
+				for (x = extent[4]; x <= extent[5]; x++) {
+
+					//if non-null insert in set
+					if (NULL_SEGMENT_VALUE != *p_scalar_data) {
+						mDirectlyContainedValues.insert(*p_scalar_data);
+						if( computeSizes ){
+							++((*sizes)[*p_scalar_data]);
+							if (mBounds[*p_scalar_data].isEmpty()) {
+								mBounds[*p_scalar_data] = DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
+												   GetExtent().getMin() + Vector3<int>(x,y,z));
+							} else {
+                                                                mBounds[*p_scalar_data].merge(DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
+												       GetExtent().getMin() + Vector3<int>(x,y,z)));
+
+							}
+						}
+					}
+					//adv to next scalar
+					++p_scalar_data;
+
 				}
 			}
 		}

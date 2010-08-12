@@ -28,7 +28,7 @@ class OmSegmentListBySize
 	OmSegIDsListWithPage * getAPageWorthOfSegmentIDs( const unsigned int, const int, const OmSegID);
 	quint64 getSegmentSize( OmSegment * seg );
 
-	quint32 size();
+	size_t size();
 	void dump();
 	void clear();
 
@@ -42,7 +42,7 @@ class OmSegmentListBySize
 	struct OmSegSize {
 		OmSegID segID;
 		quint64 segSize;
-		OmSegSize( const OmSegID segID_, const quint64 segSize_ ) 
+		OmSegSize( const OmSegID segID_, const quint64 segSize_ )
 			: segID(segID_), segSize(segSize_){}
 	};
 

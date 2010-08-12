@@ -17,7 +17,6 @@
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
 	, mSeg( NULL )
-	, mSegmentCache( NULL )
 	, mViewGroupState(vgs)
 {
 }

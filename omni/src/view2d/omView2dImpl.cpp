@@ -144,14 +144,13 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 
 			DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth);;
 			SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
+
 			OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
+			//printf("showing %f, %f,%f,%f, %i, %i\n", zoomMipVector.x, DEBUGV3(this_space_coord), mVolumeType, freshness);
+			//printf("showing %f, %i,%i,%i, %i, %i\n", zoomMipVector.x, DEBUGV3(this_data_coord), mVolumeType, freshness);
 			NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
 			OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-			/*
-			debug ("postdraw", "this_data_coord.(x,y,z): (%i,%i,%i)\n", this_data_coord.x,this_data_coord.y,this_data_coord.z);
-			debug ("postdraw", "this_space_coord.(x,y,z): (%f,%f,%f)\n", this_space_coord.x,this_space_coord.y,this_space_coord.z);
-			debug ("postdraw", "coord.(x,y,z): (%f,%f,%f)\n", coord.Coordinate.x,coord.Coordinate.y,coord.Coordinate.z);
-			*/
+
 			OmTextureIDPtr gotten_id;
                         if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
 				mCache->GetTextureID(gotten_id, mTileCoord, false);
@@ -176,7 +175,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		//		debug ("spin", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 	} else {
-		BufferTiles(zoomMipVector);
+		//BufferTiles(zoomMipVector);
 		//debug ("genone", "complete in predraw\n");
 	}
 }
@@ -294,9 +293,6 @@ void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-		//debug("FIXME", << "texture " << (int)((unsigned char*)gotten_id->texture)[0] << endl;
-		//debug("FIXME", << "x " << gotten_id->x << endl;
-		//debug("FIXME", << "y " << gotten_id->y << endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, gotten_id->x, gotten_id->y, 0, GL_LUMINANCE,
 			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->texture));
 

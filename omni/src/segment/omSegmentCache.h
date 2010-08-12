@@ -21,7 +21,7 @@ public:
 
 	OmSegment* AddSegment();
 	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord,
-				  boost::unordered_map< OmSegID, unsigned int> * sizes );
+				  boost::unordered_map< OmSegID, unsigned int> * sizes,  boost::unordered_map< OmSegID, DataBbox> & bounds);
 	OmSegment* AddSegment(OmSegID value);
 
 	OmSegment* GetSegment(const OmSegID);

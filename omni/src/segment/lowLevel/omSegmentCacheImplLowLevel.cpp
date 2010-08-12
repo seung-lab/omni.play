@@ -2,10 +2,12 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegmentLists.hpp"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel( OmSegmentation * segmentation, OmSegmentCache * cache )
+OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation,
+						       OmSegmentCache * cache )
 	: mSegmentation(segmentation)
 	, mParentCache( cache )
 	, mSegments( new OmPagingPtrStore<OmSegment>( segmentation, cache ) )
@@ -207,7 +209,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
-	mRecentRootActivityMap.touch( segID );
+	mSegmentation->getSegmentLists()->mRecentRootActivityMap.touch( segID );
 }
 
 QString OmSegmentCacheImplLowLevel::getSegmentName( OmSegID segID )

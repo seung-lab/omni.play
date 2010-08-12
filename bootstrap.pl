@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 
-# NOTE: build process will be done "out-of-source". 
-#  (from vtk): "When your build generates files, they have to go somewhere. 
-#   An in-source build puts them in your source tree. 
-#   An out-of-source build puts them in a completely separate directory, 
+# NOTE: build process will be done "out-of-source".
+#  (from vtk): "When your build generates files, they have to go somewhere.
+#   An in-source build puts them in your source tree.
+#   An out-of-source build puts them in a completely separate directory,
 #   so that your source tree is unchanged."
 # This allows us to untar only once, but build multiple times--much faster
 #  on older computers!
@@ -128,12 +128,12 @@ sub genVTKscript {
     if ( isMac() ){
 	$makeOps = " -k ";
     }
-    
+
     my $script = <<END;
 cd $buildPath/$baseFileName
 cmake $srcPath/$baseFileName
 make $makeOps
-make install    
+make install
 END
     print SCRIPT $script;
     close SCRIPT;
@@ -147,7 +147,7 @@ sub vtk {
 
     # Work around for a bug in the VTK tar ball.
     `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
-    
+
     `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
     if ( isMacLeopard() ){
 	`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
@@ -272,8 +272,8 @@ sub configure {
     my $baseFileName  = $_[0];
     my $libFolderName = $_[1];
     my $buildOptions  = $_[2];
-    
-    my $cmd = "$srcPath/$baseFileName/configure --prefix=$libPath/$libFolderName $buildOptions;";  
+
+    my $cmd = "$srcPath/$baseFileName/configure --prefix=$libPath/$libFolderName $buildOptions;";
     if( "Qt" eq $libFolderName ){
 	$cmd = 'echo "yes" | '.$cmd;
     }
@@ -332,7 +332,7 @@ sub libpng {
     prepareAndBuild( "libpng-1.2.39", "libpng" );
 }
 
-sub libtiff { 
+sub libtiff {
     prepareNukeSrcsFolder( "tiff-3.8.2", "libtiff" );
     buildInSourceFolder( "tiff-3.8.2", "libtiff", "--without-jpeg" );
 }
@@ -377,7 +377,7 @@ sub qt {
 
 sub qt46 {
     # new qt buidls has several messages:
-    # requires zlib; 
+    # requires zlib;
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
@@ -466,8 +466,9 @@ sub menu {
     print "8 -- Generate scripts\n";
     print "9 -- Build and tar release!\n";
     print "10 -- Experimental builds...\n";
-    print "11 -- Ubuntu library apt-gets...\n\n";
-    my $max_answer = 11;
+    print "11 -- Ubuntu library apt-gets...\n";
+    print "12 -- build omni (make clean first)...\n\n";
+    my $max_answer = 12;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -517,6 +518,8 @@ sub runMenuEntry {
         experimentalMenu();
     }elsif( 11 == $entry ){
         doUbuntuAptGets();
+    }elsif( 12 == $entry ){
+        omniClean();
     }
 }
 
@@ -565,7 +568,7 @@ sub runSmallLibraryMenuEntry {
 }
 
 sub numberOfCores {
-    
+
     my $numCores = 2;
     if (-e "/proc/cpuinfo") {
 	$numCores =`cat /proc/cpuinfo  | grep processor | wc -l`;
@@ -652,8 +655,8 @@ sub checkCmdLineArgs {
 }
 
 sub doUbuntuAptGets{
-    my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++ 
-	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev 
+    my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
+	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
 	libgl1-mesa-glx-dbg libboost-dev flex bison);
 
@@ -664,6 +667,12 @@ sub doUbuntuAptGets{
 
     print `sudo apt-get -y install $args`;
     print "Done with the Ubuntu apt-gets! \n\n";
+}
+
+
+sub omniClean {
+    `(cd $omniPath; make clean)`;
+    omni();
 }
 
 checkForMac();

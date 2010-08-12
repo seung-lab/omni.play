@@ -933,20 +933,65 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 /////////////////////////////////
 ///////          Actions
 
+void OmView2d::RemoveTile(OmThreadedCachingTile * cache)
+{
+	set<DataCoord>::iterator itr;
+	for(itr = mUpdateCoordsSet.begin(); itr != mUpdateCoordsSet.end(); itr++) {
+		OmMipChunkCoord ccoord = cache->mVolume->DataToMipCoord(*itr, 0);
+		DataBbox box = cache->mVolume->MipCoordToDataBbox(ccoord, 0);
+		Vector3<int> bcoord = box.getMin();
+
+        	switch (mViewType) {
+        	case XY_VIEW:
+			bcoord[2] = (*itr)[2];
+                	break;
+        	case XZ_VIEW:
+			bcoord[1] = (*itr)[1];
+                	break;
+        	case YZ_VIEW:
+			bcoord[0] = (*itr)[0];
+                	break;
+        	}
+
+                SpaceCoord this_space_coord = DataToSpaceCoord(bcoord);
+                OmTileCoord tcoord = OmTileCoord(0, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen(false));
+		cache->Remove(tcoord);
+
+                //printf("removing %d,%d,%d\n", (*itr)[0], (*itr)[1], (*itr)[2]);
+                //printf("removing %f, %f,%f,%f, %i, %i\n", 0.0, DEBUGV3(this_space_coord), SEGMENTATION, OmCachingThreadedCachingTile::Freshen(false));
+                //printf("removing %f, %i,%i,%i, %i, %i\n", 0.0, DEBUGV3(box.getMin()), SEGMENTATION, OmCachingThreadedCachingTile::Freshen(false));
+	}
+}
+
 void OmView2d::myUpdate()
 {
 	if (mDoRefresh) {
 		if(mEditedSegmentation) {
                 	(new OmVoxelSetValueAction(mEditedSegmentation, mUpdateCoordsSet, mCurrentSegmentId))->Run();
-                	mUpdateCoordsSet.clear();
-			mEditedSegmentation = 0;
+
+        		if(SEGMENTATION != mVolumeType){
+                		OmChannel & current_channel = OmProject::GetChannel(mImageId);
+                		foreach( OmId id, current_channel.GetValidFilterIds() ) {
+                        		OmFilter2d &filter = current_channel.GetFilter(id);
+                        		if (OmProject::IsSegmentationValid(filter.GetSegmentation()) ) {
+                                		if(filter.GetSegmentation() == mEditedSegmentation) {
+        						OmThreadedCachingTile *cache = filter.GetCache(mViewType, mViewGroupState);
+        						if (!cache) {
+                						continue;
+							}
+							RemoveTile(cache);
+						}
+                        		}
+                		}
+        		} else {
+				RemoveTile(mCache);
+			}
+		} else {
+			OmCachingThreadedCachingTile::Refresh();
 		}
-#if 0
-		FOR_EACH(itr, mUpdateCoordsSet) {
-			mCache
-		}
-#endif
-		OmCachingThreadedCachingTile::Refresh();
+
+               	mUpdateCoordsSet.clear();
+		mEditedSegmentation = 0;
 		mDoRefresh = false;
 	}
 

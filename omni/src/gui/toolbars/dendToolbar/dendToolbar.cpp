@@ -12,24 +12,27 @@ DendToolBar::DendToolBar(MainWindow* mw, OmViewGroupState* vgs)
 	: QToolBar("Dend", mw)
 	, mMainWindow(mw)
 	, mViewGroupState(vgs)
+	, graphToolsDock(NULL)
+	, validationGroupDock(NULL)
+	, displayToolsDock(NULL)
 {
 	graphTools = new GraphTools(this);
 	validationGroup = new ValidationGroup(this);
 	displayTools = new DisplayTools(this);
 
-	/*
 	mMainWindow->addToolbarRight(this);
 	addWidget(wrapWithGroupBox(graphTools));
 	addWidget(wrapWithGroupBox(validationGroup));
 	addWidget(wrapWithGroupBox(displayTools));
-	*/
+
 	//addWidget(new BreakThresholdGroup(this));
 
+	/*
 	graphToolsDock = makeDockWidget(graphTools);
 	validationGroupDock = makeDockWidget(validationGroup);
 	displayToolsDock = makeDockWidget(displayTools);
-
 	updateToolBarsPos(QPoint(0,0));
+	*/
 }
 
 QDockWidget* DendToolBar::makeDockWidget(OmWidget* widget)
@@ -48,11 +51,17 @@ void DendToolBar::updateToolBarsPos(QPoint)
 	const int extraVerticalPadding = 22;
 
 	int height = 0;
-	height += moveToolDock(graphToolsDock, recalcPos(newPos, height));
-	height += extraVerticalPadding;
-	height += moveToolDock(validationGroupDock, recalcPos(newPos, height));
-	height += extraVerticalPadding;
-	height += moveToolDock(displayToolsDock, recalcPos(newPos, height));
+	if(graphToolsDock){
+		height += moveToolDock(graphToolsDock, recalcPos(newPos, height));
+		height += extraVerticalPadding;
+	}
+	if(validationGroupDock){
+		height += moveToolDock(validationGroupDock, recalcPos(newPos, height));
+		height += extraVerticalPadding;
+	}
+	if(displayToolsDock){
+		height += moveToolDock(displayToolsDock, recalcPos(newPos, height));
+	}
 }
 
 QPoint DendToolBar::recalcPos(QPoint newPos, const int height)

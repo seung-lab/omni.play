@@ -1,7 +1,10 @@
 #include "utility/stringHelpers.h"
+#include "volume/omSegmentation.h"
+#include "segment/omSegmentLists.hpp"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
+#include "utility/omTimer.h"
 
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
@@ -53,13 +56,13 @@ void OmSegmentGraph::growGraphIfNeeded(OmSegment * newSeg)
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
 	mGraph->resize(size);
-	mRootListBySize.insertSegment( newSeg );
+	getSegmentLists()->mRootListBySize.insertSegment( newSeg );
 }
 
 void OmSegmentGraph::buildSegmentSizeLists()
 {
-	mValidListBySize.clear();
-	mRootListBySize.clear();
+	getSegmentLists()->mValidListBySize.clear();
+	getSegmentLists()->mRootListBySize.clear();
 
 	OmSegmentIteratorLowLevel iter(mCache);
 	iter.iterOverAllSegments();
@@ -67,9 +70,9 @@ void OmSegmentGraph::buildSegmentSizeLists()
 	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
 		if(0 == seg->mParentSegID) {
 			if(seg->mImmutable) {
-				mValidListBySize.insertSegment( seg );
+				getSegmentLists()->mValidListBySize.insertSegment( seg );
 			} else {
-				mRootListBySize.insertSegment( seg );
+				getSegmentLists()->mRootListBySize.insertSegment( seg );
 			}
 		}
 	}
@@ -77,7 +80,7 @@ void OmSegmentGraph::buildSegmentSizeLists()
 
 quint32 OmSegmentGraph::getNumTopLevelSegs()
 {
-	return mRootListBySize.size() + mValidListBySize.size();
+	return getSegmentLists()->mRootListBySize.size() + getSegmentLists()->mValidListBySize.size();
 }
 
 
@@ -93,6 +96,9 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 {
 	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
 	fflush(stdout);
+
+	OmTimer timer;
+	timer.start();
 
 	OmSegID childID;
 	OmSegID parentID;
@@ -120,7 +126,8 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 		}
         }
 
-	printf("done\n");
+	timer.stop();
+	printf("done (%f secs)\n", timer.s_elapsed() );
 }
 
 void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes,
@@ -235,15 +242,15 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 void OmSegmentGraph::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
 {
 	OmSegment * root = mCache->findRoot(parent);
-	mRootListBySize.updateFromJoin( root, child );
-	mValidListBySize.updateFromJoin( root, child );
+	getSegmentLists()->mRootListBySize.updateFromJoin( root, child );
+	getSegmentLists()->mValidListBySize.updateFromJoin( root, child );
 }
 
 void OmSegmentGraph::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
 {
 	OmSegment * root = mCache->findRoot(parent);
 	quint64 newChildSize = computeSegmentSizeWithChildren( child->mValue );
-	mRootListBySize.updateFromSplit( root, child, newChildSize );
+	getSegmentLists()->mRootListBySize.updateFromSplit( root, child, newChildSize );
 }
 
 quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
@@ -255,4 +262,8 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 		size += seg->mSize;
 	}
 	return size;
+}
+
+boost::shared_ptr<OmSegmentLists> OmSegmentGraph::getSegmentLists() {
+	return mCache->getSegmentation()->getSegmentLists();
 }

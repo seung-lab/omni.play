@@ -17,6 +17,7 @@ class DendToolBar : public QToolBar {
  Q_OBJECT
  public:
 	DendToolBar( MainWindow* mw, OmViewGroupState* vgs );
+
 	void updateToolBarsPos(QPoint oldPos);
 
 	void updateGui();

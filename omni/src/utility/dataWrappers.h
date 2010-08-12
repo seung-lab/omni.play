@@ -43,7 +43,7 @@ class SegmentationDataWrapper
 	QString getNote();
 	unsigned int getNumberOfSegments();
 	unsigned int getNumberOfTopSegments();
-	OmSegmentCache * getSegmentCache();
+	boost::shared_ptr<OmSegmentCache> getSegmentCache();
 	QString getName();
 	bool isEnabled();
 	//	QString GetSourceDirectoryPath();
@@ -89,7 +89,7 @@ class SegmentDataWrapper
 	ObjectType getType(){ return mType; }
 	quint64 getSize();
 	quint64 getSizeWithChildren();
-	OmSegmentCache * getSegmentCache();
+	boost::shared_ptr<OmSegmentCache> getSegmentCache();
  private:
 	OmSegID mID;
 	ObjectType mType;

@@ -28,6 +28,7 @@
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
+#include "segment/omSegmentLists.hpp"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -39,6 +40,7 @@
 
 OmSegmentation::OmSegmentation()
 	: mSegmentCache(new OmSegmentCache(this))
+	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
 {
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
@@ -47,6 +49,7 @@ OmSegmentation::OmSegmentation()
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
 	, mSegmentCache(new OmSegmentCache(this))
+	, mSegmentLists(new OmSegmentLists())
   	, mGroups(this)
 {
 	//set manageable object name
@@ -69,7 +72,6 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
-	delete mSegmentCache;
 }
 
 /////////////////////////////////
@@ -268,7 +270,8 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 
 	if(isMIPzero){
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes);
+		boost::unordered_map< OmSegID, DataBbox> & bounds = p_chunk->GetDirectDataBounds();
+		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes, bounds);
 
 		if(remesh) {
                 	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
@@ -423,6 +426,7 @@ void OmSegmentation::CloseDownThreads()
 	mDataCache->closeDownThreads();
 }
 
+extern int Omni_File_Version;
 Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 {
 	DataBbox box;
@@ -437,27 +441,37 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
         OmSegment * seg = iter.getNextSegment();
         while(NULL != seg) {
 
-		Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-		for (int z = 0; z < mip_coord_dims.z; ++z) {
-			for (int y = 0; y < mip_coord_dims.y; ++y) {
-				for (int x = 0; x < mip_coord_dims.x; ++x) {
-					OmMipChunkCoord chunk_coord(level, x, y, z);
-					OmMipChunkPtr p_chunk;
-					GetChunk(p_chunk, chunk_coord);
+		if(seg->getBounds().isEmpty()) {
+			Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(level);
+			for (int z = 0; z < mip_coord_dims.z; ++z) {
+				for (int y = 0; y < mip_coord_dims.y; ++y) {
+					for (int x = 0; x < mip_coord_dims.x; ++x) {
+						OmMipChunkCoord chunk_coord(level, x, y, z);
+						OmMipChunkPtr p_chunk;
+						GetChunk(p_chunk, chunk_coord);
 
-					const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-					if(data_values.contains(seg->getValue())) {
+						const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
+						if(data_values.contains(seg->getValue())) {
 
-						if(!found) {
-							found = true;
-							box = p_chunk->GetExtent();
-						} else {
-							box = DataBbox(box, p_chunk->GetExtent());
-							counter++;
+							if(!found) {
+								found = true;
+								box = p_chunk->GetExtent();
+							} else {
+								box = DataBbox(box, p_chunk->GetExtent());
+								counter++;
+							}
 						}
 					}
 				}
 			}
+		} else {
+                	if(!found) {
+                		found = true;
+                		box = seg->getBounds();
+                	} else {
+                		box.merge(seg->getBounds());
+                		counter++;
+                	}
 		}
 
 		seg = iter.getNextSegment();

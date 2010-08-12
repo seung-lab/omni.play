@@ -104,6 +104,8 @@ public:
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();
 
+	boost::unordered_map< OmSegID, DataBbox> & GetDirectDataBounds() { return mBounds; }
+
 protected:
 	bool mIsOpen;
 	void SetOpen(bool);
@@ -148,6 +150,8 @@ protected:
  private:
 	//image data of chunk
 	OmDataWrapperPtr mData;
+
+        boost::unordered_map< OmSegID, DataBbox> mBounds;
 
 	friend class OmMipVolume;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );

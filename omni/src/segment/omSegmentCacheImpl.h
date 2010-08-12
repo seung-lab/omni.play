@@ -17,7 +17,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
-				  boost::unordered_map< OmSegID, unsigned int> * sizes );
+				  boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds );
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
@@ -50,6 +50,8 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void rerootSegmentList( OmSegIDsSet & set );
 	void setGlobalThreshold();
 	void resetGlobalThreshold();
+
+	inline boost::shared_ptr<OmSegmentLists> getSegmentLists();
 
 	friend class OmSegmentColorizer;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );

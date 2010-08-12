@@ -14,6 +14,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
+class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
 class OmSegmentIterator;
@@ -49,7 +50,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void ExportDataFilter(OmDataWrapperPtr);
 
 	//segment management
-	OmSegmentCache * GetSegmentCache(){ return mSegmentCache; }
+	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
+	boost::shared_ptr<OmSegmentLists> getSegmentLists(){ return mSegmentLists; }
 
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
@@ -73,7 +75,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 private:
 	void KillCacheThreads();
 
-	OmSegmentCache *const mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
+	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 
 	OmGroups mGroups;
 
