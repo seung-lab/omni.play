@@ -36,12 +36,8 @@ void OmBuildChannel::run()
 	OmTimer build_timer;
 	startTiming(type, build_timer);
 
-        if( 0 ) {
-
-	} else {
-		mChann->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
-		mChann->BuildVolumeData();
-	}
+	mChann->SetSourceFilenamesAndPaths( mFileNamesAndPaths );
+	mChann->BuildVolumeData();
 
 	stopTimingAndSave(type, build_timer);
 }

@@ -40,7 +40,7 @@ void OmMipThreadManager::SpawnThreads(int numTotalChunks)
 		OmMipThread* thread = new OmMipThread(mpMipVolume,i,mChunkType,
 						      ChunksPerThread(i,numTotalChunks));
 		mMipThreads.append(thread);
-		mMipThreadPool.start(thread);		
+		mMipThreadPool.start(thread);
 	}
 }
 
@@ -72,13 +72,13 @@ void OmMipThreadManager::DistributeThreadChunks()
 		//	threadNum++;
 		//	if (threadNum == mNumTotalThreads){threadNum = 0;}
 		//}
-		
-	} else {		
+
+	} else {
 		//Dimensions of mip volume in thread chunks
 		Vector3 < int > thread_coord_dims = mpMipVolume->MipLevelDimensionsInThreadChunks(mInitLevel);
 		for (int z = 0; z < thread_coord_dims.z; ++z){
 			for (int y = 0; y < thread_coord_dims.y; ++y){
-				for (int x = 0; x < thread_coord_dims.x; ++x){ 	
+				for (int x = 0; x < thread_coord_dims.x; ++x){
 					mMipThreads[threadNum]->EnqueueChunk(OmMipChunkCoord(mInitLevel, x, y, z));
 					//Loop through threads
 					threadNum++;
@@ -107,14 +107,14 @@ void OmMipThreadManager::DistributeMipChunks()
 		//	threadNum++;
 		//	if (threadNum == mNumTotalThreads){threadNum = 0;}
 		//}
-		
-	} else {		
+
+	} else {
 		//Dimensions of mip volume in thread chunks
 		for (int level = 0; level <= mpMipVolume->GetRootMipLevel(); ++level){
 			Vector3 < int > mip_coord_dims = mpMipVolume->MipLevelDimensionsInMipChunks(level);
 			for (int z = 0; z < mip_coord_dims.z; ++z){
 				for (int y = 0; y < mip_coord_dims.y; ++y){
-					for (int x = 0; x < mip_coord_dims.x; ++x){ 	
+					for (int x = 0; x < mip_coord_dims.x; ++x){
 						mMipThreads[threadNum]->EnqueueChunk(OmMipChunkCoord(level, x, y, z));
 						//Loop through threads
 						threadNum++;

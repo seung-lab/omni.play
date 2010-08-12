@@ -9,19 +9,22 @@
 
 class OmMipVolume;
 
-class OmMipThreadManager: public QThread
-{
+class OmMipThreadManager: public QThread {
  public:
-	OmMipThreadManager(OmMipVolume* pMipVolume, OmMipThread::ChunkType chunkType, int initLevel,  bool buildEdited);
+	OmMipThreadManager(OmMipVolume* pMipVolume,
+			   OmMipThread::ChunkType chunkType,
+			   int initLevel,
+			   bool buildEdited);
 	void run();
 	void SpawnThreads(int numTotalChunks);
 	void StopThreads();
+
  private:
 	void DistributeThreadChunks();
 	void DistributeMipChunks();
 	int ChunksPerThread(int threadNum, int numTotalChunks);
 
-	OmMipVolume* mpMipVolume;	
+	OmMipVolume* mpMipVolume;
 	OmMipThread::ChunkType mChunkType;
 
 	QThreadPool mMipThreadPool;

@@ -10,16 +10,16 @@
 #include "omMipChunk.h"
 
 class OmThreadChunkLevel : public OmMipChunk {
- public:
+public:
 	OmThreadChunkLevel(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	~OmThreadChunkLevel();
 
- protected:
+protected:
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
-	
- private:
+
+private:
 	//image data of chunk
-	vtkImageData *mpImageData;	
+	vtkImageData *mpImageData;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );

@@ -816,20 +816,11 @@ bool OmMipVolume::BuildSerialVolume()
  */
 bool OmMipVolume::BuildThreadedVolume()
 {
-
-	//debug("FIXME", "OmMipVolume::BuildThreadedVolume()"
-	//init progress bar, needs fixing
-	OmEventManager::
-	    PostEvent(new
-		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
-				      ThreadChunksInVolume()));
-
 	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
 
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
-       		//timer start
        		vol_timer.start();
 	}
 
@@ -840,10 +831,17 @@ bool OmMipVolume::BuildThreadedVolume()
  		if ( (initLevel+1) == min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()) ){
  			printf("building mip level %i...\n",initLevel+1);
  		} else {
- 			printf("building mip levels %i-%i...\n",initLevel+1,min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()));
+ 			printf("building mip levels %i-%i...\n",
+			       initLevel+1,
+			       min(GetRootMipLevel(),
+				   initLevel + GetMaxConsecutiveSubsamples()));
  		}
 
- 		OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::THREAD_CHUNK,initLevel,false);
+ 		OmMipThreadManager* mipThreadManager =
+			new OmMipThreadManager(this,
+					       OmMipThread::THREAD_CHUNK,
+					       initLevel,
+					       false);
  		mipThreadManager->SpawnThreads(ThreadChunksInMipLevel(initLevel));
  		mipThreadManager->run();
  		mipThreadManager->wait();
@@ -859,18 +857,13 @@ bool OmMipVolume::BuildThreadedVolume()
  	printf("done.\n");
 
 	if (isDebugCategoryEnabled("perftest")){
-
-		//timer end
 		vol_timer.stop();
 		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
-
 	}
 
 	mThreadChunkThreadedCache->closeDownThreads();
 	delete mThreadChunkThreadedCache;
 
-	//hide progress bar
-	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 	return true;
 }
 
@@ -958,7 +951,9 @@ void OmMipVolume::BuildEditedLeafChunks()
 /*
  *	Build one level of a thread chunk and return image data for use by next level
  */
-OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord, OmDataWrapperPtr p_source_data, bool initCall)
+OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord,
+						    OmDataWrapperPtr p_source_data,
+						    bool initCall)
 {
 	//read and return data if this is initial call
 	if ( initCall ){
