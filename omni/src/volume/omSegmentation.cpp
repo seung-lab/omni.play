@@ -98,6 +98,8 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	//build blank data
 	BuildVolumeData();
+
+	mSegmentCache->refreshTree();
 }
 
 OmSegmentation::~OmSegmentation()
