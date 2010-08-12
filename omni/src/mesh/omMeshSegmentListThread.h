@@ -5,13 +5,13 @@
 #include "volume/omMipChunkPtr.h"
 #include "volume/omMipChunkCoord.h"
 
-#include <QRunnable>
+#include <zi/threads>
 
 class OmSegment;
 class OmSegmentCache;
 
-class OmMeshSegmentListThread : public QRunnable {
- public:
+class OmMeshSegmentListThread : public zi::Runnable {
+public:
 	OmMeshSegmentListThread( OmMipChunkPtr p_chunk,
 				 OmSegment * rootSeg,
 				 const OmMipChunkCoord & chunkCoord,
@@ -20,7 +20,7 @@ class OmMeshSegmentListThread : public QRunnable {
 
 	void run();
 
- private:
+private:
 	OmMipChunkPtr mChunk;
 	OmSegment *const mRootSeg;
 	const OmMipChunkCoord mChunkCoord;
