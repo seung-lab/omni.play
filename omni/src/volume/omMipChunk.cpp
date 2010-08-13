@@ -497,13 +497,27 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 		unsigned char *p_scalar_data = static_cast < unsigned char *>(mData->getVTKPtr()->GetScalarPointer());
 
 		//for all voxels in the chunk
-		// todo: change if default volume chunk size gets changed
-		const int vSize = 128*128*128;
-		for (int i = 0; i < vSize; ++i) {
-			if ('\0' != p_scalar_data[i]) {
-				mDirectlyContainedValues.insert(p_scalar_data[i]);
-				if( computeSizes ){
-					++((*sizes)[p_scalar_data[i]]);
+		for (int z = extent[0]; z <= extent[1]; z++) {
+			for (int y = extent[2]; y <= extent[3]; y++) {
+				for (int x = extent[4]; x <= extent[5]; x++) {
+
+					//if non-null insert in set
+					if ('\0' != *p_scalar_data) {
+						OmSegID val = (OmSegID)(*p_scalar_data);
+						mDirectlyContainedValues.insert(val);
+						if( computeSizes ){
+							++((*sizes)[val]);
+							DataBbox box(GetExtent().getMin() + Vector3<int>(x,y,z),
+								     GetExtent().getMin() + Vector3<int>(x,y,z));
+							if (mBounds[val].isEmpty()) {
+								mBounds[val] = box;
+							} else {
+                                                                mBounds[val].merge(box);
+							}
+						}
+					}
+					//adv to next scalar
+					++p_scalar_data;
 				}
 			}
 		}
@@ -724,7 +738,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
         QMutexLocker locker(&mOpenLock);
 
 	if(!mIsRawChunkOpen){
-		unsigned char * data = mpMipVolume->getChunkPtr(mCoordinate);
+		unsigned char * data = mpMipVolume->ucharData.getChunkPtr(mCoordinate);
 
 		mRawChunk = OmDataWrapper<unsigned char>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
 		mIsRawChunkOpen=true;
@@ -738,7 +752,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
         QMutexLocker locker(&mOpenLock);
 
 	if(!mIsRawChunkOpen){
-		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
+		quint32* data = (quint32*)mpMipVolume->uint32Data.getChunkPtr(mCoordinate);
 		mRawChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
 		mIsRawChunkOpen=true;
 	}
@@ -758,6 +772,8 @@ void OmMipChunk::dealWithCrazyNewStuff()
 
 void OmMipChunk::GetBounds(float & maxout, float & minout)
 {
+	return;
+
 	Open();
 	float * data = static_cast < float * >(mData->getVTKPtr()->GetScalarPointer());
 	OmImage<float, 3> chunk(OmExtents[128][128][128], data);

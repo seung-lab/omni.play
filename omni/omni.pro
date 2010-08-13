@@ -56,6 +56,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/archive/omDataArchiveVmml.h \
            src/datalayer/fs/omActionLoggerFS.h \
+           src/datalayer/fs/omMemMappedVolume.hpp \
            src/datalayer/hdf5/omHdf5.h \
            src/datalayer/hdf5/omHdf5LowLevel.h \
            src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
@@ -280,6 +281,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
+           src/datalayer/fs/omMemMappedVolume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
            src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.cpp \

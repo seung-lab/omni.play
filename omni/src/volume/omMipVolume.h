@@ -12,6 +12,7 @@
 #include "common/omCommon.h"
 #include "system/cache/omMipVolumeCache.h"
 #include "system/cache/omThreadChunkThreadedCache.h"
+#include "datalayer/fs/omMemMappedVolume.hpp"
 
 #include <QFileInfo>
 #include <QImage>
@@ -118,19 +119,8 @@ public:
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
 	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
 
-
-
-	//io
 	void copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy);
-
-
 	bool areImportFilesImages();
-
-	std::vector<QFile*> mFileVec;
-	std::vector<uchar*> mFileMapPtr;
-	void AllocMemMapFiles();
-	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
-
 
 	Vector3i get_dims(const OmDataPath dataset );
 	virtual bool GetBounds(float & , float &) { assert(0 && "the data for this mip volume has no bounds."); }
@@ -148,8 +138,13 @@ public:
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
 	mutable QMutex mChunkCoords;
-	//mip properties
+
 	QFileInfoList mSourceFilenamesAndPaths;
+
+	OmMemMappedVolume<unsigned char, OmMipVolume> ucharData;
+	OmMemMappedVolume<uint32_t, OmMipVolume> uint32Data;
+	OmMemMappedVolume<float, OmMipVolume> floatData;
+	void copyAllMipDataIntoMemMap();
 
 protected:
 	void BuildBlankVolume(const Vector3i & dims);

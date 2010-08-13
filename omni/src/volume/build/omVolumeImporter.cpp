@@ -128,7 +128,11 @@ bool OmVolumeImporter<T>::importImageStack()
 	figureOutNumberOfBytesImg();
 
 	// alloc must happen after setBytesPerSample....
-	vol->AllocMemMapFiles();
+	if( 1 == vol->GetBytesPerSample() ){
+		vol->ucharData.AllocMemMapFiles(vol);
+	} else {
+		assert(0 && "don't know if float or uint32_t");
+	}
 
 	mSliceNum = 0;
 
