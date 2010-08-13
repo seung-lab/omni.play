@@ -313,12 +313,6 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 	// refresh values even if not MIP 0
 	boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunk->RefreshDirectDataValues( isMIPzero );
 
-	const OmSegIDsSet & vals = p_chunk->GetDirectDataValues();
-	FOR_EACH(itr, vals){
-		printf("%i ", *itr);
-	}
-	printf("\n");
-
 	if(isMIPzero){
 		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
 		boost::unordered_map< OmSegID, DataBbox> & bounds = p_chunk->GetDirectDataBounds();

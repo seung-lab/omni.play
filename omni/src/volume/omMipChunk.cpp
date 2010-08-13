@@ -37,7 +37,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	, mpMipVolume(pMipVolume)
 {
 
-	//debug("genone","OmMipChunk::OmMipChunk()");   
+	//debug("genone","OmMipChunk::OmMipChunk()");
 
 	//init chunk properties
 	InitChunk(rMipCoord);
@@ -99,7 +99,7 @@ void
 	mClippedNormExtent.intersect(AxisAlignedBoundingBox < float >::UNITBOX);
 
 	//set if mipvolume uses metadata
-	setMetaDataClean();	
+	setMetaDataClean();
 }
 
 /////////////////////////////////
@@ -132,7 +132,7 @@ void OmMipChunk::OpenForWrite()
 
 	OmDataPath mip_level_vol_path;
 	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-	
+
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
 	vtkImageData *data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent(), GetBytesPerSample());
 
@@ -219,7 +219,7 @@ bool OmMipChunk::IsVolumeDataDirty()
 bool OmMipChunk::IsMetaDataDirty()
 {
 	//TODO: why isn't this OR (ie. ||)?
-	return mpMipVolume->GetChunksStoreMetaData() 
+	return mpMipVolume->GetChunksStoreMetaData()
 		&& mChunkMetaDataDirty;
 }
 
@@ -483,7 +483,7 @@ void OmMipChunk::loadMetadataIfPresent()
 }
 
 /*
- *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store 
+ *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store
  *	all values in the DataSegmentId set of the chunk.
  */
 boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
@@ -519,13 +519,12 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 						mDirectlyContainedValues.insert(*p_scalar_data);
 						if( computeSizes ){
 							++((*sizes)[*p_scalar_data]);
+							DataBbox box(GetExtent().getMin() + Vector3<int>(x,y,z),
+								     GetExtent().getMin() + Vector3<int>(x,y,z));
 							if (mBounds[*p_scalar_data].isEmpty()) {
-								mBounds[*p_scalar_data] = DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
-												   GetExtent().getMin() + Vector3<int>(x,y,z));
+								mBounds[*p_scalar_data] = box;
 							} else {
-                                                                mBounds[*p_scalar_data].merge(DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
-												       GetExtent().getMin() + Vector3<int>(x,y,z)));
-                                                                                                   
+                                                                mBounds[*p_scalar_data].merge(box);
 							}
 						}
 					}
@@ -728,7 +727,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				//form mip coord
 				OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
 							  mCoordinate.getCoordinateX() + x,
-							  mCoordinate.getCoordinateY() + y, 
+							  mCoordinate.getCoordinateY() + y,
 							  mCoordinate.getCoordinateZ() + z);
 
 				//skip invalid mip coord
@@ -750,7 +749,7 @@ vtkImageData *OmMipChunk::GetMeshImageData()
 				Vector3 < int >offset = Vector3 < int >(x * chunk_dim, y * chunk_dim, z * chunk_dim);
 				QMutexLocker locker(&mOpenLock);
 				OmImageDataIo::copyIntersectedImageDataFromOffset(p_mesh_data, p_chunk->mpImageData, offset);
-				
+
 				//p_chunk = QExplicitlySharedDataPointer  < OmMipChunk > ();
 				//mpMipVolume->Remove(mip_coord);
 			}
@@ -812,14 +811,14 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHAR()
 		OmDataPath path;
 		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
-		mRawChunk = 
+		mRawChunk =
 			OmProjectData::GetProjectDataReader()->
-			dataset_read_raw_chunk_data(path, 
-						    GetExtent(), 
+			dataset_read_raw_chunk_data(path,
+						    GetExtent(),
 						    1);
 		mIsRawChunkOpen=true;
 	}
-	
+
 	return mRawChunk;
 }
 
@@ -830,11 +829,11 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
 
 		OmDataPath path;
 		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
-		
-		mRawChunk = 
+
+		mRawChunk =
 			OmProjectData::GetProjectDataReader()->
-			dataset_read_raw_chunk_data(path, 
-						    GetExtent(), 
+			dataset_read_raw_chunk_data(path,
+						    GetExtent(),
 						    4);
 		mIsRawChunkOpen=true;
 	}
@@ -849,8 +848,8 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
-	
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
 								      1,
 								      data);
@@ -863,8 +862,8 @@ void OmMipChunk::RawWriteChunkData(quint32* data)
 	//get path to mip level volume
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
-	
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path, 
+
+	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
 								      4,
 								      data);
@@ -890,7 +889,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
 
 	if(!mIsRawChunkOpen){
 		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
-		
+
 		mRawChunk = OmDataWrapperPtr(new OmDataWrapperMemmap(data));
 		mIsRawChunkOpen=true;
 	}
