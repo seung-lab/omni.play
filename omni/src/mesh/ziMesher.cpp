@@ -70,7 +70,7 @@ int ziMesher::getQueueSize() {
   //TODO: retrieve from omLocalPreferences? (purcaro)
   //Update by aleks: this actually shouldn't be too big, since
   // each thread eats a lot of memory (pre loads the data)
-  int idealNum = zi::System::GetTotalGB() / 2;
+  int idealNum = zi::System::GetTotalGB() / 3;
   if( idealNum < 2){
     idealNum = 2;
   }
