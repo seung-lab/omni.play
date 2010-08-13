@@ -478,13 +478,12 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 						mDirectlyContainedValues.insert(*p_scalar_data);
 						if( computeSizes ){
 							++((*sizes)[*p_scalar_data]);
+							DataBbox box(GetExtent().getMin() + Vector3<int>(x,y,z),
+								     GetExtent().getMin() + Vector3<int>(x,y,z));
 							if (mBounds[*p_scalar_data].isEmpty()) {
-								mBounds[*p_scalar_data] = DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
-												   GetExtent().getMin() + Vector3<int>(x,y,z));
+								mBounds[*p_scalar_data] = box;
 							} else {
-                                                                mBounds[*p_scalar_data].merge(DataBbox(GetExtent().getMin() + Vector3<int>(x,y,z),
-												       GetExtent().getMin() + Vector3<int>(x,y,z)));
-
+                                                                mBounds[*p_scalar_data].merge(box);
 							}
 						}
 					}
@@ -615,7 +614,6 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
   }
 
   return retImage;
-
 }
 
 bool OmMipChunk::IsOpen()
@@ -687,8 +685,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32()
 		OmDataPath path;
 		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
 
-		mRawChunk =
-			OmProjectData::GetProjectDataReader()->
+		mRawChunk = OmProjectData::GetProjectDataReader()->
 			dataset_read_raw_chunk_data(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
@@ -742,7 +739,6 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
 
 	if(!mIsRawChunkOpen){
 		quint32* data = (quint32*)mpMipVolume->getChunkPtr(mCoordinate);
-
 		mRawChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
 		mIsRawChunkOpen=true;
 	}
@@ -760,7 +756,8 @@ void OmMipChunk::dealWithCrazyNewStuff()
 	}
 }
 
-void OmMipChunk::GetBounds(float & maxout, float & minout) {
+void OmMipChunk::GetBounds(float & maxout, float & minout)
+{
 	Open();
 	float * data = static_cast < float * >(mData->getVTKPtr()->GetScalarPointer());
 	OmImage<float, 3> chunk(OmExtents[128][128][128], data);

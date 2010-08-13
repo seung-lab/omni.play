@@ -158,12 +158,18 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 		rootSeg = (*iter);
 		rootSegID = rootSeg->getValue();
 
-		if(!OmMeshSegmentList::isSegmentListReadyInCache(p_chunk, rootSeg, chunkCoord,
-								 mSegmentCache, mSegmentationID )){
+		std::pair<bool, OmSegPtrList> segmentsToPossiblyDraw =
+		  OmMeshSegmentList::getFromCacheIfReady(p_chunk,
+							 rootSeg,
+							 chunkCoord,
+							 mSegmentCache,
+							 mSegmentationID);
+
+		if( false == segmentsToPossiblyDraw.first ){
 			continue;
 		}
 
-		const OmSegPtrList & segmentsToDraw = OmMeshSegmentList::getFromCache(chunkCoord, rootSegID, mSegmentationID);
+		const OmSegPtrList & segmentsToDraw = segmentsToPossiblyDraw.second;
 
 		if(segmentsToDraw.empty()){
 			continue;
