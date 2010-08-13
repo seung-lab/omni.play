@@ -655,33 +655,10 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 		resetWindow();
 		break;
 	case Qt::Key_Minus:
-		{
-			Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
-
-			if (!mLevelLock && (current_zoom.y == 6) && (current_zoom.x < mRootLevel)) {
-				Vector2i new_zoom = Vector2 < int >(current_zoom.x + 1, 10);
-
-				PanAndZoom(new_zoom);
-			}
-
-			else if (current_zoom.y > 1) {
-				Vector2i new_zoom = Vector2 < int >(current_zoom.x, current_zoom.y - 1);
-				PanAndZoom(new_zoom);
-			}
-		}
+		MouseWheelZoom(-1);
 		break;
 	case Qt::Key_Equal:
-		{
-			Vector2 < int >current_zoom = mViewGroupState->GetZoomLevel();
-
-			if (!mLevelLock && (current_zoom.y == 10) && (current_zoom.x > 0)) {
-				Vector2i new_zoom = Vector2 < int >(current_zoom.x - 1, 6);
-
-			} else	{
-				Vector2i new_zoom = Vector2 < int >(current_zoom.x, current_zoom.y + 1);
-				PanAndZoom(new_zoom);
-			}
-		}
+		MouseWheelZoom(1);
 		break;
 	case Qt::Key_Right:
 		{
