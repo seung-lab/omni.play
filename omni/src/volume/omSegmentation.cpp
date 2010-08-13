@@ -34,10 +34,7 @@
 #include <QFile>
 #include <QTextStream>
 
-
-/////////////////////////////////
-///////         OmSegmentation
-
+// used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
 	: mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
@@ -46,6 +43,7 @@ OmSegmentation::OmSegmentation()
 	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 }
 
+// used by OmGenericManager
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
 	, mSegmentCache(new OmSegmentCache(this))
@@ -68,6 +66,8 @@ OmSegmentation::OmSegmentation(OmId id)
 
 	//build blank data
 	BuildVolumeData();
+
+	mSegmentCache->refreshTree();
 }
 
 OmSegmentation::~OmSegmentation()

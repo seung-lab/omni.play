@@ -32,7 +32,7 @@ template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::UpdateSize(const qint64 delta)
 {
 	mCurSize.add(delta);
-	assert( mCurSize.get() >= 0 );
+	//	assert( mCurSize.get() >= 0 );
 }
 
 /**

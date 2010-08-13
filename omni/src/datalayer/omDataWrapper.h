@@ -171,6 +171,8 @@ private:
         	//alloc dest image data
         	Vector3 < int >dest_dims = src_dims / 2;
 
+		std::cout << "Dims: " << dest_dims << "\n";
+
         	vtkImageData *p_dest_data = vtkImageData::New();
         	p_dest_data->SetDimensions(dest_dims.array);
         	p_dest_data->SetScalarType(scalar_type);
