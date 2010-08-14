@@ -265,7 +265,8 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
-           src/zi/zunit/zunit.h
+           src/zi/zunit/zunit.h \
+           src/zi/watershed/RawQuickieWS.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -472,7 +473,8 @@ SOURCES += lib/strnatcmp.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
-           src/zi/mesh/ext/TriStrip/TriStripper.cpp
+           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
+           src/zi/watershed/RawQuickieWS.cpp
 
 RESOURCES += src/gui/resources.qrc
 
