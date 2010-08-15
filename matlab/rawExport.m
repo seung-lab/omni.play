@@ -1,4 +1,4 @@
-function rawExport(pathToData, datasetToLoad)
+function rawExport(pathToData, datasetToLoad, outputFolder)
 
 chunkDim = 128;
 
@@ -18,13 +18,17 @@ s = size(data);
 fprintf('padded affinity data: %d x %d x %d\n', s(1), s(2), s(3));
 
 fprintf('writing affinity data\n');
-fid = fopen(sprintf('afffinity.%s.dat', datasetToLoad),'w');
+fname = fullfile(outputFolder, sprintf('afffinity.%s.dat', datasetToLoad));
+fid = fopen(fname,'w');
 fwrite(fid, data, 'single');
 fclose(fid);
 
 fprintf('writing blank watershed data\n');
-fid = fopen(sprintf('watershed.%s.dat', datasetToLoad),'w');
+fname = fullfile(outputFolder, sprintf('watershed.%s.dat', datasetToLoad));
+fid = fopen(fname,'w');
 fwrite(fid, zeros(s(1:3), 'uint32'), 'uint32');
 fclose(fid);
+
+fprintf('done!\n');
 
 end
