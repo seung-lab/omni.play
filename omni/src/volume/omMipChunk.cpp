@@ -447,22 +447,19 @@ void OmMipChunk::loadMetadataIfPresent()
  */
 boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
 {
-	//uses mData->getVTKPtr() so ensure chunk is open
-	Open();
-
-	//clear previous segments
-	loadMetadataIfPresent();
 	mDirectlyContainedValues.clear();
 
-	if(SEGMENT_DATA_BYTES_PER_SAMPLE == mData->getVTKPtr()->GetScalarSize()){
-		OmSegID *p_scalar_data = static_cast<OmSegID*>(mData->getVTKPtr()->GetScalarPointer());
-		return doRefreshDirectDataValues(computeSizes, p_scalar_data);
-	} else if (1 == mData->getVTKPtr()->GetScalarSize()) {
-		uchar* p_scalar_data = static_cast<uchar*>(mData->getVTKPtr()->GetScalarPointer());
-		return doRefreshDirectDataValues(computeSizes, p_scalar_data);
+	if(4 == GetBytesPerSample()){
+		return doRefreshDirectDataValues(computeSizes,
+						 RawReadChunkDataUINT32()->getPtr<uint32_t>());
+	} else if (1 == GetBytesPerSample()){
+		return doRefreshDirectDataValues(computeSizes,
+						 RawReadChunkDataUCHAR()->getPtr<unsigned char>());
 	} else {
 		assert(0 && "unsupported number of bytes per sample");
 	}
+
+	containedValuesDataLoaded = true;
 }
 
 template <typename C>
@@ -474,15 +471,15 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataVa
 		sizes = new boost::unordered_map< OmSegID, unsigned int>();
 	}
 
-	int extent[6];
-	mData->getVTKPtr()->GetExtent(extent);
-
 	//for all voxels in the chunk
-	for(int z = extent[0]; z <= extent[1]; z++) {
-		for(int y = extent[2]; y <= extent[3]; y++) {
-			for(int x = extent[4]; x <= extent[5]; x++) {
+	for(int z = 0; z < 128; z++) {
+		for(int y = 0; y < 128; y++) {
+			for(int x = 0; x < 128; x++) {
 
-				const C val = *p_scalar_data;
+				const OmSegID val = static_cast<OmSegID>(*p_scalar_data);
+
+				//adv to next scalar
+				++p_scalar_data;
 
 				if( 0 == val) {
 					continue;
@@ -505,9 +502,6 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataVa
 				} else {
 					mBounds[val].merge(box);
 				}
-
-				//adv to next scalar
-				++p_scalar_data;
 			}
 		}
 	}
@@ -723,6 +717,9 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
 								      OmDataWrapperRaw(data));
+	// force data to be reread from HDF5
+	mIsRawChunkOpen=false;
+	mRawChunk=OmDataWrapperInvalid();
 }
 
 void OmMipChunk::RawWriteChunkData(quint32* data)
@@ -736,6 +733,10 @@ void OmMipChunk::RawWriteChunkData(quint32* data)
 	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
 								      GetExtent(),
 								      OmDataWrapperUint(data));
+
+	// force data to be reread from HDF5
+	mIsRawChunkOpen=false;
+	mRawChunk=OmDataWrapperInvalid();
 }
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()

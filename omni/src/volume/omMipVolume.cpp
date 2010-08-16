@@ -1294,12 +1294,18 @@ void OmMipVolume::copyDataIn()
 				GetChunk(chunk, coord);
 
 				if(4 == GetBytesPerSample()){
+					std::cout << "copying to mem mapped file data in chunk: "
+						  << coord << "; bytes = " << GetBytesPerSample() << "\n";
 					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
 					quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
+
 					chunk->RawWriteChunkData(dataMapped);
 				} else {
+					std::cout << "copying to mem mapped file data in chunk: "
+						  << coord << "; bytes = " << GetBytesPerSample() << "\n";
 					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
 					unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
+
 					chunk->RawWriteChunkData(dataMapped);
 				}
 
@@ -1361,9 +1367,10 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 					OmMipChunkPtr chunk;
 					GetChunk(chunk, coord);
 
-					std::cout << "copying to mem mapped file data in chunk: " << coord << "\n";
-
 					if(4 == GetBytesPerSample()){
+						std::cout << "copying to mem mapped file data in chunk: "
+							  << coord << "; bytes = " << GetBytesPerSample() << "\n";
+
 						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
 						quint32* data = dataPtr->getPtr<uint32_t>();
 
@@ -1372,6 +1379,9 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 
 						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
 					} else {
+						std::cout << "copying to mem mapped file data in chunk: "
+							  << coord << "; bytes = " << GetBytesPerSample() << "\n";
+
 						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHAR();
 						unsigned char* data = dataPtr->getPtr<unsigned char>();
 

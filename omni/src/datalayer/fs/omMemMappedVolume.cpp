@@ -79,7 +79,8 @@ T* OmMemMappedVolume<T,VOL>::getChunkPtr( OmMipChunkCoord & coord)
 		openAndmMemMap(level);
 	}
 
-	std::cout << "getting ptr for coord: " << coord << "\n";
+	std::cout << "getting ptr for coord: " << coord
+		  << "; bytes = " << GetBytesPerSample() <<"\n";
 
 	Vector3 < int >data_dims = vol_->MipLevelDataDimensions(level);
 
