@@ -30,6 +30,7 @@ static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
 	: OmCacheableBase(pMipVolume->mDataCache)
 	, mIsRawChunkOpen(false)
+	, mIsRawMappedChunkOpen(false)
 	, mpMipVolume(pMipVolume)
 {
 	//init chunk properties
@@ -536,13 +537,17 @@ Vector2i OmMipChunk::GetSliceDims()
 
 void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 {
-	Open();
+	//	Open();
 
 	//	printf("type is %s...\n", mData->getTypeAsString().c_str());
 
 	if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
-	  OmImage<float, 3> chunk(OmExtents[128][128][128],
-				  RawReadChunkDataUINT32()->getPtr<float>());
+	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
+	  float* dataMapped = dataPtrMapped->getPtr<float>();
+
+	  assert(dataMapped);
+
+	  OmImage<float, 3> chunk(OmExtents[128][128][128], dataMapped);
 	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
 	  float mn = 0.0;
 	  float mx = 1.0;
@@ -553,15 +558,26 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 
 	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
 		  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-	  OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
-				     RawReadChunkDataUINT32()->getPtr<uint32_t>());
+
+	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
+	  quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
+
+	  assert(dataMapped);
+
+	  OmImage<uint32_t, 3> chunk(OmExtents[128][128][128], dataMapped);
+
 	  OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
 	  return slice.getMallocCopyOfData();
 
 	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
 		  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
-	  OmImage<unsigned char, 3> chunk(OmExtents[128][128][128],
-					  RawReadChunkDataUCHAR()->getPtr<unsigned char>());
+
+	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUCHARmapped();
+	  unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
+
+	  assert(dataMapped);
+
+	  OmImage<unsigned char, 3> chunk(OmExtents[128][128][128], dataMapped);
 	  OmImage<unsigned char, 2> slice = chunk.getSlice(plane, offset);
 	  return slice.getMallocCopyOfData();
 	}
@@ -576,7 +592,7 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
  */
 OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 {
-  Open();
+	//  Open();
 
   OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
@@ -737,27 +753,29 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
 {
         QMutexLocker locker(&mOpenLock);
 
-	if(!mIsRawChunkOpen){
-		unsigned char * data = mpMipVolume->ucharData.getChunkPtr(mCoordinate);
+	if(!mIsRawMappedChunkOpen){
+		unsigned char * data =
+			mpMipVolume->ucharData->getChunkPtr(mCoordinate);
 
-		mRawChunk = OmDataWrapper<unsigned char>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
-		mIsRawChunkOpen=true;
+		mRawMappedChunk = OmDataWrapper<unsigned char>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
+		mIsRawMappedChunkOpen=true;
 	}
 
-	return mRawChunk;
+	return mRawMappedChunk;
 }
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
 {
         QMutexLocker locker(&mOpenLock);
 
-	if(!mIsRawChunkOpen){
-		quint32* data = (quint32*)mpMipVolume->uint32Data.getChunkPtr(mCoordinate);
-		mRawChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
-		mIsRawChunkOpen=true;
+	if(!mIsRawMappedChunkOpen){
+		quint32* data =
+			(quint32*)mpMipVolume->uint32Data->getChunkPtr(mCoordinate);
+		mRawMappedChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
+		mIsRawMappedChunkOpen=true;
 	}
 
-	return mRawChunk;
+	return mRawMappedChunk;
 }
 
 void OmMipChunk::dealWithCrazyNewStuff()
@@ -768,11 +786,16 @@ void OmMipChunk::dealWithCrazyNewStuff()
 		mIsRawChunkOpen=false;
 		mRawChunk=OmDataWrapperInvalid();
 	}
+	if(mIsRawMappedChunkOpen){
+		mIsRawMappedChunkOpen=false;
+		mRawMappedChunk=OmDataWrapperInvalid();
+	}
+
 }
 
 void OmMipChunk::GetBounds(float & maxout, float & minout)
 {
-	return;
+	return; //FIXME!
 
 	Open();
 	float * data = static_cast < float * >(mData->getVTKPtr()->GetScalarPointer());

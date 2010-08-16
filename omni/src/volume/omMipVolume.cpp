@@ -43,7 +43,10 @@ static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 ///////
 
 OmMipVolume::OmMipVolume()
-	: mDataCache(new OmMipVolumeCache(this))
+	: ucharData(new OmMemMappedVolume<unsigned char, OmMipVolume>(this))
+	, uint32Data(new OmMemMappedVolume<uint32_t, OmMipVolume>(this))
+	, floatData(new OmMemMappedVolume<float, OmMipVolume>(this))
+	, mDataCache(new OmMipVolumeCache(this))
 {
 	sourceFilesWereSet = false;
 
@@ -730,6 +733,8 @@ void OmMipVolume::Build(OmDataPath & dataset)
 		return;
 	}
 
+	copyAllMipDataIntoMemMap();
+
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
 }
@@ -1333,8 +1338,49 @@ bool OmMipVolume::areImportFilesImages()
 
 void OmMipVolume::copyAllMipDataIntoMemMap()
 {
-	/*
-	AllocMemMapFiles
-	for (int level = 0; level <= GetRootMipLevel(); level++) {
-	*/
+	if(4 == GetBytesPerSample()){
+		uint32Data->AllocMemMapFiles();
+	} else {
+		ucharData->AllocMemMapFiles();
+	}
+
+	Flush();
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+		Vector3i mip_coord_dims =
+			MipLevelDimensionsInMipChunks(level);
+
+		for (int z = 0; z < mip_coord_dims.z; ++z){
+			for (int y = 0; y < mip_coord_dims.y; ++y){
+				for (int x = 0; x < mip_coord_dims.x; ++x){
+
+					OmMipChunkCoord coord(level, x, y, z);
+
+					OmMipChunkPtr chunk;
+					GetChunk(chunk, coord);
+
+					std::cout << "copying to mem mapped file data in chunk: " << coord << "\n";
+
+					if(4 == GetBytesPerSample()){
+						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
+						quint32* data = dataPtr->getPtr<uint32_t>();
+
+						OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
+						quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
+
+						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
+					} else {
+						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHAR();
+						unsigned char* data = dataPtr->getPtr<unsigned char>();
+
+						OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
+						unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
+
+						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
+					}
+				}
+			}
+		}
+	}
 }

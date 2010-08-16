@@ -129,7 +129,7 @@ bool OmVolumeImporter<T>::importImageStack()
 
 	// alloc must happen after setBytesPerSample....
 	if( 1 == vol->GetBytesPerSample() ){
-		vol->ucharData.AllocMemMapFiles(vol);
+		vol->ucharData->AllocMemMapFiles();
 	} else {
 		assert(0 && "don't know if float or uint32_t");
 	}

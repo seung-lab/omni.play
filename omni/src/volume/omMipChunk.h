@@ -54,6 +54,10 @@ public:
 	void dealWithCrazyNewStuff();
 	OmDataWrapperPtr RawReadChunkDataUINT32mapped();
 
+	bool mIsRawMappedChunkOpen;
+	OmDataWrapperPtr mRawMappedChunk;
+
+
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);

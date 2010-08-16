@@ -141,9 +141,9 @@ public:
 
 	QFileInfoList mSourceFilenamesAndPaths;
 
-	OmMemMappedVolume<unsigned char, OmMipVolume> ucharData;
-	OmMemMappedVolume<uint32_t, OmMipVolume> uint32Data;
-	OmMemMappedVolume<float, OmMipVolume> floatData;
+	boost::shared_ptr<OmMemMappedVolume<unsigned char, OmMipVolume> > ucharData;
+	boost::shared_ptr<OmMemMappedVolume<uint32_t, OmMipVolume> > uint32Data;
+	boost::shared_ptr<OmMemMappedVolume<float, OmMipVolume> > floatData;
 	void copyAllMipDataIntoMemMap();
 
 protected:
