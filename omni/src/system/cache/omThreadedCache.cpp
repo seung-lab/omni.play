@@ -111,3 +111,9 @@ void OmThreadedCache<KEY,PTR>::Flush()
 {
 	mCache.flush();
 }
+
+template < typename KEY, typename PTR  >
+void OmThreadedCache<KEY,PTR>::Clear()
+{
+	mCache.clear();
+}

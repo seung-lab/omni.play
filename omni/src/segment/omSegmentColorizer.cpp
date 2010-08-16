@@ -53,13 +53,12 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	int offset = 0;
 	OmColor newcolor = blackColor;
 	OmSegID lastVal = 0;
-	OmSegID val;
 
 	// looping through each value of imageData, which is
 	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
 	for (int i = 0; i < size; ++i ) {
 
-		val = (OmSegID) imageData[i];
+		const OmSegID val = (OmSegID) imageData[i];
 
 		if ( val != lastVal) {
 			if( 0 == val ){

@@ -464,7 +464,7 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 
 template <typename C>
 boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataValues( const bool computeSizes,
-										      C* p_scalar_data)
+										      C* data)
 {
 	boost::unordered_map< OmSegID, unsigned int> * sizes = NULL;
 	if( computeSizes ){
@@ -476,10 +476,9 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataVa
 		for(int y = 0; y < 128; y++) {
 			for(int x = 0; x < 128; x++) {
 
-				const OmSegID val = static_cast<OmSegID>(*p_scalar_data);
+				const OmSegID val = static_cast<OmSegID>(*data);
 
-				//adv to next scalar
-				++p_scalar_data;
+				++data; //adv to next scalar
 
 				if( 0 == val) {
 					continue;
@@ -714,12 +713,10 @@ void OmMipChunk::RawWriteChunkData(unsigned char * data)
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
-								      GetExtent(),
-								      OmDataWrapperRaw(data));
-	// force data to be reread from HDF5
-	mIsRawChunkOpen=false;
-	mRawChunk=OmDataWrapperInvalid();
+	mRawChunk = OmDataWrapperRaw(data);
+
+	OmProjectData::GetDataWriter()->
+		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
 }
 
 void OmMipChunk::RawWriteChunkData(quint32* data)
@@ -730,13 +727,10 @@ void OmMipChunk::RawWriteChunkData(quint32* data)
 	OmDataPath path;
 	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
 
-	OmProjectData::GetDataWriter()->dataset_write_raw_chunk_data( path,
-								      GetExtent(),
-								      OmDataWrapperUint(data));
+	mRawChunk = OmDataWrapperUint(data);
 
-	// force data to be reread from HDF5
-	mIsRawChunkOpen=false;
-	mRawChunk=OmDataWrapperInvalid();
+	OmProjectData::GetDataWriter()->
+		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
 }
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
@@ -780,7 +774,6 @@ void OmMipChunk::dealWithCrazyNewStuff()
 		mIsRawMappedChunkOpen=false;
 		mRawMappedChunk=OmDataWrapperInvalid();
 	}
-
 }
 
 void OmMipChunk::GetBounds(float & maxout, float & minout)

@@ -26,6 +26,7 @@ class OmThreadedCache : public OmCacheBase {
 	void Remove(OmCacheableBase *);
 	void RemoveOldest();
 	void Flush();
+	void Clear();
 
 	void UpdateSize(const qint64 delta);
 

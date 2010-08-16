@@ -16,7 +16,6 @@
 
 #include <QFileInfo>
 #include <QImage>
-#include <QMutex>
 
 class OmMipChunkCoord;
 class OmDataPath;
@@ -106,7 +105,6 @@ public:
 	//build methods
 	void Build(OmDataPath & dataset);
 	bool BuildVolume();
-	bool BuildSerialVolume();
 	virtual bool BuildThreadedVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &, bool remesh=false);
 	void BuildChunkAndParents(const OmMipChunkCoord &);
@@ -136,8 +134,6 @@ public:
 
 	//Thread Chunk Cache
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
-
-	mutable QMutex mChunkCoords;
 
 	QFileInfoList mSourceFilenamesAndPaths;
 

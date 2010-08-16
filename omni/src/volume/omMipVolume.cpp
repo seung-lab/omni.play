@@ -735,6 +735,8 @@ void OmMipVolume::Build(OmDataPath & dataset)
 
 	copyAllMipDataIntoMemMap();
 
+	mDataCache->Clear();
+
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
 }
@@ -746,69 +748,6 @@ void OmMipVolume::Build(OmDataPath & dataset)
 bool OmMipVolume::BuildVolume()
 {
 	return BuildThreadedVolume();
-}
-
-/*
- *	Old way of building volume on a single thread, still used by OmSegmentation.
- */
-bool OmMipVolume::BuildSerialVolume()
-{
-
-	//debug("FIXME", "OmMipVolume::BuildVolume()"
-	//init progress bar
-	int prog_count = 0;
-	OmEventManager::
-	    PostEvent(new
-		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
-				      MipChunksInVolume()));
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer start
-		vol_timer.start();
-	}
-
-	//for each level
-	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-		printf("\tbuilding mip level %d...", level );
-		fflush(stdout);
-
-		//dim of miplevel in mipchunks
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		//for all coords
-		for (int z = 0; z < mip_coord_dims.z; ++z)
-			for (int y = 0; y < mip_coord_dims.y; ++y)
-				for (int x = 0; x < mip_coord_dims.x; ++x) {
-
-					//build chunk
-					BuildChunk(OmMipChunkCoord(level, x, y, z));
-
-					//check for cancel
-					if (OmProgressEvent::GetWasCanceled())
-						return false;
-
-					//update progress
-					OmEventManager::
-					    PostEvent(new
-						      OmProgressEvent(OmProgressEvent::PROGRESS_VALUE, ++prog_count));
-
-				}
-
-		//flush cache so that all chunks of this level are flushed to disk
-		Flush();
-		printf("done\n");
-	}
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer end
-		vol_timer.stop();
-		printf("OmMipVolume:BuildSerialVolume() done : %.6f secs\n",vol_timer.s_elapsed());
-	}
-
-	//hide progress bar
-	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
-	return true;
 }
 
 /*
@@ -873,9 +812,6 @@ bool OmMipVolume::BuildThreadedVolume()
  */
 void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 {
-
-	//debug("genone","OmMipVolume::BuildChunk()\n");
-
 	//leaf chunks are skipped since no children to build from
 	if (rMipCoord.IsLeaf())
 		return;
@@ -1294,15 +1230,11 @@ void OmMipVolume::copyDataIn()
 				GetChunk(chunk, coord);
 
 				if(4 == GetBytesPerSample()){
-					std::cout << "copying to mem mapped file data in chunk: "
-						  << coord << "; bytes = " << GetBytesPerSample() << "\n";
 					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
 					quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
 
 					chunk->RawWriteChunkData(dataMapped);
 				} else {
-					std::cout << "copying to mem mapped file data in chunk: "
-						  << coord << "; bytes = " << GetBytesPerSample() << "\n";
 					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
 					unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
 
@@ -1310,8 +1242,8 @@ void OmMipVolume::copyDataIn()
 				}
 
 				++counter;
-				printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
-				       x, y, z, counter, total);
+				printf("\rwrote chunk %dx%dx%d (%d bytes) to HDF5 (%d of %d total)",
+				       x, y, z, GetBytesPerSample(), counter, total);
 				fflush(stdout);
 			}
 		}
@@ -1368,9 +1300,6 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 					GetChunk(chunk, coord);
 
 					if(4 == GetBytesPerSample()){
-						std::cout << "copying to mem mapped file data in chunk: "
-							  << coord << "; bytes = " << GetBytesPerSample() << "\n";
-
 						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
 						quint32* data = dataPtr->getPtr<uint32_t>();
 
@@ -1379,9 +1308,6 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 
 						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
 					} else {
-						std::cout << "copying to mem mapped file data in chunk: "
-							  << coord << "; bytes = " << GetBytesPerSample() << "\n";
-
 						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHAR();
 						unsigned char* data = dataPtr->getPtr<unsigned char>();
 
