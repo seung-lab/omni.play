@@ -42,7 +42,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mShowSplit = false;
 	mShowValidInColor = false;
 
-	zoom_level = Vector2 < int >(0, 100);
+	zoom_level = Vector2 < int >(0, 6);
 
 	mColorCaches.resize( SCC_NUMBER_OF_ENUMS, NULL);
 	m_sdw = NULL;

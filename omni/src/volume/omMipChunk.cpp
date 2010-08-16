@@ -520,7 +520,15 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 
 	//	printf("type is %s...\n", mData->getTypeAsString().c_str());
 
-	if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
+	if(!mpMipVolume->mDataHack) {
+		Open();
+		mpMipVolume->mDataHack = mData;
+                printf("here 1\n");
+	} else {
+                printf("here 2\n");
+	}
+
+	if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
 	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
 	  float* dataMapped = dataPtrMapped->getPtr<float>();
 
@@ -535,8 +543,8 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
 	  return slice.getMallocCopyOfData();
 
-	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
-		  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
+	} else if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_UINT ||
+		  mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_INT  ){
 
 	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
 	  quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
@@ -548,8 +556,8 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 	  OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
 	  return slice.getMallocCopyOfData();
 
-	} else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
-		  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
+	} else if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
+		  mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
 
 	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUCHARmapped();
 	  unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();

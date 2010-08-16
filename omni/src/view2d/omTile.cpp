@@ -119,7 +119,7 @@ void * OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, Om
 
 	const int mDepth = GetDepth(key);
 
-	my_chunk->Open();
+	//my_chunk->Open();
 
 	const int realDepth = mDepth % (vol->GetChunkDimension());
 	sliceDims = my_chunk->GetSliceDims();

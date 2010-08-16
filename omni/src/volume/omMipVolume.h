@@ -142,6 +142,8 @@ public:
 	boost::shared_ptr<OmMemMappedVolume<float, OmMipVolume> > floatData;
 	void copyAllMipDataIntoMemMap();
 
+	OmDataWrapperPtr mDataHack;
+
 protected:
 	void BuildBlankVolume(const Vector3i & dims);
 
