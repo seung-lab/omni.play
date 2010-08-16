@@ -82,7 +82,9 @@ public:
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
-
+	template <typename C>
+	boost::unordered_map< OmSegID, unsigned int> * doRefreshDirectDataValues(const bool computeSizes,
+										 C* p_scalar_data);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();

@@ -447,11 +447,6 @@ void OmMipChunk::loadMetadataIfPresent()
  */
 boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
 {
-	boost::unordered_map< OmSegID, unsigned int> * sizes = NULL;
-	if( computeSizes ){
-		sizes = new boost::unordered_map< OmSegID, unsigned int>();
-	}
-
 	//uses mData->getVTKPtr() so ensure chunk is open
 	Open();
 
@@ -459,72 +454,64 @@ boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValu
 	loadMetadataIfPresent();
 	mDirectlyContainedValues.clear();
 
-	//get data extent (varify it is a chunk)
+	if(SEGMENT_DATA_BYTES_PER_SAMPLE == mData->getVTKPtr()->GetScalarSize()){
+		OmSegID *p_scalar_data = static_cast<OmSegID*>(mData->getVTKPtr()->GetScalarPointer());
+		return doRefreshDirectDataValues(computeSizes, p_scalar_data);
+	} else if (1 == mData->getVTKPtr()->GetScalarSize()) {
+		uchar* p_scalar_data = static_cast<uchar*>(mData->getVTKPtr()->GetScalarPointer());
+		return doRefreshDirectDataValues(computeSizes, p_scalar_data);
+	} else {
+		assert(0 && "unsupported number of bytes per sample");
+	}
+}
+
+template <typename C>
+boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataValues( const bool computeSizes,
+										      C* p_scalar_data)
+{
+	boost::unordered_map< OmSegID, unsigned int> * sizes = NULL;
+	if( computeSizes ){
+		sizes = new boost::unordered_map< OmSegID, unsigned int>();
+	}
+
 	int extent[6];
 	mData->getVTKPtr()->GetExtent(extent);
 
-	//get pointer to native scalar data
-	if (SEGMENT_DATA_BYTES_PER_SAMPLE == mData->getVTKPtr()->GetScalarSize()) {
-		OmSegID *p_scalar_data = static_cast < OmSegID * >(mData->getVTKPtr()->GetScalarPointer());
+	//for all voxels in the chunk
+	for(int z = extent[0]; z <= extent[1]; z++) {
+		for(int y = extent[2]; y <= extent[3]; y++) {
+			for(int x = extent[4]; x <= extent[5]; x++) {
 
-		//for all voxels in the chunk
+				const C val = *p_scalar_data;
 
-		int x, y, z;
-		for (z = extent[0]; z <= extent[1]; z++) {
-			for (y = extent[2]; y <= extent[3]; y++) {
-				for (x = extent[4]; x <= extent[5]; x++) {
-
-					//if non-null insert in set
-					if (NULL_SEGMENT_VALUE != *p_scalar_data) {
-						mDirectlyContainedValues.insert(*p_scalar_data);
-						if( computeSizes ){
-							++((*sizes)[*p_scalar_data]);
-							DataBbox box(GetExtent().getMin() + Vector3<int>(x,y,z),
-								     GetExtent().getMin() + Vector3<int>(x,y,z));
-							if (mBounds[*p_scalar_data].isEmpty()) {
-								mBounds[*p_scalar_data] = box;
-							} else {
-                                                                mBounds[*p_scalar_data].merge(box);
-							}
-						}
-					}
-					//adv to next scalar
-					++p_scalar_data;
-
+				if( 0 == val) {
+					continue;
 				}
-			}
-		}
-	} else if (1 == mData->getVTKPtr()->GetScalarSize()) {
-		unsigned char *p_scalar_data = static_cast < unsigned char *>(mData->getVTKPtr()->GetScalarPointer());
 
-		//for all voxels in the chunk
-		for (int z = extent[0]; z <= extent[1]; z++) {
-			for (int y = extent[2]; y <= extent[3]; y++) {
-				for (int x = extent[4]; x <= extent[5]; x++) {
+				mDirectlyContainedValues.insert(val);
 
-					//if non-null insert in set
-					if ('\0' != *p_scalar_data) {
-						OmSegID val = (OmSegID)(*p_scalar_data);
-						mDirectlyContainedValues.insert(val);
-						if( computeSizes ){
-							++((*sizes)[val]);
-							DataBbox box(GetExtent().getMin() + Vector3<int>(x,y,z),
-								     GetExtent().getMin() + Vector3<int>(x,y,z));
-							if (mBounds[val].isEmpty()) {
-								mBounds[val] = box;
-							} else {
-                                                                mBounds[val].merge(box);
-							}
-						}
-					}
-					//adv to next scalar
-					++p_scalar_data;
+				if(!computeSizes){
+					continue;
 				}
+
+				++((*sizes)[val]);
+
+				const Vector3i voxelPos(x,y,z);
+				const Vector3i minVertexOfChunk = GetExtent().getMin();
+				const DataBbox box(minVertexOfChunk + voxelPos,
+						   minVertexOfChunk + voxelPos);
+				if (mBounds[val].isEmpty()) {
+					mBounds[val] = box;
+				} else {
+					mBounds[val].merge(box);
+				}
+
+				//adv to next scalar
+				++p_scalar_data;
 			}
 		}
 	}
 
-	//note metadata is dirty
 	setMetaDataDirty();
 
 	return sizes;
