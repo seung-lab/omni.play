@@ -102,20 +102,6 @@ void OmVolumeImporter<T>::figureOutNumberOfBytesImg()
 }
 
 template <typename T>
-std::pair<int,QString> OmVolumeImporter<T>::getNextImgToProcess()
-{
-	QMutexLocker lock(&mutex);
-
-	if(vol->mSourceFilenamesAndPaths.size() == mSliceNum){
-		return std::pair<int,QString>(-1,"");
-	}
-
-	const QString ret = vol->mSourceFilenamesAndPaths[mSliceNum].absoluteFilePath();
-
-	return std::pair<int,QString>(mSliceNum++, ret);
-}
-
-template <typename T>
 bool OmVolumeImporter<T>::importImageStack()
 {
 	printf("\timporting data...\n");
@@ -134,16 +120,11 @@ bool OmVolumeImporter<T>::importImageStack()
 		assert(0 && "don't know if float or uint32_t");
 	}
 
-	mSliceNum = 0;
-
-	const int maxThreads=1;
-	QThreadPool threads;
-	threads.setMaxThreadCount(maxThreads);
-	for(int i=0; i<maxThreads; ++i){
-		OmLoadImageThread<T>* t = new OmLoadImageThread<T>(this, vol);
-		threads.start(t);
+	OmLoadImage<T> imageLoader(this, vol);
+	for( int i = 0; i < vol->mSourceFilenamesAndPaths.size(); ++i){
+		const QString fnp = vol->mSourceFilenamesAndPaths[i].absoluteFilePath();
+		imageLoader.processSlice(fnp, i);
 	}
-	threads.waitForDone();
 
 	printf("\ndone with image import; copying to HDF5 file...\n");
 
@@ -156,17 +137,10 @@ bool OmVolumeImporter<T>::importImageStack()
 		break;
 	}
 
-	vol->copyDataIn(chunksToCopy);
+	vol->copyDataIn();
 
 	import_timer.stop();
 
 	printf("done in %.2f secs\n",import_timer.s_elapsed());
 	return true;
-}
-
-template <typename T>
-void OmVolumeImporter<T>::addToChunkCoords(const OmMipChunkCoord chunk_coord)
-{
-	QMutexLocker lock(&mutex);
-	chunksToCopy.insert(chunk_coord);
 }

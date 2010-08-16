@@ -58,8 +58,8 @@ template class OmCheckBox<GraphTools>;
 
 template class OmVolumeImporter<OmChannel>;
 template class OmVolumeImporter<OmSegmentation>;
-template class OmLoadImageThread<OmChannel>;
-template class OmLoadImageThread<OmSegmentation>;
+template class OmLoadImage<OmChannel>;
+template class OmLoadImage<OmSegmentation>;
 
 template class OmMemMappedVolume<unsigned char, OmMipVolume>;
 template class OmMemMappedVolume<uint32_t, OmMipVolume>;

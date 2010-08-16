@@ -4,8 +4,6 @@
 #include "common/omCommon.h"
 #include "volume/omMipChunkCoord.h"
 
-#include <QMutex>
-
 class OmDataPath;
 
 template <typename T>
@@ -21,13 +19,11 @@ public:
 private:
 	T* vol;
 
-	QMutex mutex;
 	std::set<OmMipChunkCoord> chunksToCopy;;
 
 	bool areImportFilesImages();
 	bool importHDF5(OmDataPath & dataset);
 
-	int mSliceNum; //TODO: delete me!
 	bool importImageStack();
 	void figureOutNumberOfBytesImg();
 };

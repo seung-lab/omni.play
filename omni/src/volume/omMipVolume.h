@@ -119,7 +119,7 @@ public:
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
 	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
 
-	void copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy);
+	void copyDataIn();
 	bool areImportFilesImages();
 
 	Vector3i get_dims(const OmDataPath dataset );

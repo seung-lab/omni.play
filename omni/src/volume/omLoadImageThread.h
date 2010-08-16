@@ -4,17 +4,17 @@
 #include "common/omCommon.h"
 #include "volume/build/omVolumeImporter.hpp"
 
-#include <QRunnable>
 #include <QImage>
 
 class OmMipVolume;
 
 template <typename T>
-class OmLoadImageThread : public QRunnable
+class OmLoadImage
 {
  public:
-	OmLoadImageThread(OmVolumeImporter<T>* importer, T * p);
-        void run();
+	OmLoadImage(OmVolumeImporter<T>* importer, T * p);
+
+	void processSlice(const QString &, const int);
 
  private:
 	OmVolumeImporter<T> *const importer;
@@ -26,7 +26,6 @@ class OmLoadImageThread : public QRunnable
 	QString mMsg;
 	const int mTotalNumImages;
 
-	void processSlice(const QString &, const int);
 	void doProcessSlice(const QImage &, const int);
 };
 

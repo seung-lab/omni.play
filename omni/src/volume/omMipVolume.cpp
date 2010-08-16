@@ -1278,41 +1278,42 @@ Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
 	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
 }
 
-void OmMipVolume::copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy)
+void OmMipVolume::copyDataIn()
 {
-	extern hid_t GlobalHDF5id;
+	Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(0);
 
-	assert(-1 != GlobalHDF5id);
-	printf("hdf5 id is :%d\n", GlobalHDF5id);
+	const int total = mip_coord_dims.z * mip_coord_dims.y * mip_coord_dims.x;
+	int counter = 0;
 
-	int counter=0;
-	const int total = chunksToCopy.size();
+	for (int z = 0; z < mip_coord_dims.z; ++z){
+		for (int y = 0; y < mip_coord_dims.y; ++y){
+			for (int x = 0; x < mip_coord_dims.x; ++x){
 
-	foreach(const OmMipChunkCoord & c, chunksToCopy){
-		OmMipChunkPtr chunk;
-		GetChunk(chunk, c);
+				OmMipChunkCoord coord(0, x, y, z);
+				OmMipChunkPtr chunk;
+				GetChunk(chunk, coord);
 
-		if(4 == GetBytesPerSample()){
-			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
-			quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
-			chunk->RawWriteChunkData(dataMapped);
-		} else {
-			OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-			unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
-			chunk->RawWriteChunkData(dataMapped);
+				if(4 == GetBytesPerSample()){
+					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
+					quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
+					chunk->RawWriteChunkData(dataMapped);
+				} else {
+					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
+					unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
+					chunk->RawWriteChunkData(dataMapped);
+				}
+
+				++counter;
+				printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
+				       x, y, z, counter, total);
+				fflush(stdout);
+			}
 		}
-
-		++counter;
-		printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
-		       chunk->GetCoordinate().Coordinate.x,
-		       chunk->GetCoordinate().Coordinate.y,
-		       chunk->GetCoordinate().Coordinate.z,
-		       counter, total);
-		fflush(stdout);
 	}
 	printf("\n");
 }
 
+//FIXME: move into OmChannel/OmSegmentation
 void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
 {
 	SetBuildState(MIPVOL_BUILDING);

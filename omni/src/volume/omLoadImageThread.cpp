@@ -7,7 +7,7 @@
 #include "utility/omTimer.h"
 
 template <typename T>
-OmLoadImageThread<T>::OmLoadImageThread(OmVolumeImporter<T>* importer, T* p)
+OmLoadImage<T>::OmLoadImage(OmVolumeImporter<T>* importer, T* p)
 	: importer(importer)
 	, mMipVolume(p)
 	, m_leaf_mip_dims(mMipVolume->MipLevelDimensionsInMipChunks(0))
@@ -17,19 +17,7 @@ OmLoadImageThread<T>::OmLoadImageThread(OmVolumeImporter<T>* importer, T* p)
 }
 
 template <typename T>
-void OmLoadImageThread<T>::run()
-{
-	while(1){
-		const std::pair<int,QString> f = importer->getNextImgToProcess();
-		if(-1==f.first){
-			return;
-		}
-		processSlice(f.second, f.first);
-	}
-}
-
-template <typename T>
-void OmLoadImageThread<T>::processSlice(const QString & fn, const int sliceNum )
+void OmLoadImage<T>::processSlice(const QString & fn, const int sliceNum )
 {
 	OmTimer slice_timer;
 	slice_timer.start();
@@ -51,7 +39,7 @@ void OmLoadImageThread<T>::processSlice(const QString & fn, const int sliceNum )
 }
 
 template <typename T>
-void OmLoadImageThread<T>::doProcessSlice(const QImage & img, const int sliceNum)
+void OmLoadImage<T>::doProcessSlice(const QImage & img, const int sliceNum)
 {
 	int chunkNum=0;
 
@@ -63,8 +51,6 @@ void OmLoadImageThread<T>::doProcessSlice(const QImage & img, const int sliceNum
 
 			const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
 			const DataBbox chunk_bbox = mMipVolume->MipCoordToDataBbox(chunk_coord, 0);
-
-			importer->addToChunkCoords(chunk_coord);
 
 			const int startX = chunk_bbox.getMin().x;
 			const int startY = chunk_bbox.getMin().y;
