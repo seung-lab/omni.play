@@ -290,21 +290,20 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 	//ensure open
 	Open();
 
-	//record old and new values as modified
-	uint32_t old_val = GetVoxelValue(voxel);
-	mModifiedVoxelValues.insert(old_val);
-	mModifiedVoxelValues.insert(val);
+        if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
+		// FIXME..
+        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
+                  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
+          OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
+                                     RawReadChunkDataUINT32()->getPtr<uint32_t>());
 
-	//get offset into data
-	DataCoord offset = voxel - GetExtent().getMin();
-
-	//get pointer to data and copy bytes
-	void *p_scalar = mData->getVTKPtr()->GetScalarPointer(offset.x, offset.y, offset.z);
-	void *p = mData->getVTKPtr()->GetScalarPointer();
-	debug("FIXME", "%p\n", p);
-
-	//cast to appropriate type and return as uint
-	memcpy(p_scalar, &val, mData->getSizeof());
+	  mModifiedVoxelValues.insert(chunk.getVoxel(OmExtents[voxel.x][voxel.y][voxel.z]));
+	  mModifiedVoxelValues.insert(val);
+          chunk.setVoxel(OmExtents[voxel.x][voxel.y][voxel.z], val);
+        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
+                  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
+		// FIXME..
+        }
 
 	//data volume now dirty
 	setVolDataDirty();

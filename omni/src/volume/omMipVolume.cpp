@@ -320,11 +320,14 @@ int OmMipVolume::MipChunksInVolume()
  */
 int OmMipVolume::GetThreadChunkDimension()
 {
+/*
 	int unbounded_chunk_dim = OMPOW(2, mMipRootLevel);
 	int lower_bound = GetChunkDimension();
 	int upper_bound = GetChunkDimension()*OMPOW(2, MAX_THREAD_CHUNK_EXPONENT);
 	int bounded_chunk_dim = min(max(unbounded_chunk_dim,lower_bound),upper_bound);
 	return bounded_chunk_dim;
+*/
+	return GetChunkDimension();
 }
 
 Vector3 < int > OmMipVolume::GetThreadChunkDimensions()
