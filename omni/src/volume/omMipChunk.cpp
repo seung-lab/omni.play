@@ -538,7 +538,7 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
 	  float mn = 0.0;
 	  float mx = 1.0;
-	  mpMipVolume->GetBounds(mx, mn);
+	  //	  mpMipVolume->GetBounds(mx, mn);
 	  OmImage<unsigned char, 2> slice =
 		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
 	  return slice.getMallocCopyOfData();
@@ -605,26 +605,28 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
         OmMipChunkPtr p_chunk;
         mpMipVolume->GetChunk(p_chunk, mip_coord);
 
-        p_chunk->Open();
+	//        p_chunk->Open();
 
 	OmImage<uint32_t, 3> chunkImage;
 
 	if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
 	   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
 	  chunkImage = OmImage<uint32_t, 3>(OmExtents[128][128][128],
-					    p_chunk->RawReadChunkDataUINT32()
+					    p_chunk->RawReadChunkDataUINT32mapped()
 					    ->getPtr<uint32_t>());
 	} else if (mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR) {
 	  OmImage<unsigned char, 3> chunk8(OmExtents[128][128][128],
-					   RawReadChunkDataUCHAR()->getPtr<unsigned char>());
+					   RawReadChunkDataUCHARmapped()->getPtr<unsigned char>());
 	  chunkImage = chunk8.recast<uint32_t>();
 	} else {
 	  printf("type was %s...\n", p_chunk->mData->getTypeAsString().c_str());
 	  assert(0 && "unrecognized type");
 	}
 
-        retImage.copyFrom(chunkImage, OmExtents[z*128][y*128][x*128],
-                          OmExtents[0][0][0], OmExtents[lenZ][lenY][lenX]);
+        retImage.copyFrom(chunkImage,
+			  OmExtents[z*128][y*128][x*128],
+                          OmExtents[0][0][0],
+			  OmExtents[lenZ][lenY][lenX]);
 
       }
     }

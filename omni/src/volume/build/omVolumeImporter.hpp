@@ -6,18 +6,17 @@
 
 class OmDataPath;
 
-template <typename T>
+template <typename VOL>
 class OmVolumeImporter {
 public:
-	OmVolumeImporter(T*);
+	OmVolumeImporter(VOL*);
 
 	bool import(OmDataPath & dataset);
 
-	std::pair<int,QString> getNextImgToProcess();
 	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
 
 private:
-	T* vol;
+	VOL* vol;
 
 	std::set<OmMipChunkCoord> chunksToCopy;;
 
