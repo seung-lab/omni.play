@@ -9,33 +9,106 @@
 #include <algorithm>
 #include <functional>
 
-template <typename T, int D>
-class OmImage: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+template <typename T, std::size_t D>
+class OmImageCopiedData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
 public:
   typedef typename boost::multi_array<T, D> container_t;
   typedef          OmDimension<D>           dimension_t;
 
-  OmImage() {};
-  OmImage(OmDimension<D> extent): extent_(extent), data_() {
-    data_ = boost::shared_ptr<boost::multi_array<T, D> >
-      (new boost::multi_array<T, D>(extent.getBoostExtent()));
-  }
+  OmImageCopiedData() {};
+  OmImageCopiedData(OmDimension<D> extent): extent_(extent), data_() {}
 
-  OmImage(OmDimension<D> extent, T* data): extent_(extent), data_() {
-    data_ = boost::shared_ptr<boost::multi_array<T, D> >
-      (new boost::multi_array<T, D>(extent.getBoostExtent()));
+ OmImageCopiedData(OmDimension<D> extent, T* data): extent_(extent), data_() {
+    data_ = boost::shared_ptr<container_t>
+      (new container_t(extent.getBoostExtent()));
     data_->assign(data, data+data_->num_elements());
   }
 
+  OmImageCopiedData(boost::shared_ptr<container_t> data, OmDimension<D> extent):
+    extent_(extent), data_(data) {}
+
+  virtual ~OmImageCopiedData() {}
+
+  OmDimension<D>                 extent_;
+  boost::shared_ptr<container_t> data_;
+};
+
+
+template <typename T, std::size_t D>
+class OmImageRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+public:
+  typedef typename boost::multi_array_ref<T, D> container_t;
+  typedef          OmDimension<D>               dimension_t;
+
+  OmImageRefData() {};
+  OmImageRefData(OmDimension<D> extent): extent_(extent), data_() {}
+
+  OmImageRefData(OmDimension<D> extent, T* data): extent_(extent), data_() {
+    data_ = boost::shared_ptr<container_t>
+	(new container_t(data, extent.getBoostExtent()));
+  }
+
+  OmImageRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent):
+    extent_(extent), data_(data) {}
+
+  virtual ~OmImageRefData() {}
+
+  OmDimension<D>                 extent_;
+  boost::shared_ptr<container_t> data_;
+};
+
+template <typename T, std::size_t D>
+class OmImageConstRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+public:
+  typedef typename boost::const_multi_array_ref<T, D> container_t;
+  typedef          OmDimension<D>                     dimension_t;
+
+  OmImageConstRefData() {};
+  OmImageConstRefData(OmDimension<D> extent): extent_(extent), data_() {}
+
+  OmImageConstRefData(OmDimension<D> extent, T* data): extent_(extent), data_() {
+    data_ = boost::shared_ptr<container_t>
+	(new container_t(data, extent.getBoostExtent()));
+  }
+
+ OmImageConstRefData(boost::shared_ptr<container_t> data, OmDimension<D> extent):
+    extent_(extent), data_(data) {}
+
+  virtual ~OmImageConstRefData() {}
+
+  OmDimension<D>                 extent_;
+  boost::shared_ptr<container_t> data_;
+};
+
+
+
+
+
+template <typename T, std::size_t D,
+	  template <typename DATATYPE, std::size_t DATASIZE> class container_t
+	  = OmImageCopiedData >
+class OmImage {
+public:
+
+  OmImage() {};
+
+  OmImage(OmDimension<D> extent)
+    : d_(container_t<T,D>(extent)) {}
+
+  OmImage(OmDimension<D> extent, T* data)
+    : d_(container_t<T,D>(extent, data)) {}
+
+  OmImage(boost::shared_ptr<boost::multi_array<T,D> > data, OmDimension<D> extent)
+    : d_(container_t<T,D>(data, extent)) {}
+
   virtual ~OmImage() {}
 
-  OmImage<T,D-1> getSlice(const ViewType plane, const int offset){
+  OmImage<T,2> getSlice(const ViewType plane, const int offset){
 
     assert(D == 3);
-    boost::shared_ptr<boost::multi_array<T,2> > data;
     OmDimension<3> from = OmDimension<3>();
-    OmDimension<3> to   = extent_;
-    OmDimension<3> extent = extent_;
+    OmDimension<3> to   = d_.extent_;
+    OmDimension<3> extent = d_.extent_;
 
     switch(plane) {
 
@@ -58,104 +131,103 @@ public:
       assert(0);
     }
 
+    boost::shared_ptr<boost::multi_array<T,2> > data;
     data = boost::shared_ptr<boost::multi_array<T,2> >
       (new boost::multi_array<T,2>
        (extent.stripDimension<0>().getBoostExtent()));
-    (*data) = (*data_)[MakeBoostRange<3,2>::make(from, to)];
+    (*data) = (*d_.data_)[MakeBoostRange<3,2>::make(from, to)];
     return OmImage<T,2>(data, extent.stripDimension<0>());
 
   }
 
   OmDimension<D> getExtent() {
-    return extent_;
+    return d_.extent_;
   }
 
   const T getMin() { return *std::min_element(getScalarPtr(), getScalarPtr()+size());}
   const T getMax() { return *std::max_element(getScalarPtr(), getScalarPtr()+size());}
 
-  OmImage(boost::shared_ptr<container_t> data, OmDimension<D> extent):
-    extent_(extent), data_(data) {}
-
   const T* getScalarPtr() {
-    if (data_) {
-      return data_->data();
+    if (d_.data_) {
+      return d_.data_->data();
     }
     return 0;
   }
 
   size_t size() {
-    if (data_) {
-      return data_->num_elements();
+    if (d_.data_) {
+      return d_.data_->num_elements();
     }
     return 0;
   }
 
   void assign(T* data, size_t len) {
-    if (data_) {
-      data_->assign(data, data+len);
+    if (d_.data_) {
+      d_.data_->assign(data, data+len);
     }
   }
 
   template <typename O>
   void import(O* data, size_t len) {
-    if (data_) {
-      data_->assign(data, data+len);
+    if (d_.data_) {
+      d_.data_->assign(data, data+len);
     }
   }
 
   T* getMallocCopyOfData() {
-    if(!data_){
+    if(!d_.data_){
       return NULL;
     }
 
-    const int numBytes = data_->num_elements()*sizeof(T);
+    const int numBytes = d_.data_->num_elements()*sizeof(T);
     T* ret = (T*)malloc(numBytes);
-    memcpy(ret, data_->data(), numBytes);
+    memcpy(ret, d_.data_->data(), numBytes);
     return ret;
   }
 
   void copyFrom(OmImage<T,D> src, OmDimension<D> targetPos,
                 OmDimension<D> srcPos, OmDimension<D> size)
   {
-    (*data_)[MakeBoostRange<D,D>::makeLen(targetPos, size)]
-      = (*src.data_)[MakeBoostRange<D,D>::makeLen(srcPos, size)];
+    (*d_.data_)[MakeBoostRange<D,D>::makeLen(targetPos, size)]
+      = (*src.d_.data_)[MakeBoostRange<D,D>::makeLen(srcPos, size)];
   }
 
   void setVoxel(const int x, const int y, const int z, const T val)
   {
-    (*data_)[x][y][z] = val;
+    (*d_.data_)[x][y][z] = val;
   }
 
   T getVoxel(const int x, const int y, const int z)
   {
-    return (*data_)[x][y][z];
+    return (*d_.data_)[x][y][z];
   }
 
   void rescale(const T rangeMin, const T rangeMax, const T absMax){
-        std::transform(data_->data(), data_->data()+data_->num_elements(),
-    		   data_->data(), Rescale<T,T>(rangeMin, rangeMax, absMax));
+        std::transform(d_.data_->data(), d_.data_->data()+d_.data_->num_elements(),
+    		   d_.data_->data(), Rescale<T,T>(rangeMin, rangeMax, absMax));
   }
 
   template <typename C>
   OmImage<C,D> rescaleAndCast(const T rangeMin, const T rangeMax, const T absMax){
-    OmImage<C,D> out(extent_);
-    std::transform(data_->data(), data_->data()+data_->num_elements(),
-		   out.data_->data(), Rescale<T,C>(rangeMin, rangeMax, absMax));
+    OmImage<C,D> out(d_.extent_);
+    std::transform(d_.data_->data(), d_.data_->data()+d_.data_->num_elements(),
+		   out.d_.data_->data(), Rescale<T,C>(rangeMin, rangeMax, absMax));
     return out;
   }
 
   template <typename C>
   OmImage<C,D> recast(){
-    OmImage<C,D> out(extent_);
-    std::copy(data_->begin(), data_->end(), out.data_->begin());
+    OmImage<C,D> out(d_.extent_);
+    std::copy(d_.data_->begin(), d_.data_->end(), out.d_.data_->begin());
     return out;
   }
 
-  template <typename T1, int D1> friend class OmImage;
+  template <typename T1, std::size_t D1,
+	    template <typename DATATYPE1, std::size_t DATASIZE1> class container_t1>
+  friend class OmImage;
 
 private:
-  OmDimension<D>                 extent_;
-  boost::shared_ptr<container_t> data_;
+  container_t<T,D> d_;
 
   template <typename U, typename C>
   class Rescale {

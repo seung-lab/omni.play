@@ -284,11 +284,17 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
 	assert(ContainsVoxel(voxel));
 
+	if(!mpMipVolume->mDataHack) {
+		Open();
+		mpMipVolume->mDataHack = mData;
+                printf("here 1\n");
+	}
+
         if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
 	  printf("fixme!\n");
         } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
                   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-          OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
+          OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128],
                                      RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
 
 	  mModifiedVoxelValues.insert(chunk.getVoxel(voxel.x, voxel.y, voxel.z));
@@ -316,7 +322,7 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 	  printf("fixme!\n");
         } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
                   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-          OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
+          OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128],
                                      RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
 
           return chunk.getVoxel(voxel.x, voxel.y, voxel.z);
@@ -324,6 +330,8 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
                   mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
 	  printf("fixme!\n");
         }
+
+	assert(0 && "fixme!");
 }
 
 /*
@@ -517,7 +525,7 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 
 	  assert(dataMapped);
 
-	  OmImage<float, 3> chunk(OmExtents[128][128][128], dataMapped);
+	  OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
 	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
 	  float mn = 0.0;
 	  float mx = 1.0;
@@ -534,7 +542,7 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 
 	  assert(dataMapped);
 
-	  OmImage<uint32_t, 3> chunk(OmExtents[128][128][128], dataMapped);
+	  OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
 
 	  OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
 	  return slice.getMallocCopyOfData();
@@ -547,7 +555,7 @@ void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 
 	  assert(dataMapped);
 
-	  OmImage<unsigned char, 3> chunk(OmExtents[128][128][128], dataMapped);
+	  OmImage<unsigned char, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
 	  OmImage<unsigned char, 2> slice = chunk.getSlice(plane, offset);
 	  return slice.getMallocCopyOfData();
 	}
