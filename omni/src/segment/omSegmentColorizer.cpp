@@ -35,6 +35,7 @@ void OmSegmentColorizer::setup()
 
 	mSize = curSize;
 	mColorCache.resize(curSize);
+	mColorUpdateMutex.resize(curSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
@@ -64,13 +65,13 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 			if( 0 == val ){
 				newcolor = blackColor;
 			} else{
-				mColorUpdateMutex.lock(); // TODO: use lock pages
+				mColorUpdateMutex[val].lock(); // TODO: use lock pages
 				if( !isCacheElementValid(val, segCacheFreshness) ){
 					mColorCache[ val ].color = getVoxelColorForView2d(val);
 					mColorCache[ val ].freshness = segCacheFreshness;
 				}
 				newcolor = mColorCache[ val ].color;
-				mColorUpdateMutex.unlock();
+				mColorUpdateMutex[val].unlock();
 			}
 		}
 

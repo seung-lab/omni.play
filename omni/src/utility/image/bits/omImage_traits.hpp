@@ -48,10 +48,21 @@ public:
 
   template <int I, int X> friend class MakeBoostRange;
 
+  static OmDimension ONE;
+  static OmDimension ZERO;
+
 private:
   OmDimension<D-1> subDimension_;
   int              dimValue_    ;
 };
+
+
+template <int D>
+OmDimension<D> OmDimension<D>::ONE  = OmDimension<D-1>::ONE[1];
+
+template <int D>
+OmDimension<D> OmDimension<D>::ZERO = OmDimension<D-1>::ZERO[0];
+
 
 template <> struct OmDimension<0> {
 public:
@@ -84,7 +95,16 @@ public:
 
   static const OmDimension<0> extent();
 
+  static const OmDimension<0> ONE();
+  static const OmDimension<0> ZERO();
+
 };
+
+//namespace {
+//template<> OmDimension<0> OmDimension<0>::ONE  = OmDimension<0>();
+//template<> OmDimension<0> OmDimension<0>::ZERO = OmDimension<0>();
+//}
+
 
 template <int I, int D> struct MakeBoostRange {
 public:

@@ -5,6 +5,8 @@
 
 #include <QMutex>
 #include <QReadWriteLock>
+#include <zi/mutex>
+
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -32,7 +34,7 @@ class OmSegmentColorizer
 	}
 
  private:
-	mutable QMutex mColorUpdateMutex;
+	std::vector<zi::Mutex> mColorUpdateMutex;
 	mutable QReadWriteLock mMapResizeMutex;
 
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
