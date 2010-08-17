@@ -121,20 +121,14 @@ public:
       = (*src.data_)[MakeBoostRange<D,D>::makeLen(srcPos, size)];
   }
 
-  void setVoxel(OmDimension<D> pos, const T value) {
-    boost::shared_ptr<container_t> data;
-    OmImage img = OmImage<T,D>(data, OmExtents[1][1][1]);
-    img.assign((T*)&value, 1);
-    this->copyFrom(img, pos, OmExtents[0][0][0], OmExtents[1][1][1]);
+  void setVoxel(const int x, const int y, const int z, const T val)
+  {
+    (*data_)[x][y][z] = val;
   }
 
-  T getVoxel(OmDimension<D> pos) {
-    T ret;
-    boost::shared_ptr<container_t> data;
-    OmImage img = OmImage<T,D>(data, OmExtents[1][1][1]);
-    img.copyFrom(*this, OmExtents[0][0][0], pos, OmExtents[1][1][1]);
-    memcpy(&ret, img.data_->data(), sizeof(T));
-    return ret;
+  T getVoxel(const int x, const int y, const int z)
+  {
+    return (*data_)[x][y][z];
   }
 
   void rescale(const T rangeMin, const T rangeMax, const T absMax){

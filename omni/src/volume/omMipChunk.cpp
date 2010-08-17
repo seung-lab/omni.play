@@ -282,27 +282,21 @@ void OmMipChunk::ClearModifiedVoxelValues()
  */
 void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
-	//debug("FIXME", << "in OmMipChunk::SetVoxelValue" << endl;
-
-	//assert valid
 	assert(ContainsVoxel(voxel));
 
-	//ensure open
-	Open();
-
         if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
-		// FIXME..
+	  printf("fixme!\n");
         } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
                   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
           OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
-                                     RawReadChunkDataUINT32()->getPtr<uint32_t>());
+                                     RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
 
-	  mModifiedVoxelValues.insert(chunk.getVoxel(OmExtents[voxel.x][voxel.y][voxel.z]));
+	  mModifiedVoxelValues.insert(chunk.getVoxel(voxel.x, voxel.y, voxel.z));
 	  mModifiedVoxelValues.insert(val);
-          chunk.setVoxel(OmExtents[voxel.x][voxel.y][voxel.z], val);
+          chunk.setVoxel(voxel.x, voxel.y, voxel.z, val);
         } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
                   mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
-		// FIXME..
+	  printf("fixme!\n");
         }
 
 	//data volume now dirty
@@ -312,29 +306,24 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 /*
  *	Get voxel value from the ImageData associated with this MipChunk.
  */
-uint32_t OmMipChunk::GetVoxelValue(const DataCoord & voxel)
+uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 {
-	//assert valid
+        const DataCoord voxel = volVoxel - GetExtent().getMin();
+
 	assert(ContainsVoxel(voxel));
 
-	//ensure open
-	Open();
+        if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
+	  printf("fixme!\n");
+        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
+                  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
+          OmImage<uint32_t, 3> chunk(OmExtents[128][128][128],
+                                     RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
 
-	//get offset into data
-	DataCoord offset = voxel - GetExtent().getMin();
-
-	//get pointer to data and copy bytes
-	void *p_scalar = mData->getVTKPtr()->GetScalarPointer(offset.x, offset.y, offset.z);
-
-	//cast to appropriate type and return as uint
-	switch (GetBytesPerSample()) {
-	case 1:
-		return *((quint8 *) p_scalar);
-	case 4:
-		return *((uint32_t *) p_scalar);
-	default:
-		assert(false);
-	}
+          return chunk.getVoxel(voxel.x, voxel.y, voxel.z);
+        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
+                  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
+	  printf("fixme!\n");
+        }
 }
 
 /*
@@ -516,16 +505,10 @@ Vector2i OmMipChunk::GetSliceDims()
 
 void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 {
-	//	Open();
-
-	//	printf("type is %s...\n", mData->getTypeAsString().c_str());
-
 	if(!mpMipVolume->mDataHack) {
 		Open();
 		mpMipVolume->mDataHack = mData;
                 printf("here 1\n");
-	} else {
-                printf("here 2\n");
 	}
 
 	if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {

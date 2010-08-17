@@ -220,6 +220,7 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	assert( child->mParentSegID );
 
 	OmSegment * parent = mCache->GetSegmentFromValue( child->mParentSegID );
+	assert(parent);
 
 	if( child->mImmutable == parent->mImmutable &&
 	    1 == child->mImmutable ){
