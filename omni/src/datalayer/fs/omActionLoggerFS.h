@@ -17,23 +17,25 @@ class OmProjectSaveAction;
 
 class OmActionLoggerFS {
 public:
+	static QDir& getLogFolder(){ return Instance().doGetLogFolder(); }
+	static zi::Mutex& getThreadMutex(){ return Instance().threadMutex_; }
+
 	template <class T> static void save(T * action, const std::string &);
-	static zi::Mutex & getLock(){ return Instance().mutex_; }
-	static QDir & getLogFolder(){ return Instance().mLogFolder; }
+
 private:
-	OmActionLoggerFS(){
-		zi::Guard g(mutex_);
-		setupLogDir();
-	}
-	~OmActionLoggerFS(){}
+	bool initialized;
+	zi::Mutex mutex_;
+	zi::Mutex threadMutex_; //serialize file writes
+	QDir mLogFolder;
+
+	OmActionLoggerFS();
+	~OmActionLoggerFS();
+	void setupLogDir();
+	QDir& doGetLogFolder();
+
 	static inline OmActionLoggerFS & Instance(){
 		return zi::Singleton<OmActionLoggerFS>::Instance();
 	}
-
-	zi::Mutex mutex_;
-	QDir mLogFolder;
-
-	void setupLogDir();
 
 	friend class zi::Singleton<OmActionLoggerFS>;
 };

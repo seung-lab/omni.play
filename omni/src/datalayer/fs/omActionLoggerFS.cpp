@@ -10,6 +10,26 @@
 #include "volume/omSegmentationThresholdChangeAction.h"
 #include "volume/omVoxelSetValueAction.h"
 
+OmActionLoggerFS::OmActionLoggerFS()
+	: initialized(false)
+{
+}
+
+OmActionLoggerFS::~OmActionLoggerFS()
+{
+}
+
+QDir& OmActionLoggerFS::doGetLogFolder()
+{
+	zi::Guard g(mutex_);
+	if(!initialized){
+		setupLogDir();
+		initialized = true;
+	}
+
+	return mLogFolder;
+}
+
 void OmActionLoggerFS::setupLogDir()
 {
 	QString omniFolderName = ".omni";

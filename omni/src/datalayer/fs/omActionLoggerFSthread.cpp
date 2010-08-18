@@ -15,7 +15,7 @@ static const QString Omni_Postfix("OMNI_LOG");
 template <typename T>
 void OmActionLoggerFSThread<T>::run()
 {
-	zi::Guard g(OmActionLoggerFS::getLock());
+	zi::Guard g(OmActionLoggerFS::getThreadMutex());
 
 	QFile file(getFileNameAndPath(action_->classNameForLogFile()));
 	file.open(QIODevice::WriteOnly);
@@ -27,7 +27,7 @@ void OmActionLoggerFSThread<T>::run()
 	out << (*action_);
 	out << Omni_Postfix;
 
-	printf("wrote log file %s\n", qPrintable(file.fileName()));
+	//	printf("wrote log file %s\n", qPrintable(file.fileName()));
 }
 
 template <typename T>
