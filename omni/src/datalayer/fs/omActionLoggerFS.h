@@ -2,6 +2,11 @@
 #define OM_ACTION_LOGGER_H
 
 #include "datalayer/fs/omActionLoggerFSthread.hpp"
+#include "project/omProject.h"
+
+#include <QDir>
+#include <zi/mutex>
+#include <zi/utility>
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -11,12 +16,26 @@ class OmSegmentValidateAction;
 class OmProjectSaveAction;
 
 class OmActionLoggerFS {
- public:
-	OmActionLoggerFS();
-	~OmActionLoggerFS();
+public:
+	template <class T> static void save(T * action, const std::string &);
+	static zi::Mutex & getLock(){ return Instance().mutex_; }
+	static QDir & getLogFolder(){ return Instance().mLogFolder; }
+private:
+	OmActionLoggerFS(){
+		zi::Guard g(mutex_);
+		setupLogDir();
+	}
+	~OmActionLoggerFS(){}
+	static inline OmActionLoggerFS & Instance(){
+		return zi::Singleton<OmActionLoggerFS>::Instance();
+	}
 
-	template <class T>
-	void save(T * action, const std::string &);
+	zi::Mutex mutex_;
+	QDir mLogFolder;
+
+	void setupLogDir();
+
+	friend class zi::Singleton<OmActionLoggerFS>;
 };
 
 template <class T>

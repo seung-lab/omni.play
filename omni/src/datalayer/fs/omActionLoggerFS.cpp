@@ -1,6 +1,7 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "volume/omSegmentation.h"
+
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
@@ -9,12 +10,27 @@
 #include "volume/omSegmentationThresholdChangeAction.h"
 #include "volume/omVoxelSetValueAction.h"
 
-OmActionLoggerFS::OmActionLoggerFS()
+void OmActionLoggerFS::setupLogDir()
 {
-}
+	QString omniFolderName = ".omni";
+	QString homeFolder = QDir::homePath();
+	QString omniFolderPath = homeFolder + "/"
+		+ omniFolderName + "/"
+		+ "logFiles" + "/";
 
-OmActionLoggerFS::~OmActionLoggerFS()
-{
+	QDir dir = QDir( omniFolderPath );
+	if( dir.exists() ){
+		mLogFolder = dir;
+		return;
+	}
+
+	if( QDir::home().mkdir( omniFolderPath ) ){
+		printf("made folder %s\n", qPrintable(omniFolderPath) );
+		mLogFolder = dir;
+	} else {
+		const string errMsg = "could not make folder "+omniFolderPath.toStdString() + "\n";
+		throw OmIoException(errMsg);
+	}
 }
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)

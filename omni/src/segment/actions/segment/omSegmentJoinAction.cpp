@@ -13,7 +13,7 @@
 ///////
 ///////          OmSegmentJoinAction
 ///////
-OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId, 
+OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId,
 					  const OmSegIDsSet & selectedSegmentIds)
 	: mSegmentationId( segmentationId )
 	, mSelectedSegmentIds( selectedSegmentIds )
@@ -32,7 +32,7 @@ void OmSegmentJoinAction::Action()
 void OmSegmentJoinAction::UndoAction()
 {
 	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);	
+	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
 }
 
 string OmSegmentJoinAction::Description()
@@ -47,5 +47,5 @@ string OmSegmentJoinAction::Description()
 
 void OmSegmentJoinAction::save(const string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

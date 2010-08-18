@@ -285,6 +285,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
+           src/datalayer/fs/omActionLoggerFSthread.cpp \
            src/datalayer/fs/omMemMappedVolume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \

@@ -28,6 +28,15 @@
 #include "volume/omSegmentation.h"
 #include <QWidget>
 
+#include "datalayer/fs/omActionLoggerFSthread.cpp"
+#include "segment/actions/segment/omSegmentGroupAction.h"
+#include "segment/actions/segment/omSegmentJoinAction.h"
+#include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "segment/actions/segment/omSegmentValidateAction.h"
+#include "volume/omSegmentationThresholdChangeAction.h"
+#include "volume/omVoxelSetValueAction.h"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr>;
@@ -66,3 +75,12 @@ template class OmMemMappedVolume<uint8_t, OmMipVolume>;
 template class OmMemMappedVolume<int32_t, OmMipVolume>;
 template class OmMemMappedVolume<uint32_t, OmMipVolume>;
 template class OmMemMappedVolume<float, OmMipVolume>;
+
+template class OmActionLoggerFSThread<OmProjectSaveAction>;
+template class OmActionLoggerFSThread<OmSegmentJoinAction>;
+template class OmActionLoggerFSThread<OmSegmentValidateAction>;
+template class OmActionLoggerFSThread<OmSegmentGroupAction>;
+template class OmActionLoggerFSThread<OmSegmentSelectAction>;
+template class OmActionLoggerFSThread<OmSegmentSplitAction>;
+template class OmActionLoggerFSThread<OmVoxelSetValueAction>;
+template class OmActionLoggerFSThread<OmSegmentationThresholdChangeAction>;

@@ -67,5 +67,5 @@ string OmSegmentValidateAction::Description()
 
 void OmSegmentValidateAction::save(const string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

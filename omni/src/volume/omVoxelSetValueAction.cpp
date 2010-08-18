@@ -105,6 +105,6 @@ string OmVoxelSetValueAction::Description()
 
 void OmVoxelSetValueAction::save(const string & comment)
 {
-        OmActionLoggerFS().save(this, comment);
-}   
+	OmActionLoggerFS::save(this, comment);
+}
 

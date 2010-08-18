@@ -13,7 +13,7 @@
 ///////
 ///////          OmSegmentationThresholdChangeAction
 ///////
-OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmId segmentationId, 
+OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmId segmentationId,
 					  const float threshold)
 	: mSegmentationId( segmentationId )
 	, mThreshold( threshold )
@@ -44,5 +44,5 @@ string OmSegmentationThresholdChangeAction::Description()
 
 void OmSegmentationThresholdChangeAction::save(const string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

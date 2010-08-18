@@ -30,6 +30,6 @@ string OmProjectSaveAction::Description()
 
 void OmProjectSaveAction::save(const string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }
 

@@ -12,8 +12,8 @@
 ///////
 ///////          OmSegmentGroupAction
 ///////
-OmSegmentGroupAction::OmSegmentGroupAction( const OmId segmentationId, 
-					  const OmSegIDsSet & selectedSegmentIds, 
+OmSegmentGroupAction::OmSegmentGroupAction( const OmId segmentationId,
+					  const OmSegIDsSet & selectedSegmentIds,
 					  const OmGroupName name, const bool create)
 	: mSegmentationId( segmentationId )
 	, mName(name)
@@ -57,5 +57,5 @@ string OmSegmentGroupAction::Description()
 
 void OmSegmentGroupAction::save(const string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }
