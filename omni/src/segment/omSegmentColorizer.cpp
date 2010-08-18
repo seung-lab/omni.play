@@ -3,8 +3,6 @@
 #include "segment/omSegmentCacheImpl.h"
 #include "system/cache/omCacheManager.h"
 
-#include <QMutexLocker>
-
 static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
@@ -25,7 +23,7 @@ OmSegmentColorizer::~OmSegmentColorizer()
 
 void OmSegmentColorizer::setup()
 {
-	QWriteLocker mapResizeLock(&mMapResizeMutex);
+	zi::WriteGuard g(mMapResizeMutex);
 
 	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
 
@@ -37,9 +35,11 @@ void OmSegmentColorizer::setup()
 	mColorCache.resize(curSize);
 	mColorUpdateMutex.resize(curSize);
 
-	printf("segment color cache: current size in memory ~%d bytes\n",
+	printf("segment color cache (%p): current size in memory ~%d bytes for %d elements\n",
+	       this,
 	       sizeof(OmColorWithFreshness)*curSize +
-	       sizeof(zi::Mutex)*curSize);
+	       sizeof(zi::Mutex)*curSize,
+	       curSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
@@ -47,40 +47,37 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 {
 	setup();
 
-	QReadLocker mapResizeLock(&mMapResizeMutex);
+	mAreThereAnySegmentsSelected = mSegmentCache->AreSegmentsSelected() ||
+		                       mSegmentCache->AreSegmentsEnabled();
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
-
-	mAreThereAnySegmentsSelected =
-		mSegmentCache->AreSegmentsSelected() ||
-		mSegmentCache->AreSegmentsEnabled();
-
 	uint32_t offset = 0;
 	OmColor prevColor = blackColor;
 	OmSegID lastVal = 0;
 
-	// looping through each value of imageData, which is
-	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
+	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
+
+	// looping through each segID in image data (typically 128*128 elements)
 	for (int i = 0; i < size; ++i ) {
 
-		const OmSegID val = (OmSegID) imageData[i];
+		const OmSegID val = imageData[i]; // may upcast
 		OmColor curColor;
 
-		if(val == lastVal){ //memoized previous, non-zero color
+		if(val == lastVal){ // memoized previous, non-zero color
 			curColor = prevColor;
 		} else if(0 == val){
 			curColor = blackColor;
-		} else { //get color from cache
+		} else { // get color from cache
 
 			mColorUpdateMutex[val].lock();
 
-			//check if cache element is valid
+			// check if cache element is valid
 			if(segCacheFreshness   == mColorCache[val].freshness &&
 			   mCurBreakThreshhold == mPrevBreakThreshhold       ){
 
 				curColor = mColorCache[val].color;
 
-			} else { //update color
+			} else { // update color
 				curColor = mColorCache[val].color
 					 = getVoxelColorForView2d(val);
 				mColorCache[val].freshness = segCacheFreshness;
@@ -88,7 +85,7 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 
 			mColorUpdateMutex[val].unlock();
 
-			prevColor = curColor; //memoize previous, non-zero color
+			prevColor = curColor; // memoize previous, non-zero color
 			lastVal   = val;
 		}
 

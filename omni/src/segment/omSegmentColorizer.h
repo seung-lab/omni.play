@@ -3,10 +3,7 @@
 
 #include "common/omCommon.h"
 
-#include <QMutex>
-#include <QReadWriteLock>
 #include <zi/mutex>
-
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -35,7 +32,7 @@ class OmSegmentColorizer
 
  private:
 	std::vector<zi::Mutex> mColorUpdateMutex;
-	mutable QReadWriteLock mMapResizeMutex;
+	zi::RWMutex mMapResizeMutex;
 
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
