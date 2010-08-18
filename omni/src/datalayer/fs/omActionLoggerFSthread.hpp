@@ -63,6 +63,7 @@ QString OmActionLoggerFSThread<T>::getFileNameAndPath(const QString & actionName
 	return mLogFolder.filePath(fn);
 }
 
+// TODO: move to OmProject, so check is only done once?
 template <typename T>
 void OmActionLoggerFSThread<T>::setupLogDir()
 {

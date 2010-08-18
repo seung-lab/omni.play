@@ -124,4 +124,13 @@ enum OmCacheGroupEnum {
 	VRAM_CACHE_GROUP
 };
 
+enum OmAllowedVolumeDataTypes {
+	UNKNOWN = 0,
+	OM_INT8,
+	OM_UINT8,
+	OM_INT32,
+	OM_UINT32,
+	OM_FLOAT
+};
+
 #endif

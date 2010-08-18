@@ -9,15 +9,16 @@
 template <typename T, typename VOL>
 class OmMemMappedVolume {
 public:
+	OmMemMappedVolume(){} // for boost::varient
 	OmMemMappedVolume(VOL* vol);
+
 	~OmMemMappedVolume();
 
-
 	void AllocMemMapFiles();
-	T* getChunkPtr( OmMipChunkCoord & coord);
+	T* getChunkPtr(const OmMipChunkCoord & coord);
 
 private:
-	VOL *const vol_;
+	VOL* vol_;
 	std::vector<QFile*> mFileVec;
 	std::vector<uchar*> mFileMapPtr;
 	std::set<int> openedLevels;

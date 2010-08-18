@@ -22,12 +22,11 @@
 #include "volume/omMipVolume.h"
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
+#include "volume/omVolumeData.hpp"
 
 #include <vtkImageData.h>
-#include <vtkExtractVOI.h>
-#include <vtkImageConstantPad.h>
 
-#include <QFile>
+#include <QImage>
 
 //Maximum number of powers of 2 that thread chunk is linearly larger than a chunk
 #define MAX_THREAD_CHUNK_EXPONENT 2
@@ -37,16 +36,10 @@
 static const char *MIP_VOLUME_FILENAME = "volume.dat";
 static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
 
-/////////////////////////////////
-///////
-///////         OmMipVolume
-///////
-
 OmMipVolume::OmMipVolume()
-	: ucharData(new OmMemMappedVolume<unsigned char, OmMipVolume>(this))
-	, uint32Data(new OmMemMappedVolume<uint32_t, OmMipVolume>(this))
-	, floatData(new OmMemMappedVolume<float, OmMipVolume>(this))
+	: volData(new OmVolumeData(this))
 	, mDataCache(new OmMipVolumeCache(this))
+	, mVolDataType(UNKNOWN)
 {
 	sourceFilesWereSet = false;
 
@@ -737,7 +730,6 @@ void OmMipVolume::Build(OmDataPath & dataset)
 	}
 
 	copyAllMipDataIntoMemMap();
-
 	mDataCache->Clear();
 
 	//build complete
@@ -1232,6 +1224,8 @@ void OmMipVolume::copyDataIn()
 				OmMipChunkPtr chunk;
 				GetChunk(chunk, coord);
 
+				assert(0);
+				/*
 				if(4 == GetBytesPerSample()){
 					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
 					quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
@@ -1243,7 +1237,7 @@ void OmMipVolume::copyDataIn()
 
 					chunk->RawWriteChunkData(dataMapped);
 				}
-
+				*/
 				++counter;
 				printf("\rwrote chunk %dx%dx%d (%d bytes) to HDF5 (%d of %d total)",
 				       x, y, z, GetBytesPerSample(), counter, total);
@@ -1280,10 +1274,13 @@ bool OmMipVolume::areImportFilesImages()
 
 void OmMipVolume::copyAllMipDataIntoMemMap()
 {
+
 	if(4 == GetBytesPerSample()){
-		uint32Data->AllocMemMapFiles();
+		assert(0);
+		//volData.AllocMemMapFiles();
 	} else {
-		ucharData->AllocMemMapFiles();
+		assert(0);
+		//volData.AllocMemMapFiles();
 	}
 
 	Flush();
@@ -1302,6 +1299,9 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 					OmMipChunkPtr chunk;
 					GetChunk(chunk, coord);
 
+					assert(0);
+					/*
+
 					if(4 == GetBytesPerSample()){
 						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
 						quint32* data = dataPtr->getPtr<uint32_t>();
@@ -1319,8 +1319,50 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 
 						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
 					}
+					*/
 				}
 			}
 		}
 	}
+}
+
+void OmMipVolume::loadVolData()
+{
+	volData->loadVolData();
+}
+
+void OmMipVolume::setVolDataType(OmAllowedVolumeDataTypes type)
+{
+	mVolDataType = type;
+	/*
+	// TODO: don't use lowlevel HDF5 types...
+	OmMipChunkCoord coord(0,0,0,0);
+	OmMipChunkPtr chunk;
+	GetChunk(chunk, coord);
+	chunk->Open();
+	OmDataWrapperPtr data = chunk->GetImageDataWrapper();
+
+	if(data->getHdf5MemoryType() == H5T_NATIVE_CHAR){
+		mVolDataType = OM_INT8;
+	}else if(data->getHdf5MemoryType() == H5T_NATIVE_UCHAR){
+		mVolDataType = OM_UINT8;
+	}else if(data->getHdf5MemoryType() == H5T_NATIVE_INT){
+		mVolDataType = OM_INT32;
+	}else if(data->getHdf5MemoryType() == H5T_NATIVE_UINT){
+		mVolDataType = OM_UINT32;
+	}else if(data->getHdf5MemoryType() == H5T_NATIVE_FLOAT){
+		mVolDataType = OM_FLOAT;
+	}else {
+		assert(0 && "unknown type");
+	}
+	*/
+}
+
+template <typename C>
+void OmMipVolume::setupForDataImport()
+{
+	assert(0 && "fill me in");
+	//setVolDataType(OM_UINT8);
+	//vol->volData.AllocMemMapFiles();
+	//vol->AllocInternalData(OmDataWrapper<uchar>::produceinvalid());
 }

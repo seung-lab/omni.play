@@ -61,6 +61,8 @@ template class OmVolumeImporter<OmSegmentation>;
 template class OmLoadImage<OmChannel>;
 template class OmLoadImage<OmSegmentation>;
 
-template class OmMemMappedVolume<unsigned char, OmMipVolume>;
+template class OmMemMappedVolume<int8_t, OmMipVolume>;
+template class OmMemMappedVolume<uint8_t, OmMipVolume>;
+template class OmMemMappedVolume<int32_t, OmMipVolume>;
 template class OmMemMappedVolume<uint32_t, OmMipVolume>;
 template class OmMemMappedVolume<float, OmMipVolume>;

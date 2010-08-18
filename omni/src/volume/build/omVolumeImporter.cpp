@@ -115,7 +115,8 @@ bool OmVolumeImporter<VOL>::importImageStack()
 
 	// alloc must happen after setBytesPerSample....
 	if( 1 == vol->GetBytesPerSample() ){
-		vol->ucharData->AllocMemMapFiles();
+		assert(0);
+		//vol->setupForDataImport<unsigned char>();
 	} else {
 		assert(0 && "don't know if float or uint32_t");
 	}
@@ -127,18 +128,10 @@ bool OmVolumeImporter<VOL>::importImageStack()
 	}
 
 	printf("\ndone with image import; copying to HDF5 file...\n");
-
-	// silly way to allocate internal data
-	OmMipChunkCoord coord(0,0,0,0);
-	OmMipChunkPtr chunk;
-	vol->GetChunk(chunk, coord);
-	OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-	vol->AllocInternalData(dataPtrMapped);
-
 	vol->copyDataIn();
 
 	import_timer.stop();
-
 	printf("done in %.2f secs\n",import_timer.s_elapsed());
+
 	return true;
 }

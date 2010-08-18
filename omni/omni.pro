@@ -254,6 +254,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
            src/volume/omLoadImageThread.h \
+           src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
            src/zi/base/bash.h \
            src/zi/base/omni.h \
@@ -469,6 +470,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
            src/volume/omLoadImageThread.cpp \
+           src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \

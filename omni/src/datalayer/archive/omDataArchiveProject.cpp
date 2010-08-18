@@ -21,7 +21,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-const int Omni_Version = 13;
+const int Omni_Version = 14;
 int Omni_File_Version;
 
 static const QString Omni_Postfix("OMNI");
@@ -176,6 +176,8 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan )
 		in >> chan.mMinVal;
 	}
 
+	chan.loadVolData();
+
 	return in;
 }
 
@@ -316,8 +318,9 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mst.mDendThreshold;
 	in >> seg.mGroups;
 
-	seg.mst.read(seg);
+	seg.loadVolData();
 
+	seg.mst.read(seg);
 	seg.mSegmentCache->refreshTree();
 
 	return in;
@@ -481,6 +484,8 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 	out << m.mStoreChunkMetaData;
 
 	out << m.mBytesPerSample;
+
+	out << (int)m.mVolDataType;
 }
 
 void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
@@ -495,6 +500,14 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mStoreChunkMetaData;
 
 	in >> m.mBytesPerSample;
+
+	if(Omni_Version > 13){
+		int volDataType;
+		in >> volDataType;
+		m.mVolDataType = (OmAllowedVolumeDataTypes)volDataType;
+	} else {
+		m.mVolDataType = UNKNOWN;
+	}
 }
 
 void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v )
@@ -589,4 +602,3 @@ QDataStream &operator>>(QDataStream & in, OmGroup & g )
 
         return in;
 }
-

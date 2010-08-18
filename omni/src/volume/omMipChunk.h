@@ -12,11 +12,11 @@
 
 #include "omMipChunkCoord.h"
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWrapper.h"
 #include "system/cache/omCacheableBase.h"
 #include "utility/image/omImage.hpp"
 
 #include <QMutex>
+#include "boost/variant.hpp"
 
 class vtkImageData;
 class OmMipVolume;
@@ -50,9 +50,9 @@ public:
 	OmDataWrapperPtr RawReadChunkDataUINT32();
 	bool mIsRawChunkOpen;
 	OmDataWrapperPtr mRawChunk;
-	OmDataWrapperPtr RawReadChunkDataUCHARmapped();
+	boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
+	RawReadChunkDataMapped();
 	void dealWithCrazyNewStuff();
-	OmDataWrapperPtr RawReadChunkDataUINT32mapped();
 
 	bool mIsRawMappedChunkOpen;
 	OmDataWrapperPtr mRawMappedChunk;
@@ -156,6 +156,8 @@ protected:
  private:
 	//image data of chunk
 	OmDataWrapperPtr mData;
+
+	boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*> mRawData;
 
         boost::unordered_map< OmSegID, DataBbox> mBounds;
 

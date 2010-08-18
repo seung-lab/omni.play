@@ -1,3 +1,4 @@
+#include "volume/omVolumeData.hpp"
 #include "common/omGl.h"
 #include "common/omVtk.h"
 #include "utility/image/omImage.hpp"
@@ -284,12 +285,9 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
 	assert(ContainsVoxel(voxel));
 
-	if(!mpMipVolume->mDataHack) {
-		Open();
-		mpMipVolume->mDataHack = mData;
-                printf("here 1\n");
-	}
+	assert(0);
 
+	/*
         if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
 	  printf("fixme!\n");
         } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
@@ -304,7 +302,7 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
                   mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
 	  printf("fixme!\n");
         }
-
+	*/
 	//data volume now dirty
 	setVolDataDirty();
 }
@@ -314,6 +312,9 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
  */
 uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 {
+
+	assert(0);
+	/*
         const DataCoord voxel = volVoxel - GetExtent().getMin();
 
 	assert(ContainsVoxel(voxel));
@@ -330,7 +331,7 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
                   mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
 	  printf("fixme!\n");
         }
-
+	*/
 	assert(0 && "fixme!");
 }
 
@@ -511,58 +512,6 @@ Vector2i OmMipChunk::GetSliceDims()
   return Vector2i(128,128);
 }
 
-void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
-{
-	if(!mpMipVolume->mDataHack) {
-		Open();
-		mpMipVolume->mDataHack = mData;
-                printf("here 1\n");
-	}
-
-	if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
-	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
-	  float* dataMapped = dataPtrMapped->getPtr<float>();
-
-	  assert(dataMapped);
-
-	  OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
-	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
-	  float mn = 0.0;
-	  float mx = 1.0;
-	  //	  mpMipVolume->GetBounds(mx, mn);
-	  OmImage<unsigned char, 2> slice =
-		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
-	  return slice.getMallocCopyOfData();
-
-	} else if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_UINT ||
-		  mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-
-	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUINT32mapped();
-	  quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
-
-	  assert(dataMapped);
-
-	  OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
-
-	  OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
-	  return slice.getMallocCopyOfData();
-
-	} else if(mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
-		  mpMipVolume->mDataHack->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
-
-	  OmDataWrapperPtr dataPtrMapped = RawReadChunkDataUCHARmapped();
-	  unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
-
-	  assert(dataMapped);
-
-	  OmImage<unsigned char, 3, OmImageRefData> chunk(OmExtents[128][128][128], dataMapped);
-	  OmImage<unsigned char, 2> slice = chunk.getSlice(plane, offset);
-	  return slice.getMallocCopyOfData();
-	}
-
-	assert(0);
-}
-
 /**
  *      Returns new ImageData containing the entire extent of data needed
  *      to form continuous meshes with adjacent MipChunks.  This means an extra
@@ -600,6 +549,8 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 
 	OmImage<uint32_t, 3> chunkImage;
 
+	assert(0);
+	/*
 	if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
 	   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
 	  chunkImage = OmImage<uint32_t, 3>(OmExtents[128][128][128],
@@ -613,7 +564,7 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 	  printf("type was %s...\n", p_chunk->mData->getTypeAsString().c_str());
 	  assert(0 && "unrecognized type");
 	}
-
+	*/
         retImage.copyFrom(chunkImage,
 			  OmExtents[z*128][y*128][x*128],
                           OmExtents[0][0][0],
@@ -731,33 +682,17 @@ void OmMipChunk::RawWriteChunkData(quint32* data)
 		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
 }
 
-OmDataWrapperPtr OmMipChunk::RawReadChunkDataUCHARmapped()
+boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
+OmMipChunk::RawReadChunkDataMapped()
 {
         QMutexLocker locker(&mOpenLock);
 
 	if(!mIsRawMappedChunkOpen){
-		unsigned char * data =
-			mpMipVolume->ucharData->getChunkPtr(mCoordinate);
-
-		mRawMappedChunk = OmDataWrapper<unsigned char>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
-		mIsRawMappedChunkOpen=true;
+		mIsRawMappedChunkOpen = true;
+		mRawData = mpMipVolume->volData->getChunkPtrRaw(mCoordinate);
 	}
 
-	return mRawMappedChunk;
-}
-
-OmDataWrapperPtr OmMipChunk::RawReadChunkDataUINT32mapped()
-{
-        QMutexLocker locker(&mOpenLock);
-
-	if(!mIsRawMappedChunkOpen){
-		quint32* data =
-			(quint32*)mpMipVolume->uint32Data->getChunkPtr(mCoordinate);
-		mRawMappedChunk = OmDataWrapper<unsigned int>::producemmap(data, OmMemoryMappedFile::FIXME(mpMipVolume));
-		mIsRawMappedChunkOpen=true;
-	}
-
-	return mRawMappedChunk;
+	return mRawData;
 }
 
 void OmMipChunk::dealWithCrazyNewStuff()
@@ -785,3 +720,50 @@ void OmMipChunk::GetBounds(float & maxout, float & minout)
 	minout = chunk.getMin();
 }
 
+class ExtractDataSliceVisitor : public boost::static_visitor<void*>{
+public:
+	ExtractDataSliceVisitor(const ViewType plane, int offset)
+		: plane(plane), offset(offset) {}
+
+	void* operator()(int8_t* d ) const {
+		OmImage<int8_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+		OmImage<int8_t, 2> slice = chunk.getSlice(plane, offset);
+		return slice.getMallocCopyOfData();
+	}
+	void* operator()(uint8_t* d ) const {
+		OmImage<uint8_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+		OmImage<uint8_t, 2> slice = chunk.getSlice(plane, offset);
+		return slice.getMallocCopyOfData();
+	}
+	void* operator()(int32_t* d ) const {
+		OmImage<int32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+		OmImage<int32_t, 2> slice = chunk.getSlice(plane, offset);
+		return slice.getMallocCopyOfData();
+	}
+	void* operator()(uint32_t * d ) const {
+		OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+		OmImage<uint32_t, 2> slice = chunk.getSlice(plane, offset);
+		return slice.getMallocCopyOfData();
+	}
+	void* operator()(float* d ) const {
+	  OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
+	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
+	  float mn = 0.0;
+	  float mx = 1.0;
+	  //	  mpMipVolume->GetBounds(mx, mn);
+	  OmImage<unsigned char, 2> slice =
+		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
+	  return slice.getMallocCopyOfData();
+	}
+private:
+	const ViewType plane;
+	const int offset;
+};
+
+void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
+{
+	boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*> data
+		= RawReadChunkDataMapped();
+
+	return boost::apply_visitor(ExtractDataSliceVisitor(plane, offset), data);
+}

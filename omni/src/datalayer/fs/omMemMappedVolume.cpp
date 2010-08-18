@@ -68,7 +68,7 @@ void OmMemMappedVolume<T,VOL>::AllocMemMapFiles()
 }
 
 template <typename T, typename VOL>
-T* OmMemMappedVolume<T,VOL>::getChunkPtr( OmMipChunkCoord & coord)
+T* OmMemMappedVolume<T,VOL>::getChunkPtr(const OmMipChunkCoord & coord)
 {
 	const int level = coord.Level;
 

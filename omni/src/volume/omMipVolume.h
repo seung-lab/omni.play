@@ -12,10 +12,8 @@
 #include "common/omCommon.h"
 #include "system/cache/omMipVolumeCache.h"
 #include "system/cache/omThreadChunkThreadedCache.h"
-#include "datalayer/fs/omMemMappedVolume.hpp"
 
 #include <QFileInfo>
-#include <QImage>
 
 class OmMipChunkCoord;
 class OmDataPath;
@@ -23,6 +21,7 @@ class OmMipChunk;
 class OmThreadChunkLevel;
 class OmVolume;
 class vtkImageData;
+class OmVolumeData;
 
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
@@ -137,17 +136,22 @@ public:
 
 	QFileInfoList mSourceFilenamesAndPaths;
 
-	boost::shared_ptr<OmMemMappedVolume<unsigned char, OmMipVolume> > ucharData;
-	boost::shared_ptr<OmMemMappedVolume<uint32_t, OmMipVolume> > uint32Data;
-	boost::shared_ptr<OmMemMappedVolume<float, OmMipVolume> > floatData;
-	void copyAllMipDataIntoMemMap();
+        void setVolDataType(OmAllowedVolumeDataTypes type);
 
-	OmDataWrapperPtr mDataHack;
+        void copyAllMipDataIntoMemMap();
+
+	boost::shared_ptr<OmVolumeData> volData;
+
+	template <typename C>
+	void setupForDataImport();
 
 protected:
-	void BuildBlankVolume(const Vector3i & dims);
+        OmMipVolumeCache *const mDataCache;
+        OmAllowedVolumeDataTypes mVolDataType;
 
-	OmMipVolumeCache *const mDataCache;
+	//	boost::shared_ptr<OmVolumeData
+
+	void BuildBlankVolume(const Vector3i & dims);
 
 	//state
 	void SetBuildState(MipVolumeBuildState);
@@ -169,6 +173,8 @@ protected:
 	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
 
+	void loadVolData();
+
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
@@ -179,6 +185,7 @@ private:
 
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;
+	friend class OmVolumeData;
 };
 
 #endif

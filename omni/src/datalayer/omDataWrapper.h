@@ -32,6 +32,7 @@ template <> struct OmHdf5MemoryTypeImpl<unsigned int>   { static hid_t getType()
 template <> struct OmHdf5MemoryTypeImpl<int>            { static hid_t getType() { return H5T_NATIVE_INT;   }};
 template <> struct OmHdf5MemoryTypeImpl<float>          { static hid_t getType() { return H5T_NATIVE_FLOAT; }};
 template <> struct OmHdf5MemoryTypeImpl<char> 	        { static hid_t getType() { return H5T_NATIVE_CHAR;  }};
+template <> struct OmHdf5MemoryTypeImpl<int8_t>	        { static hid_t getType() { return H5T_NATIVE_CHAR;  }};
 template <> struct OmHdf5MemoryTypeImpl<unsigned char>  { static hid_t getType() { return H5T_NATIVE_UCHAR; }};
 
 template <class T> struct OmHdf5FileTypeImpl;
@@ -39,6 +40,7 @@ template <> struct OmHdf5FileTypeImpl<unsigned int>   { static hid_t getType() {
 template <> struct OmHdf5FileTypeImpl<int>            { static hid_t getType() { return H5T_STD_I32LE;  }};
 template <> struct OmHdf5FileTypeImpl<float>          { static hid_t getType() { return H5T_IEEE_F32LE; }};
 template <> struct OmHdf5FileTypeImpl<char> 	      { static hid_t getType() { return H5T_STD_I8LE;   }};
+template <> struct OmHdf5FileTypeImpl<int8_t> 	      { static hid_t getType() { return H5T_STD_I8LE;   }};
 template <> struct OmHdf5FileTypeImpl<unsigned char>  { static hid_t getType() { return H5T_STD_U8LE;   }};
 
 template <class T> struct OmTypeAsString;
@@ -46,6 +48,7 @@ template <> struct OmTypeAsString<unsigned int>   { static std::string getTypeAs
 template <> struct OmTypeAsString<int>            { static std::string getTypeAsString() { return "int"; }};
 template <> struct OmTypeAsString<float>          { static std::string getTypeAsString() { return "float"; }};
 template <> struct OmTypeAsString<char> 	  { static std::string getTypeAsString() { return "char"; }};
+template <> struct OmTypeAsString<int8_t> 	  { static std::string getTypeAsString() { return "char"; }};
 template <> struct OmTypeAsString<unsigned char>  { static std::string getTypeAsString() { return "unsigned char"; }};
 
 class OmDataWrapperBase {
@@ -106,8 +109,7 @@ private:
 		} else if(2 == mShouldFree){
 			getVTKPtr()->Delete();
 		} else  if(3 == mShouldFree) {
-			mMMFile->unref();
-			// FIXME.. delete opbject if 0...
+
 		} else if (4 == mShouldFree) {
 		} else if( -2 == mShouldFree){
 			// NULL
@@ -139,9 +141,8 @@ private:
 	static OmDataWrapperPtr producevtk(void *ptr) {
 		return ptr_type(new OmDataWrapper(ptr, 2));
 	};
-	static OmDataWrapperPtr producemmap(void *ptr, OmMemoryMappedFile* file){
-		OmDataWrapper * dw = new OmDataWrapper(ptr, 3, file);
-		file->ref();
+	static OmDataWrapperPtr producemmap(void *ptr){
+		OmDataWrapper * dw = new OmDataWrapper(ptr, 3);
 		return ptr_type(dw);
 	}
 
