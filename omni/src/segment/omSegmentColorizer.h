@@ -49,7 +49,7 @@ class OmSegmentColorizer
 
 	void setup();
 
-	OmColor getVoxelColorForView2d( const OmSegID val );
+	OmColor getVoxelColorForView2d(const OmSegID val);
 
 	inline int makeSelectedColor(const quint8 in_c ) {
 		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
@@ -57,16 +57,6 @@ class OmSegmentColorizer
 			return 255;
 		}
 		return c;
-	}
-
-	inline bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
-		if( currentSegCacheFreshness != mColorCache[val].freshness ){
-			return false;
-		}
-		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
-			return false;
-		}
-		return true;
 	}
 };
 

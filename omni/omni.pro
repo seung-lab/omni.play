@@ -504,7 +504,7 @@ DESTDIR = bin
 #QMAKE_LFLAGS += -static
 
 #### for profiling
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS   += -pg
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS   += -pg
 
 #QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter

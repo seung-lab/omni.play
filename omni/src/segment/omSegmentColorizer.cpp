@@ -36,6 +36,10 @@ void OmSegmentColorizer::setup()
 	mSize = curSize;
 	mColorCache.resize(curSize);
 	mColorUpdateMutex.resize(curSize);
+
+	printf("segment color cache: current size in memory ~%d bytes\n",
+	       sizeof(OmColorWithFreshness)*curSize +
+	       sizeof(zi::Mutex)*curSize);
 }
 
 void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
@@ -51,8 +55,8 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 		mSegmentCache->AreSegmentsSelected() ||
 		mSegmentCache->AreSegmentsEnabled();
 
-	int offset = 0;
-	OmColor newcolor = blackColor;
+	uint32_t offset = 0;
+	OmColor prevColor = blackColor;
 	OmSegID lastVal = 0;
 
 	// looping through each value of imageData, which is
@@ -60,28 +64,40 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	for (int i = 0; i < size; ++i ) {
 
 		const OmSegID val = (OmSegID) imageData[i];
+		OmColor curColor;
 
-		if ( val != lastVal) {
-			if( 0 == val ){
-				newcolor = blackColor;
-			} else{
-				mColorUpdateMutex[val].lock(); // TODO: use lock pages
-				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ].color = getVoxelColorForView2d(val);
-					mColorCache[ val ].freshness = segCacheFreshness;
-				}
-				newcolor = mColorCache[ val ].color;
-				mColorUpdateMutex[val].unlock();
+		if(val == lastVal){ //memoized previous, non-zero color
+			curColor = prevColor;
+		} else if(0 == val){
+			curColor = blackColor;
+		} else { //get color from cache
+
+			mColorUpdateMutex[val].lock();
+
+			//check if cache element is valid
+			if(segCacheFreshness   == mColorCache[val].freshness &&
+			   mCurBreakThreshhold == mPrevBreakThreshhold       ){
+
+				curColor = mColorCache[val].color;
+
+			} else { //update color
+				curColor = mColorCache[val].color
+					 = getVoxelColorForView2d(val);
+				mColorCache[val].freshness = segCacheFreshness;
 			}
+
+			mColorUpdateMutex[val].unlock();
+
+			prevColor = curColor; //memoize previous, non-zero color
+			lastVal   = val;
 		}
 
-		data[offset]     = newcolor.red;
-		data[offset + 1] = newcolor.green;
-		data[offset + 2] = newcolor.blue;
+		data[offset]     = curColor.red;
+		data[offset + 1] = curColor.green;
+		data[offset + 2] = curColor.blue;
 		data[offset + 3] = 255;
 
 		offset += 4;
-		lastVal = val;
 	}
 }
 
