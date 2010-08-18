@@ -46,29 +46,26 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 
 void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
 					      const OmMipChunkCoord &,
-					      boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds )
+					      OmSegSizeMapPtr sizes,
+					      OmSegBounds& bounds )
 {
-	OmSegIDsSet::const_iterator iter;
-	for( iter = data_values.begin(); iter != data_values.end(); ++iter ){
+	FOR_EACH(it, data_values) {
+		const OmSegID val = *it;
 
-		if( 0 == *iter ){
-			continue;
+		if( 0 == val ){ continue; }
+
+		OmSegment * seg = GetSegmentFromValue(val);
+
+                if(NULL == seg){
+			seg = AddSegment(val);
 		}
 
-		OmSegment * seg = GetSegmentFromValue( *iter );
-
-                if( NULL == seg ) {
-			seg = AddSegment( *iter );
-		}
-
-		assert(seg);
-
-		if( NULL != sizes ){
-			seg->mSize += sizes->at(*iter);
-			if (seg->mBounds.isEmpty()) {
-                        	seg->mBounds = bounds.at(*iter);
+		if(!sizes->empty()){
+			seg->mSize += sizes->at(val);
+			if(seg->mBounds.isEmpty()) {
+                        	seg->mBounds = bounds.at(val);
                         } else {
-                        	seg->mBounds.merge(bounds.at(*iter));
+                        	seg->mBounds.merge(bounds.at(val));
 			}
 		}
 

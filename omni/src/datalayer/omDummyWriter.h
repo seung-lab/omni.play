@@ -4,9 +4,8 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWriter.h"
 
-class OmDummyWriter : public OmDataWriter
-{
- public:
+class OmDummyWriter : public OmDataWriter {
+public:
 	OmDummyWriter( QString fileNameAndPath );
 	~OmDummyWriter();
 
@@ -21,16 +20,18 @@ class OmDummyWriter : public OmDataWriter
 	void group_delete( const OmDataPath & path );
 
 	//image I/O
-	void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type type);
-	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
+	void dataset_image_create_tree_overwrite(const OmDataPath &,
+						 const Vector3i&,
+						 const Vector3i&,
+						 const OmAllowedVolumeDataTypes);
 
-
-	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
+	void dataset_image_write_trim(const OmDataPath &, DataBbox*, OmDataWrapperPtr);
+	void dataset_write_raw_chunk_data(const OmDataPath &, DataBbox, OmDataWrapperPtr);
 
 	//data set raw
-	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	void dataset_raw_create_tree_overwrite(const OmDataPath &, int, const OmDataWrapperPtr);
 
- private:
+private:
 	QString mFileNameAndPath;
 };
 

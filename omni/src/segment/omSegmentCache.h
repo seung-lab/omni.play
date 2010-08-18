@@ -1,7 +1,7 @@
 #ifndef OM_SEGMENT_CACHE_H
 #define OM_SEGMENT_CACHE_H
 
-#include "common/omCommon.h"
+#include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
 
 #include <QMutex>
@@ -20,8 +20,8 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDsSet & values, const OmMipChunkCoord & mipCoord,
-				  boost::unordered_map< OmSegID, unsigned int> * sizes,  boost::unordered_map< OmSegID, DataBbox> & bounds);
+	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
+				  OmSegSizeMapPtr, OmSegBounds&);
 	OmSegment* AddSegment(OmSegID value);
 
 	OmSegment* GetSegment(const OmSegID);
@@ -79,8 +79,6 @@ public:
 						  OmSegID startSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
-
-	void ExportDataFilter(vtkImageData * pImageData);
 
 	void refreshTree();
 

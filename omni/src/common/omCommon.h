@@ -68,7 +68,6 @@ enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER };
  * "segment" types
  */
 //internal storage size of segment data
-#define SEGMENT_DATA_BYTES_PER_SAMPLE 4
 #define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
 
 typedef uint32_t OmSegID;

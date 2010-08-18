@@ -14,8 +14,9 @@ public:
 
 	~OmMemMappedVolume();
 
-	void AllocMemMapFiles();
+	void AllocMemMapFiles(const std::map<int, Vector3i> &);
 	T* getChunkPtr(const OmMipChunkCoord & coord);
+	int GetBytesPerSample(){ return sizeof(T); }
 
 private:
 	VOL* vol_;
@@ -25,14 +26,11 @@ private:
 	zi::Mutex mutex_;
 	bool alreadyAllocFiles;
 
-	int GetBytesPerSample(){ return sizeof(T); }
-
 	QString getFileName(const int level);
 	QFile* openFile(const int level);
 	void memMap(QFile * file, const int level);
 	void allocateSpace(QFile * file);
 	void openAndmMemMap(const int level);
-
 };
 
 #endif

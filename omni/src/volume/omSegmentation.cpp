@@ -40,7 +40,6 @@ OmSegmentation::OmSegmentation()
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
 {
-	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 }
 
 // used by OmGenericManager
@@ -57,9 +56,6 @@ OmSegmentation::OmSegmentation(OmId id)
 	SetDirectoryPath( QString("segmentations/%1/").arg(GetName()) );
 
 	mMipMeshManager.SetDirectoryPath( GetDirectoryPath() );
-
-	//segmenations has SEGMENT_DATA_BYTES_PER_SAMPLE bytes per sample
-	SetBytesPerSample(SEGMENT_DATA_BYTES_PER_SAMPLE);
 
 	//uses meta data
 	mStoreChunkMetaData = true;
@@ -254,27 +250,26 @@ void OmSegmentation::BuildMeshDataInternal()
  */
 void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 {
-	OmMipChunkPtr p_chunk;
-	GetChunk(p_chunk, mipCoord);
+	OmMipChunkPtr chunk;
+	GetChunk(chunk, mipCoord);
 
-	const bool isMIPzero = p_chunk->IsLeaf();
-
-	// refresh values even if not MIP 0
-	boost::unordered_map< OmSegID, unsigned int> * sizes = p_chunk->RefreshDirectDataValues( isMIPzero );
+	const bool isMIPzero = chunk->IsLeaf();
 
 	if(isMIPzero){
-		const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-		boost::unordered_map< OmSegID, DataBbox> & bounds = p_chunk->GetDirectDataBounds();
-		mSegmentCache->AddSegmentsFromChunk( data_values, mipCoord, sizes, bounds);
+		mSegmentCache->
+			AddSegmentsFromChunk(chunk->GetDirectDataValues(),
+					     mipCoord,
+					     chunk->RefreshDirectDataValues(true),
+					     chunk->GetDirectDataBounds());
 
 		if(remesh) {
                 	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
                 	mesher.addChunkCoord(mipCoord);
                 	mesher.mesh();
 		}
+	} else {
+		chunk->RefreshDirectDataValues(false);
 	}
-
-	delete sizes;
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
@@ -302,18 +297,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 	//call redraw to force mesh to reload
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-}
-
-/////////////////////////////////
-///////          Export
-
-/**
- *	Replace each segment value in the volume with its root segment ID
- */
-void OmSegmentation::ExportDataFilter(OmDataWrapperPtr data)
-{
-	// TODO: refactor out of segment cache
-	mSegmentCache->ExportDataFilter(data->getVTKPtr());
 }
 
 /////////////////////////////////

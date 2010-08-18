@@ -255,7 +255,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
-           src/volume/omLoadImageThread.h \
+           src/volume/build/omLoadImage.h \
            src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
            src/zi/base/bash.h \
@@ -471,7 +471,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
-           src/volume/omLoadImageThread.cpp \
+           src/volume/build/omLoadImage.cpp \
            src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \

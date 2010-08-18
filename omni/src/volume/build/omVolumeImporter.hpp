@@ -24,7 +24,7 @@ private:
 	bool importHDF5(OmDataPath & dataset);
 
 	bool importImageStack();
-	void figureOutNumberOfBytesImg();
+	OmAllowedVolumeDataTypes figureOutDataType();
 };
 
 #endif

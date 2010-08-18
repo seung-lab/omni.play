@@ -43,9 +43,6 @@ OmChannel::OmChannel(OmId id)
 	//init properties
 	SetHue(Vector3f::ONE);
 
-	//channels have 1 byte per sample
-	SetBytesPerSample(1);
-
 	//do not use meta data
 	mStoreChunkMetaData = false;
 

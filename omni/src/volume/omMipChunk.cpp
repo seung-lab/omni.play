@@ -102,19 +102,12 @@ void OmMipChunk::Open()
 {
         QMutexLocker locker(&mOpenLock);
 
-	//ignore if already open
-	if (IsOpen())
+	if (IsOpen()) {
 		return;
+	}
 
-
-	//read volume data
 	ReadVolumeData();
 
-	const int64_t size = 128*128*128*GetBytesPerSample();
-	UpdateSize(size);
-	std::cout << "increasing cache size by " << size << "\n";
-
-	//set open
 	SetOpen(true);
 }
 
@@ -164,20 +157,15 @@ void OmMipChunk::Close()
 {
 	dealWithCrazyNewStuff();
 
-	//ignore if already closed
-	if (!IsOpen())
+	if (!IsOpen()) {
 		return;
+	}
 
-	//flush if dirty
-	if (IsDirty())
+	if (IsDirty()) {
 		Flush();
+	}
 
-	//close
 	SetOpen(false);
-
-	const int64_t size = -128*128*128*GetBytesPerSample();
-	UpdateSize(size);
-	std::cout << "decreasing cache size by " << size << "\n";
 }
 
 /////////////////////////////////
@@ -440,35 +428,42 @@ void OmMipChunk::loadMetadataIfPresent()
 	containedValuesDataLoaded = true;
 }
 
+class RefreshDirectDataValuesVisitor :
+	public boost::static_visitor<OmSegSizeMapPtr>{
+public:
+	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
+				       const bool computeSizes)
+		: chunk_(chunk)
+		, computeSizes_(computeSizes) {}
+
+	template <typename T>
+	OmSegSizeMapPtr operator()(T* d ) const {
+		return chunk_->doRefreshDirectDataValues(computeSizes_, d);
+	}
+private:
+	OmMipChunk *const chunk_;
+	const bool computeSizes_;
+};
+
+
 /*
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store
  *	all values in the DataSegmentId set of the chunk.
  */
-boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::RefreshDirectDataValues( const bool computeSizes )
+OmSegSizeMapPtr OmMipChunk::RefreshDirectDataValues(const bool computeSizes)
 {
 	mDirectlyContainedValues.clear();
-
-	if(4 == GetBytesPerSample()){
-		return doRefreshDirectDataValues(computeSizes,
-						 RawReadChunkDataHDF5()->getPtr<uint32_t>());
-	} else if (1 == GetBytesPerSample()){
-		return doRefreshDirectDataValues(computeSizes,
-						 RawReadChunkDataHDF5()->getPtr<unsigned char>());
-	} else {
-		assert(0 && "unsupported number of bytes per sample");
-	}
-
 	containedValuesDataLoaded = true;
+
+	return boost::apply_visitor(RefreshDirectDataValuesVisitor(this, computeSizes),
+				    mChunkData->rawData);
 }
 
 template <typename C>
-boost::unordered_map< OmSegID, unsigned int> * OmMipChunk::doRefreshDirectDataValues( const bool computeSizes,
-										      C* data)
+OmSegSizeMapPtr OmMipChunk::doRefreshDirectDataValues(const bool computeSizes,
+						      C* data)
 {
-	boost::unordered_map< OmSegID, unsigned int> * sizes = NULL;
-	if( computeSizes ){
-		sizes = new boost::unordered_map< OmSegID, unsigned int>();
-	}
+	OmSegSizeMapPtr sizes(new boost::unordered_map<OmSegID, uint32_t>());
 
 	//for all voxels in the chunk
 	for(int z = 0; z < 128; z++) {
@@ -587,11 +582,6 @@ bool OmMipChunk::IsOpen()
 void OmMipChunk::SetOpen(bool state)
 {
 	mIsOpen = state;
-}
-
-int OmMipChunk::GetBytesPerSample()
-{
-	return mpMipVolume->GetBytesPerSample();
 }
 
 bool OmMipChunk::ContainsVoxel(const DataCoord & vox)

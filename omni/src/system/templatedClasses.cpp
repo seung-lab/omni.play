@@ -1,5 +1,5 @@
 #include "datalayer/fs/omMemMappedVolume.cpp"
-#include "volume/omLoadImageThread.cpp"
+#include "volume/build/omLoadImage.cpp"
 #include "volume/build/omVolumeImporter.cpp"
 #include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"

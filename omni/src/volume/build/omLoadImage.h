@@ -21,7 +21,6 @@ class OmLoadImage
 	T *const mMipVolume;
 
 	const Vector3i m_leaf_mip_dims;
-	const int m_numberOfBytes;
 
 	QString mMsg;
 	const int mTotalNumImages;

@@ -483,7 +483,7 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 	out << m.mBuildState;
 	out << m.mStoreChunkMetaData;
 
-	out << m.mBytesPerSample;
+	out << 0;
 
 	out << (int)m.mVolDataType;
 }
@@ -499,7 +499,8 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mBuildState;
 	in >> m.mStoreChunkMetaData;
 
-	in >> m.mBytesPerSample;
+	int mBytesPerSample;
+	in >> mBytesPerSample; //FIXME: no longer used
 
 	if(Omni_Version > 13){
 		int volDataType;

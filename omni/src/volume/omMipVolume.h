@@ -22,12 +22,13 @@ class OmThreadChunkLevel;
 class OmVolume;
 class vtkImageData;
 class OmVolumeData;
+class OmHdf5;
 
-//mipvolume state
-enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
+enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
+			   MIPVOL_BUILT,
+			   MIPVOL_BUILDING };
 
 class OmMipVolume : public OmVolume {
-
 public:
         OmMipVolume();
 	~OmMipVolume();
@@ -128,8 +129,6 @@ public:
 	void DeleteVolumeData();
 
 	bool ContainsVoxel(const DataCoord &vox);
-	int GetBytesPerSample();
-	void SetBytesPerSample(int);
 
 	//Thread Chunk Cache
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
@@ -142,14 +141,13 @@ public:
 
 	boost::shared_ptr<OmVolumeData> volData;
 
-	template <typename C>
-	void setupForDataImport();
+	Vector3i getDimsRoundedToNearestChunk(const int level);
+
+	template <typename C> void setupForDataImport();
 
 protected:
         OmMipVolumeCache *const mDataCache;
         OmAllowedVolumeDataTypes mVolDataType;
-
-	//	boost::shared_ptr<OmVolumeData
 
 	void BuildBlankVolume(const Vector3i & dims);
 
@@ -159,7 +157,7 @@ protected:
 	virtual bool ImportSourceData(OmDataPath & dataset) = 0;
 
 	//mipvolume disk data
-	void AllocInternalData(OmDataWrapperPtr);
+	void AllocInternalData(const OmAllowedVolumeDataTypes);
 	void UpdateRootMipLevel();
 
 	//mip data
@@ -178,10 +176,13 @@ protected:
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
-	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
 	QString mDirectoryPath;          // ex. "./" or "images/out/"
 	QString mFilename;
 	bool sourceFilesWereSet;
+
+	void allocateHDF5(const std::map<int, Vector3i> & levelsAndDims);
+	void allocateMemMap(const std::map<int, Vector3i> & levelsAndDims);
+	void doExportChunk(const OmMipChunkCoord &, OmHdf5 &);
 
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;

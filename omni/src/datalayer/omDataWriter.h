@@ -1,14 +1,17 @@
-#ifndef OM_DATA_READER_WRITER_H
-#define OM_DATA_READER_WRITER_H
+#ifndef OM_DATA_WRITER_H
+#define OM_DATA_WRITER_H
 
 #include "datalayer/omDataWrapper.h"
+#include "common/omCommon.h"
 
 class vtkImageData;
 class OmDataPath;
 
-class OmDataWriter
-{
- public:
+class OmDataWriter {
+public:
+	OmDataWriter(){}
+	virtual ~OmDataWriter(){}
+
 	virtual void create() = 0;
 
 	virtual void open() = 0;
@@ -19,13 +22,22 @@ class OmDataWriter
 	virtual void group_delete( const OmDataPath & path ) = 0;
 
 	//image I/O
-	virtual void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type type) = 0;
-	virtual void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data) = 0;
+	virtual void dataset_image_create_tree_overwrite( const OmDataPath &,
+							  const Vector3i&,
+							  const Vector3i&,
+							  const OmAllowedVolumeDataTypes) = 0;
+	virtual void dataset_image_write_trim(const OmDataPath&,
+					      DataBbox*,
+					      OmDataWrapperPtr) = 0;
 
-	virtual void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data) = 0;
+	virtual void dataset_write_raw_chunk_data(const OmDataPath &,
+						  DataBbox,
+						  OmDataWrapperPtr) = 0;
 
 	//data set raw
-	virtual void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data) = 0;
+	virtual void dataset_raw_create_tree_overwrite(const OmDataPath&,
+						       int,
+						       const OmDataWrapperPtr) = 0;
 };
 
 #endif

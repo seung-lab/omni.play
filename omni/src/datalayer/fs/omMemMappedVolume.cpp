@@ -25,7 +25,7 @@ OmMemMappedVolume<T,VOL>::~OmMemMappedVolume()
 }
 
 template <typename T, typename VOL>
-void OmMemMappedVolume<T,VOL>::AllocMemMapFiles()
+void OmMemMappedVolume<T,VOL>::AllocMemMapFiles(const std::map<int, Vector3i> & levelsAndDims)
 {
 	zi::Guard g(mutex_);
 
@@ -33,19 +33,12 @@ void OmMemMappedVolume<T,VOL>::AllocMemMapFiles()
 		return;
 	}
 
-	mFileVec.resize(vol_->GetRootMipLevel()+1);
-	mFileMapPtr.resize(vol_->GetRootMipLevel()+1);
+	mFileVec.resize(levelsAndDims.size());
+	mFileMapPtr.resize(levelsAndDims.size());
 
-	for (int level = 0; level <= vol_->GetRootMipLevel(); level++) {
-
-		Vector3i data_dims = vol_->MipLevelDataDimensions(level);
-
-		//round up to nearest chunk
-		Vector3i rdims =
-			Vector3i(ROUNDUP(data_dims.x, vol_->GetChunkDimension()),
-				 ROUNDUP(data_dims.y, vol_->GetChunkDimension()),
-				 ROUNDUP(data_dims.z, vol_->GetChunkDimension()));
-
+	FOR_EACH(it, levelsAndDims){
+		const int level = it->first;
+		const Vector3i rdims = it->second;
 		const qint64 size = (qint64)rdims.x
 			*(qint64)rdims.y
 			*(qint64)rdims.z

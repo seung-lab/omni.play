@@ -79,10 +79,8 @@ public:
 
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
-	boost::unordered_map< OmSegID, unsigned int> * RefreshDirectDataValues(const bool computeSizes);
-	template <typename C>
-	boost::unordered_map< OmSegID, unsigned int> * doRefreshDirectDataValues(const bool computeSizes,
-										 C* p_scalar_data);
+	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
+	template <typename C> OmSegSizeMapPtr doRefreshDirectDataValues(const bool, C*);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();
@@ -104,7 +102,6 @@ public:
 	//meshing
         OmImage<uint32_t, 3> GetMeshOmImageData();
 
-	int GetBytesPerSample();
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();
 
@@ -156,7 +153,7 @@ protected:
 	OmDataWrapperPtr mData;
 
 	boost::shared_ptr<OmChunkData> mChunkData;
-        boost::unordered_map< OmSegID, DataBbox> mBounds;
+        OmSegBounds mBounds;
 
 	friend class OmMipVolume;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );

@@ -1,5 +1,5 @@
 #include "system/cache/omMipVolumeCache.h"
-#include "volume/omLoadImageThread.h"
+#include "volume/build/omLoadImage.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
@@ -53,8 +53,6 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 	OmTimer import_timer;
 	import_timer.start();
 
-	bool initialized = false;
-
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
 		for (int y = 0; y < leaf_mip_dims.y; ++y) {
@@ -69,11 +67,6 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 					OmImageDataIo::om_imagedata_read_hdf5(vol->mSourceFilenamesAndPaths,
 									      chunk_data_bbox,
 									      dataset);
-				if(!initialized) {
-					initialized = true;
-					vol->AllocInternalData(p_img_data);
-				}
-
 				//write to project data
 				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path,
 											 &chunk_data_bbox,
@@ -89,16 +82,20 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 }
 
 template <typename VOL>
-void OmVolumeImporter<VOL>::figureOutNumberOfBytesImg()
+OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataType()
 {
 	const int depth = QImage(vol->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
 
-	int numberOfBytes = 1;
-	if(32 == depth){
-		numberOfBytes=4;
+	switch(depth){
+	case 8:
+		return OM_UINT8;
+	case 32:
+		return OM_UINT32;
+	default:
+		printf("image depth is %d; aborting...\n", depth);
+		assert(0 && "don't know how to import image");
 	}
 
-	vol->SetBytesPerSample(numberOfBytes);
 }
 
 template <typename VOL>
@@ -111,15 +108,7 @@ bool OmVolumeImporter<VOL>::importImageStack()
 	OmTimer import_timer;
 	import_timer.start();
 
-	figureOutNumberOfBytesImg();
-
-	// alloc must happen after setBytesPerSample....
-	if( 1 == vol->GetBytesPerSample() ){
-		assert(0);
-		//vol->setupForDataImport<unsigned char>();
-	} else {
-		assert(0 && "don't know if float or uint32_t");
-	}
+	vol->AllocInternalData(figureOutDataType());
 
 	OmLoadImage<VOL> imageLoader(this, vol);
 	for( int i = 0; i < vol->mSourceFilenamesAndPaths.size(); ++i){

@@ -33,19 +33,19 @@ void OmVolumeData::loadVolData()
 
 	switch(vol_->mVolDataType){
 	case OM_INT8:
-		volData = OmMemMappedVolume<int8_t, OmMipVolume>(vol_);
+		volData_ = OmMemMappedVolume<int8_t, OmMipVolume>(vol_);
 		break;
 	case OM_UINT8:
-		volData = OmMemMappedVolume<uint8_t, OmMipVolume>(vol_);
+		volData_ = OmMemMappedVolume<uint8_t, OmMipVolume>(vol_);
 		break;
 	case OM_INT32:
-		volData = OmMemMappedVolume<int32_t, OmMipVolume>(vol_);
+		volData_ = OmMemMappedVolume<int32_t, OmMipVolume>(vol_);
 		break;
 	case OM_UINT32:
-		volData = OmMemMappedVolume<uint32_t, OmMipVolume>(vol_);
+		volData_ = OmMemMappedVolume<uint32_t, OmMipVolume>(vol_);
 		break;
 	case OM_FLOAT:
-		volData = OmMemMappedVolume<float, OmMipVolume>(vol_);
+		volData_ = OmMemMappedVolume<float, OmMipVolume>(vol_);
 		break;
 	case UNKNOWN:
 		assert(0 && "unknown data type--probably old file?");

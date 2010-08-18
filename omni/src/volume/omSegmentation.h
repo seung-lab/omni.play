@@ -46,9 +46,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
 
-	//export
-	void ExportDataFilter(OmDataWrapperPtr);
-
 	//segment management
 	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
 	boost::shared_ptr<OmSegmentLists> getSegmentLists(){ return mSegmentLists; }

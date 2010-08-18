@@ -35,7 +35,7 @@ void OmSegmentColorizer::setup()
 	mColorCache.resize(curSize);
 	mColorUpdateMutex.resize(curSize);
 
-	printf("segment color cache (%p): current size in memory ~%d bytes for %d elements\n",
+	printf("segment color cache (%p): current size in memory ~%lu bytes for %d elements\n",
 	       this,
 	       sizeof(OmColorWithFreshness)*curSize +
 	       sizeof(zi::Mutex)*curSize,

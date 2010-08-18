@@ -1,26 +1,23 @@
 #include <stdlib.h>
-
-#include "omTile.h"
-
-#include "volume/omVolume.h"
-#include "project/omProject.h"
-#include "volume/omMipChunk.h"
-#include "system/omStateManager.h"
-
-#include "common/omStd.h"
-#include "common/omGl.h"
-#include "volume/omMipVolume.h"
-
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-
-#include "system/viewGroup/omViewGroupState.h"
-
-#include "omTextureID.h"
-#include "omTileCoord.h"
+\
 #include "common/omDebug.h"
+#include "common/omGl.h"
+#include "common/omStd.h"
+#include "omTextureID.h"
+#include "omTile.h"
+#include "omTileCoord.h"
+#include "project/omProject.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
+#include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "volume/omMipChunk.h"
+#include "volume/omMipVolume.h"
+#include "volume/omVolume.h"
+#include "volume/omVolumeData.hpp"
 
-OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol, OmViewGroupState * vgs)
+OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id,
+	       OmMipVolume * vol, OmViewGroupState * vgs)
 {
 	view_type = viewtype;
 	vol_type = voltype;
@@ -72,7 +69,7 @@ OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cac
 OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	mSamplesPerVoxel = 1;
-	mBytesPerSample = mVolume->GetBytesPerSample();
+	mBytesPerSample = mVolume->volData->GetBytesPerSample();
 
 	Vector2<int> tile_dims;
 	void * vData = GetImageData(key, tile_dims, mVolume);
@@ -160,7 +157,9 @@ int OmTile::GetDepth(const OmTileCoord & key)
 
 void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
-	unsigned char *data = (unsigned char*) malloc(dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE);
+	uchar* data = (uchar*)malloc(dims.x *
+				     dims.y *
+				     mVolume->volData->GetBytesPerSample());
 
 	mViewGroupState->ColorTile( imageData,
 				    dims.x * dims.y,

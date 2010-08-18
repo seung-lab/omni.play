@@ -2,7 +2,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipChunkCoord.h"
-#include "volume/omLoadImageThread.h"
+#include "volume/build/omLoadImage.h"
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.h"
 
@@ -11,7 +11,6 @@ OmLoadImage<T>::OmLoadImage(OmVolumeImporter<T>* importer, T* p)
 	: importer(importer)
 	, mMipVolume(p)
 	, m_leaf_mip_dims(mMipVolume->MipLevelDimensionsInMipChunks(0))
-	, m_numberOfBytes(mMipVolume->GetBytesPerSample())
 	, mTotalNumImages(mMipVolume->mSourceFilenamesAndPaths.size())
 {
 }
@@ -61,9 +60,10 @@ void OmLoadImage<T>::doProcessSlice(const QImage & img, const int sliceNum)
 			mMipVolume->GetChunk(chunk, chunk_coord);
 
 			QImage tile = img.copy(startX,startY,w,h);
-			const int advance = (128*128*(sliceNum%128))*m_numberOfBytes;
 
+			assert(0);
 			/*
+			const int advance = (128*128*(sliceNum%128))*m_numberOfBytes;
 			if(4 == m_numberOfBytes){
 				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32mapped();
 				quint32* data = dataPtr->getPtr<unsigned int>();
@@ -79,7 +79,6 @@ void OmLoadImage<T>::doProcessSlice(const QImage & img, const int sliceNum)
 				memcpy(data+advance, bits8, 128*128*1);
 			}
 			*/
-			assert(0);
 			++chunkNum;
 			QString numTiles = QString("%1 of %2 tiles copied...")
 				.arg(StringHelpers::commaDeliminateNumber(chunkNum))

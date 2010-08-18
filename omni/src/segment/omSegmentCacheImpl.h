@@ -3,6 +3,7 @@
 
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
 #include "segment/omSegmentPointers.h"
+#include "volume/omVolumeTypes.hpp"
 
 #include <QList>
 
@@ -17,7 +18,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
 	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
-				  boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds );
+				  OmSegSizeMapPtr, OmSegBounds&);
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 

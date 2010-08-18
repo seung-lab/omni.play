@@ -2,15 +2,17 @@
 #define OM_CHUNK_DATA_HPP
 
 #include "volume/omMipVolume.h"
+#include "volume/omVolumeTypes.hpp"
+
 #include <zi/mutex>
 
 class OmChunkData {
 public:
 	OmChunkData(OmMipVolume* vol, const OmMipChunkCoord &coord)
-		: vol_(vol), coord_(coord)
-	{
-		rawData = vol_->volData->getChunkPtrRaw(coord);
-	}
+		: rawData(vol->volData->getChunkPtrRaw(coord))
+		, vol_(vol)
+		, coord_(coord)
+	{}
 
 	OmRawDataPtrs rawData;
 

@@ -66,7 +66,10 @@ bool OmHdf5::dataset_exists( const OmDataPath & path )
 	return hdfLowLevelWrap->dataset_exists_with_lock( path );
 }
 
-void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type type)
+void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path,
+						  const Vector3i& dataDims,
+						  const Vector3i& chunkDims,
+						  const OmAllowedVolumeDataTypes type)
 {
 	QMutexLocker locker(&fileLock);
 	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, type);
@@ -107,7 +110,7 @@ void OmHdf5::dataset_raw_create_tree_overwrite( const OmDataPath & path, int siz
 	if (!size){
 		return;
 	}
-	
+
 	QMutexLocker locker(&fileLock);
 	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock( path, size, data);
 }

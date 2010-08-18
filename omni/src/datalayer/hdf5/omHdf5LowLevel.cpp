@@ -618,11 +618,33 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	return Vector3 < int >(dims.z, dims.y, dims.x);
 }
 
+hid_t getHDF5type(const OmAllowedVolumeDataTypes type)
+{
+	switch(type){
+	case OM_INT8:
+		return H5T_STD_I8LE;
+	case OM_UINT8:
+		return H5T_STD_U8LE;
+	case OM_INT32:
+		return H5T_STD_I32LE;
+	case OM_UINT32:
+		return H5T_STD_U32LE;
+	case OM_FLOAT:
+		return H5T_IEEE_F32LE;
+	case UNKNOWN:
+		assert(0 && "unknown data type--probably old file?");
+		break;
+	default:
+		assert(0 && "did not recognize vol data type");
+		break;
+	}
+}
+
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 							    const char *name,
-							    Vector3<int>* dataDims,
-							    Vector3<int>* chunkDims,
-							    OmHdf5Type type)
+							    const Vector3i& dataDims,
+							    const Vector3i& chunkDims,
+							    const OmAllowedVolumeDataTypes type)
 {
 	herr_t ret;
 	int rank = 3;
@@ -635,7 +657,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	}
 
 	//Sets the size of the chunks used to store a chunked layout dataset.
-	Vector3 < hsize_t > flipped_chunk_dim(chunkDims->z, chunkDims->y, chunkDims->x);
+	Vector3<hsize_t> flipped_chunk_dim(chunkDims.z, chunkDims.y, chunkDims.x);
 	ret = H5Pset_chunk(plist_id, rank, flipped_chunk_dim.array);
 	if (ret < 0) {
 		throw OmIoException("Could not set HDF5 chunk size.");
@@ -646,19 +668,21 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	}
 
 	//data dims
-	Vector3 < hsize_t > flipped_data_dims(dataDims->z, dataDims->y, dataDims->x);
+	Vector3 < hsize_t > flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
 	Vector3 < hsize_t > flipped_max_data_dims;
 
-	flipped_max_data_dims = Vector3 < hsize_t > (dataDims->z, dataDims->y, dataDims->x);
+	flipped_max_data_dims = Vector3<hsize_t>(dataDims.z, dataDims.y, dataDims.x);
 
 	//Creates a new simple dataspace and opens it for access.
-	hid_t dataspace_id = H5Screate_simple(rank, flipped_data_dims.array, flipped_max_data_dims.array);
+	hid_t dataspace_id = H5Screate_simple(rank,
+					      flipped_data_dims.array,
+					      flipped_max_data_dims.array);
 	if (dataspace_id < 0) {
 		throw OmIoException("Could not create HDF5 dataspace.");
 	}
 
 	//Creates a dataset at the specified location.
-	hid_t type_id = type;
+	hid_t type_id = getHDF5type(type);
 	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0) {
 		throw OmIoException("Could not create HDF5 dataset " + string(name));

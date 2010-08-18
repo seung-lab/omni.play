@@ -10,7 +10,7 @@ class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;
 class OmDataPath;
 
-class OmHdf5 
+class OmHdf5
 {
  public:
 	OmHdf5( QString fileNameAndPath, const bool readOnly);
@@ -34,7 +34,10 @@ class OmHdf5
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
-	void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type type);
+	void dataset_image_create_tree_overwrite( const OmDataPath &,
+						  const Vector3i&,
+						  const Vector3i&,
+						  const OmAllowedVolumeDataTypes type);
 	OmDataWrapperPtr dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
 

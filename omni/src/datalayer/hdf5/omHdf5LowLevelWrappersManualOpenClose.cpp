@@ -83,8 +83,11 @@ bool OmHdf5LowLevelWrappersManualOpenClose::dataset_exists_with_lock(const OmDat
 	return hdfLowLevel.om_hdf5_dataset_exists_with_lock(fileId, name);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path, Vector3<int>* dataDims,
-					    Vector3<int>* chunkDims, OmHdf5Type type)
+void OmHdf5LowLevelWrappersManualOpenClose::
+dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path,
+					      const Vector3i& dataDims,
+					      const Vector3i& chunkDims,
+					      const OmAllowedVolumeDataTypes type)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);
