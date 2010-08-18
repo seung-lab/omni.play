@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "volume/omMipChunkCoord.h"
+#include "volume/omVolumeTypes.hpp"
 
 class OmDataPath;
 

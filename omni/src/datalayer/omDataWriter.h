@@ -3,6 +3,7 @@
 
 #include "datalayer/omDataWrapper.h"
 #include "common/omCommon.h"
+#include "volume/omVolumeTypes.hpp"
 
 class vtkImageData;
 class OmDataPath;
@@ -26,6 +27,7 @@ public:
 							  const Vector3i&,
 							  const Vector3i&,
 							  const OmAllowedVolumeDataTypes) = 0;
+
 	virtual void dataset_image_write_trim(const OmDataPath&,
 					      DataBbox*,
 					      OmDataWrapperPtr) = 0;

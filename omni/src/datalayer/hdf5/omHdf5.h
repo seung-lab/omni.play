@@ -5,6 +5,7 @@
 
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
+#include "volume/omVolumeTypes.hpp"
 
 class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;

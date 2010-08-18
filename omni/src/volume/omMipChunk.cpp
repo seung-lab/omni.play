@@ -463,7 +463,7 @@ template <typename C>
 OmSegSizeMapPtr OmMipChunk::doRefreshDirectDataValues(const bool computeSizes,
 						      C* data)
 {
-	OmSegSizeMapPtr sizes(new boost::unordered_map<OmSegID, uint32_t>());
+	OmSegSizeMapPtr sizes(new OmSegSizeMap());
 
 	//for all voxels in the chunk
 	for(int z = 0; z < 128; z++) {

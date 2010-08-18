@@ -668,6 +668,9 @@ void OmMipVolume::AllocInternalData(const OmAllowedVolumeDataTypes type)
 
 	allocateHDF5(levelsAndDims);
 	allocateMemMap(levelsAndDims);
+
+	printf("done allocating volume data for all mip levels; data type is %s\n",
+	       OmVolumeTypeHelpers::GetTypeAsString(mVolDataType).c_str());
 }
 
 void OmMipVolume::allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
@@ -692,6 +695,8 @@ void OmMipVolume::allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
 
 void OmMipVolume::allocateMemMap(const std::map<int, Vector3i> & levelsAndDims)
 {
+	assert(UNKNOWN != mVolDataType);
+
 	volData->AllocMemMapFiles(levelsAndDims);
 }
 

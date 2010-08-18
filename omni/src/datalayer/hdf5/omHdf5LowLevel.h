@@ -9,6 +9,7 @@ typedef LONG_PTR ssize_t;
 
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
+#include "volume/omVolumeTypes.hpp"
 
 #include "hdf5.h"
 
