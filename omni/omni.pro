@@ -234,6 +234,8 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/volume/build/omVolumeBuilder.hpp \
            src/volume/build/omVolumeImporter.hpp \
+           src/volume/omVolumeTypes.hpp \
+           src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
            src/volume/omVoxelSetValueAction.h \
            src/volume/omDrawOptions.h \

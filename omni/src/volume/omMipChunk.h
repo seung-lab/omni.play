@@ -14,14 +14,15 @@
 #include "datalayer/omDataWrapper.h"
 #include "system/cache/omCacheableBase.h"
 #include "utility/image/omImage.hpp"
+#include "volume/omVolumeTypes.hpp"
 
 #include <QMutex>
-#include "boost/variant.hpp"
 
 class vtkImageData;
 class OmMipVolume;
 class OmVolumeCuller;
 class OmSegmentCache;
+class OmChunkData;
 
 class OmMipChunk : public OmCacheableBase {
 
@@ -44,14 +45,11 @@ public:
 	bool IsMetaDataDirty();
 
 
-	void RawWriteChunkData(unsigned char * data);
-	OmDataWrapperPtr RawReadChunkDataUCHAR();
-	void RawWriteChunkData(quint32* data);
-	OmDataWrapperPtr RawReadChunkDataUINT32();
+	template <typename T> void RawWriteChunkData(T* data);
+	OmDataWrapperPtr RawReadChunkDataHDF5();
 	bool mIsRawChunkOpen;
 	OmDataWrapperPtr mRawChunk;
-	boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
-	RawReadChunkDataMapped();
+
 	void dealWithCrazyNewStuff();
 
 	bool mIsRawMappedChunkOpen;
@@ -154,11 +152,10 @@ protected:
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
-	//image data of chunk
+	//FIXME: remove once downsmapling no longer using VTK stuff
 	OmDataWrapperPtr mData;
 
-	boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*> mRawData;
-
+	boost::shared_ptr<OmChunkData> mChunkData;
         boost::unordered_map< OmSegID, DataBbox> mBounds;
 
 	friend class OmMipVolume;
