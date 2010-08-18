@@ -46,7 +46,8 @@ void OmActionLoggerFS::save(T * action, const std::string & str)
 	boost::shared_ptr<OmActionLoggerFSThread<T> >
 		task(new OmActionLoggerFSThread<T>(action, str));
 
-	OmProject::GetGlobalThreadPool().addTaskBack(task);
+	task->run(); //QT may delete *action before we have a chance to save it!
+	//	OmProject::GetGlobalThreadPool().addTaskBack(task);
 }
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
