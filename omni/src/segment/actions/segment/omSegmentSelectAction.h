@@ -36,7 +36,7 @@ private:
 	const bool mDoScroll;
 	const bool mAddToRecentList;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );
 	friend QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
 };

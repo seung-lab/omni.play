@@ -15,6 +15,7 @@
 #include <boost/utility.hpp>
 
 #include "common/omStd.h"
+#include "common/omException.h"
 #include <assert.h>
 
 // elimiate VTK warning

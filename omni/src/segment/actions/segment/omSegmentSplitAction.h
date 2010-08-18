@@ -13,7 +13,7 @@ public:
 	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
 
 private:
-	OmSegmentSplitAction( const SegmentationDataWrapper & sdw, 
+	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 			      const OmSegmentEdge & edge );
 
 	void Run();
@@ -30,10 +30,9 @@ private:
 
 	QString desc;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
-
 };
 
 #endif

@@ -1,8 +1,5 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
-#include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
-#include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
 #include "segment/actions/segment/omSegmentJoinAction.h"
@@ -12,51 +9,12 @@
 #include "volume/omSegmentationThresholdChangeAction.h"
 #include "volume/omVoxelSetValueAction.h"
 
-#include <QDateTime>
-#include <QFile>
-
 OmActionLoggerFS::OmActionLoggerFS()
 {
 }
 
 OmActionLoggerFS::~OmActionLoggerFS()
 {
-}
-
-QString OmActionLoggerFS::getFileNameAndPath(const QString & actionName)
-{
-	const QDateTime curDT = QDateTime::currentDateTime();
-	const QString date = curDT.toString("yyyy.MM") + curDT.toString("MMM.dd");
-	const QString time = curDT.toString("hh.mm.ss.zzz");
-	const QString omniFN = OmProject::GetFileName().replace(".omni", "");
-
-	const QString fn = date+"--"+time+"--"+omniFN+"--"+actionName+".log";
-
-	return mLogFolder.filePath(fn);
-}
-
-void OmActionLoggerFS::setupLogDir()
-{
-	QString omniFolderName = ".omni";
-	QString homeFolder = QDir::homePath();
-	QString omniFolderPath = homeFolder + "/" 
-		+ omniFolderName + "/"
-		+ "logFiles" + "/";
-
-	QDir dir = QDir( omniFolderPath );
-	if( dir.exists() ){ 
-		mLogFolder = dir;
-		return;
-	} 
-
-	if( QDir::home().mkdir( omniFolderPath ) ){
-		printf("made folder %s\n", qPrintable(omniFolderPath) );
-		mLogFolder = dir;
-	} else {
-		const string errMsg = "could not make folder "+omniFolderPath.toStdString() + "\n";
-		throw OmIoException(errMsg);
-	}
-
 }
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)

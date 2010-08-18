@@ -24,7 +24,7 @@ private:
 	float mThreshold;
 	float mOldThreshold;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentationThresholdChangeAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentationThresholdChangeAction & a );
 };

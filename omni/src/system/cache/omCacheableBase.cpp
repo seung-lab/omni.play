@@ -11,8 +11,3 @@ void OmCacheableBase::UpdateSize(const qint64 bytesToAdd)
 {
 	mCache->UpdateSize(bytesToAdd);
 }
-
-void OmCacheableBase::Remove()
-{
-	mCache->Remove(this);
-}

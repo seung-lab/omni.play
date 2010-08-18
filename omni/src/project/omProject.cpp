@@ -34,6 +34,7 @@ OmProject *OmProject::mspInstance = 0;
 OmProject::OmProject()
 {
 	mCanFlush = true;
+	mThreadPool.start(3);
 }
 
 OmProject::~OmProject()

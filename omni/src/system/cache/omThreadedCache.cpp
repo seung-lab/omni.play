@@ -1,6 +1,7 @@
 #include "omThreadedCache.h"
 #include "omHandleCacheMissThreaded.h"
 #include "utility/stringHelpers.h"
+#include "system/cache/omCacheManager.h"
 
 static const int MAX_THREADS = 3;
 
@@ -57,7 +58,7 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 		if(mCurrentlyFetching.insertSinceDidNotHaveKey(key) ){
 			boost::shared_ptr<HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR> >
 				task(new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, key));
-			mThreadPool.pushTask(task);
+			mThreadPool.addTaskFront(task);
 		}
 	}
 }
@@ -66,13 +67,6 @@ template < typename KEY, typename PTR  >
 void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {
 	mCache.erase(key);
-}
-
-template < typename KEY, typename PTR  >
-void OmThreadedCache<KEY,PTR>::Remove(OmCacheableBase *)
-{
-	assert(0 && "not yet implemented...");
-	//Remove(base->getCacheKey());
 }
 
 template < typename KEY, typename PTR  >

@@ -18,7 +18,6 @@ public:
 	virtual ~OmCacheBase(){}
 
 	virtual void UpdateSize(const qint64 delta) = 0;
-	virtual void Remove(OmCacheableBase * base) = 0;
 	virtual void RemoveOldest() = 0;
 	virtual int GetFetchStackSize() = 0;
 	virtual qint64 GetCacheSize() = 0;

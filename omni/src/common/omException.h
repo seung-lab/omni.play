@@ -14,7 +14,7 @@
 #include <stdarg.h>
 
 enum OmExceptType {  EXCEPT_NOTE = 0, // not reported to user, make internal note
-		     EXCEPT_INFO,     // give user information (usage, formatting, etc)	     
+		     EXCEPT_INFO,     // give user information (usage, formatting, etc)
 		     EXCEPT_WARNING,  // completed function but something may be wrong
 		     EXCEPT_ERROR,    // could not complete function
 		     EXCEPT_SEVERE    //severe error, kill the system
@@ -23,8 +23,8 @@ enum OmExceptType {  EXCEPT_NOTE = 0, // not reported to user, make internal not
 class OmException {
 
 public:
-	OmException(const string &name, OmExceptType type, const string &msg); 
-	
+	OmException(const string &name, OmExceptType type, const string &msg);
+
 	QString GetName();
 	QString GetMsg();
 	QString GetType();
@@ -37,25 +37,25 @@ protected:
 
 class OmAccessException : public OmException {
 public:
-	OmAccessException(string msg) 
+	OmAccessException(string msg)
 	: OmException("OmAccessException", EXCEPT_WARNING, msg) { }
 };
 
 class OmFormatException : public OmException {
 public:
-	OmFormatException(string msg) 
+	OmFormatException(string msg)
 	: OmException("OmFormatException", EXCEPT_WARNING, msg) { }
 };
 
 class OmIoException : public OmException {
 public:
-	OmIoException(string msg) 
+	OmIoException(string msg)
 	: OmException("OmIoException", EXCEPT_ERROR, msg) { }
 };
 
 class OmModificationException : public OmException {
 public:
-	OmModificationException(string msg) 
+	OmModificationException(string msg)
 	: OmException("OmModificationException", EXCEPT_WARNING, msg) { }
 };
 

@@ -20,7 +20,7 @@ private:
 	void save(const string &);
 	QString classNameForLogFile(){return "OmProjectSaveAction";}
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 };
 
 #endif

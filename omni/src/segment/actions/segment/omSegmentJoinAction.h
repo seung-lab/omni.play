@@ -23,7 +23,7 @@ private:
 	OmId mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
 };

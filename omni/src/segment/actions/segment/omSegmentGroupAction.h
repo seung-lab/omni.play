@@ -26,12 +26,9 @@ private:
 	bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
-
-
-
 };
 
 #endif

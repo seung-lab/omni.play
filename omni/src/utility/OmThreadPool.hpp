@@ -29,8 +29,12 @@ public:
 		threadManager_->stop();
 	}
 
-	void pushTask(boost::shared_ptr<zi::Runnable> job){
+	void addTaskFront(boost::shared_ptr<zi::Runnable> job){
 		threadManager_->pushTask(job);
+	}
+
+	void addTaskBack(boost::shared_ptr<zi::Runnable> job){
+		threadManager_->addTask(job);
 	}
 
 	int getTaskCount() const {

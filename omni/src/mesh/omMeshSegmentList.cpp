@@ -77,7 +77,7 @@ OmMeshSegmentList::doGetFromCacheIfReady(OmMipChunkPtr p_chunk,
 				       chunkCoord,
 				       mSegmentCache,
 				       segmentationID));
-    mThreadPool.pushTask(task);
+    mThreadPool.addTaskFront(task);
     return std::make_pair(false, OmSegPtrList());
   }
 

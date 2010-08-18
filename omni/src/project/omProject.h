@@ -11,6 +11,7 @@
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
+#include "utility/OmThreadPool.hpp"
 
 class OmChannel;
 class OmSegmentation;
@@ -21,13 +22,13 @@ typedef int (*GGOCTFPointer) (char *, int, int, int mousex, int mousey);
 
 class OmProject : boost::noncopyable {
  public:
-	
+
 	static OmProject* Instance();
 	static void Delete();
-	
+
 	//project properties
 	static QString GetFileName() {return Instance()->mFileName;}
-	
+
 	//project IO
 	static QString New( QString fileNameAndPath );
 	static void Save();
@@ -43,7 +44,7 @@ class OmProject : boost::noncopyable {
         static const OmIDsSet & GetValidChannelIds();
         static bool IsChannelEnabled(const OmId id);
         static void SetChannelEnabled(const OmId id, const bool enable);
-        
+
         static OmSegmentation& GetSegmentation(const OmId id);
         static OmSegmentation& AddSegmentation();
         static void RemoveSegmentation(const OmId id);
@@ -54,16 +55,20 @@ class OmProject : boost::noncopyable {
 	static void SetCanFlush(bool canflush);
 	static bool GetCanFlush();
 
+	static OmThreadPool& GetGlobalThreadPool(){ return Instance()->mThreadPool; }
+
  private:
 	//singleton
 	OmProject();
 	~OmProject();
 	static OmProject* mspInstance;
-	
+
 	//project
 	QString mFileName;
 	QString mDirectoryPath;
 	bool mCanFlush;
+
+	OmThreadPool mThreadPool;
 
         //data managers
         OmGenericManager<OmChannel> mChannelManager;

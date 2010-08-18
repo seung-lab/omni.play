@@ -14,8 +14,6 @@ class OmCacheBase;
 class OmCacheableBase {
  public:
 	OmCacheableBase( OmCacheBase *cache );
-	//	OmCacheKey GetCacheKey();
-	void Remove();
 	virtual void Flush() = 0;
 
  protected:
