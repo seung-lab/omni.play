@@ -24,6 +24,7 @@ class OmThreadChunkLevel;
 class OmThreadChunkThreadedCache;
 class OmVolume;
 class vtkImageData;
+class OmViewGroupState;
 
 //mipvolume state
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
@@ -146,6 +147,8 @@ public:
 	QFileInfoList mSourceFilenamesAndPaths;
 
 	void BuildBlankVolume(const Vector3i & dims);
+
+	static void DumpTiles(OmId vol, ObjectType type, const QString dumpfile, OmViewGroupState * vgs);
 
 protected:
 	OmMipVolumeCache *const mDataCache;

@@ -168,6 +168,7 @@ vtkImageData * OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t f
 	intersect_image_data->Delete();
 
 	debug ("mesher1", "filled_read_data: %p, %i\n", filled_read_data, filled_read_data->GetReferenceCount());
+	debug ("chunk", "read: %i,%i,%i by %i,%i,%i\n", DEBUGV3(dataExtent.getMin()), DEBUGV3(dataExtent.getMax()));
 	return filled_read_data;
 }
 
@@ -843,6 +844,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId, const c
 	ret = H5Dclose(dataset_id);
 	if (ret < 0)
 		throw OmIoException("Could not close HDF5 dataset.");
+	debug ("chunk", "write: %i,%i,%i by %i,%i,%i\n", DEBUGV3(extent->getMin()), DEBUGV3(extent->getMax()));
 }
 
 void OmHdf5LowLevel::printfDatasetCacheSize( const hid_t dataset_id )

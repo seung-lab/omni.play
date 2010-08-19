@@ -119,7 +119,7 @@ void ViewGroup::addView3D()
 		delete getDockWidget( makeObjectName( vgw ) );
 	}
 
-	vgw->widget = new OmView3d( this, mViewGroupState );
+	vgw->widget = new OmView3d( mMainWindow, mViewGroupState );
 
 	insertDockIntoGroup( vgw );
 
@@ -135,7 +135,7 @@ QWidget * ViewGroup::addView2Dchannel( const OmId chan_id, ViewType vtype)
 		delete getDockWidget( makeObjectName( vgw ) );
 	}
 	
-	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, this, mViewGroupState );
+	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, mMainWindow, mViewGroupState );
 
 	insertDockIntoGroup( vgw );
 
@@ -155,7 +155,7 @@ void ViewGroup::addView2Dsegmentation( const OmId segmentation_id, ViewType vtyp
 		delete getDockWidget( makeObjectName( vgw ) );
 	}
 
-	vgw->widget = new OmView2d(vtype, SEGMENTATION, segmentation_id, this, mViewGroupState);
+	vgw->widget = new OmView2d(vtype, SEGMENTATION, segmentation_id, mMainWindow, mViewGroupState);
 
 	insertDockIntoGroup( vgw );
 

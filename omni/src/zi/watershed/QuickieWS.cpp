@@ -39,7 +39,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   vector<int> sizes;
 
-  DECLARE_MEX_RET_ARRAY(labels, plhs[0], int,
+  DECLARE_MEX_RET_ARRAY(labels, plhs[0], uint32_t,
                         connDims[0], connDims[1], connDims[2]);
 
   MEXPRINTF("Calling CC Algorithm");

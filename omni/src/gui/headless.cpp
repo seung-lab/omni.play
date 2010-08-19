@@ -22,6 +22,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "utility/stringHelpers.h"
 #include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
@@ -181,6 +182,15 @@ void Headless::processLine( QString line, QString fName )
 		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
 			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
 		}
+	} else if(line.startsWith("dumpSegTiles:") ) {
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+		QString file = "/tmp/tiles";
+		OmId segID = 1;
+
+		OmViewGroupState * vgs = new OmViewGroupState(NULL);
+		vgs->SetSegmentation(segID);
+		OmMipVolume::DumpTiles(segID, SEGMENTATION, file, vgs);
+
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
