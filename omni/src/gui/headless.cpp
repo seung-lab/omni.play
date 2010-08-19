@@ -187,6 +187,14 @@ void Headless::processLine( QString line, QString fName )
 		QString file = "/tmp/tiles";
 		OmId segID = 1;
 
+		if(3 == args.size()) {
+			segID = StringHelpers::getUInt(args[1]);
+			file = args[2];
+		} else if(2 == args.size()) {
+			segID = 1;
+			file = args[1];
+		}
+
 		OmViewGroupState * vgs = new OmViewGroupState(NULL);
 		vgs->SetSegmentation(segID);
 		OmMipVolume::DumpTiles(segID, SEGMENTATION, file, vgs);
