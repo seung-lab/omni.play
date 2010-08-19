@@ -174,6 +174,7 @@ private:
 	bool sourceFilesWereSet;
 
 	void doExportChunk(const OmMipChunkCoord &, OmHdf5 &);
+	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;

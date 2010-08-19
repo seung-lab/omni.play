@@ -7,7 +7,7 @@
  *	thread chunk level until the root mip level is reached.
  */
 
-#include "omMipChunk.h"
+#include "volume/omMipChunk.h"
 
 class OmThreadChunkLevel : public OmMipChunk {
 public:

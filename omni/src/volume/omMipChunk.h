@@ -10,19 +10,20 @@
  *	Brett Warne - bwarne@mit.edu - 2/24/09
  */
 
-#include "omMipChunkCoord.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataWriter.h"
 #include "system/cache/omCacheableBase.h"
 #include "utility/image/omImage.hpp"
+#include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 
 #include <QMutex>
 
 class vtkImageData;
-class OmMipVolume;
 class OmVolumeCuller;
 class OmSegmentCache;
 class OmChunkData;
+class OmMipVolume;
 
 class OmMipChunk : public OmCacheableBase {
 
@@ -45,16 +46,18 @@ public:
 	bool IsMetaDataDirty();
 
 
-	template <typename T> void RawWriteChunkData(T* data);
+	template <typename T> void RawWriteChunkData(T* data){
+		mRawChunk = OmDataWrapper<T>::producenofree(data);
+		writeHDF5();
+	}
 	OmDataWrapperPtr RawReadChunkDataHDF5();
 	bool mIsRawChunkOpen;
 	OmDataWrapperPtr mRawChunk;
-
+	void copyInTile(const int sliceOffset, uchar* bits);
 	void dealWithCrazyNewStuff();
-
 	bool mIsRawMappedChunkOpen;
 	OmDataWrapperPtr mRawMappedChunk;
-
+	void copyChunkFromMemMapToHDF5();
 
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
@@ -155,6 +158,7 @@ protected:
 
         OmSegBounds mBounds;
 	void addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos);
+	void writeHDF5();
 
 	friend class OmMipVolume;
 	friend class OmChunkData;

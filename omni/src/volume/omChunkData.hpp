@@ -14,7 +14,10 @@ public:
 
 	void* ExtractDataSlice(const ViewType plane, const int offset);
 	OmSegSizeMapPtr RefreshDirectDataValues(OmMipChunk* chunk,
-							     const bool computeSizes);
+						const bool computeSizes);
+	void copyInTile(const int sliceOffset, uchar* bits);
+	void copyChunkFromMemMapToHDF5(OmMipChunk* chunk);
+
 private:
 	OmMipVolume *const vol_;
 	const OmMipChunkCoord coord_;

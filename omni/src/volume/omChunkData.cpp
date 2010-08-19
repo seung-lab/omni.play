@@ -7,6 +7,7 @@ OmChunkData::OmChunkData(OmMipVolume* vol, const OmMipChunkCoord &coord)
 	, coord_(coord)
 {}
 
+
 class ExtractDataSliceVisitor : public boost::static_visitor<void*>{
 public:
 	ExtractDataSliceVisitor(const ViewType plane, int offset)
@@ -84,10 +85,52 @@ private:
 		return sizes;
 	}
 };
-
 OmSegSizeMapPtr OmChunkData::RefreshDirectDataValues(OmMipChunk* chunk,
 						     const bool computeSizes)
 {
 	return boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk, computeSizes),
 				    rawData);
+}
+
+
+class CopyInDataVisitor : public boost::static_visitor<>{
+public:
+	CopyInDataVisitor(const int sliceOffset, uchar* bits)
+		: sliceOffset_(sliceOffset)
+		, bits_(bits) {}
+
+	template <typename T>
+	void operator()(T* d ) const{
+		const int advance = (128*128*(sliceOffset_%128))*sizeof(T);
+		memcpy(d+advance,
+		       (T*)bits_,
+		       128*128*sizeof(T));
+	}
+private:
+	const int sliceOffset_;
+	uchar* bits_;
+};
+void OmChunkData::copyInTile(const int sliceOffset, uchar* bits)
+{
+	boost::apply_visitor(CopyInDataVisitor(sliceOffset, bits),
+			     rawData);
+}
+
+
+class CopyDataFromMemMapToHDF5Visitor : public boost::static_visitor<>{
+public:
+	CopyDataFromMemMapToHDF5Visitor(OmMipChunk* chunk)
+		: chunk_(chunk) {}
+
+	template <typename T>
+	void operator()(T* d) const {
+		chunk_->RawWriteChunkData(d);
+	}
+private:
+	OmMipChunk* chunk_;
+};
+void OmChunkData::copyChunkFromMemMapToHDF5(OmMipChunk* chunk)
+{
+	boost::apply_visitor(CopyDataFromMemMapToHDF5Visitor(chunk),
+			     rawData);
 }

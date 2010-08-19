@@ -61,24 +61,8 @@ void OmLoadImage<T>::doProcessSlice(const QImage & img, const int sliceNum)
 
 			QImage tile = img.copy(startX,startY,w,h);
 
-			assert(0);
-			/*
-			const int advance = (128*128*(sliceNum%128))*m_numberOfBytes;
-			if(4 == m_numberOfBytes){
-				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32mapped();
-				quint32* data = dataPtr->getPtr<unsigned int>();
+			chunk->copyInTile(sliceNum, tile.bits());
 
-				quint32* bits32 = (quint32*)tile.bits();
-				memcpy(data+advance, bits32, 128*128*4);
-
-			} else{
-				OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHARmapped();
-				unsigned char* data = dataPtr->getPtr<unsigned char>();
-				uchar* bits8 = tile.bits();
-
-				memcpy(data+advance, bits8, 128*128*1);
-			}
-			*/
 			++chunkNum;
 			QString numTiles = QString("%1 of %2 tiles copied...")
 				.arg(StringHelpers::commaDeliminateNumber(chunkNum))

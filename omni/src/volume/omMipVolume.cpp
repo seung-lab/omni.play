@@ -1171,7 +1171,7 @@ void OmMipVolume::copyDataIn()
 {
 	Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(0);
 
-	const int total = mip_coord_dims.z * mip_coord_dims.y * mip_coord_dims.x;
+	const int total = mip_coord_dims.z*mip_coord_dims.y*mip_coord_dims.x;
 	int counter = 0;
 
 	for (int z = 0; z < mip_coord_dims.z; ++z){
@@ -1181,21 +1181,8 @@ void OmMipVolume::copyDataIn()
 				OmMipChunkCoord coord(0, x, y, z);
 				OmMipChunkPtr chunk;
 				GetChunk(chunk, coord);
+				chunk->copyChunkFromMemMapToHDF5();
 
-				assert(0);
-				/*
-				if(4 == GetBytesPerSample()){
-					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
-					quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
-
-					chunk->RawWriteChunkData(dataMapped);
-				} else {
-					OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-					unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
-
-					chunk->RawWriteChunkData(dataMapped);
-				}
-				*/
 				++counter;
 				printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
 				       x, y, z, counter, total);

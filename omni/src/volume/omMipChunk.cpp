@@ -5,7 +5,6 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
@@ -570,20 +569,6 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 	return mRawChunk;
 }
 
-template <typename T>
-void OmMipChunk::RawWriteChunkData(T* data)
-{
-        QMutexLocker locker(&mOpenLock);
-
-	//get path to mip level volume
-	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-
-	mRawChunk = OmDataWrapper<T>::producenofree(data);
-
-	OmProjectData::GetDataWriter()->
-		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
-}
-
 void OmMipChunk::dealWithCrazyNewStuff()
 {
         QMutexLocker locker(&mOpenLock);
@@ -614,10 +599,23 @@ void* OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 	return mChunkData->ExtractDataSlice(plane, offset);
 }
 
-/*
 void OmMipChunk::copyInTile(const int sliceOffset, uchar* bits)
 {
-
+	mChunkData->copyInTile(sliceOffset, bits);
 }
-*/
 
+void OmMipChunk::copyChunkFromMemMapToHDF5()
+{
+	mChunkData->copyChunkFromMemMapToHDF5(this);
+}
+
+void OmMipChunk::writeHDF5()
+{
+        QMutexLocker locker(&mOpenLock);
+
+	//get path to mip level volume
+	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+
+	OmProjectData::GetDataWriter()->
+		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
+}
