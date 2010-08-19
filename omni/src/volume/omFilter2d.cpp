@@ -26,8 +26,6 @@ OmFilter2d::OmFilter2d() {
 OmFilter2d::OmFilter2d(OmId omId)
   : OmManageableObject(omId)
 {
-	mName = QString("filter%1").arg(omId);
-
 	//initially transparent.
 	mAlpha = 0.0;
 	mSeg = 1;

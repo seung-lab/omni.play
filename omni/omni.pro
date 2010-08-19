@@ -294,7 +294,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/hdf5/omHdf5Reader.cpp \
            src/datalayer/hdf5/omHdf5Writer.cpp \
            src/datalayer/omDataLayer.cpp \
-           src/datalayer/omDataPath.cpp \
            src/datalayer/omDataPaths.cpp \
            src/datalayer/omDummyWriter.cpp \
            src/gui/groupsTable.cpp \
@@ -417,7 +416,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omGroup.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
-           src/system/omManageableObject.cpp \
            src/system/omPreferenceDefinitions.cpp \
            src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \

@@ -3,8 +3,11 @@
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMeshManager.h"
 #include "project/omProject.h"
-#include "system/omStateManager.h"
 #include "system/omLocalPreferences.h"
+#include "system/omStateManager.h"
+#include "volume/omChannel.h"
+#include "volume/omMipChunkCoord.h"
+#include "volume/omSegmentation.h"
 
 string OmDataPaths::getDefaultHDF5channelDatasetName()
 {
@@ -23,10 +26,10 @@ OmDataPath OmDataPaths::getProjectArchiveNameQT()
 
 OmDataPath OmDataPaths::getSegmentPagePath( const OmId segmentationID, const quint32 pageNum )
 {
-	string p = str( boost::format("segmentations/segmentation%1%/segment_page%2%") 
+	string p = str( boost::format("segmentations/segmentation%1%/segment_page%2%")
 			% segmentationID
 			% pageNum );
-	
+
 	return OmDataPath(p);
 }
 
@@ -39,8 +42,8 @@ string OmDataPaths::getMeshDirectoryPath( const OmMipMeshCoord & meshCoordinate,
 			% meshCoordinate.MipChunkCoord.Coordinate.y
 			% meshCoordinate.MipChunkCoord.Coordinate.z
 			% meshCoordinate.DataValue);
-			
-			
+
+
 	return mipMeshManager->GetDirectoryPath().toStdString() + p;
 }
 
@@ -67,3 +70,35 @@ string OmDataPaths::getLocalPathForHd5fChunk(OmMipMeshCoord & meshCoordinate, co
   return ret.toStdString();
 }
 
+std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
+{
+	return str( boost::format("segmentations/%1%/")
+		    % seg->GetId());
+}
+
+std::string OmDataPaths::getDirectoryPath(OmChannel* chan)
+{
+	return str( boost::format("channels/%1%/")
+		    % chan->GetId());
+}
+
+std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,
+						  const int level)
+{
+	return dirPath
+		+ boost::lexical_cast<std::string>(level)
+		+ "/"
+		+ "volume.dat";
+}
+
+std::string OmDataPaths::MipChunkMetaDataPath(const std::string & dirPath,
+					      const OmMipChunkCoord & coord)
+{
+	QString p = QString("%1/%2_%3_%4/")
+		.arg(coord.Level)
+		.arg(coord.Coordinate.x)
+		.arg(coord.Coordinate.y)
+		.arg(coord.Coordinate.z);
+
+	return dirPath + p.toStdString() + "metachunk.dat";
+}

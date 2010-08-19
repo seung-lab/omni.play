@@ -14,6 +14,7 @@
 #include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
+#include "volume/omVolumeData.hpp"
 #include "system/omGroups.h"
 #include "system/omGroup.h"
 
@@ -461,20 +462,20 @@ QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
 void OmDataArchiveProject::storeOmManageableObject( QDataStream & out, const OmManageableObject & mo )
 {
 	out << mo.mId;
-	out << mo.mName;
+	out << mo.mCustomName;
 	out << mo.mNote;
 }
 
 void OmDataArchiveProject::loadOmManageableObject( QDataStream & in, OmManageableObject & mo )
 {
 	in >> mo.mId;
-	in >> mo.mName;
+	in >> mo.mCustomName;
 	in >> mo.mNote;
 }
 
 void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolume & m )
 {
-	out << m.mDirectoryPath;
+	out << ""; // TODO: remove me; was m.mDirectoryPath;
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
 
@@ -490,7 +491,8 @@ void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolum
 
 void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 {
-	in >> m.mDirectoryPath;
+	QString mDirectoryPath; //TODO: remove me
+	in >> mDirectoryPath;
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
 

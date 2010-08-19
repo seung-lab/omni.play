@@ -22,6 +22,10 @@ public:
         OmChannel();
 	OmChannel(OmId id);
 
+	std::string GetName();
+	std::string GetDirectoryPath();
+	void loadVolData();
+
 	//properties
 	void SetHue(const Vector3f &);
 	const Vector3f& GetHue();

@@ -15,6 +15,7 @@
 #include "volume/omMipThreadManager.h"
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
+#include "volume/omVolumeData.hpp"
 
 #include <float.h>
 
@@ -35,10 +36,7 @@ OmChannel::OmChannel(OmId id)
 	//set manageable object name
 	char idchar[25];
 	snprintf(idchar, sizeof(idchar), "%i", (int)id);
-	SetName( QString("channel%1").arg(idchar) );
 
-	//set permenant directory name
-	SetDirectoryPath( QString("channels/%1/").arg(GetName()) );
 
 	//init properties
 	SetHue(Vector3f::ONE);
@@ -52,10 +50,15 @@ OmChannel::OmChannel(OmId id)
 	AddFilter();
 }
 
-/////////////////////////////////
-///////          Properties
+std::string OmChannel::GetName(){
+	return "channel" +  boost::lexical_cast<std::string>(GetId());
+}
 
-/*
+std::string OmChannel::GetDirectoryPath() {
+	return OmDataPaths::getDirectoryPath(this);
+}
+
+/**
  *	Hue color property
  */
 void OmChannel::SetHue(const Vector3f & hue)
@@ -211,4 +214,9 @@ bool OmChannel::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmChannel> importer(this);
 	return importer.import(dataset);
+}
+
+void OmChannel::loadVolData()
+{
+	volData->load(this);
 }

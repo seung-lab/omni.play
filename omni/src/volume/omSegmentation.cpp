@@ -1,7 +1,9 @@
+#include "volume/omVolumeData.hpp"
 #include "volume/build/omVolumeImporter.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
+#include "datalayer/omDataPaths.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
 #include "mesh/ziMesher.h"
@@ -49,13 +51,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	, mSegmentLists(new OmSegmentLists())
   	, mGroups(this)
 {
-	//set manageable object name
-	SetName( QString("segmentation%1").arg(id));
-
-	//set permenant directory name
-	SetDirectoryPath( QString("segmentations/%1/").arg(GetName()) );
-
-	mMipMeshManager.SetDirectoryPath( GetDirectoryPath() );
+	mMipMeshManager.SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
 
 	//uses meta data
 	mStoreChunkMetaData = true;
@@ -68,6 +64,14 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
+}
+
+std::string OmSegmentation::GetName(){
+	return "segmentation" +  boost::lexical_cast<std::string>(GetId());
+}
+
+std::string OmSegmentation::GetDirectoryPath() {
+	return OmDataPaths::getDirectoryPath(this);
 }
 
 /////////////////////////////////
@@ -164,7 +168,7 @@ void OmSegmentation::BuildMeshData()
 {
 	if (!IsVolumeDataBuilt()) {
 		throw OmAccessException("Segmentation volume data must be built before mesh data: " +
-					GetName().toStdString() );
+					GetName());
 	}
 
 	//build all levels
@@ -178,7 +182,7 @@ void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
 {
         if (!IsVolumeDataBuilt())
                 throw OmAccessException(string("Segmentation volume data must be built before mesh data: ") +
-                                        GetName().toStdString() );
+                                        GetName());
 
     	QFile file(planFile);
     	if ( !file.open(QIODevice::WriteOnly)) {
@@ -468,4 +472,9 @@ bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmSegmentation> importer(this);
 	return importer.import(dataset);
+}
+
+void OmSegmentation::loadVolData()
+{
+	volData->load(this);
 }

@@ -35,13 +35,12 @@ public:
 
 	void Flush();
 
-	void SetFilename(const QString &);
-	QString GetFilename();
-	virtual void SetDirectoryPath(const QString &);
-	QString GetDirectoryPath();
+	virtual std::string GetDirectoryPath() = 0;
+	virtual std::string GetName() = 0;
+	virtual void loadVolData() = 0;
 
-	QString MipLevelInternalDataPath(int level);
-	QString MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
+	std::string MipLevelInternalDataPath(const int level);
+	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 
 	//source data properties
 	void SetSourceFilenamesAndPaths( QFileInfoList );
@@ -145,6 +144,8 @@ public:
 
 	template <typename C> void setupForDataImport();
 
+	OmAllowedVolumeDataTypes getVolDataType(){ return mVolDataType; }
+
 protected:
         OmMipVolumeCache *const mDataCache;
         OmAllowedVolumeDataTypes mVolDataType;
@@ -157,7 +158,6 @@ protected:
 	virtual bool ImportSourceData(OmDataPath & dataset) = 0;
 
 	//mipvolume disk data
-	void AllocInternalData(const OmAllowedVolumeDataTypes);
 	void UpdateRootMipLevel();
 
 	//mip data
@@ -166,22 +166,13 @@ protected:
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
-	//subsample data methods
-	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
-	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
 	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
-
-	void loadVolData();
 
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
-	QString mDirectoryPath;          // ex. "./" or "images/out/"
-	QString mFilename;
 	bool sourceFilesWereSet;
 
-	void allocateHDF5(const std::map<int, Vector3i> & levelsAndDims);
-	void allocateMemMap(const std::map<int, Vector3i> & levelsAndDims);
 	void doExportChunk(const OmMipChunkCoord &, OmHdf5 &);
 
 	friend class OmMipChunk;

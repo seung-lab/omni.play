@@ -1,5 +1,6 @@
 #include "segment/omSegmentCache.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
+#include "datalayer/omDataPath.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
@@ -21,11 +22,22 @@ OmMST::OmMST()
 {
 }
 
+OmDataPath OmMST::getDendPath(OmSegmentation & seg) {
+	return OmDataPath(seg.GetDirectoryPath() + "dend");
+}
+OmDataPath OmMST::getDendValuesPath(OmSegmentation & seg) {
+	return OmDataPath(seg.GetDirectoryPath() + "dendValues");
+}
+OmDataPath OmMST::getEdgeDisabledByUserPath(OmSegmentation & seg){
+	return OmDataPath(seg.GetDirectoryPath() + "/edgeDisabledByUser");
+};
+OmDataPath OmMST::getEdgeForceJoinPath(OmSegmentation & seg){
+	return OmDataPath(seg.GetDirectoryPath() + "/edgeForceJoin");
+};
+
 void OmMST::read(OmSegmentation & seg)
 {
-  QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
-  OmDataPath path;
-  path.setPathQstr(dendStr);
+  OmDataPath path(getDendPath(seg));
 
   if(!OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
     return;
@@ -40,8 +52,7 @@ void OmMST::read(OmSegmentation & seg)
     assert( size == mDendSize );
   }
 
-  QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
-  path.setPathQstr(dendValStr);
+  path = getDendValuesPath(seg);
   mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
@@ -50,8 +61,7 @@ void OmMST::read(OmSegmentation & seg)
     assert( size == mDendValuesSize );
   }
 
-  QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(seg.GetDirectoryPath());
-  path.setPathQstr(dendEdgeDisabledByUser);
+  path = getEdgeDisabledByUserPath(seg);
   mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
@@ -65,8 +75,7 @@ void OmMST::read(OmSegmentation & seg)
   memset(edgeJoined, 0, sizeof(quint8) * mDendValuesSize );
   mEdgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined);
 
-  QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(seg.GetDirectoryPath());
-  path.setPathQstr(dendEdgeForceJoin);
+  path = getEdgeForceJoinPath(seg);
   mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
@@ -218,20 +227,17 @@ void OmMST::convertToEdgeList( OmSegmentation & seg,
 
 void OmMST::FlushDend(OmSegmentation * seg)
 {
-  OmDataPath path;
-
-  QString dendStr = QString("%1/dend").arg(seg->GetDirectoryPath());
-  path.setPathQstr(dendStr);
-  printf("dend: will save %s bytes\n", qPrintable(StringHelpers::commaDeliminateNumber(mDendSize)));
+  OmDataPath path = getDendPath(*seg);
+  printf("dend: will save %s bytes\n",
+	 qPrintable(StringHelpers::commaDeliminateNumber(mDendSize)));
   OmProjectData::GetDataWriter()->
     dataset_raw_create_tree_overwrite(path,
 				      mDendSize,
 				      mDend);
 
-  QString dendValStr = QString("%1/dendValues")
-    .arg(seg->GetDirectoryPath());
-  path.setPathQstr(dendValStr);
-  printf("dendValues: will save %s bytes\n", qPrintable(StringHelpers::commaDeliminateNumber(mDendValuesSize)));
+  path = getDendValuesPath(*seg);
+  printf("dendValues: will save %s bytes\n",
+	 qPrintable(StringHelpers::commaDeliminateNumber(mDendValuesSize)));
   OmProjectData::GetDataWriter()->
     dataset_raw_create_tree_overwrite(path,
 				      mDendValuesSize,
@@ -242,19 +248,14 @@ void OmMST::FlushDend(OmSegmentation * seg)
 
 void OmMST::FlushDendUserEdges(OmSegmentation * seg)
 {
-  OmDataPath path;
+  OmDataPath path(getEdgeDisabledByUserPath(*seg));
 
-  QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser")
-    .arg(seg->GetDirectoryPath());
-  path.setPathQstr(dendEdgeDisabledByUser);
   OmProjectData::GetDataWriter()->
     dataset_raw_create_tree_overwrite(path,
 				      mDendValuesSize,
 				      mEdgeDisabledByUser);
 
-  QString dendEdgeForceJoin = QString("%1/edgeForceJoin")
-    .arg(seg->GetDirectoryPath());
-  path.setPathQstr(dendEdgeForceJoin);
+  path = getEdgeForceJoinPath(*seg);
   OmProjectData::GetDataWriter()->
     dataset_raw_create_tree_overwrite(path,
 				      mDendValuesSize,

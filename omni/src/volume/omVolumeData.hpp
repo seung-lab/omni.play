@@ -7,63 +7,90 @@
 
 class OmVolumeData {
 public:
-	OmVolumeData(OmMipVolume* vol) : vol_(vol) {}
+	OmVolumeData(){}
 
-	void loadVolData();
-
-	int GetBytesPerSample(){
-		return boost::apply_visitor(GetBytesPerSampleVisitor(), volData_);
+	template <typename VOL>
+	void load(VOL* vol){
+		setDataType(vol);
+		assert(0);
 	}
 
-	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord){
-		return boost::apply_visitor(getChunkPtrVisitorRaw(coord), volData_);
+	template <typename VOL>
+	void create(VOL* vol, const std::map<int, Vector3i> & levDims ){
+		setDataType(vol);
+		allocMemMapFiles(levDims);
 	}
 
-	void AllocMemMapFiles(const std::map<int, Vector3i> & levDims){
-		boost::apply_visitor(AllocMemMapFilesVisitor(levDims), volData_);
-	}
-
+	int GetBytesPerSample();
+	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord);
 
 private:
-	OmMipVolume *const vol_;
-	boost::variant<OmMemMappedVolume<int8_t, OmMipVolume>,
-		       OmMemMappedVolume<uint8_t, OmMipVolume>,
-		       OmMemMappedVolume<int32_t, OmMipVolume>,
-		       OmMemMappedVolume<uint32_t, OmMipVolume>,
-		       OmMemMappedVolume<float, OmMipVolume> > volData_;
+	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
+		       OmMemMappedVolume<uint8_t, OmChannel>,
+		       OmMemMappedVolume<int32_t, OmChannel>,
+		       OmMemMappedVolume<uint32_t, OmChannel>,
+		       OmMemMappedVolume<float, OmChannel>,
+		       OmMemMappedVolume<int8_t, OmSegmentation>,
+		       OmMemMappedVolume<uint8_t, OmSegmentation>,
+		       OmMemMappedVolume<int32_t, OmSegmentation>,
+		       OmMemMappedVolume<uint32_t, OmSegmentation>,
+		       OmMemMappedVolume<float, OmSegmentation> > volData_;
 
-	void determineOldVolType();
+	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
 
-	class GetBytesPerSampleVisitor : public boost::static_visitor<int> {
-	public:
-		template <typename T> int operator()( T & d ) const {
-			return d.GetBytesPerSample();
+	template <typename VOL> void determineOldVolType(VOL* vol) {
+		const OmMipChunkCoord coord(0,0,0,0);
+		OmMipChunkPtr chunk;
+		vol->GetChunk(chunk, coord);
+		OmDataWrapperPtr data = chunk->RawReadChunkDataHDF5();
+
+		if(data->getHdf5MemoryType() == H5T_NATIVE_FLOAT){
+			vol->mVolDataType = OM_FLOAT;
+		}else if( data->getHdf5MemoryType() == H5T_NATIVE_UINT){
+			vol->mVolDataType = OM_UINT32;
+		}else if(data->getHdf5MemoryType() == H5T_NATIVE_INT){
+			vol->mVolDataType = OM_INT32;
+		}else if(data->getHdf5MemoryType() == H5T_NATIVE_UCHAR){
+			vol->mVolDataType = OM_UINT8;
+		}else if(data->getHdf5MemoryType() == H5T_NATIVE_CHAR){
+			vol->mVolDataType = OM_INT8;
+		}else{
+			assert(0 && "unknown HDF5 type");
 		}
-	};
+	}
 
-	class AllocMemMapFilesVisitor : public boost::static_visitor<> {
-	public:
-		AllocMemMapFilesVisitor(const std::map<int, Vector3i> & levDims)
-			: levelsAndDims(levDims) {}
-		template <typename T> void operator()( T & d ) const {
-			d.AllocMemMapFiles(levelsAndDims);
+	template <typename VOL> void setDataType(VOL* vol){
+		printf("setting up volume data...\n");
+
+		if(UNKNOWN == vol->mVolDataType){
+			printf("unknown data type--probably old file? inferring type...\n");
+			determineOldVolType(vol);
 		}
-	private:
-		const std::map<int, Vector3i> levelsAndDims;
-	};
 
-	class getChunkPtrVisitorRaw : public boost::static_visitor<OmRawDataPtrs>{
-	public:
-		getChunkPtrVisitorRaw(const OmMipChunkCoord & coord)
-			: coord(coord) {}
-
-		template <typename T>
-		OmRawDataPtrs operator()(T & d ) const {
-			return d.getChunkPtr(coord);
+		switch(vol->mVolDataType){
+		case OM_INT8:
+			volData_ = OmMemMappedVolume<int8_t, VOL>(vol);
+			break;
+		case OM_UINT8:
+			volData_ = OmMemMappedVolume<uint8_t, VOL>(vol);
+			break;
+		case OM_INT32:
+			volData_ = OmMemMappedVolume<int32_t, VOL>(vol);
+			break;
+		case OM_UINT32:
+			volData_ = OmMemMappedVolume<uint32_t, VOL>(vol);
+			break;
+		case OM_FLOAT:
+			volData_ = OmMemMappedVolume<float, VOL>(vol);
+			break;
+		case UNKNOWN:
+			assert(0 && "unknown data type--probably old file?");
+			break;
+		default:
+			assert(0 && "did not recognize vol data type");
+			break;
 		}
-	private:
-		OmMipChunkCoord coord;
-	};
+	}
 };
 
 #endif

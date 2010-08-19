@@ -57,7 +57,7 @@ ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
 
 QString ChannelDataWrapper::getName()
 {
-	return OmProject::GetChannel(mID).GetName();
+	return QString::fromStdString(OmProject::GetChannel(mID).GetName());
 }
 
 bool ChannelDataWrapper::isEnabled()
@@ -111,7 +111,7 @@ OmSegmentation & SegmentationDataWrapper::getSegmentation()
 
 QString SegmentationDataWrapper::getName()
 {
-	return OmProject::GetSegmentation(mID).GetName();
+	return QString::fromStdString(OmProject::GetSegmentation(mID).GetName());
 }
 
 bool SegmentationDataWrapper::isEnabled()
@@ -179,7 +179,7 @@ QString SegmentDataWrapper::getName()
 
 QString SegmentDataWrapper::getSegmentationName()
 {
-	return getSegmentation().GetName();
+	return QString::fromStdString(getSegmentation().GetName());
 }
 
 bool SegmentDataWrapper::isSelected()
@@ -295,7 +295,9 @@ OmFilter2d * FilterDataWrapper::getFilter()
 
 QString FilterDataWrapper::getName()
 {
-	return OmProject::GetChannel(mChannelID).GetFilter(mID).GetName();
+	return QString::fromStdString(OmProject::GetChannel(mChannelID).
+				      GetFilter(mID).
+				      GetName());
 }
 
 bool FilterDataWrapper::isEnabled()

@@ -3,21 +3,26 @@
 
 #include "common/omCommon.h"
 
-class OmDataPath 
-{
- public:
- 	OmDataPath();
- 	OmDataPath( string s ) : mPath(s) {}
+class OmDataPath {
+public:
+ 	OmDataPath(){}
+ 	OmDataPath(const std::string & s )
+		: mPath(s) {}
 
-	void setPath( std::string str );
-	void setPathQstr( QString );
+	void setPath( std::string str ){
+		mPath = str;
+	}
 
-	const std::string & getString() const;
+	void setPathQstr(const QString & str ){
+		mPath = str.toStdString();
+	}
 
-	OmDataPath & operator=( OmDataPath & rhs );
+	const std::string & getString() const {
+		return mPath;
+	}
 
- private:
+private:
 	std::string mPath;
-}; 
+};
 
 #endif

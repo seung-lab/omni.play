@@ -6,18 +6,17 @@
 #include "utility/omImageDataIo.h"
 #include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
+#include "volume/omVolumeData.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "system/omProjectData.h"
 
 #include <QImage>
-#include <QThreadPool>
-#include <QMutexLocker>
 
 template <typename VOL>
 OmVolumeImporter<VOL>::OmVolumeImporter(VOL* vol)
-	: vol(vol)
+	: vol_(vol)
 {
 }
 
@@ -35,17 +34,16 @@ bool OmVolumeImporter<VOL>::import(OmDataPath & dataset)
 template <typename VOL>
 bool OmVolumeImporter<VOL>::areImportFilesImages()
 {
-	return vol->areImportFilesImages();
+	return vol_->areImportFilesImages();
 }
 
 template <typename VOL>
 bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 {
 	//dim of leaf coords
-	const Vector3i leaf_mip_dims = vol->MipLevelDimensionsInMipChunks(0);
+	const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
 
-	OmDataPath leaf_volume_path;
-	leaf_volume_path.setPathQstr( vol->MipLevelInternalDataPath(0) );
+	OmDataPath leaf_volume_path(vol_->MipLevelInternalDataPath(0));
 
 	printf("\timporting data...\n");
 	fflush(stdout);
@@ -60,11 +58,11 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 
 				//get chunk data bbox
 				const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
-				DataBbox chunk_data_bbox = vol->MipCoordToDataBbox(chunk_coord, 0);
+				DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(chunk_coord, 0);
 
 				//read chunk image data from source
 				OmDataWrapperPtr p_img_data =
-					OmImageDataIo::om_imagedata_read_hdf5(vol->mSourceFilenamesAndPaths,
+					OmImageDataIo::om_imagedata_read_hdf5(vol_->mSourceFilenamesAndPaths,
 									      chunk_data_bbox,
 									      dataset);
 				//write to project data
@@ -84,7 +82,7 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 template <typename VOL>
 OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataType()
 {
-	const int depth = QImage(vol->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
+	const int depth = QImage(vol_->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
 
 	switch(depth){
 	case 8:
@@ -108,19 +106,67 @@ bool OmVolumeImporter<VOL>::importImageStack()
 	OmTimer import_timer;
 	import_timer.start();
 
-	vol->AllocInternalData(figureOutDataType());
+	allocateData(figureOutDataType());
 
-	OmLoadImage<VOL> imageLoader(this, vol);
-	for( int i = 0; i < vol->mSourceFilenamesAndPaths.size(); ++i){
-		const QString fnp = vol->mSourceFilenamesAndPaths[i].absoluteFilePath();
+	OmLoadImage<VOL> imageLoader(this, vol_);
+	for( int i = 0; i < vol_->mSourceFilenamesAndPaths.size(); ++i){
+		const QString fnp = vol_->mSourceFilenamesAndPaths[i].absoluteFilePath();
 		imageLoader.processSlice(fnp, i);
 	}
 
 	printf("\ndone with image import; copying to HDF5 file...\n");
-	vol->copyDataIn();
+	vol_->copyDataIn();
 
 	import_timer.stop();
 	printf("done in %.2f secs\n",import_timer.s_elapsed());
 
 	return true;
+}
+
+/**
+ *	Allocate the image data for all mip level volumes.
+ *	Note: root level and leaf dim must already be set
+ */
+template <typename VOL>
+void OmVolumeImporter<VOL>::allocateData(const OmAllowedVolumeDataTypes type)
+{
+	assert(UNKNOWN != type);
+	vol_->mVolDataType = type;
+
+	std::map<int, Vector3i> levelsAndDims;
+
+	for (int level = 0; level <= vol_->GetRootMipLevel(); level++) {
+		levelsAndDims[level] = vol_->getDimsRoundedToNearestChunk(level);
+	}
+
+	allocateHDF5(levelsAndDims);
+	allocateMemMap(levelsAndDims);
+
+	printf("done allocating volume data for all mip levels; data type is %s\n",
+	       OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
+}
+
+template <typename VOL>
+void OmVolumeImporter<VOL>::allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
+{
+	const Vector3i chunkdims = vol_->GetChunkDimensions();
+
+	FOR_EACH(it, levelsAndDims){
+		const int level = it->first;
+		const Vector3i dims = it->second;
+
+		OmDataPath path(vol_->MipLevelInternalDataPath(level));
+
+		OmProjectData::GetDataWriter()->
+			dataset_image_create_tree_overwrite(path,
+							    dims,
+							    chunkdims,
+							    vol_->mVolDataType);
+	}
+}
+
+template <typename VOL>
+void OmVolumeImporter<VOL>::allocateMemMap(const std::map<int, Vector3i> & levelsAndDims)
+{
+	vol_->volData->create(vol_, levelsAndDims);
 }

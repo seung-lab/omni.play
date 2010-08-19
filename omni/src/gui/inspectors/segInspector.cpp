@@ -186,7 +186,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetSegmentation(sdw.getID()).SetName(nameEdit->text());
+	OmProject::GetSegmentation(sdw.getID()).SetCustomName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()

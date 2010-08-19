@@ -5,6 +5,7 @@
 
 class OmSegmentation;
 class OmDataReader;
+class OmDataPath;
 
 class OmMST {
 public:
@@ -39,6 +40,11 @@ private:
   bool importDend(OmDataReader * hdf5reader);
   bool importDendValues(OmDataReader * hdf5reader);
   bool setupUserEdges(const int dendValuesSize);
+
+  OmDataPath getDendPath(OmSegmentation & seg);
+  OmDataPath getDendValuesPath(OmSegmentation & seg);
+  OmDataPath getEdgeDisabledByUserPath(OmSegmentation & seg);
+  OmDataPath getEdgeForceJoinPath(OmSegmentation & seg);
 };
 
 #endif

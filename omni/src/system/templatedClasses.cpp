@@ -70,11 +70,17 @@ template class OmVolumeImporter<OmSegmentation>;
 template class OmLoadImage<OmChannel>;
 template class OmLoadImage<OmSegmentation>;
 
-template class OmMemMappedVolume<int8_t, OmMipVolume>;
-template class OmMemMappedVolume<uint8_t, OmMipVolume>;
-template class OmMemMappedVolume<int32_t, OmMipVolume>;
-template class OmMemMappedVolume<uint32_t, OmMipVolume>;
-template class OmMemMappedVolume<float, OmMipVolume>;
+template class OmMemMappedVolume<int8_t, OmChannel>;
+template class OmMemMappedVolume<uint8_t, OmChannel>;
+template class OmMemMappedVolume<int32_t, OmChannel>;
+template class OmMemMappedVolume<uint32_t, OmChannel>;
+template class OmMemMappedVolume<float, OmChannel>;
+
+template class OmMemMappedVolume<int8_t, OmSegmentation>;
+template class OmMemMappedVolume<uint8_t, OmSegmentation>;
+template class OmMemMappedVolume<int32_t, OmSegmentation>;
+template class OmMemMappedVolume<uint32_t, OmSegmentation>;
+template class OmMemMappedVolume<float, OmSegmentation>;
 
 template class OmActionLoggerFSThread<OmProjectSaveAction>;
 template class OmActionLoggerFSThread<OmSegmentJoinAction>;

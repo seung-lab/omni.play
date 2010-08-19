@@ -17,7 +17,7 @@ public:
 	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
 
 private:
-	VOL* vol;
+	VOL *const vol_;
 
 	std::set<OmMipChunkCoord> chunksToCopy;;
 
@@ -26,6 +26,10 @@ private:
 
 	bool importImageStack();
 	OmAllowedVolumeDataTypes figureOutDataType();
+
+	void allocateData(const OmAllowedVolumeDataTypes);
+	void allocateHDF5(const std::map<int, Vector3i> &);
+	void allocateMemMap(const std::map<int, Vector3i> &);
 };
 
 #endif

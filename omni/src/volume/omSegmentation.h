@@ -28,6 +28,10 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	OmSegmentation(OmId id);
 	~OmSegmentation();
 
+	std::string GetName();
+	std::string GetDirectoryPath();
+	void loadVolData();
+
 	void CloseDownThreads();
 
 	//build methods

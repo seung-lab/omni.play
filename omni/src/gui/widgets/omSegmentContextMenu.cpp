@@ -66,7 +66,7 @@ void OmSegmentContextMenu::AddSelectionNames()
 	} else {
 		validText = "Not valid in ";
 	}
-	addAction( validText + r_segmentation.GetName() );
+	addAction( validText + QString::fromStdString(r_segmentation.GetName()));
 }
 
 /*

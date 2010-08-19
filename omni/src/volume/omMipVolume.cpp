@@ -33,19 +33,14 @@
 
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
-static const char *MIP_VOLUME_FILENAME = "volume.dat";
-static const QString MIP_CHUNK_META_DATA_FILE_NAME = "metachunk.dat";
-
 OmMipVolume::OmMipVolume()
-	: volData(new OmVolumeData(this))
+	: volData(new OmVolumeData())
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolDataType(UNKNOWN)
 {
 	sourceFilesWereSet = false;
 
 	//init
-	SetFilename(MIP_VOLUME_FILENAME);
-	SetDirectoryPath("default/");
 	SetBuildState(MIPVOL_UNBUILT);
 	SetChunksStoreMetaData(false);
 }
@@ -75,56 +70,24 @@ void OmMipVolume::Flush()
 	mDataCache->Flush();
 }
 
-/////////////////////////////////
-///////          Internal Data Properties
-
-void OmMipVolume::SetFilename(const QString & fname)
-{
-	mFilename = fname;
-}
-
-QString OmMipVolume::GetFilename()
-{
-	return mFilename;
-}
-
-QString OmMipVolume::GetDirectoryPath()
-{
-	return mDirectoryPath;
-}
-
-void OmMipVolume::SetDirectoryPath(const QString & dpath)
-{
-	mDirectoryPath = dpath;
-}
-
-/*
+/**
  *	Returns data path to internal MipLevel data.
  */
-QString OmMipVolume::MipLevelInternalDataPath(int level)
+std::string OmMipVolume::MipLevelInternalDataPath(const int level)
 {
-	return QString("%1%2/%3")
-		.arg(mDirectoryPath)
-		.arg(level)
-		.arg( mFilename );
+	return OmDataPaths::MipLevelInternalDataPath(GetDirectoryPath(), level);
 }
 
 /**
  *	Returns path to MetaData of specified chunk
  */
-QString OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
+std::string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 {
 	if(!GetChunksStoreMetaData()){
 		throw new OmIoException("this mip volume has no chunk metadata????");
 	}
 
-	QString p = QString("%1/%2_%3_%4/")
-		.arg(rMipCoord.Level)
-		.arg(rMipCoord.Coordinate.x)
-		.arg(rMipCoord.Coordinate.y)
-		.arg(rMipCoord.Coordinate.z);
-
-	return GetDirectoryPath() + p + MIP_CHUNK_META_DATA_FILE_NAME;
+	return OmDataPaths::MipChunkMetaDataPath(GetDirectoryPath(), rMipCoord);
 }
 
 /////////////////////////////////
@@ -652,58 +615,9 @@ Vector3i OmMipVolume::getDimsRoundedToNearestChunk(const int level)
 			ROUNDUP(data_dims.z, GetChunkDimension()));
 }
 
-/*
- *	Allocate the image data for all mip level volumes.
- *	Note: root level and leaf dim must already be set
- */
-void OmMipVolume::AllocInternalData(const OmAllowedVolumeDataTypes type)
-{
-	mVolDataType = type;
-
-	std::map<int, Vector3i> levelsAndDims;
-
-	for (int level = 0; level <= GetRootMipLevel(); level++) {
-		levelsAndDims[level] = getDimsRoundedToNearestChunk(level);
-	}
-
-	allocateHDF5(levelsAndDims);
-	allocateMemMap(levelsAndDims);
-
-	printf("done allocating volume data for all mip levels; data type is %s\n",
-	       OmVolumeTypeHelpers::GetTypeAsString(mVolDataType).c_str());
-}
-
-void OmMipVolume::allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
-{
-	assert(UNKNOWN != mVolDataType);
-
-	const Vector3i chunkdims = GetChunkDimensions();
-
-	FOR_EACH(it, levelsAndDims){
-		const int level = it->first;
-		const Vector3i dims = it->second;
-
-		OmDataPath path(MipLevelInternalDataPath(level).toStdString());
-
-		OmProjectData::GetDataWriter()->
-			dataset_image_create_tree_overwrite(path,
-							    dims,
-							    chunkdims,
-							    mVolDataType);
-	}
-}
-
-void OmMipVolume::allocateMemMap(const std::map<int, Vector3i> & levelsAndDims)
-{
-	assert(UNKNOWN != mVolDataType);
-
-	volData->AllocMemMapFiles(levelsAndDims);
-}
-
 void OmMipVolume::DeleteVolumeData()
 {
-	OmDataPath path;
-	path.setPathQstr( mDirectoryPath );
+	OmDataPath path(GetDirectoryPath());
 
 	OmProjectData::DeleteInternalData(path);
 }
@@ -833,8 +747,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	OmDataPath source_data_path;
-	source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level - 1) );
+	OmDataPath source_data_path(MipLevelInternalDataPath(rMipCoord.Level-1));
 	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
 	//read and get pointer to data
@@ -907,12 +820,12 @@ OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 	if ( initCall ){
 
 		//read original data
-		OmDataPath source_data_path;
-		source_data_path.setPathQstr( MipLevelInternalDataPath(rMipCoord.Level) );
+		OmDataPath source_data_path(MipLevelInternalDataPath(rMipCoord.Level));
 		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
 
 		OmDataWrapperPtr p_read_data =
-			OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path, source_data_bbox);
+			OmProjectData::GetProjectDataReader()->
+			dataset_image_read_trim(source_data_path, source_data_bbox);
 
 		return p_read_data;
 
@@ -1135,14 +1048,15 @@ bool OmMipVolume::CompareChunks(OmMipChunk *pMipChunk1, OmMipChunk *pMipChunk2, 
  */
 void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 {
-	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n", qPrintable(fileNameAndPath));
+	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n",
+	      qPrintable(fileNameAndPath));
 
 	//get leaf data extent
 	DataBbox leaf_data_extent = GetDataExtent();
 
 	//dim of leaf coords
-	Vector3 < int >leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmDataPath mip_volume_path(MipLevelInternalDataPath(0).toStdString());
+	Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+	OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
 
         OmHdf5 hdfExport( fileNameAndPath, false );
         OmDataPath fpath;
@@ -1301,7 +1215,8 @@ void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
 	UpdateRootLevel();
 
 	DeleteVolumeData();
-	AllocInternalData(OM_UINT32); // FIXME: don't assume default type
+	assert(0);
+	//AllocInternalData(OM_UINT32); // FIXME: don't assume default type
 
 	SetBuildState(MIPVOL_BUILT);
 }
@@ -1359,11 +1274,6 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 			}
 		}
 	}
-}
-
-void OmMipVolume::loadVolData()
-{
-	volData->loadVolData();
 }
 
 void OmMipVolume::setVolDataType(OmAllowedVolumeDataTypes type)

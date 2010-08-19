@@ -3,12 +3,12 @@
 #include "utility/stringHelpers.h"
 #include "project/omProject.h"
 #include "datalayer/fs/omMemMappedVolume.hpp"
+#include "volume/omVolumeTypes.hpp"
 
 template <typename T, typename VOL>
 OmMemMappedVolume<T,VOL>::OmMemMappedVolume(VOL* vol)
 	: vol_(vol)
 {
-	alreadyAllocFiles = false;
 }
 
 template <typename T, typename VOL>
@@ -28,10 +28,6 @@ template <typename T, typename VOL>
 void OmMemMappedVolume<T,VOL>::AllocMemMapFiles(const std::map<int, Vector3i> & levelsAndDims)
 {
 	zi::Guard g(mutex_);
-
-	if(alreadyAllocFiles){
-		return;
-	}
 
 	mFileVec.resize(levelsAndDims.size());
 	mFileMapPtr.resize(levelsAndDims.size());
@@ -57,7 +53,7 @@ void OmMemMappedVolume<T,VOL>::AllocMemMapFiles(const std::map<int, Vector3i> & 
 		memMap(file, level);
 	}
 
-	alreadyAllocFiles = true;
+	printf("OmMemMappedVolume done allocating data\n");
 }
 
 template <typename T, typename VOL>
@@ -108,11 +104,15 @@ T* OmMemMappedVolume<T,VOL>::getChunkPtr(const OmMipChunkCoord & coord)
 template <typename T, typename VOL>
 QString OmMemMappedVolume<T,VOL>::getFileName(const int level)
 {
-	const QString fn=QString("%1_%2_mip%3_%4bit.raw")
+	const QString volName = QString::fromStdString(vol_->GetName());
+	const QString volType =
+		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType()));
+
+	const QString fn=QString("%1_%2_mip%3_%4.raw")
 		.arg(OmProject::GetFileName().replace(".omni",""))
-		.arg(vol_->GetDirectoryPath().replace("channels/","").replace("segmentations/","").replace("/",""))
+		.arg(volName)
 		.arg(level)
-		.arg(8*GetBytesPerSample());
+		.arg(volType);
 
 	const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
 

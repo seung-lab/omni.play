@@ -81,7 +81,7 @@ QDockWidget* ViewGroup::getDockWidget( QString objName )
 	} else if( widgets.size() > 1 ){
 		assert(0);
 	}
-	
+
 	return widgets[0];
 }
 
@@ -92,7 +92,7 @@ bool ViewGroup::doesDockWidgetExist( QString objName )
 	if( widgets.isEmpty() ){
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -134,7 +134,7 @@ QWidget * ViewGroup::addView2Dchannel( const OmId chan_id, ViewType vtype)
 	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
 		delete getDockWidget( makeObjectName( vgw ) );
 	}
-	
+
 	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, this, mViewGroupState );
 
 	insertDockIntoGroup( vgw );
@@ -162,10 +162,12 @@ void ViewGroup::addView2Dsegmentation( const OmId segmentation_id, ViewType vtyp
 	delete vgw;
 }
 
-QString ViewGroup::getViewName( QString baseName, ViewType vtype )
+QString ViewGroup::getViewName( const std::string & volName, ViewType vtype )
 {
-	QString name = baseName + " -- " + getViewTypeAsStr(vtype) + " View";
-	return name;
+	return QString::fromStdString(volName)
+		+ " -- "
+		+ getViewTypeAsStr(vtype)
+		+ " View";
 }
 
 QString ViewGroup::getViewTypeAsStr( ViewType vtype )
@@ -231,7 +233,7 @@ QDockWidget * ViewGroup::chooseDockToSplit( ViewGroupWidgetInfo * vgw )
 	} else if( VIEW2D_SEG == vgw->widgetType ){
 		if( UpperLeft == vgw->vtype ){
 
-		} else if( UpperRight == vgw->vtype ){		
+		} else if( UpperRight == vgw->vtype ){
 			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperLeft ) ) ){
 				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperLeft ) );
 			}
@@ -283,7 +285,7 @@ void ViewGroup::insertDockIntoGroup( ViewGroupWidgetInfo * vgw )
 			insertBySplitting( vgw, chooseDockToSplit( vgw ));
 			QApplication::processEvents();
 		}
-	}       
+	}
 }
 
 void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * biggest )
@@ -298,13 +300,13 @@ void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * bigg
 	Qt::Orientation dir = vgw->dir;
 
 	QDockWidget * dock = makeDockWidget( vgw );
-	 	
+
 	debug("viewGroup", "\t inserting %s by splitting...\n", qPrintable(dock->objectName()));
 	mMainWindow->splitDockWidget( biggest, dock, dir );
 
 	if( !tabified.empty() ){
 		foreach( QDockWidget* dwidget, tabified ){
-			dwidget->show();			
+			dwidget->show();
 			mMainWindow->tabifyDockWidget( biggest, dwidget );
 		}
 	}

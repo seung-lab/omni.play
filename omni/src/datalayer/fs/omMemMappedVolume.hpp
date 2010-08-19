@@ -24,7 +24,6 @@ private:
 	std::vector<uchar*> mFileMapPtr;
 	std::set<int> openedLevels;
 	zi::Mutex mutex_;
-	bool alreadyAllocFiles;
 
 	QString getFileName(const int level);
 	QFile* openFile(const int level);

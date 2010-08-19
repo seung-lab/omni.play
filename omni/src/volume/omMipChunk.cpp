@@ -117,8 +117,7 @@ void OmMipChunk::OpenForWrite()
 		return;
 	}
 
-	OmDataPath mip_level_vol_path;
-	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
 	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent());
@@ -201,9 +200,7 @@ bool OmMipChunk::IsMetaDataDirty()
 
 void OmMipChunk::ReadVolumeData()
 {
-	//get path to mip level volume
-	OmDataPath mip_level_vol_path;
-	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent());
 
@@ -221,11 +218,13 @@ void OmMipChunk::WriteVolumeData()
 		OpenForWrite();
 	}
 
-	OmDataPath mip_level_vol_path;
-	mip_level_vol_path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	if (mData->getVTKPtr()) {
-		OmProjectData::GetDataWriter()->dataset_image_write_trim(mip_level_vol_path, (DataBbox*)&GetExtent(), mData);
+		OmProjectData::GetDataWriter()->
+			dataset_image_write_trim(mip_level_vol_path,
+						 (DataBbox*)&GetExtent(),
+						 mData);
 	}
 
 	setVolDataClean();
@@ -233,8 +232,7 @@ void OmMipChunk::WriteVolumeData()
 
 void OmMipChunk::ReadMetaData()
 {
-	OmDataPath dat_file_path;
-	dat_file_path.setPathQstr( mpMipVolume->MipChunkMetaDataPath(mCoordinate) );
+	OmDataPath dat_file_path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	//read archive if it exists
 	if (OmProjectData::GetProjectDataReader()->dataset_exists(dat_file_path)) {
@@ -244,8 +242,7 @@ void OmMipChunk::ReadMetaData()
 
 void OmMipChunk::WriteMetaData()
 {
-	OmDataPath dat_file_path;
-	dat_file_path.setPathQstr(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	OmDataPath dat_file_path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	OmDataArchiveQT::ArchiveWrite(dat_file_path, this);
 
@@ -618,8 +615,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 {
         QMutexLocker locker(&mOpenLock);
 	if(!mIsRawChunkOpen){
-		OmDataPath path;
-		path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel()) );
+		OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 		mRawChunk = OmProjectData::GetProjectDataReader()->
 			dataset_read_raw_chunk_data(path, GetExtent());
@@ -635,8 +631,7 @@ void OmMipChunk::RawWriteChunkData(T* data)
         QMutexLocker locker(&mOpenLock);
 
 	//get path to mip level volume
-	OmDataPath path;
-	path.setPathQstr( mpMipVolume->MipLevelInternalDataPath(GetLevel() ) );
+	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	mRawChunk = OmDataWrapper<T>::producenofree(data);
 
