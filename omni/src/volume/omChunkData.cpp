@@ -1,9 +1,12 @@
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
 
-OmChunkData::OmChunkData(OmMipVolume* vol, const OmMipChunkCoord &coord)
+OmChunkData::OmChunkData(OmMipVolume* vol,
+			 OmMipChunk* chunk,
+			 const OmMipChunkCoord &coord)
 	: rawData(vol->volData->getChunkPtrRaw(coord))
 	, vol_(vol)
+	, chunk_(chunk)
 	, coord_(coord)
 {}
 
@@ -85,10 +88,9 @@ private:
 		return sizes;
 	}
 };
-OmSegSizeMapPtr OmChunkData::RefreshDirectDataValues(OmMipChunk* chunk,
-						     const bool computeSizes)
+OmSegSizeMapPtr OmChunkData::RefreshDirectDataValues(const bool computeSizes)
 {
-	return boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk, computeSizes),
+	return boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_, computeSizes),
 				    rawData);
 }
 
@@ -129,8 +131,33 @@ public:
 private:
 	OmMipChunk* chunk_;
 };
-void OmChunkData::copyChunkFromMemMapToHDF5(OmMipChunk* chunk)
+void OmChunkData::copyChunkFromMemMapToHDF5()
 {
-	boost::apply_visitor(CopyDataFromMemMapToHDF5Visitor(chunk),
+	boost::apply_visitor(CopyDataFromMemMapToHDF5Visitor(chunk_),
+			     rawData);
+}
+
+
+class CopyDataFromHDF5toMemMapVisitor : public boost::static_visitor<>{
+public:
+	CopyDataFromHDF5toMemMapVisitor(OmMipChunk* chunk)
+		: chunk_(chunk) {}
+
+	template <typename T>
+	void operator()(T* d) const {
+		OmDataWrapperPtr hdf5 = chunk_->RawReadChunkDataHDF5();
+		T* dataHDF5 = hdf5->getPtr<T>();
+
+		memcpy(d,
+		       dataHDF5,
+		       128*128*128*sizeof(T));
+	}
+
+private:
+	OmMipChunk* chunk_;
+};
+void OmChunkData::copyDataFromHDF5toMemMap()
+{
+	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_),
 			     rawData);
 }

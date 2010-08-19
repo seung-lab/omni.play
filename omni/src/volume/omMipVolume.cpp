@@ -1235,28 +1235,7 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 
 					OmMipChunkPtr chunk;
 					GetChunk(chunk, coord);
-
-					assert(0);
-					/*
-
-					if(4 == GetBytesPerSample()){
-						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUINT32();
-						quint32* data = dataPtr->getPtr<uint32_t>();
-
-						OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUINT32mapped();
-						quint32* dataMapped = dataPtrMapped->getPtr<uint32_t>();
-
-						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
-					} else {
-						OmDataWrapperPtr dataPtr = chunk->RawReadChunkDataUCHAR();
-						unsigned char* data = dataPtr->getPtr<unsigned char>();
-
-						OmDataWrapperPtr dataPtrMapped = chunk->RawReadChunkDataUCHARmapped();
-						unsigned char* dataMapped = dataPtrMapped->getPtr<unsigned char>();
-
-						memcpy(dataMapped, data, 128*128*128*GetBytesPerSample());
-					}
-					*/
+					chunk->copyDataFromHDF5toMemMap();
 				}
 			}
 		}

@@ -58,6 +58,7 @@ public:
 	bool mIsRawMappedChunkOpen;
 	OmDataWrapperPtr mRawMappedChunk;
 	void copyChunkFromMemMapToHDF5();
+	void copyDataFromHDF5toMemMap();
 
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);

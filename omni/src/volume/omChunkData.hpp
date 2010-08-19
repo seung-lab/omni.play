@@ -8,18 +8,19 @@
 
 class OmChunkData {
 public:
-	OmChunkData(OmMipVolume* vol, const OmMipChunkCoord &coord);
+	OmChunkData(OmMipVolume*, OmMipChunk*, const OmMipChunkCoord& coord);
 
 	OmRawDataPtrs rawData;
 
 	void* ExtractDataSlice(const ViewType plane, const int offset);
-	OmSegSizeMapPtr RefreshDirectDataValues(OmMipChunk* chunk,
-						const bool computeSizes);
+	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
 	void copyInTile(const int sliceOffset, uchar* bits);
-	void copyChunkFromMemMapToHDF5(OmMipChunk* chunk);
+	void copyChunkFromMemMapToHDF5();
+	void copyDataFromHDF5toMemMap();
 
 private:
 	OmMipVolume *const vol_;
+	OmMipChunk *const chunk_;
 	const OmMipChunkCoord coord_;
 };
 

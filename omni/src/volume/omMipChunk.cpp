@@ -33,7 +33,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolu
 	, mIsRawChunkOpen(false)
 	, mIsRawMappedChunkOpen(false)
 	, mpMipVolume(pMipVolume)
-	, mChunkData(new OmChunkData(mpMipVolume, rMipCoord))
+	, mChunkData(new OmChunkData(mpMipVolume, this, rMipCoord))
 {
 	//init chunk properties
 	InitChunk(rMipCoord);
@@ -434,7 +434,7 @@ OmSegSizeMapPtr OmMipChunk::RefreshDirectDataValues(const bool computeSizes)
 	containedValuesDataLoaded = true;
 	setMetaDataDirty();
 
-	return mChunkData->RefreshDirectDataValues(this, computeSizes);
+	return mChunkData->RefreshDirectDataValues(computeSizes);
 }
 
 void OmMipChunk::addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos)
@@ -606,7 +606,12 @@ void OmMipChunk::copyInTile(const int sliceOffset, uchar* bits)
 
 void OmMipChunk::copyChunkFromMemMapToHDF5()
 {
-	mChunkData->copyChunkFromMemMapToHDF5(this);
+	mChunkData->copyChunkFromMemMapToHDF5();
+}
+
+void OmMipChunk::copyDataFromHDF5toMemMap()
+{
+	mChunkData->copyDataFromHDF5toMemMap();
 }
 
 void OmMipChunk::writeHDF5()
