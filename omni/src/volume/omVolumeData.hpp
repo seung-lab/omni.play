@@ -37,34 +37,14 @@ private:
 		       OmMemMappedVolume<float, OmSegmentation> > volData_;
 
 	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
-
-	template <typename VOL> void determineOldVolType(VOL* vol) {
-		const OmMipChunkCoord coord(0,0,0,0);
-		OmMipChunkPtr chunk;
-		vol->GetChunk(chunk, coord);
-		OmDataWrapperPtr data = chunk->RawReadChunkDataHDF5();
-
-		if(data->getHdf5MemoryType() == H5T_NATIVE_FLOAT){
-			vol->mVolDataType = OM_FLOAT;
-		}else if( data->getHdf5MemoryType() == H5T_NATIVE_UINT){
-			vol->mVolDataType = OM_UINT32;
-		}else if(data->getHdf5MemoryType() == H5T_NATIVE_INT){
-			vol->mVolDataType = OM_INT32;
-		}else if(data->getHdf5MemoryType() == H5T_NATIVE_UCHAR){
-			vol->mVolDataType = OM_UINT8;
-		}else if(data->getHdf5MemoryType() == H5T_NATIVE_CHAR){
-			vol->mVolDataType = OM_INT8;
-		}else{
-			assert(0 && "unknown HDF5 type");
-		}
-	}
+	OmAllowedVolumeDataTypes determineOldVolType(OmMipVolume * vol);
 
 	template <typename VOL> void setDataType(VOL* vol){
 		printf("setting up volume data...\n");
 
 		if(UNKNOWN == vol->mVolDataType){
 			printf("unknown data type--probably old file? inferring type...\n");
-			determineOldVolType(vol);
+			vol->mVolDataType = determineOldVolType(vol);
 		}
 
 		switch(vol->mVolDataType){

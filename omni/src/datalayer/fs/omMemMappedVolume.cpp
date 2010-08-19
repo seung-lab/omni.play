@@ -108,7 +108,7 @@ QString OmMemMappedVolume<T,VOL>::getFileName(const int level)
 	const QString volType =
 		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType()));
 
-	const QString fn=QString("%1_%2_mip%3_%4.raw")
+	const QString fn=QString("%1--%2--mip%3--%4.raw")
 		.arg(OmProject::GetFileName().replace(".omni",""))
 		.arg(volName)
 		.arg(level)

@@ -26,9 +26,9 @@ int OmVolumeData::GetBytesPerSample(){
 }
 
 
-class getChunkPtrVisitorRaw : public boost::static_visitor<OmRawDataPtrs>{
+class GetChunkPtrVisitorRaw : public boost::static_visitor<OmRawDataPtrs>{
 public:
-	getChunkPtrVisitorRaw(const OmMipChunkCoord & coord)
+	GetChunkPtrVisitorRaw(const OmMipChunkCoord & coord)
 		: coord(coord) {}
 
 	template <typename T>
@@ -39,5 +39,15 @@ private:
 	OmMipChunkCoord coord;
 };
 OmRawDataPtrs OmVolumeData::getChunkPtrRaw(const OmMipChunkCoord & coord){
-	return boost::apply_visitor(getChunkPtrVisitorRaw(coord), volData_);
+	return boost::apply_visitor(GetChunkPtrVisitorRaw(coord), volData_);
+}
+
+
+OmAllowedVolumeDataTypes OmVolumeData::determineOldVolType(OmMipVolume * vol)
+{
+	const OmMipChunkCoord coord(0,0,0,0);
+	OmMipChunkPtr chunk;
+	vol->GetChunk(chunk, coord);
+	OmDataWrapperPtr data = chunk->RawReadChunkDataHDF5();
+	return data->getVolDataType();
 }

@@ -2,12 +2,13 @@
 #define OM_DATA_WRAPPER_H
 
 #include "common/omCommon.h"
-#include "utility/image/omImage.hpp"
 #include "common/omGl.h"
-#include <vtkImageData.h>
+#include "utility/image/omImage.hpp"
+#include "volume/omVolumeTypes.hpp"
+
 #include "boost/shared_ptr.hpp"
-#include <string>
 #include "hdf5.h"
+#include <vtkImageData.h>
 
 typedef hid_t OmHdf5Type;
 
@@ -72,6 +73,7 @@ public:
 	virtual std::string getTypeAsString() = 0;
 	virtual hid_t getHdf5MemoryType() = 0;
 	virtual hid_t getHdf5FileType() = 0;
+	virtual OmAllowedVolumeDataTypes getVolDataType() = 0;
 
 	template <class T> friend class OmDataWrapper;
 };
@@ -201,6 +203,21 @@ private:
 	hid_t getHdf5FileType(){ return OmHdf5FileTypeImpl<T>::getType(); }
 	std::string getTypeAsString(){ return OmTypeAsString<T>::getTypeAsString(); }
 
+	OmAllowedVolumeDataTypes getVolDataType(){
+		if(getHdf5MemoryType() == H5T_NATIVE_FLOAT){
+			return OM_FLOAT;
+		}else if( getHdf5MemoryType() == H5T_NATIVE_UINT){
+			return OM_UINT32;
+		}else if(getHdf5MemoryType() == H5T_NATIVE_INT){
+			return OM_INT32;
+		}else if(getHdf5MemoryType() == H5T_NATIVE_UCHAR){
+			return OM_UINT8;
+		}else if(getHdf5MemoryType() == H5T_NATIVE_CHAR){
+			return OM_INT8;
+		}else{
+			assert(0 && "unknown HDF5 type");
+		}
+	}
 
 private:
 	void *const mData;
