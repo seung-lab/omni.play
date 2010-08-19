@@ -452,6 +452,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/volume/build/omVolumeBuilder.cpp \
            src/volume/build/omVolumeImporter.cpp \
+           src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \
            src/volume/omVoxelSetValueAction.cpp \
            src/volume/omFilter2d.cpp \

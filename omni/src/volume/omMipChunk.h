@@ -80,7 +80,6 @@ public:
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
-	template <typename C> OmSegSizeMapPtr doRefreshDirectDataValues(const bool, C*);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();
@@ -153,9 +152,13 @@ protected:
 	OmDataWrapperPtr mData;
 
 	boost::shared_ptr<OmChunkData> mChunkData;
+
         OmSegBounds mBounds;
+	void addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos);
 
 	friend class OmMipVolume;
+	friend class OmChunkData;
+	friend class RefreshDirectDataValuesVisitor;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 };

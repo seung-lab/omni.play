@@ -24,6 +24,7 @@ public:
 	int GetBytesPerSample();
 	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord);
 
+
 private:
 	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
 		       OmMemMappedVolume<uint8_t, OmChannel>,
@@ -43,7 +44,7 @@ private:
 		printf("setting up volume data...\n");
 
 		if(UNKNOWN == vol->mVolDataType){
-			printf("unknown data type--probably old file? inferring type...\n");
+			printf("unknown data type--old file? attempting to infer type...\n");
 			vol->mVolDataType = determineOldVolType(vol);
 		}
 

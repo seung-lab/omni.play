@@ -1,27 +1,27 @@
-#include "volume/omVolumeData.hpp"
+#include "common/omDebug.h"
 #include "common/omGl.h"
 #include "common/omVtk.h"
-#include "utility/image/omImage.hpp"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "utility/image/omImage.hpp"
 #include "utility/omImageDataIo.h"
+#include "volume/omChunkData.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeCuller.h"
-#include "volume/omChunkData.hpp"
+#include "volume/omVolumeData.hpp"
 
 #include <vtkImageData.h>
 #include <vtkType.h>
 
-#include "common/omDebug.h"
 
 static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
 
@@ -425,24 +425,6 @@ void OmMipChunk::loadMetadataIfPresent()
 	containedValuesDataLoaded = true;
 }
 
-class RefreshDirectDataValuesVisitor :
-	public boost::static_visitor<OmSegSizeMapPtr>{
-public:
-	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
-				       const bool computeSizes)
-		: chunk_(chunk)
-		, computeSizes_(computeSizes) {}
-
-	template <typename T>
-	OmSegSizeMapPtr operator()(T* d ) const {
-		return chunk_->doRefreshDirectDataValues(computeSizes_, d);
-	}
-private:
-	OmMipChunk *const chunk_;
-	const bool computeSizes_;
-};
-
-
 /*
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store
  *	all values in the DataSegmentId set of the chunk.
@@ -451,54 +433,21 @@ OmSegSizeMapPtr OmMipChunk::RefreshDirectDataValues(const bool computeSizes)
 {
 	mDirectlyContainedValues.clear();
 	containedValuesDataLoaded = true;
-
-	return boost::apply_visitor(RefreshDirectDataValuesVisitor(this, computeSizes),
-				    mChunkData->rawData);
-}
-
-template <typename C>
-OmSegSizeMapPtr OmMipChunk::doRefreshDirectDataValues(const bool computeSizes,
-						      C* data)
-{
-	OmSegSizeMapPtr sizes(new OmSegSizeMap());
-
-	//for all voxels in the chunk
-	for(int z = 0; z < 128; z++) {
-		for(int y = 0; y < 128; y++) {
-			for(int x = 0; x < 128; x++) {
-
-				const OmSegID val = static_cast<OmSegID>(*data);
-
-				++data; //adv to next scalar
-
-				if( 0 == val) {
-					continue;
-				}
-
-				mDirectlyContainedValues.insert(val);
-
-				if(!computeSizes){
-					continue;
-				}
-
-				++((*sizes)[val]);
-
-				const Vector3i voxelPos(x,y,z);
-				const Vector3i minVertexOfChunk = GetExtent().getMin();
-				const DataBbox box(minVertexOfChunk + voxelPos,
-						   minVertexOfChunk + voxelPos);
-				if (mBounds[val].isEmpty()) {
-					mBounds[val] = box;
-				} else {
-					mBounds[val].merge(box);
-				}
-			}
-		}
-	}
-
 	setMetaDataDirty();
 
-	return sizes;
+	return mChunkData->RefreshDirectDataValues(this, computeSizes);
+}
+
+void OmMipChunk::addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos)
+{
+	const Vector3i minVertexOfChunk = GetExtent().getMin();
+	const DataBbox box(minVertexOfChunk + voxelPos,
+			   minVertexOfChunk + voxelPos);
+	if (mBounds[val].isEmpty()) {
+		mBounds[val] = box;
+	} else {
+		mBounds[val].merge(box);
+	}
 }
 
 Vector2i OmMipChunk::GetSliceDims()
@@ -513,8 +462,6 @@ Vector2i OmMipChunk::GetSliceDims()
  */
 OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 {
-	//  Open();
-
   OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
   for (int z = 0; z < 2; z++) {
@@ -538,8 +485,6 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
         //else get chunk
         OmMipChunkPtr p_chunk;
         mpMipVolume->GetChunk(p_chunk, mip_coord);
-
-	//        p_chunk->Open();
 
 	OmImage<uint32_t, 3> chunkImage;
 
@@ -664,35 +609,15 @@ void OmMipChunk::GetBounds(float & maxout, float & minout)
 	minout = chunk.getMin();
 }
 
-class ExtractDataSliceVisitor : public boost::static_visitor<void*>{
-public:
-	ExtractDataSliceVisitor(const ViewType plane, int offset)
-		: plane(plane), offset(offset) {}
-
-	template <typename T>
-	void* operator()(T* d ) const {
-		OmImage<T, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-		OmImage<T, 2> slice = chunk.getSlice(plane, offset);
-		return slice.getMallocCopyOfData();
-	}
-
-	void* operator()(float* d ) const {
-	  OmImage<float, 3, OmImageRefData> chunk(OmExtents[128][128][128], d);
-	  OmImage<float, 2> sliceFloat = chunk.getSlice(plane, offset);
-	  float mn = 0.0;
-	  float mx = 1.0;
-	  //	  mpMipVolume->GetBounds(mx, mn);
-	  OmImage<unsigned char, 2> slice =
-		  sliceFloat.rescaleAndCast<unsigned char>(mn, mx, 255.0);
-	  return slice.getMallocCopyOfData();
-	}
-private:
-	const ViewType plane;
-	const int offset;
-};
-
-void * OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
+void* OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
 {
-	return boost::apply_visitor(ExtractDataSliceVisitor(plane, offset),
-				    mChunkData->rawData);
+	return mChunkData->ExtractDataSlice(plane, offset);
 }
+
+/*
+void OmMipChunk::copyInTile(const int sliceOffset, uchar* bits)
+{
+
+}
+*/
+
