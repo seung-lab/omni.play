@@ -22,13 +22,15 @@ OmVolumeImporter<VOL>::OmVolumeImporter(VOL* vol)
 
 // copy data to MIP 0
 template <typename VOL>
-bool OmVolumeImporter<VOL>::import(OmDataPath & dataset)
+bool OmVolumeImporter<VOL>::import(OmDataPath& path)
 {
+	allocateData(figureOutDataType(path));
+
 	if(areImportFilesImages()){
 		return importImageStack();
 	}
 
-	return importHDF5(dataset);
+	return importHDF5(path);
 }
 
 template <typename VOL>
@@ -80,7 +82,32 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 }
 
 template <typename VOL>
-OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataType()
+OmAllowedVolumeDataTypes
+OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
+{
+	if(areImportFilesImages()){
+		return figureOutDataTypeImage();
+	}
+
+	return figureOutDataTypeHDF5(path);
+}
+
+template <typename VOL>
+OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath & dataset)
+{
+	const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0,0,0,0);
+	DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(chunk_coord, 0);
+
+	OmDataWrapperPtr data =
+		OmImageDataIo::om_imagedata_read_hdf5(vol_->mSourceFilenamesAndPaths,
+						      chunk_data_bbox,
+						      dataset);
+
+	return data->getVolDataType();
+}
+
+template <typename VOL>
+OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeImage()
 {
 	const int depth = QImage(vol_->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
 
@@ -105,8 +132,6 @@ bool OmVolumeImporter<VOL>::importImageStack()
 	//timer start
 	OmTimer import_timer;
 	import_timer.start();
-
-	allocateData(figureOutDataType());
 
 	OmLoadImage<VOL> imageLoader(this, vol_);
 	for( int i = 0; i < vol_->mSourceFilenamesAndPaths.size(); ++i){

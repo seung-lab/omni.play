@@ -408,6 +408,7 @@ const OmSegIDsSet & OmMipChunk::GetDirectDataValues()
 	//TODO: change to shared reader writer lock (purcaro)
 	QMutexLocker lock(&mDirectDataValueLock);
 	loadMetadataIfPresent();
+
 	return mDirectlyContainedValues;
 }
 
@@ -420,6 +421,10 @@ void OmMipChunk::loadMetadataIfPresent()
 	if (mpMipVolume->GetChunksStoreMetaData()) {
 		ReadMetaData();
 	}
+
+	std::cout << "chunk " << mCoordinate
+		  << " contains " << mDirectlyContainedValues.size()
+		  << " directly contained values\n";
 
 	containedValuesDataLoaded = true;
 }

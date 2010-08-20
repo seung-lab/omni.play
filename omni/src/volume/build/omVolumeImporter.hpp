@@ -25,7 +25,10 @@ private:
 	bool importHDF5(OmDataPath & dataset);
 
 	bool importImageStack();
-	OmAllowedVolumeDataTypes figureOutDataType();
+
+	OmAllowedVolumeDataTypes figureOutDataType(OmDataPath& path);
+	OmAllowedVolumeDataTypes figureOutDataTypeImage();
+	OmAllowedVolumeDataTypes figureOutDataTypeHDF5(OmDataPath &);
 
 	void allocateData(const OmAllowedVolumeDataTypes);
 	void allocateHDF5(const std::map<int, Vector3i> &);

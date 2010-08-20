@@ -113,13 +113,6 @@ bool OmChannel::BuildThreadedVolume()
 
 bool OmChannel::BuildThreadedChannel()
 {
-
-        //init progress bar
-        OmEventManager::
-            PostEvent(new
-                      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
-                                      MipChunksInVolume()));
-
         OmTimer vol_timer;
 
         if (isDebugCategoryEnabled("perftest")){
@@ -127,7 +120,8 @@ bool OmChannel::BuildThreadedChannel()
                 vol_timer.start();
         }
 
-        OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
+        OmMipThreadManager *mipThreadManager =
+		new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
         mipThreadManager->SpawnThreads(MipChunksInVolume());
         mipThreadManager->run();
         mipThreadManager->wait();
@@ -146,15 +140,11 @@ bool OmChannel::BuildThreadedChannel()
 
         }
 
-        //hide progress bar
-        OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
-
 	mWasBounded = true;
 
 	debug("chanbuild", "max=%f min=%f\n", mMaxVal, mMinVal);
 
         return true;
-
 }
 
 void OmChannel::BuildChunk(const OmMipChunkCoord & mipCoord)
