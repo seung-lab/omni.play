@@ -193,5 +193,5 @@ void OmVolumeImporter<VOL>::allocateHDF5(const std::map<int, Vector3i> & levelsA
 template <typename VOL>
 void OmVolumeImporter<VOL>::allocateMemMap(const std::map<int, Vector3i> & levelsAndDims)
 {
-	vol_->volData->create(vol_, levelsAndDims);
+	vol_->getVolData()->create(vol_, levelsAndDims);
 }

@@ -20,6 +20,7 @@
 #include <float.h>
 
 OmChannel::OmChannel()
+	: mVolData(new OmVolumeData())
 {
         mMaxVal = FLT_MIN;
         mMinVal = FLT_MAX;
@@ -28,15 +29,11 @@ OmChannel::OmChannel()
 
 OmChannel::OmChannel(OmId id)
 	: OmManageableObject(id)
+	, mVolData(new OmVolumeData())
 {
         mMaxVal = FLT_MIN;
         mMinVal = FLT_MAX;
 	mWasBounded = false;
-
-	//set manageable object name
-	char idchar[25];
-	snprintf(idchar, sizeof(idchar), "%i", (int)id);
-
 
 	//init properties
 	SetHue(Vector3f::ONE);
@@ -48,6 +45,10 @@ OmChannel::OmChannel(OmId id)
 	BuildVolumeData();
 
 	AddFilter();
+}
+
+boost::shared_ptr<OmVolumeData> OmChannel::getVolData() {
+	return mVolData;
 }
 
 std::string OmChannel::GetName(){
@@ -208,5 +209,5 @@ bool OmChannel::ImportSourceData(OmDataPath & dataset)
 
 void OmChannel::loadVolData()
 {
-	volData->load(this);
+	mVolData->load(this);
 }

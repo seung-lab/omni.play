@@ -21,8 +21,8 @@ class OmMipChunk;
 class OmThreadChunkLevel;
 class OmVolume;
 class vtkImageData;
-class OmVolumeData;
 class OmHdf5;
+class OmVolumeData;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
 			   MIPVOL_BUILT,
@@ -38,6 +38,7 @@ public:
 	virtual std::string GetDirectoryPath() = 0;
 	virtual std::string GetName() = 0;
 	virtual void loadVolData() = 0;
+	virtual boost::shared_ptr<OmVolumeData> getVolData() = 0;
 
 	std::string MipLevelInternalDataPath(const int level);
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
@@ -137,8 +138,6 @@ public:
         void setVolDataType(OmAllowedVolumeDataTypes type);
 
         void copyAllMipDataIntoMemMap();
-
-	boost::shared_ptr<OmVolumeData> volData;
 
 	Vector3i getDimsRoundedToNearestChunk(const int level);
 

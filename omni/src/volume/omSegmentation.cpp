@@ -1,5 +1,3 @@
-#include "volume/omVolumeData.hpp"
-#include "volume/build/omVolumeImporter.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -14,6 +12,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentIterator.h"
+#include "segment/omSegmentLists.hpp"
 #include "system/cache/omMipVolumeCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
@@ -23,6 +22,7 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/omTimer.h"
+#include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omMipThreadManager.h"
 #include "volume/omSegmentation.h"
@@ -30,7 +30,7 @@
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
-#include "segment/omSegmentLists.hpp"
+#include "volume/omVolumeData.hpp"
 
 #include <vtkImageData.h>
 #include <QFile>
@@ -38,7 +38,8 @@
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-	: mSegmentCache(new OmSegmentCache(this))
+	: mVolData(new OmVolumeData())
+	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
 {
@@ -47,6 +48,7 @@ OmSegmentation::OmSegmentation()
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
+	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
   	, mGroups(this)
@@ -64,6 +66,10 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
+}
+
+boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
+	return mVolData;
 }
 
 std::string OmSegmentation::GetName(){
@@ -407,20 +413,19 @@ void OmSegmentation::CloseDownThreads()
 	mDataCache->closeDownThreads();
 }
 
-extern int Omni_File_Version;
 Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 {
 	DataBbox box;
 	bool found = false;
 
-        OmSegmentIterator iter(mSegmentCache);
-        iter.iterOverSelectedIDs();
+	OmSegmentIterator iter(mSegmentCache);
+	iter.iterOverSelectedIDs();
 
 	unsigned int counter = 0;
 	const int level = 0;
 
-        OmSegment * seg = iter.getNextSegment();
-        while(NULL != seg) {
+	OmSegment * seg = iter.getNextSegment();
+	while(NULL != seg) {
 
 		if(seg->getBounds().isEmpty()) {
 			Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(level);
@@ -446,13 +451,13 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 				}
 			}
 		} else {
-                	if(!found) {
-                		found = true;
-                		box = seg->getBounds();
-                	} else {
-                		box.merge(seg->getBounds());
-                		counter++;
-                	}
+			if(!found) {
+				found = true;
+				box = seg->getBounds();
+			} else {
+				box.merge(seg->getBounds());
+				counter++;
+			}
 		}
 
 		seg = iter.getNextSegment();
@@ -468,6 +473,7 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 	return (box.getMin() + box.getMax()) / 2;
 }
 
+
 bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmSegmentation> importer(this);
@@ -476,5 +482,5 @@ bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 
 void OmSegmentation::loadVolData()
 {
-	volData->load(this);
+	mVolData->load(this);
 }

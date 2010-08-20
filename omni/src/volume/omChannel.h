@@ -15,12 +15,15 @@
 #include "volume/omFilter2dManager.h"
 #include "common/omStd.h"
 
+class OmVolumeData;
 
 class OmChannel : public OmMipVolume, public OmManageableObject {
 
 public:
         OmChannel();
 	OmChannel(OmId id);
+
+	boost::shared_ptr<OmVolumeData> getVolData();
 
 	std::string GetName();
 	std::string GetDirectoryPath();
@@ -56,6 +59,8 @@ protected:
 	OmChannel& operator= (const OmChannel&);
 
 private:
+	boost::shared_ptr<OmVolumeData> mVolData;
+
 	Vector3f mHueColor;
 	OmFilter2dManager mFilter2dManager;
 

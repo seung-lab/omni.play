@@ -21,12 +21,15 @@ class OmSegmentIterator;
 class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
+class OmVolumeData;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
  public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
+
+	boost::shared_ptr<OmVolumeData> getVolData();
 
 	std::string GetName();
 	std::string GetDirectoryPath();
@@ -49,6 +52,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
+
 
 	//segment management
 	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
@@ -76,6 +80,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 private:
 	void KillCacheThreads();
 
+	boost::shared_ptr<OmVolumeData> mVolData;
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 

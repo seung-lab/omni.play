@@ -22,7 +22,6 @@
 #include "volume/omMipVolume.h"
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
-#include "volume/omVolumeData.hpp"
 
 #include <vtkImageData.h>
 
@@ -34,8 +33,7 @@
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
 OmMipVolume::OmMipVolume()
-	: volData(new OmVolumeData())
-	, mDataCache(new OmMipVolumeCache(this))
+	: mDataCache(new OmMipVolumeCache(this))
 	, mVolDataType(UNKNOWN)
 {
 	sourceFilesWereSet = false;

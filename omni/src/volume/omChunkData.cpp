@@ -14,7 +14,7 @@ OmChunkData::OmChunkData(OmMipVolume* vol,
 OmRawDataPtrs& OmChunkData::getRawData()
 {
 	if(!loadedData_){
-		rawData_ = vol_->volData->getChunkPtrRaw(coord_);
+		rawData_ = vol_->getVolData()->getChunkPtrRaw(coord_);
 		loadedData_ = true;
 	}
 	return rawData_;

@@ -70,6 +70,9 @@ template class OmVolumeImporter<OmSegmentation>;
 template class OmLoadImage<OmChannel>;
 template class OmLoadImage<OmSegmentation>;
 
+//template class OmVolumeData<OmChannel>;
+//template class OmVolumeData<OmSegmentation>;
+
 template class OmMemMappedVolume<int8_t, OmChannel>;
 template class OmMemMappedVolume<uint8_t, OmChannel>;
 template class OmMemMappedVolume<int32_t, OmChannel>;

@@ -69,7 +69,7 @@ OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cac
 OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	mSamplesPerVoxel = 1;
-	mBytesPerSample = mVolume->volData->GetBytesPerSample();
+	mBytesPerSample = mVolume->getVolData()->GetBytesPerSample();
 
 	Vector2<int> tile_dims;
 	void * vData = GetImageData(key, tile_dims, mVolume);
