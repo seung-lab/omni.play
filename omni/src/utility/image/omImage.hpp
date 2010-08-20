@@ -16,7 +16,10 @@ public:
   typedef          OmDimension<D>           dimension_t;
 
   OmImageCopiedData() {};
-  OmImageCopiedData(OmDimension<D> extent): extent_(extent), data_() {}
+  OmImageCopiedData(OmDimension<D> extent): extent_(extent), data_() {
+    data_ = boost::shared_ptr<container_t>
+      (new container_t(extent.getBoostExtent()));
+  }
 
  OmImageCopiedData(OmDimension<D> extent, T* data): extent_(extent), data_() {
     data_ = boost::shared_ptr<container_t>
@@ -218,8 +221,14 @@ public:
   template <typename C>
   OmImage<C,D> recast(){
     OmImage<C,D> out(d_.extent_);
-    std::copy(d_.data_->begin(), d_.data_->end(), out.d_.data_->begin());
+    std::copy(d_.data_->begin(),
+	      d_.data_->end(),
+	      out.d_.data_->begin());
     return out;
+  }
+
+  OmImage<uint32_t,D> recastToUint32(){
+    return recast<uint32_t>();
   }
 
   template <typename T1, std::size_t D1,
