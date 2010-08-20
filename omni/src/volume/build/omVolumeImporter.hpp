@@ -21,11 +21,11 @@ private:
 
 	std::set<OmMipChunkCoord> chunksToCopy;;
 
-	bool areImportFilesImages();
+	bool doImport(OmDataPath& path);
 	bool importHDF5(OmDataPath & dataset);
-
 	bool importImageStack();
 
+	bool areImportFilesImages();
 	OmAllowedVolumeDataTypes figureOutDataType(OmDataPath& path);
 	OmAllowedVolumeDataTypes figureOutDataTypeImage();
 	OmAllowedVolumeDataTypes figureOutDataTypeHDF5(OmDataPath &);
