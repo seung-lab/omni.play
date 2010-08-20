@@ -6,33 +6,54 @@
 
 class OmDummyWriter : public OmDataWriter {
 public:
-	OmDummyWriter( QString fileNameAndPath );
-	~OmDummyWriter();
+	OmDummyWriter(QString){}
 
 	void open(){};
 	void close(){};
-	void flush();
+	void flush(){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//file
-	void create();
+	void create(){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//group
-	void group_delete( const OmDataPath & path );
+	void group_delete(const OmDataPath &){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//image I/O
 	void dataset_image_create_tree_overwrite(const OmDataPath &,
 						 const Vector3i&,
 						 const Vector3i&,
-						 const OmAllowedVolumeDataTypes);
+						 const OmAllowedVolumeDataTypes){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
-	void dataset_image_write_trim(const OmDataPath &, DataBbox*, OmDataWrapperPtr);
-	void dataset_write_raw_chunk_data(const OmDataPath &, DataBbox, OmDataWrapperPtr);
+	void dataset_image_write_trim(const OmDataPath &,
+				      const DataBbox&, OmDataWrapperPtr){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
+
+	void dataset_write_raw_chunk_data(const OmDataPath &, DataBbox,
+					  OmDataWrapperPtr){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//data set raw
-	void dataset_raw_create_tree_overwrite(const OmDataPath &, int, const OmDataWrapperPtr);
-
-private:
-	QString mFileNameAndPath;
+	void dataset_raw_create_tree_overwrite(const OmDataPath &, int,
+					       const OmDataWrapperPtr){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 };
 
 #endif

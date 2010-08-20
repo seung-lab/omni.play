@@ -75,18 +75,20 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 				//get chunk data bbox
-				const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0, x, y, z);
-				DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(chunk_coord, 0);
+				const OmMipChunkCoord coord(0, x, y, z);
+				OmMipChunkPtr chunk;
+				vol_->GetChunk(chunk, coord);
 
 				//read chunk image data from source
-				OmDataWrapperPtr p_img_data =
+				OmDataWrapperPtr data =
 					OmImageDataIo::om_imagedata_read_hdf5(vol_->mSourceFilenamesAndPaths,
-									      chunk_data_bbox,
+									      chunk->GetExtent(),
 									      dataset);
 				//write to project data
-				OmProjectData::GetDataWriter()->dataset_image_write_trim(leaf_volume_path,
-											 &chunk_data_bbox,
-											 p_img_data);
+				OmProjectData::GetDataWriter()->
+					dataset_image_write_trim(leaf_volume_path,
+								 chunk->GetExtent(),
+								 data);
 			}
 		}
 	}
@@ -133,7 +135,6 @@ OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeImage()
 		printf("image depth is %d; aborting...\n", depth);
 		assert(0 && "don't know how to import image");
 	}
-
 }
 
 template <typename VOL>

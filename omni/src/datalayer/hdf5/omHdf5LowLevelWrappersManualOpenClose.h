@@ -33,11 +33,13 @@ class OmHdf5LowLevelWrappersManualOpenClose
 							   const Vector3i&,
 							   const OmAllowedVolumeDataTypes);
 	OmDataWrapperPtr dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent);
-	void dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
+	void dataset_image_write_trim_with_lock(const OmDataPath&,
+						const DataBbox&,
+						OmDataWrapperPtr data);
 
 	//data set raw
-	OmDataWrapperPtr dataset_raw_read_with_lock(const OmDataPath & path, int* size = NULL);
-	void dataset_raw_create_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	OmDataWrapperPtr dataset_raw_read_with_lock(const OmDataPath &, int* = NULL);
+	void dataset_raw_create_with_lock(const OmDataPath &, int, const OmDataWrapperPtr data);
 	void dataset_raw_create_tree_overwrite_with_lock(const OmDataPath & path, int size, const OmDataWrapperPtr data);
 	OmDataWrapperPtr dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent);
 	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);

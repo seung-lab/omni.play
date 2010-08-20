@@ -33,7 +33,9 @@ class OmHdf5LowLevel
 	static bool om_hdf5_dataset_exists_with_lock(hid_t fileId, const char* name);
 	static void om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char* name, Vector3<int>* dataDims, Vector3<int>* chunkDims, OmHdf5Type type);
 	static OmDataWrapperPtr om_hdf5_dataset_image_read_trim_with_lock(hid_t fileId, const char* name, DataBbox dataExtent);
-	static void om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, const char* name, DataBbox* dataExtent, OmDataWrapperPtr data);
+	static void om_hdf5_dataset_image_write_trim_with_lock(hid_t, const char*,
+							       const DataBbox&,
+							       OmDataWrapperPtr data);
 	static void om_hdf5_dataset_delete_create_tree_with_lock(hid_t fileId, const char *name);
 
 	//data set raw
@@ -60,7 +62,10 @@ class OmHdf5LowLevel
 
 	//image I/O private
 	static OmDataWrapperPtr om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent);
-	static void om_hdf5_dataset_image_write_with_lock(hid_t fileId, const char *name, DataBbox* extent, OmDataWrapperPtr data);
+	static void om_hdf5_dataset_image_write_with_lock(hid_t ,
+							  const char *,
+							  const DataBbox&,
+							  OmDataWrapperPtr data);
 
 	//group private
 	static void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);

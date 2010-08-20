@@ -295,7 +295,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/hdf5/omHdf5Writer.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDataPaths.cpp \
-           src/datalayer/omDummyWriter.cpp \
            src/gui/groupsTable.cpp \
            src/gui/mstViewer.cpp \
            src/gui/cacheMonitorDialog.cpp \

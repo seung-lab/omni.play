@@ -40,7 +40,8 @@ class OmHdf5
 						  const Vector3i&,
 						  const OmAllowedVolumeDataTypes type);
 	OmDataWrapperPtr dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent);
-	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
+	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
+				       OmDataWrapperPtr data);
 
 	//data set raw
 	OmDataWrapperPtr dataset_raw_read( const OmDataPath & path, int* size = NULL);

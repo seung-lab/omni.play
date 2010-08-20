@@ -118,6 +118,7 @@ public:
 	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
 
 	void copyDataIn();
+        void copyAllMipDataIntoMemMap();
 	bool areImportFilesImages();
 
 	Vector3i get_dims(const OmDataPath dataset );
@@ -135,14 +136,7 @@ public:
 
 	QFileInfoList mSourceFilenamesAndPaths;
 
-        void setVolDataType(OmAllowedVolumeDataTypes type);
-
-        void copyAllMipDataIntoMemMap();
-
 	Vector3i getDimsRoundedToNearestChunk(const int level);
-
-	template <typename C> void setupForDataImport();
-
 	OmAllowedVolumeDataTypes getVolDataType(){ return mVolDataType; }
 
 protected:

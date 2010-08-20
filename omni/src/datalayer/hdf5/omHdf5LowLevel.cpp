@@ -155,7 +155,10 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t
         return filled_read_data;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, const char *name, DataBbox* dataExtent, OmDataWrapperPtr data)
+void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId,
+								const char *name,
+								const DataBbox& dataExtent,
+								OmDataWrapperPtr data)
 {
         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
         debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
@@ -168,13 +171,13 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
         DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
 
         //if data extent contains given extent, just write data
-        if (dataset_extent.contains(*dataExtent)) {
+        if (dataset_extent.contains(dataExtent)) {
                 om_hdf5_dataset_image_write_with_lock(fileId, name, dataExtent, data);
                 return;
         }
         //intersect with given extent
         DataBbox intersect_extent = dataset_extent;
-        intersect_extent.intersect(*dataExtent);
+        intersect_extent.intersect(dataExtent);
 
         //if empty intersection, just return
         if (intersect_extent.isEmpty())
@@ -190,17 +193,14 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, co
 
         //normalize to min of dataExtent
         DataBbox dataextent_norm_intersect_extent = intersect_extent;
-        dataextent_norm_intersect_extent.offset(-dataExtent->getMin());
-
-        //debug("FIXME", << intersect_norm_intersect_extent << endl;
-        //debug("FIXME", << dataextent_norm_intersect_extent << endl;
+        dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
 
         //copy data
         OmImageDataIo::copyImageData(p_intersect_data, intersect_norm_intersect_extent, //copy to extent of intersection
                                       data, dataextent_norm_intersect_extent);    //from intersection in dataExtent
 
         //write intersection
-        om_hdf5_dataset_image_write_with_lock(fileId, name, &intersect_extent, p_intersect_data);
+        om_hdf5_dataset_image_write_with_lock(fileId, name, intersect_extent, p_intersect_data);
 }
 
 /////////////////////////////////
@@ -792,7 +792,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t file
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId,
 							   const char *name,
-							   DataBbox* extent,
+							   const DataBbox& extent,
 							   OmDataWrapperPtr data)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
@@ -810,13 +810,13 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId,
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
-	Vector3 < hsize_t > start = extent->getMin();
+	Vector3 < hsize_t > start = extent.getMin();
 	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
 
 	Vector3 < hsize_t > stride = Vector3i::ONE;
 	Vector3 < hsize_t > count = Vector3i::ONE;
 
-	Vector3 < hsize_t > block = extent->getUnitDimensions();
+	Vector3 < hsize_t > block = extent.getUnitDimensions();
 	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
 
 	//Selects a hyperslab region to add to the current selected region.
@@ -833,7 +833,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId,
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3 < int >extent_dims = extent->getUnitDimensions();
+	Vector3 < int >extent_dims = extent.getUnitDimensions();
 	int data_dims[3];
 	data->getVTKPtr()->GetDimensions(data_dims);
 	assert(data_dims[0] == extent_dims.x);

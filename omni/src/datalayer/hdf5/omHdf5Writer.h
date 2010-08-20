@@ -29,7 +29,8 @@ public:
 						 const Vector3i&,
 						 const Vector3i&,
 						 const OmAllowedVolumeDataTypes);
-	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data);
+	void dataset_image_write_trim( const OmDataPath & ,
+				       const DataBbox&, OmDataWrapperPtr data);
 
 	//data set raw
 	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data);

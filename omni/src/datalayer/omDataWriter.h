@@ -29,7 +29,7 @@ public:
 							  const OmAllowedVolumeDataTypes) = 0;
 
 	virtual void dataset_image_write_trim(const OmDataPath&,
-					      DataBbox*,
+					      const DataBbox&,
 					      OmDataWrapperPtr) = 0;
 
 	virtual void dataset_write_raw_chunk_data(const OmDataPath &,

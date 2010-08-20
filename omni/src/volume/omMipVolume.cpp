@@ -1241,39 +1241,3 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 		}
 	}
 }
-
-void OmMipVolume::setVolDataType(OmAllowedVolumeDataTypes type)
-{
-	mVolDataType = type;
-	/*
-	// TODO: don't use lowlevel HDF5 types...
-	OmMipChunkCoord coord(0,0,0,0);
-	OmMipChunkPtr chunk;
-	GetChunk(chunk, coord);
-	chunk->Open();
-	OmDataWrapperPtr data = chunk->GetImageDataWrapper();
-
-	if(data->getHdf5MemoryType() == H5T_NATIVE_CHAR){
-		mVolDataType = OM_INT8;
-	}else if(data->getHdf5MemoryType() == H5T_NATIVE_UCHAR){
-		mVolDataType = OM_UINT8;
-	}else if(data->getHdf5MemoryType() == H5T_NATIVE_INT){
-		mVolDataType = OM_INT32;
-	}else if(data->getHdf5MemoryType() == H5T_NATIVE_UINT){
-		mVolDataType = OM_UINT32;
-	}else if(data->getHdf5MemoryType() == H5T_NATIVE_FLOAT){
-		mVolDataType = OM_FLOAT;
-	}else {
-		assert(0 && "unknown type");
-	}
-	*/
-}
-
-template <typename C>
-void OmMipVolume::setupForDataImport()
-{
-	assert(0 && "fill me in");
-	//setVolDataType(OM_UINT8);
-	//vol->volData.AllocMemMapFiles();
-	//vol->AllocInternalData(OmDataWrapper<uchar>::produceinvalid());
-}

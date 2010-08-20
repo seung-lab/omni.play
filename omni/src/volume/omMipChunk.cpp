@@ -222,7 +222,7 @@ void OmMipChunk::WriteVolumeData()
 	if (mData->getVTKPtr()) {
 		OmProjectData::GetDataWriter()->
 			dataset_image_write_trim(mip_level_vol_path,
-						 (DataBbox*)&GetExtent(),
+						 GetExtent(),
 						 mData);
 	}
 

@@ -100,7 +100,9 @@ OmDataWrapperPtr OmHdf5LowLevelWrappersManualOpenClose::dataset_image_read_trim_
 	return hdfLowLevel.om_hdf5_dataset_image_read_trim_with_lock(fileId, name, dataExtent);
 }
 
-void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(const OmDataPath & path, DataBbox* dataExtent, OmDataWrapperPtr data)
+void OmHdf5LowLevelWrappersManualOpenClose::dataset_image_write_trim_with_lock(const OmDataPath & path,
+									       const DataBbox& dataExtent,
+									       OmDataWrapperPtr data)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_image_write_trim_with_lock(fileId, name, dataExtent, data);
