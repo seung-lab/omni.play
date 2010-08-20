@@ -13,6 +13,7 @@ public:
 	void load(VOL* vol){
 		setDataType(vol);
 		loadMemMapFiles();
+		printf("loaded data\n");
 	}
 
 	template <typename VOL>

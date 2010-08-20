@@ -157,12 +157,12 @@ int OmTile::GetDepth(const OmTileCoord & key)
 
 void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
 {
-	uchar* data = (uchar*)malloc(dims.x *
-				     dims.y *
-				     mVolume->volData->GetBytesPerSample());
+	const int numElements = dims.x * dims.y;
+	const uint32_t memSize = numElements * 4; // 4 == RGBA
+	unsigned char* data = (unsigned char*)malloc(memSize);
 
 	mViewGroupState->ColorTile( imageData,
-				    dims.x * dims.y,
+				    numElements,
 				    key.mVolType,
 				    data );
 
