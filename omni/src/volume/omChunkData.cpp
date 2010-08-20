@@ -141,13 +141,13 @@ void OmChunkData::copyChunkFromMemMapToHDF5()
 
 class CopyDataFromHDF5toMemMapVisitor : public boost::static_visitor<>{
 public:
-	CopyDataFromHDF5toMemMapVisitor(OmMipChunk* chunk)
-		: chunk_(chunk) {}
+	CopyDataFromHDF5toMemMapVisitor(OmMipChunk* chunk,
+					OmDataWrapperPtr hdf5)
+		: chunk_(chunk), hdf5_(hdf5) {}
 
 	template <typename T>
 	void operator()(T* d) const {
-		OmDataWrapperPtr hdf5 = chunk_->RawReadChunkDataHDF5();
-		T* dataHDF5 = hdf5->getPtr<T>();
+		T* dataHDF5 = hdf5_->getPtr<T>();
 
 		memcpy(d,
 		       dataHDF5,
@@ -156,10 +156,17 @@ public:
 
 private:
 	OmMipChunk* chunk_;
+	OmDataWrapperPtr hdf5_;
 };
 void OmChunkData::copyDataFromHDF5toMemMap()
 {
-	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_),
+	OmDataWrapperPtr hdf5 = chunk_->RawReadChunkDataHDF5();
+	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
+			     rawData);
+}
+void OmChunkData::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
+{
+	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
 			     rawData);
 }
 

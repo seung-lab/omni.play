@@ -60,6 +60,7 @@ public:
 	OmDataWrapperPtr mRawMappedChunk;
 	void copyChunkFromMemMapToHDF5();
 	void copyDataFromHDF5toMemMap();
+	void copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5);
 
 	OmImage<uint32_t, 3> getOmImage32Chunk();
 

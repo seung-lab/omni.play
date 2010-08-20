@@ -20,6 +20,7 @@ public:
 	void copyInTile(const int sliceOffset, uchar* bits);
 	void copyChunkFromMemMapToHDF5();
 	void copyDataFromHDF5toMemMap();
+	void copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5);
 
 private:
 	OmMipVolume *const vol_;

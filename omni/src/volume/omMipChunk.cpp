@@ -602,6 +602,11 @@ void OmMipChunk::copyDataFromHDF5toMemMap()
 	mChunkData->copyDataFromHDF5toMemMap();
 }
 
+void OmMipChunk::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
+{
+	mChunkData->copyDataFromHDF5toMemMap(hdf5);
+}
+
 void OmMipChunk::writeHDF5()
 {
 	//get path to mip level volume
