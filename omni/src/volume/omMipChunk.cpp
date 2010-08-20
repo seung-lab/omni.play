@@ -481,28 +481,11 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
         if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
           continue;
 
-        //else get chunk
-        OmMipChunkPtr p_chunk;
-        mpMipVolume->GetChunk(p_chunk, mip_coord);
+        OmMipChunkPtr chunk;
+        mpMipVolume->GetChunk(chunk, mip_coord);
 
-	OmImage<uint32_t, 3> chunkImage;
+	OmImage<uint32_t, 3> chunkImage = chunk->getOmImage32Chunk();
 
-	assert(0);
-	/*
-	if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
-	   mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-	  chunkImage = OmImage<uint32_t, 3>(OmExtents[128][128][128],
-					    p_chunk->RawReadChunkDataUINT32mapped()
-					    ->getPtr<uint32_t>());
-	} else if (mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR) {
-	  OmImage<unsigned char, 3> chunk8(OmExtents[128][128][128],
-					   RawReadChunkDataUCHARmapped()->getPtr<unsigned char>());
-	  chunkImage = chunk8.recast<uint32_t>();
-	} else {
-	  printf("type was %s...\n", p_chunk->mData->getTypeAsString().c_str());
-	  assert(0 && "unrecognized type");
-	}
-	*/
         retImage.copyFrom(chunkImage,
 			  OmExtents[z*128][y*128][x*128],
                           OmExtents[0][0][0],
@@ -561,12 +544,12 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 	if(!mIsRawChunkOpen){
 		OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-		mRawChunk = OmProjectData::GetProjectDataReader()->
+		mHDF5data = OmProjectData::GetProjectDataReader()->
 			dataset_read_raw_chunk_data(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
 
-	return mRawChunk;
+	return mHDF5data;
 }
 
 void OmMipChunk::dealWithCrazyNewStuff()
@@ -575,7 +558,7 @@ void OmMipChunk::dealWithCrazyNewStuff()
 
 	if(mIsRawChunkOpen){
 		mIsRawChunkOpen=false;
-		mRawChunk=OmDataWrapperInvalid();
+		mHDF5data=OmDataWrapperInvalid();
 	}
 	if(mIsRawMappedChunkOpen){
 		mIsRawMappedChunkOpen=false;
@@ -616,11 +599,14 @@ void OmMipChunk::copyDataFromHDF5toMemMap()
 
 void OmMipChunk::writeHDF5()
 {
-        QMutexLocker locker(&mOpenLock);
-
 	//get path to mip level volume
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	OmProjectData::GetDataWriter()->
-		dataset_write_raw_chunk_data( path, GetExtent(), mRawChunk);
+		dataset_write_raw_chunk_data( path, GetExtent(), mHDF5data);
+}
+
+OmImage<uint32_t, 3> OmMipChunk::getOmImage32Chunk()
+{
+	return mChunkData->getOmImage32Chunk();
 }

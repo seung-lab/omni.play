@@ -1,3 +1,4 @@
+#include "utility/image/omImage.hpp"
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
 
@@ -160,4 +161,36 @@ void OmChunkData::copyDataFromHDF5toMemMap()
 {
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_),
 			     rawData);
+}
+
+
+class GetOmImage32ChunkVisitor
+	: public boost::static_visitor<OmImage<uint32_t, 3> >{
+public:
+	GetOmImage32ChunkVisitor(OmMipChunk* chunk)
+		: chunk_(chunk) {}
+
+
+	template <typename T>
+	OmImage<uint32_t, 3> operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+				  d);
+		return data.recastToUint32();
+	}
+
+	OmImage<uint32_t, 3> operator()(uint32_t* d) const {
+		return OmImage<uint32_t, 3>(OmExtents[128][128][128],
+					    d);
+	}
+
+	OmImage<uint32_t, 3> operator()(float*) const {
+		throw OmIoException("can't mesh float data!");
+	}
+private:
+	OmMipChunk* chunk_;
+};
+OmImage<uint32_t, 3> OmChunkData::getOmImage32Chunk()
+{
+	return boost::apply_visitor(GetOmImage32ChunkVisitor(chunk_),
+				    rawData);
 }

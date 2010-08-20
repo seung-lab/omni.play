@@ -47,18 +47,21 @@ public:
 
 
 	template <typename T> void RawWriteChunkData(T* data){
-		mRawChunk = OmDataWrapper<T>::producenofree(data);
+		QMutexLocker locker(&mOpenLock);
+		mHDF5data = OmDataWrapper<T>::producenofree(data);
 		writeHDF5();
 	}
 	OmDataWrapperPtr RawReadChunkDataHDF5();
 	bool mIsRawChunkOpen;
-	OmDataWrapperPtr mRawChunk;
+	OmDataWrapperPtr mHDF5data;
 	void copyInTile(const int sliceOffset, uchar* bits);
 	void dealWithCrazyNewStuff();
 	bool mIsRawMappedChunkOpen;
 	OmDataWrapperPtr mRawMappedChunk;
 	void copyChunkFromMemMapToHDF5();
 	void copyDataFromHDF5toMemMap();
+
+	OmImage<uint32_t, 3> getOmImage32Chunk();
 
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);

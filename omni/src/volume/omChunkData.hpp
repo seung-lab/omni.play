@@ -12,8 +12,11 @@ public:
 
 	OmRawDataPtrs rawData;
 
-	void* ExtractDataSlice(const ViewType plane, const int offset);
 	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
+
+	void* ExtractDataSlice(const ViewType plane, const int offset);
+	OmImage<uint32_t, 3> getOmImage32Chunk();
+
 	void copyInTile(const int sliceOffset, uchar* bits);
 	void copyChunkFromMemMapToHDF5();
 	void copyDataFromHDF5toMemMap();
