@@ -27,6 +27,7 @@ enum OmAllowedVolumeDataTypes {
 
 class OmVolumeTypeHelpers {
 public:
+	// used for serialization (don't change!)
 	static std::string GetTypeAsString(const OmAllowedVolumeDataTypes type){
 		switch(type){
 		case OM_INT8:
@@ -43,6 +44,27 @@ public:
 			return "unkown";
 		default:
 			return "invalid";
+		}
+	}
+
+	// used for serialization (don't change!)
+	static OmAllowedVolumeDataTypes GetTypeFromString(const QString & type){
+		if("int8_t" == type){
+			return OM_INT8;
+		} else if("uint8_t" == type){
+			return OM_UINT8;
+		} else if("int32_t" == type){
+			return OM_INT32;
+		} else if("uint32_t" == type){
+			return OM_UINT32;
+		} else if("float" == type){
+			return OM_FLOAT;
+		} else if("unkown" == type){
+			return UNKNOWN;
+		} else {
+			throw OmIoException("bad type \""
+					    + type.toStdString()
+					    + "\"");
 		}
 	}
 };

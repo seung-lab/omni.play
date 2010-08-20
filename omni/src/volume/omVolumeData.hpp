@@ -12,7 +12,7 @@ public:
 	template <typename VOL>
 	void load(VOL* vol){
 		setDataType(vol);
-		assert(0);
+		loadMemMapFiles();
 	}
 
 	template <typename VOL>
@@ -37,6 +37,7 @@ private:
 		       OmMemMappedVolume<uint32_t, OmSegmentation>,
 		       OmMemMappedVolume<float, OmSegmentation> > volData_;
 
+	void loadMemMapFiles();
 	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
 	OmAllowedVolumeDataTypes determineOldVolType(OmMipVolume * vol);
 

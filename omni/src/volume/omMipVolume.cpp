@@ -608,7 +608,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 
 Vector3i OmMipVolume::getDimsRoundedToNearestChunk(const int level)
 {
-	Vector3i data_dims = MipLevelDataDimensions(level);
+	const Vector3i data_dims = MipLevelDataDimensions(level);
 
 	return Vector3i(ROUNDUP(data_dims.x, GetChunkDimension()),
 			ROUNDUP(data_dims.y, GetChunkDimension()),

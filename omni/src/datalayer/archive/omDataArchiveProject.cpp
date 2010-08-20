@@ -475,18 +475,22 @@ void OmDataArchiveProject::loadOmManageableObject( QDataStream & in, OmManageabl
 
 void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolume & m )
 {
-	out << ""; // TODO: remove me; was m.mDirectoryPath;
+	out << QString(""); // TODO: remove me; was m.mDirectoryPath;
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
 
-	int subsamplemode = 0;
+	qint32 subsamplemode = 0;
 	out << subsamplemode;
 	out << m.mBuildState;
 	out << m.mStoreChunkMetaData;
 
-	out << 0;
+	qint32 mBytesPerSample = 0;
+	out << mBytesPerSample; //FIXME: no longer used; was mBytesPerSample
 
-	out << (int)m.mVolDataType;
+	const QString type =
+		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(m.mVolDataType));
+	out << type;
+	std::cout << "saved type as " << type.toStdString() << "\n";
 }
 
 void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
@@ -496,18 +500,18 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
 
-	int subsamplemode;
+	qint32 subsamplemode;
 	in >> subsamplemode;
 	in >> m.mBuildState;
 	in >> m.mStoreChunkMetaData;
 
-	int mBytesPerSample;
+	qint32 mBytesPerSample;
 	in >> mBytesPerSample; //FIXME: no longer used
 
-	if(Omni_Version > 13){
-		int volDataType;
+	if( Omni_File_Version > 13){
+		QString volDataType;
 		in >> volDataType;
-		m.mVolDataType = (OmAllowedVolumeDataTypes)volDataType;
+		m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 	} else {
 		m.mVolDataType = UNKNOWN;
 	}

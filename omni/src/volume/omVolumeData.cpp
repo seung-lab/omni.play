@@ -1,11 +1,22 @@
 #include "volume/omVolumeData.hpp"
 
+class LoadMemMapFilesVisitor : public boost::static_visitor<> {
+public:
+	template <typename T> void operator()( T & d ) const {
+		d.load();
+	}
+};
+void OmVolumeData::loadMemMapFiles()
+{
+	boost::apply_visitor(LoadMemMapFilesVisitor(), volData_);
+}
+
 class AllocMemMapFilesVisitor : public boost::static_visitor<> {
 public:
 	AllocMemMapFilesVisitor(const std::map<int, Vector3i> & levDims)
 		: levelsAndDims(levDims) {}
 	template <typename T> void operator()( T & d ) const {
-		d.AllocMemMapFiles(levelsAndDims);
+		d.create(levelsAndDims);
 	}
 private:
 	const std::map<int, Vector3i> levelsAndDims;

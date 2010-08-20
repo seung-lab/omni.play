@@ -14,18 +14,28 @@ OmMemMappedVolume<T,VOL>::OmMemMappedVolume(VOL* vol)
 template <typename T, typename VOL>
 OmMemMappedVolume<T,VOL>::~OmMemMappedVolume()
 {
-	foreach(int level, openedLevels){
+	for(size_t level = 0; level < mFileVec.size(); ++level) {
 		QFile * f = mFileVec[level];
 		printf("closing file %s\n", qPrintable(f->fileName()));
-		uchar* addr = mFileMapPtr[level];
-		f->unmap(addr);
 		delete f;
-		f = NULL;
 	}
 }
 
 template <typename T, typename VOL>
-void OmMemMappedVolume<T,VOL>::AllocMemMapFiles(const std::map<int, Vector3i> & levelsAndDims)
+void OmMemMappedVolume<T,VOL>::load()
+{
+	zi::Guard g(mutex_);
+
+        mFileVec.resize(vol_->GetRootMipLevel()+1);
+	mFileMapPtr.resize(vol_->GetRootMipLevel()+1);
+
+	for(size_t level = 0; level < mFileVec.size(); ++level) {
+		openAndmMemMap(level);
+	}
+}
+
+template <typename T, typename VOL>
+void OmMemMappedVolume<T,VOL>::create(const std::map<int, Vector3i> & levelsAndDims)
 {
 	zi::Guard g(mutex_);
 
@@ -60,24 +70,7 @@ template <typename T, typename VOL>
 T* OmMemMappedVolume<T,VOL>::getChunkPtr(const OmMipChunkCoord & coord)
 {
 	const int level = coord.Level;
-
-	if(0 == openedLevels.count(level)){
-		printf("getChunkPtr: mip level %d not yet opened\n", level);
-		mFileVec.resize(vol_->GetRootMipLevel()+1);
-		mFileMapPtr.resize(vol_->GetRootMipLevel()+1);
-		openAndmMemMap(level);
-	}
-
-	std::cout << "getting ptr for coord: " << coord
-		  << "; bytes = " << GetBytesPerSample() <<"\n";
-
-	Vector3 < int >data_dims = vol_->MipLevelDataDimensions(level);
-
-	//round up to nearest chunk
-	Vector3i rdims =
-		Vector3i(ROUNDUP(data_dims.x, vol_->GetChunkDimension()),
-			 ROUNDUP(data_dims.y, vol_->GetChunkDimension()),
-			 ROUNDUP(data_dims.z, vol_->GetChunkDimension()));
+	const Vector3i rdims = vol_->getDimsRoundedToNearestChunk(level);
 
 	const qint64 x = (qint64)coord.getCoordinateX();
 	const qint64 y = (qint64)coord.getCoordinateY();
@@ -96,7 +89,7 @@ T* OmMemMappedVolume<T,VOL>::getChunkPtr(const OmMipChunkCoord & coord)
 	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset,
 	      DEBUGV3(rdims), DEBUGV3(coord.Coordinate));
 
-	T* ret = (T*)(mFileMapPtr[level]+offset);
+	T* ret = (T*)(mFileMapPtr.at(level)+offset);
 	assert(ret);
 	return ret;
 }
@@ -129,18 +122,14 @@ QFile* OmMemMappedVolume<T,VOL>::openFile(const int level)
 		assert(0);
 	}
 
-	printf("opened mem map vol (mip %d) file %s\n", level, qPrintable(fnp));
-
 	return file;
 }
 
 template <typename T, typename VOL>
 void OmMemMappedVolume<T,VOL>::memMap(QFile * file, const int level)
 {
-	std::cout << "file size is: " << file->size() << "\n";
 	mFileMapPtr[level] = file->map(0,file->size());
 	file->close();
-	openedLevels.insert(level);
 }
 
 template <typename T, typename VOL>
