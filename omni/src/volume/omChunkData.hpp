@@ -10,7 +10,7 @@ class OmChunkData {
 public:
 	OmChunkData(OmMipVolume*, OmMipChunk*, const OmMipChunkCoord& coord);
 
-	OmRawDataPtrs rawData;
+	OmRawDataPtrs& getRawData();
 
 	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
 
@@ -26,6 +26,9 @@ private:
 	OmMipVolume *const vol_;
 	OmMipChunk *const chunk_;
 	const OmMipChunkCoord coord_;
+	bool loadedData_;
+
+	OmRawDataPtrs rawData_;
 };
 
 #endif

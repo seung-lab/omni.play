@@ -5,11 +5,20 @@
 OmChunkData::OmChunkData(OmMipVolume* vol,
 			 OmMipChunk* chunk,
 			 const OmMipChunkCoord &coord)
-	: rawData(vol->volData->getChunkPtrRaw(coord))
-	, vol_(vol)
+	: vol_(vol)
 	, chunk_(chunk)
 	, coord_(coord)
+	, loadedData_(false)
 {}
+
+OmRawDataPtrs& OmChunkData::getRawData()
+{
+	if(!loadedData_){
+		rawData_ = vol_->volData->getChunkPtrRaw(coord_);
+		loadedData_ = true;
+	}
+	return rawData_;
+}
 
 
 class ExtractDataSliceVisitor : public boost::static_visitor<void*>{
@@ -41,7 +50,7 @@ private:
 void* OmChunkData::ExtractDataSlice(const ViewType plane, const int offset)
 {
 	return boost::apply_visitor(ExtractDataSliceVisitor(plane, offset),
-				    rawData);
+				    getRawData());
 }
 
 
@@ -92,7 +101,7 @@ private:
 OmSegSizeMapPtr OmChunkData::RefreshDirectDataValues(const bool computeSizes)
 {
 	return boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_, computeSizes),
-				    rawData);
+				    getRawData());
 }
 
 
@@ -116,7 +125,7 @@ private:
 void OmChunkData::copyInTile(const int sliceOffset, uchar* bits)
 {
 	boost::apply_visitor(CopyInDataVisitor(sliceOffset, bits),
-			     rawData);
+			     getRawData());
 }
 
 
@@ -135,7 +144,7 @@ private:
 void OmChunkData::copyChunkFromMemMapToHDF5()
 {
 	boost::apply_visitor(CopyDataFromMemMapToHDF5Visitor(chunk_),
-			     rawData);
+			     getRawData());
 }
 
 
@@ -162,12 +171,12 @@ void OmChunkData::copyDataFromHDF5toMemMap()
 {
 	OmDataWrapperPtr hdf5 = chunk_->RawReadChunkDataHDF5();
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
-			     rawData);
+			     getRawData());
 }
 void OmChunkData::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
 {
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
-			     rawData);
+			     getRawData());
 }
 
 
@@ -199,5 +208,5 @@ private:
 OmImage<uint32_t, 3> OmChunkData::getOmImage32Chunk()
 {
 	return boost::apply_visitor(GetOmImage32ChunkVisitor(chunk_),
-				    rawData);
+				    getRawData());
 }

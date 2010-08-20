@@ -1,4 +1,4 @@
-QT += opengl network
+QT += opengl
 TEMPLATE = app
 
 DEPENDPATH += . \

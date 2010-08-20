@@ -422,9 +422,11 @@ void OmMipChunk::loadMetadataIfPresent()
 		ReadMetaData();
 	}
 
+	/*
 	std::cout << "chunk " << mCoordinate
 		  << " contains " << mDirectlyContainedValues.size()
 		  << " directly contained values\n";
+	*/
 
 	containedValuesDataLoaded = true;
 }
