@@ -271,25 +271,11 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
 	assert(ContainsVoxel(voxel));
 
-	assert(0);
+	const uint32_t oldVal = mChunkData->SetVoxelValue(voxel, val);
 
-	/*
-        if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
-	  printf("fixme!\n");
-        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
-                  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-          OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128],
-                                     RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
+	mModifiedVoxelValues.insert(oldVal);
+	mModifiedVoxelValues.insert(val);
 
-	  mModifiedVoxelValues.insert(chunk.getVoxel(voxel.x, voxel.y, voxel.z));
-	  mModifiedVoxelValues.insert(val);
-          chunk.setVoxel(voxel.x, voxel.y, voxel.z, val);
-        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
-                  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
-	  printf("fixme!\n");
-        }
-	*/
-	//data volume now dirty
 	setVolDataDirty();
 }
 
@@ -298,27 +284,10 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
  */
 uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 {
-
-	assert(0);
-	/*
         const DataCoord voxel = volVoxel - GetExtent().getMin();
-
 	assert(ContainsVoxel(voxel));
 
-        if(mData->getHdf5MemoryType() == H5T_NATIVE_FLOAT) {
-	  printf("fixme!\n");
-        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UINT ||
-                  mData->getHdf5MemoryType() == H5T_NATIVE_INT  ){
-          OmImage<uint32_t, 3, OmImageRefData> chunk(OmExtents[128][128][128],
-                                     RawReadChunkDataUINT32mapped()->getPtr<uint32_t>());
-
-          return chunk.getVoxel(voxel.x, voxel.y, voxel.z);
-        } else if(mData->getHdf5MemoryType() == H5T_NATIVE_UCHAR ||
-                  mData->getHdf5MemoryType() == H5T_NATIVE_CHAR  ){
-	  printf("fixme!\n");
-        }
-	*/
-	assert(0 && "fixme!");
+	return mChunkData->GetVoxelValue(voxel);
 }
 
 /*

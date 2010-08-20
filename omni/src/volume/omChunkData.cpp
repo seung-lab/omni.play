@@ -210,3 +210,48 @@ OmImage<uint32_t, 3> OmChunkData::getOmImage32Chunk()
 	return boost::apply_visitor(GetOmImage32ChunkVisitor(chunk_),
 				    getRawData());
 }
+
+
+class SetVoxelValueVisitor : public boost::static_visitor<uint32_t>{
+public:
+	SetVoxelValueVisitor(const DataCoord & voxel, uint32_t val)
+		: voxel_(voxel), val_(val) {}
+
+	template <typename T>
+	uint32_t operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+				  d);
+		const uint32_t oldVal = data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
+		data.setVoxel(voxel_.x, voxel_.y, voxel_.z, val_);
+		return oldVal;
+	}
+private:
+	const DataCoord & voxel_;
+	uint32_t val_;
+};
+uint32_t OmChunkData::SetVoxelValue(const DataCoord & voxel, uint32_t val)
+{
+	return boost::apply_visitor(SetVoxelValueVisitor(voxel, val),
+				    getRawData());
+}
+
+
+class GetVoxelValueVisitor : public boost::static_visitor<uint32_t>{
+public:
+	GetVoxelValueVisitor(const DataCoord & voxel)
+		: voxel_(voxel) {}
+
+	template <typename T>
+	uint32_t operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+				  d);
+		return data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
+	}
+private:
+	const DataCoord & voxel_;
+};
+uint32_t OmChunkData::GetVoxelValue(const DataCoord & voxel)
+{
+	return boost::apply_visitor(GetVoxelValueVisitor(voxel),
+				    getRawData());
+}
