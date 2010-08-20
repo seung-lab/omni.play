@@ -18,7 +18,7 @@ OmMST::OmMST()
   , mDendValuesSize(0)
   , mDendCount(0)
   , mDendThreshold(DefaultThresholdSize)
-  , valid(false)
+  , valid_(false)
 {
 }
 
@@ -84,7 +84,7 @@ void OmMST::read(OmSegmentation & seg)
     assert( size == mDendValuesSize );
   }
 
-  valid = true;
+  valid_ = true;
 }
 
 void OmMST::import(OmSegmentation & seg, const QString fname)
@@ -105,16 +105,11 @@ void OmMST::import(OmSegmentation & seg, const QString fname)
 
   setupUserEdges(mDendValuesSize);
 
-  convertToEdgeList( seg,
-		     mDend->getPtr<unsigned int>(),
-		     mDendValues->getPtr<float>(),
-		     mDendCount );
-
   seg.FlushDend();
 
   hdf5reader->close();
 
-  valid = true;
+  valid_ = true;
 }
 
 bool OmMST::importDend(OmDataReader * hdf5reader)
@@ -185,44 +180,6 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
   mEdgeWasJoined = edgeWasJoined;
 
   return true;
-}
-
-// rewrite child node IDs in MST, converting it to edge list
-void OmMST::convertToEdgeList( OmSegmentation & seg,
-			       quint32 * dend,
-			       float * dendValues,
-			       const int numDendRows )
-{
-  const OmSegID maxSegValue =  seg.GetSegmentCache()->getMaxValue() + 1;
-  zi::DynamicForestPool<OmSegID> graph(maxSegValue);
-
-  OmSegID childUnknownDepthID;
-  OmSegID childRootID;
-  OmSegID parentID;
-  float threshold;
-  int numBadSegValues = 0;
-
-  for(int i = 0; i < numDendRows; ++i) {
-    childUnknownDepthID = dend[i];
-    parentID = dend[i + numDendRows ];
-    threshold = dendValues[i];
-
-    // Data may have values that don't exist in the volume... warn user.
-    if(childUnknownDepthID < maxSegValue &&
-       parentID < maxSegValue) {
-      childRootID = graph.root(childUnknownDepthID);
-      graph.join(childRootID, parentID);
-
-      // set child ID to root value found by graph...
-      dend[i] = childRootID;
-    } else {
-      ++numBadSegValues;
-    }
-  }
-
-  if(0 != numBadSegValues){
-    printf("warning: dend has %d values that don't exist in the volume data.\n", numBadSegValues);
-  }
 }
 
 void OmMST::FlushDend(OmSegmentation * seg)

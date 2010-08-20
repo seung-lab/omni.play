@@ -27,15 +27,10 @@ public:
   int mDendCount;
   float mDendThreshold;
 
-  bool isValid(){ return valid; }
+  bool isValid(){ return valid_; }
 
 private:
-  bool valid;
-
-  void convertToEdgeList( OmSegmentation & seg,
-			  quint32 * dend,
-			  float * dendValues,
-			  const int numDendRows );
+  bool valid_;
 
   bool importDend(OmDataReader * hdf5reader);
   bool importDendValues(OmDataReader * hdf5reader);
