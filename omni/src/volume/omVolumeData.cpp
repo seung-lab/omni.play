@@ -54,7 +54,7 @@ OmRawDataPtrs OmVolumeData::getChunkPtrRaw(const OmMipChunkCoord & coord){
 }
 
 
-OmAllowedVolumeDataTypes OmVolumeData::determineOldVolType(OmMipVolume * vol)
+OmVolDataType OmVolumeData::determineOldVolType(OmMipVolume * vol)
 {
 	const OmMipChunkCoord coord(0,0,0,0);
 	OmMipChunkPtr chunk;

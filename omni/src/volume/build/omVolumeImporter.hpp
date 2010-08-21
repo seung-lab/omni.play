@@ -26,11 +26,11 @@ private:
 	bool importImageStack();
 
 	bool areImportFilesImages();
-	OmAllowedVolumeDataTypes figureOutDataType(OmDataPath& path);
-	OmAllowedVolumeDataTypes figureOutDataTypeImage();
-	OmAllowedVolumeDataTypes figureOutDataTypeHDF5(OmDataPath &);
+	OmVolDataType figureOutDataType(OmDataPath& path);
+	OmVolDataType figureOutDataTypeImage();
+	OmVolDataType figureOutDataTypeHDF5(OmDataPath &);
 
-	void allocateData(const OmAllowedVolumeDataTypes);
+	void allocateData(const OmVolDataType);
 	void allocateHDF5(const std::map<int, Vector3i> &);
 	void allocateMemMap(const std::map<int, Vector3i> &);
 };

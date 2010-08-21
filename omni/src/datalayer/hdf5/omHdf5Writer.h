@@ -28,7 +28,7 @@ public:
 	void dataset_image_create_tree_overwrite(const OmDataPath &,
 						 const Vector3i&,
 						 const Vector3i&,
-						 const OmAllowedVolumeDataTypes);
+						 const OmVolDataType);
 	void dataset_image_write_trim( const OmDataPath & ,
 				       const DataBbox&, OmDataWrapperPtr data);
 

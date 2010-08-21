@@ -42,7 +42,7 @@ void OmHdf5Writer::group_delete( const OmDataPath & path )
 void OmHdf5Writer::dataset_image_create_tree_overwrite( const OmDataPath & path,
 							const Vector3i& dataDims,
 							const Vector3i& chunkDims,
-							const OmAllowedVolumeDataTypes type)
+							const OmVolDataType type)
 {
 	hdf5->dataset_image_create_tree_overwrite(path, dataDims, chunkDims, type);
 }

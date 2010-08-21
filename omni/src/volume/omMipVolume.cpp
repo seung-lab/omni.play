@@ -34,7 +34,7 @@
 
 OmMipVolume::OmMipVolume()
 	: mDataCache(new OmMipVolumeCache(this))
-	, mVolDataType(UNKNOWN)
+	, mVolDataType(OmVolDataType::UNKNOWN)
 {
 	sourceFilesWereSet = false;
 

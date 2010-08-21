@@ -73,7 +73,7 @@ public:
 	virtual std::string getTypeAsString() = 0;
 	virtual hid_t getHdf5MemoryType() = 0;
 	virtual hid_t getHdf5FileType() = 0;
-	virtual OmAllowedVolumeDataTypes getVolDataType() = 0;
+	virtual OmVolDataType getVolDataType() = 0;
 
 	template <class T> friend class OmDataWrapper;
 };
@@ -203,19 +203,19 @@ private:
 	hid_t getHdf5FileType(){ return OmHdf5FileTypeImpl<T>::getType(); }
 	std::string getTypeAsString(){ return OmTypeAsString<T>::getTypeAsString(); }
 
-	OmAllowedVolumeDataTypes getVolDataType(){
+	OmVolDataType getVolDataType(){
 		if(getHdf5MemoryType() == H5T_NATIVE_FLOAT){
-			return OM_FLOAT;
+			return OmVolDataType::OM_FLOAT;
 		}else if( getHdf5MemoryType() == H5T_NATIVE_UINT){
-			return OM_UINT32;
+			return OmVolDataType::OM_UINT32;
 		}else if(getHdf5MemoryType() == H5T_NATIVE_INT){
-			return OM_INT32;
+			return OmVolDataType::OM_INT32;
 		}else if(getHdf5MemoryType() == H5T_NATIVE_UCHAR){
-			return OM_UINT8;
+			return OmVolDataType::OM_UINT8;
 		}else if(getHdf5MemoryType() == H5T_NATIVE_CHAR){
-			return OM_INT8;
+			return OmVolDataType::OM_INT8;
 		}else{
-			assert(0 && "unknown HDF5 type");
+			throw OmIoException("unknown HDF5 type");
 		}
 	}
 

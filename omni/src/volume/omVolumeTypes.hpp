@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "boost/variant.hpp"
+#include "enum/enum.hpp"
 
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
 OmRawDataPtrs;
@@ -16,56 +17,30 @@ OmSegSizeMapPtr;
 typedef boost::unordered_map<OmSegID, DataBbox>
 OmSegBounds;
 
-enum OmAllowedVolumeDataTypes {
-	UNKNOWN = 0,
-	OM_INT8,
-	OM_UINT8,
-	OM_INT32,
-	OM_UINT32,
-	OM_FLOAT
-};
+// char* used for serialization (don't change!)
+BOOST_ENUM_VALUES(OmVolDataType, const char*,
+    (UNKNOWN)("unknown")
+    (OM_INT8)("int8_t")
+    (OM_UINT8)("uint8_t")
+    (OM_INT32)("int32_t")
+    (OM_UINT32)("uint32_t")
+    (OM_FLOAT)("float")
+)
 
 class OmVolumeTypeHelpers {
 public:
-	// used for serialization (don't change!)
-	static std::string GetTypeAsString(const OmAllowedVolumeDataTypes type){
-		switch(type){
-		case OM_INT8:
-			return "int8_t";
-		case OM_UINT8:
-			return "uint8_t";
-		case OM_INT32:
-			return "int32_t";
-		case OM_UINT32:
-			return "uint32_t";
-		case OM_FLOAT:
-			return "float";
-		case UNKNOWN:
-			return "unkown";
-		default:
-			return "invalid";
-		}
+	static std::string GetTypeAsString(const OmVolDataType type){
+		return std::string(type.value());
 	}
 
 	// used for serialization (don't change!)
-	static OmAllowedVolumeDataTypes GetTypeFromString(const QString & type){
-		if("int8_t" == type){
-			return OM_INT8;
-		} else if("uint8_t" == type){
-			return OM_UINT8;
-		} else if("int32_t" == type){
-			return OM_INT32;
-		} else if("uint32_t" == type){
-			return OM_UINT32;
-		} else if("float" == type){
-			return OM_FLOAT;
-		} else if("unkown" == type){
-			return UNKNOWN;
-		} else {
-			throw OmIoException("bad type \""
-					    + type.toStdString()
-					    + "\"");
+	static OmVolDataType GetTypeFromString(const QString & type){
+		boost::optional<OmVolDataType> ret =
+			OmVolDataType::get_by_value(qPrintable(type));
+		if(!ret){
+			throw OmIoException("invalid type");
 		}
+		return *ret;
 	}
 };
 

@@ -31,7 +31,7 @@ class OmHdf5LowLevelWrappersManualOpenClose
 	void dataset_image_create_tree_overwrite_with_lock(const OmDataPath &,
 							   const Vector3i& ,
 							   const Vector3i&,
-							   const OmAllowedVolumeDataTypes);
+							   const OmVolDataType);
 	OmDataWrapperPtr dataset_image_read_trim_with_lock(const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim_with_lock(const OmDataPath&,
 						const DataBbox&,

@@ -48,7 +48,7 @@ class OmHdf5LowLevel
 	static void om_hdf5_dataset_image_create_with_lock(hid_t , const char *,
 							   const Vector3i&,
 							   const Vector3i&,
-							   const OmAllowedVolumeDataTypes);
+							   const OmVolDataType);
 	static OmDataWrapperPtr om_hdf5_dataset_read_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent);
 	static void om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, OmDataWrapperPtr data);
 	static Vector3< int > om_hdf5_dataset_get_dims_with_lock(hid_t fileId, const char *name);

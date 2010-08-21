@@ -38,7 +38,7 @@ class OmHdf5
 	void dataset_image_create_tree_overwrite( const OmDataPath &,
 						  const Vector3i&,
 						  const Vector3i&,
-						  const OmAllowedVolumeDataTypes type);
+						  const OmVolDataType type);
 	OmDataWrapperPtr dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
 				       OmDataWrapperPtr data);

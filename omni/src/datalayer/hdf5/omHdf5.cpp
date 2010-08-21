@@ -69,7 +69,7 @@ bool OmHdf5::dataset_exists( const OmDataPath & path )
 void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path,
 						  const Vector3i& dataDims,
 						  const Vector3i& chunkDims,
-						  const OmAllowedVolumeDataTypes type)
+						  const OmVolDataType type)
 {
 	QMutexLocker locker(&fileLock);
 	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, type);

@@ -618,33 +618,32 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	return Vector3 < int >(dims.z, dims.y, dims.x);
 }
 
-hid_t getHDF5type(const OmAllowedVolumeDataTypes type)
+hid_t getHDF5type(const OmVolDataType type)
 {
-	switch(type){
-	case OM_INT8:
+	switch(type.index()){
+	case OmVolDataType::OM_INT8:
 		return H5T_STD_I8LE;
-	case OM_UINT8:
+	case OmVolDataType::OM_UINT8:
 		return H5T_STD_U8LE;
-	case OM_INT32:
+	case OmVolDataType::OM_INT32:
 		return H5T_STD_I32LE;
-	case OM_UINT32:
+	case OmVolDataType::OM_UINT32:
 		return H5T_STD_U32LE;
-	case OM_FLOAT:
+	case OmVolDataType::OM_FLOAT:
 		return H5T_IEEE_F32LE;
-	case UNKNOWN:
+	case OmVolDataType::UNKNOWN:
 		assert(0 && "unknown data type--probably old file?");
 		break;
-	default:
-		assert(0 && "did not recognize vol data type");
-		break;
 	}
+
+	assert(0 && "type not found");
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 							    const char *name,
 							    const Vector3i& dataDims,
 							    const Vector3i& chunkDims,
-							    const OmAllowedVolumeDataTypes type)
+							    const OmVolDataType type)
 {
 	herr_t ret;
 	int rank = 3;

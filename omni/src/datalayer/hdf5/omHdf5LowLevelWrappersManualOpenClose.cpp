@@ -87,7 +87,7 @@ void OmHdf5LowLevelWrappersManualOpenClose::
 dataset_image_create_tree_overwrite_with_lock(const OmDataPath & path,
 					      const Vector3i& dataDims,
 					      const Vector3i& chunkDims,
-					      const OmAllowedVolumeDataTypes type)
+					      const OmVolDataType type)
 {
 	HDF5_CHECK();
 	hdfLowLevel.om_hdf5_dataset_delete_create_tree_with_lock(fileId, name);

@@ -513,7 +513,7 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 		in >> volDataType;
 		m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 	} else {
-		m.mVolDataType = UNKNOWN;
+		m.mVolDataType = OmVolDataType::UNKNOWN;
 	}
 }
 

@@ -97,7 +97,7 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 }
 
 template <typename VOL>
-OmAllowedVolumeDataTypes
+OmVolDataType
 OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
 {
 	if(areImportFilesImages()){
@@ -108,7 +108,7 @@ OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
 }
 
 template <typename VOL>
-OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath & dataset)
+OmVolDataType OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath & dataset)
 {
 	const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0,0,0,0);
 	DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(chunk_coord, 0);
@@ -122,15 +122,15 @@ OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath
 }
 
 template <typename VOL>
-OmAllowedVolumeDataTypes OmVolumeImporter<VOL>::figureOutDataTypeImage()
+OmVolDataType OmVolumeImporter<VOL>::figureOutDataTypeImage()
 {
 	const int depth = QImage(vol_->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
 
 	switch(depth){
 	case 8:
-		return OM_UINT8;
+		return OmVolDataType::OM_UINT8;
 	case 32:
-		return OM_UINT32;
+		return OmVolDataType::OM_UINT32;
 	default:
 		printf("image depth is %d; aborting...\n", depth);
 		assert(0 && "don't know how to import image");
@@ -157,9 +157,9 @@ bool OmVolumeImporter<VOL>::importImageStack()
  *	Note: root level and leaf dim must already be set
  */
 template <typename VOL>
-void OmVolumeImporter<VOL>::allocateData(const OmAllowedVolumeDataTypes type)
+void OmVolumeImporter<VOL>::allocateData(const OmVolDataType type)
 {
-	assert(UNKNOWN != type);
+	assert(OmVolDataType::UNKNOWN != type);
 	vol_->mVolDataType = type;
 
 	std::map<int, Vector3i> levelsAndDims;

@@ -137,11 +137,11 @@ public:
 	QFileInfoList mSourceFilenamesAndPaths;
 
 	Vector3i getDimsRoundedToNearestChunk(const int level);
-	OmAllowedVolumeDataTypes getVolDataType(){ return mVolDataType; }
+	OmVolDataType getVolDataType(){ return mVolDataType; }
 
 protected:
         OmMipVolumeCache *const mDataCache;
-        OmAllowedVolumeDataTypes mVolDataType;
+        OmVolDataType mVolDataType;
 
 	void BuildBlankVolume(const Vector3i & dims);
 

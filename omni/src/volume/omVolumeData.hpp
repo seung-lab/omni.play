@@ -40,39 +40,38 @@ private:
 
 	void loadMemMapFiles();
 	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
-	OmAllowedVolumeDataTypes determineOldVolType(OmMipVolume * vol);
+	OmVolDataType determineOldVolType(OmMipVolume * vol);
 
 	template <typename VOL> void setDataType(VOL* vol){
 		printf("setting up volume data...\n");
 
-		if(UNKNOWN == vol->mVolDataType){
+		if(OmVolDataType::UNKNOWN == vol->mVolDataType.index()){
 			printf("unknown data type--old file? attempting to infer type...\n");
 			vol->mVolDataType = determineOldVolType(vol);
 		}
 
-		switch(vol->mVolDataType){
-		case OM_INT8:
+		switch(vol->mVolDataType.index()){
+		case OmVolDataType::OM_INT8:
 			volData_ = OmMemMappedVolume<int8_t, VOL>(vol);
-			break;
-		case OM_UINT8:
+			return;
+		case OmVolDataType::OM_UINT8:
 			volData_ = OmMemMappedVolume<uint8_t, VOL>(vol);
-			break;
-		case OM_INT32:
+			return;
+		case OmVolDataType::OM_INT32:
 			volData_ = OmMemMappedVolume<int32_t, VOL>(vol);
-			break;
-		case OM_UINT32:
+			return;
+		case OmVolDataType::OM_UINT32:
 			volData_ = OmMemMappedVolume<uint32_t, VOL>(vol);
-			break;
-		case OM_FLOAT:
+			return;
+		case OmVolDataType::OM_FLOAT:
 			volData_ = OmMemMappedVolume<float, VOL>(vol);
-			break;
-		case UNKNOWN:
+			return;
+		case OmVolDataType::UNKNOWN:
 			assert(0 && "unknown data type--probably old file?");
-			break;
-		default:
-			assert(0 && "did not recognize vol data type");
-			break;
+			return;
 		}
+
+		assert(0 && "type not know");
 	}
 };
 

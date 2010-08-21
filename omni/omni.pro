@@ -5,6 +5,8 @@ DEPENDPATH += . \
            include \
            include/vmmlib \
            include/zi_lib \
+           include/enum \
+           include/enum/enum \
            lib \
            src \
            src/common \
