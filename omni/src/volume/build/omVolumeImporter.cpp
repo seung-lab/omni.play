@@ -128,9 +128,9 @@ OmVolDataType OmVolumeImporter<VOL>::figureOutDataTypeImage()
 
 	switch(depth){
 	case 8:
-		return OmVolDataType::OM_UINT8;
+		return OmVolDataType::UINT8;
 	case 32:
-		return OmVolDataType::OM_UINT32;
+		return OmVolDataType::UINT32;
 	default:
 		printf("image depth is %d; aborting...\n", depth);
 		assert(0 && "don't know how to import image");

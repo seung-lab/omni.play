@@ -35,7 +35,7 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 		OmProjectData::GetProjectDataReader()->
 		dataset_raw_read(path, &size);
 
-	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size );
+	QByteArray ba = QByteArray::fromRawData((const char*)dw->getPtr<int8_t>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);

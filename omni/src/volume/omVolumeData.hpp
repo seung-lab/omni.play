@@ -25,18 +25,8 @@ public:
 	int GetBytesPerSample();
 	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord);
 
-
 private:
-	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
-		       OmMemMappedVolume<uint8_t, OmChannel>,
-		       OmMemMappedVolume<int32_t, OmChannel>,
-		       OmMemMappedVolume<uint32_t, OmChannel>,
-		       OmMemMappedVolume<float, OmChannel>,
-		       OmMemMappedVolume<int8_t, OmSegmentation>,
-		       OmMemMappedVolume<uint8_t, OmSegmentation>,
-		       OmMemMappedVolume<int32_t, OmSegmentation>,
-		       OmMemMappedVolume<uint32_t, OmSegmentation>,
-		       OmMemMappedVolume<float, OmSegmentation> > volData_;
+	OmVolDataSrcs volData_;
 
 	void loadMemMapFiles();
 	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
@@ -50,25 +40,23 @@ private:
 			vol->mVolDataType = determineOldVolType(vol);
 		}
 
+		volData_ = makeVolData(vol);
+	}
+
+	template <typename VOL> OmVolDataSrcs makeVolData(VOL* vol){
 		switch(vol->mVolDataType.index()){
-		case OmVolDataType::OM_INT8:
-			volData_ = OmMemMappedVolume<int8_t, VOL>(vol);
-			return;
-		case OmVolDataType::OM_UINT8:
-			volData_ = OmMemMappedVolume<uint8_t, VOL>(vol);
-			return;
-		case OmVolDataType::OM_INT32:
-			volData_ = OmMemMappedVolume<int32_t, VOL>(vol);
-			return;
-		case OmVolDataType::OM_UINT32:
-			volData_ = OmMemMappedVolume<uint32_t, VOL>(vol);
-			return;
-		case OmVolDataType::OM_FLOAT:
-			volData_ = OmMemMappedVolume<float, VOL>(vol);
-			return;
+		case OmVolDataType::INT8:
+			return OmMemMappedVolume<int8_t, VOL>(vol);
+		case OmVolDataType::UINT8:
+			return OmMemMappedVolume<uint8_t, VOL>(vol);
+		case OmVolDataType::INT32:
+			return OmMemMappedVolume<int32_t, VOL>(vol);
+		case OmVolDataType::UINT32:
+			return OmMemMappedVolume<uint32_t, VOL>(vol);
+		case OmVolDataType::FLOAT:
+			return OmMemMappedVolume<float, VOL>(vol);
 		case OmVolDataType::UNKNOWN:
-			assert(0 && "unknown data type--probably old file?");
-			return;
+			throw OmIoException("unknown data type--probably old file?");
 		}
 
 		assert(0 && "type not know");

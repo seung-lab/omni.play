@@ -5,9 +5,6 @@
 #include "boost/variant.hpp"
 #include "enum/enum.hpp"
 
-typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
-OmRawDataPtrs;
-
 typedef boost::unordered_map<OmSegID, uint32_t>
 OmSegSizeMap;
 
@@ -17,31 +14,42 @@ OmSegSizeMapPtr;
 typedef boost::unordered_map<OmSegID, DataBbox>
 OmSegBounds;
 
+template <typename T, typename VOL> class OmMemMappedVolume;
+class OmChannel;
+class OmSegmentation;
+
+typedef	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
+		       OmMemMappedVolume<uint8_t, OmChannel>,
+		       OmMemMappedVolume<int32_t, OmChannel>,
+		       OmMemMappedVolume<uint32_t, OmChannel>,
+		       OmMemMappedVolume<float, OmChannel>,
+		       OmMemMappedVolume<int8_t, OmSegmentation>,
+		       OmMemMappedVolume<uint8_t, OmSegmentation>,
+		       OmMemMappedVolume<int32_t, OmSegmentation>,
+		       OmMemMappedVolume<uint32_t, OmSegmentation>,
+		       OmMemMappedVolume<float, OmSegmentation> >
+OmVolDataSrcs;
+
+typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
+OmRawDataPtrs;
+
 // char* used for serialization (don't change!)
-BOOST_ENUM_VALUES(OmVolDataType, const char*,
+BOOST_ENUM_VALUES(OmVolDataType, std::string,
     (UNKNOWN)("unknown")
-    (OM_INT8)("int8_t")
-    (OM_UINT8)("uint8_t")
-    (OM_INT32)("int32_t")
-    (OM_UINT32)("uint32_t")
-    (OM_FLOAT)("float")
+    (INT8)("int8_t")
+    (UINT8)("uint8_t")
+    (INT32)("int32_t")
+    (UINT32)("uint32_t")
+    (FLOAT)("float")
 )
 
 class OmVolumeTypeHelpers {
 public:
-	static std::string GetTypeAsString(const OmVolDataType type){
-		return std::string(type.value());
-	}
+	static std::string GetTypeAsString(const OmVolDataType type);
+	static OmVolDataType GetTypeFromString(const QString & type);
 
-	// used for serialization (don't change!)
-	static OmVolDataType GetTypeFromString(const QString & type){
-		boost::optional<OmVolDataType> ret =
-			OmVolDataType::get_by_value(qPrintable(type));
-		if(!ret){
-			throw OmIoException("invalid type");
-		}
-		return *ret;
-	}
+	static int getHDF5FileType(const OmVolDataType type);
+	static int getHDF5MemoryType(const OmVolDataType type);
 };
 
 

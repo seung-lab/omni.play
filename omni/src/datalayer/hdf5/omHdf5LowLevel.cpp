@@ -311,13 +311,13 @@ OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void * dataset, hid_t dstype )
         switch( H5Tget_class( dstype ) ){
         case H5T_INTEGER:
                 if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return OmDataWrapper<unsigned char>::produce(dataset);
+                        return OmDataWrapper<uint8_t>::produce(dataset);
                 } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
-                        return OmDataWrapper<char>::produce(dataset);
+                        return OmDataWrapper<int8_t>::produce(dataset);
                 }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return OmDataWrapper<unsigned int>::produce(dataset);
+                        return OmDataWrapper<uint32_t>::produce(dataset);
                 }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return OmDataWrapper<int>::produce(dataset);
+                        return OmDataWrapper<int32_t>::produce(dataset);
                 }else {
 			assert(0);
                 }
@@ -336,13 +336,13 @@ OmDataWrapperPtr OmHdf5LowLevel::getNullDataWrapper(hid_t dstype )
         switch( H5Tget_class( dstype ) ){
         case H5T_INTEGER:
                 if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return OmDataWrapper<unsigned char>::produceNull();
+                        return OmDataWrapper<uint8_t>::produceNull();
                 } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
-                        return OmDataWrapper<char>::produceNull();
+                        return OmDataWrapper<int8_t>::produceNull();
                 }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return OmDataWrapper<unsigned int>::produceNull();
+                        return OmDataWrapper<uint32_t>::produceNull();
                 }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return OmDataWrapper<int>::produceNull();
+                        return OmDataWrapper<int32_t>::produceNull();
                 }else {
 			assert(0);
                 }
@@ -363,14 +363,13 @@ int OmHdf5LowLevel::getSizeofType(hid_t dstype)
         switch( H5Tget_class( dstype ) ){
         case H5T_INTEGER:
                 if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return sizeof(unsigned char);
+                        return sizeof(uint8_t);
                 } else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return sizeof(unsigned int);
+                        return sizeof(uint32_t);
                 } else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return sizeof(int);
+                        return sizeof(int32_t);
                 } else {
                         assert(0 && "not a real int that we understand");
-                        //return OmDataType::INVALID;
                 }
                 break;
         case H5T_FLOAT:
@@ -618,27 +617,6 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	return Vector3 < int >(dims.z, dims.y, dims.x);
 }
 
-hid_t getHDF5type(const OmVolDataType type)
-{
-	switch(type.index()){
-	case OmVolDataType::OM_INT8:
-		return H5T_STD_I8LE;
-	case OmVolDataType::OM_UINT8:
-		return H5T_STD_U8LE;
-	case OmVolDataType::OM_INT32:
-		return H5T_STD_I32LE;
-	case OmVolDataType::OM_UINT32:
-		return H5T_STD_U32LE;
-	case OmVolDataType::OM_FLOAT:
-		return H5T_IEEE_F32LE;
-	case OmVolDataType::UNKNOWN:
-		assert(0 && "unknown data type--probably old file?");
-		break;
-	}
-
-	assert(0 && "type not found");
-}
-
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 							    const char *name,
 							    const Vector3i& dataDims,
@@ -681,7 +659,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
 	}
 
 	//Creates a dataset at the specified location.
-	hid_t type_id = getHDF5type(type);
+	hid_t type_id = OmVolumeTypeHelpers::getHDF5FileType(type);
 	hid_t dataset_id = H5Dcreate2(fileId, name, type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0) {
 		throw OmIoException("Could not create HDF5 dataset " + string(name));

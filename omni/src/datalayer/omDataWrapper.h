@@ -2,55 +2,22 @@
 #define OM_DATA_WRAPPER_H
 
 #include "common/omCommon.h"
-#include "common/omGl.h"
-#include "utility/image/omImage.hpp"
 #include "volume/omVolumeTypes.hpp"
 
-#include "boost/shared_ptr.hpp"
-#include "hdf5.h"
 #include <vtkImageData.h>
 
-typedef hid_t OmHdf5Type;
-
-#define OmDataWrapperRaw(c) (OmDataWrapper<char>::producenofree(c))
-#define OmDataWrapperUint(c) (OmDataWrapper<unsigned int>::produce(c))
-#define OmDataWrapperInvalid() (OmDataWrapper<char>::produceinvalid())
+#define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::producenofree(c))
+#define OmDataWrapperUint(c) (OmDataWrapper<uint32_t>::produce(c))
+#define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceinvalid())
 
 class OmMipVolume;
-class OmMemoryMappedFile
-{
-public:
-	OmMemoryMappedFile(OmMipVolume *) {}
 
-	static OmMemoryMappedFile * FIXME(OmMipVolume * vol) { return new OmMemoryMappedFile(vol); }
-
-	void ref() {}
-	void unref() {}
-};
-
-template <class T> struct OmHdf5MemoryTypeImpl;
-template <> struct OmHdf5MemoryTypeImpl<unsigned int>   { static hid_t getType() { return H5T_NATIVE_UINT;  }};
-template <> struct OmHdf5MemoryTypeImpl<int>            { static hid_t getType() { return H5T_NATIVE_INT;   }};
-template <> struct OmHdf5MemoryTypeImpl<float>          { static hid_t getType() { return H5T_NATIVE_FLOAT; }};
-template <> struct OmHdf5MemoryTypeImpl<char> 	        { static hid_t getType() { return H5T_NATIVE_CHAR;  }};
-template <> struct OmHdf5MemoryTypeImpl<int8_t>	        { static hid_t getType() { return H5T_NATIVE_CHAR;  }};
-template <> struct OmHdf5MemoryTypeImpl<unsigned char>  { static hid_t getType() { return H5T_NATIVE_UCHAR; }};
-
-template <class T> struct OmHdf5FileTypeImpl;
-template <> struct OmHdf5FileTypeImpl<unsigned int>   { static hid_t getType() { return H5T_STD_U32LE;  }};
-template <> struct OmHdf5FileTypeImpl<int>            { static hid_t getType() { return H5T_STD_I32LE;  }};
-template <> struct OmHdf5FileTypeImpl<float>          { static hid_t getType() { return H5T_IEEE_F32LE; }};
-template <> struct OmHdf5FileTypeImpl<char> 	      { static hid_t getType() { return H5T_STD_I8LE;   }};
-template <> struct OmHdf5FileTypeImpl<int8_t> 	      { static hid_t getType() { return H5T_STD_I8LE;   }};
-template <> struct OmHdf5FileTypeImpl<unsigned char>  { static hid_t getType() { return H5T_STD_U8LE;   }};
-
-template <class T> struct OmTypeAsString;
-template <> struct OmTypeAsString<unsigned int>   { static std::string getTypeAsString() { return "unsigned int"; }};
-template <> struct OmTypeAsString<int>            { static std::string getTypeAsString() { return "int"; }};
-template <> struct OmTypeAsString<float>          { static std::string getTypeAsString() { return "float"; }};
-template <> struct OmTypeAsString<char> 	  { static std::string getTypeAsString() { return "char"; }};
-template <> struct OmTypeAsString<int8_t> 	  { static std::string getTypeAsString() { return "char"; }};
-template <> struct OmTypeAsString<unsigned char>  { static std::string getTypeAsString() { return "unsigned char"; }};
+template <class T> struct OmVolDataTypeImpl;
+template <> struct OmVolDataTypeImpl<uint32_t>{ static OmVolDataType getType() { return OmVolDataType::UINT32;  }};
+template <> struct OmVolDataTypeImpl<int32_t> { static OmVolDataType getType() { return OmVolDataType::INT32;   }};
+template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() { return OmVolDataType::FLOAT; }};
+template <> struct OmVolDataTypeImpl<int8_t>	 { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
+template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
 
 class OmDataWrapperBase {
 public:
@@ -59,7 +26,6 @@ public:
 	typedef boost::shared_ptr<OmDataWrapperBase> ptr_type;
 
 	template <class C> C* getPtr() { return (C*) getVoidPtr(); }
-	//template <class C> C* getPtr() { return reinterpret_cast<OmDataWrapper<C> >(*this).getPtr(); }
 	//template <class C> C* getPtr() {assert(0 && "borked\n"); }
 
 	virtual vtkImageData * getVTKPtr() = 0;
@@ -71,9 +37,9 @@ public:
 	virtual bool IsValid() { return false; }
 
 	virtual std::string getTypeAsString() = 0;
-	virtual hid_t getHdf5MemoryType() = 0;
-	virtual hid_t getHdf5FileType() = 0;
 	virtual OmVolDataType getVolDataType() = 0;
+	virtual int getHdf5FileType() = 0;
+	virtual int getHdf5MemoryType() = 0;
 
 	template <class T> friend class OmDataWrapper;
 };
@@ -86,20 +52,14 @@ private:
 	explicit OmDataWrapper(const int m)
 		: mData(NULL)
 		, isValid(false)
-		, mMMFile(NULL)
 		, mShouldFree(m) {}
 
 	OmDataWrapper( void * ptr, const int m)
 		: mData(ptr)
 		, isValid(true)
-		, mMMFile(NULL)
 		, mShouldFree(m) {}
-	OmDataWrapper( void * ptr, const int m, OmMemoryMappedFile* mm)
-		: mData(ptr)
-		, isValid(true)
-		, mMMFile(mm)
-		, mShouldFree(m) {}
- public:
+
+public:
 	typedef boost::shared_ptr<OmDataWrapper> ptr_type;
 	virtual ~OmDataWrapper(){
 		//printf("dsy=%p\n", mData);
@@ -120,13 +80,16 @@ private:
 			printf("Can not free pointer don't know it's type\n");
 		}
 	}
+
 	virtual int getSizeof() { return sizeof(T); }
+
 	template <class C>
 	C* getPtr()
 	{
 		assert(isValid);
 		return static_cast<C*>(mData);
 	}
+
 	vtkImageData * getVTKPtr() { assert(isValid); return (vtkImageData*) mData; }
 	virtual void * getVoidPtr(){ assert(isValid); return mData; }
 	virtual bool IsValid() { return isValid; }
@@ -143,11 +106,6 @@ private:
 	static OmDataWrapperPtr producevtk(void *ptr) {
 		return ptr_type(new OmDataWrapper(ptr, 2));
 	};
-	static OmDataWrapperPtr producemmap(void *ptr){
-		OmDataWrapper * dw = new OmDataWrapper(ptr, 3);
-		return ptr_type(dw);
-	}
-
 	static OmDataWrapperPtr produceinvalid() {
 		return produceNull();
 	}
@@ -193,36 +151,28 @@ private:
          		for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x)
            			for (int dx=0; dx < dest_dims.x; ++dx, ++di, si+=2) {
              				dest_data_ptr[di] = src_data_ptr[si];
-           		}
+				}
 
 	        //return subsampled image data
         	return OmDataWrapper<T>::producevtk(p_dest_data);
 	}
 
-        hid_t getHdf5MemoryType() {return OmHdf5MemoryTypeImpl<T>::getType(); }
-	hid_t getHdf5FileType(){ return OmHdf5FileTypeImpl<T>::getType(); }
-	std::string getTypeAsString(){ return OmTypeAsString<T>::getTypeAsString(); }
-
+	std::string getTypeAsString(){
+		return OmVolumeTypeHelpers::GetTypeAsString(getVolDataType());
+	}
 	OmVolDataType getVolDataType(){
-		if(getHdf5MemoryType() == H5T_NATIVE_FLOAT){
-			return OmVolDataType::OM_FLOAT;
-		}else if( getHdf5MemoryType() == H5T_NATIVE_UINT){
-			return OmVolDataType::OM_UINT32;
-		}else if(getHdf5MemoryType() == H5T_NATIVE_INT){
-			return OmVolDataType::OM_INT32;
-		}else if(getHdf5MemoryType() == H5T_NATIVE_UCHAR){
-			return OmVolDataType::OM_UINT8;
-		}else if(getHdf5MemoryType() == H5T_NATIVE_CHAR){
-			return OmVolDataType::OM_INT8;
-		}else{
-			throw OmIoException("unknown HDF5 type");
-		}
+		return OmVolDataTypeImpl<T>::getType();
+	}
+	int getHdf5FileType(){
+		return OmVolumeTypeHelpers::getHDF5FileType(getVolDataType());
+	}
+	int getHdf5MemoryType(){
+		return OmVolumeTypeHelpers::getHDF5MemoryType(getVolDataType());
 	}
 
 private:
 	void *const mData;
 	const bool isValid;
-	OmMemoryMappedFile *const mMMFile;
 	const int mShouldFree;
 };
 
