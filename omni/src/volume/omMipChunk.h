@@ -48,7 +48,7 @@ public:
 
 	template <typename T> void RawWriteChunkData(T* data){
 		QMutexLocker locker(&mOpenLock);
-		mHDF5data = OmDataWrapper<T>::producenofree(data);
+		mHDF5data = OmDataWrapper<T>::produceNoFree(data);
 		writeHDF5();
 	}
 	OmDataWrapperPtr RawReadChunkDataHDF5();

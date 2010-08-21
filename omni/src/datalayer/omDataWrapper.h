@@ -6,17 +6,15 @@
 
 #include <vtkImageData.h>
 
-#define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::producenofree(c))
+#define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
 #define OmDataWrapperUint(c) (OmDataWrapper<uint32_t>::produce(c))
-#define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceinvalid())
-
-class OmMipVolume;
+#define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
 
 template <class T> struct OmVolDataTypeImpl;
-template <> struct OmVolDataTypeImpl<uint32_t>{ static OmVolDataType getType() { return OmVolDataType::UINT32;  }};
-template <> struct OmVolDataTypeImpl<int32_t> { static OmVolDataType getType() { return OmVolDataType::INT32;   }};
+template <> struct OmVolDataTypeImpl<uint32_t>{ static OmVolDataType getType() { return OmVolDataType::UINT32;}};
+template <> struct OmVolDataTypeImpl<int32_t> { static OmVolDataType getType() { return OmVolDataType::INT32; }};
 template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() { return OmVolDataType::FLOAT; }};
-template <> struct OmVolDataTypeImpl<int8_t>	 { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
+template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
 template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
 
 class OmDataWrapperBase {
@@ -34,7 +32,6 @@ public:
 
 	virtual int getSizeof() = 0;
 	virtual ptr_type newWrapper(void *) = 0;
-	virtual bool IsValid() { return false; }
 
 	virtual std::string getTypeAsString() = 0;
 	virtual OmVolDataType getVolDataType() = 0;
@@ -48,70 +45,57 @@ typedef boost::shared_ptr<OmDataWrapperBase> OmDataWrapperPtr;
 
 template <class T>
 class OmDataWrapper : public OmDataWrapperBase {
-private:
-	explicit OmDataWrapper(const int m)
-		: mData(NULL)
-		, isValid(false)
-		, mShouldFree(m) {}
-
-	OmDataWrapper( void * ptr, const int m)
-		: mData(ptr)
-		, isValid(true)
-		, mShouldFree(m) {}
-
 public:
 	typedef boost::shared_ptr<OmDataWrapper> ptr_type;
-	virtual ~OmDataWrapper(){
-		//printf("dsy=%p\n", mData);
-		if(!isValid) {
-			return;
-		}
-		if(1 == mShouldFree) {
-			free(mData); // from malloc in hdf5...
-		} else if(2 == mShouldFree){
-			getVTKPtr()->Delete();
-		} else  if(3 == mShouldFree) {
 
-		} else if (4 == mShouldFree) {
-		} else if( -2 == mShouldFree){
-			// NULL
-		} else {
-			assert(0);
-			printf("Can not free pointer don't know it's type\n");
-		}
-	}
-
-	virtual int getSizeof() { return sizeof(T); }
-
-	template <class C>
-	C* getPtr()
-	{
-		assert(isValid);
-		return static_cast<C*>(mData);
-	}
-
-	vtkImageData * getVTKPtr() { assert(isValid); return (vtkImageData*) mData; }
-	virtual void * getVoidPtr(){ assert(isValid); return mData; }
-	virtual bool IsValid() { return isValid; }
-
-	static OmDataWrapperPtr produce(void *ptr) {
-		return ptr_type(new OmDataWrapper(ptr, 1));
-	};
-	static OmDataWrapperPtr producenofree(void *ptr) {
-		return ptr_type(new OmDataWrapper(ptr, 4));
-	};
 	static OmDataWrapperPtr produceNull() {
-		return ptr_type(new OmDataWrapper(-2));
+		return ptr_type(new OmDataWrapper());
+	};
+	static OmDataWrapperPtr produce(void *ptr) {
+		return ptr_type(new OmDataWrapper(ptr, MALLOC));
+	};
+	static OmDataWrapperPtr produceNoFree(void *ptr) {
+		return ptr_type(new OmDataWrapper(ptr, NONE));
 	};
 	static OmDataWrapperPtr producevtk(void *ptr) {
-		return ptr_type(new OmDataWrapper(ptr, 2));
+		return ptr_type(new OmDataWrapper(ptr, VTK));
 	};
-	static OmDataWrapperPtr produceinvalid() {
-		return produceNull();
-	}
 
 	OmDataWrapperPtr newWrapper(void *ptr) {
-		return ptr_type(new OmDataWrapper(ptr, mShouldFree));
+		checkIfValid();
+		return ptr_type(new OmDataWrapper(ptr, mDestructType));
+	}
+
+	virtual ~OmDataWrapper(){
+		switch(mDestructType){
+		case MALLOC:
+			free(mData);
+			break;
+		case VTK:
+			getVTKPtr()->Delete();
+			break;
+		case NONE:
+		case INVALID:
+			break;
+		};
+	}
+
+	virtual int getSizeof() {
+		return sizeof(T);
+	}
+
+	template <class C>
+	C* getPtr() {
+		checkIfValid();
+		return static_cast<C*>(mData);
+	}
+	vtkImageData * getVTKPtr(){
+		checkIfValid();
+		return (vtkImageData*) mData;
+	}
+	void * getVoidPtr(){
+		checkIfValid();
+		return mData;
 	}
 
 	OmDataWrapperPtr SubsampleData()
@@ -171,9 +155,29 @@ public:
 	}
 
 private:
+	enum DestructType {
+		MALLOC,
+		VTK,
+		NONE,
+		INVALID
+	};
+
 	void *const mData;
-	const bool isValid;
-	const int mShouldFree;
+	const DestructType mDestructType;
+
+	explicit OmDataWrapper()
+		: mData(NULL)
+		, mDestructType(INVALID) {}
+
+	OmDataWrapper( void * ptr, const DestructType d)
+		: mData(ptr)
+		, mDestructType(d) {}
+
+	void checkIfValid(){
+		if(INVALID == mDestructType){
+			throw OmIoException("ptr not valid");
+		}
+	}
 };
 
 #endif

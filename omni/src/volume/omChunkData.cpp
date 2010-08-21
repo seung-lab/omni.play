@@ -186,7 +186,6 @@ public:
 	GetOmImage32ChunkVisitor(OmMipChunk* chunk)
 		: chunk_(chunk) {}
 
-
 	template <typename T>
 	OmImage<uint32_t, 3> operator()(T* d) const {
 		OmImage<T,3> data(OmExtents[128][128][128],
@@ -219,8 +218,8 @@ public:
 
 	template <typename T>
 	uint32_t operator()(T* d) const {
-		OmImage<T,3> data(OmExtents[128][128][128],
-				  d);
+		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
+						 d);
 		const uint32_t oldVal = data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
 		data.setVoxel(voxel_.x, voxel_.y, voxel_.z, val_);
 		return oldVal;
@@ -243,8 +242,8 @@ public:
 
 	template <typename T>
 	uint32_t operator()(T* d) const {
-		OmImage<T,3> data(OmExtents[128][128][128],
-				  d);
+		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
+						 d);
 		return data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
 	}
 private:
