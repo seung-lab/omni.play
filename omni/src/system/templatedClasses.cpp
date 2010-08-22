@@ -1,4 +1,5 @@
 #include "datalayer/fs/omMemMappedVolume.cpp"
+#include "datalayer/hdf5/omHDF5Volume.cpp"
 #include "volume/build/omLoadImage.cpp"
 #include "volume/build/omVolumeImporter.cpp"
 #include "volume/omThreadChunkLevel.h"
@@ -70,20 +71,27 @@ template class OmVolumeImporter<OmSegmentation>;
 template class OmLoadImage<OmChannel>;
 template class OmLoadImage<OmSegmentation>;
 
-//template class OmVolumeData<OmChannel>;
-//template class OmVolumeData<OmSegmentation>;
-
 template class OmMemMappedVolume<int8_t, OmChannel>;
 template class OmMemMappedVolume<uint8_t, OmChannel>;
 template class OmMemMappedVolume<int32_t, OmChannel>;
 template class OmMemMappedVolume<uint32_t, OmChannel>;
 template class OmMemMappedVolume<float, OmChannel>;
-
 template class OmMemMappedVolume<int8_t, OmSegmentation>;
 template class OmMemMappedVolume<uint8_t, OmSegmentation>;
 template class OmMemMappedVolume<int32_t, OmSegmentation>;
 template class OmMemMappedVolume<uint32_t, OmSegmentation>;
 template class OmMemMappedVolume<float, OmSegmentation>;
+
+template class OmHDF5Volume<int8_t, OmChannel>;
+template class OmHDF5Volume<uint8_t, OmChannel>;
+template class OmHDF5Volume<int32_t, OmChannel>;
+template class OmHDF5Volume<uint32_t, OmChannel>;
+template class OmHDF5Volume<float, OmChannel>;
+template class OmHDF5Volume<int8_t, OmSegmentation>;
+template class OmHDF5Volume<uint8_t, OmSegmentation>;
+template class OmHDF5Volume<int32_t, OmSegmentation>;
+template class OmHDF5Volume<uint32_t, OmSegmentation>;
+template class OmHDF5Volume<float, OmSegmentation>;
 
 template class OmActionLoggerFSThread<OmProjectSaveAction>;
 template class OmActionLoggerFSThread<OmSegmentJoinAction>;

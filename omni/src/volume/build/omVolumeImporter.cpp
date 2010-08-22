@@ -1,16 +1,16 @@
-#include "system/cache/omMipVolumeCache.h"
-#include "volume/build/omLoadImage.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
-#include "project/omProject.h"
-#include "utility/omImageDataIo.h"
-#include "utility/omTimer.h"
-#include "volume/build/omVolumeImporter.hpp"
-#include "volume/omVolumeData.hpp"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
+#include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataWriter.h"
+#include "project/omProject.h"
+#include "system/cache/omMipVolumeCache.h"
 #include "system/omProjectData.h"
+#include "utility/omImageDataIo.h"
+#include "utility/omTimer.h"
+#include "volume/build/omLoadImage.h"
+#include "volume/build/omVolumeImporter.hpp"
+#include "volume/omVolumeData.hpp"
 
 #include <QImage>
 
@@ -175,6 +175,8 @@ void OmVolumeImporter<VOL>::allocateData(const OmVolDataType type)
 template <typename VOL>
 void OmVolumeImporter<VOL>::allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
 {
+	//	vol_->getVolData()->create(vol_, levelsAndDims);
+
 	const Vector3i chunkdims = vol_->GetChunkDimensions();
 
 	FOR_EACH(it, levelsAndDims){

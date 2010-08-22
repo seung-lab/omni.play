@@ -1,13 +1,13 @@
-#ifndef OMMEMMAPPEDVOLUME_HPP
-#define OMMEMMAPPEDVOLUME_HPP
+#ifndef OM_MEM_MAPPED_VOLUME_HPP
+#define OM_MEM_MAPPED_VOLUME_HPP
 
-#include "volume/omMipChunkCoord.h"
+#include "datalayer/omDataVolumeBase.hpp"
 
-#include <QFile>
 #include <zi/mutex>
+#include <QFile>
 
 template <typename T, typename VOL>
-class OmMemMappedVolume {
+class OmMemMappedVolume : public OmDataVolumeBase<T,VOL> {
 public:
 	OmMemMappedVolume(){} // for boost::varient
 	OmMemMappedVolume(VOL* vol);
@@ -16,15 +16,16 @@ public:
 
 	void load();
 	void create(const std::map<int, Vector3i> &);
-
 	T* getChunkPtr(const OmMipChunkCoord & coord);
+
 	int GetBytesPerSample(){ return sizeof(T); }
 
 private:
 	VOL* vol_;
+	zi::Mutex mutex_;
+
 	std::vector<QFile*> mFileVec;
 	std::vector<uchar*> mFileMapPtr;
-	zi::Mutex mutex_;
 
 	QString getFileName(const int level);
 	QFile* openFile(const int level);
