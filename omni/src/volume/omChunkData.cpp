@@ -264,6 +264,10 @@ public:
 	template <typename T>
 	bool operator()(T* d) const {
 		T* otherD = boost::get<T*>(other_);
+		if(NULL == otherD){
+			printf("\terror: chunk types differ...\n");
+			return false;
+		}
 		for(int i =0; i < 128*128*128; ++i){
 			if(otherD[i] != d[i]){
 				return false;

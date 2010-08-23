@@ -113,10 +113,10 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t
         //printf("%s is the name\n", name);
 
         //get dims
-        Vector3 < int >dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
+        Vector3i dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 
         //create extent
-        DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
+        DataBbox dataset_extent = DataBbox(Vector3i ::ZERO, dims.x, dims.y, dims.z);
 
         //if data extent contains given extent, just read from data
         if (dataset_extent.contains(dataExtent)) {
@@ -514,7 +514,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_raw_create_with_lock(hid_t fileId,
 	}
 }
 
-Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId,
+Vector3i  OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId,
 									 const char *name)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
@@ -568,7 +568,7 @@ Vector3 < int > OmHdf5LowLevel::om_hdf5_dataset_image_get_dims_with_lock(hid_t f
 	      DEBUGV3(dims), DEBUGV3(maxdims));
 
 	//flip from hdf5 version
-	return Vector3 < int >(dims.z, dims.y, dims.x);
+	return Vector3i (dims.z, dims.y, dims.x);
 }
 
 void OmHdf5LowLevel::om_hdf5_dataset_image_create_with_lock(hid_t fileId,
@@ -689,7 +689,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t file
 	}
 
 	//setup image data
-	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	Vector3i extent_dims = extent.getUnitDimensions();
 	OmDataWrapperPtr imageData =
 		OmImageDataIo::allocImageData(extent_dims,
 					      getNullDataWrapper(dstype));
@@ -768,7 +768,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId,
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	Vector3i extent_dims = extent.getUnitDimensions();
 	int data_dims[3];
 	data->getVTKptr()->GetDimensions(data_dims);
 	assert(data_dims[0] == extent_dims.x);
@@ -885,7 +885,7 @@ void OmHdf5LowLevel::om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const ch
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	Vector3i extent_dims = extent.getUnitDimensions();
 
 	//Reads raw data from a dataset into a buffer.
 	ret = H5Dwrite(dataset_id, data->getHdf5MemoryType(),
@@ -966,10 +966,9 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3 < int >extent_dims = extent.getUnitDimensions();
+	Vector3i extent_dims = extent.getUnitDimensions();
 
-	void *imageData;
-	imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*(getSizeofType(dstype)));
+	void *imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*(getSizeofType(dstype)));
 	OmDataWrapperPtr data = getDataWrapper( imageData, dstype, MALLOC );
 
 	H5Tclose( dstype );

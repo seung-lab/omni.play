@@ -71,7 +71,7 @@ bool OmVolumeImporterHDF5<VOL>::importHDF5(OmDataPath & inpath)
 				OmDataWrapperPtr dataVTK =
 					hdf5reader->
 					dataset_image_read_trim(src_path,
-								    chunk->GetExtent());
+								chunk->GetExtent());
 
 				OmDataWrapperPtr data =
 					dataVTK->newWrapper(dataVTK->getVTKptr()->GetScalarPointer(), NONE);

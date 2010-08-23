@@ -43,7 +43,7 @@ class OmHdf5LowLevel
 	static void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, OmDataWrapperPtr data);
 
 	//image I/O
-	static Vector3 < int > om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
+	static Vector3i  om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
 	static void om_hdf5_dataset_image_create_with_lock(hid_t , const char *,
 							   const Vector3i&,
 							   const Vector3i&,
