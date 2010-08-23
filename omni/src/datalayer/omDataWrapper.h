@@ -17,6 +17,13 @@ template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() {
 template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
 template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
 
+enum DestructType {
+	MALLOC,
+	VTK,
+	NONE,
+	INVALID
+};
+
 class OmDataWrapperBase {
 public:
 	OmDataWrapperBase() {}
@@ -31,12 +38,14 @@ public:
 	virtual ptr_type SubsampleData() = 0;
 
 	virtual int getSizeof() = 0;
-	virtual ptr_type newWrapper(void *) = 0;
+	virtual ptr_type newWrapper(void *, const DestructType) = 0;
 
 	virtual std::string getTypeAsString() = 0;
 	virtual OmVolDataType getVolDataType() = 0;
 	virtual int getHdf5FileType() = 0;
 	virtual int getHdf5MemoryType() = 0;
+
+	virtual void checkIfValid() = 0;
 
 	template <class T> friend class OmDataWrapper;
 };
@@ -61,9 +70,10 @@ public:
 		return ptr_type(new OmDataWrapper(ptr, VTK));
 	};
 
-	OmDataWrapperPtr newWrapper(void *ptr) {
-		checkIfValid();
-		return ptr_type(new OmDataWrapper(ptr, mDestructType));
+	OmDataWrapperPtr newWrapper(void *ptr, const DestructType dt){
+		OmDataWrapperPtr ret = ptr_type(new OmDataWrapper(ptr, dt));
+		ret->checkIfValid();
+		return ret;
 	}
 
 	virtual ~OmDataWrapper(){
@@ -155,13 +165,6 @@ public:
 	}
 
 private:
-	enum DestructType {
-		MALLOC,
-		VTK,
-		NONE,
-		INVALID
-	};
-
 	void *const mData;
 	const DestructType mDestructType;
 

@@ -124,7 +124,7 @@ OmDataWrapperPtr OmImageDataIo::allocImageData(Vector3 < int >dims, OmDataWrappe
 
 	data->ReleaseDataFlagOn();
 
-	return old->newWrapper(data);
+	return old->newWrapper(data, VTK);
 }
 
 OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3 < int >dims, OmDataWrapperPtr old, char value)
