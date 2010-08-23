@@ -1,6 +1,5 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
-#include "common/omVtk.h"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
@@ -18,38 +17,26 @@
 #include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
 
-#include <vtkImageData.h>
-#include <vtkType.h>
-
-
-static const float MIP_CHUNK_DATA_SIZE_SCALE_FACTOR = 1.4f;
-
 /**
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
  *	Note: optional cache pointer if this is a cached chunk
  */
-OmMipChunk::OmMipChunk(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
-	: OmCacheableBase(pMipVolume->mDataCache)
+OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
+	: OmCacheableBase(vol->mDataCache)
 	, mIsRawChunkOpen(false)
 	, mIsRawMappedChunkOpen(false)
-	, mpMipVolume(pMipVolume)
-	, mChunkData(new OmChunkData(mpMipVolume, this, rMipCoord))
+	, mpMipVolume(vol)
+	, mIsOpen(false)
+	, containedValuesDataLoaded(false)
+	, mChunkVolumeDataDirty(false)
+	, mChunkMetaDataDirty(false)
+	, mChunkData(new OmChunkData(vol, this, coord))
 {
-	//init chunk properties
-	InitChunk(rMipCoord);
-
-	containedValuesDataLoaded = false;
-
-	mChunkVolumeDataDirty = false;
-	mChunkMetaDataDirty = false;
-
-	mIsOpen = false;
+	InitChunk(coord);
 }
 
 OmMipChunk::~OmMipChunk()
 {
-	//debug("genone","OmMipChunk::~OmMipChunk()");
-
 	//since parent destructor is called after this child destructor, we need to call
 	//child Close() here, or else child Close() won't be called (since child won't exist)
 	//when called in parent destructor
@@ -61,8 +48,7 @@ OmMipChunk::~OmMipChunk()
 /*
  *	Initialize chunk with properties of given coordinate.
  */
-void
- OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
+void OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 {
 	//set coordinate
 	mCoordinate = rMipCoord;

@@ -891,8 +891,6 @@ bool OmMipVolume::CompareVolumes(OmMipVolume *vol1, OmMipVolume *vol2)
 		return false;
 	}
 
-	bool same = true;
-
 	for (int level = 0; level <= vol1->GetRootMipLevel(); ++level) {
 		printf("Comparing mip level %i\n",level);
 
@@ -917,7 +915,7 @@ bool OmMipVolume::CompareVolumes(OmMipVolume *vol1, OmMipVolume *vol2)
 		}
 	}
 
-	return same;
+	return true;
 }
 
 /*

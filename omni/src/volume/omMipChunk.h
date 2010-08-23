@@ -115,25 +115,22 @@ public:
 	bool compare(OmMipChunkPtr other);
 
 protected:
+	OmMipVolume *const mpMipVolume;
 	bool mIsOpen;
+
+	bool containedValuesDataLoaded;
+	bool mChunkVolumeDataDirty;
+	bool mChunkMetaDataDirty;
+
 	void SetOpen(bool);
 
 	mutable QMutex mOpenLock;
 	mutable QMutex mDirectDataValueLock;
-	int mEstMemBytes;
 	virtual void InitChunk(const OmMipChunkCoord &rMipCoord);
 
-	//mip volume this chunk belongs to
-	OmMipVolume * const mpMipVolume;
-
 	//cache direct and indirectly contained values for drawing tree
-	bool containedValuesDataLoaded;
 	void loadMetadataIfPresent();
 	OmSegIDsSet mDirectlyContainedValues;
-
-	//keep track what needs to be written out
-	bool mChunkVolumeDataDirty;
-	bool mChunkMetaDataDirty;
 
 	void setVolDataDirty();
 	void setMetaDataDirty();
