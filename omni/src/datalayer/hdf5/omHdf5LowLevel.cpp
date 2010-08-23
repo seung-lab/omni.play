@@ -235,33 +235,23 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 	return data;
 }
 
-void OmHdf5LowLevel::printTypeInfo( hid_t dstype )
+OmDataWrapperPtr OmHdf5LowLevel::getNullDataWrapper(const hid_t dstype)
 {
-	switch( H5Tget_class( dstype ) ){
-	case H5T_INTEGER:
-		printf("type is int; ");
-		if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-			printf("subtype is UCHAR; ");
-		} else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-			printf("subtype is UINT; ");
-		}else {
-			printf("subtype is unknown; ");
-		}
-		break;
-	case H5T_FLOAT:
-		printf("type is float");
-		printf("subtype is unknown; ");
-		break;
-	default:
-		printf("type is unknown");
-		break;
-	}
-
-	printf("precision %lu\n", (long unsigned) H5Tget_precision(dstype));
-
+	return getDataWrapper(NULL, dstype, INVALID);
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void * dataset,
+void OmHdf5LowLevel::printTypeInfo(const hid_t dstype)
+{
+	OmDataWrapperPtr p = getNullDataWrapper(dstype);
+	printf("type is %s\n", p->getTypeAsString().c_str() );
+}
+
+int OmHdf5LowLevel::getSizeofType(const hid_t dstype)
+{
+	return getNullDataWrapper(dstype)->getSizeof();
+}
+
+OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void* dataset,
 						hid_t dstype,
 						const OmDataAllocType allocType)
 {
@@ -287,59 +277,6 @@ OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void * dataset,
                 break;
         }
 }
-
-OmDataWrapperPtr OmHdf5LowLevel::getNullDataWrapper(hid_t dstype )
-{
-        switch( H5Tget_class( dstype ) ){
-        case H5T_INTEGER:
-                if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return OmDataWrapper<uint8_t>::produceNull();
-                } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
-                        return OmDataWrapper<int8_t>::produceNull();
-                }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return OmDataWrapper<uint32_t>::produceNull();
-                }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return OmDataWrapper<int32_t>::produceNull();
-                }else {
-			assert(0);
-                }
-                break;
-        case H5T_FLOAT:
-                return OmDataWrapper<float>::produceNull();
-                break;
-        default:
-		assert(0 && "not a known type");
-                break;
-        }
-
-	assert(0);
-}
-
-int OmHdf5LowLevel::getSizeofType(hid_t dstype)
-{
-        switch( H5Tget_class( dstype ) ){
-        case H5T_INTEGER:
-                if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return sizeof(uint8_t);
-                } else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return sizeof(uint32_t);
-                } else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return sizeof(int32_t);
-                } else {
-                        assert(0 && "not a real int that we understand");
-                }
-                break;
-        case H5T_FLOAT:
-                return sizeof(float);
-                break;
-        default:
-                assert(0 && "not a known type");
-                break;
-        }
-
-	assert(0);
-}
-
 
 void OmHdf5LowLevel::om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char *name, int size, const OmDataWrapperPtr data)
 {
