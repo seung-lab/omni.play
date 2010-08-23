@@ -106,37 +106,38 @@ bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *na
 /**
  *	Trims the read to data within the extent of the dataset.  Buffers the rest with zeros.
  */
-OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t fileId, const char *name, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t fileId,
+									   const char *name,
+									   DataBbox dataExtent)
 {
         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-        //printf("%s is the name\n", name);
+        const Vector3i dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
 
-        //get dims
-        Vector3i dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
-
-        //create extent
-        DataBbox dataset_extent = DataBbox(Vector3i ::ZERO, dims.x, dims.y, dims.z);
+        const DataBbox dataset_extent =
+		DataBbox(Vector3i::ZERO, dims.x, dims.y, dims.z);
 
         //if data extent contains given extent, just read from data
         if (dataset_extent.contains(dataExtent)) {
-		//assert(0 && "stop asking for stuff that doesn't exist");
                 return om_hdf5_dataset_image_read_with_lock(fileId, name, dataExtent);
         }
         //intersect with given extent
         DataBbox intersect_extent = dataset_extent;
         intersect_extent.intersect(dataExtent);
 
-        //if empty intersection, return blank data
         if (intersect_extent.isEmpty()) {
-                //return OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), bytesPerSample);
+		throw OmIoException("should not have happened");
         }
-        //else merge intersection and read data
+
+        //merge intersection and read data
         //read intersection from source
-        OmDataWrapperPtr intersect_image_data = om_hdf5_dataset_image_read_with_lock(fileId, name, intersect_extent);
+        OmDataWrapperPtr intersect_image_data =
+		om_hdf5_dataset_image_read_with_lock(fileId, name, intersect_extent);
 
         //create blanks data
-        OmDataWrapperPtr filled_read_data = OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(), intersect_image_data);
+        OmDataWrapperPtr filled_read_data =
+		OmImageDataIo::createBlankImageData(dataExtent.getUnitDimensions(),
+						    intersect_image_data);
 
         //copy intersected data to proper location in blank image data
         //normalize to min of intersection
@@ -147,9 +148,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t
         DataBbox dataextent_norm_intersect_extent = intersect_extent;
         dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
 
-        //copy data
-        OmImageDataIo::copyImageData(filled_read_data, dataextent_norm_intersect_extent,        //copy to intersect region in dataExtent
-                      intersect_image_data, intersect_norm_intersect_extent);   //from extent of intersection
+        //copy data to intersect region in dataExtent from extent of intersection
+        OmImageDataIo::copyImageData(filled_read_data,
+				     dataextent_norm_intersect_extent,
+				     intersect_image_data,
+				     intersect_norm_intersect_extent);
 
 
         return filled_read_data;

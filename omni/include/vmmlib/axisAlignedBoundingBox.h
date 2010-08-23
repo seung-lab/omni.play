@@ -26,7 +26,7 @@ public:
 	inline bool contains( const Vector3< T >& pos ) const;
 	inline bool containsIn2d( const Vector3< T >& pos ); // only x and y components are checked
 	inline bool contains( const Vector4< T >& sphere );
-	inline bool contains( const AxisAlignedBoundingBox< T >& aabb );
+	inline bool contains( const AxisAlignedBoundingBox< T >& aabb ) const;
 
 	inline void set( const Vector3< T >& pMin, const Vector3< T >& pMax );
 	inline void set( T cx, T cy, T cz, T size );
@@ -198,17 +198,18 @@ inline bool AxisAlignedBoundingBox< T >::contains( const Vector3< T >& pos ) con
 
 /* bwarne: added to compare with other bboxes */
 template< typename T >
-inline bool AxisAlignedBoundingBox< T >::contains( const AxisAlignedBoundingBox< T >& aabb )
+inline bool AxisAlignedBoundingBox< T >::contains( const AxisAlignedBoundingBox< T >& aabb ) const
 {
-	if ( _empty || aabb.isEmpty() )
+	if ( _empty || aabb.isEmpty() ){
 		return false;
-	if ( contains(aabb.getMin()) && contains(aabb.getMax()) )
-		{
-			return true;
-		}
+	}
+
+	if ( contains(aabb.getMin()) && contains(aabb.getMax()) ) {
+		return true;
+	}
+
 	return false;
 }
-
 
 template< typename T >
 inline bool AxisAlignedBoundingBox< T >::containsIn2d( const Vector3< T >& pos )
@@ -221,9 +222,6 @@ inline bool AxisAlignedBoundingBox< T >::containsIn2d( const Vector3< T >& pos )
 		}
 	return true;
 }
-
-
-
 
 template< typename T >
 inline void AxisAlignedBoundingBox< T >::set( const Vector3< T >& pMin,
