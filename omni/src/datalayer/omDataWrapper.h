@@ -34,10 +34,10 @@ public:
 	template <class C> C* getPtr() {
 		checkIsNotVTKPtr();
 		return (C*) getVoidPtr();
+		//{assert(0 && "borked\n"); }
 	}
-	//template <class C> C* getPtr() {assert(0 && "borked\n"); }
 
-	virtual vtkImageData * getVTKPtr() = 0;
+	virtual vtkImageData * getVTKptr() = 0;
 	virtual void * getVoidPtr() = 0;
 	virtual ptr_type SubsampleData() = 0;
 
@@ -72,7 +72,7 @@ public:
 	static OmDataWrapperPtr produceNoFree(void *ptr) {
 		return ptr_type(new OmDataWrapper(ptr, NONE));
 	};
-	static OmDataWrapperPtr producevtk(void *ptr) {
+	static OmDataWrapperPtr produceVTK(void *ptr) {
 		return ptr_type(new OmDataWrapper(ptr, VTK));
 	};
 
@@ -94,7 +94,7 @@ public:
 			delete [] (T*)mData;
 			break;
 		case VTK:
-			getVTKPtr()->Delete();
+			getVTKptr()->Delete();
 			break;
 		case NONE:
 		case INVALID:
@@ -112,10 +112,10 @@ public:
 		checkIsNotVTKPtr();
 		return static_cast<C*>(mData);
 	}
-	vtkImageData * getVTKPtr(){
+	vtkImageData * getVTKptr(){
 		checkIfValid();
 		checkIsVTKPtr();
-		return (vtkImageData*) mData;
+		return (vtkImageData*)mData;
 	}
 	void * getVoidPtr(){
 		checkIfValid();
@@ -124,7 +124,7 @@ public:
 
 	OmDataWrapperPtr SubsampleData()
 	{
-        	vtkImageData * srcData = getVTKPtr();
+        	vtkImageData * srcData = getVTKptr();
 
         	//get image data dimensions
         	Vector3i src_dims;
@@ -160,7 +160,7 @@ public:
              				dest_data_ptr[di] = src_data_ptr[si];
 				}
 
-        	return OmDataWrapper<T>::producevtk(p_dest_data);
+        	return OmDataWrapper<T>::produceVTK(p_dest_data);
 	}
 
 	std::string getTypeAsString(){

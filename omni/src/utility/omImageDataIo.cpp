@@ -127,13 +127,15 @@ OmDataWrapperPtr OmImageDataIo::allocImageData(Vector3 < int >dims, OmDataWrappe
 	return old->newWrapper(data, VTK);
 }
 
-OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3 < int >dims, OmDataWrapperPtr old, char value)
+OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3i dims,
+						     OmDataWrapperPtr old,
+						     char value)
 {
 	//alloc data
 	OmDataWrapperPtr data = allocImageData(dims, old);
 
 	//clear data
-	void *scalar_pointer = data->getVTKPtr()->GetScalarPointer();
+	void *scalar_pointer = data->getVTKptr()->GetScalarPointer();
 	memset(scalar_pointer, value, old->getSizeof() * dims.x * dims.y * dims.z);
 
 	return data;
@@ -144,7 +146,7 @@ OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3 < int >dims, OmData
  */
 void * OmImageDataIo::copyImageData(OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
 {
-	vtkImageData * srcData = srcInData->getVTKPtr();
+	vtkImageData * srcData = srcInData->getVTKptr();
 
 	//get vtk formatted copy extent
 	int src_copy_extent[6];
@@ -159,11 +161,6 @@ void * OmImageDataIo::copyImageData(OmDataWrapperPtr srcInData, const DataBbox &
 	int num_scalar_components = srcData->GetNumberOfScalarComponents();
 	int bytes_per_pixel = scalar_size * num_scalar_components;
 
-	//assert that src can contain copy extent
-	//debug("FIXME", << srcCopyBbox << endl;
-	//DataBbox temp;
-	//setAxisAlignedBoundingBoxFromVtkExtent(src_data_extent, temp);
-	//debug("FIXME", << temp << endl;
 	assert((src_copy_extent[1] <= src_data_extent[1]) &&
 	       (src_copy_extent[3] <= src_data_extent[3]) && (src_copy_extent[5] <= src_data_extent[5]));
 
@@ -207,8 +204,8 @@ void * OmImageDataIo::copyImageData(OmDataWrapperPtr srcInData, const DataBbox &
 void OmImageDataIo::copyImageData(OmDataWrapperPtr dstInData, const DataBbox & dstCopyBbox,
 				  OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
 {
-	vtkImageData * dstData = dstInData->getVTKPtr();
-	vtkImageData * srcData = srcInData->getVTKPtr();
+	vtkImageData * dstData = dstInData->getVTKptr();
+	vtkImageData * srcData = srcInData->getVTKptr();
 
 	//get vtk formatted extent
 	int src_copy_extent[6], dst_copy_extent[6];
@@ -258,19 +255,12 @@ void OmImageDataIo::copyImageData(OmDataWrapperPtr dstInData, const DataBbox & d
 	//loop over all slices, rows, and pixels
 	for (int z = 0; z < copy_bbox_dim.z; z++) {
 		for (int y = 0; y < copy_bbox_dim.y; y++) {
-#if 1
 			for (int x = 0; x < copy_bbox_dim.x; x++) {
 
 				memcpy(dst_data_ptr, src_data_ptr, bytes_per_pixel);
 				src_data_ptr += bytes_per_pixel;
 				dst_data_ptr += bytes_per_pixel;
 			}
-#else
-			//optimize to copy continuous pixel strips
-			memcpy(dst_data_ptr, src_data_ptr, copy_bbox_dim.x * bytes_per_pixel);
-			src_data_ptr += copy_bbox_dim.x * bytes_per_pixel;
-			dst_data_ptr += copy_bbox_dim.x * bytes_per_pixel;
-#endif
 
 			//adv continuous inc Y
 			src_data_ptr += srcContIncY * bytes_per_pixel;
@@ -282,77 +272,3 @@ void OmImageDataIo::copyImageData(OmDataWrapperPtr dstInData, const DataBbox & d
 		dst_data_ptr += dstContIncZ * bytes_per_pixel;
 	}
 }
-
-void OmImageDataIo::copyIntersectedImageDataFromOffset(OmDataWrapperPtr dstInData, OmDataWrapperPtr srcInData,
-						       const Vector3 < int >&srcOffset)
-{
-	vtkImageData * dstData = dstInData->getVTKPtr();
-	vtkImageData * srcData = srcInData->getVTKPtr();
-
-	//bbox of source and destination
-	DataBbox src_bbox, dst_bbox;
-	setAxisAlignedBoundingBoxFromVtkExtent(srcData->GetExtent(), src_bbox);
-	setAxisAlignedBoundingBoxFromVtkExtent(dstData->GetExtent(), dst_bbox);
-
-	//src bbox offset to the dst space
-	DataBbox offset_src_bbox = src_bbox;
-	offset_src_bbox.offset(srcOffset);
-
-	//dst intersection in dst space
-	DataBbox dst_intersection = dst_bbox;
-
-	dst_intersection.intersect(offset_src_bbox);
-
-	//return if nothing to copy
-	if (dst_intersection.isEmpty())
-		return;
-
-	//src intersection in src space
-	DataBbox src_intersection = dst_intersection;
-	src_intersection.offset(-srcOffset);
-
-	/*
-	   //debug("FIXME", << "copyIntersectedImageDataFromOffset:" << endl;
-	   //debug("FIXME", << dst_intersection << endl;
-	   //debug("FIXME", << src_intersection << endl;
-	 */
-
-	//copy intersected data
-	copyImageData(dstInData, dst_intersection, srcInData, src_intersection);
-}
-
-/*
- *	Combine pairs of vtkImageData along a given axis.
- *
- *	inputImageData - pairs of vktImageData that will be combined
- *	outputImageData - length is half the number of vtkImageData as the input.
- *	num_pairs is the number of pairs in the input
- *	axis - axis to combine input data
- *
- *	Input data is deleted after output data is created.
- */
-
-void OmImageDataIo::appendImageDataPairs(vtkImageData ** inputImageData, vtkImageData ** outputImageData, int num_pairs, int axis)
-{
-
-	for (int i = 0; i < num_pairs; i++) {
-		//alloc output data
-		outputImageData[i] = vtkImageData::New();
-
-		//create appender
-		vtkImageAppend *appender = vtkImageAppend::New();
-		appender->AddInput(inputImageData[2 * i]);
-		appender->AddInput(inputImageData[2 * i + 1]);
-		appender->SetAppendAxis(axis);
-
-		appender->SetOutput(outputImageData[i]);
-		appender->Update();
-		appender->Delete();
-
-		//erase old image data
-		inputImageData[2 * i]->Delete();
-		inputImageData[2 * i + 1]->Delete();
-	}
-}
-
-

@@ -22,9 +22,6 @@ class OmImageDataIo {
 
 	static void * copyImageData(OmDataWrapperPtr srcData, const DataBbox &srcCopyBbox);
 
-	static void copyIntersectedImageDataFromOffset(OmDataWrapperPtr dstData,
-						       OmDataWrapperPtr srcData,
-						       const Vector3<int> &srcOffset);
 	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
 
 	static OmDataWrapperPtr om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths,
@@ -38,10 +35,6 @@ class OmImageDataIo {
 	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb, int extent[]);
 	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[],
 							   AxisAlignedBoundingBox<int>& aabb);
-
-	static void appendImageDataPairs(vtkImageData **inputImageData,
-					 vtkImageData **outputImageData,
-					 int num_pairs, int axis);
 };
 
 #endif

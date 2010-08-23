@@ -25,6 +25,8 @@ public:
 	uint32_t SetVoxelValue(const DataCoord & voxel, uint32_t val);
 	uint32_t GetVoxelValue(const DataCoord & voxel);
 
+	bool compare(boost::shared_ptr<OmChunkData> other);
+
 private:
 	OmMipVolume *const vol_;
 	OmMipChunk *const chunk_;

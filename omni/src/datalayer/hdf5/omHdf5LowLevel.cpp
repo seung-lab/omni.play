@@ -720,7 +720,11 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t file
 	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
 	//Selects a hyperslab region to add to the current selected region.
 	herr_t ret =
-	    H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array, stride.array, count.array,
+	    H5Sselect_hyperslab(dataspace_id,
+				H5S_SELECT_SET,
+				start_flipped.array,
+				stride.array,
+				count.array,
 				block_flipped.array);
 	if (ret < 0) {
 		throw OmIoException("Could not select HDF5 hyperslab.");
@@ -739,7 +743,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_with_lock(hid_t file
 					      getNullDataWrapper(dstype));
 
 	ret = H5Dread(dataset_id, imageData->getHdf5MemoryType(), mem_dataspace_id, dataspace_id,
-		      H5P_DEFAULT, imageData->getVTKPtr()->GetScalarPointer());
+		      H5P_DEFAULT, imageData->getVTKptr()->GetScalarPointer());
 	if (ret < 0) {
 		throw OmIoException("Could not read HDF5 dataset " + string(name));
 	}
@@ -814,19 +818,19 @@ void OmHdf5LowLevel::om_hdf5_dataset_image_write_with_lock(hid_t fileId,
 	//setup image data
 	Vector3 < int >extent_dims = extent.getUnitDimensions();
 	int data_dims[3];
-	data->getVTKPtr()->GetDimensions(data_dims);
+	data->getVTKptr()->GetDimensions(data_dims);
 	assert(data_dims[0] == extent_dims.x);
 	assert(data_dims[1] == extent_dims.y);
 	assert(data_dims[2] == extent_dims.z);
 
 	//assert(1 == imageData->GetNumberOfScalarComponents());
-	if (1 != data->getVTKPtr()->GetNumberOfScalarComponents())
+	if (1 != data->getVTKptr()->GetNumberOfScalarComponents())
 		goto doclose;
 
 	//Reads raw data from a dataset into a buffer.
 	ret = H5Dwrite(dataset_id, data->getHdf5MemoryType(),
 		       mem_dataspace_id, dataspace_id, H5P_DEFAULT,
-		       data->getVTKPtr()->GetScalarPointer());
+		       data->getVTKptr()->GetScalarPointer());
 	if (ret < 0) {
 		throw OmIoException("Could not read HDF5 dataset " + string(name));
 	}

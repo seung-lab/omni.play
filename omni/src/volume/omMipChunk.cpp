@@ -219,12 +219,10 @@ void OmMipChunk::WriteVolumeData()
 
 	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-	if (mData->getVTKPtr()) {
-		OmProjectData::GetDataWriter()->
-			dataset_image_write_trim(mip_level_vol_path,
-						 GetExtent(),
-						 mData);
-	}
+	OmProjectData::GetDataWriter()->
+		dataset_image_write_trim(mip_level_vol_path,
+					 GetExtent(),
+					 mData);
 
 	setVolDataClean();
 }
@@ -293,12 +291,6 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 /*
  *	Returns pointer to image data
  */
-
-vtkImageData* OmMipChunk::GetImageData()
-{
-	return mData->getVTKPtr();
-}
-
 OmDataWrapperPtr OmMipChunk::GetImageDataWrapper()
 {
 	return mData;
@@ -542,15 +534,16 @@ void OmMipChunk::dealWithCrazyNewStuff()
 	}
 }
 
-void OmMipChunk::GetBounds(float & maxout, float & minout)
+void OmMipChunk::GetBounds(float & , float &)
 {
 	return; //FIXME!
-
+	/*
 	Open();
-	float * data = static_cast < float * >(mData->getVTKPtr()->GetScalarPointer());
+	float * data = static_cast < float * >(mData->getVTKptr()->GetScalarPointer());
 	OmImage<float, 3> chunk(OmExtents[128][128][128], data);
 	maxout = chunk.getMax();
 	minout = chunk.getMin();
+	*/
 }
 
 void* OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
@@ -590,4 +583,19 @@ void OmMipChunk::writeHDF5()
 OmImage<uint32_t, 3> OmMipChunk::getOmImage32Chunk()
 {
 	return mChunkData->getOmImage32Chunk();
+}
+
+bool OmMipChunk::compare(OmMipChunk* other)
+{
+	if(GetCoordinate().Level != other->GetCoordinate().Level){
+		printf("Chunks differ: Different mip levels.\n");
+		return false;
+	}
+
+ 	if(GetDimensions() != other->GetDimensions()){
+		printf("Chunks differ: Different dimensions.\n");
+		return false;
+	}
+
+	return mChunkData->compare(other->mChunkData);
 }

@@ -19,7 +19,6 @@
 
 #include <QMutex>
 
-class vtkImageData;
 class OmVolumeCuller;
 class OmSegmentCache;
 class OmChunkData;
@@ -67,7 +66,6 @@ public:
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
-	vtkImageData* GetImageData();
 	OmDataWrapperPtr GetImageDataWrapper();
 	void GetBounds(float & maxout, float & minout);
 	void SetImageData(OmDataWrapperPtr data);
@@ -113,6 +111,8 @@ public:
 	const Vector3<int> GetDimensions();
 
 	boost::unordered_map< OmSegID, DataBbox> & GetDirectDataBounds() { return mBounds; }
+
+	bool compare(OmMipChunk* other);
 
 protected:
 	bool mIsOpen;

@@ -254,3 +254,30 @@ uint32_t OmChunkData::GetVoxelValue(const DataCoord & voxel)
 	return boost::apply_visitor(GetVoxelValueVisitor(voxel),
 				    getRawData());
 }
+
+
+class CompareVisitor : public boost::static_visitor<bool>{
+public:
+	CompareVisitor(OmRawDataPtrs& other)
+		: other_(other) {}
+
+	template <typename T>
+	bool operator()(T* d) const {
+		T* otherD = boost::get<T*>(other_);
+		for(int i =0; i < 128*128*128; ++i){
+			if(otherD[i] != d[i]){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+private:
+	OmRawDataPtrs& other_;
+};
+bool OmChunkData::compare(boost::shared_ptr<OmChunkData> other)
+{
+	return boost::apply_visitor(CompareVisitor(other->getRawData()),
+				    getRawData());
+}

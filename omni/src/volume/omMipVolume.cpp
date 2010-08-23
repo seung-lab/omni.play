@@ -946,97 +946,9 @@ bool OmMipVolume::CompareVolumes(OmMipVolume *pMipVolume1, OmMipVolume *pMipVolu
  *	Returns true if two given chunks contain the exact same image data
  *	Returns true even if chunk position differs
  */
-bool OmMipVolume::CompareChunks(OmMipChunk *pMipChunk1, OmMipChunk *pMipChunk2, bool verbose)
+bool OmMipVolume::CompareChunks(OmMipChunk* chunk1, OmMipChunk* chunk2, bool)
 {
-	//check if mip level is the same
-	if (pMipChunk1->GetCoordinate().Level != pMipChunk2->GetCoordinate().Level){
-		printf("Chunks differ: Different mip levels.\n");
-		return false;
-	}
-
-	//check if dimensions are the same
-	if (pMipChunk1->GetDimensions() != pMipChunk2->GetDimensions()){
-		printf("Chunks differ: Different dimensions.\n");
-		return false;
-	}
-
-	//uses mpImageData so ensure chunks are open
-	pMipChunk1->Open();
-	pMipChunk2->Open();
-
-	//get extents
-	int extent1[6];
-	int extent2[6];
-	pMipChunk1->GetImageData()->GetExtent(extent1);
-	pMipChunk2->GetImageData()->GetExtent(extent2);
-
-	//check if scalar size is the same
-	int scalarSize1 = pMipChunk1->GetImageData()->GetScalarSize();
-	int scalarSize2 = pMipChunk2->GetImageData()->GetScalarSize();
-
-	//Set flag if chunks differ
-	bool diff = false;
-
-	if (scalarSize1 != scalarSize2){
-		printf("Chunks differ: Different scalar types.\n");
-		return false;
-	} else if (scalarSize1 == 4){
-		quint32 *p_scalar_data1 = static_cast < quint32* >(pMipChunk1->GetImageData()->GetScalarPointer());
-		quint32 *p_scalar_data2 = static_cast < quint32* >(pMipChunk2->GetImageData()->GetScalarPointer());
-
-		//check if each voxel is the same as the corresponding voxel in the other chunk
-		//if verbose, loop through and print positions of all differing voxels
-		for (int z1 = extent1[0], z2 = extent2[0]; (z1 <= extent1[1]) && (z2 <= extent2[1]); z1++, z2++){
-			for (int y1 = extent1[2], y2 = extent2[2]; (y1 <= extent1[3]) && (y2 <= extent2[3]); y1++, y2++){
-				for (int x1 = extent1[4], x2 = extent2[4]; (x1 <= extent1[5]) && (x2 <= extent2[5]); x1++, x2++){
-
-					if (*p_scalar_data1 != *p_scalar_data2){
-						printf("Voxel (%i,%i,%i) in Chunk 1 differs from Voxel (%i,%i,%i) in Chunk 2.\n",x1,y1,z1,x2,y2,z2);
-						if (verbose){
-							//set diff flag, don't return
-							diff = true;
-						} else {
-							return false;
-						}
-					}
-
-					//advance to next scalars
-					++p_scalar_data1;
-					++p_scalar_data2;
-
-				}
-			}
-		}
-	} else if (scalarSize1 == 1){
-		quint8 *p_scalar_data1 = static_cast < quint8* >(pMipChunk1->GetImageData()->GetScalarPointer());
-		quint8 *p_scalar_data2 = static_cast < quint8* >(pMipChunk2->GetImageData()->GetScalarPointer());
-
-		//check if each voxel is the same as the corresponding voxel in the other chunk
-		//if verbose, loop through and print positions of all differing voxels
-		for (int z1 = extent1[0], z2 = extent2[0]; (z1 <= extent1[1]) && (z2 <= extent2[1]); z1++, z2++){
-			for (int y1 = extent1[2], y2 = extent2[2]; (y1 <= extent1[3]) && (y2 <= extent2[3]); y1++, y2++){
-				for (int x1 = extent1[4], x2 = extent2[4]; (x1 <= extent1[5]) && (x2 <= extent2[5]); x1++, x2++){
-
-					if (*p_scalar_data1 != *p_scalar_data2){
-						printf("Voxel (%i,%i,%i) in Chunk 1 differs from Voxel (%i,%i,%i) in Chunk 2.\n",x1,y1,z1,x2,y2,z2);
-						if (verbose){
-							//set diff flag, don't return
-							diff = true;
-						} else {
-							return false;
-						}
-					}
-
-					//advance to next scalars
-					++p_scalar_data1;
-					++p_scalar_data2;
-
-				}
-			}
-		}
-	}
-
-	return !diff;
+	return chunk1->compare(chunk2);
 }
 
 /////////////////////////////////
