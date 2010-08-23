@@ -114,8 +114,9 @@ public:
 	void BuildThreadChunk(const OmMipChunkCoord &, OmDataWrapperPtr data, bool initCall);
 
 	//comparison methods
-	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
-	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
+	static bool CompareVolumes(OmMipVolume *, OmMipVolume *);
+	static bool CompareChunks(const OmMipChunkCoord&,
+				  OmMipVolume*, OmMipVolume*);
 
 	void copyDataIn();
         void copyAllMipDataIntoMemMap();

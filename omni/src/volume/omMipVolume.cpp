@@ -875,79 +875,64 @@ void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, OmDataWrap
  *	Returns true if two given volumes are exactly the same.
  *	Prints all positions where volumes differ if verbose flag is set.
  */
-bool OmMipVolume::CompareVolumes(OmMipVolume *pMipVolume1, OmMipVolume *pMipVolume2, bool verbose)
+bool OmMipVolume::CompareVolumes(OmMipVolume *vol1, OmMipVolume *vol2)
 {
 	//check if dimensions are the same
-	if (pMipVolume1->GetDataExtent().getUnitDimensions() !=
-	    pMipVolume2->GetDataExtent().getUnitDimensions()){
+	if (vol1->GetDataExtent().getUnitDimensions() !=
+	    vol2->GetDataExtent().getUnitDimensions()){
 		printf("Volumes differ: Different dimensions.\n");
 		return false;
 	}
 
-	bool diff = false;
 
 	//root mip level should be the same if data dimensions are the same
-	if( pMipVolume1->GetRootMipLevel() != pMipVolume2->GetRootMipLevel() ){
+	if( vol1->GetRootMipLevel() != vol2->GetRootMipLevel() ){
 		printf("Volumes differ: Different number of MIP levels.\n");
 		return false;
 	}
 
-	//loop through levels
-	for (int level = 0; level <= pMipVolume1->GetRootMipLevel(); ++level) {
+	bool same = true;
 
-		if (verbose){
-			printf("Comparing mip level %i\n",level);
-		}
+	for (int level = 0; level <= vol1->GetRootMipLevel(); ++level) {
+		printf("Comparing mip level %i\n",level);
 
-		//dim of miplevel in mipchunks
-		Vector3i mip_coord_dims =
-			pMipVolume1->MipLevelDimensionsInMipChunks(level);
+		const Vector3i mip_coord_dims =
+			vol1->MipLevelDimensionsInMipChunks(level);
 
 		//for all coords
 		for (int z = 0; z < mip_coord_dims.z; ++z){
 			for (int y = 0; y < mip_coord_dims.y; ++y){
 				for (int x = 0; x < mip_coord_dims.x; ++x){
 
-					if (verbose){
-						printf("Comparing chunks at (%i,%i,%i,%i)\n",level,x,y,z);
+					OmMipChunkCoord coord(level,x,y,z);
+					if(CompareChunks(coord, vol1, vol2)){
+						continue;
 					}
 
-					//construct mip chunks
-					OmMipChunk *pMipChunk1 = new OmMipChunk(OmMipChunkCoord(level, x, y, z),pMipVolume1);
-					OmMipChunk *pMipChunk2 = new OmMipChunk(OmMipChunkCoord(level, x, y, z),pMipVolume2);
-
-					if(!CompareChunks(pMipChunk1,pMipChunk2,verbose)){
-						printf("Volumes differ: Chunks at (%i,%i,%i,%i) are different.\n",level,x,y,z);
-
-						//delete chunks
-						delete pMipChunk1;
-						delete pMipChunk2;
-
-						if (verbose){
-							//set diff flag, don't return
-							diff = true;
-						} else {
-							return false;
-						}
-					} else {
-						//delete chunks
-						delete pMipChunk1;
-						delete pMipChunk2;
-					}
+					std::cout << "\tchunks differ at "
+						  << coord << "; aborting...\n";
+					return false;
 				}
 			}
 		}
 	}
 
-	return !diff;
+	return same;
 }
 
 /*
  *	Returns true if two given chunks contain the exact same image data
  *	Returns true even if chunk position differs
  */
-bool OmMipVolume::CompareChunks(OmMipChunk* chunk1, OmMipChunk* chunk2, bool)
+bool OmMipVolume::CompareChunks(const OmMipChunkCoord& coord,
+				OmMipVolume* vol1, OmMipVolume* vol2)
 {
+	OmMipChunkPtr chunk1;
+	vol1->GetChunk(chunk1, coord);
+
+	OmMipChunkPtr chunk2;
+	vol2->GetChunk(chunk2, coord);
+
 	return chunk1->compare(chunk2);
 }
 

@@ -5,8 +5,6 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omMipChunk.h"
 
-typedef boost::shared_ptr<OmMipChunk> OmMipChunkPtr;
-
 class OmMipVolumeCache;
 
 class OmMipVolumeCache : public OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr> {

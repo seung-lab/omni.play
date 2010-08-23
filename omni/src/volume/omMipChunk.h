@@ -112,7 +112,7 @@ public:
 
 	boost::unordered_map< OmSegID, DataBbox> & GetDirectDataBounds() { return mBounds; }
 
-	bool compare(OmMipChunk* other);
+	bool compare(OmMipChunkPtr other);
 
 protected:
 	bool mIsOpen;

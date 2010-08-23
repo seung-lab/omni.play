@@ -585,7 +585,7 @@ OmImage<uint32_t, 3> OmMipChunk::getOmImage32Chunk()
 	return mChunkData->getOmImage32Chunk();
 }
 
-bool OmMipChunk::compare(OmMipChunk* other)
+bool OmMipChunk::compare(OmMipChunkPtr other)
 {
 	if(GetCoordinate().Level != other->GetCoordinate().Level){
 		printf("Chunks differ: Different mip levels.\n");

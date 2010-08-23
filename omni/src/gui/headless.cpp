@@ -129,18 +129,22 @@ void Headless::processLine( QString line, QString fName )
 			verbose = (bool) StringHelpers::getUInt( args[2] );
 		}
 
-		if( !OmProject::IsChannelValid(id1) && !OmProject::IsChannelValid(id2) ) {
-			if( id1 == id2 ){
-				printf("Channel %i is not a valid channel.\n",id1);
-			} else {
-				printf("Channels %i and %i are not valid channels.\n",id1,id2);
-			}
-		} else if( !OmProject::IsChannelValid(id1) ) {
+		if( !OmProject::IsChannelValid(id1) ) {
 			printf("Channel %i is not a valid channel.\n",id1);
-		} else if( !OmProject::IsChannelValid(id2) ) {
+			return;
+		}
+		if( !OmProject::IsChannelValid(id2) ) {
 			printf("Channel %i is not a valid channel.\n",id2);
-		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
+			return;
+		}
+		const bool same =
+			OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),
+						    &OmProject::GetChannel(id2));
+
+		if(same){
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
+		} else {
+			printf("Channel %i and Channel %i are different!\n",id1,id2);
 		}
 	} else if( line.startsWith("compareSegs:") ) {
 		// format: compareSegs:id1,id2[:verbose]
@@ -158,8 +162,8 @@ void Headless::processLine( QString line, QString fName )
 			return;
 		}
 
-		int id1 = StringHelpers::getUInt( segmentationIDs[0] );
-		int id2 = StringHelpers::getUInt( segmentationIDs[1] );
+		const int id1 = StringHelpers::getUInt( segmentationIDs[0] );
+		const int id2 = StringHelpers::getUInt( segmentationIDs[1] );
 
 		bool verbose = 0;
 
@@ -167,19 +171,24 @@ void Headless::processLine( QString line, QString fName )
 			verbose = (bool) StringHelpers::getUInt( args[2] );
 		}
 
-		if( !OmProject::IsSegmentationValid(id1) && !OmProject::IsSegmentationValid(id2) ) {
-			if( id1 == id2 ){
-				printf("Segmentation %i is not a valid segmentation.\n",id1);
-			} else {
-				printf("Segmentations %i and %i are not valid segmentation.\n",id1,id2);
-			}
-		} else if( !OmProject::IsSegmentationValid(id1) ) {
+		if( !OmProject::IsSegmentationValid(id1) ) {
 			printf("Segmentation %i is not a valid segmentation.\n",id1);
-		} else if( !OmProject::IsSegmentationValid(id2) ) {
-			printf("Segmentation %i is not a valid segmentation.\n",id2);
-		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
-			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
+			return;
 		}
+
+		if( !OmProject::IsSegmentationValid(id2) ) {
+			printf("Segmentation %i is not a valid segmentation.\n",id2);
+			return;
+		}
+		const bool same =
+			OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),
+						    &OmProject::GetSegmentation(id2));
+		if(same){
+			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
+		} else {
+			printf("Segmentation %i and Segmentation %i are different!\n",id1,id2);
+		}
+
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -198,9 +207,9 @@ void Headless::processLine( QString line, QString fName )
 			return;
 		}
 
-		int x = StringHelpers::getUInt( coords[0] );
-		int y = StringHelpers::getUInt( coords[1] );
-		int z = StringHelpers::getUInt( coords[2] );
+		const int x = StringHelpers::getUInt( coords[0] );
+		const int y = StringHelpers::getUInt( coords[1] );
+		const int z = StringHelpers::getUInt( coords[2] );
 
 		OmMipMeshCoord mipChunkCoord = OmMipMeshCoord(OmMipChunkCoord(mipLevel, x, y, z), SegmentationID);
 		OmDataWriter * hdf5File;

@@ -5,6 +5,9 @@
 #include "boost/variant.hpp"
 #include "enum/enum.hpp"
 
+class OmMipChunk;
+typedef boost::shared_ptr<OmMipChunk> OmMipChunkPtr;
+
 typedef boost::unordered_map<OmSegID, uint32_t>
 OmSegSizeMap;
 
