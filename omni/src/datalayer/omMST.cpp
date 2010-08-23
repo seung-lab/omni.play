@@ -73,7 +73,7 @@ void OmMST::read(OmSegmentation & seg)
   // this is just a temporary object--should be refactored... (purcaro)
   quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * mDendValuesSize );
   memset(edgeJoined, 0, sizeof(quint8) * mDendValuesSize );
-  mEdgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined);
+  mEdgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined, MALLOC);
 
   path = getEdgeForceJoinPath(seg);
   mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
@@ -162,18 +162,21 @@ bool OmMST::importDendValues(OmDataReader * hdf5reader)
 
 bool OmMST::setupUserEdges(const int dendValuesSize)
 {
-  quint8 * userDisabledEdge = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
+  quint8 * userDisabledEdge = (quint8 *)malloc(sizeof(quint8) * dendValuesSize);
   memset(userDisabledEdge, 0, sizeof(quint8) * dendValuesSize );
-  OmDataWrapperPtr edgeDisabledByUser = OmDataWrapper<unsigned char>::produce(userDisabledEdge);
+  OmDataWrapperPtr edgeDisabledByUser =
+	  OmDataWrapper<unsigned char>::produce(userDisabledEdge, MALLOC);
 
   // this is just a temporary object--should be refactored... (purcaro)
   quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
   memset(edgeJoined, 0, sizeof(quint8) * dendValuesSize );
-  OmDataWrapperPtr edgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined);
+  OmDataWrapperPtr edgeWasJoined =
+	  OmDataWrapper<unsigned char>::produce(edgeJoined, MALLOC);
 
   quint8 * edgeForce = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
   memset(edgeForce, 0, sizeof(quint8) * dendValuesSize );
-  OmDataWrapperPtr edgeForceJoin = OmDataWrapper<unsigned char>::produce(edgeForce);
+  OmDataWrapperPtr edgeForceJoin =
+	  OmDataWrapper<unsigned char>::produce(edgeForce, MALLOC);
 
   mEdgeDisabledByUser = edgeDisabledByUser;
   mEdgeForceJoin = edgeForceJoin;

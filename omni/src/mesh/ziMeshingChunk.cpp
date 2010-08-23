@@ -129,28 +129,32 @@ void ziMeshingChunk::run()
 
         oMesh->mVertexIndexCount = mit->second->totalIndices_;
         oMesh->mpVertexIndexDataWrap =
-		OmDataWrapper<GLuint>::produce(new GLuint[oMesh->mVertexIndexCount]);
+		OmDataWrapper<GLuint>::produce(new GLuint[oMesh->mVertexIndexCount],
+					       NEW_ARRAY);
         std::copy(mit->second->indices_.begin(),
                   mit->second->indices_.end(),
                   oMesh->mpVertexIndexDataWrap->getPtr<GLuint>());
 
         oMesh->mVertexCount = mit->second->totalVertices_;
         oMesh->mpVertexDataWrap =
-		OmDataWrapper<float>::produce(new GLfloat[oMesh->mVertexCount * 6]);
+		OmDataWrapper<float>::produce(new GLfloat[oMesh->mVertexCount * 6],
+					      NEW_ARRAY);
         std::copy(mit->second->vertices_.begin(),
                   mit->second->vertices_.end(),
                   oMesh->mpVertexDataWrap->getPtr<float>());
 
         oMesh->mStripCount = mit->second->totalStrips_;
         oMesh->mpStripOffsetSizeDataWrap =
-		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mStripCount]);
+		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mStripCount],
+						     NEW_ARRAY);
         std::copy(mit->second->strips_.begin(),
                   mit->second->strips_.end(),
                   oMesh->mpStripOffsetSizeDataWrap->getPtr<unsigned int>());
 
         oMesh->mTrianCount = mit->second->totalTrians_;
         oMesh->mpTrianOffsetSizeDataWrap =
-		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mTrianCount]);
+		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mTrianCount],
+						     NEW_ARRAY);
         std::copy(mit->second->trians_.begin(),
                   mit->second->trians_.end(),
                   oMesh->mpTrianOffsetSizeDataWrap->getPtr<unsigned int>());

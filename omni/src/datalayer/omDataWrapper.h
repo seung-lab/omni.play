@@ -7,7 +7,6 @@
 #include <vtkImageData.h>
 
 #define OmDataWrapperRaw(c) (OmDataWrapper<int8_t>::produceNoFree(c))
-#define OmDataWrapperUint(c) (OmDataWrapper<uint32_t>::produce(c))
 #define OmDataWrapperInvalid() (OmDataWrapper<int8_t>::produceNull())
 
 template <class T> struct OmVolDataTypeImpl;
@@ -17,8 +16,10 @@ template <> struct OmVolDataTypeImpl<float>   { static OmVolDataType getType() {
 template <> struct OmVolDataTypeImpl<int8_t>  { static OmVolDataType getType() { return OmVolDataType::INT8;  }};
 template <> struct OmVolDataTypeImpl<uint8_t> { static OmVolDataType getType() { return OmVolDataType::UINT8; }};
 
-enum DestructType {
+enum OmDataAllocType {
 	MALLOC,
+	NEW,
+	NEW_ARRAY,
 	VTK,
 	NONE,
 	INVALID
@@ -30,7 +31,10 @@ public:
 	virtual ~OmDataWrapperBase() {}
 	typedef boost::shared_ptr<OmDataWrapperBase> ptr_type;
 
-	template <class C> C* getPtr() { return (C*) getVoidPtr(); }
+	template <class C> C* getPtr() {
+		checkIsNotVTKPtr();
+		return (C*) getVoidPtr();
+	}
 	//template <class C> C* getPtr() {assert(0 && "borked\n"); }
 
 	virtual vtkImageData * getVTKPtr() = 0;
@@ -38,7 +42,7 @@ public:
 	virtual ptr_type SubsampleData() = 0;
 
 	virtual int getSizeof() = 0;
-	virtual ptr_type newWrapper(void *, const DestructType) = 0;
+	virtual ptr_type newWrapper(void *, const OmDataAllocType) = 0;
 
 	virtual std::string getTypeAsString() = 0;
 	virtual OmVolDataType getVolDataType() = 0;
@@ -46,6 +50,8 @@ public:
 	virtual int getHdf5MemoryType() = 0;
 
 	virtual void checkIfValid() = 0;
+	virtual void checkIsNotVTKPtr() = 0;
+	virtual void checkIsVTKPtr() = 0;
 
 	template <class T> friend class OmDataWrapper;
 };
@@ -60,8 +66,8 @@ public:
 	static OmDataWrapperPtr produceNull() {
 		return ptr_type(new OmDataWrapper());
 	};
-	static OmDataWrapperPtr produce(void *ptr) {
-		return ptr_type(new OmDataWrapper(ptr, MALLOC));
+	static OmDataWrapperPtr produce(void *ptr, const OmDataAllocType t){
+		return ptr_type(new OmDataWrapper(ptr, t));
 	};
 	static OmDataWrapperPtr produceNoFree(void *ptr) {
 		return ptr_type(new OmDataWrapper(ptr, NONE));
@@ -70,16 +76,22 @@ public:
 		return ptr_type(new OmDataWrapper(ptr, VTK));
 	};
 
-	OmDataWrapperPtr newWrapper(void *ptr, const DestructType dt){
+	OmDataWrapperPtr newWrapper(void *ptr, const OmDataAllocType dt){
 		OmDataWrapperPtr ret = ptr_type(new OmDataWrapper(ptr, dt));
 		ret->checkIfValid();
 		return ret;
 	}
 
 	virtual ~OmDataWrapper(){
-		switch(mDestructType){
+		switch(mOmDataAllocType){
 		case MALLOC:
 			free(mData);
+			break;
+		case NEW:
+			delete (T*)mData;
+			break;
+		case NEW_ARRAY:
+			delete [] (T*)mData;
 			break;
 		case VTK:
 			getVTKPtr()->Delete();
@@ -97,10 +109,12 @@ public:
 	template <class C>
 	C* getPtr() {
 		checkIfValid();
+		checkIsNotVTKPtr();
 		return static_cast<C*>(mData);
 	}
 	vtkImageData * getVTKPtr(){
 		checkIfValid();
+		checkIsVTKPtr();
 		return (vtkImageData*) mData;
 	}
 	void * getVoidPtr(){
@@ -113,20 +127,19 @@ public:
         	vtkImageData * srcData = getVTKPtr();
 
         	//get image data dimensions
-        	Vector3 < int >src_dims;
+        	Vector3i src_dims;
         	srcData->GetDimensions(src_dims.array);
-        	int scalar_type = srcData->GetScalarType();
-        	int num_scalar_components = srcData->GetNumberOfScalarComponents();
+        	const int scalar_type = srcData->GetScalarType();
+        	const int num_scalar_components = srcData->GetNumberOfScalarComponents();
 
         	//assert proper dims
-        	//debug("FIXME", << "OmMipVolume::SubsampleImageData: " << src_dims << endl;
         	assert((src_dims.x == src_dims.y) && (src_dims.y == src_dims.z));
         	assert(src_dims.x % 2 == 0);
 
         	//alloc dest image data
-        	Vector3 < int >dest_dims = src_dims / 2;
+        	const Vector3i dest_dims = src_dims / 2;
 
-		std::cout << "Dims: " << dest_dims << "\n";
+		std::cout << "Subsample dims: " << dest_dims << "\n";
 
         	vtkImageData *p_dest_data = vtkImageData::New();
         	p_dest_data->SetDimensions(dest_dims.array);
@@ -136,10 +149,10 @@ public:
         	p_dest_data->Update();
 
         	//get pointer into subsampled data
-        	T *dest_data_ptr = static_cast < T * >(p_dest_data->GetScalarPointer());
-       		T *src_data_ptr = static_cast < T * >(srcData->GetScalarPointer());
+        	T *dest_data_ptr = static_cast<T*>(p_dest_data->GetScalarPointer());
+       		T *src_data_ptr = static_cast<T*>(srcData->GetScalarPointer());
 
-		int sliceSize = src_dims.x * src_dims.y;
+		const int sliceSize = src_dims.x * src_dims.y;
 
 		for (int si=0,di=0,dz=0; dz < dest_dims.z; ++dz,si+=sliceSize)
          		for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x)
@@ -147,7 +160,6 @@ public:
              				dest_data_ptr[di] = src_data_ptr[si];
 				}
 
-	        //return subsampled image data
         	return OmDataWrapper<T>::producevtk(p_dest_data);
 	}
 
@@ -165,20 +177,30 @@ public:
 	}
 
 private:
-	void *const mData;
-	const DestructType mDestructType;
+	void * mData;
+	const OmDataAllocType mOmDataAllocType;
 
 	explicit OmDataWrapper()
 		: mData(NULL)
-		, mDestructType(INVALID) {}
+		, mOmDataAllocType(INVALID) {}
 
-	OmDataWrapper( void * ptr, const DestructType d)
+	OmDataWrapper( void * ptr, const OmDataAllocType d)
 		: mData(ptr)
-		, mDestructType(d) {}
+		, mOmDataAllocType(d) {}
 
 	void checkIfValid(){
-		if(INVALID == mDestructType){
-			throw OmIoException("ptr not valid");
+		if(INVALID == mOmDataAllocType){
+			throw OmIoException("OmDataWrapper: ptr not valid");
+		}
+	}
+	void checkIsVTKPtr(){
+		if(VTK != mOmDataAllocType){
+			throw OmIoException("OmDataWrapper: not VTK ptr");
+		}
+	}
+	void checkIsNotVTKPtr(){
+		if(VTK == mOmDataAllocType){
+			throw OmIoException("OmDataWrapper: were not expecting a VTK ptr");
 		}
 	}
 };

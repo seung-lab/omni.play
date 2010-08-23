@@ -77,7 +77,7 @@ class OmHdf5LowLevel
 
 	static bool checkIfLinkExists(hid_t fileId, const char *name);
 
-	static OmDataWrapperPtr getDataWrapper(void * dataset, hid_t dstype);
+	static OmDataWrapperPtr getDataWrapper(void*, hid_t, const OmDataAllocType);
 	static int getSizeofType(hid_t dstype);
 
 	static OmDataWrapperPtr getNullDataWrapper(hid_t dstype );

@@ -262,7 +262,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_raw_read_with_lock(hid_t fileId
 		throw OmIoException(errMsg);
 	}
 
-	OmDataWrapperPtr data = getDataWrapper(dataset_data, dstype);
+	OmDataWrapperPtr data = getDataWrapper(dataset_data, dstype, MALLOC);
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace.
@@ -306,27 +306,29 @@ void OmHdf5LowLevel::printTypeInfo( hid_t dstype )
 
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void * dataset, hid_t dstype )
+OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void * dataset,
+						hid_t dstype,
+						const OmDataAllocType allocType)
 {
         switch( H5Tget_class( dstype ) ){
         case H5T_INTEGER:
                 if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return OmDataWrapper<uint8_t>::produce(dataset);
+                        return OmDataWrapper<uint8_t>::produce(dataset, allocType);
                 } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
-                        return OmDataWrapper<int8_t>::produce(dataset);
+                        return OmDataWrapper<int8_t>::produce(dataset, allocType);
                 }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return OmDataWrapper<uint32_t>::produce(dataset);
+                        return OmDataWrapper<uint32_t>::produce(dataset, allocType);
                 }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return OmDataWrapper<int32_t>::produce(dataset);
+                        return OmDataWrapper<int32_t>::produce(dataset, allocType);
                 }else {
-			assert(0);
+			throw OmIoException("unknown hdf5 integer type");
                 }
                 break;
         case H5T_FLOAT:
-                return OmDataWrapper<float>::produce(dataset);
+                return OmDataWrapper<float>::produce(dataset, allocType);
                 break;
         default:
-		assert(0 && "not a known type");
+		throw OmIoException("unknown hdf5 type");
                 break;
         }
 }
@@ -1012,7 +1014,7 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 
 	void *imageData;
 	imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*(getSizeofType(dstype)));
-	OmDataWrapperPtr data = getDataWrapper( imageData, dstype );
+	OmDataWrapperPtr data = getDataWrapper( imageData, dstype, MALLOC );
 
 	H5Tclose( dstype );
 
