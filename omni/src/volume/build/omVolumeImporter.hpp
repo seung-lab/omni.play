@@ -6,6 +6,7 @@
 #include "volume/omVolumeTypes.hpp"
 
 class OmDataPath;
+class OmDataReader;
 
 template <typename VOL>
 class OmVolumeImporter {
@@ -13,8 +14,6 @@ public:
 	OmVolumeImporter(VOL*);
 
 	bool import(OmDataPath & dataset);
-
-	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
 
 private:
 	VOL *const vol_;
@@ -33,6 +32,9 @@ private:
 	void allocateData(const OmVolDataType);
 	void allocateHDF5(const std::map<int, Vector3i> &);
 	void allocateMemMap(const std::map<int, Vector3i> &);
+
+	OmDataPath getHDFsrcPath(OmDataReader*, const OmDataPath&);
+	QString getHDFfileNameAndPath();
 };
 
 #endif

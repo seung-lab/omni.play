@@ -28,10 +28,6 @@ public:
 							  const Vector3i&,
 							  const OmVolDataType) = 0;
 
-	virtual void dataset_image_write_trim(const OmDataPath&,
-					      const DataBbox&,
-					      OmDataWrapperPtr) = 0;
-
 	virtual void dataset_write_raw_chunk_data(const OmDataPath &,
 						  DataBbox,
 						  OmDataWrapperPtr) = 0;

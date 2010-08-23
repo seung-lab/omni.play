@@ -47,14 +47,9 @@ void OmHdf5Writer::dataset_image_create_tree_overwrite( const OmDataPath & path,
 	hdf5->dataset_image_create_tree_overwrite(path, dataDims, chunkDims, type);
 }
 
-void OmHdf5Writer::dataset_image_write_trim( const OmDataPath & path,
-					     const DataBbox& dataExtent,
-					     OmDataWrapperPtr data)
-{
-	hdf5->dataset_image_write_trim( path, dataExtent, data);
-}
-
-void OmHdf5Writer::dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data)
+void OmHdf5Writer::dataset_raw_create_tree_overwrite(const OmDataPath& path,
+						     int size,
+						     const OmDataWrapperPtr data)
 {
 	hdf5->dataset_raw_create_tree_overwrite( path, size, data);
 }

@@ -36,12 +36,6 @@ public:
 		       __FUNCTION__);
 	}
 
-	void dataset_image_write_trim(const OmDataPath &,
-				      const DataBbox&, OmDataWrapperPtr){
-		printf("%s: write operation should not have happened...\n",
-		       __FUNCTION__);
-	}
-
 	void dataset_write_raw_chunk_data(const OmDataPath &, DataBbox,
 					  OmDataWrapperPtr){
 		printf("%s: write operation should not have happened...\n",

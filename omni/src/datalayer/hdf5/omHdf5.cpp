@@ -81,13 +81,6 @@ OmDataWrapperPtr OmHdf5::dataset_image_read_trim( const OmDataPath & path, DataB
 	return hdfLowLevelWrap->dataset_image_read_trim_with_lock( path, dataExtent);
 }
 
-void OmHdf5::dataset_image_write_trim( const OmDataPath & path,
-				       const DataBbox& dataExtent, OmDataWrapperPtr data)
-{
-	QMutexLocker locker(&fileLock);
-	hdfLowLevelWrap->dataset_image_write_trim_with_lock( path, dataExtent, data);
-}
-
 OmDataWrapperPtr OmHdf5::dataset_raw_read( const OmDataPath & path, int* size)
 {
 	QMutexLocker locker(&fileLock);

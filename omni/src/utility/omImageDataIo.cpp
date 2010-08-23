@@ -30,31 +30,6 @@
 #include <vtkImageCast.h>
 #include <vtkStringArray.h>
 
-OmDataWrapperPtr
-OmImageDataIo::om_imagedata_read_hdf5( QFileInfoList sourceFilenamesAndPaths,
-				       const DataBbox dataExtentBbox,
-				       const OmDataPath dataset)
-{
-	//FIXME: don't assert, or check before calling me!
-	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
-
-	OmDataLayer dl;
-	OmDataReader * hdf5reader =
-		dl.getReader( sourceFilenamesAndPaths[0].filePath(), true );
-	hdf5reader->open();
-
-	OmDataWrapperPtr data;
-        if(hdf5reader->dataset_exists(dataset)){
-		data = hdf5reader->dataset_image_read_trim( dataset, dataExtentBbox);
-	} else {
-		data = hdf5reader->dataset_image_read_trim( OmDataPaths::getDefaultDatasetName(), dataExtentBbox);
-	}
-
-	hdf5reader->close();
-
-	return data;
-}
-
 Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");

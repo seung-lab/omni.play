@@ -3,6 +3,7 @@
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omDataLayer.h"
 #include "project/omProject.h"
 #include "system/cache/omMipVolumeCache.h"
 #include "system/omProjectData.h"
@@ -64,10 +65,45 @@ bool OmVolumeImporter<VOL>::areImportFilesImages()
 }
 
 template <typename VOL>
-bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
+OmDataPath OmVolumeImporter<VOL>::getHDFsrcPath(OmDataReader * hdf5reader,
+						const OmDataPath& inpath)
 {
+        if(hdf5reader->dataset_exists(inpath)){
+		return inpath;
+	}
+
+	if(hdf5reader->dataset_exists(OmDataPaths::getDefaultDatasetName())){
+		return OmDataPaths::getDefaultDatasetName();
+	}
+
+	throw OmIoException("could not find HDF5 src path");
+}
+
+template <typename VOL>
+QString OmVolumeImporter<VOL>::getHDFfileNameAndPath()
+{
+	QFileInfoList& files = vol_->mSourceFilenamesAndPaths;
+
+	//FIXME: don't assert, or check before calling me!
+	if( 1 != files.size()){
+		throw OmIoException("More than one hdf5 file specified");
+	}
+
+	return files.at(0).filePath();
+}
+
+template <typename VOL>
+bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & inpath)
+{
+	OmDataLayer dl;
+	OmDataReader * hdf5reader = dl.getReader(getHDFfileNameAndPath(), true);
+	hdf5reader->open();
+
 	const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
-	OmDataPath leaf_volume_path(vol_->MipLevelInternalDataPath(0));
+	const OmDataPath dst_path(vol_->MipLevelInternalDataPath(0));
+	const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
+	std::cout << "importHDF5: source path is: \""
+		  << src_path.getString() << "\"\n";
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
@@ -79,26 +115,29 @@ bool OmVolumeImporter<VOL>::importHDF5(OmDataPath & dataset)
 				OmMipChunkPtr chunk;
 				vol_->GetChunk(chunk, coord);
 
-				//read chunk image data from source
+				OmDataWrapperPtr dataVTK =
+					hdf5reader->
+					dataset_image_read_trim(src_path,
+								    chunk->GetExtent());
+
 				OmDataWrapperPtr data =
-					OmImageDataIo::om_imagedata_read_hdf5(vol_->mSourceFilenamesAndPaths,
-									      chunk->GetExtent(),
-									      dataset);
-				//write to project data
+					dataVTK->newWrapper(dataVTK->getVTKptr()->GetScalarPointer(), NONE);
+
 				OmProjectData::GetDataWriter()->
-					dataset_image_write_trim(leaf_volume_path,
-								 chunk->GetExtent(),
-								 data);
+					dataset_write_raw_chunk_data(dst_path,
+								     chunk->GetExtent(),
+								     data);
 			}
 		}
 	}
+
+	hdf5reader->close();
 
 	return true;
 }
 
 template <typename VOL>
-OmVolDataType
-OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
+OmVolDataType OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
 {
 	if(areImportFilesImages()){
 		return figureOutDataTypeImage();
@@ -108,17 +147,23 @@ OmVolumeImporter<VOL>::figureOutDataType(OmDataPath& path)
 }
 
 template <typename VOL>
-OmVolDataType OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath & dataset)
+OmVolDataType OmVolumeImporter<VOL>::figureOutDataTypeHDF5(OmDataPath & inpath)
 {
-	const OmMipChunkCoord chunk_coord = OmMipChunkCoord(0,0,0,0);
-	DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(chunk_coord, 0);
+	const OmMipChunkCoord coord(0,0,0,0);
+	const DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(coord, 0);
 
-	OmDataWrapperPtr data =
-		OmImageDataIo::om_imagedata_read_hdf5(vol_->mSourceFilenamesAndPaths,
-						      chunk_data_bbox,
-						      dataset);
+	OmDataLayer dl;
+	OmDataReader * hdf5reader = dl.getReader(getHDFfileNameAndPath(), true);
+	hdf5reader->open();
+	const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
 
-	return data->getVolDataType();
+	OmDataWrapperPtr dataVTK =
+		hdf5reader->dataset_image_read_trim(src_path,
+						    chunk_data_bbox);
+
+	hdf5reader->close();
+
+	return dataVTK->getVolDataType();
 }
 
 template <typename VOL>

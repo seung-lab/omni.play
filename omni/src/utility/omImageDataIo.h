@@ -9,30 +9,28 @@
 class vtkImageReader2;
 class vtkImageWriter;
 class vtkImageData;
+class OmDataReader;
 
 class OmImageDataIo {
- public:
-	static void clearImageData(vtkImageData *data);
+public:
+	static void clearImageData(vtkImageData *);
 
-	static OmDataWrapperPtr allocImageData(Vector3<int> dims, OmDataWrapperPtr);
-	static OmDataWrapperPtr createBlankImageData(Vector3<int> dims, OmDataWrapperPtr old, char value = 0);
+	static OmDataWrapperPtr allocImageData(Vector3i, OmDataWrapperPtr);
+	static OmDataWrapperPtr createBlankImageData(Vector3i, OmDataWrapperPtr,
+						     char value = 0);
 
-	static void copyImageData(OmDataWrapperPtr dstData, const DataBbox &dstCopyBbox,
-				  OmDataWrapperPtr srcData, const DataBbox &srcCopyBbox);
+	static void copyImageData(OmDataWrapperPtr, const DataBbox &,
+				  OmDataWrapperPtr, const DataBbox &);
 
-	static void * copyImageData(OmDataWrapperPtr srcData, const DataBbox &srcCopyBbox);
+	static void * copyImageData(OmDataWrapperPtr, const DataBbox &);
 
-	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset);
+	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList,
+							const OmDataPath);
+private:
+	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList);
 
-	static OmDataWrapperPtr om_imagedata_read_hdf5(QFileInfoList sourceFilenamesAndPaths,
-						     const DataBbox dataExtentBbox,
-						     const OmDataPath dataset);
- private:
-
-	//determine dimensions
-	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList sourceFilenamesAndPaths);
-
-	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb, int extent[]);
+	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb,
+							   int extent[]);
 	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[],
 							   AxisAlignedBoundingBox<int>& aabb);
 };

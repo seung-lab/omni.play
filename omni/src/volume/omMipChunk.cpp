@@ -105,7 +105,8 @@ void OmMipChunk::OpenForWrite()
 	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim( mip_level_vol_path, GetExtent());
+	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->
+		dataset_image_read_trim( mip_level_vol_path, GetExtent());
 
 	SetImageData(data);
 
@@ -185,14 +186,17 @@ bool OmMipChunk::IsMetaDataDirty()
 
 void OmMipChunk::ReadVolumeData()
 {
-	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->dataset_image_read_trim(mip_level_vol_path, GetExtent());
+	OmDataWrapperPtr data =
+		OmProjectData::GetProjectDataReader()->
+		dataset_image_read_trim(path, GetExtent());
 
 	//set this image data
 	SetImageData(data);
 
-	// Need to undo the side effect caused by setting the image data. Don't want to write out the data just
+	// Need to undo the side effect caused by setting the image data.
+	// Don't want to write out the data just
 	// because we set the newly loaded data.
 	setVolDataClean();
 }
@@ -203,12 +207,12 @@ void OmMipChunk::WriteVolumeData()
 		OpenForWrite();
 	}
 
-	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+	OmDataWrapperPtr data =
+		mData->newWrapper(mData->getVTKptr()->GetScalarPointer(), NONE);
 
 	OmProjectData::GetDataWriter()->
-		dataset_image_write_trim(mip_level_vol_path,
-					 GetExtent(),
-					 mData);
+		dataset_write_raw_chunk_data( path, GetExtent(), data);
 
 	setVolDataClean();
 }
@@ -218,7 +222,7 @@ void OmMipChunk::ReadMetaData()
 	OmDataPath dat_file_path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	//read archive if it exists
-	if (OmProjectData::GetProjectDataReader()->dataset_exists(dat_file_path)) {
+	if (OmProjectData::GetProjectDataReader()->dataset_exists(dat_file_path)){
 		OmDataArchiveQT::ArchiveRead(dat_file_path, this);
 	}
 }
@@ -524,8 +528,6 @@ void OmMipChunk::GetBounds(float & , float &)
 {
 	return; //FIXME!
 	/*
-	Open();
-	float * data = static_cast < float * >(mData->getVTKptr()->GetScalarPointer());
 	OmImage<float, 3> chunk(OmExtents[128][128][128], data);
 	maxout = chunk.getMax();
 	minout = chunk.getMin();
@@ -559,7 +561,6 @@ void OmMipChunk::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
 
 void OmMipChunk::writeHDF5()
 {
-	//get path to mip level volume
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	OmProjectData::GetDataWriter()->

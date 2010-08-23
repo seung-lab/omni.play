@@ -155,54 +155,6 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_image_read_trim_with_lock(hid_t
         return filled_read_data;
 }
 
-void OmHdf5LowLevel::om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId,
-								const char *name,
-								const DataBbox& dataExtent,
-								OmDataWrapperPtr data)
-{
-        debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-        debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n", __FUNCTION__, name);
-
-        //get dims
-        Vector3<int> dims = om_hdf5_dataset_image_get_dims_with_lock(fileId, name);
-        debug("hdf5image", "dims: %i,%i,%i\n", DEBUGV3(dims));
-
-        //create extent
-        DataBbox dataset_extent = DataBbox(Vector3 < int >::ZERO, dims.x, dims.y, dims.z);
-
-        //if data extent contains given extent, just write data
-        if (dataset_extent.contains(dataExtent)) {
-                om_hdf5_dataset_image_write_with_lock(fileId, name, dataExtent, data);
-                return;
-        }
-        //intersect with given extent
-        DataBbox intersect_extent = dataset_extent;
-        intersect_extent.intersect(dataExtent);
-
-        //if empty intersection, just return
-        if (intersect_extent.isEmpty())
-                return;
-
-        //else create alloc image data with just intersection
-        OmDataWrapperPtr p_intersect_data = OmImageDataIo::allocImageData(intersect_extent.getUnitDimensions(), data);
-
-        //copy imagedata intersection into intersection data
-        //normalize to min of intersection
-        DataBbox intersect_norm_intersect_extent = intersect_extent;
-        intersect_norm_intersect_extent.offset(-intersect_extent.getMin());
-
-        //normalize to min of dataExtent
-        DataBbox dataextent_norm_intersect_extent = intersect_extent;
-        dataextent_norm_intersect_extent.offset(-dataExtent.getMin());
-
-        //copy data
-        OmImageDataIo::copyImageData(p_intersect_data, intersect_norm_intersect_extent, //copy to extent of intersection
-                                      data, dataextent_norm_intersect_extent);    //from intersection in dataExtent
-
-        //write intersection
-        om_hdf5_dataset_image_write_with_lock(fileId, name, intersect_extent, p_intersect_data);
-}
-
 /////////////////////////////////
 ///////          Dataset Raw Data
 
@@ -1026,7 +978,8 @@ OmDataWrapperPtr OmHdf5LowLevel::om_hdf5_dataset_read_raw_chunk_data(const hid_t
 		      mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 		      imageData);
 	if (ret < 0) {
-		throw OmIoException("Could not read HDF5 dataset " + string(name));
+		throw OmIoException("Could not read HDF5 dataset \""
+				    + string(name) + "\"");
 	}
 
 	//Releases and terminates access to a dataspace.
