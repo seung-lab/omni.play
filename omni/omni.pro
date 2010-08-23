@@ -238,6 +238,7 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/volume/build/omVolumeBuilder.hpp \
            src/volume/build/omVolumeImporter.hpp \
+           src/volume/build/omVolumeImporterHDF5.hpp \
            src/volume/omVolumeTypes.hpp \
            src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
@@ -456,6 +457,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
            src/volume/build/omVolumeBuilder.cpp \
            src/volume/build/omVolumeImporter.cpp \
+           src/volume/build/omVolumeImporterHDF5.cpp \
            src/volume/omVolumeTypes.cpp \
            src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \

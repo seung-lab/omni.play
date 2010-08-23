@@ -27,8 +27,6 @@ public:
 	static Vector3<int> om_imagedata_get_dims_hdf5( QFileInfoList,
 							const OmDataPath);
 private:
-	static Vector3<int> om_imagedata_get_dims_vtk(QFileInfoList);
-
 	static void getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox<int>& aabb,
 							   int extent[]);
 	static void setAxisAlignedBoundingBoxFromVtkExtent(const int extent[],

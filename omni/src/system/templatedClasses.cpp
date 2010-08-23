@@ -2,6 +2,7 @@
 #include "datalayer/hdf5/omHDF5Volume.cpp"
 #include "volume/build/omLoadImage.cpp"
 #include "volume/build/omVolumeImporter.cpp"
+#include "volume/build/omVolumeImporterHDF5.cpp"
 #include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "gui/inspectors/segInspector.h"
@@ -68,6 +69,9 @@ template class OmCheckBox<GraphTools>;
 
 template class OmVolumeImporter<OmChannel>;
 template class OmVolumeImporter<OmSegmentation>;
+template class OmVolumeImporterHDF5<OmChannel>;
+template class OmVolumeImporterHDF5<OmSegmentation>;
+
 template class OmLoadImage<OmChannel>;
 template class OmLoadImage<OmSegmentation>;
 
