@@ -24,14 +24,13 @@ void OmMeshSegmentListThread::run()
 {
 	const OmSegIDsSet & chunkValues =  mChunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mSegmentCache);
-	segIter.iterOverSegmentID(mRootSeg->getValue());
+	segIter.iterOverSegmentID(mRootSeg->value);
 	OmSegment * seg = segIter.getNextSegment();
-	OmSegID val;
 
 	OmSegPtrList segmentsToDraw;
 
 	while( NULL != seg ){
-		val = seg->getValue();
+		const OmSegID val = seg->value;
 		if( chunkValues.contains( val ) ){
 			segmentsToDraw.push_back(seg);
 		}
@@ -41,5 +40,5 @@ void OmMeshSegmentListThread::run()
 
 	OmMeshSegmentList::addToCache( mChunkCoord, mRootSeg, segmentsToDraw, mSegmentationID );
 	OmEvents::Redraw3d();
-	//	printf("done..(%u)\n", mRootSeg->getValue());
+	//	printf("done..(%u)\n", mRootSeg->value);
 }

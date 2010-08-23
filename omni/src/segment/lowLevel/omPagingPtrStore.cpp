@@ -65,7 +65,7 @@ void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 
 	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
 					   page, mParentCache );
-	
+
 	loadedPageNumbers.insert( pageNum );
 
 	if( loadedPageNumbers == validPageNumbers ){
@@ -76,7 +76,7 @@ void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 template< class T >
 void OmPagingPtrStore<T>::AddItem( T* item )
 {
-	const OmSegID value = item->getValue();
+	const OmSegID value = item->value;
 
 	const PageNum pageNum = getValuePageNum(value);
 
@@ -96,21 +96,21 @@ bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 	if (0 == value) {
 		return false;
 	}
-	
+
 	const PageNum pageNum = getValuePageNum(value);
-	
+
 	if( !validPageNumbers.contains( pageNum ) ){
 		return false;
 	}
-	
+
 	if( !loadedPageNumbers.contains( pageNum ) ){
 		LoadValuePage( pageNum );
 	}
-	
+
 	if( NULL != mValueToSegPtr[pageNum][value % mPageSize]){
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -145,7 +145,7 @@ void OmPagingPtrStore<T>::SetBatchMode( const bool batchMode )
 }
 
 template< class T >
-T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value ) 
+T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value )
 {
 	if( !mAllPagesLoaded ){
 		if ( !IsValueAlreadyMapped( value ) ){

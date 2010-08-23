@@ -107,23 +107,23 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
-	const OmColor segRootColor = segRoot->mColorInt;
+	const OmColor segRootColor = segRoot->GetColorInt();
 
 	const bool isSelected =
 		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
-		mSegmentCache->mImpl->isSegmentEnabled(segRoot->mValue);
+		mSegmentCache->mImpl->isSegmentEnabled(segRoot->value);
 
 	locker.unlock(); // done w/ lock
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
-		if(seg->mImmutable) {
+		if(seg->GetImmutable()) {
 			return segRootColor;
 		} else {
 			return blackColor;
 		}
 	}
 	if( SCC_SEGMENTATION_VALID_BLACK == mSccType || SCC_FILTER_VALID_BLACK == mSccType){
-		if(seg->mImmutable) {
+		if(seg->GetImmutable()) {
 			return blackColor;
 		} else {
 			return segRootColor;
@@ -132,7 +132,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 
 	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
-			return seg->mColorInt;;
+			return seg->GetColorInt();;
 		} else {
 			return blackColor;
 		}

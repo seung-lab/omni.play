@@ -68,8 +68,8 @@ void OmSegmentGraph::buildSegmentSizeLists()
 	iter.iterOverAllSegments();
 
 	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		if(0 == seg->mParentSegID) {
-			if(seg->mImmutable) {
+		if(0 == seg->getParentSegID()) {
+			if(seg->GetImmutable()) {
 				getSegmentLists()->mValidListBySize.insertSegment( seg );
 			} else {
 				getSegmentLists()->mRootListBySize.insertSegment( seg );
@@ -192,17 +192,17 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 		return false;
 	}
 
-	if( childRoot->mImmutable != parent->mImmutable ){
+	if( childRoot->GetImmutable() != parent->GetImmutable() ){
 		return false;
 	}
 
 	graph_join(childRootID, parentID);
 
-	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
+	parent->addChild(childRoot->value);
 	childRoot->setParent(parent, threshold);
-	childRoot->mEdgeNumber = edgeNumber;
+	childRoot->setEdgeNumber(edgeNumber);
 
-	mCache->findRoot(parent)->mFreshnessForMeshes++;
+	mCache->findRoot(parent)->touchFreshnessForMeshes();
 
 	updateSizeListsFromJoin( parent, childRoot );
 
@@ -213,27 +213,27 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 {
 	OmSegment * child = mCache->GetSegmentFromValue( childID );
 
-	if( child->mThreshold > 1 ){
+	if( child->getThreshold() > 1 ){
 		return false;
 	}
 
-	assert( child->mParentSegID );
+	assert( child->getParentSegID() );
 
-	OmSegment * parent = mCache->GetSegmentFromValue( child->mParentSegID );
+	OmSegment * parent = mCache->GetSegmentFromValue( child->getParentSegID() );
 	assert(parent);
 
-	if( child->mImmutable == parent->mImmutable &&
-	    1 == child->mImmutable ){
+	if( child->GetImmutable() == parent->GetImmutable() &&
+	    1 == child->GetImmutable() ){
 		return false;
 	}
 
-	parent->segmentsJoinedIntoMe.erase( child->mValue );
-        graph_cut(child->mValue);
-	child->mParentSegID = 0;
-	child->mEdgeNumber = -1;
+	parent->removeChild(child->value);
+        graph_cut(child->value);
+	child->setParentSegID(0);
+	child->setEdgeNumber(-1);
 
-	mCache->findRoot(parent)->mFreshnessForMeshes++;
-	child->mFreshnessForMeshes++;
+	mCache->findRoot(parent)->touchFreshnessForMeshes();
+	child->touchFreshnessForMeshes();
 
 	updateSizeListsFromSplit( parent, child );
 
@@ -250,7 +250,7 @@ void OmSegmentGraph::updateSizeListsFromJoin( OmSegment * parent, OmSegment * ch
 void OmSegmentGraph::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
 {
 	OmSegment * root = mCache->findRoot(parent);
-	quint64 newChildSize = computeSegmentSizeWithChildren( child->mValue );
+	quint64 newChildSize = computeSegmentSizeWithChildren( child->value );
 	getSegmentLists()->mRootListBySize.updateFromSplit( root, child, newChildSize );
 }
 
@@ -260,7 +260,7 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 	OmSegmentIteratorLowLevel iter(mCache);
 	iter.iterOverSegmentID( segID );
 	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		size += seg->mSize;
+		size += seg->getSize();
 	}
 	return size;
 }

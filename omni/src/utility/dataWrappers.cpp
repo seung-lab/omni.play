@@ -160,7 +160,7 @@ SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmSegID 
 }
 
 SegmentDataWrapper::SegmentDataWrapper( OmSegment * seg )
-	: mID(seg->getValue())
+	: mID(seg->value)
 	, mType(SEGMENT)
 	, mSegmentationID( seg->getSegmentationID() )
 {

@@ -39,7 +39,7 @@ void OmMeshSegmentList::addToCache( const OmMipChunkCoord & c,
 {
   zi::Guard g(Instance()->mutex);
 
-  Instance()->mSegmentListCache[makeKey(segmentationID, rootSeg->getValue(), c)]
+  Instance()->mSegmentListCache[makeKey(segmentationID, rootSeg->value, c)]
     = OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
 }
 
@@ -54,7 +54,7 @@ OmMeshSegmentList::doGetFromCacheIfReady(OmMipChunkPtr p_chunk,
 
   OmSegPtrListValid & spList =
     mSegmentListCache[makeKey(segmentationID,
-			      rootSeg->getValue(),
+			      rootSeg->value,
 			      chunkCoord)];
 
   if(spList.isFetching){ // coord already in queue to be fetched

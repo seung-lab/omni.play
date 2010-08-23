@@ -15,15 +15,14 @@ class OmSegmentCache;
 class OmSegment {
 
 public:
-	OmSegment( const OmSegID value, OmSegmentCache * cache);
-	OmSegment(OmSegmentCache * cache);
-
-	OmSegID getValue(){ return mValue; }
+	OmSegment(const OmSegID value, OmSegmentCache * cache);
+	const OmSegID value;
 
 	// color
+	void RandomizeColor();
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return mColorInt; }
-	inline Vector3f GetColorFloat(){
+	Vector3f GetColorFloat(){
 		return Vector3f( mColorInt.red   / 255.,
 				 mColorInt.green / 255.,
 				 mColorInt.blue  / 255. ); }
@@ -38,52 +37,64 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
-	quint64 getSize(){ return mSize; }
+	quint64 getSize() const { return mSize; }
+	void addToSize(const quint64 inc){ mSize += inc; }
+
 	quint64 getSizeWithChildren();
 
+	bool GetImmutable() const { return mImmutable; }
 	void SetImmutable( const bool immutable);
-	bool GetImmutable(){ return mImmutable; }
 
-	OmSegID getParentSegID(){ return mParentSegID; }
+	OmSegID getParentSegID() const { return mParentSegID; }
+	void setParentSegID(const OmSegID val){ mParentSegID = val; }
 	OmSegID getRootSegID();
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
-	float getThreshold(){ return mThreshold; }
-	DataBbox & getBounds() { return mBounds; }
 
-	quint32 getFreshnessForMeshes(){return mFreshnessForMeshes;}
+	float getThreshold() const { return mThreshold; }
+	void setThreshold(const float thres){ mThreshold = thres; }
+
+	const DataBbox& getBounds() const { return mBounds; }
+	void setBounds(const DataBbox& box){ mBounds = box; }
+	void mergeBounds(const DataBbox& box){ mBounds.merge(box); }
+
+	uint32_t getFreshnessForMeshes() const {return mFreshnessForMeshes;}
+	void touchFreshnessForMeshes(){++mFreshnessForMeshes;}
+
+	const OmSegIDsSet& getChildren() const {
+		return segmentsJoinedIntoMe;
+	}
+	void addChild(const OmSegID childID){
+		segmentsJoinedIntoMe.insert(childID);
+	}
+	void removeChild(const OmSegID childID){
+		segmentsJoinedIntoMe.erase(childID);
+	}
+
+	int getEdgeNumber() const { return mEdgeNumber; }
+	void setEdgeNumber(const int num){ mEdgeNumber = num; }
+
+	const OmSegmentEdge& getCustomMergeEdge() const {return mCustomMergeEdge;}
+	void setCustomMergeEdge(const OmSegmentEdge& e){mCustomMergeEdge=e;}
 
 private:
-	DataBbox mBounds;
-	OmSegID mValue;
 	OmSegmentCache * mCache;
-
 	OmColor mColorInt;
-
 	OmSegIDsSet segmentsJoinedIntoMe;
-
 	OmId mParentSegID;
 	float mThreshold;
 	bool mImmutable;
-
 	quint64 mSize;
 
 	int mEdgeNumber; // index of edge in main edge list
 	OmSegmentEdge mCustomMergeEdge;
 
-	void SetInitialColor();
+	uint32_t mFreshnessForMeshes;
 
-	quint32 mFreshnessForMeshes;
+	DataBbox mBounds;
 
-	friend class OmSegmentListBySize;
-	friend class OmSegmentCacheImpl;
-	friend class OmSegmentCacheImplLowLevel;
-	friend class OmSegmentColorizer;
 	friend class OmDataArchiveSegment;
-	friend class OmSegmentIterator;
-	friend class OmSegmentIteratorLowLevel;
-	friend class OmSegmentGraph;
 };
 
 #endif

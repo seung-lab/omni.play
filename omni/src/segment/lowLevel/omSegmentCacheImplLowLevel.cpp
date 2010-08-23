@@ -25,11 +25,11 @@ OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 {
-	if(0 == segment->mParentSegID) {
+	if(0 == segment->getParentSegID()) {
 		return segment;
 	}
 
-	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->mValue ) );
+	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->value ) );
 }
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot(const OmSegID segID)
@@ -43,7 +43,7 @@ OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
 		return 0;
 	}
 
-	return findRoot( GetSegmentFromValue( segID ) )->getValue();
+	return findRoot( GetSegmentFromValue( segID ) )->value;
 }
 
 bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID value)
@@ -68,7 +68,7 @@ OmSegID OmSegmentCacheImplLowLevel::GetNumTopSegments()
 
 bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 {
-	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
 
 	if( mAllEnabled ||
 	    mEnabledSet.contains( rootID ) ){
@@ -80,7 +80,7 @@ bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 
 void OmSegmentCacheImplLowLevel::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
 	clearCaches();
 
 	if (isEnabled) {
@@ -103,7 +103,7 @@ OmSegIDsSet & OmSegmentCacheImplLowLevel::GetEnabledSegmentIdsRef()
 
 bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegment * seg )
 {
-	const OmSegID rootID = findRoot( seg )->getValue();
+	const OmSegID rootID = findRoot( seg )->value;
 
 	if( mAllSelected ||
 	    mSelectedSet.contains( rootID ) ){
@@ -149,7 +149,7 @@ void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID,
 							  const bool isSelected,
 							  const bool addToRecentList)
 {
-       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->getValue();
+       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
 
        if (isSelected) {
                doSelectedSetInsert( rootID, addToRecentList);
@@ -247,7 +247,7 @@ OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 
 void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)
 {
-	mSegments->AddToDirtyList( seg->mValue );
+	mSegments->AddToDirtyList( seg->value );
 }
 
 void OmSegmentCacheImplLowLevel::flushDirtySegments()

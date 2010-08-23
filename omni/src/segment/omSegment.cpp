@@ -2,20 +2,8 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 
-OmSegment::OmSegment( const OmSegID value, OmSegmentCache * cache)
-	: mValue(value)
-	, mCache(cache)
-	, mParentSegID(0)
-	, mImmutable(false)
-	, mSize(0)
-	, mEdgeNumber(-1)
-	, mFreshnessForMeshes(0)
-{
-	SetInitialColor();
-}
-
-OmSegment::OmSegment(OmSegmentCache * cache)
-	: mValue(0)
+OmSegment::OmSegment(const OmSegID value, OmSegmentCache * cache)
+	: value(value)
 	, mCache(cache)
 	, mParentSegID(0)
 	, mImmutable(false)
@@ -31,13 +19,13 @@ void OmSegment::setParent(OmSegment * parent, const float threshold)
 		assert(0);
 	}
 
-	mParentSegID = parent->mValue;
+	mParentSegID = parent->value;
 	mThreshold = threshold;
 }
 
 /////////////////////////////////
 ///////         Color
-void OmSegment::SetInitialColor()
+void OmSegment::RandomizeColor()
 {
 	Vector3<float> color;
 
@@ -58,7 +46,7 @@ void OmSegment::SetInitialColor()
 
 void OmSegment::reRandomizeColor()
 {
-	SetInitialColor();
+	RandomizeColor();
 
 	mCache->addToDirtySegmentList(this);
 }
@@ -74,7 +62,7 @@ void OmSegment::SetColor(const Vector3 < float >& color)
 
 QString OmSegment::GetNote()
 {
-	QString customNote = mCache->getSegmentNote( mValue );
+	QString customNote = mCache->getSegmentNote( value );
 
 	if( mParentSegID ){
 		customNote += "Parent: "
@@ -93,37 +81,37 @@ QString OmSegment::GetNote()
 
 void OmSegment::SetNote(const QString & note)
 {
-	mCache->setSegmentNote( mValue, note );
+	mCache->setSegmentNote( value, note );
 }
 
 QString OmSegment::GetName()
 {
-	return mCache->getSegmentName( mValue );
+	return mCache->getSegmentName( value );
 }
 
 void OmSegment::SetName(const QString & name)
 {
-	mCache->setSegmentName( mValue, name );
+	mCache->setSegmentName( value, name );
 }
 
 bool OmSegment::IsSelected()
 {
-	return mCache->IsSegmentSelected( mValue );
+	return mCache->IsSegmentSelected( value );
 }
 
 void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList )
 {
-	mCache->setSegmentSelected( mValue, isSelected, addToRecentList );
+	mCache->setSegmentSelected( value, isSelected, addToRecentList );
 }
 
 bool OmSegment::IsEnabled()
 {
-	return mCache->isSegmentEnabled( mValue );
+	return mCache->isSegmentEnabled( value );
 }
 
 void OmSegment::SetEnabled( const bool isEnabled)
 {
-	mCache->setSegmentEnabled( mValue, isEnabled );
+	mCache->setSegmentEnabled( value, isEnabled );
 }
 
 OmId OmSegment::getSegmentationID()
@@ -140,7 +128,7 @@ void OmSegment::SetImmutable( const bool immutable)
 
 OmSegID OmSegment::getRootSegID()
 {
-	return mCache->findRoot(this)->getValue();
+	return mCache->findRoot(this)->value;
 }
 
 quint64 OmSegment::getSizeWithChildren()

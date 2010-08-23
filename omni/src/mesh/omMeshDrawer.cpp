@@ -156,7 +156,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 	OmSegPtrList::const_iterator iter;
 	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){
 		rootSeg = (*iter);
-		rootSegID = rootSeg->getValue();
+		rootSegID = rootSeg->value;
 
 		std::pair<bool, OmSegPtrList> segmentsToPossiblyDraw =
 		  OmMeshSegmentList::getFromCacheIfReady(p_chunk,
@@ -190,16 +190,16 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chun
 void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
 			       const OmSegPtrList & segmentsToDraw )
 {
-	OmSegPtrList::const_iterator iter;
-	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
+	FOR_EACH(iter, segmentsToDraw ){
+		OmSegment* seg = *iter;
 
-		if( (*iter)->getSize() < mViewGroupState->getDustThreshold() ){
+		if( seg->getSize() < mViewGroupState->getDustThreshold() ){
 			continue;
 		}
 
 		OmMipMeshPtr p_mesh;
 		mSeg->mMipMeshManager.GetMesh(p_mesh,
-					      OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
+					      OmMipMeshCoord(chunkCoord, seg->value ));
 
 		if( !p_mesh ) {
 		        OmEvents::Redraw3d();
@@ -213,7 +213,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
 		ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
-		glPushName((*iter)->getValue());
+		glPushName(seg->value);
 		glPushName(OMGL_NAME_MESH);
 
 		p_mesh->Draw(true);

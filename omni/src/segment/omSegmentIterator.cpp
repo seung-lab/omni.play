@@ -1,4 +1,5 @@
-#include "omSegmentIterator.h"
+#include <zi/utility>
+#include "segment/omSegmentIterator.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 
@@ -14,26 +15,21 @@ void OmSegmentIterator::iterOverSegmentID(const OmSegID segID)
 
 void OmSegmentIterator::iterOverSelectedIDs()
 {
-	const OmSegIDsSet & set = mCache->GetSelectedSegmentIds();
-	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, mCache->GetSelectedSegmentIds()){
 		mSegs.push_back( mCache->GetSegment( *iter ));
 	}
 }
 
 void OmSegmentIterator::iterOverEnabledIDs()
 {
-	const OmSegIDsSet & set = mCache->GetEnabledSegmentIds();
-	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, mCache->GetEnabledSegmentIds()){
 		mSegs.push_back( mCache->GetSegment( *iter ) );
 	}
 }
 
 void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
-        OmSegIDsSet::const_iterator iter;
-        for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, set){
                 mSegs.push_back( mCache->GetSegment( *iter ) );
         }
 }
@@ -52,9 +48,7 @@ OmSegment * OmSegmentIterator::getNextSegment()
 	OmSegment * segRet = mSegs.back();
 	mSegs.pop_back();
 
-	const OmSegIDsSet & set = segRet->segmentsJoinedIntoMe;
-	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, segRet->getChildren() ){
 		mSegs.push_back( mCache->GetSegment( *iter ));
 	}
 

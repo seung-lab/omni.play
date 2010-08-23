@@ -466,7 +466,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 		return;
 	}
 	debug("fill", "OmView2d::FillToolFill, segid, fc, bc, depth %i, %i, %i, %i\n", segid, fc, bc, depth);
-	segid = current_seg.GetSegmentCache()->findRoot(current_seg.GetSegmentCache()->GetSegment(segid))->getValue();
+	segid = current_seg.GetSegmentCache()->findRoot(current_seg.GetSegmentCache()->GetSegment(segid))->value;
 
 	if (depth > 5000)
 		return;

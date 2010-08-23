@@ -329,7 +329,7 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
         OmSegment * seg = iter.getNextSegment();
 	OmSegIDsSet newSet;
         while(NULL != seg) {
-		newSet.insert(seg->getValue());
+		newSet.insert(seg->value);
                 seg = iter.getNextSegment();
         }
 
@@ -437,7 +437,7 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 						GetChunk(p_chunk, chunk_coord);
 
 						const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-						if(data_values.contains(seg->getValue())) {
+						if(data_values.contains(seg->value)) {
 
 							if(!found) {
 								found = true;

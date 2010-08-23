@@ -14,11 +14,11 @@ extern int Omni_File_Version;
 
 
 
-void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache ) 
+void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache )
 {
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-	
+
 	QByteArray ba = QByteArray::fromRawData( dw->getPtr<char>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
@@ -32,9 +32,9 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmS
 			continue;
 		}
 
-                OmSegment * segment = new OmSegment(cache);
-
-                in >> segment->mValue;
+		OmSegID val;
+                in >> val;
+                OmSegment * segment = new OmSegment(val, cache);
                 in >> segment->mColorInt.red;
                 in >> segment->mColorInt.green;
                 in >> segment->mColorInt.blue;
@@ -49,7 +49,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmS
         }
 }
 
-void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vector<OmSegment*> & page, OmSegmentCache* cache) 
+void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vector<OmSegment*> & page, OmSegmentCache* cache)
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -62,11 +62,11 @@ void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vec
 		if (NULL == segment) {
 			out << false;
 			continue;
-		} 
+		}
 
 		out << true;
 
-                out << segment->mValue;
+                out << segment->value;
                 out << segment->mColorInt.red;
                 out << segment->mColorInt.green;
                 out << segment->mColorInt.blue;
@@ -74,8 +74,8 @@ void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vec
                 out << segment->mSize;
 		out << segment->mBounds;
         }
-	
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path, 
-									   ba.size(), 
+
+	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
+									   ba.size(),
 									   OmDataWrapperRaw(ba.data()));
 }
