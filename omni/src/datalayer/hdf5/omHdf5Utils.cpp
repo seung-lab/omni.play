@@ -3,7 +3,7 @@
 
 #include <QFile>
 
-void OmHdf5FileUtils::file_create(std::string fpath)
+void OmHdf5FileUtils::file_create(const std::string & fpath)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 

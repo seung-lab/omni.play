@@ -11,7 +11,6 @@ class OmDataReader
 {
  public:
 	//paths
-	virtual std::string getFileNameAndPathString() = 0;
 	virtual QString getFileNameAndPath() = 0;
 
 	//file

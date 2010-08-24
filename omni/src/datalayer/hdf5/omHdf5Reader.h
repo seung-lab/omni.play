@@ -18,7 +18,6 @@ class OmHdf5Reader : public OmDataReader
 	OmHdf5Reader( QString fileNameAndPath, const bool readOnly);
 	~OmHdf5Reader();
 
-	std::string getFileNameAndPathString();
 	QString getFileNameAndPath();
 
 	//file

@@ -18,11 +18,6 @@ QString OmHdf5Reader::getFileNameAndPath()
 	return hdf5->getFileNameAndPath();
 }
 
-std::string OmHdf5Reader::getFileNameAndPathString()
-{
-	return hdf5->getFileNameAndPathString();
-}
-
 void OmHdf5Reader::open()
 {
 	hdf5->open();

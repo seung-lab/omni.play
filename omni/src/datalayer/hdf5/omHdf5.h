@@ -15,7 +15,6 @@ public:
 	OmHdf5( QString fileNameAndPath, const bool readOnly);
 	~OmHdf5();
 
-	string getFileNameAndPathString();
 	QString getFileNameAndPath();
 
 	//file
@@ -50,8 +49,10 @@ public:
 
 private:
 	QString m_fileNameAndPath;
+	const bool readOnly_;
+
 	zi::Mutex fileLock;
-	boost::shared_ptr<OmHdf5Impl> hdfLowLevelWrap;
+	boost::shared_ptr<OmHdf5Impl> hdf5_;
 };
 
 #endif

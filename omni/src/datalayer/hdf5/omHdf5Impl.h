@@ -12,12 +12,7 @@ class OmHdf5Impl
 	OmHdf5Impl(string fileName, const bool readOnly);
 	~OmHdf5Impl();
 
-	void open();
-	void close();
 	void flush();
-
-	//file
-	void file_create();
 
 	//group
 	bool group_exists(const OmDataPath & path);
@@ -46,11 +41,9 @@ class OmHdf5Impl
 	Vector3i dataset_get_dims( const OmDataPath & path );
 
  private:
-	OmHdf5LowLevel hdfLowLevel;
-	const string mFileName;
+	boost::shared_ptr<OmHdf5LowLevel> hdf_;
 	const bool mReadOnly;
 	hid_t fileId;
-	bool opened;
 };
 
 #endif
