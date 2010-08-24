@@ -61,10 +61,11 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/fs/omActionLoggerFSthread.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \
-           src/datalayer/hdf5/omHDF5Volume.hpp \
+           src/datalayer/omHDF5Volume.hpp \
            src/datalayer/hdf5/omHdf5.h \
+           src/datalayer/hdf5/omHdf5Utils.hpp \
            src/datalayer/hdf5/omHdf5LowLevel.h \
-           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
+           src/datalayer/hdf5/omHdf5Impl.h \
            src/datalayer/hdf5/omHdf5Manager.h \
            src/datalayer/hdf5/omHdf5Reader.h \
            src/datalayer/hdf5/omHdf5Writer.h \
@@ -292,10 +293,11 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
            src/datalayer/fs/omActionLoggerFSthread.cpp \
            src/datalayer/fs/omMemMappedVolume.cpp \
-           src/datalayer/hdf5/omHDF5Volume.cpp \
+           src/datalayer/omHDF5Volume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
+           src/datalayer/hdf5/omHdf5Utils.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
-           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.cpp \
+           src/datalayer/hdf5/omHdf5Impl.cpp \
            src/datalayer/hdf5/omHdf5Manager.cpp \
            src/datalayer/hdf5/omHdf5Reader.cpp \
            src/datalayer/hdf5/omHdf5Writer.cpp \

@@ -1,5 +1,5 @@
 #include "datalayer/fs/omMemMappedVolume.cpp"
-#include "datalayer/hdf5/omHDF5Volume.cpp"
+#include "datalayer/omHDF5Volume.cpp"
 #include "volume/build/omLoadImage.cpp"
 #include "volume/build/omVolumeImporter.cpp"
 #include "volume/build/omVolumeImporterHDF5.cpp"

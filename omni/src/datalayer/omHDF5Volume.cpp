@@ -4,7 +4,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
 #include "project/omProject.h"
-#include "datalayer/hdf5/omHDF5Volume.hpp"
+#include "datalayer/omHDF5Volume.hpp"
 #include "system/omProjectData.h"
 
 #include <zi/utility>

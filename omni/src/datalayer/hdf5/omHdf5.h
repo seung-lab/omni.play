@@ -7,13 +7,11 @@
 
 #include <zi/mutex>
 
-class OmHdf5LowLevelWrappersManualOpenClose;
-class vtkImageData;
+class OmHdf5Impl;
 class OmDataPath;
 
-class OmHdf5
-{
- public:
+class OmHdf5 {
+public:
 	OmHdf5( QString fileNameAndPath, const bool readOnly);
 	~OmHdf5();
 
@@ -50,10 +48,10 @@ class OmHdf5
 	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
 	Vector3< int > dataset_get_dims( const OmDataPath & path );
 
- private:
+private:
 	QString m_fileNameAndPath;
 	zi::Mutex fileLock;
-	boost::shared_ptr<OmHdf5LowLevelWrappersManualOpenClose> hdfLowLevelWrap;
+	boost::shared_ptr<OmHdf5Impl> hdfLowLevelWrap;
 };
 
 #endif

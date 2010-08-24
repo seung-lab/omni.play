@@ -1,11 +1,11 @@
 #include "datalayer/hdf5/omHdf5.h"
-#include "datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h"
+#include "datalayer/hdf5/omHdf5Impl.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 
 OmHdf5::OmHdf5( QString fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)
-	, hdfLowLevelWrap(new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly) )
+	, hdfLowLevelWrap(new OmHdf5Impl(getFileNameAndPathString(), readOnly) )
 {
 }
 

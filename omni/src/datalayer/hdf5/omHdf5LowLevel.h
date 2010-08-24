@@ -1,5 +1,5 @@
-#ifndef LOW_LEVEL_H
-#define LOW_LEVEL_H
+#ifndef OM_HDF5_LOW_LEVEL_H
+#define OM_HDF5_LOW_LEVEL_H
 
 #ifdef WIN32
 #include <windows.h>
@@ -13,18 +13,9 @@ typedef LONG_PTR ssize_t;
 
 #include "hdf5.h"
 
-class vtkImageData;
-
 class OmHdf5LowLevel
 {
  public:
-
-	//file
-	static void file_create(string fpath);
-	static hid_t file_open(string fpath, const bool readOnly);
-	static void file_close(hid_t fileId);
-	static void flush(const hid_t fileId);
-
 	//group
 	static bool group_exists(hid_t fileId, const char* name);
 	static void group_delete(hid_t fileId, const char* name);
@@ -52,9 +43,6 @@ class OmHdf5LowLevel
 	static Vector3i dataset_get_dims(hid_t fileId, const char *name);
 
  private:
-	static void printfDatasetCacheSize( const hid_t dataset_id );
-	static void printfFileCacheSize( const hid_t fileId );
-
 	//image I/O private
 	static OmDataWrapperPtr dataset_image_read(hid_t fileId, const char *name, DataBbox extent);
 

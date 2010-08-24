@@ -1,16 +1,16 @@
-#ifndef OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
-#define OM_MDF5_LOW_LEVEL_WRAPPERS_MANUAL_OPEN_CLOSE_H
+#ifndef OM_HDF5_IMPL_H
+#define OM_HDF5_IMPL_H
 
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "datalayer/omDataWrapper.h"
 
 class OmDataPath;
 
-class OmHdf5LowLevelWrappersManualOpenClose
+class OmHdf5Impl
 {
  public:
-	OmHdf5LowLevelWrappersManualOpenClose(string fileName, const bool readOnly);
-	~OmHdf5LowLevelWrappersManualOpenClose();
+	OmHdf5Impl(string fileName, const bool readOnly);
+	~OmHdf5Impl();
 
 	void open();
 	void close();
