@@ -1,11 +1,11 @@
 #ifndef OM_HDF_H
 #define OM_HDF_H
 
-#include <QMutex>
-
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
+
+#include <zi/mutex>
 
 class OmHdf5LowLevelWrappersManualOpenClose;
 class vtkImageData;
@@ -52,8 +52,8 @@ class OmHdf5
 
  private:
 	QString m_fileNameAndPath;
-	mutable QMutex fileLock;
-	OmHdf5LowLevelWrappersManualOpenClose * hdfLowLevelWrap;
+	zi::Mutex fileLock;
+	boost::shared_ptr<OmHdf5LowLevelWrappersManualOpenClose> hdfLowLevelWrap;
 };
 
 #endif

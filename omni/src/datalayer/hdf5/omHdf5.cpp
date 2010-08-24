@@ -5,13 +5,12 @@
 
 OmHdf5::OmHdf5( QString fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)
-	, hdfLowLevelWrap( new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly) )
+	, hdfLowLevelWrap(new OmHdf5LowLevelWrappersManualOpenClose(getFileNameAndPathString(), readOnly) )
 {
 }
 
 OmHdf5::~OmHdf5()
 {
-	delete hdfLowLevelWrap;
 }
 
 QString OmHdf5::getFileNameAndPath()
@@ -26,44 +25,44 @@ string OmHdf5::getFileNameAndPathString()
 
 void OmHdf5::create()
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	hdfLowLevelWrap->file_create();
 }
 
 void OmHdf5::open()
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	hdfLowLevelWrap->open();
 }
 
 void OmHdf5::close()
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	hdfLowLevelWrap->close();
 }
 
 void OmHdf5::flush()
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	hdfLowLevelWrap->flush();
 }
 
 bool OmHdf5::group_exists( const OmDataPath & path )
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->group_exists_with_lock( path );
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->group_exists( path );
 }
 
 void OmHdf5::group_delete( const OmDataPath & path )
 {
-	QMutexLocker locker(&fileLock);
-	hdfLowLevelWrap->group_delete_with_lock( path );
+	zi::Guard g(fileLock);
+	hdfLowLevelWrap->group_delete( path );
 }
 
 bool OmHdf5::dataset_exists( const OmDataPath & path )
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->dataset_exists_with_lock( path );
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->dataset_exists( path );
 }
 
 void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path,
@@ -71,26 +70,26 @@ void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path,
 						  const Vector3i& chunkDims,
 						  const OmVolDataType type)
 {
-	QMutexLocker locker(&fileLock);
-	hdfLowLevelWrap->dataset_image_create_tree_overwrite_with_lock( path, dataDims, chunkDims, type);
+	zi::Guard g(fileLock);
+	hdfLowLevelWrap->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, type);
 }
 
 OmDataWrapperPtr OmHdf5::dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent)
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->dataset_image_read_trim_with_lock( path, dataExtent);
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->dataset_image_read_trim( path, dataExtent);
 }
 
 OmDataWrapperPtr OmHdf5::dataset_raw_read( const OmDataPath & path, int* size)
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->dataset_raw_read_with_lock( path, size);
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->dataset_raw_read( path, size);
 }
 
 OmDataWrapperPtr OmHdf5::dataset_read_raw_chunk_data( const OmDataPath & path,
 						      DataBbox dataExtent)
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	return hdfLowLevelWrap->dataset_read_raw_chunk_data( path, dataExtent);
 }
 
@@ -98,7 +97,7 @@ void OmHdf5::dataset_write_raw_chunk_data(const OmDataPath & path,
 					  DataBbox dataExtent,
 					  OmDataWrapperPtr data)
 {
-	QMutexLocker locker(&fileLock);
+	zi::Guard g(fileLock);
 	hdfLowLevelWrap->dataset_write_raw_chunk_data(path, dataExtent, data);
 }
 
@@ -110,18 +109,18 @@ void OmHdf5::dataset_raw_create_tree_overwrite( const OmDataPath & path,
 		return;
 	}
 
-	QMutexLocker locker(&fileLock);
-	hdfLowLevelWrap->dataset_raw_create_tree_overwrite_with_lock( path, size, data);
+	zi::Guard g(fileLock);
+	hdfLowLevelWrap->dataset_raw_create_tree_overwrite( path, size, data);
 }
 
-Vector3 < int > OmHdf5::dataset_image_get_dims( const OmDataPath & path )
+Vector3i OmHdf5::dataset_image_get_dims( const OmDataPath & path )
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->dataset_image_get_dims_with_lock( path );
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->dataset_image_get_dims( path );
 }
 
-Vector3< int > OmHdf5::dataset_get_dims( const OmDataPath & path )
+Vector3i OmHdf5::dataset_get_dims( const OmDataPath & path )
 {
-	QMutexLocker locker(&fileLock);
-	return hdfLowLevelWrap->dataset_get_dims_with_lock( path );
+	zi::Guard g(fileLock);
+	return hdfLowLevelWrap->dataset_get_dims( path );
 }
