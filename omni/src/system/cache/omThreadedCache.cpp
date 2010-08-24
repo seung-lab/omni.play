@@ -55,8 +55,9 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 			mKeyAccessList.touch(key);
 		}
 	} else {
-		if(mThreadPool.getTaskCount() == mThreadPool.getMaxTaskCount()) {
-			return;
+		if(mThreadPool.getTaskCount() ==
+		   mThreadPool.getMaxSimultaneousTaskCount()) {
+			return; // restrict number of tasks to process
 		}
 
 		if(mCurrentlyFetching.insertSinceDidNotHaveKey(key) ){
