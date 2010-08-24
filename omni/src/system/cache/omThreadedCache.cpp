@@ -55,6 +55,10 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 			mKeyAccessList.touch(key);
 		}
 	} else {
+		if(mThreadPool.getTaskCount() == mThreadPool.getMaxTaskCount()) {
+			return;
+		}
+
 		if(mCurrentlyFetching.insertSinceDidNotHaveKey(key) ){
 			boost::shared_ptr<HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR> >
 				task(new HandleCacheMissThreaded<OmThreadedCache<KEY, PTR>, KEY, PTR>(this, key));

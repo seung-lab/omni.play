@@ -6,13 +6,14 @@
 
 class OmThreadPool {
 public:
-	OmThreadPool(){}
+	OmThreadPool():numWorkerThreads_(0) {}
 
 	~OmThreadPool(){
 		stop();
 	}
 
 	void start(const int numWorkerThreads){
+		numWorkerThreads_ = numWorkerThreads;
 		boost::shared_ptr<zi::ThreadFactory> factory(new zi::ThreadFactory);
 		factory->setDetached(false);
 
@@ -40,9 +41,14 @@ public:
 	int getTaskCount() const {
 		return threadManager_->getTaskCount();
 	}
+	
+	int getMaxTaskCount() const {
+		return numWorkerThreads_;
+	}
 
 private:
 	boost::shared_ptr<zi::ThreadManager> threadManager_;
+	int numWorkerThreads_;
 };
 
 #endif
