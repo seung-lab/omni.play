@@ -48,7 +48,6 @@ OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype, OmViewGroupStat
 	if (OmProject::IsSegmentationValid(mSeg)) {
 		vgs->SetSegmentation(mSeg);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, vgs);
-
 	} else if (OmProject::IsChannelValid(mChannel)) {
 		vgs->SetChannel(mChannel);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, vgs);

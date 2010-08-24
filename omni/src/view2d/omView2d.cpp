@@ -953,8 +953,14 @@ void OmView2d::RemoveTile(OmThreadedCachingTile * cache)
                 	break;
         	}
 
+                OmTileCoord tcoord;
                 SpaceCoord this_space_coord = DataToSpaceCoord(bcoord);
-                OmTileCoord tcoord = OmTileCoord(0, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen(false));
+
+        	if(SEGMENTATION == mVolumeType) {
+                	tcoord = OmTileCoord(0, this_space_coord, SEGMENTATION, OmCachingThreadedCachingTile::Freshen(false));
+		} else {
+                	tcoord = OmTileCoord(0, this_space_coord, CHANNEL, OmCachingThreadedCachingTile::Freshen(false));
+		}
 		cache->Remove(tcoord);
 
                 //printf("removing %d,%d,%d\n", (*itr)[0], (*itr)[1], (*itr)[2]);
@@ -976,10 +982,9 @@ void OmView2d::myUpdate()
                         		if (OmProject::IsSegmentationValid(filter.GetSegmentation()) ) {
                                 		if(filter.GetSegmentation() == mEditedSegmentation) {
         						OmThreadedCachingTile *cache = filter.GetCache(mViewType, mViewGroupState);
-        						if (!cache) {
-                						continue;
+        						if (cache) {
+								RemoveTile(cache);
 							}
-							RemoveTile(cache);
 						}
                         		}
                 		}
