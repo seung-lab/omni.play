@@ -61,10 +61,6 @@ class OmHdf5LowLevel
 
 	//image I/O private
 	static OmDataWrapperPtr om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent);
-	static void om_hdf5_dataset_image_write_with_lock(hid_t ,
-							  const char *,
-							  const DataBbox&,
-							  OmDataWrapperPtr data);
 
 	//group private
 	static void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);
