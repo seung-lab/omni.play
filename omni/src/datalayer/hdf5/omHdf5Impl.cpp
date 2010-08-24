@@ -40,36 +40,32 @@ bool OmHdf5Impl::dataset_exists(const OmDataPath & path)
 	return hdf_->dataset_exists();
 }
 
-void OmHdf5Impl::
-dataset_image_create_tree_overwrite(const OmDataPath & path,
-				    const Vector3i& dataDims,
-				    const Vector3i& chunkDims,
-				    const OmVolDataType type)
+void OmHdf5Impl::allocateChunkedDataset(const OmDataPath & path,
+					const Vector3i& dataDims,
+					const Vector3i& chunkDims,
+					const OmVolDataType type)
 {
 	hdf_->setPath(path);
 	hdf_->dataset_delete_create_tree();
-	hdf_->dataset_image_create(dataDims, chunkDims, type);
+	hdf_->allocateChunkedDataset(dataDims, chunkDims, type);
 }
 
-OmDataWrapperPtr OmHdf5Impl::dataset_image_read_trim(const OmDataPath & path, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5Impl::readChunkNotOnBoundary(const OmDataPath & path, DataBbox dataExtent)
 {
 	hdf_->setPath(path);
-	return hdf_->dataset_image_read_trim(dataExtent);
+	return hdf_->readChunkNotOnBoundary(dataExtent);
 }
 
-OmDataWrapperPtr OmHdf5Impl::dataset_raw_read(const OmDataPath & path, int *size)
+OmDataWrapperPtr OmHdf5Impl::readDataset(const OmDataPath & path,
+					      int *size)
 {
 	hdf_->setPath(path);
-	return hdf_->dataset_raw_read(size);
+	return hdf_->readDataset(size);
 }
 
-void OmHdf5Impl::dataset_raw_create(const OmDataPath & path, int size, const OmDataWrapperPtr data)
-{
-	hdf_->setPath(path);
-	hdf_->dataset_raw_create(size, data);
-}
-
-void OmHdf5Impl::dataset_raw_create_tree_overwrite(const OmDataPath & path, int size, const OmDataWrapperPtr data)
+void OmHdf5Impl::writeDataset(const OmDataPath & path,
+			      int size,
+			      const OmDataWrapperPtr data)
 {
 	hdf_->setPath(path);
 
@@ -77,7 +73,7 @@ void OmHdf5Impl::dataset_raw_create_tree_overwrite(const OmDataPath & path, int 
 	hdf_->dataset_delete_create_tree();
 
 	//create data
-	hdf_->dataset_raw_create(size, data);
+	hdf_->allocateDataset(size, data);
 }
 
 Vector3i OmHdf5Impl::dataset_image_get_dims(const OmDataPath & path)
@@ -86,16 +82,19 @@ Vector3i OmHdf5Impl::dataset_image_get_dims(const OmDataPath & path)
 	return hdf_->dataset_image_get_dims();
 }
 
-OmDataWrapperPtr OmHdf5Impl::dataset_read_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath & path,
+				       DataBbox dataExtent)
 {
 	hdf_->setPath(path);
-	return hdf_->dataset_read_raw_chunk_data(dataExtent);
+	return hdf_->readChunk(dataExtent);
 }
 
-void OmHdf5Impl::dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data)
+void OmHdf5Impl::writeChunk(const OmDataPath & path,
+			    DataBbox dataExtent,
+			    OmDataWrapperPtr data)
 {
 	hdf_->setPath(path);
-	hdf_->dataset_write_raw_chunk_data(dataExtent, data);
+	hdf_->writeChunk(dataExtent, data);
 }
 
 Vector3< int > OmHdf5Impl::dataset_get_dims( const OmDataPath & path )

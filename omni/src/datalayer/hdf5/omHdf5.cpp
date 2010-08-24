@@ -63,43 +63,43 @@ bool OmHdf5::dataset_exists( const OmDataPath & path )
 	return hdf5_->dataset_exists( path );
 }
 
-void OmHdf5::dataset_image_create_tree_overwrite( const OmDataPath & path,
+void OmHdf5::allocateChunkedDataset( const OmDataPath & path,
 						  const Vector3i& dataDims,
 						  const Vector3i& chunkDims,
 						  const OmVolDataType type)
 {
 	zi::Guard g(fileLock);
-	hdf5_->dataset_image_create_tree_overwrite( path, dataDims, chunkDims, type);
+	hdf5_->allocateChunkedDataset( path, dataDims, chunkDims, type);
 }
 
-OmDataWrapperPtr OmHdf5::dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5::readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent)
 {
 	zi::Guard g(fileLock);
-	return hdf5_->dataset_image_read_trim( path, dataExtent);
+	return hdf5_->readChunkNotOnBoundary( path, dataExtent);
 }
 
-OmDataWrapperPtr OmHdf5::dataset_raw_read( const OmDataPath & path, int* size)
+OmDataWrapperPtr OmHdf5::readDataset( const OmDataPath & path, int* size)
 {
 	zi::Guard g(fileLock);
-	return hdf5_->dataset_raw_read( path, size);
+	return hdf5_->readDataset( path, size);
 }
 
-OmDataWrapperPtr OmHdf5::dataset_read_raw_chunk_data( const OmDataPath & path,
+OmDataWrapperPtr OmHdf5::readChunk( const OmDataPath & path,
 						      DataBbox dataExtent)
 {
 	zi::Guard g(fileLock);
-	return hdf5_->dataset_read_raw_chunk_data( path, dataExtent);
+	return hdf5_->readChunk( path, dataExtent);
 }
 
-void OmHdf5::dataset_write_raw_chunk_data(const OmDataPath & path,
+void OmHdf5::writeChunk(const OmDataPath & path,
 					  DataBbox dataExtent,
 					  OmDataWrapperPtr data)
 {
 	zi::Guard g(fileLock);
-	hdf5_->dataset_write_raw_chunk_data(path, dataExtent, data);
+	hdf5_->writeChunk(path, dataExtent, data);
 }
 
-void OmHdf5::dataset_raw_create_tree_overwrite( const OmDataPath & path,
+void OmHdf5::writeDataset( const OmDataPath & path,
 						int size,
 						const OmDataWrapperPtr data)
 {
@@ -108,7 +108,7 @@ void OmHdf5::dataset_raw_create_tree_overwrite( const OmDataPath & path,
 	}
 
 	zi::Guard g(fileLock);
-	hdf5_->dataset_raw_create_tree_overwrite( path, size, data);
+	hdf5_->writeDataset( path, size, data);
 }
 
 Vector3i OmHdf5::dataset_image_get_dims( const OmDataPath & path )

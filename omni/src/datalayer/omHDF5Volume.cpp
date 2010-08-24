@@ -41,7 +41,7 @@ void OmHDF5Volume<T,VOL>::create(const std::map<int, Vector3i> & levelsAndDims)
 		OmDataPath path(vol_->MipLevelInternalDataPath(level));
 
 		OmProjectData::GetDataWriter()->
-			dataset_image_create_tree_overwrite(path,
+			allocateChunkedDataset(path,
 							    dims,
 							    chunkdims,
 							    vol_->getVolDataType());

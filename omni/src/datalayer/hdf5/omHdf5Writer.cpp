@@ -39,22 +39,22 @@ void OmHdf5Writer::group_delete( const OmDataPath & path )
 	hdf5->group_delete( path );
 }
 
-void OmHdf5Writer::dataset_image_create_tree_overwrite( const OmDataPath & path,
+void OmHdf5Writer::allocateChunkedDataset( const OmDataPath & path,
 							const Vector3i& dataDims,
 							const Vector3i& chunkDims,
 							const OmVolDataType type)
 {
-	hdf5->dataset_image_create_tree_overwrite(path, dataDims, chunkDims, type);
+	hdf5->allocateChunkedDataset(path, dataDims, chunkDims, type);
 }
 
-void OmHdf5Writer::dataset_raw_create_tree_overwrite(const OmDataPath& path,
+void OmHdf5Writer::writeDataset(const OmDataPath& path,
 						     int size,
 						     const OmDataWrapperPtr data)
 {
-	hdf5->dataset_raw_create_tree_overwrite( path, size, data);
+	hdf5->writeDataset( path, size, data);
 }
 
-void OmHdf5Writer::dataset_write_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data)
+void OmHdf5Writer::writeChunk( const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data)
 {
-	hdf5->dataset_write_raw_chunk_data( path, dataExtent, data);
+	hdf5->writeChunk( path, dataExtent, data);
 }

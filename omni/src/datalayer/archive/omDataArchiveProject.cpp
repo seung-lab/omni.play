@@ -33,7 +33,7 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 
 	OmDataWrapperPtr dw =
 		OmProjectData::GetProjectDataReader()->
-		dataset_raw_read(path, &size);
+		readDataset(path, &size);
 
 	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
@@ -71,7 +71,7 @@ void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * pr
 	out << (*project);
 	out << Omni_Postfix;
 
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
+	OmProjectData::GetDataWriter()->writeDataset( path,
 									   ba.size(),
 									   OmDataWrapperRaw(ba.data()));
 }

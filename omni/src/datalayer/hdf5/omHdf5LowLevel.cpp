@@ -33,9 +33,9 @@ bool OmHdf5LowLevel::group_exists(const char* path)
 }
 
 /**
- *	Trims the read to data within the extent of the dataset.  Buffers the rest with zeros.
+ *  Trims the read to data within the extent of the dataset. (0 fills)
  */
-OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read_trim(DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(DataBbox dataExtent)
 {
         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -46,7 +46,7 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read_trim(DataBbox dataExtent)
 
         //if data extent contains given extent, just read from data
         if (dataset_extent.contains(dataExtent)) {
-                return dataset_image_read( dataExtent);
+                return readChunkVTK( dataExtent);
         }
         //intersect with given extent
         DataBbox intersect_extent = dataset_extent;
@@ -59,7 +59,7 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read_trim(DataBbox dataExtent)
         //merge intersection and read data
         //read intersection from source
         OmDataWrapperPtr intersect_image_data =
-		dataset_image_read( intersect_extent);
+		readChunkVTK( intersect_extent);
 
         //create blanks data
         OmDataWrapperPtr filled_read_data =
@@ -85,13 +85,10 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read_trim(DataBbox dataExtent)
         return filled_read_data;
 }
 
-/////////////////////////////////
-///////          Dataset Raw Data
-
 /**
  * method used to read meshes and .dat files from disk
  */
-OmDataWrapperPtr OmHdf5LowLevel::dataset_raw_read(int *size)
+OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 {
 	debug("hdf5verbose", "\nOmHDF5LowLevel: in %s...\n", __FUNCTION__);
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n",
@@ -111,8 +108,6 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_raw_read(int *size)
 		const string errMsg = "Could not open HDF5 dataset (even though it existed)" + string(getPath());
 		throw OmIoException(errMsg);
 	}
-
-	//printfDatasetCacheSize( dataset_id );
 
 	//Returns an identifier for a copy of the dataspace for a dataset.
 	hid_t dataspace_id = H5Dget_space(dataset_id);
@@ -163,6 +158,53 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_raw_read(int *size)
 	return data;
 }
 
+void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
+{
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+
+	herr_t status;
+
+	//Creates a new simple dataspace and opens it for access.
+	int rank = 1;
+	hsize_t dim = size / data->getSizeof();
+
+	// TODO: fixme! use the max dim!
+	hsize_t max = dim;
+	hid_t dataspace_id = H5Screate_simple(rank, &dim, &max);
+	if (dataspace_id < 0) {
+		throw OmIoException("Could not create HDF5 dataspace.");
+	}
+
+	//Creates a dataset at the specified location.
+	hid_t dataset_id = H5Dcreate2(fileId, getPath(), data->getHdf5FileType(),
+                                     dataspace_id,
+                                     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if (dataset_id < 0) {
+		throw OmIoException("Could not create HDF5 dataset " + string(getPath()));
+	}
+
+	//if given data, then write it into new dataset
+	if (NULL != data->getVoidPtr()) {
+		status = H5Dwrite(dataset_id, data->getHdf5FileType(),
+				  H5S_ALL, H5S_ALL, H5P_DEFAULT,
+				  data->getVoidPtr());
+		if (status < 0)
+			throw OmIoException("Could not copy data into HDF5 dataset.");
+	}
+
+	//Closes the specified dataset.
+	status = H5Dclose(dataset_id);
+	if (status < 0) {
+		throw OmIoException("Could not close HDF5 dataset.");
+	}
+
+	//Releases and terminates access to a dataspace.
+	status = H5Sclose(dataspace_id);
+	if (status < 0) {
+		throw OmIoException("Could not close HDF5 dataspace.");
+	}
+}
+
 OmDataWrapperPtr OmHdf5LowLevel::getNullDataWrapper(const hid_t dstype)
 {
 	return getDataWrapper(NULL, dstype, INVALID);
@@ -206,8 +248,6 @@ OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void* dataset,
         }
 }
 
-/////////////////////////////////
-///////          Group private
 void OmHdf5LowLevel::group_create(const char* path)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
@@ -231,15 +271,13 @@ void OmHdf5LowLevel::group_create_tree(const char* path)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	QString currentPath;
-	foreach( QString folder, QString(path).split('/') ){
-		currentPath += folder + "/";
-
-		string curPathStr = currentPath.toStdString();
+	std::string curPath;
+	foreach( const QString & folder, QString(path).split('/') ){
+		curPath += folder.toStdString() + "/";
 
                 //create if group does not exist
-                if (!group_exists(curPathStr.c_str() ) ){
-                        group_create(curPathStr.c_str() );
+                if (!group_exists(curPath.c_str() ) ){
+                        group_create(curPath.c_str() );
                 }
         }
 }
@@ -315,60 +353,9 @@ void OmHdf5LowLevel::dataset_delete_create_tree()
 
 }
 
-/////////////////////////////////
-///////          Dataset Raw Data private
-void OmHdf5LowLevel::dataset_raw_create(int size, OmDataWrapperPtr data)
-{
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	herr_t status;
-
-	//Creates a new simple dataspace and opens it for access.
-	int rank = 1;
-	hsize_t dim = size / data->getSizeof();
-
-	// TODO: fixme! use the max dim!
-	hsize_t max = dim;
-	hid_t dataspace_id = H5Screate_simple(rank, &dim, &max);
-	if (dataspace_id < 0) {
-		throw OmIoException("Could not create HDF5 dataspace.");
-	}
-
-	//Creates a dataset at the specified location.
-	hid_t dataset_id = H5Dcreate2(fileId, getPath(), data->getHdf5FileType(),
-				      dataspace_id,
-				      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	if (dataset_id < 0) {
-		throw OmIoException("Could not create HDF5 dataset " + string(getPath()));
-	}
-
-	//if given data, then write it into new dataset
-	if (NULL != data->getVoidPtr()) {
-		status = H5Dwrite(dataset_id, data->getHdf5FileType(),
-				  H5S_ALL, H5S_ALL, H5P_DEFAULT,
-				  data->getVoidPtr());
-		if (status < 0)
-			throw OmIoException("Could not copy data into HDF5 dataset.");
-	}
-
-	//Closes the specified dataset.
-	status = H5Dclose(dataset_id);
-	if (status < 0) {
-		throw OmIoException("Could not close HDF5 dataset.");
-	}
-
-	//Releases and terminates access to a dataspace.
-	status = H5Sclose(dataspace_id);
-	if (status < 0) {
-		throw OmIoException("Could not close HDF5 dataspace.");
-	}
-}
-
 Vector3i  OmHdf5LowLevel::dataset_image_get_dims()
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	Vector3 < hsize_t > dims;
 
 	herr_t status;
 
@@ -395,8 +382,11 @@ Vector3i  OmHdf5LowLevel::dataset_image_get_dims()
 	}
 
 	//Retrieves dataspace dimension size and maximum size.
-	Vector3 < hsize_t > maxdims;
-	rank = H5Sget_simple_extent_dims(dataspace_id, dims.array, maxdims.array);
+	Vector3<hsize_t> dims;
+	Vector3<hsize_t> maxdims;
+	rank = H5Sget_simple_extent_dims(dataspace_id,
+					 dims.array,
+					 maxdims.array);
 	if (rank < 0) {
 		throw OmIoException("Could not determine dimensions of HDF5 dataspace.");
 	}
@@ -420,9 +410,9 @@ Vector3i  OmHdf5LowLevel::dataset_image_get_dims()
 	return Vector3i (dims.z, dims.y, dims.x);
 }
 
-void OmHdf5LowLevel::dataset_image_create(const Vector3i& dataDims,
-					  const Vector3i& chunkDims,
-					  const OmVolDataType type)
+void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
+					    const Vector3i& chunkDims,
+					    const OmVolDataType type)
 {
 	herr_t ret;
 	int rank = 3;
@@ -446,8 +436,8 @@ void OmHdf5LowLevel::dataset_image_create(const Vector3i& dataDims,
 	}
 
 	//data dims
-	Vector3 < hsize_t > flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
-	Vector3 < hsize_t > flipped_max_data_dims;
+	Vector3<hsize_t> flipped_data_dims(dataDims.z, dataDims.y, dataDims.x);
+	Vector3<hsize_t> flipped_max_data_dims;
 
 	flipped_max_data_dims = Vector3<hsize_t>(dataDims.z, dataDims.y, dataDims.x);
 
@@ -485,7 +475,7 @@ void OmHdf5LowLevel::dataset_image_create(const Vector3i& dataDims,
 	}
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read(DataBbox extent)
+OmDataWrapperPtr OmHdf5LowLevel::readChunkVTK(DataBbox extent)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -507,14 +497,14 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read(DataBbox extent)
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
-	Vector3 < hsize_t > start = extent.getMin();
-	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+	Vector3<hsize_t> start = extent.getMin();
+	Vector3<hsize_t> start_flipped(start.z, start.y, start.x);
 
-	Vector3 < hsize_t > stride = Vector3i::ONE;
-	Vector3 < hsize_t > count = Vector3i::ONE;
+	Vector3<hsize_t> stride = Vector3i::ONE;
+	Vector3<hsize_t> count = Vector3i::ONE;
 
-	Vector3 < hsize_t > block = extent.getUnitDimensions();
-	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+	Vector3<hsize_t> block = extent.getUnitDimensions();
+	Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
 	debug("hdf5image", "start:%i,%i,%i\n", DEBUGV3(start));
 	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
 	//Selects a hyperslab region to add to the current selected region.
@@ -571,8 +561,8 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_image_read(DataBbox extent)
 	return imageData;
 }
 
-void OmHdf5LowLevel::dataset_write_raw_chunk_data(DataBbox extent,
-						  OmDataWrapperPtr data)
+void OmHdf5LowLevel::writeChunk(DataBbox extent,
+				OmDataWrapperPtr data)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -590,15 +580,15 @@ void OmHdf5LowLevel::dataset_write_raw_chunk_data(DataBbox extent,
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
-	Vector3 < hsize_t > start = extent.getMin();
-	Vector3 < hsize_t > end   = extent.getMax();
-	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+	Vector3<hsize_t> start = extent.getMin();
+	Vector3<hsize_t> end   = extent.getMax();
+	Vector3<hsize_t> start_flipped(start.z, start.y, start.x);
 
-	Vector3 < hsize_t > stride = Vector3i::ONE;
-	Vector3 < hsize_t > count = Vector3i::ONE;
+	Vector3<hsize_t> stride = Vector3i::ONE;
+	Vector3<hsize_t> count = Vector3i::ONE;
 
-	Vector3 < hsize_t > block = extent.getUnitDimensions();
-	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+	Vector3<hsize_t> block = extent.getUnitDimensions();
+	Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
 
 	//Selects a hyperslab region to add to the current selected region.
 	herr_t ret = H5Sselect_hyperslab(dataspace_id,
@@ -643,10 +633,9 @@ void OmHdf5LowLevel::dataset_write_raw_chunk_data(DataBbox extent,
 		throw OmIoException("Could not close HDF5 dataset.");
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::dataset_read_raw_chunk_data(DataBbox extent)
+OmDataWrapperPtr OmHdf5LowLevel::readChunk(DataBbox extent)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
 
 	//Opens an existing dataset.
 	//hid_t H5Dopen(hid_t loc_id, const char *name  )
@@ -666,9 +655,9 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_read_raw_chunk_data(DataBbox extent)
 
 	//create start, stride, count, block
 	//flip coordinates cuz thats how hdf5 likes it
-	Vector3 < hsize_t > start = extent.getMin();
-	Vector3 < hsize_t > end   = extent.getMax();
-	Vector3 < hsize_t > start_flipped(start.z, start.y, start.x);
+	Vector3<hsize_t> start = extent.getMin();
+	Vector3<hsize_t> end   = extent.getMax();
+	Vector3<hsize_t> start_flipped(start.z, start.y, start.x);
 
 	//hsize_t* dims;
 	//hsize_t* maxdims;
@@ -677,11 +666,11 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_read_raw_chunk_data(DataBbox extent)
         //if ((dims[0]<end.z)&&(dims[1]<end.y)&&(dims[2]<end.z))
         //	throw OmIoException("Tried to read data outside of Dataspace extent.");
 
-	Vector3 < hsize_t > stride = Vector3i::ONE;
-	Vector3 < hsize_t > count = Vector3i::ONE;
+	Vector3<hsize_t> stride = Vector3i::ONE;
+	Vector3<hsize_t> count = Vector3i::ONE;
 
-	Vector3 < hsize_t > block = extent.getUnitDimensions();
-	Vector3 < hsize_t > block_flipped(block.z, block.y, block.x);
+	Vector3<hsize_t> block = extent.getUnitDimensions();
+	Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
 	debug("hdf5image", "start:%i,%i,%i\n", DEBUGV3(start));
 	debug("hdf5image", "block:%i,%i,%i\n", DEBUGV3(block));
 	//Selects a hyperslab region to add to the current selected region.
@@ -731,11 +720,11 @@ OmDataWrapperPtr OmHdf5LowLevel::dataset_read_raw_chunk_data(DataBbox extent)
 	return data;
 }
 
-Vector3< int > OmHdf5LowLevel::dataset_get_dims()
+Vector3i OmHdf5LowLevel::dataset_get_dims()
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-	Vector3 < hsize_t > dims(0,0,0);
+	Vector3<hsize_t> dims(0,0,0);
 
 	herr_t status;
 
@@ -756,7 +745,7 @@ Vector3< int > OmHdf5LowLevel::dataset_get_dims()
 		throw OmIoException("Could not determine rank of HDF5 dataspace.");
 
 	//Retrieves dataspace dimension size and maximum size.
-	Vector3 < hsize_t > maxdims;
+	Vector3<hsize_t> maxdims;
 	rank = H5Sget_simple_extent_dims(dataspace_id, dims.array, maxdims.array);
 	if (rank < 0)
 		throw OmIoException("Could not determine dimensions of HDF5 dataspace.");

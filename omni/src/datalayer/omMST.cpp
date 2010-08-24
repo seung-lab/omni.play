@@ -44,7 +44,7 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   int size;
-  mDend = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+  mDend = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
   if( size != mDendSize ){
     printf("warning: something may be bad...\n");
     printf("dend: size=%d, mDendSize=%d\n", size, mDendSize);
@@ -53,7 +53,7 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   path = getDendValuesPath(seg);
-  mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+  mDendValues = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
     printf("dendValues: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
@@ -62,7 +62,7 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   path = getEdgeDisabledByUserPath(seg);
-  mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+  mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
     printf("dendEdgeDisabledByUser: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
@@ -76,7 +76,7 @@ void OmMST::read(OmSegmentation & seg)
   mEdgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined, MALLOC);
 
   path = getEdgeForceJoinPath(seg);
-  mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+  mEdgeForceJoin = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
   if( size != mDendValuesSize ){
     printf("warning: something may be bad...\n");
     printf("dendEdgeForceJoin: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
@@ -122,7 +122,7 @@ bool OmMST::importDend(OmDataReader * hdf5reader)
   }
   Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
   int dendSize;
-  OmDataWrapperPtr dend = hdf5reader->dataset_raw_read(fpath, &dendSize);
+  OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
   printf("\tdendrogram is %s x %s (%s bytes)\n",
 	 qPrintable(StringHelpers::commaDeliminateNumber(dSize.x)),
 	 qPrintable(StringHelpers::commaDeliminateNumber(dSize.y)),
@@ -146,7 +146,7 @@ bool OmMST::importDendValues(OmDataReader * hdf5reader)
   }
   Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
   int dendValuesSize;
-  OmDataWrapperPtr dendValues = hdf5reader->dataset_raw_read(fpath, &dendValuesSize);
+  OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 
   printf("\tdendrogram values is %s x %s (%s bytes)\n",
 	 qPrintable(StringHelpers::commaDeliminateNumber(vSize.x)),
@@ -191,7 +191,7 @@ void OmMST::FlushDend(OmSegmentation * seg)
   printf("dend: will save %s bytes\n",
 	 qPrintable(StringHelpers::commaDeliminateNumber(mDendSize)));
   OmProjectData::GetDataWriter()->
-    dataset_raw_create_tree_overwrite(path,
+    writeDataset(path,
 				      mDendSize,
 				      mDend);
 
@@ -199,7 +199,7 @@ void OmMST::FlushDend(OmSegmentation * seg)
   printf("dendValues: will save %s bytes\n",
 	 qPrintable(StringHelpers::commaDeliminateNumber(mDendValuesSize)));
   OmProjectData::GetDataWriter()->
-    dataset_raw_create_tree_overwrite(path,
+    writeDataset(path,
 				      mDendValuesSize,
 				      mDendValues);
 
@@ -211,13 +211,13 @@ void OmMST::FlushDendUserEdges(OmSegmentation * seg)
   OmDataPath path(getEdgeDisabledByUserPath(*seg));
 
   OmProjectData::GetDataWriter()->
-    dataset_raw_create_tree_overwrite(path,
+    writeDataset(path,
 				      mDendValuesSize,
 				      mEdgeDisabledByUser);
 
   path = getEdgeForceJoinPath(*seg);
   OmProjectData::GetDataWriter()->
-    dataset_raw_create_tree_overwrite(path,
+    writeDataset(path,
 				      mDendValuesSize,
 				      mEdgeForceJoin);
 }

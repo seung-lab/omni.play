@@ -13,7 +13,7 @@
 void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk )
 {
 	int size;
-	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
 
 	QByteArray ba = QByteArray::fromRawData( dw->getPtr<char>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
@@ -30,7 +30,7 @@ void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * 
 	out.setVersion(QDataStream::Qt_4_6);
 	out << (*chunk);
 
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
+	OmProjectData::GetDataWriter()->writeDataset( path,
 									   ba.size(),
 									   OmDataWrapperRaw(ba.data()));
 }

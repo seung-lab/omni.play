@@ -38,14 +38,14 @@ bool OmHdf5Reader::dataset_exists( const OmDataPath & path )
 	return hdf5->dataset_exists( path );
 }
 
-OmDataWrapperPtr OmHdf5Reader::dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5Reader::readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent)
 {
-	return hdf5->dataset_image_read_trim( path, dataExtent);
+	return hdf5->readChunkNotOnBoundary( path, dataExtent);
 }
 
-OmDataWrapperPtr OmHdf5Reader::dataset_raw_read( const OmDataPath & path, int* size)
+OmDataWrapperPtr OmHdf5Reader::readDataset( const OmDataPath & path, int* size)
 {
-	return hdf5->dataset_raw_read( path, size );
+	return hdf5->readDataset( path, size );
 }
 
 Vector3 < int > OmHdf5Reader::dataset_image_get_dims( const OmDataPath & path )
@@ -53,9 +53,9 @@ Vector3 < int > OmHdf5Reader::dataset_image_get_dims( const OmDataPath & path )
 	return hdf5->dataset_image_get_dims( path );
 }
 
-OmDataWrapperPtr OmHdf5Reader::dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5Reader::readChunk( const OmDataPath & path, DataBbox dataExtent)
 {
-	return hdf5->dataset_read_raw_chunk_data( path, dataExtent);
+	return hdf5->readChunk( path, dataExtent);
 }
 
 Vector3< int > OmHdf5Reader::dataset_get_dims( const OmDataPath & path )

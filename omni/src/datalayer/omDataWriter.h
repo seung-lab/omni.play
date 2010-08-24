@@ -23,17 +23,17 @@ public:
 	virtual void group_delete( const OmDataPath & path ) = 0;
 
 	//image I/O
-	virtual void dataset_image_create_tree_overwrite( const OmDataPath &,
+	virtual void allocateChunkedDataset( const OmDataPath &,
 							  const Vector3i&,
 							  const Vector3i&,
 							  const OmVolDataType) = 0;
 
-	virtual void dataset_write_raw_chunk_data(const OmDataPath &,
+	virtual void writeChunk(const OmDataPath &,
 						  DataBbox,
 						  OmDataWrapperPtr) = 0;
 
 	//data set raw
-	virtual void dataset_raw_create_tree_overwrite(const OmDataPath&,
+	virtual void writeDataset(const OmDataPath&,
 						       int,
 						       const OmDataWrapperPtr) = 0;
 };

@@ -28,7 +28,7 @@ public:
 	}
 
 	//image I/O
-	void dataset_image_create_tree_overwrite(const OmDataPath &,
+	void allocateChunkedDataset(const OmDataPath &,
 						 const Vector3i&,
 						 const Vector3i&,
 						 const OmVolDataType){
@@ -36,14 +36,14 @@ public:
 		       __FUNCTION__);
 	}
 
-	void dataset_write_raw_chunk_data(const OmDataPath &, DataBbox,
+	void writeChunk(const OmDataPath &, DataBbox,
 					  OmDataWrapperPtr){
 		printf("%s: write operation should not have happened...\n",
 		       __FUNCTION__);
 	}
 
 	//data set raw
-	void dataset_raw_create_tree_overwrite(const OmDataPath &, int,
+	void writeDataset(const OmDataPath &, int,
 					       const OmDataWrapperPtr){
 		printf("%s: write operation should not have happened...\n",
 		       __FUNCTION__);

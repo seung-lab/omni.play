@@ -32,19 +32,19 @@ public:
 
 	//image I/O
 	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
-	void dataset_image_create_tree_overwrite( const OmDataPath &,
+	void allocateChunkedDataset( const OmDataPath &,
 						  const Vector3i&,
 						  const Vector3i&,
 						  const OmVolDataType type);
-	OmDataWrapperPtr dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent);
+	OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
 				       OmDataWrapperPtr data);
 
 	//data set raw
-	OmDataWrapperPtr dataset_raw_read( const OmDataPath & path, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data);
-	OmDataWrapperPtr dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent);
-	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
+	OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL);
+	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	OmDataWrapperPtr readChunk( const OmDataPath & path, DataBbox dataExtent);
+	void writeChunk(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
 	Vector3< int > dataset_get_dims( const OmDataPath & path );
 
 private:

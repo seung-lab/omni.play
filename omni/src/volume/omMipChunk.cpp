@@ -106,7 +106,7 @@ void OmMipChunk::OpenForWrite()
 
 	//assert(OmProjectData::DataExists(mip_level_vol_path));
 	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->
-		dataset_image_read_trim( mip_level_vol_path, GetExtent());
+		readChunkNotOnBoundary( mip_level_vol_path, GetExtent());
 
 	SetImageData(data);
 
@@ -190,7 +190,7 @@ void OmMipChunk::ReadVolumeData()
 
 	OmDataWrapperPtr data =
 		OmProjectData::GetProjectDataReader()->
-		dataset_image_read_trim(path, GetExtent());
+		readChunkNotOnBoundary(path, GetExtent());
 
 	//set this image data
 	SetImageData(data);
@@ -212,7 +212,7 @@ void OmMipChunk::WriteVolumeData()
 		mData->newWrapper(mData->getVTKptr()->GetScalarPointer(), NONE);
 
 	OmProjectData::GetDataWriter()->
-		dataset_write_raw_chunk_data( path, GetExtent(), data);
+		writeChunk( path, GetExtent(), data);
 
 	setVolDataClean();
 }
@@ -503,7 +503,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 		OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 		mHDF5data = OmProjectData::GetProjectDataReader()->
-			dataset_read_raw_chunk_data(path, GetExtent());
+			readChunk(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
 
@@ -564,7 +564,7 @@ void OmMipChunk::writeHDF5()
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	OmProjectData::GetDataWriter()->
-		dataset_write_raw_chunk_data( path, GetExtent(), mHDF5data);
+		writeChunk( path, GetExtent(), mHDF5data);
 }
 
 OmImage<uint32_t, 3> OmMipChunk::getOmImage32Chunk()

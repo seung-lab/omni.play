@@ -25,7 +25,7 @@ public:
 	void group_delete( const OmDataPath & path );
 
 	//image I/O
-	void dataset_image_create_tree_overwrite(const OmDataPath &,
+	void allocateChunkedDataset(const OmDataPath &,
 						 const Vector3i&,
 						 const Vector3i&,
 						 const OmVolDataType);
@@ -33,8 +33,8 @@ public:
 				       const DataBbox&, OmDataWrapperPtr data);
 
 	//data set raw
-	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const OmDataWrapperPtr data);
-	void dataset_write_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
+	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	void writeChunk( const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
 private:
 	OmHdf5 * hdf5;
 

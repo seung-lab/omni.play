@@ -70,14 +70,14 @@ bool OmVolumeImporterHDF5<VOL>::importHDF5(OmDataPath & inpath)
 
 				OmDataWrapperPtr dataVTK =
 					hdf5reader->
-					dataset_image_read_trim(src_path,
+					readChunkNotOnBoundary(src_path,
 								chunk->GetExtent());
 
 				OmDataWrapperPtr data =
 					dataVTK->newWrapper(dataVTK->getVTKptr()->GetScalarPointer(), NONE);
 
 				OmProjectData::GetDataWriter()->
-					dataset_write_raw_chunk_data(dst_path,
+					writeChunk(dst_path,
 								     chunk->GetExtent(),
 								     data);
 			}
@@ -101,7 +101,7 @@ OmVolDataType OmVolumeImporterHDF5<VOL>::figureOutDataTypeHDF5(OmDataPath & inpa
 	const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
 
 	OmDataWrapperPtr dataVTK =
-		hdf5reader->dataset_image_read_trim(src_path,
+		hdf5reader->readChunkNotOnBoundary(src_path,
 						    chunk_data_bbox);
 
 	hdf5reader->close();
@@ -123,7 +123,7 @@ void OmVolumeImporterHDF5<VOL>::allocateHDF5(const std::map<int, Vector3i> & lev
 		OmDataPath path(vol_->MipLevelInternalDataPath(level));
 
 		OmProjectData::GetDataWriter()->
-			dataset_image_create_tree_overwrite(path,
+			allocateChunkedDataset(path,
 							    dims,
 							    chunkdims,
 							    vol_->getVolDataType());

@@ -750,7 +750,7 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 
 	//read and get pointer to data
 	OmDataWrapperPtr p_source_data =
-		OmProjectData::GetProjectDataReader()->dataset_image_read_trim(source_data_path,
+		OmProjectData::GetProjectDataReader()->readChunkNotOnBoundary(source_data_path,
 									source_data_bbox);
 
 	//subsample
@@ -823,7 +823,7 @@ OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 
 		OmDataWrapperPtr p_read_data =
 			OmProjectData::GetProjectDataReader()->
-			dataset_image_read_trim(source_data_path, source_data_bbox);
+			readChunkNotOnBoundary(source_data_path, source_data_bbox);
 
 		return p_read_data;
 
@@ -962,7 +962,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
         	hdfExport.open();
 		Vector3<int> full = MipLevelDataDimensions(0);
         	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
-        	hdfExport.dataset_image_create_tree_overwrite(fpath,
+        	hdfExport.allocateChunkedDataset(fpath,
 							      rounded_data_dims,
 							      full,
 							      mVolDataType);

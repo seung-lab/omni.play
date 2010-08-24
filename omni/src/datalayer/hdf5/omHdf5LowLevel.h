@@ -38,22 +38,22 @@ public:
 
 	//data set
 	bool dataset_exists();
-	OmDataWrapperPtr dataset_image_read_trim(DataBbox dataExtent);
+	OmDataWrapperPtr readChunkNotOnBoundary(DataBbox dataExtent);
 	void dataset_image_write_trim(const DataBbox&,
 				      OmDataWrapperPtr data);
 	void dataset_delete_create_tree();
 
 	//data set raw
-	OmDataWrapperPtr dataset_raw_read(int* size = NULL);
-	void dataset_raw_create(int size, OmDataWrapperPtr data);
+	OmDataWrapperPtr readDataset(int* size = NULL);
+	void allocateDataset(int size, OmDataWrapperPtr data);
 
 	//image I/O
 	Vector3i  dataset_image_get_dims();
-	void dataset_image_create(const Vector3i&,
+	void allocateChunkedDataset(const Vector3i&,
 				  const Vector3i&,
 				  const OmVolDataType);
-	OmDataWrapperPtr dataset_read_raw_chunk_data(DataBbox extent);
-	void dataset_write_raw_chunk_data(DataBbox extent, OmDataWrapperPtr data);
+	OmDataWrapperPtr readChunk(DataBbox extent);
+	void writeChunk(DataBbox extent, OmDataWrapperPtr data);
 	Vector3i dataset_get_dims();
 
  private:
@@ -61,7 +61,7 @@ public:
 	OmDataPath path;
 
 	//image I/O private
-	OmDataWrapperPtr dataset_image_read(DataBbox extent);
+	OmDataWrapperPtr readChunkVTK(DataBbox extent);
 
 	//data set private
 	void dataset_delete();
