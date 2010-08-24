@@ -31,27 +31,29 @@ public:
 	void group_create_tree(const char*);
 
 	bool dataset_exists();
-
-	OmDataWrapperPtr readChunkNotOnBoundary(DataBbox dataExtent);
 	void dataset_delete_create_tree();
-
+	Vector3i getDatasetDims();
 	OmDataWrapperPtr readDataset(int* size = NULL);
 	void allocateDataset(int size, OmDataWrapperPtr data);
 
-	Vector3i  getChunkedDatasetDims();
+
+
+	Vector3i getChunkedDatasetDims();
 	void allocateChunkedDataset(const Vector3i&,
-				  const Vector3i&,
-				  const OmVolDataType);
-	OmDataWrapperPtr readChunk(DataBbox extent);
-	void writeChunk(DataBbox extent, OmDataWrapperPtr data);
-	Vector3i getDatasetDims();
+				    const Vector3i&,
+				    const OmVolDataType);
+	OmDataWrapperPtr readChunkNotOnBoundary(const DataBbox&);
+	OmDataWrapperPtr readChunk(const DataBbox&);
+	void writeChunk(const DataBbox&, OmDataWrapperPtr);
 
  private:
 	// hid_t is typedef'd to int in H5Ipublic.h
 	const int fileId;
 	OmDataPath path;
 
-	//image I/O private
 	OmDataWrapperPtr readChunkVTK(DataBbox extent);
+	OmDataWrapperPtr readChunkNotOnBoundaryVTK(const DataBbox&,
+						   const DataBbox&);
+
 };
 #endif

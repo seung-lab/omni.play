@@ -29,7 +29,7 @@ bool OmHdf5LowLevel::dataset_exists(){
 /**
  *  Trims the read to data within the extent of the dataset. (0 fills)
  */
-OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(DataBbox dataExtent)
+OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(const DataBbox& dataExtent)
 {
         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -50,10 +50,17 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(DataBbox dataExtent)
 		throw OmIoException("should not have happened");
         }
 
+        OmDataWrapperPtr vtkData = readChunkNotOnBoundaryVTK(dataExtent, intersect_extent);
+
+	return vtkData;
+}
+
+OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundaryVTK(const DataBbox& dataExtent,
+							   const DataBbox& intersect_extent)
+{
         //merge intersection and read data
         //read intersection from source
-        OmDataWrapperPtr intersect_image_data =
-		readChunkVTK( intersect_extent);
+        OmDataWrapperPtr intersect_image_data = readChunkVTK( intersect_extent);
 
         //create blanks data
         OmDataWrapperPtr filled_read_data =
@@ -75,8 +82,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(DataBbox dataExtent)
 				     intersect_image_data,
 				     intersect_norm_intersect_extent);
 
-
-        return filled_read_data;
+	return filled_read_data;
 }
 
 /**
@@ -452,8 +458,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkVTK(DataBbox extent)
 	return imageData;
 }
 
-void OmHdf5LowLevel::writeChunk(DataBbox extent,
-				OmDataWrapperPtr data)
+void OmHdf5LowLevel::writeChunk(const DataBbox& extent, OmDataWrapperPtr data)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -524,7 +529,7 @@ void OmHdf5LowLevel::writeChunk(DataBbox extent,
 		throw OmIoException("Could not close HDF5 dataset.");
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::readChunk(DataBbox extent)
+OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent)
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
