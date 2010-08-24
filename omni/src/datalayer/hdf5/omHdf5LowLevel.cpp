@@ -84,11 +84,6 @@ void OmHdf5LowLevel::om_hdf5_file_close_with_lock (hid_t fileId)
 	}
 }
 
-bool OmHdf5LowLevel::checkIfLinkExists(hid_t fileID, const char *name)
-{
-	return H5Lexists(fileID, name, H5P_DEFAULT);
-}
-
 /////////////////////////////////
 ///////          Group
 bool OmHdf5LowLevel::om_hdf5_group_exists_with_lock(hid_t fileId, const char *name)
@@ -901,11 +896,4 @@ Vector3< int > OmHdf5LowLevel::om_hdf5_dataset_get_dims_with_lock(hid_t fileId, 
 
 	//flip from hdf5 version
 	return dims;
-}
-
-bool OmHdf5LowLevel::isDatasetPathNameAChannel( const char *name )
-{
-	const string defaultName = OmDataPaths::getDefaultHDF5channelDatasetName();
-
-	return (0 == defaultName.compare(name));
 }

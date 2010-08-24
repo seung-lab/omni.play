@@ -56,8 +56,6 @@ class OmHdf5LowLevel
 	static void printfDatasetCacheSize( const hid_t dataset_id );
 	static void printfFileCacheSize( const hid_t fileId );
 	static void printTypeInfo( hid_t dstype );
-	//static int getTypeInfo( hid_t dstype );
-
 
 	//image I/O private
 	static OmDataWrapperPtr om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent);
@@ -68,10 +66,6 @@ class OmHdf5LowLevel
 
 	//data set private
 	static void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name);
-
-	static bool isDatasetPathNameAChannel( const char *name );
-
-	static bool checkIfLinkExists(hid_t fileId, const char *name);
 
 	static OmDataWrapperPtr getDataWrapper(void*, hid_t, const OmDataAllocType);
 	static int getSizeofType(hid_t dstype);
