@@ -12,7 +12,7 @@ class OmDataPath;
 
 class OmHdf5 {
 public:
-	OmHdf5( QString fileNameAndPath, const bool readOnly);
+	OmHdf5(const QString&, const bool readOnly);
 	~OmHdf5();
 
 	QString getFileNameAndPath();
@@ -31,7 +31,7 @@ public:
 	bool dataset_exists( const OmDataPath & path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
+	Vector3 < int > getChunkedDatasetDims(const OmDataPath & path );
 	void allocateChunkedDataset( const OmDataPath &,
 						  const Vector3i&,
 						  const Vector3i&,
@@ -45,7 +45,7 @@ public:
 	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
 	OmDataWrapperPtr readChunk( const OmDataPath & path, DataBbox dataExtent);
 	void writeChunk(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
-	Vector3< int > dataset_get_dims( const OmDataPath & path );
+	Vector3< int > getDatasetDims( const OmDataPath & path );
 
 private:
 	QString m_fileNameAndPath;

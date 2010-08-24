@@ -31,13 +31,13 @@ class OmHdf5Reader : public OmDataReader
 	bool dataset_exists( const OmDataPath & path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
+	Vector3 < int > getChunkedDatasetDims(const OmDataPath & path );
 	OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent);
 
 	//data set raw
 	OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL);
 	OmDataWrapperPtr readChunk( const OmDataPath & path, DataBbox dataExtent);
-	Vector3< int > dataset_get_dims( const OmDataPath & path );
+	Vector3< int > getDatasetDims( const OmDataPath & path );
 
  private:
 	OmHdf5 * hdf5;

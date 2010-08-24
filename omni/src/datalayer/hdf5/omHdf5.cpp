@@ -2,9 +2,9 @@
 #include "datalayer/hdf5/omHdf5Impl.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/hdf5/omHdf5Utils.hpp"
+#include "datalayer/hdf5/omHdf5FileUtils.hpp"
 
-OmHdf5::OmHdf5( QString fileNameAndPath, const bool readOnly )
+OmHdf5::OmHdf5( const QString & fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)
 	, readOnly_(readOnly)
 {
@@ -111,14 +111,14 @@ void OmHdf5::writeDataset( const OmDataPath & path,
 	hdf5_->writeDataset( path, size, data);
 }
 
-Vector3i OmHdf5::dataset_image_get_dims( const OmDataPath & path )
+Vector3i OmHdf5::getChunkedDatasetDims( const OmDataPath & path )
 {
 	zi::Guard g(fileLock);
-	return hdf5_->dataset_image_get_dims( path );
+	return hdf5_->getChunkedDatasetDims( path );
 }
 
-Vector3i OmHdf5::dataset_get_dims( const OmDataPath & path )
+Vector3i OmHdf5::getDatasetDims( const OmDataPath & path )
 {
 	zi::Guard g(fileLock);
-	return hdf5_->dataset_get_dims( path );
+	return hdf5_->getDatasetDims( path );
 }

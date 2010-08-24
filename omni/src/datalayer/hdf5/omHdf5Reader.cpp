@@ -48,9 +48,9 @@ OmDataWrapperPtr OmHdf5Reader::readDataset( const OmDataPath & path, int* size)
 	return hdf5->readDataset( path, size );
 }
 
-Vector3 < int > OmHdf5Reader::dataset_image_get_dims( const OmDataPath & path )
+Vector3 < int > OmHdf5Reader::getChunkedDatasetDims( const OmDataPath & path )
 {
-	return hdf5->dataset_image_get_dims( path );
+	return hdf5->getChunkedDatasetDims( path );
 }
 
 OmDataWrapperPtr OmHdf5Reader::readChunk( const OmDataPath & path, DataBbox dataExtent)
@@ -58,7 +58,7 @@ OmDataWrapperPtr OmHdf5Reader::readChunk( const OmDataPath & path, DataBbox data
 	return hdf5->readChunk( path, dataExtent);
 }
 
-Vector3< int > OmHdf5Reader::dataset_get_dims( const OmDataPath & path )
+Vector3< int > OmHdf5Reader::getDatasetDims( const OmDataPath & path )
 {
-	return hdf5->dataset_get_dims( path );
+	return hdf5->getDatasetDims( path );
 }

@@ -1,111 +1,125 @@
 #include "datalayer/hdf5/omHdf5Utils.hpp"
-#include "common/omDebug.h"
+#include "common/omException.h"
+#include "datalayer/omDataPath.h"
 
-#include <QFile>
+#include "hdf5.h"
 
-void OmHdf5FileUtils::file_create(const std::string & fpath)
+void OmHdf5Utils::group_create(const int fileId,
+			       const char* path)
 {
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
+        //Creates a new empty group and links it into the file.
+        hid_t group_id = H5Gcreate2(fileId, path, 0, H5P_DEFAULT, H5P_DEFAULT);
+        if (group_id < 0) {
+                throw OmIoException("Could not create HDF5 group \""
+				    + string(path) + "\"");
+	}
 
-        QFile file(QString::fromStdString(fpath));
-        if(!file.exists()){
-		hid_t fileId = H5Fcreate(fpath.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
-		if (fileId < 0) {
-			const std::string errMsg = "Could not create HDF5 file: " + fpath + "\n";
-			fprintf(stderr, "%s", errMsg.c_str());
-			throw OmIoException(errMsg);
-		}
+        herr_t status = H5Gclose(group_id);
+        if (status < 0) {
+                throw OmIoException("Could not close HDF5 group.");
+	}
+}
 
-		file_close(fileId);
+void OmHdf5Utils::group_delete(const int fileId, const char* path)
+{
+	herr_t err = H5Gunlink(fileId, path);
+	if (err < 0) {
+		throw OmIoException("Could not unlink HDF5 group " + string(path));
+	}
+}
+
+bool OmHdf5Utils::group_exists(const int fileId, const char* path)
+{
+        H5E_BEGIN_TRY {
+ 		herr_t ret = H5Gget_objinfo(fileId, path, 0, NULL);
+ 		if( ret < 0 ){
+ 			return false;
+ 		}
+ 	} H5E_END_TRY
+
+ 	return true;
+}
+
+bool OmHdf5Utils::dataset_exists(const int fileId, const char* path)
+{
+         hid_t dataset_id;
+
+         //Try to open a data set
+         //Turn off error printing idea from http://www.fiberbundle.net/index.html
+         H5E_BEGIN_TRY {
+                 dataset_id = H5Dopen2(fileId, path, H5P_DEFAULT);
+         } H5E_END_TRY
+
+         //if failure, then assume doesn't exist
+         if (dataset_id < 0)
+                 return false;
+
+         //Closes the specified dataset.
+         herr_t ret = H5Dclose(dataset_id);
+         if (ret < 0) {
+                 throw OmIoException("Could not close HDF5 dataset "
+				     + string(path));
+         }
+
+         return true;
+}
+
+void OmHdf5Utils::dataset_delete(const int fileId, const char* path)
+{
+        //Removes the link to an object from a group.
+        herr_t err = H5Gunlink(fileId, path);
+        if (err < 0) {
+                throw OmIoException("Could not unlink HDF5 dataset "
+				    + string(path));
+	}
+}
+
+void OmHdf5Utils::dataset_delete_if_exists(const int fileId, const char* path)
+{
+        if (dataset_exists(fileId, path)) {
+		dataset_delete(fileId, path);
         }
 }
 
-hid_t OmHdf5FileUtils::file_open(std::string fpath, const bool readOnly  )
+OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype)
 {
-	debug("hdf5", "%s: opened HDF file\n", __FUNCTION__ );
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	const unsigned int totalCacheSizeMB = 256;
-
-	// number of elements (objects) in the raw data chunk cache (default 521)
-	//  should be a prime number (due to simplistic hashing algorithm)
-	size_t rdcc_nelmts = 2011;
-
-	size_t rdcc_nbytes = totalCacheSizeMB * 1024 * 1024; // total size of the raw data chunk cache (default 1MB)
-	double rdcc_w0 = 0.75;  // preemption policy (default 0.75)
-	int    mdc_nelmts  = 0;    // no longer used
-
-	hid_t fapl = H5Pcreate(H5P_FILE_ACCESS); // defaults
-	herr_t err = H5Pset_cache( fapl, mdc_nelmts, rdcc_nelmts, rdcc_nbytes, rdcc_w0 );
-	if(err < 0) {
-		throw OmIoException("Could not setup HDF5 file cache.");
-	}
-
-	hid_t fileId;
-	if( readOnly ) {
-		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDONLY, fapl);
-	} else {
-		fileId = H5Fopen(fpath.c_str(), H5F_ACC_RDWR, fapl);
-	}
-
-	if (fileId < 0) {
-		const std::string errMsg = "Could not open HDF5 file: " + fpath + "\n";
-                throw OmIoException(errMsg);
-	}
-
-	printfFileCacheSize( fileId );
-
-        return fileId;
+	OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, INVALID);
+	return dw;
 }
 
-void OmHdf5FileUtils::flush(const hid_t fileId)
+void OmHdf5Utils::printTypeInfo(const int dstype)
 {
-	H5Fflush(fileId, H5F_SCOPE_GLOBAL);
+	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
+	printf("type is %s\n", dw->getTypeAsString().c_str() );
 }
 
-void OmHdf5FileUtils::file_close (hid_t fileId)
+int OmHdf5Utils::getSizeofType(const int dstype)
 {
-	debug("hdf5", "%s: closed HDF file\n", __FUNCTION__ );
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	flush( fileId );
-        herr_t ret = H5Fclose(fileId);
-        if (ret < 0) {
-                throw OmIoException("Could not close HDF5 file.");
-	}
+	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
+	return dw->getSizeof();
 }
 
-void OmHdf5FileUtils::printfDatasetCacheSize( const hid_t dataset_id )
+OmDataWrapperPtr OmHdf5Utils::getDataWrapper(void* dataset,
+					     const int dstype,
+					     const OmDataAllocType allocType)
 {
-	if( !isDebugCategoryEnabled( "hdf5cache" ) ){
-		return;
-	}
-
-	size_t rdcc_nslots;
-	size_t rdcc_nbytes;
-	double rdcc_w0;
-
-	H5Pget_chunk_cache( H5Dget_access_plist(dataset_id), &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
-
-	printf("dataset cache info: Number of chunk slots in the raw data chunk cache: %s\n", qPrintable( QString::number(rdcc_nslots )));
-	printf("dataset cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
-	printf("dataset cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
+        switch( H5Tget_class( dstype ) ){
+        case H5T_INTEGER:
+                if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
+                        return OmDataWrapper<uint8_t>::produce(dataset, allocType);
+                } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
+                        return OmDataWrapper<int8_t>::produce(dataset, allocType);
+                }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
+                        return OmDataWrapper<uint32_t>::produce(dataset, allocType);
+                }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
+                        return OmDataWrapper<int32_t>::produce(dataset, allocType);
+                }else {
+			throw OmIoException("unknown hdf5 integer type");
+                }
+        case H5T_FLOAT:
+                return OmDataWrapper<float>::produce(dataset, allocType);
+        default:
+		throw OmIoException("unknown hdf5 type");
+        }
 }
 
-void OmHdf5FileUtils::printfFileCacheSize( const hid_t fileId )
-{
-	if( !isDebugCategoryEnabled( "hdf5cache" ) ){
-		return;
-	}
-
-	int    mdc_nelmts; // no longer used
-	size_t rdcc_nelmts;
-	size_t rdcc_nbytes;
-	double rdcc_w0;
-
-	H5Pget_cache(H5Fget_access_plist( fileId ), &mdc_nelmts, &rdcc_nelmts, &rdcc_nbytes, &rdcc_w0 );
-
-	printf("file cache info: Number of elements in the raw data chunk cache: %s\n", qPrintable( QString::number( rdcc_nelmts )));
-	printf("file cache info: Total size of the raw data chunk cache, in bytes: %s\n", qPrintable( QString::number(rdcc_nbytes )));
-	printf("file cache info: Preemption policy: %s\n",  qPrintable( QString::number(rdcc_w0)));
-}

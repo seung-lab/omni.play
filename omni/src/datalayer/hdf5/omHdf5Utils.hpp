@@ -1,19 +1,28 @@
 #ifndef OM_HDF5_UTILS_HPP
 #define OM_HDF5_UTILS_HPP
 
-#include <string>
-#include "hdf5.h"
+#include "volume/omVolumeTypes.hpp"
+#include "datalayer/omDataWrapper.h"
 
-class OmHdf5FileUtils {
+class OmDataPath;
+
+class OmHdf5Utils {
 public:
-	static void file_create(const std::string&);
-	static hid_t file_open(std::string fpath, const bool readOnly);
-	static void file_close(hid_t fileId);
-	static void flush(const hid_t fileId);
+	static bool group_exists(const int, const char*);
+	static void group_delete(const int, const char*);
+	static void group_create(const int, const char*);
 
-private:
-	static void printfDatasetCacheSize( const hid_t dataset_id );
-	static void printfFileCacheSize( const hid_t fileId );
+	static bool dataset_exists(const int, const char*);
+	static void dataset_delete(const int, const char*);
+	static void dataset_delete_if_exists(const int, const char*);
+
+	static OmDataWrapperPtr getNullDataWrapper(const int);
+	static void printTypeInfo(const int);
+	static int getSizeofType(const int);
+	static OmDataWrapperPtr getDataWrapper(void*,
+					       const int,
+					       const OmDataAllocType);
+
 };
 
 #endif

@@ -5,31 +5,25 @@
 #include "datalayer/omDataPaths.h"
 #include "utility/omImageDataIo.h"
 #include "utility/omSystemInformation.h"
+#include "datalayer/hdf5/omHdf5Utils.hpp"
 
 #include <QStringList>
+#include "hdf5.h"
 
 bool OmHdf5LowLevel::group_exists(){
-	return group_exists(getPath());
+	return OmHdf5Utils::group_exists(fileId, getPath());
 }
 
 void OmHdf5LowLevel::group_delete(){
-	group_delete(getPath());
+	OmHdf5Utils::group_delete(fileId, getPath());
 }
 
 void OmHdf5LowLevel::group_create(){
-	group_create(getPath());
+	OmHdf5Utils::group_create(fileId, getPath());
 }
 
-bool OmHdf5LowLevel::group_exists(const char* path)
-{
-        H5E_BEGIN_TRY {
- 		herr_t ret = H5Gget_objinfo(fileId, path, 0, NULL);
- 		if( ret < 0 ){
- 			return false;
- 		}
- 	} H5E_END_TRY
-
- 	return true;
+bool OmHdf5LowLevel::dataset_exists(){
+	return OmHdf5Utils::dataset_exists(fileId, getPath());
 }
 
 /**
@@ -39,7 +33,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkNotOnBoundary(DataBbox dataExtent)
 {
         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
-        const Vector3i dims = dataset_image_get_dims();
+        const Vector3i dims = getChunkedDatasetDims();
 
         const DataBbox dataset_extent =
 		DataBbox(Vector3i::ZERO, dims.x, dims.y, dims.z);
@@ -94,7 +88,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s: path is %s\n",
 	      __FUNCTION__, getPath());
 
-	if(!group_exists()){
+	if(!OmHdf5Utils::group_exists(fileId, getPath())){
 		*size = 0;
 		return OmDataWrapperInvalid();
 	}
@@ -105,7 +99,9 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		const string errMsg = "Could not open HDF5 dataset (even though it existed)" + string(getPath());
+		const string errMsg =
+			"Could not open HDF5 dataset (even though it existed)"
+			+ string(getPath());
 		throw OmIoException(errMsg);
 	}
 
@@ -125,7 +121,8 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 
 	//printTypeInfo( dstype );
 
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s: dataset size is %d\n", __FUNCTION__, (int)dataset_size);
+	debug("hdf5verbose", "OmHDF5LowLevel: in %s: dataset size is %d\n",
+	      __FUNCTION__, (int)dataset_size);
 
 	//Allocate memory to read into
 	dataset_data = malloc(dataset_size);
@@ -136,11 +133,13 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	//Reads raw data from a dataset into a buffer.
 	status = H5Dread(dataset_id, dstype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
 	if (status < 0) {
-		const string errMsg = "Could not open HDF5 dataset " + string(getPath());
+		const string errMsg =
+			"Could not open HDF5 dataset " + string(getPath());
 		throw OmIoException(errMsg);
 	}
 
-	OmDataWrapperPtr data = getDataWrapper(dataset_data, dstype, MALLOC);
+	OmDataWrapperPtr data =
+		OmHdf5Utils::getDataWrapper(dataset_data, dstype, MALLOC);
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace.
@@ -205,65 +204,6 @@ void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
 	}
 }
 
-OmDataWrapperPtr OmHdf5LowLevel::getNullDataWrapper(const hid_t dstype)
-{
-	return getDataWrapper(NULL, dstype, INVALID);
-}
-
-void OmHdf5LowLevel::printTypeInfo(const hid_t dstype)
-{
-	OmDataWrapperPtr p = getNullDataWrapper(dstype);
-	printf("type is %s\n", p->getTypeAsString().c_str() );
-}
-
-int OmHdf5LowLevel::getSizeofType(const hid_t dstype)
-{
-	return getNullDataWrapper(dstype)->getSizeof();
-}
-
-OmDataWrapperPtr OmHdf5LowLevel::getDataWrapper(void* dataset,
-						hid_t dstype,
-						const OmDataAllocType allocType)
-{
-        switch( H5Tget_class( dstype ) ){
-        case H5T_INTEGER:
-                if( H5Tequal(dstype, H5T_NATIVE_UCHAR ) ){
-                        return OmDataWrapper<uint8_t>::produce(dataset, allocType);
-                } else if( H5Tequal(dstype, H5T_NATIVE_CHAR ) ){
-                        return OmDataWrapper<int8_t>::produce(dataset, allocType);
-                }else if( H5Tequal(dstype, H5T_NATIVE_UINT ) ){
-                        return OmDataWrapper<uint32_t>::produce(dataset, allocType);
-                }else if( H5Tequal(dstype, H5T_NATIVE_INT ) ){
-                        return OmDataWrapper<int32_t>::produce(dataset, allocType);
-                }else {
-			throw OmIoException("unknown hdf5 integer type");
-                }
-                break;
-        case H5T_FLOAT:
-                return OmDataWrapper<float>::produce(dataset, allocType);
-                break;
-        default:
-		throw OmIoException("unknown hdf5 type");
-                break;
-        }
-}
-
-void OmHdf5LowLevel::group_create(const char* path)
-{
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-        //Creates a new empty group and links it into the file.
-        hid_t group_id = H5Gcreate2(fileId, path, 0, H5P_DEFAULT, H5P_DEFAULT);
-        if (group_id < 0) {
-                throw OmIoException("Could not create HDF5 group.");
-	}
-
-        herr_t status = H5Gclose(group_id);
-        if (status < 0) {
-                throw OmIoException("Could not close HDF5 group.");
-	}
-}
-
 /**
  *	Creates nested group tree.  Ignores already existing groups.
  */
@@ -276,60 +216,14 @@ void OmHdf5LowLevel::group_create_tree(const char* path)
 		curPath += folder.toStdString() + "/";
 
                 //create if group does not exist
-                if (!group_exists(curPath.c_str() ) ){
-                        group_create(curPath.c_str() );
+                if (!OmHdf5Utils::group_exists(fileId, curPath.c_str() ) ){
+                        OmHdf5Utils::group_create(fileId, curPath.c_str() );
                 }
         }
 }
 
-void OmHdf5LowLevel::group_delete(const char* path)
-{
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-	//Closes the specified group.
-	herr_t err = H5Gunlink(fileId, path);
-	if (err < 0) {
-		throw OmIoException("Could not unlink HDF5 group " + string(getPath()));
-	}
-}
-
 /////////////////////////////////
 ///////          Dataset private
-bool OmHdf5LowLevel::dataset_exists()
-{
-         debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-         hid_t dataset_id;
-
-         //Try to open a data set
-         //Turn off error printing idea from http://www.fiberbundle.net/index.html
-         H5E_BEGIN_TRY {
-                 dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
-         } H5E_END_TRY
-
-         //if failure, then assume doesn't exist
-         if (dataset_id < 0)
-                 return false;
-
-         //Closes the specified dataset.
-         herr_t ret = H5Dclose(dataset_id);
-         if (ret < 0) {
-                 throw OmIoException("Could not close HDF5 dataset " + string(getPath()));
-         }
-
-         return true;
-}
-
-void OmHdf5LowLevel::dataset_delete()
-{
-	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
-
-        //Removes the link to an object from a group.
-        herr_t err = H5Gunlink(fileId, getPath());
-        if (err < 0) {
-                throw OmIoException("Could not unlink HDF5 dataset " + string(getPath()));
-	}
-}
 
 void OmHdf5LowLevel::dataset_delete_create_tree()
 {
@@ -346,14 +240,11 @@ void OmHdf5LowLevel::dataset_delete_create_tree()
 
                 group_create_tree(group_path.c_str());
         }
-        //if data already exists, delete it
-        if (dataset_exists()) {
-                dataset_delete();
-        }
 
+	OmHdf5Utils::dataset_delete_if_exists(fileId, getPath());
 }
 
-Vector3i  OmHdf5LowLevel::dataset_image_get_dims()
+Vector3i  OmHdf5LowLevel::getChunkedDatasetDims()
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
@@ -529,7 +420,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkVTK(DataBbox extent)
 	Vector3i extent_dims = extent.getUnitDimensions();
 	OmDataWrapperPtr imageData =
 		OmImageDataIo::allocImageData(extent_dims,
-					      getNullDataWrapper(dstype));
+					      OmHdf5Utils::getNullDataWrapper(dstype));
 
 	ret = H5Dread(dataset_id, imageData->getHdf5MemoryType(), mem_dataspace_id, dataspace_id,
 		      H5P_DEFAULT, imageData->getVTKptr()->GetScalarPointer());
@@ -686,10 +577,11 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(DataBbox extent)
 		throw OmIoException("Could not create scratch HDF5 dataspace to read data into.");
 
 	//setup image data
-	Vector3i extent_dims = extent.getUnitDimensions();
+	const Vector3i extent_dims = extent.getUnitDimensions();
 
-	void *imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*(getSizeofType(dstype)));
-	OmDataWrapperPtr data = getDataWrapper( imageData, dstype, MALLOC );
+	void *imageData = malloc(extent_dims.x*extent_dims.y*extent_dims.z*(OmHdf5Utils::getSizeofType(dstype)));
+	OmDataWrapperPtr data =
+		OmHdf5Utils::getDataWrapper( imageData, dstype, MALLOC );
 
 	H5Tclose( dstype );
 
@@ -720,7 +612,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(DataBbox extent)
 	return data;
 }
 
-Vector3i OmHdf5LowLevel::dataset_get_dims()
+Vector3i OmHdf5LowLevel::getDatasetDims()
 {
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 

@@ -42,9 +42,9 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 	//get dims of image
 	Vector3 < int >dims;
 	if(hdf5reader->dataset_exists(dataset)){
-		dims = hdf5reader->dataset_image_get_dims( dataset );
+		dims = hdf5reader->getChunkedDatasetDims( dataset );
 	} else {
-		dims = hdf5reader->dataset_image_get_dims( OmDataPaths::getDefaultDatasetName() );
+		dims = hdf5reader->getChunkedDatasetDims( OmDataPaths::getDefaultDatasetName() );
 	}
 
 	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));

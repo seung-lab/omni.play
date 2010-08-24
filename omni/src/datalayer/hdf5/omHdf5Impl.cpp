@@ -2,9 +2,9 @@
 #include "common/omException.h"
 #include "datalayer/hdf5/omHdf5Impl.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/hdf5/omHdf5Utils.hpp"
+#include "datalayer/hdf5/omHdf5FileUtils.hpp"
 
-OmHdf5Impl::OmHdf5Impl(string fileName, const bool readOnly)
+OmHdf5Impl::OmHdf5Impl(const std::string& fileName, const bool readOnly)
 	: mReadOnly(readOnly)
 {
 	fileId = OmHdf5FileUtils::file_open(fileName, mReadOnly);
@@ -76,10 +76,10 @@ void OmHdf5Impl::writeDataset(const OmDataPath & path,
 	hdf_->allocateDataset(size, data);
 }
 
-Vector3i OmHdf5Impl::dataset_image_get_dims(const OmDataPath & path)
+Vector3i OmHdf5Impl::getChunkedDatasetDims(const OmDataPath & path)
 {
 	hdf_->setPath(path);
-	return hdf_->dataset_image_get_dims();
+	return hdf_->getChunkedDatasetDims();
 }
 
 OmDataWrapperPtr OmHdf5Impl::readChunk(const OmDataPath & path,
@@ -97,8 +97,8 @@ void OmHdf5Impl::writeChunk(const OmDataPath & path,
 	hdf_->writeChunk(dataExtent, data);
 }
 
-Vector3< int > OmHdf5Impl::dataset_get_dims( const OmDataPath & path )
+Vector3< int > OmHdf5Impl::getDatasetDims( const OmDataPath & path )
 {
 	hdf_->setPath(path);
-	return hdf_->dataset_get_dims();
+	return hdf_->getDatasetDims();
 }

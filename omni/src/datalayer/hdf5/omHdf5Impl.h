@@ -9,7 +9,7 @@ class OmDataPath;
 class OmHdf5Impl
 {
  public:
-	OmHdf5Impl(string fileName, const bool readOnly);
+	OmHdf5Impl(const std::string& fileName, const bool readOnly);
 	~OmHdf5Impl();
 
 	void flush();
@@ -22,7 +22,7 @@ class OmHdf5Impl
 	bool dataset_exists(const OmDataPath & path);
 
 	//image I/O
-	Vector3i dataset_image_get_dims(const OmDataPath & path);
+	Vector3i getChunkedDatasetDims(const OmDataPath & path);
 	void allocateChunkedDataset(const OmDataPath &,
 							   const Vector3i& ,
 							   const Vector3i&,
@@ -38,12 +38,12 @@ class OmHdf5Impl
 	void writeDataset(const OmDataPath & path, int size, const OmDataWrapperPtr data);
 	OmDataWrapperPtr readChunk(const OmDataPath & path, DataBbox dataExtent);
 	void writeChunk(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
-	Vector3i dataset_get_dims( const OmDataPath & path );
+	Vector3i getDatasetDims( const OmDataPath & path );
 
  private:
 	boost::shared_ptr<OmHdf5LowLevel> hdf_;
 	const bool mReadOnly;
-	hid_t fileId;
+	int fileId;
 };
 
 #endif

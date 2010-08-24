@@ -120,7 +120,7 @@ bool OmMST::importDend(OmDataReader * hdf5reader)
     printf("no dendrogram dataset found\n");
     return false;
   }
-  Vector3 < int > dSize = hdf5reader->dataset_get_dims(fpath);
+  Vector3 < int > dSize = hdf5reader->getDatasetDims(fpath);
   int dendSize;
   OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
   printf("\tdendrogram is %s x %s (%s bytes)\n",
@@ -144,7 +144,7 @@ bool OmMST::importDendValues(OmDataReader * hdf5reader)
     printf("no dendrogram values dataset found\n");
     return false;
   }
-  Vector3 < int > vSize = hdf5reader->dataset_get_dims(fpath);
+  Vector3 < int > vSize = hdf5reader->getDatasetDims(fpath);
   int dendValuesSize;
   OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 

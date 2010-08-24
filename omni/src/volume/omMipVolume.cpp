@@ -960,12 +960,12 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	if( !QFile::exists(fileNameAndPath) ){
         	hdfExport.create();
         	hdfExport.open();
-		Vector3<int> full = MipLevelDataDimensions(0);
+		const Vector3i full = MipLevelDataDimensions(0);
         	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
         	hdfExport.allocateChunkedDataset(fpath,
-							      rounded_data_dims,
-							      full,
-							      mVolDataType);
+						 rounded_data_dims,
+						 full,
+						 mVolDataType);
 	} else {
         	hdfExport.open();
 	}

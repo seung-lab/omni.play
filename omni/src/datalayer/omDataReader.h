@@ -24,14 +24,14 @@ class OmDataReader
 	virtual bool dataset_exists( const OmDataPath & path ) = 0;
 
 	//image I/O
-	virtual Vector3 < int > dataset_image_get_dims(const OmDataPath & path ) = 0;
+	virtual Vector3 < int > getChunkedDatasetDims(const OmDataPath & path ) = 0;
 	virtual OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent) = 0;
 	virtual OmDataWrapperPtr readChunk( const OmDataPath & path, DataBbox dataExtent)=0;
 
 	//data set raw
 	virtual OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL) = 0;
 
-	virtual Vector3< int > dataset_get_dims(const OmDataPath & path) = 0;
+	virtual Vector3< int > getDatasetDims(const OmDataPath & path) = 0;
  };
 
 #endif
