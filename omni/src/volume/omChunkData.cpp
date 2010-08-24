@@ -220,8 +220,8 @@ public:
 	uint32_t operator()(T* d) const {
 		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
 						 d);
-		const uint32_t oldVal = data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
-		data.setVoxel(voxel_.x, voxel_.y, voxel_.z, val_);
+		const uint32_t oldVal = data.getVoxel(voxel_.z, voxel_.y, voxel_.x);
+		data.setVoxel(voxel_.z, voxel_.y, voxel_.x, val_);
 		return oldVal;
 	}
 private:
@@ -244,7 +244,7 @@ public:
 	uint32_t operator()(T* d) const {
 		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
 						 d);
-		return data.getVoxel(voxel_.x, voxel_.y, voxel_.z);
+		return data.getVoxel(voxel_.z, voxel_.y, voxel_.x);
 	}
 private:
 	const DataCoord & voxel_;

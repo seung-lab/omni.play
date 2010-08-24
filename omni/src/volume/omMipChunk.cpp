@@ -255,10 +255,11 @@ void OmMipChunk::ClearModifiedVoxelValues()
 /*
  *	Set value of voxel in ImageData of MipChunk.  Causes volume data to become dirty.
  */
-void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
+void OmMipChunk::SetVoxelValue(const DataCoord & volVoxel, uint32_t val)
 {
-	assert(ContainsVoxel(voxel));
+	assert(ContainsVoxel(volVoxel));
 
+        const DataCoord voxel = volVoxel - GetExtent().getMin();
 	const uint32_t oldVal = mChunkData->SetVoxelValue(voxel, val);
 
 	mModifiedVoxelValues.insert(oldVal);
@@ -272,8 +273,9 @@ void OmMipChunk::SetVoxelValue(const DataCoord & voxel, uint32_t val)
  */
 uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 {
+	assert(ContainsVoxel(volVoxel));
+
         const DataCoord voxel = volVoxel - GetExtent().getMin();
-	assert(ContainsVoxel(voxel));
 
 	return mChunkData->GetVoxelValue(voxel);
 }
