@@ -41,6 +41,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
         mShowValid = false;
 	mShowSplit = false;
 	mShowValidInColor = false;
+	mShowFilterInColor = false;
 
 	zoom_level = Vector2 < int >(0, 6);
 
