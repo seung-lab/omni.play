@@ -158,7 +158,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 				if (gotten_id) {
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
-					mThreeTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
+					//mThreeTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else if(mScribbling) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, true);
                                         safeTexture(gotten_id);

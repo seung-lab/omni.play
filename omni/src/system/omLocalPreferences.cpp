@@ -9,7 +9,14 @@
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
-OmLocalPreferences::OmLocalPreferences()
+OmLocalPreferences::OmLocalPreferences() 
+	: stickyCrosshairMode(NULL)
+        , m2DViewFrameIn3D(true)
+        , m2DViewPaneIn3D(false)
+        , mDrawCrosshairsIn3D(true)
+        , mDoDiscoBall(true)
+        , mCrosshairValue(10)
+        , localPrefFiles(NULL)
 {
 }
 

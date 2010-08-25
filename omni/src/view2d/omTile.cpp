@@ -93,13 +93,13 @@ OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* c
 				vDataFake[i] = ((unsigned char *)(vData))[i];
 			}
 
-			setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
+			out = setMyColorMap(((OmSegID *) vDataFake), tile_dims, key);
 
 			textureID = OmTextureIDPtr(new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
 								   cache, out, OMTILE_NEEDCOLORMAP));
 			free(vDataFake);
 		} else {
-			setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
+			out = setMyColorMap(((OmSegID *) vData), tile_dims, key);
 			textureID = OmTextureIDPtr(new OmTextureID(key, 0, 4*dataSize, tile_dims.x, tile_dims.y,
 								   cache, out, OMTILE_NEEDCOLORMAP));
 		}
@@ -155,7 +155,7 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	return ret;
 }
 
-void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
+unsigned char * OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key)
 {
 	const int numElements = dims.x * dims.y;
 	const uint32_t memSize = numElements * 4; // 4 == RGBA
@@ -166,5 +166,5 @@ void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileC
 				    key.mVolType,
 				    data );
 
-	*rData = data;
+	return data;
 }

@@ -24,6 +24,10 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 OmTextureID::~OmTextureID()
 {
 	OmGarbage::asOmTextureId(textureID);
+	if(texture) {
+		//printf("freeing texture that was never displayed\n");
+		free(texture);
+	}
 
 	//remove object size from cache
 	UpdateSize(-mem_size);

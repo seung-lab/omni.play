@@ -52,7 +52,7 @@ private:
 	int mBackgroundSamplesPerVoxel;
 	int mBackgroundBytesPerSample;
 
-	void setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
+	unsigned char * setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key);
 
 	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
