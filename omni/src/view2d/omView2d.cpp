@@ -116,7 +116,6 @@ OmView2d::OmView2d(ViewType viewtype, ObjectType voltype, OmId image_id, QWidget
 
 	iSentIt = false;
 	mInitialized = false;
-	mDrawFromChannel = false;
 
 	OmCachingThreadedCachingTile::Refresh();
 

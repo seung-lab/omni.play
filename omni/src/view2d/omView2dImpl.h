@@ -25,7 +25,7 @@ class OmView2dImpl : public QWidget
 	Vector2f GetPanDistance(ViewType viewType);
 	DataCoord SpaceToDataCoord(const SpaceCoord &spacec);
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
-        DataCoord ToDataCoord(float xMipChunk, float yMipChunk, float mDataDepth);
+        DataCoord ToDataCoord(float, float, float);
 
 	bool drawComplete;
 	ViewType mViewType;
@@ -38,12 +38,10 @@ class OmView2dImpl : public QWidget
 	bool mScribbling;
 	int mTileCountIncomplete;
 	int mRootLevel;
-	bool mDrawFromChannel;
 	int mZoomLevel;
 	double mAlpha;
 
 	vector <Drawable*> mTextures;
-	vector <Drawable*> mThreeTextures;
 
 	Vector4i mTotalViewport; //lower left x, lower left y, width, height
 
@@ -53,8 +51,6 @@ class OmView2dImpl : public QWidget
 	QImage safePaintEvent();	// pbuffered paint.
 
  private:
-	void setBackgroundColor();
-
 	void initializeGL();
 
 	void DrawFromCache();

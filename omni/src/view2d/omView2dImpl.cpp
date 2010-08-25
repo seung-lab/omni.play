@@ -10,19 +10,8 @@
 
 OmView2dImpl::OmView2dImpl(QWidget * parent)
 	: QWidget(parent)
+	, drawComplete(false)
 {
-	// drawComplete = true; // this was never initialized! set it here?
-
-	setBackgroundColor();
-}
-
-void OmView2dImpl::setBackgroundColor()
-{
-	// http://wiki.forum.nokia.com/index.php/CS001348_-_Changing_QWidget_background_colour
-	// Set background colour to black
-	QPalette p(palette());
-	p.setColor(QPalette::Background, Qt::black);
-	setPalette(p);
 }
 
 void OmView2dImpl::Draw()
@@ -30,35 +19,9 @@ void OmView2dImpl::Draw()
 	drawComplete = true;
 
 	Vector2f zoomMipVector = mViewGroupState->GetZoomLevel();
-	if (0) {
-		Vector2f zoom = zoomMipVector;
-		Vector2f translateVector = GetPanDistance(mViewType);
-
-		int lvl = zoomMipVector.x+1;
-
-		for (int i = mRootLevel; i > lvl; --i) {
-
-			zoom.x = i;
-			zoom.y = zoomMipVector.y * (1 + i - zoomMipVector.x);
-			debug("view2d","OmView2d::Draw(zoom lvl %i, scale %i\n)\n");
-
-			mViewGroupState->SetPanDistance(mViewType,
-							Vector2f(translateVector.x / (1 + i - zoomMipVector.x),
-								 translateVector.y / (1 + i - zoomMipVector.x)),
-							false);
-
-			PreDraw(zoom);
-		}
-		mViewGroupState->SetPanDistance(mViewType,
-							   Vector2f(translateVector.x, translateVector.y),
-							   false);
-	}
 
 	PreDraw(zoomMipVector);
-	if (mDrawFromChannel) {
-		OmStateManager::SetViewDrawable(mViewType, mThreeTextures);
-	}
-	mThreeTextures.clear();
+
 	TextureDraw(mTextures);
 	mTextures.clear ();
 }
@@ -588,33 +551,26 @@ QImage OmView2dImpl::safePaintEvent()
 	return pbuffer->toImage();
 }
 
+// IMPORTANT: To cooperate fully with QPainter, we defer matrix
+//   stack operations and attribute initialization until
+//   the widget needs to be myUpdated.
 // The initializeGL() function is called just once, before paintGL() is called.
 // More importantly this function is called before "make current" calls.
 void OmView2dImpl::initializeGL()
 {
-	// IMPORTANT: To cooperate fully with QPainter, we defer matrix stack operations and attribute initialization until
-	// the widget needs to be myUpdated.
-	//debug("genone","OmView2d::initializeGL        " << "(" << size().width() << ", " << size().height() << ")");
-	//debug("genone","viewtype = " << mViewType);
-
 	mTotalViewport.lowerLeftX = 0;
 	mTotalViewport.lowerLeftY = 0;
 	mTotalViewport.width = size().width();
 	mTotalViewport.height = size().height();
 
-	// //debug("FIXME", << "mtotalviewport = " << mTotalViewport << endl;
-
 	mNearClip = -1;
 	mFarClip = 1;
 	mZoomLevel = 0;
-
-	// //debug("FIXME", << "mTotalViewport = " << mTotalViewport << endl;
 }
 
 void OmView2dImpl::DrawFromCache()
 {
 	if (mVolumeType == CHANNEL) {
-		mDrawFromChannel = true;
 		OmChannel & current_channel = OmProject::GetChannel(mImageId);
 		mVolume = &current_channel;
 
@@ -625,7 +581,6 @@ void OmView2dImpl::DrawFromCache()
 			delete fastCache;
 
 		Draw();
-		mDrawFromChannel = false;
 	} else {
 		OmSegmentation & current_seg = OmProject::GetSegmentation(mImageId);
 		mVolume = &current_seg;
