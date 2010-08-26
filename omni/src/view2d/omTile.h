@@ -29,13 +29,9 @@ public:
 	~OmTile();
 
 	OmTextureIDPtr BindToTextureID(const OmTileCoord &key, OmTileCache * cache);
-
 	void SetNewAlpha(float newval);
-
 	OmMipVolume *mVolume;
-
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
-	int GetDepth(const OmTileCoord &key);
 
 private:
 	OmViewGroupState * mViewGroupState;
@@ -55,16 +51,16 @@ private:
 
 	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
-	boost::shared_ptr<uint8_t> setMyColorMap(boost::shared_ptr<uint32_t>,
-						 const Vector2i&,
-						 const OmTileCoord&);
+	boost::shared_ptr<OmColorRGBA> setMyColorMap(boost::shared_ptr<uint32_t>,
+						     const Vector2i&,
+						     const OmTileCoord&);
 
-	boost::shared_ptr<uint8_t> GetImageData8bit(const OmTileCoord& key,
-						    OmMipVolume* vol);
-	boost::shared_ptr<uint32_t> GetImageData32bit(const OmTileCoord& key,
-						      OmMipVolume* vol);
+	boost::shared_ptr<uint8_t> GetImageData8bit(const OmTileCoord&);
+	boost::shared_ptr<uint32_t> GetImageData32bit(const OmTileCoord&);
 
 	OmTextureIDPtr makeNullTextureID(const OmTileCoord& key);
+	int GetDepth(const OmTileCoord &key);
+	int getVolDepth(const OmTileCoord& key);
 };
 
 #endif

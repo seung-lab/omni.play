@@ -53,7 +53,7 @@ class OmViewGroupState : public OmManageableObject {
 	void ColorTile(boost::shared_ptr<uint32_t>,
 		       const int,
 		       const ObjectType,
-		       boost::shared_ptr<uint8_t>);
+		       boost::shared_ptr<OmColorRGBA>);
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }

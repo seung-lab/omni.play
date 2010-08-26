@@ -24,7 +24,7 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
 			 const Vector2i& dims,
 			 OmTileCache * cache,
-			 boost::shared_ptr<uint32_t> texture,
+			 boost::shared_ptr<OmColorRGBA> texture,
 			 const OmTileFlag flag)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)

@@ -73,10 +73,11 @@ OmTextureIDPtr OmTile::makeNullTextureID(const OmTileCoord& key)
 
 OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
+
 	const Vector2i tile_dims(128,128);
 
 	if (vol_type == CHANNEL) {
-		boost::shared_ptr<uint8_t> vData = GetImageData8bit(key, mVolume);
+		boost::shared_ptr<uint8_t> vData = GetImageData8bit(key);
 		return OmTextureIDPtr(new OmTextureID(key,
 						      tile_dims,
 						      cache,
@@ -85,9 +86,9 @@ OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* c
 	}
 
 	boost::shared_ptr<uint32_t> vData =
-		GetImageData32bit(key, mVolume);
+		GetImageData32bit(key);
 
-	boost::shared_ptr<uchar> colorMappedData =
+	boost::shared_ptr<OmColorRGBA> colorMappedData =
 		setMyColorMap(vData, tile_dims, key);
 
 	return OmTextureIDPtr(new OmTextureID(key,
@@ -97,27 +98,28 @@ OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* c
 					      OMTILE_NEEDCOLORMAP));
 }
 
-
-boost::shared_ptr<uint8_t> OmTile::GetImageData8bit(const OmTileCoord& key,
-						    OmMipVolume* vol)
+int OmTile::getVolDepth(const OmTileCoord& key)
 {
-	OmMipChunkPtr my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key), true);
-
 	const int mDepth = GetDepth(key);
-	const int realDepth = mDepth % (vol->GetChunkDimension());
-	return my_chunk->ExtractDataSlice8bit(view_type, realDepth);
+	return mDepth % (mVolume->GetChunkDimension());
 }
 
-boost::shared_ptr<uint32_t> OmTile::GetImageData32bit(const OmTileCoord& key,
-						      OmMipVolume* vol)
+boost::shared_ptr<uint8_t> OmTile::GetImageData8bit(const OmTileCoord& key)
 {
-	OmMipChunkPtr my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key), true);
+	OmMipChunkPtr chunk;
+	mVolume->GetChunk(chunk, TileToMipCoord(key), true);
 
-	const int mDepth = GetDepth(key);
-	const int realDepth = mDepth % (vol->GetChunkDimension());
-	return my_chunk->ExtractDataSlice32bit(view_type, realDepth);
+	return chunk->ExtractDataSlice8bit(view_type,
+					   getVolDepth(key));
+}
+
+boost::shared_ptr<uint32_t> OmTile::GetImageData32bit(const OmTileCoord& key)
+{
+	OmMipChunkPtr chunk;
+	mVolume->GetChunk(chunk, TileToMipCoord(key), true);
+
+	return chunk->ExtractDataSlice32bit(view_type,
+					    getVolDepth(key));
 }
 
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
@@ -152,14 +154,15 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	return ret;
 }
 
-boost::shared_ptr<uchar> OmTile::setMyColorMap(boost::shared_ptr<uint32_t> imageData,
-					       const Vector2i& dims,
-					       const OmTileCoord& key)
+boost::shared_ptr<OmColorRGBA>
+OmTile::setMyColorMap(boost::shared_ptr<uint32_t> imageData,
+		      const Vector2i& dims,
+		      const OmTileCoord& key)
 {
-	const int numElements = dims.x * dims.y;
-	const uint32_t memSize = numElements * 4; // 4 == RGBA
-	boost::shared_ptr<uint8_t> colorMappedData
-		= OmSmartPtr<uint8_t>::makeMallocPtr(memSize);
+	const uint32_t numElements = dims.x * dims.y;
+
+	boost::shared_ptr<OmColorRGBA> colorMappedData
+		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(numElements);
 
 	mViewGroupState->ColorTile(imageData,
 				   numElements,

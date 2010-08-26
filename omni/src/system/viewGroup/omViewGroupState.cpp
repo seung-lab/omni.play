@@ -313,7 +313,7 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 void OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 				 const int size,
 				 const ObjectType objType,
-				 boost::shared_ptr<uint8_t> data )
+				 boost::shared_ptr<OmColorRGBA> data )
 {
 	OmSegmentColorCacheType sccType;
 

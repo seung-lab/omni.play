@@ -22,10 +22,17 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 
 typedef struct {
-	quint8 red;
-	quint8 green;
-	quint8 blue;
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
 } OmColor;
+
+typedef struct {
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
+	uint8_t alpha;
+} OmColorRGBA;
 
 
 

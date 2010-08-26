@@ -41,7 +41,7 @@ public:
 	OmTextureID(const OmTileCoord & tileCoord,
 		    const Vector2i& dims,
 		    OmTileCache* cache,
-		    boost::shared_ptr<uint32_t> texture,
+		    boost::shared_ptr<OmColorRGBA> texture,
 		    const OmTileFlag flag);
 
 	virtual ~OmTextureID();
@@ -67,7 +67,7 @@ private:
 	GLuint textureID;
 	const Vector2i dims_;
 	boost::variant<boost::shared_ptr<uint8_t>,
-		       boost::shared_ptr<uint32_t> > texture_;
+		       boost::shared_ptr<OmColorRGBA> > texture_;
         OmTileFlag flag_;
 
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel

@@ -19,12 +19,13 @@ class OmSegment;
 class OmSegmentColorizer
 {
  public:
-	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>, const OmSegmentColorCacheType, const bool);
+	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
+			    const OmSegmentColorCacheType, const bool);
 	~OmSegmentColorizer();
 
 	void colorTile(boost::shared_ptr<uint32_t>,
-		       const int,
-		       boost::shared_ptr<uint8_t>);
+		       const uint32_t,
+		       boost::shared_ptr<OmColorRGBA>);
 
 	void setCurBreakThreshhold( const float t ) {
 		mPrevBreakThreshhold = mCurBreakThreshhold;

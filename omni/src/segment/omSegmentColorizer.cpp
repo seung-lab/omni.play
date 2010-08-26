@@ -43,8 +43,8 @@ void OmSegmentColorizer::setup()
 }
 
 void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
-				   const int size,
-				   boost::shared_ptr<uint8_t> dataPtr )
+				   const uint32_t size,
+				   boost::shared_ptr<OmColorRGBA> dataPtr )
 {
 	setup();
 
@@ -52,17 +52,16 @@ void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
 		                       mSegmentCache->AreSegmentsEnabled();
 
 	const int segCacheFreshness = OmCacheManager::Freshen(false);
-	uint32_t offset = 0;
 	OmColor prevColor = blackColor;
 	OmSegID lastVal = 0;
 
 	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
 
 	uint32_t* imageData = imageDataPtr.get();
-	uint8_t* data = dataPtr.get();
+	OmColorRGBA* data = dataPtr.get();
 
 	// looping through each segID in image data (typically 128*128 elements)
-	for (int i = 0; i < size; ++i ) {
+	for(uint32_t i = 0; i < size; ++i ) {
 
 		const OmSegID val = imageData[i]; // may upcast
 		OmColor curColor;
@@ -93,12 +92,10 @@ void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
 			lastVal   = val;
 		}
 
-		data[offset]     = curColor.red;
-		data[offset + 1] = curColor.green;
-		data[offset + 2] = curColor.blue;
-		data[offset + 3] = 255;
-
-		offset += 4;
+		data[i].red   = curColor.red;
+		data[i].green = curColor.green;
+		data[i].blue  = curColor.blue;
+		data[i].alpha = 255;
 	}
 }
 
