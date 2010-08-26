@@ -64,9 +64,8 @@ OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cac
 
 OmTextureIDPtr OmTile::makeNullTextureID(const OmTileCoord& key)
 {
-	return OmTextureIDPtr(new OmTextureID(key, 0,
-					      0,
-					      0, 0,
+	return OmTextureIDPtr(new OmTextureID(key,
+					      Vector2i(0,0),
 					      NULL,
 					      boost::shared_ptr<uint8_t>(),
 					      OMTILE_COORDINVALID));
@@ -74,17 +73,12 @@ OmTextureIDPtr OmTile::makeNullTextureID(const OmTileCoord& key)
 
 OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
-	mSamplesPerVoxel = 1;
-	mBytesPerSample = mVolume->getVolData()->GetBytesPerSample();
-
 	const Vector2i tile_dims(128,128);
-	const int dataSize = tile_dims.x * tile_dims.y;
 
 	if (vol_type == CHANNEL) {
 		boost::shared_ptr<uint8_t> vData = GetImageData8bit(key, mVolume);
-		return OmTextureIDPtr(new OmTextureID(key, 0,
-						      dataSize,
-						      tile_dims.x, tile_dims.y,
+		return OmTextureIDPtr(new OmTextureID(key,
+						      tile_dims,
 						      cache,
 						      vData,
 						      OMTILE_NEEDTEXTUREBUILT));
@@ -96,9 +90,8 @@ OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* c
 	boost::shared_ptr<uchar> colorMappedData =
 		setMyColorMap(vData, tile_dims, key);
 
-	return OmTextureIDPtr(new OmTextureID(key, 0,
-					      4*dataSize,
-					      tile_dims.x, tile_dims.y,
+	return OmTextureIDPtr(new OmTextureID(key,
+					      tile_dims,
 					      cache,
 					      colorMappedData,
 					      OMTILE_NEEDCOLORMAP));

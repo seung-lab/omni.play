@@ -32,47 +32,44 @@ class OmTextureID : public OmCacheableBase {
 
 public:
 	OmTextureID(const OmTileCoord & tileCoord,
-		    const GLuint & texID,
-		    const int & size,
-		    const int x,
-		    const int y,
+		    const Vector2i& dims,
 		    OmTileCache* cache,
 		    boost::shared_ptr<uint8_t> texture,
 		    int flags);
 
 	OmTextureID(const OmTileCoord & tileCoord,
-		    const GLuint & texID,
-		    const int & size,
-		    const int x,
-		    const int y,
+		    const Vector2i& dims,
 		    OmTileCache* cache,
 		    boost::shared_ptr<uint32_t> texture,
 		    int flags);
 
 	virtual ~OmTextureID();
 
-	//texture ID property accessors;
+	int getX() const { return dims_.x; }
+	int getY() const { return dims_.y; }
+
 	GLuint getTextureID() const { return textureID; }
-	int GetSize() const { return mem_size; }
+	void setTextureID(const GLuint id) { textureID = id; }
+
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
+
+	int getFlags() const { return flags; }
+	void setFlags(const int f){ flags = f; }
 
 	void Flush(){}
 
-	OmTileCoord mTileCoordinate;
-	GLuint textureID;
-	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
-	int flags;
-	int x;
-	int y;
-
-	ObjectType mVolType;
-	bool mRemoveMe;
-
 	void* getTexture();
 	void deleteTexture();
+
 private:
+	const OmTileCoord mTileCoordinate;
+	GLuint textureID;
+	const Vector2i dims_;
 	boost::variant<boost::shared_ptr<uint8_t>,
 		       boost::shared_ptr<uint32_t> > texture_;
+        int flags;
+
+	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
 };
 
 #endif

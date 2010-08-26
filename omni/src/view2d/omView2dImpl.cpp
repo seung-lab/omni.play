@@ -221,42 +221,47 @@ DataCoord OmView2dImpl::ToDataCoord(float xMipChunk, float yMipChunk, float mDat
 
 void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 {
-	if (OMTILE_NEEDCOLORMAP == gotten_id->flags) {
-		GLuint texture;
-		glGenTextures(1, &texture);
+	if (OMTILE_NEEDCOLORMAP == gotten_id->getFlags()) {
+		GLuint textureID;
+		glGenTextures(1, &textureID);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gotten_id->x, gotten_id->y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+			     gotten_id->getX(), gotten_id->getY(),
+			     0, GL_RGBA, GL_UNSIGNED_BYTE,
 			     gotten_id->getTexture());
 
-		gotten_id->flags = OMTILE_GOOD;
-		gotten_id->textureID = texture;
+		gotten_id->setFlags(OMTILE_GOOD);
+		gotten_id->setTextureID(textureID);
 		gotten_id->deleteTexture();
 
 		debug("genone", "texture = %i\n", gotten_id->getTextureID());
 
-	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->flags) {
-		GLuint texture;
-		glGenTextures(1, &texture);
+	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->getFlags()) {
+		GLuint textureID;
+		glGenTextures(1, &textureID);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, gotten_id->x, gotten_id->y, 0, GL_LUMINANCE,
-			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->getTexture()));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE,
+			     gotten_id->getX(), gotten_id->getY(),
+			     0, GL_LUMINANCE,
+			     GL_UNSIGNED_BYTE,
+			     gotten_id->getTexture());
 
-		gotten_id->flags = OMTILE_GOOD;
-		gotten_id->textureID = texture;
+		gotten_id->setFlags(OMTILE_GOOD);
+		gotten_id->setTextureID(textureID);
 		gotten_id->deleteTexture();
 	}
 }
