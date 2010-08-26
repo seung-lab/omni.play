@@ -61,7 +61,7 @@ class OmView2dImpl : public QWidget
 	void safeDraw(float zoomFactor, float x, float y, int tileLength,
 		      OmTextureIDPtr gotten_id);
 	void safeTexture(OmTextureIDPtr gotten_id);
-	bool BufferTiles(Vector2f zoomMipVector);
+	void doSafeTexture(OmTextureIDPtr gotten_id);
 
 	Vector2f GetPanDistanceStickyMode(ViewType viewType);
 };

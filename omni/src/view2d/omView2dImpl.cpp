@@ -137,12 +137,8 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 	if (!complete) {
 		//		debug ("spin", "not complete yet in predraw\n");
 		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	} else {
-		//BufferTiles(zoomMipVector);
-		//debug ("genone", "complete in predraw\n");
 	}
 }
-
 
 Vector2f OmView2dImpl::GetPanDistance(ViewType viewType)
 {
@@ -221,192 +217,51 @@ DataCoord OmView2dImpl::ToDataCoord(float xMipChunk, float yMipChunk, float mDat
 
 void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 {
-	if (OMTILE_NEEDCOLORMAP == gotten_id->getFlags()) {
-		GLuint textureID;
-		glGenTextures(1, &textureID);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	if(gotten_id->needToBuildTexture()){
+		doSafeTexture(gotten_id);
+	}
+}
 
+void OmView2dImpl::doSafeTexture(OmTextureIDPtr gotten_id)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	switch(gotten_id->getFlags()){
+	case OMTILE_NEEDCOLORMAP:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-			     gotten_id->getX(), gotten_id->getY(),
-			     0, GL_RGBA, GL_UNSIGNED_BYTE,
+			     gotten_id->getWidth(), gotten_id->getHeight(),
+			     0, GL_RGBA,
+			     GL_UNSIGNED_BYTE,
 			     gotten_id->getTexture());
-
-		gotten_id->setFlags(OMTILE_GOOD);
-		gotten_id->setTextureID(textureID);
-		gotten_id->deleteTexture();
-
-		debug("genone", "texture = %i\n", gotten_id->getTextureID());
-
-	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->getFlags()) {
-		GLuint textureID;
-		glGenTextures(1, &textureID);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
+		break;
+	case OMTILE_NEEDTEXTUREBUILT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE,
-			     gotten_id->getX(), gotten_id->getY(),
+			     gotten_id->getWidth(), gotten_id->getHeight(),
 			     0, GL_LUMINANCE,
 			     GL_UNSIGNED_BYTE,
 			     gotten_id->getTexture());
-
-		gotten_id->setFlags(OMTILE_GOOD);
-		gotten_id->setTextureID(textureID);
-		gotten_id->deleteTexture();
+		break;
+	default:
+		throw OmArgException("unknown flag");
 	}
+
+	gotten_id->setFlags(OMTILE_GOOD);
+	gotten_id->setTextureID(textureID);
+	gotten_id->deleteTexture();
 }
-
-bool OmView2dImpl::BufferTiles(Vector2f zoomMipVector)
-{
-#define BUFFERCOUNT 10
-	int boff[BUFFERCOUNT] = {5, -5, 4, -4, 3, -3, 2, -2, 1, -1};
-
-	drawComplete = true;
-	unsigned int freshness = 0;
-	//debug("genone","OmView2d::Draw(zoom lvl %i, scale %i)\n", zoomMipVector.x, zoomMipVector.y);
-
-	//zoomMipVector = mViewGroupState->GetZoomLevel();
-
-	Vector2f translateVector = GetPanDistance(mViewType);
-	float zoomFactor = (zoomMipVector.y / 10.0);
-
-	Vector3f depth = Vector3f( 0, 0, 0);
-	DataCoord data_coord;
-	int mDataDepth = 0;
-	switch (mViewType){
-	case XY_VIEW:
-		depth.z = mViewGroupState->GetViewSliceDepth(XY_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.z;
-		break;
-	case XZ_VIEW:
-		depth.y = mViewGroupState->GetViewSliceDepth(XZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.y;
-		break;
-	case YZ_VIEW:
-		depth.x = mViewGroupState->GetViewSliceDepth(YZ_VIEW);
-		data_coord = SpaceToDataCoord(depth);
-	        mDataDepth = data_coord.x;
-		break;
-	}
-
-
-	float tileLength = 0;
-	switch (mCache->mVolType) {
-	case CHANNEL:
-		tileLength = OmProject::GetChannel(mCache->mImageId).GetChunkDimension();
-		break;
-	case SEGMENTATION:
-		tileLength = OmProject::GetSegmentation(mCache->mImageId).GetChunkDimension();
-		freshness = OmCachingThreadedCachingTile::Freshen(false);
-		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
-	}
-
-	bool complete = true;
-	debug("genone", "in buffering: %i\n", mDataDepth);
-	for (int count = 0; count < BUFFERCOUNT; count++) {
-		float xMipChunk;
-		float yMipChunk;
-		float xval;
-		float yval;
-		Vector2f stretch = mVolume->GetStretchValues(mViewType);
-
-		float pl = OMPOW(2, zoomMipVector.x);
-		int tl = tileLength * OMPOW(2, zoomMipVector.x);
-
-		if (translateVector.y < 0) {
-			yMipChunk = ((abs((int)translateVector.y) /tl)) * tl * pl;
-			yval = (-1 * (abs((int)translateVector.y) % tl));
-		} else {
-			yMipChunk = 0;
-			yval = translateVector.y;
-		}
-
-		//printf("count=%i\n", count);
-		for (float y = yval; y < (mTotalViewport.height/zoomFactor/stretch.y);
-	     		y = y + tileLength, yMipChunk = yMipChunk + tl) {
-
-			if (translateVector.x < 0) {
-				xMipChunk = ((abs((float)translateVector.x) / tl)) * tl * pl;
-				xval = (-1 * (abs((float)translateVector.x) % tl));
-			} else {
-				xMipChunk = 0;
-				xval = translateVector.x;
-			}
-
-#if 0
-			debug("view2d","mDataDepth = %i\n",mDataDepth);
-			debug("view2d", "tl = %i\n", tl);
-			debug("view2d", "pl = %i\n", pl);
-			//debug("view2d", "x = %i\n", x);
-			debug("view2d", "y = %i\n", y);
-			debug("view2d", "xval = %i\n", xval);
-			debug("view2d", "yval = %i\n", yval);
-			debug("view2d", "translateVector.x = %i\n", translateVector.x);
-			debug("view2d", "translateVector.y = %i\n", translateVector.y);
-			debug("view2d", "xMipChunk = %i\n", xMipChunk);
-			debug("view2d", "yMipChunk = %i\n", yMipChunk);
-			debug("view2d", "y-thing: = %f\n", (mTotalViewport.height * (1.0 / zoomFactor)));
-#endif
-
-			for (float x = xval; x < (mTotalViewport.width * (1.0 / zoomFactor/stretch.x));
-		     			x = x + tileLength, xMipChunk = xMipChunk + tl) {
-
-                        	DataCoord this_data_coord = ToDataCoord(xMipChunk, yMipChunk, mDataDepth+boff[count]);
-                        	SpaceCoord this_space_coord = DataToSpaceCoord(this_data_coord);
-                        	OmTileCoord mTileCoord = OmTileCoord(zoomMipVector.x, this_space_coord, mVolumeType, freshness);
-                        	NormCoord mNormCoord = mVolume->SpaceToNormCoord(mTileCoord.Coordinate);
-                        	OmMipChunkCoord coord = mCache->mVolume->NormToMipCoord(mNormCoord, mTileCoord.Level);
-				OmTextureIDPtr gotten_id;
-                        	if (mCache->mVolume->ContainsMipChunkCoord(coord)) {
-                                	mCache->GetTextureID(gotten_id, mTileCoord, false);
-					debug("genone", "buffering: %i, %i\n", count, boff[count]);
-                                	if (gotten_id) {
-                                        	safeTexture(gotten_id);
-					} else {
-						mTileCountIncomplete++;
-                                        	if (mTileCountIncomplete >= mTileCount) {
-							OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-							return false;
-						}
-                                        	complete = false;
-                                	}
-				}
-			}
-		}
-	}
-
-	if (!complete) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
-	}
-
-	debug("genone", "done buffering\n");
-	return complete;
-}
-
 
 void OmView2dImpl::TextureDraw(vector < Drawable * >&textures)
 {
-	Drawable * d;
-	vector < Drawable * >::iterator it;
-	for(it = textures.begin(); it != textures.end(); ++it){
-		d = *it;
+	FOR_EACH(it, textures){
+		Drawable* d = *it;
 		if (d->mGood) {
 			safeDraw(d->zoomFactor, d->x, d->y, d->tileLength, d->gotten_id);
 			delete (d);

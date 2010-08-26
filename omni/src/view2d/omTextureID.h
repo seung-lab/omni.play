@@ -46,8 +46,13 @@ public:
 
 	virtual ~OmTextureID();
 
-	int getX() const { return dims_.x; }
-	int getY() const { return dims_.y; }
+	bool needToBuildTexture(){
+		return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
+			flag_ == OMTILE_NEEDCOLORMAP);
+	}
+
+	int getWidth() const { return dims_.x; }
+	int getHeight() const { return dims_.y; }
 
 	GLuint getTextureID() const { return textureID; }
 	void setTextureID(const GLuint id) { textureID = id; }

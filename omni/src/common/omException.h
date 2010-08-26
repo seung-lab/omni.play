@@ -41,6 +41,12 @@ public:
 	: OmException("OmAccessException", EXCEPT_WARNING, msg) { }
 };
 
+class OmArgException : public OmException {
+public:
+	OmArgException(string msg)
+	: OmException("OmArgException", EXCEPT_ERROR, msg) { }
+};
+
 class OmFormatException : public OmException {
 public:
 	OmFormatException(string msg)
