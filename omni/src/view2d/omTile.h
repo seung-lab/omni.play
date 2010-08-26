@@ -25,28 +25,25 @@ typedef boost::shared_ptr<OmTextureID> OmTextureIDPtr;
 class OmTile {
 
 public:
-	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, OmViewGroupState * vgs);
+	OmTile(ViewType, ObjectType, OmId, OmMipVolume*, OmViewGroupState*);
 	~OmTile();
 
-	OmTextureIDPtr BindToTextureID(const OmTileCoord &key, OmTileCache * cache);
-	void SetNewAlpha(float newval);
-	OmMipVolume *mVolume;
-	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
+	OmTextureIDPtr BindToTextureID(const OmTileCoord &, OmTileCache*);
+	void SetNewAlpha(const float);
+	OmMipChunkCoord TileToMipCoord(const OmTileCoord &);
+
+	OmMipVolume *const mVolume;
+	OmMipVolume* getVol(){ return mVolume; }
 
 private:
 	const Vector2i dims_;
 	OmViewGroupState * mViewGroupState;
 
-	ViewType view_type;
-	ObjectType vol_type;
-	OmId myID;
+	const ViewType view_type;
+	const ObjectType vol_type;
+	const OmId myID;
 
 	float mAlpha;
-	int mSamplesPerVoxel;
-	int mBytesPerSample;
-
-	int mBackgroundSamplesPerVoxel;
-	int mBackgroundBytesPerSample;
 
 	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 

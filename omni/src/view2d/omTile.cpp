@@ -18,17 +18,13 @@
 
 OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id,
 	       OmMipVolume * vol, OmViewGroupState * vgs)
-	: dims_(Vector2i(128,128))
+	: mVolume(vol)
+	, dims_(Vector2i(128,128))
+	, mViewGroupState(vgs)
+	, view_type(viewtype)
+	, vol_type(voltype)
+	, myID(image_id)
 {
-	view_type = viewtype;
-	vol_type = voltype;
-
-	myID = image_id;
-
-	mVolume = vol;
-
-	mViewGroupState = vgs;
-
 	mAlpha = OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT);
 }
 
@@ -36,7 +32,7 @@ OmTile::~OmTile()
 {
 }
 
-void OmTile::SetNewAlpha(float newval)
+void OmTile::SetNewAlpha(const float newval)
 {
 	mAlpha = newval;
 }
