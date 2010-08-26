@@ -17,6 +17,8 @@
 #include "omTileCoord.h"
 #include "omTile.h"
 
+#include "boost/variant.hpp"
+
 // Flags to OmTextureID. FIXME. All of this is just a hack to make it work for now. MW.
 #define OMTILE_FIXME		0
 #define OMTILE_NEEDTEXTUREBUILT 1
@@ -35,13 +37,22 @@ public:
 		    const int x,
 		    const int y,
 		    OmTileCache* cache,
-		    void* texture,
+		    boost::shared_ptr<uint8_t> texture,
+		    int flags);
+
+	OmTextureID(const OmTileCoord & tileCoord,
+		    const GLuint & texID,
+		    const int & size,
+		    const int x,
+		    const int y,
+		    OmTileCache* cache,
+		    boost::shared_ptr<uint32_t> texture,
 		    int flags);
 
 	virtual ~OmTextureID();
 
 	//texture ID property accessors;
-	GLuint GetTextureID() const { return textureID; }
+	GLuint getTextureID() const { return textureID; }
 	int GetSize() const { return mem_size; }
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
 
@@ -50,13 +61,18 @@ public:
 	OmTileCoord mTileCoordinate;
 	GLuint textureID;
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
-	void * texture;	// Free this once the texture is built.
 	int flags;
 	int x;
 	int y;
 
 	ObjectType mVolType;
 	bool mRemoveMe;
+
+	void* getTexture();
+	void deleteTexture();
+private:
+	boost::variant<boost::shared_ptr<uint8_t>,
+		       boost::shared_ptr<uint32_t> > texture_;
 };
 
 #endif

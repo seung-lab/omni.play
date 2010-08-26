@@ -14,7 +14,8 @@ public:
 
 	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
 
-	void* ExtractDataSlice(const ViewType plane, const int offset);
+        boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 	OmImage<uint32_t, 3> getOmImage32Chunk();
 
 	void copyInTile(const int sliceOffset, uchar* bits);

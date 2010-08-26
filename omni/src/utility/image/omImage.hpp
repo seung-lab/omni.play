@@ -3,6 +3,7 @@
 
 #include "bits/omImage_traits.hpp"
 #include "common/omCommon.h"
+#include "utility/omSmartPtr.hpp"
 #include <boost/multi_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <zi/utility>
@@ -177,14 +178,14 @@ public:
     }
   }
 
-  T* getMallocCopyOfData() {
+  boost::shared_ptr<T> getMallocCopyOfData() {
     if(!d_.data_){
-      return NULL;
+      return boost::shared_ptr<T>();
     }
 
     const int numBytes = d_.data_->num_elements()*sizeof(T);
-    T* ret = (T*)malloc(numBytes);
-    memcpy(ret, d_.data_->data(), numBytes);
+    boost::shared_ptr<T> ret = OmSmartPtr<T>::makeMallocPtr(numBytes);
+    memcpy(ret.get(), d_.data_->data(), numBytes);
     return ret;
   }
 
@@ -229,6 +230,10 @@ public:
 
   OmImage<uint32_t,D> recastToUint32(){
     return recast<uint32_t>();
+  }
+
+  OmImage<uint8_t,D> recastToUint8(){
+    return recast<uint8_t>();
   }
 
   template <typename T1, std::size_t D1,

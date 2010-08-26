@@ -536,9 +536,16 @@ void OmMipChunk::GetBounds(float & , float &)
 	*/
 }
 
-void* OmMipChunk::ExtractDataSlice(const ViewType plane, int offset)
+boost::shared_ptr<uint8_t> OmMipChunk::ExtractDataSlice8bit(const ViewType plane,
+							    const int offset)
 {
-	return mChunkData->ExtractDataSlice(plane, offset);
+	return mChunkData->ExtractDataSlice8bit(plane, offset);
+}
+
+boost::shared_ptr<uint32_t> OmMipChunk::ExtractDataSlice32bit(const ViewType plane,
+							      const int offset)
+{
+	return mChunkData->ExtractDataSlice32bit(plane, offset);
 }
 
 void OmMipChunk::copyInTile(const int sliceOffset, uchar* bits)

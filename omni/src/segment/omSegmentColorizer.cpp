@@ -42,8 +42,9 @@ void OmSegmentColorizer::setup()
 	       curSize);
 }
 
-void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data )
+void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
+				   const int size,
+				   boost::shared_ptr<uint8_t> dataPtr )
 {
 	setup();
 
@@ -56,6 +57,9 @@ void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
 	OmSegID lastVal = 0;
 
 	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
+
+	uint32_t* imageData = imageDataPtr.get();
+	uint8_t* data = dataPtr.get();
 
 	// looping through each segID in image data (typically 128*128 elements)
 	for (int i = 0; i < size; ++i ) {

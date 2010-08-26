@@ -209,6 +209,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omThreadedCache.h \
            src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
+           src/utility/omSmartPtr.hpp \
            src/utility/dataWrappers.h \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \

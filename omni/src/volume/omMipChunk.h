@@ -102,7 +102,8 @@ public:
 
 	//slice
         Vector2i GetSliceDims();
-        void * ExtractDataSlice(const ViewType, int offset);
+        boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 
 	//meshing
         OmImage<uint32_t, 3> GetMeshOmImageData();

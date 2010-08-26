@@ -22,8 +22,9 @@ class OmSegmentColorizer
 	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>, const OmSegmentColorCacheType, const bool);
 	~OmSegmentColorizer();
 
-	void colorTile( OmSegID * imageData, const int size,
-			unsigned char * data );
+	void colorTile(boost::shared_ptr<uint32_t>,
+		       const int,
+		       boost::shared_ptr<uint8_t>);
 
 	void setCurBreakThreshhold( const float t ) {
 		mPrevBreakThreshhold = mCurBreakThreshhold;

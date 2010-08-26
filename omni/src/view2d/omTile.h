@@ -27,14 +27,13 @@ class OmTile {
 public:
 	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, OmViewGroupState * vgs);
 	~OmTile();
-	
+
 	OmTextureIDPtr BindToTextureID(const OmTileCoord &key, OmTileCache * cache);
-	
+
 	void SetNewAlpha(float newval);
 
 	OmMipVolume *mVolume;
-	
-	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
+
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
 	int GetDepth(const OmTileCoord &key);
 
@@ -44,11 +43,11 @@ private:
 	ViewType view_type;
 	ObjectType vol_type;
 	OmId myID;
-	
+
 	float mAlpha;
 	int mSamplesPerVoxel;
 	int mBytesPerSample;
-	
+
 	int mBackgroundSamplesPerVoxel;
 	int mBackgroundBytesPerSample;
 
@@ -56,6 +55,16 @@ private:
 
 	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
+	boost::shared_ptr<uint8_t> setMyColorMap(boost::shared_ptr<uint32_t>,
+						 const Vector2i&,
+						 const OmTileCoord&);
+
+	boost::shared_ptr<uint8_t> GetImageData8bit(const OmTileCoord& key,
+						    OmMipVolume* vol);
+	boost::shared_ptr<uint32_t> GetImageData32bit(const OmTileCoord& key,
+						      OmMipVolume* vol);
+
+	OmTextureIDPtr makeNullTextureID(const OmTileCoord& key);
 };
 
 #endif

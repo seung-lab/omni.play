@@ -233,17 +233,13 @@ void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gotten_id->x, gotten_id->y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-			     gotten_id->texture);
+			     gotten_id->getTexture());
 
 		gotten_id->flags = OMTILE_GOOD;
 		gotten_id->textureID = texture;
-		if (gotten_id->texture) {
-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
-			free(gotten_id->texture);
-		}
-		gotten_id->texture = NULL;
+		gotten_id->deleteTexture();
 
-		debug("genone", "texture = %i\n", gotten_id->GetTextureID());
+		debug("genone", "texture = %i\n", gotten_id->getTextureID());
 
 	} else if (OMTILE_NEEDTEXTUREBUILT == gotten_id->flags) {
 		GLuint texture;
@@ -257,16 +253,11 @@ void OmView2dImpl::safeTexture(OmTextureIDPtr gotten_id)
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, gotten_id->x, gotten_id->y, 0, GL_LUMINANCE,
-			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->texture));
+			     GL_UNSIGNED_BYTE, ((unsigned char *)gotten_id->getTexture()));
 
 		gotten_id->flags = OMTILE_GOOD;
 		gotten_id->textureID = texture;
-
-		if (gotten_id->texture) {
-			//debug ("genone", "freeing texture: %x\n", gotten_id->texture);
-			free(gotten_id->texture);
-		}
-		gotten_id->texture = NULL;
+		gotten_id->deleteTexture();
 	}
 }
 
@@ -434,7 +425,7 @@ void OmView2dImpl::safeDraw(float zoomFactor, float x, float y,
 		glMatrixMode(GL_MODELVIEW);
 	}
 
-	glBindTexture(GL_TEXTURE_2D, gotten_id->GetTextureID());
+	glBindTexture(GL_TEXTURE_2D, gotten_id->getTextureID());
 	glBegin(GL_QUADS);
 
 	GLfloat xLowerLeft, yLowerLeft, xLowerRight, yLowerRight, xUpperRight, yUpperRight, xUpperLeft, yUpperLeft;

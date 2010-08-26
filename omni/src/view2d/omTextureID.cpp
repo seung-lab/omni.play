@@ -7,13 +7,31 @@
 
 OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 			 const int &size, const int x, const int y,
-			 OmTileCache * cache, void *texture,
+			 OmTileCache * cache,
+			 boost::shared_ptr<uint8_t> texture,
 			 int flags)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)
 	, textureID(texID)
 	, mem_size(size)
-	, texture(texture)
+	, texture_(texture)
+	, flags(flags)
+	, x(x)
+	, y(y)
+{
+	UpdateSize(mem_size);
+}
+
+OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
+			 const int &size, const int x, const int y,
+			 OmTileCache * cache,
+			 boost::shared_ptr<uint32_t> texture,
+			 int flags)
+	: OmCacheableBase(cache)
+	, mTileCoordinate(tileCoord)
+	, textureID(texID)
+	, mem_size(size)
+	, texture_(texture)
 	, flags(flags)
 	, x(x)
 	, y(y)
@@ -24,11 +42,35 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord, const GLuint & texID,
 OmTextureID::~OmTextureID()
 {
 	OmGarbage::asOmTextureId(textureID);
-	if(texture) {
-		//printf("freeing texture that was never displayed\n");
-		free(texture);
-	}
 
 	//remove object size from cache
 	UpdateSize(-mem_size);
+}
+
+
+class GetTextureVisitor : public boost::static_visitor<void*>{
+public:
+	template <typename T>
+	void* operator()(T & d ) const {
+		return d.get();
+	}
+};
+void* OmTextureID::getTexture()
+{
+	return boost::apply_visitor(GetTextureVisitor(),
+				    texture_);
+}
+
+
+class DeleteTextureVisitor : public boost::static_visitor<>{
+public:
+	template <typename T>
+	void operator()(T & d ) const {
+		d.reset();
+	}
+};
+void OmTextureID::deleteTexture()
+{
+	boost::apply_visitor(DeleteTextureVisitor(),
+			     texture_);
 }

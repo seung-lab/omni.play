@@ -50,8 +50,10 @@ class OmViewGroupState : public OmManageableObject {
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	void ColorTile( OmSegID *, const int,
-			const ObjectType, unsigned char * );
+	void ColorTile(boost::shared_ptr<uint32_t>,
+		       const int,
+		       const ObjectType,
+		       boost::shared_ptr<uint8_t>);
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
