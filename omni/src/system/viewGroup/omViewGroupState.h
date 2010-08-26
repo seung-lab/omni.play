@@ -50,10 +50,10 @@ class OmViewGroupState : public OmManageableObject {
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	void ColorTile(boost::shared_ptr<uint32_t>,
-		       const int,
-		       const ObjectType,
-		       boost::shared_ptr<OmColorRGBA>);
+	boost::shared_ptr<OmColorRGBA>
+	ColorTile(boost::shared_ptr<uint32_t>,
+		  const Vector2i& dims,
+		  const ObjectType);
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
@@ -110,7 +110,7 @@ class OmViewGroupState : public OmManageableObject {
 	Vector3i mViewSliceDimYZ;
 	Vector3i mViewSliceDimXZ;
 
-	std::vector<OmSegmentColorizer*> mColorCaches;
+	std::vector<boost::shared_ptr<OmSegmentColorizer> > mColorCaches;
 
 	SegmentationDataWrapper * m_sdw;
 	ChannelDataWrapper * m_cdw;

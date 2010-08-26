@@ -1,5 +1,5 @@
 #include <stdlib.h>
-\
+
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "common/omStd.h"
@@ -33,7 +33,6 @@ OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id,
 
 OmTile::~OmTile()
 {
-	//debug("genone","OmTile::~OmTile()");
 }
 
 void OmTile::SetNewAlpha(float newval)
@@ -85,11 +84,13 @@ OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* c
 						      OMTILE_NEEDTEXTUREBUILT));
 	}
 
-	boost::shared_ptr<uint32_t> vData =
+	boost::shared_ptr<uint32_t> imageData =
 		GetImageData32bit(key);
 
 	boost::shared_ptr<OmColorRGBA> colorMappedData =
-		setMyColorMap(vData, tile_dims, key);
+		mViewGroupState->ColorTile(imageData,
+					   tile_dims,
+					   key.mVolType);
 
 	return OmTextureIDPtr(new OmTextureID(key,
 					      tile_dims,
@@ -152,22 +153,4 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	}
 
 	return ret;
-}
-
-boost::shared_ptr<OmColorRGBA>
-OmTile::setMyColorMap(boost::shared_ptr<uint32_t> imageData,
-		      const Vector2i& dims,
-		      const OmTileCoord& key)
-{
-	const uint32_t numElements = dims.x * dims.y;
-
-	boost::shared_ptr<OmColorRGBA> colorMappedData
-		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(numElements);
-
-	mViewGroupState->ColorTile(imageData,
-				   numElements,
-				   key.mVolType,
-				   colorMappedData);
-
-	return colorMappedData;
 }

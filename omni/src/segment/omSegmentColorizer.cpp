@@ -2,18 +2,21 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/cache/omCacheManager.h"
+#include "utility/omSmartPtr.hpp"
 
 static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
 					const OmSegmentColorCacheType sccType,
-					const bool isSegmentation)
+					const bool isSegmentation,
+					const Vector2i& dims)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize(0)
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
 	, mIsSegmentation(isSegmentation)
+	, mNumElements(dims.x * dims.y)
 {
 }
 
@@ -25,7 +28,7 @@ void OmSegmentColorizer::setup()
 {
 	zi::WriteGuard g(mMapResizeMutex);
 
-	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
+	const OmSegID curSize = mSegmentCache->getMaxValue() + 1;
 
 	if( curSize == mSize ){
 		return;
@@ -34,34 +37,35 @@ void OmSegmentColorizer::setup()
 	mSize = curSize;
 	mColorCache.resize(curSize);
 	mColorUpdateMutex.resize(curSize);
-
-	printf("segment color cache (%p): current size in memory ~%lu bytes for %d elements\n",
-	       this,
-	       sizeof(OmColorWithFreshness)*curSize +
-	       sizeof(zi::Mutex)*curSize,
-	       curSize);
 }
 
-void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
-				   const uint32_t size,
-				   boost::shared_ptr<OmColorRGBA> dataPtr )
+boost::shared_ptr<OmColorRGBA>
+OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr)
 {
 	setup();
+
+	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
 
 	mAreThereAnySegmentsSelected = mSegmentCache->AreSegmentsSelected() ||
 		                       mSegmentCache->AreSegmentsEnabled();
 
-	const int segCacheFreshness = OmCacheManager::Freshen(false);
+	mCurSegCacheFreshness = OmCacheManager::Freshen(false);
+
+	boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
+		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(mNumElements);
+
+	doColorTile(imageDataPtr.get(), colorMappedDataPtr.get());
+
+	return colorMappedDataPtr;
+}
+
+void OmSegmentColorizer::doColorTile(uint32_t* imageData,
+				     OmColorRGBA* colorMappedData)
+{
 	OmColor prevColor = blackColor;
 	OmSegID lastVal = 0;
 
-	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
-
-	uint32_t* imageData = imageDataPtr.get();
-	OmColorRGBA* data = dataPtr.get();
-
-	// looping through each segID in image data (typically 128*128 elements)
-	for(uint32_t i = 0; i < size; ++i ) {
+	for(uint32_t i = 0; i < mNumElements; ++i ) {
 
 		const OmSegID val = imageData[i]; // may upcast
 		OmColor curColor;
@@ -75,15 +79,15 @@ void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
 			mColorUpdateMutex[val].lock();
 
 			// check if cache element is valid
-			if(segCacheFreshness   == mColorCache[val].freshness &&
-			   mCurBreakThreshhold == mPrevBreakThreshhold       ){
+			if(mCurSegCacheFreshness  == mColorCache[val].freshness &&
+			   mCurBreakThreshhold == mPrevBreakThreshhold ){
 
 				curColor = mColorCache[val].color;
 
 			} else { // update color
 				curColor = mColorCache[val].color
 					 = getVoxelColorForView2d(val);
-				mColorCache[val].freshness = segCacheFreshness;
+				mColorCache[val].freshness = mCurSegCacheFreshness;
 			}
 
 			mColorUpdateMutex[val].unlock();
@@ -92,10 +96,10 @@ void OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr,
 			lastVal   = val;
 		}
 
-		data[i].red   = curColor.red;
-		data[i].green = curColor.green;
-		data[i].blue  = curColor.blue;
-		data[i].alpha = 255;
+		colorMappedData[i].red   = curColor.red;
+		colorMappedData[i].green = curColor.green;
+		colorMappedData[i].blue  = curColor.blue;
+		colorMappedData[i].alpha = 255;
 	}
 }
 

@@ -43,9 +43,9 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mShowValidInColor = false;
 	mShowFilterInColor = false;
 
-	zoom_level = Vector2 < int >(0, 6);
+	zoom_level = Vector2i(0, 6);
 
-	mColorCaches.resize( SCC_NUMBER_OF_ENUMS, NULL);
+	mColorCaches.resize(SCC_NUMBER_OF_ENUMS);
 	m_sdw = NULL;
 	m_cdw = NULL;
 
@@ -310,10 +310,10 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 	m_cdw = new ChannelDataWrapper( chanID );
 }
 
-void OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
-				 const int size,
-				 const ObjectType objType,
-				 boost::shared_ptr<OmColorRGBA> data )
+boost::shared_ptr<OmColorRGBA>
+OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
+			    const Vector2i& dims,
+			    const ObjectType objType)
 {
 	OmSegmentColorCacheType sccType;
 
@@ -357,14 +357,17 @@ void OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 	mColorCacheMapLock.lock();
 	if( NULL == mColorCaches[ sccType ] ){
 		assert(m_sdw);
-		mColorCaches[ sccType ] =
+		OmSegmentColorizer* sc =
 			new OmSegmentColorizer( m_sdw->getSegmentCache(),
 						sccType,
-						SEGMENTATION == objType );
+						SEGMENTATION == objType,
+						dims);
+		mColorCaches[ sccType ] =
+			boost::shared_ptr<OmSegmentColorizer>(sc);
 	}
 	mColorCacheMapLock.unlock();
 
-	mColorCaches[ sccType ]->colorTile( imageData, size, data );
+	return mColorCaches[ sccType ]->colorTile(imageData);
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)

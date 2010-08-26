@@ -47,8 +47,6 @@ private:
 	int mBackgroundSamplesPerVoxel;
 	int mBackgroundBytesPerSample;
 
-	unsigned char * setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key);
-
 	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
 	boost::shared_ptr<OmColorRGBA> setMyColorMap(boost::shared_ptr<uint32_t>,

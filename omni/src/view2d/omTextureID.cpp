@@ -33,7 +33,7 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
 	, texture_(texture)
 	, flag_(flag)
 {
-	mem_size = dims.x * dims.y * sizeof(uint32_t);
+	mem_size = dims.x * dims.y * sizeof(OmColorRGBA);
 	UpdateSize(mem_size);
 }
 
