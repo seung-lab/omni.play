@@ -68,7 +68,7 @@ typedef unsigned int OmBitfield;
 enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW };
 
 //objects
-enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER };
+enum ObjectType { CHANNEL, SEGMENTATION };
 
 
 /**

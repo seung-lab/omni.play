@@ -55,7 +55,6 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		break;
 	}
 
-
 	float tileLength = 0;
 	switch (mCache->mVolType) {
 	case CHANNEL:
@@ -65,13 +64,7 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 		tileLength = OmProject::GetSegmentation(mCache->mImageId).GetChunkDimension();
 		freshness = OmCachingThreadedCachingTile::Freshen(false);
 		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
 	}
-
 
 	bool complete = true;
 	float xMipChunk;
@@ -121,7 +114,6 @@ void OmView2dImpl::PreDraw(Vector2f zoomMipVector)
 				if (gotten_id) {
 					safeTexture(gotten_id);
 					mTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
-					//mThreeTextures.push_back(new Drawable(x*stretch.x, y*stretch.y, tileLength, mTileCoord, zoomFactor, gotten_id));
 				} else if(mScribbling) {
                                 	mCache->GetTextureID(gotten_id, mTileCoord, true);
                                         safeTexture(gotten_id);
@@ -290,7 +282,8 @@ void OmView2dImpl::safeDraw(float zoomFactor, float x, float y,
 	glBindTexture(GL_TEXTURE_2D, gotten_id->getTextureID());
 	glBegin(GL_QUADS);
 
-	GLfloat xLowerLeft, yLowerLeft, xLowerRight, yLowerRight, xUpperRight, yUpperRight, xUpperLeft, yUpperLeft;
+	GLfloat xLowerLeft, yLowerLeft, xLowerRight, yLowerRight, xUpperRight,
+		yUpperRight, xUpperLeft, yUpperLeft;
 
 	if (mViewType == XY_VIEW) {
 		xLowerLeft  = x * zoomFactor;

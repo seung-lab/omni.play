@@ -342,11 +342,6 @@ void MyInspectorWidget::doShowDataSrcContextMenu( QTreeWidgetItem *dataSrcItem )
 	case SEGMENTATION:
 		showSegmentationContextMenu();
 		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
 	}
 }
 
@@ -427,11 +422,6 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
 		break;
 	case SEGMENTATION:
 		updateSegmentListBox( dwc.getSegmentationDataWrapper() );
-		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
 		break;
 	}
 }

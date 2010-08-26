@@ -27,11 +27,6 @@ DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId
 		segmenDW = SegmentationDataWrapper(obj_id);
 		mIsValidContainer = true;
 		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
 	}
 }
 
@@ -154,14 +149,12 @@ quint64 SegmentationDataWrapper::getSegmentListSize(OmSegIDRootType type)
  *******************************************/
 SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmSegID segmentID)
 	: mID(segmentID)
-	, mType(SEGMENT)
 	, mSegmentationID( segmentationID )
 {
 }
 
 SegmentDataWrapper::SegmentDataWrapper( OmSegment * seg )
 	: mID(seg->value)
-	, mType(SEGMENT)
 	, mSegmentationID( seg->getSegmentationID() )
 {
 }
@@ -268,14 +261,13 @@ quint64 SegmentDataWrapper::getSizeWithChildren()
  *******************************************/
 FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId ID)
 	: mID(ID)
-	, mType(FILTER)
 	, mChannelID(channelID)
 {
 }
 
 bool FilterDataWrapper::isValid()
 {
-	if( OmProject::IsChannelValid( mChannelID ) ){
+	if( OmProject::IsChannelValid(mChannelID) ){
 		if( OmProject::GetChannel(mChannelID).IsFilterValid(mID) ){
 			return true;
 		}
@@ -284,7 +276,7 @@ bool FilterDataWrapper::isValid()
 	return false;
 }
 
-OmFilter2d * FilterDataWrapper::getFilter()
+OmFilter2d* FilterDataWrapper::getFilter()
 {
 	if(!isValid()){
 		return NULL;
