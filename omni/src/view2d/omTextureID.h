@@ -21,11 +21,10 @@
 
 // Flags to OmTextureID. FIXME. All of this is just a hack to make it work for now. MW.
 enum OmTileFlag {
-	OMTILE_FIXME = 0,
+	OMTILE_COORDINVALID = 0,
+	OMTILE_NEEDCOLORMAP,
 	OMTILE_NEEDTEXTUREBUILT,
-	OMTILE_COORDINVALID,
-	OMTILE_GOOD,
-	OMTILE_NEEDCOLORMAP
+	OMTILE_GOOD
 };
 
 class OmTileCache;
