@@ -20,11 +20,13 @@
 #include "boost/variant.hpp"
 
 // Flags to OmTextureID. FIXME. All of this is just a hack to make it work for now. MW.
-#define OMTILE_FIXME		0
-#define OMTILE_NEEDTEXTUREBUILT 1
-#define OMTILE_COORDINVALID     2
-#define OMTILE_GOOD		3
-#define OMTILE_NEEDCOLORMAP 	4
+enum OmTileFlag {
+	OMTILE_FIXME = 0,
+	OMTILE_NEEDTEXTUREBUILT,
+	OMTILE_COORDINVALID,
+	OMTILE_GOOD,
+	OMTILE_NEEDCOLORMAP
+};
 
 class OmTileCache;
 
@@ -35,13 +37,13 @@ public:
 		    const Vector2i& dims,
 		    OmTileCache* cache,
 		    boost::shared_ptr<uint8_t> texture,
-		    int flags);
+		    const OmTileFlag flag);
 
 	OmTextureID(const OmTileCoord & tileCoord,
 		    const Vector2i& dims,
 		    OmTileCache* cache,
 		    boost::shared_ptr<uint32_t> texture,
-		    int flags);
+		    const OmTileFlag flag);
 
 	virtual ~OmTextureID();
 
@@ -53,8 +55,8 @@ public:
 
 	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
 
-	int getFlags() const { return flags; }
-	void setFlags(const int f){ flags = f; }
+	OmTileFlag getFlags() const { return flag_; }
+	void setFlags(const OmTileFlag f){ flag_ = f; }
 
 	void Flush(){}
 
@@ -67,7 +69,7 @@ private:
 	const Vector2i dims_;
 	boost::variant<boost::shared_ptr<uint8_t>,
 		       boost::shared_ptr<uint32_t> > texture_;
-        int flags;
+        OmTileFlag flag_;
 
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
 };

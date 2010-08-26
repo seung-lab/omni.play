@@ -9,13 +9,13 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
 			 const Vector2i& dims,
 			 OmTileCache * cache,
 			 boost::shared_ptr<uint8_t> texture,
-			 int flags)
+			 const OmTileFlag flag)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)
 	, textureID(0)
 	, dims_(dims)
 	, texture_(texture)
-	, flags(flags)
+	, flag_(flag)
 {
 	mem_size = dims.x * dims.y * sizeof(uint8_t);
 	UpdateSize(mem_size);
@@ -25,13 +25,13 @@ OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
 			 const Vector2i& dims,
 			 OmTileCache * cache,
 			 boost::shared_ptr<uint32_t> texture,
-			 int flags)
+			 const OmTileFlag flag)
 	: OmCacheableBase(cache)
 	, mTileCoordinate(tileCoord)
 	, textureID(0)
 	, dims_(dims)
 	, texture_(texture)
-	, flags(flags)
+	, flag_(flag)
 {
 	mem_size = dims.x * dims.y * sizeof(uint32_t);
 	UpdateSize(mem_size);
