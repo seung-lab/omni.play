@@ -128,7 +128,7 @@ void OmSegmentContextMenu::UnselectOthers()
 void OmSegmentContextMenu::MergeSegments()
 {
         OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-        OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
+        OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
 

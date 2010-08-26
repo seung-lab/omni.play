@@ -71,7 +71,7 @@ bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
 
 	if( mAllEnabled ||
-	    mEnabledSet.contains( rootID ) ){
+	    0 != mEnabledSet.count(rootID)){
 		return true;
 	}
 
@@ -80,13 +80,13 @@ bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 
 void OmSegmentCacheImplLowLevel::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
+	const OmSegID rootID = findRoot(GetSegmentFromValue(segID))->value;
 	clearCaches();
 
 	if (isEnabled) {
-		mEnabledSet.insert( rootID );
+		mEnabledSet.insert(rootID);
 	} else {
-		mEnabledSet.remove( rootID );
+		mEnabledSet.erase(rootID);
 	}
 }
 
@@ -106,7 +106,7 @@ bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegment * seg )
 	const OmSegID rootID = findRoot( seg )->value;
 
 	if( mAllSelected ||
-	    mSelectedSet.contains( rootID ) ){
+	    0 != mSelectedSet.count(rootID) ){
 		return true;
 	}
 
@@ -155,7 +155,6 @@ void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID,
                doSelectedSetInsert( rootID, addToRecentList);
        } else {
                doSelectedSetRemove( rootID );
-               assert( !mSelectedSet.contains( segID ));
        }
 }
 
@@ -203,7 +202,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetInsert( const OmSegID segID,
 
 void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 {
-	mSelectedSet.remove( segID );
+	mSelectedSet.erase(segID);
 	addToRecentMap(segID);
 }
 

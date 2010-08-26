@@ -1,12 +1,12 @@
 #include "common/omCommon.h"
-#include "system/omProjectData.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveMipChunk.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataWrapper.h"
-#include "volume/omMipChunk.h"
 #include "datalayer/omDataReader.h"
+#include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
+#include "system/omProjectData.h"
+#include "volume/omMipChunk.h"
 
 #include <QDataStream>
 

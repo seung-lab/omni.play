@@ -31,7 +31,7 @@ void OmMeshSegmentListThread::run()
 
 	while( NULL != seg ){
 		const OmSegID val = seg->value;
-		if( chunkValues.contains( val ) ){
+		if(0 != chunkValues.count(val)){
 			segmentsToDraw.push_back(seg);
 		}
 

@@ -7,9 +7,9 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 
 JoinButton::JoinButton(GraphTools * d)
-	: OmButton<GraphTools>( d, 
-				 "Join", 
-				 "Join objects", 
+	: OmButton<GraphTools>( d,
+				 "Join",
+				 "Join objects",
 				 false)
 {
 }
@@ -22,7 +22,7 @@ void JoinButton::doAction()
 	}
 
 	OmSegmentation & seg = sdw.getSegmentation();
-	OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
+	OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(sdw.getID(), ids))->Run();
 
 	mParent->updateGui();

@@ -79,7 +79,7 @@ enum ObjectType { CHANNEL, SEGMENTATION };
 
 typedef uint32_t OmSegID;
 static const OmSegID NULL_SEGMENT_VALUE(0);
-typedef boost::unordered_set<OmSegID> OmSegIDsSet;
+typedef std::set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
 
 

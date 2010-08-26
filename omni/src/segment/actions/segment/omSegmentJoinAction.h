@@ -11,7 +11,7 @@
 class OmSegmentJoinAction : public OmAction {
 
 public:
-	OmSegmentJoinAction( const OmId segmentationId, const OmSegIDsSet & selectedSegmentIdsSet);
+	OmSegmentJoinAction( const OmId, const OmSegIDsSet&);
 
 private:
 	void Action();
@@ -24,8 +24,8 @@ private:
 	OmSegIDsSet mSelectedSegmentIds;
 
 	template <typename T> friend class OmActionLoggerFSThread;
-	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
-	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
+	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinAction&);
+	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinAction&);
 };
 
 #endif

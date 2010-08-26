@@ -437,7 +437,7 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 						GetChunk(p_chunk, chunk_coord);
 
 						const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-						if(data_values.contains(seg->value)) {
+						if(0 != data_values.count(seg->value)) {
 
 							if(!found) {
 								found = true;
