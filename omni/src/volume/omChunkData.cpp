@@ -140,14 +140,14 @@ public:
 	}
 
 private:
-
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
 
 	boost::shared_ptr<OmSegmentCache> segCache_;
-	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
+	std::map<OmSegID, OmSegment*> localSegCache_;
 };
+
 class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{
 public:
 	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
