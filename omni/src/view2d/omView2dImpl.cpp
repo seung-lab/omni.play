@@ -234,28 +234,30 @@ void OmView2dImpl::doSafeTexture(OmTextureIDPtr gotten_id)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-	switch(gotten_id->getFlags()){
-	case OMTILE_NEEDCOLORMAP:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-			     gotten_id->getWidth(), gotten_id->getHeight(),
-			     0, GL_RGBA,
-			     GL_UNSIGNED_BYTE,
-			     gotten_id->getTexture());
-		break;
-	case OMTILE_NEEDTEXTUREBUILT:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE,
-			     gotten_id->getWidth(), gotten_id->getHeight(),
-			     0, GL_LUMINANCE,
-			     GL_UNSIGNED_BYTE,
-			     gotten_id->getTexture());
-		break;
-	default:
-		throw OmArgException("unknown flag");
-	}
+	const GLint format = getFormat(gotten_id);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		     format,
+		     gotten_id->getWidth(), gotten_id->getHeight(),
+		     0,
+		     format,
+		     GL_UNSIGNED_BYTE,
+		     gotten_id->getTileData());
 
 	gotten_id->setFlags(OMTILE_GOOD);
 	gotten_id->setTextureID(textureID);
-	gotten_id->deleteTexture();
+	gotten_id->deleteTileData();
+}
+
+GLint OmView2dImpl::getFormat(OmTextureIDPtr gotten_id)
+{
+	switch(gotten_id->getFlags()){
+	case OMTILE_NEEDCOLORMAP:
+		return GL_RGBA;
+	case OMTILE_NEEDTEXTUREBUILT:
+		return GL_LUMINANCE;
+	default:
+		throw OmArgException("unknown flag");
+	}
 }
 
 void OmView2dImpl::TextureDraw(vector < Drawable * >&textures)

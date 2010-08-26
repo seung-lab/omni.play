@@ -64,8 +64,8 @@ public:
 
 	void Flush(){}
 
-	void* getTexture();
-	void deleteTexture();
+	void* getTileData();
+	void deleteTileData();
 
 private:
 	const OmTileCoord mTileCoordinate;

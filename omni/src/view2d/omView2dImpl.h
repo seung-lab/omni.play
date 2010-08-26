@@ -62,6 +62,7 @@ class OmView2dImpl : public QWidget
 		      OmTextureIDPtr gotten_id);
 	void safeTexture(OmTextureIDPtr gotten_id);
 	void doSafeTexture(OmTextureIDPtr gotten_id);
+	GLint getFormat(OmTextureIDPtr gotten_id);
 
 	Vector2f GetPanDistanceStickyMode(ViewType viewType);
 };

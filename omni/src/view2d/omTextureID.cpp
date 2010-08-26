@@ -46,29 +46,29 @@ OmTextureID::~OmTextureID()
 }
 
 
-class GetTextureVisitor : public boost::static_visitor<void*>{
+class GetTileDataVisitor : public boost::static_visitor<void*>{
 public:
 	template <typename T>
 	void* operator()(T & d ) const {
 		return d.get();
 	}
 };
-void* OmTextureID::getTexture()
+void* OmTextureID::getTileData()
 {
-	return boost::apply_visitor(GetTextureVisitor(),
+	return boost::apply_visitor(GetTileDataVisitor(),
 				    texture_);
 }
 
 
-class DeleteTextureVisitor : public boost::static_visitor<>{
+class DeleteTileDataVisitor : public boost::static_visitor<>{
 public:
 	template <typename T>
 	void operator()(T & d ) const {
 		d.reset();
 	}
 };
-void OmTextureID::deleteTexture()
+void OmTextureID::deleteTileData()
 {
-	boost::apply_visitor(DeleteTextureVisitor(),
+	boost::apply_visitor(DeleteTileDataVisitor(),
 			     texture_);
 }
