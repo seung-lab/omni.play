@@ -85,12 +85,12 @@ public:
 
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
-	OmSegSizeMapPtr RefreshDirectDataValues(const bool computeSizes);
+	void RefreshDirectDataValues(const bool,
+				     boost::shared_ptr<OmSegmentCache>);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();
 	const NormBbox& GetClippedNormExtent();
-
 
 	//mip properties
 	int GetLevel();
@@ -101,7 +101,6 @@ public:
 	const set<OmMipChunkCoord>& GetChildrenCoordinates();
 
 	//slice
-        Vector2i GetSliceDims();
         boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 
@@ -110,8 +109,6 @@ public:
 
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3<int> GetDimensions();
-
-	boost::unordered_map< OmSegID, DataBbox> & GetDirectDataBounds() { return mBounds; }
 
 	bool compare(OmMipChunkPtr other);
 
@@ -159,13 +156,11 @@ protected:
 
 	boost::shared_ptr<OmChunkData> mChunkData;
 
-        OmSegBounds mBounds;
-	void addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos);
 	void writeHDF5();
 
 	friend class OmMipVolume;
 	friend class OmChunkData;
-	friend class RefreshDirectDataValuesVisitor;
+	friend class ProcessChunkVoxel;
 	friend QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk );
 	friend QDataStream &operator>>(QDataStream & in, OmMipChunk & chunk );
 };

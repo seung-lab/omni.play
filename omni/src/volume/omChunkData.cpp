@@ -1,6 +1,7 @@
 #include "utility/image/omImage.hpp"
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
+#include "segment/omSegmentCache.h"
 
 OmChunkData::OmChunkData(OmMipVolume* vol,
 			 OmMipChunk* chunk,
@@ -103,54 +104,96 @@ boost::shared_ptr<uint32_t> OmChunkData::ExtractDataSlice32bit(const ViewType pl
 }
 
 
-class RefreshDirectDataValuesVisitor :
-	public boost::static_visitor<OmSegSizeMapPtr>{
+class ProcessChunkVoxel {
+public:
+	ProcessChunkVoxel(OmMipChunk* chunk,
+			  const bool computeSizes,
+			  boost::shared_ptr<OmSegmentCache> segCache)
+		: chunk_(chunk)
+		, computeSizes_(computeSizes)
+		, minVertexOfChunk_(chunk_->GetExtent().getMin())
+		, segCache_(segCache) {}
+
+	void processVoxel(const OmSegID val, const Vector3i& voxelPos)
+	{
+		chunk_->mDirectlyContainedValues.insert(val);
+
+		if(!computeSizes_){
+			return;
+		}
+
+		OmSegment* seg = getOrAddSegment(val);
+		seg->addToSize(1);
+
+		const DataBbox box(minVertexOfChunk_ + voxelPos,
+				   minVertexOfChunk_ + voxelPos);
+		seg->addToBounds(box);
+	}
+
+	OmSegment* getOrAddSegment(const OmSegID val)
+	{
+		if(0 == localSegCache_.count(val)){
+			return localSegCache_[val] =
+				segCache_->GetOrAddSegment(val);
+		}
+		return localSegCache_[val];
+	}
+
+private:
+
+	OmMipChunk *const chunk_;
+	const bool computeSizes_;
+	const Vector3i minVertexOfChunk_;
+
+	boost::shared_ptr<OmSegmentCache> segCache_;
+	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
+};
+class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{
 public:
 	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
-				       const bool computeSizes)
+				       const bool computeSizes,
+				       boost::shared_ptr<OmSegmentCache> segCache)
 		: chunk_(chunk)
-		, computeSizes_(computeSizes) {}
+		, computeSizes_(computeSizes)
+		, segCache_(segCache) {}
 
 	template <typename T>
-	OmSegSizeMapPtr operator()(T* d ) const{
-		return doRefreshDirectDataValues(d);
+	void operator()(T* d ) const{
+		doRefreshDirectDataValues(d);
 	}
 private:
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
+	boost::shared_ptr<OmSegmentCache> segCache_;
 
 	template <typename C>
-	OmSegSizeMapPtr doRefreshDirectDataValues(C* data) const
+	void doRefreshDirectDataValues(C* data) const
 	{
-		OmSegSizeMapPtr sizes(new OmSegSizeMap());
+		ProcessChunkVoxel p(chunk_, computeSizes_, segCache_);
 
 		//for all voxels in the chunk
 		for(int z = 0; z < 128; z++) {
 			for(int y = 0; y < 128; y++) {
 				for(int x = 0; x < 128; x++) {
-
-					const OmSegID val = static_cast<OmSegID>(*data++);
-
-					if(0 == val){ continue; }
-
-					chunk_->mDirectlyContainedValues.insert(val);
-
-					if(!computeSizes_){ continue; }
-
-					++((*sizes)[val]);
-
-					chunk_->addVoxelToBounds(val,
-								 Vector3i(x,y,z));
+					const OmSegID val =
+						static_cast<OmSegID>(*data++);
+					if(0 == val){
+						continue;
+					}
+					p.processVoxel(val, Vector3i(x,y,z));
 				}
 			}
 		}
-		return sizes;
 	}
+
 };
-OmSegSizeMapPtr OmChunkData::RefreshDirectDataValues(const bool computeSizes)
+void OmChunkData::RefreshDirectDataValues(const bool computeSizes,
+					  boost::shared_ptr<OmSegmentCache> segCache)
 {
-	return boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_, computeSizes),
-				    getRawData());
+	boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_,
+							    computeSizes,
+							    segCache),
+			     getRawData());
 }
 
 

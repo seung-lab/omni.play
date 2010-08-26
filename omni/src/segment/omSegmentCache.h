@@ -20,11 +20,9 @@ public:
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
-	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
-				  OmSegSizeMapPtr, OmSegBounds&);
 	OmSegment* AddSegment(OmSegID value);
-
 	OmSegment* GetSegment(const OmSegID);
+	OmSegment* GetOrAddSegment(const OmSegID);
 
 	bool IsSegmentValid(OmSegID seg);
 

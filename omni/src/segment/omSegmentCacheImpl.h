@@ -17,8 +17,7 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
-	void AddSegmentsFromChunk(const OmSegIDsSet &, const OmMipChunkCoord &,
-				  OmSegSizeMapPtr, OmSegBounds&);
+	OmSegment* GetOrAddSegment(const OmSegID val);
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 

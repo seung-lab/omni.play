@@ -48,13 +48,10 @@ OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 	return mImpl->AddSegment(value);
 }
 
-void OmSegmentCache::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
-					  const OmMipChunkCoord & mipCoord,
-					  OmSegSizeMapPtr sizes,
-					  OmSegBounds& bounds)
+OmSegment* OmSegmentCache::GetOrAddSegment(const OmSegID val)
 {
-	QMutexLocker locker( &mMutex );
-	mImpl->AddSegmentsFromChunk(data_values, mipCoord, sizes, bounds );
+	QMutexLocker locker(&mMutex);
+	return mImpl->GetOrAddSegment(val);
 }
 
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)

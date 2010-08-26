@@ -388,30 +388,14 @@ void OmMipChunk::loadMetadataIfPresent()
  *	Analyze segmentation ImageData in the chunk associated to a MipCoord and store
  *	all values in the DataSegmentId set of the chunk.
  */
-OmSegSizeMapPtr OmMipChunk::RefreshDirectDataValues(const bool computeSizes)
+void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
+					 boost::shared_ptr<OmSegmentCache> segCache)
 {
 	mDirectlyContainedValues.clear();
 	containedValuesDataLoaded = true;
 	setMetaDataDirty();
 
-	return mChunkData->RefreshDirectDataValues(computeSizes);
-}
-
-void OmMipChunk::addVoxelToBounds(const OmSegID val, const Vector3i & voxelPos)
-{
-	const Vector3i minVertexOfChunk = GetExtent().getMin();
-	const DataBbox box(minVertexOfChunk + voxelPos,
-			   minVertexOfChunk + voxelPos);
-	if (mBounds[val].isEmpty()) {
-		mBounds[val] = box;
-	} else {
-		mBounds[val].merge(box);
-	}
-}
-
-Vector2i OmMipChunk::GetSliceDims()
-{
-  return Vector2i(128,128);
+	mChunkData->RefreshDirectDataValues(computeSizes, segCache);
 }
 
 /**

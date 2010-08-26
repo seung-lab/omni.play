@@ -10,10 +10,11 @@
 #include "common/omCommon.h"
 #include "segment/omSegmentEdge.h"
 
+#include <zi/mutex>
+
 class OmSegmentCache;
 
 class OmSegment {
-
 public:
 	OmSegment(const OmSegID value, OmSegmentCache * cache);
 	const OmSegID value;
@@ -38,7 +39,10 @@ public:
 	void SetEnabled( const bool);
 
 	quint64 getSize() const { return mSize; }
-	void addToSize(const quint64 inc){ mSize += inc; }
+	void addToSize(const quint64 inc){
+		zi::Guard g(sizeWriteLock_);
+		mSize += inc;
+	}
 
 	quint64 getSizeWithChildren();
 
@@ -56,8 +60,14 @@ public:
 	void setThreshold(const float thres){ mThreshold = thres; }
 
 	const DataBbox& getBounds() const { return mBounds; }
-	void setBounds(const DataBbox& box){ mBounds = box; }
-	void mergeBounds(const DataBbox& box){ mBounds.merge(box); }
+	void addToBounds(const DataBbox& box){
+		zi::Guard g(boundsWriteLock_);
+		if (mBounds.isEmpty()) {
+			mBounds = box;
+		} else {
+			mBounds.merge(box);
+		}
+	}
 
 	uint32_t getFreshnessForMeshes() const {return mFreshnessForMeshes;}
 	void touchFreshnessForMeshes(){++mFreshnessForMeshes;}
@@ -79,6 +89,9 @@ public:
 	void setCustomMergeEdge(const OmSegmentEdge& e){mCustomMergeEdge=e;}
 
 private:
+	zi::Mutex boundsWriteLock_;
+	zi::Mutex sizeWriteLock_;
+
 	OmSegmentCache * mCache;
 	OmColor mColorInt;
 	OmSegIDsSet segmentsJoinedIntoMe;

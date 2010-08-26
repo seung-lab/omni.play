@@ -11,12 +11,6 @@ typedef boost::shared_ptr<OmMipChunk> OmMipChunkPtr;
 typedef boost::unordered_map<OmSegID, uint32_t>
 OmSegSizeMap;
 
-typedef boost::shared_ptr<OmSegSizeMap>
-OmSegSizeMapPtr;
-
-typedef boost::unordered_map<OmSegID, DataBbox>
-OmSegBounds;
-
 template <typename T, typename VOL> class OmMemMappedVolume;
 template <typename T, typename VOL> class OmHDF5Volume;
 class OmChannel;

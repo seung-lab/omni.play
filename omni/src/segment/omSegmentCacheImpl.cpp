@@ -44,33 +44,19 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 	return seg;
 }
 
-void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
-					      const OmMipChunkCoord &,
-					      OmSegSizeMapPtr sizes,
-					      OmSegBounds& bounds )
+OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 {
-	FOR_EACH(it, data_values) {
-		const OmSegID val = *it;
+	if( 0 == val ){
+		return NULL;
+	}
 
-		if( 0 == val ){ continue; }
+	OmSegment* seg = GetSegmentFromValue(val);
+	if(NULL == seg){
+		seg = AddSegment(val);
+	}
 
-		OmSegment * seg = GetSegmentFromValue(val);
-
-                if(NULL == seg){
-			seg = AddSegment(val);
-		}
-
-		if(!sizes->empty()){
-			seg->addToSize(sizes->at(val));
-			if(seg->getBounds().isEmpty()) {
-                        	seg->setBounds(bounds.at(val));
-                        } else {
-                        	seg->mergeBounds(bounds.at(val));
-			}
-		}
-
-		addToDirtySegmentList(seg);
-        }
+	addToDirtySegmentList(seg);
+	return seg;
 }
 
 OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)

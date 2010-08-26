@@ -266,11 +266,15 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
 	const bool isMIPzero = chunk->IsLeaf();
 
 	if(isMIPzero){
+		/*
 		mSegmentCache->
 			AddSegmentsFromChunk(chunk->GetDirectDataValues(),
 					     mipCoord,
 					     chunk->RefreshDirectDataValues(true),
 					     chunk->GetDirectDataBounds());
+		*/
+
+		chunk->RefreshDirectDataValues(true, mSegmentCache);
 
 		if(remesh) {
                 	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
@@ -278,7 +282,7 @@ void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
                 	mesher.mesh();
 		}
 	} else {
-		chunk->RefreshDirectDataValues(false);
+		chunk->RefreshDirectDataValues(false, mSegmentCache);
 	}
 }
 
