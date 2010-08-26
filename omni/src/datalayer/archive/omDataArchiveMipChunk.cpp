@@ -31,8 +31,8 @@ void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * 
 	out << (*chunk);
 
 	OmProjectData::GetDataWriter()->writeDataset( path,
-									   ba.size(),
-									   OmDataWrapperRaw(ba.data()));
+						      ba.size(),
+						      OmDataWrapperRaw(ba.data()));
 }
 
 QDataStream &operator<<(QDataStream & out, const OmMipChunk & chunk )

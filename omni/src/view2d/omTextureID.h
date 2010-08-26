@@ -32,19 +32,12 @@ class OmTileCache;
 class OmTextureID : public OmCacheableBase {
 
 public:
-	OmTextureID(const OmTileCoord & tileCoord,
-		    const Vector2i& dims,
-		    OmTileCache* cache,
-		    boost::shared_ptr<uint8_t> texture,
-		    const OmTileFlag flag);
-
-	OmTextureID(const OmTileCoord & tileCoord,
-		    const Vector2i& dims,
-		    OmTileCache* cache,
-		    boost::shared_ptr<OmColorRGBA> texture,
-		    const OmTileFlag flag);
-
+	OmTextureID();
+	OmTextureID(const Vector2i&, OmTileCache*);
 	virtual ~OmTextureID();
+
+	void setData(boost::shared_ptr<uint8_t>);
+	void setData(boost::shared_ptr<OmColorRGBA>);
 
 	bool needToBuildTexture(){
 		return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
@@ -57,10 +50,8 @@ public:
 	GLuint getTextureID() const { return textureID; }
 	void setTextureID(const GLuint id) { textureID = id; }
 
-	const OmTileCoord& GetCoordinate() const { return mTileCoordinate; }
-
-	OmTileFlag getFlags() const { return flag_; }
-	void setFlags(const OmTileFlag f){ flag_ = f; }
+	OmTileFlag getFlag() const { return flag_; }
+	void setFlag(const OmTileFlag f){ flag_ = f; }
 
 	void Flush(){}
 
@@ -68,13 +59,12 @@ public:
 	void deleteTileData();
 
 private:
-	const OmTileCoord mTileCoordinate;
 	GLuint textureID;
 	const Vector2i dims_;
 
 	// Free this once the texture is built.
 	boost::variant<boost::shared_ptr<uint8_t>,
-		       boost::shared_ptr<OmColorRGBA> > texture_;
+		       boost::shared_ptr<OmColorRGBA> > tileData_;
 
         OmTileFlag flag_;
 

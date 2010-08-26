@@ -5,35 +5,39 @@
 #include "common/omDebug.h"
 #include "system/cache/omTileCache.h"
 
-OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
-			 const Vector2i& dims,
-			 OmTileCache * cache,
-			 boost::shared_ptr<uint8_t> texture,
-			 const OmTileFlag flag)
+OmTextureID::OmTextureID()
+	: OmCacheableBase(NULL)
+	, textureID(0)
+	, dims_(Vector2i(0,0))
+	, flag_(OMTILE_COORDINVALID)
+	, mem_size(0)
+{
+}
+
+OmTextureID::OmTextureID(const Vector2i& dims, OmTileCache* cache)
 	: OmCacheableBase(cache)
-	, mTileCoordinate(tileCoord)
 	, textureID(0)
 	, dims_(dims)
-	, texture_(texture)
-	, flag_(flag)
+	, flag_(OMTILE_COORDINVALID)
+	, mem_size(0)
 {
-	mem_size = dims.x * dims.y * sizeof(uint8_t);
+}
+
+void OmTextureID::setData(boost::shared_ptr<uint8_t> data)
+{
+	flag_ = OMTILE_NEEDTEXTUREBUILT;
+	mem_size = dims_.x * dims_.y * sizeof(uint8_t);
+
+	tileData_ = data;
 	UpdateSize(mem_size);
 }
 
-OmTextureID::OmTextureID(const OmTileCoord & tileCoord,
-			 const Vector2i& dims,
-			 OmTileCache * cache,
-			 boost::shared_ptr<OmColorRGBA> texture,
-			 const OmTileFlag flag)
-	: OmCacheableBase(cache)
-	, mTileCoordinate(tileCoord)
-	, textureID(0)
-	, dims_(dims)
-	, texture_(texture)
-	, flag_(flag)
+void OmTextureID::setData(boost::shared_ptr<OmColorRGBA> data)
 {
-	mem_size = dims.x * dims.y * sizeof(OmColorRGBA);
+	flag_ = OMTILE_NEEDCOLORMAP;
+	mem_size = dims_.x * dims_.y * sizeof(OmColorRGBA);
+
+	tileData_ = data;
 	UpdateSize(mem_size);
 }
 
@@ -56,7 +60,7 @@ public:
 void* OmTextureID::getTileData()
 {
 	return boost::apply_visitor(GetTileDataVisitor(),
-				    texture_);
+				    tileData_);
 }
 
 
@@ -70,5 +74,5 @@ public:
 void OmTextureID::deleteTileData()
 {
 	boost::apply_visitor(DeleteTileDataVisitor(),
-			     texture_);
+			     tileData_);
 }

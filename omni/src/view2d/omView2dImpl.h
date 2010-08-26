@@ -60,6 +60,7 @@ class OmView2dImpl : public QWidget
 	void TextureDraw(vector <Drawable*> &textures);
 	void safeDraw(float zoomFactor, float x, float y, int tileLength,
 		      OmTextureIDPtr gotten_id);
+
 	void safeTexture(OmTextureIDPtr gotten_id);
 	void doSafeTexture(OmTextureIDPtr gotten_id);
 	GLint getFormat(OmTextureIDPtr gotten_id);

@@ -235,14 +235,14 @@ void OmView2dImpl::doSafeTexture(OmTextureIDPtr gotten_id)
 		     GL_UNSIGNED_BYTE,
 		     gotten_id->getTileData());
 
-	gotten_id->setFlags(OMTILE_GOOD);
+	gotten_id->setFlag(OMTILE_GOOD);
 	gotten_id->setTextureID(textureID);
 	gotten_id->deleteTileData();
 }
 
 GLint OmView2dImpl::getFormat(OmTextureIDPtr gotten_id)
 {
-	switch(gotten_id->getFlags()){
+	switch(gotten_id->getFlag()){
 	case OMTILE_NEEDCOLORMAP:
 		return GL_RGBA;
 	case OMTILE_NEEDTEXTUREBUILT:

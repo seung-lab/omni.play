@@ -34,6 +34,7 @@ public:
 	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
 
 private:
+	const Vector2i dims_;
 	OmViewGroupState * mViewGroupState;
 
 	ViewType view_type;
@@ -56,7 +57,7 @@ private:
 	boost::shared_ptr<uint8_t> GetImageData8bit(const OmTileCoord&);
 	boost::shared_ptr<uint32_t> GetImageData32bit(const OmTileCoord&);
 
-	OmTextureIDPtr makeNullTextureID(const OmTileCoord& key);
+	OmTextureIDPtr makeNullTextureID();
 	int GetDepth(const OmTileCoord &key);
 	int getVolDepth(const OmTileCoord& key);
 };

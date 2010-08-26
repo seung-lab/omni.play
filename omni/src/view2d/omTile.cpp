@@ -18,6 +18,7 @@
 
 OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id,
 	       OmMipVolume * vol, OmViewGroupState * vgs)
+	: dims_(Vector2i(128,128))
 {
 	view_type = viewtype;
 	vol_type = voltype;
@@ -45,7 +46,7 @@ OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cac
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
 	if(!mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
-		return makeNullTextureID(key);
+		return makeNullTextureID();
 	}
 
 	const int mcc_x = mMipChunkCoord.Coordinate.x;
@@ -55,48 +56,35 @@ OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cac
 	const bool legalCoord = (mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0);
 
 	if(!legalCoord){
-		return makeNullTextureID(key);
+		return makeNullTextureID();
 	}
 
 	return doBindToTextureID(key, cache);
 }
 
-OmTextureIDPtr OmTile::makeNullTextureID(const OmTileCoord& key)
+OmTextureIDPtr OmTile::makeNullTextureID()
 {
-	return OmTextureIDPtr(new OmTextureID(key,
-					      Vector2i(0,0),
-					      NULL,
-					      boost::shared_ptr<uint8_t>(),
-					      OMTILE_COORDINVALID));
+	return OmTextureIDPtr(new OmTextureID());
 }
 
-OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
+OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key,
+					 OmTileCache* cache)
 {
-
-	const Vector2i tile_dims(128,128);
+	OmTextureIDPtr tid(new OmTextureID(dims_, cache));
 
 	if (vol_type == CHANNEL) {
 		boost::shared_ptr<uint8_t> vData = GetImageData8bit(key);
-		return OmTextureIDPtr(new OmTextureID(key,
-						      tile_dims,
-						      cache,
-						      vData,
-						      OMTILE_NEEDTEXTUREBUILT));
+		tid->setData(vData);
+	} else {
+		boost::shared_ptr<uint32_t> imageData = GetImageData32bit(key);
+		boost::shared_ptr<OmColorRGBA> colorMappedData =
+			mViewGroupState->ColorTile(imageData,
+						   dims_,
+						   key.mVolType);
+		tid->setData(colorMappedData);
 	}
 
-	boost::shared_ptr<uint32_t> imageData =
-		GetImageData32bit(key);
-
-	boost::shared_ptr<OmColorRGBA> colorMappedData =
-		mViewGroupState->ColorTile(imageData,
-					   tile_dims,
-					   key.mVolType);
-
-	return OmTextureIDPtr(new OmTextureID(key,
-					      tile_dims,
-					      cache,
-					      colorMappedData,
-					      OMTILE_NEEDCOLORMAP));
+	return tid;
 }
 
 int OmTile::getVolDepth(const OmTileCoord& key)
