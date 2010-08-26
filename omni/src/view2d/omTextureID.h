@@ -66,8 +66,11 @@ private:
 	const OmTileCoord mTileCoordinate;
 	GLuint textureID;
 	const Vector2i dims_;
+
+	// Free this once the texture is built.
 	boost::variant<boost::shared_ptr<uint8_t>,
 		       boost::shared_ptr<OmColorRGBA> > texture_;
+
         OmTileFlag flag_;
 
 	int mem_size;	// total size of data in memory: width * height * bytesPerSample * samplesPerVoxel
