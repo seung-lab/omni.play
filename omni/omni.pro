@@ -220,6 +220,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
            src/utility/OmThreadPool.hpp \
+           src/utility/omChunkVoxelWalker.hpp \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
            src/system/cache/omTileCache.h \

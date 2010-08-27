@@ -108,7 +108,7 @@ public:
         OmImage<uint32_t, 3> GetMeshOmImageData();
 
 	bool ContainsVoxel(const DataCoord &vox);
-	const Vector3<int> GetDimensions();
+	const Vector3i GetDimensions();
 
 	bool compare(OmMipChunkPtr other);
 

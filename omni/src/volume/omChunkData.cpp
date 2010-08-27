@@ -2,6 +2,7 @@
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
 #include "segment/omSegmentCache.h"
+#include "utility/omChunkVoxelWalker.hpp"
 
 OmChunkData::OmChunkData(OmMipVolume* vol,
 			 OmMipChunk* chunk,
@@ -171,21 +172,15 @@ private:
 	{
 		ProcessChunkVoxel p(chunk_, computeSizes_, segCache_);
 
-		//for all voxels in the chunk
-		for(int z = 0; z < 128; z++) {
-			for(int y = 0; y < 128; y++) {
-				for(int x = 0; x < 128; x++) {
-					const OmSegID val =
-						static_cast<OmSegID>(*data++);
-					if(0 == val){
-						continue;
-					}
-					p.processVoxel(val, Vector3i(x,y,z));
-				}
+		OmChunkVoxelWalker iter(128);
+		for(iter.begin(); iter < iter.end(); ++iter){
+			const OmSegID val = static_cast<OmSegID>(*data++);
+			if(0 == val){
+				continue;
 			}
+			p.processVoxel(val, *iter);
 		}
 	}
-
 };
 void OmChunkData::RefreshDirectDataValues(const bool computeSizes,
 					  boost::shared_ptr<OmSegmentCache> segCache)

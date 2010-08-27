@@ -457,7 +457,7 @@ bool OmMipChunk::ContainsVoxel(const DataCoord & vox)
 	return GetExtent().contains(vox);
 }
 
-const Vector3 < int > OmMipChunk::GetDimensions()
+const Vector3i OmMipChunk::GetDimensions()
 {
 	return GetExtent().getUnitDimensions();
 }
