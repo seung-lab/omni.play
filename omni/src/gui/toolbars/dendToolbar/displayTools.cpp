@@ -17,7 +17,10 @@ DisplayTools::DisplayTools(DendToolBar * d)
 void DisplayTools::changeMapColors()
 {
 	// Using !(not) because check happens after this fuction.
-	getViewGroupState()->SetShowFilterMode(showValid->isChecked());
+	const bool val = showValid->isChecked();
+
+	getViewGroupState()->
+		SetHowNonSelectedSegmentsAreColoredInFilter(val);
 }
 
 QWidget* DisplayTools::filterShowNonSelectedSegmentsBox()

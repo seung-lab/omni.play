@@ -3,7 +3,8 @@
 
 #include "system/omManageableObject.h"
 #include "gui/inspectors/inspectorProperties.h"
-#include <QMutex>
+
+#include <zi/mutex>
 
 class ChannelDataWrapper;
 class MainWindow;
@@ -81,11 +82,11 @@ class OmViewGroupState : public OmManageableObject {
 	int getView2DBrushToolDiameter();
 	void setView2DBrushToolDiameter(const int size);
 
-	void SetShowFilterMode(const bool inColor);
-	bool GetShowFilterMode();
+	void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
+	bool ShowNonSelectedSegmentsInColorInFilter();
 
  private:
-	mutable QMutex mColorCacheMapLock;
+	zi::Mutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
 	ViewGroup * mViewGroup;
@@ -129,6 +130,12 @@ class OmViewGroupState : public OmManageableObject {
 	bool mShowFilterInColor;
 
 	int view2DBrushToolDiameter_;
+
+	OmSegmentColorCacheType determineColorizationType(const ObjectType);
+	void setupColorizer(const Vector2i& dims,
+			    const ObjectType objType,
+			    const OmSegmentColorCacheType sccType);
+
 };
 
 #endif

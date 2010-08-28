@@ -310,62 +310,71 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 	m_cdw = new ChannelDataWrapper( chanID );
 }
 
+OmSegmentColorCacheType
+OmViewGroupState::determineColorizationType(const ObjectType objType)
+{
+	switch( objType ){
+	case CHANNEL:
+		if(mShowValid) {
+			if(mShowValidInColor){
+				return SCC_FILTER_VALID;
+			}
+			return SCC_FILTER_VALID_BLACK;
+		}
+
+		if(shouldVolumeBeShownBroken()){
+			return SCC_FILTER_BREAK;
+		}
+
+		if(ShowNonSelectedSegmentsInColorInFilter()){
+			return SCC_FILTER_COLOR;
+		}
+
+		return SCC_FILTER_BLACK;
+
+	case SEGMENTATION:
+		if(mShowValid){
+			if(mShowValidInColor){
+				return SCC_SEGMENTATION_VALID;
+			}
+			return SCC_SEGMENTATION_VALID_BLACK;
+		}
+
+		if(shouldVolumeBeShownBroken() ){
+			return SCC_SEGMENTATION_BREAK;
+		}
+
+		return SCC_SEGMENTATION;
+	}
+}
+
+void OmViewGroupState::setupColorizer(const Vector2i& dims,
+				      const ObjectType objType,
+				      const OmSegmentColorCacheType sccType)
+{
+	zi::Guard g(mColorCacheMapLock);
+
+	if(NULL == mColorCaches[sccType]){
+		assert(m_sdw);
+		OmSegmentColorizer* sc =
+			new OmSegmentColorizer(m_sdw->getSegmentCache(),
+					       sccType,
+					       SEGMENTATION == objType,
+					       dims);
+		mColorCaches[ sccType ] =
+			boost::shared_ptr<OmSegmentColorizer>(sc);
+	}
+}
+
 boost::shared_ptr<OmColorRGBA>
 OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 			    const Vector2i& dims,
 			    const ObjectType objType)
 {
-	OmSegmentColorCacheType sccType;
+	const OmSegmentColorCacheType sccType =
+		determineColorizationType(objType);
 
-	switch( objType ){
-	case CHANNEL:
-		if( !mShowValid && shouldVolumeBeShownBroken() ){
-			sccType = SCC_FILTER_BREAK;
-		} else if(mShowValid) {
-			if(mShowValidInColor){
-				sccType = SCC_FILTER_VALID;
-			} else {
-				sccType = SCC_FILTER_VALID_BLACK;
-			}
-		} else {
-			if(GetShowFilterMode()){
-				sccType = SCC_FILTER_COLOR;
-			} else {
-				sccType = SCC_FILTER_BLACK;
-			}
-		}
-		break;
-
-	case SEGMENTATION:
-		if( !mShowValid && shouldVolumeBeShownBroken() ){
-			sccType = SCC_SEGMENTATION_BREAK;
-		} else if(mShowValid) {
-			if(mShowValidInColor){
-				sccType = SCC_SEGMENTATION_VALID;
-			} else {
-				sccType = SCC_SEGMENTATION_VALID_BLACK;
-			}
-		} else {
-			sccType = SCC_SEGMENTATION;
-		}
-		break;
-
-	default:
-		assert(0);
-	}
-
-	mColorCacheMapLock.lock();
-	if( NULL == mColorCaches[ sccType ] ){
-		assert(m_sdw);
-		OmSegmentColorizer* sc =
-			new OmSegmentColorizer( m_sdw->getSegmentCache(),
-						sccType,
-						SEGMENTATION == objType,
-						dims);
-		mColorCaches[ sccType ] =
-			boost::shared_ptr<OmSegmentColorizer>(sc);
-	}
-	mColorCacheMapLock.unlock();
+	setupColorizer(dims, objType, sccType);
 
 	return mColorCaches[ sccType ]->colorTile(imageData);
 }
@@ -440,12 +449,12 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
-bool OmViewGroupState::GetShowFilterMode()
+bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
 {
 	return mShowFilterInColor;
 }
 
-void OmViewGroupState::SetShowFilterMode(const bool inColor)
+void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool inColor)
 {
 	mShowFilterInColor = inColor;
 	OmCacheManager::Freshen(true);
