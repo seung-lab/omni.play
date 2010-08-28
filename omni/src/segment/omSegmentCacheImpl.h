@@ -13,7 +13,7 @@ class OmSegmentEdge;
 class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
  public:
 	OmSegmentCacheImpl( OmSegmentation *, OmSegmentCache *);
-	~OmSegmentCacheImpl();
+	virtual ~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);

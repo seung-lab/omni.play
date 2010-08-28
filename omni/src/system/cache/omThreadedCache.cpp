@@ -27,6 +27,8 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 	mThreadPool.stop();
 	mCache.flush();
 	mCache.clear();
+	mKeyAccessList.clear();
+	mCurrentlyFetching.clear();
 }
 
 template < typename KEY, typename PTR  >
