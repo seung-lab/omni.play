@@ -1,5 +1,5 @@
-#ifndef OM_PAGING_STORE_H
-#define OM_PAGING_STORE_H
+#ifndef OM_PAGING_PTR_STORE_H
+#define OM_PAGING_PTR_STORE_H
 
 #include "common/omCommon.h"
 
