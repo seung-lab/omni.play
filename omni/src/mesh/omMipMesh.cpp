@@ -10,6 +10,9 @@
 #include "datalayer/omDataLayer.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 
@@ -154,9 +157,9 @@ void OmMipMesh::Save()
   OmDataWriter * hdf5File;
 
   if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-    OmDataLayer * dl = OmProjectData::GetDataLayer();
-    hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate, mSegmentationID) ),
-                              false );
+    const std::string path = OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate,
+								   mSegmentationID);
+    hdf5File = OmDataLayer::getWriter(QString::fromStdString(path), false);
   } else {
     hdf5File = OmProjectData::GetDataWriter();
   }

@@ -18,7 +18,7 @@ OmVolumeImporterHDF5<VOL>::OmVolumeImporterHDF5(VOL* vol)
 }
 
 template <typename VOL>
-OmDataPath OmVolumeImporterHDF5<VOL>::getHDFsrcPath(OmDataReader * hdf5reader,
+OmDataPath OmVolumeImporterHDF5<VOL>::getHDFsrcPath(OmIDataReader * hdf5reader,
 						const OmDataPath& inpath)
 {
         if(hdf5reader->dataset_exists(inpath)){
@@ -48,8 +48,7 @@ QString OmVolumeImporterHDF5<VOL>::getHDFfileNameAndPath()
 template <typename VOL>
 bool OmVolumeImporterHDF5<VOL>::importHDF5(OmDataPath & inpath)
 {
-	OmDataLayer dl;
-	OmDataReader * hdf5reader = dl.getReader(getHDFfileNameAndPath(), true);
+	OmIDataReader* hdf5reader = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
 	hdf5reader->open();
 
 	const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
@@ -71,15 +70,15 @@ bool OmVolumeImporterHDF5<VOL>::importHDF5(OmDataPath & inpath)
 				OmDataWrapperPtr dataVTK =
 					hdf5reader->
 					readChunkNotOnBoundary(src_path,
-								chunk->GetExtent());
+							       chunk->GetExtent());
 
 				OmDataWrapperPtr data =
 					dataVTK->newWrapper(dataVTK->getVTKptr()->GetScalarPointer(), NONE);
 
 				OmProjectData::GetDataWriter()->
 					writeChunk(dst_path,
-								     chunk->GetExtent(),
-								     data);
+						   chunk->GetExtent(),
+						   data);
 			}
 		}
 	}
@@ -95,14 +94,13 @@ OmVolDataType OmVolumeImporterHDF5<VOL>::figureOutDataTypeHDF5(OmDataPath & inpa
 	const OmMipChunkCoord coord(0,0,0,0);
 	const DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(coord, 0);
 
-	OmDataLayer dl;
-	OmDataReader * hdf5reader = dl.getReader(getHDFfileNameAndPath(), true);
+	OmIDataReader * hdf5reader = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
 	hdf5reader->open();
 	const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
 
 	OmDataWrapperPtr dataVTK =
 		hdf5reader->readChunkNotOnBoundary(src_path,
-						    chunk_data_bbox);
+						   chunk_data_bbox);
 
 	hdf5reader->close();
 

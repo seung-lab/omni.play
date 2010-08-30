@@ -11,10 +11,9 @@
 
 class OmDataPath;
 class OmDataLayer;
-class OmDataReader;
+class OmIDataReader;
 class OmDataWriter;
 class OmSegment;
-class vtkImageData;
 
 class OmProjectData : boost::noncopyable {
 public:
@@ -22,7 +21,7 @@ public:
 
 	static OmProjectData* Instance();
 	static void Delete();
-	
+
 	static QString getFileNameAndPath();
 	static QString getAbsoluteFileNameAndPath();
 	static QString getAbsolutePath();
@@ -31,14 +30,13 @@ public:
 	static void Open();
 	static void Close();
 	static void DeleteInternalData(const OmDataPath & path);
-	
+
 	static bool IsOpen() {return Instance()->mIsOpen;}
 	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
 
-	static OmDataLayer * GetDataLayer();
-	static OmDataReader * GetProjectDataReader();
-	static OmDataWriter * GetDataWriter();
-		
+	static OmIDataReader* GetProjectDataReader();
+	static OmDataWriter* GetDataWriter();
+
 private:
 	OmProjectData();
 	~OmProjectData();
@@ -51,9 +49,8 @@ private:
 	bool mIsReadOnly;
 
 	void setupDataLayer( QString fileNameAndPath );
-	OmDataLayer  * dataLayer;
-	OmDataReader * dataReader;
-	OmDataWriter * dataWriter;
+	OmIDataReader* dataReader;
+	OmDataWriter* dataWriter;
 };
 
 #endif

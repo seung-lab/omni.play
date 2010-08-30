@@ -3,6 +3,7 @@
 #include "common/omVtk.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
+#include "datalayer/omDataReader.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/hdf5/omHdf5.h"
@@ -34,8 +35,9 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
-	OmDataLayer dl;
-	OmDataReader * hdf5reader = dl.getReader(sourceFilenamesAndPaths[0].filePath(), true );
+	OmIDataReader* hdf5reader =
+		OmDataLayer::getReader(sourceFilenamesAndPaths[0].filePath(),
+				       true );
 
 	hdf5reader->open();
 

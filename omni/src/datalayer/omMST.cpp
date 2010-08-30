@@ -89,8 +89,7 @@ void OmMST::read(OmSegmentation & seg)
 
 void OmMST::import(OmSegmentation & seg, const QString fname)
 {
-  OmDataLayer dl;
-  OmDataReader * hdf5reader = dl.getReader(fname, true);
+  OmIDataReader* hdf5reader = OmDataLayer::getReader(fname, true);
   hdf5reader->open();
 
   if(!importDend(hdf5reader)){
@@ -112,7 +111,7 @@ void OmMST::import(OmSegmentation & seg, const QString fname)
   valid_ = true;
 }
 
-bool OmMST::importDend(OmDataReader * hdf5reader)
+bool OmMST::importDend(OmIDataReader* hdf5reader)
 {
   OmDataPath fpath;
   fpath.setPathQstr("dend");
@@ -136,7 +135,7 @@ bool OmMST::importDend(OmDataReader * hdf5reader)
   return true;
 }
 
-bool OmMST::importDendValues(OmDataReader * hdf5reader)
+bool OmMST::importDendValues(OmIDataReader * hdf5reader)
 {
   OmDataPath fpath;
   fpath.setPathQstr("dendValues");

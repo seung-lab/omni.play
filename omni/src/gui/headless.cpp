@@ -215,8 +215,7 @@ void Headless::processLine( QString line, QString fName )
 		OmDataWriter * hdf5File;
 
   		if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-			OmDataLayer * dl = OmProjectData::GetDataLayer();
-    			hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
+    			hdf5File = OmDataLayer::getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
 			hdf5File->create();
 			hdf5File->open();
                 }

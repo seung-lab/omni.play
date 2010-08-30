@@ -10,6 +10,7 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omDataLayer.h"
 #include "system/cache/omThreadChunkThreadedCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
@@ -953,21 +954,21 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
 
-        OmHdf5 hdfExport( fileNameAndPath, false );
+        OmDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
         OmDataPath fpath;
         fpath.setPath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){
-        	hdfExport.create();
-        	hdfExport.open();
+        	hdfExport->create();
+        	hdfExport->open();
 		const Vector3i full = MipLevelDataDimensions(0);
         	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
-        	hdfExport.allocateChunkedDataset(fpath,
+        	hdfExport->allocateChunkedDataset(fpath,
 						 rounded_data_dims,
 						 full,
 						 mVolDataType);
 	} else {
-        	hdfExport.open();
+        	hdfExport->open();
 	}
 
 
@@ -980,11 +981,11 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 			}
 		}
 	}
-	hdfExport.close();
+	hdfExport->close();
 }
 
 void OmMipVolume::doExportChunk(const OmMipChunkCoord & leaf_coord,
-				OmHdf5 & )
+				OmDataWriter* )
 {
 
 	assert(0 && "FIXME");

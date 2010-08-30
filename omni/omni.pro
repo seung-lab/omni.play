@@ -68,7 +68,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/hdf5/omHdf5LowLevel.h \
            src/datalayer/hdf5/omHdf5Impl.h \
            src/datalayer/hdf5/omHdf5Manager.h \
-           src/datalayer/hdf5/omHdf5Reader.h \
            src/datalayer/hdf5/omHdf5Writer.h \
            src/datalayer/omDataLayer.h \
            src/datalayer/omDataPath.h \
@@ -303,7 +302,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
            src/datalayer/hdf5/omHdf5Impl.cpp \
            src/datalayer/hdf5/omHdf5Manager.cpp \
-           src/datalayer/hdf5/omHdf5Reader.cpp \
            src/datalayer/hdf5/omHdf5Writer.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDataPaths.cpp \

@@ -4,16 +4,18 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
+#include "datalayer/omDataReader.h"
 
 #include <zi/mutex>
 
 class OmHdf5Impl;
 class OmDataPath;
 
-class OmHdf5 {
+class OmHdf5 : public OmIDataReader {
 public:
-	OmHdf5(const QString&, const bool readOnly);
-	~OmHdf5();
+	static OmHdf5* getHDF5(const QString& fnp, const bool readOnly);
+
+	virtual ~OmHdf5();
 
 	QString getFileNameAndPath();
 
@@ -48,11 +50,15 @@ public:
 	Vector3< int > getDatasetDims( const OmDataPath & path );
 
 private:
+	OmHdf5(const QString&, const bool readOnly);
+
 	QString m_fileNameAndPath;
 	const bool readOnly_;
 
 	zi::Mutex fileLock;
 	boost::shared_ptr<OmHdf5Impl> hdf5_;
+
+	friend class OmHdf5Manager;
 };
 
 #endif

@@ -7,16 +7,14 @@
 #include "omProjectData.h"
 #include "segment/omSegment.h"
 #include "utility/fileHelpers.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 #include <QFileInfo>
 
 //init instance pointer
 OmProjectData *OmProjectData::mspInstance = NULL;
-
-
-/////////////////////////////////
-///////          OmProjectData
 
 OmProjectData::OmProjectData()
 	: mIsReadOnly(false)
@@ -29,7 +27,7 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 		delete mspInstance;
 		mspInstance = new OmProjectData();
 	}
-	
+
 	Instance()->setupDataLayer( fileNameAndPath );
 }
 
@@ -110,25 +108,19 @@ void OmProjectData::DeleteInternalData(const OmDataPath & path)
 	}
 }
 
-OmDataLayer * OmProjectData::GetDataLayer()
-{
-	return Instance()->dataLayer;
-}
-
-OmDataReader * OmProjectData::GetProjectDataReader()
+OmIDataReader* OmProjectData::GetProjectDataReader()
 {
 	return Instance()->dataReader;
 }
 
-OmDataWriter * OmProjectData::GetDataWriter()
+OmDataWriter* OmProjectData::GetDataWriter()
 {
 	return Instance()->dataWriter;
 }
 
 void OmProjectData::setupDataLayer( QString fileNameAndPath )
 {
-	dataLayer = new OmDataLayer();
 	mIsReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
-	dataReader = dataLayer->getReader( fileNameAndPath, mIsReadOnly );
-	dataWriter = dataLayer->getWriter( fileNameAndPath, mIsReadOnly );
+	dataReader = OmDataLayer::getReader( fileNameAndPath, mIsReadOnly );
+	dataWriter = OmDataLayer::getWriter( fileNameAndPath, mIsReadOnly );
 }

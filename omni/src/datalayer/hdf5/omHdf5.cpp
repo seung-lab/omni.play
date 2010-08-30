@@ -3,6 +3,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
+#include "datalayer/hdf5/omHdf5Manager.h"
 
 OmHdf5::OmHdf5( const QString & fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)
@@ -12,6 +13,10 @@ OmHdf5::OmHdf5( const QString & fileNameAndPath, const bool readOnly )
 
 OmHdf5::~OmHdf5()
 {
+}
+
+OmHdf5* OmHdf5::getHDF5(const QString& fnp, const bool readOnly){
+	return OmHdf5Manager::getOmHdf5File(fnp, readOnly );
 }
 
 QString OmHdf5::getFileNameAndPath()

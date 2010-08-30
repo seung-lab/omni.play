@@ -14,6 +14,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
+//TODO: class OmMST;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;

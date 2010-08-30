@@ -5,7 +5,7 @@
 #include "volume/omVolumeTypes.hpp"
 
 class OmDataPath;
-class OmDataReader;
+class OmIDataReader;
 
 template <typename VOL>
 class OmVolumeImporterHDF5 {
@@ -19,7 +19,7 @@ public:
 private:
 	VOL *const vol_;
 
-	OmDataPath getHDFsrcPath(OmDataReader*, const OmDataPath&);
+	OmDataPath getHDFsrcPath(OmIDataReader*, const OmDataPath&);
 	QString getHDFfileNameAndPath();
 };
 

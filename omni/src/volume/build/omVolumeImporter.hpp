@@ -5,7 +5,7 @@
 #include "volume/omVolumeTypes.hpp"
 
 class OmDataPath;
-class OmDataReader;
+class OmIDataReader;
 template <typename VOL> class OmVolumeImporterHDF5;
 
 template <typename VOL>

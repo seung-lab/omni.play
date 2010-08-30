@@ -4,7 +4,7 @@
 #include "datalayer/omDataWrapper.h"
 
 class OmSegmentation;
-class OmDataReader;
+class OmIDataReader;
 class OmDataPath;
 
 class OmMST {
@@ -32,14 +32,14 @@ public:
 private:
   bool valid_;
 
-  bool importDend(OmDataReader * hdf5reader);
-  bool importDendValues(OmDataReader * hdf5reader);
-  bool setupUserEdges(const int dendValuesSize);
+  bool importDend(OmIDataReader*);
+  bool importDendValues(OmIDataReader*);
+  bool setupUserEdges(const int);
 
-  OmDataPath getDendPath(OmSegmentation & seg);
-  OmDataPath getDendValuesPath(OmSegmentation & seg);
-  OmDataPath getEdgeDisabledByUserPath(OmSegmentation & seg);
-  OmDataPath getEdgeForceJoinPath(OmSegmentation & seg);
+  OmDataPath getDendPath(OmSegmentation&);
+  OmDataPath getDendValuesPath(OmSegmentation&);
+  OmDataPath getEdgeDisabledByUserPath(OmSegmentation&);
+  OmDataPath getEdgeForceJoinPath(OmSegmentation&);
 };
 
 #endif
