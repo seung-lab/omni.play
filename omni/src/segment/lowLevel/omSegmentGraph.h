@@ -25,17 +25,17 @@ class OmSegmentGraph {
 
 	void setGlobalThreshold( const quint32 * dend,
 				 const float * dendValues,
-				 quint8 * edgeDisabledByUser,
-				 quint8 * edgeWasJoined,
-				 quint8 * edgeForceJoin,
+				 uint8_t* edgeDisabledByUser,
+				 uint8_t* edgeWasJoined,
+				 uint8_t* edgeForceJoin,
 				 const int size,
 				 const float stopPoint);
 
 	void resetGlobalThreshold( const quint32 * dend,
 				   const float * dendValues,
-				   quint8 * edgeDisabledByUser,
-				   quint8 * edgeWasJoined,
-				   quint8 * edgeForceJoin,
+				   uint8_t* edgeDisabledByUser,
+				   uint8_t* edgeWasJoined,
+				   uint8_t* edgeForceJoin,
 				   const int size,
 				   const float stopPoint );
 

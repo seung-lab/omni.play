@@ -163,9 +163,11 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( -1 != child->getEdgeNumber() ){
 		const int e = child->getEdgeNumber();
-		quint8 * edgeDisabledByUser = mSegmentation->mst_->mEdgeDisabledByUser->getPtr<unsigned char>();
-		quint8 * edgeWasJoined = mSegmentation->mst_->mEdgeWasJoined->getPtr<unsigned char>();
-		quint8 * edgeForceJoin = mSegmentation->mst_->mEdgeForceJoin->getPtr<unsigned char>();
+		boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
+		uint8_t* edgeDisabledByUser =
+			mst->mEdgeDisabledByUser->getPtr<uint8_t>();
+		uint8_t* edgeWasJoined = mst->mEdgeWasJoined.get();
+		uint8_t* edgeForceJoin = mst->mEdgeForceJoin->getPtr<uint8_t>();
 
 		edgeDisabledByUser[e] = 1;
 		edgeWasJoined[e] = 0;
@@ -401,11 +403,11 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 	}
 
 	printf("setting global threshold to %f...\n", mst->mDendThreshold);
-	mSegmentGraph.setGlobalThreshold( mst->mDend->getPtr<unsigned int>(),
+	mSegmentGraph.setGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
 					  mst->mDendValues->getPtr<float>(),
-					  mst->mEdgeDisabledByUser->getPtr<unsigned char>(),
-					  mst->mEdgeWasJoined->getPtr<unsigned char>(),
-					  mst->mEdgeForceJoin->getPtr<unsigned char>(),
+					  mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
+					  mst->mEdgeWasJoined.get(),
+					  mst->mEdgeForceJoin->getPtr<uint8_t>(),
 					  mst->mDendCount,
 					  mst->mDendThreshold);
 
@@ -421,11 +423,11 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 
 	printf("resetting global threshold to %f...\n", mst->mDendThreshold);
 
-	mSegmentGraph.resetGlobalThreshold( mst->mDend->getPtr<unsigned int>(),
+	mSegmentGraph.resetGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
 					    mst->mDendValues->getPtr<float>(),
-					    mst->mEdgeDisabledByUser->getPtr<unsigned char>(),
-					    mst->mEdgeWasJoined->getPtr<unsigned char>(),
-					    mst->mEdgeForceJoin->getPtr<unsigned char>(),
+					    mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
+					    mst->mEdgeWasJoined.get(),
+					    mst->mEdgeForceJoin->getPtr<uint8_t>(),
 					    mst->mDendCount,
 					    mst->mDendThreshold);
 

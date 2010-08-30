@@ -1,15 +1,16 @@
-#include "segment/omSegmentCache.h"
-#include "segment/lowLevel/DynamicForestPool.hpp"
-#include "datalayer/omDataPath.h"
 #include "datalayer/omDataLayer.h"
+#include "datalayer/omDataPath.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omDataWriter.h"
 #include "datalayer/omMST.h"
 #include "project/omProject.h"
+#include "segment/lowLevel/DynamicForestPool.hpp"
+#include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
-#include "volume/omSegmentation.h"
+#include "utility/omSmartPtr.hpp"
 #include "utility/stringHelpers.h"
+#include "volume/omSegmentation.h"
 
 static const float DefaultThresholdSize = 0.5;
 
@@ -71,9 +72,7 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   // this is just a temporary object--should be refactored... (purcaro)
-  quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * mDendValuesSize );
-  memset(edgeJoined, 0, sizeof(quint8) * mDendValuesSize );
-  mEdgeWasJoined = OmDataWrapper<unsigned char>::produce(edgeJoined, MALLOC);
+  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize);
 
   path = getEdgeForceJoinPath(seg);
   mEdgeForceJoin = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
@@ -166,12 +165,6 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
   OmDataWrapperPtr edgeDisabledByUser =
 	  OmDataWrapper<unsigned char>::produce(userDisabledEdge, MALLOC);
 
-  // this is just a temporary object--should be refactored... (purcaro)
-  quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
-  memset(edgeJoined, 0, sizeof(quint8) * dendValuesSize );
-  OmDataWrapperPtr edgeWasJoined =
-	  OmDataWrapper<unsigned char>::produce(edgeJoined, MALLOC);
-
   quint8 * edgeForce = (quint8 *)malloc(sizeof(quint8) * dendValuesSize );
   memset(edgeForce, 0, sizeof(quint8) * dendValuesSize );
   OmDataWrapperPtr edgeForceJoin =
@@ -179,7 +172,7 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
 
   mEdgeDisabledByUser = edgeDisabledByUser;
   mEdgeForceJoin = edgeForceJoin;
-  mEdgeWasJoined = edgeWasJoined;
+  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);
 
   return true;
 }

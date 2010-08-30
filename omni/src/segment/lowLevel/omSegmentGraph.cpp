@@ -88,9 +88,9 @@ quint32 OmSegmentGraph::getNumTopLevelSegs()
 // NOTE: assuming incoming data is an edge list
 void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 					 const float * thresholds,
-					 quint8 * edgeDisabledByUser,
-					 quint8 * edgeWasJoined,
-					 quint8 * edgeForceJoin,
+					 uint8_t* edgeDisabledByUser,
+					 uint8_t* edgeWasJoined,
+					 uint8_t* edgeForceJoin,
 					 const int numEdges,
 					 const float stopThreshold )
 {
@@ -132,9 +132,9 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 
 void OmSegmentGraph::resetGlobalThreshold( const quint32 * nodes,
 					   const float * thresholds,
-					   quint8 * edgeDisabledByUser,
-					   quint8 * edgeWasJoined,
-					   quint8 * edgeForceJoin,
+					   uint8_t* edgeDisabledByUser,
+					   uint8_t* edgeWasJoined,
+					   uint8_t* edgeForceJoin,
 					   const int numEdges,
 					   const float stopThreshold )
 {

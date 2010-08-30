@@ -20,7 +20,7 @@ public:
   OmDataWrapperPtr mDend;
   OmDataWrapperPtr mDendValues;
   OmDataWrapperPtr mEdgeDisabledByUser;
-  OmDataWrapperPtr mEdgeWasJoined;
+  boost::shared_ptr<uint8_t> mEdgeWasJoined;
   OmDataWrapperPtr mEdgeForceJoin;
   int mDendSize;
   int mDendValuesSize;
