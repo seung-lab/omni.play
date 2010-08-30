@@ -1,6 +1,7 @@
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"
+#include "datalayer/omMST.h"
 
 MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 	: QTableWidget(parent)
@@ -12,11 +13,11 @@ MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 void MstViewerImpl::populate()
 {
 	OmSegmentation & segmentation = sdw_.getSegmentation();
-	OmMST & mst = segmentation.mst;
+	boost::shared_ptr<OmMST> mst = segmentation.getMST();
 
-	const int numEdges = mst.mDendCount;
-	const quint32 * nodes    = mst.mDend->getPtr<unsigned int>();
-	const float * thresholds = mst.mDendValues->getPtr<float>();
+	const int numEdges = mst->mDendCount;
+	const quint32 * nodes    = mst->mDend->getPtr<unsigned int>();
+	const float * thresholds = mst->mDendValues->getPtr<float>();
 
 	QStringList headerLabels;
 	headerLabels << "Edge" << "Node 1" << "Node 2" << "threshold" << "Node 1 size" << "Node 2 size";

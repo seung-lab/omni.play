@@ -266,5 +266,5 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 }
 
 boost::shared_ptr<OmSegmentLists> OmSegmentGraph::getSegmentLists() {
-	return mCache->getSegmentation()->getSegmentLists();
+	return mCache->getSegmentation()->GetSegmentLists();
 }

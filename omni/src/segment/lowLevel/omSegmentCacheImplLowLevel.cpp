@@ -208,7 +208,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
-	mSegmentation->getSegmentLists()->mRecentRootActivityMap.touch( segID );
+	mSegmentation->GetSegmentLists()->mRecentRootActivityMap.touch( segID );
 }
 
 QString OmSegmentCacheImplLowLevel::getSegmentName( OmSegID segID )

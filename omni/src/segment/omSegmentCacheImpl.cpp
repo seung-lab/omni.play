@@ -5,6 +5,7 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
+#include "datalayer/omMST.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -162,9 +163,9 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( -1 != child->getEdgeNumber() ){
 		const int e = child->getEdgeNumber();
-		quint8 * edgeDisabledByUser = mSegmentation->mst.mEdgeDisabledByUser->getPtr<unsigned char>();
-		quint8 * edgeWasJoined = mSegmentation->mst.mEdgeWasJoined->getPtr<unsigned char>();
-		quint8 * edgeForceJoin = mSegmentation->mst.mEdgeForceJoin->getPtr<unsigned char>();
+		quint8 * edgeDisabledByUser = mSegmentation->mst_->mEdgeDisabledByUser->getPtr<unsigned char>();
+		quint8 * edgeWasJoined = mSegmentation->mst_->mEdgeWasJoined->getPtr<unsigned char>();
+		quint8 * edgeForceJoin = mSegmentation->mst_->mEdgeForceJoin->getPtr<unsigned char>();
 
 		edgeDisabledByUser[e] = 1;
 		edgeWasJoined[e] = 0;
@@ -344,7 +345,7 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
         	return;
 	}
 
-	quint8 * edgeForceJoin = mSegmentation->mst.mEdgeForceJoin->getPtr<unsigned char>();
+	quint8 * edgeForceJoin = mSegmentation->mst_->mEdgeForceJoin->getPtr<unsigned char>();
 	edgeForceJoin[ seg->getEdgeNumber() ] = valid;
 }
 
@@ -392,37 +393,41 @@ void OmSegmentCacheImpl::refreshTree()
 
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
-  if(!mSegmentation->mst.isValid()){
-    printf("no graph found...\n");
-    return;
-  }
+	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
 
-  printf("setting global threshold to %f...\n", mSegmentation->mst.mDendThreshold);
-  mSegmentGraph.setGlobalThreshold( mSegmentation->mst.mDend->getPtr<unsigned int>(),
-				    mSegmentation->mst.mDendValues->getPtr<float>(),
-				    mSegmentation->mst.mEdgeDisabledByUser->getPtr<unsigned char>(),
-				    mSegmentation->mst.mEdgeWasJoined->getPtr<unsigned char>(),
-				    mSegmentation->mst.mEdgeForceJoin->getPtr<unsigned char>(),
-				    mSegmentation->mst.mDendCount,
-				    mSegmentation->mst.mDendThreshold);
+	if(!mst->isValid()){
+		printf("no graph found...\n");
+		return;
+	}
 
-  mSelectedSet.clear();
-  clearCaches();
+	printf("setting global threshold to %f...\n", mst->mDendThreshold);
+	mSegmentGraph.setGlobalThreshold( mst->mDend->getPtr<unsigned int>(),
+					  mst->mDendValues->getPtr<float>(),
+					  mst->mEdgeDisabledByUser->getPtr<unsigned char>(),
+					  mst->mEdgeWasJoined->getPtr<unsigned char>(),
+					  mst->mEdgeForceJoin->getPtr<unsigned char>(),
+					  mst->mDendCount,
+					  mst->mDendThreshold);
 
-  printf("done\n");
+	mSelectedSet.clear();
+	clearCaches();
+
+	printf("done\n");
 }
 
 void OmSegmentCacheImpl::resetGlobalThreshold()
 {
-	printf("resetting global threshold to %f...\n", mSegmentation->mst.mDendThreshold);
+	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
 
-	mSegmentGraph.resetGlobalThreshold( mSegmentation->mst.mDend->getPtr<unsigned int>(),
-					    mSegmentation->mst.mDendValues->getPtr<float>(),
-					    mSegmentation->mst.mEdgeDisabledByUser->getPtr<unsigned char>(),
-					    mSegmentation->mst.mEdgeWasJoined->getPtr<unsigned char>(),
-					    mSegmentation->mst.mEdgeForceJoin->getPtr<unsigned char>(),
-					    mSegmentation->mst.mDendCount,
-					    mSegmentation->mst.mDendThreshold);
+	printf("resetting global threshold to %f...\n", mst->mDendThreshold);
+
+	mSegmentGraph.resetGlobalThreshold( mst->mDend->getPtr<unsigned int>(),
+					    mst->mDendValues->getPtr<float>(),
+					    mst->mEdgeDisabledByUser->getPtr<unsigned char>(),
+					    mst->mEdgeWasJoined->getPtr<unsigned char>(),
+					    mst->mEdgeForceJoin->getPtr<unsigned char>(),
+					    mst->mDendCount,
+					    mst->mDendThreshold);
 
 	rerootSegmentLists();
 	clearCaches();
@@ -431,5 +436,5 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 }
 
 boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
-	return getSegmentation()->getSegmentLists();
+	return getSegmentation()->GetSegmentLists();
 }

@@ -6,7 +6,6 @@
  *	Brett Warne - bwarne@mit.edu - 3/9/09
  */
 
-#include "datalayer/omMST.h"
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
 #include "system/omGroups.h"
@@ -14,7 +13,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
-//TODO: class OmMST;
+class OmMST;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
@@ -54,10 +53,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
 
-
 	//segment management
 	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
-	boost::shared_ptr<OmSegmentLists> getSegmentLists(){ return mSegmentLists; }
+	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
 
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
@@ -72,9 +70,10 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void FlushDendUserEdges();
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
-	float GetDendThreshold(){ return mst.mDendThreshold; }
+	float GetDendThreshold();
+	boost::shared_ptr<OmMST> getMST();
 
-	Vector3<int> FindCenterOfSelectedSegments();
+	Vector3i FindCenterOfSelectedSegments();
 
 	bool ImportSourceData(OmDataPath & dataset);
 
@@ -87,7 +86,7 @@ private:
 
 	OmGroups mGroups;
 
-	OmMST mst;
+	boost::shared_ptr<OmMST> mst_;
 
 	friend class OmBuildSegmentation;
 	template <class T> friend class OmVolumeImporter;

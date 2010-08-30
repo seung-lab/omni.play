@@ -295,10 +295,10 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
 	out << seg.mMipMeshManager;
 	out << (*seg.mSegmentCache);
 
-	out << seg.mst.mDendSize;
-	out << seg.mst.mDendValuesSize;
-	out << seg.mst.mDendCount;
-	out << seg.mst.mDendThreshold;
+	out << seg.mst_->mDendSize;
+	out << seg.mst_->mDendValuesSize;
+	out << seg.mst_->mDendCount;
+	out << seg.mst_->mDendThreshold;
 	out << seg.mGroups;
 
 	return out;
@@ -313,15 +313,15 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
 	in >> seg.mMipMeshManager;
 	in >> (*seg.mSegmentCache);
 
-	in >> seg.mst.mDendSize;
-	in >> seg.mst.mDendValuesSize;
-	in >> seg.mst.mDendCount;
-	in >> seg.mst.mDendThreshold;
+	in >> seg.mst_->mDendSize;
+	in >> seg.mst_->mDendValuesSize;
+	in >> seg.mst_->mDendCount;
+	in >> seg.mst_->mDendThreshold;
 	in >> seg.mGroups;
 
 	seg.loadVolData();
 
-	seg.mst.read(seg);
+	seg.mst_->read(seg);
 	seg.mSegmentCache->refreshTree();
 
 	return in;

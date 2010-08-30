@@ -4,6 +4,7 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omMST.h"
 #include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
@@ -32,7 +33,6 @@
 #include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
 
-#include <vtkImageData.h>
 #include <QFile>
 #include <QTextStream>
 
@@ -42,6 +42,7 @@ OmSegmentation::OmSegmentation()
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
+	, mst_(new OmMST())
 {
 }
 
@@ -52,6 +53,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
   	, mGroups(this)
+	, mst_(new OmMST())
 {
 	mMipMeshManager.SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
 
@@ -123,14 +125,6 @@ bool OmSegmentation::BuildThreadedVolume()
 
 bool OmSegmentation::BuildThreadedSegmentation()
 {
-
-	//debug("FIXME", << "OmMipVolume::BuildThreadedVolume()" << endl;
-	//init progress bar
-	OmEventManager::
-	    PostEvent(new
-		      OmProgressEvent(OmProgressEvent::PROGRESS_SHOW, string("Building volume...               "), 0,
-				      MipChunksInVolume()));
-
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
@@ -138,7 +132,7 @@ bool OmSegmentation::BuildThreadedSegmentation()
        		vol_timer.start();
 	}
 
-	printf("Refreshing direct data values...\n");
+	printf("Finding direct data values...\n");
 
 	//initLevel doesn't matter, just set to 0
 	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
@@ -154,17 +148,13 @@ bool OmSegmentation::BuildThreadedSegmentation()
 	printf("done\n");
 
 	if (isDebugCategoryEnabled("perftest")){
-
 		//timer end
 		vol_timer.stop();
 		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
 
 	}
 
-	//hide progress bar
-	OmEventManager::PostEvent(new OmProgressEvent(OmProgressEvent::PROGRESS_HIDE));
 	return true;
-
 }
 
 /*
@@ -384,20 +374,20 @@ void OmSegmentation::FlushDirtySegments()
 
 void OmSegmentation::FlushDend()
 {
-	mst.FlushDend(this);
+	mst_->FlushDend(this);
 }
 
 void OmSegmentation::FlushDendUserEdges()
 {
-	mst.FlushDendUserEdges(this);
+	mst_->FlushDendUserEdges(this);
 }
 
 void OmSegmentation::SetDendThreshold( float t )
 {
-	if( t == mst.mDendThreshold ){
+	if( t == mst_->mDendThreshold ){
 		return;
 	}
-	mst.mDendThreshold = t;
+	mst_->mDendThreshold = t;
 	mSegmentCache->refreshTree();
 }
 
@@ -467,7 +457,6 @@ Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
 	return (box.getMin() + box.getMax()) / 2;
 }
 
-
 bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmSegmentation> importer(this);
@@ -477,4 +466,14 @@ bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 void OmSegmentation::loadVolData()
 {
 	mVolData->load(this);
+}
+
+float OmSegmentation::GetDendThreshold()
+{
+	return mst_->mDendThreshold;
+}
+
+boost::shared_ptr<OmMST> OmSegmentation::getMST()
+{
+	return mst_;
 }
