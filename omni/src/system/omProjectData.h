@@ -12,7 +12,7 @@
 class OmDataPath;
 class OmDataLayer;
 class OmIDataReader;
-class OmDataWriter;
+class OmIDataWriter;
 class OmSegment;
 
 class OmProjectData : boost::noncopyable {
@@ -35,7 +35,7 @@ public:
 	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
 
 	static OmIDataReader* GetProjectDataReader();
-	static OmDataWriter* GetDataWriter();
+	static OmIDataWriter* GetDataWriter();
 
 private:
 	OmProjectData();
@@ -50,7 +50,7 @@ private:
 
 	void setupDataLayer( QString fileNameAndPath );
 	OmIDataReader* dataReader;
-	OmDataWriter* dataWriter;
+	OmIDataWriter* dataWriter;
 };
 
 #endif

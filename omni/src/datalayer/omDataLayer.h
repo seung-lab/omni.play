@@ -4,15 +4,14 @@
 #include "common/omCommon.h"
 
 class OmIDataReader;
-class OmDataWriter;
-class OmDataPath;
+class OmIDataWriter;
 
 class OmDataLayer {
 public:
 	static OmIDataReader* getReader(const QString& fileNameAndPath,
 					const bool readOnly);
-	static OmDataWriter* getWriter(const QString& fileNameAndPath,
-				       const bool readOnly);
+	static OmIDataWriter* getWriter(const QString& fileNameAndPath,
+					const bool readOnly);
 private:
 	OmDataLayer(){}
 	~OmDataLayer(){}

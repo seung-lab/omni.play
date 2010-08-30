@@ -7,21 +7,19 @@
  *	Brett Warne - bwarne@mit.edu - 3/7/09
  */
 
-#include "omMeshTypes.h"
-
-#include "omMipMeshCoord.h"
 #include "common/omCommon.h"
 #include "common/omGl.h"
-#include "system/cache/omCacheableBase.h"
 #include "datalayer/omDataWrapper.h"
-
-class ziMeshingChunk;
+#include "mesh/omMeshTypes.h"
+#include "mesh/omMipMeshCoord.h"
+#include "system/cache/omCacheableBase.h"
 
 class OmHdf5;
 class OmMipMesh;
 class OmSegmentManager;
 class OmMipMeshManager;
 class OmMeshCache;
+class ziMeshingChunk;
 
 class OmMipMesh : public OmCacheableBase {
 
@@ -61,16 +59,13 @@ private:
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
 	OmDataWrapperPtr mpStripOffsetSizeDataWrap; //dim = 2 * mStripCount
-	//uint32_t *mpStripOffsetSizeData; //dim = 2 * mStripCount
 
 	uint32_t mTrianCount;
 	OmDataWrapperPtr mpTrianOffsetSizeDataWrap; //dim = 2 * mTrianCount
-	//uint32_t *mpTrianOffsetSizeData; //dim = 2 * mTrianCount
 
 	// offsets for vectors in geometry data (specifies geometry)
 	uint32_t mVertexIndexCount;
 	OmDataWrapperPtr mpVertexIndexDataWrap; //dim = mVertexIndexCount with 2 bytes check 65K limit
-	//GLuint *mpVertexIndexData; //dim = mVertexIndexCount with 2 bytes check 65K limit
 
 	uint32_t m2VertexIndexCount;
 	GLuint *mp2VertexIndexData;
@@ -78,7 +73,6 @@ private:
 	// interleved vertex and normal data (raw data)
 	uint32_t mVertexCount;
 	OmDataWrapperPtr mpVertexDataWrap;	//dim = 6 * mVertexCount 4 bytes
-	//GLfloat *mpVertexData;	//dim = 6 * mVertexCount 4 bytes
 
 	GLuint mVertexDataVboId;
 	GLuint mVertexIndexDataVboId;
@@ -89,6 +83,8 @@ private:
 	GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
  	GLuint displayList;
         bool hasDisplayList;
+
+	void doLoad();
 
 	friend class OmMesher;
         friend class ziMeshingChunk;

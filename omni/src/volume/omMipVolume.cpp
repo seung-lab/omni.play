@@ -954,9 +954,8 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 	Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
 
-        OmDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
-        OmDataPath fpath;
-        fpath.setPath("main");
+        OmIDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
+        OmDataPath fpath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){
         	hdfExport->create();
@@ -985,7 +984,7 @@ void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 }
 
 void OmMipVolume::doExportChunk(const OmMipChunkCoord & leaf_coord,
-				OmDataWriter* )
+				OmIDataWriter* )
 {
 
 	assert(0 && "FIXME");

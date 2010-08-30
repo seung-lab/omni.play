@@ -212,9 +212,10 @@ void Headless::processLine( QString line, QString fName )
 		const int z = StringHelpers::getUInt( coords[2] );
 
 		OmMipMeshCoord mipChunkCoord = OmMipMeshCoord(OmMipChunkCoord(mipLevel, x, y, z), SegmentationID);
-		OmDataWriter * hdf5File;
+		OmIDataWriter* hdf5File = NULL;
 
-  		if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
+  		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
+		    OmStateManager::getParallel()) {
     			hdf5File = OmDataLayer::getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
 			hdf5File->create();
 			hdf5File->open();

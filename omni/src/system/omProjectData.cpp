@@ -113,14 +113,14 @@ OmIDataReader* OmProjectData::GetProjectDataReader()
 	return Instance()->dataReader;
 }
 
-OmDataWriter* OmProjectData::GetDataWriter()
+OmIDataWriter* OmProjectData::GetDataWriter()
 {
 	return Instance()->dataWriter;
 }
 
 void OmProjectData::setupDataLayer( QString fileNameAndPath )
 {
-	mIsReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
-	dataReader = OmDataLayer::getReader( fileNameAndPath, mIsReadOnly );
-	dataWriter = OmDataLayer::getWriter( fileNameAndPath, mIsReadOnly );
+	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
+	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);
+	dataWriter = OmDataLayer::getWriter(fileNameAndPath, mIsReadOnly);
 }

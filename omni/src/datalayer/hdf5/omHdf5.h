@@ -5,13 +5,15 @@
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
 #include <zi/mutex>
 
 class OmHdf5Impl;
 class OmDataPath;
 
-class OmHdf5 : public OmIDataReader {
+class OmHdf5 : public OmIDataReader,
+	       public OmIDataWriter {
 public:
 	static OmHdf5* getHDF5(const QString& fnp, const bool readOnly);
 

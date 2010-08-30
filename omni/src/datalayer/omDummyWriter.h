@@ -4,7 +4,7 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWriter.h"
 
-class OmDummyWriter : public OmDataWriter {
+class OmDummyWriter : public OmIDataWriter {
 public:
 	OmDummyWriter(QString){}
 

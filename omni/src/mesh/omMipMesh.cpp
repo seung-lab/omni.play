@@ -78,12 +78,6 @@ OmMipMesh::~OmMipMesh()
     OmGarbage::asOmGenlistId(displayList);
   }
 
-  //if was vbo, then delete vbos
-  //not save to do in a sub thread.
-  //if (IsVbo()) {
-  //  DeleteVbo();
-  //}
-
   if (mHdf5File) {
     delete mHdf5File;
   }
@@ -96,11 +90,15 @@ OmMipMesh::~OmMipMesh()
 
 void OmMipMesh::Load()
 {
-  //debug("load", "in OmMipMesh::Load\n");
-  //read meta data
-  OmDataPath fpath( mPath + "metamesh.dat" );
+  try {
+    doLoad();
+  } catch (...) {
+  }
+}
 
-try {
+void OmMipMesh::doLoad()
+{
+  OmDataPath fpath( mPath + "metamesh.dat" );
   if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
     return;
   }
@@ -121,40 +119,33 @@ try {
   //read triangles offset/size data  (uint32_t *)
   fpath.setPath( mPath + "trianoffset.dat" );
   mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
-  //mpTrianOffsetSizeData = mpTrianOffsetSizeDataWrap->getPtr<unsigned int>();
   mTrianCount = size / (2 * sizeof(uint32_t));
 
   //read strip offset/size data  (uint32_t *)
   fpath.setPath( mPath + "stripoffset.dat" );
   mpStripOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
-  //mpStripOffsetSizeData = mpStripOffsetSizeDataWrap->getPtr<unsigned int>();
   mStripCount = size / (2 * sizeof(uint32_t));
 
   //read vertex offset data (GLuint *)
   fpath.setPath( mPath + "vertexoffset.dat" );
   mpVertexIndexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
-  //mpVertexIndexData = mpVertexIndexDataWrap->getPtr<GLuint>();
   mVertexIndexCount = size / sizeof(GLuint);
 
   //read strip offset/size data (GLfloat *)
   fpath.setPath( mPath + "vertex.dat" );
   mpVertexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
-  //mpVertexData = mpVertexDataWrap->getPtr<float>();
   mVertexCount = size / (6 * sizeof(GLfloat));
 
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
+
   //update cache
   UpdateSize(vertex_data_size + vertex_index_data_size);
-
-} catch (...) {
-  return;
-}
 }
 
 void OmMipMesh::Save()
 {
-  OmDataWriter * hdf5File;
+  OmIDataWriter* hdf5File = NULL;
 
   if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
     const std::string path = OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate,

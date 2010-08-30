@@ -12,8 +12,6 @@
 
 extern int Omni_File_Version;
 
-
-
 void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache )
 {
 	int size;
@@ -76,6 +74,6 @@ void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vec
         }
 
 	OmProjectData::GetDataWriter()->writeDataset( path,
-									   ba.size(),
-									   OmDataWrapperRaw(ba.data()));
+						      ba.size(),
+						      OmDataWrapperRaw(ba.data()));
 }

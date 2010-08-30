@@ -15,13 +15,12 @@
 
 #include <QFileInfo>
 
-class OmMipChunkCoord;
 class OmDataPath;
+class OmHdf5;
 class OmMipChunk;
+class OmMipChunkCoord;
 class OmThreadChunkLevel;
 class OmVolume;
-class vtkImageData;
-class OmHdf5;
 class OmVolumeData;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
@@ -167,7 +166,7 @@ private:
 
 	bool sourceFilesWereSet;
 
-	void doExportChunk(const OmMipChunkCoord &, OmDataWriter*);
+	void doExportChunk(const OmMipChunkCoord &, OmIDataWriter*);
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 
 	friend class OmMipChunk;

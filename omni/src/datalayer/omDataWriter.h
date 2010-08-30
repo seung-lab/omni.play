@@ -5,13 +5,11 @@
 #include "common/omCommon.h"
 #include "volume/omVolumeTypes.hpp"
 
-class vtkImageData;
 class OmDataPath;
 
-class OmDataWriter {
+class OmIDataWriter {
 public:
-	OmDataWriter(){}
-	virtual ~OmDataWriter(){}
+	virtual ~OmIDataWriter(){}
 
 	virtual void create() = 0;
 
@@ -24,18 +22,18 @@ public:
 
 	//image I/O
 	virtual void allocateChunkedDataset( const OmDataPath &,
-							  const Vector3i&,
-							  const Vector3i&,
-							  const OmVolDataType) = 0;
+					     const Vector3i&,
+					     const Vector3i&,
+					     const OmVolDataType) = 0;
 
 	virtual void writeChunk(const OmDataPath &,
-						  DataBbox,
-						  OmDataWrapperPtr) = 0;
+				DataBbox,
+				OmDataWrapperPtr) = 0;
 
 	//data set raw
 	virtual void writeDataset(const OmDataPath&,
-						       int,
-						       const OmDataWrapperPtr) = 0;
+				  int,
+				  const OmDataWrapperPtr) = 0;
 };
 
 #endif
