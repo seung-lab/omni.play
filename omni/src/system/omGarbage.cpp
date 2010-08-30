@@ -15,10 +15,13 @@ OmGarbage *OmGarbage::mspInstance = 0;
 
 OmGarbage::OmGarbage()
 {
+
 }
 
 OmGarbage::~OmGarbage()
 {
+	OmGarbage::safeCleanTextureIds();
+	OmGarbage::safeCleanGenlistIds();
 }
 
 OmGarbage *OmGarbage::Instance()
