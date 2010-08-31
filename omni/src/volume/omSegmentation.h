@@ -50,8 +50,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
-	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
+	void BuildChunk( const OmMipChunkCoord &, bool remesh = false);
+	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
 	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
@@ -59,8 +59,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
- 	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
-	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+ 	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
+	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void DeleteGroup(OmSegID = 0);
 
 	OmMipMeshManager mMipMeshManager;

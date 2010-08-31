@@ -12,7 +12,9 @@
 
 extern int Omni_File_Version;
 
-void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmSegment*> & page, OmSegmentCache* cache )
+void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path,
+					std::vector<OmSegment*> & page,
+					boost::shared_ptr<OmSegmentCache> cache)
 {
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
@@ -47,7 +49,9 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path, std::vector<OmS
         }
 }
 
-void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path, const std::vector<OmSegment*> & page, OmSegmentCache* cache)
+void OmDataArchiveSegment::ArchiveWrite( const OmDataPath & path,
+					 const std::vector<OmSegment*> & page,
+					 boost::shared_ptr<OmSegmentCache> cache)
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);

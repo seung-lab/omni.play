@@ -12,13 +12,12 @@
 
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
-	, mImpl(new OmSegmentCacheImpl(segmentation, this))
+	, mImpl(new OmSegmentCacheImpl(segmentation))
 {
 }
 
 OmSegmentCache::~OmSegmentCache()
 {
-	delete mImpl;
 }
 
 OmSegID OmSegmentCache::getSegmentationID()

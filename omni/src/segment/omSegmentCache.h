@@ -85,7 +85,7 @@ public:
 private:
 	mutable QMutex mMutex;
 	OmSegmentation *const mSegmentation;
-	OmSegmentCacheImpl *const mImpl;
+	boost::shared_ptr<OmSegmentCacheImpl> mImpl;
 
 	friend class OmSegmentColorizer;
 

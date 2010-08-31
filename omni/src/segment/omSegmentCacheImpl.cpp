@@ -9,8 +9,8 @@
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImpl::OmSegmentCacheImpl( OmSegmentation * segmentation, OmSegmentCache * cache )
-	: OmSegmentCacheImplLowLevel( segmentation, cache )
+OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation)
+	: OmSegmentCacheImplLowLevel(segmentation)
 {
 }
 
@@ -31,7 +31,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 		return NULL;
 	}
 
-	OmSegment * seg = new OmSegment( value, mParentCache);
+	OmSegment * seg = new OmSegment( value, getSegmentCache());
 	seg->RandomizeColor();
 
 	mSegments->AddItem( seg );

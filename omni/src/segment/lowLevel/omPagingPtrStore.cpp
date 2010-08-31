@@ -9,10 +9,8 @@ static const quint32 DEFAULT_PAGE_SIZE = 100000;
 static const quint32 DEFAULT_VECTOR_SIZE = DEFAULT_PAGE_SIZE;
 
 template<typename T>
-OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation,
-				      OmSegmentCache * cache)
+OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
-	, mParentCache(cache)
 	, mPageSize(DEFAULT_PAGE_SIZE)
 	, mAllPagesLoaded(false)
 	, amInBatchMode(false)
@@ -55,7 +53,7 @@ void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 	const std::vector<T*> & page = mValueToSegPtr[ pageNum ];
 	OmDataArchiveSegment::ArchiveWrite(OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
 					   page,
-					   mParentCache);
+					   mSegmentation->GetSegmentCache());
 }
 
 template<typename T>
@@ -66,8 +64,10 @@ void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 	std::vector<T*> & page = mValueToSegPtr[ pageNum ];
 	page.resize( mPageSize, NULL );
 
-	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
-					   page, mParentCache );
+	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath(mSegmentation->GetId(),
+									   pageNum),
+					   page,
+					   mSegmentation->GetSegmentCache());
 
 	loadedPageNumbers.insert( pageNum );
 

@@ -13,7 +13,7 @@ class OmSegmentation;
 
 class OmSegmentCacheImplLowLevel {
  public:
-	OmSegmentCacheImplLowLevel( OmSegmentation *, OmSegmentCache *);
+	OmSegmentCacheImplLowLevel( OmSegmentation *);
 	virtual ~OmSegmentCacheImplLowLevel();
 
 	void growGraphIfNeeded(OmSegment * newSeg);
@@ -61,10 +61,11 @@ class OmSegmentCacheImplLowLevel {
 	quint32 getPageSize();
 	quint32 getMaxValue();
 
+	boost::shared_ptr<OmSegmentCache> getSegmentCache();
+
  protected:
 	OmSegmentation * mSegmentation;
-	OmSegmentCache * mParentCache;
-	OmPagingPtrStore<OmSegment> * mSegments;
+	boost::shared_ptr<OmPagingPtrStore<OmSegment> > mSegments;
 
 	OmSegID mMaxValue;
 	OmSegID getNextValue();

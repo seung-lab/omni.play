@@ -2,7 +2,8 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
 
-OmSegment::OmSegment(const OmSegID value, OmSegmentCache * cache)
+OmSegment::OmSegment(const OmSegID value,
+		     boost::shared_ptr<OmSegmentCache> cache)
 	: value(value)
 	, mCache(cache)
 	, mParentSegID(0)

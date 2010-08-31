@@ -12,7 +12,7 @@ class OmSegmentEdge;
 
 class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
  public:
-	OmSegmentCacheImpl( OmSegmentation *, OmSegmentCache *);
+	OmSegmentCacheImpl(OmSegmentation *);
 	virtual ~OmSegmentCacheImpl();
 
 	OmSegment* AddSegment();
@@ -54,8 +54,8 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	inline boost::shared_ptr<OmSegmentLists> getSegmentLists();
 
 	friend class OmSegmentColorizer;
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
-	friend QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
+	friend QDataStream &operator<<(QDataStream&, const OmSegmentCacheImpl&);
+	friend QDataStream &operator>>(QDataStream&, OmSegmentCacheImpl&);
 };
 
 #endif

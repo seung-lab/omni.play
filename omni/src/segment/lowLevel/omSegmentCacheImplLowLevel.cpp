@@ -6,11 +6,9 @@
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation,
-						       OmSegmentCache * cache )
+OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
-	, mParentCache( cache )
-	, mSegments( new OmPagingPtrStore<OmSegment>( segmentation, cache ) )
+	, mSegments( new OmPagingPtrStore<OmSegment>(segmentation) )
 	, mMaxValue(0)
 	, mNumSegs(0)
 	, mAllSelected(false)
@@ -20,7 +18,6 @@ OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmenta
 
 OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
 {
-	delete mSegments;
 }
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
@@ -287,4 +284,9 @@ void OmSegmentCacheImplLowLevel::clearCaches()
 void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 {
 	mSegmentGraph.growGraphIfNeeded(newSeg);
+}
+
+boost::shared_ptr<OmSegmentCache> OmSegmentCacheImplLowLevel::getSegmentCache()
+{
+	return mSegmentation->GetSegmentCache();
 }

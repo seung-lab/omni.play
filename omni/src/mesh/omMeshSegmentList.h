@@ -47,23 +47,12 @@ public:
   static void Delete();
 
   static inline std::pair<bool, OmSegPtrList>
-  getFromCacheIfReady(OmMipChunkPtr p_chunk,
-		      OmSegment * rootSeg,
-		      const OmMipChunkCoord & chunkCoord,
-		      boost::shared_ptr<OmSegmentCache> mSegmentCache,
-		      const OmId segmentationID)
-  {
-    return Instance()->doGetFromCacheIfReady(p_chunk,
-					     rootSeg,
-					     chunkCoord,
-					     mSegmentCache,
-					     segmentationID);
+  getFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg) {
+	  return Instance()->doGetFromCacheIfReady(chunk, rootSeg);
   }
 
-  static void addToCache( const OmMipChunkCoord &,
-			  OmSegment *,
-			  const OmSegPtrList &,
-			  const OmId );
+	static void addToCache(OmMipChunkPtr, OmSegment*,
+			       const OmSegPtrList &);
 
 private:
   //singleton
@@ -76,22 +65,16 @@ private:
   OmThreadPool mThreadPool;
   zi::Mutex mutex;
 
-  std::pair<bool, OmSegPtrList>
-  doGetFromCacheIfReady(OmMipChunkPtr,
-		      OmSegment *,
-		      const OmMipChunkCoord &,
-		      boost::shared_ptr<OmSegmentCache>,
-		      const OmId );
+  std::pair<bool, OmSegPtrList> doGetFromCacheIfReady(OmMipChunkPtr, OmSegment*);
 
-  static inline OmMeshSegListKey makeKey(const OmId segmentationID,
-					 const OmSegID segID,
-					 const OmMipChunkCoord & c){
-    return OmMeshSegListKey(segmentationID,
-			    segID,
-			    c.Level,
-			    c.Coordinate.x,
-			    c.Coordinate.y,
-			    c.Coordinate.z);
+  static inline OmMeshSegListKey makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg){
+	  const OmMipChunkCoord& c = chunk->GetCoordinate();
+	  return OmMeshSegListKey(rootSeg->getSegmentationID(),
+				  rootSeg->value,
+				  c.Level,
+				  c.Coordinate.x,
+				  c.Coordinate.y,
+				  c.Coordinate.z);
   }
 
 };

@@ -16,7 +16,7 @@ class OmSegmentCache;
 
 class OmSegment {
 public:
-	OmSegment(const OmSegID value, OmSegmentCache * cache);
+	OmSegment(const OmSegID, boost::shared_ptr<OmSegmentCache>);
 	const OmSegID value;
 
 	// color
@@ -88,11 +88,13 @@ public:
 	const OmSegmentEdge& getCustomMergeEdge() const {return mCustomMergeEdge;}
 	void setCustomMergeEdge(const OmSegmentEdge& e){mCustomMergeEdge=e;}
 
+	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return mCache; }
+
 private:
 	zi::Mutex boundsWriteLock_;
 	zi::Mutex sizeWriteLock_;
 
-	OmSegmentCache * mCache;
+	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;
 	OmSegIDsSet segmentsJoinedIntoMe;
 	OmId mParentSegID;

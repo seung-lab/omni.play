@@ -11,7 +11,7 @@ class OmSegmentCache;
 class OmSegmentIterator
 {
  public:
-	OmSegmentIterator(boost::shared_ptr<OmSegmentCache>);
+	explicit OmSegmentIterator(boost::shared_ptr<OmSegmentCache>);
 
 	void iterOverSegmentID(const OmSegID segID);
 	void iterOverSegmentIDs(const OmSegIDsSet & set);

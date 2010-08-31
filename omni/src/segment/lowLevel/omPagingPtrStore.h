@@ -13,7 +13,7 @@ class OmSegmentCache;
 template <typename T>
 class OmPagingPtrStore {
  public:
-	OmPagingPtrStore( OmSegmentation *, OmSegmentCache *);
+	OmPagingPtrStore(OmSegmentation*);
 	~OmPagingPtrStore();
 
 	quint32 getPageSize() { return mPageSize; }
@@ -32,7 +32,6 @@ class OmPagingPtrStore {
 
  private:
 	OmSegmentation *const mSegmentation;
-	OmSegmentCache *const mParentCache;
 
 	quint32 mPageSize;
 	std::vector< std::vector<T*> > mValueToSegPtr;

@@ -104,10 +104,10 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
  *	Uses the OmVolumeCuller to determine the visibility of a MipChunk.  If visible, the
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
-void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool testVis)
+void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
+				      bool testVis)
 {
-	// get pointer to chunk
-	OmMipChunkPtr p_chunk = OmMipChunkPtr ();
+	OmMipChunkPtr p_chunk = OmMipChunkPtr();
 	mSeg->GetChunk(p_chunk, chunkCoord, true);
 
 	// test for chunk visibility (if necessary)
@@ -131,13 +131,11 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
 		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
-			DrawChunk( p_chunk, chunkCoord );
+			DrawChunk(p_chunk);
 		}
 
 	} else {
-		const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
-		std::set<OmMipChunkCoord>::const_iterator iter;
-		for( iter = coords.begin(); iter != coords.end(); ++iter ){
+		FOR_EACH(iter, p_chunk->GetChildrenCoordinates()){
 			DrawChunkRecursive(*iter, testVis);
 		}
 	}
@@ -146,49 +144,40 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
+void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
 {
 	bool segsWereFound = false;
 
-	OmSegment * rootSeg;
-	OmSegID rootSegID;
-
-	OmSegPtrList::const_iterator iter;
-	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){
-		rootSeg = (*iter);
-		rootSegID = rootSeg->value;
+	FOR_EACH(iter, mRootSegsToDraw){
+		OmSegment* rootSeg = (*iter);
 
 		std::pair<bool, OmSegPtrList> segmentsToPossiblyDraw =
-		  OmMeshSegmentList::getFromCacheIfReady(p_chunk,
-							 rootSeg,
-							 chunkCoord,
-							 mSegmentCache,
-							 mSegmentationID);
+			OmMeshSegmentList::getFromCacheIfReady(chunk, rootSeg);
 
-		if( false == segmentsToPossiblyDraw.first ){
+		if(false == segmentsToPossiblyDraw.first){
 			continue;
 		}
 
-		const OmSegPtrList & segmentsToDraw = segmentsToPossiblyDraw.second;
+		const OmSegPtrList& segmentsToDraw = segmentsToPossiblyDraw.second;
 
 		if(segmentsToDraw.empty()){
 			continue;
 		}
 
 		segsWereFound = true;
-		doDrawChunk(chunkCoord, segmentsToDraw);
+		doDrawChunk(chunk->GetCoordinate(), segmentsToDraw);
 	}
 
 	if(segsWereFound){
 		if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
 			// draw bounding box around chunk
-			DrawClippedExtent( p_chunk );
+			DrawClippedExtent(chunk);
 		}
 	}
 }
 
-void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
-			       const OmSegPtrList & segmentsToDraw )
+void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
+			       const OmSegPtrList& segmentsToDraw )
 {
 	FOR_EACH(iter, segmentsToDraw ){
 		OmSegment* seg = *iter;

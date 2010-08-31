@@ -22,15 +22,15 @@ class OmMeshDrawer : boost::noncopyable
 
  private:
 	const OmId mSegmentationID;
-	OmSegmentation * mSeg;
+	OmSegmentation* mSeg;
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
-	OmViewGroupState * mViewGroupState;
-	OmVolumeCuller * mVolumeCuller;
+	OmViewGroupState* mViewGroupState;
+	OmVolumeCuller* mVolumeCuller;
 
 	OmSegPtrList mRootSegsToDraw;
 
 	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
-	void DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord);
+	void DrawChunk(OmMipChunkPtr);
 	void doDrawChunk(const OmMipChunkCoord &, const OmSegPtrList &);
 	bool ShouldChunkBeDrawn(OmMipChunkPtr p_chunk);
 	void DrawClippedExtent(OmMipChunkPtr p_chunk);
