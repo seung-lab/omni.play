@@ -1,9 +1,4 @@
-#include "common/omDebug.h"
-#include "common/omException.h"
-#include "omGarbage.h"
-#include "omPreferenceDefinitions.h"
-#include "system/cache/omCacheManager.h"
-#include "system/omProjectData.h"
+#include "system/omGarbage.h"
 
 OmGarbage::~OmGarbage()
 {
@@ -19,13 +14,7 @@ void OmGarbage::Delete()
 void OmGarbage::assignOmTextureId(const GLuint textureID)
 {
 	zi::Guard g(Instance().mTextureMutex);
-	OmGarbage::Instance().mTextures.push_back(textureID);
-}
-
-void OmGarbage::assignOmGenlistId(const GLuint genlistID)
-{
-	zi::Guard g(Instance().mGenlistMutex);
-        OmGarbage::Instance().mGenlists.push_back(genlistID);
+	Instance().mTextures.push_back(textureID);
 }
 
 void OmGarbage::safeCleanTextureIds()
@@ -35,7 +24,13 @@ void OmGarbage::safeCleanTextureIds()
 	glDeleteTextures(Instance().mTextures.size(),
 			 &Instance().mTextures[0]);
 
-	OmGarbage::Instance().mTextures.clear();
+	Instance().mTextures.clear();
+}
+
+void OmGarbage::assignOmGenlistId(const GLuint genlistID)
+{
+	zi::Guard g(Instance().mGenlistMutex);
+        Instance().mGenlists.push_back(genlistID);
 }
 
 void OmGarbage::safeCleanGenlistIds()
@@ -46,6 +41,6 @@ void OmGarbage::safeCleanGenlistIds()
 		glDeleteLists((*iter), 1);
 	}
 
-	OmGarbage::Instance().mGenlists.clear();
+	Instance().mGenlists.clear();
 }
 
