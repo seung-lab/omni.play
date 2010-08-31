@@ -75,7 +75,7 @@ OmMipMesh::~OmMipMesh()
 {
   if (hasDisplayList) {
     hasDisplayList = false;
-    OmGarbage::asOmGenlistId(displayList);
+    OmGarbage::assignOmGenlistId(displayList);
   }
 
   if (mHdf5File) {

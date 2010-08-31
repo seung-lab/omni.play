@@ -43,7 +43,7 @@ protected:
 private:
 	OmCacheManager();
 	~OmCacheManager();
-	static inline OmCacheManager & Instance(){
+	static inline OmCacheManager& Instance(){
 		return zi::Singleton<OmCacheManager>::Instance();
 	}
 
@@ -53,7 +53,7 @@ private:
 
 	boost::shared_ptr<OmCacheGroup> mRamCacheMap;
 	boost::shared_ptr<OmCacheGroup> mVramCacheMap;
-	friend class zi::Singleton<OmCacheManager>;
+ 	friend class zi::Singleton<OmCacheManager>;
 };
 
 #endif

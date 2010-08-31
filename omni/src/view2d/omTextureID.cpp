@@ -43,7 +43,7 @@ void OmTextureID::setData(boost::shared_ptr<OmColorRGBA> data)
 
 OmTextureID::~OmTextureID()
 {
-	OmGarbage::asOmTextureId(textureID);
+	OmGarbage::assignOmTextureId(textureID);
 
 	//remove object size from cache
 	UpdateSize(-mem_size);

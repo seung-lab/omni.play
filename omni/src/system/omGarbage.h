@@ -8,45 +8,41 @@
  * 	measured in time spent in the paint event in the call
  * 	to safeCleanTextureIds.
  *
+ *      Must be called from main GUI thread.
+ *
  * 	Matt Wimer mwimer@mit.edu 10/21/09
  */
 
 #include "common/omCommon.h"
 #include "common/omGl.h"
 
-#include <QMutex>
+#include <zi/mutex>
+#include <zi/utility>
 
 class OmGarbage : boost::noncopyable {
 
 public:
-	
-	static OmGarbage* Instance();
 	static void Delete();
-	
-	static void asOmTextureId(GLuint);
-	static void asOmGenlistId(GLuint);
-	static void safeCleanTextureIds ();
-	static void safeCleanGenlistIds ();
-	
-	static void Lock ();
-	static vector<GLuint>& LockTextures ();
-	static vector<GLuint>& LockGenlists ();
-	static void Unlock ();
-	static void UnlockTextures ();
-	static void UnlockGenlists ();
-	
-private:
-	OmGarbage();
-	~OmGarbage();
 
-	//singleton
-	static OmGarbage* mspInstance;
-	
-	//garbage
-	vector <GLuint> mTextures;
-	vector <GLuint> mGenlists;
-	mutable QMutex mTextureMutex;
-	mutable QMutex mGenlistMutex;
+	static void assignOmTextureId(const GLuint);
+	static void safeCleanTextureIds();
+
+	static void assignOmGenlistId(const GLuint);
+	static void safeCleanGenlistIds();
+
+private:
+	OmGarbage(){}
+	~OmGarbage();
+	static inline OmGarbage& Instance(){
+		return zi::Singleton<OmGarbage>::Instance();
+	}
+
+	std::vector<GLuint> mTextures;
+	std::vector<GLuint> mGenlists;
+	zi::Mutex mTextureMutex;
+	zi::Mutex mGenlistMutex;
+
+	friend class zi::Singleton<OmGarbage>;
 };
 
 #endif
