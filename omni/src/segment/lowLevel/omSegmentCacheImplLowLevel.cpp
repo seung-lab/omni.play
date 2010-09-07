@@ -134,8 +134,7 @@ void OmSegmentCacheImplLowLevel::UpdateSegmentSelection( const OmSegIDsSet & ids
 {
 	mSelectedSet.clear();
 
-	OmSegIDsSet::const_iterator iter;
-	for( iter = ids.begin(); iter != ids.end(); ++iter ){
+	FOR_EACH(iter, ids){
 		setSegmentSelectedBatch( *iter, true, addToRecentList);
 	}
 
