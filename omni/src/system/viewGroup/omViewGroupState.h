@@ -6,6 +6,7 @@
 #include <QMutex>
 
 class ChannelDataWrapper;
+class FilterWidget;
 class MainWindow;
 class OmSegment;
 class OmSegmentColorizer;
@@ -20,6 +21,9 @@ class OmViewGroupState : public OmManageableObject {
 
 	void SetInspectorProperties(InspectorProperties * ip) {mInspectorProperties = ip; }
 	InspectorProperties * GetInspectorProperties() { return mInspectorProperties; }
+
+	void SetFilterWidget(FilterWidget* f){ mFilterWidget = f; }
+	FilterWidget* GetFilterWidget(){ return mFilterWidget; }
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
@@ -86,6 +90,7 @@ class OmViewGroupState : public OmManageableObject {
 	mutable QMutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
+	FilterWidget* mFilterWidget;
 	ViewGroup * mViewGroup;
 	InspectorProperties * mInspectorProperties;
 

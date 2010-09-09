@@ -30,5 +30,4 @@ fwrite(fid, zeros(s(1:3), 'uint32'), 'uint32');
 fclose(fid);
 
 fprintf('done!\n');
-
 end

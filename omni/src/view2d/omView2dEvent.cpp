@@ -12,6 +12,7 @@
 #include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
 #include "volume/omSegmentation.h"
+#include "gui/toolbars/mainToolbar/filterWidget.h"
 
 /**
  * \name Mouse Event Handlers
@@ -273,12 +274,20 @@ void OmView2d::wheelEvent(QWheelEvent * event)
 	const int numSteps = numDegrees / 15;
 
 	const bool move_through_stack = event->modifiers() & Qt::ControlModifier;
+	const bool change_alpha = event->modifiers() & Qt::ShiftModifier;
 
 	if (move_through_stack) {
 		if (numSteps >= 0) {
 			MoveUpStackCloserToViewer();
 		} else {
 			MoveDownStackFartherFromViewer();
+		}
+	} else if(change_alpha){
+		FilterWidget* fw = mViewGroupState->GetFilterWidget();
+		if (numSteps >= 0) {
+			fw->increaseAlpha();
+		} else{
+			fw->decreaseAlpha();
 		}
 	} else {
 		MouseWheelZoom(numSteps);

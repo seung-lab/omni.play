@@ -7,7 +7,7 @@
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "system/omProjectData.h"
 
-MainToolbar::MainToolbar( MainWindow * mw )
+MainToolbar::MainToolbar(MainWindow * mw)
 	: QWidget(mw)
 	, mMainWindow(mw)
 	, saveButton(new SaveButton(this))
