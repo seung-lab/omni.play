@@ -22,7 +22,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-const int Omni_Version = 14;
+const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
 int Omni_File_Version;
 
 static const QString Omni_Postfix("OMNI");
