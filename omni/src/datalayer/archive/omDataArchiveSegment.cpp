@@ -11,6 +11,7 @@
 
 #include <QDataStream>
 
+static const QString Omni_Postfix("OMNI");
 const int Omni_Segment_Version = 2;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
@@ -107,7 +108,9 @@ void OmDataArchiveSegment::readSegmentsNew(std::vector<OmSegment*> & page,
                 page[ i ] = segment;
         }
 
-	if(!in.atEnd()){
+	QString omniPostfix;
+	in >> omniPostfix;
+	if( Omni_Postfix != omniPostfix || !in.atEnd() ){
 		throw OmIoException("corrupt segment list detected");
 	}
 }
@@ -143,6 +146,10 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
                 out << segment->mSize;
 		out << segment->mBounds;
         }
+
+	if(OmProjectData::getFileVersion() >= 15){
+		out << Omni_Postfix;
+	}
 
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
 									   ba.size(),

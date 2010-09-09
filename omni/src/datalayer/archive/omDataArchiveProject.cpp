@@ -51,13 +51,9 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 
 	QString omniPostfix;
 	in >> omniPostfix;
-
-	if( Omni_Postfix != omniPostfix ){
+	if(Omni_Postfix != omniPostfix ||
+	   !in.atEnd()){
 		throw OmIoException("corruption detected in Omni file");
-	}
-
-	if(!in.atEnd()){
-		throw OmIoException("corrupt omni file detected");
 	}
 }
 
