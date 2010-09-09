@@ -45,11 +45,10 @@ void FilterWidget::setFilAlpha(const int sliderVal)
 void FilterWidget::initSilderTab()
 {
 	const boost::optional<double> alpha = doGetFilterAlpha();
-	if(!alpha){
-		return;
-	}
 
-	moveSliderTab(*alpha);
+	if(alpha){
+		moveSliderTab(*alpha);
+	}
 }
 
 void FilterWidget::moveSliderTab(const double alpha)
@@ -75,7 +74,7 @@ void FilterWidget::doSetFilterAlpha(const double alpha)
 	FilterDataWrapper fdw(getChannelID(), getFilterID());
 
 	if(fdw.isValid()){
-		OmFilter2d * filter = fdw.getFilter();
+		OmFilter2d* filter = fdw.getFilter();
 		filter->SetAlpha(alpha);
 		moveSliderTab(alpha);
 		OmEvents::Redraw();
