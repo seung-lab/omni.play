@@ -27,6 +27,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 
 		if(!dataReadCorrect){
 			// reread, don't read mBounds
+			// warning: will leak corrupt OmSegments...
 			const bool dataReadCorrectOverride =
 				readSegmentsOld(page, cache, dw, size, true);
 			if(!dataReadCorrectOverride){
@@ -40,6 +41,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 	}
 }
 
+// don't modify this--to add extra member vars, please modify readSegmentsNew
 bool OmDataArchiveSegment::readSegmentsOld(std::vector<OmSegment*> & page,
 					   OmSegmentCache* cache,
 					   OmDataWrapperPtr dw,

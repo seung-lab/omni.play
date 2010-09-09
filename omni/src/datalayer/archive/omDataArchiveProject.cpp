@@ -21,7 +21,7 @@
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
 static const QString Omni_Postfix("OMNI");
-static const int Omni_Version = 13;
+static const int Omni_Version = 13; // warning: don't change to version 15 (purcaro)
 static int fileVersion_;
 
 void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
