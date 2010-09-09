@@ -26,7 +26,12 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 			readSegmentsOld(page, cache, dw, size, false);
 
 		if(!dataReadCorrect){
-			readSegmentsOld(page, cache, dw, size, true);
+			// reread, don't read mBounds
+			const bool dataReadCorrectOverride =
+				readSegmentsOld(page, cache, dw, size, true);
+			if(!dataReadCorrectOverride){
+				throw OmIoException("corrupt segment list detected");
+			}
 			printf("forcing rewrite of segments...\n");
 			ArchiveWrite(path, page, cache);
 		}
