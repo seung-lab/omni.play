@@ -22,7 +22,9 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 
 	if(OmProjectData::getFileVersion() < 15){ // segments weren't versioned
-		const bool dataReadCorrect = readSegmentsOld(page, cache, dw, size, false);
+		const bool dataReadCorrect =
+			readSegmentsOld(page, cache, dw, size, false);
+
 		if(!dataReadCorrect){
 			readSegmentsOld(page, cache, dw, size, true);
 			printf("forcing rewrite of segments...\n");
