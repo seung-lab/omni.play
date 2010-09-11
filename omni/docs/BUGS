@@ -1,11 +1,11 @@
 * Output to stdout should be restricted, and not be written to during batch
   activities such as building segmentation data.
 * Progress window for building segmentaion should be titled something other
-  than "omGuiApp". 
+  than "omGuiApp".
 * makecurrent deadlock (FIXED: Aug 18th, 2009)
 * Flicking of the 2d view. (FIXED: Aug 19th, 2009)
 * Memory leak: (need data from Brett)
-* The 2d viewer needs to have its own way of changing to edit mode. Currently, it 
+* The 2d viewer needs to have its own way of changing to edit mode. Currently, it
   requires using the 3d viewer to enter edit mode. (Control+E in 3d viewer toggles
   edit mode.)
 
@@ -211,42 +211,42 @@ in OmProjectData::ReadImageData
 00400000-013c8000 r-xp 00000000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
 015c8000-01602000 r--p 00fc8000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
 01602000-0160c000 rw-p 01002000 00:18 18411384                           /Users/mwimer/code6/omni/bin/omGuiApp
-0160c000-01614000 rw-p 0160c000 00:00 0 
+0160c000-01614000 rw-p 0160c000 00:00 0
 02b18000-0e729000 rw-p 02b18000 00:00 0                                  [heap]
 40c81000-40d01000 rw-p 00000000 00:0f 730                                /dev/zero
 40f5e000-40f60000 rwxp 00000000 00:0f 730                                /dev/zero
 41b3f000-41bbf000 rw-p 00000000 00:0f 730                                /dev/zero
 41cce000-41d4e000 rw-p 00000000 00:0f 730                                /dev/zero
-7f0ab4000000-7f0ab66d3000 rw-p 7f0ab4000000 00:00 0 
-7f0ab66d3000-7f0ab8000000 ---p 7f0ab66d3000 00:00 0 
-7f0abc000000-7f0abff76000 rw-p 7f0abc000000 00:00 0 
-7f0abff76000-7f0ac0000000 ---p 7f0abff76000 00:00 0 
-7f0ac0000000-7f0ac4000000 rw-p 7f0ac0000000 00:00 0 
-7f0ac4000000-7f0ac7cd7000 rw-p 7f0ac4000000 00:00 0 
-7f0ac7cd7000-7f0ac8000000 ---p 7f0ac7cd7000 00:00 0 
-7f0ac8000000-7f0acc000000 rw-p 7f0ac8000000 00:00 0 
-7f0acc000000-7f0acfef0000 rw-p 7f0acc000000 00:00 0 
-7f0acfef0000-7f0ad0000000 ---p 7f0acfef0000 00:00 0 
-7f0ad0000000-7f0ad3f18000 rw-p 7f0ad0000000 00:00 0 
-7f0ad3f18000-7f0ad4000000 ---p 7f0ad3f18000 00:00 0 
-7f0ad4000000-7f0ad7ef0000 rw-p 7f0ad4000000 00:00 0 
-7f0ad7ef0000-7f0ad8000000 ---p 7f0ad7ef0000 00:00 0 
-7f0ad8000000-7f0adbfca000 rw-p 7f0ad8000000 00:00 0 
-7f0adbfca000-7f0adc000000 ---p 7f0adbfca000 00:00 0 
-7f0ade3f5000-7f0ade3f6000 ---p 7f0ade3f5000 00:00 0 
-7f0ade3f6000-7f0adebf6000 rwxp 7f0ade3f6000 00:00 0 
-7f0ae0000000-7f0ae3e25000 rw-p 7f0ae0000000 00:00 0 
-7f0ae3e25000-7f0ae4000000 ---p 7f0ae3e25000 00:00 0 
+7f0ab4000000-7f0ab66d3000 rw-p 7f0ab4000000 00:00 0
+7f0ab66d3000-7f0ab8000000 ---p 7f0ab66d3000 00:00 0
+7f0abc000000-7f0abff76000 rw-p 7f0abc000000 00:00 0
+7f0abff76000-7f0ac0000000 ---p 7f0abff76000 00:00 0
+7f0ac0000000-7f0ac4000000 rw-p 7f0ac0000000 00:00 0
+7f0ac4000000-7f0ac7cd7000 rw-p 7f0ac4000000 00:00 0
+7f0ac7cd7000-7f0ac8000000 ---p 7f0ac7cd7000 00:00 0
+7f0ac8000000-7f0acc000000 rw-p 7f0ac8000000 00:00 0
+7f0acc000000-7f0acfef0000 rw-p 7f0acc000000 00:00 0
+7f0acfef0000-7f0ad0000000 ---p 7f0acfef0000 00:00 0
+7f0ad0000000-7f0ad3f18000 rw-p 7f0ad0000000 00:00 0
+7f0ad3f18000-7f0ad4000000 ---p 7f0ad3f18000 00:00 0
+7f0ad4000000-7f0ad7ef0000 rw-p 7f0ad4000000 00:00 0
+7f0ad7ef0000-7f0ad8000000 ---p 7f0ad7ef0000 00:00 0
+7f0ad8000000-7f0adbfca000 rw-p 7f0ad8000000 00:00 0
+7f0adbfca000-7f0adc000000 ---p 7f0adbfca000 00:00 0
+7f0ade3f5000-7f0ade3f6000 ---p 7f0ade3f5000 00:00 0
+7f0ade3f6000-7f0adebf6000 rwxp 7f0ade3f6000 00:00 0
+7f0ae0000000-7f0ae3e25000 rw-p 7f0ae0000000 00:00 0
+7f0ae3e25000-7f0ae4000000 ---p 7f0ae3e25000 00:00 0
 7f0ae427a000-7f0ae467a000 rw-s 75a39f000 00:0f 8152                      /dev/nvidia0
 7f0ae467a000-7f0ae477a000 rw-s 606421000 00:0f 8152                      /dev/nvidia0
 7f0ae477a000-7f0ae47ba000 rw-s 3dd070000 00:0f 8152                      /dev/nvidia0
 7f0ae47da000-7f0ae47fb000 rw-s 00000000 00:09 14548992                   /SYSV00000000 (deleted)
-7f0ae47fb000-7f0ae47fc000 rw-p 7f0ae47fb000 00:00 0 
+7f0ae47fb000-7f0ae47fc000 rw-p 7f0ae47fb000 00:00 0
 7f0ae47fc000-7f0ae480b000 r--p 00000000 08:02 41573                      /usr/share/fonts/truetype/ttf-bitstream-vera/VeraBd.ttf
-7f0ae480b000-7f0ae480c000 ---p 7f0ae480b000 00:00 0 
-7f0ae480c000-7f0ae500c000 rwxp 7f0ae480c000 00:00 0 
-7f0ae500c000-7f0ae500d000 ---p 7f0ae500c000 00:00 0 
-7f0ae500d000-7f0ae580d000 rwxp 7f0ae500d000 00:00 0 
+7f0ae480b000-7f0ae480c000 ---p 7f0ae480b000 00:00 0
+7f0ae480c000-7f0ae500c000 rwxp 7f0ae480c000 00:00 0
+7f0ae500c000-7f0ae500d000 ---p 7f0ae500c000 00:00 0
+7f0ae500d000-7f0ae580d000 rwxp 7f0ae500d000 00:00 0
 7f0ae580d000-7f0ae5810000 r-xp 00000000 08:02 2590                       /lib/libgpg-error.so.0.3.0
 7f0ae5810000-7f0ae5a0f000 ---p 00003000 08:02 2590                       /lib/libgpg-error.so.0.3.0
 7f0ae5a0f000-7f0ae5a10000 rw-p 00002000 08:02 2590                       /lib/libgpg-error.so.0.3.0
@@ -328,7 +328,7 @@ are already closed.
 #2  0x00007f07736ba2df in __assert_fail () from /lib/libc.so.6
 #3  0x0000000000fe31cd in om_hdf5_dataset_image_get_dims (fileId=67108869, name=0x1cf00d8 "segmentations/segmentation1/0/volume.dat")
     at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:323
-#4  0x0000000000fe3385 in om_hdf5_dataset_image_write_trim (fileId=67108869, name=0x1cf00d8 "segmentations/segmentation1/0/volume.dat", 
+#4  0x0000000000fe3385 in om_hdf5_dataset_image_write_trim (fileId=67108869, name=0x1cf00d8 "segmentations/segmentation1/0/volume.dat",
     dataExtent=@0x7fff7e056cb0, bytesPerSample=1, pImageData=0x7f076800e640) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:643
 #5  0x000000000082fc9d in OmProjectData::WriteImageData (path=@0x7fff7e056d10, extent=@0x1fc081c, bytesPerSample=1, data=0x7f076800e640)
     at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
@@ -430,7 +430,7 @@ omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:618: void om_hdf5_data
 #18 0x00007f6b4938b3f7 in start_thread () from /lib/libpthread.so.0
 #19 0x00007f6b484f8b3d in clone () from /lib/libc.so.6
 #20 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:571: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `H5Tget_size(dataset_type_id) == bytesPerSample' failed.
 
@@ -459,7 +459,7 @@ Program received signal SIGABRT, Aborted.
 #18 0x00007f9f6abee3f7 in start_thread () from /lib/libpthread.so.0
 #19 0x00007f9f69d5bb3d in clone () from /lib/libc.so.6
 #20 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 
@@ -491,7 +491,7 @@ Program received signal SIGABRT, Aborted.
 #16 0x0000000000f42026 in QEventLoop::exec ()
 #17 0x0000000000f43d3b in QCoreApplication::exec ()
 #18 0x0000000000798c83 in main (argc=1, argv=0x7ffff7e6c6f8) at /Users/mwimer/code9/omni/src/gui/main.cpp:38
-(gdb) 
+(gdb)
 
 Here it is again: 32bitx86 linux.
 omGuiApp: /home/matt/code9/omni/src/volume/omMipVolume.cpp:595: virtual uint32_t OmMipVolume::GetVoxelValue(const DataCoord&): Assertion `OmDataVolume::ContainsVoxel(vox)' failed.
@@ -547,7 +547,7 @@ Program received signal SIGABRT, Aborted.
 #13 0x00007f9c4e7993f7 in start_thread () from /lib/libpthread.so.0
 #14 0x00007f9c4d906b3d in clone () from /lib/libc.so.6
 #15 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 Crash when trying to build meshes as well as data for a segmentation.
 Program received signal SIGSEGV, Segmentation fault.
@@ -565,7 +565,7 @@ Program received signal SIGSEGV, Segmentation fault.
 #7  0x00007f6b89d003f7 in start_thread () from /lib/libpthread.so.0
 #8  0x00007f6b88e6db3d in clone () from /lib/libc.so.6
 #9  0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 omGuiApp: /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:252: void OmMipChunk::WriteVolumeData(): Assertion `IsOpen()' failed.
@@ -593,7 +593,7 @@ Program received signal SIGABRT, Aborted.
 #15 0x00007fb988fe43f7 in start_thread () from /lib/libpthread.so.0
 #16 0x00007fb988151b3d in clone () from /lib/libc.so.6
 #17 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1136429392.  Back trace follows.
   #000: H5G.c line 196 in H5Gcreate(): not a location
@@ -627,7 +627,7 @@ Program received signal SIGABRT, Aborted.
 #11 0x00007f75b0c543f7 in start_thread () from /lib/libpthread.so.0
 #12 0x00007f75afdc1b3d in clone () from /lib/libc.so.6
 #13 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 Died building the second segmenation after trying to view it.
@@ -650,7 +650,7 @@ Program received signal SIGSEGV, Segmentation fault.
 #10 0x00007f0f18ea13f7 in start_thread () from /lib/libpthread.so.0
 #11 0x00007f0f1800eb3d in clone () from /lib/libc.so.6
 #12 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 
@@ -667,7 +667,7 @@ Program received signal SIGABRT, Aborted.
 #2  0x00007f19303cf2df in __assert_fail () from /lib/libc.so.6
 #3  0x0000000001012c45 in om_hdf5_dataset_image_write (fileId=67108865, name=0x2cd3d68 "segmentations/segmentation1/0/volume.dat", extent=@0x7fff3ad6a680, bytesPerSample=1, imageData=0x7f192403da30)
     at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573
-#4  0x0000000001013b66 in om_hdf5_dataset_image_write_trim (fileId=67108865, name=0x2cd3d68 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff3ad6a760, bytesPerSample=1, 
+#4  0x0000000001013b66 in om_hdf5_dataset_image_write_trim (fileId=67108865, name=0x2cd3d68 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff3ad6a760, bytesPerSample=1,
     pImageData=0x7f192403da30) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:656
 #5  0x000000000085d2bd in OmProjectData::WriteImageData (path=@0x7fff3ad6a7c0, extent=@0x7f192403bd2c, bytesPerSample=1, data=0x7f192403da30) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
 #6  0x00000000007e44da in OmMipChunk::WriteVolumeData (this=0x7f192403bca0) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:258
@@ -720,7 +720,7 @@ Program received signal SIGABRT, Aborted.
 #9  0x00007fb0255ee3f7 in start_thread () from /lib/libpthread.so.0
 #10 0x00007fb02475bb3d in clone () from /lib/libc.so.6
 #11 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS
 HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 1110378832.  Back trace follows.
@@ -746,9 +746,9 @@ Program received signal SIGABRT, Aborted.
     at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:481
 #4  0x0000000001014007 in om_hdf5_dataset_image_read_trim (fileId=67108869, name=0x166b2be "main", dataExtent=@0x422efd40, bytesPerSample=1)
     at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:516
-#5  0x000000000101b705 in om_imagedata_read_hdf5 (dpath=@0x422efe60, fnames=@0x1f48520, srcExtentBbox=@0x422efe00, dataExtentBbox=@0x422efde0, 
+#5  0x000000000101b705 in om_imagedata_read_hdf5 (dpath=@0x422efe60, fnames=@0x1f48520, srcExtentBbox=@0x422efe00, dataExtentBbox=@0x422efde0,
     bytesPerSample=1) at /Users/mwimer/code9/omni/src/utility/omImageDataIo.cpp:309
-#6  0x000000000101c7f1 in om_imagedata_read (dpath=@0x422eff90, fnames=@0x1f48520, srcExtentBbox=@0x422eff30, dataExtentBbox=@0x422eff10, 
+#6  0x000000000101c7f1 in om_imagedata_read (dpath=@0x422eff90, fnames=@0x1f48520, srcExtentBbox=@0x422eff30, dataExtentBbox=@0x422eff10,
     bytesPerSample=1) at /Users/mwimer/code9/omni/src/utility/omImageDataIo.cpp:206
 #7  0x00000000007f2aca in OmMipVolume::ImportSourceData (this=0x1f48350) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:912
 #8  0x00000000007f2e3e in OmMipVolume::Build (this=0x1f48350) at /Users/mwimer/code9/omni/src/volume/omMipVolume.cpp:716
@@ -763,7 +763,7 @@ Program received signal SIGABRT, Aborted.
 #15 0x00007fb0e21923f7 in start_thread () from /lib/libpthread.so.0
 #16 0x00007fb0e12ffb3d in clone () from /lib/libc.so.6
 #17 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 omGuiApp: /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573: void om_hdf5_dataset_image_write(hid_t, const char*, DataBbox, int, vtkImageData*): Assertion `H5Tget_size(dataset_type_id) == bytesPerSample' failed.
@@ -777,7 +777,7 @@ Program received signal SIGABRT, Aborted.
 #2  0x00007f734102b2df in __assert_fail () from /lib/libc.so.6
 #3  0x0000000001012575 in om_hdf5_dataset_image_write (fileId=67108864, name=0x2574c48 "segmentations/segmentation1/0/volume.dat", extent=@0x7fff4b9c82e0, bytesPerSample=1, imageData=0x7f73343a0490)
     at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:573
-#4  0x0000000001013496 in om_hdf5_dataset_image_write_trim (fileId=67108864, name=0x2574c48 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff4b9c83c0, bytesPerSample=1, 
+#4  0x0000000001013496 in om_hdf5_dataset_image_write_trim (fileId=67108864, name=0x2574c48 "segmentations/segmentation1/0/volume.dat", dataExtent=@0x7fff4b9c83c0, bytesPerSample=1,
     pImageData=0x7f73343a0490) at /Users/mwimer/code9/omni/src/utility/omHdf5.cpp:656
 #5  0x000000000085d2bd in OmProjectData::WriteImageData (path=@0x7fff4b9c8420, extent=@0x1d2d7ac, bytesPerSample=1, data=0x7f73343a0490) at /Users/mwimer/code9/omni/src/system/omProjectData.cpp:175
 #6  0x00000000007e44da in OmMipChunk::WriteVolumeData (this=0x1d2d720) at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:258
@@ -811,7 +811,7 @@ Program received signal SIGABRT, Aborted.
 #34 0x0000000000f3ee06 in QEventLoop::exec ()
 #35 0x0000000000f40b1b in QCoreApplication::exec ()
 #36 0x0000000000797163 in main (argc=1, argv=0x7fff4b9cb248) at /Users/mwimer/code9/omni/src/gui/main.cpp:38
-(gdb) 
+(gdb)
 
 
 (gdb) bt
@@ -848,24 +848,24 @@ Program received signal SIGABRT, Aborted.
 #15 0x0000000000806541 in OmCacheManager::UpdateCacheSize (
     group=RAM_CACHE_GROUP, delta=2936012)
     at /Users/mwimer/code9/omni/src/system/omCacheManager.cpp:130
-#16 0x00000000007ec35e in OmCacheBase::UpdateSize (this=0x7f4e080e34f0, 
+#16 0x00000000007ec35e in OmCacheBase::UpdateSize (this=0x7f4e080e34f0,
     delta=2936012) at /Users/mwimer/code9/omni/src/system/omCacheBase.h:32
-#17 0x00000000007ec38a in OmCacheableBase::UpdateSize (this=0x7f4e0b532b60, 
+#17 0x00000000007ec38a in OmCacheableBase::UpdateSize (this=0x7f4e0b532b60,
     delta=2936012) at /Users/mwimer/code9/omni/src/system/omCacheableBase.h:25
-#18 0x00000000007e4133 in OmMipChunk::SetImageData (this=0x7f4e0b532b50, 
+#18 0x00000000007e4133 in OmMipChunk::SetImageData (this=0x7f4e0b532b50,
     pImageData=0x7f4e03a68ce0)
     at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:416
 #19 0x00000000007e4678 in OmMipChunk::ReadVolumeData (this=0x7f4e0b532b50)
     at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:247
 #20 0x00000000007e46ca in OmMipChunk::Open (this=0x7f4e0b532b50)
     at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:136
-#21 0x00000000007e3b89 in OmMipChunk::ExtractDataSlice (this=0x7f4e0b532b50, 
+#21 0x00000000007e3b89 in OmMipChunk::ExtractDataSlice (this=0x7f4e0b532b50,
     plane=VOL_XY_PLANE, offset=0, sliceDims=@0x41d3dfd0)
     at /Users/mwimer/code9/omni/src/volume/omMipChunk.cpp:686
-#22 0x00000000008917a5 in OmTile::GetImageData (this=0x7f4e081ef920, 
+#22 0x00000000008917a5 in OmTile::GetImageData (this=0x7f4e081ef920,
     key=@0x41d3e090, sliceDims=@0x41d3dfd0, vol=0x7f4e080e34e0)
     at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:164
-#23 0x0000000000891926 in OmTile::BindToTextureID (this=0x7f4e081ef920, 
+#23 0x0000000000891926 in OmTile::BindToTextureID (this=0x7f4e081ef920,
     key=@0x41d3e090) at /Users/mwimer/code9/omni/src/view2d/omTile.cpp:70
 #24 0x000000000087ce7c in OmThreadedCachingTile::HandleCacheMiss (
     this=0x7f4e081ef780, key=@0x41d3e090)
@@ -879,7 +879,7 @@ Program received signal SIGABRT, Aborted.
 #27 0x00007f4e132083f7 in start_thread () from /lib/libpthread.so.0
 #28 0x00007f4e12375b3d in clone () from /lib/libc.so.6
 #29 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 Not sure which id caused this:
@@ -905,7 +905,7 @@ Program received signal SIGABRT, Aborted.
 #7  0x0000000000f43f9b in QCoreApplication::exec ()
 #8  0x0000000000798863 in firsttime (argc=1, argv=0x7fff987a2028) at /Users/mwimer/code9/omni/src/gui/main.cpp:43
 #9  0x0000000000798909 in main (argc=1, argv=0x7fff987a2028) at /Users/mwimer/code9/omni/src/gui/main.cpp:10
-(gdb) 
+(gdb)
 
 
 
@@ -1133,7 +1133,7 @@ Looks like clearing the cache will cause a deadlock...
 #39 0x0000000000f54a2b in QCoreApplication::exec ()
 #40 0x000000000079d606 in firsttime (argc=1, argv=0x7fff68be6b98) at /Users/mwimer/code10/omni/src/gui/main.cpp:41
 #41 0x000000000079d6c6 in main (argc=1, argv=0x7fff68be6b98) at /Users/mwimer/code10/omni/src/gui/main.cpp:11
-(gdb) 
+(gdb)
 
 
 Program received signal SIGINT, Interrupt.
@@ -1185,9 +1185,9 @@ looks like memory corruption:
 
 #0  0x00007f97718b55c4 in std::_Rb_tree_rotate_right () from /usr/lib/libstdc++.so.6
 #1  0x00007f97718b5751 in std::_Rb_tree_insert_and_rebalance () from /usr/lib/libstdc++.so.6
-#2  0x000000000085c222 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_ (this=0x203da20, __x=0x8a19c50, 
+#2  0x000000000085c222 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_ (this=0x203da20, __x=0x8a19c50,
     __p=0x8a19c50, __v=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_tree.h:854
-#3  0x000000000087bd91 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_unique_ (this=0x203da20, 
+#3  0x000000000087bd91 in std::_Rb_tree<unsigned int, std::pair<unsigned int const, unsigned int>, std::_Select1st<std::pair<unsigned int const, unsigned int> >, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::_M_insert_unique_ (this=0x203da20,
     __position={_M_node = 0x8a19c50}, __v=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_tree.h:1204
 #4  0x000000000087bf78 in std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::insert (this=0x203da20, __position={_M_node = 0x8a19c50}, __x=@0x43f96b90) at /usr/include/c++/4.3/bits/stl_map.h:496
 #5  0x000000000087c01e in std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > >::operator[] (this=0x203da20, __k=@0x43f96be4) at /usr/include/c++/4.3/bits/stl_map.h:419
@@ -1198,7 +1198,7 @@ looks like memory corruption:
 #8  0x0000000000809d4c in OmSegmentation::GetSegmentIdMappedToValue (this=0x203d6f0, value=3064700059)
     at /Users/mwimer/code10/omni/src/volume/omSegmentation.cpp:106
 #9  0x00000000008a77c0 in OmTile::setMyColorMap (this=0x200f900, imageData=0x8ac6840, dims=
-      {{{x = 1140420448, y = 0}, {min = 1140420448, max = 0}, xy = {1140420448, 0}, array = {1140420448, 0}}, static ZERO = <optimized out>}, 
+      {{{x = 1140420448, y = 0}, {min = 1140420448, max = 0}, xy = {1140420448, 0}, array = {1140420448, 0}}, static ZERO = <optimized out>},
     key=@0x43f97070, rData=0x43f96f70) at /Users/mwimer/code10/omni/src/view2d/omTile.cpp:277
 #10 0x00000000008a8486 in OmTile::BindToTextureID (this=0x200f900, key=@0x43f97070) at /Users/mwimer/code10/omni/src/view2d/omTile.cpp:107
 #11 0x000000000088a662 in OmThreadedCachingTile::HandleCacheMiss (this=0x200f760, key=@0x43f97070)
@@ -1210,7 +1210,7 @@ looks like memory corruption:
 #14 0x00007f97722473ea in start_thread () from /lib/libpthread.so.0
 #15 0x00007f97713a2cbd in clone () from /lib/libc.so.6
 #16 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 BUILDING:
@@ -1224,7 +1224,7 @@ Program received signal SIGINT, Interrupt.
 #2  0x00007febcd0c5aae in pthread_mutex_lock () from /lib/libpthread.so.0
 #3  0x00000000007ee60e in OmThreadedCache<OmMipChunkCoord, OmMipChunk>::RemoveOldest (this=0x2d4d420)
     at /Users/mwimer/code10/omni/src/system/omThreadedCache.h:351
-#4  0x000000000081307a in OmCacheManager::CleanCacheGroup (this=0x2ada670, 
+#4  0x000000000081307a in OmCacheManager::CleanCacheGroup (this=0x2ada670,
     group=RAM_CACHE_GROUP)
     at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:193
 #5  0x00000000008136b5 in OmCacheManager::UpdateCacheSizeInternal (
@@ -1233,12 +1233,12 @@ Program received signal SIGINT, Interrupt.
 #6  0x00000000008136dd in OmCacheManager::UpdateCacheSize (
     group=RAM_CACHE_GROUP, delta=11744051)
     at /Users/mwimer/code10/omni/src/system/omCacheManager.cpp:130
-#7  0x00000000007f8bdc in OmCacheBase::UpdateSize (this=0x2d4d420, 
+#7  0x00000000007f8bdc in OmCacheBase::UpdateSize (this=0x2d4d420,
     delta=11744051) at /Users/mwimer/code10/omni/src/system/omCacheBase.h:32
-#8  0x00000000007f8c08 in OmCacheableBase::UpdateSize (this=0x7febac801a50, 
+#8  0x00000000007f8c08 in OmCacheableBase::UpdateSize (this=0x7febac801a50,
     delta=11744051)
     at /Users/mwimer/code10/omni/src/system/omCacheableBase.h:25
-#9  0x00000000007f04b2 in OmMipChunk::SetImageData (this=0x7febac801a40, 
+#9  0x00000000007f04b2 in OmMipChunk::SetImageData (this=0x7febac801a40,
     pImageData=0x7febc3082970)
     at /Users/mwimer/code10/omni/src/volume/omMipChunk.cpp:424
 ---Type <return> to continue, or q <return> to quit---
@@ -1274,7 +1274,7 @@ Program received signal SIGINT, Interrupt.
 #24 0x00007febcd0c43ea in start_thread () from /lib/libpthread.so.0
 #25 0x00007febcc21fcbd in clone () from /lib/libc.so.6
 #26 0x0000000000000000 in ?? ()
-(gdb) 
+(gdb)
 
 
 More building bugs:
@@ -1331,22 +1331,22 @@ Infinite loop when the zoomfactor goes below 0 somehow.
 
 Program received signal SIGINT, Interrupt.
 [Switching to Thread 0x7f43b8e02730 (LWP 8701)]
-0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75, 
+0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75,
     other=@0x7fff78627ac0)
     at /Users/mwimer/code11/omni/include/vmmlib/matrix4.h:753
 753	Vector3< T > Matrix4< T >::operator* (const Vector3< T >& other) const
 (gdb) bt
-#0  0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75, 
+#0  0x00000000007fd417 in vmml::Matrix4<float>::operator* (this=0x88dd75,
     other=@0x7fff78627ac0)
     at /Users/mwimer/code11/omni/include/vmmlib/matrix4.h:753
 #1  0x000000000080dd82 in OmVolume::SpaceToNormCoord (spatial=@0x7f43a69d4f30)
     at /Users/mwimer/code11/omni/src/volume/omVolume.cpp:146
-#2  0x00000000008a6e86 in OmTile::TileToMipCoord (this=0x7f43a8404fc8, 
+#2  0x00000000008a6e86 in OmTile::TileToMipCoord (this=0x7f43a8404fc8,
     key=@0x7f43a69d4f2c) at /Users/mwimer/code11/omni/src/view2d/omTile.cpp:166
-#3  0x0000000000892a0c in OmView2d::myBindToTextureID (this=0x7f43a83ebe80, 
+#3  0x0000000000892a0c in OmView2d::myBindToTextureID (this=0x7f43a83ebe80,
     gotten_id={px = 0x7fff78627d80, pn = {pi_ = 0x7f43a83ebe80}})
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2578
-#4  0x0000000000893c9d in OmView2d::PreDraw (this=0x7f43a83ebe80, 
+#4  0x0000000000893c9d in OmView2d::PreDraw (this=0x7f43a83ebe80,
     zoomMipVector=
       {{{x = 2019720848, y = 32767}, {min = 2019720848, max = 32767}, xy = {2019720848, 32767}, array = {2019720848, 32767}}, static ZERO = <optimized out>})
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2708
@@ -1354,10 +1354,10 @@ Program received signal SIGINT, Interrupt.
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2414
 #6  0x0000000000894803 in OmView2d::DrawFromCache (this=0x7f43a83ebe80)
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:2242
-#7  0x000000000089dcec in OmView2d::safePaintEvent (this=0x7f43a83ebe80, 
+#7  0x000000000089dcec in OmView2d::safePaintEvent (this=0x7f43a83ebe80,
     event=0x7fff78628ad0)
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:405
-#8  0x000000000089df47 in OmView2d::paintEvent (this=0x7f43a83ebe80, 
+#8  0x000000000089df47 in OmView2d::paintEvent (this=0x7f43a83ebe80,
 ---Type <return> to continue, or q <return> to quit---
     event=0x7fff78628ad0)
     at /Users/mwimer/code11/omni/src/view2d/omView2d.cpp:261
@@ -1378,19 +1378,19 @@ Saving the meshes crashes:
 #0  0x00007f1f44833015 in raise () from /lib/libc.so.6
 #1  0x00007f1f44834b83 in abort () from /lib/libc.so.6
 #2  0x00007f1f4482bd89 in __assert_fail () from /lib/libc.so.6
-#3  0x0000000001029486 in om_hdf5_group_create (fileId=67108864, 
+#3  0x0000000001029486 in om_hdf5_group_create (fileId=67108864,
     name=0x7f1f38eef418 "segmentations/")
     at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:90
-#4  0x0000000001029624 in om_hdf5_group_create_tree (fileId=67108864, 
+#4  0x0000000001029624 in om_hdf5_group_create_tree (fileId=67108864,
     name=0x7f1f383ab9d8 "segmentations/segmentation1/1/0_0_0/mesh/134")
     at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:122
-#5  0x00000000010297f6 in om_hdf5_dataset_delete_create_tree (fileId=67108864, 
+#5  0x00000000010297f6 in om_hdf5_dataset_delete_create_tree (fileId=67108864,
     name=0x7f1f385ba348 "segmentations/segmentation1/1/0_0_0/mesh/134/metamesh.dat") at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:186
 #6  0x0000000001029974 in om_hdf5_dataset_raw_create_tree_overwrite (
-    fileId=67108864, 
+    fileId=67108864,
     name=0x7f1f385ba348 "segmentations/segmentation1/1/0_0_0/mesh/134/metamesh.dat", size=1, data=0x498c3f8f)
     at /Users/mwimer/code11/omni/src/utility/omHdf5.cpp:243
-#7  0x000000000086be71 in OmProjectData::WriteRawData (path=@0x498c3f70, 
+#7  0x000000000086be71 in OmProjectData::WriteRawData (path=@0x498c3f70,
     size=1, data=0x498c3f8f)
     at /Users/mwimer/code11/omni/src/system/omProjectData.cpp:190
 #8  0x000000000101f91c in OmMipMesh::Save (this=0x3ae97d0)
@@ -1457,7 +1457,7 @@ Program received signal SIGABRT, Aborted.
 #16 0x0000000000f66094 in QEventLoop::exec ()
 #17 0x0000000000f6826b in QCoreApplication::exec ()
 #18 0x000000000079fb1c in main (argc=1, argv=0x7fff201a5f98) at /Users/mwimer/omni1/omni/src/gui/main.cpp:51
-(gdb) 
+(gdb)
 
 
 HDF5-DIAG: Error detected in HDF5 library version: 1.6.9 thread 139842165839664.  Back trace follows.
@@ -1494,9 +1494,9 @@ omGuiApp: /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:90: void om_hdf5_group
     at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:90
 #4  0x000000000103fd33 in om_hdf5_group_create_tree (fileId=67108864, name=0x2fe78a8 "segmentations/segmentation1/0")
     at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:122
-#5  0x000000000103ff05 in om_hdf5_dataset_delete_create_tree (fileId=67108864, 
+#5  0x000000000103ff05 in om_hdf5_dataset_delete_create_tree (fileId=67108864,
     name=0x2f94bd8 "segmentations/segmentation1/0/volume.dat") at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:186
-#6  0x000000000103ffbd in om_hdf5_dataset_image_create_tree_overwrite (fileId=67108864, 
+#6  0x000000000103ffbd in om_hdf5_dataset_image_create_tree_overwrite (fileId=67108864,
     name=0x2f94bd8 "segmentations/segmentation1/0/volume.dat", dataDims=
       {{{x = -1274017424, y = 32767, z = 49892312}, {r = -1274017424, g = 32767, b = 49892312}, xyz = {-1274017424, 32767, 49892312}, rgb = {-1274017424, 32767, 49892312}, array = {-1274017424, 32767, 49892312}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, chunkDims=
       {{{x = -1274017440, y = 32767, z = -1274017424}, {r = -1274017440, g = 32767, b = -1274017424}, xyz = {-1274017440, 32767, -1274017424}, rgb = {-1274017440, 32767, -1274017424}, array = {-1274017440, 32767, -1274017424}}, static ZERO = {{{x = 0, y = 0, z = 0}, {r = 0, g = 0, b = 0}, xyz = {0, 0, 0}, rgb = {0, 0, 0}, array = {0, 0, 0}}, static ZERO = <same as static member of an already seen type>, static ONE = {{{x = 1, y = 1, z = 1}, {r = 1, g = 1, b = 1}, xyz = {1, 1, 1}, rgb = {1, 1, 1}, array = {1, 1, 1}}, static ZERO = <same as static member of an already seen type>, static ONE = <same as static member of an already seen type>}}, static ONE = <same as static member of an already seen type>}, bytesPerSample=4, unlimited=false) at /Users/mwimer/omni1/omni/src/utility/omHdf5.cpp:426
@@ -1833,10 +1833,10 @@ Program received signal SIGABRT, Aborted.
     at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:248
 #4  0x00000000007a8c86 in OmMipChunk::Open (this=0x2aaab6449500)
     at /Users/purcaro/omni.trunk/omni/src/volume/omMipChunk.cpp:127
-#5  0x000000000084bf3c in OmTile::GetImageData (this=0x4419b78, 
+#5  0x000000000084bf3c in OmTile::GetImageData (this=0x4419b78,
     key=@0x47b29040, sliceDims=@0x47b28f50, vol=0x5dd6840)
     at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:145
-#6  0x000000000084c08b in OmTile::BindToTextureID (this=0x4419b78, 
+#6  0x000000000084c08b in OmTile::BindToTextureID (this=0x4419b78,
     key=@0x47b29040, cache=0x44199a0)
     at /Users/purcaro/omni.trunk/omni/src/view2d/omTile.cpp:76
 #7  0x000000000082fde2 in OmThreadedCachingTile::HandleCacheMiss (
@@ -1861,116 +1861,116 @@ It seems to have something to do with Hdf5.
 
 (gdb) run -dcross -nview2d,thread
 Starting program: /Users/didier/branch/omni/bin/omni -dcross -nview2d,thread
-[Thread debugging using libthread_db enabled]                               
-[New Thread 0x7f13c61b9790 (LWP 23551)]                                     
-[New Thread 0x7f13bd7b9950 (LWP 23552)]                                     
-[New Thread 0x7f13bcfb8950 (LWP 23553)]                                     
-[New Thread 0x7f13bc7b7950 (LWP 23554)]                                     
-[New Thread 0x7f13bbfb6950 (LWP 23555)]                                     
-[New Thread 0x7f13bb234950 (LWP 23556)]                                     
-[New Thread 0x7f13baa33950 (LWP 23557)]                                     
-[New Thread 0x7f13abfff950 (LWP 23558)]                                     
-[New Thread 0x7f13ab7fe950 (LWP 23559)]                                     
-[New Thread 0x7f13a9ffb950 (LWP 23561)]                                     
-[New Thread 0x7f13a97fa950 (LWP 23562)]                                     
-*** glibc detected *** /Users/didier/branch/omni/bin/omni: corrupted double-linked list: 0x0000000003a71200 ***                                                                                     
-======= Backtrace: =========                                                                      
-/lib/libc.so.6[0x7f13c3bd6b2c]                                                                    
-/lib/libc.so.6[0x7f13c3bd7e98]                                                                    
-/lib/libc.so.6(cfree+0x76)[0x7f13c3bd8276]                                                        
-/usr/lib/tls/libnvidia-tls.so.1[0x7f13c61bda3b]                                                   
-======= Memory map: ========                                                                      
-00400000-01acc000 r-xp 00000000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
-01ccb000-01d05000 r--p 016cb000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
-01d05000-01d1a000 rw-p 01705000 00:18 33130858                           /Users/didier/branch/omni/bin/omni                                                                                         
-01d1a000-01d26000 rw-p 01d1a000 00:00 0                                                           
-02958000-040a6000 rw-p 02958000 00:00 0                                  [heap]                   
-402e4000-40364000 rw-p 00000000 00:0f 731                                /dev/zero                
-40442000-404c2000 rw-p 00000000 00:0f 731                                /dev/zero                
-406f0000-406f2000 rwxp 00000000 00:0f 731                                /dev/zero                
-40c78000-40cf8000 rw-p 00000000 00:0f 731                                /dev/zero                
-41d44000-41dc4000 rw-p 00000000 00:0f 731                                /dev/zero                
-7f13a87f9000-7f13a8ffa000 rw-p 7f13a87f9000 00:00 0                                               
-7f13a8ffa000-7f13a8ffb000 ---p 7f13a8ffa000 00:00 0                                               
-7f13a8ffb000-7f13a97fb000 rwxp 7f13a8ffb000 00:00 0                                               
-7f13a97fb000-7f13a97fc000 ---p 7f13a97fb000 00:00 0                                               
-7f13a97fc000-7f13a9ffc000 rwxp 7f13a97fc000 00:00 0                                               
-7f13a9ffc000-7f13aaffe000 rw-p 7f13a9ffc000 00:00 0                                               
-7f13aaffe000-7f13aafff000 ---p 7f13aaffe000 00:00 0                                               
-7f13aafff000-7f13ab7ff000 rwxp 7f13aafff000 00:00 0                                               
-7f13ab7ff000-7f13ab800000 ---p 7f13ab7ff000 00:00 0                                               
-7f13ab800000-7f13ac000000 rwxp 7f13ab800000 00:00 0                                               
-7f13ac000000-7f13ac444000 rw-p 7f13ac000000 00:00 0                                               
-7f13ac444000-7f13b0000000 ---p 7f13ac444000 00:00 0                                               
-7f13b0202000-7f13b1204000 rw-p 7f13b0202000 00:00 0                                               
-7f13b14be000-7f13b1cbf000 rw-p 7f13b14be000 00:00 0                                               
-7f13b1cbf000-7f13b1d3f000 rw-s 801d22000 00:0f 7692                      /dev/nvidia0             
-7f13b1d3f000-7f13b1f40000 rw-p 7f13b1d3f000 00:00 0                                               
-7f13b21fa000-7f13b4000000 rw-p 7f13b21fa000 00:00 0                                               
-7f13b4000000-7f13b424e000 rw-p 7f13b4000000 00:00 0                                               
-7f13b424e000-7f13b8000000 ---p 7f13b424e000 00:00 0                                               
-7f13b802b000-7f13ba233000 rw-p 7f13b802b000 00:00 0                                               
-7f13ba233000-7f13ba234000 ---p 7f13ba233000 00:00 0                                               
-7f13ba234000-7f13baa34000 rwxp 7f13ba234000 00:00 0                                               
-7f13baa34000-7f13baa35000 ---p 7f13baa34000 00:00 0                                               
-7f13baa35000-7f13bb235000 rwxp 7f13baa35000 00:00 0                                               
-7f13bb235000-7f13bb635000 rw-s 72a1c3000 00:0f 7692                      /dev/nvidia0             
-7f13bb635000-7f13bb735000 rw-s 8064ee000 00:0f 7692                      /dev/nvidia0             
-7f13bb735000-7f13bb775000 rw-s 530868000 00:0f 7692                      /dev/nvidia0             
-7f13bb795000-7f13bb7b6000 rw-s 00000000 00:09 0                          /SYSV00000000 (deleted)  
-7f13bb7b6000-7f13bb7b7000 ---p 7f13bb7b6000 00:00 0                                               
-7f13bb7b7000-7f13bbfb7000 rwxp 7f13bb7b7000 00:00 0                                               
-7f13bbfb7000-7f13bbfb8000 ---p 7f13bbfb7000 00:00 0                                               
-7f13bbfb8000-7f13bc7b8000 rwxp 7f13bbfb8000 00:00 0                                               
-7f13bc7b8000-7f13bc7b9000 ---p 7f13bc7b8000 00:00 0                                               
-7f13bc7b9000-7f13bcfb9000 rwxp 7f13bc7b9000 00:00 0                                               
-7f13bcfb9000-7f13bcfba000 ---p 7f13bcfb9000 00:00 0                                               
-7f13bcfba000-7f13bd7ba000 rwxp 7f13bcfba000 00:00 0                                               
-7f13bd7ba000-7f13bd7bd000 r-xp 00000000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
-7f13bd7bd000-7f13bd9bc000 ---p 00003000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
-7f13bd9bc000-7f13bd9bd000 rw-p 00002000 08:02 2590                       /lib/libgpg-error.so.0.3.0                                                                                                 
-7f13bd9bd000-7f13bd9bf000 r-xp 00000000 08:02 2595                       /lib/libkeyutils-1.2.so  
-7f13bd9bf000-7f13bdbbe000 ---p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so  
-7f13bdbbe000-7f13bdbbf000 r--p 00001000 08:02 2595                       /lib/libkeyutils-1.2.so  
-7f13bdbbf000-7f13bdbc0000 rw-p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so  
-7f13bdbc0000-7f13bdbc7000 r-xp 00000000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
-7f13bdbc7000-7f13bddc6000 ---p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
-7f13bddc6000-7f13bddc7000 r--p 00006000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
-7f13bddc7000-7f13bddc8000 rw-p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1                                                                                             
-7f13bddc8000-7f13bddeb000 r-xp 00000000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
-7f13bddeb000-7f13bdfeb000 ---p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
-7f13bdfeb000-7f13bdfed000 r--p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
-7f13bdfed000-7f13bdfee000 rw-p 00025000 08:02 8764                       /usr/lib/libk5crypto.so.3.1                                                                                                
-7f13bdfee000-7f13be053000 r-xp 00000000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
-7f13be053000-7f13be252000 ---p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
-7f13be252000-7f13be253000 r--p 00064000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
-7f13be253000-7f13be255000 rw-p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4 
-7f13be255000-7f13be265000 r-xp 00000000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
-7f13be265000-7f13be464000 ---p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
-7f13be464000-7f13be465000 r--p 0000f000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
-7f13be465000-7f13be466000 rw-p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16                                                                                                
-7f13be466000-7f13be509000 r-xp 00000000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
-7f13be509000-7f13be708000 ---p 000a3000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
-7f13be708000-7f13be712000 r--p 000a2000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
-7f13be712000-7f13be713000 rw-p 000ac000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6                                                                                               
-7f13be713000-7f13be727000 r-xp 00000000 08:02 7717                       /lib/libresolv-2.9.so    
-7f13be727000-7f13be927000 ---p 00014000 08:02 7717                       /lib/libresolv-2.9.so    
-7f13be927000-7f13be928000 r--p 00014000 08:02 7717                       /lib/libresolv-2.9.so    
-7f13be928000-7f13be929000 rw-p 00015000 08:02 7717                       /lib/libresolv-2.9.so    
-7f13be929000-7f13be92b000 rw-p 7f13be929000 00:00 0                                               
-7f13be9                                                                                           
-Program received signal SIGABRT, Aborted.                                                         
-[Switching to Thread 0x7f13abfff950 (LWP 23558)]                                                  
-0x00007f13c3b90fb5 in raise () from /lib/libc.so.6                                                
-(gdb) bt                                                                                          
-#0  0x00007f13c3b90fb5 in raise () from /lib/libc.so.6                                            
-#1  0x00007f13c3b92bc3 in abort () from /lib/libc.so.6                                            
-#2  0x00007f13c3bd0228 in ?? () from /lib/libc.so.6                                               
-#3  0x00007f13c3bd6b2c in ?? () from /lib/libc.so.6                                               
-#4  0x00007f13c3bd7e98 in ?? () from /lib/libc.so.6                                               
-#5  0x00007f13c3bd8276 in free () from /lib/libc.so.6                                             
-#6  0x00007f13c61bda3b in ?? () from /usr/lib/tls/libnvidia-tls.so.1                              
-#7  0x0000000000eb4662 in QString::operator= ()                                                   
+[Thread debugging using libthread_db enabled]
+[New Thread 0x7f13c61b9790 (LWP 23551)]
+[New Thread 0x7f13bd7b9950 (LWP 23552)]
+[New Thread 0x7f13bcfb8950 (LWP 23553)]
+[New Thread 0x7f13bc7b7950 (LWP 23554)]
+[New Thread 0x7f13bbfb6950 (LWP 23555)]
+[New Thread 0x7f13bb234950 (LWP 23556)]
+[New Thread 0x7f13baa33950 (LWP 23557)]
+[New Thread 0x7f13abfff950 (LWP 23558)]
+[New Thread 0x7f13ab7fe950 (LWP 23559)]
+[New Thread 0x7f13a9ffb950 (LWP 23561)]
+[New Thread 0x7f13a97fa950 (LWP 23562)]
+*** glibc detected *** /Users/didier/branch/omni/bin/omni: corrupted double-linked list: 0x0000000003a71200 ***
+======= Backtrace: =========
+/lib/libc.so.6[0x7f13c3bd6b2c]
+/lib/libc.so.6[0x7f13c3bd7e98]
+/lib/libc.so.6(cfree+0x76)[0x7f13c3bd8276]
+/usr/lib/tls/libnvidia-tls.so.1[0x7f13c61bda3b]
+======= Memory map: ========
+00400000-01acc000 r-xp 00000000 00:18 33130858                           /Users/didier/branch/omni/bin/omni
+01ccb000-01d05000 r--p 016cb000 00:18 33130858                           /Users/didier/branch/omni/bin/omni
+01d05000-01d1a000 rw-p 01705000 00:18 33130858                           /Users/didier/branch/omni/bin/omni
+01d1a000-01d26000 rw-p 01d1a000 00:00 0
+02958000-040a6000 rw-p 02958000 00:00 0                                  [heap]
+402e4000-40364000 rw-p 00000000 00:0f 731                                /dev/zero
+40442000-404c2000 rw-p 00000000 00:0f 731                                /dev/zero
+406f0000-406f2000 rwxp 00000000 00:0f 731                                /dev/zero
+40c78000-40cf8000 rw-p 00000000 00:0f 731                                /dev/zero
+41d44000-41dc4000 rw-p 00000000 00:0f 731                                /dev/zero
+7f13a87f9000-7f13a8ffa000 rw-p 7f13a87f9000 00:00 0
+7f13a8ffa000-7f13a8ffb000 ---p 7f13a8ffa000 00:00 0
+7f13a8ffb000-7f13a97fb000 rwxp 7f13a8ffb000 00:00 0
+7f13a97fb000-7f13a97fc000 ---p 7f13a97fb000 00:00 0
+7f13a97fc000-7f13a9ffc000 rwxp 7f13a97fc000 00:00 0
+7f13a9ffc000-7f13aaffe000 rw-p 7f13a9ffc000 00:00 0
+7f13aaffe000-7f13aafff000 ---p 7f13aaffe000 00:00 0
+7f13aafff000-7f13ab7ff000 rwxp 7f13aafff000 00:00 0
+7f13ab7ff000-7f13ab800000 ---p 7f13ab7ff000 00:00 0
+7f13ab800000-7f13ac000000 rwxp 7f13ab800000 00:00 0
+7f13ac000000-7f13ac444000 rw-p 7f13ac000000 00:00 0
+7f13ac444000-7f13b0000000 ---p 7f13ac444000 00:00 0
+7f13b0202000-7f13b1204000 rw-p 7f13b0202000 00:00 0
+7f13b14be000-7f13b1cbf000 rw-p 7f13b14be000 00:00 0
+7f13b1cbf000-7f13b1d3f000 rw-s 801d22000 00:0f 7692                      /dev/nvidia0
+7f13b1d3f000-7f13b1f40000 rw-p 7f13b1d3f000 00:00 0
+7f13b21fa000-7f13b4000000 rw-p 7f13b21fa000 00:00 0
+7f13b4000000-7f13b424e000 rw-p 7f13b4000000 00:00 0
+7f13b424e000-7f13b8000000 ---p 7f13b424e000 00:00 0
+7f13b802b000-7f13ba233000 rw-p 7f13b802b000 00:00 0
+7f13ba233000-7f13ba234000 ---p 7f13ba233000 00:00 0
+7f13ba234000-7f13baa34000 rwxp 7f13ba234000 00:00 0
+7f13baa34000-7f13baa35000 ---p 7f13baa34000 00:00 0
+7f13baa35000-7f13bb235000 rwxp 7f13baa35000 00:00 0
+7f13bb235000-7f13bb635000 rw-s 72a1c3000 00:0f 7692                      /dev/nvidia0
+7f13bb635000-7f13bb735000 rw-s 8064ee000 00:0f 7692                      /dev/nvidia0
+7f13bb735000-7f13bb775000 rw-s 530868000 00:0f 7692                      /dev/nvidia0
+7f13bb795000-7f13bb7b6000 rw-s 00000000 00:09 0                          /SYSV00000000 (deleted)
+7f13bb7b6000-7f13bb7b7000 ---p 7f13bb7b6000 00:00 0
+7f13bb7b7000-7f13bbfb7000 rwxp 7f13bb7b7000 00:00 0
+7f13bbfb7000-7f13bbfb8000 ---p 7f13bbfb7000 00:00 0
+7f13bbfb8000-7f13bc7b8000 rwxp 7f13bbfb8000 00:00 0
+7f13bc7b8000-7f13bc7b9000 ---p 7f13bc7b8000 00:00 0
+7f13bc7b9000-7f13bcfb9000 rwxp 7f13bc7b9000 00:00 0
+7f13bcfb9000-7f13bcfba000 ---p 7f13bcfb9000 00:00 0
+7f13bcfba000-7f13bd7ba000 rwxp 7f13bcfba000 00:00 0
+7f13bd7ba000-7f13bd7bd000 r-xp 00000000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f13bd7bd000-7f13bd9bc000 ---p 00003000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f13bd9bc000-7f13bd9bd000 rw-p 00002000 08:02 2590                       /lib/libgpg-error.so.0.3.0
+7f13bd9bd000-7f13bd9bf000 r-xp 00000000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f13bd9bf000-7f13bdbbe000 ---p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f13bdbbe000-7f13bdbbf000 r--p 00001000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f13bdbbf000-7f13bdbc0000 rw-p 00002000 08:02 2595                       /lib/libkeyutils-1.2.so
+7f13bdbc0000-7f13bdbc7000 r-xp 00000000 08:02 8768                       /usr/lib/libkrb5support.so.0.1
+7f13bdbc7000-7f13bddc6000 ---p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1
+7f13bddc6000-7f13bddc7000 r--p 00006000 08:02 8768                       /usr/lib/libkrb5support.so.0.1
+7f13bddc7000-7f13bddc8000 rw-p 00007000 08:02 8768                       /usr/lib/libkrb5support.so.0.1
+7f13bddc8000-7f13bddeb000 r-xp 00000000 08:02 8764                       /usr/lib/libk5crypto.so.3.1
+7f13bddeb000-7f13bdfeb000 ---p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1
+7f13bdfeb000-7f13bdfed000 r--p 00023000 08:02 8764                       /usr/lib/libk5crypto.so.3.1
+7f13bdfed000-7f13bdfee000 rw-p 00025000 08:02 8764                       /usr/lib/libk5crypto.so.3.1
+7f13bdfee000-7f13be053000 r-xp 00000000 08:02 2588                       /lib/libgcrypt.so.11.4.4
+7f13be053000-7f13be252000 ---p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4
+7f13be252000-7f13be253000 r--p 00064000 08:02 2588                       /lib/libgcrypt.so.11.4.4
+7f13be253000-7f13be255000 rw-p 00065000 08:02 2588                       /lib/libgcrypt.so.11.4.4
+7f13be255000-7f13be265000 r-xp 00000000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16
+7f13be265000-7f13be464000 ---p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16
+7f13be464000-7f13be465000 r--p 0000f000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16
+7f13be465000-7f13be466000 rw-p 00010000 08:02 9963                       /usr/lib/libtasn1.so.3.0.16
+7f13be466000-7f13be509000 r-xp 00000000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6
+7f13be509000-7f13be708000 ---p 000a3000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6
+7f13be708000-7f13be712000 r--p 000a2000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6
+7f13be712000-7f13be713000 rw-p 000ac000 08:02 267950                     /usr/lib/libgnutls.so.26.4.6
+7f13be713000-7f13be727000 r-xp 00000000 08:02 7717                       /lib/libresolv-2.9.so
+7f13be727000-7f13be927000 ---p 00014000 08:02 7717                       /lib/libresolv-2.9.so
+7f13be927000-7f13be928000 r--p 00014000 08:02 7717                       /lib/libresolv-2.9.so
+7f13be928000-7f13be929000 rw-p 00015000 08:02 7717                       /lib/libresolv-2.9.so
+7f13be929000-7f13be92b000 rw-p 7f13be929000 00:00 0
+7f13be9
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7f13abfff950 (LWP 23558)]
+0x00007f13c3b90fb5 in raise () from /lib/libc.so.6
+(gdb) bt
+#0  0x00007f13c3b90fb5 in raise () from /lib/libc.so.6
+#1  0x00007f13c3b92bc3 in abort () from /lib/libc.so.6
+#2  0x00007f13c3bd0228 in ?? () from /lib/libc.so.6
+#3  0x00007f13c3bd6b2c in ?? () from /lib/libc.so.6
+#4  0x00007f13c3bd7e98 in ?? () from /lib/libc.so.6
+#5  0x00007f13c3bd8276 in free () from /lib/libc.so.6
+#6  0x00007f13c61bda3b in ?? () from /usr/lib/tls/libnvidia-tls.so.1
+#7  0x0000000000eb4662 in QString::operator= ()
 #8  0x000000000104970a in OmGarbage::Instance ()
     at /Users/didier/branch/omni/src/system/omGarbage.cpp:56
 #9  0x0000000001049995 in OmGarbage::Unlock ()
@@ -2022,21 +2022,21 @@ $2 = {static null = {<No data fields>}, static shared_null = {ref = {_q_value = 
 
 
 Program received signal SIGSEGV, Segmentation fault.
-0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+0x00000000008aa82d in copyImageData (srcData=0x1b73a560,
     srcCopyBbox=@0x7fffef28ac40)
     at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
 653             srcData->GetExtent(src_data_extent);
 (gdb) bt
-#0  0x00000000008aa82d in copyImageData (srcData=0x1b73a560, 
+#0  0x00000000008aa82d in copyImageData (srcData=0x1b73a560,
     srcCopyBbox=@0x7fffef28ac40)
     at /Users/purcaro/omni.staging/omni/src/utility/omImageDataIo.cpp:653
-#1  0x00000000007c6ca2 in OmMipChunk::ExtractDataSlice (this=0x1b739fa0, 
+#1  0x00000000007c6ca2 in OmMipChunk::ExtractDataSlice (this=0x1b739fa0,
     plane=VOL_XY_PLANE, offset=35, sliceDims=@0x7fffef28adf0, fast=true)
     at /Users/purcaro/omni.staging/omni/src/volume/omMipChunk.cpp:707
-#2  0x0000000000802432 in OmView2d::GetImageData (this=0x1b79a470, 
+#2  0x0000000000802432 in OmView2d::GetImageData (this=0x1b79a470,
     key=@0x1b73a19c, sliceDims=@0x7fffef28adf0, vol=0x1b638290)
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2244
-#3  0x0000000000802f74 in OmView2d::myBindToTextureID (this=0x1b79a470, 
+#3  0x0000000000802f74 in OmView2d::myBindToTextureID (this=0x1b79a470,
     gotten_id={px = 0x7fffef28b080, pn = {pi_ = 0x1b79a470}})
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2271
 #4  0x00000000008045df in OmView2d::PreDraw (this=0x1b79a470, zoomMipVector=
@@ -2046,7 +2046,7 @@ Program received signal SIGSEGV, Segmentation fault.
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:2056
 #6  0x000000000080554d in OmView2d::DrawFromCache (this=0x1b79a470)
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:1890
-#7  0x000000000080c128 in OmView2d::safePaintEvent (this=0x1b79a470, 
+#7  0x000000000080c128 in OmView2d::safePaintEvent (this=0x1b79a470,
     event=0x7fffef28c280)
     at /Users/purcaro/omni.staging/omni/src/view2d/omView2d.cpp:376
 ---Type <return> to continue, or q <return> to quit---
@@ -2153,7 +2153,7 @@ omni: /home/mwimer/staging/omni/src/volume/omMipChunk.cpp:246: void OmMipChunk::
 #4  0x0000000000f8f14d in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::parse_extended ()
 #5  0x0000000000f88299 in boost::re_detail::basic_regex_parser<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::parse ()
 #6  0x0000000000f886b6 in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::do_assign ()
-#7  0x00000000008c151b in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::assign (this=0x7ffff8e8d000, 
+#7  0x00000000008c151b in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::assign (this=0x7ffff8e8d000,
     p1=0x14f5c818 "*", p2=0x14f5c819 "", f=0) at /Users/purcaro/omni.staging/external/libs/Boost/include/boost/regex/v4/basic_regex.hpp:425
 #8  0x00000000008c1565 in boost::basic_regex<char, boost::regex_traits<char, boost::cpp_regex_traits<char> > >::assign<std::char_traits<char>, std::allocator<char> > (this=0x7ffff8e8d000, s=@0x7ffff8e8d0b0, f=0)
     at /Users/purcaro/omni.staging/external/libs/Boost/include/boost/regex/v4/basic_regex.hpp:463
@@ -2330,7 +2330,7 @@ Reason: KERN_INVALID_ADDRESS at address: 0x0000000145640000
 #19 0x000000010207777c in QCoreApplication::exec ()
 #20 0x0000000100042fa8 in Headless::start (this=0x7fff5fbff97f, argc=1, argv=0x7fff5fbff9a8) at src/gui/headless.cpp:377
 #21 0x000000010005238f in main (argc=1, argv=0x7fff5fbff9a8) at src/gui/main.cpp:89
-(gdb) 
+(gdb)
 
 
 
@@ -2363,12 +2363,27 @@ Program received signal SIGSEGV, Segmentation fault.
 #5  0x00000000004a9326 in std::vector<float, std::allocator<float> >::push_back
     (this=0x7ffc208e0d40, __x=@0x7fffe1e33acc)
     at /usr/include/c++/4.4/bits/stl_vector.h:741
-#6  0x00000000004a7f0e in StrippedMesh::addStrips (this=0x7ffc208e0cc0, 
+#6  0x00000000004a7f0e in StrippedMesh::addStrips (this=0x7ffc208e0cc0,
     ptrs=..., vertices=..., scale=..., trans=...)
     at src/mesh/ziMesherManager.cpp:38
-#7  0x00000000004a875c in GrowingMeshes::receive (this=0x12f3960, 
+#7  0x00000000004a875c in GrowingMeshes::receive (this=0x12f3960,
     stripified=..., scale=..., trans=...) at src/mesh/ziMesherManager.cpp:95
 #8  0x00000000004ad43f in ziMeshingChunk::run (this=0x130a310)
     at src/mesh/ziMeshingChunk.cpp:108
 #9  0x000000000056f551 in zi::Threads::ThreadManager::Task::run (
     this=0x7fffe78ca010) at src/zi/thread/ThreadManager.cpp:36
+
+
+
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x7fffa467f910 (LWP 8589)]
+0x00000000004deed2 in std::less<zi::Vertex<zi::vector::Vec3<double> >*>::operator() (this=0x7ffd938eee88, __x=@0xb5f, __y=@0x7fffa467e928)
+    at /usr/include/c++/4.4/bits/stl_function.h:230
+230           { return __x < __y; }
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 8550] will be killed.
+
+Quit anyway? (y or n) EOF [assumed Y]
