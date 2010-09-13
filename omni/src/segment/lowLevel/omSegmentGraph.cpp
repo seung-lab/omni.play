@@ -217,7 +217,9 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 		return false;
 	}
 
-	assert( child->mParentSegID );
+	if(!child->mParentSegID){ // user manually split?
+		return false;
+	}
 
 	OmSegment * parent = mCache->GetSegmentFromValue( child->mParentSegID );
 
