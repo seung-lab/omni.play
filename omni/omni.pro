@@ -219,6 +219,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/stringHelpers.h \
            src/utility/OmThreadPool.hpp \
            src/utility/omChunkVoxelWalker.hpp \
+           src/view2d/omTileDumper.hpp \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
            src/system/cache/omTileCache.h \
@@ -275,7 +276,8 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_graph_array.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
-           src/zi/zunit/zunit.h
+           src/zi/zunit/zunit.h \
+           src/zi/watershed/RawQuickieWS.h
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -439,6 +441,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/omTimer.cpp \
            src/utility/sortHelpers.cpp \
            src/utility/stringHelpers.cpp \
+           src/view2d/omTileDumper.cpp \
            src/view2d/drawable.cpp \
            src/view2d/omTextureID.cpp \
            src/view2d/omThreadedCachingTile.cpp \
@@ -485,7 +488,8 @@ SOURCES += lib/strnatcmp.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
-           src/zi/mesh/ext/TriStrip/TriStripper.cpp
+           src/zi/mesh/ext/TriStrip/TriStripper.cpp \
+           src/zi/watershed/RawQuickieWS.cpp
 
 RESOURCES += src/gui/resources.qrc
 

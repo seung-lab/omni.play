@@ -20,7 +20,9 @@ class Headless
 	void setOmniExecutablePath( QString rel_fnpn );
 	void runMeshPlan( QString headlessLine );
 	OmSegmentationChunkCoord makeChunkCoord( QString line );
-	
+
+	void watershed(const QString &  args);
+
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <time.h>
 
+#include "view2d/omTileDumper.hpp"
 #include "volume/omMipChunk.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
@@ -22,6 +23,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "utility/stringHelpers.h"
 #include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
@@ -29,6 +31,7 @@
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
+#include "zi/watershed/RawQuickieWS.h"
 
 int argc_global;
 char **argv_global;
@@ -188,7 +191,39 @@ void Headless::processLine( QString line, QString fName )
 		} else {
 			printf("Segmentation %i and Segmentation %i are different!\n",id1,id2);
 		}
+	} else if(line.startsWith("dumpSegTiles:") ) {
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+		QString file = "/tmp/tiles";
+		OmId segID = 1;
 
+		if(3 == args.size()) {
+			segID = StringHelpers::getUInt(args[1]);
+			file = args[2];
+		} else if(2 == args.size()) {
+			segID = 1;
+			file = args[1];
+		}
+
+		OmViewGroupState * vgs = new OmViewGroupState(NULL);
+		vgs->SetSegmentation(segID);
+		OmTileDumper::DumpTiles(segID, SEGMENTATION, file, vgs);
+
+        } else if(line.startsWith("dumpChannTiles:") ) {
+                QStringList args = line.split(':',QString::SkipEmptyParts);
+                QString file = "/tmp/tiles";
+                OmId segID = 1;
+
+                if(3 == args.size()) {
+                        segID = StringHelpers::getUInt(args[1]);
+                        file = args[2];
+                } else if(2 == args.size()) {
+                        segID = 1;
+                        file = args[1];
+                }
+
+                OmViewGroupState * vgs = new OmViewGroupState(NULL);
+                vgs->SetSegmentation(segID);
+                OmTileDumper::DumpTiles(segID, CHANNEL, file, vgs);
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -444,7 +479,6 @@ void Headless::processLine( QString line, QString fName )
 
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
-
 		OmMipChunkPtr p_chunk;
 		segmen.GetChunk(p_chunk, chunk_coord, true);
 		p_chunk->Open();
@@ -506,6 +540,8 @@ void Headless::processLine( QString line, QString fName )
 			SegmentationDataWrapper sdw(*iter);
 			printf("%i\t%s\n", *iter, qPrintable( sdw.getName() ));
 		}
+	} else if( line.startsWith("watershed:") ){
+		watershed(line);
         } else {
 		printf("Could not parse \"%s\".\n", qPrintable(line) );
 	}
@@ -656,4 +692,58 @@ OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 	unsigned int z = StringHelpers::getUInt( coords[2] );
 
 	return OmSegmentationChunkCoord(segmentationID, mipLevel, x, y, z);
+}
+
+void Headless::watershed(const QString &  line)
+{
+	QStringList args = line.split(':',QString::SkipEmptyParts);
+
+	const QString in_fnp = "/Users/purcaro/Omni/affinity/conn709.dat";
+	QFile* inf = new QFile(in_fnp);
+	if(!inf->open(QIODevice::ReadOnly)){
+		printf("could not open %s\n", qPrintable(in_fnp));
+		assert(0);
+	}
+
+	const QString out_fnp = "/Users/purcaro/Omni/affinity/conn709.out.dat";
+	QFile* outf = new QFile(out_fnp);
+	if(!outf->open(QIODevice::ReadWrite)){
+		printf("could not open %s\n", qPrintable(out_fnp));
+		assert(0);
+	}
+
+	float* in = (float*)(inf->map(0, inf->size()));
+	uint32_t* out= (uint32_t*)(outf->map(0, outf->size()));
+
+	inf->close();
+	outf->close();
+
+	const int64_t xDim = 1024;
+	const int64_t yDim = 1024;
+	const int64_t zDim = 50;
+
+	const float loThreshold = 0.1;
+	const float hiThreshold = 0.99;
+	const int   noThreshold = 150;
+	const float absLowThreshold = 0.3;
+
+	std::vector<std::pair<int64_t, float> > graph;
+	std::vector<std::pair<float, int64_t> >  dendQueue;
+	std::vector<int> sizes;
+
+	rawQuickieWS(in,
+		     xDim,
+		     yDim,
+		     zDim,
+		     loThreshold,
+		     hiThreshold,
+		     noThreshold,
+		     absLowThreshold,
+		     out,
+		     graph,
+		     dendQueue,
+		     sizes);
+
+	delete inf;
+	delete outf;
 }

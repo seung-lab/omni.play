@@ -37,6 +37,8 @@ public:
 	static OmIDataReader* GetProjectDataReader();
 	static OmIDataWriter* GetDataWriter();
 
+	static int getFileVersion(){ return Instance()-> fileVersion_; }
+
 private:
 	OmProjectData();
 	~OmProjectData();
@@ -44,13 +46,17 @@ private:
 	//singleton
 	static OmProjectData* mspInstance;
 
-	bool mIsOpen;
+	static void setFileVersion(const int v){ Instance()->fileVersion_ = v; }
+	int fileVersion_;
 
+	bool mIsOpen;
 	bool mIsReadOnly;
 
 	void setupDataLayer( QString fileNameAndPath );
 	OmIDataReader* dataReader;
 	OmIDataWriter* dataWriter;
+
+	friend class OmDataArchiveProject;
 };
 
 #endif

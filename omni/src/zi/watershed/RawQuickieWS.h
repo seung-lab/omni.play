@@ -13,7 +13,7 @@ rawQuickieWS(const float* connections,
              const float hiThreshold,
              const int   noThreshold,
              const float absLowThreshold,
-             int*  result,
+             uint32_t*  result,
              std::vector<std::pair<int64_t, float> >   &graph,
              std::vector<std::pair<float, int64_t> >   &dendQueue,
              std::vector<int> &sizes);

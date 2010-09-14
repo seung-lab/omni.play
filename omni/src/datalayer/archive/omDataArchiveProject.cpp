@@ -22,12 +22,12 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
-int Omni_File_Version;
-
+static const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
 static const QString Omni_Postfix("OMNI");
+static int fileVersion_;
 
-void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * project )
+void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
+				       OmProject* project )
 {
 	int size;
 
@@ -40,11 +40,13 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 
-	in >> Omni_File_Version;
+	in >> fileVersion_;
+	OmProjectData::setFileVersion(fileVersion_);
+	printf("Omni file version is %d\n", fileVersion_);
 
-	if( Omni_File_Version < 10 ){
+	if( fileVersion_ < 10 ){
 		throw OmIoException("can not open file: file version is ("
-				    + boost::lexical_cast<std::string>(Omni_File_Version)
+				    + boost::lexical_cast<std::string>(fileVersion_)
 				    +"), but Omni expecting ("
 				    + boost::lexical_cast<std::string>(Omni_Version)
 				    + ")");
@@ -54,8 +56,8 @@ void OmDataArchiveProject::ArchiveRead( const OmDataPath & path, OmProject * pro
 
 	QString omniPostfix;
 	in >> omniPostfix;
-
-	if( Omni_Postfix != omniPostfix ){
+	if(Omni_Postfix != omniPostfix ||
+	   !in.atEnd()){
 		throw OmIoException("corruption detected in Omni file");
 	}
 }
@@ -171,7 +173,7 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan )
 	OmDataArchiveProject::loadOmVolume( in, chan );
 
 	in >> chan.mFilter2dManager;
-	if(Omni_File_Version > 12) {
+	if(fileVersion_ > 12) {
 		in >> chan.mWasBounded;
 		in >> chan.mMaxVal;
 		in >> chan.mMinVal;
@@ -395,7 +397,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	in >> sc.mNumSegs;
 
-	if(Omni_File_Version < 12) {
+	if(fileVersion_ < 12) {
 		quint32 mNumTopLevelSegs;
 		in >> mNumTopLevelSegs;
 	}
@@ -508,7 +510,7 @@ void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
 	qint32 mBytesPerSample;
 	in >> mBytesPerSample; //FIXME: no longer used
 
-	if( Omni_File_Version > 13){
+	if(fileVersion_ > 13){
 		QString volDataType;
 		in >> volDataType;
 		m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
@@ -599,11 +601,11 @@ QDataStream &operator<<(QDataStream & out, const OmGroup & g )
 
 QDataStream &operator>>(QDataStream & in, OmGroup & g )
 {
-	if(Omni_File_Version > 11) {
+	if(fileVersion_ > 11) {
 		OmDataArchiveProject::loadOmManageableObject( in, g );
 	}
         in >> g.mName;
-	if(Omni_File_Version > 11) {
+	if(fileVersion_ > 11) {
        		in >> g.mIDs;
 	}
 

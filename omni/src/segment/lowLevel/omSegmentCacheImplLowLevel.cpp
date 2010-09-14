@@ -48,9 +48,15 @@ bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID val
 	return mSegments->IsValueAlreadyMapped( value );
 }
 
-OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value )
+OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value)
 {
-	return mSegments->GetItemFromValue( value );
+	OmSegment* seg = mSegments->GetItemFromValue(value);
+
+	if(seg->value > mMaxValue){
+		throw OmIoException("bad segment");
+	}
+
+	return seg;
 }
 
 OmSegID OmSegmentCacheImplLowLevel::GetNumSegments()

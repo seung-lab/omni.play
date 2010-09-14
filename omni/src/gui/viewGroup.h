@@ -11,7 +11,7 @@ class MainWindow;
 class OmView2d;
 class OmView3d;
 
-class ViewGroup : public QWidget
+class ViewGroup 
 {
  public:
 	ViewGroup( MainWindow * mainWindow, OmViewGroupState * viewGroupState );

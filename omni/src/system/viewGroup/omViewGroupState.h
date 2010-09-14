@@ -7,6 +7,7 @@
 #include <zi/mutex>
 
 class ChannelDataWrapper;
+class FilterWidget;
 class MainWindow;
 class OmSegment;
 class OmSegmentColorizer;
@@ -21,6 +22,9 @@ class OmViewGroupState : public OmManageableObject {
 
 	void SetInspectorProperties(InspectorProperties * ip) {mInspectorProperties = ip; }
 	InspectorProperties * GetInspectorProperties() { return mInspectorProperties; }
+
+	void SetFilterWidget(FilterWidget* f){ mFilterWidget = f; }
+	FilterWidget* GetFilterWidget(){ return mFilterWidget; }
 
 	void SetSegmentation( const OmId  );
 	void SetChannel( const OmId  );
@@ -89,6 +93,7 @@ class OmViewGroupState : public OmManageableObject {
 	zi::Mutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
+	FilterWidget* mFilterWidget;
 	ViewGroup * mViewGroup;
 	InspectorProperties * mInspectorProperties;
 

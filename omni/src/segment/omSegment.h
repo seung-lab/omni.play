@@ -97,7 +97,7 @@ private:
 	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;
 	OmSegIDsSet segmentsJoinedIntoMe;
-	OmId mParentSegID;
+	OmSegID mParentSegID;
 	float mThreshold;
 	bool mImmutable;
 	quint64 mSize;
