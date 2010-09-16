@@ -120,7 +120,14 @@ void OmPagingPtrStore<T>::AddToDirtyList(const OmSegID value)
 	if( amInBatchMode ){
 		needToFlush = true;
 	} else {
-		dirtyPages.insert( getValuePageNum( value ) );
+		PageNum pn = getValuePageNum(value);
+		if(!validPageNumbers.contains(pn)){
+			throw OmIoException("bad page number " +
+					    boost::lexical_cast<std::string>(pn)
+					    + " for value " +
+					    boost::lexical_cast<std::string>(value));
+		}
+		dirtyPages.insert(pn);
 	}
 }
 
@@ -152,17 +159,16 @@ T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value)
 			return NULL;
 		}
 	}
-	return mValueToSegPtr[ getValuePageNum(value) ][ value % mPageSize];
-}
 
-template< class T >
-PageNum OmPagingPtrStore<T>::getValuePageNum(const OmSegID value)
-{
-	PageNum pn = PageNum(value / mPageSize);
+	PageNum pn = getValuePageNum(value);
 	if(!validPageNumbers.contains(pn)){
-		throw OmIoException("bad page number");
+		throw OmIoException("bad page number " +
+				    boost::lexical_cast<std::string>(pn)
+				    + " for value " +
+				    boost::lexical_cast<std::string>(value));
 	}
-	return pn;
+
+	return mValueToSegPtr[pn][ value % mPageSize];
 }
 
 template< class T >

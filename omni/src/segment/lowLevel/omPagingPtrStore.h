@@ -44,7 +44,10 @@ class OmPagingPtrStore {
 	bool amInBatchMode;
 	bool needToFlush;
 
-	PageNum getValuePageNum( const OmSegID value );
+	PageNum getValuePageNum(const OmSegID value){
+		return PageNum(value / mPageSize);
+	}
+
 	void resizeVectorIfNeeded(const PageNum pageNum );
 	void LoadValuePage( const PageNum valuePageNum );
 	void doSavePage( const PageNum segPageNum );
