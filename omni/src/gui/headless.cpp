@@ -739,10 +739,6 @@ void Headless::watershed(const QString &  line)
 	const int   noThreshold = StringHelpers::getUInt( args[6] );;
 	const float absLowThreshold = StringHelpers::getFloat( args[7] );;
 
-	std::vector<std::pair<int64_t, float> > graph;
-	std::vector<std::pair<float, int64_t> >  dendQueue;
-	std::vector<int> sizes;
-
 	RawQuickieWS rqws(xDim,
 			  yDim,
 			  zDim,
@@ -750,5 +746,6 @@ void Headless::watershed(const QString &  line)
 			  hiThreshold,
 			  noThreshold,
 			  absLowThreshold);
-	rqws.run(in, out);
+
+	RawQuickieWStreeOutput mstAndSize = rqws.run(in, out);
 }

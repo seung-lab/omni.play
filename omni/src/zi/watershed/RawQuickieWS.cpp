@@ -34,7 +34,6 @@ void RawQuickieWS::rawQuickieWS(const float* connections,
   const int64_t xyDim      = xDim  * yDim;
   const int64_t xyzDim     = xyDim * zDim;
   const int64_t xyzDim2    = xyDim * zDim * 2;
-  const int64_t noElements = xyzDim * 3;
   const int64_t nHood[6]   = {-1, -xDim, -xyDim, 1, xDim, xyDim};
 
   int64_t totalNice  = 0;
@@ -64,7 +63,7 @@ void RawQuickieWS::rawQuickieWS(const float* connections,
 		  }
 	  }
   }
-  cout << "\rdone                            \n";
+  cout << "\rdone                                                  \n";
 
   for (int64_t j=0,z=0; z<zDim; ++z){
 	  cout << "\r" << z << " of " << zDim << " slices" << flush;
