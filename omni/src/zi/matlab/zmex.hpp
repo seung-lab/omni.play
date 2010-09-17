@@ -60,7 +60,7 @@ T getMexScalar(const mxArray *prhs) {
   do {                                                          \
     mexExecCount++;                                             \
     zTimer.reset();                                             \
-    MEXPRINTF("!gooD moorninG # %d time", mexExecCount);        \
+    MEXPRINTF("!gooD asdfasdf moorninG # %d time", mexExecCount);        \
     MEXFLUSH();                                                 \
   } while(0)
 

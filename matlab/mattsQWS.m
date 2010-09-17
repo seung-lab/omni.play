@@ -38,7 +38,13 @@ function mattsQWS
 					fprintf (fid, 'loadHDF5chann:/home/mwimer/%s.h5\n', f);
 					fprintf (fid, 'close\n');
 
-					hdf5write(fname, '/main', seg, '/dend', dend, '/graph', graph, '/dendValues', dendValues, '/chanSingle', chan, '/affGraphSingle', conn);
+					hdf5write(fname, 
+						  '/main', seg, 
+						  '/dend', dend, 
+						  '/graph', graph, 
+						  '/dendValues', dendValues, 
+						  '/chanSingle', chan, 
+						  '/affGraphSingle', conn);
 				end
 			end
 		end

@@ -1,4 +1,4 @@
-MATLAB		=	/usr/local/matlab_2009a
+MATLAB		=	/usr/local/matlab_2009b
 HERE    	=       $(shell pwd)
 BINDIR		=	_bin
 GENDIR		=	_gen

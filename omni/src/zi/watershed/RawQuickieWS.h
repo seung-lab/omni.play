@@ -6,6 +6,22 @@
 #include <vector>
 #include <stdint.h>
 
+struct Int64AndFloat {
+	int64_t first;
+	float second;
+};
+
+struct FloatAndInt64 {
+	float first;
+	int64_t second;
+};
+
+//typedef Int64AndFloat graph_t;
+//typedef FloatAndInt64 dend_t;
+
+typedef std::pair<int64_t, float> graph_t;
+typedef std::pair<float, int64_t> dend_t;
+
 void
 rawQuickieWS(const float* connections,
              int64_t xDim, int64_t yDim, int64_t zDim,
@@ -13,9 +29,9 @@ rawQuickieWS(const float* connections,
              const float hiThreshold,
              const int   noThreshold,
              const float absLowThreshold,
-             uint32_t*  result,
-             std::vector<std::pair<int64_t, float> >   &graph,
-             std::vector<std::pair<float, int64_t> >   &dendQueue,
+             int*  result,
+             std::vector<graph_t>& graph,
+             std::vector<dend_t>& dendQueue,
              std::vector<int> &sizes);
 
 

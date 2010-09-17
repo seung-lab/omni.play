@@ -164,7 +164,7 @@ void OmLocalPreferences::setNumAllowedWorkerThreads( const int numThreads )
 // RAM size
 unsigned int OmLocalPreferences::getRamCacheSizeMB()
 {
-	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 3.0;
+	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 3;
 	return readSettingUInt( "ram", defaultRet );
 }
 
@@ -178,7 +178,7 @@ void OmLocalPreferences::setRamCacheSizeMB(unsigned int size)
 // VRAM size
 unsigned int OmLocalPreferences::getVRamCacheSizeMB()
 {
-	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 4.0;
+	const unsigned int defaultRet = OmSystemInformation::get_total_system_memory_megs() / 4;
 	return readSettingUInt( "vram", defaultRet );
 }
 
