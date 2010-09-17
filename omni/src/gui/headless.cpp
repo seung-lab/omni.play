@@ -696,54 +696,59 @@ OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 
 void Headless::watershed(const QString &  line)
 {
-	QStringList args = line.split(':',QString::SkipEmptyParts);
+	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
 
-	const QString in_fnp = "/Users/purcaro/Omni/affinity/conn709.dat";
-	QFile* inf = new QFile(in_fnp);
-	if(!inf->open(QIODevice::ReadOnly)){
-		printf("could not open %s\n", qPrintable(in_fnp));
-		assert(0);
+	if ( argsMain.size() < 2 ){
+		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
+		return;
 	}
 
-	const QString out_fnp = "/Users/purcaro/Omni/affinity/conn709.out.dat";
-	QFile* outf = new QFile(out_fnp);
+	const QStringList args = argsMain[1].split(',',QString::SkipEmptyParts);
+	if ( args.size() < 8 ){
+		printf("%d args; ", args.size());
+		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
+		return;
+	}
+
+	const QString in_fnp = args[0];
+	boost::shared_ptr<QFile> inf(new QFile(in_fnp));
+	if(!inf->open(QIODevice::ReadOnly)){
+		const std::string err = "could not open " + in_fnp.toStdString();
+		throw OmIoException(err);
+	}
+
+	const QString out_fnp = in_fnp + ".out";
+	boost::shared_ptr<QFile> outf(new QFile(out_fnp));
 	if(!outf->open(QIODevice::ReadWrite)){
-		printf("could not open %s\n", qPrintable(out_fnp));
-		assert(0);
+		const std::string err = "could not open " + out_fnp.toStdString();
+		throw OmIoException(err);
 	}
 
 	float* in = (float*)(inf->map(0, inf->size()));
-	uint32_t* out= (uint32_t*)(outf->map(0, outf->size()));
+	int* out= (int*)(outf->map(0, outf->size()));
 
 	inf->close();
 	outf->close();
 
-	const int64_t xDim = 1024;
-	const int64_t yDim = 1024;
-	const int64_t zDim = 50;
+	const int64_t xDim = StringHelpers::getUInt( args[1] );;
+	const int64_t yDim = StringHelpers::getUInt( args[2] );;
+	const int64_t zDim = StringHelpers::getUInt( args[3] );;
 
-	const float loThreshold = 0.1;
-	const float hiThreshold = 0.99;
-	const int   noThreshold = 150;
-	const float absLowThreshold = 0.3;
+	const float loThreshold = StringHelpers::getFloat( args[4] );;
+	const float hiThreshold = StringHelpers::getFloat( args[5] );;
+	const int   noThreshold = StringHelpers::getUInt( args[6] );;
+	const float absLowThreshold = StringHelpers::getFloat( args[7] );;
 
 	std::vector<std::pair<int64_t, float> > graph;
 	std::vector<std::pair<float, int64_t> >  dendQueue;
 	std::vector<int> sizes;
 
-	rawQuickieWS(in,
-		     xDim,
-		     yDim,
-		     zDim,
-		     loThreshold,
-		     hiThreshold,
-		     noThreshold,
-		     absLowThreshold,
-		     out,
-		     graph,
-		     dendQueue,
-		     sizes);
-
-	delete inf;
-	delete outf;
+	RawQuickieWS rqws(xDim,
+			  yDim,
+			  zDim,
+			  loThreshold,
+			  hiThreshold,
+			  noThreshold,
+			  absLowThreshold);
+	rqws.run(in, out);
 }

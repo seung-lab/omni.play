@@ -47,7 +47,7 @@ QString StringHelpers::getStringFromStringList( const QStringList & data_set )
 		str += val;
 		if( counter < data_set.size() ){
 			str += ", ";
-			if( counter > 0 && 
+			if( counter > 0 &&
 			    counter % numOfItemsToAddBeforeLinebreak == 0 ){
 				str += "\n";
 			}
@@ -66,35 +66,11 @@ QString StringHelpers::commaDeliminateNumber( const long long num )
 	for (i = rawNumAsStr.end()-1; i != rawNumAsStr.begin()-1; i-- ){
 		counter++;
 		str.prepend( (*i) );
-		if( 0 == ( counter % 3 ) && 
+		if( 0 == ( counter % 3 ) &&
 		    counter != rawNumAsStr.size() ){
 			str.prepend(',');
 		}
 	}
 
 	return str;
-}
-
-unsigned int StringHelpers::getUInt( QString arg )
-{
-	bool ok;
-	unsigned int ret = arg.toUInt(&ok, 10); 
-	if( ok ){
-		return ret;
-	} else {
-		printf("could not parse to unsigned int \"%s\"\n", qPrintable(arg) );
-		return 0;
-	}
-}
-
-double StringHelpers::getDouble( QString arg )
-{
-	bool ok;
-	double ret = arg.toDouble(&ok); 
-	if( ok ){
-		return ret;
-	} else {
-		printf("could not parse to double  \"%s\"\n", qPrintable(arg) );
-		return 0;
-	}
 }

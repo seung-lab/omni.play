@@ -60,7 +60,7 @@ void computeMSTthresholds(const vector<dend_t> dend,
   FOR_EACH (it, dend) retDendValsData[idx++] = (float)it->first;
 }
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) 
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   MEXINIT();
 
@@ -81,10 +81,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   const size_t numVoxels = xDim*yDim*zDim;
   const size_t numBytesIn = numVoxels*sizeof(float)*3;
   const size_t numbytesOut = numVoxels*sizeof(int);
+
+  /*
   MemMappedFileRead<float> in("/scratch/purcaro/connE1088full.raw",
 			      numBytesIn);
   MemMappedFileWrite<int> out("/scratch/purcaro/connE1088full.output.raw",
 			      numbytesOut);
+  */
+  const std::string dirName = "/home/omni/data/alum_sirini_sept-10-2010/";
+  //  const std::string inFile = dirName + "connE1088full.raw";
+  const std::string inFile = dirName + "test.raw";
+  const std::string outFile = inFile + ".out";
+  MemMappedFileRead<float> in(inFile, numBytesIn);
+  MemMappedFileWrite<int> out(outFile, numbytesOut);
 
   MEXPRINTF("Calling algorithm...");
   MEXFLUSH();
@@ -102,14 +111,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   MEXPRINTF("DONE");
   MEXFLUSH();
 
-  computeMSTedges(dend, plhs);
   if (nlhs < 1) MEX_RETURN;
 
-  computeMSTthresholds(dend, plhs);
-  if (nlhs < 2) MEX_RETURN; 
+  computeMSTedges(dend, plhs);
+  if (nlhs < 2) MEX_RETURN;
 
-  computeRegionGraphEdges(graph, plhs);
+  computeMSTthresholds(dend, plhs);
   if (nlhs < 3) MEX_RETURN;
 
+  computeRegionGraphEdges(graph, plhs);
+  if (nlhs < 4) MEX_RETURN;
+
   computeRegionGraphThresholds(graph, plhs);
+  MEX_RETURN;
 }

@@ -22,23 +22,14 @@
 
 using namespace std;
 
-void
-rawQuickieWS(const float* connections,
-             int64_t xDim, int64_t yDim, int64_t zDim,
-             const float loThreshold,
-             const float hiThreshold,
-             int   noThreshold,
-             const float absLowThreshold,
-             int* result,
-             vector<graph_t>& graph,
-             vector<dend_t>& dendQueue,
-             vector<int> &sizes)
+void RawQuickieWS::rawQuickieWS(const float* connections,
+				int* result)
 {
 
   cout << "Low Threshold: " << loThreshold << "\n"
        << "Hi  Threshold: " << hiThreshold << "\n"
-       << "No  Threshold: " << noThreshold << "\n";
-
+       << "No  Threshold: " << noThreshold << "\n"
+       << "Abs Low Thresh:" << absLowThreshold << "\n";
 
   const int64_t xyDim      = xDim  * yDim;
   const int64_t xyzDim     = xyDim * zDim;
@@ -50,15 +41,17 @@ rawQuickieWS(const float* connections,
   int64_t singleOnes = 0;
   int64_t nullOnes   = 0;
 
-  cout << "clearing file..." << flush;
+  cout << "clearing output file..." << flush;
   memset((void*)result, 0, xyzDim * (int64_t)sizeof(int));
   cout << "done\n";
 
+  cout << "walking affinity graph...\n";
+
   for (int64_t i=0,d=0; d<3; ++d) {
 	  for (int64_t j=0,z=0; z<zDim; ++z) {
-		  cout << "\r" << "(" << d << " of 3):"
+		  cout << "\r\t" << "(" << d+1 << " of 3):"
 		       << z << " of " << zDim << " slices" << flush;
-		  for (int64_t y=0; y<yDim; ++y){ 
+		  for (int64_t y=0; y<yDim; ++y){
 			  for (int64_t x=0; x<xDim; ++x,++i,++j) {
 				  if ((x == 0) && (d==0)) continue;
 				  if ((y == 0) && (d==1)) continue;
@@ -71,7 +64,7 @@ rawQuickieWS(const float* connections,
 		  }
 	  }
   }
-  cout << "done\n";
+  cout << "\rdone                            \n";
 
   for (int64_t j=0,z=0; z<zDim; ++z){
 	  cout << "\r" << z << " of " << zDim << " slices" << flush;
@@ -158,7 +151,6 @@ rawQuickieWS(const float* connections,
   }
   cout << "\rdone                                  \n";
 
-  cout << "Abs Low Thresh:" << absLowThreshold << "\n";
   cout << "Total Nice   : " << totalNice << "\n";
   cout << "Total Singles: " << singleOnes << "\n";
   cout << "Total Null:    " << nullOnes << "\n";
@@ -353,5 +345,7 @@ rawQuickieWS(const float* connections,
 
   cout << "Total Reduced : " << (nextIdx-1) << "\n";
   sizes.clear();
+
+  cout << "Done w/ Raw!\n";
 }
 
