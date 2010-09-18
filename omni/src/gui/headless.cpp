@@ -710,6 +710,13 @@ void Headless::watershed(const QString &  line)
 		return;
 	}
 
+	const int64_t xDim = StringHelpers::getUInt( args[1] );;
+	const int64_t yDim = StringHelpers::getUInt( args[2] );;
+	const int64_t zDim = StringHelpers::getUInt( args[3] );;
+	const size_t numVoxels = xDim*yDim*zDim;
+	const size_t numBytesIn = numVoxels*sizeof(float)*3;
+	const size_t numBytesOut = numVoxels*sizeof(int);
+
 	const QString in_fnp = args[0];
 	boost::shared_ptr<QFile> inf(new QFile(in_fnp));
 	if(!inf->open(QIODevice::ReadOnly)){
@@ -717,22 +724,28 @@ void Headless::watershed(const QString &  line)
 		throw OmIoException(err);
 	}
 
+	if(inf->size() != (qint64)numBytesIn){
+		const QString err =
+			QString("error: input file size of %1 bytes doesn't match expected size %d")
+			.arg(inf->size())
+			.arg(numBytesIn);
+		throw OmIoException(err.toStdString());
+	}
+
 	const QString out_fnp = in_fnp + ".out";
+	QFile::remove(out_fnp);
 	boost::shared_ptr<QFile> outf(new QFile(out_fnp));
 	if(!outf->open(QIODevice::ReadWrite)){
 		const std::string err = "could not open " + out_fnp.toStdString();
 		throw OmIoException(err);
 	}
+	outf->resize(numBytesOut);
 
 	float* in = (float*)(inf->map(0, inf->size()));
 	int* out= (int*)(outf->map(0, outf->size()));
 
 	inf->close();
 	outf->close();
-
-	const int64_t xDim = StringHelpers::getUInt( args[1] );;
-	const int64_t yDim = StringHelpers::getUInt( args[2] );;
-	const int64_t zDim = StringHelpers::getUInt( args[3] );;
 
 	const float loThreshold = StringHelpers::getFloat( args[4] );;
 	const float hiThreshold = StringHelpers::getFloat( args[5] );;
