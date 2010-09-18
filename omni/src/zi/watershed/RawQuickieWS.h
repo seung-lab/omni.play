@@ -25,12 +25,15 @@ typedef Int64AndFloat graph_t;
 typedef FloatAndInt64 dend_t;
 */
 
+
+struct OmMSTedge {
+	uint32_t node1;
+	uint32_t node2;
+	float threshold;
+};
+
 typedef std::pair<int64_t, float> graph_t;
 typedef std::pair<float, int64_t> dend_t;
-
-typedef boost::tuple<boost::shared_ptr<int>,
-		     boost::shared_ptr<float>,
-		     size_t> RawQuickieWStreeOutput;
 
 class RawQuickieWS {
 public:
@@ -48,14 +51,35 @@ public:
 		, absLowThreshold(absLowThreshold)
 	{}
 
-	RawQuickieWStreeOutput run(const float* connections,
-				   int* result)
-	{
+	void Run(const float* connections, int* result){
 		rawQuickieWS(connections, result);
+	}
 
-		return boost::make_tuple(computeMSTedges(),
-					 computeMSTthresholds(),
-					 dendQueue.size());
+	const std::vector<graph_t>& GetGraph(){
+		return graph;
+	}
+	const std::vector<dend_t>& GetDend(){
+		return dendQueue;
+	}
+
+	size_t GetNumEdges(){
+		return dendQueue.size();
+	}
+
+	void SaveToMemMap(OmMSTedge* mst)
+	{
+		boost::shared_ptr<int> nodesPtr = computeMSTedges();
+		boost::shared_ptr<float> thresholdsPtr = computeMSTthresholds();
+
+		int* nodes = nodesPtr.get();
+		float* thresholds = thresholdsPtr.get();
+
+		int idx = 0;
+		for(size_t i = 0; i < GetNumEdges(); ++i){
+			mst[i].node1 = nodes[idx++];
+			mst[i].node2 = nodes[idx++];
+			mst[i].threshold = thresholds[i];
+		}
 	}
 
 private:

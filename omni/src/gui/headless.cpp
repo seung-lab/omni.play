@@ -32,6 +32,7 @@
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
 #include "zi/watershed/RawQuickieWS.h"
+#include "datalayer/fs/omMemMappedFile.hpp"
 
 int argc_global;
 char **argv_global;
@@ -710,47 +711,23 @@ void Headless::watershed(const QString &  line)
 		return;
 	}
 
-	const int64_t xDim = StringHelpers::getUInt( args[1] );;
-	const int64_t yDim = StringHelpers::getUInt( args[2] );;
-	const int64_t zDim = StringHelpers::getUInt( args[3] );;
+	const int64_t xDim = StringHelpers::getUInt(args[1]);
+	const int64_t yDim = StringHelpers::getUInt(args[2]);
+	const int64_t zDim = StringHelpers::getUInt(args[3]);
 	const size_t numVoxels = xDim*yDim*zDim;
 	const size_t numBytesIn = numVoxels*sizeof(float)*3;
 	const size_t numBytesOut = numVoxels*sizeof(int);
 
-	const QString in_fnp = args[0];
-	boost::shared_ptr<QFile> inf(new QFile(in_fnp));
-	if(!inf->open(QIODevice::ReadOnly)){
-		const std::string err = "could not open " + in_fnp.toStdString();
-		throw OmIoException(err);
-	}
+	const std::string in_fnp = args[0].toStdString();
+	MemMappedFileRead<float> in(in_fnp, numBytesIn);
 
-	if(inf->size() != (qint64)numBytesIn){
-		const QString err =
-			QString("error: input file size of %1 bytes doesn't match expected size %d")
-			.arg(inf->size())
-			.arg(numBytesIn);
-		throw OmIoException(err.toStdString());
-	}
+	const std::string out_fnp = in_fnp + ".out";
+	MemMappedFileWrite<int> out(out_fnp, numBytesOut);
 
-	const QString out_fnp = in_fnp + ".out";
-	QFile::remove(out_fnp);
-	boost::shared_ptr<QFile> outf(new QFile(out_fnp));
-	if(!outf->open(QIODevice::ReadWrite)){
-		const std::string err = "could not open " + out_fnp.toStdString();
-		throw OmIoException(err);
-	}
-	outf->resize(numBytesOut);
-
-	float* in = (float*)(inf->map(0, inf->size()));
-	int* out= (int*)(outf->map(0, outf->size()));
-
-	inf->close();
-	outf->close();
-
-	const float loThreshold = StringHelpers::getFloat( args[4] );;
-	const float hiThreshold = StringHelpers::getFloat( args[5] );;
-	const int   noThreshold = StringHelpers::getUInt( args[6] );;
-	const float absLowThreshold = StringHelpers::getFloat( args[7] );;
+	const float loThreshold = StringHelpers::getFloat(args[4]);
+	const float hiThreshold = StringHelpers::getFloat(args[5]);
+	const int   noThreshold = StringHelpers::getUInt(args[6]);
+	const float absLowThreshold = StringHelpers::getFloat(args[7]);
 
 	RawQuickieWS rqws(xDim,
 			  yDim,
@@ -760,5 +737,13 @@ void Headless::watershed(const QString &  line)
 			  noThreshold,
 			  absLowThreshold);
 
-	RawQuickieWStreeOutput mstAndSize = rqws.run(in, out);
+	rqws.Run(in.GetPtr(), out.GetPtr());
+
+	const size_t numEdges = rqws.GetNumEdges();
+	const qint64 numBytesMST = numEdges*sizeof(OmMSTedge);
+
+	const std::string mst_fnp = out_fnp + ".mst";
+	MemMappedFileWrite<OmMSTedge> mst(mst_fnp, numBytesMST);
+
+	rqws.SaveToMemMap(mst.GetPtr());
 }

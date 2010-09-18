@@ -74,10 +74,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   cout << "x,y,z == " << xDim << "," << yDim << "," << zDim << "\n";
 
-  vector<int> sizes;
-  vector<graph_t> graph;
-  vector<dend_t> dend;
-
   const size_t numVoxels = xDim*yDim*zDim;
   const size_t numBytesIn = numVoxels*sizeof(float)*3;
   const size_t numbytesOut = numVoxels*sizeof(int);
@@ -98,30 +94,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   MEXPRINTF("Calling algorithm...");
   MEXFLUSH();
 
-  rawQuickieWS(in.GetMapPtr(),
-	       xDim, yDim, zDim,
-               loThreshold,
-               hiThreshold,
-               sizeThreshold,
-               absLowThreshold,
-	       out.GetMapPtr(),
-               graph,
-               dend,
-               sizes);
+  RawQuickieWS rqws(xDim,
+		    yDim,
+		    zDim,
+		    loThreshold,
+		    hiThreshold,
+		    sizeThreshold,
+		    absLowThreshold);
+
+  rqws.Run(in.GetMapPtr(), out.GetMapPtr());
+
   MEXPRINTF("DONE");
   MEXFLUSH();
 
   if (nlhs < 1) MEX_RETURN;
 
-  computeMSTedges(dend, plhs);
+  computeMSTedges(rqws.GetDend(), plhs);
   if (nlhs < 2) MEX_RETURN;
 
-  computeMSTthresholds(dend, plhs);
+  computeMSTthresholds(rqws.GetDend(), plhs);
   if (nlhs < 3) MEX_RETURN;
 
-  computeRegionGraphEdges(graph, plhs);
+  computeRegionGraphEdges(rqws.GetGraph(), plhs);
   if (nlhs < 4) MEX_RETURN;
 
-  computeRegionGraphThresholds(graph, plhs);
+  computeRegionGraphThresholds(rqws.GetGraph(), plhs);
   MEX_RETURN;
 }
