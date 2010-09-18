@@ -26,36 +26,36 @@ DECLARE_MEX(QuickieWatershed);
 #  define ARRAYSIZE(array) (sizeof(array) / sizeof(array[0]))
 #endif
 
+template <typename T>
 void computeRegionGraphEdges(const vector<graph_t> &graph,
-			     mxArray *plhs[])
+							 T& retGraphData)
 {
-  DECLARE_MEX_RET_ARRAY(retGraph, plhs[1], int, graph.size(), 2);
   int idx = 0;
   FOR_EACH (it, graph) retGraphData[idx++] = (it->first >> 32);
   FOR_EACH (it, graph) retGraphData[idx++] = (it->first & 0xFFFFFFFF);
 }
 
+template <typename T>
 void computeRegionGraphThresholds(const vector<graph_t> &graph,
-				  mxArray *plhs[])
+								  T& retGraphValsData)
 {
-  DECLARE_MEX_RET_ARRAY(retGraphVals, plhs[2], float, graph.size(), 1);
   int idx = 0;
   FOR_EACH (it, graph) retGraphValsData[idx++] = (float)it->second;
 }
 
+template <typename T>
 void computeMSTedges(const vector<dend_t> dend,
-		     mxArray *plhs[])
+					 T& retDendData)
 {
-  DECLARE_MEX_RET_ARRAY(retDend, plhs[3], int, dend.size(), 2);
   int idx = 0;
   FOR_EACH (it, dend) retDendData[idx++] = (it->second >> 32);
   FOR_EACH (it, dend) retDendData[idx++] = (it->second & 0xFFFFFFFF);
 }
 
+template <typename T>
 void computeMSTthresholds(const vector<dend_t> dend,
-			  mxArray *plhs[])
+						  T& retDendValsData)
 {
-  DECLARE_MEX_RET_ARRAY(retDendVals, plhs[4], float, dend.size(), 1);
   int idx = 0;
   FOR_EACH (it, dend) retDendValsData[idx++] = (float)it->first;
 }
@@ -109,15 +109,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   if (nlhs < 1) MEX_RETURN;
 
-  computeMSTedges(rqws.GetDend(), plhs);
+  DECLARE_MEX_RET_ARRAY(retDend, plhs[3], int, rqws.GetDend().size(), 2);
+  computeMSTedges(rqws.GetDend(), retDendData);
   if (nlhs < 2) MEX_RETURN;
 
-  computeMSTthresholds(rqws.GetDend(), plhs);
+  DECLARE_MEX_RET_ARRAY(retDendVals, plhs[4], float, rqws.GetDend().size(), 1);
+  computeMSTthresholds(rqws.GetDend(), retDendValsData);
   if (nlhs < 3) MEX_RETURN;
 
-  computeRegionGraphEdges(rqws.GetGraph(), plhs);
+  DECLARE_MEX_RET_ARRAY(retGraph, plhs[1], int, rqws.GetGraph().size(), 2);
+  computeRegionGraphEdges(rqws.GetGraph(), retGraphData);
   if (nlhs < 4) MEX_RETURN;
 
-  computeRegionGraphThresholds(rqws.GetGraph(), plhs);
+  DECLARE_MEX_RET_ARRAY(retGraphVals, plhs[2], float, rqws.GetGraph().size(), 1);
+  computeRegionGraphThresholds(rqws.GetGraph(), retGraphValsData);
   MEX_RETURN;
 }

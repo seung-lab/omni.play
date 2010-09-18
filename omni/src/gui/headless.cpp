@@ -739,7 +739,7 @@ void Headless::watershed(const QString &  line)
 
 	rqws.Run(in.GetPtr(), out.GetPtr());
 
-	const size_t numEdges = rqws.GetNumEdges();
+	const size_t numEdges = rqws.GetNumMSTedges();
 	const qint64 numBytesMST = numEdges*sizeof(OmMSTedge);
 
 	const std::string mst_fnp = out_fnp + ".mst";

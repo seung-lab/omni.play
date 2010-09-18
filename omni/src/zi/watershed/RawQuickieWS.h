@@ -62,7 +62,7 @@ public:
 		return dendQueue;
 	}
 
-	size_t GetNumEdges(){
+	size_t GetNumMSTedges(){
 		return dendQueue.size();
 	}
 
@@ -75,7 +75,7 @@ public:
 		float* thresholds = thresholdsPtr.get();
 
 		int idx = 0;
-		for(size_t i = 0; i < GetNumEdges(); ++i){
+		for(size_t i = 0; i < GetNumMSTedges(); ++i){
 			mst[i].node1 = nodes[idx++];
 			mst[i].node2 = nodes[idx++];
 			mst[i].threshold = thresholds[i];
