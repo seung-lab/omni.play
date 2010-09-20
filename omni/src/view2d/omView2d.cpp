@@ -934,7 +934,7 @@ void OmView2d::SegmentEditSelectionChangeEvent()
 
 void OmView2d::RemoveTile(OmThreadedCachingTile * cache)
 {
-	set<DataCoord>::iterator itr;
+	std::set<DataCoord>::iterator itr;
 	for(itr = mUpdateCoordsSet.begin(); itr != mUpdateCoordsSet.end(); itr++) {
 		OmMipChunkCoord ccoord = cache->mVolume->DataToMipCoord(*itr, 0);
 		DataBbox box = cache->mVolume->MipCoordToDataBbox(ccoord, 0);

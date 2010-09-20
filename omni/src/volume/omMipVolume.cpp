@@ -522,7 +522,8 @@ bool OmMipVolume::ContainsThreadChunkLevelCoord(const OmMipChunkCoord & rMipCoor
 /*
  *	Finds set of children coordinates that are valid for this MipVolume.
  */
-void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & rMipCoord, set < OmMipChunkCoord > &children)
+void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & rMipCoord,
+											 std::set<OmMipChunkCoord>& children)
 {
 	//clear set
 	children.clear();

@@ -331,7 +331,7 @@ const OmMipChunkCoord & OmMipChunk::GetParentCoordinate()
 	return mParentCoord;
 }
 
-const set < OmMipChunkCoord > & OmMipChunk::GetChildrenCoordinates()
+const std::set<OmMipChunkCoord>& OmMipChunk::GetChildrenCoordinates()
 {
 	return mChildrenCoordinates;
 }

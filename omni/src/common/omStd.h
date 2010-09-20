@@ -24,12 +24,8 @@ using std::sort;
 using std::map;
 
 #include <math.h>
-
 #include <set>
-using std::set;
-
 #include <string>
-
 #include <vector>
 using std::vector;
 
@@ -61,7 +57,7 @@ using std::vector;
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 #endif
 static inline double round(double val)
-{   
+{
     return floor(val + 0.5);
 }
 #else

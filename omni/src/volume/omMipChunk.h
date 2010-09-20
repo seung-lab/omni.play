@@ -98,7 +98,7 @@ public:
 	bool IsLeaf();
 	const OmMipChunkCoord& GetCoordinate();
 	const OmMipChunkCoord& GetParentCoordinate();
-	const set<OmMipChunkCoord>& GetChildrenCoordinates();
+	const std::set<OmMipChunkCoord>& GetChildrenCoordinates();
 
 	//slice
         boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
@@ -141,7 +141,7 @@ protected:
 	NormBbox mClippedNormExtent;	// extent of contained data in norm space
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
-	set<OmMipChunkCoord> mChildrenCoordinates;
+	std::set<OmMipChunkCoord> mChildrenCoordinates;
 
 	//chunk properties
 	std::string mFileName;

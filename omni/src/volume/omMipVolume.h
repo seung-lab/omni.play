@@ -93,9 +93,12 @@ public:
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &rMipCoord);
 	bool ContainsThreadChunkCoord(const OmMipChunkCoord &rMipCoord);
 	bool ContainsThreadChunkLevelCoord(const OmMipChunkCoord &rMipCoord);
-	void ValidMipChunkCoordChildren(const OmMipChunkCoord &rMipCoord, set<OmMipChunkCoord> &children);
-	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
-	void GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
+	void ValidMipChunkCoordChildren(const OmMipChunkCoord &rMipCoord,
+									std::set<OmMipChunkCoord> &children);
+	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord,
+				  bool block=true);
+	void GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
+							 const OmMipChunkCoord &rMipCoord, bool block=true);
 
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);
@@ -159,7 +162,7 @@ protected:
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
-	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
+	std::set<OmMipChunkCoord> mEditedLeafChunks;	//set of edited chunks that need rebuild
 
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;

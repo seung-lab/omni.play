@@ -1,7 +1,7 @@
 #include "view2d/omTileDumper.hpp"
 #include "system/viewGroup/omViewGroupState.h"
 
-void OmTileDumper::DumpTiles(OmId vol, ObjectType type, const QString dumpfile, OmViewGroupState * vgs)
+void OmTileDumper::DumpTiles(OmId, ObjectType, const QString, OmViewGroupState *)
 {
 	throw OmIoException("not implemented");
 /*

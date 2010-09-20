@@ -13,7 +13,8 @@
 ///////          OmVoxelSetValueAction Class
 ///////
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rVoxel, OmSegID value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId,
+											 DataCoord & rVoxel, OmSegID value)
 {
 	//store segmentation id
 	mSegmentationId = segmentationId;
@@ -28,7 +29,9 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, DataCoord & rV
 	mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoord > &rVoxels, OmSegID value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId,
+											 std::set<DataCoord>& rVoxels,
+											 OmSegID value)
 {
 	//store segmentation id
 	mSegmentationId = segmentationId;
@@ -37,9 +40,7 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId, set < DataCoor
 	mNewValue = value;
 
 	//store old values of voxels
-	set < DataCoord >::iterator itr;
-	for (itr = rVoxels.begin(); itr != rVoxels.end(); itr++) {
-		//mOldVoxelValues[*itr] = r_segmentation.GetVoxelValue(*itr);
+	FOR_EACH(itr, rVoxels){
 		mOldVoxelValues[*itr] = mNewValue;
 	}
 
@@ -55,13 +56,11 @@ void OmVoxelSetValueAction::Action()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//modified voxels
-	set < DataCoord > edited_voxels;
+	std::set<DataCoord> edited_voxels;
 
 	//for all elements in the map
-	map < DataCoord, OmSegID >::iterator itr;
-	for (itr = mOldVoxelValues.begin(); itr != mOldVoxelValues.end(); itr++) {
+	FOR_EACH(itr, mOldVoxelValues){
 		//set voxel to new value
-		//cout << "Setting changed voxel" << endl;
 		r_segmentation.SetVoxelValue(itr->first, mNewValue);
 		edited_voxels.insert(itr->first);
 	}
@@ -76,11 +75,10 @@ void OmVoxelSetValueAction::UndoAction()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 
 	//modified voxels
-	set < DataCoord > edited_voxels;
+	std::set<DataCoord> edited_voxels;
 
 	//for all elements in the map
-	map < DataCoord, OmSegID >::iterator itr;
-	for (itr = mOldVoxelValues.begin(); itr != mOldVoxelValues.end(); itr++) {
+	FOR_EACH(itr, mOldVoxelValues){
 		//set voxel to prev value
 		r_segmentation.SetVoxelValue(itr->first, itr->second);
 		edited_voxels.insert(itr->first);

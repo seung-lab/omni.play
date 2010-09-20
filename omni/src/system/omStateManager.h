@@ -88,10 +88,6 @@ private:
 	std::string mProjectFileName;
 	std::string mProjectDirectoryPath;
 
-	//edit selection
-	Vector3< OmId > mEditSelection;	//volume, segmentation, segment
-	set< DataCoord > mEditSelectionCoords;
-
 	//tool mode
 	OmToolMode mCurToolMode;
 	OmToolMode mPrevToolMode;

@@ -56,12 +56,12 @@ SegmentDataWrapper OmSegmentEditor::GetEditSelection()
 /////////////////////////////////
 ///////          Selected Voxels
 
-const set < DataCoord > & OmSegmentEditor::GetSelectedVoxels()
+const std::set <DataCoord>& OmSegmentEditor::GetSelectedVoxels()
 {
 	return Instance()->mSelectedVoxels;
 }
 
-void OmSegmentEditor::SetSelectedVoxels(const set < DataCoord > &voxels)
+void OmSegmentEditor::SetSelectedVoxels(const std::set<DataCoord>& voxels)
 {
 	Instance()->mSelectedVoxels = voxels;
 }

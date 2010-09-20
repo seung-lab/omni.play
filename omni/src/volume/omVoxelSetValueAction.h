@@ -11,7 +11,8 @@
 class OmVoxelSetValueAction : public OmAction {
 public:
 	OmVoxelSetValueAction(OmId segmentationId, DataCoord &rVoxel, OmSegID value);
-	OmVoxelSetValueAction(OmId segmentationId, set<DataCoord> &rVoxels, OmSegID value);
+	OmVoxelSetValueAction(OmId segmentationId, std::set<DataCoord> &rVoxels,
+						  OmSegID value);
 
 private:
 	void Action();
