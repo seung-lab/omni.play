@@ -691,13 +691,13 @@ bool OmMipVolume::BuildThreadedVolume()
  	for (int initLevel = 0; initLevel < GetRootMipLevel(); initLevel += GetMaxConsecutiveSubsamples()){
 
  		printf("Reading mip level %i, ",initLevel);
- 		if ( (initLevel+1) == min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()) ){
+ 		if ( (initLevel+1) == std::min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()) ){
  			printf("building mip level %i...\n",initLevel+1);
  		} else {
  			printf("building mip levels %i-%i...\n",
 			       initLevel+1,
-			       min(GetRootMipLevel(),
-				   initLevel + GetMaxConsecutiveSubsamples()));
+			       std::min(GetRootMipLevel(),
+							initLevel + GetMaxConsecutiveSubsamples()));
  		}
 
  		OmMipThreadManager* mipThreadManager =

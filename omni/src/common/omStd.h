@@ -11,18 +11,13 @@
 
 // Global Includes
 #include <stdarg.h>
-
 #include <stdio.h>
 
 #include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::sort;
-
-#include <map>
 #include <math.h>
+
 #include <set>
+#include <map>
 #include <string>
 #include <vector>
 

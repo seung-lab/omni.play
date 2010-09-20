@@ -191,5 +191,5 @@ void OmCameraZoom::Drag(const Vector2 < float >&point)
 	double delta = double (cy - sy) / r_viewport[3];
 
 	// exponential zoom factor
-	mpCamera->SetDistance(max(mStartDistance, 1.0f) * exp(delta));
+	mpCamera->SetDistance(std::max(mStartDistance, 1.0f) * exp(delta));
 }

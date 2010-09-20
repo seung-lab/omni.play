@@ -84,13 +84,14 @@ protected:
 };
 
 template< typename T >
-AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(const AxisAlignedBoundingBox & one, const AxisAlignedBoundingBox & two)
-	: _min(Vector3< T >(min(one.getMin().x, two.getMin().x),
-			    min(one.getMin().y, two.getMin().y),
-			    min(one.getMin().z, two.getMin().z)))
-	, _max(Vector3< T >(max(one.getMax().x, two.getMax().x),
-			    max(one.getMax().y, two.getMax().y),
-			    max(one.getMax().z, two.getMax().z)))
+AxisAlignedBoundingBox< T >::AxisAlignedBoundingBox(const AxisAlignedBoundingBox& one,
+													const AxisAlignedBoundingBox& two)
+	: _min(Vector3< T >(std::min(one.getMin().x, two.getMin().x),
+						std::min(one.getMin().y, two.getMin().y),
+						std::min(one.getMin().z, two.getMin().z)))
+	, _max(Vector3< T >(std::max(one.getMax().x, two.getMax().x),
+						std::max(one.getMax().y, two.getMax().y),
+						std::max(one.getMax().z, two.getMax().z)))
 	, _dirty( false )
 	, _empty( false )
 {
