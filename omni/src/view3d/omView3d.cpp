@@ -334,7 +334,8 @@ void OmView3d::View3dUpdatePreferencesEvent()
 /*
  *	Returns a vector names of closest picked result for given draw options.
  */
-bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesVec)
+bool OmView3d::PickPoint(Vector2 < int >point2d,
+						 std::vector < unsigned int >&rNamesVec)
 {
 	//clear name vector
 	rNamesVec.clear();

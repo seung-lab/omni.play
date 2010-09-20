@@ -74,8 +74,9 @@ public:
 
 	static QSize getViewBoxSizeHint();
 
-	static void SetViewDrawable(ViewType viewType, vector<Drawable*> & drawable);
-	static vector<Drawable*> GetViewDrawable(ViewType viewType);
+	static void SetViewDrawable(ViewType viewType,
+								std::vector<Drawable*>& drawable);
+	static std::vector<Drawable*> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -110,9 +111,9 @@ private:
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
 
-	vector<Drawable*> mDrawableXY;
-	vector<Drawable*> mDrawableXZ;
-	vector<Drawable*> mDrawableYZ;
+	std::vector<Drawable*> mDrawableXY;
+	std::vector<Drawable*> mDrawableXZ;
+	std::vector<Drawable*> mDrawableYZ;
 };
 
 #endif

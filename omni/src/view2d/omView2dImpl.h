@@ -41,7 +41,7 @@ class OmView2dImpl : public QWidget
 	int mZoomLevel;
 	double mAlpha;
 
-	vector <Drawable*> mTextures;
+	std::vector <Drawable*> mTextures;
 
 	Vector4i mTotalViewport; //lower left x, lower left y, width, height
 
@@ -57,7 +57,7 @@ class OmView2dImpl : public QWidget
 	void DrawFromFilter(OmFilter2d&);
 
 	void PreDraw(Vector2f zoomMipVector);
-	void TextureDraw(vector <Drawable*> &textures);
+	void TextureDraw(std::vector <Drawable*> &textures);
 	void safeDraw(float zoomFactor, float x, float y, int tileLength,
 		      OmTextureIDPtr gotten_id);
 

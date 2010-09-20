@@ -148,7 +148,8 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 	drawRectangle(v0, v1, v2, v3);
 }
 
-void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawables)
+void OmViewBoxWidget::drawChannelData(ViewType plane,
+									  std::vector<Drawable*> drawables)
 {
 	if(!OmLocalPreferences::get2DViewPaneIn3D())
 	{
@@ -170,7 +171,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane, vector<Drawable*> drawable
 
 	Vector2f dataMin,dataMax,spaceMin,spaceMax;
 
-	for (vector < Drawable * >::iterator it = drawables.begin(); drawables.end() != it; it++) {
+	for (std::vector < Drawable * >::iterator it = drawables.begin(); drawables.end() != it; it++) {
 		Drawable *d = *it;
 
 		int level = d->tileCoord.Level;

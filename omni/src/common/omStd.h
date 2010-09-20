@@ -21,13 +21,10 @@ using std::swap;
 using std::sort;
 
 #include <map>
-using std::map;
-
 #include <math.h>
 #include <set>
 #include <string>
 #include <vector>
-using std::vector;
 
 #define OMPOW(base,expon) (int)pow((double) base, (double)expon)
 

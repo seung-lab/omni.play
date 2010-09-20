@@ -252,7 +252,7 @@ GLint OmView2dImpl::getFormat(OmTextureIDPtr gotten_id)
 	}
 }
 
-void OmView2dImpl::TextureDraw(vector < Drawable * >&textures)
+void OmView2dImpl::TextureDraw(std::vector < Drawable * >&textures)
 {
 	FOR_EACH(it, textures){
 		Drawable* d = *it;

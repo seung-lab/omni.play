@@ -10,7 +10,7 @@ public:
 				     OmViewGroupState * vgs)
 	{
 
-		static vector<OmCachingThreadedCachingTile*> caches;
+		static std::vector<OmCachingThreadedCachingTile*> caches;
 
 		if(NULL == vol) {
 			mDelete = true;

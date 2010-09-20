@@ -25,7 +25,7 @@ private:
 	OmId mSegmentationId;
 
 	//map of voxels to old values
-	map< DataCoord, OmSegID > mOldVoxelValues;
+	std::map<DataCoord, OmSegID> mOldVoxelValues;
 
 	//new value of voxels
 	OmSegID mNewValue;
