@@ -492,13 +492,11 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	// Draw meshes!
-	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
-	OmIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
 		OmMeshDrawer drawer( *iter, mViewGroupState);
 		drawer.Init();
 		drawer.Draw( culler );
-        }
+	}
 }
 
 void OmView3d::DrawEditSelectionVoxels()

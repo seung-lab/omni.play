@@ -24,12 +24,12 @@ class OmVolume;
 class OmVolumeData;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
-			   MIPVOL_BUILT,
-			   MIPVOL_BUILDING };
+						   MIPVOL_BUILT,
+						   MIPVOL_BUILDING };
 
 class OmMipVolume : public OmVolume {
 public:
-        OmMipVolume();
+	OmMipVolume();
 	~OmMipVolume();
 
 	void Flush();
@@ -84,8 +84,8 @@ public:
 	OmMipChunkCoord NormToMipCoord(const NormCoord &normCoord, int level);
 	DataBbox MipCoordToDataBbox(const OmMipChunkCoord &, int level);
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);
-       	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
-       	DataBbox MipCoordToThreadLevelDataBbox(const OmMipChunkCoord &);
+	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
+	DataBbox MipCoordToThreadLevelDataBbox(const OmMipChunkCoord &);
 
 	//mip chunk methods
 	OmMipChunkCoord RootMipChunkCoordinate();
@@ -118,10 +118,10 @@ public:
 	//comparison methods
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *);
 	static bool CompareChunks(const OmMipChunkCoord&,
-				  OmMipVolume*, OmMipVolume*);
+							  OmMipVolume*, OmMipVolume*);
 
 	void copyDataIn();
-        void copyAllMipDataIntoMemMap();
+	void copyAllMipDataIntoMemMap();
 	bool areImportFilesImages();
 
 	Vector3i get_dims(const OmDataPath dataset );
@@ -143,8 +143,8 @@ public:
 	OmVolDataType getVolDataType(){ return mVolDataType; }
 
 protected:
-        OmMipVolumeCache *const mDataCache;
-        OmVolDataType mVolDataType;
+	OmMipVolumeCache *const mDataCache;
+	OmVolDataType mVolDataType;
 
 	void BuildBlankVolume(const Vector3i & dims);
 
@@ -175,6 +175,7 @@ private:
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;
 	friend class OmVolumeData;
+	friend class OmUpgradeTo14;
 };
 
 #endif

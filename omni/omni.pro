@@ -13,6 +13,7 @@ DEPENDPATH += . \
            src/datalayer \
            src/datalayer/archive \
            src/datalayer/hdf5 \
+           src/datalayer/upgraders \
            src/gui \
            src/gui/images \
            src/gui/inspectors \
