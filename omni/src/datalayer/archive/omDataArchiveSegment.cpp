@@ -136,6 +136,10 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 	out.setByteOrder( QDataStream::LittleEndian );
 	out.setVersion(QDataStream::Qt_4_6);
 
+	if(0 == OmProjectData::getFileVersion()){
+		assert(0 && "file version not set");
+	}
+
 	if(OmProjectData::getFileVersion() >= 15){
 		out << Omni_Segment_Version;
 	}
