@@ -24,66 +24,71 @@ OmDataPath OmDataPaths::getProjectArchiveNameQT()
 	return OmDataPath("project.qt.dat");
 }
 
-OmDataPath OmDataPaths::getSegmentPagePath( const OmId segmentationID, const quint32 pageNum )
+OmDataPath OmDataPaths::getSegmentPagePath(const OmId segmentationID,
+										   const quint32 pageNum)
 {
-	string p = str( boost::format("segmentations/segmentation%1%/segment_page%2%")
-			% segmentationID
-			% pageNum );
+	const std::string p =
+		str( boost::format("segmentations/segmentation%1%/segment_page%2%")
+			 % segmentationID
+			 % pageNum );
 
 	return OmDataPath(p);
 }
 
-string OmDataPaths::getMeshDirectoryPath( const OmMipMeshCoord & meshCoordinate,
-					  OmMipMeshManager * const mipMeshManager )
+string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
+										 OmMipMeshManager* const mipMeshManager)
 {
-	string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
-			% meshCoordinate.MipChunkCoord.Level
-			% meshCoordinate.MipChunkCoord.Coordinate.x
-			% meshCoordinate.MipChunkCoord.Coordinate.y
-			% meshCoordinate.MipChunkCoord.Coordinate.z
-			% meshCoordinate.DataValue);
-
+	const std::string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
+							   % meshCoord.MipChunkCoord.Level
+							   % meshCoord.MipChunkCoord.Coordinate.x
+							   % meshCoord.MipChunkCoord.Coordinate.y
+							   % meshCoord.MipChunkCoord.Coordinate.z
+							   % meshCoord.DataValue);
 
 	return mipMeshManager->GetDirectoryPath().toStdString() + p;
 }
 
-string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoordinate )
+string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
 {
 	return str( boost::format("mesh.%1%.dat")
-		    %meshCoordinate.DataValue);
+				%meshCoord.DataValue);
 }
 
-string OmDataPaths::getLocalPathForHd5fChunk(OmMipMeshCoord & meshCoordinate, const OmId segmentationID)
+string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
+											 const OmId segmentationID)
 {
-  QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
-    .arg(segmentationID)
-    .arg(meshCoordinate.MipChunkCoord.Level)
-    .arg(meshCoordinate.MipChunkCoord.Coordinate.x)
-    .arg(meshCoordinate.MipChunkCoord.Coordinate.y)
-    .arg(meshCoordinate.MipChunkCoord.Coordinate.z)
-    .arg( OmProject::GetFileName() )
-    .arg( OmStateManager::getPID() );
+	const QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
+		.arg(segmentationID)
+		.arg(meshCoord.MipChunkCoord.Level)
+		.arg(meshCoord.MipChunkCoord.Coordinate.x)
+		.arg(meshCoord.MipChunkCoord.Coordinate.y)
+		.arg(meshCoord.MipChunkCoord.Coordinate.z)
+		.arg( OmProject::GetFileName() )
+		.arg( OmStateManager::getPID() );
 
-  QString ret = OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
-  debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
-  fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
-  return ret.toStdString();
+	const QString ret =
+		OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
+
+	debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
+	fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
+
+	return ret.toStdString();
 }
 
 std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
 {
 	return str( boost::format("segmentations/segmentation%1%/")
-		    % seg->GetId());
+				% seg->GetId());
 }
 
 std::string OmDataPaths::getDirectoryPath(OmChannel* chan)
 {
 	return str( boost::format("channels/channel%1%/")
-		    % chan->GetId());
+				% chan->GetId());
 }
 
 std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,
-						  const int level)
+												  const int level)
 {
 	return dirPath
 		+ boost::lexical_cast<std::string>(level)
@@ -92,9 +97,9 @@ std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,
 }
 
 std::string OmDataPaths::MipChunkMetaDataPath(const std::string & dirPath,
-					      const OmMipChunkCoord & coord)
+											  const OmMipChunkCoord & coord)
 {
-	QString p = QString("%1/%2_%3_%4/")
+	const QString p = QString("%1/%2_%3_%4/")
 		.arg(coord.Level)
 		.arg(coord.Coordinate.x)
 		.arg(coord.Coordinate.y)

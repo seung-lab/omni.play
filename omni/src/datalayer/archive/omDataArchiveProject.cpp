@@ -353,6 +353,7 @@ QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm )
 
 	return in;
 }
+
 QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc )
 {
 	out << (*sc.mImpl);

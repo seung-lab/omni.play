@@ -16,22 +16,23 @@ public:
 	static OmDataPath getProjectArchiveNameQT();
 
 	static OmDataPath getSegmentPagePath( const OmId segmentationID,
-					      const quint32 pageNum );
+										  const quint32 pageNum );
 
-	static string getMeshDirectoryPath( const OmMipMeshCoord &,
-					    OmMipMeshManager *const );
+	static string getMeshDirectoryPath( const OmMipMeshCoord&,
+										OmMipMeshManager *const );
 
-	static string getMeshFileName( const OmMipMeshCoord & meshCoordinate );
-	static string getLocalPathForHd5fChunk(OmMipMeshCoord & meshCoordinate,
-					       const OmId segmentationID);
+	static string getMeshFileName(const OmMipMeshCoord& meshCoord);
+	static string getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
+										   const OmId segmentationID);
 
 	static std::string getDirectoryPath(OmChannel* chan);
 	static std::string getDirectoryPath(OmSegmentation* seg);
 
-	static std::string MipLevelInternalDataPath(const std::string & dirPath,
-						    const int level);
-	static std::string MipChunkMetaDataPath(const std::string & dirPath,
-						const OmMipChunkCoord & coord);
+	static std::string MipLevelInternalDataPath(const std::string& dirPath,
+												const int level);
+
+	static std::string MipChunkMetaDataPath(const std::string& dirPath,
+											const OmMipChunkCoord& coord);
 };
 
 #endif
