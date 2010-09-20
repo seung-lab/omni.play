@@ -15,11 +15,14 @@ static const QString Omni_Postfix("OMNI");
 const int Omni_Segment_Version = 2;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
-				       std::vector<OmSegment*> & page,
-				       OmSegmentCache* cache)
+									   std::vector<OmSegment*> & page,
+									   OmSegmentCache* cache)
 {
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
+
+	printf("segment load: file version is %d\n",
+		   OmProjectData::getFileVersion());
 
 	if(OmProjectData::getFileVersion() < 15){ // segments weren't versioned
 		const bool dataReadCorrect =
@@ -43,39 +46,39 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 
 // don't modify this--to add extra member vars, please modify readSegmentsNew
 bool OmDataArchiveSegment::readSegmentsOld(std::vector<OmSegment*> & page,
-					   OmSegmentCache* cache,
-					   OmDataWrapperPtr dw,
-					   const int size,
-					   const bool overrideVersion)
+										   OmSegmentCache* cache,
+										   OmDataWrapperPtr dw,
+										   const int size,
+										   const bool overrideVersion)
 {
 	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 
-        for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
 		bool valid;
-                in >> valid;
+		in >> valid;
 		if (!valid) {
-                	page[ i ] = NULL;
+			page[ i ] = NULL;
 			continue;
 		}
 
-                OmSegment* segment = new OmSegment(cache);
+		OmSegment* segment = new OmSegment(cache);
 
-                in >> segment->mValue;
-                in >> segment->mColorInt.red;
-                in >> segment->mColorInt.green;
-                in >> segment->mColorInt.blue;
-                in >> segment->mImmutable;
-                in >> segment->mSize;
+		in >> segment->mValue;
+		in >> segment->mColorInt.red;
+		in >> segment->mColorInt.green;
+		in >> segment->mColorInt.blue;
+		in >> segment->mImmutable;
+		in >> segment->mSize;
 
 		if(!overrideVersion && OmProjectData::getFileVersion() >= 13) {
 			in >> segment->mBounds;
 		}
 
-                page[ i ] = segment;
-        }
+		page[ i ] = segment;
+	}
 
 	if(in.atEnd()){
 		return true; // segment version is good
@@ -84,9 +87,9 @@ bool OmDataArchiveSegment::readSegmentsOld(std::vector<OmSegment*> & page,
 }
 
 void OmDataArchiveSegment::readSegmentsNew(std::vector<OmSegment*> & page,
-					   OmSegmentCache* cache,
-					   OmDataWrapperPtr dw,
-					   const int size)
+										   OmSegmentCache* cache,
+										   OmDataWrapperPtr dw,
+										   const int size)
 {
 	QByteArray ba = QByteArray::fromRawData( dw->getCharPtr(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
@@ -96,26 +99,26 @@ void OmDataArchiveSegment::readSegmentsNew(std::vector<OmSegment*> & page,
 	int segmentFileVersion_;
 	in >> segmentFileVersion_;
 
-        for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
 		bool valid;
-                in >> valid;
+		in >> valid;
 		if (!valid) {
-                	page[ i ] = NULL;
+			page[ i ] = NULL;
 			continue;
 		}
 
-                OmSegment* segment = new OmSegment(cache);
+		OmSegment* segment = new OmSegment(cache);
 
-                in >> segment->mValue;
-                in >> segment->mColorInt.red;
-                in >> segment->mColorInt.green;
-                in >> segment->mColorInt.blue;
-                in >> segment->mImmutable;
-                in >> segment->mSize;
+		in >> segment->mValue;
+		in >> segment->mColorInt.red;
+		in >> segment->mColorInt.green;
+		in >> segment->mColorInt.blue;
+		in >> segment->mImmutable;
+		in >> segment->mSize;
 		in >> segment->mBounds;
 
-                page[ i ] = segment;
-        }
+		page[ i ] = segment;
+	}
 
 	QString omniPostfix;
 	in >> omniPostfix;
@@ -125,8 +128,8 @@ void OmDataArchiveSegment::readSegmentsNew(std::vector<OmSegment*> & page,
 }
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
-					const std::vector<OmSegment*> & page,
-					OmSegmentCache* cache)
+										const std::vector<OmSegment*> & page,
+										OmSegmentCache* cache)
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -137,8 +140,8 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 		out << Omni_Segment_Version;
 	}
 
-        for( quint32 i = 0; i < cache->getPageSize(); ++i ){
-        	OmSegment * segment = page[ i ];
+	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+		OmSegment * segment = page[ i ];
 
 		if (NULL == segment) {
 			out << false;
@@ -147,20 +150,20 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 
 		out << true;
 
-                out << segment->mValue;
-                out << segment->mColorInt.red;
-                out << segment->mColorInt.green;
-                out << segment->mColorInt.blue;
-                out << segment->mImmutable;
-                out << segment->mSize;
+		out << segment->mValue;
+		out << segment->mColorInt.red;
+		out << segment->mColorInt.green;
+		out << segment->mColorInt.blue;
+		out << segment->mImmutable;
+		out << segment->mSize;
 		out << segment->mBounds;
-        }
+	}
 
 	if(OmProjectData::getFileVersion() >= 15){
 		out << Omni_Postfix;
 	}
 
 	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
-									   ba.size(),
-									   ba.data() );
+																	   ba.size(),
+																	   ba.data());
 }
