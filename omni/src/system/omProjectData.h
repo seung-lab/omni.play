@@ -41,7 +41,7 @@ public:
 
 private:
 	OmProjectData();
-	~OmProjectData();
+	~OmProjectData(){}
 
 	//singleton
 	static OmProjectData* mspInstance;

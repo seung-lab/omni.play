@@ -41,6 +41,9 @@ void OmMST::read(OmSegmentation & seg)
   OmDataPath path(getDendPath(seg));
 
   if(!OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
+	std::cout << "did not find MST at path \""
+			  << path.getString().c_str()
+			  << "\"\n";
     return;
   }
 
