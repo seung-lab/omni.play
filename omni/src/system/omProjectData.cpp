@@ -19,7 +19,9 @@ OmProjectData *OmProjectData::mspInstance = NULL;
 ///////          OmProjectData
 
 OmProjectData::OmProjectData()
-	: mIsReadOnly(false)
+	: fileVersion_(0)
+	, mIsOpen(false)
+	, mIsReadOnly(false)
 {
 }
 
@@ -29,7 +31,7 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 		delete mspInstance;
 		mspInstance = new OmProjectData();
 	}
-	
+
 	Instance()->setupDataLayer( fileNameAndPath );
 }
 
