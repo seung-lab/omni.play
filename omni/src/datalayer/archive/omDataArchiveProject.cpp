@@ -75,6 +75,8 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 	out.setByteOrder( QDataStream::LittleEndian );
 	out.setVersion(QDataStream::Qt_4_6);
 
+	OmProjectData::setFileVersion(Omni_Version);
+
 	out << Omni_Version;
 	out << (*project);
 	out << Omni_Postfix;

@@ -21,6 +21,9 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path,
 	int size;
 	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
 
+	printf("segment load: file version is %d\n",
+		   OmProjectData::getFileVersion());
+
 	if(OmProjectData::getFileVersion() < 15){ // segments weren't versioned
 		const bool dataReadCorrect =
 			readSegmentsOld(page, cache, dw, size, false);
