@@ -11,7 +11,7 @@ void OmHdf5Utils::group_create(const int fileId,
         hid_t group_id = H5Gcreate2(fileId, path, 0, H5P_DEFAULT, H5P_DEFAULT);
         if (group_id < 0) {
                 throw OmIoException("Could not create HDF5 group \""
-				    + string(path) + "\"");
+				    + std::string(path) + "\"");
 	}
 
         herr_t status = H5Gclose(group_id);
@@ -24,7 +24,7 @@ void OmHdf5Utils::group_delete(const int fileId, const char* path)
 {
 	herr_t err = H5Gunlink(fileId, path);
 	if (err < 0) {
-		throw OmIoException("Could not unlink HDF5 group " + string(path));
+		throw OmIoException("Could not unlink HDF5 group " + std::string(path));
 	}
 }
 
@@ -58,7 +58,7 @@ bool OmHdf5Utils::dataset_exists(const int fileId, const char* path)
          herr_t ret = H5Dclose(dataset_id);
          if (ret < 0) {
                  throw OmIoException("Could not close HDF5 dataset "
-				     + string(path));
+				     + std::string(path));
          }
 
          return true;
@@ -70,7 +70,7 @@ void OmHdf5Utils::dataset_delete(const int fileId, const char* path)
         herr_t err = H5Gunlink(fileId, path);
         if (err < 0) {
                 throw OmIoException("Could not unlink HDF5 dataset "
-				    + string(path));
+				    + std::string(path));
 	}
 }
 

@@ -105,9 +105,9 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		const string errMsg =
+		const std::string errMsg =
 			"Could not open HDF5 dataset (even though it existed)"
-			+ string(getPath());
+			+ std::string(getPath());
 		throw OmIoException(errMsg);
 	}
 
@@ -139,8 +139,8 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	//Reads raw data from a dataset into a buffer.
 	status = H5Dread(dataset_id, dstype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataset_data);
 	if (status < 0) {
-		const string errMsg =
-			"Could not open HDF5 dataset " + string(getPath());
+		const std::string errMsg =
+			"Could not open HDF5 dataset " + std::string(getPath());
 		throw OmIoException(errMsg);
 	}
 
@@ -185,7 +185,7 @@ void OmHdf5LowLevel::allocateDataset(int size, OmDataWrapperPtr data)
                                      dataspace_id,
                                      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not create HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not create HDF5 dataset " + std::string(getPath()));
 	}
 
 	//if given data, then write it into new dataset
@@ -236,13 +236,13 @@ void OmHdf5LowLevel::dataset_delete_create_tree()
 	debug("hdf5verbose", "OmHDF5LowLevel: in %s...\n", __FUNCTION__);
 
         //get position of last slash
-        string name_str(getPath());
-        size_t pos_last_slash = name_str.find_last_of(string("/"));
+        std::string name_str(getPath());
+        size_t pos_last_slash = name_str.find_last_of(std::string("/"));
 
         //if there was a slash
-        if ((string::npos != pos_last_slash) && (pos_last_slash > 0)) {
+        if ((std::string::npos != pos_last_slash) && (pos_last_slash > 0)) {
                 //split into group path and name
-                string group_path(name_str, 0, pos_last_slash);
+                std::string group_path(name_str, 0, pos_last_slash);
 
                 group_create_tree(group_path.c_str());
         }
@@ -259,7 +259,7 @@ Vector3i  OmHdf5LowLevel::getChunkedDatasetDims()
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not open HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not open HDF5 dataset " + std::string(getPath()));
 	}
 
 	//Returns an identifier for a copy of the dataspace for a dataset.
@@ -350,7 +350,7 @@ void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
 	hid_t type_id = OmVolumeTypeHelpers::getHDF5FileType(type);
 	hid_t dataset_id = H5Dcreate2(fileId, getPath(), type_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not create HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not create HDF5 dataset " + std::string(getPath()));
 	}
 
 	//Terminates access to a property list.
@@ -380,7 +380,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkVTK(DataBbox extent)
 	//hid_t H5Dopen(hid_t loc_id, const char *name  )
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not open HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not open HDF5 dataset " + std::string(getPath()));
 	}
 
 	hid_t dstype = H5Dget_type(dataset_id);
@@ -431,7 +431,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunkVTK(DataBbox extent)
 	ret = H5Dread(dataset_id, imageData->getHdf5MemoryType(), mem_dataspace_id, dataspace_id,
 		      H5P_DEFAULT, imageData->getVTKptr()->GetScalarPointer());
 	if (ret < 0) {
-		throw OmIoException("Could not read HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not read HDF5 dataset " + std::string(getPath()));
 	}
 
 	H5Tclose( dstype );
@@ -465,7 +465,7 @@ void OmHdf5LowLevel::writeChunk(const DataBbox& extent, OmDataWrapperPtr data)
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not open HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not open HDF5 dataset " + std::string(getPath()));
 	}
 
 	//Returns an identifier for a copy of the dataspace for a dataset.
@@ -509,7 +509,7 @@ void OmHdf5LowLevel::writeChunk(const DataBbox& extent, OmDataWrapperPtr data)
 		       mem_dataspace_id, dataspace_id, H5P_DEFAULT,
 		       data->getVoidPtr());
 	if (ret < 0) {
-		throw OmIoException("Could not read HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not read HDF5 dataset " + std::string(getPath()));
 	}
 
 	//Releases and terminates access to a dataspace.
@@ -537,7 +537,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent)
 	//hid_t H5Dopen(hid_t loc_id, const char *name  )
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0)
-		throw OmIoException("Could not open HDF5 dataset " + string(getPath()) );
+		throw OmIoException("Could not open HDF5 dataset " + std::string(getPath()) );
 
 	hid_t dstype = H5Dget_type(dataset_id);
 	//printTypeInfo( dstype );
@@ -595,7 +595,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent)
 		      imageData);
 	if (ret < 0) {
 		throw OmIoException("Could not read HDF5 dataset \""
-				    + string(getPath()) + "\"");
+				    + std::string(getPath()) + "\"");
 	}
 
 	//Releases and terminates access to a dataspace.
@@ -628,7 +628,7 @@ Vector3i OmHdf5LowLevel::getDatasetDims()
 	//Opens an existing dataset.
 	hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
 	if (dataset_id < 0) {
-		throw OmIoException("Could not open HDF5 dataset " + string(getPath()));
+		throw OmIoException("Could not open HDF5 dataset " + std::string(getPath()));
 	}
 
 	//Returns an identifier for a copy of the dataspace for a dataset.

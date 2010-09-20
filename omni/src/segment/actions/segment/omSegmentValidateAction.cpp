@@ -46,7 +46,7 @@ void OmSegmentValidateAction::UndoAction()
 	OmCacheManager::Freshen(true);
 }
 
-string OmSegmentValidateAction::Description()
+std::string OmSegmentValidateAction::Description()
 {
 	QString lineItem;
 	if(mCreate) {
@@ -64,7 +64,7 @@ string OmSegmentValidateAction::Description()
 	return lineItem.toStdString();
 }
 
-void OmSegmentValidateAction::save(const string & comment)
+void OmSegmentValidateAction::save(const std::string& comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

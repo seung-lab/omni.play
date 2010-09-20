@@ -35,7 +35,7 @@ void OmSegmentJoinAction::UndoAction()
 	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
 }
 
-string OmSegmentJoinAction::Description()
+std::string OmSegmentJoinAction::Description()
 {
 	QString lineItem = QString("Joined: ");
 	foreach( const OmId segId, mSelectedSegmentIds){
@@ -45,7 +45,7 @@ string OmSegmentJoinAction::Description()
 	return lineItem.toStdString();
 }
 
-void OmSegmentJoinAction::save(const string & comment)
+void OmSegmentJoinAction::save(const std::string& comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

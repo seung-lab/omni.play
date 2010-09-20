@@ -17,8 +17,8 @@ public:
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
 	OmId mSegmentationId;

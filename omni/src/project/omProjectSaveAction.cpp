@@ -22,13 +22,13 @@ void OmProjectSaveAction::UndoAction()
 {
 }
 
-string OmProjectSaveAction::Description()
+std::string OmProjectSaveAction::Description()
 {
 	QString lineItem = QString("Saved");
 	return lineItem.toStdString();
 }
 
-void OmProjectSaveAction::save(const string & comment)
+void OmProjectSaveAction::save(const std::string& comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

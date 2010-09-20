@@ -519,7 +519,7 @@ void OmView2d::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc, OmSegID bc, int
 }
 
 void myBreak(){}
-void checkDC (string /*s*/, DataCoord /*dc*/)
+void checkDC (std::string /*s*/, DataCoord /*dc*/)
 {
 #if 0
 	if(dc.x == dc.y) {

@@ -9,7 +9,7 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omSegmentation.h"
 
-string OmDataPaths::getDefaultHDF5channelDatasetName()
+std::string OmDataPaths::getDefaultHDF5channelDatasetName()
 {
 	return "chanSingle";
 }
@@ -35,8 +35,8 @@ OmDataPath OmDataPaths::getSegmentPagePath(const OmId segmentationID,
 	return OmDataPath(p);
 }
 
-string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
-										 OmMipMeshManager* const mipMeshManager)
+std::string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
+											  OmMipMeshManager* const mipMeshManager)
 {
 	const std::string p = str( boost::format("%1%/%2%_%3%_%4%/mesh/%5%/")
 							   % meshCoord.MipChunkCoord.Level
@@ -48,13 +48,13 @@ string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
 	return mipMeshManager->GetDirectoryPath().toStdString() + p;
 }
 
-string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
+std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
 {
 	return str( boost::format("mesh.%1%.dat")
 				%meshCoord.DataValue);
 }
 
-string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
+std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
 											 const OmId segmentationID)
 {
 	const QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")

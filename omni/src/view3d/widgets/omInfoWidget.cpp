@@ -33,7 +33,7 @@ void OmInfoWidget::Draw()
 
 void OmInfoWidget::RenderCameraText(int x, int y)
 {
-	string str;
+	std::string str;
 
 	SpaceCoord focus = mView3d->GetCamera().GetFocus();
 	float distance = mView3d->GetCamera().GetDistance();

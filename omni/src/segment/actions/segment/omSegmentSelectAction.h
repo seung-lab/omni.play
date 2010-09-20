@@ -16,15 +16,15 @@ public:
 			      const OmSegIDsSet & mOldSelectedIdSet,
 			      const OmId segmentJustSelected,
 			      void* sender,
-			      const string & comment,
+			      const std::string & comment,
 			      const bool doScroll,
 			      const bool addToRecentList);
 
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentSelectAction";}
 
 	OmId mSegmentationId;
@@ -32,7 +32,7 @@ private:
 	OmSegIDsSet mOldSelectedIdSet;
 	OmId mSegmentJustSelectedID;
 	void * mSender;
-	const string mComment;
+	const std::string mComment;
 	const bool mDoScroll;
 	const bool mAddToRecentList;
 

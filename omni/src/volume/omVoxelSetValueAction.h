@@ -16,21 +16,22 @@ public:
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-        void save(const string &);
-        QString classNameForLogFile(){return "OmVolxelSetvalueAction";}
+	std::string Description();
+	void save(const std::string&);
+	QString classNameForLogFile(){return "OmVolxelSetvalueAction";}
 
 	//segmentation of voxels
 	OmId mSegmentationId;
 
 	//map of voxels to old values
 	map< DataCoord, OmSegID > mOldVoxelValues;
+
 	//new value of voxels
 	OmSegID mNewValue;
 
 	template <typename T> friend class OmActionLoggerFSThread;
-        friend class QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a );
-        friend class QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a );
+	friend class QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a );
+	friend class QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a );
 };
 
 #endif

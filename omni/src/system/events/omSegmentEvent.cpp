@@ -22,9 +22,9 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId)
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 			       OmId segmentationId,
-			       const OmId segmentJustSelectedID, 
-			       void* sender, 
-			       string comment,
+			       const OmId segmentJustSelectedID,
+			       void* sender,
+			       std::string comment,
 			       const bool doScroll )
 	: OmEvent(type, CLASS)
 	, mSegmentationId( segmentationId )
@@ -50,7 +50,7 @@ void* OmSegmentEvent::getSender()
 	return mSender;
 }
 
-string OmSegmentEvent::getComment()
+std::string OmSegmentEvent::getComment()
 {
 	return mComment;
 }

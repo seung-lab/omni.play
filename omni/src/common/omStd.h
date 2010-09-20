@@ -29,7 +29,6 @@ using std::map;
 using std::set;
 
 #include <string>
-using std::string;
 
 #include <vector>
 using std::vector;

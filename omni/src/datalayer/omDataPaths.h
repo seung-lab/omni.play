@@ -10,7 +10,7 @@ class OmSegmentation;
 
 class OmDataPaths {
 public:
-	static string getDefaultHDF5channelDatasetName();
+	static std::string getDefaultHDF5channelDatasetName();
 
 	static OmDataPath getDefaultDatasetName();
 	static OmDataPath getProjectArchiveNameQT();
@@ -18,12 +18,12 @@ public:
 	static OmDataPath getSegmentPagePath( const OmId segmentationID,
 										  const quint32 pageNum );
 
-	static string getMeshDirectoryPath( const OmMipMeshCoord&,
-										OmMipMeshManager *const );
+	static std::string getMeshDirectoryPath( const OmMipMeshCoord&,
+											 OmMipMeshManager *const );
 
-	static string getMeshFileName(const OmMipMeshCoord& meshCoord);
-	static string getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
-										   const OmId segmentationID);
+	static std::string getMeshFileName(const OmMipMeshCoord& meshCoord);
+	static std::string getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
+												const OmId segmentationID);
 
 	static std::string getDirectoryPath(OmChannel* chan);
 	static std::string getDirectoryPath(OmSegmentation* seg);

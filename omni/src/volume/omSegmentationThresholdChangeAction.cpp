@@ -36,13 +36,13 @@ void OmSegmentationThresholdChangeAction::UndoAction()
 	seg.SetDendThreshold(mOldThreshold);
 }
 
-string OmSegmentationThresholdChangeAction::Description()
+std::string OmSegmentationThresholdChangeAction::Description()
 {
 	QString lineItem = QString("Threshold: %1").arg(mThreshold);
 	return lineItem.toStdString();
 }
 
-void OmSegmentationThresholdChangeAction::save(const string & comment)
+void OmSegmentationThresholdChangeAction::save(const std::string & comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

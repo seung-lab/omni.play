@@ -81,7 +81,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	return shouldSuggestThisTabBeMadeActive;
 }
 
-string OmSegmentListWidget::eventSenderName()
+std::string OmSegmentListWidget::eventSenderName()
 {
 	return "segmentList";
 }

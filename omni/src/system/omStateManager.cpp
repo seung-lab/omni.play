@@ -81,32 +81,32 @@ void OmStateManager::Delete()
 ///////          Project
 
 //project
-const string & OmStateManager::GetProjectFileName()
+const std::string & OmStateManager::GetProjectFileName()
 {
 	return Instance()->mProjectFileName;
 }
 
-void OmStateManager::SetProjectFileName(const string & name)
+void OmStateManager::SetProjectFileName(const std::string & name)
 {
 	Instance()->mProjectFileName = name;
 }
 
-const string & OmStateManager::GetProjectDirectoryPath()
+const std::string & OmStateManager::GetProjectDirectoryPath()
 {
 	return Instance()->mProjectDirectoryPath;
 }
 
-void OmStateManager::SetProjectDirectoryPath(const string & dpath)
+void OmStateManager::SetProjectDirectoryPath(const std::string & dpath)
 {
 	Instance()->mProjectDirectoryPath = dpath;
 }
 
-void OmStateManager::setOmniExecutableAbsolutePath( QString abs_path ) 
+void OmStateManager::setOmniExecutableAbsolutePath( QString abs_path )
 {
 	Instance()->omniExecPathAbsolute = abs_path;
 }
 
-QString OmStateManager::getOmniExecutableAbsolutePath() 
+QString OmStateManager::getOmniExecutableAbsolutePath()
 {
 	return Instance()->omniExecPathAbsolute;
 }
@@ -231,7 +231,7 @@ const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
 }
 
 /*
- *	Returns a pointer to a QGLContext that is shared with the primary QGLContext.  
+ *	Returns a pointer to a QGLContext that is shared with the primary QGLContext.
  */
 QGLContext *OmStateManager::GetSharedView3dContext()
 {
@@ -293,7 +293,7 @@ QSize OmStateManager::getViewBoxSizeHint()
 	}
 	int w = mw->width();
 	int h = mw->height();
-	
+
 	if( Instance()->inspectorWidget != NULL ){
 		w -= Instance()->inspectorWidget->width();
 	}
@@ -343,5 +343,5 @@ vector<Drawable*> OmStateManager::GetViewDrawable(ViewType viewType)
 		return Instance()->mDrawableYZ;
 	default:
 		assert(false);
-	}	
+	}
 }

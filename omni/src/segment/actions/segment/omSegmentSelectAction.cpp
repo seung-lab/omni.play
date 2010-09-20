@@ -15,7 +15,7 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
 					     const OmSegIDsSet & oldSelectedIdSet,
 					     const OmId segmentJustSelected,
 					     void * sender,
-					     const string & comment,
+					     const std::string& comment,
 					     const bool doScroll,
 					     const bool addToRecentList)
 	: mSegmentationId(segmentationId)
@@ -60,7 +60,7 @@ void OmSegmentSelectAction::UndoAction()
 						     mDoScroll));
 }
 
-string OmSegmentSelectAction::Description()
+std::string OmSegmentSelectAction::Description()
 {
         QString lineItem = QString("Selected: ");
         foreach(const OmSegID segId, mNewSelectedIdSet){
@@ -70,7 +70,7 @@ string OmSegmentSelectAction::Description()
         return lineItem.toStdString();
 }
 
-void OmSegmentSelectAction::save(const string & comment)
+void OmSegmentSelectAction::save(const std::string& comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

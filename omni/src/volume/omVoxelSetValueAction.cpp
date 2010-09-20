@@ -90,20 +90,20 @@ void OmVoxelSetValueAction::UndoAction()
 	//OmEventManager::PostEvent(new OmVoxelEvent(OmVoxelEvent::VOXEL_MODIFICATION, mSegmentationId, edited_voxels));
 }
 
-string OmVoxelSetValueAction::Description()
+std::string OmVoxelSetValueAction::Description()
 {
-	string plurlize;
+	std::string plurlize;
 	if (mOldVoxelValues.size() > 1)
 		plurlize = "s";
 
 	if (NULL_SEGMENT_VALUE == mNewValue) {
-		return string("Remove Voxel") + plurlize;
+		return std::string("Remove Voxel") + plurlize;
 	} else {
-		return string("Set Voxel") + plurlize;
+		return std::string("Set Voxel") + plurlize;
 	}
 }
 
-void OmVoxelSetValueAction::save(const string & comment)
+void OmVoxelSetValueAction::save(const std::string & comment)
 {
 	OmActionLoggerFS::save(this, comment);
 }

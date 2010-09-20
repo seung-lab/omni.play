@@ -20,8 +20,8 @@ private:
 
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string & comment);
+	std::string Description();
+	void save(const std::string& comment);
 	QString classNameForLogFile(){return "OmSegmentSplitAction";}
 
 	OmSegmentEdge mEdge;

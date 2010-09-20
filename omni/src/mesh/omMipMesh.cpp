@@ -193,12 +193,12 @@ void OmMipMesh::Save()
   }
 }
 
-string OmMipMesh::GetFileName()
+std::string OmMipMesh::GetFileName()
 {
   return OmDataPaths::getMeshFileName( mMeshCoordinate );
 }
 
-string OmMipMesh::GetDirectoryPath()
+std::string OmMipMesh::GetDirectoryPath()
 {
   return OmDataPaths::getMeshDirectoryPath(mMeshCoordinate,
 					   mpMipMeshManager);

@@ -31,9 +31,9 @@ public:
 	void Save();
 	void Flush();
 
-	string GetFileName();
-	string GetDirectoryPath();
-	string GetLocalPathForHd5fChunk();
+	std::string GetFileName();
+	std::string GetDirectoryPath();
+	std::string GetLocalPathForHd5fChunk();
 
 	bool IsVbo();
 	void CreateVbo();
@@ -42,19 +42,19 @@ public:
 	bool IsEmptyMesh();
 
 	bool Draw(bool doCreateVbo);
-        void setSegmentationID(OmId sid);
-        OmId getSegmentationID();
+	void setSegmentationID(OmId sid);
+	OmId getSegmentationID();
 
 	bool hasData(){ return mHasData; }
 
 private:
 	OmId mSegmentationID;
-	OmHdf5 * mHdf5File;
-	OmMipMeshManager * const mpMipMeshManager;
+	OmHdf5* mHdf5File;
+	OmMipMeshManager *const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
 	bool mHasData;
-	string mPath;
+	std::string mPath;
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;
@@ -82,12 +82,12 @@ private:
 
 	GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
  	GLuint displayList;
-        bool hasDisplayList;
+	bool hasDisplayList;
 
 	void doLoad();
 
 	friend class OmMesher;
-        friend class ziMeshingChunk;
+	friend class ziMeshingChunk;
 };
 
 #endif

@@ -144,8 +144,8 @@ protected:
 	set<OmMipChunkCoord> mChildrenCoordinates;
 
 	//chunk properties
-	string mFileName;
-	string mDirectoryPath;
+	std::string mFileName;
+	std::string mDirectoryPath;
 
 	//voxel management
 	OmSegIDsSet mModifiedVoxelValues;

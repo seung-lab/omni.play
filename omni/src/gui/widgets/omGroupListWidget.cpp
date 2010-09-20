@@ -23,7 +23,7 @@ OmGroupListWidget::OmGroupListWidget(GroupsTable * gt)
 	setFocusPolicy(Qt::StrongFocus);
 }
 
-string OmGroupListWidget::eventSenderName()
+std::string OmGroupListWidget::eventSenderName()
 {
 	return "groupList";
 }
@@ -52,8 +52,8 @@ void OmGroupListWidget::mousePressEvent(QMouseEvent* event)
 
 void OmGroupListWidget::keyPressEvent(QKeyEvent* event)
 {
-	QTreeWidget::keyPressEvent(event);	
-	
+	QTreeWidget::keyPressEvent(event);
+
 	switch (event->key()) {
 	case Qt::Key_Up:
 	case Qt::Key_Down:

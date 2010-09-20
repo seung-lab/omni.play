@@ -48,7 +48,8 @@ void OmActionLoggerFS::setupLogDir()
 		printf("made folder %s\n", qPrintable(omniFolderPath) );
 		mLogFolder = dir;
 	} else {
-		const string errMsg = "could not make folder "+omniFolderPath.toStdString() + "\n";
+		const std::string errMsg =
+			"could not make folder "+omniFolderPath.toStdString() + "\n";
 		throw OmIoException(errMsg);
 	}
 }
