@@ -25,17 +25,7 @@ typedef	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
 		       OmMemMappedVolume<uint8_t, OmSegmentation>,
 		       OmMemMappedVolume<int32_t, OmSegmentation>,
 		       OmMemMappedVolume<uint32_t, OmSegmentation>,
-		       OmMemMappedVolume<float, OmSegmentation>,
-		       OmHDF5Volume<int8_t, OmChannel>,
-		       OmHDF5Volume<uint8_t, OmChannel>,
-		       OmHDF5Volume<int32_t, OmChannel>,
-		       OmHDF5Volume<uint32_t, OmChannel>,
-		       OmHDF5Volume<float, OmChannel>,
-		       OmHDF5Volume<int8_t, OmSegmentation>,
-		       OmHDF5Volume<uint8_t, OmSegmentation>,
-		       OmHDF5Volume<int32_t, OmSegmentation>,
-		       OmHDF5Volume<uint32_t, OmSegmentation>,
-		       OmHDF5Volume<float, OmSegmentation> >
+		       OmMemMappedVolume<float, OmSegmentation> >
 OmVolDataSrcs;
 
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>

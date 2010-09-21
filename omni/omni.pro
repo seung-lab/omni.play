@@ -65,7 +65,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/fs/omActionLoggerFSthread.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \
-           src/datalayer/omHDF5Volume.hpp \
            src/datalayer/hdf5/omHdf5.h \
            src/datalayer/hdf5/omHdf5FileUtils.hpp \
            src/datalayer/hdf5/omHdf5Utils.hpp \
@@ -300,7 +299,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
            src/datalayer/fs/omActionLoggerFSthread.cpp \
            src/datalayer/fs/omMemMappedVolume.cpp \
-           src/datalayer/omHDF5Volume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5FileUtils.cpp \
            src/datalayer/hdf5/omHdf5Utils.cpp \

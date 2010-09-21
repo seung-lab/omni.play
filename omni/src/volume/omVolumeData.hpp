@@ -2,7 +2,6 @@
 #define OM_VOLUME_DATA_HPP
 
 #include "datalayer/fs/omMemMappedVolume.hpp"
-#include "datalayer/omHDF5Volume.hpp"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 
