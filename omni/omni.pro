@@ -50,7 +50,7 @@ HEADERS += lib/strnatcmp.h \
            src/common/omGl.h \
            src/common/omStd.h \
            src/common/omVtk.h \
-           src/datalayer/fs/omMemMappedFile.hpp \
+           src/datalayer/fs/omMemMappedFileQT.hpp \
            src/datalayer/omDataVolumeBase.hpp \
            src/datalayer/omMST.h \
            src/datalayer/archive/omDataArchiveBoost.h \

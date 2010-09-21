@@ -7,9 +7,8 @@
 #include <QProcess>
 #include <time.h>
 
-#include "view2d/omTileDumper.hpp"
-#include "volume/omMipChunk.h"
 #include "common/omDebug.h"
+#include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
 #include "gui/headless.h"
@@ -24,15 +23,16 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "utility/stringHelpers.h"
 #include "utility/dataWrappers.h"
+#include "utility/stringHelpers.h"
+#include "view2d/omTileDumper.hpp"
 #include "volume/omFilter2d.h"
+#include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
 #include "zi/watershed/RawQuickieWS.h"
-#include "datalayer/fs/omMemMappedFile.hpp"
 
 int argc_global;
 char **argv_global;
@@ -719,10 +719,10 @@ void Headless::watershed(const QString &  line)
 	const size_t numBytesOut = numVoxels*sizeof(int);
 
 	const std::string in_fnp = args[0].toStdString();
-	MemMappedFileRead<float> in(in_fnp, numBytesIn);
+	OmMemMappedFileReadQT<float> in(in_fnp, numBytesIn);
 
 	const std::string out_fnp = in_fnp + ".out";
-	MemMappedFileWrite<int> out(out_fnp, numBytesOut);
+	OmMemMappedFileWriteQT<int> out(out_fnp, numBytesOut);
 
 	const float loThreshold = StringHelpers::getFloat(args[4]);
 	const float hiThreshold = StringHelpers::getFloat(args[5]);
@@ -743,7 +743,7 @@ void Headless::watershed(const QString &  line)
 	const qint64 numBytesMST = numEdges*sizeof(OmMSTedge);
 
 	const std::string mst_fnp = out_fnp + ".mst";
-	MemMappedFileWrite<OmMSTedge> mst(mst_fnp, numBytesMST);
+	OmMemMappedFileWriteQT<OmMSTedge> mst(mst_fnp, numBytesMST);
 
 	rqws.SaveToMemMap(mst.GetPtr());
 }

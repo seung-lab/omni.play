@@ -27,7 +27,7 @@ void OmMemMappedVolume<T,VOL>::load()
 {
 	zi::Guard g(mutex_);
 
-        mFileVec.resize(vol_->GetRootMipLevel()+1);
+	mFileVec.resize(vol_->GetRootMipLevel()+1);
 	mFileMapPtr.resize(vol_->GetRootMipLevel()+1);
 
 	for(size_t level = 0; level < mFileVec.size(); ++level) {
@@ -142,11 +142,11 @@ void OmMemMappedVolume<T,VOL>::openAndmMemMap(const int level)
 template <typename T, typename VOL>
 void OmMemMappedVolume<T,VOL>::allocateSpace(QFile * file)
 {
-	  printf("\tpre-allocating...\n");
-	  for( qint64 i=0; i < file->size(); i+=(qint64)4096){
-		  file->seek(i);
-		  file->putChar(0);
-	  }
-	  printf("\tflushing...\n");
-	  file->flush();
+	printf("\tpre-allocating...\n");
+	for( qint64 i=0; i < file->size(); i+=(qint64)4096){
+		file->seek(i);
+		file->putChar(0);
+	}
+	printf("\tflushing...\n");
+	file->flush();
 }

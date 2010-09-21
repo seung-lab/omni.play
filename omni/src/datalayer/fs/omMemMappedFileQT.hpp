@@ -6,10 +6,18 @@
 #include <boost/make_shared.hpp>
 
 template <typename T>
-class MemMappedFileRead {
+class OmIMemMappedFile {
 public:
-	MemMappedFileRead(const std::string& fnp,
-			  const qint64 numBytes)
+	virtual ~OmIMemMappedFile(){}
+
+	virtual T* GetPtr() const = 0;
+};
+
+template <typename T>
+class OmMemMappedFileReadQT : public OmIMemMappedFile<T> {
+public:
+	OmMemMappedFileReadQT(const std::string& fnp,
+						  const qint64 numBytes)
 		: fnp_(fnp), numBytes_(numBytes)
 	{
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
@@ -43,12 +51,11 @@ private:
 	T* map_;
 };
 
-
 template <typename T>
-class MemMappedFileWrite {
+class OmMemMappedFileWriteQT : public OmIMemMappedFile<T> {
 public:
-	MemMappedFileWrite(const std::string& fnp,
-			   const qint64 numBytes)
+	OmMemMappedFileWriteQT(const std::string& fnp,
+						   const qint64 numBytes)
 		: fnp_(fnp), numBytes_(numBytes)
 	{
 		QFile::remove(QString::fromStdString(fnp_));

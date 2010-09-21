@@ -59,7 +59,7 @@ private:
 			throw OmIoException("unknown data type--probably old file?");
 		}
 
-		assert(0 && "type not know");
+		throw OmArgException("type not know");
 	}
 };
 

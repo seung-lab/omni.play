@@ -1,5 +1,3 @@
-#include "datalayer/upgraders/omUpgraders.hpp"
-#include "datalayer/omMST.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
@@ -7,17 +5,19 @@
 #include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omMST.h"
+#include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
+#include "system/omGroup.h"
+#include "system/omGroups.h"
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeData.hpp"
-#include "system/omGroups.h"
-#include "system/omGroup.h"
 
 #include <QDataStream>
 
