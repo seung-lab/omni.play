@@ -44,10 +44,10 @@ void OmMemMappedVolume<T,VOL>::Create(const std::map<int, Vector3i> & levelsAndD
 		const int level = it->first;
 		const Vector3i dims = it->second;
 		const qint64 size =
-			(qint64)dims.x
-			*(qint64)dims.y
-			*(qint64)dims.z
-			*(qint64)GetBytesPerSample();
+			(qint64)dims.x *
+			(qint64)dims.y *
+			(qint64)dims.z *
+			(qint64)GetBytesPerSample();
 
 		assert(size);
 
@@ -77,11 +77,13 @@ T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 	const qint64 yDepth  = 128;
 	const qint64 zHeight = 128;
 
-	const qint64 slabSize = (qint64)dims.x * (qint64)dims.y * (qint64)zHeight * (qint64)GetBytesPerSample();
-	const qint64 rowSize =  (qint64)dims.x * (qint64)yDepth  * (qint64)zHeight * (qint64)GetBytesPerSample();
-	const qint64 cSize =    (qint64)xWidth  * (qint64)yDepth  * (qint64)zHeight * (qint64)GetBytesPerSample();
+	const qint64 bps = (qint64)GetBytesPerSample();
 
-	const qint64 offset = slabSize*z + rowSize*y + cSize*x;
+	const qint64 slabSize  = (qint64)dims.x * (qint64)dims.y * (qint64)zHeight * bps;
+	const qint64 rowSize   = (qint64)dims.x * (qint64)yDepth * (qint64)zHeight * bps;
+	const qint64 chunkSize = (qint64)xWidth * (qint64)yDepth * (qint64)zHeight * bps;
+
+	const qint64 offset = slabSize*z + rowSize*y + chunkSize*x;
 
 	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset,
 	      DEBUGV3(dims), DEBUGV3(coord.Coordinate));
@@ -94,15 +96,15 @@ T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 template <typename T, typename VOL>
 std::string OmMemMappedVolume<T,VOL>::getFileName(const int level) const
 {
-	const QString volName = QString::fromStdString(vol_->GetName());
-	const QString volType =
-		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType()));
+	const std::string volName = vol_->GetName();
+	const std::string volType =
+		OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType());
 
 	const QString fn=QString("%1--%2--mip%3--%4.raw")
 		.arg(OmProject::GetFileName().replace(".omni",""))
-		.arg(volName)
+		.arg(QString::fromStdString(volName))
 		.arg(level)
-		.arg(volType);
+		.arg(QString::fromStdString(volType));
 
 	const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
 
