@@ -64,6 +64,7 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 
 	if( fileVersion_ < 14 ){
 		OmUpgraders::to14();
+		ArchiveWrite(path, project);
 	}
 }
 

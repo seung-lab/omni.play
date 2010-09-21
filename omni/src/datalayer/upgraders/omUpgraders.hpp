@@ -6,7 +6,8 @@
 class OmUpgraders{
 public:
 	static void to14(){
-
+		OmUpgradeTo14 u;
+		u.copyDataOutFromHDF5();
 	}
 
 };

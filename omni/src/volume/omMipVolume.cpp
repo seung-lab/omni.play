@@ -1118,6 +1118,9 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 {
 	Flush();
 
+	const uint32_t numChunks = computeTotalNumChunks();
+	uint32_t counter = 0;
+
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 
 		Vector3i mip_coord_dims =
@@ -1131,9 +1134,32 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 
 					OmMipChunkPtr chunk;
 					GetChunk(chunk, coord);
+
+					++counter;
+					printf("\rcopying chunk %d of %d...", counter, numChunks);
 					chunk->copyDataFromHDF5toMemMap();
 				}
 			}
 		}
 	}
+
+	fflush(stdout);
+}
+
+uint32_t OmMipVolume::computeTotalNumChunks()
+{
+	uint32_t numChunks = 0;
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+
+		Vector3i mip_coord_dims =
+			MipLevelDimensionsInMipChunks(level);
+
+		numChunks +=
+			mip_coord_dims.x *
+			mip_coord_dims.y *
+			mip_coord_dims.z;
+	}
+
+	return numChunks;
 }

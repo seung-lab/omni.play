@@ -171,6 +171,7 @@ private:
 
 	void doExportChunk(const OmMipChunkCoord &, OmIDataWriter*);
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
+	uint32_t computeTotalNumChunks();
 
 	friend class OmMipChunk;
 	friend class OmDataArchiveProject;

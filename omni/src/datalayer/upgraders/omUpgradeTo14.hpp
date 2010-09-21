@@ -10,7 +10,13 @@
 
 class OmUpgradeTo14{
 public:
-	void doUpdate()
+	void copyDataOutFromHDF5(){
+		doConvert();
+	}
+
+private:
+
+	void doConvert()
 	{
 		FOR_EACH(iter, OmProject::GetValidChannelIds()){
 			OmChannel& channel = OmProject::GetChannel(*iter);
@@ -23,8 +29,6 @@ public:
 		}
 	}
 
-private:
-
 	template <typename T>
 	void convertVolume(T& vol)
 	{
@@ -33,15 +37,8 @@ private:
 	}
 
 	template <typename T>
-	void allocate(T& vol){
-
-		const OmVolDataType type = vol.mVolDataType;
-		if(OmVolDataType::UNKNOWN == type.index()){
-			// figure it out
-			assert(0);
-		}
-		vol.mVolDataType = type;
-
+	void allocate(T& vol)
+	{
 		std::map<int, Vector3i> levelsAndDims;
 
 		for (int level = 0; level <= vol.GetRootMipLevel(); level++) {
@@ -53,9 +50,9 @@ private:
 	}
 
 	template <typename T>
-	void copyData(T& )
+	void copyData(T& vol)
 	{
-
+		vol.copyAllMipDataIntoMemMap();
 	}
 
 };
