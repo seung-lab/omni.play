@@ -3,7 +3,7 @@
 class LoadMemMapFilesVisitor : public boost::static_visitor<> {
 public:
 	template <typename T> void operator()( T & d ) const {
-		d.load();
+		d.Load();
 	}
 };
 void OmVolumeData::loadMemMapFiles()
@@ -16,7 +16,7 @@ public:
 	AllocMemMapFilesVisitor(const std::map<int, Vector3i> & levDims)
 		: levelsAndDims(levDims) {}
 	template <typename T> void operator()( T & d ) const {
-		d.create(levelsAndDims);
+		d.Create(levelsAndDims);
 	}
 private:
 	const std::map<int, Vector3i> levelsAndDims;
@@ -44,7 +44,7 @@ public:
 
 	template <typename T>
 	OmRawDataPtrs operator()(T & d ) const {
-		return d.getChunkPtr(coord);
+		return d.GetChunkPtr(coord);
 	}
 private:
 	OmMipChunkCoord coord;

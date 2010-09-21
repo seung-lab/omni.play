@@ -23,7 +23,7 @@ OmMemMappedVolume<T,VOL>::~OmMemMappedVolume()
 }
 
 template <typename T, typename VOL>
-void OmMemMappedVolume<T,VOL>::load()
+void OmMemMappedVolume<T,VOL>::Load()
 {
 	zi::Guard g(mutex_);
 
@@ -36,7 +36,7 @@ void OmMemMappedVolume<T,VOL>::load()
 }
 
 template <typename T, typename VOL>
-void OmMemMappedVolume<T,VOL>::create(const std::map<int, Vector3i> & levelsAndDims)
+void OmMemMappedVolume<T,VOL>::Create(const std::map<int, Vector3i> & levelsAndDims)
 {
 	zi::Guard g(mutex_);
 
@@ -46,7 +46,8 @@ void OmMemMappedVolume<T,VOL>::create(const std::map<int, Vector3i> & levelsAndD
 	FOR_EACH(it, levelsAndDims){
 		const int level = it->first;
 		const Vector3i rdims = it->second;
-		const qint64 size = (qint64)rdims.x
+		const qint64 size =
+			(qint64)rdims.x
 			*(qint64)rdims.y
 			*(qint64)rdims.z
 			*(qint64)GetBytesPerSample();
@@ -68,7 +69,7 @@ void OmMemMappedVolume<T,VOL>::create(const std::map<int, Vector3i> & levelsAndD
 }
 
 template <typename T, typename VOL>
-T* OmMemMappedVolume<T,VOL>::getChunkPtr(const OmMipChunkCoord & coord)
+T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord & coord)
 {
 	const int level = coord.Level;
 	const Vector3i rdims = vol_->getDimsRoundedToNearestChunk(level);

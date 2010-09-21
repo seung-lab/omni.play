@@ -1,8 +1,7 @@
-#ifndef OM_MEM_MAPPED_FILE_HPP
-#define OM_MEM_MAPPED_FILE_HPP
+#ifndef OM_MEM_MAPPED_FILE_QT_HPP
+#define OM_MEM_MAPPED_FILE_QT_HPP
 
 #include <QFile>
-
 #include <boost/make_shared.hpp>
 
 template <typename T>
@@ -61,6 +60,7 @@ public:
 		QFile::remove(QString::fromStdString(fnp_));
 
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
+
 		if(!file_->open(QIODevice::ReadWrite)){
 			const std::string err = "could not open " + fnp_;
 			throw OmIoException(err);

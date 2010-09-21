@@ -726,7 +726,7 @@ void Headless::watershed(const QString &  line)
 
 	const float loThreshold = StringHelpers::getFloat(args[4]);
 	const float hiThreshold = StringHelpers::getFloat(args[5]);
-	const int   noThreshold = StringHelpers::getUInt(args[6]);
+	const int   sizeThreshold = StringHelpers::getUInt(args[6]);
 	const float absLowThreshold = StringHelpers::getFloat(args[7]);
 
 	RawQuickieWS rqws(xDim,
@@ -734,7 +734,7 @@ void Headless::watershed(const QString &  line)
 			  zDim,
 			  loThreshold,
 			  hiThreshold,
-			  noThreshold,
+			  sizeThreshold,
 			  absLowThreshold);
 
 	rqws.Run(in.GetPtr(), out.GetPtr());
