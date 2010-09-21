@@ -46,8 +46,6 @@ void OmMemMappedVolume<T,VOL>::Create(const std::map<int, Vector3i> & levelsAndD
 		const int64_t size =
 			dims.x * dims.y * dims.z * (int64_t)GetBytesPerSample();
 
-		assert(size);
-
 		printf("mip %d: size is: %s (%ldx%ldx%ld)\n",
 		       level, qPrintable(StringHelpers::commaDeliminateNumber(size)),
 		       dims.x, dims.y, dims.z);
