@@ -4,6 +4,8 @@
 #include <QFile>
 #include <boost/make_shared.hpp>
 
+#include <cstddef>
+
 template <typename T>
 class OmIMemMappedFile {
 public:
@@ -21,7 +23,8 @@ public:
 	{
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
 
-		if(!file_->open(QIODevice::ReadOnly)){
+		if( !file_->open(QIODevice::ReadOnly))
+		{
 			const std::string err = "could not open " + fnp_;
 			throw OmIoException(err);
 		}
@@ -40,11 +43,11 @@ public:
 	}
 
 	T* GetPtr() const {
-		return (T*)map_;
+		return reinterpret_cast< T* >( map_ );
 	}
 
 	T* GetPtrWithOffset(const int64_t offset) const {
-		return (T*)(map_ + offset);
+		return reinterpret_cast< T* >( map_ + offset );
 	}
 
 private:
@@ -54,7 +57,7 @@ private:
 
 	void checkFileSize(const qint64 numBytes)
 	{
-		if(file_->size() != (qint64)numBytes){
+		if ( file_->size() != numBytes ){
 			const QString err =
 				QString("error: input file size of %1 bytes doesn't match expected size %d")
 				.arg(file_->size())

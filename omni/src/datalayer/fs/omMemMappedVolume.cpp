@@ -16,7 +16,7 @@ OmMemMappedVolume<T,VOL>::OmMemMappedVolume(VOL* vol)
 template <typename T, typename VOL>
 void OmMemMappedVolume<T,VOL>::resizeMapsVector()
 {
-	maps_.resize(vol_->GetRootMipLevel()+1);
+	maps_.resize(vol_->GetRootMipLevel() + 1);
 }
 
 template <typename T, typename VOL>
@@ -67,26 +67,26 @@ template <typename T, typename VOL>
 T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 {
 	const int level = coord.Level;
-	const Vector3i dims = vol_->getDimsRoundedToNearestChunk(level);
+	const Vector3<qint64> volDims = vol_->getDimsRoundedToNearestChunk(level);
 
-	const qint64 x = (qint64)coord.getCoordinateX();
-	const qint64 y = (qint64)coord.getCoordinateY();
-	const qint64 z = (qint64)coord.getCoordinateZ();
+	const qint64 x = coord.getCoordinateX();
+	const qint64 y = coord.getCoordinateY();
+	const qint64 z = coord.getCoordinateZ();
 
 	const qint64 xWidth  = 128;
 	const qint64 yDepth  = 128;
 	const qint64 zHeight = 128;
 
-	const qint64 bps = (qint64)GetBytesPerSample();
+	const qint64 bps = GetBytesPerSample();
 
-	const qint64 slabSize  = (qint64)dims.x * (qint64)dims.y * (qint64)zHeight * bps;
-	const qint64 rowSize   = (qint64)dims.x * (qint64)yDepth * (qint64)zHeight * bps;
-	const qint64 chunkSize = (qint64)xWidth * (qint64)yDepth * (qint64)zHeight * bps;
+	const qint64 slabSize  = volDims.x * volDims.y * zHeight * bps;
+	const qint64 rowSize   = volDims.x * yDepth    * zHeight * bps;
+	const qint64 chunkSize = xWidth    * yDepth    * zHeight * bps;
 
 	const qint64 offset = slabSize*z + rowSize*y + chunkSize*x;
 
 	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset,
-	      DEBUGV3(dims), DEBUGV3(coord.Coordinate));
+	      DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 	T* ret = maps_[level]->GetPtrWithOffset(offset);
 	assert(ret);
