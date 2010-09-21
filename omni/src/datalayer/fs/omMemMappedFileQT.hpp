@@ -18,7 +18,7 @@ public:
 template <typename T>
 class OmMemMappedFileReadQT : public OmIMemMappedFile<T> {
 public:
-	OmMemMappedFileReadQT(const std::string& fnp, const qint64 numBytes)
+	OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
 		: fnp_(fnp)
 	{
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
@@ -55,7 +55,7 @@ private:
 	boost::shared_ptr<QFile> file_;
 	uchar* map_;
 
-	void checkFileSize(const qint64 numBytes)
+	void checkFileSize(const int64_t numBytes)
 	{
 		if ( file_->size() != numBytes ){
 			const QString err =
@@ -71,7 +71,7 @@ template <typename T>
 class OmMemMappedFileWriteQT : public OmIMemMappedFile<T> {
 public:
 	OmMemMappedFileWriteQT(const std::string& fnp,
-						   const qint64 numBytes)
+						   const int64_t numBytes)
 		: fnp_(fnp), numBytes_(numBytes)
 	{
 		if(!numBytes){
@@ -110,7 +110,7 @@ public:
 
 private:
 	const std::string fnp_;
-	const qint64 numBytes_;
+	const int64_t numBytes_;
 	boost::shared_ptr<QFile> file_;
 	uchar* map_;
 
@@ -120,7 +120,7 @@ private:
 	  void OmMemMappedVolume<T,VOL>::allocateSpace(QFile * file)
 	  {
 	  printf("\tpre-allocating...\n");
-	  for( qint64 i=0; i < file->size(); i+=(qint64)4096){
+	  for( int64_t i=0; i < file->size(); i+=(int64_t)4096){
 	  file->seek(i);
 	  file->putChar(0);
 	  }

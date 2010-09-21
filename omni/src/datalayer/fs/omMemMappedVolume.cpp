@@ -42,16 +42,13 @@ void OmMemMappedVolume<T,VOL>::Create(const std::map<int, Vector3i> & levelsAndD
 
 	FOR_EACH(it, levelsAndDims){
 		const int level = it->first;
-		const Vector3i dims = it->second;
-		const qint64 size =
-			(qint64)dims.x *
-			(qint64)dims.y *
-			(qint64)dims.z *
-			(qint64)GetBytesPerSample();
+		const Vector3<int64_t> dims = it->second;
+		const int64_t size =
+			dims.x * dims.y * dims.z * (int64_t)GetBytesPerSample();
 
 		assert(size);
 
-		printf("mip %d: size is: %s (%dx%dx%d)\n",
+		printf("mip %d: size is: %s (%ldx%ldx%ld)\n",
 		       level, qPrintable(StringHelpers::commaDeliminateNumber(size)),
 		       dims.x, dims.y, dims.z);
 
@@ -67,26 +64,20 @@ template <typename T, typename VOL>
 T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 {
 	const int level = coord.Level;
-	const Vector3<qint64> volDims = vol_->getDimsRoundedToNearestChunk(level);
+	const Vector3<int64_t> volDims = vol_->getDimsRoundedToNearestChunk(level);
+	const Vector3<int64_t> chunkDims(128, 128, 128);
+	const int64_t bps = GetBytesPerSample();
 
-	const qint64 x = coord.getCoordinateX();
-	const qint64 y = coord.getCoordinateY();
-	const qint64 z = coord.getCoordinateZ();
+	const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bps;
+	const int64_t rowSize   = volDims.x   * chunkDims.y * chunkDims.z * bps;
+	const int64_t chunkSize = chunkDims.x * chunkDims.y * chunkDims.z * bps;
 
-	const qint64 xWidth  = 128;
-	const qint64 yDepth  = 128;
-	const qint64 zHeight = 128;
+	const Vector3<int64_t> chunkPos = coord.Coordinate; // bottom left corner
+	const int64_t offset =
+		slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-	const qint64 bps = GetBytesPerSample();
-
-	const qint64 slabSize  = volDims.x * volDims.y * zHeight * bps;
-	const qint64 rowSize   = volDims.x * yDepth    * zHeight * bps;
-	const qint64 chunkSize = xWidth    * yDepth    * zHeight * bps;
-
-	const qint64 offset = slabSize*z + rowSize*y + chunkSize*x;
-
-	debug("newimport", "offset is: %llu (%d,%d,%d) for (%d,%d,%d)\n", offset,
-	      DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
+	debug("memmap", "offset is: %llu (%ld,%ld,%ld) for (%ld,%ld,%ld)\n",
+		  offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 	T* ret = maps_[level]->GetPtrWithOffset(offset);
 	assert(ret);
