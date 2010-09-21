@@ -39,6 +39,10 @@ public:
 		file_->close();
 	}
 
+	virtual ~OmMemMappedFileReadQT(){
+		printf("closing file %s\n", fnp_.c_str());
+	}
+
 	T* GetPtr() const {
 		return map_;
 	}
@@ -73,6 +77,10 @@ public:
 		map_ = (T*)(file_->map(0, numBytes_));
 
 		file_->close();
+	}
+
+	virtual ~OmMemMappedFileWriteQT(){
+		printf("closing file %s\n", fnp_.c_str());
 	}
 
 	T* GetPtr() const {

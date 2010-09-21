@@ -25,6 +25,11 @@ public:
 	}
 
 private:
+	struct OmMemMapFileAndPtr{
+		boost::shared_ptr<OmIMemMappedFile<T> > file;
+		T* ptr;
+	};
+
 	VOL* vol_;
 	zi::Mutex mutex_;
 
