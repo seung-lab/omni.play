@@ -10,14 +10,14 @@ public:
 	virtual ~OmIMemMappedFile(){}
 
 	virtual T* GetPtr() const = 0;
+	virtual T* GetPtrWithOffset(const int64_t offset) const = 0;
 };
 
 template <typename T>
 class OmMemMappedFileReadQT : public OmIMemMappedFile<T> {
 public:
-	OmMemMappedFileReadQT(const std::string& fnp,
-						  const qint64 numBytes)
-		: fnp_(fnp), numBytes_(numBytes)
+	OmMemMappedFileReadQT(const std::string& fnp, const qint64 numBytes)
+		: fnp_(fnp)
 	{
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
 
@@ -26,15 +26,11 @@ public:
 			throw OmIoException(err);
 		}
 
-		if(file_->size() != (qint64)numBytes){
-			const QString err =
-				QString("error: input file size of %1 bytes doesn't match expected size %d")
-				.arg(file_->size())
-				.arg(numBytes);
-			throw OmIoException(err.toStdString());
+		if(numBytes){ // perform optional check of expected file size
+			checkFileSize(numBytes);
 		}
 
-		map_ = (T*)(file_->map(0, numBytes_));
+		map_ = file_->map(0, file_->size());
 
 		file_->close();
 	}
@@ -44,14 +40,28 @@ public:
 	}
 
 	T* GetPtr() const {
-		return map_;
+		return (T*)map_;
+	}
+
+	T* GetPtrWithOffset(const int64_t offset) const {
+		return (T*)(map_ + offset);
 	}
 
 private:
 	const std::string fnp_;
-	const qint64 numBytes_;
 	boost::shared_ptr<QFile> file_;
-	T* map_;
+	uchar* map_;
+
+	void checkFileSize(const qint64 numBytes)
+	{
+		if(file_->size() != (qint64)numBytes){
+			const QString err =
+				QString("error: input file size of %1 bytes doesn't match expected size %d")
+				.arg(file_->size())
+				.arg(numBytes);
+			throw OmIoException(err.toStdString());
+		}
+	}
 };
 
 template <typename T>
@@ -61,6 +71,10 @@ public:
 						   const qint64 numBytes)
 		: fnp_(fnp), numBytes_(numBytes)
 	{
+		if(!numBytes){
+			throw OmIoException("size was 0");
+		}
+
 		QFile::remove(QString::fromStdString(fnp_));
 
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
@@ -72,9 +86,9 @@ public:
 
 		file_->resize(numBytes);
 
-		//TODO: allocate??
+		//TODO: allocate space??
 
-		map_ = (T*)(file_->map(0, numBytes_));
+		map_ = file_->map(0, numBytes_);
 
 		file_->close();
 	}
@@ -84,14 +98,33 @@ public:
 	}
 
 	T* GetPtr() const {
-		return map_;
+		return (T*)map_;
+	}
+
+	T* GetPtrWithOffset(const int64_t offset) const {
+		return (T*)(map_ + offset);
 	}
 
 private:
 	const std::string fnp_;
 	const qint64 numBytes_;
 	boost::shared_ptr<QFile> file_;
-	T* map_;
+	uchar* map_;
+
+	/*
+
+	  template <typename T, typename VOL>
+	  void OmMemMappedVolume<T,VOL>::allocateSpace(QFile * file)
+	  {
+	  printf("\tpre-allocating...\n");
+	  for( qint64 i=0; i < file->size(); i+=(qint64)4096){
+	  file->seek(i);
+	  file->putChar(0);
+	  }
+	  printf("\tflushing...\n");
+	  file->flush();
+	  }
+	*/
 };
 
 #endif

@@ -12,8 +12,8 @@ public:
 
 	virtual void Load() = 0;
 	virtual void Create(const std::map<int, Vector3i> &) = 0;
-	virtual T* GetChunkPtr(const OmMipChunkCoord & coord)  = 0;
-	virtual int GetBytesPerSample() = 0;
+	virtual T* GetChunkPtr(const OmMipChunkCoord & coord) const = 0;
+	virtual int GetBytesPerSample() const = 0;
 };
 
 #endif

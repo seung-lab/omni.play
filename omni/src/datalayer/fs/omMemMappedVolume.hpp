@@ -14,33 +14,22 @@ public:
 	OmMemMappedVolume(){} // for boost::varient
 	OmMemMappedVolume(VOL* vol);
 
-	virtual ~OmMemMappedVolume();
-
 	void Load();
-	void Create(const std::map<int, Vector3i> &);
-	T* GetChunkPtr(const OmMipChunkCoord & coord);
+	void Create(const std::map<int, Vector3i>&);
+	T* GetChunkPtr(const OmMipChunkCoord & coord) const;
 
-	int GetBytesPerSample(){
+	int GetBytesPerSample() const {
 		return sizeof(T);
 	}
 
 private:
-	struct OmMemMapFileAndPtr{
-		boost::shared_ptr<OmIMemMappedFile<T> > file;
-		T* ptr;
-	};
-
 	VOL* vol_;
 	zi::Mutex mutex_;
 
-	std::vector<QFile*> mFileVec;
-	std::vector<uchar*> mFileMapPtr;
+	std::vector<boost::shared_ptr<OmIMemMappedFile<T> > > maps_;
+	void resizeMapsVector();
 
-	QString getFileName(const int level);
-	QFile* openFile(const int level);
-	void memMap(QFile * file, const int level);
-	void allocateSpace(QFile * file);
-	void openAndmMemMap(const int level);
+	std::string getFileName(const int level) const;
 };
 
 #endif
