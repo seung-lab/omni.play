@@ -199,7 +199,7 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
+	//	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
 	if (mElapsed->elapsed() > 5000) {
 		mElapsed->restart();
 		updateGL();
@@ -334,7 +334,8 @@ void OmView3d::View3dUpdatePreferencesEvent()
 /*
  *	Returns a vector names of closest picked result for given draw options.
  */
-bool OmView3d::PickPoint(Vector2 < int >point2d, vector < unsigned int >&rNamesVec)
+bool OmView3d::PickPoint(Vector2 < int >point2d,
+						 std::vector < unsigned int >&rNamesVec)
 {
 	//clear name vector
 	rNamesVec.clear();
@@ -418,7 +419,7 @@ void OmView3d::UpdateEnabledWidgets()
 ///////          Draw Methods
 
 /*
- *	Root of drawing tree.  
+ *	Root of drawing tree.
  *	Called from myUpdate() and picking calls.
  */
 void OmView3d::Draw(OmBitfield cullerOptions)
@@ -491,13 +492,11 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	// Draw meshes!
-	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
-	OmIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
 		OmMeshDrawer drawer( *iter, mViewGroupState);
 		drawer.Init();
 		drawer.Draw( culler );
-        }
+	}
 }
 
 void OmView3d::DrawEditSelectionVoxels()

@@ -104,11 +104,11 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
  *	Uses the OmVolumeCuller to determine the visibility of a MipChunk.  If visible, the
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
-void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool testVis)
+void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
+				      bool testVis)
 {
-	// get pointer to chunk
-	OmMipChunkPtr p_chunk = OmMipChunkPtr ();
-	mSeg->GetChunk(p_chunk, chunkCoord);
+	OmMipChunkPtr p_chunk = OmMipChunkPtr();
+	mSeg->GetChunk(p_chunk, chunkCoord, true);
 
 	// test for chunk visibility (if necessary)
 	if (testVis) {
@@ -131,13 +131,11 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
 		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
-			DrawChunk( p_chunk, chunkCoord );
+			DrawChunk(p_chunk);
 		}
 
 	} else {
-		const set<OmMipChunkCoord> & coords = p_chunk->GetChildrenCoordinates();
-		std::set<OmMipChunkCoord>::const_iterator iter;
-		for( iter = coords.begin(); iter != coords.end(); ++iter ){
+		FOR_EACH(iter, p_chunk->GetChildrenCoordinates()){
 			DrawChunkRecursive(*iter, testVis);
 		}
 	}
@@ -146,60 +144,51 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord & chunkCoord, bool t
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmMeshDrawer::DrawChunk(OmMipChunkPtr p_chunk, const OmMipChunkCoord & chunkCoord)
+void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
 {
 	bool segsWereFound = false;
 
-	OmSegment * rootSeg;
-	OmSegID rootSegID;
-
-	OmSegPtrList::const_iterator iter;
-	for( iter = mRootSegsToDraw.begin(); iter != mRootSegsToDraw.end(); ++iter ){
-		rootSeg = (*iter);
-		rootSegID = rootSeg->getValue();
+	FOR_EACH(iter, mRootSegsToDraw){
+		OmSegment* rootSeg = (*iter);
 
 		std::pair<bool, OmSegPtrList> segmentsToPossiblyDraw =
-		  OmMeshSegmentList::getFromCacheIfReady(p_chunk,
-							 rootSeg,
-							 chunkCoord,
-							 mSegmentCache,
-							 mSegmentationID);
+			OmMeshSegmentList::getFromCacheIfReady(chunk, rootSeg);
 
-		if( false == segmentsToPossiblyDraw.first ){
+		if(false == segmentsToPossiblyDraw.first){
 			continue;
 		}
 
-		const OmSegPtrList & segmentsToDraw = segmentsToPossiblyDraw.second;
+		const OmSegPtrList& segmentsToDraw = segmentsToPossiblyDraw.second;
 
 		if(segmentsToDraw.empty()){
 			continue;
 		}
 
 		segsWereFound = true;
-		doDrawChunk(chunkCoord, segmentsToDraw);
+		doDrawChunk(chunk->GetCoordinate(), segmentsToDraw);
 	}
 
 	if(segsWereFound){
 		if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
 			// draw bounding box around chunk
-			DrawClippedExtent( p_chunk );
+			DrawClippedExtent(chunk);
 		}
 	}
 }
 
-void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
-			       const OmSegPtrList & segmentsToDraw )
+void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
+			       const OmSegPtrList& segmentsToDraw )
 {
-	OmSegPtrList::const_iterator iter;
-	for( iter = segmentsToDraw.begin(); iter != segmentsToDraw.end(); ++iter ){
+	FOR_EACH(iter, segmentsToDraw ){
+		OmSegment* seg = *iter;
 
-		if( (*iter)->getSize() < mViewGroupState->getDustThreshold() ){
+		if( seg->getSize() < mViewGroupState->getDustThreshold() ){
 			continue;
 		}
 
-		//get pointer to mesh
-		QExplicitlySharedDataPointer < OmMipMesh > p_mesh = QExplicitlySharedDataPointer < OmMipMesh > ();
-		mSeg->mMipMeshManager.GetMesh(p_mesh, OmMipMeshCoord(chunkCoord, (*iter)->getValue() ));
+		OmMipMeshPtr p_mesh;
+		mSeg->mMipMeshManager.GetMesh(p_mesh,
+					      OmMipMeshCoord(chunkCoord, seg->value ));
 
 		if( !p_mesh ) {
 		        OmEvents::Redraw3d();
@@ -213,7 +202,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord & chunkCoord,
 		ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
-		glPushName((*iter)->getValue());
+		glPushName(seg->value);
 		glPushName(OMGL_NAME_MESH);
 
 		p_mesh->Draw(true);

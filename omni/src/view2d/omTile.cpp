@@ -1,55 +1,48 @@
 #include <stdlib.h>
 
-#include "omTile.h"
-
-#include "volume/omVolume.h"
-#include "project/omProject.h"
-#include "volume/omMipChunk.h"
-#include "system/omStateManager.h"
-
-#include "common/omStd.h"
-#include "common/omGl.h"
-#include "volume/omMipVolume.h"
-
-#include "system/omPreferences.h"
-#include "system/omPreferenceDefinitions.h"
-
-#include "system/viewGroup/omViewGroupState.h"
-
-#include "omTextureID.h"
-#include "omTileCoord.h"
 #include "common/omDebug.h"
+#include "common/omGl.h"
+#include "common/omStd.h"
+#include "omTextureID.h"
+#include "omTile.h"
+#include "omTileCoord.h"
+#include "project/omProject.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omPreferences.h"
+#include "system/omStateManager.h"
+#include "system/viewGroup/omViewGroupState.h"
+#include "volume/omMipChunk.h"
+#include "volume/omMipVolume.h"
+#include "volume/omVolume.h"
+#include "volume/omVolumeData.hpp"
 
-OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume * vol, OmViewGroupState * vgs)
+OmTile::OmTile(ViewType viewtype, ObjectType voltype, OmId image_id,
+	       OmMipVolume * vol, OmViewGroupState * vgs)
+	: mVolume(vol)
+	, dims_(Vector2i(128,128))
+	, mViewGroupState(vgs)
+	, view_type(viewtype)
+	, vol_type(voltype)
+	, myID(image_id)
 {
-	view_type = viewtype;
-	vol_type = voltype;
-
-	myID = image_id;
-
-	mVolume = vol;
-
-	mViewGroupState = vgs;
-
 	mAlpha = OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT);
 }
 
 OmTile::~OmTile()
 {
-	//debug("genone","OmTile::~OmTile()");
 }
 
-void OmTile::SetNewAlpha(float newval)
+void OmTile::SetNewAlpha(const float newval)
 {
 	mAlpha = newval;
 }
 
-OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cache)
+OmTextureIDPtr OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cache)
 {
 	OmMipChunkCoord mMipChunkCoord = TileToMipCoord(key);
 
 	if(!mVolume->ContainsMipChunkCoord(mMipChunkCoord)) {
-		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
+		return makeNullTextureID();
 	}
 
 	const int mcc_x = mMipChunkCoord.Coordinate.x;
@@ -57,69 +50,61 @@ OmTextureID * OmTile::BindToTextureID(const OmTileCoord & key, OmTileCache* cach
 	const int mcc_z = mMipChunkCoord.Coordinate.z;
 
 	const bool legalCoord = (mcc_x >= 0) && (mcc_y >= 0) && (mcc_z >= 0);
-	
+
 	if(!legalCoord){
-		return new OmTextureID(key, 0, 0, 0, 0, NULL, NULL, OMTILE_COORDINVALID);
+		return makeNullTextureID();
 	}
 
 	return doBindToTextureID(key, cache);
 }
 
-OmTextureID * OmTile::doBindToTextureID(const OmTileCoord & key, OmTileCache* cache)
+OmTextureIDPtr OmTile::makeNullTextureID()
 {
-	mSamplesPerVoxel = 1;
-	mBytesPerSample = mVolume->GetBytesPerSample();
-
-	Vector2<int> tile_dims;
-	void * vData = GetImageData(key, tile_dims, mVolume);
-
-	OmTextureID *textureID;
-			
-	const int dataSize = tile_dims.x * tile_dims.y;
-
-	if (vol_type == CHANNEL) {
-		textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-					    cache, vData, OMTILE_NEEDTEXTUREBUILT);
-		// don't free vData
-	} else {
-		void * out = NULL;
-
-		if (1 == mBytesPerSample) {
-					
-			uint32_t * vDataFake = (uint32_t*) malloc( dataSize * sizeof(OmSegID));
-
-			for (int i = 0; i < dataSize; ++i) {
-				vDataFake[i] = ((unsigned char *)(vData))[i];
-			}
-
-			setMyColorMap(((OmSegID *) vDataFake), tile_dims, key, &out);
-
-			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
-			free(vDataFake);
-		} else {
-			setMyColorMap(((OmSegID *) vData), tile_dims, key, &out);
-			textureID = new OmTextureID(key, 0, dataSize, tile_dims.x, tile_dims.y,
-						    cache, out, OMTILE_NEEDCOLORMAP);
-		}
-		free(vData);
-	}
-
-	return textureID;
+	return OmTextureIDPtr(new OmTextureID());
 }
 
-void * OmTile::GetImageData(const OmTileCoord & key, Vector2<int> &sliceDims, OmMipVolume * vol)
+OmTextureIDPtr OmTile::doBindToTextureID(const OmTileCoord & key,
+					 OmTileCache* cache)
 {
-	QExplicitlySharedDataPointer < OmMipChunk > my_chunk;
-	vol->GetChunk(my_chunk, TileToMipCoord(key));
+	OmTextureIDPtr tid(new OmTextureID(dims_, cache));
 
+	if (vol_type == CHANNEL) {
+		boost::shared_ptr<uint8_t> vData = GetImageData8bit(key);
+		tid->setData(vData);
+	} else {
+		boost::shared_ptr<uint32_t> imageData = GetImageData32bit(key);
+		boost::shared_ptr<OmColorRGBA> colorMappedData =
+			mViewGroupState->ColorTile(imageData,
+						   dims_,
+						   key.mVolType);
+		tid->setData(colorMappedData);
+	}
+
+	return tid;
+}
+
+int OmTile::getVolDepth(const OmTileCoord& key)
+{
 	const int mDepth = GetDepth(key);
+	return mDepth % (mVolume->GetChunkDimension());
+}
 
-	my_chunk->Open();
+boost::shared_ptr<uint8_t> OmTile::GetImageData8bit(const OmTileCoord& key)
+{
+	OmMipChunkPtr chunk;
+	mVolume->GetChunk(chunk, TileToMipCoord(key), true);
 
-	const int realDepth = mDepth % (vol->GetChunkDimension());
+	return chunk->ExtractDataSlice8bit(view_type,
+					   getVolDepth(key));
+}
 
-	return my_chunk->ExtractDataSlice(view_type, realDepth, sliceDims, false);
+boost::shared_ptr<uint32_t> OmTile::GetImageData32bit(const OmTileCoord& key)
+{
+	OmMipChunkPtr chunk;
+	mVolume->GetChunk(chunk, TileToMipCoord(key), true);
+
+	return chunk->ExtractDataSlice32bit(view_type,
+					    getVolDepth(key));
 }
 
 OmMipChunkCoord OmTile::TileToMipCoord(const OmTileCoord & key)
@@ -152,16 +137,4 @@ int OmTile::GetDepth(const OmTileCoord & key)
 	}
 
 	return ret;
-}
-
-void OmTile::setMyColorMap(OmSegID * imageData, Vector2<int> dims, const OmTileCoord & key, void **rData)
-{
-	unsigned char *data = (unsigned char*) malloc(dims.x * dims.y * SEGMENT_DATA_BYTES_PER_SAMPLE);
-
-	mViewGroupState->ColorTile( imageData, 
-				    dims.x * dims.y,
-				    key.mVolType,
-				    data );
-	
-	*rData = data;
 }

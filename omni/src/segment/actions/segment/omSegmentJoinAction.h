@@ -11,21 +11,21 @@
 class OmSegmentJoinAction : public OmAction {
 
 public:
-	OmSegmentJoinAction( const OmId segmentationId, const OmSegIDsSet & selectedSegmentIdsSet);
+	OmSegmentJoinAction( const OmId, const OmSegIDsSet&);
 
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentJoinAction";}
 
 	OmId mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
 
-	friend class OmActionLoggerFS;
-	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
-	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
+	template <typename T> friend class OmActionLoggerFSThread;
+	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinAction&);
+	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinAction&);
 };
 
 #endif

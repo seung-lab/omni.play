@@ -1,3 +1,7 @@
+#include "datalayer/fs/omMemMappedVolume.cpp"
+#include "volume/build/omLoadImage.cpp"
+#include "volume/build/omVolumeImporter.cpp"
+#include "volume/build/omVolumeImporterHDF5.cpp"
 #include "volume/omThreadChunkLevel.h"
 #include "common/omCommon.h"
 #include "gui/inspectors/segInspector.h"
@@ -25,12 +29,21 @@
 #include "volume/omSegmentation.h"
 #include <QWidget>
 
+#include "datalayer/fs/omActionLoggerFSthread.cpp"
+#include "segment/actions/segment/omSegmentGroupAction.h"
+#include "segment/actions/segment/omSegmentJoinAction.h"
+#include "segment/actions/segment/omSegmentSelectAction.h"
+#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "segment/actions/segment/omSegmentValidateAction.h"
+#include "volume/omSegmentationThresholdChangeAction.h"
+#include "volume/omVoxelSetValueAction.h"
+
 // based on http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
 
-template class OmThreadedCache<OmMipChunkCoord, OmMipChunk>;
-template class OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevel>;
-template class OmThreadedCache<OmMipMeshCoord, OmMipMesh>;
-template class OmThreadedCache<OmTileCoord, OmTextureID>;
+template class OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr>;
+template class OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevelPtr>;
+template class OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>;
+template class OmThreadedCache<OmTileCoord, OmTextureIDPtr>;
 
 template class OmGenericManager< OmFilter2d >;
 template class OmGenericManager< OmChannel >;
@@ -52,3 +65,31 @@ template class OmButton<GraphTools>;
 template class OmButton<SegInspector>;
 
 template class OmCheckBox<GraphTools>;
+
+template class OmVolumeImporter<OmChannel>;
+template class OmVolumeImporter<OmSegmentation>;
+template class OmVolumeImporterHDF5<OmChannel>;
+template class OmVolumeImporterHDF5<OmSegmentation>;
+
+template class OmLoadImage<OmChannel>;
+template class OmLoadImage<OmSegmentation>;
+
+template class OmMemMappedVolume<int8_t, OmChannel>;
+template class OmMemMappedVolume<uint8_t, OmChannel>;
+template class OmMemMappedVolume<int32_t, OmChannel>;
+template class OmMemMappedVolume<uint32_t, OmChannel>;
+template class OmMemMappedVolume<float, OmChannel>;
+template class OmMemMappedVolume<int8_t, OmSegmentation>;
+template class OmMemMappedVolume<uint8_t, OmSegmentation>;
+template class OmMemMappedVolume<int32_t, OmSegmentation>;
+template class OmMemMappedVolume<uint32_t, OmSegmentation>;
+template class OmMemMappedVolume<float, OmSegmentation>;
+
+template class OmActionLoggerFSThread<OmProjectSaveAction>;
+template class OmActionLoggerFSThread<OmSegmentJoinAction>;
+template class OmActionLoggerFSThread<OmSegmentValidateAction>;
+template class OmActionLoggerFSThread<OmSegmentGroupAction>;
+template class OmActionLoggerFSThread<OmSegmentSelectAction>;
+template class OmActionLoggerFSThread<OmSegmentSplitAction>;
+template class OmActionLoggerFSThread<OmVoxelSetValueAction>;
+template class OmActionLoggerFSThread<OmSegmentationThresholdChangeAction>;

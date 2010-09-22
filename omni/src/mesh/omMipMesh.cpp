@@ -10,6 +10,9 @@
 #include "datalayer/omDataLayer.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
+#include "datalayer/omDataPath.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 
@@ -46,21 +49,17 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManag
   hasDisplayList = false;
   //init mesh data
   mTrianCount = 0;
-  mpTrianOffsetSizeData = NULL;
 
   mStripCount = 0;
-  mpStripOffsetSizeData = NULL;
 
-  mpTrianOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
-  mpStripOffsetSizeDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
-  mpVertexIndexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
-  mpVertexDataWrap = OmDataWrapperPtr( new OmDataWrapper( NULL) );
+  mpTrianOffsetSizeDataWrap = OmDataWrapperInvalid();
+  mpStripOffsetSizeDataWrap = OmDataWrapperInvalid();
+  mpVertexIndexDataWrap = OmDataWrapperInvalid();
+  mpVertexDataWrap = OmDataWrapperInvalid();
 
   mVertexIndexCount = 0;
-  mpVertexIndexData = NULL;
 
   mVertexCount = 0;
-  mpVertexData = NULL;
 
   mVertexDataVboId = NULL_VBO_ID;
   mVertexIndexDataVboId = NULL_VBO_ID;
@@ -76,14 +75,8 @@ OmMipMesh::~OmMipMesh()
 {
   if (hasDisplayList) {
     hasDisplayList = false;
-    OmGarbage::asOmGenlistId(displayList);
+    OmGarbage::assignOmGenlistId(displayList);
   }
-
-  //if was vbo, then delete vbos
-  //not save to do in a sub thread.
-  //if (IsVbo()) {
-  //  DeleteVbo();
-  //}
 
   if (mHdf5File) {
     delete mHdf5File;
@@ -97,18 +90,22 @@ OmMipMesh::~OmMipMesh()
 
 void OmMipMesh::Load()
 {
-  //debug("load", "in OmMipMesh::Load\n");
-  //read meta data
-  OmDataPath fpath( mPath + "metamesh.dat" );
+  try {
+    doLoad();
+  } catch (...) {
+  }
+}
 
-try {
+void OmMipMesh::doLoad()
+{
+  OmDataPath fpath( mPath + "metamesh.dat" );
   if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
     return;
   }
 
-  OmDataWrapperPtr result = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath);
+  OmDataWrapperPtr result = OmProjectData::GetProjectDataReader()->readDataset(fpath);
 
-  char noData = *(result->getCharPtr());
+  unsigned char noData = *(result->getPtr<unsigned char>());
 
   //if meta is zero, then no data so skip
   if ( 0 == noData ){
@@ -121,46 +118,39 @@ try {
 
   //read triangles offset/size data  (uint32_t *)
   fpath.setPath( mPath + "trianoffset.dat" );
-  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
-  mpTrianOffsetSizeData = mpTrianOffsetSizeDataWrap->getUInt32Ptr();
+  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
   mTrianCount = size / (2 * sizeof(uint32_t));
 
   //read strip offset/size data  (uint32_t *)
   fpath.setPath( mPath + "stripoffset.dat" );
-  mpStripOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
-  mpStripOffsetSizeData = mpStripOffsetSizeDataWrap->getUInt32Ptr();
+  mpStripOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
   mStripCount = size / (2 * sizeof(uint32_t));
 
   //read vertex offset data (GLuint *)
   fpath.setPath( mPath + "vertexoffset.dat" );
-  mpVertexIndexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
-  mpVertexIndexData = mpVertexIndexDataWrap->getGLuintPtr();
+  mpVertexIndexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
   mVertexIndexCount = size / sizeof(GLuint);
 
   //read strip offset/size data (GLfloat *)
   fpath.setPath( mPath + "vertex.dat" );
-  mpVertexDataWrap = OmProjectData::GetProjectDataReader()->dataset_raw_read(fpath, &size);
-  mpVertexData = mpVertexDataWrap->getGLfloatPtr();
+  mpVertexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
   mVertexCount = size / (6 * sizeof(GLfloat));
 
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
+
   //update cache
   UpdateSize(vertex_data_size + vertex_index_data_size);
-
-} catch (...) {
-  return;
-}
 }
 
 void OmMipMesh::Save()
 {
-  OmDataWriter * hdf5File;
+  OmIDataWriter* hdf5File = NULL;
 
   if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-    OmDataLayer * dl = OmProjectData::GetDataLayer();
-    hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate, mSegmentationID) ),
-                              false );
+    const std::string path = OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate,
+								   mSegmentationID);
+    hdf5File = OmDataLayer::getWriter(QString::fromStdString(path), false);
   } else {
     hdf5File = OmProjectData::GetDataWriter();
   }
@@ -173,7 +163,7 @@ void OmMipMesh::Save()
   OmDataPath fpath;
   fpath.setPath( mPath + "metamesh.dat" );
   char meta = ((mStripCount && mVertexIndexCount && mVertexCount) != false);
-  hdf5File->dataset_raw_create_tree_overwrite(fpath, 1, &meta);
+  hdf5File->writeDataset(fpath, 1, OmDataWrapperRaw(&meta));
 
   //if meta is zero then skip mesh
   if (!meta)
@@ -182,33 +172,33 @@ void OmMipMesh::Save()
   //write trian offset/size data
   fpath.setPath( mPath + "trianoffset.dat" );
   size = 2 * mTrianCount * sizeof(uint32_t);
-  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpTrianOffsetSizeData);
+  hdf5File->writeDataset(fpath, size, mpTrianOffsetSizeDataWrap);
 
   //write strip offset/size data
   fpath.setPath( mPath + "stripoffset.dat" );
   size = 2 * mStripCount * sizeof(uint32_t);
-  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpStripOffsetSizeData);
+  hdf5File->writeDataset(fpath, size, mpStripOffsetSizeDataWrap);
 
   //write vertex offset data
   fpath.setPath( mPath + "vertexoffset.dat" );
   size = mVertexIndexCount * sizeof(GLuint);
-  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexIndexData);
+  hdf5File->writeDataset(fpath, size, mpVertexIndexDataWrap);
 
   //write strip offset/size data
   fpath.setPath( mPath + "vertex.dat" );
   size = 6 * mVertexCount * sizeof(GLfloat);
-  hdf5File->dataset_raw_create_tree_overwrite(fpath, size, mpVertexData);
+  hdf5File->writeDataset(fpath, size, mpVertexDataWrap);
 
   if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
   }
 }
 
-string OmMipMesh::GetFileName()
+std::string OmMipMesh::GetFileName()
 {
   return OmDataPaths::getMeshFileName( mMeshCoordinate );
 }
 
-string OmMipMesh::GetDirectoryPath()
+std::string OmMipMesh::GetDirectoryPath()
 {
   return OmDataPaths::getMeshDirectoryPath(mMeshCoordinate,
 					   mpMipMeshManager);
@@ -244,12 +234,12 @@ void OmMipMesh::CreateVbo()
   //2 (pos/norm) * 3 (x/y/z) * sizeof(GLfloat)
   //debug("genone","OmMipMesh::CreateVbo(): vertex data");
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
-  mVertexDataVboId = createVbo(mpVertexData, vertex_data_size, GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
+  mVertexDataVboId = createVbo(mpVertexDataWrap->getPtr<float>(), vertex_data_size, GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 
   //create VBO for the vertex index data
   //debug("genone","OmMipMesh::CreateVbo(): vertex index data\n");
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
-  mVertexIndexDataVboId = createVbo(mpVertexIndexData, vertex_index_data_size,
+  mVertexIndexDataVboId = createVbo(mpVertexIndexDataWrap->getPtr<GLuint>(), vertex_index_data_size,
                                     GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
 }
 
@@ -314,18 +304,24 @@ bool OmMipMesh::Draw(bool)
     int size = 0;
     //// draw mesh elements
     debug("elements", "going to draw elements\n");
-    for (uint32_t idx = 0; idx < mStripCount; ++idx) {
-      size += mpStripOffsetSizeData[2 * idx + 1];
-      glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
-                     mpStripOffsetSizeData[2 * idx + 1],	//elements in strip
+    if(mStripCount) {
+      unsigned int * stripOffsetSizeData = mpStripOffsetSizeDataWrap->getPtr<unsigned int>();
+      for (uint32_t idx = 0; idx < mStripCount; ++idx) {
+        size += stripOffsetSizeData[2 * idx + 1];
+        glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
+                     stripOffsetSizeData[2 * idx + 1],	//elements in strip
                      GL_UNSIGNED_INT,	//type
-                     (GLuint *) 0 + mpStripOffsetSizeData[2 * idx]);	//strip offset
+                     (GLuint *) 0 + stripOffsetSizeData[2 * idx]);	//strip offset
+      }
     }
-    for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
- 	      glDrawElements(GL_TRIANGLES,      //triangle trian
-              mpTrianOffsetSizeData[2 * idx + 1],        //elements in trian
+    if(mTrianCount) {
+      unsigned int * trianOffsetSizeData = mpTrianOffsetSizeDataWrap->getPtr<unsigned int>();
+      for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
+ 	glDrawElements(GL_TRIANGLES,      //triangle trian
+              trianOffsetSizeData[2 * idx + 1],        //elements in trian
 	      GL_UNSIGNED_INT,   //type
- 	      (GLuint *) 0 + mpTrianOffsetSizeData[2 * idx]);    //trian offset
+ 	      (GLuint *) 0 + trianOffsetSizeData[2 * idx]);    //trian offset
+      }
     }
     debug("tri","strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
     debug("elements", "done drawing %i elements\n", mStripCount);

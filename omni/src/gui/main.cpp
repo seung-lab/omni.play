@@ -1,6 +1,6 @@
 #include <signal.h>
-
 #include "headless.h"
+#include <zi/args>
 
 #ifndef WIN32
 #include <execinfo.h>
@@ -8,35 +8,14 @@
 #endif
 
 
-//GGOCTFPointer GGOCTFunction = 0;
-
-/*
-int firsttime(int argc, char *argv[])
-{
-	switch (argc) {
-	case 3:
-	case 2:
-		void *lp = dlopen(argv[1], RTLD_LAZY);
-		if (lp) {
-			GGOCTFunction = (GGOCTFPointer) dlsym(lp, "omnichanneltile");
-		}
-		break;
-	}
-
-	QApplication app(argc, argv);
-	Q_INIT_RESOURCE(resources);
-	MainWindow mainWin;
-	mainWin.show();
-
-	switch (argc) {
-	case 3:
-		mainWin.openProject(argv[2]);
-		break;
-	}
-
-	return app.exec();
-}
-*/
+ZiARG_bool(      someBool,        true, "Sample bool argument");
+ZiARG_bool(   anotherBool,       false, "Another bool argument");
+ZiARG_int32(    someInt32,           0, "Sample int32 argument");
+ZiARG_int64(    someInt64,           1, "Sample int64 argument");
+ZiARG_uint64(  someUInt64,           2, "Sample uint64 argument");
+ZiARG_double(  someDouble,         3.0, "Sample double argument");
+ZiARG_float(    someFloat,         4.0, "Sample float argument");
+ZiARG_string(  someString,  "string_5", "Sample string argument");
 
 //int backtrace (void **buffer, int size);
 //char ** backtrace_symbols (void *const *buffer, int size);
@@ -52,16 +31,16 @@ void myBacktrace (int sig)
 	if(!sig) {
 		out = stdout;
 	}
-     
+
        	size = backtrace (array, 1000);
        	strings = backtrace_symbols (array, size);
-     
+
        	//fprintf (stderr, "Obtained %zd stack frames.\n", size);
        	fprintf (out, "Obtained %zd stack frames.\n", size);
-     
+
 	for (i = 0; i < size; i++)
 		fprintf (out, "%s\n", strings[i]);
-     
+
 	free (strings);
 
 	if(sig) {

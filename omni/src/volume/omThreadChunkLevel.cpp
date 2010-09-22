@@ -1,11 +1,6 @@
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omMipVolume.h"
 
-/////////////////////////////////
-///////
-///////         OmThreadChunkLevel Class
-///////
-
 OmThreadChunkLevel::OmThreadChunkLevel(const OmMipChunkCoord & rMipCoord, OmMipVolume * pMipVolume)
 	:OmMipChunk(rMipCoord,pMipVolume)
 {
@@ -21,9 +16,6 @@ OmThreadChunkLevel::~OmThreadChunkLevel()
 	if (IsOpen()) {
 		Close();
 	}
-	
-	//remove object size from cache
-	UpdateSize(-int (sizeof(OmThreadChunkLevel)));
 }
 
 /*
@@ -43,8 +35,8 @@ void OmThreadChunkLevel::InitChunk(const OmMipChunkCoord & rMipCoord)
 	}
 
 	//get extent from coord
-	mDataExtent = mpMipVolume->MipCoordToThreadDataBbox(rMipCoord);
+	mDataExtent = mpMipVolume->MipCoordToThreadLevelDataBbox(rMipCoord);
 
 	//set if mipvolume uses metadata
-	setMetaDataClean();	
+	setMetaDataClean();
 }

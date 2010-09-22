@@ -1,14 +1,15 @@
 #include "omException.h"
 #include "common/omDebug.h"
 
-static string OmExceptTypeStrings[] = { "Note",
+static std::string OmExceptTypeStrings[] = { "Note",
 					"Information",
 					"Warning",
 					"Error",
 					"Critical Error"
 };
 
-OmException::OmException(const string & name, OmExceptType type, const string & msg)
+OmException::OmException(const std::string & name, OmExceptType type,
+						 const std::string & msg)
 	: mName(name)
 	, mType(type)
 	, mMessage(msg)

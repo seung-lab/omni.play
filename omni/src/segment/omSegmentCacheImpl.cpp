@@ -5,11 +5,12 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
+#include "datalayer/omMST.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImpl::OmSegmentCacheImpl( OmSegmentation * segmentation, OmSegmentCache * cache )
-	: OmSegmentCacheImplLowLevel( segmentation, cache )
+OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation)
+	: OmSegmentCacheImplLowLevel(segmentation)
 {
 }
 
@@ -24,17 +25,17 @@ OmSegment* OmSegmentCacheImpl::AddSegment()
 	return newSeg;
 }
 
-OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
+OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 {
 	if( 0 == value ){
 		return NULL;
 	}
 
-	OmSegment * seg = new OmSegment( value, mParentCache);
+	OmSegment * seg = new OmSegment( value, getSegmentCache());
+	seg->RandomizeColor();
+
 	mSegments->AddItem( seg );
-
 	++mNumSegs;
-
 	if (mMaxValue < value) {
 		mMaxValue = value;
 	}
@@ -44,36 +45,19 @@ OmSegment* OmSegmentCacheImpl::AddSegment( const OmSegID value)
 	return seg;
 }
 
-void OmSegmentCacheImpl::AddSegmentsFromChunk(const OmSegIDsSet & data_values,
-					      const OmMipChunkCoord &,
-					      boost::unordered_map< OmSegID, unsigned int> * sizes, boost::unordered_map< OmSegID, DataBbox> & bounds )
+OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 {
-	OmSegIDsSet::const_iterator iter;
-	for( iter = data_values.begin(); iter != data_values.end(); ++iter ){
+	if( 0 == val ){
+		return NULL;
+	}
 
-		if( 0 == *iter ){
-			continue;
-		}
+	OmSegment* seg = GetSegmentFromValue(val);
+	if(NULL == seg){
+		seg = AddSegment(val);
+	}
 
-		OmSegment * seg = GetSegmentFromValue( *iter );
-
-                if( NULL == seg ) {
-			seg = AddSegment( *iter );
-		}
-
-		assert(seg);
-
-		if( NULL != sizes ){
-			seg->mSize += sizes->at(*iter);
-			if (seg->mBounds.isEmpty()) {
-                        	seg->mBounds = bounds.at(*iter);
-                        } else {
-                        	seg->mBounds.merge(bounds.at(*iter));
-			}
-		}
-
-		addToDirtySegmentList(seg);
-        }
+	addToDirtySegmentList(seg);
+	return seg;
 }
 
 OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
@@ -88,21 +72,21 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
         }
 
 	OmSegment * s1 = seg1;
-	while (0 != s1->mParentSegID) {
-		if(s1->mParentSegID == seg2->mValue) {
+	while (0 != s1->getParentSegID()) {
+		if(s1->getParentSegID() == seg2->value) {
 			debug("split", "splitting child from a direct parent\n");
 			return OmSegmentEdge(s1);
 		}
-        	s1 = GetSegmentFromValue(s1->mParentSegID);
+        	s1 = GetSegmentFromValue(s1->getParentSegID());
 	}
 
 	OmSegment * s2 = seg2;
-	while (0 != s2->mParentSegID) {
-		if(s2->mParentSegID == seg1->mValue) {
+	while (0 != s2->getParentSegID()) {
+		if(s2->getParentSegID() == seg1->value) {
 			debug("split", "splitting child from a direct parent\n");
 			return OmSegmentEdge(s2);
 		}
-        	s2 = GetSegmentFromValue(s2->mParentSegID);
+        	s2 = GetSegmentFromValue(s2->getParentSegID());
 	}
 
         OmSegment * nearestCommonPred = 0;
@@ -110,9 +94,9 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 	OmSegment * one;
 	OmSegment * two;
 
-	for (quint32 oneID = seg1->mValue, twoID; oneID != 0; oneID = one->mParentSegID) {
+	for (quint32 oneID = seg1->value, twoID; oneID != 0; oneID = one->getParentSegID()) {
 	  one = GetSegmentFromValue(oneID);
-	  for (twoID = seg2->mValue; twoID != 0 && oneID != twoID; twoID = two->mParentSegID) {
+	  for (twoID = seg2->value; twoID != 0 && oneID != twoID; twoID = two->getParentSegID()) {
 	    two = GetSegmentFromValue(twoID);
 	  }
 	  if (oneID == twoID) {
@@ -125,16 +109,16 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 
         float minThresh = 100.0;
         OmSegment * minChild = 0;
-        for (one = seg1; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
-	  if (one->mThreshold < minThresh) {
-	    minThresh = one->mThreshold;
+        for (one = seg1; one != nearestCommonPred; one = GetSegmentFromValue(one->getParentSegID())) {
+	  if (one->getThreshold() < minThresh) {
+	    minThresh = one->getThreshold();
 	    minChild = one;
 	  }
         }
 
-        for (one = seg2; one != nearestCommonPred; one = GetSegmentFromValue(one->mParentSegID)) {
-	  if (one->mThreshold < minThresh) {
-	    minThresh = one->mThreshold;
+        for (one = seg2; one != nearestCommonPred; one = GetSegmentFromValue(one->getParentSegID())) {
+	  if (one->getThreshold() < minThresh) {
+	    minThresh = one->getThreshold();
 	    minChild = one;
 	  }
         }
@@ -151,47 +135,49 @@ OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
-	assert( child->mParentSegID );
+	assert( child->getParentSegID() );
 
-	OmSegment * parent = GetSegmentFromValue( child->mParentSegID );
+	OmSegment * parent = GetSegmentFromValue( child->getParentSegID() );
 
-	if( child->mImmutable == parent->mImmutable &&
-	    1 == child->mImmutable ){
+	if( child->GetImmutable() == parent->GetImmutable() &&
+	    1 == child->GetImmutable() ){
 		return OmSegmentEdge();
 	}
 
-	OmSegmentEdge edgeThatGotBroken( parent, child, child->mThreshold );
+	OmSegmentEdge edgeThatGotBroken( parent, child, child->getThreshold() );
 
-	parent->segmentsJoinedIntoMe.erase( child->getValue() );
-        mSegmentGraph.graph_cut(child->mValue);
-	child->mParentSegID = 0;
+	parent->removeChild(child->value);
+        mSegmentGraph.graph_cut(child->value);
+	child->setParentSegID(0);
 
-	child->mThreshold = 0;
+	child->setThreshold(0);
 
-	findRoot(parent)->mFreshnessForMeshes++;
-	child->mFreshnessForMeshes++;
+	findRoot(parent)->touchFreshnessForMeshes();
+	child->touchFreshnessForMeshes();
 
-	if( isSegmentSelected( parent->getValue() ) ){
-		doSelectedSetInsert( child->getValue(), true );
+	if( isSegmentSelected( parent->value ) ){
+		doSelectedSetInsert( child->value, true );
 	} else {
-		doSelectedSetRemove( child->getValue() );
+		doSelectedSetRemove( child->value );
 	}
 
-	if( -1 != child->mEdgeNumber ){
-		const int e = child->mEdgeNumber;
-		quint8 * edgeDisabledByUser = mSegmentation->mEdgeDisabledByUser->getQuint8Ptr();
-		quint8 * edgeWasJoined = mSegmentation->mEdgeWasJoined->getQuint8Ptr();
-		quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
+	if( -1 != child->getEdgeNumber() ){
+		const int e = child->getEdgeNumber();
+		boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
+		uint8_t* edgeDisabledByUser =
+			mst->mEdgeDisabledByUser->getPtr<uint8_t>();
+		uint8_t* edgeWasJoined = mst->mEdgeWasJoined.get();
+		uint8_t* edgeForceJoin = mst->mEdgeForceJoin->getPtr<uint8_t>();
 
 		edgeDisabledByUser[e] = 1;
 		edgeWasJoined[e] = 0;
 		edgeForceJoin[e] = 0;
-		child->mEdgeNumber = -1;
+		child->setEdgeNumber(-1);
 	}
 
-	if( child->mCustomMergeEdge.isValid() ){
-		mManualUserMergeEdgeList.removeAll( child->mCustomMergeEdge );
-		child->mCustomMergeEdge.valid = false;
+	if( child->getCustomMergeEdge().isValid() ){
+		mManualUserMergeEdgeList.removeAll( child->getCustomMergeEdge() );
+		child->setCustomMergeEdge(OmSegmentEdge());
 	}
 
 	mSegmentGraph.updateSizeListsFromSplit( parent, child );
@@ -222,22 +208,22 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
-	if( childRoot->mImmutable != parent->mImmutable ){
+	if( childRoot->GetImmutable() != parent->GetImmutable() ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->mValue, parent->mValue, childRoot->mImmutable, parent->mImmutable );
+		       childRoot->value, parent->value, childRoot->GetImmutable(), parent->GetImmutable() );
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
 	mSegmentGraph.graph_join(childRootID, e.parentID);
 
-	parent->segmentsJoinedIntoMe.insert( childRoot->mValue );
+	parent->addChild(childRoot->value);
 	childRoot->setParent(parent, e.threshold);
-	childRoot->mCustomMergeEdge = e;
+	childRoot->setCustomMergeEdge(e);
 
-	findRoot(parent)->mFreshnessForMeshes++;
+	findRoot(parent)->touchFreshnessForMeshes();
 
         if( isSegmentSelected( e.childID ) ){
-                doSelectedSetInsert( parent->mValue, true );
+                doSelectedSetInsert( parent->value, true );
         }
 	doSelectedSetRemove( e.childID );
 
@@ -357,19 +343,19 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 		getSegmentLists()->moveSegmentFromValidToRoot(seg);
 	}
 
-        if( -1 == seg->mEdgeNumber ){
+        if( -1 == seg->getEdgeNumber() ){
         	return;
 	}
 
-	quint8 * edgeForceJoin = mSegmentation->mEdgeForceJoin->getQuint8Ptr();
-	edgeForceJoin[ seg->mEdgeNumber ] = valid;
+	quint8 * edgeForceJoin = mSegmentation->mst_->mEdgeForceJoin->getPtr<unsigned char>();
+	edgeForceJoin[ seg->getEdgeNumber() ] = valid;
 }
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
 	OmSegment * seg = findRoot( segUnknownDepth );
 
-	if( seg->mImmutable ) {
+	if( seg->GetImmutable() ) {
 		return getSegmentLists()->mValidListBySize.getSegmentSize( seg );
 	}
 
@@ -389,7 +375,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 
 	OmSegID rootSegID;
 	foreach( const OmSegID & id, old ){
-		rootSegID = findRoot( GetSegmentFromValue( id) )->getValue();
+		rootSegID = findRoot( GetSegmentFromValue( id) )->value;
 		set.insert( rootSegID );
 	}
 }
@@ -409,15 +395,21 @@ void OmSegmentCacheImpl::refreshTree()
 
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
-	printf("setting global threshold to %f...\n", mSegmentation->mDendThreshold);
+	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
 
-	mSegmentGraph.setGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(),
-					  mSegmentation->mDendValues->getFloatPtr(),
-					  mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(),
-					  mSegmentation->mEdgeWasJoined->getQuint8Ptr(),
-					  mSegmentation->mEdgeForceJoin->getQuint8Ptr(),
-					  mSegmentation->mDendCount,
-					  mSegmentation->mDendThreshold);
+	if(!mst->isValid()){
+		printf("no graph found...\n");
+		return;
+	}
+
+	printf("setting global threshold to %f...\n", mst->mDendThreshold);
+	mSegmentGraph.setGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
+					  mst->mDendValues->getPtr<float>(),
+					  mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
+					  mst->mEdgeWasJoined.get(),
+					  mst->mEdgeForceJoin->getPtr<uint8_t>(),
+					  mst->mDendCount,
+					  mst->mDendThreshold);
 
 	mSelectedSet.clear();
 	clearCaches();
@@ -427,15 +419,17 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 
 void OmSegmentCacheImpl::resetGlobalThreshold()
 {
-	printf("resetting global threshold to %f...\n", mSegmentation->mDendThreshold);
+	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
 
-	mSegmentGraph.resetGlobalThreshold( mSegmentation->mDend->getQuint32Ptr(),
-					    mSegmentation->mDendValues->getFloatPtr(),
-					    mSegmentation->mEdgeDisabledByUser->getQuint8Ptr(),
-					    mSegmentation->mEdgeWasJoined->getQuint8Ptr(),
-					    mSegmentation->mEdgeForceJoin->getQuint8Ptr(),
-					    mSegmentation->mDendCount,
-					    mSegmentation->mDendThreshold);
+	printf("resetting global threshold to %f...\n", mst->mDendThreshold);
+
+	mSegmentGraph.resetGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
+					    mst->mDendValues->getPtr<float>(),
+					    mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
+					    mst->mEdgeWasJoined.get(),
+					    mst->mEdgeForceJoin->getPtr<uint8_t>(),
+					    mst->mDendCount,
+					    mst->mDendThreshold);
 
 	rerootSegmentLists();
 	clearCaches();
@@ -444,5 +438,5 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 }
 
 boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
-	return getSegmentation()->getSegmentLists();
+	return getSegmentation()->GetSegmentLists();
 }

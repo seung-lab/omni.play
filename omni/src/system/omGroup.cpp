@@ -24,13 +24,13 @@ OmColor OmGroup::GetRandomColor()
 {
 	Vector3<float> color;
 	OmColor colorInt;
-    
+
         //initially random color
-        do { 
+        do {
                 color.randomize();
         } while ((color.x * 255 > 255 && color.y * 255 > 255 && color.z * 255 > 255) &&
                  (color.x * 255 < 55 && color.y * 255 < 55 && color.z * 255 < 55));
-    
+
         color.x /= 2;
         color.y /= 2;
         color.z /= 2;
@@ -45,9 +45,7 @@ OmColor OmGroup::GetRandomColor()
 void OmGroup::AddIds(const OmSegIDsSet & ids)
 {
 	foreach(OmSegID segid, ids) {
-		if(!mIDs.contains(segid)) {
-			mIDs.insert(segid);
-		}
+		mIDs.insert(segid);
 	}
 }
 

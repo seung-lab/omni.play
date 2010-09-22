@@ -16,7 +16,7 @@ class OmGroupListWidget : public QTreeWidget {
 
 	void populate(OmSegmentation & seg);
 
-	static string eventSenderName();
+	static std::string eventSenderName();
 
  private:
 	GroupsTable * mGroupsTable;

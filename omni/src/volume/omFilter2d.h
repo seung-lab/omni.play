@@ -3,7 +3,7 @@
 
 /*
  *	Filter Object
- *	
+ *
  *	Matthew Wimer - mwimer@mit.edu - 11/13/09
  */
 
@@ -17,7 +17,11 @@ class OmFilter2d : public OmManageableObject {
 public:
 	OmFilter2d(OmId);
 	OmFilter2d();
-	
+
+	std::string GetName(){
+		return "filter"+  boost::lexical_cast<std::string>(GetId());
+	}
+
 	//accessors
 	void SetAlpha(double);
 	double GetAlpha();
@@ -29,7 +33,7 @@ public:
 	void SetChannel (OmId id);
 
 	OmThreadedCachingTile * GetCache (ViewType, OmViewGroupState *);
-	
+
 private:
 	double mAlpha;
 	OmThreadedCachingTile * mCache;

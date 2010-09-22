@@ -55,13 +55,13 @@ bool OmPreferences::CheckKey(const int)
 /////////////////////////////////
 ///////          Accessors
 
-string OmPreferences::GetString(const int key)
+std::string OmPreferences::GetString(const int key)
 {
 	CheckKey(key);
 	return Instance()->stringPrefs.value(key).toStdString();
 }
 
-void OmPreferences::SetString(const int key, string value)
+void OmPreferences::SetString(const int key, std::string value)
 {
 	Instance()->stringPrefs[ key ] = QString::fromStdString(value);
 	OmEventManager::PostEvent(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));

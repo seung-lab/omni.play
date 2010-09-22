@@ -8,20 +8,19 @@
  *	Brett Warne - bwarne@mit.edu - 6/1/09
  */
 
-#include "omCacheBase.h"
-#include <QSharedData>
+class OmCacheBase;
 
-class OmCacheableBase : public QSharedData 
-{
+
+class OmCacheableBase {
  public:
-	OmCacheableBase( OmCacheBase *cache );	
+	OmCacheableBase( OmCacheBase *cache );
 	virtual void Flush() = 0;
-	
+
  protected:
-	void UpdateSize(int delta);
-	
+	void UpdateSize(const qint64 bytesToAdd);
+
  private:
-	OmCacheBase * const mCache;
+	OmCacheBase *const mCache;
 };
 
 #endif

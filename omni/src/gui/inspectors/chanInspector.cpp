@@ -1,6 +1,5 @@
 #include <QtGui>
 #include "project/omProject.h"
-#include <QThread>
 #include "chanInspector.h"
 #include "volInspector.h"
 #include "common/omStd.h"
@@ -10,7 +9,8 @@
 #include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 
-ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent) : QWidget(parent)
+ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
+	: QWidget(parent)
 {
 	setupUi(this);
 
@@ -30,7 +30,7 @@ ChannelDataWrapper ChanInspector::getChannelDataWrapper()
 
 void ChanInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetChannel(cdw.getID()).SetName(nameEdit->text());
+	OmProject::GetChannel(cdw.getID()).SetCustomName(nameEdit->text());
 }
 
 void ChanInspector::on_browseButton_clicked()
@@ -53,7 +53,7 @@ void ChanInspector::on_exportButton_clicked()
 	OmProject::GetChannel(cdw.getID()).ExportInternalData( fileName );
 }
 QDir ChanInspector::getDir()
-{	
+{
 	QString regex = patternEdit->text();
 	QDir dir( directoryEdit->text() );
 

@@ -34,6 +34,7 @@ OmProject *OmProject::mspInstance = 0;
 OmProject::OmProject()
 {
 	mCanFlush = true;
+	mThreadPool.start(3);
 }
 
 OmProject::~OmProject()
@@ -184,8 +185,7 @@ void OmProject::RemoveChannel(const OmId id)
 {
 	GetChannel(id).CloseDownThreads();
 
-	OmDataPath path;
-	path.setPathQstr(GetChannel(id).GetDirectoryPath());
+	OmDataPath path(GetChannel(id).GetDirectoryPath());
 
         Instance()->mChannelManager.Remove(id);
 
@@ -243,8 +243,7 @@ void OmProject::RemoveSegmentation(const OmId id)
 
 	GetSegmentation(id).CloseDownThreads();
 
-	OmDataPath path;
-	path.setPathQstr(GetSegmentation(id).GetDirectoryPath());
+	OmDataPath path(GetSegmentation(id).GetDirectoryPath());
 
         Instance()->mSegmentationManager.Remove(id);
 

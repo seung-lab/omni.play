@@ -12,62 +12,74 @@ $omniDir =~ s/\/scripts\///;
 
 my $omniExec = $omniDir . "/omni/bin/omni ";
 my $scriptFolder = $omniDir . "/scripts/BuildScripts";
-my $cmdGeneric = $omniExec." --headless=".$scriptFolder;
+my $headlessCmd = "run --headless=".$scriptFolder;
+
+sub run {
+    my $file = $headlessCmd.$_[0];
+    my $cmd = "(echo $file; cat) | gdb $omniExec";
+    system $cmd;
+}
 
 sub buildRabbit {
-    my $cmd = $cmdGeneric."/buildRabbit.omni.cmd";
+    my $cmd = "/buildRabbit.omni.cmd";
     printTitle("rabbit", $cmd);
-    system $cmd;
+    run($cmd);
 }
 
 sub build150 {
-    my $cmd = $cmdGeneric."/build150.omni.cmd";
+    my $cmd = "/build150.omni.cmd";
     printTitle("150^3", $cmd);
-    system $cmd;
+    run($cmd);
 }
 
 sub build150noMeshes {
-    my $cmd = $cmdGeneric."/build150.noMeshes.omni.cmd";
+    my $cmd = "/build150.noMeshes.omni.cmd";
     printTitle("150^3 no meshes", $cmd);
-    system $cmd;
+    run($cmd);
 }
 
 sub build512 {
-    my $cmd = $cmdGeneric."/build512.omni.cmd";
+    my $cmd = "/build512.omni.cmd";
     printTitle("512^3", $cmd );
-    system $cmd;
+    run($cmd);
 }
 
 sub build512noMeshes {
-    my $cmd = $cmdGeneric."/build512.noMeshes.omni.cmd";
+    my $cmd = "/build512.noMeshes.omni.cmd";
     printTitle("512^3 no meshes", $cmd );
-    system $cmd;
+    run($cmd);
 }
 
 sub build512useMeshinator {
-    my $cmd = $cmdGeneric."/build512useMeshinator.omni.cmd";
+    my $cmd = "/build512useMeshinator.omni.cmd";
     printTitle("512^3 use Meshinator", $cmd );
-    system $cmd;
+    run($cmd);
 }
 
 ###########################################
 
 sub buildRegionGraphNew150 {
-    my $cmd = $cmdGeneric."/regionGraphs/new150graph.omni.cmd";
+    my $cmd = "/regionGraphs/new150graph.omni.cmd";
     printTitle("new 150 w/ region graph", $cmd);
-    system $cmd;
+    run($cmd);
 }
 
 sub buildRegionI1088150 {
-    my $cmd = $cmdGeneric."/regionGraphs/build.i1088_150_graph.omni.cmd";
+    my $cmd = "/regionGraphs/build.i1088_150_graph.omni.cmd";
     printTitle("i1088 150 w/ region graph", $cmd);
-    system $cmd;
+    run($cmd);
 }
 
 sub buildRegionI1088250 {
-    my $cmd = $cmdGeneric."/regionGraphs/build.i1088_250_graph.omni.cmd";
+    my $cmd = "/regionGraphs/build.i1088_250_graph.omni.cmd";
     printTitle("i1088 250 w/ region graph", $cmd);
-    system $cmd;
+    run($cmd);
+}
+
+sub buildNew {
+    my $cmd = "/buildNew.cmd";
+    printTitle("New stuff from Matt's automated MATLAB build...", $cmd);
+    run($cmd);
 }
 
 sub buildAll {
@@ -107,8 +119,9 @@ sub menu {
     print "8 -- Build new150graph w/ region graphs\n";
     print "9 -- Build i1088_150 w/ region graphs\n";
     print "10 -- Build i1088_250 w/ region graphs\n";
+    print "11 -- Build Matt's new stuff from MATLAB\n";
     print "\n";
-    my $max_answer = 10;
+    my $max_answer = 11;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -145,9 +158,11 @@ sub runMenuEntry {
     }elsif( 8 == $entry ){
 	buildRegionGraphNew150();
     }elsif( 9 == $entry ){
-	buildRegionI1088150();	
+	buildRegionI1088150();
     }elsif( 10 == $entry ){
-	buildRegionI1088250();	
+	buildRegionI1088250();
+    }elsif( 11 == $entry ){
+	buildNew();
     }
 }
 

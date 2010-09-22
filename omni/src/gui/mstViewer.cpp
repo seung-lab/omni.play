@@ -1,6 +1,7 @@
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"
+#include "datalayer/omMST.h"
 
 MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 	: QTableWidget(parent)
@@ -12,16 +13,11 @@ MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 void MstViewerImpl::populate()
 {
 	OmSegmentation & segmentation = sdw_.getSegmentation();
+	boost::shared_ptr<OmMST> mst = segmentation.getMST();
 
-	const int numEdges = segmentation.mDendCount;
-	const quint32 * nodes    = segmentation.mDend->getQuint32Ptr();
-	const float * thresholds = segmentation.mDendValues->getFloatPtr();
-	/*
-	quint8 * edgeDisabledByUse = segmentation.mEdgeDisabledByUser->getQuint8Ptr();
-	quint8 * edgeWasJoined = segmentation.mEdgeWasJoined->getQuint8Ptr();
-	quint8 * edgeForceJoin = segmentation.mEdgeForceJoin->getQuint8Ptr();
-	const float stopThreshold = segmentation.mDendThreshold;
-	*/
+	const int numEdges = mst->mDendCount;
+	const quint32 * nodes    = mst->mDend->getPtr<unsigned int>();
+	const float * thresholds = mst->mDendValues->getPtr<float>();
 
 	QStringList headerLabels;
 	headerLabels << "Edge" << "Node 1" << "Node 2" << "threshold" << "Node 1 size" << "Node 2 size";
@@ -31,7 +27,6 @@ void MstViewerImpl::populate()
 	setRowCount(numEdges);
 
 	for( int i = 0; i < numEdges; ++i){
-		int colNum = 0;
 		const OmSegID node1ID  = nodes[i];
 		const OmSegID node2ID  = nodes[i + numEdges ];
 		const float threshold  = thresholds[i];
@@ -39,12 +34,13 @@ void MstViewerImpl::populate()
 		OmSegment* node1 = segmentation.GetSegmentCache()->GetSegment(node1ID);
 		OmSegment* node2 = segmentation.GetSegmentCache()->GetSegment(node2ID);
 
-		add(i, colNum, i);
-		add(i, colNum, node1ID);
-		add(i, colNum, node2ID);
-		add(i, colNum, threshold);
-		add(i, colNum, node1->getSize());
-		add(i, colNum, node2->getSize());
+		int colNum = 0;
+		setCell(i, colNum, i);
+		setCell(i, colNum, node1ID);
+		setCell(i, colNum, node2ID);
+		setCell(i, colNum, threshold);
+		setCell(i, colNum, node1->getSize());
+		setCell(i, colNum, node2->getSize());
 	}
 
 	setSortingEnabled(true); // don't enable sorting until done inserting

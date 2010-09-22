@@ -16,15 +16,15 @@ public:
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentationThresholdChangeAction";}
 
 	OmId mSegmentationId;
 	float mThreshold;
 	float mOldThreshold;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentationThresholdChangeAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentationThresholdChangeAction & a );
 };

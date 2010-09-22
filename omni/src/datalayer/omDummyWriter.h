@@ -4,34 +4,50 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWriter.h"
 
-class OmDummyWriter : public OmDataWriter
-{
- public:
-	OmDummyWriter( QString fileNameAndPath );
-	~OmDummyWriter();
+class OmDummyWriter : public OmIDataWriter {
+public:
+	OmDummyWriter(QString){}
 
 	void open(){};
 	void close(){};
-	void flush();
+	void flush(){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//file
-	void create();
+	void create(){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//group
-	void group_delete( const OmDataPath & path );
+	void group_delete(const OmDataPath &){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//image I/O
-	void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample );
-	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	void allocateChunkedDataset(const OmDataPath &,
+						 const Vector3i&,
+						 const Vector3i&,
+						 const OmVolDataType){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
-
-	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
+	void writeChunk(const OmDataPath &, DataBbox,
+					  OmDataWrapperPtr){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 
 	//data set raw
-	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const void* data);
-
- private:
-	QString mFileNameAndPath;
+	void writeDataset(const OmDataPath &, int,
+					       const OmDataWrapperPtr){
+		printf("%s: write operation should not have happened...\n",
+		       __FUNCTION__);
+	}
 };
 
 #endif

@@ -1,22 +1,24 @@
 #ifndef OM_HDF_H
 #define OM_HDF_H
 
-#include <QMutex>
-
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
+#include "volume/omVolumeTypes.hpp"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
-class OmHdf5LowLevelWrappersManualOpenClose;
-class vtkImageData;
+#include <zi/mutex>
+
+class OmHdf5Impl;
 class OmDataPath;
 
-class OmHdf5 
-{
- public:
-	OmHdf5( QString fileNameAndPath, const bool readOnly);
-	~OmHdf5();
+class OmHdf5 : public OmIDataReader,
+	       public OmIDataWriter {
+public:
+	static OmHdf5* getHDF5(const QString& fnp, const bool readOnly);
 
-	string getFileNameAndPathString();
+	virtual ~OmHdf5();
+
 	QString getFileNameAndPath();
 
 	//file
@@ -33,22 +35,32 @@ class OmHdf5
 	bool dataset_exists( const OmDataPath & path );
 
 	//image I/O
-	Vector3 < int > dataset_image_get_dims(const OmDataPath & path );
-	void dataset_image_create_tree_overwrite( const OmDataPath & path, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample );
-	vtkImageData* dataset_image_read_trim( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_image_write_trim( const OmDataPath & path, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
+	Vector3i getChunkedDatasetDims(const OmDataPath & path );
+	void allocateChunkedDataset( const OmDataPath &,
+						  const Vector3i&,
+						  const Vector3i&,
+						  const OmVolDataType type);
+	OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent);
+	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
+				       OmDataWrapperPtr data);
 
 	//data set raw
-	OmDataWrapperPtr dataset_raw_read( const OmDataPath & path, int* size = NULL);
-	void dataset_raw_create_tree_overwrite( const OmDataPath & path, int size, const void* data);
-	OmDataWrapperPtr dataset_read_raw_chunk_data( const OmDataPath & path, DataBbox dataExtent, int bytesPerSample);
-	void dataset_write_raw_chunk_data(const OmDataPath & path, DataBbox dataExtent, int bytesPerSample, void * imageData);
-	Vector3< int > dataset_get_dims( const OmDataPath & path );
+	OmDataWrapperPtr readDataset( const OmDataPath & path, int* size = NULL);
+	void writeDataset( const OmDataPath & path, int size, const OmDataWrapperPtr data);
+	OmDataWrapperPtr readChunk( const OmDataPath & path, DataBbox dataExtent);
+	void writeChunk(const OmDataPath & path, DataBbox dataExtent, OmDataWrapperPtr data);
+	Vector3i getDatasetDims( const OmDataPath & path );
 
- private:
+private:
+	OmHdf5(const QString&, const bool readOnly);
+
 	QString m_fileNameAndPath;
-	mutable QMutex fileLock;
-	OmHdf5LowLevelWrappersManualOpenClose * hdfLowLevelWrap;
+	const bool readOnly_;
+
+	zi::Mutex fileLock;
+	boost::shared_ptr<OmHdf5Impl> hdf5_;
+
+	friend class OmHdf5Manager;
 };
 
 #endif

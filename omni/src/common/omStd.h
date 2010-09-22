@@ -11,28 +11,15 @@
 
 // Global Includes
 #include <stdarg.h>
-
 #include <stdio.h>
 
 #include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::sort;
-
-#include <map>
-using std::map;
-
 #include <math.h>
 
 #include <set>
-using std::set;
-
+#include <map>
 #include <string>
-using std::string;
-
 #include <vector>
-using std::vector;
 
 #define OMPOW(base,expon) (int)pow((double) base, (double)expon)
 
@@ -62,7 +49,7 @@ using std::vector;
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 #endif
 static inline double round(double val)
-{   
+{
     return floor(val + 0.5);
 }
 #else

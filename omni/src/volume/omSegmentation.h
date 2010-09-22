@@ -13,20 +13,27 @@
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
+class OmMST;
 class OmSegmentLists;
-class MeshingManager;
 class OmSegment;
 class OmSegmentCache;
 class OmSegmentIterator;
 class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
+class OmVolumeData;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
  public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
+
+	boost::shared_ptr<OmVolumeData> getVolData();
+
+	std::string GetName();
+	std::string GetDirectoryPath();
+	void loadVolData();
 
 	void CloseDownThreads();
 
@@ -43,20 +50,17 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
 	void RunMeshQueue();
 
-	void BuildChunk( const OmMipChunkCoord &mipCoord, bool remesh = false);
-	void RebuildChunk(const OmMipChunkCoord &mipCoord, const OmSegIDsSet &rEditedVals);
-
-	//export
-	void ExportDataFilter(vtkImageData *);
+	void BuildChunk( const OmMipChunkCoord &, bool remesh = false);
+	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
 	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
-	boost::shared_ptr<OmSegmentLists> getSegmentLists(){ return mSegmentLists; }
+	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
 
 	//group management
         OmGroups * GetGroups(){ return &mGroups; }
- 	void SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
-	void UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name);
+ 	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
+	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void DeleteGroup(OmSegID = 0);
 
 	OmMipMeshManager mMipMeshManager;
@@ -66,32 +70,27 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void FlushDendUserEdges();
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
-	float GetDendThreshold(){ return mDendThreshold; }
+	float GetDendThreshold();
+	boost::shared_ptr<OmMST> getMST();
 
-	Vector3<int> FindCenterOfSelectedSegments();
+	Vector3i FindCenterOfSelectedSegments();
 
+	bool ImportSourceData(OmDataPath & dataset);
 
 private:
 	void KillCacheThreads();
 
-	MeshingManager * mMeshingMan;
-
+	boost::shared_ptr<OmVolumeData> mVolData;
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 
 	OmGroups mGroups;
 
-        OmDataWrapperPtr mDend;
-        OmDataWrapperPtr mDendValues;
-	OmDataWrapperPtr mEdgeDisabledByUser;
-	OmDataWrapperPtr mEdgeWasJoined;
-	OmDataWrapperPtr mEdgeForceJoin;
-	int mDendSize;
-	int mDendValuesSize;
-	int mDendCount;
-	float mDendThreshold;
+	boost::shared_ptr<OmMST> mst_;
 
 	friend class OmBuildSegmentation;
+	template <class T> friend class OmVolumeImporter;
+
 	friend class OmSegmentCacheImpl;
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;

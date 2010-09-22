@@ -14,7 +14,7 @@ class OmSegmentEdge {
 
 	bool operator==( const OmSegmentEdge& rhs ) const;
 
-	bool isValid();
+	bool isValid() const {return valid;}
 
 	OmSegID parentID;
 	OmSegID childID;

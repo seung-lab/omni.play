@@ -9,12 +9,13 @@
 
 #include "common/omCommon.h"
 
+#include <QDir>
+
 class OmDataPath;
 class OmDataLayer;
-class OmDataReader;
-class OmDataWriter;
+class OmIDataReader;
+class OmIDataWriter;
 class OmSegment;
-class vtkImageData;
 
 class OmProjectData : boost::noncopyable {
 public:
@@ -26,6 +27,7 @@ public:
 	static QString getFileNameAndPath();
 	static QString getAbsoluteFileNameAndPath();
 	static QString getAbsolutePath();
+	static QDir GetFilesFolderPath();
 
 	static void Create();
 	static void Open();
@@ -35,15 +37,14 @@ public:
 	static bool IsOpen() {return Instance()->mIsOpen;}
 	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
 
-	static OmDataLayer * GetDataLayer();
-	static OmDataReader * GetProjectDataReader();
-	static OmDataWriter * GetDataWriter();
+	static OmIDataReader* GetProjectDataReader();
+	static OmIDataWriter* GetDataWriter();
 
-	static int getFileVersion(){ return Instance()-> fileVersion_; }
+	static int getFileVersion(){ return Instance()->fileVersion_; }
 
 private:
 	OmProjectData();
-	~OmProjectData();
+	~OmProjectData(){}
 
 	//singleton
 	static OmProjectData* mspInstance;
@@ -55,9 +56,8 @@ private:
 	bool mIsReadOnly;
 
 	void setupDataLayer( QString fileNameAndPath );
-	OmDataLayer* dataLayer;
-	OmDataReader* dataReader;
-	OmDataWriter* dataWriter;
+	OmIDataReader* dataReader;
+	OmIDataWriter* dataWriter;
 
 	friend class OmDataArchiveProject;
 };

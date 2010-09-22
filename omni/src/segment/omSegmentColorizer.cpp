@@ -2,20 +2,21 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/cache/omCacheManager.h"
-
-#include <QMutexLocker>
+#include "utility/omSmartPtr.hpp"
 
 static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
 					const OmSegmentColorCacheType sccType,
-					const bool isSegmentation)
+					const bool isSegmentation,
+					const Vector2i& dims)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize(0)
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
 	, mIsSegmentation(isSegmentation)
+	, mNumElements(dims.x * dims.y)
 {
 }
 
@@ -25,9 +26,9 @@ OmSegmentColorizer::~OmSegmentColorizer()
 
 void OmSegmentColorizer::setup()
 {
-	QWriteLocker mapResizeLock(&mMapResizeMutex);
+	zi::WriteGuard g(mMapResizeMutex);
 
-	const quint32 curSize = mSegmentCache->getMaxValue() + 1;
+	const OmSegID curSize = mSegmentCache->getMaxValue() + 1;
 
 	if( curSize == mSize ){
 		return;
@@ -35,53 +36,70 @@ void OmSegmentColorizer::setup()
 
 	mSize = curSize;
 	mColorCache.resize(curSize);
+	mColorUpdateMutex.resize(curSize);
 }
 
-void OmSegmentColorizer::colorTile( OmSegID * imageData, const int size,
-				    unsigned char * data )
+boost::shared_ptr<OmColorRGBA>
+OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr)
 {
 	setup();
 
-	QReadLocker mapResizeLock(&mMapResizeMutex);
+	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
 
-	const int segCacheFreshness = OmCacheManager::Freshen(false);
+	mAreThereAnySegmentsSelected = mSegmentCache->AreSegmentsSelected() ||
+		                       mSegmentCache->AreSegmentsEnabled();
 
-	mAreThereAnySegmentsSelected =
-		mSegmentCache->AreSegmentsSelected() ||
-		mSegmentCache->AreSegmentsEnabled();
+	mCurSegCacheFreshness = OmCacheManager::Freshen(false);
 
-	int offset = 0;
-	OmColor newcolor = blackColor;
+	boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
+		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(mNumElements);
+
+	doColorTile(imageDataPtr.get(), colorMappedDataPtr.get());
+
+	return colorMappedDataPtr;
+}
+
+void OmSegmentColorizer::doColorTile(uint32_t* imageData,
+				     OmColorRGBA* colorMappedData)
+{
+	OmColor prevColor = blackColor;
 	OmSegID lastVal = 0;
-	OmSegID val;
 
-	// looping through each value of imageData, which is
-	//   strictly dims.x * dims.y big, no extra because of cast to OmSegID
-	for (int i = 0; i < size; ++i ) {
+	for(uint32_t i = 0; i < mNumElements; ++i ) {
 
-		val = (OmSegID) imageData[i];
+		const OmSegID val = imageData[i]; // may upcast
+		OmColor curColor;
 
-		if ( val != lastVal) {
-			if( 0 == val ){
-				newcolor = blackColor;
-			} else{
-				mColorUpdateMutex.lock(); // TODO: use lock pages
-				if( !isCacheElementValid(val, segCacheFreshness) ){
-					mColorCache[ val ].color = getVoxelColorForView2d(val);
-					mColorCache[ val ].freshness = segCacheFreshness;
-				}
-				newcolor = mColorCache[ val ].color;
-				mColorUpdateMutex.unlock();
+		if(val == lastVal){ // memoized previous, non-zero color
+			curColor = prevColor;
+		} else if(0 == val){
+			curColor = blackColor;
+		} else { // get color from cache
+
+			mColorUpdateMutex[val].lock();
+
+			// check if cache element is valid
+			if(mCurSegCacheFreshness  == mColorCache[val].freshness &&
+			   mCurBreakThreshhold == mPrevBreakThreshhold ){
+
+				curColor = mColorCache[val].color;
+
+			} else { // update color
+				curColor = mColorCache[val].color
+					 = getVoxelColorForView2d(val);
+				mColorCache[val].freshness = mCurSegCacheFreshness;
 			}
+
+			mColorUpdateMutex[val].unlock();
+
+			prevColor = curColor; // memoize previous, non-zero color
+			lastVal   = val;
 		}
 
-		data[offset]     = newcolor.red;
-		data[offset + 1] = newcolor.green;
-		data[offset + 2] = newcolor.blue;
-		data[offset + 3] = 255;
-
-		offset += 4;
-		lastVal = val;
+		colorMappedData[i].red   = curColor.red;
+		colorMappedData[i].green = curColor.green;
+		colorMappedData[i].blue  = curColor.blue;
+		colorMappedData[i].alpha = 255;
 	}
 }
 
@@ -94,23 +112,23 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 		return blackColor;
 	}
 	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
-	const OmColor segRootColor = segRoot->mColorInt;
+	const OmColor segRootColor = segRoot->GetColorInt();
 
 	const bool isSelected =
 		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
-		mSegmentCache->mImpl->isSegmentEnabled(segRoot->mValue);
+		mSegmentCache->mImpl->isSegmentEnabled(segRoot->value);
 
 	locker.unlock(); // done w/ lock
 
 	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
-		if(seg->mImmutable) {
+		if(seg->GetImmutable()) {
 			return segRootColor;
 		} else {
 			return blackColor;
 		}
 	}
 	if( SCC_SEGMENTATION_VALID_BLACK == mSccType || SCC_FILTER_VALID_BLACK == mSccType){
-		if(seg->mImmutable) {
+		if(seg->GetImmutable()) {
 			return blackColor;
 		} else {
 			return segRootColor;
@@ -119,7 +137,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
 
 	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
 		if( isSelected ){
-			return seg->mColorInt;;
+			return seg->GetColorInt();;
 		} else {
 			return blackColor;
 		}

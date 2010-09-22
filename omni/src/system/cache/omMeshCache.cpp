@@ -2,14 +2,13 @@
 #include "mesh/omMipMeshManager.h"
 
 OmMeshCache::OmMeshCache(OmMipMeshManager * parent) 
-	: OmThreadedCache<OmMipMeshCoord, OmMipMesh>(VRAM_CACHE_GROUP)
+	: OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(VRAM_CACHE_GROUP)
 	, mOmMipMeshManager(parent)
 {
 }
 	
-OmMipMesh* OmMeshCache::HandleCacheMiss(const OmMipMeshCoord & coord)
+OmMipMeshPtr OmMeshCache::HandleCacheMiss(const OmMipMeshCoord & coord)
 {
-	//create mesh with this segment manager as cache
 	OmMipMesh *mesh = mOmMipMeshManager->AllocMesh(coord);
 
 	//load data from disk
@@ -17,8 +16,6 @@ OmMipMesh* OmMeshCache::HandleCacheMiss(const OmMipMeshCoord & coord)
 		mesh->Load();
 	} catch (...) {
 	}
-
-	//return mesh to cache
-	return mesh;
+	
+	return OmMipMeshPtr(mesh);
 }
-

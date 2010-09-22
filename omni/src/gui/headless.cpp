@@ -7,8 +7,8 @@
 #include <QProcess>
 #include <time.h>
 
-#include "volume/omMipChunk.h"
 #include "common/omDebug.h"
+#include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
 #include "gui/headless.h"
@@ -23,9 +23,11 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "utility/stringHelpers.h"
 #include "utility/dataWrappers.h"
+#include "utility/stringHelpers.h"
+#include "view2d/omTileDumper.hpp"
 #include "volume/omFilter2d.h"
+#include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
@@ -131,18 +133,22 @@ void Headless::processLine( QString line, QString fName )
 			verbose = (bool) StringHelpers::getUInt( args[2] );
 		}
 
-		if( !OmProject::IsChannelValid(id1) && !OmProject::IsChannelValid(id2) ) {
-			if( id1 == id2 ){
-				printf("Channel %i is not a valid channel.\n",id1);
-			} else {
-				printf("Channels %i and %i are not valid channels.\n",id1,id2);
-			}
-		} else if( !OmProject::IsChannelValid(id1) ) {
+		if( !OmProject::IsChannelValid(id1) ) {
 			printf("Channel %i is not a valid channel.\n",id1);
-		} else if( !OmProject::IsChannelValid(id2) ) {
+			return;
+		}
+		if( !OmProject::IsChannelValid(id2) ) {
 			printf("Channel %i is not a valid channel.\n",id2);
-		} else if( OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),&OmProject::GetChannel(id2),verbose) ) {
+			return;
+		}
+		const bool same =
+			OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),
+						    &OmProject::GetChannel(id2));
+
+		if(same){
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
+		} else {
+			printf("Channel %i and Channel %i are different!\n",id1,id2);
 		}
 	} else if( line.startsWith("compareSegs:") ) {
 		// format: compareSegs:id1,id2[:verbose]
@@ -160,8 +166,8 @@ void Headless::processLine( QString line, QString fName )
 			return;
 		}
 
-		int id1 = StringHelpers::getUInt( segmentationIDs[0] );
-		int id2 = StringHelpers::getUInt( segmentationIDs[1] );
+		const int id1 = StringHelpers::getUInt( segmentationIDs[0] );
+		const int id2 = StringHelpers::getUInt( segmentationIDs[1] );
 
 		bool verbose = 0;
 
@@ -169,18 +175,22 @@ void Headless::processLine( QString line, QString fName )
 			verbose = (bool) StringHelpers::getUInt( args[2] );
 		}
 
-		if( !OmProject::IsSegmentationValid(id1) && !OmProject::IsSegmentationValid(id2) ) {
-			if( id1 == id2 ){
-				printf("Segmentation %i is not a valid segmentation.\n",id1);
-			} else {
-				printf("Segmentations %i and %i are not valid segmentation.\n",id1,id2);
-			}
-		} else if( !OmProject::IsSegmentationValid(id1) ) {
+		if( !OmProject::IsSegmentationValid(id1) ) {
 			printf("Segmentation %i is not a valid segmentation.\n",id1);
-		} else if( !OmProject::IsSegmentationValid(id2) ) {
+			return;
+		}
+
+		if( !OmProject::IsSegmentationValid(id2) ) {
 			printf("Segmentation %i is not a valid segmentation.\n",id2);
-		} else if( OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),&OmProject::GetSegmentation(id2),verbose) ) {
+			return;
+		}
+		const bool same =
+			OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),
+						    &OmProject::GetSegmentation(id2));
+		if(same){
 			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
+		} else {
+			printf("Segmentation %i and Segmentation %i are different!\n",id1,id2);
 		}
 	} else if(line.startsWith("dumpSegTiles:") ) {
                 QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -197,7 +207,7 @@ void Headless::processLine( QString line, QString fName )
 
 		OmViewGroupState * vgs = new OmViewGroupState(NULL);
 		vgs->SetSegmentation(segID);
-		OmMipVolume::DumpTiles(segID, SEGMENTATION, file, vgs);
+		OmTileDumper::DumpTiles(segID, SEGMENTATION, file, vgs);
 
         } else if(line.startsWith("dumpChannTiles:") ) {
                 QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -214,9 +224,7 @@ void Headless::processLine( QString line, QString fName )
 
                 OmViewGroupState * vgs = new OmViewGroupState(NULL);
                 vgs->SetSegmentation(segID);
-                OmMipVolume::DumpTiles(segID, CHANNEL, file, vgs);
-
-
+                OmTileDumper::DumpTiles(segID, CHANNEL, file, vgs);
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -235,16 +243,16 @@ void Headless::processLine( QString line, QString fName )
 			return;
 		}
 
-		int x = StringHelpers::getUInt( coords[0] );
-		int y = StringHelpers::getUInt( coords[1] );
-		int z = StringHelpers::getUInt( coords[2] );
+		const int x = StringHelpers::getUInt( coords[0] );
+		const int y = StringHelpers::getUInt( coords[1] );
+		const int z = StringHelpers::getUInt( coords[2] );
 
 		OmMipMeshCoord mipChunkCoord = OmMipMeshCoord(OmMipChunkCoord(mipLevel, x, y, z), SegmentationID);
-		OmDataWriter * hdf5File;
+		OmIDataWriter* hdf5File = NULL;
 
-  		if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-			OmDataLayer * dl = OmProjectData::GetDataLayer();
-    			hdf5File = dl->getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
+  		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
+		    OmStateManager::getParallel()) {
+    			hdf5File = OmDataLayer::getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
 			hdf5File->create();
 			hdf5File->open();
                 }
@@ -472,9 +480,8 @@ void Headless::processLine( QString line, QString fName )
 
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
-
-		QExplicitlySharedDataPointer < OmMipChunk > p_chunk = QExplicitlySharedDataPointer < OmMipChunk > ();
-		segmen.GetChunk(p_chunk, chunk_coord);
+		OmMipChunkPtr p_chunk;
+		segmen.GetChunk(p_chunk, chunk_coord, true);
 		p_chunk->Open();
         } else if( line.startsWith("removeChann:") ){
                 QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -690,54 +697,53 @@ OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 
 void Headless::watershed(const QString &  line)
 {
-	QStringList args = line.split(':',QString::SkipEmptyParts);
+	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
 
-	const QString in_fnp = "/Users/purcaro/Omni/affinity/conn709.dat";
-	QFile* inf = new QFile(in_fnp);
-	if(!inf->open(QIODevice::ReadOnly)){
-		printf("could not open %s\n", qPrintable(in_fnp));
-		assert(0);
+	if ( argsMain.size() < 2 ){
+		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
+		return;
 	}
 
-	const QString out_fnp = "/Users/purcaro/Omni/affinity/conn709.out.dat";
-	QFile* outf = new QFile(out_fnp);
-	if(!outf->open(QIODevice::ReadWrite)){
-		printf("could not open %s\n", qPrintable(out_fnp));
-		assert(0);
+	const QStringList args = argsMain[1].split(',',QString::SkipEmptyParts);
+	if ( args.size() < 8 ){
+		printf("%d args; ", args.size());
+		printf("Please enter an input filename, x, y, and z, low, high, size, and absLowThreshold.\n");
+		return;
 	}
 
-	float* in = (float*)(inf->map(0, inf->size()));
-	uint32_t* out= (uint32_t*)(outf->map(0, outf->size()));
+	const int64_t xDim = StringHelpers::getUInt(args[1]);
+	const int64_t yDim = StringHelpers::getUInt(args[2]);
+	const int64_t zDim = StringHelpers::getUInt(args[3]);
+	const size_t numVoxels = xDim*yDim*zDim;
+	const size_t numBytesIn = numVoxels*sizeof(float)*3;
+	const size_t numBytesOut = numVoxels*sizeof(int);
 
-	inf->close();
-	outf->close();
+	const std::string in_fnp = args[0].toStdString();
+	OmMemMappedFileReadQT<float> in(in_fnp, numBytesIn);
 
-	const int64_t xDim = 1024;
-	const int64_t yDim = 1024;
-	const int64_t zDim = 50;
+	const std::string out_fnp = in_fnp + ".out";
+	OmMemMappedFileWriteQT<int> out(out_fnp, numBytesOut);
 
-	const float loThreshold = 0.1;
-	const float hiThreshold = 0.99;
-	const int   noThreshold = 150;
-	const float absLowThreshold = 0.3;
+	const float loThreshold = StringHelpers::getFloat(args[4]);
+	const float hiThreshold = StringHelpers::getFloat(args[5]);
+	const int   sizeThreshold = StringHelpers::getUInt(args[6]);
+	const float absLowThreshold = StringHelpers::getFloat(args[7]);
 
-	std::vector<std::pair<int64_t, float> > graph;
-	std::vector<std::pair<float, int64_t> >  dendQueue;
-	std::vector<int> sizes;
+	RawQuickieWS rqws(xDim,
+			  yDim,
+			  zDim,
+			  loThreshold,
+			  hiThreshold,
+			  sizeThreshold,
+			  absLowThreshold);
 
-	rawQuickieWS(in,
-		     xDim,
-		     yDim,
-		     zDim,
-		     loThreshold,
-		     hiThreshold,
-		     noThreshold,
-		     absLowThreshold,
-		     out,
-		     graph,
-		     dendQueue,
-		     sizes);
+	rqws.Run(in.GetPtr(), out.GetPtr());
 
-	delete inf;
-	delete outf;
+	const size_t numEdges = rqws.GetNumMSTedges();
+	const qint64 numBytesMST = numEdges*sizeof(OmMSTedge);
+
+	const std::string mst_fnp = out_fnp + ".mst";
+	OmMemMappedFileWriteQT<OmMSTedge> mst(mst_fnp, numBytesMST);
+
+	rqws.SaveToMemMap(mst.GetPtr());
 }

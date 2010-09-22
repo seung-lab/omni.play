@@ -9,62 +9,51 @@ typedef LONG_PTR ssize_t;
 
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/omDataPath.h"
 
-#include "hdf5.h"
+class OmHdf5LowLevel {
+public:
+	explicit OmHdf5LowLevel(const int id)
+		: fileId(id) {}
 
-class vtkImageData;
+	void setPath(const OmDataPath & p){
+		path = p;
+	}
 
-class OmHdf5LowLevel
-{
- public:
-	//file
-	static void om_hdf5_file_create(string fpath);
-	static hid_t om_hdf5_file_open_with_lock(string fpath, const bool readOnly);
-	static void om_hdf5_file_close_with_lock(hid_t fileId);
-	static void om_hdf5_flush_with_lock(const hid_t fileId);
+	const char* getPath(){
+		return path.getString().c_str();
+	}
 
 	//group
-	static bool om_hdf5_group_exists_with_lock(hid_t fileId, const char* name);
-	static void om_hdf5_group_delete_with_lock(hid_t fileId, const char* name);
+	bool group_exists();
+	void group_delete();
+	void group_create();
+	void group_create_tree(const char*);
 
-	//data set
-	static bool om_hdf5_dataset_exists_with_lock(hid_t fileId, const char* name);
-	static void om_hdf5_dataset_image_create_tree_overwrite_with_lock(hid_t fileId, const char* name, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
-	static vtkImageData * om_hdf5_dataset_image_read_trim_with_lock(hid_t fileId, const char* name, DataBbox dataExtent, int bytesPerSample);
-	static void om_hdf5_dataset_image_write_trim_with_lock(hid_t fileId, const char* name, DataBbox* dataExtent, int bytesPerSample, vtkImageData *pImageData);
-	static void om_hdf5_dataset_delete_create_tree_with_lock(hid_t fileId, const char *name);
+	bool dataset_exists();
+	void dataset_delete_create_tree();
+	Vector3i getDatasetDims();
+	OmDataWrapperPtr readDataset(int* size = NULL);
+	void allocateDataset(int size, OmDataWrapperPtr data);
 
-	//data set raw
-	static OmDataWrapperPtr om_hdf5_dataset_raw_read_with_lock(hid_t fileId, const char* name, int* size = NULL);
-	static void om_hdf5_dataset_raw_create_tree_overwrite_with_lock(hid_t fileId, const char* name, int size, const void* data);
-	static void om_hdf5_dataset_raw_create_with_lock(hid_t fileId, const char *name, int size, const void *data);
 
-	//image I/O
-	static Vector3 < int > om_hdf5_dataset_image_get_dims_with_lock(hid_t fileId, const char *name);
-	static void om_hdf5_dataset_image_create_with_lock(hid_t fileId, const char *name, Vector3<int>* dataDims, Vector3<int>* chunkDims, int bytesPerSample);
-	static OmDataWrapperPtr om_hdf5_dataset_read_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
-	static void om_hdf5_dataset_write_raw_chunk_data(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample,  void * imageData);
-	static Vector3< int > om_hdf5_dataset_get_dims_with_lock(hid_t fileId, const char *name);
+
+	Vector3i getChunkedDatasetDims();
+	void allocateChunkedDataset(const Vector3i&,
+				    const Vector3i&,
+				    const OmVolDataType);
+	OmDataWrapperPtr readChunkNotOnBoundary(const DataBbox&);
+	OmDataWrapperPtr readChunk(const DataBbox&);
+	void writeChunk(const DataBbox&, OmDataWrapperPtr);
 
  private:
-	static hid_t om_hdf5_bytesToHdf5Id(int bytes);
-	static void printfDatasetCacheSize( const hid_t dataset_id );
-	static void printfFileCacheSize( const hid_t fileId );
-	static void printTypeInfo( hid_t dstype );
+	// hid_t is typedef'd to int in H5Ipublic.h
+	const int fileId;
+	OmDataPath path;
 
-	//image I/O private
-	static vtkImageData * om_hdf5_dataset_image_read_with_lock(hid_t fileId, const char *name, DataBbox extent, int bytesPerSample);
-	static void om_hdf5_dataset_image_write_with_lock(hid_t fileId, const char *name, DataBbox* extent, int bytesPerSample,  vtkImageData * imageData);
+	OmDataWrapperPtr readChunkVTK(DataBbox extent);
+	OmDataWrapperPtr readChunkNotOnBoundaryVTK(const DataBbox&,
+						   const DataBbox&);
 
-	//group private
-	static void om_hdf5_group_create_with_lock(hid_t fileId, const char *name);
-	static void om_hdf5_group_create_tree_with_lock(hid_t fileId, const char *name);
-
-	//data set private
-	static void om_hdf5_dataset_delete_with_lock(hid_t fileId, const char *name);
-
-	static bool isDatasetPathNameAChannel( const char *name );
-
-	static bool checkIfLinkExists(hid_t fileId, const char *name);
 };
 #endif

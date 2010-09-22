@@ -26,8 +26,6 @@ OmFilter2d::OmFilter2d() {
 OmFilter2d::OmFilter2d(OmId omId)
   : OmManageableObject(omId)
 {
-	mName = QString("filter%1").arg(omId);
-
 	//initially transparent.
 	mAlpha = 0.0;
 	mSeg = 1;
@@ -50,7 +48,6 @@ OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype, OmViewGroupStat
 	if (OmProject::IsSegmentationValid(mSeg)) {
 		vgs->SetSegmentation(mSeg);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, vgs);
-
 	} else if (OmProject::IsChannelValid(mChannel)) {
 		vgs->SetChannel(mChannel);
 		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, vgs);

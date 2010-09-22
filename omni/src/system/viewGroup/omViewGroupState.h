@@ -3,7 +3,8 @@
 
 #include "system/omManageableObject.h"
 #include "gui/inspectors/inspectorProperties.h"
-#include <QMutex>
+
+#include <zi/mutex>
 
 class ChannelDataWrapper;
 class FilterWidget;
@@ -54,8 +55,10 @@ class OmViewGroupState : public OmManageableObject {
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	void ColorTile( OmSegID *, const int,
-			const ObjectType, unsigned char * );
+	boost::shared_ptr<OmColorRGBA>
+	ColorTile(boost::shared_ptr<uint32_t>,
+		  const Vector2i& dims,
+		  const ObjectType);
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
@@ -83,11 +86,11 @@ class OmViewGroupState : public OmManageableObject {
 	int getView2DBrushToolDiameter();
 	void setView2DBrushToolDiameter(const int size);
 
-	void SetShowFilterMode(const bool inColor);
-	bool GetShowFilterMode();
+	void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
+	bool ShowNonSelectedSegmentsInColorInFilter();
 
  private:
-	mutable QMutex mColorCacheMapLock;
+	zi::Mutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
 	FilterWidget* mFilterWidget;
@@ -113,7 +116,7 @@ class OmViewGroupState : public OmManageableObject {
 	Vector3i mViewSliceDimYZ;
 	Vector3i mViewSliceDimXZ;
 
-	std::vector<OmSegmentColorizer*> mColorCaches;
+	std::vector<boost::shared_ptr<OmSegmentColorizer> > mColorCaches;
 
 	SegmentationDataWrapper * m_sdw;
 	ChannelDataWrapper * m_cdw;
@@ -132,6 +135,12 @@ class OmViewGroupState : public OmManageableObject {
 	bool mShowFilterInColor;
 
 	int view2DBrushToolDiameter_;
+
+	OmSegmentColorCacheType determineColorizationType(const ObjectType);
+	void setupColorizer(const Vector2i& dims,
+			    const ObjectType objType,
+			    const OmSegmentColorCacheType sccType);
+
 };
 
 #endif

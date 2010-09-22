@@ -17,8 +17,8 @@ public:
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
 	OmId mSegmentationId;
@@ -26,12 +26,9 @@ private:
 	bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
 	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
-
-
-
 };
 
 #endif

@@ -41,10 +41,11 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
         mShowValid = false;
 	mShowSplit = false;
 	mShowValidInColor = false;
+	mShowFilterInColor = false;
 
-	zoom_level = Vector2 < int >(0, 100);
+	zoom_level = Vector2i(0, 6);
 
-	mColorCaches.resize( SCC_NUMBER_OF_ENUMS, NULL);
+	mColorCaches.resize(SCC_NUMBER_OF_ENUMS);
 	m_sdw = NULL;
 	m_cdw = NULL;
 
@@ -309,59 +310,73 @@ void OmViewGroupState::SetChannel( const OmId chanID )
 	m_cdw = new ChannelDataWrapper( chanID );
 }
 
-void OmViewGroupState::ColorTile( OmSegID * imageData, const int size,
-				  const ObjectType objType, unsigned char * data )
+OmSegmentColorCacheType
+OmViewGroupState::determineColorizationType(const ObjectType objType)
 {
-	OmSegmentColorCacheType sccType;
-
 	switch( objType ){
 	case CHANNEL:
-		if( !mShowValid && shouldVolumeBeShownBroken() ){
-			sccType = SCC_FILTER_BREAK;
-		} else if(mShowValid) {
+		if(mShowValid) {
 			if(mShowValidInColor){
-				sccType = SCC_FILTER_VALID;
-			} else {
-				sccType = SCC_FILTER_VALID_BLACK;
+				return SCC_FILTER_VALID;
 			}
-		} else {
-			if(GetShowFilterMode()){
-				sccType = SCC_FILTER_COLOR;
-			} else {
-				sccType = SCC_FILTER_BLACK;
-			}
+			return SCC_FILTER_VALID_BLACK;
 		}
-		break;
+
+		if(shouldVolumeBeShownBroken()){
+			return SCC_FILTER_BREAK;
+		}
+
+		if(ShowNonSelectedSegmentsInColorInFilter()){
+			return SCC_FILTER_COLOR;
+		}
+
+		return SCC_FILTER_BLACK;
 
 	case SEGMENTATION:
-		if( !mShowValid && shouldVolumeBeShownBroken() ){
-			sccType = SCC_SEGMENTATION_BREAK;
-		} else if(mShowValid) {
+		if(mShowValid){
 			if(mShowValidInColor){
-				sccType = SCC_SEGMENTATION_VALID;
-			} else {
-				sccType = SCC_SEGMENTATION_VALID_BLACK;
+				return SCC_SEGMENTATION_VALID;
 			}
-		} else {
-			sccType = SCC_SEGMENTATION;
+			return SCC_SEGMENTATION_VALID_BLACK;
 		}
-		break;
 
-	default:
-		assert(0);
+		if(shouldVolumeBeShownBroken() ){
+			return SCC_SEGMENTATION_BREAK;
+		}
+
+		return SCC_SEGMENTATION;
 	}
+}
 
-	mColorCacheMapLock.lock();
-	if( NULL == mColorCaches[ sccType ] ){
+void OmViewGroupState::setupColorizer(const Vector2i& dims,
+				      const ObjectType objType,
+				      const OmSegmentColorCacheType sccType)
+{
+	zi::Guard g(mColorCacheMapLock);
+
+	if(NULL == mColorCaches[sccType]){
 		assert(m_sdw);
+		OmSegmentColorizer* sc =
+			new OmSegmentColorizer(m_sdw->getSegmentCache(),
+					       sccType,
+					       SEGMENTATION == objType,
+					       dims);
 		mColorCaches[ sccType ] =
-			new OmSegmentColorizer( m_sdw->getSegmentCache(),
-						sccType,
-						SEGMENTATION == objType );
+			boost::shared_ptr<OmSegmentColorizer>(sc);
 	}
-	mColorCacheMapLock.unlock();
+}
 
-	mColorCaches[ sccType ]->colorTile( imageData, size, data );
+boost::shared_ptr<OmColorRGBA>
+OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
+			    const Vector2i& dims,
+			    const ObjectType objType)
+{
+	const OmSegmentColorCacheType sccType =
+		determineColorizationType(objType);
+
+	setupColorizer(dims, objType, sccType);
+
+	return mColorCaches[ sccType ]->colorTile(imageData);
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)
@@ -434,12 +449,12 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
         OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
-bool OmViewGroupState::GetShowFilterMode()
+bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
 {
 	return mShowFilterInColor;
 }
 
-void OmViewGroupState::SetShowFilterMode(const bool inColor)
+void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool inColor)
 {
 	mShowFilterInColor = inColor;
 	OmCacheManager::Freshen(true);

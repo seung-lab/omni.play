@@ -13,7 +13,7 @@
 ///////
 ///////          OmSegmentJoinAction
 ///////
-OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId, 
+OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId,
 					  const OmSegIDsSet & selectedSegmentIds)
 	: mSegmentationId( segmentationId )
 	, mSelectedSegmentIds( selectedSegmentIds )
@@ -32,10 +32,10 @@ void OmSegmentJoinAction::Action()
 void OmSegmentJoinAction::UndoAction()
 {
 	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);	
+	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
 }
 
-string OmSegmentJoinAction::Description()
+std::string OmSegmentJoinAction::Description()
 {
 	QString lineItem = QString("Joined: ");
 	foreach( const OmId segId, mSelectedSegmentIds){
@@ -45,7 +45,7 @@ string OmSegmentJoinAction::Description()
 	return lineItem.toStdString();
 }
 
-void OmSegmentJoinAction::save(const string & comment)
+void OmSegmentJoinAction::save(const std::string& comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

@@ -16,18 +16,18 @@
 
 class OmEventListener;
 
-typedef set< OmEventListener* > EventListenerSet;
-typedef map< OmEventClass, EventListenerSet > EventClassToEventListenerSetMap;
+typedef std::set<OmEventListener*> EventListenerSet;
+typedef std::map<OmEventClass, EventListenerSet> EventClassToEventListenerSetMap;
 
 class OmEventManager : boost::noncopyable, public QObject {
 
 public:
 	static OmEventManager* Instance();
 	static void Delete();
-	
+
 	//qtevent handler
 	bool event(QEvent *event);	//customEvent
-	
+
 	//EventListener accessors
 	void AddEventListener(OmEventClass, OmEventListener*);
 	void RemoveEventListener(OmEventClass, OmEventListener*);
@@ -35,19 +35,19 @@ public:
 	//static accessors
 	static void AddListener(OmEventClass, OmEventListener*);
 	static void RemoveListener(OmEventClass, OmEventListener*);
-	
+
 	//event accessors
 	static bool SendEvent(OmEvent&);
 	static void PostEvent(OmEvent*);
 	static void FlushPostEvents();
-	
+
 private:
 	OmEventManager();
 	~OmEventManager();
 
 	//singleton
 	static OmEventManager* mspInstance;
-	
+
 	//map events
 	EventClassToEventListenerSetMap mEventClassToListernsMap;
 };

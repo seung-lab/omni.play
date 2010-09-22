@@ -1,30 +1,22 @@
 #include "datalayer/omDataLayer.h"
-#include "datalayer/hdf5/omHdf5Reader.h"
-#include "datalayer/hdf5/omHdf5Writer.h"
+#include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDummyWriter.h"
 
 #include <QFileInfo>
 
-OmDataLayer::OmDataLayer()
+OmIDataReader* OmDataLayer::getReader(const QString& fileNameAndPath,
+				      const bool readOnly)
 {
+	return OmHdf5::getHDF5(fileNameAndPath, readOnly);
 }
 
-OmDataLayer::~OmDataLayer()
-{
-	//TODO: fixme!
-}
-
-OmDataReader * OmDataLayer::getReader(  QString fileNameAndPath, const bool readOnly )
-{
-	return new OmHdf5Reader( fileNameAndPath, readOnly );
-}
-
-OmDataWriter * OmDataLayer::getWriter(  QString fileNameAndPath, const bool readOnly )
+OmIDataWriter* OmDataLayer::getWriter(const QString& fileNameAndPath,
+				      const bool readOnly)
 {
 	if( readOnly ){
 		printf("%s: in read-only mode...\n", __FUNCTION__);
 		return new OmDummyWriter( fileNameAndPath );
 	}
-	
-	return new OmHdf5Writer( fileNameAndPath );
+
+	return OmHdf5::getHDF5(fileNameAndPath, false);
 }

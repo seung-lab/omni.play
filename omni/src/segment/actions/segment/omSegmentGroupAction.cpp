@@ -12,8 +12,8 @@
 ///////
 ///////          OmSegmentGroupAction
 ///////
-OmSegmentGroupAction::OmSegmentGroupAction( const OmId segmentationId, 
-					  const OmSegIDsSet & selectedSegmentIds, 
+OmSegmentGroupAction::OmSegmentGroupAction( const OmId segmentationId,
+					  const OmSegIDsSet & selectedSegmentIds,
 					  const OmGroupName name, const bool create)
 	: mSegmentationId( segmentationId )
 	, mName(name)
@@ -45,7 +45,7 @@ void OmSegmentGroupAction::UndoAction()
 	}
 }
 
-string OmSegmentGroupAction::Description()
+std::string OmSegmentGroupAction::Description()
 {
 	QString lineItem = QString("Grouped: ");
 	foreach( const OmId segId, mSelectedSegmentIds){
@@ -55,7 +55,7 @@ string OmSegmentGroupAction::Description()
 	return lineItem.toStdString();
 }
 
-void OmSegmentGroupAction::save(const string & comment)
+void OmSegmentGroupAction::save(const std::string& comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

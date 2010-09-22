@@ -6,7 +6,7 @@
 
 class OmThreadPool {
 public:
-	OmThreadPool(){}
+	OmThreadPool() {}
 
 	~OmThreadPool(){
 		stop();
@@ -29,12 +29,24 @@ public:
 		threadManager_->stop();
 	}
 
-	void pushTask(boost::shared_ptr<zi::Runnable> job){
+	void addTaskFront(boost::shared_ptr<zi::Runnable> job){
 		threadManager_->pushTask(job);
+	}
+
+	void addTaskBack(boost::shared_ptr<zi::Runnable> job){
+		threadManager_->addTask(job);
 	}
 
 	int getTaskCount() const {
 		return threadManager_->getTaskCount();
+	}
+
+	int getNumWorkerThreads() const {
+		return threadManager_->getWorkerCount();
+	}
+
+	int getMaxSimultaneousTaskCount() const {
+		return getNumWorkerThreads();
 	}
 
 private:

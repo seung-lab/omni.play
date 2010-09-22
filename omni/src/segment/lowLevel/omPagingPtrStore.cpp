@@ -8,10 +8,9 @@
 static const quint32 DEFAULT_PAGE_SIZE = 100000;
 static const quint32 DEFAULT_VECTOR_SIZE = DEFAULT_PAGE_SIZE;
 
-template< class T >
-OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation, OmSegmentCache * cache)
+template<typename T>
+OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
-	, mParentCache(cache)
 	, mPageSize(DEFAULT_PAGE_SIZE)
 	, mAllPagesLoaded(false)
 	, amInBatchMode(false)
@@ -20,17 +19,18 @@ OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation, OmSegmentCa
 	mValueToSegPtr.resize(DEFAULT_VECTOR_SIZE);
 }
 
-template< class T >
+template<typename T>
 OmPagingPtrStore<T>::~OmPagingPtrStore()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
 		for( quint32 i = 0; i < mPageSize; ++i ){
 			delete mValueToSegPtr[pageNum][i];
 		}
+		mValueToSegPtr[pageNum].clear();
 	}
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::SaveAllLoadedPages()
 {
 	foreach( const PageNum & pageNum, loadedPageNumbers ){
@@ -38,7 +38,7 @@ void OmPagingPtrStore<T>::SaveAllLoadedPages()
 	}
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::SaveDirtyPages()
 {
 	foreach( const PageNum & pageNum, dirtyPages ){
@@ -47,15 +47,16 @@ void OmPagingPtrStore<T>::SaveDirtyPages()
 	dirtyPages.clear();
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 {
 	const std::vector<T*> & page = mValueToSegPtr[pageNum];
-	OmDataArchiveSegment::ArchiveWrite( OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
-					    page, mParentCache );
+	OmDataArchiveSegment::ArchiveWrite(OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
+					   page,
+					   mSegmentation->GetSegmentCache());
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 {
 	resizeVectorIfNeeded(pageNum);
@@ -63,8 +64,10 @@ void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 	std::vector<T*> & page = mValueToSegPtr[pageNum];
 	page.resize( mPageSize, NULL );
 
-	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath( mSegmentation->GetId(),pageNum),
-					   page, mParentCache );
+	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath(mSegmentation->GetId(),
+									   pageNum),
+					   page,
+					   mSegmentation->GetSegmentCache());
 
 	loadedPageNumbers.insert(pageNum);
 
@@ -73,10 +76,10 @@ void OmPagingPtrStore<T>::LoadValuePage( const PageNum pageNum )
 	}
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::AddItem( T* item )
 {
-	const OmSegID value = item->getValue();
+	const OmSegID value = item->value;
 
 	const PageNum pageNum = getValuePageNum(value);
 
@@ -90,7 +93,7 @@ void OmPagingPtrStore<T>::AddItem( T* item )
 	mValueToSegPtr[pageNum][value % mPageSize] = item;
 }
 
-template< class T >
+template<typename T>
 bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 {
 	if (0 == value) {
@@ -98,12 +101,11 @@ bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 	}
 
 	const PageNum pageNum = getValuePageNum(value);
-
-	if( !validPageNumbers.contains(pageNum) ){
+	if(!validPageNumbers.contains(pageNum)){
 		return false;
 	}
 
-	if( !loadedPageNumbers.contains(pageNum) ){
+	if(!loadedPageNumbers.contains(pageNum)){
 		LoadValuePage(pageNum);
 	}
 
@@ -114,7 +116,7 @@ bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 	return false;
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::AddToDirtyList(const OmSegID value)
 {
 	if( amInBatchMode ){
@@ -131,7 +133,7 @@ void OmPagingPtrStore<T>::AddToDirtyList(const OmSegID value)
 	}
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::FlushDirtyItems()
 {
 	if( amInBatchMode ){
@@ -145,7 +147,7 @@ void OmPagingPtrStore<T>::FlushDirtyItems()
 	}
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::SetBatchMode(const bool batchMode)
 {
 	amInBatchMode = batchMode;
@@ -171,7 +173,7 @@ T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value)
 	return mValueToSegPtr[pn][ value % mPageSize];
 }
 
-template< class T >
+template<typename T>
 void OmPagingPtrStore<T>::resizeVectorIfNeeded(const PageNum pageNum)
 {
 	if( pageNum >= mValueToSegPtr.size() ){

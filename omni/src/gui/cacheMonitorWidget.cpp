@@ -1,6 +1,5 @@
+#include "utility/stringHelpers.h"
 #include "gui/cacheMonitorWidget.h"
-#include "system/cache/omCacheManager.h"
-#include "system/cache/omThreadedCache.h"
 #include "system/cache/omCacheInfo.h"
 
 CacheMonitorWidget::CacheMonitorWidget(QWidget * parent) : QWidget(parent)
@@ -8,21 +7,21 @@ CacheMonitorWidget::CacheMonitorWidget(QWidget * parent) : QWidget(parent)
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
         mainLayout->addWidget( ShowDisplay("RAM", RAM_CACHE_GROUP ));
         mainLayout->addWidget(ShowDisplay("VRAM", VRAM_CACHE_GROUP ));
-        setLayout(mainLayout); 
+        setLayout(mainLayout);
 }
 
 CacheMonitorWidget::~CacheMonitorWidget()
 {
 }
 
-QGroupBox* CacheMonitorWidget::ShowDisplay( QString cacheType, OmCacheGroup cacheGroup )
+QGroupBox* CacheMonitorWidget::ShowDisplay( QString cacheType, OmCacheGroupEnum cacheGroup )
 {
 	QGroupBox* groupBox = new QGroupBox( cacheType );
 	QGridLayout* gridLayout = new QGridLayout( groupBox );
 
         long maxSize = 0;
-	
-	QList< OmCacheInfo > infos = OmCacheManager::Instance()->GetCacheInfo(cacheGroup);
+
+	QList< OmCacheInfo > infos = OmCacheManager::GetCacheInfo(cacheGroup);
 	for( int j = 0; j < infos.size(); ++j ){
 
 		OmCacheInfo info = infos.at(j);
@@ -43,10 +42,10 @@ QGroupBox* CacheMonitorWidget::ShowDisplay( QString cacheType, OmCacheGroup cach
 
 		gridLayout->addWidget(cacheSizeBar, j*2+1, 0, 1, 3);
 
-		label = new QLabel(QString::number( info.cacheSize ), groupBox);
-		gridLayout->addWidget(label, j*2+1, 4, 1, 1);	
+		label = new QLabel(StringHelpers::commaDeliminateNumber(info.cacheSize), groupBox);
+		gridLayout->addWidget(label, j*2+1, 4, 1, 1);
 	}
-	
+
 	return groupBox;
 }
 

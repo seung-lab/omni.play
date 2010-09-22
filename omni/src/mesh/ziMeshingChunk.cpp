@@ -38,10 +38,9 @@ void ziMeshingChunk::run()
 
   loadChunk_();
 
-  vtkImageData *pImageData = chunk_->GetMeshImageData();
-  Vector3<int> dims;
-  pImageData->GetDimensions(dims.array);
-  OmSegID *pScalarData = static_cast<OmSegID*>(pImageData->GetScalarPointer());
+  Vector3<int> dims(129, 129, 129);
+  OmImage<uint32_t, 3> image = chunk_->GetMeshOmImageData();
+  const OmSegID *pScalarData = static_cast<const OmSegID*>(image.getScalarPtr());
 
   std::cout << "thread " << hex << threadId << dec;
   std::cout << ": chunk " << mipCoord_ << " data loaded\n";
@@ -53,7 +52,6 @@ void ziMeshingChunk::run()
   boost::shared_ptr<boost::unordered_map<int, QuickMesh> > qMeshes =
     zi::QuickMarchingCubes(dims.z-1, dims.y-1, dims.x-1, (int*)pScalarData);
 
-  pImageData->Delete();
   std::cout << "\t" << "thread " << hex << threadId << dec;
   std::cout << ": chunk " << mipCoord_ << ": Marching Cubes Done "
 	    << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
@@ -125,40 +123,45 @@ void ziMeshingChunk::run()
 
       //sMeshes
       FOR_EACH (mit, *sMeshes) {
-	 OmMipMeshCoord mmCoor(it->first->getCoor(), mit->first);
-	 OmMipMesh *oMesh = mipMeshManager_->AllocMesh(mmCoor);
-	 oMesh->setSegmentationID(segmentationId_);
+        OmMipMeshCoord mmCoor(it->first->getCoor(), mit->first);
+        OmMipMesh *oMesh = mipMeshManager_->AllocMesh(mmCoor);
+        oMesh->setSegmentationID(segmentationId_);
 
-	 oMesh->mVertexIndexCount = mit->second->totalIndices_;
-	 oMesh->mpVertexIndexData = new GLuint[oMesh->mVertexIndexCount];
-	 std::copy(mit->second->indices_.begin(),
-		   mit->second->indices_.end(),
-		   oMesh->mpVertexIndexData);
+        oMesh->mVertexIndexCount = mit->second->totalIndices_;
+        oMesh->mpVertexIndexDataWrap =
+		OmDataWrapper<GLuint>::produce(new GLuint[oMesh->mVertexIndexCount],
+					       NEW_ARRAY);
+        std::copy(mit->second->indices_.begin(),
+                  mit->second->indices_.end(),
+                  oMesh->mpVertexIndexDataWrap->getPtr<GLuint>());
 
-	 oMesh->mVertexCount = mit->second->totalVertices_;
-	 oMesh->mpVertexData = new GLfloat[oMesh->mVertexCount * 6];
-	 std::copy(mit->second->vertices_.begin(),
-		   mit->second->vertices_.end(),
-		   oMesh->mpVertexData);
+        oMesh->mVertexCount = mit->second->totalVertices_;
+        oMesh->mpVertexDataWrap =
+		OmDataWrapper<float>::produce(new GLfloat[oMesh->mVertexCount * 6],
+					      NEW_ARRAY);
+        std::copy(mit->second->vertices_.begin(),
+                  mit->second->vertices_.end(),
+                  oMesh->mpVertexDataWrap->getPtr<float>());
 
-	 oMesh->mStripCount = mit->second->totalStrips_;
-	 oMesh->mpStripOffsetSizeData = new uint32_t[2*oMesh->mStripCount];
-	 std::copy(mit->second->strips_.begin(),
-		   mit->second->strips_.end(),
-		   oMesh->mpStripOffsetSizeData);
+        oMesh->mStripCount = mit->second->totalStrips_;
+        oMesh->mpStripOffsetSizeDataWrap =
+		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mStripCount],
+						     NEW_ARRAY);
+        std::copy(mit->second->strips_.begin(),
+                  mit->second->strips_.end(),
+                  oMesh->mpStripOffsetSizeDataWrap->getPtr<unsigned int>());
 
-	 oMesh->mTrianCount = mit->second->totalTrians_;
-	 oMesh->mpTrianOffsetSizeData = new uint32_t[2*oMesh->mTrianCount];
-	 std::copy(mit->second->trians_.begin(),
-		   mit->second->trians_.end(),
-		   oMesh->mpTrianOffsetSizeData);
+        oMesh->mTrianCount = mit->second->totalTrians_;
+        oMesh->mpTrianOffsetSizeDataWrap =
+		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mTrianCount],
+						     NEW_ARRAY);
+        std::copy(mit->second->trians_.begin(),
+                  mit->second->trians_.end(),
+                  oMesh->mpTrianOffsetSizeDataWrap->getPtr<unsigned int>());
 
-	 oMesh->Save();
-	 delete [] oMesh->mpVertexData;
-	 delete [] oMesh->mpVertexIndexData;
-	 delete [] oMesh->mpStripOffsetSizeData;
-	 delete [] oMesh->mpTrianOffsetSizeData;
-	 delete oMesh;
+        oMesh->Save();
+        delete oMesh;
+
       }
 
       std::cout << "\t" << "thread " << hex << threadId << dec;

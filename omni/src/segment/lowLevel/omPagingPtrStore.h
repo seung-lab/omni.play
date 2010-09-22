@@ -1,5 +1,5 @@
-#ifndef OM_PAGING_STORE_H
-#define OM_PAGING_STORE_H
+#ifndef OM_PAGING_PTR_STORE_H
+#define OM_PAGING_PTR_STORE_H
 
 #include "common/omCommon.h"
 
@@ -10,10 +10,10 @@ typedef quint32 PageNum;
 class OmSegmentation;
 class OmSegmentCache;
 
-template < class T >
+template <typename T>
 class OmPagingPtrStore {
  public:
-	OmPagingPtrStore( OmSegmentation *, OmSegmentCache *);
+	OmPagingPtrStore(OmSegmentation*);
 	~OmPagingPtrStore();
 
 	quint32 getPageSize() { return mPageSize; }
@@ -32,13 +32,12 @@ class OmPagingPtrStore {
 
  private:
 	OmSegmentation *const mSegmentation;
-	OmSegmentCache *const mParentCache;
 
 	quint32 mPageSize;
 	std::vector< std::vector<T*> > mValueToSegPtr;
-	QSet< PageNum > validPageNumbers;
-	QSet< PageNum > loadedPageNumbers;
-	QSet< PageNum > dirtyPages;
+	QSet<PageNum> validPageNumbers;
+	QSet<PageNum> loadedPageNumbers;
+	QSet<PageNum> dirtyPages;
 	bool mAllPagesLoaded;
 
 	bool amInBatchMode;

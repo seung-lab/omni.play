@@ -1,6 +1,7 @@
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/omSegment.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
+#include <zi/utility>
 
 OmSegmentIteratorLowLevel::OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel * cache )
 	: mCache(cache)
@@ -43,7 +44,7 @@ OmSegment * OmSegmentIteratorLowLevel::getNextSegmentFromFullList()
 		seg = mCache->GetSegmentFromValue( i );
                 if( NULL == seg) {
 			continue;
-		} 
+		}
 		mCurSegID = i;
 		return seg;
 	}
@@ -60,9 +61,7 @@ OmSegment * OmSegmentIteratorLowLevel::getNextSegmentFromSet()
 	OmSegment * segRet = mSegs.back();
 	mSegs.pop_back();
 
-	const OmSegIDsSet & set = segRet->segmentsJoinedIntoMe;
-	OmSegIDsSet::const_iterator iter;
-	for( iter = set.begin(); iter != set.end(); ++iter ){
+	FOR_EACH(iter, segRet->getChildren()){
 		mSegs.push_back( mCache->GetSegmentFromValue( *iter ));
 	}
 

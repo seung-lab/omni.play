@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QMultiMap>
 #include <QProgressDialog>
-#include <QThread>
 #include <QList>
 #include <QMultiMap>
 #include <QUndoStack>

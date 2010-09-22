@@ -7,11 +7,11 @@
 
 class OmMipVolumeCache;
 
-class OmMipVolumeCache : public OmThreadedCache<OmMipChunkCoord, OmMipChunk> {
+class OmMipVolumeCache : public OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr> {
 public:
 	OmMipVolumeCache(OmMipVolume * parent);
-	
-	OmMipChunk* HandleCacheMiss(const OmMipChunkCoord &key);
+
+	OmMipChunkPtr HandleCacheMiss(const OmMipChunkCoord &key);
 
 private:
 	OmMipVolume *const mMipVolume;

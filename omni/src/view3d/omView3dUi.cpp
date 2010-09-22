@@ -63,29 +63,29 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
-        if (event->key() == Qt::Key_C) {
+	if (event->key() == Qt::Key_C) {
 		OmId seg = 1;
-        	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+		OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 
 		Vector3<int> voxel = current_seg.FindCenterOfSelectedSegments();
 
-        	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
+		SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 
-        	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-        	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-        	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+		mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+		mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+		mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 
-        	mpView3d->mCamera.SetFocus(picked_voxel);
-        	mpView3d->updateGL();
+		mpView3d->mCamera.SetFocus(picked_voxel);
+		mpView3d->updateGL();
 
-        	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 	} else if (event->key() == Qt::Key_Escape) {
 		resetWindow();
 	} else if (event->key() == Qt::Key_Minus) {
 		doZoom(-1);
 	} else if (event->key() == Qt::Key_Equal) {
 		doZoom(1);
-	} 
+	}
 
 	NavigationModeKeyPress(event);
 }
@@ -94,41 +94,41 @@ void OmView3dUi::doZoom(int direction)
 {
 	float dist = mpView3d->mCamera.GetDistance();
 	mpView3d->mCamera.SetDistance(dist - (.3 * dist * direction));
-        mpView3d->updateGL();
+	mpView3d->updateGL();
 }
 
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
 	debug("dend3d", "OmView3dUi::DendModeMouseReleased\n");
-        //get segment
-        OmId segmentation_id, segment_id;
-        if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
-                mpView3d->updateGL();
-                return;
-        }
-        mpView3d->updateGL();
+	//get segment
+	OmId segmentation_id, segment_id;
+	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
+		mpView3d->updateGL();
+		return;
+	}
+	mpView3d->updateGL();
 
 	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
 
 	OmId segmentationID, segmentID;
-        if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
-                debug("split", "segmentID=%i\n", segmentID);
-                debug("split", "segment_id=%i\n", segment_id);
-                OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
-                OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segment_id);
+	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
+		debug("split", "segmentID=%i\n", segmentID);
+		debug("split", "segment_id=%i\n", segment_id);
+		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
+		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segment_id);
 		if(NULL == seg1 || NULL == seg2) {
 			return;
 		}
 
 		OmSegmentSplitAction::RunIfSplittable(seg1, seg2);
 
-                mViewGroupState->SetSplitMode(false);
-        } else {
-                debug("split", "segment_id=%i\n", segment_id);
-                if (segment_id && segmentation.GetSegmentCache()->GetSegment(segment_id)) {
-                        mViewGroupState->SetSplitMode(segmentationID, segment_id);
-                }
-        }
+		mViewGroupState->SetSplitMode(false);
+	} else {
+		debug("split", "segment_id=%i\n", segment_id);
+		if (segment_id && segmentation.GetSegmentCache()->GetSegment(segment_id)) {
+			mViewGroupState->SetSplitMode(segmentationID, segment_id);
+		}
+	}
 }
 
 /////////////////////////////////
@@ -146,7 +146,7 @@ void OmView3dUi::NavigationModeMousePressed(QMouseEvent * event)
 	if (event->buttons() & Qt::LeftButton && control_modifier) {
 		crosshair(event);
 	} else if ((event->buttons() & Qt::LeftButton) && mCPressed){
-	        CenterAxisOfRotation(event);
+		CenterAxisOfRotation(event);
 	} else {
 		CameraMovementMouseStart(event);
 	}
@@ -200,7 +200,7 @@ void OmView3dUi::CameraMovementMouseStart(QMouseEvent * event)
 		//right button zooms
 	} else if (event->buttons() & Qt::RightButton) {
 		mpView3d->mCamera.MovementStart(CAMERA_ZOOM, point);
-	} 
+	}
 }
 
 void OmView3dUi::CameraMovementMouseEnd(QMouseEvent * event)
@@ -230,7 +230,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 	if (numSteps >= 0) {
 		point.y -= 30.f;
 	} else {
-		point.y += 30.f;		
+		point.y += 30.f;
 	}
 	mpView3d->mCamera.MovementUpdate(point);
 	mpView3d->updateGL();
@@ -248,7 +248,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 	Vector2i point2d(event->x(), event->y());
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	vector<unsigned int> result;
+	std::vector<unsigned int> result;
 	bool valid_pick = mpView3d->PickPoint(point2d, result);
 
 	//if valid and return count
@@ -263,8 +263,8 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//check if dragging
-	if (drag && 
-	    (result[0] == mPrevSegmentationId) && 
+	if (drag &&
+	    (result[0] == mPrevSegmentationId) &&
 	    (result[1] == mPrevSegmentId)) {
 		return false;
 	} else {
@@ -276,7 +276,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 	//otherwise vaild segment
 	segmentationId = result[0];
 	segmentId = result[1];
-	//debug("genone","OmView3dUi::PickSegmentMouse %i \n",result[1]);       
+	//debug("genone","OmView3dUi::PickSegmentMouse %i \n",result[1]);
 
 	//if valid pointer, then store pick name
 	if (type != NULL) {
@@ -343,7 +343,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-        OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
@@ -365,15 +365,15 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 
 	debug("view3d", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
 
-        OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
 
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
 	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-	
-	debug("view3d", "coordinate is now (%f, %f, %f)\n", 
+
+	debug("view3d", "coordinate is now (%f, %f, %f)\n",
 	      picked_voxel.x,
 	      picked_voxel.y,
 	      picked_voxel.z
@@ -382,54 +382,54 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 
 OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
 {
-        //extract event properties
-        Vector2i point2d(event->x(), event->y());
+	//extract event properties
+	Vector2i point2d(event->x(), event->y());
 
-        //pick point causes localized redraw (but all depth info stored in selection buffer)
-        vector<unsigned int>result;
+	//pick point causes localized redraw (but all depth info stored in selection buffer)
+	std::vector<unsigned int>result;
 
 	bool valid_pick;
 	mpView3d->updateGL();
 	valid_pick = mpView3d->PickPoint(point2d, result);
 
-	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n", 
+	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n",
 	      valid_pick, result.size());
 
 	if(!valid_pick || result.size() != 3)
 		return 0;
 
 	const OmId segmentationID = result[0];
-        if (!OmProject::IsSegmentationValid(segmentationID))
-                return 0;
-        if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
-                return 0;
+	if (!OmProject::IsSegmentationValid(segmentationID))
+		return 0;
+	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
+		return 0;
 
-        //unproject to point3d
-        Vector3f point3d;
-        if (!mpView3d->UnprojectPoint(point2d, point3d))
-                return 0;
+	//unproject to point3d
+	Vector3f point3d;
+	if (!mpView3d->UnprojectPoint(point2d, point3d))
+		return 0;
 
-        //define depth scale factor
-        float z_depth_scale = 0.0f;
+	//define depth scale factor
+	float z_depth_scale = 0.0f;
 
-        //normalized vector from camera to unprojected point
-        Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
-        cam_to_point.normalize();
-        Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
+	//normalized vector from camera to unprojected point
+	Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());
+	cam_to_point.normalize();
+	Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
 
-        //get voxel at point3d
+	//get voxel at point3d
 	OmSegmentation & current_seg = OmProject::GetSegmentation(result[0]);
-        NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
-        DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
+	NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
+	DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
 
-        //return success with voxel
-        rVoxel = voxel;
-        return result[0];
+	//return success with voxel
+	rVoxel = voxel;
+	return result[0];
 }
 
 void OmView3dUi::resetWindow()
-{	
-	SpaceCoord coord = SpaceCoord(0,0,0);	
+{
+	SpaceCoord coord = SpaceCoord(0,0,0);
 
 	mpView3d->mCamera.SetFocus(coord);
 	mpView3d->mCamera.SetDistance(300.0);
@@ -440,73 +440,73 @@ void OmView3dUi::resetWindow()
 
 void OmView3dUi::pinchTriggered(QPinchGesture *gesture)
 {
-        QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
-        if (changeFlags & QPinchGesture::RotationAngleChanged) {
-                //printf("1\n");
-                //qreal value = gesture->property("rotationAngle").toReal();
-                //qreal lastValue = gesture->property("lastRotationAngle").toReal();
-                //rotationAngle += value - lastValue;
-        }
-        if (changeFlags & QPinchGesture::ScaleFactorChanged) {
-                //qreal value = gesture->property("scaleFactor").toReal();
-                //printf("2 : %f\n", value);
-                //currentStepScaleFactor = value;
-        }
-        if (gesture->state() == Qt::GestureFinished) {
-                qreal value = gesture->property("scaleFactor").toReal();
-                //printf("3 : %f\n", value);
-                //scaleFactor *= currentStepScaleFactor;
-                //currentStepScaleFactor = 1;
+	QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
+	if (changeFlags & QPinchGesture::RotationAngleChanged) {
+		//printf("1\n");
+		//qreal value = gesture->property("rotationAngle").toReal();
+		//qreal lastValue = gesture->property("lastRotationAngle").toReal();
+		//rotationAngle += value - lastValue;
+	}
+	if (changeFlags & QPinchGesture::ScaleFactorChanged) {
+		//qreal value = gesture->property("scaleFactor").toReal();
+		//printf("2 : %f\n", value);
+		//currentStepScaleFactor = value;
+	}
+	if (gesture->state() == Qt::GestureFinished) {
+		qreal value = gesture->property("scaleFactor").toReal();
+		//printf("3 : %f\n", value);
+		//scaleFactor *= currentStepScaleFactor;
+		//currentStepScaleFactor = 1;
 		if(value < 1) {
 			doZoom(-1);
 		} else {
 			doZoom(1);
 		}
-        }
-        mpView3d->update();
- }
+	}
+	mpView3d->update();
+}
 
 void OmView3dUi::panTriggered(QPanGesture *gesture)
 {
-     	QPointF delta = gesture->delta();
+	QPointF delta = gesture->delta();
 	//printf("pan: %f, %f\n", delta.x(), delta.y());
 	mpView3d->mCamera.MovementStart(CAMERA_PAN, Vector2f(0,0));
-        mpView3d->mCamera.MovementUpdate(Vector2i(delta.x(),delta.y()));
-        mpView3d->mCamera.MovementEnd(Vector2i(delta.x(),delta.y()));
+	mpView3d->mCamera.MovementUpdate(Vector2i(delta.x(),delta.y()));
+	mpView3d->mCamera.MovementEnd(Vector2i(delta.x(),delta.y()));
 
-     	mpView3d->update();
+	mpView3d->update();
 }
 
 void OmView3dUi::swipeTriggered(QSwipeGesture *gesture)
 {
-     if (gesture->state() == Qt::GestureFinished) {
-         if (gesture->horizontalDirection() == QSwipeGesture::Left
-             || gesture->verticalDirection() == QSwipeGesture::Up) {
-		printf("swipe 1\n");
-             //goPrevImage();
-	} else {
-		printf("swipe 2\n");
-             //goNextImage();
-	}
-	printf("swipe 3\n");
+	if (gesture->state() == Qt::GestureFinished) {
+		if (gesture->horizontalDirection() == QSwipeGesture::Left
+			|| gesture->verticalDirection() == QSwipeGesture::Up) {
+			printf("swipe 1\n");
+			//goPrevImage();
+		} else {
+			printf("swipe 2\n");
+			//goNextImage();
+		}
+		printf("swipe 3\n");
         mpView3d->update();
-     }
+	}
 }
 
 
 bool OmView3dUi::gestureEvent(QGestureEvent *event)
 {
-        if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
-                pinchTriggered(static_cast<QPinchGesture *>(pinch));
-        }
-        if (QGesture *pan = event->gesture(Qt::PanGesture)) {
-                panTriggered(static_cast<QPanGesture *>(pan));
+	if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+		pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	}
-        if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
-                swipeTriggered(static_cast<QSwipeGesture *>(swipe));
+	if (QGesture *pan = event->gesture(Qt::PanGesture)) {
+		panTriggered(static_cast<QPanGesture *>(pan));
+	}
+	if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
+		swipeTriggered(static_cast<QSwipeGesture *>(swipe));
 	}
 	event->accept();
 	//printf("type %i\n", event->type());
-        return true;
+	return true;
 }
 

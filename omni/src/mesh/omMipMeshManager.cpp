@@ -54,7 +54,7 @@ OmMipMesh *OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
 /*
  *	Get mesh from cache.
  */
-void OmMipMeshManager::GetMesh(QExplicitlySharedDataPointer < OmMipMesh > &p_value, const OmMipMeshCoord & coord)
+void OmMipMeshManager::GetMesh(OmMipMeshPtr& p_value, const OmMipMeshCoord & coord)
 {
 	mDataCache->Get(p_value, coord, false);
 }

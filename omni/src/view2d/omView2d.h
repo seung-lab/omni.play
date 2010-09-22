@@ -1,5 +1,5 @@
 #ifndef OM_QT_VIEW_2D_H
-#define OM_QT_VIEW_2D_H 
+#define OM_QT_VIEW_2D_H
 
 #include <QGLFramebufferObject>
 #include <QGLPixelBuffer>
@@ -22,7 +22,7 @@ class OmSegmentation;
 class OmFilter2d;
 class OmSegmentSelector;
 
-class OmView2d : 
+class OmView2d :
 	public OmView2dImpl,
 	public OmPreferenceEventListener,
 	public OmSegmentEventListener,
@@ -30,11 +30,11 @@ class OmView2d :
 	public OmToolModeEventListener
 {
 	Q_OBJECT
-	
+
 public:
 	OmView2d(ViewType, ObjectType, OmId, QWidget *, OmViewGroupState *);
  	~OmView2d();
-	
+
 	OmSegmentation *mSeg;
 
 	int GetDepthToDataSlice(ViewType viewType);
@@ -60,7 +60,7 @@ protected:
 	DataCoord BrushToolOTGDC(DataCoord off);
 
 	void PickToolAddToSelection(const OmId segmentation_id, DataCoord globalDataClickPoint);
-	void PickToolAddToSelection( OmSegmentSelector & sel, 
+	void PickToolAddToSelection( OmSegmentSelector & sel,
 				     OmSegmentation & current_seg,
 				     DataCoord globalDataClickPoint);
 	void FillToolFill (OmId segmentation, DataCoord gCP, OmSegID fc, OmSegID bc, int depth=0);
@@ -79,7 +79,7 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
-	
+
 	// event
 	void mouseLeftButton(QMouseEvent *event);
 	void mouseSelectSegment(QMouseEvent *event);
@@ -91,7 +91,7 @@ protected:
 
 	void mouseZoomIn();
 	void mouseZoomOut();
-	void mouseZoom(QMouseEvent *event);	
+	void mouseZoom(QMouseEvent *event);
 	void ViewRedrawEvent();
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 
@@ -99,7 +99,7 @@ protected:
 	void MouseRelease(QMouseEvent *event);
 	void MouseMove(QMouseEvent *event);
 	void MouseDoubleClick(QMouseEvent *event);
-	void KeyPress(QKeyEvent *event);	
+	void KeyPress(QKeyEvent *event);
 	void MouseMove_LeftButton_Scribbling(QMouseEvent *event);
 	void MouseRelease_LeftButton_Filling(QMouseEvent *event);
 	void mouseMove_CamMoving(QMouseEvent *event);
@@ -110,12 +110,12 @@ protected:
 
 	// key events
 	void keyPressEvent (QKeyEvent *event);
-	
+
 	// omni events
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
 	void SegmentObjectModificationEvent(OmSegmentEvent*);
 	void SegmentDataModificationEvent();
-	
+
 	// Change to edit selection
 	void SegmentEditSelectionChangeEvent();
 	void VoxelSelectionModificationEvent() {}
@@ -155,7 +155,7 @@ private:
 	int mBrushToolMaxX, mBrushToolMaxY, mBrushToolMaxZ, mBrushToolMinX, mBrushToolMinY, mBrushToolMinZ;
 	QTime * mElapsed;
 	OmId mCurrentSegmentId;
-	set<DataCoord> mUpdateCoordsSet; 
+	std::set<DataCoord> mUpdateCoordsSet;
 	QImage mImage;
 	QPainter painter;
 	bool mLevelLock;
@@ -176,40 +176,40 @@ private:
 	bool iSentIt;
 
 	bool mInitialized;
-	
+
 	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
 	DataCoord lastDataPoint;
-	
+
 	QColor editColor;
-	
+
 	OmIDsSet modified_Ids;
 	bool delete_dirty;
-	
+
 	// slice props - spatial coords
-	
+
 	// corresponds to window viewport - is not modified except through window resizes
 
-	
+
 	// corresponds to slice viewport - is not modified except through window resizes
 	Vector4i mLocalViewport;
-	
+
 	// cursor props
 	ScreenCoord clickPoint;
 
 	// These coords are accurate for orthogonal views, not flat coordinates.
-	set<DataCoord> modifiedCoords;
-	
+	std::set<DataCoord> modifiedCoords;
+
 	OmId mSegmentID;
 	int mSegmentValue;
-	
+
 	bool cameraMoving;
 	bool firstResize;
-	
+
 	Vector2i mMin;
 	Vector2i mMax;
-	
+
 	bool firstPaintEvent;
-	
+
 	int depthCache;
 	int sidesCache;
 	int mipCache;
@@ -231,7 +231,7 @@ private:
 
 	OmSegmentContextMenu mSegmentContextMenu;
 	void mouseShowSegmentContextMenu(QMouseEvent * event);
-	
+
 	void ToolModeChangeEvent();
 
 #ifdef WIN32
@@ -240,4 +240,4 @@ private:
 #endif
 };
 
-#endif 
+#endif

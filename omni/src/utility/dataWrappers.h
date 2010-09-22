@@ -1,5 +1,5 @@
-#ifndef DATA_WRAPPERS
-#define DATA_WRAPPERS
+#ifndef DATA_WRAPPERS_H
+#define DATA_WRAPPERS_H
 
 #include "segment/omSegment.h"
 #include "common/omException.h"
@@ -12,25 +12,23 @@ class SegmentDataWrapper;
 class FilterDataWrapper;
 class OmSegmentCache;
 
-class ChannelDataWrapper
-{
- public:
+class ChannelDataWrapper {
+public:
 	ChannelDataWrapper(){}
-	ChannelDataWrapper( const OmId mID );
+	explicit ChannelDataWrapper( const OmId mID );
 	QHash< OmId, FilterDataWrapper > getAllFilterIDsAndNames();
 	QString getNote();
 	QString getName();
 	bool isEnabled();
 	OmId getID()     {    return mID;   }
 	ObjectType getType(){ return mType; }
- private:
+private:
 	OmId mID;
 	ObjectType mType;
 };
 
-class SegmentationDataWrapper
-{
- public:
+class SegmentationDataWrapper {
+public:
 	SegmentationDataWrapper(){}
 	explicit SegmentationDataWrapper( const OmId mID );
 	explicit SegmentationDataWrapper( OmSegment * );
@@ -51,18 +49,17 @@ class SegmentationDataWrapper
 	ObjectType getType(){ return mType; }
 	quint32 getMaxSegmentValue();
 	quint64 getSegmentListSize(OmSegIDRootType type);
- private:
+private:
 	OmId mID;
 	ObjectType mType;
 };
 
-class SegmentDataWrapper
-{
- public:
+class SegmentDataWrapper {
+public:
 	SegmentDataWrapper(){}
 	SegmentDataWrapper( const OmId segmentationID,
 			    const OmSegID segmentID );
-	SegmentDataWrapper( OmSegment * seg );
+	explicit SegmentDataWrapper( OmSegment * seg );
 
 	QString getName();
 
@@ -86,19 +83,16 @@ class SegmentDataWrapper
 	void setColor(const Vector3 < float >& color);
 	void setName( const QString& str );
 	OmSegID getID()     {    return mID;   }
-	ObjectType getType(){ return mType; }
 	quint64 getSize();
 	quint64 getSizeWithChildren();
 	boost::shared_ptr<OmSegmentCache> getSegmentCache();
- private:
+private:
 	OmSegID mID;
-	ObjectType mType;
 	OmId mSegmentationID;
 };
 
-class FilterDataWrapper
-{
- public:
+class FilterDataWrapper {
+public:
 	FilterDataWrapper(){}
 	FilterDataWrapper( const OmId channelID,
 			   const OmId mID );
@@ -109,19 +103,16 @@ class FilterDataWrapper
 	QString getNote();
 	bool isEnabled();
 	OmId getID()     {    return mID;   }
-	ObjectType getType(){ return mType; }
- private:
+private:
 	OmId mID;
-	ObjectType mType;
 	OmId mChannelID;
 };
 
-class DataWrapperContainer
-{
- public:
+class DataWrapperContainer {
+public:
 	DataWrapperContainer();
 	DataWrapperContainer( const ObjectType obj_type, const OmId obj_id );
-	DataWrapperContainer( SegmentationDataWrapper sdw );
+	explicit DataWrapperContainer( SegmentationDataWrapper sdw );
 	ObjectType getType(){ return mType; }
 
 	SegmentationDataWrapper getSegmentationDataWrapper(){ return segmenDW; }
@@ -129,7 +120,7 @@ class DataWrapperContainer
 
 	bool isValidContainer();
 
- private:
+private:
 	SegmentationDataWrapper segmenDW;
 	ChannelDataWrapper cDW;
 	ObjectType mType;

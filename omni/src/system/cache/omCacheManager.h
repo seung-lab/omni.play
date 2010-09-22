@@ -2,79 +2,58 @@
 #define OM_CACHE_MANAGER_H
 
 #include "common/omCommon.h"
+#include "utility/omLockedObjects.h"
 
-#include <QReadWriteLock>
-#include <QMutex>
+#include <zi/mutex>
+#include <zi/threads>
+#include <zi/utility>
 
 class OmCacheBase;
-
-//caches
-enum OmCacheGroup {
-	RAM_CACHE_GROUP = 1,
-	VRAM_CACHE_GROUP
-};
-
-struct CacheGroupProperties {
-	CacheGroupProperties() {
-		//init to zero
-		Size = 0;
-		MaxSize = 0;
-	}
-	
-        //current size and max size in bytes
-        unsigned long Size;
-	unsigned long MaxSize;
-
-	set< OmCacheBase* > CacheSet;
-};
-
+class OmCacheGroup;
 class OmCacheInfo;
 class OmPreferenceEvent;
 
 class OmCacheManager : boost::noncopyable {
-
 public:
-	static OmCacheManager* Instance();
+	static QList< OmCacheInfo > GetCacheInfo(OmCacheGroupEnum group);
+	static unsigned int Freshen(const bool freshen);
+	static void AddCache(OmCacheGroupEnum group, OmCacheBase *base);
+	static int  CleanCacheGroup(OmCacheGroupEnum group);
+	static void RemoveCache(OmCacheGroupEnum group, OmCacheBase *base);
+	static void SignalCachesToCloseDown();
+	static void UpdateCacheSizeFromLocalPrefs();
 	static void Delete();
 
-	static void AddCache(OmCacheGroup group, OmCacheBase *base);
-	static void RemoveCache(OmCacheGroup group, OmCacheBase *base);
-	static QList< OmCacheInfo > GetCacheInfo(OmCacheGroup group);
-	
-	static void UpdateCacheSize(OmCacheGroup group, int delta);
-	static void UpdateCacheSizeFromLocalPrefs();
-	static unsigned int Freshen(bool freshen);
+	static inline boost::shared_ptr<OmCacheGroup> GetCache(const OmCacheGroupEnum group)
+	{
+		if(group == RAM_CACHE_GROUP){
+			return Instance().mRamCacheMap;
+		} else {
+			return Instance().mVramCacheMap;
+		}
+	}
 
-	static void SignalCachesToCloseDown();
+	static inline bool AmClosingDown(){
+		return Instance().amClosingDown.get();
+	}
 
-	void doUpdateCacheSizeFromLocalPrefs();
-	void UpdateCacheSizeInternal(OmCacheGroup group, int delta);
-	void CleanCacheGroup(OmCacheGroup group);
-	void CleanCacheGroupCopy(map< OmCacheGroup, CacheGroupProperties > & copy, OmCacheGroup group);
-	
 protected:
-	//event handling
 	void PreferenceChangeEvent(OmPreferenceEvent *event);
-	
-        int mSavedDelta;
-        bool mDelayDelta;
 
 private:
-	//singleton
-	static OmCacheManager* mspInstance;
 	OmCacheManager();
 	~OmCacheManager();
+	static inline OmCacheManager& Instance(){
+		return zi::Singleton<OmCacheManager>::Instance();
+	}
 
-	mutable QReadWriteLock mCacheMutex;
+	zi::ThreadFactory threadFactory_;
+	bool CacheManagerCleaner();
+	LockedBool amClosingDown;
 
-	mutable QMutex mFreshnessMutex;
-	CacheGroupProperties mRamCacheMap;
-	CacheGroupProperties mVramCacheMap;
-	
-	//cleaning
-	float mTargetRatio;
-	bool mCurrentlyCleaning;
-	int mThreadCount;
+	boost::shared_ptr<OmCacheGroup> mRamCacheMap;
+	boost::shared_ptr<OmCacheGroup> mVramCacheMap;
+ 	friend class zi::Singleton<OmCacheManager>;
 };
 
 #endif

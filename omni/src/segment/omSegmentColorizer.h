@@ -3,8 +3,7 @@
 
 #include "common/omCommon.h"
 
-#include <QMutex>
-#include <QReadWriteLock>
+#include <zi/mutex>
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -20,11 +19,13 @@ class OmSegment;
 class OmSegmentColorizer
 {
  public:
-	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>, const OmSegmentColorCacheType, const bool);
+	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
+			    const OmSegmentColorCacheType, const bool,
+			    const Vector2i& dims);
 	~OmSegmentColorizer();
 
-	void colorTile( OmSegID * imageData, const int size,
-			unsigned char * data );
+	boost::shared_ptr<OmColorRGBA>
+	colorTile(boost::shared_ptr<uint32_t>);
 
 	void setCurBreakThreshhold( const float t ) {
 		mPrevBreakThreshhold = mCurBreakThreshhold;
@@ -32,22 +33,24 @@ class OmSegmentColorizer
 	}
 
  private:
-	mutable QMutex mColorUpdateMutex;
-	mutable QReadWriteLock mMapResizeMutex;
+	std::vector<zi::Mutex> mColorUpdateMutex;
+	zi::RWMutex mMapResizeMutex;
 
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
-	quint32 mSize;
+	OmSegID mSize;
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
 	const bool mIsSegmentation;
 	bool mAreThereAnySegmentsSelected;
+ 	const uint32_t mNumElements;
+	int mCurSegCacheFreshness;
 
 	std::vector<OmColorWithFreshness> mColorCache;
 
 	void setup();
 
-	OmColor getVoxelColorForView2d( const OmSegID val );
+	OmColor getVoxelColorForView2d(const OmSegID val);
 
 	inline int makeSelectedColor(const quint8 in_c ) {
 		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
@@ -57,15 +60,7 @@ class OmSegmentColorizer
 		return c;
 	}
 
-	inline bool isCacheElementValid( const OmSegID val, const int currentSegCacheFreshness ){
-		if( currentSegCacheFreshness != mColorCache[val].freshness ){
-			return false;
-		}
-		if( mCurBreakThreshhold != mPrevBreakThreshhold ){
-			return false;
-		}
-		return true;
-	}
+	void doColorTile(uint32_t*, OmColorRGBA*);
 };
 
 #endif

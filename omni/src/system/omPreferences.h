@@ -14,15 +14,15 @@
 class OmPreferences : boost::noncopyable {
 
 public:
-	
+
 	static OmPreferences* Instance();
 	static void Delete();
-	
+
 	static bool ValidPreference(const int key);
-	
+
 	//accessors
-	static string GetString(const int);
-	static void SetString(const int, string );
+	static std::string GetString(const int);
+	static void SetString(const int, std::string );
 
 	static float GetFloat(const int);
 	static void SetFloat(const int, float);
@@ -35,7 +35,7 @@ public:
 
 	static Vector3f GetVector3f(const int);
 	static void SetVector3f(const int, Vector3f);
-	
+
 private:
 	OmPreferences();
 	~OmPreferences();
@@ -44,7 +44,7 @@ private:
 	static OmPreferences* mspInstance;
 
 	static bool CheckKey(const int key );
-	
+
 	//preference map
 	QHash< int, QString > stringPrefs;
 	QHash< int, float > floatPrefs;

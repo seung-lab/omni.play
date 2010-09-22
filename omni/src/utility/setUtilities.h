@@ -11,18 +11,18 @@
 #include "common/omStd.h"
 
 template< typename T >
-void
-setIntersection(const set<T> &source, const set<T> &target, set<T> &intersection) {
+void setIntersection(const std::set<T> &source, const std::set<T> &target,
+					 std::set<T> &intersection) {
 	//clear result
 	intersection.clear();
-	
+
 	//create intersection insert iterator
-	std::insert_iterator< set<T> > insert_itr(intersection, intersection.begin());
-	
+	std::insert_iterator< std::set<T> > insert_itr(intersection, intersection.begin());
+
 	//perform intersection
-	std::set_intersection(source.begin(), source.end(), 
+	std::set_intersection(source.begin(), source.end(),
 			      target.begin(), target.end(),
-			      insert_itr);	
+			      insert_itr);
 }
 
 /*
@@ -31,36 +31,36 @@ setIntersection(const set<T> &source, const set<T> &target, set<T> &intersection
  *	Present in the first set, but not in the second one.
  */
 template< typename T >
-void
-setDifference(const set<T> &source, const set<T> &target, set<T> &differance) {
+void setDifference(const std::set<T> &source, const std::set<T> &target,
+				   std::set<T> &differance) {
 	//clear result
 	differance.clear();
-	
+
 	//create intersection insert iterator
-	std::insert_iterator< set<T> > insert_itr(differance, differance.begin());
-	
+	std::insert_iterator< std::set<T> > insert_itr(differance, differance.begin());
+
 	//perform difference
-	std::set_difference(source.begin(), source.end(), 
+	std::set_difference(source.begin(), source.end(),
 			    target.begin(), target.end(),
-			    insert_itr);	
+			    insert_itr);
 }
 
 /*
  *	Union.
  */
 template< typename T >
-void
-setUnion(const set<T> &source1, const set<T> &source2, set<T> &result) {
+void setUnion(const std::set<T> &source1, const std::set<T> &source2,
+			  std::set<T> &result) {
 	//clear result
 	result.clear();
-	
+
 	//create intersection insert iterator
-	std::insert_iterator< set<T> > insert_itr(result, result.begin());
-	
+	std::insert_iterator< std::set<T> > insert_itr(result, result.begin());
+
 	//perform difference
-	std::set_union(source1.begin(), source1.end(), 
+	std::set_union(source1.begin(), source1.end(),
 		       source2.begin(), source2.end(),
-		       insert_itr);	
+		       insert_itr);
 }
 
 #endif

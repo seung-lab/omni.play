@@ -8,7 +8,8 @@ class OmSegmentation;
 class OmSegmentSelector
 {
  public:
-	OmSegmentSelector( const OmId segmentationID, void * sender, const string & cmt );
+	OmSegmentSelector( const OmId segmentationID, void * sender,
+					   const std::string & cmt );
 	void selectJustThisSegment( const OmSegID segID, const bool isSelected );
 	void augmentSelectedSet( const OmSegID segID, const bool isSelected );
 
@@ -25,7 +26,7 @@ private:
 
 	OmId mSegmentJustSelectedID;
 	void * mSender;
-	string mComment;
+	std::string mComment;
 
 	const OmSegIDsSet oldSelectedIDs;
 	OmSegIDsSet newSelectedIDs;

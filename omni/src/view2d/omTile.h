@@ -12,7 +12,6 @@
 #include "system/cache/omCacheBase.h"
 #include "volume/omSegmentation.h"
 
-#include <QExplicitlySharedDataPointer>
 #include <QColor>
 
 class OmMipVolume;
@@ -21,40 +20,43 @@ class OmTileCoord;
 class OmTileCache;
 class OmViewGroupState;
 
+typedef boost::shared_ptr<OmTextureID> OmTextureIDPtr;
+
 class OmTile {
 
 public:
-	OmTile(ViewType viewtype, ObjectType voltype, OmId image_id, OmMipVolume *vol, OmViewGroupState * vgs);
+	OmTile(ViewType, ObjectType, OmId, OmMipVolume*, OmViewGroupState*);
 	~OmTile();
-	
-	OmTextureID* BindToTextureID(const OmTileCoord &key, OmTileCache * cache);
-	
-	void SetNewAlpha(float newval);
 
-	OmMipVolume *mVolume;
-	
-	void* GetImageData(const OmTileCoord &key, Vector2<int> &sliceDims, OmMipVolume *vol);
-	OmMipChunkCoord TileToMipCoord(const OmTileCoord &key);
-	int GetDepth(const OmTileCoord &key);
+	OmTextureIDPtr BindToTextureID(const OmTileCoord &, OmTileCache*);
+	void SetNewAlpha(const float);
+	OmMipChunkCoord TileToMipCoord(const OmTileCoord &);
+
+	OmMipVolume *const mVolume;
+	OmMipVolume* getVol(){ return mVolume; }
 
 private:
+	const Vector2i dims_;
 	OmViewGroupState * mViewGroupState;
 
-	ViewType view_type;
-	ObjectType vol_type;
-	OmId myID;
-	
+	const ViewType view_type;
+	const ObjectType vol_type;
+	const OmId myID;
+
 	float mAlpha;
-	int mSamplesPerVoxel;
-	int mBytesPerSample;
-	
-	int mBackgroundSamplesPerVoxel;
-	int mBackgroundBytesPerSample;
 
-	void setMyColorMap(OmSegID* imageData, Vector2<int> dims, const OmTileCoord &key, void **rData);
+	OmTextureIDPtr doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
 
-	OmTextureID * doBindToTextureID(const OmTileCoord & key, OmTileCache * cache);
+	boost::shared_ptr<OmColorRGBA> setMyColorMap(boost::shared_ptr<uint32_t>,
+						     const Vector2i&,
+						     const OmTileCoord&);
 
+	boost::shared_ptr<uint8_t> GetImageData8bit(const OmTileCoord&);
+	boost::shared_ptr<uint32_t> GetImageData32bit(const OmTileCoord&);
+
+	OmTextureIDPtr makeNullTextureID();
+	int GetDepth(const OmTileCoord &key);
+	int getVolDepth(const OmTileCoord& key);
 };
 
 #endif

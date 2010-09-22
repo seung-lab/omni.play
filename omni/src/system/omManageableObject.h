@@ -11,22 +11,36 @@
 
 class OmManageableObject {
 public:
-	OmManageableObject();
-	
-	explicit OmManageableObject(const OmId id);
-		
-	OmId GetId();
-	
-	const QString& GetName();
-	void SetName(const QString &name);
+	OmManageableObject()
+		: mId( 1 )
+		, mNote("") {}
 
-	const QString& GetNote();
-	void SetNote(const QString &note);
+	explicit OmManageableObject(const OmId id)
+		: mId( id )
+		, mNote("") {}
+
+	OmId GetId(){
+		return mId;
+	}
+
+	QString GetCustomName(){
+		return mCustomName;
+	}
+	void SetCustomName(const QString & name){
+		mCustomName = name;
+	}
+
+	const QString& GetNote(){
+		return mNote;
+	}
+	void SetNote(const QString &note){
+		mNote = note;
+	}
 
 protected:
 	OmId mId;
-	QString mName;
 	QString mNote;
+	QString mCustomName;
 
 	friend class OmDataArchiveProject;
 };

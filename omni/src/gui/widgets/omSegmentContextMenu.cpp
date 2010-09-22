@@ -57,7 +57,7 @@ void OmSegmentContextMenu::AddSelectionNames()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
 
-	addAction( "Segment " + QString::number(r_segment->getValue())
+	addAction( "Segment " + QString::number(r_segment->value)
 		   + " (Root " + QString::number(r_segment->getRootSegID())
 		   + ")" );
 	QString validText;
@@ -66,7 +66,7 @@ void OmSegmentContextMenu::AddSelectionNames()
 	} else {
 		validText = "Not valid in ";
 	}
-	addAction( validText + r_segmentation.GetName() );
+	addAction( validText + QString::fromStdString(r_segmentation.GetName()));
 }
 
 /*
@@ -128,7 +128,7 @@ void OmSegmentContextMenu::UnselectOthers()
 void OmSegmentContextMenu::MergeSegments()
 {
         OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-        OmIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
+        OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
 
@@ -210,12 +210,12 @@ void OmSegmentContextMenu::printChildren()
 	if (OmProject::IsSegmentationValid(mSegmentationId)) {
 		OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
 		OmSegmentIterator iter(segmentation.GetSegmentCache());
-		iter.iterOverSegmentID(segmentation.GetSegmentCache()->findRoot(mSegmentId)->getValue());
+		iter.iterOverSegmentID(segmentation.GetSegmentCache()->findRoot(mSegmentId)->value);
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
 			printf("%u : %u, %f, %llu\n",
-			       seg->getValue(),
+			       seg->value,
 			       seg->getParentSegID(),
 			       seg->getThreshold(),
 			       seg->getSize());

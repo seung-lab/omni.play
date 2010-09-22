@@ -10,21 +10,20 @@
 
 class OmMipVolume;
 
-class OmMipThread: public QRunnable
-{
- public:
+class OmMipThread: public QRunnable {
+public:
 	enum ChunkType
-	{
-		MIP_CHUNK,
-		THREAD_CHUNK
-	};
+		{
+			MIP_CHUNK,
+			THREAD_CHUNK
+		};
 
 	OmMipThread(OmMipVolume* pMipVolume, const int threadNum, ChunkType chunkType, int numTotalChunks);
 	int GetNumChunksDone();
 	void EnqueueChunk(OmMipChunkCoord mipCoord);
 	void run();
 
- private:
+private:
 	OmMipVolume* mpMipVolume;
 	const int mThreadNum;
 
@@ -33,7 +32,7 @@ class OmMipThread: public QRunnable
 	QQueue<OmMipChunkCoord> mMipCoords;
 	int mNumChunksDone;
 	int mNumTotalChunks;
-	
+
 	mutable QSemaphore mNumEnqueuedChunks;
 	mutable QMutex mutex;
 };

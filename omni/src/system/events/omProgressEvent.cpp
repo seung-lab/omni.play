@@ -25,7 +25,8 @@ OmProgressEvent::OmProgressEvent(QEvent::Type type, int min, int max, int value)
 }
 
 //PROGRESS_SHOW
-OmProgressEvent::OmProgressEvent(QEvent::Type type, string text, int min, int max)
+OmProgressEvent::OmProgressEvent(QEvent::Type type, std::string text,
+								 int min, int max)
 	: OmEvent(type, CLASS)
 {
 	mText = text;

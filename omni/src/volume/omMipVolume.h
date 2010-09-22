@@ -10,40 +10,37 @@
 
 #include "volume/omVolume.h"
 #include "common/omCommon.h"
+#include "system/cache/omMipVolumeCache.h"
+#include "system/cache/omThreadChunkThreadedCache.h"
 
 #include <QFileInfo>
-#include <QExplicitlySharedDataPointer>
-#include <QImage>
-#include <QMutex>
 
-class OmMipChunkCoord;
 class OmDataPath;
+class OmHdf5;
 class OmMipChunk;
-class OmMipVolumeCache;
+class OmMipChunkCoord;
 class OmThreadChunkLevel;
-class OmThreadChunkThreadedCache;
 class OmVolume;
-class vtkImageData;
-class OmViewGroupState;
+class OmVolumeData;
 
-//mipvolume state
-enum MipVolumeBuildState { MIPVOL_UNBUILT = 0, MIPVOL_BUILT, MIPVOL_BUILDING };
+enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
+						   MIPVOL_BUILT,
+						   MIPVOL_BUILDING };
 
 class OmMipVolume : public OmVolume {
-
 public:
-        OmMipVolume();
+	OmMipVolume();
 	~OmMipVolume();
 
 	void Flush();
 
-	void SetFilename(const QString &);
-	QString GetFilename();
-	virtual void SetDirectoryPath(const QString &);
-	QString GetDirectoryPath();
+	virtual std::string GetDirectoryPath() = 0;
+	virtual std::string GetName() = 0;
+	virtual void loadVolData() = 0;
+	virtual boost::shared_ptr<OmVolumeData> getVolData() = 0;
 
-	QString MipLevelInternalDataPath(int level);
-	QString MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
+	std::string MipLevelInternalDataPath(const int level);
+	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 
 	//source data properties
 	void SetSourceFilenamesAndPaths( QFileInfoList );
@@ -51,7 +48,6 @@ public:
 	bool IsSourceValid();
 
 	// data properties
-	const DataBbox& GetExtent();
 	int GetChunkDimension();
 	Vector3<int> GetChunkDimensions();
 
@@ -75,7 +71,12 @@ public:
 	//thread chunk methods
 	int GetThreadChunkDimension();
 	Vector3<int> GetThreadChunkDimensions();
-	Vector3<int> MipVolumeDimensionsInThreadChunks();
+	int GetMaxConsecutiveSubsamples();
+	int GetThreadChunkLevelDimension(int level);
+	Vector3<int> GetThreadChunkLevelDimensions(int level);
+	Vector3<int> MipLevelDimensionsInThreadChunks(int level);
+	Vector3<int> MipLevelDimensionsInThreadChunkLevels(int level);
+	int ThreadChunksInMipLevel(int level);
 	int ThreadChunksInVolume();
 
 	//mip coord
@@ -83,16 +84,21 @@ public:
 	OmMipChunkCoord NormToMipCoord(const NormCoord &normCoord, int level);
 	DataBbox MipCoordToDataBbox(const OmMipChunkCoord &, int level);
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);
-       	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
+	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
+	DataBbox MipCoordToThreadLevelDataBbox(const OmMipChunkCoord &);
 
 	//mip chunk methods
 	OmMipChunkCoord RootMipChunkCoordinate();
 	int MipChunkDimension(int level);
-	bool ContainsMipChunkCoord(const OmMipChunkCoord &mipCoord);
-	bool ContainsThreadChunkCoord(const OmMipChunkCoord &mipCoord);
-	void ValidMipChunkCoordChildren(const OmMipChunkCoord &mipCoord, set<OmMipChunkCoord> &children);
-	void GetChunk(QExplicitlySharedDataPointer<OmMipChunk> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
-	void GetThreadChunkLevel(QExplicitlySharedDataPointer<OmThreadChunkLevel> &p_value, const OmMipChunkCoord &rMipCoord, bool block=true);
+	bool ContainsMipChunkCoord(const OmMipChunkCoord &rMipCoord);
+	bool ContainsThreadChunkCoord(const OmMipChunkCoord &rMipCoord);
+	bool ContainsThreadChunkLevelCoord(const OmMipChunkCoord &rMipCoord);
+	void ValidMipChunkCoordChildren(const OmMipChunkCoord &rMipCoord,
+									std::set<OmMipChunkCoord> &children);
+	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord,
+				  bool block=true);
+	void GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
+							 const OmMipChunkCoord &rMipCoord, bool block=true);
 
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);
@@ -101,63 +107,53 @@ public:
 	//build methods
 	void Build(OmDataPath & dataset);
 	bool BuildVolume();
-	bool BuildSerialVolume();
 	virtual bool BuildThreadedVolume();
 	virtual void BuildChunk(const OmMipChunkCoord &, bool remesh=false);
-	void BuildChunkAndParents(const OmMipChunkCoord &mipCoord);
+	void BuildChunkAndParents(const OmMipChunkCoord &);
 	void BuildEditedLeafChunks();
-	vtkImageData* BuildThreadChunkLevel(const OmMipChunkCoord &, vtkImageData *p_source_data);
-	void BuildThreadChunk(const OmMipChunkCoord &, vtkImageData *p_source_data);
+
+	virtual OmDataWrapperPtr BuildThreadChunkLevel(const OmMipChunkCoord &, OmDataWrapperPtr p_source_data, bool initCall);
+	void BuildThreadChunk(const OmMipChunkCoord &, OmDataWrapperPtr data, bool initCall);
 
 	//comparison methods
-	static bool CompareVolumes(OmMipVolume *, OmMipVolume *, bool verbose);
-	static bool CompareChunks(OmMipChunk *, OmMipChunk *, bool verbose);
+	static bool CompareVolumes(OmMipVolume *, OmMipVolume *);
+	static bool CompareChunks(const OmMipChunkCoord&,
+							  OmMipVolume*, OmMipVolume*);
 
-	//io
-	bool ImportSourceData(OmDataPath & dataset);
-	bool ImportSourceDataQT();
-	bool ImportSourceDataVTK(OmDataPath & dataset);
-	void copyDataIn( std::set<OmMipChunkCoord> & chunksToCopy);
-	void addToChunkCoords(const OmMipChunkCoord chunk_coord);
-	std::set<OmMipChunkCoord> chunksToCopy;;
-	std::pair<int,QString> getNextImgToProcess();
-	int mSliceNum;
-	std::vector<QFile*> mFileVec;
-	std::vector<uchar*> mFileMapPtr;
-	void AllocMemMapFiles();
-	unsigned char * getChunkPtr( OmMipChunkCoord & coord);
-	void figureOutNumberOfBytesImg();
+	void copyDataIn();
+	void copyAllMipDataIntoMemMap();
 	bool areImportFilesImages();
+
 	Vector3i get_dims(const OmDataPath dataset );
+	virtual bool GetBounds(float & , float &) { assert(0 && "the data for this mip volume has no bounds."); }
 
 	void ImportSourceDataSlice();
 	void ExportInternalData(QString fileNameAndPath);
-	virtual void ExportDataFilter(vtkImageData *) { }
+	virtual void ExportDataFilter(OmDataWrapperPtr) { }
 	void DeleteVolumeData();
 
 	bool ContainsVoxel(const DataCoord &vox);
-	int GetBytesPerSample();
-	void SetBytesPerSample(int);
 
 	//Thread Chunk Cache
 	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
-	mutable QMutex mChunkCoords;
-	//mip properties
 	QFileInfoList mSourceFilenamesAndPaths;
 
-	void BuildBlankVolume(const Vector3i & dims);
-
-	static void DumpTiles(OmId vol, ObjectType type, const QString dumpfile, OmViewGroupState * vgs);
+	Vector3i getDimsRoundedToNearestChunk(const int level);
+	OmVolDataType getVolDataType(){ return mVolDataType; }
 
 protected:
 	OmMipVolumeCache *const mDataCache;
+	OmVolDataType mVolDataType;
+
+	void BuildBlankVolume(const Vector3i & dims);
 
 	//state
 	void SetBuildState(MipVolumeBuildState);
 
+	virtual bool ImportSourceData(OmDataPath & dataset) = 0;
+
 	//mipvolume disk data
-	void AllocInternalData();
 	void UpdateRootMipLevel();
 
 	//mip data
@@ -166,24 +162,21 @@ protected:
 	int mMipRootLevel;			//inferred from leaf dim and source data extent
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
-	//subsample data methods
-	vtkImageData* GetSubsampledImageDataFromChildren(const OmMipChunkCoord &mipCoord);
-	vtkImageData* GetSubsampledChunkImageData(const OmMipChunkCoord &mipCoord);
-
-	template< typename T> vtkImageData* SubsampleImageData(vtkImageData* srcData);
-
-	set< OmMipChunkCoord > mEditedLeafChunks;	//set of edited chunks that need rebuild
+	std::set<OmMipChunkCoord> mEditedLeafChunks;	//set of edited chunks that need rebuild
 
 private:
 	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
 
-	int mBytesPerSample;		//VTK_UNSIGNED_CHAR (1 byte) or VTK_UNSIGNED_INT (4 bytes)
-
-	QString mDirectoryPath;          // ex. "./" or "images/out/"
-	QString mFilename;
 	bool sourceFilesWereSet;
 
+	void doExportChunk(const OmMipChunkCoord &, OmIDataWriter*);
+	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
+	uint32_t computeTotalNumChunks();
+
+	friend class OmMipChunk;
 	friend class OmDataArchiveProject;
+	friend class OmVolumeData;
+	friend class OmUpgradeTo14;
 };
 
 #endif

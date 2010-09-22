@@ -7,16 +7,14 @@
 #include "omProjectData.h"
 #include "segment/omSegment.h"
 #include "utility/fileHelpers.h"
+#include "datalayer/omDataReader.h"
+#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 #include <QFileInfo>
 
 //init instance pointer
 OmProjectData *OmProjectData::mspInstance = NULL;
-
-
-/////////////////////////////////
-///////          OmProjectData
 
 OmProjectData::OmProjectData()
 	: fileVersion_(0)
@@ -33,10 +31,6 @@ void OmProjectData::instantiateProjectData( QString fileNameAndPath )
 	}
 
 	Instance()->setupDataLayer( fileNameAndPath );
-}
-
-OmProjectData::~OmProjectData()
-{
 }
 
 OmProjectData *OmProjectData::Instance()
@@ -61,16 +55,21 @@ QString OmProjectData::getFileNameAndPath()
 
 QString OmProjectData::getAbsoluteFileNameAndPath()
 {
-	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QString rel_fnpn = getFileNameAndPath();
 	QFileInfo fInfo(rel_fnpn);
 	return fInfo.absoluteFilePath();
 }
 
 QString OmProjectData::getAbsolutePath()
 {
-	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QString rel_fnpn = getFileNameAndPath();
 	QFileInfo fInfo(rel_fnpn);
 	return fInfo.absolutePath();
+}
+
+QDir OmProjectData::GetFilesFolderPath()
+{
+	return QDir(getAbsoluteFileNameAndPath() + ".files");
 }
 
 /////////////////////////////////
@@ -78,9 +77,27 @@ QString OmProjectData::getAbsolutePath()
 
 void OmProjectData::Create()
 {
-	QFile projectFile( getFileNameAndPath() );
+	QFile projectFile(getFileNameAndPath());
 	if( projectFile.exists() ){
 		projectFile.remove();
+	}
+
+	QDir filesDir = GetFilesFolderPath();
+	const QString path = filesDir.absolutePath();
+	if(filesDir.exists()){
+		printf("removing folder %s...", qPrintable(path));
+		fflush(stdout);
+		if(FileHelpers::removeDir(path)){
+			printf("done!\n");
+		} else {
+			throw OmIoException("could not remove folder " + path.toStdString());
+		}
+	}
+
+	if(filesDir.mkpath(path)){
+		printf("made folder \"%s\"\n", qPrintable(path));
+	} else{
+		throw OmIoException("could not make folder " + path.toStdString());
 	}
 
 	Instance()->dataWriter->create();
@@ -112,25 +129,19 @@ void OmProjectData::DeleteInternalData(const OmDataPath & path)
 	}
 }
 
-OmDataLayer * OmProjectData::GetDataLayer()
-{
-	return Instance()->dataLayer;
-}
-
-OmDataReader * OmProjectData::GetProjectDataReader()
+OmIDataReader* OmProjectData::GetProjectDataReader()
 {
 	return Instance()->dataReader;
 }
 
-OmDataWriter * OmProjectData::GetDataWriter()
+OmIDataWriter* OmProjectData::GetDataWriter()
 {
 	return Instance()->dataWriter;
 }
 
 void OmProjectData::setupDataLayer( QString fileNameAndPath )
 {
-	dataLayer = new OmDataLayer();
-	mIsReadOnly = FileHelpers::isFileReadOnly( fileNameAndPath);
-	dataReader = dataLayer->getReader( fileNameAndPath, mIsReadOnly );
-	dataWriter = dataLayer->getWriter( fileNameAndPath, mIsReadOnly );
+	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
+	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);
+	dataWriter = OmDataLayer::getWriter(fileNameAndPath, mIsReadOnly);
 }

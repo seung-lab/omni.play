@@ -31,7 +31,6 @@ void OmSegmentValidateAction::Action()
         	OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
 		segment->SetImmutable(mCreate);
         	seg.GetSegmentCache()->setAsValidated(segment, mCreate);
-		printf("set %d as valid=%d\n", id, mCreate);
 	}
 	OmCacheManager::Freshen(true);
 }
@@ -47,7 +46,7 @@ void OmSegmentValidateAction::UndoAction()
 	OmCacheManager::Freshen(true);
 }
 
-string OmSegmentValidateAction::Description()
+std::string OmSegmentValidateAction::Description()
 {
 	QString lineItem;
 	if(mCreate) {
@@ -65,7 +64,7 @@ string OmSegmentValidateAction::Description()
 	return lineItem.toStdString();
 }
 
-void OmSegmentValidateAction::save(const string & comment)
+void OmSegmentValidateAction::save(const std::string& comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

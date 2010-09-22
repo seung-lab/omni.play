@@ -3,6 +3,14 @@
 #include <stdarg.h>
 #include <string.h>
 #include "common/omDebug.h"
+#include <QImage>
+#include <QPainter>
+#include <QDialog>
+#include <QLabel>
+#include <QPixmap>
+#include <QWidget>
+#include <QGridLayout>
+#include <QMessageBox>
 
 char debugCategoryArray[OM_DEBUG_STRING_MAX_NUMBER][OM_DEBUG_STRING_SIZE];
 int debugCategoryNumber;
@@ -127,7 +135,7 @@ int parseEnvironment()
 						return 0;
 					}
 				}
-			 }
+			}
 		} else if (-1==debugParseArg(inputString,OM_DEBUG_ADD)) return -1;
 		return 1;
 	} else return 0;

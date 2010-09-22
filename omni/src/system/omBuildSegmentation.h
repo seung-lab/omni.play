@@ -19,7 +19,6 @@ class OmBuildSegmentation : public OmBuildVolumes, public QThread
 
 	bool doBuildImage;
 	bool doBuildMesh;
-	void doLoadDendrogram();
 
 	void run();
 	void reset();

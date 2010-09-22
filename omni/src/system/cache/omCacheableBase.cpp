@@ -1,12 +1,13 @@
+#include "omCacheBase.h"
 #include "omCacheableBase.h"
 
-OmCacheableBase::OmCacheableBase( OmCacheBase *cache ) 
-	: mCache(cache) 
-{ 
+OmCacheableBase::OmCacheableBase( OmCacheBase *cache )
+	: mCache(cache)
+{
+	assert(mCache);
 }
 
-void OmCacheableBase::UpdateSize(int delta) {
-	if(mCache) {
-		mCache->UpdateSize(delta);
-	}
+void OmCacheableBase::UpdateSize(const qint64 bytesToAdd)
+{
+	mCache->UpdateSize(bytesToAdd);
 }

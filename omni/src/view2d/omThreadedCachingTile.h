@@ -19,7 +19,7 @@ class QGLContext;
 
 
 /**
- *	A Tile extended to support caching of TextureIDs with the GenericCache interface.
+ *	A Tile extended to support caching of TextureIDs
  *
  *	Rachel Shearer - rshearer@mit.edu
  */
@@ -32,8 +32,8 @@ public:
 	~OmThreadedCachingTile();
 		
 	// texture ID
-	virtual void GetTextureID(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, bool block = true);
-	void GetTextureIDDownMip(QExplicitlySharedDataPointer<OmTextureID> &p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
+	virtual void GetTextureID(OmTextureIDPtr& p_value, const OmTileCoord &tileCoord, bool block = true);
+	void GetTextureIDDownMip(OmTextureIDPtr& p_value, const OmTileCoord &tileCoord, int rootLevel, OmTileCoord &retCoord);
 
 	ObjectType mVolType;
 	OmId mImageId;

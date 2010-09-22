@@ -27,11 +27,6 @@ DataWrapperContainer::DataWrapperContainer(const ObjectType obj_type, const OmId
 		segmenDW = SegmentationDataWrapper(obj_id);
 		mIsValidContainer = true;
 		break;
-	case VOLUME:
-	case SEGMENT:
-	case NOTE:
-	case FILTER:
-		break;
 	}
 }
 
@@ -57,7 +52,7 @@ ChannelDataWrapper::ChannelDataWrapper(const OmId ID)
 
 QString ChannelDataWrapper::getName()
 {
-	return OmProject::GetChannel(mID).GetName();
+	return QString::fromStdString(OmProject::GetChannel(mID).GetName());
 }
 
 bool ChannelDataWrapper::isEnabled()
@@ -111,7 +106,7 @@ OmSegmentation & SegmentationDataWrapper::getSegmentation()
 
 QString SegmentationDataWrapper::getName()
 {
-	return OmProject::GetSegmentation(mID).GetName();
+	return QString::fromStdString(OmProject::GetSegmentation(mID).GetName());
 }
 
 bool SegmentationDataWrapper::isEnabled()
@@ -154,14 +149,12 @@ quint64 SegmentationDataWrapper::getSegmentListSize(OmSegIDRootType type)
  *******************************************/
 SegmentDataWrapper::SegmentDataWrapper(const OmId segmentationID, const OmSegID segmentID)
 	: mID(segmentID)
-	, mType(SEGMENT)
 	, mSegmentationID( segmentationID )
 {
 }
 
 SegmentDataWrapper::SegmentDataWrapper( OmSegment * seg )
-	: mID(seg->getValue())
-	, mType(SEGMENT)
+	: mID(seg->value)
 	, mSegmentationID( seg->getSegmentationID() )
 {
 }
@@ -179,7 +172,7 @@ QString SegmentDataWrapper::getName()
 
 QString SegmentDataWrapper::getSegmentationName()
 {
-	return getSegmentation().GetName();
+	return QString::fromStdString(getSegmentation().GetName());
 }
 
 bool SegmentDataWrapper::isSelected()
@@ -268,14 +261,13 @@ quint64 SegmentDataWrapper::getSizeWithChildren()
  *******************************************/
 FilterDataWrapper::FilterDataWrapper(const OmId channelID, const OmId ID)
 	: mID(ID)
-	, mType(FILTER)
 	, mChannelID(channelID)
 {
 }
 
 bool FilterDataWrapper::isValid()
 {
-	if( OmProject::IsChannelValid( mChannelID ) ){
+	if( OmProject::IsChannelValid(mChannelID) ){
 		if( OmProject::GetChannel(mChannelID).IsFilterValid(mID) ){
 			return true;
 		}
@@ -284,7 +276,7 @@ bool FilterDataWrapper::isValid()
 	return false;
 }
 
-OmFilter2d * FilterDataWrapper::getFilter()
+OmFilter2d* FilterDataWrapper::getFilter()
 {
 	if(!isValid()){
 		return NULL;
@@ -295,7 +287,9 @@ OmFilter2d * FilterDataWrapper::getFilter()
 
 QString FilterDataWrapper::getName()
 {
-	return OmProject::GetChannel(mChannelID).GetFilter(mID).GetName();
+	return QString::fromStdString(OmProject::GetChannel(mChannelID).
+				      GetFilter(mID).
+				      GetName());
 }
 
 bool FilterDataWrapper::isEnabled()

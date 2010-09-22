@@ -54,12 +54,12 @@ void OmSegmentSplitAction::UndoAction()
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
-string OmSegmentSplitAction::Description()
+std::string OmSegmentSplitAction::Description()
 {
 	return desc.toStdString();
 }
 
-void OmSegmentSplitAction::save(const string & comment)
+void OmSegmentSplitAction::save(const std::string & comment)
 {
-	OmActionLoggerFS().save(this, comment);
+	OmActionLoggerFS::save(this, comment);
 }

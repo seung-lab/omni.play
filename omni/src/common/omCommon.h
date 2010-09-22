@@ -15,16 +15,24 @@
 #include <boost/utility.hpp>
 
 #include "common/omStd.h"
+#include "common/omException.h"
 #include <assert.h>
 
 // elimiate VTK warning
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 
 typedef struct {
-	quint8 red;
-	quint8 green;
-	quint8 blue;
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
 } OmColor;
+
+typedef struct {
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
+	uint8_t alpha;
+} OmColorRGBA;
 
 
 
@@ -60,19 +68,18 @@ typedef unsigned int OmBitfield;
 enum ViewType { XY_VIEW, XZ_VIEW, YZ_VIEW };
 
 //objects
-enum ObjectType { VOLUME, CHANNEL, SEGMENTATION, SEGMENT, NOTE, FILTER };
+enum ObjectType { CHANNEL, SEGMENTATION };
 
 
 /**
  * "segment" types
  */
 //internal storage size of segment data
-#define SEGMENT_DATA_BYTES_PER_SAMPLE 4
 #define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
 
 typedef uint32_t OmSegID;
 static const OmSegID NULL_SEGMENT_VALUE(0);
-typedef boost::unordered_set<OmSegID> OmSegIDsSet;
+typedef std::set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
 
 
@@ -114,5 +121,13 @@ enum OmSegmentColorCacheType { SCC_FILTER_BLACK = 0,
 			       SCC_SEGMENTATION_VALID,
 			       SCC_SEGMENTATION_VALID_BLACK,
 			       SCC_NUMBER_OF_ENUMS };
+
+/**
+ * cache-type enum
+ */
+enum OmCacheGroupEnum {
+	RAM_CACHE_GROUP = 1,
+	VRAM_CACHE_GROUP
+};
 
 #endif

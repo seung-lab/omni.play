@@ -30,7 +30,7 @@ private:
   OmMipChunkCoord               mipCoord_;
   OmMipMeshManager              *mipMeshManager_;
   ziMesher                      *mesher_;
-  Qshared_ptr<OmMipChunk>       chunk_;
+  OmMipChunkPtr                 chunk_;
   vtkImageData                  *pImageData_;
   AxisAlignedBoundingBox<int>   srcBbox_;
   AxisAlignedBoundingBox<float> dstBbox_;

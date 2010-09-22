@@ -16,11 +16,11 @@ public:
 private:
 	void Action();
 	void UndoAction();
-	string Description();
-	void save(const string &);
+	std::string Description();
+	void save(const std::string&);
 	QString classNameForLogFile(){return "OmProjectSaveAction";}
 
-	friend class OmActionLoggerFS;
+	template <typename T> friend class OmActionLoggerFSThread;
 };
 
 #endif

@@ -2,30 +2,20 @@
 #define OM_MESH_SEGMENT_LIST_THREAD_H
 
 #include "common/omCommon.h"
-#include "volume/omMipChunkPtr.h"
-#include "volume/omMipChunkCoord.h"
+#include "volume/omVolumeTypes.hpp"
 
 #include <zi/threads>
 
 class OmSegment;
-class OmSegmentCache;
 
 class OmMeshSegmentListThread : public zi::Runnable {
 public:
-	OmMeshSegmentListThread( OmMipChunkPtr p_chunk,
-				 OmSegment * rootSeg,
-				 const OmMipChunkCoord & chunkCoord,
-				 boost::shared_ptr<OmSegmentCache> segmentCache,
-				 const OmId segmentationID);
-
+	OmMeshSegmentListThread(OmMipChunkPtr, OmSegment *);
 	void run();
 
 private:
 	OmMipChunkPtr mChunk;
 	OmSegment *const mRootSeg;
-	const OmMipChunkCoord mChunkCoord;
-	boost::shared_ptr<OmSegmentCache> mSegmentCache;
-	const OmId mSegmentationID;
 };
 
 #endif

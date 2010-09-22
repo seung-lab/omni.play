@@ -5,46 +5,52 @@
 #include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataReader.h"
 #include "datalayer/omDataWriter.h"
+#include "datalayer/omMST.h"
+#include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
+#include "system/omGroup.h"
+#include "system/omGroups.h"
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "system/omGroups.h"
-#include "system/omGroup.h"
+#include "volume/omVolumeData.hpp"
 
 #include <QDataStream>
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
+static const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
 static const QString Omni_Postfix("OMNI");
-static const int Omni_Version = 13; // warning: don't change to version 15 (purcaro)
 static int fileVersion_;
 
 void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
-				       OmProject* project )
+									   OmProject* project)
 {
 	int size;
-	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
 
-	QByteArray ba = QByteArray::fromRawData(dw->getCharPtr(), size);
+	OmDataWrapperPtr dw =
+		OmProjectData::GetProjectDataReader()->
+		readDataset(path, &size);
+
+	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size);
 	QDataStream in(&ba, QIODevice::ReadOnly);
-	in.setByteOrder( QDataStream::LittleEndian );
+	in.setByteOrder(QDataStream::LittleEndian);
 	in.setVersion(QDataStream::Qt_4_6);
 
 	in >> fileVersion_;
 	OmProjectData::setFileVersion(fileVersion_);
 	printf("Omni file version is %d\n", fileVersion_);
 
-	if( fileVersion_ < 10 ){
+	if(fileVersion_ < 10){
 		throw OmIoException("can not open file: file version is ("
-				    + boost::lexical_cast<std::string>(fileVersion_)
-				    +"), but Omni expecting ("
-				    + boost::lexical_cast<std::string>(Omni_Version)
-				    + ")");
+							+ boost::lexical_cast<std::string>(fileVersion_)
+							+"), but Omni expecting ("
+							+ boost::lexical_cast<std::string>(Omni_Version)
+							+ ")");
 	}
 
 	in >> (*project);
@@ -55,13 +61,19 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	   !in.atEnd()){
 		throw OmIoException("corruption detected in Omni file");
 	}
+
+	if(fileVersion_ < 14){
+		OmUpgraders::to14();
+		ArchiveWrite(path, project);
+	}
 }
 
-void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * project )
+void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
+										OmProject* project)
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
-	out.setByteOrder( QDataStream::LittleEndian );
+	out.setByteOrder(QDataStream::LittleEndian);
 	out.setVersion(QDataStream::Qt_4_6);
 
 	OmProjectData::setFileVersion(Omni_Version);
@@ -70,9 +82,9 @@ void OmDataArchiveProject::ArchiveWrite( const OmDataPath & path, OmProject * pr
 	out << (*project);
 	out << Omni_Postfix;
 
-	OmProjectData::GetDataWriter()->dataset_raw_create_tree_overwrite( path,
-									   ba.size(),
-									   ba.data() );
+	OmProjectData::GetDataWriter()->writeDataset(path,
+												  ba.size(),
+												  OmDataWrapperRaw(ba.data()));
 }
 
 QDataStream &operator<<(QDataStream & out, const OmProject & p)
@@ -86,14 +98,13 @@ QDataStream &operator<<(QDataStream & out, const OmProject & p)
 QDataStream &operator>>(QDataStream & in, OmProject & p)
 {
 	in >> *OmPreferences::Instance();
-
 	in >> p.mChannelManager;
 	in >> p.mSegmentationManager;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmPreferences & p )
+QDataStream &operator<<(QDataStream & out, const OmPreferences & p)
 {
 	out << p.stringPrefs;
 	out << p.floatPrefs;
@@ -103,7 +114,7 @@ QDataStream &operator<<(QDataStream & out, const OmPreferences & p )
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmPreferences & p )
+QDataStream &operator>>(QDataStream & in, OmPreferences & p)
 {
 	in >> p.stringPrefs;
 	in >> p.floatPrefs;
@@ -117,21 +128,21 @@ QDataStream &operator>>(QDataStream & in, OmPreferences & p )
  * Channel
  */
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & cm )
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & cm)
 {
 	out << cm.mNextId;
 	out << cm.mSize;
 	out << cm.mValidSet;
 	out << cm.mEnabledSet;
 
-	foreach( const OmId & id, cm.mValidSet ){
+	foreach(const OmId & id, cm.mValidSet){
 		out << *cm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm)
 {
 	in >> cm.mNextId;
 	in >> cm.mSize;
@@ -140,7 +151,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
 
 	cm.mMap.resize(cm.mSize, NULL);
 
-	for( unsigned int i = 0; i < cm.mValidSet.size(); ++i ){
+	for(unsigned int i = 0; i < cm.mValidSet.size(); ++i){
 		OmChannel * chan = new OmChannel();
 		in >> *chan;
 		cm.mMap[ chan->GetId() ] = chan;
@@ -149,24 +160,36 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmChannel & chan )
+QDataStream &operator<<(QDataStream & out, const OmChannel & chan)
 {
-	OmDataArchiveProject::storeOmManageableObject( out, chan );
-	OmDataArchiveProject::storeOmMipVolume( out, chan );
-	OmDataArchiveProject::storeOmVolume( out, chan );
+	OmDataArchiveProject::storeOmManageableObject(out, chan);
+	OmDataArchiveProject::storeOmMipVolume(out, chan);
+	OmDataArchiveProject::storeOmVolume(out, chan);
 
 	out << chan.mFilter2dManager;
+	out << chan.mWasBounded;
+	out << chan.mMaxVal;
+	out << chan.mMinVal;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmChannel & chan )
+QDataStream &operator>>(QDataStream & in, OmChannel & chan)
 {
-	OmDataArchiveProject::loadOmManageableObject( in, chan );
-	OmDataArchiveProject::loadOmMipVolume( in, chan );
-	OmDataArchiveProject::loadOmVolume( in, chan );
+	OmDataArchiveProject::loadOmManageableObject(in, chan);
+	OmDataArchiveProject::loadOmMipVolume(in, chan);
+	OmDataArchiveProject::loadOmVolume(in, chan);
 
 	in >> chan.mFilter2dManager;
+	if(fileVersion_ > 13) {
+		in >> chan.mWasBounded;
+		in >> chan.mMaxVal;
+		in >> chan.mMinVal;
+	}
+
+	if(fileVersion_ > 13){
+		chan.loadVolData();
+	}
 
 	return in;
 }
@@ -175,33 +198,33 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan )
  * Filter
  */
 
-QDataStream &operator<<(QDataStream & out, const OmFilter2dManager & fm )
+QDataStream &operator<<(QDataStream & out, const OmFilter2dManager & fm)
 {
 	out << fm.mGenericFilterManager;
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmFilter2dManager & fm )
+QDataStream &operator>>(QDataStream & in, OmFilter2dManager & fm)
 {
 	in >> fm.mGenericFilterManager;
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & fm )
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & fm)
 {
 	out << fm.mNextId;
 	out << fm.mSize;
 	out << fm.mValidSet;
 	out << fm.mEnabledSet;
 
-	foreach( const OmId & id, fm.mValidSet ){
+	foreach(const OmId & id, fm.mValidSet){
 		out << *fm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm)
 {
 	in >> fm.mNextId;
 	in >> fm.mSize;
@@ -210,7 +233,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
 
 	fm.mMap.resize(fm.mSize, NULL);
 
-	for( unsigned int i = 0; i < fm.mValidSet.size(); ++i ){
+	for(unsigned int i = 0; i < fm.mValidSet.size(); ++i){
 		OmFilter2d * filter = new OmFilter2d();
 		in >> *filter;
 		fm.mMap[ filter->GetId() ] = filter;
@@ -219,9 +242,9 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmFilter2d & f )
+QDataStream &operator<<(QDataStream & out, const OmFilter2d & f)
 {
-	OmDataArchiveProject::storeOmManageableObject( out, f );
+	OmDataArchiveProject::storeOmManageableObject(out, f);
 	out << f.mAlpha;
 	out << f.mChannel;
 	out << f.mSeg;
@@ -229,9 +252,9 @@ QDataStream &operator<<(QDataStream & out, const OmFilter2d & f )
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmFilter2d & f )
+QDataStream &operator>>(QDataStream & in, OmFilter2d & f)
 {
-	OmDataArchiveProject::loadOmManageableObject( in, f );
+	OmDataArchiveProject::loadOmManageableObject(in, f);
 	in >> f.mAlpha;
 	in >> f.mChannel;
 	in >> f.mSeg;
@@ -243,21 +266,21 @@ QDataStream &operator>>(QDataStream & in, OmFilter2d & f )
  * Segmentation and related
  */
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation> & sm )
+QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation> & sm)
 {
 	out << sm.mNextId;
 	out << sm.mSize;
 	out << sm.mValidSet;
 	out << sm.mEnabledSet;
 
-	foreach( const OmId & id, sm.mValidSet ){
+	foreach(const OmId & id, sm.mValidSet){
 		out << *sm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm )
+QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm)
 {
 	in >> sm.mNextId;
 	in >> sm.mSize;
@@ -266,7 +289,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm 
 
 	sm.mMap.resize(sm.mSize, NULL);
 
-	for( unsigned int i = 0; i < sm.mValidSet.size(); ++i ){
+	for(unsigned int i = 0; i < sm.mValidSet.size(); ++i){
 		OmSegmentation * seg = new OmSegmentation();
 		in >> *seg;
 		sm.mMap[ seg->GetId() ] = seg;
@@ -275,111 +298,87 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg )
+QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
 {
-	OmDataArchiveProject::storeOmManageableObject( out, seg );
-	OmDataArchiveProject::storeOmVolume( out, seg );
-	OmDataArchiveProject::storeOmMipVolume( out, seg );
+	OmDataArchiveProject::storeOmManageableObject(out, seg);
+	OmDataArchiveProject::storeOmVolume(out, seg);
+	OmDataArchiveProject::storeOmMipVolume(out, seg);
 
 	out << seg.mMipMeshManager;
 	out << (*seg.mSegmentCache);
 
-	out << seg.mDendSize;
-	out << seg.mDendValuesSize;
-	out << seg.mDendCount;
-	out << seg.mDendThreshold;
+	out << seg.mst_->mDendSize;
+	out << seg.mst_->mDendValuesSize;
+	out << seg.mst_->mDendCount;
+	out << seg.mst_->mDendThreshold;
 	out << seg.mGroups;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentation & seg )
+QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 {
-	OmDataArchiveProject::loadOmManageableObject( in, seg );
-	OmDataArchiveProject::loadOmVolume( in, seg );
-	OmDataArchiveProject::loadOmMipVolume( in, seg );
+	OmDataArchiveProject::loadOmManageableObject(in, seg);
+	OmDataArchiveProject::loadOmVolume(in, seg);
+	OmDataArchiveProject::loadOmMipVolume(in, seg);
 
 	in >> seg.mMipMeshManager;
 	in >> (*seg.mSegmentCache);
 
-	in >> seg.mDendSize;
-	in >> seg.mDendValuesSize;
-	in >> seg.mDendCount;
-	in >> seg.mDendThreshold;
+	in >> seg.mst_->mDendSize;
+	in >> seg.mst_->mDendValuesSize;
+	in >> seg.mst_->mDendCount;
+	in >> seg.mst_->mDendThreshold;
 	in >> seg.mGroups;
 
-        QString dendStr = QString("%1dend").arg(seg.GetDirectoryPath());
-	OmDataPath path;
-        path.setPathQstr(dendStr);
-
-        if(OmProjectData::GetProjectDataReader()->dataset_exists(path)) {
-		int size;
-        	seg.mDend = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		//assert( size == seg.mDendSize );
-
-		QString dendValStr = QString("%1dendValues").arg(seg.GetDirectoryPath());
-        	path.setPathQstr(dendValStr);
-        	seg.mDendValues = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		//assert( size == seg.mDendValuesSize );
-
-		QString dendEdgeDisabledByUser = QString("%1/edgeDisabledByUser").arg(seg.GetDirectoryPath());
-		path.setPathQstr(dendEdgeDisabledByUser);
-		seg.mEdgeDisabledByUser = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		//assert( size == seg.mDendValuesSize );
-
-		// this is just a temporary object--should be refactored... (purcaro)
-		quint8 * edgeJoined = (quint8 *)malloc(sizeof(quint8) * seg.mDendValuesSize );
-		memset(edgeJoined, 0, sizeof(quint8) * seg.mDendValuesSize );
-		seg.mEdgeWasJoined = OmDataWrapperPtr( new OmDataWrapper( edgeJoined ) );
-
-		QString dendEdgeForceJoin = QString("%1/edgeForceJoin").arg(seg.GetDirectoryPath());
-		path.setPathQstr(dendEdgeForceJoin);
-		seg.mEdgeForceJoin = OmProjectData::GetProjectDataReader()->dataset_raw_read(path, &size);
-		//assert( size == seg.mDendValuesSize );
+	if(fileVersion_ > 13){
+		seg.loadVolData();
 	}
 
+	seg.mst_->read(seg);
 	seg.mSegmentCache->refreshTree();
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm )
+QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm)
 {
 	out << mm.mDirectoryPath;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm )
+QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm)
 {
 	in >> mm.mDirectoryPath;
 
 	return in;
 }
-QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc )
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc)
 {
-        out << (*sc.mImpl);
+	out << (*sc.mImpl);
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc )
+QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc)
 {
 	in >> (*sc.mImpl);
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
+QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc)
 {
 	out << (*sc.mSegments);
 
-        out << sc.mAllSelected;
-        out << sc.mAllEnabled;
-        out << sc.mMaxValue;
+	out << sc.mAllSelected;
+	out << sc.mAllEnabled;
+	out << sc.mMaxValue;
 
-        out << sc.mEnabledSet;
-        out << sc.mSelectedSet;
+	out << sc.mEnabledSet;
+	out << sc.mSelectedSet;
 
 	out << sc.segmentCustomNames;
 	out << sc.segmentNotes;
@@ -388,23 +387,23 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc )
 
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
-	foreach( const OmSegmentEdge & e, sc.mManualUserMergeEdgeList ){
+	foreach(const OmSegmentEdge & e, sc.mManualUserMergeEdgeList){
 		out << e;
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
+QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc)
 {
 	in >> (*sc.mSegments);
 
-        in >> sc.mAllSelected;
-        in >> sc.mAllEnabled;
-        in >> sc.mMaxValue;
+	in >> sc.mAllSelected;
+	in >> sc.mAllEnabled;
+	in >> sc.mMaxValue;
 
-        in >> sc.mEnabledSet;
-        in >> sc.mSelectedSet;
+	in >> sc.mEnabledSet;
+	in >> sc.mSelectedSet;
 
 	in >> sc.segmentCustomNames;
 	in >> sc.segmentNotes;
@@ -418,17 +417,17 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 
 	int size;
 	in >> size;
-	for( int i = 0; i < size; ++i ){
+	for(int i = 0; i < size; ++i){
 		OmSegmentEdge e;
 		in >> e;
-		if( 0 == e.childID  ||
+		if(0 == e.childID  ||
 		    0 == e.parentID ||
 		    std::isnan(e.threshold)){
-		  printf("warning: bad edge found: %d, %d, %f\n",
-			 e.parentID,
-			 e.childID,
-			 e.threshold);
-		  continue;
+			printf("warning: bad edge found: %d, %d, %f\n",
+				   e.parentID,
+				   e.childID,
+				   e.threshold);
+			continue;
 		}
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
@@ -437,7 +436,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc )
 }
 
 template< class T2 >
-QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps )
+QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps)
 {
 	out << ps.validPageNumbers;
 	out << ps.mPageSize;
@@ -445,14 +444,14 @@ QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps )
 }
 
 template< class T2 >
-QDataStream &operator>>(QDataStream & in, OmPagingPtrStore<T2> & ps )
+QDataStream &operator>>(QDataStream & in, OmPagingPtrStore<T2> & ps)
 {
 	in >> ps.validPageNumbers;
 	in >> ps.mPageSize;
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se )
+QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se)
 {
 	out << se.parentID;
 	out << se.childID;
@@ -461,7 +460,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se )
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
+QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se)
 {
 	in >> se.parentID;
 	in >> se.childID;
@@ -475,49 +474,65 @@ QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se )
  * Generic base objects
  */
 
-void OmDataArchiveProject::storeOmManageableObject( QDataStream & out, const OmManageableObject & mo )
+void OmDataArchiveProject::storeOmManageableObject(QDataStream & out, const OmManageableObject & mo)
 {
 	out << mo.mId;
-	out << mo.mName;
+	out << mo.mCustomName;
 	out << mo.mNote;
 }
 
-void OmDataArchiveProject::loadOmManageableObject( QDataStream & in, OmManageableObject & mo )
+void OmDataArchiveProject::loadOmManageableObject(QDataStream & in, OmManageableObject & mo)
 {
 	in >> mo.mId;
-	in >> mo.mName;
+	in >> mo.mCustomName;
 	in >> mo.mNote;
 }
 
-void OmDataArchiveProject::storeOmMipVolume( QDataStream & out, const OmMipVolume & m )
+void OmDataArchiveProject::storeOmMipVolume(QDataStream & out, const OmMipVolume & m)
 {
-	out << m.mDirectoryPath;
+	out << QString(""); // TODO: remove me; was m.mDirectoryPath;
 	out << m.mMipLeafDim;
 	out << m.mMipRootLevel;
 
-	int subsamplemode = 0;
+	qint32 subsamplemode = 0;
 	out << subsamplemode;
 	out << m.mBuildState;
 	out << m.mStoreChunkMetaData;
 
-	out << m.mBytesPerSample;
+	qint32 mBytesPerSample = 0;
+	out << mBytesPerSample; //FIXME: no longer used; was mBytesPerSample
+
+	const QString type =
+		QString::fromStdString(OmVolumeTypeHelpers::GetTypeAsString(m.mVolDataType));
+	out << type;
+	std::cout << "saved type as " << type.toStdString() << "\n";
 }
 
-void OmDataArchiveProject::loadOmMipVolume( QDataStream & in, OmMipVolume & m )
+void OmDataArchiveProject::loadOmMipVolume(QDataStream & in, OmMipVolume & m)
 {
-	in >> m.mDirectoryPath;
+	QString mDirectoryPath; //TODO: remove me
+	in >> mDirectoryPath;
 	in >> m.mMipLeafDim;
 	in >> m.mMipRootLevel;
 
-	int subsamplemode;
+	qint32 subsamplemode;
 	in >> subsamplemode;
 	in >> m.mBuildState;
 	in >> m.mStoreChunkMetaData;
 
-	in >> m.mBytesPerSample;
+	qint32 mBytesPerSample;
+	in >> mBytesPerSample; //FIXME: no longer used
+
+	if(fileVersion_ > 13){
+		QString volDataType;
+		in >> volDataType;
+		m.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+	} else {
+		m.mVolDataType = OmVolDataType::UNKNOWN;
+	}
 }
 
-void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v )
+void OmDataArchiveProject::storeOmVolume(QDataStream & out, const OmVolume & v)
 {
 	out << v.mNormToSpaceMat;
 	out << v.mNormToSpaceInvMat;
@@ -528,7 +543,7 @@ void OmDataArchiveProject::storeOmVolume( QDataStream & out, const OmVolume & v 
 	out << v.mDataStretchValues;
 }
 
-void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
+void OmDataArchiveProject::loadOmVolume(QDataStream & in, OmVolume & v)
 {
 	in >> v.mNormToSpaceMat;
 	in >> v.mNormToSpaceInvMat;
@@ -539,74 +554,73 @@ void OmDataArchiveProject::loadOmVolume( QDataStream & in, OmVolume & v )
 	in >> v.mDataStretchValues;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGroups & g )
+QDataStream &operator<<(QDataStream & out, const OmGroups & g)
 {
-        out << g.mGroupManager;
-        out << g.mGroupsByName;
+	out << g.mGroupManager;
+	out << g.mGroupsByName;
 
-        return out;
+	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGroups & g )
+QDataStream &operator>>(QDataStream & in, OmGroups & g)
 {
-        in >> g.mGroupManager;
-        in >> g.mGroupsByName;
+	in >> g.mGroupManager;
+	in >> g.mGroupsByName;
 
-        return in;
+	return in;
 }
 
 QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & gm)
 {
-        out << gm.mNextId;
-        out << gm.mSize;
-        out << gm.mValidSet;
-        out << gm.mEnabledSet;
+	out << gm.mNextId;
+	out << gm.mSize;
+	out << gm.mValidSet;
+	out << gm.mEnabledSet;
 
-        foreach( const OmId & id, gm.mValidSet ){
-                out << *gm.mMap[id];
+	foreach(const OmId & id, gm.mValidSet){
+		out << *gm.mMap[id];
 		printf("id=%i\n", id);
-        }
+	}
 
-        return out;
+	return out;
 }
 
 QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 {
-        in >> gm.mNextId;
-        in >> gm.mSize;
-        in >> gm.mValidSet;
-        in >> gm.mEnabledSet;
+	in >> gm.mNextId;
+	in >> gm.mSize;
+	in >> gm.mValidSet;
+	in >> gm.mEnabledSet;
 
-        gm.mMap.resize(gm.mSize, NULL);
+	gm.mMap.resize(gm.mSize, NULL);
 
-        for( unsigned int i = 0; i < gm.mValidSet.size(); ++i ){
-                OmGroup * group = new OmGroup();
-                in >> *group;
-                gm.mMap[ group->GetId() ] = group;
-        }
-
-        return in;
-}
-
-QDataStream &operator<<(QDataStream & out, const OmGroup & g )
-{
-	OmDataArchiveProject::storeOmManageableObject( out, g );
-        out << g.mName;
-        out << g.mIDs;
-
-        return out;
-}
-
-QDataStream &operator>>(QDataStream & in, OmGroup & g )
-{
-	if(fileVersion_ > 11) {
-		OmDataArchiveProject::loadOmManageableObject( in, g );
-	}
-        in >> g.mName;
-	if(fileVersion_ > 11) {
-       		in >> g.mIDs;
+	for(unsigned int i = 0; i < gm.mValidSet.size(); ++i){
+		OmGroup * group = new OmGroup();
+		in >> *group;
+		gm.mMap[ group->GetId() ] = group;
 	}
 
-        return in;
+	return in;
 }
 
+QDataStream &operator<<(QDataStream & out, const OmGroup & g)
+{
+	OmDataArchiveProject::storeOmManageableObject(out, g);
+	out << g.mName;
+	out << g.mIDs;
+
+	return out;
+}
+
+QDataStream &operator>>(QDataStream & in, OmGroup & g)
+{
+	if(fileVersion_ > 11) {
+		OmDataArchiveProject::loadOmManageableObject(in, g);
+	}
+	in >> g.mName;
+	if(fileVersion_ > 11) {
+		in >> g.mIDs;
+	}
+
+	return in;
+}

@@ -1,11 +1,12 @@
 #ifndef OM_ACTION_LOGGER_H
 #define OM_ACTION_LOGGER_H
 
-#include "common/omCommon.h"
+#include "datalayer/fs/omActionLoggerFSthread.hpp"
+#include "project/omProject.h"
+
 #include <QDir>
-#include <QDataStream>
-static const int Omni_Log_Version = 1;
-static const QString Omni_Postfix("OMNI_LOG");
+#include <zi/mutex>
+#include <zi/utility>
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -13,37 +14,40 @@ class OmSegmentJoinAction;
 class OmSegmentSelectAction;
 class OmSegmentValidateAction;
 class OmProjectSaveAction;
-class OmAction;
 
 class OmActionLoggerFS {
- public:
-	OmActionLoggerFS();
-	~OmActionLoggerFS();
+public:
+	static QDir& getLogFolder(){ return Instance().doGetLogFolder(); }
+	static zi::Mutex& getThreadMutex(){ return Instance().threadMutex_; }
 
-	template <class T>
-	void save(T * action, const std::string &);
+	template <class T> static void save(T * action, const std::string &);
 
- private:
+private:
+	bool initialized;
+	zi::Mutex mutex_;
+	zi::Mutex threadMutex_; //serialize file writes
 	QDir mLogFolder;
 
+	OmActionLoggerFS();
+	~OmActionLoggerFS();
 	void setupLogDir();
-	QString getFileNameAndPath(const QString & actionName );
+	QDir& doGetLogFolder();
+
+	static inline OmActionLoggerFS & Instance(){
+		return zi::Singleton<OmActionLoggerFS>::Instance();
+	}
+
+	friend class zi::Singleton<OmActionLoggerFS>;
 };
 
 template <class T>
-void OmActionLoggerFS::save(T * action, const std::string &)
+void OmActionLoggerFS::save(T * action, const std::string & str)
 {
-	setupLogDir();
+	boost::shared_ptr<OmActionLoggerFSThread<T> >
+		task(new OmActionLoggerFSThread<T>(action, str));
 
-	QFile file(getFileNameAndPath(action->classNameForLogFile()));
-	file.open(QIODevice::WriteOnly);
-	QDataStream out(&file);
-	out.setByteOrder( QDataStream::LittleEndian );
-	out.setVersion(QDataStream::Qt_4_6);
-
-	out << Omni_Log_Version;
-	out << (*action);
-	out << Omni_Postfix;
+	task->run(); //QT may delete *action before we have a chance to save it!
+	//	OmProject::GetGlobalThreadPool().addTaskBack(task);
 }
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );

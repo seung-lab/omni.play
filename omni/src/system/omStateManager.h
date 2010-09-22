@@ -25,18 +25,18 @@ class Drawable;
 class OmStateManager : boost::noncopyable {
 
 public:
-	
+
 	static OmStateManager* Instance();
 	static void Delete();
 
 	static void UpdateStatusBar( const QString & msg );
 
 	//project
-	static const string& GetProjectFileName();
-	static void SetProjectFileName(const string &);
-	static const string& GetProjectDirectoryPath();
-	static void SetProjectDirectoryPath(const string &);
-		
+	static const std::string& GetProjectFileName();
+	static void SetProjectFileName(const std::string &);
+	static const std::string& GetProjectDirectoryPath();
+	static void SetProjectDirectoryPath(const std::string &);
+
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolModeAndSendEvent(const OmToolMode mode);
@@ -47,19 +47,19 @@ public:
 	static void PushUndoCommand(QUndoCommand *);
 	static void ClearUndoStack();
 	static void UndoUndoCommand();
-	
+
 	//view3d context
 	static void CreatePrimaryView3dWidget();
 	static const QGLWidget* GetPrimaryView3dWidget();
 	static QGLContext* GetSharedView3dContext();
-	
+
 	//view2d context
 	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
-	
+
 	//central transparency value (to avoid gross pref lookups)
 	static float GetTransparencyAlpha();
 	static void SetTransparencyAlpha(float);
-	
+
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
@@ -74,8 +74,9 @@ public:
 
 	static QSize getViewBoxSizeHint();
 
-	static void SetViewDrawable(ViewType viewType, vector<Drawable*> & drawable);
-	static vector<Drawable*> GetViewDrawable(ViewType viewType);
+	static void SetViewDrawable(ViewType viewType,
+								std::vector<Drawable*>& drawable);
+	static std::vector<Drawable*> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -83,25 +84,21 @@ private:
 
 	//singleton
 	static OmStateManager* mspInstance;
-	
+
 	//project
-	string mProjectFileName;
-	string mProjectDirectoryPath;
-	
-	//edit selection
-	Vector3< OmId > mEditSelection;	//volume, segmentation, segment
-	set< DataCoord > mEditSelectionCoords;
-	
+	std::string mProjectFileName;
+	std::string mProjectDirectoryPath;
+
 	//tool mode
 	OmToolMode mCurToolMode;
 	OmToolMode mPrevToolMode;
-	
+
 	//undostack
 	QUndoStack *mpUndoStack;
-	
+
 	//view3d context
 	QGLWidget *mpPrimaryView3dWidget;
-	
+
 	//transparency
 	float TRANSPARANCY_ALPHA;
 
@@ -114,9 +111,9 @@ private:
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
 
-	vector<Drawable*> mDrawableXY;
-	vector<Drawable*> mDrawableXZ;
-	vector<Drawable*> mDrawableYZ;
+	std::vector<Drawable*> mDrawableXY;
+	std::vector<Drawable*> mDrawableXZ;
+	std::vector<Drawable*> mDrawableYZ;
 };
 
 #endif

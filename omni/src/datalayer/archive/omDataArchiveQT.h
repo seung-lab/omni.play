@@ -3,7 +3,6 @@
 
 class OmDataPath;
 class OmMipChunk;
-class OmSimpleChunk;
 class OmProject;
 
 class OmDataArchiveQT
@@ -11,9 +10,6 @@ class OmDataArchiveQT
  public:
 	static void ArchiveRead( const OmDataPath & path, OmMipChunk * chunk );
 	static void ArchiveWrite( const OmDataPath & path, OmMipChunk * chunk );
-
-	static void ArchiveRead( const OmDataPath & path, OmSimpleChunk * chunk );
-	static void ArchiveWrite( const OmDataPath & path, OmSimpleChunk * chunk );
 
 	static void ArchiveRead( const OmDataPath & path, OmProject * project );
 	static void ArchiveWrite( const OmDataPath & path, OmProject * project );

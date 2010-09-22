@@ -53,16 +53,16 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);
 		row->setText(NAME_COL, seg->GetName());
-		row->setText(ID_COL, QString::number( seg->getValue() ) );
+		row->setText(ID_COL, QString::number( seg->value ) );
 
-		SegmentDataWrapper segDW( segmentationDW.getID(), seg->getValue() );
+		SegmentDataWrapper segDW( segmentationDW.getID(), seg->value );
 		row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
 		//row->setText(NOTE_COL, seg.getNote());
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(seg->IsEnabled()));
 
 		row->setSelected(seg->IsSelected());
-		if (doScrollToSelectedSegment && seg->getValue() == segmentJustSelectedID) {
+		if (doScrollToSelectedSegment && seg->value == segmentJustSelectedID) {
 			rowToJumpTo = row;
 			shouldSuggestThisTabBeMadeActive = true;
 		}
@@ -81,7 +81,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 	return shouldSuggestThisTabBeMadeActive;
 }
 
-string OmSegmentListWidget::eventSenderName()
+std::string OmSegmentListWidget::eventSenderName()
 {
 	return "segmentList";
 }
