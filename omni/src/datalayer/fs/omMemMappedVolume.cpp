@@ -74,7 +74,7 @@ T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 	const int64_t offset =
 		slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-	debug("memmap", "offset is: %llu (%ld,%ld,%ld) for (%ld,%ld,%ld)\n",
+	debug("io", "offset is: %llu (%ld,%ld,%ld) for (%ld,%ld,%ld)\n",
 		  offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 	T* ret = maps_[level]->GetPtrWithOffset(offset);
@@ -82,20 +82,37 @@ T* OmMemMappedVolume<T,VOL>::GetChunkPtr(const OmMipChunkCoord& coord) const
 	return ret;
 }
 
+//TODO: cleanup!
+//ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
 template <typename T, typename VOL>
 std::string OmMemMappedVolume<T,VOL>::getFileName(const int level) const
 {
-	const std::string volName = vol_->GetName();
+	const QDir filesDir = OmProjectData::GetFilesFolderPath();
+
+	const QString subPath = QString("%1/%2/")
+		.arg(QString::fromStdString(vol_->GetDirectoryPath()))
+		.arg(level);
+
+	if(subPath.startsWith("/")){
+		throw OmIoException("not a relative path: " + subPath.toStdString());
+	}
+
+	const QString fullPath = filesDir.absolutePath() + QDir::separator() + subPath;
+
+	if(!filesDir.mkpath(subPath)){
+		throw OmIoException("could not create folder " + fullPath.toStdString());
+	}
+
 	const std::string volType =
 		OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType());
 
-	const QString fn=QString("%1--%2--mip%3--%4.raw")
-		.arg(OmProject::GetFileName().replace(".omni",""))
-		.arg(QString::fromStdString(volName))
-		.arg(level)
+	const QString fnp = QString("/%1/volume.%3.raw")
+		.arg(fullPath)
 		.arg(QString::fromStdString(volType));
 
-	const QString fnp = OmProjectData::GetFilesFolderPath().filePath(fn);
+	const QString fnp_clean = QDir::cleanPath(fnp);
 
-	return fnp.toStdString();
+	debug("io", "file is %s\n", qPrintable(fnp_clean));
+
+	return fnp_clean.toStdString();
 }
