@@ -95,7 +95,7 @@ std::string OmMemMappedVolume<T,VOL>::getFileName(const int level) const
 		.arg(level)
 		.arg(QString::fromStdString(volType));
 
-	const QString fnp = OmProjectData::getAbsolutePath()+"/"+fn;
+	const QString fnp = OmProjectData::GetFilesFolderPath().filePath(fn);
 
 	return fnp.toStdString();
 }

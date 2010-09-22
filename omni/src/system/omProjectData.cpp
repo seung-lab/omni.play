@@ -55,16 +55,21 @@ QString OmProjectData::getFileNameAndPath()
 
 QString OmProjectData::getAbsoluteFileNameAndPath()
 {
-	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QString rel_fnpn = getFileNameAndPath();
 	QFileInfo fInfo(rel_fnpn);
 	return fInfo.absoluteFilePath();
 }
 
 QString OmProjectData::getAbsolutePath()
 {
-	QString rel_fnpn = Instance()->getFileNameAndPath();
+	QString rel_fnpn = getFileNameAndPath();
 	QFileInfo fInfo(rel_fnpn);
 	return fInfo.absolutePath();
+}
+
+QDir OmProjectData::GetFilesFolderPath()
+{
+	return QDir(getAbsoluteFileNameAndPath() + ".files");
 }
 
 /////////////////////////////////
@@ -72,9 +77,27 @@ QString OmProjectData::getAbsolutePath()
 
 void OmProjectData::Create()
 {
-	QFile projectFile( getFileNameAndPath() );
+	QFile projectFile(getFileNameAndPath());
 	if( projectFile.exists() ){
 		projectFile.remove();
+	}
+
+	QDir filesDir = GetFilesFolderPath();
+	const QString path = filesDir.absolutePath();
+	if(filesDir.exists()){
+		printf("removing folder %s...", qPrintable(path));
+		fflush(stdout);
+		if(FileHelpers::removeDir(path)){
+			printf("done!\n");
+		} else {
+			throw OmIoException("could not remove folder " + path.toStdString());
+		}
+	}
+
+	if(filesDir.mkpath(path)){
+		printf("made folder \"%s\"\n", qPrintable(path));
+	} else{
+		throw OmIoException("could not make folder " + path.toStdString());
 	}
 
 	Instance()->dataWriter->create();

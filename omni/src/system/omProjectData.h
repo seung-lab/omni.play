@@ -9,6 +9,8 @@
 
 #include "common/omCommon.h"
 
+#include <QDir>
+
 class OmDataPath;
 class OmDataLayer;
 class OmIDataReader;
@@ -25,6 +27,7 @@ public:
 	static QString getFileNameAndPath();
 	static QString getAbsoluteFileNameAndPath();
 	static QString getAbsolutePath();
+	static QDir GetFilesFolderPath();
 
 	static void Create();
 	static void Open();
@@ -37,7 +40,7 @@ public:
 	static OmIDataReader* GetProjectDataReader();
 	static OmIDataWriter* GetDataWriter();
 
-	static int getFileVersion(){ return Instance()-> fileVersion_; }
+	static int getFileVersion(){ return Instance()->fileVersion_; }
 
 private:
 	OmProjectData();
