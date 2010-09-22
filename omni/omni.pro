@@ -1,16 +1,19 @@
-QT += opengl network
+QT += opengl
 TEMPLATE = app
 
 DEPENDPATH += . \
            include \
            include/vmmlib \
            include/zi_lib \
+           include/enum \
+           include/enum/enum \
            lib \
            src \
            src/common \
            src/datalayer \
            src/datalayer/archive \
            src/datalayer/hdf5 \
+           src/datalayer/upgraders \
            src/gui \
            src/gui/images \
            src/gui/inspectors \
@@ -47,6 +50,9 @@ HEADERS += lib/strnatcmp.h \
            src/common/omGl.h \
            src/common/omStd.h \
            src/common/omVtk.h \
+           src/datalayer/fs/omMemMappedFileQT.hpp \
+           src/datalayer/omIDataVolume.hpp \
+           src/datalayer/omMST.h \
            src/datalayer/archive/omDataArchiveBoost.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
@@ -54,13 +60,17 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveQT.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/archive/omDataArchiveVmml.h \
+           src/datalayer/upgraders/omUpgraders.hpp \
+           src/datalayer/upgraders/omUpgradeTo14.hpp \
            src/datalayer/fs/omActionLoggerFS.h \
+           src/datalayer/fs/omActionLoggerFSthread.hpp \
+           src/datalayer/fs/omMemMappedVolume.hpp \
            src/datalayer/hdf5/omHdf5.h \
+           src/datalayer/hdf5/omHdf5FileUtils.hpp \
+           src/datalayer/hdf5/omHdf5Utils.hpp \
            src/datalayer/hdf5/omHdf5LowLevel.h \
-           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.h \
+           src/datalayer/hdf5/omHdf5Impl.h \
            src/datalayer/hdf5/omHdf5Manager.h \
-           src/datalayer/hdf5/omHdf5Reader.h \
-           src/datalayer/hdf5/omHdf5Writer.h \
            src/datalayer/omDataLayer.h \
            src/datalayer/omDataPath.h \
            src/datalayer/omDataPaths.h \
@@ -135,13 +145,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/omThresholdGroup.h \
-           src/mesh/meshingChunkThread.h \
-           src/mesh/meshingChunkThreadManager.h \
-           src/mesh/meshingManager.h \
            src/mesh/omMeshDrawer.h \
-           src/mesh/omMeshSource.h \
            src/mesh/omMeshTypes.h \
-           src/mesh/omMesher.h \
            src/mesh/omMipMesh.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
@@ -191,6 +196,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omCacheBase.h \
            src/system/cache/omCacheInfo.h \
            src/system/cache/omCacheManager.h \
+           src/system/cache/omCacheGroup.h \
            src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
@@ -204,8 +210,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omThreadedCache.h \
            src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
+           src/utility/omSmartPtr.hpp \
            src/utility/dataWrappers.h \
-           src/utility/OmThreadPool.hpp \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omImageDataIo.h \
@@ -214,6 +220,9 @@ HEADERS += lib/strnatcmp.h \
            src/utility/setUtilities.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
+           src/utility/OmThreadPool.hpp \
+           src/utility/omChunkVoxelWalker.hpp \
+           src/view2d/omTileDumper.hpp \
            src/view2d/drawable.h \
            src/view2d/omCachingThreadedCachingTile.h \
            src/system/cache/omTileCache.h \
@@ -233,6 +242,11 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
+           src/volume/build/omVolumeBuilder.hpp \
+           src/volume/build/omVolumeImporter.hpp \
+           src/volume/build/omVolumeImporterHDF5.hpp \
+           src/volume/omVolumeTypes.hpp \
+           src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
            src/volume/omVoxelSetValueAction.h \
            src/volume/omDrawOptions.h \
@@ -240,7 +254,6 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
            src/volume/omMipChunkCoord.h \
-           src/volume/omMipChunkPtr.h \
            src/volume/omMipVolume.h \
            src/volume/omMipThread.h \
            src/volume/omMipThreadManager.h \
@@ -253,7 +266,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
-           src/volume/omLoadImageThread.h \
+           src/volume/build/omLoadImage.h \
+           src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
            src/zi/base/bash.h \
            src/zi/base/omni.h \
@@ -274,6 +288,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/common/omException.cpp \
            src/common/omGl.cpp \
            src/common/omStd.cpp \
+           src/datalayer/omMST.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
@@ -282,16 +297,16 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
+           src/datalayer/fs/omActionLoggerFSthread.cpp \
+           src/datalayer/fs/omMemMappedVolume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
+           src/datalayer/hdf5/omHdf5FileUtils.cpp \
+           src/datalayer/hdf5/omHdf5Utils.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
-           src/datalayer/hdf5/omHdf5LowLevelWrappersManualOpenClose.cpp \
+           src/datalayer/hdf5/omHdf5Impl.cpp \
            src/datalayer/hdf5/omHdf5Manager.cpp \
-           src/datalayer/hdf5/omHdf5Reader.cpp \
-           src/datalayer/hdf5/omHdf5Writer.cpp \
            src/datalayer/omDataLayer.cpp \
-           src/datalayer/omDataPath.cpp \
            src/datalayer/omDataPaths.cpp \
-           src/datalayer/omDummyWriter.cpp \
            src/gui/groupsTable.cpp \
            src/gui/mstViewer.cpp \
            src/gui/cacheMonitorDialog.cpp \
@@ -355,12 +370,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/widgets/omCheckBox.cpp \
            src/gui/widgets/omGroupListWidget.cpp \
            src/gui/widgets/omSegmentListWidget.cpp \
-           src/mesh/meshingChunkThread.cpp \
-           src/mesh/meshingChunkThreadManager.cpp \
-           src/mesh/meshingManager.cpp \
            src/mesh/omMeshDrawer.cpp \
-           src/mesh/omMeshSource.cpp \
-           src/mesh/omMesher.cpp \
            src/mesh/omMipMesh.cpp \
            src/mesh/omMipMeshCoord.cpp \
            src/mesh/omMipMeshManager.cpp \
@@ -407,6 +417,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
+           src/system/cache/omCacheGroup.cpp \
            src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
@@ -416,7 +427,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omGroup.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
-           src/system/omManageableObject.cpp \
            src/system/omPreferenceDefinitions.cpp \
            src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \
@@ -433,6 +443,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/utility/omTimer.cpp \
            src/utility/sortHelpers.cpp \
            src/utility/stringHelpers.cpp \
+           src/view2d/omTileDumper.cpp \
            src/view2d/drawable.cpp \
            src/view2d/omTextureID.cpp \
            src/view2d/omThreadedCachingTile.cpp \
@@ -451,6 +462,11 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
+           src/volume/build/omVolumeBuilder.cpp \
+           src/volume/build/omVolumeImporter.cpp \
+           src/volume/build/omVolumeImporterHDF5.cpp \
+           src/volume/omVolumeTypes.cpp \
+           src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \
            src/volume/omVoxelSetValueAction.cpp \
            src/volume/omFilter2d.cpp \
@@ -469,7 +485,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \
-           src/volume/omLoadImageThread.cpp \
+           src/volume/build/omLoadImage.cpp \
+           src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
@@ -509,3 +526,5 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
+
+#QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter
