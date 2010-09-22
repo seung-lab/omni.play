@@ -16,30 +16,36 @@ public:
 };
 
 template <typename T>
-class OmMemMappedFileReadQT : public OmIMemMappedFile<T> {
-public:
-	OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
-		: numBytes_(numBytes)
+class OmMemMappedFileQTbase : public OmIMemMappedFile<T> {
+protected:
+	const std::string fnp_;
+	boost::shared_ptr<QFile> file_;
+	uchar* map_;
+
+	OmMemMappedFileQTbase(const std::string& fnp)
+		: fnp_(fnp)
+	{}
+
+	virtual ~OmMemMappedFileQTbase(){
+		printf("closing file %s\n", GetBaseFileName().c_str());
+	}
+
+	void open(const QIODevice::OpenModeFlag mode)
 	{
-		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp));
+		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));
 
-		if( !file_->open(QIODevice::ReadOnly)) {
-			throw OmIoException("could not open " + fnp);
+		if( !file_->open(mode)) {
+			throw OmIoException("could not open " + fnp_);
 		}
+	}
 
-		checkFileSize();
-
+	void map()
+	{
 		map_ = file_->map(0, file_->size());
-
 		file_->close();
-
-		printf("opened file %s\n", GetBaseFileName().c_str());
 	}
 
-	virtual ~OmMemMappedFileReadQT(){
-		printf("closing file %s\n", qPrintable(file_->fileName()));
-	}
-
+public:
 	T* GetPtr() const {
 		return reinterpret_cast< T* >( map_ );
 	}
@@ -49,82 +55,61 @@ public:
 	}
 
 	std::string GetBaseFileName() const {
-		return QFileInfo(*file_).baseName().toStdString();
+		return "\"" + QFileInfo(*file_).fileName().toStdString() + "\"";
+	}
+};
+
+template <typename T>
+class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
+public:
+	OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
+		: OmMemMappedFileQTbase<T>(fnp)
+	{
+		this->open(QIODevice::ReadOnly);
+		checkFileSize(numBytes);
+		this->map();
+
+		printf("opened file %s\n", this->GetBaseFileName().c_str());
 	}
 
 private:
-	const int64_t numBytes_;
-	boost::shared_ptr<QFile> file_;
-	uchar* map_;
-
 	// optional check of expected file size
-	void checkFileSize()
+	void checkFileSize(const int64_t numBytes)
 	{
-		if(!numBytes_){
+		if(!numBytes){
 			return;
 		}
 
-		if ( file_->size() != numBytes_ ){
+		if ( this->file_->size() != numBytes ){
 			const QString err =
 				QString("error: input file size of %1 bytes doesn't match expected size %d")
-				.arg(file_->size())
-				.arg(numBytes_);
+				.arg(this->file_->size())
+				.arg(numBytes);
 			throw OmIoException(err.toStdString());
 		}
 	}
 };
 
 template <typename T>
-class OmMemMappedFileWriteQT : public OmIMemMappedFile<T> {
+class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
 public:
-	OmMemMappedFileWriteQT(const std::string& fnp,
-						   const int64_t numBytes)
-		: numBytes_(numBytes)
+	OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes)
+		: OmMemMappedFileQTbase<T>(fnp)
 	{
 		if(!numBytes){
 			throw OmIoException("size was 0");
 		}
 
 		QFile::remove(QString::fromStdString(fnp));
-
-		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp));
-
-		if(!file_->open(QIODevice::ReadWrite)){
-			throw OmIoException("could not create " + fnp);
-		}
-
-		file_->resize(numBytes);
-
+		this->open(QIODevice::QIODevice::ReadWrite);
+		this->file_->resize(numBytes);
 		//TODO: allocate space??
+		this->map();
 
-		map_ = file_->map(0, numBytes_);
-
-		file_->close();
-
-		printf("created file %s\n", GetBaseFileName().c_str());
-	}
-
-	virtual ~OmMemMappedFileWriteQT(){
-		printf("closing file %s\n", qPrintable(file_->fileName()));
-	}
-
-	T* GetPtr() const {
-		return (T*)map_;
-	}
-
-	T* GetPtrWithOffset(const int64_t offset) const {
-		return (T*)(map_ + offset);
-	}
-
-	std::string GetBaseFileName() const {
-		return QFileInfo(*file_).baseName().toStdString();
+		printf("created file %s\n", this->GetBaseFileName().c_str());
 	}
 
 private:
-	const int64_t numBytes_;
-	boost::shared_ptr<QFile> file_;
-	uchar* map_;
-
 	/*
 
 	  template <typename T, typename VOL>
