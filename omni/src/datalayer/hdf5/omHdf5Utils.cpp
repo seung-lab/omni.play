@@ -90,13 +90,15 @@ OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype)
 void OmHdf5Utils::printTypeInfo(const int dstype)
 {
 	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
-	printf("type is %s\n", dw->getTypeAsString().c_str() );
+	std::string type = dw->getTypeAsString();
+	printf("type is %s\n", type.c_str() );
 }
 
 int OmHdf5Utils::getSizeofType(const int dstype)
 {
 	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
-	return dw->getSizeof();
+	const int size = dw->getSizeof();
+	return size;
 }
 
 OmDataWrapperPtr OmHdf5Utils::getDataWrapper(void* dataset,

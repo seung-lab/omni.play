@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "common/omDebug.h"
 #include "gui/inspectors/segInspector.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
@@ -18,7 +19,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspec
 	: QWidget(parent)
 	, mParent(parent)
 {
-	sdw = incoming_sdw;
+	sdw = boost::make_shared<SegmentationDataWrapper>(incoming_sdw);
 
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
@@ -39,7 +40,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspec
 
 QGroupBox* SegInspector::makeVolBox()
 {
-	return new OmVolInspector(&sdw.getSegmentation(), this);
+	return new OmVolInspector(&sdw->getSegmentation(), this);
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -52,7 +53,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfSegments() );
+	QString commaNumSegs = StringHelpers::commaDeliminateNumber( sdw->getNumberOfSegments() );
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
 
@@ -62,7 +63,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw.getNumberOfTopSegments() );
+	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw->getNumberOfTopSegments() );
 	labelNumTopSegmentsNum->setText( commaNumTopSegs );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
 
@@ -186,7 +187,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetSegmentation(sdw.getID()).SetCustomName(nameEdit->text());
+	OmProject::GetSegmentation(sdw->getID()).SetCustomName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -205,7 +206,7 @@ void SegInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	OmProject::GetSegmentation(sdw.getID()).ExportInternalData(fileName);
+	OmProject::GetSegmentation(sdw->getID()).ExportInternalData(fileName);
 }
 
 QDir SegInspector::getDir()
@@ -225,13 +226,13 @@ QDir SegInspector::getDir()
 QStringList SegInspector::getFileList()
 {
 	QStringList files = getDir().entryList();
-	return SortHelpers::sortNaturally( files );
+	return SortHelpers::SortNaturally( files );
 }
 
 QFileInfoList SegInspector::getFileInfoList()
 {
 	QFileInfoList files = getDir().entryInfoList();
-	return SortHelpers::sortNaturally( files );
+	return SortHelpers::SortNaturally( files );
 }
 
 void SegInspector::updateFileList()
@@ -269,7 +270,7 @@ QString& GetScriptCmd (QString arg)
 
 void SegInspector::on_buildButton_clicked()
 {
-	OmSegmentation & current_seg = OmProject::GetSegmentation(sdw.getID());
+	OmSegmentation & current_seg = OmProject::GetSegmentation(sdw->getID());
 
 	OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
 	bs->setFileNamesAndPaths( getFileInfoList() );
@@ -277,18 +278,18 @@ void SegInspector::on_buildButton_clicked()
 	QString whatOrHowToBuild = buildComboBox->currentText();
 	if ("Data" == whatOrHowToBuild ){
 		bs->build_seg_image();
-		rebuildSegmentLists(sdw.getID(), 0);
+		rebuildSegmentLists(sdw->getID(), 0);
 
 	} else if ( "Mesh" == whatOrHowToBuild ){
 		bs->build_seg_mesh();
 
 	} else if ("Data & Mesh" == whatOrHowToBuild){
 		bs->buildAndMeshSegmentation();
-		rebuildSegmentLists(sdw.getID(), 0);
+		rebuildSegmentLists(sdw->getID(), 0);
 
 	} else if ("Load Dendrogram" == whatOrHowToBuild){
 		bs->loadDendrogram();
-		rebuildSegmentLists(sdw.getID(), 0);
+		rebuildSegmentLists(sdw->getID(), 0);
 
 	} else if( "Meshinator" == whatOrHowToBuild ){
 		doMeshinate( &current_seg );
@@ -325,17 +326,17 @@ void SegInspector::doMeshinate( OmSegmentation * current_seg )
 
 void SegInspector::on_notesEdit_textChanged()
 {
-	OmProject::GetSegmentation(sdw.getID()).SetNote(notesEdit->toPlainText());
+	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId SegInspector::getSegmentationID()
 {
-	return sdw.getID();
+	return sdw->getID();
 }
 
 void SegInspector::populateSegmentationInspector()
 {
-	nameEdit->setText( sdw.getName() );
+	nameEdit->setText( sdw->getName() );
 	nameEdit->setMinimumWidth(200);
 
 	//TODO: fix me!
@@ -349,7 +350,7 @@ void SegInspector::populateSegmentationInspector()
 	patternEdit->setText( "*" );
 	patternEdit->setMinimumWidth(200);
 
-	notesEdit->setPlainText( sdw.getNote() );
+	notesEdit->setPlainText( sdw->getNote() );
 
 	updateFileList();
 }
@@ -357,4 +358,8 @@ void SegInspector::populateSegmentationInspector()
 void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
 {
 	mParent->rebuildSegmentLists(segmentationID, segID);
+}
+
+SegmentationDataWrapper SegInspector::getSegmentationDataWrapper(){
+	return *sdw;
 }

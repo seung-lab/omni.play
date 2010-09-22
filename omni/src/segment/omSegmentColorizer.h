@@ -20,7 +20,7 @@ class OmSegmentColorizer
 {
  public:
 	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
-			    const OmSegmentColorCacheType, const bool,
+			    const OmSegmentColorCacheType,
 			    const Vector2i& dims);
 	~OmSegmentColorizer();
 
@@ -41,7 +41,6 @@ class OmSegmentColorizer
 	OmSegID mSize;
 	float mCurBreakThreshhold;
 	float mPrevBreakThreshhold;
-	const bool mIsSegmentation;
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
 	int mCurSegCacheFreshness;

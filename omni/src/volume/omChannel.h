@@ -2,7 +2,7 @@
 #define OM_CHANNEL_H
 
 /*
- *	OmChannel is the MIP data structure for a channel of raw data in a volume.
+ *	OmChannel is the MIP data structure for a raw data volume
  *
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
@@ -22,12 +22,16 @@ class OmChannel : public OmMipVolume, public OmManageableObject {
 public:
         OmChannel();
 	OmChannel(OmId id);
+	~OmChannel();
 
 	boost::shared_ptr<OmVolumeData> getVolData();
 
 	std::string GetName();
 	std::string GetDirectoryPath();
 	void loadVolData();
+	ObjectType getVolumeType(){ return CHANNEL; }
+	OmId getID(){ return GetId(); }
+	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 
 	//properties
 	void SetHue(const Vector3f &);
@@ -58,7 +62,11 @@ protected:
 	OmChannel(const OmChannel&);
 	OmChannel& operator= (const OmChannel&);
 
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&);
+
 private:
+        OmMipVolumeCache *const mDataCache;
+
 	boost::shared_ptr<OmVolumeData> mVolData;
 
 	Vector3f mHueColor;

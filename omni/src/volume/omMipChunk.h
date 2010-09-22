@@ -11,27 +11,25 @@
  */
 
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
-#include "system/cache/omCacheableBase.h"
+#include "datalayer/omIDataWriter.h"
 #include "utility/image/omImage.hpp"
 #include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 
 #include <QMutex>
 
+class OmMipVolumeCache;
 class OmVolumeCuller;
 class OmSegmentCache;
 class OmChunkData;
 class OmMipVolume;
 
-class OmMipChunk : public OmCacheableBase {
-
+class OmMipChunk {
 public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	virtual ~OmMipChunk();
 
 	void Open();
-	void OpenForWrite();
 	void Flush();
 	void Close();
 	bool IsOpen();
@@ -61,7 +59,7 @@ public:
 	void copyDataFromHDF5toMemMap();
 	void copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5);
 
-	OmImage<uint32_t, 3> getOmImage32Chunk();
+	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
 
 	//data accessors
 	virtual quint32 GetVoxelValue(const DataCoord &vox);
@@ -112,6 +110,8 @@ public:
 
 	bool compare(OmMipChunkPtr other);
 
+	int GetNumberOfVoxelsInChunk() const;
+
 protected:
 	OmMipVolume *const mpMipVolume;
 	bool mIsOpen;
@@ -151,7 +151,7 @@ protected:
 	OmSegIDsSet mModifiedVoxelValues;
 
  private:
-	//FIXME: remove once downsmapling no longer using VTK stuff
+	OmMipVolumeCache *const cache_;
 	OmDataWrapperPtr mData;
 
 	boost::shared_ptr<OmChunkData> mChunkData;

@@ -39,10 +39,15 @@ QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()
 	zi::ReadGuard lock(mRWLock);
 
 	QList<OmCacheInfo> infos;
-	foreach( OmCacheBase * c, mCacheSet ){
+	foreach(OmCacheBase* c, mCacheSet){
 		OmCacheInfo info;
 		info.cacheSize = c->GetCacheSize();
-		info.cacheName = "fixme";//c->GetCacheName();
+		const std::string name =
+			c->GetName()
+			+ " ("
+			+ c->getGroupName()
+			+ ")";
+		info.cacheName = QString::fromStdString(name);
 		infos << info;
 	}
 	return infos;
@@ -73,9 +78,8 @@ int OmCacheGroup::Clean()
 			}
 
 			uint64_t oldCacheSize = cache->GetCacheSize();
-			cache->RemoveOldest();
+			numItemsRemoved += cache->Clean();
 			curSize -= (oldCacheSize - cache->GetCacheSize());
-			++numItemsRemoved;
 
 			if(curSize < mMaxSize){
 				return numItemsRemoved;

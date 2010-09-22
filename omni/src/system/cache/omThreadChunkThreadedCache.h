@@ -5,22 +5,23 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omThreadChunkLevel.h"
 
-typedef boost::shared_ptr<OmThreadChunkLevel> OmThreadChunkLevelPtr;
-
 /*
  *	A Cache that stores OmThreadChunkLevels
 */
 
-class OmThreadChunkThreadedCache 
-: public OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevelPtr> {
-
- public:
+class OmThreadChunkThreadedCache
+	: public OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevelPtr> {
+public:
 	OmThreadChunkThreadedCache(OmMipVolume* volume);
 	~OmThreadChunkThreadedCache();
-	void GetChunk(OmThreadChunkLevelPtr& p_value, const OmMipChunkCoord& key, bool block=false);
 
- private:
+	void GetChunk(OmThreadChunkLevelPtr& p_value,
+		      const OmMipChunkCoord& key,
+		      bool block=false);
+
+private:
 	OmThreadChunkLevelPtr HandleCacheMiss(const OmMipChunkCoord &key);
+
 	OmMipVolume *const mMipVolume;
 };
 

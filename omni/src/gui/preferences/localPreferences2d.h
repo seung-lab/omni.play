@@ -4,17 +4,15 @@
 #include <QtGui>
 
 class LocalPreferences2d : public QWidget
-{ 
-    Q_OBJECT 
-	
- public: 
-	LocalPreferences2d(QWidget *parent); 
-    
- private slots: 
-	void on_stickyCrosshairMode_stateChanged();
+{
+    Q_OBJECT
+
+ public:
+	LocalPreferences2d(QWidget *parent);
+
+ private slots:
 
  private:
  	QGroupBox* makeGeneralPropBox();
-        QCheckBox  *stickyCrosshairMode;
-}; 
+};
 #endif

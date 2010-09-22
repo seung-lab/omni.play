@@ -20,7 +20,8 @@
 #include <float.h>
 
 OmChannel::OmChannel()
-	: mVolData(new OmVolumeData())
+	: mDataCache(new OmMipVolumeCache(this))
+	, mVolData(new OmVolumeData())
 {
         mMaxVal = FLT_MIN;
         mMinVal = FLT_MAX;
@@ -29,6 +30,7 @@ OmChannel::OmChannel()
 
 OmChannel::OmChannel(OmId id)
 	: OmManageableObject(id)
+	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 {
         mMaxVal = FLT_MIN;
@@ -45,6 +47,11 @@ OmChannel::OmChannel(OmId id)
 	BuildVolumeData();
 
 	AddFilter();
+}
+
+OmChannel::~OmChannel()
+{
+	delete mDataCache;
 }
 
 boost::shared_ptr<OmVolumeData> OmChannel::getVolData() {
@@ -104,9 +111,8 @@ bool OmChannel::BuildThreadedVolume()
         }
 
         if (isDebugCategoryEnabled("perftest")){
-                //timer stop
-                vol_timer.stop();
-                printf("OmChannel::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+                printf("OmChannel::BuildThreadedVolume() done : %.6f secs\n",
+		       vol_timer.s_elapsed());
         }
 
         return true;
@@ -134,11 +140,8 @@ bool OmChannel::BuildThreadedChannel()
         printf("done\n");
 
         if (isDebugCategoryEnabled("perftest")){
-
-                //timer end
-                vol_timer.stop();
-                printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
-
+                printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",
+		       vol_timer.s_elapsed());
         }
 
 	mWasBounded = true;
@@ -210,4 +213,14 @@ bool OmChannel::ImportSourceData(OmDataPath & dataset)
 void OmChannel::loadVolData()
 {
 	mVolData->load(this);
+}
+
+OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
+{
+	OmMipChunkPtr chunk;
+	getDataCache()->Get(chunk, coord, true);
+
+	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
+	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
+	return OmDataWrapperFactory::produce(rawDataPtr);
 }

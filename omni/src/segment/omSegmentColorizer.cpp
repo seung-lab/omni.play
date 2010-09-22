@@ -8,14 +8,12 @@ static const OmColor blackColor = {0, 0, 0};
 
 OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
 					const OmSegmentColorCacheType sccType,
-					const bool isSegmentation,
 					const Vector2i& dims)
 	: mSegmentCache(cache)
 	, mSccType(sccType)
 	, mSize(0)
 	, mCurBreakThreshhold(0)
 	, mPrevBreakThreshhold(0)
-	, mIsSegmentation(isSegmentation)
 	, mNumElements(dims.x * dims.y)
 {
 }
@@ -49,7 +47,7 @@ OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr)
 	mAreThereAnySegmentsSelected = mSegmentCache->AreSegmentsSelected() ||
 		                       mSegmentCache->AreSegmentsEnabled();
 
-	mCurSegCacheFreshness = OmCacheManager::Freshen(false);
+	mCurSegCacheFreshness = OmCacheManager::GetFreshness();
 
 	boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
 		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(mNumElements);
@@ -103,56 +101,52 @@ void OmSegmentColorizer::doColorTile(uint32_t* imageData,
 	}
 }
 
-OmColor OmSegmentColorizer::getVoxelColorForView2d( const OmSegID val)
+OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 {
-	QMutexLocker locker(&mSegmentCache->mMutex);
+	zi::Guard g(mSegmentCache->mMutex);
 
-	OmSegment * seg = mSegmentCache->mImpl->GetSegmentFromValue( val );
+	OmSegment* seg = mSegmentCache->mImpl->GetSegmentFromValue(val);
 	if( NULL == seg ) {
 		return blackColor;
 	}
-	OmSegment * segRoot = mSegmentCache->mImpl->findRoot( seg );
+	OmSegment* segRoot = mSegmentCache->mImpl->findRoot(seg);
 	const OmColor segRootColor = segRoot->GetColorInt();
 
 	const bool isSelected =
 		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
 		mSegmentCache->mImpl->isSegmentEnabled(segRoot->value);
 
-	locker.unlock(); // done w/ lock
+	g.unlock(); // done w/ lock
 
-	if( SCC_SEGMENTATION_VALID == mSccType || SCC_FILTER_VALID == mSccType){
+	switch(mSccType){
+	case SCC_SEGMENTATION_VALID:
+	case SCC_FILTER_VALID:
 		if(seg->GetImmutable()) {
 			return segRootColor;
-		} else {
-			return blackColor;
 		}
-	}
-	if( SCC_SEGMENTATION_VALID_BLACK == mSccType || SCC_FILTER_VALID_BLACK == mSccType){
+		return blackColor;
+	case SCC_SEGMENTATION_VALID_BLACK:
+	case SCC_FILTER_VALID_BLACK:
 		if(seg->GetImmutable()) {
 			return blackColor;
-		} else {
-			return segRootColor;
 		}
-	}
-
-	if( SCC_FILTER_BREAK == mSccType || SCC_SEGMENTATION_BREAK == mSccType){
-		if( isSelected ){
+		return segRootColor;
+	case SCC_FILTER_BREAK:
+	case SCC_SEGMENTATION_BREAK:
+		if(isSelected){
 			return seg->GetColorInt();;
-		} else {
-			return blackColor;
 		}
-	}
-
-	if( isSelected ){
-		OmColor color = { makeSelectedColor(segRootColor.red),
-				  makeSelectedColor(segRootColor.green),
-				  makeSelectedColor(segRootColor.blue) };
-		return color;
-	} else {
+		return blackColor;
+	default:
+		if(isSelected){
+			OmColor color = {makeSelectedColor(segRootColor.red),
+					 makeSelectedColor(segRootColor.green),
+					 makeSelectedColor(segRootColor.blue)};
+			return color;
+		}
 		if(SCC_FILTER_BLACK == mSccType && mAreThereAnySegmentsSelected){
 			return blackColor;
-		} else {
-			return segRootColor;
 		}
+		return segRootColor;
 	}
 }

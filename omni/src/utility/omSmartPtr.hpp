@@ -12,8 +12,8 @@ class OmSmartPtr {
 public:
 	static boost::shared_ptr<T>
 	makeMallocPtrNumBytes(const uint32_t numBytes,
-			      const OM::zeroMem shouldZeroMem
-			      = OM::DONT_ZERO_FILL)
+						  const OM::zeroMem shouldZeroMem
+						  = OM::DONT_ZERO_FILL)
 	{
 		T* rawPtr = static_cast<T*>(malloc(numBytes));
 		if(NULL == rawPtr){

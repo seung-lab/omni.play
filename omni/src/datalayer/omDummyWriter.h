@@ -2,7 +2,7 @@
 #define OM_DUMMY_WRITER_H
 
 #include "common/omCommon.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataWriter.h"
 
 class OmDummyWriter : public OmIDataWriter {
 public:

@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"

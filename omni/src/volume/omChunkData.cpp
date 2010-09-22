@@ -1,3 +1,4 @@
+#include "volume/omMipChunk.h"
 #include "utility/image/omImage.hpp"
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
@@ -291,7 +292,7 @@ public:
 private:
 	OmMipChunk* chunk_;
 };
-OmImage<uint32_t, 3> OmChunkData::getOmImage32Chunk()
+OmImage<uint32_t, 3> OmChunkData::GetCopyOfChunkDataAsOmImage32()
 {
 	return boost::apply_visitor(GetOmImage32ChunkVisitor(chunk_),
 				    getRawData());

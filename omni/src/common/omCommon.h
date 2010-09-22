@@ -18,9 +18,6 @@
 #include "common/omException.h"
 #include <assert.h>
 
-// elimiate VTK warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-
 typedef struct {
 	uint8_t red;
 	uint8_t green;
@@ -129,5 +126,8 @@ enum OmCacheGroupEnum {
 	RAM_CACHE_GROUP = 1,
 	VRAM_CACHE_GROUP
 };
+
+class OmTile;
+typedef boost::shared_ptr<OmTile> OmTilePtr;
 
 #endif

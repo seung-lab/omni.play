@@ -1,3 +1,6 @@
+#include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshCoord.h"
+#include "mesh/omMipMeshManager.h"
 #include "project/omProject.h"
 #include "volume/omSegmentation.h"
 #include "zi/base/base.h"
@@ -42,7 +45,7 @@ void ziMeshingChunk::run()
   OmImage<uint32_t, 3> image = chunk_->GetMeshOmImageData();
   const OmSegID *pScalarData = static_cast<const OmSegID*>(image.getScalarPtr());
 
-  std::cout << "thread " << hex << threadId << dec;
+  std::cout << "thread " << std::hex << threadId << std::dec;
   std::cout << ": chunk " << mipCoord_ << " data loaded\n";
 
   float maxScale = std::max(std::max(scale_.x(), scale_.y()), scale_.z());
@@ -52,7 +55,7 @@ void ziMeshingChunk::run()
   boost::shared_ptr<boost::unordered_map<int, QuickMesh> > qMeshes =
     zi::QuickMarchingCubes(dims.z-1, dims.y-1, dims.x-1, (int*)pScalarData);
 
-  std::cout << "\t" << "thread " << hex << threadId << dec;
+  std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
   std::cout << ": chunk " << mipCoord_ << ": Marching Cubes Done "
 	    << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
@@ -69,7 +72,7 @@ void ziMeshingChunk::run()
   }
   qMeshes->clear();
 
-  std::cout << "\t" << "thread " << hex << threadId << dec;
+  std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
   std::cout << ": chunk " << mipCoord_ << ": HalfEdge Meshes Created "
 	    << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
@@ -81,7 +84,7 @@ void ziMeshingChunk::run()
       (new zi::QuadraticErrorSimplifier(it->second));
   }
 
-  std::cout << "\t" << "thread " << hex << threadId << dec;
+  std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
   std::cout << ": chunk " << mipCoord_ << ": QEM Simplifiers Created "
 	    << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
@@ -102,19 +105,19 @@ void ziMeshingChunk::run()
     }
 
     idx++;
-    std::cout << "\t" << "thread " << hex << threadId << dec;
+    std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
     std::cout << ": chunk " << mipCoord_ << ": Simplification Round # " << idx << " done "
 	      << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
     it->first->receive(stripified, scale_, translate_);
 
-    std::cout << "\t" << "thread " << hex << threadId << dec;
+    std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
     std::cout << ": chunk " << mipCoord_ << ": Delivered at " << it->second << " "
 	      << "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
     if (it->first->isDone()) {
 
-      std::cout << "\t" << "thread " << hex << threadId << dec;
+      std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
       std::cout << ": chunk " << mipCoord_ << ": This Guy is done "
 		<< "(" << ztimer.dTotal() - ztimer.dLap() << " secs)" << "\n";
 
@@ -124,7 +127,7 @@ void ziMeshingChunk::run()
       //sMeshes
       FOR_EACH (mit, *sMeshes) {
         OmMipMeshCoord mmCoor(it->first->getCoor(), mit->first);
-        OmMipMesh *oMesh = mipMeshManager_->AllocMesh(mmCoor);
+        OmMipMeshPtr oMesh = mipMeshManager_->AllocMesh(mmCoor);
         oMesh->setSegmentationID(segmentationId_);
 
         oMesh->mVertexIndexCount = mit->second->totalIndices_;
@@ -145,7 +148,7 @@ void ziMeshingChunk::run()
 
         oMesh->mStripCount = mit->second->totalStrips_;
         oMesh->mpStripOffsetSizeDataWrap =
-		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mStripCount],
+		OmDataWrapper<uint32_t>::produce(new uint32_t[2*oMesh->mStripCount],
 						     NEW_ARRAY);
         std::copy(mit->second->strips_.begin(),
                   mit->second->strips_.end(),
@@ -153,18 +156,16 @@ void ziMeshingChunk::run()
 
         oMesh->mTrianCount = mit->second->totalTrians_;
         oMesh->mpTrianOffsetSizeDataWrap =
-		OmDataWrapper<unsigned int>::produce(new uint32_t[2*oMesh->mTrianCount],
+		OmDataWrapper<uint32_t>::produce(new uint32_t[2*oMesh->mTrianCount],
 						     NEW_ARRAY);
         std::copy(mit->second->trians_.begin(),
                   mit->second->trians_.end(),
                   oMesh->mpTrianOffsetSizeDataWrap->getPtr<unsigned int>());
 
         oMesh->Save();
-        delete oMesh;
-
       }
 
-      std::cout << "\t" << "thread " << hex << threadId << dec;
+      std::cout << "\t" << "thread " << std::hex << threadId << std::dec;
       std::cout << ": chunk " << mipCoord_ << ": Meshes Saved "
 		<< "(" << ztimer.dTotal() - ztimer.dLap() << " secs)"
 		<< " TOTAL OF : " << meshes.size() << "\n";
@@ -175,7 +176,7 @@ void ziMeshingChunk::run()
 
   mesher_->numOfChunksToProcess.sub(1);
 
-  std::cout << "thread " << hex << threadId << dec;
+  std::cout << "thread " << std::hex << threadId << std::dec;
   std::cout << ": chunk " << mipCoord_ << " finished; "
 	    << mesher_->numOfChunksToProcess.get() << " chunks left\n";
 }

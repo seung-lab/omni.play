@@ -1,18 +1,20 @@
+#include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
+#include "mesh/omMeshSegmentList.h"
+#include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshCoord.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
+#include "system/omEvents.h"
+#include "system/omGarbage.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
-#include "volume/omVolumeCuller.h"
 #include "volume/omSegmentation.h"
-#include "mesh/omMeshSegmentList.h"
-#include "system/omEvents.h"
-#include "system/omGarbage.h"
-
+#include "volume/omVolumeCuller.h"
 
 OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
 	: mSegmentationID( segmentationID )
@@ -298,11 +300,11 @@ void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 
 	//check coloring options
 	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
-		glColor3fv(OmPreferences::GetVector3f(OM_PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
+		glColor3fv(OmPreferences::GetVector3f(OM::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
 
 	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
 		glColor3fva(hyperColor.array,
-			    OmPreferences::GetFloat(OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+			    OmPreferences::GetFloat(OM::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else if (OmLocalPreferences::getDoDiscoBall()) {
 		static float s = 10.0;

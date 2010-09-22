@@ -42,7 +42,7 @@ class MainWindow
 
 	bool isProjectOpen();
 
-	OmViewGroupState * getViewGroupState(){ return mViewGroupState; }
+	OmViewGroupState* getViewGroupState(){ return mViewGroupState; }
 
 	void addToolbarWidget(QWidget * b);
 	void addToolbarSeperator();

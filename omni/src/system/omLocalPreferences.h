@@ -23,9 +23,6 @@ public:
 	static unsigned int getVRamCacheSizeMB();
 	static void setVRamCacheSizeMB(const unsigned int);
 
-	static bool getStickyCrosshairMode();
-	static void setStickyCrosshairMode(bool sticky);
-
 	static unsigned int getCrosshairValue();
 	static unsigned int getDefaultCrosshairValue();
 	static void setCrosshairValue(const unsigned int);
@@ -82,7 +79,6 @@ private:
 
 	// Global Variables for Quick access to Preference Settings
 	// Thus bypassing any file I/O
-	bool * stickyCrosshairMode;
 	bool m2DViewFrameIn3D;
 	bool m2DViewPaneIn3D;
 	bool mDrawCrosshairsIn3D;

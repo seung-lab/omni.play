@@ -5,7 +5,6 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
 #include "system/cache/omCacheManager.h"
-#include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 
 /////////////////////////////////
@@ -32,7 +31,7 @@ void OmSegmentValidateAction::Action()
 		segment->SetImmutable(mCreate);
         	seg.GetSegmentCache()->setAsValidated(segment, mCreate);
 	}
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 }
 
 void OmSegmentValidateAction::UndoAction()
@@ -43,7 +42,7 @@ void OmSegmentValidateAction::UndoAction()
 		segment->SetImmutable(!mCreate);
         	seg.GetSegmentCache()->setAsValidated(segment, !mCreate);
 	}
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 }
 
 std::string OmSegmentValidateAction::Description()

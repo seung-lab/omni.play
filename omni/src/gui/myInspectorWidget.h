@@ -7,18 +7,20 @@
 
 #include "common/omCommon.h"
 #include "system/events/omSegmentEvent.h"
-#include "utility/dataWrappers.h"
 
-class SegInspector;
 class ChanInspector;
-class FilObjectInspector;
-class SegmentListWorking;
-class SegmentListValid;
-class SegmentListRecent;
+class ChannelDataWrapper;
+class DataWrapperContainer;
 class ElementListBox;
+class FilObjectInspector;
 class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
+class SegInspector;
+class SegmentListRecent;
+class SegmentListValid;
+class SegmentListWorking;
+class SegmentationDataWrapper;
 
 class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
  Q_OBJECT
@@ -63,13 +65,15 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addToSplitterDataSource(QTreeWidgetItem * current);
 
 	void doDataSrcContextMenuVolAdd(QAction * act);
-	void deleteSegmentation(SegmentationDataWrapper sdw);
-	void deleteChannel(ChannelDataWrapper cdw);
 
  private:
 
 	QTreeWidget *dataSrcListWidget;
 	QTreeWidget *filterListWidget;
+
+	void deleteSegmentation(SegmentationDataWrapper sdw);
+	void deleteChannel(ChannelDataWrapper cdw);
+
 	void populateDataSrcListWidget();
 	void addChannelToSplitter(ChannelDataWrapper data);
 	void addSegmentationToSplitter(SegmentationDataWrapper data);
@@ -90,7 +94,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 
 	QMenu *makeDataSrcContextMenu(QTreeWidget * parent);
 
-	DataWrapperContainer currentDataSrc;
+	boost::shared_ptr<DataWrapperContainer> currentDataSrc;
 
 	MainWindow* mParentWindow;
 

@@ -3,8 +3,8 @@
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
@@ -19,7 +19,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path,
 										boost::shared_ptr<OmSegmentCache> cache)
 {
 	int size;
-	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
 
 	printf("segment load: file version is %d\n",
 		   OmProjectData::getFileVersion());
@@ -163,11 +163,8 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 		out << segment->mBounds;
 	}
 
-	if(OmProjectData::getFileVersion() >= 15){
-		out << Omni_Postfix;
-	}
-
-	OmProjectData::GetDataWriter()->writeDataset( path,
-												  ba.size(),
-												  OmDataWrapperRaw(ba.data()));
+	OmProjectData::GetIDataWriter()->
+		writeDataset( path,
+			      ba.size(),
+			      OmDataWrapperRaw(ba.constData()));
 }

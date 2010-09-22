@@ -1,15 +1,13 @@
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omDataReader.h"
+#include "datalayer/omIDataReader.h"
 #include "project/omProject.h"
 #include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
 #include "utility/stringHelpers.h"
 #include "volume/omMipChunk.h"
-
-#include <vtkImageData.h>
 
 #include <QTextStream>
 #include <QImage>

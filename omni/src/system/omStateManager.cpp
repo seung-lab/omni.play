@@ -91,7 +91,7 @@ void OmStateManager::SetProjectFileName(const std::string & name)
 	Instance()->mProjectFileName = name;
 }
 
-const std::string & OmStateManager::GetProjectDirectoryPath()
+const std::string& OmStateManager::GetProjectDirectoryPath()
 {
 	return Instance()->mProjectDirectoryPath;
 }
@@ -230,34 +230,6 @@ const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
 	return Instance()->mpPrimaryView3dWidget;
 }
 
-/*
- *	Returns a pointer to a QGLContext that is shared with the primary QGLContext.
- */
-QGLContext *OmStateManager::GetSharedView3dContext()
-{
-	return NULL;
-
-	//create primary widget if it does not exist yet
-	if (Instance()->mpPrimaryView3dWidget == NULL)
-		CreatePrimaryView3dWidget();
-
-	//get primary context
-	const QGLContext *p_primary_context = Instance()->mpPrimaryView3dWidget->context();
-
-	//make isntance of a shared context
-	QGLContext *p_shared_context = new QGLContext(p_primary_context->format(),
-						      p_primary_context->device());
-
-	//create context that is shared with primary
-	p_shared_context->create(p_primary_context);
-
-	//assert context is valid and is sharing
-	assert(p_shared_context->isValid() && "Shared context not valid.");
-	assert(p_shared_context->isSharing() && "New shared context is not sharing");
-
-	return p_shared_context;
-}
-
 /////////////////////////////////
 ///////          Transparency State
 
@@ -316,7 +288,7 @@ void OmStateManager::UpdateStatusBar( const QString & msg )
 }
 
 void OmStateManager::SetViewDrawable(ViewType viewType,
-									 std::vector<Drawable*> &drawable)
+				     std::vector<OmTilePtr>& drawable)
 {
 	switch(viewType){
 	case XY_VIEW:
@@ -333,7 +305,7 @@ void OmStateManager::SetViewDrawable(ViewType viewType,
 	}
 }
 
-std::vector<Drawable*> OmStateManager::GetViewDrawable(ViewType viewType)
+std::vector<OmTilePtr> OmStateManager::GetViewDrawable(ViewType viewType)
 {
 	switch(viewType){
 	case XY_VIEW:

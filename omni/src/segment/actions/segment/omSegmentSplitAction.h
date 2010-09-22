@@ -2,15 +2,19 @@
 #define OM_SEGMENT_SPLIT_ACTION_H
 
 #include "system/omAction.h"
-#include "utility/dataWrappers.h"
+#include "segment/omSegmentEdge.h"
 
+class SegmentDataWrapper;
+class SegmentationDataWrapper;
 class OmSegmentation;
 class OmSegment;
+class OmViewGroupState;
 
 class OmSegmentSplitAction : public OmAction {
 
 public:
-	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
+	static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
+					  OmViewGroupState* vgs);
 
 private:
 	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
@@ -26,9 +30,10 @@ private:
 
 	OmSegmentEdge mEdge;
 	OmId mSegmentationID;
-	//SegmentationDataWrapper m_sdw;
 
 	QString desc;
+
+	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
 
 	template <typename T> friend class OmActionLoggerFSThread;
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );

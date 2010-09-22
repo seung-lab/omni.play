@@ -1,3 +1,4 @@
+#include "system/viewGroup/omViewGroupState.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
@@ -5,16 +6,18 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
-#include "view2d/drawable.h"
 #include "volume/omChannel.h"
+#include "tiles/omTile.h"
+#include "tiles/omTextureID.h"
 
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;
 
 OmViewBoxWidget::OmViewBoxWidget(OmView3d *view3d, OmViewGroupState * vgs)
-	: OmView3dWidget(view3d), mViewGroupState(vgs)
+	: OmView3dWidget(view3d)
+	, mViewGroupState(vgs)
 {
-};
+}
 
 /**
  *	Draw the three orthogonal slices from of the view box
@@ -37,27 +40,28 @@ void OmViewBoxWidget::Draw()
 	//set line width
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
-		drawChannelData(XY_VIEW, OmStateManager::GetViewDrawable(XY_VIEW));
+		drawChannelData(XY_VIEW,
+				OmStateManager::GetViewDrawable(XY_VIEW));
 		drawSlice(XY_VIEW,
 			  mViewGroupState->GetViewSliceMin(XY_VIEW),
 			  mViewGroupState->GetViewSliceMax(XY_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XY_VIEW));
-		drawChannelData(XZ_VIEW, OmStateManager::GetViewDrawable(XZ_VIEW));
+
+		drawChannelData(XZ_VIEW,
+				OmStateManager::GetViewDrawable(XZ_VIEW));
 		drawSlice(XZ_VIEW,
 			  mViewGroupState->GetViewSliceMin(XZ_VIEW),
 			  mViewGroupState->GetViewSliceMax(XZ_VIEW),
 			  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
-		drawChannelData(YZ_VIEW, OmStateManager::GetViewDrawable(YZ_VIEW));
+
+		drawChannelData(YZ_VIEW,
+				OmStateManager::GetViewDrawable(YZ_VIEW));
 		drawSlice(YZ_VIEW,
 			  mViewGroupState->GetViewSliceMin(YZ_VIEW),
 			  mViewGroupState->GetViewSliceMax(YZ_VIEW),
 			  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
 	}
-
-
-
 
 	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
 		drawLines(mViewGroupState->GetViewDepthCoord());
@@ -149,15 +153,13 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 }
 
 void OmViewBoxWidget::drawChannelData(ViewType plane,
-									  std::vector<Drawable*> drawables)
+				      std::vector<OmTilePtr> drawables)
 {
-	if(!OmLocalPreferences::get2DViewPaneIn3D())
-	{
+	if(!OmLocalPreferences::get2DViewPaneIn3D() ||
+	   !OmProject::IsChannelValid(1)) {
 		return;
 	}
-	if(!OmProject::IsChannelValid(1)) {
-		return;
-	}
+
 	OmChannel& channel = OmProject::GetChannel(1);
 	Vector3f resolution = channel.GetDataResolution();
 	Vector3i extents = channel.GetDataDimensions();
@@ -165,109 +167,105 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 	glColor3fv(OMGL_WHITE);
         glEnable(GL_TEXTURE_2D);
 	glDepthMask(GL_TRUE);
-	//glEnable(GL_BLEND);
-	//glDisable(GL_DEPTH_TEST);
-        //glBlendFunc(GL_ONE, GL_DST_ALPHA);
 
 	Vector2f dataMin,dataMax,spaceMin,spaceMax;
 
-	for (std::vector < Drawable * >::iterator it = drawables.begin(); drawables.end() != it; it++) {
-		Drawable *d = *it;
+	FOR_EACH(it, drawables){
+		OmTilePtr d = *it;
 
-		int level = d->tileCoord.Level;
+		int level = d->GetTileCoord().getLevel();
 		Vector3f tileLength = resolution*128.0*OMPOW(2,level);
 
-		SpaceCoord thisCoord = d->tileCoord.Coordinate;
+		SpaceCoord thisCoord = d->GetTileCoord().getSpaceCoord();
 		debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
-		NormCoord normCoord = channel.SpaceToNormCoord(d->tileCoord.Coordinate);
-		//thisCoord = channel.NormToDataCoord(normCoord);
+		NormCoord normCoord =
+			channel.SpaceToNormCoord(d->GetTileCoord().getSpaceCoord());
 
 		debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
-		glBindTexture(GL_TEXTURE_2D, d->gotten_id->getTextureID());
+		glBindTexture(GL_TEXTURE_2D, d->GetTexture()->getTextureID());
 		glBegin(GL_QUADS);
 
-	if (plane == XY_VIEW) {
-		if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
-			spaceMax.x = thisCoord.x + tileLength.x;
-			spaceMax.y = thisCoord.y + tileLength.y;
-			dataMax.x = 1.0;
-			dataMax.y = 1.0;
+		if (plane == XY_VIEW) {
+			if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
+				spaceMax.x = thisCoord.x + tileLength.x;
+				spaceMax.y = thisCoord.y + tileLength.y;
+				dataMax.x = 1.0;
+				dataMax.y = 1.0;
+			}
+			if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
+				spaceMin.x = thisCoord.x;
+				spaceMin.y = thisCoord.y;
+				dataMin.x = 0.0;
+				dataMin.y = 0.0;
+			}
+			glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
+			glVertex3f(spaceMin.x, spaceMin.y,thisCoord.z);
+
+			glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
+			glVertex3f(spaceMax.x, spaceMin.y,thisCoord.z);
+
+			glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
+			glVertex3f(spaceMax.x, spaceMax.y, thisCoord.z);
+
+			glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
+			glVertex3f(spaceMin.x, spaceMax.y, thisCoord.z);
+			glEnd();
+		} else if (plane == XZ_VIEW) {
+			if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
+				spaceMax.x = thisCoord.x + tileLength.x;
+				spaceMax.y = thisCoord.z + tileLength.z;
+				dataMax.x = 1.0;
+				dataMax.y = 1.0;
+			}
+			if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
+				spaceMin.x = thisCoord.x;
+				spaceMin.y = thisCoord.z;
+				dataMin.x = 0.0;
+				dataMin.y = 0.0;
+			}
+			glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
+			glVertex3f(spaceMin.x, thisCoord.y,spaceMin.y);
+
+			glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
+			glVertex3f(spaceMax.x, thisCoord.y,spaceMin.y);
+
+			glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
+			glVertex3f(spaceMax.x, thisCoord.y,spaceMax.y);
+
+			glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
+			glVertex3f(spaceMin.x, thisCoord.y,spaceMax.y);
+			glEnd();
+		} else if (plane == YZ_VIEW) {
+			if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
+				spaceMax.x = thisCoord.z + tileLength.z;
+				spaceMax.y = thisCoord.y + tileLength.y;
+				dataMax.x = 1.0;
+				dataMax.y = 1.0;
+			}
+			if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
+				spaceMin.x = thisCoord.z;
+				spaceMin.y = thisCoord.y;
+				dataMin.x = 0.0;
+				dataMin.y = 0.0;
+			}
+
+			debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
+			debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
+			debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
+			debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
+			glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
+			glVertex3f(thisCoord.x,spaceMin.x,spaceMin.y);
+
+			glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
+			glVertex3f(thisCoord.x,spaceMax.x ,spaceMin.y);
+
+			glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
+			glVertex3f(thisCoord.x,spaceMax.x,spaceMax.y);
+
+			glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
+			glVertex3f(thisCoord.x,spaceMin.x,spaceMax.y);
+			glEnd();
 		}
-		if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
-			spaceMin.x = thisCoord.x;
-			spaceMin.y = thisCoord.y;
-			dataMin.x = 0.0;
-			dataMin.y = 0.0;
-		}
-		glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
-		glVertex3f(spaceMin.x, spaceMin.y,thisCoord.z);
-
-		glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
-		glVertex3f(spaceMax.x, spaceMin.y,thisCoord.z);
-
-		glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
-		glVertex3f(spaceMax.x, spaceMax.y, thisCoord.z);
-
-		glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
-		glVertex3f(spaceMin.x, spaceMax.y, thisCoord.z);
-		glEnd();
-	} else if (plane == XZ_VIEW) {
-		if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
-			spaceMax.x = thisCoord.x + tileLength.x;
-			spaceMax.y = thisCoord.z + tileLength.z;
-			dataMax.x = 1.0;
-			dataMax.y = 1.0;
-		}
-		if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
-			spaceMin.x = thisCoord.x;
-			spaceMin.y = thisCoord.z;
-			dataMin.x = 0.0;
-			dataMin.y = 0.0;
-		}
-		glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
-		glVertex3f(spaceMin.x, thisCoord.y,spaceMin.y);
-
-		glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
-		glVertex3f(spaceMax.x, thisCoord.y,spaceMin.y);
-
-		glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
-		glVertex3f(spaceMax.x, thisCoord.y,spaceMax.y);
-
-		glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
-		glVertex3f(spaceMin.x, thisCoord.y,spaceMax.y);
-		glEnd();
-	} else if (plane == YZ_VIEW) {
-		if (GetTextureMax(thisCoord, plane, dataMax, spaceMax)){
-			spaceMax.x = thisCoord.z + tileLength.z;
-			spaceMax.y = thisCoord.y + tileLength.y;
-			dataMax.x = 1.0;
-			dataMax.y = 1.0;
-		}
-		if (GetTextureMin(thisCoord, plane, dataMin, spaceMin)){
-			spaceMin.x = thisCoord.z;
-			spaceMin.y = thisCoord.y;
-			dataMin.x = 0.0;
-			dataMin.y = 0.0;
-		}
-
-		debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
-		debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
-		debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
-		debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
-		glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
-		glVertex3f(thisCoord.x,spaceMin.x,spaceMin.y);
-
-		glTexCoord2f(dataMax.x, dataMin.y);	/* lower right corner of image */
-		glVertex3f(thisCoord.x,spaceMax.x ,spaceMin.y);
-
-		glTexCoord2f(dataMax.x, dataMax.y);	/* upper right corner of image */
-		glVertex3f(thisCoord.x,spaceMax.x,spaceMax.y);
-
-		glTexCoord2f(dataMin.x, dataMax.y);	/* upper left corner of image */
-		glVertex3f(thisCoord.x,spaceMin.x,spaceMax.y);
-		glEnd();
-	}
-
 	}
 	//glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
@@ -275,8 +273,10 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 	glDisable(GL_TEXTURE_2D);
 }
 
-bool
-OmViewBoxWidget::GetTextureMax(Vector3f coord,ViewType plane, Vector2f & dataMax, Vector2f & spaceMax)
+bool OmViewBoxWidget::GetTextureMax(Vector3f coord,
+				    ViewType plane,
+				    Vector2f & dataMax,
+				    Vector2f & spaceMax)
 {
 	OmChannel& channel = OmProject::GetChannel( 1);
 	Vector3f resolution = channel.GetDataResolution();

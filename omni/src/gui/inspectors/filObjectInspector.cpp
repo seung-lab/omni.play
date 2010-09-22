@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "filObjectInspector.h"
 #include "common/omDebug.h"
 #include "system/omEventManager.h"
@@ -6,9 +7,9 @@
 FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper & fdw )
  : QWidget(parent)
 {
-	mFDW = fdw;
-	mChannelID = mFDW.getChannelID();
-	mFilterID = mFDW.getID();
+	mFDW = boost::make_shared<FilterDataWrapper>(fdw);
+	mChannelID = mFDW->getChannelID();
+	mFilterID = mFDW->getID();
 
 	QVBoxLayout* overallContainer = new QVBoxLayout( this );
 
@@ -27,14 +28,14 @@ FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper
 		this, SLOT(sourceEditChangedChan()), Qt::DirectConnection);
 	connect(segEdit, SIGNAL(editingFinished()),
 		this, SLOT(sourceEditChangedSeg()), Qt::DirectConnection);
-	connect(alphaSlider, SIGNAL(valueChanged(int)), 
+	connect(alphaSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(setFilAlpha(int)), Qt::DirectConnection);
-	connect(alphaSlider, SIGNAL(sliderReleased()), 
+	connect(alphaSlider, SIGNAL(sliderReleased()),
 		this, SLOT(saveFilterAlphaValue()), Qt::DirectConnection);
 }
 
 void FilObjectInspector::saveFilterAlphaValue()
-{		
+{
 	//	OmProject::Save();
 }
 
@@ -53,7 +54,7 @@ void FilObjectInspector::setFilAlpha(int alpha)
 void FilObjectInspector::set_initial_values()
 {
 	OmFilter2d & filter = OmProject::GetChannel(mChannelID).GetFilter(mFilterID);
-	
+
 	alphaSlider->setValue(filter.GetAlpha() * 100);
 	chanEdit->setText(QString::number(filter.GetChannel()));
 	segEdit->setText(QString::number(filter.GetSegmentation()));
@@ -113,7 +114,7 @@ QGroupBox* FilObjectInspector::makeNotesBox()
         notesEdit = new QPlainTextEdit(groupBox);
         notesEdit->setObjectName(QString("notesEdit"));
 	vbox->addWidget(notesEdit);
- 
+
 	return groupBox;
 }
 

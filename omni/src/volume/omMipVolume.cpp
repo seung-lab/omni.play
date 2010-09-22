@@ -1,15 +1,16 @@
+#include "system/cache/omMipVolumeCache.h"
+#include "volume/build/omVolumeBuilder.hpp"
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
 #include "utility/stringHelpers.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "common/omStd.h"
-#include "common/omVtk.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "datalayer/omDataLayer.h"
 #include "system/cache/omThreadChunkThreadedCache.h"
 #include "system/events/omProgressEvent.h"
@@ -24,8 +25,6 @@
 #include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 
-#include <vtkImageData.h>
-
 #include <QImage>
 
 //Maximum number of powers of 2 that thread chunk is linearly larger than a chunk
@@ -34,8 +33,7 @@
 //TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
 OmMipVolume::OmMipVolume()
-	: mDataCache(new OmMipVolumeCache(this))
-	, mVolDataType(OmVolDataType::UNKNOWN)
+	: mVolDataType(OmVolDataType::UNKNOWN)
 {
 	sourceFilesWereSet = false;
 
@@ -47,7 +45,6 @@ OmMipVolume::OmMipVolume()
 OmMipVolume::~OmMipVolume()
 {
 	Flush();
-	delete mDataCache;
 }
 
 /////////////////////////////////
@@ -66,7 +63,7 @@ void OmMipVolume::Flush()
 	BuildEditedLeafChunks();
 
 	//flush all chunks in the cache
-	mDataCache->Flush();
+	getDataCache()->Flush();
 }
 
 /**
@@ -93,7 +90,7 @@ std::string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 ///////          Source Data Properties
 void OmMipVolume::SetSourceFilenamesAndPaths( QFileInfoList sourceFilenamesAndPaths )
 {
-	mSourceFilenamesAndPaths = SortHelpers::sortNaturally(sourceFilenamesAndPaths);
+	mSourceFilenamesAndPaths = SortHelpers::SortNaturally(sourceFilenamesAndPaths);
 	sourceFilesWereSet = true;
 }
 
@@ -219,10 +216,10 @@ Vector3i  OmMipVolume::MipLevelDataDimensions(int level)
 {
 	//get dimensions
 	DataBbox source_extent = GetDataExtent();
-	Vector3 < float >source_dims = source_extent.getUnitDimensions();
+	Vector3f source_dims = source_extent.getUnitDimensions();
 
 	//dims in fraction of pixels
-	Vector3 < float >mip_level_dims = source_dims / OMPOW(2, level);
+	Vector3f mip_level_dims = source_dims / OMPOW(2, level);
 
 	return Vector3i (ceil(mip_level_dims.x),
 			       ceil(mip_level_dims.y),
@@ -236,7 +233,7 @@ Vector3i  OmMipVolume::MipLevelDataDimensions(int level)
  */
 Vector3i  OmMipVolume::MipLevelDimensionsInMipChunks(int level)
 {
-	Vector3 < float >data_dims = MipLevelDataDimensions(level);
+	Vector3f data_dims = MipLevelDataDimensions(level);
 	return Vector3i (ceil(data_dims.x / GetChunkDimension()),
 			       ceil(data_dims.y / GetChunkDimension()),
 			       ceil(data_dims.z / GetChunkDimension()));
@@ -324,7 +321,7 @@ Vector3i  OmMipVolume::GetThreadChunkLevelDimensions(int level)
  */
 Vector3i  OmMipVolume::MipLevelDimensionsInThreadChunks(int level)
 {
-	Vector3 < float >data_dims = MipLevelDataDimensions(level);
+	Vector3f data_dims = MipLevelDataDimensions(level);
 
 	return Vector3i (ceil(data_dims.x / GetThreadChunkDimension()),
 			       ceil(data_dims.y / GetThreadChunkDimension()),
@@ -336,7 +333,7 @@ Vector3i  OmMipVolume::MipLevelDimensionsInThreadChunks(int level)
  */
 Vector3i  OmMipVolume::MipLevelDimensionsInThreadChunkLevels(int level)
 {
-	Vector3 < float >data_dims = MipLevelDataDimensions(level);
+	Vector3f data_dims = MipLevelDataDimensions(level);
 
 	return Vector3i (ceil(data_dims.x / GetThreadChunkLevelDimension(level)),
 			       ceil(data_dims.y / GetThreadChunkLevelDimension(level)),
@@ -376,7 +373,8 @@ OmMipChunkCoord OmMipVolume::DataToMipCoord(const DataCoord & dataCoord, int lev
 
 	return OmMipChunkCoord(level,
 			       floor(float (dataCoord.x) / data_dim),
-			       floor(float (dataCoord.y) / data_dim), floor(float (dataCoord.z) / data_dim));
+			       floor(float (dataCoord.y) / data_dim),
+			       floor(float (dataCoord.z) / data_dim));
 }
 
 OmMipChunkCoord OmMipVolume::NormToMipCoord(const NormCoord & normCoord, int level)
@@ -458,7 +456,6 @@ OmMipChunkCoord OmMipVolume::RootMipChunkCoordinate()
  */
 bool OmMipVolume::ContainsMipChunkCoord(const OmMipChunkCoord & rMipCoord)
 {
-
 	//if level is greater than root level
 	if (rMipCoord.Level > GetRootMipLevel())
 		return false;
@@ -552,15 +549,19 @@ void OmMipVolume::ValidMipChunkCoordChildren(const OmMipChunkCoord & rMipCoord,
  *	NOTE: DO NOT DELETE the data volume returned as a shared pointer
  *			this is taken care of by the cache system.
  */
-void OmMipVolume::GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord & rMipCoord, bool block)
+void OmMipVolume::GetChunk(OmMipChunkPtr& p_value,
+			   const OmMipChunkCoord & rMipCoord,
+			   bool block)
 {
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
-	mDataCache->Get(p_value, rMipCoord, block);
+	getDataCache()->Get(p_value, rMipCoord, block);
 }
 
-void OmMipVolume::GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value, const OmMipChunkCoord & rMipCoord, bool block)
+void OmMipVolume::GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
+				      const OmMipChunkCoord & rMipCoord,
+				      bool block)
 {
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
@@ -660,7 +661,7 @@ void OmMipVolume::Build(OmDataPath & dataset)
 		return;
 	}
 
-	mDataCache->Clear();
+	getDataCache()->Clear();
 
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
@@ -720,8 +721,8 @@ bool OmMipVolume::BuildThreadedVolume()
  	printf("done.\n");
 
 	if (isDebugCategoryEnabled("perftest")){
-		vol_timer.stop();
-		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
+		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",
+		       vol_timer.s_elapsed());
 	}
 
 	mThreadChunkThreadedCache->closeDownThreads();
@@ -747,18 +748,22 @@ void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
 	GetChunk(p_chunk, rMipCoord);
 
 	//read original data
-	OmDataPath source_data_path(MipLevelInternalDataPath(rMipCoord.Level-1));
-	DataBbox source_data_bbox = MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
+	OmDataPath src_path(MipLevelInternalDataPath(rMipCoord.Level-1));
+	DataBbox srcDataExtents =
+		MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
 
 	//read and get pointer to data
-	OmDataWrapperPtr p_source_data =
-		OmProjectData::GetProjectDataReader()->readChunkNotOnBoundary(source_data_path,
-									source_data_bbox);
+	OmDataWrapperPtr src_data =
+		OmProjectData::GetProjectIDataReader()->
+		readChunk(src_path, srcDataExtents);
 
-	//subsample
-	OmDataWrapperPtr p_subsampled_data;
+	const Vector3i chunkSize = srcDataExtents.getUnitDimensions();
+	const DataBbox hdf5Extent =
+		DataBbox(srcDataExtents.getMin(),
+			 chunkSize.x, chunkSize.y, chunkSize.z);
 
-	p_subsampled_data = p_source_data->SubsampleData();
+	OmDataWrapperPtr p_subsampled_data =
+		OmVolumeBuilder::SubsampleData(src_data, hdf5Extent);
 
 	//set or replace image data (chunk now owns pointer)
 	p_chunk->SetImageData(p_subsampled_data);
@@ -812,20 +817,20 @@ void OmMipVolume::BuildEditedLeafChunks()
 /*
  *	Build one level of a thread chunk and return image data for use by next level
  */
-OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMipCoord,
-						    OmDataWrapperPtr p_source_data,
+OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord& coord,
+						    OmDataWrapperPtr src_data,
 						    bool initCall)
 {
 	//read and return data if this is initial call
 	if ( initCall ){
 
 		//read original data
-		OmDataPath source_data_path(MipLevelInternalDataPath(rMipCoord.Level));
-		DataBbox source_data_bbox = MipCoordToThreadDataBbox(rMipCoord);
+		OmDataPath source_data_path(MipLevelInternalDataPath(coord.Level));
+		DataBbox source_data_bbox = MipCoordToThreadDataBbox(coord);
 
 		OmDataWrapperPtr p_read_data =
-			OmProjectData::GetProjectDataReader()->
-			readChunkNotOnBoundary(source_data_path, source_data_bbox);
+			OmProjectData::GetProjectIDataReader()->
+			readChunk(source_data_path, source_data_bbox);
 
 		return p_read_data;
 
@@ -833,11 +838,25 @@ OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord & rMip
 
 		//otherwise get pointer to thread chunk level
 		OmThreadChunkLevelPtr p_chunklevel;
-		GetThreadChunkLevel(p_chunklevel, rMipCoord);
-		debug("mipthread","Thread chunk level coordinates: %s\n", qPrintable( rMipCoord.getCoordsAsString() ));
-		debug("mipthread","Thread chunk level dimensions: %i,%i,%i\n", p_chunklevel->GetDimensions().x, p_chunklevel->GetDimensions().y, p_chunklevel->GetDimensions().z);
+		GetThreadChunkLevel(p_chunklevel, coord);
 
-		OmDataWrapperPtr p_subsampled_data = p_source_data->SubsampleData();
+		debug("mipthread","Thread chunk level coordinates: %s\n",
+		      qPrintable( coord.getCoordsAsString() ));
+		debug("mipthread","Thread chunk level dimensions: %i,%i,%i\n",
+		      p_chunklevel->GetDimensions().x,
+		      p_chunklevel->GetDimensions().y,
+		      p_chunklevel->GetDimensions().z);
+
+		const Vector3i chunkSize = p_chunklevel->GetExtent().getUnitDimensions();
+		const DataBbox hdf5Extent =
+			DataBbox(p_chunklevel->GetExtent().getMin(),
+				 chunkSize.x, chunkSize.y, chunkSize.z);
+
+		OmDataWrapperPtr p_subsampled_data =
+			OmVolumeBuilder::SubsampleData(src_data,
+						       hdf5Extent);
+
+
 		//set or replace image data (chunk level now owns pointer)
 		p_chunklevel->SetImageData(p_subsampled_data);
 
@@ -934,111 +953,6 @@ bool OmMipVolume::CompareChunks(const OmMipChunkCoord& coord,
 	vol2->GetChunk(chunk2, coord);
 
 	return chunk1->compare(chunk2);
-}
-
-/////////////////////////////////
-///////          IO
-
-/*
- *	Export leaf volume data to HDF5 format.  Calls ExportImageDataFilter so subclass can
- *	post-process the image data before it is written.
- */
-void OmMipVolume::ExportInternalData(QString fileNameAndPath)
-{
-	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n",
-	      qPrintable(fileNameAndPath));
-
-	//get leaf data extent
-	DataBbox leaf_data_extent = GetDataExtent();
-
-	//dim of leaf coords
-	Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
-
-        OmIDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
-        OmDataPath fpath("main");
-
-	if( !QFile::exists(fileNameAndPath) ){
-        	hdfExport->create();
-        	hdfExport->open();
-		const Vector3i full = MipLevelDataDimensions(0);
-        	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
-        	hdfExport->allocateChunkedDataset(fpath,
-						 rounded_data_dims,
-						 full,
-						 mVolDataType);
-	} else {
-        	hdfExport->open();
-	}
-
-
-	//for all coords
-	for (int z = 0; z < leaf_mip_dims.z; ++z) {
-		for (int y = 0; y < leaf_mip_dims.y; ++y) {
-			for (int x = 0; x < leaf_mip_dims.x; ++x) {
-				const OmMipChunkCoord coord(0, x, y, z);
-				doExportChunk(coord, hdfExport);
-			}
-		}
-	}
-	hdfExport->close();
-}
-
-void OmMipVolume::doExportChunk(const OmMipChunkCoord & leaf_coord,
-				OmIDataWriter* )
-{
-
-	assert(0 && "FIXME");
-	const DataBbox chunk_data_bbox = MipCoordToDataBbox(leaf_coord, 0);
-	/*
-	OmMipChunkPtr chunk;
-	Get(chunk, leaf_coord);
-
-	OmDataWrapperPtr chunkData = chunk->RawReadChunkDataHDF5();
-	uint32_t* data =
-
-	for(int i = 0; i < 128*128*128; ++i){
-
-	// rewrite
-	ExportDataFilter(p_chunk_img_data);
-
-// FIXME: this needs to get refactored into some sort of helper...
-void OmSegmentCache::ExportDataFilter(vtkImageData * pImageData)
-{
-	QMutexLocker locker( &mMutex );
-
-	//get data extent (varify it is a chunk)
-	int extent[6];
-	pImageData->GetExtent(extent);
-
-	//get pointer to native scalar data
-	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
-	OmSegID * p_scalar_data = static_cast<OmSegID*>( pImageData->GetScalarPointer() );
-
-	//for all voxels in the chunk
-	int x, y, z;
-	for (z = extent[0]; z <= extent[1]; z++) {
-		for (y = extent[2]; y <= extent[3]; y++) {
-			for (x = extent[4]; x <= extent[5]; x++) {
-
-				//if non-null segment value
-				if (NULL_SEGMENT_VALUE != *p_scalar_data) {
-					*p_scalar_data = mImpl->findRootID( *p_scalar_data );
-				}
-				//adv to next scalar
-				++p_scalar_data;
-			}
-		}
-	}
-}
-
-	//write to hdf5 file
-	//debug("FIXME", "OmMipVolume::Export:" chunk_data_bbox  endl;
-
-	hdfExport.dataset_image_write_trim(OmDataPaths::getDefaultDatasetName(),
-					   (DataBbox*)&chunk_data_bbox,
-					   p_chunk_img_data);
-	*/
 }
 
 bool OmMipVolume::ContainsVoxel(const DataCoord & vox)
@@ -1144,6 +1058,53 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 	}
 
 	fflush(stdout);
+}
+
+/**
+ *	Export leaf volume data to HDF5 format.
+ */
+void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
+{
+	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n",
+	      qPrintable(fileNameAndPath));
+
+	const DataBbox leaf_data_extent = GetDataExtent();
+	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+	const OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
+
+        OmIDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
+        OmDataPath fpath("main");
+
+	if( !QFile::exists(fileNameAndPath) ){
+        	hdfExport->create();
+        	hdfExport->open();
+		const Vector3i full = MipLevelDataDimensions(0);
+        	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
+        	hdfExport->allocateChunkedDataset(fpath,
+						 rounded_data_dims,
+						 full,
+						 mVolDataType);
+	} else {
+        	hdfExport->open();
+	}
+
+	//for all coords
+	for (int z = 0; z < leaf_mip_dims.z; ++z) {
+		for (int y = 0; y < leaf_mip_dims.y; ++y) {
+			for (int x = 0; x < leaf_mip_dims.x; ++x) {
+				const OmMipChunkCoord coord(0, x, y, z);
+				OmDataWrapperPtr data = doExportChunk(coord);
+
+				const DataBbox chunk_data_bbox =
+					MipCoordToDataBbox(coord, 0);
+				hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
+						      chunk_data_bbox,
+						      data);
+			}
+		}
+	}
+
+	hdfExport->close();
 }
 
 uint32_t OmMipVolume::computeTotalNumChunks()

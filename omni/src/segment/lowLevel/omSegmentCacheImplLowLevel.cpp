@@ -3,6 +3,7 @@
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentLists.hpp"
+#include "segment/lowLevel/omPagingPtrStore.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -274,10 +275,6 @@ quint32 OmSegmentCacheImplLowLevel::getMaxValue()
 	return mMaxValue;
 }
 
-///////////////////////////
-////// Private
-///////////////////////////
-
 OmSegID OmSegmentCacheImplLowLevel::getNextValue()
 {
 	++mMaxValue;
@@ -286,7 +283,7 @@ OmSegID OmSegmentCacheImplLowLevel::getNextValue()
 
 void OmSegmentCacheImplLowLevel::clearCaches()
 {
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 }
 
 void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)

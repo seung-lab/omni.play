@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
-#include "datalayer/omDataReader.h"
+#include "datalayer/omIDataReader.h"
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "system/omBuildVolumes.h"
@@ -43,7 +43,7 @@ bool OmBuildVolumes::canDoLoadDendrogram()
 	QString fname = mFileNamesAndPaths.at(0).filePath();
 
 	if( fname.endsWith(".h5")  ||
-	    fname.endsWith(".hdf5")){ 
+	    fname.endsWith(".hdf5")){
 		return true;
 	}
 
@@ -98,7 +98,8 @@ void OmBuildVolumes::startTiming(const QString & type, OmTimer & timer)
 void OmBuildVolumes::stopTimingAndSave(const QString & type, OmTimer & timer)
 {
         (new OmProjectSaveAction())->Run();
-	timer.stop();
-	printf("done: %s build performed in (%.6f secs)\n", qPrintable(type), timer.s_elapsed() );
+	const double time = timer.s_elapsed();
+	printf("done: %s build performed in (%.6f secs)\n",
+	       qPrintable(type), time);
 	printf("************\n");
 }

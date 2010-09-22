@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "gui/mstViewer.hpp"
 #include "common/omDebug.h"
 #include "gui/elementListBox.h"
@@ -38,7 +39,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 
 	verticalLayout->addWidget(setupDataSrcList());
 
-	currentDataSrc = DataWrapperContainer();
+	currentDataSrc = boost::make_shared<DataWrapperContainer>();
 
 	inspectorProperties = new InspectorProperties( this, mViewGroupState);
 

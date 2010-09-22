@@ -3,8 +3,8 @@
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/archive/omDataArchiveVmml.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "datalayer/omMST.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
@@ -33,7 +33,7 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	int size;
 
 	OmDataWrapperPtr dw =
-		OmProjectData::GetProjectDataReader()->
+		OmProjectData::GetProjectIDataReader()->
 		readDataset(path, &size);
 
 	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size);
@@ -82,14 +82,15 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 	out << (*project);
 	out << Omni_Postfix;
 
-	OmProjectData::GetDataWriter()->writeDataset(path,
-												  ba.size(),
-												  OmDataWrapperRaw(ba.data()));
+	OmProjectData::GetIDataWriter()->
+		writeDataset( path,
+			      ba.size(),
+			      OmDataWrapperRaw(ba.constData()));
 }
 
 QDataStream &operator<<(QDataStream & out, const OmProject & p)
 {
-	out << *OmPreferences::Instance();
+	out << OmPreferences::Instance();
 	out << p.mChannelManager;
 	out << p.mSegmentationManager;
 	return out;
@@ -97,7 +98,7 @@ QDataStream &operator<<(QDataStream & out, const OmProject & p)
 
 QDataStream &operator>>(QDataStream & in, OmProject & p)
 {
-	in >> *OmPreferences::Instance();
+	in >> OmPreferences::Instance();
 	in >> p.mChannelManager;
 	in >> p.mSegmentationManager;
 

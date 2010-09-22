@@ -6,7 +6,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataWriter.h"
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -81,8 +81,7 @@ QString OmProject::New( QString fileNameAndPath )
 	OmProjectData::Create();
 	OmProjectData::Open();
 
-	//load default project preferences
-	omSetDefaultAllPreferences();
+	OmPreferenceDefaults::SetDefaultAllPreferences();
 
 	Save();
 
@@ -97,7 +96,7 @@ void OmProject::Save()
 		return;
 	}
 
-	//TODO: move this into omProjectData
+	//TODO: move this into omProjectData?
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
 		OmProject::GetSegmentation( segID ).Flush();
@@ -107,7 +106,7 @@ void OmProject::Save()
 
 	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
 
-	OmProjectData::GetDataWriter()->flush();
+	OmProjectData::GetIDataWriter()->flush();
 
 	printf("omni project saved!\n");
 }

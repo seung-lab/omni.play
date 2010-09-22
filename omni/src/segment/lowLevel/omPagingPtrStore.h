@@ -2,6 +2,7 @@
 #define OM_PAGING_PTR_STORE_H
 
 #include "common/omCommon.h"
+#include "segment/omSegment.h"
 
 #include <QSet>
 

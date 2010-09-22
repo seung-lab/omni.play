@@ -1,20 +1,24 @@
+#include "system/viewGroup/omBrushSize.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentColorizer.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/omEventManager.h"
-#include "system/omGenericManager.h"
 #include "system/cache/omCacheManager.h"
+#include "system/omEvents.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
+#include "tiles/omTileCoord.h"
+
+#include <boost/make_shared.hpp>
 
 OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
+	, mViewGroup(boost::make_shared<ViewGroup>(mMainWindow, this))
+	, brushSize_(boost::make_shared<OmBrushSize>())
+	, segmentBeingSplit_(boost::make_shared<SegmentDataWrapper>())
 {
 	mXYSliceEnabled = false;
 	mYZSliceEnabled = false;
@@ -36,8 +40,6 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
         mShatter = false;
         mSplitting = false;
 	mBreakOnSplit = true;
-        mSplittingSegment = 0;
-        mSplittingSeg = 1;
         mShowValid = false;
 	mShowSplit = false;
 	mShowValidInColor = false;
@@ -46,42 +48,30 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	zoom_level = Vector2i(0, 6);
 
 	mColorCaches.resize(SCC_NUMBER_OF_ENUMS);
-	m_sdw = NULL;
-	m_cdw = NULL;
-
-	mViewGroup = new ViewGroup( mMainWindow, this );
-
-	view2DBrushToolDiameter_ = 8;
 
 	debug("viewgroupstate", "constructed viewGroupState\n");
 }
 
-OmViewGroupState::~OmViewGroupState()
-{
-	delete m_sdw;
-	delete m_cdw;
-	delete mViewGroup;
-}
-
 // GUI state
-void OmViewGroupState::addView2Dchannel( OmId chan_id, ViewType vtype)
+void OmViewGroupState::addView2Dchannel(OmId chan_id, ViewType vtype)
 {
-	mViewGroup->addView2Dchannel( chan_id, vtype);
+	mViewGroup->AddView2Dchannel(chan_id, vtype);
 }
 
-void OmViewGroupState::addView2Dsegmentation( OmId segmentation_id, ViewType vtype)
+void OmViewGroupState::addView2Dsegmentation(OmId segmentation_id,
+					     ViewType vtype)
 {
-	mViewGroup->addView2Dsegmentation( segmentation_id, vtype);
+	mViewGroup->AddView2Dsegmentation(segmentation_id, vtype);
 }
 
 void OmViewGroupState::addView3D()
 {
-	mViewGroup->addView3D();
+	mViewGroup->AddView3D();
 }
 
 void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
 {
-	mViewGroup->addAllViews( channelID, segmentationID );
+	mViewGroup->AddAllViews( channelID, segmentationID );
 }
 
 /////////////////////////////////
@@ -90,39 +80,36 @@ void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
 /*
  *	Set/Get minimum coordiante of view slice.
  */
-void OmViewGroupState::SetViewSliceMin(ViewType plane, Vector2 < float >point, bool postEvent)
+void OmViewGroupState::SetViewSliceMin(const ViewType plane, const float x,
+				       const float y)
 {
 	switch (plane) {
 	case XY_VIEW:
-		mXYSlice[0] = point.x;
-		mXYSlice[1] = point.y;
+		mXYSlice[0] = x;
+		mXYSlice[1] = y;
 		break;
 	case XZ_VIEW:
-		mXZSlice[0] = point.x;
-		mXZSlice[1] = point.y;
+		mXZSlice[0] = x;
+		mXZSlice[1] = y;
 		break;
 	case YZ_VIEW:
-		mYZSlice[0] = point.x;
-		mYZSlice[1] = point.y;
+		mYZSlice[0] = x;
+		mYZSlice[1] = y;
 		break;
 	default:
 		assert(false);
 	}
-
-	if (postEvent) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
-	}
 }
 
-Vector2 < float > OmViewGroupState::GetViewSliceMin(ViewType plane)
+Vector2f OmViewGroupState::GetViewSliceMin(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
-		return Vector2 < float >(&mXYSlice[0]);
+		return Vector2f(&mXYSlice[0]);
 	case XZ_VIEW:
-		return Vector2 < float >(&mXZSlice[0]);
+		return Vector2f(&mXZSlice[0]);
 	case YZ_VIEW:
-		return Vector2 < float >(&mYZSlice[0]);
+		return Vector2f(&mYZSlice[0]);
 	default:
 		assert(false);
 	}
@@ -131,31 +118,28 @@ Vector2 < float > OmViewGroupState::GetViewSliceMin(ViewType plane)
 /*
  *	Set/Get maximum coordiante of view slice.
  */
-void OmViewGroupState::SetViewSliceMax(ViewType plane, Vector2 < float >point, bool postEvent)
+void OmViewGroupState::SetViewSliceMax(const ViewType plane, const float x,
+				       const float y)
 {
 	switch (plane) {
 	case XY_VIEW:
-		mXYSlice[2] = point.x;
-		mXYSlice[3] = point.y;
+		mXYSlice[2] = x;
+		mXYSlice[3] = y;
 		break;
 	case XZ_VIEW:
-		mXZSlice[2] = point.x;
-		mXZSlice[3] = point.y;
+		mXZSlice[2] = x;
+		mXZSlice[3] = y;
 		break;
 	case YZ_VIEW:
-		mYZSlice[2] = point.x;
-		mYZSlice[3] = point.y;
+		mYZSlice[2] = x;
+		mYZSlice[3] = y;
 		break;
 	default:
 		assert(false);
 	}
-
-	if (postEvent) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
-	}
 }
 
-Vector2 < float > OmViewGroupState::GetViewSliceMax(ViewType plane)
+Vector2f OmViewGroupState::GetViewSliceMax(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -172,7 +156,7 @@ Vector2 < float > OmViewGroupState::GetViewSliceMax(ViewType plane)
 /**
  *	Set/Get depth of view slice.
  */
-void OmViewGroupState::SetViewSliceDepth(ViewType plane, float depth, bool postEvent)
+void OmViewGroupState::SetViewSliceDepth(ViewType plane, float depth)
 {
 	if (ISNAN(depth)) assert(0);
 	switch (plane) {
@@ -189,9 +173,7 @@ void OmViewGroupState::SetViewSliceDepth(ViewType plane, float depth, bool postE
 		assert(false);
 	}
 
-	if (postEvent) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
-	}
+	OmEvents::ViewBoxChanged();
 }
 
 SpaceCoord OmViewGroupState::GetViewDepthCoord()
@@ -202,7 +184,6 @@ SpaceCoord OmViewGroupState::GetViewDepthCoord()
 	spacec.z = mXYSlice[4];
 	return spacec;
 }
-
 
 float OmViewGroupState::GetViewSliceDepth(ViewType plane)
 {
@@ -221,22 +202,17 @@ float OmViewGroupState::GetViewSliceDepth(ViewType plane)
 /*
  *	Set/Get zoom level.
  */
-void OmViewGroupState::SetZoomLevel(Vector2 < int >zoom)
+void OmViewGroupState::SetZoomLevel(const Vector2i& zoom)
 {
 	zoom_level = zoom;
-
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
-}
-
-Vector2 < int > OmViewGroupState::GetZoomLevel()
-{
-	return zoom_level;
+	OmEvents::ViewPosChanged();
 }
 
 /*
  *	Set/Get pan distance.
  */
-void OmViewGroupState::SetPanDistance(ViewType plane, Vector2f pan, bool postEvent)
+void OmViewGroupState::SetPanDistance(const ViewType plane,
+				      const Vector2f& pan)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -255,12 +231,10 @@ void OmViewGroupState::SetPanDistance(ViewType plane, Vector2f pan, bool postEve
 		assert(false);
 	}
 
-	if (postEvent) {
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
-	}
+	OmEvents::ViewPosChanged();
 }
 
-Vector2f OmViewGroupState::GetPanDistance(ViewType plane)
+Vector2f OmViewGroupState::ComputePanDistance(ViewType plane)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -296,18 +270,6 @@ void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
 	default:
 		assert(false);
 	}
-}
-
-void OmViewGroupState::SetSegmentation( const OmId segID )
-{
-	delete m_sdw;
-	m_sdw = new SegmentationDataWrapper( segID );
-}
-
-void OmViewGroupState::SetChannel( const OmId chanID )
-{
-	delete m_cdw;
-	m_cdw = new ChannelDataWrapper( chanID );
 }
 
 OmSegmentColorCacheType
@@ -349,17 +311,17 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
 }
 
 void OmViewGroupState::setupColorizer(const Vector2i& dims,
-				      const ObjectType objType,
+				      const OmTileCoord& key,
 				      const OmSegmentColorCacheType sccType)
 {
 	zi::Guard g(mColorCacheMapLock);
 
 	if(NULL == mColorCaches[sccType]){
-		assert(m_sdw);
+		SegmentationDataWrapper sdw(key.getVolume()->getID());
+
 		OmSegmentColorizer* sc =
-			new OmSegmentColorizer(m_sdw->getSegmentCache(),
+			new OmSegmentColorizer(sdw.getSegmentCache(),
 					       sccType,
-					       SEGMENTATION == objType,
 					       dims);
 		mColorCaches[ sccType ] =
 			boost::shared_ptr<OmSegmentColorizer>(sc);
@@ -369,13 +331,16 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 boost::shared_ptr<OmColorRGBA>
 OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 			    const Vector2i& dims,
-			    const ObjectType objType)
+			    const OmTileCoord& key)
 {
+	if(SEGMENTATION != key.getVolume()->getVolumeType()){
+		throw OmIoException("can only color segmentations");
+	}
+
 	const OmSegmentColorCacheType sccType =
-		determineColorizationType(objType);
+		key.getSegmentColorCacheType();
 
-	setupColorizer(dims, objType, sccType);
-
+	setupColorizer(dims, key, sccType);
 	return mColorCaches[ sccType ]->colorTile(imageData);
 }
 
@@ -399,16 +364,9 @@ void OmViewGroupState::ToggleShatterMode()
 	mShatter = !mShatter;
 }
 
-bool OmViewGroupState::GetSplitMode()
+std::pair<bool, SegmentDataWrapper> OmViewGroupState::GetSplitMode()
 {
-        return mSplitting;
-}
-
-bool OmViewGroupState::GetSplitMode(OmId & seg, OmId & segment)
-{
-        seg = mSplittingSeg;
-        segment = mSplittingSegment;
-        return mSplitting;
+	return std::make_pair(mSplitting, *segmentBeingSplit_);
 }
 
 void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
@@ -422,15 +380,14 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 		OmStateManager::SetOldToolModeAndSendEvent();
 	}
 
-	OmCacheManager::Freshen(true);
-        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	OmCacheManager::TouchFresheness();
+	OmEvents::Redraw3d();
+	OmEvents::Redraw();
 }
 
-void OmViewGroupState::SetSplitMode(OmId seg, OmId segment)
+void OmViewGroupState::SetSplitMode(const SegmentDataWrapper& sdw)
 {
-        mSplittingSeg = seg;
-        mSplittingSegment = segment;
+        segmentBeingSplit_->set(sdw);
         SetSplitMode(true);
 }
 
@@ -442,11 +399,11 @@ void OmViewGroupState::SetBreakOnSplitMode(bool mode)
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 {
 	debug("valid", "OmViewGroupState::SetShowValidMode(bool mode=%i, bool inColor=%i)\n", mode, inColor);
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 	mShowValid = mode;
 	mShowValidInColor = inColor;
-        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+        OmEvents::Redraw3d();
+        OmEvents::Redraw();
 }
 
 bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
@@ -457,15 +414,15 @@ bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool inColor)
 {
 	mShowFilterInColor = inColor;
-	OmCacheManager::Freshen(true);
-        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	OmCacheManager::TouchFresheness();
+        OmEvents::Redraw();
 }
 
 void OmViewGroupState::SetShowSplitMode(bool mode)
 {
-	OmCacheManager::Freshen(true);
-        OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
-        OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	OmCacheManager::TouchFresheness();
+        OmEvents::Redraw3d();
+        OmEvents::Redraw();
 	mShowSplit = mode;
 }
 
@@ -479,12 +436,3 @@ void OmViewGroupState::setTool(const OmToolMode tool)
 	mToolBarManager->setTool(tool);
 }
 
-int OmViewGroupState::getView2DBrushToolDiameter()
-{
-	return view2DBrushToolDiameter_;
-}
-
-void OmViewGroupState::setView2DBrushToolDiameter(const int size)
-{
-	view2DBrushToolDiameter_ = size;
-}

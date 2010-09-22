@@ -1,12 +1,4 @@
-#include <QApplication>
-#include <QTextStream>
-#include <QFile>
-#include <QDir>
-#include <QFileInfo>
-#include <QTime>
-#include <QProcess>
-#include <time.h>
-
+#include "mesh/omMipMesh.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataLayer.h"
@@ -23,9 +15,9 @@
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
+#include "tiles/omTileDumper.hpp"
 #include "utility/dataWrappers.h"
 #include "utility/stringHelpers.h"
-#include "view2d/omTileDumper.hpp"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
@@ -33,6 +25,15 @@
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
 #include "zi/watershed/RawQuickieWS.h"
+
+#include <QApplication>
+#include <QTextStream>
+#include <QFile>
+#include <QDir>
+#include <QFileInfo>
+#include <QTime>
+#include <QProcess>
+#include <time.h>
 
 int argc_global;
 char **argv_global;
@@ -194,20 +195,20 @@ void Headless::processLine( QString line, QString fName )
 		}
 	} else if(line.startsWith("dumpSegTiles:") ) {
                 QStringList args = line.split(':',QString::SkipEmptyParts);
-		QString file = "/tmp/tiles";
+		QString fileNameAndPath = "/tmp/tiles.dump";
 		OmId segID = 1;
 
 		if(3 == args.size()) {
 			segID = StringHelpers::getUInt(args[1]);
-			file = args[2];
+			fileNameAndPath = args[2];
 		} else if(2 == args.size()) {
 			segID = 1;
-			file = args[1];
+			fileNameAndPath = args[1];
 		}
 
-		OmViewGroupState * vgs = new OmViewGroupState(NULL);
-		vgs->SetSegmentation(segID);
-		OmTileDumper::DumpTiles(segID, SEGMENTATION, file, vgs);
+		OmViewGroupState* vgs = new OmViewGroupState(NULL);
+		OmTileDumper dumper(segID, SEGMENTATION, fileNameAndPath, vgs);
+		dumper.DumpTiles();
 
         } else if(line.startsWith("dumpChannTiles:") ) {
                 QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -223,8 +224,9 @@ void Headless::processLine( QString line, QString fName )
                 }
 
                 OmViewGroupState * vgs = new OmViewGroupState(NULL);
-                vgs->SetSegmentation(segID);
-                OmTileDumper::DumpTiles(segID, CHANNEL, file, vgs);
+		OmTileDumper dumper(segID, CHANNEL, file, vgs);
+		dumper.DumpTiles();
+
 	} else if( line.startsWith("meshchunk:") ) {
 		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -268,7 +270,6 @@ void Headless::processLine( QString line, QString fName )
 		printf("Meshing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
 		timer.start();
 		OmProject::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
-		timer.stop();
 		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
 
 		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
@@ -277,9 +278,7 @@ void Headless::processLine( QString line, QString fName )
   		}
 	} else if( line.startsWith("runMeshPlan") ) {
 		timer.start();
-		//runMeshPlan("runMeshPlan")????
 		runMeshPlan( line );
-		timer.stop();
 		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
 	} else if( "meshplan" == line ) {
 		if( 0 == SegmentationID  ){
@@ -695,6 +694,7 @@ OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 	return OmSegmentationChunkCoord(segmentationID, mipLevel, x, y, z);
 }
 
+
 void Headless::watershed(const QString &  line)
 {
 	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
@@ -726,7 +726,7 @@ void Headless::watershed(const QString &  line)
 
 	const float loThreshold = StringHelpers::getFloat(args[4]);
 	const float hiThreshold = StringHelpers::getFloat(args[5]);
-	const int   sizeThreshold = StringHelpers::getUInt(args[6]);
+	const int   noThreshold = StringHelpers::getUInt(args[6]);
 	const float absLowThreshold = StringHelpers::getFloat(args[7]);
 
 	RawQuickieWS rqws(xDim,
@@ -734,7 +734,7 @@ void Headless::watershed(const QString &  line)
 			  zDim,
 			  loThreshold,
 			  hiThreshold,
-			  sizeThreshold,
+			  noThreshold,
 			  absLowThreshold);
 
 	rqws.Run(in.GetPtr(), out.GetPtr());

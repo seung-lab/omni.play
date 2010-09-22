@@ -4,8 +4,8 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 
 #include <zi/mutex>
 
@@ -40,7 +40,6 @@ public:
 						  const Vector3i&,
 						  const Vector3i&,
 						  const OmVolDataType type);
-	OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
 				       OmDataWrapperPtr data);
 

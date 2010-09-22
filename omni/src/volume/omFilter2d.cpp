@@ -3,8 +3,6 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/viewGroup/omViewGroupState.h"
-#include "view2d/omCachingThreadedCachingTile.h"
-#include "view2d/omThreadedCachingTile.h"
 #include "view2d/omView2d.h"
 #include "volume/omDrawOptions.h"
 #include "volume/omFilter2d.h"
@@ -12,70 +10,33 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
-/////////////////////////////////
-///////
-///////		OmFilter Class
-///////
-
-OmFilter2d::OmFilter2d() {
-	mAlpha = 0.0;
-	mSeg = 1;
-	mChannel = 0;
-}
+OmFilter2d::OmFilter2d()
+	: mAlpha(0.0)
+	, mChannel(0)
+	, mSeg(1)
+	, vol_(NULL) {}
 
 OmFilter2d::OmFilter2d(OmId omId)
-  : OmManageableObject(omId)
-{
-	//initially transparent.
-	mAlpha = 0.0;
-	mSeg = 1;
-	mChannel = 0;
-}
+	: OmManageableObject(omId)
+	, mAlpha(0.0)
+	, mChannel(0)
+	, mSeg(1)
+	, vol_(NULL) {}
 
-void OmFilter2d::SetAlpha (double alpha)
-{
+void OmFilter2d::SetAlpha(const double alpha){
 	mAlpha = alpha;
 }
 
-double OmFilter2d::GetAlpha ()
-{
+double OmFilter2d::GetAlpha(){
 	return mAlpha;
 }
 
-OmThreadedCachingTile * OmFilter2d::GetCache (ViewType viewtype, OmViewGroupState * vgs)
-{
-	OmCachingThreadedCachingTile *fastCache = NULL;
-	if (OmProject::IsSegmentationValid(mSeg)) {
-		vgs->SetSegmentation(mSeg);
-		fastCache = new OmCachingThreadedCachingTile (viewtype, SEGMENTATION, mSeg, &OmProject::GetSegmentation(mSeg), NULL, vgs);
-	} else if (OmProject::IsChannelValid(mChannel)) {
-		vgs->SetChannel(mChannel);
-		fastCache = new OmCachingThreadedCachingTile (viewtype, CHANNEL, mChannel, &OmProject::GetChannel(mChannel), NULL, vgs);
-	}
-
-	if (fastCache) {
-		mCache = fastCache->mCache;
-		if (fastCache->mDelete) {
-			delete fastCache;
-		}
-	} else {
-		return NULL;
-	}
-
-	return mCache;
-}
-
-OmId OmFilter2d::GetSegmentation () {
+OmId OmFilter2d::GetSegmentation() {
 	return mSeg;
 }
 
-void OmFilter2d::SetSegmentation (OmId id)
+void OmFilter2d::SetSegmentation(const OmId id)
 {
-
-	if (mSeg != id || 0 == id) {
-		mCache = NULL;
-	}
-
 	if(OmProject::IsSegmentationValid(id)){
 		mSeg = id;
 	} else{
@@ -83,20 +44,31 @@ void OmFilter2d::SetSegmentation (OmId id)
 	}
 }
 
-OmId OmFilter2d::GetChannel ()
-{
+OmId OmFilter2d::GetChannel(){
 	return mChannel;
 }
 
-void OmFilter2d::SetChannel (OmId id)
+void OmFilter2d::SetChannel(const OmId id)
 {
-	if (mChannel != id) {
-		mCache = NULL;
-	}
-
 	if(OmProject::IsChannelValid(id)){
 		mChannel = id;
 	} else{
 		mChannel = 0;
 	}
+}
+
+bool OmFilter2d::setupVol()
+{
+	if (OmProject::IsSegmentationValid(mSeg)) {
+		vol_ = &OmProject::GetSegmentation(mSeg);
+		return true;
+
+	}
+
+	if (OmProject::IsChannelValid(mChannel)) {
+		vol_ = &OmProject::GetChannel(mChannel);
+		return true;
+	}
+
+	return false;
 }

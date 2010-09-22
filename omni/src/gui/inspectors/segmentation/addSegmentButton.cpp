@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"

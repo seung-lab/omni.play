@@ -2,7 +2,6 @@
 #define MST_VIEWER_HPP
 
 #include <QtGui>
-#include "utility/dataWrappers.h"
 
 class MstViewerImpl : public QTableWidget {
 public:

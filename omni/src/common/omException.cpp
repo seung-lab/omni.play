@@ -14,7 +14,7 @@ OmException::OmException(const std::string & name, OmExceptType type,
 	, mType(type)
 	, mMessage(msg)
 {
-	printf("OmException: %s\n", msg.c_str() );
+	printf("\nOmException: %s\n\n", msg.c_str() );
 }
 
 QString OmException::GetName()

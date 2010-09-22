@@ -126,7 +126,6 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 		}
         }
 
-	timer.stop();
 	printf("done (%f secs)\n", timer.s_elapsed() );
 }
 

@@ -77,12 +77,6 @@ void OmHdf5::allocateChunkedDataset( const OmDataPath & path,
 	hdf5_->allocateChunkedDataset( path, dataDims, chunkDims, type);
 }
 
-OmDataWrapperPtr OmHdf5::readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent)
-{
-	zi::Guard g(fileLock);
-	return hdf5_->readChunkNotOnBoundary( path, dataExtent);
-}
-
 OmDataWrapperPtr OmHdf5::readDataset( const OmDataPath & path, int* size)
 {
 	zi::Guard g(fileLock);

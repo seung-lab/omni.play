@@ -5,12 +5,11 @@
 
 OmVolume::OmVolume()
 {
-	//debug("genone","OmVolume::OmVolume()");
-        mNormToSpaceMat = Matrix4 < float >::IDENTITY;
-        mNormToSpaceInvMat = Matrix4 < float >::IDENTITY;
+        mNormToSpaceMat = Matrix4<float>::IDENTITY;
+        mNormToSpaceInvMat = Matrix4<float>::IDENTITY;
 
-        mSpaceToUserMat = Matrix4 < float >::IDENTITY;
-        mSpaceToUserInvMat = Matrix4 < float >::IDENTITY;
+        mSpaceToUserMat = Matrix4<float>::IDENTITY;
+        mSpaceToUserInvMat = Matrix4<float>::IDENTITY;
 
         //defaults
         mDataResolution = Vector3f::ONE;
@@ -23,21 +22,19 @@ OmVolume::OmVolume()
 
 OmVolume::~OmVolume()
 {
-	//debug("genone","OmVolume::~OmVolume()");
 }
 
 /////////////////////////////////
 ///////          Transform Methods
 
-Vector3 < float > OmVolume::GetScale()
+Vector3f OmVolume::GetScale()
 {
-	return Vector3 < float >(
-	       mNormToSpaceMat.m00,
-	       mNormToSpaceMat.m11,
-	       mNormToSpaceMat.m22);
+	return Vector3f(mNormToSpaceMat.m00,
+			mNormToSpaceMat.m11,
+			mNormToSpaceMat.m22);
 }
 
-bool OmVolume::SetScale(const Vector3 < float >&scale)
+bool OmVolume::SetScale(const Vector3f &scale)
 {
 	//set scale
 	mNormToSpaceMat.m[0][0] = scale.x;
@@ -48,14 +45,14 @@ bool OmVolume::SetScale(const Vector3 < float >&scale)
 	return mNormToSpaceMat.getInverse(mNormToSpaceInvMat);
 }
 
-Vector3 < float > OmVolume::GetUserScale()
+Vector3f  OmVolume::GetUserScale()
 {
-	return Vector3 < float >(mSpaceToUserMat.m00,
-				 mSpaceToUserMat.m11,
-				 mSpaceToUserMat.m22);
+	return Vector3f(mSpaceToUserMat.m00,
+			mSpaceToUserMat.m11,
+			mSpaceToUserMat.m22);
 }
 
-bool OmVolume::SetUserScale(const Vector3 < float >&scale)
+bool OmVolume::SetUserScale(const Vector3f &scale)
 {
 	//set scale
 	mSpaceToUserMat.m[0][0] = scale.x;
@@ -108,9 +105,8 @@ SpaceBbox OmVolume::NormToSpaceBbox(const NormBbox & normBbox)
  */
 NormCoord OmVolume::DataToNormCoord(const DataCoord & data, bool centered)
 {
-	const DataBbox & extent = GetDataExtent();
-	Vector3 < float >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
-	Vector3 < float >offset = centered ? Vector3 < float >(0.5f, 0.5f, 0.5f) : Vector3 < float >::ZERO;
+	Vector3f scale = mDataExtent.getUnitDimensions();
+	Vector3f offset = centered ? Vector3f (0.5f, 0.5f, 0.5f) : Vector3f ::ZERO;
 	return NormCoord((offset + data) / scale);
 }
 
@@ -119,8 +115,7 @@ NormCoord OmVolume::DataToNormCoord(const DataCoord & data, bool centered)
  */
 DataCoord OmVolume::NormToDataCoord(const NormCoord & norm)
 {
-	const DataBbox & extent = GetDataExtent();
-	Vector3 < int >scale = extent.getMax() - extent.getMin() + Vector3 < int >::ONE;
+	const Vector3i scale = mDataExtent.getUnitDimensions();
 	return DataCoord(floor(norm.x * scale.x), floor(norm.y * scale.y), floor(norm.z * scale.z));
 }
 
@@ -130,7 +125,7 @@ DataCoord OmVolume::NormToDataCoord(const NormCoord & norm)
 NormBbox OmVolume::DataToNormBbox(const DataBbox & dataBbox)
 {
 	return NormBbox(DataToNormCoord(dataBbox.getMin(), false),
-			DataToNormCoord(dataBbox.getMax() + Vector3 < int >::ONE, false));
+			DataToNormCoord(dataBbox.getMax() + Vector3i ::ONE, false));
 }
 
 /**
@@ -138,12 +133,11 @@ NormBbox OmVolume::DataToNormBbox(const DataBbox & dataBbox)
  */
 DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
 {
-	const DataBbox & extent = GetDataExtent();
-	Vector3 < float >normalized_pixel_dim =
-	    Vector3 < float >::ONE / (extent.getMax() - extent.getMin() + Vector3 < float >::ONE);
+	const Vector3f normalized_pixel_dim =
+		Vector3f::ONE / mDataExtent.getUnitDimensions();
 
-	NormCoord extent_min = normBbox.getMin() + normalized_pixel_dim * 0.5f;
-	NormCoord extent_max = normBbox.getMax() - normalized_pixel_dim * 0.5f;
+	const NormCoord extent_min = normBbox.getMin() + normalized_pixel_dim * 0.5f;
+	const NormCoord extent_max = normBbox.getMax() - normalized_pixel_dim * 0.5f;
 
 	return DataBbox(NormToDataCoord(extent_min), NormToDataCoord(extent_max));
 }
@@ -151,7 +145,7 @@ DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
 /////////////////////////////////
 ///////          Data Properties
 
-const DataBbox & OmVolume::GetDataExtent()
+const DataBbox& OmVolume::GetDataExtent()
 {
 	return mDataExtent;
 }
@@ -165,7 +159,7 @@ void OmVolume::SetDataExtent(const DataBbox & extent)
 
 Vector3i OmVolume::GetDataDimensions()
 {
-	return GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3i::ONE;
+	return mDataExtent.getUnitDimensions();
 }
 
 void OmVolume::SetDataDimensions(const Vector3i & dim)
@@ -188,7 +182,7 @@ void OmVolume::SetDataResolution(const Vector3f & res)
 bool OmVolume::Update()
 {
 	//update scale
-	Vector3i data_dims = GetDataExtent().getMax() - GetDataExtent().getMin() + Vector3 < int >::ONE;
+	const Vector3i data_dims = mDataExtent.getUnitDimensions();
 	SetStretchValues();
 	return SetScale(mDataResolution * data_dims);
 }
@@ -203,29 +197,23 @@ void OmVolume::SetChunkDimension(int dim)
 	mChunkDim = dim;
 }
 
-Vector2f OmVolume::GetStretchValues(ViewType plane)
+Vector2f OmVolume::GetStretchValues(const ViewType plane)
 {
-	Vector3f stretch =mDataStretchValues;
-	Vector2f ret;
-
 	switch(plane){
 	case XY_VIEW:
-		ret = Vector2f(stretch.x,stretch.y);
-		break;
+		return Vector2f(mDataStretchValues.x, mDataStretchValues.y);
 	case YZ_VIEW:
-		ret = Vector2f(stretch.z,stretch.y);
-		break;
+		return Vector2f(mDataStretchValues.z, mDataStretchValues.y);
 	case XZ_VIEW:
-		ret = Vector2f(stretch.x,stretch.z);
-		break;
+	 	return Vector2f(mDataStretchValues.x, mDataStretchValues.z);
 	}
 
-	return ret;
+	throw OmArgException("invalid type");
 }
 
 void OmVolume::SetStretchValues()
 {
-	Vector3f res = mDataResolution;
+	const Vector3f res = mDataResolution;
 	if ((res.x<=res.y)&&(res.x<=res.z)){
 		mDataStretchValues.x = 1.0;
 		mDataStretchValues.y = res.y/res.x;
@@ -237,7 +225,7 @@ void OmVolume::SetStretchValues()
 			mDataStretchValues.z = res.z/res.y;
 		} else {
 			mDataStretchValues.x = res.x/res.z;
-			mDataStretchValues.y = res.y/res.z;	
+			mDataStretchValues.y = res.y/res.z;
 			mDataStretchValues.z = 1.0;
 		}
 	}

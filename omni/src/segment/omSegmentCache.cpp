@@ -7,9 +7,6 @@
 #include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
 
-#include <QMutexLocker>
-#include <vtkImageData.h>
-
 OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
 	, mImpl(new OmSegmentCacheImpl(segmentation))
@@ -32,108 +29,108 @@ quint32 OmSegmentCache::getPageSize()
 
 void OmSegmentCache::turnBatchModeOn( const bool batchMode )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->turnBatchModeOn( batchMode );
 }
 OmSegment* OmSegmentCache::AddSegment()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->AddSegment();
 }
 
 OmSegment* OmSegmentCache::AddSegment(OmSegID value)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->AddSegment(value);
 }
 
 OmSegment* OmSegmentCache::GetOrAddSegment(const OmSegID val)
 {
-	QMutexLocker locker(&mMutex);
+	zi::Guard g(mMutex);
 	return mImpl->GetOrAddSegment(val);
 }
 
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->isValueAlreadyMappedToSegment(seg);
 }
 
 OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->GetSegmentFromValue( value );
 }
 
 OmSegID OmSegmentCache::GetNumSegments()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->GetNumSegments();
 }
 
 OmSegID OmSegmentCache::GetNumTopSegments()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->GetNumTopSegments();
 }
 
 bool OmSegmentCache::AreSegmentsSelected()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->AreSegmentsSelected();
 }
 
 quint32 OmSegmentCache::numberOfSelectedSegments()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->numberOfSelectedSegments();
 }
 
 OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIds()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->GetSelectedSegmentIdsRef();
 }
 
 OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIds()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->GetEnabledSegmentIdsRef();
 }
 
 void OmSegmentCache::SetAllEnabled(bool enabled)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->SetAllEnabled(enabled);
 }
 
 void OmSegmentCache::SetAllSelected(bool selected)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->SetAllSelected(selected);
 }
 
 bool OmSegmentCache::isSegmentEnabled( OmSegID segID )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->isSegmentEnabled( segID );
 }
 
 bool OmSegmentCache::IsSegmentSelected( OmSegID segID )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->isSegmentSelected( segID );
 }
 
 bool OmSegmentCache::IsSegmentSelected( OmSegment * seg )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->isSegmentSelected( seg );
 }
 
 void OmSegmentCache::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->setSegmentEnabled( segID, isEnabled );
 }
 
@@ -141,138 +138,139 @@ void OmSegmentCache::setSegmentSelected( OmSegID segID,
 					 const bool isSelected,
 					 const bool addToRecentList)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->setSegmentSelected( segID, isSelected, addToRecentList );
 }
 
 void OmSegmentCache::setSegmentName( OmSegID segID, QString name )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->setSegmentName(segID, name);
 }
 
 QString OmSegmentCache::getSegmentName( OmSegID segID )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->getSegmentName( segID );
 }
 
 void OmSegmentCache::setSegmentNote( OmSegID segID, QString note )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->setSegmentNote( segID, note );
 }
 
 QString OmSegmentCache::getSegmentNote( OmSegID segID )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->getSegmentNote( segID );
 }
 
 void OmSegmentCache::addToDirtySegmentList( OmSegment* seg)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->addToDirtySegmentList( seg);
 }
 
 void OmSegmentCache::flushDirtySegments()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->flushDirtySegments();
 }
 
-OmSegment * OmSegmentCache::findRoot( OmSegment * segment )
+OmSegment* OmSegmentCache::findRoot(OmSegment * segment)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->findRoot( segment );
 }
 
-OmSegment * OmSegmentCache::findRoot( const OmSegID segID )
+OmSegment* OmSegmentCache::findRoot(const OmSegID segID)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->findRoot( segID );
 }
 
-OmSegID OmSegmentCache::findRootID( const OmSegID segID )
+OmSegID OmSegmentCache::findRootID(const OmSegID segID)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->findRootID( segID );
 }
 
-OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1,
+						    OmSegment * seg2)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->findClosestCommonEdge(seg1, seg2);
 }
 
 void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->JoinTheseSegments(segmentList);
 }
 
 void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	mImpl->UnJoinTheseSegments( segmentList);
 }
 
 quint32 OmSegmentCache::getMaxValue()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->getMaxValue();
 }
 
 quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->getSegmentListSize(type);
 }
 
 void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
 					     const bool addToRecentList)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
 OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);
 }
 
 void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->setAsValidated(segment, valid);
 }
 
 std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge( const OmSegmentEdge & e )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->JoinFromUserAction( e );
 }
 
 OmSegmentEdge OmSegmentCache::SplitEdge( const OmSegmentEdge & e )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->SplitEdgeUserAction( e );
 }
 
 void OmSegmentCache::refreshTree()
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->refreshTree();
 }
 
 quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
         return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
 }
 
 bool OmSegmentCache::AreSegmentsEnabled(){
-	QMutexLocker locker( &mMutex );
+	zi::Guard g(mMutex);
 	return mImpl->AreSegmentsEnabled();
 }

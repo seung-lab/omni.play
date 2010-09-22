@@ -108,27 +108,8 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
-
-	OmId segmentationID, segmentID;
-	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
-		debug("split", "segmentID=%i\n", segmentID);
-		debug("split", "segment_id=%i\n", segment_id);
-		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
-		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segment_id);
-		if(NULL == seg1 || NULL == seg2) {
-			return;
-		}
-
-		OmSegmentSplitAction::RunIfSplittable(seg1, seg2);
-
-		mViewGroupState->SetSplitMode(false);
-	} else {
-		debug("split", "segment_id=%i\n", segment_id);
-		if (segment_id && segmentation.GetSegmentCache()->GetSegment(segment_id)) {
-			mViewGroupState->SetSplitMode(segmentationID, segment_id);
-		}
-	}
+	OmSegmentSplitAction::DoFindAndSplitSegment(SegmentDataWrapper(segmentation_id, segment_id),
+												mViewGroupState);
 }
 
 /////////////////////////////////

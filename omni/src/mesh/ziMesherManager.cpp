@@ -1,5 +1,6 @@
 #include "common/omGl.h"
 
+#include "omMipMeshManager.h"
 #include <iostream>
 #include "ziMesherManager.h"
 #include <zi/mutex>

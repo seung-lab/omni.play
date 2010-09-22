@@ -2,7 +2,6 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 
@@ -10,6 +9,7 @@
 
 class OmSegmentCache;
 class OmSegmentation;
+template <typename T> class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
  public:

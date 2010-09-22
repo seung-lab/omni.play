@@ -2,7 +2,6 @@
 #define ZIMESHERMANAGER_H_
 
 #include "common/omGl.h"
-#include "omMipMeshManager.h"
 #include "volume/omMipChunkCoord.h"
 #include <zi/threads>
 #include "zi/vector/Vec.hpp"
@@ -57,8 +56,8 @@ public:
 
 private:
   int remainingDeliveries_;
-  zi::Mutex   mutex_;
-  OmMipChunkCoord      coor_;
+  zi::Mutex mutex_;
+  OmMipChunkCoord coor_;
   boost::shared_ptr<std::map<int, boost::shared_ptr<StrippedMesh> > > strippeds_;
 };
 

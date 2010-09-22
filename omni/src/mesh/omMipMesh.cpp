@@ -1,3 +1,4 @@
+#include "system/cache/omMeshCache.h"
 #include "common/omDebug.h"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
@@ -11,8 +12,8 @@
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 
 #include <QFile>
 
@@ -39,8 +40,10 @@ extern GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
 #define glGetBufferParameterivARB glGetBufferParameterivARBFunction;
 #endif
 
-OmMipMesh::OmMipMesh(const OmMipMeshCoord & id, OmMipMeshManager * pMipMeshManager, OmMeshCache * cache)
-  : OmCacheableBase(cache)
+OmMipMesh::OmMipMesh(const OmMipMeshCoord& id,
+		     OmMipMeshManager* pMipMeshManager,
+		     OmMeshCache* cache)
+  : cache_(cache)
   , mpMipMeshManager(pMipMeshManager)
   , mMeshCoordinate(id)
 {
@@ -99,11 +102,11 @@ void OmMipMesh::Load()
 void OmMipMesh::doLoad()
 {
   OmDataPath fpath( mPath + "metamesh.dat" );
-  if( !OmProjectData::GetProjectDataReader()->dataset_exists( fpath ) ){
+  if( !OmProjectData::GetProjectIDataReader()->dataset_exists( fpath ) ){
     return;
   }
 
-  OmDataWrapperPtr result = OmProjectData::GetProjectDataReader()->readDataset(fpath);
+  OmDataWrapperPtr result = OmProjectData::GetProjectIDataReader()->readDataset(fpath);
 
   unsigned char noData = *(result->getPtr<unsigned char>());
 
@@ -118,29 +121,29 @@ void OmMipMesh::doLoad()
 
   //read triangles offset/size data  (uint32_t *)
   fpath.setPath( mPath + "trianoffset.dat" );
-  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
+  mpTrianOffsetSizeDataWrap = OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
   mTrianCount = size / (2 * sizeof(uint32_t));
 
   //read strip offset/size data  (uint32_t *)
   fpath.setPath( mPath + "stripoffset.dat" );
-  mpStripOffsetSizeDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
+  mpStripOffsetSizeDataWrap = OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
   mStripCount = size / (2 * sizeof(uint32_t));
 
   //read vertex offset data (GLuint *)
   fpath.setPath( mPath + "vertexoffset.dat" );
-  mpVertexIndexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
+  mpVertexIndexDataWrap = OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
   mVertexIndexCount = size / sizeof(GLuint);
 
   //read strip offset/size data (GLfloat *)
   fpath.setPath( mPath + "vertex.dat" );
-  mpVertexDataWrap = OmProjectData::GetProjectDataReader()->readDataset(fpath, &size);
+  mpVertexDataWrap = OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
   mVertexCount = size / (6 * sizeof(GLfloat));
 
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
 
   //update cache
-  UpdateSize(vertex_data_size + vertex_index_data_size);
+  cache_->UpdateSize(vertex_data_size + vertex_index_data_size);
 }
 
 void OmMipMesh::Save()
@@ -152,7 +155,7 @@ void OmMipMesh::Save()
 								   mSegmentationID);
     hdf5File = OmDataLayer::getWriter(QString::fromStdString(path), false);
   } else {
-    hdf5File = OmProjectData::GetDataWriter();
+    hdf5File = OmProjectData::GetIDataWriter();
   }
 
   int size;
@@ -255,7 +258,7 @@ void OmMipMesh::DeleteVbo()
   //update cache
   int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
   int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
-  UpdateSize(-(vertex_data_size + vertex_index_data_size));
+  cache_->UpdateSize(-(vertex_data_size + vertex_index_data_size));
 
   mVertexDataVboId = NULL_VBO_ID;
   mVertexIndexDataVboId = NULL_VBO_ID;

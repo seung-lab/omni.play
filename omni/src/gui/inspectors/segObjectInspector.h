@@ -2,22 +2,25 @@
 #define SEGOBJECTINSPECTOR_H
 
 #include <QtGui>
-#include <QWidget> 
-#include "utility/dataWrappers.h"
+#include <QWidget>
+
+#include <boost/shared_ptr.hpp>
+
+class SegmentDataWrapper;
 
 class SegObjectInspector : public QWidget
-{ 
-    Q_OBJECT 
-	
-public: 
+{
+    Q_OBJECT
+
+public:
 	SegObjectInspector(SegmentDataWrapper incoming_sdw, QWidget* parent);
-	
-private slots: 
+
+private slots:
 	void setSegObjColor();
 	void nameEditChanged();
 
 private:
-	SegmentDataWrapper sdw;
+	boost::shared_ptr<SegmentDataWrapper> sdw;
 
 	QColor current_color;
 
@@ -34,5 +37,5 @@ private:
 	QGroupBox* makeSourcesBox();
 	QGroupBox* makeNotesBox();
 	void set_initial_values();
-}; 
+};
 #endif

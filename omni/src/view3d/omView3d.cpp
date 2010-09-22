@@ -268,28 +268,28 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
 	switch (event->GetPreference()) {
 
-	case OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL:
-	case OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL:
-	case OM_PREF_VIEW3D_SHOW_INFO_BOOL:
-	case OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL:
+	case OM::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL:
+	case OM::PREF_VIEW3D_SHOW_VIEWBOX_BOOL:
+	case OM::PREF_VIEW3D_SHOW_INFO_BOOL:
+	case OM::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL:
 		UpdateEnabledWidgets();
 		break;
 
-	case OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F:
+	case OM::PREF_VIEW3D_BACKGROUND_COLOR_V3F:
 		SetBackgroundColor();
 		break;
 
-	case OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL:
+	case OM::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL:
 		SetBlending();
 		break;
 
-	case OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT:
-	case OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT:
-	case OM_PREF_VIEW3D_CAMERA_FOV_FLT:
+	case OM::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT:
+	case OM::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT:
+	case OM::PREF_VIEW3D_CAMERA_FOV_FLT:
 		//SetCameraPerspective();
 		break;
 
-	case OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT:
+	case OM::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT:
 		break;
 
 	default:
@@ -402,16 +402,16 @@ bool OmView3d::UnprojectPoint(Vector2i point2d, Vector3f & point3d, float z_scal
 void OmView3d::UpdateEnabledWidgets()
 {
 	//set widgets enabled
-	bool highlight_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
+	bool highlight_widget_state = OmPreferences::GetBoolean(OM::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_SELECTION]->enabled = highlight_widget_state;
 
-	bool viewbox_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
+	bool viewbox_widget_state = OmPreferences::GetBoolean(OM::PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_VIEWBOX]->enabled = viewbox_widget_state;
 
-	bool info_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_INFO_BOOL);
+	bool info_widget_state = OmPreferences::GetBoolean(OM::PREF_VIEW3D_SHOW_INFO_BOOL);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO]->enabled = info_widget_state;
 
-	bool extent_widget = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
+	bool extent_widget = OmPreferences::GetBoolean(OM::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_CHUNK_EXTENT]->enabled = extent_widget;
 }
 
@@ -451,7 +451,7 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 
 			//draw unselected (i.e. enabled) segments
 			//if transparent unselected, disable writing to depth buffer
-			if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+			if (OmPreferences::GetBoolean(OM::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 				glDepthMask(GL_FALSE);
 			}
 
@@ -465,12 +465,8 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 		if (cullerOptions & DRAWOP_RENDERMODE_SELECTION) {
 			DrawVolumes(cullerOptions);
 		}
-
-		//draw edit selection
-		DrawEditSelectionVoxels();
 	}
 
-	//debug("FIXME", << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
 	if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}
@@ -499,36 +495,20 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 	}
 }
 
-void OmView3d::DrawEditSelectionVoxels()
-{
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-	//offset selection voxels to be on top
-	glPolygonOffset(-1.0f, -1.0f);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-
-	//check if there are any voxels to draw
-	if (OmSegmentEditor::GetSelectedVoxels().size()) {
-		//OmVolume::DrawEditSelectionVoxels();
-	}
-
-	glPopAttrib();
-}
-
 /////////////////////////////////
 ///////          Draw Settings
 
 void OmView3d::SetBackgroundColor()
 {
-	Vector3f bg_color = OmPreferences::GetVector3f(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F);
+	Vector3f bg_color = OmPreferences::GetVector3f(OM::PREF_VIEW3D_BACKGROUND_COLOR_V3F);
 	glClearColor(bg_color.r, bg_color.g, bg_color.b, 1);
 }
 
 void OmView3d::SetCameraPerspective()
 {
-	float mynear = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
-	float myfar = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
-	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
+	float mynear = OmPreferences::GetFloat(OM::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
+	float myfar = OmPreferences::GetFloat(OM::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
+	float fov = OmPreferences::GetFloat(OM::PREF_VIEW3D_CAMERA_FOV_FLT);
 	myfar = 10000000.0;
 	Vector4 < float >perspective(fov, (float)(400) / 300, mynear, myfar);
 
@@ -538,7 +518,7 @@ void OmView3d::SetCameraPerspective()
 
 void OmView3d::SetBlending()
 {
-	if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+	if (OmPreferences::GetBoolean(OM::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 		glEnable(GL_BLEND);
 	} else {
 		glDisable(GL_BLEND);

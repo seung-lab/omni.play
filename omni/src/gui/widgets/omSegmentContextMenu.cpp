@@ -6,15 +6,13 @@
 #include "segment/actions/segment/omSegmentSelectAction.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
-#include "system/events/omViewEvent.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "system/viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-#include "system/events/omSegmentEvent.h"
+#include "system/omEvents.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -156,8 +154,8 @@ void OmSegmentContextMenu::randomizeColor()
         OmSegment * r_segment = r_segmentation.GetSegmentCache()->findRoot(mSegmentId);
 
 	r_segment->reRandomizeColor();
-	OmCacheManager::Freshen(true);
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+	OmCacheManager::TouchFresheness();
+	OmEvents::Redraw();
 }
 
 void OmSegmentContextMenu::addGroup()
@@ -168,7 +166,7 @@ void OmSegmentContextMenu::addGroup()
                 OmSegIDsSet set;
 		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, VALIDROOT, QString("Valid"));
-                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+                OmEvents::SegmentModified();
         }
 }
 
@@ -180,7 +178,7 @@ void OmSegmentContextMenu::deleteGroup()
                 OmSegIDsSet set;
                 set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
                 seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
-                OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+                OmEvents::SegmentModified();
         }
 }
 

@@ -34,6 +34,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	std::string GetName();
 	std::string GetDirectoryPath();
 	void loadVolData();
+	ObjectType getVolumeType(){ return SEGMENTATION; }
+	OmId getID(){ return GetId(); }
+	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 
 	void CloseDownThreads();
 
@@ -78,6 +81,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	bool ImportSourceData(OmDataPath & dataset);
 
 private:
+	OmMipVolumeCache *const mDataCache;
+
 	void KillCacheThreads();
 
 	boost::shared_ptr<OmVolumeData> mVolData;
@@ -87,6 +92,8 @@ private:
 	OmGroups mGroups;
 
 	boost::shared_ptr<OmMST> mst_;
+
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
 
 	friend class OmBuildSegmentation;
 	template <class T> friend class OmVolumeImporter;

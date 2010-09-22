@@ -1,10 +1,14 @@
+#include "omMipMeshManager.h"
 #include "ziMesher.h"
 #include "ziMesherManager.h"
-#include "boost/shared_ptr.hpp"
+
 #include "zi/base/base.h"
-#include <map>
-#include <zi/system>
 #include "ziMeshingChunk.h"
+
+#include <map>
+#include "boost/shared_ptr.hpp"
+
+#include <zi/system>
 #include <zi/threads>
 #include <zi/system>
 

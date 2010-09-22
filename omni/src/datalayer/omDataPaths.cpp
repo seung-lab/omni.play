@@ -1,3 +1,5 @@
+#include "common/omCommon.h"
+#include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/omMipMeshCoord.h"

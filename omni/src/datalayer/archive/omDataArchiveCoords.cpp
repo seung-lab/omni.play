@@ -1,7 +1,7 @@
 #include "common/omCommon.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveVmml.h"
-#include "view2d/omTileCoord.h"
+#include "tiles/omTileCoord.h"
 #include "project/omProject.h"
 #include "system/omProjectData.h"
 #include "mesh/omMipMeshCoord.h"
@@ -36,16 +36,3 @@ QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c )
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmTileCoord & c )
-{
-	out << c.Level;
-	out << c.Coordinate;
-	return out;
-}
-
-QDataStream &operator>>(QDataStream & in, OmTileCoord & c )
-{
-	in >> c.Level;
-	in >> c.Coordinate;
-	return in;
-}

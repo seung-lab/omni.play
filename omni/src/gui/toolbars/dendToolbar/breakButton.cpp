@@ -6,15 +6,15 @@
 
 BreakButton::BreakButton(GraphTools * d)
 	: OmButton<GraphTools>( d,
-				 "Break", 
-				 "Shatter object mode", 
+				 "Break",
+				 "Shatter object mode",
 				 true)
 {
 }
 
 void BreakButton::doAction()
 {
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 	mParent->getViewGroupState()->ToggleShatterMode();
 
 	mParent->updateGui();

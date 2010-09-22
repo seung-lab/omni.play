@@ -2,8 +2,9 @@
 #define OM_SEGMENT_POINTERS_H
 
 #include "segment/omSegment.h"
+#include <deque>
 
-typedef std::vector<OmSegment*> OmSegPtrList;
+typedef std::deque<OmSegment*> OmSegPtrList;
 
 class OmSegPtrListWithPage {
  public:

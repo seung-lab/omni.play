@@ -1,37 +1,13 @@
 #include "common/omDebug.h"
-#include "common/omException.h"
-#include "common/omVtk.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataReader.h"
+#include "datalayer/omIDataReader.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 
-#include <QFile>
-#include <QFileInfo>
-#include <QImage>
-
-#include <vtk_tiff.h>
-#include <vtkTIFFReader.h>
-#include <vtkJPEGReader.h>
-#include <vtkPNGReader.h>
-#include <vtkImageReader2.h>
-#include <vtkTIFFWriter.h>
-#include <vtkJPEGWriter.h>
-#include <vtkPNGWriter.h>
-#include <vtkImageWriter.h>
-#include <vtkImageData.h>
-#include <vtkExtractVOI.h>
-#include <vtkImageConstantPad.h>
-#include <vtkImageFlip.h>
-#include <vtkImageTranslateExtent.h>
-#include <vtkImageAppend.h>
-#include <vtkImageCast.h>
-#include <vtkStringArray.h>
-
-Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
+Vector3i OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
@@ -42,7 +18,7 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 	hdf5reader->open();
 
 	//get dims of image
-	Vector3 < int >dims;
+	Vector3i dims;
 	if(hdf5reader->dataset_exists(dataset)){
 		dims = hdf5reader->getChunkedDatasetDims( dataset );
 	} else {
@@ -54,198 +30,4 @@ Vector3 < int > OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceF
 	hdf5reader->close();
 
 	return dims;
-}
-
-/////////////////////////////////
-///////          vtkImageData Utility Functions
-void OmImageDataIo::getVtkExtentFromAxisAlignedBoundingBox(const AxisAlignedBoundingBox < int >&aabb, int extent[])
-{
-	extent[0] = aabb.getMin().x;
-	extent[1] = aabb.getMax().x;
-	extent[2] = aabb.getMin().y;
-	extent[3] = aabb.getMax().y;
-	extent[4] = aabb.getMin().z;
-	extent[5] = aabb.getMax().z;
-}
-
-void OmImageDataIo::setAxisAlignedBoundingBoxFromVtkExtent(const int extent[], AxisAlignedBoundingBox < int >&aabb)
-{
-	aabb.setMin(Vector3 < int >(extent[0], extent[2], extent[4]));
-	aabb.setMax(Vector3 < int >(extent[1], extent[3], extent[5]));
-	aabb.setEmpty(false);
-}
-
-void OmImageDataIo::clearImageData(vtkImageData * data)
-{
-	int dims[3];
-	data->GetDimensions(dims);
-
-	int bytes_per_sample = data->GetScalarSize();
-	int samples_per_voxel = data->GetNumberOfScalarComponents();
-
-	void *scalar_pointer = data->GetScalarPointer();
-
-	memset(scalar_pointer, 0, bytes_per_sample * samples_per_voxel * dims[0] * dims[1] * dims[2]);
-}
-
-OmDataWrapperPtr OmImageDataIo::allocImageData(Vector3 < int >dims, OmDataWrapperPtr old)
-{
-	//alloc data
-	vtkImageData *data = vtkImageData::New();
-	debug ("meshercrash", "allocImageData: %p, %i\n", data, data->GetReferenceCount());
-	data->SetDimensions(dims.x, dims.y, dims.z);
-	data->SetScalarType(bytesToVtkScalarType(old->getSizeof()));
-	data->SetNumberOfScalarComponents(1);
-	data->AllocateScalars();
-	data->Update();
-
-	data->ReleaseDataFlagOn();
-
-	return old->newWrapper(data, VTK);
-}
-
-OmDataWrapperPtr OmImageDataIo::createBlankImageData(Vector3i dims,
-						     OmDataWrapperPtr old,
-						     char value)
-{
-	//alloc data
-	OmDataWrapperPtr data = allocImageData(dims, old);
-
-	//clear data
-	void *scalar_pointer = data->getVTKptr()->GetScalarPointer();
-	memset(scalar_pointer, value, old->getSizeof() * dims.x * dims.y * dims.z);
-
-	return data;
-}
-
-/*
- *	Returns pointer to array of copied data from specified source and bbox.
- */
-void * OmImageDataIo::copyImageData(OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
-{
-	vtkImageData * srcData = srcInData->getVTKptr();
-
-	//get vtk formatted copy extent
-	int src_copy_extent[6];
-	getVtkExtentFromAxisAlignedBoundingBox(srcCopyBbox, src_copy_extent);
-
-	//get vtk formmatted data extent
-	int src_data_extent[6];
-	srcData->GetExtent(src_data_extent);
-
-	//get properties from source
-	int scalar_size = srcData->GetScalarSize();
-	int num_scalar_components = srcData->GetNumberOfScalarComponents();
-	int bytes_per_pixel = scalar_size * num_scalar_components;
-
-	assert((src_copy_extent[1] <= src_data_extent[1]) &&
-	       (src_copy_extent[3] <= src_data_extent[3]) && (src_copy_extent[5] <= src_data_extent[5]));
-
-	//get continuous increment values
-	vtkIdType srcContIncX, srcContIncY, srcContIncZ;
-	srcData->GetContinuousIncrements((int *)src_copy_extent, srcContIncX, srcContIncY, srcContIncZ);
-
-	//get scalar pointers
-	char *src_data_ptr = static_cast < char *>(srcData->GetScalarPointerForExtent(src_copy_extent));
-
-	//alloc output memory
-	const Vector3 < int >copy_bbox_dim = srcCopyBbox.getUnitDimensions();
-	void *p_out_data = malloc(copy_bbox_dim.x * copy_bbox_dim.y * copy_bbox_dim.z * bytes_per_pixel);
-	memset(p_out_data, 0, copy_bbox_dim.x * copy_bbox_dim.y * copy_bbox_dim.z * bytes_per_pixel);
-	char *p_out_data_itr = (char *)p_out_data;
-	assert(p_out_data);
-
-	//loop over all slices, rows, and pixels
-	for (int z = 0; z < copy_bbox_dim.z; z++) {
-		for (int y = 0; y < copy_bbox_dim.y; y++) {
-			for (int x = 0; x < copy_bbox_dim.x; x++) {
-
-				memcpy(p_out_data_itr, src_data_ptr, bytes_per_pixel);
-
-				p_out_data_itr += bytes_per_pixel;
-				src_data_ptr += bytes_per_pixel;
-			}
-
-			//adv continuous inc Y
-			src_data_ptr += srcContIncY * bytes_per_pixel;
-		}
-
-		//adv continuous inc Z
-		src_data_ptr += srcContIncZ * bytes_per_pixel;
-	}
-
-	//return pointer to data
-	return p_out_data;
-}
-
-void OmImageDataIo::copyImageData(OmDataWrapperPtr dstInData, const DataBbox & dstCopyBbox,
-				  OmDataWrapperPtr srcInData, const DataBbox & srcCopyBbox)
-{
-	vtkImageData * dstData = dstInData->getVTKptr();
-	vtkImageData * srcData = srcInData->getVTKptr();
-
-	//get vtk formatted extent
-	int src_copy_extent[6], dst_copy_extent[6];
-	getVtkExtentFromAxisAlignedBoundingBox(srcCopyBbox, src_copy_extent);
-	getVtkExtentFromAxisAlignedBoundingBox(dstCopyBbox, dst_copy_extent);
-
-	int src_data_extent[6], dst_data_extent[6];
-	srcData->GetExtent(src_data_extent);
-	dstData->GetExtent(dst_data_extent);
-
-	//get properties from source
-	int scalar_size = srcData->GetScalarSize();
-	int num_scalar_components = srcData->GetNumberOfScalarComponents();
-	int bytes_per_pixel = scalar_size * num_scalar_components;
-
-	///////check dest matches source properties
-	//check src and dest dims are the same
-	const Vector3 < int >copy_bbox_dim = srcCopyBbox.getMax() - srcCopyBbox.getMin() + Vector3 < int >::ONE;
-	Vector3 < int >dest_copy_bbox_dim = dstCopyBbox.getMax() - dstCopyBbox.getMin() + Vector3 < int >::ONE;
-	assert(copy_bbox_dim == dest_copy_bbox_dim);
-
-	//assert that src and dest can contain copy extent
-	assert((src_copy_extent[1] <= src_data_extent[1]) &&
-	       (src_copy_extent[3] <= src_data_extent[3]) && (src_copy_extent[5] <= src_data_extent[5]));
-	assert((dst_copy_extent[1] <= dst_data_extent[1]) &&
-	       (dst_copy_extent[3] <= dst_data_extent[3]) && (dst_copy_extent[5] <= dst_data_extent[5]));
-
-	//check src and dest have proper scalar type
-	assert(dstData->GetScalarSize() == scalar_size);
-
-	//check component count
-	assert(dstData->GetNumberOfScalarComponents() == num_scalar_components);
-	/////////
-
-	//get continuous increment values
-	vtkIdType srcContIncX, srcContIncY, srcContIncZ;
-	vtkIdType dstContIncX, dstContIncY, dstContIncZ;
-	srcData->GetContinuousIncrements((int *)src_copy_extent, srcContIncX, srcContIncY, srcContIncZ);
-	dstData->GetContinuousIncrements((int *)dst_copy_extent, dstContIncX, dstContIncY, dstContIncZ);
-
-	//get scalar pointers
-	char *src_data_ptr = static_cast < char *>(srcData->GetScalarPointerForExtent(src_copy_extent));
-	assert( src_data_ptr );
-	char *dst_data_ptr = static_cast < char *>(dstData->GetScalarPointerForExtent(dst_copy_extent));
-	assert( dst_data_ptr );
-
-	//loop over all slices, rows, and pixels
-	for (int z = 0; z < copy_bbox_dim.z; z++) {
-		for (int y = 0; y < copy_bbox_dim.y; y++) {
-			for (int x = 0; x < copy_bbox_dim.x; x++) {
-
-				memcpy(dst_data_ptr, src_data_ptr, bytes_per_pixel);
-				src_data_ptr += bytes_per_pixel;
-				dst_data_ptr += bytes_per_pixel;
-			}
-
-			//adv continuous inc Y
-			src_data_ptr += srcContIncY * bytes_per_pixel;
-			dst_data_ptr += dstContIncY * bytes_per_pixel;
-		}
-
-		//adv continuous inc Z
-		src_data_ptr += srcContIncZ * bytes_per_pixel;
-		dst_data_ptr += dstContIncZ * bytes_per_pixel;
-	}
 }

@@ -1,21 +1,46 @@
 #ifndef SORT_HELPERS_H
 #define SORT_HELPERS_H
 
-#include "common/omDebug.h"
 #include <strnatcmp.h>
 #include <QFileInfoList>
 #include <QFileInfo>
 #include <QStringList>
 
-class SortHelpers
-{
- public:
-	static QFileInfoList sortNaturally( QFileInfoList in );
-	static QStringList sortNaturally( QStringList in );
+class SortHelpers {
+public:
+	static QStringList SortNaturally(const QStringList& in)
+	{
+		QStringList retVal = in;
+		qSort(retVal.begin(),
+		      retVal.end(),
+		      NaturalStringCaseInsensitiveCompareLessThan);
+		return retVal;
+	}
 
- private:
-	static bool NaturalStringCaseInsensitiveCompareLessThan( const QString & lhsQ, const QString & rhsQ );
-	static bool NaturalStringCaseInsensitiveCompareLessThanQFile( const QFileInfo & lhsQ, const QFileInfo & rhsQ );
+	static QFileInfoList SortNaturally(const QFileInfoList& in)
+	{
+		QFileInfoList retVal = in;
+		qSort(retVal.begin(),
+		      retVal.end(),
+		      NaturalStringCaseInsensitiveCompareLessThanQFile);
+		return retVal;
+	}
+
+private:
+
+	static bool NaturalStringCaseInsensitiveCompareLessThan(const QString& lhs,
+								const QString& rhs)
+	{
+		return strnatcmp(qPrintable(lhs),
+				 qPrintable(rhs)) < 0;
+	}
+
+	static bool NaturalStringCaseInsensitiveCompareLessThanQFile(const QFileInfo & lhs,
+								     const QFileInfo & rhs)
+	{
+		return NaturalStringCaseInsensitiveCompareLessThan(lhs.fileName(),
+								   rhs.fileName());
+	}
 };
 
 #endif

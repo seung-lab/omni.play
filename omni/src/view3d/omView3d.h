@@ -79,7 +79,6 @@ class OmView3d : public QGLWidget,
 	//draw methods
 	void Draw(OmBitfield option);
 	void DrawVolumes(OmBitfield option);
-	void DrawEditSelectionVoxels();
 	void DrawWidgets();
 	void doTimedDraw();
 	void myUpdate();

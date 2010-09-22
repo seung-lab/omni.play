@@ -1,11 +1,9 @@
+#include "common/omDebug.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
-#include "segment/omSegment.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
-#include "volume/omSegmentation.h"
+#include "system/omEvents.h"
+#include "utility/dataWrappers.h"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 					    const OmSegmentEdge & edge )
@@ -36,7 +34,8 @@ void OmSegmentSplitAction::Action()
 	desc = QString("Split seg %1 from %2")
 		.arg(mEdge.childID)
 		.arg(mEdge.parentID);
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+
+	OmEvents::SegmentModified();
 }
 
 void OmSegmentSplitAction::UndoAction()
@@ -51,7 +50,7 @@ void OmSegmentSplitAction::UndoAction()
 		.arg(mEdge.childID)
 		.arg(mEdge.parentID);
 
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+	OmEvents::SegmentModified();
 }
 
 std::string OmSegmentSplitAction::Description()
@@ -62,4 +61,33 @@ std::string OmSegmentSplitAction::Description()
 void OmSegmentSplitAction::save(const std::string & comment)
 {
 	OmActionLoggerFS::save(this, comment);
+}
+
+void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
+						 OmViewGroupState* vgs)
+{
+	const std::pair<bool, SegmentDataWrapper> splittingAndSDW =
+		vgs->GetSplitMode();
+	const bool amAlreadySplitting = splittingAndSDW.first;
+
+        if(amAlreadySplitting){
+
+		SegmentDataWrapper segmentBeingSplit = splittingAndSDW.second;
+
+                OmSegment* seg1 = segmentBeingSplit.getSegment();
+                OmSegment* seg2 = sdw.getSegment();
+
+		if(NULL == seg1 || NULL == seg2) {
+			return;
+		}
+
+		RunIfSplittable(seg1, seg2);
+
+                vgs->SetSplitMode(false);
+
+        } else { // set segment to be split later...
+                if(sdw.isValid()){
+                        vgs->SetSplitMode(sdw);
+                }
+        }
 }

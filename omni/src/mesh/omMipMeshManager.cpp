@@ -11,7 +11,6 @@
 #include "volume/omMipChunkCoord.h"
 #include "system/cache/omMeshCache.h"
 
-#include <vtkImageData.h>
 #include <QGLContext>
 
 /////////////////////////////////
@@ -46,9 +45,9 @@ void OmMipMeshManager::SetDirectoryPath(const QString & dpath)
 /////////////////////////////////
 ///////          Mesh Accessors
 
-OmMipMesh *OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
+OmMipMeshPtr OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
 {
-	return new OmMipMesh(coord, this, mDataCache);
+	return boost::make_shared<OmMipMesh>(coord, this, mDataCache);
 }
 
 /*

@@ -13,7 +13,4 @@ QDataStream &operator>>(QDataStream & in, OmMipMeshCoord & c );
 QDataStream &operator<<(QDataStream & out, const OmMipChunkCoord & c );
 QDataStream &operator>>(QDataStream & in, OmMipChunkCoord & c );
 
-QDataStream &operator<<(QDataStream & out, const OmTileCoord & c );
-QDataStream &operator>>(QDataStream & in, OmTileCoord & c );
-
 #endif

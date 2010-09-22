@@ -6,6 +6,8 @@
 
 #include <zi/mutex>
 
+class OmSegmentCache;
+
 class OmChunkData {
 public:
 	OmChunkData(OmMipVolume*, OmMipChunk*, const OmMipChunkCoord& coord);
@@ -17,7 +19,7 @@ public:
 
         boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
-	OmImage<uint32_t, 3> getOmImage32Chunk();
+	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
 
 	void copyInTile(const int sliceOffset, uchar* bits);
 	void copyChunkFromMemMapToHDF5();

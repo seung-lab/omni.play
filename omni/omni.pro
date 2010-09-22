@@ -1,10 +1,12 @@
 QT += opengl
 TEMPLATE = app
+CONFIG += qt debug
 
 DEPENDPATH += . \
            include \
            include/vmmlib \
            include/zi_lib \
+           include/zi_lib_v2 \
            include/enum \
            include/enum/enum \
            lib \
@@ -49,7 +51,6 @@ HEADERS += lib/strnatcmp.h \
            src/common/omException.h \
            src/common/omGl.h \
            src/common/omStd.h \
-           src/common/omVtk.h \
            src/datalayer/fs/omMemMappedFileQT.hpp \
            src/datalayer/omIDataVolume.hpp \
            src/datalayer/omMST.h \
@@ -74,9 +75,9 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataLayer.h \
            src/datalayer/omDataPath.h \
            src/datalayer/omDataPaths.h \
-           src/datalayer/omDataReader.h \
+           src/datalayer/omIDataReader.h \
            src/datalayer/omDataWrapper.h \
-           src/datalayer/omDataWriter.h \
+           src/datalayer/omIDataWriter.h \
            src/datalayer/omDummyWriter.h \
            src/gui/mstViewer.hpp \
            src/gui/cacheMonitorDialog.h \
@@ -193,11 +194,11 @@ HEADERS += lib/strnatcmp.h \
            src/system/omBuildChannel.h \
            src/system/omBuildSegmentation.h \
            src/system/omBuildVolumes.h \
+           src/system/cache/omLockedCacheObjects.hpp \
            src/system/cache/omCacheBase.h \
            src/system/cache/omCacheInfo.h \
            src/system/cache/omCacheManager.h \
            src/system/cache/omCacheGroup.h \
-           src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
            src/system/omGroups.h \
@@ -210,28 +211,61 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omThreadedCache.h \
            src/system/cache/omHandleCacheMissThreaded.h \
            src/system/viewGroup/omViewGroupState.h \
+           src/system/viewGroup/omBrushSize.hpp \
+           src/utility/setUtilities.h \
            src/utility/omSmartPtr.hpp \
+           src/utility/omLockedObjects.h \
+           src/utility/omLockedPODs.hpp \
            src/utility/dataWrappers.h \
+           src/utility/channelDataWrapper.hpp \
+           src/utility/filterDataWrapper.hpp \
+           src/utility/segmentDataWrapper.hpp \
+           src/utility/segmentationDataWrapper.hpp \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/omTimer.h \
-           src/utility/setUtilities.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
            src/utility/OmThreadPool.hpp \
            src/utility/omChunkVoxelWalker.hpp \
+<<<<<<< .working
+<<<<<<< .working
            src/view2d/omTileDumper.hpp \
            src/view2d/drawable.h \
-           src/view2d/omCachingThreadedCachingTile.h \
+=======
+>>>>>>> .merge-right.r2603
            src/system/cache/omTileCache.h \
-           src/view2d/omTextureID.h \
-           src/view2d/omThreadedCachingTile.h \
-           src/view2d/omTile.h \
-           src/view2d/omTileCoord.h \
+           src/system/cache/omTileCacheImpl.h \
+=======
+           src/tiles/cache/omTileCache.h \
+           src/tiles/cache/omTileCacheImpl.h \
+           src/tiles/omTilePreFetcher.hpp \
+           src/tiles/omTilePreFetcherTask.hpp \
+           src/view2d/omLineDraw.hpp \
+           src/view2d/omMouseEvents.hpp \
+           src/view2d/omKeyEvents.hpp \
+           src/view2d/omMouseEventWheel.hpp  \
+           src/view2d/omMouseEventRelease.hpp \
+           src/view2d/omMouseEventMove.hpp \
+           src/view2d/omMouseEventPress.hpp \
+           src/view2d/omMouseEventUtils.hpp \
+           src/view2d/omMouseZoom.hpp \
+           src/view2d/omScreenPainter.hpp \
+           src/tiles/omTileDrawer.hpp \
+           src/view2d/omView2dState.hpp \
+           src/view2d/omDisplayInfo.hpp \
+           src/view2d/omScreenShotSaver.hpp \
+>>>>>>> .merge-right.r2747
+           src/view2d/omOnScreenTileCoords.h \
+           src/tiles/omTextureID.h \
+           src/tiles/omTile.h \
+           src/tiles/omTileCoord.h \
+           src/tiles/omTileTypes.hpp \
            src/view2d/omView2d.h \
-           src/view2d/omView2dImpl.h \
+           src/view2d/omView2dCore.h \
+           src/view2d/omView2dEvents.hpp \
            src/view3d/omCamera.h \
            src/view3d/omCameraMovement.h \
            src/view3d/omView3d.h \
@@ -381,7 +415,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
            src/project/omProjectSaveAction.cpp \
-           src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentValidateAction.cpp \
            src/segment/actions/segment/omSegmentGroupAction.cpp \
@@ -418,7 +451,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
            src/system/cache/omCacheGroup.cpp \
-           src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
@@ -428,32 +460,46 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
            src/system/omPreferenceDefinitions.cpp \
-           src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \
+           src/tiles/cache/omTileCache.cpp \
            src/system/cache/omThreadedCache.cpp \
            src/system/cache/omHandleCacheMissThreaded.cpp \
            src/system/templatedClasses.cpp \
            src/system/viewGroup/omViewGroupState.cpp \
-           src/utility/dataWrappers.cpp \
+           src/utility/channelDataWrapper.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
-           src/utility/omTimer.cpp \
-           src/utility/sortHelpers.cpp \
            src/utility/stringHelpers.cpp \
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
            src/view2d/omTileDumper.cpp \
            src/view2d/drawable.cpp \
+=======
+>>>>>>> .merge-right.r2555
+=======
+           src/system/cache/omTileCacheImpl.cpp \
+=======
+           src/tiles/cache/omTileCacheImpl.cpp \
+           src/tiles/omTilePreFetcher.cpp \
+           src/tiles/omTilePreFetcherTask.cpp \
+           src/view2d/omLineDraw.cpp \
+           src/tiles/omTileDrawer.cpp \
+>>>>>>> .merge-right.r2747
+           src/view2d/omOnScreenTileCoords.cpp \
+<<<<<<< .working
+>>>>>>> .merge-right.r2603
            src/view2d/omTextureID.cpp \
-           src/view2d/omThreadedCachingTile.cpp \
-           src/system/cache/omTileCache.cpp \
-           src/view2d/omTile.cpp \
-           src/view2d/omTileCoord.cpp \
+=======
+           src/tiles/omTextureID.cpp \
+>>>>>>> .merge-right.r2811
+           src/tiles/omTile.cpp \
+           src/tiles/omTileCoord.cpp \
            src/view2d/omView2d.cpp \
-           src/view2d/omView2dConverters.cpp \
-           src/view2d/omView2dEvent.cpp \
-           src/view2d/omView2dImpl.cpp \
+           src/view2d/omView2dCore.cpp \
            src/view3d/omCamera.cpp \
            src/view3d/omCameraMovement.cpp \
            src/view3d/omView3d.cpp \
@@ -496,21 +542,19 @@ SOURCES += lib/strnatcmp.cpp \
 RESOURCES += src/gui/resources.qrc
 
 INCLUDEPATH = src include lib
-
-LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF
-
 INCLUDEPATH += ./include/zi_lib
+INCLUDEPATH += ./include/zi_lib_v2
 
 #### Windows
 win32 {
-   INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/
+   INCLUDEPATH += c:/hdf5lib/include C:/mygl  C:/mygl
+   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a
    LIBS += -lgdi32
 } else {
-### Linux or MacOS
-   INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
+#### Linux or MacOS
+   INCLUDEPATH +=  ../external/libs/HDF5/include
    INCLUDEPATH += ../external/headers/boost_1_43_0
-   LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/
+   LIBS += ../external/libs/HDF5/lib/libhdf5.a
    LIBS += -lz
 }
 
@@ -526,5 +570,3 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
-
-#QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter

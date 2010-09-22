@@ -10,18 +10,21 @@
 
 #include "volume/omVolume.h"
 #include "common/omCommon.h"
-#include "system/cache/omMipVolumeCache.h"
-#include "system/cache/omThreadChunkThreadedCache.h"
+#include "volume/omMipChunkCoord.h"
+#include "volume/omVolumeTypes.hpp"
+#include "datalayer/omDataWrapper.h"
 
 #include <QFileInfo>
 
 class OmDataPath;
 class OmHdf5;
 class OmMipChunk;
-class OmMipChunkCoord;
 class OmThreadChunkLevel;
 class OmVolume;
+class OmHdf5;
 class OmVolumeData;
+class OmThreadChunkThreadedCache;
+class OmMipVolumeCache;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
 						   MIPVOL_BUILT,
@@ -30,7 +33,7 @@ enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
 class OmMipVolume : public OmVolume {
 public:
 	OmMipVolume();
-	~OmMipVolume();
+	virtual ~OmMipVolume();
 
 	void Flush();
 
@@ -38,6 +41,11 @@ public:
 	virtual std::string GetName() = 0;
 	virtual void loadVolData() = 0;
 	virtual boost::shared_ptr<OmVolumeData> getVolData() = 0;
+	virtual ObjectType getVolumeType() = 0;
+	virtual OmId getID() = 0;
+	virtual OmMipVolumeCache* getDataCache() = 0;
+
+	void ExportInternalData(const QString& fileNameAndPath);
 
 	std::string MipLevelInternalDataPath(const int level);
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
@@ -86,6 +94,9 @@ public:
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);
 	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
 	DataBbox MipCoordToThreadLevelDataBbox(const OmMipChunkCoord &);
+	DataBbox DataToDataBBox(const DataCoord &vox, const int level){
+		return MipCoordToDataBbox(DataToMipCoord(vox, level), level);
+	}
 
 	//mip chunk methods
 	OmMipChunkCoord RootMipChunkCoordinate();
@@ -128,8 +139,7 @@ public:
 	virtual bool GetBounds(float & , float &) { assert(0 && "the data for this mip volume has no bounds."); }
 
 	void ImportSourceDataSlice();
-	void ExportInternalData(QString fileNameAndPath);
-	virtual void ExportDataFilter(OmDataWrapperPtr) { }
+
 	void DeleteVolumeData();
 
 	bool ContainsVoxel(const DataCoord &vox);
@@ -143,8 +153,9 @@ public:
 	OmVolDataType getVolDataType(){ return mVolDataType; }
 
 protected:
-	OmMipVolumeCache *const mDataCache;
 	OmVolDataType mVolDataType;
+
+	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&)=0;
 
 	void BuildBlankVolume(const Vector3i & dims);
 
@@ -169,7 +180,6 @@ private:
 
 	bool sourceFilesWereSet;
 
-	void doExportChunk(const OmMipChunkCoord &, OmIDataWriter*);
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 	uint32_t computeTotalNumChunks();
 

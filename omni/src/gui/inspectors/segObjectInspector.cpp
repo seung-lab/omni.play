@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include "segObjectInspector.h"
 #include "common/omDebug.h"
 #include "system/omEventManager.h"
@@ -10,7 +11,7 @@
 SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
  : QWidget(parent)
 {
-	sdw = sdw_;
+	sdw = boost::make_shared<SegmentDataWrapper>(sdw_);
 
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeSourcesBox());
@@ -18,7 +19,7 @@ SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
 
 	set_initial_values();
 
-	connect(colorButton, SIGNAL(clicked()), 
+	connect(colorButton, SIGNAL(clicked()),
 		this, SLOT(setSegObjColor()), Qt::DirectConnection);
 
 	connect(nameEdit, SIGNAL(editingFinished()),
@@ -29,15 +30,15 @@ void SegObjectInspector::set_initial_values()
 {
 	segmentIDEdit->setReadOnly(true);
 
-	nameEdit->setText( sdw.getName() );
+	nameEdit->setText( sdw->getName() );
 	nameEdit->setMinimumWidth(200);
 
-	segmentIDEdit->setText( sdw.getIDstr() );
+	segmentIDEdit->setText( sdw->getIDstr() );
 	segmentIDEdit->setMinimumWidth(200);
 
-	notesEdit->setPlainText( sdw.getNote() );
+	notesEdit->setPlainText( sdw->getNote() );
 
-	const Vector3 < float >&color = sdw.getColorFloat();
+	const Vector3 < float >&color = sdw->getColorFloat();
 
 	QPixmap *pixm = new QPixmap(40, 30);
 	QColor newcolor = qRgb(color.x * 255, color.y * 255, color.z * 255);
@@ -46,16 +47,16 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSize()));
-	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw.getSizeWithChildren()));
-	
-	origDataValueList->setText( sdw.getIDstr() );
+	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw->getSize()));
+	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw->getSizeWithChildren()));
+
+	origDataValueList->setText( sdw->getIDstr() );
 	chunkList->setText( "disabled" );
 }
 
 void SegObjectInspector::nameEditChanged()
 {
-	sdw.setName( nameEdit->text() );
+	sdw->setName( nameEdit->text() );
 	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
 
@@ -74,9 +75,9 @@ void SegObjectInspector::setSegObjColor()
 	current_color = color;
 
 	Vector3 < float >color_vector(color.redF()/2, color.greenF()/2, color.blueF()/2);
-	sdw.setColor(color_vector);
+	sdw->setColor(color_vector);
 
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 

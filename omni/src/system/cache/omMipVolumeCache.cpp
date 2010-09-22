@@ -1,14 +1,20 @@
-#include "volume/omMipVolume.h"
+#include "volume/omMipChunk.h"
 #include "system/cache/omMipVolumeCache.h"
+#include "volume/omMipChunkCoord.h"
+#include "volume/omMipVolume.h"
 
-OmMipVolumeCache::OmMipVolumeCache(OmMipVolume * parent)
-	: OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr>(RAM_CACHE_GROUP)
+#include <boost/make_shared.hpp>
+
+OmMipVolumeCache::OmMipVolumeCache(OmMipVolume* parent)
+	: OmThreadedCache<OmMipChunkCoord,
+			  OmMipChunkPtr>(RAM_CACHE_GROUP,
+					 parent->GetName())
 	, mMipVolume(parent)
 {
 }
 
-OmMipChunkPtr OmMipVolumeCache::HandleCacheMiss(const OmMipChunkCoord &rMipCoord)
-{
+OmMipChunkPtr
+OmMipVolumeCache::HandleCacheMiss(const OmMipChunkCoord &rMipCoord){
 	assert(mMipVolume->ContainsMipChunkCoord(rMipCoord));
-	return OmMipChunkPtr(new OmMipChunk(rMipCoord, mMipVolume));
+	return OmMipChunkPtr(boost::make_shared<OmMipChunk>(rMipCoord, mMipVolume));
 }

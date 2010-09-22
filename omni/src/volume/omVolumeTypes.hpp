@@ -8,6 +8,9 @@
 class OmMipChunk;
 typedef boost::shared_ptr<OmMipChunk> OmMipChunkPtr;
 
+class OmThreadChunkLevel;
+typedef boost::shared_ptr<OmThreadChunkLevel> OmThreadChunkLevelPtr;
+
 typedef boost::unordered_map<OmSegID, uint32_t>
 OmSegSizeMap;
 

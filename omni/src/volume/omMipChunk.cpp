@@ -1,8 +1,7 @@
 #include "common/omDebug.h"
-#include "common/omGl.h"
 #include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataReader.h"
+#include "datalayer/omIDataReader.h"
 #include "datalayer/omDataWrapper.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
@@ -14,22 +13,20 @@
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
 
 /**
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
- *	Note: optional cache pointer if this is a cached chunk
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
-	: OmCacheableBase(vol->mDataCache)
-	, mIsRawChunkOpen(false)
+	: mIsRawChunkOpen(false)
 	, mIsRawMappedChunkOpen(false)
 	, mpMipVolume(vol)
 	, mIsOpen(false)
 	, containedValuesDataLoaded(false)
 	, mChunkVolumeDataDirty(false)
 	, mChunkMetaDataDirty(false)
+	, cache_(vol->getDataCache())
 	, mChunkData(new OmChunkData(vol, this, coord))
 {
 	InitChunk(coord);
@@ -71,7 +68,7 @@ void OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 
 	//set clipped norm extent
 	mClippedNormExtent = mpMipVolume->MipCoordToNormBbox(rMipCoord);
-	mClippedNormExtent.intersect(AxisAlignedBoundingBox < float >::UNITBOX);
+	mClippedNormExtent.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
 
 	//set if mipvolume uses metadata
 	setMetaDataClean();
@@ -96,28 +93,15 @@ void OmMipChunk::Open()
 	SetOpen(true);
 }
 
-void OmMipChunk::OpenForWrite()
-{
-	if (IsOpen()) {
-		return;
-	}
-
-	OmDataPath mip_level_vol_path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-
-	//assert(OmProjectData::DataExists(mip_level_vol_path));
-	OmDataWrapperPtr data = OmProjectData::GetProjectDataReader()->
-		readChunkNotOnBoundary( mip_level_vol_path, GetExtent());
-
-	SetImageData(data);
-
-	SetOpen(true);
-}
-
 /*
  *	Flush data to project data mip volume.
  */
 void OmMipChunk::Flush()
 {
+	std::cout << "flushing " << mCoordinate << "\n";
+
+        QMutexLocker locker(&mOpenLock);
+
 	if(!OmProject::GetCanFlush()) {
 		return;
 	}
@@ -156,7 +140,7 @@ void OmMipChunk::Close()
 /////////////////////////////////
 ///////          Data Properties
 
-const DataBbox & OmMipChunk::GetExtent()
+const DataBbox& OmMipChunk::GetExtent()
 {
 	return mDataExtent;
 }
@@ -189,8 +173,8 @@ void OmMipChunk::ReadVolumeData()
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
 	OmDataWrapperPtr data =
-		OmProjectData::GetProjectDataReader()->
-		readChunkNotOnBoundary(path, GetExtent());
+		OmProjectData::GetProjectIDataReader()->
+		readChunk(path, GetExtent());
 
 	//set this image data
 	SetImageData(data);
@@ -204,34 +188,32 @@ void OmMipChunk::ReadVolumeData()
 void OmMipChunk::WriteVolumeData()
 {
 	if (!IsOpen()) {
-		OpenForWrite();
+		return;
 	}
 
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-	OmDataWrapperPtr data =
-		mData->newWrapper(mData->getVTKptr()->GetScalarPointer(), NONE);
 
-	OmProjectData::GetDataWriter()->
-		writeChunk( path, GetExtent(), data);
+	OmProjectData::GetIDataWriter()->
+		writeChunk(path, GetExtent(), mData);
 
 	setVolDataClean();
 }
 
 void OmMipChunk::ReadMetaData()
 {
-	OmDataPath dat_file_path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	//read archive if it exists
-	if (OmProjectData::GetProjectDataReader()->dataset_exists(dat_file_path)){
-		OmDataArchiveQT::ArchiveRead(dat_file_path, this);
+	if (OmProjectData::GetProjectIDataReader()->dataset_exists(path)){
+		OmDataArchiveQT::ArchiveRead(path, this);
 	}
 }
 
 void OmMipChunk::WriteMetaData()
 {
-	OmDataPath dat_file_path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
-	OmDataArchiveQT::ArchiveWrite(dat_file_path, this);
+	OmDataArchiveQT::ArchiveWrite(path, this);
 
 	setMetaDataClean();
 }
@@ -428,7 +410,7 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
         OmMipChunkPtr chunk;
         mpMipVolume->GetChunk(chunk, mip_coord);
 
-	OmImage<uint32_t, 3> chunkImage = chunk->getOmImage32Chunk();
+	OmImage<uint32_t, 3> chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
 
         retImage.copyFrom(chunkImage,
 			  OmExtents[z*128][y*128][x*128],
@@ -488,7 +470,7 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 	if(!mIsRawChunkOpen){
 		OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-		mHDF5data = OmProjectData::GetProjectDataReader()->
+		mHDF5data = OmProjectData::GetProjectIDataReader()->
 			readChunk(path, GetExtent());
 		mIsRawChunkOpen=true;
 	}
@@ -498,8 +480,6 @@ OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 
 void OmMipChunk::dealWithCrazyNewStuff()
 {
-        QMutexLocker locker(&mOpenLock);
-
 	if(mIsRawChunkOpen){
 		mIsRawChunkOpen=false;
 		mHDF5data=OmDataWrapperInvalid();
@@ -556,13 +536,13 @@ void OmMipChunk::writeHDF5()
 {
 	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-	OmProjectData::GetDataWriter()->
+	OmProjectData::GetIDataWriter()->
 		writeChunk( path, GetExtent(), mHDF5data);
 }
 
-OmImage<uint32_t, 3> OmMipChunk::getOmImage32Chunk()
+OmImage<uint32_t, 3> OmMipChunk::GetCopyOfChunkDataAsOmImage32()
 {
-	return mChunkData->getOmImage32Chunk();
+	return mChunkData->GetCopyOfChunkDataAsOmImage32();
 }
 
 bool OmMipChunk::compare(OmMipChunkPtr other)
@@ -578,4 +558,9 @@ bool OmMipChunk::compare(OmMipChunkPtr other)
 	}
 
 	return mChunkData->compare(other->mChunkData);
+}
+
+int OmMipChunk::GetNumberOfVoxelsInChunk() const {
+	const int sideDim = mpMipVolume->GetChunkDimension();
+	return sideDim*sideDim*sideDim;
 }

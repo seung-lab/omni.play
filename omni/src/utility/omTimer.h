@@ -2,41 +2,55 @@
 #define OM_TIMER_H
 
 /*
- *	OmTimer provides a simple cross-platform high-resolution timer for use in performance 
- *	testing by wrapping OS-specific timer functions.	
+ *	OmTimer provides a simple cross-platform high-resolution timer for use in performance
+ *	testing by wrapping OS-specific timer functions.
  */
 
-#include "common/omStd.h"
+/*
+ * take a look at <zi2/time/now.hpp> to see how to get system time
+ * in windows
+ */
 
-#ifdef WIN32
-#include <windows.h> //For Windows
-#else
-#include <sys/time.h> //For Unix/Linux/Mac OS
-#endif
+#include <zi2/time/time.hpp>
 
-class OmTimer {
+class OmTimer
+{
+private:
+	zi::wall_timer timer_  ;
 
 public:
-	OmTimer();
-	~OmTimer();
+	OmTimer() : timer_()
+	{
+	}
 
-	void start();
-	void stop();
+	~OmTimer()
+	{
+	}
 
-	double us_elapsed();
-	double ms_elapsed();
-	double s_elapsed();
+	void start()
+	{
+		timer_.reset();
+	}
 
-private:
-	
-	#ifdef WIN32
-	LARGE_INTEGER start_time, stop_time;
-	LARGE_INTEGER freq;
-	#else
-	timeval start_time, stop_time;
-	#endif
+	void restart()
+	{
+		timer_.restart();
+	}
 
-	bool running;
+	double us_elapsed()
+	{
+		return timer_.us_elapsed< double >();
+	}
+
+	double ms_elapsed()
+	{
+		return timer_.ms_elapsed< double >();
+	}
+
+	double s_elapsed()
+	{
+		return timer_.elapsed< double >();
+	}
 };
 
 #endif

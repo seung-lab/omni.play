@@ -228,12 +228,16 @@ public:
     return out;
   }
 
+  OmImage<uint8_t,D> recastToUint8(){
+    return recast<uint8_t>();
+  }
+
   OmImage<uint32_t,D> recastToUint32(){
     return recast<uint32_t>();
   }
 
-  OmImage<uint8_t,D> recastToUint8(){
-    return recast<uint8_t>();
+  void resize(const Vector3i& dims){
+     d_.data_->resize(OmExtents[dims.x][dims.y][dims.z].getBoostExtent());
   }
 
   template <typename T1, std::size_t D1,

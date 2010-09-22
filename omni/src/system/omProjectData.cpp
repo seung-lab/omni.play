@@ -3,12 +3,13 @@
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
-#include "omPreferenceDefinitions.h"
-#include "omProjectData.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
+#include "tiles/cache/omTileCache.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omProjectData.h"
 #include "utility/fileHelpers.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -20,6 +21,7 @@ OmProjectData::OmProjectData()
 	: fileVersion_(0)
 	, mIsOpen(false)
 	, mIsReadOnly(false)
+	, tileCache_(new OmTileCache())
 {
 }
 
@@ -124,17 +126,17 @@ void OmProjectData::Close()
 void OmProjectData::DeleteInternalData(const OmDataPath & path)
 {
 	//TODO: mutex lock this!!!!
-	if (OmProjectData::GetProjectDataReader()->group_exists(path)) {
-		OmProjectData::GetDataWriter()->group_delete(path);
+	if (OmProjectData::GetProjectIDataReader()->group_exists(path)) {
+		OmProjectData::GetIDataWriter()->group_delete(path);
 	}
 }
 
-OmIDataReader* OmProjectData::GetProjectDataReader()
+OmIDataReader* OmProjectData::GetProjectIDataReader()
 {
 	return Instance()->dataReader;
 }
 
-OmIDataWriter* OmProjectData::GetDataWriter()
+OmIDataWriter* OmProjectData::GetIDataWriter()
 {
 	return Instance()->dataWriter;
 }

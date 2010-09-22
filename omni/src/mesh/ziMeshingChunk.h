@@ -3,7 +3,6 @@
 
 #include "zi/base/omni.h"
 #include <zi/threads>
-#include "mesh/omMipMeshManager.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omMipChunkCoord.h"
@@ -11,9 +10,9 @@
 #include "ziMesherManager.h"
 #include <vector>
 #include <utility>
-#include <vtkImageData.h>
 
 class ziMesher;
+class OmMipMeshManager;
 
 class ziMeshingChunk : public zi::Runnable {
 public:
@@ -31,7 +30,6 @@ private:
   OmMipMeshManager              *mipMeshManager_;
   ziMesher                      *mesher_;
   OmMipChunkPtr                 chunk_;
-  vtkImageData                  *pImageData_;
   AxisAlignedBoundingBox<int>   srcBbox_;
   AxisAlignedBoundingBox<float> dstBbox_;
   zi::vector::Vec3d             scale_;

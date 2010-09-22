@@ -1,9 +1,11 @@
+#include "mesh/omMipMesh.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omDataWrapper.h"
+#include "datalayer/omIDataReader.h"
 #include "datalayer/omMST.h"
 #include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -15,7 +17,6 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentLists.hpp"
 #include "system/cache/omMipVolumeCache.h"
-#include "system/events/omProgressEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
@@ -38,7 +39,8 @@
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-	: mVolData(new OmVolumeData())
+	: mDataCache(new OmMipVolumeCache(this))
+	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(this)
@@ -49,6 +51,7 @@ OmSegmentation::OmSegmentation()
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
+	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
@@ -68,6 +71,7 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
+	delete mDataCache;
 }
 
 boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
@@ -115,8 +119,6 @@ bool OmSegmentation::BuildThreadedVolume()
 	}
 
 	if (isDebugCategoryEnabled("perftest")){
-		//timer stop
-		vol_timer.stop();
 		printf("OmSegmentation::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
 	}
 
@@ -128,14 +130,14 @@ bool OmSegmentation::BuildThreadedSegmentation()
 	OmTimer vol_timer;
 
 	if (isDebugCategoryEnabled("perftest")){
-		//timer start
-		vol_timer.start();
+       		vol_timer.start();
 	}
 
 	printf("Finding direct data values...\n");
 
 	//initLevel doesn't matter, just set to 0
-	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
+	OmMipThreadManager* mipThreadManager =
+		new OmMipThreadManager(this, OmMipThread::MIP_CHUNK, 0, false);
 	mipThreadManager->SpawnThreads(MipChunksInVolume());
 	mipThreadManager->run();
 	mipThreadManager->wait();
@@ -148,10 +150,8 @@ bool OmSegmentation::BuildThreadedSegmentation()
 	printf("done\n");
 
 	if (isDebugCategoryEnabled("perftest")){
-		//timer end
-		vol_timer.stop();
-		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
-
+		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",
+		       vol_timer.s_elapsed());
 	}
 
 	return true;
@@ -476,4 +476,22 @@ float OmSegmentation::GetDendThreshold()
 boost::shared_ptr<OmMST> OmSegmentation::getMST()
 {
 	return mst_;
+}
+
+OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
+{
+	OmMipChunkPtr chunk;
+	getDataCache()->Get(chunk, coord, true);
+
+	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
+	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
+	uint32_t* rawData = rawDataPtr.get();
+
+	for(int i = 0; i < chunk->GetNumberOfVoxelsInChunk(); ++i){
+		if( 0 != rawData[i]) {
+			rawData[i] = mSegmentCache->findRootID(rawData[i]);
+		}
+	}
+
+	return OmDataWrapperFactory::produce(rawDataPtr);
 }
