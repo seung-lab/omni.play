@@ -1110,14 +1110,8 @@ uint32_t OmMipVolume::computeTotalNumChunks()
 	uint32_t numChunks = 0;
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
-
-		Vector3i mip_coord_dims =
-			MipLevelDimensionsInMipChunks(level);
-
-		numChunks +=
-			mip_coord_dims.x *
-			mip_coord_dims.y *
-			mip_coord_dims.z;
+		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+		numChunks += dims.x * dims.y * dims.z;
 	}
 
 	return numChunks;
