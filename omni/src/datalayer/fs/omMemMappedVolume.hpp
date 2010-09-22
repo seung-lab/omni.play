@@ -50,11 +50,12 @@ public:
 
 		resizeMapsVector();
 
+		const int64_t bps = GetBytesPerSample();
+
 		FOR_EACH(it, levelsAndDims){
 			const int level = it->first;
 			const Vector3<int64_t> dims = it->second;
-			const int64_t size =
-				dims.x * dims.y * dims.z * (int64_t)GetBytesPerSample();
+			const int64_t size = dims.x * dims.y * dims.z * bps;
 
 			printf("mip %d: size is: %s (%ldx%ldx%ld)\n",
 				   level, qPrintable(StringHelpers::commaDeliminateNumber(size)),
@@ -65,9 +66,12 @@ public:
 															   size);
 		}
 
-		printf("OmMemMappedVolume done allocating data\n");
+		printf("OmMemMappedVolume: done allocating data\n");
 	}
 
+	T* GetPtr(const int level) const {
+		return maps_[level]->GetPtr();
+	}
 
 	T* GetChunkPtr(const OmMipChunkCoord& coord) const
 	{

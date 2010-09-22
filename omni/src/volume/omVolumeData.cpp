@@ -50,12 +50,12 @@ public:
 private:
 	OmMipChunkCoord coord;
 };
-OmRawDataPtrs OmVolumeData::getChunkPtrRaw(const OmMipChunkCoord & coord){
+OmRawDataPtrs OmVolumeData::getChunkPtrRaw(const OmMipChunkCoord& coord){
 	return boost::apply_visitor(GetChunkPtrVisitor(coord), volData_);
 }
 
 
-OmVolDataType OmVolumeData::determineOldVolType(OmMipVolume * vol)
+OmVolDataType OmVolumeData::determineOldVolType(OmMipVolume* vol)
 {
 	const OmMipChunkCoord coord(0,0,0,0);
 	OmMipChunkPtr chunk;

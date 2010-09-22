@@ -18,13 +18,13 @@
 
 class OmDataPath;
 class OmHdf5;
-class OmMipChunk;
-class OmThreadChunkLevel;
-class OmVolume;
 class OmHdf5;
-class OmVolumeData;
-class OmThreadChunkThreadedCache;
+class OmMipChunk;
 class OmMipVolumeCache;
+class OmThreadChunkLevel;
+class OmThreadChunkThreadedCache;
+class OmVolume;
+class OmVolumeData;
 
 enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
 						   MIPVOL_BUILT,
@@ -57,7 +57,7 @@ public:
 
 	// data properties
 	int GetChunkDimension();
-	Vector3<int> GetChunkDimensions();
+	Vector3i GetChunkDimensions();
 
 	void SetChunksStoreMetaData(bool);
 	bool GetChunksStoreMetaData();
@@ -71,19 +71,19 @@ public:
 	//mip level method
 	void UpdateRootLevel();
 	int GetRootMipLevel();
-	Vector3<int> MipLevelDataDimensions(int);
-	Vector3<int> MipLevelDimensionsInMipChunks(int level);
+	Vector3i MipLevelDataDimensions(int);
+	Vector3i MipLevelDimensionsInMipChunks(int level);
 	int MipChunksInMipLevel(int level);
 	int MipChunksInVolume();
 
 	//thread chunk methods
 	int GetThreadChunkDimension();
-	Vector3<int> GetThreadChunkDimensions();
+	Vector3i GetThreadChunkDimensions();
 	int GetMaxConsecutiveSubsamples();
 	int GetThreadChunkLevelDimension(int level);
-	Vector3<int> GetThreadChunkLevelDimensions(int level);
-	Vector3<int> MipLevelDimensionsInThreadChunks(int level);
-	Vector3<int> MipLevelDimensionsInThreadChunkLevels(int level);
+	Vector3i GetThreadChunkLevelDimensions(int level);
+	Vector3i MipLevelDimensionsInThreadChunks(int level);
+	Vector3i MipLevelDimensionsInThreadChunkLevels(int level);
 	int ThreadChunksInMipLevel(int level);
 	int ThreadChunksInVolume();
 
