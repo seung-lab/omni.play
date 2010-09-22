@@ -56,7 +56,7 @@ int OmTile::getVolDepth(){
 boost::shared_ptr<uint8_t> OmTile::getImageData8bit()
 {
 	OmMipChunkPtr chunk;
-	getVol()->GetChunk(chunk, mipChunkCoord_, true);
+	getVol()->GetChunk(chunk, mipChunkCoord_);
 
 	return chunk->ExtractDataSlice8bit(key_.getViewType(),
 					   getVolDepth());
@@ -65,7 +65,7 @@ boost::shared_ptr<uint8_t> OmTile::getImageData8bit()
 boost::shared_ptr<uint32_t> OmTile::getImageData32bit()
 {
 	OmMipChunkPtr chunk;
-	getVol()->GetChunk(chunk, mipChunkCoord_, true);
+	getVol()->GetChunk(chunk, mipChunkCoord_);
 
 	return chunk->ExtractDataSlice32bit(key_.getViewType(),
 					    getVolDepth());

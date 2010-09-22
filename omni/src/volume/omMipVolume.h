@@ -106,10 +106,9 @@ public:
 	bool ContainsThreadChunkLevelCoord(const OmMipChunkCoord &rMipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &rMipCoord,
 									std::set<OmMipChunkCoord> &children);
-	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord,
-				  bool block=true);
+	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord);
 	void GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
-							 const OmMipChunkCoord &rMipCoord, bool block=true);
+							 const OmMipChunkCoord &rMipCoord);
 
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);
@@ -123,8 +122,11 @@ public:
 	void BuildChunkAndParents(const OmMipChunkCoord &);
 	void BuildEditedLeafChunks();
 
-	virtual OmDataWrapperPtr BuildThreadChunkLevel(const OmMipChunkCoord &, OmDataWrapperPtr p_source_data, bool initCall);
-	void BuildThreadChunk(const OmMipChunkCoord &, OmDataWrapperPtr data, bool initCall);
+	virtual OmDataWrapperPtr BuildThreadChunkLevel(const OmMipChunkCoord &,
+												   OmDataWrapperPtr p_source_data,
+												   bool initCall);
+	void BuildThreadChunk(const OmMipChunkCoord &, OmDataWrapperPtr data,
+						  bool initCall);
 
 	//comparison methods
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *);

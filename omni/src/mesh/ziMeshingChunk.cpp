@@ -184,7 +184,7 @@ void ziMeshingChunk::run()
 void ziMeshingChunk::loadChunk_()
 {
   debug ("ziMeshingChunk", "loadChunk_()\n");
-  OmProject::GetSegmentation(segmentationId_).GetChunk(chunk_, mipCoord_,true);
+  OmProject::GetSegmentation(segmentationId_).GetChunk(chunk_, mipCoord_);
   chunk_->Open();
   srcBbox_  = chunk_->GetExtent();
   dstBbox_  = chunk_->GetNormExtent();

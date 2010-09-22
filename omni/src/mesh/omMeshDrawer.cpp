@@ -110,7 +110,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 				      bool testVis)
 {
 	OmMipChunkPtr p_chunk = OmMipChunkPtr();
-	mSeg->GetChunk(p_chunk, chunkCoord, true);
+	mSeg->GetChunk(p_chunk, chunkCoord);
 
 	// test for chunk visibility (if necessary)
 	if (testVis) {

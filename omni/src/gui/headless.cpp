@@ -480,7 +480,7 @@ void Headless::processLine( QString line, QString fName )
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
 		OmMipChunkPtr p_chunk;
-		segmen.GetChunk(p_chunk, chunk_coord, true);
+		segmen.GetChunk(p_chunk, chunk_coord);
 		p_chunk->Open();
         } else if( line.startsWith("removeChann:") ){
                 QStringList args = line.split(':',QString::SkipEmptyParts);
