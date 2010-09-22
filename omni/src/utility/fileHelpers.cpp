@@ -1,15 +1,55 @@
-#include "fileHelpers.h"
-#include <QFileInfo>
 #include "common/omDebug.h"
+#include "utility/fileHelpers.h"
 
-bool FileHelpers::isFileReadOnly( QString fileNameAndPath )
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
+
+bool FileHelpers::isFileReadOnly(const QString& fileNameAndPath)
 {
-	bool isReadOnly = false;
 	QFileInfo file(fileNameAndPath);
 	if (file.exists() && !file.isWritable() ){
-		isReadOnly = true; 
+		return true;
 	}
-	
-	debug("fileHelpers", "%s: file is read only? %d\n", __FUNCTION__, isReadOnly );
-	return isReadOnly;
+
+	return false;
  }
+
+
+/*!
+   Delete a directory along with all of its contents.
+
+   \param dirName Path of directory to remove.
+   \return true on success; false on error.
+
+   from http://john.nachtimwald.com/2010/06/08/qt-remove-directory-and-its-contents/
+*/
+bool FileHelpers::removeDir(const QString &dirName)
+{
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
+													QDir::System |
+													QDir::Hidden  |
+													QDir::AllDirs |
+													QDir::Files,
+													QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            }
+            else {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+
+    return result;
+}
