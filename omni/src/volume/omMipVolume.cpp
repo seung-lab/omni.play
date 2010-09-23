@@ -58,9 +58,6 @@ void OmMipVolume::Flush()
 
 	//build any edited leaf chunks
 	BuildEditedLeafChunks();
-
-	//flush all chunks in the cache
-	getDataCache()->Flush();
 }
 
 /**
