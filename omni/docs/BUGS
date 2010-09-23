@@ -2387,3 +2387,33 @@ A debugging session is active.
         Inferior 1 [process 8550] will be killed.
 
 Quit anyway? (y or n) EOF [assumed Y]
+
+---------------
+mesher crash
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 0x7fff9ffff910 (LWP 3602)]
+0x00007ffff50874b5 in *__GI_raise (sig=<value optimized out>) at ../nptl/sysdeps/unix/sysv/linux/raise.c:64
+64      ../nptl/sysdeps/unix/sysv/linux/raise.c: No such file or directory.
+        in ../nptl/sysdeps/unix/sysv/linux/raise.c
+Current language:  auto
+The current source language is "auto; currently c".
+(gdb) bt
+#0  0x00007ffff50874b5 in *__GI_raise (sig=<value optimized out>) at ../nptl/sysdeps/unix/sysv/linux/raise.c:64
+#1  0x00007ffff508af50 in *__GI_abort () at abort.c:92
+#2  0x00007ffff50c01b7 in __libc_message (do_abort=<value optimized out>, fmt=<value optimized out>) at ../sysdeps/unix/sysv/linux/libc_fatal.c:189
+#3  0x00007ffff50ca2f6 in malloc_printerr (action=3, str=0x7ffff518bcf0 "double free or corruption (!prev)", ptr=<value optimized out>) at malloc.c:6217
+#4  0x00007ffff50cec6c in *__GI___libc_free (mem=<value optimized out>) at malloc.c:3716
+#5  0x0000000000515c6c in __gnu_cxx::new_allocator<unsigned int>::deallocate (this=0x7ffd19a8d490, __p=0x7fff7319a530) at /usr/include/c++/4.4/ext/new_allocator.h:95
+#6  0x0000000000514ef8 in std::_Vector_base<unsigned int, std::allocator<unsigned int> >::_M_deallocate (this=0x7ffd19a8d490, __p=0x7fff7319a530, __n=128) at /usr/include/c++/4.4/bits/stl_vector.h:146
+#7  0x0000000000514936 in std::vector<unsigned int, std::allocator<unsigned int> >::_M_insert_aux (this=0x7ffd19a8d490, __position=..., __x=@0x7fff9fffea8c) at /usr/include/c++/4.4/bits/vector.tcc:361
+#8  0x0000000000513b1a in std::vector<unsigned int, std::allocator<unsigned int> >::push_back (this=0x7ffd19a8d490, __x=@0x7fff9fffea8c) at /usr/include/c++/4.4/bits/stl_vector.h:741
+#9  0x00000000005121a9 in StrippedMesh::addStrips (this=0x7ffd19a8d430, ptrs=..., vertices=..., scale=..., trans=...) at src/mesh/ziMesherManager.cpp:47
+#10 0x000000000051287e in GrowingMeshes::receive (this=0x4bc14f00, stripified=..., scale=..., trans=...) at src/mesh/ziMesherManager.cpp:93
+#11 0x0000000000517bc3 in ziMeshingChunk::run (this=0x4bf8c150) at src/mesh/ziMeshingChunk.cpp:109
+#12 0x00000000005041ef in zi::detail::ThreadManagerImpl_::Task::run (this=0x7fffa26c5820) at include/zi_lib/zi/libs/thread/impl/thread_manager-impl.hpp:39
+#13 0x0000000000504f48 in zi::detail::ThreadManagerImpl_::workerLoop (this=0x4bf33600, worker=0x7fffa0763180) at include/zi_lib/zi/libs/thread/impl/thread_manager-impl.hpp:274
+#14 0x00000000005042c9 in zi::detail::ThreadManagerImpl_::Worker::run (this=0x7fffa0763180) at include/zi_lib/zi/libs/thread/impl/thread_manager-impl.hpp:60
+#15 0x0000000000502f16 in zi::detail::ThreadImpl_::MAIN (arg=0x7fff9038b690) at include/zi_lib/zi/libs/thread/impl/thread-impl.hpp:36
+#16 0x00007ffff5b75a04 in start_thread (arg=<value optimized out>) at pthread_create.c:300
+#17 0x00007ffff5133d4d in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:112
+#18 0x0000000000000000 in ?? ()
