@@ -24,8 +24,6 @@ OmChannel::OmChannel()
 	: mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 {
-	mMaxVal = FLT_MIN;
-	mMinVal = FLT_MAX;
 	mWasBounded = false;
 }
 
@@ -34,12 +32,7 @@ OmChannel::OmChannel(OmId id)
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 {
-	mMaxVal = FLT_MIN;
-	mMinVal = FLT_MAX;
 	mWasBounded = false;
-
-	//init properties
-	SetHue(Vector3f::ONE);
 
 	//do not use meta data
 	mStoreChunkMetaData = false;
@@ -65,27 +58,6 @@ std::string OmChannel::GetName(){
 
 std::string OmChannel::GetDirectoryPath() {
 	return OmDataPaths::getDirectoryPath(this);
-}
-
-/**
- *	Hue color property
- */
-void OmChannel::SetHue(const Vector3f & hue)
-{
-	mHueColor = hue;
-}
-
-const Vector3f & OmChannel::GetHue()
-{
-	return mHueColor;
-}
-
-/////////////////////////////////
-///////          Accessors
-
-bool OmChannel::IsVolumeDataBuilt()
-{
-	return true;
 }
 
 void OmChannel::BuildVolumeData()
@@ -117,14 +89,6 @@ bool OmChannel::IsFilterValid(const OmId id)
 bool OmChannel::IsFilterEnabled(OmId id)
 {
 	return mFilter2dManager.IsFilterEnabled(id);
-}
-
-/////////////////////////////////
-///////          Print Methods
-
-void OmChannel::Print()
-{
-	//debug("FIXME", << "\t" << mName << " (" << mId << ")" << endl;
 }
 
 void OmChannel::CloseDownThreads()

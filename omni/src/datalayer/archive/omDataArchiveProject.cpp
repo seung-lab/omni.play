@@ -192,6 +192,8 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan)
 		float oldmin = 0; //TODO: delete
 		in >> oldmax;
 		in >> oldmin;
+	} else{
+		chan.mWasBounded = false;
 	}
 
 	if(fileVersion_ > 13){

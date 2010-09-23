@@ -7,7 +7,6 @@
  *	Brett Warne - bwarne@mit.edu - 2/6/09
  */
 
-
 #include "volume/omVolume.h"
 #include "volume/omMipVolume.h"
 #include "system/omManageableObject.h"
@@ -33,17 +32,9 @@ public:
 	OmId getID(){ return GetId(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 
-	//properties
-	void SetHue(const Vector3f &);
-	const Vector3f& GetHue();
-
 	void CloseDownThreads();
 
-	//accessor
-	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
-
-	void Print();
 
 	OmFilter2d& AddFilter();
 	OmFilter2d& GetFilter(OmId id);
@@ -67,7 +58,6 @@ private:
 
 	boost::shared_ptr<OmVolumeData> mVolData;
 
-	Vector3f mHueColor;
 	OmFilter2dManager mFilter2dManager;
 
 	OmRawData mMaxVal;
