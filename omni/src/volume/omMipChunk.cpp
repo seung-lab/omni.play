@@ -16,23 +16,10 @@
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
 	: vol_(vol)
 	, containedValuesDataLoaded(false)
-	, mChunkMetaDataDirty(false)
 	, cache_(vol->getDataCache())
 	, mChunkData(boost::make_shared<OmChunkData>(vol, this, coord))
 {
 	InitChunk(coord);
-}
-
-OmMipChunk::~OmMipChunk()
-{
-	Flush();
-}
-
-void OmMipChunk::Flush()
-{
-	if(IsMetaDataDirty() && OmProject::GetCanFlush()){
-		WriteMetaData();
-	}
 }
 
 /*
@@ -62,21 +49,11 @@ void OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 	//set clipped norm extent
 	mClippedNormExtent = vol_->MipCoordToNormBbox(rMipCoord);
 	mClippedNormExtent.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
-
-	//set if mipvolume uses metadata
-	setMetaDataClean();
 }
 
 const DataBbox& OmMipChunk::GetExtent()
 {
 	return mDataExtent;
-}
-
-bool OmMipChunk::IsMetaDataDirty()
-{
-	//TODO: why isn't this OR (ie. ||)?
-	return vol_->GetChunksStoreMetaData()
-		&& mChunkMetaDataDirty;
 }
 
 void OmMipChunk::ReadMetaData()
@@ -92,10 +69,7 @@ void OmMipChunk::ReadMetaData()
 void OmMipChunk::WriteMetaData()
 {
 	OmDataPath path(vol_->MipChunkMetaDataPath(mCoordinate));
-
 	OmDataArchiveMipChunk::ArchiveWrite(path, this);
-
-	setMetaDataClean();
 }
 
 /////////////////////////////////
@@ -229,10 +203,9 @@ void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
 										 boost::shared_ptr<OmSegmentCache> segCache)
 {
 	mDirectlyContainedValues.clear();
-	containedValuesDataLoaded = true;
-	setMetaDataDirty();
-
 	mChunkData->RefreshDirectDataValues(computeSizes, segCache);
+	containedValuesDataLoaded = true;
+	WriteMetaData();
 }
 
 /**
@@ -287,16 +260,6 @@ bool OmMipChunk::ContainsVoxel(const DataCoord & vox)
 const Vector3i OmMipChunk::GetDimensions()
 {
 	return GetExtent().getUnitDimensions();
-}
-
-void OmMipChunk::setMetaDataDirty()
-{
-	mChunkMetaDataDirty = true;
-}
-
-void OmMipChunk::setMetaDataClean()
-{
-	mChunkMetaDataDirty = false;
 }
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()

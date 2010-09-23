@@ -27,9 +27,9 @@ class OmMipVolume;
 class OmMipChunk {
 public:
 	OmMipChunk(const OmMipChunkCoord &coord, OmMipVolume* vol);
-	virtual ~OmMipChunk();
+	virtual ~OmMipChunk(){}
 
-	void Flush();
+	void Flush(){}
 
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3i GetDimensions();
@@ -73,16 +73,12 @@ protected:
 	OmMipVolume *const vol_;
 
 	bool containedValuesDataLoaded;
-	bool mChunkMetaDataDirty;
 
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 
 	zi::Mutex mDirectDataValueLock;
 	void loadMetadataIfPresent();
 	OmSegIDsSet mDirectlyContainedValues;
-
-	void setMetaDataDirty();
-	void setMetaDataClean();
 
 	//octree properties
 	DataBbox mDataExtent;
@@ -104,7 +100,6 @@ private:
 
 	boost::shared_ptr<OmChunkData> mChunkData;
 
-	bool IsMetaDataDirty();
 	void ReadMetaData();
 	void WriteMetaData();
 

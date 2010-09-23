@@ -58,7 +58,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
            src/datalayer/archive/omDataArchiveProject.h \
-           src/datalayer/archive/omDataArchiveQT.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/archive/omDataArchiveVmml.h \
            src/datalayer/upgraders/omUpgraders.hpp \
@@ -314,7 +313,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
            src/datalayer/archive/omDataArchiveProject.cpp \
-           src/datalayer/archive/omDataArchiveQT.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
