@@ -3,6 +3,8 @@
 
 #ifdef __APPLE__
 
+#include <zi/mutex>
+
 class LockedBool{
 public:
 	LockedBool()
