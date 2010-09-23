@@ -45,8 +45,8 @@ public:
 	OmImage<uint32_t, 3> GetMeshOmImageData();
 	bool compare(OmMipChunkPtr other);
 
-	virtual quint32 GetVoxelValue(const DataCoord &vox);
-	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
+	virtual uint32_t GetVoxelValue(const DataCoord &vox);
+	virtual void SetVoxelValue(const DataCoord &vox, uint32_t value);
 
 	//meta data accessors
 	const OmSegIDsSet & GetModifiedVoxelValues();
@@ -72,13 +72,12 @@ public:
 protected:
 	OmMipVolume *const vol_;
 
-	bool containedValuesDataLoaded;
-
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 
 	zi::Mutex mDirectDataValueLock;
 	void loadMetadataIfPresent();
 	OmSegIDsSet mDirectlyContainedValues;
+	bool containedValuesDataLoaded;
 
 	//octree properties
 	DataBbox mDataExtent;
@@ -87,10 +86,6 @@ protected:
 	OmMipChunkCoord mCoordinate;
 	OmMipChunkCoord mParentCoord;
 	std::set<OmMipChunkCoord> mChildrenCoordinates;
-
-	//chunk properties
-	std::string mFileName;
-	std::string mDirectoryPath;
 
 	//voxel management
 	OmSegIDsSet mModifiedVoxelValues;
