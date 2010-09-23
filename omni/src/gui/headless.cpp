@@ -388,7 +388,6 @@ void Headless::processLine(const QString& line, const QString&)
 		OmMipChunkCoord chunk_coord(0,0,0,0);
 		OmMipChunkPtr p_chunk;
 		segmen.GetChunk(p_chunk, chunk_coord);
-		p_chunk->Open();
 	} else if( line.startsWith("removeChann:") ){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 

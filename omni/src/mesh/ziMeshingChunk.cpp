@@ -185,11 +185,10 @@ void ziMeshingChunk::loadChunk_()
 {
   debug ("ziMeshingChunk", "loadChunk_()\n");
   OmProject::GetSegmentation(segmentationId_).GetChunk(chunk_, mipCoord_);
-  chunk_->Open();
   srcBbox_  = chunk_->GetExtent();
   dstBbox_  = chunk_->GetNormExtent();
 
-  Vector3<float> srcDim = srcBbox_.getMax() - srcBbox_.getMin();
+  Vector3f srcDim = srcBbox_.getMax() - srcBbox_.getMin();
   srcDim += Vector3<float>::ONE;
   Vector3<float> dstDim = dstBbox_.getMax() - dstBbox_.getMin();
   scale_ = zi::vector::Vec3d(dstDim.x / srcDim.x,

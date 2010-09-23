@@ -1,7 +1,7 @@
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omStd.h"
-#include "datalayer/archive/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -104,7 +104,7 @@ void OmProject::Save()
 		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
 
-	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
+	OmDataArchiveProject::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
 
 	OmProjectData::GetIDataWriter()->flush();
 
@@ -133,7 +133,7 @@ void OmProject::Load( QString fileNameAndPath  )
 	OmProjectData::Open();
 
 	try {
-		OmDataArchiveQT::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(), Instance());
+		OmDataArchiveProject::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(), Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;

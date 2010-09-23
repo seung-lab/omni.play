@@ -1,5 +1,6 @@
+#include "utility/image/omImage.hpp"
 #include "common/omDebug.h"
-#include "datalayer/archive/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveMipChunk.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omDataWrapper.h"
@@ -19,12 +20,8 @@
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
-	: mIsRawChunkOpen(false)
-	, mIsRawMappedChunkOpen(false)
-	, mpMipVolume(vol)
-	, mIsOpen(false)
+	: mpMipVolume(vol)
 	, containedValuesDataLoaded(false)
-	, mChunkVolumeDataDirty(false)
 	, mChunkMetaDataDirty(false)
 	, cache_(vol->getDataCache())
 	, mChunkData(new OmChunkData(vol, this, coord))
@@ -34,11 +31,13 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
 
 OmMipChunk::~OmMipChunk()
 {
-	//since parent destructor is called after this child destructor, we need to call
-	//child Close() here, or else child Close() won't be called (since child won't exist)
-	//when called in parent destructor
-	if (IsOpen()) {
-		Close();
+	Flush();
+}
+
+void OmMipChunk::Flush()
+{
+	if(IsMetaDataDirty() && OmProject::GetCanFlush()){
+		WriteMetaData();
 	}
 }
 
@@ -74,88 +73,9 @@ void OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 	setMetaDataClean();
 }
 
-/////////////////////////////////
-///////          DataVolume Methods
-
-/*
- *	Overridden to load data from project data mip volume.
- */
-void OmMipChunk::Open()
-{
-        QMutexLocker locker(&mOpenLock);
-
-	if (IsOpen()) {
-		return;
-	}
-
-	ReadVolumeData();
-
-	SetOpen(true);
-}
-
-/*
- *	Flush data to project data mip volume.
- */
-void OmMipChunk::Flush()
-{
-	std::cout << "flushing " << mCoordinate << "\n";
-
-        QMutexLocker locker(&mOpenLock);
-
-	if(!OmProject::GetCanFlush()) {
-		return;
-	}
-
-	//only write if dirty
-	if (IsVolumeDataDirty()) {
-		WriteVolumeData();
-	}
-
-	//write meta data if dirty
-	if (IsMetaDataDirty()) {
-		WriteMetaData();
-	}
-
-	dealWithCrazyNewStuff();
-}
-
-/*
- *	Close volume data
- */
-void OmMipChunk::Close()
-{
-	dealWithCrazyNewStuff();
-
-	if (!IsOpen()) {
-		return;
-	}
-
-	if (IsDirty()) {
-		Flush();
-	}
-
-	SetOpen(false);
-}
-
-/////////////////////////////////
-///////          Data Properties
-
 const DataBbox& OmMipChunk::GetExtent()
 {
 	return mDataExtent;
-}
-
-/////////////////////////////////
-///////          Dirty Methods
-
-bool OmMipChunk::IsDirty()
-{
-	return IsVolumeDataDirty() || IsMetaDataDirty();
-}
-
-bool OmMipChunk::IsVolumeDataDirty()
-{
-	return mChunkVolumeDataDirty;
 }
 
 bool OmMipChunk::IsMetaDataDirty()
@@ -165,47 +85,13 @@ bool OmMipChunk::IsMetaDataDirty()
 		&& mChunkMetaDataDirty;
 }
 
-/////////////////////////////////
-///////           Data IO
-
-void OmMipChunk::ReadVolumeData()
-{
-	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-
-	OmDataWrapperPtr data =
-		OmProjectData::GetProjectIDataReader()->
-		readChunk(path, GetExtent());
-
-	//set this image data
-	SetImageData(data);
-
-	// Need to undo the side effect caused by setting the image data.
-	// Don't want to write out the data just
-	// because we set the newly loaded data.
-	setVolDataClean();
-}
-
-void OmMipChunk::WriteVolumeData()
-{
-	if (!IsOpen()) {
-		return;
-	}
-
-	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-
-	OmProjectData::GetIDataWriter()->
-		writeChunk(path, GetExtent(), mData);
-
-	setVolDataClean();
-}
-
 void OmMipChunk::ReadMetaData()
 {
 	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
 	//read archive if it exists
 	if (OmProjectData::GetProjectIDataReader()->dataset_exists(path)){
-		OmDataArchiveQT::ArchiveRead(path, this);
+		OmDataArchiveMipChunk::ArchiveRead(path, this);
 	}
 }
 
@@ -213,7 +99,7 @@ void OmMipChunk::WriteMetaData()
 {
 	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
 
-	OmDataArchiveQT::ArchiveWrite(path, this);
+	OmDataArchiveMipChunk::ArchiveWrite(path, this);
 
 	setMetaDataClean();
 }
@@ -241,13 +127,11 @@ void OmMipChunk::SetVoxelValue(const DataCoord & volVoxel, uint32_t val)
 {
 	assert(ContainsVoxel(volVoxel));
 
-        const DataCoord voxel = volVoxel - GetExtent().getMin();
+	const DataCoord voxel = volVoxel - GetExtent().getMin();
 	const uint32_t oldVal = mChunkData->SetVoxelValue(voxel, val);
 
 	mModifiedVoxelValues.insert(oldVal);
 	mModifiedVoxelValues.insert(val);
-
-	setVolDataDirty();
 }
 
 /*
@@ -257,31 +141,9 @@ uint32_t OmMipChunk::GetVoxelValue(const DataCoord & volVoxel)
 {
 	assert(ContainsVoxel(volVoxel));
 
-        const DataCoord voxel = volVoxel - GetExtent().getMin();
+	const DataCoord voxel = volVoxel - GetExtent().getMin();
 
 	return mChunkData->GetVoxelValue(voxel);
-}
-
-/*
- *	Returns pointer to image data
- */
-OmDataWrapperPtr OmMipChunk::GetImageDataWrapper()
-{
-	return mData;
-}
-
-/*
- *	Set the image data of this MipChunk to data at the given pointer.
- *	Closes if already open and sets MipChunk to be open and dirty.
- */
-void OmMipChunk::SetImageData(OmDataWrapperPtr data)
-{
-	//set this image data to given
-	mData = data;
-
-	//set data causes chunk to be open and dirty
-	SetOpen(true);
-	setVolDataDirty();
 }
 
 /////////////////////////////////
@@ -338,10 +200,9 @@ const NormBbox & OmMipChunk::GetClippedNormExtent()
  *	Returns reference to set of all values directly contained by
  *	the image data of this MipChunk
  */
-const OmSegIDsSet & OmMipChunk::GetDirectDataValues()
+const OmSegIDsSet& OmMipChunk::GetDirectDataValues()
 {
-	//TODO: change to shared reader writer lock (purcaro)
-	QMutexLocker lock(&mDirectDataValueLock);
+	zi::Guard g(mDirectDataValueLock);
 	loadMetadataIfPresent();
 
 	return mDirectlyContainedValues;
@@ -358,9 +219,9 @@ void OmMipChunk::loadMetadataIfPresent()
 	}
 
 	/*
-	std::cout << "chunk " << mCoordinate
-		  << " contains " << mDirectlyContainedValues.size()
-		  << " directly contained values\n";
+	  std::cout << "chunk " << mCoordinate
+	  << " contains " << mDirectlyContainedValues.size()
+	  << " directly contained values\n";
 	*/
 
 	containedValuesDataLoaded = true;
@@ -371,7 +232,7 @@ void OmMipChunk::loadMetadataIfPresent()
  *	all values in the DataSegmentId set of the chunk.
  */
 void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
-					 boost::shared_ptr<OmSegmentCache> segCache)
+										 boost::shared_ptr<OmSegmentCache> segCache)
 {
 	mDirectlyContainedValues.clear();
 	containedValuesDataLoaded = true;
@@ -381,57 +242,47 @@ void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
 }
 
 /**
- *      Returns new ImageData containing the entire extent of data needed
+ *      Returns new OmImage containing the entire extent of data needed
  *      to form continuous meshes with adjacent MipChunks.  This means an extra
  *      voxel of data is included on each dimensions.
  */
 OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 {
-  OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
+	OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
-  for (int z = 0; z < 2; z++) {
-    for (int y = 0; y < 2; y++) {
-      for (int x = 0; x < 2; x++) {
+	for (int z = 0; z < 2; z++) {
+		for (int y = 0; y < 2; y++) {
+			for (int x = 0; x < 2; x++) {
 
-        int lenZ = z ? 1 : 128;
-        int lenY = y ? 1 : 128;
-        int lenX = x ? 1 : 128;
+				int lenZ = z ? 1 : 128;
+				int lenY = y ? 1 : 128;
+				int lenX = x ? 1 : 128;
 
-        //form mip coord
-        OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
-                                  mCoordinate.getCoordinateX() + x,
-                                  mCoordinate.getCoordinateY() + y,
-                                  mCoordinate.getCoordinateZ() + z);
+				//form mip coord
+				OmMipChunkCoord mip_coord(mCoordinate.getLevel(),
+										  mCoordinate.getCoordinateX() + x,
+										  mCoordinate.getCoordinateY() + y,
+										  mCoordinate.getCoordinateZ() + z);
 
-        //skip invalid mip coord
-        if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
-          continue;
+				//skip invalid mip coord
+				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
+					continue;
 
-        OmMipChunkPtr chunk;
-        mpMipVolume->GetChunk(chunk, mip_coord);
+				OmMipChunkPtr chunk;
+				mpMipVolume->GetChunk(chunk, mip_coord);
 
-	OmImage<uint32_t, 3> chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
+				OmImage<uint32_t, 3> chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
 
-        retImage.copyFrom(chunkImage,
-			  OmExtents[z*128][y*128][x*128],
-                          OmExtents[0][0][0],
-			  OmExtents[lenZ][lenY][lenX]);
+				retImage.copyFrom(chunkImage,
+								  OmExtents[z*128][y*128][x*128],
+								  OmExtents[0][0][0],
+								  OmExtents[lenZ][lenY][lenX]);
 
-      }
-    }
-  }
+			}
+		}
+	}
 
-  return retImage;
-}
-
-bool OmMipChunk::IsOpen()
-{
-	return mIsOpen;
-}
-
-void OmMipChunk::SetOpen(bool state)
-{
-	mIsOpen = state;
+	return retImage;
 }
 
 bool OmMipChunk::ContainsVoxel(const DataCoord & vox)
@@ -444,19 +295,9 @@ const Vector3i OmMipChunk::GetDimensions()
 	return GetExtent().getUnitDimensions();
 }
 
-void OmMipChunk::setVolDataDirty()
-{
-	mChunkVolumeDataDirty = true;
-}
-
 void OmMipChunk::setMetaDataDirty()
 {
 	mChunkMetaDataDirty = true;
-}
-
-void OmMipChunk::setVolDataClean()
-{
-	mChunkVolumeDataDirty = false;
 }
 
 void OmMipChunk::setMetaDataClean()
@@ -466,48 +307,23 @@ void OmMipChunk::setMetaDataClean()
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 {
-        QMutexLocker locker(&mOpenLock);
-	if(!mIsRawChunkOpen){
-		OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
 
-		mHDF5data = OmProjectData::GetProjectIDataReader()->
-			readChunk(path, GetExtent());
-		mIsRawChunkOpen=true;
-	}
+	OmDataWrapperPtr data =
+		OmProjectData::GetProjectIDataReader()->
+		readChunk(path, GetExtent());
 
-	return mHDF5data;
-}
-
-void OmMipChunk::dealWithCrazyNewStuff()
-{
-	if(mIsRawChunkOpen){
-		mIsRawChunkOpen=false;
-		mHDF5data=OmDataWrapperInvalid();
-	}
-	if(mIsRawMappedChunkOpen){
-		mIsRawMappedChunkOpen=false;
-		mRawMappedChunk=OmDataWrapperInvalid();
-	}
-}
-
-void OmMipChunk::GetBounds(float & , float &)
-{
-	return; //FIXME!
-	/*
-	OmImage<float, 3> chunk(OmExtents[128][128][128], data);
-	maxout = chunk.getMax();
-	minout = chunk.getMin();
-	*/
+	return data;
 }
 
 boost::shared_ptr<uint8_t> OmMipChunk::ExtractDataSlice8bit(const ViewType plane,
-							    const int offset)
+															const int offset)
 {
 	return mChunkData->ExtractDataSlice8bit(plane, offset);
 }
 
 boost::shared_ptr<uint32_t> OmMipChunk::ExtractDataSlice32bit(const ViewType plane,
-							      const int offset)
+															  const int offset)
 {
 	return mChunkData->ExtractDataSlice32bit(plane, offset);
 }
@@ -517,27 +333,9 @@ void OmMipChunk::copyInTile(const int sliceOffset, uchar* bits)
 	mChunkData->copyInTile(sliceOffset, bits);
 }
 
-void OmMipChunk::copyChunkFromMemMapToHDF5()
-{
-	mChunkData->copyChunkFromMemMapToHDF5();
-}
-
 void OmMipChunk::copyDataFromHDF5toMemMap()
 {
 	mChunkData->copyDataFromHDF5toMemMap();
-}
-
-void OmMipChunk::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
-{
-	mChunkData->copyDataFromHDF5toMemMap(hdf5);
-}
-
-void OmMipChunk::writeHDF5()
-{
-	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
-
-	OmProjectData::GetIDataWriter()->
-		writeChunk( path, GetExtent(), mHDF5data);
 }
 
 OmImage<uint32_t, 3> OmMipChunk::GetCopyOfChunkDataAsOmImage32()

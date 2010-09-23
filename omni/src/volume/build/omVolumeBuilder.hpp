@@ -12,6 +12,8 @@ public:
 	static void downsample(T* src, T* dst, OmMipVolume* vol,
 						   const int preLevel, const int level)
 	{
+		assert(src && dst && vol);
+		printf("downsampling %d to %d\n", preLevel, level);
 /*
 	const Vector3i src_dims = src_extents.getUnitDimensions();
 	const Vector3i dest_dims = src_dims / 2;

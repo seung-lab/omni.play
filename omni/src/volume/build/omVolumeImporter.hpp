@@ -91,10 +91,6 @@ private:
 			const QString fnp = vol_->mSourceFilenamesAndPaths[i].absoluteFilePath();
 			imageLoader.processSlice(fnp, i);
 		}
-
-		printf("\ndone with image import; copying to HDF5 file...\n");
-		vol_->copyDataIn();
-
 		return true;
 	}
 

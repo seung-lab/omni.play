@@ -229,7 +229,7 @@ Vector3i OmSegmentation::FindCenterOfSelectedSegments()
 
 	uint32_t counter = 0;
 
-	OmSegment * seg = iter.getNextSegment();
+	OmSegment* seg = iter.getNextSegment();
 	while(NULL != seg) {
 		const DataBbox& segBox = seg->getBounds();
 		if(segBox.isEmpty()){

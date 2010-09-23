@@ -453,8 +453,6 @@ void OmMipVolume::Build(OmDataPath & dataset)
 		return;
 	}
 
-	getDataCache()->Clear();
-
 	//build complete
 	SetBuildState(MIPVOL_BUILT);
 }
@@ -586,32 +584,6 @@ Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
 	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
 }
 
-void OmMipVolume::copyDataIn()
-{
-	Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(0);
-
-	const int total = mip_coord_dims.z*mip_coord_dims.y*mip_coord_dims.x;
-	int counter = 0;
-
-	for (int z = 0; z < mip_coord_dims.z; ++z){
-		for (int y = 0; y < mip_coord_dims.y; ++y){
-			for (int x = 0; x < mip_coord_dims.x; ++x){
-
-				OmMipChunkCoord coord(0, x, y, z);
-				OmMipChunkPtr chunk;
-				GetChunk(chunk, coord);
-				chunk->copyChunkFromMemMapToHDF5();
-
-				++counter;
-				printf("\rwrote chunk %dx%dx%d to HDF5 (%d of %d total)",
-				       x, y, z, counter, total);
-				fflush(stdout);
-			}
-		}
-	}
-	printf("\n");
-}
-
 //FIXME: move into OmChannel/OmSegmentation so we don't assume default type
 void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
 {
@@ -639,8 +611,6 @@ bool OmMipVolume::areImportFilesImages()
 
 void OmMipVolume::copyAllMipDataIntoMemMap()
 {
-	Flush();
-
 	const uint32_t numChunks = computeTotalNumChunks();
 	uint32_t counter = 0;
 

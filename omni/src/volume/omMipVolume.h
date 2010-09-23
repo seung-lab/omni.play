@@ -104,12 +104,10 @@ public:
 	static bool CompareChunks(const OmMipChunkCoord&,
 							  OmMipVolume*, OmMipVolume*);
 
-	void copyDataIn();
 	void copyAllMipDataIntoMemMap();
 	bool areImportFilesImages();
 
 	Vector3i get_dims(const OmDataPath dataset );
-	virtual bool GetBounds(float & , float &) { assert(0 && "the data for this mip volume has no bounds."); }
 
 	void ImportSourceDataSlice();
 
