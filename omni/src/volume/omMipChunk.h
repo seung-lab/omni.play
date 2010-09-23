@@ -70,7 +70,7 @@ public:
 	const std::set<OmMipChunkCoord>& GetChildrenCoordinates();
 
 protected:
-	OmMipVolume *const mpMipVolume;
+	OmMipVolume *const vol_;
 
 	bool containedValuesDataLoaded;
 	bool mChunkMetaDataDirty;

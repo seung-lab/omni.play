@@ -20,7 +20,7 @@
  *	Constructor speicifies MipCoord and MipVolume the chunk extracts data from
  */
 OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
-	: mpMipVolume(vol)
+	: vol_(vol)
 	, containedValuesDataLoaded(false)
 	, mChunkMetaDataDirty(false)
 	, cache_(vol->getDataCache())
@@ -50,23 +50,23 @@ void OmMipChunk::InitChunk(const OmMipChunkCoord & rMipCoord)
 	mCoordinate = rMipCoord;
 
 	//set parent, if any
-	if (rMipCoord.Level == mpMipVolume->GetRootMipLevel()) {
+	if (rMipCoord.Level == vol_->GetRootMipLevel()) {
 		mParentCoord = OmMipChunkCoord::NULL_COORD;
 	} else {
 		mParentCoord = rMipCoord.ParentCoord();
 	}
 
 	//set children
-	mpMipVolume->ValidMipChunkCoordChildren(rMipCoord, mChildrenCoordinates);
+	vol_->ValidMipChunkCoordChildren(rMipCoord, mChildrenCoordinates);
 
 	//get extent from coord
-	mDataExtent = mpMipVolume->MipCoordToDataBbox(rMipCoord, rMipCoord.Level);
+	mDataExtent = vol_->MipCoordToDataBbox(rMipCoord, rMipCoord.Level);
 
 	//set norm extent
-	mNormExtent = mpMipVolume->MipCoordToNormBbox(rMipCoord);
+	mNormExtent = vol_->MipCoordToNormBbox(rMipCoord);
 
 	//set clipped norm extent
-	mClippedNormExtent = mpMipVolume->MipCoordToNormBbox(rMipCoord);
+	mClippedNormExtent = vol_->MipCoordToNormBbox(rMipCoord);
 	mClippedNormExtent.intersect(AxisAlignedBoundingBox<float>::UNITBOX);
 
 	//set if mipvolume uses metadata
@@ -81,13 +81,13 @@ const DataBbox& OmMipChunk::GetExtent()
 bool OmMipChunk::IsMetaDataDirty()
 {
 	//TODO: why isn't this OR (ie. ||)?
-	return mpMipVolume->GetChunksStoreMetaData()
+	return vol_->GetChunksStoreMetaData()
 		&& mChunkMetaDataDirty;
 }
 
 void OmMipChunk::ReadMetaData()
 {
-	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	OmDataPath path(vol_->MipChunkMetaDataPath(mCoordinate));
 
 	//read archive if it exists
 	if (OmProjectData::GetProjectIDataReader()->dataset_exists(path)){
@@ -97,7 +97,7 @@ void OmMipChunk::ReadMetaData()
 
 void OmMipChunk::WriteMetaData()
 {
-	OmDataPath path(mpMipVolume->MipChunkMetaDataPath(mCoordinate));
+	OmDataPath path(vol_->MipChunkMetaDataPath(mCoordinate));
 
 	OmDataArchiveMipChunk::ArchiveWrite(path, this);
 
@@ -214,7 +214,7 @@ void OmMipChunk::loadMetadataIfPresent()
 		return;
 	}
 
-	if (mpMipVolume->GetChunksStoreMetaData()) {
+	if (vol_->GetChunksStoreMetaData()) {
 		ReadMetaData();
 	}
 
@@ -265,11 +265,11 @@ OmImage<uint32_t, 3> OmMipChunk::GetMeshOmImageData()
 										  mCoordinate.getCoordinateZ() + z);
 
 				//skip invalid mip coord
-				if (!mpMipVolume->ContainsMipChunkCoord(mip_coord))
+				if (!vol_->ContainsMipChunkCoord(mip_coord))
 					continue;
 
 				OmMipChunkPtr chunk;
-				mpMipVolume->GetChunk(chunk, mip_coord);
+				vol_->GetChunk(chunk, mip_coord);
 
 				OmImage<uint32_t, 3> chunkImage = chunk->GetCopyOfChunkDataAsOmImage32();
 
@@ -307,7 +307,7 @@ void OmMipChunk::setMetaDataClean()
 
 OmDataWrapperPtr OmMipChunk::RawReadChunkDataHDF5()
 {
-	OmDataPath path(mpMipVolume->MipLevelInternalDataPath(GetLevel()));
+	OmDataPath path(vol_->MipLevelInternalDataPath(GetLevel()));
 
 	OmDataWrapperPtr data =
 		OmProjectData::GetProjectIDataReader()->
@@ -359,6 +359,6 @@ bool OmMipChunk::compare(OmMipChunkPtr other)
 }
 
 int OmMipChunk::GetNumberOfVoxelsInChunk() const {
-	const int sideDim = mpMipVolume->GetChunkDimension();
+	const int sideDim = vol_->GetChunkDimension();
 	return sideDim*sideDim*sideDim;
 }
