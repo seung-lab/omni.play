@@ -1,10 +1,7 @@
 #include "utility/dataWrappers.h"
 #include "segObjectInspector.h"
 #include "common/omDebug.h"
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omViewEvent.h"
+#include "system/omEvents.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/stringHelpers.h"
 
@@ -47,8 +44,8 @@ void SegObjectInspector::set_initial_values()
 	colorButton->setIcon(QIcon(*pixm));
 	current_color = newcolor;
 
-	sizeNoChildren->setText( StringHelpers::commaDeliminateNumber(sdw->getSize()));
-	sizeWithChildren->setText( StringHelpers::commaDeliminateNumber(sdw->getSizeWithChildren()));
+	sizeNoChildren->setText( StringHelpers::commaDeliminateNumQT(sdw->getSize()));
+	sizeWithChildren->setText( StringHelpers::commaDeliminateNumQT(sdw->getSizeWithChildren()));
 
 	origDataValueList->setText( sdw->getIDstr() );
 	chunkList->setText( "disabled" );
@@ -57,7 +54,7 @@ void SegObjectInspector::set_initial_values()
 void SegObjectInspector::nameEditChanged()
 {
 	sdw->setName( nameEdit->text() );
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+	OmEvents::SegmentModified();
 }
 
 void SegObjectInspector::setSegObjColor()
@@ -78,7 +75,7 @@ void SegObjectInspector::setSegObjColor()
 	sdw->setColor(color_vector);
 
 	OmCacheManager::TouchFresheness();
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+	OmEvents::Redraw3d();
 }
 
 QGroupBox* SegObjectInspector::makeSourcesBox()

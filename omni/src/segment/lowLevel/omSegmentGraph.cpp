@@ -94,7 +94,7 @@ void OmSegmentGraph::setGlobalThreshold( const quint32 * nodes,
 					 const int numEdges,
 					 const float stopThreshold )
 {
-	printf("\t %s edges...", qPrintable(StringHelpers::commaDeliminateNumber(numEdges)));
+	printf("\t %s edges...",StringHelpers::commaDeliminateNum(numEdges).c_str());
 	fflush(stdout);
 
 	OmTimer timer;

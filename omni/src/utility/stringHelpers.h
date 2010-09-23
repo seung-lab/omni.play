@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include <QStringList>
+#include <zi/utility>
 
 class StringHelpers
 {
@@ -10,7 +11,29 @@ class StringHelpers
 	static QString getStringFromSegmentSet( const OmSegIDsSet & data_set );
 	static QString getStringFromIDset( const OmIDsSet & data_set );
 	static QString getStringFromStringList( const QStringList & data_set );
-	static QString commaDeliminateNumber( const long long num );
+
+	template <typename T>
+	static std::string commaDeliminateNum(const T num){
+		const std::string rawNumAsStr = QString::number(num).toStdString();
+
+		size_t counter = 0;
+		QString ret;
+		FOR_EACH_R(i, rawNumAsStr){
+			++counter;
+			ret.prepend( (*i) );
+			if( 0 == ( counter % 3 ) &&
+				counter != rawNumAsStr.size() ){
+				ret.prepend(',');
+			}
+		}
+
+		return ret.toStdString();
+	}
+
+	template <typename T>
+	static QString commaDeliminateNumQT(const T num){
+		return QString::fromStdString(commaDeliminateNum(num));
+	}
 
 	static unsigned int getUInt(const QString& arg)
 	{

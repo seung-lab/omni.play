@@ -25,6 +25,9 @@ private:
 	zi::Mutex mutex_;
 	std::vector<boost::shared_ptr<OmIMemMappedFile<T> > > maps_;
 
+	typedef OmMemMappedFileReadQT<T> reader_t;
+	typedef OmMemMappedFileWriteQT<T> writer_t;
+
 public:
 	OmMemMappedVolume(){} // for boost::varient
 	OmMemMappedVolume(VOL* vol)
@@ -39,8 +42,8 @@ public:
 
 		for(size_t level = 0; level < maps_.size(); ++level) {
 			maps_[level] =
-				boost::make_shared<OmMemMappedFileReadQT<T> >(getFileName(level),
-															  0);
+				boost::make_shared<reader_t>(getFileName(level),
+							     0);
 		}
 	}
 
@@ -58,12 +61,13 @@ public:
 			const int64_t size = dims.x * dims.y * dims.z * bps;
 
 			printf("mip %d: size is: %s (%lldx%lldx%lld)\n",
-				   level, qPrintable(StringHelpers::commaDeliminateNumber(size)),
-				   dims.x, dims.y, dims.z);
+			       level,
+			       StringHelpers::commaDeliminateNum(size).c_str(),
+			       dims.x, dims.y, dims.z);
 
 			maps_[level] =
-				boost::make_shared<OmMemMappedFileWriteQT<T> >(getFileName(level),
-															   size);
+				boost::make_shared<writer_t>(getFileName(level),
+							     size);
 		}
 
 		printf("OmMemMappedVolume: done allocating data\n");
@@ -89,7 +93,7 @@ public:
 			slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
 		debug("io", "offset is: %llu (%lld,%lld,%lld) for (%lld,%lld,%lld)\n",
-			  offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
+		      offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
 		assert(ret);
@@ -106,8 +110,8 @@ private:
 		maps_.resize(vol_->GetRootMipLevel() + 1);
 	}
 
-//TODO: cleanup!
-//ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
+	//TODO: cleanup!
+	//ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
 	std::string getFileName(const int level) const
 	{
 		const QDir filesDir = OmProjectData::GetFilesFolderPath();

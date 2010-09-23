@@ -50,7 +50,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumSegments, 0, 0 );
 	QLabel *labelNumSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumSegs = StringHelpers::commaDeliminateNumber( sdw->getNumberOfSegments() );
+	QString commaNumSegs = StringHelpers::commaDeliminateNumQT(sdw->getNumberOfSegments());
 	labelNumSegmentsNum->setText( commaNumSegs );
 	grid->addWidget( labelNumSegmentsNum, 0, 1 );
 
@@ -60,7 +60,7 @@ QGroupBox* SegInspector::makeStatsBox()
 	grid->addWidget( labelNumTopSegments, 1, 0 );
 	QLabel *labelNumTopSegmentsNum = new QLabel(statsBox);
 
-	QString commaNumTopSegs = StringHelpers::commaDeliminateNumber( sdw->getNumberOfTopSegments() );
+	QString commaNumTopSegs = StringHelpers::commaDeliminateNumQT(sdw->getNumberOfTopSegments());
 	labelNumTopSegmentsNum->setText( commaNumTopSegs );
 	grid->addWidget( labelNumTopSegmentsNum, 1, 1 );
 

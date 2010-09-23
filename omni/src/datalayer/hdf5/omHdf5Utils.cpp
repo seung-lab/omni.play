@@ -83,7 +83,7 @@ void OmHdf5Utils::dataset_delete_if_exists(const int fileId, const char* path)
 
 OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype)
 {
-	OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, INVALID);
+	OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, NONE);
 	return dw;
 }
 

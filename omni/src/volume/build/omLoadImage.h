@@ -74,10 +74,10 @@ private:
 				chunk->copyInTile(sliceNum, tile.bits());
 
 				++chunkNum;
-				QString numTiles = QString("%1 of %2 tiles copied...")
-					.arg(StringHelpers::commaDeliminateNumber(chunkNum))
-					.arg(StringHelpers::commaDeliminateNumber(totalChunksInSlice));
-				printf("%s", qPrintable(QString(mMsg+numTiles)));
+				printf("%s %d of %d tiles copied",
+					   qPrintable(mMsg),
+					   StringHelpers::commaDeliminateNum(chunkNum).c_str(),
+					   StringHelpers::commaDeliminateNum(totalChunksInSlice).c_str());
 			}
 		}
 	}

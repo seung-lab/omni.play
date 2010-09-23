@@ -125,9 +125,9 @@ bool OmMST::importDend(OmIDataReader* hdf5reader)
   int dendSize;
   OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
   printf("\tdendrogram is %s x %s (%s bytes)\n",
-	 qPrintable(StringHelpers::commaDeliminateNumber(dSize.x)),
-	 qPrintable(StringHelpers::commaDeliminateNumber(dSize.y)),
-	 qPrintable(StringHelpers::commaDeliminateNumber(dendSize)));
+		 StringHelpers::commaDeliminateNum(dSize.x).c_str(),
+		 StringHelpers::commaDeliminateNum(dSize.y).c_str(),
+		 StringHelpers::commaDeliminateNum(dendSize).c_str());
 
   assert( 2 == dSize.x );
   mDendCount = dSize.y;
@@ -150,9 +150,9 @@ bool OmMST::importDendValues(OmIDataReader * hdf5reader)
   OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 
   printf("\tdendrogram values is %s x %s (%s bytes)\n",
-	 qPrintable(StringHelpers::commaDeliminateNumber(vSize.x)),
-	 qPrintable(StringHelpers::commaDeliminateNumber(vSize.y)),
-	 qPrintable(StringHelpers::commaDeliminateNumber(dendValuesSize)));
+		 StringHelpers::commaDeliminateNum(vSize.x).c_str(),
+		 StringHelpers::commaDeliminateNum(vSize.y).c_str(),
+		 StringHelpers::commaDeliminateNum(dendValuesSize).c_str());
 
   assert( 0 == vSize.y );
   mDendValues = dendValues;
@@ -182,7 +182,7 @@ void OmMST::FlushDend(OmSegmentation * seg)
 {
   OmDataPath path = getDendPath(*seg);
   printf("dend: will save %s bytes\n",
-	 qPrintable(StringHelpers::commaDeliminateNumber(mDendSize)));
+		 StringHelpers::commaDeliminateNum(mDendSize).c_str());
   OmProjectData::GetIDataWriter()->
     writeDataset(path,
 				      mDendSize,
@@ -190,7 +190,7 @@ void OmMST::FlushDend(OmSegmentation * seg)
 
   path = getDendValuesPath(*seg);
   printf("dendValues: will save %s bytes\n",
-	 qPrintable(StringHelpers::commaDeliminateNumber(mDendValuesSize)));
+		 StringHelpers::commaDeliminateNum(mDendValuesSize).c_str());
   OmProjectData::GetIDataWriter()->
     writeDataset(path,
 		 mDendValuesSize,

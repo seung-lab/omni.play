@@ -65,9 +65,9 @@ int OmCacheGroup::Clean()
 	}
 
 	std::cout << "cur size: "
-		  << StringHelpers::commaDeliminateNumber(curSize).toStdString()
+		  << StringHelpers::commaDeliminateNum(curSize)
 		  << " bytes; maxSize is: "
-		  << StringHelpers::commaDeliminateNumber(mMaxSize).toStdString()
+		  << StringHelpers::commaDeliminateNum(mMaxSize)
 		  << "\n";
 
 	int numItemsRemoved = 0;
