@@ -8,11 +8,11 @@
 
 #include "system/omManageableObject.h"
 #include "mesh/omMipMeshManager.h"
-#include "system/omGroups.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/omDataWrapper.h"
 #include "segment/omSegmentIterator.h"
 
+class OmGroups;
 class OmMST;
 class OmSegmentLists;
 class OmSegment;
@@ -50,7 +50,7 @@ public:
 	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
 
 	//group management
-	OmGroups * GetGroups(){ return &mGroups; }
+	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
  	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void DeleteGroup(OmSegID = 0);
@@ -81,7 +81,7 @@ private:
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 
-	OmGroups mGroups;
+	boost::shared_ptr<OmGroups> mGroups;
 
 	boost::shared_ptr<OmMST> mst_;
 

@@ -45,7 +45,7 @@ void OmGroupListWidget::mousePressEvent(QMouseEvent* event)
 
 	populateTable();
 
-        if (event->button() == Qt::LeftButton) {
+	if (event->button() == Qt::LeftButton) {
 	} else if (event->button() == Qt::RightButton) {
 	}
 }
@@ -64,21 +64,21 @@ void OmGroupListWidget::keyPressEvent(QKeyEvent* event)
 
 void OmGroupListWidget::populate(OmSegmentation & seg)
 {
-        OmGroups * groups = seg.GetGroups();
+	boost::shared_ptr<OmGroups> groups = seg.GetGroups();
 
-        OmGroupIDsSet set = groups->GetGroups();
+	OmGroupIDsSet set = groups->GetGroups();
 
-        OmGroupID firstID = 0;
-        foreach(OmGroupID id, set) {
-                if(!firstID) {
-                        firstID = id;
-                }
-                QTreeWidgetItem *row = new QTreeWidgetItem(this);
-                OmGroup & group = groups->GetGroup(id);
-                row->setText(0, group.GetName());
-                row->setData(0, Qt::UserRole, qVariantFromValue(id));
-                row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+	OmGroupID firstID = 0;
+	foreach(OmGroupID id, set) {
+		if(!firstID) {
+			firstID = id;
+		}
+		QTreeWidgetItem *row = new QTreeWidgetItem(this);
+		OmGroup & group = groups->GetGroup(id);
+		row->setText(0, group.GetName());
+		row->setData(0, Qt::UserRole, qVariantFromValue(id));
+		row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
-                printf("here\n");
-        }
+		printf("here\n");
+	}
 }

@@ -1,4 +1,3 @@
-#include "utility/OmThreadPool.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -6,14 +5,11 @@
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "system/cache/omMipVolumeCache.h"
-#include "system/events/omProgressEvent.h"
-#include "system/omEventManager.h"
-#include "utility/omTimer.h"
+#include "utility/OmThreadPool.hpp"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
-#include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 
 #include <float.h>
@@ -76,23 +72,19 @@ OmFilter2d& OmChannel::GetFilter(OmId id) {
 	return mFilter2dManager.GetFilter(id);
 }
 
-const OmIDsSet & OmChannel::GetValidFilterIds()
-{
+const OmIDsSet & OmChannel::GetValidFilterIds(){
 	return mFilter2dManager.GetValidFilterIds();
 }
 
-bool OmChannel::IsFilterValid(const OmId id)
-{
+bool OmChannel::IsFilterValid(const OmId id){
 	return mFilter2dManager.IsFilterValid(id);
 }
 
-bool OmChannel::IsFilterEnabled(OmId id)
-{
+bool OmChannel::IsFilterEnabled(OmId id){
 	return mFilter2dManager.IsFilterEnabled(id);
 }
 
-void OmChannel::CloseDownThreads()
-{
+void OmChannel::CloseDownThreads(){
 	mDataCache->closeDownThreads();
 }
 
@@ -102,8 +94,7 @@ bool OmChannel::ImportSourceData(OmDataPath & dataset)
 	return importer.import(dataset);
 }
 
-void OmChannel::loadVolData()
-{
+void OmChannel::loadVolData(){
 	mVolData->load(this);
 }
 
@@ -116,6 +107,7 @@ OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
 	return OmDataWrapperFactory::produce(rawDataPtr);
 }
+
 
 class OmChannelChunkBuildTask : public zi::Runnable {
 private:

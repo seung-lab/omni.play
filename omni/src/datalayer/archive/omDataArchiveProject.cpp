@@ -320,7 +320,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
 	out << seg.mst_->mDendValuesSize;
 	out << seg.mst_->mDendCount;
 	out << seg.mst_->mDendThreshold;
-	out << seg.mGroups;
+	out << (*seg.mGroups);
 
 	return out;
 }
@@ -338,7 +338,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 	in >> seg.mst_->mDendValuesSize;
 	in >> seg.mst_->mDendCount;
 	in >> seg.mst_->mDendThreshold;
-	in >> seg.mGroups;
+	in >> (*seg.mGroups);
 
 	if(fileVersion_ > 13){
 		seg.loadVolData();

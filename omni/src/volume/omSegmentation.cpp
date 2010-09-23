@@ -1,3 +1,4 @@
+#include "system/omGroups.h"
 #include "utility/OmThreadPool.hpp"
 #include "mesh/omMipMesh.h"
 #include "common/omCommon.h"
@@ -43,7 +44,7 @@ OmSegmentation::OmSegmentation()
 	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
-	, mGroups(this)
+	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
 {
 }
@@ -55,7 +56,7 @@ OmSegmentation::OmSegmentation(OmId id)
 	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
-  	, mGroups(this)
+	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
 {
 	mMipMeshManager.SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
@@ -176,7 +177,7 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
 	if(GROUPROOT == type) {
-		return mGroups.UnsetGroup(set, name);
+		return mGroups->UnsetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
 	} else {
 		assert(0 && "only unset regular groups");
