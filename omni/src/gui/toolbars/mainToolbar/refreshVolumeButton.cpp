@@ -18,6 +18,7 @@ void VolumeRefreshButton::doAction()
 	const OmIDsSet & set = OmProject::GetValidSegmentationIds();
 	OmIDsSet::const_iterator iter;
 	for( iter = set.begin(); iter != set.end(); ++iter ){
-		OmProject::GetSegmentation(*iter).Flush();
-        }
+		printf("fixme!!!!!!!!!!!!!!\n");
+		//OmProject::GetSegmentation(*iter).Flush();
+	}
 }

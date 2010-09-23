@@ -39,27 +39,6 @@ OmMipVolume::OmMipVolume()
 	SetChunksStoreMetaData(false);
 }
 
-OmMipVolume::~OmMipVolume()
-{
-	Flush();
-}
-
-/////////////////////////////////
-///////          DataVolume
-
-/*
- *	Flush all changes to disk
- */
-void OmMipVolume::Flush()
-{
-	if(!OmProject::GetCanFlush()) {
-		return;
-	}
-
-	//build any edited leaf chunks
-	BuildEditedLeafChunks();
-}
-
 /**
  *	Returns data path to internal MipLevel data.
  */
@@ -82,9 +61,9 @@ std::string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 
 /////////////////////////////////
 ///////          Source Data Properties
-void OmMipVolume::SetSourceFilenamesAndPaths( QFileInfoList sourceFilenamesAndPaths )
+void OmMipVolume::SetSourceFilenamesAndPaths(const QFileInfoList& srcFiles)
 {
-	mSourceFilenamesAndPaths = SortHelpers::SortNaturally(sourceFilenamesAndPaths);
+	mSourceFilenamesAndPaths = SortHelpers::SortNaturally(srcFiles);
 	sourceFilesWereSet = true;
 }
 

@@ -31,9 +31,7 @@ enum MipVolumeBuildState { MIPVOL_UNBUILT = 0,
 class OmMipVolume : public OmVolume {
 public:
 	OmMipVolume();
-	virtual ~OmMipVolume();
-
-	void Flush();
+	virtual ~OmMipVolume(){}
 
 	virtual std::string GetDirectoryPath() = 0;
 	virtual std::string GetName() = 0;
@@ -49,7 +47,7 @@ public:
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 
 	//source data properties
-	void SetSourceFilenamesAndPaths( QFileInfoList );
+	void SetSourceFilenamesAndPaths(const QFileInfoList&);
 	QFileInfoList GetSourceFilenamesAndPaths();
 	bool IsSourceValid();
 

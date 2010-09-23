@@ -35,7 +35,7 @@ private:
 				 qPrintable(rhs)) < 0;
 	}
 
-	static bool NaturalStringCaseInsensitiveCompareLessThanQFile(const QFileInfo & lhs,
+	static bool NaturalStringCaseInsensitiveCompareLessThanQFile(const QFileInfo& lhs,
 								     const QFileInfo & rhs)
 	{
 		return NaturalStringCaseInsensitiveCompareLessThan(lhs.fileName(),

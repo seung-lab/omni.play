@@ -74,7 +74,7 @@ private:
 				chunk->copyInTile(sliceNum, tile.bits());
 
 				++chunkNum;
-				printf("%s %d of %d tiles copied",
+				printf("%s %s of %s tiles copied",
 					   qPrintable(mMsg),
 					   StringHelpers::commaDeliminateNum(chunkNum).c_str(),
 					   StringHelpers::commaDeliminateNum(totalChunksInSlice).c_str());
