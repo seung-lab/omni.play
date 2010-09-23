@@ -143,6 +143,7 @@ private:
         case NONE:
             return OmSmartPtr<T>::wrapNoFree(rawPtr);
         case INVALID:
+		default:
             throw OmArgException("can't wrap invalid ptr");
         };
     }
