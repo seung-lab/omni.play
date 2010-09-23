@@ -18,7 +18,7 @@ OmMipChunk::OmMipChunk(const OmMipChunkCoord & coord, OmMipVolume* vol)
 	, containedValuesDataLoaded(false)
 	, mChunkMetaDataDirty(false)
 	, cache_(vol->getDataCache())
-	, mChunkData(new OmChunkData(vol, this, coord))
+	, mChunkData(boost::make_shared<OmChunkData>(vol, this, coord))
 {
 	InitChunk(coord);
 }
