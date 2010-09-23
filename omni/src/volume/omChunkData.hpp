@@ -3,6 +3,7 @@
 
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
+#include "utility/image/omImage.hpp"
 
 #include <zi/mutex>
 
@@ -15,9 +16,9 @@ public:
 	OmRawDataPtrs& getRawData();
 
 	void RefreshDirectDataValues(const bool,
-				     boost::shared_ptr<OmSegmentCache>);
+								 boost::shared_ptr<OmSegmentCache>);
 
-        boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
 	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
 
