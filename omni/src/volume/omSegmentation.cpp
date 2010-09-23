@@ -236,7 +236,7 @@ Vector3i OmSegmentation::FindCenterOfSelectedSegments()
 			continue;
 		}
 
-		box.merge(seg->getBounds());
+		box.merge(segBox);
 
 		++counter;
 		if(counter > 5000) {
