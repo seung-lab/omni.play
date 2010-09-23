@@ -2,7 +2,6 @@
 
 #include "volume/omMipChunk.h"
 #include "volume/omVolumeTypes.hpp"
-#include "system/cache/omThreadChunkThreadedCache.h"
 
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMeshTypes.hpp"
@@ -12,7 +11,6 @@
 #include "tiles/omTile.h"
 
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr>;
-template class OmThreadedCache<OmMipChunkCoord, OmThreadChunkLevelPtr>;
 template class OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>;
 template class OmThreadedCache<OmTileCoord, OmTilePtr>;
 

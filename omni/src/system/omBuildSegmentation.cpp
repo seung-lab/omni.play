@@ -84,7 +84,7 @@ void OmBuildSegmentation::do_build_seg_mesh()
 	OmTimer build_timer;
 	startTiming(type, build_timer);
 
-	mSeg->BuildMeshData();
+	mSeg->Mesh();
 
 	stopTimingAndSave(type, build_timer);
 }

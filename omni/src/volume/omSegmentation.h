@@ -24,7 +24,7 @@ class OmVolumeCuller;
 class OmVolumeData;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
- public:
+public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
@@ -40,20 +40,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
 	void CloseDownThreads();
 
-	//build methods
 	void BuildVolumeData();
+	void Mesh();
 
-	bool BuildThreadedVolume();
-	bool BuildThreadedSegmentation();
-
-	void BuildMeshData();
-	void BuildMeshDataPlan(const QString &);
-	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
-	void BuildMeshDataInternal();
-	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
-	void RunMeshQueue();
-
-	void BuildChunk( const OmMipChunkCoord &, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
@@ -61,7 +50,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
 
 	//group management
-        OmGroups * GetGroups(){ return &mGroups; }
+	OmGroups * GetGroups(){ return &mGroups; }
  	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void DeleteGroup(OmSegID = 0);
@@ -79,6 +68,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	Vector3i FindCenterOfSelectedSegments();
 
 	bool ImportSourceData(OmDataPath & dataset);
+
+protected:
+	virtual void doBuildThreadedVolume();
 
 private:
 	OmMipVolumeCache *const mDataCache;

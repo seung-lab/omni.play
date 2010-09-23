@@ -23,6 +23,10 @@ public:
 		threadManager_->start();
 	}
 
+	void join(){
+		threadManager_->join();
+	}
+
 	void clear(){
 		if(getTaskCount()){
 			threadManager_->clearTasks();

@@ -21,7 +21,6 @@
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationChunkCoord.h"
 #include "volume/omVolume.h"
 #include "zi/base/base.h"
 #include "zi/watershed/RawQuickieWS.h"
@@ -49,32 +48,11 @@ void Headless::openProject( QString fName )
 		QDir::setCurrent( QFileInfo(fName).absolutePath() );
 		printf("Opened project \"%s\"\n", qPrintable( fName ));
 	} catch(...) {
-	        printf("Error while loading project \"%s\"\n", qPrintable( fName ));
+		printf("Error while loading project \"%s\"\n", qPrintable( fName ));
 	}
 }
 
-void doMeshinate( OmSegmentation * current_seg )
-{
-        QString abs_fnpn = OmProjectData::getAbsoluteFileNameAndPath();
-        QString fnpnPlan = abs_fnpn + ".plan";
-        current_seg->BuildMeshDataPlan( fnpnPlan );
-
-	QString& GetScriptCmd (QString arg);
-        QString script = GetScriptCmd (fnpnPlan);
-        debug ("meshinator", "%s\n", qPrintable (script));
-
-	//printf("here 2\n");
-
-        QProcess * meshinatorProc = new QProcess ();
-        meshinatorProc->start(script);
-        meshinatorProc->waitForFinished(-1);
-
-	//printf("here 3\n");
-
-	(new OmProjectSaveAction())->Run();
-}
-
-void Headless::processLine( QString line, QString fName )
+void Headless::processLine(const QString& line, const QString&)
 {
 	OmTimer timer;
 
@@ -93,14 +71,6 @@ void Headless::processLine( QString line, QString fName )
 		OmBuildSegmentation bs( &added_segmentation );
 		bs.build_seg_mesh();
 		bs.wait();
-        } else if( "meshinator" == line ) {
-                if( 0 == SegmentationID  ){
-                        printf("Please choose segmentation first!\n");
-                        return;
-                }
-                OmSegmentation & added_segmentation = OmProject::GetSegmentation(SegmentationID);
-		(new OmProjectSaveAction())->Run();
-		doMeshinate(&added_segmentation);
 	} else if( "loadDend" == line ) {
 		if( 0 == SegmentationID  ){
 			printf("Please choose segmentation first!\n");
@@ -144,7 +114,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 		const bool same =
 			OmMipVolume::CompareVolumes(&OmProject::GetChannel(id1),
-						    &OmProject::GetChannel(id2));
+										&OmProject::GetChannel(id2));
 
 		if(same){
 			printf("Channel %i and Channel %i are identical.\n",id1,id2);
@@ -187,14 +157,14 @@ void Headless::processLine( QString line, QString fName )
 		}
 		const bool same =
 			OmMipVolume::CompareVolumes(&OmProject::GetSegmentation(id1),
-						    &OmProject::GetSegmentation(id2));
+										&OmProject::GetSegmentation(id2));
 		if(same){
 			printf("Segmentation %i and Segmentation %i are identical.\n",id1,id2);
 		} else {
 			printf("Segmentation %i and Segmentation %i are different!\n",id1,id2);
 		}
 	} else if(line.startsWith("dumpSegTiles:") ) {
-                QStringList args = line.split(':',QString::SkipEmptyParts);
+		QStringList args = line.split(':',QString::SkipEmptyParts);
 		QString fileNameAndPath = "/tmp/tiles.dump";
 		OmId segID = 1;
 
@@ -210,85 +180,22 @@ void Headless::processLine( QString line, QString fName )
 		OmTileDumper dumper(segID, SEGMENTATION, fileNameAndPath, vgs);
 		dumper.DumpTiles();
 
-        } else if(line.startsWith("dumpChannTiles:") ) {
-                QStringList args = line.split(':',QString::SkipEmptyParts);
-                QString file = "/tmp/tiles";
-                OmId segID = 1;
+	} else if(line.startsWith("dumpChannTiles:") ) {
+		QStringList args = line.split(':',QString::SkipEmptyParts);
+		QString file = "/tmp/tiles";
+		OmId segID = 1;
 
-                if(3 == args.size()) {
-                        segID = StringHelpers::getUInt(args[1]);
-                        file = args[2];
-                } else if(2 == args.size()) {
-                        segID = 1;
-                        file = args[1];
-                }
+		if(3 == args.size()) {
+			segID = StringHelpers::getUInt(args[1]);
+			file = args[2];
+		} else if(2 == args.size()) {
+			segID = 1;
+			file = args[1];
+		}
 
-                OmViewGroupState * vgs = new OmViewGroupState(NULL);
+		OmViewGroupState * vgs = new OmViewGroupState(NULL);
 		OmTileDumper dumper(segID, CHANNEL, file, vgs);
 		dumper.DumpTiles();
-
-	} else if( line.startsWith("meshchunk:") ) {
-		// format: meshchunk:segmentationID:mipLevel:x,y,z[:numthreads]
-		QStringList args = line.split(':',QString::SkipEmptyParts);
-
-		if ( args.size() < 4 ){
-			printf("Invalid format. Did you forget some arguments?\n");
-			return;
-		}
-
-		SegmentationID = StringHelpers::getUInt( args[1] );
-		unsigned int mipLevel = StringHelpers::getUInt( args[2] );
-		QStringList coords = args[3].split(',',QString::SkipEmptyParts);
-
-		if ( args.size() < 3 ){
-			printf("Not enough coordinates specified. Please specify as 'x,y,z'.\n");
-			return;
-		}
-
-		const int x = StringHelpers::getUInt( coords[0] );
-		const int y = StringHelpers::getUInt( coords[1] );
-		const int z = StringHelpers::getUInt( coords[2] );
-
-		OmMipMeshCoord mipChunkCoord = OmMipMeshCoord(OmMipChunkCoord(mipLevel, x, y, z), SegmentationID);
-		OmIDataWriter* hdf5File = NULL;
-
-  		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
-		    OmStateManager::getParallel()) {
-    			hdf5File = OmDataLayer::getWriter( QString::fromStdString( OmDataPaths::getLocalPathForHd5fChunk(mipChunkCoord, SegmentationID) ), false );
-			hdf5File->create();
-			hdf5File->open();
-                }
-
-		int numThreads=0;
-		if( 5 == args.size() ){
-			numThreads = StringHelpers::getUInt( args[4] );
-			printf("Overrode default number of threads...\n");
-		}
-		if( 0 == numThreads) {
-			numThreads = 4;
-		}
-		printf("Meshing chunk %d, %d, %d, %d...", mipLevel, x, y, z );
-		timer.start();
-		OmProject::GetSegmentation( SegmentationID ).BuildMeshChunk( mipLevel, x, y, z, numThreads);
-		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
-
-		if (OmLocalPreferences::getStoreMeshesInTempFolder() ||
-      			OmStateManager::getParallel()) {
-    			hdf5File->close();
-  		}
-	} else if( line.startsWith("runMeshPlan") ) {
-		timer.start();
-		runMeshPlan( line );
-		printf("Meshing done (%.6f secs)\n", timer.s_elapsed() );
-	} else if( "meshplan" == line ) {
-		if( 0 == SegmentationID  ){
-			printf("Please choose segmentation first!\n");
-			return;
-		}
-		QString planFile = fName + ".plan";
-		//		QString planFile = fName + QString(".seg%1.plan").arg(SegmentationID);
-		OmProject::GetSegmentation( SegmentationID ).BuildMeshDataPlan(planFile);
-		printf("Wrote plan to \"%s\"\n", qPrintable( planFile ) );
 	} else if( line.startsWith("seg:") ) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		if ( args.size() < 2 ){
@@ -326,12 +233,12 @@ void Headless::processLine( QString line, QString fName )
 		}
 		QDir::setCurrent(path);
 	} else if( "ls" == line ){
-	        QStringList entrylist = QDir::current().entryList();
+		QStringList entrylist = QDir::current().entryList();
 		foreach (QString str, entrylist){
 			printf("%s\n",qPrintable(str));
 		}
 	} else if( "ls -l" == line ){
-	        QFileInfoList entrylist = QDir::current().entryInfoList();
+		QFileInfoList entrylist = QDir::current().entryInfoList();
 		foreach(QFileInfo f, entrylist){
 			QString line = QString("%1%2")
 				.arg(f.fileName(), -20, ' ')
@@ -340,12 +247,12 @@ void Headless::processLine( QString line, QString fName )
 		}
 	} else if( "parallel" == line ){
 		OmStateManager::setParallel(true);
-        } else if( line.startsWith("addSegment") ){
-                if( 0 == SegmentationID  ){
-                        printf("Please choose segmentation first!\n");
-                        return;
-                }
-                OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
+	} else if( line.startsWith("addSegment") ){
+		if( 0 == SegmentationID  ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		OmProject::GetSegmentation( SegmentationID ).GetSegmentCache()->AddSegment();
 		(new OmProjectSaveAction())->Run();
 	} else if( line.startsWith("create:") ) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
@@ -356,7 +263,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 
 		QString projectFileNameAndPath = args[1];
-                const QString fname = OmProject::New( projectFileNameAndPath );
+		const QString fname = OmProject::New( projectFileNameAndPath );
 		RecentFileList::prependFileToFS(fname);
 		printf("Created and opened %s.\n",qPrintable(fname));
 
@@ -430,28 +337,28 @@ void Headless::processLine( QString line, QString fName )
 		}
 		bc.build_channel();
 		bc.wait();
-        } else if( line.startsWith("loadTIFFseg:") ){
-                QStringList args = line.split(':',QString::SkipEmptyParts);
+	} else if( line.startsWith("loadTIFFseg:") ){
+		QStringList args = line.split(':',QString::SkipEmptyParts);
 
 		if ( args.size() < 2 ){
 			printf("Please enter a path to a directory.\n");
 			return;
 		}
 
-                OmSegmentation & seg = OmProject::AddSegmentation();
+		OmSegmentation & seg = OmProject::AddSegmentation();
 		SegmentationID = seg.GetId();
-                OmBuildSegmentation bs( &seg );
+		OmBuildSegmentation bs( &seg );
 
-                QDir dir( args[1] );
-                foreach( QFileInfo f, dir.entryInfoList() ){
-                        if(!f.isFile()){
-                                continue;
-                        }
-                        //printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
-                        bs.addFileNameAndPath( f.canonicalFilePath() );
-                }
-                bs.build_seg_image();
-                bs.wait();
+		QDir dir( args[1] );
+		foreach( QFileInfo f, dir.entryInfoList() ){
+			if(!f.isFile()){
+				continue;
+			}
+			//printf("adding %s/\n", qPrintable( f.canonicalFilePath() ) );
+			bs.addFileNameAndPath( f.canonicalFilePath() );
+		}
+		bs.build_seg_image();
+		bs.wait();
 	} else if( line.startsWith("buildHDF5:") ){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -473,17 +380,17 @@ void Headless::processLine( QString line, QString fName )
 		bs.wait();
 	} else if( "loadChunk" == line ){
 		if( 0 == SegmentationID ){
-                        printf("Please choose segmentation first!\n");
-                        return;
-                }
+			printf("Please choose segmentation first!\n");
+			return;
+		}
 
 		OmSegmentation & segmen = OmProject::GetSegmentation(SegmentationID);
 		OmMipChunkCoord chunk_coord(0,0,0,0);
 		OmMipChunkPtr p_chunk;
 		segmen.GetChunk(p_chunk, chunk_coord);
 		p_chunk->Open();
-        } else if( line.startsWith("removeChann:") ){
-                QStringList args = line.split(':',QString::SkipEmptyParts);
+	} else if( line.startsWith("removeChann:") ){
+		QStringList args = line.split(':',QString::SkipEmptyParts);
 
 		if ( args.size() < 2 ){
 			printf("Please enter a channel id.\n");
@@ -501,7 +408,7 @@ void Headless::processLine( QString line, QString fName )
 		printf("Channel %i removed.\n",channID);
 
 	} else if( line.startsWith("removeSeg:") ){
-                QStringList args = line.split(':',QString::SkipEmptyParts);
+		QStringList args = line.split(':',QString::SkipEmptyParts);
 
 		if ( args.size() < 2 ){
 			printf("Please enter a segmentation id.\n");
@@ -542,7 +449,7 @@ void Headless::processLine( QString line, QString fName )
 		}
 	} else if( line.startsWith("watershed:") ){
 		watershed(line);
-        } else {
+	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line) );
 	}
 }
@@ -649,52 +556,6 @@ int Headless::start(int argc, char *argv[])
 	}
 }
 
-void Headless::runMeshPlan( QString headlessLine )
-{
-	QStringList headlessArgs = headlessLine.split(':');
-	QString planName = headlessArgs[1];
-
-	QFile file( planName );
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		throw OmIoException( "Could not read file" );
-	}
-
-	QSet<OmId> segmentationIDs;
-
-	QString line;
-	QTextStream in(&file);
-	while (!in.atEnd()) {
-		line = in.readLine();
-
-		OmSegmentationChunkCoord coord = makeChunkCoord( line );
-		OmId segmentationID = coord.getSegmentationID();
-
-		if (!segmentationIDs.contains(segmentationID)){
-			segmentationIDs << segmentationID;
-		}
-
-		OmProject::GetSegmentation( segmentationID ).QueueUpMeshChunk( coord );
-	}
-
-	foreach( OmId segID, segmentationIDs){
-		OmProject::GetSegmentation( segID ).RunMeshQueue();
-	}
-}
-
-OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
-{
-	QStringList args = line.split(':');
-	OmId segmentationID = StringHelpers::getUInt( args[1] );
-	unsigned int mipLevel = StringHelpers::getUInt( args[2] );
-	QStringList coords = args[3].split(',');
-	unsigned int x = StringHelpers::getUInt( coords[0] );
-	unsigned int y = StringHelpers::getUInt( coords[1] );
-	unsigned int z = StringHelpers::getUInt( coords[2] );
-
-	return OmSegmentationChunkCoord(segmentationID, mipLevel, x, y, z);
-}
-
-
 void Headless::watershed(const QString &  line)
 {
 	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
@@ -730,12 +591,12 @@ void Headless::watershed(const QString &  line)
 	const float absLowThreshold = StringHelpers::getFloat(args[7]);
 
 	RawQuickieWS rqws(xDim,
-			  yDim,
-			  zDim,
-			  loThreshold,
-			  hiThreshold,
-			  noThreshold,
-			  absLowThreshold);
+					  yDim,
+					  zDim,
+					  loThreshold,
+					  hiThreshold,
+					  noThreshold,
+					  absLowThreshold);
 
 	rqws.Run(in.GetPtr(), out.GetPtr());
 

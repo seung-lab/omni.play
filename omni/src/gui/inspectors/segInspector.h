@@ -55,10 +55,6 @@ public:
 	QGroupBox* makeStatsBox();
 	QGroupBox* makeVolBox();
 
-	void doMeshinate( OmSegmentation * current_seg );
-	QProcess* mMeshinatorProc;
-	QDialog* mMeshinatorDialog;
-
 	QDir getDir();
 	QStringList getFileList();
 	QFileInfoList getFileInfoList();

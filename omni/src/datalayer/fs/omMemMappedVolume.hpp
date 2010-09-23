@@ -44,7 +44,7 @@ public:
 		}
 	}
 
-	void Create(const std::map<int, Vector3i> & levelsAndDims)
+	void Create(const std::map<int, Vector3i>& levelsAndDims)
 	{
 		zi::Guard g(mutex_);
 

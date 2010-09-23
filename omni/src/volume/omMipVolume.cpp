@@ -12,7 +12,6 @@
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
 #include "datalayer/omDataLayer.h"
-#include "system/cache/omThreadChunkThreadedCache.h"
 #include "system/events/omProgressEvent.h"
 #include "system/omEventManager.h"
 #include "system/omProjectData.h"
@@ -20,9 +19,7 @@
 #include "utility/omTimer.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
-#include "volume/omMipThreadManager.h"
 #include "volume/omMipVolume.h"
-#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 
 #include <QImage>
@@ -239,128 +236,6 @@ Vector3i  OmMipVolume::MipLevelDimensionsInMipChunks(int level)
 					 ceil(data_dims.z / GetChunkDimension()));
 }
 
-/*
- *	Returns the number of MipChunks in a given MipLevel of the MipVolume
- */
-int OmMipVolume::MipChunksInMipLevel(int level)
-{
-	Vector3i mip_dims = MipLevelDimensionsInMipChunks(level);
-	return mip_dims.x * mip_dims.y * mip_dims.z;
-}
-
-/*
- *	Returns the number of MipChunks in all MipLevels of the MipVolume
- */
-int OmMipVolume::MipChunksInVolume()
-{
-	int total = 0;
-	for (int i = 0; i <= GetRootMipLevel(); i++) {
-		total += MipChunksInMipLevel(i);
-	}
-	return total;
-}
-
-/////////////////////////////////
-///////          Thread Chunk Methods
-
-
-/*
- *	Gets dimension of a thread chunk, which incrceases with num of mip levels,
- *	but is at least as large as a mip chunk, and also bounded from above to prevent
- *	having thread chunks that are too large in memory
- */
-int OmMipVolume::GetThreadChunkDimension()
-{
-/*
-  int unbounded_chunk_dim = OMPOW(2, mMipRootLevel);
-  int lower_bound = GetChunkDimension();
-  int upper_bound = GetChunkDimension()*OMPOW(2, MAX_THREAD_CHUNK_EXPONENT);
-  int bounded_chunk_dim = min(max(unbounded_chunk_dim,lower_bound),upper_bound);
-  return bounded_chunk_dim;
-*/
-	return GetChunkDimension();
-}
-
-Vector3i  OmMipVolume::GetThreadChunkDimensions()
-{
-	return Vector3i (GetThreadChunkDimension(), GetThreadChunkDimension(), GetThreadChunkDimension());
-}
-
-
-/*
- *	Calculates maximum number of consecutive subsamples before a thread chunk bottoms out
- */
-int OmMipVolume::GetMaxConsecutiveSubsamples()
-{
-	double max_consecutive_subsamples = log(GetThreadChunkDimension()) / log(2);
-	return (int) max_consecutive_subsamples;
-}
-
-/*
- *	Gets dimension of a thread chunk level, which depends on the mipcoord level
- *	but flows over and loops back if it gets too small
- */
-int OmMipVolume::GetThreadChunkLevelDimension(int level)
-{
-	int effective_level = level;
-	int max_effective_level = GetMaxConsecutiveSubsamples();
-	//Flow over so that thread levels never get too small
-	effective_level = effective_level % max_effective_level;
-	//Effective level is never zero
-	if ( 0 == effective_level ){ effective_level = max_effective_level; }
-	return GetThreadChunkDimension() / OMPOW(2, effective_level);
-}
-
-Vector3i  OmMipVolume::GetThreadChunkLevelDimensions(int level)
-{
-	return Vector3i (GetThreadChunkLevelDimension(level), GetThreadChunkLevelDimension(level), GetThreadChunkLevelDimension(level));
-}
-
-/*
- *	Calculate the MipChunkCoord dims required to contain all the thread chunks in a mip level.
- */
-Vector3i  OmMipVolume::MipLevelDimensionsInThreadChunks(int level)
-{
-	Vector3f data_dims = MipLevelDataDimensions(level);
-
-	return Vector3i (ceil(data_dims.x / GetThreadChunkDimension()),
-					 ceil(data_dims.y / GetThreadChunkDimension()),
-					 ceil(data_dims.z / GetThreadChunkDimension()));
-}
-
-/*
- *	Calculate the MipChunkCoord dims required to contain all the thread chunks levels of that level in a mip level.
- */
-Vector3i  OmMipVolume::MipLevelDimensionsInThreadChunkLevels(int level)
-{
-	Vector3f data_dims = MipLevelDataDimensions(level);
-
-	return Vector3i (ceil(data_dims.x / GetThreadChunkLevelDimension(level)),
-					 ceil(data_dims.y / GetThreadChunkLevelDimension(level)),
-					 ceil(data_dims.z / GetThreadChunkLevelDimension(level)));
-}
-
-/*
- *	Returns the number of ThreadChunks in a given MipLevel of the MipVolume.
- */
-int OmMipVolume::ThreadChunksInMipLevel(int level)
-{
-	Vector3i thread_dims = MipLevelDimensionsInThreadChunks(level);
-	return thread_dims.x * thread_dims.y * thread_dims.z;
-}
-
-/*
- *	Returns the total number of ThreadChunks that will be built in a MipVolume.
- */
-int OmMipVolume::ThreadChunksInVolume()
-{
-	int total = 0;
-	for (int initLevel = 0; initLevel < GetRootMipLevel(); initLevel += GetMaxConsecutiveSubsamples()) {
-		total += ThreadChunksInMipLevel(initLevel);
-	}
-	return total;
-}
-
 /////////////////////////////////
 ///////          MipCoordinate Methods
 
@@ -412,34 +287,6 @@ NormBbox OmMipVolume::MipCoordToNormBbox(const OmMipChunkCoord & rMipCoord)
 	return OmVolume::DataToNormBbox(MipCoordToDataBbox(rMipCoord, 0));
 }
 
-/*
- *	Returns the extent of a thread chunk, indepndent of mip coord level
- */
-DataBbox OmMipVolume::MipCoordToThreadDataBbox(const OmMipChunkCoord & rMipCoord)
-{
-	int thread_dim = GetThreadChunkDimension();
-	Vector3i thread_dims = GetThreadChunkDimensions();
-
-	//min of extent in parent data coordinates
-	DataCoord thread_min_coord = rMipCoord.Coordinate * thread_dim;
-
-	return DataBbox(thread_min_coord, thread_dims.x, thread_dims.y, thread_dims.z);
-}
-
-/*
- *	Returns the extent of a thread chunk level based on mip coord level
- */
-DataBbox OmMipVolume::MipCoordToThreadLevelDataBbox(const OmMipChunkCoord & rMipCoord)
-{
-	int level_dim = GetThreadChunkLevelDimension(rMipCoord.Level);
-	Vector3i level_dims = GetThreadChunkLevelDimensions(rMipCoord.Level);
-
-	//min of extent in parent data coordinates
-	DataCoord level_min_coord = rMipCoord.Coordinate * level_dim;
-
-	return DataBbox(level_min_coord, level_dims.x, level_dims.y, level_dims.z);
-}
-
 /////////////////////////////////
 ///////          MipChunk Methods
 
@@ -467,50 +314,6 @@ bool OmMipVolume::ContainsMipChunkCoord(const OmMipChunkCoord & rMipCoord)
 	mip_coord_data_bbox.intersect(GetDataExtent());
 	if (mip_coord_data_bbox.isEmpty())
 		return false;
-
-	//else valid mip coord
-	return true;
-}
-
-/*
- *	Returns true if coordinate of thread chunk level is a valid coordinate within the MipVolume.
- */
-bool OmMipVolume::ContainsThreadChunkCoord(const OmMipChunkCoord & rMipCoord)
-{
-
-	//if level is greater than root level
-	if (rMipCoord.Level > GetRootMipLevel())
-		return false;
-
-	//check if coord is in volume
-	DataCoord thread_coord_dims = MipLevelDimensionsInThreadChunks(0);
-	if (rMipCoord.Coordinate.x > thread_coord_dims.x ||
-	    rMipCoord.Coordinate.y > thread_coord_dims.y ||
-	    rMipCoord.Coordinate.z > thread_coord_dims.z){
-		return false;
-	}
-
-	//else valid mip coord
-	return true;
-}
-
-/*
- *	Returns true if coordinate of thread chunk is a valid coordinate within the MipVolume.
- */
-bool OmMipVolume::ContainsThreadChunkLevelCoord(const OmMipChunkCoord & rMipCoord)
-{
-
-	//if level is greater than root level
-	if (rMipCoord.Level > GetRootMipLevel())
-		return false;
-
-	//check if coord is in volume
-	DataCoord thread_coord_dims = MipLevelDimensionsInThreadChunkLevels(rMipCoord.Level);
-	if (rMipCoord.Coordinate.x > thread_coord_dims.x ||
-	    rMipCoord.Coordinate.y > thread_coord_dims.y ||
-	    rMipCoord.Coordinate.z > thread_coord_dims.z){
-		return false;
-	}
 
 	//else valid mip coord
 	return true;
@@ -556,15 +359,6 @@ void OmMipVolume::GetChunk(OmMipChunkPtr& p_value,
 	assert(mBuildState != MIPVOL_UNBUILT);
 
 	getDataCache()->Get(p_value, rMipCoord, OM::BLOCKING);
-}
-
-void OmMipVolume::GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
-									  const OmMipChunkCoord & rMipCoord)
-{
-	//ensure either built or building
-	assert(mBuildState != MIPVOL_UNBUILT);
-
-	mThreadChunkThreadedCache->Get(p_value, rMipCoord, OM::BLOCKING);
 }
 
 /////////////////////////////////
@@ -653,7 +447,7 @@ void OmMipVolume::Build(OmDataPath & dataset)
 	}
 
 	//build volume
-	if (!BuildVolume()) {
+	if (!BuildThreadedVolume()) {
 		DeleteVolumeData();
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
@@ -665,128 +459,24 @@ void OmMipVolume::Build(OmDataPath & dataset)
 	SetBuildState(MIPVOL_BUILT);
 }
 
-/*
- *	Build all chunks in MipLevel of this MipVolume.
- */
-bool OmMipVolume::BuildVolume()
-{
-	return BuildThreadedVolume();
-}
-
-/*
+/**
  *	Build all chunks in MipLevel of this MipVolume with multithreading
  */
 bool OmMipVolume::BuildThreadedVolume()
 {
-	mThreadChunkThreadedCache = new OmThreadChunkThreadedCache(this);
-
 	OmTimer vol_timer;
+	vol_timer.start();
 
-	if (isDebugCategoryEnabled("perftest")){
-		vol_timer.start();
+	try{
+		doBuildThreadedVolume();
+	} catch(...){
+		return false;
 	}
 
- 	//Distribute and subsample thread chunks as much as possible before redistributing
- 	for (int initLevel = 0; initLevel < GetRootMipLevel(); initLevel += GetMaxConsecutiveSubsamples()){
-
- 		printf("Reading mip level %i, ",initLevel);
- 		if ( (initLevel+1) == std::min(GetRootMipLevel(), initLevel + GetMaxConsecutiveSubsamples()) ){
- 			printf("building mip level %i...\n",initLevel+1);
- 		} else {
- 			printf("building mip levels %i-%i...\n",
-			       initLevel+1,
-			       std::min(GetRootMipLevel(),
-							initLevel + GetMaxConsecutiveSubsamples()));
- 		}
-
- 		OmMipThreadManager* mipThreadManager =
-			new OmMipThreadManager(this,
-								   OmMipThread::THREAD_CHUNK,
-								   initLevel,
-								   false);
- 		mipThreadManager->SpawnThreads(ThreadChunksInMipLevel(initLevel));
- 		mipThreadManager->run();
- 		mipThreadManager->wait();
- 		mipThreadManager->StopThreads();
- 		delete mipThreadManager;
-
- 		//flush cache so that all thread chunks are flushed to disk
- 		printf("Flushing thread chunks...\n");
- 		mThreadChunkThreadedCache->Flush();
-
- 	}
-
- 	printf("done.\n");
-
-	if (isDebugCategoryEnabled("perftest")){
-		printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",
-		       vol_timer.s_elapsed());
-	}
-
-	mThreadChunkThreadedCache->closeDownThreads();
-	delete mThreadChunkThreadedCache;
-
-	copyAllMipDataIntoMemMap();
+	printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",
+		   vol_timer.s_elapsed());
 
 	return true;
-}
-
-/*
- *	Build chunk data from children.
- *	rMipCoord: specifies the chunk to be built
- */
-void OmMipVolume::BuildChunk(const OmMipChunkCoord & rMipCoord, bool)
-{
-	//leaf chunks are skipped since no children to build from
-	if (rMipCoord.IsLeaf())
-		return;
-
-	//otherwise chunk is a parent, so get pointer to chunk
-	OmMipChunkPtr p_chunk;
-	GetChunk(p_chunk, rMipCoord);
-
-	//read original data
-	OmDataPath src_path(MipLevelInternalDataPath(rMipCoord.Level-1));
-	DataBbox srcDataExtents =
-		MipCoordToDataBbox(rMipCoord, rMipCoord.Level - 1);
-
-	//read and get pointer to data
-	OmDataWrapperPtr src_data =
-		OmProjectData::GetProjectIDataReader()->
-		readChunk(src_path, srcDataExtents);
-
-	const Vector3i chunkSize = srcDataExtents.getUnitDimensions();
-	const DataBbox hdf5Extent =
-		DataBbox(srcDataExtents.getMin(),
-				 chunkSize.x, chunkSize.y, chunkSize.z);
-
-	OmDataWrapperPtr p_subsampled_data =
-		OmVolumeBuilder::SubsampleData(src_data, hdf5Extent);
-
-	//set or replace image data (chunk now owns pointer)
-	p_chunk->SetImageData(p_subsampled_data);
-	p_chunk->setVolDataDirty();
-}
-
-/*
- *	Builds a chunk and its ancestors of a chunk, propagating any changes of
- *	the chunk to parent chunks.
- */
-void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
-{
-	//build the chunk
-	OmMipVolume::BuildChunk(rMipCoord);
-	BuildChunk(rMipCoord, true);
-
-	//if mipCoord is not root
-	if (rMipCoord.Level != mMipRootLevel) {
-
-		//get parent
-		OmMipChunkCoord parent_coord = rMipCoord.ParentCoord();
-
-		//build parent chunk and recurse
-		BuildChunkAndParents(parent_coord);
-	}
 }
 
 /*
@@ -795,7 +485,7 @@ void OmMipVolume::BuildChunkAndParents(const OmMipChunkCoord & rMipCoord)
 void OmMipVolume::BuildEditedLeafChunks()
 {
 	//first build all the edited leaf chunks
-
+/*
 	FOR_EACH(itr, mEditedLeafChunks ){
 
 		OmMipChunkPtr p_chunk;
@@ -810,81 +500,7 @@ void OmMipVolume::BuildEditedLeafChunks()
 
 	//edited chunks clean
 	mEditedLeafChunks.clear();
-}
-
-/*
- *	Build one level of a thread chunk and return image data for use by next level
- */
-OmDataWrapperPtr OmMipVolume::BuildThreadChunkLevel(const OmMipChunkCoord& coord,
-													OmDataWrapperPtr src_data,
-													bool initCall)
-{
-	//read and return data if this is initial call
-	if ( initCall ){
-
-		//read original data
-		OmDataPath source_data_path(MipLevelInternalDataPath(coord.Level));
-		DataBbox source_data_bbox = MipCoordToThreadDataBbox(coord);
-
-		OmDataWrapperPtr p_read_data =
-			OmProjectData::GetProjectIDataReader()->
-			readChunk(source_data_path, source_data_bbox);
-
-		return p_read_data;
-
-	} else {
-
-		//otherwise get pointer to thread chunk level
-		OmThreadChunkLevelPtr p_chunklevel;
-		GetThreadChunkLevel(p_chunklevel, coord);
-
-		debug("mipthread","Thread chunk level coordinates: %s\n",
-		      qPrintable( coord.getCoordsAsString() ));
-		debug("mipthread","Thread chunk level dimensions: %i,%i,%i\n",
-		      p_chunklevel->GetDimensions().x,
-		      p_chunklevel->GetDimensions().y,
-		      p_chunklevel->GetDimensions().z);
-
-		const Vector3i chunkSize = p_chunklevel->GetExtent().getUnitDimensions();
-		const DataBbox hdf5Extent =
-			DataBbox(p_chunklevel->GetExtent().getMin(),
-					 chunkSize.x, chunkSize.y, chunkSize.z);
-
-		OmDataWrapperPtr p_subsampled_data =
-			OmVolumeBuilder::SubsampleData(src_data,
-										   hdf5Extent);
-
-
-		//set or replace image data (chunk level now owns pointer)
-		p_chunklevel->SetImageData(p_subsampled_data);
-
-		return p_subsampled_data;
-	}
-}
-
-/*
- *	Recursively build thread chunk levels with minimal IO by passing image data from
- *	the previous level build to the next level build
- */
-void OmMipVolume::BuildThreadChunk(const OmMipChunkCoord & rMipCoord, OmDataWrapperPtr data, bool initCall){
-
-	//build level
-	OmDataWrapperPtr p_image_data = BuildThreadChunkLevel(rMipCoord, data, initCall);
-
-	//continue only if image is large enough to subsample
-	//this assumes initial calls get image data which is large enough
-	if ( GetThreadChunkLevelDimension(rMipCoord.Level) >= 2 || initCall ) {
-		//if mipCoord is not root
-		if ( rMipCoord.Level != mMipRootLevel ) {
-			//get parent level
-			OmMipChunkCoord parent_coord = rMipCoord;
-			parent_coord.Level++;
-
-			//build parent chunk level and recurse
-			//not initial call
-			BuildThreadChunk(parent_coord, p_image_data, false);
-		}
-	}
+*/
 }
 
 /////////////////////////////////
@@ -956,11 +572,6 @@ bool OmMipVolume::CompareChunks(const OmMipChunkCoord& coord,
 bool OmMipVolume::ContainsVoxel(const DataCoord & vox)
 {
 	return GetDataExtent().contains(vox);
-}
-
-OmThreadChunkThreadedCache* OmMipVolume::GetThreadChunkThreadedCache()
-{
-	return mThreadChunkThreadedCache;
 }
 
 Vector3i OmMipVolume::get_dims(const OmDataPath dataset )

@@ -3,8 +3,6 @@
 
 #include "common/omCommon.h"
 
-class OmSegmentationChunkCoord;
-
 class Headless
 {
  public:
@@ -13,13 +11,11 @@ class Headless
  private:
 
 	void openProject( QString fName );
-	void processLine( QString line, QString fName );
+	void processLine(const QString& line, const QString& fName );
 	void runInteractive( QString fName );
 	void runScript( const QString scriptFileName, QString fName );
 	void runHeadless( QString headlessCMD, QString fName );
 	void setOmniExecutablePath( QString rel_fnpn );
-	void runMeshPlan( QString headlessLine );
-	OmSegmentationChunkCoord makeChunkCoord( QString line );
 
 	void watershed(const QString &  args);
 

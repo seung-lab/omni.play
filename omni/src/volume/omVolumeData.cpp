@@ -1,3 +1,4 @@
+#include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omVolumeData.hpp"
 #include "volume/omMipChunk.h"
 
@@ -62,4 +63,60 @@ OmVolDataType OmVolumeData::determineOldVolType(OmMipVolume* vol)
 	vol->GetChunk(chunk, coord);
 	OmDataWrapperPtr data = chunk->RawReadChunkDataHDF5();
 	return data->getVolDataType();
+}
+
+
+class GetVolPtrVisitor : public boost::static_visitor<OmRawDataPtrs>{
+public:
+	GetVolPtrVisitor(const int level) : level_(level) {}
+
+	template <typename T>
+	OmRawDataPtrs operator()(T & d ) const {
+		return d.GetPtr(level_);
+	}
+private:
+	const int level_;
+};
+OmRawDataPtrs OmVolumeData::GetVolPtr(const int level)
+{
+	return boost::apply_visitor(GetVolPtrVisitor(level), volData_);
+}
+
+
+class DownsampleVisitor : public boost::static_visitor<>{
+public:
+	DownsampleVisitor(const int level, OmMipVolume* vol,
+					  OmRawDataPtrs prevLevel)
+		: level_(level)
+		, vol_(vol)
+		, prevLevel_(prevLevel)
+	{}
+
+	template <typename T>
+	void operator()(T* curLevelPtr) const {
+		T* prevPtr = boost::get<T*>(prevLevel_);
+		assert(prevPtr);
+
+		OmVolumeBuilder::downsample<T>(prevPtr,
+									   curLevelPtr,
+									   vol_,
+									   level_-1,
+									   level_);
+	}
+
+private:
+	const int level_;
+	OmMipVolume* vol_;
+	OmRawDataPtrs& prevLevel_;
+};
+
+void OmVolumeData::downsample(OmMipVolume* vol)
+{
+	for (int level = 1; level <= vol->GetRootMipLevel(); ++level) {
+		OmRawDataPtrs prevLevelVolPtr = GetVolPtr(level-1);
+		OmRawDataPtrs levelVolPtr = GetVolPtr(level);
+
+		boost::apply_visitor(DownsampleVisitor(level, vol, prevLevelVolPtr),
+							 levelVolPtr);
+	}
 }

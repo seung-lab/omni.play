@@ -32,10 +32,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspec
 	populateSegmentationInspector();
 	directoryEdit->setReadOnly(true);
 
-        QMetaObject::connectSlotsByName(this);
-
-	mMeshinatorProc = NULL;
-	mMeshinatorDialog = NULL;
+	QMetaObject::connectSlotsByName(this);
 }
 
 QGroupBox* SegInspector::makeVolBox()
@@ -76,8 +73,8 @@ QGroupBox* SegInspector::makeNotesBox()
 	QGridLayout *gridNotes = new QGridLayout( notesBox );
 
 	notesEdit = new QPlainTextEdit(notesBox);
-        notesEdit->setObjectName(QString::fromUtf8("notesEdit"));
-        gridNotes->addWidget(notesEdit, 0, 1);
+	notesEdit->setObjectName(QString::fromUtf8("notesEdit"));
+	gridNotes->addWidget(notesEdit, 0, 1);
 
 	return notesBox;
 }
@@ -88,7 +85,7 @@ QGroupBox* SegInspector::makeToolsBox()
 	QGridLayout *gridSegment = new QGridLayout( segmentBox );
 
 	addSegmentButton = new AddSegmentButton(this);
-        gridSegment->addWidget(addSegmentButton, 0, 0);
+	gridSegment->addWidget(addSegmentButton, 0, 0);
 
 	return segmentBox;
 }
@@ -106,28 +103,27 @@ QGroupBox* SegInspector::makeActionsBox()
 	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
 
 	buildComboBox = new QComboBox(actionsBox);
-        buildComboBox->setObjectName(QString::fromUtf8("buildComboBox"));
-        buildComboBox->clear();
-        buildComboBox->insertItems(0, QStringList()
-         << "Data"
-         << "Mesh"
-	 << "Data & Mesh"
-         << "Load Dendrogram"
-         << "Meshinator"
-         << "Blank Volume"
+	buildComboBox->setObjectName(QString::fromUtf8("buildComboBox"));
+	buildComboBox->clear();
+	buildComboBox->insertItems(0, QStringList()
+							   << "Data"
+							   << "Mesh"
+							   << "Data & Mesh"
+							   << "Load Dendrogram"
+							   << "Blank Volume"
         );
-        gridAction->addWidget(buildComboBox, 1, 0);
+	gridAction->addWidget(buildComboBox, 1, 0);
 
 	QPushButton *buildButton = new QPushButton(actionsBox);
-        buildButton->setObjectName(QString::fromUtf8("buildButton"));
-        buildButton->setEnabled(true);
-        buildButton->setText("Build");
-        gridAction->addWidget(buildButton, 1, 1);
+	buildButton->setObjectName(QString::fromUtf8("buildButton"));
+	buildButton->setEnabled(true);
+	buildButton->setText("Build");
+	gridAction->addWidget(buildButton, 1, 1);
 
 	QPushButton *exportButton = new QPushButton(actionsBox);
-        exportButton->setObjectName(QString::fromUtf8("exportButton"));
-        exportButton->setText("Export");
-        gridAction->addWidget(exportButton, 2, 0, 1, 2 );
+	exportButton->setObjectName(QString::fromUtf8("exportButton"));
+	exportButton->setText("Export");
+	gridAction->addWidget(exportButton, 2, 0, 1, 2 );
 
 	return actionsBox;
 }
@@ -138,49 +134,49 @@ QGroupBox* SegInspector::makeSourcesBox()
 	QGridLayout *grid = new QGridLayout( sourceBox );
 
 	QLabel *nameLabel = new QLabel(sourceBox);
-        nameLabel->setObjectName(QString::fromUtf8("nameLabel"));
-        nameLabel->setText("Name:");
-        grid->addWidget(nameLabel, 0, 0);
+	nameLabel->setObjectName(QString::fromUtf8("nameLabel"));
+	nameLabel->setText("Name:");
+	grid->addWidget(nameLabel, 0, 0);
 
 	nameEdit = new QLineEdit(sourceBox);
-        nameEdit->setObjectName(QString::fromUtf8("nameEdit"));
-        nameEdit->setText(QString());
-        grid->addWidget(nameEdit, 0, 1);
+	nameEdit->setObjectName(QString::fromUtf8("nameEdit"));
+	nameEdit->setText(QString());
+	grid->addWidget(nameEdit, 0, 1);
 
 	directoryLabel = new QLabel(sourceBox);
-        directoryLabel->setObjectName(QString::fromUtf8("directoryLabel"));
-        directoryLabel->setText("Directory:");
-        grid->addWidget(directoryLabel, 1, 0);
+	directoryLabel->setObjectName(QString::fromUtf8("directoryLabel"));
+	directoryLabel->setText("Directory:");
+	grid->addWidget(directoryLabel, 1, 0);
 
 	directoryEdit = new QLineEdit(sourceBox);
-        directoryEdit->setObjectName(QString::fromUtf8("directoryEdit"));
+	directoryEdit->setObjectName(QString::fromUtf8("directoryEdit"));
 
-        grid->addWidget(directoryEdit, 1, 1);
+	grid->addWidget(directoryEdit, 1, 1);
 
 	QPushButton *browseButton = new QPushButton(sourceBox);
-        browseButton->setObjectName(QString::fromUtf8("browseButton"));
-        browseButton->setText("Browse");
-        grid->addWidget(browseButton, 2, 1);
+	browseButton->setObjectName(QString::fromUtf8("browseButton"));
+	browseButton->setText("Browse");
+	grid->addWidget(browseButton, 2, 1);
 
 	QLabel *patternLabel = new QLabel(sourceBox);
-        patternLabel->setObjectName(QString::fromUtf8("patternLabel"));
-        patternLabel->setText("Pattern:");
-        patternLabel->setToolTip("(i.e. data.%d.tif)");
-        grid->addWidget(patternLabel, 3, 0);
+	patternLabel->setObjectName(QString::fromUtf8("patternLabel"));
+	patternLabel->setText("Pattern:");
+	patternLabel->setToolTip("(i.e. data.%d.tif)");
+	grid->addWidget(patternLabel, 3, 0);
 
 	patternEdit = new QLineEdit(sourceBox);
-        patternEdit->setObjectName(QString::fromUtf8("patternEdit"));
-        grid->addWidget(patternEdit, 3, 1);
+	patternEdit->setObjectName(QString::fromUtf8("patternEdit"));
+	grid->addWidget(patternEdit, 3, 1);
 
-        listWidget = new QListWidget(sourceBox);
-        listWidget->setObjectName(QString::fromUtf8("listWidget"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(listWidget->sizePolicy().hasHeightForWidth());
-        listWidget->setSizePolicy(sizePolicy1);
-        listWidget->setMaximumSize(QSize(16777215, 85));
-        grid->addWidget(listWidget, 4, 1 );
+	listWidget = new QListWidget(sourceBox);
+	listWidget->setObjectName(QString::fromUtf8("listWidget"));
+	QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	sizePolicy1.setHorizontalStretch(0);
+	sizePolicy1.setVerticalStretch(0);
+	sizePolicy1.setHeightForWidth(listWidget->sizePolicy().hasHeightForWidth());
+	listWidget->setSizePolicy(sizePolicy1);
+	listWidget->setMaximumSize(QSize(16777215, 85));
+	grid->addWidget(listWidget, 4, 1 );
 
 	return sourceBox;
 }
@@ -193,7 +189,7 @@ void SegInspector::on_nameEdit_editingFinished()
 void SegInspector::on_browseButton_clicked()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-							"", QFileDialog::ShowDirsOnly);
+													"", QFileDialog::ShowDirsOnly);
 	if (dir != "") {
 		directoryEdit->setText(dir);
 		updateFileList();
@@ -291,37 +287,9 @@ void SegInspector::on_buildButton_clicked()
 		bs->loadDendrogram();
 		rebuildSegmentLists(sdw->getID(), 0);
 
-	} else if( "Meshinator" == whatOrHowToBuild ){
-		doMeshinate( &current_seg );
-
 	} else if( "Blank Volume" == whatOrHowToBuild ){
 		bs->buildBlankVolume();
 	}
-}
-
-void SegInspector::doMeshinate( OmSegmentation * current_seg )
-{
-	QString abs_fnpn = OmProjectData::getAbsoluteFileNameAndPath();
-	QString fnpnPlan = abs_fnpn + ".plan";
-	current_seg->BuildMeshDataPlan( fnpnPlan );
-
-	QString script = GetScriptCmd (fnpnPlan);
-	debug ("meshinator", "%s\n", qPrintable (script));
-	if (mMeshinatorProc) {
-		delete mMeshinatorProc;
-	}
-
-	mMeshinatorProc = new QProcess ();
-	mMeshinatorProc->start(script);
-
-	if (mMeshinatorDialog) {
-		delete mMeshinatorDialog;
-	}
-	mMeshinatorDialog = new QDialog ();
-	connect(mMeshinatorProc, SIGNAL(finished(int)), mMeshinatorDialog, SLOT(close()) );
-	mMeshinatorDialog->exec();
-
-	(new OmProjectSaveAction())->Run();
 }
 
 void SegInspector::on_notesEdit_textChanged()

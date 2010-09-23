@@ -281,14 +281,9 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipChunk.h \
            src/volume/omMipChunkCoord.h \
            src/volume/omMipVolume.h \
-           src/volume/omMipThread.h \
-           src/volume/omMipThreadManager.h \
            src/volume/omSegmentation.h \
            src/system/cache/omMipVolumeCache.h \
            src/volume/omSegmentationThresholdChangeAction.h \
-           src/volume/omSegmentationChunkCoord.h \
-           src/volume/omThreadChunkLevel.h \
-           src/system/cache/omThreadChunkThreadedCache.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/volume/omVolumeCuller.h \
@@ -477,7 +472,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
-           src/volume/build/omVolumeBuilder.cpp \
            src/volume/omVolumeTypes.cpp \
            src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \
@@ -487,14 +481,9 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipChunk.cpp \
            src/volume/omMipChunkCoord.cpp \
            src/volume/omMipVolume.cpp \
-           src/volume/omMipThread.cpp \
-           src/volume/omMipThreadManager.cpp \
            src/system/cache/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
-           src/volume/omSegmentationChunkCoord.cpp \
-           src/volume/omThreadChunkLevel.cpp \
-           src/system/cache/omThreadChunkThreadedCache.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/volume/omVolumeCuller.cpp \

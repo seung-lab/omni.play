@@ -1,3 +1,4 @@
+#include "utility/OmThreadPool.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
@@ -12,19 +13,19 @@
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
-#include "volume/omMipThreadManager.h"
-#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 
 #include <float.h>
 
+#include <zi/threads>
+
 OmChannel::OmChannel()
 	: mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 {
-        mMaxVal = FLT_MIN;
-        mMinVal = FLT_MAX;
+	mMaxVal = FLT_MIN;
+	mMinVal = FLT_MAX;
 	mWasBounded = false;
 }
 
@@ -33,8 +34,8 @@ OmChannel::OmChannel(OmId id)
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 {
-        mMaxVal = FLT_MIN;
-        mMinVal = FLT_MAX;
+	mMaxVal = FLT_MIN;
+	mMinVal = FLT_MAX;
 	mWasBounded = false;
 
 	//init properties
@@ -93,87 +94,14 @@ void OmChannel::BuildVolumeData()
 	OmMipVolume::Build(path);
 }
 
-bool OmChannel::BuildThreadedVolume()
-{
-        OmTimer vol_timer;
-
-        if (isDebugCategoryEnabled("perftest")){
-                //timer start
-                vol_timer.start();
-        }
-
-        if (!OmMipVolume::BuildThreadedVolume()){
-                return false;
-        }
-
-        if (!BuildThreadedChannel()){
-                return false;
-        }
-
-        if (isDebugCategoryEnabled("perftest")){
-                printf("OmChannel::BuildThreadedVolume() done : %.6f secs\n",
-		       vol_timer.s_elapsed());
-        }
-
-        return true;
-}
-
-bool OmChannel::BuildThreadedChannel()
-{
-        OmTimer vol_timer;
-
-        if (isDebugCategoryEnabled("perftest")){
-                //timer start
-                vol_timer.start();
-        }
-
-        OmMipThreadManager *mipThreadManager =
-		new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
-        mipThreadManager->SpawnThreads(MipChunksInVolume());
-        mipThreadManager->run();
-        mipThreadManager->wait();
-        mipThreadManager->StopThreads();
-        delete mipThreadManager;
-
-        //flush cache so that all thread chunks are flushed to disk
-        Flush();
-        printf("done\n");
-
-        if (isDebugCategoryEnabled("perftest")){
-                printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",
-		       vol_timer.s_elapsed());
-        }
-
-	mWasBounded = true;
-
-	debug("chanbuild", "max=%f min=%f\n", mMaxVal, mMinVal);
-
-        return true;
-}
-
-void OmChannel::BuildChunk(const OmMipChunkCoord & mipCoord)
-{
-	debug("chanbuild", "in OmChannel::BuildChunk\n");
-        OmMipChunkPtr p_chunk;
-        GetChunk(p_chunk, mipCoord);
-
-        const bool isMIPzero = p_chunk->IsLeaf();
-
-	if(isMIPzero) {
-		//mMaxVal = std::max(p_chunk->getMax(), mMaxVal);
-		//mMinVal = std::min(p_chunk->getMin(), mMinVal);
-	}
-}
-
-
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();
 	(new OmProjectSaveAction())->Run();
-        return filter;
+	return filter;
 }
 
 OmFilter2d& OmChannel::GetFilter(OmId id) {
-        return mFilter2dManager.GetFilter(id);
+	return mFilter2dManager.GetFilter(id);
 }
 
 const OmIDsSet & OmChannel::GetValidFilterIds()
@@ -223,4 +151,55 @@ OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
 	return OmDataWrapperFactory::produce(rawDataPtr);
+}
+
+class OmChannelChunkBuildTask : public zi::Runnable {
+private:
+	const OmMipChunkCoord coord_;
+	OmMipVolume* vol_;
+
+public:
+	OmChannelChunkBuildTask(const OmMipChunkCoord& coord,
+							OmMipVolume* vol)
+		:coord_(coord), vol_(vol)
+	{}
+
+	void run()
+	{
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord_);
+
+		const bool isMIPzero = chunk->IsLeaf();
+
+		if(isMIPzero) {
+			printf("channelfixme");
+			//vol_->mMaxVal = std::max(p_chunk->getMax(), mMaxVal);
+			//vol_->mMinVal = std::min(p_chunk->getMin(), mMinVal);
+		}
+	}
+};
+
+void OmChannel::doBuildThreadedVolume()
+{
+	OmThreadPool threadPool;
+	threadPool.start(30);
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+		for (int z = 0; z < dims.z; ++z){
+			for (int y = 0; y < dims.y; ++y){
+				for (int x = 0; x < dims.x; ++x){
+
+					OmMipChunkCoord coord(level, x, y, z);
+
+					boost::shared_ptr<OmChannelChunkBuildTask> task =
+						boost::make_shared<OmChannelChunkBuildTask>(coord, this);
+					threadPool.addTaskBack(task);
+				}
+			}
+		}
+	}
+
+	threadPool.join();
+	mWasBounded = true;
 }

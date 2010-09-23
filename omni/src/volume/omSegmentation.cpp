@@ -1,3 +1,4 @@
+#include "utility/OmThreadPool.hpp"
 #include "mesh/omMipMesh.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
@@ -26,13 +27,12 @@
 #include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
-#include "volume/omMipThreadManager.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationChunkCoord.h"
-#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
+
+#include <zi/threads>
 
 #include <QFile>
 #include <QTextStream>
@@ -101,133 +101,7 @@ void OmSegmentation::BuildVolumeData()
 	mSegmentCache->turnBatchModeOn(false);
 }
 
-bool OmSegmentation::BuildThreadedVolume()
-{
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer start
-		vol_timer.start();
-	}
-
-	if (!OmMipVolume::BuildThreadedVolume()){
-		return false;
-	}
-
-	if (!BuildThreadedSegmentation()){
-		return false;
-	}
-
-	if (isDebugCategoryEnabled("perftest")){
-		printf("OmSegmentation::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
-	}
-
-	return true;
-}
-
-bool OmSegmentation::BuildThreadedSegmentation()
-{
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-       		vol_timer.start();
-	}
-
-	printf("Finding direct data values...\n");
-
-	//initLevel doesn't matter, just set to 0
-	OmMipThreadManager* mipThreadManager =
-		new OmMipThreadManager(this, OmMipThread::MIP_CHUNK, 0, false);
-	mipThreadManager->SpawnThreads(MipChunksInVolume());
-	mipThreadManager->run();
-	mipThreadManager->wait();
-	mipThreadManager->StopThreads();
-	delete mipThreadManager;
-
-	//flush cache so that all thread chunks are flushed to disk
-	printf("Flushing mipchunks...\n");
-	Flush();
-	printf("done\n");
-
-	if (isDebugCategoryEnabled("perftest")){
-		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",
-		       vol_timer.s_elapsed());
-	}
-
-	return true;
-}
-
-/*
- *	Build all meshes in all chunks of the MipVolume.
- */
-void OmSegmentation::BuildMeshData()
-{
-	if (!IsVolumeDataBuilt()) {
-		throw OmAccessException("Segmentation volume data must be built before mesh data: " +
-								GetName());
-	}
-
-	//build all levels
-	BuildMeshDataInternal();
-}
-
-/**
- * Produce the plan file.
- */
-void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
-{
-	if (!IsVolumeDataBuilt())
-		throw OmAccessException(std::string("Segmentation volume data must be built before mesh data: ") +
-								GetName());
-
-	QFile file(planFile);
-	if ( !file.open(QIODevice::WriteOnly)) {
-		throw (false && "couldn't open the plan file, check to make sure you have write permission");
-	}
-	QTextStream stream(&file);
-
-	//for each level
-	for (int level = GetRootMipLevel(); level >= 0; level--) {
-
-		//dim of leaf coords
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		//for all coords of level
-		for (int z = mip_coord_dims.z-1; z >= 0; --z) {
-			for (int y = mip_coord_dims.y-1; y >= 0; --y) {
-				for (int x = mip_coord_dims.x-1; x >= 0; --x) {
-
-					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
-				}
-			}
-		}
-	}
-
-	file.close();
-}
-
-
-/**
- * Build the meshes for a single chunk.
- */
-void OmSegmentation::BuildMeshChunk(int,int,int,int,int) //int level, int x, int y, int z, int numThreads )
-{
-	assert(0 && "switch to ziMesher");
-	/*
-	  MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-	  OmMipChunkCoord chunk_coord(level, x, y, z);
-
-	  meshingMan->addToQueue( chunk_coord );
-	  if( numThreads > 0 ){
-	  meshingMan->setNumThreads( numThreads );
-	  }
-	  meshingMan->start();
-	  meshingMan->wait();
-	  delete(meshingMan);
-	*/
-}
-
-void OmSegmentation::BuildMeshDataInternal()
+void OmSegmentation::Mesh()
 {
 	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
 	Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
@@ -244,33 +118,12 @@ void OmSegmentation::BuildMeshDataInternal()
 	mesher.mesh();
 }
 
-/*
- *	Overridden BuildChunk method so that the mesh data for a chunk will
- *	also be rebuilt if needed, and segments are added from the chunk.
- */
-void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
-{
-	OmMipChunkPtr chunk;
-	GetChunk(chunk, mipCoord);
-
-	const bool isMIPzero = chunk->IsLeaf();
-
-	chunk->RefreshDirectDataValues(isMIPzero, mSegmentCache);
-
-	if(isMIPzero){
-		if(remesh) {
-			ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
-			mesher.addChunkCoord(mipCoord);
-			mesher.mesh();
-		}
-	}
-}
-
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
 {
+	assert(0);
 
 	//build chunk volume data and analyze data
-	OmMipVolume::BuildChunk(mipCoord);
+//	OmMipVolume::BuildChunk(mipCoord);
 
 	//rebuild mesh data only if entire volume data has been built
 	if (IsVolumeDataBuilt()) {
@@ -334,37 +187,6 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 void OmSegmentation::DeleteGroup(OmGroupID)
 {
 	printf("FIXME delete group not supported\n");
-}
-
-/**
- * Enqueue chunk coord to build
- */
-void OmSegmentation::QueueUpMeshChunk(OmSegmentationChunkCoord /*chunk_coord*/ )
-{
-	assert(0 && "switch to ziMesher");
-	/*
-	  if( NULL == mMeshingMan ){
-	  mMeshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-	  }
-
-	  mMeshingMan->addToQueue( chunk_coord );
-	*/
-}
-
-void OmSegmentation::RunMeshQueue()
-{
-	assert(0 && "switch to ziMesher");
-
-	/*
-	  if(  NULL == mMeshingMan ){
-	  return;
-	  }
-
-	  mMeshingMan->start();
-	  mMeshingMan->wait();
-	  delete(mMeshingMan);
-	  mMeshingMan = NULL;
-	*/
 }
 
 void OmSegmentation::FlushDirtySegments()
@@ -494,4 +316,55 @@ OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 	}
 
 	return OmDataWrapperFactory::produce(rawDataPtr);
+}
+
+
+class OmSegmentationChunkBuildTask : public zi::Runnable {
+private:
+	const OmMipChunkCoord coord_;
+	OmMipVolume* vol_;
+	boost::shared_ptr<OmSegmentCache> segmentCache_;
+
+public:
+	OmSegmentationChunkBuildTask(const OmMipChunkCoord& coord,
+								 boost::shared_ptr<OmSegmentCache> segmentCache,
+								 OmMipVolume* vol)
+		:coord_(coord), vol_(vol), segmentCache_(segmentCache)
+	{}
+
+	void run()
+	{
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord_);
+
+		const bool isMIPzero = chunk->IsLeaf();
+
+		chunk->RefreshDirectDataValues(isMIPzero, segmentCache_);
+	}
+};
+
+void OmSegmentation::doBuildThreadedVolume()
+{
+	OmThreadPool threadPool;
+	threadPool.start(30);
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+		for (int z = 0; z < dims.z; ++z){
+			for (int y = 0; y < dims.y; ++y){
+				for (int x = 0; x < dims.x; ++x){
+
+					OmMipChunkCoord coord(level, x, y, z);
+
+					boost::shared_ptr<OmSegmentationChunkBuildTask> task =
+						boost::make_shared<OmSegmentationChunkBuildTask>(coord,
+																		 mSegmentCache,
+																		 this);
+					threadPool.addTaskBack(task);
+				}
+			}
+		}
+	}
+
+	threadPool.join();
 }

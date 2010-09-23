@@ -64,6 +64,9 @@ protected:
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&);
 
+	virtual void doBuildThreadedVolume();
+
+
 private:
         OmMipVolumeCache *const mDataCache;
 

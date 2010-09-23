@@ -21,8 +21,6 @@ class OmHdf5;
 class OmHdf5;
 class OmMipChunk;
 class OmMipVolumeCache;
-class OmThreadChunkLevel;
-class OmThreadChunkThreadedCache;
 class OmVolume;
 class OmVolumeData;
 
@@ -73,27 +71,12 @@ public:
 	int GetRootMipLevel();
 	Vector3i MipLevelDataDimensions(int);
 	Vector3i MipLevelDimensionsInMipChunks(int level);
-	int MipChunksInMipLevel(int level);
-	int MipChunksInVolume();
-
-	//thread chunk methods
-	int GetThreadChunkDimension();
-	Vector3i GetThreadChunkDimensions();
-	int GetMaxConsecutiveSubsamples();
-	int GetThreadChunkLevelDimension(int level);
-	Vector3i GetThreadChunkLevelDimensions(int level);
-	Vector3i MipLevelDimensionsInThreadChunks(int level);
-	Vector3i MipLevelDimensionsInThreadChunkLevels(int level);
-	int ThreadChunksInMipLevel(int level);
-	int ThreadChunksInVolume();
 
 	//mip coord
 	OmMipChunkCoord DataToMipCoord(const DataCoord &vox, int level);
 	OmMipChunkCoord NormToMipCoord(const NormCoord &normCoord, int level);
 	DataBbox MipCoordToDataBbox(const OmMipChunkCoord &, int level);
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);
-	DataBbox MipCoordToThreadDataBbox(const OmMipChunkCoord &);
-	DataBbox MipCoordToThreadLevelDataBbox(const OmMipChunkCoord &);
 	DataBbox DataToDataBBox(const DataCoord &vox, const int level){
 		return MipCoordToDataBbox(DataToMipCoord(vox, level), level);
 	}
@@ -102,13 +85,9 @@ public:
 	OmMipChunkCoord RootMipChunkCoordinate();
 	int MipChunkDimension(int level);
 	bool ContainsMipChunkCoord(const OmMipChunkCoord &rMipCoord);
-	bool ContainsThreadChunkCoord(const OmMipChunkCoord &rMipCoord);
-	bool ContainsThreadChunkLevelCoord(const OmMipChunkCoord &rMipCoord);
 	void ValidMipChunkCoordChildren(const OmMipChunkCoord &rMipCoord,
 									std::set<OmMipChunkCoord> &children);
 	void GetChunk(OmMipChunkPtr& p_value, const OmMipChunkCoord &rMipCoord);
-	void GetThreadChunkLevel(OmThreadChunkLevelPtr& p_value,
-							 const OmMipChunkCoord &rMipCoord);
 
 	//mip data accessors
 	quint32 GetVoxelValue(const DataCoord &vox);
@@ -116,17 +95,9 @@ public:
 
 	//build methods
 	void Build(OmDataPath & dataset);
-	bool BuildVolume();
-	virtual bool BuildThreadedVolume();
-	virtual void BuildChunk(const OmMipChunkCoord &, bool remesh=false);
-	void BuildChunkAndParents(const OmMipChunkCoord &);
+	bool BuildThreadedVolume();
+	virtual void doBuildThreadedVolume() = 0;
 	void BuildEditedLeafChunks();
-
-	virtual OmDataWrapperPtr BuildThreadChunkLevel(const OmMipChunkCoord &,
-												   OmDataWrapperPtr p_source_data,
-												   bool initCall);
-	void BuildThreadChunk(const OmMipChunkCoord &, OmDataWrapperPtr data,
-						  bool initCall);
 
 	//comparison methods
 	static bool CompareVolumes(OmMipVolume *, OmMipVolume *);
@@ -145,9 +116,6 @@ public:
 	void DeleteVolumeData();
 
 	bool ContainsVoxel(const DataCoord &vox);
-
-	//Thread Chunk Cache
-	OmThreadChunkThreadedCache* GetThreadChunkThreadedCache();
 
 	QFileInfoList mSourceFilenamesAndPaths;
 
@@ -178,8 +146,6 @@ protected:
 	std::set<OmMipChunkCoord> mEditedLeafChunks;	//set of edited chunks that need rebuild
 
 private:
-	OmThreadChunkThreadedCache* mThreadChunkThreadedCache;
-
 	bool sourceFilesWereSet;
 
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
