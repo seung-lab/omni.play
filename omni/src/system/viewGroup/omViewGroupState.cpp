@@ -308,6 +308,8 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
 
 		return SCC_SEGMENTATION;
 	}
+
+	throw OmArgException("unknown objType");
 }
 
 void OmViewGroupState::setupColorizer(const Vector2i& dims,
