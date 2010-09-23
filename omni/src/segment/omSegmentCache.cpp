@@ -2,7 +2,6 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "system/omProjectData.h"
-#include "datalayer/archive/omDataArchiveQT.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
@@ -234,7 +233,10 @@ void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
         return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
-OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs( const unsigned int offset, const int numToGet, OmSegIDRootType type, OmSegID startSeg)
+OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs(const uint32_t offset,
+							  const int numToGet,
+							  const OmSegIDRootType type,
+							  const OmSegID startSeg)
 {
 	zi::Guard g(mMutex);
         return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);

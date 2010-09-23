@@ -57,7 +57,7 @@ public:
 			const Vector3<int64_t> dims = it->second;
 			const int64_t size = dims.x * dims.y * dims.z * bps;
 
-			printf("mip %d: size is: %s (%ldx%ldx%ld)\n",
+			printf("mip %d: size is: %s (%lldx%lldx%lld)\n",
 				   level, qPrintable(StringHelpers::commaDeliminateNumber(size)),
 				   dims.x, dims.y, dims.z);
 
@@ -88,7 +88,7 @@ public:
 		const int64_t offset =
 			slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-		debug("io", "offset is: %llu (%ld,%ld,%ld) for (%ld,%ld,%ld)\n",
+		debug("io", "offset is: %llu (%lld,%lld,%lld) for (%lld,%lld,%lld)\n",
 			  offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
