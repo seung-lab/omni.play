@@ -42,11 +42,9 @@ public:
 	//accessor
 	bool IsVolumeDataBuilt();
 	void BuildVolumeData();
-	bool BuildThreadedVolume();
-	bool BuildThreadedChannel();
-	void BuildChunk(const OmMipChunkCoord&);
 
 	void Print();
+
 	OmFilter2d& AddFilter();
 	OmFilter2d& GetFilter(OmId id);
 	const OmIDsSet & GetValidFilterIds();
