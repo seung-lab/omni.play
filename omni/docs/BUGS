@@ -2387,3 +2387,14 @@ A debugging session is active.
         Inferior 1 [process 8550] will be killed.
 
 Quit anyway? (y or n) EOF [assumed Y]
+
+
+
+
+*** glibc detected *** /home/purcaro.local/omni.trunk/omni/bin/omni: munmap_chunk(): invalid pointer: 0x0000000019cc6100 ***
+
+Program received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0x7fffa437c910 (LWP 3946)]
+0x0000000000648559 in zi::QuadraticErrorSimplifier::addToQueue (this=0x7ffe1cab0a80, edge=0x7ffc462af0a0)
+    at src/zi/mesh/QuadraticErrorSimplification.cpp:117
+117       FOR_AROUND_VERTEX(ii, edge->vertex_) {
