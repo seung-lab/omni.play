@@ -220,63 +220,36 @@ void OmSegmentation::CloseDownThreads()
 	mDataCache->closeDownThreads();
 }
 
-Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
+Vector3i OmSegmentation::FindCenterOfSelectedSegments()
 {
 	DataBbox box;
-	bool found = false;
 
 	OmSegmentIterator iter(mSegmentCache);
 	iter.iterOverSelectedIDs();
 
-	unsigned int counter = 0;
-	const int level = 0;
+	uint32_t counter = 0;
 
 	OmSegment * seg = iter.getNextSegment();
 	while(NULL != seg) {
-
-		if(seg->getBounds().isEmpty()) {
-			Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-			for (int z = 0; z < mip_coord_dims.z; ++z) {
-				for (int y = 0; y < mip_coord_dims.y; ++y) {
-					for (int x = 0; x < mip_coord_dims.x; ++x) {
-						OmMipChunkCoord chunk_coord(level, x, y, z);
-						OmMipChunkPtr p_chunk;
-						GetChunk(p_chunk, chunk_coord);
-
-						const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-						if(0 != data_values.count(seg->value)) {
-
-							if(!found) {
-								found = true;
-								box = p_chunk->GetExtent();
-							} else {
-								box = DataBbox(box, p_chunk->GetExtent());
-								counter++;
-							}
-						}
-					}
-				}
-			}
-		} else {
-			if(!found) {
-				found = true;
-				box = seg->getBounds();
-			} else {
-				box.merge(seg->getBounds());
-				counter++;
-			}
+		const DataBbox& segBox = seg->getBounds();
+		if(segBox.isEmpty()){
+			continue;
 		}
 
-		seg = iter.getNextSegment();
+		box.merge(seg->getBounds());
+
+		++counter;
 		if(counter > 5000) {
 			break;
 		}
+
+		seg = iter.getNextSegment();
 	}
 
-	if(!found) {
-		return Vector3<int> (0,0,0);
-		//assert(0 && "segments must be selected before calling this function");
+	if(!counter){
+		return Vector3i(0,0,0);
 	}
+
 	return (box.getMin() + box.getMax()) / 2;
 }
 

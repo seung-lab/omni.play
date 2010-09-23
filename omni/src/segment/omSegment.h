@@ -59,14 +59,10 @@ public:
 	float getThreshold() const { return mThreshold; }
 	void setThreshold(const float thres){ mThreshold = thres; }
 
-	const DataBbox& getBounds() const { return mBounds; }
+	const DataBbox& getBounds() const {	return mBounds;	}
 	void addToBounds(const DataBbox& box){
 		zi::Guard g(boundsWriteLock_);
-		if (mBounds.isEmpty()) {
-			mBounds = box;
-		} else {
-			mBounds.merge(box);
-		}
+		mBounds.merge(box);
 	}
 
 	uint32_t getFreshnessForMeshes() const {return mFreshnessForMeshes;}
