@@ -1,6 +1,55 @@
 #ifndef OM_LOCKED_PODS_H
 #define OM_LOCKED_PODS_H
 
+#ifdef __APPLE__
+
+class LockedBool{
+public:
+	LockedBool()
+		: val_(false) {}
+	inline bool get(){
+		zi::ReadGuard g(mutex_);
+		return val_;
+	}
+	inline void set(const bool b){
+		zi::WriteGuard g(mutex_);
+		val_ = b;
+	}
+
+private:
+	bool val_;
+	zi::RWMutex mutex_;
+};
+
+template <typename T>
+class LockedNumber{
+public:
+	LockedNumber()
+		: val_(0) {}
+	inline T get(){
+		zi::ReadGuard g(mutex_);
+		return val_;
+	}
+	inline void set(const T val){
+		zi::WriteGuard g(mutex_);
+		val_ = val;
+	}
+	inline void add(const T val){
+		zi::WriteGuard g(mutex_);
+		val_ += val;
+	}
+	inline void sub(const T val){
+		zi::WriteGuard g(mutex_);
+		val_ -= val;
+	}
+private:
+	T val_;
+	zi::RWMutex mutex_;
+};
+
+
+#else
+
 #include <zi2/concurrency/spinlock.hpp>
 #include <zi2/atomic/atomic.hpp>
 #include <zi2/bits/type_traits.hpp>
@@ -232,11 +281,14 @@ struct LockedNumber< T, false >: Private::LockedNumberDefault< T > {};
 template< class T >
 struct LockedNumber< T, true >: Private::LockedIntegralNumber< T > {};
 
+#endif // __APPLE__
+
 
 typedef LockedNumber<int64_t>  LockedInt64;
 typedef LockedNumber<uint64_t> LockedUint64;
 
 typedef LockedNumber<int32_t>  LockedInt32;
 typedef LockedNumber<uint32_t> LockedUint32;
+
 
 #endif

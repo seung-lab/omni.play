@@ -125,7 +125,7 @@ void OmProjectData::Close()
  */
 void OmProjectData::DeleteInternalData(const OmDataPath & path)
 {
-	//TODO: mutex lock this!!!!
+	//TODO: mutex lock this?
 	if (OmProjectData::GetProjectIDataReader()->group_exists(path)) {
 		OmProjectData::GetIDataWriter()->group_delete(path);
 	}
@@ -141,7 +141,7 @@ OmIDataWriter* OmProjectData::GetIDataWriter()
 	return Instance()->dataWriter;
 }
 
-void OmProjectData::setupDataLayer( QString fileNameAndPath )
+void OmProjectData::setupDataLayer(const QString& fileNameAndPath)
 {
 	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
 	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);

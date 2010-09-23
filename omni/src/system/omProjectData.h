@@ -61,7 +61,7 @@ private:
 	bool mIsReadOnly;
 	boost::shared_ptr<OmTileCache> tileCache_;
 
-	void setupDataLayer( QString fileNameAndPath );
+	void setupDataLayer(const QString&);
 	OmIDataReader* dataReader;
 	OmIDataWriter* dataWriter;
 
