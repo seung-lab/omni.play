@@ -20,7 +20,7 @@ class OmVolumeData;
 class OmChannel : public OmMipVolume, public OmManageableObject {
 
 public:
-        OmChannel();
+	OmChannel();
 	OmChannel(OmId id);
 	~OmChannel();
 
@@ -53,8 +53,6 @@ public:
 	bool IsFilterEnabled(OmId id);
 	bool IsFilterValid(const OmId id);
 
-	bool GetBounds(float & mx, float & mn) { if(mWasBounded) {mx = mMaxVal; mn = mMinVal;} return mWasBounded;}
-
 	bool ImportSourceData(OmDataPath & dataset);
 
 protected:
@@ -66,17 +64,16 @@ protected:
 
 	virtual void doBuildThreadedVolume();
 
-
 private:
-        OmMipVolumeCache *const mDataCache;
+	OmMipVolumeCache *const mDataCache;
 
 	boost::shared_ptr<OmVolumeData> mVolData;
 
 	Vector3f mHueColor;
 	OmFilter2dManager mFilter2dManager;
 
-	float mMaxVal;
-	float mMinVal;
+	OmRawData mMaxVal;
+	OmRawData mMinVal;
 	bool mWasBounded;
 
 	friend class OmBuildChannel;

@@ -169,8 +169,11 @@ QDataStream &operator<<(QDataStream & out, const OmChannel & chan)
 
 	out << chan.mFilter2dManager;
 	out << chan.mWasBounded;
-	out << chan.mMaxVal;
-	out << chan.mMinVal;
+
+	float oldmax = 0; //TODO: delete
+	float oldmin = 0; //TODO: delete
+	out << oldmax;
+	out << oldmin;
 
 	return out;
 }
@@ -184,8 +187,11 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan)
 	in >> chan.mFilter2dManager;
 	if(fileVersion_ > 13) {
 		in >> chan.mWasBounded;
-		in >> chan.mMaxVal;
-		in >> chan.mMinVal;
+
+		float oldmax = 0; //TODO: delete
+		float oldmin = 0; //TODO: delete
+		in >> oldmax;
+		in >> oldmin;
 	}
 
 	if(fileVersion_ > 13){

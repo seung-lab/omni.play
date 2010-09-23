@@ -31,6 +31,9 @@ typedef	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
 		       OmMemMappedVolume<float, OmSegmentation> >
 OmVolDataSrcs;
 
+typedef boost::variant<int8_t, uint8_t, int32_t, uint32_t, float>
+OmRawData;
+
 typedef boost::variant<int8_t*, uint8_t*, int32_t*, uint32_t*, float*>
 OmRawDataPtrs;
 
