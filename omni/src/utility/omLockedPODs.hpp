@@ -49,6 +49,11 @@ public:
 		zi::WriteGuard g(mutex_);
 		return ++val_;
     }
+	inline T& operator-- ()
+    {
+		zi::WriteGuard g(mutex_);
+		return --val_;
+    }
 private:
 	T val_;
 	zi::RWMutex mutex_;
