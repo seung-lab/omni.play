@@ -31,6 +31,4 @@ private:
 	friend class OmCacheManager;
 };
 
-template class OmThreadedCache<OmTileCoord, OmTilePtr>;
-
 #endif
