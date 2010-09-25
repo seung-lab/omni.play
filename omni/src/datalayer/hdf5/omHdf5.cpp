@@ -5,7 +5,7 @@
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 
-OmHdf5::OmHdf5( const QString & fileNameAndPath, const bool readOnly )
+OmHdf5::OmHdf5(const QString & fileNameAndPath, const bool readOnly )
 	: m_fileNameAndPath(fileNameAndPath)
 	, readOnly_(readOnly)
 {
