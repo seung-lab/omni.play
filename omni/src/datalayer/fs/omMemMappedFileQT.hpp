@@ -96,9 +96,7 @@ public:
 	OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes)
 		: OmMemMappedFileQTbase<T>(fnp)
 	{
-		if(!numBytes){
-			throw OmIoException("size was 0");
-		}
+		checkFileSize(numBytes);
 
 		QFile::remove(QString::fromStdString(fnp));
 		this->open(QIODevice::QIODevice::ReadWrite);
@@ -106,10 +104,16 @@ public:
 		//TODO: allocate space??
 		this->map();
 
-		printf("created file %s\n", this->GetBaseFileName().c_str());
+		debug("io", "created file %s\n", this->GetBaseFileName().c_str());
 	}
 
 private:
+	void checkFileSize(const int64_t numBytes)
+	{
+		if(!numBytes){
+			throw OmIoException("size was 0");
+		}
+	}
 	/*
 
 	  template <typename T, typename VOL>
