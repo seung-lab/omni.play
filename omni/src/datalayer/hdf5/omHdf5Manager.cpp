@@ -45,13 +45,13 @@ OmHdf5* OmHdf5Manager::doGetOmHdf5File( QString fileNameAndPath, const bool read
 	QMutexLocker locker(&lock);
 
 	QFileInfo fInfo(fileNameAndPath);
-	QString abs_fnpn = fInfo.absoluteFilePath();
+	const QString abs_fnpn = fInfo.absoluteFilePath();
 
 	if( hdf5Files.contains( abs_fnpn ) ){
 		return hdf5Files.value( abs_fnpn );
 	}
 
-	OmHdf5 * hdf5File = new OmHdf5(fileNameAndPath, readOnly );
+	OmHdf5 * hdf5File = new OmHdf5(abs_fnpn, readOnly );
 	hdf5Files.insert( abs_fnpn, hdf5File );
 	return hdf5File;
 }
