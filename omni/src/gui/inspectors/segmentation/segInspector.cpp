@@ -1,22 +1,19 @@
+#include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "utility/dataWrappers.h"
-#include "common/omDebug.h"
-#include "gui/inspectors/segInspector.h"
+#include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
+#include "gui/inspectors/segmentation/buildButton.hpp"
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
-#include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
-#include "system/omBuildSegmentation.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 
-SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspectorWidget* parent)
+SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
+							MyInspectorWidget* parent)
 	: QWidget(parent)
 	, mParent(parent)
 {
@@ -96,13 +93,6 @@ QGroupBox* SegInspector::makeActionsBox()
 	QGroupBox* actionsBox = new QGroupBox("Actions");
 	QGridLayout *gridAction = new QGridLayout( actionsBox );
 
-	QLabel *labelNumThreadsText = new QLabel(actionsBox);
-	labelNumThreadsText->setText("number of meshing threads: ");
-	gridAction->addWidget( labelNumThreadsText, 0, 0 );
-	QLabel *labelNumThreadsNum = new QLabel(actionsBox);
-	labelNumThreadsNum->setNum( OmLocalPreferences::numAllowedWorkerThreads());
-	gridAction->addWidget( labelNumThreadsNum, 0, 1 );
-
 	buildComboBox = new QComboBox(actionsBox);
 	buildComboBox->setObjectName(QString::fromUtf8("buildComboBox"));
 	buildComboBox->clear();
@@ -115,10 +105,7 @@ QGroupBox* SegInspector::makeActionsBox()
         );
 	gridAction->addWidget(buildComboBox, 1, 0);
 
-	QPushButton *buildButton = new QPushButton(actionsBox);
-	buildButton->setObjectName(QString::fromUtf8("buildButton"));
-	buildButton->setEnabled(true);
-	buildButton->setText("Build");
+	BuildButton* buildButton = new BuildButton(this);
 	gridAction->addWidget(buildButton, 1, 1);
 
 	QPushButton *exportButton = new QPushButton(actionsBox);
@@ -184,7 +171,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetSegmentation(sdw->getID()).SetCustomName(nameEdit->text());
+	sdw->getSegmentation().SetCustomName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -203,7 +190,7 @@ void SegInspector::on_exportButton_clicked()
 	if (fileName == NULL)
 		return;
 
-	OmProject::GetSegmentation(sdw->getID()).ExportInternalData(fileName);
+	sdw->getSegmentation().ExportInternalData(fileName);
 }
 
 QDir SegInspector::getDir()
@@ -248,51 +235,6 @@ void SegInspector::on_patternEdit_textChanged()
 	updateFileList();
 }
 
-QString& GetScriptCmd (QString arg)
-{
-	static QString cmd;
-
-	QString omniPath = OmStateManager::getOmniExecutableAbsolutePath();
-	debug ("meshinator", "omni: %s\n", qPrintable (omniPath));
-	QString cmdPath = omniPath;
-
-	cmdPath.truncate (omniPath.size () - 13);  // "omni/bin/omni" == 13
-	cmd = cmdPath;
-	cmd += "/scripts/cluster/headnodemesher.pl " + arg;
-
-	debug ("meshinator", "script: %s\n", qPrintable (cmd));
-
-	return cmd;
-}
-
-void SegInspector::on_buildButton_clicked()
-{
-	OmSegmentation & current_seg = OmProject::GetSegmentation(sdw->getID());
-
-	OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
-	bs->setFileNamesAndPaths( getFileInfoList() );
-
-	QString whatOrHowToBuild = buildComboBox->currentText();
-	if ("Data" == whatOrHowToBuild ){
-		bs->build_seg_image();
-		rebuildSegmentLists(sdw->getID(), 0);
-
-	} else if ( "Mesh" == whatOrHowToBuild ){
-		bs->build_seg_mesh();
-
-	} else if ("Data & Mesh" == whatOrHowToBuild){
-		bs->buildAndMeshSegmentation();
-		rebuildSegmentLists(sdw->getID(), 0);
-
-	} else if ("Load Dendrogram" == whatOrHowToBuild){
-		bs->loadDendrogram();
-		rebuildSegmentLists(sdw->getID(), 0);
-
-	} else if( "Blank Volume" == whatOrHowToBuild ){
-		bs->buildBlankVolume();
-	}
-}
-
 void SegInspector::on_notesEdit_textChanged()
 {
 	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
@@ -331,4 +273,9 @@ void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID 
 
 SegmentationDataWrapper SegInspector::getSegmentationDataWrapper(){
 	return *sdw;
+}
+
+void SegInspector::showMeshPreviewer()
+{
+	new MeshPreviewer(this, sdw, mParent->getViewGroupState());
 }

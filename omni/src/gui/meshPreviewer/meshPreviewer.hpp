@@ -9,7 +9,8 @@ class OmViewGroupState;
 
 class MeshPreviewerImpl : public QWidget {
 public:
-	MeshPreviewerImpl(QWidget* parent, const SegmentationDataWrapper& sdw,
+	MeshPreviewerImpl(QWidget* parent,
+					  boost::shared_ptr<SegmentationDataWrapper> sdw,
 					  OmViewGroupState* vgs);
 
 private:
@@ -23,7 +24,8 @@ private:
 
 class MeshPreviewer : public QDialog {
 public:
-	MeshPreviewer(QWidget * p, const SegmentationDataWrapper& sdw,
+	MeshPreviewer(QWidget * p,
+				  boost::shared_ptr<SegmentationDataWrapper> sdw,
 				  OmViewGroupState* vgs)
 		: QDialog(p)
 	{

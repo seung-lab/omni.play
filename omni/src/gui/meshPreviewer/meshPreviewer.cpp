@@ -10,10 +10,10 @@
 #include <boost/make_shared.hpp>
 
 MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
-									 const SegmentationDataWrapper& sdw,
+									 boost::shared_ptr<SegmentationDataWrapper> sdw,
 									 OmViewGroupState* vgs)
 	: QWidget(parent)
-	, sdw_(boost::make_shared<SegmentationDataWrapper>(sdw))
+	, sdw_(sdw)
 	, vgs_(vgs)
 {
 	QLineEdit* downsample = new QLineEdit(this);

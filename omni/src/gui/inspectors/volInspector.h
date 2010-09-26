@@ -1,3 +1,6 @@
+#ifndef VOL_INSPECTOR_H
+#define VOL_INSPECTOR_H
+
 #include "project/omProject.h"
 #include "volume/omVolume.h"
 
@@ -7,18 +10,20 @@
 #include <QLineEdit>
 
 class OmVolInspector : public QGroupBox {
- Q_OBJECT
- public:
-	OmVolInspector(OmVolume * vol, QWidget * parent);
-	~OmVolInspector();
+	Q_OBJECT
+public:
+	OmVolInspector(OmVolume* vol, QWidget* parent);
+	virtual ~OmVolInspector(){}
 
- private slots:
+private slots:
 	void apply();
 
- private:
-        QGridLayout *mGrid;
-	OmVolume * mVol;
-	QLineEdit * mResX;
-	QLineEdit * mResY;
-	QLineEdit * mResZ;
+private:
+	QGridLayout* mGrid;
+	OmVolume* mVol;
+	QLineEdit* mResX;
+	QLineEdit* mResY;
+	QLineEdit* mResZ;
 };
+
+#endif

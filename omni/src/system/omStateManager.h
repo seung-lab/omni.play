@@ -74,7 +74,7 @@ public:
 	static QSize getViewBoxSizeHint();
 
 	static void SetViewDrawable(ViewType viewType,
-				    std::vector<OmTilePtr>& drawable);
+								std::vector<OmTilePtr>& drawable);
 	static std::vector<OmTilePtr> GetViewDrawable(ViewType viewType);
 
 private:

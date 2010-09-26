@@ -34,7 +34,6 @@ public:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
 	void on_patternEdit_textChanged();
-	void on_buildButton_clicked();
 	void on_notesEdit_textChanged();
 	void on_exportButton_clicked();
 
@@ -47,6 +46,7 @@ public:
 
 	void populateSegmentationInspector();
 	void updateFileList();
+	void showMeshPreviewer();
 
 	QGroupBox* makeActionsBox();
 	QGroupBox* makeSourcesBox();
@@ -60,5 +60,7 @@ public:
 	QFileInfoList getFileInfoList();
 
 	AddSegmentButton *addSegmentButton;
+
+	friend class BuildButton;
 };
 #endif
