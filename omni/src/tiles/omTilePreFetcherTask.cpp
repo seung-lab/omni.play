@@ -9,7 +9,7 @@ void OmTilePreFetcherTask::run()
 
 	const int maxPrefetchDepth = 128;
 
-	for(int i = 1; i < 128; ++i){
+	for(int i = 1; i < maxPrefetchDepth; ++i){
 		if(shouldExitEarly()){
 			return;
 		}

@@ -14,6 +14,7 @@
 #include "utility/stringHelpers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
+#include "gui/meshPreviewer/meshPreviewer.hpp"
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw, MyInspectorWidget* parent)
 	: QWidget(parent)
