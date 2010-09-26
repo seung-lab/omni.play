@@ -3,24 +3,22 @@
 #include "tiles/omTilePreFetcherTask.hpp"
 #include "view2d/omView2dState.hpp"
 
-#include <boost/array.hpp>
-
 void OmTilePreFetcherTask::run()
 {
 	onScreenTileCoords_ = boost::make_shared<OmOnScreenTileCoords>(state_);
 
-	static const boost::array<int,10> relativeDepths = { { 1, -1,
-							       2, -2,
-							       3, -3,
-							       4, -4,
-							       5, -5 } };
+	const int maxPrefetchDepth = 128;
 
-	FOR_EACH(iter, relativeDepths){
+	for(int i = 1; i < 128; ++i){
 		if(shouldExitEarly()){
 			return;
 		}
+		preLoadDepth(i);
 
-		preLoadDepth(*iter);
+		if(shouldExitEarly()){
+			return;
+		}
+		preLoadDepth(-i);
 	}
 }
 

@@ -60,10 +60,12 @@ public:
 			const Vector3<int64_t> dims = it->second;
 			const int64_t size = dims.x * dims.y * dims.z * bps;
 
-			printf("mip %d: size is: %s (%lldx%lldx%lld)\n",
-			       level,
-			       StringHelpers::commaDeliminateNum(size).c_str(),
-			       dims.x, dims.y, dims.z);
+			std::cout << "mip " << level << ": size is: "
+					  << StringHelpers::commaDeliminateNum(size)
+					  << " (" << dims.x
+					  << "," << dims.y
+					  << "," << dims.z
+					  << ")\n";
 
 			maps_[level] =
 				boost::make_shared<writer_t>(getFileName(level),
