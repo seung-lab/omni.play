@@ -15,6 +15,8 @@ public:
 private:
 	boost::shared_ptr<SegmentationDataWrapper> sdw_;
 	OmViewGroupState* vgs_;
+
+	void mesh();
 };
 
 class MeshPreviewer : public QDialog {

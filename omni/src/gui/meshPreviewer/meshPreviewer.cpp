@@ -1,6 +1,8 @@
+#include "segment/omSegmentSelector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "volume/omMipChunk.h"
 #include "segment/omSegmentCache.h"
 #include "view3d/omView3d.h"
 
@@ -16,7 +18,7 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 	QLineEdit* downsample = new QLineEdit(this);
 	QLineEdit* initialError = new QLineEdit(this);
 
-	QFormLayout *formLayout = new QFormLayout;
+	QFormLayout* formLayout = new QFormLayout;
 	formLayout->addRow(tr("Initial Error:"), initialError);
 	formLayout->addRow(tr("&Edge shrink factor:"), downsample);
 
@@ -27,6 +29,26 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 	overallContainer->addWidget(v3d);
 
 
-	OmSegmentation & segmentation = sdw_->getSegmentation();
+}
 
+void MeshPreviewerImpl::mesh()
+{
+	OmSegmentation& segmentation = sdw_->getSegmentation();
+	const DataCoord center =
+		segmentation.NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
+	const OmMipChunkCoord coord = segmentation.DataToMipCoord(center, 0);
+
+	segmentation.MeshChunk(coord);
+
+	OmMipChunkPtr chunk;
+	segmentation.GetChunk(chunk, coord);
+	chunk->RefreshDirectDataValues(false, segmentation.GetSegmentCache());
+
+	// select all segments
+	OmSegmentSelector sel(segmentation.GetId(), this, "meshPreviewer");
+	sel.selectNoSegments();
+	FOR_EACH(iter, chunk->GetDirectDataValues()){
+		sel.augmentSelectedSet(*iter, true);
+	}
+	sel.sendEvent();
 }

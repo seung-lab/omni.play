@@ -42,6 +42,7 @@ public:
 
 	void BuildVolumeData();
 	void Mesh();
+	void MeshChunk(const OmMipChunkCoord& coord);
 
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 

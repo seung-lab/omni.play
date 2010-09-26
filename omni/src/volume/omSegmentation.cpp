@@ -119,6 +119,13 @@ void OmSegmentation::Mesh()
 	mesher.mesh();
 }
 
+void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
+{
+	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+	mesher.addChunkCoord(coord);
+	mesher.mesh();
+}
+
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
 {
 	assert(0);
