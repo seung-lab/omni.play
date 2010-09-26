@@ -3,6 +3,8 @@
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
 #include "gui/inspectors/segmentation/buildButton.hpp"
+#include "gui/inspectors/segmentation/exportButton.hpp"
+#include "gui/inspectors/segmentation/meshPreviewButton.hpp"
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
 #include "system/omLocalPreferences.h"
@@ -10,12 +12,11 @@
 #include "system/omStateManager.h"
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
-#include "gui/meshPreviewer/meshPreviewer.hpp"
 
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
 							MyInspectorWidget* parent)
 	: QWidget(parent)
-	, mParent(parent)
+	, inspectorWidget_(parent)
 {
 	sdw = boost::make_shared<SegmentationDataWrapper>(incoming_sdw);
 
@@ -108,10 +109,11 @@ QGroupBox* SegInspector::makeActionsBox()
 	BuildButton* buildButton = new BuildButton(this);
 	gridAction->addWidget(buildButton, 1, 1);
 
-	QPushButton *exportButton = new QPushButton(actionsBox);
-	exportButton->setObjectName(QString::fromUtf8("exportButton"));
-	exportButton->setText("Export");
+	ExportButton* exportButton = new ExportButton(this);
 	gridAction->addWidget(exportButton, 2, 0, 1, 2 );
+
+	MeshPreviewButton* meshPreviewButton = new MeshPreviewButton(this);
+	gridAction->addWidget(meshPreviewButton, 3, 0, 1, 2 );
 
 	return actionsBox;
 }
@@ -182,15 +184,6 @@ void SegInspector::on_browseButton_clicked()
 		directoryEdit->setText(dir);
 		updateFileList();
 	}
-}
-
-void SegInspector::on_exportButton_clicked()
-{
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Export As"));
-	if (fileName == NULL)
-		return;
-
-	sdw->getSegmentation().ExportInternalData(fileName);
 }
 
 QDir SegInspector::getDir()
@@ -268,14 +261,14 @@ void SegInspector::populateSegmentationInspector()
 
 void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
 {
-	mParent->rebuildSegmentLists(segmentationID, segID);
+	inspectorWidget_->rebuildSegmentLists(segmentationID, segID);
 }
 
-SegmentationDataWrapper SegInspector::getSegmentationDataWrapper(){
-	return *sdw;
+boost::shared_ptr<SegmentationDataWrapper>
+SegInspector::getSegmentationDataWrapper(){
+	return sdw;
 }
 
-void SegInspector::showMeshPreviewer()
-{
-	new MeshPreviewer(this, sdw, mParent->getViewGroupState());
+OmViewGroupState* SegInspector::getViewGroupState(){
+	return inspectorWidget_->getViewGroupState();
 }

@@ -20,8 +20,9 @@ public:
 private:
 	void doAction()
 	{
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-		OmSegmentation & current_seg = sdw.getSegmentation();
+		boost::shared_ptr<SegmentationDataWrapper> sdw =
+			mParent->getSegmentationDataWrapper();
+		OmSegmentation & current_seg = sdw->getSegmentation();
 
 		OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
 		bs->setFileNamesAndPaths( mParent->getFileInfoList() );
@@ -29,18 +30,18 @@ private:
 		const QString whatOrHowToBuild = mParent->buildComboBox->currentText();
 		if ("Data" == whatOrHowToBuild ){
 			bs->build_seg_image();
-			mParent->rebuildSegmentLists(sdw.getID(), 0);
+			mParent->rebuildSegmentLists(sdw->getID(), 0);
 
 		} else if ( "Mesh" == whatOrHowToBuild ){
 			bs->build_seg_mesh();
 
 		} else if ("Data & Mesh" == whatOrHowToBuild){
 			bs->buildAndMeshSegmentation();
-			mParent->rebuildSegmentLists(sdw.getID(), 0);
+			mParent->rebuildSegmentLists(sdw->getID(), 0);
 
 		} else if ("Load Dendrogram" == whatOrHowToBuild){
 			bs->loadDendrogram();
-			mParent->rebuildSegmentLists(sdw.getID(), 0);
+			mParent->rebuildSegmentLists(sdw->getID(), 0);
 
 		} else if( "Blank Volume" == whatOrHowToBuild ){
 			bs->buildBlankVolume();

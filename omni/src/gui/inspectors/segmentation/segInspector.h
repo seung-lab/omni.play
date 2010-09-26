@@ -9,16 +9,18 @@ class AddSegmentButton;
 class OmSegmentation;
 class MyInspectorWidget;
 class SegmentationDataWrapper;
+class OmViewGroupState;
 
 class SegInspector : public QWidget
 {
     Q_OBJECT
 
 public:
-	SegInspector( const SegmentationDataWrapper sdw, MyInspectorWidget* parent);
+	SegInspector( const SegmentationDataWrapper sdw,
+				  MyInspectorWidget* parent);
 
 	OmId getSegmentationID();
-	SegmentationDataWrapper getSegmentationDataWrapper();
+	boost::shared_ptr<SegmentationDataWrapper> getSegmentationDataWrapper();
 
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;
@@ -30,19 +32,20 @@ public:
 
 	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
 
+	OmViewGroupState* getViewGroupState();
+
  private slots:
 	void on_nameEdit_editingFinished();
 	void on_browseButton_clicked();
 	void on_patternEdit_textChanged();
 	void on_notesEdit_textChanged();
-	void on_exportButton_clicked();
 
  signals:
 	void meshBuilt(OmId seg_id);
 
  private:
 	boost::shared_ptr<SegmentationDataWrapper> sdw;
-	MyInspectorWidget *const mParent;
+	MyInspectorWidget *const inspectorWidget_;
 
 	void populateSegmentationInspector();
 	void updateFileList();
