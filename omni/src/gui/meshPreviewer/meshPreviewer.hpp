@@ -17,6 +17,8 @@ private:
 	OmViewGroupState* vgs_;
 
 	void mesh();
+
+	friend class PreviewButton;
 };
 
 class MeshPreviewer : public QDialog {

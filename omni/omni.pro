@@ -113,6 +113,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/segmentListRecent.h \
            src/gui/segmentListValid.h \
            src/gui/segmentListWorking.h \
+           src/gui/meshPreviewer/previewButton.hpp \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
            src/gui/toolbars/dendToolbar/breakButton.h \
            src/gui/toolbars/dendToolbar/joinButton.h \

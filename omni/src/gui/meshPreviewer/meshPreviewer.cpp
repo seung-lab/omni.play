@@ -1,3 +1,4 @@
+#include "gui/meshPreviewer/previewButton.hpp"
 #include "segment/omSegmentSelector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "utility/dataWrappers.h"
@@ -28,7 +29,8 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 	OmView3d* v3d = new OmView3d(this, vgs_);
 	overallContainer->addWidget(v3d);
 
-
+	PreviewButton* pb = new PreviewButton(this);
+	overallContainer->addWidget(pb);
 }
 
 void MeshPreviewerImpl::mesh()
