@@ -20,7 +20,7 @@
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
-#include "volume/omVolume.h"
+#include "volume/omVolumeData.hpp"
 
 #include <QImage>
 
@@ -421,6 +421,8 @@ void OmMipVolume::Build(OmDataPath & dataset)
 		SetBuildState(MIPVOL_UNBUILT);
 		return;
 	}
+
+	getVolData()->downsample(this);
 
 	//build volume
 	if (!BuildThreadedVolume()) {

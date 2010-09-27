@@ -86,28 +86,42 @@ OmRawDataPtrs OmVolumeData::GetVolPtr(const int level)
 class DownsampleVisitor : public boost::static_visitor<>{
 public:
 	DownsampleVisitor(const int level, OmMipVolume* vol,
-					  OmRawDataPtrs prevLevel)
+					  OmRawDataPtrs prevLevelPtr)
 		: level_(level)
+		, prevLevel_(level-1)
 		, vol_(vol)
-		, prevLevel_(prevLevel)
+		, prevLevelPtr_(prevLevelPtr)
 	{}
 
 	template <typename T>
-	void operator()(T* curLevelPtr) const {
-		T* prevPtr = boost::get<T*>(prevLevel_);
-		assert(prevPtr);
+	void operator()(T* dst) const {
+		T* src = boost::get<T*>(prevLevelPtr_);
+		assert(src);
 
-		OmVolumeBuilder::downsample<T>(prevPtr,
-									   curLevelPtr,
-									   vol_,
-									   level_-1,
-									   level_);
+		printf("\n************will downsample from %d to %d\n\n",
+			   level_-1, level_);
+
+		const Vector3i src_dims = vol_->getDimsRoundedToNearestChunk(prevLevel_);
+		const Vector3i dest_dims = vol_->getDimsRoundedToNearestChunk(level_);
+
+		std::cout << "downsampling level " << prevLevel_ << "(" << src_dims << ")"
+				  << " to level " << level_ << "(" << dest_dims << ")\n";
+		fflush(stdout);
+
+		const int sliceSize = src_dims.x * src_dims.y;
+
+		for (int si=0,di=0,dz=0; dz < dest_dims.z; ++dz,si+=sliceSize)
+			for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x)
+				for (int dx=0; dx < dest_dims.x; ++dx, ++di, si+=2) {
+					dst[di] = src[si];
+				}
 	}
 
 private:
 	const int level_;
+	const int prevLevel_;
 	OmMipVolume* vol_;
-	OmRawDataPtrs& prevLevel_;
+	OmRawDataPtrs& prevLevelPtr_;
 };
 
 void OmVolumeData::downsample(OmMipVolume* vol)
