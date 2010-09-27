@@ -354,10 +354,6 @@ sub qt47 {
     prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
-sub apacheThrift {
-    prepareAndBuild( "thrift-0.2.0", "thrift");
-}
-
 sub omni {
     printTitle("omni");
     genOmniScript();
@@ -404,7 +400,6 @@ sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
-    print "2 -- Build Apache Thrift\n";
     print "3 -- Build qt\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
@@ -431,7 +426,6 @@ sub menu {
 
 sub buildAll {
 	smallLibraries();
-	apacheThrift();
 	qt();
 	omni();
 }
@@ -444,7 +438,7 @@ sub runMenuEntry {
     }elsif( 1 == $entry ){
 	smallLibraries();
     }elsif( 2 == $entry ){
-	apacheThrift();
+
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
