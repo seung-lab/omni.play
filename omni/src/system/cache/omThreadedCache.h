@@ -6,8 +6,7 @@
 #include "system/cache/omLockedCacheObjects.hpp"
 #include "utility/OmThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
-
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 template <typename T> class LockedList;
 
@@ -53,7 +52,7 @@ private:
 	const std::string name_;
 	OmThreadPool mThreadPool;
 
-	zi::Mutex mCacheMutex;
+	zi::mutex mutex_;
 	LockedKeySet<KEY> mCurrentlyFetching;
 	LockedCacheMap<KEY, PTR> mCache;
 	LockedKeyList<KEY> mKeyAccessList;

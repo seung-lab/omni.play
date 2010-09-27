@@ -65,18 +65,18 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
-		debug("dend", "can't split disconnected objects.\n");
+		//debug(dend, "can't split disconnected objects.\n");
 		return OmSegmentEdge();
 	}
 	if( seg1 == seg2 ){
-		debug("dend", "can't split object from self.\n");
+		//debug(dend, "can't split object from self.\n");
 		return OmSegmentEdge();
 	}
 
 	OmSegment * s1 = seg1;
 	while (0 != s1->getParentSegID()) {
 		if(s1->getParentSegID() == seg2->value) {
-			debug("split", "splitting child from a direct parent\n");
+			//debug(split, "splitting child from a direct parent\n");
 			return OmSegmentEdge(s1);
 		}
 		s1 = GetSegmentFromValue(s1->getParentSegID());
@@ -85,7 +85,7 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 	OmSegment * s2 = seg2;
 	while (0 != s2->getParentSegID()) {
 		if(s2->getParentSegID() == seg1->value) {
-			debug("split", "splitting child from a direct parent\n");
+			//debug(split, "splitting child from a direct parent\n");
 			return OmSegmentEdge(s2);
 		}
 		s2 = GetSegmentFromValue(s2->getParentSegID());

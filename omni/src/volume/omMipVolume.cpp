@@ -135,7 +135,7 @@ void OmMipVolume::UpdateMipProperties(OmDataPath & dataset)
 		//get source dimensions
 		Vector3i source_dims = get_dims(dataset);
 
-		debug("hdf5image", "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
+		//debug(hdf5image, "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
 
 		//if dim differs from OmVolume alert user
 		if (OmVolume::GetDataDimensions() != source_dims) {
@@ -620,14 +620,15 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
  */
 void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
 {
-	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n",
-	      qPrintable(fileNameAndPath));
+	//debug(hdf5image, "OmMipVolume::ExportInternalData(%s)\n",
+	//qPrintable(fileNameAndPath));
 
 	const DataBbox leaf_data_extent = GetDataExtent();
 	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	const OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
 
-	OmIDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
+	OmIDataWriter* hdfExport =
+		OmDataLayer::getWriter(fileNameAndPath.toStdString(), false);
 	OmDataPath fpath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){

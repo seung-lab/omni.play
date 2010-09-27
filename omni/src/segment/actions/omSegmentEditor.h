@@ -4,8 +4,7 @@
 #include "common/omCommon.h"
 #include "utility/dataWrappers.h"
 #include "system/omEvents.h"
-
-#include <zi/utility>
+#include "zi/omUtility.h"
 
 class OmSegmentEditor : boost::noncopyable {
 public:
@@ -32,13 +31,13 @@ private:
 		, mEditSegment(0) {}
 	~OmSegmentEditor(){}
 	static inline OmSegmentEditor& Instance(){
-		return zi::Singleton<OmSegmentEditor>::Instance();
+		return zi::singleton<OmSegmentEditor>::instance();
 	}
 
 	OmId mEditSegmentation;
 	OmSegID mEditSegment;
 
-	friend class zi::Singleton<OmSegmentEditor>;
+	friend class zi::singleton<OmSegmentEditor>;
 };
 
 #endif

@@ -1,70 +1,9 @@
 #ifndef OM_LOCKED_PODS_H
 #define OM_LOCKED_PODS_H
 
-#ifdef __APPLE__
-
-#include <zi/mutex>
-
-class LockedBool{
-public:
-	LockedBool()
-		: val_(false) {}
-	inline bool get(){
-		zi::ReadGuard g(mutex_);
-		return val_;
-	}
-	inline void set(const bool b){
-		zi::WriteGuard g(mutex_);
-		val_ = b;
-	}
-
-private:
-	bool val_;
-	zi::RWMutex mutex_;
-};
-
-template <typename T>
-class LockedNumber{
-public:
-	LockedNumber()
-		: val_(0) {}
-	inline T get(){
-		zi::ReadGuard g(mutex_);
-		return val_;
-	}
-	inline void set(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ = val;
-	}
-	inline void add(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ += val;
-	}
-	inline void sub(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ -= val;
-	}
-	inline T& operator++ ()
-    {
-		zi::WriteGuard g(mutex_);
-		return ++val_;
-    }
-	inline T& operator-- ()
-    {
-		zi::WriteGuard g(mutex_);
-		return --val_;
-    }
-private:
-	T val_;
-	zi::RWMutex mutex_;
-};
-
-
-#else
-
-#include <zi2/concurrency/spinlock.hpp>
-#include <zi2/atomic/atomic.hpp>
-#include <zi2/bits/type_traits.hpp>
+#include <zi/concurrency/spinlock.hpp>
+#include <zi/atomic/atomic.hpp>
+#include <zi/bits/type_traits.hpp>
 
 /*
  * There is no need for a HEAVY RWLock here,
@@ -100,7 +39,7 @@ private:
 
 
 /*
- * Same arguments holds here. Even though RWMutex 'sounds'
+ * Same arguments holds here. Even though zi::rwmutex 'sounds'
  * like it should be more efficient, the actual operations
  * inside the write lock are very very fast, so the
  * condition variable stuff behind the read lock is by far
@@ -292,9 +231,6 @@ struct LockedNumber< T, false >: Private::LockedNumberDefault< T > {};
 
 template< class T >
 struct LockedNumber< T, true >: Private::LockedIntegralNumber< T > {};
-
-#endif // __APPLE__
-
 
 typedef LockedNumber<int64_t>  LockedInt64;
 typedef LockedNumber<uint64_t> LockedUint64;

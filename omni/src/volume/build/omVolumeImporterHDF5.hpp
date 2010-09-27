@@ -27,7 +27,8 @@ public:
 
 	bool importHDF5(const OmDataPath & inpath)
 	{
-		OmIDataReader* hdf5reader = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
+		OmIDataReader* hdf5reader =
+			OmDataLayer::getReader(getHDFfileNameAndPath(), true);
 		hdf5reader->open();
 
 		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
@@ -78,26 +79,6 @@ public:
 		return data->getVolDataType();
 	}
 
-	void allocateHDF5(const std::map<int, Vector3i> & levelsAndDims)
-	{
-		//	vol_->getVolData()->create(vol_, levelsAndDims);
-
-		const Vector3i chunkdims = vol_->GetChunkDimensions();
-
-		FOR_EACH(it, levelsAndDims){
-			const int level = it->first;
-			const Vector3i dims = it->second;
-
-			OmDataPath path(vol_->MipLevelInternalDataPath(level));
-
-			OmProjectData::GetIDataWriter()->
-				allocateChunkedDataset(path,
-									   dims,
-									   chunkdims,
-									   vol_->getVolDataType());
-		}
-	}
-
 private:
 
 	OmDataPath getHDFsrcPath(OmIDataReader * hdf5reader,
@@ -114,7 +95,7 @@ private:
 		throw OmIoException("could not find HDF5 src path");
 	}
 
-	QString getHDFfileNameAndPath()
+	std::string getHDFfileNameAndPath()
 	{
 		QFileInfoList& files = vol_->mSourceFilenamesAndPaths;
 
@@ -123,7 +104,7 @@ private:
 			throw OmIoException("More than one hdf5 file specified");
 		}
 
-		return files.at(0).filePath();
+		return files.at(0).filePath().toStdString();
 	}
 
 	template< typename T>

@@ -6,12 +6,11 @@
 #include "utility/omSmartPtr.hpp"
 #include <boost/multi_array.hpp>
 #include <boost/shared_ptr.hpp>
-#include <zi/utility>
 #include <algorithm>
 #include <functional>
 
 template <typename T, std::size_t D>
-class OmImageCopiedData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageCopiedData {
 public:
   typedef typename boost::multi_array<T, D> container_t;
   typedef          OmDimension<D>           dimension_t;
@@ -39,7 +38,7 @@ public:
 
 
 template <typename T, std::size_t D>
-class OmImageRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageRefData {
 public:
   typedef typename boost::multi_array_ref<T, D> container_t;
   typedef          OmDimension<D>               dimension_t;
@@ -62,7 +61,7 @@ public:
 };
 
 template <typename T, std::size_t D>
-class OmImageConstRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageConstRefData {
 public:
   typedef typename boost::const_multi_array_ref<T, D> container_t;
   typedef          OmDimension<D>                     dimension_t;

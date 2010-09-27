@@ -16,7 +16,7 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 class OmMipVolumeCache;
 class OmVolumeCuller;
@@ -74,7 +74,7 @@ protected:
 
 	void InitChunk(const OmMipChunkCoord &rMipCoord);
 
-	zi::Mutex mDirectDataValueLock;
+	zi::mutex mDirectDataValueLock;
 	void loadMetadataIfPresent();
 	OmSegIDsSet mDirectlyContainedValues;
 	bool containedValuesDataLoaded;

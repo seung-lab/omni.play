@@ -4,9 +4,10 @@
 #include "common/omCommon.h"
 #include "utility/omLockedPODs.hpp"
 
-#include <zi/mutex>
-#include <zi/threads>
-#include <zi/utility>
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
+#include "zi/omThreads.h"
+#include <zi/concurrency/periodic_function.hpp>
 
 class OmCacheBase;
 class OmCacheGroup;
@@ -50,18 +51,19 @@ private:
 	OmCacheManager();
 	~OmCacheManager();
 	static inline OmCacheManager& Instance(){
-		return zi::Singleton<OmCacheManager>::Instance();
+		return zi::singleton<OmCacheManager>::instance();
 	}
 
 	boost::shared_ptr<OmCacheGroup> mRamCacheMap;
 	boost::shared_ptr<OmCacheGroup> mVramCacheMap;
-	zi::ThreadFactory threadFactory_;
+	boost::shared_ptr<zi::periodic_function> cleaner_;
+	boost::shared_ptr<zi::thread> cleanerThread_;
 	LockedBool amClosingDown;
 	LockedUint64 freshness_;
 
 	bool cacheManagerCleaner();
 	void setupCleanerThread();
- 	friend class zi::Singleton<OmCacheManager>;
+ 	friend class zi::singleton<OmCacheManager>;
 };
 
 #endif

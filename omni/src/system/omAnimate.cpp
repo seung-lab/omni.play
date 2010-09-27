@@ -24,7 +24,7 @@ void OmAnimate::run ()
 	try {
 
 	} catch (...) {
-		debug ("animate", "Animation failed to run fully.\n");
+		//debug ("animate", "Animation failed to run fully.\n");
 	}
 }
 

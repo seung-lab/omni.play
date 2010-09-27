@@ -14,7 +14,7 @@ ShowValidatedButton::ShowValidatedButton(ValidationGroup * d)
 
 void ShowValidatedButton::doAction()
 {
-	debug("valid", "DendToolBar::mapColors(%i)\n", isChecked());
+	//debug(valid, "DendToolBar::mapColors(%i)\n", isChecked());
 	// Using !(not) because check happens after this fuction.
 	mParent->getViewGroupState()->SetShowValidMode(!isChecked(), mParent->isShowValidChecked());
 }

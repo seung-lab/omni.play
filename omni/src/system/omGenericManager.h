@@ -61,8 +61,8 @@ public:
 	{
 		throwIfInvalidID(id);
 
-		mValidSet.remove(id);
-		mEnabledSet.remove(id);
+		mValidSet.erase(id);
+		mEnabledSet.erase(id);
 
 		delete mMap[id];
 		mMap[id] = NULL;
@@ -83,7 +83,7 @@ public:
 	bool IsEnabled( const OmId id) const
 	{
 		throwIfInvalidID(id);
-		return mEnabledSet.contains(id);
+		return mEnabledSet.count(id);
 	}
 
 	void SetEnabled( const OmId id, const bool enable)
@@ -93,7 +93,7 @@ public:
 		if(enable) {
 			mEnabledSet.insert(id);
 		} else {
-			mEnabledSet.remove(id);
+			mEnabledSet.erase(id);
 		}
 	}
 

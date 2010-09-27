@@ -9,7 +9,7 @@ static const int MAX_THREADS = 3;
 
 template <typename KEY, typename PTR>
 OmThreadedCache<KEY,PTR>::OmThreadedCache(const OmCacheGroupEnum group,
-					  const std::string& name)
+										  const std::string& name)
 	: OmCacheBase(group)
 	, name_(name)
 	, cachesToClean_(boost::make_shared<LockedList<OldCachePtr> >())
@@ -57,7 +57,7 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 	} else if(blocking) {
 		p_value = HandleCacheMiss(key);
 		{
-			zi::Guard g(mCacheMutex);
+			zi::guard g(mutex_);
 			mCache.set(key, p_value);
 			mKeyAccessList.touch(key);
 		}
@@ -118,7 +118,7 @@ int OmThreadedCache<KEY,PTR>::Clean()
 template <typename KEY, typename PTR>
 int OmThreadedCache<KEY,PTR>::RemoveOldest()
 {
-	zi::Guard g(mCacheMutex);
+	zi::guard g(mutex_);
 
 	if(mCache.empty() || mKeyAccessList.empty()){
 		return 0;
@@ -163,7 +163,7 @@ void OmThreadedCache<KEY,PTR>::Clear()
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::InvalidateCache()
 {
-	zi::Guard g(mCacheMutex);
+	zi::guard g(mutex_);
 
 	mThreadPool.clear();
 

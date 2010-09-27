@@ -3,10 +3,10 @@
 
 #include "datalayer/fs/omActionLoggerFSthread.hpp"
 #include "project/omProject.h"
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
 
 #include <QDir>
-#include <zi/mutex>
-#include <zi/utility>
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -21,7 +21,7 @@ public:
 
 private:
 	bool initialized;
-	zi::Mutex mutex_;
+	zi::mutex mutex_;
 	QDir mLogFolder;
 
 	OmActionLoggerFS();
@@ -30,10 +30,10 @@ private:
 	QDir& doGetLogFolder();
 
 	static inline OmActionLoggerFS & Instance(){
-		return zi::Singleton<OmActionLoggerFS>::Instance();
+		return zi::singleton<OmActionLoggerFS>::instance();
 	}
 
-	friend class zi::Singleton<OmActionLoggerFS>;
+	friend class zi::singleton<OmActionLoggerFS>;
 };
 
 template <class T>

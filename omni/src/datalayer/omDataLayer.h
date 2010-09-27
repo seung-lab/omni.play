@@ -8,9 +8,9 @@ class OmIDataWriter;
 
 class OmDataLayer {
 public:
-	static OmIDataReader* getReader(const QString& fileNameAndPath,
+	static OmIDataReader* getReader(const std::string& fileNameAndPath,
 					const bool readOnly);
-	static OmIDataWriter* getWriter(const QString& fileNameAndPath,
+	static OmIDataWriter* getWriter(const std::string& fileNameAndPath,
 					const bool readOnly);
 private:
 	OmDataLayer(){}

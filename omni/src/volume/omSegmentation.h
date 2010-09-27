@@ -7,18 +7,16 @@
  */
 
 #include "system/omManageableObject.h"
-#include "mesh/omMipMeshManager.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/omDataWrapper.h"
-#include "segment/omSegmentIterator.h"
+#include "mesh/omMeshTypes.h"
 
+class OmMipMeshManager;
 class OmGroups;
 class OmMST;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
-class OmSegmentIterator;
-class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
@@ -47,16 +45,19 @@ public:
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
-	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
-	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
+	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){
+		return mSegmentCache;
+	}
+	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){
+		return mSegmentLists;
+	}
+
+	void GetMesh(OmMipMeshPtr& ptr, const OmMipChunkCoord&, const OmSegID );
 
 	//group management
 	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
  	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
-	void DeleteGroup(OmSegID = 0);
-
-	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
 	void FlushDend();
@@ -64,9 +65,11 @@ public:
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold();
-	boost::shared_ptr<OmMST> getMST();
+	boost::shared_ptr<OmMST> getMST(){
+		return mst_;
+	}
 
-	Vector3i FindCenterOfSelectedSegments();
+	Vector3i FindCenterOfSelectedSegments() const;
 
 	bool ImportSourceData(OmDataPath & dataset);
 
@@ -81,10 +84,9 @@ private:
 	boost::shared_ptr<OmVolumeData> mVolData;
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
-
 	boost::shared_ptr<OmGroups> mGroups;
-
 	boost::shared_ptr<OmMST> mst_;
+	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
 

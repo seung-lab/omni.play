@@ -5,7 +5,7 @@
 #include "volume/omVolumeTypes.hpp"
 #include "utility/image/omImage.hpp"
 
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 class OmSegmentCache;
 

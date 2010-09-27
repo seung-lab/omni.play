@@ -18,13 +18,9 @@ OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
 {
 }
 
-OmSegmentColorizer::~OmSegmentColorizer()
-{
-}
-
 void OmSegmentColorizer::setup()
 {
-	zi::WriteGuard g(mMapResizeMutex);
+	zi::rwmutex::write_guard g(mMapResizeMutex);
 
 	const OmSegID curSize = mSegmentCache->getMaxValue() + 1;
 
@@ -34,7 +30,6 @@ void OmSegmentColorizer::setup()
 
 	mSize = curSize;
 	mColorCache.resize(curSize);
-	mColorUpdateMutex.resize(curSize);
 }
 
 boost::shared_ptr<OmColorRGBA>
@@ -42,7 +37,7 @@ OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr)
 {
 	setup();
 
-	zi::ReadGuard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
+	zi::rwmutex::read_guard g(mMapResizeMutex); //prevent vectors from being resized while we're reading
 
 	mAreThereAnySegmentsSelected = mSegmentCache->AreSegmentsSelected() ||
 		                       mSegmentCache->AreSegmentsEnabled();
@@ -74,21 +69,21 @@ void OmSegmentColorizer::doColorTile(uint32_t* imageData,
 			curColor = blackColor;
 		} else { // get color from cache
 
-			mColorUpdateMutex[val].lock();
+			{
+				zi::spinlock::pool<mutex_pool_tag>::guard g(val);
 
-			// check if cache element is valid
-			if(mCurSegCacheFreshness  == mColorCache[val].freshness &&
-			   mCurBreakThreshhold == mPrevBreakThreshhold ){
+				// check if cache element is valid
+				if(mCurSegCacheFreshness  == mColorCache[val].freshness &&
+				   mCurBreakThreshhold == mPrevBreakThreshhold ){
 
-				curColor = mColorCache[val].color;
+					curColor = mColorCache[val].color;
 
-			} else { // update color
-				curColor = mColorCache[val].color
-					 = getVoxelColorForView2d(val);
-				mColorCache[val].freshness = mCurSegCacheFreshness;
+				} else { // update color
+					curColor = mColorCache[val].color
+						= getVoxelColorForView2d(val);
+					mColorCache[val].freshness = mCurSegCacheFreshness;
+				}
 			}
-
-			mColorUpdateMutex[val].unlock();
 
 			prevColor = curColor; // memoize previous, non-zero color
 			lastVal   = val;
@@ -103,20 +98,16 @@ void OmSegmentColorizer::doColorTile(uint32_t* imageData,
 
 OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 {
-	zi::Guard g(mSegmentCache->mMutex);
-
-	OmSegment* seg = mSegmentCache->mImpl->GetSegmentFromValue(val);
+	OmSegment* seg = mSegmentCache->GetSegment(val);
 	if( NULL == seg ) {
 		return blackColor;
 	}
-	OmSegment* segRoot = mSegmentCache->mImpl->findRoot(seg);
+	OmSegment* segRoot = mSegmentCache->findRoot(seg);
 	const OmColor segRootColor = segRoot->GetColorInt();
 
 	const bool isSelected =
-		mSegmentCache->mImpl->isSegmentSelected(segRoot) ||
-		mSegmentCache->mImpl->isSegmentEnabled(segRoot->value);
-
-	g.unlock(); // done w/ lock
+		mSegmentCache->IsSegmentSelected(segRoot) ||
+		mSegmentCache->isSegmentEnabled(segRoot->value);
 
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:

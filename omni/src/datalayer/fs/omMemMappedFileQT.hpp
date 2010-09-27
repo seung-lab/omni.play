@@ -104,7 +104,7 @@ public:
 		//TODO: allocate space??
 		this->map();
 
-		debug("io", "created file %s\n", this->GetBaseFileName().c_str());
+		//debug(io, "created file %s\n", this->GetBaseFileName().c_str());
 	}
 
 private:

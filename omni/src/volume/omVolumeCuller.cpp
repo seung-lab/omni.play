@@ -93,7 +93,7 @@ void OmVolumeCuller::Draw()
 
 	const Vector4f *planes = mFrustumCuller.getPlanes();
 
-	//debug("FIXME", << "center: " << mPosition << endl;
+	////debug(FIXME, << "center: " << mPosition << endl;
 
 	for (int plane_idx = 0; plane_idx < 6; ++plane_idx) {
 
@@ -229,6 +229,6 @@ void OmVolumeCuller::ExtractFrustum()
 
 	for (int i = 0; i < 6; ++i) {
 		Vector4f plane(frustum[i]);
-		//debug("FIXME", << plane << endl;
+		////debug(FIXME, << plane << endl;
 	}
 }

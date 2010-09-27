@@ -54,7 +54,7 @@ bool OmTileCacheNonChannel::isKeyFresh(const OmTileCoord& key)
 void OmTileCacheNonChannel::Get(OmTilePtr& ptr, const OmTileCoord& key,
 				const OM::BlockingRead isBlocking)
 {
-	zi::Guard g(mutex_);
+	zi::guard g(mutex_);
 	if(key.getFreshness() > freshness_.get()){
 		InvalidateCache();
 		keysBySpaceCoord_.clear();

@@ -13,7 +13,7 @@
 #include "system/omPreferenceDefinitions.h"
 
 #include <QHash>
-#include <zi/utility>
+#include "zi/omUtility.h"
 
 class OmProject;
 
@@ -71,7 +71,7 @@ private:
 	OmPreferences(){}
 	~OmPreferences(){}
 	static inline OmPreferences& Instance(){
-		return zi::Singleton<OmPreferences>::Instance();
+		return zi::singleton<OmPreferences>::instance();
 	}
 
 	QHash< int, QString > stringPrefs;
@@ -84,7 +84,7 @@ private:
 		OmEvents::PreferenceChange(key);
 	}
 
-	friend class zi::Singleton<OmPreferences>;
+	friend class zi::singleton_::singleton<OmPreferences>;
 	friend QDataStream &operator<<(QDataStream & out, const OmPreferences & v );
 	friend QDataStream &operator>>(QDataStream & in, OmPreferences & v );
 	friend QDataStream &operator<<(QDataStream & out, const OmProject & p);

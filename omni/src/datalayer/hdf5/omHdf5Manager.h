@@ -2,28 +2,57 @@
 #define OM_HDF5_MANAGER_H
 
 #include "common/omCommon.h"
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
+#include "datalayer/hdf5/omHdf5.h"
 
 #include <QHash>
-#include <QMutex>
-
-class OmHdf5;
+#include <QFileInfo>
+#include <boost/make_shared.hpp>
 
 class OmHdf5Manager : boost::noncopyable {
 
  public:
-	static OmHdf5Manager* Instance();
-	static void Delete();
-	static OmHdf5* getOmHdf5File( QString fileNameAndPath, const bool readOnly);
-	
+	static void Delete(){
+		zi::guard g(Instance().mutex_);
+		Instance().hdf5Files_.clear();
+	}
+
+	static OmHdf5* getOmHdf5File(const std::string& fileNameAndPath,
+								 const bool readOnly)
+	{
+		QFileInfo fInfo(QString::fromStdString(fileNameAndPath));
+		const std::string abs_fnpn = fInfo.absoluteFilePath().toStdString();
+
+		return Instance().doGetOmHdf5File(abs_fnpn, readOnly);
+	}
+
+
  private:
-	OmHdf5Manager();
-	~OmHdf5Manager();
+	OmHdf5Manager(){}
+	~OmHdf5Manager(){}
+	static inline OmHdf5Manager& Instance(){
+		return zi::singleton<OmHdf5Manager>::instance();
+	}
 
-	static OmHdf5Manager* mspInstance;
+	zi::mutex mutex_;
+	std::map<std::string, boost::shared_ptr<OmHdf5> > hdf5Files_;
 
-	OmHdf5* doGetOmHdf5File( QString fileNameAndPath, const bool readOnly );
-	QHash<QString, OmHdf5*> hdf5Files;
-	mutable QMutex lock;
+	OmHdf5* doGetOmHdf5File(const std::string& fnp, const bool readOnly)
+	{
+		zi::guard g(mutex_);
+
+		if(hdf5Files_.count(fnp)){
+			return hdf5Files_.at(fnp).get();
+		}
+
+		boost::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly));
+
+		hdf5Files_[fnp] = hdf5File;
+		return hdf5File.get();
+	}
+
+ 	friend class zi::singleton<OmHdf5Manager>;
 };
 
 #endif

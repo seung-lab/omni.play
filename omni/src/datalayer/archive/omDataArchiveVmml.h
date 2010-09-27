@@ -1,7 +1,7 @@
 #ifndef OM_DATA_ARCHIVE_VMML_H
 #define OM_DATA_ARCHIVE_VMML_H
 
-#include "common/omDebug.h"
+#include "common/omCommon.h"
 
 QDataStream &operator<<(QDataStream & out, const Vector3<float> & v );
 QDataStream &operator>>(QDataStream & in, Vector3<float> & v );

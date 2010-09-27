@@ -7,11 +7,11 @@
  */
 
 /*
- * take a look at <zi2/time/now.hpp> to see how to get system time
+ * take a look at <zi/time/now.hpp> to see how to get system time
  * in windows
  */
 
-#include <zi2/time/time.hpp>
+#include <zi/time/time.hpp>
 
 class OmTimer
 {
@@ -39,17 +39,17 @@ public:
 
 	double us_elapsed()
 	{
-		return timer_.us_elapsed< double >();
+		return timer_.elapsed< zi::in_usecs >();
 	}
 
 	double ms_elapsed()
 	{
-		return timer_.ms_elapsed< double >();
+		return timer_.elapsed< zi::in_msecs >();
 	}
 
 	double s_elapsed()
 	{
-		return timer_.elapsed< double >();
+		return timer_.elapsed< zi::in_secs >();
 	}
 };
 

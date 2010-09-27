@@ -25,7 +25,7 @@ OmProjectData::OmProjectData()
 {
 }
 
-void OmProjectData::instantiateProjectData( QString fileNameAndPath )
+void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath )
 {
 	if (NULL != mspInstance) {
 		delete mspInstance;
@@ -52,7 +52,8 @@ void OmProjectData::Delete()
 
 QString OmProjectData::getFileNameAndPath()
 {
-	return Instance()->dataReader->getFileNameAndPath();
+	const std::string& fnp = Instance()->dataReader->getFileNameAndPath();
+	return QString::fromStdString(fnp);
 }
 
 QString OmProjectData::getAbsoluteFileNameAndPath()
@@ -141,7 +142,7 @@ OmIDataWriter* OmProjectData::GetIDataWriter()
 	return Instance()->dataWriter;
 }
 
-void OmProjectData::setupDataLayer(const QString& fileNameAndPath)
+void OmProjectData::setupDataLayer(const std::string& fileNameAndPath)
 {
 	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
 	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);

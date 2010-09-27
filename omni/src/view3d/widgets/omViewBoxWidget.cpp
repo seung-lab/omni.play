@@ -1,4 +1,3 @@
-#include "system/viewGroup/omViewGroupState.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "common/omGl.h"
@@ -6,9 +5,11 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
-#include "volume/omChannel.h"
-#include "tiles/omTile.h"
+#include "system/viewGroup/omViewGroupState.h"
 #include "tiles/omTextureID.h"
+#include "tiles/omTile.h"
+#include "volume/omChannel.h"
+#include "zi/omUtility.h"
 
 enum OmViewBoxPlane { XY_PLANE, XZ_PLANE, YZ_PLANE };
 static const int RECT_WIREFRAME_LINE_WIDTH = 2;
@@ -177,11 +178,11 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 		Vector3f tileLength = resolution*128.0*OMPOW(2,level);
 
 		SpaceCoord thisCoord = d->GetTileCoord().getSpaceCoord();
-		debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
+		//debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
 		NormCoord normCoord =
 			channel.SpaceToNormCoord(d->GetTileCoord().getSpaceCoord());
 
-		debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
+		//debug ("FIXME", "normCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(normCoord));
 		glBindTexture(GL_TEXTURE_2D, d->GetTexture()->getTextureID());
 		glBegin(GL_QUADS);
 
@@ -249,10 +250,10 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 				dataMin.y = 0.0;
 			}
 
-			debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
-			debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
-			debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
-			debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
+			//debug ("chandata", "dataMin.(x,y): (%f,%f)\n", dataMin.x,dataMin.y);
+			//debug ("chandata", "dataMax.(x,y): (%f,%f)\n", dataMax.x,dataMax.y);
+			//debug ("chandata", "spaceMin.(x,y): (%f,%f)\n", spaceMin.x,spaceMin.y);
+			//debug ("chandata", "spaceMax.(x,y): (%f,%f)\n", spaceMax.x,spaceMax.y);
 			glTexCoord2f(dataMin.x, dataMin.y);	/* lower left corner of image */
 			glVertex3f(thisCoord.x,spaceMin.x,spaceMin.y);
 

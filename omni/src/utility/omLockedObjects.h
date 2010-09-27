@@ -1,19 +1,21 @@
 #ifndef OM_LOCKED_OBJECTS_H
 #define OM_LOCKED_OBJECTS_H
 
-#include <zi/mutex>
-#include <zi/utility>
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
 
 #include <list>
 #include <map>
 #include <set>
 #include <utility>
 #include <iterator>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 template <typename VAL>
 class LockableList
 	: public std::list<VAL>,
-	  public zi::RWMutex {
+	  public zi::rwmutex {
 };
 
 template <typename KEY>
@@ -21,24 +23,24 @@ class LockedList{
 public:
 	virtual ~LockedList(){}
 	bool empty(){
-		zi::ReadGuard g(mutex_);
+		zi::rwmutex::read_guard g(mutex_);
 		return list_.empty();
 	}
 	void push_back(const KEY& key){
-		zi::WriteGuard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		list_.push_back(key);
 	}
 	void clear(){
-		zi::WriteGuard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		list_.clear();
 	}
 	void swap(std::list<KEY>& newList){
-		zi::WriteGuard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		list_.swap(newList);
 	}
 private:
 	std::list<KEY> list_;
-	zi::RWMutex mutex_;
+	zi::rwmutex mutex_;
 };
 
 template <typename KEY, typename VAL>
@@ -49,16 +51,16 @@ public:
 
 	virtual ~LockedMultiMap(){}
 	void insert(const KEY& key, const VAL& val){
-		zi::Guard g(mutex_);
+		zi::guard g(mutex_);
 		mmap_.insert(std::pair<KEY,VAL>(key,val));
 	}
 	void clear(){
-		zi::Guard g(mutex_);
+		zi::guard g(mutex_);
 		mmap_.clear();
 	}
 
 	boost::shared_ptr<valsCont> removeKey(const KEY& key){
-		zi::Guard g(mutex_);
+		zi::guard g(mutex_);
 		boost::shared_ptr<valsCont> vals =
 			boost::make_shared<valsCont>();
 
@@ -76,7 +78,7 @@ public:
 	}
 private:
 	std::multimap<KEY, VAL> mmap_;
-	zi::Mutex mutex_;
+	zi::mutex mutex_;
 };
 
 #endif

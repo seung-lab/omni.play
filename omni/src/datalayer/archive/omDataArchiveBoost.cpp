@@ -1,6 +1,6 @@
 #include "datalayer/archive/omDataArchiveBoost.h"
 
-#include <zi/utility>
+#include <zi/utility/for_each.hpp>
 #include <QDataStream>
 
 QDataStream &operator<<(QDataStream & out, const OmIDsSet & set )

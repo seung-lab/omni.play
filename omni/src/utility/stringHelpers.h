@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include <QStringList>
-#include <zi/utility>
+#include <zi/utility/for_each.hpp>
 
 class StringHelpers
 {

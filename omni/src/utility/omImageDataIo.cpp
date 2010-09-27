@@ -7,13 +7,14 @@
 #include "datalayer/hdf5/omHdf5.h"
 #include "utility/omImageDataIo.h"
 
-Vector3i OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths, const OmDataPath dataset )
+Vector3i OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilenamesAndPaths,
+													const OmDataPath dataset )
 {
 	assert((sourceFilenamesAndPaths.size() == 1) && "More than one hdf5 file specified.h");
 
 	OmIDataReader* hdf5reader =
-		OmDataLayer::getReader(sourceFilenamesAndPaths[0].filePath(),
-				       true );
+		OmDataLayer::getReader(sourceFilenamesAndPaths[0].filePath().toStdString(),
+							   true );
 
 	hdf5reader->open();
 
@@ -25,7 +26,7 @@ Vector3i OmImageDataIo::om_imagedata_get_dims_hdf5( QFileInfoList sourceFilename
 		dims = hdf5reader->getChunkedDatasetDims( OmDataPaths::getDefaultDatasetName() );
 	}
 
-	debug("hfd5image", "dims are %i,%i,%i\n", DEBUGV3(dims));
+	//debug(hfd5image, "dims are %i,%i,%i\n", DEBUGV3(dims));
 
 	hdf5reader->close();
 

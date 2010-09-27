@@ -199,7 +199,7 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	//	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
+	//	//debug(view3ddraw, "elasped %f\n", mElapsed->elapsed());
 	if (mElapsed->elapsed() > 5000) {
 		mElapsed->restart();
 		updateGL();

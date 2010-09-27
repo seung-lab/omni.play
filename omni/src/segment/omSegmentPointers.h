@@ -5,6 +5,7 @@
 #include <deque>
 
 typedef std::deque<OmSegment*> OmSegPtrList;
+typedef boost::shared_ptr<OmSegPtrList> OmSegPtrListPtr;
 
 class OmSegPtrListWithPage {
  public:

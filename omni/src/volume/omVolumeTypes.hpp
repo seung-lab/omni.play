@@ -20,15 +20,15 @@ class OmChannel;
 class OmSegmentation;
 
 typedef	boost::variant<OmMemMappedVolume<int8_t, OmChannel>,
-		       OmMemMappedVolume<uint8_t, OmChannel>,
-		       OmMemMappedVolume<int32_t, OmChannel>,
-		       OmMemMappedVolume<uint32_t, OmChannel>,
-		       OmMemMappedVolume<float, OmChannel>,
-		       OmMemMappedVolume<int8_t, OmSegmentation>,
-		       OmMemMappedVolume<uint8_t, OmSegmentation>,
-		       OmMemMappedVolume<int32_t, OmSegmentation>,
-		       OmMemMappedVolume<uint32_t, OmSegmentation>,
-		       OmMemMappedVolume<float, OmSegmentation> >
+					   OmMemMappedVolume<uint8_t, OmChannel>,
+					   OmMemMappedVolume<int32_t, OmChannel>,
+					   OmMemMappedVolume<uint32_t, OmChannel>,
+					   OmMemMappedVolume<float, OmChannel>,
+					   OmMemMappedVolume<int8_t, OmSegmentation>,
+					   OmMemMappedVolume<uint8_t, OmSegmentation>,
+					   OmMemMappedVolume<int32_t, OmSegmentation>,
+					   OmMemMappedVolume<uint32_t, OmSegmentation>,
+					   OmMemMappedVolume<float, OmSegmentation> >
 OmVolDataSrcs;
 
 typedef boost::variant<int8_t, uint8_t, int32_t, uint32_t, float>

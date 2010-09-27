@@ -170,7 +170,7 @@ const NormBbox & OmMipChunk::GetClippedNormExtent()
  */
 const OmSegIDsSet& OmMipChunk::GetDirectDataValues()
 {
-	zi::Guard g(mDirectDataValueLock);
+	zi::guard g(mDirectDataValueLock);
 	loadMetadataIfPresent();
 
 	return mDirectlyContainedValues;

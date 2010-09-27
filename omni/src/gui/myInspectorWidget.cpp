@@ -11,7 +11,7 @@
 #include "inspectors/chanInspector.h"
 #include "inspectors/filObjectInspector.h"
 #include "inspectors/inspectorProperties.h"
-#include "inspectors/segInspector.h"
+#include "inspectors/segmentation/segInspector.h"
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"

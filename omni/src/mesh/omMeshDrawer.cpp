@@ -3,7 +3,6 @@
 #include "mesh/omMeshDrawer.h"
 #include "mesh/omMeshSegmentList.h"
 #include "mesh/omMipMesh.h"
-#include "mesh/omMipMeshCoord.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/omEvents.h"
@@ -68,7 +67,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 
 	//form culler for this volume and call draw on all volumes
 	mVolumeCuller = rCuller.GetTransformedCuller(mSeg->GetNormToSpaceMatrix(),
-						     mSeg->GetNormToSpaceInvMatrix());
+												 mSeg->GetNormToSpaceInvMatrix());
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
@@ -86,7 +85,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 	}
 
 	if( mRootSegsToDraw.empty() ){
-        	glPopMatrix();
+		glPopMatrix();
 		return;
 	}
 
@@ -97,8 +96,8 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 
 	glPopName();
 
-        //pop matrix
-        glPopMatrix();
+	//pop matrix
+	glPopMatrix();
 }
 
 /*
@@ -107,7 +106,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
 void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
-				      bool testVis)
+									  bool testVis)
 {
 	OmMipChunkPtr p_chunk = OmMipChunkPtr();
 	mSeg->GetChunk(p_chunk, chunkCoord);
@@ -153,21 +152,19 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
 	FOR_EACH(iter, mRootSegsToDraw){
 		OmSegment* rootSeg = (*iter);
 
-		std::pair<bool, OmSegPtrList> segmentsToPossiblyDraw =
+		boost::optional<OmSegPtrList> segmentsToDraw =
 			OmMeshSegmentList::getFromCacheIfReady(chunk, rootSeg);
 
-		if(false == segmentsToPossiblyDraw.first){
+		if(!segmentsToDraw){
 			continue;
 		}
 
-		const OmSegPtrList& segmentsToDraw = segmentsToPossiblyDraw.second;
-
-		if(segmentsToDraw.empty()){
+		if(segmentsToDraw->empty()){
 			continue;
 		}
 
 		segsWereFound = true;
-		doDrawChunk(chunk->GetCoordinate(), segmentsToDraw);
+		doDrawChunk(chunk->GetCoordinate(), *segmentsToDraw);
 	}
 
 	if(segsWereFound){
@@ -179,7 +176,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
 }
 
 void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
-			       const OmSegPtrList& segmentsToDraw )
+							   const OmSegPtrList& segmentsToDraw )
 {
 	FOR_EACH(iter, segmentsToDraw ){
 		OmSegment* seg = *iter;
@@ -189,13 +186,13 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		}
 
 		OmMipMeshPtr p_mesh;
-		mSeg->mMipMeshManager.GetMesh(p_mesh,
-					      OmMipMeshCoord(chunkCoord, seg->value ));
+		mSeg->GetMesh(p_mesh, chunkCoord, seg->value);
 
 		if( !p_mesh ) {
-		        OmEvents::Redraw3d();
+			OmEvents::Redraw3d();
 			continue;
 		}
+
 		if( !p_mesh->hasData() ) {
 			continue;
 		}
@@ -225,17 +222,17 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 		return true;
 	}
 
-	const NormBbox & normExtent = p_chunk->GetNormExtent();
-	const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
+	const NormBbox& normExtent = p_chunk->GetNormExtent();
+	const NormBbox& clippedNormExtent = p_chunk->GetClippedNormExtent();
 
-	NormCoord camera = mVolumeCuller->GetPosition();
-	NormCoord center = clippedNormExtent.getCenter();
+	const NormCoord camera = mVolumeCuller->GetPosition();
+	const NormCoord center = clippedNormExtent.getCenter();
 
-	float camera_to_center = center.distance(camera);
-	float distance = (normExtent.getMax() - normExtent.getCenter()).length();
+	const float camera_to_center = center.distance(camera);
+	const float distance =
+		(normExtent.getMax() - normExtent.getCenter()).length();
 
 	//if distance too large, just draw it - else keep breaking it down
-	debug("vol", "cam,dist:%f,%f\n", camera_to_center, distance);
 	return (camera_to_center > distance);
 }
 
@@ -252,8 +249,9 @@ void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 	const NormBbox & clippedNormExtent = p_chunk->GetClippedNormExtent();
 
 	//translate and scale to chunk norm extent
-	Vector3f translate = clippedNormExtent.getMin();
-	Vector3f scale = clippedNormExtent.getMax() - clippedNormExtent.getMin();
+	const Vector3f translate = clippedNormExtent.getMin();
+	const Vector3f scale =
+		clippedNormExtent.getMax() - clippedNormExtent.getMin();
 
 	//transform model view
 	glTranslatefv(translate.array);
@@ -273,30 +271,26 @@ void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 
 void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
 {
-        OmSegmentColorCacheType sccType;
+	OmSegmentColorCacheType sccType;
 
-        if( mViewGroupState->shouldVolumeBeShownBroken() ) {
-        	sccType = SCC_SEGMENTATION_BREAK;
-        } else {
-        	sccType = SCC_SEGMENTATION;
-        }
+	if( mViewGroupState->shouldVolumeBeShownBroken() ) {
+		sccType = SCC_SEGMENTATION_BREAK;
+	} else {
+		sccType = SCC_SEGMENTATION;
+	}
 
 	ApplyColor( segment, drawOps, sccType);
 }
 
 void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
-			      const OmSegmentColorCacheType sccType)
+							  const OmSegmentColorCacheType sccType)
 {
 	if( seg->getParentSegID() && sccType != SCC_SEGMENTATION_BREAK){
 		ApplyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
 		return;
 	}
 
-	Vector3<float> hyperColor = seg->GetColorFloat();
-
-	hyperColor.x *= 2.;
-	hyperColor.y *= 2.;
-	hyperColor.z *= 2.;
+	const Vector3f hyperColor = seg->GetColorFloat() * 2.;
 
 	//check coloring options
 	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
@@ -304,7 +298,7 @@ void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 
 	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
 		glColor3fva(hyperColor.array,
-			    OmPreferences::GetFloat(OM::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+					OmPreferences::GetFloat(OM::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else if (OmLocalPreferences::getDoDiscoBall()) {
 		static float s = 10.0;

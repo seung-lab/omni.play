@@ -11,6 +11,6 @@ AutoBreakCheckbox::AutoBreakCheckbox( GraphTools * d )
 
 void AutoBreakCheckbox::doAction()
 {
-	debug("dendbar", "DendToolBar::autoBreakChecked (%i)\n", isChecked());
+	//debug(dendbar, "DendToolBar::autoBreakChecked (%i)\n", isChecked());
 	mParent->getViewGroupState()->SetBreakOnSplitMode(isChecked());
 }

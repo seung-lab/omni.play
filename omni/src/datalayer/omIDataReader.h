@@ -9,7 +9,7 @@ class OmIDataReader {
 public:
 	virtual ~OmIDataReader(){}
 
-	virtual QString getFileNameAndPath() = 0;
+	virtual const std::string& getFileNameAndPath() = 0;
 
 	//file
 	virtual void open() = 0;

@@ -7,7 +7,7 @@
  */
 
 #include "segment/omSegmentPointers.h"
-#include "mesh/omMeshTypes.hpp"
+#include "mesh/omMeshTypes.h"
 
 class OmMeshSource;
 class OmMipChunk;

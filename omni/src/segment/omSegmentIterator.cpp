@@ -1,4 +1,4 @@
-#include <zi/utility>
+#include "zi/omUtility.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"

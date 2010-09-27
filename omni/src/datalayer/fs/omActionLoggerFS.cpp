@@ -21,7 +21,7 @@ OmActionLoggerFS::~OmActionLoggerFS()
 
 QDir& OmActionLoggerFS::doGetLogFolder()
 {
-	zi::Guard g(mutex_);
+	zi::guard g(mutex_);
 	if(!initialized){
 		setupLogDir();
 		initialized = true;

@@ -11,7 +11,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
 
-#include <zi/system>
+#include <zi/system.hpp>
 
 //undostack
 #include <QUndoStack>
@@ -134,7 +134,7 @@ QString OmStateManager::getPID()
 
 QString OmStateManager::getHostname()
 {
-	return QString::fromStdString(zi::System::getHostname());
+	return QString::fromStdString(zi::system::hostname);
 }
 
 bool OmStateManager::getParallel()

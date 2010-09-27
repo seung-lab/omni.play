@@ -89,7 +89,7 @@ void OmMST::read(OmSegmentation & seg)
   valid_ = true;
 }
 
-void OmMST::import(OmSegmentation & seg, const QString fname)
+void OmMST::import(OmSegmentation & seg, const std::string& fname)
 {
   OmIDataReader* hdf5reader = OmDataLayer::getReader(fname, true);
   hdf5reader->open();

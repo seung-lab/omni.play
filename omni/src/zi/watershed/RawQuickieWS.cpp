@@ -17,7 +17,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
-#include <zi/utility>
+#include "zi/omUtility.h"
 #include "zi/trees/DisjointSets.hpp"
 
 using namespace std;

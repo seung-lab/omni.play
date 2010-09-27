@@ -125,7 +125,7 @@ private:
 									 true);
 			}
 		} else {
-			debug("genone", "No segment_id in edit selection\n");
+			//debug(genone, "No segment_id in edit selection\n");
 		}
 
 		state_->SetLastDataPoint(dataClickPoint);

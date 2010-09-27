@@ -12,7 +12,7 @@
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
 
-#include <zi/utility>
+#include "zi/omUtility.h"
 
 OmTileDrawer::OmTileDrawer(boost::shared_ptr<OmView2dState> state,
 			   const ViewType vt)

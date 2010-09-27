@@ -3,6 +3,8 @@
 #include "tiles/omTilePreFetcherTask.hpp"
 #include "view2d/omView2dState.hpp"
 
+#include <boost/make_shared.hpp>
+
 void OmTilePreFetcherTask::run()
 {
 	onScreenTileCoords_ = boost::make_shared<OmOnScreenTileCoords>(state_);

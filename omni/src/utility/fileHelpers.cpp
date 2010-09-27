@@ -6,9 +6,9 @@
 #include <QFileInfo>
 #include <QFileInfoList>
 
-bool FileHelpers::isFileReadOnly(const QString& fileNameAndPath)
+bool FileHelpers::isFileReadOnly(const std::string& fileNameAndPath)
 {
-	QFileInfo file(fileNameAndPath);
+	QFileInfo file(QString::fromStdString(fileNameAndPath));
 	if (file.exists() && !file.isWritable() ){
 		return true;
 	}

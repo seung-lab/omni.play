@@ -71,7 +71,7 @@ std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoor
 	const QString ret =
 		OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
 
-	debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
+	//debug(parallel, "parallel mesh fs path: %s\n", qPrintable( ret ) );
 	fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
 
 	return ret.toStdString();

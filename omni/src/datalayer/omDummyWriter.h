@@ -6,7 +6,7 @@
 
 class OmDummyWriter : public OmIDataWriter {
 public:
-	OmDummyWriter(QString){}
+	OmDummyWriter(const std::string&){}
 
 	void open(){};
 	void close(){};

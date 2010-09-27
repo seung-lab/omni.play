@@ -1,11 +1,16 @@
 #ifndef OM_THREAD_POOL_HPP
 #define OM_THREAD_POOL_HPP
 
+#include "zi/omThreads.h"
+
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include <zi/threads>
 
 class OmThreadPool {
+private:
+	typedef zi::task_manager::simple taskman_t;
+	boost::shared_ptr<taskman_t> taskMan_;
+
 public:
 	OmThreadPool() {}
 
@@ -14,52 +19,44 @@ public:
 	}
 
 	void start(const int numWorkerThreads){
-		boost::shared_ptr<zi::ThreadFactory> factory(new zi::ThreadFactory);
-		factory->setDetached(false);
-
-		threadManager_ = boost::make_shared<zi::ThreadManager>
-			(factory, numWorkerThreads);
-
-		threadManager_->start();
+		taskMan_ = boost::make_shared<taskman_t>(numWorkerThreads);
+		taskMan_->start();
 	}
 
 	void join(){
-		threadManager_->join();
+		taskMan_->join();
 	}
 
 	void clear(){
 		if(getTaskCount()){
-			threadManager_->clearTasks();
+			taskMan_->clear();
 		}
 	}
 
 	void stop(){
 		clear();
-		threadManager_->stop();
+		taskMan_->stop();
 	}
 
-	void addTaskFront(const boost::shared_ptr<zi::Runnable>& job){
-		threadManager_->pushTask(job);
+	void addTaskFront(const boost::shared_ptr<zi::runnable>& job){
+		taskMan_->push_front(job);
 	}
 
-	void addTaskBack(const boost::shared_ptr<zi::Runnable>& job){
-		threadManager_->addTask(job);
+	void addTaskBack(const boost::shared_ptr<zi::runnable>& job){
+		taskMan_->push_back(job);
 	}
 
 	int getTaskCount() const {
-		return threadManager_->getTaskCount();
+		return taskMan_->size();
 	}
 
 	int getNumWorkerThreads() const {
-		return threadManager_->getWorkerCount();
+		return taskMan_->worker_count();
 	}
 
 	int getMaxSimultaneousTaskCount() const {
 		return getNumWorkerThreads();
 	}
-
-private:
-	boost::shared_ptr<zi::ThreadManager> threadManager_;
 };
 
 #endif

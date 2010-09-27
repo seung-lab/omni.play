@@ -2,7 +2,7 @@
 #define OM_MESH_CACHE_H
 
 #include "system/cache/omThreadedCache.h"
-#include "mesh/omMeshTypes.hpp"
+#include "mesh/omMeshTypes.h"
 
 class OmMipMeshCoord;
 class OmMipMeshManager;

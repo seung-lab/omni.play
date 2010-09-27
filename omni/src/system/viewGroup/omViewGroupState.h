@@ -4,7 +4,7 @@
 #include "system/omManageableObject.h"
 #include "gui/inspectors/inspectorProperties.h"
 
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 class SegmentDataWrapper;
 class OmBrushSize;
@@ -92,7 +92,7 @@ class OmViewGroupState : public OmManageableObject {
 	OmSegmentColorCacheType determineColorizationType(const ObjectType);
 
  private:
-	zi::Mutex mColorCacheMapLock;
+	zi::mutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
 	FilterWidget* mFilterWidget;

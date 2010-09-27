@@ -1,10 +1,10 @@
 #ifndef OM_HANDLE_CACHE_MISS_THREADED_H
 #define OM_HANDLE_CACHE_MISS_THREADED_H
 
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 template <typename KEY, typename PTR >
-class HandleCacheMissThreaded : public zi::Runnable {
+class HandleCacheMissThreaded : public zi::runnable {
 public:
 	HandleCacheMissThreaded(OmThreadedCache<KEY,PTR>* tc,
 							const KEY& key)
@@ -37,7 +37,7 @@ private:
 
 	void doHandleFetchUpdate(PTR val)
 	{
-		zi::Guard g(mTC->mCacheMutex);
+		zi::guard g(mTC->mutex_);
 
 		if(val){
 			mTC->mCache.set(mKey, val);

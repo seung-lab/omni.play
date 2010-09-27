@@ -24,7 +24,7 @@ public:
 		, hdf5_(new OmVolumeImporterHDF5<VOL>(vol))
 	{}
 
-	bool import(const OmDataPath& path)
+	bool Import(const OmDataPath& path)
 	{
 		printf("\timporting data...\n");
 		fflush(stdout);
@@ -53,7 +53,6 @@ private:
 
 		return hdf5_->importHDF5(path);
 	}
-
 
 	bool areImportFilesImages()
 	{
@@ -100,7 +99,7 @@ private:
 	 */
 	void allocateData(const OmVolDataType type)
 	{
-		assert(OmVolDataType::UNKNOWN != type);
+		assert(OmVolDataType::UNKNOWN != type.index());
 		vol_->mVolDataType = type;
 
 		std::map<int, Vector3i> levelsAndDims;
@@ -109,12 +108,6 @@ private:
 			levelsAndDims[level] = vol_->getDimsRoundedToNearestChunk(level);
 		}
 
-		hdf5_->allocateHDF5(levelsAndDims);
-		allocateMemMap(levelsAndDims);
-	}
-
-	void allocateMemMap(const std::map<int, Vector3i> & levelsAndDims)
-	{
 		vol_->getVolData()->create(vol_, levelsAndDims);
 	}
 };

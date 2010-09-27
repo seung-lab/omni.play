@@ -44,7 +44,7 @@ void FilObjectInspector::setFilAlpha(int alpha)
 	if( OmProject::IsChannelValid( mChannelID ) ){
 		OmChannel& channel = OmProject::GetChannel( mChannelID);
 		if( channel.IsFilterValid( mFilterID ) ){
-			//debug("filter", "setting alpha\n");
+			////debug(filter, "setting alpha\n");
 			channel.GetFilter( mFilterID).SetAlpha((double)alpha / 100.00);
 			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
  		}

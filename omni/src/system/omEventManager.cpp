@@ -37,7 +37,7 @@ void OmEventManager::Delete()
 bool OmEventManager::event(QEvent * event)
 {
 
-	//debug("genone","OmEventManager::event(QEvent *event)\n");
+	////debug(genone,"OmEventManager::event(QEvent *event)\n");
 
 	//ensure we have an OmEvent object (or else the next step will pretty much crash)
 	QEvent::Type eventType = event->type();

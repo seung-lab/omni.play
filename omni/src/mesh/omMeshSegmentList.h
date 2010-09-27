@@ -6,7 +6,7 @@
 #include "segment/omSegmentPointers.h"
 #include "volume/omMipVolume.h"
 
-#include <zi/mutex>
+#include "zi/omMutex.h"
 #include "utility/OmThreadPool.hpp"
 
 #include <boost/tuple/tuple.hpp>
@@ -46,7 +46,7 @@ class OmMeshSegmentList : boost::noncopyable{
 public:
 	static void Delete();
 
-	static inline std::pair<bool, OmSegPtrList>
+	static inline boost::optional<OmSegPtrList>
 	getFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg) {
 		return Instance()->doGetFromCacheIfReady(chunk, rootSeg);
 	}
@@ -63,9 +63,9 @@ private:
 
 	std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
 	OmThreadPool mThreadPool;
-	zi::Mutex mutex;
+	zi::mutex mutex;
 
-	std::pair<bool, OmSegPtrList> doGetFromCacheIfReady(OmMipChunkPtr, OmSegment*);
+	boost::optional<OmSegPtrList> doGetFromCacheIfReady(OmMipChunkPtr, OmSegment*);
 
 	static OmMeshSegListKey makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg);
 };

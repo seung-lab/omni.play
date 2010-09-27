@@ -43,7 +43,7 @@ ValidationGroup::ValidationGroup(DendToolBar * d)
 
 void ValidationGroup::changeMapColors()
 {
-	debug("valid", "ValidationGroup::changeMapColors(%i)\n", showValidatedButton->isChecked());
+	//debug(valid, "ValidationGroup::changeMapColors(%i)\n", showValidatedButton->isChecked());
 	// Using !(not) because check happens after this fuction.
 	getViewGroupState()->SetShowValidMode(showValidatedButton->isChecked(), showValid->isChecked());
 }

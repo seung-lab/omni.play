@@ -4,7 +4,7 @@
 #include "volume/omVolumeTypes.hpp"
 
 #include "mesh/omMipMeshCoord.h"
-#include "mesh/omMeshTypes.hpp"
+#include "mesh/omMeshTypes.h"
 #include "mesh/omMipMesh.h"
 
 #include "tiles/omTileCoord.h"

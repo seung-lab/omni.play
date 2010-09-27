@@ -20,7 +20,7 @@ class OmTileCache;
 
 class OmProjectData : boost::noncopyable {
 public:
-	static void instantiateProjectData( QString fileNameAndPath );
+	static void instantiateProjectData(const std::string& fileNameAndPath);
 
 	static OmProjectData* Instance();
 	static void Delete();
@@ -61,7 +61,7 @@ private:
 	bool mIsReadOnly;
 	boost::shared_ptr<OmTileCache> tileCache_;
 
-	void setupDataLayer(const QString&);
+	void setupDataLayer(const std::string&);
 	OmIDataReader* dataReader;
 	OmIDataWriter* dataWriter;
 

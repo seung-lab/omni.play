@@ -4,7 +4,7 @@
 #include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
 
-#include <zi/mutex>
+#include <zi/mutex.hpp>
 
 class OmMipChunkCoord;
 class OmSegment;
@@ -82,7 +82,7 @@ public:
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
 private:
-	zi::Mutex mMutex;
+	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;
 	boost::shared_ptr<OmSegmentCacheImpl> mImpl;
 

@@ -1,7 +1,7 @@
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/omSegment.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
-#include <zi/utility>
+#include "zi/omUtility.h"
 
 OmSegmentIteratorLowLevel::OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel * cache )
 	: mCache(cache)

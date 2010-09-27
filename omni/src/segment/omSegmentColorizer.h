@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 static const double selectedSegmentColorMultiFactor = 2.5;
 
@@ -22,10 +22,8 @@ class OmSegmentColorizer
 	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
 			    const OmSegmentColorCacheType,
 			    const Vector2i& dims);
-	~OmSegmentColorizer();
 
-	boost::shared_ptr<OmColorRGBA>
-	colorTile(boost::shared_ptr<uint32_t>);
+	boost::shared_ptr<OmColorRGBA> colorTile(boost::shared_ptr<uint32_t>);
 
 	void setCurBreakThreshhold( const float t ) {
 		mPrevBreakThreshhold = mCurBreakThreshhold;
@@ -33,8 +31,7 @@ class OmSegmentColorizer
 	}
 
  private:
-	std::vector<zi::Mutex> mColorUpdateMutex;
-	zi::RWMutex mMapResizeMutex;
+	zi::rwmutex mMapResizeMutex;
 
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
@@ -60,6 +57,8 @@ class OmSegmentColorizer
 	}
 
 	void doColorTile(uint32_t*, OmColorRGBA*);
+
+	struct mutex_pool_tag;
 };
 
 #endif

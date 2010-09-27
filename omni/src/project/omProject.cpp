@@ -79,7 +79,7 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 		}
 	}
 
-	OmProjectData::instantiateProjectData( fileNameAndPath );
+	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Create();
 	OmProjectData::Open();
 
@@ -132,7 +132,7 @@ void OmProject::Load(const QString& fileNameAndPath)
 		throw OmIoException( qPrintable( err ));
 	}
 
-	OmProjectData::instantiateProjectData( fileNameAndPath );
+	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Open();
 
 	try {

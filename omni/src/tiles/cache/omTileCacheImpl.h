@@ -22,7 +22,7 @@ public:
 
 private:
 	LockedMultiMap<SpaceCoord, OmTileCoord> keysBySpaceCoord_;
-	zi::Mutex mutex_;
+	zi::mutex mutex_;
 	LockedUint64 freshness_;
 
 	bool isKeyFresh(const OmTileCoord& key);

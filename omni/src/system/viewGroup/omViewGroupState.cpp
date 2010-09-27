@@ -49,7 +49,7 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 
 	mColorCaches.resize(SCC_NUMBER_OF_ENUMS);
 
-	debug("viewgroupstate", "constructed viewGroupState\n");
+	//debug(viewgroupstate, "constructed viewGroupState\n");
 }
 
 // GUI state
@@ -316,7 +316,7 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 				      const OmTileCoord& key,
 				      const OmSegmentColorCacheType sccType)
 {
-	zi::Guard g(mColorCacheMapLock);
+	zi::guard g(mColorCacheMapLock);
 
 	if(NULL == mColorCaches[sccType]){
 		SegmentationDataWrapper sdw(key.getVolume()->getID());
@@ -400,7 +400,7 @@ void OmViewGroupState::SetBreakOnSplitMode(bool mode)
 
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 {
-	debug("valid", "OmViewGroupState::SetShowValidMode(bool mode=%i, bool inColor=%i)\n", mode, inColor);
+	//debug(valid, "OmViewGroupState::SetShowValidMode(bool mode=%i, bool inColor=%i)\n", mode, inColor);
 	OmCacheManager::TouchFresheness();
 	mShowValid = mode;
 	mShowValidInColor = inColor;

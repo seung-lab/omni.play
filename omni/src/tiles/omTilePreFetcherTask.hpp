@@ -4,12 +4,12 @@
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dState.hpp"
 
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 class OmView2dState;
 class OmOnScreenTileCoords;
 
-class OmTilePreFetcherTask : public zi::Runnable {
+class OmTilePreFetcherTask : public zi::runnable {
 public:
 	OmTilePreFetcherTask(const boost::shared_ptr<OmView2dState>& state)
 		: state_(state) {}

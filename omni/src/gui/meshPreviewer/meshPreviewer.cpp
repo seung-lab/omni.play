@@ -1,11 +1,12 @@
-#include "gui/meshPreviewer/previewButton.hpp"
-#include "segment/omSegmentSelector.h"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
-#include "volume/omMipChunk.h"
+#include "gui/meshPreviewer/previewButton.hpp"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelector.h"
+#include "utility/dataWrappers.h"
 #include "view3d/omView3d.h"
+#include "volume/omMipChunk.h"
+#include "volume/omSegmentation.h"
+#include "zi/omUtility.h"
 
 #include <boost/make_shared.hpp>
 

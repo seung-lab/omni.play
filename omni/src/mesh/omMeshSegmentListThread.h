@@ -4,11 +4,11 @@
 #include "common/omCommon.h"
 #include "volume/omVolumeTypes.hpp"
 
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 class OmSegment;
 
-class OmMeshSegmentListThread : public zi::Runnable {
+class OmMeshSegmentListThread : public zi::runnable {
 public:
 	OmMeshSegmentListThread(OmMipChunkPtr, OmSegment *);
 	void run();

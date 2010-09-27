@@ -13,7 +13,7 @@ public:
   ~OmMST(){}
 
   void read(OmSegmentation & seg);
-  void import(OmSegmentation & seg, const QString fname);
+	void import(OmSegmentation & seg, const std::string& fname);
   void FlushDend(OmSegmentation * seg);
   void FlushDendUserEdges(OmSegmentation * seg);
 

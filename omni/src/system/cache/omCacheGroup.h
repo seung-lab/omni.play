@@ -4,7 +4,7 @@
 #include "common/omCommon.h"
 
 #include <QList>
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 class OmCacheBase;
 class OmCacheInfo;
@@ -26,7 +26,7 @@ public:
 
 private:
 	uint64_t mMaxSize;
-	zi::RWMutex mRWLock;
+	zi::rwmutex mRWLock;
 	std::set<OmCacheBase*> mCacheSet;
 };
 

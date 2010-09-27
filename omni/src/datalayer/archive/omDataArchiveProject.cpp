@@ -1,3 +1,4 @@
+#include "mesh/omMipMeshManager.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
@@ -313,7 +314,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
 	OmDataArchiveProject::storeOmVolume(out, seg);
 	OmDataArchiveProject::storeOmMipVolume(out, seg);
 
-	out << seg.mMipMeshManager;
+	out << (*seg.mMipMeshManager);
 	out << (*seg.mSegmentCache);
 
 	out << seg.mst_->mDendSize;
@@ -331,7 +332,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 	OmDataArchiveProject::loadOmVolume(in, seg);
 	OmDataArchiveProject::loadOmMipVolume(in, seg);
 
-	in >> seg.mMipMeshManager;
+	in >> (*seg.mMipMeshManager);
 	in >> (*seg.mSegmentCache);
 
 	in >> seg.mst_->mDendSize;

@@ -5,8 +5,6 @@ CONFIG += qt debug
 DEPENDPATH += . \
            include \
            include/vmmlib \
-           include/zi_lib \
-           include/zi_lib_v2 \
            include/enum \
            include/enum/enum \
            lib \
@@ -85,7 +83,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/cacheMonitorWidget.h \
            src/gui/elementListBox.h \
            src/gui/guiUtils.h \
-           src/gui/headless.h \
+           src/headless/headless.h \
            src/gui/inspectors/chanInspector.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
@@ -152,7 +150,6 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/omMipMesh.h \
            src/mesh/omMipMeshCoord.h \
            src/mesh/omMipMeshManager.h \
-           src/mesh/omMeshTypes.hpp \
            src/mesh/omMeshSegmentList.h \
            src/mesh/omMeshSegmentListThread.h \
            src/mesh/ziMesher.h \
@@ -191,7 +188,6 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/system/omAction.h \
-           src/system/omAnimate.h \
            src/system/omBuildChannel.h \
            src/system/omBuildSegmentation.h \
            src/system/omBuildVolumes.h \
@@ -306,7 +302,6 @@ HEADERS += lib/strnatcmp.h \
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
-           src/common/omDebug.cpp \
            src/common/omException.cpp \
            src/common/omGl.cpp \
            src/common/omStd.cpp \
@@ -323,7 +318,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/hdf5/omHdf5Utils.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
            src/datalayer/hdf5/omHdf5Impl.cpp \
-           src/datalayer/hdf5/omHdf5Manager.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDataPaths.cpp \
            src/gui/groupsTable.cpp \
@@ -333,14 +327,14 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/cacheMonitorWidget.cpp \
            src/gui/elementListBox.cpp \
            src/gui/guiUtils.cpp \
-           src/gui/headless.cpp \
+           src/headless/headless.cpp \
            src/gui/inspectors/chanInspector.cpp \
            src/gui/inspectors/filObjectInspector.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
            src/gui/inspectors/segmentation/segInspector.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
            src/gui/inspectors/volInspector.cpp \
-           src/gui/main.cpp \
+           src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
@@ -426,7 +420,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
            src/system/omAction.cpp \
-           src/system/omAnimate.cpp \
            src/system/omBuildChannel.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
@@ -435,7 +428,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
-           src/system/omGarbage.cpp \
            src/system/omGroup.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
@@ -497,8 +489,7 @@ SOURCES += lib/strnatcmp.cpp \
 RESOURCES += src/gui/resources.qrc
 
 INCLUDEPATH = src include lib
-INCLUDEPATH += ./include/zi_lib
-INCLUDEPATH += ./include/zi_lib_v2
+INCLUDEPATH += ../external/zi_lib
 
 #### Windows
 win32 {
@@ -508,7 +499,7 @@ win32 {
 } else {
 #### Linux or MacOS
    INCLUDEPATH +=  ../external/libs/HDF5/include
-   INCLUDEPATH += ../external/headers/boost_1_43_0
+   INCLUDEPATH += ../external/zi_lib/external/include
    LIBS += ../external/libs/HDF5/lib/libhdf5.a
    LIBS += -lz
 }

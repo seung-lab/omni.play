@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include <zi/utility>
+#include "zi/omUtility.h"
 
 #include "utility/omSmartPtr.hpp"
 

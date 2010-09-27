@@ -35,7 +35,7 @@ ziMeshingChunk::ziMeshingChunk(int segId, OmMipChunkCoord c,
 
 void ziMeshingChunk::run()
 {
-  const uint64_t threadId = zi::ThreadFactory::ID();
+  const uint64_t threadId = 0; //FIXME! get_id()?
   ziTimer ztimer;
   ztimer.start();
 
@@ -183,7 +183,7 @@ void ziMeshingChunk::run()
 
 void ziMeshingChunk::loadChunk_()
 {
-  debug ("ziMeshingChunk", "loadChunk_()\n");
+  //debug ("ziMeshingChunk", "loadChunk_()\n");
   OmProject::GetSegmentation(segmentationId_).GetChunk(chunk_, mipCoord_);
   srcBbox_  = chunk_->GetExtent();
   dstBbox_  = chunk_->GetNormExtent();

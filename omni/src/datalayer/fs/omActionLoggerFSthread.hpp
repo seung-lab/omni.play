@@ -4,7 +4,7 @@
 #include "project/omProject.h"
 #include "utility/omLockedPODs.hpp"
 
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 #include <QDataStream>
 #include <QDateTime>
@@ -15,7 +15,7 @@ static const int Omni_Log_Version = 1;
 static const QString Omni_Postfix("OMNI_LOG");
 
 template <typename T>
-class OmActionLoggerFSThread : public zi::Runnable {
+class OmActionLoggerFSThread : public zi::runnable {
 public:
 	OmActionLoggerFSThread(T* action,
 						   const std::string& doOrUndo,

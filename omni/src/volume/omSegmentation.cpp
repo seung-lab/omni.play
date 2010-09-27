@@ -1,6 +1,4 @@
-#include "system/omGroups.h"
-#include "utility/OmThreadPool.hpp"
-#include "mesh/omMipMesh.h"
+#include "mesh/omMipMeshManager.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
@@ -9,6 +7,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omMST.h"
+#include "mesh/omMipMesh.h"
 #include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
@@ -23,8 +22,10 @@
 #include "system/events/omView3dEvent.h"
 #include "system/omEventManager.h"
 #include "system/omGenericManager.h"
+#include "system/omGroups.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "utility/OmThreadPool.hpp"
 #include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
@@ -32,8 +33,7 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
-
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -46,6 +46,7 @@ OmSegmentation::OmSegmentation()
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
 {
 }
 
@@ -58,8 +59,9 @@ OmSegmentation::OmSegmentation(OmId id)
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
 {
-	mMipMeshManager.SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
+	mMipMeshManager->SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
 
 	//uses meta data
 	mStoreChunkMetaData = true;
@@ -104,7 +106,7 @@ void OmSegmentation::BuildVolumeData()
 
 void OmSegmentation::Mesh()
 {
-	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+	ziMesher mesher(GetId(), mMipMeshManager.get(), GetRootMipLevel());
 	Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
 
 	for (int z = 0; z < mc.z; ++z) {
@@ -121,7 +123,7 @@ void OmSegmentation::Mesh()
 
 void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 {
-	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+	ziMesher mesher(GetId(), mMipMeshManager.get(), GetRootMipLevel());
 	mesher.addChunkCoord(coord);
 	mesher.mesh();
 }
@@ -147,7 +149,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	//remove mesh from cache to force it to reload
 	foreach( const OmSegID & val, rModifiedValues ){
 		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
-		mMipMeshManager.UncacheMesh(mip_mesh_coord);
+		mMipMeshManager->UncacheMesh(mip_mesh_coord);
 	}
 
 	//call redraw to force mesh to reload
@@ -191,12 +193,6 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 	}
 }
 
-
-void OmSegmentation::DeleteGroup(OmGroupID)
-{
-	printf("FIXME delete group not supported\n");
-}
-
 void OmSegmentation::FlushDirtySegments()
 {
 	mSegmentCache->flushDirtySegments();
@@ -223,11 +219,11 @@ void OmSegmentation::SetDendThreshold( float t )
 
 void OmSegmentation::CloseDownThreads()
 {
-	mMipMeshManager.CloseDownThreads();
+	mMipMeshManager->CloseDownThreads();
 	mDataCache->closeDownThreads();
 }
 
-Vector3i OmSegmentation::FindCenterOfSelectedSegments()
+Vector3i OmSegmentation::FindCenterOfSelectedSegments() const
 {
 	DataBbox box;
 
@@ -263,7 +259,7 @@ Vector3i OmSegmentation::FindCenterOfSelectedSegments()
 bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmSegmentation> importer(this);
-	return importer.import(dataset);
+	return importer.Import(dataset);
 }
 
 void OmSegmentation::loadVolData()
@@ -274,11 +270,6 @@ void OmSegmentation::loadVolData()
 float OmSegmentation::GetDendThreshold()
 {
 	return mst_->mDendThreshold;
-}
-
-boost::shared_ptr<OmMST> OmSegmentation::getMST()
-{
-	return mst_;
 }
 
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
@@ -300,7 +291,7 @@ OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 }
 
 
-class OmSegmentationChunkBuildTask : public zi::Runnable {
+class OmSegmentationChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
 	OmMipVolume* vol_;
@@ -348,4 +339,11 @@ void OmSegmentation::doBuildThreadedVolume()
 	}
 
 	threadPool.join();
+}
+
+void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
+							 const OmMipChunkCoord& coord,
+							 const OmSegID segID )
+{
+	return mMipMeshManager->GetMesh(ptr, OmMipMeshCoord(coord, segID));
 }

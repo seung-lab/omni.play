@@ -9,8 +9,7 @@
 
 #include "common/omCommon.h"
 #include "segment/omSegmentEdge.h"
-
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 class OmSegmentCache;
 
@@ -40,7 +39,7 @@ public:
 
 	quint64 getSize() const { return mSize; }
 	void addToSize(const quint64 inc){
-		zi::Guard g(sizeWriteLock_);
+		zi::guard g(sizeWriteLock_);
 		mSize += inc;
 	}
 
@@ -61,7 +60,7 @@ public:
 
 	const DataBbox& getBounds() const {	return mBounds;	}
 	void addToBounds(const DataBbox& box){
-		zi::Guard g(boundsWriteLock_);
+		zi::guard g(boundsWriteLock_);
 		mBounds.merge(box);
 	}
 
@@ -87,8 +86,8 @@ public:
 	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return mCache; }
 
 private:
-	zi::Mutex boundsWriteLock_;
-	zi::Mutex sizeWriteLock_;
+	zi::mutex boundsWriteLock_;
+	zi::mutex sizeWriteLock_;
 
 	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;

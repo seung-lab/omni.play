@@ -13,7 +13,7 @@
 #include "volume/omSegmentation.h"
 #include "datalayer/omIDataVolume.hpp"
 
-#include <zi/mutex>
+#include <zi/mutex.hpp>
 #include <QFile>
 
 template <typename T> class OmIMemMappedFile;
@@ -22,7 +22,6 @@ template <typename T, typename VOL>
 class OmMemMappedVolume : public OmIDataVolume<T,VOL> {
 private:
 	VOL* vol_;
-	zi::Mutex mutex_;
 	std::vector<boost::shared_ptr<OmIMemMappedFile<T> > > maps_;
 
 	typedef OmMemMappedFileReadQT<T> reader_t;
@@ -36,8 +35,6 @@ public:
 
 	void Load()
 	{
-		zi::Guard g(mutex_);
-
 		resizeMapsVector();
 
 		for(size_t level = 0; level < maps_.size(); ++level) {
@@ -49,8 +46,6 @@ public:
 
 	void Create(const std::map<int, Vector3i>& levelsAndDims)
 	{
-		zi::Guard g(mutex_);
-
 		resizeMapsVector();
 
 		const int64_t bps = GetBytesPerSample();
@@ -94,8 +89,8 @@ public:
 		const int64_t offset =
 			slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-		debug("io", "offset is: %llu (%lld,%lld,%lld) for (%lld,%lld,%lld)\n",
-		      offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
+		//debug(io, "offset is: %llu (%lld,%lld,%lld) for (%lld,%lld,%lld)\n",
+		//offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
 
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
 		assert(ret);
@@ -141,7 +136,7 @@ private:
 
 		const QString fnp_clean = QDir::cleanPath(fnp);
 
-		debug("io", "file is %s\n", qPrintable(fnp_clean));
+		//debug(io, "file is %s\n", qPrintable(fnp_clean));
 
 		return fnp_clean.toStdString();
 	}

@@ -8,6 +8,8 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 
+#include <boost/make_shared.hpp>
+
 static const int CLEANER_THREAD_LOOP_TIME_SECS = 30;
 
 OmCacheManager::OmCacheManager()
@@ -28,16 +30,15 @@ OmCacheManager::~OmCacheManager()
 
 void OmCacheManager::setupCleanerThread()
 {
-	const int64_t loopTimeMS = CLEANER_THREAD_LOOP_TIME_SECS * 1000;
+	const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;
 
-	threadFactory_.setDetached(false);
+	cleaner_ =
+		boost::make_shared<zi::periodic_function>(
+			&OmCacheManager::cacheManagerCleaner, this,
+			zi::interval::secs(loopTimeSecs));
 
-	boost::shared_ptr<zi::Runner>
-		threadedCleaner(new zi::Runner(this,
-					       &OmCacheManager::cacheManagerCleaner,
-					       loopTimeMS));
-
-	threadFactory_.poopThread(threadedCleaner)->start();
+	cleanerThread_ = boost::make_shared<zi::thread>(*cleaner_);
+	cleanerThread_->start();
 }
 
 void OmCacheManager::Delete()
@@ -78,6 +79,7 @@ int OmCacheManager::CleanCacheGroup(const OmCacheGroupEnum group)
 void OmCacheManager::SignalCachesToCloseDown()
 {
 	Instance().amClosingDown.set(true);
+	Instance().cleaner_->stop();
 	GetCache(RAM_CACHE_GROUP)->SignalCachesToCloseDown();
 	GetCache(VRAM_CACHE_GROUP)->SignalCachesToCloseDown();
 }

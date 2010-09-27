@@ -2,7 +2,7 @@
 #define  ZIMESHINGCHUNK_H_
 
 #include "zi/base/omni.h"
-#include <zi/threads>
+#include "zi/omThreads.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omMipChunkCoord.h"
@@ -14,7 +14,7 @@
 class ziMesher;
 class OmMipMeshManager;
 
-class ziMeshingChunk : public zi::Runnable {
+class ziMeshingChunk : public zi::runnable {
 public:
   ziMeshingChunk(int segId, OmMipChunkCoord c,
 		 OmMipMeshManager *mmm, ziMesher *mesher);

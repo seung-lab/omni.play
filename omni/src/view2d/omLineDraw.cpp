@@ -13,7 +13,7 @@
 #include "volume/omVoxelSetValueAction.h"
 
 OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
-		       const ViewType vt)
+					   const ViewType vt)
 	: state_(v2ds)
 	, mViewType(vt)
 {
@@ -30,8 +30,8 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 }
 
 void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
-				 const DataCoord & second,
-				 bool doselection)
+								   const DataCoord & second,
+								   bool doselection)
 {
 	//store current selection
 	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
@@ -65,30 +65,30 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 
 	const float mDepth = state_->getViewGroupState()->GetViewSliceDepth(mViewType);
 	const DataCoord data_coord = state_->getVol()->SpaceToDataCoord(SpaceCoord(0, 0, mDepth));
-	int mViewDepth = data_coord.z;
-        DataCoord globalDC;
+
+	DataCoord globalDC;
 	int y1, y0, x1, x0;
 
-        switch (mViewType) {
-        case XY_VIEW:
+	switch (mViewType) {
+	case XY_VIEW:
 		y1 = second.y;
 		y0 = first.y;
 		x1 = second.x;
 		x0 = first.x;
-                break;
-        case XZ_VIEW:
+		break;
+	case XZ_VIEW:
 		y1 = second.z;
 		y0 = first.z;
 		x1 = second.x;
 		x0 = first.x;
-                break;
-        case YZ_VIEW:
+		break;
+	case YZ_VIEW:
 		y1 = second.y;
 		y0 = first.y;
 		x1 = second.z;
 		x0 = first.z;
-                break;
-        }
+		break;
+	}
 
 	int dy = y1 - y0;
 	int dx = x1 - x0;
@@ -109,8 +109,8 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	dy <<= 1;		// dy is now 2*dy
 	dx <<= 1;		// dx is now 2*dx
 
-	debug("brush", "coords: %i,%i,%i\n", x0, y0, mViewDepth);
-	debug("brush", "mDepth = %f\n", mDepth);
+	//debug(brush, "coords: %i,%i,%i\n", x0, y0, mViewDepth);
+	//debug(brush, "mDepth = %f\n", mDepth);
 
 	OmSegmentSelector sel(segmentation_id, this, "view2d_selector" );
 	OmSegmentation & current_seg = OmProject::GetSegmentation(segmentation_id);
@@ -133,8 +133,8 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 
 			DataCoord globalDC =
 				state_->makeViewTypeVector3(x0,
-							    y0,
-							    second.z);
+											y0,
+											second.z);
 
 			if(brushSize->Diameter() > 4 &&
 			   (x1 == x0 || abs(x1 - x0) % (brushSize->Diameter() / 4) == 0)) {
@@ -164,8 +164,8 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 
 			DataCoord globalDC =
 				state_->makeViewTypeVector3(x0,
-							    y0,
-							    second.z);
+											y0,
+											second.z);
 
 			if(brushSize->Diameter() > 4 && (y1 == y0 || abs(y1 - y0) % (brushSize->Diameter() / 4) == 0)) {
 				if (!doselection) {
@@ -185,8 +185,8 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 }
 
 void OmLineDraw::PickToolAddToSelection( OmSegmentSelector & sel,
-				       OmSegmentation & current_seg,
-				       DataCoord globalDataClickPoint)
+										 OmSegmentation & current_seg,
+										 DataCoord globalDataClickPoint)
 {
 	const OmSegID segID = current_seg.GetVoxelValue(globalDataClickPoint);
 	if (segID ) {
@@ -237,8 +237,8 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 					myoff.x += i - savedDia / 2.0;
 					myoff.y += j - savedDia / 2.0;
 					BrushToolApplyPaint(segid,
-							    BrushToolToGDC(myoff),
-							    seg);
+										BrushToolToGDC(myoff),
+										seg);
 				}
 			}
 		}
@@ -247,7 +247,7 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 }
 
 void OmLineDraw::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc,
-			      OmSegID bc, int depth)
+							  OmSegID bc, int depth)
 {
 	OmSegmentation & segmentation = OmProject::GetSegmentation(seg);
 	OmId segid = segmentation.GetVoxelValue(gCP);
@@ -303,8 +303,8 @@ void OmLineDraw::myUpdate()
 	if(mDoRefresh) {
 		if(mEditedSegmentation){
 			(new OmVoxelSetValueAction(mEditedSegmentation,
-						   mUpdatedDataCoords,
-						   mCurrentSegmentId))->Run();
+									   mUpdatedDataCoords,
+									   mCurrentSegmentId))->Run();
 			RemoveModifiedTiles();
 		} else {
 			state_->touchFreshnessAndRedraw();

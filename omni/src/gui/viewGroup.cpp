@@ -288,8 +288,8 @@ QDockWidget* ViewGroup::insertBySplitting(ViewGroupWidgetInfo* vgw,
 
 	QDockWidget* dock = makeDockWidget(vgw);
 
-	debug("viewGroup", "\t inserting %s by splitting...\n",
-	      qPrintable(dock->objectName()));
+	//debug(viewGroup, "\t inserting %s by splitting...\n",
+	//qPrintable(dock->objectName()));
 
 	mMainWindow->splitDockWidget( biggest, dock, dir );
 
@@ -307,8 +307,8 @@ QDockWidget* ViewGroup::insertByTabbing(ViewGroupWidgetInfo * vgw,
 					QDockWidget* widgetToTabify)
 {
 	QDockWidget* dock = makeDockWidget( vgw );
-	debug("viewGroup", "\t inserting %s by tabbing...\n",
-	      qPrintable(dock->objectName()));
+	//debug(viewGroup, "\t inserting %s by tabbing...\n",
+	//qPrintable(dock->objectName()));
 	mMainWindow->tabifyDockWidget( widgetToTabify, dock );
 
 	return dock;

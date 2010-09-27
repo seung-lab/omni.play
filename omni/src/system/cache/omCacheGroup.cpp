@@ -3,7 +3,7 @@
 #include "system/cache/omCacheInfo.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/stringHelpers.h"
-#include <zi/mutex>
+#include "zi/omMutex.h"
 
 OmCacheGroup::OmCacheGroup()
 	: mMaxSize(0)
@@ -12,31 +12,31 @@ OmCacheGroup::OmCacheGroup()
 
 void OmCacheGroup::Clear()
 {
-	zi::WriteGuard lock(mRWLock);
+	zi::rwmutex::write_guard lock(mRWLock);
 	mCacheSet.clear();
 }
 
 void OmCacheGroup::AddCache(OmCacheBase* cache)
 {
-	zi::WriteGuard lock(mRWLock);
+	zi::rwmutex::write_guard lock(mRWLock);
 	mCacheSet.insert(cache);
 }
 
 void OmCacheGroup::RemoveCache(OmCacheBase* cache)
 {
-	zi::WriteGuard lock(mRWLock);
+	zi::rwmutex::write_guard lock(mRWLock);
 	mCacheSet.erase(cache);
 }
 
 void OmCacheGroup::SetMaxSizeMB(const qint64 size)
 {
-	zi::WriteGuard lock(mRWLock);
+	zi::rwmutex::write_guard lock(mRWLock);
 	mMaxSize = size * (qint64)BYTES_PER_MB;
 }
 
 QList<OmCacheInfo> OmCacheGroup::GetCacheInfo()
 {
-	zi::ReadGuard lock(mRWLock);
+	zi::rwmutex::read_guard lock(mRWLock);
 
 	QList<OmCacheInfo> infos;
 	foreach(OmCacheBase* c, mCacheSet){
@@ -92,7 +92,7 @@ int OmCacheGroup::Clean()
 
 void OmCacheGroup::SignalCachesToCloseDown()
 {
-	zi::ReadGuard lock(mRWLock);
+	zi::rwmutex::read_guard lock(mRWLock);
 	foreach( OmCacheBase * cache, mCacheSet ) {
 		cache->closeDownThreads();
 	}

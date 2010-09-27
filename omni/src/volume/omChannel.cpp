@@ -14,7 +14,7 @@
 
 #include <float.h>
 
-#include <zi/threads>
+#include "zi/omThreads.h"
 
 OmChannel::OmChannel()
 	: mDataCache(new OmMipVolumeCache(this))
@@ -91,7 +91,7 @@ void OmChannel::CloseDownThreads(){
 bool OmChannel::ImportSourceData(OmDataPath & dataset)
 {
 	OmVolumeImporter<OmChannel> importer(this);
-	return importer.import(dataset);
+	return importer.Import(dataset);
 }
 
 void OmChannel::loadVolData(){
@@ -109,7 +109,7 @@ OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 }
 
 
-class OmChannelChunkBuildTask : public zi::Runnable {
+class OmChannelChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
 	OmMipVolume* vol_;

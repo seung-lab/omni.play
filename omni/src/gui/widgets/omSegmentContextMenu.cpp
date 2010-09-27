@@ -1,3 +1,4 @@
+#include "segment/omSegmentIterator.h"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
 #include "omSegmentContextMenu.h"
@@ -160,7 +161,7 @@ void OmSegmentContextMenu::randomizeColor()
 
 void OmSegmentContextMenu::addGroup()
 {
-        debug("validate", "OmSegmentContextMenu::addGroup\n");
+        //debug(validate, "OmSegmentContextMenu::addGroup\n");
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
                 OmSegIDsSet set;
@@ -172,7 +173,7 @@ void OmSegmentContextMenu::addGroup()
 
 void OmSegmentContextMenu::deleteGroup()
 {
-        debug("validate", "OmSegmentContextMenu::addGroup\n");
+        //debug(validate, "OmSegmentContextMenu::addGroup\n");
         if (OmProject::IsSegmentationValid(mSegmentationId)) {
                 OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
                 OmSegIDsSet set;
@@ -204,7 +205,7 @@ void OmSegmentContextMenu::AddPropertiesActions()
 
 void OmSegmentContextMenu::printChildren()
 {
-	debug("validate", "OmSegmentContextMenu::addGroup\n");
+	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if (OmProject::IsSegmentationValid(mSegmentationId)) {
 		OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
 		OmSegmentIterator iter(segmentation.GetSegmentCache());

@@ -102,7 +102,7 @@ void OmBuildSegmentation::loadDendrogram()
 	startTiming(type, build_timer);
 
 	const QString fname = mFileNamesAndPaths.at(0).filePath();
-	mSeg->mst_->import(*mSeg, fname);
+	mSeg->mst_->import(*mSeg, fname.toStdString());
 
 	stopTimingAndSave(type, build_timer);
 }
