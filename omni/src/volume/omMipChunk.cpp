@@ -295,6 +295,11 @@ void OmMipChunk::copyDataFromHDF5toMemMap()
 	mChunkData->copyDataFromHDF5toMemMap();
 }
 
+void OmMipChunk::copyInChunkData(OmDataWrapperPtr hdf5)
+{
+	mChunkData->copyDataFromHDF5toMemMap(hdf5);
+}
+
 OmImage<uint32_t, 3> OmMipChunk::GetCopyOfChunkDataAsOmImage32()
 {
 	return mChunkData->GetCopyOfChunkDataAsOmImage32();

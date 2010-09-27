@@ -312,6 +312,9 @@ public:
 		const bool isMIPzero = chunk->IsLeaf();
 
 		chunk->RefreshDirectDataValues(isMIPzero, segmentCache_);
+		std::cout << "chunk " << coord_
+				  << " has " << chunk->GetDirectDataValues().size()
+				  << " values\n";
 	}
 };
 

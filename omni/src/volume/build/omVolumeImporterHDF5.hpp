@@ -32,7 +32,6 @@ public:
 		hdf5reader->open();
 
 		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
-		const OmDataPath dst_path(vol_->MipLevelInternalDataPath(0));
 		const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
 		std::cout << "importHDF5: source path is: \""
 				  << src_path.getString() << "\"\n";
@@ -47,8 +46,7 @@ public:
 				for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 					const OmMipChunkCoord coord(0, x, y, z);
-					copyChunk(coord, hdf5reader,
-							  dst_path, src_path);
+					copyChunk(coord, hdf5reader, src_path);
 				}
 			}
 		}
@@ -151,19 +149,13 @@ private:
 
 	void copyChunk(const OmMipChunkCoord& coord,
 				   OmIDataReader* hdf5reader,
-				   const OmDataPath& dst_path,
 				   const OmDataPath& src_path)
 	{
-		OmDataWrapperPtr data = getChunk(coord, hdf5reader,
-										 src_path);
+		OmDataWrapperPtr data = getChunk(coord, hdf5reader, src_path);
 
 		OmMipChunkPtr chunk;
 		vol_->GetChunk(chunk, coord);
-		const DataBbox& chunkExtent = chunk->GetExtent();
-
-		OmProjectData::GetIDataWriter()->writeChunk(dst_path,
-													chunkExtent,
-													data);
+		chunk->copyInChunkData(data);
 	}
 
 	OmDataWrapperPtr getChunk(const OmMipChunkCoord& coord,

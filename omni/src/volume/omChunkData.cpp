@@ -242,7 +242,11 @@ void OmChunkData::copyDataFromHDF5toMemMap()
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
 						 getRawData());
 }
-
+void OmChunkData::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
+{
+	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
+			     getRawData());
+}
 
 class GetOmImage32ChunkVisitor
 	: public boost::static_visitor<OmImage<uint32_t, 3> >{

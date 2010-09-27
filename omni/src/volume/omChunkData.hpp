@@ -24,6 +24,7 @@ public:
 
 	void copyInTile(const int sliceOffset, uchar* bits);
 	void copyDataFromHDF5toMemMap();
+	void copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5);
 
 	uint32_t SetVoxelValue(const DataCoord & voxel, uint32_t val);
 	uint32_t GetVoxelValue(const DataCoord & voxel);
