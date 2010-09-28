@@ -1,13 +1,9 @@
-#ifndef _OM_DEBUG_H_
-#define _OM_DEBUG_H_
+#ifndef _OM_DEBUG_H
+#define _OM_DEBUG_H
 
 #include <zi/logging.hpp>
 
-#ifdef NDEBUG
-# define debug(x, ...) ;
-# else
-# define debug(x, ...) ZiLOG(DEBUG, x) << zi::log_printf( __VA_ARGS__)
-#endif
+#define debug(x, ...) ZiLOG(DEBUG, x) << zi::log_printf(__VA_ARGS__)
 
 #define DEBUGV3(vec) vec.x, vec.y, vec.z
 

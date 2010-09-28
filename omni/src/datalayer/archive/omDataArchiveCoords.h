@@ -1,8 +1,6 @@
 #ifndef OM_DATA_ARCHIVE_COORDS_H
 #define OM_DATA_ARCHIVE_COORDS_H
 
-#include "common/omDebug.h"
-
 class OmMipChunkCoord;
 class OmMipMeshCoord;
 class OmTileCoord;

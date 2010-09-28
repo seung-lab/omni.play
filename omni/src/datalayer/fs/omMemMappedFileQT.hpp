@@ -27,7 +27,7 @@ protected:
 	{}
 
 	virtual ~OmMemMappedFileQTbase(){
-		printf("closing file %s\n", GetBaseFileName().c_str());
+		debug(memmap, "closing file %s\n", GetBaseFileName().c_str());
 	}
 
 	void open(const QIODevice::OpenModeFlag mode)
@@ -69,7 +69,7 @@ public:
 		checkFileSize(numBytes);
 		this->map();
 
-		printf("opened file %s\n", this->GetBaseFileName().c_str());
+		debug(memmap, "opened file %s\n", this->GetBaseFileName().c_str());
 	}
 
 private:

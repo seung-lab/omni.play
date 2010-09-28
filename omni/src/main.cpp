@@ -1,20 +1,21 @@
+#include <zi/zargs/zargs.hpp>
+ZiARG_bool(headless, false, "run Omni without GUI");
+ZiARG_bool(tests, false, "run tests");
+ZiARG_string(cmdFile, "", "run automated script file");
+ZiARG_int64(psn, 0, "mac OSX proces ID");
+
+#include <zi/logging.hpp>
+USE_ZiLOGGING(STDERR);
+DEFINE_ZiLOG(memmap, true );
+DEFINE_ZiLOG(hdf5verbose, false );
+
 #include "headless/headless.h"
 #include "system/omStateManager.h"
 #include "gui/mainwindow.h"
 #include "tests/tests.hpp"
 
-#include <zi/zargs/zargs.hpp>
-
-#include <zi/logging.hpp>
-USE_ZiLOGGING(DEFAULT);
-
 #include <QApplication>
 #include <QFileInfo>
-
-ZiARG_bool(headless, false, "run Omni without GUI");
-ZiARG_bool(tests, false, "run tests");
-ZiARG_string(cmdFile, "", "run automated script file");
-ZiARG_int64(psn, 0, "mac OSX proces ID");
 
 class Omni{
 private:
