@@ -111,6 +111,9 @@ private:
 										  const DataBbox& dataExtent)
 	{
 		const Vector3i dataSize = dataExtent.getUnitDimensions();
+
+		//weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
+		//TODO: figure out!
 		OmImage<T, 3> partialChunk(OmExtents
 								   [dataSize.z]
 								   [dataSize.y]
