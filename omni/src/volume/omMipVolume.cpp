@@ -219,7 +219,7 @@ Vector3i  OmMipVolume::MipLevelDimensionsInMipChunks(int level)
  */
 OmMipChunkCoord OmMipVolume::DataToMipCoord(const DataCoord & dataCoord, int level)
 {
-	int data_dim = OMPOW(2, level) * GetChunkDimension();
+	const int data_dim = OMPOW(2, level) * GetChunkDimension();
 
 	return OmMipChunkCoord(level,
 						   floor(float (dataCoord.x) / data_dim),

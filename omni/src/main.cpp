@@ -6,7 +6,7 @@ ZiARG_int64(psn, 0, "mac OSX proces ID");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDERR);
-DEFINE_ZiLOG(memmap, true );
+DEFINE_ZiLOG(memmap, false );
 DEFINE_ZiLOG(hdf5verbose, false );
 
 #include "headless/headless.h"
