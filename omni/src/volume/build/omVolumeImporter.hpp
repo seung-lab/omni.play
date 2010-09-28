@@ -15,7 +15,7 @@ template <typename VOL>
 class OmVolumeImporter {
 private:
 	VOL *const vol_;
-	const OmDataPath& path_;
+	const OmDataPath path_;
 
 public:
 	OmVolumeImporter(VOL* vol, const OmDataPath& path)
