@@ -112,9 +112,9 @@ private:
 	{
 		const Vector3i dataSize = dataExtent.getUnitDimensions();
 		OmImage<T, 3> partialChunk(OmExtents
-								   [dataSize.x]
+								   [dataSize.z]
 								   [dataSize.y]
-								   [dataSize.z],
+								   [dataSize.x],
 								   data->getPtr<T>());
 
 		const Vector3i chunkSize = chunkExtent.getUnitDimensions();
