@@ -114,7 +114,8 @@ public:
 		: chunk_(chunk)
 		, computeSizes_(computeSizes)
 		, minVertexOfChunk_(chunk_->GetExtent().getMin())
-		, segCache_(segCache) {}
+		, segCache_(segCache)
+	{}
 
 	~ProcessChunkVoxel()
 	{
@@ -126,7 +127,7 @@ public:
 		}
 	}
 
-	void processVoxel(const OmSegID val, const Vector3i& voxelPos)
+	inline void processVoxel(const OmSegID val, const Vector3i& voxelPos)
 	{
 		chunk_->mDirectlyContainedValues.insert(val);
 

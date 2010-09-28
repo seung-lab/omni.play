@@ -138,7 +138,7 @@ public:
 void OmChannel::doBuildThreadedVolume()
 {
 	OmThreadPool threadPool;
-	threadPool.start(30);
+	threadPool.start(5);
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
@@ -157,5 +157,5 @@ void OmChannel::doBuildThreadedVolume()
 	}
 
 	threadPool.join();
-	mWasBounded = true;
+	mWasBounded = false;
 }
