@@ -46,7 +46,7 @@ public:
 		hdf5reader_->close();
 	}
 
-	bool ImportHDF5()
+	bool Import()
 	{
 		//for all coords
 		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);

@@ -9,8 +9,7 @@
 #include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeData.hpp"
 #include "volume/omVolumeTypes.hpp"
-
-#include <QImage>
+#include "volume/build/omVolumeImporterImageStack.hpp"
 
 template <typename VOL>
 class OmVolumeImporter {
@@ -29,12 +28,11 @@ public:
 		printf("\timporting data...\n");
 		fflush(stdout);
 
-		OmTimer import_timer;
-		import_timer.start();
+		OmTimer timer;
 
 		const bool ret = doImport();
 
-		printf("done in %.2f secs\n",import_timer.s_elapsed());
+		printf("done in %.2f secs\n", timer.s_elapsed());
 
 		return ret;
 	}
@@ -52,54 +50,20 @@ private:
 	bool doImportHDF5()
 	{
 		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_);
-
 		allocateData(hdf5.DetermineDataType());
-
-		printf("\tdone allocating volume data for all mip levels; data type is %s\n",
-			   OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
-
-		return hdf5.ImportHDF5();
+		return hdf5.Import();
 	}
 
 	bool doImportImageStack()
 	{
-		allocateData(figureOutDataTypeImage());
-
-		printf("\tdone allocating volume data for all mip levels; data type is %s\n",
-			   OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
-
-		return importImageStack();
+		OmVolumeImporterImageStack<VOL> images(vol_);
+		allocateData(images.DetermineDataType());
+		return images.Import();
 	}
 
 	bool areImportFilesImages()
 	{
 		return vol_->areImportFilesImages();
-	}
-
-
-	OmVolDataType figureOutDataTypeImage()
-	{
-		const int depth = QImage(vol_->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
-
-		switch(depth){
-		case 8:
-			return OmVolDataType::UINT8;
-		case 32:
-			return OmVolDataType::UINT32;
-		default:
-			printf("image depth is %d; aborting...\n", depth);
-			assert(0 && "don't know how to import image");
-		}
-	}
-
-	bool importImageStack()
-	{
-		OmLoadImage<VOL> imageLoader(vol_);
-		for( int i = 0; i < vol_->mSourceFilenamesAndPaths.size(); ++i){
-			const QString fnp = vol_->mSourceFilenamesAndPaths[i].absoluteFilePath();
-			imageLoader.processSlice(fnp, i);
-		}
-		return true;
 	}
 
 	/**
@@ -118,6 +82,9 @@ private:
 		}
 
 		vol_->getVolData()->create(vol_, levelsAndDims);
+
+		printf("\tdone allocating volume for all mip levels; data type is %s\n",
+			   OmVolumeTypeHelpers::GetTypeAsString(type).c_str());
 	}
 };
 
