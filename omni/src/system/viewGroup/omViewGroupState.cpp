@@ -37,10 +37,10 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 
 	mBreakThreshold = 0;
 	mDustThreshold = 90;
-        mShatter = false;
-        mSplitting = false;
+	mShatter = false;
+	mSplitting = false;
 	mBreakOnSplit = true;
-        mShowValid = false;
+	mShowValid = false;
 	mShowSplit = false;
 	mShowValidInColor = false;
 	mShowFilterInColor = false;
@@ -59,7 +59,7 @@ void OmViewGroupState::addView2Dchannel(OmId chan_id, ViewType vtype)
 }
 
 void OmViewGroupState::addView2Dsegmentation(OmId segmentation_id,
-					     ViewType vtype)
+											 ViewType vtype)
 {
 	mViewGroup->AddView2Dsegmentation(segmentation_id, vtype);
 }
@@ -81,7 +81,7 @@ void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
  *	Set/Get minimum coordiante of view slice.
  */
 void OmViewGroupState::SetViewSliceMin(const ViewType plane, const float x,
-				       const float y)
+									   const float y)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -119,7 +119,7 @@ Vector2f OmViewGroupState::GetViewSliceMin(ViewType plane)
  *	Set/Get maximum coordiante of view slice.
  */
 void OmViewGroupState::SetViewSliceMax(const ViewType plane, const float x,
-				       const float y)
+									   const float y)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -135,7 +135,7 @@ void OmViewGroupState::SetViewSliceMax(const ViewType plane, const float x,
 		mYZSlice[3] = y;
 		break;
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -149,7 +149,7 @@ Vector2f OmViewGroupState::GetViewSliceMax(ViewType plane)
 	case YZ_VIEW:
 		return Vector2f(&mYZSlice[2]);
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -170,7 +170,7 @@ void OmViewGroupState::SetViewSliceDepth(ViewType plane, float depth)
 		mYZSlice[4] = depth;
 		break;
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 
 	OmEvents::ViewBoxChanged();
@@ -195,7 +195,7 @@ float OmViewGroupState::GetViewSliceDepth(ViewType plane)
 	case YZ_VIEW:
 		return mYZSlice[4];
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -212,7 +212,7 @@ void OmViewGroupState::SetZoomLevel(const Vector2i& zoom)
  *	Set/Get pan distance.
  */
 void OmViewGroupState::SetPanDistance(const ViewType plane,
-				      const Vector2f& pan)
+									  const Vector2f& pan)
 {
 	switch (plane) {
 	case XY_VIEW:
@@ -228,7 +228,7 @@ void OmViewGroupState::SetPanDistance(const ViewType plane,
 		mYZPan[1] = pan.y;
 		break;
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 
 	OmEvents::ViewPosChanged();
@@ -244,7 +244,7 @@ Vector2f OmViewGroupState::ComputePanDistance(ViewType plane)
 	case YZ_VIEW:
 		return Vector2f(mYZPan[0], mYZPan[1]);
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -313,8 +313,8 @@ OmViewGroupState::determineColorizationType(const ObjectType objType)
 }
 
 void OmViewGroupState::setupColorizer(const Vector2i& dims,
-				      const OmTileCoord& key,
-				      const OmSegmentColorCacheType sccType)
+									  const OmTileCoord& key,
+									  const OmSegmentColorCacheType sccType)
 {
 	zi::guard g(mColorCacheMapLock);
 
@@ -323,8 +323,8 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 
 		OmSegmentColorizer* sc =
 			new OmSegmentColorizer(sdw.getSegmentCache(),
-					       sccType,
-					       dims);
+								   sccType,
+								   dims);
 		mColorCaches[ sccType ] =
 			boost::shared_ptr<OmSegmentColorizer>(sc);
 	}
@@ -332,8 +332,8 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 
 boost::shared_ptr<OmColorRGBA>
 OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
-			    const Vector2i& dims,
-			    const OmTileCoord& key)
+							const Vector2i& dims,
+							const OmTileCoord& key)
 {
 	if(SEGMENTATION != key.getVolume()->getVolumeType()){
 		throw OmIoException("can only color segmentations");
@@ -358,7 +358,7 @@ void OmViewGroupState::SetShatterMode(bool shatter)
 
 bool OmViewGroupState::GetShatterMode()
 {
-        return mShatter;
+	return mShatter;
 }
 
 void OmViewGroupState::ToggleShatterMode()
@@ -373,7 +373,7 @@ std::pair<bool, SegmentDataWrapper> OmViewGroupState::GetSplitMode()
 
 void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 {
-        mSplitting = onoroff;
+	mSplitting = onoroff;
 	if(false == onoroff){
 		if(postEvent) {
 			mToolBarManager->SetSplittingOff();
@@ -389,8 +389,8 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 
 void OmViewGroupState::SetSplitMode(const SegmentDataWrapper& sdw)
 {
-        segmentBeingSplit_->set(sdw);
-        SetSplitMode(true);
+	segmentBeingSplit_->set(sdw);
+	SetSplitMode(true);
 }
 
 void OmViewGroupState::SetBreakOnSplitMode(bool mode)
@@ -404,8 +404,8 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 	OmCacheManager::TouchFresheness();
 	mShowValid = mode;
 	mShowValidInColor = inColor;
-        OmEvents::Redraw3d();
-        OmEvents::Redraw();
+	OmEvents::Redraw3d();
+	OmEvents::Redraw();
 }
 
 bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
@@ -417,14 +417,14 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool in
 {
 	mShowFilterInColor = inColor;
 	OmCacheManager::TouchFresheness();
-        OmEvents::Redraw();
+	OmEvents::Redraw();
 }
 
 void OmViewGroupState::SetShowSplitMode(bool mode)
 {
 	OmCacheManager::TouchFresheness();
-        OmEvents::Redraw3d();
-        OmEvents::Redraw();
+	OmEvents::Redraw3d();
+	OmEvents::Redraw();
 	mShowSplit = mode;
 }
 

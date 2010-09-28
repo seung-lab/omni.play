@@ -302,7 +302,6 @@ HEADERS += lib/strnatcmp.h \
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
-           src/common/omException.cpp \
            src/common/omGl.cpp \
            src/common/omStd.cpp \
            src/datalayer/omMST.cpp \

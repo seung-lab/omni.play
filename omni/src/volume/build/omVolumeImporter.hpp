@@ -68,7 +68,7 @@ private:
 		printf("\tdone allocating volume data for all mip levels; data type is %s\n",
 			   OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
 
-			return importImageStack();
+		return importImageStack();
 	}
 
 	bool areImportFilesImages()

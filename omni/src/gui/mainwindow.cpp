@@ -401,10 +401,12 @@ int MainWindow::checkForSave()
 
 void MainWindow::spawnErrorDialog(OmException & e)
 {
-	//assert (0);
+	const QString errorMessage(e.what());
 
-	QString errorMessage = e.GetType() + ": " + e.GetName() + ". " + e.GetMsg();
-	exceptionMessage->showMessage(errorMessage, QDateTime::currentDateTime().toString() ); // force user to always see dialog
+    // force user to always see dialog
+	exceptionMessage->showMessage(errorMessage,
+								  QDateTime::currentDateTime().toString() );
+
 	printf("Exception thrown: %s\n", qPrintable(errorMessage) );
 }
 

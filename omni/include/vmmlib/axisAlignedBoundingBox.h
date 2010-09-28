@@ -24,7 +24,7 @@ public:
 	AxisAlignedBoundingBox( const AxisAlignedBoundingBox &, const AxisAlignedBoundingBox &);
 
 	inline bool contains( const Vector3< T >& pos ) const;
-	inline bool containsIn2d( const Vector3< T >& pos ); // only x and y components are checked
+	inline bool containsIn2dxx( const Vector3< T >& pos ); // only x and y components are checked
 	inline bool contains( const Vector4< T >& sphere );
 	inline bool contains( const AxisAlignedBoundingBox< T >& aabb ) const;
 
@@ -213,7 +213,7 @@ inline bool AxisAlignedBoundingBox< T >::contains( const AxisAlignedBoundingBox<
 }
 
 template< typename T >
-inline bool AxisAlignedBoundingBox< T >::containsIn2d( const Vector3< T >& pos )
+inline bool AxisAlignedBoundingBox< T >::containsIn2dxx( const Vector3< T >& pos )
 {
 	if ( _empty )
 		return false;
