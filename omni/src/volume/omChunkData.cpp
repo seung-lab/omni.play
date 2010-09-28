@@ -116,6 +116,16 @@ public:
 		, minVertexOfChunk_(chunk_->GetExtent().getMin())
 		, segCache_(segCache) {}
 
+	~ProcessChunkVoxel()
+	{
+		FOR_EACH(iter, sizes_){
+			const OmSegID val = iter->first;
+			OmSegment* seg = segCache_->GetOrAddSegment(val);
+			seg->addToSize(sizes_[val]);
+			seg->addToBounds(bounds_[val]);
+		}
+	}
+
 	void processVoxel(const OmSegID val, const Vector3i& voxelPos)
 	{
 		chunk_->mDirectlyContainedValues.insert(val);
@@ -124,21 +134,9 @@ public:
 			return;
 		}
 
-		OmSegment* seg = getOrAddSegment(val);
-		seg->addToSize(1);
-
-		const DataBbox box(minVertexOfChunk_ + voxelPos,
-						   minVertexOfChunk_ + voxelPos);
-		seg->addToBounds(box);
-	}
-
-	OmSegment* getOrAddSegment(const OmSegID val)
-	{
-		if(0 == localSegCache_.count(val)){
-			return localSegCache_[val] =
-				segCache_->GetOrAddSegment(val);
-		}
-		return localSegCache_[val];
+		sizes_[val] = 1 + sizes_[val];
+		bounds_[val].merge(DataBbox(minVertexOfChunk_ + voxelPos,
+									minVertexOfChunk_ + voxelPos));
 	}
 
 private:
@@ -146,8 +144,10 @@ private:
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
 
+	std::map<OmSegID, uint64_t> sizes_;
+	std::map<OmSegID, DataBbox> bounds_;
+
 	boost::shared_ptr<OmSegmentCache> segCache_;
-	std::map<OmSegID, OmSegment*> localSegCache_;
 };
 
 class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{
