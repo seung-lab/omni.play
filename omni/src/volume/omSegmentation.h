@@ -71,7 +71,7 @@ public:
 
 	Vector3i FindCenterOfSelectedSegments() const;
 
-	bool ImportSourceData(OmDataPath & dataset);
+	bool ImportSourceData(const OmDataPath& path);
 
 protected:
 	virtual void doBuildThreadedVolume();
@@ -98,8 +98,8 @@ private:
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
-	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
+	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
+	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);
 };
 
 #endif

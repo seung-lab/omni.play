@@ -84,64 +84,38 @@ OmRawDataPtrs OmVolumeData::GetVolPtr(const int level)
 
 class DownsampleVisitor : public boost::static_visitor<>{
 public:
-	DownsampleVisitor(const int level, OmMipVolume* vol,
-					  OmRawDataPtrs prevLevelPtr)
-		: level_(level)
-		, prevLevel_(level-1)
-		, vol_(vol)
-		, prevLevelPtr_(prevLevelPtr)
+	DownsampleVisitor(OmMipVolume* vol)
+		: vol_(vol)
 	{}
 
 	template <typename T>
-	void operator()(T* dst) const {
-		T* src = boost::get<T*>(prevLevelPtr_);
-		assert(src);
+	void operator()(T* src) const
+	{
 
-		printf("\n************will downsample from %d to %d\n\n",
-			   level_-1, level_);
 
-		const Vector3i src_dims = vol_->getDimsRoundedToNearestChunk(prevLevel_);
-		const Vector3i dest_dims = vol_->getDimsRoundedToNearestChunk(level_);
+		const Vector3<uint64_t> src_dims = vol_->getDimsRoundedToNearestChunk(0);
+		std::vector<T*> mips(vol_->GetRootMipLevel() + 1);
+		for(int i=0; i <= vol_->GetRootMipLevel(); ++i){
+			mips[i] = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
+			assert(mips[i]);
+		}
 
-		const int64_t maxValidIndexSrc = src_dims.x * src_dims.y * src_dims.z - 1;
-		const int64_t maxValidIndexDst = dest_dims.x * dest_dims.y * dest_dims.z - 1;
+		for(uint64_t sz=0; sz < src_dims.z; sz+=2){
+			for(uint64_t sy=0; sy < src_dims.y; sy+=2){
+				for(uint64_t sx=0; sx < src_dims.x; sx+=2){
 
-		std::cout << "downsampling level " << prevLevel_ << "(" << src_dims << ")"
-				  << " to level " << level_ << "(" << dest_dims << ")\n";
-		fflush(stdout);
-
-		const int sliceSize = src_dims.x * src_dims.y;
-
-		const Vector3<int64_t> chunkDims = vol_->GetChunkDimensions();
-
-		for (int si=0,di=0,dz=0; dz < dest_dims.z; ++dz,si+=sliceSize){
-			for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x){
-				if(di < 2000){
-					printf("src %d goes to dst %d\n", si, di);
-				}
-				for (int dx=0; dx < dest_dims.x; ++dx, ++di, si+=2){
-					assert(di <= maxValidIndexDst);
-					assert(si <= maxValidIndexSrc);
-					dst[di] = src[si];
 				}
 			}
 		}
 	}
 
 private:
-	const int level_;
-	const int prevLevel_;
 	OmMipVolume* vol_;
-	OmRawDataPtrs& prevLevelPtr_;
 };
 
 void OmVolumeData::downsample(OmMipVolume* vol)
 {
-	for (int level = 1; level <= vol->GetRootMipLevel(); ++level) {
-		OmRawDataPtrs prevLevelVolPtr = GetVolPtr(level-1);
-		OmRawDataPtrs levelVolPtr = GetVolPtr(level);
-
-		boost::apply_visitor(DownsampleVisitor(level, vol, prevLevelVolPtr),
-							 levelVolPtr);
-	}
+	OmRawDataPtrs data = GetVolPtr(0);
+	boost::apply_visitor(DownsampleVisitor(vol),
+						 data);
 }

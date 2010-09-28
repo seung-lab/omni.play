@@ -158,8 +158,7 @@ private:
         : ptr_(wrapRawPtr(ptr, d)) {}
 
     void checkIfValid(){
-        if( !ptr_ )
-        {
+        if(!ptr_){
             throw OmIoException("OmDataWrapper: ptr not valid");
         }
     }

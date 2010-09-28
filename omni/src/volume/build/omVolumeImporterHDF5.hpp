@@ -19,73 +19,69 @@ template <typename VOL>
 class OmVolumeImporterHDF5 {
 private:
 	VOL *const vol_;
+	const OmDataPath inpath_;
+
+	Vector3i volSize_;
+	OmIDataReader* hdf5reader_;
+	OmDataPath src_path_;
 
 public:
-	OmVolumeImporterHDF5(VOL* vol)
+	OmVolumeImporterHDF5(VOL* vol,
+						 const OmDataPath & inpath)
 		: vol_(vol)
-	{}
-
-	bool importHDF5(const OmDataPath & inpath)
+		, inpath_(inpath)
 	{
-		OmIDataReader* hdf5reader =
-			OmDataLayer::getReader(getHDFfileNameAndPath(), true);
-		hdf5reader->open();
+		hdf5reader_ = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
+		hdf5reader_->open();
 
-		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
-		const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
-		std::cout << "importHDF5: source path is: \""
-				  << src_path.getString() << "\"\n";
+		src_path_ = getHDFsrcPath();
+		std::cout << "importHDF5: source path is: " << src_path_ << "\n";
 
-        const Vector3i volSize = hdf5reader->getChunkedDatasetDims(src_path);
-		std::cout << "importHDF5: source vol dims are: "
-				  << volSize << "\n";
+        volSize_ = hdf5reader_->getChunkedDatasetDims(src_path_);
+		std::cout << "importHDF5: source vol dims: " << volSize_ << "\n";
+	}
 
+	~OmVolumeImporterHDF5()
+	{
+		hdf5reader_->close();
+	}
+
+	bool ImportHDF5()
+	{
 		//for all coords
+		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
 		for (int z = 0; z < leaf_mip_dims.z; ++z) {
 			for (int y = 0; y < leaf_mip_dims.y; ++y) {
 				for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 					const OmMipChunkCoord coord(0, x, y, z);
-					copyIntoChunk(coord, hdf5reader, src_path);
+					copyIntoChunk(coord);
 				}
 			}
 		}
 
-		hdf5reader->close();
-
 		return true;
 	}
 
-	OmVolDataType figureOutDataTypeHDF5(const OmDataPath & inpath)
+	OmVolDataType DetermineDataType()
 	{
 		const OmMipChunkCoord coord(0,0,0,0);
-		const DataBbox chunk_data_bbox = vol_->MipCoordToDataBbox(coord, 0);
+		const DataBbox chunk_bbox = vol_->MipCoordToDataBbox(coord, 0);
 
-		OmIDataReader * hdf5reader = OmDataLayer::getReader(getHDFfileNameAndPath(), true);
-		hdf5reader->open();
-		const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
-
-        const Vector3i volSize = hdf5reader->getChunkedDatasetDims(src_path);
-//		std::cout << "importHDF5: source vol dims are: " << volSize << "\n";
-
-		OmDataWrapperPtr data =
-			hdf5reader->readChunk(src_path, chunk_data_bbox);
-
-		hdf5reader->close();
+		OmDataWrapperPtr data = hdf5reader_->readChunk(src_path_, chunk_bbox);
 
 		return data->getVolDataType();
 	}
 
 private:
 
-	OmDataPath getHDFsrcPath(OmIDataReader * hdf5reader,
-							 const OmDataPath& inpath)
+	OmDataPath getHDFsrcPath()
 	{
-        if(hdf5reader->dataset_exists(inpath)){
-			return inpath;
+        if(hdf5reader_->dataset_exists(inpath_)){
+			return inpath_;
 		}
 
-		if(hdf5reader->dataset_exists(OmDataPaths::getDefaultDatasetName())){
+		if(hdf5reader_->dataset_exists(OmDataPaths::getDefaultDatasetName())){
 			return OmDataPaths::getDefaultDatasetName();
 		}
 
@@ -148,20 +144,16 @@ private:
 		}
 	}
 
-	void copyIntoChunk(const OmMipChunkCoord& coord,
-				   OmIDataReader* hdf5reader,
-				   const OmDataPath& src_path)
+	void copyIntoChunk(const OmMipChunkCoord& coord)
 	{
-		OmDataWrapperPtr data = getChunk(coord, hdf5reader, src_path);
+		OmDataWrapperPtr data = getChunk(coord);
 
 		OmMipChunkPtr chunk;
 		vol_->GetChunk(chunk, coord);
 		chunk->copyInChunkData(data);
 	}
 
-	OmDataWrapperPtr getChunk(const OmMipChunkCoord& coord,
-							  OmIDataReader* hdf5reader,
-							  const OmDataPath& src_path)
+	OmDataWrapperPtr getChunk(const OmMipChunkCoord& coord)
 	{
 		//get chunk data bbox
 		OmMipChunkPtr chunk;
@@ -169,13 +161,12 @@ private:
 
 		const DataBbox& chunkExtent = chunk->GetExtent();
 
-        const Vector3i volDims = hdf5reader->getChunkedDatasetDims(src_path);
         const DataBbox volExtent =
-			DataBbox(Vector3i::ZERO, volDims.x, volDims.y, volDims.z);
+			DataBbox(Vector3i::ZERO, volSize_.x, volSize_.y, volSize_.z);
 
         //if data extent contains given extent, just read from data
         if (volExtent.contains(chunkExtent)) {
-			return hdf5reader->readChunk(src_path, chunkExtent);
+			return hdf5reader_->readChunk(src_path_, chunkExtent);
         }
 
         //intersect with given extent
@@ -186,14 +177,13 @@ private:
 			throw OmIoException("should not have happened");
         }
 
-        OmDataWrapperPtr partialChunk =
-			hdf5reader->readChunk(src_path, intersect_extent);
-		OmDataWrapperPtr paddedChunk =
-			resizePartialChunk(partialChunk,
-							   chunkExtent,
-							   intersect_extent);
+        OmDataWrapperPtr partialChunk = hdf5reader_->readChunk(src_path_,
+															  intersect_extent);
 
-		return paddedChunk;
+		return resizePartialChunk(partialChunk,
+								  chunkExtent,
+								  intersect_extent);
 	}
 };
+
 #endif

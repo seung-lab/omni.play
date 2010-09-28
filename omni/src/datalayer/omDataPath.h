@@ -35,6 +35,12 @@ public:
         return mPath;
     }
 
+	friend std::ostream& operator<<(std::ostream &out, const OmDataPath &in)
+	{
+		out << "\"" << in.mPath << "\"";
+		return out;
+	}
+
 private:
     std::string mPath;
 };

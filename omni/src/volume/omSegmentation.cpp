@@ -256,10 +256,10 @@ Vector3i OmSegmentation::FindCenterOfSelectedSegments() const
 	return (box.getMin() + box.getMax()) / 2;
 }
 
-bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
+bool OmSegmentation::ImportSourceData(const OmDataPath& path)
 {
-	OmVolumeImporter<OmSegmentation> importer(this);
-	return importer.Import(dataset);
+	OmVolumeImporter<OmSegmentation> importer(this, path);
+	return importer.Import();
 }
 
 void OmSegmentation::loadVolData()

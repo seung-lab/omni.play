@@ -88,10 +88,10 @@ void OmChannel::CloseDownThreads(){
 	mDataCache->closeDownThreads();
 }
 
-bool OmChannel::ImportSourceData(OmDataPath & dataset)
+bool OmChannel::ImportSourceData(const OmDataPath& path)
 {
-	OmVolumeImporter<OmChannel> importer(this);
-	return importer.Import(dataset);
+	OmVolumeImporter<OmChannel> importer(this, path);
+	return importer.Import();
 }
 
 void OmChannel::loadVolData(){

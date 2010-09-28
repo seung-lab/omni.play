@@ -42,7 +42,7 @@ public:
 	bool IsFilterEnabled(OmId id);
 	bool IsFilterValid(const OmId id);
 
-	bool ImportSourceData(OmDataPath & dataset);
+	bool ImportSourceData(const OmDataPath& dataset);
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy

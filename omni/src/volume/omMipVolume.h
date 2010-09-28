@@ -128,7 +128,7 @@ protected:
 	//state
 	void SetBuildState(MipVolumeBuildState);
 
-	virtual bool ImportSourceData(OmDataPath & dataset) = 0;
+	virtual bool ImportSourceData(const OmDataPath&) = 0;
 
 	//mipvolume disk data
 	void UpdateRootMipLevel();

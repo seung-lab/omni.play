@@ -16,15 +16,15 @@ template <typename VOL>
 class OmVolumeImporter {
 private:
 	VOL *const vol_;
-	boost::shared_ptr<OmVolumeImporterHDF5<VOL> > hdf5_;
+	const OmDataPath& path_;
 
 public:
-	OmVolumeImporter(VOL* vol)
+	OmVolumeImporter(VOL* vol, const OmDataPath& path)
 		: vol_(vol)
-		, hdf5_(new OmVolumeImporterHDF5<VOL>(vol))
+		, path_(path)
 	{}
 
-	bool Import(const OmDataPath& path)
+	bool Import()
 	{
 		printf("\timporting data...\n");
 		fflush(stdout);
@@ -32,7 +32,7 @@ public:
 		OmTimer import_timer;
 		import_timer.start();
 
-		const bool ret = doImport(path);
+		const bool ret = doImport();
 
 		printf("done in %.2f secs\n",import_timer.s_elapsed());
 
@@ -40,18 +40,35 @@ public:
 	}
 
 private:
-	bool doImport(const OmDataPath& path)
+	bool doImport()
 	{
-		allocateData(figureOutDataType(path));
+		if(areImportFilesImages()){
+			return doImportImageStack();
+		}
+
+		return doImportHDF5();
+	}
+
+	bool doImportHDF5()
+	{
+		OmVolumeImporterHDF5<VOL> hdf5(vol_, path_);
+
+		allocateData(hdf5.DetermineDataType());
 
 		printf("\tdone allocating volume data for all mip levels; data type is %s\n",
 			   OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
 
-		if(areImportFilesImages()){
-			return importImageStack();
-		}
+		return hdf5.ImportHDF5();
+	}
 
-		return hdf5_->importHDF5(path);
+	bool doImportImageStack()
+	{
+		allocateData(figureOutDataTypeImage());
+
+		printf("\tdone allocating volume data for all mip levels; data type is %s\n",
+			   OmVolumeTypeHelpers::GetTypeAsString(vol_->mVolDataType).c_str());
+
+			return importImageStack();
 	}
 
 	bool areImportFilesImages()
@@ -59,14 +76,6 @@ private:
 		return vol_->areImportFilesImages();
 	}
 
-	OmVolDataType figureOutDataType(const OmDataPath& path)
-	{
-		if(areImportFilesImages()){
-			return figureOutDataTypeImage();
-		}
-
-		return hdf5_->figureOutDataTypeHDF5(path);
-	}
 
 	OmVolDataType figureOutDataTypeImage()
 	{
