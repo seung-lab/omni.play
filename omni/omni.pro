@@ -265,7 +265,6 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
-           src/volume/build/omVolumeBuilder.hpp \
            src/volume/build/omVolumeImporter.hpp \
            src/volume/build/omVolumeImporterHDF5.hpp \
            src/volume/omVolumeTypes.hpp \
@@ -298,7 +297,8 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
            src/zi/zunit/zunit.h \
-           src/zi/watershed/RawQuickieWS.h
+           src/zi/watershed/RawQuickieWS.h \
+           tests/tests.hpp
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -488,18 +488,18 @@ SOURCES += lib/strnatcmp.cpp \
 
 RESOURCES += src/gui/resources.qrc
 
-INCLUDEPATH = src include lib
+INCLUDEPATH = src include lib tests
 INCLUDEPATH += ../external/zi_lib
+INCLUDEPATH += ../external/zi_lib/external/include
 
 #### Windows
 win32 {
-   INCLUDEPATH += c:/hdf5lib/include C:/mygl  C:/mygl
+   INCLUDEPATH += c:/hdf5lib/include C:/mygl
    LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a
    LIBS += -lgdi32
 } else {
 #### Linux or MacOS
    INCLUDEPATH +=  ../external/libs/HDF5/include
-   INCLUDEPATH += ../external/zi_lib/external/include
    LIBS += ../external/libs/HDF5/lib/libhdf5.a
    LIBS += -lz
 }

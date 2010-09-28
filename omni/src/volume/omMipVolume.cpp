@@ -1,5 +1,4 @@
 #include "system/cache/omMipVolumeCache.h"
-#include "volume/build/omVolumeBuilder.hpp"
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
 #include "utility/stringHelpers.h"

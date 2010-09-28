@@ -78,7 +78,7 @@ public:
 	{
 		const int level = coord.Level;
 		const Vector3<int64_t> volDims = vol_->getDimsRoundedToNearestChunk(level);
-		const Vector3<int64_t> chunkDims(128, 128, 128);
+		const Vector3<int64_t> chunkDims = vol_->GetChunkDimensions();
 		const int64_t bps = GetBytesPerSample();
 
 		const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bps;

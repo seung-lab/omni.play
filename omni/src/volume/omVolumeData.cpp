@@ -1,4 +1,3 @@
-#include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omVolumeData.hpp"
 #include "volume/omMipChunk.h"
 
@@ -104,17 +103,29 @@ public:
 		const Vector3i src_dims = vol_->getDimsRoundedToNearestChunk(prevLevel_);
 		const Vector3i dest_dims = vol_->getDimsRoundedToNearestChunk(level_);
 
+		const int64_t maxValidIndexSrc = src_dims.x * src_dims.y * src_dims.z - 1;
+		const int64_t maxValidIndexDst = dest_dims.x * dest_dims.y * dest_dims.z - 1;
+
 		std::cout << "downsampling level " << prevLevel_ << "(" << src_dims << ")"
 				  << " to level " << level_ << "(" << dest_dims << ")\n";
 		fflush(stdout);
 
 		const int sliceSize = src_dims.x * src_dims.y;
 
-		for (int si=0,di=0,dz=0; dz < dest_dims.z; ++dz,si+=sliceSize)
-			for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x)
-				for (int dx=0; dx < dest_dims.x; ++dx, ++di, si+=2) {
+		const Vector3<int64_t> chunkDims = vol_->GetChunkDimensions();
+
+		for (int si=0,di=0,dz=0; dz < dest_dims.z; ++dz,si+=sliceSize){
+			for (int dy=0; dy < dest_dims.y; ++dy, si+=src_dims.x){
+				if(di < 2000){
+					printf("src %d goes to dst %d\n", si, di);
+				}
+				for (int dx=0; dx < dest_dims.x; ++dx, ++di, si+=2){
+					assert(di <= maxValidIndexDst);
+					assert(si <= maxValidIndexSrc);
 					dst[di] = src[si];
 				}
+			}
+		}
 	}
 
 private:

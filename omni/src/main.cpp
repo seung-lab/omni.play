@@ -1,6 +1,7 @@
 #include "headless/headless.h"
 #include "system/omStateManager.h"
 #include "gui/mainwindow.h"
+#include "tests/tests.hpp"
 
 #include <zi/zargs/zargs.hpp>
 
@@ -11,6 +12,7 @@ USE_ZiLOGGING(DEFAULT);
 #include <QFileInfo>
 
 ZiARG_bool(headless, false, "run Omni without GUI");
+ZiARG_bool(tests, false, "run tests");
 ZiARG_string(cmdFile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 
@@ -30,6 +32,10 @@ public:
 		fileToOpen_ = getFileToOpen();
 
 		setOmniExecutablePath();
+
+		if(ZiARG_tests){
+			return runTests();
+		}
 
 		if(shouldRunHeadless()){
 			return runHeadless();
@@ -64,6 +70,12 @@ private:
 		}
 
 		return false;
+	}
+
+	int runTests()
+	{
+		Tests().Run();
+		return 0;
 	}
 
 	int runHeadless()
