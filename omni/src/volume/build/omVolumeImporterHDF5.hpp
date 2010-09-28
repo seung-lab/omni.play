@@ -46,7 +46,7 @@ public:
 				for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
 					const OmMipChunkCoord coord(0, x, y, z);
-					copyChunk(coord, hdf5reader, src_path);
+					copyIntoChunk(coord, hdf5reader, src_path);
 				}
 			}
 		}
@@ -66,8 +66,7 @@ public:
 		const OmDataPath src_path = getHDFsrcPath(hdf5reader, inpath);
 
         const Vector3i volSize = hdf5reader->getChunkedDatasetDims(src_path);
-		std::cout << "importHDF5: source vol dims are: "
-				  << volSize << "\n";
+//		std::cout << "importHDF5: source vol dims are: " << volSize << "\n";
 
 		OmDataWrapperPtr data =
 			hdf5reader->readChunk(src_path, chunk_data_bbox);
@@ -121,8 +120,8 @@ private:
 								   data->getPtr<T>());
 
 		const Vector3i chunkSize = chunkExtent.getUnitDimensions();
-		std::cout << "resizing from " << dataSize
-				  << " to " << chunkSize << "\n";
+//		std::cout << "resizing from " << dataSize
+//				  << " to " << chunkSize << "\n";
 		partialChunk.resize(chunkSize);
 
 		return OmDataWrapperFactory::produce(partialChunk.getMallocCopyOfData());
@@ -144,13 +143,12 @@ private:
 		case OmVolDataType::FLOAT:
 			return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
 		case OmVolDataType::UNKNOWN:
+		default:
 			throw OmIoException("unknown data type");
 		}
-
-		throw OmIoException("unknown vol data type");
 	}
 
-	void copyChunk(const OmMipChunkCoord& coord,
+	void copyIntoChunk(const OmMipChunkCoord& coord,
 				   OmIDataReader* hdf5reader,
 				   const OmDataPath& src_path)
 	{
