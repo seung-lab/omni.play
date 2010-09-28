@@ -7,29 +7,33 @@ template <typename T>
 class OmDownsampler {
 private:
 	OmMipVolume* vol_;
+	std::vector<T*> mips_;
+	const Vector3<uint64_t> src_dims_;
 
 public:
 	OmDownsampler(OmMipVolume* vol)
 		: vol_(vol)
-	{}
+		, src_dims_(vol->getDimsRoundedToNearestChunk(0))
+	{
+		// get ptrs to each MIP volume level
+		mips_.resize(vol_->GetRootMipLevel() + 1);
+		for(int i=0; i <= vol_->GetRootMipLevel(); ++i){
+			mips_[i] = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
+			assert(mips_[i]);
+		}
+	}
 
 	void DownsampleChooseOne()
 	{
-		const Vector3<uint64_t> src_dims = vol_->getDimsRoundedToNearestChunk(0);
-		std::vector<T*> mips(vol_->GetRootMipLevel() + 1);
-		for(int i=0; i <= vol_->GetRootMipLevel(); ++i){
-			mips[i] = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
-			assert(mips[i]);
-		}
+		for(uint64_t sz=0; sz < src_dims_.z; sz+=2){
+			for(uint64_t sy=0; sy < src_dims_.y; sy+=2){
+				for(uint64_t sx=0; sx < src_dims_.x; sx+=2){
 
-		for(uint64_t sz=0; sz < src_dims.z; sz+=2){
-			for(uint64_t sy=0; sy < src_dims.y; sy+=2){
-				for(uint64_t sx=0; sx < src_dims.x; sx+=2){
+
 
 				}
 			}
 		}
-
 	}
 
 };

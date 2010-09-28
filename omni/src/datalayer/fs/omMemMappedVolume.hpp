@@ -130,7 +130,7 @@ private:
 		const std::string volType =
 			OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType());
 
-		const QString fnp = QString("/%1/volume.%3.raw")
+		const QString fnp = QString("/%1/volume.%2.raw")
 			.arg(fullPath)
 			.arg(QString::fromStdString(volType));
 
