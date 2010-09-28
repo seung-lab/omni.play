@@ -89,8 +89,9 @@ public:
 		const int64_t offset =
 			slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
 
-		//debug(io, "offset is: %llu (%lld,%lld,%lld) for (%lld,%lld,%lld)\n",
-		//offset, DEBUGV3(volDims), DEBUGV3(coord.Coordinate));
+		ZiLOG(DEBUG, io) << "offset is: " << offset
+						 << " (" << volDims << ") for "
+						 << coord.Coordinate << "\n";
 
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
 		assert(ret);
@@ -127,8 +128,7 @@ private:
 			throw OmIoException("could not create folder " + fullPath.toStdString());
 		}
 
-		const std::string volType =
-			OmVolumeTypeHelpers::GetTypeAsString(vol_->getVolDataType());
+		const std::string volType =vol_->getVolDataTypeAsStr();
 
 		const QString fnp = QString("/%1/volume.%2.raw")
 			.arg(fullPath)
@@ -136,7 +136,7 @@ private:
 
 		const QString fnp_clean = QDir::cleanPath(fnp);
 
-		//debug(io, "file is %s\n", qPrintable(fnp_clean));
+		ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
 		return fnp_clean.toStdString();
 	}

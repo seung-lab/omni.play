@@ -117,6 +117,9 @@ public:
 
 	Vector3i getDimsRoundedToNearestChunk(const int level);
 	OmVolDataType getVolDataType(){ return mVolDataType; }
+	std::string getVolDataTypeAsStr(){
+		return OmVolumeTypeHelpers::GetTypeAsString(mVolDataType);
+	}
 
 protected:
 	OmVolDataType mVolDataType;

@@ -8,6 +8,7 @@ ZiARG_int64(psn, 0, "mac OSX proces ID");
 USE_ZiLOGGING(STDERR);
 DEFINE_ZiLOG(memmap, false );
 DEFINE_ZiLOG(hdf5verbose, false );
+DEFINE_ZiLOG(io, false);
 
 #include "headless/headless.h"
 #include "system/omStateManager.h"
