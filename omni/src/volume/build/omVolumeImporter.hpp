@@ -25,13 +25,12 @@ public:
 
 	bool Import()
 	{
+		OmTimer timer;
+
 		printf("\timporting data...\n");
 		fflush(stdout);
 
-		OmTimer timer;
-
 		const bool ret = doImport();
-
 		printf("done in %.2f secs\n", timer.s_elapsed());
 
 		return ret;

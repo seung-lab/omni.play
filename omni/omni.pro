@@ -250,7 +250,7 @@ HEADERS += lib/strnatcmp.h \
            src/tiles/omTextureID.h \
            src/tiles/omTile.h \
            src/tiles/omTileCoord.h \
-           src/tiles/omTileDumper.cpp \
+           src/tiles/omTileDumper.hpp \
            src/tiles/omTileTypes.hpp \
            src/view2d/omView2d.h \
            src/view2d/omView2dCore.h \
@@ -267,6 +267,8 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
            src/volume/build/omVolumeImporter.hpp \
            src/volume/build/omVolumeImporterHDF5.hpp \
+           src/volume/build/omVolumeImporterImageStack.hpp \
+           src/volume/build/omDownsampler.hpp \
            src/volume/omVolumeTypes.hpp \
            src/volume/omChunkData.hpp \
            src/volume/omChannel.h \

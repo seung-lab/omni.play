@@ -34,7 +34,7 @@ public:
 			return OmVolDataType::UINT32;
 		default:
 			printf("image depth is %d; aborting...\n", depth);
-			assert(0 && "don't know how to import image");
+			throw OmIoException("don't know how to import image");
 		}
 	}
 };

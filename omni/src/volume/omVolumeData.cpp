@@ -1,5 +1,6 @@
 #include "volume/omVolumeData.hpp"
 #include "volume/omMipChunk.h"
+#include "volume/build/omDownsampler.hpp"
 
 class LoadMemMapFilesVisitor : public boost::static_visitor<> {
 public:
@@ -89,24 +90,10 @@ public:
 	{}
 
 	template <typename T>
-	void operator()(T* src) const
+	void operator()(T*) const
 	{
-
-
-		const Vector3<uint64_t> src_dims = vol_->getDimsRoundedToNearestChunk(0);
-		std::vector<T*> mips(vol_->GetRootMipLevel() + 1);
-		for(int i=0; i <= vol_->GetRootMipLevel(); ++i){
-			mips[i] = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
-			assert(mips[i]);
-		}
-
-		for(uint64_t sz=0; sz < src_dims.z; sz+=2){
-			for(uint64_t sy=0; sy < src_dims.y; sy+=2){
-				for(uint64_t sx=0; sx < src_dims.x; sx+=2){
-
-				}
-			}
-		}
+		OmDownsampler<T> d(vol_);
+		d.DownsampleChooseOne();
 	}
 
 private:
