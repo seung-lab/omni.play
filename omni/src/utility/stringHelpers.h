@@ -14,6 +14,11 @@ class StringHelpers
 
 	template <typename T>
 	static std::string commaDeliminateNum(const T num){
+		return commaDeliminateNumQT(num).toStdString();
+	}
+
+	template <typename T>
+	static QString commaDeliminateNumQT(const T num){
 		const std::string rawNumAsStr = QString::number(num).toStdString();
 
 		size_t counter = 0;
@@ -27,12 +32,7 @@ class StringHelpers
 			}
 		}
 
-		return ret.toStdString();
-	}
-
-	template <typename T>
-	static QString commaDeliminateNumQT(const T num){
-		return QString::fromStdString(commaDeliminateNum(num));
+		return ret;
 	}
 
 	static unsigned int getUInt(const QString& arg)
