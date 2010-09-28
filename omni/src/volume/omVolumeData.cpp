@@ -93,7 +93,7 @@ public:
 	void operator()(T*) const
 	{
 		OmDownsampler<T> d(vol_);
-		d.DownsampleChooseOne();
+		d.DownsampleChooseOneVoxelOfNine();
 	}
 
 private:
