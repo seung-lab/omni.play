@@ -1,5 +1,7 @@
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "utility/dataWrappers.h"
+#include "gui/inspectors/segmentation/exportSegmentList.hpp"
+#include "gui/inspectors/segmentation/exportMST.hpp"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
 #include "gui/inspectors/segmentation/buildButton.hpp"
@@ -112,8 +114,14 @@ QGroupBox* SegInspector::makeActionsBox()
 	ExportButton* exportButton = new ExportButton(this);
 	gridAction->addWidget(exportButton, 2, 0, 1, 2 );
 
+	ExportSegmentList* segList = new ExportSegmentList(this);
+	gridAction->addWidget(segList, 3, 0, 1, 2 );
+
+	ExportMST* mstList = new ExportMST(this);
+	gridAction->addWidget(mstList, 4, 0, 1, 2 );
+
 	MeshPreviewButton* meshPreviewButton = new MeshPreviewButton(this);
-	gridAction->addWidget(meshPreviewButton, 3, 0, 1, 2 );
+	gridAction->addWidget(meshPreviewButton, 5, 0, 1, 2 );
 
 	return actionsBox;
 }
