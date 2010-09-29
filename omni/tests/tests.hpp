@@ -10,7 +10,8 @@ public:
 
 	void Run()
 	{
-		imageResize();
+//		imageResize();
+		rounding();
 		printf("OK!\n");
 	}
 
@@ -44,6 +45,17 @@ private:
 			printf("%d: %d\n", i, ptr2[i]);
 		}
 
+	}
+
+	void rounding()
+	{
+		assert( 10 == ROUNDUP(1,10) );
+		assert( 0 == ROUNDUP(0,10));
+
+		assert(128 == ROUNDUP(127,128));
+
+		assert(0 == ROUNDDOWN(5,10));
+		assert(10 == ROUNDDOWN(11,10));
 	}
 };
 

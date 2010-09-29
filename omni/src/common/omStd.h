@@ -76,32 +76,25 @@ typedef quint64 qulonglong;
 
 #define EPSILON 1.0e-5
 
-#ifdef WIN32
-inline quint32 ROUNDDOWN (quint32 a, quint32 n)
+template <typename T>
+inline T ROUNDDOWN(T a, T b)
 {
-	quint32 __a = (quint32) (a);
-	return (__a - __a % (n));
-}
-inline quint32 ROUNDUP (quint32 a, quint32 n)
-{
-	quint32 __n = (quint32) (n);
-	return (ROUNDDOWN((quint32) (a) + __n - 1, __n));
+	return a - a % b;
 }
 
-#else
-// Rounding operations (efficient when n is a power of 2)
-// Round down to the nearest multiple of n
-#define ROUNDDOWN(a, n)			\
-({					\
-	quint32 __a = (quint32) (a);	\
-	(typeof(a)) (__a - __a % (n));	\
-})
-// Round up to the nearest multiple of n
-#define ROUNDUP(a, n)				\
-({						\
-	quint32 __n = (quint32) (n);		\
-	(typeof(a)) (ROUNDDOWN((quint32) (a) + __n - 1, __n));	\
-})
-#endif
+// http://stackoverflow.com/questions/3407012/c-rounding-up-to-the-nearest-multiple-of-a-number
+template <typename T>
+inline T ROUNDUP(T numToRound, T multiple)
+{
+	if(multiple == 0)
+	{
+		return numToRound;
+	}
+
+	T remainder = numToRound % multiple;
+	if (remainder == 0)
+		return numToRound;
+	return numToRound + multiple - remainder;
+}
 
 #endif
