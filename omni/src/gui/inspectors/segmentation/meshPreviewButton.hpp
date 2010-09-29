@@ -9,8 +9,8 @@ class MeshPreviewButton : public OmButton<SegInspector> {
 public:
 	MeshPreviewButton(SegInspector * d)
 		: OmButton<SegInspector>( d,
-								  "Export",
-								  "Export",
+								  "Mesh Preview",
+								  "preview mesh",
 								  false)
 	{
 	}
