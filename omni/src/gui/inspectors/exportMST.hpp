@@ -41,12 +41,14 @@ private:
 		boost::shared_ptr<OmMST> mst = sdw.getSegmentation().getMST();
 
 		const int numEdges = mst->mDendCount;
-		const quint32 * nodes    = mst->mDend->getPtr<unsigned int>();
-		const float * thresholds = mst->mDendValues->getPtr<float>();
+		quint32* nodes    = mst->mDend->getPtr<unsigned int>();
+		float* thresholds = mst->mDendValues->getPtr<float>();
+		uint8_t* edgeDisabledByUser = mst->mEdgeDisabledByUser->getPtr<uint8_t>();
+		uint8_t* edgeForceJoin = mst->mEdgeForceJoin->getPtr<uint8_t>();
 
 		QStringList headerLabels;
 		headerLabels << "Edge" << "segID1" << "segID2" << "threshold"
-					 << "seg1size" << "seg2size";
+					 << "userJoin" << "userSplit" << "seg1size" << "seg2size";
 		out << headerLabels.join(",");
 		out << "\n";
 
@@ -54,6 +56,8 @@ private:
 			const OmSegID node1ID  = nodes[i];
 			const OmSegID node2ID  = nodes[i + numEdges ];
 			const float threshold  = thresholds[i];
+			const bool userSplit = edgeDisabledByUser[i];
+			const bool userJoined = edgeForceJoin[i];
 
 			OmSegment* node1 = segmentCache->GetSegment(node1ID);
 			OmSegment* node2 = segmentCache->GetSegment(node2ID);
@@ -62,6 +66,8 @@ private:
 			out << node1ID << ",";
 			out << node2ID << ",";
 			out << threshold << ",";
+			out << userJoined << ",";
+			out << userSplit << ",";
 			out << node1->getSize() << ",";
 			out << node2->getSize();
 			out << "\n";
