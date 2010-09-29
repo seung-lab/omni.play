@@ -2,7 +2,7 @@
 #define EXPORT_MST_HPP
 
 #include "datalayer/omMST.h"
-#include "gui/inspectors/segInspector.h"
+#include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.h"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
@@ -23,7 +23,6 @@ public:
 private:
 	void doAction()
 	{
-
 		const QString outFile =
 			OmProjectData::getAbsoluteFileNameAndPath() + ".mst.txt";
 		QFile data(outFile);
@@ -36,9 +35,10 @@ private:
 
 		QTextStream out(&data);
 
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-		boost::shared_ptr<OmSegmentCache> segmentCache = sdw.getSegmentCache();
-		boost::shared_ptr<OmMST> mst = sdw.getSegmentation().getMST();
+		boost::shared_ptr<SegmentationDataWrapper> sdw =
+			mParent->getSegmentationDataWrapper();
+		boost::shared_ptr<OmSegmentCache> segmentCache = sdw->getSegmentCache();
+		boost::shared_ptr<OmMST> mst = sdw->getSegmentation().getMST();
 
 		const int numEdges = mst->mDendCount;
 		quint32* nodes    = mst->mDend->getPtr<unsigned int>();

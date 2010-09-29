@@ -1,11 +1,11 @@
 #ifndef EXPORT_SEGMENT_LIST_HPP
 #define EXPORT_SEGMENT_LIST_HPP
 
-#include "gui/inspectors/segInspector.h"
+#include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.h"
-#include "utility/dataWrappers.h"
-#include "system/omProjectData.h"
 #include "segment/omSegmentCache.h"
+#include "system/omProjectData.h"
+#include "utility/dataWrappers.h"
 
 #include <QTextStream>
 
@@ -21,9 +21,10 @@ class ExportSegmentList : public OmButton<SegInspector> {
  private:
 	void doAction()
 	{
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
+		boost::shared_ptr<SegmentationDataWrapper> sdw
+			= mParent->getSegmentationDataWrapper();
 
-		boost::shared_ptr<OmSegmentCache> segmentCache = sdw.getSegmentCache();
+		boost::shared_ptr<OmSegmentCache> segmentCache = sdw->getSegmentCache();
 
 		const QString outFile =
 			OmProjectData::getAbsoluteFileNameAndPath() + ".segments.txt";
