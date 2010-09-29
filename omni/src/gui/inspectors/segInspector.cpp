@@ -1,5 +1,6 @@
 #include "common/omDebug.h"
 #include "gui/inspectors/exportSegmentList.hpp"
+#include "gui/inspectors/exportMST.hpp"
 #include "gui/inspectors/segInspector.h"
 #include "gui/inspectors/segmentation/addSegmentButton.h"
 #include "gui/inspectors/volInspector.h"
@@ -131,6 +132,9 @@ QGroupBox* SegInspector::makeActionsBox()
 
 	ExportSegmentList* segList = new ExportSegmentList(this);
 	gridAction->addWidget(segList, 3, 0, 1, 2 );
+
+	ExportMST* mstList = new ExportMST(this);
+	gridAction->addWidget(mstList, 4, 0, 1, 2 );
 
 	return actionsBox;
 }

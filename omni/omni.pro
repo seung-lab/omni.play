@@ -93,6 +93,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/inspectors/segObjectInspector.h \
            src/gui/inspectors/ui_chanInspector.h \
            src/gui/inspectors/volInspector.h \
+           src/gui/inspectors/exportMST.hpp \
            src/gui/inspectors/exportSegmentList.hpp \
            src/gui/mainwindow.h \
            src/gui/menubar.h \

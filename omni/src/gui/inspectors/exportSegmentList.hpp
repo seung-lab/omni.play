@@ -15,7 +15,7 @@ class ExportSegmentList : public OmButton<SegInspector> {
 		: OmButton<SegInspector>( d,
 								  "Export Segment Info (Valid)",
 								  "export segment info",
-								  true)
+								  false)
 	{}
 
  private:
@@ -25,7 +25,8 @@ class ExportSegmentList : public OmButton<SegInspector> {
 
 		boost::shared_ptr<OmSegmentCache> segmentCache = sdw.getSegmentCache();
 
-		const QString outFile = OmProjectData::getAbsolutePath() + "/segments.txt";
+		const QString outFile =
+			OmProjectData::getAbsoluteFileNameAndPath() + ".segments.txt";
 		QFile data(outFile);
 		if(data.open(QFile::WriteOnly | QFile::Truncate)) {
 			printf("writing segment file %s\n", qPrintable(outFile));
