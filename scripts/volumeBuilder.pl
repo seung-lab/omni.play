@@ -12,7 +12,7 @@ $omniDir =~ s/\/scripts\///;
 
 my $omniExec = $omniDir . "/omni/bin/omni ";
 my $scriptFolder = $omniDir . "/scripts/BuildScripts";
-my $headlessCmd = "run --headless --cmdFile=".$scriptFolder;
+my $headlessCmd = "run --headless --cmdfile=".$scriptFolder;
 
 sub run {
     my $file = $headlessCmd.$_[0];

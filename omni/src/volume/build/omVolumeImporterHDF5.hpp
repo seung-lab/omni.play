@@ -48,6 +48,9 @@ public:
 
 	bool Import()
 	{
+		OmTimer timer;
+		printf("copying in HDF5 data...\n");
+
 		//for all coords
 		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
 		for (int z = 0; z < leaf_mip_dims.z; ++z) {
@@ -60,6 +63,7 @@ public:
 			}
 		}
 
+		printf("HDF5 data copy done in %f secs\n", timer.s_elapsed());
 		return true;
 	}
 
@@ -116,8 +120,8 @@ private:
 								   data->getPtr<T>());
 
 		const Vector3i chunkSize = chunkExtent.getUnitDimensions();
-//		std::cout << "resizing from " << dataSize
-//				  << " to " << chunkSize << "\n";
+		std::cout << "\tresizing chunk from " << dataSize
+				  << " to " << chunkSize << "\n";
 		partialChunk.resize(chunkSize);
 
 		return OmDataWrapperFactory::produce(partialChunk.getMallocCopyOfData());

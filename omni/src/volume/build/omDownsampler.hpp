@@ -2,6 +2,7 @@
 #define OM_DOWNSAMPLER_HPP
 
 #include "volume/omMipVolume.h"
+#include "utility/omTimer.h"
 #include "zi/omThreads.h"
 
 template <typename T>
@@ -48,11 +49,11 @@ public:
 		}
 	}
 
-	uint64_t getOffsetIntoVolume(const DataCoord& coord, const int level)
+	inline uint64_t getOffsetIntoVolume(const DataCoord& coord, const int level)
 	{
-		const DataCoord chunkPos =
-			OmMipVolume::DataToMipCoord(coord, level,
-										mippingInfo_.chunkDims).Coordinate;
+		const DataCoord chunkPos(coord.x / mippingInfo_.chunkDims.x,
+								 coord.y / mippingInfo_.chunkDims.y,
+								 coord.z / mippingInfo_.chunkDims.z);
 
 		const uint64_t chunkOffsetFromVolStart =
 			mips_[level].volSlabSize * chunkPos.z +
@@ -69,7 +70,7 @@ public:
 		return chunkOffsetFromVolStart + offsetIntoChunk;
 	}
 
-	void pushVoxelIntoMips(const DataCoord& srcCoord)
+	inline void pushVoxelIntoMips(const DataCoord& srcCoord)
 	{
 		for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
 			if( 0 != srcCoord.z % mips_[i].factor ||
@@ -87,7 +88,6 @@ public:
 		}
 	}
 };
-
 
 template <typename T>
 class OmDownsampler {
@@ -125,6 +125,7 @@ public:
 
 	void DownsampleChooseOneVoxelOfNine()
 	{
+		OmTimer timer;
 		printf("downsampling...\n");
 
 		OmThreadPool threadPool;
@@ -141,7 +142,7 @@ public:
 		}
 
 		threadPool.join();
-		printf("\t downsampling done\n");
+		printf("\t downsampling done in %f secs\n", timer.s_elapsed());
 	}
 };
 

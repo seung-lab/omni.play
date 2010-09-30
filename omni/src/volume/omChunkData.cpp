@@ -119,9 +119,9 @@ public:
 
 	~ProcessChunkVoxel()
 	{
-		FOR_EACH(iter, sizes_){
+		FOR_EACH(iter, localSegCache_){
 			const OmSegID val = iter->first;
-			OmSegment* seg = segCache_->GetOrAddSegment(val);
+			OmSegment* seg = iter->second;
 			seg->addToSize(sizes_[val]);
 			seg->addToBounds(bounds_[val]);
 		}
@@ -135,6 +135,7 @@ public:
 			return;
 		}
 
+		getOrAddSegment(val);
 		sizes_[val] = 1 + sizes_[val];
 		bounds_[val].merge(DataBbox(minVertexOfChunk_ + voxelPos,
 									minVertexOfChunk_ + voxelPos));
@@ -149,6 +150,16 @@ private:
 	std::map<OmSegID, DataBbox> bounds_;
 
 	boost::shared_ptr<OmSegmentCache> segCache_;
+	std::map<OmSegID, OmSegment*> localSegCache_;
+
+	OmSegment* getOrAddSegment(const OmSegID val)
+	{
+		if(0 == localSegCache_.count(val)){
+			return localSegCache_[val] =
+				segCache_->GetOrAddSegment(val);
+		}
+		return localSegCache_[val];
+	}
 };
 
 class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{

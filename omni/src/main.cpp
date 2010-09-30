@@ -1,7 +1,7 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_bool(tests, false, "run tests");
-ZiARG_string(cmdFile, "", "run automated script file");
+ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 
 #include <zi/logging.hpp>
@@ -83,7 +83,7 @@ private:
 
 	int runHeadless()
 	{
-		const QString headlessCMD = QString::fromStdString(ZiARG_cmdFile);
+		const QString headlessCMD = QString::fromStdString(ZiARG_cmdfile);
 
 		Headless h;
 		h.runHeadless(headlessCMD, fileToOpen_);
