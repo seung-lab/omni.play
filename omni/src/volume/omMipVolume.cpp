@@ -203,7 +203,7 @@ Vector3i  OmMipVolume::MipLevelDataDimensions(int level)
 /*
  *	Calculate the MipChunkCoord dims required to contain all the chunks of a given level.
  */
-Vector3i  OmMipVolume::MipLevelDimensionsInMipChunks(int level)
+Vector3i OmMipVolume::MipLevelDimensionsInMipChunks(int level)
 {
 	Vector3f data_dims = MipLevelDataDimensions(level);
 	return Vector3i (ceil(data_dims.x / GetChunkDimension()),
@@ -213,19 +213,6 @@ Vector3i  OmMipVolume::MipLevelDimensionsInMipChunks(int level)
 
 /////////////////////////////////
 ///////          MipCoordinate Methods
-
-/*
- *	Returns MipChunkCoord containing given data coordinate for given MipLevel
- */
-OmMipChunkCoord OmMipVolume::DataToMipCoord(const DataCoord & dataCoord, int level)
-{
-	const int data_dim = OMPOW(2, level) * GetChunkDimension();
-
-	return OmMipChunkCoord(level,
-						   floor(float (dataCoord.x) / data_dim),
-						   floor(float (dataCoord.y) / data_dim),
-						   floor(float (dataCoord.z) / data_dim));
-}
 
 OmMipChunkCoord OmMipVolume::NormToMipCoord(const NormCoord & normCoord, int level)
 {

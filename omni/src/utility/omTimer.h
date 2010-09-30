@@ -49,7 +49,7 @@ public:
 
 	double s_elapsed()
 	{
-		return timer_.elapsed< zi::in_secs >();
+		return timer_.elapsed< zi::in_msecs >() / 1000.;
 	}
 };
 

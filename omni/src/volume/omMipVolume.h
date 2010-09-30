@@ -70,8 +70,22 @@ public:
 	Vector3i MipLevelDataDimensions(int);
 	Vector3i MipLevelDimensionsInMipChunks(int level);
 
-	//mip coord
-	OmMipChunkCoord DataToMipCoord(const DataCoord &vox, int level);
+	/*
+	 *	Returns MipChunkCoord containing given data coordinate for given MipLevel
+	 */
+	OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord, const int level) {
+		return DataToMipCoord(dataCoord, level, GetChunkDimensions());
+	}
+	static OmMipChunkCoord DataToMipCoord(const DataCoord & dataCoord,
+										  const int level,
+										  const Vector3i& chunkDimensions){
+		const int factor = OMPOW(2, level);
+		return OmMipChunkCoord(level,
+							   dataCoord.x / factor / chunkDimensions.x,
+							   dataCoord.y / factor / chunkDimensions.y,
+							   dataCoord.z / factor / chunkDimensions.z);
+	}
+
 	OmMipChunkCoord NormToMipCoord(const NormCoord &normCoord, int level);
 	DataBbox MipCoordToDataBbox(const OmMipChunkCoord &, int level);
 	NormBbox MipCoordToNormBbox(const OmMipChunkCoord &);

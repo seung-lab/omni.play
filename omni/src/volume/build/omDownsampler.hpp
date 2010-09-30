@@ -8,7 +8,7 @@ class OmDownsampler {
 private:
 	OmMipVolume *const vol_;
 	std::vector<T*> mips_;
-	std::vector<uint64_t> mipsChunkSizes_;
+	std::vector<uint64_t> mipsFactor_;
 	const int maxMipLevel_;
 
 	const Vector3<uint64_t> srcDims_;
@@ -40,9 +40,9 @@ public:
 			assert(mips_[i]);
 		}
 
-		mipsChunkSizes_.resize(maxMipLevel_ + 1);
+		mipsFactor_.resize(maxMipLevel_ + 1);
 		for(int i=0; i <= maxMipLevel_; ++i){
-			mipsChunkSizes_[i] = OMPOW(2, i);
+			mipsFactor_[i] = OMPOW(2, i);
 		}
 	}
 
@@ -76,16 +76,16 @@ public:
 		}
 	}
 
-	void pushVoxelIntoMips(const DataCoord& coord)
+	void pushVoxelIntoMips(const DataCoord& srcCoord)
 	{
 		for(int i = 1; i <= maxMipLevel_; ++i){
-			if( 0 != coord.z % mipsChunkSizes_[i] ||
-				0 != coord.y % mipsChunkSizes_[i] ||
-				0 != coord.x % mipsChunkSizes_[i] ){
+			if( 0 != srcCoord.z % mipsFactor_[i] ||
+				0 != srcCoord.y % mipsFactor_[i] ||
+				0 != srcCoord.x % mipsFactor_[i] ){
 				return;
 			}
 
-//			std::cout << "will process " << coord << "\n";
+			const DataCoord dstCoord = srcCoord / mipsFactor_[i];
 
 		}
 
