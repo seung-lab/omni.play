@@ -4,8 +4,6 @@
 #include <stdarg.h>
 #include "common/omDebug.h"
 
-#define OMPOW(base,expon) (int)pow((double) base, (double)expon)
-
 // Random Number State
 /*
    Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
