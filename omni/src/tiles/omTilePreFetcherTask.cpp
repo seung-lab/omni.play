@@ -9,7 +9,7 @@ void OmTilePreFetcherTask::run()
 {
 	onScreenTileCoords_ = boost::make_shared<OmOnScreenTileCoords>(state_);
 
-	const int maxPrefetchDepth = 128;
+	const int maxPrefetchDepth = 32;
 
 	for(int i = 1; i < maxPrefetchDepth; ++i){
 		if(shouldExitEarly()){
