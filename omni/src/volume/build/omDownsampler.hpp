@@ -8,6 +8,8 @@ class OmDownsampler {
 private:
 	OmMipVolume *const vol_;
 	std::vector<T*> mips_;
+	std::vector<uint64_t> mipsChunkSizes_;
+	const int maxMipLevel_;
 
 	const Vector3<uint64_t> srcDims_;
 	const Vector3<uint64_t> chunkDims_;
@@ -21,6 +23,7 @@ private:
 public:
 	OmDownsampler(OmMipVolume* vol)
 		: vol_(vol)
+		, maxMipLevel_(vol_->GetRootMipLevel())
 		, srcDims_(vol->getDimsRoundedToNearestChunk(0))
 		, chunkDims_(vol_->GetChunkDimensions())
 		, tileSize_(chunkDims_.x * chunkDims_.y)
@@ -31,21 +34,23 @@ public:
 		, totalVoxels_(srcDims_.x * srcDims_.y   * srcDims_.z)
 	{
 		// get ptrs to each MIP volume level
-		mips_.resize(vol_->GetRootMipLevel() + 1);
-		for(int i=0; i <= vol_->GetRootMipLevel(); ++i){
+		mips_.resize(maxMipLevel_ + 1);
+		for(int i=0; i <= maxMipLevel_; ++i){
 			mips_[i] = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
 			assert(mips_[i]);
 		}
 
-
-//		const Vector3<int64_t> chunkPos = coord.Coordinate; // bottom left corner
-//		const int64_t offset =
-//			slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
+		mipsChunkSizes_.resize(maxMipLevel_ + 1);
+		for(int i=0; i <= maxMipLevel_; ++i){
+			mipsChunkSizes_[i] = OMPOW(2, i);
+		}
 	}
 
 /*
 	uint64_t getOffsetIntoVolume(uint64_t x, uint64_t y, uint64_t z, int level)
 	{
+		for( int level = 1; level <= vol_->GetRootMipLevel(); ++level){
+			const uint64_t numToSkip = OMPOW(2, level);
 		const uint64_t
 
 		const Vector3i chunkPos = (ROUNDDOWN(sx,128),
@@ -62,29 +67,28 @@ public:
 */
 	void DownsampleChooseOneVoxelOfNine()
 	{
-		for( int level = 1; level <= vol_->GetRootMipLevel(); ++level){
-
-			const uint64_t numToSkip = OMPOW(2, level);
-
-			// downsample chunk
-			for(uint64_t sz=0; sz < srcDims_.z; sz+=numToSkip){
-				for(uint64_t sy=0; sy < srcDims_.y; sy+=numToSkip){
-					for(uint64_t sx=0; sx < srcDims_.x; sx+=numToSkip){
-
-						const Vector3i chunkPos = (ROUNDDOWN(sx, chunkDims_.x),
-												   ROUNDDOWN(sy, chunkDims_.y),
-												   ROUNDDOWN(sz, chunkDims_.z));
-						uint64_t offset =
-							slabSize_*chunkPos.z +
-							rowSize_*chunkPos.y  +
-							chunkSize_*chunkPos.x;
-
-						offset += (sz%128)*sliceSize_ + (sy%128)*128 + sx%128;
-
-					}
+		for(uint64_t sz=0; sz < srcDims_.z; sz+=2){
+			for(uint64_t sy=0; sy < srcDims_.y; sy+=2){
+				for(uint64_t sx=0; sx < srcDims_.x; sx+=2){
+					pushVoxelIntoMips(DataCoord(sx, sy, sz));
 				}
 			}
 		}
+	}
+
+	void pushVoxelIntoMips(const DataCoord& coord)
+	{
+		for(int i = 1; i <= maxMipLevel_; ++i){
+			if( 0 != coord.z % mipsChunkSizes_[i] ||
+				0 != coord.y % mipsChunkSizes_[i] ||
+				0 != coord.x % mipsChunkSizes_[i] ){
+				return;
+			}
+
+			std::cout << "will process " << coord << "\n";
+
+		}
+
 	}
 };
 

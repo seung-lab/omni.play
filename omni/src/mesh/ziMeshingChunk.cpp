@@ -35,7 +35,7 @@ ziMeshingChunk::ziMeshingChunk(int segId, OmMipChunkCoord c,
 
 void ziMeshingChunk::run()
 {
-	const uint64_t threadId = zi::this_thread::id();
+	const zi::thread_id_type threadId = zi::this_thread::id();
 	ziTimer ztimer;
 	ztimer.start();
 

@@ -5,8 +5,9 @@ ZiARG_string(cmdFile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 
 #include <zi/logging.hpp>
-USE_ZiLOGGING(STDERR);
+USE_ZiLOGGING(STDOUT);
 DEFINE_ZiLOG(memmap, false );
+DEFINE_ZiLOG(mesh, false );
 DEFINE_ZiLOG(hdf5verbose, false );
 DEFINE_ZiLOG(io, false);
 
