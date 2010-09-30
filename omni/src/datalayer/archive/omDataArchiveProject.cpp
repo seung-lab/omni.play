@@ -62,7 +62,9 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 		throw OmIoException("corruption detected in Omni file");
 	}
 
-	if(fileVersion_ < 14){
+	QDir filesDir = OmProjectData::GetFilesFolderPath();
+	if(fileVersion_ < 14 ||
+	   !filesDir.exists()){
 		OmUpgraders::to14();
 		ArchiveWrite(path, project);
 	}
@@ -188,7 +190,10 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan)
 	}
 
 	if(fileVersion_ > 13){
-		chan.loadVolData();
+		QDir filesDir = OmProjectData::GetFilesFolderPath();
+		if(filesDir.exists()){
+			chan.loadVolData();
+		}
 	}
 
 	return in;
@@ -332,7 +337,10 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 	in >> seg.mGroups;
 
 	if(fileVersion_ > 13){
-		seg.loadVolData();
+		QDir filesDir = OmProjectData::GetFilesFolderPath();
+		if(filesDir.exists()){
+			seg.loadVolData();
+		}
 	}
 
 	seg.mst_->read(seg);

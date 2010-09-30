@@ -20,11 +20,13 @@ private:
 	{
 		FOR_EACH(iter, OmProject::GetValidChannelIds()){
 			OmChannel& channel = OmProject::GetChannel(*iter);
+			printf("converting channel %d\n", *iter);
 			convertVolume(channel);
 		}
 
 		FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
 			OmSegmentation& segmentation = OmProject::GetSegmentation(*iter);
+			printf("converting segmentation %d\n", *iter);
 			convertVolume(segmentation);
 		}
 	}
