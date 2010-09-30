@@ -307,7 +307,6 @@ HEADERS += lib/strnatcmp.h \
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
            src/common/omGl.cpp \
-           src/common/omStd.cpp \
            src/datalayer/omMST.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \

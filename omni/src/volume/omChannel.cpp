@@ -133,7 +133,6 @@ public:
 			min = std::min(chunk->GetMinValue(), min);
 			max = std::max(chunk->GetMaxValue(), max);
 		}
-
 		vol_->updateMinMax(min, max);
 	}
 };
@@ -141,7 +140,7 @@ public:
 void OmChannel::doBuildThreadedVolume()
 {
 	OmThreadPool threadPool;
-	threadPool.start(5);
+	threadPool.start(30);
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
