@@ -76,7 +76,7 @@ public:
 	OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord, const int level) {
 		return DataToMipCoord(dataCoord, level, GetChunkDimensions());
 	}
-	static OmMipChunkCoord DataToMipCoord(const DataCoord & dataCoord,
+	static OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord,
 										  const int level,
 										  const Vector3i& chunkDimensions){
 		const int factor = OMPOW(2, level);
@@ -157,6 +157,10 @@ protected:
 	bool mStoreChunkMetaData;		//do chunks have metadata
 
 	std::set<OmMipChunkCoord> mEditedLeafChunks;	//set of edited chunks that need rebuild
+
+	double mMaxVal;
+	double mMinVal;
+	bool mWasBounded;
 
 private:
 	bool sourceFilesWereSet;

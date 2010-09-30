@@ -46,6 +46,9 @@ public:
 	OmImage<uint32_t, 3> GetMeshOmImageData();
 	bool compare(OmMipChunkPtr other);
 
+	double GetMinValue();
+	double GetMaxValue();
+
 	virtual uint32_t GetVoxelValue(const DataCoord &vox);
 	virtual void SetVoxelValue(const DataCoord &vox, uint32_t value);
 

@@ -324,3 +324,14 @@ int OmMipChunk::GetNumberOfVoxelsInChunk() const {
 	const int sideDim = vol_->GetChunkDimension();
 	return sideDim*sideDim*sideDim;
 }
+
+double OmMipChunk::GetMinValue()
+{
+	return mChunkData->GetMinValue();
+}
+
+double OmMipChunk::GetMaxValue()
+{
+	return mChunkData->GetMaxValue();
+}
+

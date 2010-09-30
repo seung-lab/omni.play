@@ -112,11 +112,11 @@ OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 class OmChannelChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
-	OmMipVolume* vol_;
+	OmChannel* vol_;
 
 public:
 	OmChannelChunkBuildTask(const OmMipChunkCoord& coord,
-							OmMipVolume* vol)
+							OmChannel* vol)
 		:coord_(coord), vol_(vol)
 	{}
 
@@ -126,11 +126,9 @@ public:
 		vol_->GetChunk(chunk, coord_);
 
 		const bool isMIPzero = chunk->IsLeaf();
-
 		if(isMIPzero) {
-			printf("channelfixme");
-			//vol_->mMaxVal = std::max(p_chunk->getMax(), mMaxVal);
-			//vol_->mMinVal = std::min(p_chunk->getMin(), mMinVal);
+			vol_->mMaxVal = std::max(chunk->GetMaxValue(), vol_->mMaxVal);
+			vol_->mMinVal = std::min(chunk->GetMinValue(), vol_->mMinVal);
 		}
 	}
 };
@@ -157,5 +155,6 @@ void OmChannel::doBuildThreadedVolume()
 	}
 
 	threadPool.join();
-	mWasBounded = false;
+	printf("max is %g\n", mMaxVal);
+	mWasBounded = true;
 }

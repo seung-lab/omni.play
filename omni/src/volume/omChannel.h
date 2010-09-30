@@ -60,11 +60,8 @@ private:
 
 	OmFilter2dManager mFilter2dManager;
 
-	OmRawData mMaxVal;
-	OmRawData mMinVal;
-	bool mWasBounded;
-
 	friend class OmBuildChannel;
+	friend class OmChannelChunkBuildTask;
 	template <class T> friend class OmVolumeImporter;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmChannel & );

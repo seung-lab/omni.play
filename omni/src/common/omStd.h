@@ -21,8 +21,6 @@
 #include <string>
 #include <vector>
 
-#define OMPOW(base,expon) (int)pow((double) base, (double)expon)
-
 // Platform-Dependent Definitions
 #ifdef __APPLE__
 # define powf pow
@@ -96,5 +94,7 @@ inline T ROUNDUP(T numToRound, T multiple)
 		return numToRound;
 	return numToRound + multiple - remainder;
 }
+
+#define OMPOW(base,expon) pow(base, expon)
 
 #endif

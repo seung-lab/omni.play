@@ -97,6 +97,7 @@ private:
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
+	friend class OmSegmentationChunkBuildTask;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);

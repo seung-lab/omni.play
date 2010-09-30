@@ -29,6 +29,9 @@ public:
 	uint32_t SetVoxelValue(const DataCoord & voxel, uint32_t val);
 	uint32_t GetVoxelValue(const DataCoord & voxel);
 
+	double GetMinValue();
+	double GetMaxValue();
+
 	bool compare(boost::shared_ptr<OmChunkData> other);
 
 private:

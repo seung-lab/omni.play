@@ -354,3 +354,33 @@ bool OmChunkData::compare(boost::shared_ptr<OmChunkData> other)
 	return boost::apply_visitor(CompareVisitor(other->getRawData()),
 								getRawData());
 }
+
+class GetMaxVisitor : public boost::static_visitor<double>{
+public:
+	template <typename T>
+	double operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+						  d);
+		return static_cast<double>(data.getMax());
+	}
+};
+double OmChunkData::GetMaxValue()
+{
+	return boost::apply_visitor(GetMaxVisitor(),
+								getRawData());
+}
+
+class GetMinVisitor : public boost::static_visitor<double>{
+public:
+	template <typename T>
+	double operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+						  d);
+		return data.getMin();
+	}
+};
+double OmChunkData::GetMinValue()
+{
+	return boost::apply_visitor(GetMinVisitor(),
+								getRawData());
+}

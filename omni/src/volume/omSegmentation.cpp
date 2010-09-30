@@ -294,13 +294,13 @@ OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 class OmSegmentationChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
-	OmMipVolume* vol_;
+	OmSegmentation* vol_;
 	boost::shared_ptr<OmSegmentCache> segmentCache_;
 
 public:
 	OmSegmentationChunkBuildTask(const OmMipChunkCoord& coord,
 								 boost::shared_ptr<OmSegmentCache> segmentCache,
-								 OmMipVolume* vol)
+								 OmSegmentation* vol)
 		:coord_(coord), vol_(vol), segmentCache_(segmentCache)
 	{}
 
@@ -315,6 +315,11 @@ public:
 		std::cout << "chunk " << coord_
 				  << " has " << chunk->GetDirectDataValues().size()
 				  << " values\n";
+
+		if(isMIPzero) {
+			vol_->mMaxVal = std::max(chunk->GetMaxValue(), vol_->mMaxVal);
+			vol_->mMinVal = std::min(chunk->GetMinValue(), vol_->mMinVal);
+		}
 	}
 };
 
@@ -342,6 +347,8 @@ void OmSegmentation::doBuildThreadedVolume()
 	}
 
 	threadPool.join();
+	printf("max is %g\n", mMaxVal);
+	mWasBounded = true;
 }
 
 void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
