@@ -30,6 +30,10 @@
 
 OmMipVolume::OmMipVolume()
 	: mVolDataType(OmVolDataType::UNKNOWN)
+	, mMaxVal(0)
+	, mMinVal(0)
+	, mWasBounded(false)
+
 {
 	sourceFilesWereSet = false;
 
@@ -661,4 +665,13 @@ uint32_t OmMipVolume::computeTotalNumChunks()
 	}
 
 	return numChunks;
+}
+
+void OmMipVolume::updateMinMax(const double inMin, const double inMax)
+{
+	static zi::mutex mutex;
+	zi::guard g(mutex);
+
+	mMinVal = std::min(inMin, mMinVal);
+	mMaxVal = std::max(inMax, mMaxVal);
 }

@@ -158,6 +158,7 @@ protected:
 
 	std::set<OmMipChunkCoord> mEditedLeafChunks;	//set of edited chunks that need rebuild
 
+	void updateMinMax(const double, const double);
 	double mMaxVal;
 	double mMinVal;
 	bool mWasBounded;

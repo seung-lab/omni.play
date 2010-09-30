@@ -109,6 +109,7 @@ private:
 										  const DataBbox& chunkExtent,
 										  const DataBbox& dataExtent)
 	{
+		OmTimer timer;
 		const Vector3i dataSize = dataExtent.getUnitDimensions();
 
 		//weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
@@ -123,6 +124,8 @@ private:
 		std::cout << "\tresizing chunk from " << dataSize
 				  << " to " << chunkSize << "\n";
 		partialChunk.resize(chunkSize);
+
+		printf("\t\tdone in %f secs\n", timer.s_elapsed());
 
 		return OmDataWrapperFactory::produce(partialChunk.getMallocCopyOfData());
 	}

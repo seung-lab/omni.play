@@ -126,10 +126,15 @@ public:
 		vol_->GetChunk(chunk, coord_);
 
 		const bool isMIPzero = chunk->IsLeaf();
-		if(isMIPzero) {
-			vol_->mMaxVal = std::max(chunk->GetMaxValue(), vol_->mMaxVal);
-			vol_->mMinVal = std::min(chunk->GetMinValue(), vol_->mMinVal);
+
+		double max = 0;
+		double min = 0;
+		if(isMIPzero){
+			min = std::min(chunk->GetMinValue(), min);
+			max = std::max(chunk->GetMaxValue(), max);
 		}
+
+		vol_->updateMinMax(min, max);
 	}
 };
 
