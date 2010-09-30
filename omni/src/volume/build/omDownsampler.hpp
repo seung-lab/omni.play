@@ -85,7 +85,7 @@ public:
 				return;
 			}
 
-			std::cout << "will process " << coord << "\n";
+//			std::cout << "will process " << coord << "\n";
 
 		}
 
