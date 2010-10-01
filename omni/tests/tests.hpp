@@ -15,6 +15,7 @@ public:
 //		imageResize();
 		DataToMipCoordTest();
 		rounding();
+		powersOf2();
 		printf("done\n");
 	}
 
@@ -102,6 +103,41 @@ private:
 */
 
 		printf("DataToMipCoordTest OK\n");
+	}
+
+	void powersOf2()
+	{
+		for(int i = 0; i < 32; ++i){
+			if(std::pow(static_cast<float>(2),
+						static_cast<float>(i)) != om::pow2(i)){
+				std::cout << "pow2 fail at i==" << i
+						  << "; was " << om::pow2(i)
+						  << ", but should be: "
+						  << std::pow(static_cast<float>(2),
+									  static_cast<float>(i))
+						  << "\n";
+					assert(0);
+			}
+		}
+/*
+		OmTimer timer;
+		const uint64_t max = 2000000;
+		double sum = 0;
+		for(uint64_t i = 0; i < max; ++i){
+			sum += om::pow2(8);
+
+		}
+		std::cout << "\t" << max << " pow2 lookups in " << timer.s_elapsed() << " secs\n";
+
+		timer.restart();
+		sum = 0;
+		for(uint64_t i = 0; i < max; ++i){
+			sum += std::pow(static_cast<double>(2),
+							static_cast<double>(i));
+		}
+		std::cout << "\t" << max << " std::pow in " << timer.s_elapsed() << " secs\n";
+*/
+		printf("powersOf2 ok\n");
 	}
 };
 
