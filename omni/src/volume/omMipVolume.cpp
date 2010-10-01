@@ -195,7 +195,7 @@ Vector3i  OmMipVolume::MipLevelDataDimensions(int level)
 	Vector3f source_dims = source_extent.getUnitDimensions();
 
 	//dims in fraction of pixels
-	Vector3f mip_level_dims = source_dims / std::pow(2, level);
+	Vector3f mip_level_dims = source_dims / om::pow2(level);
 
 	return Vector3i (ceil(mip_level_dims.x),
 					 ceil(mip_level_dims.y),
@@ -229,8 +229,8 @@ OmMipChunkCoord OmMipVolume::NormToMipCoord(const NormCoord & normCoord, int lev
 DataBbox OmMipVolume::MipCoordToDataBbox(const OmMipChunkCoord & rMipCoord, int newLevel)
 {
 
-	int old_level_factor = std::pow(2, rMipCoord.Level);
-	int new_level_factor = std::pow(2, newLevel);
+	int old_level_factor = om::pow2(rMipCoord.Level);
+	int new_level_factor = om::pow2(newLevel);
 
 	//convert to leaf level dimensions
 	int leaf_dim = GetChunkDimension() * old_level_factor;
