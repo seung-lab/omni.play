@@ -11,7 +11,7 @@
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
-#include "utility/OmThreadPool.hpp"
+#include "utility/omThreadPool.hpp"
 
 class OmChannel;
 class OmSegmentation;

@@ -7,7 +7,7 @@
 #include "volume/omMipVolume.h"
 
 #include "zi/omMutex.h"
-#include "utility/OmThreadPool.hpp"
+#include "utility/omThreadPool.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>

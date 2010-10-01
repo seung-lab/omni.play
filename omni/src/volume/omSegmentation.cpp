@@ -25,7 +25,7 @@
 #include "system/omGroups.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "utility/OmThreadPool.hpp"
+#include "utility/omThreadPool.hpp"
 #include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"

@@ -4,7 +4,7 @@
 #include "common/om.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "system/cache/omLockedCacheObjects.hpp"
-#include "utility/OmThreadPool.hpp"
+#include "utility/omThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
 #include "zi/omMutex.h"
 

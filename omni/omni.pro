@@ -228,7 +228,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/omTimer.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
-           src/utility/OmThreadPool.hpp \
+           src/utility/omThreadPool.hpp \
            src/utility/omChunkVoxelWalker.hpp \
            src/tiles/cache/omTileCache.h \
            src/tiles/cache/omTileCacheImpl.h \

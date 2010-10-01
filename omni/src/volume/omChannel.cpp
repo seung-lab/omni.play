@@ -5,7 +5,7 @@
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "system/cache/omMipVolumeCache.h"
-#include "utility/OmThreadPool.hpp"
+#include "utility/omThreadPool.hpp"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
