@@ -1,6 +1,7 @@
 #ifndef OM_THREAD_POOL_HPP
 #define OM_THREAD_POOL_HPP
 
+#include "utility/omSystemInformation.h"
 #include "zi/omThreads.h"
 
 #include <boost/shared_ptr.hpp>
@@ -16,6 +17,11 @@ public:
 
 	~OmThreadPool(){
 		stop();
+	}
+
+	void start(){
+		const int numWokers = 2 * OmSystemInformation::get_num_cores();
+		start(numWokers);
 	}
 
 	void start(const int numWorkerThreads){

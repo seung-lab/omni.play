@@ -140,7 +140,7 @@ public:
 void OmChannel::doBuildThreadedVolume()
 {
 	OmThreadPool threadPool;
-	threadPool.start(30);
+	threadPool.start();
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 		const Vector3i dims = MipLevelDimensionsInMipChunks(level);

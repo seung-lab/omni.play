@@ -330,7 +330,7 @@ public:
 void OmSegmentation::doBuildThreadedVolume()
 {
 	OmThreadPool threadPool;
-	threadPool.start(5);
+	threadPool.start();
 
 	for (int level = 0; level <= GetRootMipLevel(); ++level) {
 		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
