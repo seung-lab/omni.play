@@ -56,7 +56,7 @@ bool OmDataArchiveSegment::readSegmentsOld(std::vector<OmSegment*> & page,
 	in.setByteOrder( QDataStream::LittleEndian );
 	in.setVersion(QDataStream::Qt_4_6);
 
-	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+	for(uint32_t i = 0; i < cache->getPageSize(); ++i ){
 		bool valid;
 		in >> valid;
 		if (!valid) {
@@ -99,7 +99,7 @@ void OmDataArchiveSegment::readSegmentsNew(std::vector<OmSegment*> & page,
 	int segmentFileVersion_;
 	in >> segmentFileVersion_;
 
-	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+	for(uint32_t i = 0; i < cache->getPageSize(); ++i ){
 		bool valid;
 		in >> valid;
 		if (!valid) {
@@ -144,7 +144,7 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 		out << Omni_Segment_Version;
 	}
 
-	for( quint32 i = 0; i < cache->getPageSize(); ++i ){
+	for(uint32_t i = 0; i < cache->getPageSize(); ++i ){
 		OmSegment * segment = page[ i ];
 
 		if (NULL == segment) {
