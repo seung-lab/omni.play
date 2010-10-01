@@ -1,9 +1,8 @@
-
 #include "omCameraMovement.h"
 #include "omCamera.h"
-
 #include "common/omDebug.h"
-#include <limits>
+
+static const float EPSILON = 1.0e-5;
 
 /////////////////////////////////////
 //////////
@@ -38,7 +37,7 @@ void OmCameraArcBall::Drag(const Vector2 < float >&point)
 	perp_vector.cross(mStartVector, mEndVector);
 
 	//compute length of perpendicular
-	if (perp_vector.length() > std::numeric_limits< float >::epsilon() ) {	//if non-zero
+	if(perp_vector.length() > EPSILON){	//if non-zero
 
 		//update specific matrix depending on what type of rotation
 		Quaternion < float >rotation;
