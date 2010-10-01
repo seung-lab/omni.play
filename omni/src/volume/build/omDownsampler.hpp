@@ -72,6 +72,8 @@ public:
 
 	inline void pushVoxelIntoMips(const DataCoord& srcCoord)
 	{
+		const uint64_t srcOffset = getOffsetIntoVolume(srcCoord, 0);
+
 		for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
 			if( 0 != srcCoord.z % mips_[i].factor ||
 				0 != srcCoord.y % mips_[i].factor ||
@@ -80,10 +82,7 @@ public:
 			}
 
 			const DataCoord dstCoord = srcCoord / mips_[i].factor;
-
 			const uint64_t dstOffset = getOffsetIntoVolume(dstCoord, i);
-			const uint64_t srcOffset = getOffsetIntoVolume(srcCoord, 0);
-
 			mips_[i].data[dstOffset] = mips_[0].data[srcOffset];
 		}
 	}
