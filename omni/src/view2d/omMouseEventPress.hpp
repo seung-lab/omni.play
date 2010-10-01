@@ -15,7 +15,7 @@ private:
 
 public:
 	OmMouseEventPress(OmView2d* v2d,
-			 boost::shared_ptr<OmView2dState> state)
+					  boost::shared_ptr<OmView2dState> state)
 		: v2d_(v2d)
 		, state_(state)
 	{}
@@ -60,7 +60,7 @@ private:
 		}
 
 		OmSegmentSplitAction::DoFindAndSplitSegment(*sdw,
-							    state_->getViewGroupState());
+													state_->getViewGroupState());
 	}
 	void mouseSetCrosshair(QMouseEvent * event)
 	{
@@ -111,18 +111,18 @@ private:
 			//run action
 			if (!doselection) {
 				if (dosubtract) {
-					data_value = NULL_SEGMENT_VALUE;
+					data_value = 0;
 				} else {
 					data_value = sdw.getID();
 				}
 				v2d_->getLineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(), dataClickPoint, data_value);
 			} else {
 				OmMouseEventUtils::PickToolAddToSelection(sdw,
-									  dataClickPoint,
-									  v2d_);
+														  dataClickPoint,
+														  v2d_);
 				v2d_->getLineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-									 dataClickPoint,
-									 true);
+														 dataClickPoint,
+														 true);
 			}
 		} else {
 			//debug(genone, "No segment_id in edit selection\n");
@@ -186,7 +186,7 @@ private:
 
 		if(SEGMENTATION == state_->getVol()->getVolumeType()){
 			return getSelectedSegmentSegmentation(dataClickPoint,
-							      state_->getVol()->getID());
+												  state_->getVol()->getID());
 		}
 
 		SegmentDataWrapper* ret = NULL;
@@ -200,7 +200,7 @@ private:
 			}
 
 			ret = getSelectedSegmentSegmentation(dataClickPoint,
-							     segmentationID);
+												 segmentationID);
 			if(ret){
 				break;
 			}
@@ -211,7 +211,7 @@ private:
 
 	SegmentDataWrapper*
 	getSelectedSegmentSegmentation(const DataCoord& dataClickPoint,
-				       const OmId segmentationID)
+								   const OmId segmentationID)
 	{
 		OmSegmentation & segmentation =
 			OmProject::GetSegmentation(segmentationID);

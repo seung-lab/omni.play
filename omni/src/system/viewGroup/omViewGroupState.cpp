@@ -158,7 +158,10 @@ Vector2f OmViewGroupState::GetViewSliceMax(ViewType plane)
  */
 void OmViewGroupState::SetViewSliceDepth(ViewType plane, float depth)
 {
-	if (ISNAN(depth)) assert(0);
+	if(std::isnan(depth)){
+		throw OmArgException("depth was not a number");
+	}
+
 	switch (plane) {
 	case XY_VIEW:
 		mXYSlice[4] = depth;

@@ -79,7 +79,7 @@ public:
 	static OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord,
 										  const int level,
 										  const Vector3i& chunkDimensions){
-		const int factor = OMPOW(2, level);
+		const int factor = std::pow(2, level);
 		return OmMipChunkCoord(level,
 							   dataCoord.x / factor / chunkDimensions.x,
 							   dataCoord.y / factor / chunkDimensions.y,

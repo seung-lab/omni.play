@@ -175,7 +175,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 		OmTilePtr d = *it;
 
 		int level = d->GetTileCoord().getLevel();
-		Vector3f tileLength = resolution*128.0*OMPOW(2,level);
+		Vector3f tileLength = resolution*128.0*std::pow(2,level);
 
 		SpaceCoord thisCoord = d->GetTileCoord().getSpaceCoord();
 		//debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));

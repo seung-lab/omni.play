@@ -85,7 +85,7 @@ private:
 			data_value = sdw.getID();
 			break;
 		case SUBTRACT_VOXEL_MODE:
-			data_value = NULL_SEGMENT_VALUE;
+			data_value = 0;
 			break;
 		case SELECT_MODE:
 			doselection = true;

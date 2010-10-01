@@ -12,7 +12,7 @@
 
 #include "common/omCommon.h"
 
-#include <stdarg.h>
+#include <cstdarg>
 #include <exception>
 
 class OmException : public std::exception {

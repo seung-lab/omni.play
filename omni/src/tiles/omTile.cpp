@@ -82,7 +82,7 @@ int OmTile::getDepth()
 {
 	const NormCoord normCoord = getVol()->SpaceToNormCoord(key_.getSpaceCoord());
 	const DataCoord dataCoord = getVol()->NormToDataCoord(normCoord);
-        const float factor = OMPOW(2, key_.getLevel());
+        const float factor = std::pow(2, key_.getLevel());
 
 	switch(key_.getViewType()){
 	case XY_VIEW:

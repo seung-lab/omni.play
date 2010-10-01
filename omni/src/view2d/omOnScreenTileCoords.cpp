@@ -45,7 +45,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations()
 OmTileCoordsAndLocationsPtr
 OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 {
-	const float levelFactor = OMPOW(2, mipLevel_);
+	const float levelFactor = std::pow(2, mipLevel_);
 	const int dataDim = tileLength_ * levelFactor;
 
 	if(translateVector_.y < 0) {
