@@ -65,7 +65,7 @@ namespace om{
 	// 2^n, domain of [0,31]
 	inline uint32_t pow2(const int exp)
 	{
-		//assert(0 <= exp && exp < 32);
+		assert(0 <= exp && exp < 32);
 		return powers_of_2[exp];
 	}
 };
