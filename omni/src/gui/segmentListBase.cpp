@@ -68,12 +68,15 @@ void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSel
 {
 	assert( haveValidSDW );
 	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
-	const bool shouldThisTabBeMadeActive = segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment,
-																								segmentJustSelectedID,
-																								*currentSDW,
-																								segs );
+	const bool shouldThisTabBeMadeActive =
+		segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment,
+															 segmentJustSelectedID,
+															 *currentSDW,
+															 segs );
 
 	delete segs;
+
+	debug(segmentlist, "bye!\n");
 
 	if(shouldThisTabBeMadeActive){
 		makeTabActiveIfContainsJumpedToSegment();
@@ -95,7 +98,7 @@ void SegmentListBase::setupPageButtons()
 	endButton->setFixedSize(x, y);
 
 	searchEdit = new QLineEdit();
-	connect(searchEdit, SIGNAL(editingFinished()),
+	connect(searchEdit, SIGNAL(returnPressed()),
 			this, SLOT(searchChanged()));
 
 	connect( startButton, SIGNAL( released()  ),
