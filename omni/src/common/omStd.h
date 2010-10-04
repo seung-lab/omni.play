@@ -70,13 +70,14 @@ namespace om{
 	}
 };
 
+//only valid for a>=0
 template <typename T>
 inline T ROUNDDOWN(T a, T b)
 {
 	return a - a % b;
 }
 
-// http://stackoverflow.com/questions/3407012/c-rounding-up-to-the-nearest-multiple-of-a-number
+//only valid for numToRound >= 0
 template <typename T>
 inline T ROUNDUP(T numToRound, T multiple)
 {

@@ -62,6 +62,15 @@ private:
 		assert(10 == ROUNDDOWN(11,10));
 		assert(128 == ROUNDDOWN(129,128));
 
+		// ROUNDDOWN and ROUNDUP not yet valid for negative numbers...
+		/*
+		std::cout << ROUNDDOWN(-8,128) << "\n";
+		std::cout << -8 % 128 << "\n";
+		std::cout << abs(-8) % 128 << "\n";
+		assert(-128 == ROUNDDOWN(-8,128));
+		assert(0 == ROUNDUP(-8,128));
+		*/
+
 		printf("rounding OK\n");
 	}
 
