@@ -270,8 +270,10 @@ OmMipChunkCoord OmMipVolume::RootMipChunkCoordinate()
 bool OmMipVolume::ContainsMipChunkCoord(const OmMipChunkCoord & rMipCoord)
 {
 	//if level is greater than root level
-	if (rMipCoord.Level > GetRootMipLevel())
-		return false;
+	if(rMipCoord.Level < 0 ||
+	   rMipCoord.Level > GetRootMipLevel()){
+	   return false;
+	}
 
 	//convert to data box in leaf
 	DataBbox mip_coord_data_bbox = MipCoordToDataBbox(rMipCoord, 0);
