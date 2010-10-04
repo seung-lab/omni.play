@@ -19,6 +19,7 @@ my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
+my $omniExecPathMac  = $basePath.'/omni/bin/omni.app/Contents/MacOS/omni';
 
 my $omniScriptFile = $scriptPath.'/buildomni.sh';
 my $omniScriptOptions = "";
@@ -358,6 +359,10 @@ sub qt47 {
 sub omni {
     printTitle("omni");
     genOmniScript();
+
+    if(isMac()){
+	unlink($omniExecPathMac);
+    }
 
     my $cmd = "sh $omniScriptFile";
     print "running: ($cmd)\n";
