@@ -23,7 +23,8 @@ OmTileCoord::OmTileCoord(const int level, const SpaceCoord& spaceCoord,
 					 vgs,
 					 vt,
 					 vgs->determineColorizationType(objType))
-{}
+{
+}
 
 ObjectType OmTileCoord::getVolType() const {
 	return getVolume()->getVolumeType();

@@ -326,6 +326,7 @@ sub qt46 {
  -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
  -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng
  -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype);
+# -qtnamespace qt );
 
     my $args = "";
     foreach (@argsList){

@@ -80,7 +80,7 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 }
 
 void OmOnScreenTileCoords::computeTile(const float x, const float y,
-				       const int depthOffset)
+									   const int depthOffset)
 {
 	const DataCoord dataCoord = toDataCoord(depthOffset);;
 	const OmMipChunkCoord chunkCoord =

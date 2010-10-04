@@ -79,6 +79,12 @@ public:
 	static OmMipChunkCoord DataToMipCoord(const DataCoord& dataCoord,
 										  const int level,
 										  const Vector3i& chunkDimensions){
+		if( dataCoord.x < 0 ||
+			dataCoord.y < 0 ||
+			dataCoord.z < 0 ){
+			return OmMipChunkCoord::NULL_COORD;
+		}
+
 		const int factor = om::pow2(level);
 		return OmMipChunkCoord(level,
 							   dataCoord.x / factor / chunkDimensions.x,

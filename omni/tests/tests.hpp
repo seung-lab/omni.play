@@ -87,6 +87,8 @@ private:
 		assert(OmMipChunkCoord(2,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
 
+		assert(OmMipChunkCoord::NULL_COORD ==
+			   OmMipVolume::DataToMipCoord(DataCoord(-8, 0, 0), 0, chunkDims));
 
 		const Vector3<uint64_t> chunkDims64(128,128,128);
 		assert(OmMipChunkCoord(0,1,1,1) ==
