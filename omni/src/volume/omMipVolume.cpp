@@ -275,13 +275,13 @@ bool OmMipVolume::ContainsMipChunkCoord(const OmMipChunkCoord & rMipCoord)
 	   return false;
 	}
 
-	//convert to data box in leaf
-	DataBbox mip_coord_data_bbox = MipCoordToDataBbox(rMipCoord, 0);
+	//convert to data box in leaf (MIP 0)
+	DataBbox bbox = MipCoordToDataBbox(rMipCoord, 0);
 
-	//insersect and check if not empty
-	mip_coord_data_bbox.intersect(GetDataExtent());
-	if (mip_coord_data_bbox.isEmpty())
+	bbox.intersect(GetDataExtent());
+	if(bbox.isEmpty()){
 		return false;
+	}
 
 	//else valid mip coord
 	return true;
