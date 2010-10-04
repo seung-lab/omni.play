@@ -13,7 +13,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTileDumper.hpp"
 #include "utility/dataWrappers.h"
 #include "utility/stringHelpers.h"

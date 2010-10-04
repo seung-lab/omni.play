@@ -7,7 +7,7 @@
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/omSegmentSelector.h"
 #include "system/omEvents.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);

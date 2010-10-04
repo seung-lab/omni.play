@@ -3,7 +3,7 @@
 #include "volume/omMipVolume.h"
 #include "view2d/omOnScreenTileCoords.h"
 #include "system/cache/omCacheManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 #include <boost/make_shared.hpp>
 

@@ -6,7 +6,7 @@
 #include "gui/toolbars/dendToolbar/groupButtonDelete.h"
 #include "gui/toolbars/dendToolbar/groupButtonTag.h"
 #include "gui/toolbars/dendToolbar/showValidatedButton.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 ValidationGroup::ValidationGroup(DendToolBar * d)
 	: OmWidget(d)

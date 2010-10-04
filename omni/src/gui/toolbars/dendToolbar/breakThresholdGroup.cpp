@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 BreakThresholdGroup::BreakThresholdGroup(GraphTools * d)
 	: OmThresholdGroup(d, false)

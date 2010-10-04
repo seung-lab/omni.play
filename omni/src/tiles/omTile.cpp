@@ -1,4 +1,4 @@
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "volume/omMipChunk.h"

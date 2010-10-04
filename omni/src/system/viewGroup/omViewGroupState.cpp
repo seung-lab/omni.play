@@ -1,4 +1,4 @@
-#include "system/viewGroup/omBrushSize.hpp"
+#include "viewGroup/omBrushSize.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup.h"
@@ -7,7 +7,7 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omEvents.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "tiles/omTileCoord.h"
 

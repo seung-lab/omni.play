@@ -2,7 +2,7 @@
 #include "project/omProject.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 #include "volume/omDrawOptions.h"
 #include "volume/omFilter2d.h"

@@ -1,5 +1,5 @@
 #include "common/omDebug.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "system/omEvents.h"

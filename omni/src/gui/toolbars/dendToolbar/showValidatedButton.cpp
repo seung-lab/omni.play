@@ -2,7 +2,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar/showValidatedButton.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 ShowValidatedButton::ShowValidatedButton(ValidationGroup * d)
 	: OmButton<ValidationGroup>( d, 

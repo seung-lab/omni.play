@@ -30,13 +30,13 @@ DEPENDPATH += . \
            src/segment/lowLevel \
            src/system \
            src/system/events \
-           src/system/viewGroup \
            src/utility \
            src/utility/bin \
            src/utility/build \
            src/view2d \
            src/view3d \
            src/view3d/widgets \
+           src/viewGroup \
            src/volume \
            tests \
            tests/segment \
@@ -209,8 +209,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/omStateManager.h \
            src/system/cache/omThreadedCache.h \
            src/system/cache/omHandleCacheMissThreaded.h \
-           src/system/viewGroup/omViewGroupState.h \
-           src/system/viewGroup/omBrushSize.hpp \
+           src/viewGroup/omViewGroupState.h \
+           src/viewGroup/omBrushSize.hpp \
            src/utility/setUtilities.h \
            src/utility/omSmartPtr.hpp \
            src/utility/omLockedObjects.h \
@@ -438,7 +438,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/templatedClasses.cpp \
            src/tiles/cache/omTileCache.cpp \
            src/system/cache/omThreadedCache.cpp \
-           src/system/viewGroup/omViewGroupState.cpp \
+           src/viewGroup/omViewGroupState.cpp \
            src/utility/channelDataWrapper.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \

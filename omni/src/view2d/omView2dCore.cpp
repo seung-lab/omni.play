@@ -1,7 +1,7 @@
 #include "system/omEvents.h"
 #include "system/omGarbage.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTileDrawer.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dCore.h"

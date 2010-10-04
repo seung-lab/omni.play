@@ -3,7 +3,7 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 SplitButton::SplitButton(GraphTools * d)
 	: OmButton<GraphTools>( d, 

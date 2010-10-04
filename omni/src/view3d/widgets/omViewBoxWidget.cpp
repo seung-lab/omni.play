@@ -5,7 +5,7 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "volume/omChannel.h"

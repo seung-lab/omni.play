@@ -6,7 +6,7 @@
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
 #include "system/omEvents.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
 GraphTools::GraphTools(DendToolBar * d)

@@ -4,7 +4,7 @@
 #include "gui/widgets/omGroupListWidget.h"
 #include "system/omGroup.h"
 #include "gui/groupsTable.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 
 OmGroupListWidget::OmGroupListWidget(GroupsTable * gt)

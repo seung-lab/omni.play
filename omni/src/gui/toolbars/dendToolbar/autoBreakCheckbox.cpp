@@ -1,7 +1,7 @@
 #include "gui/toolbars/dendToolbar/autoBreakCheckbox.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "common/omDebug.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 AutoBreakCheckbox::AutoBreakCheckbox( GraphTools * d )
 	: OmCheckBox<GraphTools>(d, "Show Breaks")

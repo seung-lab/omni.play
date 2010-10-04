@@ -6,7 +6,7 @@
 #include "system/omEvents.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
 
 #include <QSize>

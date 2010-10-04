@@ -4,7 +4,7 @@
 #include "gui/viewGroup.h"
 #include "gui/viewGroupWidgetInfo.h"
 #include "project/omProject.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
 #include "volume/omChannel.h"

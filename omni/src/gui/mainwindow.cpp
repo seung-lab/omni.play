@@ -15,7 +15,7 @@
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
 MainWindow::MainWindow()

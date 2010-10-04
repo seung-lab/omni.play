@@ -21,7 +21,7 @@
 #include "system/omStateManager.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 #include <QtGui>
 #include <QMessageBox>

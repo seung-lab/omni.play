@@ -9,7 +9,7 @@
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"

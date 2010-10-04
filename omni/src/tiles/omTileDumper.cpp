@@ -1,6 +1,6 @@
 #include "project/omProject.h"
 #include "system/omProjectData.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"

@@ -4,7 +4,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "view2d/omScreenShotSaver.hpp"
-#include "system/viewGroup/omBrushSize.hpp"
+#include "viewGroup/omBrushSize.hpp"
 #include "view2d/omMouseZoom.hpp"
 
 #include <QKeyEvent>

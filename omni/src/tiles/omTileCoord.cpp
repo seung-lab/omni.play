@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
 #include "tiles/omTileCoord.h"
 #include "volume/omMipVolume.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 OmTileCoord::OmTileCoord()
 	: OmTileCoordKey(-1,

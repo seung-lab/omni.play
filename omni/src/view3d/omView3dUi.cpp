@@ -8,7 +8,7 @@
 #include "segment/omSegmentSelector.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"

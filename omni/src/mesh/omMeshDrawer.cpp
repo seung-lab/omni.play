@@ -10,7 +10,7 @@
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeCuller.h"
