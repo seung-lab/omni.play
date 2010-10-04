@@ -20,6 +20,7 @@ class OmView2dCore : public QWidget {
 Q_OBJECT
 public:
 	const ViewType mViewType;
+
 	QImage fullRedraw();
 	bool isDrawComplete();
 	int getTileCount();
@@ -34,7 +35,7 @@ public slots:
 
 protected:
 	OmView2dCore(QWidget *, OmMipVolume*, OmViewGroupState*, const ViewType,
-		     const std::string& name);
+				 const std::string& name);
 
 	void resetPbuffer(const QSize&);
 

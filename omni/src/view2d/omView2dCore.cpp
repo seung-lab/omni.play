@@ -11,8 +11,8 @@
 #include <boost/make_shared.hpp>
 
 OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
-			   OmViewGroupState * vgs, const ViewType viewType,
-			   const std::string& name)
+						   OmViewGroupState * vgs, const ViewType viewType,
+						   const std::string& name)
 	: QWidget(parent)
 	, mViewType(viewType)
 	, name_(name)
@@ -26,8 +26,8 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
 void OmView2dCore::resetPbuffer(const QSize& size)
 {
 	pbuffer_ = boost::make_shared<QGLPixelBuffer>(size,
-						      QGLFormat::defaultFormat(),
-						      (QGLWidget*)OmStateManager::GetPrimaryView3dWidget());
+												  QGLFormat::defaultFormat(),
+												  (QGLWidget*)OmStateManager::GetPrimaryView3dWidget());
 }
 
 // pbuffered paint
@@ -70,17 +70,17 @@ void OmView2dCore::setupMainGLpaintOp()
 		const Vector4i& vp = state_->getTotalViewport();
 
 		glViewport(vp.lowerLeftX,
-			   vp.lowerLeftY,
-			   vp.width,
-			   vp.height);
+				   vp.lowerLeftY,
+				   vp.width,
+				   vp.height);
 		glLoadIdentity();
 
 		glOrtho(vp.lowerLeftX,	/* left */
-			vp.width,	/* right */
-			vp.height,	/* bottom */
-			vp.lowerLeftY,	/* top */
-			mNearClip,
-			mFarClip);
+				vp.width,	/* right */
+				vp.height,	/* bottom */
+				vp.lowerLeftY,	/* top */
+				mNearClip,
+				mFarClip);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();

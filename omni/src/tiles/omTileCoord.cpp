@@ -13,15 +13,16 @@ OmTileCoord::OmTileCoord()
 			 SCC_NUMBER_OF_ENUMS) {}
 
 OmTileCoord::OmTileCoord(const int level, const SpaceCoord& spaceCoord,
-			 OmMipVolume* vol, const uint32_t freshness,
-			 OmViewGroupState* vgs, const ViewType vt)
+						 OmMipVolume* vol, const uint32_t freshness,
+						 OmViewGroupState* vgs, const ViewType vt,
+						 const ObjectType objType)
 	: OmTileCoordKey(level,
-			 spaceCoord,
-			 vol,
-			 freshness,
-			 vgs,
-			 vt,
-			 vgs->determineColorizationType(vol->getVolumeType()))
+					 spaceCoord,
+					 vol,
+					 freshness,
+					 vgs,
+					 vt,
+					 vgs->determineColorizationType(objType))
 {}
 
 ObjectType OmTileCoord::getVolType() const {

@@ -13,11 +13,11 @@ class OmMouseEvents;
 class OmKeyEvents;
 
 class OmView2d : public OmView2dCore {
-Q_OBJECT
+	Q_OBJECT
 
-public:
+	public:
 	OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
-		 const std::string& name);
+			 const std::string& name);
  	~OmView2d();
 
 	void SetComplimentaryDockWidget(QDockWidget* dock){

@@ -21,11 +21,12 @@
 class OmView2dState{
 public:
 	OmView2dState(OmMipVolume* vol,
-		      OmViewGroupState* vgs,
-		      const ViewType viewType,
-		      const QSize& size,
-		      const std::string name)
+				  OmViewGroupState* vgs,
+				  const ViewType viewType,
+				  const QSize& size,
+				  const std::string name)
 		: mVolume(vol)
+		, objType_(vol->getVolumeType())
 		, mViewGroupState(vgs)
 		, mViewType(viewType)
 		, name_(name)
@@ -62,7 +63,7 @@ public:
 		const float unscaleNormY = ((float)screenc.y/zoomScale/stretch.y-mPanDistance.y)*factor;
 
 		const NormCoord normc = scaleViewType(unscaleNormX, unscaleNormY,
-						      dataScale);
+											  dataScale);
 
 		SpaceCoord result = mVolume->NormToSpaceCoord(normc);
 		setViewTypeDepth(result, getSliceDepth());
@@ -87,13 +88,13 @@ public:
 		switch(mViewType){
 		case XY_VIEW:
 			return ScreenCoord((int)((float)(datac.x/factor+mPanDistance.x)*zoomScale*stretch.x),
-					   (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale*stretch.y));
+							   (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale*stretch.y));
 		case XZ_VIEW:
 			return ScreenCoord((int)((float)(datac.x/factor+mPanDistance.x)*zoomScale*stretch.x),
-					   (int)((float)(datac.z/factor+mPanDistance.y)*zoomScale*stretch.y));
+							   (int)((float)(datac.z/factor+mPanDistance.y)*zoomScale*stretch.y));
 		case YZ_VIEW:
 			return ScreenCoord((int)((float)(datac.z/factor+mPanDistance.x)*zoomScale*stretch.x),
-					   (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale*stretch.y));
+							   (int)((float)(datac.y/factor+mPanDistance.y)*zoomScale*stretch.y));
 		};
 
 		throw OmArgException("invalid viewType");
@@ -129,13 +130,13 @@ public:
 		switch(mViewType){
 		case XY_VIEW:
 			return Vector2f(panx-mydataCoord.x/factor,
-					pany-mydataCoord.y/factor);
+							pany-mydataCoord.y/factor);
 		case XZ_VIEW:
 			return Vector2f(panx-mydataCoord.x/factor,
-					pany-mydataCoord.z/factor);
+							pany-mydataCoord.z/factor);
 		case YZ_VIEW:
 			return Vector2f(panx-mydataCoord.z/factor,
-					pany-mydataCoord.y/factor);
+							pany-mydataCoord.y/factor);
 		}
 
 		throw OmArgException("invalid parameter");
@@ -149,15 +150,15 @@ public:
 		const float zoomFactor = getZoomScale();
 
 		const DataCoord minDCoord(mTotalViewport.lowerLeftX - translateVector.x * pl,
-					  mTotalViewport.lowerLeftY - translateVector.y * pl,
-					  0);
+								  mTotalViewport.lowerLeftY - translateVector.y * pl,
+								  0);
 
 		const DataCoord maxDCoord(mTotalViewport.width / zoomFactor * pl - translateVector.x * pl,
-					  mTotalViewport.height / zoomFactor * pl - translateVector.y * pl,
-					  0);
+								  mTotalViewport.height / zoomFactor * pl - translateVector.y * pl,
+								  0);
 
 		setSliceMinAndMax(mVolume->DataToSpaceCoord(minDCoord),
-				  mVolume->DataToSpaceCoord(maxDCoord));
+						  mVolume->DataToSpaceCoord(maxDCoord));
 
 		OmEvents::Redraw3d();
 	}
@@ -175,7 +176,7 @@ public:
 
 		const ScreenCoord crossCoord = SpaceToScreenCoord(depth);
 		const ScreenCoord centerCoord = Vector2i(mTotalViewport.width/2,
-							 mTotalViewport.height/2);
+												 mTotalViewport.height/2);
 
 		const Vector2f currentPan = ComputePanDistance();
 		const Vector2f newPan =  currentPan
@@ -202,7 +203,7 @@ public:
 	void SetPanDistance(const int x, const int y)
 	{
 		mViewGroupState->SetPanDistance(mViewType,
-						Vector2f(x, y));
+										Vector2f(x, y));
 		SetViewSliceOnPan();
 	}
 
@@ -279,8 +280,8 @@ public:
 	SpaceCoord getViewSliceDepthSpace() const
 	{
 		return SpaceCoord(getXsliceDepth(),
-				  getYsliceDepth(),
-				  getZsliceDepth());
+						  getYsliceDepth(),
+						  getZsliceDepth());
 	}
 	DataCoord getViewSliceDepthData() const {
 		return mVolume->SpaceToDataCoord(getViewSliceDepthSpace());
@@ -343,7 +344,7 @@ public:
 
 	template <typename T>
 	Vector3<T> makeViewTypeVector3(const T& x, const T& y,
-				       const T& z) const
+								   const T& z) const
 	{
 		switch(mViewType){
 		case XY_VIEW:
@@ -392,21 +393,21 @@ public:
 
 	template <typename T>
 	Vector3<T> scaleViewType(const T& x, const T& y,
-				 const Vector3<T>& scale) const
+							 const Vector3<T>& scale) const
 	{
 		switch(mViewType){
 		case XY_VIEW:
 			return Vector3<T>(x / scale.x,
-					  y / scale.y,
-					  0);
+							  y / scale.y,
+							  0);
 		case XZ_VIEW:
 			return Vector3<T>(x / scale.x,
-					  0,
-					  y / scale.z);
+							  0,
+							  y / scale.z);
 		case YZ_VIEW:
 			return Vector3<T>(0,
-					  y / scale.y,
-					  x / scale.z);
+							  y / scale.y,
+							  x / scale.z);
 		default:
 			throw OmArgException("invalid viewType");
 		}
@@ -475,8 +476,14 @@ public:
 		lastDataPoint_ = coord;
 	}
 
+	// whether overall view2d widget is displaying a channel or a segmentation
+	ObjectType getObjectType() const {
+		return objType_;
+	}
+
 private:
 	OmMipVolume* mVolume;
+	const ObjectType objType_;
 	OmViewGroupState *const mViewGroupState;
 	const ViewType mViewType;
 	const std::string name_;

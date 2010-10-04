@@ -109,11 +109,12 @@ DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord)
 {
 	return OmTileCoord(mipLevel_,
-			   coord,
-			   mVolume,
-			   freshness_,
-			   mViewGroupState,
-			   viewType_);
+					   coord,
+					   mVolume,
+					   freshness_,
+					   mViewGroupState,
+					   viewType_,
+					   state_->getObjectType());
 }
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
