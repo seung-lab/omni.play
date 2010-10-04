@@ -94,7 +94,7 @@ void SegmentListBase::setupPageButtons()
 	endButton->setFixedSize(x, y);
 
 	searchEdit = new QLineEdit();
-        connect(searchEdit, SIGNAL(editingFinished()),
+        connect(searchEdit, SIGNAL(returnPressed()),
                 this, SLOT(searchChanged()));
 
         connect( startButton, SIGNAL( released()  ),
