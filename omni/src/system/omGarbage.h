@@ -38,6 +38,10 @@ public:
 	{
 		zi::guard g(Instance().textureMutex_);
 
+		if(!Instance().mTextures.size()){
+			return;
+		}
+
 		glDeleteTextures(Instance().mTextures.size(),
 						 &Instance().mTextures[0]);
 
