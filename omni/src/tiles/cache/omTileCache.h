@@ -26,7 +26,7 @@ public:
 	void Get(OmTileDrawer* drawer,
 		 OmTilePtr& tile,
 		 const OmTileCoord& key,
-		 const OM::BlockingRead blocking);
+		 const om::BlockingRead blocking);
 
 	void RemoveSpaceCoord(const SpaceCoord & coord);
 
@@ -51,7 +51,7 @@ private:
 
 	void doGet(OmTilePtr& tile,
 		   const OmTileCoord& key,
-		   const OM::BlockingRead blocking);
+		   const om::BlockingRead blocking);
 
 	friend class OmProjectData; // location where OmTileCache is constructed
 	friend class OmTilePreFetcherTask; // access doGet(...)

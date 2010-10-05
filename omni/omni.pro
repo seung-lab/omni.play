@@ -67,6 +67,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveVmml.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
+           src/datalayer/upgraders/omUpgradeTo15.hpp \
            src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/fs/omActionLoggerFSthread.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \

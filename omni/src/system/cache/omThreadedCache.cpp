@@ -77,9 +77,9 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
 				   const KEY &key,
-				   const OM::BlockingRead blocking)
+				   const om::BlockingRead blocking)
 {
-	if(OM::BLOCKING == blocking){
+	if(om::BLOCKING == blocking){
 		Get(p_value, key, true);
 	} else {
 		Get(p_value, key, false);

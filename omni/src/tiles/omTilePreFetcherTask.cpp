@@ -42,7 +42,7 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
 
 		OmTilePtr tile;
 		state_->getCache()->doGet(tile, tileCL->tileCoord,
-								  OM::BLOCKING);
+								  om::BLOCKING);
 	}
 
 	printf("OmTilePreFetcherTask: fetched %d tiles\n", count);

@@ -27,42 +27,42 @@ public:
 		Instance().v3fPrefs.clear();
 	}
 
-	static std::string GetString(const OM::PrefEnum key){
+	static std::string GetString(const om::PrefEnum key){
 		return Instance().stringPrefs.value(key).toStdString();
 	}
-	static void SetString(const OM::PrefEnum key, const std::string& value){
+	static void SetString(const om::PrefEnum key, const std::string& value){
 		Instance().stringPrefs[ key ] = QString::fromStdString(value);
 		postEvent(key);
 	}
 
-	static float GetFloat(const OM::PrefEnum key){
+	static float GetFloat(const om::PrefEnum key){
 		return Instance().floatPrefs.value(key);
 	}
-	static void SetFloat(const OM::PrefEnum key, const float value){
+	static void SetFloat(const om::PrefEnum key, const float value){
 		Instance().floatPrefs[key] = value;
 		postEvent(key);
 	}
 
-	static int GetInteger(const OM::PrefEnum key){
+	static int GetInteger(const om::PrefEnum key){
 		return Instance().intPrefs.value(key);
 	}
-	static void SetInteger(const OM::PrefEnum key, const int value){
+	static void SetInteger(const om::PrefEnum key, const int value){
 		Instance().intPrefs[key] = value;
 		postEvent(key);
 	}
 
-	static bool GetBoolean(const OM::PrefEnum key){
+	static bool GetBoolean(const om::PrefEnum key){
 		return Instance().boolPrefs.value(key);
 	}
-	static void SetBoolean(const OM::PrefEnum key, const bool value){
+	static void SetBoolean(const om::PrefEnum key, const bool value){
 		Instance().boolPrefs[key] = value;
 		postEvent(key);
 	}
 
-	static Vector3f GetVector3f(const OM::PrefEnum key){
+	static Vector3f GetVector3f(const om::PrefEnum key){
 		return Instance().v3fPrefs.value(key);
 	}
-	static void SetVector3f(const OM::PrefEnum key, const Vector3f& value){
+	static void SetVector3f(const om::PrefEnum key, const Vector3f& value){
 		Instance().v3fPrefs[key] = value;
 		postEvent(key);
 	}
@@ -80,7 +80,7 @@ private:
 	QHash< int, bool > boolPrefs;
 	QHash< int, Vector3f> v3fPrefs;
 
-	static void postEvent(const OM::PrefEnum key){
+	static void postEvent(const om::PrefEnum key){
 		OmEvents::PreferenceChange(key);
 	}
 

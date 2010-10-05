@@ -295,3 +295,8 @@ boost::shared_ptr<OmSegmentCache> OmSegmentCacheImplLowLevel::getSegmentCache()
 {
 	return mSegmentation->GetSegmentCache();
 }
+
+void OmSegmentCacheImplLowLevel::UpgradeSegmentSerialization()
+{
+	mSegments->UpgradeSegmentSerialization();
+}

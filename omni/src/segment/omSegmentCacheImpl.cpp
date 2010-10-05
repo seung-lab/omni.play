@@ -442,3 +442,8 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
 	return getSegmentation()->GetSegmentLists();
 }
+
+void OmSegmentCacheImpl::UpgradeSegmentSerialization()
+{
+	mSegments->UpgradeSegmentSerialization();
+}

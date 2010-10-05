@@ -294,11 +294,11 @@ void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
 
 	//check coloring options
 	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {
-		glColor3fv(OmPreferences::GetVector3f(OM::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
+		glColor3fv(OmPreferences::GetVector3f(om::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F).array);
 
 	} else if (drawOps & DRAWOP_SEGMENT_COLOR_TRANSPARENT) {
 		glColor3fva(hyperColor.array,
-					OmPreferences::GetFloat(OM::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
+					OmPreferences::GetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
 	} else if (OmLocalPreferences::getDoDiscoBall()) {
 		static float s = 10.0;

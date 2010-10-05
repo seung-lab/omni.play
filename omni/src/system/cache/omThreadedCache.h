@@ -25,7 +25,7 @@ public:
 
 	//value accessors
 	virtual void Get(PTR&, const KEY&, const bool);
-	virtual void Get(PTR&, const KEY&, const OM::BlockingRead);
+	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
 	void Remove(const KEY &key);
 	int Clean();
 	void Clear(); //TODO: remove me

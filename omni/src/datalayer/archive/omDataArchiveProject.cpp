@@ -24,7 +24,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
+static const int Omni_Version = 15;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -63,10 +63,12 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 		throw OmIoException("corruption detected in Omni file");
 	}
 
-	QDir filesDir = OmProjectData::GetFilesFolderPath();
-	if(fileVersion_ < 14 ||
-	   !filesDir.exists()){
+	if(fileVersion_ < 14){
+		OmUpgraders::to15();
 		OmUpgraders::to14();
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 15){
+		OmUpgraders::to15();
 		ArchiveWrite(path, project);
 	}
 }
@@ -89,6 +91,8 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 		writeDataset( path,
 			      ba.size(),
 			      OmDataWrapperRaw(ba.constData()));
+
+	OmProjectData::GetIDataWriter()->flush();
 }
 
 QDataStream &operator<<(QDataStream & out, const OmProject & p)

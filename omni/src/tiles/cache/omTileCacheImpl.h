@@ -17,7 +17,7 @@ class OmTileCacheNonChannel : private OmThreadedCache<OmTileCoord, OmTilePtr> {
 public:
 	OmTileCacheNonChannel();
 
-	void Get(OmTilePtr&, const OmTileCoord&, const OM::BlockingRead);
+	void Get(OmTilePtr&, const OmTileCoord&, const om::BlockingRead);
 	void RemoveSpaceCoord(const SpaceCoord& coord);
 
 private:

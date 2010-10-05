@@ -27,14 +27,14 @@ struct new_array_tag { operator OmDataAllocType() const { return NEW_ARRAY; } };
 struct none_tag      { operator OmDataAllocType() const { return NONE; } };
 struct invalid_tag   { operator OmDataAllocType() const { return INVALID; } };
 
-namespace OM {
+namespace om {
 
 typedef malloc_tag    MALLOC;
 typedef new_array_tag NEW_ARRAY;
 typedef none_tag      NONE;
 typedef invalid_tag   INVALID;
 
-} // namespace OM
+} // namespace om
 
 class OmDataWrapperBase {
 public:

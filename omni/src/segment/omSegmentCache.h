@@ -81,6 +81,8 @@ public:
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
+	void UpgradeSegmentSerialization();
+
 private:
 	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;

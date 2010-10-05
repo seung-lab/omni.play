@@ -272,7 +272,14 @@ quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
         return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
 }
 
-bool OmSegmentCache::AreSegmentsEnabled(){
+bool OmSegmentCache::AreSegmentsEnabled()
+{
 	zi::guard g(mutex_);
 	return mImpl->AreSegmentsEnabled();
+}
+
+void OmSegmentCache::UpgradeSegmentSerialization()
+{
+	zi::guard g(mutex_);
+	return mImpl->UpgradeSegmentSerialization();
 }

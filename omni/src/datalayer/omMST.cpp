@@ -165,12 +165,12 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
 {
   boost::shared_ptr<uint8_t> edbu =
 	  OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
-							OM::ZERO_FILL);
+							om::ZERO_FILL);
   mEdgeDisabledByUser = OmDataWrapperFactory::produce(edbu);
 
   boost::shared_ptr<uint8_t> efj =
 	  OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
-							OM::ZERO_FILL);
+							om::ZERO_FILL);
   mEdgeForceJoin = OmDataWrapperFactory::produce(efj);
 
   mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);

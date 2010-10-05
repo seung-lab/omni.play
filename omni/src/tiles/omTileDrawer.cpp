@@ -75,9 +75,9 @@ void OmTileDrawer::determineWhichTilesToDraw(OmMipVolume* vol)
 
 	FOR_EACH(tileCL, *tileCoordsAndLocations){
 
-		OM::BlockingRead amBlocking = OM::NON_BLOCKING;
+		om::BlockingRead amBlocking = om::NON_BLOCKING;
 		if(state_->getScribbling()){
-			amBlocking = OM::BLOCKING;
+			amBlocking = om::BLOCKING;
 		}
 
 		OmTilePtr tile;

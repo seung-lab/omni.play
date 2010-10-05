@@ -11,7 +11,7 @@ class OmMipChunkCoord;
 class OmSegmentEdge;
 
 class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
- public:
+public:
 	OmSegmentCacheImpl(OmSegmentation *);
 	virtual ~OmSegmentCacheImpl();
 
@@ -27,18 +27,20 @@ class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset,
-						   const int numToGet,
-						   const OmSegIDRootType type,
-						   const OmSegID starSeg = 0);
+											   const int numToGet,
+											   const OmSegIDRootType type,
+											   const OmSegID starSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
 
 	void refreshTree();
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
-        quint64 getSegmentListSize(OmSegIDRootType type);
+	quint64 getSegmentListSize(OmSegIDRootType type);
 
- private:
+	void UpgradeSegmentSerialization();
+
+private:
 	OmSegmentEdge splitChildFromParent( OmSegment * child );
 
 	QList<OmSegmentEdge> mManualUserMergeEdgeList;

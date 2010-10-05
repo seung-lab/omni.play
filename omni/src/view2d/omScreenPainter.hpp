@@ -21,7 +21,7 @@ public:
 		, state_(state)
 		, screenShotSaver_(s)
 		, viewType_(v2d->mViewType)
-		, shouldDisplayInfo_(OmPreferences::GetBoolean(OM::PREF_VIEW2D_SHOW_INFO_BOOL))
+		, shouldDisplayInfo_(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL))
 	{}
 
 	void FullRedraw() {

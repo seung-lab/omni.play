@@ -12,8 +12,8 @@ class OmSmartPtr {
 public:
 	static boost::shared_ptr<T>
 	makeMallocPtrNumBytes(const uint32_t numBytes,
-						  const OM::zeroMem shouldZeroMem
-						  = OM::DONT_ZERO_FILL)
+						  const om::zeroMem shouldZeroMem
+						  = om::DONT_ZERO_FILL)
 	{
 		T* rawPtr = static_cast<T*>(malloc(numBytes));
 		if(NULL == rawPtr){
@@ -23,7 +23,7 @@ public:
 			std::cerr << err << "\n" << std::flush;
 			throw std::bad_alloc();
 		}
-		if(OM::ZERO_FILL == shouldZeroMem){
+		if(om::ZERO_FILL == shouldZeroMem){
 			memset(rawPtr, 0, numBytes);
 		}
 		return boost::shared_ptr<T>(rawPtr, deallocatorMalloc());
@@ -31,8 +31,8 @@ public:
 
 	static boost::shared_ptr<T>
 	makeMallocPtrNumElements(const uint32_t numElements,
-				 const OM::zeroMem shouldZeroMem
-				 = OM::DONT_ZERO_FILL)
+				 const om::zeroMem shouldZeroMem
+				 = om::DONT_ZERO_FILL)
 	{
 		return makeMallocPtrNumBytes(numElements * sizeof(T),
 					     shouldZeroMem);

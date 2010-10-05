@@ -11,9 +11,9 @@ public:
 	PreferencesMesh(QWidget *parent); 
     
  private slots: 
-	void on_tdpSlider_valueChanged();	// OM::PREF_MESH_REDUCTION_PERCENT_FLT
-	void on_pasSlider_valueChanged();	// OM::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT
-	void on_nsSlider_valueChanged();	// OM::PREF_MESH_NUM_SMOOTHING_ITERS_INT
+	void on_tdpSlider_valueChanged();	// om::PREF_MESH_REDUCTION_PERCENT_FLT
+	void on_pasSlider_valueChanged();	// om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT
+	void on_nsSlider_valueChanged();	// om::PREF_MESH_NUM_SMOOTHING_ITERS_INT
 
  private:
 	QGroupBox* makeSmoothnessBox();	

@@ -484,7 +484,7 @@ void Headless::runHeadless(const QString& headlessCMD, const QString& fName)
 	}
 }
 
-void Headless::watershed(const QString&  line)
+void Headless::watershed(const QString&)
 {
 /*
 	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
