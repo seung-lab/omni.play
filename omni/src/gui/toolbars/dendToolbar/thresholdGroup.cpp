@@ -10,8 +10,9 @@ ThresholdGroup::ThresholdGroup(GraphTools * d)
 	: OmThresholdGroup(d, false)
 	, mParent(d)
 {
-	setSingleStep(0.02);
+	setSingleStep(0.002);
 	setMaximum(1.0);
+	setDecimals(3);
 	setInitialGUIThresholdValue();
 }
 
