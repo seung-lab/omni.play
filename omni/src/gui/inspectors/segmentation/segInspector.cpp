@@ -15,6 +15,8 @@
 #include "utility/sortHelpers.h"
 #include "utility/stringHelpers.h"
 
+#include <boost/make_shared.hpp>
+
 SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
 							MyInspectorWidget* parent)
 	: QWidget(parent)

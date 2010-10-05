@@ -10,6 +10,8 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
 
+#include <boost/make_shared.hpp>
+
 SegmentListBase::SegmentListBase( QWidget * parent,
 								  InspectorProperties * ip,
 								  ElementListBox * eb )

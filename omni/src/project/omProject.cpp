@@ -33,7 +33,6 @@ OmProject *OmProject::mspInstance = 0;
 ///////          OmProject
 OmProject::OmProject()
 {
-	mThreadPool.start(3);
 }
 
 OmProject::~OmProject()

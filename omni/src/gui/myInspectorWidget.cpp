@@ -26,6 +26,8 @@
 #include <QtGui>
 #include <QMessageBox>
 
+#include <boost/make_shared.hpp>
+
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 

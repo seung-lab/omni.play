@@ -11,6 +11,8 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
+#include <boost/make_shared.hpp>
+
 static const ViewType UpperLeft  = XY_VIEW;
 static const ViewType UpperRight = YZ_VIEW;
 static const ViewType LowerLeft  = XZ_VIEW;
@@ -44,22 +46,26 @@ QString ViewGroup::makeObjectName(ViewGroupWidgetInfo* vgw)
 {
 	if( VIEW2D_CHAN == vgw->widgetType ) {
 		return makeObjectName( CHANNEL, vgw->vtype );
-	} else if (VIEW2D_SEG  == vgw->widgetType ){
-		return makeObjectName( SEGMENTATION, vgw->vtype );
-	} else {
-		return makeObjectName();
 	}
+
+	if (VIEW2D_SEG  == vgw->widgetType ){
+		return makeObjectName( SEGMENTATION, vgw->vtype );
+	}
+
+	return makeObjectName();
 }
 
 QString ViewGroup::makeComplimentaryObjectName(ViewGroupWidgetInfo* vgw)
 {
 	if( VIEW2D_CHAN == vgw->widgetType ){
 		return makeObjectName( SEGMENTATION, vgw->vtype );
-	} else if( VIEW2D_SEG == vgw->widgetType ){
-		return makeObjectName( CHANNEL, vgw->vtype );
-	} else {
-		return "";
 	}
+
+	if( VIEW2D_SEG == vgw->widgetType ){
+		return makeObjectName( CHANNEL, vgw->vtype );
+	}
+
+	return "";
 }
 
 QDockWidget* ViewGroup::getDockWidget(const QString& objName)

@@ -11,7 +11,6 @@
 
 #include "common/omCommon.h"
 #include "system/omGenericManager.h"
-#include "utility/omThreadPool.hpp"
 
 class OmChannel;
 class OmSegmentation;
@@ -51,8 +50,6 @@ public:
 	static bool IsSegmentationEnabled(const OmId id);
 	static void SetSegmentationEnabled(const OmId id, const bool enable);
 
-	static OmThreadPool& GetGlobalThreadPool(){ return Instance()->mThreadPool; }
-
 private:
 	//singleton
 	OmProject();
@@ -62,8 +59,6 @@ private:
 	//project
 	QString mFileName;
 	QString mDirectoryPath;
-
-	OmThreadPool mThreadPool;
 
 	//data managers
 	OmGenericManager<OmChannel> mChannelManager;

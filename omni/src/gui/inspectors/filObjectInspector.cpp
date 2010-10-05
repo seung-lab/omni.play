@@ -4,6 +4,8 @@
 #include "system/omEventManager.h"
 #include "system/events/omViewEvent.h"
 
+#include <boost/make_shared.hpp>
+
 FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper & fdw )
  : QWidget(parent)
 {

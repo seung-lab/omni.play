@@ -5,6 +5,8 @@
 #include "system/cache/omCacheManager.h"
 #include "utility/stringHelpers.h"
 
+#include <boost/make_shared.hpp>
+
 SegObjectInspector::SegObjectInspector(SegmentDataWrapper sdw_, QWidget* parent)
  : QWidget(parent)
 {

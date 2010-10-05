@@ -4,6 +4,7 @@
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.h"
 #include "zi/omThreads.h"
+#include "utility/omThreadPool.hpp"
 
 template <typename T>
 struct MipLevelInfo {

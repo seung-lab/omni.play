@@ -10,6 +10,8 @@
 #include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 
+#include <boost/make_shared.hpp>
+
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 	: QWidget(parent)
 {
