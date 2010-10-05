@@ -524,7 +524,7 @@ sub numberOfCores {
 	$numCores = 2;
     }
 
-    return $numCores-1;
+    return $numCores;
 }
 
 sub setupParallelBuildOption {
