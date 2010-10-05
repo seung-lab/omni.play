@@ -30,7 +30,7 @@ void ziMesher::mesh() {
 
   FOR_EACH(it, levelZeroChunks_) {
 
-    double error = 1e-4;
+    double error = 1e-5;
     OmMipChunkCoord c = *it;
     shared_ptr<ziMeshingChunk> worker(new ziMeshingChunk(segmentationId_, c,
                                                          mipMeshManager_,
