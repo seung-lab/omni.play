@@ -31,6 +31,7 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path,
 		if(!dataReadCorrect){
 			// reread, don't read mBounds
 			// warning: will leak corrupt OmSegments...
+ 			printf("intial segment load failed; rereading\n");
 			const bool dataReadCorrectOverride =
 				readSegmentsOld(page, cache, dw, size, true);
 			if(!dataReadCorrectOverride){
@@ -39,6 +40,12 @@ void OmDataArchiveSegment::ArchiveRead( const OmDataPath & path,
 			printf("forcing rewrite of segments...\n");
 			ArchiveWrite(path, page, cache);
 		}
+
+		if(OmProjectData::getFileVersion() < 14){
+			printf("forcing rewrite of segments...\n");
+			ArchiveWrite(path, page, cache);
+		}
+
 	}else{
 		readSegmentsNew(page, cache, dw, size);
 	}
@@ -73,7 +80,7 @@ bool OmDataArchiveSegment::readSegmentsOld(std::vector<OmSegment*> & page,
 		in >> segment->mImmutable;
 		in >> segment->mSize;
 
-		if(!overrideVersion && OmProjectData::getFileVersion() >= 13) {
+		if(!overrideVersion && OmProjectData::getFileVersion() >= 13){
 			in >> segment->mBounds;
 		}
 
