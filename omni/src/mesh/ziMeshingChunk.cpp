@@ -94,8 +94,8 @@ void ziMeshingChunk::run()
 
     FOR_EACH (sit, simplifiers) {
       sit->second->runQueue((idx == 0) ?
-                            (meshes[sit->first].faces_.size() / 2) :
-                            (meshes[sit->first].faces_.size() / 2),
+                            (meshes[sit->first].faces_.size() / 8) :
+                            (meshes[sit->first].faces_.size() / 8),
                             it->second, 0);
       meshes[sit->first].toStrips(&stripified[sit->first].first,
                                   stripified[sit->first].second);

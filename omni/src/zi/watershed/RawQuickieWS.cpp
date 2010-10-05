@@ -22,134 +22,135 @@
 
 using namespace std;
 
-void RawQuickieWS::rawQuickieWS(const float* connections,
-				int* result)
+
+void
+rawQuickieWS(const float* connections,
+             int64_t xDim, int64_t yDim, int64_t zDim,
+             const float loThreshold,
+             const float hiThreshold,
+             int   noThreshold,
+             const float absLowThreshold,
+             uint32_t*  result,
+             vector<pair<int64_t, float> > &graph,
+             vector<pair<float, int64_t> > &dendQueue,
+             vector<int> &sizes)
 {
 
   cout << "Low Threshold: " << loThreshold << "\n"
        << "Hi  Threshold: " << hiThreshold << "\n"
-       << "No  Threshold: " << noThreshold << "\n"
-       << "Abs Low Thresh:" << absLowThreshold << "\n";
+       << "No  Threshold: " << noThreshold << "\n";
 
-  const int64_t xyDim      = xDim  * yDim;
-  const int64_t xyzDim     = xyDim * zDim;
-  const int64_t xyzDim2    = xyDim * zDim * 2;
-  const int64_t nHood[6]   = {-1, -xDim, -xyDim, 1, xDim, xyDim};
+
+  int64_t xyDim      = xDim  * yDim;
+  int64_t xyzDim     = xyDim * zDim;
+  int64_t xyzDim2    = xyDim * zDim * 2;
+  int64_t noElements = xyzDim * 3;
+  int64_t nHood[6]   = {-1, -xDim, -xyDim, 1, xDim, xyDim};
 
   int64_t totalNice  = 0;
   int64_t singleOnes = 0;
   int64_t nullOnes   = 0;
 
-  cout << "clearing output file..." << flush;
-  memset((void*)result, 0, xyzDim * (int64_t)sizeof(int));
-  cout << "done\n";
+  //  memset((void*)result, 0, xyzDim * (int64_t)sizeof(int));
 
-  cout << "walking affinity graph...\n";
 
   for (int64_t i=0,d=0; d<3; ++d) {
-	  for (int64_t j=0,z=0; z<zDim; ++z) {
-		  cout << "\r\t" << "(" << d+1 << " of 3):"
-		       << z << " of " << zDim << " slices" << flush;
-		  for (int64_t y=0; y<yDim; ++y){
-			  for (int64_t x=0; x<xDim; ++x,++i,++j) {
-				  if ((x == 0) && (d==0)) continue;
-				  if ((y == 0) && (d==1)) continue;
-				  if ((z == 0) && (d==2)) continue;
-				  if (connections[i] >= hiThreshold) {
-					  result[j]            |= (1 << d);
-					  result[j + nHood[d]] |= (8 << d);
-				  }
-			  }
-		  }
-	  }
+    for (int64_t j=0,z=0; z<zDim; ++z)
+      for (int64_t y=0; y<yDim; ++y)
+        for (int64_t x=0; x<xDim; ++x,++i,++j) {
+          if ((x == 0) && (d==0)) continue;
+          if ((y == 0) && (d==1)) continue;
+          if ((z == 0) && (d==2)) continue;
+          if (connections[i] >= hiThreshold) {
+            result[j]            |= (1 << d);
+            result[j + nHood[d]] |= (8 << d);
+          }
+        }
   }
-  cout << "\rdone                                                  \n";
-
-  for (int64_t j=0,z=0; z<zDim; ++z){
-	  cout << "\r" << z << " of " << zDim << " slices" << flush;
-
-	  for (int64_t y=0; y<yDim; ++y){
-		  for (int64_t x=0; x<xDim; ++x,++j) {
-
-			  int   d = -1;
-			  float top = 0.0, second = 0.0;
-
-			  if (x > 0) {
-				  if (connections[j] >= top) {
-					  d = 1;
-					  second = top;
-					  top = connections[j];
-				  }
-			  }
-
-			  if (y > 0) {
-				  if (connections[j+xyzDim] >= top) {
-					  d = 2;
-					  second = top;
-					  top = connections[j+xyzDim];
-				  }
-			  }
-
-			  if (z > 0) {
-				  if (connections[j+xyzDim2] >= top) {
-					  d = 3;
-					  second = top;
-					  top = connections[j+xyzDim2];
-				  }
-			  }
 
 
-			  if (x < xDim - 1) {
-				  if (connections[j+1] >= top) {
-					  d = 4;
-					  second = top;
-					  top = connections[j+1];
-				  }
-			  }
+  for (int64_t j=0,z=0; z<zDim; ++z)
+    for (int64_t y=0; y<yDim; ++y)
+      for (int64_t x=0; x<xDim; ++x,++j) {
+
+        int   d = -1;
+        float top = 0.0, second = 0.0;
+
+        if (x > 0) {
+          if (connections[j] >= top) {
+            d = 1;
+            second = top;
+            top = connections[j];
+          }
+        }
+
+        if (y > 0) {
+          if (connections[j+xyzDim] >= top) {
+            d = 2;
+            second = top;
+            top = connections[j+xyzDim];
+          }
+        }
+
+        if (z > 0) {
+          if (connections[j+xyzDim2] >= top) {
+            d = 3;
+            second = top;
+            top = connections[j+xyzDim2];
+          }
+        }
 
 
-			  if (y < yDim - 1) {
-				  if (connections[j+xyzDim+xDim] >= top) {
-					  d = 5;
-					  second = top;
-					  top = connections[j+xyzDim+xDim];
-				  }
-			  }
+        if (x < xDim - 1) {
+          if (connections[j+1] >= top) {
+            d = 4;
+            second = top;
+            top = connections[j+1];
+          }
+        }
 
 
-			  if (z < zDim - 1) {
-				  if (connections[j+xyDim+xyzDim2] >= top) {
-					  d = 6;
-					  second = top;
-					  top = connections[j+xyDim+xyzDim2];
-				  }
-			  }
+        if (y < yDim - 1) {
+          if (connections[j+xyzDim+xDim] >= top) {
+            d = 5;
+            second = top;
+            top = connections[j+xyzDim+xDim];
+          }
+        }
 
-			  if (d > 0) {
-				  if (top > absLowThreshold) {
-					  if (top > second) {
-						  --d;
-						  if (d < 3) {
-							  result[j]            |= (1 << d);
-							  result[j + nHood[d]] |= (8 << d);
-						  } else {
-							  result[j]            |= (1 << d);
-							  result[j + nHood[d]] |= (1 << (d - 3));
-						  }
-						  ++totalNice;
-					  } else {
-						  result[j] |= 0x10000000;
-						  ++singleOnes;
-					  }
-				  } else {
-					  ++nullOnes;
-				  }
-			  }
-		  }
-	  }
-  }
-  cout << "\rdone                                  \n";
 
+        if (z < zDim - 1) {
+          if (connections[j+xyDim+xyzDim2] >= top) {
+            d = 6;
+            second = top;
+            top = connections[j+xyDim+xyzDim2];
+          }
+        }
+
+        if (d > 0) {
+          if (top > absLowThreshold) {
+            if (top > second) {
+              --d;
+              if (d < 3) {
+                result[j]            |= (1 << d);
+                result[j + nHood[d]] |= (8 << d);
+              } else {
+                result[j]            |= (1 << d);
+                result[j + nHood[d]] |= (1 << (d - 3));
+              }
+              ++totalNice;
+            } else {
+              result[j] |= 0x10000000;
+              ++singleOnes;
+            }
+          } else {
+            ++nullOnes;
+          }
+        }
+      }
+
+
+  cout << "Abs Low Thresh:" << absLowThreshold << "\n";
   cout << "Total Nice   : " << totalNice << "\n";
   cout << "Total Singles: " << singleOnes << "\n";
   cout << "Total Null:    " << nullOnes << "\n";
@@ -184,6 +185,7 @@ void RawQuickieWS::rawQuickieWS(const float* connections,
               cout << "ERROR\n";
               return;
             }
+
 
             if (!(result[pot] & 0x80000000)) {
               result[pot] |= 0x80000000;
@@ -345,6 +347,5 @@ void RawQuickieWS::rawQuickieWS(const float* connections,
   cout << "Total Reduced : " << (nextIdx-1) << "\n";
   sizes.clear();
 
-  cout << "Done w/ Raw!\n";
 }
 
