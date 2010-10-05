@@ -695,8 +695,9 @@ OmSegmentationChunkCoord Headless::makeChunkCoord( QString line )
 	return OmSegmentationChunkCoord(segmentationID, mipLevel, x, y, z);
 }
 
-void Headless::watershed(const QString &  line)
+void Headless::watershed(const QString &)
 {
+/*
 	const QStringList argsMain = line.split(':',QString::SkipEmptyParts);
 
 	if ( argsMain.size() < 2 ){
@@ -746,4 +747,5 @@ void Headless::watershed(const QString &  line)
 	OmMemMappedFileWriteQT<OmMSTedge> mst(mst_fnp, numBytesMST);
 
 	rqws.SaveToMemMap(mst.GetPtr());
+*/
 }
