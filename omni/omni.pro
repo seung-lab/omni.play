@@ -1,6 +1,13 @@
 QT += opengl
 TEMPLATE = app
-CONFIG += qt debug
+CONFIG += qt
+
+mac {
+  CONFIG += release
+}
+else {
+ CONFIG += debug
+}
 
 DEPENDPATH += . \
            include \
