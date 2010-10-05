@@ -419,7 +419,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/system/cache/omCacheInfo.cpp \
            src/segment/omSegmentLists.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
