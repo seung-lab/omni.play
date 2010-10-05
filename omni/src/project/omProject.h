@@ -32,7 +32,7 @@ public:
 	static void Save();
 	static void Commit();
 	static void Load(const QString& fileNameAndPath);
-	static void Close(bool doSave = true);
+	static void Close();
 
 	//volume management
 	static OmChannel& GetChannel(const OmId id);
@@ -50,8 +50,6 @@ public:
 	static const OmIDsSet & GetValidSegmentationIds();
 	static bool IsSegmentationEnabled(const OmId id);
 	static void SetSegmentationEnabled(const OmId id, const bool enable);
-	static void SetCanFlush(bool canflush);
-	static bool GetCanFlush();
 
 	static OmThreadPool& GetGlobalThreadPool(){ return Instance()->mThreadPool; }
 
@@ -64,7 +62,6 @@ private:
 	//project
 	QString mFileName;
 	QString mDirectoryPath;
-	bool mCanFlush;
 
 	OmThreadPool mThreadPool;
 

@@ -28,7 +28,6 @@ public:
 	virtual void Get(PTR&, const KEY&, const OM::BlockingRead);
 	void Remove(const KEY &key);
 	int Clean();
-	void Flush();
 	void Clear(); //TODO: remove me
 	void InvalidateCache();
 	const std::string& GetName(){ return name_; }

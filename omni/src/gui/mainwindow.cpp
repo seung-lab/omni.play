@@ -162,15 +162,12 @@ bool MainWindow::closeProjectIfOpen()
 	}
 
 	const int ret = checkForSave();
-	bool doSave;
 	switch (ret) {
 	case QMessageBox::Save:
 		(new OmProjectSaveAction())->Run();
-		doSave = true;
 		break;
 	case QMessageBox::Discard:
 		// Don't Save was clicked
-		doSave = false;
 		break;
 	case QMessageBox::Cancel:
 		return false;
@@ -192,7 +189,7 @@ bool MainWindow::closeProjectIfOpen()
 		preferences = NULL;
 	}
 
-	OmProject::Close(doSave);
+	OmProject::Close();
 	windowTitleClear();
 
 	updateReadOnlyRelatedWidgets();

@@ -30,7 +30,6 @@ void OmThreadedCache<KEY,PTR>::closeDownThreads()
 {
 	mKillingCache.set(true);
 	mThreadPool.stop();
-	mCache.flush();
 	mCache.clear();
 	mKeyAccessList.clear();
 	mCurrentlyFetching.clear();
@@ -146,12 +145,6 @@ qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
 	}
 	*/
         return mCurSize.get();
-}
-
-template <typename KEY, typename PTR>
-void OmThreadedCache<KEY,PTR>::Flush()
-{
-	mCache.flush();
 }
 
 template <typename KEY, typename PTR>

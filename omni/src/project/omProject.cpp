@@ -33,7 +33,6 @@ OmProject *OmProject::mspInstance = 0;
 ///////          OmProject
 OmProject::OmProject()
 {
-	mCanFlush = true;
 	mThreadPool.start(3);
 }
 
@@ -92,8 +91,6 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 
 void OmProject::Save()
 {
-	SetCanFlush(true);
-
 	if (!OmProjectData::IsOpen()) {
 		return;
 	}
@@ -101,7 +98,6 @@ void OmProject::Save()
 	//TODO: move this into omProjectData?
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
-		//OmProject::GetSegmentation( segID ).Flush();
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
@@ -144,10 +140,8 @@ void OmProject::Load(const QString& fileNameAndPath)
 	}
 }
 
-void OmProject::Close(bool doSave)
+void OmProject::Close()
 {
-	SetCanFlush(doSave);
-
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
 	Delete();
@@ -274,14 +268,3 @@ void OmProject::SetSegmentationEnabled(const OmId id, const bool enable)
 {
 	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
-
-void OmProject::SetCanFlush(bool canFlush)
-{
-	Instance()->mCanFlush = canFlush;
-}
-
-bool OmProject::GetCanFlush()
-{
-	return Instance()->mCanFlush;
-}
-

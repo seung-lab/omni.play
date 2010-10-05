@@ -29,8 +29,6 @@ public:
 	OmMipChunk(const OmMipChunkCoord &coord, OmMipVolume* vol);
 	virtual ~OmMipChunk(){}
 
-	void Flush(){}
-
 	bool ContainsVoxel(const DataCoord &vox);
 	const Vector3i GetDimensions();
 	int GetNumberOfVoxelsInChunk() const;

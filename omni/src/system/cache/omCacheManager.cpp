@@ -24,10 +24,6 @@ OmCacheManager::OmCacheManager()
 	setupCleanerThread();
 }
 
-OmCacheManager::~OmCacheManager()
-{
-}
-
 void OmCacheManager::setupCleanerThread()
 {
 	const int64_t loopTimeSecs= CLEANER_THREAD_LOOP_TIME_SECS;

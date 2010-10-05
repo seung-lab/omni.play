@@ -5,7 +5,7 @@
 
 class OmCacheInfo {
 public:
-	OmCacheInfo();
+	OmCacheInfo(){}
 	long cacheSize;
 	QString cacheName;
 };

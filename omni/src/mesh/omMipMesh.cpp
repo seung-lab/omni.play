@@ -385,10 +385,6 @@ GLuint OmMipMesh::createVbo(const void *data, int dataSize, GLenum target, GLenu
 	return id;		// return VBO id
 }
 
-void OmMipMesh::Flush()
-{
-}
-
 void OmMipMesh::setSegmentationID(OmId sid)
 {
 	mSegmentationID = sid;

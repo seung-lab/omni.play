@@ -49,7 +49,7 @@ protected:
 
 private:
 	OmCacheManager();
-	~OmCacheManager();
+	~OmCacheManager(){}
 	static inline OmCacheManager& Instance(){
 		return zi::singleton<OmCacheManager>::instance();
 	}

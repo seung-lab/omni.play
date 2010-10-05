@@ -28,7 +28,6 @@ public:
 
 	void Load();
 	void Save();
-	void Flush();
 
 	std::string GetFileName();
 	std::string GetDirectoryPath();

@@ -38,12 +38,6 @@ public:
 		zi::rwmutex::read_guard g(mutex_);
 		return map_.empty();
 	}
-	void flush(){
-		zi::rwmutex::write_guard g(mutex_);
-		FOR_EACH( iter, map_ ){
-			(*iter).second->Flush();
-		}
-	}
 	void clear(){
 		zi::rwmutex::write_guard g(mutex_);
 		map_.clear();

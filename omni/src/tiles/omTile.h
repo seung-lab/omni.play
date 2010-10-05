@@ -27,8 +27,6 @@ public:
 	const OmTextureIDPtr& GetTexture(){ return texture_; }
 	const OmTileCoord& GetTileCoord(){ return key_; }
 
-	void Flush(){} // for cache
-
 private:
 	OmCacheBase *const cache_;
 	const OmTileCoord key_;
