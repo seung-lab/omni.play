@@ -129,7 +129,7 @@ public:
 		printf("downsampling...\n");
 
 		OmThreadPool threadPool;
-		threadPool.start();
+		threadPool.start(3);
 
 		for(uint64_t sz=0; sz < mips_[0].volDims.z; sz+=2){
 			for(uint64_t sy=0; sy < mips_[0].volDims.y; sy+=2){
