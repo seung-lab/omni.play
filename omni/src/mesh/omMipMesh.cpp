@@ -193,6 +193,8 @@ void OmMipMesh::Save()
 	size = 6 * mVertexCount * sizeof(GLfloat);
 	hdf5File->writeDataset(fpath, size, mpVertexDataWrap);
 
+	hdf5File->flush();
+
 	if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
 	}
 }
