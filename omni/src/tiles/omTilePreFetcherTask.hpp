@@ -1,9 +1,6 @@
 #ifndef OM_TILE_PRE_FETCHER_TASK_HPP
 #define OM_TILE_PRE_FETCHER_TASK_HPP
 
-#include "tiles/cache/omTileCache.h"
-#include "view2d/omView2dState.hpp"
-
 #include "zi/omThreads.h"
 
 class OmView2dState;
@@ -22,13 +19,7 @@ private:
 
 	void preLoadDepth(const int depth);
 
-	bool areDrawersActive(){
-		return state_->getCache()->AreDrawersActive();
-	}
-
-	bool shouldExitEarly(){
-		return areDrawersActive() || OmCacheManager::AmClosingDown();
-	}
+	bool shouldExitEarly();
 };
 
 #endif

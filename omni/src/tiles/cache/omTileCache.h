@@ -5,6 +5,8 @@
 #include "common/omCommon.h"
 #include "utility/omLockedPODs.hpp"
 
+#include <QApplication>
+
 class OmTileCoord;
 class OmTileCacheChannel;
 class OmTileCacheNonChannel;
@@ -30,9 +32,7 @@ public:
 
 	void RemoveSpaceCoord(const SpaceCoord & coord);
 
-	bool AreDrawersActive(){
-		return numDrawersActive_.get() > 0;
-	}
+	bool AreDrawersActive();
 
 private:
 	OmTileCache();

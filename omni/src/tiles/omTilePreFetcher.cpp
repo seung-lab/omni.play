@@ -1,6 +1,8 @@
 #include "tiles/omTilePreFetcher.hpp"
 #include "tiles/omTilePreFetcherTask.hpp"
 #include "tiles/omTileDrawer.hpp"
+#include "zi/omUtility.h"
+#include "view2d/omView2dState.hpp"
 
 #include <boost/make_shared.hpp>
 
@@ -31,3 +33,4 @@ void OmTilePreFetcher::StopTasks()
 {
 	mThreadPool.clear();
 }
+

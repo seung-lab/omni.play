@@ -15,17 +15,17 @@ OmTileCache::OmTileCache()
 }
 
 void OmTileCache::Get(OmTileDrawer* drawer,
-		      OmTilePtr& tile,
-		      const OmTileCoord& key,
-		      const om::BlockingRead blocking)
+					  OmTilePtr& tile,
+					  const OmTileCoord& key,
+					  const om::BlockingRead blocking)
 {
 	setDrawerActive(drawer);
 	doGet(tile, key, blocking);
 }
 
 void OmTileCache::doGet(OmTilePtr& tile,
-			const OmTileCoord& key,
-			const om::BlockingRead blocking)
+						const OmTileCoord& key,
+						const om::BlockingRead blocking)
 {
 	if(isChannel(key)){
 		cacheChannel_->Get(tile, key, blocking);
@@ -69,7 +69,7 @@ void OmTileCache::setDrawerActive(OmTileDrawer* d)
 void OmTileCache::SetDrawerDone(OmTileDrawer* d)
 {
 	if(!drawersActive_[d]){
-                return;
+		return;
 	}
 
 	drawersActive_[d] = false;
@@ -100,11 +100,18 @@ void OmTileCache::stopIdleThreadTask()
 }
 
 void OmTileCache::WidgetVisibilityChanged(boost::shared_ptr<OmTileDrawer> drawer,
-					  const bool visible)
+										  const bool visible)
 {
 	if(visible){
 		setDrawerActive(drawer.get());
 	}else{
 		SetDrawerDone(drawer.get());
 	}
+}
+
+bool OmTileCache::AreDrawersActive()
+{
+	return numDrawersActive_.get() > 0 ||
+		OmCacheManager::AmClosingDown() ||
+		QApplication::mouseButtons() != Qt::NoButton;
 }

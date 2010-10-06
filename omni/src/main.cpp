@@ -11,7 +11,7 @@ DEFINE_ZiLOG(mesh, false );
 DEFINE_ZiLOG(hdf5verbose, false );
 DEFINE_ZiLOG(io, false);
 DEFINE_ZiLOG(segmentlist, false);
-DEFINE_ZiLOG(tiles, false);
+DEFINE_ZiLOG(tiles, true);
 
 #include "headless/headless.h"
 #include "system/omStateManager.h"
