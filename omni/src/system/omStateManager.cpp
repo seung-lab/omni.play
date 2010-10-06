@@ -33,8 +33,6 @@ OmStateManager::OmStateManager()
 	mPrevToolMode = PAN_MODE;
 	mCurToolMode = PAN_MODE;
 
-	mParallel = false;
-
 	inspectorWidget = NULL;
 	mainWindow = NULL;
 	dendToolBar = NULL;
@@ -135,18 +133,6 @@ QString OmStateManager::getPID()
 QString OmStateManager::getHostname()
 {
 	return QString::fromStdString(zi::system::hostname);
-}
-
-bool OmStateManager::getParallel()
-{
-	return Instance()->mParallel;
-}
-
-void OmStateManager::setParallel(bool parallel)
-{
-	// This has a race condition in that others migth have been acting on this
-	// value while it is changing, which could lead to a crash.
-	Instance()->mParallel = parallel;
 }
 
 /////////////////////////////////

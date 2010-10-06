@@ -11,12 +11,10 @@ LocalPreferencesMeshing::LocalPreferencesMeshing(QWidget * parent)
 	overallContainer->addWidget( makeMeshBox());
 	overallContainer->insertStretch( 4, 1 );
 
-	connect(numThreadsSlider, SIGNAL(valueChanged(int)), 
+	connect(numThreadsSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(on_numThreadsSlider_valueChanged()));
-	connect(numThreadsSlider, SIGNAL(sliderReleased()), 
+	connect(numThreadsSlider, SIGNAL(sliderReleased()),
 		this, SLOT(on_numThreadsSlider_sliderReleased()));
-	connect(storeMeshesInTempFolder, SIGNAL(stateChanged(int)),
-		this, SLOT(on_storeMeshesInTempFolder_stateChanged(int)));
 }
 
 QGroupBox* LocalPreferencesMeshing::makeNumberOfThreadsBox()
@@ -52,18 +50,7 @@ QGroupBox* LocalPreferencesMeshing::makeMeshBox()
 	QGridLayout* gridLayout = new QGridLayout;
 	groupBox->setLayout( gridLayout );
 
-        storeMeshesInTempFolder = new QCheckBox(groupBox);
-	storeMeshesInTempFolder->setText("Store Files in Temp Folder");
-	storeMeshesInTempFolder->setChecked( OmLocalPreferences::getStoreMeshesInTempFolder() );
-        gridLayout->addWidget(storeMeshesInTempFolder, 0, 0, 1, 1);
-
   	return groupBox;
-}
-
-void LocalPreferencesMeshing::on_storeMeshesInTempFolder_stateChanged( int)
-{
-	const bool val = GuiUtils::getBoolState( storeMeshesInTempFolder->checkState() );
-	OmLocalPreferences::setStoreMeshesInTempFolder( val );
 }
 
 void LocalPreferencesMeshing::on_numThreadsSlider_valueChanged()

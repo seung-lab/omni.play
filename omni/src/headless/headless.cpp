@@ -232,8 +232,6 @@ void Headless::processLine(const QString& line, const QString&)
 				.arg(QString::number((double)f.size()/BYTES_PER_MB, 'f', 3));
 			printf("%s\n", qPrintable(line));
 		}
-	} else if("parallel" == line){
-		OmStateManager::setParallel(true);
 	} else if(line.startsWith("addSegment")){
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");

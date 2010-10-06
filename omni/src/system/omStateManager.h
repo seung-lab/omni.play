@@ -64,8 +64,6 @@ public:
 
 	static QString getPID();
 	static QString getHostname();
-	static bool getParallel();
-	static void setParallel(bool parallel);
 
 	static void setInspector( MyInspectorWidget * miw );
 	static void setMainWindow( MainWindow * mw );
@@ -104,7 +102,6 @@ private:
 	unsigned int myBackoff;
 
 	QString omniExecPathAbsolute;
-	bool mParallel;
 
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;

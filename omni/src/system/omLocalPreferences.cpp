@@ -290,19 +290,6 @@ void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
 	Instance()->localPrefFiles->writeSettingQStringList( "recentlyOpenedFiles", values );
 }
 
-/////////////////////////////
-// where to store temporary meshes
-bool OmLocalPreferences::getStoreMeshesInTempFolder()
-{
-	const bool defaultRet = false;
-	return readSettingBool( "storeMeshesInTempFolder", defaultRet );
-}
-
-void OmLocalPreferences::setStoreMeshesInTempFolder( const bool value )
-{
-	writeSettingBool( "storeMeshesInTempFolder", value );
-}
-
 void OmLocalPreferences::setScratchPath( QString scratchPath )
 {
 	writeSettingQString( "sratchPath", scratchPath );

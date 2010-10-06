@@ -149,15 +149,7 @@ void OmMipMesh::doLoad()
 
 void OmMipMesh::Save()
 {
-	OmIDataWriter* hdf5File = NULL;
-
-	if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-		const std::string path = OmDataPaths::getLocalPathForHd5fChunk(mMeshCoordinate,
-																	   mSegmentationID);
-		hdf5File = OmDataLayer::getWriter(path, false);
-	} else {
-		hdf5File = OmProjectData::GetIDataWriter();
-	}
+	OmIDataWriter* hdf5File = OmProjectData::GetIDataWriter();
 
 	int size;
 
@@ -194,9 +186,6 @@ void OmMipMesh::Save()
 	hdf5File->writeDataset(fpath, size, mpVertexDataWrap);
 
 	hdf5File->flush();
-
-	if (OmLocalPreferences::getStoreMeshesInTempFolder() || OmStateManager::getParallel()) {
-	}
 }
 
 std::string OmMipMesh::GetFileName()

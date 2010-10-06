@@ -14,9 +14,6 @@ public:
 	static int numAllowedWorkerThreads();
 	static void setNumAllowedWorkerThreads(int);
 
-	static bool getStoreMeshesInTempFolder();
-	static void setStoreMeshesInTempFolder( const bool );
-
 	static unsigned int getRamCacheSizeMB();
 	static void setRamCacheSizeMB(const unsigned int);
 
@@ -39,9 +36,9 @@ public:
 	static bool getDefaultDrawCrosshairsIn3D();
 	static void setDrawCrosshairsIn3D(const bool);
 
-        static bool getDoDiscoBall();
-        static bool getDefaultDoDiscoBall();
-        static void setDoDiscoBall(const bool);
+	static bool getDoDiscoBall();
+	static bool getDefaultDoDiscoBall();
+	static void setDoDiscoBall(const bool);
 
 	static QStringList getRecentlyUsedFilesNames();
 	static void setRecentlyUsedFilesNames( QStringList values);
