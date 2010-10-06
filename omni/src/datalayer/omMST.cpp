@@ -75,7 +75,8 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   // this is just a temporary object--should be refactored... (purcaro)
-  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize);
+  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize,
+																 om::ZERO_FILL);
 
   path = getEdgeForceJoinPath(seg);
   mEdgeForceJoin = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
