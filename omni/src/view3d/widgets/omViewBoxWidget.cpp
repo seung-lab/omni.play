@@ -43,25 +43,25 @@ void OmViewBoxWidget::Draw()
 
 	if (OmLocalPreferences::get2DViewFrameIn3D()){
 		drawChannelData(XY_VIEW,
-				OmStateManager::GetViewDrawable(XY_VIEW));
+						OmStateManager::GetViewDrawable(XY_VIEW));
 		drawSlice(XY_VIEW,
-			  mViewGroupState->GetViewSliceMin(XY_VIEW),
-			  mViewGroupState->GetViewSliceMax(XY_VIEW),
-			  mViewGroupState->GetViewSliceDepth(XY_VIEW));
+				  mViewGroupState->GetViewSliceMin(XY_VIEW),
+				  mViewGroupState->GetViewSliceMax(XY_VIEW),
+				  mViewGroupState->GetViewSliceDepth(XY_VIEW));
 
 		drawChannelData(XZ_VIEW,
-				OmStateManager::GetViewDrawable(XZ_VIEW));
+						OmStateManager::GetViewDrawable(XZ_VIEW));
 		drawSlice(XZ_VIEW,
-			  mViewGroupState->GetViewSliceMin(XZ_VIEW),
-			  mViewGroupState->GetViewSliceMax(XZ_VIEW),
-			  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
+				  mViewGroupState->GetViewSliceMin(XZ_VIEW),
+				  mViewGroupState->GetViewSliceMax(XZ_VIEW),
+				  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
 
 		drawChannelData(YZ_VIEW,
-				OmStateManager::GetViewDrawable(YZ_VIEW));
+						OmStateManager::GetViewDrawable(YZ_VIEW));
 		drawSlice(YZ_VIEW,
-			  mViewGroupState->GetViewSliceMin(YZ_VIEW),
-			  mViewGroupState->GetViewSliceMax(YZ_VIEW),
-			  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
+				  mViewGroupState->GetViewSliceMin(YZ_VIEW),
+				  mViewGroupState->GetViewSliceMax(YZ_VIEW),
+				  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
 	}
 
 	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
@@ -154,7 +154,7 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 }
 
 void OmViewBoxWidget::drawChannelData(ViewType plane,
-				      std::vector<OmTilePtr> drawables)
+									  std::vector<OmTilePtr> drawables)
 {
 	if(!OmLocalPreferences::get2DViewPaneIn3D() ||
 	   !OmProject::IsChannelValid(1)) {
@@ -166,7 +166,7 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 	Vector3i extents = channel.GetDataDimensions();
 
 	glColor3fv(OMGL_WHITE);
-        glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 	glDepthMask(GL_TRUE);
 
 	Vector2f dataMin,dataMax,spaceMin,spaceMax;
@@ -174,8 +174,8 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 	FOR_EACH(it, drawables){
 		OmTilePtr d = *it;
 
-		int level = d->GetTileCoord().getLevel();
-		const Vector3f tileLength = resolution*128.0*om::pow2(level);
+		const int level = d->GetTileCoord().getLevel();
+		const Vector3f tileLength = resolution*128.0*om::pow2int(level);
 
 		const SpaceCoord thisCoord = d->GetTileCoord().getSpaceCoord();
 		//debug ("FIXME", "thisCoord.(x,y,z): (%f,%f,%f)\n", DEBUGV3(thisCoord));
@@ -275,9 +275,9 @@ void OmViewBoxWidget::drawChannelData(ViewType plane,
 }
 
 bool OmViewBoxWidget::GetTextureMax(Vector3f coord,
-				    ViewType plane,
-				    Vector2f & dataMax,
-				    Vector2f & spaceMax)
+									ViewType plane,
+									Vector2f & dataMax,
+									Vector2f & spaceMax)
 {
 	OmChannel& channel = OmProject::GetChannel( 1);
 	Vector3f resolution = channel.GetDataResolution();
@@ -327,7 +327,7 @@ OmViewBoxWidget::GetTextureMin(Vector3f coord,ViewType plane, Vector2f & dataMin
 	OmChannel& channel = OmProject::GetChannel( 1);
 	Vector3f resolution = channel.GetDataResolution();
 	Vector3f tileLength = resolution*128.0;
-        Vector2f minScreen = mViewGroupState->GetViewSliceMin(plane);
+	Vector2f minScreen = mViewGroupState->GetViewSliceMin(plane);
 	DataCoord minData = channel.GetDataExtent().getMin();
 	NormCoord minNorm = channel.DataToNormCoord(minData);
 	SpaceCoord minSpace= channel.NormToSpaceCoord(minNorm);

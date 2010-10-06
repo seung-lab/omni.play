@@ -130,9 +130,9 @@ private:
 	{
 		for(int i = 0; i < 32; ++i){
 			if(std::pow(static_cast<float>(2),
-						static_cast<float>(i)) != om::pow2(i)){
+						static_cast<float>(i)) != om::pow2int(i)){
 				std::cout << "pow2 fail at i==" << i
-						  << "; was " << om::pow2(i)
+						  << "; was " << om::pow2int(i)
 						  << ", but should be: "
 						  << std::pow(static_cast<float>(2),
 									  static_cast<float>(i))

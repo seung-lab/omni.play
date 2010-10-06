@@ -43,8 +43,8 @@ void OmTile::doLoadData()
 		boost::shared_ptr<uint32_t> imageData = getImageData32bit();
 		boost::shared_ptr<OmColorRGBA> colorMappedData =
 			key_.getViewGroupState()->ColorTile(imageData,
-							    dims_,
-							    key_);
+												dims_,
+												key_);
 		texture_->setData(colorMappedData);
 	}
 }
@@ -59,7 +59,7 @@ boost::shared_ptr<uint8_t> OmTile::getImageData8bit()
 	getVol()->GetChunk(chunk, mipChunkCoord_);
 
 	return chunk->ExtractDataSlice8bit(key_.getViewType(),
-					   getVolDepth());
+									   getVolDepth());
 }
 
 boost::shared_ptr<uint32_t> OmTile::getImageData32bit()
@@ -68,7 +68,7 @@ boost::shared_ptr<uint32_t> OmTile::getImageData32bit()
 	getVol()->GetChunk(chunk, mipChunkCoord_);
 
 	return chunk->ExtractDataSlice32bit(key_.getViewType(),
-					    getVolDepth());
+										getVolDepth());
 }
 
 OmMipChunkCoord OmTile::tileToMipCoord()
@@ -82,7 +82,7 @@ int OmTile::getDepth()
 {
 	const NormCoord normCoord = getVol()->SpaceToNormCoord(key_.getSpaceCoord());
 	const DataCoord dataCoord = getVol()->NormToDataCoord(normCoord);
-        const float factor = om::pow2(key_.getLevel());
+	const float factor = om::pow2int(key_.getLevel());
 
 	switch(key_.getViewType()){
 	case XY_VIEW:

@@ -85,7 +85,7 @@ public:
 			return OmMipChunkCoord::NULL_COORD;
 		}
 
-		const int factor = om::pow2(level);
+		const int factor = om::pow2int(level);
 		return OmMipChunkCoord(level,
 							   dataCoord.x / factor / chunkDimensions.x,
 							   dataCoord.y / factor / chunkDimensions.y,

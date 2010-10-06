@@ -56,7 +56,7 @@ public:
 		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
 
 		const Vector3f dataScale = mVolume->GetDataDimensions();
-		const float factor = om::pow2(getMipLevel());
+		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
 		const float unscaleNormX = ((float)screenc.x/zoomScale/stretch.x-mPanDistance.x)*factor;
@@ -82,7 +82,7 @@ public:
 
 		const Vector2f mPanDistance = ComputePanDistance();
 		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
-		const float factor = om::pow2(getMipLevel());
+		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
 		switch(mViewType){
@@ -119,7 +119,7 @@ public:
 	Vector2f ComputePanDistance() const
 	{
 		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
-		const float factor = om::pow2(getMipLevel());
+		const float factor = om::pow2int(getMipLevel());
 
 		const DataCoord mydataCoord = getViewSliceDepthData();
 
@@ -146,7 +146,7 @@ public:
 	{
 		const Vector2f translateVector = ComputePanDistance();
 
-		const float pl = om::pow2(getMipLevel());
+		const float pl = om::pow2int(getMipLevel());
 		const float zoomFactor = getZoomScale();
 
 		const DataCoord minDCoord(mTotalViewport.lowerLeftX - translateVector.x * pl,
@@ -210,14 +210,14 @@ public:
 	void MoveUpStackCloserToViewer()
 	{
 		const int depth = GetDepthToDataSlice();
-		const int numberOfSlicestoAdvance = om::pow2(getMipLevel());
+		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
 		SetDataSliceToDepth(depth+numberOfSlicestoAdvance);
 	}
 
 	void MoveDownStackFartherFromViewer()
 	{
 		const int depth = GetDepthToDataSlice();
-		const int numberOfSlicestoAdvance = om::pow2(getMipLevel());
+		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
 		SetDataSliceToDepth(depth-numberOfSlicestoAdvance);
 	}
 

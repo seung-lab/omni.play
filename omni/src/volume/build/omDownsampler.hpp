@@ -112,7 +112,7 @@ public:
 
 		for(int i=0; i <= mippingInfo_.maxMipLevel; ++i){
 			mips_[i].data = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
-			mips_[i].factor = om::pow2(i);
+			mips_[i].factor = om::pow2int(i);
 
 			const Vector3i dims = vol_->getDimsRoundedToNearestChunk(i);
 			mips_[i].volDims = dims;
