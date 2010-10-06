@@ -20,7 +20,7 @@ public:
 	}
 
 	void start(){
-		const int numWokers = 2 * OmSystemInformation::get_num_cores();
+		const int numWokers = OmSystemInformation::get_num_cores();
 		start(numWokers);
 	}
 
