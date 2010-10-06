@@ -15,203 +15,206 @@
 static const float DefaultThresholdSize = 0.5;
 
 OmMST::OmMST()
-  : mDendSize(0)
-  , mDendValuesSize(0)
-  , mDendCount(0)
-  , mDendThreshold(DefaultThresholdSize)
-  , valid_(false)
+	: mDendSize(0)
+	, mDendValuesSize(0)
+	, mDendCount(0)
+	, mDendThreshold(DefaultThresholdSize)
+	, valid_(false)
 {
 }
 
 OmDataPath OmMST::getDendPath(OmSegmentation & seg) {
 	return OmDataPath(seg.GetDirectoryPath() + "dend");
 }
+
 OmDataPath OmMST::getDendValuesPath(OmSegmentation & seg) {
 	return OmDataPath(seg.GetDirectoryPath() + "dendValues");
 }
+
 OmDataPath OmMST::getEdgeDisabledByUserPath(OmSegmentation & seg){
 	return OmDataPath(seg.GetDirectoryPath() + "/edgeDisabledByUser");
 };
+
 OmDataPath OmMST::getEdgeForceJoinPath(OmSegmentation & seg){
 	return OmDataPath(seg.GetDirectoryPath() + "/edgeForceJoin");
 };
 
 void OmMST::read(OmSegmentation & seg)
 {
-  OmDataPath path(getDendPath(seg));
+	OmDataPath path(getDendPath(seg));
 
-  if(!OmProjectData::GetProjectIDataReader()->dataset_exists(path)) {
-	std::cout << "did not find MST at path \""
-			  << path.getString().c_str()
-			  << "\"\n";
-    return;
-  }
+	if(!OmProjectData::GetProjectIDataReader()->dataset_exists(path)) {
+		std::cout << "did not find MST at path \""
+				  << path.getString().c_str()
+				  << "\"\n";
+		return;
+	}
 
-  int size;
-  mDend = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
-  if( size != mDendSize ){
-    printf("warning: something may be bad...\n");
-    printf("dend: size=%d, mDendSize=%d\n", size, mDendSize);
-    printf("type is %s\n", mDend->getTypeAsString().c_str());
-    assert( size == mDendSize );
-  }
+	int size;
+	mDend = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
+	if( size != mDendSize ){
+		printf("warning: something may be bad...\n");
+		printf("dend: size=%d, mDendSize=%d\n", size, mDendSize);
+		printf("type is %s\n", mDend->getTypeAsString().c_str());
+		assert( size == mDendSize );
+	}
 
-  path = getDendValuesPath(seg);
-  mDendValues = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
-  if( size != mDendValuesSize ){
-    printf("warning: something may be bad...\n");
-    printf("dendValues: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
-    printf("type is %s\n", mDendValues->getTypeAsString().c_str());
-    assert( size == mDendValuesSize );
-  }
+	path = getDendValuesPath(seg);
+	mDendValues = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
+	if( size != mDendValuesSize ){
+		printf("warning: something may be bad...\n");
+		printf("dendValues: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
+		printf("type is %s\n", mDendValues->getTypeAsString().c_str());
+		assert( size == mDendValuesSize );
+	}
 
-  path = getEdgeDisabledByUserPath(seg);
-  mEdgeDisabledByUser = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
-  if( size != mDendValuesSize ){
-    printf("warning: something may be bad...\n");
-    printf("dendEdgeDisabledByUser: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
-    printf("type is %s\n", mEdgeDisabledByUser->getTypeAsString().c_str());
-    assert( size == mDendValuesSize );
-  }
+	path = getEdgeDisabledByUserPath(seg);
+	mEdgeDisabledByUser = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
+	if( size != mDendValuesSize ){
+		printf("warning: something may be bad...\n");
+		printf("dendEdgeDisabledByUser: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
+		printf("type is %s\n", mEdgeDisabledByUser->getTypeAsString().c_str());
+		assert( size == mDendValuesSize );
+	}
 
-  // this is just a temporary object--should be refactored... (purcaro)
-  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize,
-																 om::ZERO_FILL);
+	// this is just a temporary object--should be refactored... (purcaro)
+	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize,
+																   om::ZERO_FILL);
 
-  path = getEdgeForceJoinPath(seg);
-  mEdgeForceJoin = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
-  if( size != mDendValuesSize ){
-    printf("warning: something may be bad...\n");
-    printf("dendEdgeForceJoin: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
-    printf("type is %s\n", mEdgeForceJoin->getTypeAsString().c_str());
-    assert( size == mDendValuesSize );
-  }
+	path = getEdgeForceJoinPath(seg);
+	mEdgeForceJoin = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
+	if( size != mDendValuesSize ){
+		printf("warning: something may be bad...\n");
+		printf("dendEdgeForceJoin: size=%d, mDendValuesSize=%d\n", size, mDendValuesSize);
+		printf("type is %s\n", mEdgeForceJoin->getTypeAsString().c_str());
+		assert( size == mDendValuesSize );
+	}
 
-  valid_ = true;
+	valid_ = true;
 }
 
 void OmMST::import(OmSegmentation & seg, const std::string& fname)
 {
-  OmIDataReader* hdf5reader = OmDataLayer::getReader(fname, true);
-  hdf5reader->open();
+	OmIDataReader* hdf5reader = OmDataLayer::getReader(fname, true);
+	hdf5reader->open();
 
-  if(!importDend(hdf5reader)){
-    return;
-  }
+	if(!importDend(hdf5reader)){
+		return;
+	}
 
-  if(!importDendValues(hdf5reader)){
-    return;
-  }
+	if(!importDendValues(hdf5reader)){
+		return;
+	}
 
-  //	assert( vSize.x == dSize.y );
+	//	assert( vSize.x == dSize.y );
 
-  setupUserEdges(mDendValuesSize);
+	setupUserEdges(mDendValuesSize);
 
-  seg.FlushDend();
+	seg.FlushDend();
 
-  hdf5reader->close();
+	hdf5reader->close();
 
-  valid_ = true;
+	valid_ = true;
 }
 
 bool OmMST::importDend(OmIDataReader* hdf5reader)
 {
-  OmDataPath fpath;
-  fpath.setPathQstr("dend");
-  if( !hdf5reader->dataset_exists(fpath)){
-    printf("no dendrogram dataset found\n");
-    return false;
-  }
-  Vector3 < int > dSize = hdf5reader->getDatasetDims(fpath);
-  int dendSize;
-  OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
-  printf("\tdendrogram is %s x %s (%s bytes)\n",
-		 StringHelpers::commaDeliminateNum(dSize.x).c_str(),
-		 StringHelpers::commaDeliminateNum(dSize.y).c_str(),
-		 StringHelpers::commaDeliminateNum(dendSize).c_str());
+	OmDataPath fpath;
+	fpath.setPathQstr("dend");
+	if( !hdf5reader->dataset_exists(fpath)){
+		printf("no dendrogram dataset found\n");
+		return false;
+	}
+	Vector3 < int > dSize = hdf5reader->getDatasetDims(fpath);
+	int dendSize;
+	OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
+	printf("\tdendrogram is %s x %s (%s bytes)\n",
+		   StringHelpers::commaDeliminateNum(dSize.x).c_str(),
+		   StringHelpers::commaDeliminateNum(dSize.y).c_str(),
+		   StringHelpers::commaDeliminateNum(dendSize).c_str());
 
-  assert( 2 == dSize.x );
-  mDendCount = dSize.y;
-  mDend = dend;
-  mDendSize = dendSize;
+	assert( 2 == dSize.x );
+	mDendCount = dSize.y;
+	mDend = dend;
+	mDendSize = dendSize;
 
-  return true;
+	return true;
 }
 
 bool OmMST::importDendValues(OmIDataReader * hdf5reader)
 {
-  OmDataPath fpath;
-  fpath.setPathQstr("dendValues");
-  if(!hdf5reader->dataset_exists(fpath)){
-    printf("no dendrogram values dataset found\n");
-    return false;
-  }
-  Vector3 < int > vSize = hdf5reader->getDatasetDims(fpath);
-  int dendValuesSize;
-  OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
+	OmDataPath fpath;
+	fpath.setPathQstr("dendValues");
+	if(!hdf5reader->dataset_exists(fpath)){
+		printf("no dendrogram values dataset found\n");
+		return false;
+	}
+	Vector3 < int > vSize = hdf5reader->getDatasetDims(fpath);
+	int dendValuesSize;
+	OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 
-  printf("\tdendrogram values is %s x %s (%s bytes)\n",
-		 StringHelpers::commaDeliminateNum(vSize.x).c_str(),
-		 StringHelpers::commaDeliminateNum(vSize.y).c_str(),
-		 StringHelpers::commaDeliminateNum(dendValuesSize).c_str());
+	printf("\tdendrogram values is %s x %s (%s bytes)\n",
+		   StringHelpers::commaDeliminateNum(vSize.x).c_str(),
+		   StringHelpers::commaDeliminateNum(vSize.y).c_str(),
+		   StringHelpers::commaDeliminateNum(dendValuesSize).c_str());
 
-  assert( 0 == vSize.y );
-  mDendValues = dendValues;
-  mDendValuesSize = dendValuesSize;
+	assert( 0 == vSize.y );
+	mDendValues = dendValues;
+	mDendValuesSize = dendValuesSize;
 
-  return true;
+	return true;
 }
 
 bool OmMST::setupUserEdges(const int dendValuesSize)
 {
-  boost::shared_ptr<uint8_t> edbu =
-	  OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
-							om::ZERO_FILL);
-  mEdgeDisabledByUser = OmDataWrapperFactory::produce(edbu);
+	boost::shared_ptr<uint8_t> edbu =
+		OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+													  om::ZERO_FILL);
+	mEdgeDisabledByUser = OmDataWrapperFactory::produce(edbu);
 
-  boost::shared_ptr<uint8_t> efj =
-	  OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
-							om::ZERO_FILL);
-  mEdgeForceJoin = OmDataWrapperFactory::produce(efj);
+	boost::shared_ptr<uint8_t> efj =
+		OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+													  om::ZERO_FILL);
+	mEdgeForceJoin = OmDataWrapperFactory::produce(efj);
 
-  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);
+	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);
 
-  return true;
+	return true;
 }
 
 void OmMST::FlushDend(OmSegmentation * seg)
 {
-  OmDataPath path = getDendPath(*seg);
-  printf("dend: will save %s bytes\n",
-		 StringHelpers::commaDeliminateNum(mDendSize).c_str());
-  OmProjectData::GetIDataWriter()->
-    writeDataset(path,
-				      mDendSize,
-				      mDend);
+	OmDataPath path = getDendPath(*seg);
+	printf("dend: will save %s bytes\n",
+		   StringHelpers::commaDeliminateNum(mDendSize).c_str());
+	OmProjectData::GetIDataWriter()->
+		writeDataset(path,
+					 mDendSize,
+					 mDend);
 
-  path = getDendValuesPath(*seg);
-  printf("dendValues: will save %s bytes\n",
-		 StringHelpers::commaDeliminateNum(mDendValuesSize).c_str());
-  OmProjectData::GetIDataWriter()->
-    writeDataset(path,
-		 mDendValuesSize,
-		 mDendValues);
+	path = getDendValuesPath(*seg);
+	printf("dendValues: will save %s bytes\n",
+		   StringHelpers::commaDeliminateNum(mDendValuesSize).c_str());
+	OmProjectData::GetIDataWriter()->
+		writeDataset(path,
+					 mDendValuesSize,
+					 mDendValues);
 
-  FlushDendUserEdges(seg);
+	FlushDendUserEdges(seg);
 }
 
 void OmMST::FlushDendUserEdges(OmSegmentation * seg)
 {
-  OmDataPath path(getEdgeDisabledByUserPath(*seg));
+	OmDataPath path(getEdgeDisabledByUserPath(*seg));
 
-  OmProjectData::GetIDataWriter()->
-    writeDataset(path,
-		 mDendValuesSize,
-		 mEdgeDisabledByUser);
+	OmProjectData::GetIDataWriter()->
+		writeDataset(path,
+					 mDendValuesSize,
+					 mEdgeDisabledByUser);
 
-  path = getEdgeForceJoinPath(*seg);
-  OmProjectData::GetIDataWriter()->
-    writeDataset(path,
-		 mDendValuesSize,
-		 mEdgeForceJoin);
+	path = getEdgeForceJoinPath(*seg);
+	OmProjectData::GetIDataWriter()->
+		writeDataset(path,
+					 mDendValuesSize,
+					 mEdgeForceJoin);
 }

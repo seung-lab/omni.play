@@ -22,7 +22,7 @@ void ThresholdGroup::actUponThresholdChange( const float threshold )
 	if(!sdw.isValid()){
 		return;
 	}
-	
+
 	(new OmSegmentationThresholdChangeAction(sdw.getSegmentationID(), threshold))->Run();
 }
 
@@ -33,7 +33,7 @@ void ThresholdGroup::setInitialGUIThresholdValue()
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(sdw.isValid()){
 		threshold = sdw.getSegmentation().GetDendThreshold();
-	} 
+	}
 
-        setGUIvalue(threshold);
+	setGUIvalue(threshold);
 }

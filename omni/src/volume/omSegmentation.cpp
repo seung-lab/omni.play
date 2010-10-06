@@ -18,9 +18,7 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentLists.hpp"
 #include "system/cache/omMipVolumeCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omView3dEvent.h"
-#include "system/omEventManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omGenericManager.h"
 #include "system/omGroups.h"
 #include "system/omProjectData.h"
@@ -153,7 +151,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	}
 
 	//call redraw to force mesh to reload
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+	OmEvents::Redraw3d();
 }
 
 /////////////////////////////////
@@ -168,6 +166,8 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	} else if(GROUPROOT == type) {
 		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
 		return;
+	} else {
+		throw OmArgException("invalid argument?");
 	}
 
 	OmSegmentIterator iter(mSegmentCache);
@@ -189,7 +189,7 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, O
 		return mGroups->UnsetGroup(set, name);
 		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
 	} else {
-		assert(0 && "only unset regular groups");
+		throw OmArgException("only unset regular groups");
 	}
 }
 

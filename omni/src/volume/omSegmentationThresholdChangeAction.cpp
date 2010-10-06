@@ -13,7 +13,7 @@
 ///////          OmSegmentationThresholdChangeAction
 ///////
 OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmId segmentationId,
-					  const float threshold)
+																		  const float threshold)
 	: mSegmentationId( segmentationId )
 	, mThreshold( threshold )
 {
