@@ -177,7 +177,8 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
 													  om::ZERO_FILL);
 	mEdgeForceJoin = OmDataWrapperFactory::produce(efj);
 
-	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);
+	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+																   om::ZERO_FILL);
 
 	return true;
 }
