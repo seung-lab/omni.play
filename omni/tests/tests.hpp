@@ -6,9 +6,16 @@
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.h"
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/variate_generator.hpp>
+
 class Tests{
 public:
-	Tests(){}
+	Tests()
+		: gen(boost::mt19937(std::time(0)))
+	{
+	}
 
 	void Run()
 	{
@@ -16,10 +23,13 @@ public:
 		DataToMipCoordTest();
 		rounding();
 		powersOf2();
+		mapTests();
 		printf("done\n");
 	}
 
 private:
+	boost::mt19937 gen;
+
 	void imageResize()
 	{
 		uint32_t data[] = {
@@ -150,6 +160,53 @@ private:
 */
 		printf("powersOf2 ok\n");
 	}
+
+	void mapTests()
+	{
+		const uint64_t max = 2000000;
+
+		std::map<int, int> stdMap;
+		testMapSpeed(stdMap, max, "std::map");
+
+		boost::unordered_map<int,int> boostMap;
+		testMapSpeed(boostMap, max, "boost::unordered_map");
+	}
+
+	template <typename T>
+	void testMapSpeed(T& map, const uint64_t max,
+					  const std::string& mapType)
+	{
+		OmTimer timer;
+		for(uint64_t i = 0; i < max; ++i){
+			map[i] = i;
+
+		}
+		std::cout << "\t" << max << " inserts into " << mapType
+				  << " in " << timer.s_elapsed() << " secs\n";
+
+		timer.restart();
+		double sum = 0;
+		FOR_EACH(iter, map){
+			const int key = iter->first;
+			const int val = iter->second;
+			sum += key + val;
+		}
+		std::cout << "\t" << max << " {key,val} walk in " << mapType
+				  << " in " << timer.s_elapsed() << " secs\n";
+
+		timer.restart();
+		sum = 0;
+		boost::uniform_int<> dist(0, max);
+		boost::variate_generator<boost::mt19937&,
+			boost::uniform_int<> > rrand(gen, dist);
+		for(uint64_t i=0; i < max; ++i){
+			sum += map[ rrand() ];
+		}
+		std::cout << "\t" << max << " rand gets in " << mapType
+				  << " in " << timer.s_elapsed() << " secs\n";
+
+	}
+
 };
 
 #endif
