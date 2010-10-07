@@ -13,8 +13,8 @@ class OmSegmentValidateAction : public OmAction {
 
 public:
 	OmSegmentValidateAction( const OmId segmentationId,
-				 const OmSegIDsSet & selectedSegmentIdsSet,
-				 const bool create);
+							 const OmSegIDsSet & selectedSegmentIdsSet,
+							 const bool valid);
 
 private:
 	void Action();
@@ -24,12 +24,12 @@ private:
 	QString classNameForLogFile(){return "OmSegmentValidateAction";}
 
 	OmId mSegmentationId;
-	bool mCreate;
+	bool valid_;
 	OmSegIDsSet mSelectedSegmentIds;
 
 	template <typename T> friend class OmActionLoggerFSThread;
-        friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
-        friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
+	friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
+	friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
 };
 
 #endif

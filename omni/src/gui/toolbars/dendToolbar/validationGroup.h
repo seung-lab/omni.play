@@ -13,8 +13,8 @@ class SegmentationDataWrapper;
 class OmViewGroupState;
 
 class ValidationGroup : public OmWidget {
- Q_OBJECT
- public:
+	Q_OBJECT
+	public:
 	ValidationGroup(DendToolBar *);
 	QString getGroupNameFromGUI();
 	bool isShowValidChecked();
@@ -24,19 +24,19 @@ class ValidationGroup : public OmWidget {
 
 	QString getName(){ return "Validation"; }
 
- private slots:
-        void changeMapColors();
+private slots:
+	void changeMapColors();
 
- private:
+private:
 	DendToolBar *const mDendToolBar;
 
 	QButtonGroup * validGroup;
-        QRadioButton * showValid;
-        QRadioButton * dontShowValid;
+	QRadioButton * showValid;
+	QRadioButton * dontShowValid;
 	QLineEdit* mGroupName;
 
-	GroupButtonAdd * groupButtonAdd;
-	GroupButtonDelete * groupButtonDelete;
+	GroupButtonAdd * setSelectionValid;
+	GroupButtonDelete * setSelectionNotValid;
 	GroupButtonTag * groupButtonTag;
 	ShowValidatedButton * showValidatedButton;
 };

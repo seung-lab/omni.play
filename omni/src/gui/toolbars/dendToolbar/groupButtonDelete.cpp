@@ -6,16 +6,16 @@
 #include "segment/omSegmentCache.h"
 
 GroupButtonDelete::GroupButtonDelete(ValidationGroup * d)
-	: OmButton<ValidationGroup>( d, 
-				 "Set Selection Not Valid", 
-				 "Unlock selected objects", 
-				 false)
+	: OmButton<ValidationGroup>( d,
+								 "Set Selection Not Valid",
+								 "Unlock selected objects",
+								 false)
 {
 }
 
 void GroupButtonDelete::doAction()
 {
-        //debug(dendbar, "ValidationGroup::deleteGroup\n");
+	//debug(dendbar, "ValidationGroup::deleteGroup\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

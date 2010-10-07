@@ -11,34 +11,34 @@
 ValidationGroup::ValidationGroup(DendToolBar * d)
 	: OmWidget(d)
 	, mDendToolBar(d)
-	, groupButtonAdd(new GroupButtonAdd(this))
-	, groupButtonDelete(new GroupButtonDelete(this))
+	, setSelectionValid(new GroupButtonAdd(this))
+	, setSelectionNotValid(new GroupButtonDelete(this))
 	, groupButtonTag(new GroupButtonTag(this))
 	, showValidatedButton(new ShowValidatedButton(this))
 {
 	validGroup = new QButtonGroup();
 	showValid = new QRadioButton("In Color");
 	validGroup->addButton(showValid);
-        connect(showValid, SIGNAL(toggled(bool)),
-                this, SLOT(changeMapColors()));
+	connect(showValid, SIGNAL(toggled(bool)),
+			this, SLOT(changeMapColors()));
 
 	dontShowValid = new QRadioButton("As Black");
 	dontShowValid->setChecked(true);
 	validGroup->addButton(dontShowValid);
-        connect(dontShowValid, SIGNAL(toggled(bool)),
-                this, SLOT(changeMapColors()));
+	connect(dontShowValid, SIGNAL(toggled(bool)),
+			this, SLOT(changeMapColors()));
 
-        mGroupName = new QLineEdit(this);
-        mGroupName->setText("Glia");
+	mGroupName = new QLineEdit(this);
+	mGroupName->setText("Glia");
 
-        QGridLayout * box = new QGridLayout(this);
-        box->addWidget(groupButtonAdd,0,0,1,2);
-	box->addWidget(groupButtonDelete,1,0,1,2);
-        box->addWidget(showValidatedButton,2,0,1,2);
-        box->addWidget(showValid,3,0,1,1);
-        box->addWidget(dontShowValid,3,1,1,1);
-        box->addWidget(groupButtonTag,4,0,1,1);
-        box->addWidget(mGroupName,4,1,1,1);
+	QGridLayout * box = new QGridLayout(this);
+	box->addWidget(setSelectionValid,0,0,1,2);
+	box->addWidget(setSelectionNotValid,1,0,1,2);
+	box->addWidget(showValidatedButton,2,0,1,2);
+	box->addWidget(showValid,3,0,1,1);
+	box->addWidget(dontShowValid,3,1,1,1);
+	box->addWidget(groupButtonTag,4,0,1,1);
+	box->addWidget(mGroupName,4,1,1,1);
 }
 
 void ValidationGroup::changeMapColors()

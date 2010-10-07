@@ -1,9 +1,9 @@
 #include "common/omDebug.h"
-#include "viewGroup/omViewGroupState.h"
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 					    const OmSegmentEdge & edge )
@@ -20,6 +20,7 @@ void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 	OmSegmentEdge edge = sdw.getSegmentCache()->findClosestCommonEdge(seg1, seg2);
 
 	if(!edge.isValid()){
+		printf("edge was not splittable\n");
 		return;
 	}
 
@@ -34,6 +35,8 @@ void OmSegmentSplitAction::Action()
 	desc = QString("Split seg %1 from %2")
 		.arg(mEdge.childID)
 		.arg(mEdge.parentID);
+
+	std::cout << desc.toStdString() << "\n";
 
 	OmEvents::SegmentModified();
 }

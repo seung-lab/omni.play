@@ -22,6 +22,7 @@ void GroupButtonAdd::doAction()
 	}
 
 	OmSegmentation & seg = sdw.getSegmentation();
-	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), VALIDROOT, QString("Valid"));
+	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(),
+				 VALIDROOT, QString("Valid"));
 	OmEvents::SegmentModified();
 }
