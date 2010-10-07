@@ -58,6 +58,8 @@ protected:
 	OmChannel(const OmChannel&);
 	OmChannel& operator= (const OmChannel&);
 
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&);
+
 private:
 	boost::shared_ptr<OmVolumeData> mVolData;
 

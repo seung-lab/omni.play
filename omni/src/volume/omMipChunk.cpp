@@ -579,3 +579,8 @@ bool OmMipChunk::compare(OmMipChunkPtr other)
 
 	return mChunkData->compare(other->mChunkData);
 }
+
+int OmMipChunk::GetNumberOfVoxelsInChunk() const {
+	const int sideDim = mpMipVolume->GetChunkDimension();
+	return sideDim*sideDim*sideDim;
+}

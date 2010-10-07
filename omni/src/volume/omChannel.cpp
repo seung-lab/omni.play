@@ -211,3 +211,13 @@ void OmChannel::loadVolData()
 {
 	mVolData->load(this);
 }
+
+OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
+{
+	OmMipChunkPtr chunk;
+	mDataCache->Get(chunk, coord, true);
+
+	OmImage<uint32_t, 3> imageData = chunk->getOmImage32Chunk();
+	uint32_t* rawDataPtr = imageData.getMallocCopyOfDataNoSmartPtr();
+	return OmDataWrapper<uint32_t>::produce(rawDataPtr, MALLOC);
+}

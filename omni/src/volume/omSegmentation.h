@@ -88,6 +88,8 @@ private:
 
 	boost::shared_ptr<OmMST> mst_;
 
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
+
 	friend class OmBuildSegmentation;
 	template <class T> friend class OmVolumeImporter;
 

@@ -30,6 +30,8 @@ public:
 	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
 	virtual ~OmMipChunk();
 
+	int GetNumberOfVoxelsInChunk() const;
+
 	void Open();
 	void OpenForWrite();
 	void Flush();

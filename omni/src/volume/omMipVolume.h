@@ -146,6 +146,8 @@ protected:
 	OmMipVolumeCache *const mDataCache;
 	OmVolDataType mVolDataType;
 
+	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&)=0;
+
 	void BuildBlankVolume(const Vector3i & dims);
 
 	//state
@@ -169,7 +171,6 @@ private:
 
 	bool sourceFilesWereSet;
 
-	void doExportChunk(const OmMipChunkCoord &, OmIDataWriter*);
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 	uint32_t computeTotalNumChunks();
 

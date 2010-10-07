@@ -945,100 +945,44 @@ bool OmMipVolume::CompareChunks(const OmMipChunkCoord& coord,
  */
 void OmMipVolume::ExportInternalData(QString fileNameAndPath)
 {
-	debug("hdf5image", "OmMipVolume::ExportInternalData(%s)\n",
-	      qPrintable(fileNameAndPath));
+	const DataBbox leaf_data_extent = GetDataExtent();
+	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
+	const OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
 
-	//get leaf data extent
-	DataBbox leaf_data_extent = GetDataExtent();
-
-	//dim of leaf coords
-	Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
-	OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
-
-        OmIDataWriter* hdfExport = OmDataLayer::getWriter(fileNameAndPath, false);
-        OmDataPath fpath("main");
+	OmIDataWriter* hdfExport =
+		OmDataLayer::getWriter(fileNameAndPath, false);
+	OmDataPath fpath("main");
 
 	if( !QFile::exists(fileNameAndPath) ){
-        	hdfExport->create();
-        	hdfExport->open();
+		hdfExport->create();
+		hdfExport->open();
 		const Vector3i full = MipLevelDataDimensions(0);
-        	const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
-        	hdfExport->allocateChunkedDataset(fpath,
-						 rounded_data_dims,
-						 full,
-						 mVolDataType);
+		const Vector3i rounded_data_dims = getDimsRoundedToNearestChunk(0);
+		hdfExport->allocateChunkedDataset(fpath,
+										  rounded_data_dims,
+										  full,
+										  mVolDataType);
 	} else {
-        	hdfExport->open();
+		hdfExport->open();
 	}
-
 
 	//for all coords
 	for (int z = 0; z < leaf_mip_dims.z; ++z) {
 		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 				const OmMipChunkCoord coord(0, x, y, z);
-				doExportChunk(coord, hdfExport);
+				OmDataWrapperPtr data = doExportChunk(coord);
+
+				const DataBbox chunk_data_bbox =
+					MipCoordToDataBbox(coord, 0);
+				hdfExport->writeChunk(OmDataPaths::getDefaultDatasetName(),
+									  chunk_data_bbox,
+									  data);
 			}
 		}
 	}
+
 	hdfExport->close();
-}
-
-void OmMipVolume::doExportChunk(const OmMipChunkCoord & leaf_coord,
-				OmIDataWriter* )
-{
-
-	assert(0 && "FIXME");
-	const DataBbox chunk_data_bbox = MipCoordToDataBbox(leaf_coord, 0);
-	/*
-	OmMipChunkPtr chunk;
-	Get(chunk, leaf_coord);
-
-	OmDataWrapperPtr chunkData = chunk->RawReadChunkDataHDF5();
-	uint32_t* data =
-
-	for(int i = 0; i < 128*128*128; ++i){
-
-	// rewrite
-	ExportDataFilter(p_chunk_img_data);
-
-// FIXME: this needs to get refactored into some sort of helper...
-void OmSegmentCache::ExportDataFilter(vtkImageData * pImageData)
-{
-	QMutexLocker locker( &mMutex );
-
-	//get data extent (varify it is a chunk)
-	int extent[6];
-	pImageData->GetExtent(extent);
-
-	//get pointer to native scalar data
-	assert(pImageData->GetScalarSize() == SEGMENT_DATA_BYTES_PER_SAMPLE);
-	OmSegID * p_scalar_data = static_cast<OmSegID*>( pImageData->GetScalarPointer() );
-
-	//for all voxels in the chunk
-	int x, y, z;
-	for (z = extent[0]; z <= extent[1]; z++) {
-		for (y = extent[2]; y <= extent[3]; y++) {
-			for (x = extent[4]; x <= extent[5]; x++) {
-
-				//if non-null segment value
-				if (NULL_SEGMENT_VALUE != *p_scalar_data) {
-					*p_scalar_data = mImpl->findRootID( *p_scalar_data );
-				}
-				//adv to next scalar
-				++p_scalar_data;
-			}
-		}
-	}
-}
-
-	//write to hdf5 file
-	//debug("FIXME", "OmMipVolume::Export:" chunk_data_bbox  endl;
-
-	hdfExport.dataset_image_write_trim(OmDataPaths::getDefaultDatasetName(),
-					   (DataBbox*)&chunk_data_bbox,
-					   p_chunk_img_data);
-	*/
 }
 
 bool OmMipVolume::ContainsVoxel(const DataCoord & vox)

@@ -477,3 +477,20 @@ boost::shared_ptr<OmMST> OmSegmentation::getMST()
 {
 	return mst_;
 }
+
+OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
+{
+	OmMipChunkPtr chunk;
+	mDataCache->Get(chunk, coord, true);
+
+	OmImage<uint32_t, 3> imageData = chunk->getOmImage32Chunk();
+	uint32_t* rawData = imageData.getMallocCopyOfDataNoSmartPtr();
+
+	for(int i = 0; i < chunk->GetNumberOfVoxelsInChunk(); ++i){
+		if( 0 != rawData[i]) {
+			rawData[i] = mSegmentCache->findRootID(rawData[i]);
+		}
+	}
+
+	return OmDataWrapper<uint32_t>::produce(rawData, MALLOC);
+}
