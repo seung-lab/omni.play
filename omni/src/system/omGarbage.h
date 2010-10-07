@@ -24,8 +24,8 @@ public:
 
 	static void Delete()
 	{
-		OmGarbage::safeCleanTextureIds();
-		OmGarbage::safeCleanGenlistIds();
+		safeCleanTextureIds();
+		CleanGenlists();
 	}
 
 	static void assignOmTextureId(const GLuint textureID)
@@ -54,7 +54,7 @@ public:
 		Instance().mGenlists.push_back(genlistID);
 	}
 
-	static void safeCleanGenlistIds()
+	static void CleanGenlists()
 	{
 		zi::guard g(Instance().meshMutex_);
 

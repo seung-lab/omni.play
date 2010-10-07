@@ -15,27 +15,12 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeCuller.h"
 
-OmMeshDrawer::OmMeshDrawer( const OmId segmentationID, OmViewGroupState * vgs )
-	: mSegmentationID( segmentationID )
-	, mSeg( NULL )
+OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg, OmViewGroupState* vgs)
+	: mSeg(seg)
 	, mViewGroupState(vgs)
+	, mSegmentCache(mSeg->GetSegmentCache())
+
 {
-}
-
-OmMeshDrawer::~OmMeshDrawer()
-{
-	delete mVolumeCuller;
-}
-
-void OmMeshDrawer::Init()
-{
-	mSeg = &OmProject::GetSegmentation(mSegmentationID);
-	assert(mSeg);
-
-	mSegmentCache = mSeg->GetSegmentCache();
-	assert(mSegmentCache);
-
-	assert(mViewGroupState);
 }
 
 /////////////////////////////////
@@ -46,9 +31,9 @@ void OmMeshDrawer::Init()
  *	from the root MipChunk of the Segmentation.  Filters for relevant data values to be
  *	drawn depending on culler draw options and passes relevant set to root chunk.
  */
-void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
+void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 {
-	OmGarbage::safeCleanGenlistIds();
+	OmGarbage::CleanGenlists();
 
 	//transform to normal frame
 	glPushMatrix();
@@ -71,15 +56,11 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 
 	//check to filter for relevant data values
 	if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
-		const OmSegIDsSet & set = mSegmentCache->GetSelectedSegmentIds();
-		OmSegIDsSet::const_iterator iter;
-		for( iter = set.begin(); iter != set.end(); ++iter ){
+		FOR_EACH(iter, mSegmentCache->GetSelectedSegmentIds()){
 			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
 		}
 	} else if (rCuller.CheckDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)) {
-		const OmSegIDsSet & set = mSegmentCache->GetEnabledSegmentIds();
-		OmSegIDsSet::const_iterator iter;
-		for( iter = set.begin(); iter != set.end(); ++iter ){
+		FOR_EACH(iter, mSegmentCache->GetEnabledSegmentIds()){
 			mRootSegsToDraw.push_back(mSegmentCache->GetSegment(*iter));
 		}
 	}
@@ -89,7 +70,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller & rCuller)
 		return;
 	}
 
-	glPushName( mSegmentationID );
+	glPushName(mSeg->GetId());
 
 	//draw relevant data values starting from root chunk
 	DrawChunkRecursive(mSeg->RootMipChunkCoordinate(), true );

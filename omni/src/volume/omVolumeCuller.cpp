@@ -3,14 +3,11 @@
 #include "common/omGl.h"
 #include "common/omDebug.h"
 
-/////////////////////////////////
-///////
-///////          OmVolumeCuller
-///////
+#include <boost/make_shared.hpp>
 
 OmVolumeCuller::OmVolumeCuller(const Matrix4f & projmodelview,
-			       const NormCoord & pos, 
-			       const NormCoord & focus, 
+			       const NormCoord & pos,
+			       const NormCoord & focus,
 			       OmBitfield option)
 	: mProjModelView(projmodelview)
 	, mPosition(pos)
@@ -50,13 +47,14 @@ const NormCoord & OmVolumeCuller::GetFocus()
 /////////////////////////////////
 ///////          Transform Methods
 
-OmVolumeCuller * OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat, 
-						      const Matrix4f & matInv)
+boost::shared_ptr<OmVolumeCuller>
+OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
+									 const Matrix4f & matInv)
 {
-	return new OmVolumeCuller(mProjModelView * mat, 
-				  matInv * mPosition, 
-				  matInv * mFocus, 
-				  mOptionBits);
+	return boost::make_shared<OmVolumeCuller>(mProjModelView * mat,
+											  matInv * mPosition,
+											  matInv * mFocus,
+											  mOptionBits);
 }
 
 void OmVolumeCuller::TransformCuller(const Matrix4f & mat, const Matrix4f & matInv)

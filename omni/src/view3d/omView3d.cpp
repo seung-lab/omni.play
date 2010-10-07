@@ -489,8 +489,8 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 
 	// Draw meshes!
 	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
-		OmMeshDrawer drawer( *iter, mViewGroupState);
-		drawer.Init();
+		OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
+		OmMeshDrawer drawer(seg, mViewGroupState);
 		drawer.Draw( culler );
 	}
 }
