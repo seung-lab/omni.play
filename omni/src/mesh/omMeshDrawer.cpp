@@ -19,7 +19,7 @@ OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg, OmViewGroupState* vgs)
 	: mSeg(seg)
 	, mViewGroupState(vgs)
 	, mSegmentCache(mSeg->GetSegmentCache())
-
+	, redrawNeeded_(false)
 {
 }
 
@@ -79,6 +79,10 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 
 	//pop matrix
 	glPopMatrix();
+
+	if(redrawNeeded_){
+		OmEvents::Redraw3d();
+	}
 }
 
 /*
@@ -170,7 +174,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		mSeg->GetMesh(p_mesh, chunkCoord, seg->value);
 
 		if( !p_mesh ){
-			OmEvents::Redraw3d();
+			redrawNeeded_ = true;
 			continue;
 		}
 

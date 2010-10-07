@@ -26,6 +26,7 @@ private:
 
 	boost::shared_ptr<OmVolumeCuller> mVolumeCuller;
 	OmSegPtrList mRootSegsToDraw;
+	bool redrawNeeded_;
 
 	void drawChunkRecursive(const OmMipChunkCoord &, bool testVis );
 	void drawChunk(OmMipChunkPtr);
