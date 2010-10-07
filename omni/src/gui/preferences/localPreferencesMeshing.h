@@ -7,7 +7,7 @@ class LocalPreferencesMeshing : public QWidget
 {
     Q_OBJECT
 
-	public:
+public:
 	LocalPreferencesMeshing(QWidget *parent);
 
 private slots:

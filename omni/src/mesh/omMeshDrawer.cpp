@@ -188,12 +188,12 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		OmMipMeshPtr p_mesh;
 		mSeg->GetMesh(p_mesh, chunkCoord, seg->value);
 
-		if( !p_mesh ) {
+		if( !p_mesh ){
 			OmEvents::Redraw3d();
 			continue;
 		}
 
-		if( !p_mesh->hasData() ) {
+		if( !p_mesh->hasData() ){
 			continue;
 		}
 
@@ -204,7 +204,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		glPushName(seg->value);
 		glPushName(OMGL_NAME_MESH);
 
-		p_mesh->Draw(true);
+		p_mesh->Draw();
 
 		glPopName();
 		glPopName();

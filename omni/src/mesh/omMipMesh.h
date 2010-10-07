@@ -39,7 +39,7 @@ public:
 
 	bool IsEmptyMesh();
 
-	bool Draw(bool doCreateVbo);
+	void Draw();
 	void setSegmentationID(OmId sid);
 	OmId getSegmentationID();
 

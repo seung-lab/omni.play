@@ -215,33 +215,36 @@ bool OmMipMesh::IsVbo()
 
 void OmMipMesh::CreateVbo()
 {
-	////debug(genone,"OmMipMesh::CreateVbo()\n");
-
-	//ignore empty meshes
-	if (IsEmptyMesh())
+	if( IsEmptyMesh() ){
 		return;
+	}
 
-	//should not already be vbo
-	if (IsVbo())
-		assert(false);
+	if( IsVbo() ){
+		throw OmIoException("should not already be vbo");
+	}
 
 	//create the VBO for the vertex data
 	//2 (pos/norm) * 3 (x/y/z) * sizeof(GLfloat)
 	////debug(genone,"OmMipMesh::CreateVbo(): vertex data");
 	int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
-	mVertexDataVboId = createVbo(mpVertexDataWrap->getPtr<float>(), vertex_data_size, GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
+	mVertexDataVboId = createVbo(mpVertexDataWrap->getPtr<float>(),
+								 vertex_data_size,
+								 GL_ARRAY_BUFFER_ARB,
+								 GL_STATIC_DRAW_ARB);
 
 	//create VBO for the vertex index data
 	////debug(genone,"OmMipMesh::CreateVbo(): vertex index data\n");
 	int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
-	mVertexIndexDataVboId = createVbo(mpVertexIndexDataWrap->getPtr<GLuint>(), vertex_index_data_size,
-									  GL_ARRAY_BUFFER_ARB, GL_STATIC_DRAW_ARB);
+	mVertexIndexDataVboId = createVbo(mpVertexIndexDataWrap->getPtr<GLuint>(),
+									  vertex_index_data_size,
+									  GL_ARRAY_BUFFER_ARB,
+									  GL_STATIC_DRAW_ARB);
 }
 
 void OmMipMesh::DeleteVbo()
 {
 	if (!IsVbo()) {
-		assert(false);
+		throw OmIoException("not a vbo");
 	}
 
 	glDeleteBuffersARB(1, &mVertexDataVboId);
@@ -259,13 +262,10 @@ void OmMipMesh::DeleteVbo()
 /////////////////////////////////
 ///////          Draw Methods
 
-bool OmMipMesh::Draw(bool)
+void OmMipMesh::Draw()
 {
-	bool ret = false;
-
-	//ignore empty meshes
 	if (IsEmptyMesh()) {
-		return ret;
+		return;
 	}
 
 	if (!hasDisplayList) {
@@ -336,8 +336,6 @@ bool OmMipMesh::Draw(bool)
 	}
 
 	glCallList(displayList);
-
-	return ret;
 }
 
 /////////////////////////////////
