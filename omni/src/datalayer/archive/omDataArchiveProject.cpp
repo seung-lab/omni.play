@@ -437,6 +437,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc)
 				   e.threshold);
 			continue;
 		}
+		e.valid = true;
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
