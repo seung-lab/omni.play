@@ -75,7 +75,8 @@ void OmMST::read(OmSegmentation & seg)
   }
 
   // this is just a temporary object--should be refactored... (purcaro)
-  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize);
+  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize,
+																 OM::ZERO_FILL);
 
   path = getEdgeForceJoinPath(seg);
   mEdgeForceJoin = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
@@ -175,7 +176,8 @@ bool OmMST::setupUserEdges(const int dendValuesSize)
 
   mEdgeDisabledByUser = edgeDisabledByUser;
   mEdgeForceJoin = edgeForceJoin;
-  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize);
+  mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+																 OM::ZERO_FILL);
 
   return true;
 }
