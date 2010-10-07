@@ -283,7 +283,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
            src/volume/omVoxelSetValueAction.h \
-           src/volume/omDrawOptions.h \
+           src/mesh/omDrawOptions.h \
            src/volume/omFilter2d.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
@@ -294,7 +294,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omSegmentationThresholdChangeAction.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
-           src/volume/omVolumeCuller.h \
+           src/mesh/omVolumeCuller.h \
            src/volume/build/omLoadImage.h \
            src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
@@ -486,7 +486,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
-           src/volume/omVolumeCuller.cpp \
+           src/mesh/omVolumeCuller.cpp \
            src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \

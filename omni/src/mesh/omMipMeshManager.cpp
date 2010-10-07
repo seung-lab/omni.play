@@ -7,7 +7,7 @@
 #include "system/omStateManager.h"
 #include "system/cache/omThreadedCache.h"
 #include "viewGroup/omViewGroupState.h"
-#include "volume/omDrawOptions.h"
+#include "mesh/omDrawOptions.h"
 #include "volume/omMipChunkCoord.h"
 #include "system/cache/omMeshCache.h"
 

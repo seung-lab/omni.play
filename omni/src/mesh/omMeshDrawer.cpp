@@ -13,7 +13,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolumeCuller.h"
+#include "mesh/omVolumeCuller.h"
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg, OmViewGroupState* vgs)
 	: mSeg(seg)

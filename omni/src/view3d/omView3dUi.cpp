@@ -13,7 +13,7 @@
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
-#include "volume/omDrawOptions.h"
+#include "mesh/omDrawOptions.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 

@@ -9,7 +9,7 @@
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "view3d/omView3d.h"
-#include "volume/omVolumeCuller.h"
+#include "mesh/omVolumeCuller.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
@@ -23,29 +23,7 @@ enum View3dWidgetIds {
 	NUMBER_VIEW3D_WIDGET_IDS
 };
 
-/////////////////////////////////////////
-///////         Utility Function Prototypes
-
 void initLights();
-
-/////////////////////////////////////
-//////////
-//////////      OmView3d Class
-//////////
-
-#ifdef WIN32
-typedef void (*GLDELETEBUFFERS)(GLsizei n, const GLuint *buffers);
-typedef void (*GLBINDBUFFER)(GLenum target, GLuint buffer);
-typedef void (*GLGENBUFFERS)(GLsizei n, GLuint *buffers);
-typedef void (*GLBUFFERDATA)(GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
-typedef void (*GLGETBUFFERPARAIV)(GLenum target, GLenum pname, GLint *params);
-
-GLDELETEBUFFERS glDeleteBuffersARBFunction;
-GLBINDBUFFER glBindBufferARBFunction;
-GLGENBUFFERS glGenBuffersARBFunction;
-GLBUFFERDATA glBufferDataARBFunction;
-GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
-#endif
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
@@ -69,8 +47,8 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
 
-        mDrawTimer.stop();
-        connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+	mDrawTimer.stop();
+	connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
 	// TODO: make OmLocalPreferences cache, so we don't have to prime...(purcaro)
@@ -97,13 +75,13 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
-     	grabGesture(Qt::SwipeGesture);
+	grabGesture(Qt::SwipeGesture);
 }
 
 OmView3d::~OmView3d()
 {
-        if (mDrawTimer.isActive()) {
-        	mDrawTimer.stop();
+	if (mDrawTimer.isActive()) {
+		mDrawTimer.stop();
 	}
 
 	delete mElapsed;
@@ -206,11 +184,11 @@ void OmView3d::doTimedDraw()
 	}
 
 	if (mDrawTimer.isActive()) {
-        	mDrawTimer.stop();
-        	mDrawTimer.start(100);
+		mDrawTimer.stop();
+		mDrawTimer.start(100);
 		mDrawTimer.setSingleShot(true);
 	} else {
-        	mDrawTimer.start(100);
+		mDrawTimer.start(100);
 		mDrawTimer.setSingleShot(true);
 	}
 }
@@ -456,7 +434,7 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 			}
 
 			DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_UNSELECTED |
-				    DRAWOP_SEGMENT_COLOR_TRANSPARENT);
+						DRAWOP_SEGMENT_COLOR_TRANSPARENT);
 
 			//always renable writing to depth buffer
 			glDepthMask(GL_TRUE);
@@ -485,7 +463,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 
 	//setup culler to current projection-modelview matrix
 	OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
+						  mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
 
 	// Draw meshes!
 	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){

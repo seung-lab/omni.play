@@ -1,14 +1,7 @@
-#include "common/omGl.h"
 #include "project/omProject.h"
-#include "system/omPreferenceDefinitions.h"
-#include "system/omPreferences.h"
-#include "viewGroup/omViewGroupState.h"
-#include "view2d/omView2d.h"
-#include "volume/omDrawOptions.h"
 #include "volume/omFilter2d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 
 OmFilter2d::OmFilter2d()
 	: mAlpha(0.0)
