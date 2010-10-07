@@ -111,7 +111,7 @@ make $globalMakeOptions
 END
 
     if(isMac()) {
-        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0-beta2/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
     print SCRIPT $script;
@@ -308,11 +308,7 @@ sub hdf5_18 {
 }
 
 sub qt {
-    if(isMacLeopard()){
-	qt47();
-    } else {
 	qt46();
-    }
 }
 
 sub qt46 {
@@ -347,7 +343,7 @@ sub qt47 {
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
-    my $baseFileName = "qt-everywhere-opensource-src-4.7.0-beta2";
+    my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
     my $args = "-debug -no-framework -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
     if ( isMacSnowLeopard() ){
         $args .= " -arch x86_64 ";
