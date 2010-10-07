@@ -1,5 +1,5 @@
-#ifndef OM_MIP_CHUNK_CULLER_H
-#define OM_MIP_CHUNK_CULLER_H
+#ifndef OM_VOLUME_CULLER_H
+#define OM_VOLUME_CULLER_H
 
 /*
  *	A FrustumCuller wrapper specifically used to cull objects in a volume.  Rather than extracting the
@@ -18,31 +18,17 @@ class OmVolumeCuller {
 
 public:
 	OmVolumeCuller(const Matrix4f& projmodelview,
-		       const NormCoord& pos,
-		       const NormCoord& focus,
-		       OmBitfield options);
+				   const NormCoord& pos,
+				   const NormCoord& focus,
+				   OmBitfield options);
 
-	//accessors
+	Visibility TestChunk( OmMipChunk &);
 	bool CheckDrawOption(OmBitfield option);
-	OmBitfield MaskDrawOptions(OmBitfield mask);
 	OmBitfield GetDrawOptions();
-
 	NormCoord& GetPosition();
-	const NormCoord& GetFocus();
 
-	//transform
-	OmVolumeCuller GetTransformed(const Matrix4f&, const Matrix4f&);
 	boost::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,
 														   const Matrix4f&);
-	void TransformCuller(const Matrix4f& mat, const Matrix4f& matInv);
-
-	//tests
-	Visibility TestChunk( OmMipChunk &);
-	Visibility VisibilityTestNormBbox(const NormBbox &);
-
-	//temp
-	void Draw();
-	void ExtractFrustum();
 
 private:
 	Matrix4f mProjModelView;
