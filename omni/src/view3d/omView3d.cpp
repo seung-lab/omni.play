@@ -23,8 +23,6 @@ enum View3dWidgetIds {
 	NUMBER_VIEW3D_WIDGET_IDS
 };
 
-void initLights();
-
 /*
  *	Constructs View3d widget that shares with the primary widget.
  */
@@ -59,19 +57,6 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 
 	mElapsed = new QTime();
 	mElapsed->start();
-
-#ifdef WIN32
-	glDeleteBuffersARBFunction = (GLDELETEBUFFERS) wglGetProcAddress("glDeleteBuffersARB");
-	assert(glDeleteBuffersARBFunction);
-	glBindBufferARBFunction = (GLBINDBUFFER) wglGetProcAddress("glBindBufferARB");
-	assert(glBindBufferARBFunction);
-	glGenBuffersARBFunction = (GLGENBUFFERS) wglGetProcAddress("glGenBuffersARB");
-	assert(glGenBuffersARBFunction);
-	glBufferDataARBFunction = (GLBUFFERDATA) wglGetProcAddress("glBufferDataARB");
-	assert(glBufferDataARBFunction);
-	glGetBufferParameterivARBFunction = (GLGETBUFFERPARAIV) wglGetProcAddress("glGetBufferParameterivARB");
-	assert(glGetBufferParameterivARBFunction);
-#endif
 
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
@@ -145,7 +130,7 @@ void OmView3d::initializeGL()
 
 	initLights();
 
-	Vector4 < int >viewport(0, 0, 400, 300);
+	Vector4i viewport(0, 0, 400, 300);
 	mCamera.SetViewport(viewport);	//set viewport
 
 	SetCameraPerspective();	// camera props
@@ -156,7 +141,7 @@ void OmView3d::initializeGL()
  */
 void OmView3d::resizeGL(int width, int height)
 {
-	mCamera.ApplyReshape(Vector2 < int >(width, height));
+	mCamera.ApplyReshape(Vector2i(width, height));
 }
 
 /*
@@ -177,7 +162,6 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	//	//debug(view3ddraw, "elasped %f\n", mElapsed->elapsed());
 	if (mElapsed->elapsed() > 5000) {
 		mElapsed->restart();
 		updateGL();
@@ -201,7 +185,6 @@ void OmView3d::mousePressEvent(QMouseEvent * event)
 	try {
 		mView3dUi.MousePressed(event);
 	} catch(...) {
-
 	}
 }
 
@@ -463,7 +446,9 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 
 	//setup culler to current projection-modelview matrix
 	OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-						  mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
+						  mCamera.GetPosition(),
+						  mCamera.GetFocus(),
+						  cullerOptions);
 
 	// Draw meshes!
 	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
@@ -527,7 +512,7 @@ void OmView3d::DrawWidgets()
  * Initialize lights
  * http://www.songho.ca/opengl/gl_vbo.html
  */
-void initLights()
+void OmView3d::initLights()
 {
 	// set up light colors (ambient, diffuse, specular)
 	GLfloat lightKa[] = { .2f, .2f, .2f, 1.0f };	// ambient light

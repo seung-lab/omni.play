@@ -104,6 +104,8 @@ class OmView3d : public QGLWidget,
 
 	std::vector<int> mMousePickResult;
 
+	void initLights();
+
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;
 	friend class OmChunkExtentWidget;

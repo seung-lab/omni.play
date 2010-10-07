@@ -143,6 +143,7 @@ void OmProject::Close()
 {
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
+	OmMeshSegmentList::Delete();
 //	zi::all_threads::join_all();
 	Delete();
 	OmCacheManager::Delete();
