@@ -146,17 +146,16 @@ private:
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
 
-	std::map<OmSegID, uint64_t> sizes_;
-	std::map<OmSegID, DataBbox> bounds_;
+	boost::unordered_map<OmSegID, uint64_t> sizes_;
+	boost::unordered_map<OmSegID, DataBbox> bounds_;
 
 	boost::shared_ptr<OmSegmentCache> segCache_;
-	std::map<OmSegID, OmSegment*> localSegCache_;
+	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
 
 	OmSegment* getOrAddSegment(const OmSegID val)
 	{
-		if(0 == localSegCache_.count(val)){
-			return localSegCache_[val] =
-				segCache_->GetOrAddSegment(val);
+		if(!localSegCache_.count(val)){
+			return localSegCache_[val] = segCache_->GetOrAddSegment(val);
 		}
 		return localSegCache_[val];
 	}
