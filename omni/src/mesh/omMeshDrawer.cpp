@@ -97,7 +97,7 @@ void OmMeshDrawer::drawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 	mSeg->GetChunk(p_chunk, chunkCoord);
 
 	// test for chunk visibility (if necessary)
-	if (testVis) {
+	if(testVis) {
 		//check if frustum contains chunk
 		switch (mVolumeCuller->TestChunk(*p_chunk)) {
 		case VISIBILITY_NONE:
@@ -112,7 +112,7 @@ void OmMeshDrawer::drawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 		}
 	}
 
-	if ( shouldChunkBeDrawn(p_chunk) ){
+	if( shouldChunkBeDrawn(p_chunk) ){
 
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
