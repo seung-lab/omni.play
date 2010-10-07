@@ -73,7 +73,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 	glPushName(mSeg->GetId());
 
 	//draw relevant data values starting from root chunk
-	drawChunkRecursive(mSeg->RootMipChunkCoordinate(), true );
+	drawChunkRecursive(mSeg->RootMipChunkCoordinate(), true);
 
 	glPopName();
 
@@ -93,13 +93,13 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 void OmMeshDrawer::drawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 									  bool testVis)
 {
-	OmMipChunkPtr p_chunk = OmMipChunkPtr();
-	mSeg->GetChunk(p_chunk, chunkCoord);
+	OmMipChunkPtr chunk = OmMipChunkPtr();
+	mSeg->GetChunk(chunk, chunkCoord);
 
 	// test for chunk visibility (if necessary)
 	if(testVis) {
 		//check if frustum contains chunk
-		switch (mVolumeCuller->TestChunk(*p_chunk)) {
+		switch (mVolumeCuller->TestChunk(chunk->GetNormExtent())) {
 		case VISIBILITY_NONE:
 			return;
 
@@ -112,16 +112,16 @@ void OmMeshDrawer::drawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 		}
 	}
 
-	if( shouldChunkBeDrawn(p_chunk) ){
+	if( shouldChunkBeDrawn(chunk) ){
 
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
 		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
-			drawChunk(p_chunk);
+			drawChunk(chunk);
 		}
 
 	} else {
-		FOR_EACH(iter, p_chunk->GetChildrenCoordinates()){
+		FOR_EACH(iter, chunk->GetChildrenCoordinates()){
 			drawChunkRecursive(*iter, testVis);
 		}
 	}

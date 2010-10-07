@@ -151,12 +151,12 @@ const std::set<OmMipChunkCoord>& OmMipChunk::GetChildrenCoordinates()
 /////////////////////////////////
 ///////          Property Accessors
 
-const NormBbox & OmMipChunk::GetNormExtent()
+const NormBbox& OmMipChunk::GetNormExtent()
 {
 	return mNormExtent;
 }
 
-const NormBbox & OmMipChunk::GetClippedNormExtent()
+const NormBbox& OmMipChunk::GetClippedNormExtent()
 {
 	return mClippedNormExtent;
 }

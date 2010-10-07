@@ -1,5 +1,4 @@
 #include "omVolumeCuller.h"
-#include "omMipChunk.h"
 #include "common/omGl.h"
 #include "common/omDebug.h"
 
@@ -29,7 +28,7 @@ OmBitfield OmVolumeCuller::GetDrawOptions()
 	return mOptionBits;
 }
 
-NormCoord & OmVolumeCuller::GetPosition()
+const NormCoord& OmVolumeCuller::GetPosition() const
 {
 	return mPosition;
 }
@@ -50,8 +49,8 @@ OmVolumeCuller::GetTransformedCuller(const Matrix4f & mat,
 /////////////////////////////////
 ///////          Frustum Test Methods
 
-Visibility OmVolumeCuller::TestChunk(OmMipChunk & rChunk)
+Visibility OmVolumeCuller::TestChunk(const NormBbox& normBox)
 {
-	return mFrustumCuller.testAabb(rChunk.GetNormExtent());
+	return mFrustumCuller.testAabb(normBox);
 }
 

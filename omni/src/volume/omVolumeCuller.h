@@ -12,29 +12,26 @@
 #include "common/omCommon.h"
 #include "omDrawOptions.h"
 
-class OmMipChunk;
-
 class OmVolumeCuller {
-
 public:
 	OmVolumeCuller(const Matrix4f& projmodelview,
 				   const NormCoord& pos,
 				   const NormCoord& focus,
 				   OmBitfield options);
 
-	Visibility TestChunk( OmMipChunk &);
+	Visibility TestChunk(const NormBbox&);
 	bool CheckDrawOption(OmBitfield option);
 	OmBitfield GetDrawOptions();
-	NormCoord& GetPosition();
+	const NormCoord& GetPosition() const;
 
 	boost::shared_ptr<OmVolumeCuller> GetTransformedCuller(const Matrix4f&,
 														   const Matrix4f&);
 
 private:
-	Matrix4f mProjModelView;
-	NormCoord mPosition;
-	NormCoord mFocus;
-	OmBitfield mOptionBits;
+	const Matrix4f mProjModelView;
+	const NormCoord mPosition;
+	const NormCoord mFocus;
+	const OmBitfield mOptionBits;
 
 	FrustumCullerf mFrustumCuller;
 };
