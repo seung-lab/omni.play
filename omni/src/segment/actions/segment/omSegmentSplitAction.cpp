@@ -3,9 +3,8 @@
 #include "segment/actions/segment/omSegmentSplitAction.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
 #include "volume/omSegmentation.h"
+#include "system/omEvents.h"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 					    const OmSegmentEdge & edge )
@@ -22,6 +21,7 @@ void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 	OmSegmentEdge edge = sdw.getSegmentCache()->findClosestCommonEdge(seg1, seg2);
 
 	if(!edge.isValid()){
+		printf("edge was not splittable\n");
 		return;
 	}
 
@@ -36,7 +36,10 @@ void OmSegmentSplitAction::Action()
 	desc = QString("Split seg %1 from %2")
 		.arg(mEdge.childID)
 		.arg(mEdge.parentID);
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+
+	std::cout << desc.toStdString() << "\n";
+
+	OmEvents::SegmentModified();
 }
 
 void OmSegmentSplitAction::UndoAction()
@@ -51,7 +54,7 @@ void OmSegmentSplitAction::UndoAction()
 		.arg(mEdge.childID)
 		.arg(mEdge.parentID);
 
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+	OmEvents::SegmentModified();
 }
 
 std::string OmSegmentSplitAction::Description()

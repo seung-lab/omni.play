@@ -59,7 +59,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
 	int version = 1;
 	out << version;
         out << a.mSelectedSegmentIds;
-        out << a.mCreate;
+        out << a.valid_;
         out << a.mSegmentationId;
 
         return out;
@@ -70,7 +70,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
 	int version;
 	in >> version;
         in >> a.mSelectedSegmentIds;
-        in >> a.mCreate;
+        in >> a.valid_;
         in >> a.mSegmentationId;
 
 	a.SetActivate(false);

@@ -8,15 +8,11 @@
 #include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 
-/////////////////////////////////
-///////
-///////          OmSegmentValidateAction
-///////
 OmSegmentValidateAction::OmSegmentValidateAction( const OmId segmentationId,
-					  const OmSegIDsSet & selectedSegmentIds,
-					  const bool create)
+												  const OmSegIDsSet & selectedSegmentIds,
+												  const bool valid)
 	: mSegmentationId( segmentationId )
-	, mCreate(create)
+	, valid_(valid)
 	, mSelectedSegmentIds( selectedSegmentIds )
 {
 	SetUndoable(true);
@@ -28,9 +24,10 @@ void OmSegmentValidateAction::Action()
 {
 	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	foreach(OmSegID id, mSelectedSegmentIds) {
-        	OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
-		segment->SetImmutable(mCreate);
-        	seg.GetSegmentCache()->setAsValidated(segment, mCreate);
+		OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
+		printf("set seg %d as valid: %d\n", id, valid_);
+		segment->SetImmutable(valid_);
+		seg.GetSegmentCache()->setAsValidated(segment, valid_);
 	}
 	OmCacheManager::Freshen(true);
 }
@@ -39,9 +36,10 @@ void OmSegmentValidateAction::UndoAction()
 {
 	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	foreach(OmSegID id, mSelectedSegmentIds) {
-        	OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
-		segment->SetImmutable(!mCreate);
-        	seg.GetSegmentCache()->setAsValidated(segment, !mCreate);
+		OmSegment * segment = seg.GetSegmentCache()->GetSegment(id);
+		printf("set seg %d as valid: %d\n", id, valid_);
+		segment->SetImmutable(!valid_);
+		seg.GetSegmentCache()->setAsValidated(segment, !valid_);
 	}
 	OmCacheManager::Freshen(true);
 }
@@ -49,7 +47,7 @@ void OmSegmentValidateAction::UndoAction()
 std::string OmSegmentValidateAction::Description()
 {
 	QString lineItem;
-	if(mCreate) {
+	if(valid_) {
 		lineItem = QString("Validated: ");
 	} else {
 		lineItem = QString("Invalidated: ");

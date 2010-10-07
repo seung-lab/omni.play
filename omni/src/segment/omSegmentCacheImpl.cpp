@@ -141,13 +141,17 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( child->GetImmutable() == parent->GetImmutable() &&
 	    1 == child->GetImmutable() ){
+		printf("could not split %d from %d\n", child->value, parent->value);
 		return OmSegmentEdge();
 	}
+
+	addToDirtySegmentList(child);
+	addToDirtySegmentList(parent);
 
 	OmSegmentEdge edgeThatGotBroken( parent, child, child->getThreshold() );
 
 	parent->removeChild(child->value);
-        mSegmentGraph.graph_cut(child->value);
+	mSegmentGraph.graph_cut(child->value);
 	child->setParentSegID(0);
 
 	child->setThreshold(0);
@@ -176,7 +180,9 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	}
 
 	if( child->getCustomMergeEdge().isValid() ){
-		mManualUserMergeEdgeList.removeAll( child->getCustomMergeEdge() );
+		const int numRemoved =
+			mManualUserMergeEdgeList.removeAll( child->getCustomMergeEdge() );
+		printf("number of user edges removed: %d\n", numRemoved);
 		child->setCustomMergeEdge(OmSegmentEdge());
 	}
 
@@ -342,6 +348,8 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 	} else {
 		getSegmentLists()->moveSegmentFromValidToRoot(seg);
 	}
+
+	addToDirtySegmentList(seg);
 
         if( -1 == seg->getEdgeNumber() ){
         	return;

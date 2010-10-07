@@ -3,7 +3,7 @@
 #include "system/omGroups.h"
 #include "system/omManageableObject.h"
 
-OmGroups::OmGroups(OmSegmentation * seg) 
+OmGroups::OmGroups(OmSegmentation * seg)
 	: mSegmentation(seg)
 {
 	debug("groups", "construting group for seg\n");
@@ -41,11 +41,11 @@ void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
 
 void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
 {
-        if(!mGroupsByName[name]) {
-                return;
-        } else {
-                setGroupIDs(set, &GetGroup(name), false);
-        }
+	if(!mGroupsByName[name]) {
+		return;
+	} else {
+		setGroupIDs(set, &GetGroup(name), false);
+	}
 }
 
 OmGroup & OmGroups::GetGroup(OmGroupName name)
@@ -55,7 +55,7 @@ OmGroup & OmGroups::GetGroup(OmGroupName name)
 
 OmGroup & OmGroups::GetGroup(OmGroupID id)
 {
-        return mGroupManager.Get(id);
+	return mGroupManager.Get(id);
 }
 
 OmGroupIDsSet OmGroups::GetGroups()
