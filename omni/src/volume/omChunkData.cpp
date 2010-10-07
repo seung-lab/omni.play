@@ -145,12 +145,11 @@ private:
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
+	const boost::shared_ptr<OmSegmentCache> segCache_;
 
+	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
 	boost::unordered_map<OmSegID, uint64_t> sizes_;
 	boost::unordered_map<OmSegID, DataBbox> bounds_;
-
-	boost::shared_ptr<OmSegmentCache> segCache_;
-	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
 
 	OmSegment* getOrAddSegment(const OmSegID val)
 	{
