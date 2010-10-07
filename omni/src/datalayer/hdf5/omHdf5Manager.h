@@ -43,7 +43,7 @@ class OmHdf5Manager : boost::noncopyable {
 		zi::guard g(mutex_);
 
 		if(hdf5Files_.count(fnp)){
-			return hdf5Files_.at(fnp).get();
+			return hdf5Files_[fnp].get();
 		}
 
 		boost::shared_ptr<OmHdf5> hdf5File(new OmHdf5(fnp, readOnly));
