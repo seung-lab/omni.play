@@ -27,13 +27,13 @@ private:
 	boost::shared_ptr<OmVolumeCuller> mVolumeCuller;
 	OmSegPtrList mRootSegsToDraw;
 
-	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
-	void DrawChunk(OmMipChunkPtr);
+	void drawChunkRecursive(const OmMipChunkCoord &, bool testVis );
+	void drawChunk(OmMipChunkPtr);
 	void doDrawChunk(const OmMipChunkCoord &, const OmSegPtrList &);
-	bool ShouldChunkBeDrawn(OmMipChunkPtr p_chunk);
-	void DrawClippedExtent(OmMipChunkPtr p_chunk);
-	void ColorMesh(const OmBitfield & drawOps, OmSegment * segment);
-	void ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
+	bool shouldChunkBeDrawn(OmMipChunkPtr p_chunk);
+	void drawClippedExtent(OmMipChunkPtr p_chunk);
+	void colorMesh(const OmBitfield & drawOps, OmSegment * segment);
+	void applyColor(OmSegment * seg, const OmBitfield & drawOps,
 					const OmSegmentColorCacheType sccType);
 };
 

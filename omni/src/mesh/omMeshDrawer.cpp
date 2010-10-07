@@ -73,7 +73,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 	glPushName(mSeg->GetId());
 
 	//draw relevant data values starting from root chunk
-	DrawChunkRecursive(mSeg->RootMipChunkCoordinate(), true );
+	drawChunkRecursive(mSeg->RootMipChunkCoordinate(), true );
 
 	glPopName();
 
@@ -86,7 +86,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
  *	Uses the OmVolumeCuller to determine the visibility of a MipChunk.  If visible, the
  *	MipChunk is either drawn or the recursive draw process is called on its children.
  */
-void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
+void OmMeshDrawer::drawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 									  bool testVis)
 {
 	OmMipChunkPtr p_chunk = OmMipChunkPtr();
@@ -108,17 +108,17 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 		}
 	}
 
-	if ( ShouldChunkBeDrawn(p_chunk) ) {
+	if ( shouldChunkBeDrawn(p_chunk) ){
 
 		// if allowed to render segments
 		// TODO: do we really need this option? (purcaro)
 		if( mVolumeCuller->CheckDrawOption(DRAWOP_LEVEL_SEGMENT) ){
-			DrawChunk(p_chunk);
+			drawChunk(p_chunk);
 		}
 
 	} else {
 		FOR_EACH(iter, p_chunk->GetChildrenCoordinates()){
-			DrawChunkRecursive(*iter, testVis);
+			drawChunkRecursive(*iter, testVis);
 		}
 	}
 }
@@ -126,7 +126,7 @@ void OmMeshDrawer::DrawChunkRecursive(const OmMipChunkCoord& chunkCoord,
 /*
  *	MipChunk determined to be visible so draw contents depending on mode.
  */
-void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
+void OmMeshDrawer::drawChunk(OmMipChunkPtr chunk)
 {
 	bool segsWereFound = false;
 
@@ -151,7 +151,7 @@ void OmMeshDrawer::DrawChunk(OmMipChunkPtr chunk)
 	if(segsWereFound){
 		if (mVolumeCuller->CheckDrawOption(DRAWOP_DRAW_CHUNK_EXTENT)) {
 			// draw bounding box around chunk
-			DrawClippedExtent(chunk);
+			drawClippedExtent(chunk);
 		}
 	}
 }
@@ -179,7 +179,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		}
 
 		//apply segment color
-		ColorMesh(mVolumeCuller->GetDrawOptions(), *iter);
+		colorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
 		glPushName(seg->value);
@@ -196,7 +196,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
  *	Given that the chunk is visible, determine if it should be drawn
  *	or if we should continue refining so as to draw children.
  */
-bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
+bool OmMeshDrawer::shouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 {
 	//draw if leaf
 	if(p_chunk->IsLeaf()) {
@@ -217,7 +217,7 @@ bool OmMeshDrawer::ShouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 	return (camera_to_center > distance);
 }
 
-void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
+void OmMeshDrawer::drawClippedExtent(OmMipChunkPtr p_chunk)
 {
 	return; // FIXME!
 
@@ -250,7 +250,7 @@ void OmMeshDrawer::DrawClippedExtent(OmMipChunkPtr p_chunk)
 	glPopAttrib();
 }
 
-void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
+void OmMeshDrawer::colorMesh(const OmBitfield & drawOps, OmSegment * segment)
 {
 	OmSegmentColorCacheType sccType;
 
@@ -260,14 +260,14 @@ void OmMeshDrawer::ColorMesh(const OmBitfield & drawOps, OmSegment * segment)
 		sccType = SCC_SEGMENTATION;
 	}
 
-	ApplyColor( segment, drawOps, sccType);
+	applyColor( segment, drawOps, sccType);
 }
 
-void OmMeshDrawer::ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
+void OmMeshDrawer::applyColor(OmSegment * seg, const OmBitfield & drawOps,
 							  const OmSegmentColorCacheType sccType)
 {
 	if( seg->getParentSegID() && sccType != SCC_SEGMENTATION_BREAK){
-		ApplyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
+		applyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
 		return;
 	}
 
