@@ -20,21 +20,21 @@ public:
 		: v2d_(v2d)
 		, state_(state)
 		, screenShotSaver_(s)
-		, viewType_(v2d->mViewType)
+		, viewType_(v2d->GetViewType())
 		, shouldDisplayInfo_(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL))
 	{}
 
 	void FullRedraw() {
 		elapsed_.restart();
 
-		const QImage screenImage = v2d_->fullRedraw();
+		const QImage screenImage = v2d_->FullRedraw();
 		paintScreen(screenImage);
 
 		screenShotSaver_->saveTiles(screenImage);
 
 		state_->SetViewSliceOnPan();
 
-		if(!v2d_->isDrawComplete()){
+		if(!v2d_->IsDrawComplete()){
 			OmEvents::Redraw();
 		}
 	}
@@ -130,8 +130,8 @@ private:
 
 	void printTileCount(OmDisplayInfo& di)
 	{
-		const int tileCountIncomplete = v2d_->getTileCountIncomplete();
-		const int tileCount = v2d_->getTileCount();
+		const int tileCountIncomplete = v2d_->GetTileCountIncomplete();
+		const int tileCount = v2d_->GetTileCount();
 
 		if(tileCountIncomplete){
 			di.paint(tileCountIncomplete, "tiles incomplete of",

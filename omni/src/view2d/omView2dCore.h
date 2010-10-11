@@ -19,14 +19,16 @@ class OmViewGroupState;
 class OmView2dCore : public QWidget {
 Q_OBJECT
 public:
-	const ViewType mViewType;
+	ViewType GetViewType() const {
+		return viewType_;
+	}
 
-	QImage fullRedraw();
-	bool isDrawComplete();
-	int getTileCount();
-	int getTileCountIncomplete();
+	QImage FullRedraw();
+	bool IsDrawComplete();
+	int GetTileCount();
+	int GetTileCountIncomplete();
 
-	const boost::shared_ptr<OmLineDraw>& getLineDrawer(){
+	boost::shared_ptr<OmLineDraw>& LineDrawer(){
 		return lineDraw_;
 	}
 
@@ -39,12 +41,15 @@ protected:
 
 	void resetPbuffer(const QSize&);
 
+	boost::shared_ptr<OmView2dState>& state() {
+		return state_;
+	}
+
+private:
+	const ViewType viewType_;
 	const std::string name_;
 
 	boost::shared_ptr<OmView2dState> state_;
-
-
-private:
 	boost::shared_ptr<QGLPixelBuffer> pbuffer_;
 	boost::shared_ptr<OmTileDrawer> tileDrawer_;
 	boost::shared_ptr<OmLineDraw> lineDraw_;

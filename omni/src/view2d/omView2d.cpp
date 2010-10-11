@@ -13,17 +13,17 @@ OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
 	: OmView2dCore(parent, vol, vgs, viewtype, name)
 	, complimentaryDock_(NULL)
 	, mScreenShotSaver(boost::make_shared<OmScreenShotSaver>())
-	, screenPainter_(boost::make_shared<OmScreenPainter>(this, state_,
+	, screenPainter_(boost::make_shared<OmScreenPainter>(this, state(),
 							     mScreenShotSaver))
-	, mouseEvents_(boost::make_shared<OmMouseEvents>(this, state_))
-	, keyEvents_(boost::make_shared<OmKeyEvents>(this, state_))
-	, events_(boost::make_shared<OmView2dEvents>(this, state_))
+	, mouseEvents_(boost::make_shared<OmMouseEvents>(this, state()))
+	, keyEvents_(boost::make_shared<OmKeyEvents>(this, state()))
+	, events_(boost::make_shared<OmView2dEvents>(this, state()))
 {
 	setFocusPolicy(Qt::ClickFocus);	// necessary for receiving keyboard events
 	setMouseTracking(true);	// necessary for mouse-centered zooming
 	setAutoFillBackground(false);	// necessary for proper QPainter functionality
 
-	state_->ResetWindowState();
+	state()->ResetWindowState();
 	OmCursors::setToolCursor(this);
 	OmEvents::ViewCenterChanged();
 }
@@ -56,13 +56,13 @@ void OmView2d::resizeEvent(QResizeEvent * event)
 
 void OmView2d::resizeGL(const QSize& size)
 {
-	state_->touchFreshnessAndRedraw();
+	state()->touchFreshnessAndRedraw();
 
 	resetPbuffer(size);
 
-	state_->setTotalViewport(size.width(), size.height());
+	state()->setTotalViewport(size.width(), size.height());
 
-	state_->SetViewSliceOnPan();
+	state()->SetViewSliceOnPan();
 }
 
 void OmView2d::paintEvent(QPaintEvent *){
@@ -71,7 +71,7 @@ void OmView2d::paintEvent(QPaintEvent *){
 
 void OmView2d::myUpdate()
 {
-	getLineDrawer()->myUpdate();
+	LineDrawer()->myUpdate();
 	update();
 }
 
@@ -86,15 +86,15 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 
 void OmView2d::doRedraw()
 {
-	state_->touchFreshnessAndRedraw();
+	state()->touchFreshnessAndRedraw();
 	myUpdate();
 }
 
 void OmView2d::SetDepth(QMouseEvent * event)
 {
 	const ScreenCoord screenc = ScreenCoord(event->x(),event->y());
-	const SpaceCoord newDepth = state_->ScreenToSpaceCoord(screenc);
-	state_->setSliceDepth(newDepth);
+	const SpaceCoord newDepth = state()->ScreenToSpaceCoord(screenc);
+	state()->setSliceDepth(newDepth);
 
 	OmEvents::ViewCenterChanged();
 }
@@ -120,7 +120,7 @@ void OmView2d::keyPressEvent(QKeyEvent * event)
 
 void OmView2d::resetWindow()
 {
-	state_->ResetWindowState();
+	state()->ResetWindowState();
 	OmEvents::ViewCenterChanged();
 	doRedraw();
 }

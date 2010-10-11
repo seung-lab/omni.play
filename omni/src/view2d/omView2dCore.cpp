@@ -14,7 +14,7 @@ OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
 						   OmViewGroupState * vgs, const ViewType viewType,
 						   const std::string& name)
 	: QWidget(parent)
-	, mViewType(viewType)
+	, viewType_(viewType)
 	, name_(name)
 	, state_(boost::make_shared<OmView2dState>(vol, vgs, viewType, size(), name))
 	, tileDrawer_(boost::make_shared<OmTileDrawer>(state_, viewType))
@@ -31,7 +31,7 @@ void OmView2dCore::resetPbuffer(const QSize& size)
 }
 
 // pbuffered paint
-QImage OmView2dCore::fullRedraw()
+QImage OmView2dCore::FullRedraw()
 {
 	reset();
 
@@ -100,15 +100,15 @@ void OmView2dCore::teardownMainGLpaintOp()
 	glDisable(GL_TEXTURE_2D);
 }
 
-int OmView2dCore::getTileCount(){
+int OmView2dCore::GetTileCount(){
 	return tileDrawer_->GetTileCount();
 }
 
-int OmView2dCore::getTileCountIncomplete(){
+int OmView2dCore::GetTileCountIncomplete(){
 	return tileDrawer_->GetTileCountIncomplete();
 }
 
-bool OmView2dCore::isDrawComplete(){
+bool OmView2dCore::IsDrawComplete(){
 	return tileDrawer_->IsDrawComplete();
 }
 

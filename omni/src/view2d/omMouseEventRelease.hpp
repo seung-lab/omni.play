@@ -73,12 +73,12 @@ private:
 
 		switch (OmStateManager::GetToolMode()) {
 		case ADD_VOXEL_MODE:
-			v2d_->getLineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
 								   dataClickPoint,
 								   sdw.getID());
 			break;
 		case SUBTRACT_VOXEL_MODE:
-			v2d_->getLineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
 								   dataClickPoint,
 								   0);
 			break;
@@ -123,7 +123,7 @@ private:
 
 		const OmSegID rootSegID = sdw.getSegmentation().GetSegmentCache()->findRootID(segid);
 
-		v2d_->getLineDrawer()->FillToolFill( sdw.getSegmentationID(),
+		v2d_->LineDrawer()->FillToolFill( sdw.getSegmentationID(),
 						     dataClickPoint,
 						     data_value,
 						     rootSegID );

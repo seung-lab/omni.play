@@ -96,14 +96,14 @@ private:
 
 		if (!doselection) {
 			//run action
-			v2d_->getLineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
 								   dataClickPoint,
 								   data_value);
-			v2d_->getLineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
+			v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
 								 dataClickPoint);
 		} else {
 			// TODO: bug here; ask MattW
-			v2d_->getLineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
+			v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
 								 dataClickPoint,
 								 doselection);
 			OmMouseEventUtils::PickToolAddToSelection(sdw,

@@ -115,12 +115,14 @@ private:
 				} else {
 					data_value = sdw.getID();
 				}
-				v2d_->getLineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(), dataClickPoint, data_value);
+				v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+														dataClickPoint,
+														data_value);
 			} else {
 				OmMouseEventUtils::PickToolAddToSelection(sdw,
 														  dataClickPoint,
 														  v2d_);
-				v2d_->getLineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
+				v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
 														 dataClickPoint,
 														 true);
 			}
