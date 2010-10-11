@@ -26,7 +26,9 @@ public:
 												const OmId segmentationID);
 
 	static std::string getDirectoryPath(OmChannel* chan);
+	static std::string getDirectoryPathChannel(const OmId id);
 	static std::string getDirectoryPath(OmSegmentation* seg);
+	static std::string getDirectoryPathSegmentation(const OmId id);
 
 	static std::string MipLevelInternalDataPath(const std::string& dirPath,
 												const int level);

@@ -12,7 +12,7 @@ private:
 
 public:
 	OmMouseEventRelease(OmView2d* v2d,
-			    boost::shared_ptr<OmView2dState> state)
+						boost::shared_ptr<OmView2dState> state)
 		: v2d_(v2d)
 		, state_(state)
 	{}
@@ -74,18 +74,18 @@ private:
 		switch (OmStateManager::GetToolMode()) {
 		case ADD_VOXEL_MODE:
 			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
-								   dataClickPoint,
-								   sdw.getID());
+													dataClickPoint,
+													sdw.getID());
 			break;
 		case SUBTRACT_VOXEL_MODE:
 			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
-								   dataClickPoint,
-								   0);
+													dataClickPoint,
+													0);
 			break;
 		case SELECT_MODE:
 			OmMouseEventUtils::PickToolAddToSelection(sdw,
-								  dataClickPoint,
-								  v2d_);
+													  dataClickPoint,
+													  v2d_);
 			break;
 		default:
 			return;
@@ -124,9 +124,9 @@ private:
 		const OmSegID rootSegID = sdw.getSegmentation().GetSegmentCache()->findRootID(segid);
 
 		v2d_->LineDrawer()->FillToolFill( sdw.getSegmentationID(),
-						     dataClickPoint,
-						     data_value,
-						     rootSegID );
+										  dataClickPoint,
+										  data_value,
+										  rootSegID );
 
 		v2d_->doRedraw();
 	}

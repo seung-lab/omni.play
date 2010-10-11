@@ -4,7 +4,9 @@
 #include "src/utility/image/omImage.hpp"
 #include "src/common/omCommon.h"
 #include "volume/omMipVolume.h"
+#include "volume/omSegmentation.h"
 #include "utility/omTimer.h"
+#include "datalayer/omDataPaths.h"
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
@@ -14,6 +16,7 @@ class Tests{
 public:
 	Tests()
 		: gen(boost::mt19937(std::time(0)))
+		, runPerfTests_(ZiARG_perf)
 	{
 	}
 
@@ -23,12 +26,16 @@ public:
 		DataToMipCoordTest();
 		rounding();
 		powersOf2();
-		mapTests();
+		if(runPerfTests_){
+			mapTests();
+		}
+		hdf5Paths();
 		printf("done\n");
 	}
 
 private:
 	boost::mt19937 gen;
+	const bool runPerfTests_;
 
 	void imageResize()
 	{
@@ -113,15 +120,15 @@ private:
 		assert(OmMipChunkCoord(0,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(130,128,128), 0, chunkDims64));
 
-/*
-		OmTimer timer;
-		const uint64_t max = 2000000;
-		for(uint64_t i = 0; i < max; ++i){
-			assert(OmMipChunkCoord(2,1,1,1) ==
-				   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
+		if(runPerfTests_){
+			OmTimer timer;
+			const uint64_t max = 2000000;
+			for(uint64_t i = 0; i < max; ++i){
+				assert(OmMipChunkCoord(2,1,1,1) ==
+					   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
+			}
+			std::cout << max << " conversions in " << timer.s_elapsed() << " secs\n";
 		}
-		std::cout << max << " conversions in " << timer.s_elapsed() << " secs\n";
-*/
 
 		printf("DataToMipCoordTest OK\n");
 	}
@@ -140,24 +147,26 @@ private:
 					assert(0);
 			}
 		}
-/*
-		OmTimer timer;
-		const uint64_t max = 2000000;
-		double sum = 0;
-		for(uint64_t i = 0; i < max; ++i){
-			sum += om::pow2(8);
 
-		}
-		std::cout << "\t" << max << " pow2 lookups in " << timer.s_elapsed() << " secs\n";
+		if(runPerfTests_){
+			OmTimer timer;
+			const uint64_t max = 2000000;
+			uint64_t sum = 0;
+			for(uint64_t i = 0; i < max; ++i){
+				sum += om::pow2int(8);
 
-		timer.restart();
-		sum = 0;
-		for(uint64_t i = 0; i < max; ++i){
-			sum += std::pow(static_cast<double>(2),
-							static_cast<double>(i));
+			}
+			std::cout << "\t" << max << " pow2 lookups in " << timer.s_elapsed() << " secs\n";
+
+			timer.restart();
+			sum = 0;
+			for(uint64_t i = 0; i < max; ++i){
+				sum += std::pow(static_cast<double>(2),
+								static_cast<double>(8));
+			}
+			std::cout << "\t" << max << " std::pow in " << timer.s_elapsed() << " secs\n";
 		}
-		std::cout << "\t" << max << " std::pow in " << timer.s_elapsed() << " secs\n";
-*/
+
 		printf("powersOf2 ok\n");
 	}
 
@@ -205,6 +214,17 @@ private:
 		std::cout << "\t" << max << " rand gets in " << mapType
 				  << " in " << timer.s_elapsed() << " secs\n";
 
+	}
+
+	void hdf5Paths()
+	{
+		assert("segmentations/segmentation1/" ==
+			   OmDataPaths::getDirectoryPathSegmentation(1));
+
+		assert("channels/channel1/" ==
+			   OmDataPaths::getDirectoryPathChannel(1));
+
+		printf("hdf5 tests OK\n");
 	}
 
 };

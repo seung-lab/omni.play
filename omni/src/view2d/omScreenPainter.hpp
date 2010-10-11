@@ -15,8 +15,8 @@
 class OmScreenPainter{
 public:
 	OmScreenPainter(OmView2d* v2d,
-			boost::shared_ptr<OmView2dState> state,
-			boost::shared_ptr<OmScreenShotSaver> s)
+					boost::shared_ptr<OmView2dState> state,
+					boost::shared_ptr<OmScreenShotSaver> s)
 		: v2d_(v2d)
 		, state_(state)
 		, screenShotSaver_(s)
@@ -60,10 +60,10 @@ private:
 
 		if(v2d_->amInFillMode()) {
 			painter.drawRoundedRect(QRect(mousePoint.x,
-						      mousePoint.y,
-						      20,
-						      20),
-						5, 5);
+										  mousePoint.y,
+										  20,
+										  20),
+									5, 5);
 		}else if(usingEditingTool()){
 			const float zoomFactor = state_->getZoomScale();
 			const int brushDiamater = zoomFactor *
@@ -71,10 +71,10 @@ private:
 			const double offset = 0.5 * brushDiamater;
 			const double width = 1.0 * brushDiamater;
 			painter.drawEllipse(QRectF
-					    (mousePoint.x - offset,
-					     mousePoint.y - offset,
-					     width,
-					     width ));
+								(mousePoint.x - offset,
+								 mousePoint.y - offset,
+								 width,
+								 width ));
 		}
 
 		if(v2d_->hasFocus()){
@@ -83,9 +83,9 @@ private:
 
 		const Vector4i& vp = state_->getTotalViewport();
 		painter.drawRect(vp.lowerLeftX,
-				 vp.lowerLeftY,
-				 vp.width - 1,
-				 vp.height - 1);
+						 vp.lowerLeftY,
+						 vp.width - 1,
+						 vp.height - 1);
 
 		if(shouldDisplayInfo_){
 			displayInformation(painter);
@@ -135,7 +135,7 @@ private:
 
 		if(tileCountIncomplete){
 			di.paint(tileCountIncomplete, "tiles incomplete of",
-				 tileCount, "tiles");
+					 tileCount, "tiles");
 		}else{
 			di.paint(tileCount, "tiles");
 		}

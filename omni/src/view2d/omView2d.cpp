@@ -1,20 +1,19 @@
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omMouseEvents.hpp"
 #include "view2d/omKeyEvents.hpp"
-
 #include "view2d/omScreenPainter.hpp"
 #include "view2d/omView2d.h"
 
 #include <boost/make_shared.hpp>
 
 OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
-		   OmViewGroupState * vgs, OmMipVolume* vol,
-		   const std::string& name)
+				   OmViewGroupState * vgs, OmMipVolume* vol,
+				   const std::string& name)
 	: OmView2dCore(parent, vol, vgs, viewtype, name)
 	, complimentaryDock_(NULL)
 	, mScreenShotSaver(boost::make_shared<OmScreenShotSaver>())
 	, screenPainter_(boost::make_shared<OmScreenPainter>(this, state(),
-							     mScreenShotSaver))
+														 mScreenShotSaver))
 	, mouseEvents_(boost::make_shared<OmMouseEvents>(this, state()))
 	, keyEvents_(boost::make_shared<OmKeyEvents>(this, state()))
 	, events_(boost::make_shared<OmView2dEvents>(this, state()))

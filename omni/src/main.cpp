@@ -3,6 +3,7 @@ ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_bool(tests, false, "run tests");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
+ZiARG_bool(perf, false, "enable performance tests");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
