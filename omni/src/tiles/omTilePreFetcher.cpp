@@ -17,7 +17,7 @@ OmTilePreFetcher::OmTilePreFetcher()
 //  with mTotalViewport
 boost::shared_ptr<OmView2dState> OmTilePreFetcher::cloneState(OmTileDrawer* d)
 {
-	return boost::make_shared<OmView2dState>(*(d->getState()));
+	return boost::make_shared<OmView2dState>(*(d->GetState()));
 }
 
 void OmTilePreFetcher::RunTasks(const std::list<OmTileDrawer*>& drawers)

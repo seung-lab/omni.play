@@ -13,19 +13,19 @@ public:
 		     const ViewType vt);
 	~OmTileDrawer();
 
-	void fullRedraw();
+	void FullRedraw();
 
-	int getTileCount(){
+	int GetTileCount(){
 		return mTileCount;
 	}
-	int getTileCountIncomplete(){
+	int GetTileCountIncomplete(){
 		return mTileCountIncomplete;
 	}
-	bool isDrawComplete(){
+	bool IsDrawComplete(){
 		return !mTileCountIncomplete;
 	}
 
-	const boost::shared_ptr<OmView2dState>& getState(){
+	const boost::shared_ptr<OmView2dState>& GetState(){
 		return state_;
 	}
 

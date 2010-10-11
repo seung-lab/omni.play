@@ -41,7 +41,7 @@ QImage OmView2dCore::fullRedraw()
 	{
 		OmGarbage::safeCleanTextureIds();
 
-		tileDrawer_->fullRedraw();
+		tileDrawer_->FullRedraw();
 	}
 	teardownMainGLpaintOp();
 
@@ -101,15 +101,15 @@ void OmView2dCore::teardownMainGLpaintOp()
 }
 
 int OmView2dCore::getTileCount(){
-	return tileDrawer_->getTileCount();
+	return tileDrawer_->GetTileCount();
 }
 
 int OmView2dCore::getTileCountIncomplete(){
-	return tileDrawer_->getTileCountIncomplete();
+	return tileDrawer_->GetTileCountIncomplete();
 }
 
 bool OmView2dCore::isDrawComplete(){
-	return tileDrawer_->isDrawComplete();
+	return tileDrawer_->IsDrawComplete();
 }
 
 void OmView2dCore::dockVisibilityChanged(const bool visible)

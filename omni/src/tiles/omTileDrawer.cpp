@@ -15,7 +15,7 @@
 #include "zi/omUtility.h"
 
 OmTileDrawer::OmTileDrawer(boost::shared_ptr<OmView2dState> state,
-			   const ViewType vt)
+						   const ViewType vt)
 	: state_(state)
 	, mViewType(vt)
 	, mTileCount(0)
@@ -33,7 +33,7 @@ OmTileDrawer::~OmTileDrawer()
 	state_->getCache()->UnRegisterDrawer(this);
 }
 
-void OmTileDrawer::fullRedraw()
+void OmTileDrawer::FullRedraw()
 {
 	reset();
 
@@ -48,7 +48,7 @@ void OmTileDrawer::fullRedraw()
 		}
 	}
 
-	if(isDrawComplete()){
+	if(IsDrawComplete()){
 		state_->getCache()->SetDrawerDone(this);
 	}
 }
@@ -82,7 +82,7 @@ void OmTileDrawer::determineWhichTilesToDraw(OmMipVolume* vol)
 
 		OmTilePtr tile;
 		state_->getCache()->Get(this, tile, tileCL->tileCoord,
-					amBlocking);
+								amBlocking);
 
 		if(!tile){
 			++mTileCountIncomplete;
@@ -133,19 +133,19 @@ void OmTileDrawer::drawTile(const OmTileAndVertices& tv)
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);	/* lower left corner */
 	glVertex2f(tv.vertices.lowerLeft.x,
-		   tv.vertices.lowerLeft.y);
+			   tv.vertices.lowerLeft.y);
 
 	glTexCoord2f(1.0f, 0.0f);	/* lower right corner */
 	glVertex2f(tv.vertices.lowerRight.x,
-		   tv.vertices.lowerRight.y);
+			   tv.vertices.lowerRight.y);
 
 	glTexCoord2f(1.0f, 1.0f);	/* upper right corner */
 	glVertex2f(tv.vertices.upperRight.x,
-		   tv.vertices.upperRight.y);
+			   tv.vertices.upperRight.y);
 
 	glTexCoord2f(0.0f, 1.0f);	/* upper left corner */
 	glVertex2f(tv.vertices.upperLeft.x,
-		   tv.vertices.upperLeft.y);
+			   tv.vertices.upperLeft.y);
 	glEnd();
 }
 
@@ -170,12 +170,12 @@ void OmTileDrawer::doBindTileDataToGLid(const OmTextureIDPtr& texture)
 
 	const GLint format = texture->getGLformat();
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		     format,
-		     texture->getWidth(), texture->getHeight(),
-		     0,
-		     format,
-		     GL_UNSIGNED_BYTE,
-		     texture->getTileData());
+				 format,
+				 texture->getWidth(), texture->getHeight(),
+				 0,
+				 format,
+				 GL_UNSIGNED_BYTE,
+				 texture->getTileData());
 
 	texture->textureBindComplete(textureID);
 }
@@ -198,11 +198,7 @@ void OmTileDrawer::setupGLblendColor(const float alpha)
 	glEnable(GL_BLEND);	// enable blending for transparency
 	glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
 
-#if WIN32
-	mGlBlendColorFunction(1.f, 1.f, 1.f, (1.f - alpha));
-#else
 	glBlendColor(1.f, 1.f, 1.f, (1.f - alpha));
-#endif
 
 	// continued...
 }
