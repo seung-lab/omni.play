@@ -258,6 +258,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/omScreenPainter.hpp \
            src/tiles/omTileDrawer.hpp \
            src/view2d/omView2dState.hpp \
+           src/view2d/omView2dConverters.hpp \
            src/view2d/omDisplayInfo.hpp \
            src/view2d/omScreenShotSaver.hpp \
            src/view2d/omOnScreenTileCoords.h \

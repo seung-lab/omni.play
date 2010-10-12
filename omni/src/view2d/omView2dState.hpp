@@ -6,9 +6,11 @@
 #include "system/omEvents.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
+#include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "volume/omMipVolume.h"
 #include "viewGroup/omZoomLevel.hpp"
+#include "volume/omMipVolume.h"
+
 #include <QSize>
 
 /**
@@ -375,71 +377,26 @@ public:
 	Vector3<T> makeViewTypeVector3(const T& x, const T& y,
 								   const T& z) const
 	{
-		switch(viewType_){
-		case XY_VIEW:
-			return Vector3<T>(x, y, z);
-		case XZ_VIEW:
-			return Vector3<T>(x, z, y);
-		case YZ_VIEW:
-			return Vector3<T>(z, y, x);
-		default:
-			throw OmArgException("invalid viewType");
-		}
+		return OmView2dConverters::MakeViewTypeVector3(x,y,z,viewType_);
 	}
 
 	template <typename T>
 	T getViewTypeDepth(const Vector3<T>& vec) const
 	{
-		switch(viewType_){
-		case XY_VIEW:
-			return vec.z;
-		case XZ_VIEW:
-			return vec.y;
-		case YZ_VIEW:
-			return vec.x;
-		default:
-			throw OmArgException("invalid viewType");
-		}
+		return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
 	}
 
 	template <typename T>
 	void setViewTypeDepth(Vector3<T>& vec, const T& val) const
 	{
-		switch(viewType_){
-		case XY_VIEW:
-			vec.z = val;
-			break;
-		case XZ_VIEW:
-			vec.y = val;
-			break;
-		case YZ_VIEW:
-			vec.x = val;
-			break;
-		default:
-			throw OmArgException("invalid viewType");
-		}
+		OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
 	}
 
 	template <typename T>
 	Vector3<T> scaleViewType(const T& x, const T& y,
 							 const Vector3<T>& scale) const
 	{
-		switch(viewType_){
-		case XY_VIEW:
-			return Vector3<T>(x / scale.x,
-							  y / scale.y,
-							  0);
-		case XZ_VIEW:
-			return Vector3<T>(x / scale.x,
-							  0,
-							  y / scale.z);
-		case YZ_VIEW:
-			return Vector3<T>(0,
-							  y / scale.y,
-							  x / scale.z);
-		default:
-			throw OmArgException("invalid viewType");
-		}
+		return OmView2dConverters::ScaleViewType(x, y, scale, viewType_);
 	}
 
 	// for tile coord creation
