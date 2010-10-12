@@ -7,26 +7,26 @@ class OmZoomLevel {
 private:
 	bool valid;
 	int mipLevel_;
-	int zoomFactor_;
+	float zoomFactor_;
 
 public:
 	OmZoomLevel()
 		: valid(false)
 		, mipLevel_(0)
-		, zoomFactor_(6)
+		, zoomFactor_(0.6)
 	{}
 
 	void Update(OmMipVolume* vol){
 		if(!valid){
 			// set defaults
 			mipLevel_ = vol->GetRootMipLevel();
-			zoomFactor_ = 10;
+			zoomFactor_ = 1;
 			valid = true;
 		}
 	}
 
 	float GetZoomScale() const {
-		return zoomFactor_ / 10.0;
+		return zoomFactor_;
 	}
 
 	int GetMipLevel() const {
@@ -37,7 +37,7 @@ public:
 						OmMipVolume* vol)
 	{
 		const int curMipLevel = mipLevel_;
-		const float curZoom = GetZoomScale();
+		const float curZoom = zoomFactor_;
 		int mipLevel;
 		int zoomFactor;
 
@@ -69,7 +69,7 @@ public:
 		}
 
 		mipLevel_ = mipLevel;
-		zoomFactor_ = zoomFactor;
+		zoomFactor_ = zoomFactor / 10.0;
 	}
 
 };
