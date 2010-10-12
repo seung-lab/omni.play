@@ -131,6 +131,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			x0 += stepx;
 			fraction += dy;	// same as fraction -= 2*dy
 
+			// do the conversion ourselves; painting "skips" otherwise
 			DataCoord globalDC;
 			switch (mViewType) {
 			case XY_VIEW:
@@ -170,6 +171,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			y0 += stepy;
 			fraction += dx;
 
+			// do the conversion ourselves; painting "skips" otherwise
 			DataCoord globalDC;
 			switch (mViewType) {
 			case XY_VIEW:
