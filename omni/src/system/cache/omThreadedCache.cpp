@@ -5,17 +5,17 @@
 #include "system/cache/omCacheManager.h"
 #include <boost/make_shared.hpp>
 
-static const int MAX_THREADS = 3;
-
 template <typename KEY, typename PTR>
 OmThreadedCache<KEY,PTR>::OmThreadedCache(const OmCacheGroupEnum group,
-										  const std::string& name)
+										  const std::string& name,
+										  const int numThreads)
 	: OmCacheBase(group)
 	, name_(name)
+	, numThreads_(numThreads)
 	, cachesToClean_(boost::make_shared<LockedList<OldCachePtr> >())
 {
 	OmCacheManager::AddCache(group, this);
-	mThreadPool.start(MAX_THREADS);
+	mThreadPool.start(numThreads_);
 }
 
 template <typename KEY, typename PTR>
@@ -48,12 +48,12 @@ void OmThreadedCache<KEY,PTR>::UpdateSize(const qint64 delta)
  */
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
-				   const KEY &key,
-				   const bool blocking)
+								   const KEY &key,
+								   const bool blocking)
 {
 	if( mCache.setIfHadKey(key, p_value) ) {
 		// done!
-	} else if(blocking) {
+	} else if(blocking || !numThreads_){
 		p_value = HandleCacheMiss(key);
 		{
 			zi::guard g(mutex_);

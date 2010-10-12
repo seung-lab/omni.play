@@ -5,10 +5,13 @@
 
 #include <boost/make_shared.hpp>
 
+static const int NUM_THREADS = 0; // no threads needed for mem-mapped volume
+
 OmMipVolumeCache::OmMipVolumeCache(OmMipVolume* parent)
 	: OmThreadedCache<OmMipChunkCoord,
-			  OmMipChunkPtr>(RAM_CACHE_GROUP,
-					 parent->GetName())
+					  OmMipChunkPtr>(RAM_CACHE_GROUP,
+									 parent->GetName(),
+									 NUM_THREADS)
 	, mMipVolume(parent)
 {
 }

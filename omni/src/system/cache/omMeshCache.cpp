@@ -2,9 +2,12 @@
 #include "system/cache/omMeshCache.h"
 #include "mesh/omMipMeshManager.h"
 
+static const int NUM_THREADS = 3;
+
 OmMeshCache::OmMeshCache(OmMipMeshManager * parent)
 	: OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>(VRAM_CACHE_GROUP,
-							"Meshes")
+													"Meshes",
+													NUM_THREADS)
 	, mOmMipMeshManager(parent)
 {
 }

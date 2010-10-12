@@ -63,9 +63,6 @@ OmSegmentation::OmSegmentation(OmId id)
 	//uses meta data
 	mStoreChunkMetaData = true;
 
-	//build blank data
-	BuildVolumeData();
-
 	mSegmentCache->refreshTree();
 }
 

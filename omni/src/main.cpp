@@ -14,6 +14,7 @@ DEFINE_ZiLOG(io, false);
 DEFINE_ZiLOG(segmentlist, false);
 DEFINE_ZiLOG(tiles, true);
 DEFINE_ZiLOG(tilesVerbose, false);
+DEFINE_ZiLOG(threadpool, false);
 
 #include "headless/headless.h"
 #include "system/omStateManager.h"

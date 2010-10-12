@@ -5,6 +5,7 @@
 #include "src/common/omCommon.h"
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
+#include "volume/omChannel.h"
 #include "utility/omTimer.h"
 #include "datalayer/omDataPaths.h"
 
@@ -218,11 +219,14 @@ private:
 
 	void hdf5Paths()
 	{
-		assert("segmentations/segmentation1/" ==
-			   OmDataPaths::getDirectoryPathSegmentation(1));
+		boost::shared_ptr<OmSegmentation> seg1(new OmSegmentation(1));
 
+		assert("segmentations/segmentation1/" ==
+			   OmDataPaths::getDirectoryPath(seg1.get()));
+
+		boost::shared_ptr<OmChannel> chann1(new OmChannel(1));
 		assert("channels/channel1/" ==
-			   OmDataPaths::getDirectoryPathChannel(1));
+			   OmDataPaths::getDirectoryPath(chann1.get()));
 
 		printf("hdf5 tests OK\n");
 	}

@@ -33,10 +33,7 @@ OmChannel::OmChannel(OmId id)
 	//do not use meta data
 	mStoreChunkMetaData = false;
 
-	//build blank data
-	BuildVolumeData();
-
-	AddFilter();
+	mFilter2dManager.AddFilter();
 }
 
 OmChannel::~OmChannel()

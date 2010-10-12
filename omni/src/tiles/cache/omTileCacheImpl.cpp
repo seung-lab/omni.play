@@ -2,9 +2,12 @@
 #include "tiles/omTile.h"
 #include "tiles/cache/omTileCacheImpl.h"
 
+static const int NUM_THREADS = 3;
+
 OmTileCacheChannel::OmTileCacheChannel()
 	: OmThreadedCache<OmTileCoord, OmTilePtr>(VRAM_CACHE_GROUP,
-											  "Channel Tiles")
+											  "Channel Tiles",
+											  NUM_THREADS)
 {}
 
 OmTilePtr OmTileCacheChannel::HandleCacheMiss(const OmTileCoord& key){
@@ -16,7 +19,8 @@ OmTilePtr OmTileCacheChannel::HandleCacheMiss(const OmTileCoord& key){
 
 OmTileCacheNonChannel::OmTileCacheNonChannel()
 	: OmThreadedCache<OmTileCoord, OmTilePtr>(VRAM_CACHE_GROUP,
-											  "Non-channel Tiles")
+											  "Non-channel Tiles",
+											  NUM_THREADS)
 {}
 
 void OmTileCacheNonChannel::RemoveSpaceCoord(const SpaceCoord& coord)

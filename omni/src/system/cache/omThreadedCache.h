@@ -20,7 +20,8 @@ template <typename KEY, typename PTR>
 class OmThreadedCache : public OmCacheBase {
 public:
 	OmThreadedCache(const OmCacheGroupEnum group,
-			const std::string& name);
+					const std::string& name,
+					const int numThreads);
 	virtual ~OmThreadedCache();
 
 	//value accessors
@@ -47,8 +48,10 @@ private:
 	typedef boost::shared_ptr<CacheMissHandler> CacheMissHandlerPtr;
 	typedef boost::shared_ptr<std::map<KEY,PTR> > OldCachePtr;
 
-	LockedInt64 mCurSize;
 	const std::string name_;
+	const int numThreads_;
+
+	LockedInt64 mCurSize;
 	OmThreadPool mThreadPool;
 
 	zi::mutex mutex_;

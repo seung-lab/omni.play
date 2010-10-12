@@ -237,6 +237,9 @@ HEADERS += lib/strnatcmp.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
            src/utility/omThreadPool.hpp \
+           src/utility/details/omIThreadPool.h \
+           src/utility/details/omThreadPoolImpl.hpp \
+           src/utility/details/omThreadPoolMock.hpp \
            src/utility/omChunkVoxelWalker.hpp \
            src/tiles/cache/omTileCache.h \
            src/tiles/cache/omTileCacheImpl.h \
