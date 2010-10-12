@@ -4,6 +4,7 @@ ZiARG_bool(tests, false, "run tests");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 ZiARG_bool(perf, false, "enable performance tests");
+ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
@@ -40,6 +41,8 @@ public:
 		fileToOpen_ = getFileToOpen();
 
 		setOmniExecutablePath();
+
+		OmStateManager::setNoTilePrefetch(ZiARG_noTilePrefetch);
 
 		if(ZiARG_tests){
 			return runTests();

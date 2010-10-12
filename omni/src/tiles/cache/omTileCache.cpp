@@ -3,6 +3,7 @@
 #include "tiles/omTileDrawer.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/cache/omTileCacheImpl.h"
+#include "system/omStateManager.h"
 
 #include <boost/make_shared.hpp>
 
@@ -79,6 +80,10 @@ void OmTileCache::SetDrawerDone(OmTileDrawer* d)
 
 void OmTileCache::runIdleThreadTask()
 {
+	if(OmStateManager::getNoTilePrefetch()){
+		return;
+	}
+
 	if(AreDrawersActive()){
 		return;
 	}

@@ -25,6 +25,7 @@
 OmStateManager *OmStateManager::mspInstance = 0;
 
 OmStateManager::OmStateManager()
+	: noTilePrefetch_(false)
 {
 	//view3d
 	mpPrimaryView3dWidget = NULL;
