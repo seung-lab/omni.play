@@ -165,15 +165,6 @@ public:
 		OmEvents::Redraw3d();
 	}
 
-	void PanAndZoom(const int mipLevel, const int zoomFactor)
-	{
-		zoomLevel_->SetZoomLevel(mipLevel, zoomFactor);
-		OmEvents::ViewPosChanged();
-
-		SetViewSliceOnPan();
-		OmEvents::ViewCenterChanged();
-	}
-
 	void ChangeViewCenter()
 	{
 		const SpaceCoord depth = getViewSliceDepthSpace();
@@ -225,7 +216,16 @@ public:
 		SetDataSliceToDepth(depth-numberOfSlicestoAdvance);
 	}
 
-	// mouse movement
+    // mouse movement
+	void MouseWheelZoom(const int numSteps)
+	{
+		zoomLevel_->MouseWheelZoom(numSteps, IsLevelLocked(), vol_);
+
+		OmEvents::ViewPosChanged();
+		SetViewSliceOnPan();
+		OmEvents::ViewCenterChanged();
+	}
+
 	void mouseMove_CamMoving(const Vector2i& cursorLocation)
 	{
 		const Vector2f current_pan = ComputePanDistance();

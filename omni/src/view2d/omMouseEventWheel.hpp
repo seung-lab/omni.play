@@ -41,7 +41,7 @@ public:
 				fw->decreaseAlpha();
 			}
 		} else {
-			OmMouseZoom::MouseWheelZoom(state_, numSteps);
+			state_->MouseWheelZoom(numSteps);
 		}
 
 		event->accept();

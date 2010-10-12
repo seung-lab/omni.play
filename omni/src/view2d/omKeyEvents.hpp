@@ -50,10 +50,10 @@ public:
 			v2d_->resetWindow();
 			break;
 		case Qt::Key_Minus:
-			OmMouseZoom::MouseWheelZoom(state_, -1);
+			state_->MouseWheelZoom(-1);
 			break;
 		case Qt::Key_Equal:
-			OmMouseZoom::MouseWheelZoom(state_, 1);
+			state_->MouseWheelZoom(1);
 			break;
 		case Qt::Key_Right:
 			{
