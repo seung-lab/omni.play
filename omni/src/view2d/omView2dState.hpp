@@ -199,7 +199,7 @@ public:
 	void SetPanDistance(const int x, const int y)
 	{
 		vgs_->SetPanDistance(viewType_,
-										Vector2f(x, y));
+							 Vector2f(x, y));
 		SetViewSliceOnPan();
 	}
 
@@ -367,7 +367,7 @@ public:
 		OmEvents::Redraw();
 	}
 
-	//helpers
+	// depth-related computation helpers
 	template <typename T>
 	Vector3<T> makeViewTypeVector3(const Vector3<T>& vec) const {
 		return makeViewTypeVector3(vec.x, vec.y, vec.z);
@@ -375,27 +375,23 @@ public:
 
 	template <typename T>
 	Vector3<T> makeViewTypeVector3(const T& x, const T& y,
-								   const T& z) const
-	{
+								   const T& z) const {
 		return OmView2dConverters::MakeViewTypeVector3(x,y,z,viewType_);
 	}
 
 	template <typename T>
-	T getViewTypeDepth(const Vector3<T>& vec) const
-	{
+	T getViewTypeDepth(const Vector3<T>& vec) const {
 		return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
 	}
 
 	template <typename T>
-	void setViewTypeDepth(Vector3<T>& vec, const T& val) const
-	{
+	void setViewTypeDepth(Vector3<T>& vec, const T& val) const {
 		OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
 	}
 
 	template <typename T>
 	Vector3<T> scaleViewType(const T& x, const T& y,
-							 const Vector3<T>& scale) const
-	{
+							 const Vector3<T>& scale) const {
 		return OmView2dConverters::ScaleViewType(x, y, scale, viewType_);
 	}
 
