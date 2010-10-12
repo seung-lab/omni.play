@@ -2,7 +2,6 @@
 #define OM_ZOOM_LEVEL_HPP
 
 #include "volume/omMipVolume.h"
-#include "system/omEvents.h"
 
 class OmZoomLevel {
 private:
@@ -26,23 +25,18 @@ public:
 		}
 	}
 
-/*
-	float getZoomScale() const {
-		return zoomLevel_->GetZoomLevel().y / 10.0;
-	}
-	int getMipLevel() const {
-		return zoomLevel_->GetZoomLevel().x;
-	}
-*/
-	Vector2i GetZoomLevel() const {
-		return Vector2i(mipLevel_, zoomFactor_);
+	float GetZoomScale() const {
+		return zoomFactor_ / 10.0;
 	}
 
-	void SetZoomLevel(const Vector2i& zoom)
+	int GetMipLevel() const {
+		return mipLevel_;
+	}
+
+	void SetZoomLevel(const int mipLevel, const int zoomFactor)
 	{
-		mipLevel_ = zoom.x;
-		zoomFactor_ = zoom.y;
-		OmEvents::ViewPosChanged();
+		mipLevel_ = mipLevel;
+		zoomFactor_ = zoomFactor;
 	}
 };
 

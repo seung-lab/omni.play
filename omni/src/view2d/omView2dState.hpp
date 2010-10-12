@@ -165,9 +165,11 @@ public:
 		OmEvents::Redraw3d();
 	}
 
-	void PanAndZoom(const Vector2i& new_zoom)
+	void PanAndZoom(const int mipLevel, const int zoomFactor)
 	{
-		zoomLevel_->SetZoomLevel(new_zoom);
+		zoomLevel_->SetZoomLevel(mipLevel, zoomFactor);
+		OmEvents::ViewPosChanged();
+
 		SetViewSliceOnPan();
 		OmEvents::ViewCenterChanged();
 	}
@@ -226,7 +228,6 @@ public:
 	// mouse movement
 	void mouseMove_CamMoving(const Vector2i& cursorLocation)
 	{
-		const Vector2i zoomMipVector = zoomLevel_->GetZoomLevel();
 		const Vector2f current_pan = ComputePanDistance();
 		const Vector2i drag = GetClickPoint() - cursorLocation;
 
@@ -291,10 +292,10 @@ public:
 
 	// zoom and mip level
 	float getZoomScale() const {
-		return zoomLevel_->GetZoomLevel().y / 10.0;
+		return zoomLevel_->GetZoomScale();
 	}
 	int getMipLevel() const {
-		return zoomLevel_->GetZoomLevel().x;
+		return zoomLevel_->GetMipLevel();
 	}
 
 	// slice depth

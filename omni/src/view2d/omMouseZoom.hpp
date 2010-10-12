@@ -28,37 +28,41 @@ public:
 	}
 
 	static void MouseWheelZoom(boost::shared_ptr<OmView2dState> state,
-				   const int numSteps)
+							   const int numSteps)
 	{
-		const float curZoom = state->getZoomScale();
 		const int curMipLevel = state->getMipLevel();
-		Vector2i new_zoom;
+		const float curZoom = state->getZoomScale();
+		int mipLevel;
+		int zoomFactor;
 
 		if (numSteps >= 0) { // ZOOMING IN
 			if(!state->IsLevelLocked() && curZoom >= 1 && curMipLevel > 0){
 				//move to previous mip level
-				new_zoom = Vector2i(curMipLevel - 1, 6);
+				mipLevel = curMipLevel - 1;
+				zoomFactor = 6;
 			} else{
-				new_zoom = Vector2i(curMipLevel,
-						    ceil(curZoom * 10.0 + (1 * numSteps)));
+				mipLevel = curMipLevel;
+				zoomFactor = ceil(curZoom * 10.0 + (1 * numSteps));
 			}
 		} else { // ZOOMING OUT
 			if (!state->IsLevelLocked() && curZoom <= 0.6 &&
 			    curMipLevel < state->getVol()->GetRootMipLevel()){
 				// need to move to next mip level
-				new_zoom = Vector2i(curMipLevel + 1, 10);
+				mipLevel = curMipLevel + 1;
+				zoomFactor = 10;
 			} else if (curZoom > 0.1) {
 				int zoom = curZoom * 10 - (1 * (-1 * numSteps));
 				if (zoom < 1) {
 					zoom = 1;
 				}
-				new_zoom = Vector2i(curMipLevel, zoom);
+				mipLevel = curMipLevel;
+				zoomFactor = zoom;
 			}else{
 				return;
 			}
 		}
 
-		state->PanAndZoom(new_zoom);
+		state->PanAndZoom(mipLevel, zoomFactor);
 	}
 };
 
