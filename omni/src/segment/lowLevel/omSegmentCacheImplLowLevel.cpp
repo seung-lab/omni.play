@@ -247,7 +247,7 @@ void OmSegmentCacheImplLowLevel::setSegmentNote( OmSegID segID, QString note )
 
 OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 {
-	return mSegmentation->GetId();
+	return mSegmentation->GetID();
 }
 
 void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)

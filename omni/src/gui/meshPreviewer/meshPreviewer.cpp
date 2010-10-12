@@ -48,7 +48,7 @@ void MeshPreviewerImpl::mesh()
 	chunk->RefreshDirectDataValues(false, segmentation.GetSegmentCache());
 
 	// select all segments
-	OmSegmentSelector sel(segmentation.GetId(), this, "meshPreviewer");
+	OmSegmentSelector sel(segmentation.GetID(), this, "meshPreviewer");
 	sel.selectNoSegments();
 	FOR_EACH(iter, chunk->GetDirectDataValues()){
 		sel.augmentSelectedSet(*iter, true);

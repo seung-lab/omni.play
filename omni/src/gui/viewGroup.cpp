@@ -24,7 +24,7 @@ ViewGroup::ViewGroup(MainWindow* mw, OmViewGroupState* vgs)
 }
 
 int ViewGroup::getID(){
-	return mViewGroupState->GetId();
+	return mViewGroupState->GetID();
 }
 
 QString ViewGroup::makeObjectName(const ObjectType voltype, const ViewType vtype)

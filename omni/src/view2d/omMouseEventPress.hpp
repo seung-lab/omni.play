@@ -158,9 +158,9 @@ private:
 
 		const OmId segmentID = sdw.getID();
 
-		OmSegmentEditor::SetEditSelection( segmentation.GetId(), segmentID);
+		OmSegmentEditor::SetEditSelection( segmentation.GetID(), segmentID);
 
-		OmSegmentSelector sel( segmentation.GetId(), this, "view2dEvent" );
+		OmSegmentSelector sel( segmentation.GetID(), this, "view2dEvent" );
 		if( augment_selection ){
 			sel.augmentSelectedSet_toggle( segmentID);
 		} else {

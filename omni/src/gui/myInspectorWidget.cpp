@@ -181,7 +181,7 @@ void MyInspectorWidget::addChannelToVolume()
 	OmChannel & added_channel = OmProject::AddChannel();
 	populateDataSrcListWidget();
 
-	ChannelDataWrapper cdw( added_channel.GetId() );
+	ChannelDataWrapper cdw( added_channel.GetID() );
 	addChannelToSplitter(cdw);
 }
 
@@ -195,7 +195,7 @@ void MyInspectorWidget::addSegmentationToVolume()
 	OmSegmentation & added_segmentation = OmProject::AddSegmentation();
 	populateDataSrcListWidget();
 
-	SegmentationDataWrapper sdw( added_segmentation.GetId() );
+	SegmentationDataWrapper sdw( added_segmentation.GetID() );
 	updateSegmentListBox( sdw );
 
 	addSegmentationToSplitter( sdw);

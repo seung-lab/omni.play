@@ -74,7 +74,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	stopTimingAndSave(type, build_timer);
 
 	loadDendrogram();
-	(new OmSegmentationThresholdChangeAction(mSeg->GetId(), 0.5))->Run();
+	(new OmSegmentationThresholdChangeAction(mSeg->GetID(), 0.5))->Run();
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()

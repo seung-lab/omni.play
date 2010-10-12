@@ -76,7 +76,7 @@ boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
 }
 
 std::string OmSegmentation::GetName(){
-	return "segmentation" +  boost::lexical_cast<std::string>(GetId());
+	return "segmentation" +  boost::lexical_cast<std::string>(GetID());
 }
 
 std::string OmSegmentation::GetDirectoryPath() {
@@ -100,7 +100,7 @@ void OmSegmentation::BuildVolumeData()
 
 void OmSegmentation::Mesh()
 {
-	ziMesher mesher(GetId(), mMipMeshManager.get(), GetRootMipLevel());
+	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
 	Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
 
 	for (int z = 0; z < mc.z; ++z) {
@@ -117,7 +117,7 @@ void OmSegmentation::Mesh()
 
 void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 {
-	ziMesher mesher(GetId(), mMipMeshManager.get(), GetRootMipLevel());
+	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
 	mesher.addChunkCoord(coord);
 	mesher.mesh();
 }
@@ -133,7 +133,7 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	if (IsVolumeDataBuilt()) {
 		assert(0 && "switch to ziMesher");
 		/*
-		  MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		  MeshingManager* meshingMan = new MeshingManager( GetID(), &mMipMeshManager );
 		  meshingMan->addToQueue( mipCoord );
 		  meshingMan->start();
 		  meshingMan->wait();
@@ -160,7 +160,7 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
+		(new OmSegmentGroupAction(GetID(), set, name, true))->Run();
 		return;
 	} else {
 		throw OmArgException("invalid argument?");
@@ -176,14 +176,14 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 		seg = iter.getNextSegment();
 	}
 
-	(new OmSegmentValidateAction(GetId(), newSet, valid))->Run();
+	(new OmSegmentValidateAction(GetID(), newSet, valid))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
 	if(GROUPROOT == type) {
 		return mGroups->UnsetGroup(set, name);
-		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
+		(new OmSegmentGroupAction(GetID(), set, name, false))->Run();
 	} else {
 		throw OmArgException("only unset regular groups");
 	}

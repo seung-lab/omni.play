@@ -19,7 +19,7 @@ public:
 		: mId( id )
 		, mNote("") {}
 
-	OmId GetId(){
+	OmId GetID(){
 		return mId;
 	}
 

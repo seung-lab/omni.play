@@ -18,7 +18,7 @@ OmSegmentCache::~OmSegmentCache()
 
 OmSegID OmSegmentCache::getSegmentationID()
 {
-	return mSegmentation->GetId();
+	return mSegmentation->GetID();
 }
 
 quint32 OmSegmentCache::getPageSize()

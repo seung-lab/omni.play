@@ -228,7 +228,7 @@ private:
 		assert("channels/channel1/" ==
 			   OmDataPaths::getDirectoryPath(chann1.get()));
 
-		printf("hdf5 tests OK\n");
+		printf("hdf5 path tests OK\n");
 	}
 
 };

@@ -52,7 +52,7 @@ template<typename T>
 void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 {
 	const std::vector<T*> & page = mValueToSegPtr[pageNum];
-	OmDataArchiveSegment::ArchiveWrite(OmDataPaths::getSegmentPagePath( mSegmentation->GetId(), pageNum ),
+	OmDataArchiveSegment::ArchiveWrite(OmDataPaths::getSegmentPagePath( mSegmentation->GetID(), pageNum ),
 									   page,
 									   mSegmentation->GetSegmentCache());
 }
@@ -72,7 +72,7 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 	std::vector<T*> & page = mValueToSegPtr[pageNum];
 	page.resize( mPageSize, NULL );
 
-	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath(mSegmentation->GetId(),
+	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath(mSegmentation->GetID(),
 																	   pageNum),
 									   page,
 									   mSegmentation->GetSegmentCache(),

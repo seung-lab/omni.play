@@ -80,13 +80,13 @@ std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoor
 std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
 {
 	return str( boost::format("segmentations/segmentation%1%/")
-				% seg->GetId());
+				% seg->GetID());
 }
 
 std::string OmDataPaths::getDirectoryPath(OmChannel* chan)
 {
 	return str( boost::format("channels/channel%1%/")
-				% chan->GetId());
+				% chan->GetID());
 }
 
 std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,

@@ -19,7 +19,7 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 	OmGroup & group = mGroupManager.Add();
 	group.mName = name;
 
-	mGroupsByName.insert(name, group.GetId());
+	mGroupsByName.insert(name, group.GetID());
 
 	return group;
 }

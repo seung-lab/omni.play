@@ -44,7 +44,7 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, 
 
 void OmSegmentSelector::setEditSelection(const OmSegID segID)
 {
-        OmSegmentEditor::SetEditSelection(mSegmentation->GetId(), segID);
+	OmSegmentEditor::SetEditSelection(mSegmentation->GetID(), segID);
 	mSegmentJustSelectedID = segID;
 }
 
@@ -93,14 +93,14 @@ bool OmSegmentSelector::sendEvent()
 		return false;
 	}
 
-	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetId(),
-							      newSelectedIDs,
-							      oldSelectedIDs,
-							      mSegmentJustSelectedID,
-							      mSender,
-							      mComment,
-							      true,
-							      mAddToRecentList);
+	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetID(),
+														  newSelectedIDs,
+														  oldSelectedIDs,
+														  mSegmentJustSelectedID,
+														  mSender,
+														  mComment,
+														  true,
+														  mAddToRecentList);
 	a->Run();
 	// don't delete--cleanup will be handled by OmAction
 

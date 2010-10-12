@@ -33,7 +33,7 @@ public:
 	std::string GetDirectoryPath();
 	void loadVolData();
 	ObjectType getVolumeType(){ return SEGMENTATION; }
-	OmId getID(){ return GetId(); }
+	OmId getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 
 	void CloseDownThreads();

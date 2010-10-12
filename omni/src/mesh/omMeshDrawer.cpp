@@ -70,7 +70,7 @@ void OmMeshDrawer::Draw(OmVolumeCuller& rCuller)
 		return;
 	}
 
-	glPushName(mSeg->GetId());
+	glPushName(mSeg->GetID());
 
 	//draw relevant data values starting from root chunk
 	drawChunkRecursive(mSeg->RootMipChunkCoordinate(), true);

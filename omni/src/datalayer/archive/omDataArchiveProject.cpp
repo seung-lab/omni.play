@@ -162,7 +162,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm)
 	for(unsigned int i = 0; i < cm.mValidSet.size(); ++i){
 		OmChannel * chan = new OmChannel();
 		in >> *chan;
-		cm.mMap[ chan->GetId() ] = chan;
+		cm.mMap[ chan->GetID() ] = chan;
 	}
 
 	return in;
@@ -255,7 +255,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm)
 	for(unsigned int i = 0; i < fm.mValidSet.size(); ++i){
 		OmFilter2d * filter = new OmFilter2d();
 		in >> *filter;
-		fm.mMap[ filter->GetId() ] = filter;
+		fm.mMap[ filter->GetID() ] = filter;
 	}
 
 	return in;
@@ -311,7 +311,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm)
 	for(unsigned int i = 0; i < sm.mValidSet.size(); ++i){
 		OmSegmentation * seg = new OmSegmentation();
 		in >> *seg;
-		sm.mMap[ seg->GetId() ] = seg;
+		sm.mMap[ seg->GetID() ] = seg;
 	}
 
 	return in;
@@ -620,7 +620,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 	for(unsigned int i = 0; i < gm.mValidSet.size(); ++i){
 		OmGroup * group = new OmGroup();
 		in >> *group;
-		gm.mMap[ group->GetId() ] = group;
+		gm.mMap[ group->GetID() ] = group;
 	}
 
 	return in;

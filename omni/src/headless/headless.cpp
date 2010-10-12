@@ -279,7 +279,7 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 
 		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-		segmentationID_ = added_segmentation.GetId();
+		segmentationID_ = added_segmentation.GetID();
 		QString hdf5fnp = args[1];
 
 		OmBuildSegmentation bs(&added_segmentation);
@@ -331,7 +331,7 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 
 		OmSegmentation& seg = OmProject::AddSegmentation();
-		segmentationID_ = seg.GetId();
+		segmentationID_ = seg.GetID();
 		OmBuildSegmentation bs(&seg);
 
 		QDir dir(args[1]);
