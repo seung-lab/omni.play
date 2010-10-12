@@ -206,6 +206,10 @@ void OmMST::FlushDend(OmSegmentation * seg)
 
 void OmMST::FlushDendUserEdges(OmSegmentation * seg)
 {
+	if(!valid_){
+		return;
+	}
+
 	OmDataPath path(getEdgeDisabledByUserPath(*seg));
 
 	OmProjectData::GetIDataWriter()->
