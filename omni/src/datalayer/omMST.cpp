@@ -125,7 +125,8 @@ bool OmMST::importDend(OmIDataReader* hdf5reader)
 		printf("no dendrogram dataset found\n");
 		return false;
 	}
-	Vector3 < int > dSize = hdf5reader->getDatasetDims(fpath);
+
+	const Vector3i dSize = hdf5reader->getDatasetDims(fpath);
 	int dendSize;
 	OmDataWrapperPtr dend = hdf5reader->readDataset(fpath, &dendSize);
 	printf("\tdendrogram is %s x %s (%s bytes)\n",
@@ -149,7 +150,8 @@ bool OmMST::importDendValues(OmIDataReader * hdf5reader)
 		printf("no dendrogram values dataset found\n");
 		return false;
 	}
-	Vector3 < int > vSize = hdf5reader->getDatasetDims(fpath);
+
+	const Vector3i vSize = hdf5reader->getDatasetDims(fpath);
 	int dendValuesSize;
 	OmDataWrapperPtr dendValues = hdf5reader->readDataset(fpath, &dendValuesSize);
 
@@ -188,18 +190,16 @@ void OmMST::FlushDend(OmSegmentation * seg)
 	OmDataPath path = getDendPath(*seg);
 	printf("dend: will save %s bytes\n",
 		   StringHelpers::commaDeliminateNum(mDendSize).c_str());
-	OmProjectData::GetIDataWriter()->
-		writeDataset(path,
-					 mDendSize,
-					 mDend);
+	OmProjectData::GetIDataWriter()->writeDataset(path,
+												  mDendSize,
+												  mDend);
 
 	path = getDendValuesPath(*seg);
 	printf("dendValues: will save %s bytes\n",
 		   StringHelpers::commaDeliminateNum(mDendValuesSize).c_str());
-	OmProjectData::GetIDataWriter()->
-		writeDataset(path,
-					 mDendValuesSize,
-					 mDendValues);
+	OmProjectData::GetIDataWriter()->writeDataset(path,
+												  mDendValuesSize,
+												  mDendValues);
 
 	FlushDendUserEdges(seg);
 }
@@ -212,14 +212,12 @@ void OmMST::FlushDendUserEdges(OmSegmentation * seg)
 
 	OmDataPath path(getEdgeDisabledByUserPath(*seg));
 
-	OmProjectData::GetIDataWriter()->
-		writeDataset(path,
-					 mDendValuesSize,
-					 mEdgeDisabledByUser);
+	OmProjectData::GetIDataWriter()->writeDataset(path,
+												  mDendValuesSize,
+												  mEdgeDisabledByUser);
 
 	path = getEdgeForceJoinPath(*seg);
-	OmProjectData::GetIDataWriter()->
-		writeDataset(path,
-					 mDendValuesSize,
-					 mEdgeForceJoin);
+	OmProjectData::GetIDataWriter()->writeDataset(path,
+												  mDendValuesSize,
+												  mEdgeForceJoin);
 }

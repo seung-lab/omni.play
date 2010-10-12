@@ -28,7 +28,7 @@ public:
 	int GetTileCount();
 	int GetTileCountIncomplete();
 
-	boost::shared_ptr<OmLineDraw>& LineDrawer(){
+	inline boost::shared_ptr<OmLineDraw>& LineDrawer(){
 		return lineDraw_;
 	}
 
@@ -41,7 +41,7 @@ protected:
 
 	void resetPbuffer(const QSize&);
 
-	boost::shared_ptr<OmView2dState>& state() {
+	inline boost::shared_ptr<OmView2dState>& state() {
 		return state_;
 	}
 
