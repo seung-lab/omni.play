@@ -131,10 +131,18 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			x0 += stepx;
 			fraction += dy;	// same as fraction -= 2*dy
 
-			DataCoord globalDC =
-				state_->makeViewTypeVector3(x0,
-											y0,
-											second.z);
+			DataCoord globalDC;
+			switch (mViewType) {
+			case XY_VIEW:
+				globalDC = DataCoord(x0, y0, second.z);
+				break;
+			case XZ_VIEW:
+				globalDC = DataCoord(x0, second.y, y0);
+				break;
+			case YZ_VIEW:
+				globalDC = DataCoord(second.x, y0, x0);
+				break;
+			}
 
 			if(brushSize->Diameter() > 4 &&
 			   (x1 == x0 || abs(x1 - x0) % (brushSize->Diameter() / 4) == 0)) {
@@ -162,9 +170,18 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			y0 += stepy;
 			fraction += dx;
 
-			const DataCoord globalDC = state_->makeViewTypeVector3(x0,
-																   y0,
-																   second.z);
+			DataCoord globalDC;
+			switch (mViewType) {
+			case XY_VIEW:
+				globalDC = DataCoord(x0, y0, second.z);
+				break;
+			case XZ_VIEW:
+				globalDC = DataCoord(x0, second.y, y0);
+				break;
+			case YZ_VIEW:
+				globalDC = DataCoord(second.x, y0, x0);
+				break;
+			}
 
 			if(brushSize->Diameter() > 4 && (y1 == y0 || abs(y1 - y0) % (brushSize->Diameter() / 4) == 0)) {
 				if (!doselection) {
