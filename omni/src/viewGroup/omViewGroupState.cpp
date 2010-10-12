@@ -1,4 +1,3 @@
-#include "viewGroup/omBrushSize.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "gui/viewGroup.h"
@@ -7,17 +6,20 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omEvents.h"
 #include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
-#include "utility/dataWrappers.h"
 #include "tiles/omTileCoord.h"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omBrushSize.hpp"
+#include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omZoomLevel.hpp"
 
 #include <boost/make_shared.hpp>
 
-OmViewGroupState::OmViewGroupState( MainWindow * mw)
+OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
 	, mViewGroup(boost::make_shared<ViewGroup>(mMainWindow, this))
 	, brushSize_(boost::make_shared<OmBrushSize>())
+	, zoomLevel_(boost::make_shared<OmZoomLevel>())
 	, segmentBeingSplit_(boost::make_shared<SegmentDataWrapper>())
 {
 	mXYSliceEnabled = false;
@@ -44,8 +46,6 @@ OmViewGroupState::OmViewGroupState( MainWindow * mw)
 	mShowSplit = false;
 	mShowValidInColor = false;
 	mShowFilterInColor = false;
-
-	zoom_level = Vector2i(0, 6);
 
 	mColorCaches.resize(SCC_NUMBER_OF_ENUMS);
 
@@ -200,15 +200,6 @@ float OmViewGroupState::GetViewSliceDepth(ViewType plane)
 	default:
 		throw OmArgException("unknown plane");
 	}
-}
-
-/*
- *	Set/Get zoom level.
- */
-void OmViewGroupState::SetZoomLevel(const Vector2i& zoom)
-{
-	zoom_level = zoom;
-	OmEvents::ViewPosChanged();
 }
 
 /*

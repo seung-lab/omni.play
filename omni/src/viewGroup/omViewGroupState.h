@@ -16,9 +16,10 @@ class OmSegmentColorizer;
 class ToolBarManager;
 class ViewGroup;
 class OmMipVolume;
+class OmZoomLevel;
 
 class OmViewGroupState : public OmManageableObject {
- public:
+public:
 	OmViewGroupState( MainWindow * mw );
 	~OmViewGroupState(){}
 
@@ -36,20 +37,19 @@ class OmViewGroupState : public OmManageableObject {
 
 	//viewbox state
 	void SetViewSliceMin(const ViewType plane, const float x,
-			     const float y);
+						 const float y);
 	Vector2f GetViewSliceMin(ViewType);
 
 	void SetViewSliceMax(const ViewType plane, const float x,
-			     const float y);
+						 const float y);
 	Vector2f GetViewSliceMax(ViewType);
 
 	SpaceCoord GetViewDepthCoord();
 	void SetViewSliceDepth(ViewType, float);
 	float GetViewSliceDepth(ViewType);
 
-	void SetZoomLevel(const Vector2i&);
-	const Vector2i& GetZoomLevel(){
-		return zoom_level;
+	boost::shared_ptr<OmZoomLevel>& ZoomLevel() {
+		return zoomLevel_;
 	}
 
 	void SetPanDistance(const ViewType, const Vector2f&);
@@ -59,8 +59,8 @@ class OmViewGroupState : public OmManageableObject {
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
 	boost::shared_ptr<OmColorRGBA> ColorTile(boost::shared_ptr<uint32_t>,
-						 const Vector2i&,
-						 const OmTileCoord&);
+											 const Vector2i&,
+											 const OmTileCoord&);
 
 	void setBreakThreshold(int t){ mBreakThreshold = t; }
 	int getBreakThreshold(){ return mBreakThreshold; }
@@ -69,13 +69,13 @@ class OmViewGroupState : public OmManageableObject {
 	unsigned int getDustThreshold(){ return mDustThreshold; }
 
 	void SetToolBarManager(ToolBarManager * tbm);
-        bool GetShatterMode();
+	bool GetShatterMode();
 	void SetShatterMode(bool shatter);
 	void ToggleShatterMode();
 
-        std::pair<bool, SegmentDataWrapper> GetSplitMode();
+	std::pair<bool, SegmentDataWrapper> GetSplitMode();
 	void SetSplitMode(const SegmentDataWrapper& sdw);
-        void SetSplitMode(bool onoroff, bool postEvent = true);
+	void SetSplitMode(bool onoroff, bool postEvent = true);
 	void SetBreakOnSplitMode(bool mode);
 
 	void SetShowValidMode(bool mode, bool incolor);
@@ -91,7 +91,7 @@ class OmViewGroupState : public OmManageableObject {
 
 	OmSegmentColorCacheType determineColorizationType(const ObjectType);
 
- private:
+private:
 	zi::mutex mColorCacheMapLock;
 
 	MainWindow * mMainWindow;
@@ -107,7 +107,8 @@ class OmViewGroupState : public OmManageableObject {
 	//view event
 	float mXYSlice[6], mYZSlice[6], mXZSlice[6];
 	float mXYPan[2], mYZPan[2], mXZPan[2];
-	Vector2i zoom_level;
+
+	boost::shared_ptr<OmZoomLevel> zoomLevel_;
 
 	SpaceBbox mViewBbox;
 	SpaceCoord mViewCenter;
@@ -134,7 +135,7 @@ class OmViewGroupState : public OmManageableObject {
 	bool mShowFilterInColor;
 
 	void setupColorizer(const Vector2i&, const OmTileCoord&,
-			    const OmSegmentColorCacheType);
+						const OmSegmentColorCacheType);
 
 	boost::shared_ptr<SegmentDataWrapper> segmentBeingSplit_;
 };

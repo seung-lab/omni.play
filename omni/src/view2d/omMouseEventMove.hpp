@@ -118,21 +118,7 @@ private:
 
 	void mouseMove_CamMoving(QMouseEvent * event)
 	{
-		const Vector2i zoomMipVector = state_->getViewGroupState()->GetZoomLevel();
-		const Vector2f current_pan = state_->ComputePanDistance();
-		const Vector2i drag =
-			state_->GetClickPoint() - Vector2i(event->x(),event->y());
-
-		const SpaceCoord dragCoord = state_->ScreenToSpaceCoord(drag);
-		const SpaceCoord zeroCoord = state_->ScreenToSpaceCoord(Vector2i(0,0));
-
-		const SpaceCoord difference = zeroCoord - dragCoord;
-		const SpaceCoord oldDepth = state_->getViewGroupState()->GetViewDepthCoord();
-		const SpaceCoord depth = oldDepth - difference;
-		state_->setSliceDepth(depth);
-		OmEvents::ViewCenterChanged();
-
-		state_->SetClickPoint(event->x(), event->y());
+		state_->mouseMove_CamMoving(Vector2i(event->x(),event->y()));
 	}
 };
 

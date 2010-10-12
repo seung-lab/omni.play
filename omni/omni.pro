@@ -219,6 +219,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omHandleCacheMissThreaded.h \
            src/viewGroup/omViewGroupState.h \
            src/viewGroup/omBrushSize.hpp \
+           src/viewGroup/omZoomLevel.hpp \
            src/utility/setUtilities.h \
            src/utility/omSmartPtr.hpp \
            src/utility/omLockedObjects.h \

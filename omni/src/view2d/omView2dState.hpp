@@ -8,7 +8,7 @@
 #include "system/omProjectData.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
-
+#include "viewGroup/omZoomLevel.hpp"
 #include <QSize>
 
 /**
@@ -25,7 +25,7 @@ public:
 				  const ViewType viewType,
 				  const QSize& size,
 				  const std::string name)
-		: mVolume(vol)
+		: vol_(vol)
 		, objType_(vol->getVolumeType())
 		, mViewGroupState(vgs)
 		, mViewType(viewType)
@@ -36,14 +36,16 @@ public:
 		, clickPoint_(0,0)
 		, cameraMoving_(false)
 		, lastDataPoint_(0,0)
+		, zoomLevel_(vgs->ZoomLevel())
 	{
 		setTotalViewport(size);
+		zoomLevel_->Update(vol_);
 	}
 
 	// coord convertors
 	Vector2f ScreenToPanShift(const Vector2i& screenshift) const
 	{
-		const Vector2f stretch= mVolume->GetStretchValues(mViewType);
+		const Vector2f stretch= vol_->GetStretchValues(mViewType);
 		const float zoomScale = getZoomScale();
 		const float panx = screenshift.x/zoomScale/stretch.x;
 		const float pany = screenshift.y/zoomScale/stretch.y;
@@ -53,9 +55,9 @@ public:
 	SpaceCoord ScreenToSpaceCoord(const ScreenCoord& screenc) const
 	{
 		const Vector2f mPanDistance = ComputePanDistance();
-		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
+		const Vector2f stretch = vol_->GetStretchValues(mViewType);
 
-		const Vector3f dataScale = mVolume->GetDataDimensions();
+		const Vector3f dataScale = vol_->GetDataDimensions();
 		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
@@ -65,23 +67,23 @@ public:
 		const NormCoord normc = scaleViewType(unscaleNormX, unscaleNormY,
 											  dataScale);
 
-		SpaceCoord result = mVolume->NormToSpaceCoord(normc);
+		SpaceCoord result = vol_->NormToSpaceCoord(normc);
 		setViewTypeDepth(result, getSliceDepth());
 		return result;
 	}
 
 	DataCoord ScreenToDataCoord(const ScreenCoord & screenc) const {
-		return mVolume->SpaceToDataCoord(ScreenToSpaceCoord(screenc));
+		return vol_->SpaceToDataCoord(ScreenToSpaceCoord(screenc));
 	}
 
 	ScreenCoord SpaceToScreenCoord(const SpaceCoord& spacec) const
 	{
-		const NormCoord normCoord = mVolume->SpaceToNormCoord(spacec);
-		const Vector3f scale = mVolume->GetDataDimensions();
+		const NormCoord normCoord = vol_->SpaceToNormCoord(spacec);
+		const Vector3f scale = vol_->GetDataDimensions();
 		const Vector3f datac = normCoord * scale;
 
 		const Vector2f mPanDistance = ComputePanDistance();
-		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
+		const Vector2f stretch = vol_->GetStretchValues(mViewType);
 		const float factor = om::pow2int(getMipLevel());
 		const float zoomScale = getZoomScale();
 
@@ -103,7 +105,7 @@ public:
 	int GetDepthToDataSlice() const
 	{
 		const SpaceCoord depthCoord = mViewGroupState->GetViewDepthCoord();
-		const DataCoord dataCoord = mVolume->SpaceToDataCoord(depthCoord);
+		const DataCoord dataCoord = vol_->SpaceToDataCoord(depthCoord);
 		return getViewTypeDepth(dataCoord);
 	}
 
@@ -111,14 +113,14 @@ public:
 	{
 		DataCoord dataCoord(0, 0, 0);
 		setViewTypeDepth(dataCoord, slice);
-		const SpaceCoord depthCoord = mVolume->DataToSpaceCoord(dataCoord);
+		const SpaceCoord depthCoord = vol_->DataToSpaceCoord(dataCoord);
 
 		setSliceDepth(getViewTypeDepth(depthCoord));
 	}
 
 	Vector2f ComputePanDistance() const
 	{
-		const Vector2f stretch = mVolume->GetStretchValues(mViewType);
+		const Vector2f stretch = vol_->GetStretchValues(mViewType);
 		const float factor = om::pow2int(getMipLevel());
 
 		const DataCoord mydataCoord = getViewSliceDepthData();
@@ -157,15 +159,15 @@ public:
 								  mTotalViewport.height / zoomFactor * pl - translateVector.y * pl,
 								  0);
 
-		setSliceMinAndMax(mVolume->DataToSpaceCoord(minDCoord),
-						  mVolume->DataToSpaceCoord(maxDCoord));
+		setSliceMinAndMax(vol_->DataToSpaceCoord(minDCoord),
+						  vol_->DataToSpaceCoord(maxDCoord));
 
 		OmEvents::Redraw3d();
 	}
 
 	void PanAndZoom(const Vector2i& new_zoom)
 	{
-		mViewGroupState->SetZoomLevel(new_zoom);
+		zoomLevel_->SetZoomLevel(new_zoom);
 		SetViewSliceOnPan();
 		OmEvents::ViewCenterChanged();
 	}
@@ -189,7 +191,7 @@ public:
 	void ResetWindowState()
 	{
 		const SpaceCoord depth =
-			mVolume->NormToSpaceCoord(NormCoord(0.5, 0.5, 0.5));
+			vol_->NormToSpaceCoord(NormCoord(0.5, 0.5, 0.5));
 
 		setSliceDepth(depth);
 
@@ -221,6 +223,25 @@ public:
 		SetDataSliceToDepth(depth-numberOfSlicestoAdvance);
 	}
 
+	// mouse movement
+	void mouseMove_CamMoving(const Vector2i& cursorLocation)
+	{
+		const Vector2i zoomMipVector = zoomLevel_->GetZoomLevel();
+		const Vector2f current_pan = ComputePanDistance();
+		const Vector2i drag = GetClickPoint() - cursorLocation;
+
+		const SpaceCoord dragCoord = ScreenToSpaceCoord(drag);
+		const SpaceCoord zeroCoord = ScreenToSpaceCoord(Vector2i(0,0));
+
+		const SpaceCoord difference = zeroCoord - dragCoord;
+		const SpaceCoord oldDepth = getViewGroupState()->GetViewDepthCoord();
+		const SpaceCoord depth = oldDepth - difference;
+		setSliceDepth(depth);
+		OmEvents::ViewCenterChanged();
+
+		SetClickPoint(cursorLocation.x, cursorLocation.y);
+	}
+
 	// name
 	const std::string& getName() const {
 		return name_;
@@ -244,10 +265,10 @@ public:
 
 	// volume
 	OmMipVolume* getVol() const {
-		return mVolume;
+		return vol_;
 	}
 	void setVol(OmMipVolume* vol){
-		mVolume = vol;
+		vol_ = vol;
 	}
 
 	// view group state
@@ -270,10 +291,10 @@ public:
 
 	// zoom and mip level
 	float getZoomScale() const {
-		return mViewGroupState->GetZoomLevel().y / 10.0;
+		return zoomLevel_->GetZoomLevel().y / 10.0;
 	}
 	int getMipLevel() const {
-		return mViewGroupState->GetZoomLevel().x;
+		return zoomLevel_->GetZoomLevel().x;
 	}
 
 	// slice depth
@@ -284,7 +305,7 @@ public:
 						  getZsliceDepth());
 	}
 	DataCoord getViewSliceDepthData() const {
-		return mVolume->SpaceToDataCoord(getViewSliceDepthSpace());
+		return vol_->SpaceToDataCoord(getViewSliceDepthSpace());
 	}
 	float getSliceDepth() const {
 		return mViewGroupState->GetViewSliceDepth(mViewType);
@@ -416,13 +437,13 @@ public:
 	// for tile coord creation
 	SpaceCoord computeTileSpaceCoord(const DataCoord& dataCoord) const
 	{
-		const DataBbox box = mVolume->DataToDataBBox(dataCoord, 0);
+		const DataBbox box = vol_->DataToDataBBox(dataCoord, 0);
 		const int depth = getViewTypeDepth(dataCoord);
 
 		Vector3i bcoord = box.getMin();
 		setViewTypeDepth(bcoord, depth);
 
-		return mVolume->DataToSpaceCoord(bcoord);
+		return vol_->DataToSpaceCoord(bcoord);
 	}
 
 	// brush size
@@ -482,7 +503,7 @@ public:
 	}
 
 private:
-	OmMipVolume* mVolume;
+	OmMipVolume* vol_;
 	const ObjectType objType_;
 	OmViewGroupState *const mViewGroupState;
 	const ViewType mViewType;
@@ -498,6 +519,8 @@ private:
 
 	// FLAT data coordinates, not accurate for orthogonal views but accurate for Bresenham
 	DataCoord lastDataPoint_;
+
+	boost::shared_ptr<OmZoomLevel> zoomLevel_;
 };
 
 #endif
