@@ -65,7 +65,7 @@ public:
 	OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
 		: OmMemMappedFileQTbase<T>(fnp)
 	{
-		this->open(QIODevice::ReadOnly);
+		this->open(QIODevice::ReadWrite);
 		checkFileSize(numBytes);
 		this->map();
 
