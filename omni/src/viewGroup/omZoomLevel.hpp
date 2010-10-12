@@ -48,28 +48,29 @@ private:
 	void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked,
 						   const int maxMipLevel)
 	{
-		if (!isLevelLocked && zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel){
-			mipLevel_ += 1; // need to move to next mip level
+		if(!isLevelLocked && zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel){
+			// move to next mip level
+			mipLevel_ += 1;
 			zoomFactor_ = 1.0;
+			return;
+		}
 
-		} else if (zoomFactor_ > 0.1) {
-			int zoom = zoomFactor_ * 10 - (1 * (-1 * numSteps));
-			if (zoom < 1) {
-				zoom = 1;
-			}
-			zoomFactor_ = zoom / 10.0;
+		zoomFactor_ += numSteps / 10.0; // numSteps is negative!
+		if( zoomFactor_ < 0.1 ){
+			zoomFactor_ = 0.1;
 		}
 	}
 
 	void mouseWheelZoomIn(const int numSteps, const bool isLevelLocked)
 	{
 		if(!isLevelLocked && zoomFactor_ >= 1 && mipLevel_ > 0){
-			mipLevel_ -= 1; //move to previous mip level
+			//move to previous mip level
+			mipLevel_ -= 1;
 			zoomFactor_ = 0.6;
-
-		} else{
-			zoomFactor_ = ceil(zoomFactor_ * 10.0 + (1 * numSteps)) / 10.0;
+			return;
 		}
+
+		zoomFactor_ += numSteps / 10.0;
 	}
 
 };
