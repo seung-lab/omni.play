@@ -218,7 +218,7 @@ public:
 	}
 
     // mouse movement
-	void mouseMove_CamMoving(const Vector2i& cursorLocation)
+	void DoMousePan(const Vector2i& cursorLocation)
 	{
 		const Vector2f current_pan = ComputePanDistance();
 		const Vector2i drag = GetClickPoint() - cursorLocation;

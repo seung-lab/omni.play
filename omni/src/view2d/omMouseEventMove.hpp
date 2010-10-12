@@ -15,7 +15,7 @@ private:
 	boost::shared_ptr<OmView2dState> state_;
 public:
 	OmMouseEventMove(OmView2d* v2d,
-			 boost::shared_ptr<OmView2dState> state)
+					 boost::shared_ptr<OmView2dState> state)
 		: v2d_(v2d)
 		, state_(state)
 	{}
@@ -32,30 +32,31 @@ public:
 
 			case SELECT_MODE:
 				if(state_->IsCameraMoving()){
-					MouseMove_LeftButton_Scribbling(event);
+					selectSegments(event);
 				}
 				break;
 			case PAN_MODE:
 				if(state_->IsCameraMoving()){
-					mouseMove_CamMoving(event);
+					mousePan(event);
 					OmEvents::Redraw3d();
 				}
 				break;
+
 			case CROSSHAIR_MODE:
 			case ZOOM_MODE:
+			case FILL_MODE:
+				break;
+
 			case ADD_VOXEL_MODE:
 			case SUBTRACT_VOXEL_MODE:
-			case FILL_MODE:
-				if (PAN_MODE == OmStateManager::GetToolMode()) {
-					mouseMove_CamMoving(event);
-				} else if (state_->getScribbling()) {
+				if (state_->getScribbling()) {
 					// keep painting
-					MouseMove_LeftButton_Scribbling(event);
+					paint(event);
 				}
 				break;
 
 			case SELECT_VOXEL_MODE:
-				assert(0 && "not implemented");
+				throw OmArgException("not implemented");
 			}
 		}
 
@@ -63,62 +64,57 @@ public:
 	}
 
 private:
-	void MouseMove_LeftButton_Scribbling(QMouseEvent * event)
+	void selectSegments(QMouseEvent* event)
 	{
-		bool doselection = false;
+		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		if (!sdw.isValid()){
+			return;
+		}
 
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
-		//store current selection
-		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		// TODO: bug here; ask MattW
+		v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
+											  dataClickPoint,
+											  true);
 
-		//return if not valid
-		if (!sdw.isValid())
-			return;
-
-		//switch on tool mode
-		OmSegID data_value;
-		switch (OmStateManager::GetToolMode()) {
-		case ADD_VOXEL_MODE:
-			//get value associated to segment id
-			data_value = sdw.getID();
-			break;
-		case SUBTRACT_VOXEL_MODE:
-			data_value = 0;
-			break;
-		case SELECT_MODE:
-			doselection = true;
-			break;
-		default:
-			return;
-		}
-
-		if (!doselection) {
-			//run action
-			v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
-								   dataClickPoint,
-								   data_value);
-			v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-								 dataClickPoint);
-		} else {
-			// TODO: bug here; ask MattW
-			v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
-								 dataClickPoint,
-								 doselection);
-			OmMouseEventUtils::PickToolAddToSelection(sdw,
-								  dataClickPoint,
-								  v2d_);
-		}
+		OmMouseEventUtils::PickToolAddToSelection(sdw,
+												  dataClickPoint,
+												  v2d_);
 
 		state_->SetLastDataPoint(dataClickPoint);
-
-		v2d_->myUpdate();
 	}
 
-	void mouseMove_CamMoving(QMouseEvent * event)
+	void paint(QMouseEvent* event)
 	{
-		state_->mouseMove_CamMoving(Vector2i(event->x(),event->y()));
+		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		if (!sdw.isValid()){
+			return;
+		}
+
+		const DataCoord dataClickPoint =
+			state_->ComputeMouseClickPointDataCoord(event);
+
+		OmSegID segmentValueToPaint = 0;
+		if( ADD_VOXEL_MODE == OmStateManager::GetToolMode()) {
+			segmentValueToPaint = sdw.getID();
+		}
+
+		v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+												dataClickPoint,
+												segmentValueToPaint);
+
+		v2d_->LineDrawer()->bresenhamLineDraw(state_->GetLastDataPoint(),
+											  dataClickPoint,
+											  false);
+
+		state_->SetLastDataPoint(dataClickPoint);
+	}
+
+	void mousePan(QMouseEvent* event)
+	{
+		state_->DoMousePan(Vector2i(event->x(),event->y()));
 	}
 };
 

@@ -5,17 +5,17 @@
 #include "gui/widgets/omButton.h"
 
 class ToolButton : public OmButton<QWidget> {
- public:
+public:
 	ToolButton(QWidget*,
-		   const QString & title, 
-		   const QString & statusTip,
-		   const OmToolMode tool,
-		   const QString & iconPath);
+			   const QString & title,
+			   const QString & statusTip,
+			   const OmToolMode tool,
+			   const QString & iconPath);
 
 	OmToolMode getToolMode(){ return mTool; }
- private:
+private:
 	OmToolMode mTool;
-		  
+
 	void doAction();
 };
 

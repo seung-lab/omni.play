@@ -162,10 +162,9 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 			y0 += stepy;
 			fraction += dx;
 
-			DataCoord globalDC =
-				state_->makeViewTypeVector3(x0,
-											y0,
-											second.z);
+			const DataCoord globalDC = state_->makeViewTypeVector3(x0,
+																   y0,
+																   second.z);
 
 			if(brushSize->Diameter() > 4 && (y1 == y0 || abs(y1 - y0) % (brushSize->Diameter() / 4) == 0)) {
 				if (!doselection) {

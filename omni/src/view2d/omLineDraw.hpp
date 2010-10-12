@@ -15,7 +15,7 @@ public:
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 	void bresenhamLineDraw(const DataCoord &first,
 			       const DataCoord &second,
-			       bool doselection = false);
+			       bool doselection);
 	void FillToolFill(OmId segmentation,
 			  DataCoord gCP,
 			  OmSegID fc,
