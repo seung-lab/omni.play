@@ -202,6 +202,12 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 	if (1 == brushSize->Diameter() ) {
 		mEditedSegmentation = segid;
 		mCurrentSegmentId = seg;
+
+		if( gDC.x < 0 ||
+			gDC.y < 0 ||
+			gDC.z < 0){
+			return;
+		}
 		mUpdatedDataCoords.insert(gDC);
 		mDoRefresh = true;
 
