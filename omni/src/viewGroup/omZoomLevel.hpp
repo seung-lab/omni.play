@@ -1,8 +1,6 @@
 #ifndef OM_ZOOM_LEVEL_HPP
 #define OM_ZOOM_LEVEL_HPP
 
-#include "volume/omMipVolume.h"
-
 class OmZoomLevel {
 private:
 	bool valid;
@@ -16,10 +14,10 @@ public:
 		, zoomFactor_(0.6)
 	{}
 
-	void Update(OmMipVolume* vol){
+	void Update(const int defaultMipLevel){
 		if(!valid){
 			// set defaults
-			mipLevel_ = vol->GetRootMipLevel();
+			mipLevel_ = defaultMipLevel;
 			zoomFactor_ = 1;
 			valid = true;
 		}
@@ -34,12 +32,11 @@ public:
 	}
 
 	void MouseWheelZoom(const int numSteps, const bool isLevelLocked,
-						OmMipVolume* vol)
+						const int maxMipLevel)
 	{
 		if (numSteps >= 0){
 			mouseWheelZoomIn(numSteps, isLevelLocked);
 		} else{
-			const int maxMipLevel = vol->GetRootMipLevel();
 			mouseWheelZoomOut(numSteps, isLevelLocked, maxMipLevel);
 		}
 	}

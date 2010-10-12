@@ -1,5 +1,6 @@
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omMouseEvents.hpp"
+#include "view2d/omView2dZoom.hpp"
 #include "view2d/omKeyEvents.hpp"
 #include "view2d/omScreenPainter.hpp"
 #include "view2d/omView2d.h"
@@ -17,6 +18,7 @@ OmView2d::OmView2d(const ViewType viewtype, QWidget* parent,
 	, mouseEvents_(boost::make_shared<OmMouseEvents>(this, state()))
 	, keyEvents_(boost::make_shared<OmKeyEvents>(this, state()))
 	, events_(boost::make_shared<OmView2dEvents>(this, state()))
+	, zoom_(boost::make_shared<OmView2dZoom>(state()))
 {
 	setFocusPolicy(Qt::ClickFocus);	// necessary for receiving keyboard events
 	setMouseTracking(true);	// necessary for mouse-centered zooming

@@ -1,7 +1,7 @@
 #ifndef OM_MOUSE_EVENT_UTILS_HPP
 #define OM_MOUSE_EVENT_UTILS_HPP
 
-#include "view2d/omMouseZoom.hpp"
+#include "view2d/omView2dZoom.hpp"
 
 class OmView2d;
 

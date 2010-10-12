@@ -88,7 +88,7 @@ private:
 			mouseSetCrosshair(event);
 			return;
 		case ZOOM_MODE:
-			OmMouseZoom::MouseZoom(state_, event);
+			v2d_->Zoom()->MouseLeftButtonClick(event);
 			OmEvents::Redraw3d();
 			return;
 		case ADD_VOXEL_MODE:

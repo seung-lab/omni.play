@@ -5,7 +5,7 @@
 #include "view2d/omMouseEventPress.hpp"
 #include "view2d/omMouseEventRelease.hpp"
 #include "view2d/omMouseEventWheel.hpp"
-#include "view2d/omMouseZoom.hpp"
+#include "view2d/omView2dZoom.hpp"
 
 #include <boost/make_shared.hpp>
 

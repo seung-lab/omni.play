@@ -11,11 +11,12 @@ class SegmentDataWrapper;
 class OmScreenShotSaver;
 class OmMouseEvents;
 class OmKeyEvents;
+class OmView2dZoom;
 
 class OmView2d : public OmView2dCore {
-	Q_OBJECT
+Q_OBJECT
 
-	public:
+public:
 	OmView2d(const ViewType, QWidget*, OmViewGroupState*, OmMipVolume*,
 			 const std::string& name);
  	~OmView2d();
@@ -37,6 +38,10 @@ class OmView2d : public OmView2dCore {
 
 	boost::shared_ptr<OmScreenShotSaver> GetScreenShotSaver(){
 		return mScreenShotSaver;
+	}
+
+	boost::shared_ptr<OmView2dZoom>& Zoom(){
+		return zoom_;
 	}
 
 	void resetWindow();
@@ -70,6 +75,7 @@ private:
 	boost::shared_ptr<OmMouseEvents> mouseEvents_;
 	boost::shared_ptr<OmKeyEvents> keyEvents_;
 	boost::shared_ptr<OmView2dEvents> events_;
+	boost::shared_ptr<OmView2dZoom> zoom_;
 
 	void unlinkComplimentaryDock();
 };

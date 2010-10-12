@@ -254,7 +254,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/omMouseEventMove.hpp \
            src/view2d/omMouseEventPress.hpp \
            src/view2d/omMouseEventUtils.hpp \
-           src/view2d/omMouseZoom.hpp \
+           src/view2d/omView2dZoom.hpp \
            src/view2d/omScreenPainter.hpp \
            src/tiles/omTileDrawer.hpp \
            src/view2d/omView2dState.hpp \
