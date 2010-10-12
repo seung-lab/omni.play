@@ -36,40 +36,40 @@ public:
 	void MouseWheelZoom(const int numSteps, const bool isLevelLocked,
 						OmMipVolume* vol)
 	{
-		const int curMipLevel = mipLevel_;
-		const float curZoom = zoomFactor_;
-		int mipLevel;
-		int zoomFactor;
-
-		if (numSteps >= 0) { // ZOOMING IN
-			if(!isLevelLocked && curZoom >= 1 && curMipLevel > 0){
-				//move to previous mip level
-				mipLevel = curMipLevel - 1;
-				zoomFactor = 6;
-			} else{
-				mipLevel = curMipLevel;
-				zoomFactor = ceil(curZoom * 10.0 + (1 * numSteps));
-			}
-		} else { // ZOOMING OUT
-			if (!isLevelLocked && curZoom <= 0.6 &&
-			    curMipLevel < vol->GetRootMipLevel()){
-				// need to move to next mip level
-				mipLevel = curMipLevel + 1;
-				zoomFactor = 10;
-			} else if (curZoom > 0.1) {
-				int zoom = curZoom * 10 - (1 * (-1 * numSteps));
-				if (zoom < 1) {
-					zoom = 1;
-				}
-				mipLevel = curMipLevel;
-				zoomFactor = zoom;
-			}else{
-				return;
-			}
+		if (numSteps >= 0){
+			mouseWheelZoomIn(numSteps, isLevelLocked);
+		} else{
+			const int maxMipLevel = vol->GetRootMipLevel();
+			mouseWheelZoomOut(numSteps, isLevelLocked, maxMipLevel);
 		}
+	}
 
-		mipLevel_ = mipLevel;
-		zoomFactor_ = zoomFactor / 10.0;
+private:
+	void mouseWheelZoomOut(const int numSteps, const bool isLevelLocked,
+						   const int maxMipLevel)
+	{
+		if (!isLevelLocked && zoomFactor_ <= 0.6 && mipLevel_ < maxMipLevel){
+			mipLevel_ += 1; // need to move to next mip level
+			zoomFactor_ = 1.0;
+
+		} else if (zoomFactor_ > 0.1) {
+			int zoom = zoomFactor_ * 10 - (1 * (-1 * numSteps));
+			if (zoom < 1) {
+				zoom = 1;
+			}
+			zoomFactor_ = zoom / 10.0;
+		}
+	}
+
+	void mouseWheelZoomIn(const int numSteps, const bool isLevelLocked)
+	{
+		if(!isLevelLocked && zoomFactor_ >= 1 && mipLevel_ > 0){
+			mipLevel_ -= 1; //move to previous mip level
+			zoomFactor_ = 0.6;
+
+		} else{
+			zoomFactor_ = ceil(zoomFactor_ * 10.0 + (1 * numSteps)) / 10.0;
+		}
 	}
 
 };
