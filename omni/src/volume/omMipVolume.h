@@ -42,7 +42,7 @@ public:
 	virtual OmMipVolumeCache* getDataCache() = 0;
 
 	inline bool IsVolumeReadyForDisplay(){
-		return MIPVOL_BUILT == mBuildState;
+		return MIPVOL_UNBUILT != mBuildState;
 	}
 
 	void ExportInternalData(const QString& fileNameAndPath);
