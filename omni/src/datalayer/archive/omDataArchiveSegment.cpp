@@ -85,6 +85,7 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 		bool valid;
 		in >> valid;
 		if (!valid) {
+			page_[i].value_ = 0;
 			continue;
 		}
 
@@ -121,6 +122,7 @@ void OmDataArchiveSegment::readSegmentsNew()
 		bool valid;
 		in >> valid;
 		if (!valid) {
+			page_[i].value_ = 0;
 			continue;
 		}
 
