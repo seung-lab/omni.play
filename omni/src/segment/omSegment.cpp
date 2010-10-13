@@ -4,69 +4,57 @@
 #include "segment/omSegmentIterator.h"
 #include "utility/omRand.hpp"
 
-OmSegment::OmSegment(const OmSegID value,
-					 boost::shared_ptr<OmSegmentCache> cache)
-	: value_(value)
-	, mCache(cache)
-	, mParentSegID(0)
-	, mImmutable(false)
-	, mSize(0)
-	, mEdgeNumber(-1)
-	, mFreshnessForMeshes(0)
-{
-}
-
 void OmSegment::setParent(OmSegment * parent, const float threshold)
 {
-	if( mParentSegID ){
+	if( parentSegID_ ){
 		assert(0);
 	}
 
-	mParentSegID = parent->value_;
-	mThreshold = threshold;
+	parentSegID_ = parent->value_;
+	threshold_ = threshold;
 }
 
 /////////////////////////////////
 ///////         Color
 void OmSegment::RandomizeColor()
 {
-	mColorInt = OmRand::GetRandomColor();
+	colorInt_ = OmRand::GetRandomColor();
 
 	debugs(segmentBuild) << "final color values: "
-						 << (int)mColorInt.red << ","
-						 << (int)mColorInt.green << ","
-						 << (int)mColorInt.blue << "\n";
+						 << (int)colorInt_.red << ","
+						 << (int)colorInt_.green << ","
+						 << (int)colorInt_.blue << "\n";
 }
 
 void OmSegment::reRandomizeColor()
 {
 	RandomizeColor();
 
-	mCache->addToDirtySegmentList(this);
+	cache_->addToDirtySegmentList(this);
 }
 
 void OmSegment::SetColor(const Vector3f& color)
 {
-	mColorInt.red   = static_cast<quint8>(color.x * 255);
-	mColorInt.green = static_cast<quint8>(color.y * 255);
-	mColorInt.blue  = static_cast<quint8>(color.z * 255);
+	colorInt_.red   = static_cast<quint8>(color.x * 255);
+	colorInt_.green = static_cast<quint8>(color.y * 255);
+	colorInt_.blue  = static_cast<quint8>(color.z * 255);
 
-	mCache->addToDirtySegmentList(this);
+	cache_->addToDirtySegmentList(this);
 }
 
 QString OmSegment::GetNote()
 {
-	QString customNote = mCache->getSegmentNote(value_);
+	QString customNote = cache_->getSegmentNote(value_);
 
-	if( mParentSegID ){
+	if( parentSegID_ ){
 		customNote += "Parent: "
-			+ QString::number(mParentSegID)
+			+ QString::number(parentSegID_)
 			+ "; ";
 	}
 
-	if( !segmentsJoinedIntoMe.empty() ){
+	if( !segmentsJoinedIntoMe_.empty() ){
 		customNote += "Number of Children: "
-			+ QString::number( segmentsJoinedIntoMe.size() )
+			+ QString::number( segmentsJoinedIntoMe_.size() )
 			+ "; ";
 	}
 
@@ -75,57 +63,57 @@ QString OmSegment::GetNote()
 
 void OmSegment::SetNote(const QString & note)
 {
-	mCache->setSegmentNote( value_, note );
+	cache_->setSegmentNote( value_, note );
 }
 
 QString OmSegment::GetName()
 {
-	return mCache->getSegmentName( value_ );
+	return cache_->getSegmentName( value_ );
 }
 
 void OmSegment::SetName(const QString & name)
 {
-	mCache->setSegmentName( value_, name );
+	cache_->setSegmentName( value_, name );
 }
 
 bool OmSegment::IsSelected()
 {
-	return mCache->IsSegmentSelected( value_ );
+	return cache_->IsSegmentSelected( value_ );
 }
 
 void OmSegment::SetSelected( const bool isSelected, const bool addToRecentList )
 {
-	mCache->setSegmentSelected( value_, isSelected, addToRecentList );
+	cache_->setSegmentSelected( value_, isSelected, addToRecentList );
 }
 
 bool OmSegment::IsEnabled()
 {
-	return mCache->isSegmentEnabled( value_ );
+	return cache_->isSegmentEnabled( value_ );
 }
 
 void OmSegment::SetEnabled( const bool isEnabled)
 {
-	mCache->setSegmentEnabled( value_, isEnabled );
+	cache_->setSegmentEnabled( value_, isEnabled );
 }
 
 OmId OmSegment::getSegmentationID()
 {
-	return mCache->getSegmentationID();
+	return cache_->getSegmentationID();
 }
 
 void OmSegment::SetImmutable( const bool immutable)
 {
-	mImmutable = immutable;
+	immutable_ = immutable;
 
-	mCache->addToDirtySegmentList(this);
+	cache_->addToDirtySegmentList(this);
 }
 
 OmSegID OmSegment::getRootSegID()
 {
-	return mCache->findRoot(this)->value_;
+	return cache_->findRoot(this)->value_;
 }
 
 quint64 OmSegment::getSizeWithChildren()
 {
-	return mCache->getSizeRootAndAllChildren(this);
+	return cache_->getSizeRootAndAllChildren(this);
 }
