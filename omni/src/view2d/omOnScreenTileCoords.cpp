@@ -100,7 +100,7 @@ void OmOnScreenTileCoords::computeTile(const float x, const float y,
 	const SpaceCoord spaceCoord = mVolume->DataToSpaceCoord(dataCoord);
 
 	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord),
-				       computeVertices(x, y) };
+								   computeVertices(x, y) };
 
 	tileCoordsAndLocations_->push_back(pair);
 }
@@ -109,8 +109,8 @@ DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 {
 	//TODO: yMipChunk_ and yMipChunk_ are floats; convert to int?
 	return state_->makeViewTypeVector3<int>(xMipChunk_,
-						yMipChunk_,
-						dataDepth_ + depthOffset);
+											yMipChunk_,
+											dataDepth_ + depthOffset);
 }
 
 OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord)
@@ -125,7 +125,7 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord)
 }
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const float xRaw,
-						 const float yRaw)
+												 const float yRaw)
 {
 	const float x = xRaw * stretch_.x;
 	const float y = yRaw * stretch_.y;
