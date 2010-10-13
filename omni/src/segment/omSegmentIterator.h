@@ -8,24 +8,22 @@
 class OmSegment;
 class OmSegmentCache;
 
-class OmSegmentIterator
-{
- public:
+class OmSegmentIterator {
+public:
 	explicit OmSegmentIterator(boost::shared_ptr<OmSegmentCache>);
 
 	void iterOverSegmentID(const OmSegID segID);
-	void iterOverSegmentIDs(const OmSegIDsSet & set);
+	void iterOverSegmentIDs(const OmSegIDsSet& set);
 	void iterOverSelectedIDs();
 	void iterOverEnabledIDs();
 
-	OmSegment * getNextSegment();
+	OmSegment* getNextSegment();
 	bool empty();
 
 	OmSegmentIterator & operator = (const OmSegmentIterator & other);
 
- private:
+private:
 	boost::shared_ptr<OmSegmentCache> mCache;
-
 	std::deque<OmSegment*> mSegs;
 };
 

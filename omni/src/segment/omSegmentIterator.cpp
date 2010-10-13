@@ -39,7 +39,7 @@ bool OmSegmentIterator::empty()
 	return mSegs.empty();
 }
 
-OmSegment * OmSegmentIterator::getNextSegment()
+OmSegment* OmSegmentIterator::getNextSegment()
 {
 	if( mSegs.empty() ){
 		return NULL;
