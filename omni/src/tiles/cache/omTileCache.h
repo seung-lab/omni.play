@@ -34,6 +34,8 @@ public:
 
 	bool AreDrawersActive();
 
+	void Clear();
+
 private:
 	OmTileCache();
 

@@ -120,3 +120,9 @@ bool OmTileCache::AreDrawersActive()
 		OmCacheManager::AmClosingDown() ||
 		QApplication::mouseButtons() != Qt::NoButton;
 }
+
+void OmTileCache::Clear()
+{
+	cacheChannel_->Clear();
+	cacheNonChannel_->Clear();
+}
