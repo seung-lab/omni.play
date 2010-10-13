@@ -41,6 +41,10 @@ public:
 	virtual OmId getID() = 0;
 	virtual OmMipVolumeCache* getDataCache() = 0;
 
+	inline bool IsVolumeReadyForDisplay(){
+		return MIPVOL_BUILT == mBuildState;
+	}
+
 	void ExportInternalData(const QString& fileNameAndPath);
 
 	std::string MipLevelInternalDataPath(const int level);

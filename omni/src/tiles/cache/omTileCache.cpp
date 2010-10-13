@@ -1,6 +1,6 @@
 #include "view2d/omView2dState.hpp"
 #include "tiles/omTilePreFetcher.hpp"
-#include "tiles/omTileDrawer.hpp"
+#include "view2d/omTileDrawer.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/cache/omTileCacheImpl.h"
 #include "system/omStateManager.h"

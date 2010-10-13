@@ -258,7 +258,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/omMouseEventUtils.hpp \
            src/view2d/omView2dZoom.hpp \
            src/view2d/omScreenPainter.hpp \
-           src/tiles/omTileDrawer.hpp \
+           src/view2d/omTileDrawer.hpp \
            src/view2d/omView2dState.hpp \
            src/view2d/omView2dConverters.hpp \
            src/view2d/omDisplayInfo.hpp \
@@ -464,7 +464,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/tiles/omTilePreFetcher.cpp \
            src/tiles/omTilePreFetcherTask.cpp \
            src/view2d/omLineDraw.cpp \
-           src/tiles/omTileDrawer.cpp \
+           src/view2d/omTileDrawer.cpp \
            src/view2d/omOnScreenTileCoords.cpp \
            src/tiles/omTextureID.cpp \
            src/tiles/omTile.cpp \

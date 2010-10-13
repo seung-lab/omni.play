@@ -260,7 +260,9 @@ bool OmSegmentation::ImportSourceData(const OmDataPath& path)
 
 void OmSegmentation::loadVolData()
 {
-	mVolData->load(this);
+	if(IsVolumeReadyForDisplay()){
+		mVolData->load(this);
+	}
 }
 
 float OmSegmentation::GetDendThreshold()

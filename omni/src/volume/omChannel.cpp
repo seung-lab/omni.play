@@ -91,8 +91,11 @@ bool OmChannel::ImportSourceData(const OmDataPath& path)
 	return importer.Import();
 }
 
-void OmChannel::loadVolData(){
-	mVolData->load(this);
+void OmChannel::loadVolData()
+{
+	if(IsVolumeReadyForDisplay()){
+		mVolData->load(this);
+	}
 }
 
 OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
