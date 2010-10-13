@@ -152,7 +152,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	OmSegmentEdge edgeThatGotBroken( parent, child, child->getThreshold() );
 
-	parent->removeChild(child->value);
+	parent->removeChild(child);
 	mSegmentGraph.graph_cut(child->value);
 	child->setParentSegID(0);
 
@@ -224,7 +224,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 
 	mSegmentGraph.graph_join(childRootID, e.parentID);
 
-	parent->addChild(childRoot->value);
+	parent->addChild(childRoot);
 	childRoot->setParent(parent, e.threshold);
 	childRoot->setCustomMergeEdge(e);
 

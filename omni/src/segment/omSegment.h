@@ -67,14 +67,14 @@ public:
 	uint32_t getFreshnessForMeshes() const {return mFreshnessForMeshes;}
 	void touchFreshnessForMeshes(){++mFreshnessForMeshes;}
 
-	const OmSegIDsSet& getChildren() const {
+	const std::set<OmSegment*>& getChildren() const {
 		return segmentsJoinedIntoMe;
 	}
-	void addChild(const OmSegID childID){
-		segmentsJoinedIntoMe.insert(childID);
+	void addChild(OmSegment* child){
+		segmentsJoinedIntoMe.insert(child);
 	}
-	void removeChild(const OmSegID childID){
-		segmentsJoinedIntoMe.erase(childID);
+	void removeChild(OmSegment* child){
+		segmentsJoinedIntoMe.erase(child);
 	}
 
 	int getEdgeNumber() const { return mEdgeNumber; }
@@ -91,7 +91,7 @@ private:
 
 	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;
-	OmSegIDsSet segmentsJoinedIntoMe;
+	std::set<OmSegment*> segmentsJoinedIntoMe;
 	OmSegID mParentSegID;
 	float mThreshold;
 	bool mImmutable;

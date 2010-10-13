@@ -30,8 +30,8 @@ void OmSegmentIterator::iterOverEnabledIDs()
 void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
 	FOR_EACH(iter, set){
-                mSegs.push_back( mCache->GetSegment( *iter ) );
-        }
+		mSegs.push_back( mCache->GetSegment( *iter ) );
+	}
 }
 
 bool OmSegmentIterator::empty()
@@ -45,11 +45,11 @@ OmSegment * OmSegmentIterator::getNextSegment()
 		return NULL;
 	}
 
-	OmSegment * segRet = mSegs.back();
+	OmSegment* segRet = mSegs.back();
 	mSegs.pop_back();
 
 	FOR_EACH(iter, segRet->getChildren() ){
-		mSegs.push_back( mCache->GetSegment( *iter ));
+		mSegs.push_back(*iter);
 	}
 
 	return segRet;

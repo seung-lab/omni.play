@@ -62,7 +62,7 @@ OmSegment * OmSegmentIteratorLowLevel::getNextSegmentFromSet()
 	mSegs.pop_back();
 
 	FOR_EACH(iter, segRet->getChildren()){
-		mSegs.push_back( mCache->GetSegmentFromValue( *iter ));
+		mSegs.push_back(*iter);
 	}
 
 	return segRet;
