@@ -70,7 +70,7 @@ void OmSegmentColorizer::doColorTile(uint32_t* imageData,
 		} else { // get color from cache
 
 			{
-				zi::spinlock::pool<mutex_pool_tag>::guard g(val);
+				zi::spinlock::pool<segment_colorizer_mutex_pool_tag>::guard g(val);
 
 				// check if cache element is valid
 				if(mCurSegCacheFreshness  == mColorCache[val].freshness &&

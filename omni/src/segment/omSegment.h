@@ -39,7 +39,7 @@ public:
 
 	quint64 getSize() const { return mSize; }
 	void addToSize(const quint64 inc){
-		zi::guard g(sizeWriteLock_);
+		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(value);
 		mSize += inc;
 	}
 
@@ -60,7 +60,7 @@ public:
 
 	const DataBbox& getBounds() const {	return mBounds;	}
 	void addToBounds(const DataBbox& box){
-		zi::guard g(boundsWriteLock_);
+		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(value);
 		mBounds.merge(box);
 	}
 
@@ -86,9 +86,6 @@ public:
 	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return mCache; }
 
 private:
-	zi::mutex boundsWriteLock_;
-	zi::mutex sizeWriteLock_;
-
 	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;
 	std::set<OmSegment*> segmentsJoinedIntoMe;
@@ -103,6 +100,9 @@ private:
 	uint32_t mFreshnessForMeshes;
 
 	DataBbox mBounds;
+
+	struct segment_bounds_mutex_pool_tag;
+	struct segment_size_mutex_pool_tag;
 
 	friend class OmDataArchiveSegment;
 };

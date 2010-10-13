@@ -161,24 +161,24 @@ void OmMeshDrawer::drawChunk(OmMipChunkPtr chunk)
 }
 
 void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
-							   const OmSegPtrList& segmentsToDraw )
+							   const OmSegPtrList& segmentsToDraw)
 {
 	FOR_EACH(iter, segmentsToDraw ){
 		OmSegment* seg = *iter;
 
-		if( seg->getSize() < mViewGroupState->getDustThreshold() ){
+		if(seg->getSize() < mViewGroupState->getDustThreshold()){
 			continue;
 		}
 
 		OmMipMeshPtr p_mesh;
 		mSeg->GetMesh(p_mesh, chunkCoord, seg->value);
 
-		if( !p_mesh ){
+		if(!p_mesh){
 			redrawNeeded_ = true;
 			continue;
 		}
 
-		if( !p_mesh->hasData() ){
+		if(!p_mesh->hasData()){
 			continue;
 		}
 
@@ -203,7 +203,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 bool OmMeshDrawer::shouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 {
 	//draw if leaf
-	if(p_chunk->IsLeaf()) {
+	if(p_chunk->IsLeaf()){
 		return true;
 	}
 
