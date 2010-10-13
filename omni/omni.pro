@@ -221,6 +221,7 @@ HEADERS += lib/strnatcmp.h \
            src/viewGroup/omBrushSize.hpp \
            src/viewGroup/omZoomLevel.hpp \
            src/utility/setUtilities.h \
+           src/utility/omRand.hpp \
            src/utility/omSmartPtr.hpp \
            src/utility/omLockedObjects.h \
            src/utility/omLockedPODs.hpp \
@@ -444,7 +445,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
-           src/system/omGroup.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
            src/system/omPreferenceDefinitions.cpp \

@@ -1,9 +1,11 @@
+#include "common/omDebug.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentIterator.h"
+#include "utility/omRand.hpp"
 
 OmSegment::OmSegment(const OmSegID value,
-		     boost::shared_ptr<OmSegmentCache> cache)
+					 boost::shared_ptr<OmSegmentCache> cache)
 	: value(value)
 	, mCache(cache)
 	, mParentSegID(0)
@@ -28,21 +30,12 @@ void OmSegment::setParent(OmSegment * parent, const float threshold)
 ///////         Color
 void OmSegment::RandomizeColor()
 {
-	Vector3<float> color;
+	mColorInt = OmRand::GetRandomColor();
 
-	//initially random color
-	do {
-		color.randomize();
-	} while ((color.x * 255 > 255 && color.y * 255 > 255 && color.z * 255 > 255) &&
-		 (color.x * 255 < 85 && color.y * 255 < 85 && color.z * 255 < 85));
-
-	color.x /= 2;
-	color.y /= 2;
-	color.z /= 2;
-
-	mColorInt.red   = static_cast<quint8>(color.x * 255);
-	mColorInt.green = static_cast<quint8>(color.y * 255);
-	mColorInt.blue  = static_cast<quint8>(color.z * 255);
+	debugs(segmentBuild) << "final color values: "
+						 << (int)mColorInt.red << ","
+						 << (int)mColorInt.green << ","
+						 << (int)mColorInt.blue << "\n";
 }
 
 void OmSegment::reRandomizeColor()
@@ -72,7 +65,7 @@ QString OmSegment::GetNote()
 	}
 
 	if( !segmentsJoinedIntoMe.empty() ){
-                customNote += "Number of Children: "
+		customNote += "Number of Children: "
 			+ QString::number( segmentsJoinedIntoMe.size() )
 			+ "; ";
 	}

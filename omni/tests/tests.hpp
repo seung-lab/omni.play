@@ -9,16 +9,14 @@
 #include "utility/omTimer.h"
 #include "datalayer/omDataPaths.h"
 #include "view2d/omPointsInCircle.hpp"
+#include "utility/omRand.hpp"
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
+#include <QTextStream>
 
 class Tests{
 public:
 	Tests()
-		: gen(boost::mt19937(std::time(0)))
-		, runPerfTests_(ZiARG_perf)
+		: runPerfTests_(ZiARG_perf)
 	{
 	}
 
@@ -33,11 +31,11 @@ public:
 		}
 		hdf5Paths();
 		pointsInCircle();
+		rand();
 		printf("done\n");
 	}
 
 private:
-	boost::mt19937 gen;
 	const bool runPerfTests_;
 
 	void imageResize()
@@ -208,15 +206,34 @@ private:
 
 		timer.restart();
 		sum = 0;
-		boost::uniform_int<> dist(0, max);
-		boost::variate_generator<boost::mt19937&,
-			boost::uniform_int<> > rrand(gen, dist);
 		for(uint64_t i=0; i < max; ++i){
-			sum += map[ rrand() ];
+			sum += map[ OmRand::GetRandomInt(0,max) ];
 		}
 		std::cout << "\t" << max << " rand gets in " << mapType
 				  << " in " << timer.s_elapsed() << " secs\n";
 
+	}
+
+	void rand()
+	{
+		const int max = 3000;
+
+		const QString outFile("/tmp/randNums.txt");
+		QFile f(outFile);
+		if(f.open(QFile::WriteOnly | QFile::Truncate)) {
+			printf("writing segment file %s\n", qPrintable(outFile));
+		} else{
+			throw OmIoException("could not open file \"" + outFile.toStdString()
+								+"\"");
+		}
+
+		QTextStream out(&f);
+
+		for(int i = 0; i < max; ++i){
+			out << OmRand::GetRandomInt(1,127) << "\n";
+		}
+
+		printf("rand OK\n");
 	}
 
 	void hdf5Paths()
