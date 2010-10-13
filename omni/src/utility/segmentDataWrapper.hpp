@@ -20,7 +20,7 @@ public:
 	{}
 
 	explicit SegmentDataWrapper(OmSegment* seg )
-		: mID(seg->value)
+		: mID(seg->value())
 		, mSegmentationID( seg->getSegmentationID() )
 	{}
 

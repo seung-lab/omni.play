@@ -152,7 +152,8 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 /////////////////////////////////
 ///////          Groups
-void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
+							  OmGroupName name)
 {
 	bool valid;
 	if(VALIDROOT == type) {
@@ -172,14 +173,15 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	OmSegment * seg = iter.getNextSegment();
 	OmSegIDsSet newSet;
 	while(NULL != seg) {
-		newSet.insert(seg->value);
+		newSet.insert(seg->value());
 		seg = iter.getNextSegment();
 	}
 
 	(new OmSegmentValidateAction(GetID(), newSet, valid))->Run();
 }
 
-void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
+								OmGroupName name)
 {
 	if(GROUPROOT == type) {
 		return mGroups->UnsetGroup(set, name);

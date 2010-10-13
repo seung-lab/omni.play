@@ -88,7 +88,7 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 template<typename T>
 void OmPagingPtrStore<T>::AddItem( T* item )
 {
-	const OmSegID value = item->value;
+	const OmSegID value = item->value();
 
 	const PageNum pageNum = getValuePageNum(value);
 

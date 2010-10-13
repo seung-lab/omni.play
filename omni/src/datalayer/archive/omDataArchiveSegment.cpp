@@ -176,7 +176,7 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 
 		out << true;
 
-		out << segment->value;
+		out << segment->value_;
 		out << segment->mColorInt.red;
 		out << segment->mColorInt.green;
 		out << segment->mColorInt.blue;

@@ -23,7 +23,6 @@ public:
 		OmColor colorInt = {GetRandomInt(1,127),
 							GetRandomInt(1,127),
 							GetRandomInt(1,127)};
-
 		return colorInt;
 	}
 

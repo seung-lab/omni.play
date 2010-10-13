@@ -16,7 +16,9 @@ class OmSegmentCache;
 class OmSegment {
 public:
 	OmSegment(const OmSegID, boost::shared_ptr<OmSegmentCache>);
-	const OmSegID value;
+	inline OmSegID value(){
+		return value_;
+	}
 
 	// color
 	void RandomizeColor();
@@ -41,7 +43,7 @@ public:
 
 	quint64 getSize() const { return mSize; }
 	void addToSize(const quint64 inc){
-		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(value);
+		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(value_);
 		mSize += inc;
 	}
 
@@ -62,7 +64,7 @@ public:
 
 	const DataBbox& getBounds() const {	return mBounds;	}
 	void addToBounds(const DataBbox& box){
-		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(value);
+		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(value_);
 		mBounds.merge(box);
 	}
 
@@ -88,6 +90,8 @@ public:
 	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return mCache; }
 
 private:
+	OmSegID value_;
+
 	boost::shared_ptr<OmSegmentCache> mCache;
 	OmColor mColorInt;
 	std::set<OmSegment*> segmentsJoinedIntoMe;

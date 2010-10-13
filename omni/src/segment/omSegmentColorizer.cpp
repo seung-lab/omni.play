@@ -107,7 +107,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 
 	const bool isSelected =
 		mSegmentCache->IsSegmentSelected(segRoot) ||
-		mSegmentCache->isSegmentEnabled(segRoot->value);
+		mSegmentCache->isSegmentEnabled(segRoot->value());
 
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:

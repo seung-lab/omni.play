@@ -171,7 +171,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		}
 
 		OmMipMeshPtr p_mesh;
-		mSeg->GetMesh(p_mesh, chunkCoord, seg->value);
+		mSeg->GetMesh(p_mesh, chunkCoord, seg->value());
 
 		if(!p_mesh){
 			redrawNeeded_ = true;
@@ -186,7 +186,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 		colorMesh(mVolumeCuller->GetDrawOptions(), *iter);
 
 		//draw mesh
-		glPushName(seg->value);
+		glPushName(seg->value());
 		glPushName(OMGL_NAME_MESH);
 
 		p_mesh->Draw();

@@ -229,7 +229,7 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	}
 
 	parent->removeChild(child);
-	graph_cut(child->value);
+	graph_cut(child->value());
 	child->setParentSegID(0);
 	child->setEdgeNumber(-1);
 
@@ -251,7 +251,7 @@ void OmSegmentGraph::updateSizeListsFromJoin( OmSegment * parent, OmSegment * ch
 void OmSegmentGraph::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
 {
 	OmSegment * root = mCache->findRoot(parent);
-	quint64 newChildSize = computeSegmentSizeWithChildren( child->value );
+	quint64 newChildSize = computeSegmentSizeWithChildren( child->value() );
 	getSegmentLists()->mRootListBySize.updateFromSplit( root, child, newChildSize );
 }
 

@@ -56,7 +56,7 @@ void OmSegmentContextMenu::AddSelectionNames()
 	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
 	OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
 
-	addAction( "Segment " + QString::number(r_segment->value)
+	addAction( "Segment " + QString::number(r_segment->value())
 		   + " (Root " + QString::number(r_segment->getRootSegID())
 		   + ")" );
 	QString validText;
@@ -208,13 +208,15 @@ void OmSegmentContextMenu::printChildren()
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if (OmProject::IsSegmentationValid(mSegmentationId)) {
 		OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
-		OmSegmentIterator iter(segmentation.GetSegmentCache());
-		iter.iterOverSegmentID(segmentation.GetSegmentCache()->findRoot(mSegmentId)->value);
+
+		boost::shared_ptr<OmSegmentCache> segCache = segmentation.GetSegmentCache();
+		OmSegmentIterator iter(segCache);
+		iter.iterOverSegmentID(segCache->findRoot(mSegmentId)->value());
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
 			printf("%u : %u, %f, %llu\n",
-			       seg->value,
+			       seg->value(),
 			       seg->getParentSegID(),
 			       seg->getThreshold(),
 			       seg->getSize());
