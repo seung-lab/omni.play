@@ -22,10 +22,12 @@ public:
 	void RandomizeColor();
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return mColorInt; }
-	Vector3f GetColorFloat(){
+	Vector3f GetColorFloat()
+	{
 		return Vector3f( mColorInt.red   / 255.,
-				 mColorInt.green / 255.,
-				 mColorInt.blue  / 255. ); }
+						 mColorInt.green / 255.,
+						 mColorInt.blue  / 255. );
+	}
 	void SetColor(const Vector3f &);
 
 	QString GetNote();
