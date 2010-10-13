@@ -17,18 +17,7 @@ OmPagingPtrStore<T>::OmPagingPtrStore(OmSegmentation * segmentation)
 	, amInBatchMode(false)
 	, needToFlush(false)
 {
-	mValueToSegPtr.resize(DEFAULT_VECTOR_SIZE);
-}
-
-template<typename T>
-OmPagingPtrStore<T>::~OmPagingPtrStore()
-{
-	foreach( const PageNum & pageNum, loadedPageNumbers ){
-		for( quint32 i = 0; i < mPageSize; ++i ){
-			delete mValueToSegPtr[pageNum][i];
-		}
-		mValueToSegPtr[pageNum].clear();
-	}
+	mValueToSeg.resize(DEFAULT_VECTOR_SIZE);
 }
 
 template<typename T>
@@ -49,10 +38,16 @@ void OmPagingPtrStore<T>::SaveDirtyPages()
 }
 
 template<typename T>
+OmDataPath OmPagingPtrStore<T>::getPath(const PageNum pageNum)
+{
+	return OmDataPaths::getSegmentPagePath( mSegmentation->GetID(), pageNum);
+}
+
+template<typename T>
 void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 {
-	const std::vector<T*> & page = mValueToSegPtr[pageNum];
-	OmDataArchiveSegment::ArchiveWrite(OmDataPaths::getSegmentPagePath( mSegmentation->GetID(), pageNum ),
+	const std::vector<T>& page = mValueToSeg[pageNum];
+	OmDataArchiveSegment::ArchiveWrite(getPath(pageNum),
 									   page,
 									   mSegmentation->GetSegmentCache());
 }
@@ -69,11 +64,10 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 {
 	resizeVectorIfNeeded(pageNum);
 
-	std::vector<T*> & page = mValueToSegPtr[pageNum];
-	page.resize( mPageSize, NULL );
+	std::vector<T>& page = mValueToSeg[pageNum];
+	page.resize(mPageSize);
 
-	OmDataArchiveSegment::ArchiveRead( OmDataPaths::getSegmentPagePath(mSegmentation->GetID(),
-																	   pageNum),
+	OmDataArchiveSegment::ArchiveRead(getPath(pageNum),
 									   page,
 									   mSegmentation->GetSegmentCache(),
 									   rewriteSegments);
@@ -86,7 +80,7 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 }
 
 template<typename T>
-void OmPagingPtrStore<T>::AddItem( T* item )
+void OmPagingPtrStore<T>::AddItem(T* item )
 {
 	const OmSegID value = item->value();
 
@@ -94,12 +88,12 @@ void OmPagingPtrStore<T>::AddItem( T* item )
 
 	if( !validPageNumbers.contains(pageNum) ) {
 		resizeVectorIfNeeded(pageNum);
-		mValueToSegPtr[pageNum].resize(mPageSize, NULL);
+		mValueToSeg[pageNum].resize(mPageSize);
 		validPageNumbers.insert(pageNum);
 		loadedPageNumbers.insert(pageNum);
 	}
 
-	mValueToSegPtr[pageNum][value % mPageSize] = item;
+	mValueToSeg[pageNum][value % mPageSize] = *item;
 }
 
 template<typename T>
@@ -118,7 +112,7 @@ bool OmPagingPtrStore<T>::IsValueAlreadyMapped( const OmSegID value )
 		loadValuePage(pageNum);
 	}
 
-	if( NULL != mValueToSegPtr[pageNum][value % mPageSize]){
+	if( 0 != mValueToSeg[pageNum][value % mPageSize].value()){
 		return true;
 	}
 
@@ -179,14 +173,14 @@ T* OmPagingPtrStore<T>::GetItemFromValue(const OmSegID value)
 							boost::lexical_cast<std::string>(value));
 	}
 
-	return mValueToSegPtr[pn][ value % mPageSize];
+	return &(mValueToSeg[pn][ value % mPageSize]);
 }
 
 template<typename T>
 void OmPagingPtrStore<T>::resizeVectorIfNeeded(const PageNum pageNum)
 {
-	if( pageNum >= mValueToSegPtr.size() ){
-		mValueToSegPtr.resize(pageNum*2);
+	if( pageNum >= mValueToSeg.size() ){
+		mValueToSeg.resize(pageNum*2);
 	}
 }
 

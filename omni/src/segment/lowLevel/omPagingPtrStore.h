@@ -9,6 +9,7 @@
 
 typedef quint32 PageNum;
 
+class OmDataPath;
 class OmSegmentation;
 class OmSegmentCache;
 
@@ -16,7 +17,7 @@ template <typename T>
 class OmPagingPtrStore {
  public:
 	OmPagingPtrStore(OmSegmentation*);
-	~OmPagingPtrStore();
+	virtual ~OmPagingPtrStore(){}
 
 	quint32 getPageSize() { return mPageSize; }
 	void SetSegmentationID(const OmId);
@@ -38,7 +39,7 @@ class OmPagingPtrStore {
 	OmSegmentation *const mSegmentation;
 
 	quint32 mPageSize;
-	std::vector< std::vector<T*> > mValueToSegPtr;
+	std::vector< std::vector<T> > mValueToSeg;
 	QSet<PageNum> validPageNumbers;
 	QSet<PageNum> loadedPageNumbers;
 	QSet<PageNum> dirtyPages;
@@ -55,6 +56,7 @@ class OmPagingPtrStore {
 	void loadValuePage(const PageNum);
 	void loadValuePage(const PageNum, const om::RewriteSegments);
 	void doSavePage(const PageNum segPageNum);
+	OmDataPath getPath(const PageNum pageNum);
 
 	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingPtrStore<T2> & ps );
 	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingPtrStore<T2> & ps );

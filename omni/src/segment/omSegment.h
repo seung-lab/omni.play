@@ -15,6 +15,16 @@ class OmSegmentCache;
 
 class OmSegment {
 public:
+	OmSegment()
+		: value_(0)
+		, mParentSegID(0)
+		, mThreshold(0)
+		, mImmutable(false)
+		, mSize(0)
+		, mEdgeNumber(0)
+		, mFreshnessForMeshes(0)
+	{}
+
 	OmSegment(const OmSegID, boost::shared_ptr<OmSegmentCache>);
 	inline OmSegID value(){
 		return value_;

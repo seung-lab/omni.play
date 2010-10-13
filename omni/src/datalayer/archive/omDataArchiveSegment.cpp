@@ -14,7 +14,7 @@ const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
-									   std::vector<OmSegment*> & page,
+									   std::vector<OmSegment> & page,
 									   boost::shared_ptr<OmSegmentCache> cache,
 									   const om::RewriteSegments rewriteSegments)
 {
@@ -23,7 +23,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 }
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
-										   std::vector<OmSegment*> & page,
+										   std::vector<OmSegment> & page,
 										   boost::shared_ptr<OmSegmentCache> cache)
 	: path_(path)
 	, page_(page)
@@ -85,24 +85,20 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[ i ] = NULL;
 			continue;
 		}
 
-		OmSegID val;
-		in >> val;
-		OmSegment * segment = new OmSegment(val, cache_);
-		in >> segment->mColorInt.red;
-		in >> segment->mColorInt.green;
-		in >> segment->mColorInt.blue;
-		in >> segment->mImmutable;
-		in >> segment->mSize;
+		page_[i].mCache = cache_;
+		in >> page_[i].value_;
+		in >> page_[i].mColorInt.red;
+		in >> page_[i].mColorInt.green;
+		in >> page_[i].mColorInt.blue;
+		in >> page_[i].mImmutable;
+		in >> page_[i].mSize;
 
 		if(!overrideVersion && omniFileVersion_ >= 13){
-			in >> segment->mBounds;
+			in >> page_[i].mBounds;
 		}
-
-		page_[ i ] = segment;
 	}
 
 	if(in.atEnd()){
@@ -125,21 +121,17 @@ void OmDataArchiveSegment::readSegmentsNew()
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[ i ] = NULL;
 			continue;
 		}
 
-		OmSegID val;
-		in >> val;
-		OmSegment * segment = new OmSegment(val, cache_);
-		in >> segment->mColorInt.red;
-		in >> segment->mColorInt.green;
-		in >> segment->mColorInt.blue;
-		in >> segment->mImmutable;
-		in >> segment->mSize;
-		in >> segment->mBounds;
-
-		page_[ i ] = segment;
+		page_[i].mCache = cache_;
+		in >> page_[i].value_;
+		in >> page_[i].mColorInt.red;
+		in >> page_[i].mColorInt.green;
+		in >> page_[i].mColorInt.blue;
+		in >> page_[i].mImmutable;
+		in >> page_[i].mSize;
+		in >> page_[i].mBounds;
 	}
 
 	QString omniPostfix;
@@ -150,7 +142,7 @@ void OmDataArchiveSegment::readSegmentsNew()
 }
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
-										const std::vector<OmSegment*> & page,
+										const std::vector<OmSegment> & page,
 										boost::shared_ptr<OmSegmentCache> cache)
 {
 	const int omniFileVersion = OmProjectData::getFileVersion();
@@ -167,22 +159,20 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 	out << Omni_Segment_Version;
 
 	for(uint32_t i = 0; i < cache->getPageSize(); ++i ){
-		OmSegment * segment = page[ i ];
-
-		if (NULL == segment) {
+		if(0 == page[i].value_){
 			out << false;
 			continue;
 		}
 
 		out << true;
 
-		out << segment->value_;
-		out << segment->mColorInt.red;
-		out << segment->mColorInt.green;
-		out << segment->mColorInt.blue;
-		out << segment->mImmutable;
-		out << segment->mSize;
-		out << segment->mBounds;
+		out << page[i].value_;
+		out << page[i].mColorInt.red;
+		out << page[i].mColorInt.green;
+		out << page[i].mColorInt.blue;
+		out << page[i].mImmutable;
+		out << page[i].mSize;
+		out << page[i].mBounds;
 	}
 
 	out << Omni_Postfix;
