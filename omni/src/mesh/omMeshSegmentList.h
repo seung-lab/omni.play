@@ -6,8 +6,8 @@
 #include "segment/omSegmentPointers.h"
 #include "volume/omMipVolume.h"
 
-#include <zi/mutex>
-#include "utility/OmThreadPool.hpp"
+#include "zi/omMutex.h"
+#include "utility/omThreadPool.hpp"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -19,64 +19,55 @@ class OmMeshSegmentListThread;
 
 class OmSegPtrListValid {
 public:
-  OmSegPtrListValid()
-    : isValid(false)
-    , freshness(0)
-    , isFetching(false)
-  {}
-  explicit OmSegPtrListValid(const bool isFetching)
-    : isValid(false)
-    , freshness(0)
-    , isFetching(isFetching)
-  {}
-  OmSegPtrListValid( const OmSegPtrList & L, const quint32 f )
-    : isValid(true)
-    , list(L)
-    , freshness(f)
-    , isFetching(false)
-  {}
+	OmSegPtrListValid()
+		: isValid(false)
+		, freshness(0)
+		, isFetching(false)
+	{}
+	explicit OmSegPtrListValid(const bool isFetching)
+		: isValid(false)
+		, freshness(0)
+		, isFetching(isFetching)
+	{}
+	OmSegPtrListValid( const OmSegPtrList & L, const quint32 f )
+		: isValid(true)
+		, list(L)
+		, freshness(f)
+		, isFetching(false)
+	{}
 
-  bool isValid;
-  OmSegPtrList list;
-  quint32 freshness;
-  bool isFetching;
+	bool isValid;
+	OmSegPtrList list;
+	quint32 freshness;
+	bool isFetching;
 };
 
 class OmMeshSegmentList : boost::noncopyable{
 public:
-  static void Delete();
+	static void Delete();
 
-  static inline std::pair<bool, OmSegPtrList>
-  getFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg) {
-	  return Instance()->doGetFromCacheIfReady(chunk, rootSeg);
-  }
+	static inline boost::optional<OmSegPtrList>
+	getFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg) {
+		return Instance()->doGetFromCacheIfReady(chunk, rootSeg);
+	}
 
 	static void addToCache(OmMipChunkPtr, OmSegment*,
-			       const OmSegPtrList &);
+						   const OmSegPtrList &);
 
 private:
-  //singleton
-  OmMeshSegmentList();
-  ~OmMeshSegmentList();
-  static OmMeshSegmentList* Instance();
-  static OmMeshSegmentList* mspInstance;
+	//singleton
+	OmMeshSegmentList();
+	~OmMeshSegmentList();
+	static OmMeshSegmentList* Instance();
+	static OmMeshSegmentList* mspInstance;
 
-  std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
-  OmThreadPool mThreadPool;
-  zi::Mutex mutex;
+	std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
+	OmThreadPool mThreadPool;
+	zi::mutex mutex;
 
-  std::pair<bool, OmSegPtrList> doGetFromCacheIfReady(OmMipChunkPtr, OmSegment*);
+	boost::optional<OmSegPtrList> doGetFromCacheIfReady(OmMipChunkPtr, OmSegment*);
 
-  static inline OmMeshSegListKey makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg){
-	  const OmMipChunkCoord& c = chunk->GetCoordinate();
-	  return OmMeshSegListKey(rootSeg->getSegmentationID(),
-				  rootSeg->value,
-				  c.Level,
-				  c.Coordinate.x,
-				  c.Coordinate.y,
-				  c.Coordinate.z);
-  }
-
+	static OmMeshSegListKey makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg);
 };
 
 #endif

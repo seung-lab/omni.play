@@ -1,12 +1,12 @@
 #include "common/omCommon.h"
 #include "common/omException.h"
 #include "common/omStd.h"
-#include "datalayer/archive/omDataArchiveQT.h"
+#include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataWriter.h"
 #include "project/omProject.h"
 #include "project/omProjectSaveAction.h"
 #include "segment/actions/omSegmentEditor.h"
@@ -33,8 +33,6 @@ OmProject *OmProject::mspInstance = 0;
 ///////          OmProject
 OmProject::OmProject()
 {
-	mCanFlush = true;
-	mThreadPool.start(3);
 }
 
 OmProject::~OmProject()
@@ -59,8 +57,10 @@ void OmProject::Delete()
 
 /////////////////////////////////
 ///////          Project IO
-QString OmProject::New( QString fileNameAndPath )
+QString OmProject::New(const QString& fileNameAndPathIn)
 {
+	QString fileNameAndPath = fileNameAndPathIn;
+
 	if (!fileNameAndPath.endsWith(".omni")) {
 		fileNameAndPath.append(".omni");
 	}
@@ -77,12 +77,11 @@ QString OmProject::New( QString fileNameAndPath )
 		}
 	}
 
-	OmProjectData::instantiateProjectData( fileNameAndPath );
+	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Create();
 	OmProjectData::Open();
 
-	//load default project preferences
-	omSetDefaultAllPreferences();
+	OmPreferenceDefaults::SetDefaultAllPreferences();
 
 	Save();
 
@@ -91,23 +90,21 @@ QString OmProject::New( QString fileNameAndPath )
 
 void OmProject::Save()
 {
-	SetCanFlush(true);
-
 	if (!OmProjectData::IsOpen()) {
 		return;
 	}
 
-	//TODO: move this into omProjectData
+	//TODO: move this into omProjectData?
 
 	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
-		OmProject::GetSegmentation( segID ).Flush();
 		OmProject::GetSegmentation( segID ).FlushDirtySegments();
 		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
 	}
 
-	OmDataArchiveQT::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(), Instance());
+	OmDataArchiveProject::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(),
+									   Instance());
 
-	OmProjectData::GetDataWriter()->flush();
+	OmProjectData::GetIDataWriter()->flush();
 
 	printf("omni project saved!\n");
 }
@@ -118,7 +115,7 @@ void OmProject::Commit()
 	OmStateManager::ClearUndoStack();
 }
 
-void OmProject::Load( QString fileNameAndPath  )
+void OmProject::Load(const QString& fileNameAndPath)
 {
 	QFileInfo fileInfo( fileNameAndPath );
 	Instance()->mFileName = fileInfo.fileName();
@@ -130,23 +127,24 @@ void OmProject::Load( QString fileNameAndPath  )
 		throw OmIoException( qPrintable( err ));
 	}
 
-	OmProjectData::instantiateProjectData( fileNameAndPath );
+	OmProjectData::instantiateProjectData(fileNameAndPath.toStdString());
 	OmProjectData::Open();
 
 	try {
-		OmDataArchiveQT::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(), Instance());
+		OmDataArchiveProject::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(),
+										  Instance());
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;
 	}
 }
 
-void OmProject::Close(bool doSave)
+void OmProject::Close()
 {
-	SetCanFlush(doSave);
-
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
+	OmMeshSegmentList::Delete();
+//	zi::all_threads::join_all();
 	Delete();
 	OmCacheManager::Delete();
 
@@ -171,14 +169,14 @@ void OmProject::Close(bool doSave)
 
 OmChannel & OmProject::GetChannel(const OmId id)
 {
-        return Instance()->mChannelManager.Get(id);
+	return Instance()->mChannelManager.Get(id);
 }
 
 OmChannel & OmProject::AddChannel()
 {
-        OmChannel & r_channel = Instance()->mChannelManager.Add();
-        (new OmProjectSaveAction())->Run();
-        return r_channel;
+	OmChannel & r_channel = Instance()->mChannelManager.Add();
+	(new OmProjectSaveAction())->Run();
+	return r_channel;
 }
 
 void OmProject::RemoveChannel(const OmId id)
@@ -187,7 +185,7 @@ void OmProject::RemoveChannel(const OmId id)
 
 	OmDataPath path(GetChannel(id).GetDirectoryPath());
 
-        Instance()->mChannelManager.Remove(id);
+	Instance()->mChannelManager.Remove(id);
 
 	OmProjectData::DeleteInternalData(path);
 
@@ -196,22 +194,22 @@ void OmProject::RemoveChannel(const OmId id)
 
 bool OmProject::IsChannelValid(const OmId id)
 {
-        return Instance()->mChannelManager.IsValid(id);
+	return Instance()->mChannelManager.IsValid(id);
 }
 
 const OmIDsSet & OmProject::GetValidChannelIds()
 {
-        return Instance()->mChannelManager.GetValidIds();
+	return Instance()->mChannelManager.GetValidIds();
 }
 
 bool OmProject::IsChannelEnabled(const OmId id)
 {
-        return Instance()->mChannelManager.IsEnabled(id);
+	return Instance()->mChannelManager.IsEnabled(id);
 }
 
 void OmProject::SetChannelEnabled(const OmId id, bool enable)
 {
-        Instance()->mChannelManager.SetEnabled(id, enable);
+	Instance()->mChannelManager.SetEnabled(id, enable);
 }
 
 /////////////////////////////////
@@ -219,33 +217,33 @@ void OmProject::SetChannelEnabled(const OmId id, bool enable)
 
 OmSegmentation & OmProject::GetSegmentation(const OmId id)
 {
-        return Instance()->mSegmentationManager.Get(id);
+	return Instance()->mSegmentationManager.Get(id);
 }
 
 OmSegmentation & OmProject::AddSegmentation()
 {
-        OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
+	OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
 	(new OmProjectSaveAction())->Run();
-        return r_segmentation;
+	return r_segmentation;
 }
 
 void OmProject::RemoveSegmentation(const OmId id)
 {
-        foreach( OmId channelID, OmProject::GetValidChannelIds()) {
-                OmChannel & channel = OmProject::GetChannel(channelID);
-                foreach( OmId filterID, channel.GetValidFilterIds()) {
-                        OmFilter2d &filter = channel.GetFilter(filterID);
-                        if (filter.GetSegmentation() == id){
-                                filter.SetSegmentation(0);
-                        }
-                }
-        }
+	foreach( OmId channelID, OmProject::GetValidChannelIds()) {
+		OmChannel & channel = OmProject::GetChannel(channelID);
+		foreach( OmId filterID, channel.GetValidFilterIds()) {
+			OmFilter2d &filter = channel.GetFilter(filterID);
+			if (filter.GetSegmentation() == id){
+				filter.SetSegmentation(0);
+			}
+		}
+	}
 
 	GetSegmentation(id).CloseDownThreads();
 
 	OmDataPath path(GetSegmentation(id).GetDirectoryPath());
 
-        Instance()->mSegmentationManager.Remove(id);
+	Instance()->mSegmentationManager.Remove(id);
 
 	OmProjectData::DeleteInternalData(path);
 
@@ -254,31 +252,20 @@ void OmProject::RemoveSegmentation(const OmId id)
 
 bool OmProject::IsSegmentationValid(const OmId id)
 {
-        return Instance()->mSegmentationManager.IsValid(id);
+	return Instance()->mSegmentationManager.IsValid(id);
 }
 
 const OmIDsSet & OmProject::GetValidSegmentationIds()
 {
-        return Instance()->mSegmentationManager.GetValidIds();
+	return Instance()->mSegmentationManager.GetValidIds();
 }
 
 bool OmProject::IsSegmentationEnabled(const OmId id)
 {
-        return Instance()->mSegmentationManager.IsEnabled(id);
+	return Instance()->mSegmentationManager.IsEnabled(id);
 }
 
 void OmProject::SetSegmentationEnabled(const OmId id, const bool enable)
 {
-        Instance()->mSegmentationManager.SetEnabled(id, enable);
+	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }
-
-void OmProject::SetCanFlush(bool canFlush)
-{
-	Instance()->mCanFlush = canFlush;
-}
-
-bool OmProject::GetCanFlush()
-{
-	return Instance()->mCanFlush;
-}
-

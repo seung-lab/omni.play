@@ -5,7 +5,7 @@
 #include "volume/omSegmentation.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 #include <QSize>
 

@@ -1,10 +1,11 @@
+#include "mesh/omMipMeshManager.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/archive/omDataArchiveVmml.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "datalayer/omMST.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
@@ -23,7 +24,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 14; // warning: don't change to version 15 (purcaro)
+static const int Omni_Version = 15;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -33,7 +34,7 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	int size;
 
 	OmDataWrapperPtr dw =
-		OmProjectData::GetProjectDataReader()->
+		OmProjectData::GetProjectIDataReader()->
 		readDataset(path, &size);
 
 	QByteArray ba = QByteArray::fromRawData(dw->getPtr<char>(), size);
@@ -62,10 +63,12 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 		throw OmIoException("corruption detected in Omni file");
 	}
 
-	QDir filesDir = OmProjectData::GetFilesFolderPath();
-	if(fileVersion_ < 14 ||
-	   !filesDir.exists()){
+	if(fileVersion_ < 14){
+		OmUpgraders::to15();
 		OmUpgraders::to14();
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 15){
+		OmUpgraders::to15();
 		ArchiveWrite(path, project);
 	}
 }
@@ -84,14 +87,17 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 	out << (*project);
 	out << Omni_Postfix;
 
-	OmProjectData::GetDataWriter()->writeDataset(path,
-												  ba.size(),
-												  OmDataWrapperRaw(ba.data()));
+	OmProjectData::GetIDataWriter()->
+		writeDataset( path,
+			      ba.size(),
+			      OmDataWrapperRaw(ba.constData()));
+
+	OmProjectData::GetIDataWriter()->flush();
 }
 
 QDataStream &operator<<(QDataStream & out, const OmProject & p)
 {
-	out << *OmPreferences::Instance();
+	out << OmPreferences::Instance();
 	out << p.mChannelManager;
 	out << p.mSegmentationManager;
 	return out;
@@ -99,7 +105,7 @@ QDataStream &operator<<(QDataStream & out, const OmProject & p)
 
 QDataStream &operator>>(QDataStream & in, OmProject & p)
 {
-	in >> *OmPreferences::Instance();
+	in >> OmPreferences::Instance();
 	in >> p.mChannelManager;
 	in >> p.mSegmentationManager;
 
@@ -156,7 +162,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm)
 	for(unsigned int i = 0; i < cm.mValidSet.size(); ++i){
 		OmChannel * chan = new OmChannel();
 		in >> *chan;
-		cm.mMap[ chan->GetId() ] = chan;
+		cm.mMap[ chan->GetID() ] = chan;
 	}
 
 	return in;
@@ -170,8 +176,11 @@ QDataStream &operator<<(QDataStream & out, const OmChannel & chan)
 
 	out << chan.mFilter2dManager;
 	out << chan.mWasBounded;
-	out << chan.mMaxVal;
-	out << chan.mMinVal;
+
+	float oldmax = 0; //TODO: delete
+	float oldmin = 0; //TODO: delete
+	out << oldmax;
+	out << oldmin;
 
 	return out;
 }
@@ -185,8 +194,13 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan)
 	in >> chan.mFilter2dManager;
 	if(fileVersion_ > 13) {
 		in >> chan.mWasBounded;
-		in >> chan.mMaxVal;
-		in >> chan.mMinVal;
+
+		float oldmax = 0; //TODO: delete
+		float oldmin = 0; //TODO: delete
+		in >> oldmax;
+		in >> oldmin;
+	} else{
+		chan.mWasBounded = false;
 	}
 
 	if(fileVersion_ > 13){
@@ -241,7 +255,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm)
 	for(unsigned int i = 0; i < fm.mValidSet.size(); ++i){
 		OmFilter2d * filter = new OmFilter2d();
 		in >> *filter;
-		fm.mMap[ filter->GetId() ] = filter;
+		fm.mMap[ filter->GetID() ] = filter;
 	}
 
 	return in;
@@ -297,7 +311,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm)
 	for(unsigned int i = 0; i < sm.mValidSet.size(); ++i){
 		OmSegmentation * seg = new OmSegmentation();
 		in >> *seg;
-		sm.mMap[ seg->GetId() ] = seg;
+		sm.mMap[ seg->GetID() ] = seg;
 	}
 
 	return in;
@@ -309,14 +323,14 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
 	OmDataArchiveProject::storeOmVolume(out, seg);
 	OmDataArchiveProject::storeOmMipVolume(out, seg);
 
-	out << seg.mMipMeshManager;
+	out << (*seg.mMipMeshManager);
 	out << (*seg.mSegmentCache);
 
 	out << seg.mst_->mDendSize;
 	out << seg.mst_->mDendValuesSize;
 	out << seg.mst_->mDendCount;
 	out << seg.mst_->mDendThreshold;
-	out << seg.mGroups;
+	out << (*seg.mGroups);
 
 	return out;
 }
@@ -327,14 +341,14 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 	OmDataArchiveProject::loadOmVolume(in, seg);
 	OmDataArchiveProject::loadOmMipVolume(in, seg);
 
-	in >> seg.mMipMeshManager;
+	in >> (*seg.mMipMeshManager);
 	in >> (*seg.mSegmentCache);
 
 	in >> seg.mst_->mDendSize;
 	in >> seg.mst_->mDendValuesSize;
 	in >> seg.mst_->mDendCount;
 	in >> seg.mst_->mDendThreshold;
-	in >> seg.mGroups;
+	in >> (*seg.mGroups);
 
 	if(fileVersion_ > 13){
 		QDir filesDir = OmProjectData::GetFilesFolderPath();
@@ -606,7 +620,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 	for(unsigned int i = 0; i < gm.mValidSet.size(); ++i){
 		OmGroup * group = new OmGroup();
 		in >> *group;
-		gm.mMap[ group->GetId() ] = group;
+		gm.mMap[ group->GetID() ] = group;
 	}
 
 	return in;

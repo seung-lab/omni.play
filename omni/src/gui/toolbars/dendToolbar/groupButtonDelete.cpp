@@ -15,7 +15,7 @@ GroupButtonDelete::GroupButtonDelete(ValidationGroup * d)
 
 void GroupButtonDelete::doAction()
 {
-	debug("dendbar", "ValidationGroup::deleteGroup\n");
+	//debug(dendbar, "ValidationGroup::deleteGroup\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

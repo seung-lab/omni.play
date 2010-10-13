@@ -4,22 +4,23 @@
 #include "common/omCommon.h"
 #include "datalayer/omDataWrapper.h"
 #include "volume/omVolumeTypes.hpp"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
-
-#include <zi/mutex>
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
+#include "zi/omMutex.h"
 
 class OmHdf5Impl;
 class OmDataPath;
 
 class OmHdf5 : public OmIDataReader,
-	       public OmIDataWriter {
+			   public OmIDataWriter {
 public:
-	static OmHdf5* getHDF5(const QString& fnp, const bool readOnly);
+	static OmHdf5* getHDF5(const std::string& fnp, const bool readOnly);
 
-	virtual ~OmHdf5();
+	virtual ~OmHdf5(){}
 
-	QString getFileNameAndPath();
+	const std::string& getFileNameAndPath(){
+		return m_fileNameAndPath;
+	}
 
 	//file
 	void open();
@@ -40,7 +41,6 @@ public:
 						  const Vector3i&,
 						  const Vector3i&,
 						  const OmVolDataType type);
-	OmDataWrapperPtr readChunkNotOnBoundary( const OmDataPath & path, DataBbox dataExtent);
 	void dataset_image_write_trim( const OmDataPath &, const DataBbox&,
 				       OmDataWrapperPtr data);
 
@@ -52,12 +52,15 @@ public:
 	Vector3i getDatasetDims( const OmDataPath & path );
 
 private:
-	OmHdf5(const QString&, const bool readOnly);
+	OmHdf5(const std::string& fnp, const bool readOnly)
+		: m_fileNameAndPath(fnp)
+		, readOnly_(readOnly)
+	{}
 
-	QString m_fileNameAndPath;
+	const std::string m_fileNameAndPath;
 	const bool readOnly_;
 
-	zi::Mutex fileLock;
+	zi::mutex fileLock;
 	boost::shared_ptr<OmHdf5Impl> hdf5_;
 
 	friend class OmHdf5Manager;

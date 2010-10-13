@@ -23,7 +23,10 @@ public:
 	}
 
 	int GetBytesPerSample();
+	OmRawDataPtrs GetVolPtr(const int level);
 	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord);
+
+	void downsample(OmMipVolume* vol);
 
 private:
 	OmVolDataSrcs volData_;

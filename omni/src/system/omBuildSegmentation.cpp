@@ -74,7 +74,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	stopTimingAndSave(type, build_timer);
 
 	loadDendrogram();
-	(new OmSegmentationThresholdChangeAction(mSeg->GetId(), 0.5))->Run();
+	(new OmSegmentationThresholdChangeAction(mSeg->GetID(), 0.5))->Run();
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()
@@ -84,7 +84,7 @@ void OmBuildSegmentation::do_build_seg_mesh()
 	OmTimer build_timer;
 	startTiming(type, build_timer);
 
-	mSeg->BuildMeshData();
+	mSeg->Mesh();
 
 	stopTimingAndSave(type, build_timer);
 }
@@ -102,7 +102,7 @@ void OmBuildSegmentation::loadDendrogram()
 	startTiming(type, build_timer);
 
 	const QString fname = mFileNamesAndPaths.at(0).filePath();
-	mSeg->mst_->import(*mSeg, fname);
+	mSeg->mst_->import(*mSeg, fname.toStdString());
 
 	stopTimingAndSave(type, build_timer);
 }

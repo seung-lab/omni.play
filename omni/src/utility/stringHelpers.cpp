@@ -55,22 +55,3 @@ QString StringHelpers::getStringFromStringList( const QStringList & data_set )
 	}
 	return str;
 }
-
-QString StringHelpers::commaDeliminateNumber( const long long num )
-{
-	QString rawNumAsStr = QString::number( num );
-
-	QString str;
-	QString::const_iterator i;
-	int counter = 0;
-	for (i = rawNumAsStr.end()-1; i != rawNumAsStr.begin()-1; i-- ){
-		counter++;
-		str.prepend( (*i) );
-		if( 0 == ( counter % 3 ) &&
-		    counter != rawNumAsStr.size() ){
-			str.prepend(',');
-		}
-	}
-
-	return str;
-}

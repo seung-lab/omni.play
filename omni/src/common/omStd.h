@@ -10,98 +10,80 @@
 #define OM_STD_H
 
 // Global Includes
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cassert>
+#include <iostream>
+#include <zi/bits/cstdint.hpp>
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 #include <set>
 #include <map>
 #include <string>
 #include <vector>
 
-#define OMPOW(base,expon) (int)pow((double) base, (double)expon)
-
-// Platform-Dependent Definitions
-#ifdef __APPLE__
-# define powf pow
-# define sinf sin
-# define cosf cos
-# define tanf tan
-# define asinf asin
-# define acosf acos
-# define atanf atan
-# define atan2f atan2
-# define logf log
-# define log10f log10
-# define expf exp
-# define sqrtf sqrt
-#else
-# define HAVE_CLOCK_GETTIME
-#endif // __APPLE__
-
-#ifdef WIN32
-#include <float.h>
-#define ISNAN(x) _isnan(x)
-#define snprintf _snprintf
-#ifndef M_PI
-#define M_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
-#endif
-static inline double round(double val)
-{
-    return floor(val + 0.5);
-}
-#else
-#define ISNAN(x) std::isnan(x)
-#endif
-
-// Global Type Definitions
-// Explicitly-sized versions of integer types
-// from QT
-
-typedef signed char qint8;         /* 8 bit signed */
-typedef unsigned char quint8;      /* 8 bit unsigned */
-typedef short qint16;              /* 16 bit signed */
-typedef unsigned short quint16;    /* 16 bit unsigned */
-typedef int qint32;                /* 32 bit signed */
-typedef unsigned int quint32;      /* 32 bit unsigned */
-typedef long long qint64;           /* 64 bit signed */
-typedef unsigned long long quint64; /* 64 bit unsigned */
-typedef qint64 qlonglong;
-typedef quint64 qulonglong;
-
 // Global Constants
 #define BYTES_PER_MB 1048576
 
-#define EPSILON 1.0e-5
+namespace om{
+	static const uint32_t powers_of_2[] = {
+		1u,
+		2u,
+		4u,
+		8u,
+		16u,
+		32u,
+		64u,
+		128u,
+		256u,
+		512u,
+		1024u,
+		2048u,
+		4096u,
+		8192u,
+		16384u,
+		32768u,
+		65536u,
+		131072u,
+		262144u,
+		524288u,
+		1048576u,
+		2097152u,
+		4194304u,
+		8388608u,
+		16777216u,
+		33554432u,
+		67108864u,
+		134217728u,
+		268435456u,
+		536870912u,
+		1073741824u,
+		2147483648u //2^31
+	};
 
-#ifdef WIN32
-inline quint32 ROUNDDOWN (quint32 a, quint32 n)
+	// 2^n, domain of [0,31]
+	inline uint32_t pow2int(const int exp)
+	{
+		assert(0 <= exp && exp < 32);
+		return powers_of_2[exp];
+	}
+};
+
+//only valid for a>=0
+template <typename T>
+inline T ROUNDDOWN(T a, T b)
 {
-	quint32 __a = (quint32) (a);
-	return (__a - __a % (n));
-}
-inline quint32 ROUNDUP (quint32 a, quint32 n)
-{
-	quint32 __n = (quint32) (n);
-	return (ROUNDDOWN((quint32) (a) + __n - 1, __n));
+	return a - a % b;
 }
 
-#else
-// Rounding operations (efficient when n is a power of 2)
-// Round down to the nearest multiple of n
-#define ROUNDDOWN(a, n)			\
-({					\
-	quint32 __a = (quint32) (a);	\
-	(typeof(a)) (__a - __a % (n));	\
-})
-// Round up to the nearest multiple of n
-#define ROUNDUP(a, n)				\
-({						\
-	quint32 __n = (quint32) (n);		\
-	(typeof(a)) (ROUNDDOWN((quint32) (a) + __n - 1, __n));	\
-})
-#endif
+//only valid for numToRound >= 0
+template <typename T>
+inline T ROUNDUP(T numToRound, T multiple)
+{
+	assert( multiple );
+	numToRound += multiple - 1;
+	return ROUNDDOWN( numToRound, multiple );
+}
 
 #endif

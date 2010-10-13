@@ -48,7 +48,7 @@ QGroupBox* PreferencesMesh::makeSmoothnessBox()
 	QGroupBox* groupBox = makeBoxGeneric( &nsSliderLabel, &nsSlider, "Normal Smoothness");
 
 	connect(nsSlider, SIGNAL(valueChanged(int)), this, SLOT(on_nsSlider_valueChanged()));
-	nsSlider->setValue(OmPreferences::GetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT));
+	nsSlider->setValue(OmPreferences::GetInteger(om::PREF_MESH_NUM_SMOOTHING_ITERS_INT));
 	nsSliderLabel->setNum(nsSlider->value());
 
 	return groupBox;
@@ -59,7 +59,7 @@ QGroupBox* PreferencesMesh::makeSharpnessBox()
 	QGroupBox* groupBox = makeBoxGeneric( &pasSliderLabel, &pasSlider, "Preserved Angle Sharpness");
 
 	connect(pasSlider, SIGNAL(valueChanged(int)), this, SLOT(on_pasSlider_valueChanged()));
-	pasSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT)));
+	pasSlider->setValue(floor(OmPreferences::GetFloat(om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT)));
 	pasSliderLabel->setNum(pasSlider->value());
 
 	return groupBox;
@@ -69,7 +69,7 @@ QGroupBox* PreferencesMesh::makeDecimationBox()
 	QGroupBox* groupBox = makeBoxGeneric( &tdpSliderLabel, &tdpSlider, "Target Decimation Percentage");
 
 	connect(tdpSlider, SIGNAL(valueChanged(int)), this, SLOT(on_tdpSlider_valueChanged()));
-	tdpSlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT)));
+	tdpSlider->setValue(floor(OmPreferences::GetFloat(om::PREF_MESH_REDUCTION_PERCENT_FLT)));
 	tdpSliderLabel->setNum(tdpSlider->value());
 
 	return groupBox;
@@ -78,20 +78,20 @@ QGroupBox* PreferencesMesh::makeDecimationBox()
 void PreferencesMesh::on_tdpSlider_valueChanged()
 {
 	tdpSliderLabel->setNum(tdpSlider->value());
-	OmPreferences::SetFloat(OM_PREF_MESH_REDUCTION_PERCENT_FLT, tdpSlider->value());
+	OmPreferences::SetFloat(om::PREF_MESH_REDUCTION_PERCENT_FLT, tdpSlider->value());
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }
 
 void PreferencesMesh::on_pasSlider_valueChanged()
 {
 	pasSliderLabel->setNum(pasSlider->value());
-	OmPreferences::SetFloat(OM_PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, pasSlider->value());
+	OmPreferences::SetFloat(om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, pasSlider->value());
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }
 
 void PreferencesMesh::on_nsSlider_valueChanged()
 {
 	nsSliderLabel->setNum(nsSlider->value());
-	OmPreferences::SetInteger(OM_PREF_MESH_NUM_SMOOTHING_ITERS_INT, nsSlider->value());
+	OmPreferences::SetInteger(om::PREF_MESH_NUM_SMOOTHING_ITERS_INT, nsSlider->value());
 	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
 }

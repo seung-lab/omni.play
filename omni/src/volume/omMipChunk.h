@@ -11,84 +11,53 @@
  */
 
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
-#include "system/cache/omCacheableBase.h"
+#include "datalayer/omIDataWriter.h"
 #include "utility/image/omImage.hpp"
 #include "volume/omMipChunkCoord.h"
 #include "volume/omVolumeTypes.hpp"
 
-#include <QMutex>
+#include "zi/omMutex.h"
 
+class OmMipVolumeCache;
 class OmVolumeCuller;
 class OmSegmentCache;
 class OmChunkData;
 class OmMipVolume;
 
-class OmMipChunk : public OmCacheableBase {
-
+class OmMipChunk {
 public:
-	OmMipChunk(const OmMipChunkCoord &rMipCoord, OmMipVolume *pMipVolume);
-	virtual ~OmMipChunk();
+	OmMipChunk(const OmMipChunkCoord &coord, OmMipVolume* vol);
+	virtual ~OmMipChunk(){}
 
+	bool ContainsVoxel(const DataCoord &vox);
+	const Vector3i GetDimensions();
 	int GetNumberOfVoxelsInChunk() const;
-
-	void Open();
-	void OpenForWrite();
-	void Flush();
-	void Close();
-	bool IsOpen();
-
-	//properties
 	const DataBbox& GetExtent();
 
-	//dirty accessors
-	bool IsDirty();
-	bool IsVolumeDataDirty();
-	bool IsMetaDataDirty();
-
-
-	template <typename T> void RawWriteChunkData(T* data){
-		QMutexLocker locker(&mOpenLock);
-		mHDF5data = OmDataWrapper<T>::produceNoFree(data);
-		writeHDF5();
-	}
 	OmDataWrapperPtr RawReadChunkDataHDF5();
-	bool mIsRawChunkOpen;
-	OmDataWrapperPtr mHDF5data;
 	void copyInTile(const int sliceOffset, uchar* bits);
-	void dealWithCrazyNewStuff();
-	bool mIsRawMappedChunkOpen;
-	OmDataWrapperPtr mRawMappedChunk;
-	void copyChunkFromMemMapToHDF5();
 	void copyDataFromHDF5toMemMap();
-	void copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5);
+	void copyInChunkData(OmDataWrapperPtr hdf5);
+	OmImage<uint32_t, 3> GetCopyOfChunkDataAsOmImage32();
+	boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
+	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
+	OmImage<uint32_t, 3> GetMeshOmImageData();
+	bool compare(OmMipChunkPtr other);
 
-	OmImage<uint32_t, 3> getOmImage32Chunk();
+	double GetMinValue();
+	double GetMaxValue();
 
-	//data accessors
-	virtual quint32 GetVoxelValue(const DataCoord &vox);
-	virtual void SetVoxelValue(const DataCoord &vox, quint32 value);
-	OmDataWrapperPtr GetImageDataWrapper();
-	void GetBounds(float & maxout, float & minout);
-	void SetImageData(OmDataWrapperPtr data);
-
-
-	//meta data io
-	virtual void ReadVolumeData();
-	virtual void WriteVolumeData();
-	void ReadMetaData();
-	void WriteMetaData();
-
+	virtual uint32_t GetVoxelValue(const DataCoord &vox);
+	virtual void SetVoxelValue(const DataCoord &vox, uint32_t value);
 
 	//meta data accessors
 	const OmSegIDsSet & GetModifiedVoxelValues();
 	void ClearModifiedVoxelValues();
 
-
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
 	void RefreshDirectDataValues(const bool,
-				     boost::shared_ptr<OmSegmentCache>);
+								 boost::shared_ptr<OmSegmentCache>);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();
@@ -102,40 +71,15 @@ public:
 	const OmMipChunkCoord& GetParentCoordinate();
 	const std::set<OmMipChunkCoord>& GetChildrenCoordinates();
 
-	//slice
-        boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
-	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);
-
-	//meshing
-        OmImage<uint32_t, 3> GetMeshOmImageData();
-
-	bool ContainsVoxel(const DataCoord &vox);
-	const Vector3i GetDimensions();
-
-	bool compare(OmMipChunkPtr other);
-
 protected:
-	OmMipVolume *const mpMipVolume;
-	bool mIsOpen;
+	OmMipVolume *const vol_;
 
-	bool containedValuesDataLoaded;
-	bool mChunkVolumeDataDirty;
-	bool mChunkMetaDataDirty;
+	void InitChunk(const OmMipChunkCoord &rMipCoord);
 
-	void SetOpen(bool);
-
-	mutable QMutex mOpenLock;
-	mutable QMutex mDirectDataValueLock;
-	virtual void InitChunk(const OmMipChunkCoord &rMipCoord);
-
-	//cache direct and indirectly contained values for drawing tree
+	zi::mutex mDirectDataValueLock;
 	void loadMetadataIfPresent();
 	OmSegIDsSet mDirectlyContainedValues;
-
-	void setVolDataDirty();
-	void setMetaDataDirty();
-	void setVolDataClean();
-	void setMetaDataClean();
+	bool containedValuesDataLoaded;
 
 	//octree properties
 	DataBbox mDataExtent;
@@ -145,20 +89,16 @@ protected:
 	OmMipChunkCoord mParentCoord;
 	std::set<OmMipChunkCoord> mChildrenCoordinates;
 
-	//chunk properties
-	std::string mFileName;
-	std::string mDirectoryPath;
-
 	//voxel management
 	OmSegIDsSet mModifiedVoxelValues;
 
- private:
-	//FIXME: remove once downsmapling no longer using VTK stuff
-	OmDataWrapperPtr mData;
+private:
+	OmMipVolumeCache *const cache_;
 
 	boost::shared_ptr<OmChunkData> mChunkData;
 
-	void writeHDF5();
+	void ReadMetaData();
+	void WriteMetaData();
 
 	friend class OmMipVolume;
 	friend class OmChunkData;

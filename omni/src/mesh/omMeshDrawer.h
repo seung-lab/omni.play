@@ -13,30 +13,29 @@ class OmVolumeCuller;
 
 class OmMeshDrawer : boost::noncopyable
 {
- public:
-	OmMeshDrawer(const OmId, OmViewGroupState *);
-	~OmMeshDrawer();
+public:
+	OmMeshDrawer(OmSegmentation*, OmViewGroupState*);
+	virtual ~OmMeshDrawer(){}
 
-	void Init();
 	void Draw(OmVolumeCuller &);
 
- private:
-	const OmId mSegmentationID;
-	OmSegmentation* mSeg;
-	boost::shared_ptr<OmSegmentCache> mSegmentCache;
-	OmViewGroupState* mViewGroupState;
-	OmVolumeCuller* mVolumeCuller;
+private:
+	OmSegmentation *const mSeg;
+	OmViewGroupState *const mViewGroupState;
+	const boost::shared_ptr<OmSegmentCache> mSegmentCache;
 
+	boost::shared_ptr<OmVolumeCuller> mVolumeCuller;
 	OmSegPtrList mRootSegsToDraw;
+	bool redrawNeeded_;
 
-	void DrawChunkRecursive(const OmMipChunkCoord &, bool testVis );
-	void DrawChunk(OmMipChunkPtr);
+	void drawChunkRecursive(const OmMipChunkCoord &, bool testVis );
+	void drawChunk(OmMipChunkPtr);
 	void doDrawChunk(const OmMipChunkCoord &, const OmSegPtrList &);
-	bool ShouldChunkBeDrawn(OmMipChunkPtr p_chunk);
-	void DrawClippedExtent(OmMipChunkPtr p_chunk);
-	void ColorMesh(const OmBitfield & drawOps, OmSegment * segment);
-	void ApplyColor(OmSegment * seg, const OmBitfield & drawOps,
-			const OmSegmentColorCacheType sccType);
+	bool shouldChunkBeDrawn(OmMipChunkPtr p_chunk);
+	void drawClippedExtent(OmMipChunkPtr p_chunk);
+	void colorMesh(const OmBitfield & drawOps, OmSegment * segment);
+	void applyColor(OmSegment * seg, const OmBitfield & drawOps,
+					const OmSegmentColorCacheType sccType);
 };
 
 #endif

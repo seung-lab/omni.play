@@ -1,7 +1,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/mainToolbar/openViewGroupButton.h"
 #include "project/omProject.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 OpenViewGroupButton::OpenViewGroupButton(MainWindow * mw)
 	: OmButton<MainWindow>( mw, 

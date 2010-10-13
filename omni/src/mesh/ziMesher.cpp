@@ -1,12 +1,15 @@
+#include "omMipMeshManager.h"
 #include "ziMesher.h"
 #include "ziMesherManager.h"
-#include "boost/shared_ptr.hpp"
+
 #include "zi/base/base.h"
-#include <map>
-#include <zi/system>
 #include "ziMeshingChunk.h"
-#include <zi/threads>
-#include <zi/system>
+
+#include <map>
+#include "boost/shared_ptr.hpp"
+
+#include "zi/omThreads.h"
+#include <zi/system.hpp>
 
 using boost::shared_ptr;
 
@@ -30,7 +33,7 @@ void ziMesher::mesh() {
 
   FOR_EACH(it, levelZeroChunks_) {
 
-    double error = 1e-5;
+    double error = 1e-4;
     OmMipChunkCoord c = *it;
     shared_ptr<ziMeshingChunk> worker(new ziMeshingChunk(segmentationId_, c,
                                                          mipMeshManager_,
@@ -53,24 +56,21 @@ void ziMesher::mesh() {
 
   }
 
-  shared_ptr<zi::ThreadFactory> factory(new zi::ThreadFactory());
-  factory->setDetached(false);
-  shared_ptr<zi::ThreadManager> manager =
-    shared_ptr<zi::ThreadManager>(new zi::ThreadManager(factory, getQueueSize()));
+  zi::task_manager::simple manager(getQueueSize());
 
-  manager->start();
+  manager.start();
 
   FOR_EACH(it, workers)
-    manager->addTask(*it);
+    manager.push_back(*it);
 
-  manager->join();
+  manager.join();
 }
 
 int ziMesher::getQueueSize() {
   //TODO: retrieve from omLocalPreferences? (purcaro)
   //Update by aleks: this actually shouldn't be too big, since
   // each thread eats a lot of memory (pre loads the data)
-  int idealNum = zi::System::GetTotalGB() / 3;
+  int idealNum = zi::system::memory_gb / 3;
   if( idealNum < 2){
     idealNum = 2;
   }

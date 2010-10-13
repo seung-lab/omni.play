@@ -1,18 +1,19 @@
 #ifndef CHANINSPECTOR_H
 #define CHANINSPECTOR_H
 
-#include <QWidget> 
-#include "ui_chanInspector.h" 
-#include "utility/dataWrappers.h"
+#include <QWidget>
+#include "ui_chanInspector.h"
 #include "volume/omChannel.h"
 #include <QFileInfoList>
 #include <QStringList>
 
+class ChannelDataWrapper;
+
 class ChanInspector : public QWidget, public Ui::chanInspector
-{ 
-	Q_OBJECT 
-	
- public: 
+{
+	Q_OBJECT
+
+ public:
 	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent);
 
 	OmId getChannelID();
@@ -30,12 +31,12 @@ class ChanInspector : public QWidget, public Ui::chanInspector
 	void nameEditChanged();
 
  private:
-	ChannelDataWrapper cdw;
+	boost::shared_ptr<ChannelDataWrapper> cdw;
 	void updateFileList();
 	void populateChannelInspector();
 
 	QDir getDir();
 	QStringList getFileList();
 	QFileInfoList getFileInfoList();
-}; 
+};
 #endif

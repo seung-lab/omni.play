@@ -6,7 +6,7 @@
 #include "gui/toolbars/dendToolbar/groupButtonDelete.h"
 #include "gui/toolbars/dendToolbar/groupButtonTag.h"
 #include "gui/toolbars/dendToolbar/showValidatedButton.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 ValidationGroup::ValidationGroup(DendToolBar * d)
 	: OmWidget(d)
@@ -43,7 +43,7 @@ ValidationGroup::ValidationGroup(DendToolBar * d)
 
 void ValidationGroup::changeMapColors()
 {
-	debug("valid", "ValidationGroup::changeMapColors(%i)\n", showValidatedButton->isChecked());
+	//debug(valid, "ValidationGroup::changeMapColors(%i)\n", showValidatedButton->isChecked());
 	// Using !(not) because check happens after this fuction.
 	getViewGroupState()->SetShowValidMode(showValidatedButton->isChecked(), showValid->isChecked());
 }

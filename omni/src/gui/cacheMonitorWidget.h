@@ -1,23 +1,20 @@
 #ifndef CACHE_MONITOR_WIDGET_H
 #define CACHE_MONITOR_WIDGET_H
 
+#include "common/omCommon.h"
 #include <QtGui>
-#include "system/cache/omCacheManager.h"
 
-class CacheMonitorWidget : public QWidget 
-{
+class CacheMonitorWidget : public QWidget {
+	Q_OBJECT
 
-Q_OBJECT
-
- public:
+public:
 	CacheMonitorWidget(QWidget *parent);
-	~CacheMonitorWidget();
-	
- signals:
+
+signals:
 	void triggerCacheView();
 
- private:
-	QGroupBox* ShowDisplay( QString cacheType, OmCacheGroupEnum cacheGroup );
+private:
+	QGroupBox* showDisplay(const QString&, const OmCacheGroupEnum);
 };
 
 #endif

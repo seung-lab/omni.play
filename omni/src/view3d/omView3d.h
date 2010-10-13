@@ -79,7 +79,6 @@ class OmView3d : public QGLWidget,
 	//draw methods
 	void Draw(OmBitfield option);
 	void DrawVolumes(OmBitfield option);
-	void DrawEditSelectionVoxels();
 	void DrawWidgets();
 	void doTimedDraw();
 	void myUpdate();
@@ -104,6 +103,8 @@ class OmView3d : public QGLWidget,
 	std::vector< OmView3dWidget* > mView3dWidgetManager;
 
 	std::vector<int> mMousePickResult;
+
+	void initLights();
 
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;

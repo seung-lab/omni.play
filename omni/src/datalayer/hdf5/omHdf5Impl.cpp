@@ -50,12 +50,6 @@ void OmHdf5Impl::allocateChunkedDataset(const OmDataPath & path,
 	hdf_->allocateChunkedDataset(dataDims, chunkDims, type);
 }
 
-OmDataWrapperPtr OmHdf5Impl::readChunkNotOnBoundary(const OmDataPath & path, DataBbox dataExtent)
-{
-	hdf_->setPath(path);
-	return hdf_->readChunkNotOnBoundary(dataExtent);
-}
-
 OmDataWrapperPtr OmHdf5Impl::readDataset(const OmDataPath & path,
 					      int *size)
 {

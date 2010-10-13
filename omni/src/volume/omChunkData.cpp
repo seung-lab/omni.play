@@ -1,3 +1,4 @@
+#include "volume/omMipChunk.h"
 #include "utility/image/omImage.hpp"
 #include "volume/omChunkData.hpp"
 #include "volume/omVolumeData.hpp"
@@ -5,8 +6,8 @@
 #include "utility/omChunkVoxelWalker.hpp"
 
 OmChunkData::OmChunkData(OmMipVolume* vol,
-			 OmMipChunk* chunk,
-			 const OmMipChunkCoord &coord)
+						 OmMipChunk* chunk,
+						 const OmMipChunkCoord &coord)
 	: vol_(vol)
 	, chunk_(chunk)
 	, coord_(coord)
@@ -57,10 +58,10 @@ private:
 	const int offset;
 };
 boost::shared_ptr<uint8_t> OmChunkData::ExtractDataSlice8bit(const ViewType plane,
-							     const int offset)
+															 const int offset)
 {
 	return boost::apply_visitor(ExtractDataSlice8bitVisitor(plane, offset),
-				    getRawData());
+								getRawData());
 }
 
 
@@ -98,24 +99,35 @@ private:
 	const int offset;
 };
 boost::shared_ptr<uint32_t> OmChunkData::ExtractDataSlice32bit(const ViewType plane,
-							       const int offset)
+															   const int offset)
 {
 	return boost::apply_visitor(ExtractDataSlice32bitVisitor(plane, offset),
-				    getRawData());
+								getRawData());
 }
 
 
 class ProcessChunkVoxel {
 public:
 	ProcessChunkVoxel(OmMipChunk* chunk,
-			  const bool computeSizes,
-			  boost::shared_ptr<OmSegmentCache> segCache)
+					  const bool computeSizes,
+					  boost::shared_ptr<OmSegmentCache> segCache)
 		: chunk_(chunk)
 		, computeSizes_(computeSizes)
 		, minVertexOfChunk_(chunk_->GetExtent().getMin())
-		, segCache_(segCache) {}
+		, segCache_(segCache)
+	{}
 
-	void processVoxel(const OmSegID val, const Vector3i& voxelPos)
+	~ProcessChunkVoxel()
+	{
+		FOR_EACH(iter, localSegCache_){
+			const OmSegID val = iter->first;
+			OmSegment* seg = iter->second;
+			seg->addToSize(sizes_[val]);
+			seg->addToBounds(bounds_[val]);
+		}
+	}
+
+	inline void processVoxel(const OmSegID val, const Vector3i& voxelPos)
 	{
 		chunk_->mDirectlyContainedValues.insert(val);
 
@@ -123,37 +135,36 @@ public:
 			return;
 		}
 
-		OmSegment* seg = getOrAddSegment(val);
-		seg->addToSize(1);
-
-		const DataBbox box(minVertexOfChunk_ + voxelPos,
-				   minVertexOfChunk_ + voxelPos);
-		seg->addToBounds(box);
-	}
-
-	OmSegment* getOrAddSegment(const OmSegID val)
-	{
-		if(0 == localSegCache_.count(val)){
-			return localSegCache_[val] =
-				segCache_->GetOrAddSegment(val);
-		}
-		return localSegCache_[val];
+		getOrAddSegment(val);
+		sizes_[val] = 1 + sizes_[val];
+		bounds_[val].merge(DataBbox(minVertexOfChunk_ + voxelPos,
+									minVertexOfChunk_ + voxelPos));
 	}
 
 private:
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
+	const boost::shared_ptr<OmSegmentCache> segCache_;
 
-	boost::shared_ptr<OmSegmentCache> segCache_;
-	std::map<OmSegID, OmSegment*> localSegCache_;
+	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
+	boost::unordered_map<OmSegID, uint64_t> sizes_;
+	boost::unordered_map<OmSegID, DataBbox> bounds_;
+
+	OmSegment* getOrAddSegment(const OmSegID val)
+	{
+		if(!localSegCache_.count(val)){
+			return localSegCache_[val] = segCache_->GetOrAddSegment(val);
+		}
+		return localSegCache_[val];
+	}
 };
 
 class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{
 public:
 	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
-				       const bool computeSizes,
-				       boost::shared_ptr<OmSegmentCache> segCache)
+								   const bool computeSizes,
+								   boost::shared_ptr<OmSegmentCache> segCache)
 		: chunk_(chunk)
 		, computeSizes_(computeSizes)
 		, segCache_(segCache) {}
@@ -183,12 +194,12 @@ private:
 	}
 };
 void OmChunkData::RefreshDirectDataValues(const bool computeSizes,
-					  boost::shared_ptr<OmSegmentCache> segCache)
+										  boost::shared_ptr<OmSegmentCache> segCache)
 {
 	boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_,
-							    computeSizes,
-							    segCache),
-			     getRawData());
+														computeSizes,
+														segCache),
+						 getRawData());
 }
 
 
@@ -212,33 +223,14 @@ private:
 void OmChunkData::copyInTile(const int sliceOffset, uchar* bits)
 {
 	boost::apply_visitor(CopyInDataVisitor(sliceOffset, bits),
-			     getRawData());
-}
-
-
-class CopyDataFromMemMapToHDF5Visitor : public boost::static_visitor<>{
-public:
-	CopyDataFromMemMapToHDF5Visitor(OmMipChunk* chunk)
-		: chunk_(chunk) {}
-
-	template <typename T>
-	void operator()(T* d) const {
-		chunk_->RawWriteChunkData(d);
-	}
-private:
-	OmMipChunk* chunk_;
-};
-void OmChunkData::copyChunkFromMemMapToHDF5()
-{
-	boost::apply_visitor(CopyDataFromMemMapToHDF5Visitor(chunk_),
-			     getRawData());
+						 getRawData());
 }
 
 
 class CopyDataFromHDF5toMemMapVisitor : public boost::static_visitor<>{
 public:
 	CopyDataFromHDF5toMemMapVisitor(OmMipChunk* chunk,
-					OmDataWrapperPtr hdf5)
+									OmDataWrapperPtr hdf5)
 		: chunk_(chunk), hdf5_(hdf5) {}
 
 	template <typename T>
@@ -258,14 +250,13 @@ void OmChunkData::copyDataFromHDF5toMemMap()
 {
 	OmDataWrapperPtr hdf5 = chunk_->RawReadChunkDataHDF5();
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
-			     getRawData());
+						 getRawData());
 }
 void OmChunkData::copyDataFromHDF5toMemMap(OmDataWrapperPtr hdf5)
 {
 	boost::apply_visitor(CopyDataFromHDF5toMemMapVisitor(chunk_, hdf5),
 			     getRawData());
 }
-
 
 class GetOmImage32ChunkVisitor
 	: public boost::static_visitor<OmImage<uint32_t, 3> >{
@@ -276,13 +267,13 @@ public:
 	template <typename T>
 	OmImage<uint32_t, 3> operator()(T* d) const {
 		OmImage<T,3> data(OmExtents[128][128][128],
-				  d);
+						  d);
 		return data.recastToUint32();
 	}
 
 	OmImage<uint32_t, 3> operator()(uint32_t* d) const {
 		return OmImage<uint32_t, 3>(OmExtents[128][128][128],
-					    d);
+									d);
 	}
 
 	OmImage<uint32_t, 3> operator()(float*) const {
@@ -291,10 +282,10 @@ public:
 private:
 	OmMipChunk* chunk_;
 };
-OmImage<uint32_t, 3> OmChunkData::getOmImage32Chunk()
+OmImage<uint32_t, 3> OmChunkData::GetCopyOfChunkDataAsOmImage32()
 {
 	return boost::apply_visitor(GetOmImage32ChunkVisitor(chunk_),
-				    getRawData());
+								getRawData());
 }
 
 
@@ -306,7 +297,7 @@ public:
 	template <typename T>
 	uint32_t operator()(T* d) const {
 		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
-						 d);
+										 d);
 		const uint32_t oldVal = data.getVoxel(voxel_.z, voxel_.y, voxel_.x);
 		data.setVoxel(voxel_.z, voxel_.y, voxel_.x, val_);
 		return oldVal;
@@ -318,7 +309,7 @@ private:
 uint32_t OmChunkData::SetVoxelValue(const DataCoord & voxel, uint32_t val)
 {
 	return boost::apply_visitor(SetVoxelValueVisitor(voxel, val),
-				    getRawData());
+								getRawData());
 }
 
 
@@ -330,7 +321,7 @@ public:
 	template <typename T>
 	uint32_t operator()(T* d) const {
 		OmImage<T,3,OmImageRefData> data(OmExtents[128][128][128],
-						 d);
+										 d);
 		return data.getVoxel(voxel_.z, voxel_.y, voxel_.x);
 	}
 private:
@@ -339,7 +330,7 @@ private:
 uint32_t OmChunkData::GetVoxelValue(const DataCoord & voxel)
 {
 	return boost::apply_visitor(GetVoxelValueVisitor(voxel),
-				    getRawData());
+								getRawData());
 }
 
 
@@ -370,5 +361,35 @@ private:
 bool OmChunkData::compare(boost::shared_ptr<OmChunkData> other)
 {
 	return boost::apply_visitor(CompareVisitor(other->getRawData()),
-				    getRawData());
+								getRawData());
+}
+
+class GetMaxVisitor : public boost::static_visitor<double>{
+public:
+	template <typename T>
+	double operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+						  d);
+		return static_cast<double>(data.getMax());
+	}
+};
+double OmChunkData::GetMaxValue()
+{
+	return boost::apply_visitor(GetMaxVisitor(),
+								getRawData());
+}
+
+class GetMinVisitor : public boost::static_visitor<double>{
+public:
+	template <typename T>
+	double operator()(T* d) const {
+		OmImage<T,3> data(OmExtents[128][128][128],
+						  d);
+		return data.getMin();
+	}
+};
+double OmChunkData::GetMinValue()
+{
+	return boost::apply_visitor(GetMinVisitor(),
+								getRawData());
 }

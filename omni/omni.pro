@@ -1,10 +1,17 @@
 QT += opengl
 TEMPLATE = app
+CONFIG += qt
+
+mac {
+  CONFIG += release
+}
+else {
+ CONFIG += debug
+}
 
 DEPENDPATH += . \
            include \
            include/vmmlib \
-           include/zi_lib \
            include/enum \
            include/enum/enum \
            lib \
@@ -30,13 +37,13 @@ DEPENDPATH += . \
            src/segment/lowLevel \
            src/system \
            src/system/events \
-           src/system/viewGroup \
            src/utility \
            src/utility/bin \
            src/utility/build \
            src/view2d \
            src/view3d \
            src/view3d/widgets \
+           src/viewGroup \
            src/volume \
            tests \
            tests/segment \
@@ -49,7 +56,6 @@ HEADERS += lib/strnatcmp.h \
            src/common/omException.h \
            src/common/omGl.h \
            src/common/omStd.h \
-           src/common/omVtk.h \
            src/datalayer/fs/omMemMappedFileQT.hpp \
            src/datalayer/omIDataVolume.hpp \
            src/datalayer/omMST.h \
@@ -57,11 +63,11 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
            src/datalayer/archive/omDataArchiveProject.h \
-           src/datalayer/archive/omDataArchiveQT.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/archive/omDataArchiveVmml.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
+           src/datalayer/upgraders/omUpgradeTo15.hpp \
            src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/fs/omActionLoggerFSthread.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \
@@ -74,27 +80,28 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataLayer.h \
            src/datalayer/omDataPath.h \
            src/datalayer/omDataPaths.h \
-           src/datalayer/omDataReader.h \
+           src/datalayer/omIDataReader.h \
            src/datalayer/omDataWrapper.h \
-           src/datalayer/omDataWriter.h \
+           src/datalayer/omIDataWriter.h \
            src/datalayer/omDummyWriter.h \
+           src/gui/meshPreviewer/meshPreviewer.hpp \
            src/gui/mstViewer.hpp \
            src/gui/cacheMonitorDialog.h \
            src/gui/groupsTable.h \
            src/gui/cacheMonitorWidget.h \
            src/gui/elementListBox.h \
            src/gui/guiUtils.h \
-           src/gui/headless.h \
+           src/headless/headless.h \
            src/gui/inspectors/chanInspector.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
-           src/gui/inspectors/segInspector.h \
+           src/gui/inspectors/segmentation/segInspector.h \
            src/gui/inspectors/segmentation/addSegmentButton.h \
            src/gui/inspectors/segObjectInspector.h \
            src/gui/inspectors/ui_chanInspector.h \
            src/gui/inspectors/volInspector.h \
-           src/gui/inspectors/exportMST.hpp \
-           src/gui/inspectors/exportSegmentList.hpp \
+           src/gui/inspectors/segmentation/exportMST.hpp \
+           src/gui/inspectors/segmentation/exportSegmentList.hpp \
            src/gui/mainwindow.h \
            src/gui/menubar.h \
            src/gui/myInspectorWidget.h \
@@ -114,6 +121,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/segmentListRecent.h \
            src/gui/segmentListValid.h \
            src/gui/segmentListWorking.h \
+           src/gui/meshPreviewer/previewButton.hpp \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
            src/gui/toolbars/dendToolbar/breakButton.h \
            src/gui/toolbars/dendToolbar/joinButton.h \
@@ -165,8 +173,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/actions/segment/omSegmentGroupAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
-           src/segment/lowLevel/DynamicTree.h \
-           src/segment/lowLevel/DynamicTreeContainer.h \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
@@ -184,6 +190,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentQueue.h \
            src/segment/omSegmentSelector.h \
            src/segment/omSegmentLists.hpp \
+           src/system/omGenericManager.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
            src/system/events/omSegmentEvent.h \
@@ -191,15 +198,14 @@ HEADERS += lib/strnatcmp.h \
            src/system/events/omView3dEvent.h \
            src/system/events/omViewEvent.h \
            src/system/omAction.h \
-           src/system/omAnimate.h \
            src/system/omBuildChannel.h \
            src/system/omBuildSegmentation.h \
            src/system/omBuildVolumes.h \
+           src/system/cache/omLockedCacheObjects.hpp \
            src/system/cache/omCacheBase.h \
            src/system/cache/omCacheInfo.h \
            src/system/cache/omCacheManager.h \
            src/system/cache/omCacheGroup.h \
-           src/system/cache/omCacheableBase.h \
            src/system/omEvent.h \
            src/system/omGroup.h \
            src/system/omGroups.h \
@@ -211,29 +217,59 @@ HEADERS += lib/strnatcmp.h \
            src/system/omStateManager.h \
            src/system/cache/omThreadedCache.h \
            src/system/cache/omHandleCacheMissThreaded.h \
-           src/system/viewGroup/omViewGroupState.h \
+           src/viewGroup/omViewGroupState.h \
+           src/viewGroup/omBrushSize.hpp \
+           src/viewGroup/omZoomLevel.hpp \
+           src/utility/setUtilities.h \
            src/utility/omSmartPtr.hpp \
+           src/utility/omLockedObjects.h \
+           src/utility/omLockedPODs.hpp \
            src/utility/dataWrappers.h \
+           src/utility/dataWrapperContainer.hpp \
+           src/utility/channelDataWrapper.hpp \
+           src/utility/filterDataWrapper.hpp \
+           src/utility/segmentDataWrapper.hpp \
+           src/utility/segmentationDataWrapper.hpp \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/omTimer.h \
-           src/utility/setUtilities.h \
            src/utility/sortHelpers.h \
            src/utility/stringHelpers.h \
-           src/utility/OmThreadPool.hpp \
+           src/utility/omThreadPool.hpp \
+           src/utility/details/omIThreadPool.h \
+           src/utility/details/omThreadPoolImpl.hpp \
+           src/utility/details/omThreadPoolMock.hpp \
            src/utility/omChunkVoxelWalker.hpp \
-           src/view2d/omTileDumper.hpp \
-           src/view2d/drawable.h \
-           src/view2d/omCachingThreadedCachingTile.h \
-           src/system/cache/omTileCache.h \
-           src/view2d/omTextureID.h \
-           src/view2d/omThreadedCachingTile.h \
-           src/view2d/omTile.h \
-           src/view2d/omTileCoord.h \
+           src/tiles/cache/omTileCache.h \
+           src/tiles/cache/omTileCacheImpl.h \
+           src/tiles/omTilePreFetcher.hpp \
+           src/tiles/omTilePreFetcherTask.hpp \
+           src/view2d/omLineDraw.hpp \
+           src/view2d/omMouseEvents.hpp \
+           src/view2d/omKeyEvents.hpp \
+           src/view2d/omMouseEventWheel.hpp  \
+           src/view2d/omMouseEventRelease.hpp \
+           src/view2d/omMouseEventMove.hpp \
+           src/view2d/omMouseEventPress.hpp \
+           src/view2d/omMouseEventUtils.hpp \
+           src/view2d/omView2dZoom.hpp \
+           src/view2d/omScreenPainter.hpp \
+           src/tiles/omTileDrawer.hpp \
+           src/view2d/omView2dState.hpp \
+           src/view2d/omView2dConverters.hpp \
+           src/view2d/omDisplayInfo.hpp \
+           src/view2d/omScreenShotSaver.hpp \
+           src/view2d/omOnScreenTileCoords.h \
+           src/tiles/omTextureID.h \
+           src/tiles/omTile.h \
+           src/tiles/omTileCoord.h \
+           src/tiles/omTileDumper.hpp \
+           src/tiles/omTileTypes.hpp \
            src/view2d/omView2d.h \
-           src/view2d/omView2dImpl.h \
+           src/view2d/omView2dCore.h \
+           src/view2d/omView2dEvents.hpp \
            src/view3d/omCamera.h \
            src/view3d/omCameraMovement.h \
            src/view3d/omView3d.h \
@@ -244,30 +280,26 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
-           src/volume/build/omVolumeBuilder.hpp \
            src/volume/build/omVolumeImporter.hpp \
            src/volume/build/omVolumeImporterHDF5.hpp \
+           src/volume/build/omVolumeImporterImageStack.hpp \
+           src/volume/build/omDownsampler.hpp \
            src/volume/omVolumeTypes.hpp \
            src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
            src/volume/omVoxelSetValueAction.h \
-           src/volume/omDrawOptions.h \
+           src/mesh/omDrawOptions.h \
            src/volume/omFilter2d.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
            src/volume/omMipChunkCoord.h \
            src/volume/omMipVolume.h \
-           src/volume/omMipThread.h \
-           src/volume/omMipThreadManager.h \
            src/volume/omSegmentation.h \
            src/system/cache/omMipVolumeCache.h \
            src/volume/omSegmentationThresholdChangeAction.h \
-           src/volume/omSegmentationChunkCoord.h \
-           src/volume/omThreadChunkLevel.h \
-           src/system/cache/omThreadChunkThreadedCache.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
-           src/volume/omVolumeCuller.h \
+           src/mesh/omVolumeCuller.h \
            src/volume/build/omLoadImage.h \
            src/volume/omVolumeData.hpp \
            src/zi/base/base.h \
@@ -282,48 +314,41 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStrip_heap_array.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
            src/zi/zunit/zunit.h \
-           src/zi/watershed/RawQuickieWS.h
+           src/zi/watershed/RawQuickieWS.h \
+           tests/tests.hpp
 
 SOURCES += lib/strnatcmp.cpp \
-           src/common/omCommon.cpp \
-           src/common/omDebug.cpp \
-           src/common/omException.cpp \
            src/common/omGl.cpp \
-           src/common/omStd.cpp \
            src/datalayer/omMST.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
            src/datalayer/archive/omDataArchiveProject.cpp \
-           src/datalayer/archive/omDataArchiveQT.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
            src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
-           src/datalayer/fs/omActionLoggerFSthread.cpp \
-           src/datalayer/fs/omMemMappedVolume.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5FileUtils.cpp \
            src/datalayer/hdf5/omHdf5Utils.cpp \
            src/datalayer/hdf5/omHdf5LowLevel.cpp \
            src/datalayer/hdf5/omHdf5Impl.cpp \
-           src/datalayer/hdf5/omHdf5Manager.cpp \
            src/datalayer/omDataLayer.cpp \
            src/datalayer/omDataPaths.cpp \
            src/gui/groupsTable.cpp \
+           src/gui/meshPreviewer/meshPreviewer.cpp \
            src/gui/mstViewer.cpp \
            src/gui/cacheMonitorDialog.cpp \
            src/gui/cacheMonitorWidget.cpp \
            src/gui/elementListBox.cpp \
            src/gui/guiUtils.cpp \
-           src/gui/headless.cpp \
+           src/headless/headless.cpp \
            src/gui/inspectors/chanInspector.cpp \
            src/gui/inspectors/filObjectInspector.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
-           src/gui/inspectors/segInspector.cpp \
-           src/gui/inspectors/segmentation/addSegmentButton.cpp \
+           src/gui/inspectors/segmentation/segInspector.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
            src/gui/inspectors/volInspector.cpp \
-           src/gui/main.cpp \
+           src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/menubar.cpp \
            src/gui/myInspectorWidget.cpp \
@@ -368,8 +393,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/mainToolbar/refreshVolumeButton.cpp \
            src/gui/toolbars/toolbarManager.cpp \
            src/gui/viewGroup.cpp \
-           src/gui/widgets/omButton.cpp \
-           src/gui/widgets/omCheckBox.cpp \
            src/gui/widgets/omGroupListWidget.cpp \
            src/gui/widgets/omSegmentListWidget.cpp \
            src/mesh/omMeshDrawer.cpp \
@@ -383,14 +406,11 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
            src/project/omProjectSaveAction.cpp \
-           src/segment/actions/omSegmentEditor.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
            src/segment/actions/segment/omSegmentValidateAction.cpp \
            src/segment/actions/segment/omSegmentGroupAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
            src/segment/actions/segment/omSegmentSplitAction.cpp \
-           src/segment/lowLevel/DynamicTree.cpp \
-           src/segment/lowLevel/DynamicTreeContainer.cpp \
            src/segment/lowLevel/omPagingPtrStore.cpp \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.cpp \
            src/segment/lowLevel/omSegmentGraph.cpp \
@@ -405,7 +425,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/system/cache/omCacheInfo.cpp \
            src/segment/omSegmentLists.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
@@ -414,48 +433,42 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
            src/system/omAction.cpp \
-           src/system/omAnimate.cpp \
            src/system/omBuildChannel.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
            src/system/cache/omCacheGroup.cpp \
-           src/system/cache/omCacheableBase.cpp \
            src/system/omEvent.cpp \
            src/system/omEventManager.cpp \
            src/system/omEvents.cpp \
-           src/system/omGarbage.cpp \
-           src/system/omGenericManager.cpp \
            src/system/omGroup.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \
            src/system/omPreferenceDefinitions.cpp \
-           src/system/omPreferences.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \
-           src/system/cache/omThreadedCache.cpp \
-           src/system/cache/omHandleCacheMissThreaded.cpp \
            src/system/templatedClasses.cpp \
-           src/system/viewGroup/omViewGroupState.cpp \
-           src/utility/dataWrappers.cpp \
+           src/tiles/cache/omTileCache.cpp \
+           src/system/cache/omThreadedCache.cpp \
+           src/viewGroup/omViewGroupState.cpp \
+           src/utility/channelDataWrapper.cpp \
            src/utility/fileHelpers.cpp \
            src/utility/localPrefFiles.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
-           src/utility/omTimer.cpp \
-           src/utility/sortHelpers.cpp \
            src/utility/stringHelpers.cpp \
-           src/view2d/omTileDumper.cpp \
-           src/view2d/drawable.cpp \
-           src/view2d/omTextureID.cpp \
-           src/view2d/omThreadedCachingTile.cpp \
-           src/system/cache/omTileCache.cpp \
-           src/view2d/omTile.cpp \
-           src/view2d/omTileCoord.cpp \
+           src/tiles/cache/omTileCacheImpl.cpp \
+           src/tiles/omTilePreFetcher.cpp \
+           src/tiles/omTilePreFetcherTask.cpp \
+           src/view2d/omLineDraw.cpp \
+           src/tiles/omTileDrawer.cpp \
+           src/view2d/omOnScreenTileCoords.cpp \
+           src/tiles/omTextureID.cpp \
+           src/tiles/omTile.cpp \
+           src/tiles/omTileCoord.cpp \
+           src/tiles/omTileDumper.cpp \
            src/view2d/omView2d.cpp \
-           src/view2d/omView2dConverters.cpp \
-           src/view2d/omView2dEvent.cpp \
-           src/view2d/omView2dImpl.cpp \
+           src/view2d/omView2dCore.cpp \
            src/view3d/omCamera.cpp \
            src/view3d/omCameraMovement.cpp \
            src/view3d/omView3d.cpp \
@@ -464,9 +477,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/view3d/widgets/omInfoWidget.cpp \
            src/view3d/widgets/omSelectionWidget.cpp \
            src/view3d/widgets/omViewBoxWidget.cpp \
-           src/volume/build/omVolumeBuilder.cpp \
-           src/volume/build/omVolumeImporter.cpp \
-           src/volume/build/omVolumeImporterHDF5.cpp \
            src/volume/omVolumeTypes.cpp \
            src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \
@@ -476,18 +486,12 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipChunk.cpp \
            src/volume/omMipChunkCoord.cpp \
            src/volume/omMipVolume.cpp \
-           src/volume/omMipThread.cpp \
-           src/volume/omMipThreadManager.cpp \
            src/system/cache/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
-           src/volume/omSegmentationChunkCoord.cpp \
-           src/volume/omThreadChunkLevel.cpp \
-           src/system/cache/omThreadChunkThreadedCache.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
-           src/volume/omVolumeCuller.cpp \
-           src/volume/build/omLoadImage.cpp \
+           src/mesh/omVolumeCuller.cpp \
            src/volume/omVolumeData.cpp \
            tests/utility/stringHelpersTest.cpp \
            src/zi/mesh/MarchingCubes.cpp \
@@ -497,22 +501,19 @@ SOURCES += lib/strnatcmp.cpp \
 
 RESOURCES += src/gui/resources.qrc
 
-INCLUDEPATH = src include lib
-
-LIBS += -lvtkHybrid -lvtkRendering -lvtkGraphics -lvtkverdict -lvtkImaging -lvtkIO -lvtkFiltering -lvtkCommon -lvtkDICOMParser -lvtkmetaio -lvtksqlite -lvtkpng -lvtktiff -lvtkzlib -lvtkjpeg -lvtkexpat -lvtksys -lvtkexoIIc -lvtkNetCDF
-
-INCLUDEPATH += ./include/zi_lib
+INCLUDEPATH = src include lib tests
+INCLUDEPATH += ../external/zi_lib
+INCLUDEPATH += ../external/zi_lib/external/include
 
 #### Windows
 win32 {
-   INCLUDEPATH += c:/hdf5lib/include c:/dev/external/libs/VTK/include/vtk-5.4/ c:/dev/external/libs/libtiff/include C:/mygl C:/omni/external/libs/VTK/include/vtk-5.4  C:/mygl C:/omni/external/libs/libtiff/include
-   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a  -L/drivec/omni/external/libs/VTK/lib/vtk-5.4/
+   INCLUDEPATH += c:/hdf5lib/include C:/mygl
+   LIBS += /omni/external/srcs/hdf5-1.8.4-patch1/src/.libs/libhdf5.a
    LIBS += -lgdi32
 } else {
-### Linux or MacOS
-   INCLUDEPATH +=  ../external/libs/HDF5/include ../external/libs/VTK/include/vtk-5.4/ ../external/libs/libtiff/include
-   INCLUDEPATH += ../external/headers/boost_1_43_0
-   LIBS += ../external/libs/HDF5/lib/libhdf5.a  -L../external/libs/VTK/lib/vtk-5.4/
+#### Linux or MacOS
+   INCLUDEPATH +=  ../external/libs/HDF5/include
+   LIBS += ../external/libs/HDF5/lib/libhdf5.a
    LIBS += -lz
 }
 
@@ -528,5 +529,3 @@ DESTDIR = bin
 #### for profiling
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
-
-#QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter

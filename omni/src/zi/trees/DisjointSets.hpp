@@ -21,13 +21,12 @@ private:
 public:
 
   DisjointSets(size_t s) : size_(s), nSets_(s) {
-    assert(s >= 0);
     x_ = new Node[s];
-    for (int i=0; i<s; ++i) x_[i].p = i;
+    for (size_t i=0; i<s; ++i) x_[i].p = i;
   }
 
   inline T findSet(T id) const {
-    assert(id < size_);
+    assert(static_cast<size_t>(id) < size_);
     T n(id), x;
     while (n != x_[n].p) n = x_[n].p;
     while (n != id) { x = x_[id].p; x_[id].p = n; id = x; }
@@ -35,8 +34,8 @@ public:
   }
 
   inline T join(T x, T y) {
-    assert(x < size_);
-    assert(y < size_);
+	assert(static_cast<size_t>(x) < size_);
+	assert(static_cast<size_t>(y) < size_);
 
     if (x == y) return x;
     --nSets_;
@@ -52,7 +51,7 @@ public:
   }
 
   inline void clear() {
-    for (int i=0; i<size_; ++i) { x_[i].p = i; x_[i].r = 0; }
+    for (size_t i=0; i<size_; ++i) { x_[i].p = i; x_[i].r = 0; }
     nSets_ = size_;
   }
 

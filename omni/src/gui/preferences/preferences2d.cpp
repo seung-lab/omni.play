@@ -115,53 +115,53 @@ QGroupBox* Preferences2d::makeDisplayBox()
 
 void Preferences2d::set_initial_values()
 {
-	volEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT)));
+	volEdit->setText(QString::number(OmPreferences::GetInteger(om::PREF_VIEW2D_VOLUME_CACHE_SIZE_INT)));
 
-	tileEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT)));
+	tileEdit->setText(QString::number(OmPreferences::GetInteger(om::PREF_VIEW2D_TILE_CACHE_SIZE_INT)));
 
-	depthEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT)));
+	depthEdit->setText(QString::number(OmPreferences::GetInteger(om::PREF_VIEW2D_DEPTH_CACHE_SIZE_INT)));
 
-	sideEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT)));
-	mipEdit->setText(QString::number(OmPreferences::GetInteger(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT)));
+	sideEdit->setText(QString::number(OmPreferences::GetInteger(om::PREF_VIEW2D_SIDES_CACHE_SIZE_INT)));
+	mipEdit->setText(QString::number(OmPreferences::GetInteger(om::PREF_VIEW2D_MIP_CACHE_SIZE_INT)));
 
-	transparencySlider->setValue(floor(OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT) * 50));
-	transparencySliderLabel->setNum(OmPreferences::GetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
+	transparencySlider->setValue(floor(OmPreferences::GetFloat(om::PREF_VIEW2D_TRANSPARENT_ALPHA_FLT) * 50));
+	transparencySliderLabel->setNum(OmPreferences::GetFloat(om::PREF_VIEW2D_TRANSPARENT_ALPHA_FLT));
 
-	infoCheckBox->setChecked(OmPreferences::GetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL));
+	infoCheckBox->setChecked(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL));
 }
 
 void Preferences2d::on_volEdit_editingFinished()
 {
-	OmPreferences::SetInteger(OM_PREF_VIEW2D_VOLUME_CACHE_SIZE_INT, volEdit->text().toInt());
+	OmPreferences::SetInteger(om::PREF_VIEW2D_VOLUME_CACHE_SIZE_INT, volEdit->text().toInt());
 }
 
 void Preferences2d::on_tileEdit_editingFinished()
 {
-	OmPreferences::SetInteger(OM_PREF_VIEW2D_TILE_CACHE_SIZE_INT, tileEdit->text().toInt());
+	OmPreferences::SetInteger(om::PREF_VIEW2D_TILE_CACHE_SIZE_INT, tileEdit->text().toInt());
 }
 
 void Preferences2d::on_depthEdit_editingFinished()
 {
-	OmPreferences::SetInteger(OM_PREF_VIEW2D_DEPTH_CACHE_SIZE_INT, depthEdit->text().toInt());
+	OmPreferences::SetInteger(om::PREF_VIEW2D_DEPTH_CACHE_SIZE_INT, depthEdit->text().toInt());
 }
 
 void Preferences2d::on_sideEdit_editingFinished()
 {
-	OmPreferences::SetInteger(OM_PREF_VIEW2D_SIDES_CACHE_SIZE_INT, sideEdit->text().toInt());
+	OmPreferences::SetInteger(om::PREF_VIEW2D_SIDES_CACHE_SIZE_INT, sideEdit->text().toInt());
 }
 
 void Preferences2d::on_mipEdit_editingFinished()
 {
-	OmPreferences::SetInteger(OM_PREF_VIEW2D_MIP_CACHE_SIZE_INT, mipEdit->text().toInt());
+	OmPreferences::SetInteger(om::PREF_VIEW2D_MIP_CACHE_SIZE_INT, mipEdit->text().toInt());
 }
 
 void Preferences2d::on_transparencySlider_valueChanged(int val)
 {
 	transparencySliderLabel->setNum(val / (50.0));
-	OmPreferences::SetFloat(OM_PREF_VIEW2D_TRANSPARENT_ALPHA_FLT, (val / (50.0)));
+	OmPreferences::SetFloat(om::PREF_VIEW2D_TRANSPARENT_ALPHA_FLT, (val / (50.0)));
 }
 
 void Preferences2d::on_infoCheckBox_stateChanged()
 {
-	OmPreferences::SetBoolean(OM_PREF_VIEW2D_SHOW_INFO_BOOL, infoCheckBox->isChecked());
+	OmPreferences::SetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL, infoCheckBox->isChecked());
 }

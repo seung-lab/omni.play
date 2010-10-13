@@ -6,7 +6,7 @@
 OmGroups::OmGroups(OmSegmentation * seg)
 	: mSegmentation(seg)
 {
-	debug("groups", "construting group for seg\n");
+	//debug(groups, "construting group for seg\n");
 }
 
 OmGroups::~OmGroups()
@@ -15,11 +15,11 @@ OmGroups::~OmGroups()
 
 OmGroup & OmGroups::AddGroup(OmGroupName name)
 {
-	debug("groups", "adding group for seg\n");
+	//debug(groups, "adding group for seg\n");
 	OmGroup & group = mGroupManager.Add();
 	group.mName = name;
 
-	mGroupsByName.insert(name, group.GetId());
+	mGroupsByName.insert(name, group.GetID());
 
 	return group;
 }

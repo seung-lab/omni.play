@@ -24,15 +24,6 @@ private:
   const CantBeCopied& operator = (const CantBeCopied&);
 };
 
-#define FOR_EACH(it_var, container)                                     \
-  FOR_EACH_RANGE(it_var, (container).begin(), (container).end())
-
-#define FOR_EACH_R(it_var, container)                                   \
-  FOR_EACH_RANGE(it_var, (container).rbegin(), (container).rend())
-
-#define FOR_EACH_RANGE(it_var, begin, end)                              \
-  for (__typeof__(begin) it_var = (begin); it_var != (end); ++it_var)
-
 #define ARRAYSIZE(array) (sizeof(array) / sizeof(array[0]))
 
 #define ITERATOR(container) __typeof__((container).begin())

@@ -1,5 +1,5 @@
 #include "gui/groupsTable.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"
 #include "common/omCommon.h"

@@ -1,32 +1,37 @@
 #ifndef OM_THREADED_CACHE_H
 #define OM_THREADED_CACHE_H
 
-#include "common/omDebug.h"
-#include "utility/omLockedObjects.h"
-#include "utility/OmThreadPool.hpp"
+#include "common/om.hpp"
+#include "utility/omLockedPODs.hpp"
+#include "system/cache/omLockedCacheObjects.hpp"
+#include "utility/omThreadPool.hpp"
 #include "system/cache/omCacheBase.h"
+#include "zi/omMutex.h"
 
-#include <zi/mutex>
+template <typename T> class LockedList;
 
 /**
  *	Brett Warne - bwarne@mit.edu - 3/12/09
  */
 
-template < typename KEY, typename PTR  >
+template <typename KEY, typename PTR> class HandleCacheMissThreaded;
+
+template <typename KEY, typename PTR>
 class OmThreadedCache : public OmCacheBase {
- public:
-	OmThreadedCache(const OmCacheGroupEnum group);
+public:
+	OmThreadedCache(const OmCacheGroupEnum group,
+					const std::string& name,
+					const int numThreads);
 	virtual ~OmThreadedCache();
 
 	//value accessors
-	void Get(PTR& p_value,
-		 const KEY &key,
-		 bool blocking);
+	virtual void Get(PTR&, const KEY&, const bool);
+	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
 	void Remove(const KEY &key);
-	void Remove(OmCacheableBase *);
-	void RemoveOldest();
-	void Flush();
-	void Clear();
+	int Clean();
+	void Clear(); //TODO: remove me
+	void InvalidateCache();
+	const std::string& GetName(){ return name_; }
 
 	void UpdateSize(const qint64 delta);
 
@@ -36,19 +41,29 @@ class OmThreadedCache : public OmCacheBase {
 
 	virtual PTR HandleCacheMiss(const KEY& key) = 0;
 
-	zi::RWMutex mCacheMutex;
+	void closeDownThreads();
+
+private:
+	typedef HandleCacheMissThreaded<KEY, PTR> CacheMissHandler;
+	typedef boost::shared_ptr<CacheMissHandler> CacheMissHandlerPtr;
+	typedef boost::shared_ptr<std::map<KEY,PTR> > OldCachePtr;
+
+	const std::string name_;
+	const int numThreads_;
+
+	LockedInt64 mCurSize;
+	OmThreadPool mThreadPool;
+
+	zi::mutex mutex_;
 	LockedKeySet<KEY> mCurrentlyFetching;
 	LockedCacheMap<KEY, PTR> mCache;
 	LockedKeyList<KEY> mKeyAccessList;
-
-	void closeDownThreads();
-
 	LockedBool mKillingCache;
 
-private:
-	LockedInt64 mCurSize;
-	const std::string name_;
-	OmThreadPool mThreadPool;
+	int RemoveOldest();
+	boost::shared_ptr<LockedList<OldCachePtr> > cachesToClean_;
+
+	template <typename T1, typename T2> friend class HandleCacheMissThreaded;
 };
 
 #endif

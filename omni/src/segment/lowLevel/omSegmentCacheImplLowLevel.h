@@ -2,7 +2,6 @@
 #define OM_SEGMENT_CACHE_IMPL_LOW_LEVEL_H
 
 #include "common/omCommon.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegment.h"
 
@@ -10,9 +9,10 @@
 
 class OmSegmentCache;
 class OmSegmentation;
+template <typename T> class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
- public:
+public:
 	OmSegmentCacheImplLowLevel( OmSegmentation *);
 	virtual ~OmSegmentCacheImplLowLevel();
 
@@ -63,7 +63,9 @@ class OmSegmentCacheImplLowLevel {
 
 	boost::shared_ptr<OmSegmentCache> getSegmentCache();
 
- protected:
+	void UpgradeSegmentSerialization();
+
+protected:
 	OmSegmentation * mSegmentation;
 	boost::shared_ptr<OmPagingPtrStore<OmSegment> > mSegments;
 
@@ -75,8 +77,8 @@ class OmSegmentCacheImplLowLevel {
 	bool mAllSelected;
 	bool mAllEnabled;
 
-        OmSegIDsSet mEnabledSet;
-        OmSegIDsSet mSelectedSet;
+	OmSegIDsSet mEnabledSet;
+	OmSegIDsSet mSelectedSet;
 
 	QHash< OmId, QString > segmentCustomNames;
 	QHash< OmId, QString > segmentNotes;
@@ -90,7 +92,7 @@ class OmSegmentCacheImplLowLevel {
 
 	void addToRecentMap( const OmSegID segID);
 
- private:
+private:
 	void setSegmentSelectedBatch( OmSegID segID, const bool, const bool );
 };
 

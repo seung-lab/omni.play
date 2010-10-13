@@ -2,37 +2,42 @@
 #define OM_SEGMENT_EDITOR_H
 
 #include "common/omCommon.h"
-
-class SegmentDataWrapper;
+#include "utility/dataWrappers.h"
+#include "system/omEvents.h"
+#include "zi/omUtility.h"
 
 class OmSegmentEditor : boost::noncopyable {
-
 public:
-	static OmSegmentEditor* Instance();
-	static void Delete();
+	static void Delete(){
+		Instance().mEditSegmentation = 0;
+		Instance().mEditSegment = 0;
+	}
 
-	//edit selection
-	static void SetEditSelection(OmId segmentation, OmId segment);
-	static SegmentDataWrapper GetEditSelection();
+	static void SetEditSelection(const OmId segmentation,
+				     const OmSegID segment){
+		Instance().mEditSegmentation = segmentation;
+		Instance().mEditSegment = segment;
+		OmEvents::SegmentEditSelectionChanged();
+	}
 
-	//voxel selection
-	static void SetSelectedVoxels(const std::set<DataCoord> &voxels);
-	static const std::set<DataCoord>& GetSelectedVoxels();
-	static void ClearSelectedVoxels();
-
-	static void SetSelectedVoxelState(const DataCoord &dataCoord, bool selected);
-	static bool GetSelectedVoxelState(const DataCoord &dataCoord);
+	static SegmentDataWrapper GetEditSelection(){
+		return SegmentDataWrapper(Instance().mEditSegmentation,
+					  Instance().mEditSegment);
+	}
 
 private:
-	OmSegmentEditor();
-	~OmSegmentEditor();
+	OmSegmentEditor()
+		: mEditSegmentation(0)
+		, mEditSegment(0) {}
+	~OmSegmentEditor(){}
+	static inline OmSegmentEditor& Instance(){
+		return zi::singleton<OmSegmentEditor>::instance();
+	}
 
-	//singleton
-	static OmSegmentEditor* mspInstance;
+	OmId mEditSegmentation;
+	OmSegID mEditSegment;
 
-	OmId mEditSegmentation, mEditSegment;
-	std::set<DataCoord> mSelectedVoxels;
-
+	friend class zi::singleton<OmSegmentEditor>;
 };
 
 #endif

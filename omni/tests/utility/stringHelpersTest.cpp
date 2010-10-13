@@ -3,5 +3,5 @@
 
 void StringHelpersTest::testCommaDeliminateNumber()
 {
-	assert( "10" == StringHelpers::commaDeliminateNumber( 10 ) );
+	assert( "10" == StringHelpers::commaDeliminateNum( 10 ) );
 }

@@ -15,7 +15,7 @@ GroupButtonTag::GroupButtonTag(ValidationGroup * d)
 
 void GroupButtonTag::doAction()
 {
-	debug("dendbar", "ValidationGroup::specialGroupAdd\n");
+	//debug(dendbar, "ValidationGroup::specialGroupAdd\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

@@ -2,9 +2,8 @@
 #define ZIMESHERMANAGER_H_
 
 #include "common/omGl.h"
-#include "omMipMeshManager.h"
 #include "volume/omMipChunkCoord.h"
-#include <zi/threads>
+#include "zi/omThreads.h"
 #include "zi/vector/Vec.hpp"
 #include "zi/mesh/HalfEdge.hpp"
 #include "zi/mesh/ext/TriStrip/TriStripper.h"
@@ -17,7 +16,7 @@ public:
     totalIndices_(0),
     totalStrips_(0),
     totalTrians_(0),
-    monitor_(),
+    monitor_(mutex_),
     waiting_(0),
     free_(true) {}
 
@@ -29,7 +28,8 @@ public:
   int totalIndices_;
   int totalStrips_;
   int totalTrians_;
-  zi::Monitor   monitor_;
+  zi::monitor   monitor_;
+  zi::mutex mutex_;
   std::vector<GLfloat>  vertices_;
   std::vector<GLuint>   indices_;
   std::vector<uint32_t> strips_;
@@ -57,8 +57,8 @@ public:
 
 private:
   int remainingDeliveries_;
-  zi::Mutex   mutex_;
-  OmMipChunkCoord      coor_;
+  zi::mutex mutex_;
+  OmMipChunkCoord coor_;
   boost::shared_ptr<std::map<int, boost::shared_ptr<StrippedMesh> > > strippeds_;
 };
 

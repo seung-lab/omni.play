@@ -3,10 +3,11 @@
 
 #include <vector>
 #include "volume/omMipChunkCoord.h"
-#include "omMipMeshManager.h"
 #include "common/omCommon.h"
 #include "ziMeshingChunk.h"
-#include "utility/omLockedObjects.h"
+#include "utility/omLockedPODs.hpp"
+
+class OmMipMeshManager;
 
 class ziMesher {
 public:

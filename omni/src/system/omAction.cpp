@@ -1,17 +1,11 @@
 #include "omAction.h"
-#include "system/omEventManager.h"
-#include "system/events/omSegmentEvent.h"
 #include "system/omStateManager.h"
-#include "common/omDebug.h"
 
 OmAction::OmAction()
+	: mUndoable(true)
+	, mValid(true)
+	, mActivate(true)
 {
-	//assume valid
-	mValid = true;
-
-	//assume undoable
-	mUndoable = true;
-	mActivate = true;	// Actions are activated by default.
 }
 
 void OmAction::SetValid(bool state)
@@ -66,7 +60,7 @@ void OmAction::redo()
 	// Only do the action if the action is activated.
 	if(GetActivate()) {
 		Action();
-		save("redo");
+		save("executeOrRedo");
 	} else {
 		SetActivate(true);
 	}

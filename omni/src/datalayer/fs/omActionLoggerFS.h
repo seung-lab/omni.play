@@ -3,10 +3,10 @@
 
 #include "datalayer/fs/omActionLoggerFSthread.hpp"
 #include "project/omProject.h"
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
 
 #include <QDir>
-#include <zi/mutex>
-#include <zi/utility>
 
 class OmSegmentSplitAction;
 class OmSegmentGroupAction;
@@ -17,15 +17,11 @@ class OmProjectSaveAction;
 
 class OmActionLoggerFS {
 public:
-	static QDir& getLogFolder(){ return Instance().doGetLogFolder(); }
-	static zi::Mutex& getThreadMutex(){ return Instance().threadMutex_; }
-
 	template <class T> static void save(T * action, const std::string &);
 
 private:
 	bool initialized;
-	zi::Mutex mutex_;
-	zi::Mutex threadMutex_; //serialize file writes
+	zi::mutex mutex_;
 	QDir mLogFolder;
 
 	OmActionLoggerFS();
@@ -34,17 +30,18 @@ private:
 	QDir& doGetLogFolder();
 
 	static inline OmActionLoggerFS & Instance(){
-		return zi::Singleton<OmActionLoggerFS>::Instance();
+		return zi::singleton<OmActionLoggerFS>::instance();
 	}
 
-	friend class zi::Singleton<OmActionLoggerFS>;
+	friend class zi::singleton<OmActionLoggerFS>;
 };
 
 template <class T>
 void OmActionLoggerFS::save(T * action, const std::string & str)
 {
 	boost::shared_ptr<OmActionLoggerFSThread<T> >
-		task(new OmActionLoggerFSThread<T>(action, str));
+		task(new OmActionLoggerFSThread<T>(action, str,
+										   Instance().doGetLogFolder()));
 
 	task->run(); //QT may delete *action before we have a chance to save it!
 	//	OmProject::GetGlobalThreadPool().addTaskBack(task);

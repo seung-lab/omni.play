@@ -4,9 +4,9 @@
 #include <QtGui>
 #include <QWidget>
 
-#include "utility/dataWrappers.h"
 #include "segment/omSegmentPointers.h"
 
+class SegmentationDataWrapper;
 class ElementListBox;
 class InspectorProperties;
 class OmSegmentEvent;
@@ -17,16 +17,16 @@ class SegmentListBase : public QWidget
 {
 	Q_OBJECT
 
-public:
+	public:
 	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
 
 	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false,
-					       const OmSegID segmentJustSelectedID = 0,
-					       const bool useOffset = false);
+										   const OmSegID segmentJustSelectedID = 0,
+										   const bool useOffset = false);
 
 	void makeSegmentationActive(SegmentationDataWrapper sdw,
-				    const OmSegID segmentJustSelectedID,
-				    const bool doScroll );
+								const OmSegID segmentJustSelectedID,
+								const bool doScroll );
 
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
@@ -48,17 +48,17 @@ protected:
 	virtual int getPreferredTabIndex() = 0;
 	virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
 
-        QVBoxLayout * layout;
-        QPushButton * prevButton;
-        QPushButton * nextButton;
-        QPushButton * startButton;
-        QPushButton * endButton;
-        QLineEdit * searchEdit;
+	QVBoxLayout * layout;
+	QPushButton * prevButton;
+	QPushButton * nextButton;
+	QPushButton * startButton;
+	QPushButton * endButton;
+	QLineEdit * searchEdit;
 
 	OmSegmentListWidget * segmentListWidget;
 	ElementListBox * elementListBox;
 
-	SegmentationDataWrapper currentSDW;
+	boost::shared_ptr<SegmentationDataWrapper> currentSDW;
 	bool haveValidSDW;
 
 	OmSegPtrList * getSegmentsToDisplay( const OmId firstSegmentID, const bool  );

@@ -7,13 +7,16 @@
  */
 
 #include "segment/omSegmentPointers.h"
-#include "system/cache/omMeshCache.h"
+#include "mesh/omMeshTypes.h"
 
 class OmMeshSource;
 class OmMipChunk;
 class OmMipChunkCoord;
 class OmViewGroupState;
 class QGLContext;
+class OmMipMeshCoord;
+class OmMeshCache;
+class OmMipMesh;
 
 class OmMipMeshManager {
 public:
@@ -21,21 +24,21 @@ public:
 	~OmMipMeshManager();
 
 	void CloseDownThreads();
-	
+
 	//accessors
 	const QString& GetDirectoryPath() const;
 	void SetDirectoryPath(const QString &);
-	
+
 	//meshing
-	OmMipMesh* AllocMesh(const OmMipMeshCoord &coord );
+	OmMipMeshPtr AllocMesh(const OmMipMeshCoord&);
 	void GetMesh(OmMipMeshPtr& p_value, const OmMipMeshCoord &coord );
 	void UncacheMesh(const OmMipMeshCoord &coord );
-		
+
 private:
 	OmMeshCache *const mDataCache;
-	
+
 	void HandleFetchUpdate();
-	
+
 	QString mDirectoryPath;
 
 	//gl context to load mesh vbos

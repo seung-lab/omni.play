@@ -31,6 +31,13 @@ public:
 
 	static void UpdateStatusBar( const QString & msg );
 
+	static void setNoTilePrefetch(const bool noTilePrefetch){
+		Instance()->noTilePrefetch_ = noTilePrefetch;
+	}
+	static bool getNoTilePrefetch() {
+		return Instance()->noTilePrefetch_;
+	}
+
 	//project
 	static const std::string& GetProjectFileName();
 	static void SetProjectFileName(const std::string &);
@@ -51,7 +58,6 @@ public:
 	//view3d context
 	static void CreatePrimaryView3dWidget();
 	static const QGLWidget* GetPrimaryView3dWidget();
-	static QGLContext* GetSharedView3dContext();
 
 	//view2d context
 	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
@@ -65,8 +71,6 @@ public:
 
 	static QString getPID();
 	static QString getHostname();
-	static bool getParallel();
-	static void setParallel(bool parallel);
 
 	static void setInspector( MyInspectorWidget * miw );
 	static void setMainWindow( MainWindow * mw );
@@ -75,8 +79,8 @@ public:
 	static QSize getViewBoxSizeHint();
 
 	static void SetViewDrawable(ViewType viewType,
-								std::vector<Drawable*>& drawable);
-	static std::vector<Drawable*> GetViewDrawable(ViewType viewType);
+								std::vector<OmTilePtr>& drawable);
+	static std::vector<OmTilePtr> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -84,6 +88,8 @@ private:
 
 	//singleton
 	static OmStateManager* mspInstance;
+
+	bool noTilePrefetch_;
 
 	//project
 	std::string mProjectFileName;
@@ -105,15 +111,14 @@ private:
 	unsigned int myBackoff;
 
 	QString omniExecPathAbsolute;
-	bool mParallel;
 
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
 
-	std::vector<Drawable*> mDrawableXY;
-	std::vector<Drawable*> mDrawableXZ;
-	std::vector<Drawable*> mDrawableYZ;
+	std::vector<OmTilePtr> mDrawableXY;
+	std::vector<OmTilePtr> mDrawableXZ;
+	std::vector<OmTilePtr> mDrawableYZ;
 };
 
 #endif

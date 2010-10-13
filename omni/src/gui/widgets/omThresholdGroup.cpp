@@ -19,7 +19,7 @@ OmThresholdGroup::OmThresholdGroup(QWidget * d, const bool updateAsType)
 
 void OmThresholdGroup::thresholdChanged()
 {
-	debug("dendbar", "OmThresholdGroup::thresholdChanged\n");
+	//debug(dendbar, "OmThresholdGroup::thresholdChanged\n");
 
 	OmBusyCursorWrapper busyCursorWrapper();
 

@@ -16,10 +16,11 @@ class OmDataLayer;
 class OmIDataReader;
 class OmIDataWriter;
 class OmSegment;
+class OmTileCache;
 
 class OmProjectData : boost::noncopyable {
 public:
-	static void instantiateProjectData( QString fileNameAndPath );
+	static void instantiateProjectData(const std::string& fileNameAndPath);
 
 	static OmProjectData* Instance();
 	static void Delete();
@@ -37,8 +38,12 @@ public:
 	static bool IsOpen() {return Instance()->mIsOpen;}
 	static bool IsReadOnly() {return Instance()->mIsReadOnly;}
 
-	static OmIDataReader* GetProjectDataReader();
-	static OmIDataWriter* GetDataWriter();
+	static OmIDataReader* GetProjectIDataReader();
+	static OmIDataWriter* GetIDataWriter();
+
+	static const boost::shared_ptr<OmTileCache>& getTileCache(){
+		return Instance()->tileCache_;
+	}
 
 	static int getFileVersion(){ return Instance()->fileVersion_; }
 
@@ -54,8 +59,9 @@ private:
 
 	bool mIsOpen;
 	bool mIsReadOnly;
+	boost::shared_ptr<OmTileCache> tileCache_;
 
-	void setupDataLayer( QString fileNameAndPath );
+	void setupDataLayer(const std::string&);
 	OmIDataReader* dataReader;
 	OmIDataWriter* dataWriter;
 

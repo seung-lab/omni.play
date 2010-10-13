@@ -1,3 +1,5 @@
+#include "common/omCommon.h"
+#include "common/omDebug.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/omMipMeshCoord.h"
@@ -69,7 +71,7 @@ std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoor
 	const QString ret =
 		OmLocalPreferences::getScratchPath() + "/meshinator_" + p;
 
-	debug("parallel", "parallel mesh fs path: %s\n", qPrintable( ret ) );
+	//debug(parallel, "parallel mesh fs path: %s\n", qPrintable( ret ) );
 	fprintf(stderr, "parallel mesh fs path: %s\n", qPrintable( ret ) );
 
 	return ret.toStdString();
@@ -78,13 +80,13 @@ std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoor
 std::string OmDataPaths::getDirectoryPath(OmSegmentation* seg)
 {
 	return str( boost::format("segmentations/segmentation%1%/")
-				% seg->GetId());
+				% seg->GetID());
 }
 
 std::string OmDataPaths::getDirectoryPath(OmChannel* chan)
 {
 	return str( boost::format("channels/channel%1%/")
-				% chan->GetId());
+				% chan->GetID());
 }
 
 std::string OmDataPaths::MipLevelInternalDataPath(const std::string & dirPath,

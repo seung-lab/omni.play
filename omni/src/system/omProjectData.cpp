@@ -3,12 +3,13 @@
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
-#include "omPreferenceDefinitions.h"
-#include "omProjectData.h"
+#include "datalayer/omIDataReader.h"
+#include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
+#include "tiles/cache/omTileCache.h"
+#include "system/omPreferenceDefinitions.h"
+#include "system/omProjectData.h"
 #include "utility/fileHelpers.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -20,10 +21,11 @@ OmProjectData::OmProjectData()
 	: fileVersion_(0)
 	, mIsOpen(false)
 	, mIsReadOnly(false)
+	, tileCache_(new OmTileCache())
 {
 }
 
-void OmProjectData::instantiateProjectData( QString fileNameAndPath )
+void OmProjectData::instantiateProjectData(const std::string& fileNameAndPath )
 {
 	if (NULL != mspInstance) {
 		delete mspInstance;
@@ -50,7 +52,8 @@ void OmProjectData::Delete()
 
 QString OmProjectData::getFileNameAndPath()
 {
-	return Instance()->dataReader->getFileNameAndPath();
+	const std::string& fnp = Instance()->dataReader->getFileNameAndPath();
+	return QString::fromStdString(fnp);
 }
 
 QString OmProjectData::getAbsoluteFileNameAndPath()
@@ -123,23 +126,23 @@ void OmProjectData::Close()
  */
 void OmProjectData::DeleteInternalData(const OmDataPath & path)
 {
-	//TODO: mutex lock this!!!!
-	if (OmProjectData::GetProjectDataReader()->group_exists(path)) {
-		OmProjectData::GetDataWriter()->group_delete(path);
+	//TODO: mutex lock this?
+	if (OmProjectData::GetProjectIDataReader()->group_exists(path)) {
+		OmProjectData::GetIDataWriter()->group_delete(path);
 	}
 }
 
-OmIDataReader* OmProjectData::GetProjectDataReader()
+OmIDataReader* OmProjectData::GetProjectIDataReader()
 {
 	return Instance()->dataReader;
 }
 
-OmIDataWriter* OmProjectData::GetDataWriter()
+OmIDataWriter* OmProjectData::GetIDataWriter()
 {
 	return Instance()->dataWriter;
 }
 
-void OmProjectData::setupDataLayer( QString fileNameAndPath )
+void OmProjectData::setupDataLayer(const std::string& fileNameAndPath)
 {
 	mIsReadOnly = FileHelpers::isFileReadOnly(fileNameAndPath);
 	dataReader = OmDataLayer::getReader(fileNameAndPath, mIsReadOnly);

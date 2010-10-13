@@ -8,12 +8,12 @@
 #include "segment/omSegmentSelector.h"
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
-#include "volume/omDrawOptions.h"
+#include "mesh/omDrawOptions.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
@@ -99,7 +99,7 @@ void OmView3dUi::doZoom(int direction)
 
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
-	debug("dend3d", "OmView3dUi::DendModeMouseReleased\n");
+	//debug(dend3d, "OmView3dUi::DendModeMouseReleased\n");
 	//get segment
 	OmId segmentation_id, segment_id;
 	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
@@ -108,27 +108,8 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-	OmSegmentation & segmentation = OmProject::GetSegmentation(segmentation_id);
-
-	OmId segmentationID, segmentID;
-	if(mViewGroupState->GetSplitMode(segmentationID, segmentID)) {
-		debug("split", "segmentID=%i\n", segmentID);
-		debug("split", "segment_id=%i\n", segment_id);
-		OmSegment * seg1 = segmentation.GetSegmentCache()->GetSegment(segmentID);
-		OmSegment * seg2 = segmentation.GetSegmentCache()->GetSegment(segment_id);
-		if(NULL == seg1 || NULL == seg2) {
-			return;
-		}
-
-		OmSegmentSplitAction::RunIfSplittable(seg1, seg2);
-
-		mViewGroupState->SetSplitMode(false);
-	} else {
-		debug("split", "segment_id=%i\n", segment_id);
-		if (segment_id && segmentation.GetSegmentCache()->GetSegment(segment_id)) {
-			mViewGroupState->SetSplitMode(segmentationID, segment_id);
-		}
-	}
+	OmSegmentSplitAction::DoFindAndSplitSegment(SegmentDataWrapper(segmentation_id, segment_id),
+												mViewGroupState);
 }
 
 /////////////////////////////////
@@ -242,7 +223,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 
 bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segmentationId, OmId & segmentId, int *type)
 {
-	debug("3d", "OmView3dUi::PickSegmentMouse\n");
+	//debug(3d, "OmView3dUi::PickSegmentMouse\n");
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
@@ -276,7 +257,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 	//otherwise vaild segment
 	segmentationId = result[0];
 	segmentId = result[1];
-	//debug("genone","OmView3dUi::PickSegmentMouse %i \n",result[1]);
+	////debug(genone,"OmView3dUi::PickSegmentMouse %i \n",result[1]);
 
 	//if valid pointer, then store pick name
 	if (type != NULL) {
@@ -353,7 +334,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 
 void OmView3dUi::crosshair(QMouseEvent * event)
 {
-	debug("view3d", "hi from %s\n", __FUNCTION__);
+	//debug(view3d, "hi from %s\n", __FUNCTION__);
 
 	DataCoord voxel;
 	OmId seg = PickVoxelMouseCrosshair(event, voxel);
@@ -363,7 +344,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-	debug("view3d", "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
+	//debug(view3d, "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
 
 	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
@@ -373,11 +354,13 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
 	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 
-	debug("view3d", "coordinate is now (%f, %f, %f)\n",
+/*
+	debug(view3d, "coordinate is now (%f, %f, %f)\n",
 	      picked_voxel.x,
 	      picked_voxel.y,
 	      picked_voxel.z
 	      );
+*/
 }
 
 OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
@@ -392,8 +375,8 @@ OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 	mpView3d->updateGL();
 	valid_pick = mpView3d->PickPoint(point2d, result);
 
-	debug("crosshair", "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n",
-	      valid_pick, result.size());
+	//debug(crosshair, "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n",
+	//valid_pick, result.size());
 
 	if(!valid_pick || result.size() != 3)
 		return 0;

@@ -1,155 +1,84 @@
 #ifndef OM_LOCKED_OBJECTS_H
 #define OM_LOCKED_OBJECTS_H
 
-#include <zi/mutex>
-#include <zi/utility>
+#include "zi/omMutex.h"
+#include "zi/omUtility.h"
 
 #include <list>
+#include <map>
+#include <set>
+#include <utility>
+#include <iterator>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
-template <typename KEY, typename VAL>
-class LockedCacheMap : private zi::RWMutex {
-public:
-	LockedCacheMap(){}
-	bool setIfHadKey(const KEY & k, VAL & ptr){
-		zi::ReadGuard g(mutex_);
-		if(0 == map_.count(k)){
-			return false;
-		}
-		ptr = map_[k];
-		return true;
-	}
-	void set(const KEY k, VAL v){
-		zi::WriteGuard g(mutex_);
-		map_[k]=v;
-	}
-	void erase(const KEY k){
-		zi::WriteGuard g(mutex_);
-		map_.erase(k);
-	}
-	size_t size(){
-		zi::ReadGuard g(mutex_);
-		return map_.size();
-	}
-	bool empty(){
-		zi::ReadGuard g(mutex_);
-		return map_.empty();
-	}
-	void flush(){
-		zi::WriteGuard g(mutex_);
-		FOR_EACH( iter, map_ ){
-			(*iter).second->Flush();
-		}
-	}
-	void clear(){
-		zi::WriteGuard g(mutex_);
-		map_.clear();
-	}
-private:
-	std::map<KEY, VAL> map_;
-	zi::RWMutex mutex_;
+template <typename VAL>
+class LockableList
+	: public std::list<VAL>,
+	  public zi::rwmutex {
 };
 
 template <typename KEY>
-class LockedKeySet{
+class LockedList{
 public:
-	LockedKeySet(){}
-	bool insertSinceDidNotHaveKey(const KEY k){
-		zi::Guard g(mutex_);
-		if(set_.count(k) > 0){
-			return false;
-		}
-		set_.insert(k);
-		return true;
-	}
-	void insert(const KEY k){
-		zi::Guard g(mutex_);
-		set_.insert(k);
-	}
-	void erase(const KEY k){
-		zi::Guard g(mutex_);
-		set_.erase(k);
-	}
-	void clear(){
-		zi::Guard g(mutex_);
-		set_.clear();
-	}
-private:
-	std::set<KEY> set_;
-	zi::Mutex mutex_;
-};
-
-template <typename VAL>
-class LockedKeyList{
-public:
-	LockedKeyList(){}
-	VAL remove_back(){
-		zi::WriteGuard g(mutex_);
-		const VAL & ret = list_.back();
-		list_.pop_back();
-		return ret;
-	}
-	void touch(const VAL & val){
-		zi::WriteGuard g(mutex_);
-		list_.remove(val);
-		list_.push_front(val);
-	}
+	virtual ~LockedList(){}
 	bool empty(){
-		zi::ReadGuard g(mutex_);
+		zi::rwmutex::read_guard g(mutex_);
 		return list_.empty();
 	}
+	void push_back(const KEY& key){
+		zi::rwmutex::write_guard g(mutex_);
+		list_.push_back(key);
+	}
 	void clear(){
-		zi::WriteGuard g(mutex_);
+		zi::rwmutex::write_guard g(mutex_);
 		list_.clear();
 	}
+	void swap(std::list<KEY>& newList){
+		zi::rwmutex::write_guard g(mutex_);
+		list_.swap(newList);
+	}
 private:
-	std::list<VAL> list_;
-	zi::RWMutex mutex_;
+	std::list<KEY> list_;
+	zi::rwmutex mutex_;
 };
 
-class LockedBool{
+template <typename KEY, typename VAL>
+class LockedMultiMap{
 public:
-	LockedBool()
-		: val_(false) {}
-	bool get(){
-		zi::ReadGuard g(mutex_);
-		return val_;
+	typedef typename std::multimap<KEY,VAL>::iterator KViterator;
+	typedef std::list<VAL> valsCont;
+
+	virtual ~LockedMultiMap(){}
+	void insert(const KEY& key, const VAL& val){
+		zi::guard g(mutex_);
+		mmap_.insert(std::pair<KEY,VAL>(key,val));
 	}
-	void set(const bool b){
-		zi::WriteGuard g(mutex_);
-		val_ = b;
+	void clear(){
+		zi::guard g(mutex_);
+		mmap_.clear();
+	}
+
+	boost::shared_ptr<valsCont> removeKey(const KEY& key){
+		zi::guard g(mutex_);
+		boost::shared_ptr<valsCont> vals =
+			boost::make_shared<valsCont>();
+
+		std::pair<KViterator, KViterator> found =
+			mmap_.equal_range(key);
+
+		KViterator it;
+		for(it = found.first; it != found.second; ++it){
+			vals->push_back(it->second);
+		}
+
+		mmap_.erase(key);
+
+		return vals;
 	}
 private:
-	bool val_;
-	zi::RWMutex mutex_;
+	std::multimap<KEY, VAL> mmap_;
+	zi::mutex mutex_;
 };
-
-template <typename T>
-class LockedNumber{
-public:
-	LockedNumber()
-		: val_(0) {}
-	T get(){
-		zi::ReadGuard g(mutex_);
-		return val_;
-	}
-	void set(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ = val;
-	}
-	void add(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ += val;
-	}
-	void sub(const T val){
-		zi::WriteGuard g(mutex_);
-		val_ -= val;
-	}
-private:
-	T val_;
-	zi::RWMutex mutex_;
-};
-
-typedef LockedNumber<int64_t> LockedInt64;
-typedef LockedNumber<uint64_t> LockedUint64;
 
 #endif

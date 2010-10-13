@@ -3,10 +3,9 @@
 
 #include <QString>
 
-class OmCacheInfo
-{
- public:
-	OmCacheInfo();
+class OmCacheInfo {
+public:
+	OmCacheInfo(){}
 	long cacheSize;
 	QString cacheName;
 };

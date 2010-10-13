@@ -12,7 +12,6 @@
 #include "datalayer/omDataWrapper.h"
 #include "mesh/omMeshTypes.h"
 #include "mesh/omMipMeshCoord.h"
-#include "system/cache/omCacheableBase.h"
 
 class OmHdf5;
 class OmMipMesh;
@@ -21,7 +20,7 @@ class OmMipMeshManager;
 class OmMeshCache;
 class ziMeshingChunk;
 
-class OmMipMesh : public OmCacheableBase {
+class OmMipMesh {
 
 public:
 	OmMipMesh(const OmMipMeshCoord &id, OmMipMeshManager *, OmMeshCache *);
@@ -29,7 +28,6 @@ public:
 
 	void Load();
 	void Save();
-	void Flush();
 
 	std::string GetFileName();
 	std::string GetDirectoryPath();
@@ -41,13 +39,14 @@ public:
 
 	bool IsEmptyMesh();
 
-	bool Draw(bool doCreateVbo);
+	void Draw();
 	void setSegmentationID(OmId sid);
 	OmId getSegmentationID();
 
 	bool hasData(){ return mHasData; }
 
 private:
+	OmMeshCache *const cache_;
 	OmId mSegmentationID;
 	OmHdf5* mHdf5File;
 	OmMipMeshManager *const mpMipMeshManager;

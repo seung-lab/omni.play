@@ -7,24 +7,22 @@
  */
 
 #include "system/omManageableObject.h"
-#include "mesh/omMipMeshManager.h"
-#include "system/omGroups.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/omDataWrapper.h"
-#include "segment/omSegmentIterator.h"
+#include "mesh/omMeshTypes.h"
 
+class OmMipMeshManager;
+class OmGroups;
 class OmMST;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
-class OmSegmentIterator;
-class OmSegmentationChunkCoord;
 class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
- public:
+public:
 	OmSegmentation();
 	OmSegmentation(OmId id);
 	~OmSegmentation();
@@ -34,36 +32,32 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	std::string GetName();
 	std::string GetDirectoryPath();
 	void loadVolData();
+	ObjectType getVolumeType(){ return SEGMENTATION; }
+	OmId getID(){ return GetID(); }
+	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 
 	void CloseDownThreads();
 
-	//build methods
 	void BuildVolumeData();
+	void Mesh();
+	void MeshChunk(const OmMipChunkCoord& coord);
 
-	bool BuildThreadedVolume();
-	bool BuildThreadedSegmentation();
-
-	void BuildMeshData();
-	void BuildMeshDataPlan(const QString &);
-	void BuildMeshChunk(int level, int x, int y, int z, int numThreads = 0);
-	void BuildMeshDataInternal();
-	void QueueUpMeshChunk(OmSegmentationChunkCoord chunk_coord );
-	void RunMeshQueue();
-
-	void BuildChunk( const OmMipChunkCoord &, bool remesh = false);
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
-	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){ return mSegmentCache; }
-	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){ return mSegmentLists; }
+	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){
+		return mSegmentCache;
+	}
+	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){
+		return mSegmentLists;
+	}
+
+	void GetMesh(OmMipMeshPtr& ptr, const OmMipChunkCoord&, const OmSegID );
 
 	//group management
-        OmGroups * GetGroups(){ return &mGroups; }
+	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
  	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
-	void DeleteGroup(OmSegID = 0);
-
-	OmMipMeshManager mMipMeshManager;
 
 	void FlushDirtySegments();
 	void FlushDend();
@@ -71,22 +65,28 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 	void SetDendThreshold( float t );
 	void SetDendThresholdAndReload( const float t );
 	float GetDendThreshold();
-	boost::shared_ptr<OmMST> getMST();
+	boost::shared_ptr<OmMST> getMST(){
+		return mst_;
+	}
 
-	Vector3i FindCenterOfSelectedSegments();
+	Vector3i FindCenterOfSelectedSegments() const;
 
-	bool ImportSourceData(OmDataPath & dataset);
+	bool ImportSourceData(const OmDataPath& path);
+
+protected:
+	virtual void doBuildThreadedVolume();
 
 private:
+	OmMipVolumeCache *const mDataCache;
+
 	void KillCacheThreads();
 
 	boost::shared_ptr<OmVolumeData> mVolData;
 	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
-
-	OmGroups mGroups;
-
+	boost::shared_ptr<OmGroups> mGroups;
 	boost::shared_ptr<OmMST> mst_;
+	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
 
@@ -97,9 +97,10 @@ private:
 	friend class OmSegmentCacheImplLowLevel;
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
+	friend class OmSegmentationChunkBuildTask;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg );
-	friend QDataStream &operator>>(QDataStream & in, OmSegmentation & seg );
+	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
+	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);
 };
 
 #endif

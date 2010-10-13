@@ -11,19 +11,31 @@ class QDataStream;
 class OmDataArchiveSegment{
 public:
 	static void ArchiveRead(const OmDataPath&, std::vector<OmSegment*>&,
-				boost::shared_ptr<OmSegmentCache>);
+							boost::shared_ptr<OmSegmentCache>,
+							const om::RewriteSegments rewriteSegments);
+
 	static void ArchiveWrite(const OmDataPath&, const std::vector<OmSegment*>&,
-				 boost::shared_ptr<OmSegmentCache>);
+							 boost::shared_ptr<OmSegmentCache>);
+
 private:
-	static bool readSegmentsOld(std::vector<OmSegment*> & page,
-				    boost::shared_ptr<OmSegmentCache>,
-				    OmDataWrapperPtr dw,
-				    const int size,
-				    const bool overrideVersion);
-	static void readSegmentsNew(std::vector<OmSegment*> & page,
-				    boost::shared_ptr<OmSegmentCache> cache,
-				    OmDataWrapperPtr dw,
-				    const int size);
+	OmDataArchiveSegment(const OmDataPath&,
+						 std::vector<OmSegment*>&,
+						 boost::shared_ptr<OmSegmentCache>);
+
+	const OmDataPath& path_;
+	std::vector<OmSegment*>& page_;
+	boost::shared_ptr<OmSegmentCache> cache_;
+	const int omniFileVersion_;
+
+	OmDataWrapperPtr dw_;
+	int size_;
+
+	void archiveRead(const om::RewriteSegments rewriteSegments);
+	void archiveWrite();
+
+	bool readSegmentsOld(const bool overrideVersion);
+	void attemptOldSegmentRead();
+	void readSegmentsNew();
 };
 
 #endif

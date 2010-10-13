@@ -9,39 +9,38 @@
 
 #include "system/omManageableObject.h"
 
-class OmThreadedCachingTile;
-class OmViewGroupState;
+class OmMipVolume;
 
 class OmFilter2d : public OmManageableObject {
 
 public:
-	OmFilter2d(OmId);
 	OmFilter2d();
+	OmFilter2d(OmId);
 
 	std::string GetName(){
-		return "filter"+  boost::lexical_cast<std::string>(GetId());
+		return "filter" + boost::lexical_cast<std::string>(GetID());
 	}
 
-	//accessors
-	void SetAlpha(double);
+	void SetAlpha(const double);
 	double GetAlpha();
 
-	OmId GetSegmentation ();
-	void SetSegmentation (OmId id);
+	OmId GetSegmentation();
+	void SetSegmentation(const OmId id);
 
 	OmId GetChannel();
-	void SetChannel (OmId id);
+	void SetChannel(const OmId id);
 
-	OmThreadedCachingTile * GetCache (ViewType, OmViewGroupState *);
+	bool setupVol();
+	OmMipVolume* getVolume(){ return vol_; }
 
 private:
 	double mAlpha;
-	OmThreadedCachingTile * mCache;
 	OmId mChannel;
 	OmId mSeg;
+	OmMipVolume* vol_;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmFilter2d & f );
-	friend QDataStream &operator>>(QDataStream & in, OmFilter2d & f );
+	friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);
+	friend QDataStream &operator>>(QDataStream&, OmFilter2d&);
 };
 
 #endif

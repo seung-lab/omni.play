@@ -6,12 +6,11 @@
 #include "utility/omSmartPtr.hpp"
 #include <boost/multi_array.hpp>
 #include <boost/shared_ptr.hpp>
-#include <zi/utility>
 #include <algorithm>
 #include <functional>
 
 template <typename T, std::size_t D>
-class OmImageCopiedData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageCopiedData {
 public:
 	typedef typename boost::multi_array<T, D> container_t;
 	typedef          OmDimension<D>           dimension_t;
@@ -39,7 +38,7 @@ public:
 
 
 template <typename T, std::size_t D>
-class OmImageRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageRefData {
 public:
 	typedef typename boost::multi_array_ref<T, D> container_t;
 	typedef          OmDimension<D>               dimension_t;
@@ -62,7 +61,7 @@ public:
 };
 
 template <typename T, std::size_t D>
-class OmImageConstRefData: zi::EnableIf<((D > 0) && (D < 10)), zi::NullType>::type {
+class OmImageConstRefData {
 public:
 	typedef typename boost::const_multi_array_ref<T, D> container_t;
 	typedef          OmDimension<D>                     dimension_t;
@@ -189,18 +188,6 @@ public:
 		return ret;
 	}
 
-	T* getMallocCopyOfDataNoSmartPtr() {
-		if(!d_.data_){
-			return NULL;
-		}
-
-		const int numBytes = d_.data_->num_elements()*sizeof(T);
-		T* ret = static_cast<T*>(malloc(numBytes));
-		assert(ret);
-		memcpy(ret, d_.data_->data(), numBytes);
-		return ret;
-	}
-
 	void copyFrom(OmImage<T,D> src, OmDimension<D> targetPos,
 				  OmDimension<D> srcPos, OmDimension<D> size)
 	{
@@ -240,12 +227,16 @@ public:
 		return out;
 	}
 
+	OmImage<uint8_t,D> recastToUint8(){
+		return recast<uint8_t>();
+	}
+
 	OmImage<uint32_t,D> recastToUint32(){
 		return recast<uint32_t>();
 	}
 
-	OmImage<uint8_t,D> recastToUint8(){
-		return recast<uint8_t>();
+	void resize(const Vector3i& dims){
+		d_.data_->resize(boost::extents[dims.x][dims.y][dims.z]);
 	}
 
 	template <typename T1, std::size_t D1,

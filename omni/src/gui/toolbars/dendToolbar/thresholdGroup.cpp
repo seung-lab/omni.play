@@ -10,8 +10,9 @@ ThresholdGroup::ThresholdGroup(GraphTools * d)
 	: OmThresholdGroup(d, false)
 	, mParent(d)
 {
-	setSingleStep(0.02);
+	setSingleStep(0.002);
 	setMaximum(1.0);
+	setDecimals(3);
 	setInitialGUIThresholdValue();
 }
 
@@ -21,7 +22,7 @@ void ThresholdGroup::actUponThresholdChange( const float threshold )
 	if(!sdw.isValid()){
 		return;
 	}
-	
+
 	(new OmSegmentationThresholdChangeAction(sdw.getSegmentationID(), threshold))->Run();
 }
 
@@ -32,7 +33,7 @@ void ThresholdGroup::setInitialGUIThresholdValue()
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(sdw.isValid()){
 		threshold = sdw.getSegmentation().GetDendThreshold();
-	} 
+	}
 
-        setGUIvalue(threshold);
+	setGUIvalue(threshold);
 }

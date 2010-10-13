@@ -1,8 +1,8 @@
-
 #include "omCameraMovement.h"
 #include "omCamera.h"
-
 #include "common/omDebug.h"
+
+static const float EPSILON = 1.0e-5;
 
 /////////////////////////////////////
 //////////
@@ -37,7 +37,7 @@ void OmCameraArcBall::Drag(const Vector2 < float >&point)
 	perp_vector.cross(mStartVector, mEndVector);
 
 	//compute length of perpendicular
-	if (perp_vector.length() > EPSILON) {	//if non-zero
+	if(perp_vector.length() > EPSILON){	//if non-zero
 
 		//update specific matrix depending on what type of rotation
 		Quaternion < float >rotation;
@@ -175,7 +175,7 @@ void OmCameraPan::Drag(const Vector2 < float >&point)
 
 void OmCameraZoom::Click(const Vector2 < float >&point)
 {
-	//debug("view3d", "zooming: click: x=%f, y=%f\n", point.x, point.y);
+	////debug(view3d, "zooming: click: x=%f, y=%f\n", point.x, point.y);
 	mOldViewMatrix = mpCamera->GetModelViewMatrix();
 	mStartDistance = mpCamera->GetDistance();
 	mStartPoint = point;
@@ -183,7 +183,7 @@ void OmCameraZoom::Click(const Vector2 < float >&point)
 
 void OmCameraZoom::Drag(const Vector2 < float >&point)
 {
-	//debug("view3d", "zooming: drag: x=%f, y=%f\n", point.x, point.y);
+	////debug(view3d, "zooming: drag: x=%f, y=%f\n", point.x, point.y);
 	const Vector4 < int >&r_viewport = mpCamera->mViewport;
 	int sy = mStartPoint[1] - r_viewport[1];
 	int cy = point.y - r_viewport[1];

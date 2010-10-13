@@ -3,6 +3,7 @@
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentLists.hpp"
+#include "segment/lowLevel/omPagingPtrStore.h"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
@@ -246,7 +247,7 @@ void OmSegmentCacheImplLowLevel::setSegmentNote( OmSegID segID, QString note )
 
 OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 {
-	return mSegmentation->GetId();
+	return mSegmentation->GetID();
 }
 
 void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)
@@ -274,10 +275,6 @@ quint32 OmSegmentCacheImplLowLevel::getMaxValue()
 	return mMaxValue;
 }
 
-///////////////////////////
-////// Private
-///////////////////////////
-
 OmSegID OmSegmentCacheImplLowLevel::getNextValue()
 {
 	++mMaxValue;
@@ -286,7 +283,7 @@ OmSegID OmSegmentCacheImplLowLevel::getNextValue()
 
 void OmSegmentCacheImplLowLevel::clearCaches()
 {
-	OmCacheManager::Freshen(true);
+	OmCacheManager::TouchFresheness();
 }
 
 void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
@@ -297,4 +294,9 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 boost::shared_ptr<OmSegmentCache> OmSegmentCacheImplLowLevel::getSegmentCache()
 {
 	return mSegmentation->GetSegmentCache();
+}
+
+void OmSegmentCacheImplLowLevel::UpgradeSegmentSerialization()
+{
+	mSegments->UpgradeSegmentSerialization();
 }

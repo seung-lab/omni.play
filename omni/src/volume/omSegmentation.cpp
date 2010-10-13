@@ -1,10 +1,13 @@
+#include "mesh/omMipMeshManager.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "datalayer/omDataReader.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omDataWrapper.h"
+#include "datalayer/omIDataReader.h"
 #include "datalayer/omMST.h"
+#include "mesh/omMipMesh.h"
 #include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/actions/segment/omSegmentGroupAction.h"
@@ -15,59 +18,57 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentLists.hpp"
 #include "system/cache/omMipVolumeCache.h"
-#include "system/events/omProgressEvent.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omView3dEvent.h"
-#include "system/omEventManager.h"
+#include "system/cache/omCacheManager.h"
 #include "system/omGenericManager.h"
+#include "system/omGroups.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
+#include "utility/omThreadPool.hpp"
 #include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
-#include "volume/omMipThreadManager.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationChunkCoord.h"
-#include "volume/omThreadChunkLevel.h"
 #include "volume/omVolume.h"
-#include "volume/omVolumeCuller.h"
 #include "volume/omVolumeData.hpp"
+#include "zi/omThreads.h"
 
 #include <QFile>
 #include <QTextStream>
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-	: mVolData(new OmVolumeData())
+	: mDataCache(new OmMipVolumeCache(this))
+	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
-	, mGroups(this)
+	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
 {
 }
 
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(OmId id)
 	: OmManageableObject(id)
+	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
-  	, mGroups(this)
+	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(new OmMST())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
 {
-	mMipMeshManager.SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
+	mMipMeshManager->SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
 
 	//uses meta data
 	mStoreChunkMetaData = true;
-
-	//build blank data
-	BuildVolumeData();
 
 	mSegmentCache->refreshTree();
 }
 
 OmSegmentation::~OmSegmentation()
 {
+	delete mDataCache;
 }
 
 boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
@@ -75,7 +76,7 @@ boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
 }
 
 std::string OmSegmentation::GetName(){
-	return "segmentation" +  boost::lexical_cast<std::string>(GetId());
+	return "segmentation" +  boost::lexical_cast<std::string>(GetID());
 }
 
 std::string OmSegmentation::GetDirectoryPath() {
@@ -97,139 +98,9 @@ void OmSegmentation::BuildVolumeData()
 	mSegmentCache->turnBatchModeOn(false);
 }
 
-bool OmSegmentation::BuildThreadedVolume()
+void OmSegmentation::Mesh()
 {
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer start
-		vol_timer.start();
-	}
-
-	if (!OmMipVolume::BuildThreadedVolume()){
-		return false;
-	}
-
-	if (!BuildThreadedSegmentation()){
-		return false;
-	}
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer stop
-		vol_timer.stop();
-		printf("OmSegmentation::BuildThreadedVolume() done : %.6f secs\n",vol_timer.s_elapsed());
-	}
-
-	return true;
-}
-
-bool OmSegmentation::BuildThreadedSegmentation()
-{
-	OmTimer vol_timer;
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer start
-		vol_timer.start();
-	}
-
-	printf("Finding direct data values...\n");
-
-	//initLevel doesn't matter, just set to 0
-	OmMipThreadManager *mipThreadManager = new OmMipThreadManager(this,OmMipThread::MIP_CHUNK,0,false);
-	mipThreadManager->SpawnThreads(MipChunksInVolume());
-	mipThreadManager->run();
-	mipThreadManager->wait();
-	mipThreadManager->StopThreads();
-	delete mipThreadManager;
-
-	//flush cache so that all thread chunks are flushed to disk
-	printf("Flushing mipchunks...\n");
-	Flush();
-	printf("done\n");
-
-	if (isDebugCategoryEnabled("perftest")){
-		//timer end
-		vol_timer.stop();
-		printf("OmSegmentation::BuildThreadedSegmentation() done : %.6f secs\n",vol_timer.s_elapsed());
-
-	}
-
-	return true;
-}
-
-/*
- *	Build all meshes in all chunks of the MipVolume.
- */
-void OmSegmentation::BuildMeshData()
-{
-	if (!IsVolumeDataBuilt()) {
-		throw OmAccessException("Segmentation volume data must be built before mesh data: " +
-								GetName());
-	}
-
-	//build all levels
-	BuildMeshDataInternal();
-}
-
-/**
- * Produce the plan file.
- */
-void OmSegmentation::BuildMeshDataPlan(const QString & planFile)
-{
-	if (!IsVolumeDataBuilt())
-		throw OmAccessException(std::string("Segmentation volume data must be built before mesh data: ") +
-								GetName());
-
-	QFile file(planFile);
-	if ( !file.open(QIODevice::WriteOnly)) {
-		throw (false && "couldn't open the plan file, check to make sure you have write permission");
-	}
-	QTextStream stream(&file);
-
-	//for each level
-	for (int level = GetRootMipLevel(); level >= 0; level--) {
-
-		//dim of leaf coords
-		Vector3 < int >mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-
-		//for all coords of level
-		for (int z = mip_coord_dims.z-1; z >= 0; --z) {
-			for (int y = mip_coord_dims.y-1; y >= 0; --y) {
-				for (int x = mip_coord_dims.x-1; x >= 0; --x) {
-
-					stream << "meshchunk:" << GetId() << ":" << level << ":" << x << "," << y << "," << z << endl;
-				}
-			}
-		}
-	}
-
-	file.close();
-}
-
-
-/**
- * Build the meshes for a single chunk.
- */
-void OmSegmentation::BuildMeshChunk(int,int,int,int,int) //int level, int x, int y, int z, int numThreads )
-{
-	assert(0 && "switch to ziMesher");
-	/*
-	  MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-	  OmMipChunkCoord chunk_coord(level, x, y, z);
-
-	  meshingMan->addToQueue( chunk_coord );
-	  if( numThreads > 0 ){
-	  meshingMan->setNumThreads( numThreads );
-	  }
-	  meshingMan->start();
-	  meshingMan->wait();
-	  delete(meshingMan);
-	*/
-}
-
-void OmSegmentation::BuildMeshDataInternal()
-{
-	ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
+	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
 	Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
 
 	for (int z = 0; z < mc.z; ++z) {
@@ -244,39 +115,25 @@ void OmSegmentation::BuildMeshDataInternal()
 	mesher.mesh();
 }
 
-/*
- *	Overridden BuildChunk method so that the mesh data for a chunk will
- *	also be rebuilt if needed, and segments are added from the chunk.
- */
-void OmSegmentation::BuildChunk(const OmMipChunkCoord & mipCoord, bool remesh)
+void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 {
-	OmMipChunkPtr chunk;
-	GetChunk(chunk, mipCoord);
-
-	const bool isMIPzero = chunk->IsLeaf();
-
-	chunk->RefreshDirectDataValues(isMIPzero, mSegmentCache);
-
-	if(isMIPzero){
-		if(remesh) {
-			ziMesher mesher(GetId(), &mMipMeshManager, GetRootMipLevel());
-			mesher.addChunkCoord(mipCoord);
-			mesher.mesh();
-		}
-	}
+	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
+	mesher.addChunkCoord(coord);
+	mesher.mesh();
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
 {
+	assert(0);
 
 	//build chunk volume data and analyze data
-	OmMipVolume::BuildChunk(mipCoord);
+//	OmMipVolume::BuildChunk(mipCoord);
 
 	//rebuild mesh data only if entire volume data has been built
 	if (IsVolumeDataBuilt()) {
 		assert(0 && "switch to ziMesher");
 		/*
-		  MeshingManager* meshingMan = new MeshingManager( GetId(), &mMipMeshManager );
+		  MeshingManager* meshingMan = new MeshingManager( GetID(), &mMipMeshManager );
 		  meshingMan->addToQueue( mipCoord );
 		  meshingMan->start();
 		  meshingMan->wait();
@@ -286,11 +143,11 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	//remove mesh from cache to force it to reload
 	foreach( const OmSegID & val, rModifiedValues ){
 		OmMipMeshCoord mip_mesh_coord = OmMipMeshCoord(mipCoord, val);
-		mMipMeshManager.UncacheMesh(mip_mesh_coord);
+		mMipMeshManager->UncacheMesh(mip_mesh_coord);
 	}
 
 	//call redraw to force mesh to reload
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+	OmEvents::Redraw3d();
 }
 
 /////////////////////////////////
@@ -303,8 +160,10 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	} else if(NOTVALIDROOT == type) {
 		valid = false;
 	} else if(GROUPROOT == type) {
-		(new OmSegmentGroupAction(GetId(), set, name, true))->Run();
+		(new OmSegmentGroupAction(GetID(), set, name, true))->Run();
 		return;
+	} else {
+		throw OmArgException("invalid argument?");
 	}
 
 	OmSegmentIterator iter(mSegmentCache);
@@ -317,54 +176,17 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 		seg = iter.getNextSegment();
 	}
 
-	(new OmSegmentValidateAction(GetId(), newSet, valid))->Run();
+	(new OmSegmentValidateAction(GetID(), newSet, valid))->Run();
 }
 
 void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
 {
 	if(GROUPROOT == type) {
-		return mGroups.UnsetGroup(set, name);
-		(new OmSegmentGroupAction(GetId(), set, name, false))->Run();
+		return mGroups->UnsetGroup(set, name);
+		(new OmSegmentGroupAction(GetID(), set, name, false))->Run();
 	} else {
-		assert(0 && "only unset regular groups");
+		throw OmArgException("only unset regular groups");
 	}
-}
-
-
-void OmSegmentation::DeleteGroup(OmGroupID)
-{
-	printf("FIXME delete group not supported\n");
-}
-
-/**
- * Enqueue chunk coord to build
- */
-void OmSegmentation::QueueUpMeshChunk(OmSegmentationChunkCoord /*chunk_coord*/ )
-{
-	assert(0 && "switch to ziMesher");
-	/*
-	  if( NULL == mMeshingMan ){
-	  mMeshingMan = new MeshingManager( GetId(), &mMipMeshManager );
-	  }
-
-	  mMeshingMan->addToQueue( chunk_coord );
-	*/
-}
-
-void OmSegmentation::RunMeshQueue()
-{
-	assert(0 && "switch to ziMesher");
-
-	/*
-	  if(  NULL == mMeshingMan ){
-	  return;
-	  }
-
-	  mMeshingMan->start();
-	  mMeshingMan->wait();
-	  delete(mMeshingMan);
-	  mMeshingMan = NULL;
-	*/
 }
 
 void OmSegmentation::FlushDirtySegments()
@@ -393,74 +215,47 @@ void OmSegmentation::SetDendThreshold( float t )
 
 void OmSegmentation::CloseDownThreads()
 {
-	mMipMeshManager.CloseDownThreads();
+	mMipMeshManager->CloseDownThreads();
 	mDataCache->closeDownThreads();
 }
 
-Vector3<int> OmSegmentation::FindCenterOfSelectedSegments()
+Vector3i OmSegmentation::FindCenterOfSelectedSegments() const
 {
 	DataBbox box;
-	bool found = false;
 
 	OmSegmentIterator iter(mSegmentCache);
 	iter.iterOverSelectedIDs();
 
-	unsigned int counter = 0;
-	const int level = 0;
+	uint32_t counter = 0;
 
-	OmSegment * seg = iter.getNextSegment();
+	OmSegment* seg = iter.getNextSegment();
 	while(NULL != seg) {
-
-		if(seg->getBounds().isEmpty()) {
-			Vector3i mip_coord_dims = MipLevelDimensionsInMipChunks(level);
-			for (int z = 0; z < mip_coord_dims.z; ++z) {
-				for (int y = 0; y < mip_coord_dims.y; ++y) {
-					for (int x = 0; x < mip_coord_dims.x; ++x) {
-						OmMipChunkCoord chunk_coord(level, x, y, z);
-						OmMipChunkPtr p_chunk;
-						GetChunk(p_chunk, chunk_coord);
-
-						const OmSegIDsSet & data_values = p_chunk->GetDirectDataValues();
-						if(0 != data_values.count(seg->value)) {
-
-							if(!found) {
-								found = true;
-								box = p_chunk->GetExtent();
-							} else {
-								box = DataBbox(box, p_chunk->GetExtent());
-								counter++;
-							}
-						}
-					}
-				}
-			}
-		} else {
-			if(!found) {
-				found = true;
-				box = seg->getBounds();
-			} else {
-				box.merge(seg->getBounds());
-				counter++;
-			}
+		const DataBbox& segBox = seg->getBounds();
+		if(segBox.isEmpty()){
+			continue;
 		}
 
-		seg = iter.getNextSegment();
+		box.merge(segBox);
+
+		++counter;
 		if(counter > 5000) {
 			break;
 		}
+
+		seg = iter.getNextSegment();
 	}
 
-	if(!found) {
-		return Vector3<int> (0,0,0);
-		//assert(0 && "segments must be selected before calling this function");
+	if(!counter){
+		return Vector3i(0,0,0);
 	}
+
 	return (box.getMin() + box.getMax()) / 2;
 }
 
-bool OmSegmentation::ImportSourceData(OmDataPath & dataset)
+bool OmSegmentation::ImportSourceData(const OmDataPath& path)
 {
-	OmVolumeImporter<OmSegmentation> importer(this);
-	return importer.import(dataset);
+	OmVolumeImporter<OmSegmentation> importer(this, path);
+	return importer.Import();
 }
 
 void OmSegmentation::loadVolData()
@@ -473,18 +268,14 @@ float OmSegmentation::GetDendThreshold()
 	return mst_->mDendThreshold;
 }
 
-boost::shared_ptr<OmMST> OmSegmentation::getMST()
-{
-	return mst_;
-}
-
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	mDataCache->Get(chunk, coord, true);
+	getDataCache()->Get(chunk, coord, true);
 
-	OmImage<uint32_t, 3> imageData = chunk->getOmImage32Chunk();
-	uint32_t* rawData = imageData.getMallocCopyOfDataNoSmartPtr();
+	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
+	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
+	uint32_t* rawData = rawDataPtr.get();
 
 	for(int i = 0; i < chunk->GetNumberOfVoxelsInChunk(); ++i){
 		if( 0 != rawData[i]) {
@@ -492,5 +283,77 @@ OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 		}
 	}
 
-	return OmDataWrapper<uint32_t>::produce(rawData, MALLOC);
+	return OmDataWrapperFactory::produce(rawDataPtr);
+}
+
+
+class OmSegmentationChunkBuildTask : public zi::runnable {
+private:
+	const OmMipChunkCoord coord_;
+	OmSegmentation* vol_;
+	boost::shared_ptr<OmSegmentCache> segmentCache_;
+
+public:
+	OmSegmentationChunkBuildTask(const OmMipChunkCoord& coord,
+								 boost::shared_ptr<OmSegmentCache> segmentCache,
+								 OmSegmentation* vol)
+		:coord_(coord), vol_(vol), segmentCache_(segmentCache)
+	{}
+
+	void run()
+	{
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord_);
+
+		const bool isMIPzero = chunk->IsLeaf();
+
+		chunk->RefreshDirectDataValues(isMIPzero, segmentCache_);
+		std::cout << "chunk " << coord_
+				  << " has " << chunk->GetDirectDataValues().size()
+				  << " values\n";
+
+		double max = 0;
+		double min = 0;
+		if(isMIPzero){
+			min = std::min(chunk->GetMinValue(), min);
+			max = std::max(chunk->GetMaxValue(), max);
+		}
+
+		vol_->updateMinMax(min, max);
+	}
+};
+
+void OmSegmentation::doBuildThreadedVolume()
+{
+	OmThreadPool threadPool;
+	threadPool.start();
+
+	for (int level = 0; level <= GetRootMipLevel(); ++level) {
+		const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+		for (int z = 0; z < dims.z; ++z){
+			for (int y = 0; y < dims.y; ++y){
+				for (int x = 0; x < dims.x; ++x){
+
+					OmMipChunkCoord coord(level, x, y, z);
+
+					boost::shared_ptr<OmSegmentationChunkBuildTask> task =
+						boost::make_shared<OmSegmentationChunkBuildTask>(coord,
+																		 mSegmentCache,
+																		 this);
+					threadPool.addTaskBack(task);
+				}
+			}
+		}
+	}
+
+	threadPool.join();
+	printf("max is %g\n", mMaxVal);
+	mWasBounded = true;
+}
+
+void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
+							 const OmMipChunkCoord& coord,
+							 const OmSegID segID )
+{
+	return mMipMeshManager->GetMesh(ptr, OmMipMeshCoord(coord, segID));
 }

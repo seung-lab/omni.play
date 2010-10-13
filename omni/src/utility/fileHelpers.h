@@ -6,7 +6,7 @@
 class FileHelpers
 {
  public:
-	static bool isFileReadOnly(const QString& fileNameAndPath);
+	static bool isFileReadOnly(const std::string& fileNameAndPath);
 	static bool removeDir(const QString &dirName); // rm -rf
 };
 

@@ -17,7 +17,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 
-#include <zi/utility>
+#include "zi/omUtility.h"
 #include "zi/trees/DisjointSets.hpp"
 
 using namespace std;
@@ -44,7 +44,6 @@ rawQuickieWS(const float* connections,
   int64_t xyDim      = xDim  * yDim;
   int64_t xyzDim     = xyDim * zDim;
   int64_t xyzDim2    = xyDim * zDim * 2;
-  int64_t noElements = xyzDim * 3;
   int64_t nHood[6]   = {-1, -xDim, -xyDim, 1, xDim, xyDim};
 
   int64_t totalNice  = 0;

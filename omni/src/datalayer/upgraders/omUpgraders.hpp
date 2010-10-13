@@ -2,6 +2,7 @@
 #define OM_UPGRADERS_HPP
 
 #include "datalayer/upgraders/omUpgradeTo14.hpp"
+#include "datalayer/upgraders/omUpgradeTo15.hpp"
 
 class OmUpgraders{
 public:
@@ -10,6 +11,10 @@ public:
 		u.copyDataOutFromHDF5();
 	}
 
+	static void to15(){
+		OmUpgradeTo15 u;
+		u.rewriteSegments();
+	}
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "gui/toolbars/dendToolbar/displayTools.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "system/omEvents.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
 

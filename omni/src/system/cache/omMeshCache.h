@@ -2,17 +2,15 @@
 #define OM_MESH_CACHE_H
 
 #include "system/cache/omThreadedCache.h"
-#include "mesh/omMipMeshCoord.h"
-#include "mesh/omMipMesh.h"
+#include "mesh/omMeshTypes.h"
 
-typedef boost::shared_ptr<OmMipMesh> OmMipMeshPtr;
-
+class OmMipMeshCoord;
 class OmMipMeshManager;
 
 class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {
 public:
 	OmMeshCache(OmMipMeshManager * parent);
-	
+
 	OmMipMeshPtr HandleCacheMiss(const OmMipMeshCoord &meshCoord);
 
 private:

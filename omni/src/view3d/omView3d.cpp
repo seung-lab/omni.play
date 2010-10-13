@@ -9,7 +9,7 @@
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "view3d/omView3d.h"
-#include "volume/omVolumeCuller.h"
+#include "mesh/omVolumeCuller.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
@@ -22,30 +22,6 @@ enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_CHUNK_EXTENT,
 	NUMBER_VIEW3D_WIDGET_IDS
 };
-
-/////////////////////////////////////////
-///////         Utility Function Prototypes
-
-void initLights();
-
-/////////////////////////////////////
-//////////
-//////////      OmView3d Class
-//////////
-
-#ifdef WIN32
-typedef void (*GLDELETEBUFFERS)(GLsizei n, const GLuint *buffers);
-typedef void (*GLBINDBUFFER)(GLenum target, GLuint buffer);
-typedef void (*GLGENBUFFERS)(GLsizei n, GLuint *buffers);
-typedef void (*GLBUFFERDATA)(GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
-typedef void (*GLGETBUFFERPARAIV)(GLenum target, GLenum pname, GLint *params);
-
-GLDELETEBUFFERS glDeleteBuffersARBFunction;
-GLBINDBUFFER glBindBufferARBFunction;
-GLGENBUFFERS glGenBuffersARBFunction;
-GLBUFFERDATA glBufferDataARBFunction;
-GLGETBUFFERPARAIV glGetBufferParameterivARBFunction;
-#endif
 
 /*
  *	Constructs View3d widget that shares with the primary widget.
@@ -69,8 +45,8 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	//update enabled state of widgets
 	UpdateEnabledWidgets();
 
-        mDrawTimer.stop();
-        connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+	mDrawTimer.stop();
+	connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
 	// These calls simply prime Michaels Local Preferences File I/O System
 	// TODO: make OmLocalPreferences cache, so we don't have to prime...(purcaro)
@@ -82,28 +58,15 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	mElapsed = new QTime();
 	mElapsed->start();
 
-#ifdef WIN32
-	glDeleteBuffersARBFunction = (GLDELETEBUFFERS) wglGetProcAddress("glDeleteBuffersARB");
-	assert(glDeleteBuffersARBFunction);
-	glBindBufferARBFunction = (GLBINDBUFFER) wglGetProcAddress("glBindBufferARB");
-	assert(glBindBufferARBFunction);
-	glGenBuffersARBFunction = (GLGENBUFFERS) wglGetProcAddress("glGenBuffersARB");
-	assert(glGenBuffersARBFunction);
-	glBufferDataARBFunction = (GLBUFFERDATA) wglGetProcAddress("glBufferDataARB");
-	assert(glBufferDataARBFunction);
-	glGetBufferParameterivARBFunction = (GLGETBUFFERPARAIV) wglGetProcAddress("glGetBufferParameterivARB");
-	assert(glGetBufferParameterivARBFunction);
-#endif
-
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
-     	grabGesture(Qt::SwipeGesture);
+	grabGesture(Qt::SwipeGesture);
 }
 
 OmView3d::~OmView3d()
 {
-        if (mDrawTimer.isActive()) {
-        	mDrawTimer.stop();
+	if (mDrawTimer.isActive()) {
+		mDrawTimer.stop();
 	}
 
 	delete mElapsed;
@@ -167,7 +130,7 @@ void OmView3d::initializeGL()
 
 	initLights();
 
-	Vector4 < int >viewport(0, 0, 400, 300);
+	Vector4i viewport(0, 0, 400, 300);
 	mCamera.SetViewport(viewport);	//set viewport
 
 	SetCameraPerspective();	// camera props
@@ -178,7 +141,7 @@ void OmView3d::initializeGL()
  */
 void OmView3d::resizeGL(int width, int height)
 {
-	mCamera.ApplyReshape(Vector2 < int >(width, height));
+	mCamera.ApplyReshape(Vector2i(width, height));
 }
 
 /*
@@ -199,18 +162,17 @@ void OmView3d::myUpdate()
 
 void OmView3d::doTimedDraw()
 {
-	//	debug("view3ddraw", "elasped %f\n", mElapsed->elapsed());
 	if (mElapsed->elapsed() > 5000) {
 		mElapsed->restart();
 		updateGL();
 	}
 
 	if (mDrawTimer.isActive()) {
-        	mDrawTimer.stop();
-        	mDrawTimer.start(100);
+		mDrawTimer.stop();
+		mDrawTimer.start(100);
 		mDrawTimer.setSingleShot(true);
 	} else {
-        	mDrawTimer.start(100);
+		mDrawTimer.start(100);
 		mDrawTimer.setSingleShot(true);
 	}
 }
@@ -223,7 +185,6 @@ void OmView3d::mousePressEvent(QMouseEvent * event)
 	try {
 		mView3dUi.MousePressed(event);
 	} catch(...) {
-
 	}
 }
 
@@ -268,28 +229,28 @@ void OmView3d::PreferenceChangeEvent(OmPreferenceEvent * event)
 {
 	switch (event->GetPreference()) {
 
-	case OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL:
-	case OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL:
-	case OM_PREF_VIEW3D_SHOW_INFO_BOOL:
-	case OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL:
+	case om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL:
+	case om::PREF_VIEW3D_SHOW_VIEWBOX_BOOL:
+	case om::PREF_VIEW3D_SHOW_INFO_BOOL:
+	case om::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL:
 		UpdateEnabledWidgets();
 		break;
 
-	case OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F:
+	case om::PREF_VIEW3D_BACKGROUND_COLOR_V3F:
 		SetBackgroundColor();
 		break;
 
-	case OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL:
+	case om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL:
 		SetBlending();
 		break;
 
-	case OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT:
-	case OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT:
-	case OM_PREF_VIEW3D_CAMERA_FOV_FLT:
+	case om::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT:
+	case om::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT:
+	case om::PREF_VIEW3D_CAMERA_FOV_FLT:
 		//SetCameraPerspective();
 		break;
 
-	case OM_PREF_VIEW3D_TRANSPARENT_ALPHA_FLT:
+	case om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT:
 		break;
 
 	default:
@@ -402,16 +363,16 @@ bool OmView3d::UnprojectPoint(Vector2i point2d, Vector3f & point3d, float z_scal
 void OmView3d::UpdateEnabledWidgets()
 {
 	//set widgets enabled
-	bool highlight_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
+	bool highlight_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_SELECTION]->enabled = highlight_widget_state;
 
-	bool viewbox_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
+	bool viewbox_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_VIEWBOX_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_VIEWBOX]->enabled = viewbox_widget_state;
 
-	bool info_widget_state = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_INFO_BOOL);
+	bool info_widget_state = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_INFO_BOOL);
 	mView3dWidgetManager[VIEW3D_WIDGET_ID_INFO]->enabled = info_widget_state;
 
-	bool extent_widget = OmPreferences::GetBoolean(OM_PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
+	bool extent_widget = OmPreferences::GetBoolean(om::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL);
 	mView3dWidgetManager[ VIEW3D_WIDGET_ID_CHUNK_EXTENT]->enabled = extent_widget;
 }
 
@@ -451,12 +412,12 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 
 			//draw unselected (i.e. enabled) segments
 			//if transparent unselected, disable writing to depth buffer
-			if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+			if (OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 				glDepthMask(GL_FALSE);
 			}
 
 			DrawVolumes(cullerOptions | DRAWOP_SEGMENT_FILTER_UNSELECTED |
-				    DRAWOP_SEGMENT_COLOR_TRANSPARENT);
+						DRAWOP_SEGMENT_COLOR_TRANSPARENT);
 
 			//always renable writing to depth buffer
 			glDepthMask(GL_TRUE);
@@ -465,12 +426,8 @@ void OmView3d::Draw(OmBitfield cullerOptions)
 		if (cullerOptions & DRAWOP_RENDERMODE_SELECTION) {
 			DrawVolumes(cullerOptions);
 		}
-
-		//draw edit selection
-		DrawEditSelectionVoxels();
 	}
 
-	//debug("FIXME", << "cullerOptions & DRAWOP_DRAW_WIDGETS" << (cullerOptions & DRAWOP_DRAW_WIDGETS) << endl;
 	if (cullerOptions & DRAWOP_DRAW_WIDGETS) {
 		DrawWidgets();
 	}
@@ -489,30 +446,16 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions)
 
 	//setup culler to current projection-modelview matrix
 	OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
-			      mCamera.GetPosition(), mCamera.GetFocus(), cullerOptions);
+						  mCamera.GetPosition(),
+						  mCamera.GetFocus(),
+						  cullerOptions);
 
 	// Draw meshes!
 	FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
-		OmMeshDrawer drawer( *iter, mViewGroupState);
-		drawer.Init();
+		OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
+		OmMeshDrawer drawer(seg, mViewGroupState);
 		drawer.Draw( culler );
 	}
-}
-
-void OmView3d::DrawEditSelectionVoxels()
-{
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-	//offset selection voxels to be on top
-	glPolygonOffset(-1.0f, -1.0f);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-
-	//check if there are any voxels to draw
-	if (OmSegmentEditor::GetSelectedVoxels().size()) {
-		//OmVolume::DrawEditSelectionVoxels();
-	}
-
-	glPopAttrib();
 }
 
 /////////////////////////////////
@@ -520,15 +463,15 @@ void OmView3d::DrawEditSelectionVoxels()
 
 void OmView3d::SetBackgroundColor()
 {
-	Vector3f bg_color = OmPreferences::GetVector3f(OM_PREF_VIEW3D_BACKGROUND_COLOR_V3F);
+	Vector3f bg_color = OmPreferences::GetVector3f(om::PREF_VIEW3D_BACKGROUND_COLOR_V3F);
 	glClearColor(bg_color.r, bg_color.g, bg_color.b, 1);
 }
 
 void OmView3d::SetCameraPerspective()
 {
-	float mynear = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
-	float myfar = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
-	float fov = OmPreferences::GetFloat(OM_PREF_VIEW3D_CAMERA_FOV_FLT);
+	float mynear = OmPreferences::GetFloat(om::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT);
+	float myfar = OmPreferences::GetFloat(om::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT);
+	float fov = OmPreferences::GetFloat(om::PREF_VIEW3D_CAMERA_FOV_FLT);
 	myfar = 10000000.0;
 	Vector4 < float >perspective(fov, (float)(400) / 300, mynear, myfar);
 
@@ -538,7 +481,7 @@ void OmView3d::SetCameraPerspective()
 
 void OmView3d::SetBlending()
 {
-	if (OmPreferences::GetBoolean(OM_PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
+	if (OmPreferences::GetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL)) {
 		glEnable(GL_BLEND);
 	} else {
 		glDisable(GL_BLEND);
@@ -569,7 +512,7 @@ void OmView3d::DrawWidgets()
  * Initialize lights
  * http://www.songho.ca/opengl/gl_vbo.html
  */
-void initLights()
+void OmView3d::initLights()
 {
 	// set up light colors (ambient, diffuse, specular)
 	GLfloat lightKa[] = { .2f, .2f, .2f, 1.0f };	// ambient light

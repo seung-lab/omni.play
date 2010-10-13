@@ -13,14 +13,13 @@
 #include "system/omManageableObject.h"
 
 class OmVolume : boost::noncopyable {
-
- public:
+public:
 	//transform methods
 	Vector3<float> GetScale();
 	bool SetScale(const Vector3<float> &vec);
 	Vector3<float> GetUserScale();
 	bool SetUserScale(const Vector3<float> &vec);
-	
+
 	//data properties
 	const DataBbox& GetDataExtent();
 	void SetDataExtent(const DataBbox& extent);
@@ -35,7 +34,7 @@ class OmVolume : boost::noncopyable {
 	void SetChunkDimension(int);
 	QString GetUnit();
 	void SetUnit(QString unit);
-	
+
 	//coordinate frame methods
 	NormCoord DataToNormCoord(const DataCoord &data, bool centered = true);
 	DataCoord NormToDataCoord(const NormCoord &norm);
@@ -46,7 +45,7 @@ class OmVolume : boost::noncopyable {
 	SpaceCoord DataToSpaceCoord(const DataCoord &datac);
 	DataBbox SpaceToDataBbox(const SpaceBbox & spacebox);
 	SpaceBbox DataToSpaceBbox(const DataBbox & databox);
-	
+
 	NormBbox DataToNormBbox(const DataBbox &dataBbox);
 	DataBbox NormToDataBbox(const NormBbox &normBbox);
 	SpaceBbox NormToSpaceBbox(const NormBbox &normBbox);
@@ -55,10 +54,10 @@ class OmVolume : boost::noncopyable {
 	const Matrix4<float> & GetNormToSpaceMatrix(){ return mNormToSpaceMat; }
 	const Matrix4<float> & GetNormToSpaceInvMatrix(){ return mNormToSpaceInvMat; }
 
- protected:
+protected:
 	OmVolume();
-	~OmVolume();
-	
+	virtual ~OmVolume();
+
 	//transforms from normailzed unit cube external spatial coverage
 	Matrix4<float> mSpaceToUserMat;
 	Matrix4<float> mSpaceToUserInvMat;
@@ -69,10 +68,10 @@ class OmVolume : boost::noncopyable {
 	DataBbox mDataExtent;
 	Vector3f mDataResolution;	//units per voxel
 	Vector3f mDataStretchValues;
-	
+
 	int mChunkDim;
 	QString unitString;
-	
+
 	friend class OmDataArchiveProject;
 
 private:

@@ -2,7 +2,7 @@
 #include "gui/mainwindow.h"
 #include "gui/toolbars/dendToolbar/showValidatedButton.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 ShowValidatedButton::ShowValidatedButton(ValidationGroup * d)
 	: OmButton<ValidationGroup>( d, 
@@ -14,7 +14,7 @@ ShowValidatedButton::ShowValidatedButton(ValidationGroup * d)
 
 void ShowValidatedButton::doAction()
 {
-	debug("valid", "DendToolBar::mapColors(%i)\n", isChecked());
+	//debug(valid, "DendToolBar::mapColors(%i)\n", isChecked());
 	// Using !(not) because check happens after this fuction.
 	mParent->getViewGroupState()->SetShowValidMode(!isChecked(), mParent->isShowValidChecked());
 }

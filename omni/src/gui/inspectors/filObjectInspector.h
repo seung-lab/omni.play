@@ -2,16 +2,17 @@
 #define FILOBJECTINSPECTOR_H
 
 #include <QtGui>
-#include <QWidget> 
+#include <QWidget>
 #include "project/omProject.h"
-#include "utility/dataWrappers.h"
+
+class FilterDataWrapper;
 
 class FilObjectInspector : public QWidget
-{ 
-    Q_OBJECT 
-	
-public: 
-    FilObjectInspector(QWidget *parent, const FilterDataWrapper & fdw); 
+{
+    Q_OBJECT
+
+public:
+    FilObjectInspector(QWidget *parent, const FilterDataWrapper & fdw);
 
 private slots:
     void sourceEditChangedChan();
@@ -19,12 +20,12 @@ private slots:
     void setFilAlpha(int);
     void saveFilterAlphaValue();
 
-private: 
+private:
     QSlider *alphaSlider;
 
     OmId mChannelID;
     OmId mFilterID;
-    FilterDataWrapper mFDW;
+	boost::shared_ptr<FilterDataWrapper> mFDW;
 
     QLineEdit *chanEdit;
     QLineEdit *segEdit;
@@ -37,5 +38,5 @@ private:
     void set_initial_values();
     int getSegmentationIDtoFilter();
     int getChannelIDtoFilter();
-}; 
+};
 #endif

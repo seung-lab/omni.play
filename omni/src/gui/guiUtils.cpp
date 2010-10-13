@@ -22,7 +22,7 @@ bool GuiUtils::getBoolState(const Qt::CheckState state)
 		break;
 	}
 
-	assert(0);
+	throw OmArgException("unknown state?");
 }
 
 void GuiUtils::autoResizeColumnWidths(QTreeWidget * widget, const int max_col_to_display)

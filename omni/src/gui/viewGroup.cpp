@@ -1,41 +1,33 @@
+#include "common/omDebug.h"
 #include "gui/mainwindow.h"
 #include "gui/menubar.h"
 #include "gui/viewGroup.h"
 #include "gui/viewGroupWidgetInfo.h"
 #include "project/omProject.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 #include "view3d/omView3d.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
+#include <boost/make_shared.hpp>
+
 static const ViewType UpperLeft  = XY_VIEW;
 static const ViewType UpperRight = YZ_VIEW;
 static const ViewType LowerLeft  = XZ_VIEW;
 
-ViewGroup::ViewGroup( MainWindow * mw, OmViewGroupState * vgs )
+ViewGroup::ViewGroup(MainWindow* mw, OmViewGroupState* vgs)
 	: mMainWindow(mw)
 	, mViewGroupState(vgs)
 {
 }
 
-int ViewGroup::getID()
-{
-	return mViewGroupState->GetId();
+int ViewGroup::getID(){
+	return mViewGroupState->GetID();
 }
 
-QString ViewGroup::viewGroupName()
-{
-	return "ViewGroup" + QString::number(getID());
-}
-
-QString ViewGroup::makeObjectName()
-{
-	return "3d_" + viewGroupName();
-}
-
-QString ViewGroup::makeObjectName( ObjectType voltype, ViewType vtype )
+QString ViewGroup::makeObjectName(const ObjectType voltype, const ViewType vtype)
 {
 	QString name;
 
@@ -50,44 +42,48 @@ QString ViewGroup::makeObjectName( ObjectType voltype, ViewType vtype )
 	return name;
 }
 
-QString ViewGroup::makeObjectName( ViewGroupWidgetInfo * vgw )
+QString ViewGroup::makeObjectName(ViewGroupWidgetInfo* vgw)
 {
 	if( VIEW2D_CHAN == vgw->widgetType ) {
 		return makeObjectName( CHANNEL, vgw->vtype );
-	} else if (VIEW2D_SEG  == vgw->widgetType ){
-		return makeObjectName( SEGMENTATION, vgw->vtype );
-	} else {
-		return makeObjectName();
 	}
+
+	if (VIEW2D_SEG  == vgw->widgetType ){
+		return makeObjectName( SEGMENTATION, vgw->vtype );
+	}
+
+	return makeObjectName();
 }
 
-QString ViewGroup::makeComplimentaryObjectName( ViewGroupWidgetInfo * vgw )
+QString ViewGroup::makeComplimentaryObjectName(ViewGroupWidgetInfo* vgw)
 {
 	if( VIEW2D_CHAN == vgw->widgetType ){
 		return makeObjectName( SEGMENTATION, vgw->vtype );
-	} else if( VIEW2D_SEG == vgw->widgetType ){
-		return makeObjectName( CHANNEL, vgw->vtype );
-	} else {
-		return "";
 	}
+
+	if( VIEW2D_SEG == vgw->widgetType ){
+		return makeObjectName( CHANNEL, vgw->vtype );
+	}
+
+	return "";
 }
 
-QDockWidget* ViewGroup::getDockWidget( QString objName )
+QDockWidget* ViewGroup::getDockWidget(const QString& objName)
 {
-	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( objName );
+	QList<QDockWidget*> widgets = findDockWidgets(objName);
 
 	if( widgets.isEmpty() ){
 		return NULL;
 	} else if( widgets.size() > 1 ){
-		assert(0);
+		throw OmArgException("too many widgets");
 	}
 
 	return widgets[0];
 }
 
-bool ViewGroup::doesDockWidgetExist( QString objName )
+bool ViewGroup::doesDockWidgetExist(const QString& objName )
 {
-	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( objName );
+	QList<QDockWidget*> widgets = findDockWidgets(objName);
 
 	if( widgets.isEmpty() ){
 		return false;
@@ -96,21 +92,21 @@ bool ViewGroup::doesDockWidgetExist( QString objName )
 	return true;
 }
 
-QList<QDockWidget * > ViewGroup::getAllDockWidgets()
+QList<QDockWidget*> ViewGroup::getAllDockWidgets()
 {
 	QRegExp rx( ".*" + viewGroupName() + "$" );
-	QList<QDockWidget * > widgets = mMainWindow->findChildren< QDockWidget *>( rx );
+	QList<QDockWidget*> widgets = findDockWidgets(rx);
 
 	return widgets;
 }
 
 int ViewGroup::getNumDockWidgets()
 {
-	QList<QDockWidget * > widgets = getAllDockWidgets();
+	QList<QDockWidget*> widgets = getAllDockWidgets();
 	return widgets.size();
 }
 
-void ViewGroup::addView3D()
+void ViewGroup::AddView3D()
 {
 	QString name = "3D View";
 	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW3D );
@@ -126,64 +122,54 @@ void ViewGroup::addView3D()
 	delete(vgw);
 }
 
-QWidget * ViewGroup::addView2Dchannel( const OmId chan_id, ViewType vtype)
+void ViewGroup::AddView2Dchannel(const OmId chan_id, const ViewType vtype)
 {
-	QString name = getViewName( OmProject::GetChannel(chan_id).GetName(), vtype );
-	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_CHAN, vtype );
+	OmChannel& chan = OmProject::GetChannel(chan_id);
+	const QString name = getViewName(chan.GetName(), vtype);
 
-	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
-		delete getDockWidget( makeObjectName( vgw ) );
+	boost::shared_ptr<ViewGroupWidgetInfo> vgw =
+		boost::make_shared<ViewGroupWidgetInfo>(name, VIEW2D_CHAN, vtype);
+
+	if( doesDockWidgetExist(makeObjectName(vgw.get()))){
+		delete getDockWidget(makeObjectName(vgw.get()));
 	}
 
-	vgw->widget = new OmView2d(vtype, CHANNEL, chan_id, mMainWindow, mViewGroupState );
+	OmView2d* v2d =  new OmView2d(vtype, mMainWindow, mViewGroupState,
+				      &chan,  name.toStdString());
+	vgw->widget = v2d;
+	std::pair<QDockWidget*,QDockWidget*> dockAndCompliment =
+		insertDockIntoGroup(vgw.get());
 
-	insertDockIntoGroup( vgw );
-
-	QWidget * ret = vgw->widget;
-
-	delete vgw;
-
-	return ret;
+	View2dDockWidget::WireDockWithView2d(v2d, dockAndCompliment);
 }
 
-void ViewGroup::addView2Dsegmentation( const OmId segmentation_id, ViewType vtype)
+void ViewGroup::AddView2Dsegmentation(const OmId segmentation_id,
+				      const ViewType vtype)
 {
-	QString name = getViewName( OmProject::GetSegmentation(segmentation_id).GetName(), vtype );
-	ViewGroupWidgetInfo * vgw = new ViewGroupWidgetInfo( name, VIEW2D_SEG, vtype );
+	OmSegmentation& seg = OmProject::GetSegmentation(segmentation_id);
+	const QString name = getViewName(seg.GetName(), vtype);
 
-	if( doesDockWidgetExist( makeObjectName( vgw ) ) ){
-		delete getDockWidget( makeObjectName( vgw ) );
+	boost::shared_ptr<ViewGroupWidgetInfo> vgw =
+		boost::make_shared<ViewGroupWidgetInfo>(name, VIEW2D_SEG, vtype);
+
+	if( doesDockWidgetExist(makeObjectName(vgw.get()))){
+		delete getDockWidget(makeObjectName(vgw.get()));
 	}
 
-	vgw->widget = new OmView2d(vtype, SEGMENTATION, segmentation_id, mMainWindow, mViewGroupState);
+	OmView2d* v2d = new OmView2d(vtype, mMainWindow, mViewGroupState,
+				     &seg, name.toStdString());
 
-	insertDockIntoGroup( vgw );
+	vgw->widget = v2d;
 
-	delete vgw;
+	std::pair<QDockWidget*,QDockWidget*> dockAndCompliment =
+		insertDockIntoGroup(vgw.get());
+
+	View2dDockWidget::WireDockWithView2d(v2d, dockAndCompliment);
 }
 
-QString ViewGroup::getViewName( const std::string & volName, ViewType vtype )
+QDockWidget* ViewGroup::makeDockWidget(ViewGroupWidgetInfo* vgw)
 {
-	return QString::fromStdString(volName)
-		+ " -- "
-		+ getViewTypeAsStr(vtype)
-		+ " View";
-}
-
-QString ViewGroup::getViewTypeAsStr( ViewType vtype )
-{
-	if (vtype == XY_VIEW) {
-		return "XY";
-	} else if (vtype == XZ_VIEW) {
-		return "XZ";
-	} else {
-		return "YZ";
-	}
-}
-
-QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidgetInfo * vgw )
-{
-	QDockWidget * dock = new QDockWidget( vgw->name, mMainWindow);
+	QDockWidget* dock = new QDockWidget( vgw->name, mMainWindow);
 	vgw->widget->setParent(dock);
 
 	dock->setObjectName( makeObjectName(vgw) );
@@ -196,14 +182,14 @@ QDockWidget * ViewGroup::makeDockWidget( ViewGroupWidgetInfo * vgw )
 	return dock;
 }
 
-QDockWidget * ViewGroup::getBiggestDockWidget()
+QDockWidget* ViewGroup::getBiggestDockWidget()
 {
-       QDockWidget * biggest = NULL;
+       QDockWidget* biggest = NULL;
        long long biggest_area = 0;
 
-       foreach( QDockWidget* dock, getAllDockWidgets() ){
+       foreach(QDockWidget* dock, getAllDockWidgets() ){
                long long area = dock->width() * dock->height();
-               if( area > biggest_area ){
+               if(area > biggest_area){
                        biggest_area = area;
                        biggest = dock;
                }
@@ -212,21 +198,21 @@ QDockWidget * ViewGroup::getBiggestDockWidget()
        return biggest;
 }
 
-QDockWidget * ViewGroup::chooseDockToSplit( ViewGroupWidgetInfo * vgw )
+QDockWidget* ViewGroup::chooseDockToSplit(ViewGroupWidgetInfo* vgw)
 {
-	QDockWidget * dock = getBiggestDockWidget();
+	QDockWidget* dock = getBiggestDockWidget();
 	vgw->dir = Qt::Horizontal;
 
 	if( VIEW2D_CHAN == vgw->widgetType ){
 		if( UpperLeft == vgw->vtype ){
 
 		} else if( UpperRight == vgw->vtype ){
-			if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperLeft ) ) ){
-				dock = getDockWidget( makeObjectName( CHANNEL, UpperLeft ) );
+			if( doesDockWidgetExist(CHANNEL, UpperLeft)){
+				dock = getDockWidget(CHANNEL, UpperLeft);
 			}
 		} else {
-			if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperLeft ) ) ){
-				dock = getDockWidget( makeObjectName( CHANNEL, UpperLeft ) );
+			if( doesDockWidgetExist(CHANNEL, UpperLeft)){
+				dock = getDockWidget(CHANNEL, UpperLeft);
 			}
 			vgw->dir = Qt::Vertical;
 		}
@@ -234,21 +220,21 @@ QDockWidget * ViewGroup::chooseDockToSplit( ViewGroupWidgetInfo * vgw )
 		if( UpperLeft == vgw->vtype ){
 
 		} else if( UpperRight == vgw->vtype ){
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperLeft ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperLeft ) );
+			if( doesDockWidgetExist(SEGMENTATION, UpperLeft)){
+				dock = getDockWidget(SEGMENTATION, UpperLeft);
 			}
 		} else {
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperLeft ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperLeft ) );
+			if( doesDockWidgetExist(SEGMENTATION, UpperLeft)){
+				dock = getDockWidget(SEGMENTATION, UpperLeft);
 			}
 			vgw->dir = Qt::Vertical;
 		}
 	} else {
-		if( doesDockWidgetExist( makeObjectName( CHANNEL, UpperRight ) ) ){
-			dock = getDockWidget( makeObjectName( CHANNEL, UpperRight ) );
+		if( doesDockWidgetExist(CHANNEL, UpperRight)){
+			dock = getDockWidget(CHANNEL, UpperRight);
 		} else {
-			if( doesDockWidgetExist( makeObjectName( SEGMENTATION, UpperRight ) ) ){
-				dock = getDockWidget( makeObjectName( SEGMENTATION, UpperRight ) );
+			if( doesDockWidgetExist(SEGMENTATION, UpperRight)){
+				dock = getDockWidget(SEGMENTATION, UpperRight);
 			}
 		}
 		vgw->dir = Qt::Vertical;
@@ -257,14 +243,14 @@ QDockWidget * ViewGroup::chooseDockToSplit( ViewGroupWidgetInfo * vgw )
 	return dock;
 }
 
-QDockWidget * ViewGroup::chooseDockToTabify( ViewGroupWidgetInfo * vgw )
+QDockWidget* ViewGroup::chooseDockToTabify(ViewGroupWidgetInfo* vgw)
 {
-	if( VIEW3D == vgw->widgetType ){
+	if(VIEW3D == vgw->widgetType){
 		return NULL;
 	}
 
-	QDockWidget * widgetToTabify = NULL;
-	QString complimentaryObjName = makeComplimentaryObjectName( vgw );
+	QDockWidget* widgetToTabify = NULL;
+	const QString complimentaryObjName = makeComplimentaryObjectName(vgw);
 	if( doesDockWidgetExist(complimentaryObjName) ){
 		widgetToTabify = getDockWidget(complimentaryObjName);
 	}
@@ -272,26 +258,33 @@ QDockWidget * ViewGroup::chooseDockToTabify( ViewGroupWidgetInfo * vgw )
 	return widgetToTabify;
 }
 
-void ViewGroup::insertDockIntoGroup( ViewGroupWidgetInfo * vgw )
+std::pair<QDockWidget*,QDockWidget*>
+ViewGroup::insertDockIntoGroup(ViewGroupWidgetInfo* vgw)
 {
-	if( 0 == getNumDockWidgets() ) {
-		QDockWidget * dock = makeDockWidget( vgw );
+	QDockWidget* dock = NULL;
+	QDockWidget* dockToTabify = NULL;
+
+	if(0 == getNumDockWidgets()) {
+		dock = makeDockWidget( vgw );
 		mMainWindow->addDockWidget(Qt::TopDockWidgetArea, dock);
 	} else {
-		QDockWidget * dockToTabify = chooseDockToTabify( vgw );
-		if( NULL != dockToTabify ){
-			insertByTabbing( vgw, dockToTabify );
+		dockToTabify = chooseDockToTabify(vgw);
+		if(dockToTabify){
+			dock = insertByTabbing( vgw, dockToTabify );
 		} else {
-			insertBySplitting( vgw, chooseDockToSplit( vgw ));
+			dock = insertBySplitting(vgw, chooseDockToSplit(vgw));
 			QApplication::processEvents();
 		}
 	}
+
+	return std::make_pair(dock, dockToTabify);
 }
 
-void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * biggest )
+QDockWidget* ViewGroup::insertBySplitting(ViewGroupWidgetInfo* vgw,
+					  QDockWidget* biggest)
 {
-	QList<QDockWidget *> tabified = mMainWindow->tabifiedDockWidgets( biggest );
-	if( !tabified.empty() ){
+	QList<QDockWidget*> tabified = mMainWindow->tabifiedDockWidgets(biggest);
+	if(!tabified.empty()){
 		foreach( QDockWidget* widget, tabified ){
 			mMainWindow->removeDockWidget( widget );
 		}
@@ -299,43 +292,95 @@ void ViewGroup::insertBySplitting( ViewGroupWidgetInfo * vgw, QDockWidget * bigg
 
 	Qt::Orientation dir = vgw->dir;
 
-	QDockWidget * dock = makeDockWidget( vgw );
+	QDockWidget* dock = makeDockWidget(vgw);
 
-	debug("viewGroup", "\t inserting %s by splitting...\n", qPrintable(dock->objectName()));
+	//debug(viewGroup, "\t inserting %s by splitting...\n",
+	//qPrintable(dock->objectName()));
+
 	mMainWindow->splitDockWidget( biggest, dock, dir );
 
-	if( !tabified.empty() ){
-		foreach( QDockWidget* dwidget, tabified ){
+	if(!tabified.empty()){
+		foreach(QDockWidget* dwidget, tabified ){
 			dwidget->show();
 			mMainWindow->tabifyDockWidget( biggest, dwidget );
 		}
 	}
+
+	return dock;
 }
 
-void ViewGroup::insertByTabbing( ViewGroupWidgetInfo * vgw, QDockWidget * widgetToTabify )
+QDockWidget* ViewGroup::insertByTabbing(ViewGroupWidgetInfo * vgw,
+					QDockWidget* widgetToTabify)
 {
-	QDockWidget * dock = makeDockWidget( vgw );
-	debug("viewGroup", "\t inserting %s by tabbing...\n", qPrintable(dock->objectName()));
+	QDockWidget* dock = makeDockWidget( vgw );
+	//debug(viewGroup, "\t inserting %s by tabbing...\n",
+	//qPrintable(dock->objectName()));
 	mMainWindow->tabifyDockWidget( widgetToTabify, dock );
+
+	return dock;
 }
 
-void ViewGroup::addAllViews(const OmId channelID, const OmId segmentationID )
+void ViewGroup::AddAllViews(const OmId channelID, const OmId segmentationID)
 {
-	foreach(QDockWidget * w, getAllDockWidgets() ){
+	foreach(QDockWidget* w, getAllDockWidgets() ){
 		delete w;
 	}
 
-	if( OmProject::IsChannelValid(channelID) ){
-		addView2Dchannel( channelID, UpperLeft);
-		addView2Dchannel( channelID, UpperRight);
-		addView2Dchannel( channelID, LowerLeft);
+	if(OmProject::IsChannelValid(channelID)){
+		AddView2Dchannel(channelID, UpperLeft);
+		AddView2Dchannel(channelID, UpperRight);
+		AddView2Dchannel(channelID, LowerLeft);
 	}
 
-	if( OmProject::IsSegmentationValid(segmentationID)) {
-		addView2Dsegmentation( segmentationID, UpperLeft);
-		addView2Dsegmentation( segmentationID, UpperRight);
-		addView2Dsegmentation( segmentationID, LowerLeft);
+	if(OmProject::IsSegmentationValid(segmentationID)){
+		AddView2Dsegmentation(segmentationID, UpperLeft);
+		AddView2Dsegmentation(segmentationID, UpperRight);
+		AddView2Dsegmentation(segmentationID, LowerLeft);
 	}
 
-	addView3D();
+	AddView3D();
+}
+
+QList<QDockWidget*> ViewGroup::findDockWidgets(const QString& name){
+	return mMainWindow->findChildren<QDockWidget*>(name);
+}
+
+QList<QDockWidget*> ViewGroup::findDockWidgets(const QRegExp& regExp){
+	return mMainWindow->findChildren<QDockWidget*>(regExp);
+}
+
+void View2dDockWidget::WireDockWithView2d(OmView2d* w,
+					  const std::pair<QDockWidget*,QDockWidget*>& dockAndCompliment)
+{
+	QDockWidget* dock = dockAndCompliment.first;
+	QDockWidget* complimentaryDock = dockAndCompliment.second;
+
+	connectVisibilityChange(w, dock);
+	setComplimentaryDockWidget(w, dock, complimentaryDock);
+}
+
+void View2dDockWidget::connectVisibilityChange(OmView2d* w, QDockWidget* dock)
+{
+	// used to let tile cache know when view2d visibilty changes
+	QObject::connect(dock, SIGNAL(visibilityChanged(bool)),
+			 w, SLOT(dockVisibilityChanged(bool)));
+}
+
+void View2dDockWidget::setComplimentaryDockWidget(OmView2d* w,
+						  QDockWidget* dock,
+						  QDockWidget* complimentaryDock)
+{
+	// used for cntrl+tab key in view2d
+
+	if(!complimentaryDock){
+		return;
+	}
+
+	w->SetComplimentaryDockWidget(complimentaryDock);
+
+	QWidget* compWidget = complimentaryDock->widget();
+	if(compWidget){
+		OmView2d* v2d = static_cast<OmView2d*>(compWidget);
+		v2d->SetComplimentaryDockWidget(dock);
+	}
 }

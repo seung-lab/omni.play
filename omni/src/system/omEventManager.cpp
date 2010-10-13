@@ -4,6 +4,7 @@
 #include "events/omSegmentEvent.h"
 
 #include <qapplication.h>
+#include <zi/assert.hpp>
 #include "common/omDebug.h"
 
 OmEventManager *OmEventManager::mspInstance = 0;
@@ -37,11 +38,11 @@ void OmEventManager::Delete()
 bool OmEventManager::event(QEvent * event)
 {
 
-	//debug("genone","OmEventManager::event(QEvent *event)\n");
+	////debug(genone,"OmEventManager::event(QEvent *event)\n");
 
 	//ensure we have an OmEvent object (or else the next step will pretty much crash)
 	QEvent::Type eventType = event->type();
-	assert(eventType > QEvent::User && eventType < QEvent::MaxUser);
+	ZI_VERIFY(eventType > QEvent::User && eventType < QEvent::MaxUser);
 
 	//cast to OmEvent to get OmEventClass
 	OmEvent *om_event = static_cast < OmEvent * >(event);
@@ -99,7 +100,7 @@ bool OmEventManager::SendEvent(OmEvent & event)
 }
 
 /*
- *	Event put in queue.  Ownership of event object given to Qt, and deleted when 
+ *	Event put in queue.  Ownership of event object given to Qt, and deleted when
  *	notification completed (event normally created on heap).
  */
 void OmEventManager::PostEvent(OmEvent * event)

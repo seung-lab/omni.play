@@ -1,12 +1,12 @@
 #include "utility/omSystemInformation.h"
-#include <zi/system>
+#include <zi/system.hpp>
 
 unsigned int OmSystemInformation::get_num_cores()
 {
-	return zi::System::getCPUCount();
+	return  zi::system::cpu_count;
 }
 
 unsigned int OmSystemInformation::get_total_system_memory_megs()
 {
-	return zi::System::getTotalMB();
+	return zi::system::memory::total_mb();
 }

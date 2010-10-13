@@ -19,11 +19,10 @@ my $libPath     = $basePath.'/external/libs';
 my $tarballPath = $basePath.'/external/tarballs';
 my $scriptPath  = $basePath.'/scripts';
 my $omniPath    = $basePath.'/omni';
+my $omniExecPathMac  = $basePath.'/omni/bin/omni.app/Contents/MacOS/omni';
 
 my $omniScriptFile = $scriptPath.'/buildomni.sh';
 my $omniScriptOptions = "";
-
-my $vtkScriptFile = $scriptPath.'/buildvtk.sh';
 
 my $globalMakeOptions = "";
 
@@ -112,58 +111,12 @@ make $globalMakeOptions
 END
 
     if(isMac()) {
-        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0-beta2/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $omniScriptFile`;
-}
-
-sub genVTKscript {
-    my $baseFileName = $_[0];
-    open (SCRIPT, ">", $vtkScriptFile) or die $!;
-
-    my $makeOps = $globalMakeOptions;
-    if ( isMac() ){
-	$makeOps = " -k ";
-    }
-
-    my $script = <<END;
-cd $buildPath/$baseFileName
-cmake $srcPath/$baseFileName
-make $makeOps
-make install
-END
-    print SCRIPT $script;
-    close SCRIPT;
-    `chmod +x $vtkScriptFile`;
-}
-
-sub vtk {
-    my $baseFileName = "vtk-5.4.2";
-    genVTKscript( $baseFileName );
-    prepareNukeSrcsFolder( $baseFileName, "VTK" );
-
-    # Work around for a bug in the VTK tar ball.
-    `chmod 600 $srcPath/$baseFileName/Utilities/vtktiff/tif_fax3sm.c`;
-
-    `echo "CMAKE_INSTALL_PREFIX:PATH=$libPath/VTK/" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    if ( isMacLeopard() ){
-	`echo "BUILD_SHARED_LIBS:BOOL=ON" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    } else {
-        `echo "BUILD_SHARED_LIBS:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    }
-    `echo "CMAKE_BUILD_TYPE:STRING=Debug" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    `echo "CMAKE_CXX_FLAGS_DEBUG:STRING=-${profileOn}g -Wall -I $libPath/libtiff/include" >> $buildPath/$baseFileName/CMakeCache.txt`;
-    `echo "BUILD_TESTING:BOOL=OFF" >> $buildPath/$baseFileName/CMakeCache.txt`;
-
-    #`patch $srcPath/$baseFileName/Utilities/MaterialLibrary/ProcessShader.cxx -i $basePath/external/patches/vtk-processshader.patch`;
-
-    my $cmd = "sh $vtkScriptFile";
-    print "running: ($cmd)\n";
-    `$cmd`;
-    print "done\n";
 }
 
 sub setupBuildFolder {
@@ -207,10 +160,6 @@ sub untar {
     }
 
     my $tarOptions = " -C $srcPath/ ";
-    if( $baseFileName =~ /^vtk/ ) {
-	`mkdir -p $srcPath/$baseFileName/`;
-	$tarOptions = " -C $srcPath/$baseFileName/ --strip-components=1";
-    }
 
     print "==> untarring to external/srcs/...";
     `tar -zxf $tarballPath/$baseFileName.tar.gz $tarOptions`;
@@ -328,15 +277,6 @@ sub prepareNukeSrcsAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
-sub libpng {
-    prepareAndBuild( "libpng-1.2.39", "libpng" );
-}
-
-sub libtiff {
-    prepareNukeSrcsFolder( "tiff-3.8.2", "libtiff" );
-    buildInSourceFolder( "tiff-3.8.2", "libtiff", "--without-jpeg" );
-}
-
 sub freetype {
     my $tempMakeOptions = $globalMakeOptions;
     $globalMakeOptions = "";
@@ -368,11 +308,7 @@ sub hdf5_18 {
 }
 
 sub qt {
-    if(isMacLeopard()){
-	qt47();
-    } else {
 	qt46();
-    }
 }
 
 sub qt46 {
@@ -382,7 +318,18 @@ sub qt46 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
-    my $args = "-debug -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
+    my @argsList = qw( -release -opensource -no-glib -fast -make libs -make tools
+ -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
+ -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
+ -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng
+ -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype);
+# -qtnamespace qt );
+
+    my $args = "";
+    foreach (@argsList){
+	$args .= " $_";
+    }
+
     if ( isMacSnowLeopard() ){
 	$args .= " -arch x86_64 ";
     }
@@ -396,7 +343,7 @@ sub qt47 {
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
-    my $baseFileName = "qt-everywhere-opensource-src-4.7.0-beta2";
+    my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
     my $args = "-debug -no-framework -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
     if ( isMacSnowLeopard() ){
         $args .= " -arch x86_64 ";
@@ -405,13 +352,13 @@ sub qt47 {
     prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
-sub apacheThrift {
-    prepareAndBuild( "thrift-0.2.0", "thrift");
-}
-
 sub omni {
     printTitle("omni");
     genOmniScript();
+
+    if(isMac()){
+	unlink($omniExecPathMac);
+    }
 
     my $cmd = "sh $omniScriptFile";
     print "running: ($cmd)\n";
@@ -430,12 +377,10 @@ sub printLine {
 }
 
 sub smallLibraries {
-    libpng();
     freetype();
     fontconfig();
     expat();
     hdf5();
-    libtiff();
 }
 
 # This is the official release option
@@ -457,9 +402,7 @@ sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
     print "1 -- Build small libs\n";
-    print "2 -- Build Apache Thrift\n";
     print "3 -- Build qt\n";
-    print "4 -- Build vtk\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
@@ -485,9 +428,7 @@ sub menu {
 
 sub buildAll {
 	smallLibraries();
-	apacheThrift();
 	qt();
-	vtk();
 	omni();
 }
 
@@ -499,11 +440,11 @@ sub runMenuEntry {
     }elsif( 1 == $entry ){
 	smallLibraries();
     }elsif( 2 == $entry ){
-	apacheThrift();
+
     }elsif( 3 == $entry ){
 	qt();
     }elsif( 4 == $entry ){
-	vtk();
+
     }elsif( 5 == $entry ){
 	omni();
     }elsif( 6 == $entry ){
@@ -529,9 +470,7 @@ sub smallLibraryMenu() {
     print "1 -- Build expat\n";
     print "2 -- Build fontconfig\n";
     print "3 -- Build freetype\n";
-    print "4 -- Build hdf5\n";
-    print "5 -- Build libpng\n";
-    print "6 -- Build libtiff\n\n";
+    print "4 -- Build hdf5\n\n";
     my $max_answer = 6;
 
     while( 1 ){
@@ -560,10 +499,6 @@ sub runSmallLibraryMenuEntry {
         freetype();
     }elsif( 4 == $entry ){
         hdf5();
-    }elsif( 5 == $entry ){
-        libpng();
-    }elsif( 6 == $entry ){
-        libtiff();
     }
 }
 
@@ -585,7 +520,7 @@ sub numberOfCores {
 	$numCores = 2;
     }
 
-    return $numCores-1;
+    return $numCores;
 }
 
 sub setupParallelBuildOption {

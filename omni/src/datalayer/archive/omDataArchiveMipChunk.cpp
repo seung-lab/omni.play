@@ -2,9 +2,9 @@
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveMipChunk.h"
 #include "datalayer/omDataPath.h"
-#include "datalayer/omDataReader.h"
+#include "datalayer/omIDataReader.h"
 #include "datalayer/omDataWrapper.h"
-#include "datalayer/omDataWriter.h"
+#include "datalayer/omIDataWriter.h"
 #include "system/omProjectData.h"
 #include "volume/omMipChunk.h"
 
@@ -13,7 +13,7 @@
 void OmDataArchiveMipChunk::ArchiveRead( const OmDataPath & path, OmMipChunk * chunk )
 {
 	int size;
-	OmDataWrapperPtr dw = OmProjectData::GetProjectDataReader()->readDataset(path, &size);
+	OmDataWrapperPtr dw = OmProjectData::GetProjectIDataReader()->readDataset(path, &size);
 
 	QByteArray ba = QByteArray::fromRawData( dw->getPtr<char>(), size );
 	QDataStream in(&ba, QIODevice::ReadOnly);
@@ -30,7 +30,7 @@ void OmDataArchiveMipChunk::ArchiveWrite( const OmDataPath & path, OmMipChunk * 
 	out.setVersion(QDataStream::Qt_4_6);
 	out << (*chunk);
 
-	OmProjectData::GetDataWriter()->writeDataset( path,
+	OmProjectData::GetIDataWriter()->writeDataset( path,
 						      ba.size(),
 						      OmDataWrapperRaw(ba.data()));
 }

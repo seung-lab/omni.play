@@ -5,7 +5,6 @@
 #include "system/events/omSegmentEvent.h"
 #include "system/omEventManager.h"
 #include "utility/dataWrappers.h"
-#include "utility/setUtilities.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 

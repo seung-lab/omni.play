@@ -83,20 +83,22 @@ void OmHdf5Utils::dataset_delete_if_exists(const int fileId, const char* path)
 
 OmDataWrapperPtr OmHdf5Utils::getNullDataWrapper(const int dstype)
 {
-	OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, INVALID);
+	OmDataWrapperPtr dw = getDataWrapper(NULL, dstype, NONE);
 	return dw;
 }
 
 void OmHdf5Utils::printTypeInfo(const int dstype)
 {
 	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
-	printf("type is %s\n", dw->getTypeAsString().c_str() );
+	std::string type = dw->getTypeAsString();
+	printf("type is %s\n", type.c_str() );
 }
 
 int OmHdf5Utils::getSizeofType(const int dstype)
 {
 	OmDataWrapperPtr dw = getNullDataWrapper(dstype);
-	return dw->getSizeof();
+	const int size = dw->getSizeof();
+	return size;
 }
 
 OmDataWrapperPtr OmHdf5Utils::getDataWrapper(void* dataset,

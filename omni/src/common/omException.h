@@ -11,59 +11,64 @@
  */
 
 #include "common/omCommon.h"
-#include <stdarg.h>
 
-enum OmExceptType {  EXCEPT_NOTE = 0, // not reported to user, make internal note
-		     EXCEPT_INFO,     // give user information (usage, formatting, etc)
-		     EXCEPT_WARNING,  // completed function but something may be wrong
-		     EXCEPT_ERROR,    // could not complete function
-		     EXCEPT_SEVERE    //severe error, kill the system
-};
+#include <cstdarg>
+#include <exception>
 
-class OmException {
-
+class OmException : public std::exception {
 public:
-	OmException(const std::string &name, OmExceptType type,
-				const std::string &msg);
+	OmException(const std::string& name,
+				const std::string& msg)
+		: name_(name)
+		, message_(msg)
+		, fullMessage_()
+	{}
 
-	QString GetName();
-	QString GetMsg();
-	QString GetType();
+	virtual ~OmException() throw() {}
+
+	virtual const char* what() const throw()
+	{
+		if(fullMessage_.empty()){
+			fullMessage_ = name_ + ": " + message_;
+		}
+
+		return fullMessage_.c_str();
+	}
 
 protected:
-	std::string mName;
-	OmExceptType mType;
-	std::string mMessage;
+	const std::string name_;
+	const std::string message_;
+	mutable std::string fullMessage_;
 };
 
 class OmAccessException : public OmException {
 public:
-	OmAccessException(std::string msg)
-	: OmException("OmAccessException", EXCEPT_WARNING, msg) { }
+	OmAccessException(const std::string& msg)
+		: OmException("OmAccessException", msg) { }
 };
 
 class OmArgException : public OmException {
 public:
-	OmArgException(std::string msg)
-	: OmException("OmArgException", EXCEPT_ERROR, msg) { }
+	OmArgException(const std::string& msg)
+		: OmException("OmArgException", msg) { }
 };
 
 class OmFormatException : public OmException {
 public:
-	OmFormatException(std::string msg)
-	: OmException("OmFormatException", EXCEPT_WARNING, msg) { }
+	OmFormatException(const std::string& msg)
+		: OmException("OmFormatException", msg) { }
 };
 
 class OmIoException : public OmException {
 public:
-	OmIoException(std::string msg)
-	: OmException("OmIoException", EXCEPT_ERROR, msg) { }
+	OmIoException(const std::string& msg)
+		: OmException("OmIoException", msg) { }
 };
 
 class OmModificationException : public OmException {
 public:
-	OmModificationException(std::string msg)
-	: OmException("OmModificationException", EXCEPT_WARNING, msg) { }
+	OmModificationException(const std::string& msg)
+		: OmException("OmModificationException", msg) { }
 };
 
 #endif

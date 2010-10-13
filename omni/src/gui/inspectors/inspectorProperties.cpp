@@ -1,5 +1,5 @@
 #include "inspectorProperties.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 InspectorProperties::InspectorProperties(QWidget *parent, OmViewGroupState * vgs) : QDialog(parent), mViewGroupState(vgs)
 {

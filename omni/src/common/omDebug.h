@@ -1,44 +1,12 @@
-#ifndef _OM_DEBUG_H_
-#define _OM_DEBUG_H_
+#ifndef _OM_DEBUG_H
+#define _OM_DEBUG_H
 
-#define OM_DEBUG_STRING_SIZE 30
-#define OM_DEBUG_STRING_MAX_NUMBER 30
+#include <zi/logging.hpp>
 
-#include "omCommon.h"
-
-
-#ifdef NDEBUG
-#define debug(x, ...) ;
-#else
-#define debug(x, ...) actual_debug(x, __VA_ARGS__)
-#endif
+#define debugs(x) ZiLOG(DEBUG, x)
+#define debug(x, ...) ZiLOG(DEBUG, x) << zi::log_printf(__VA_ARGS__)
 
 #define DEBUGV3(vec) vec.x, vec.y, vec.z
-
-class CmdLineArgs
-{
-public:
-	int fileArgIndex;
-	bool runHeadless;
-	QString headlessCMD;
-};
-
-enum { OM_DEBUG_REMOVE, OM_DEBUG_ADD };
-
-/**
- * A function designed for selecting and customizing debug statements to stdout
- */
-
-bool isDebugCategoryEnabled( const char *category );
-void actual_debug(const char *category, const char *format, ...);
-void debugInit();
-int  debugParseArg(char *stringInput,int action);
-void debugAddCategory(char *category,int length);
-void debugRemoveCategory(char *category, int length);
-int  parseEnvironment();
-CmdLineArgs parseArgs(int argc, char *argv[]);
-CmdLineArgs parseAnythingYouCan(int argc, char *argv[]);
-void usage();
 
 #endif
 

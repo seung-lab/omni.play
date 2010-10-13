@@ -1,6 +1,8 @@
 #ifndef OM_COMMON_H
 #define OM_COMMON_H
 
+#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+
 #define QT_USE_FAST_CONCATENATION
 #define QT_USE_FAST_OPERATOR_PLUS
 
@@ -16,10 +18,7 @@
 
 #include "common/omStd.h"
 #include "common/omException.h"
-#include <assert.h>
-
-// elimiate VTK warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
+#include <cassert>
 
 typedef struct {
 	uint8_t red;
@@ -58,7 +57,7 @@ typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
  * "system" types
  */
 //id typedefs
-typedef quint32 OmId;
+typedef uint32_t OmId;
 typedef boost::unordered_set< OmId > OmIDsSet;
 
 //bit field
@@ -74,11 +73,7 @@ enum ObjectType { CHANNEL, SEGMENTATION };
 /**
  * "segment" types
  */
-//internal storage size of segment data
-#define SEGMENT_DATA_SAMPLES_PER_PIXEL 1
-
 typedef uint32_t OmSegID;
-static const OmSegID NULL_SEGMENT_VALUE(0);
 typedef std::set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
 
@@ -97,30 +92,30 @@ typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
  **/
 enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
 enum OmToolMode { SELECT_MODE,
-		  PAN_MODE,
-		  CROSSHAIR_MODE,
-		  ZOOM_MODE,
-		  ADD_VOXEL_MODE,
-		  SUBTRACT_VOXEL_MODE,
-		  SELECT_VOXEL_MODE,
-		  FILL_MODE,
-		  SPLIT_MODE
+				  PAN_MODE,
+				  CROSSHAIR_MODE,
+				  ZOOM_MODE,
+				  ADD_VOXEL_MODE,
+				  SUBTRACT_VOXEL_MODE,
+				  SELECT_VOXEL_MODE,
+				  FILL_MODE,
+				  SPLIT_MODE
 };
 
 
 /**
  * color cache enum
  */
-enum OmSegmentColorCacheType { SCC_FILTER_BLACK = 0,
-			       SCC_FILTER_COLOR,
-			       SCC_FILTER_BREAK,
-			       SCC_FILTER_VALID,
-			       SCC_FILTER_VALID_BLACK,
-			       SCC_SEGMENTATION,
-			       SCC_SEGMENTATION_BREAK,
-			       SCC_SEGMENTATION_VALID,
-			       SCC_SEGMENTATION_VALID_BLACK,
-			       SCC_NUMBER_OF_ENUMS };
+enum OmSegmentColorCacheType{SCC_FILTER_BLACK = 0,
+							 SCC_FILTER_COLOR,
+							 SCC_FILTER_BREAK,
+							 SCC_FILTER_VALID,
+							 SCC_FILTER_VALID_BLACK,
+							 SCC_SEGMENTATION,
+							 SCC_SEGMENTATION_BREAK,
+							 SCC_SEGMENTATION_VALID,
+							 SCC_SEGMENTATION_VALID_BLACK,
+							 SCC_NUMBER_OF_ENUMS };
 
 /**
  * cache-type enum
@@ -129,5 +124,8 @@ enum OmCacheGroupEnum {
 	RAM_CACHE_GROUP = 1,
 	VRAM_CACHE_GROUP
 };
+
+class OmTile;
+typedef boost::shared_ptr<OmTile> OmTilePtr;
 
 #endif

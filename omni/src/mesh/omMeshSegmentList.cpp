@@ -1,3 +1,4 @@
+#include "volume/omMipChunk.h"
 #include "mesh/omMeshSegmentList.h"
 #include "mesh/omMeshSegmentListThread.h"
 #include "common/omDebug.h"
@@ -33,42 +34,53 @@ void OmMeshSegmentList::Delete()
 }
 
 void OmMeshSegmentList::addToCache(OmMipChunkPtr chunk, OmSegment* rootSeg,
-				    const OmSegPtrList & segmentsToDraw)
+								   const OmSegPtrList & segmentsToDraw)
 {
-  zi::Guard g(Instance()->mutex);
+	zi::guard g(Instance()->mutex);
 
-  Instance()->mSegmentListCache[makeKey(chunk, rootSeg)]
-    = OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
+	Instance()->mSegmentListCache[makeKey(chunk, rootSeg)]
+		= OmSegPtrListValid(segmentsToDraw, rootSeg->getFreshnessForMeshes() );
 }
 
-std::pair<bool, OmSegPtrList>
+boost::optional<OmSegPtrList>
 OmMeshSegmentList::doGetFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg)
 {
-  zi::Guard g(mutex);
+	zi::guard g(mutex);
 
-  OmSegPtrListValid& spList = mSegmentListCache[makeKey(chunk, rootSeg)];
+	OmSegPtrListValid& spList = mSegmentListCache[makeKey(chunk, rootSeg)];
 
-  if(spList.isFetching){ // coord already in queue to be fetched
-    return std::make_pair(false, OmSegPtrList());
-  }
+	if(spList.isFetching){ // coord already in queue to be fetched
+		return boost::optional<OmSegPtrList>();
+	}
 
-  // remove from cache if freshness is too old
-  const unsigned int currentFreshness = rootSeg->getFreshnessForMeshes();
-  if(spList.isValid && currentFreshness != spList.freshness){
-    spList.list.clear();
-    spList.isValid = false;
-  }
+	// remove from cache if freshness is too old
+	const unsigned int currentFreshness = rootSeg->getFreshnessForMeshes();
+	if(spList.isValid && currentFreshness != spList.freshness){
+		spList.list.clear();
+		spList.isValid = false;
+	}
 
-  if(!spList.isValid){ // add coord to list to be fetched
-    spList = OmSegPtrListValid(true);
+	if(!spList.isValid){ // add coord to list to be fetched
+		spList = OmSegPtrListValid(true);
 
-    boost::shared_ptr<OmMeshSegmentListThread>
-	    task(new OmMeshSegmentListThread(chunk, rootSeg));
+		boost::shared_ptr<OmMeshSegmentListThread> task
+			= boost::make_shared<OmMeshSegmentListThread>(chunk, rootSeg);
 
-    mThreadPool.addTaskFront(task);
-    return std::make_pair(false, OmSegPtrList());
-  }
+		mThreadPool.addTaskFront(task);
+		return boost::optional<OmSegPtrList>();
+	}
 
-  // coord was valid
-  return make_pair(true, spList.list);
+	// coord was valid
+	return boost::optional<OmSegPtrList>(spList.list);
+}
+
+OmMeshSegListKey OmMeshSegmentList::makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg)
+{
+	const OmMipChunkCoord& c = chunk->GetCoordinate();
+	return OmMeshSegListKey(rootSeg->getSegmentationID(),
+							rootSeg->value,
+							c.Level,
+							c.Coordinate.x,
+							c.Coordinate.y,
+							c.Coordinate.z);
 }

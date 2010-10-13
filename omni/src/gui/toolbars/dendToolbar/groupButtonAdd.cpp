@@ -15,7 +15,7 @@ GroupButtonAdd::GroupButtonAdd(ValidationGroup * d)
 
 void GroupButtonAdd::doAction()
 {
-	debug("dendbar", "ValidationGroup::addGroup\n");
+	//debug(dendbar, "ValidationGroup::addGroup\n");
 	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
 	if(!sdw.isValid()){
 		return;

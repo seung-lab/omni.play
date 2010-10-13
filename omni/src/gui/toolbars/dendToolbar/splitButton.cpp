@@ -3,7 +3,7 @@
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 SplitButton::SplitButton(GraphTools * d)
 	: OmButton<GraphTools>( d, 
@@ -15,12 +15,12 @@ SplitButton::SplitButton(GraphTools * d)
 
 void SplitButton::doAction()
 {
-        debug("dendbar", "DendToolBar::split(%i)\n", isChecked());
+        //debug(dendbar, "DendToolBar::split(%i)\n", isChecked());
 	if(!isChecked()) {
 		mParent->getViewGroupState()->SetShowSplitMode(true);
 		OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
 	} else {
-        	debug("dendbar", "unchecking\n");
+        	//debug(dendbar, "unchecking\n");
 		mParent->getViewGroupState()->SetSplitMode(false, false);
 		OmStateManager::SetOldToolModeAndSendEvent();
 	}

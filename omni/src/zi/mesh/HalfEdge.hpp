@@ -19,6 +19,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "zi/omUtility.h"
 #include "zi/base/base.h"
 #include "zi/vector/Vec.hpp"
 #include "zi/trees/lib/FHeap.hpp"

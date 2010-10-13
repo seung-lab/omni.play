@@ -94,7 +94,7 @@ std::string OmVoxelSetValueAction::Description()
 	if (mOldVoxelValues.size() > 1)
 		plurlize = "s";
 
-	if (NULL_SEGMENT_VALUE == mNewValue) {
+	if(0 == mNewValue) {
 		return std::string("Remove Voxel") + plurlize;
 	} else {
 		return std::string("Set Voxel") + plurlize;

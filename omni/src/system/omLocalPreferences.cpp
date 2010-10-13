@@ -9,9 +9,8 @@
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
-OmLocalPreferences::OmLocalPreferences() 
-	: stickyCrosshairMode(NULL)
-        , m2DViewFrameIn3D(true)
+OmLocalPreferences::OmLocalPreferences()
+        : m2DViewFrameIn3D(true)
         , m2DViewPaneIn3D(false)
         , mDrawCrosshairsIn3D(true)
         , mDoDiscoBall(true)
@@ -29,8 +28,7 @@ OmLocalPreferences *OmLocalPreferences::Instance()
 	if (NULL == mspInstance) {
 		mspInstance = new OmLocalPreferences;
 		mspInstance->localPrefFiles = new LocalPrefFiles();
-		mspInstance->stickyCrosshairMode=NULL;
-	}	
+	}
 	return mspInstance;
 }
 
@@ -48,7 +46,7 @@ bool OmLocalPreferences::readSettingBool( QString setting, const bool defaultRet
 {
 	if( !settingExists( setting ) ){
 		return defaultRet;
-	} 
+	}
 
 	try{
 		return Instance()->localPrefFiles->readSettingBool( setting  );
@@ -66,7 +64,7 @@ int OmLocalPreferences::readSettingInt( QString setting, const int defaultRet )
 {
 	if( !settingExists( setting ) ){
 		return defaultRet;
-	} 
+	}
 
 	try{
 		return Instance()->localPrefFiles->readSettingInt( setting  );
@@ -84,7 +82,7 @@ unsigned int OmLocalPreferences::readSettingUInt( QString setting, const unsigne
 {
 	if( !settingExists( setting ) ){
 		return defaultRet;
-	} 
+	}
 
 	try{
 		return Instance()->localPrefFiles->readSettingUInt( setting  );
@@ -107,7 +105,7 @@ QStringList OmLocalPreferences::readSettingQStringList( QString setting, QString
 {
 	if( !settingExists( setting ) ){
 		return defaultRet;
-	} 
+	}
 
 	try{
 		return Instance()->localPrefFiles->readSettingQStringList( setting  );
@@ -186,29 +184,6 @@ void OmLocalPreferences::setVRamCacheSizeMB(const unsigned int size)
 {
 	writeSettingUInt("vram", size);
 	OmCacheManager::UpdateCacheSizeFromLocalPrefs();
-}
-
-/////////////////////////////
-// sticky cross-hair mode
-bool OmLocalPreferences::getStickyCrosshairMode()
-{
-	if (Instance()->stickyCrosshairMode==NULL){
-		const unsigned int defaultRet = 1;
-		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
-		Instance()->stickyCrosshairMode[0] = (bool) readSettingUInt( "stickyCrosshairMode", defaultRet );
-	}
-	bool sticky = Instance()->stickyCrosshairMode[0];
-	return sticky;		
-}
-
-void OmLocalPreferences::setStickyCrosshairMode(bool sticky)
-{
-	if (Instance()->stickyCrosshairMode==NULL){
-		Instance()->stickyCrosshairMode = (bool*) malloc(sizeof(bool));
-	} 
-	Instance()->stickyCrosshairMode[0] = sticky;
-	if (sticky) OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-	writeSettingUInt("stickyCrosshairMode", sticky);
 }
 
 unsigned int OmLocalPreferences::getDefaultCrosshairValue()
@@ -313,19 +288,6 @@ QStringList OmLocalPreferences::getRecentlyUsedFilesNames()
 void OmLocalPreferences::setRecentlyUsedFilesNames( QStringList values)
 {
 	Instance()->localPrefFiles->writeSettingQStringList( "recentlyOpenedFiles", values );
-}
-
-/////////////////////////////
-// where to store temporary meshes
-bool OmLocalPreferences::getStoreMeshesInTempFolder()
-{
-	const bool defaultRet = false;
-	return readSettingBool( "storeMeshesInTempFolder", defaultRet );
-}
-
-void OmLocalPreferences::setStoreMeshesInTempFolder( const bool value )
-{
-	writeSettingBool( "storeMeshesInTempFolder", value );
 }
 
 void OmLocalPreferences::setScratchPath( QString scratchPath )

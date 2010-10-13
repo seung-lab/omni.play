@@ -1,5 +1,5 @@
 #ifndef JOIN_BUTTON_H
-#define JOIn_BUTTON_H
+#define JOIN_BUTTON_H
 
 #include "gui/widgets/omButton.h"
 class GraphTools;

@@ -1,7 +1,7 @@
 #include "gui/toolbars/dendToolbar/autoBreakCheckbox.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "common/omDebug.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 
 AutoBreakCheckbox::AutoBreakCheckbox( GraphTools * d )
 	: OmCheckBox<GraphTools>(d, "Show Breaks")
@@ -11,6 +11,6 @@ AutoBreakCheckbox::AutoBreakCheckbox( GraphTools * d )
 
 void AutoBreakCheckbox::doAction()
 {
-	debug("dendbar", "DendToolBar::autoBreakChecked (%i)\n", isChecked());
+	//debug(dendbar, "DendToolBar::autoBreakChecked (%i)\n", isChecked());
 	mParent->getViewGroupState()->SetBreakOnSplitMode(isChecked());
 }

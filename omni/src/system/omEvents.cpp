@@ -1,27 +1,48 @@
-#include "system/omEvent.h"
-#include "system/omEvents.h"
+#include "events/omPreferenceEvent.h"
 #include "system/events/omSegmentEvent.h"
 #include "system/events/omToolModeEvent.h"
-#include "system/events/omViewEvent.h"
 #include "system/events/omView3dEvent.h"
+#include "system/events/omViewEvent.h"
+#include "system/omEvent.h"
 #include "system/omEventManager.h"
+#include "system/omEvents.h"
 
-void OmEvents::ToolChange()
-{
-	OmEventManager::PostEvent(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
+#define POST OmEventManager::PostEvent
+
+void OmEvents::ToolChange(){
+	POST(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 }
 
-void OmEvents::Redraw()
-{
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+void OmEvents::Redraw(){
+	POST(new OmViewEvent(OmViewEvent::REDRAW));
 }
 
-void OmEvents::Redraw3d()
-{
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::REDRAW));
+void OmEvents::Redraw3d(){
+	POST(new OmView3dEvent(OmView3dEvent::REDRAW));
 }
 
-void OmEvents::SegmentModified()
-{
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
+void OmEvents::SegmentModified(){
+	POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION));
 }
+
+void OmEvents::ViewCenterChanged(){
+	POST(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+}
+
+void OmEvents::ViewBoxChanged(){
+	POST(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
+}
+
+void OmEvents::ViewPosChanged(){
+	POST(new OmViewEvent(OmViewEvent::VIEW_POS_CHANGE));
+}
+
+void OmEvents::SegmentEditSelectionChanged(){
+	POST(new OmSegmentEvent(OmSegmentEvent::SEGMENT_EDIT_SELECTION_CHANGE));
+}
+
+void OmEvents::PreferenceChange(const int key){
+	POST(new OmPreferenceEvent(OmPreferenceEvent::PREFERENCE_CHANGE, key));
+}
+
+#undef POST

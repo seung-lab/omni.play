@@ -6,12 +6,11 @@
 #include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "system/cache/omThreadedCache.h"
-#include "system/viewGroup/omViewGroupState.h"
-#include "volume/omDrawOptions.h"
+#include "viewGroup/omViewGroupState.h"
+#include "mesh/omDrawOptions.h"
 #include "volume/omMipChunkCoord.h"
 #include "system/cache/omMeshCache.h"
 
-#include <vtkImageData.h>
 #include <QGLContext>
 
 /////////////////////////////////
@@ -46,9 +45,9 @@ void OmMipMeshManager::SetDirectoryPath(const QString & dpath)
 /////////////////////////////////
 ///////          Mesh Accessors
 
-OmMipMesh *OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
+OmMipMeshPtr OmMipMeshManager::AllocMesh(const OmMipMeshCoord & coord)
 {
-	return new OmMipMesh(coord, this, mDataCache);
+	return boost::make_shared<OmMipMesh>(coord, this, mDataCache);
 }
 
 /*

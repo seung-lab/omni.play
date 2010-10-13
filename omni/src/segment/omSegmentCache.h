@@ -4,13 +4,12 @@
 #include "volume/omVolumeTypes.hpp"
 #include "segment/omSegmentPointers.h"
 
-#include <QMutex>
+#include <zi/mutex.hpp>
 
 class OmMipChunkCoord;
 class OmSegment;
 class OmSegmentCacheImpl;
 class OmSegmentation;
-class vtkImageData;
 
 class OmSegmentCache {
 public:
@@ -82,8 +81,10 @@ public:
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
+	void UpgradeSegmentSerialization();
+
 private:
-	mutable QMutex mMutex;
+	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;
 	boost::shared_ptr<OmSegmentCacheImpl> mImpl;
 

@@ -1,3 +1,4 @@
+#include "utility/dataWrappers.h"
 #include <QtGui>
 #include "project/omProject.h"
 #include "chanInspector.h"
@@ -9,12 +10,14 @@
 #include "system/omBuildChannel.h"
 #include "system/omProjectData.h"
 
+#include <boost/make_shared.hpp>
+
 ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 	: QWidget(parent)
 {
 	setupUi(this);
 
-	cdw = incoming_cdw;
+	cdw = boost::make_shared<ChannelDataWrapper>(incoming_cdw);
 	directoryEdit->setReadOnly(true);
 
 	populateChannelInspector();
@@ -25,18 +28,19 @@ ChanInspector::ChanInspector(ChannelDataWrapper incoming_cdw, QWidget * parent)
 
 ChannelDataWrapper ChanInspector::getChannelDataWrapper()
 {
-	return cdw;
+	return *cdw;
 }
 
 void ChanInspector::on_nameEdit_editingFinished()
 {
-	OmProject::GetChannel(cdw.getID()).SetCustomName(nameEdit->text());
+	OmProject::GetChannel(cdw->getID()).SetCustomName(nameEdit->text());
 }
 
 void ChanInspector::on_browseButton_clicked()
 {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-							"", QFileDialog::ShowDirsOnly);
+	const QString dir =
+		QFileDialog::getExistingDirectory(this, "Choose Directory",
+						  "", QFileDialog::ShowDirsOnly);
 	if (dir != "") {
 		directoryEdit->setText(dir);
 		updateFileList();
@@ -50,8 +54,9 @@ void ChanInspector::on_exportButton_clicked()
 		return;
 	}
 
-	OmProject::GetChannel(cdw.getID()).ExportInternalData( fileName );
+	OmProject::GetChannel(cdw->getID()).ExportInternalData(fileName);
 }
+
 QDir ChanInspector::getDir()
 {
 	QString regex = patternEdit->text();
@@ -66,16 +71,12 @@ QDir ChanInspector::getDir()
 	return dir;
 }
 
-QStringList ChanInspector::getFileList()
-{
-	QStringList files = getDir().entryList();
-	return SortHelpers::sortNaturally( files );
+QStringList ChanInspector::getFileList(){
+	return SortHelpers::SortNaturally(getDir().entryList());
 }
 
-QFileInfoList ChanInspector::getFileInfoList()
-{
-	QFileInfoList files = getDir().entryInfoList();
-	return SortHelpers::sortNaturally( files );
+QFileInfoList ChanInspector::getFileInfoList(){
+	return SortHelpers::SortNaturally(getDir().entryInfoList());
 }
 
 void ChanInspector::updateFileList()
@@ -96,7 +97,7 @@ void ChanInspector::on_patternEdit_textChanged()
 
 void ChanInspector::on_buildButton_clicked()
 {
-	OmChannel & current_channel = OmProject::GetChannel(cdw.getID());
+	OmChannel & current_channel = OmProject::GetChannel(cdw->getID());
 
 	OmBuildChannel * bc = new OmBuildChannel( &current_channel );
 	bc->setFileNamesAndPaths( getFileInfoList() );
@@ -105,17 +106,17 @@ void ChanInspector::on_buildButton_clicked()
 
 void ChanInspector::on_notesEdit_textChanged()
 {
-	OmProject::GetChannel(cdw.getID()).SetNote(notesEdit->toPlainText());
+	OmProject::GetChannel(cdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
 OmId ChanInspector::getChannelID()
 {
-	return cdw.getID();
+	return cdw->getID();
 }
 
 void ChanInspector::populateChannelInspector()
 {
-	nameEdit->setText( cdw.getName() );
+	nameEdit->setText( cdw->getName() );
 	nameEdit->setMinimumWidth(200);
 
 	//TODO: fix me!
@@ -130,10 +131,10 @@ void ChanInspector::populateChannelInspector()
 	patternEdit->setMinimumWidth(200);
 
 
-	OmChannel & current_channel = OmProject::GetChannel(cdw.getID());
+	OmChannel & current_channel = OmProject::GetChannel(cdw->getID());
         gridLayout_3->addWidget(new OmVolInspector(&current_channel, this), 4, 0, 1, 1);
 
-	notesEdit->setPlainText( cdw.getNote() );
+	notesEdit->setPlainText( cdw->getNote() );
 
 	updateFileList();
 }

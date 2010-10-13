@@ -15,7 +15,7 @@
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "system/viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
 MainWindow::MainWindow()
@@ -162,15 +162,12 @@ bool MainWindow::closeProjectIfOpen()
 	}
 
 	const int ret = checkForSave();
-	bool doSave;
 	switch (ret) {
 	case QMessageBox::Save:
 		(new OmProjectSaveAction())->Run();
-		doSave = true;
 		break;
 	case QMessageBox::Discard:
 		// Don't Save was clicked
-		doSave = false;
 		break;
 	case QMessageBox::Cancel:
 		return false;
@@ -192,7 +189,7 @@ bool MainWindow::closeProjectIfOpen()
 		preferences = NULL;
 	}
 
-	OmProject::Close(doSave);
+	OmProject::Close();
 	windowTitleClear();
 
 	updateReadOnlyRelatedWidgets();
@@ -401,10 +398,12 @@ int MainWindow::checkForSave()
 
 void MainWindow::spawnErrorDialog(OmException & e)
 {
-	//assert (0);
+	const QString errorMessage(e.what());
 
-	QString errorMessage = e.GetType() + ": " + e.GetName() + ". " + e.GetMsg();
-	exceptionMessage->showMessage(errorMessage, QDateTime::currentDateTime().toString() ); // force user to always see dialog
+    // force user to always see dialog
+	exceptionMessage->showMessage(errorMessage,
+								  QDateTime::currentDateTime().toString() );
+
 	printf("Exception thrown: %s\n", qPrintable(errorMessage) );
 }
 
