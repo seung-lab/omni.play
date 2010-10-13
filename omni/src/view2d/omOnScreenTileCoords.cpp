@@ -45,6 +45,15 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations()
 OmTileCoordsAndLocationsPtr
 OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 {
+	if(mVolume->IsVolumeReadyForDisplay()){
+		doComputeCoordsAndLocations(depthOffset);
+	}
+
+	return tileCoordsAndLocations_;
+}
+
+void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
+{
 	const float levelFactor = om::pow2int(mipLevel_);
 	const int dataDim = tileLength_ * levelFactor;
 
@@ -75,8 +84,6 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 			computeTile(x, y, depthOffset);
 		}
 	}
-
-	return tileCoordsAndLocations_;
 }
 
 void OmOnScreenTileCoords::computeTile(const float x, const float y,

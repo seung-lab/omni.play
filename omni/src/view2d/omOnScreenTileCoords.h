@@ -35,8 +35,9 @@ private:
 
 	OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
+	void doComputeCoordsAndLocations(const int depthOffset);
 	void setDepths();
-        DataCoord toDataCoord(const int);
+	DataCoord toDataCoord(const int);
 	OmTileCoord makeTileCoord(const SpaceCoord&);
 	GLfloatBox computeVertices(const float, const float);
 	void computeTile(const float x, const float y, const int);
