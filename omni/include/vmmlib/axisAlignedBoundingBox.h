@@ -3,6 +3,7 @@
 
 #include <vmmlib/vector3.h>
 #include <vmmlib/vector4.h>
+#include <QDataStream>
 
 #define NAMESPACE_VMML_START namespace vmml {
 #define NAMESPACE_VMML_END   }; //namespace vmml
@@ -73,6 +74,43 @@ public:
 	// purcaro
 	bool operator!=(const AxisAlignedBoundingBox &other) const {
 		return !(*this == other);
+	}
+
+	friend QDataStream& operator<<(QDataStream& out,
+									   const AxisAlignedBoundingBox& d)
+	{
+		vmml::Vector3<int> min = d.getMin();
+		vmml::Vector3<int> max = d.getMax();
+		bool dirty = d.isDirty();
+		bool empty = d.isEmpty();
+
+		out << min;
+		out << max;
+		out << dirty;
+		out << empty;
+
+		return out;
+	}
+
+	friend QDataStream& operator>>(QDataStream& in,
+									   AxisAlignedBoundingBox& d)
+	{
+		vmml::Vector3<int> min;
+		vmml::Vector3<int> max;
+		bool dirty;
+		bool empty;
+
+		in >> min;
+		in >> max;
+		in >> dirty;
+		in >> empty;
+
+		vmml::AxisAlignedBoundingBox<int> temp(min, max);
+		d.setDirty(dirty);
+		d.setEmpty(empty);
+		d = temp;
+
+		return in;
 	}
 
 protected:

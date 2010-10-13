@@ -35,6 +35,7 @@ public:
 	ObjectType getVolumeType(){ return SEGMENTATION; }
 	OmId getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
+	int GetBytesPerSample() const;
 
 	void CloseDownThreads();
 
@@ -72,6 +73,8 @@ public:
 	Vector3i FindCenterOfSelectedSegments() const;
 
 	bool ImportSourceData(const OmDataPath& path);
+
+	void SetVolDataType(const OmVolDataType);
 
 protected:
 	virtual void doBuildThreadedVolume();

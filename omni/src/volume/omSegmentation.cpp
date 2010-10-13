@@ -271,7 +271,7 @@ float OmSegmentation::GetDendThreshold()
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	getDataCache()->Get(chunk, coord, true);
+	mDataCache->Get(chunk, coord, true);
 
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
@@ -356,4 +356,15 @@ void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
 							 const OmSegID segID )
 {
 	return mMipMeshManager->GetMesh(ptr, OmMipMeshCoord(coord, segID));
+}
+
+int OmSegmentation::GetBytesPerSample() const
+{
+	return mVolData->GetBytesPerSample();
+}
+
+void OmSegmentation::SetVolDataType(const OmVolDataType type)
+{
+	mVolDataType = type;
+	getVolData()->setDataType(this);
 }

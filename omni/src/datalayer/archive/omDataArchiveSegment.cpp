@@ -1,7 +1,6 @@
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
-#include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"

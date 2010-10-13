@@ -98,7 +98,7 @@ void OmChannel::loadVolData(){
 OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	getDataCache()->Get(chunk, coord, true);
+	mDataCache->Get(chunk, coord, true);
 
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
@@ -158,4 +158,15 @@ void OmChannel::doBuildThreadedVolume()
 	threadPool.join();
 	printf("max is %g\n", mMaxVal);
 	mWasBounded = true;
+}
+
+int OmChannel::GetBytesPerSample() const
+{
+	return mVolData->GetBytesPerSample();
+}
+
+void OmChannel::SetVolDataType(const OmVolDataType type)
+{
+	mVolDataType = type;
+	getVolData()->setDataType(this);
 }

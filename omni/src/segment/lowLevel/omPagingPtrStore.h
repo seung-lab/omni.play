@@ -56,8 +56,8 @@ class OmPagingPtrStore {
 	void loadValuePage(const PageNum, const om::RewriteSegments);
 	void doSavePage(const PageNum segPageNum);
 
-	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingPtrStore<T2> & ps);
-	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingPtrStore<T2> & ps);
+	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingPtrStore<T2> & ps );
+	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingPtrStore<T2> & ps );
 };
 
 #endif

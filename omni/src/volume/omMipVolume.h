@@ -52,8 +52,7 @@ public:
 	bool IsSourceValid();
 
 	// data properties
-	int GetChunkDimension();
-	Vector3i GetChunkDimensions();
+	Vector3i GetChunkDimensions() const;
 
 	void SetChunksStoreMetaData(bool);
 	bool GetChunksStoreMetaData();
@@ -67,7 +66,7 @@ public:
 	//mip level method
 	void UpdateRootLevel();
 	int GetRootMipLevel();
-	Vector3i MipLevelDataDimensions(int);
+	Vector3i MipLevelDataDimensions(int) const;
 	Vector3i MipLevelDimensionsInMipChunks(int level);
 
 	/*
@@ -135,11 +134,17 @@ public:
 
 	QFileInfoList mSourceFilenamesAndPaths;
 
-	Vector3i getDimsRoundedToNearestChunk(const int level);
+	Vector3i getDimsRoundedToNearestChunk(const int level) const;
 	OmVolDataType getVolDataType(){ return mVolDataType; }
 	std::string getVolDataTypeAsStr(){
 		return OmVolumeTypeHelpers::GetTypeAsString(mVolDataType);
 	}
+
+	virtual int GetBytesPerSample() const = 0;
+
+	virtual void SetVolDataType(const OmVolDataType) = 0;
+
+	uint64_t ComputeChunkPtrOffset(const OmMipChunkCoord& coord) const;
 
 protected:
 	OmVolDataType mVolDataType;

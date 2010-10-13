@@ -31,6 +31,7 @@ public:
 	ObjectType getVolumeType(){ return CHANNEL; }
 	OmId getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
+	int GetBytesPerSample() const;
 
 	void CloseDownThreads();
 
@@ -43,6 +44,8 @@ public:
 	bool IsFilterValid(const OmId id);
 
 	bool ImportSourceData(const OmDataPath& dataset);
+
+	void SetVolDataType(const OmVolDataType);
 
 protected:
 	//protected copy constructor and assignment operator to prevent copy

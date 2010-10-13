@@ -57,6 +57,7 @@ HEADERS += lib/strnatcmp.h \
            src/common/omGl.h \
            src/common/omStd.h \
            src/datalayer/fs/omMemMappedFileQT.hpp \
+           src/datalayer/fs/omFileNames.hpp \
            src/datalayer/omIDataVolume.hpp \
            src/datalayer/omMST.h \
            src/datalayer/archive/omDataArchiveBoost.h \
@@ -64,7 +65,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
            src/datalayer/archive/omDataArchiveProject.h \
            src/datalayer/archive/omDataArchiveSegment.h \
-           src/datalayer/archive/omDataArchiveVmml.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
            src/datalayer/upgraders/omUpgradeTo15.hpp \
@@ -246,6 +246,8 @@ HEADERS += lib/strnatcmp.h \
            src/tiles/cache/omTileCacheImpl.h \
            src/tiles/omTilePreFetcher.hpp \
            src/tiles/omTilePreFetcherTask.hpp \
+           src/view2d/omPointsInCircle.hpp \
+           src/view2d/details/omMidpointCircleAlgorithm.hpp \
            src/view2d/omLineDraw.hpp \
            src/view2d/omMouseEvents.hpp \
            src/view2d/omKeyEvents.hpp \
@@ -280,6 +282,8 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
+           src/volume/build/omDownsamplerTypes.hpp \
+           src/volume/build/omDownsamplerVoxelTask.hpp \
            src/volume/build/omVolumeImporter.hpp \
            src/volume/build/omVolumeImporterHDF5.hpp \
            src/volume/build/omVolumeImporterImageStack.hpp \
@@ -325,7 +329,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
            src/datalayer/archive/omDataArchiveProject.cpp \
            src/datalayer/archive/omDataArchiveSegment.cpp \
-           src/datalayer/archive/omDataArchiveVmml.cpp \
            src/datalayer/fs/omActionLoggerFS.cpp \
            src/datalayer/hdf5/omHdf5.cpp \
            src/datalayer/hdf5/omHdf5FileUtils.cpp \

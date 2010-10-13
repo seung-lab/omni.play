@@ -6,7 +6,6 @@
 class OmDataPath;
 class OmSegment;
 class OmSegmentCache;
-class QDataStream;
 
 class OmDataArchiveSegment{
 public:
