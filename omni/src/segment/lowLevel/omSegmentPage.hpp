@@ -2,12 +2,12 @@
 #define OM_SEGMENT_PAGE_HPP
 
 #include "common/omCommon.h"
-#include "segment/omSegment.h"
-#include "utility/omSmartPtr.hpp"
 #include "datalayer/archive/omDataArchiveSegment.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
+#include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
+#include "utility/omSmartPtr.hpp"
 
 class OmSegmentPage {
 private:
