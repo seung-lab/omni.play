@@ -6,7 +6,7 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
+OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache* cache,
 					const OmSegmentColorCacheType sccType,
 					const Vector2i& dims)
 	: mSegmentCache(cache)

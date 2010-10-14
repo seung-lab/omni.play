@@ -291,7 +291,7 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 	mSegmentGraph.growGraphIfNeeded(newSeg);
 }
 
-boost::shared_ptr<OmSegmentCache> OmSegmentCacheImplLowLevel::getSegmentCache()
+OmSegmentCache* OmSegmentCacheImplLowLevel::getSegmentCache()
 {
 	return mSegmentation->GetSegmentCache();
 }

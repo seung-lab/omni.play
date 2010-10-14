@@ -17,7 +17,7 @@ class OmSegment;
 class OmSegmentColorizer
 {
  public:
-	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
+	OmSegmentColorizer( OmSegmentCache*,
 			    const OmSegmentColorCacheType,
 			    const Vector2i& dims);
 
@@ -31,7 +31,7 @@ class OmSegmentColorizer
  private:
 	zi::rwmutex mMapResizeMutex;
 
-	boost::shared_ptr<OmSegmentCache> mSegmentCache;
+	OmSegmentCache* mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 	OmSegID mSize;
 	float mCurBreakThreshhold;

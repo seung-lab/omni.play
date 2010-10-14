@@ -15,7 +15,7 @@ static int segmentFileVersion_;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 									   std::vector<OmSegment> & page,
-									   boost::shared_ptr<OmSegmentCache> cache,
+									   OmSegmentCache* cache,
 									   const om::RewriteSegments rewriteSegments)
 {
 	OmDataArchiveSegment dsw(path, page, cache);
@@ -24,7 +24,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
 										   std::vector<OmSegment> & page,
-										   boost::shared_ptr<OmSegmentCache> cache)
+										   OmSegmentCache* cache)
 	: path_(path)
 	, page_(page)
 	, cache_(cache)
@@ -145,7 +145,7 @@ void OmDataArchiveSegment::readSegmentsNew()
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 										const std::vector<OmSegment> & page,
-										boost::shared_ptr<OmSegmentCache> cache)
+										OmSegmentCache* cache)
 {
 	const int omniFileVersion = OmProjectData::getFileVersion();
 

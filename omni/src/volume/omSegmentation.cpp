@@ -68,6 +68,7 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
+	delete mSegmentCache;
 	delete mDataCache;
 }
 
@@ -295,11 +296,11 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
 	OmSegmentation* vol_;
-	boost::shared_ptr<OmSegmentCache> segmentCache_;
+	OmSegmentCache* segmentCache_;
 
 public:
 	OmSegmentationChunkBuildTask(const OmMipChunkCoord& coord,
-								 boost::shared_ptr<OmSegmentCache> segmentCache,
+								 OmSegmentCache* segmentCache,
 								 OmSegmentation* vol)
 		:coord_(coord), vol_(vol), segmentCache_(segmentCache)
 	{}

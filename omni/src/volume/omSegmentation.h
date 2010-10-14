@@ -46,7 +46,7 @@ public:
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
-	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){
+	OmSegmentCache* GetSegmentCache(){
 		return mSegmentCache;
 	}
 	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){
@@ -85,7 +85,7 @@ private:
 	void KillCacheThreads();
 
 	boost::shared_ptr<OmVolumeData> mVolData;
-	boost::shared_ptr<OmSegmentCache> mSegmentCache;
+	OmSegmentCache* mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 	boost::shared_ptr<OmGroups> mGroups;
 	boost::shared_ptr<OmMST> mst_;

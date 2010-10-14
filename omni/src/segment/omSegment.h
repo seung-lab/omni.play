@@ -27,7 +27,7 @@ public:
 
 
 	OmSegment(const OmSegID value,
-			  boost::shared_ptr<OmSegmentCache> cache)
+			  OmSegmentCache* cache)
 		: value_(value)
 		, cache_(cache)
 		, parentSegID_(0)
@@ -108,11 +108,11 @@ public:
 	const OmSegmentEdge& getCustomMergeEdge() const {return customMergeEdge_;}
 	void setCustomMergeEdge(const OmSegmentEdge& e){customMergeEdge_=e;}
 
-	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return cache_; }
+	OmSegmentCache* getSegmentCache(){ return cache_; }
 
 private:
 	OmSegID value_;
-	boost::shared_ptr<OmSegmentCache> cache_;
+	OmSegmentCache* cache_;
 	OmSegID parentSegID_;
 	OmColor colorInt_;
 	std::set<OmSegment*> segmentsJoinedIntoMe_;

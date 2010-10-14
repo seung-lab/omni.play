@@ -209,7 +209,7 @@ void OmSegmentContextMenu::printChildren()
 	if (OmProject::IsSegmentationValid(mSegmentationId)) {
 		OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
 
-		boost::shared_ptr<OmSegmentCache> segCache = segmentation.GetSegmentCache();
+		OmSegmentCache* segCache = segmentation.GetSegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(segCache->findRoot(mSegmentId)->value());
 

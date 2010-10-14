@@ -10,20 +10,20 @@ class OmSegmentCache;
 class OmDataArchiveSegment{
 public:
 	static void ArchiveRead(const OmDataPath&, std::vector<OmSegment>&,
-							boost::shared_ptr<OmSegmentCache>,
+							OmSegmentCache*,
 							const om::RewriteSegments rewriteSegments);
 
 	static void ArchiveWrite(const OmDataPath&, const std::vector<OmSegment>&,
-							 boost::shared_ptr<OmSegmentCache>);
+							 OmSegmentCache*);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
 						 std::vector<OmSegment>&,
-						 boost::shared_ptr<OmSegmentCache>);
+						 OmSegmentCache*);
 
 	const OmDataPath& path_;
 	std::vector<OmSegment>& page_;
-	boost::shared_ptr<OmSegmentCache> cache_;
+	OmSegmentCache* cache_;
 	const int omniFileVersion_;
 
 	OmDataWrapperPtr dw_;

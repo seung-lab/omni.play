@@ -96,7 +96,7 @@ public:
 		return getSegmentation().GetSegmentCache()->GetSegment( mID );
 	}
 
-	boost::shared_ptr<OmSegmentCache> getSegmentCache() const {
+	OmSegmentCache* getSegmentCache() const {
 		return getSegmentation().GetSegmentCache();
 	}
 

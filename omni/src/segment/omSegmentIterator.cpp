@@ -3,7 +3,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 
-OmSegmentIterator::OmSegmentIterator(boost::shared_ptr<OmSegmentCache> cache)
+OmSegmentIterator::OmSegmentIterator(OmSegmentCache* cache)
 	: mCache(cache)
 {
 }
