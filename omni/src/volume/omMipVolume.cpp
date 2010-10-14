@@ -93,13 +93,7 @@ bool OmMipVolume::IsSourceValid()
 /////////////////////////////////
 ///////          Mip Data Properties
 
-
-int OmMipVolume::GetChunkDimension()
-{
-	return OmVolume:: GetChunkDimension();
-}
-
-Vector3i OmMipVolume::GetChunkDimensions()
+Vector3i OmMipVolume::GetChunkDimensions() const
 {
 	return Vector3i(GetChunkDimension(), GetChunkDimension(), GetChunkDimension());
 }
@@ -188,7 +182,7 @@ void OmMipVolume::UpdateRootLevel()
 /*
  *	Calculate the data dimensions needed to contain the volume at a given compression level.
  */
-Vector3i  OmMipVolume::MipLevelDataDimensions(int level)
+Vector3i OmMipVolume::MipLevelDataDimensions(int level) const
 {
 	//get dimensions
 	DataBbox source_extent = GetDataExtent();
@@ -241,7 +235,7 @@ DataBbox OmMipVolume::MipCoordToDataBbox(const OmMipChunkCoord & rMipCoord, int 
 
 	//convert to new level
 	DataCoord new_extent_min_coord = leaf_min_coord / new_level_factor;
-	//DataCoord new_extent_max_coord = (leaf_min_coord + leaf_dims) / new_level_factor;
+
 	Vector3i new_dims = leaf_dims / new_level_factor;
 
 	//return
@@ -367,7 +361,7 @@ void OmMipVolume::SetVoxelValue(const DataCoord & vox, uint32_t val)
 /////////////////////////////////
 ///////         Mip Construction Methods
 
-Vector3i OmMipVolume::getDimsRoundedToNearestChunk(const int level)
+Vector3i OmMipVolume::getDimsRoundedToNearestChunk(const int level) const
 {
 	const Vector3i data_dims = MipLevelDataDimensions(level);
 
@@ -614,9 +608,6 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
  */
 void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
 {
-	//debug(hdf5image, "OmMipVolume::ExportInternalData(%s)\n",
-	//qPrintable(fileNameAndPath));
-
 	const DataBbox leaf_data_extent = GetDataExtent();
 	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	const OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
@@ -676,4 +667,25 @@ void OmMipVolume::updateMinMax(const double inMin, const double inMax)
 
 	mMinVal = std::min(inMin, mMinVal);
 	mMaxVal = std::max(inMax, mMaxVal);
+}
+
+uint64_t OmMipVolume::ComputeChunkPtrOffset(const OmMipChunkCoord& coord) const
+{
+	const int level = coord.Level;
+	const Vector3<int64_t> volDims = getDimsRoundedToNearestChunk(level);
+	const Vector3<int64_t> chunkDims = GetChunkDimensions();
+	const int64_t bps = GetBytesPerSample();
+
+	const int64_t slabSize  = volDims.x   * volDims.y   * chunkDims.z * bps;
+	const int64_t rowSize   = volDims.x   * chunkDims.y * chunkDims.z * bps;
+	const int64_t chunkSize = chunkDims.x * chunkDims.y * chunkDims.z * bps;
+
+	const Vector3<int64_t> chunkPos = coord.Coordinate; // bottom left corner
+	const int64_t offset =
+		slabSize*chunkPos.z + rowSize*chunkPos.y + chunkSize*chunkPos.x;
+
+	ZiLOG(DEBUG, io) << "offset is: " << offset
+					 << " (" << volDims << ") for "
+					 << coord.Coordinate << "\n";
+	return offset;
 }

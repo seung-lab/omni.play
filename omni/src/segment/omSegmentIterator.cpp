@@ -3,7 +3,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 
-OmSegmentIterator::OmSegmentIterator(boost::shared_ptr<OmSegmentCache> cache)
+OmSegmentIterator::OmSegmentIterator(OmSegmentCache* cache)
 	: mCache(cache)
 {
 }
@@ -30,8 +30,8 @@ void OmSegmentIterator::iterOverEnabledIDs()
 void OmSegmentIterator::iterOverSegmentIDs(const OmSegIDsSet & set)
 {
 	FOR_EACH(iter, set){
-                mSegs.push_back( mCache->GetSegment( *iter ) );
-        }
+		mSegs.push_back( mCache->GetSegment( *iter ) );
+	}
 }
 
 bool OmSegmentIterator::empty()
@@ -39,17 +39,17 @@ bool OmSegmentIterator::empty()
 	return mSegs.empty();
 }
 
-OmSegment * OmSegmentIterator::getNextSegment()
+OmSegment* OmSegmentIterator::getNextSegment()
 {
 	if( mSegs.empty() ){
 		return NULL;
 	}
 
-	OmSegment * segRet = mSegs.back();
+	OmSegment* segRet = mSegs.back();
 	mSegs.pop_back();
 
 	FOR_EACH(iter, segRet->getChildren() ){
-		mSegs.push_back( mCache->GetSegment( *iter ));
+		mSegs.push_back(*iter);
 	}
 
 	return segRet;

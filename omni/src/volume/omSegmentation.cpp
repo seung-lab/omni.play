@@ -68,6 +68,7 @@ OmSegmentation::OmSegmentation(OmId id)
 
 OmSegmentation::~OmSegmentation()
 {
+	delete mSegmentCache;
 	delete mDataCache;
 }
 
@@ -152,7 +153,8 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 
 /////////////////////////////////
 ///////          Groups
-void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
+							  OmGroupName name)
 {
 	bool valid;
 	if(VALIDROOT == type) {
@@ -172,14 +174,15 @@ void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmG
 	OmSegment * seg = iter.getNextSegment();
 	OmSegIDsSet newSet;
 	while(NULL != seg) {
-		newSet.insert(seg->value);
+		newSet.insert(seg->value());
 		seg = iter.getNextSegment();
 	}
 
 	(new OmSegmentValidateAction(GetID(), newSet, valid))->Run();
 }
 
-void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type, OmGroupName name)
+void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
+								OmGroupName name)
 {
 	if(GROUPROOT == type) {
 		return mGroups->UnsetGroup(set, name);
@@ -260,7 +263,9 @@ bool OmSegmentation::ImportSourceData(const OmDataPath& path)
 
 void OmSegmentation::loadVolData()
 {
-	mVolData->load(this);
+	if(IsVolumeReadyForDisplay()){
+		mVolData->load(this);
+	}
 }
 
 float OmSegmentation::GetDendThreshold()
@@ -271,7 +276,7 @@ float OmSegmentation::GetDendThreshold()
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	getDataCache()->Get(chunk, coord, true);
+	mDataCache->Get(chunk, coord, true);
 
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
@@ -291,11 +296,11 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 private:
 	const OmMipChunkCoord coord_;
 	OmSegmentation* vol_;
-	boost::shared_ptr<OmSegmentCache> segmentCache_;
+	OmSegmentCache* segmentCache_;
 
 public:
 	OmSegmentationChunkBuildTask(const OmMipChunkCoord& coord,
-								 boost::shared_ptr<OmSegmentCache> segmentCache,
+								 OmSegmentCache* segmentCache,
 								 OmSegmentation* vol)
 		:coord_(coord), vol_(vol), segmentCache_(segmentCache)
 	{}
@@ -356,4 +361,15 @@ void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
 							 const OmSegID segID )
 {
 	return mMipMeshManager->GetMesh(ptr, OmMipMeshCoord(coord, segID));
+}
+
+int OmSegmentation::GetBytesPerSample() const
+{
+	return mVolData->GetBytesPerSample();
+}
+
+void OmSegmentation::SetVolDataType(const OmVolDataType type)
+{
+	mVolDataType = type;
+	getVolData()->setDataType(this);
 }

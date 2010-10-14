@@ -3,7 +3,6 @@
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveProject.h"
-#include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
 #include "datalayer/omMST.h"
@@ -95,7 +94,7 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 	OmProjectData::GetIDataWriter()->flush();
 }
 
-QDataStream &operator<<(QDataStream & out, const OmProject & p)
+QDataStream &operator<<(QDataStream& out, const OmProject& p)
 {
 	out << OmPreferences::Instance();
 	out << p.mChannelManager;
@@ -103,7 +102,7 @@ QDataStream &operator<<(QDataStream & out, const OmProject & p)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmProject & p)
+QDataStream &operator>>(QDataStream& in, OmProject& p)
 {
 	in >> OmPreferences::Instance();
 	in >> p.mChannelManager;
@@ -112,7 +111,7 @@ QDataStream &operator>>(QDataStream & in, OmProject & p)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmPreferences & p)
+QDataStream &operator<<(QDataStream& out, const OmPreferences& p)
 {
 	out << p.stringPrefs;
 	out << p.floatPrefs;
@@ -122,7 +121,7 @@ QDataStream &operator<<(QDataStream & out, const OmPreferences & p)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmPreferences & p)
+QDataStream &operator>>(QDataStream& in, OmPreferences& p)
 {
 	in >> p.stringPrefs;
 	in >> p.floatPrefs;
@@ -136,21 +135,21 @@ QDataStream &operator>>(QDataStream & in, OmPreferences & p)
  * Channel
  */
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmChannel> & cm)
+QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmChannel>& cm)
 {
 	out << cm.mNextId;
 	out << cm.mSize;
 	out << cm.mValidSet;
 	out << cm.mEnabledSet;
 
-	foreach(const OmId & id, cm.mValidSet){
+	foreach(const OmId& id, cm.mValidSet){
 		out << *cm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm)
+QDataStream &operator>>(QDataStream& in, OmGenericManager<OmChannel>& cm)
 {
 	in >> cm.mNextId;
 	in >> cm.mSize;
@@ -168,7 +167,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmChannel> & cm)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmChannel & chan)
+QDataStream &operator<<(QDataStream& out, const OmChannel& chan)
 {
 	OmDataArchiveProject::storeOmManageableObject(out, chan);
 	OmDataArchiveProject::storeOmMipVolume(out, chan);
@@ -185,7 +184,7 @@ QDataStream &operator<<(QDataStream & out, const OmChannel & chan)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmChannel & chan)
+QDataStream &operator>>(QDataStream& in, OmChannel& chan)
 {
 	OmDataArchiveProject::loadOmManageableObject(in, chan);
 	OmDataArchiveProject::loadOmMipVolume(in, chan);
@@ -217,33 +216,33 @@ QDataStream &operator>>(QDataStream & in, OmChannel & chan)
  * Filter
  */
 
-QDataStream &operator<<(QDataStream & out, const OmFilter2dManager & fm)
+QDataStream &operator<<(QDataStream& out, const OmFilter2dManager& fm)
 {
 	out << fm.mGenericFilterManager;
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmFilter2dManager & fm)
+QDataStream &operator>>(QDataStream& in, OmFilter2dManager& fm)
 {
 	in >> fm.mGenericFilterManager;
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmFilter2d> & fm)
+QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmFilter2d>& fm)
 {
 	out << fm.mNextId;
 	out << fm.mSize;
 	out << fm.mValidSet;
 	out << fm.mEnabledSet;
 
-	foreach(const OmId & id, fm.mValidSet){
+	foreach(const OmId& id, fm.mValidSet){
 		out << *fm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm)
+QDataStream &operator>>(QDataStream& in, OmGenericManager<OmFilter2d>& fm)
 {
 	in >> fm.mNextId;
 	in >> fm.mSize;
@@ -261,7 +260,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmFilter2d> & fm)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmFilter2d & f)
+QDataStream &operator<<(QDataStream& out, const OmFilter2d& f)
 {
 	OmDataArchiveProject::storeOmManageableObject(out, f);
 	out << f.mAlpha;
@@ -271,7 +270,7 @@ QDataStream &operator<<(QDataStream & out, const OmFilter2d & f)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmFilter2d & f)
+QDataStream &operator>>(QDataStream& in, OmFilter2d& f)
 {
 	OmDataArchiveProject::loadOmManageableObject(in, f);
 	in >> f.mAlpha;
@@ -285,21 +284,21 @@ QDataStream &operator>>(QDataStream & in, OmFilter2d & f)
  * Segmentation and related
  */
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmSegmentation> & sm)
+QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmSegmentation>& sm)
 {
 	out << sm.mNextId;
 	out << sm.mSize;
 	out << sm.mValidSet;
 	out << sm.mEnabledSet;
 
-	foreach(const OmId & id, sm.mValidSet){
+	foreach(const OmId& id, sm.mValidSet){
 		out << *sm.mMap[id];
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm)
+QDataStream &operator>>(QDataStream& in, OmGenericManager<OmSegmentation>& sm)
 {
 	in >> sm.mNextId;
 	in >> sm.mSize;
@@ -317,7 +316,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmSegmentation> & sm)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
+QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 {
 	OmDataArchiveProject::storeOmManageableObject(out, seg);
 	OmDataArchiveProject::storeOmVolume(out, seg);
@@ -335,7 +334,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentation & seg)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
+QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 {
 	OmDataArchiveProject::loadOmManageableObject(in, seg);
 	OmDataArchiveProject::loadOmVolume(in, seg);
@@ -363,35 +362,35 @@ QDataStream &operator>>(QDataStream & in, OmSegmentation & seg)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm)
+QDataStream &operator<<(QDataStream& out, const OmMipMeshManager& mm)
 {
 	out << mm.mDirectoryPath;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm)
+QDataStream &operator>>(QDataStream& in, OmMipMeshManager& mm)
 {
 	in >> mm.mDirectoryPath;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc)
+QDataStream &operator<<(QDataStream& out, const OmSegmentCache& sc)
 {
 	out << (*sc.mImpl);
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc)
+QDataStream &operator>>(QDataStream& in, OmSegmentCache& sc)
 {
 	in >> (*sc.mImpl);
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc)
+QDataStream &operator<<(QDataStream& out, const OmSegmentCacheImpl& sc)
 {
 	out << (*sc.mSegments);
 
@@ -409,14 +408,14 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc)
 
 	int size = sc.mManualUserMergeEdgeList.size();
 	out << size;
-	foreach(const OmSegmentEdge & e, sc.mManualUserMergeEdgeList){
+	foreach(const OmSegmentEdge& e, sc.mManualUserMergeEdgeList){
 		out << e;
 	}
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc)
+QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 {
 	in >> (*sc.mSegments);
 
@@ -459,7 +458,7 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc)
 }
 
 template< class T2 >
-QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps)
+QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore<T2>& ps)
 {
 	out << ps.validPageNumbers;
 	out << ps.mPageSize;
@@ -467,14 +466,14 @@ QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps)
 }
 
 template< class T2 >
-QDataStream &operator>>(QDataStream & in, OmPagingPtrStore<T2> & ps)
+QDataStream &operator>>(QDataStream& in, OmPagingPtrStore<T2>& ps)
 {
 	in >> ps.validPageNumbers;
 	in >> ps.mPageSize;
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se)
+QDataStream &operator<<(QDataStream& out, const OmSegmentEdge& se)
 {
 	out << se.parentID;
 	out << se.childID;
@@ -483,7 +482,7 @@ QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se)
+QDataStream &operator>>(QDataStream& in, OmSegmentEdge& se)
 {
 	in >> se.parentID;
 	in >> se.childID;
@@ -497,21 +496,21 @@ QDataStream &operator>>(QDataStream & in, OmSegmentEdge & se)
  * Generic base objects
  */
 
-void OmDataArchiveProject::storeOmManageableObject(QDataStream & out, const OmManageableObject & mo)
+void OmDataArchiveProject::storeOmManageableObject(QDataStream& out, const OmManageableObject& mo)
 {
 	out << mo.mId;
 	out << mo.mCustomName;
 	out << mo.mNote;
 }
 
-void OmDataArchiveProject::loadOmManageableObject(QDataStream & in, OmManageableObject & mo)
+void OmDataArchiveProject::loadOmManageableObject(QDataStream& in, OmManageableObject& mo)
 {
 	in >> mo.mId;
 	in >> mo.mCustomName;
 	in >> mo.mNote;
 }
 
-void OmDataArchiveProject::storeOmMipVolume(QDataStream & out, const OmMipVolume & m)
+void OmDataArchiveProject::storeOmMipVolume(QDataStream& out, const OmMipVolume& m)
 {
 	out << QString(""); // TODO: remove me; was m.mDirectoryPath;
 	out << m.mMipLeafDim;
@@ -531,7 +530,7 @@ void OmDataArchiveProject::storeOmMipVolume(QDataStream & out, const OmMipVolume
 	std::cout << "saved type as " << type.toStdString() << "\n";
 }
 
-void OmDataArchiveProject::loadOmMipVolume(QDataStream & in, OmMipVolume & m)
+void OmDataArchiveProject::loadOmMipVolume(QDataStream& in, OmMipVolume& m)
 {
 	QString mDirectoryPath; //TODO: remove me
 	in >> mDirectoryPath;
@@ -555,7 +554,8 @@ void OmDataArchiveProject::loadOmMipVolume(QDataStream & in, OmMipVolume & m)
 	}
 }
 
-void OmDataArchiveProject::storeOmVolume(QDataStream & out, const OmVolume & v)
+void OmDataArchiveProject::storeOmVolume(QDataStream& out,
+										 const OmVolume& v)
 {
 	out << v.mNormToSpaceMat;
 	out << v.mNormToSpaceInvMat;
@@ -566,7 +566,7 @@ void OmDataArchiveProject::storeOmVolume(QDataStream & out, const OmVolume & v)
 	out << v.mDataStretchValues;
 }
 
-void OmDataArchiveProject::loadOmVolume(QDataStream & in, OmVolume & v)
+void OmDataArchiveProject::loadOmVolume(QDataStream& in, OmVolume& v)
 {
 	in >> v.mNormToSpaceMat;
 	in >> v.mNormToSpaceInvMat;
@@ -577,7 +577,7 @@ void OmDataArchiveProject::loadOmVolume(QDataStream & in, OmVolume & v)
 	in >> v.mDataStretchValues;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGroups & g)
+QDataStream &operator<<(QDataStream& out, const OmGroups& g)
 {
 	out << g.mGroupManager;
 	out << g.mGroupsByName;
@@ -585,7 +585,7 @@ QDataStream &operator<<(QDataStream & out, const OmGroups & g)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGroups & g)
+QDataStream &operator>>(QDataStream& in, OmGroups& g)
 {
 	in >> g.mGroupManager;
 	in >> g.mGroupsByName;
@@ -593,14 +593,15 @@ QDataStream &operator>>(QDataStream & in, OmGroups & g)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & gm)
+QDataStream &operator<<(QDataStream& out,
+							const OmGenericManager<OmGroup>& gm)
 {
 	out << gm.mNextId;
 	out << gm.mSize;
 	out << gm.mValidSet;
 	out << gm.mEnabledSet;
 
-	foreach(const OmId & id, gm.mValidSet){
+	foreach(const OmId& id, gm.mValidSet){
 		out << *gm.mMap[id];
 		printf("id=%i\n", id);
 	}
@@ -608,7 +609,8 @@ QDataStream &operator<<(QDataStream & out, const OmGenericManager<OmGroup> & gm)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
+QDataStream &operator>>(QDataStream& in,
+							OmGenericManager<OmGroup>& gm)
 {
 	in >> gm.mNextId;
 	in >> gm.mSize;
@@ -626,7 +628,7 @@ QDataStream &operator>>(QDataStream & in, OmGenericManager<OmGroup> & gm)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmGroup & g)
+QDataStream &operator<<(QDataStream& out, const OmGroup& g)
 {
 	OmDataArchiveProject::storeOmManageableObject(out, g);
 	out << g.mName;
@@ -635,7 +637,7 @@ QDataStream &operator<<(QDataStream & out, const OmGroup & g)
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmGroup & g)
+QDataStream &operator>>(QDataStream& in, OmGroup& g)
 {
 	if(fileVersion_ > 11) {
 		OmDataArchiveProject::loadOmManageableObject(in, g);

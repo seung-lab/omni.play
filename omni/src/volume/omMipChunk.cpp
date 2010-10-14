@@ -200,7 +200,7 @@ void OmMipChunk::loadMetadataIfPresent()
  *	all values in the DataSegmentId set of the chunk.
  */
 void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
-										 boost::shared_ptr<OmSegmentCache> segCache)
+										 OmSegmentCache* segCache)
 {
 	mDirectlyContainedValues.clear();
 	mChunkData->RefreshDirectDataValues(computeSizes, segCache);

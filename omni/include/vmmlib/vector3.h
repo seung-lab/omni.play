@@ -26,6 +26,7 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <QDataStream>
 
 #define NAMESPACE_VMML_START namespace vmml {
 #define NAMESPACE_VMML_END   }; //namespace vmml
@@ -201,6 +202,22 @@ public:
 		os.setf( flags );
 		return os;
 	};
+
+	friend QDataStream& operator<<(QDataStream& out, const Vector3& v)
+	{
+		out << v.array[0];
+		out << v.array[1];
+		out << v.array[2];
+		return out;
+	}
+
+	friend QDataStream& operator>>(QDataStream& in, Vector3& v)
+	{
+		in >> v.array[0];
+		in >> v.array[1];
+		in >> v.array[2];
+		return in;
+	}
 
 
 	// component iterators

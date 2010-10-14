@@ -27,7 +27,7 @@ OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 		return segment;
 	}
 
-	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->value ) );
+	return GetSegmentFromValue( mSegmentGraph.graph_getRootID( segment->value() ) );
 }
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot(const OmSegID segID)
@@ -41,7 +41,7 @@ OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
 		return 0;
 	}
 
-	return findRoot( GetSegmentFromValue( segID ) )->value;
+	return findRoot( GetSegmentFromValue( segID ) )->value();
 }
 
 bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID value)
@@ -53,9 +53,9 @@ OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value)
 {
 	OmSegment* seg = mSegments->GetItemFromValue(value);
 
-	if(seg && seg->value > mMaxValue){
+	if(seg && seg->value() > mMaxValue){
 		throw OmIoException("bad segment value: "+
-				    boost::lexical_cast<std::string>(seg->value)
+							boost::lexical_cast<std::string>(seg->value())
 				    + "; maxValue is: "
 				    + boost::lexical_cast<std::string>(mMaxValue));
 	}
@@ -75,7 +75,7 @@ OmSegID OmSegmentCacheImplLowLevel::GetNumTopSegments()
 
 bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 {
-	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
+	const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value();
 
 	if( mAllEnabled ||
 	    0 != mEnabledSet.count(rootID)){
@@ -87,7 +87,7 @@ bool OmSegmentCacheImplLowLevel::isSegmentEnabled( OmSegID segID )
 
 void OmSegmentCacheImplLowLevel::setSegmentEnabled( OmSegID segID, bool isEnabled )
 {
-	const OmSegID rootID = findRoot(GetSegmentFromValue(segID))->value;
+	const OmSegID rootID = findRoot(GetSegmentFromValue(segID))->value();
 	clearCaches();
 
 	if (isEnabled) {
@@ -110,7 +110,7 @@ OmSegIDsSet & OmSegmentCacheImplLowLevel::GetEnabledSegmentIdsRef()
 
 bool OmSegmentCacheImplLowLevel::isSegmentSelected( OmSegment * seg )
 {
-	const OmSegID rootID = findRoot( seg )->value;
+	const OmSegID rootID = findRoot( seg )->value();
 
 	if( mAllSelected ||
 	    0 != mSelectedSet.count(rootID) ){
@@ -155,7 +155,7 @@ void OmSegmentCacheImplLowLevel::setSegmentSelectedBatch( OmSegID segID,
 							  const bool isSelected,
 							  const bool addToRecentList)
 {
-       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value;
+       const OmSegID rootID = findRoot( GetSegmentFromValue(segID) )->value();
 
        if (isSelected) {
                doSelectedSetInsert( rootID, addToRecentList);
@@ -252,7 +252,7 @@ OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 
 void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)
 {
-	mSegments->AddToDirtyList( seg->value );
+	mSegments->AddToDirtyList( seg->value() );
 }
 
 void OmSegmentCacheImplLowLevel::flushDirtySegments()
@@ -291,7 +291,7 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 	mSegmentGraph.growGraphIfNeeded(newSeg);
 }
 
-boost::shared_ptr<OmSegmentCache> OmSegmentCacheImplLowLevel::getSegmentCache()
+OmSegmentCache* OmSegmentCacheImplLowLevel::getSegmentCache()
 {
 	return mSegmentation->GetSegmentCache();
 }

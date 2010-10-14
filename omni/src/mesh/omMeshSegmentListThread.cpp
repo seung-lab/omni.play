@@ -16,13 +16,13 @@ void OmMeshSegmentListThread::run()
 {
 	const OmSegIDsSet & chunkValues =  mChunk->GetDirectDataValues();
 	OmSegmentIterator segIter(mRootSeg->getSegmentCache());
-	segIter.iterOverSegmentID(mRootSeg->value);
+	segIter.iterOverSegmentID(mRootSeg->value());
 	OmSegment* seg = segIter.getNextSegment();
 
 	OmSegPtrList segmentsToDraw;
 
 	while( NULL != seg ){
-		const OmSegID val = seg->value;
+		const OmSegID val = seg->value();
 		if(0 != chunkValues.count(val)){
 			segmentsToDraw.push_back(seg);
 		}

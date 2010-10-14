@@ -61,7 +61,7 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 	}
         OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
         OmGroup & group = seg.GetGroups()->GetGroup(id);
-	boost::shared_ptr<OmSegmentCache> cache = seg.GetSegmentCache();
+	OmSegmentCache* cache = seg.GetSegmentCache();
 
 	const OmSegIDsSet & set = group.GetIDs();
 	mGroupsTable->setRowCount(set.size());

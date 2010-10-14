@@ -19,6 +19,7 @@ public:
 
 	void Get(OmTilePtr&, const OmTileCoord&, const om::BlockingRead);
 	void RemoveSpaceCoord(const SpaceCoord& coord);
+	void Clear();
 
 private:
 	LockedMultiMap<SpaceCoord, OmTileCoord> keysBySpaceCoord_;

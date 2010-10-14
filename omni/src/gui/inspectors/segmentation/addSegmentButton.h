@@ -23,10 +23,11 @@ private:
 		boost::shared_ptr<SegmentationDataWrapper> sdw =
 			mParent->getSegmentationDataWrapper();
 		OmSegment * newSeg = sdw->getSegmentCache()->AddSegment();
-		mParent->rebuildSegmentLists(newSeg->getSegmentationID(), newSeg->value);
+		mParent->rebuildSegmentLists(newSeg->getSegmentationID(),
+									 newSeg->value());
 
 		OmSegmentSelector sel(sdw->getID(), this, "addSegmentButton" );
-		sel.selectJustThisSegment(newSeg->value, true);
+		sel.selectJustThisSegment(newSeg->value(), true);
 		sel.sendEvent();
 	}
 };

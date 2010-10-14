@@ -41,6 +41,7 @@ protected:
 
 	void map()
 	{
+		std::cout << "file size is " << file_->size() << "\n";
 		map_ = file_->map(0, file_->size());
 		file_->close();
 	}
@@ -114,20 +115,6 @@ private:
 			throw OmIoException("size was 0");
 		}
 	}
-	/*
-
-	  template <typename T, typename VOL>
-	  void OmMemMappedVolume<T,VOL>::allocateSpace(QFile * file)
-	  {
-	  printf("\tpre-allocating...\n");
-	  for( int64_t i=0; i < file->size(); i+=(int64_t)4096){
-	  file->seek(i);
-	  file->putChar(0);
-	  }
-	  printf("\tflushing...\n");
-	  file->flush();
-	  }
-	*/
 };
 
 #endif

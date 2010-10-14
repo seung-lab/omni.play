@@ -16,7 +16,7 @@ private:
 		printf("upgrading segments to ver 15\n");
 		FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
 			SegmentationDataWrapper sdw(*iter);
-			boost::shared_ptr<OmSegmentCache> cache = sdw.getSegmentCache();
+			OmSegmentCache* cache = sdw.getSegmentCache();
 			cache->UpgradeSegmentSerialization();
 		}
 	}

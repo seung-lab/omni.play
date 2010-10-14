@@ -34,15 +34,17 @@ public:
 
 	bool AreDrawersActive();
 
+	void Clear();
+
 private:
 	OmTileCache();
-
-	LockedInt32 numDrawersActive_;
-	std::map<OmTileDrawer*, bool> drawersActive_;
 
 	boost::shared_ptr<OmTileCacheChannel> cacheChannel_;
 	boost::shared_ptr<OmTileCacheNonChannel> cacheNonChannel_;
 	boost::shared_ptr<OmTilePreFetcher> preFetcher_;
+
+	std::map<OmTileDrawer*, bool> drawersActive_;
+	LockedInt32 numDrawersActive_;
 
 	bool isChannel(const OmTileCoord& key);
 	void setDrawerActive(OmTileDrawer* v);

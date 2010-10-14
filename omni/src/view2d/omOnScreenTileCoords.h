@@ -15,9 +15,9 @@ public:
 
 private:
 	const boost::shared_ptr<OmView2dState> state_;
-	OmMipVolume *const mVolume;
+	OmMipVolume *const vol_;
 	const ViewType viewType_;
-	OmViewGroupState *const mViewGroupState;
+	OmViewGroupState *const vgs_;
 	const float tileLength_;
 	const float zoomFactor_;
 	const float mipLevel_;
@@ -28,15 +28,14 @@ private:
 	int dataDepth_;
 	uint64_t freshness_;
 
-	float xMipChunk_;
-	float yMipChunk_;
-	float xval;
-	float yval;
+	int xMipChunk_;
+	int yMipChunk_;
 
 	OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;
 
+	void doComputeCoordsAndLocations(const int depthOffset);
 	void setDepths();
-        DataCoord toDataCoord(const int);
+	DataCoord toDataCoord(const int);
 	OmTileCoord makeTileCoord(const SpaceCoord&);
 	GLfloatBox computeVertices(const float, const float);
 	void computeTile(const float x, const float y, const int);
