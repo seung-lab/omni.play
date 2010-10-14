@@ -46,7 +46,7 @@ OmDataPath OmPagingPtrStore<T>::getPath(const PageNum pageNum)
 template<typename T>
 void OmPagingPtrStore<T>::doSavePage( const PageNum pageNum )
 {
-	const std::vector<T>& page = mValueToSeg[pageNum];
+	const OmSegmentPage& page = mValueToSeg[pageNum];
 	OmDataArchiveSegment::ArchiveWrite(getPath(pageNum),
 									   page,
 									   mSegmentation->GetSegmentCache());
@@ -64,13 +64,12 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 {
 	resizeVectorIfNeeded(pageNum);
 
-	std::vector<T>& page = mValueToSeg[pageNum];
-	page.resize(mPageSize);
+	OmSegmentPage& page = mValueToSeg[pageNum];
 
 	OmDataArchiveSegment::ArchiveRead(getPath(pageNum),
-									   page,
-									   mSegmentation->GetSegmentCache(),
-									   rewriteSegments);
+									  page,
+									  mSegmentation->GetSegmentCache(),
+									  rewriteSegments);
 
 	loadedPageNumbers.insert(pageNum);
 
@@ -88,7 +87,7 @@ void OmPagingPtrStore<T>::AddItem(T* item )
 
 	if( !validPageNumbers.contains(pageNum) ) {
 		resizeVectorIfNeeded(pageNum);
-		mValueToSeg[pageNum].resize(mPageSize);
+		mValueToSeg[pageNum] = OmSegmentPage(mPageSize);
 		validPageNumbers.insert(pageNum);
 		loadedPageNumbers.insert(pageNum);
 	}

@@ -6,23 +6,26 @@
 class OmDataPath;
 class OmSegment;
 class OmSegmentCache;
+class OmSegmentPage;
 
 class OmDataArchiveSegment{
 public:
-	static void ArchiveRead(const OmDataPath&, std::vector<OmSegment>&,
+	static void ArchiveRead(const OmDataPath&,
+							OmSegmentPage&,
 							OmSegmentCache*,
 							const om::RewriteSegments rewriteSegments);
 
-	static void ArchiveWrite(const OmDataPath&, const std::vector<OmSegment>&,
+	static void ArchiveWrite(const OmDataPath&,
+							 const OmSegmentPage&,
 							 OmSegmentCache*);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
-						 std::vector<OmSegment>&,
+						 OmSegmentPage&,
 						 OmSegmentCache*);
 
 	const OmDataPath& path_;
-	std::vector<OmSegment>& page_;
+	OmSegmentPage& page_;
 	OmSegmentCache* cache_;
 	const int omniFileVersion_;
 

@@ -6,6 +6,7 @@
 #include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
+#include "segment/lowLevel/omSegmentPage.hpp"
 #include "system/omProjectData.h"
 #include <QDataStream>
 
@@ -13,8 +14,8 @@ static const QString Omni_Postfix("OMNI");
 const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
-void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
-									   std::vector<OmSegment> & page,
+void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
+									   OmSegmentPage& page,
 									   OmSegmentCache* cache,
 									   const om::RewriteSegments rewriteSegments)
 {
@@ -23,7 +24,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
 }
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
-										   std::vector<OmSegment> & page,
+										   OmSegmentPage& page,
 										   OmSegmentCache* cache)
 	: path_(path)
 	, page_(page)
@@ -91,9 +92,9 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 
 		page_[i].cache_ = cache_;
 		in >> page_[i].value_;
-		in >> page_[i].colorInt_.red;
-		in >> page_[i].colorInt_.green;
-		in >> page_[i].colorInt_.blue;
+		in >> page_[i].color_.red;
+		in >> page_[i].color_.green;
+		in >> page_[i].color_.blue;
 		in >> page_[i].immutable_;
 		in >> page_[i].size_;
 
@@ -128,9 +129,9 @@ void OmDataArchiveSegment::readSegmentsNew()
 
 		page_[i].cache_ = cache_;
 		in >> page_[i].value_;
-		in >> page_[i].colorInt_.red;
-		in >> page_[i].colorInt_.green;
-		in >> page_[i].colorInt_.blue;
+		in >> page_[i].color_.red;
+		in >> page_[i].color_.green;
+		in >> page_[i].color_.blue;
 		in >> page_[i].immutable_;
 		in >> page_[i].size_;
 		in >> page_[i].bounds_;
@@ -144,7 +145,7 @@ void OmDataArchiveSegment::readSegmentsNew()
 }
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
-										const std::vector<OmSegment> & page,
+										const OmSegmentPage& page,
 										OmSegmentCache* cache)
 {
 	const int omniFileVersion = OmProjectData::getFileVersion();
@@ -169,9 +170,9 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 		out << true;
 
 		out << page[i].value_;
-		out << page[i].colorInt_.red;
-		out << page[i].colorInt_.green;
-		out << page[i].colorInt_.blue;
+		out << page[i].color_.red;
+		out << page[i].color_.green;
+		out << page[i].color_.blue;
 		out << page[i].immutable_;
 		out << page[i].size_;
 		out << page[i].bounds_;

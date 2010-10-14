@@ -18,12 +18,12 @@ void OmSegment::setParent(OmSegment * parent, const float threshold)
 ///////         Color
 void OmSegment::RandomizeColor()
 {
-	colorInt_ = OmRand::GetRandomColor();
+	color_ = OmRand::GetRandomColor();
 
 	debugs(segmentBuild) << "final color values: "
-						 << (int)colorInt_.red << ","
-						 << (int)colorInt_.green << ","
-						 << (int)colorInt_.blue << "\n";
+						 << (int)color_.red << ","
+						 << (int)color_.green << ","
+						 << (int)color_.blue << "\n";
 }
 
 void OmSegment::reRandomizeColor()
@@ -35,9 +35,9 @@ void OmSegment::reRandomizeColor()
 
 void OmSegment::SetColor(const Vector3f& color)
 {
-	colorInt_.red   = static_cast<quint8>(color.x * 255);
-	colorInt_.green = static_cast<quint8>(color.y * 255);
-	colorInt_.blue  = static_cast<quint8>(color.z * 255);
+	color_.red   = static_cast<quint8>(color.x * 255);
+	color_.green = static_cast<quint8>(color.y * 255);
+	color_.blue  = static_cast<quint8>(color.z * 255);
 
 	cache_->addToDirtySegmentList(this);
 }

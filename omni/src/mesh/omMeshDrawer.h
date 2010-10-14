@@ -11,8 +11,7 @@ class OmSegmentation;
 class OmViewGroupState;
 class OmVolumeCuller;
 
-class OmMeshDrawer : boost::noncopyable
-{
+class OmMeshDrawer : boost::noncopyable {
 public:
 	OmMeshDrawer(OmSegmentation*, OmViewGroupState*);
 	virtual ~OmMeshDrawer(){}

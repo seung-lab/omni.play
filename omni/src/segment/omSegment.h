@@ -44,12 +44,12 @@ public:
 	// color
 	void RandomizeColor();
 	void reRandomizeColor();
-	OmColor GetColorInt(){ return colorInt_; }
+	OmColor GetColorInt(){ return color_; }
 	Vector3f GetColorFloat()
 	{
-		return Vector3f( colorInt_.red   / 255.,
-						 colorInt_.green / 255.,
-						 colorInt_.blue  / 255. );
+		return Vector3f( color_.red   / 255.,
+						 color_.green / 255.,
+						 color_.blue  / 255. );
 	}
 	void SetColor(const Vector3f &);
 
@@ -114,7 +114,7 @@ private:
 	OmSegID value_;
 	OmSegmentCache* cache_;
 	OmSegID parentSegID_;
-	OmColor colorInt_;
+	OmColor color_;
 	std::set<OmSegment*> segmentsJoinedIntoMe_;
 	float threshold_;
 	bool immutable_;

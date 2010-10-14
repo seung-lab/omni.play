@@ -4,6 +4,7 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "segment/omSegment.h"
+#include "segment/lowLevel/omSegmentPage.hpp"
 
 #include <QSet>
 
@@ -38,8 +39,8 @@ class OmPagingPtrStore {
  private:
 	OmSegmentation *const mSegmentation;
 
-	quint32 mPageSize;
-	std::vector< std::vector<T> > mValueToSeg;
+	uint32_t mPageSize;
+	std::vector<OmSegmentPage> mValueToSeg;
 	QSet<PageNum> validPageNumbers;
 	QSet<PageNum> loadedPageNumbers;
 	QSet<PageNum> dirtyPages;
