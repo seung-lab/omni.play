@@ -20,7 +20,8 @@ private:
 
 public:
 	OmSegmentPage()
-		: pageNum_(0)
+		: segmentation_(NULL)
+		, pageNum_(0)
 		, pageSize_(0)
 		, segmentsRawPtr_(NULL)
 	{}
@@ -30,17 +31,22 @@ public:
 		: segmentation_(segmentation)
 		, pageNum_(pageNum)
 		, pageSize_(pageSize)
+		, segmentsRawPtr_(NULL)
+	{}
+
+	void Create()
 	{
 		segments_ = OmSmartPtr<OmSegment>::MallocNumElements(pageSize_,
 															 om::ZERO_FILL);
 		segmentsRawPtr_ = segments_.get();
 	}
 
-	void Create()
-	{}
-
 	void Load(const om::RewriteSegments rewriteSegments)
 	{
+		segments_ = OmSmartPtr<OmSegment>::MallocNumElements(pageSize_,
+															 om::ZERO_FILL);
+		segmentsRawPtr_ = segments_.get();
+
 		OmDataArchiveSegment::ArchiveRead(getPath(),
 										  this,
 										  segmentation_->GetSegmentCache(),
