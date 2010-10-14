@@ -14,13 +14,13 @@ public:
 
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 	void bresenhamLineDraw(const DataCoord &first,
-			       const DataCoord &second,
-			       bool doselection);
+						   const DataCoord &second,
+						   bool doselection);
 	void FillToolFill(OmId segmentation,
-			  DataCoord gCP,
-			  OmSegID fc,
-			  OmSegID bc,
-			  int depth=0);
+					  DataCoord gCP,
+					  OmSegID fc,
+					  OmSegID bc,
+					  int depth=0);
 
 	void myUpdate();
 
@@ -39,8 +39,8 @@ private:
 
 	void RemoveModifiedTiles();
 	void PickToolAddToSelection(OmSegmentSelector & sel,
-				    OmSegmentation & current_seg,
-				    DataCoord globalDataClickPoint);
+								OmSegmentation & current_seg,
+								DataCoord globalDataClickPoint);
 
 };
 
