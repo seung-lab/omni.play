@@ -91,6 +91,10 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 		}
 
 		page_[i].cache_ = cache_;
+		page_[i].segmentsJoinedIntoMe_ = std::set<OmSegment*>();
+		page_[i].customMergeEdge_ = OmSegmentEdge();
+		page_[i].bounds_ = DataBbox();
+
 		in >> page_[i].value_;
 		in >> page_[i].color_.red;
 		in >> page_[i].color_.green;
@@ -128,6 +132,10 @@ void OmDataArchiveSegment::readSegmentsNew()
 		}
 
 		page_[i].cache_ = cache_;
+		page_[i].segmentsJoinedIntoMe_ = std::set<OmSegment*>();
+		page_[i].customMergeEdge_ = OmSegmentEdge();
+		page_[i].bounds_ = DataBbox();
+
 		in >> page_[i].value_;
 		in >> page_[i].color_.red;
 		in >> page_[i].color_.green;

@@ -33,18 +33,18 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 		return NULL;
 	}
 
-	OmSegment * seg = new OmSegment( value, getSegmentCache());
-	seg->RandomizeColor();
+	OmSegment seg(value, getSegmentCache());
+	seg.RandomizeColor();
 
-	mSegments->AddItem( seg );
+	OmSegment* addedSegment = mSegments->AddItem( seg );
 	++mNumSegs;
 	if (mMaxValue < value) {
 		mMaxValue = value;
 	}
 
-	addToDirtySegmentList(seg);
+	addToDirtySegmentList(value);
 
-	return seg;
+	return addedSegment;
 }
 
 OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)

@@ -255,6 +255,11 @@ void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)
 	mSegments->AddToDirtyList( seg->value() );
 }
 
+void OmSegmentCacheImplLowLevel::addToDirtySegmentList(const OmSegID val)
+{
+	mSegments->AddToDirtyList(val);
+}
+
 void OmSegmentCacheImplLowLevel::flushDirtySegments()
 {
 	mSegments->FlushDirtyItems();

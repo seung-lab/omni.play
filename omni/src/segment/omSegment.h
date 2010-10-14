@@ -15,8 +15,10 @@ class OmSegmentCache;
 
 class OmSegment {
 public:
+	// for OmDataArchiveSegment
 	OmSegment()
 		: value_(0)
+		, cache_(NULL)
 		, parentSegID_(0)
 		, threshold_(0)
 		, immutable_(false)
@@ -25,19 +27,19 @@ public:
 		, freshnessForMeshes_(0)
 	{}
 
-
-	OmSegment(const OmSegID value,
-			  OmSegmentCache* cache)
+	// for OmSegmentCacheImpl::AddSegment
+	OmSegment(const OmSegID value, OmSegmentCache* cache)
 		: value_(value)
 		, cache_(cache)
 		, parentSegID_(0)
+		, threshold_(0)
 		, immutable_(false)
 		, size_(0)
 		, edgeNumber_(-1)
 		, freshnessForMeshes_(0)
 	{}
 
-	inline OmSegID value(){
+	inline OmSegID value() const {
 		return value_;
 	}
 
@@ -45,7 +47,7 @@ public:
 	void RandomizeColor();
 	void reRandomizeColor();
 	OmColor GetColorInt(){ return color_; }
-	Vector3f GetColorFloat()
+	Vector3f GetColorFloat() const
 	{
 		return Vector3f( color_.red   / 255.,
 						 color_.green / 255.,

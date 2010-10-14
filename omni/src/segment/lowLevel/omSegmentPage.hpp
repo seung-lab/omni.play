@@ -9,29 +9,31 @@ class OmSegmentPage {
 public:
 	OmSegmentPage()
 		: pageSize_(0)
+		, segmentsRawPtr_(NULL)
 	{}
 
 	OmSegmentPage(const uint32_t pageSize)
 		: pageSize_(pageSize)
 	{
-//		segments_ = OmSmartPtr<OmSegmentPage>::
-//			makeMallocPtrNumElements(pageSize_,
-//									 om::ZERO_FILL);
-		segments_.resize(pageSize_);
+		segments_ = OmSmartPtr<OmSegment>::MallocNumElements(pageSize_,
+															 om::ZERO_FILL);
+		segmentsRawPtr_ = segments_.get();
 	}
 
 	inline OmSegment& operator[](const uint32_t index){
-		return segments_[index];
+		assert(pageSize_ && index < pageSize_);
+		return segmentsRawPtr_[index];
 	}
 
 	inline const OmSegment& operator[](const uint32_t index) const {
-		return segments_[index];
+		assert(pageSize_ && index < pageSize_);
+		return segmentsRawPtr_[index];
 	}
 
 private:
-	int pageSize_;
-//	boost::shared_ptr<OmSegment> segments_;
-	std::vector<OmSegment> segments_;
+	uint32_t pageSize_;
+	boost::shared_ptr<OmSegment> segments_;
+	OmSegment* segmentsRawPtr_;
 };
 
 #endif

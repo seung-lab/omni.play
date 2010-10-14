@@ -64,6 +64,7 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 {
 	resizeVectorIfNeeded(pageNum);
 
+	mValueToSeg[pageNum] = OmSegmentPage(mPageSize);
 	OmSegmentPage& page = mValueToSeg[pageNum];
 
 	OmDataArchiveSegment::ArchiveRead(getPath(pageNum),
@@ -79,9 +80,9 @@ void OmPagingPtrStore<T>::loadValuePage(const PageNum pageNum,
 }
 
 template<typename T>
-void OmPagingPtrStore<T>::AddItem(T* item )
+T* OmPagingPtrStore<T>::AddItem(const T& item)
 {
-	const OmSegID value = item->value();
+	const OmSegID value = item.value();
 
 	const PageNum pageNum = getValuePageNum(value);
 
@@ -92,7 +93,9 @@ void OmPagingPtrStore<T>::AddItem(T* item )
 		loadedPageNumbers.insert(pageNum);
 	}
 
-	mValueToSeg[pageNum][value % mPageSize] = *item;
+	mValueToSeg[pageNum][value % mPageSize] = item;
+
+	return &(mValueToSeg[pageNum][value % mPageSize]);
 }
 
 template<typename T>

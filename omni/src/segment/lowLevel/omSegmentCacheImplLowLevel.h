@@ -54,6 +54,8 @@ public:
 	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);
+	void addToDirtySegmentList(const OmSegID val);
+
 	void flushDirtySegments();
 
 	void turnBatchModeOn(const bool batchMode);

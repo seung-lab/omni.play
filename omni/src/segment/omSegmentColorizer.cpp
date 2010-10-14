@@ -45,7 +45,8 @@ OmSegmentColorizer::colorTile(boost::shared_ptr<uint32_t> imageDataPtr)
 	mCurSegCacheFreshness = OmCacheManager::GetFreshness();
 
 	boost::shared_ptr<OmColorRGBA> colorMappedDataPtr
-		= OmSmartPtr<OmColorRGBA>::makeMallocPtrNumElements(mNumElements);
+		= OmSmartPtr<OmColorRGBA>::MallocNumElements(mNumElements,
+													 om::DONT_ZERO_FILL);
 
 	doColorTile(imageDataPtr.get(), colorMappedDataPtr.get());
 

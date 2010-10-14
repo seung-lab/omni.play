@@ -23,7 +23,7 @@ class OmPagingPtrStore {
 	quint32 getPageSize() { return mPageSize; }
 	void SetSegmentationID(const OmId);
 
-	void AddItem(T* item);
+	T* AddItem(const T& item);
 	bool IsValueAlreadyMapped(const OmSegID);
 
 	void SaveAllLoadedPages();
