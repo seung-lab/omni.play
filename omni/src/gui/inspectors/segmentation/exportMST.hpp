@@ -37,7 +37,7 @@ private:
 
 		boost::shared_ptr<SegmentationDataWrapper> sdw =
 			mParent->getSegmentationDataWrapper();
-		OmSegmentCache* segmentCache = sdw->getSegmentCache();
+		boost::shared_ptr<OmSegmentCache> segmentCache = sdw->getSegmentCache();
 		boost::shared_ptr<OmMST> mst = sdw->getSegmentation().getMST();
 
 		const int numEdges = mst->mDendCount;

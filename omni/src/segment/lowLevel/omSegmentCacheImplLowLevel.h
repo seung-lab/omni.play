@@ -61,7 +61,7 @@ public:
 	quint32 getPageSize();
 	quint32 getMaxValue();
 
-	OmSegmentCache* getSegmentCache();
+	boost::shared_ptr<OmSegmentCache> getSegmentCache();
 
 	void UpgradeSegmentSerialization();
 

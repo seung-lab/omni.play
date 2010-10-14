@@ -67,8 +67,3 @@ void OmTileCacheNonChannel::Get(OmTilePtr& ptr, const OmTileCoord& key,
 
 	OmThreadedCache<OmTileCoord, OmTilePtr>::Get(ptr, key, isBlocking);
 }
-
-void OmTileCacheNonChannel::Clear()
-{
-	OmThreadedCache<OmTileCoord, OmTilePtr>::Clear();
-}

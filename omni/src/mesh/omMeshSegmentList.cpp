@@ -78,7 +78,7 @@ OmMeshSegListKey OmMeshSegmentList::makeKey(OmMipChunkPtr chunk, OmSegment* root
 {
 	const OmMipChunkCoord& c = chunk->GetCoordinate();
 	return OmMeshSegListKey(rootSeg->getSegmentationID(),
-							rootSeg->value(),
+							rootSeg->value,
 							c.Level,
 							c.Coordinate.x,
 							c.Coordinate.y,

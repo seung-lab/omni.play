@@ -22,11 +22,18 @@ public:
 		allocMemMapFiles(levDims);
 	}
 
-	int GetBytesPerSample() const;
+	int GetBytesPerSample();
 	OmRawDataPtrs GetVolPtr(const int level);
 	OmRawDataPtrs getChunkPtrRaw(const OmMipChunkCoord & coord);
 
 	void downsample(OmMipVolume* vol);
+
+private:
+	OmVolDataSrcs volData_;
+
+	void loadMemMapFiles();
+	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
+	OmVolDataType determineOldVolType(OmMipVolume * vol);
 
 	template <typename VOL> void setDataType(VOL* vol){
 		printf("setting up volume data...\n");
@@ -38,14 +45,6 @@ public:
 
 		volData_ = makeVolData(vol);
 	}
-
-private:
-	OmVolDataSrcs volData_;
-
-	void loadMemMapFiles();
-	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
-	OmVolDataType determineOldVolType(OmMipVolume * vol);
-
 
 	template <typename VOL> OmVolDataSrcs makeVolData(VOL* vol){
 		switch(vol->mVolDataType.index()){

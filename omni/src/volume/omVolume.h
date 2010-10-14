@@ -21,7 +21,7 @@ public:
 	bool SetUserScale(const Vector3<float> &vec);
 
 	//data properties
-	const DataBbox& GetDataExtent() const;
+	const DataBbox& GetDataExtent();
 	void SetDataExtent(const DataBbox& extent);
 	Vector3i GetDataDimensions();
 	void SetDataDimensions(const Vector3i& dim);
@@ -30,7 +30,7 @@ public:
 	void CheckDataResolution();
 	Vector2f GetStretchValues(ViewType plane);
 	void SetStretchValues();
-	int GetChunkDimension() const;
+	int GetChunkDimension();
 	void SetChunkDimension(int);
 	QString GetUnit();
 	void SetUnit(QString unit);

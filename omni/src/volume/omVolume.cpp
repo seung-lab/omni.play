@@ -145,7 +145,7 @@ DataBbox OmVolume::NormToDataBbox(const NormBbox & normBbox)
 /////////////////////////////////
 ///////          Data Properties
 
-const DataBbox& OmVolume::GetDataExtent() const
+const DataBbox& OmVolume::GetDataExtent()
 {
 	return mDataExtent;
 }
@@ -187,7 +187,7 @@ bool OmVolume::Update()
 	return SetScale(mDataResolution * data_dims);
 }
 
-int OmVolume::GetChunkDimension() const
+int OmVolume::GetChunkDimension()
 {
 	return mChunkDim;
 }

@@ -12,13 +12,15 @@
 #include "common/omCommon.h"
 
 #include <QSize>
-#include <QUndoStack>
-#include <QGLWidget>
-#include <QGLContext>
 
+class QUndoStack;
+class QUndoCommand;
+class QGLWidget;
+class QGLContext;
 class MyInspectorWidget;
 class MainWindow;
 class DendToolBar;
+class Drawable;
 
 class OmStateManager : boost::noncopyable {
 

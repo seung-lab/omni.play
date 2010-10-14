@@ -1,6 +1,6 @@
 #include "view2d/omView2dState.hpp"
 #include "tiles/omTilePreFetcher.hpp"
-#include "view2d/omTileDrawer.hpp"
+#include "tiles/omTileDrawer.hpp"
 #include "tiles/cache/omTileCache.h"
 #include "tiles/cache/omTileCacheImpl.h"
 #include "system/omStateManager.h"
@@ -119,10 +119,4 @@ bool OmTileCache::AreDrawersActive()
 	return numDrawersActive_.get() > 0 ||
 		OmCacheManager::AmClosingDown() ||
 		QApplication::mouseButtons() != Qt::NoButton;
-}
-
-void OmTileCache::Clear()
-{
-	cacheChannel_->Clear();
-	cacheNonChannel_->Clear();
 }

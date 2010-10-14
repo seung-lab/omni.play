@@ -11,7 +11,8 @@ class OmSegmentation;
 class OmViewGroupState;
 class OmVolumeCuller;
 
-class OmMeshDrawer : boost::noncopyable {
+class OmMeshDrawer : boost::noncopyable
+{
 public:
 	OmMeshDrawer(OmSegmentation*, OmViewGroupState*);
 	virtual ~OmMeshDrawer(){}
@@ -21,7 +22,7 @@ public:
 private:
 	OmSegmentation *const mSeg;
 	OmViewGroupState *const mViewGroupState;
-	OmSegmentCache *const mSegmentCache;
+	const boost::shared_ptr<OmSegmentCache> mSegmentCache;
 
 	boost::shared_ptr<OmVolumeCuller> mVolumeCuller;
 	OmSegPtrList mRootSegsToDraw;

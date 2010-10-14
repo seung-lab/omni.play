@@ -35,7 +35,6 @@ public:
 	ObjectType getVolumeType(){ return SEGMENTATION; }
 	OmId getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
-	int GetBytesPerSample() const;
 
 	void CloseDownThreads();
 
@@ -46,7 +45,7 @@ public:
 	void RebuildChunk(const OmMipChunkCoord &, const OmSegIDsSet &);
 
 	//segment management
-	OmSegmentCache* GetSegmentCache(){
+	boost::shared_ptr<OmSegmentCache> GetSegmentCache(){
 		return mSegmentCache;
 	}
 	boost::shared_ptr<OmSegmentLists> GetSegmentLists(){
@@ -74,8 +73,6 @@ public:
 
 	bool ImportSourceData(const OmDataPath& path);
 
-	void SetVolDataType(const OmVolDataType);
-
 protected:
 	virtual void doBuildThreadedVolume();
 
@@ -85,7 +82,7 @@ private:
 	void KillCacheThreads();
 
 	boost::shared_ptr<OmVolumeData> mVolData;
-	OmSegmentCache* mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 	boost::shared_ptr<OmGroups> mGroups;
 	boost::shared_ptr<OmMST> mst_;

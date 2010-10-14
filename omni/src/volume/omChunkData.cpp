@@ -110,7 +110,7 @@ class ProcessChunkVoxel {
 public:
 	ProcessChunkVoxel(OmMipChunk* chunk,
 					  const bool computeSizes,
-					  OmSegmentCache* segCache)
+					  boost::shared_ptr<OmSegmentCache> segCache)
 		: chunk_(chunk)
 		, computeSizes_(computeSizes)
 		, minVertexOfChunk_(chunk_->GetExtent().getMin())
@@ -145,7 +145,7 @@ private:
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
 	const Vector3i minVertexOfChunk_;
-	OmSegmentCache *const segCache_;
+	const boost::shared_ptr<OmSegmentCache> segCache_;
 
 	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
 	boost::unordered_map<OmSegID, uint64_t> sizes_;
@@ -164,7 +164,7 @@ class RefreshDirectDataValuesVisitor : public boost::static_visitor<>{
 public:
 	RefreshDirectDataValuesVisitor(OmMipChunk* chunk,
 								   const bool computeSizes,
-								   OmSegmentCache* segCache)
+								   boost::shared_ptr<OmSegmentCache> segCache)
 		: chunk_(chunk)
 		, computeSizes_(computeSizes)
 		, segCache_(segCache) {}
@@ -176,7 +176,7 @@ public:
 private:
 	OmMipChunk *const chunk_;
 	const bool computeSizes_;
-	OmSegmentCache* segCache_;
+	boost::shared_ptr<OmSegmentCache> segCache_;
 
 	template <typename C>
 	void doRefreshDirectDataValues(C* data) const
@@ -194,7 +194,7 @@ private:
 	}
 };
 void OmChunkData::RefreshDirectDataValues(const bool computeSizes,
-										  OmSegmentCache* segCache)
+										  boost::shared_ptr<OmSegmentCache> segCache)
 {
 	boost::apply_visitor(RefreshDirectDataValuesVisitor(chunk_,
 														computeSizes,

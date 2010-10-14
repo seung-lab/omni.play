@@ -57,7 +57,7 @@ public:
 		return OmProject::GetSegmentation(mID).GetSegmentCache()->GetNumTopSegments();
 	}
 
-	OmSegmentCache* getSegmentCache() const {
+	boost::shared_ptr<OmSegmentCache> getSegmentCache() const {
 		return OmProject::GetSegmentation(mID).GetSegmentCache();
 	}
 

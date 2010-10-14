@@ -1,6 +1,6 @@
-/*
+/* 
 * VMMLib - Vector & Matrix Math Lib
-*
+*  
 * @author Jonas Boesch
 * @author Stefan Eilemann
 * @author Renato Pajarola
@@ -9,18 +9,18 @@
 *
 * @license revised BSD license, check LICENSE
 *
-* parts of the source code of VMMLib were inspired by David Eberly's
+* parts of the source code of VMMLib were inspired by David Eberly's 
 * Wild Magic and Andrew Willmott's VL.
-*
-*/
+* 
+*/ 
 
 
 #ifndef __VMML__MATRIX4__H__
 #define __VMML__MATRIX4__H__
 
-/*
+/* 
  *   4x4 Matrix Class
- */
+ */ 
 
 #include <cmath>
 #include <cstdlib>
@@ -31,7 +31,6 @@
 #include <string>
 #include <vector>
 #include <string.h> //bwarne: added for memcpy
-#include <QDataStream>
 
 // * * * * * * * * * *
 //
@@ -45,7 +44,7 @@ namespace vmml
     template< typename T > class Vector3;
     template< typename T > class Vector4;
 
-template< typename T >
+template< typename T > 
 class Matrix4
 {
 public:
@@ -53,51 +52,51 @@ public:
     {
         struct
         {
-            /**
-            * The matrix element in 'math' notation, e.g. similar to the way
-            * it is done in mathematical texts.
-            *
-            * The first index denotes the row, the second the column. This
+            /** 
+            * The matrix element in 'math' notation, e.g. similar to the way 
+            * it is done in mathematical texts. 
+            * 
+            * The first index denotes the row, the second the column. This 
             * means that m21 is the element at row #2, col #1.
             */
-            T   m00, m10, m20, m30, m01, m11, m21, m31,
+            T   m00, m10, m20, m30, m01, m11, m21, m31, 
                 m02, m12, m22, m32, m03, m13, m23, m33;
         };
         struct
         {
-            T   rot00, rot10, rot20, d30,
-                rot01, rot11, rot21, d31,
-                rot02, rot12, rot22, d32,
+            T   rot00, rot10, rot20, d30, 
+                rot01, rot11, rot21, d31, 
+                rot02, rot12, rot22, d32, 
                 x,     y,     z,     d33;
         };
-
+        
         /**
-        *   The linear / 1d-array representation of the matrix. Useful for
+        *   The linear / 1d-array representation of the matrix. Useful for 
         *   usage with the OpenGL API. E.g.: glLoadMatrix( mymat.ml );
         */
-        T ml[16];
+        T ml[16]; 
         T array[16];
-
+        
         /**
-        *   The following representation is for internal purposes.
-        *   The first array index specifies the __column__ number, the second
+        *   The following representation is for internal purposes. 
+        *   The first array index specifies the __column__ number, the second 
         *   the row: m[col][row].
         *
         *   Example: m[2][1] -> row #1, col #2
         */
-        T m[4][4];
+        T m[4][4]; 
     };
-
+    
     Matrix4();
-    Matrix4( T v00, T v01, T v02, T v03,
+    Matrix4( T v00, T v01, T v02, T v03, 
              T v10, T v11, T v12, T v13,
              T v20, T v21, T v22, T v23,
              T v30, T v31, T v32, T v33 );
-    Matrix4( const Vector4<T>& v0, const Vector4<T>& v1,
-             const Vector4<T>& v2, const Vector4<T>& v3,
+    Matrix4( const Vector4<T>& v0, const Vector4<T>& v1, 
+             const Vector4<T>& v2, const Vector4<T>& v3, 
              bool columnVectors = false );
-
-    Matrix4( const Matrix4& other );
+             
+    Matrix4( const Matrix4& other );             
     //type conversion ctor
     template< typename U >
     Matrix4( const Matrix4< U >& other );
@@ -105,7 +104,7 @@ public:
     //the pointer 'values must be a valid 16 component c array of the resp. type
     Matrix4( const float* values );
     Matrix4( const double* values );
-
+ 
     inline const Matrix4& operator= ( const Matrix4& other );
     template< typename U >
     inline const Matrix4& operator= ( const Matrix4< U >& other );
@@ -114,50 +113,50 @@ public:
     inline bool operator!= ( const Matrix4& other ) const;
 
     void set( const Matrix4& other );
-    // dangerous, but implemented to allow easy conversion between
+    // dangerous, but implemented to allow easy conversion between 
     // Matrix< float > and Matrix< double >
     //the pointer 'values must be a valid 16 component c array of the resp. type
     void set( const float* other );
     void set( const double* other );
-    void set( T v00, T v01, T v02, T v03, T v10, T v11, T v12, T v13,
+    void set( T v00, T v01, T v02, T v03, T v10, T v11, T v12, T v13, 
               T v20, T v21, T v22, T v23, T v30, T v31, T v32, T v33 );
 
-	// create matrix from a string containing a whitespace (or parameter
+	// create matrix from a string containing a whitespace (or parameter 
 	// 'delimiter' ) delimited list of values.
 	// returns false if failed, true if it (seems to have) succeeded.
 	// PRE: string must contain at least 16 values, delimited by char delimiter.
 	bool set( const std::string& values, char delimiter = ' ' );
 	// PRE: vector must contain at least 16 strings with one value each
 	bool set( const std::vector< std::string >& values );
-
+              
     const T& getElement( const size_t row, const size_t col ) const;
     void setElement( const size_t row, const size_t col, const T& value ) const;
 
     Vector4< T > getColumn( const size_t column ) const;
     Vector4< T > getRow( const size_t row ) const;
-
+    
     // vec3
     void setColumn( const size_t column, const Vector3< T >& columnvec );
     void setRow( const size_t row, const Vector3< T >& rowvec );
     // vec4
     void setColumn( const size_t column, const Vector4< T >& columnvec );
     void setRow( const size_t row, const Vector4< T >& rowvec );
-
+    
     // sets a 3x3 submatrix
     template< typename U >
-    void set3x3SubMatrix( const Matrix3< U >& m3x3, size_t columnOffset = 0,
-        size_t rowOffset = 0 );
-    void get3x3SubMatrix( Matrix3< T >& result, size_t rowOffset = 0,
+    void set3x3SubMatrix( const Matrix3< U >& m3x3, size_t columnOffset = 0, 
+        size_t rowOffset = 0 ); 
+    void get3x3SubMatrix( Matrix3< T >& result, size_t rowOffset = 0, 
         size_t colOffset = 0 ) const;
 
     // arithmetic operations
     Matrix4 operator+ ( const Matrix4& other ) const;
     Matrix4 operator- ( const Matrix4& other ) const;
     Matrix4 operator* ( const Matrix4& other ) const;
-    Matrix4 operator* ( T scalar ) const; // matrix = matrix * scalar
+    Matrix4 operator* ( T scalar ) const; // matrix = matrix * scalar 
     inline Matrix4 operator/ ( T scalar ) const
-        { scalar = 1.0 / scalar; return operator*(scalar); };
-
+        { scalar = 1.0 / scalar; return operator*(scalar); }; 
+    
     // vector = matrix * vector
     Vector3< T > operator* ( const Vector3< T >& other ) const;
     Vector4< T > operator* ( const Vector4< T >& other ) const;
@@ -165,13 +164,13 @@ public:
     Matrix4& operator+= ( const Matrix4& other );
     Matrix4& operator-= ( const Matrix4& other );
     Matrix4& operator*= ( const Matrix4& other );
-    Matrix4& operator*= ( T scalar ); // matrix = matrix * scalar
+    Matrix4& operator*= ( T scalar ); // matrix = matrix * scalar 
     inline Matrix4& operator/= ( T scalar )
         { scalar = 1.0 / scalar; return operator*=( scalar ); };
 
     Matrix4 negate() const;
     Matrix4 operator-() const;
-
+    
     Matrix4 getTransposed() const;
 
     T getDeterminant() const;
@@ -179,7 +178,7 @@ public:
 
     Matrix4 getAdjugate() const;
     inline Matrix4 getAdjoint() const;
-
+    
     Matrix4 getInverse( bool& isInvertible, T limit = 0.0000000001 ) const;
     inline bool getInverse( Matrix4& result, T limit = 0.0000000001 ) const;
 
@@ -208,14 +207,14 @@ public:
     void tensor( const Vector3< T >& u, const Vector3< T >& v );
     void tensor( const Vector4< T >& u, const Vector4< T >& v );
 
-    // computes the minor of M, that is, the determinant of an
+    // computes the minor of M, that is, the determinant of an 
     // n-1 x n-1 ( = 3x3 ) submatrix of M
-    // specify the indices of the rows/columns to be used
+    // specify the indices of the rows/columns to be used 
     T getMinor( const size_t row0, const size_t row1, const size_t row2,
              const size_t col0, const size_t col1, const size_t col2 ) const;
-    // specify the indices of the rows/columns to be removed ( slower )
+    // specify the indices of the rows/columns to be removed ( slower ) 
     T getMinor( const size_t removeRow, const size_t removeCol ) const;
-
+                   
 	// writes the values into param result, delimited by param 'delimiter'.
 	// returns false if it failed, true if it (seems to have) succeeded.
 	bool getString( std::string& result, const std::string& delimiter = " " ) const;
@@ -227,46 +226,30 @@ public:
 
         os.setf( std::ios::right, std::ios::adjustfield );
         os.precision( 5 );
-        os << std::endl << "|"
-            << std::setw(10) << m.m00 << " "
-            << std::setw(10) << m.m01 << " "
-            << std::setw(10) << m.m02 << " "
-            << std::setw(10) << m.m03 << "|"
-            << std::endl << "|"
-            << std::setw(10) << m.m10 << " "
-            << std::setw(10) << m.m11 << " "
-            << std::setw(10) << m.m12 << " "
-            << std::setw(10) << m.m13 << "|"
-            << std::endl << "|"
-            << std::setw(10) << m.m20 << " "
-            << std::setw(10) << m.m21 << " "
-            << std::setw(10) << m.m22 << " "
-            << std::setw(10) << m.m23 << "|"
-            << std::endl << "|"
-            << std::setw(10) << m.m30 << " "
-            << std::setw(10) << m.m31 << " "
-            << std::setw(10) << m.m32 << " "
+        os << std::endl << "|" 
+            << std::setw(10) << m.m00 << " " 
+            << std::setw(10) << m.m01 << " " 
+            << std::setw(10) << m.m02 << " " 
+            << std::setw(10) << m.m03 << "|" 
+            << std::endl << "|" 
+            << std::setw(10) << m.m10 << " " 
+            << std::setw(10) << m.m11 << " " 
+            << std::setw(10) << m.m12 << " " 
+            << std::setw(10) << m.m13 << "|" 
+            << std::endl << "|" 
+            << std::setw(10) << m.m20 << " " 
+            << std::setw(10) << m.m21 << " " 
+            << std::setw(10) << m.m22 << " " 
+            << std::setw(10) << m.m23 << "|" 
+            << std::endl << "|" 
+            << std::setw(10) << m.m30 << " " 
+            << std::setw(10) << m.m31 << " " 
+            << std::setw(10) << m.m32 << " " 
             << std::setw(10) << m.m33 << "|" << std::endl;
         os.precision( prec );
         os.setf( flags );
         return os;
-    };
-
-	friend QDataStream& operator<<(QDataStream& out, const Matrix4& m)
-	{
-		for( int i = 0; i < 16; ++i){
-			out << m.array[i];
-		}
-		return out;
-	}
-
-	friend QDataStream& operator>>(QDataStream& in, Matrix4& m)
-	{
-		for( int i = 0; i < 16; ++i){
-			in >> m.array[i];
-		}
-		return in;
-	}
+    };  
 
     static const Matrix4 IDENTITY;
     static const Matrix4 ZERO;
@@ -295,23 +278,23 @@ typedef Matrix4< double > mat4d;
 namespace vmml
 {
 
-template< typename T >
+template< typename T > 
 const Matrix4< T > Matrix4< T >::IDENTITY( 1, 0, 0, 0, 0, 1, 0, 0,
                                            0, 0, 1, 0, 0, 0, 0, 1 );
 
-template< typename T >
+template< typename T > 
 const Matrix4< T > Matrix4< T >::ZERO( 0, 0, 0, 0, 0, 0, 0, 0,
                                        0, 0, 0, 0, 0, 0, 0, 0 );
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >::Matrix4()
 {}
 
 
 
-template< typename T >
-Matrix4< T >::Matrix4( T v00, T v01, T v02, T v03,
+template< typename T > 
+Matrix4< T >::Matrix4( T v00, T v01, T v02, T v03, 
                        T v10, T v11, T v12, T v13,
                        T v20, T v21, T v22, T v23,
                        T v30, T v31, T v32, T v33 )
@@ -335,7 +318,7 @@ Matrix4< T >::Matrix4( T v00, T v01, T v02, T v03,
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >::Matrix4( const Matrix4& other )
 {
    memcpy(ml,other.ml, 16 * sizeof( T ) );
@@ -343,8 +326,8 @@ Matrix4< T >::Matrix4( const Matrix4& other )
 
 
 
-template< typename T >
-template< typename U >
+template< typename T > 
+template< typename U > 
 Matrix4< T >::Matrix4( const Matrix4< U >& other )
 {
     for ( size_t i = 0; i < 16; ++i )
@@ -353,8 +336,8 @@ Matrix4< T >::Matrix4( const Matrix4< U >& other )
 
 
 
-template< typename T >
-Matrix4< T >::Matrix4( const Vector4< T >& v0, const Vector4< T >& v1,
+template< typename T > 
+Matrix4< T >::Matrix4( const Vector4< T >& v0, const Vector4< T >& v1, 
     const Vector4< T >& v2, const Vector4< T >& v3,
     bool columnVectors )
 {
@@ -378,16 +361,16 @@ Matrix4< T >::Matrix4( const Vector4< T >& v0, const Vector4< T >& v1,
 
 
 
-template< typename T >
+template< typename T > 
 const T& Matrix4< T >::getElement( const size_t row, const size_t col ) const
 {
     return m[col][row];
-}
+} 
 
 
 
-template< typename T >
-void Matrix4< T >::setElement( const size_t row, const size_t col,
+template< typename T > 
+void Matrix4< T >::setElement( const size_t row, const size_t col, 
                          const T& value ) const
 {
     m[col][row] = value;
@@ -395,7 +378,7 @@ void Matrix4< T >::setElement( const size_t row, const size_t col,
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >::Matrix4( const float* values )
 {
     assert( values && "Matrix4: Initialisation of a Matrix from a Nullpointer was requested." );
@@ -405,7 +388,7 @@ Matrix4< T >::Matrix4( const float* values )
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >::Matrix4( const double* values )
 {
     assert( values && "Matrix4: Initialisation of a Matrix from a Nullpointer was requested." );
@@ -415,7 +398,7 @@ Matrix4< T >::Matrix4( const double* values )
 
 
 
-template< typename T >
+template< typename T > 
 const Matrix4< T >& Matrix4< T >::operator= ( const Matrix4< T >& other )
 {
     memcpy( ml, other.ml, 16 * sizeof( T ) );
@@ -424,8 +407,8 @@ const Matrix4< T >& Matrix4< T >::operator= ( const Matrix4< T >& other )
 
 
 
-template< typename T >
-template< typename U >
+template< typename T > 
+template< typename U > 
 const Matrix4< T >& Matrix4< T >::operator= ( const Matrix4< U >& other )
 {
     ml[  0 ] = static_cast< T > ( other.ml[  0 ] );
@@ -449,7 +432,7 @@ const Matrix4< T >& Matrix4< T >::operator= ( const Matrix4< U >& other )
 
 
 
-template< typename T >
+template< typename T > 
 bool Matrix4< T >::operator== (const Matrix4< T >& other) const
 {
     for( size_t i = 0; i < 16; ++i )
@@ -462,7 +445,7 @@ bool Matrix4< T >::operator== (const Matrix4< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 inline bool Matrix4< T >::operator!= (const Matrix4< T >& other) const
 {
     return !operator==(other);
@@ -470,7 +453,7 @@ inline bool Matrix4< T >::operator!= (const Matrix4< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::set( const Matrix4& other )
 {
     memcpy( ml, other.ml, 16 * sizeof( T ) );
@@ -478,7 +461,7 @@ void Matrix4< T >::set( const Matrix4& other )
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::set( const float* values )
 {
     assert( values && "Matrix4: Nullpointer argument as source for initialisation!" );
@@ -488,7 +471,7 @@ void Matrix4< T >::set( const float* values )
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::set( const double* values )
 {
     assert( values && "Matrix4: Nullpointer argument as source for initialisation!" );
@@ -498,8 +481,8 @@ void Matrix4< T >::set( const double* values )
 
 
 
-template< typename T >
-void Matrix4< T >::set( T v00, T v01, T v02, T v03, T v10, T v11, T v12, T v13,
+template< typename T > 
+void Matrix4< T >::set( T v00, T v01, T v02, T v03, T v10, T v11, T v12, T v13, 
               T v20, T v21, T v22, T v23, T v30, T v31, T v32, T v33 )
 {
     m00 = v00;
@@ -523,11 +506,11 @@ void Matrix4< T >::set( T v00, T v01, T v02, T v03, T v10, T v11, T v12, T v13,
 
 
 
-// create matrix from a string containing a whitespace (or parameter
+// create matrix from a string containing a whitespace (or parameter 
 // 'delimiter' ) delimited list of values.
 // returns false if failed, true if it (seems to have) succeeded.
 // PRE: string must contain at least 16 values, delimited by char delimiter.
-template< typename T >
+template< typename T > 
 bool
 Matrix4< T >::set( const std::string& values, char delimiter )
 {
@@ -538,21 +521,21 @@ Matrix4< T >::set( const std::string& values, char delimiter )
 
 
 
-// create matrix from a string containing a whitespace (or parameter
+// create matrix from a string containing a whitespace (or parameter 
 // 'delimiter' ) delimited list of values.
 // returns false if failed, true if it (seems to have) succeeded.
 // PRE: vector must contain  at least 16 strings with one value each
-template< typename T >
+template< typename T > 
 bool
 Matrix4< T >::set( const std::vector< std::string >& values )
 {
 	bool ok = true;
-
+	
 	if ( values.size() < 16 )
 		return false;
 
 	std::vector< std::string >::const_iterator it 		= values.begin();
-
+	
 	for( size_t row = 0; row < 4; ++row )
 	{
 		for( size_t col = 0; ok && col < 4; ++col, ++it )
@@ -561,12 +544,12 @@ Matrix4< T >::set( const std::vector< std::string >& values )
 			ok = stringUtils::fromString< T >( *it, m[ col ][ row ] );
 		}
 	}
-
+	
 	return ok;
 }
 
 
-template< typename T >
+template< typename T > 
 Vector4< T > Matrix4< T >::getColumn( size_t column ) const
 {
     assert( column < 4 && "Matrix4: Requested Column ( getColumn ) with invalid index!" );
@@ -575,7 +558,7 @@ Vector4< T > Matrix4< T >::getColumn( size_t column ) const
 
 
 
-template< typename T >
+template< typename T > 
 Vector4< T > Matrix4< T >::getRow( size_t row ) const
 {
     assert( row < 4 && "Matrix4: Requested Row ( getRow ) with invalid index!");
@@ -584,7 +567,7 @@ Vector4< T > Matrix4< T >::getRow( size_t row ) const
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::setColumn( size_t column, const Vector4< T >& columnvec )
 {
     assert( column < 4 && "Matrix4: Writing Column ( setColumn ) with invalid index!" );
@@ -596,7 +579,7 @@ void Matrix4< T >::setColumn( size_t column, const Vector4< T >& columnvec )
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::setRow( size_t row, const Vector4< T >& rowvec )
 {
     assert( row < 4 && "Matrix4: Writing Row ( setRow ) with invalid index!" );
@@ -608,7 +591,7 @@ void Matrix4< T >::setRow( size_t row, const Vector4< T >& rowvec )
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::setColumn( size_t column, const Vector3< T >& columnvec )
 {
     assert( column < 4 && "Matrix4: Writing Column ( setColumn ) with invalid index!" );
@@ -619,7 +602,7 @@ void Matrix4< T >::setColumn( size_t column, const Vector3< T >& columnvec )
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::setRow( size_t row, const Vector3< T >& rowvec )
 {
     assert( row < 4 && "Matrix4: Writing Row ( setRow ) with invalid index!" );
@@ -630,7 +613,7 @@ void Matrix4< T >::setRow( size_t row, const Vector3< T >& rowvec )
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::operator+ (const Matrix4< T >& other) const
 {
     Matrix4< T > result;
@@ -641,7 +624,7 @@ Matrix4< T > Matrix4< T >::operator+ (const Matrix4< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::operator- (const Matrix4< T >& other) const
 {
     Matrix4< T > result;
@@ -652,7 +635,7 @@ Matrix4< T > Matrix4< T >::operator- (const Matrix4< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::operator* (const Matrix4< T >& o) const
 {
     Matrix4< T > r;
@@ -682,7 +665,7 @@ Matrix4< T > Matrix4< T >::operator* (const Matrix4< T >& o) const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::operator* ( T scalar ) const
 {
     Matrix4< T > result;
@@ -693,8 +676,8 @@ Matrix4< T > Matrix4< T >::operator* ( T scalar ) const
 
 
 
-template< typename T >
-Matrix4< T >& Matrix4< T >::operator+= (const Matrix4< T >& other)
+template< typename T > 
+Matrix4< T >& Matrix4< T >::operator+= (const Matrix4< T >& other) 
 {
     for ( size_t i = 0; i < 16; ++i )
         ml[i]  += other.ml[i];
@@ -703,7 +686,7 @@ Matrix4< T >& Matrix4< T >::operator+= (const Matrix4< T >& other)
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >& Matrix4< T >::operator-= ( const Matrix4& other )
 {
     for ( size_t i = 0; i < 16; ++i )
@@ -713,8 +696,8 @@ Matrix4< T >& Matrix4< T >::operator-= ( const Matrix4& other )
 
 
 
-template< typename T >
-Matrix4< T >& Matrix4< T >::operator*= ( const Matrix4& other )
+template< typename T > 
+Matrix4< T >& Matrix4< T >::operator*= ( const Matrix4& other ) 
 {
     Matrix4< T > r;
 
@@ -744,10 +727,10 @@ Matrix4< T >& Matrix4< T >::operator*= ( const Matrix4& other )
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T >& Matrix4< T >::operator*= ( T scalar )
 {
-    // matrix = matrix * scalar
+    // matrix = matrix * scalar 
     for ( size_t i = 0; i < 16; ++i )
         ml[i]  *= scalar;
     return *this;
@@ -755,7 +738,7 @@ Matrix4< T >& Matrix4< T >::operator*= ( T scalar )
 
 
 
-template< typename T >
+template< typename T > 
 Vector4< T > Matrix4< T >::operator* (const Vector4< T >& other) const
 {
 	return Vector4< T >( other[0] * m00 + other[1] * m01 + other[2] * m02 + other[3] * m03,
@@ -766,7 +749,7 @@ Vector4< T > Matrix4< T >::operator* (const Vector4< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 Vector3< T > Matrix4< T >::operator* (const Vector3< T >& other) const
 {
 	const Vector4< T > result( other[0] * m00 + other[1] * m01 + other[2] * m02 + m03,
@@ -778,19 +761,19 @@ Vector3< T > Matrix4< T >::operator* (const Vector3< T >& other) const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::getTransposed() const
 {
     Matrix4< T > result;
     for ( size_t i = 0; i < 4; ++i )
         for ( size_t j = 0; j < 4; ++j )
-            result.m[i][j] = m[j][i];
+            result.m[i][j] = m[j][i]; 
     return result;
 }
 
 
 
-template< typename T >
+template< typename T > 
 inline T Matrix4< T >::det() const
 {
     return getDeterminant();
@@ -798,18 +781,18 @@ inline T Matrix4< T >::det() const
 
 
 
-template< typename T >
+template< typename T > 
 T Matrix4< T >::getDeterminant() const
 {
-    return m00 * getMinor( 1, 2, 3, 1, 2, 3 )
-         - m01 * getMinor( 1, 2, 3, 0, 2, 3 )
-         + m02 * getMinor( 1, 2, 3, 0, 1, 3 )
-         - m03 * getMinor( 1, 2, 3, 0, 1, 2 );
+    return m00 * getMinor( 1, 2, 3, 1, 2, 3 ) 
+         - m01 * getMinor( 1, 2, 3, 0, 2, 3 ) 
+         + m02 * getMinor( 1, 2, 3, 0, 1, 3 ) 
+         - m03 * getMinor( 1, 2, 3, 0, 1, 2 ); 
 }
 
 
 
-template< typename T >
+template< typename T > 
 inline Matrix4< T > Matrix4< T >::getAdjoint() const
 {
     return getAdjugate();
@@ -818,9 +801,9 @@ inline Matrix4< T > Matrix4< T >::getAdjoint() const
 
 
 template< typename T >
-Matrix4< T > Matrix4< T >::getAdjugate() const
+Matrix4< T > Matrix4< T >::getAdjugate() const 
 {
-    return Matrix4(    // rows  // cols
+    return Matrix4(    // rows  // cols 
              getMinor( 1, 2, 3, 1, 2, 3 ), //0,0
             -getMinor( 0, 2, 3, 1, 2, 3 ), //1,0
              getMinor( 0, 1, 3, 1, 2, 3 ), //2,0
@@ -839,9 +822,9 @@ Matrix4< T > Matrix4< T >::getAdjugate() const
              getMinor( 0, 1, 2, 0, 1, 2 )  //3,3
              );
 
-#if 0
+#if 0 
 // not transposed
-    return Matrix4(    // rows  // cols
+    return Matrix4(    // rows  // cols 
              getMinor( 1, 2, 3, 1, 2, 3 ), //0,0
             -getMinor( 1, 2, 3, 0, 2, 3 ), //0,1
              getMinor( 1, 2, 3, 0, 1, 3 ), //0,2
@@ -864,22 +847,22 @@ Matrix4< T > Matrix4< T >::getAdjugate() const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::getInverse( bool& isInvertible, T limit ) const
 {
-    Matrix4< T > tmp;
+    Matrix4< T > tmp; 
     isInvertible = getInverse( tmp, limit );
     return tmp;
 }
 
 
 
-template< typename T >
+template< typename T > 
 bool Matrix4< T >::getInverse( Matrix4< T >& result, T limit ) const
 {
 #if 0
     T det = getDeterminant();
-    if ( fabs(det) <= limit )
+    if ( fabs(det) <= limit ) 
         return false;
     else
         result = getAdjugate() * ( 1. / det );
@@ -940,15 +923,15 @@ bool Matrix4< T >::getInverse( Matrix4< T >& result, T limit ) const
 
 
 template< typename T >
-void
+void 
 Matrix4<T>::rotate( const T angle, const Vector3< T >& axis )
 {
     T sinus = sin( angle );
     T cosin = cos( angle );
-
+    
     // this is necessary since Visual Studio cannot resolve the
     // pow()-call correctly if we just use 2.0 directly.
-    // this way, the '2.0' is converted to the same format
+    // this way, the '2.0' is converted to the same format 
     // as the axis components
 
     T two = 2.0;
@@ -957,17 +940,17 @@ Matrix4<T>::rotate( const T angle, const Vector3< T >& axis )
     ml[1]  = (1.0 - cosin ) * axis.x * axis.y + sinus * axis.z;
     ml[2]  = (1.0 - cosin ) * axis.x * axis.z - sinus * axis.y;
     ml[3]  = 0;
-
+    
     ml[4]  = ( 1.0 - cosin ) * axis.x * axis.y - sinus * axis.z;
     ml[5]  = cosin + ( 1.0 - cosin ) * pow( axis.y, two );
     ml[6]  = ( 1.0 - cosin ) * axis.y *  axis.z + sinus * axis.x;
     ml[7]  = 0;
-
+    
     ml[8]  = ( 1.0 - cosin ) * axis.x * axis.z + sinus * axis.y;
     ml[9]  = ( 1.0 - cosin ) * axis.y * axis.z - sinus * axis.x;
     ml[10] = cosin + ( 1.0 - cosin ) * pow( axis.z, two );
     ml[11] = 0;
-
+    
     ml[12] = 0;
     ml[13] = 0;
     ml[14] = 0;
@@ -1091,7 +1074,7 @@ void Matrix4<T>::rotateZ( const T angle )
     m01   = -m00*sinus + m01*cosin;
     m00   = tmp;
 
-    tmp =  m10*cosin + m11*sinus;
+    tmp =  m10*cosin + m11*sinus; 
     m11 = -m10*sinus + m11*cosin;
     m10 =  tmp;
 
@@ -1117,7 +1100,7 @@ inline void Matrix4<float>::rotateZ( const float angle )
     m01   = -m00*sinus + m01*cosin;
     m00   = tmp;
 
-    tmp =  m10*cosin + m11*sinus;
+    tmp =  m10*cosin + m11*sinus; 
     m11 = -m10*sinus + m11*cosin;
     m10 =  tmp;
 
@@ -1395,7 +1378,7 @@ void Matrix4<T>::setTranslation( const Vector3<T>& trans )
 
 
 template< typename T >
-Vector3< T >
+Vector3< T > 
 Matrix4< T >::getTranslation() const
 {
     return Vector3< T > ( ml[12], ml[13], ml[14] );
@@ -1404,11 +1387,11 @@ Matrix4< T >::getTranslation() const
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::tensor( const Vector3< T >& u, const Vector3< T >& v )
 {
     int i, j;
-    for (j = 0; j < 3; j++)
+    for (j = 0; j < 3; j++) 
     {
         for (i = 0; i < 3; i++)
             m[i][j] = u[j] * v[i];
@@ -1416,12 +1399,12 @@ void Matrix4< T >::tensor( const Vector3< T >& u, const Vector3< T >& v )
     }
     for (i = 0; i < 3; i++)
         m[i][3] = v[i];
-    m[3][3] = 1.0;
+    m[3][3] = 1.0;    
 }
 
 
 
-template< typename T >
+template< typename T > 
 void Matrix4< T >::tensor( const Vector4< T >& u, const Vector4< T >& v )
 {
     int i, j;
@@ -1433,7 +1416,7 @@ void Matrix4< T >::tensor( const Vector4< T >& u, const Vector4< T >& v )
 
 
 
-template< typename T >
+template< typename T > 
 T Matrix4< T >::getMinor( const size_t removeRow, const size_t removeCol ) const
 {
     size_t col[3], c = 0;
@@ -1447,8 +1430,8 @@ T Matrix4< T >::getMinor( const size_t removeRow, const size_t removeCol ) const
             ++r;
         row[i] = r++;
     }
-
-    Matrix3< T > minorm( m[col[0]][row[0]], m[col[1]][row[0]], m[col[2]][row[0]],
+    
+    Matrix3< T > minorm( m[col[0]][row[0]], m[col[1]][row[0]], m[col[2]][row[0]], 
                          m[col[0]][row[1]], m[col[1]][row[1]], m[col[2]][row[1]],
                          m[col[0]][row[2]], m[col[1]][row[2]], m[col[2]][row[2]] );
     return minorm.det();
@@ -1456,12 +1439,12 @@ T Matrix4< T >::getMinor( const size_t removeRow, const size_t removeCol ) const
 
 
 
-template< typename T >
+template< typename T > 
 T Matrix4< T >::getMinor( const size_t row0, const size_t row1,
                        const size_t row2, const size_t col0,
                        const size_t col1, const size_t col2 ) const
 {
-    Matrix3< T > minorm( m[col0][row0], m[col1][row0], m[col2][row0],
+    Matrix3< T > minorm( m[col0][row0], m[col1][row0], m[col2][row0], 
                          m[col0][row1], m[col1][row1], m[col2][row1],
                          m[col0][row2], m[col1][row2], m[col2][row2] );
     return minorm.det();
@@ -1469,7 +1452,7 @@ T Matrix4< T >::getMinor( const size_t row0, const size_t row1,
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::operator-() const
 {
     Matrix4< T > result( *this );
@@ -1479,7 +1462,7 @@ Matrix4< T > Matrix4< T >::operator-() const
 
 
 
-template< typename T >
+template< typename T > 
 Matrix4< T > Matrix4< T >::negate() const
 {
     Matrix4< T > result( *this );
@@ -1492,11 +1475,11 @@ Matrix4< T > Matrix4< T >::negate() const
 template< typename T >
 template< typename U >
 void
-Matrix4< T >::set3x3SubMatrix( const Matrix3< U >& sourceMatrix, size_t columnOffset,
+Matrix4< T >::set3x3SubMatrix( const Matrix3< U >& sourceMatrix, size_t columnOffset, 
     size_t rowOffset )
 {
     assert( rowOffset < 2 && columnOffset < 2 );
-
+    
     for( size_t row = rowOffset, i = 0; i < 3; ++i, ++row )
         for( size_t col = columnOffset, j = 0; j < 3; ++j, ++col )
         {
@@ -1508,7 +1491,7 @@ Matrix4< T >::set3x3SubMatrix( const Matrix3< U >& sourceMatrix, size_t columnOf
 
 template< typename T >
 void
-Matrix4< T >::get3x3SubMatrix( Matrix3< T >& result, size_t rowOffset,
+Matrix4< T >::get3x3SubMatrix( Matrix3< T >& result, size_t rowOffset, 
     size_t columnOffset ) const
 {
     for( size_t row = rowOffset, i = 0; i < 3; ++i, ++row )

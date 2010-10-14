@@ -6,7 +6,6 @@
 #include "system/omEvents.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
-#include "tiles/cache/omTileCache.h"
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omZoomLevel.hpp"
@@ -185,8 +184,8 @@ public:
 
 	void ResetWindowState()
 	{
-		static const NormCoord midPoint(0.5, 0.5, 0.5);
-		const SpaceCoord depth = vol_->NormToSpaceCoord(midPoint);
+		const SpaceCoord depth =
+			vol_->NormToSpaceCoord(NormCoord(0.5, 0.5, 0.5));
 
 		setSliceDepth(depth);
 
@@ -194,15 +193,13 @@ public:
 		vgs_->SetPanDistance(XZ_VIEW, Vector2f(0,0));
 		vgs_->SetPanDistance(XY_VIEW, Vector2f(0,0));
 
-		ZoomLevel()->Reset(getMaxMipLevel());
-
-		OmProjectData::getTileCache()->Clear();
-		OmEvents::Redraw();
+		//TODO: clear cache?
 	}
 
 	void SetPanDistance(const int x, const int y)
 	{
-		vgs_->SetPanDistance(viewType_, Vector2f(x, y));
+		vgs_->SetPanDistance(viewType_,
+							 Vector2f(x, y));
 		SetViewSliceOnPan();
 	}
 

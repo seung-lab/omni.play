@@ -6,8 +6,88 @@
 #include "zi/omThreads.h"
 #include "utility/omThreadPool.hpp"
 
-#include "volume/build/omDownsamplerTypes.hpp"
-#include "volume/build/omDownsamplerVoxelTask.hpp"
+template <typename T>
+struct MipLevelInfo {
+	T* data;
+	uint64_t factor;
+	Vector3<uint64_t> volDims;
+
+	uint64_t maxAllowedIndex;
+	uint64_t volSlabSize;
+	uint64_t volSliceSize;
+	uint64_t volRowSize;
+	uint64_t totalVoxels;
+};
+
+struct MippingInfo {
+	int maxMipLevel;
+	Vector3<uint64_t> chunkDims;
+	uint64_t chunkSize;
+	uint64_t tileSize;
+};
+
+template <typename T>
+class DownsampleVoxelTask : public zi::runnable {
+private:
+	const std::vector<MipLevelInfo<T> >& mips_;
+	const MippingInfo& mippingInfo_;
+	const uint64_t sy_;
+	const uint64_t sz_;
+
+public:
+	DownsampleVoxelTask(const std::vector<MipLevelInfo<T> >& mips,
+						const MippingInfo& mippingInfo,
+						const uint64_t sy, const uint64_t sz)
+		: mips_(mips)
+		, mippingInfo_(mippingInfo)
+		, sy_(sy), sz_(sz)
+	{}
+
+	void run()
+	{
+		for(uint64_t sx=0; sx < mips_[0].volDims.x; sx+=2){
+			pushVoxelIntoMips(DataCoord(sx, sy_, sz_));
+		}
+	}
+
+	inline uint64_t getOffsetIntoVolume(const DataCoord& coord, const int level)
+	{
+		const DataCoord chunkPos(coord.x / mippingInfo_.chunkDims.x,
+								 coord.y / mippingInfo_.chunkDims.y,
+								 coord.z / mippingInfo_.chunkDims.z);
+
+		const uint64_t chunkOffsetFromVolStart =
+			mips_[level].volSlabSize * chunkPos.z +
+			mips_[level].volRowSize  * chunkPos.y +
+			mippingInfo_.chunkSize * chunkPos.x;
+
+		const Vector3i offsetVec = coord - chunkPos*mippingInfo_.chunkDims;
+
+		const uint64_t offsetIntoChunk =
+			mippingInfo_.tileSize    * offsetVec.z +
+			mippingInfo_.chunkDims.x * offsetVec.y +
+			offsetVec.x;
+
+		return chunkOffsetFromVolStart + offsetIntoChunk;
+	}
+
+	inline void pushVoxelIntoMips(const DataCoord& srcCoord)
+	{
+		const uint64_t srcOffset = getOffsetIntoVolume(srcCoord, 0);
+
+		for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
+			if( 0 != srcCoord.z % mips_[i].factor ||
+				0 != srcCoord.y % mips_[i].factor ||
+				0 != srcCoord.x % mips_[i].factor ){
+				return;
+			}
+
+			const DataCoord dstCoord = srcCoord / mips_[i].factor;
+			const uint64_t dstOffset = getOffsetIntoVolume(dstCoord, i);
+			mips_[i].data[dstOffset] = mips_[0].data[srcOffset];
+		}
+	}
+};
 
 template <typename T>
 class OmDownsampler {
@@ -51,20 +131,13 @@ public:
 		OmThreadPool threadPool;
 		threadPool.start(3);
 
-		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
-
-		//for all chunks
-		for (int z = 0; z < leaf_mip_dims.z; ++z) {
-			for (int y = 0; y < leaf_mip_dims.y; ++y) {
-				for (int x = 0; x < leaf_mip_dims.x; ++x) {
-					const OmMipChunkCoord coord(0, x, y, z);
+		for(uint64_t sz=0; sz < mips_[0].volDims.z; sz+=2){
+			for(uint64_t sy=0; sy < mips_[0].volDims.y; sy+=2){
 					boost::shared_ptr<DownsampleVoxelTask<T> > task =
-						boost::make_shared<DownsampleVoxelTask<T> >(vol_,
-																	mips_,
+						boost::make_shared<DownsampleVoxelTask<T> >(mips_,
 																	mippingInfo_,
-																	coord);
+																	sy, sz);
 					threadPool.addTaskBack(task);
-				}
 			}
 		}
 

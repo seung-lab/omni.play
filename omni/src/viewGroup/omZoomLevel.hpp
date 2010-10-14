@@ -16,14 +16,11 @@ public:
 
 	void Update(const int defaultMipLevel){
 		if(!valid){
-			Reset(defaultMipLevel);
+			// set defaults
+			mipLevel_ = defaultMipLevel;
+			zoomFactor_ = 1;
+			valid = true;
 		}
-	}
-
-	void Reset(const int defaultMipLevel){
-		mipLevel_ = defaultMipLevel;
-		zoomFactor_ = 1;
-		valid = true;
 	}
 
 	float GetZoomScale() const {

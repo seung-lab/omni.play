@@ -1,12 +1,12 @@
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveCoords.h"
 #include "datalayer/archive/omDataArchiveSegment.h"
+#include "datalayer/archive/omDataArchiveVmml.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "segment/lowLevel/omSegmentPage.hpp"
 #include "system/omProjectData.h"
 #include <QDataStream>
 
@@ -14,9 +14,9 @@ static const QString Omni_Postfix("OMNI");
 const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
-void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
-									   OmSegmentPage& page,
-									   OmSegmentCache* cache,
+void OmDataArchiveSegment::ArchiveRead(const OmDataPath & path,
+									   std::vector<OmSegment*> & page,
+									   boost::shared_ptr<OmSegmentCache> cache,
 									   const om::RewriteSegments rewriteSegments)
 {
 	OmDataArchiveSegment dsw(path, page, cache);
@@ -24,8 +24,8 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
 }
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
-										   OmSegmentPage& page,
-										   OmSegmentCache* cache)
+										   std::vector<OmSegment*> & page,
+										   boost::shared_ptr<OmSegmentCache> cache)
 	: path_(path)
 	, page_(page)
 	, cache_(cache)
@@ -86,21 +86,24 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[i].value_ = 0;
+			page_[ i ] = NULL;
 			continue;
 		}
 
-		page_[i].cache_ = cache_;
-		in >> page_[i].value_;
-		in >> page_[i].color_.red;
-		in >> page_[i].color_.green;
-		in >> page_[i].color_.blue;
-		in >> page_[i].immutable_;
-		in >> page_[i].size_;
+		OmSegID val;
+		in >> val;
+		OmSegment * segment = new OmSegment(val, cache_);
+		in >> segment->mColorInt.red;
+		in >> segment->mColorInt.green;
+		in >> segment->mColorInt.blue;
+		in >> segment->mImmutable;
+		in >> segment->mSize;
 
 		if(!overrideVersion && omniFileVersion_ >= 13){
-			in >> page_[i].bounds_;
+			in >> segment->mBounds;
 		}
+
+		page_[ i ] = segment;
 	}
 
 	if(in.atEnd()){
@@ -123,18 +126,21 @@ void OmDataArchiveSegment::readSegmentsNew()
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[i].value_ = 0;
+			page_[ i ] = NULL;
 			continue;
 		}
 
-		page_[i].cache_ = cache_;
-		in >> page_[i].value_;
-		in >> page_[i].color_.red;
-		in >> page_[i].color_.green;
-		in >> page_[i].color_.blue;
-		in >> page_[i].immutable_;
-		in >> page_[i].size_;
-		in >> page_[i].bounds_;
+		OmSegID val;
+		in >> val;
+		OmSegment * segment = new OmSegment(val, cache_);
+		in >> segment->mColorInt.red;
+		in >> segment->mColorInt.green;
+		in >> segment->mColorInt.blue;
+		in >> segment->mImmutable;
+		in >> segment->mSize;
+		in >> segment->mBounds;
+
+		page_[ i ] = segment;
 	}
 
 	QString omniPostfix;
@@ -145,8 +151,8 @@ void OmDataArchiveSegment::readSegmentsNew()
 }
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
-										const OmSegmentPage& page,
-										OmSegmentCache* cache)
+										const std::vector<OmSegment*> & page,
+										boost::shared_ptr<OmSegmentCache> cache)
 {
 	const int omniFileVersion = OmProjectData::getFileVersion();
 
@@ -162,20 +168,22 @@ void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
 	out << Omni_Segment_Version;
 
 	for(uint32_t i = 0; i < cache->getPageSize(); ++i ){
-		if(0 == page[i].value_){
+		OmSegment * segment = page[ i ];
+
+		if (NULL == segment) {
 			out << false;
 			continue;
 		}
 
 		out << true;
 
-		out << page[i].value_;
-		out << page[i].color_.red;
-		out << page[i].color_.green;
-		out << page[i].color_.blue;
-		out << page[i].immutable_;
-		out << page[i].size_;
-		out << page[i].bounds_;
+		out << segment->value;
+		out << segment->mColorInt.red;
+		out << segment->mColorInt.green;
+		out << segment->mColorInt.blue;
+		out << segment->mImmutable;
+		out << segment->mSize;
+		out << segment->mBounds;
 	}
 
 	out << Omni_Postfix;

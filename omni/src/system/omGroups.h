@@ -11,8 +11,8 @@ class OmGroup;
 
 class OmGroups : boost::noncopyable {
 public:
-	OmGroups(OmSegmentation * seg);
-	~OmGroups();
+        OmGroups(OmSegmentation * seg);
+        ~OmGroups();
 
 	OmGroup & AddGroup(OmGroupName);
 	OmGroup & GetGroup(OmGroupID);
@@ -29,14 +29,14 @@ public:
 
 
 private:
-	void setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet);
+        void setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool doSet);
 
 	OmSegmentation * mSegmentation;
 	OmGenericManager<OmGroup> mGroupManager;
 	QHash<OmGroupName, OmGroupID> mGroupsByName;
 
-	friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
-	friend QDataStream &operator>>(QDataStream & in, OmGroups &);
+        friend QDataStream &operator<<(QDataStream & out, const OmGroups &);
+        friend QDataStream &operator>>(QDataStream & in, OmGroups &);
 };
 
 #endif

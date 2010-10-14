@@ -10,7 +10,7 @@ OmSegmentEdge::OmSegmentEdge()
 
 OmSegmentEdge::OmSegmentEdge( OmSegment * c )
 	: parentID(c->getParentSegID())
-	, childID(c->value())
+	, childID(c->value)
 	, threshold(c->getThreshold())
 	, valid(true)
 {
@@ -25,8 +25,8 @@ OmSegmentEdge::OmSegmentEdge( const OmSegID p, const OmSegID c, const float t )
 }
 
 OmSegmentEdge::OmSegmentEdge( OmSegment * p, OmSegment * c, const float t )
-	: parentID(p->value())
-	, childID(c->value())
+	: parentID(p->value)
+	, childID(c->value)
 	, threshold(t)
 	, valid(true)
 {

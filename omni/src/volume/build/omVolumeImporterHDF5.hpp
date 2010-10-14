@@ -20,14 +20,14 @@ class OmVolumeImporterHDF5 {
 private:
 	VOL *const vol_;
 	const OmDataPath inpath_;
-	boost::shared_ptr<QFile> mip0volFile_;
 
 	Vector3i volSize_;
 	OmIDataReader* hdf5reader_;
 	OmDataPath src_path_;
 
 public:
-	OmVolumeImporterHDF5(VOL* vol, const OmDataPath& inpath)
+	OmVolumeImporterHDF5(VOL* vol,
+						 const OmDataPath & inpath)
 		: vol_(vol)
 		, inpath_(inpath)
 	{
@@ -46,10 +46,8 @@ public:
 		hdf5reader_->close();
 	}
 
-	bool Import(boost::shared_ptr<QFile> mip0volFile)
+	bool Import()
 	{
-		mip0volFile_ = mip0volFile;
-
 		OmTimer timer;
 		printf("copying in HDF5 data...\n");
 
@@ -155,15 +153,14 @@ private:
 
 	void copyIntoChunk(const OmMipChunkCoord& coord)
 	{
-		OmDataWrapperPtr data = getChunkData(coord);
+		OmDataWrapperPtr data = getChunk(coord);
 
-		const uint64_t chunkOffset = vol_->ComputeChunkPtrOffset(coord);
-		mip0volFile_->seek(chunkOffset);
-		mip0volFile_->write(static_cast<const char*>(data->getVoidPtr()),
-							128*128*128*vol_->GetBytesPerSample());
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord);
+		chunk->copyInChunkData(data);
 	}
 
-	OmDataWrapperPtr getChunkData(const OmMipChunkCoord& coord)
+	OmDataWrapperPtr getChunk(const OmMipChunkCoord& coord)
 	{
 		//get chunk data bbox
 		OmMipChunkPtr chunk;

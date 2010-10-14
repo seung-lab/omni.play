@@ -111,7 +111,7 @@ make $globalMakeOptions
 END
 
     if(isMac()) {
-	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+        $script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
     print SCRIPT $script;
@@ -277,6 +277,21 @@ sub prepareNukeSrcsAndBuild {
     build(   $baseFileName, $libFolderName, $buildOptions );
 }
 
+sub freetype {
+    my $tempMakeOptions = $globalMakeOptions;
+    $globalMakeOptions = "";
+    prepareAndBuild( "freetype-2.3.9", "FreeType" );
+    $globalMakeOptions = $tempMakeOptions;
+}
+
+sub fontconfig {
+    prepareNukeSrcsAndBuild( "fontconfig-2.7.1", "Fontconfig" );
+}
+
+sub expat {
+    prepareAndBuild( "expat-2.0.1", "expat" );
+}
+
 sub hdf5 {
     hdf5_18();
 }
@@ -293,7 +308,33 @@ sub hdf5_18 {
 }
 
 sub qt {
-    qt47();
+	qt46();
+}
+
+sub qt46 {
+    # new qt buidls has several messages:
+    # requires zlib;
+    # suggests --no-excpetion to reduce gcc-induced memory footprint increases
+    # disable postgres/sqlite
+    # debug not enabled?
+    my $baseFileName = "qt-everywhere-opensource-src-4.6.2";
+    my @argsList = qw( -release -opensource -no-glib -fast -make libs -make tools
+ -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
+ -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
+ -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng
+ -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype);
+# -qtnamespace qt );
+
+    my $args = "";
+    foreach (@argsList){
+	$args .= " $_";
+    }
+
+    if ( isMacSnowLeopard() ){
+	$args .= " -arch x86_64 ";
+    }
+
+    prepareAndBuild( $baseFileName, "Qt", $args );
 }
 
 sub qt47 {
@@ -303,21 +344,9 @@ sub qt47 {
     # disable postgres/sqlite
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
-    my @argsList = qw( -release -opensource -no-glib -v
- -optimized-qmake
- -no-exceptions
- -no-fast -make libs -make tools
- -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
- -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend
- -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng
- -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-freetype
- -no-multimedia -no-javascript-jit -no-script -no-scripttools
-);
-
-    my $args = concatStrList(@argsList);
-
+    my $args = "-debug -no-framework -opensource -no-glib -fast -make libs -make tools -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit -no-sql-sqlite -no-xmlpatterns -no-phonon -no-phonon-backend -no-svg -qt-zlib -qt-gif -qt-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-openssl -no-nis -no-cups -no-iconv -no-dbus -no-freetype";
     if ( isMacSnowLeopard() ){
-	$args .= " -arch x86_64 ";
+        $args .= " -arch x86_64 ";
     }
 
     prepareAndBuild( $baseFileName, "Qt", $args );
@@ -347,15 +376,38 @@ sub printLine {
     print "\n**********************************************\n";
 }
 
+sub smallLibraries {
+    freetype();
+    fontconfig();
+    expat();
+    hdf5();
+}
+
+# This is the official release option
+sub release {
+	my $version = "1.0";
+
+	buildAll();
+
+	# Do release specific work now.
+
+	# Cleanup any leftover cryptographic keys.
+	`rm -rf omni/secret`;
+
+	# FIXME: Need to tar up the right files
+	print `tar -zcvf Omni1-release-bin-$version.tar.gz omni/bin/omni`;
+}
+
 sub menu {
     print "bootstrap.pl menu:\n";
     print "0 -- exit\n";
-    print "1 -- Build hdf5\n";
+    print "1 -- Build small libs\n";
     print "3 -- Build qt\n";
     print "5 -- Build omni\n";
     print "6 -- [Do 1 through 5]\n";
     print "7 -- Build one of the small libraries...\n";
     print "8 -- Generate scripts\n";
+    print "9 -- Build and tar release!\n";
     print "10 -- Experimental builds...\n";
     print "11 -- Ubuntu library apt-gets...\n";
     print "12 -- build omni (make clean first)...\n\n";
@@ -375,9 +427,9 @@ sub menu {
 }
 
 sub buildAll {
-    hdf5();
-    qt();
-    omni();
+	smallLibraries();
+	qt();
+	omni();
 }
 
 sub runMenuEntry {
@@ -386,7 +438,7 @@ sub runMenuEntry {
     if( 0 == $entry ){
 	return();
     }elsif( 1 == $entry ){
-	hdf5();
+	smallLibraries();
     }elsif( 2 == $entry ){
 
     }elsif( 3 == $entry ){
@@ -398,15 +450,55 @@ sub runMenuEntry {
     }elsif( 6 == $entry ){
 	buildAll();
     }elsif( 7 == $entry ){
+	smallLibraryMenu();
     }elsif( 8 == $entry ){
 	genOmniScript();
     }elsif( 9 == $entry ){
+        release();
     }elsif( 10 == $entry ){
         experimentalMenu();
     }elsif( 11 == $entry ){
         doUbuntuAptGets();
     }elsif( 12 == $entry ){
         omniClean();
+    }
+}
+
+sub smallLibraryMenu() {
+    print "build small library menu:\n";
+    print "0 -- exit\n";
+    print "1 -- Build expat\n";
+    print "2 -- Build fontconfig\n";
+    print "3 -- Build freetype\n";
+    print "4 -- Build hdf5\n\n";
+    my $max_answer = 6;
+
+    while( 1 ){
+	print "Please make selection: ";
+	my $answer = <STDIN>;
+
+	if( $answer =~ /^\d+$/ ) {
+	    if( ($answer > -1) and ($answer < (1+$max_answer))){
+		runSmallLibraryMenuEntry( $answer );
+		exit();
+	    }
+	}
+    }
+}
+
+sub runSmallLibraryMenuEntry {
+    my $entry = $_[0];
+
+    if( 0 == $entry ){
+        return();
+    }elsif( 1 == $entry ){
+        expat();
+    }elsif( 2 == $entry ){
+        fontconfig();
+    }elsif( 3 == $entry ){
+        freetype();
+    }elsif( 4 == $entry ){
+        hdf5();
     }
 }
 
@@ -503,20 +595,15 @@ sub doUbuntuAptGets{
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
 	libgl1-mesa-glx-dbg libboost-dev flex bison);
 
-    my $args = concatStrList(@packages);
+    my $args = "";
+    foreach (@packages){
+	$args .= " $_";
+    }
 
     print `sudo apt-get -y install $args`;
     print "Done with the Ubuntu apt-gets! \n\n";
 }
 
-sub concatStrList{
-    my (@array) = @_;
-    my $args = "";
-    foreach (@array){
-	$args .= " $_";
-    }
-    return $args;
-}
 
 sub omniClean {
     `(cd $omniPath; make clean)`;

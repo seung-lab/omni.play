@@ -3,8 +3,7 @@
 
 class OmDataPath;
 class OmMipChunk;
-
-#include <QDataStream>
+class QDataStream;
 
 class OmDataArchiveMipChunk
 {

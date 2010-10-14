@@ -35,7 +35,7 @@ public:
 		return d.GetBytesPerSample();
 	}
 };
-int OmVolumeData::GetBytesPerSample() const {
+int OmVolumeData::GetBytesPerSample(){
 	return boost::apply_visitor(GetBytesPerSampleVisitor(), volData_);
 }
 

@@ -16,7 +16,7 @@ public:
 	OmRawDataPtrs& getRawData();
 
 	void RefreshDirectDataValues(const bool,
-								 OmSegmentCache*);
+								 boost::shared_ptr<OmSegmentCache>);
 
 	boost::shared_ptr<uint8_t>  ExtractDataSlice8bit(const ViewType, const int);
 	boost::shared_ptr<uint32_t> ExtractDataSlice32bit(const ViewType, const int);

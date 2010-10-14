@@ -20,6 +20,13 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 	mDoRefresh = false;
 	mCurrentSegmentId = 0;
 	mEditedSegmentation = 0;
+
+	mBrushToolMaxX = 0;
+	mBrushToolMaxY = 0;
+	mBrushToolMaxZ = 0;
+	mBrushToolMinX = INT_MAX;
+	mBrushToolMinY = INT_MAX;
+	mBrushToolMinZ = INT_MAX;
 }
 
 void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
@@ -223,6 +230,25 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 		mUpdatedDataCoords.insert(gDC);
 		mDoRefresh = true;
 
+		if (gDC.x > mBrushToolMaxX) {
+			mBrushToolMaxX = gDC.x;
+		}
+		if (gDC.y > mBrushToolMaxY) {
+			mBrushToolMaxY = gDC.y;
+		}
+		if (gDC.z > mBrushToolMaxZ) {
+			mBrushToolMaxZ = gDC.z;
+		}
+
+		if (gDC.x < mBrushToolMinX) {
+			mBrushToolMinX = gDC.x;
+		}
+		if (gDC.y < mBrushToolMinY) {
+			mBrushToolMinY = gDC.y;
+		}
+		if (gDC.z < mBrushToolMinZ) {
+			mBrushToolMinZ = gDC.z;
+		}
 	} else {
 		const int savedDia = brushSize->Diameter();
 		brushSize->SetDiameter(1);
@@ -298,19 +324,24 @@ void OmLineDraw::RemoveModifiedTiles()
 
 void OmLineDraw::myUpdate()
 {
-	if(!mDoRefresh){
-		return;
+	if(mDoRefresh) {
+		if(mEditedSegmentation){
+			(new OmVoxelSetValueAction(mEditedSegmentation,
+									   mUpdatedDataCoords,
+									   mCurrentSegmentId))->Run();
+			RemoveModifiedTiles();
+		} else {
+			state_->touchFreshnessAndRedraw();
+		}
+		mUpdatedDataCoords.clear();
+		mEditedSegmentation = 0;
+		mDoRefresh = false;
 	}
 
-	if(mEditedSegmentation){
-		(new OmVoxelSetValueAction(mEditedSegmentation,
-								   mUpdatedDataCoords,
-								   mCurrentSegmentId))->Run();
-		RemoveModifiedTiles();
-	} else {
-		state_->touchFreshnessAndRedraw();
-	}
-	mUpdatedDataCoords.clear();
-	mEditedSegmentation = 0;
-	mDoRefresh = false;
+	mBrushToolMaxX = 0;
+	mBrushToolMaxY = 0;
+	mBrushToolMaxZ = 0;
+	mBrushToolMinX = INT_MAX;
+	mBrushToolMinY = INT_MAX;
+	mBrushToolMinZ = INT_MAX;
 }

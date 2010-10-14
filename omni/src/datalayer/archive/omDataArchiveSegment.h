@@ -6,27 +6,25 @@
 class OmDataPath;
 class OmSegment;
 class OmSegmentCache;
-class OmSegmentPage;
+class QDataStream;
 
 class OmDataArchiveSegment{
 public:
-	static void ArchiveRead(const OmDataPath&,
-							OmSegmentPage&,
-							OmSegmentCache*,
+	static void ArchiveRead(const OmDataPath&, std::vector<OmSegment*>&,
+							boost::shared_ptr<OmSegmentCache>,
 							const om::RewriteSegments rewriteSegments);
 
-	static void ArchiveWrite(const OmDataPath&,
-							 const OmSegmentPage&,
-							 OmSegmentCache*);
+	static void ArchiveWrite(const OmDataPath&, const std::vector<OmSegment*>&,
+							 boost::shared_ptr<OmSegmentCache>);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
-						 OmSegmentPage&,
-						 OmSegmentCache*);
+						 std::vector<OmSegment*>&,
+						 boost::shared_ptr<OmSegmentCache>);
 
 	const OmDataPath& path_;
-	OmSegmentPage& page_;
-	OmSegmentCache* cache_;
+	std::vector<OmSegment*>& page_;
+	boost::shared_ptr<OmSegmentCache> cache_;
 	const int omniFileVersion_;
 
 	OmDataWrapperPtr dw_;

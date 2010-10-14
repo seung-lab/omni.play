@@ -28,7 +28,6 @@ private:
 	OmSegIDsSet mSelectedSegmentIds;
 
 	template <typename T> friend class OmActionLoggerFSThread;
-
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
 };

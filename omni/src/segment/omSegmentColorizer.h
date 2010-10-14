@@ -5,6 +5,8 @@
 
 #include "zi/omMutex.h"
 
+static const double selectedSegmentColorMultiFactor = 2.5;
+
 typedef struct {
 	OmColor color;
 	int freshness;
@@ -17,7 +19,7 @@ class OmSegment;
 class OmSegmentColorizer
 {
  public:
-	OmSegmentColorizer( OmSegmentCache*,
+	OmSegmentColorizer( boost::shared_ptr<OmSegmentCache>,
 			    const OmSegmentColorCacheType,
 			    const Vector2i& dims);
 
@@ -31,7 +33,7 @@ class OmSegmentColorizer
  private:
 	zi::rwmutex mMapResizeMutex;
 
-	OmSegmentCache* mSegmentCache;
+	boost::shared_ptr<OmSegmentCache> mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 	OmSegID mSize;
 	float mCurBreakThreshhold;
@@ -46,9 +48,8 @@ class OmSegmentColorizer
 
 	OmColor getVoxelColorForView2d(const OmSegID val);
 
-	inline int makeSelectedColor(const quint8 in_c) {
-		static const double selectedSegColorFactor = 2.5;
-		const int c = static_cast<int>((double)in_c * selectedSegColorFactor);
+	inline int makeSelectedColor(const quint8 in_c ) {
+		const int c = static_cast<int>((double)in_c * selectedSegmentColorMultiFactor);
 		if (c > 255) {
 			return 255;
 		}
@@ -57,7 +58,7 @@ class OmSegmentColorizer
 
 	void doColorTile(uint32_t*, OmColorRGBA*);
 
-	struct segment_colorizer_mutex_pool_tag;
+	struct mutex_pool_tag;
 };
 
 #endif

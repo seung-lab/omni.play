@@ -6,7 +6,7 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
-OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache* cache,
+OmSegmentColorizer::OmSegmentColorizer( boost::shared_ptr<OmSegmentCache> cache,
 					const OmSegmentColorCacheType sccType,
 					const Vector2i& dims)
 	: mSegmentCache(cache)
@@ -70,7 +70,7 @@ void OmSegmentColorizer::doColorTile(uint32_t* imageData,
 		} else { // get color from cache
 
 			{
-				zi::spinlock::pool<segment_colorizer_mutex_pool_tag>::guard g(val);
+				zi::spinlock::pool<mutex_pool_tag>::guard g(val);
 
 				// check if cache element is valid
 				if(mCurSegCacheFreshness  == mColorCache[val].freshness &&
@@ -107,7 +107,7 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 
 	const bool isSelected =
 		mSegmentCache->IsSegmentSelected(segRoot) ||
-		mSegmentCache->isSegmentEnabled(segRoot->value());
+		mSegmentCache->isSegmentEnabled(segRoot->value);
 
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:
