@@ -8,16 +8,15 @@
 #include "volume/omChannel.h"
 #include "utility/omTimer.h"
 #include "datalayer/omDataPaths.h"
+#include "view2d/omPointsInCircle.hpp"
+#include "utility/omRand.hpp"
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
+#include <QTextStream>
 
 class Tests{
 public:
 	Tests()
-		: gen(boost::mt19937(std::time(0)))
-		, runPerfTests_(ZiARG_perf)
+		: runPerfTests_(ZiARG_perf)
 	{
 	}
 
@@ -31,11 +30,12 @@ public:
 			mapTests();
 		}
 		hdf5Paths();
+		pointsInCircle();
+		rand();
 		printf("done\n");
 	}
 
 private:
-	boost::mt19937 gen;
 	const bool runPerfTests_;
 
 	void imageResize()
@@ -82,11 +82,11 @@ private:
 
 		// ROUNDDOWN and ROUNDUP not yet valid for negative numbers...
 		/*
-		std::cout << ROUNDDOWN(-8,128) << "\n";
-		std::cout << -8 % 128 << "\n";
-		std::cout << abs(-8) % 128 << "\n";
-		assert(-128 == ROUNDDOWN(-8,128));
-		assert(0 == ROUNDUP(-8,128));
+		  std::cout << ROUNDDOWN(-8,128) << "\n";
+		  std::cout << -8 % 128 << "\n";
+		  std::cout << abs(-8) % 128 << "\n";
+		  assert(-128 == ROUNDDOWN(-8,128));
+		  assert(0 == ROUNDUP(-8,128));
 		*/
 
 		printf("rounding OK\n");
@@ -145,7 +145,7 @@ private:
 						  << std::pow(static_cast<float>(2),
 									  static_cast<float>(i))
 						  << "\n";
-					assert(0);
+				assert(0);
 			}
 		}
 
@@ -206,29 +206,120 @@ private:
 
 		timer.restart();
 		sum = 0;
-		boost::uniform_int<> dist(0, max);
-		boost::variate_generator<boost::mt19937&,
-			boost::uniform_int<> > rrand(gen, dist);
 		for(uint64_t i=0; i < max; ++i){
-			sum += map[ rrand() ];
+			sum += map[ OmRand::GetRandomInt(0,max) ];
 		}
 		std::cout << "\t" << max << " rand gets in " << mapType
 				  << " in " << timer.s_elapsed() << " secs\n";
 
 	}
 
+	void rand()
+	{
+		const int max = 3000;
+
+		const QString outFile("/tmp/randNums.txt");
+		QFile f(outFile);
+		if(f.open(QFile::WriteOnly | QFile::Truncate)) {
+			printf("writing segment file %s\n", qPrintable(outFile));
+		} else{
+			throw OmIoException("could not open file \"" + outFile.toStdString()
+								+"\"");
+		}
+
+		QTextStream out(&f);
+
+		for(int i = 0; i < max; ++i){
+			out << OmRand::GetRandomInt(1,127) << "\n";
+		}
+
+		printf("rand OK\n");
+	}
+
 	void hdf5Paths()
 	{
-		boost::shared_ptr<OmSegmentation> seg1(new OmSegmentation(1));
+		OmSegmentation seg1(1);
 
 		assert("segmentations/segmentation1/" ==
-			   OmDataPaths::getDirectoryPath(seg1.get()));
+			   OmDataPaths::getDirectoryPath(&seg1));
 
-		boost::shared_ptr<OmChannel> chann1(new OmChannel(1));
+		OmChannel chann1(1);
 		assert("channels/channel1/" ==
-			   OmDataPaths::getDirectoryPath(chann1.get()));
+			   OmDataPaths::getDirectoryPath(&chann1));
 
 		printf("hdf5 path tests OK\n");
+	}
+
+	void pointsInCircle()
+	{
+		static bool BrushTool32[33][33] = {
+			{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0},
+			{0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0},
+			{0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+			{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
+			{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
+			{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+			{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+			{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+			{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
+			{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+			{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+			{0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
+			{0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0},
+			{0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		};
+
+		const int r = 16;
+
+		OmPointsInCircle pc;
+		std::set<Om2dPoint> points = pc.GetPointsInCircleNonCached(r);
+
+		for(int x = 0; x < 33; ++x){
+			for(int y = 0; y < 33; ++y){
+				Om2dPoint fp = { x, y };
+				if(BrushTool32[x][y]){
+					assert(points.count(fp));
+				} else {
+					assert(!points.count(fp));
+				}
+			}
+		}
+
+		// (mostly) generate above circle
+		if(0){
+			for( int y = 2*r; y >= 0; --y){
+				for(int x =0; x <= 2*r; ++x){
+					Om2dPoint fp = { x, y };
+					if(points.count(fp)){
+						printf("1,");
+					}else{
+						printf("0,");
+					}
+				}
+				printf("\n");
+			}
+		}
+
+		printf("points in circle OK\n");
 	}
 
 };

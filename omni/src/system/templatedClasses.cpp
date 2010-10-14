@@ -13,8 +13,3 @@
 template class OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr>;
 template class OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>;
 template class OmThreadedCache<OmTileCoord, OmTilePtr>;
-
-
-#include "segment/lowLevel/omPagingPtrStore.cpp"
-template class OmPagingPtrStore<OmSegment>;
-

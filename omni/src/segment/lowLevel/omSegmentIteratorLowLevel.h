@@ -9,24 +9,24 @@ class OmSegmentCacheImplLowLevel;
 
 class OmSegmentIteratorLowLevel : boost::noncopyable {
 
- public:
-	OmSegmentIteratorLowLevel( OmSegmentCacheImplLowLevel * );
+public:
+	OmSegmentIteratorLowLevel(OmSegmentCacheImplLowLevel*);
 
 	void iterOverAllSegments();
 	void iterOverSegmentID(const OmSegID segID);
 
-	OmSegment * getNextSegment();
+	OmSegment* getNextSegment();
 	bool empty();
-	
- private:
-	OmSegmentCacheImplLowLevel * mCache;
+
+private:
+	OmSegmentCacheImplLowLevel* mCache;
 	OmSegPtrList mSegs;
 
 	bool mIterOverAll;
 	OmSegID mCurSegID;
 
-	OmSegment * getNextSegmentFromFullList();
-	OmSegment * getNextSegmentFromSet();
+	OmSegment* getNextSegmentFromFullList();
+	OmSegment* getNextSegmentFromSet();
 };
 
 #endif

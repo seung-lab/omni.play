@@ -75,8 +75,8 @@ QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );
 QDataStream &operator<<(QDataStream & out, const OmSegmentCacheImpl & sc );
 QDataStream &operator>>(QDataStream & in, OmSegmentCacheImpl & sc );
 
-template< class T2 > QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore<T2> & ps );
-template< class T2 > QDataStream &operator>>(QDataStream & in, OmPagingPtrStore<T2> & ps );
+QDataStream &operator<<(QDataStream & out, const OmPagingPtrStore & ps );
+QDataStream &operator>>(QDataStream & in, OmPagingPtrStore & ps );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & se );
 QDataStream &operator>>(QDataStream & in, OmSegmentEdge & sc );

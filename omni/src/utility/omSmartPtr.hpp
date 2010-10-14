@@ -11,11 +11,10 @@ template <typename T>
 class OmSmartPtr {
 public:
 	static boost::shared_ptr<T>
-	makeMallocPtrNumBytes(const uint32_t numBytes,
-						  const om::zeroMem shouldZeroMem
-						  = om::DONT_ZERO_FILL)
+	MallocNumBytes(const uint32_t numBytes, const om::zeroMem shouldZeroMem)
 	{
 		T* rawPtr = static_cast<T*>(malloc(numBytes));
+
 		if(NULL == rawPtr){
 			const std::string err = "could not allocate "
 				+ boost::lexical_cast<std::string>(numBytes)
@@ -23,19 +22,20 @@ public:
 			std::cerr << err << "\n" << std::flush;
 			throw std::bad_alloc();
 		}
+
 		if(om::ZERO_FILL == shouldZeroMem){
 			memset(rawPtr, 0, numBytes);
 		}
+
 		return boost::shared_ptr<T>(rawPtr, deallocatorMalloc());
 	}
 
 	static boost::shared_ptr<T>
-	makeMallocPtrNumElements(const uint32_t numElements,
-				 const om::zeroMem shouldZeroMem
-				 = om::DONT_ZERO_FILL)
+	MallocNumElements(const uint32_t numElements,
+					  const om::zeroMem shouldZeroMem)
 	{
-		return makeMallocPtrNumBytes(numElements * sizeof(T),
-					     shouldZeroMem);
+		return MallocNumBytes(numElements * sizeof(T),
+							  shouldZeroMem);
 	}
 
 	static boost::shared_ptr<T> wrapNewArray(T* rawPtr){

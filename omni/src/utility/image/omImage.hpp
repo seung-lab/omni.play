@@ -183,7 +183,8 @@ public:
 		}
 
 		const int numBytes = d_.data_->num_elements()*sizeof(T);
-		boost::shared_ptr<T> ret = OmSmartPtr<T>::makeMallocPtrNumBytes(numBytes);
+		boost::shared_ptr<T> ret =
+			OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
 		memcpy(ret.get(), d_.data_->data(), numBytes);
 		return ret;
 	}

@@ -165,7 +165,7 @@ QString OmSegmentCache::getSegmentNote( OmSegID segID )
 	return mImpl->getSegmentNote( segID );
 }
 
-void OmSegmentCache::addToDirtySegmentList( OmSegment* seg)
+void OmSegmentCache::addToDirtySegmentList(OmSegment* seg)
 {
 	zi::guard g(mutex_);
 	mImpl->addToDirtySegmentList( seg);

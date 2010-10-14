@@ -33,18 +33,18 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 		return NULL;
 	}
 
-	OmSegment * seg = new OmSegment( value, getSegmentCache());
-	seg->RandomizeColor();
+	OmSegment seg(value, getSegmentCache());
+	seg.RandomizeColor();
 
-	mSegments->AddItem( seg );
+	OmSegment* addedSegment = mSegments->AddItem(seg);
 	++mNumSegs;
 	if (mMaxValue < value) {
 		mMaxValue = value;
 	}
 
-	addToDirtySegmentList(seg);
+	addToDirtySegmentList(value);
 
-	return seg;
+	return addedSegment;
 }
 
 OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
@@ -75,7 +75,7 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 
 	OmSegment * s1 = seg1;
 	while (0 != s1->getParentSegID()) {
-		if(s1->getParentSegID() == seg2->value) {
+		if(s1->getParentSegID() == seg2->value()) {
 			//debug(split, "splitting child from a direct parent\n");
 			return OmSegmentEdge(s1);
 		}
@@ -84,7 +84,7 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 
 	OmSegment * s2 = seg2;
 	while (0 != s2->getParentSegID()) {
-		if(s2->getParentSegID() == seg1->value) {
+		if(s2->getParentSegID() == seg1->value()) {
 			//debug(split, "splitting child from a direct parent\n");
 			return OmSegmentEdge(s2);
 		}
@@ -96,9 +96,9 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 	OmSegment * one;
 	OmSegment * two;
 
-	for (quint32 oneID = seg1->value, twoID; oneID != 0; oneID = one->getParentSegID()) {
+	for (quint32 oneID = seg1->value(), twoID; oneID != 0; oneID = one->getParentSegID()) {
 		one = GetSegmentFromValue(oneID);
-		for (twoID = seg2->value; twoID != 0 && oneID != twoID; twoID = two->getParentSegID()) {
+		for (twoID = seg2->value(); twoID != 0 && oneID != twoID; twoID = two->getParentSegID()) {
 			two = GetSegmentFromValue(twoID);
 		}
 		if (oneID == twoID) {
@@ -143,7 +143,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( child->GetImmutable() == parent->GetImmutable() &&
 	    1 == child->GetImmutable() ){
-		printf("could not split %d from %d\n", child->value, parent->value);
+		printf("could not split %d from %d\n", child->value(), parent->value());
 		return OmSegmentEdge();
 	}
 
@@ -152,8 +152,8 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	OmSegmentEdge edgeThatGotBroken( parent, child, child->getThreshold() );
 
-	parent->removeChild(child->value);
-	mSegmentGraph.graph_cut(child->value);
+	parent->removeChild(child);
+	mSegmentGraph.graph_cut(child->value());
 	child->setParentSegID(0);
 
 	child->setThreshold(0);
@@ -161,10 +161,10 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	findRoot(parent)->touchFreshnessForMeshes();
 	child->touchFreshnessForMeshes();
 
-	if( isSegmentSelected( parent->value ) ){
-		doSelectedSetInsert( child->value, true );
+	if( isSegmentSelected( parent->value() ) ){
+		doSelectedSetInsert( child->value(), true );
 	} else {
-		doSelectedSetRemove( child->value );
+		doSelectedSetRemove( child->value() );
 	}
 
 	if( -1 != child->getEdgeNumber() ){
@@ -218,20 +218,20 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 
 	if( childRoot->GetImmutable() != parent->GetImmutable() ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->value, parent->value, childRoot->GetImmutable(), parent->GetImmutable() );
+		       childRoot->value(), parent->value(), childRoot->GetImmutable(), parent->GetImmutable() );
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
 	mSegmentGraph.graph_join(childRootID, e.parentID);
 
-	parent->addChild(childRoot->value);
+	parent->addChild(childRoot);
 	childRoot->setParent(parent, e.threshold);
 	childRoot->setCustomMergeEdge(e);
 
 	findRoot(parent)->touchFreshnessForMeshes();
 
 	if( isSegmentSelected( e.childID ) ){
-		doSelectedSetInsert( parent->value, true );
+		doSelectedSetInsert( parent->value(), true );
 	}
 	doSelectedSetRemove( e.childID );
 
@@ -385,7 +385,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 
 	OmSegID rootSegID;
 	foreach( const OmSegID & id, old ){
-		rootSegID = findRoot( GetSegmentFromValue( id) )->value;
+		rootSegID = findRoot( GetSegmentFromValue( id) )->value();
 		set.insert( rootSegID );
 	}
 }

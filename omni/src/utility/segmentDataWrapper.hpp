@@ -20,7 +20,7 @@ public:
 	{}
 
 	explicit SegmentDataWrapper(OmSegment* seg )
-		: mID(seg->value)
+		: mID(seg->value())
 		, mSegmentationID( seg->getSegmentationID() )
 	{}
 
@@ -96,7 +96,7 @@ public:
 		return getSegmentation().GetSegmentCache()->GetSegment( mID );
 	}
 
-	boost::shared_ptr<OmSegmentCache> getSegmentCache() const {
+	OmSegmentCache* getSegmentCache() const {
 		return getSegmentation().GetSegmentCache();
 	}
 

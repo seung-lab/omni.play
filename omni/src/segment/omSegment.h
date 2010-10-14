@@ -15,17 +15,44 @@ class OmSegmentCache;
 
 class OmSegment {
 public:
-	OmSegment(const OmSegID, boost::shared_ptr<OmSegmentCache>);
-	const OmSegID value;
+	// for OmDataArchiveSegment
+	OmSegment()
+		: value_(0)
+		, cache_(NULL)
+		, parentSegID_(0)
+		, threshold_(0)
+		, immutable_(false)
+		, size_(0)
+		, edgeNumber_(-1)
+		, freshnessForMeshes_(0)
+	{}
+
+	// for OmSegmentCacheImpl::AddSegment
+	OmSegment(const OmSegID value, OmSegmentCache* cache)
+		: value_(value)
+		, cache_(cache)
+		, parentSegID_(0)
+		, threshold_(0)
+		, immutable_(false)
+		, size_(0)
+		, edgeNumber_(-1)
+		, freshnessForMeshes_(0)
+	{}
+
+	inline OmSegID value() const {
+		return value_;
+	}
 
 	// color
 	void RandomizeColor();
 	void reRandomizeColor();
-	OmColor GetColorInt(){ return mColorInt; }
-	Vector3f GetColorFloat(){
-		return Vector3f( mColorInt.red   / 255.,
-				 mColorInt.green / 255.,
-				 mColorInt.blue  / 255. ); }
+	OmColor GetColorInt(){ return color_; }
+	Vector3f GetColorFloat() const
+	{
+		return Vector3f( color_.red   / 255.,
+						 color_.green / 255.,
+						 color_.blue  / 255. );
+	}
 	void SetColor(const Vector3f &);
 
 	QString GetNote();
@@ -37,72 +64,71 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
-	quint64 getSize() const { return mSize; }
+	quint64 getSize() const { return size_; }
 	void addToSize(const quint64 inc){
-		zi::guard g(sizeWriteLock_);
-		mSize += inc;
+		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(value_);
+		size_ += inc;
 	}
 
 	quint64 getSizeWithChildren();
 
-	bool GetImmutable() const { return mImmutable; }
+	bool GetImmutable() const { return immutable_; }
 	void SetImmutable( const bool immutable);
 
-	OmSegID getParentSegID() const { return mParentSegID; }
-	void setParentSegID(const OmSegID val){ mParentSegID = val; }
+	OmSegID getParentSegID() const { return parentSegID_; }
+	void setParentSegID(const OmSegID val){ parentSegID_ = val; }
 	OmSegID getRootSegID();
 	void setParent(OmSegment * segment, const float);
 
 	OmId getSegmentationID();
 
-	float getThreshold() const { return mThreshold; }
-	void setThreshold(const float thres){ mThreshold = thres; }
+	float getThreshold() const { return threshold_; }
+	void setThreshold(const float thres){ threshold_ = thres; }
 
-	const DataBbox& getBounds() const {	return mBounds;	}
+	const DataBbox& getBounds() const {	return bounds_;	}
 	void addToBounds(const DataBbox& box){
-		zi::guard g(boundsWriteLock_);
-		mBounds.merge(box);
+		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(value_);
+		bounds_.merge(box);
 	}
 
-	uint32_t getFreshnessForMeshes() const {return mFreshnessForMeshes;}
-	void touchFreshnessForMeshes(){++mFreshnessForMeshes;}
+	uint32_t getFreshnessForMeshes() const {return freshnessForMeshes_;}
+	void touchFreshnessForMeshes(){++freshnessForMeshes_;}
 
-	const OmSegIDsSet& getChildren() const {
-		return segmentsJoinedIntoMe;
+	const std::set<OmSegment*>& getChildren() const {
+		return segmentsJoinedIntoMe_;
 	}
-	void addChild(const OmSegID childID){
-		segmentsJoinedIntoMe.insert(childID);
+	void addChild(OmSegment* child){
+		segmentsJoinedIntoMe_.insert(child);
 	}
-	void removeChild(const OmSegID childID){
-		segmentsJoinedIntoMe.erase(childID);
+	void removeChild(OmSegment* child){
+		segmentsJoinedIntoMe_.erase(child);
 	}
 
-	int getEdgeNumber() const { return mEdgeNumber; }
-	void setEdgeNumber(const int num){ mEdgeNumber = num; }
+	int getEdgeNumber() const { return edgeNumber_; }
+	void setEdgeNumber(const int num){ edgeNumber_ = num; }
 
-	const OmSegmentEdge& getCustomMergeEdge() const {return mCustomMergeEdge;}
-	void setCustomMergeEdge(const OmSegmentEdge& e){mCustomMergeEdge=e;}
+	const OmSegmentEdge& getCustomMergeEdge() const {return customMergeEdge_;}
+	void setCustomMergeEdge(const OmSegmentEdge& e){customMergeEdge_=e;}
 
-	boost::shared_ptr<OmSegmentCache> getSegmentCache(){ return mCache; }
+	OmSegmentCache* getSegmentCache(){ return cache_; }
 
 private:
-	zi::mutex boundsWriteLock_;
-	zi::mutex sizeWriteLock_;
+	OmSegID value_;
+	OmSegmentCache* cache_;
+	OmSegID parentSegID_;
+	OmColor color_;
+	std::set<OmSegment*> segmentsJoinedIntoMe_;
+	float threshold_;
+	bool immutable_;
+	quint64 size_;
 
-	boost::shared_ptr<OmSegmentCache> mCache;
-	OmColor mColorInt;
-	OmSegIDsSet segmentsJoinedIntoMe;
-	OmSegID mParentSegID;
-	float mThreshold;
-	bool mImmutable;
-	quint64 mSize;
+	int edgeNumber_; // index of edge in main edge list
+	OmSegmentEdge customMergeEdge_;
+	uint32_t freshnessForMeshes_;
+	DataBbox bounds_;
 
-	int mEdgeNumber; // index of edge in main edge list
-	OmSegmentEdge mCustomMergeEdge;
-
-	uint32_t mFreshnessForMeshes;
-
-	DataBbox mBounds;
+	struct segment_bounds_mutex_pool_tag;
+	struct segment_size_mutex_pool_tag;
 
 	friend class OmDataArchiveSegment;
 };

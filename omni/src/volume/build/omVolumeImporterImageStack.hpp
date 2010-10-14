@@ -7,25 +7,33 @@ template <typename VOL>
 class OmVolumeImporterImageStack{
 private:
 	VOL *const vol_;
+	const QFileInfoList& files_;
 
 public:
 	OmVolumeImporterImageStack(VOL* vol)
 		: vol_(vol)
-	{}
-
-	bool Import()
+		, files_(vol_->mSourceFilenamesAndPaths)
 	{
-		OmLoadImage<VOL> imageLoader(vol_);
-		for( int i = 0; i < vol_->mSourceFilenamesAndPaths.size(); ++i){
-			const QString fnp = vol_->mSourceFilenamesAndPaths[i].absoluteFilePath();
+		if(0 == files_.size()){
+			throw OmIoException("no files!");
+		}
+	}
+
+	bool Import(boost::shared_ptr<QFile> mip0volFile)
+	{
+		OmLoadImage<VOL> imageLoader(vol_, mip0volFile);
+
+		for( int i = 0; i < files_.size(); ++i){
+			const QString fnp = files_[i].absoluteFilePath();
 			imageLoader.processSlice(fnp, i);
 		}
+
 		return true;
 	}
 
 	OmVolDataType DetermineDataType()
 	{
-		const int depth = QImage(vol_->mSourceFilenamesAndPaths[0].absoluteFilePath()).depth();
+		const int depth = QImage(files_[0].absoluteFilePath()).depth();
 
 		switch(depth){
 		case 8:

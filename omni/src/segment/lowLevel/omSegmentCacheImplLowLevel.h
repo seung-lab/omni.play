@@ -9,7 +9,7 @@
 
 class OmSegmentCache;
 class OmSegmentation;
-template <typename T> class OmPagingPtrStore;
+class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
 public:
@@ -54,6 +54,8 @@ public:
 	OmSegID getSegmentationID();
 
 	void addToDirtySegmentList( OmSegment* seg);
+	void addToDirtySegmentList(const OmSegID val);
+
 	void flushDirtySegments();
 
 	void turnBatchModeOn(const bool batchMode);
@@ -61,13 +63,13 @@ public:
 	quint32 getPageSize();
 	quint32 getMaxValue();
 
-	boost::shared_ptr<OmSegmentCache> getSegmentCache();
+	OmSegmentCache* getSegmentCache();
 
 	void UpgradeSegmentSerialization();
 
 protected:
 	OmSegmentation * mSegmentation;
-	boost::shared_ptr<OmPagingPtrStore<OmSegment> > mSegments;
+	boost::shared_ptr<OmPagingPtrStore> mSegments;
 
 	OmSegID mMaxValue;
 	OmSegID getNextValue();

@@ -78,7 +78,7 @@ void OmMST::read(OmSegmentation & seg)
 	}
 
 	// this is just a temporary object--should be refactored... (purcaro)
-	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(mDendValuesSize,
+	mEdgeWasJoined = OmSmartPtr<uint8_t>::MallocNumElements(mDendValuesSize,
 																   om::ZERO_FILL);
 
 	path = getEdgeForceJoinPath(seg);
@@ -170,16 +170,16 @@ bool OmMST::importDendValues(OmIDataReader * hdf5reader)
 bool OmMST::setupUserEdges(const int dendValuesSize)
 {
 	boost::shared_ptr<uint8_t> edbu =
-		OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+		OmSmartPtr<uint8_t>::MallocNumElements(dendValuesSize,
 													  om::ZERO_FILL);
 	mEdgeDisabledByUser = OmDataWrapperFactory::produce(edbu);
 
 	boost::shared_ptr<uint8_t> efj =
-		OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+		OmSmartPtr<uint8_t>::MallocNumElements(dendValuesSize,
 													  om::ZERO_FILL);
 	mEdgeForceJoin = OmDataWrapperFactory::produce(efj);
 
-	mEdgeWasJoined = OmSmartPtr<uint8_t>::makeMallocPtrNumElements(dendValuesSize,
+	mEdgeWasJoined = OmSmartPtr<uint8_t>::MallocNumElements(dendValuesSize,
 																   om::ZERO_FILL);
 
 	return true;

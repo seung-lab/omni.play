@@ -6,7 +6,7 @@
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
 #include "tiles/omTileCoord.h"
-#include "tiles/omTileDrawer.hpp"
+#include "view2d/omTileDrawer.hpp"
 #include "view2d/omOnScreenTileCoords.h"
 #include "view2d/omView2dState.hpp"
 #include "volume/omChannel.h"
@@ -62,6 +62,10 @@ void OmTileDrawer::reset()
 
 void OmTileDrawer::draw(OmMipVolume* vol)
 {
+	if(!vol->IsVolumeReadyForDisplay()){
+		return;
+	}
+
 	determineWhichTilesToDraw(vol);
 	drawTiles();
 }
