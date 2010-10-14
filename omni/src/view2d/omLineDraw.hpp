@@ -32,13 +32,11 @@ private:
 	OmId mCurrentSegmentId;
 
 	std::set<DataCoord> mUpdatedDataCoords;
-	int mBrushToolMaxX, mBrushToolMaxY,
-		mBrushToolMaxZ, mBrushToolMinX,
-		mBrushToolMinY, mBrushToolMinZ;
 
 	DataCoord BrushToolToGDC(const DataCoord& vec){
 		return state_->makeViewTypeVector3(vec);
 	}
+
 	void RemoveModifiedTiles();
 	void PickToolAddToSelection(OmSegmentSelector & sel,
 				    OmSegmentation & current_seg,
