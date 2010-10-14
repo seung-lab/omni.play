@@ -373,3 +373,8 @@ void OmSegmentation::SetVolDataType(const OmVolDataType type)
 	mVolDataType = type;
 	getVolData()->setDataType(this);
 }
+
+SegmentationDataWrapper OmSegmentation::getSDW() const
+{
+	return SegmentationDataWrapper(GetID());
+}

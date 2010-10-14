@@ -20,6 +20,7 @@ class OmSegmentCache;
 class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
+class SegmentationDataWrapper;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
@@ -36,6 +37,8 @@ public:
 	OmId getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 	int GetBytesPerSample() const;
+
+	SegmentationDataWrapper getSDW() const;
 
 	void CloseDownThreads();
 

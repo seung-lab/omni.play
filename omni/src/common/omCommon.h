@@ -76,6 +76,7 @@ enum ObjectType { CHANNEL, SEGMENTATION };
 typedef uint32_t OmSegID;
 typedef std::set<OmSegID> OmSegIDsSet;
 typedef std::vector<OmSegID> OmSegIDsList;
+typedef uint32_t PageNum;
 
 
 /**

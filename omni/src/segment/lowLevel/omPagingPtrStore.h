@@ -8,8 +8,6 @@
 
 #include <QSet>
 
-typedef quint32 PageNum;
-
 class OmDataPath;
 class OmSegmentation;
 class OmSegmentCache;

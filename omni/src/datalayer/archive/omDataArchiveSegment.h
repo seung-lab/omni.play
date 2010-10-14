@@ -11,17 +11,17 @@ class OmSegmentPage;
 class OmDataArchiveSegment{
 public:
 	static void ArchiveRead(const OmDataPath&,
-							OmSegmentPage&,
+							OmSegmentPage*,
 							OmSegmentCache*,
 							const om::RewriteSegments rewriteSegments);
 
 	static void ArchiveWrite(const OmDataPath&,
-							 const OmSegmentPage&,
+							 const OmSegmentPage*,
 							 OmSegmentCache*);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
-						 OmSegmentPage&,
+						 OmSegmentPage*,
 						 OmSegmentCache*);
 
 	const OmDataPath& path_;

@@ -15,7 +15,7 @@ const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
-									   OmSegmentPage& page,
+									   OmSegmentPage* page,
 									   OmSegmentCache* cache,
 									   const om::RewriteSegments rewriteSegments)
 {
@@ -24,10 +24,10 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
 }
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
-										   OmSegmentPage& page,
+										   OmSegmentPage* page,
 										   OmSegmentCache* cache)
 	: path_(path)
-	, page_(page)
+	, page_(*page)
 	, cache_(cache)
 	, omniFileVersion_(OmProjectData::getFileVersion())
 	, size_(0)
@@ -71,7 +71,7 @@ void OmDataArchiveSegment::attemptOldSegmentRead()
 
 void OmDataArchiveSegment::archiveWrite()
 {
-	ArchiveWrite(path_, page_, cache_);
+	ArchiveWrite(path_, &page_, cache_);
 }
 
 // don't modify this--to add extra member vars, please modify readSegmentsNew
@@ -153,9 +153,11 @@ void OmDataArchiveSegment::readSegmentsNew()
 }
 
 void OmDataArchiveSegment::ArchiveWrite(const OmDataPath & path,
-										const OmSegmentPage& page,
+										const OmSegmentPage* pagePtr,
 										OmSegmentCache* cache)
 {
+	const OmSegmentPage page = *pagePtr;
+
 	const int omniFileVersion = OmProjectData::getFileVersion();
 
 	QByteArray ba;

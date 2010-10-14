@@ -1,6 +1,3 @@
-#include "datalayer/archive/omDataArchiveSegment.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPaths.h"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/omSegmentCache.h"
 #include "system/omProjectData.h"
@@ -34,17 +31,9 @@ void OmPagingPtrStore::SaveDirtyPages()
 	dirtyPages.clear();
 }
 
-OmDataPath OmPagingPtrStore::getPath(const PageNum pageNum)
+void OmPagingPtrStore::doSavePage(const PageNum pageNum)
 {
-	return OmDataPaths::getSegmentPagePath( mSegmentation->GetID(), pageNum);
-}
-
-void OmPagingPtrStore::doSavePage( const PageNum pageNum )
-{
-	const OmSegmentPage& page = mValueToSeg[pageNum];
-	OmDataArchiveSegment::ArchiveWrite(getPath(pageNum),
-									   page,
-									   mSegmentation->GetSegmentCache());
+	mValueToSeg[pageNum].Save();
 }
 
 void OmPagingPtrStore::loadValuePage(const PageNum pageNum)
@@ -57,13 +46,10 @@ void OmPagingPtrStore::loadValuePage(const PageNum pageNum,
 {
 	resizeVectorIfNeeded(pageNum);
 
-	mValueToSeg[pageNum] = OmSegmentPage(mPageSize);
-	OmSegmentPage& page = mValueToSeg[pageNum];
-
-	OmDataArchiveSegment::ArchiveRead(getPath(pageNum),
-									  page,
-									  mSegmentation->GetSegmentCache(),
-									  rewriteSegments);
+	mValueToSeg[pageNum] = OmSegmentPage(mSegmentation,
+										 pageNum,
+										 mPageSize);
+	mValueToSeg[pageNum].Load(rewriteSegments);
 
 	loadedPageNumbers.insert(pageNum);
 
@@ -80,7 +66,10 @@ OmSegment* OmPagingPtrStore::AddItem(const OmSegment& item)
 
 	if( !validPageNumbers.contains(pageNum) ) {
 		resizeVectorIfNeeded(pageNum);
-		mValueToSeg[pageNum] = OmSegmentPage(mPageSize);
+		mValueToSeg[pageNum] = OmSegmentPage(mSegmentation,
+											 pageNum,
+											 mPageSize);
+		mValueToSeg[pageNum].Create();
 		validPageNumbers.insert(pageNum);
 		loadedPageNumbers.insert(pageNum);
 	}
