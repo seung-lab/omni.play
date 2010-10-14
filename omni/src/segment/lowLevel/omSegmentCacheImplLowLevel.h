@@ -9,7 +9,7 @@
 
 class OmSegmentCache;
 class OmSegmentation;
-template <typename T> class OmPagingPtrStore;
+class OmPagingPtrStore;
 
 class OmSegmentCacheImplLowLevel {
 public:
@@ -69,7 +69,7 @@ public:
 
 protected:
 	OmSegmentation * mSegmentation;
-	boost::shared_ptr<OmPagingPtrStore<OmSegment> > mSegments;
+	boost::shared_ptr<OmPagingPtrStore> mSegments;
 
 	OmSegID mMaxValue;
 	OmSegID getNextValue();

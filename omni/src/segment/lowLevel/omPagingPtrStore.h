@@ -14,7 +14,6 @@ class OmDataPath;
 class OmSegmentation;
 class OmSegmentCache;
 
-template <typename T>
 class OmPagingPtrStore {
  public:
 	OmPagingPtrStore(OmSegmentation*);
@@ -23,7 +22,7 @@ class OmPagingPtrStore {
 	quint32 getPageSize() { return mPageSize; }
 	void SetSegmentationID(const OmId);
 
-	T* AddItem(const T& item);
+	OmSegment* AddItem(const OmSegment& item);
 	bool IsValueAlreadyMapped(const OmSegID);
 
 	void SaveAllLoadedPages();
@@ -32,7 +31,7 @@ class OmPagingPtrStore {
 	void FlushDirtyItems();
 	void SetBatchMode(const bool);
 
-	T* GetItemFromValue(const OmSegID value);
+	OmSegment* GetItemFromValue(const OmSegID value);
 
 	void UpgradeSegmentSerialization();
 
@@ -59,8 +58,8 @@ class OmPagingPtrStore {
 	void doSavePage(const PageNum segPageNum);
 	OmDataPath getPath(const PageNum pageNum);
 
-	template <class T2> friend QDataStream &operator<< (QDataStream & out, const OmPagingPtrStore<T2> & ps );
-	template <class T2> friend QDataStream &operator>> (QDataStream & in, OmPagingPtrStore<T2> & ps );
+	friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
+	friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);
 };
 
 #endif

@@ -457,16 +457,14 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 	return in;
 }
 
-template< class T2 >
-QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore<T2>& ps)
+QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore& ps)
 {
 	out << ps.validPageNumbers;
 	out << ps.mPageSize;
 	return out;
 }
 
-template< class T2 >
-QDataStream &operator>>(QDataStream& in, OmPagingPtrStore<T2>& ps)
+QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 {
 	in >> ps.validPageNumbers;
 	in >> ps.mPageSize;

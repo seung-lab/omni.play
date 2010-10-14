@@ -9,7 +9,7 @@
 
 OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation)
 	: mSegmentation(segmentation)
-	, mSegments( new OmPagingPtrStore<OmSegment>(segmentation) )
+	, mSegments(new OmPagingPtrStore(segmentation))
 	, mMaxValue(0)
 	, mNumSegs(0)
 	, mAllSelected(false)

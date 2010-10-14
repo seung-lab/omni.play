@@ -36,7 +36,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 	OmSegment seg(value, getSegmentCache());
 	seg.RandomizeColor();
 
-	OmSegment* addedSegment = mSegments->AddItem( seg );
+	OmSegment* addedSegment = mSegments->AddItem(seg);
 	++mNumSegs;
 	if (mMaxValue < value) {
 		mMaxValue = value;
