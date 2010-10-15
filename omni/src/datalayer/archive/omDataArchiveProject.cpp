@@ -45,7 +45,7 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	OmProjectData::setFileVersion(fileVersion_);
 	printf("Omni file version is %d\n", fileVersion_);
 
-	if(fileVersion_ < 10){
+	if(fileVersion_ < 10 || fileVersion_ > Omni_Version){
 		throw OmIoException("can not open file: file version is ("
 							+ boost::lexical_cast<std::string>(fileVersion_)
 							+"), but Omni expecting ("
