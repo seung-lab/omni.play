@@ -317,7 +317,6 @@ sub qt47 {
 
     if ( isMacSnowLeopard() ){
 	$args .= " -arch x86_64 ";
-	$args = "";
     } else {
 	$args .= " -optimized-qmake ";
     }
