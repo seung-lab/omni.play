@@ -12,6 +12,9 @@ class OmLineDraw{
 public:
 	OmLineDraw(boost::shared_ptr<OmView2dState>, const ViewType);
 
+	void DrawLine(const DataCoord& startPoint,
+				  const DataCoord& endPoint);
+
 	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
 	void bresenhamLineDraw(const DataCoord &first,
 						   const DataCoord &second,

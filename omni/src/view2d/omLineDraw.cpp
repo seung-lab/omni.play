@@ -22,6 +22,12 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 	mEditedSegmentation = 0;
 }
 
+void OmLineDraw::DrawLine(const DataCoord& startPoint,
+						  const DataCoord& endPoint)
+{
+
+}
+
 void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 								   const DataCoord & second,
 								   bool doselection)
