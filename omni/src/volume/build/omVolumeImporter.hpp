@@ -12,9 +12,6 @@
 #include "volume/omVolumeTypes.hpp"
 #include "volume/build/omVolumeImporterImageStack.hpp"
 
-//Linux only; will fix later
-#include <sys/fcntl.h>
-
 template <typename VOL>
 class OmVolumeImporter {
 private:
@@ -114,9 +111,6 @@ private:
 		file->seek(size-1);
 		file->putChar(0);
 		file->flush();
-
-		fdatasync(file->handle());
-		posix_fadvise(file->handle(), 0, 0, POSIX_FADV_DONTNEED);
 
 		return file;
 	}

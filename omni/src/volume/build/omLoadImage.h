@@ -10,7 +10,6 @@
 #include "utility/omTimer.h"
 
 #include <QImage>
-#include <fcntl.h>
 
 template <typename T>
 class OmLoadImage {
@@ -54,9 +53,6 @@ public:
 			printf("could not open file %s; skipping\n", qPrintable(fn));
 			return;
 		}
-
-		fdatasync(file.handle());
-		posix_fadvise(file.handle(), 0, 0, POSIX_FADV_DONTNEED);
 
 		const QByteArray data = file.readAll();
 		QImage img;
