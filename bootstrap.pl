@@ -304,7 +304,6 @@ sub qt47 {
     # debug not enabled?
     my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
     my @argsList = qw( -release -opensource -no-glib -v
- -optimized-qmake
  -no-exceptions
  -no-fast -make libs -make tools
  -no-accessibility -no-qt3support -no-cups -no-qdbus -no-webkit
@@ -318,6 +317,8 @@ sub qt47 {
 
     if ( isMacSnowLeopard() ){
 	$args .= " -arch x86_64 ";
+    } else {
+	$args .= " -optimized-qmake ";
     }
 
     prepareAndBuild( $baseFileName, "Qt", $args );
