@@ -71,8 +71,7 @@ public:
 
 	OmVolDataType DetermineDataType()
 	{
-		const OmMipChunkCoord coord(0,0,0,0);
-		const DataBbox chunk_bbox = vol_->MipCoordToDataBbox(coord, 0);
+		const DataBbox chunk_bbox(Vector3i(0,0,0), Vector3i(1,0,0));
 
 		OmDataWrapperPtr data = hdf5reader_->readChunk(src_path_, chunk_bbox);
 
