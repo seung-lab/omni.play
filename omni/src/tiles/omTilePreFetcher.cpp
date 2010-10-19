@@ -3,14 +3,18 @@
 #include "view2d/omTileDrawer.hpp"
 #include "zi/omUtility.h"
 #include "view2d/omView2dState.hpp"
+#include "utility/omSystemInformation.h"
 
 #include <boost/make_shared.hpp>
 
-static const int MAX_THREADS = 2;
-
 OmTilePreFetcher::OmTilePreFetcher()
 {
-	mThreadPool.start(MAX_THREADS);
+	int maxThreads = 2;
+	if(OmSystemInformation::get_num_cores() < 3){
+		maxThreads = 1;
+	}
+
+	mThreadPool.start(maxThreads);
 }
 
 // make a shallow copy of state information to avoid any locking issues
