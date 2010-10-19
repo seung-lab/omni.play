@@ -109,5 +109,10 @@ void OmMST::import(const std::string& fname)
 
 void OmMST::Flush()
 {
-	edgesPtr_->Flush();
+	static zi::mutex mutex;
+	zi::guard g(mutex);
+
+	if(numEdges_){
+		edgesPtr_->Flush();
+	}
 }

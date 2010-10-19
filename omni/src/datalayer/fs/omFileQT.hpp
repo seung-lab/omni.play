@@ -33,16 +33,19 @@ protected:
 		}
 	}
 
-	void readIn()
+	uint64_t readIn()
 	{
 		const uint64_t numBytes = file_->size();
 
 		data_ = OmSmartPtr<T>::MallocNumBytes(numBytes, om::DONT_ZERO_FILL);
 		char* dataCharPtr = reinterpret_cast<char*>(data_.get());
+		file_->seek(0);
 		const uint64_t readBytes = file_->read(dataCharPtr, numBytes);
 		if(readBytes != numBytes){
 			throw OmIoException("could not read in fully file " + fnp_);
 		}
+
+		return readBytes;
 	}
 
 public:
@@ -51,6 +54,7 @@ public:
 		const uint64_t numBytes = file_->size();
 
 		char* dataCharPtr = reinterpret_cast<char*>(data_.get());
+		file_->seek(0);
 		const uint64_t writeBytes = file_->write(dataCharPtr, numBytes);
 		if(writeBytes != numBytes){
 			throw OmIoException("could not write fully file " + fnp_);
@@ -120,7 +124,8 @@ public:
 		this->open();
 		this->file_->resize(numBytes);
 		//TODO: allocate space??
-		this->readIn();
+		const int64_t bytesRead = this->readIn();
+		assert(bytesRead == numBytes);
 
 		if(om::ZERO_FILL == shouldZeroFill){
 			memset(this->data_.get(), 0, numBytes);
