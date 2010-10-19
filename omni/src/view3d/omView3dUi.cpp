@@ -64,7 +64,7 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
 	if (event->key() == Qt::Key_C) {
-		OmId seg = 1;
+		OmID seg = 1;
 		OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
 
 		Vector3<int> voxel = current_seg.FindCenterOfSelectedSegments();
@@ -101,7 +101,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
 	//debug(dend3d, "OmView3dUi::DendModeMouseReleased\n");
 	//get segment
-	OmId segmentation_id, segment_id;
+	OmID segmentation_id, segment_id;
 	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
 		mpView3d->updateGL();
 		return;
@@ -221,7 +221,7 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 /////////////////////////////////
 ///////          Segment Picking
 
-bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segmentationId, OmId & segmentId, int *type)
+bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmID & segmentationId, OmID & segmentId, int *type)
 {
 	//debug(3d, "OmView3dUi::PickSegmentMouse\n");
 
@@ -237,7 +237,7 @@ bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segment
 		return false;
 
 	//ensure valid OmIDsSet
-	const OmId segmentationID = result[0];
+	const OmID segmentationID = result[0];
 	if (!OmProject::IsSegmentationValid(segmentationID))
 		return false;
 	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
@@ -276,7 +276,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
 	//get ids
-	OmId segmentation_id, segmentID;
+	OmID segmentation_id, segmentID;
 	int pick_object_type;
 	if (!PickSegmentMouse(event, drag, segmentation_id, segmentID, &pick_object_type))
 		return;
@@ -301,7 +301,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
 	//get segment
-	OmId segmentationID, segmentID;
+	OmID segmentationID, segmentID;
 	if (!PickSegmentMouse(event, false, segmentationID, segmentID)) {
 		mpView3d->updateGL();
 		return;
@@ -317,7 +317,7 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 {
 	DataCoord voxel;
-	OmId seg = PickVoxelMouseCrosshair(event, voxel);
+	OmID seg = PickVoxelMouseCrosshair(event, voxel);
 	if (!seg) {
 		mpView3d->updateGL();
 		return;
@@ -337,7 +337,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	//debug(view3d, "hi from %s\n", __FUNCTION__);
 
 	DataCoord voxel;
-	OmId seg = PickVoxelMouseCrosshair(event, voxel);
+	OmID seg = PickVoxelMouseCrosshair(event, voxel);
 	if (!seg) {
 		mpView3d->updateGL();
 		return;
@@ -363,7 +363,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 */
 }
 
-OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
+OmID OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
 {
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
@@ -381,7 +381,7 @@ OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 	if(!valid_pick || result.size() != 3)
 		return 0;
 
-	const OmId segmentationID = result[0];
+	const OmID segmentationID = result[0];
 	if (!OmProject::IsSegmentationValid(segmentationID))
 		return 0;
 	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))

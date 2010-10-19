@@ -35,11 +35,11 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void addSegmentationToVolume();
 
 	void refreshWidgetData();
-	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
+	void rebuildSegmentLists(const OmID segmentationID, const OmSegID segID);
 
  signals:
-	void triggerChannelView(OmId chan_id, ViewType vtype);
-	void triggerSegmentationView(OmId primary_id, ViewType vtype);
+	void triggerChannelView(OmID chan_id, ViewType vtype);
+	void triggerSegmentationView(OmID primary_id, ViewType vtype);
 
  protected:
 
@@ -117,7 +117,7 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	ChanInspector *channelInspectorWidget;
 	FilObjectInspector *filObjectInspectorWidget;
 
-	void populateChannelInspector(OmId c_id);
+	void populateChannelInspector(OmID c_id);
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	InspectorProperties * inspectorProperties;

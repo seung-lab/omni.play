@@ -36,8 +36,8 @@ private slots:
 	void printChildren();
 
 private:
-	OmId mSegmentationId;
-	OmId mSegmentId;
+	OmID mSegmentationId;
+	OmID mSegmentId;
 	bool mImmutable;
 	OmViewGroupState * mViewGroupState;
 };

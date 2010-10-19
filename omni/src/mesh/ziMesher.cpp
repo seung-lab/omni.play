@@ -17,7 +17,7 @@ void ziMesher::addChunkCoord(const OmMipChunkCoord &c) {
   levelZeroChunks_.push_back(c);
 }
 
-ziMesher::ziMesher(const OmId &segId, OmMipMeshManager *mmManager,
+ziMesher::ziMesher(const OmID &segId, OmMipMeshManager *mmManager,
                    int rootLevel)
   : segmentationId_(segId),
     mipMeshManager_(mmManager),

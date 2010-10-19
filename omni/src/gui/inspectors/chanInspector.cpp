@@ -109,7 +109,7 @@ void ChanInspector::on_notesEdit_textChanged()
 	OmProject::GetChannel(cdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
-OmId ChanInspector::getChannelID()
+OmID ChanInspector::getChannelID()
 {
 	return cdw->getID();
 }

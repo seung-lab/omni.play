@@ -20,7 +20,7 @@ QDataStream &operator>>(QDataStream & in, OmIDsSet & set )
 	quint32 size;
 	in >> size;
 
-	OmId id;
+	OmID id;
 	for( quint32 i = 0; i < size; ++i ){
 		in >> id;
 		set.insert(id);
@@ -45,7 +45,7 @@ QDataStream &operator>>(QDataStream & in, OmSegIDsSet & set )
 	quint32 size;
 	in >> size;
 
-	OmId id;
+	OmID id;
 	for( quint32 i = 0; i < size; ++i ){
 		in >> id;
 		set.insert(id);

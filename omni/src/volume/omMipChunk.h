@@ -66,7 +66,6 @@ public:
 	//mip properties
 	int GetLevel();
 	bool IsRoot();
-	bool IsLeaf();
 	const OmMipChunkCoord& GetCoordinate();
 	const OmMipChunkCoord& GetParentCoordinate();
 	const std::set<OmMipChunkCoord>& GetChildrenCoordinates();

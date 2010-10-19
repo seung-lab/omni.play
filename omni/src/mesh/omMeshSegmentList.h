@@ -11,7 +11,7 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
-typedef boost::tuple<OmId,OmSegID,int,int,int,int> OmMeshSegListKey;
+typedef boost::tuple<OmID,OmSegID,int,int,int,int> OmMeshSegListKey;
 
 class OmSegment;
 class OmSegmentCache;

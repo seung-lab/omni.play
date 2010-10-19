@@ -16,6 +16,8 @@ public:
 	OmSegmentCache(OmSegmentation * segmentation);
 	~OmSegmentCache();
 
+	void Flush();
+
 	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
@@ -51,12 +53,10 @@ public:
 
 	OmSegID getSegmentationID();
 
-	void addToDirtySegmentList( OmSegment* seg);
-	void flushDirtySegments();
-
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegment * findRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
+	OmSegID findRootID(OmSegment* segment);
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
@@ -81,14 +81,13 @@ public:
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
-	void UpgradeSegmentSerialization();
-
 private:
 	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;
 	boost::shared_ptr<OmSegmentCacheImpl> mImpl;
 
 	friend class OmSegmentColorizer;
+	friend class SegmentTests;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );

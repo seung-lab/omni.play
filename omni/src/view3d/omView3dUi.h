@@ -49,8 +49,8 @@ public:
 	
 	//segment picking
 	bool PickSegmentMouse(QMouseEvent *event, bool drag, 
-			      OmId &segmentationId, 
-			      OmId &segmentId, 
+			      OmID &segmentationId, 
+			      OmID &segmentId, 
 			      int *pickName = NULL);      
 		
 	//segment actions
@@ -67,11 +67,11 @@ private:
 	
 	bool mPrevSelectionState;
 	DataCoord mPrevMouseSelectVoxel;
-	OmId mPrevSegmentationId, mPrevSegmentId;
+	OmID mPrevSegmentationId, mPrevSegmentId;
 
 	void crosshair(QMouseEvent * event);
 	void CenterAxisOfRotation(QMouseEvent * event);
-	OmId PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
+	OmID PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
 	void resetWindow();
 	void doZoom(int direction);
 

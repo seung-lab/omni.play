@@ -53,12 +53,12 @@ OmViewGroupState::OmViewGroupState(MainWindow * mw)
 }
 
 // GUI state
-void OmViewGroupState::addView2Dchannel(OmId chan_id, ViewType vtype)
+void OmViewGroupState::addView2Dchannel(OmID chan_id, ViewType vtype)
 {
 	mViewGroup->AddView2Dchannel(chan_id, vtype);
 }
 
-void OmViewGroupState::addView2Dsegmentation(OmId segmentation_id,
+void OmViewGroupState::addView2Dsegmentation(OmID segmentation_id,
 											 ViewType vtype)
 {
 	mViewGroup->AddView2Dsegmentation(segmentation_id, vtype);
@@ -69,7 +69,7 @@ void OmViewGroupState::addView3D()
 	mViewGroup->AddView3D();
 }
 
-void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
+void OmViewGroupState::addAllViews( OmID channelID, OmID segmentationID )
 {
 	mViewGroup->AddAllViews( channelID, segmentationID );
 }
@@ -325,7 +325,7 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 }
 
 boost::shared_ptr<OmColorRGBA>
-OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
+OmViewGroupState::ColorTile(uint32_t const* imageData,
 							const Vector2i& dims,
 							const OmTileCoord& key)
 {
@@ -337,7 +337,7 @@ OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 		key.getSegmentColorCacheType();
 
 	setupColorizer(dims, key, sccType);
-	return mColorCaches[ sccType ]->colorTile(imageData);
+	return mColorCaches[ sccType ]->ColorTile(imageData);
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)

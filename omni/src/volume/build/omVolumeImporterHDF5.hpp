@@ -53,19 +53,27 @@ public:
 		OmTimer timer;
 		printf("copying in HDF5 data...\n");
 
-		//for all coords
 		const Vector3i leaf_mip_dims = vol_->MipLevelDimensionsInMipChunks(0);
+
+		const int totalNumChunks = leaf_mip_dims.x * leaf_mip_dims.y *
+			leaf_mip_dims.z;
+		int counter = 0;
+
 		for (int z = 0; z < leaf_mip_dims.z; ++z) {
 			for (int y = 0; y < leaf_mip_dims.y; ++y) {
 				for (int x = 0; x < leaf_mip_dims.x; ++x) {
 
+					++counter;
 					const OmMipChunkCoord coord(0, x, y, z);
+					printf("\r\tcopying chunk %d of %d...",
+						   counter, totalNumChunks);
+					fflush(stdout);
 					copyIntoChunk(coord);
 				}
 			}
 		}
 
-		printf("HDF5 data copy done in %f secs\n", timer.s_elapsed());
+		printf("\nHDF5 data copy done in %f secs\n", timer.s_elapsed());
 		return true;
 	}
 

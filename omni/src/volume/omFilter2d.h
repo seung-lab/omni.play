@@ -15,7 +15,7 @@ class OmFilter2d : public OmManageableObject {
 
 public:
 	OmFilter2d();
-	OmFilter2d(OmId);
+	OmFilter2d(OmID);
 
 	std::string GetName(){
 		return "filter" + boost::lexical_cast<std::string>(GetID());
@@ -24,19 +24,19 @@ public:
 	void SetAlpha(const double);
 	double GetAlpha();
 
-	OmId GetSegmentation();
-	void SetSegmentation(const OmId id);
+	OmID GetSegmentation();
+	void SetSegmentation(const OmID id);
 
-	OmId GetChannel();
-	void SetChannel(const OmId id);
+	OmID GetChannel();
+	void SetChannel(const OmID id);
 
 	bool setupVol();
 	OmMipVolume* getVolume(){ return vol_; }
 
 private:
 	double mAlpha;
-	OmId mChannel;
-	OmId mSeg;
+	OmID mChannel;
+	OmID mSeg;
 	OmMipVolume* vol_;
 
 	friend QDataStream &operator<<(QDataStream&, const OmFilter2d&);

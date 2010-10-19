@@ -11,7 +11,7 @@
 ///////
 ///////          OmSegmentGroupAction
 ///////
-OmSegmentGroupAction::OmSegmentGroupAction( const OmId segmentationId,
+OmSegmentGroupAction::OmSegmentGroupAction( const OmID segmentationId,
 					  const OmSegIDsSet & selectedSegmentIds,
 					  const OmGroupName name, const bool create)
 	: mSegmentationId( segmentationId )
@@ -47,7 +47,7 @@ void OmSegmentGroupAction::UndoAction()
 std::string OmSegmentGroupAction::Description()
 {
 	QString lineItem = QString("Grouped: ");
-	foreach( const OmId segId, mSelectedSegmentIds){
+	foreach( const OmID segId, mSelectedSegmentIds){
 		lineItem += QString("seg %1 + ").arg(segId);
 	}
 

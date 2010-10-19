@@ -3,9 +3,7 @@
 
 #include "common/omCommon.h"
 
-template <typename T>
 struct MipLevelInfo {
-	T* data;
 	uint64_t factor;
 	Vector3<uint64_t> volDims;
 

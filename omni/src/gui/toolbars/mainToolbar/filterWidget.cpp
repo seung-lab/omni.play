@@ -25,12 +25,12 @@ FilterWidget::FilterWidget(MainWindow * mw)
 	mw->getViewGroupState()->SetFilterWidget(this);
 }
 
-OmId FilterWidget::getChannelID()
+OmID FilterWidget::getChannelID()
 {
 	return 1;
 }
 
-OmId FilterWidget::getFilterID()
+OmID FilterWidget::getFilterID()
 {
 	return 1;
 }

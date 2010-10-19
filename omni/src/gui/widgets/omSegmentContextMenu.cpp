@@ -21,7 +21,7 @@
 void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs)
 {
 	mSegmentationId = sdw.getSegmentationID();
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	mSegmentId = sdw.getID();
 	mViewGroupState = vgs;
 	OmSegID rootId = seg.GetSegmentCache()->findRootID(mSegmentId);
@@ -34,9 +34,9 @@ void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * v
 	addSeparator();
 
 	AddSelectionAction();
-        addSeparator();
+	addSeparator();
 
-        AddColorActions();
+	AddColorActions();
 	addSeparator();
 
 	if(!mImmutable) {
@@ -57,8 +57,8 @@ void OmSegmentContextMenu::AddSelectionNames()
 	OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
 
 	addAction( "Segment " + QString::number(r_segment->value())
-		   + " (Root " + QString::number(r_segment->getRootSegID())
-		   + ")" );
+			   + " (Root " + QString::number(r_segment->getRootSegID())
+			   + ")" );
 	QString validText;
 	if(mImmutable) {
 		validText = "Valid in ";
@@ -126,8 +126,8 @@ void OmSegmentContextMenu::UnselectOthers()
 
 void OmSegmentContextMenu::MergeSegments()
 {
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-        OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
+	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+	OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
 }
 
@@ -140,19 +140,19 @@ void OmSegmentContextMenu::splitSegments()
 
 void OmSegmentContextMenu::AddColorActions()
 {
-        addAction(QString("Randomize Segment Color"), this, SLOT(randomizeColor()));
+	addAction(QString("Randomize Segment Color"), this, SLOT(randomizeColor()));
 }
 
 void OmSegmentContextMenu::AddGroupActions()
 {
-        addAction(QString("Set Segment Valid"), this, SLOT(addGroup()));
-        addAction(QString("Set Segment Not Valid"), this, SLOT(deleteGroup()));
+	addAction(QString("Set Segment Valid"), this, SLOT(addGroup()));
+	addAction(QString("Set Segment Not Valid"), this, SLOT(deleteGroup()));
 }
 
 void OmSegmentContextMenu::randomizeColor()
 {
-        OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-        OmSegment * r_segment = r_segmentation.GetSegmentCache()->findRoot(mSegmentId);
+	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
+	OmSegment * r_segment = r_segmentation.GetSegmentCache()->findRoot(mSegmentId);
 
 	r_segment->reRandomizeColor();
 	OmCacheManager::TouchFresheness();
@@ -161,45 +161,45 @@ void OmSegmentContextMenu::randomizeColor()
 
 void OmSegmentContextMenu::addGroup()
 {
-        //debug(validate, "OmSegmentContextMenu::addGroup\n");
-        if (OmProject::IsSegmentationValid(mSegmentationId)) {
-                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                OmSegIDsSet set;
+	//debug(validate, "OmSegmentContextMenu::addGroup\n");
+	if (OmProject::IsSegmentationValid(mSegmentationId)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+		OmSegIDsSet set;
 		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
-                seg.SetGroup(set, VALIDROOT, QString("Valid"));
-                OmEvents::SegmentModified();
-        }
+		seg.SetGroup(set, VALIDROOT, QString("Valid"));
+		OmEvents::SegmentModified();
+	}
 }
 
 void OmSegmentContextMenu::deleteGroup()
 {
-        //debug(validate, "OmSegmentContextMenu::addGroup\n");
-        if (OmProject::IsSegmentationValid(mSegmentationId)) {
-                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                OmSegIDsSet set;
-                set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
-                seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
-                OmEvents::SegmentModified();
-        }
+	//debug(validate, "OmSegmentContextMenu::addGroup\n");
+	if (OmProject::IsSegmentationValid(mSegmentationId)) {
+		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+		OmSegIDsSet set;
+		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
+		seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
+		OmEvents::SegmentModified();
+	}
 }
 
 void OmSegmentContextMenu::showProperties()
 {
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
+	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 	OmSegID segid;
 
 	segid = seg.GetSegmentCache()->findRootID(mSegmentId);
 
 	mViewGroupState->GetInspectorProperties()->setOrReplaceWidget( new SegObjectInspector(
-						 SegmentDataWrapper(mSegmentationId, segid), this),
-                                                 QString("Segmentation%1: Segment %2")
-                                                 .arg(mSegmentationId)
-                                                 .arg(segid) );
+																	   SegmentDataWrapper(mSegmentationId, segid), this),
+																   QString("Segmentation%1: Segment %2")
+																   .arg(mSegmentationId)
+																   .arg(segid) );
 }
 
 void OmSegmentContextMenu::AddPropertiesActions()
 {
-        addAction(QString("Properties"), this, SLOT(showProperties()));
+	addAction(QString("Properties"), this, SLOT(showProperties()));
 	addAction(QString("List Children"), this, SLOT(printChildren()));
 }
 
@@ -215,7 +215,7 @@ void OmSegmentContextMenu::printChildren()
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
-			printf("%u : %u, %f, %llu\n",
+			printf("%u : %u, %f, %lu\n",
 			       seg->value(),
 			       seg->getParentSegID(),
 			       seg->getThreshold(),

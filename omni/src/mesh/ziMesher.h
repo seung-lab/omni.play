@@ -11,7 +11,7 @@ class OmMipMeshManager;
 
 class ziMesher {
 public:
-  ziMesher(const OmId &segId, OmMipMeshManager *mmManager,
+  ziMesher(const OmID &segId, OmMipMeshManager *mmManager,
            int rootLevel);
   virtual ~ziMesher() {}
 
@@ -21,7 +21,7 @@ public:
   LockedInt64 numOfChunksToProcess;
 
 private:
-  OmId               segmentationId_;
+  OmID               segmentationId_;
   OmMipMeshManager   *mipMeshManager_;
   int                rootMipLevel_;
   std::vector<OmMipChunkCoord> levelZeroChunks_;

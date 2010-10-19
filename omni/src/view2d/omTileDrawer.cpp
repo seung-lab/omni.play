@@ -42,7 +42,7 @@ void OmTileDrawer::FullRedraw()
 
 	if(CHANNEL == vol->getVolumeType()) {
 		OmChannel& chan = OmProject::GetChannel(vol->getID());
-		foreach( OmId id, chan.GetValidFilterIds() ) {
+		foreach( OmID id, chan.GetValidFilterIds() ) {
 			OmFilter2d &filter = chan.GetFilter(id);
 			drawFromFilter(filter);
 		}

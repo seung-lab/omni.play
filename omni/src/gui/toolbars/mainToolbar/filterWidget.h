@@ -20,8 +20,8 @@ class FilterWidget : public QSlider {
 	void setFilAlpha(int alpha);
 
  private:
-	OmId getChannelID();
-	OmId getFilterID();
+	OmID getChannelID();
+	OmID getFilterID();
 
 	void initSilderTab();
 	boost::optional<double> doGetFilterAlpha();

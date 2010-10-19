@@ -11,7 +11,7 @@
 class OmSegmentationThresholdChangeAction : public OmAction {
 
 public:
-	OmSegmentationThresholdChangeAction( const OmId segmentationId, const float threshold);
+	OmSegmentationThresholdChangeAction( const OmID segmentationId, const float threshold);
 
 private:
 	void Action();
@@ -20,7 +20,7 @@ private:
 	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentationThresholdChangeAction";}
 
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 	float mThreshold;
 	float mOldThreshold;
 

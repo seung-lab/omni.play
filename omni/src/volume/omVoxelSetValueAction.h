@@ -10,8 +10,8 @@
 
 class OmVoxelSetValueAction : public OmAction {
 public:
-	OmVoxelSetValueAction(OmId segmentationId, DataCoord &rVoxel, OmSegID value);
-	OmVoxelSetValueAction(OmId segmentationId, std::set<DataCoord> &rVoxels,
+	OmVoxelSetValueAction(OmID segmentationId, DataCoord &rVoxel, OmSegID value);
+	OmVoxelSetValueAction(OmID segmentationId, std::set<DataCoord> &rVoxels,
 						  OmSegID value);
 
 private:
@@ -22,7 +22,7 @@ private:
 	QString classNameForLogFile(){return "OmVolxelSetvalueAction";}
 
 	//segmentation of voxels
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 
 	//map of voxels to old values
 	std::map<DataCoord, OmSegID> mOldVoxelValues;

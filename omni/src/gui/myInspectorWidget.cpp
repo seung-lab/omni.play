@@ -87,7 +87,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 {
 	dataSrcListWidget->clear();
 
-	foreach(OmId channID, OmProject::GetValidChannelIds()) {
+	foreach(OmID channID, OmProject::GetValidChannelIds()) {
 		DataWrapperContainer dwc = DataWrapperContainer(CHANNEL, channID);
 		ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
@@ -98,7 +98,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 		setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
 	}
 
-	foreach(OmId segmenID, OmProject::GetValidSegmentationIds()) {
+	foreach(OmID segmenID, OmProject::GetValidSegmentationIds()) {
 		DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
 		SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
@@ -275,7 +275,7 @@ void MyInspectorWidget::refreshWidgetData()
 	recentList->populateSegmentElementsListWidget();
 }
 
-void MyInspectorWidget::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
+void MyInspectorWidget::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
 {
 	segmentList->rebuildSegmentList(segmentationID, segID);
 	validList->rebuildSegmentList(segmentationID, segID);
@@ -486,9 +486,9 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 		elementListBox->reset();
 
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
-		foreach(OmId channelID, OmProject::GetValidChannelIds()) {
+		foreach(OmID channelID, OmProject::GetValidChannelIds()) {
 			OmChannel & channel = OmProject::GetChannel(channelID);
-			foreach(OmId filterID, channel.GetValidFilterIds()) {
+			foreach(OmID filterID, channel.GetValidFilterIds()) {
 				OmFilter2d &filter = channel.GetFilter(filterID);
 				if (filter.GetSegmentation() == sdw.getID()){
 					mParentWindow->cleanViewsOnVolumeChange(CHANNEL,channelID);
@@ -536,8 +536,8 @@ void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
 	elementListBox->reset();
 	elementListBox->setTitle("");
 
-	const OmId segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
-	const OmId segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
+	const OmID segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
+	const OmID segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
 	recentList->dealWithSegmentObjectModificationEvent(event);
 
 	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){

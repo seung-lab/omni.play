@@ -16,12 +16,12 @@ public:
 		, mNote("")
 	{}
 
-	explicit OmManageableObject(const OmId id)
+	explicit OmManageableObject(const OmID id)
 		: mId( id )
 		, mNote("")
 	{}
 
-	OmId GetID() const {
+	OmID GetID() const {
 		return mId;
 	}
 
@@ -40,7 +40,7 @@ public:
 	}
 
 protected:
-	OmId mId;
+	OmID mId;
 	QString mNote;
 	QString mCustomName;
 

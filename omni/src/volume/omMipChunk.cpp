@@ -128,11 +128,6 @@ bool OmMipChunk::IsRoot()
 	return mParentCoord == OmMipChunkCoord::NULL_COORD;
 }
 
-bool OmMipChunk::IsLeaf()
-{
-	return mCoordinate.Level == 0;
-}
-
 const OmMipChunkCoord & OmMipChunk::GetCoordinate()
 {
 	return mCoordinate;

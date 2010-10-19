@@ -29,7 +29,7 @@ private:
 	QString classNameForLogFile(){return "OmSegmentSplitAction";}
 
 	OmSegmentEdge mEdge;
-	OmId mSegmentationID;
+	OmID mSegmentationID;
 
 	QString desc;
 

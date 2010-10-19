@@ -7,7 +7,7 @@
 #include "system/cache/omCacheManager.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentValidateAction::OmSegmentValidateAction( const OmId segmentationId,
+OmSegmentValidateAction::OmSegmentValidateAction( const OmID segmentationId,
 												  const OmSegIDsSet & selectedSegmentIds,
 												  const bool valid)
 	: mSegmentationId( segmentationId )
@@ -52,7 +52,7 @@ std::string OmSegmentValidateAction::Description()
 		lineItem = QString("Invalidated: ");
 	}
 	int count = 0;
-	foreach( const OmId segId, mSelectedSegmentIds){
+	foreach( const OmID segId, mSelectedSegmentIds){
 		lineItem += QString("seg %1 + ").arg(segId);
 		if(count > 10) break;
 		count++;

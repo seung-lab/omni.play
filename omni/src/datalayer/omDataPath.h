@@ -7,32 +7,30 @@ class OmDataPath
 {
 public:
     OmDataPath()
-    {
-    }
+    {}
 
     OmDataPath( const std::string &str ): mPath( str )
-    {
-    }
+    {}
 
-    void setPath( const std::string &str )
-    {
+    void setPath( const std::string &str ){
         mPath = str;
     }
 
     // why did we have two different function names? weird...
-    void setPath( const QString &str )
-    {
+    void setPath( const QString &str ){
         mPath = str.toStdString();
     }
 
-    void setPathQstr( const QString & str )
-    {
+    void setPathQstr( const QString & str ){
         mPath = str.toStdString();
     }
 
-    const std::string& getString() const
-    {
+    const std::string& getString() const {
         return mPath;
+    }
+
+    const QString getQString() const {
+        return QString::fromStdString(mPath);
     }
 
 	friend std::ostream& operator<<(std::ostream &out, const OmDataPath &in)

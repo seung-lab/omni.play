@@ -7,9 +7,10 @@
 class OmSegment;
 class OmSegmentCacheImplLowLevel;
 class OmSegmentLists;
+class OmMST;
 
 class OmSegmentGraph {
- public:
+public:
 	OmSegmentGraph();
 	~OmSegmentGraph();
 
@@ -23,28 +24,15 @@ class OmSegmentGraph {
 
 	quint32 getNumTopLevelSegs();
 
-	void setGlobalThreshold( const quint32 * dend,
-				 const float * dendValues,
-				 uint8_t* edgeDisabledByUser,
-				 uint8_t* edgeWasJoined,
-				 uint8_t* edgeForceJoin,
-				 const int size,
-				 const float stopPoint);
-
-	void resetGlobalThreshold( const quint32 * dend,
-				   const float * dendValues,
-				   uint8_t* edgeDisabledByUser,
-				   uint8_t* edgeWasJoined,
-				   uint8_t* edgeForceJoin,
-				   const int size,
-				   const float stopPoint );
+	void setGlobalThreshold(boost::shared_ptr<OmMST> mst);
+	void resetGlobalThreshold(boost::shared_ptr<OmMST> mst);
 
 	void updateSizeListsFromJoin( OmSegment * root, OmSegment * child );
 	void updateSizeListsFromSplit( OmSegment * parent, OmSegment * child );
 
 	inline boost::shared_ptr<OmSegmentLists> getSegmentLists();
 
- private:
+private:
 
 	zi::DynamicForestPool<uint32_t> * mGraph;
 	OmSegmentCacheImplLowLevel * mCache;
@@ -52,7 +40,7 @@ class OmSegmentGraph {
 	void buildSegmentSizeLists();
 
 	bool JoinInternal( const OmSegID parentID, const OmSegID childUnknownDepthID,
-			   const float threshold, const int edgeNumber);
+					   const double threshold, const int edgeNumber);
 
 	bool splitChildFromParentInternal( const OmSegID childID );
 

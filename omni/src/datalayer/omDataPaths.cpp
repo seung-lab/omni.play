@@ -26,7 +26,7 @@ OmDataPath OmDataPaths::getProjectArchiveNameQT()
 	return OmDataPath("project.qt.dat");
 }
 
-OmDataPath OmDataPaths::getSegmentPagePath(const OmId segmentationID,
+OmDataPath OmDataPaths::getSegmentPagePath(const OmID segmentationID,
 										   const quint32 pageNum)
 {
 	const std::string p =
@@ -57,7 +57,7 @@ std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )
 }
 
 std::string OmDataPaths::getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
-											 const OmId segmentationID)
+											 const OmID segmentationID)
 {
 	const QString p = QString("%1.%2.%3_%4_%5.%6.%7.h5")
 		.arg(segmentationID)

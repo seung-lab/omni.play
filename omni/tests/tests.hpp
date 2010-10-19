@@ -1,28 +1,48 @@
 #ifndef TESTS_HPP
 #define TESTS_HPP
 
-#include "src/utility/image/omImage.hpp"
+#include "datalayer/omDataPaths.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "src/common/omCommon.h"
+#include "src/utility/image/omImage.hpp"
+#include "system/omProjectData.h"
+#include "utility/omRand.hpp"
+#include "utility/omTimer.h"
+#include "view2d/omPointsInCircle.hpp"
+#include "volume/omChannel.h"
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
-#include "volume/omChannel.h"
-#include "utility/omTimer.h"
-#include "datalayer/omDataPaths.h"
-#include "view2d/omPointsInCircle.hpp"
-#include "utility/omRand.hpp"
+#include "tests/testUtils.hpp"
+#include "segment/segmentTests.hpp"
 
 #include <QTextStream>
 
 class Tests{
+	const bool runPerfTests_;
+	const bool justRunSegments_;
+
 public:
 	Tests()
 		: runPerfTests_(ZiARG_perf)
+		, justRunSegments_(ZiARG_segments)
 	{
+		setupTestProject();
+	}
+
+	~Tests(){
+		OmProject::Close();
 	}
 
 	void Run()
 	{
 //		imageResize();
+
+		if(justRunSegments_){
+			SegmentTests segTests;
+			segTests.RunAll();
+			return;
+		}
+
 		DataToMipCoordTest();
 		rounding();
 		powersOf2();
@@ -31,13 +51,11 @@ public:
 		}
 		hdf5Paths();
 		pointsInCircle();
-		rand();
+
 		printf("done\n");
 	}
 
 private:
-	const bool runPerfTests_;
-
 	void imageResize()
 	{
 		uint32_t data[] = {
@@ -53,11 +71,11 @@ private:
 							   [2],
 							   data);
 
-		assert(8 == d.size());
+		verify(8 == d.size());
 		const uint32_t* ptr = d.getScalarPtr();
 		for(uint32_t i = 0; i <d.size(); ++i){
 			printf("%d: %d\n", i, ptr[i]);
-			assert(ptr[i] == i);
+			verify(ptr[i] == i);
 		}
 
 		d.resize(Vector3i(4,4,4));
@@ -71,22 +89,25 @@ private:
 
 	void rounding()
 	{
-		assert( 10 == ROUNDUP(1,10) );
-		assert( 0 == ROUNDUP(0,10));
+		// corner case?
+		//verify( 1 == ROUNDUP(0,1));
 
-		assert(128 == ROUNDUP(127,128));
+		verify( 10 == ROUNDUP(1,10) );
+		verify( 0 == ROUNDUP(0,10));
 
-		assert(0 == ROUNDDOWN(5,10));
-		assert(10 == ROUNDDOWN(11,10));
-		assert(128 == ROUNDDOWN(129,128));
+		verify(128 == ROUNDUP(127,128));
+
+		verify(0 == ROUNDDOWN(5,10));
+		verify(10 == ROUNDDOWN(11,10));
+		verify(128 == ROUNDDOWN(129,128));
 
 		// ROUNDDOWN and ROUNDUP not yet valid for negative numbers...
 		/*
 		  std::cout << ROUNDDOWN(-8,128) << "\n";
 		  std::cout << -8 % 128 << "\n";
 		  std::cout << abs(-8) % 128 << "\n";
-		  assert(-128 == ROUNDDOWN(-8,128));
-		  assert(0 == ROUNDUP(-8,128));
+		  verify(-128 == ROUNDDOWN(-8,128));
+		  verify(0 == ROUNDUP(-8,128));
 		*/
 
 		printf("rounding OK\n");
@@ -96,36 +117,36 @@ private:
 	{
 		const Vector3i chunkDims(128,128,128);
 
-		assert(OmMipChunkCoord(0,0,0,0) ==
+		verify(OmMipChunkCoord(0,0,0,0) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(1,1,1), 0, chunkDims));
 
-		assert(OmMipChunkCoord(0,1,1,1) ==
+		verify(OmMipChunkCoord(0,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(129,129,129), 0, chunkDims));
 
-		assert(OmMipChunkCoord(1,0,0,0) ==
+		verify(OmMipChunkCoord(1,0,0,0) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(255,255,255), 1, chunkDims));
 
-		assert(OmMipChunkCoord(1,1,1,1) ==
+		verify(OmMipChunkCoord(1,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(256,256,256), 1, chunkDims));
 
-		assert(OmMipChunkCoord(2,0,0,0) ==
+		verify(OmMipChunkCoord(2,0,0,0) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(511,511,511), 2, chunkDims));
 
-		assert(OmMipChunkCoord(2,1,1,1) ==
+		verify(OmMipChunkCoord(2,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
 
-		assert(OmMipChunkCoord::NULL_COORD ==
+		verify(OmMipChunkCoord::NULL_COORD ==
 			   OmMipVolume::DataToMipCoord(DataCoord(-8, 0, 0), 0, chunkDims));
 
 		const Vector3<uint64_t> chunkDims64(128,128,128);
-		assert(OmMipChunkCoord(0,1,1,1) ==
+		verify(OmMipChunkCoord(0,1,1,1) ==
 			   OmMipVolume::DataToMipCoord(DataCoord(130,128,128), 0, chunkDims64));
 
 		if(runPerfTests_){
 			OmTimer timer;
 			const uint64_t max = 2000000;
 			for(uint64_t i = 0; i < max; ++i){
-				assert(OmMipChunkCoord(2,1,1,1) ==
+				verify(OmMipChunkCoord(2,1,1,1) ==
 					   OmMipVolume::DataToMipCoord(DataCoord(512,512,512), 2, chunkDims));
 			}
 			std::cout << max << " conversions in " << timer.s_elapsed() << " secs\n";
@@ -145,7 +166,7 @@ private:
 						  << std::pow(static_cast<float>(2),
 									  static_cast<float>(i))
 						  << "\n";
-				assert(0);
+				verify(0);
 			}
 		}
 
@@ -214,37 +235,22 @@ private:
 
 	}
 
-	void rand()
-	{
-		const int max = 3000;
-
-		const QString outFile("/tmp/randNums.txt");
-		QFile f(outFile);
-		if(f.open(QFile::WriteOnly | QFile::Truncate)) {
-			printf("writing segment file %s\n", qPrintable(outFile));
-		} else{
-			throw OmIoException("could not open file \"" + outFile.toStdString()
-								+"\"");
-		}
-
-		QTextStream out(&f);
-
-		for(int i = 0; i < max; ++i){
-			out << OmRand::GetRandomInt(1,127) << "\n";
-		}
-
-		printf("rand OK\n");
-	}
-
 	void hdf5Paths()
 	{
 		OmSegmentation seg1(1);
 
-		assert("segmentations/segmentation1/" ==
+		verify("segmentations/segmentation1/" ==
 			   OmDataPaths::getDirectoryPath(&seg1));
 
+		const QString basePath =
+			OmProjectData::GetFilesFolderPath().absolutePath();
+		const QString fullPathToVolData =
+			basePath + "/segmentations/segmentation1/0/volume.unknown.raw";
+		verify(fullPathToVolData.toStdString() ==
+			   OmFileNames::GetMemMapFileName(&seg1, 0));
+
 		OmChannel chann1(1);
-		assert("channels/channel1/" ==
+		verify("channels/channel1/" ==
 			   OmDataPaths::getDirectoryPath(&chann1));
 
 		printf("hdf5 path tests OK\n");
@@ -297,9 +303,9 @@ private:
 			for(int y = 0; y < 33; ++y){
 				Om2dPoint fp = { x, y };
 				if(BrushTool32[x][y]){
-					assert(points.count(fp));
+					verify(points.count(fp));
 				} else {
-					assert(!points.count(fp));
+					verify(!points.count(fp));
 				}
 			}
 		}
@@ -320,6 +326,12 @@ private:
 		}
 
 		printf("points in circle OK\n");
+	}
+
+	void setupTestProject()
+	{
+		const QString path = "/tmp/omni_test_project.omni";
+		OmProject::New(path);
 	}
 
 };

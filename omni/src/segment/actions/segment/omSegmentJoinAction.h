@@ -11,7 +11,7 @@
 class OmSegmentJoinAction : public OmAction {
 
 public:
-	OmSegmentJoinAction( const OmId, const OmSegIDsSet&);
+	OmSegmentJoinAction( const OmID, const OmSegIDsSet&);
 
 private:
 	void Action();
@@ -20,7 +20,7 @@ private:
 	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentJoinAction";}
 
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
 
 	template <typename T> friend class OmActionLoggerFSThread;

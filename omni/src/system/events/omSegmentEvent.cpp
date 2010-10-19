@@ -10,7 +10,7 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type)
 {
 }
 
-OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId)
+OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmID segmentationId)
 	: OmEvent(type, CLASS)
 	, mSegmentationId(segmentationId)
 	, mSegmentJustSelectedID(0)
@@ -21,8 +21,8 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type, OmId segmentationId)
 }
 
 OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
-			       OmId segmentationId,
-			       const OmId segmentJustSelectedID,
+			       OmID segmentationId,
+			       const OmID segmentJustSelectedID,
 			       void* sender,
 			       std::string comment,
 			       const bool doScroll )
@@ -35,12 +35,12 @@ OmSegmentEvent::OmSegmentEvent(QEvent::Type type,
 {
 }
 
-OmId OmSegmentEvent::GetModifiedSegmentationId()
+OmID OmSegmentEvent::GetModifiedSegmentationId()
 {
 	return mSegmentationId;
 }
 
-OmId OmSegmentEvent::GetSegmentJustSelectedID()
+OmID OmSegmentEvent::GetSegmentJustSelectedID()
 {
 	return mSegmentJustSelectedID;
 }

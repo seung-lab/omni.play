@@ -17,44 +17,31 @@ class OmPagingPtrStore {
 	OmPagingPtrStore(OmSegmentation*);
 	virtual ~OmPagingPtrStore(){}
 
-	quint32 getPageSize() { return mPageSize; }
-	void SetSegmentationID(const OmId);
+	void Flush();
 
-	OmSegment* AddItem(const OmSegment& item);
-	bool IsValueAlreadyMapped(const OmSegID);
+	quint32 getPageSize() { return pageSize_; }
+	void SetSegmentationID(const OmID);
 
-	void SaveAllLoadedPages();
-	void SaveDirtyPages();
-	void AddToDirtyList(const OmSegID);
-	void FlushDirtyItems();
-	void SetBatchMode(const bool);
-
-	OmSegment* GetItemFromValue(const OmSegID value);
-
-	void UpgradeSegmentSerialization();
+	OmSegment* AddSegment(const OmSegID value);
+	OmSegment* GetSegment(const OmSegID value);
 
  private:
-	OmSegmentation *const mSegmentation;
+	OmSegmentation *const segmentation_;
 
-	uint32_t mPageSize;
-	std::vector<OmSegmentPage> mValueToSeg;
-	QSet<PageNum> validPageNumbers;
-	QSet<PageNum> loadedPageNumbers;
-	QSet<PageNum> dirtyPages;
-	bool mAllPagesLoaded;
-
-	bool amInBatchMode;
-	bool needToFlush;
+	uint32_t pageSize_;
+	std::vector<OmSegmentPage> pages_;
+	QSet<PageNum> validPageNumbers_;
 
 	inline PageNum getValuePageNum(const OmSegID value){
-		return PageNum(value / mPageSize);
+		return PageNum(value / pageSize_);
 	}
 
+	void loadAllSegmentPages();
 	void resizeVectorIfNeeded(const PageNum pageNum);
-	void loadValuePage(const PageNum);
-	void loadValuePage(const PageNum, const om::RewriteSegments);
-	void doSavePage(const PageNum segPageNum);
-	OmDataPath getPath(const PageNum pageNum);
+
+	QString metadataPathQStr();
+	void loadMetadata();
+	void storeMetadata();
 
 	friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
 	friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);

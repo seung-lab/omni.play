@@ -42,20 +42,19 @@ OmSegmentation::OmSegmentation()
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
-	, mst_(new OmMST())
+	, mst_(boost::make_shared<OmMST>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
-{
-}
+{}
 
 // used by OmGenericManager
-OmSegmentation::OmSegmentation(OmId id)
+OmSegmentation::OmSegmentation(OmID id)
 	: OmManageableObject(id)
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
 	, mSegmentCache(new OmSegmentCache(this))
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
-	, mst_(new OmMST())
+	, mst_(boost::make_shared<OmMST>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
 {
 	mMipMeshManager->SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
@@ -89,14 +88,8 @@ std::string OmSegmentation::GetDirectoryPath() {
 
 void OmSegmentation::BuildVolumeData()
 {
-	mSegmentCache->turnBatchModeOn(true);
-
-	//build volume
 	OmDataPath dataset = OmDataPath("main");
 	OmMipVolume::Build(dataset);
-
-	mSegmentCache->flushDirtySegments();
-	mSegmentCache->turnBatchModeOn(false);
 }
 
 void OmSegmentation::Mesh()
@@ -192,34 +185,18 @@ void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
 	}
 }
 
-void OmSegmentation::FlushDirtySegments()
+void OmSegmentation::SetDendThreshold(const double t)
 {
-	mSegmentCache->flushDirtySegments();
-}
-
-void OmSegmentation::FlushDend()
-{
-	mst_->FlushDend(this);
-}
-
-void OmSegmentation::FlushDendUserEdges()
-{
-	mst_->FlushDendUserEdges(this);
-}
-
-void OmSegmentation::SetDendThreshold( float t )
-{
-	if( t == mst_->mDendThreshold ){
+	if( t == mst_->UserThreshold() ){
 		return;
 	}
-	mst_->mDendThreshold = t;
+	mst_->SetUserThreshold(t);
 	mSegmentCache->refreshTree();
 }
 
 void OmSegmentation::CloseDownThreads()
 {
 	mMipMeshManager->CloseDownThreads();
-	mDataCache->closeDownThreads();
 }
 
 Vector3i OmSegmentation::FindCenterOfSelectedSegments() const
@@ -268,15 +245,15 @@ void OmSegmentation::loadVolData()
 	}
 }
 
-float OmSegmentation::GetDendThreshold()
+double OmSegmentation::GetDendThreshold()
 {
-	return mst_->mDendThreshold;
+	return mst_->UserThreshold();
 }
 
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	mDataCache->Get(chunk, coord, true);
+	mDataCache->Get(chunk, coord);
 
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
@@ -310,26 +287,24 @@ public:
 		OmMipChunkPtr chunk;
 		vol_->GetChunk(chunk, coord_);
 
-		const bool isMIPzero = chunk->IsLeaf();
+		const bool isMIPzero = (0 == coord_.Level);
 
 		chunk->RefreshDirectDataValues(isMIPzero, segmentCache_);
 		std::cout << "chunk " << coord_
 				  << " has " << chunk->GetDirectDataValues().size()
 				  << " values\n";
 
-		double max = 0;
-		double min = 0;
 		if(isMIPzero){
-			min = std::min(chunk->GetMinValue(), min);
-			max = std::max(chunk->GetMaxValue(), max);
+			vol_->updateMinMax(chunk->GetMinValue(),
+							   chunk->GetMaxValue());
 		}
-
-		vol_->updateMinMax(min, max);
 	}
 };
 
 void OmSegmentation::doBuildThreadedVolume()
 {
+	loadVolData();
+
 	OmThreadPool threadPool;
 	threadPool.start();
 
@@ -377,4 +352,10 @@ void OmSegmentation::SetVolDataType(const OmVolDataType type)
 SegmentationDataWrapper OmSegmentation::getSDW() const
 {
 	return SegmentationDataWrapper(GetID());
+}
+
+void OmSegmentation::Flush()
+{
+	mSegmentCache->Flush();
+	mst_->Flush();
 }

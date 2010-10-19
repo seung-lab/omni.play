@@ -30,10 +30,10 @@ public:
 	FilterWidget* GetFilterWidget(){ return mFilterWidget; }
 
 	// GUI state
-	void addView2Dchannel( OmId chan_id, ViewType vtype);
-	void addView2Dsegmentation( OmId segmentation_id, ViewType vtype);
+	void addView2Dchannel( OmID chan_id, ViewType vtype);
+	void addView2Dsegmentation( OmID segmentation_id, ViewType vtype);
 	void addView3D();
-	void addAllViews( OmId channelID, OmId segmentationID );
+	void addAllViews( OmID channelID, OmID segmentationID );
 
 	//viewbox state
 	void SetViewSliceMin(const ViewType plane, const float x,
@@ -58,7 +58,7 @@ public:
 	// slices
 	void SetSliceState(OmSlicePlane plane, bool enabled);
 
-	boost::shared_ptr<OmColorRGBA> ColorTile(boost::shared_ptr<uint32_t>,
+	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*,
 											 const Vector2i&,
 											 const OmTileCoord&);
 

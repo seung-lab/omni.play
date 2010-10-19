@@ -6,8 +6,8 @@
 #include "segment/omSegmentCache.h"
 
 GroupButtonTag::GroupButtonTag(ValidationGroup * d)
-	: OmButton<ValidationGroup>( d, 
-				 "Group As:", 
+	: OmButton<ValidationGroup>( d,
+				 "Group As:",
 				 "",
 				 false)
 {
@@ -20,8 +20,10 @@ void GroupButtonTag::doAction()
 	if(!sdw.isValid()){
 		return;
 	}
-	
+
 	OmSegmentation & seg = sdw.getSegmentation();
-	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(), GROUPROOT, mParent->getGroupNameFromGUI());
+	seg.SetGroup(seg.GetSegmentCache()->GetSelectedSegmentIds(),
+				 GROUPROOT,
+				 mParent->getGroupNameFromGUI());
 	OmEvents::SegmentModified();
 }

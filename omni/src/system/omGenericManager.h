@@ -3,7 +3,7 @@
 
 /*
  *	Templated generic manager for a objects that have an
- *   (OmId id) constructor.
+ *   (OmID id) constructor.
  *
  *  NOT thread-safe
  *
@@ -41,7 +41,7 @@ public:
 	//managed accessors
 	T& Add()
 	{
-		const OmId id = mNextId;
+		const OmID id = mNextId;
 		mMap[id] = new T(id);
 		findAndSetNextValidID();
 
@@ -51,13 +51,13 @@ public:
 		return *mMap[id];
 	}
 
-	T& Get( const OmId id) const
+	T& Get( const OmID id) const
 	{
 		throwIfInvalidID(id);
 		return *mMap[id];
 	}
 
-	void Remove( const OmId id)
+	void Remove( const OmID id)
 	{
 		throwIfInvalidID(id);
 
@@ -71,7 +71,7 @@ public:
 	}
 
 	//valid
-	bool IsValid( const OmId id) const{
+	bool IsValid( const OmID id) const{
 		return !isIDinvalid(id);
 	}
 
@@ -80,13 +80,13 @@ public:
 	}
 
 	//enabled
-	bool IsEnabled( const OmId id) const
+	bool IsEnabled( const OmID id) const
 	{
 		throwIfInvalidID(id);
 		return mEnabledSet.count(id);
 	}
 
-	void SetEnabled( const OmId id, const bool enable)
+	void SetEnabled( const OmID id, const bool enable)
 	{
 		throwIfInvalidID(id);
 
@@ -102,7 +102,7 @@ public:
 	}
 
 private:
-	OmId mNextId;
+	OmID mNextId;
 	uint32_t mSize;
 
 	std::vector<T*> mMap;
@@ -110,11 +110,11 @@ private:
 	OmIDsSet mValidSet;	  // keys in map (fast iteration)
 	OmIDsSet mEnabledSet; // enabled keys in map
 
-	bool isIDinvalid(const OmId id) const {
+	bool isIDinvalid(const OmID id) const {
 		return id < 1 || id >= mSize || NULL == mMap[id];
 	}
 
-	void throwIfInvalidID(const OmId id) const {
+	void throwIfInvalidID(const OmID id) const {
 		if(isIDinvalid(id)){
 			assert(0 && "invalid ID");
 			throw OmAccessException("Cannot get object with id: " + id);

@@ -11,7 +11,7 @@ void MainToolbar::filterSegmentationChanged(int)
 
 void MainToolbar::filterChannelChanged(int chanId)
 {
-	OmId filterID = 1;
+	OmID filterID = 1;
 
 	if( OmProject::IsChannelValid( chanId ) ){
 		OmChannel& channel = OmProject::GetChannel( chanId );
@@ -28,7 +28,7 @@ void MainToolbar::setupFilterToolbar()
 {
 
 	mSegmentationCombo = new QComboBox(this);
-        foreach(OmId segmentationID, OmProject::GetValidSegmentationIds()) {
+        foreach(OmID segmentationID, OmProject::GetValidSegmentationIds()) {
 		QString segString = QString("Segmentation %1").arg(segmentationID) ;
 		mSegmentationCombo->insertItem(segmentationID, segString);
 	
@@ -37,7 +37,7 @@ void MainToolbar::setupFilterToolbar()
 		this, SLOT(filterSegmentationChanged(int)), Qt::DirectConnection);
 		
 	mChannelCombo = new QComboBox(this);
-        foreach(OmId channelID, OmProject::GetValidChannelIds()) {
+        foreach(OmID channelID, OmProject::GetValidChannelIds()) {
 		QString chanString = QString("Channel %1").arg(channelID) ;
 		mChannelCombo->insertItem(channelID, chanString);
 	

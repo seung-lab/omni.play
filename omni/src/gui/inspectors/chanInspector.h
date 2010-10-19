@@ -16,7 +16,7 @@ class ChanInspector : public QWidget, public Ui::chanInspector
  public:
 	ChanInspector( ChannelDataWrapper incoming_cdw, QWidget *parent);
 
-	OmId getChannelID();
+	OmID getChannelID();
 
  	QString raiseFileDialog();
 	ChannelDataWrapper getChannelDataWrapper();

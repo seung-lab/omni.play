@@ -8,7 +8,7 @@
 #include "tiles/omTileDumper.hpp"
 #include "volume/omMipVolume.h"
 
-OmTileDumper::OmTileDumper(const OmId volID, const ObjectType type,
+OmTileDumper::OmTileDumper(const OmID volID, const ObjectType type,
 						   const QString& dumpfile,
 						   OmViewGroupState* vgs)
 	: dumpfile_(dumpfile)

@@ -156,7 +156,7 @@ private:
 			return;
 		}
 
-		const OmId segmentID = sdw.getID();
+		const OmID segmentID = sdw.getID();
 
 		OmSegmentEditor::SetEditSelection( segmentation.GetID(), segmentID);
 
@@ -193,10 +193,10 @@ private:
 
 		SegmentDataWrapper* ret = NULL;
 		OmChannel& channel = OmProject::GetChannel(state_->getVol()->getID());
-		foreach( OmId id, channel.GetValidFilterIds() ) {
+		foreach( OmID id, channel.GetValidFilterIds() ) {
 
 			OmFilter2d &filter = channel.GetFilter(id);
-			OmId segmentationID = filter.GetSegmentation();
+			OmID segmentationID = filter.GetSegmentation();
 			if (!OmProject::IsSegmentationValid(segmentationID)){
 				continue;
 			}
@@ -213,7 +213,7 @@ private:
 
 	SegmentDataWrapper*
 	getSelectedSegmentSegmentation(const DataCoord& dataClickPoint,
-								   const OmId segmentationID)
+								   const OmID segmentationID)
 	{
 		OmSegmentation & segmentation =
 			OmProject::GetSegmentation(segmentationID);

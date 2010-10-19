@@ -7,7 +7,7 @@
 #include <QTreeWidgetItem>
 #include <QMenu>
 
-static OmId mSeg = 1; //FIXME!
+static OmID mSeg = 1; //FIXME!
 
 GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vgs)
 {
@@ -41,7 +41,7 @@ void GroupsTable::doDeleteAction()
 	printf("here %p %p\n", QObject::sender(), mMenu);
 }
 
-OmId GroupsTable::getSegmentationID()
+OmID GroupsTable::getSegmentationID()
 {
         return mSeg;
 }

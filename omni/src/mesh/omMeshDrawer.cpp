@@ -202,8 +202,8 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
  */
 bool OmMeshDrawer::shouldChunkBeDrawn(OmMipChunkPtr p_chunk)
 {
-	//draw if leaf
-	if(p_chunk->IsLeaf()){
+	// draw if MIP 0
+	if(0 == p_chunk->GetCoordinate().Level){
 		return true;
 	}
 

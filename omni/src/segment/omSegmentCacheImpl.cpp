@@ -33,18 +33,15 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 		return NULL;
 	}
 
-	OmSegment seg(value, getSegmentCache());
-	seg.RandomizeColor();
+	OmSegment* seg = mSegments->AddSegment(value);
+	seg->RandomizeColor();
 
-	OmSegment* addedSegment = mSegments->AddItem(seg);
 	++mNumSegs;
 	if (mMaxValue < value) {
 		mMaxValue = value;
 	}
 
-	addToDirtySegmentList(value);
-
-	return addedSegment;
+	return seg;;
 }
 
 OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
@@ -58,7 +55,6 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 		seg = AddSegment(val);
 	}
 
-	addToDirtySegmentList(seg);
 	return seg;
 }
 
@@ -109,7 +105,7 @@ OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegm
 
 	assert(nearestCommonPred != 0);
 
-	float minThresh = 100.0;
+	double minThresh = 100.0;
 	OmSegment * minChild = 0;
 	for (one = seg1; one != nearestCommonPred; one = GetSegmentFromValue(one->getParentSegID())) {
 		if (one->getThreshold() < minThresh) {
@@ -147,9 +143,6 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 		return OmSegmentEdge();
 	}
 
-	addToDirtySegmentList(child);
-	addToDirtySegmentList(parent);
-
 	OmSegmentEdge edgeThatGotBroken( parent, child, child->getThreshold() );
 
 	parent->removeChild(child);
@@ -169,15 +162,11 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( -1 != child->getEdgeNumber() ){
 		const int e = child->getEdgeNumber();
-		boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
-		uint8_t* edgeDisabledByUser =
-			mst->mEdgeDisabledByUser->getPtr<uint8_t>();
-		uint8_t* edgeWasJoined = mst->mEdgeWasJoined.get();
-		uint8_t* edgeForceJoin = mst->mEdgeForceJoin->getPtr<uint8_t>();
+		OmMSTEdge* edges = mSegmentation->getMST()->Edges();
 
-		edgeDisabledByUser[e] = 1;
-		edgeWasJoined[e] = 0;
-		edgeForceJoin[e] = 0;
+		edges[e].userSplit = 1;
+		edges[e].wasJoined = 0;
+		edges[e].userJoin  = 0;
 		child->setEdgeNumber(-1);
 	}
 
@@ -245,7 +234,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 
 std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( const OmSegID parentID, const OmSegID childUnknownDepthID )
 {
-	const float threshold = 2.0f;
+	const double threshold = 2.0f;
 	return JoinFromUserAction( OmSegmentEdge( parentID, childUnknownDepthID, threshold) );
 }
 
@@ -351,14 +340,12 @@ void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
 		getSegmentLists()->moveSegmentFromValidToRoot(seg);
 	}
 
-	addToDirtySegmentList(seg);
-
 	if( -1 == seg->getEdgeNumber() ){
 		return;
 	}
 
-	quint8 * edgeForceJoin = mSegmentation->mst_->mEdgeForceJoin->getPtr<unsigned char>();
-	edgeForceJoin[ seg->getEdgeNumber() ] = valid;
+	OmMSTEdge* edges = mSegmentation->mst_->Edges();
+	edges[seg->getEdgeNumber()].userJoin = valid;
 }
 
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
@@ -412,14 +399,8 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 		return;
 	}
 
-	printf("setting global threshold to %f...\n", mst->mDendThreshold);
-	mSegmentGraph.setGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
-									  mst->mDendValues->getPtr<float>(),
-									  mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
-									  mst->mEdgeWasJoined.get(),
-									  mst->mEdgeForceJoin->getPtr<uint8_t>(),
-									  mst->mDendCount,
-									  mst->mDendThreshold);
+	printf("setting global threshold to %f...\n", mst->UserThreshold());
+	mSegmentGraph.setGlobalThreshold(mst);
 
 	mSelectedSet.clear();
 	clearCaches();
@@ -431,16 +412,9 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 {
 	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
 
-	printf("resetting global threshold to %f...\n", mst->mDendThreshold);
+	printf("resetting global threshold to %f...\n", mst->UserThreshold());
 
-	mSegmentGraph.resetGlobalThreshold( mst->mDend->getPtr<uint32_t>(),
-										mst->mDendValues->getPtr<float>(),
-										mst->mEdgeDisabledByUser->getPtr<uint8_t>(),
-										mst->mEdgeWasJoined.get(),
-										mst->mEdgeForceJoin->getPtr<uint8_t>(),
-										mst->mDendCount,
-										mst->mDendThreshold);
-
+	mSegmentGraph.resetGlobalThreshold(mst);
 	rerootSegmentLists();
 	clearCaches();
 
@@ -451,7 +425,7 @@ boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
 	return getSegmentation()->GetSegmentLists();
 }
 
-void OmSegmentCacheImpl::UpgradeSegmentSerialization()
+void OmSegmentCacheImpl::Flush()
 {
-	mSegments->UpgradeSegmentSerialization();
+	mSegments->Flush();
 }

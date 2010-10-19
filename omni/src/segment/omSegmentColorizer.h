@@ -16,26 +16,19 @@ class OmSegment;
 
 class OmSegmentColorizer
 {
- public:
+public:
 	OmSegmentColorizer( OmSegmentCache*,
-			    const OmSegmentColorCacheType,
-			    const Vector2i& dims);
+						const OmSegmentColorCacheType,
+						const Vector2i& dims);
 
-	boost::shared_ptr<OmColorRGBA> colorTile(boost::shared_ptr<uint32_t>);
+	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*const imageData);
 
-	void setCurBreakThreshhold( const float t ) {
-		mPrevBreakThreshhold = mCurBreakThreshhold;
-		mCurBreakThreshhold = t;
-	}
-
- private:
+private:
 	zi::rwmutex mMapResizeMutex;
 
 	OmSegmentCache* mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 	OmSegID mSize;
-	float mCurBreakThreshhold;
-	float mPrevBreakThreshhold;
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
 	int mCurSegCacheFreshness;
@@ -46,18 +39,24 @@ class OmSegmentColorizer
 
 	OmColor getVoxelColorForView2d(const OmSegID val);
 
-	inline int makeSelectedColor(const quint8 in_c) {
+	static inline OmColor makeSelectedColor(const OmColor& color)
+	{
 		static const double selectedSegColorFactor = 2.5;
-		const int c = static_cast<int>((double)in_c * selectedSegColorFactor);
-		if (c > 255) {
-			return 255;
-		}
-		return c;
+
+		const OmColor ret =
+			{(color.red   > 101 ? 255 : color.red   * selectedSegColorFactor),
+			 (color.green > 101 ? 255 : color.green * selectedSegColorFactor),
+			 (color.blue  > 101 ? 255 : color.blue  * selectedSegColorFactor)
+			};
+		return ret;
 	}
 
-	void doColorTile(uint32_t*, OmColorRGBA*);
+	void doColorTile(uint32_t const*, OmColorRGBA*);
 
-	struct segment_colorizer_mutex_pool_tag;
+	struct colorizer_mutex_pool_tag;
+	typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard mutex_guard_t;
+
+	friend class SegmentTests;
 };
 
 #endif

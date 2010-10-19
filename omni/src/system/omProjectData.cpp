@@ -1,3 +1,4 @@
+#include "project/omProject.h"
 #include "common/omDebug.h"
 #include "common/omException.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
@@ -45,33 +46,33 @@ OmProjectData *OmProjectData::Instance()
 
 void OmProjectData::Delete()
 {
-	if (mspInstance)
+	if (mspInstance){
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 
 QString OmProjectData::getFileNameAndPath()
 {
-	const std::string& fnp = Instance()->dataReader->getFileNameAndPath();
-	return QString::fromStdString(fnp);
+	return OmProject::GetFileNameAndPath();
 }
 
 QString OmProjectData::getAbsoluteFileNameAndPath()
 {
-	QString rel_fnpn = getFileNameAndPath();
-	QFileInfo fInfo(rel_fnpn);
-	return fInfo.absoluteFilePath();
+	return OmProject::GetFileNameAndPath();
 }
 
 QString OmProjectData::getAbsolutePath()
 {
-	QString rel_fnpn = getFileNameAndPath();
-	QFileInfo fInfo(rel_fnpn);
-	return fInfo.absolutePath();
+	return OmProject::GetPath();
 }
 
 QDir OmProjectData::GetFilesFolderPath()
 {
+	if( "" == getAbsoluteFileNameAndPath()){
+		throw OmIoException("project file name not set");
+	}
+
 	return QDir(getAbsoluteFileNameAndPath() + ".files");
 }
 
@@ -93,14 +94,14 @@ void OmProjectData::Create()
 		if(FileHelpers::removeDir(path)){
 			printf("done!\n");
 		} else {
-			throw OmIoException("could not remove folder " + path.toStdString());
+			throw OmIoException("could not remove folder", path);
 		}
 	}
 
 	if(filesDir.mkpath(path)){
 		printf("made folder \"%s\"\n", qPrintable(path));
 	} else{
-		throw OmIoException("could not make folder " + path.toStdString());
+		throw OmIoException("could not make folder", path);
 	}
 
 	Instance()->dataWriter->create();

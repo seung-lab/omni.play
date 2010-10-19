@@ -25,7 +25,7 @@ class SegmentationDataWrapper;
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
 	OmSegmentation();
-	OmSegmentation(OmId id);
+	OmSegmentation(OmID id);
 	~OmSegmentation();
 
 	boost::shared_ptr<OmVolumeData> getVolData();
@@ -34,7 +34,7 @@ public:
 	std::string GetDirectoryPath();
 	void loadVolData();
 	ObjectType getVolumeType(){ return SEGMENTATION; }
-	OmId getID(){ return GetID(); }
+	OmID getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 	int GetBytesPerSample() const;
 
@@ -42,6 +42,7 @@ public:
 
 	void CloseDownThreads();
 
+	void Flush();
 	void BuildVolumeData();
 	void Mesh();
 	void MeshChunk(const OmMipChunkCoord& coord);
@@ -63,12 +64,8 @@ public:
  	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 
-	void FlushDirtySegments();
-	void FlushDend();
-	void FlushDendUserEdges();
-	void SetDendThreshold( float t );
-	void SetDendThresholdAndReload( const float t );
-	float GetDendThreshold();
+	void SetDendThreshold( double t );
+	double GetDendThreshold();
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
@@ -104,6 +101,7 @@ private:
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
 	friend class OmSegmentationChunkBuildTask;
+	friend class SegmentTests;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);

@@ -40,14 +40,14 @@ public:
 	bool IsEmptyMesh();
 
 	void Draw();
-	void setSegmentationID(OmId sid);
-	OmId getSegmentationID();
+	void setSegmentationID(OmID sid);
+	OmID getSegmentationID();
 
 	bool hasData(){ return mHasData; }
 
 private:
 	OmMeshCache *const cache_;
-	OmId mSegmentationID;
+	OmID mSegmentationID;
 	OmHdf5* mHdf5File;
 	OmMipMeshManager *const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;

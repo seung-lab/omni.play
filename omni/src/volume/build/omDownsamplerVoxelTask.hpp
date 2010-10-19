@@ -1,34 +1,46 @@
 #ifndef OM_DOWNSAMPLER_VOXEL_TASK
 #define OM_DOWNSAMPLER_VOXEL_TASK
 
-
-
 template <typename T>
 class DownsampleVoxelTask : public zi::runnable {
 private:
 	OmMipVolume *const vol_;
-	const std::vector<MipLevelInfo<T> >& mips_;
+	const std::vector<MipLevelInfo>& mips_;
 	const MippingInfo& mippingInfo_;
 	const OmMipChunkCoord coord_;
 	const Vector3i srcChunkStartPos_;
-	const uint64_t srcChunkOffset_;
+	boost::shared_ptr<OmRawChunkCache<T> > cache_;
+
+	std::vector<boost::shared_ptr<OmRawChunk<T> > > chunks_;
 
 public:
 	DownsampleVoxelTask(OmMipVolume* vol,
-						const std::vector<MipLevelInfo<T> >& mips,
+						const std::vector<MipLevelInfo>& mips,
 						const MippingInfo& mippingInfo,
-						const OmMipChunkCoord& coord)
+						const OmMipChunkCoord& coord,
+						boost::shared_ptr<OmRawChunkCache<T> > cache)
 		: vol_(vol)
 		, mips_(mips)
 		, mippingInfo_(mippingInfo)
 		, coord_(coord)
 		, srcChunkStartPos_(vol_->MipCoordToDataBbox(coord_, 0).getMin())
-		, srcChunkOffset_(computeChunkOffsetIntoVolume(0, coord.Coordinate))
-	{}
+		, cache_(cache)
+	{
+		chunks_.resize(mippingInfo.maxMipLevel + 1);
+
+		for(int i = 1; i <= mippingInfo_.maxMipLevel; ++i){
+			const DataCoord dstCoord = coord_.Coordinate / mips_[i].factor;
+			const OmMipChunkCoord coord(i, dstCoord);
+
+			boost::shared_ptr<OmRawChunk<T> > chunk;
+			cache_->Get(chunk, coord, om::BLOCKING);
+			chunks_[i] = chunk;
+		}
+	}
 
 	void run()
 	{
-		T *const chunkStart = mips_[0].data + srcChunkOffset_;
+		OmRawChunk<T> mip0chunk(vol_, coord_);
 
 		const int sliceSize = 128*128;
 
@@ -38,36 +50,13 @@ public:
 
 					const Vector3i srcVoxelPosInChunk(sx,sy,sz);
 
-					const T srcVoxel = chunkStart[si];
+					const T srcVoxel = mip0chunk.Get(si);
 
 					pushVoxelIntoMips(srcChunkStartPos_ + srcVoxelPosInChunk,
 									  srcVoxel);
 				}
 			}
 		}
-	}
-
-	inline uint64_t computeVoxelOffsetIntoVolume(const DataCoord& coord,
-												 const int level)
-	{
-		const DataCoord chunkPos(coord.x / mippingInfo_.chunkDims.x,
-								 coord.y / mippingInfo_.chunkDims.y,
-								 coord.z / mippingInfo_.chunkDims.z);
-
-		const uint64_t chunkOffsetFromVolStart =
-			computeChunkOffsetIntoVolume(level, chunkPos);
-
-		const Vector3i voxelOffset = coord - chunkPos*mippingInfo_.chunkDims;
-
-		return chunkOffsetFromVolStart + computeVoxelOffsetIntoChunk(voxelOffset);
-	}
-
-	inline uint64_t computeChunkOffsetIntoVolume(const int level,
-												 const Vector3i& chunkPos)
-	{
-		return (mips_[level].volSlabSize * chunkPos.z +
-				mips_[level].volRowSize  * chunkPos.y +
-				mippingInfo_.chunkSize   * chunkPos.x);
 	}
 
 	inline uint64_t computeVoxelOffsetIntoChunk(const Vector3i& offsetVec)
@@ -86,9 +75,12 @@ public:
 				return;
 			}
 
-			const DataCoord dstCoord = srcCoord / mips_[i].factor;
-			const uint64_t dstOffset = computeVoxelOffsetIntoVolume(dstCoord, i);
-			mips_[i].data[dstOffset] = srcVoxel;
+			const DataCoord dstLocation = srcCoord / mips_[i].factor;
+			const DataCoord dstCoord(dstLocation.x  % 128,
+									 dstLocation.y  % 128,
+									 dstLocation.z  % 128);
+			const uint64_t offset = computeVoxelOffsetIntoChunk(dstCoord);
+			chunks_[i]->Set(offset, srcVoxel);
 		}
 	}
 };

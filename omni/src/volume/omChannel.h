@@ -20,7 +20,7 @@ class OmChannel : public OmMipVolume, public OmManageableObject {
 
 public:
 	OmChannel();
-	OmChannel(OmId id);
+	OmChannel(OmID id);
 	~OmChannel();
 
 	boost::shared_ptr<OmVolumeData> getVolData();
@@ -29,7 +29,7 @@ public:
 	std::string GetDirectoryPath();
 	void loadVolData();
 	ObjectType getVolumeType(){ return CHANNEL; }
-	OmId getID(){ return GetID(); }
+	OmID getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 	int GetBytesPerSample() const;
 
@@ -38,10 +38,10 @@ public:
 	void BuildVolumeData();
 
 	OmFilter2d& AddFilter();
-	OmFilter2d& GetFilter(OmId id);
+	OmFilter2d& GetFilter(OmID id);
 	const OmIDsSet & GetValidFilterIds();
-	bool IsFilterEnabled(OmId id);
-	bool IsFilterValid(const OmId id);
+	bool IsFilterEnabled(OmID id);
+	bool IsFilterValid(const OmID id);
 
 	bool ImportSourceData(const OmDataPath& dataset);
 

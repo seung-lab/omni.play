@@ -10,10 +10,10 @@
 /////////////////////////////////
 ///////          OmSegmentSelectAction
 
-OmSegmentSelectAction::OmSegmentSelectAction(const OmId segmentationId,
+OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
 					     const OmSegIDsSet & newSelectedIdSet,
 					     const OmSegIDsSet & oldSelectedIdSet,
-					     const OmId segmentJustSelected,
+					     const OmID segmentJustSelected,
 					     void * sender,
 					     const std::string& comment,
 					     const bool doScroll,

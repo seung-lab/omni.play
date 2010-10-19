@@ -320,7 +320,7 @@ void OmMipVolume::GetChunk(OmMipChunkPtr& p_value,
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
-	getDataCache()->Get(p_value, rMipCoord, om::BLOCKING);
+	getDataCache()->Get(p_value, rMipCoord);
 }
 
 /////////////////////////////////

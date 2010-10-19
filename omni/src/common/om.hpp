@@ -12,11 +12,6 @@ namespace om {
 		NON_BLOCKING
 	};
 
-	enum RewriteSegments{
-		REWRITE_SEGMENTS,
-		DONT_REWRITE_SEGMENTS
-	};
-
 } // namespace Om
 
 #endif

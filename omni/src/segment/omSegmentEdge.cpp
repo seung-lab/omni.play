@@ -16,7 +16,7 @@ OmSegmentEdge::OmSegmentEdge( OmSegment * c )
 {
 }
 
-OmSegmentEdge::OmSegmentEdge( const OmSegID p, const OmSegID c, const float t )
+OmSegmentEdge::OmSegmentEdge( const OmSegID p, const OmSegID c, const double t )
 	: parentID(p)
 	, childID(c)
 	, threshold(t)
@@ -24,7 +24,7 @@ OmSegmentEdge::OmSegmentEdge( const OmSegID p, const OmSegID c, const float t )
 {
 }
 
-OmSegmentEdge::OmSegmentEdge( OmSegment * p, OmSegment * c, const float t )
+OmSegmentEdge::OmSegmentEdge( OmSegment * p, OmSegment * c, const double t )
 	: parentID(p->value())
 	, childID(c->value())
 	, threshold(t)

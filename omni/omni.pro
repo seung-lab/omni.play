@@ -56,10 +56,13 @@ HEADERS += lib/strnatcmp.h \
            src/common/omException.h \
            src/common/omGl.h \
            src/common/omStd.h \
+           src/datalayer/fs/omIOnDiskFile.h \
+           src/datalayer/fs/omFileQT.hpp \
            src/datalayer/fs/omMemMappedFileQT.hpp \
            src/datalayer/fs/omFileNames.hpp \
            src/datalayer/omIDataVolume.hpp \
            src/datalayer/omMST.h \
+           src/datalayer/omMSTold.h \
            src/datalayer/archive/omDataArchiveBoost.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
@@ -67,7 +70,6 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
-           src/datalayer/upgraders/omUpgradeTo15.hpp \
            src/datalayer/fs/omActionLoggerFS.h \
            src/datalayer/fs/omActionLoggerFSthread.hpp \
            src/datalayer/fs/omMemMappedVolume.hpp \
@@ -92,6 +94,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/elementListBox.h \
            src/gui/guiUtils.h \
            src/headless/headless.h \
+           src/headless/headlessImpl.hpp \
            src/gui/inspectors/chanInspector.h \
            src/gui/inspectors/filObjectInspector.h \
            src/gui/inspectors/inspectorProperties.h \
@@ -188,7 +191,6 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentEdge.h \
            src/segment/omSegmentIterator.h \
            src/segment/omSegmentPointers.h \
-           src/segment/omSegmentQueue.h \
            src/segment/omSegmentSelector.h \
            src/segment/omSegmentLists.hpp \
            src/system/omGenericManager.h \
@@ -298,6 +300,8 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omFilter2d.h \
            src/volume/omFilter2dManager.h \
            src/volume/omMipChunk.h \
+           src/volume/omRawChunk.hpp \
+           src/system/cache/omRawChunkCache.hpp \
            src/volume/omMipChunkCoord.h \
            src/volume/omMipVolume.h \
            src/volume/omSegmentation.h \
@@ -321,11 +325,16 @@ HEADERS += lib/strnatcmp.h \
            src/zi/mesh/ext/TriStrip/TriStripper.h \
            src/zi/zunit/zunit.h \
            src/zi/watershed/RawQuickieWS.h \
-           tests/tests.hpp
+           tests/tests.hpp \
+           tests/segment/segmentTests.hpp \
+           tests/fakeMemMapFile.hpp \
+           tests/testUtils.hpp
 
 SOURCES += lib/strnatcmp.cpp \
+           src/common/omCommon.cpp \
            src/common/omGl.cpp \
            src/datalayer/omMST.cpp \
+           src/datalayer/omMSTold.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
@@ -428,7 +437,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentColorizer.cpp \
            src/segment/omSegmentEdge.cpp \
            src/segment/omSegmentIterator.cpp \
-           src/segment/omSegmentQueue.cpp \
            src/segment/omSegmentSelector.cpp \
            src/segment/omSegmentLists.cpp \
            src/system/events/omPreferenceEvent.cpp \
@@ -490,7 +498,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omMipChunk.cpp \
            src/volume/omMipChunkCoord.cpp \
            src/volume/omMipVolume.cpp \
-           src/system/cache/omMipVolumeCache.cpp \
            src/volume/omSegmentation.cpp \
            src/volume/omSegmentationThresholdChangeAction.cpp \
            src/system/cache/omMeshCache.cpp \

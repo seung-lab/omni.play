@@ -12,7 +12,7 @@ OmFilter2d& OmFilter2dManager::AddFilter()
 	return r_filter;
 }
 
-OmFilter2d& OmFilter2dManager::GetFilter(OmId id)
+OmFilter2d& OmFilter2dManager::GetFilter(OmID id)
 {
 	return mGenericFilterManager.Get(id);
 }
@@ -22,12 +22,12 @@ const OmIDsSet & OmFilter2dManager::GetValidFilterIds()
 	return mGenericFilterManager.GetValidIds();
 }
 
-bool OmFilter2dManager::IsFilterEnabled(OmId id)
+bool OmFilter2dManager::IsFilterEnabled(OmID id)
 {
 	return mGenericFilterManager.IsEnabled(id);
 }
 
-bool OmFilter2dManager::IsFilterValid(OmId id)
+bool OmFilter2dManager::IsFilterValid(OmID id)
 {
 	return mGenericFilterManager.IsValid(id);
 }

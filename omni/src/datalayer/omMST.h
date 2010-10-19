@@ -2,44 +2,71 @@
 #define OM_MST_H
 
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/fs/omFileQT.hpp"
 
 class OmSegmentation;
-class OmIDataReader;
-class OmDataPath;
+
+struct OmMSTEdge {
+	uint32_t number;
+	uint32_t node1ID;
+	uint32_t node2ID;
+	double threshold;
+	uint8_t userJoin;
+	uint8_t userSplit;
+	uint8_t wasJoined;	// transient state
+};
 
 class OmMST {
 public:
-  OmMST();
-  ~OmMST(){}
+	OmMST(OmSegmentation* segmentation);
+	~OmMST(){}
 
-  void read(OmSegmentation & seg);
-	void import(OmSegmentation & seg, const std::string& fname);
-  void FlushDend(OmSegmentation * seg);
-  void FlushDendUserEdges(OmSegmentation * seg);
+	void Read();
+	void Flush();
+	void import(const std::string& fname);
 
-  OmDataWrapperPtr mDend;
-  OmDataWrapperPtr mDendValues;
-  OmDataWrapperPtr mEdgeDisabledByUser;
-  boost::shared_ptr<uint8_t> mEdgeWasJoined;
-  OmDataWrapperPtr mEdgeForceJoin;
-  int mDendSize;
-  int mDendValuesSize;
-  int mDendCount;
-  float mDendThreshold;
+	bool isValid(){
+		return numEdges_ > 0;
+	}
 
-  bool isValid(){ return valid_; }
+	uint32_t NumEdges() const {
+		return numEdges_;
+	}
+
+	double UserThreshold() const {
+		return userThreshold_;
+	}
+	void SetUserThreshold(const float t) {
+		userThreshold_ = t;
+	}
+
+	OmMSTEdge* Edges(){
+		return edges_;
+	}
 
 private:
-  bool valid_;
+	OmSegmentation* segmentation_;
+	uint32_t numEdges_;
+	double userThreshold_;
 
-  bool importDend(OmIDataReader*);
-  bool importDendValues(OmIDataReader*);
-  bool setupUserEdges(const int);
+	boost::shared_ptr<OmIOnDiskFile<OmMSTEdge> > edgesPtr_;
+	OmMSTEdge* edges_;
 
-  OmDataPath getDendPath(OmSegmentation&);
-  OmDataPath getDendValuesPath(OmSegmentation&);
-  OmDataPath getEdgeDisabledByUserPath(OmSegmentation&);
-  OmDataPath getEdgeForceJoinPath(OmSegmentation&);
+	void create();
+	void convert();
+
+	typedef OmFileReadQT<OmMSTEdge> reader_t;
+	typedef OmFileWriteQT<OmMSTEdge> writer_t;
+
+	QString memMapPathQStr();
+	std::string memMapPath();
+
+	friend class SegmentTests;
+
+	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation &);
+	friend QDataStream &operator>>(QDataStream& in, OmSegmentation  &);
 };
 
 #endif

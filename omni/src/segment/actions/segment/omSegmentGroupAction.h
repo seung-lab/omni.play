@@ -12,7 +12,7 @@
 class OmSegmentGroupAction : public OmAction {
 
 public:
-	OmSegmentGroupAction( const OmId segmentationId, const OmSegIDsSet & selectedSegmentIdsSet, const OmGroupName name, const bool create);
+	OmSegmentGroupAction( const OmID segmentationId, const OmSegIDsSet & selectedSegmentIdsSet, const OmGroupName name, const bool create);
 
 private:
 	void Action();
@@ -21,7 +21,7 @@ private:
 	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 	OmGroupName mName;
 	bool mCreate;
 	OmSegIDsSet mSelectedSegmentIds;

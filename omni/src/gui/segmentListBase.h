@@ -31,7 +31,7 @@ class SegmentListBase : public QWidget
 	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
 
 	void userJustClickedInThisSegmentList();
-	void rebuildSegmentList(const OmId segmentationID, const OmSegID segmentJustAddedID);
+	void rebuildSegmentList(const OmID segmentationID, const OmSegID segmentJustAddedID);
 
 	virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
@@ -61,7 +61,7 @@ protected:
 	boost::shared_ptr<SegmentationDataWrapper> currentSDW;
 	bool haveValidSDW;
 
-	OmSegPtrList * getSegmentsToDisplay( const OmId firstSegmentID, const bool  );
+	OmSegPtrList * getSegmentsToDisplay( const OmID firstSegmentID, const bool  );
 
 	QMenu * contextMenu;
 	QAction * propAct;

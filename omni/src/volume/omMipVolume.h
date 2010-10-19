@@ -38,7 +38,7 @@ public:
 	virtual void loadVolData() = 0;
 	virtual boost::shared_ptr<OmVolumeData> getVolData() = 0;
 	virtual ObjectType getVolumeType() = 0;
-	virtual OmId getID() = 0;
+	virtual OmID getID() = 0;
 	virtual OmMipVolumeCache* getDataCache() = 0;
 
 	inline bool IsVolumeReadyForDisplay(){

@@ -288,10 +288,10 @@ void MainWindow::openInspector()
 		addDockWidget(Qt::TopDockWidgetArea, dock);
 		mMenuBar->getWindowMenu()->addAction(dock->toggleViewAction());
 
-		connect(omniInspector, SIGNAL(triggerChannelView(OmId, ViewType)),
-			this, SLOT(openChannelView(OmId, ViewType)));
-		connect(omniInspector, SIGNAL(triggerSegmentationView(OmId, ViewType)),
-			this, SLOT(openSegmentationView(OmId, ViewType)));
+		connect(omniInspector, SIGNAL(triggerChannelView(OmID, ViewType)),
+			this, SLOT(openChannelView(OmID, ViewType)));
+		connect(omniInspector, SIGNAL(triggerSegmentationView(OmID, ViewType)),
+			this, SLOT(openSegmentationView(OmID, ViewType)));
 
 	} catch(OmException & e) {
 		spawnErrorDialog(e);
@@ -353,7 +353,7 @@ void MainWindow::open3dView()
 	}
 }
 
-void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
+void MainWindow::openChannelView(OmID chan_id, ViewType vtype)
 {
 	try {
 		mViewGroupState->addView2Dchannel( chan_id, vtype);
@@ -363,7 +363,7 @@ void MainWindow::openChannelView(OmId chan_id, ViewType vtype)
 	}
 }
 
-void MainWindow::openSegmentationView(OmId segmentation_id, ViewType vtype)
+void MainWindow::openSegmentationView(OmID segmentation_id, ViewType vtype)
 {
 	try {
 		mViewGroupState->addView2Dsegmentation( segmentation_id, vtype);
@@ -461,7 +461,7 @@ void MainWindow::openCacheMonitor()
 	mMenuBar->getOpenCacheMonitorAct()->setChecked(true);
 }
 
-void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmId objectId )
+void MainWindow::cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId )
 {
 	QString unwantedView3DTitle = "3D";
 	foreach( QDockWidget * dw, this->findChildren<QDockWidget *>() ){

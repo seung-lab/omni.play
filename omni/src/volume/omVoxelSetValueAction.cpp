@@ -13,7 +13,7 @@
 ///////          OmVoxelSetValueAction Class
 ///////
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId,
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
 											 DataCoord & rVoxel, OmSegID value)
 {
 	//store segmentation id
@@ -29,7 +29,7 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId,
 	mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmId segmentationId,
+OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
 											 std::set<DataCoord>& rVoxels,
 											 OmSegID value)
 {

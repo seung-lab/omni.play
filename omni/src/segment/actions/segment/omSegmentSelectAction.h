@@ -11,10 +11,10 @@
 class OmSegmentSelectAction : public OmAction {
 
 public:
-	OmSegmentSelectAction(const OmId segmentationId,
+	OmSegmentSelectAction(const OmID segmentationId,
 			      const OmSegIDsSet & mNewSelectedIdSet,
 			      const OmSegIDsSet & mOldSelectedIdSet,
-			      const OmId segmentJustSelected,
+			      const OmID segmentJustSelected,
 			      void* sender,
 			      const std::string & comment,
 			      const bool doScroll,
@@ -27,10 +27,10 @@ private:
 	void save(const std::string &);
 	QString classNameForLogFile(){return "OmSegmentSelectAction";}
 
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 	OmSegIDsSet mNewSelectedIdSet;
 	OmSegIDsSet mOldSelectedIdSet;
-	OmId mSegmentJustSelectedID;
+	OmID mSegmentJustSelectedID;
 	void * mSender;
 	const std::string mComment;
 	const bool mDoScroll;

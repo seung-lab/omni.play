@@ -22,10 +22,9 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 	mEditedSegmentation = 0;
 }
 
-void OmLineDraw::DrawLine(const DataCoord& startPoint,
-						  const DataCoord& endPoint)
+void OmLineDraw::DrawLine(const DataCoord& /*startPoint*/,
+						  const DataCoord& /*endPoint*/)
 {
-
 }
 
 void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
@@ -39,7 +38,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	if (!sdw.isValid())
 		return;
 
-	const OmId segmentation_id = sdw.getSegmentationID();
+	const OmID segmentation_id = sdw.getSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;
@@ -211,7 +210,7 @@ void OmLineDraw::PickToolAddToSelection( OmSegmentSelector & sel,
 	}
 }
 
-void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
+void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 {
 	boost::shared_ptr<OmBrushSize>& brushSize = state_->getBrushSize();
 
@@ -250,11 +249,11 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 	}
 }
 
-void OmLineDraw::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc,
+void OmLineDraw::FillToolFill(OmID seg, DataCoord gCP, OmSegID fc,
 							  OmSegID bc, int depth)
 {
 	OmSegmentation & segmentation = OmProject::GetSegmentation(seg);
-	OmId segid = segmentation.GetVoxelValue(gCP);
+	OmID segid = segmentation.GetVoxelValue(gCP);
 
 	if (!segid) {
 		return;

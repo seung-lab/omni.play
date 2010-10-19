@@ -5,7 +5,7 @@
 #include "segment/omSegmentSelector.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentSelector::OmSegmentSelector( const OmId segmentationID, void * sender,
+OmSegmentSelector::OmSegmentSelector( const OmID segmentationID, void * sender,
 									  const std::string & cmt )
 	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
 	, mSegmentJustSelectedID(0)

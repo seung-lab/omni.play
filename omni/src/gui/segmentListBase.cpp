@@ -182,7 +182,7 @@ void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
 	populateSegmentElementsListWidget(doScroll, segmentJustSelectedID);
 }
 
-void SegmentListBase::rebuildSegmentList(const OmId segmentationID,
+void SegmentListBase::rebuildSegmentList(const OmID segmentationID,
 										 const OmSegID segmentJustAddedID)
 {
 	makeSegmentationActive(SegmentationDataWrapper(segmentationID),
@@ -199,7 +199,7 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 		doScroll = false;
 	}
 
-	const OmId segmentationID = event->GetModifiedSegmentationId();
+	const OmID segmentationID = event->GetModifiedSegmentationId();
 
 	if (OmProject::IsSegmentationValid(segmentationID)) {
 		const OmSegID segmentJustSelectedID = event->GetSegmentJustSelectedID();

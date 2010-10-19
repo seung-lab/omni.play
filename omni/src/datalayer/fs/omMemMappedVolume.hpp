@@ -17,13 +17,13 @@
 #include <zi/mutex.hpp>
 #include <QFile>
 
-template <typename T> class OmIMemMappedFile;
+template <typename T> class OmIOnDiskFile;
 
 template <typename T, typename VOL>
 class OmMemMappedVolume : public OmIDataVolume<T,VOL> {
 private:
 	VOL* vol_;
-	std::vector<boost::shared_ptr<OmIMemMappedFile<T> > > maps_;
+	std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
 	typedef OmMemMappedFileReadQT<T> reader_t;
 	typedef OmMemMappedFileWriteQT<T> writer_t;
@@ -33,6 +33,10 @@ public:
 	OmMemMappedVolume(VOL* vol)
 		: vol_(vol)
 	{}
+
+	OmRawDataPtrs GetType() const {
+		return (T*)0;
+	}
 
 	void Load()
 	{
@@ -65,7 +69,7 @@ public:
 
 			maps_[level] =
 				boost::make_shared<writer_t>(getFileName(level),
-							     size);
+											 size, om::DONT_ZERO_FILL);
 		}
 
 		printf("OmMemMappedVolume: done allocating data\n");

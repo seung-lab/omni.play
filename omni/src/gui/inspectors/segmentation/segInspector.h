@@ -19,7 +19,7 @@ public:
 	SegInspector( const SegmentationDataWrapper sdw,
 				  MyInspectorWidget* parent);
 
-	OmId getSegmentationID();
+	OmID getSegmentationID();
 	boost::shared_ptr<SegmentationDataWrapper> getSegmentationDataWrapper();
 
 	QLineEdit * nameEdit;
@@ -30,7 +30,7 @@ public:
 	QPlainTextEdit *notesEdit;
 	QLineEdit *directoryEdit ;
 
-	void rebuildSegmentLists(const OmId segmentationID, const OmSegID segID);
+	void rebuildSegmentLists(const OmID segmentationID, const OmSegID segID);
 
 	OmViewGroupState* getViewGroupState();
 
@@ -41,7 +41,7 @@ public:
 	void on_notesEdit_textChanged();
 
  signals:
-	void meshBuilt(OmId seg_id);
+	void meshBuilt(OmID seg_id);
 
  private:
 	boost::shared_ptr<SegmentationDataWrapper> sdw;

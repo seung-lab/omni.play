@@ -15,11 +15,12 @@ public:
 	void DrawLine(const DataCoord& startPoint,
 				  const DataCoord& endPoint);
 
-	void BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg);
+	void BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg);
+
 	void bresenhamLineDraw(const DataCoord &first,
 						   const DataCoord &second,
 						   bool doselection);
-	void FillToolFill(OmId segmentation,
+	void FillToolFill(OmID segmentation,
 					  DataCoord gCP,
 					  OmSegID fc,
 					  OmSegID bc,
@@ -31,8 +32,8 @@ private:
 	boost::shared_ptr<OmView2dState> state_;
 	const ViewType mViewType;
 	bool mDoRefresh;
-	OmId mEditedSegmentation;
-	OmId mCurrentSegmentId;
+	OmID mEditedSegmentation;
+	OmID mCurrentSegmentId;
 
 	std::set<DataCoord> mUpdatedDataCoords;
 

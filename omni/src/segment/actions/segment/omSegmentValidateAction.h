@@ -12,7 +12,7 @@
 class OmSegmentValidateAction : public OmAction {
 
 public:
-	OmSegmentValidateAction( const OmId segmentationId,
+	OmSegmentValidateAction( const OmID segmentationId,
 							 const OmSegIDsSet & selectedSegmentIdsSet,
 							 const bool valid);
 
@@ -23,7 +23,7 @@ private:
 	void save(const std::string&);
 	QString classNameForLogFile(){return "OmSegmentValidateAction";}
 
-	OmId mSegmentationId;
+	OmID mSegmentationId;
 	bool valid_;
 	OmSegIDsSet mSelectedSegmentIds;
 

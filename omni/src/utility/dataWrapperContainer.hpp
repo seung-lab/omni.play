@@ -11,7 +11,7 @@ private:
 public:
 	DataWrapperContainer(){}
 
-	DataWrapperContainer(const ObjectType obj_type, const OmId obj_id)
+	DataWrapperContainer(const ObjectType obj_type, const OmID obj_id)
 	{
 		switch (obj_type){
 		case CHANNEL:

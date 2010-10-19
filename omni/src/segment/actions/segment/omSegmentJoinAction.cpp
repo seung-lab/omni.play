@@ -12,7 +12,7 @@
 ///////
 ///////          OmSegmentJoinAction
 ///////
-OmSegmentJoinAction::OmSegmentJoinAction( const OmId segmentationId,
+OmSegmentJoinAction::OmSegmentJoinAction( const OmID segmentationId,
 					  const OmSegIDsSet & selectedSegmentIds)
 	: mSegmentationId( segmentationId )
 	, mSelectedSegmentIds( selectedSegmentIds )
@@ -37,7 +37,7 @@ void OmSegmentJoinAction::UndoAction()
 std::string OmSegmentJoinAction::Description()
 {
 	QString lineItem = QString("Joined: ");
-	foreach( const OmId segId, mSelectedSegmentIds){
+	foreach( const OmID segId, mSelectedSegmentIds){
 		lineItem += QString("seg %1 + ").arg(segId);
 	}
 

@@ -15,6 +15,8 @@ public:
 	OmSegmentCacheImpl(OmSegmentation *);
 	virtual ~OmSegmentCacheImpl();
 
+	void Flush();
+
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
 	OmSegment* GetOrAddSegment(const OmSegID val);
@@ -38,15 +40,13 @@ public:
 
 	quint64 getSegmentListSize(OmSegIDRootType type);
 
-	void UpgradeSegmentSerialization();
-
 private:
 	OmSegmentEdge splitChildFromParent( OmSegment * child );
 
 	QList<OmSegmentEdge> mManualUserMergeEdgeList;
 
 	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser( OmSegmentEdge e );
-	std::pair<bool, OmSegmentEdge> JoinFromUserAction( const OmId, const OmId );
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction( const OmID, const OmID );
 
 	void rerootSegmentLists();
 	void rerootSegmentList( OmSegIDsSet & set );

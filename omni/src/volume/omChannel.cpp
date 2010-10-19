@@ -23,7 +23,7 @@ OmChannel::OmChannel()
 	mWasBounded = false;
 }
 
-OmChannel::OmChannel(OmId id)
+OmChannel::OmChannel(OmID id)
 	: OmManageableObject(id)
 	, mDataCache(new OmMipVolumeCache(this))
 	, mVolData(new OmVolumeData())
@@ -65,7 +65,7 @@ OmFilter2d& OmChannel::AddFilter() {
 	return filter;
 }
 
-OmFilter2d& OmChannel::GetFilter(OmId id) {
+OmFilter2d& OmChannel::GetFilter(OmID id) {
 	return mFilter2dManager.GetFilter(id);
 }
 
@@ -73,16 +73,15 @@ const OmIDsSet & OmChannel::GetValidFilterIds(){
 	return mFilter2dManager.GetValidFilterIds();
 }
 
-bool OmChannel::IsFilterValid(const OmId id){
+bool OmChannel::IsFilterValid(const OmID id){
 	return mFilter2dManager.IsFilterValid(id);
 }
 
-bool OmChannel::IsFilterEnabled(OmId id){
+bool OmChannel::IsFilterEnabled(OmID id){
 	return mFilter2dManager.IsFilterEnabled(id);
 }
 
 void OmChannel::CloseDownThreads(){
-	mDataCache->closeDownThreads();
 }
 
 bool OmChannel::ImportSourceData(const OmDataPath& path)
@@ -101,7 +100,7 @@ void OmChannel::loadVolData()
 OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
 {
 	OmMipChunkPtr chunk;
-	mDataCache->Get(chunk, coord, true);
+	mDataCache->Get(chunk, coord);
 
 	OmImage<uint32_t, 3> imageData = chunk->GetCopyOfChunkDataAsOmImage32();
 	boost::shared_ptr<uint32_t> rawDataPtr = imageData.getMallocCopyOfData();
@@ -125,20 +124,19 @@ public:
 		OmMipChunkPtr chunk;
 		vol_->GetChunk(chunk, coord_);
 
-		const bool isMIPzero = chunk->IsLeaf();
+		const bool isMIPzero = (0 == coord_.Level);
 
-		double max = 0;
-		double min = 0;
 		if(isMIPzero){
-			min = std::min(chunk->GetMinValue(), min);
-			max = std::max(chunk->GetMaxValue(), max);
+			vol_->updateMinMax(chunk->GetMinValue(),
+							   chunk->GetMaxValue());
 		}
-		vol_->updateMinMax(min, max);
 	}
 };
 
 void OmChannel::doBuildThreadedVolume()
 {
+	loadVolData();
+
 	OmThreadPool threadPool;
 	threadPool.start();
 

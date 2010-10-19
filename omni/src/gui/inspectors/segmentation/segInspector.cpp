@@ -243,7 +243,7 @@ void SegInspector::on_notesEdit_textChanged()
 	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
-OmId SegInspector::getSegmentationID()
+OmID SegInspector::getSegmentationID()
 {
 	return sdw->getID();
 }
@@ -269,7 +269,7 @@ void SegInspector::populateSegmentationInspector()
 	updateFileList();
 }
 
-void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
+void SegInspector::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
 {
 	inspectorWidget_->rebuildSegmentLists(segmentationID, segID);
 }

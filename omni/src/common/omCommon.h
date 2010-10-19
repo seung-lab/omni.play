@@ -20,19 +20,25 @@
 #include "common/omException.h"
 #include <cassert>
 
-typedef struct {
+
+/**
+ * color structs
+ *
+ **/
+struct OmColor {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
-} OmColor;
+};
+std::ostream& operator<<(std::ostream &out, const OmColor& c);
 
-typedef struct {
+struct OmColorRGBA {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
 	uint8_t alpha;
-} OmColorRGBA;
-
+};
+std::ostream& operator<<(std::ostream &out, const OmColorRGBA& c);
 
 
 /**
@@ -57,8 +63,8 @@ typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
  * "system" types
  */
 //id typedefs
-typedef uint32_t OmId;
-typedef boost::unordered_set< OmId > OmIDsSet;
+typedef uint32_t OmID;
+typedef boost::unordered_set< OmID > OmIDsSet;
 
 //bit field
 typedef unsigned int OmBitfield;

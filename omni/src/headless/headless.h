@@ -10,7 +10,7 @@ public:
 	void runHeadless(const QString& headlessCMD, const QString& fName);
 
 private:
-	OmId segmentationID_;
+	OmID segmentationID_;
 
 	void openProject(const QString& fName);
 	void processLine(const QString& line, const QString& fName);

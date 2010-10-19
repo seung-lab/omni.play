@@ -35,9 +35,6 @@ public:
 		const bool ret = doImport();
 		printf("done in %.2f secs\n", timer.s_elapsed());
 
-		volFiles_.clear();
-		vol_->loadVolData();
-
 		return ret;
 	}
 

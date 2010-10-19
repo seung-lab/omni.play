@@ -11,10 +11,10 @@
 
 #include <QImage>
 
-template <typename T>
+template <typename VOL>
 class OmLoadImage {
 private:
-	T *const vol_;
+	VOL *const vol_;
 	const boost::shared_ptr<QFile> mip0volFile_;
 	const Vector3i mip0dims_;
 	const int totalNumImages_;
@@ -27,8 +27,8 @@ private:
 	QString mMsg;
 
 public:
-	OmLoadImage(T * p, boost::shared_ptr<QFile> mip0volFile)
-		: vol_(p)
+	OmLoadImage(VOL* vol, boost::shared_ptr<QFile> mip0volFile)
+		: vol_(vol)
 		, mip0volFile_(mip0volFile)
 		, mip0dims_(vol_->MipLevelDimensionsInMipChunks(0))
 		, totalNumImages_(vol_->mSourceFilenamesAndPaths.size())

@@ -16,9 +16,8 @@ void MstViewerImpl::populate()
 	OmSegmentation & segmentation = sdw_.getSegmentation();
 	boost::shared_ptr<OmMST> mst = segmentation.getMST();
 
-	const int numEdges = mst->mDendCount;
-	const quint32 * nodes    = mst->mDend->getPtr<unsigned int>();
-	const float * thresholds = mst->mDendValues->getPtr<float>();
+	const int numEdges = mst->NumEdges();
+	OmMSTEdge* edges = mst->Edges();
 
 	QStringList headerLabels;
 	headerLabels << "Edge" << "Node 1" << "Node 2" << "threshold" << "Node 1 size" << "Node 2 size";
@@ -28,9 +27,9 @@ void MstViewerImpl::populate()
 	setRowCount(numEdges);
 
 	for( int i = 0; i < numEdges; ++i){
-		const OmSegID node1ID  = nodes[i];
-		const OmSegID node2ID  = nodes[i + numEdges ];
-		const float threshold  = thresholds[i];
+		const OmSegID node1ID  = edges[i].node1ID;
+		const OmSegID node2ID  = edges[i].node2ID;
+		const float threshold  = edges[i].threshold;
 
 		OmSegment* node1 = segmentation.GetSegmentCache()->GetSegment(node1ID);
 		OmSegment* node2 = segmentation.GetSegmentCache()->GetSegment(node2ID);
@@ -40,8 +39,8 @@ void MstViewerImpl::populate()
 		setCell(i, colNum, node1ID);
 		setCell(i, colNum, node2ID);
 		setCell(i, colNum, threshold);
-		setCell(i, colNum, node1->getSize());
-		setCell(i, colNum, node2->getSize());
+		setCell(i, colNum, static_cast<quint64>(node1->getSize()));
+		setCell(i, colNum, static_cast<quint64>(node2->getSize()));
 	}
 
 	setSortingEnabled(true); // don't enable sorting until done inserting

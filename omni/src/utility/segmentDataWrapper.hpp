@@ -8,12 +8,12 @@
 class SegmentDataWrapper {
 private:
 	OmSegID mID;
-	OmId mSegmentationID;
+	OmID mSegmentationID;
 
 public:
 	SegmentDataWrapper(){}
 
-	SegmentDataWrapper(const OmId segmentationID,
+	SegmentDataWrapper(const OmID segmentationID,
 			   const OmSegID segmentID)
 		: mID(segmentID)
 		, mSegmentationID( segmentationID )
@@ -108,7 +108,7 @@ public:
 		return getSegment()->getSizeWithChildren();
 	}
 
-	OmId getSegmentationID() const {
+	OmID getSegmentationID() const {
 		return mSegmentationID;
 	}
 

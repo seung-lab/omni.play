@@ -23,8 +23,8 @@ private slots:
 private:
     QSlider *alphaSlider;
 
-    OmId mChannelID;
-    OmId mFilterID;
+    OmID mChannelID;
+    OmID mFilterID;
 	boost::shared_ptr<FilterDataWrapper> mFDW;
 
     QLineEdit *chanEdit;

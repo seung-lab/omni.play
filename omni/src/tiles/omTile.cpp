@@ -42,7 +42,7 @@ void OmTile::doLoadData()
 	} else {
 		boost::shared_ptr<uint32_t> imageData = getImageData32bit();
 		boost::shared_ptr<OmColorRGBA> colorMappedData =
-			key_.getViewGroupState()->ColorTile(imageData,
+			key_.getViewGroupState()->ColorTile(imageData.get(),
 												dims_,
 												key_);
 		texture_->setData(colorMappedData);

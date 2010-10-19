@@ -3,13 +3,13 @@
 
 class SegmentationDataWrapper {
 private:
-	OmId mID;
+	OmID mID;
 	ObjectType mType;
 
 public:
 	SegmentationDataWrapper(){}
 
-	explicit SegmentationDataWrapper(const OmId ID)
+	explicit SegmentationDataWrapper(const OmID ID)
 		: mID(ID)
 		, mType(SEGMENTATION)
 	{}
@@ -19,10 +19,10 @@ public:
 		, mType(SEGMENTATION)
 	{}
 
-	OmId getSegmentationID() const {
+	OmID getSegmentationID() const {
 		return mID;
 	}
-	OmId getID() const {
+	OmID getID() const {
 		return mID;
 	}
 	ObjectType getType() const {

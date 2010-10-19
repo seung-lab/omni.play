@@ -8,7 +8,7 @@ class OmViewGroupState;
 
 class OmTileDumper{
 public:
-	OmTileDumper(const OmId vol, const ObjectType type,
+	OmTileDumper(const OmID vol, const ObjectType type,
 		     const QString& dumpfile,
 		     OmViewGroupState* vgs);
 

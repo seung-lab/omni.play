@@ -16,8 +16,8 @@ class OmSegmentEvent : public OmEvent {
 
  public:
 	OmSegmentEvent(QEvent::Type type);
-	OmSegmentEvent(QEvent::Type type, OmId);
-	OmSegmentEvent(QEvent::Type type, OmId, OmId, void*, std::string, const bool );
+	OmSegmentEvent(QEvent::Type type, OmID);
+	OmSegmentEvent(QEvent::Type type, OmID, OmID, void*, std::string, const bool );
 	void Dispatch(OmEventListener *);
 
 	//class
@@ -28,15 +28,15 @@ class OmSegmentEvent : public OmEvent {
 	static const QEvent::Type SEGMENT_DATA_MODIFICATION = (QEvent::Type) (CLASS + 2);
 	static const QEvent::Type SEGMENT_EDIT_SELECTION_CHANGE = (QEvent::Type) (CLASS + 3);
 
-	OmId GetModifiedSegmentationId();
-	OmId GetSegmentJustSelectedID();
+	OmID GetModifiedSegmentationId();
+	OmID GetSegmentJustSelectedID();
 	void* getSender();
 	std::string getComment();
 	bool getDoScroll();
 
  private:
-	OmId  mSegmentationId;
-	OmId  mSegmentJustSelectedID;
+	OmID  mSegmentationId;
+	OmID  mSegmentJustSelectedID;
 	void* mSender;
 	std::string mComment;
 	bool mDoScroll;

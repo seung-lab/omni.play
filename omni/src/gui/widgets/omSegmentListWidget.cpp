@@ -31,7 +31,7 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
 }
 
 bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							    const OmId segmentJustSelectedID,
+							    const OmID segmentJustSelectedID,
 							    SegmentationDataWrapper segmentationDW,
 							    OmSegPtrList * segs )
 {

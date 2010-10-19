@@ -13,7 +13,7 @@ public:
 		Instance().mEditSegment = 0;
 	}
 
-	static void SetEditSelection(const OmId segmentation,
+	static void SetEditSelection(const OmID segmentation,
 				     const OmSegID segment){
 		Instance().mEditSegmentation = segmentation;
 		Instance().mEditSegment = segment;
@@ -34,7 +34,7 @@ private:
 		return zi::singleton<OmSegmentEditor>::instance();
 	}
 
-	OmId mEditSegmentation;
+	OmID mEditSegmentation;
 	OmSegID mEditSegment;
 
 	friend class zi::singleton<OmSegmentEditor>;
