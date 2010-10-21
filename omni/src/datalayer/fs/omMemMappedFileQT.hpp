@@ -25,6 +25,12 @@ protected:
 		debug(memmap, "closing file %s\n", GetBaseFileName().c_str());
 	}
 
+	uint64_t Size(){
+		boost::shared_ptr<QFile> file =
+			boost::make_shared<QFile>(QString::fromStdString(fnp_));
+		return file->size();
+	}
+
 	void open()
 	{
 		file_ = boost::make_shared<QFile>(QString::fromStdString(fnp_));

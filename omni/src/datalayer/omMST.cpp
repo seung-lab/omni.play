@@ -39,6 +39,15 @@ void OmMST::Read()
 	edgesPtr_ = boost::make_shared<reader_t>(memMapPath(), 0);
 	edges_ = edgesPtr_->GetPtr();
 
+	const uint64_t expectedSize = numEdges_*sizeof(OmMSTEdge);
+	if( expectedSize != edgesPtr_->Size()){
+		const QString err =
+			QString("mst sizes did not match: file was %1, but expected %2")
+			.arg(edgesPtr_->Size())
+			.arg(expectedSize);
+		throw OmIoException(err.toStdString());
+	}
+
 	for(uint32_t i = 0; i < numEdges_; ++i){
 		edges_[i].wasJoined = 0; // always zero out
 	}
