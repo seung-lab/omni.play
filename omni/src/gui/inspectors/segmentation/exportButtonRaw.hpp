@@ -1,19 +1,18 @@
-#ifndef SEG_INSPECTOR_EXPORT_BUTTON_H
-#define SEG_INSPECTOR_EXPORT_BUTTON_H
+#ifndef SEG_INSPECTOR_EXPORT_BUTTON_RAW_HPP
+#define SEG_INSPECTOR_EXPORT_BUTTON_RAW_HPP
 
 #include "gui/widgets/omButton.h"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "utility/dataWrappers.h"
 
-class ExportButton : public OmButton<SegInspector> {
+class ExportButtonRaw : public OmButton<SegInspector> {
 public:
-	ExportButton(SegInspector * d)
+	ExportButtonRaw(SegInspector * d)
 		: OmButton<SegInspector>( d,
-								  "Export and reroot segments",
-								  "Export",
+								  "Export Raw",
+								  "Export Raw",
 								  false)
-	{
-	}
+	{}
 
 private:
 	void doAction()
@@ -27,7 +26,7 @@ private:
 		if (fileName == NULL)
 			return;
 
-		sdw->getSegmentation().ExportInternalData(fileName, true);
+		sdw->getSegmentation().ExportInternalData(fileName, false);
 	}
 };
 

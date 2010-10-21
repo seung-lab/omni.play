@@ -91,7 +91,8 @@ private:
 	boost::shared_ptr<OmMST> mst_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
-	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
+								   const bool rerootSegments);
 
 	friend class OmBuildSegmentation;
 	template <class T> friend class OmVolumeImporter;

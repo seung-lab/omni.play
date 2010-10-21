@@ -250,7 +250,8 @@ double OmSegmentation::GetDendThreshold()
 	return mst_->UserThreshold();
 }
 
-OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
+OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord,
+											   const bool rerootSegments)
 {
 	OmMipChunkPtr chunk;
 	mDataCache->Get(chunk, coord);
@@ -260,8 +261,10 @@ OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord)
 	uint32_t* rawData = rawDataPtr.get();
 
 	for(int i = 0; i < chunk->GetNumberOfVoxelsInChunk(); ++i){
-		if( 0 != rawData[i]) {
-			rawData[i] = mSegmentCache->findRootID(rawData[i]);
+		if(rerootSegments){
+			if( 0 != rawData[i]) {
+				rawData[i] = mSegmentCache->findRootID(rawData[i]);
+			}
 		}
 	}
 

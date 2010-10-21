@@ -97,7 +97,8 @@ void OmChannel::loadVolData()
 	}
 }
 
-OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord)
+OmDataWrapperPtr OmChannel::doExportChunk(const OmMipChunkCoord& coord,
+										  const bool)
 {
 	OmMipChunkPtr chunk;
 	mDataCache->Get(chunk, coord);

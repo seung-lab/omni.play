@@ -52,7 +52,8 @@ protected:
 	OmChannel(const OmChannel&);
 	OmChannel& operator= (const OmChannel&);
 
-	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&);
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&,
+								   const bool rerootSegments);
 
 	virtual void doBuildThreadedVolume();
 

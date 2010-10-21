@@ -606,7 +606,8 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 /**
  *	Export leaf volume data to HDF5 format.
  */
-void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
+void OmMipVolume::ExportInternalData(const QString& fileNameAndPath,
+									 const bool rerootSegments)
 {
 	const DataBbox leaf_data_extent = GetDataExtent();
 	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
@@ -634,7 +635,7 @@ void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
 		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 				const OmMipChunkCoord coord(0, x, y, z);
-				OmDataWrapperPtr data = doExportChunk(coord);
+				OmDataWrapperPtr data = doExportChunk(coord, rerootSegments);
 
 				const DataBbox chunk_data_bbox =
 					MipCoordToDataBbox(coord, 0);

@@ -45,7 +45,8 @@ public:
 		return MIPVOL_UNBUILT != mBuildState;
 	}
 
-	void ExportInternalData(const QString& fileNameAndPath);
+	void ExportInternalData(const QString& fileNameAndPath,
+							const bool rerootSegments);
 
 	std::string MipLevelInternalDataPath(const int level);
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
@@ -153,7 +154,8 @@ public:
 protected:
 	OmVolDataType mVolDataType;
 
-	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&)=0;
+	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&,
+										   const bool rerootSegments) = 0;
 
 	void BuildBlankVolume(const Vector3i & dims);
 
