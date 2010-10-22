@@ -144,45 +144,21 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegI
 	OmEvents::Redraw3d();
 }
 
-/////////////////////////////////
-///////          Groups
-void OmSegmentation::SetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
-							  OmGroupName name)
+boost::shared_ptr<std::set<OmSegment*> >
+OmSegmentation::GetAllChildrenSegments(const OmSegIDsSet& set)
 {
-	bool valid;
-	if(VALIDROOT == type) {
-		valid = true;
-	} else if(NOTVALIDROOT == type) {
-		valid = false;
-	} else if(GROUPROOT == type) {
-		(new OmSegmentGroupAction(GetID(), set, name, true))->Run();
-		return;
-	} else {
-		throw OmArgException("invalid argument?");
-	}
-
 	OmSegmentIterator iter(mSegmentCache);
 	iter.iterOverSegmentIDs(set);
 
 	OmSegment * seg = iter.getNextSegment();
-	OmSegIDsSet newSet;
+	std::set<OmSegment*>* children = new std::set<OmSegment*>();
+
 	while(NULL != seg) {
-		newSet.insert(seg->value());
+		children->insert(seg);
 		seg = iter.getNextSegment();
 	}
 
-	(new OmSegmentValidateAction(GetID(), newSet, valid))->Run();
-}
-
-void OmSegmentation::UnsetGroup(const OmSegIDsSet & set, OmSegIDRootType type,
-								OmGroupName name)
-{
-	if(GROUPROOT == type) {
-		return mGroups->UnsetGroup(set, name);
-		(new OmSegmentGroupAction(GetID(), set, name, false))->Run();
-	} else {
-		throw OmArgException("only unset regular groups");
-	}
+	return boost::shared_ptr<std::set<OmSegment*> >(children);
 }
 
 void OmSegmentation::SetDendThreshold(const double t)
@@ -199,7 +175,7 @@ void OmSegmentation::CloseDownThreads()
 	mMipMeshManager->CloseDownThreads();
 }
 
-Vector3i OmSegmentation::FindCenterOfSelectedSegments() const
+DataCoord OmSegmentation::FindCenterOfSelectedSegments() const
 {
 	DataBbox box;
 
@@ -253,6 +229,8 @@ double OmSegmentation::GetDendThreshold()
 OmDataWrapperPtr OmSegmentation::doExportChunk(const OmMipChunkCoord& coord,
 											   const bool rerootSegments)
 {
+	std::cout << "\r\texporting " << coord << std::flush;
+
 	OmMipChunkPtr chunk;
 	mDataCache->Get(chunk, coord);
 

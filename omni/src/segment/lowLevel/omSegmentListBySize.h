@@ -22,8 +22,10 @@ public:
 	static void swapSegment(OmSegment* seg, OmSegmentListBySize & one,
 							OmSegmentListBySize & two);
 
-	OmSegIDsListWithPage* getAPageWorthOfSegmentIDs(const unsigned int,
-													const int, const OmSegID);
+	boost::shared_ptr<OmSegIDsListWithPage>
+	getPageOfSegmentIDs(const unsigned int,
+							  const int, const OmSegID);
+
 	quint64 getSegmentSize(OmSegment* seg);
 
 	size_t size();

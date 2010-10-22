@@ -28,17 +28,8 @@ public:
 	void JoinTheseSegments( const OmSegIDsSet & segmentList);
 	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
-	OmSegPtrListWithPage * getRootLevelSegIDs( const unsigned int offset,
-											   const int numToGet,
-											   const OmSegIDRootType type,
-											   const OmSegID starSeg = 0);
-
-	void setAsValidated(OmSegment * segment, const bool valid);
-
 	void refreshTree();
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
-
-	quint64 getSegmentListSize(OmSegIDRootType type);
 
 private:
 	OmSegmentEdge splitChildFromParent( OmSegment * child );

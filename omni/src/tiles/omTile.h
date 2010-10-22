@@ -24,6 +24,9 @@ public:
 	~OmTile(){}
 
 	void LoadData();
+	uint32_t NumBytes() const;
+	void Flush(){}
+
 	const OmTextureIDPtr& GetTexture(){ return texture_; }
 	const OmTileCoord& GetTileCoord(){ return key_; }
 

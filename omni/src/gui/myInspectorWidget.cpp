@@ -1,13 +1,10 @@
 #include "utility/dataWrappers.h"
 #include "gui/mstViewer.hpp"
 #include "common/omDebug.h"
-#include "gui/elementListBox.h"
+#include "gui/segmentLists/elementListBox.hpp"
 #include "gui/guiUtils.h"
 #include "gui/mainwindow.h"
 #include "gui/myInspectorWidget.h"
-#include "gui/segmentListWorking.h"
-#include "gui/segmentListValid.h"
-#include "gui/segmentListRecent.h"
 #include "inspectors/chanInspector.h"
 #include "inspectors/filObjectInspector.h"
 #include "inspectors/inspectorProperties.h"
@@ -15,9 +12,6 @@
 #include "project/omProject.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "system/events/omView3dEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/omEventManager.h"
 #include "system/omStateManager.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
@@ -25,8 +19,6 @@
 
 #include <QtGui>
 #include <QMessageBox>
-
-#include <boost/make_shared.hpp>
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
@@ -45,14 +37,11 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 
 	inspectorProperties = new InspectorProperties( this, mViewGroupState);
 
-	elementListBox = new ElementListBox(this);
-	verticalLayout->addWidget(elementListBox);
+	ElementListBox::Create(mViewGroupState);
+	verticalLayout->addWidget(ElementListBox::Widget());
 
-	segmentList = new SegmentListWorking(this, inspectorProperties, elementListBox);
-	validList = new SegmentListValid(this, inspectorProperties, elementListBox);
-	recentList = new SegmentListRecent(this, inspectorProperties, elementListBox);
-	channelInspectorWidget=NULL;
-	segInspectorWidget=NULL;
+	channelInspectorWidget = NULL;
+	segInspectorWidget = NULL;
 
 	QMetaObject::connectSlotsByName(this);
 
@@ -61,6 +50,7 @@ MyInspectorWidget::MyInspectorWidget(MainWindow * parent, OmViewGroupState * vgs
 
 MyInspectorWidget::~MyInspectorWidget()
 {
+	ElementListBox::Delete();
 	OmStateManager::setInspector( NULL );
 }
 
@@ -120,9 +110,9 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 void MyInspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw)
 {
-	elementListBox->reset();
-	elementListBox->setTitle(QString("Channel %1").arg(cdw.getID()));
-	elementListBox->addTab(0, setupFilterList(), "Filters" );
+	ElementListBox::Reset();
+	ElementListBox::SetTitle(QString("Channel %1").arg(cdw.getID()));
+	ElementListBox::AddTab(0, setupFilterList(), "Filters" );
 
 	filterListWidget->clear();
 
@@ -183,11 +173,6 @@ void MyInspectorWidget::addChannelToVolume()
 
 	ChannelDataWrapper cdw( added_channel.GetID() );
 	addChannelToSplitter(cdw);
-}
-
-QString MyInspectorWidget::getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw)
-{
-	return QString("Segmentation %1: Segments").arg(sdw.getID());
 }
 
 void MyInspectorWidget::addSegmentationToVolume()
@@ -270,16 +255,12 @@ void MyInspectorWidget::nameEditChanged()
 void MyInspectorWidget::refreshWidgetData()
 {
 	populateDataSrcListWidget();
-	segmentList->populateSegmentElementsListWidget();
-	validList->populateSegmentElementsListWidget();
-	recentList->populateSegmentElementsListWidget();
+	ElementListBox::PopulateLists();
 }
 
 void MyInspectorWidget::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
 {
-	segmentList->rebuildSegmentList(segmentationID, segID);
-	validList->rebuildSegmentList(segmentationID, segID);
-	recentList->rebuildSegmentList(segmentationID, segID);
+	ElementListBox::RebuildLists(SegmentDataWrapper(segmentationID, segID));
 }
 
 //////////////////////////////
@@ -483,7 +464,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 
 	if (ret == QMessageBox::Yes){
 
-		elementListBox->reset();
+		ElementListBox::Reset();
 
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, sdw.getID());
 		foreach(OmID channelID, OmProject::GetValidChannelIds()) {
@@ -515,7 +496,7 @@ void MyInspectorWidget::deleteChannel(ChannelDataWrapper cdw)
 
 	if (ret == QMessageBox::Yes){
 		inspectorProperties->closeDialog();
-		elementListBox->reset();
+		ElementListBox::Reset();
 		mParentWindow->cleanViewsOnVolumeChange(CHANNEL, cdw.getID());
 		OmProject::RemoveChannel(cdw.getID());
 		populateDataSrcListWidget();
@@ -524,26 +505,7 @@ void MyInspectorWidget::deleteChannel(ChannelDataWrapper cdw)
 
 void MyInspectorWidget::updateSegmentListBox( SegmentationDataWrapper sdw )
 {
-	elementListBox->reset();
-	elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
-	segmentList->makeSegmentationActive( sdw, 0, true );
-	validList->makeSegmentationActive( sdw, 0, true );
-	recentList->makeSegmentationActive( sdw, 0, true );
-}
-
-void MyInspectorWidget::SegmentObjectModificationEvent(OmSegmentEvent * event)
-{
-	elementListBox->reset();
-	elementListBox->setTitle("");
-
-	const OmID segmentationID1 = segmentList->dealWithSegmentObjectModificationEvent(event);
-	const OmID segmentationID2 = validList->dealWithSegmentObjectModificationEvent(event);
-	recentList->dealWithSegmentObjectModificationEvent(event);
-
-	if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
-		SegmentationDataWrapper sdw(segmentationID1);
-		elementListBox->setTitle(getSegmentationGroupBoxTitle(sdw));
-	}
+	ElementListBox::UpdateSegmentListBox(sdw);
 }
 
 void MyInspectorWidget::showMSTtable(SegmentationDataWrapper sdw)

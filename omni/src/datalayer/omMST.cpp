@@ -25,7 +25,7 @@ OmMST::OmMST(OmSegmentation* segmentation)
 QString OmMST::memMapPathQStr()
 {
 	const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-	return QString("%1/mst.data").arg(volPath);
+	return QString("%1mst.data").arg(volPath);
 }
 
 std::string OmMST::memMapPath(){
@@ -36,7 +36,7 @@ void OmMST::Read()
 {
 	assert(numEdges_);
 
-	edgesPtr_ = boost::make_shared<reader_t>(memMapPath(), 0);
+	edgesPtr_ = reader_t::Reader(memMapPath());
 	edges_ = edgesPtr_->GetPtr();
 
 	const uint64_t expectedSize = numEdges_*sizeof(OmMSTEdge);
@@ -57,10 +57,9 @@ void OmMST::create()
 {
 	assert(numEdges_);
 
-	const int size = numEdges_*sizeof(OmMSTEdge);
-	edgesPtr_ = boost::make_shared<writer_t>(memMapPath(),
-											 size,
-											 om::ZERO_FILL);
+	edgesPtr_ = writer_t::WriterNumElements(memMapPath(),
+										   numEdges_,
+										   om::ZERO_FILL);
 
 	edges_ = edgesPtr_->GetPtr();
 }
@@ -69,33 +68,22 @@ void OmMST::convert()
 {
 	OmMSTold old;
 	old.readOld(*segmentation_);
+	// numEdges_ already set by OmDataArchiveProject
 
-	create();
-
-	const quint32 * nodes = old.mDend->getPtr<uint32_t>();
-	const float * thresholds = old.mDendValues->getPtr<float>();
-	uint8_t* edgeDisabledByUser = old.mEdgeDisabledByUser->getPtr<uint8_t>();
-	uint8_t* edgeForceJoin = old.mEdgeForceJoin->getPtr<uint8_t>();
-
-	for(uint32_t i = 0; i < numEdges_; ++i){
-		edges_[i].number = i;
-		edges_[i].node1ID = nodes[i];
-		edges_[i].node2ID = nodes[i + numEdges_ ];
-		edges_[i].threshold = thresholds[i];
-		edges_[i].userSplit = edgeDisabledByUser[i];
-		edges_[i].userJoin = edgeForceJoin[i];
-		edges_[i].wasJoined = 0; // always zero out
-	}
-
-	Flush();
+	doReadInFromOldMST(old);
 }
 
 void OmMST::import(const std::string& fname)
 {
 	OmMSTold old;
 	old.import(fname);
-
 	numEdges_ = old.NumEdges();
+
+	doReadInFromOldMST(old);
+}
+
+void OmMST::doReadInFromOldMST(const OmMSTold& old)
+{
 	create();
 
 	const quint32 * nodes = old.mDend->getPtr<uint32_t>();
@@ -118,9 +106,6 @@ void OmMST::import(const std::string& fname)
 
 void OmMST::Flush()
 {
-	static zi::mutex mutex;
-	zi::guard g(mutex);
-
 	if(numEdges_){
 		edgesPtr_->Flush();
 	}

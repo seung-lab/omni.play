@@ -12,8 +12,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omZoomLevel.hpp"
 
-#include <boost/make_shared.hpp>
-
 OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
@@ -239,30 +237,6 @@ Vector2f OmViewGroupState::ComputePanDistance(ViewType plane)
 		return Vector2f(mYZPan[0], mYZPan[1]);
 	default:
 		throw OmArgException("unknown plane");
-	}
-}
-
-/*
- *	Enable/disable orthogonal slice.
- */
-void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
-{
-	switch (plane) {
-
-	case SLICE_XY_PLANE:
-		mXYSliceEnabled = enabled;
-		break;
-
-	case SLICE_YZ_PLANE:
-		mYZSliceEnabled = enabled;
-		break;
-
-	case SLICE_XZ_PLANE:
-		mXZSliceEnabled = enabled;
-		break;
-
-	default:
-		assert(false);
 	}
 }
 

@@ -1,8 +1,8 @@
+#include "zi/omUtility.h"
 #include "common/omCommon.h"
 #include "gui/guiUtils.h"
-#include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segObjectInspector.h"
-#include "gui/segmentListBase.h"
+#include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/omSegmentSelector.h"
@@ -13,10 +13,10 @@
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
-					 InspectorProperties * ip)
+										 OmViewGroupState * vgs)
 	: QTreeWidget(slist)
 	, segmentListBase(slist)
-	, inspectorProperties(ip)
+	, vgs_(vgs)
 {
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	setAlternatingRowColors(true);
@@ -30,12 +30,12 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase * slist,
 	setFocusPolicy(Qt::StrongFocus);
 }
 
-bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-							    const OmID segmentJustSelectedID,
-							    SegmentationDataWrapper segmentationDW,
-							    OmSegPtrList * segs )
+bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
+								   const OmID segmentJustSelectedID,
+								   SegmentationDataWrapper segmentationDW,
+								   boost::shared_ptr<OmSegIDsListWithPage> segIDs )
 {
-	bool shouldSuggestThisTabBeMadeActive = false;
+	bool makeTabActive = false;
 
 	setUpdatesEnabled( false );
 	clear();
@@ -44,12 +44,12 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	assert( 100 >= segs->size() && "too many segments returned" );
+	assert( 100 >= segIDs->list.size() && "too many segments returned" );
 
-	OmSegment * seg;
-	OmSegPtrList::iterator iter;
-	for( iter = segs->begin(); iter != segs->end(); ++iter){
-		seg = (*iter);
+	OmSegmentCache* segCache = segmentationDW.getSegmentCache();
+
+	FOR_EACH(iter, segIDs->list){
+		OmSegment* seg = segCache->GetSegment(*iter);
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);
 		row->setText(NAME_COL, seg->GetName());
@@ -64,7 +64,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 		row->setSelected(seg->IsSelected());
 		if (doScrollToSelectedSegment && seg->value() == segmentJustSelectedID) {
 			rowToJumpTo = row;
-			shouldSuggestThisTabBeMadeActive = true;
+			makeTabActive = true;
 		}
 	}
 
@@ -78,7 +78,7 @@ bool OmSegmentListWidget::populateSegmentElementsListWidget(const bool doScrollT
 
 	setUpdatesEnabled( true);
 
-	return shouldSuggestThisTabBeMadeActive;
+	return makeTabActive;
 }
 
 std::string OmSegmentListWidget::eventSenderName()
@@ -99,7 +99,7 @@ void OmSegmentListWidget::segmentLeftClick()
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
 	OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
-	sel.setAddToRecentList( segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
+	sel.setAddToRecentList(segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
 	const int column = currentColumn();
 	if (0 == column) {
@@ -169,8 +169,8 @@ void OmSegmentListWidget::segmentShowContexMenu(QMouseEvent* event)
 {
 	SegmentDataWrapper sdw = getCurrentlySelectedSegment();
 
-        mSegmentContextMenu.Refresh( sdw, inspectorProperties->getViewGroupState());
-        mSegmentContextMenu.exec(event->globalPos());
+	mSegmentContextMenu.Refresh(sdw, vgs_);
+	mSegmentContextMenu.exec(event->globalPos());
 }
 
 bool OmSegmentListWidget::isSegmentSelected()
@@ -192,15 +192,6 @@ void OmSegmentListWidget::setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::Ch
 {
 	row->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 	row->setCheckState(ENABLED_COL, checkState);
-}
-
-void OmSegmentListWidget::addToSplitterDataElementSegment( SegmentDataWrapper sdw )
-{
-	assert(inspectorProperties);
-	inspectorProperties->setOrReplaceWidget( new SegObjectInspector(sdw, this),
-						 QString("Segmentation%1: Segment %2")
-						 .arg(sdw.getSegmentationID())
-						 .arg(sdw.getID()) );
 }
 
 void OmSegmentListWidget::keyPressEvent(QKeyEvent* event)

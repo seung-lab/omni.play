@@ -3,15 +3,10 @@
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
-/////////////////////////////////
-///////
-///////          OmSegmentationThresholdChangeAction
-///////
 OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmID segmentationId,
 																		  const float threshold)
 	: mSegmentationId( segmentationId )
@@ -20,8 +15,6 @@ OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const 
 	SetUndoable(true);
 }
 
-/////////////////////////////////
-///////          Action Methods
 void OmSegmentationThresholdChangeAction::Action()
 {
 	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);

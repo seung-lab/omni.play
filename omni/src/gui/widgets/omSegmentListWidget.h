@@ -9,7 +9,6 @@
 
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
-class InspectorProperties;
 class SegmentListBase;
 
 class OmSegmentListWidget : public QTreeWidget {
@@ -17,27 +16,27 @@ class OmSegmentListWidget : public QTreeWidget {
  Q_OBJECT
 
  public:
-	OmSegmentListWidget(SegmentListBase*, InspectorProperties *);
+	OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
-	bool populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-					       const OmID segmentJustSelectedID,
-					       SegmentationDataWrapper seg,
-					       OmSegPtrList * segs );
+	bool populate(const bool doScrollToSelectedSegment,
+				  const OmID segmentJustSelectedID,
+				  SegmentationDataWrapper seg,
+				  boost::shared_ptr<OmSegIDsListWithPage>);
+
 	static std::string eventSenderName();
 
  private:
 	void mousePressEvent(QMouseEvent * event);
 	void keyPressEvent(QKeyEvent * event);
 
-	SegmentListBase * segmentListBase;
- 	InspectorProperties * inspectorProperties;
+						SegmentListBase * segmentListBase;
+						OmViewGroupState *const vgs_;
 
 	SegmentDataWrapper getCurrentlySelectedSegment();
 	bool isSegmentSelected();
 	void segmentRightClick(QMouseEvent* event);
 	void segmentLeftClick();
 
-	void addToSplitterDataElementSegment(SegmentDataWrapper sdw );
 	void setRowFlagsAndCheckState(QTreeWidgetItem * row, Qt::CheckState checkState);
 
 	void segmentShowContexMenu(QMouseEvent* event);

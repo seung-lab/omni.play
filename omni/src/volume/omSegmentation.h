@@ -61,8 +61,6 @@ public:
 
 	//group management
 	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
- 	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
-	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 
 	void SetDendThreshold( double t );
 	double GetDendThreshold();
@@ -70,11 +68,15 @@ public:
 		return mst_;
 	}
 
-	Vector3i FindCenterOfSelectedSegments() const;
+	DataCoord FindCenterOfSelectedSegments() const;
 
 	bool ImportSourceData(const OmDataPath& path);
 
 	void SetVolDataType(const OmVolDataType);
+
+	boost::shared_ptr<std::set<OmSegment*> >
+	GetAllChildrenSegments(const OmSegIDsSet& set);
+
 
 protected:
 	virtual void doBuildThreadedVolume();

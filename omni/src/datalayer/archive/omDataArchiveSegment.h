@@ -6,21 +6,21 @@
 class OmDataPath;
 class OmSegment;
 class OmSegmentPage;
-class OmSegmentData;
+class OmSegmentDataV2;
 
 class OmDataArchiveSegment{
 public:
 	static void ArchiveRead(const OmDataPath&,
-							OmSegmentData*,
+							OmSegmentDataV2*,
 							const uint32_t pageSize);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
-						 OmSegmentData*,
+						 OmSegmentDataV2*,
 						 const uint32_t pageSize);
 
 	const OmDataPath& path_;
-	OmSegmentData* page_;
+	OmSegmentDataV2* page_;
 	const uint32_t pageSize_;
 	const int omniFileVersion_;
 	int size_;

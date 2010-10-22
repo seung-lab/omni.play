@@ -15,13 +15,14 @@ protected:
 	const std::string fnp_;
 	boost::shared_ptr<QFile> file_;
 	boost::shared_ptr<T> data_;
+	zi::mutex mutex_;
 
 	OmFileQTbase(const std::string& fnp)
 		: fnp_(fnp)
 	{}
 
 	virtual ~OmFileQTbase(){
-		debug(memmap, "closing file %s\n", GetBaseFileName().c_str());
+		debug(file, "closing file %s\n", GetBaseFileName().c_str());
 	}
 
 	uint64_t Size(){
@@ -55,6 +56,8 @@ protected:
 public:
 	virtual void Flush()
 	{
+		zi::guard g(mutex_);
+
 		const uint64_t numBytes = file_->size();
 
 		char* dataCharPtr = reinterpret_cast<char*>(data_.get());
@@ -87,6 +90,15 @@ public:
 template <typename T>
 class OmFileReadQT : public OmFileQTbase<T> {
 public:
+
+	static boost::shared_ptr<OmFileReadQT<T> >
+	Reader(const std::string& fnp)
+	{
+		OmFileReadQT* ret = new OmFileReadQT(fnp, 0);
+		return boost::shared_ptr<OmFileReadQT<T> >(ret);
+	}
+
+private:
 	OmFileReadQT(const std::string& fnp, const int64_t numBytes)
 		: OmFileQTbase<T>(fnp)
 	{
@@ -94,10 +106,9 @@ public:
 		checkFileSize(numBytes);
 		this->readIn();
 
-		debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
+		debug(file, "opened file %s\n", this->GetAbsFileName().c_str());
 	}
 
-private:
 	// optional check of expected file size
 	void checkFileSize(const int64_t numBytes)
 	{
@@ -118,6 +129,24 @@ private:
 template <typename T>
 class OmFileWriteQT : public OmFileQTbase<T> {
 public:
+	static boost::shared_ptr<OmFileWriteQT<T> >
+	WriterNumBytes(const std::string& fnp, const int64_t numBytes,
+				   const om::zeroMem shouldZeroFill)
+	{
+		OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
+		return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+	}
+
+	static boost::shared_ptr<OmFileWriteQT<T> >
+	WriterNumElements(const std::string& fnp, const int64_t numElements,
+					 const om::zeroMem shouldZeroFill)
+	{
+		const uint64_t numBytes = numElements*sizeof(T);
+		OmFileWriteQT<T>* ret = new OmFileWriteQT(fnp, numBytes, shouldZeroFill);
+		return boost::shared_ptr<OmFileWriteQT<T> >(ret);
+	}
+
+private:
 	OmFileWriteQT(const std::string& fnp, const int64_t numBytes,
 				  const om::zeroMem shouldZeroFill)
 		: OmFileQTbase<T>(fnp)
@@ -135,10 +164,9 @@ public:
 			memset(this->data_.get(), 0, numBytes);
 		}
 
-		debug(memmap, "created file %s\n", this->GetAbsFileName().c_str());
+		debug(file, "created file %s\n", this->GetAbsFileName().c_str());
 	}
 
-private:
 	void checkFileSize(const int64_t numBytes)
 	{
 		if(!numBytes){

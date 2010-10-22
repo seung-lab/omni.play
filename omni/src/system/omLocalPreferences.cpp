@@ -3,19 +3,17 @@
 #include <stdio.h>
 #include "utility/omSystemInformation.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omEventManager.h"
-#include "system/events/omViewEvent.h"
 #include "common/omDebug.h"
 
 OmLocalPreferences *OmLocalPreferences::mspInstance = 0;
 
 OmLocalPreferences::OmLocalPreferences()
-        : m2DViewFrameIn3D(true)
-        , m2DViewPaneIn3D(false)
-        , mDrawCrosshairsIn3D(true)
-        , mDoDiscoBall(true)
-        , mCrosshairValue(10)
-        , localPrefFiles(NULL)
+	: m2DViewFrameIn3D(true)
+	, m2DViewPaneIn3D(false)
+	, mDrawCrosshairsIn3D(true)
+	, mDoDiscoBall(true)
+	, mCrosshairValue(10)
+	, localPrefFiles(NULL)
 {
 }
 
@@ -121,15 +119,15 @@ void OmLocalPreferences::writeSettingQString (QString setting, QString value)
 
 QString OmLocalPreferences::readSettingQString (QString setting, QString defaultRet)
 {
-        if( !settingExists( setting ) ){
-                return defaultRet;
-        }
+	if( !settingExists( setting ) ){
+		return defaultRet;
+	}
 
-        try{
-                return Instance()->localPrefFiles->readSettingQString( setting  );
-        } catch (...) {
-                return defaultRet;
-        }
+	try{
+		return Instance()->localPrefFiles->readSettingQString( setting  );
+	} catch (...) {
+		return defaultRet;
+	}
 
 }
 
@@ -231,20 +229,20 @@ bool OmLocalPreferences::getDefaultDrawCrosshairsIn3D()
 
 bool OmLocalPreferences::get2DViewPaneIn3D()
 {
-        return Instance()->m2DViewPaneIn3D;
+	return Instance()->m2DViewPaneIn3D;
 }
 
 bool OmLocalPreferences::getDefault2DViewPaneIn3D()
 {
-        const bool defaultRet = false;
-        Instance()->m2DViewPaneIn3D = readSettingBool("2DViewPaneIn3D", defaultRet );
-        return get2DViewPaneIn3D();
+	const bool defaultRet = false;
+	Instance()->m2DViewPaneIn3D = readSettingBool("2DViewPaneIn3D", defaultRet );
+	return get2DViewPaneIn3D();
 }
 
 void OmLocalPreferences::set2DViewPaneIn3D(const bool value)
 {
-        Instance()->m2DViewPaneIn3D = value;
-        writeSettingBool("2DViewPaneIn3D", value);
+	Instance()->m2DViewPaneIn3D = value;
+	writeSettingBool("2DViewPaneIn3D", value);
 }
 
 bool OmLocalPreferences::getDrawCrosshairsIn3D()
@@ -260,20 +258,20 @@ void OmLocalPreferences::setDrawCrosshairsIn3D(bool value)
 
 bool OmLocalPreferences::getDefaultDoDiscoBall()
 {
-        const bool defaultRet = true;
-        Instance()->mDoDiscoBall = readSettingBool( "DoDiscoBall", defaultRet );
-        return getDoDiscoBall();
+	const bool defaultRet = true;
+	Instance()->mDoDiscoBall = readSettingBool( "DoDiscoBall", defaultRet );
+	return getDoDiscoBall();
 }
 
 bool OmLocalPreferences::getDoDiscoBall()
 {
-        return Instance()->mDoDiscoBall;
+	return Instance()->mDoDiscoBall;
 }
 
 void OmLocalPreferences::setDoDiscoBall(bool value)
 {
-        Instance()->mDoDiscoBall = value;
-        writeSettingBool("DoDiscoBall", value);
+	Instance()->mDoDiscoBall = value;
+	writeSettingBool("DoDiscoBall", value);
 }
 
 

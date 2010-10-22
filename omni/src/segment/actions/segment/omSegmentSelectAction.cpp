@@ -1,23 +1,17 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/events/omViewEvent.h"
-#include "system/omEventManager.h"
-#include "volume/omSegmentation.h"
-
-/////////////////////////////////
-///////          OmSegmentSelectAction
+#include "utility/dataWrappers.h"
+#include "system/omEvents.h"
 
 OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
-					     const OmSegIDsSet & newSelectedIdSet,
-					     const OmSegIDsSet & oldSelectedIdSet,
-					     const OmID segmentJustSelected,
-					     void * sender,
-					     const std::string& comment,
-					     const bool doScroll,
-					     const bool addToRecentList)
+											 const OmSegIDsSet & newSelectedIdSet,
+											 const OmSegIDsSet & oldSelectedIdSet,
+											 const OmID segmentJustSelected,
+											 void * sender,
+											 const std::string& comment,
+											 const bool doScroll,
+											 const bool addToRecentList)
 	: mSegmentationId(segmentationId)
 	, mNewSelectedIdSet(newSelectedIdSet)
 	, mOldSelectedIdSet(oldSelectedIdSet)
@@ -26,48 +20,42 @@ OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
 	, mComment(comment)
 	, mDoScroll(doScroll)
 	, mAddToRecentList(addToRecentList)
-{
-}
-
-/////////////////////////////////
-///////          Action Methods
+{}
 
 void OmSegmentSelectAction::Action()
 {
-	OmProject::GetSegmentation( mSegmentationId ).
-		GetSegmentCache()->
-		UpdateSegmentSelection( mNewSelectedIdSet, mAddToRecentList );
+	SegmentationDataWrapper sdw(mSegmentationId);
+	sdw.getSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+												  mAddToRecentList);
 
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
-						     mSegmentationId,
-						     mSegmentJustSelectedID,
-						     mSender,
-						     mComment,
-						     mDoScroll));
+	OmEvents::SegmentModified(mSegmentationId,
+							  mSegmentJustSelectedID,
+							  mSender,
+							  mComment,
+							  mDoScroll);
 }
 
 void OmSegmentSelectAction::UndoAction()
 {
-	OmProject::GetSegmentation( mSegmentationId ).
-		GetSegmentCache()->
-		UpdateSegmentSelection( mOldSelectedIdSet, mAddToRecentList );
+	SegmentationDataWrapper sdw(mSegmentationId);
+	sdw.getSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+												  mAddToRecentList);
 
-	OmEventManager::PostEvent(new OmSegmentEvent(OmSegmentEvent::SEGMENT_OBJECT_MODIFICATION,
-						     mSegmentationId,
-						     mSegmentJustSelectedID,
-						     mSender,
-						     mComment,
-						     mDoScroll));
+	OmEvents::SegmentModified(mSegmentationId,
+							  mSegmentJustSelectedID,
+							  mSender,
+							  mComment,
+							  mDoScroll);
 }
 
 std::string OmSegmentSelectAction::Description()
 {
-        QString lineItem = QString("Selected: ");
-        foreach(const OmSegID segId, mNewSelectedIdSet){
-                lineItem += QString("seg %1 + ").arg(segId);
-        }
+	QString lineItem = QString("Selected: ");
+	foreach(const OmSegID segId, mNewSelectedIdSet){
+		lineItem += QString("seg %1 + ").arg(segId);
+	}
 
-        return lineItem.toStdString();
+	return lineItem.toStdString();
 }
 
 void OmSegmentSelectAction::save(const std::string& comment)

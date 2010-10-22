@@ -6,15 +6,10 @@
 #include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
+OmSegmentCache::OmSegmentCache(OmSegmentation* segmentation)
 	: mSegmentation(segmentation)
-	, mImpl(new OmSegmentCacheImpl(segmentation))
-{
-}
-
-OmSegmentCache::~OmSegmentCache()
-{
-}
+	, mImpl(boost::make_shared<OmSegmentCacheImpl>(segmentation))
+{}
 
 OmSegID OmSegmentCache::getSegmentationID()
 {
@@ -200,19 +195,13 @@ void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	mImpl->UnJoinTheseSegments( segmentList);
+	mImpl->UnJoinTheseSegments(segmentList);
 }
 
 quint32 OmSegmentCache::getMaxValue()
 {
 	zi::guard g(mutex_);
 	return mImpl->getMaxValue();
-}
-
-quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
-{
-	zi::guard g(mutex_);
-	return mImpl->getSegmentListSize(type);
 }
 
 void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
@@ -222,22 +211,7 @@ void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
 	return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
-OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs(const uint32_t offset,
-														  const int numToGet,
-														  const OmSegIDRootType type,
-														  const OmSegID startSeg)
-{
-	zi::guard g(mutex_);
-	return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);
-}
-
-void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
-{
-	zi::guard g(mutex_);
-	return mImpl->setAsValidated(segment, valid);
-}
-
-std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge( const OmSegmentEdge & e )
+std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge(const OmSegmentEdge& e)
 {
 	zi::guard g(mutex_);
 	return mImpl->JoinFromUserAction( e );

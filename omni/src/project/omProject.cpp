@@ -11,7 +11,7 @@
 #include "project/omProjectSaveAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omEventManager.h"
+#include "system/events/omEventManager.h"
 #include "system/omGarbage.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"

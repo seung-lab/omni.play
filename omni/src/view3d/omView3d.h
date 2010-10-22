@@ -72,7 +72,7 @@ class OmView3d : public QGLWidget,
 	void SelectVoxel(DataCoord &voxel, bool append);
 
 	//gl actions
-	bool PickPoint(Vector2<int> point, std::vector<unsigned int> &names);
+	SegmentDataWrapper PickPoint(const Vector2i& point2d, int& pickName);
 	bool UnprojectPoint(Vector2i point2d, Vector3f &point3d,
 						float depth_scale_factor = 1.0f);
 
@@ -105,6 +105,7 @@ class OmView3d : public QGLWidget,
 	std::vector<int> mMousePickResult;
 
 	void initLights();
+	bool pickPoint(const Vector2i& point, std::vector<uint32_t>& names);
 
 	friend class OmView3dUi;
 	friend class OmSelectionWidget;

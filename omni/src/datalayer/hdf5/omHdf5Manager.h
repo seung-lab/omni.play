@@ -10,12 +10,12 @@
 #include <QFileInfo>
 #include <boost/make_shared.hpp>
 
-class OmHdf5Manager : boost::noncopyable {
+class OmHdf5Manager : private om::singletonBase<OmHdf5Manager> {
 
  public:
 	static void Delete(){
-		zi::guard g(Instance().mutex_);
-		Instance().hdf5Files_.clear();
+		zi::guard g(instance().mutex_);
+		instance().hdf5Files_.clear();
 	}
 
 	static OmHdf5* getOmHdf5File(const std::string& fileNameAndPath,
@@ -24,16 +24,13 @@ class OmHdf5Manager : boost::noncopyable {
 		QFileInfo fInfo(QString::fromStdString(fileNameAndPath));
 		const std::string abs_fnpn = fInfo.absoluteFilePath().toStdString();
 
-		return Instance().doGetOmHdf5File(abs_fnpn, readOnly);
+		return instance().doGetOmHdf5File(abs_fnpn, readOnly);
 	}
 
 
  private:
 	OmHdf5Manager(){}
 	~OmHdf5Manager(){}
-	static inline OmHdf5Manager& Instance(){
-		return zi::singleton<OmHdf5Manager>::instance();
-	}
 
 	zi::mutex mutex_;
 	std::map<std::string, boost::shared_ptr<OmHdf5> > hdf5Files_;

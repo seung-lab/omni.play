@@ -55,9 +55,6 @@ public:
 	void SetPanDistance(const ViewType, const Vector2f&);
 	Vector2f ComputePanDistance(ViewType);
 
-	// slices
-	void SetSliceState(OmSlicePlane plane, bool enabled);
-
 	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*,
 											 const Vector2i&,
 											 const OmTileCoord&);

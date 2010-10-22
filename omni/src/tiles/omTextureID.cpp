@@ -1,45 +1,33 @@
 #include "common/omDebug.h"
-#include "system/cache/omCacheBase.h"
 #include "tiles/cache/omTileCache.h"
 #include "system/omGarbage.h"
 #include "tiles/omTextureID.h"
 #include "volume/omVolume.h"
 
 OmTextureID::OmTextureID()
-	: cache_(NULL)
-	, textureID_(0)
+	: textureID_(0)
 	, dims_(Vector2i(0,0))
 	, flag_(OMTILE_COORDINVALID)
-	, mem_size(0)
-{
-}
+	, numBytes_(0)
+{}
 
-OmTextureID::OmTextureID(const Vector2i& dims, OmCacheBase* cache)
-	: cache_(cache)
-	, textureID_(0)
+OmTextureID::OmTextureID(const Vector2i& dims,
+						 boost::shared_ptr<uint8_t> data)
+	: textureID_(0)
 	, dims_(dims)
-	, flag_(OMTILE_COORDINVALID)
-	, mem_size(0)
-{
-}
+	, flag_(OMTILE_NEEDTEXTUREBUILT)
+	, numBytes_(dims_.x * dims_.y * sizeof(uint8_t))
+	, tileData_(data)
+{}
 
-void OmTextureID::setData(boost::shared_ptr<uint8_t> data)
-{
-	flag_ = OMTILE_NEEDTEXTUREBUILT;
-	mem_size = dims_.x * dims_.y * sizeof(uint8_t);
-
-	tileData_ = data;
-	cache_->UpdateSize(mem_size);
-}
-
-void OmTextureID::setData(boost::shared_ptr<OmColorRGBA> data)
-{
-	flag_ = OMTILE_NEEDCOLORMAP;
-	mem_size = dims_.x * dims_.y * sizeof(OmColorRGBA);
-
-	tileData_ = data;
-	cache_->UpdateSize(mem_size);
-}
+OmTextureID::OmTextureID(const Vector2i& dims,
+						 boost::shared_ptr<OmColorRGBA> data)
+	: textureID_(0)
+	, dims_(dims)
+	, flag_(OMTILE_NEEDCOLORMAP)
+	, numBytes_(dims_.x * dims_.y * sizeof(OmColorRGBA))
+	, tileData_(data)
+{}
 
 OmTextureID::~OmTextureID()
 {
@@ -47,7 +35,6 @@ OmTextureID::~OmTextureID()
 
 	// data now in OpenGL texture; will be garbage collected via
 	//  OmGarbage getting called from main GUI thread
-	cache_->UpdateSize(-mem_size);
 }
 
 

@@ -6,17 +6,17 @@
  *	Brett Warne - bwarne@mit.edu - 4/21/09
  */
 #include "gui/widgets/omSegmentContextMenu.h"
+#include "utility/dataWrappers.h"
 
-#include <QtGui> 
+#include <QtGui>
 
 class OmView3d;
 class OmViewGroupState;
 
 class OmView3dUi {
-
 public:
 	OmView3dUi(OmView3d * view3d, OmViewGroupState * );
-	
+
 	//ui events
         void pinchTriggered(QPinchGesture *gesture);
 	void panTriggered(QPanGesture*);
@@ -29,7 +29,7 @@ public:
 	void MouseDoubleClick(QMouseEvent *event);
 	void MouseWheel(QWheelEvent *event);
 	void KeyPress(QKeyEvent *event);
-	
+
 	//navigation mode
 	void NavigationModeMousePressed(QMouseEvent *event);
 	void NavigationModeMouseRelease(QMouseEvent *event);
@@ -37,41 +37,40 @@ public:
 	void NavigationModeMouseDoubleClick(QMouseEvent *event);
 	void NavigationModeMouseWheel(QWheelEvent *event);
 	void NavigationModeKeyPress(QKeyEvent *event);
-	
+
 	//dend mode
 	void DendModeMouseReleased(QMouseEvent *event);
-	
+
 	//camera movement
 	void CameraMovementMouseStart(QMouseEvent *event);
 	void CameraMovementMouseEnd(QMouseEvent *event);
 	void CameraMovementMouseUpdate(QMouseEvent *event);
 	void CameraMovementMouseWheel(QWheelEvent *event);
-	
+
 	//segment picking
-	bool PickSegmentMouse(QMouseEvent *event, bool drag, 
-			      OmID &segmentationId, 
-			      OmID &segmentId, 
-			      int *pickName = NULL);      
-		
+	SegmentDataWrapper PickSegmentMouse(QMouseEvent *event, bool drag,
+										int *pickName = NULL);
+
 	//segment actions
 	void SegmentSelectToggleMouse(QMouseEvent *event, bool drag);
-	
+
 	//segment context menu
 	void ShowSegmentContextMenu(QMouseEvent *event);
-	
+
 private:
 	OmView3d *const mpView3d;
 	OmViewGroupState * mViewGroupState;
 
 	OmSegmentContextMenu mSegmentContextMenu;
-	
+
 	bool mPrevSelectionState;
 	DataCoord mPrevMouseSelectVoxel;
-	OmID mPrevSegmentationId, mPrevSegmentId;
 
 	void crosshair(QMouseEvent * event);
 	void CenterAxisOfRotation(QMouseEvent * event);
-	OmID PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel);
+	SegmentDataWrapper PickVoxelMouseCrosshair(QMouseEvent* event,
+											   DataCoord& rVoxel);
+	SegmentDataWrapper prevSDW_;
 	void resetWindow();
 	void doZoom(int direction);
 

@@ -7,7 +7,7 @@
  */
 
 
-#include "system/omEvent.h"
+#include "system/events/omEvent.h"
 #include "common/omCommon.h"
 
 class OmSegmentAction;

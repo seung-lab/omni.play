@@ -67,7 +67,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
-		if (!sdw.isValid()){
+		if (!sdw.isValidWrapper()){
 			return;
 		}
 
@@ -106,7 +106,7 @@ private:
 		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 		//return if not valid
-		if (!sdw.isValid() ){
+		if (!sdw.isValidWrapper() ){
 			return;
 		}
 

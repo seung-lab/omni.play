@@ -6,6 +6,9 @@
 
 static const OmColor blackColor = {0, 0, 0};
 
+const std::vector<uint8_t> OmSegmentColorizer::selectedColorLookup_ =
+	OmSegmentColorizer::makeLookupTable();
+
 OmSegmentColorizer::OmSegmentColorizer( OmSegmentCache* cache,
 					const OmSegmentColorCacheType sccType,
 					const Vector2i& dims)
@@ -109,13 +112,13 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:
 	case SCC_FILTER_VALID:
-		if(seg->GetImmutable()) {
+		if(seg->IsValid()) {
 			return segRootColor;
 		}
 		return blackColor;
 	case SCC_SEGMENTATION_VALID_BLACK:
 	case SCC_FILTER_VALID_BLACK:
-		if(seg->GetImmutable()) {
+		if(seg->IsValid()) {
 			return blackColor;
 		}
 		return segRootColor;

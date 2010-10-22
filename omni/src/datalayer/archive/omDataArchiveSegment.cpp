@@ -15,7 +15,7 @@ const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
-									   OmSegmentData* page,
+									   OmSegmentDataV2* page,
 									   const uint32_t pageSize)
 {
 	OmDataArchiveSegment dsw(path, page, pageSize);
@@ -23,7 +23,7 @@ void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
 }
 
 OmDataArchiveSegment::OmDataArchiveSegment(const OmDataPath & path,
-										   OmSegmentData* page,
+										   OmSegmentDataV2* page,
 										   const uint32_t pageSize)
 	: path_(path)
 	, page_(page)
@@ -74,21 +74,21 @@ bool OmDataArchiveSegment::readSegmentsOld(const bool overrideVersion)
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[i].value_ = 0;
+			page_[i].value = 0;
 			continue;
 		}
 
-		in >> page_[i].value_;
-		in >> page_[i].color_.red;
-		in >> page_[i].color_.green;
-		in >> page_[i].color_.blue;
-		in >> page_[i].immutable_;
+		in >> page_[i].value;
+		in >> page_[i].color.red;
+		in >> page_[i].color.green;
+		in >> page_[i].color.blue;
+		in >> page_[i].immutable;
 		quint64 size;
 		in >> size;
-		page_[i].size_ = size;
+		page_[i].size = size;
 
 		if(!overrideVersion && omniFileVersion_ >= 13){
-			in >> page_[i].bounds_;
+			in >> page_[i].bounds;
 		}
 	}
 
@@ -112,19 +112,19 @@ void OmDataArchiveSegment::readSegmentsNew()
 		bool valid;
 		in >> valid;
 		if (!valid) {
-			page_[i].value_ = 0;
+			page_[i].value = 0;
 			continue;
 		}
 
-		in >> page_[i].value_;
-		in >> page_[i].color_.red;
-		in >> page_[i].color_.green;
-		in >> page_[i].color_.blue;
-		in >> page_[i].immutable_;
+		in >> page_[i].value;
+		in >> page_[i].color.red;
+		in >> page_[i].color.green;
+		in >> page_[i].color.blue;
+		in >> page_[i].immutable;
 		quint64 size;
 		in >> size;
-		page_[i].size_ = size;
-		in >> page_[i].bounds_;
+		page_[i].size = size;
+		in >> page_[i].bounds;
 	}
 
 	QString omniPostfix;

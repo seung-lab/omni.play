@@ -2,8 +2,6 @@
 #include "omSegmentJoinAction.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"

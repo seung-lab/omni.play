@@ -2,8 +2,6 @@
 #include "omSegmentGroupAction.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "system/omEventManager.h"
 #include "system/omGroups.h"
 #include "volume/omSegmentation.h"
 

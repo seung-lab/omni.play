@@ -7,7 +7,7 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
 
-class OmRand : public zi::enable_singleton_of_this<OmRand> {
+class OmRand : private om::singletonBase<OmRand> {
 public:
 	// return rand int in range [min, max]
 	static int GetRandomInt(const int min, const int max)

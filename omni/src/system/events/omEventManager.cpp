@@ -1,59 +1,47 @@
-
-#include "omEventManager.h"
-#include "events/omViewEvent.h"
-#include "events/omSegmentEvent.h"
+#include "system/events/omEventManager.h"
+#include "system/events/omViewEvent.h"
+#include "system/events/omSegmentEvent.h"
+#include "common/omDebug.h"
+#include "zi/omUtility.h"
 
 #include <qapplication.h>
-#include <zi/assert.hpp>
-#include "common/omDebug.h"
 
 OmEventManager *OmEventManager::mspInstance = 0;
 
-OmEventManager::OmEventManager()
+OmEventManager* OmEventManager::Instance()
 {
-}
-
-OmEventManager::~OmEventManager()
-{
-}
-
-//singleton accessor
-OmEventManager *OmEventManager::Instance()
-{
-
 	if (NULL == mspInstance) {
 		mspInstance = new OmEventManager;
 	}
-
 	return mspInstance;
 }
 
 void OmEventManager::Delete()
 {
-	if (mspInstance)
+	if (mspInstance){
 		delete mspInstance;
+	}
 	mspInstance = NULL;
 }
 
 bool OmEventManager::event(QEvent * event)
 {
-
-	////debug(genone,"OmEventManager::event(QEvent *event)\n");
-
 	//ensure we have an OmEvent object (or else the next step will pretty much crash)
 	QEvent::Type eventType = event->type();
 	ZI_VERIFY(eventType > QEvent::User && eventType < QEvent::MaxUser);
 
 	//cast to OmEvent to get OmEventClass
-	OmEvent *om_event = static_cast < OmEvent * >(event);
+	OmEvent *om_event = static_cast<OmEvent*>(event);
+
+//	printf("OmEventManager::event: %s\n", om_event->EventTypeStr().c_str());
+
 	OmEventClass event_class = om_event->ChildClass;
 
 	//get set of listeners registered to an event class
 	EventListenerSet & listener_set = mEventClassToListernsMap[event_class];
 
 	//call event for every listener in the set
-	EventListenerSet::iterator it;
-	for (it = listener_set.begin(); it != listener_set.end(); it++) {
+	FOR_EACH(it, listener_set){
 		om_event->Dispatch(*it);
 	}
 
@@ -63,23 +51,27 @@ bool OmEventManager::event(QEvent * event)
 /////////////////////////////////
 ///////         EventListener Accessors
 
-void OmEventManager::AddEventListener(OmEventClass eventClass, OmEventListener * listener)
+void OmEventManager::AddEventListener(OmEventClass eventClass,
+									  OmEventListener* listener)
 {
 	mEventClassToListernsMap[eventClass].insert(listener);
 }
 
-void OmEventManager::RemoveEventListener(OmEventClass eventClass, OmEventListener * listener)
+void OmEventManager::RemoveEventListener(OmEventClass eventClass,
+										 OmEventListener* listener)
 {
 	mEventClassToListernsMap[eventClass].erase(listener);
 }
 
 //macro to add listener to singleton
-void OmEventManager::AddListener(OmEventClass eventClass, OmEventListener * listener)
+void OmEventManager::AddListener(OmEventClass eventClass,
+								 OmEventListener* listener)
 {
 	Instance()->AddEventListener(eventClass, listener);
 }
 
-void OmEventManager::RemoveListener(OmEventClass eventClass, OmEventListener * listener)
+void OmEventManager::RemoveListener(OmEventClass eventClass,
+									OmEventListener* listener)
 {
 	Instance()->RemoveEventListener(eventClass, listener);
 }
@@ -94,18 +86,15 @@ void OmEventManager::RemoveListener(OmEventClass eventClass, OmEventListener * l
  */
 bool OmEventManager::SendEvent(OmEvent & event)
 {
-	bool status = QCoreApplication::sendEvent(Instance(), &event);
-	//bool status = Instance()->event(&event);
-	return status;
+	return QCoreApplication::sendEvent(Instance(), &event);
 }
 
 /*
  *	Event put in queue.  Ownership of event object given to Qt, and deleted when
  *	notification completed (event normally created on heap).
  */
-void OmEventManager::PostEvent(OmEvent * event)
+void OmEventManager::PostEvent(OmEvent* event)
 {
-
 	QCoreApplication::postEvent(Instance(), event);
 }
 

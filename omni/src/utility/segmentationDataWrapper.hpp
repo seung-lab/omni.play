@@ -1,6 +1,8 @@
 #ifndef SEGMENTATION_DATA_WRAPPER_HPP
 #define SEGMENTATION_DATA_WRAPPER_HPP
 
+class OmSegmentLists;
+
 class SegmentationDataWrapper {
 private:
 	OmID mID;
@@ -69,8 +71,13 @@ public:
 		return OmProject::GetSegmentation(mID).GetSegmentCache()->getMaxValue();
 	}
 
-	quint64 getSegmentListSize(OmSegIDRootType type) const {
-		return OmProject::GetSegmentation(mID).GetSegmentCache()->getSegmentListSize(type);
+	boost::shared_ptr<OmSegmentLists> GetSegmentLists() const {
+		return getSegmentation().GetSegmentLists();
 	}
+
+	boost::shared_ptr<OmMST> GetMST() const {
+		return getSegmentation().getMST();
+	}
+
 };
 #endif

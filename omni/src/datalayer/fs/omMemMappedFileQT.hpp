@@ -68,6 +68,15 @@ public:
 template <typename T>
 class OmMemMappedFileReadQT : public OmMemMappedFileQTbase<T> {
 public:
+
+	static boost::shared_ptr<OmMemMappedFileReadQT<T> >
+	Reader(const std::string& fnp)
+	{
+		OmMemMappedFileReadQT* ret = new OmMemMappedFileReadQT(fnp, 0);
+		return boost::shared_ptr<OmMemMappedFileReadQT<T> >(ret);
+	}
+
+private:
 	OmMemMappedFileReadQT(const std::string& fnp, const int64_t numBytes)
 		: OmMemMappedFileQTbase<T>(fnp)
 	{
@@ -78,7 +87,6 @@ public:
 		debug(memmap, "opened file %s\n", this->GetAbsFileName().c_str());
 	}
 
-private:
 	// optional check of expected file size
 	void checkFileSize(const int64_t numBytes)
 	{
@@ -99,6 +107,27 @@ private:
 template <typename T>
 class OmMemMappedFileWriteQT : public OmMemMappedFileQTbase<T> {
 public:
+
+	static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
+	WriterNumBytes(const std::string& fnp, const int64_t numBytes,
+						   const om::zeroMem shouldZeroFill)
+	{
+		OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
+																 shouldZeroFill);
+		return boost::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
+	}
+
+	static boost::shared_ptr<OmMemMappedFileWriteQT<T> >
+	WriterNumElements(const std::string& fnp, const int64_t numElements,
+					  const om::zeroMem shouldZeroFill)
+	{
+		const uint64_t numBytes = numElements * sizeof(T);
+		OmMemMappedFileWriteQT* ret = new OmMemMappedFileWriteQT(fnp, numBytes,
+																 shouldZeroFill);
+		return boost::shared_ptr<OmMemMappedFileWriteQT<T> >(ret);
+	}
+
+private:
 	OmMemMappedFileWriteQT(const std::string& fnp, const int64_t numBytes,
 						   const om::zeroMem shouldZeroFill)
 		: OmMemMappedFileQTbase<T>(fnp)
@@ -118,7 +147,6 @@ public:
 		debug(memmap, "created file %s\n", this->GetAbsFileName().c_str());
 	}
 
-private:
 	void checkFileSize(const int64_t numBytes)
 	{
 		if(!numBytes){

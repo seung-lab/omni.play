@@ -50,7 +50,7 @@ OmSegment* OmPagingPtrStore::AddSegment(const OmSegID value)
 	}
 
 	OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
-	ret->data_->value_ = value;
+	ret->data_->value = value;
 
 	return ret;
 }
@@ -70,7 +70,7 @@ OmSegment* OmPagingPtrStore::GetSegment(const OmSegID value)
 	}
 
 	OmSegment* ret = &(pages_[pageNum][ value % pageSize_]);
-	if(!ret->data_->value_){
+	if(!ret->data_->value){
 		return NULL;
 	}
 

@@ -164,7 +164,7 @@ private:
 	{
 		OmDataWrapperPtr data = getChunkData(coord);
 
-		const uint64_t chunkOffset = vol_->ComputeChunkPtrOffset(coord);
+		const uint64_t chunkOffset = vol_->ComputeChunkPtrOffsetBytes(coord);
 		mip0volFile_->seek(chunkOffset);
 		mip0volFile_->write(static_cast<const char*>(data->getVoidPtr()),
 							128*128*128*vol_->GetBytesPerSample());

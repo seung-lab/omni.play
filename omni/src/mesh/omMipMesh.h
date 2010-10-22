@@ -28,6 +28,8 @@ public:
 
 	void Load();
 	void Save();
+	uint64_t NumBytes() const { return numBytes_; }
+	void Flush(){}
 
 	std::string GetFileName();
 	std::string GetDirectoryPath();
@@ -54,6 +56,9 @@ private:
 
 	bool mHasData;
 	std::string mPath;
+
+	void SetNumBytes();
+	uint64_t numBytes_;
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;

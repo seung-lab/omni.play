@@ -140,11 +140,15 @@ void OmMipMesh::doLoad()
 	mpVertexDataWrap = OmProjectData::GetProjectIDataReader()->readDataset(fpath, &size);
 	mVertexCount = size / (6 * sizeof(GLfloat));
 
-	int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
-	int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
+	SetNumBytes();
+	cache_->UpdateSize(numBytes_);
+}
 
-	//update cache
-	cache_->UpdateSize(vertex_data_size + vertex_index_data_size);
+void OmMipMesh::SetNumBytes()
+{
+	const int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
+	const int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
+	numBytes_ = vertex_data_size + vertex_index_data_size;
 }
 
 void OmMipMesh::Save()
@@ -210,7 +214,8 @@ bool OmMipMesh::IsEmptyMesh()
 
 bool OmMipMesh::IsVbo()
 {
-	return (NULL_VBO_ID != mVertexDataVboId) || (NULL_VBO_ID != mVertexIndexDataVboId);
+	return (NULL_VBO_ID != mVertexDataVboId) ||
+		(NULL_VBO_ID != mVertexIndexDataVboId);
 }
 
 void OmMipMesh::CreateVbo()
@@ -251,9 +256,8 @@ void OmMipMesh::DeleteVbo()
 	glDeleteBuffersARB(1, &mVertexIndexDataVboId);
 
 	//update cache
-	int vertex_data_size = 6 * mVertexCount * sizeof(GLfloat);
-	int vertex_index_data_size = mVertexIndexCount * sizeof(GLuint);
-	cache_->UpdateSize(-(vertex_data_size + vertex_index_data_size));
+	cache_->UpdateSize(-numBytes_);
+	numBytes_ = 0;
 
 	mVertexDataVboId = NULL_VBO_ID;
 	mVertexIndexDataVboId = NULL_VBO_ID;

@@ -14,11 +14,9 @@ class OmSegmentation;
 class OmSegmentCache {
 public:
 	OmSegmentCache(OmSegmentation * segmentation);
-	~OmSegmentCache();
+	virtual ~OmSegmentCache(){}
 
 	void Flush();
-
-	void turnBatchModeOn( const bool batchMode );
 
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
@@ -68,14 +66,6 @@ public:
 	quint32 getPageSize();
 
 	quint32 getMaxValue();
-	quint64 getSegmentListSize(OmSegIDRootType type);
-
-	OmSegPtrListWithPage* getRootLevelSegIDs(const unsigned int offset,
-											 const int numToGet,
-											 OmSegIDRootType type,
-											 OmSegID startSeg = 0);
-
-	void setAsValidated(OmSegment * segment, const bool valid);
 
 	void refreshTree();
 

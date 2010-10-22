@@ -13,12 +13,20 @@
 
 class OmSegmentCache;
 
-struct OmSegmentData {
-	OmSegID value_;
-	OmColor color_;
-	bool immutable_;
-	uint64_t size_;
-	DataBbox bounds_;
+struct OmSegmentDataV2 {
+	OmSegID value;
+	OmColor color;
+	bool immutable;
+	uint64_t size;
+	DataBbox bounds;
+};
+
+struct OmSegmentDataV3 {
+	OmSegID value;
+	OmColor color;
+	om::OmSegListType listType;
+	uint64_t size;
+	DataBbox bounds;
 };
 
 class OmSegment {
@@ -33,18 +41,18 @@ public:
 	{}
 
 	inline OmSegID value() const {
-		return data_->value_;
+		return data_->value;
 	}
 
 	// color
 	void RandomizeColor();
 	void reRandomizeColor();
-	OmColor GetColorInt(){ return data_->color_; }
+	OmColor GetColorInt(){ return data_->color; }
 	Vector3f GetColorFloat() const
 	{
-		return Vector3f( data_->color_.red   / 255.,
-						 data_->color_.green / 255.,
-						 data_->color_.blue  / 255. );
+		return Vector3f( data_->color.red   / 255.,
+						 data_->color.green / 255.,
+						 data_->color.blue  / 255. );
 	}
 	void SetColor(const Vector3f &);
 
@@ -57,16 +65,17 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
-	uint64_t getSize() const { return data_->size_; }
+	uint64_t getSize() const { return data_->size; }
 	void addToSize(const uint64_t inc){
-		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(data_->value_);
-		data_->size_ += inc;
+		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(data_->value);
+		data_->size += inc;
 	}
 
 	uint64_t getSizeWithChildren();
 
-	bool GetImmutable() const { return data_->immutable_; }
-	void SetImmutable( const bool immutable);
+	bool IsValid() const { return om::VALID == data_->listType; }
+	om::OmSegListType GetListType() const { return data_->listType; }
+	void SetListType(const om::OmSegListType type) { data_->listType = type; }
 
 	OmSegID getParentSegID() const { return parentSegID_; }
 	void setParentSegID(const OmSegID val){ parentSegID_ = val; }
@@ -78,10 +87,10 @@ public:
 	double getThreshold() const { return threshold_; }
 	void setThreshold(const double thres){ threshold_ = thres; }
 
-	const DataBbox& getBounds() const {	return data_->bounds_;	}
+	const DataBbox& getBounds() const {	return data_->bounds;	}
 	void addToBounds(const DataBbox& box){
-		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value_);
-		data_->bounds_.merge(box);
+		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
+		data_->bounds.merge(box);
 	}
 
 	uint32_t getFreshnessForMeshes() const {return freshnessForMeshes_;}
@@ -106,7 +115,7 @@ public:
 	OmSegmentCache* getSegmentCache(){ return cache_; }
 
 private:
-	OmSegmentData* data_;
+	OmSegmentDataV3* data_;
 
 	OmSegmentCache* cache_;
 	OmSegID parentSegID_;

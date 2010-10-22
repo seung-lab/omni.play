@@ -5,8 +5,10 @@
 #include "gui/widgets/omWidget.hpp"
 
 class DendToolBar;
-class GroupButtonAdd;
-class GroupButtonDelete;
+class SetValid;
+class SetNotValid;
+class SetUncertain;
+class SetNotUncertain;
 class GroupButtonTag;
 class ShowValidatedButton;
 class SegmentationDataWrapper;
@@ -35,10 +37,16 @@ private:
 	QRadioButton * dontShowValid;
 	QLineEdit* mGroupName;
 
-	GroupButtonAdd * setSelectionValid;
-	GroupButtonDelete * setSelectionNotValid;
+	SetValid* setSelectionValid;
+	SetNotValid* setSelectionNotValid;
+
+	SetUncertain* setSelectionUncertain;
+	SetNotUncertain* setSelectionNotUncertain;
+
 	GroupButtonTag * groupButtonTag;
 	ShowValidatedButton * showValidatedButton;
+
+	QWidget* addSelectedSegmentButtons();
 };
 
 #endif

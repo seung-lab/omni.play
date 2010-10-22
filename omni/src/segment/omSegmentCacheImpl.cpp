@@ -137,8 +137,8 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	OmSegment * parent = GetSegmentFromValue( child->getParentSegID() );
 
-	if( child->GetImmutable() == parent->GetImmutable() &&
-	    1 == child->GetImmutable() ){
+	if( child->IsValid() == parent->IsValid() &&
+	    1 == child->IsValid() ){
 		printf("could not split %d from %d\n", child->value(), parent->value());
 		return OmSegmentEdge();
 	}
@@ -196,20 +196,29 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegment
 std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 {
 	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
-	OmSegment * childRoot = GetSegmentFromValue(childRootID);
-	OmSegment * parent = GetSegmentFromValue( e.parentID );
+	OmSegment* childRoot = GetSegmentFromValue(childRootID);
+	OmSegment* parent = GetSegmentFromValue( e.parentID );
+	OmSegment* parentRoot = findRoot(parent);
 
-	if( childRoot == findRoot( parent ) ){
+	if( childRoot == parentRoot ){
 		printf("cycle found in user manual edge; skipping edge %d, %d, %f\n",
 		       e.childID, e.parentID, e.threshold);
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
-	if( childRoot->GetImmutable() != parent->GetImmutable() ){
+	if( childRoot->IsValid() != parent->IsValid() ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->value(), parent->value(), childRoot->GetImmutable(), parent->GetImmutable() );
+		       childRoot->value(), parent->value(), childRoot->IsValid(), parent->IsValid() );
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
+
+/*
+	if( childRoot->IsValid() &&
+		childRoot != parentRoot ){
+		printf("can't join two validated segments\n");
+		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
+	}
+*/
 
 	mSegmentGraph.graph_join(childRootID, e.parentID);
 
@@ -240,7 +249,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( const OmS
 
 void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
-	if( segmentList.size() < 2 ){
+	if(segmentList.size() < 2 ){
 		return;
 	}
 
@@ -267,7 +276,7 @@ void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
 
 void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
-	if( segmentList.size() < 2 ){
+	if(segmentList.size() < 2 ){
 		return;
 	}
 
@@ -287,76 +296,20 @@ void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 	clearCaches();
 }
 
-OmSegPtrListWithPage * OmSegmentCacheImpl::getRootLevelSegIDs( const unsigned int offset,
-															   const int numToGet,
-															   const OmSegIDRootType type,
-															   const OmSegID startSeg)
-{
-	OmSegIDsListWithPage * ids;
-	if(VALIDROOT == type) {
-		ids = getSegmentLists()->mValidListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
-	} else if(NOTVALIDROOT == type) {
-		ids = getSegmentLists()->mRootListBySize.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
-	} else if(RECENTROOT == type) {
-		ids = getSegmentLists()->mRecentRootActivityMap.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
-	} else {
-		assert(0 && "Shouldn't call this function to do non special group code.\n");
-	}
-
-	OmSegPtrList retPtrs = OmSegPtrList();
-
-	// TODO: make a little stuct of the data the GUI needs...
-	OmSegIDsList::const_iterator iter;
-	for( iter = ids->list.begin(); iter != ids->list.end(); ++iter ){
-		retPtrs.push_back( GetSegmentFromValue(*iter) );
-	}
-
-	OmSegPtrListWithPage * ret = new OmSegPtrListWithPage( retPtrs, ids->mPageOffset );
-
-	delete ids;
-
-	return ret;
-}
-
-quint64 OmSegmentCacheImpl::getSegmentListSize(OmSegIDRootType type)
-{
-	if(VALIDROOT == type) {
-		return getSegmentLists()->mValidListBySize.size();
-	} else if(NOTVALIDROOT == type) {
-		return getSegmentLists()->mRootListBySize.size();
-	} else if(RECENTROOT == type) {
-		return getSegmentLists()->mRecentRootActivityMap.size();
-	}
-
-	assert(0 && "shouldn't reach here, type incorrect\n");
-	return 0;
-}
-
-void OmSegmentCacheImpl::setAsValidated(OmSegment * seg, const bool valid)
-{
-	if(valid) {
-		getSegmentLists()->moveSegmentFromRootToValid(seg);
-	} else {
-		getSegmentLists()->moveSegmentFromValidToRoot(seg);
-	}
-
-	if( -1 == seg->getEdgeNumber() ){
-		return;
-	}
-
-	OmMSTEdge* edges = mSegmentation->mst_->Edges();
-	edges[seg->getEdgeNumber()].userJoin = valid;
-}
-
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
-	OmSegment * seg = findRoot( segUnknownDepth );
+	OmSegment* seg = findRoot( segUnknownDepth );
 
-	if( seg->GetImmutable() ) {
-		return getSegmentLists()->mValidListBySize.getSegmentSize( seg );
+	switch(seg->GetListType()){
+	case om::VALID:
+		return getSegmentLists()->Valid().getSegmentSize(seg);
+	case om::WORKING:
+		return getSegmentLists()->Working().getSegmentSize(seg);
+	case om::UNCERTAIN:
+		return getSegmentLists()->Uncertain().getSegmentSize(seg);
+	default:
+		throw OmArgException("unknown type");
 	}
-
-	return getSegmentLists()->mRootListBySize.getSegmentSize( seg );
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()

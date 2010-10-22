@@ -28,6 +28,8 @@ DEPENDPATH += . \
            src/gui/toolbars \
            src/gui/toolbars/dendToolbar \
            src/gui/toolbars/mainToolbar \
+           src/gui/segmentLists \
+           src/gui/segmentLists/details \
            src/gui/widgets \
            src/mesh \
            src/project \
@@ -91,7 +93,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/cacheMonitorDialog.h \
            src/gui/groupsTable.h \
            src/gui/cacheMonitorWidget.h \
-           src/gui/elementListBox.h \
+           src/gui/segmentLists/elementListBox.hpp \
+           src/gui/segmentLists/elementListBoxImpl.hpp \
            src/gui/guiUtils.h \
            src/headless/headless.h \
            src/headless/headlessImpl.hpp \
@@ -122,18 +125,21 @@ HEADERS += lib/strnatcmp.h \
            src/gui/preferences/preferencesMesh.h \
            src/gui/preferences/ui_preferences3d.h \
            src/gui/recentFileList.h \
-           src/gui/segmentListBase.h \
-           src/gui/segmentListRecent.h \
-           src/gui/segmentListValid.h \
-           src/gui/segmentListWorking.h \
+           src/gui/segmentLists/details/segmentListBase.h \
+           src/gui/segmentLists/details/segmentListRecent.h \
+           src/gui/segmentLists/details/segmentListValid.h \
+           src/gui/segmentLists/details/segmentListWorking.h \
+           src/gui/segmentLists/details/segmentListUncertain.h \
            src/gui/meshPreviewer/previewButton.hpp \
            src/gui/toolbars/dendToolbar/dendToolbar.h \
            src/gui/toolbars/dendToolbar/breakButton.h \
            src/gui/toolbars/dendToolbar/joinButton.h \
            src/gui/toolbars/dendToolbar/splitButton.h \
-           src/gui/toolbars/dendToolbar/groupButtonAdd.h \
+           src/gui/toolbars/dendToolbar/setValid.hpp \
+           src/gui/toolbars/dendToolbar/setNotValid.hpp \
+           src/gui/toolbars/dendToolbar/setUncertain.hpp \
+           src/gui/toolbars/dendToolbar/setNotUncertain.hpp \
            src/gui/toolbars/dendToolbar/groupButtonTag.h \
-           src/gui/toolbars/dendToolbar/groupButtonDelete.h \
            src/gui/toolbars/dendToolbar/showValidatedButton.h \
            src/gui/toolbars/dendToolbar/validationGroup.h \
            src/gui/toolbars/dendToolbar/graphTools.h \
@@ -174,10 +180,12 @@ HEADERS += lib/strnatcmp.h \
            src/project/omProjectSaveAction.h \
            src/segment/actions/omSegmentEditor.h \
            src/segment/actions/segment/omSegmentJoinAction.h \
+           src/segment/actions/segment/omSegmentUncertainAction.h \
            src/segment/actions/segment/omSegmentValidateAction.h \
            src/segment/actions/segment/omSegmentGroupAction.h \
            src/segment/actions/segment/omSegmentSelectAction.h \
            src/segment/actions/segment/omSegmentSplitAction.h \
+           src/segment/details/omSegmentListContainer.hpp \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
@@ -195,6 +203,8 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentPointers.h \
            src/segment/omSegmentSelector.h \
            src/segment/omSegmentLists.hpp \
+           src/segment/omSegmentValidation.hpp \
+           src/segment/omSegmentUncertain.hpp \
            src/system/omGenericManager.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
@@ -211,7 +221,8 @@ HEADERS += lib/strnatcmp.h \
            src/system/cache/omCacheInfo.h \
            src/system/cache/omCacheManager.h \
            src/system/cache/omCacheGroup.h \
-           src/system/omEvent.h \
+           src/system/events/omEvent.h \
+           src/system/events/omEventManager.h \
            src/system/omGroup.h \
            src/system/omGroups.h \
            src/system/omLocalPreferences.h \
@@ -355,7 +366,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/mstViewer.cpp \
            src/gui/cacheMonitorDialog.cpp \
            src/gui/cacheMonitorWidget.cpp \
-           src/gui/elementListBox.cpp \
            src/gui/guiUtils.cpp \
            src/headless/headless.cpp \
            src/gui/inspectors/chanInspector.cpp \
@@ -380,17 +390,13 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/preferences/preferences3d.cpp \
            src/gui/preferences/preferencesMesh.cpp \
            src/gui/recentFileList.cpp \
-           src/gui/segmentListBase.cpp \
-           src/gui/segmentListRecent.cpp \
-           src/gui/segmentListValid.cpp \
-           src/gui/segmentListWorking.cpp \
+           src/gui/segmentLists/elementListBox.cpp \
+           src/gui/segmentLists/details/segmentListBase.cpp \
            src/gui/toolbars/dendToolbar/dendToolbar.cpp \
            src/gui/toolbars/dendToolbar/breakButton.cpp \
            src/gui/toolbars/dendToolbar/joinButton.cpp \
            src/gui/toolbars/dendToolbar/splitButton.cpp \
-           src/gui/toolbars/dendToolbar/groupButtonAdd.cpp \
            src/gui/toolbars/dendToolbar/groupButtonTag.cpp \
-           src/gui/toolbars/dendToolbar/groupButtonDelete.cpp \
            src/gui/toolbars/dendToolbar/showValidatedButton.cpp \
            src/gui/toolbars/dendToolbar/validationGroup.cpp \
            src/gui/toolbars/dendToolbar/graphTools.cpp \
@@ -423,6 +429,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/project/omProject.cpp \
            src/project/omProjectSaveAction.cpp \
            src/segment/actions/segment/omSegmentJoinAction.cpp \
+           src/segment/actions/segment/omSegmentUncertainAction.cpp \
            src/segment/actions/segment/omSegmentValidateAction.cpp \
            src/segment/actions/segment/omSegmentGroupAction.cpp \
            src/segment/actions/segment/omSegmentSelectAction.cpp \
@@ -453,8 +460,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/omBuildVolumes.cpp \
            src/system/cache/omCacheManager.cpp \
            src/system/cache/omCacheGroup.cpp \
-           src/system/omEvent.cpp \
-           src/system/omEventManager.cpp \
+           src/system/events/omEvent.cpp \
+           src/system/events/omEventManager.cpp \
            src/system/omEvents.cpp \
            src/system/omGroups.cpp \
            src/system/omLocalPreferences.cpp \

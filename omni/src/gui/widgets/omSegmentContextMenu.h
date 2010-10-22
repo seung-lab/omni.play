@@ -2,43 +2,46 @@
 #define OM_SEGMENT_CONTEXT_MENU_H
 
 #include "common/omCommon.h"
+#include "utility/dataWrappers.h"
+
 #include <QMenu>
 
-class SegmentDataWrapper;
 class OmViewGroupState;
 
 class OmSegmentContextMenu : public QMenu {
 
-	Q_OBJECT
+Q_OBJECT
 
 public:
-	void Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs);
+	void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
 
 protected:
-	void AddSelectionNames();
-	void AddSelectionAction();
-	void AddDendActions();
-	void AddColorActions();
-	void AddGroupActions();
-	void AddPropertiesActions();
+	void addSelectionNames();
+	void addSelectionAction();
+	void addDendActions();
+	void addColorActions();
+	void addGroupActions();
+	void addPropertiesActions();
 
 private slots:
-	void Select();
-	void Unselect();
-	void UnselectOthers();
+	void select();
+	void unselect();
+	void unselectOthers();
 
-	void MergeSegments();
+	void mergeSegments();
 	void splitSegments();
 	void randomizeColor();
-	void addGroup();
-	void deleteGroup();
+	void setValid();
+	void setNotValid();
 	void showProperties();
 	void printChildren();
 
 private:
-	OmID mSegmentationId;
-	OmID mSegmentId;
-	bool mImmutable;
+	SegmentDataWrapper sdw_;
+
+	bool isValid() const;
+	bool isUncertain() const;
+
 	OmViewGroupState * mViewGroupState;
 };
 

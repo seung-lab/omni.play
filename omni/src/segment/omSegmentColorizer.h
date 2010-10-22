@@ -2,7 +2,6 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
-
 #include "zi/omMutex.h"
 
 typedef struct {
@@ -39,15 +38,29 @@ private:
 
 	OmColor getVoxelColorForView2d(const OmSegID val);
 
+	static const std::vector<uint8_t> selectedColorLookup_;
+
 	static inline OmColor makeSelectedColor(const OmColor& color)
+	{
+		const OmColor ret = {selectedColorLookup_[color.red],
+							 selectedColorLookup_[color.green],
+							 selectedColorLookup_[color.blue]};
+		return ret;
+	}
+
+	static inline uint8_t makeSelectedColor(const uint8_t val)
 	{
 		static const double selectedSegColorFactor = 2.5;
 
-		const OmColor ret =
-			{(color.red   > 101 ? 255 : color.red   * selectedSegColorFactor),
-			 (color.green > 101 ? 255 : color.green * selectedSegColorFactor),
-			 (color.blue  > 101 ? 255 : color.blue  * selectedSegColorFactor)
-			};
+		return val > 101 ? 255 : val * selectedSegColorFactor;
+	}
+
+	static std::vector<uint8_t> makeLookupTable()
+	{
+		std::vector<uint8_t> ret(256, 0);
+		for(int i = 0; i < 256; ++i){
+			ret[i] = makeSelectedColor(i);
+		}
 		return ret;
 	}
 

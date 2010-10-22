@@ -7,22 +7,20 @@
 #include "segment/omSegmentPointers.h"
 
 class SegmentationDataWrapper;
-class ElementListBox;
-class InspectorProperties;
+class OmViewGroupState;
 class OmSegmentEvent;
 class OmSegmentListWidget;
 class SegObjectInspector;
 
-class SegmentListBase : public QWidget
-{
+class SegmentListBase : public QWidget {
 	Q_OBJECT
 
-	public:
-	SegmentListBase( QWidget * , InspectorProperties *, ElementListBox * );
+public:
+	SegmentListBase(QWidget*, OmViewGroupState*);
 
-	void populateSegmentElementsListWidget(const bool doScrollToSelectedSegment = false,
-										   const OmSegID segmentJustSelectedID = 0,
-										   const bool useOffset = false);
+	void populate(const bool doScrollToSelectedSegment = false,
+				  const OmSegID segmentJustSelectedID = 0,
+				  const bool useOffset = false);
 
 	void makeSegmentationActive(SegmentationDataWrapper sdw,
 								const OmSegID segmentJustSelectedID,
@@ -44,9 +42,13 @@ public slots:
 
 protected:
 	virtual QString getTabTitle() = 0;
-	virtual OmSegIDRootType getRootSegType() = 0;
+	virtual uint64_t Size() = 0;
 	virtual int getPreferredTabIndex() = 0;
 	virtual void makeTabActiveIfContainsJumpedToSegment() = 0;
+	virtual boost::shared_ptr<OmSegIDsListWithPage>
+	getPageSegments(const unsigned int offset,
+					const int numToGet,
+					const OmSegID startSeg) = 0;
 
 	QVBoxLayout * layout;
 	QPushButton * prevButton;
@@ -56,12 +58,12 @@ protected:
 	QLineEdit * searchEdit;
 
 	OmSegmentListWidget * segmentListWidget;
-	ElementListBox * elementListBox;
 
 	boost::shared_ptr<SegmentationDataWrapper> currentSDW;
 	bool haveValidSDW;
 
-	OmSegPtrList * getSegmentsToDisplay( const OmID firstSegmentID, const bool  );
+	boost::shared_ptr<OmSegIDsListWithPage>
+	getSegmentsToDisplay( const OmID firstSegmentID, const bool  );
 
 	QMenu * contextMenu;
 	QAction * propAct;

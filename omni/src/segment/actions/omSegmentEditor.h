@@ -6,36 +6,28 @@
 #include "system/omEvents.h"
 #include "zi/omUtility.h"
 
-class OmSegmentEditor : boost::noncopyable {
+class OmSegmentEditor : private om::singletonBase<OmSegmentEditor> {
 public:
 	static void Delete(){
-		Instance().mEditSegmentation = 0;
-		Instance().mEditSegment = 0;
+		instance().sdw_ = SegmentDataWrapper();
 	}
 
-	static void SetEditSelection(const OmID segmentation,
-				     const OmSegID segment){
-		Instance().mEditSegmentation = segmentation;
-		Instance().mEditSegment = segment;
+	static void SetEditSelection(const OmID segmentationID,
+								 const OmSegID segmentID)
+	{
+		instance().sdw_ = SegmentDataWrapper(segmentationID, segmentID);
 		OmEvents::SegmentEditSelectionChanged();
 	}
 
-	static SegmentDataWrapper GetEditSelection(){
-		return SegmentDataWrapper(Instance().mEditSegmentation,
-					  Instance().mEditSegment);
+	static SegmentDataWrapper GetEditSelection() {
+		return instance().sdw_;
 	}
 
 private:
-	OmSegmentEditor()
-		: mEditSegmentation(0)
-		, mEditSegment(0) {}
+	OmSegmentEditor(){}
 	~OmSegmentEditor(){}
-	static inline OmSegmentEditor& Instance(){
-		return zi::singleton<OmSegmentEditor>::instance();
-	}
 
-	OmID mEditSegmentation;
-	OmSegID mEditSegment;
+	SegmentDataWrapper sdw_;
 
 	friend class zi::singleton<OmSegmentEditor>;
 };

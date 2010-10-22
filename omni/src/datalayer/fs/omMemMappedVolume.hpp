@@ -43,9 +43,7 @@ public:
 		resizeMapsVector();
 
 		for(size_t level = 0; level < maps_.size(); ++level) {
-			maps_[level] =
-				boost::make_shared<reader_t>(getFileName(level),
-							     0);
+			maps_[level] = reader_t::Reader(getFileName(level));
 		}
 	}
 
@@ -67,9 +65,9 @@ public:
 					  << "," << dims.z
 					  << ")\n";
 
-			maps_[level] =
-				boost::make_shared<writer_t>(getFileName(level),
-											 size, om::DONT_ZERO_FILL);
+			maps_[level] =writer_t::WriterNumBytes(getFileName(level),
+												   size,
+												   om::DONT_ZERO_FILL);
 		}
 
 		printf("OmMemMappedVolume: done allocating data\n");
@@ -82,7 +80,7 @@ public:
 	T* GetChunkPtr(const OmMipChunkCoord& coord) const
 	{
 		const int level = coord.Level;
-		const uint64_t offset = vol_->ComputeChunkPtrOffset(coord);
+		const uint64_t offset = vol_->ComputeChunkPtrOffsetBytes(coord);
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
 		assert(ret);
 		return ret;

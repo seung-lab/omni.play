@@ -3,58 +3,85 @@
 
 #include "segment/lowLevel/omSegmentListBySize.h"
 #include "segment/lowLevel/omSegmentListByMRU.h"
-
-class OmSegment;
-class OmSegmentation;
-
-template <typename T>
-class OmSegmentListContainer {
-public:
-	void insertSegment(OmSegment* seg){
-		list.insertSegment(seg);
-	}
-	void clear(){
-		list.clear();
-	}
-	size_t size(){
-		return list.size();
-	}
-	void updateFromJoin(OmSegment* root, OmSegment* child){
-		list.updateFromJoin(root, child);
-	}
-	OmSegIDsListWithPage* getAPageWorthOfSegmentIDs(const uint32_t offset,
-							const int numToGet,
-							const OmSegID startSeg){
-		return list.getAPageWorthOfSegmentIDs(offset, numToGet, startSeg);
-	}
-	void updateFromSplit(OmSegment* root, OmSegment* child, const quint64 newChildSize){
-		list.updateFromSplit(root, child, newChildSize);
-	}
-	void swapSegment(OmSegment* seg, OmSegmentListContainer<T>& two ){
-		T::swapSegment(seg, list, two.list);
-	}
-	quint64 getSegmentSize(OmSegment* seg){
-		return list.getSegmentSize(seg);
-	}
-
-private:
-	T list;
-};
+#include "segment/details/omSegmentListContainer.hpp"
 
 class OmSegmentLists {
-public:
-	OmSegmentLists(){}
+private:
+	OmSegmentListContainer<OmSegmentListBySize> validList_;
+	OmSegmentListContainer<OmSegmentListBySize> workingList_;
+	OmSegmentListContainer<OmSegmentListBySize> uncertainList_;
+	OmSegmentListByMRU recentList_;
 
-	OmSegmentListContainer<OmSegmentListBySize> mValidListBySize;
-	OmSegmentListContainer<OmSegmentListBySize> mRootListBySize;
-	OmSegmentListByMRU mRecentRootActivityMap;
-
-	void moveSegmentFromValidToRoot(OmSegment* seg){
-		mValidListBySize.swapSegment(seg, mRootListBySize);
+	OmSegmentListContainer<OmSegmentListBySize>&
+	getContainer(const om::OmSegListType type)
+	{
+		switch(type){
+		case om::VALID:
+			return validList_;
+		case om::WORKING:
+			return workingList_;
+		case om::UNCERTAIN:
+			return uncertainList_;
+		default:
+			throw OmArgException("unknown type");
+		}
 	}
 
-	void moveSegmentFromRootToValid(OmSegment* seg){
-		mRootListBySize.swapSegment(seg, mValidListBySize);
+public:
+	OmSegmentListByMRU& Recent() {
+		return recentList_;
+	}
+
+	OmSegmentListContainer<OmSegmentListBySize>& Working() {
+		return workingList_;
+	}
+
+	OmSegmentListContainer<OmSegmentListBySize>& Valid() {
+		return validList_;
+	}
+
+	OmSegmentListContainer<OmSegmentListBySize>& Uncertain() {
+		return uncertainList_;
+	}
+
+	void MoveSegment(const om::OmSegListType toType,
+					 OmSegment* seg)
+	{
+		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
+		seg->SetListType(toType);
+	}
+
+	void TouchRecentList(const OmSegID segID){
+		recentList_.touch( segID );
+	}
+
+	void InsertSegmentWorking(OmSegment* seg){
+		workingList_.insertSegment(seg);
+	}
+
+	void InsertSegmentValid(OmSegment* seg){
+		validList_.insertSegment(seg);
+	}
+
+	void InsertSegmentUncertain(OmSegment* seg){
+		uncertainList_.insertSegment(seg);
+	}
+
+	uint64_t GetNumTopLevelSegs() {
+		return workingList_.size() + validList_.size() + uncertainList_.size();
+	}
+
+	void UpdateFromJoinWorking(OmSegment* root, OmSegment* child){
+		workingList_.updateFromJoin(root, child);
+	}
+
+	void UpdateFromJoinValid(OmSegment* root, OmSegment* child){
+		validList_.updateFromJoin(root, child);
+	}
+
+	void UpdateFromSplitWorking(OmSegment* root, OmSegment* child,
+								const uint64_t newChildSize){
+		workingList_.updateFromSplit(root, child, newChildSize);
 	}
 };
 

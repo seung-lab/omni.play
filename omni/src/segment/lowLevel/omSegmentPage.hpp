@@ -20,7 +20,8 @@ class OmSegmentPage {
 private:
 	// version 1: pages in hdf5
 	// version 2: first move to mem-mapped pages
-	static const int CurrentFileVersion = 2;
+	// version 3: replace 'bool immutable' w/ 'enum OmSegListType'
+	static const int CurrentFileVersion = 3;
 
 	OmSegmentation* segmentation_;
 	PageNum pageNum_;
@@ -32,11 +33,13 @@ private:
 	boost::shared_ptr<OmSegment> segmentsPtr_;
 	OmSegment* segments_;
 
-	boost::shared_ptr<OmIOnDiskFile<OmSegmentData> > segmentsDataPtr_;
-	OmSegmentData* segmentsData_;
+	boost::shared_ptr<OmIOnDiskFile<OmSegmentDataV3> > segmentsDataPtr_;
+	OmSegmentDataV3* segmentsData_;
 
-	typedef OmFileReadQT<OmSegmentData> reader_t;
-	typedef OmFileWriteQT<OmSegmentData> writer_t;
+	typedef OmFileReadQT<OmSegmentDataV2> reader_t_v2;
+	typedef OmFileReadQT<OmSegmentDataV3> reader_t_v3;
+	typedef OmFileWriteQT<OmSegmentDataV2> writer_t_v2;
+	typedef OmFileWriteQT<OmSegmentDataV3> writer_t_v3;
 
 public:
 	OmSegmentPage()
@@ -72,16 +75,15 @@ public:
 		version_ = CurrentFileVersion;
 		storeVersion();
 
-		const int segmentDataFileSize = pageSize_*sizeof(OmSegmentData);
-		segmentsDataPtr_ = boost::make_shared<writer_t>(memMapPath(),
-													 segmentDataFileSize,
-													 om::ZERO_FILL);
+		segmentsDataPtr_ = writer_t_v3::WriterNumElements(memMapPathV3(),
+														  pageSize_,
+														  om::ZERO_FILL);
 		segmentsData_ = segmentsDataPtr_->GetPtr();
 
 		for(uint32_t i = 0; i < pageSize_; ++i){
 			segments_[i].cache_ = cache_;
 			segments_[i].data_ = &segmentsData_[i];
-			segments_[i].data_->bounds_ = DataBbox();
+			segments_[i].data_->bounds = DataBbox();
 		}
 	}
 
@@ -96,6 +98,9 @@ public:
 			convertFromHDF5();
 			return;
 		case 2:
+			convertFromVersion2();
+			return;
+		case 3:
 			openMemMapFile();
 			return;
 		default:
@@ -120,18 +125,66 @@ private:
 		segments_ = segmentsPtr_.get();
 	}
 
+	void convertFromVersion2()
+	{
+		printf("rewriting segment page %d from ver2 to ver3\n", pageNum_);
+
+		boost::shared_ptr<OmIOnDiskFile<OmSegmentDataV2> > oldSegmentDataPtr =
+			reader_t_v2::Reader(memMapPathV2());
+		OmSegmentDataV2* oldSegmentData = oldSegmentDataPtr->GetPtr();
+
+		Create();
+
+		for(uint32_t i = 0; i < pageSize_; ++i){
+			segmentsData_[i].value = oldSegmentData[i].value;
+			segmentsData_[i].color = oldSegmentData[i].color;
+			segmentsData_[i].size = oldSegmentData[i].size;
+			segmentsData_[i].bounds = oldSegmentData[i].bounds;
+
+			if(oldSegmentData[i].immutable){
+				segmentsData_[i].listType = om::VALID;
+			} else {
+				segmentsData_[i].listType = om::WORKING;
+			}
+		}
+
+		Flush();
+	}
+
 	void convertFromHDF5()
 	{
-		printf("rewriting segment page %d\n", pageNum_);
+		printf("rewriting segment page %d from HDF5\n", pageNum_);
+
 		Create();
+
+		boost::shared_ptr<OmSegmentDataV2> oldSegmentDataPtr =
+			OmSmartPtr<OmSegmentDataV2>::MallocNumElements(pageSize_,
+														  om::ZERO_FILL);
+		OmSegmentDataV2* oldSegmentData = oldSegmentDataPtr.get();
+
 		OmDataArchiveSegment::ArchiveRead(getOldHDF5path(),
-										  segmentsData_,
+										  oldSegmentData,
 										  pageSize_);
+
+		for(uint32_t i = 0; i < pageSize_; ++i){
+			segmentsData_[i].value = oldSegmentData[i].value;
+			segmentsData_[i].color = oldSegmentData[i].color;
+			segmentsData_[i].size = oldSegmentData[i].size;
+			segmentsData_[i].bounds = oldSegmentData[i].bounds;
+
+			if(oldSegmentData[i].immutable){
+				segmentsData_[i].listType = om::VALID;
+			} else {
+				segmentsData_[i].listType = om::WORKING;
+			}
+		}
+
+		Flush();
 	}
 
 	void openMemMapFile()
 	{
-		segmentsDataPtr_ = boost::make_shared<reader_t>(memMapPath(), 0);
+		segmentsDataPtr_ = reader_t_v3::Reader(memMapPathV3());
 		segmentsData_ = segmentsDataPtr_->GetPtr();
 
 		for(uint32_t i = 0; i < pageSize_; ++i){
@@ -145,13 +198,27 @@ private:
 											   pageNum_);
 	}
 
-	std::string memMapPath(){
-		return memMapPathQStr().toStdString();
+	std::string memMapPathV2(){
+		return memMapPathQStrV2().toStdString();
 	}
 
-	QString memMapPathQStr(){
+	QString memMapPathQStrV2(){
 		const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
-		const QString fullPath = QString("%1/segment_page%2.%3")
+		const QString fullPath = QString("%1segment_page%2.%3")
+			.arg(volPath)
+			.arg(pageNum_)
+			.arg("data");
+
+		return fullPath;
+	}
+
+	std::string memMapPathV3(){
+		return memMapPathQStrV3().toStdString();
+	}
+
+	QString memMapPathQStrV3(){
+		const QString volPath = OmFileNames::MakeVolSegmentsPath(segmentation_);
+		const QString fullPath = QString("%1segment_page%2.%3.ver3")
 			.arg(volPath)
 			.arg(pageNum_)
 			.arg("data");
@@ -160,7 +227,7 @@ private:
 	}
 
 	QString versionFilePath(){
-		return memMapPathQStr() + ".ver";
+		return memMapPathQStrV2() + ".ver";
 	}
 
 	void loadVersion()

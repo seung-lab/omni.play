@@ -74,6 +74,10 @@ public:
 	Vector3i MipLevelDataDimensions(int) const;
 	Vector3i MipLevelDimensionsInMipChunks(int level);
 
+	SpaceCoord DataToSpaceCoord(const DataCoord& dataCoord){
+		return NormToSpaceCoord(DataToNormCoord(dataCoord));
+	}
+
 	/*
 	 *	Returns MipChunkCoord containing given data coordinate for given MipLevel
 	 */
@@ -149,7 +153,7 @@ public:
 
 	virtual void SetVolDataType(const OmVolDataType) = 0;
 
-	uint64_t ComputeChunkPtrOffset(const OmMipChunkCoord& coord) const;
+	uint64_t ComputeChunkPtrOffsetBytes(const OmMipChunkCoord& coord) const;
 
 protected:
 	OmVolDataType mVolDataType;

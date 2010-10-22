@@ -35,7 +35,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
 
 	//return if not valid
-	if (!sdw.isValid())
+	if (!sdw.isValidWrapper())
 		return;
 
 	const OmID segmentation_id = sdw.getSegmentationID();

@@ -6,7 +6,7 @@
 #include "system/omEvents.h"
 
 OmMeshSegmentListThread::OmMeshSegmentListThread(OmMipChunkPtr p_chunk,
-						 OmSegment * rootSeg)
+												 OmSegment * rootSeg)
 	: mChunk(p_chunk)
 	, mRootSeg(rootSeg)
 {
@@ -22,8 +22,7 @@ void OmMeshSegmentListThread::run()
 	OmSegPtrList segmentsToDraw;
 
 	while( NULL != seg ){
-		const OmSegID val = seg->value();
-		if(0 != chunkValues.count(val)){
+		if(0 != chunkValues.count(seg->value())){
 			segmentsToDraw.push_back(seg);
 		}
 

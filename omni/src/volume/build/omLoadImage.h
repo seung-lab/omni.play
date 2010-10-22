@@ -81,8 +81,8 @@ private:
 		}
 
 		//if chunk was not in map, assume chunk is unallocated...
-
-		const uint64_t offset = vol_->ComputeChunkPtrOffset(coord);
+		//TODO: just use OmRawChunk...
+		const uint64_t offset = vol_->ComputeChunkPtrOffsetBytes(coord);
 
 		debugs(io) << "preallocating chunk: " << coord << "\n";
 		preallocateChunk(offset);

@@ -21,7 +21,9 @@ public:
 	boost::shared_ptr<OmRawChunk<T> >
 	HandleCacheMiss(const OmMipChunkCoord& coord)
 	{
-		return boost::make_shared<OmRawChunk<T> >(vol_, coord);
+		OmRawChunk<T>* chunk = new OmRawChunk<T>(vol_, coord);
+		UpdateSize(chunk->NumBytes());
+		return boost::shared_ptr<OmRawChunk<T> >(chunk);
 	}
 
 private:

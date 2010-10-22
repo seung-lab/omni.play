@@ -1,28 +1,25 @@
 #include "utility/dataWrappers.h"
+#include "segment/omSegmentLists.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
-#include "gui/elementListBox.h"
+#include "gui/segmentLists/elementListBox.hpp"
 #include "gui/widgets/omSegmentListWidget.h"
-#include "gui/segmentListBase.h"
+#include "gui/segmentLists/details/segmentListBase.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
 
-#include <boost/make_shared.hpp>
-
 SegmentListBase::SegmentListBase( QWidget * parent,
-								  InspectorProperties * ip,
-								  ElementListBox * eb )
+								  OmViewGroupState* vgs)
 	: QWidget(parent)
-	, elementListBox(eb)
 	, haveValidSDW(false)
 	, currentPageNum(0)
 {
 	layout = new QVBoxLayout(this);
 
-	segmentListWidget = new OmSegmentListWidget(this, ip);
+	segmentListWidget = new OmSegmentListWidget(this, vgs);
 	layout->addWidget(segmentListWidget);
 
 	setupPageButtons();
@@ -36,47 +33,43 @@ int SegmentListBase::getNumSegmentsPerPage()
 quint32 SegmentListBase::getTotalNumberOfSegments()
 {
 	assert( haveValidSDW );
-	return currentSDW->getSegmentListSize(getRootSegType());
+	return Size();
 }
 
-OmSegPtrList * SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset, const bool useOffset)
+boost::shared_ptr<OmSegIDsListWithPage>
+SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset,
+									   const bool useOffset)
 {
 	assert( haveValidSDW );
 
-	unsigned int offset = in_offset - (in_offset % getNumSegmentsPerPage() );
+	const unsigned int offset = in_offset - (in_offset % getNumSegmentsPerPage() );
 	OmSegID startSeg = 0;
 	if(!useOffset){
 		startSeg = in_offset;
 	}
 
-	OmSegPtrListWithPage * segIDsAll = currentSDW->getSegmentCache()->getRootLevelSegIDs( offset, getNumSegmentsPerPage(), getRootSegType(), startSeg);
-	currentPageNum = segIDsAll->mPageOffset;
+	boost::shared_ptr<OmSegIDsListWithPage> ids =
+		getPageSegments(offset, getNumSegmentsPerPage(), startSeg);
 
-	OmSegPtrList * ret = new OmSegPtrList();
+	currentPageNum = ids->mPageOffset;
 
-	OmSegPtrList::const_iterator iter;
-	for( iter = segIDsAll->list.begin(); iter != segIDsAll->list.end(); ++iter){
-		ret->push_back( *iter );
-	}
-
-	delete segIDsAll;
-
-	return ret;
+	return ids;
 }
 
-void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSelectedSegment,
-														const OmSegID segmentJustSelectedID,
-														const bool useOffset)
+void SegmentListBase::populate(const bool doScrollToSelectedSegment,
+							   const OmSegID segmentJustSelectedID,
+							   const bool useOffset)
 {
 	assert( haveValidSDW );
-	OmSegPtrList * segs = getSegmentsToDisplay( segmentJustSelectedID, useOffset);
-	const bool shouldThisTabBeMadeActive =
-		segmentListWidget->populateSegmentElementsListWidget(doScrollToSelectedSegment,
-															 segmentJustSelectedID,
-															 *currentSDW,
-															 segs );
 
-	delete segs;
+	boost::shared_ptr<OmSegIDsListWithPage> segIDs =
+		getSegmentsToDisplay( segmentJustSelectedID, useOffset);
+
+	const bool shouldThisTabBeMadeActive =
+		segmentListWidget->populate(doScrollToSelectedSegment,
+									segmentJustSelectedID,
+									*currentSDW,
+									segIDs);
 
 	debug(segmentlist, "bye!\n");
 
@@ -84,7 +77,7 @@ void SegmentListBase::populateSegmentElementsListWidget(const bool doScrollToSel
 		makeTabActiveIfContainsJumpedToSegment();
 	}
 
-	elementListBox->addTab(getPreferredTabIndex(), this, getTabTitle() );
+	ElementListBox::AddTab(getPreferredTabIndex(), this, getTabTitle());
 }
 
 void SegmentListBase::setupPageButtons()
@@ -139,7 +132,7 @@ void SegmentListBase::goToStartPage()
 {
 	currentPageNum = 0;
 	int offset = currentPageNum * getNumSegmentsPerPage();
-	populateSegmentElementsListWidget( false, offset, true);
+	populate( false, offset, true);
 }
 
 void SegmentListBase::goToNextPage()
@@ -150,7 +143,7 @@ void SegmentListBase::goToNextPage()
 		--currentPageNum;
 		offset = currentPageNum * getNumSegmentsPerPage();
 	}
-	populateSegmentElementsListWidget( false, offset, true);
+	populate( false, offset, true);
 }
 
 void SegmentListBase::goToPrevPage()
@@ -160,7 +153,7 @@ void SegmentListBase::goToPrevPage()
 		currentPageNum = 0;
 	}
 	int offset = currentPageNum * getNumSegmentsPerPage();
-	populateSegmentElementsListWidget( false, offset, true);
+	populate( false, offset, true);
 }
 
 void SegmentListBase::goToEndPage()
@@ -170,7 +163,7 @@ void SegmentListBase::goToEndPage()
 		currentPageNum = 0;
 	}
 	int offset = currentPageNum * getNumSegmentsPerPage();
-	populateSegmentElementsListWidget( false, offset, true);
+	populate( false, offset, true);
 }
 
 void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
@@ -179,7 +172,7 @@ void SegmentListBase::makeSegmentationActive(SegmentationDataWrapper sdw,
 {
 	currentSDW = boost::make_shared<SegmentationDataWrapper>(sdw);
 	haveValidSDW = true;
-	populateSegmentElementsListWidget(doScroll, segmentJustSelectedID);
+	populate(doScroll, segmentJustSelectedID);
 }
 
 void SegmentListBase::rebuildSegmentList(const OmID segmentationID,
@@ -209,7 +202,7 @@ int SegmentListBase::dealWithSegmentObjectModificationEvent(OmSegmentEvent * eve
 		return segmentationID;
 	} else {
 		if( haveValidSDW ){
-			populateSegmentElementsListWidget();
+			populate();
 			return currentSDW->getID();
 		}
 		return 0;
@@ -233,5 +226,5 @@ void SegmentListBase::searchChanged()
 
 void SegmentListBase::userJustClickedInThisSegmentList()
 {
-	elementListBox->setActiveTab( this );
+	ElementListBox::SetActiveTab(this);
 }

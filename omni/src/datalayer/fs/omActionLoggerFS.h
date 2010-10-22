@@ -13,9 +13,10 @@ class OmSegmentGroupAction;
 class OmSegmentJoinAction;
 class OmSegmentSelectAction;
 class OmSegmentValidateAction;
+class OmSegmentUncertainAction;
 class OmProjectSaveAction;
 
-class OmActionLoggerFS {
+class OmActionLoggerFS : private om::singletonBase<OmActionLoggerFS> {
 public:
 	template <class T> static void save(T * action, const std::string &);
 
@@ -29,10 +30,6 @@ private:
 	void setupLogDir();
 	QDir& doGetLogFolder();
 
-	static inline OmActionLoggerFS & Instance(){
-		return zi::singleton<OmActionLoggerFS>::instance();
-	}
-
 	friend class zi::singleton<OmActionLoggerFS>;
 };
 
@@ -41,7 +38,7 @@ void OmActionLoggerFS::save(T * action, const std::string & str)
 {
 	boost::shared_ptr<OmActionLoggerFSThread<T> >
 		task(new OmActionLoggerFSThread<T>(action, str,
-										   Instance().doGetLogFolder()));
+										   instance().doGetLogFolder()));
 
 	task->run(); //QT may delete *action before we have a chance to save it!
 	//	OmProject::GetGlobalThreadPool().addTaskBack(task);
@@ -61,6 +58,9 @@ QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
 
 QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a );
 QDataStream &operator>>(QDataStream & in,  OmSegmentValidateAction & a );
+
+QDataStream &operator<<(QDataStream & out, const OmSegmentUncertainAction & a);
+QDataStream &operator>>(QDataStream & in, OmSegmentUncertainAction & a);
 
 QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a );
 QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a );

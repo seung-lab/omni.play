@@ -107,7 +107,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
-		if ( sdw.isValid() ) {
+		if ( sdw.isValidWrapper() ) {
 			//run action
 			if (!doselection) {
 				if (dosubtract) {
@@ -151,7 +151,7 @@ private:
 	{
 		OmSegmentation & segmentation = sdw.getSegmentation();
 
-		if( !sdw.isValid() ){
+		if( !sdw.isValidWrapper() ){
 			printf("not valid\n");
 			return;
 		}

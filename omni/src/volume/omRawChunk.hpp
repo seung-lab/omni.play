@@ -2,6 +2,7 @@
 #define OM_RAW_CHUNK_HPP
 
 #include "zi/omMutex.h"
+#include "zi/omThreads.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 #include "volume/omMipChunkCoord.h"
@@ -25,11 +26,14 @@ private:
 
 	bool dirty_;
 
+	struct raw_chunk_mutex_pool_tag;
+	typedef typename zi::spinlock::pool<raw_chunk_mutex_pool_tag>::guard mutex_guard_t;
+
 public:
 	OmRawChunk(OmMipVolume* vol, const OmMipChunkCoord& coord)
 		: vol_(vol)
 		, coord_(coord)
-		, chunkOffset_(vol_->ComputeChunkPtrOffset(coord_))
+		, chunkOffset_(vol_->ComputeChunkPtrOffsetBytes(coord_))
 		, memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol_,
 														   coord.Level))
 		, numBytes_(128*128*128*vol_->GetBytesPerSample())
@@ -41,9 +45,15 @@ public:
 
 	~OmRawChunk()
 	{
+		Flush();
+	}
+
+	void Flush()
+	{
 		if(dirty_){
 			std::cout << "flushing " << coord_ << "\n";
 			writeData();
+			dirty_ = false;
 		}
 	}
 
@@ -58,9 +68,15 @@ public:
 		return dataRaw_[index];
 	}
 
+	uint64_t NumBytes() const {
+		return numBytes_;
+	}
+
 private:
 	void readData()
 	{
+		mutex_guard_t g(chunkOffset_); // prevent read-while-writing errors
+
 		QFile file(memMapFileName_);
 		if(!file.open(QIODevice::ReadOnly)){
 			throw OmIoException("could not open", memMapFileName_);
@@ -81,6 +97,8 @@ private:
 
 	void writeData()
 	{
+		mutex_guard_t g(chunkOffset_); // prevent read-while-writing errors
+
 		QFile file(memMapFileName_);
 		if(!file.open(QIODevice::ReadWrite)){
 			throw OmIoException("could not open", memMapFileName_);
@@ -93,8 +111,6 @@ private:
 		if( writeSize != numBytes_) {
 			throw OmIoException("write failed");
 		}
-
-		dirty_ = false;
 	}
 };
 

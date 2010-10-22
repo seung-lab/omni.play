@@ -52,28 +52,36 @@ void OmSegmentGraph::initialize( OmSegmentCacheImplLowLevel * cache )
 	buildSegmentSizeLists();
 }
 
-void OmSegmentGraph::growGraphIfNeeded(OmSegment * newSeg)
+void OmSegmentGraph::growGraphIfNeeded(OmSegment * seg)
 {
 	// maxValue is a valid segment id, so array needs to be 1 bigger
 	const quint32 size = 1 + mCache->getMaxValue();
 	mGraph->resize(size);
-	getSegmentLists()->mRootListBySize.insertSegment( newSeg );
+	getSegmentLists()->InsertSegmentWorking(seg);
 }
 
 void OmSegmentGraph::buildSegmentSizeLists()
 {
-	getSegmentLists()->mValidListBySize.clear();
-	getSegmentLists()->mRootListBySize.clear();
+	getSegmentLists()->Valid().clear();
+	getSegmentLists()->Working().clear();
 
 	OmSegmentIteratorLowLevel iter(mCache);
 	iter.iterOverAllSegments();
 
 	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
 		if(0 == seg->getParentSegID()) {
-			if(seg->GetImmutable()) {
-				getSegmentLists()->mValidListBySize.insertSegment( seg );
-			} else {
-				getSegmentLists()->mRootListBySize.insertSegment( seg );
+			switch(seg->GetListType()){
+			case om::WORKING:
+				getSegmentLists()->InsertSegmentWorking(seg);
+				break;
+			case om::VALID:
+				getSegmentLists()->InsertSegmentValid(seg);
+				break;
+			case om::UNCERTAIN:
+				getSegmentLists()->InsertSegmentUncertain(seg);
+				break;
+			default:
+				throw OmArgException("unsupprted list arg");
 			}
 		}
 	}
@@ -81,7 +89,7 @@ void OmSegmentGraph::buildSegmentSizeLists()
 
 quint32 OmSegmentGraph::getNumTopLevelSegs()
 {
-	return getSegmentLists()->mRootListBySize.size() + getSegmentLists()->mValidListBySize.size();
+	return getSegmentLists()->GetNumTopLevelSegs();
 }
 
 void OmSegmentGraph::setGlobalThreshold(boost::shared_ptr<OmMST> mst)
@@ -179,7 +187,7 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 		return false;
 	}
 
-	if( childRoot->GetImmutable() != parent->GetImmutable() ){
+	if( childRoot->IsValid() != parent->IsValid() ){
 		return false;
 	}
 
@@ -213,8 +221,8 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	OmSegment * parent = mCache->GetSegmentFromValue( child->getParentSegID() );
 	assert(parent);
 
-	if( child->GetImmutable() == parent->GetImmutable() &&
-	    1 == child->GetImmutable() ){
+	if( child->IsValid() == parent->IsValid() &&
+	    1 == child->IsValid() ){
 		breakpoint();
 		return false;
 	}
@@ -232,18 +240,19 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 	return true;
 }
 
-void OmSegmentGraph::updateSizeListsFromJoin( OmSegment * parent, OmSegment * child )
+void OmSegmentGraph::updateSizeListsFromJoin(OmSegment* parent, OmSegment* child)
 {
 	OmSegment * root = mCache->findRoot(parent);
-	getSegmentLists()->mRootListBySize.updateFromJoin( root, child );
-	getSegmentLists()->mValidListBySize.updateFromJoin( root, child );
+	getSegmentLists()->UpdateFromJoinWorking(root, child);
+	getSegmentLists()->UpdateFromJoinValid(root, child); //TODO: we update valid?
 }
 
-void OmSegmentGraph::updateSizeListsFromSplit( OmSegment * parent, OmSegment * child )
+void OmSegmentGraph::updateSizeListsFromSplit(OmSegment* parent, OmSegment* child)
 {
 	OmSegment * root = mCache->findRoot(parent);
-	quint64 newChildSize = computeSegmentSizeWithChildren( child->value() );
-	getSegmentLists()->mRootListBySize.updateFromSplit( root, child, newChildSize );
+	uint64_t newChildSize = computeSegmentSizeWithChildren(child->value());
+	getSegmentLists()->UpdateFromSplitWorking(root, child, newChildSize);
+    //TODO: we don't update valid?
 }
 
 quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )

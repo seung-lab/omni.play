@@ -92,15 +92,15 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 
 	OmProjectData::GetIDataWriter()->
 		writeDataset( path,
-			      ba.size(),
-			      OmDataWrapperRaw(ba.constData()));
+					  ba.size(),
+					  OmDataWrapperRaw(ba.constData()));
 
 	OmProjectData::GetIDataWriter()->flush();
 }
 
 QDataStream &operator<<(QDataStream& out, const OmProject& p)
 {
-	out << OmPreferences::Instance();
+	out << OmPreferences::instance();
 	out << p.mChannelManager;
 	out << p.mSegmentationManager;
 	return out;
@@ -108,7 +108,7 @@ QDataStream &operator<<(QDataStream& out, const OmProject& p)
 
 QDataStream &operator>>(QDataStream& in, OmProject& p)
 {
-	in >> OmPreferences::Instance();
+	in >> OmPreferences::instance();
 	in >> p.mChannelManager;
 	in >> p.mSegmentationManager;
 
@@ -117,21 +117,21 @@ QDataStream &operator>>(QDataStream& in, OmProject& p)
 
 QDataStream &operator<<(QDataStream& out, const OmPreferences& p)
 {
-	out << p.stringPrefs;
-	out << p.floatPrefs;
-	out << p.intPrefs;
-	out << p.boolPrefs;
-	out << p.v3fPrefs;
+	out << p.stringPrefs_;
+	out << p.floatPrefs_;
+	out << p.intPrefs_;
+	out << p.boolPrefs_;
+	out << p.v3fPrefs_;
 	return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmPreferences& p)
 {
-	in >> p.stringPrefs;
-	in >> p.floatPrefs;
-	in >> p.intPrefs;
-	in >> p.boolPrefs;
-	in >> p.v3fPrefs;
+	in >> p.stringPrefs_;
+	in >> p.floatPrefs_;
+	in >> p.intPrefs_;
+	in >> p.boolPrefs_;
+	in >> p.v3fPrefs_;
 	return in;
 }
 
@@ -454,8 +454,8 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 		OmSegmentEdge e;
 		in >> e;
 		if(0 == e.childID  ||
-		    0 == e.parentID ||
-		    std::isnan(e.threshold)){
+		   0 == e.parentID ||
+		   std::isnan(e.threshold)){
 			printf("warning: bad edge found: %d, %d, %f\n",
 				   e.parentID,
 				   e.childID,
@@ -619,7 +619,7 @@ QDataStream &operator>>(QDataStream& in, OmGroups& g)
 }
 
 QDataStream &operator<<(QDataStream& out,
-							const OmGenericManager<OmGroup>& gm)
+						const OmGenericManager<OmGroup>& gm)
 {
 	out << gm.mNextId;
 	out << gm.mSize;
@@ -635,7 +635,7 @@ QDataStream &operator<<(QDataStream& out,
 }
 
 QDataStream &operator>>(QDataStream& in,
-							OmGenericManager<OmGroup>& gm)
+						OmGenericManager<OmGroup>& gm)
 {
 	in >> gm.mNextId;
 	in >> gm.mSize;

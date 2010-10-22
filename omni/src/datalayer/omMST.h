@@ -7,6 +7,7 @@
 #include "datalayer/fs/omFileQT.hpp"
 
 class OmSegmentation;
+class OmMSTold;
 
 struct OmMSTEdge {
 	uint32_t number;
@@ -62,6 +63,7 @@ private:
 
 	QString memMapPathQStr();
 	std::string memMapPath();
+	void doReadInFromOldMST(const OmMSTold& old);
 
 	friend class SegmentTests;
 

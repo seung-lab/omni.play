@@ -1,18 +1,13 @@
 #include "preferences2d.h"
-
 #include "common/omStd.h"
 #include "volume/omVolume.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
+#include "system/omEvents.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
 
-#define DEBUG 0;
-
 Preferences2d::Preferences2d(QWidget * parent)
- : QWidget(parent)
+	: QWidget(parent)
 {
 	QVBoxLayout* overallContainer = new QVBoxLayout(this);
 	overallContainer->addWidget(makeCacheBox());
@@ -21,7 +16,7 @@ Preferences2d::Preferences2d(QWidget * parent)
 
 	set_initial_values();
 
-        QMetaObject::connectSlotsByName(this);
+	QMetaObject::connectSlotsByName(this);
 }
 
 QGroupBox* Preferences2d::makeCacheBox()
@@ -30,53 +25,53 @@ QGroupBox* Preferences2d::makeCacheBox()
 	QGridLayout *grid = new QGridLayout( groupBox );
 
 	QLabel *volLabel = new QLabel(groupBox);
-        volLabel->setObjectName(QString::fromUtf8("volLabel"));
+	volLabel->setObjectName(QString::fromUtf8("volLabel"));
 	volLabel->setText("Volume Cache Size:");
-        volLabel->setToolTip("(MB)");
-        grid->addWidget(volLabel, 0, 1, 1, 1);
+	volLabel->setToolTip("(MB)");
+	grid->addWidget(volLabel, 0, 1, 1, 1);
 
-        volEdit = new QLineEdit(groupBox);
-        volEdit->setObjectName(QString::fromUtf8("volEdit"));
-        grid->addWidget(volEdit, 0, 2, 1, 1);
+	volEdit = new QLineEdit(groupBox);
+	volEdit->setObjectName(QString::fromUtf8("volEdit"));
+	grid->addWidget(volEdit, 0, 2, 1, 1);
 
-        QLabel *cacheLabel = new QLabel(groupBox);
-        cacheLabel->setObjectName(QString::fromUtf8("cacheLabel"));
+	QLabel *cacheLabel = new QLabel(groupBox);
+	cacheLabel->setObjectName(QString::fromUtf8("cacheLabel"));
 	cacheLabel->setText("Tile Cache Size:");
 	cacheLabel->setToolTip("(MB)");
-        grid->addWidget(cacheLabel, 1, 1, 1, 1);
+	grid->addWidget(cacheLabel, 1, 1, 1, 1);
 
-        tileEdit = new QLineEdit(groupBox);
-        tileEdit->setObjectName(QString::fromUtf8("tileEdit"));
-        grid->addWidget(tileEdit, 1, 2, 1, 1);
+	tileEdit = new QLineEdit(groupBox);
+	tileEdit->setObjectName(QString::fromUtf8("tileEdit"));
+	grid->addWidget(tileEdit, 1, 2, 1, 1);
 
-        QLabel *depthLabel = new QLabel(groupBox);
-        depthLabel->setObjectName(QString::fromUtf8("depthLabel"));
+	QLabel *depthLabel = new QLabel(groupBox);
+	depthLabel->setObjectName(QString::fromUtf8("depthLabel"));
 	depthLabel->setText("Depth Caching:");
 	depthLabel->setToolTip("(slices)");
-        grid->addWidget(depthLabel, 2, 1, 1, 1);
+	grid->addWidget(depthLabel, 2, 1, 1, 1);
 
-        depthEdit = new QLineEdit(groupBox);
-        depthEdit->setObjectName(QString::fromUtf8("depthEdit"));
-        grid->addWidget(depthEdit, 2, 2, 1, 1);
+	depthEdit = new QLineEdit(groupBox);
+	depthEdit->setObjectName(QString::fromUtf8("depthEdit"));
+	grid->addWidget(depthEdit, 2, 2, 1, 1);
 
-        QLabel *sideLabel = new QLabel(groupBox);
-        sideLabel->setObjectName(QString::fromUtf8("sideLabel"));
+	QLabel *sideLabel = new QLabel(groupBox);
+	sideLabel->setObjectName(QString::fromUtf8("sideLabel"));
 	sideLabel->setText("Side Caching:");
 	sideLabel->setToolTip("(tiles)");
-        grid->addWidget(sideLabel, 3, 1, 1, 1);
+	grid->addWidget(sideLabel, 3, 1, 1, 1);
 
-        sideEdit = new QLineEdit(groupBox);
-        sideEdit->setObjectName(QString::fromUtf8("sideEdit"));
-        grid->addWidget(sideEdit, 3, 2, 1, 1);
+	sideEdit = new QLineEdit(groupBox);
+	sideEdit->setObjectName(QString::fromUtf8("sideEdit"));
+	grid->addWidget(sideEdit, 3, 2, 1, 1);
 
-        QLabel *mipLabel = new QLabel(groupBox);
-        mipLabel->setObjectName(QString::fromUtf8("mipLabel"));
+	QLabel *mipLabel = new QLabel(groupBox);
+	mipLabel->setObjectName(QString::fromUtf8("mipLabel"));
 	mipLabel->setText("Mip Level Caching:");
-        grid->addWidget(mipLabel, 4, 1, 1, 1);
+	grid->addWidget(mipLabel, 4, 1, 1, 1);
 
-        mipEdit = new QLineEdit(groupBox);
-        mipEdit->setObjectName(QString::fromUtf8("mipEdit"));
-        grid->addWidget(mipEdit, 4, 2, 1, 1);
+	mipEdit = new QLineEdit(groupBox);
+	mipEdit->setObjectName(QString::fromUtf8("mipEdit"));
+	grid->addWidget(mipEdit, 4, 2, 1, 1);
 
 	return groupBox;
 }
@@ -86,29 +81,29 @@ QGroupBox* Preferences2d::makeDisplayBox()
 	QGroupBox* groupBox = new QGroupBox("Cache Properties");
 	QGridLayout *grid = new QGridLayout( groupBox );
 
-        QLabel *alphaLabel = new QLabel(groupBox);
-        alphaLabel->setObjectName(QString::fromUtf8("alphaLabel"));
+	QLabel *alphaLabel = new QLabel(groupBox);
+	alphaLabel->setObjectName(QString::fromUtf8("alphaLabel"));
 	alphaLabel->setText("Alpha:");
-        grid->addWidget(alphaLabel, 0, 0);
+	grid->addWidget(alphaLabel, 0, 0);
 
-        transparencySliderLabel = new QLabel(groupBox);
-        transparencySliderLabel->setObjectName(QString::fromUtf8("transparencySliderLabel"));
-        transparencySliderLabel->setMinimumSize(QSize(40, 0));
-        transparencySliderLabel->setMaximumSize(QSize(25, 16777215));
-        grid->addWidget(transparencySliderLabel, 0, 1);
+	transparencySliderLabel = new QLabel(groupBox);
+	transparencySliderLabel->setObjectName(QString::fromUtf8("transparencySliderLabel"));
+	transparencySliderLabel->setMinimumSize(QSize(40, 0));
+	transparencySliderLabel->setMaximumSize(QSize(25, 16777215));
+	grid->addWidget(transparencySliderLabel, 0, 1);
 
-        transparencySlider = new QSlider(groupBox);
-        transparencySlider->setObjectName(QString::fromUtf8("transparencySlider"));
-        transparencySlider->setMaximum(50);
-        transparencySlider->setOrientation(Qt::Horizontal);
-        transparencySlider->setTickPosition(QSlider::TicksBelow);
-        transparencySlider->setTickInterval(5);
-        grid->addWidget(transparencySlider, 1, 0);
+	transparencySlider = new QSlider(groupBox);
+	transparencySlider->setObjectName(QString::fromUtf8("transparencySlider"));
+	transparencySlider->setMaximum(50);
+	transparencySlider->setOrientation(Qt::Horizontal);
+	transparencySlider->setTickPosition(QSlider::TicksBelow);
+	transparencySlider->setTickInterval(5);
+	grid->addWidget(transparencySlider, 1, 0);
 
-        infoCheckBox = new QCheckBox(groupBox);
-        infoCheckBox->setObjectName(QString::fromUtf8("infoCheckBox"));
+	infoCheckBox = new QCheckBox(groupBox);
+	infoCheckBox->setObjectName(QString::fromUtf8("infoCheckBox"));
 	infoCheckBox->setText("Show Information");
-        grid->addWidget(infoCheckBox, 2, 0);
+	grid->addWidget(infoCheckBox, 2, 0);
 
 	return groupBox;
 }

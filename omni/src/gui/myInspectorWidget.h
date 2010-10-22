@@ -6,7 +6,6 @@
 #include <QWidget>
 
 #include "common/omCommon.h"
-#include "system/events/omSegmentEvent.h"
 
 class ChanInspector;
 class ChannelDataWrapper;
@@ -17,12 +16,9 @@ class InspectorProperties;
 class MainWindow;
 class OmViewGroupState;
 class SegInspector;
-class SegmentListRecent;
-class SegmentListValid;
-class SegmentListWorking;
 class SegmentationDataWrapper;
 
-class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
+class MyInspectorWidget : public QWidget {
  Q_OBJECT
 
  public:
@@ -49,12 +45,8 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	static const int NOTE_COL = 3;
 	static const int USER_DATA_COL = 4;
 
-	void SegmentObjectModificationEvent(OmSegmentEvent * event);
-	void SegmentDataModificationEvent() {}
-	void SegmentEditSelectionChangeEvent() {}
-
  private slots:
-        void addFilter();
+	void addFilter();
 	void nameEditChanged();
 
 	void showDataSrcContextMenu(const QPoint & menuPoint);
@@ -121,15 +113,10 @@ class MyInspectorWidget : public QWidget, public OmSegmentEventListener {
 	void populateSegmentationInspector( SegmentationDataWrapper sdw);
 
 	InspectorProperties * inspectorProperties;
-	ElementListBox * elementListBox;
-	SegmentListWorking * segmentList;
-	SegmentListValid * validList;
-	SegmentListRecent * recentList;
 
 	ViewType getViewType(QAction * act);
 
 	QVBoxLayout * verticalLayout;
-	QString getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw);
 	void updateSegmentListBox( SegmentationDataWrapper sdw );
 
 	OmViewGroupState* mViewGroupState;

@@ -19,7 +19,7 @@
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
-class OmGarbage : boost::noncopyable {
+class OmGarbage : private om::singletonBase<OmGarbage> {
 public:
 
 	static void Delete()
@@ -30,48 +30,45 @@ public:
 
 	static void assignOmTextureId(const GLuint textureID)
 	{
-		zi::guard g(Instance().textureMutex_);
-		Instance().mTextures.push_back(textureID);
+		zi::guard g(instance().textureMutex_);
+		instance().mTextures.push_back(textureID);
 	}
 
 	static void safeCleanTextureIds()
 	{
-		zi::guard g(Instance().textureMutex_);
+		zi::guard g(instance().textureMutex_);
 
-		if(!Instance().mTextures.size()){
+		if(!instance().mTextures.size()){
 			return;
 		}
 
-		glDeleteTextures(Instance().mTextures.size(),
-						 &Instance().mTextures[0]);
+		glDeleteTextures(instance().mTextures.size(),
+						 &instance().mTextures[0]);
 
-		Instance().mTextures.clear();
+		instance().mTextures.clear();
 	}
 
 	static void assignOmGenlistId(const GLuint genlistID)
 	{
-		zi::guard g(Instance().meshMutex_);
-		Instance().mGenlists.push_back(genlistID);
+		zi::guard g(instance().meshMutex_);
+		instance().mGenlists.push_back(genlistID);
 	}
 
 	static void CleanGenlists()
 	{
-		zi::guard g(Instance().meshMutex_);
+		zi::guard g(instance().meshMutex_);
 
-		FOR_EACH(iter, Instance().mGenlists){
+		FOR_EACH(iter, instance().mGenlists){
 			glDeleteLists((*iter), 1);
 		}
 
-		Instance().mGenlists.clear();
+		instance().mGenlists.clear();
 	}
 
 private:
 	OmGarbage(){}
 	~OmGarbage(){
 		Delete();
-	}
-	static inline OmGarbage& Instance(){
-		return zi::singleton<OmGarbage>::instance();
 	}
 
 	std::vector<GLuint> mTextures;

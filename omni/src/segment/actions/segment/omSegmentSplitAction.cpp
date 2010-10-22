@@ -6,7 +6,7 @@
 #include "viewGroup/omViewGroupState.h"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
-					    const OmSegmentEdge & edge )
+											const OmSegmentEdge & edge )
 	: mEdge(edge)
 	, mSegmentationID(sdw.getSegmentationID())
 	, desc("Splitting: ")
@@ -67,18 +67,18 @@ void OmSegmentSplitAction::save(const std::string & comment)
 }
 
 void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
-						 OmViewGroupState* vgs)
+												 OmViewGroupState* vgs)
 {
 	const std::pair<bool, SegmentDataWrapper> splittingAndSDW =
 		vgs->GetSplitMode();
 	const bool amAlreadySplitting = splittingAndSDW.first;
 
-        if(amAlreadySplitting){
+	if(amAlreadySplitting){
 
 		SegmentDataWrapper segmentBeingSplit = splittingAndSDW.second;
 
-                OmSegment* seg1 = segmentBeingSplit.getSegment();
-                OmSegment* seg2 = sdw.getSegment();
+		OmSegment* seg1 = segmentBeingSplit.getSegment();
+		OmSegment* seg2 = sdw.getSegment();
 
 		if(NULL == seg1 || NULL == seg2) {
 			return;
@@ -86,11 +86,11 @@ void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 
 		RunIfSplittable(seg1, seg2);
 
-                vgs->SetSplitMode(false);
+		vgs->SetSplitMode(false);
 
-        } else { // set segment to be split later...
-                if(sdw.isValid()){
-                        vgs->SetSplitMode(sdw);
-                }
-        }
+	} else { // set segment to be split later...
+		if(sdw.isValidWrapper()){
+			vgs->SetSplitMode(sdw);
+		}
+	}
 }

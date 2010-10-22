@@ -10,33 +10,27 @@
  *	Rachel Shearer - rshearer@mit.edu - 3/17/09
  */
 
-#include "common/omStd.h"
 #include "common/omGl.h"
-#include "tiles/omTile.h"
 
-#include "boost/variant.hpp"
-
-class OmCacheBase;
+#include <boost/variant.hpp>
 
 class OmTextureID {
 public:
 	OmTextureID();
-	OmTextureID(const Vector2i&, OmCacheBase*);
+	OmTextureID(const Vector2i&, boost::shared_ptr<uint8_t>);
+	OmTextureID(const Vector2i&, boost::shared_ptr<OmColorRGBA>);
 	virtual ~OmTextureID();
-
-	void setData(boost::shared_ptr<uint8_t>);
-	void setData(boost::shared_ptr<OmColorRGBA>);
 
 	int getWidth() const { return dims_.x; }
 	int getHeight() const { return dims_.y; }
 	GLuint getTextureID() const { return textureID_; }
 
-	int getNumBytes() const { return mem_size; }
+	uint64_t NumBytes() const { return numBytes_; }
 	void* getTileData() const;
 
 	bool needToBuildTexture() const {
 		return (flag_ == OMTILE_NEEDTEXTUREBUILT ||
-			flag_ == OMTILE_NEEDCOLORMAP);
+				flag_ == OMTILE_NEEDCOLORMAP);
 	}
 
 	GLint getGLformat() const {
@@ -64,20 +58,17 @@ private:
 		OMTILE_GOOD
 	};
 
-	OmCacheBase *const cache_;
 	GLuint textureID_;
 	const Vector2i dims_;
-
-	// Free this once the texture is built.
-	boost::variant<boost::shared_ptr<uint8_t>,
-		       boost::shared_ptr<OmColorRGBA> > tileData_;
-
-        OmTileFlag flag_;
-
-	int mem_size;	// total size of data in memory: width * height
-	                //  * bytesPerSample * samplesPerVoxel
+	OmTileFlag flag_;
+	const uint64_t numBytes_;
 
 	void deleteTileData();
+
+	// free data once texture is built
+	boost::variant<boost::shared_ptr<uint8_t>,
+				   boost::shared_ptr<OmColorRGBA> > tileData_;
+
 };
 
 #endif

@@ -76,8 +76,8 @@ void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
 
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
-				   const KEY &key,
-				   const om::BlockingRead blocking)
+								   const KEY &key,
+								   const om::BlockingRead blocking)
 {
 	if(om::BLOCKING == blocking){
 		Get(p_value, key, true);
@@ -124,7 +124,11 @@ int OmThreadedCache<KEY,PTR>::RemoveOldest()
 	}
 
 	const KEY key = mKeyAccessList.remove_back();
+	const PTR val = mCache.get(key);
+	val->Flush();
+	mCurSize.sub(val->NumBytes());
 	mCache.erase(key);
+
 	return 1;
 }
 
@@ -138,13 +142,13 @@ template <typename KEY, typename PTR>
 qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
 {
 	/*
-	if(RAM_CACHE_GROUP == mCacheGroup ){
+	  if(RAM_CACHE_GROUP == mCacheGroup ){
 	  std::cout << "current cache (" << getGroupName() << ") size is :"
 	  << StringHelpers::commaDeliminateNumber(mCurSize.get()).toStdString()
 	  << " bytes\n";
-	}
+	  }
 	*/
-        return mCurSize.get();
+	return mCurSize.get();
 }
 
 template <typename KEY, typename PTR>
