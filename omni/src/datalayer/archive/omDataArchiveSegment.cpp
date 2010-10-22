@@ -6,7 +6,7 @@
 #include "datalayer/omIDataWriter.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "segment/lowLevel/omSegmentPage.hpp"
+#include "segment/io/omSegmentPage.hpp"
 #include "system/omProjectData.h"
 #include <QDataStream>
 

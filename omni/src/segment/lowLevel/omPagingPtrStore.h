@@ -4,7 +4,7 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "segment/omSegment.h"
-#include "segment/lowLevel/omSegmentPage.hpp"
+#include "segment/io/omSegmentPage.hpp"
 
 #include <QSet>
 
@@ -19,8 +19,9 @@ class OmPagingPtrStore {
 
 	void Flush();
 
-	quint32 getPageSize() { return pageSize_; }
-	void SetSegmentationID(const OmID);
+	quint32 getPageSize() {
+		return pageSize_;
+	}
 
 	OmSegment* AddSegment(const OmSegID value);
 	OmSegment* GetSegment(const OmSegID value);
