@@ -15,6 +15,7 @@
 OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
+	, mFilterWidget(NULL)
 	, mViewGroup(boost::make_shared<ViewGroup>(mMainWindow, this))
 	, brushSize_(boost::make_shared<OmBrushSize>())
 	, zoomLevel_(boost::make_shared<OmZoomLevel>())

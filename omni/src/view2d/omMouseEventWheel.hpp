@@ -35,10 +35,12 @@ public:
 			}
 		} else if(change_alpha){
 			FilterWidget* fw = state_->getViewGroupState()->GetFilterWidget();
-			if (numSteps >= 0) {
-				fw->increaseAlpha();
-			} else{
-				fw->decreaseAlpha();
+			if(fw){
+				if (numSteps >= 0) {
+					fw->increaseAlpha();
+				} else{
+					fw->decreaseAlpha();
+				}
 			}
 		} else {
 			v2d_->Zoom()->MouseWheelZoom(numSteps);
