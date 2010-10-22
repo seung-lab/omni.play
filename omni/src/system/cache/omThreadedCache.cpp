@@ -125,6 +125,10 @@ int OmThreadedCache<KEY,PTR>::RemoveOldest()
 
 	const KEY key = mKeyAccessList.remove_back();
 	const PTR val = mCache.get(key);
+	if(!val){
+		return 0;
+	}
+
 	val->Flush();
 	mCurSize.sub(val->NumBytes());
 	mCache.erase(key);
