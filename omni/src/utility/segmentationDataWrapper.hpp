@@ -61,6 +61,10 @@ public:
 		return OmProject::GetSegmentation(mID).GetSegmentCache();
 	}
 
+	inline boost::shared_ptr<OmMST> getMST() const {
+		return getSegmentation().getMST();
+	}
+
 	quint32 getMaxSegmentValue() const {
 		return OmProject::GetSegmentation(mID).GetSegmentCache()->getMaxValue();
 	}

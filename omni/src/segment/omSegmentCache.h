@@ -70,10 +70,10 @@ public:
 	quint32 getMaxValue();
 	quint64 getSegmentListSize(OmSegIDRootType type);
 
-	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset,
-						  const int numToGet,
-						  OmSegIDRootType type,
-						  OmSegID startSeg = 0);
+	OmSegPtrListWithPage* getRootLevelSegIDs(const unsigned int offset,
+											 const int numToGet,
+											 OmSegIDRootType type,
+											 OmSegID startSeg = 0);
 
 	void setAsValidated(OmSegment * segment, const bool valid);
 

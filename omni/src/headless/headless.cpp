@@ -59,6 +59,13 @@ void Headless::processLine(const QString& line, const QString&)
 		OmBuildSegmentation bs(&added_segmentation);
 		bs.build_seg_mesh();
 		bs.wait();
+	} else if("clearMST" == line) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::ClearMST(segmentationID_);
+
 	} else if("loadDend" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");

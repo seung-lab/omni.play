@@ -4,6 +4,8 @@
 #include "project/omProject.h"
 #include "volume/omSegmentation.h"
 #include "system/omBuildSegmentation.h"
+#include "utility/dataWrappers.h"
+#include "datalayer/omMST.h"
 
 class HeadlessImpl {
 public:
@@ -49,6 +51,24 @@ public:
 		bs.addFileNameAndPath(file);
 		bs.build_seg_image();
 		bs.wait();
+	}
+
+	static void ClearMST(const OmID segmentationID)
+	{
+		SegmentationDataWrapper sdw(segmentationID);
+
+		boost::shared_ptr<OmMST> mst = sdw.getMST();
+		OmMSTEdge* edges = mst->Edges();
+
+		for(uint32_t i = 0; i < mst->NumEdges(); ++i){
+			edges[i].userSplit = 0;
+			edges[i].userJoin = 0;
+			edges[i].wasJoined = 0;
+		}
+
+		mst->Flush();
+
+		//clear user edges
 	}
 };
 
