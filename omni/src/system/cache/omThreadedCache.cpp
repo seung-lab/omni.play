@@ -47,7 +47,7 @@ void OmThreadedCache<KEY,PTR>::UpdateSize(const qint64 delta)
  *	Specify if Get should block calling thread.
  */
 template <typename KEY, typename PTR>
-void OmThreadedCache<KEY,PTR>::Get(PTR &p_value,
+void OmThreadedCache<KEY,PTR>::get(PTR &p_value,
 								   const KEY &key,
 								   const bool blocking)
 {
@@ -80,9 +80,9 @@ void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
 								   const om::BlockingRead blocking)
 {
 	if(om::BLOCKING == blocking){
-		Get(p_value, key, true);
+		get(p_value, key, true);
 	} else {
-		Get(p_value, key, false);
+		get(p_value, key, false);
 	}
 }
 
@@ -158,6 +158,7 @@ qint64 OmThreadedCache<KEY,PTR>::GetCacheSize()
 template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Clear()
 {
+	zi::guard g(mutex_);
 	mCache.clear();
 }
 

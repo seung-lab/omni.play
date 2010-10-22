@@ -19,8 +19,8 @@ FilterWidget::FilterWidget(MainWindow * mw)
 	initSilderTab();
 
 	connect(this, SIGNAL(valueChanged(int)),
-		this, SLOT(setFilAlpha(int)),
-		Qt::DirectConnection);
+			this, SLOT(setFilAlpha(int)),
+			Qt::DirectConnection);
 
 	mw->getViewGroupState()->SetFilterWidget(this);
 }

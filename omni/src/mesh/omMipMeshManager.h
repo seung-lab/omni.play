@@ -1,33 +1,22 @@
 #ifndef OM_MIP_MESH_MANAGER_H
 #define OM_MIP_MESH_MANAGER_H
 
-/*
- *
- *
- */
-
 #include "segment/omSegmentPointers.h"
 #include "mesh/omMeshTypes.h"
 
-class OmMeshSource;
-class OmMipChunk;
-class OmMipChunkCoord;
-class OmViewGroupState;
-class QGLContext;
 class OmMipMeshCoord;
 class OmMeshCache;
 class OmMipMesh;
+class OmSegmentation;
 
 class OmMipMeshManager {
 public:
-	OmMipMeshManager();
+	OmMipMeshManager(OmSegmentation* segmentation);
 	~OmMipMeshManager();
 
 	void CloseDownThreads();
 
-	//accessors
-	const QString& GetDirectoryPath() const;
-	void SetDirectoryPath(const QString &);
+	std::string GetDirectoryPath() const;
 
 	//meshing
 	OmMipMeshPtr AllocMesh(const OmMipMeshCoord&);
@@ -35,17 +24,13 @@ public:
 	void UncacheMesh(const OmMipMeshCoord &coord );
 
 private:
+	OmSegmentation *const segmentation_;
 	OmMeshCache *const mDataCache;
 
 	void HandleFetchUpdate();
 
-	QString mDirectoryPath;
-
-	//gl context to load mesh vbos
-	QGLContext* mFetchThreadContext;
-
-	friend QDataStream &operator<<(QDataStream & out, const OmMipMeshManager & mm );
-	friend QDataStream &operator>>(QDataStream & in, OmMipMeshManager & mm );
+	friend QDataStream &operator<<(QDataStream&, const OmMipMeshManager&);
+	friend QDataStream &operator>>(QDataStream&, OmMipMeshManager&);
 };
 
 #endif

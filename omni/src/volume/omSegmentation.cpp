@@ -43,7 +43,7 @@ OmSegmentation::OmSegmentation()
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
-	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {}
 
 // used by OmGenericManager
@@ -55,10 +55,8 @@ OmSegmentation::OmSegmentation(OmID id)
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
-	, mMipMeshManager(boost::make_shared<OmMipMeshManager>())
+	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {
-	mMipMeshManager->SetDirectoryPath(QString::fromStdString(GetDirectoryPath()));
-
 	//uses meta data
 	mStoreChunkMetaData = true;
 

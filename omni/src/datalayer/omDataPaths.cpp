@@ -47,7 +47,7 @@ std::string OmDataPaths::getMeshDirectoryPath(const OmMipMeshCoord& meshCoord,
 							   % meshCoord.MipChunkCoord.Coordinate.z
 							   % meshCoord.DataValue);
 
-	return mipMeshManager->GetDirectoryPath().toStdString() + p;
+	return mipMeshManager->GetDirectoryPath() + p;
 }
 
 std::string OmDataPaths::getMeshFileName( const OmMipMeshCoord & meshCoord )

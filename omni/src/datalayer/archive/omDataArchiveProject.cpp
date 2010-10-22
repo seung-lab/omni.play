@@ -374,16 +374,18 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmMipMeshManager& mm)
+QDataStream &operator<<(QDataStream& out, const OmMipMeshManager&)
 {
-	out << mm.mDirectoryPath;
+	QString dead("");
+	out << dead;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream& in, OmMipMeshManager& mm)
+QDataStream &operator>>(QDataStream& in, OmMipMeshManager&)
 {
-	in >> mm.mDirectoryPath;
+	QString dead;
+	in >> dead;
 
 	return in;
 }
