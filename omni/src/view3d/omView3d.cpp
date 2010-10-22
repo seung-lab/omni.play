@@ -2,7 +2,7 @@
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"

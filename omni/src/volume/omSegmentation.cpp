@@ -10,7 +10,7 @@
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
 #include "mesh/ziMesher.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "segment/io/omMST.h"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"

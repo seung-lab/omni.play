@@ -9,7 +9,6 @@
 #include "project/omProject.h"
 #include "actions/omProjectSaveAction.h"
 #include "recentFileList.h"
-#include "segment/actions/omSegmentEditor.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "system/omProjectData.h"

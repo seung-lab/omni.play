@@ -177,7 +177,7 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/ziMeshingChunk.h \
            src/project/omProject.h \
            src/actions/omProjectSaveAction.h \
-           src/segment/actions/omSegmentEditor.h \
+           src/segment/omSegmentEditor.h \
            src/actions/omSegmentJoinAction.h \
            src/actions/omSegmentUncertainAction.h \
            src/actions/omSegmentValidateAction.h \

@@ -1,6 +1,6 @@
 #include "project/omProject.h"
 #include "actions/omSegmentSelectAction.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "volume/omSegmentation.h"
@@ -22,7 +22,8 @@ void OmSegmentSelector::selectNoSegments()
 	newSelectedIDs.clear();
 }
 
-void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel, const bool isSelected )
+void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
+											   const bool isSelected )
 {
 	selectNoSegments();
 
@@ -48,7 +49,8 @@ void OmSegmentSelector::setEditSelection(const OmSegID segID)
 	mSegmentJustSelectedID = segID;
 }
 
-void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel, const bool isSelected )
+void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
+											const bool isSelected )
 {
 	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
 

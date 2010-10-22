@@ -1,6 +1,6 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "tiles/cache/omTileCache.h"

@@ -2,15 +2,10 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "omVoxelSetValueAction.h"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
-
-/////////////////////////////////
-///////
-///////          OmVoxelSetValueAction Class
-///////
 
 OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
 											 DataCoord & rVoxel, OmSegID value)

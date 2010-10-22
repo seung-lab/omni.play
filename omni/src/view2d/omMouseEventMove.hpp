@@ -1,7 +1,7 @@
 #ifndef OM_MOUSE_EVENT_MOVE_HPP
 #define OM_MOUSE_EVENT_MOVE_HPP
 
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
 #include "view2d/omLineDraw.hpp"

@@ -9,7 +9,7 @@
 #include "datalayer/omIDataWriter.h"
 #include "project/omProject.h"
 #include "actions/omProjectSaveAction.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentEditor.h"
 #include "system/cache/omCacheManager.h"
 #include "system/events/omEventManager.h"
 #include "system/omGarbage.h"
