@@ -86,6 +86,10 @@ void OmMST::import(const std::string& fname)
 
 void OmMST::doReadInFromOldMST(const OmMSTold& old)
 {
+	if(!numEdges_){
+		printf("no MST found\n");
+	}
+
 	create();
 
 	const quint32 * nodes = old.mDend->getPtr<uint32_t>();
