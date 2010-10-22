@@ -2,7 +2,7 @@
 #define OM_SEGMENT_VALIDATION_HPP
 
 #include "common/omCommon.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
 #include "utility/dataWrappers.h"

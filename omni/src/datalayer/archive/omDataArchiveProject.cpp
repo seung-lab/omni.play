@@ -5,7 +5,7 @@
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"

@@ -6,7 +6,7 @@
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataReader.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "mesh/omMipMesh.h"
 #include "mesh/ziMesher.h"
 #include "segment/actions/omSegmentEditor.h"

@@ -2,7 +2,7 @@
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentCache.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 
 MstViewerImpl::MstViewerImpl(QWidget * parent, SegmentationDataWrapper sdw)
 	: QTableWidget(parent)

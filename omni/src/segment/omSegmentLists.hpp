@@ -83,6 +83,10 @@ public:
 								const uint64_t newChildSize){
 		workingList_.updateFromSplit(root, child, newChildSize);
 	}
+
+	uint64_t getSegmentSize(OmSegment* seg){
+		return getContainer(seg->GetListType()).getSegmentSize(seg);
+	}
 };
 
 #endif

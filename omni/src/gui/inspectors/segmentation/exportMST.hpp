@@ -1,7 +1,7 @@
 #ifndef EXPORT_MST_HPP
 #define EXPORT_MST_HPP
 
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.h"
 #include "segment/omSegmentCache.h"

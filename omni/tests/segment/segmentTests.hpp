@@ -1,7 +1,7 @@
 #ifndef SEGMENT_TESTS_HPP
 #define SEGMENT_TESTS_HPP
 
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "segment/lowLevel/omSegmentCacheImplLowLevel.h"
 #include "segment/lowLevel/omSegmentGraph.h"
 #include "segment/omSegmentCache.h"

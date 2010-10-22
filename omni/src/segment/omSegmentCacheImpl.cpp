@@ -1,6 +1,6 @@
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "common/omDebug.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
@@ -58,7 +58,8 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 	return seg;
 }
 
-OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment * seg1, OmSegment * seg2)
+OmSegmentEdge OmSegmentCacheImpl::findClosestCommonEdge(OmSegment* seg1,
+														OmSegment* seg2)
 {
 	if( findRoot(seg1) != findRoot(seg2) ){
 		//debug(dend, "can't split disconnected objects.\n");
@@ -241,10 +242,13 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 														 e.threshold ));
 }
 
-std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( const OmSegID parentID, const OmSegID childUnknownDepthID )
+std::pair<bool, OmSegmentEdge>
+OmSegmentCacheImpl::JoinFromUserAction(const OmSegID parentID,
+									   const OmSegID childUnknownDepthID)
 {
 	const double threshold = 2.0f;
-	return JoinFromUserAction( OmSegmentEdge( parentID, childUnknownDepthID, threshold) );
+	return JoinFromUserAction( OmSegmentEdge( parentID, childUnknownDepthID,
+											  threshold) );
 }
 
 void OmSegmentCacheImpl::JoinTheseSegments( const OmSegIDsSet & segmentList)
@@ -299,17 +303,7 @@ void OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 quint64 OmSegmentCacheImpl::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
 	OmSegment* seg = findRoot( segUnknownDepth );
-
-	switch(seg->GetListType()){
-	case om::VALID:
-		return getSegmentLists()->Valid().getSegmentSize(seg);
-	case om::WORKING:
-		return getSegmentLists()->Working().getSegmentSize(seg);
-	case om::UNCERTAIN:
-		return getSegmentLists()->Uncertain().getSegmentSize(seg);
-	default:
-		throw OmArgException("unknown type");
-	}
+	return getSegmentLists()->getSegmentSize(seg);
 }
 
 void OmSegmentCacheImpl::rerootSegmentLists()

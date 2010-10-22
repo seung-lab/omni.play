@@ -3,7 +3,7 @@
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataWriter.h"
-#include "datalayer/omMSTold.h"
+#include "segment/io/omMSTold.h"
 #include "project/omProject.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
 #include "segment/omSegmentCache.h"

@@ -2,7 +2,6 @@
 #define OM_SEGMENT_UNCERTAIN_HPP
 
 #include "common/omCommon.h"
-#include "datalayer/omMST.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentLists.hpp"
 #include "utility/dataWrappers.h"
@@ -25,7 +24,6 @@ private:
 	const boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 	const bool uncertain_;
 	const boost::shared_ptr<OmSegmentLists> segmentLists_;
-	OmMSTEdge *const edges_;
 
 	OmSegmentUncertain(const SegmentationDataWrapper& sdw,
 					   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
@@ -34,7 +32,6 @@ private:
 		, selectedSegments_(selectedSegments)
 		, uncertain_(uncertain)
 		, segmentLists_(sdw_.GetSegmentLists())
-		, edges_(sdw_.GetMST()->Edges())
 	{}
 
 	void setAsUncertain()

@@ -63,8 +63,8 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/fs/omMemMappedFileQT.hpp \
            src/datalayer/fs/omFileNames.hpp \
            src/datalayer/omIDataVolume.hpp \
-           src/datalayer/omMST.h \
-           src/datalayer/omMSTold.h \
+           src/segment/io/omMST.h \
+           src/segment/io/omMSTold.h \
            src/datalayer/archive/omDataArchiveBoost.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \
@@ -346,8 +346,8 @@ HEADERS += lib/strnatcmp.h \
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
            src/common/omGl.cpp \
-           src/datalayer/omMST.cpp \
-           src/datalayer/omMSTold.cpp \
+           src/segment/io/omMST.cpp \
+           src/segment/io/omMSTold.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \
            src/datalayer/archive/omDataArchiveCoords.cpp \
            src/datalayer/archive/omDataArchiveMipChunk.cpp \
@@ -447,7 +447,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentEdge.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentSelector.cpp \
-           src/segment/omSegmentLists.cpp \
            src/system/events/omPreferenceEvent.cpp \
            src/system/events/omProgressEvent.cpp \
            src/system/events/omSegmentEvent.cpp \

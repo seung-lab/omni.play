@@ -5,7 +5,7 @@
 #include "volume/omSegmentation.h"
 #include "system/omBuildSegmentation.h"
 #include "utility/dataWrappers.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 
 class HeadlessImpl {
 public:
