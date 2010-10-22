@@ -1,5 +1,5 @@
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "segment/actions/segment/omSegmentValidateAction.h"
+#include "actions/omSegmentValidateAction.h"
 #include "segment/omSegmentValidation.hpp"
 #include "system/cache/omCacheManager.h"
 

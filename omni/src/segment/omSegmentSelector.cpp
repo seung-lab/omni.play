@@ -1,5 +1,5 @@
 #include "project/omProject.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
+#include "actions/omSegmentSelectAction.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"

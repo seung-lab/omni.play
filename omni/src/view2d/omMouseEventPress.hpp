@@ -5,7 +5,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "actions/omSegmentSplitAction.h"
 
 class OmMouseEventPress{
 private:

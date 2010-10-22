@@ -7,7 +7,7 @@
 #include "mainwindow.h"
 #include "myInspectorWidget.h"
 #include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
+#include "actions/omProjectSaveAction.h"
 #include "recentFileList.h"
 #include "segment/actions/omSegmentEditor.h"
 #include "system/omPreferenceDefinitions.h"

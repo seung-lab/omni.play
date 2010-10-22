@@ -1,11 +1,11 @@
 #include "gui/toolbars/mainToolbar/saveButton.h"
 #include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
+#include "actions/omProjectSaveAction.h"
 
 SaveButton::SaveButton(MainToolbar * parent)
-	: OmButton<MainToolbar>( parent, 
-				 "Save", 
-				 "Saves the current project", 
+	: OmButton<MainToolbar>( parent,
+				 "Save",
+				 "Saves the current project",
 				 false)
 {
 	setFlat(true);

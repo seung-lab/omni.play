@@ -3,14 +3,15 @@
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "volume/omSegmentation.h"
 #include "segment/omSegment.h"
-#include "segment/actions/segment/omSegmentGroupAction.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
-#include "segment/actions/segment/omSegmentValidateAction.h"
-#include "segment/actions/segment/omSegmentUncertainAction.h"
-#include "volume/omSegmentationThresholdChangeAction.h"
-#include "volume/omVoxelSetValueAction.h"
+
+#include "actions/omSegmentGroupAction.h"
+#include "actions/omSegmentJoinAction.h"
+#include "actions/omSegmentSelectAction.h"
+#include "actions/omSegmentSplitAction.h"
+#include "actions/omSegmentValidateAction.h"
+#include "actions/omSegmentUncertainAction.h"
+#include "actions/omSegmentationThresholdChangeAction.h"
+#include "actions/omVoxelSetValueAction.h"
 
 OmActionLoggerFS::OmActionLoggerFS()
 	: initialized(false)

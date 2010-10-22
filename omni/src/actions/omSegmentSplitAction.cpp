@@ -1,6 +1,6 @@
 #include "common/omDebug.h"
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "actions/omSegmentSplitAction.h"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"

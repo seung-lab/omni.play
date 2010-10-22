@@ -1,5 +1,5 @@
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "segment/actions/segment/omSegmentUncertainAction.h"
+#include "actions/omSegmentUncertainAction.h"
 #include "system/cache/omCacheManager.h"
 #include "segment/omSegmentUncertain.hpp"
 

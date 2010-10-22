@@ -1,4 +1,4 @@
-#include "segment/actions/segment/omSegmentGroupAction.h"
+#include "actions/omSegmentGroupAction.h"
 #include "gui/toolbars/dendToolbar/groupButtonTag.h"
 #include "common/omDebug.h"
 #include "utility/dataWrappers.h"

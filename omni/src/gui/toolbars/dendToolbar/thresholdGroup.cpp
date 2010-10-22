@@ -4,7 +4,7 @@
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationThresholdChangeAction.h"
+#include "actions/omSegmentationThresholdChangeAction.h"
 
 ThresholdGroup::ThresholdGroup(GraphTools * d)
 	: OmThresholdGroup(d, false)

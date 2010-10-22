@@ -34,8 +34,7 @@ DEPENDPATH += . \
            src/mesh \
            src/project \
            src/segment \
-           src/segment/actions \
-           src/segment/actions/segment \
+           src/actions \
            src/segment/lowLevel \
            src/system \
            src/system/events \
@@ -177,14 +176,14 @@ HEADERS += lib/strnatcmp.h \
            src/mesh/ziMesherManager.h \
            src/mesh/ziMeshingChunk.h \
            src/project/omProject.h \
-           src/project/omProjectSaveAction.h \
+           src/actions/omProjectSaveAction.h \
            src/segment/actions/omSegmentEditor.h \
-           src/segment/actions/segment/omSegmentJoinAction.h \
-           src/segment/actions/segment/omSegmentUncertainAction.h \
-           src/segment/actions/segment/omSegmentValidateAction.h \
-           src/segment/actions/segment/omSegmentGroupAction.h \
-           src/segment/actions/segment/omSegmentSelectAction.h \
-           src/segment/actions/segment/omSegmentSplitAction.h \
+           src/actions/omSegmentJoinAction.h \
+           src/actions/omSegmentUncertainAction.h \
+           src/actions/omSegmentValidateAction.h \
+           src/actions/omSegmentGroupAction.h \
+           src/actions/omSegmentSelectAction.h \
+           src/actions/omSegmentSplitAction.h \
            src/segment/details/omSegmentListContainer.hpp \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
@@ -308,7 +307,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omVolumeTypes.hpp \
            src/volume/omChunkData.hpp \
            src/volume/omChannel.h \
-           src/volume/omVoxelSetValueAction.h \
+           src/actions/omVoxelSetValueAction.h \
            src/mesh/omDrawOptions.h \
            src/volume/omFilter2d.h \
            src/volume/omFilter2dManager.h \
@@ -319,7 +318,7 @@ HEADERS += lib/strnatcmp.h \
            src/volume/omMipVolume.h \
            src/volume/omSegmentation.h \
            src/system/cache/omMipVolumeCache.h \
-           src/volume/omSegmentationThresholdChangeAction.h \
+           src/actions/omSegmentationThresholdChangeAction.h \
            src/system/cache/omMeshCache.h \
            src/volume/omVolume.h \
            src/mesh/omVolumeCuller.h \
@@ -427,13 +426,13 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/ziMesherManager.cpp \
            src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
-           src/project/omProjectSaveAction.cpp \
-           src/segment/actions/segment/omSegmentJoinAction.cpp \
-           src/segment/actions/segment/omSegmentUncertainAction.cpp \
-           src/segment/actions/segment/omSegmentValidateAction.cpp \
-           src/segment/actions/segment/omSegmentGroupAction.cpp \
-           src/segment/actions/segment/omSegmentSelectAction.cpp \
-           src/segment/actions/segment/omSegmentSplitAction.cpp \
+           src/actions/omProjectSaveAction.cpp \
+           src/actions/omSegmentJoinAction.cpp \
+           src/actions/omSegmentUncertainAction.cpp \
+           src/actions/omSegmentValidateAction.cpp \
+           src/actions/omSegmentGroupAction.cpp \
+           src/actions/omSegmentSelectAction.cpp \
+           src/actions/omSegmentSplitAction.cpp \
            src/segment/lowLevel/omPagingPtrStore.cpp \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.cpp \
            src/segment/lowLevel/omSegmentGraph.cpp \
@@ -500,14 +499,14 @@ SOURCES += lib/strnatcmp.cpp \
            src/volume/omVolumeTypes.cpp \
            src/volume/omChunkData.cpp \
            src/volume/omChannel.cpp \
-           src/volume/omVoxelSetValueAction.cpp \
+           src/actions/omVoxelSetValueAction.cpp \
            src/volume/omFilter2d.cpp \
            src/volume/omFilter2dManager.cpp \
            src/volume/omMipChunk.cpp \
            src/volume/omMipChunkCoord.cpp \
            src/volume/omMipVolume.cpp \
            src/volume/omSegmentation.cpp \
-           src/volume/omSegmentationThresholdChangeAction.cpp \
+           src/actions/omSegmentationThresholdChangeAction.cpp \
            src/system/cache/omMeshCache.cpp \
            src/volume/omVolume.cpp \
            src/mesh/omVolumeCuller.cpp \

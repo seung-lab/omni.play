@@ -3,7 +3,7 @@
 #include "volume/omSegmentation.h"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentCache.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
+#include "actions/omSegmentJoinAction.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 
 JoinButton::JoinButton(GraphTools * d)

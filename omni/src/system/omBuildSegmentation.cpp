@@ -5,9 +5,7 @@
 #include "system/omBuildSegmentation.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationThresholdChangeAction.h"
-
-#include <QTextStream>
+#include "actions/omSegmentationThresholdChangeAction.h"
 
 OmBuildSegmentation::OmBuildSegmentation(OmSegmentation * seg)
 {
