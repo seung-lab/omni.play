@@ -34,7 +34,9 @@ std::string OmMST::memMapPath(){
 
 void OmMST::Read()
 {
-	assert(numEdges_);
+	if(!numEdges_){
+		printf("no MST found\n");
+	}
 
 	edgesPtr_ = reader_t::Reader(memMapPath());
 	edges_ = edgesPtr_->GetPtr();
