@@ -36,6 +36,7 @@ void OmMST::Read()
 {
 	if(!numEdges_){
 		printf("no MST found\n");
+		return;
 	}
 
 	edgesPtr_ = reader_t::Reader(memMapPath());
@@ -88,6 +89,7 @@ void OmMST::doReadInFromOldMST(const OmMSTold& old)
 {
 	if(!numEdges_){
 		printf("no MST found\n");
+		return;
 	}
 
 	create();
