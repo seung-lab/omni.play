@@ -1,6 +1,6 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "tiles/cache/omTileCache.h"
@@ -32,7 +32,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 								   bool doselection)
 {
 	//store current selection
-	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	SegmentDataWrapper sdw = OmSegmentSelected::Get();
 
 	//return if not valid
 	if (!sdw.isValidWrapper())

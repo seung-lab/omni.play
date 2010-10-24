@@ -1,7 +1,7 @@
 #ifndef OM_MOUSE_EVENT_MOVE_HPP
 #define OM_MOUSE_EVENT_MOVE_HPP
 
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "utility/dataWrappers.h"
 #include "view2d/omLineDraw.hpp"
@@ -66,7 +66,7 @@ public:
 private:
 	void selectSegments(QMouseEvent* event)
 	{
-		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		SegmentDataWrapper sdw = OmSegmentSelected::Get();
 		if (!sdw.isValidWrapper()){
 			return;
 		}
@@ -88,7 +88,7 @@ private:
 
 	void paint(QMouseEvent* event)
 	{
-		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		SegmentDataWrapper sdw = OmSegmentSelected::Get();
 		if (!sdw.isValidWrapper()){
 			return;
 		}

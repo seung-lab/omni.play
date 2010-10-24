@@ -106,7 +106,7 @@ private:
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
-		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+		SegmentDataWrapper sdw = OmSegmentSelected::Get();
 		if ( sdw.isValidWrapper() ) {
 			//run action
 			if (!doselection) {
@@ -158,7 +158,7 @@ private:
 
 		const OmID segmentID = sdw.getID();
 
-		OmSegmentEditor::SetEditSelection( segmentation.GetID(), segmentID);
+		OmSegmentSelected::Set(sdw);
 
 		OmSegmentSelector sel( segmentation.GetID(), this, "view2dEvent" );
 		if( augment_selection ){

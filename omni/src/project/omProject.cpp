@@ -9,7 +9,7 @@
 #include "datalayer/omIDataWriter.h"
 #include "project/omProject.h"
 #include "actions/omProjectSaveAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
 #include "system/events/omEventManager.h"
 #include "system/omGarbage.h"
@@ -145,7 +145,7 @@ void OmProject::Close()
 
 	//delete all singletons
 	OmMeshSegmentList::Delete();
-	OmSegmentEditor::Delete();
+	OmSegmentSelected::Delete();
 	OmEventManager::Delete();
 	OmGarbage::Delete();
 	OmPreferences::Delete();

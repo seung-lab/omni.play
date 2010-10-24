@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "actions/omSegmentSelectAction.h"
 #include "actions/omSegmentSplitAction.h"
 #include "segment/omSegmentCache.h"

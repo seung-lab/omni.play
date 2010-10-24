@@ -1,6 +1,6 @@
 #include "project/omProject.h"
 #include "actions/omSegmentSelectAction.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "volume/omSegmentation.h"
@@ -45,7 +45,7 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
 
 void OmSegmentSelector::setEditSelection(const OmSegID segID)
 {
-	OmSegmentEditor::SetEditSelection(mSegmentation->GetID(), segID);
+	OmSegmentSelected::Set(mSegmentation->GetID(), segID);
 	mSegmentJustSelectedID = segID;
 }
 

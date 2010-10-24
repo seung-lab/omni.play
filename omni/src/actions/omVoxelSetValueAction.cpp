@@ -2,7 +2,7 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "omVoxelSetValueAction.h"
 #include "project/omProject.h"
-#include "segment/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
