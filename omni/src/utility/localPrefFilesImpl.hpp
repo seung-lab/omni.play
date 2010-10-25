@@ -23,7 +23,7 @@ public:
 		return false;
 	}
 
-	inline int readSettingInt(const QString& setting)
+	inline int32_t readSettingInt(const QString& setting)
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
@@ -31,7 +31,7 @@ public:
 		}
 
 		bool ok;
-		uint ret = lines[0].toInt(&ok, 10);
+		int32_t ret = lines[0].toInt(&ok, 10);
 
 		if(!ok){
 			throw OmIoException("could not parse preference");
@@ -39,7 +39,7 @@ public:
 
 		return ret;
 	}
-	inline void writeSettingInt(const QString& setting, const uint32_t value)
+	inline void writeSettingInt(const QString& setting, const int32_t value)
 	{
 		QFile file(getFileName(setting));
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -50,7 +50,7 @@ public:
 		out << QString::number(value);
 	}
 
-	inline unsigned int readSettingUInt(const QString& setting)
+	inline uint32_t readSettingUInt(const QString& setting)
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
@@ -58,7 +58,7 @@ public:
 		}
 
 		bool ok;
-		uint ret = lines[0].toUInt(&ok, 10);
+		uint32_t ret = lines[0].toUInt(&ok, 10);
 
 		if(!ok){
 			throw OmIoException("could not parse preference");
@@ -117,8 +117,8 @@ public:
 		}
 
 		QTextStream out(&file);
-		for (int i = 0; i < values.size(); i++) {
-			out << values.at(i) << endl;
+		FOR_EACH(iter, values){
+			out << *iter << endl;
 		}
 	}
 
@@ -154,8 +154,8 @@ public:
 	}
 	inline void writeSettingBool(const QString& setting, const bool value)
 	{
-		unsigned int intValue;
-		if(true == value){
+		uint32_t intValue;
+		if(value){
 			intValue = 1;
 		} else {
 			intValue = 0;
