@@ -20,7 +20,7 @@ public:
 	static void setCrosshairValue(const uint32_t value)
 	{
 		instance().mCrosshairValue = value;
-		LocalPrefFiles::writeSettingUInt( "crosshairValue", value );
+		LocalPrefFiles::writeSettingNumber<uint32_t>( "crosshairValue", value );
 	}
 
 	static bool get2DViewFrameIn3D(){
@@ -75,7 +75,8 @@ private:
 	{
 		const uint32_t defaultRet = 1;
 		mCrosshairValue =
-			LocalPrefFiles::readSettingUInt("crosshairValue", defaultRet);
+			LocalPrefFiles::readSettingNumber<uint32_t>("crosshairValue",
+														defaultRet);
 	}
 
 	void setDefault2DViewFrameIn3D()

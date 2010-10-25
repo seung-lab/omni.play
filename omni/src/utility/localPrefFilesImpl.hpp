@@ -11,10 +11,6 @@
 
 class LocalPrefFilesImpl {
 public:
-	LocalPrefFilesImpl() {
-		setupPrefFolder();
-	}
-
 	inline bool settingExists(const QString& setting)
 	{
 		if(prefFolder_.exists(getFileName(setting))){
@@ -23,23 +19,37 @@ public:
 		return false;
 	}
 
-	inline int32_t readSettingInt(const QString& setting)
+// bool
+	inline bool readSettingBool(const QString& setting)
+	{
+		if(readSettingNumber<uint32_t>(setting)){
+			return true;
+		}
+		return false;
+	}
+	inline void writeSettingBool(const QString& setting, const bool value)
+	{
+		uint32_t intValue = 0;
+		if(value){
+			intValue = 1;
+		}
+		writeSettingNumber<uint32_t>(setting, intValue);
+	}
+
+// number
+	template <typename T>
+	inline T readSettingNumber(const QString& setting)
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
 			throw OmIoException("no preference found", setting);
 		}
 
-		bool ok;
-		const int32_t ret = lines[0].toInt(&ok, 10);
-
-		if(!ok){
-			throw OmIoException("could not parse preference", setting);
-		}
-
-		return ret;
+		return boost::lexical_cast<T>(lines[0].toStdString());
 	}
-	inline void writeSettingInt(const QString& setting, const int32_t value)
+
+	template <typename T>
+	inline void writeSettingNumber(const QString& setting, const T value)
 	{
 		const QString fnp = getFileName(setting);
 
@@ -52,84 +62,7 @@ public:
 		out << QString::number(value);
 	}
 
-	inline uint32_t readSettingUInt(const QString& setting)
-	{
-		QStringList lines = readFile(setting);
-		if(0 == lines.size()){
-			throw OmIoException("no preference found", setting);
-		}
-
-		bool ok;
-		const uint32_t ret = lines[0].toUInt(&ok, 10);
-
-		if(!ok){
-			throw OmIoException("could not parse preference", setting);
-		}
-
-		return ret;
-	}
-	inline void writeSettingUInt(const QString& setting, const uint32_t value)
-	{
-		const QString fnp = getFileName(setting);
-
-		QFile file(fnp);
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file", fnp);
-		}
-
-		QTextStream out(&file);
-		out << QString::number(value);
-	}
-
-	inline float readSettingFloat(const QString& setting)
-	{
-		QStringList lines = readFile(setting);
-		if(0 == lines.size()){
-			throw OmIoException("no preference found", setting);
-		}
-
-		bool ok;
-		const float ret = lines[0].toFloat(&ok);
-
-		if(!ok){
-			throw OmIoException("could not parse preference", setting);
-		}
-
-		return ret;
-	}
-	inline void writeSettingFloat(const QString& setting, const float value)
-	{
-		const QString fnp = getFileName(setting);
-
-		QFile file(fnp);
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file", fnp);
-		}
-
-		QTextStream out(&file);
-		out << QString::number(value);
-	}
-
-	inline QStringList readSettingQStringList(const QString& setting)
-	{
-		return readFile(setting);
-	}
-	inline void writeSettingQStringList(const QString& setting,
-										const QStringList& values)
-	{
-		const QString fnp = getFileName(setting);
-
-		QFile file(fnp);
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file", fnp);
-		}
-
-		QTextStream out(&file);
-		FOR_EACH(iter, values){
-			out << *iter << endl;
-		}
-	}
-
+// QString
 	inline QString readSettingQString(const QString& setting)
 	{
         const QStringList lines = readFile(setting);
@@ -153,29 +86,35 @@ public:
 		out << value << endl;
 	}
 
-	inline bool readSettingBool(const QString& setting)
+// QStringList
+	inline QStringList readSettingQStringList(const QString& setting)
 	{
-		const uint32_t val = readSettingUInt(setting);
-		if(0 == val){
-			return false;
-		}
-
-		return true;
+		return readFile(setting);
 	}
-	inline void writeSettingBool(const QString& setting, const bool value)
+
+	inline void writeSettingQStringList(const QString& setting,
+										const QStringList& values)
 	{
-		uint32_t intValue;
-		if(value){
-			intValue = 1;
-		} else {
-			intValue = 0;
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			throw OmIoException("could not write file", fnp);
 		}
 
-		writeSettingUInt(setting, intValue);
+		QTextStream out(&file);
+		FOR_EACH(iter, values){
+			out << *iter << endl;
+		}
 	}
 
 private:
+
 	QDir prefFolder_;
+
+	LocalPrefFilesImpl() {
+		setupPrefFolder();
+	}
 
 	inline void setupPrefFolder()
 	{
@@ -219,6 +158,8 @@ private:
 
 		return lines;
 	}
+
+	friend class LocalPrefFiles;
 };
 
 #endif

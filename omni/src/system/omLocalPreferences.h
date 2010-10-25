@@ -20,11 +20,11 @@ public:
 			numCores = 2;
 		}
 
-		return LocalPrefFiles::readSettingInt("numThreads", numCores);
+		return LocalPrefFiles::readSettingNumber<int32_t>("numThreads", numCores);
 	}
 	static void setNumAllowedWorkerThreads(const int32_t numThreads)
 	{
-		LocalPrefFiles::writeSettingInt("numThreads", numThreads);
+		LocalPrefFiles::writeSettingNumber<int32_t>("numThreads", numThreads);
 	}
 
 // RAM size
@@ -32,11 +32,11 @@ public:
 	{
 		const unsigned int defaultRet =
 			OmSystemInformation::get_total_system_memory_megs() / 3;
-		return LocalPrefFiles::readSettingUInt("ram", defaultRet);
+		return LocalPrefFiles::readSettingNumber<uint32_t>("ram", defaultRet);
 	}
 	static void setRamCacheSizeMB(const uint32_t size)
 	{
-		LocalPrefFiles::writeSettingUInt("ram", size);
+		LocalPrefFiles::writeSettingNumber<uint32_t>("ram", size);
 		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 	}
 
@@ -45,11 +45,11 @@ public:
 	{
 		const unsigned int defaultRet =
 			OmSystemInformation::get_total_system_memory_megs() / 4;
-		return LocalPrefFiles::readSettingUInt("vram", defaultRet);
+		return LocalPrefFiles::readSettingNumber<uint32_t>("vram", defaultRet);
 	}
 	static void setVRamCacheSizeMB(const uint32_t size)
 	{
-		LocalPrefFiles::writeSettingUInt("vram", size);
+		LocalPrefFiles::writeSettingNumber<uint32_t>("vram", size);
 		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
 	}
 
