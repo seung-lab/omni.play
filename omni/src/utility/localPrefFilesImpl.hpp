@@ -27,6 +27,7 @@ public:
 		}
 		return false;
 	}
+
 	inline void writeSettingBool(const QString& setting, const bool value)
 	{
 		uint32_t intValue = 0;
@@ -72,6 +73,7 @@ public:
 
         return lines[0];
 	}
+
 	inline void writeSettingQString(const QString& setting,
 									const QString& value)
 	{
@@ -87,8 +89,7 @@ public:
 	}
 
 // QStringList
-	inline QStringList readSettingQStringList(const QString& setting)
-	{
+	inline QStringList readSettingQStringList(const QString& setting){
 		return readFile(setting);
 	}
 
@@ -136,9 +137,8 @@ private:
 		}
 	}
 
-	inline QString getFileName(const QString& setting)
-	{
-		return prefFolder_.filePath(setting + QString(".txt"));
+	inline QString getFileName(const QString& setting){
+		return prefFolder_.filePath(setting + ".txt");
 	}
 
 	inline QStringList readFile(const QString& setting)
