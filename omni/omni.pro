@@ -464,7 +464,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omEventManager.cpp \
            src/system/omEvents.cpp \
            src/system/omGroups.cpp \
-           src/system/omLocalPreferences.cpp \
            src/system/omPreferenceDefinitions.cpp \
            src/system/omProjectData.cpp \
            src/system/omStateManager.cpp \

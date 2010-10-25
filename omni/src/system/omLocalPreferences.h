@@ -4,25 +4,76 @@
 #include "common/omCommon.h"
 #include "zi/omUtility.h"
 #include "utility/localPrefFiles.h"
+#include "utility/omSystemInformation.h"
+#include "system/cache/omCacheManager.h"
+#include "common/omDebug.h"
 
 class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 public:
-	static int get_num_cores();
 
-	static int numAllowedWorkerThreads();
-	static void setNumAllowedWorkerThreads(int);
+// max number of mesh worker threads
+	static int32_t numAllowedWorkerThreads()
+	{
+		const int numCoresRaw = OmSystemInformation::get_num_cores();
+		int numCores = numCoresRaw - 1;
+		if(numCoresRaw < 2){
+			numCores = 2;
+		}
 
-	static unsigned int getRamCacheSizeMB();
-	static void setRamCacheSizeMB(const unsigned int);
+		return LocalPrefFiles::readSettingInt("numThreads", numCores);
+	}
+	static void setNumAllowedWorkerThreads(const int32_t numThreads)
+	{
+		LocalPrefFiles::writeSettingInt("numThreads", numThreads);
+	}
 
-	static unsigned int getVRamCacheSizeMB();
-	static void setVRamCacheSizeMB(const unsigned int);
+// RAM size
+	static uint32_t getRamCacheSizeMB()
+	{
+		const unsigned int defaultRet =
+			OmSystemInformation::get_total_system_memory_megs() / 3;
+		return LocalPrefFiles::readSettingUInt("ram", defaultRet);
+	}
+	static void setRamCacheSizeMB(const uint32_t size)
+	{
+		LocalPrefFiles::writeSettingUInt("ram", size);
+		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+	}
 
-	static QStringList getRecentlyUsedFilesNames();
-	static void setRecentlyUsedFilesNames( QStringList values);
+// VRAM size
+	static uint32_t getVRamCacheSizeMB()
+	{
+		const unsigned int defaultRet =
+			OmSystemInformation::get_total_system_memory_megs() / 4;
+		return LocalPrefFiles::readSettingUInt("vram", defaultRet);
+	}
+	static void setVRamCacheSizeMB(const uint32_t size)
+	{
+		LocalPrefFiles::writeSettingUInt("vram", size);
+		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+	}
 
-	static QString getScratchPath( );
-	static void setScratchPath( QString value);
+// recently-used files
+	static QStringList getRecentlyUsedFilesNames()
+	{
+		QStringList empty;
+		return LocalPrefFiles::readSettingQStringList("recentlyOpenedFiles", empty);
+	}
+	static void setRecentlyUsedFilesNames(const QStringList& values)
+	{
+		LocalPrefFiles::writeSettingQStringList("recentlyOpenedFiles", values);
+	}
+
+// scratch space
+	static QString getScratchPath()
+	{
+		QString defaultPath = "/tmp";
+		return LocalPrefFiles::readSettingQString("sratchPath", defaultPath);
+	}
+	static void setScratchPath(const QString& scratchPath)
+	{
+		LocalPrefFiles::writeSettingQString("sratchPath", scratchPath);
+	}
 
 private:
 	OmLocalPreferences(){}
