@@ -3,6 +3,7 @@
 #include "mesh/omMeshDrawer.h"
 #include "mesh/omMeshSegmentList.h"
 #include "mesh/omMipMesh.h"
+#include "mesh/omVolumeCuller.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/omEvents.h"
@@ -10,18 +11,17 @@
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
+#include "view3d/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
-#include "mesh/omVolumeCuller.h"
 
 OmMeshDrawer::OmMeshDrawer(OmSegmentation* seg, OmViewGroupState* vgs)
 	: mSeg(seg)
 	, mViewGroupState(vgs)
 	, mSegmentCache(mSeg->GetSegmentCache())
 	, redrawNeeded_(false)
-{
-}
+{}
 
 /////////////////////////////////
 ///////          Draw
@@ -285,7 +285,7 @@ void OmMeshDrawer::applyColor(OmSegment * seg, const OmBitfield & drawOps,
 		glColor3fva(hyperColor.array,
 					OmPreferences::GetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
-	} else if (OmLocalPreferences::getDoDiscoBall()) {
+	} else if (Om3dPreferences::getDoDiscoBall()) {
 		static float s = 10.0;
 		static int dir = 1;
 

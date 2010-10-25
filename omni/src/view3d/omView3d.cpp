@@ -47,13 +47,6 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 	mDrawTimer.stop();
 	connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
 
-	// These calls simply prime Michaels Local Preferences File I/O System
-	// TODO: make OmLocalPreferences cache, so we don't have to prime...(purcaro)
-	OmLocalPreferences::getDefault2DViewFrameIn3D();
-	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
-	OmLocalPreferences::getDefaultCrosshairValue();
-	OmLocalPreferences::getDefaultDoDiscoBall();
-
 	mElapsed = new QTime();
 	mElapsed->start();
 

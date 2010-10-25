@@ -248,6 +248,7 @@ HEADERS += lib/strnatcmp.h \
            src/utility/segmentationDataWrapper.hpp \
            src/utility/fileHelpers.h \
            src/utility/localPrefFiles.h \
+           src/utility/localPrefFilesImpl.hpp \
            src/utility/omImageDataIo.h \
            src/utility/omSystemInformation.h \
            src/utility/omTimer.h \
@@ -288,6 +289,7 @@ HEADERS += lib/strnatcmp.h \
            src/view2d/omView2d.h \
            src/view2d/omView2dCore.h \
            src/view2d/omView2dEvents.hpp \
+           src/view3d/om3dPreferences.hpp \
            src/view3d/omCamera.h \
            src/view3d/omCameraMovement.h \
            src/view3d/omView3d.h \
@@ -472,7 +474,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/viewGroup/omViewGroupState.cpp \
            src/utility/channelDataWrapper.cpp \
            src/utility/fileHelpers.cpp \
-           src/utility/localPrefFiles.cpp \
            src/utility/omImageDataIo.cpp \
            src/utility/omSystemInformation.cpp \
            src/utility/stringHelpers.cpp \
