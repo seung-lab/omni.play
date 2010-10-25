@@ -15,7 +15,7 @@ public:
 		setupPrefFolder();
 	}
 
-	inline bool checkIfSettingExists(const QString& setting)
+	inline bool settingExists(const QString& setting)
 	{
 		if( prefFolder_.exists( getFileName(setting))){
 			return true;
@@ -39,6 +39,16 @@ public:
 
 		return ret;
 	}
+	inline void writeSettingInt(const QString& setting, const uint32_t value)
+	{
+		QFile file(getFileName( setting));
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			throw OmIoException( "could not write file");
+		}
+
+		QTextStream out(&file);
+		out << QString::number( value);
+	}
 
 	inline unsigned int readSettingUInt(const QString& setting)
 	{
@@ -56,19 +66,7 @@ public:
 
 		return ret;
 	}
-
 	inline void writeSettingUInt(const QString& setting, const uint32_t value)
-	{
-		QFile file(getFileName( setting));
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException( "could not write file");
-		}
-
-		QTextStream out(&file);
-		out << QString::number( value);
-	}
-
-	inline void writeSettingInt(const QString& setting, const uint32_t value)
 	{
 		QFile file(getFileName( setting));
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -109,7 +107,6 @@ public:
         QTextStream out(&file);
 		out << value << endl;
 	}
-
 	inline QString readSettingQString(const QString& setting)
 	{
         QStringList lines = readFile( setting);
@@ -129,7 +126,6 @@ public:
 
 		return true;
 	}
-
 	inline void writeSettingBool(const QString& setting, const bool value)
 	{
 		unsigned int intValue;

@@ -5,19 +5,19 @@
 
 class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
 public:
-	static bool settingExists( QString setting)
+	inline static bool settingExists(QString setting)
 	{
-		return checkIfSettingExists( setting);
+		return instance().impl_->settingExists(setting);
 	}
 
 	static bool readSettingBool(const QString& setting, const bool defaultRet)
 	{
-		if( !settingExists( setting)){
+		if(!settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingBool( setting );
+			return readSettingBool(setting);
 		} catch (...) {
 			return defaultRet;
 		}
@@ -29,12 +29,12 @@ public:
 	static int32_t readSettingInt(const QString& setting,
 								  const int32_t defaultRet)
 	{
-		if( !settingExists( setting)){
+		if(!settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingInt( setting );
+			return readSettingInt(setting);
 		} catch (...) {
 			return defaultRet;
 		}
@@ -46,12 +46,12 @@ public:
 	static uint32_t readSettingUInt(const QString& setting,
 									const uint32_t defaultRet)
 	{
-		if( !settingExists( setting)){
+		if(!settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingUInt( setting );
+			return readSettingUInt(setting);
 		} catch (...) {
 			return defaultRet;
 		}
@@ -65,12 +65,12 @@ public:
 	static QStringList readSettingQStringList(const QString& setting,
 											  const QStringList& defaultRet)
 	{
-		if( !settingExists( setting)){
+		if(!settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingQStringList( setting );
+			return readSettingQStringList(setting);
 		} catch (...) {
 			return defaultRet;
 		}
@@ -83,12 +83,12 @@ public:
 	static QString readSettingQString(const QString& setting,
 									  const QString& defaultRet)
 	{
-		if( !settingExists( setting)){
+		if(!settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingQString( setting );
+			return readSettingQString(setting);
 		} catch (...) {
 			return defaultRet;
 		}
@@ -100,10 +100,6 @@ public:
 	}
 
 private:
-	static bool checkIfSettingExists(const QString& setting){
-		return instance().impl_->checkIfSettingExists(setting);
-	}
-
 	static int32_t readSettingInt(const QString& setting){
 		return instance().impl_->readSettingInt(setting);
 	}
