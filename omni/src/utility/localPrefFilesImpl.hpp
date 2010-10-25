@@ -27,23 +27,25 @@ public:
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
-			throw OmIoException("no preference found");
+			throw OmIoException("no preference found", setting);
 		}
 
 		bool ok;
-		int32_t ret = lines[0].toInt(&ok, 10);
+		const int32_t ret = lines[0].toInt(&ok, 10);
 
 		if(!ok){
-			throw OmIoException("could not parse preference");
+			throw OmIoException("could not parse preference", setting);
 		}
 
 		return ret;
 	}
 	inline void writeSettingInt(const QString& setting, const int32_t value)
 	{
-		QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file");
+			throw OmIoException("could not write file", fnp);
 		}
 
 		QTextStream out(&file);
@@ -54,23 +56,25 @@ public:
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
-			throw OmIoException("no preference found");
+			throw OmIoException("no preference found", setting);
 		}
 
 		bool ok;
-		uint32_t ret = lines[0].toUInt(&ok, 10);
+		const uint32_t ret = lines[0].toUInt(&ok, 10);
 
 		if(!ok){
-			throw OmIoException("could not parse preference");
+			throw OmIoException("could not parse preference", setting);
 		}
 
 		return ret;
 	}
 	inline void writeSettingUInt(const QString& setting, const uint32_t value)
 	{
-		QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file");
+			throw OmIoException("could not write file", fnp);
 		}
 
 		QTextStream out(&file);
@@ -81,23 +85,25 @@ public:
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
-			throw OmIoException("no preference found");
+			throw OmIoException("no preference found", setting);
 		}
 
 		bool ok;
-		float ret = lines[0].toFloat(&ok);
+		const float ret = lines[0].toFloat(&ok);
 
 		if(!ok){
-			throw OmIoException("could not parse preference");
+			throw OmIoException("could not parse preference", setting);
 		}
 
 		return ret;
 	}
 	inline void writeSettingFloat(const QString& setting, const float value)
 	{
-		QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file");
+			throw OmIoException("could not write file", fnp);
 		}
 
 		QTextStream out(&file);
@@ -111,9 +117,11 @@ public:
 	inline void writeSettingQStringList(const QString& setting,
 										const QStringList& values)
 	{
-		QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file");
+			throw OmIoException("could not write file", fnp);
 		}
 
 		QTextStream out(&file);
@@ -122,25 +130,27 @@ public:
 		}
 	}
 
+	inline QString readSettingQString(const QString& setting)
+	{
+        const QStringList lines = readFile(setting);
+        if(1 != lines.size()){
+			throw OmIoException("no preference found", setting);
+        }
+
+        return lines[0];
+	}
 	inline void writeSettingQString(const QString& setting,
 									const QString& value)
 	{
-        QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+        QFile file(fnp);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			throw OmIoException("could not write file");
+			throw OmIoException("could not write file", fnp);
         }
 
         QTextStream out(&file);
 		out << value << endl;
-	}
-	inline QString readSettingQString(const QString& setting)
-	{
-        QStringList lines = readFile(setting);
-        if(1 != lines.size()){
-			throw OmIoException("no preference found");
-        }
-
-        return lines[0];
 	}
 
 	inline bool readSettingBool(const QString& setting)
@@ -169,9 +179,9 @@ private:
 
 	inline void setupPrefFolder()
 	{
-		QString omniFolderName = ".omni";
-		QString homeFolder = QDir::homePath();
-		QString omniFolderPath = homeFolder + "/" + omniFolderName;
+		const QString omniFolderName = ".omni";
+		const QString homeFolder = QDir::homePath();
+		const QString omniFolderPath = homeFolder + "/" + omniFolderName;
 
 		QDir dir = QDir(omniFolderPath);
 		if(dir.exists()){
@@ -183,8 +193,7 @@ private:
 			printf("made folder %s\n", qPrintable(omniFolderPath));
 			prefFolder_ = dir;
 		} else {
-			printf("could not make folder %s\n", qPrintable(omniFolderPath));
-			throw OmIoException("could not create .omni");
+			throw OmIoException("could not create folder", omniFolderPath);
 		}
 	}
 
@@ -195,9 +204,11 @@ private:
 
 	inline QStringList readFile(const QString& setting)
 	{
-		QFile file(getFileName(setting));
+		const QString fnp = getFileName(setting);
+
+		QFile file(fnp);
 		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			throw OmIoException("could not read file");
+			throw OmIoException("could not read file", fnp);
 		}
 
 		QStringList lines;
