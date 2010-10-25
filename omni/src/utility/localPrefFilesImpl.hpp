@@ -155,7 +155,7 @@ public:
 
 	inline bool readSettingBool(const QString& setting)
 	{
-		const unsigned int val = readSettingUInt(setting);
+		const uint32_t val = readSettingUInt(setting);
 		if(0 == val){
 			return false;
 		}
