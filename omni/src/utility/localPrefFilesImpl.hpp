@@ -28,13 +28,8 @@ public:
 		return false;
 	}
 
-	inline void writeSettingBool(const QString& setting, const bool value)
-	{
-		uint32_t intValue = 0;
-		if(value){
-			intValue = 1;
-		}
-		writeSettingNumber<uint32_t>(setting, intValue);
+	inline void writeSettingBool(const QString& setting, const bool value){
+		writeSettingNumber<uint32_t>(setting, value);
 	}
 
 // number
@@ -43,7 +38,7 @@ public:
 	{
 		QStringList lines = readFile(setting);
 		if(0 == lines.size()){
-			throw OmIoException("no preference found", setting);
+			throw OmIoException("invalid preference found", setting);
 		}
 
 		return boost::lexical_cast<T>(lines[0].toStdString());

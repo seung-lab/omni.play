@@ -43,7 +43,7 @@ public:
 
 	template <typename T>
 	inline static void writeSettingNumber(const QString& setting,
-										  const int32_t value){
+										  const T value){
 		return instance().impl_->writeSettingNumber<T>(setting, value);
 	}
 
