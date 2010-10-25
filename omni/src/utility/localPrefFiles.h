@@ -5,121 +5,116 @@
 
 class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
 public:
-	inline static bool settingExists(QString setting)
+	inline static bool readSettingBool(const QString& setting,
+									   const bool defaultRet)
 	{
-		return instance().impl_->settingExists(setting);
-	}
-
-	static bool readSettingBool(const QString& setting, const bool defaultRet)
-	{
-		if(!settingExists(setting)){
+		if(!instance().impl_->settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingBool(setting);
+			return instance().impl_->readSettingBool(setting);
 		} catch (...) {
 			return defaultRet;
 		}
 	}
-	static void writeSettingBool(const QString& setting, const bool value){
+	inline static void writeSettingBool(const QString& setting,
+										const bool value){
 		return instance().impl_->writeSettingBool(setting, value);
 	}
 
-	static int32_t readSettingInt(const QString& setting,
-								  const int32_t defaultRet)
+	inline static int32_t readSettingInt(const QString& setting,
+										 const int32_t defaultRet)
 	{
-		if(!settingExists(setting)){
+		if(!instance().impl_->settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingInt(setting);
+			return instance().impl_->readSettingInt(setting);
 		} catch (...) {
 			return defaultRet;
 		}
 	}
-	static void writeSettingInt(const QString& setting, const int32_t value){
+	inline static void writeSettingInt(const QString& setting,
+									   const int32_t value){
 		return instance().impl_->writeSettingInt(setting, value);
 	}
 
-	static uint32_t readSettingUInt(const QString& setting,
-									const uint32_t defaultRet)
+	inline static uint32_t readSettingUInt(const QString& setting,
+										   const uint32_t defaultRet)
 	{
-		if(!settingExists(setting)){
+		if(!instance().impl_->settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingUInt(setting);
+			return instance().impl_->readSettingUInt(setting);
 		} catch (...) {
 			return defaultRet;
 		}
 	}
-	static void writeSettingUInt(const QString& setting,
-								 const uint32_t value){
+	inline static void writeSettingUInt(const QString& setting,
+										const uint32_t value){
 		return instance().impl_->writeSettingUInt(setting, value);
 	}
 
-
-	static QStringList readSettingQStringList(const QString& setting,
-											  const QStringList& defaultRet)
+	inline static float readSettingFloat(const QString& setting,
+										 const float defaultRet)
 	{
-		if(!settingExists(setting)){
+		if(!instance().impl_->settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingQStringList(setting);
+			return instance().impl_->readSettingFloat(setting);
 		} catch (...) {
 			return defaultRet;
 		}
 	}
-	static void writeSettingQStringList(const QString& setting,
-										const QStringList& values){
+	inline static void writeSettingFloat(const QString& setting,
+										 const float value){
+		return instance().impl_->writeSettingFloat(setting, value);
+	}
+
+	inline static QStringList readSettingQStringList(const QString& setting,
+													 const QStringList& defaultRet)
+	{
+		if(!instance().impl_->settingExists(setting)){
+			return defaultRet;
+		}
+
+		try{
+			return instance().impl_->readSettingQStringList(setting);
+		} catch (...) {
+			return defaultRet;
+		}
+	}
+	inline static void writeSettingQStringList(const QString& setting,
+											   const QStringList& values){
 		return instance().impl_->writeSettingQStringList(setting, values);
 	}
 
-	static QString readSettingQString(const QString& setting,
-									  const QString& defaultRet)
+	inline static QString readSettingQString(const QString& setting,
+											 const QString& defaultRet)
 	{
-		if(!settingExists(setting)){
+		if(!instance().impl_->settingExists(setting)){
 			return defaultRet;
 		}
 
 		try{
-			return readSettingQString(setting);
+			return instance().impl_->readSettingQString(setting);
 		} catch (...) {
 			return defaultRet;
 		}
 
 	}
-	static void writeSettingQString(const QString& setting,
-									const QString& value){
+	inline static void writeSettingQString(const QString& setting,
+										   const QString& value){
 		return instance().impl_->writeSettingQString(setting, value);
 	}
 
 private:
-	static int32_t readSettingInt(const QString& setting){
-		return instance().impl_->readSettingInt(setting);
-	}
-
-	static uint32_t readSettingUInt(const QString& setting){
-		return instance().impl_->readSettingUInt(setting);
-	}
-
-	static QStringList readSettingQStringList(const QString& setting){
-		return instance().impl_->readSettingQStringList(setting);
-	}
-
-	static QString readSettingQString(const QString& setting){
-		return instance().impl_->readSettingQString(setting);
-	}
-
-	static bool readSettingBool(const QString& setting){
-		return instance().impl_->readSettingBool(setting);
-	}
-
 	LocalPrefFiles()
 		: impl_(boost::make_shared<LocalPrefFilesImpl>())
 	{}
