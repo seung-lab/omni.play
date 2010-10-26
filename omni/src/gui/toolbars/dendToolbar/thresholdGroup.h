@@ -1,7 +1,7 @@
 #ifndef THRESHOLD_GROUP_H
 #define THRESHOLD_GROUP_H
 
-#include "actions/omSegmentationThresholdChangeAction.h"
+#include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
@@ -45,7 +45,7 @@ private:
 			return;
 		}
 
-		(new OmSegmentationThresholdChangeAction(sdw.getSegmentationID(), threshold))->Run();
+		OmActions::ChangeMSTthreshold(sdw.getSegmentationID(), threshold);
 	}
 };
 

@@ -6,7 +6,7 @@
  *
  */
 
-#include "system/omAction.h"
+#include "actions/details/omAction.h"
 #include "common/omCommon.h"
 
 class OmSegmentGroupActionImpl;

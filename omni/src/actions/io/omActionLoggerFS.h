@@ -1,7 +1,7 @@
 #ifndef OM_ACTION_LOGGER_H
 #define OM_ACTION_LOGGER_H
 
-#include "datalayer/fs/omActionLoggerFSthread.hpp"
+#include "actions/io/omActionLoggerFSthread.hpp"
 #include "project/omProject.h"
 #include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"

@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentUncertainAction.h"
-#include "actions/omSegmentUncertainActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentUncertainAction.h"
+#include "actions/details/omSegmentUncertainActionImpl.hpp"
 
 void OmSegmentUncertainAction::SetUncertain(const SegmentDataWrapper& sdw,
 											const bool uncertain)

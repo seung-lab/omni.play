@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentSelectAction.h"
-#include "actions/omSegmentSelectActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentSelectAction.h"
+#include "actions/details/omSegmentSelectActionImpl.hpp"
 
 OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
 											 const OmSegIDsSet & newSelectedIdSet,

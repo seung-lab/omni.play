@@ -1,10 +1,8 @@
+#include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "project/omProject.h"
-#include "actions/omSegmentJoinAction.h"
-#include "actions/omSegmentSelectAction.h"
-#include "actions/omSegmentValidateAction.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
@@ -128,7 +126,7 @@ void OmSegmentContextMenu::unselectOthers()
 void OmSegmentContextMenu::mergeSegments()
 {
 	OmSegIDsSet ids = sdw_.getSegmentCache()->GetSelectedSegmentIds();
-	(new OmSegmentJoinAction(sdw_.getSegmentationID(), ids))->Run();
+	OmActions::JoinSegments(sdw_.getSegmentationID(), ids);
 }
 
 void OmSegmentContextMenu::splitSegments()

@@ -1,7 +1,9 @@
 #ifndef OM_PROJECT_SAVE_ACTION_H
 #define OM_PROJECT_SAVE_ACTION_H
 
-#include "system/omAction.h"
+#include "actions/details/omAction.h"
+
+#include <boost/shared_ptr.hpp>
 
 class OmProjectSaveActionImpl;
 

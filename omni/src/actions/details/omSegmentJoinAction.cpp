@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentJoinAction.h"
-#include "actions/omSegmentJoinActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentJoinAction.h"
+#include "actions/details/omSegmentJoinActionImpl.hpp"
 
 OmSegmentJoinAction::OmSegmentJoinAction(const OmID segmentationId,
 										 const OmSegIDsSet& selectedSegmentIds)

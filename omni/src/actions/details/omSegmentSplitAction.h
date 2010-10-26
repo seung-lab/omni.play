@@ -1,7 +1,7 @@
 #ifndef OM_SEGMENT_SPLIT_ACTION_H
 #define OM_SEGMENT_SPLIT_ACTION_H
 
-#include "system/omAction.h"
+#include "actions/details/omAction.h"
 #include "segment/omSegmentEdge.h"
 
 class SegmentDataWrapper;

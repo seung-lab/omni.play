@@ -1,7 +1,7 @@
 #include "common/omDebug.h"
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentSplitAction.h"
-#include "actions/omSegmentSplitActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentSplitAction.h"
+#include "actions/details/omSegmentSplitActionImpl.hpp"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 											const OmSegmentEdge & edge )

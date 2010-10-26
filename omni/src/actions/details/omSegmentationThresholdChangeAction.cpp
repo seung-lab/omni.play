@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentationThresholdChangeAction.h"
-#include "actions/omSegmentationThresholdChangeActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentationThresholdChangeAction.h"
+#include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
 
 OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmID segmentationId,
 																		  const float threshold)

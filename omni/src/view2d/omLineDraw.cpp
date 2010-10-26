@@ -10,7 +10,7 @@
 #include "view2d/omLineDraw.hpp"
 #include "view2d/omView2dState.hpp"
 #include "volume/omSegmentation.h"
-#include "actions/omVoxelSetValueAction.h"
+#include "actions/omActions.hpp"
 
 OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 					   const ViewType vt)

@@ -1,5 +1,5 @@
 #include "project/omProject.h"
-#include "actions/omSegmentSelectAction.h"
+#include "actions/omActions.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
@@ -109,17 +109,14 @@ bool OmSegmentSelector::sendEvent()
 		return false;
 	}
 
-	OmSegmentSelectAction * a = new OmSegmentSelectAction(mSegmentation->GetID(),
-														  newSelectedIDs,
-														  oldSelectedIDs,
-														  mSegmentJustSelectedID,
-														  mSender,
-														  mComment,
-														  true,
-														  mAddToRecentList);
-	a->Run();
-	// don't delete--cleanup will be handled by OmAction
-
+	OmActions::SelectSegments(mSegmentation->GetID(),
+							  newSelectedIDs,
+							  oldSelectedIDs,
+							  mSegmentJustSelectedID,
+							  mSender,
+							  mComment,
+							  true,
+							  mAddToRecentList);
 	return true;
 }
 

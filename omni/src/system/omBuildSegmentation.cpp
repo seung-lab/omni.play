@@ -5,7 +5,7 @@
 #include "system/omBuildSegmentation.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "actions/omSegmentationThresholdChangeAction.h"
+#include "actions/omActions.hpp"
 
 OmBuildSegmentation::OmBuildSegmentation(OmSegmentation * seg)
 {
@@ -72,7 +72,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	stopTimingAndSave(type, build_timer);
 
 	loadDendrogram();
-	(new OmSegmentationThresholdChangeAction(mSeg->GetID(), 0.5))->Run();
+	OmActions::ChangeMSTthreshold(mSeg->GetID(), 0.5);
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()

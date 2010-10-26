@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
+#include "actions/io/omActionLoggerFS.h"
 #include "omProjectSaveAction.h"
-#include "actions/omProjectSaveActionImpl.hpp"
+#include "actions/details/omProjectSaveActionImpl.hpp"
 
 OmProjectSaveAction::OmProjectSaveAction()
 	: impl_(boost::make_shared<OmProjectSaveActionImpl>())

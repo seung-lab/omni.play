@@ -1,5 +1,3 @@
-#include "actions/omSegmentGroupAction.h"
-#include "actions/omSegmentValidateAction.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"

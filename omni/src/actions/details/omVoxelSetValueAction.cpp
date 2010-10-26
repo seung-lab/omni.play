@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omVoxelSetValueAction.h"
-#include "actions/omVoxelSetValueActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omVoxelSetValueAction.h"
+#include "actions/details/omVoxelSetValueActionImpl.hpp"
 
 OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
 											 const DataCoord& rVoxel,

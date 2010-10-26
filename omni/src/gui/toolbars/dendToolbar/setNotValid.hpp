@@ -4,7 +4,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/widgets/omButton.h"
-#include "actions/omSegmentValidateAction.h"
+#include "actions/omActions.hpp"
 #include "system/omEvents.h"
 
 class SetNotValid : public OmButton<ValidationGroup> {
@@ -25,7 +25,7 @@ private:
 			return;
 		}
 
-		OmSegmentValidateAction::Validate(sdw, false);
+		OmActions::ValidateSegment(sdw, false);
 
 		OmEvents::SegmentModified();
 	}

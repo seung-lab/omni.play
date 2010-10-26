@@ -5,7 +5,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
-#include "actions/omSegmentSplitAction.h"
+#include "actions/omActions.hpp"
 
 class OmMouseEventPress{
 private:
@@ -53,14 +53,13 @@ public:
 private:
 	void doFindAndSplitSegment(QMouseEvent* event)
 	{
-		SegmentDataWrapper * sdw = getSelectedSegment(event);
+		SegmentDataWrapper* sdw = getSelectedSegment(event);
 
 		if(NULL == sdw) {
 			return;
 		}
 
-		OmSegmentSplitAction::DoFindAndSplitSegment(*sdw,
-													state_->getViewGroupState());
+		OmActions::FindAndSplitSegments(*sdw, state_->getViewGroupState());
 	}
 	void mouseSetCrosshair(QMouseEvent * event)
 	{

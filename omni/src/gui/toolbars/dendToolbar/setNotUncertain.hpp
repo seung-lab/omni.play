@@ -4,7 +4,7 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/validationGroup.h"
 #include "gui/widgets/omButton.h"
-#include "actions/omSegmentUncertainAction.h"
+#include "actions/omActions.hpp"
 #include "system/omEvents.h"
 
 class SetNotUncertain : public OmButton<ValidationGroup> {
@@ -25,7 +25,7 @@ private:
 			return;
 		}
 
-		OmSegmentUncertainAction::SetUncertain(sdw, false);
+		OmActions::UncertainSegment(sdw, false);
 
 		OmEvents::SegmentModified();
 	}

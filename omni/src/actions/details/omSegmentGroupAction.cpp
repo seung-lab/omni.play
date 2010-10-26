@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentGroupAction.h"
-#include "actions/omSegmentGroupActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentGroupAction.h"
+#include "actions/details/omSegmentGroupActionImpl.hpp"
 
 OmSegmentGroupAction::OmSegmentGroupAction(const OmID segmentationId,
 										   const OmSegIDsSet& selectedSegmentIds,

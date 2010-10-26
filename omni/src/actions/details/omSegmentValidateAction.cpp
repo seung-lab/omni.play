@@ -1,6 +1,6 @@
-#include "datalayer/fs/omActionLoggerFS.h"
-#include "actions/omSegmentValidateAction.h"
-#include "actions/omSegmentValidateActionImpl.hpp"
+#include "actions/io/omActionLoggerFS.h"
+#include "actions/details/omSegmentValidateAction.h"
+#include "actions/details/omSegmentValidateActionImpl.hpp"
 
 void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 									   const bool valid)

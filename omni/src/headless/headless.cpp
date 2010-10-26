@@ -7,7 +7,7 @@
 #include "headless/headless.h"
 #include "gui/recentFileList.h"
 #include "project/omProject.h"
-#include "actions/omProjectSaveAction.h"
+#include "actions/omActions.hpp"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"

@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
-#include "datalayer/fs/omActionLoggerFS.h"
+#include "actions/io/omActionLoggerFS.h"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"

@@ -2,7 +2,7 @@
 #define OM_SEGMENT_JOIN_ACTION_IMPL_HPP
 
 #include "common/omCommon.h"
-#include "datalayer/fs/omActionLoggerFS.h"
+#include "actions/io/omActionLoggerFS.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "utility/dataWrappers.h"

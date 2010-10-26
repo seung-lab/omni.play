@@ -1,17 +1,17 @@
-#include "utility/dataWrappers.h"
-#include "datalayer/fs/omActionLoggerFS.h"
+#include "actions/io/omActionLoggerFS.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
-#include "volume/omSegmentation.h"
 #include "segment/omSegment.h"
+#include "utility/dataWrappers.h"
+#include "volume/omSegmentation.h"
 
-#include "actions/omSegmentGroupActionImpl.hpp"
-#include "actions/omSegmentJoinActionImpl.hpp"
-#include "actions/omSegmentSelectActionImpl.hpp"
-#include "actions/omSegmentSplitActionImpl.hpp"
-#include "actions/omSegmentValidateActionImpl.hpp"
-#include "actions/omSegmentUncertainActionImpl.hpp"
-#include "actions/omSegmentationThresholdChangeActionImpl.hpp"
-#include "actions/omVoxelSetValueActionImpl.hpp"
+#include "actions/details/omSegmentGroupActionImpl.hpp"
+#include "actions/details/omSegmentJoinActionImpl.hpp"
+#include "actions/details/omSegmentSelectActionImpl.hpp"
+#include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentValidateActionImpl.hpp"
+#include "actions/details/omSegmentUncertainActionImpl.hpp"
+#include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
+#include "actions/details/omVoxelSetValueActionImpl.hpp"
 
 QDir& OmActionLoggerFS::doGetLogFolder()
 {
