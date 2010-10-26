@@ -184,6 +184,7 @@ HEADERS += lib/strnatcmp.h \
            src/actions/omSegmentGroupAction.h \
            src/actions/omSegmentSelectAction.h \
            src/actions/omSegmentSplitAction.h \
+           src/actions/omProjectSaveActionImpl.hpp \
            src/actions/omSegmentGroupActionImpl.hpp \
            src/actions/omSegmentJoinActionImpl.hpp \
            src/actions/omSegmentSelectActionImpl.hpp \
