@@ -1,12 +1,10 @@
 #include "utility/dataWrappers.h"
 #include "filObjectInspector.h"
 #include "common/omDebug.h"
-#include "system/omEventManager.h"
-#include "system/events/omViewEvent.h"
+#include "system/omEvents.h"
 
-#include <boost/make_shared.hpp>
-
-FilObjectInspector::FilObjectInspector(QWidget * parent, const FilterDataWrapper & fdw )
+FilObjectInspector::FilObjectInspector(QWidget * parent,
+									   const FilterDataWrapper & fdw )
  : QWidget(parent)
 {
 	mFDW = boost::make_shared<FilterDataWrapper>(fdw);
@@ -48,7 +46,7 @@ void FilObjectInspector::setFilAlpha(int alpha)
 		if( channel.IsFilterValid( mFilterID ) ){
 			////debug(filter, "setting alpha\n");
 			channel.GetFilter( mFilterID).SetAlpha((double)alpha / 100.00);
-			OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::REDRAW));
+			OmEvents::Redraw();
  		}
 	}
 }

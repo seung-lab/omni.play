@@ -11,6 +11,7 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/strong_typedef.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/tr1/unordered_set.hpp>
@@ -20,19 +21,25 @@
 #include "common/omException.h"
 #include <cassert>
 
-typedef struct {
+
+/**
+ * color structs
+ *
+ **/
+struct OmColor {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
-} OmColor;
+};
+std::ostream& operator<<(std::ostream &out, const OmColor& c);
 
-typedef struct {
+struct OmColorRGBA {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
 	uint8_t alpha;
-} OmColorRGBA;
-
+};
+std::ostream& operator<<(std::ostream &out, const OmColorRGBA& c);
 
 
 /**
@@ -57,8 +64,8 @@ typedef vmml::AxisAlignedBoundingBox<float> SpaceBbox;
  * "system" types
  */
 //id typedefs
-typedef uint32_t OmId;
-typedef boost::unordered_set< OmId > OmIDsSet;
+typedef uint32_t OmID;
+typedef boost::unordered_set< OmID > OmIDsSet;
 
 //bit field
 typedef unsigned int OmBitfield;
@@ -75,14 +82,25 @@ enum ObjectType { CHANNEL, SEGMENTATION };
  */
 typedef uint32_t OmSegID;
 typedef std::set<OmSegID> OmSegIDsSet;
-typedef std::vector<OmSegID> OmSegIDsList;
+typedef std::deque<OmSegID> OmSegIDsList;
+typedef uint32_t PageNum;
+
+
+/**
+ * GUI segment list types
+ */
+namespace om {
+	// WARNING: used for serialization by OmSegmentPage
+	enum OmSegListType {WORKING = 0,
+						VALID = 1,
+						UNCERTAIN = 2};
+};
 
 
 /**
  * "group" types
  */
-typedef quint32 OmGroupID;
-enum OmSegIDRootType {NOTVALIDROOT, VALIDROOT, RECENTROOT, GROUPROOT};
+typedef uint32_t OmGroupID;
 typedef QString OmGroupName;
 typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 
@@ -90,7 +108,6 @@ typedef boost::unordered_set<OmGroupID> OmGroupIDsSet;
 /**
  * System-state related
  **/
-enum OmSlicePlane { SLICE_XY_PLANE, SLICE_XZ_PLANE, SLICE_YZ_PLANE };
 enum OmToolMode { SELECT_MODE,
 				  PAN_MODE,
 				  CROSSHAIR_MODE,

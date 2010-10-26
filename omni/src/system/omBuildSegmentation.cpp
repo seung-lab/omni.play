@@ -1,13 +1,11 @@
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "system/omEvents.h"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildSegmentation.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationThresholdChangeAction.h"
-
-#include <QTextStream>
+#include "actions/omSegmentationThresholdChangeAction.h"
 
 OmBuildSegmentation::OmBuildSegmentation(OmSegmentation * seg)
 {
@@ -102,7 +100,7 @@ void OmBuildSegmentation::loadDendrogram()
 	startTiming(type, build_timer);
 
 	const QString fname = mFileNamesAndPaths.at(0).filePath();
-	mSeg->mst_->import(*mSeg, fname.toStdString());
+	mSeg->mst_->import(fname.toStdString());
 
 	stopTimingAndSave(type, build_timer);
 }

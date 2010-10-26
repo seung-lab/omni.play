@@ -5,9 +5,10 @@
 #include "project/omProject.h"
 #include "system/omLocalPreferences.h"
 #include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
+#include "view3d/om3dPreferences.hpp"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omChannel.h"
 #include "zi/omUtility.h"
 
@@ -41,7 +42,7 @@ void OmViewBoxWidget::Draw()
 	//set line width
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-	if (OmLocalPreferences::get2DViewFrameIn3D()){
+	if (Om3dPreferences::get2DViewFrameIn3D()){
 		drawChannelData(XY_VIEW,
 						OmStateManager::GetViewDrawable(XY_VIEW));
 		drawSlice(XY_VIEW,
@@ -64,7 +65,7 @@ void OmViewBoxWidget::Draw()
 				  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
 	}
 
-	if (OmLocalPreferences::getDrawCrosshairsIn3D()){
+	if(Om3dPreferences::getDrawCrosshairsIn3D()){
 		drawLines(mViewGroupState->GetViewDepthCoord());
 	}
 
@@ -89,7 +90,7 @@ void OmViewBoxWidget::drawLines(SpaceCoord depth)
 {
 	SpaceCoord v0, v1;
 
-	float distance = ((float)OmLocalPreferences::getCrosshairValue())/10.0;
+	float distance = ((float)Om3dPreferences::getCrosshairValue())/10.0;
 
 	glColor3fv(OMGL_BLUE);
 	v0 = SpaceCoord(depth.x, depth.y, depth.z-distance);
@@ -156,7 +157,7 @@ void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < 
 void OmViewBoxWidget::drawChannelData(ViewType plane,
 									  std::vector<OmTilePtr> drawables)
 {
-	if(!OmLocalPreferences::get2DViewPaneIn3D() ||
+	if(!Om3dPreferences::get2DViewPaneIn3D() ||
 	   !OmProject::IsChannelValid(1)) {
 		return;
 	}

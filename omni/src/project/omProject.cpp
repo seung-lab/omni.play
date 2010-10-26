@@ -8,10 +8,10 @@
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/omIDataWriter.h"
 #include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "actions/omProjectSaveAction.h"
+#include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
-#include "system/omEventManager.h"
+#include "system/events/omEventManager.h"
 #include "system/omGarbage.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -24,7 +24,6 @@
 
 #include <QDir>
 #include <QFile>
-#include <QFileInfo>
 
 //init instance pointer
 OmProject *OmProject::mspInstance = 0;
@@ -65,15 +64,14 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 		fileNameAndPath.append(".omni");
 	}
 
-	QFileInfo fileInfo( fileNameAndPath );
-	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.absolutePath();
+	Instance()->projectFileNameAndPath_ = QFileInfo(fileNameAndPath);
 
-	QDir dir(Instance()->mDirectoryPath);
+	const QString dirStr = Instance()->projectFileNameAndPath_.absolutePath();
+	QDir dir(dirStr);
 	if( !dir.exists() ){
-		if( !dir.mkpath(Instance()->mDirectoryPath) ){
-			QString err = "could not make path " + Instance()->mDirectoryPath;
-			throw OmIoException( qPrintable(err) );
+		if( !dir.mkpath(dirStr) ){
+			const QString err = "could not make path " + dirStr;
+			throw OmIoException(err.toStdString());
 		}
 	}
 
@@ -85,7 +83,7 @@ QString OmProject::New(const QString& fileNameAndPathIn)
 
 	Save();
 
-	return fileInfo.absoluteFilePath();
+	return Instance()->projectFileNameAndPath_.absoluteFilePath();
 }
 
 void OmProject::Save()
@@ -96,9 +94,8 @@ void OmProject::Save()
 
 	//TODO: move this into omProjectData?
 
-	foreach( const OmId & segID, OmProject::GetValidSegmentationIds() ){
-		OmProject::GetSegmentation( segID ).FlushDirtySegments();
-		OmProject::GetSegmentation( segID ).FlushDendUserEdges();
+	foreach( const OmID & segID, OmProject::GetValidSegmentationIds() ){
+		OmProject::GetSegmentation( segID ).Flush();
 	}
 
 	OmDataArchiveProject::ArchiveWrite(OmDataPaths::getProjectArchiveNameQT(),
@@ -117,11 +114,9 @@ void OmProject::Commit()
 
 void OmProject::Load(const QString& fileNameAndPath)
 {
-	QFileInfo fileInfo( fileNameAndPath );
-	Instance()->mFileName = fileInfo.fileName();
-	Instance()->mDirectoryPath = fileInfo.absolutePath();
+	Instance()->projectFileNameAndPath_ = QFileInfo(fileNameAndPath);
 
-	QFile projectFile( fileNameAndPath );
+	QFile projectFile(Instance()->projectFileNameAndPath_.absoluteFilePath());
 	if( !projectFile.exists() ){
 		QString err = "Project file not found at \"" + fileNameAndPath + "\"";
 		throw OmIoException( qPrintable( err ));
@@ -150,7 +145,7 @@ void OmProject::Close()
 
 	//delete all singletons
 	OmMeshSegmentList::Delete();
-	OmSegmentEditor::Delete();
+	OmSegmentSelected::Delete();
 	OmEventManager::Delete();
 	OmGarbage::Delete();
 	OmPreferences::Delete();
@@ -167,7 +162,7 @@ void OmProject::Close()
 /////////////////////////////////
 ///////          Channel Manager Method
 
-OmChannel & OmProject::GetChannel(const OmId id)
+OmChannel & OmProject::GetChannel(const OmID id)
 {
 	return Instance()->mChannelManager.Get(id);
 }
@@ -179,7 +174,7 @@ OmChannel & OmProject::AddChannel()
 	return r_channel;
 }
 
-void OmProject::RemoveChannel(const OmId id)
+void OmProject::RemoveChannel(const OmID id)
 {
 	GetChannel(id).CloseDownThreads();
 
@@ -192,7 +187,7 @@ void OmProject::RemoveChannel(const OmId id)
 	(new OmProjectSaveAction())->Run();
 }
 
-bool OmProject::IsChannelValid(const OmId id)
+bool OmProject::IsChannelValid(const OmID id)
 {
 	return Instance()->mChannelManager.IsValid(id);
 }
@@ -202,12 +197,12 @@ const OmIDsSet & OmProject::GetValidChannelIds()
 	return Instance()->mChannelManager.GetValidIds();
 }
 
-bool OmProject::IsChannelEnabled(const OmId id)
+bool OmProject::IsChannelEnabled(const OmID id)
 {
 	return Instance()->mChannelManager.IsEnabled(id);
 }
 
-void OmProject::SetChannelEnabled(const OmId id, bool enable)
+void OmProject::SetChannelEnabled(const OmID id, bool enable)
 {
 	Instance()->mChannelManager.SetEnabled(id, enable);
 }
@@ -215,7 +210,7 @@ void OmProject::SetChannelEnabled(const OmId id, bool enable)
 /////////////////////////////////
 ///////          Segmentation Manager Method
 
-OmSegmentation & OmProject::GetSegmentation(const OmId id)
+OmSegmentation & OmProject::GetSegmentation(const OmID id)
 {
 	return Instance()->mSegmentationManager.Get(id);
 }
@@ -227,11 +222,11 @@ OmSegmentation & OmProject::AddSegmentation()
 	return r_segmentation;
 }
 
-void OmProject::RemoveSegmentation(const OmId id)
+void OmProject::RemoveSegmentation(const OmID id)
 {
-	foreach( OmId channelID, OmProject::GetValidChannelIds()) {
+	foreach( OmID channelID, OmProject::GetValidChannelIds()) {
 		OmChannel & channel = OmProject::GetChannel(channelID);
-		foreach( OmId filterID, channel.GetValidFilterIds()) {
+		foreach( OmID filterID, channel.GetValidFilterIds()) {
 			OmFilter2d &filter = channel.GetFilter(filterID);
 			if (filter.GetSegmentation() == id){
 				filter.SetSegmentation(0);
@@ -250,7 +245,7 @@ void OmProject::RemoveSegmentation(const OmId id)
 	(new OmProjectSaveAction())->Run();
 }
 
-bool OmProject::IsSegmentationValid(const OmId id)
+bool OmProject::IsSegmentationValid(const OmID id)
 {
 	return Instance()->mSegmentationManager.IsValid(id);
 }
@@ -260,12 +255,12 @@ const OmIDsSet & OmProject::GetValidSegmentationIds()
 	return Instance()->mSegmentationManager.GetValidIds();
 }
 
-bool OmProject::IsSegmentationEnabled(const OmId id)
+bool OmProject::IsSegmentationEnabled(const OmID id)
 {
 	return Instance()->mSegmentationManager.IsEnabled(id);
 }
 
-void OmProject::SetSegmentationEnabled(const OmId id, const bool enable)
+void OmProject::SetSegmentationEnabled(const OmID id, const bool enable)
 {
 	Instance()->mSegmentationManager.SetEnabled(id, enable);
 }

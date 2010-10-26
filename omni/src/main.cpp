@@ -1,10 +1,12 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_bool(tests, false, "run tests");
+ZiARG_bool(segments, false, "run segments tests");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
 ZiARG_bool(perf, false, "enable performance tests");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
+ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);
@@ -13,13 +15,14 @@ DEFINE_ZiLOG(mesh, false );
 DEFINE_ZiLOG(hdf5verbose, false );
 DEFINE_ZiLOG(io, false);
 DEFINE_ZiLOG(segmentlist, false);
-DEFINE_ZiLOG(tiles, true);
+DEFINE_ZiLOG(tiles, false);
 DEFINE_ZiLOG(tilesVerbose, false);
 DEFINE_ZiLOG(threadpool, false);
 
-#include "headless/headless.h"
-#include "system/omStateManager.h"
 #include "gui/mainwindow.h"
+#include "headless/headless.h"
+#include "headless/headlessImpl.hpp"
+#include "system/omStateManager.h"
 #include "tests/tests.hpp"
 
 #include <QApplication>
@@ -43,6 +46,10 @@ public:
 		setOmniExecutablePath();
 
 		OmStateManager::setNoTilePrefetch(ZiARG_noTilePrefetch);
+
+		if(ZiARG_importHDF5seg.size() > 0){
+			return importHDF5seg();
+		}
 
 		if(ZiARG_tests){
 			return runTests();
@@ -130,6 +137,13 @@ private:
 		}
 
 		return "";
+	}
+
+	int importHDF5seg()
+	{
+		HeadlessImpl::importHDF5seg(ZiARG_importHDF5seg);
+		OmProject::Close();
+		return 0;
 	}
 };
 

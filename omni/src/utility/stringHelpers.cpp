@@ -23,7 +23,7 @@ QString StringHelpers::getStringFromIDset( const OmIDsSet & data_set )
 	}
 
 	QStringList strs;
-	foreach( OmId val, data_set ){
+	foreach( OmID val, data_set ){
 		strs << QString::number( val );
 	}
 

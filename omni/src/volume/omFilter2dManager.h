@@ -15,10 +15,10 @@ public:
 	OmFilter2dManager();
 	
 	OmFilter2d& AddFilter();
-	OmFilter2d& GetFilter(OmId id);
+	OmFilter2d& GetFilter(OmID id);
 	const OmIDsSet & GetValidFilterIds();
-	bool IsFilterEnabled(OmId id);
-	bool IsFilterValid(OmId id);
+	bool IsFilterEnabled(OmID id);
+	bool IsFilterValid(OmID id);
 
 	
 	//properties?

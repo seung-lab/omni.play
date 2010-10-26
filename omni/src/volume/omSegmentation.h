@@ -20,11 +20,12 @@ class OmSegmentCache;
 class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
+class SegmentationDataWrapper;
 
 class OmSegmentation : public OmMipVolume, public OmManageableObject {
 public:
 	OmSegmentation();
-	OmSegmentation(OmId id);
+	OmSegmentation(OmID id);
 	~OmSegmentation();
 
 	boost::shared_ptr<OmVolumeData> getVolData();
@@ -33,12 +34,15 @@ public:
 	std::string GetDirectoryPath();
 	void loadVolData();
 	ObjectType getVolumeType(){ return SEGMENTATION; }
-	OmId getID(){ return GetID(); }
+	OmID getID(){ return GetID(); }
 	OmMipVolumeCache* getDataCache(){ return mDataCache; }
 	int GetBytesPerSample() const;
 
+	SegmentationDataWrapper getSDW() const;
+
 	void CloseDownThreads();
 
+	void Flush();
 	void BuildVolumeData();
 	void Mesh();
 	void MeshChunk(const OmMipChunkCoord& coord);
@@ -57,24 +61,22 @@ public:
 
 	//group management
 	boost::shared_ptr<OmGroups> GetGroups(){ return mGroups; }
- 	void SetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
-	void UnsetGroup(const OmSegIDsSet&, OmSegIDRootType, OmGroupName);
 
-	void FlushDirtySegments();
-	void FlushDend();
-	void FlushDendUserEdges();
-	void SetDendThreshold( float t );
-	void SetDendThresholdAndReload( const float t );
-	float GetDendThreshold();
+	void SetDendThreshold( double t );
+	double GetDendThreshold();
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
 
-	Vector3i FindCenterOfSelectedSegments() const;
+	DataCoord FindCenterOfSelectedSegments() const;
 
 	bool ImportSourceData(const OmDataPath& path);
 
 	void SetVolDataType(const OmVolDataType);
+
+	boost::shared_ptr<std::set<OmSegment*> >
+	GetAllChildrenSegments(const OmSegIDsSet& set);
+
 
 protected:
 	virtual void doBuildThreadedVolume();
@@ -91,7 +93,8 @@ private:
 	boost::shared_ptr<OmMST> mst_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
-	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &);
+	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
+								   const bool rerootSegments);
 
 	friend class OmBuildSegmentation;
 	template <class T> friend class OmVolumeImporter;
@@ -101,6 +104,7 @@ private:
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
 	friend class OmSegmentationChunkBuildTask;
+	friend class SegmentTests;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);

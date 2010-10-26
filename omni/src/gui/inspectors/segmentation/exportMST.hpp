@@ -1,7 +1,7 @@
 #ifndef EXPORT_MST_HPP
 #define EXPORT_MST_HPP
 
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "gui/widgets/omButton.h"
 #include "segment/omSegmentCache.h"
@@ -39,12 +39,7 @@ private:
 			mParent->getSegmentationDataWrapper();
 		OmSegmentCache* segmentCache = sdw->getSegmentCache();
 		boost::shared_ptr<OmMST> mst = sdw->getSegmentation().getMST();
-
-		const int numEdges = mst->mDendCount;
-		quint32* nodes    = mst->mDend->getPtr<unsigned int>();
-		float* thresholds = mst->mDendValues->getPtr<float>();
-		uint8_t* edgeDisabledByUser = mst->mEdgeDisabledByUser->getPtr<uint8_t>();
-		uint8_t* edgeForceJoin = mst->mEdgeForceJoin->getPtr<uint8_t>();
+		OmMSTEdge* edges = mst->Edges();
 
 		QStringList headerLabels;
 		headerLabels << "Edge" << "segID1" << "segID2" << "threshold"
@@ -52,22 +47,16 @@ private:
 		out << headerLabels.join(",");
 		out << "\n";
 
-		for( int i = 0; i < numEdges; ++i){
-			const OmSegID node1ID  = nodes[i];
-			const OmSegID node2ID  = nodes[i + numEdges ];
-			const float threshold  = thresholds[i];
-			const bool userSplit = edgeDisabledByUser[i];
-			const bool userJoined = edgeForceJoin[i];
-
-			OmSegment* node1 = segmentCache->GetSegment(node1ID);
-			OmSegment* node2 = segmentCache->GetSegment(node2ID);
+		for(uint32_t i = 0; i < mst->NumEdges(); ++i){
+			OmSegment* node1 = segmentCache->GetSegment(edges[i].node1ID);
+			OmSegment* node2 = segmentCache->GetSegment(edges[i].node2ID);
 
 			out << i << ",";
-			out << node1ID << ",";
-			out << node2ID << ",";
-			out << threshold << ",";
-			out << userJoined << ",";
-			out << userSplit << ",";
+			out << edges[i].node1ID << ",";
+			out << edges[i].node2ID << ",";
+			out << edges[i].threshold << ",";
+			out << edges[i].userJoin << ",";
+			out << edges[i].userSplit << ",";
 			out << node1->getSize() << ",";
 			out << node2->getSize();
 			out << "\n";

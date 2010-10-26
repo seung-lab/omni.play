@@ -77,8 +77,8 @@ void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::it
 	}
 }
 
-OmSegIDsListWithPage *
-OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const int numToGet, const OmSegID startSeg)
+boost::shared_ptr<OmSegIDsListWithPage>
+OmSegmentListBySize::getPageOfSegmentIDs( const unsigned int offset, const int numToGet, const OmSegID startSeg)
 {
 	OmSegIDsList ret = OmSegIDsList();
 
@@ -105,7 +105,7 @@ OmSegmentListBySize::getAPageWorthOfSegmentIDs( const unsigned int offset, const
 		ret.push_back( iterSize->segID );
 	}
 
-	return new OmSegIDsListWithPage(ret, page);
+	return boost::make_shared<OmSegIDsListWithPage>(ret, page);
 }
 
 quint64 OmSegmentListBySize::getSegmentSize( OmSegment * seg )

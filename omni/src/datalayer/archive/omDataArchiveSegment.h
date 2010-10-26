@@ -5,35 +5,28 @@
 
 class OmDataPath;
 class OmSegment;
-class OmSegmentCache;
 class OmSegmentPage;
+class OmSegmentDataV2;
 
 class OmDataArchiveSegment{
 public:
 	static void ArchiveRead(const OmDataPath&,
-							OmSegmentPage&,
-							OmSegmentCache*,
-							const om::RewriteSegments rewriteSegments);
-
-	static void ArchiveWrite(const OmDataPath&,
-							 const OmSegmentPage&,
-							 OmSegmentCache*);
+							OmSegmentDataV2*,
+							const uint32_t pageSize);
 
 private:
 	OmDataArchiveSegment(const OmDataPath&,
-						 OmSegmentPage&,
-						 OmSegmentCache*);
+						 OmSegmentDataV2*,
+						 const uint32_t pageSize);
 
 	const OmDataPath& path_;
-	OmSegmentPage& page_;
-	OmSegmentCache* cache_;
+	OmSegmentDataV2* page_;
+	const uint32_t pageSize_;
 	const int omniFileVersion_;
-
-	OmDataWrapperPtr dw_;
 	int size_;
+	OmDataWrapperPtr dw_;
 
-	void archiveRead(const om::RewriteSegments rewriteSegments);
-	void archiveWrite();
+	void archiveRead();
 
 	bool readSegmentsOld(const bool overrideVersion);
 	void attemptOldSegmentRead();

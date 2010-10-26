@@ -38,14 +38,15 @@ public:
 	virtual void loadVolData() = 0;
 	virtual boost::shared_ptr<OmVolumeData> getVolData() = 0;
 	virtual ObjectType getVolumeType() = 0;
-	virtual OmId getID() = 0;
+	virtual OmID getID() = 0;
 	virtual OmMipVolumeCache* getDataCache() = 0;
 
 	inline bool IsVolumeReadyForDisplay(){
 		return MIPVOL_UNBUILT != mBuildState;
 	}
 
-	void ExportInternalData(const QString& fileNameAndPath);
+	void ExportInternalData(const QString& fileNameAndPath,
+							const bool rerootSegments);
 
 	std::string MipLevelInternalDataPath(const int level);
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
@@ -72,6 +73,10 @@ public:
 	int GetRootMipLevel();
 	Vector3i MipLevelDataDimensions(int) const;
 	Vector3i MipLevelDimensionsInMipChunks(int level);
+
+	SpaceCoord DataToSpaceCoord(const DataCoord& dataCoord){
+		return NormToSpaceCoord(DataToNormCoord(dataCoord));
+	}
 
 	/*
 	 *	Returns MipChunkCoord containing given data coordinate for given MipLevel
@@ -148,12 +153,13 @@ public:
 
 	virtual void SetVolDataType(const OmVolDataType) = 0;
 
-	uint64_t ComputeChunkPtrOffset(const OmMipChunkCoord& coord) const;
+	uint64_t ComputeChunkPtrOffsetBytes(const OmMipChunkCoord& coord) const;
 
 protected:
 	OmVolDataType mVolDataType;
 
-	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&)=0;
+	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&,
+										   const bool rerootSegments) = 0;
 
 	void BuildBlankVolume(const Vector3i & dims);
 

@@ -2,7 +2,6 @@
 #define OM_SEGEMNT_COLORIZER_H
 
 #include "common/omCommon.h"
-
 #include "zi/omMutex.h"
 
 typedef struct {
@@ -16,26 +15,19 @@ class OmSegment;
 
 class OmSegmentColorizer
 {
- public:
+public:
 	OmSegmentColorizer( OmSegmentCache*,
-			    const OmSegmentColorCacheType,
-			    const Vector2i& dims);
+						const OmSegmentColorCacheType,
+						const Vector2i& dims);
 
-	boost::shared_ptr<OmColorRGBA> colorTile(boost::shared_ptr<uint32_t>);
+	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*const imageData);
 
-	void setCurBreakThreshhold( const float t ) {
-		mPrevBreakThreshhold = mCurBreakThreshhold;
-		mCurBreakThreshhold = t;
-	}
-
- private:
+private:
 	zi::rwmutex mMapResizeMutex;
 
 	OmSegmentCache* mSegmentCache;
 	const OmSegmentColorCacheType mSccType;
 	OmSegID mSize;
-	float mCurBreakThreshhold;
-	float mPrevBreakThreshhold;
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
 	int mCurSegCacheFreshness;
@@ -46,18 +38,38 @@ class OmSegmentColorizer
 
 	OmColor getVoxelColorForView2d(const OmSegID val);
 
-	inline int makeSelectedColor(const quint8 in_c) {
-		static const double selectedSegColorFactor = 2.5;
-		const int c = static_cast<int>((double)in_c * selectedSegColorFactor);
-		if (c > 255) {
-			return 255;
-		}
-		return c;
+	static const std::vector<uint8_t> selectedColorLookup_;
+
+	static inline OmColor makeSelectedColor(const OmColor& color)
+	{
+		const OmColor ret = {selectedColorLookup_[color.red],
+							 selectedColorLookup_[color.green],
+							 selectedColorLookup_[color.blue]};
+		return ret;
 	}
 
-	void doColorTile(uint32_t*, OmColorRGBA*);
+	static inline uint8_t makeSelectedColor(const uint8_t val)
+	{
+		static const double selectedSegColorFactor = 2.5;
 
-	struct segment_colorizer_mutex_pool_tag;
+		return val > 101 ? 255 : val * selectedSegColorFactor;
+	}
+
+	static std::vector<uint8_t> makeLookupTable()
+	{
+		std::vector<uint8_t> ret(256, 0);
+		for(int i = 0; i < 256; ++i){
+			ret[i] = makeSelectedColor(i);
+		}
+		return ret;
+	}
+
+	void doColorTile(uint32_t const*, OmColorRGBA*);
+
+	struct colorizer_mutex_pool_tag;
+	typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard mutex_guard_t;
+
+	friend class SegmentTests;
 };
 
 #endif

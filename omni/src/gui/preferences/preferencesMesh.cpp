@@ -1,7 +1,4 @@
 #include "preferencesMesh.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "common/omDebug.h"
@@ -79,19 +76,19 @@ void PreferencesMesh::on_tdpSlider_valueChanged()
 {
 	tdpSliderLabel->setNum(tdpSlider->value());
 	OmPreferences::SetFloat(om::PREF_MESH_REDUCTION_PERCENT_FLT, tdpSlider->value());
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+	OmEvents::View3dPreferenceChange();
 }
 
 void PreferencesMesh::on_pasSlider_valueChanged()
 {
 	pasSliderLabel->setNum(pasSlider->value());
 	OmPreferences::SetFloat(om::PREF_MESH_PRESERVED_SHARP_ANGLE_FLT, pasSlider->value());
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+	OmEvents::View3dPreferenceChange();
 }
 
 void PreferencesMesh::on_nsSlider_valueChanged()
 {
 	nsSliderLabel->setNum(nsSlider->value());
 	OmPreferences::SetInteger(om::PREF_MESH_NUM_SMOOTHING_ITERS_INT, nsSlider->value());
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+	OmEvents::View3dPreferenceChange();
 }

@@ -1,6 +1,6 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
+#include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
 #include "tiles/cache/omTileCache.h"
@@ -10,7 +10,7 @@
 #include "view2d/omLineDraw.hpp"
 #include "view2d/omView2dState.hpp"
 #include "volume/omSegmentation.h"
-#include "volume/omVoxelSetValueAction.h"
+#include "actions/omVoxelSetValueAction.h"
 
 OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 					   const ViewType vt)
@@ -22,18 +22,23 @@ OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 	mEditedSegmentation = 0;
 }
 
+void OmLineDraw::DrawLine(const DataCoord& /*startPoint*/,
+						  const DataCoord& /*endPoint*/)
+{
+}
+
 void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 								   const DataCoord & second,
 								   bool doselection)
 {
 	//store current selection
-	SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
+	SegmentDataWrapper sdw = OmSegmentSelected::Get();
 
 	//return if not valid
-	if (!sdw.isValid())
+	if (!sdw.isValidWrapper())
 		return;
 
-	const OmId segmentation_id = sdw.getSegmentationID();
+	const OmID segmentation_id = sdw.getSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;
@@ -205,7 +210,7 @@ void OmLineDraw::PickToolAddToSelection( OmSegmentSelector & sel,
 	}
 }
 
-void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
+void OmLineDraw::BrushToolApplyPaint(OmID segid, DataCoord gDC, OmSegID seg)
 {
 	boost::shared_ptr<OmBrushSize>& brushSize = state_->getBrushSize();
 
@@ -244,11 +249,11 @@ void OmLineDraw::BrushToolApplyPaint(OmId segid, DataCoord gDC, OmSegID seg)
 	}
 }
 
-void OmLineDraw::FillToolFill(OmId seg, DataCoord gCP, OmSegID fc,
+void OmLineDraw::FillToolFill(OmID seg, DataCoord gCP, OmSegID fc,
 							  OmSegID bc, int depth)
 {
 	OmSegmentation & segmentation = OmProject::GetSegmentation(seg);
-	OmId segid = segmentation.GetVoxelValue(gCP);
+	OmID segid = segmentation.GetVoxelValue(gCP);
 
 	if (!segid) {
 		return;

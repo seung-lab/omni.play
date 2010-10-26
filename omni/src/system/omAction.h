@@ -20,7 +20,6 @@ protected:
 	virtual void UndoAction() = 0;
 	virtual std::string Description() = 0;
 	virtual void save(const std::string&) = 0;
-	virtual QString classNameForLogFile() = 0;
 
 	bool mUndoable;
 

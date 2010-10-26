@@ -8,7 +8,7 @@
 #include "tiles/omTileDumper.hpp"
 #include "volume/omMipVolume.h"
 
-OmTileDumper::OmTileDumper(const OmId volID, const ObjectType type,
+OmTileDumper::OmTileDumper(const OmID volID, const ObjectType type,
 						   const QString& dumpfile,
 						   OmViewGroupState* vgs)
 	: dumpfile_(dumpfile)
@@ -72,7 +72,7 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel,
 	OmProjectData::getTileCache()->doGet(tile, tileCoord, om::BLOCKING);
 
 	const char* tileData = (const char*)tile->GetTexture()->getTileData();
-	const int numBytes = tile->GetTexture()->getNumBytes();
+	const int numBytes = tile->GetTexture()->NumBytes();
 
 	out.writeBytes(tileData, numBytes);
 }

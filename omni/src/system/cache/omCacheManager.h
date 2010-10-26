@@ -15,7 +15,7 @@ class OmCacheInfo;
 class OmPreferenceEvent;
 class OmTileCache;
 
-class OmCacheManager : boost::noncopyable {
+class OmCacheManager : private om::singletonBase<OmCacheManager> {
 public:
 	static QList<OmCacheInfo> GetCacheInfo(const OmCacheGroupEnum group);
 	static void AddCache(const OmCacheGroupEnum group, OmCacheBase *base);
@@ -26,22 +26,14 @@ public:
 	static void Delete();
 
 	static void TouchFresheness(){
-		Instance().freshness_.add(1);
+		instance().freshness_.add(1);
 	}
 	static uint64_t GetFreshness(){
-		return Instance().freshness_.get();
-	}
-
-	static boost::shared_ptr<OmCacheGroup>
-	GetCache(const OmCacheGroupEnum group) {
-		if(group == RAM_CACHE_GROUP){
-			return Instance().mRamCacheMap;
-		}
-		return Instance().mVramCacheMap;
+		return instance().freshness_.get();
 	}
 
 	static bool AmClosingDown(){
-		return Instance().amClosingDown.get();
+		return instance().amClosingDown.get();
 	}
 
 protected:
@@ -50,9 +42,6 @@ protected:
 private:
 	OmCacheManager();
 	~OmCacheManager(){}
-	static inline OmCacheManager& Instance(){
-		return zi::singleton<OmCacheManager>::instance();
-	}
 
 	boost::shared_ptr<OmCacheGroup> mRamCacheMap;
 	boost::shared_ptr<OmCacheGroup> mVramCacheMap;
@@ -63,6 +52,16 @@ private:
 
 	bool cacheManagerCleaner();
 	void setupCleanerThread();
+
+	inline static boost::shared_ptr<OmCacheGroup>
+	GetCache(const OmCacheGroupEnum group)
+	{
+		if(group == RAM_CACHE_GROUP){
+			return instance().mRamCacheMap;
+		}
+		return instance().mVramCacheMap;
+	}
+
  	friend class zi::singleton<OmCacheManager>;
 };
 

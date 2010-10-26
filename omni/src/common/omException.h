@@ -19,26 +19,18 @@ class OmException : public std::exception {
 public:
 	OmException(const std::string& name,
 				const std::string& msg)
-		: name_(name)
-		, message_(msg)
-		, fullMessage_()
+		: fullMessage_(name + ": " + msg)
 	{}
 
 	virtual ~OmException() throw() {}
 
 	virtual const char* what() const throw()
 	{
-		if(fullMessage_.empty()){
-			fullMessage_ = name_ + ": " + message_;
-		}
-
 		return fullMessage_.c_str();
 	}
 
 protected:
-	const std::string name_;
-	const std::string message_;
-	mutable std::string fullMessage_;
+	const std::string fullMessage_;
 };
 
 class OmAccessException : public OmException {
@@ -51,6 +43,11 @@ class OmArgException : public OmException {
 public:
 	OmArgException(const std::string& msg)
 		: OmException("OmArgException", msg) { }
+	OmArgException(const QString& str1,
+				   const QString& str2)
+		: OmException("OmArgException",
+					  QString(str1+" "+str2).toStdString())
+	{}
 };
 
 class OmFormatException : public OmException {
@@ -63,12 +60,23 @@ class OmIoException : public OmException {
 public:
 	OmIoException(const std::string& msg)
 		: OmException("OmIoException", msg) { }
+	OmIoException(const QString& str1,
+				  const QString& str2)
+		: OmException("OmIoException",
+					  QString(str1+" "+str2).toStdString())
+	{}
 };
 
 class OmModificationException : public OmException {
 public:
 	OmModificationException(const std::string& msg)
 		: OmException("OmModificationException", msg) { }
+};
+
+class OmVerifyException : public OmException {
+public:
+	OmVerifyException(const std::string& msg)
+		: OmException("OmVerifyException", msg) { }
 };
 
 #endif

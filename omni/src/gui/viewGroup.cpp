@@ -122,7 +122,7 @@ void ViewGroup::AddView3D()
 	delete(vgw);
 }
 
-void ViewGroup::AddView2Dchannel(const OmId chan_id, const ViewType vtype)
+void ViewGroup::AddView2Dchannel(const OmID chan_id, const ViewType vtype)
 {
 	OmChannel& chan = OmProject::GetChannel(chan_id);
 	const QString name = getViewName(chan.GetName(), vtype);
@@ -143,7 +143,7 @@ void ViewGroup::AddView2Dchannel(const OmId chan_id, const ViewType vtype)
 	View2dDockWidget::WireDockWithView2d(v2d, dockAndCompliment);
 }
 
-void ViewGroup::AddView2Dsegmentation(const OmId segmentation_id,
+void ViewGroup::AddView2Dsegmentation(const OmID segmentation_id,
 				      const ViewType vtype)
 {
 	OmSegmentation& seg = OmProject::GetSegmentation(segmentation_id);
@@ -320,7 +320,7 @@ QDockWidget* ViewGroup::insertByTabbing(ViewGroupWidgetInfo * vgw,
 	return dock;
 }
 
-void ViewGroup::AddAllViews(const OmId channelID, const OmId segmentationID)
+void ViewGroup::AddAllViews(const OmID channelID, const OmID segmentationID)
 {
 	foreach(QDockWidget* w, getAllDockWidgets() ){
 		delete w;

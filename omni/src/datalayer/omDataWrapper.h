@@ -137,11 +137,11 @@ private:
     static boost::shared_ptr<T> wrapRawPtr(T* rawPtr, const OmDataAllocType d){
         switch(d){
         case MALLOC:
-            return OmSmartPtr<T>::wrapMalloc(rawPtr);
+            return OmSmartPtr<T>::WrapMalloc(rawPtr);
         case NEW_ARRAY:
-            return OmSmartPtr<T>::wrapNewArray(rawPtr);
+            return OmSmartPtr<T>::WrapNewArray(rawPtr);
         case NONE:
-            return OmSmartPtr<T>::wrapNoFree(rawPtr);
+            return OmSmartPtr<T>::WrapNoFree(rawPtr);
         case INVALID:
 		default:
             throw OmArgException("can't wrap invalid ptr");

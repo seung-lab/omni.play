@@ -15,8 +15,8 @@ OpenViewGroupButton::OpenViewGroupButton(MainWindow * mw)
 
 void OpenViewGroupButton::doAction()
 {
-	const OmId channelID = 1;
-	const OmId segmentationID = 1;
+	const OmID channelID = 1;
+	const OmID segmentationID = 1;
 
 	mParent->getViewGroupState()->addAllViews( channelID, segmentationID );
 }

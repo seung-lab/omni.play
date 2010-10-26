@@ -25,7 +25,6 @@ public:
 	virtual ~OmThreadedCache();
 
 	//value accessors
-	virtual void Get(PTR&, const KEY&, const bool);
 	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
 	void Remove(const KEY &key);
 	int Clean();
@@ -62,6 +61,7 @@ private:
 
 	int RemoveOldest();
 	boost::shared_ptr<LockedList<OldCachePtr> > cachesToClean_;
+	void get(PTR&, const KEY&, const bool);
 
 	template <typename T1, typename T2> friend class HandleCacheMissThreaded;
 };

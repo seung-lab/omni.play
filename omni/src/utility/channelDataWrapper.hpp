@@ -10,16 +10,16 @@ class FilterDataWrapper;
 
 class ChannelDataWrapper {
 private:
-	OmId mID;
+	OmID mID;
 	ObjectType mType;
 public:
 	ChannelDataWrapper(){}
 
-	explicit ChannelDataWrapper(const OmId ID)
+	explicit ChannelDataWrapper(const OmID ID)
 		: mID(ID), mType(CHANNEL)
 	{}
 
-	OmId getID(){
+	OmID getID(){
 		return mID;
 	}
 
@@ -35,7 +35,7 @@ public:
 		return OmProject::GetChannel(mID).GetNote();
 	}
 
-	QHash<OmId, FilterDataWrapper> getAllFilterIDsAndNames();
+	QHash<OmID, FilterDataWrapper> getAllFilterIDsAndNames();
 };
 
 #endif

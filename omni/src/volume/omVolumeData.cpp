@@ -84,6 +84,19 @@ OmRawDataPtrs OmVolumeData::GetVolPtr(const int level)
 }
 
 
+class GetVolPtrTypeVisitor : public boost::static_visitor<OmRawDataPtrs>{
+public:
+	template <typename T>
+	OmRawDataPtrs operator()(T & d ) const {
+		return d.GetType();
+	}
+};
+OmRawDataPtrs OmVolumeData::GetVolPtrType()
+{
+	return boost::apply_visitor(GetVolPtrTypeVisitor(), volData_);
+}
+
+
 class DownsampleVisitor : public boost::static_visitor<>{
 public:
 	DownsampleVisitor(OmMipVolume* vol)
@@ -103,7 +116,7 @@ private:
 
 void OmVolumeData::downsample(OmMipVolume* vol)
 {
-	OmRawDataPtrs data = GetVolPtr(0);
+	OmRawDataPtrs dataType = GetVolPtrType();
 	boost::apply_visitor(DownsampleVisitor(vol),
-						 data);
+						 dataType);
 }

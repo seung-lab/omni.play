@@ -17,7 +17,7 @@ void ziMesher::addChunkCoord(const OmMipChunkCoord &c) {
   levelZeroChunks_.push_back(c);
 }
 
-ziMesher::ziMesher(const OmId &segId, OmMipMeshManager *mmManager,
+ziMesher::ziMesher(const OmID &segId, OmMipMeshManager *mmManager,
                    int rootLevel)
   : segmentationId_(segId),
     mipMeshManager_(mmManager),
@@ -33,7 +33,7 @@ void ziMesher::mesh() {
 
   FOR_EACH(it, levelZeroChunks_) {
 
-    double error = 1e-4;
+    double error = 1e-5;
     OmMipChunkCoord c = *it;
     shared_ptr<ziMeshingChunk> worker(new ziMeshingChunk(segmentationId_, c,
                                                          mipMeshManager_,

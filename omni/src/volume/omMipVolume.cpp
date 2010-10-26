@@ -11,8 +11,6 @@
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
 #include "datalayer/omDataLayer.h"
-#include "system/events/omProgressEvent.h"
-#include "system/omEventManager.h"
 #include "system/omProjectData.h"
 #include "utility/omImageDataIo.h"
 #include "utility/omTimer.h"
@@ -22,11 +20,6 @@
 #include "volume/omVolumeData.hpp"
 
 #include <QImage>
-
-//Maximum number of powers of 2 that thread chunk is linearly larger than a chunk
-#define MAX_THREAD_CHUNK_EXPONENT 2
-
-//TODO: Get BuildThreadedVolume() to display progress somehow using OmMipThread::GetThreadChunksDone()
 
 OmMipVolume::OmMipVolume()
 	: mVolDataType(OmVolDataType::UNKNOWN)
@@ -320,7 +313,7 @@ void OmMipVolume::GetChunk(OmMipChunkPtr& p_value,
 	//ensure either built or building
 	assert(mBuildState != MIPVOL_UNBUILT);
 
-	getDataCache()->Get(p_value, rMipCoord, om::BLOCKING);
+	getDataCache()->Get(p_value, rMipCoord);
 }
 
 /////////////////////////////////
@@ -606,8 +599,10 @@ void OmMipVolume::copyAllMipDataIntoMemMap()
 /**
  *	Export leaf volume data to HDF5 format.
  */
-void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
+void OmMipVolume::ExportInternalData(const QString& fileNameAndPath,
+									 const bool rerootSegments)
 {
+	printf("starting export...\n");
 	const DataBbox leaf_data_extent = GetDataExtent();
 	const Vector3i leaf_mip_dims = MipLevelDimensionsInMipChunks(0);
 	const OmDataPath mip_volume_path(MipLevelInternalDataPath(0));
@@ -634,7 +629,7 @@ void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
 		for (int y = 0; y < leaf_mip_dims.y; ++y) {
 			for (int x = 0; x < leaf_mip_dims.x; ++x) {
 				const OmMipChunkCoord coord(0, x, y, z);
-				OmDataWrapperPtr data = doExportChunk(coord);
+				OmDataWrapperPtr data = doExportChunk(coord, rerootSegments);
 
 				const DataBbox chunk_data_bbox =
 					MipCoordToDataBbox(coord, 0);
@@ -646,6 +641,8 @@ void OmMipVolume::ExportInternalData(const QString& fileNameAndPath)
 	}
 
 	hdfExport->close();
+
+	printf("\nexport done!\n");
 }
 
 uint32_t OmMipVolume::computeTotalNumChunks()
@@ -660,6 +657,7 @@ uint32_t OmMipVolume::computeTotalNumChunks()
 	return numChunks;
 }
 
+// TODO: ignore 0?
 void OmMipVolume::updateMinMax(const double inMin, const double inMax)
 {
 	static zi::mutex mutex;
@@ -669,7 +667,7 @@ void OmMipVolume::updateMinMax(const double inMin, const double inMax)
 	mMaxVal = std::max(inMax, mMaxVal);
 }
 
-uint64_t OmMipVolume::ComputeChunkPtrOffset(const OmMipChunkCoord& coord) const
+uint64_t OmMipVolume::ComputeChunkPtrOffsetBytes(const OmMipChunkCoord& coord) const
 {
 	const int level = coord.Level;
 	const Vector3<int64_t> volDims = getDimsRoundedToNearestChunk(level);

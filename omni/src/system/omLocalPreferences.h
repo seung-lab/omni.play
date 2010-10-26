@@ -1,88 +1,85 @@
 #ifndef OM_LOCAL_CONFIGURATION_H
 #define OM_LOCAL_CONFIGURATION_H
 
+#include "common/omCommon.h"
+#include "zi/omUtility.h"
 #include "utility/localPrefFiles.h"
+#include "utility/omSystemInformation.h"
+#include "system/cache/omCacheManager.h"
+#include "common/omDebug.h"
 
-class OmLocalPreferences {
-
+class OmLocalPreferences : private om::singletonBase<OmLocalPreferences> {
 public:
-	static OmLocalPreferences* Instance();
-	static void Delete();
 
-	static int get_num_cores();
+// max number of mesh worker threads
+	static int32_t numAllowedWorkerThreads()
+	{
+		const int numCoresRaw = OmSystemInformation::get_num_cores();
+		int numCores = numCoresRaw - 1;
+		if(numCoresRaw < 2){
+			numCores = 2;
+		}
 
-	static int numAllowedWorkerThreads();
-	static void setNumAllowedWorkerThreads(int);
+		return LocalPrefFiles::readSettingNumber<int32_t>("numThreads", numCores);
+	}
+	static void setNumAllowedWorkerThreads(const int32_t numThreads)
+	{
+		LocalPrefFiles::writeSettingNumber<int32_t>("numThreads", numThreads);
+	}
 
-	static unsigned int getRamCacheSizeMB();
-	static void setRamCacheSizeMB(const unsigned int);
+// RAM size
+	static uint32_t getRamCacheSizeMB()
+	{
+		const unsigned int defaultRet =
+			OmSystemInformation::get_total_system_memory_megs() / 3;
+		return LocalPrefFiles::readSettingNumber<uint32_t>("ram", defaultRet);
+	}
+	static void setRamCacheSizeMB(const uint32_t size)
+	{
+		LocalPrefFiles::writeSettingNumber<uint32_t>("ram", size);
+		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+	}
 
-	static unsigned int getVRamCacheSizeMB();
-	static void setVRamCacheSizeMB(const unsigned int);
+// VRAM size
+	static uint32_t getVRamCacheSizeMB()
+	{
+		const unsigned int defaultRet =
+			OmSystemInformation::get_total_system_memory_megs() / 4;
+		return LocalPrefFiles::readSettingNumber<uint32_t>("vram", defaultRet);
+	}
+	static void setVRamCacheSizeMB(const uint32_t size)
+	{
+		LocalPrefFiles::writeSettingNumber<uint32_t>("vram", size);
+		OmCacheManager::UpdateCacheSizeFromLocalPrefs();
+	}
 
-	static unsigned int getCrosshairValue();
-	static unsigned int getDefaultCrosshairValue();
-	static void setCrosshairValue(const unsigned int);
+// recently-used files
+	static QStringList getRecentlyUsedFilesNames()
+	{
+		QStringList empty;
+		return LocalPrefFiles::readSettingQStringList("recentlyOpenedFiles", empty);
+	}
+	static void setRecentlyUsedFilesNames(const QStringList& values)
+	{
+		LocalPrefFiles::writeSettingQStringList("recentlyOpenedFiles", values);
+	}
 
-	static bool get2DViewFrameIn3D();
-	static bool getDefault2DViewFrameIn3D();
-	static void set2DViewFrameIn3D(const bool);
-
-	static bool get2DViewPaneIn3D();
-	static bool getDefault2DViewPaneIn3D();
-	static void set2DViewPaneIn3D(const bool);
-
-	static bool getDrawCrosshairsIn3D();
-	static bool getDefaultDrawCrosshairsIn3D();
-	static void setDrawCrosshairsIn3D(const bool);
-
-	static bool getDoDiscoBall();
-	static bool getDefaultDoDiscoBall();
-	static void setDoDiscoBall(const bool);
-
-	static QStringList getRecentlyUsedFilesNames();
-	static void setRecentlyUsedFilesNames( QStringList values);
-
-	static QString getScratchPath( );
-	static void setScratchPath( QString value);
-
-
-protected:
-	// singleton constructor, copy constructor, assignment operator protected
-	OmLocalPreferences();
-	~OmLocalPreferences();
-	OmLocalPreferences(const OmLocalPreferences&);
-	OmLocalPreferences& operator= (const OmLocalPreferences&);
+// scratch space
+	static QString getScratchPath()
+	{
+		QString defaultPath = "/tmp";
+		return LocalPrefFiles::readSettingQString("sratchPath", defaultPath);
+	}
+	static void setScratchPath(const QString& scratchPath)
+	{
+		LocalPrefFiles::writeSettingQString("sratchPath", scratchPath);
+	}
 
 private:
-	//singleton
-	static OmLocalPreferences* mspInstance;
+	OmLocalPreferences(){}
+	~OmLocalPreferences(){}
 
-	static bool readSettingBool( QString setting, const bool defaultRet );
-	static void writeSettingBool( QString setting, const bool value );
-
-	static int readSettingInt( QString setting, const int defaultRet );
-	static void writeSettingInt( QString setting, const int value );
-
-	static unsigned int readSettingUInt( QString setting, const unsigned int defaultRet );
-	static void writeSettingUInt( QString setting, const unsigned int value );
-
-	static QStringList readSettingQStringList( QString setting, QStringList defaultRet );
-
-	static void writeSettingQString (QString setting, QString value);
-	static QString readSettingQString (QString setting, QString defaultRet);
-
-	static bool settingExists( QString setting );
-
-	// Global Variables for Quick access to Preference Settings
-	// Thus bypassing any file I/O
-	bool m2DViewFrameIn3D;
-	bool m2DViewPaneIn3D;
-	bool mDrawCrosshairsIn3D;
-	bool mDoDiscoBall;
-	int mCrosshairValue;
-	LocalPrefFiles* localPrefFiles;
-
+	friend class zi::singleton<OmLocalPreferences>;
 };
 
 #endif

@@ -24,7 +24,7 @@ public:
 
 	OmGroupIDsSet GetGroups();
 
-	OmId getSegmentationID();
+	OmID getSegmentationID();
 	void populateGroupsList();
 
 

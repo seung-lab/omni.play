@@ -6,7 +6,7 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-#include "system/omEvent.h"
+#include "system/events/omEvent.h"
 #include "common/omStd.h"
 
 /*
@@ -24,7 +24,7 @@ public:
 	static const QEvent::Type VIEW_BOX_CHANGE = (QEvent::Type) (CLASS);
 	static const QEvent::Type VIEW_CENTER_CHANGE = (QEvent::Type) (CLASS + 1);
 	static const QEvent::Type VIEW_POS_CHANGE = (QEvent::Type) (CLASS + 2);
-	
+
 	static const QEvent::Type REDRAW = (QEvent::Type) (CLASS + 3);
 };
 
@@ -32,10 +32,10 @@ public:
  *	View Event Listener
  */
 class OmViewEventListener : public OmEventListener {
-	
-public:	
+
+public:
 	OmViewEventListener() : OmEventListener(OmViewEvent::CLASS) { };
-	
+
 	virtual void ViewBoxChangeEvent() = 0;
 	virtual void ViewCenterChangeEvent() = 0;
 	virtual void ViewPosChangeEvent() = 0;

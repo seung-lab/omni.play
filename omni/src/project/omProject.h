@@ -17,6 +17,8 @@ class OmSegmentation;
 class OmVolumeCuller;
 class OmViewGroupState;
 
+#include <QFileInfo>
+
 class OmProject : boost::noncopyable {
 public:
 
@@ -24,7 +26,15 @@ public:
 	static void Delete();
 
 	//project properties
-	static QString GetFileName() { return Instance()->mFileName; }
+	static QString GetFileName() {
+		return Instance()->projectFileNameAndPath_.fileName();
+	}
+	static QString GetPath() {
+		return Instance()->projectFileNameAndPath_.absolutePath();
+	}
+	static QString GetFileNameAndPath() {
+		return Instance()->projectFileNameAndPath_.absoluteFilePath();
+	}
 
 	//project IO
 	static QString New(const QString& fileNameAndPath);
@@ -34,21 +44,21 @@ public:
 	static void Close();
 
 	//volume management
-	static OmChannel& GetChannel(const OmId id);
+	static OmChannel& GetChannel(const OmID id);
 	static OmChannel& AddChannel();
-	static void RemoveChannel(const OmId id);
-	static bool IsChannelValid(const OmId id);
+	static void RemoveChannel(const OmID id);
+	static bool IsChannelValid(const OmID id);
 	static const OmIDsSet & GetValidChannelIds();
-	static bool IsChannelEnabled(const OmId id);
-	static void SetChannelEnabled(const OmId id, const bool enable);
+	static bool IsChannelEnabled(const OmID id);
+	static void SetChannelEnabled(const OmID id, const bool enable);
 
-	static OmSegmentation& GetSegmentation(const OmId id);
+	static OmSegmentation& GetSegmentation(const OmID id);
 	static OmSegmentation& AddSegmentation();
-	static void RemoveSegmentation(const OmId id);
-	static bool IsSegmentationValid(const OmId id);
+	static void RemoveSegmentation(const OmID id);
+	static bool IsSegmentationValid(const OmID id);
 	static const OmIDsSet & GetValidSegmentationIds();
-	static bool IsSegmentationEnabled(const OmId id);
-	static void SetSegmentationEnabled(const OmId id, const bool enable);
+	static bool IsSegmentationEnabled(const OmID id);
+	static void SetSegmentationEnabled(const OmID id, const bool enable);
 
 private:
 	//singleton
@@ -56,9 +66,7 @@ private:
 	~OmProject();
 	static OmProject* mspInstance;
 
-	//project
-	QString mFileName;
-	QString mDirectoryPath;
+	QFileInfo projectFileNameAndPath_;
 
 	//data managers
 	OmGenericManager<OmChannel> mChannelManager;

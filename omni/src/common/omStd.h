@@ -20,6 +20,7 @@
 
 #include <set>
 #include <map>
+#include <deque>
 #include <string>
 #include <vector>
 

@@ -1,3 +1,4 @@
+#include "utility/omSystemInformation.h"
 #include "localPreferencesMeshing.h"
 #include "gui/guiUtils.h"
 #include "common/omDebug.h"
@@ -36,7 +37,7 @@ QGroupBox* LocalPreferencesMeshing::makeNumberOfThreadsBox()
 	vbox->addWidget(numThreadsSlider);
 
 	numThreadsSlider->setMinimum( 1 );
-	numThreadsSlider->setMaximum( 2 * OmLocalPreferences::get_num_cores() );
+	numThreadsSlider->setMaximum( 2 * OmSystemInformation::get_num_cores() );
 
 	numThreadsSlider->setValue( OmLocalPreferences::numAllowedWorkerThreads() );
 	numThreadsSliderLabel->setNum(numThreadsSlider->value());

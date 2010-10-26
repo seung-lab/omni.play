@@ -14,9 +14,9 @@ class OmSegmentation;
 class OmSegmentCache {
 public:
 	OmSegmentCache(OmSegmentation * segmentation);
-	~OmSegmentCache();
+	virtual ~OmSegmentCache(){}
 
-	void turnBatchModeOn( const bool batchMode );
+	void Flush();
 
 	OmSegment* AddSegment();
 	OmSegment* AddSegment(OmSegID value);
@@ -51,12 +51,10 @@ public:
 
 	OmSegID getSegmentationID();
 
-	void addToDirtySegmentList( OmSegment* seg);
-	void flushDirtySegments();
-
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegment * findRoot( const OmSegID segID );
 	OmSegID findRootID( const OmSegID segID );
+	OmSegID findRootID(OmSegment* segment);
 
 	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
 
@@ -68,20 +66,10 @@ public:
 	quint32 getPageSize();
 
 	quint32 getMaxValue();
-	quint64 getSegmentListSize(OmSegIDRootType type);
-
-	OmSegPtrListWithPage * getRootLevelSegIDs(const unsigned int offset,
-						  const int numToGet,
-						  OmSegIDRootType type,
-						  OmSegID startSeg = 0);
-
-	void setAsValidated(OmSegment * segment, const bool valid);
 
 	void refreshTree();
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
-
-	void UpgradeSegmentSerialization();
 
 private:
 	zi::mutex mutex_;
@@ -89,6 +77,7 @@ private:
 	boost::shared_ptr<OmSegmentCacheImpl> mImpl;
 
 	friend class OmSegmentColorizer;
+	friend class SegmentTests;
 
 	friend QDataStream &operator<<(QDataStream & out, const OmSegmentCache & sc );
 	friend QDataStream &operator>>(QDataStream & in, OmSegmentCache & sc );

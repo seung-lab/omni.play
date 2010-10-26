@@ -1,20 +1,35 @@
 #ifndef OM_MIP_VOLUME_CACHE_H
 #define OM_MIP_VOLUME_CACHE_H
 
-#include "system/cache/omThreadedCache.h"
+#include "zi/omMutex.h"
+#include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
+#include "volume/omMipChunkCoord.h"
 
-class OmMipVolume;
-class OmMipChunkCoord;
+#include <boost/make_shared.hpp>
 
-class OmMipVolumeCache : public OmThreadedCache<OmMipChunkCoord, OmMipChunkPtr> {
+class OmMipVolumeCache{
 public:
-	OmMipVolumeCache(OmMipVolume*);
+	OmMipVolumeCache(OmMipVolume* vol)
+		: vol_(vol)
+	{}
 
-	OmMipChunkPtr HandleCacheMiss(const OmMipChunkCoord &key);
+	void Get(OmMipChunkPtr& ptr, const OmMipChunkCoord& coord)
+	{
+		zi::guard g(mutex_);
+		if(map_.count(coord)){
+			ptr = map_[coord];
+		}else{
+			assert(vol_->ContainsMipChunkCoord(coord));
+			ptr = map_[coord] =
+				OmMipChunkPtr(boost::make_shared<OmMipChunk>(coord, vol_));
+		}
+	}
 
 private:
-	OmMipVolume *const mMipVolume;
+	OmMipVolume *const vol_;;
+	zi::mutex mutex_;
+	std::map<OmMipChunkCoord, OmMipChunkPtr> map_;
 };
 
 #endif

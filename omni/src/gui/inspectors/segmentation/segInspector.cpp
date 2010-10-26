@@ -6,6 +6,7 @@
 #include "gui/inspectors/segmentation/addSegmentButton.h"
 #include "gui/inspectors/segmentation/buildButton.hpp"
 #include "gui/inspectors/segmentation/exportButton.hpp"
+#include "gui/inspectors/segmentation/exportButtonRaw.hpp"
 #include "gui/inspectors/segmentation/meshPreviewButton.hpp"
 #include "gui/inspectors/volInspector.h"
 #include "gui/myInspectorWidget.h"
@@ -114,7 +115,10 @@ QGroupBox* SegInspector::makeActionsBox()
 	gridAction->addWidget(buildButton, 1, 1);
 
 	ExportButton* exportButton = new ExportButton(this);
-	gridAction->addWidget(exportButton, 2, 0, 1, 2 );
+	gridAction->addWidget(exportButton, 2, 0, 1, 1 );
+
+	ExportButtonRaw* exportButtonRaw = new ExportButtonRaw(this);
+	gridAction->addWidget(exportButtonRaw, 2, 1, 1, 1 );
 
 	ExportSegmentList* segList = new ExportSegmentList(this);
 	gridAction->addWidget(segList, 3, 0, 1, 2 );
@@ -243,7 +247,7 @@ void SegInspector::on_notesEdit_textChanged()
 	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
-OmId SegInspector::getSegmentationID()
+OmID SegInspector::getSegmentationID()
 {
 	return sdw->getID();
 }
@@ -269,7 +273,7 @@ void SegInspector::populateSegmentationInspector()
 	updateFileList();
 }
 
-void SegInspector::rebuildSegmentLists(const OmId segmentationID, const OmSegID segID)
+void SegInspector::rebuildSegmentLists(const OmID segmentationID, const OmSegID segID)
 {
 	inspectorWidget_->rebuildSegmentLists(segmentationID, segID);
 }

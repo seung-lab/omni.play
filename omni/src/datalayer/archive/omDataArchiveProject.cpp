@@ -5,7 +5,7 @@
 #include "datalayer/archive/omDataArchiveProject.h"
 #include "datalayer/omIDataReader.h"
 #include "datalayer/omIDataWriter.h"
-#include "datalayer/omMST.h"
+#include "segment/io/omMST.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
@@ -23,7 +23,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 15;
+static const int Omni_Version = 18;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -63,11 +63,15 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	}
 
 	if(fileVersion_ < 14){
-		OmUpgraders::to15();
 		OmUpgraders::to14();
 		ArchiveWrite(path, project);
 	} else if(fileVersion_ < 15){
-		OmUpgraders::to15();
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 16){
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 17){
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 18){
 		ArchiveWrite(path, project);
 	}
 }
@@ -88,15 +92,15 @@ void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
 
 	OmProjectData::GetIDataWriter()->
 		writeDataset( path,
-			      ba.size(),
-			      OmDataWrapperRaw(ba.constData()));
+					  ba.size(),
+					  OmDataWrapperRaw(ba.constData()));
 
 	OmProjectData::GetIDataWriter()->flush();
 }
 
 QDataStream &operator<<(QDataStream& out, const OmProject& p)
 {
-	out << OmPreferences::Instance();
+	out << OmPreferences::instance();
 	out << p.mChannelManager;
 	out << p.mSegmentationManager;
 	return out;
@@ -104,7 +108,7 @@ QDataStream &operator<<(QDataStream& out, const OmProject& p)
 
 QDataStream &operator>>(QDataStream& in, OmProject& p)
 {
-	in >> OmPreferences::Instance();
+	in >> OmPreferences::instance();
 	in >> p.mChannelManager;
 	in >> p.mSegmentationManager;
 
@@ -113,21 +117,21 @@ QDataStream &operator>>(QDataStream& in, OmProject& p)
 
 QDataStream &operator<<(QDataStream& out, const OmPreferences& p)
 {
-	out << p.stringPrefs;
-	out << p.floatPrefs;
-	out << p.intPrefs;
-	out << p.boolPrefs;
-	out << p.v3fPrefs;
+	out << p.stringPrefs_;
+	out << p.floatPrefs_;
+	out << p.intPrefs_;
+	out << p.boolPrefs_;
+	out << p.v3fPrefs_;
 	return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmPreferences& p)
 {
-	in >> p.stringPrefs;
-	in >> p.floatPrefs;
-	in >> p.intPrefs;
-	in >> p.boolPrefs;
-	in >> p.v3fPrefs;
+	in >> p.stringPrefs_;
+	in >> p.floatPrefs_;
+	in >> p.intPrefs_;
+	in >> p.boolPrefs_;
+	in >> p.v3fPrefs_;
 	return in;
 }
 
@@ -142,7 +146,7 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmChannel>& cm)
 	out << cm.mValidSet;
 	out << cm.mEnabledSet;
 
-	foreach(const OmId& id, cm.mValidSet){
+	foreach(const OmID& id, cm.mValidSet){
 		out << *cm.mMap[id];
 	}
 
@@ -235,7 +239,7 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmFilter2d>& fm
 	out << fm.mValidSet;
 	out << fm.mEnabledSet;
 
-	foreach(const OmId& id, fm.mValidSet){
+	foreach(const OmID& id, fm.mValidSet){
 		out << *fm.mMap[id];
 	}
 
@@ -291,7 +295,7 @@ QDataStream &operator<<(QDataStream& out, const OmGenericManager<OmSegmentation>
 	out << sm.mValidSet;
 	out << sm.mEnabledSet;
 
-	foreach(const OmId& id, sm.mValidSet){
+	foreach(const OmID& id, sm.mValidSet){
 		out << *sm.mMap[id];
 	}
 
@@ -325,10 +329,12 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentation& seg)
 	out << (*seg.mMipMeshManager);
 	out << (*seg.mSegmentCache);
 
-	out << seg.mst_->mDendSize;
-	out << seg.mst_->mDendValuesSize;
-	out << seg.mst_->mDendCount;
-	out << seg.mst_->mDendThreshold;
+	int dead = 0;
+
+	out << dead;
+	out << dead;
+	out << seg.mst_->numEdges_;
+	out << seg.mst_->userThreshold_;
 	out << (*seg.mGroups);
 
 	return out;
@@ -343,10 +349,12 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 	in >> (*seg.mMipMeshManager);
 	in >> (*seg.mSegmentCache);
 
-	in >> seg.mst_->mDendSize;
-	in >> seg.mst_->mDendValuesSize;
-	in >> seg.mst_->mDendCount;
-	in >> seg.mst_->mDendThreshold;
+	int dead;
+
+	in >> dead;
+	in >> dead;
+	in >> seg.mst_->numEdges_;
+	in >> seg.mst_->userThreshold_;
 	in >> (*seg.mGroups);
 
 	if(fileVersion_ > 13){
@@ -356,22 +364,28 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 		}
 	}
 
-	seg.mst_->read(seg);
+	if(fileVersion_ < 18){
+		seg.mst_->convert();
+	}
+
+	seg.mst_->Read();
 	seg.mSegmentCache->refreshTree();
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmMipMeshManager& mm)
+QDataStream &operator<<(QDataStream& out, const OmMipMeshManager&)
 {
-	out << mm.mDirectoryPath;
+	QString dead("");
+	out << dead;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream& in, OmMipMeshManager& mm)
+QDataStream &operator>>(QDataStream& in, OmMipMeshManager&)
 {
-	in >> mm.mDirectoryPath;
+	QString dead;
+	in >> dead;
 
 	return in;
 }
@@ -442,8 +456,8 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 		OmSegmentEdge e;
 		in >> e;
 		if(0 == e.childID  ||
-		    0 == e.parentID ||
-		    std::isnan(e.threshold)){
+		   0 == e.parentID ||
+		   std::isnan(e.threshold)){
 			printf("warning: bad edge found: %d, %d, %f\n",
 				   e.parentID,
 				   e.childID,
@@ -457,17 +471,32 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 	return in;
 }
 
-QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore& ps)
+QDataStream &operator<<(QDataStream& out, const OmPagingPtrStore&)
 {
-	out << ps.validPageNumbers;
-	out << ps.mPageSize;
+	QSet<PageNum> nums;
+	quint32 size = 0;
+
+	out << nums;
+	out << size;
 	return out;
 }
 
 QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 {
-	in >> ps.validPageNumbers;
-	in >> ps.mPageSize;
+	QSet<PageNum> nums;
+	quint32 size;
+
+	in >> nums;
+	in >> size;
+
+	if(fileVersion_ < 17){
+		ps.pageSize_ = size;
+		ps.validPageNumbers_ = nums;
+		ps.storeMetadata();
+	}
+
+	ps.loadAllSegmentPages();
+
 	return in;
 }
 
@@ -592,14 +621,14 @@ QDataStream &operator>>(QDataStream& in, OmGroups& g)
 }
 
 QDataStream &operator<<(QDataStream& out,
-							const OmGenericManager<OmGroup>& gm)
+						const OmGenericManager<OmGroup>& gm)
 {
 	out << gm.mNextId;
 	out << gm.mSize;
 	out << gm.mValidSet;
 	out << gm.mEnabledSet;
 
-	foreach(const OmId& id, gm.mValidSet){
+	foreach(const OmID& id, gm.mValidSet){
 		out << *gm.mMap[id];
 		printf("id=%i\n", id);
 	}
@@ -608,7 +637,7 @@ QDataStream &operator<<(QDataStream& out,
 }
 
 QDataStream &operator>>(QDataStream& in,
-							OmGenericManager<OmGroup>& gm)
+						OmGenericManager<OmGroup>& gm)
 {
 	in >> gm.mNextId;
 	in >> gm.mSize;

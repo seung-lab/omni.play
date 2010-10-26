@@ -1,6 +1,7 @@
-#include "viewGroup/omViewGroupState.h"
+#include "system/cache/omCacheBase.h"
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 
@@ -12,8 +13,7 @@ OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
 	, tileLength_(key.getVolume()->GetChunkDimension())
 	, dims_(Vector2i(tileLength_, tileLength_))
 	, mipChunkCoord_(tileToMipCoord())
-{
-}
+{}
 
 void OmTile::LoadData()
 {
@@ -34,19 +34,20 @@ void OmTile::makeNullTextureID(){
 
 void OmTile::doLoadData()
 {
-	texture_ = boost::make_shared<OmTextureID>(dims_, cache_);
-
 	if(getVolType() == CHANNEL) {
 		boost::shared_ptr<uint8_t> vData = getImageData8bit();
-		texture_->setData(vData);
+		texture_ = boost::make_shared<OmTextureID>(dims_, vData);
+
 	} else {
 		boost::shared_ptr<uint32_t> imageData = getImageData32bit();
 		boost::shared_ptr<OmColorRGBA> colorMappedData =
-			key_.getViewGroupState()->ColorTile(imageData,
+			key_.getViewGroupState()->ColorTile(imageData.get(),
 												dims_,
 												key_);
-		texture_->setData(colorMappedData);
+		texture_ = boost::make_shared<OmTextureID>(dims_, colorMappedData);
 	}
+
+	cache_->UpdateSize(texture_->NumBytes());
 }
 
 int OmTile::getVolDepth(){
@@ -98,4 +99,12 @@ int OmTile::getDepth()
 
 ObjectType OmTile::getVolType(){
 	return getVol()->getVolumeType();
+}
+
+uint32_t OmTile::NumBytes() const
+{
+	if(!texture_){
+		return 0;
+	}
+	return texture_->NumBytes();
 }

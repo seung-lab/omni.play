@@ -9,7 +9,7 @@ class OmGroup : public OmManageableObject {
 public:
 	OmGroup(){}
 
-	OmGroup(OmId id)
+	OmGroup(OmID id)
 		: OmManageableObject(id)
 	{
 		mColor = OmRand::GetRandomColor();

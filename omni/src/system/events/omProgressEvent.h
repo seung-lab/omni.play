@@ -9,8 +9,7 @@
 
 #include <common/omStd.h>
 
-#include "system/omEvent.h"
-
+#include "system/events/omEvent.h"
 
 class OmProgressEvent : public OmEvent {
 

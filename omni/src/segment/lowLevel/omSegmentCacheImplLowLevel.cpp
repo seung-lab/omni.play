@@ -44,14 +44,18 @@ OmSegID OmSegmentCacheImplLowLevel::findRootID(const OmSegID segID)
 	return findRoot( GetSegmentFromValue( segID ) )->value();
 }
 
-bool OmSegmentCacheImplLowLevel::isValueAlreadyMappedToSegment(const OmSegID value)
+OmSegID OmSegmentCacheImplLowLevel::findRootID(OmSegment* segment)
 {
-	return mSegments->IsValueAlreadyMapped( value );
+	if(!segment){
+		return 0;
+	}
+
+	return findRoot(segment)->value();
 }
 
 OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value)
 {
-	OmSegment* seg = mSegments->GetItemFromValue(value);
+	OmSegment* seg = mSegments->GetSegment(value);
 
 	if(seg && seg->value() > mMaxValue){
 		throw OmIoException("bad segment value: "+
@@ -214,7 +218,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
-	mSegmentation->GetSegmentLists()->mRecentRootActivityMap.touch( segID );
+	mSegmentation->GetSegmentLists()->TouchRecentList(segID);
 }
 
 QString OmSegmentCacheImplLowLevel::getSegmentName( OmSegID segID )
@@ -250,26 +254,6 @@ OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 	return mSegmentation->GetID();
 }
 
-void OmSegmentCacheImplLowLevel::addToDirtySegmentList( OmSegment* seg)
-{
-	mSegments->AddToDirtyList( seg->value() );
-}
-
-void OmSegmentCacheImplLowLevel::addToDirtySegmentList(const OmSegID val)
-{
-	mSegments->AddToDirtyList(val);
-}
-
-void OmSegmentCacheImplLowLevel::flushDirtySegments()
-{
-	mSegments->FlushDirtyItems();
-}
-
-void OmSegmentCacheImplLowLevel::turnBatchModeOn( const bool batchMode )
-{
-	mSegments->SetBatchMode(batchMode);
-}
-
 quint32 OmSegmentCacheImplLowLevel::getPageSize()
 {
 	return mSegments->getPageSize();
@@ -299,9 +283,4 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 OmSegmentCache* OmSegmentCacheImplLowLevel::getSegmentCache()
 {
 	return mSegmentation->GetSegmentCache();
-}
-
-void OmSegmentCacheImplLowLevel::UpgradeSegmentSerialization()
-{
-	mSegments->UpgradeSegmentSerialization();
 }

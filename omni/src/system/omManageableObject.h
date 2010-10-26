@@ -13,24 +13,26 @@ class OmManageableObject {
 public:
 	OmManageableObject()
 		: mId( 1 )
-		, mNote("") {}
+		, mNote("")
+	{}
 
-	explicit OmManageableObject(const OmId id)
+	explicit OmManageableObject(const OmID id)
 		: mId( id )
-		, mNote("") {}
+		, mNote("")
+	{}
 
-	OmId GetID(){
+	OmID GetID() const {
 		return mId;
 	}
 
-	QString GetCustomName(){
+	QString GetCustomName() const {
 		return mCustomName;
 	}
 	void SetCustomName(const QString & name){
 		mCustomName = name;
 	}
 
-	const QString& GetNote(){
+	const QString& GetNote() const {
 		return mNote;
 	}
 	void SetNote(const QString &note){
@@ -38,7 +40,7 @@ public:
 	}
 
 protected:
-	OmId mId;
+	OmID mId;
 	QString mNote;
 	QString mCustomName;
 

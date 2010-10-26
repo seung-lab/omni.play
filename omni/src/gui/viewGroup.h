@@ -25,12 +25,12 @@ class ViewGroup{
 public:
 	ViewGroup(MainWindow*, OmViewGroupState*);
 
-	void AddView2Dchannel(const OmId chan_id,
+	void AddView2Dchannel(const OmID chan_id,
 			      const ViewType vtype);
-	void AddView2Dsegmentation(const OmId segmentation_id,
+	void AddView2Dsegmentation(const OmID segmentation_id,
 				   const ViewType vtype);
 	void AddView3D();
-	void AddAllViews(const OmId channelID, const OmId segmentationID);
+	void AddAllViews(const OmID channelID, const OmID segmentationID);
 
 private:
 	MainWindow * mMainWindow;

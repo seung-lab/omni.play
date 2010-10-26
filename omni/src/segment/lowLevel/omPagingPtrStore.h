@@ -4,11 +4,9 @@
 #include "common/om.hpp"
 #include "common/omCommon.h"
 #include "segment/omSegment.h"
-#include "segment/lowLevel/omSegmentPage.hpp"
+#include "segment/io/omSegmentPage.hpp"
 
 #include <QSet>
-
-typedef quint32 PageNum;
 
 class OmDataPath;
 class OmSegmentation;
@@ -19,44 +17,32 @@ class OmPagingPtrStore {
 	OmPagingPtrStore(OmSegmentation*);
 	virtual ~OmPagingPtrStore(){}
 
-	quint32 getPageSize() { return mPageSize; }
-	void SetSegmentationID(const OmId);
+	void Flush();
 
-	OmSegment* AddItem(const OmSegment& item);
-	bool IsValueAlreadyMapped(const OmSegID);
-
-	void SaveAllLoadedPages();
-	void SaveDirtyPages();
-	void AddToDirtyList(const OmSegID);
-	void FlushDirtyItems();
-	void SetBatchMode(const bool);
-
-	OmSegment* GetItemFromValue(const OmSegID value);
-
-	void UpgradeSegmentSerialization();
-
- private:
-	OmSegmentation *const mSegmentation;
-
-	uint32_t mPageSize;
-	std::vector<OmSegmentPage> mValueToSeg;
-	QSet<PageNum> validPageNumbers;
-	QSet<PageNum> loadedPageNumbers;
-	QSet<PageNum> dirtyPages;
-	bool mAllPagesLoaded;
-
-	bool amInBatchMode;
-	bool needToFlush;
-
-	inline PageNum getValuePageNum(const OmSegID value){
-		return PageNum(value / mPageSize);
+	quint32 getPageSize() {
+		return pageSize_;
 	}
 
+	OmSegment* AddSegment(const OmSegID value);
+	OmSegment* GetSegment(const OmSegID value);
+
+ private:
+	OmSegmentation *const segmentation_;
+
+	uint32_t pageSize_;
+	std::vector<OmSegmentPage> pages_;
+	QSet<PageNum> validPageNumbers_;
+
+	inline PageNum getValuePageNum(const OmSegID value){
+		return PageNum(value / pageSize_);
+	}
+
+	void loadAllSegmentPages();
 	void resizeVectorIfNeeded(const PageNum pageNum);
-	void loadValuePage(const PageNum);
-	void loadValuePage(const PageNum, const om::RewriteSegments);
-	void doSavePage(const PageNum segPageNum);
-	OmDataPath getPath(const PageNum pageNum);
+
+	QString metadataPathQStr();
+	void loadMetadata();
+	void storeMetadata();
 
 	friend QDataStream &operator<< (QDataStream& out, const OmPagingPtrStore&);
 	friend QDataStream &operator>> (QDataStream& in, OmPagingPtrStore&);

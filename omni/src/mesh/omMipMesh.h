@@ -28,6 +28,8 @@ public:
 
 	void Load();
 	void Save();
+	uint64_t NumBytes() const { return numBytes_; }
+	void Flush(){}
 
 	std::string GetFileName();
 	std::string GetDirectoryPath();
@@ -40,20 +42,23 @@ public:
 	bool IsEmptyMesh();
 
 	void Draw();
-	void setSegmentationID(OmId sid);
-	OmId getSegmentationID();
+	void setSegmentationID(OmID sid);
+	OmID getSegmentationID();
 
 	bool hasData(){ return mHasData; }
 
 private:
 	OmMeshCache *const cache_;
-	OmId mSegmentationID;
+	OmID mSegmentationID;
 	OmHdf5* mHdf5File;
 	OmMipMeshManager *const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
 	bool mHasData;
 	std::string mPath;
+
+	void SetNumBytes();
+	uint64_t numBytes_;
 
 	// interleved strip offset (into vertex data) and strip size data
 	uint32_t mStripCount;

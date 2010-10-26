@@ -1,228 +1,215 @@
-#include "segment/omSegmentIterator.h"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
-#include "omSegmentContextMenu.h"
+#include "gui/widgets/omSegmentContextMenu.h"
 #include "project/omProject.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/omSegmentCache.h"
+#include "actions/omSegmentJoinAction.h"
+#include "actions/omSegmentSelectAction.h"
+#include "actions/omSegmentValidateAction.h"
+#include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
-#include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 #include "system/omEvents.h"
+#include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
 
-void OmSegmentContextMenu::Refresh( SegmentDataWrapper sdw, OmViewGroupState * vgs)
+void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
+								   OmViewGroupState* vgs)
 {
-	mSegmentationId = sdw.getSegmentationID();
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	mSegmentId = sdw.getID();
+	sdw_ = sdw;
+
 	mViewGroupState = vgs;
-	OmSegID rootId = seg.GetSegmentCache()->findRootID(mSegmentId);
-	mImmutable = seg.GetSegmentCache()->GetSegment(rootId)->GetImmutable();
 
 	//clear old menu actions
 	clear();
 
-	AddSelectionNames();
+	addSelectionNames();
 	addSeparator();
 
-	AddSelectionAction();
-        addSeparator();
-
-        AddColorActions();
+	addSelectionAction();
 	addSeparator();
 
-	if(!mImmutable) {
-		AddDendActions();
+	addColorActions();
+	addSeparator();
+
+	if(!isValid()) {
+		addDendActions();
 		addSeparator();
 	}
 
-	AddGroupActions();
+	addGroupActions();
 	addSeparator();
 
-	AddPropertiesActions();
+	addPropertiesActions();
 }
 
-void OmSegmentContextMenu::AddSelectionNames()
-{
-	//get segmentation and segment
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-	OmSegment * r_segment = r_segmentation.GetSegmentCache()->GetSegment(mSegmentId);
+bool OmSegmentContextMenu::isValid() const {
+	assert(sdw_.isValidWrapper());
+	return sdw_.FindRoot()->IsValid();
+}
 
-	addAction( "Segment " + QString::number(r_segment->value())
-		   + " (Root " + QString::number(r_segment->getRootSegID())
-		   + ")" );
-	QString validText;
-	if(mImmutable) {
-		validText = "Valid in ";
+bool OmSegmentContextMenu::isUncertain() const {
+	assert(sdw_.isValidWrapper());
+	return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
+}
+
+void OmSegmentContextMenu::addSelectionNames()
+{
+	const QString segStr = QString("Segment %1 (Root %2)")
+		.arg(sdw_.getID())
+		.arg(sdw_.FindRootID());
+	addAction(segStr);
+
+	QString validStr;
+	if(isValid()){
+		validStr = QString("%1 %2")
+			.arg("Valid in ")
+			.arg(sdw_.getSegmentationName());
 	} else {
-		validText = "Not valid in ";
+		validStr = QString("%1 %2")
+			.arg("Not valid in ")
+			.arg(sdw_.getSegmentationName());
 	}
-	addAction( validText + QString::fromStdString(r_segmentation.GetName()));
+	addAction(validStr);
 }
 
 /*
- *	Adds Un/Select Segment Action
+ *	adds Un/Select Segment Action
  */
-void OmSegmentContextMenu::AddSelectionAction()
+void OmSegmentContextMenu::addSelectionAction()
 {
-	//get segmentation and segment
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-
-	//is segment selected
-	bool is_segment_selected = r_segmentation.GetSegmentCache()->IsSegmentSelected(mSegmentId);
-
-	//if segment is already selected
-	if (is_segment_selected) {
-		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
-		addAction(QString("Deselect Only This Segment"), this, SLOT(Unselect()));
+	if(sdw_.isSelected()) {
+		addAction("Select Only This Segment", this, SLOT(unselectOthers()));
+		addAction("Deselect Only This Segment", this, SLOT(unselect()));
 	} else {
-		addAction(QString("Select Only This Segment"), this, SLOT(UnselectOthers()));
-		addAction(QString("Select Segment"), this, SLOT(Select()));
+		addAction("Select Only This Segment", this, SLOT(unselectOthers()));
+		addAction("Select Segment", this, SLOT(select()));
 	}
 }
 
 /*
  *	Merge Segments
  */
-void OmSegmentContextMenu::AddDendActions()
+void OmSegmentContextMenu::addDendActions()
 {
-	addAction(QString("Merge Selected Segments"), this, SLOT(MergeSegments()));
-	addAction(QString("Split Segments"), this, SLOT(splitSegments()));
+	addAction("Merge Selected Segments", this, SLOT(mergeSegments()));
+	addAction("Split Segments", this, SLOT(splitSegments()));
 }
 
 
 /////////////////////////////////
 ///////          Context Menu Slots Methods
 
-void OmSegmentContextMenu::Select()
+void OmSegmentContextMenu::select()
 {
-	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
-	sel.augmentSelectedSet( mSegmentId, true);
+	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	sel.augmentSelectedSet(sdw_.getID(), true);
 	sel.sendEvent();
 }
 
-void OmSegmentContextMenu::Unselect()
+void OmSegmentContextMenu::unselect()
 {
-	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
-	sel.augmentSelectedSet(mSegmentId, false);
+	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	sel.augmentSelectedSet(sdw_.getID(), false);
 	sel.sendEvent();
 }
 
-void OmSegmentContextMenu::UnselectOthers()
+void OmSegmentContextMenu::unselectOthers()
 {
-	OmSegmentSelector sel(mSegmentationId, this, "view3d" );
+	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
 	sel.selectNoSegments();
-	sel.selectJustThisSegment(mSegmentId, true);
+	sel.selectJustThisSegment(sdw_.getID(), true);
 	sel.sendEvent();
 }
 
-void OmSegmentContextMenu::MergeSegments()
+void OmSegmentContextMenu::mergeSegments()
 {
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-        OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
-	(new OmSegmentJoinAction(mSegmentationId, ids))->Run();
+	OmSegIDsSet ids = sdw_.getSegmentCache()->GetSelectedSegmentIds();
+	(new OmSegmentJoinAction(sdw_.getSegmentationID(), ids))->Run();
 }
 
 void OmSegmentContextMenu::splitSegments()
 {
 	mViewGroupState->SetShowSplitMode(true);
 	OmStateManager::SetToolModeAndSendEvent(SPLIT_MODE);
-	mViewGroupState->SetSplitMode(mSegmentationId, mSegmentId);
+	mViewGroupState->SetSplitMode(sdw_);
 }
 
-void OmSegmentContextMenu::AddColorActions()
+void OmSegmentContextMenu::addColorActions()
 {
-        addAction(QString("Randomize Segment Color"), this, SLOT(randomizeColor()));
+	addAction("Randomize Segment Color", this, SLOT(randomizeColor()));
 }
 
-void OmSegmentContextMenu::AddGroupActions()
+void OmSegmentContextMenu::addGroupActions()
 {
-        addAction(QString("Set Segment Valid"), this, SLOT(addGroup()));
-        addAction(QString("Set Segment Not Valid"), this, SLOT(deleteGroup()));
+	addAction("Set Segment Valid", this, SLOT(setValid()));
+	addAction("Set Segment Not Valid", this, SLOT(setNotValid()));
 }
 
 void OmSegmentContextMenu::randomizeColor()
 {
-        OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-        OmSegment * r_segment = r_segmentation.GetSegmentCache()->findRoot(mSegmentId);
+	OmSegment* segment = sdw_.FindRoot();
+	segment->reRandomizeColor();
 
-	r_segment->reRandomizeColor();
 	OmCacheManager::TouchFresheness();
 	OmEvents::Redraw();
 }
 
-void OmSegmentContextMenu::addGroup()
+void OmSegmentContextMenu::setValid()
 {
-        //debug(validate, "OmSegmentContextMenu::addGroup\n");
-        if (OmProject::IsSegmentationValid(mSegmentationId)) {
-                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                OmSegIDsSet set;
-		set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
-                seg.SetGroup(set, VALIDROOT, QString("Valid"));
-                OmEvents::SegmentModified();
-        }
+	//debug(validate, "OmSegmentContextMenu::addGroup\n");
+	if(sdw_.isValidWrapper()){
+		OmSegmentValidateAction::Validate(sdw_, true);
+		OmEvents::SegmentModified();
+	}
 }
 
-void OmSegmentContextMenu::deleteGroup()
+void OmSegmentContextMenu::setNotValid()
 {
-        //debug(validate, "OmSegmentContextMenu::addGroup\n");
-        if (OmProject::IsSegmentationValid(mSegmentationId)) {
-                OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-                OmSegIDsSet set;
-                set.insert(seg.GetSegmentCache()->findRootID(mSegmentId));
-                seg.SetGroup(set, NOTVALIDROOT, QString("Not Valid"));
-                OmEvents::SegmentModified();
-        }
+	//debug(validate, "OmSegmentContextMenu::addGroup\n");
+	if(sdw_.isValidWrapper()){
+		OmSegmentValidateAction::Validate(sdw_, false);
+		OmEvents::SegmentModified();
+	}
 }
 
 void OmSegmentContextMenu::showProperties()
 {
-        OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	OmSegID segid;
+	const OmSegID segid = sdw_.FindRootID();
 
-	segid = seg.GetSegmentCache()->findRootID(mSegmentId);
-
-	mViewGroupState->GetInspectorProperties()->setOrReplaceWidget( new SegObjectInspector(
-						 SegmentDataWrapper(mSegmentationId, segid), this),
-                                                 QString("Segmentation%1: Segment %2")
-                                                 .arg(mSegmentationId)
-                                                 .arg(segid) );
+	mViewGroupState->GetInspectorProperties()->
+		setOrReplaceWidget( new SegObjectInspector(sdw_, this),
+							QString("Segmentation %1: Segment %2")
+							.arg(sdw_.getSegmentationID())
+							.arg(segid));
 }
 
-void OmSegmentContextMenu::AddPropertiesActions()
+void OmSegmentContextMenu::addPropertiesActions()
 {
-        addAction(QString("Properties"), this, SLOT(showProperties()));
-	addAction(QString("List Children"), this, SLOT(printChildren()));
+	addAction("Properties", this, SLOT(showProperties()));
+	addAction("List Children", this, SLOT(printChildren()));
 }
 
 void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if (OmProject::IsSegmentationValid(mSegmentationId)) {
-		OmSegmentation & segmentation = OmProject::GetSegmentation(mSegmentationId);
-
-		OmSegmentCache* segCache = segmentation.GetSegmentCache();
+	if (sdw_.isValidWrapper()){
+		OmSegmentCache* segCache = sdw_.getSegmentCache();
 		OmSegmentIterator iter(segCache);
-		iter.iterOverSegmentID(segCache->findRoot(mSegmentId)->value());
+		iter.iterOverSegmentID(sdw_.FindRootID());
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
-			printf("%u : %u, %f, %llu\n",
-			       seg->value(),
-			       seg->getParentSegID(),
-			       seg->getThreshold(),
-			       seg->getSize());
+			const QString str = QString("%1 : %2, %3, %4")
+				.arg(seg->value())
+				.arg(seg->getParentSegID())
+				.arg(seg->getThreshold())
+				.arg(seg->getSize());
+			printf("%s\n", qPrintable(str));
 			seg = iter.getNextSegment();
 		}
-
 	}
-
 }

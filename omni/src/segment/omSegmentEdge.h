@@ -9,8 +9,8 @@ class OmSegmentEdge {
  public:
 	OmSegmentEdge();
 	explicit OmSegmentEdge( OmSegment * c );
-	OmSegmentEdge( const OmSegID p, const OmSegID c, const float t );
- 	OmSegmentEdge( OmSegment * p, OmSegment * c, const float t );
+	OmSegmentEdge( const OmSegID p, const OmSegID c, const double t );
+ 	OmSegmentEdge( OmSegment * p, OmSegment * c, const double t );
 
 	bool operator==( const OmSegmentEdge& rhs ) const;
 
@@ -18,7 +18,7 @@ class OmSegmentEdge {
 
 	OmSegID parentID;
 	OmSegID childID;
-	float threshold;
+	double threshold;
 	bool valid;
 
 	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentEdge & e );

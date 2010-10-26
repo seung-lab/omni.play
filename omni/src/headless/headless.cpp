@@ -1,3 +1,4 @@
+#include "headless/headlessImpl.hpp"
 #include "mesh/omMipMesh.h"
 #include "common/omDebug.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
@@ -6,7 +7,7 @@
 #include "headless/headless.h"
 #include "gui/recentFileList.h"
 #include "project/omProject.h"
-#include "project/omProjectSaveAction.h"
+#include "actions/omProjectSaveAction.h"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
@@ -58,6 +59,13 @@ void Headless::processLine(const QString& line, const QString&)
 		OmBuildSegmentation bs(&added_segmentation);
 		bs.build_seg_mesh();
 		bs.wait();
+	} else if("clearMST" == line) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::ClearMST(segmentationID_);
+
 	} else if("loadDend" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");
@@ -153,7 +161,7 @@ void Headless::processLine(const QString& line, const QString&)
 	} else if(line.startsWith("dumpSegTiles:")) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		QString fileNameAndPath = "/tmp/tiles.dump";
-		OmId segID = 1;
+		OmID segID = 1;
 
 		if(3 == args.size()) {
 			segID = StringHelpers::getUInt(args[1]);
@@ -170,7 +178,7 @@ void Headless::processLine(const QString& line, const QString&)
 	} else if(line.startsWith("dumpChannTiles:")) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 		QString file = "/tmp/tiles";
-		OmId segID = 1;
+		OmID segID = 1;
 
 		if(3 == args.size()) {
 			segID = StringHelpers::getUInt(args[1]);
@@ -278,14 +286,8 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-		segmentationID_ = added_segmentation.GetID();
-		QString hdf5fnp = args[1];
+		HeadlessImpl::loadHDF5seg(args[1], segmentationID_);
 
-		OmBuildSegmentation bs(&added_segmentation);
-		bs.addFileNameAndPath(hdf5fnp);
-		bs.build_seg_image();
-		bs.wait();
 	} else if(line.startsWith("loadHDF5chann:")){
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 
@@ -352,17 +354,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 
-		QString projectFileName = QFileInfo(args[1]+".omni").fileName();
-
-		OmProject::New(projectFileName);
-
-		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-		QString hdf5fnp = args[1];
-
-		OmBuildSegmentation bs(&added_segmentation);
-		bs.addFileNameAndPath(hdf5fnp);
-		bs.buildAndMeshSegmentation();
-		bs.wait();
+		HeadlessImpl::buildHDF5(args[1]);
 	} else if("loadChunk" == line){
 		if(0 == segmentationID_){
 			printf("Please choose segmentation first!\n");

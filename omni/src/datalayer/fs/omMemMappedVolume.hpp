@@ -17,13 +17,13 @@
 #include <zi/mutex.hpp>
 #include <QFile>
 
-template <typename T> class OmIMemMappedFile;
+template <typename T> class OmIOnDiskFile;
 
 template <typename T, typename VOL>
 class OmMemMappedVolume : public OmIDataVolume<T,VOL> {
 private:
 	VOL* vol_;
-	std::vector<boost::shared_ptr<OmIMemMappedFile<T> > > maps_;
+	std::vector<boost::shared_ptr<OmIOnDiskFile<T> > > maps_;
 
 	typedef OmMemMappedFileReadQT<T> reader_t;
 	typedef OmMemMappedFileWriteQT<T> writer_t;
@@ -34,14 +34,16 @@ public:
 		: vol_(vol)
 	{}
 
+	OmRawDataPtrs GetType() const {
+		return (T*)0;
+	}
+
 	void Load()
 	{
 		resizeMapsVector();
 
 		for(size_t level = 0; level < maps_.size(); ++level) {
-			maps_[level] =
-				boost::make_shared<reader_t>(getFileName(level),
-							     0);
+			maps_[level] = reader_t::Reader(getFileName(level));
 		}
 	}
 
@@ -63,9 +65,9 @@ public:
 					  << "," << dims.z
 					  << ")\n";
 
-			maps_[level] =
-				boost::make_shared<writer_t>(getFileName(level),
-							     size);
+			maps_[level] =writer_t::WriterNumBytes(getFileName(level),
+												   size,
+												   om::DONT_ZERO_FILL);
 		}
 
 		printf("OmMemMappedVolume: done allocating data\n");
@@ -78,7 +80,7 @@ public:
 	T* GetChunkPtr(const OmMipChunkCoord& coord) const
 	{
 		const int level = coord.Level;
-		const uint64_t offset = vol_->ComputeChunkPtrOffset(coord);
+		const uint64_t offset = vol_->ComputeChunkPtrOffsetBytes(coord);
 		T* ret = maps_[level]->GetPtrWithOffset(offset);
 		assert(ret);
 		return ret;

@@ -26,6 +26,10 @@ public:
 		zi::rwmutex::write_guard g(mutex_);
 		map_[k]=v;
 	}
+	VAL get(const KEY& k){
+		zi::rwmutex::read_guard g(mutex_);
+		return map_[k];
+	}
 	void erase(const KEY& k){
 		zi::rwmutex::write_guard g(mutex_);
 		map_.erase(k);

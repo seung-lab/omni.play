@@ -2,8 +2,7 @@
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
-#include "system/omEventManager.h"
+#include "segment/omSegmentSelected.hpp"
 #include "system/omLocalPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -47,13 +46,6 @@ OmView3d::OmView3d(QWidget * parent, OmViewGroupState * vgs )
 
 	mDrawTimer.stop();
 	connect(&mDrawTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
-
-	// These calls simply prime Michaels Local Preferences File I/O System
-	// TODO: make OmLocalPreferences cache, so we don't have to prime...(purcaro)
-	OmLocalPreferences::getDefault2DViewFrameIn3D();
-	OmLocalPreferences::getDefaultDrawCrosshairsIn3D();
-	OmLocalPreferences::getDefaultCrosshairValue();
-	OmLocalPreferences::getDefaultDoDiscoBall();
 
 	mElapsed = new QTime();
 	mElapsed->start();
@@ -295,8 +287,8 @@ void OmView3d::View3dUpdatePreferencesEvent()
 /*
  *	Returns a vector names of closest picked result for given draw options.
  */
-bool OmView3d::PickPoint(Vector2 < int >point2d,
-						 std::vector < unsigned int >&rNamesVec)
+bool OmView3d::pickPoint(const Vector2i& point2d,
+						 std::vector<uint32_t>& rNamesVec)
 {
 	//clear name vector
 	rNamesVec.clear();
@@ -335,6 +327,29 @@ bool OmView3d::PickPoint(Vector2 < int >point2d,
 
 	//success
 	return true;
+}
+
+SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2d, int& pickName)
+{
+	std::vector<uint32_t> result;
+	const bool valid_pick = pickPoint(point2d, result);
+
+	//if valid and return count
+	if (!valid_pick || (result.size() != 3)){
+		return SegmentDataWrapper();
+	}
+
+	//ensure valid OmIDsSet
+	const OmID segmentationID = result[0];
+	const OmSegID segmentID = result[1];
+	SegmentDataWrapper sdw(segmentationID, segmentID);
+
+	if (!sdw.isValidWrapper()){
+		return SegmentDataWrapper();
+	}
+
+	pickName = result[2];
+	return sdw;
 }
 
 /*

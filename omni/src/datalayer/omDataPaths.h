@@ -15,7 +15,7 @@ public:
 	static OmDataPath getDefaultDatasetName();
 	static OmDataPath getProjectArchiveNameQT();
 
-	static OmDataPath getSegmentPagePath( const OmId segmentationID,
+	static OmDataPath getSegmentPagePath( const OmID segmentationID,
 										  const quint32 pageNum );
 
 	static std::string getMeshDirectoryPath( const OmMipMeshCoord&,
@@ -23,7 +23,7 @@ public:
 
 	static std::string getMeshFileName(const OmMipMeshCoord& meshCoord);
 	static std::string getLocalPathForHd5fChunk(const OmMipMeshCoord& meshCoord,
-												const OmId segmentationID);
+												const OmID segmentationID);
 
 	static std::string getDirectoryPath(OmChannel* chan);
 	static std::string getDirectoryPath(OmSegmentation* seg);

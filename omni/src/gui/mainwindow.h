@@ -37,7 +37,7 @@ class MainWindow
 	void openProject( QString fileNameAndPath );
 	void openProject( QString fileName, QString pathName );
 
-	void cleanViewsOnVolumeChange(ObjectType objectType, OmId objectId);
+	void cleanViewsOnVolumeChange(ObjectType objectType, OmID objectId);
 	void updateStatusBar( QString msg );
 
 	bool isProjectOpen();
@@ -73,8 +73,8 @@ class MainWindow
 
 
 	void open3dView();
-	void openChannelView(OmId chan_id, ViewType vtype);
-	void openSegmentationView(OmId primary_id, ViewType vtype);
+	void openChannelView(OmID chan_id, ViewType vtype);
+	void openSegmentationView(OmID primary_id, ViewType vtype);
 
 	void showEditPreferencesDialog();
 	void showEditLocalPreferencesDialog();

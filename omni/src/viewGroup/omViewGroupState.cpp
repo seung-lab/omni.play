@@ -12,11 +12,10 @@
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omZoomLevel.hpp"
 
-#include <boost/make_shared.hpp>
-
 OmViewGroupState::OmViewGroupState(MainWindow * mw)
 	: OmManageableObject()
 	, mMainWindow(mw)
+	, mFilterWidget(NULL)
 	, mViewGroup(boost::make_shared<ViewGroup>(mMainWindow, this))
 	, brushSize_(boost::make_shared<OmBrushSize>())
 	, zoomLevel_(boost::make_shared<OmZoomLevel>())
@@ -53,12 +52,12 @@ OmViewGroupState::OmViewGroupState(MainWindow * mw)
 }
 
 // GUI state
-void OmViewGroupState::addView2Dchannel(OmId chan_id, ViewType vtype)
+void OmViewGroupState::addView2Dchannel(OmID chan_id, ViewType vtype)
 {
 	mViewGroup->AddView2Dchannel(chan_id, vtype);
 }
 
-void OmViewGroupState::addView2Dsegmentation(OmId segmentation_id,
+void OmViewGroupState::addView2Dsegmentation(OmID segmentation_id,
 											 ViewType vtype)
 {
 	mViewGroup->AddView2Dsegmentation(segmentation_id, vtype);
@@ -69,7 +68,7 @@ void OmViewGroupState::addView3D()
 	mViewGroup->AddView3D();
 }
 
-void OmViewGroupState::addAllViews( OmId channelID, OmId segmentationID )
+void OmViewGroupState::addAllViews( OmID channelID, OmID segmentationID )
 {
 	mViewGroup->AddAllViews( channelID, segmentationID );
 }
@@ -242,30 +241,6 @@ Vector2f OmViewGroupState::ComputePanDistance(ViewType plane)
 	}
 }
 
-/*
- *	Enable/disable orthogonal slice.
- */
-void OmViewGroupState::SetSliceState(OmSlicePlane plane, bool enabled)
-{
-	switch (plane) {
-
-	case SLICE_XY_PLANE:
-		mXYSliceEnabled = enabled;
-		break;
-
-	case SLICE_YZ_PLANE:
-		mYZSliceEnabled = enabled;
-		break;
-
-	case SLICE_XZ_PLANE:
-		mXZSliceEnabled = enabled;
-		break;
-
-	default:
-		assert(false);
-	}
-}
-
 OmSegmentColorCacheType
 OmViewGroupState::determineColorizationType(const ObjectType objType)
 {
@@ -325,7 +300,7 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 }
 
 boost::shared_ptr<OmColorRGBA>
-OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
+OmViewGroupState::ColorTile(uint32_t const* imageData,
 							const Vector2i& dims,
 							const OmTileCoord& key)
 {
@@ -337,7 +312,7 @@ OmViewGroupState::ColorTile(boost::shared_ptr<uint32_t> imageData,
 		key.getSegmentColorCacheType();
 
 	setupColorizer(dims, key, sccType);
-	return mColorCaches[ sccType ]->colorTile(imageData);
+	return mColorCaches[ sccType ]->ColorTile(imageData);
 }
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager * tbm)

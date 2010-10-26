@@ -9,7 +9,7 @@ class ExportButton : public OmButton<SegInspector> {
 public:
 	ExportButton(SegInspector * d)
 		: OmButton<SegInspector>( d,
-								  "Export",
+								  "Export and reroot segments",
 								  "Export",
 								  false)
 	{
@@ -27,7 +27,7 @@ private:
 		if (fileName == NULL)
 			return;
 
-		sdw->getSegmentation().ExportInternalData(fileName);
+		sdw->getSegmentation().ExportInternalData(fileName, true);
 	}
 };
 

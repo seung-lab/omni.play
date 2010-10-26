@@ -1,8 +1,6 @@
 #include <QtGui>
 #include "preferences3d.h"
-
-#include "system/omEventManager.h"
-#include "system/events/omView3dEvent.h"
+#include "system/omEvents.h"
 #include "system/omPreferences.h"
 #include "system/omPreferenceDefinitions.h"
 
@@ -11,7 +9,7 @@
 #define DEBUG 0
 
 Preferences3d::Preferences3d(QWidget * parent)
- : QWidget(parent)
+	: QWidget(parent)
 {
 	setupUi(this);
 
@@ -55,10 +53,9 @@ Preferences3d::Preferences3d(QWidget * parent)
 
 void Preferences3d::on_antiAliasingCheckBox_stateChanged()
 {
-	OmPreferences::SetBoolean(om::PREF_VIEW3D_ANTIALIASING_BOOL, antiAliasingCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-
+	OmPreferences::SetBoolean(om::PREF_VIEW3D_ANTIALIASING_BOOL,
+							  antiAliasingCheckBox->isChecked());
+	OmEvents::View3dPreferenceChange();
 }
 
 void Preferences3d::on_bgColorPicker_clicked()
@@ -75,16 +72,15 @@ void Preferences3d::on_bgColorPicker_clicked()
 		Vector3 < float >color3f(color.redF(), color.greenF(), color.blueF());
 		OmPreferences::SetVector3f(om::PREF_VIEW3D_BACKGROUND_COLOR_V3F, color3f);
 
-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+		OmEvents::View3dPreferenceChange();
 	}
-
 }
 
 void Preferences3d::on_highlightCheckBox_stateChanged()
 {
-	OmPreferences::SetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL, highlightCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+	OmPreferences::SetBoolean(om::PREF_VIEW3D_HIGHLIGHT_ENABLED_BOOL,
+							  highlightCheckBox->isChecked());
+	OmEvents::View3dPreferenceChange();
 }
 
 void Preferences3d::on_highlightColorPicker_clicked()
@@ -100,73 +96,54 @@ void Preferences3d::on_highlightColorPicker_clicked()
 
 		Vector3 < float >color3f(color.redF(), color.greenF(), color.blueF());
 		OmPreferences::SetVector3f(om::PREF_VIEW3D_HIGHLIGHT_COLOR_V3F, color3f);
-
-		OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
+		OmEvents::View3dPreferenceChange();
 	}
 }
 
 void Preferences3d::on_transparentCheckBox_stateChanged()
 {
 	OmPreferences::SetBoolean(om::PREF_VIEW3D_TRANSPARENT_UNSELECTED_BOOL, transparentCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_fovSlider_valueChanged()
 {
 	OmPreferences::SetFloat(om::PREF_VIEW3D_CAMERA_FOV_FLT, (fovSlider->value() * 1.0));
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_nearplaneSlider_valueChanged()
 {
 	OmPreferences::SetFloat(om::PREF_VIEW3D_CAMERA_NEAR_PLANE_FLT, (nearplaneSlider->value()));
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_farplaneSlider_valueChanged()
 {
 	OmPreferences::SetFloat(om::PREF_VIEW3D_CAMERA_FAR_PLANE_FLT, (farplaneSlider->value() * 1000.0));
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_axisCheckBox_stateChanged()
 {
 	OmPreferences::SetBoolean(om::PREF_VIEW3D_SHOW_AXIS_BOOL, axisCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_chunksCheckBox_stateChanged()
 {
 	OmPreferences::SetBoolean(om::PREF_VIEW3D_SHOW_CHUNK_EXTENT_BOOL, chunksCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_infoCheckBox_stateChanged()
 {
 	OmPreferences::SetBoolean(om::PREF_VIEW3D_SHOW_INFO_BOOL, infoCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_focusCheckBox_stateChanged()
 {
 	OmPreferences::SetBoolean(om::PREF_VIEW3D_SHOW_FOCUS_BOOL, focusCheckBox->isChecked());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::on_styleComboBox_currentIndexChanged()
 {
 	OmPreferences::SetInteger(om::PREF_VIEW3D_FOCUS_STYLE_INT, styleComboBox->currentIndex());
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-}
+	OmEvents::View3dPreferenceChange();}
 
 void Preferences3d::alphaSliderValueChanged(int val)
 {
@@ -174,7 +151,5 @@ void Preferences3d::alphaSliderValueChanged(int val)
 	transparencySliderLabel->setNum(val / (50.0));
 
 	OmPreferences::SetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT, (val / (50.0)));
-
-	OmEventManager::PostEvent(new OmView3dEvent(OmView3dEvent::UPDATE_PREFERENCES));
-
+	OmEvents::View3dPreferenceChange();
 }

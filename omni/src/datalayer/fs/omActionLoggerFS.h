@@ -3,66 +3,80 @@
 
 #include "datalayer/fs/omActionLoggerFSthread.hpp"
 #include "project/omProject.h"
+#include "utility/omThreadPool.hpp"
 #include "zi/omMutex.h"
 #include "zi/omUtility.h"
 
 #include <QDir>
 
-class OmSegmentSplitAction;
-class OmSegmentGroupAction;
-class OmSegmentJoinAction;
-class OmSegmentSelectAction;
-class OmSegmentValidateAction;
-class OmProjectSaveAction;
+class OmSegmentSplitActionImpl;
+class OmSegmentGroupActionImpl;
+class OmSegmentJoinActionImpl;
+class OmSegmentSelectActionImpl;
+class OmSegmentValidateActionImpl;
+class OmSegmentUncertainActionImpl;
+class OmProjectSaveActionImpl;
 
-class OmActionLoggerFS {
+class OmActionLoggerFS : private om::singletonBase<OmActionLoggerFS> {
 public:
-	template <class T> static void save(T * action, const std::string &);
+	template <typename T>
+	static void save(boost::shared_ptr<T> actionImpl,
+					 const std::string& str);
 
 private:
 	bool initialized;
 	zi::mutex mutex_;
 	QDir mLogFolder;
 
-	OmActionLoggerFS();
-	~OmActionLoggerFS();
+	OmThreadPool threadPool_;
+
+	OmActionLoggerFS()
+		: initialized(false)
+	{
+		threadPool_.start(1);
+	}
+
+	~OmActionLoggerFS(){
+		threadPool_.stop();
+	}
+
 	void setupLogDir();
 	QDir& doGetLogFolder();
-
-	static inline OmActionLoggerFS & Instance(){
-		return zi::singleton<OmActionLoggerFS>::instance();
-	}
 
 	friend class zi::singleton<OmActionLoggerFS>;
 };
 
-template <class T>
-void OmActionLoggerFS::save(T * action, const std::string & str)
+template <typename T>
+void OmActionLoggerFS::save(boost::shared_ptr<T> actionImpl,
+							const std::string& str)
 {
 	boost::shared_ptr<OmActionLoggerFSThread<T> >
-		task(new OmActionLoggerFSThread<T>(action, str,
-										   Instance().doGetLogFolder()));
+		task(new OmActionLoggerFSThread<T>(actionImpl,
+										   str,
+										   instance().doGetLogFolder()));
 
-	task->run(); //QT may delete *action before we have a chance to save it!
-	//	OmProject::GetGlobalThreadPool().addTaskBack(task);
+	instance().threadPool_.addTaskBack(task);
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
-QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl&);
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
-QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentGroupActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmSegmentGroupActionImpl&);
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a );
-QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentJoinActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmSegmentJoinActionImpl&);
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );
-QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl&);
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a );
-QDataStream &operator>>(QDataStream & in,  OmSegmentValidateAction & a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentValidateActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmSegmentValidateActionImpl&);
 
-QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & a );
-QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction& a );
+QDataStream& operator<<(QDataStream& out, const OmSegmentUncertainActionImpl&);
+QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl&);
+
+QDataStream& operator<<(QDataStream& out, const OmProjectSaveActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmProjectSaveActionImpl&);
 
 #endif

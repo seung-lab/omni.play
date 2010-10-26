@@ -9,7 +9,7 @@ OmFilter2d::OmFilter2d()
 	, mSeg(1)
 	, vol_(NULL) {}
 
-OmFilter2d::OmFilter2d(OmId omId)
+OmFilter2d::OmFilter2d(OmID omId)
 	: OmManageableObject(omId)
 	, mAlpha(0.0)
 	, mChannel(0)
@@ -24,11 +24,11 @@ double OmFilter2d::GetAlpha(){
 	return mAlpha;
 }
 
-OmId OmFilter2d::GetSegmentation() {
+OmID OmFilter2d::GetSegmentation() {
 	return mSeg;
 }
 
-void OmFilter2d::SetSegmentation(const OmId id)
+void OmFilter2d::SetSegmentation(const OmID id)
 {
 	if(OmProject::IsSegmentationValid(id)){
 		mSeg = id;
@@ -37,11 +37,11 @@ void OmFilter2d::SetSegmentation(const OmId id)
 	}
 }
 
-OmId OmFilter2d::GetChannel(){
+OmID OmFilter2d::GetChannel(){
 	return mChannel;
 }
 
-void OmFilter2d::SetChannel(const OmId id)
+void OmFilter2d::SetChannel(const OmID id)
 {
 	if(OmProject::IsChannelValid(id)){
 		mChannel = id;

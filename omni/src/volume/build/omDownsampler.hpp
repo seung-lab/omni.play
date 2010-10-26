@@ -5,6 +5,7 @@
 #include "utility/omTimer.h"
 #include "zi/omThreads.h"
 #include "utility/omThreadPool.hpp"
+#include "system/cache/omRawChunkCache.hpp"
 
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
@@ -13,12 +14,14 @@ template <typename T>
 class OmDownsampler {
 private:
 	OmMipVolume *const vol_;
-	std::vector<MipLevelInfo<T> > mips_;
+	std::vector<MipLevelInfo> mips_;
 	MippingInfo mippingInfo_;
+	boost::shared_ptr<OmRawChunkCache<T> > cache_;
 
 public:
 	OmDownsampler(OmMipVolume* vol)
 		: vol_(vol)
+		, cache_(boost::make_shared<OmRawChunkCache<T> >(vol_))
 	{
 		mippingInfo_.maxMipLevel = vol_->GetRootMipLevel();
 
@@ -31,7 +34,6 @@ public:
 		mips_.resize(mippingInfo_.maxMipLevel + 1);
 
 		for(int i=0; i <= mippingInfo_.maxMipLevel; ++i){
-			mips_[i].data = boost::get<T*>(vol_->getVolData()->GetVolPtr(i));
 			mips_[i].factor = om::pow2int(i);
 
 			const Vector3i dims = vol_->getDimsRoundedToNearestChunk(i);
@@ -58,11 +60,13 @@ public:
 			for (int y = 0; y < leaf_mip_dims.y; ++y) {
 				for (int x = 0; x < leaf_mip_dims.x; ++x) {
 					const OmMipChunkCoord coord(0, x, y, z);
+
 					boost::shared_ptr<DownsampleVoxelTask<T> > task =
 						boost::make_shared<DownsampleVoxelTask<T> >(vol_,
 																	mips_,
 																	mippingInfo_,
-																	coord);
+																	coord,
+																	cache_);
 					threadPool.addTaskBack(task);
 				}
 			}

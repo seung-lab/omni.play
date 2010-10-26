@@ -1,33 +1,101 @@
 #ifndef LOCAL_PREF_FILES_H
 #define LOCAL_PREF_FILES_H
 
-#include <QDir>
+#include "utility/localPrefFilesImpl.hpp"
 
-class LocalPrefFiles 
-{
- public:
-	LocalPrefFiles();
-	bool checkIfSettingExists( QString setting );
+class LocalPrefFiles : private om::singletonBase<LocalPrefFiles> {
+public:
+// bool
+	inline static bool readSettingBool(const QString& setting,
+									   const bool defaultRet)
+	{
+		if(!instance().impl_->settingExists(setting)){
+			return defaultRet;
+		}
 
-	bool readSettingBool( QString setting );
-	void writeSettingBool( QString setting, const bool value );
+		try{
+			return instance().impl_->readSettingBool(setting);
+		} catch (...) {
+			return defaultRet;
+		}
+	}
 
-	int readSettingInt( QString setting );
-	void writeSettingInt( QString setting, const int value );
+	inline static void writeSettingBool(const QString& setting,
+										const bool value){
+		return instance().impl_->writeSettingBool(setting, value);
+	}
 
-	unsigned int readSettingUInt( QString setting );
-	void writeSettingUInt( QString setting, const unsigned int value );
+// numbers
+	template <typename T>
+	inline static T readSettingNumber(const QString& setting,
+									  const T defaultRet)
+	{
+		if(!instance().impl_->settingExists(setting)){
+			return defaultRet;
+		}
 
-	QStringList readSettingQStringList( QString setting );
-	void writeSettingQStringList( QString setting, QStringList values );
+		try{
+			return instance().impl_->readSettingNumber<T>(setting);
+		} catch (...) {
+			return defaultRet;
+		}
+	}
 
-	QString readSettingQString( QString setting );
-	void writeSettingQString( QString setting, QString value );
- private:
-	QDir prefFolder;
-	void setupPrefFolder();
-	QString getFileName( QString setting );
-	QStringList readFile( QString setting );
+	template <typename T>
+	inline static void writeSettingNumber(const QString& setting,
+										  const T value){
+		return instance().impl_->writeSettingNumber<T>(setting, value);
+	}
+
+// QString
+	inline static QString readSettingQString(const QString& setting,
+											 const QString& defaultRet)
+	{
+		if(!instance().impl_->settingExists(setting)){
+			return defaultRet;
+		}
+
+		try{
+			return instance().impl_->readSettingQString(setting);
+		} catch (...) {
+			return defaultRet;
+		}
+
+	}
+
+	inline static void writeSettingQString(const QString& setting,
+										   const QString& value){
+		return instance().impl_->writeSettingQString(setting, value);
+	}
+
+// QStringList
+	inline static QStringList readSettingQStringList(const QString& setting,
+													 const QStringList& defaultRet)
+	{
+		if(!instance().impl_->settingExists(setting)){
+			return defaultRet;
+		}
+
+		try{
+			return instance().impl_->readSettingQStringList(setting);
+		} catch (...) {
+			return defaultRet;
+		}
+	}
+
+	inline static void writeSettingQStringList(const QString& setting,
+											   const QStringList& values){
+		return instance().impl_->writeSettingQStringList(setting, values);
+	}
+
+private:
+	LocalPrefFiles()
+		: impl_(new LocalPrefFilesImpl())
+	{}
+
+	boost::shared_ptr<LocalPrefFilesImpl> impl_;
+
+	friend class zi::singleton<LocalPrefFiles>;
 };
 
 #endif

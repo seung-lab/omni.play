@@ -1,15 +1,14 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "project/omProject.h"
-#include "segment/actions/omSegmentEditor.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "segment/omSegmentSelected.hpp"
+#include "actions/omSegmentSelectAction.h"
+#include "actions/omSegmentSplitAction.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelector.h"
-#include "system/omEventManager.h"
+#include "system/omEvents.h"
 #include "system/omStateManager.h"
 #include "viewGroup/omViewGroupState.h"
-#include "utility/dataWrappers.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
@@ -64,12 +63,11 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
 	if (event->key() == Qt::Key_C) {
-		OmId seg = 1;
-		OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
+		SegmentationDataWrapper sdw(1);
+		OmSegmentation & current_seg = sdw.getSegmentation();
 
-		Vector3<int> voxel = current_seg.FindCenterOfSelectedSegments();
-
-		SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
+		const DataCoord voxel = current_seg.FindCenterOfSelectedSegments();
+		SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
 		mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
@@ -78,7 +76,8 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 		mpView3d->mCamera.SetFocus(picked_voxel);
 		mpView3d->updateGL();
 
-		OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
+		OmEvents::ViewCenterChanged();
+
 	} else if (event->key() == Qt::Key_Escape) {
 		resetWindow();
 	} else if (event->key() == Qt::Key_Minus) {
@@ -99,17 +98,14 @@ void OmView3dUi::doZoom(int direction)
 
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
-	//debug(dend3d, "OmView3dUi::DendModeMouseReleased\n");
-	//get segment
-	OmId segmentation_id, segment_id;
-	if (!PickSegmentMouse(event, false, segmentation_id, segment_id)) {
+	const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
+	if (!sdw.isValidWrapper()) {
 		mpView3d->updateGL();
 		return;
 	}
 	mpView3d->updateGL();
 
-	OmSegmentSplitAction::DoFindAndSplitSegment(SegmentDataWrapper(segmentation_id, segment_id),
-												mViewGroupState);
+	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, mViewGroupState);
 }
 
 /////////////////////////////////
@@ -221,50 +217,35 @@ void OmView3dUi::CameraMovementMouseWheel(QWheelEvent * event)
 /////////////////////////////////
 ///////          Segment Picking
 
-bool OmView3dUi::PickSegmentMouse(QMouseEvent * event, bool drag, OmId & segmentationId, OmId & segmentId, int *type)
+SegmentDataWrapper OmView3dUi::PickSegmentMouse(QMouseEvent * event,
+												bool drag,
+												int *type)
 {
-	//debug(3d, "OmView3dUi::PickSegmentMouse\n");
+	debug(3d, "OmView3dUi::PickSegmentMouse\n");
 
 	//extract event properties
 	Vector2i point2d(event->x(), event->y());
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	std::vector<unsigned int> result;
-	bool valid_pick = mpView3d->PickPoint(point2d, result);
-
-	//if valid and return count
-	if (!valid_pick || (result.size() != 3))
-		return false;
-
-	//ensure valid OmIDsSet
-	const OmId segmentationID = result[0];
-	if (!OmProject::IsSegmentationValid(segmentationID))
-		return false;
-	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
-		return false;
-
-	//check if dragging
-	if (drag &&
-	    (result[0] == mPrevSegmentationId) &&
-	    (result[1] == mPrevSegmentId)) {
-		return false;
-	} else {
-		//update prev selection
-		mPrevSegmentationId = result[0];
-		mPrevSegmentId = result[1];
+	int pickName;
+	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
+	if(!sdw.isValidWrapper()){
+		return SegmentDataWrapper();
 	}
 
-	//otherwise vaild segment
-	segmentationId = result[0];
-	segmentId = result[1];
-	////debug(genone,"OmView3dUi::PickSegmentMouse %i \n",result[1]);
+	//check if dragging
+	if (drag && sdw == prevSDW_){
+		return SegmentDataWrapper();
+	} else {
+		prevSDW_ = sdw;
+	}
 
 	//if valid pointer, then store pick name
 	if (type != NULL) {
-		*type = result[2];
+		*type = pickName;
 	}
 
-	return true;
+	return sdw;
 }
 
 /////////////////////////////////
@@ -276,21 +257,23 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
 	//get ids
-	OmId segmentation_id, segmentID;
 	int pick_object_type;
-	if (!PickSegmentMouse(event, drag, segmentation_id, segmentID, &pick_object_type))
+	SegmentDataWrapper sdw = PickSegmentMouse(event, drag, &pick_object_type);
+	if (!sdw.isValidWrapper()){
 		return;
+	}
 
 	//if picked type was not a mesh
-	if (pick_object_type != OMGL_NAME_MESH)
+	if (pick_object_type != OMGL_NAME_MESH){
 		return;
+	}
 
 	//get segment state
-	OmSegmentSelector sel( segmentation_id, this, "view3dUi" );
+	OmSegmentSelector sel(sdw.getSegmentationID(), this, "view3dUi" );
 	if( augment_selection ){
-		sel.augmentSelectedSet_toggle( segmentID );
+		sel.augmentSelectedSet_toggle( sdw.getID() );
 	} else {
-		sel.selectJustThisSegment_toggle( segmentID );
+		sel.selectJustThisSegment_toggle( sdw.getID() );
 	}
 	sel.sendEvent();
 }
@@ -300,16 +283,14 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
-	//get segment
-	OmId segmentationID, segmentID;
-	if (!PickSegmentMouse(event, false, segmentationID, segmentID)) {
+	SegmentDataWrapper sdw = PickSegmentMouse(event, false);
+	if (!sdw.isValidWrapper()){
 		mpView3d->updateGL();
 		return;
 	}
 	mpView3d->updateGL();
 
 	//refersh context menu and display
-	SegmentDataWrapper sdw(segmentationID, segmentID);
 	mSegmentContextMenu.Refresh( sdw, mViewGroupState);
 	mSegmentContextMenu.exec(event->globalPos());
 }
@@ -317,15 +298,15 @@ void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 {
 	DataCoord voxel;
-	OmId seg = PickVoxelMouseCrosshair(event, voxel);
-	if (!seg) {
-		mpView3d->updateGL();
-		return;
-	}
+	SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
-	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
+	if(!sdw.isValidWrapper()){
+		return;
+	}
+
+	OmSegmentation & current_seg = sdw.getSegmentation();
+	SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
 
@@ -334,63 +315,42 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 
 void OmView3dUi::crosshair(QMouseEvent * event)
 {
-	//debug(view3d, "hi from %s\n", __FUNCTION__);
-
 	DataCoord voxel;
-	OmId seg = PickVoxelMouseCrosshair(event, voxel);
-	if (!seg) {
-		mpView3d->updateGL();
-		return;
-	}
+	const SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	//debug(view3d, "coordinate is (%d, %d, %d)\n", voxel.x, voxel.y, voxel.z );
+	if(!sdw.isValidWrapper()) {
+		return;
+	}
 
-	OmSegmentation & current_seg = OmProject::GetSegmentation(seg);
-	SpaceCoord picked_voxel = current_seg.NormToSpaceCoord(current_seg.DataToNormCoord(voxel));
+	OmSegmentation & current_seg = sdw.getSegmentation();
+	const SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
 	mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
 	mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
-	OmEventManager::PostEvent(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
-
-/*
-	debug(view3d, "coordinate is now (%f, %f, %f)\n",
-	      picked_voxel.x,
-	      picked_voxel.y,
-	      picked_voxel.z
-	      );
-*/
+	OmEvents::ViewCenterChanged();
 }
 
-OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel)
+SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
+													   DataCoord& rVoxel)
 {
 	//extract event properties
-	Vector2i point2d(event->x(), event->y());
+	const Vector2i point2d(event->x(), event->y());
 
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
-	std::vector<unsigned int>result;
-
-	bool valid_pick;
+	int pickName;
 	mpView3d->updateGL();
-	valid_pick = mpView3d->PickPoint(point2d, result);
-
-	//debug(crosshair, "valid_pick = %i, size of crosshair PickPoint call's hit list: %i\n",
-	//valid_pick, result.size());
-
-	if(!valid_pick || result.size() != 3)
-		return 0;
-
-	const OmId segmentationID = result[0];
-	if (!OmProject::IsSegmentationValid(segmentationID))
-		return 0;
-	if (!OmProject::GetSegmentation(segmentationID).GetSegmentCache()->IsSegmentValid(result[1]))
-		return 0;
+	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
+	if(!sdw.isValidWrapper()){
+		return SegmentDataWrapper();
+	}
 
 	//unproject to point3d
 	Vector3f point3d;
-	if (!mpView3d->UnprojectPoint(point2d, point3d))
-		return 0;
+	if (!mpView3d->UnprojectPoint(point2d, point3d)){
+		return SegmentDataWrapper();
+	}
 
 	//define depth scale factor
 	float z_depth_scale = 0.0f;
@@ -401,13 +361,13 @@ OmId OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent * event, DataCoord & rVoxel
 	Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
 
 	//get voxel at point3d
-	OmSegmentation & current_seg = OmProject::GetSegmentation(result[0]);
+	OmSegmentation & current_seg = sdw.getSegmentation();
 	NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
 	DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
 
 	//return success with voxel
 	rVoxel = voxel;
-	return result[0];
+	return sdw;
 }
 
 void OmView3dUi::resetWindow()

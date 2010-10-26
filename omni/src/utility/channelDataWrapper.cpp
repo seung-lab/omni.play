@@ -1,13 +1,13 @@
 #include "utility/channelDataWrapper.hpp"
 #include "utility/dataWrappers.h"
 
-QHash<OmId, FilterDataWrapper> ChannelDataWrapper::getAllFilterIDsAndNames()
+QHash<OmID, FilterDataWrapper> ChannelDataWrapper::getAllFilterIDsAndNames()
 {
-	QHash<OmId, FilterDataWrapper> filters;
+	QHash<OmID, FilterDataWrapper> filters;
 
 	OmChannel & chann = OmProject::GetChannel(mID);
 
-	foreach(OmId filterID, chann.GetValidFilterIds()) {
+	foreach(OmID filterID, chann.GetValidFilterIds()) {
 		FilterDataWrapper filter(mID, filterID);
 		filters[filterID] = filter;
 	}

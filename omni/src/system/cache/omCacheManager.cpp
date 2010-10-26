@@ -74,8 +74,8 @@ int OmCacheManager::CleanCacheGroup(const OmCacheGroupEnum group)
 
 void OmCacheManager::SignalCachesToCloseDown()
 {
-	Instance().amClosingDown.set(true);
-	Instance().cleaner_->stop();
+	instance().amClosingDown.set(true);
+	instance().cleaner_->stop();
 	GetCache(RAM_CACHE_GROUP)->SignalCachesToCloseDown();
 	GetCache(VRAM_CACHE_GROUP)->SignalCachesToCloseDown();
 }

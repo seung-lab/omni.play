@@ -28,7 +28,9 @@ public:
 
 	void downsample(OmMipVolume* vol);
 
-	template <typename VOL> void setDataType(VOL* vol){
+	template <typename VOL>
+	void setDataType(VOL* vol)
+	{
 		printf("setting up volume data...\n");
 
 		if(OmVolDataType::UNKNOWN == vol->mVolDataType.index()){
@@ -45,9 +47,11 @@ private:
 	void loadMemMapFiles();
 	void allocMemMapFiles(const std::map<int, Vector3i> & levDims);
 	OmVolDataType determineOldVolType(OmMipVolume * vol);
+	OmRawDataPtrs GetVolPtrType();
 
-
-	template <typename VOL> OmVolDataSrcs makeVolData(VOL* vol){
+	template <typename VOL>
+	OmVolDataSrcs makeVolData(VOL* vol)
+	{
 		switch(vol->mVolDataType.index()){
 		case OmVolDataType::INT8:
 			return OmMemMappedVolume<int8_t, VOL>(vol);

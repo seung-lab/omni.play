@@ -54,7 +54,7 @@ void ChanInspector::on_exportButton_clicked()
 		return;
 	}
 
-	OmProject::GetChannel(cdw->getID()).ExportInternalData(fileName);
+	OmProject::GetChannel(cdw->getID()).ExportInternalData(fileName, false);
 }
 
 QDir ChanInspector::getDir()
@@ -109,7 +109,7 @@ void ChanInspector::on_notesEdit_textChanged()
 	OmProject::GetChannel(cdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
-OmId ChanInspector::getChannelID()
+OmID ChanInspector::getChannelID()
 {
 	return cdw->getID();
 }

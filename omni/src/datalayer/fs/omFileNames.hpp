@@ -1,6 +1,7 @@
 #ifndef OM_FILE_NAMES_HPP
 #define OM_FILE_NAMES_HPP
 
+#include "common/omDebug.h"
 #include "system/omProjectData.h"
 
 #include <QFile>
@@ -9,10 +10,53 @@
 class OmFileNames {
 public:
 
+	template <typename T>
+	static QString MakeVolPath(T* vol)
+	{
+		const QDir filesDir = OmProjectData::GetFilesFolderPath();
+
+		const QString subPath = QString("%1/")
+			.arg(QString::fromStdString(vol->GetDirectoryPath()));
+
+		if(subPath.startsWith("/")){
+			throw OmIoException("not a relative path: " + subPath.toStdString());
+		}
+
+		const QString fullPath = filesDir.absolutePath() + QDir::separator() + subPath;
+
+		if(!filesDir.mkpath(subPath)){
+			throw OmIoException("could not create folder " + fullPath.toStdString());
+		}
+
+		return fullPath;
+	}
+
+	template <typename T>
+	static QString MakeVolSegmentsPath(T* vol)
+	{
+		const QDir filesDir(MakeVolPath(vol));
+
+		const QString subPath("segments/");
+
+		const QString fullPath = filesDir.absolutePath() + QDir::separator() + subPath;
+
+		if(!filesDir.mkpath(subPath)){
+			throw OmIoException("could not create folder", fullPath);
+		}
+
+		return fullPath;
+	}
+
 	//TODO: cleanup!
 	//ex:  /home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
 	template <typename T>
 	static std::string GetMemMapFileName(T* vol, const int level)
+	{
+		return GetMemMapFileNameQT(vol, level).toStdString();
+	}
+
+	template <typename T>
+	static QString GetMemMapFileNameQT(T* vol, const int level)
 	{
 		const QDir filesDir = OmProjectData::GetFilesFolderPath();
 
@@ -40,7 +84,7 @@ public:
 
 		ZiLOG(DEBUG, io) << "file is " << fnp_clean.toStdString() << "\n";
 
-		return fnp_clean.toStdString();
+		return fnp_clean;
 	}
 };
 

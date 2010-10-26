@@ -11,7 +11,9 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
-typedef boost::tuple<OmId,OmSegID,int,int,int,int> OmMeshSegListKey;
+
+// segmentation ID, segment ID, mip level, x, y, z
+typedef boost::tuple<OmID,OmSegID,int,int,int,int> OmMeshSegListKey;
 
 class OmSegment;
 class OmSegmentCache;
@@ -29,7 +31,7 @@ public:
 		, freshness(0)
 		, isFetching(isFetching)
 	{}
-	OmSegPtrListValid( const OmSegPtrList & L, const quint32 f )
+	OmSegPtrListValid( const OmSegPtrList & L, const uint32_t f )
 		: isValid(true)
 		, list(L)
 		, freshness(f)
@@ -38,7 +40,7 @@ public:
 
 	bool isValid;
 	OmSegPtrList list;
-	quint32 freshness;
+	uint32_t freshness;
 	bool isFetching;
 };
 

@@ -6,15 +6,10 @@
 #include "datalayer/omDataPath.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentCache::OmSegmentCache(OmSegmentation * segmentation)
+OmSegmentCache::OmSegmentCache(OmSegmentation* segmentation)
 	: mSegmentation(segmentation)
-	, mImpl(new OmSegmentCacheImpl(segmentation))
-{
-}
-
-OmSegmentCache::~OmSegmentCache()
-{
-}
+	, mImpl(boost::make_shared<OmSegmentCacheImpl>(segmentation))
+{}
 
 OmSegID OmSegmentCache::getSegmentationID()
 {
@@ -26,11 +21,6 @@ quint32 OmSegmentCache::getPageSize()
 	return mImpl->getPageSize();
 }
 
-void OmSegmentCache::turnBatchModeOn( const bool batchMode )
-{
-	zi::guard g(mutex_);
-	mImpl->turnBatchModeOn( batchMode );
-}
 OmSegment* OmSegmentCache::AddSegment()
 {
 	zi::guard g(mutex_);
@@ -52,7 +42,7 @@ OmSegment* OmSegmentCache::GetOrAddSegment(const OmSegID val)
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 {
 	zi::guard g(mutex_);
-	return mImpl->isValueAlreadyMappedToSegment(seg);
+	return (NULL != mImpl->GetSegmentFromValue(seg));
 }
 
 OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
@@ -76,7 +66,7 @@ OmSegID OmSegmentCache::GetNumTopSegments()
 bool OmSegmentCache::AreSegmentsSelected()
 {
 	zi::guard g(mutex_);
-        return mImpl->AreSegmentsSelected();
+	return mImpl->AreSegmentsSelected();
 }
 
 quint32 OmSegmentCache::numberOfSelectedSegments()
@@ -88,13 +78,13 @@ quint32 OmSegmentCache::numberOfSelectedSegments()
 OmSegIDsSet & OmSegmentCache::GetSelectedSegmentIds()
 {
 	zi::guard g(mutex_);
-        return mImpl->GetSelectedSegmentIdsRef();
+	return mImpl->GetSelectedSegmentIdsRef();
 }
 
 OmSegIDsSet & OmSegmentCache::GetEnabledSegmentIds()
 {
 	zi::guard g(mutex_);
-        return mImpl->GetEnabledSegmentIdsRef();
+	return mImpl->GetEnabledSegmentIdsRef();
 }
 
 void OmSegmentCache::SetAllEnabled(bool enabled)
@@ -134,8 +124,8 @@ void OmSegmentCache::setSegmentEnabled( OmSegID segID, bool isEnabled )
 }
 
 void OmSegmentCache::setSegmentSelected( OmSegID segID,
-					 const bool isSelected,
-					 const bool addToRecentList)
+										 const bool isSelected,
+										 const bool addToRecentList)
 {
 	zi::guard g(mutex_);
 	mImpl->setSegmentSelected( segID, isSelected, addToRecentList );
@@ -165,18 +155,6 @@ QString OmSegmentCache::getSegmentNote( OmSegID segID )
 	return mImpl->getSegmentNote( segID );
 }
 
-void OmSegmentCache::addToDirtySegmentList(OmSegment* seg)
-{
-	zi::guard g(mutex_);
-	mImpl->addToDirtySegmentList( seg);
-}
-
-void OmSegmentCache::flushDirtySegments()
-{
-	zi::guard g(mutex_);
-	mImpl->flushDirtySegments();
-}
-
 OmSegment* OmSegmentCache::findRoot(OmSegment * segment)
 {
 	zi::guard g(mutex_);
@@ -195,8 +173,14 @@ OmSegID OmSegmentCache::findRootID(const OmSegID segID)
 	return mImpl->findRootID( segID );
 }
 
+OmSegID OmSegmentCache::findRootID(OmSegment* segment)
+{
+	zi::guard g(mutex_);
+	return mImpl->findRootID(segment);
+}
+
 OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1,
-						    OmSegment * seg2)
+													OmSegment * seg2)
 {
 	zi::guard g(mutex_);
 	return mImpl->findClosestCommonEdge(seg1, seg2);
@@ -211,65 +195,44 @@ void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	mImpl->UnJoinTheseSegments( segmentList);
+	mImpl->UnJoinTheseSegments(segmentList);
 }
 
 quint32 OmSegmentCache::getMaxValue()
 {
 	zi::guard g(mutex_);
-        return mImpl->getMaxValue();
-}
-
-quint64 OmSegmentCache::getSegmentListSize(OmSegIDRootType type)
-{
-	zi::guard g(mutex_);
-        return mImpl->getSegmentListSize(type);
+	return mImpl->getMaxValue();
 }
 
 void OmSegmentCache::UpdateSegmentSelection( const OmSegIDsSet & idsToSelect,
-					     const bool addToRecentList)
+											 const bool addToRecentList)
 {
 	zi::guard g(mutex_);
-        return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
+	return mImpl->UpdateSegmentSelection(idsToSelect, addToRecentList);
 }
 
-OmSegPtrListWithPage * OmSegmentCache::getRootLevelSegIDs(const uint32_t offset,
-							  const int numToGet,
-							  const OmSegIDRootType type,
-							  const OmSegID startSeg)
+std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge(const OmSegmentEdge& e)
 {
 	zi::guard g(mutex_);
-        return mImpl->getRootLevelSegIDs(offset, numToGet, type, startSeg);
-}
-
-void OmSegmentCache::setAsValidated(OmSegment * segment, const bool valid)
-{
-	zi::guard g(mutex_);
-        return mImpl->setAsValidated(segment, valid);
-}
-
-std::pair<bool, OmSegmentEdge> OmSegmentCache::JoinEdge( const OmSegmentEdge & e )
-{
-	zi::guard g(mutex_);
-        return mImpl->JoinFromUserAction( e );
+	return mImpl->JoinFromUserAction( e );
 }
 
 OmSegmentEdge OmSegmentCache::SplitEdge( const OmSegmentEdge & e )
 {
 	zi::guard g(mutex_);
-        return mImpl->SplitEdgeUserAction( e );
+	return mImpl->SplitEdgeUserAction( e );
 }
 
 void OmSegmentCache::refreshTree()
 {
 	zi::guard g(mutex_);
-        return mImpl->refreshTree();
+	return mImpl->refreshTree();
 }
 
 quint64 OmSegmentCache::getSizeRootAndAllChildren( OmSegment * segUnknownDepth )
 {
 	zi::guard g(mutex_);
-        return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
+	return mImpl->getSizeRootAndAllChildren(segUnknownDepth);
 }
 
 bool OmSegmentCache::AreSegmentsEnabled()
@@ -278,8 +241,8 @@ bool OmSegmentCache::AreSegmentsEnabled()
 	return mImpl->AreSegmentsEnabled();
 }
 
-void OmSegmentCache::UpgradeSegmentSerialization()
+void OmSegmentCache::Flush()
 {
 	zi::guard g(mutex_);
-	return mImpl->UpgradeSegmentSerialization();
+	return mImpl->Flush();
 }

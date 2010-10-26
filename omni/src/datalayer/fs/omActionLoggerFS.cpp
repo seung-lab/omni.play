@@ -1,23 +1,17 @@
+#include "utility/dataWrappers.h"
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "volume/omSegmentation.h"
+#include "segment/omSegment.h"
 
-#include "segment/actions/segment/omSegmentGroupAction.h"
-#include "segment/actions/segment/omSegmentJoinAction.h"
-#include "segment/actions/segment/omSegmentSelectAction.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
-#include "segment/actions/segment/omSegmentValidateAction.h"
-#include "volume/omSegmentationThresholdChangeAction.h"
-#include "volume/omVoxelSetValueAction.h"
-
-OmActionLoggerFS::OmActionLoggerFS()
-	: initialized(false)
-{
-}
-
-OmActionLoggerFS::~OmActionLoggerFS()
-{
-}
+#include "actions/omSegmentGroupActionImpl.hpp"
+#include "actions/omSegmentJoinActionImpl.hpp"
+#include "actions/omSegmentSelectActionImpl.hpp"
+#include "actions/omSegmentSplitActionImpl.hpp"
+#include "actions/omSegmentValidateActionImpl.hpp"
+#include "actions/omSegmentUncertainActionImpl.hpp"
+#include "actions/omSegmentationThresholdChangeActionImpl.hpp"
+#include "actions/omVoxelSetValueActionImpl.hpp"
 
 QDir& OmActionLoggerFS::doGetLogFolder()
 {
@@ -38,14 +32,14 @@ void OmActionLoggerFS::setupLogDir()
 		+ omniFolderName + "/"
 		+ "logFiles" + "/";
 
-	QDir dir = QDir( omniFolderPath );
-	if( dir.exists() ){
+	QDir dir = QDir( omniFolderPath);
+	if( dir.exists()){
 		mLogFolder = dir;
 		return;
 	}
 
-	if( QDir::home().mkdir( omniFolderPath ) ){
-		printf("made folder %s\n", qPrintable(omniFolderPath) );
+	if( QDir::home().mkdir( omniFolderPath)){
+		printf("made folder %s\n", qPrintable(omniFolderPath));
 		mLogFolder = dir;
 	} else {
 		const std::string errMsg =
@@ -54,175 +48,233 @@ void OmActionLoggerFS::setupLogDir()
 	}
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & a)
+QDataStream& operator<<(QDataStream& out, const OmSegmentValidateActionImpl& a)
 {
 	int version = 1;
 	out << version;
-        out << a.mSelectedSegmentIds;
-        out << a.valid_;
-        out << a.mSegmentationId;
 
-        return out;
+	OmSegIDsSet ids;
+	std::set<OmSegment*>* segs = a.selectedSegments_.get();
+	FOR_EACH(iter, *segs){
+		OmSegment* seg = *iter;
+		ids.insert(seg->value());
+	}
+	out << ids;
+	out << a.valid_;
+	out << a.mSegmentationId;
+
+	return out;
 }
 
-QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & a)
+QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
 {
 	int version;
 	in >> version;
-        in >> a.mSelectedSegmentIds;
-        in >> a.valid_;
-        in >> a.mSegmentationId;
 
-	a.SetActivate(false);
+	OmSegIDsSet ids;
+	in >> ids;
+	in >> a.valid_;
+	in >> a.mSegmentationId;
 
-        return in;
+	SegmentationDataWrapper sdw(a.mSegmentationId);
+	OmSegmentCache* cache = sdw.getSegmentCache();
+	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
+	FOR_EACH(iter, ids){
+		OmSegment* seg = cache->GetSegment(*iter);
+		segs->insert(seg);
+	}
+
+	a.selectedSegments_ = boost::shared_ptr<std::set<OmSegment*> >(segs);
+
+	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a )
+QDataStream& operator<<(QDataStream& out, const OmSegmentUncertainActionImpl& a)
 {
-        int version = 1;
-        out << version;
-        out << a.mEdge;
-        out << a.mSegmentationID;
-        out << a.desc;
+	int version = 1;
+	out << version;
+
+	OmSegIDsSet ids;
+	std::set<OmSegment*>* segs = a.selectedSegments_.get();
+	FOR_EACH(iter, *segs){
+		OmSegment* seg = *iter;
+		ids.insert(seg->value());
+	}
+	out << ids;
+	out << a.uncertain_;
+	out << a.mSegmentationId;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a )
+QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 {
 	int version;
 	in >> version;
-        in >> a.mEdge;
-        in >> a.mSegmentationID;
-        in >> a.desc;
+
+	OmSegIDsSet ids;
+	in >> ids;
+	in >> a.uncertain_;
+	in >> a.mSegmentationId;
+
+	SegmentationDataWrapper sdw(a.mSegmentationId);
+	OmSegmentCache* cache = sdw.getSegmentCache();
+	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
+	FOR_EACH(iter, ids){
+		OmSegment* seg = cache->GetSegment(*iter);
+		segs->insert(seg);
+	}
+
+	a.selectedSegments_ = boost::shared_ptr<std::set<OmSegment*> >(segs);
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a )
+QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl& a)
 {
-        int version = 1;
-        out << version;
-        out << a.mSegmentationId;
-        out << a.mName;
-        out << a.mCreate;
-        out << a.mSelectedSegmentIds;
+	int version = 1;
+	out << version;
+	out << a.mEdge;
+	out << a.mSegmentationID;
+	out << a.desc;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a )
+QDataStream& operator>>(QDataStream& in,  OmSegmentSplitActionImpl& a)
 {
-        int version;
-        in >> version;
-        in >> a.mSegmentationId;
-        in >> a.mName;
-        in >> a.mCreate;
-        in >> a.mSelectedSegmentIds;
+	int version;
+	in >> version;
+	in >> a.mEdge;
+	in >> a.mSegmentationID;
+	in >> a.desc;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentJoinAction & a )
+QDataStream& operator<<(QDataStream& out, const OmSegmentGroupActionImpl& a)
 {
-        int version = 1;
-        out << version;
-        out << a.mSegmentationId;
-        out << a.mSelectedSegmentIds;
+	int version = 1;
+	out << version;
+	out << a.mSegmentationId;
+	out << a.mName;
+	out << a.mCreate;
+	out << a.mSelectedSegmentIds;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmSegmentJoinAction & a )
+QDataStream& operator>>(QDataStream& in,  OmSegmentGroupActionImpl& a)
 {
-        int version;
-        in >> version;
-        in >> a.mSegmentationId;
-        in >> a.mSelectedSegmentIds;
+	int version;
+	in >> version;
+	in >> a.mSegmentationId;
+	in >> a.mName;
+	in >> a.mCreate;
+	in >> a.mSelectedSegmentIds;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a )
+QDataStream& operator<<(QDataStream& out, const OmSegmentJoinActionImpl& a)
 {
-        int version = 1;
-        out << version;
-        out << a.mSegmentationId;
-        out << a.mNewSelectedIdSet;
-        out << a.mOldSelectedIdSet;
-        out << a.mSegmentJustSelectedID;
+	int version = 1;
+	out << version;
+	out << a.mSegmentationId;
+	out << a.mSelectedSegmentIds;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a )
+QDataStream& operator>>(QDataStream& in,  OmSegmentJoinActionImpl& a)
 {
-        int version;
-        in >> version;
-        in >> a.mSegmentationId;
-        in >> a.mNewSelectedIdSet;
-        in >> a.mOldSelectedIdSet;
-        in >> a.mSegmentJustSelectedID;
+	int version;
+	in >> version;
+	in >> a.mSegmentationId;
+	in >> a.mSelectedSegmentIds;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmProjectSaveAction & )
+QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a)
 {
-        int version = 1;
-        out << version;
+	int version = 1;
+	out << version;
+	out << a.mSegmentationId;
+	out << a.mNewSelectedIdSet;
+	out << a.mOldSelectedIdSet;
+	out << a.mSegmentJustSelectedID;
 
 	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,   OmProjectSaveAction&  )
+QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl& a)
 {
-        int version;
-        in >> version;
+	int version;
+	in >> version;
+	in >> a.mSegmentationId;
+	in >> a.mNewSelectedIdSet;
+	in >> a.mOldSelectedIdSet;
+	in >> a.mSegmentJustSelectedID;
 
 	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmSegmentationThresholdChangeAction & a )
+QDataStream& operator<<(QDataStream& out, const OmProjectSaveActionImpl&)
 {
-        int version = 1;
-        out << version;
+	int version = 1;
+	out << version;
+
+	return out;
+}
+
+QDataStream& operator>>(QDataStream& in,   OmProjectSaveActionImpl& )
+{
+	int version;
+	in >> version;
+
+	return in;
+}
+
+QDataStream& operator<<(QDataStream& out, const OmSegmentationThresholdChangeActionImpl& a)
+{
+	int version = 1;
+	out << version;
 	out << a.mThreshold;
 	out << a.mOldThreshold;
 
-        return out;
+	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmSegmentationThresholdChangeAction & a )
+QDataStream& operator>>(QDataStream& in,  OmSegmentationThresholdChangeActionImpl& a)
 {
-        int version;
-        in >> version;
+	int version;
+	in >> version;
 	in >> a.mThreshold;
 	in >> a.mOldThreshold;
 
-        return in;
+	return in;
 }
 
-QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a )
+QDataStream& operator<<(QDataStream& out, const OmVoxelSetValueActionImpl& a)
 {
-        int version = 1;
-        out << version;
-        out << a.mSegmentationId;
-        //out << a.mOldVoxelValues;	//FIXME
-        out << a.mNewValue;
+	int version = 1;
+	out << version;
+	out << a.mSegmentationId;
+	//out << a.mOldVoxelValues;	//FIXME
+	out << a.mNewValue;
 
-        return out;
+	return out;
 }
 
-QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a )
+QDataStream& operator>>(QDataStream& in,  OmVoxelSetValueActionImpl& a)
 {
-        int version;
-        in >> version;
-        in >> a.mSegmentationId;
-        //in >> a.mOldVoxelValues;	//FIXME
-        in >> a.mNewValue;
+	int version;
+	in >> version;
+	in >> a.mSegmentationId;
+	//in >> a.mOldVoxelValues;	//FIXME
+	in >> a.mNewValue;
 
-        return in;
+	return in;
 }
 

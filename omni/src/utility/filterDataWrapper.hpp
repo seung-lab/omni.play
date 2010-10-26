@@ -3,20 +3,20 @@
 
 class FilterDataWrapper {
 private:
-	OmId mID;
-	OmId mChannelID;
+	OmID mID;
+	OmID mChannelID;
 public:
 	FilterDataWrapper(){}
 
-	FilterDataWrapper(const OmId channelID, const OmId ID)
+	FilterDataWrapper(const OmID channelID, const OmID ID)
 		: mID(ID)
 		, mChannelID(channelID)
 	{}
 
-	OmId getChannelID(){
+	OmID getChannelID(){
 		return mChannelID;
 	}
-	OmId getID(){
+	OmID getID(){
 		return mID;
 	}
 

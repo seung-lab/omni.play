@@ -5,7 +5,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
-#include "segment/actions/segment/omSegmentSplitAction.h"
+#include "actions/omSegmentSplitAction.h"
 
 class OmMouseEventPress{
 private:
@@ -106,8 +106,8 @@ private:
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
-		SegmentDataWrapper sdw = OmSegmentEditor::GetEditSelection();
-		if ( sdw.isValid() ) {
+		SegmentDataWrapper sdw = OmSegmentSelected::Get();
+		if ( sdw.isValidWrapper() ) {
 			//run action
 			if (!doselection) {
 				if (dosubtract) {
@@ -151,14 +151,14 @@ private:
 	{
 		OmSegmentation & segmentation = sdw.getSegmentation();
 
-		if( !sdw.isValid() ){
+		if( !sdw.isValidWrapper() ){
 			printf("not valid\n");
 			return;
 		}
 
-		const OmId segmentID = sdw.getID();
+		const OmID segmentID = sdw.getID();
 
-		OmSegmentEditor::SetEditSelection( segmentation.GetID(), segmentID);
+		OmSegmentSelected::Set(sdw);
 
 		OmSegmentSelector sel( segmentation.GetID(), this, "view2dEvent" );
 		if( augment_selection ){
@@ -193,10 +193,10 @@ private:
 
 		SegmentDataWrapper* ret = NULL;
 		OmChannel& channel = OmProject::GetChannel(state_->getVol()->getID());
-		foreach( OmId id, channel.GetValidFilterIds() ) {
+		foreach( OmID id, channel.GetValidFilterIds() ) {
 
 			OmFilter2d &filter = channel.GetFilter(id);
-			OmId segmentationID = filter.GetSegmentation();
+			OmID segmentationID = filter.GetSegmentation();
 			if (!OmProject::IsSegmentationValid(segmentationID)){
 				continue;
 			}
@@ -213,7 +213,7 @@ private:
 
 	SegmentDataWrapper*
 	getSelectedSegmentSegmentation(const DataCoord& dataClickPoint,
-								   const OmId segmentationID)
+								   const OmID segmentationID)
 	{
 		OmSegmentation & segmentation =
 			OmProject::GetSegmentation(segmentationID);

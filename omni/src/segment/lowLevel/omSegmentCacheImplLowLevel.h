@@ -18,7 +18,6 @@ public:
 
 	void growGraphIfNeeded(OmSegment * newSeg);
 
-	bool isValueAlreadyMappedToSegment(const OmSegID value);
 	OmSegment* GetSegmentFromValue(const OmSegID value );
 
 	OmSegID GetNumSegments();
@@ -27,6 +26,7 @@ public:
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegment * findRoot(const OmSegID segID);
 	OmSegID findRootID( const OmSegID segID );
+	OmSegID findRootID(OmSegment* segment);
 
 	bool isSegmentEnabled( OmSegID segID );
 	void setSegmentEnabled( OmSegID segID, bool isEnabled );
@@ -53,19 +53,12 @@ public:
 	OmSegmentation* getSegmentation() { return mSegmentation; }
 	OmSegID getSegmentationID();
 
-	void addToDirtySegmentList( OmSegment* seg);
-	void addToDirtySegmentList(const OmSegID val);
-
-	void flushDirtySegments();
-
 	void turnBatchModeOn(const bool batchMode);
 
 	quint32 getPageSize();
 	quint32 getMaxValue();
 
 	OmSegmentCache* getSegmentCache();
-
-	void UpgradeSegmentSerialization();
 
 protected:
 	OmSegmentation * mSegmentation;
@@ -82,8 +75,8 @@ protected:
 	OmSegIDsSet mEnabledSet;
 	OmSegIDsSet mSelectedSet;
 
-	QHash< OmId, QString > segmentCustomNames;
-	QHash< OmId, QString > segmentNotes;
+	QHash< OmID, QString > segmentCustomNames;
+	QHash< OmID, QString > segmentNotes;
 
 	void doSelectedSetInsert( const OmSegID segID, const bool);
 	void doSelectedSetRemove( const OmSegID segID);
@@ -96,6 +89,8 @@ protected:
 
 private:
 	void setSegmentSelectedBatch( OmSegID segID, const bool, const bool );
+
+	friend class SegmentTests;
 };
 
 #endif

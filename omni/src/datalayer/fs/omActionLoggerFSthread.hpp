@@ -17,7 +17,7 @@ static const QString Omni_Postfix("OMNI_LOG");
 template <typename T>
 class OmActionLoggerFSThread : public zi::runnable {
 public:
-	OmActionLoggerFSThread(T* action,
+	OmActionLoggerFSThread(boost::shared_ptr<T> action,
 						   const std::string& doOrUndo,
 						   QDir& logFolder)
 		: action_(action)
@@ -41,7 +41,7 @@ public:
 	}
 
 private:
-	T *const action_;
+	const boost::shared_ptr<T> action_;
 	const std::string doOrUndo_;
 	QDir logFolder_;
 
