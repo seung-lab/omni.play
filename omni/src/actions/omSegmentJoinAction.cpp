@@ -22,7 +22,7 @@ void OmSegmentJoinAction::UndoAction()
 
 std::string OmSegmentJoinAction::Description()
 {
-	impl_->Description();
+	return impl_->Description();
 }
 
 void OmSegmentJoinAction::save(const std::string& comment)
