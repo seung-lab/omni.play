@@ -1,48 +1,31 @@
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "omSegmentJoinAction.h"
-#include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
+#include "actions/omSegmentJoinAction.h"
+#include "actions/omSegmentJoinActionImpl.hpp"
 
-/////////////////////////////////
-///////
-///////          OmSegmentJoinAction
-///////
-OmSegmentJoinAction::OmSegmentJoinAction( const OmID segmentationId,
-					  const OmSegIDsSet & selectedSegmentIds)
-	: mSegmentationId( segmentationId )
-	, mSelectedSegmentIds( selectedSegmentIds )
+OmSegmentJoinAction::OmSegmentJoinAction(const OmID segmentationId,
+										 const OmSegIDsSet& selectedSegmentIds)
+	: impl_(boost::make_shared<OmSegmentJoinActionImpl>(segmentationId,
+														selectedSegmentIds))
 {
 	SetUndoable(true);
 }
 
-/////////////////////////////////
-///////          Action Methods
 void OmSegmentJoinAction::Action()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	seg.GetSegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
+	impl_->Execute();
 }
 
 void OmSegmentJoinAction::UndoAction()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	seg.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
+	impl_->Undo();
 }
 
 std::string OmSegmentJoinAction::Description()
 {
-	QString lineItem = QString("Joined: ");
-	foreach( const OmID segId, mSelectedSegmentIds){
-		lineItem += QString("seg %1 + ").arg(segId);
-	}
-
-	return lineItem.toStdString();
+	impl_->Description();
 }
 
 void OmSegmentJoinAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }

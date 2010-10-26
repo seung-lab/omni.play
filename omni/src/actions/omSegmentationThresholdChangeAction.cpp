@@ -1,40 +1,31 @@
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "omSegmentationThresholdChangeAction.h"
-#include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "system/events/omSegmentEvent.h"
-#include "utility/dataWrappers.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
+#include "actions/omSegmentationThresholdChangeAction.h"
+#include "actions/omSegmentationThresholdChangeActionImpl.hpp"
 
 OmSegmentationThresholdChangeAction::OmSegmentationThresholdChangeAction( const OmID segmentationId,
 																		  const float threshold)
-	: mSegmentationId( segmentationId )
-	, mThreshold( threshold )
+	: impl_(boost::make_shared<OmSegmentationThresholdChangeActionImpl>(segmentationId,
+																		threshold))
 {
 	SetUndoable(true);
 }
 
 void OmSegmentationThresholdChangeAction::Action()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	mOldThreshold = seg.GetDendThreshold();
-	seg.SetDendThreshold(mThreshold);
+	impl_->Execute();
 }
 
 void OmSegmentationThresholdChangeAction::UndoAction()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	seg.SetDendThreshold(mOldThreshold);
+	impl_->Undo();
 }
 
 std::string OmSegmentationThresholdChangeAction::Description()
 {
-	QString lineItem = QString("Threshold: %1").arg(mThreshold);
-	return lineItem.toStdString();
+	return impl_->Description();
 }
 
 void OmSegmentationThresholdChangeAction::save(const std::string & comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }

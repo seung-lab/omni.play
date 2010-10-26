@@ -1,42 +1,24 @@
-#include "common/omCommon.h"
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "omVoxelSetValueAction.h"
-#include "project/omProject.h"
-#include "segment/omSegmentSelected.hpp"
-#include "system/omStateManager.h"
-#include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
+#include "actions/omVoxelSetValueAction.h"
+#include "actions/omVoxelSetValueActionImpl.hpp"
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
-											 DataCoord & rVoxel, OmSegID value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
+											 const DataCoord& rVoxel,
+											 const OmSegID value)
+	: impl_(boost::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
+														  rVoxel,
+														  value))
 {
-	//store segmentation id
-	mSegmentationId = segmentationId;
-
-	//store new value
-	mNewValue = value;
-
-	//store old value of voxel
-	mOldVoxelValues[rVoxel] = mNewValue;
-
 	mUndoable = false;
 }
 
-OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
-											 std::set<DataCoord>& rVoxels,
-											 OmSegID value)
+OmVoxelSetValueAction::OmVoxelSetValueAction(const OmID segmentationId,
+											 const std::set<DataCoord>& rVoxels,
+											 const OmSegID value)
+	: impl_(boost::make_shared<OmVoxelSetValueActionImpl>(segmentationId,
+														  rVoxels,
+														  value))
 {
-	//store segmentation id
-	mSegmentationId = segmentationId;
-
-	//store new value
-	mNewValue = value;
-
-	//store old values of voxels
-	FOR_EACH(itr, rVoxels){
-		mOldVoxelValues[*itr] = mNewValue;
-	}
-
 	mUndoable = false;
 }
 
@@ -45,49 +27,21 @@ OmVoxelSetValueAction::OmVoxelSetValueAction(OmID segmentationId,
 
 void OmVoxelSetValueAction::Action()
 {
-	//set voxel
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-
-	//modified voxels
-	std::set<DataCoord> edited_voxels;
-
-	FOR_EACH(itr, mOldVoxelValues){
-		//set voxel to new value
-		r_segmentation.SetVoxelValue(itr->first, mNewValue);
-		edited_voxels.insert(itr->first);
-	}
+	impl_->Execute();
 }
 
 void OmVoxelSetValueAction::UndoAction()
 {
-	//set voxel
-	OmSegmentation & r_segmentation = OmProject::GetSegmentation(mSegmentationId);
-
-	//modified voxels
-	std::set<DataCoord> edited_voxels;
-
-	FOR_EACH(itr, mOldVoxelValues){
-		//set voxel to prev value
-		r_segmentation.SetVoxelValue(itr->first, itr->second);
-		edited_voxels.insert(itr->first);
-	}
+	impl_->Undo();
 }
 
 std::string OmVoxelSetValueAction::Description()
 {
-	std::string plurlize;
-	if (mOldVoxelValues.size() > 1)
-		plurlize = "s";
-
-	if(0 == mNewValue) {
-		return std::string("Remove Voxel") + plurlize;
-	} else {
-		return std::string("Set Voxel") + plurlize;
-	}
+	return impl_->Description();
 }
 
 void OmVoxelSetValueAction::save(const std::string & comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }
 

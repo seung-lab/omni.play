@@ -8,6 +8,8 @@
 
 #include "system/omAction.h"
 
+class OmSegmentJoinActionImpl;
+
 class OmSegmentJoinAction : public OmAction {
 
 public:
@@ -18,14 +20,8 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string &);
-	QString classNameForLogFile(){return "OmSegmentJoinAction";}
 
-	OmID mSegmentationId;
-	OmSegIDsSet mSelectedSegmentIds;
-
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinAction&);
-	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinAction&);
+	boost::shared_ptr<OmSegmentJoinActionImpl> impl_;
 };
 
 #endif

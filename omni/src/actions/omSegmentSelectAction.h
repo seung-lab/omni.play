@@ -1,15 +1,11 @@
 #ifndef OM_SEGMENT_SELECT_ACTION_H
 #define OM_SEGMENT_SELECT_ACTION_H
 
-/*
- *
- *
- */
-
 #include "system/omAction.h"
 
-class OmSegmentSelectAction : public OmAction {
+class OmSegmentSelectActionImpl;
 
+class OmSegmentSelectAction : public OmAction {
 public:
 	OmSegmentSelectAction(const OmID segmentationId,
 			      const OmSegIDsSet & mNewSelectedIdSet,
@@ -25,20 +21,8 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string &);
-	QString classNameForLogFile(){return "OmSegmentSelectAction";}
 
-	OmID mSegmentationId;
-	OmSegIDsSet mNewSelectedIdSet;
-	OmSegIDsSet mOldSelectedIdSet;
-	OmID mSegmentJustSelectedID;
-	void * mSender;
-	const std::string mComment;
-	const bool mDoScroll;
-	const bool mAddToRecentList;
-
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentSelectAction & a );
-	friend QDataStream &operator>>(QDataStream & in,  OmSegmentSelectAction & a );
+	boost::shared_ptr<OmSegmentSelectActionImpl> impl_;
 };
 
 #endif

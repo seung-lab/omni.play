@@ -9,6 +9,7 @@ class SegmentationDataWrapper;
 class OmSegmentation;
 class OmSegment;
 class OmViewGroupState;
+class OmSegmentSplitActionImpl;
 
 class OmSegmentSplitAction : public OmAction {
 
@@ -26,18 +27,10 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string& comment);
-	QString classNameForLogFile(){return "OmSegmentSplitAction";}
-
-	OmSegmentEdge mEdge;
-	OmID mSegmentationID;
-
-	QString desc;
 
 	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
 
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentSplitAction & a );
-	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentSplitAction & a );
+	boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };
 
 #endif

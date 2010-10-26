@@ -12,6 +12,7 @@
 class OmSegment;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
+class OmSegmentUncertainActionImpl;
 
 class OmSegmentUncertainAction : public OmAction {
 
@@ -30,17 +31,9 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string&);
-	QString classNameForLogFile(){return "OmSegmentUncertainAction";}
 
-	OmID mSegmentationId;
-	bool uncertain_;
-	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+	boost::shared_ptr<OmSegmentUncertainActionImpl> impl_;
 
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend QDataStream &operator<<(QDataStream&,
-								   const OmSegmentUncertainAction&);
-	friend QDataStream &operator>>(QDataStream&,
-								   OmSegmentUncertainAction&);
 };
 
 #endif

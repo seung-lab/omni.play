@@ -1,15 +1,11 @@
 #include "common/omDebug.h"
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "actions/omSegmentSplitAction.h"
-#include "system/omEvents.h"
-#include "utility/dataWrappers.h"
-#include "viewGroup/omViewGroupState.h"
+#include "actions/omSegmentSplitActionImpl.hpp"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 											const OmSegmentEdge & edge )
-	: mEdge(edge)
-	, mSegmentationID(sdw.getSegmentationID())
-	, desc("Splitting: ")
+	: impl_(boost::make_shared<OmSegmentSplitActionImpl>(sdw, edge))
 {
 	SetUndoable(true);
 }
@@ -29,43 +25,25 @@ void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 
 void OmSegmentSplitAction::Action()
 {
-	SegmentationDataWrapper sdw(mSegmentationID);
-	mEdge = sdw.getSegmentCache()->SplitEdge(mEdge);
-
-	desc = QString("Split seg %1 from %2")
-		.arg(mEdge.childID)
-		.arg(mEdge.parentID);
-
-	std::cout << desc.toStdString() << "\n";
-
-	OmEvents::SegmentModified();
+	impl_->Execute();
 }
 
 void OmSegmentSplitAction::UndoAction()
 {
-	SegmentationDataWrapper sdw(mSegmentationID);
-	std::pair<bool, OmSegmentEdge> edge = sdw.getSegmentCache()->JoinEdge(mEdge);
-
-	assert(edge.first && "edge could not be rejoined...");
-	mEdge = edge.second;
-
-	desc = QString("Joined seg %1 to %2")
-		.arg(mEdge.childID)
-		.arg(mEdge.parentID);
-
-	OmEvents::SegmentModified();
+	impl_->Undo();
 }
 
 std::string OmSegmentSplitAction::Description()
 {
-	return desc.toStdString();
+	return impl_->Description();
 }
 
-void OmSegmentSplitAction::save(const std::string & comment)
+void OmSegmentSplitAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }
 
+//TODO: put this somewhere else...
 void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 												 OmViewGroupState* vgs)
 {

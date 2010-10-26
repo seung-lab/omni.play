@@ -1,7 +1,6 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "actions/omSegmentValidateAction.h"
-#include "segment/omSegmentValidation.hpp"
-#include "system/cache/omCacheManager.h"
+#include "actions/omSegmentValidateActionImpl.hpp"
 
 void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 									   const bool valid)
@@ -30,51 +29,29 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
 OmSegmentValidateAction::OmSegmentValidateAction(const OmID segmentationId,
 												 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 												 const bool valid)
-	: mSegmentationId( segmentationId )
-	, valid_(valid)
-	, selectedSegments_(selectedSegments)
+	: impl_(boost::make_shared<OmSegmentValidateActionImpl>(segmentationId,
+															selectedSegments,
+															valid))
 {
 	SetUndoable(true);
 }
 
-/////////////////////////////////
-///////          Action Methods
 void OmSegmentValidateAction::Action()
 {
-	OmSegmentValidation::SetAsValidated(SegmentationDataWrapper(mSegmentationId),
-										selectedSegments_,
-										valid_);
-	OmCacheManager::TouchFresheness();
+	impl_->Execute();
 }
 
 void OmSegmentValidateAction::UndoAction()
 {
-	OmSegmentValidation::SetAsValidated(SegmentationDataWrapper(mSegmentationId),
-										selectedSegments_,
-										!valid_);
-	OmCacheManager::TouchFresheness();
+	impl_->Undo();
 }
 
 std::string OmSegmentValidateAction::Description()
 {
-	QString lineItem;
-	if(valid_) {
-		lineItem = QString("Validated: ");
-	} else {
-		lineItem = QString("Invalidated: ");
-	}
-
-	int count = 0;
-	FOR_EACH(iter, *selectedSegments_){
-		lineItem += QString("seg %1 + ").arg((*iter)->value());
-		if(count > 10) break;
-		count++;
-	}
-
-	return lineItem.toStdString();
+	return impl_->Description();
 }
 
 void OmSegmentValidateAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }

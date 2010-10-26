@@ -1,12 +1,9 @@
 #ifndef OM_PROJECT_SAVE_ACTION_H
 #define OM_PROJECT_SAVE_ACTION_H
 
-/*
- *
- *
- */
-
 #include "system/omAction.h"
+
+class OmProjectSaveActionImpl;
 
 class OmProjectSaveAction : public OmAction {
 
@@ -18,9 +15,8 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string&);
-	QString classNameForLogFile(){return "OmProjectSaveAction";}
 
-	template <typename T> friend class OmActionLoggerFSThread;
+	boost::shared_ptr<OmProjectSaveActionImpl> impl_;
 };
 
 #endif

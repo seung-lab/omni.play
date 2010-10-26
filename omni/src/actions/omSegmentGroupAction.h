@@ -9,26 +9,21 @@
 #include "system/omAction.h"
 #include "common/omCommon.h"
 
+class OmSegmentGroupActionImpl;
+
 class OmSegmentGroupAction : public OmAction {
-
 public:
-	OmSegmentGroupAction( const OmID segmentationId, const OmSegIDsSet & selectedSegmentIdsSet, const OmGroupName name, const bool create);
-
+	OmSegmentGroupAction(const OmID segmentationId,
+						 const OmSegIDsSet & selectedSegmentIdsSet,
+						 const OmGroupName name,
+						 const bool create);
 private:
 	void Action();
 	void UndoAction();
 	std::string Description();
 	void save(const std::string &);
-	QString classNameForLogFile(){return "OmSegmentGroupAction";}
 
-	OmID mSegmentationId;
-	OmGroupName mName;
-	bool mCreate;
-	OmSegIDsSet mSelectedSegmentIds;
-
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend class QDataStream &operator<<(QDataStream & out, const OmSegmentGroupAction & a );
-	friend class QDataStream &operator>>(QDataStream & in,  OmSegmentGroupAction & a );
+	boost::shared_ptr<OmSegmentGroupActionImpl> impl_;
 };
 
 #endif

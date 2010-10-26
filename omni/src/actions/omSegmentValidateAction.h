@@ -1,17 +1,13 @@
 #ifndef OM_SEGMENT_VALIDATE_ACTION_H
 #define OM_SEGMENT_VALIDATE_ACTION_H
 
-/*
- *
- *
- */
-
 #include "system/omAction.h"
 #include "common/omCommon.h"
 
 class OmSegment;
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
+class OmSegmentValidateActionImpl;
 
 class OmSegmentValidateAction : public OmAction {
 
@@ -30,16 +26,9 @@ private:
 	void UndoAction();
 	std::string Description();
 	void save(const std::string&);
-	QString classNameForLogFile(){return "OmSegmentValidateAction";}
 
-	OmID mSegmentationId;
-	bool valid_;
-	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
+	boost::shared_ptr<OmSegmentValidateActionImpl> impl_;
 
-	template <typename T> friend class OmActionLoggerFSThread;
-
-	friend QDataStream &operator<<(QDataStream & out, const OmSegmentValidateAction & action );
-	friend QDataStream &operator>>(QDataStream & in, OmSegmentValidateAction & action );
 };
 
 #endif

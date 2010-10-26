@@ -1,35 +1,30 @@
 #include "datalayer/fs/omActionLoggerFS.h"
 #include "omProjectSaveAction.h"
-#include "project/omProject.h"
+#include "actions/omProjectSaveActionImpl.hpp"
 
-/////////////////////////////////
-///////
-///////          OmProjectSaveAction
-///////
 OmProjectSaveAction::OmProjectSaveAction()
+	: impl_(boost::make_shared<OmProjectSaveActionImpl>())
 {
 	SetUndoable(false);
 }
 
-/////////////////////////////////
-///////          Action Methods
 void OmProjectSaveAction::Action()
 {
-	OmProject::Save();
+	impl_->Execute();
 }
 
 void OmProjectSaveAction::UndoAction()
 {
+	impl_->Undo();
 }
 
 std::string OmProjectSaveAction::Description()
 {
-	QString lineItem = QString("Saved");
-	return lineItem.toStdString();
+	return impl_->Description();
 }
 
 void OmProjectSaveAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }
 

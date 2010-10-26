@@ -184,6 +184,14 @@ HEADERS += lib/strnatcmp.h \
            src/actions/omSegmentGroupAction.h \
            src/actions/omSegmentSelectAction.h \
            src/actions/omSegmentSplitAction.h \
+           src/actions/omSegmentGroupActionImpl.hpp \
+           src/actions/omSegmentJoinActionImpl.hpp \
+           src/actions/omSegmentSelectActionImpl.hpp \
+           src/actions/omSegmentSplitActionImpl.hpp \
+           src/actions/omSegmentValidateActionImpl.hpp \
+           src/actions/omSegmentUncertainActionImpl.hpp \
+           src/actions/omSegmentationThresholdChangeActionImpl.hpp \
+           src/actions/omVoxelSetValueActionImpl.hpp \
            src/segment/details/omSegmentListContainer.hpp \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \

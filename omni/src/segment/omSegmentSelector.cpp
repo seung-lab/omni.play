@@ -5,17 +5,31 @@
 #include "segment/omSegmentSelector.h"
 #include "volume/omSegmentation.h"
 
-OmSegmentSelector::OmSegmentSelector( const OmID segmentationID, void * sender,
-									  const std::string & cmt )
-	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
+OmSegmentSelector::OmSegmentSelector(OmSegmentation* segmentation,
+									 void* sender,
+									 const std::string& cmt )
+	: mSegmentation(segmentation)
+	, segmentCache_(mSegmentation->GetSegmentCache())
 	, mSegmentJustSelectedID(0)
 	, mSender(sender)
 	, mComment(cmt)
-	, oldSelectedIDs( mSegmentation->GetSegmentCache()->GetSelectedSegmentIds() )
-	, newSelectedIDs( oldSelectedIDs )
+	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
+	, newSelectedIDs(oldSelectedIDs)
 	, mAddToRecentList(true)
-{
-}
+{}
+
+OmSegmentSelector::OmSegmentSelector( const OmID segmentationID,
+									  void* sender,
+									  const std::string& cmt )
+	: mSegmentation(&OmProject::GetSegmentation( segmentationID ))
+	, segmentCache_(mSegmentation->GetSegmentCache())
+	, mSegmentJustSelectedID(0)
+	, mSender(sender)
+	, mComment(cmt)
+	, oldSelectedIDs(segmentCache_->GetSelectedSegmentIds())
+	, newSelectedIDs(oldSelectedIDs)
+	, mAddToRecentList(true)
+{}
 
 void OmSegmentSelector::selectNoSegments()
 {
@@ -27,7 +41,7 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
 {
 	selectNoSegments();
 
-	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
 	}
@@ -40,10 +54,10 @@ void OmSegmentSelector::selectJustThisSegment( const OmSegID segIDunknownLevel,
 		}
 	}
 
-	setEditSelection(segID);
+	setSelectedSegment(segID);
 }
 
-void OmSegmentSelector::setEditSelection(const OmSegID segID)
+void OmSegmentSelector::setSelectedSegment(const OmSegID segID)
 {
 	OmSegmentSelected::Set(mSegmentation->GetID(), segID);
 	mSegmentJustSelectedID = segID;
@@ -52,7 +66,7 @@ void OmSegmentSelector::setEditSelection(const OmSegID segID)
 void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
 											const bool isSelected )
 {
-	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 
 	if(!segID){
 		return;
@@ -64,28 +78,28 @@ void OmSegmentSelector::augmentSelectedSet( const OmSegID segIDunknownLevel,
 		newSelectedIDs.erase(segID);
 	}
 
-	setEditSelection(segID);
+	setSelectedSegment(segID);
 }
 
 void OmSegmentSelector::selectJustThisSegment_toggle( const OmSegID segIDunknownLevel )
 {
-	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
 	}
 
-	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
+	const bool isSelected = segmentCache_->IsSegmentSelected( segID );
 	selectJustThisSegment( segID, !isSelected );
 }
 
 void OmSegmentSelector::augmentSelectedSet_toggle( const OmSegID segIDunknownLevel )
 {
-	const OmSegID segID = mSegmentation->GetSegmentCache()->findRootID( segIDunknownLevel );
+	const OmSegID segID = segmentCache_->findRootID( segIDunknownLevel );
 	if(!segID){
 		return;
 	}
 
-	const bool isSelected = mSegmentation->GetSegmentCache()->IsSegmentSelected( segID );
+	const bool isSelected = segmentCache_->IsSegmentSelected( segID );
 	augmentSelectedSet( segID, !isSelected );
 }
 

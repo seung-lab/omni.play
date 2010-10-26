@@ -8,31 +8,24 @@
 
 #include "system/omAction.h"
 
+class OmVoxelSetValueActionImpl;
+
 class OmVoxelSetValueAction : public OmAction {
 public:
-	OmVoxelSetValueAction(OmID segmentationId, DataCoord &rVoxel, OmSegID value);
-	OmVoxelSetValueAction(OmID segmentationId, std::set<DataCoord> &rVoxels,
-						  OmSegID value);
+	OmVoxelSetValueAction(const OmID segmentationId,
+						  const DataCoord& rVoxel,
+						  const OmSegID value);
+	OmVoxelSetValueAction(const OmID segmentationId,
+						  const std::set<DataCoord>&rVoxels,
+						  const OmSegID value);
 
 private:
 	void Action();
 	void UndoAction();
 	std::string Description();
 	void save(const std::string&);
-	QString classNameForLogFile(){return "OmVolxelSetvalueAction";}
 
-	//segmentation of voxels
-	OmID mSegmentationId;
-
-	//map of voxels to old values
-	std::map<DataCoord, OmSegID> mOldVoxelValues;
-
-	//new value of voxels
-	OmSegID mNewValue;
-
-	template <typename T> friend class OmActionLoggerFSThread;
-	friend class QDataStream &operator<<(QDataStream & out, const OmVoxelSetValueAction & a );
-	friend class QDataStream &operator>>(QDataStream & in,  OmVoxelSetValueAction & a );
+	boost::shared_ptr<OmVoxelSetValueActionImpl> impl_;
 };
 
 #endif

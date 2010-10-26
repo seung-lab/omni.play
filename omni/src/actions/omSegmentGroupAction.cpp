@@ -1,58 +1,35 @@
 #include "datalayer/fs/omActionLoggerFS.h"
-#include "omSegmentGroupAction.h"
-#include "project/omProject.h"
-#include "segment/omSegmentCache.h"
-#include "system/omGroups.h"
-#include "volume/omSegmentation.h"
+#include "actions/omSegmentGroupAction.h"
+#include "actions/omSegmentGroupActionImpl.hpp"
 
-/////////////////////////////////
-///////
-///////          OmSegmentGroupAction
-///////
-OmSegmentGroupAction::OmSegmentGroupAction( const OmID segmentationId,
-					  const OmSegIDsSet & selectedSegmentIds,
-					  const OmGroupName name, const bool create)
-	: mSegmentationId( segmentationId )
-	, mName(name)
-	, mCreate(create)
-	, mSelectedSegmentIds( selectedSegmentIds )
+OmSegmentGroupAction::OmSegmentGroupAction(const OmID segmentationId,
+										   const OmSegIDsSet& selectedSegmentIds,
+										   const OmGroupName name,
+										   const bool create)
+	: impl_(boost::make_shared<OmSegmentGroupActionImpl>(segmentationId,
+														 selectedSegmentIds,
+														 name,
+														 create))
 {
 	SetUndoable(true);
 }
 
-/////////////////////////////////
-///////          Action Methods
 void OmSegmentGroupAction::Action()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	if(mCreate) {
-        	seg.GetGroups()->SetGroup(mSelectedSegmentIds, mName);
-	} else {
-        	seg.GetGroups()->UnsetGroup(mSelectedSegmentIds, mName);
-	}
+	impl_->Execute();
 }
 
 void OmSegmentGroupAction::UndoAction()
 {
-	OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
-	if(!mCreate) {
-        	seg.GetGroups()->SetGroup(mSelectedSegmentIds, mName);
-	} else {
-        	seg.GetGroups()->UnsetGroup(mSelectedSegmentIds, mName);
-	}
+	impl_->Undo();
 }
 
 std::string OmSegmentGroupAction::Description()
 {
-	QString lineItem = QString("Grouped: ");
-	foreach( const OmID segId, mSelectedSegmentIds){
-		lineItem += QString("seg %1 + ").arg(segId);
-	}
-
-	return lineItem.toStdString();
+	return impl_->Description();
 }
 
 void OmSegmentGroupAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(this, comment);
+	OmActionLoggerFS::save(impl_, comment);
 }
