@@ -2,6 +2,7 @@
 #define OM_SEGMENTATION_THRESHOLD_CHANGE_ACTION_H
 
 #include "system/omAction.h"
+#include "common/omCommon.h"
 
 class OmSegmentationThresholdChangeActionImpl;
 

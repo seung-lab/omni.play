@@ -164,7 +164,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omCheckBox.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
-           src/gui/widgets/omThresholdGroup.h \
+           src/gui/widgets/omSpinBox.hpp \
            src/mesh/omMeshDrawer.h \
            src/mesh/omMeshTypes.h \
            src/mesh/omMipMesh.h \
@@ -390,7 +390,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/myInspectorWidget.cpp \
            src/gui/widgets/omSegmentContextMenu.cpp \
            src/gui/widgets/omCursors.cpp \
-           src/gui/widgets/omThresholdGroup.cpp \
            src/gui/preferences/localPreferences2d.cpp \
            src/gui/preferences/localPreferences3d.cpp \
            src/gui/preferences/localPreferencesMeshing.cpp \
@@ -411,9 +410,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/validationGroup.cpp \
            src/gui/toolbars/dendToolbar/graphTools.cpp \
            src/gui/toolbars/dendToolbar/displayTools.cpp \
-           src/gui/toolbars/dendToolbar/breakThresholdGroup.cpp \
-           src/gui/toolbars/dendToolbar/dust3DthresholdGroup.cpp \
-           src/gui/toolbars/dendToolbar/thresholdGroup.cpp \
            src/gui/toolbars/dendToolbar/autoBreakCheckbox.cpp \
            src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
