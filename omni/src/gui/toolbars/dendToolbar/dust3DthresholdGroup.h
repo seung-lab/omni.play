@@ -39,7 +39,7 @@ private:
 			dThreshold = vgs()->getDustThreshold();
 		}
 
-        setGUIvalue(dThreshold);
+        setValue(dThreshold);
 	}
 
 	OmViewGroupState* vgs() const {

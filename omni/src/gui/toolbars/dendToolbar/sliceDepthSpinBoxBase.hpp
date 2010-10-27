@@ -11,13 +11,14 @@
 
 class SliceDepthSpinBoxBase : public OmIntSpinBox,
 							  public OmViewEventListener {
-	Q_OBJECT
+Q_OBJECT
 
 public:
 	SliceDepthSpinBoxBase(DisplayTools* d)
 		: OmIntSpinBox(d, om::UPDATE_AS_TYPE)
 		, mParent(d)
 	{
+		setValue(0);
 		setSingleStep(1);
 		setMaximum(std::numeric_limits<int32_t>::max());
 	}
@@ -33,41 +34,35 @@ private:
 
 	void actUponSpinboxChange(const int depth)
 	{
-		if( NULL != mParent->getViewGroupState() ) {
-			vgs()->SetViewSliceDepth(viewType(), depth);
+		if(NULL == vgs()){
+			return;
 		}
 
+		vgs()->SetViewSliceDepth(viewType(), depth);
 		OmEvents::Redraw2d();
 	}
 
 	void update()
 	{
+		blockSignals(true);
+
 		const int depth = vgs()->GetViewSliceDepth(viewType());
 		setValue(depth);
+
+		blockSignals(false);
 	}
 
-	OmViewGroupState* vgs() const {
+	inline OmViewGroupState* vgs() const {
 		return mParent->getViewGroupState();
 	}
 
+// OmViewEventListener stuff
 	void ViewBoxChangeEvent(){
 		update();
 	}
 	void ViewPosChangeEvent(){}
 	void ViewCenterChangeEvent(){}
 	void ViewRedrawEvent(){}
-
-protected:
-	void setInitialGUIThresholdValue()
-	{
-		int depth = 0;
-
-        if( NULL != mParent->getViewGroupState() ) {
-			depth = vgs()->GetViewSliceDepth(viewType());
-		}
-
-        setValue(depth);
-	}
 };
 
 #endif

@@ -7,13 +7,9 @@ class SliceDepthSpinBoxY : public SliceDepthSpinBoxBase {
 	Q_OBJECT
 
 public:
-
 	SliceDepthSpinBoxY(DisplayTools* d)
 		: SliceDepthSpinBoxBase(d)
-	{
-		setInitialGUIThresholdValue();
-	}
-
+	{}
 
 private:
 	virtual ViewType viewType() const {

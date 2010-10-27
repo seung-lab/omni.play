@@ -26,28 +26,16 @@ public:
 		}
 	}
 
-	void updateGui(){
-		OmEvents::Redraw2d();
-	}
-
  private slots:
 	void spinboxChanged()
 	{
 		OmBusyCursorWrapper busyCursorWrapper();
-		actUponSpinboxChange(getGUIvalue());
-		updateGui();
+		actUponSpinboxChange(value());
+		OmEvents::Redraw2d();
 	}
 
  protected:
-	int getGUIvalue(){
-		return value();
-	}
-
-	void setGUIvalue(const int newThreshold){
-		setValue(newThreshold);
-	}
-
-	virtual void setInitialGUIThresholdValue() = 0;
+	virtual void setInitialGUIThresholdValue(){}
 	virtual void actUponSpinboxChange(const int value) = 0;
 };
 
