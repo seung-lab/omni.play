@@ -50,7 +50,7 @@ public:
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
-	OmSegmentation* getSegmentation() { return mSegmentation; }
+	OmSegmentation* getSegmentation() { return segmentation_; }
 	OmSegID getSegmentationID();
 
 	void turnBatchModeOn(const bool batchMode);
@@ -61,7 +61,7 @@ public:
 	OmSegmentCache* getSegmentCache();
 
 protected:
-	OmSegmentation * mSegmentation;
+	OmSegmentation *const segmentation_;
 	boost::shared_ptr<OmPagingPtrStore> mSegments;
 
 	OmSegID mMaxValue;

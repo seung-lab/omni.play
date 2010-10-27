@@ -48,7 +48,7 @@ public:
 	}
 
 private:
-	OmSegmentation* segmentation_;
+	OmSegmentation *const segmentation_;
 	uint32_t numEdges_;
 	double userThreshold_;
 

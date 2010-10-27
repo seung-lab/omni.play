@@ -1,3 +1,4 @@
+#include "segment/io/omUserEdges.hpp"
 #include "mesh/omMipMeshManager.h"
 #include "common/omException.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
@@ -23,7 +24,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 18;
+static const int Omni_Version = 19;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -72,6 +73,8 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 	} else if(fileVersion_ < 17){
 		ArchiveWrite(path, project);
 	} else if(fileVersion_ < 18){
+		ArchiveWrite(path, project);
+	} else if(fileVersion_ < 19){
 		ArchiveWrite(path, project);
 	}
 }
@@ -420,12 +423,6 @@ QDataStream &operator<<(QDataStream& out, const OmSegmentCacheImpl& sc)
 
 	out << sc.mNumSegs;
 
-	int size = sc.mManualUserMergeEdgeList.size();
-	out << size;
-	foreach(const OmSegmentEdge& e, sc.mManualUserMergeEdgeList){
-		out << e;
-	}
-
 	return out;
 }
 
@@ -450,22 +447,21 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 		in >> mNumTopLevelSegs;
 	}
 
-	int size;
-	in >> size;
-	for(int i = 0; i < size; ++i){
-		OmSegmentEdge e;
-		in >> e;
-		if(0 == e.childID  ||
-		   0 == e.parentID ||
-		   std::isnan(e.threshold)){
-			printf("warning: bad edge found: %d, %d, %f\n",
-				   e.parentID,
-				   e.childID,
-				   e.threshold);
-			continue;
+	boost::shared_ptr<OmUserEdges> userEdges =
+		sc.segmentation_->getMSTUserEdges();
+
+	if(fileVersion_ < 19){
+		int size;
+		in >> size;
+		for(int i = 0; i < size; ++i){
+			OmSegmentEdge e;
+			in >> e;
+			userEdges->AddEdgeFromProjectLoad(e);
 		}
-		e.valid = true;
-		sc.mManualUserMergeEdgeList.push_back(e);
+		userEdges->Save();
+		printf("loaded %d user edges\n", userEdges->Edges().size());
+	} else {
+		userEdges->Load();
 	}
 
 	return in;

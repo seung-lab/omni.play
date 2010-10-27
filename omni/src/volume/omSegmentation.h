@@ -14,6 +14,7 @@
 class OmMipMeshManager;
 class OmGroups;
 class OmMST;
+class OmUserEdges;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
@@ -67,6 +68,9 @@ public:
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
+	boost::shared_ptr<OmUserEdges> getMSTUserEdges(){
+		return mstUserEdges_;
+	}
 
 	DataCoord FindCenterOfSelectedSegments() const;
 
@@ -91,6 +95,7 @@ private:
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 	boost::shared_ptr<OmGroups> mGroups;
 	boost::shared_ptr<OmMST> mst_;
+	boost::shared_ptr<OmUserEdges> mstUserEdges_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,

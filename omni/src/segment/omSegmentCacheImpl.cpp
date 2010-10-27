@@ -8,10 +8,11 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
+#include "segment/io/omUserEdges.hpp"
 
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
-OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation * segmentation)
+OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation* segmentation)
 	: OmSegmentCacheImplLowLevel(segmentation)
 {
 }
@@ -41,7 +42,7 @@ OmSegment* OmSegmentCacheImpl::AddSegment(const OmSegID value)
 		mMaxValue = value;
 	}
 
-	return seg;;
+	return seg;
 }
 
 OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
@@ -163,7 +164,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( -1 != child->getEdgeNumber() ){
 		const int e = child->getEdgeNumber();
-		OmMSTEdge* edges = mSegmentation->getMST()->Edges();
+		OmMSTEdge* edges = segmentation_->getMST()->Edges();
 
 		edges[e].userSplit = 1;
 		edges[e].wasJoined = 0;
@@ -173,7 +174,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( child->getCustomMergeEdge().isValid() ){
 		const int numRemoved =
-			mManualUserMergeEdgeList.removeAll( child->getCustomMergeEdge() );
+			userEdges()->RemoveEdge(child->getCustomMergeEdge());
 		printf("number of user edges removed: %d\n", numRemoved);
 		child->setCustomMergeEdge(OmSegmentEdge());
 	}
@@ -189,7 +190,7 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegment
 {
 	std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser( e );
 	if(edge.first){
-		mManualUserMergeEdgeList.push_back( edge.second );
+		userEdges()->AddEdge(edge.second);
 	}
 	return edge;
 }
@@ -328,7 +329,7 @@ void OmSegmentCacheImpl::refreshTree()
 {
 	if( mSegmentGraph.graph_doesGraphNeedToBeRefreshed(mMaxValue) ){
 		mSegmentGraph.initialize(this);
-		foreach( const OmSegmentEdge & e, mManualUserMergeEdgeList ){
+		foreach(const OmSegmentEdge & e, userEdges()->Edges()){
 			JoinEdgeFromUser(e);
 		}
 		setGlobalThreshold();
@@ -339,7 +340,7 @@ void OmSegmentCacheImpl::refreshTree()
 
 void OmSegmentCacheImpl::setGlobalThreshold()
 {
-	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
+	boost::shared_ptr<OmMST> mst = segmentation_->getMST();
 
 	if(!mst->isValid()){
 		printf("no graph found...\n");
@@ -357,7 +358,7 @@ void OmSegmentCacheImpl::setGlobalThreshold()
 
 void OmSegmentCacheImpl::resetGlobalThreshold()
 {
-	boost::shared_ptr<OmMST> mst = mSegmentation->getMST();
+	boost::shared_ptr<OmMST> mst = segmentation_->getMST();
 
 	printf("resetting global threshold to %f...\n", mst->UserThreshold());
 
@@ -375,4 +376,8 @@ boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
 void OmSegmentCacheImpl::Flush()
 {
 	mSegments->Flush();
+}
+
+boost::shared_ptr<OmUserEdges> OmSegmentCacheImpl::userEdges(){
+	return segmentation_->getMSTUserEdges();
 }

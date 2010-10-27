@@ -8,7 +8,7 @@
 // entry into this class via OmSegmentCache hopefully guarentees proper locking...
 
 OmSegmentCacheImplLowLevel::OmSegmentCacheImplLowLevel(OmSegmentation * segmentation)
-	: mSegmentation(segmentation)
+	: segmentation_(segmentation)
 	, mSegments(new OmPagingPtrStore(segmentation))
 	, mMaxValue(0)
 	, mNumSegs(0)
@@ -218,7 +218,7 @@ void OmSegmentCacheImplLowLevel::doSelectedSetRemove( const OmSegID segID)
 
 void OmSegmentCacheImplLowLevel::addToRecentMap( const OmSegID segID )
 {
-	mSegmentation->GetSegmentLists()->TouchRecentList(segID);
+	segmentation_->GetSegmentLists()->TouchRecentList(segID);
 }
 
 QString OmSegmentCacheImplLowLevel::getSegmentName( OmSegID segID )
@@ -251,7 +251,7 @@ void OmSegmentCacheImplLowLevel::setSegmentNote( OmSegID segID, QString note )
 
 OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
 {
-	return mSegmentation->GetID();
+	return segmentation_->GetID();
 }
 
 quint32 OmSegmentCacheImplLowLevel::getPageSize()
@@ -282,5 +282,5 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 
 OmSegmentCache* OmSegmentCacheImplLowLevel::getSegmentCache()
 {
-	return mSegmentation->GetSegmentCache();
+	return segmentation_->GetSegmentCache();
 }

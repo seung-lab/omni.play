@@ -65,6 +65,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omIDataVolume.hpp \
            src/segment/io/omMST.h \
            src/segment/io/omMSTold.h \
+           src/segment/io/omUserEdges.hpp \
            src/datalayer/archive/omDataArchiveBoost.h \
            src/datalayer/archive/omDataArchiveCoords.h \
            src/datalayer/archive/omDataArchiveMipChunk.h \

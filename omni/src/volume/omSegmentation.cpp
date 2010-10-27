@@ -29,6 +29,7 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 #include "zi/omThreads.h"
+#include "segment/io/omUserEdges.hpp"
 
 #include <QFile>
 #include <QTextStream>
@@ -41,6 +42,7 @@ OmSegmentation::OmSegmentation()
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
+	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {}
 
@@ -53,6 +55,7 @@ OmSegmentation::OmSegmentation(OmID id)
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
+	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {
 	//uses meta data
@@ -335,4 +338,5 @@ void OmSegmentation::Flush()
 {
 	mSegmentCache->Flush();
 	mst_->Flush();
+	mstUserEdges_->Save();
 }

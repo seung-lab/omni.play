@@ -7,6 +7,7 @@
 #include "system/omBuildSegmentation.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "segment/io/omUserEdges.hpp"
 
 class HeadlessImpl {
 public:
@@ -69,7 +70,8 @@ public:
 
 		mst->Flush();
 
-		//TODO: clear user edges
+		sdw.getSegmentation().getMSTUserEdges()->Clear();
+		sdw.getSegmentation().getMSTUserEdges()->Save();
 
 		OmSegmentCache* segCache = sdw.getSegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
