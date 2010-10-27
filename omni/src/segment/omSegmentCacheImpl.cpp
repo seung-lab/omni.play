@@ -10,7 +10,7 @@
 #include "volume/omSegmentation.h"
 #include "segment/io/omUserEdges.hpp"
 
-// entry into this class via OmSegmentCache hopefully guarentees proper locking...
+// entry into this class via OmSegmentCache hopefully guarantees proper locking...
 
 OmSegmentCacheImpl::OmSegmentCacheImpl(OmSegmentation* segmentation)
 	: OmSegmentCacheImplLowLevel(segmentation)
