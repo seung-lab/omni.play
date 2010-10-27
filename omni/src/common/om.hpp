@@ -12,6 +12,11 @@ namespace om {
 		NON_BLOCKING
 	};
 
+	enum ShouldUpdateAsType{
+		UPDATE_AS_TYPE,
+		DONT_UPDATE_AS_TYPE
+	};
+
 } // namespace Om
 
 #endif

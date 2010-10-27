@@ -13,7 +13,7 @@ void OmEvents::ToolChange(){
 	POST(new OmToolModeEvent(OmToolModeEvent::TOOL_MODE_CHANGE));
 }
 
-void OmEvents::Redraw(){
+void OmEvents::Redraw2d(){
 	POST(new OmViewEvent(OmViewEvent::REDRAW));
 }
 

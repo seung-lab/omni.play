@@ -27,7 +27,7 @@ public:
 		if( SPLIT_MODE == OmStateManager::GetToolMode()){
 			if (event->button() == Qt::LeftButton) {
 				doFindAndSplitSegment( event );
-				v2d_->doRedraw();
+				v2d_->doRedraw2d();
 				return;
 			}
 		}
@@ -63,7 +63,7 @@ private:
 	}
 	void mouseSetCrosshair(QMouseEvent * event)
 	{
-		v2d_->doRedraw();
+		v2d_->doRedraw2d();
 		v2d_->SetDepth(event);
 		state_->getViewGroupState()->setTool(PAN_MODE);
 	}
@@ -167,7 +167,7 @@ private:
 		}
 		sel.sendEvent();
 
-		state_->touchFreshnessAndRedraw();
+		state_->touchFreshnessAndRedraw2d();
 		v2d_->myUpdate();
 	}
 

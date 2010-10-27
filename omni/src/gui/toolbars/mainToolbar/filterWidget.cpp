@@ -54,7 +54,7 @@ void FilterWidget::initSilderTab()
 void FilterWidget::moveSliderTab(const double alpha)
 {
 	this->setValue(alpha * 100);
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 boost::optional<double> FilterWidget::doGetFilterAlpha()
@@ -77,7 +77,7 @@ void FilterWidget::doSetFilterAlpha(const double alpha)
 		OmFilter2d* filter = fdw.getFilter();
 		filter->SetAlpha(alpha);
 		moveSliderTab(alpha);
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 }
 

@@ -1,23 +1,17 @@
-#ifndef OM_THRESHOLD_GROUP_H
-#define OM_THRESHOLD_GROUP_H
+#ifndef OM_DOUBLE_SPIN_BOX_HPP
+#define OM_DOUBLE_SPIN_BOX_HPP
 
+#include "common/om.hpp"
 #include "common/omDebug.h"
 #include "gui/widgets/omCursors.h"
 #include "system/omEvents.h"
 
 #include <QtGui>
 
-namespace om {
-	enum ShouldUpdateAsType{
-		UPDATE_AS_TYPE,
-		DONT_UPDATE_AS_TYPE
-	};
-};
-
-class OmSpinBox : public QDoubleSpinBox {
+class OmDoubleSpinBox : public QDoubleSpinBox {
 Q_OBJECT
 public:
-	OmSpinBox(QWidget * d,
+	OmDoubleSpinBox(QWidget * d,
 			  const om::ShouldUpdateAsType updateAsType)
 		: QDoubleSpinBox(d)
 	{
@@ -33,7 +27,7 @@ public:
 	}
 
 	void updateGui(){
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 
  private slots:

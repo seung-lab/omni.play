@@ -33,7 +33,7 @@ OmTileDrawer::~OmTileDrawer()
 	state_->getCache()->UnRegisterDrawer(this);
 }
 
-void OmTileDrawer::FullRedraw()
+void OmTileDrawer::FullRedraw2d()
 {
 	reset();
 

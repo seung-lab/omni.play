@@ -1,3 +1,6 @@
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxX.hpp"
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxY.hpp"
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/displayTools.h"
 #include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
@@ -19,9 +22,14 @@ QWidget* DisplayTools::view2dSliceDepthBox()
 {
 	QGroupBox* widget = new QGroupBox("Slice Depths", this);
 
-	const int xSliceDepth = getViewGroupState()->GetViewSliceDepth(YZ_VIEW);
-	const int ySliceDepth = getViewGroupState()->GetViewSliceDepth(XZ_VIEW);
-	const int zSliceDepth = getViewGroupState()->GetViewSliceDepth(XY_VIEW);
+	SliceDepthSpinBoxX* xDepth = new SliceDepthSpinBoxX(this);
+	SliceDepthSpinBoxY* yDepth = new SliceDepthSpinBoxY(this);
+	SliceDepthSpinBoxZ* zDepth = new SliceDepthSpinBoxZ(this);
+
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(xDepth);
+	layout->addWidget(yDepth);
+	layout->addWidget(zDepth);
 
 	return widget;
 }
@@ -75,7 +83,7 @@ OmViewGroupState * DisplayTools::getViewGroupState()
 
 void DisplayTools::updateGui()
 {
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 SegmentationDataWrapper DisplayTools::getSegmentationDataWrapper()

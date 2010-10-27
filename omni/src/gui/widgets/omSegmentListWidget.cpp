@@ -108,7 +108,7 @@ void OmSegmentListWidget::segmentLeftClick()
 		const bool shouldBeChecked = !isCurrentlyChecked;
 
 		sdw.setEnabled(shouldBeChecked);
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 		OmEvents::Redraw3d();
 
 		/*

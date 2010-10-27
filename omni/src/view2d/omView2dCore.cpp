@@ -31,7 +31,7 @@ void OmView2dCore::resetPbuffer(const QSize& size)
 }
 
 // pbuffered paint
-QImage OmView2dCore::FullRedraw()
+QImage OmView2dCore::FullRedraw2d()
 {
 	reset();
 
@@ -41,7 +41,7 @@ QImage OmView2dCore::FullRedraw()
 	{
 		OmGarbage::safeCleanTextureIds();
 
-		tileDrawer_->FullRedraw();
+		tileDrawer_->FullRedraw2d();
 	}
 	teardownMainGLpaintOp();
 

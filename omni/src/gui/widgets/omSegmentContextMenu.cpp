@@ -153,7 +153,7 @@ void OmSegmentContextMenu::randomizeColor()
 	segment->reRandomizeColor();
 
 	OmCacheManager::TouchFresheness();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid()

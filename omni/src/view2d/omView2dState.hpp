@@ -197,7 +197,7 @@ public:
 		ZoomLevel()->Reset(getMaxMipLevel());
 
 		OmProjectData::getTileCache()->Clear();
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 
 	inline void SetPanDistance(const int x, const int y)
@@ -364,10 +364,10 @@ public:
 	}
 
 	//refresh
-	static void touchFreshnessAndRedraw()
+	static void touchFreshnessAndRedraw2d()
 	{
 		OmCacheManager::TouchFresheness();
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 
 	// depth-related computation helpers

@@ -6,7 +6,7 @@
 class OmEvents {
  public:
 	static void ToolChange();
-	static void Redraw();
+	static void Redraw2d();
 	static void Redraw3d();
 	static void SegmentModified();
 	static void SegmentModified(OmID segmentationId,

@@ -313,7 +313,7 @@ void OmLineDraw::myUpdate()
 								   mCurrentSegmentId))->Run();
 		RemoveModifiedTiles();
 	} else {
-		state_->touchFreshnessAndRedraw();
+		state_->touchFreshnessAndRedraw2d();
 	}
 	mUpdatedDataCoords.clear();
 	mEditedSegmentation = 0;

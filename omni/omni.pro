@@ -144,7 +144,10 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/dendToolbar/validationGroup.h \
            src/gui/toolbars/dendToolbar/graphTools.h \
            src/gui/toolbars/dendToolbar/displayTools.h \
-           src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
+           src/gui/toolbars/dendToolbar/sliceDepthSpinBoxBase.hpp \
+           src/gui/toolbars/dendToolbar/sliceDepthSpinBoxX.hpp \
+           src/gui/toolbars/dendToolbar/sliceDepthSpinBoxY.hpp \
+           src/gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
@@ -165,7 +168,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omCheckBox.h \
            src/gui/widgets/omSegmentListWidget.h \
            src/gui/widgets/omGroupListWidget.h \
-           src/gui/widgets/omSpinBox.hpp \
+           src/gui/widgets/omIntSpinBox.hpp \
+           src/gui/widgets/omDoubleSpinBox.hpp \
            src/mesh/omMeshDrawer.h \
            src/mesh/omMeshTypes.h \
            src/mesh/omMipMesh.h \

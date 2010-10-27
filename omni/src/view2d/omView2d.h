@@ -45,7 +45,7 @@ public:
 	}
 
 	void resetWindow();
-	void doRedraw();
+	void doRedraw2d();
 	void SetDepth(QMouseEvent *event);
 
 	void myUpdate();

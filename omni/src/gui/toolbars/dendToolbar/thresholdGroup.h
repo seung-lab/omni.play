@@ -5,16 +5,16 @@
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
-#include "gui/widgets/omSpinBox.hpp"
+#include "gui/widgets/omDoubleSpinBox.hpp"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-class ThresholdGroup : public OmSpinBox {
+class ThresholdGroup : public OmDoubleSpinBox {
 Q_OBJECT
 public:
 	ThresholdGroup(GraphTools * d)
-		: OmSpinBox(d, om::DONT_UPDATE_AS_TYPE)
+		: OmDoubleSpinBox(d, om::DONT_UPDATE_AS_TYPE)
 		, mParent(d)
 	{
 		setSingleStep(0.002);

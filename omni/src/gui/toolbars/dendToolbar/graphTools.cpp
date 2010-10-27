@@ -47,7 +47,7 @@ OmViewGroupState * GraphTools::getViewGroupState()
 
 void GraphTools::updateGui()
 {
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 SegmentationDataWrapper GraphTools::getSegmentationDataWrapper()
