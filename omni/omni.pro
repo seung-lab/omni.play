@@ -361,6 +361,7 @@ HEADERS += lib/strnatcmp.h \
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
            src/common/omGl.cpp \
+           src/actions/omActions.cpp \
            src/segment/io/omMST.cpp \
            src/segment/io/omMSTold.cpp \
            src/datalayer/archive/omDataArchiveBoost.cpp \

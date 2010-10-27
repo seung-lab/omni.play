@@ -104,7 +104,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, mViewGroupState);
+	OmActions::FindAndSplitSegments(sdw, mViewGroupState);
 }
 
 /////////////////////////////////

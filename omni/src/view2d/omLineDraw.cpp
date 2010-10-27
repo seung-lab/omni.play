@@ -308,9 +308,9 @@ void OmLineDraw::myUpdate()
 	}
 
 	if(mEditedSegmentation){
-		(new OmVoxelSetValueAction(mEditedSegmentation,
-								   mUpdatedDataCoords,
-								   mCurrentSegmentId))->Run();
+		OmActions::SetVoxels(mEditedSegmentation,
+							 mUpdatedDataCoords,
+							 mCurrentSegmentId);
 		RemoveModifiedTiles();
 	} else {
 		state_->touchFreshnessAndRedraw2d();

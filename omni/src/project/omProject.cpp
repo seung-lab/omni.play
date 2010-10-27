@@ -170,7 +170,7 @@ OmChannel & OmProject::GetChannel(const OmID id)
 OmChannel & OmProject::AddChannel()
 {
 	OmChannel & r_channel = Instance()->mChannelManager.Add();
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 	return r_channel;
 }
 
@@ -184,7 +184,7 @@ void OmProject::RemoveChannel(const OmID id)
 
 	OmProjectData::DeleteInternalData(path);
 
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 }
 
 bool OmProject::IsChannelValid(const OmID id)
@@ -218,7 +218,7 @@ OmSegmentation & OmProject::GetSegmentation(const OmID id)
 OmSegmentation & OmProject::AddSegmentation()
 {
 	OmSegmentation & r_segmentation = Instance()->mSegmentationManager.Add();
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 	return r_segmentation;
 }
 
@@ -242,7 +242,7 @@ void OmProject::RemoveSegmentation(const OmID id)
 
 	OmProjectData::DeleteInternalData(path);
 
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 }
 
 bool OmProject::IsSegmentationValid(const OmID id)

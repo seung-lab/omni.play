@@ -15,5 +15,5 @@ SaveButton::SaveButton(MainToolbar * parent)
 
 void SaveButton::doAction()
 {
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 }

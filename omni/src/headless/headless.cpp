@@ -49,7 +49,7 @@ void Headless::processLine(const QString& line, const QString&)
 		OmProject::Close();
 		exit(0);
 	} else if("save" == line) {
-		(new OmProjectSaveAction())->Run();
+		OmActions::Save();
 	} else if("mesh" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");
@@ -246,7 +246,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 		OmProject::GetSegmentation(segmentationID_).GetSegmentCache()->AddSegment();
-		(new OmProjectSaveAction())->Run();
+		OmActions::Save();
 	} else if(line.startsWith("create:")) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 

@@ -61,7 +61,7 @@ void OmChannel::BuildVolumeData()
 
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 	return filter;
 }
 
