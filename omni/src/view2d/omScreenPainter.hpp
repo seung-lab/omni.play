@@ -122,7 +122,7 @@ private:
 
 		di.paint(state_->getZoomScale(), "zoomFactor", 2);
 
-		di.paint(state_->GetDepthToDataSlice(), "Slice Depth");
+		di.paint(state_->GetDepthToDataSlice() + 1, "Slice Depth");
 
 		printTileCount(di);
 		printTimingInfo(di);

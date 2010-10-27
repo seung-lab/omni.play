@@ -60,13 +60,13 @@ private:
 protected:
 	void setInitialGUIThresholdValue()
 	{
-		int dThreshold = 0;
+		int depth = 0;
 
         if( NULL != mParent->getViewGroupState() ) {
-			dThreshold = vgs()->GetViewSliceDepth(viewType());
+			depth = vgs()->GetViewSliceDepth(viewType());
 		}
 
-        setGUIvalue(dThreshold);
+        setValue(depth);
 	}
 };
 

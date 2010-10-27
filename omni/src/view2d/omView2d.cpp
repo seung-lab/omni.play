@@ -93,7 +93,7 @@ void OmView2d::doRedraw2d()
 
 void OmView2d::SetDepth(QMouseEvent * event)
 {
-	const ScreenCoord screenc = ScreenCoord(event->x(),event->y());
+	const ScreenCoord screenc = ScreenCoord(event->x(), event->y());
 	const SpaceCoord newDepth = state()->ScreenToSpaceCoord(screenc);
 	state()->setSliceDepth(newDepth);
 

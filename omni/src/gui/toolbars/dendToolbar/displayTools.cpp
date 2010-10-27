@@ -20,7 +20,7 @@ DisplayTools::DisplayTools(DendToolBar * d)
 
 QWidget* DisplayTools::view2dSliceDepthBox()
 {
-	QGroupBox* widget = new QGroupBox("Slice Depths", this);
+	QGroupBox* widget = new QGroupBox("Slice Depths (x,y,z)", this);
 
 	SliceDepthSpinBoxX* xDepth = new SliceDepthSpinBoxX(this);
 	SliceDepthSpinBoxY* yDepth = new SliceDepthSpinBoxY(this);
