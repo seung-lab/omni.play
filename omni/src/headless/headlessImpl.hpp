@@ -1,11 +1,12 @@
 #ifndef HEADLESS_IMPL_HPP
 #define HEADLESS_IMPL_HPP
 
+#include "actions/omActions.hpp"
 #include "project/omProject.h"
-#include "volume/omSegmentation.h"
+#include "segment/io/omMST.h"
 #include "system/omBuildSegmentation.h"
 #include "utility/dataWrappers.h"
-#include "segment/io/omMST.h"
+#include "volume/omSegmentation.h"
 
 class HeadlessImpl {
 public:
@@ -68,7 +69,18 @@ public:
 
 		mst->Flush();
 
-		//clear user edges
+		//TODO: clear user edges
+
+		OmSegmentCache* segCache = sdw.getSegmentCache();
+		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
+			OmSegment* seg = segCache->GetSegment(i);
+			if(!seg){
+				continue;
+			}
+			seg->SetListType(om::WORKING);
+		}
+
+		OmActions::Save();
 	}
 };
 
