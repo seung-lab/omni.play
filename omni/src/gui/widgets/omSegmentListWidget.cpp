@@ -1,14 +1,15 @@
-#include "zi/omUtility.h"
 #include "common/omCommon.h"
 #include "gui/guiUtils.h"
 #include "gui/inspectors/segObjectInspector.h"
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omSegmentListWidget.h"
+#include "segment/details/omSegmentListsTypes.hpp"
 #include "segment/omSegmentSelector.h"
 #include "system/omEvents.h"
-#include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
+#include "zi/omUtility.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
@@ -44,11 +45,11 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	assert( 100 >= segIDs->list.size() && "too many segments returned" );
+	assert( 100 >= segIDs->list_->size() && "too many segments returned" );
 
 	OmSegmentCache* segCache = segmentationDW.getSegmentCache();
 
-	FOR_EACH(iter, segIDs->list){
+	FOR_EACH(iter, *segIDs->list_){
 		OmSegment* seg = segCache->GetSegment(*iter);
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);

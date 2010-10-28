@@ -1,6 +1,7 @@
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "common/omDebug.h"
 #include "segment/io/omMST.h"
+#include "segment/io/omUserEdges.hpp"
+#include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentIteratorLowLevel.h"
 #include "segment/omSegmentCacheImpl.h"
 #include "segment/omSegmentEdge.h"
@@ -8,7 +9,6 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omProjectData.h"
 #include "volume/omSegmentation.h"
-#include "segment/io/omUserEdges.hpp"
 
 // entry into this class via OmSegmentCache hopefully guarantees proper locking...
 

@@ -5,15 +5,4 @@
 
 typedef std::deque<OmSegment*> OmSegPtrList;
 
-class OmSegIDsListWithPage {
- public:
-	OmSegIDsListWithPage( const OmSegIDsList & L, int pageOffset )
-		: mPageOffset(pageOffset)
-		, list(L) {}
-
-	int mPageOffset;
-	OmSegIDsList list;
-};
-
-
 #endif

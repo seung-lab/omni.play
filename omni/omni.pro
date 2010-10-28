@@ -219,6 +219,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentPointers.h \
            src/segment/omSegmentSelector.h \
            src/segment/omSegmentLists.hpp \
+           src/segment/details/omSegmentListsTypes.hpp \
            src/segment/omSegmentValidation.hpp \
            src/segment/omSegmentUncertain.hpp \
            src/system/omGenericManager.h \

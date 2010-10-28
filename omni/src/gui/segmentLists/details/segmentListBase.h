@@ -1,11 +1,12 @@
 #ifndef SEGMENT_LIST_BASE_H
 #define SEGMENT_LIST_BASE_H
 
+#include "common/omCommon.h"
+
 #include <QtGui>
 #include <QWidget>
 
-#include "segment/omSegmentPointers.h"
-
+class OmSegIDsListWithPage;
 class SegmentationDataWrapper;
 class OmViewGroupState;
 class OmSegmentEvent;

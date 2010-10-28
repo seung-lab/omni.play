@@ -1,21 +1,21 @@
 #ifndef OM_SEGMENT_LIST_WIDGET_H
 #define OM_SEGMENT_LIST_WIDGET_H
 
-#include <QtGui>
 #include "common/omCommon.h"
 #include "segment/omSegmentPointers.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "volume/omSegmentation.h"
 
+#include <QtGui>
+
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class SegmentListBase;
+class OmSegIDsListWithPage;
 
 class OmSegmentListWidget : public QTreeWidget {
-
  Q_OBJECT
-
- public:
+public:
 	OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
 
 	bool populate(const bool doScrollToSelectedSegment,
