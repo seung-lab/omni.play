@@ -1,11 +1,11 @@
 #include "segment/lowLevel/omSegmentListBySize.h"
 
-void OmSegmentListBySize::insertSegment(OmSegment* seg)
+void OmSegmentListBySize::InsertSegment(OmSegment* seg)
 {
 	do_insertSegment(seg->value(), seg->getSize());
 }
 
-void OmSegmentListBySize::swapSegment(OmSegment* seg, OmSegmentListBySize& one,
+void OmSegmentListBySize::SwapSegment(OmSegment* seg, OmSegmentListBySize& one,
 									  OmSegmentListBySize& two)
 {
 	List_by_ID& idIndex = one.mList.get<segID>();
@@ -16,18 +16,18 @@ void OmSegmentListBySize::swapSegment(OmSegment* seg, OmSegmentListBySize& one,
 	}
 }
 
-void OmSegmentListBySize::removeSegment(OmSegment* seg)
+void OmSegmentListBySize::RemoveSegment(OmSegment* seg)
 {
 	do_removeSegment(seg->value());
 }
 
-void OmSegmentListBySize::updateFromJoin(OmSegment* root, OmSegment* child)
+void OmSegmentListBySize::UpdateFromJoin(OmSegment* root, OmSegment* child)
 {
-	do_incrementSegSize(root->value(), getSegmentSize(child));
+	do_incrementSegSize(root->value(), GetSegmentSize(child));
 	do_removeSegment(child->value());
 }
 
-void OmSegmentListBySize::updateFromSplit(OmSegment* root, OmSegment* child,
+void OmSegmentListBySize::UpdateFromSplit(OmSegment* root, OmSegment* child,
 										  const uint64_t newChildSize)
 {
 	do_incrementSegSize(root->value(), -newChildSize);
@@ -84,7 +84,7 @@ void OmSegmentListBySize::advanceIter(List_by_size& sizeIndex,
 }
 
 boost::shared_ptr<OmSegIDsListWithPage>
-OmSegmentListBySize::getPageOfSegmentIDs(const unsigned int offset,
+OmSegmentListBySize::GetPageOfSegmentIDs(const unsigned int offset,
 										 const int numToGet,
 										 const OmSegID startSeg)
 {
@@ -116,7 +116,7 @@ OmSegmentListBySize::getPageOfSegmentIDs(const unsigned int offset,
 	return boost::make_shared<OmSegIDsListWithPage>(ret, page);
 }
 
-uint64_t OmSegmentListBySize::getSegmentSize(OmSegment* seg)
+uint64_t OmSegmentListBySize::GetSegmentSize(OmSegment* seg)
 {
 	List_by_ID& idIndex = mList.get<segID>();
 	List_by_ID::iterator iter = idIndex.find(seg->value());
@@ -127,7 +127,7 @@ uint64_t OmSegmentListBySize::getSegmentSize(OmSegment* seg)
 	return seg->getSize();
 }
 
-void OmSegmentListBySize::dump()
+void OmSegmentListBySize::Dump()
 {
 	List_by_size& sizeIndex = mList.get<segSize>();
 	List_by_size::iterator iterSize = sizeIndex.begin();
@@ -137,12 +137,12 @@ void OmSegmentListBySize::dump()
 	}
 }
 
-size_t OmSegmentListBySize::size()
+size_t OmSegmentListBySize::Size()
 {
 	return mList.size();
 }
 
-void OmSegmentListBySize::clear()
+void OmSegmentListBySize::Clear()
 {
 	mList.clear();
 }

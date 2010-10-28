@@ -14,23 +14,23 @@ class OmSegmentListBySize {
 public:
 	OmSegmentListBySize(){}
 
-	void insertSegment(OmSegment* seg);
-	void removeSegment(OmSegment* seg);
-	void updateFromJoin(OmSegment* root, OmSegment* child);
-	void updateFromSplit(OmSegment* root, OmSegment* child, const uint64_t);
+	void InsertSegment(OmSegment* seg);
+	void RemoveSegment(OmSegment* seg);
+	void UpdateFromJoin(OmSegment* root, OmSegment* child);
+	void UpdateFromSplit(OmSegment* root, OmSegment* child, const uint64_t);
 
-	static void swapSegment(OmSegment* seg, OmSegmentListBySize & one,
+	static void SwapSegment(OmSegment* seg, OmSegmentListBySize & one,
 							OmSegmentListBySize & two);
 
 	boost::shared_ptr<OmSegIDsListWithPage>
-	getPageOfSegmentIDs(const unsigned int,
+	GetPageOfSegmentIDs(const unsigned int,
 							  const int, const OmSegID);
 
-	uint64_t getSegmentSize(OmSegment* seg);
+	uint64_t GetSegmentSize(OmSegment* seg);
 
-	size_t size();
-	void dump();
-	void clear();
+	size_t Size();
+	void Dump();
+	void Clear();
 
 	OmSegID GetNextSegmentIDinList(const OmSegID id);
 
