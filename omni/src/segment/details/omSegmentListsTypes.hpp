@@ -11,6 +11,15 @@ public:
 		, mPageOffset(pageOffset)
 	{}
 
+	boost::shared_ptr<OmSegIDsList>& List(){
+		return list_;
+	}
+
+	int Offset() const {
+		return mPageOffset;
+	}
+
+private:
 	boost::shared_ptr<OmSegIDsList> list_;
 	int mPageOffset;
 };

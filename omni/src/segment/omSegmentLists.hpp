@@ -1,9 +1,8 @@
 #ifndef OM_SEGMENT_LISTS_HPP
 #define OM_SEGMENT_LISTS_HPP
 
-#include "segment/lowLevel/omSegmentListBySize.h"
-#include "segment/lowLevel/omSegmentListByMRU.h"
 #include "segment/details/omSegmentListContainer.hpp"
+#include "segment/lowLevel/omSegmentListByMRU.h"
 
 class OmSegmentLists {
 private:

@@ -110,7 +110,7 @@ private:
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
 	friend class OmSegmentationChunkBuildTask;
-	friend class SegmentTests;
+	friend class SegmentTests1;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);

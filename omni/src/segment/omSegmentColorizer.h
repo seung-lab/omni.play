@@ -69,7 +69,7 @@ private:
 	struct colorizer_mutex_pool_tag;
 	typedef zi::spinlock::pool<colorizer_mutex_pool_tag>::guard mutex_guard_t;
 
-	friend class SegmentTests;
+	friend class SegmentTests1;
 };
 
 #endif

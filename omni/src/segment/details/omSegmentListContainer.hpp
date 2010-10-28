@@ -2,6 +2,7 @@
 #define OM_SEGMENT_LIST_CONTAINER_HPP
 
 class OmSegment;
+class OmSegIDsListWithPage;
 
 template <typename T>
 class OmSegmentListContainer {
@@ -24,8 +25,8 @@ public:
 
 	boost::shared_ptr<OmSegIDsListWithPage>
 	getPageOfSegmentIDs(const uint32_t offset,
-							  const int numToGet,
-							  const OmSegID startSeg){
+						const int numToGet,
+						const OmSegID startSeg){
 		return list_.GetPageOfSegmentIDs(offset, numToGet, startSeg);
 	}
 

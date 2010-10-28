@@ -45,11 +45,11 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
 	QTreeWidgetItem *rowToJumpTo = NULL;
 
-	assert( 100 >= segIDs->list_->size() && "too many segments returned" );
+	assert( 100 >= segIDs->List()->size() && "too many segments returned" );
 
 	OmSegmentCache* segCache = segmentationDW.getSegmentCache();
 
-	FOR_EACH(iter, *segIDs->list_){
+	FOR_EACH(iter, *segIDs->List()){
 		OmSegment* seg = segCache->GetSegment(*iter);
 
 		QTreeWidgetItem *row = new QTreeWidgetItem(this);

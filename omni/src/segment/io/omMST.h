@@ -65,7 +65,7 @@ private:
 	std::string memMapPath();
 	void doReadInFromOldMST(const OmMSTold& old);
 
-	friend class SegmentTests;
+	friend class SegmentTests1;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation &);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation  &);

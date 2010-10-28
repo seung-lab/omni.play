@@ -358,8 +358,11 @@ HEADERS += lib/strnatcmp.h \
            src/zi/watershed/RawQuickieWS.h \
            tests/tests.hpp \
            tests/segment/segmentTests.hpp \
+           tests/segment/segmentTests1.hpp \
            tests/fakeMemMapFile.hpp \
-           tests/testUtils.hpp
+           tests/testUtils.hpp \
+           tests/segment/omSegmentListBySizeTests.hpp \
+           tests/segment/mockSegments.hpp
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
