@@ -340,3 +340,19 @@ void OmSegmentation::Flush()
 	mst_->Flush();
 	mstUserEdges_->Save();
 }
+
+//FIXME: move into OmChannel/OmSegmentation so we don't assume default type
+void OmSegmentation::BuildBlankVolume(const Vector3i & dims)
+{
+	SetBuildState(MIPVOL_BUILDING);
+
+	OmVolume::SetDataDimensions(dims);
+	UpdateRootLevel();
+
+	DeleteVolumeData();
+
+	OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
+
+	SetBuildState(MIPVOL_BUILT);
+}
+

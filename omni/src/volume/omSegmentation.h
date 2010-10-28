@@ -81,6 +81,7 @@ public:
 	boost::shared_ptr<std::set<OmSegment*> >
 	GetAllChildrenSegments(const OmSegIDsSet& set);
 
+	void BuildBlankVolume(const Vector3i & dims);
 
 protected:
 	virtual void doBuildThreadedVolume();

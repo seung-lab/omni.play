@@ -317,6 +317,7 @@ HEADERS += lib/strnatcmp.h \
            src/view3d/widgets/omSelectionWidget.h \
            src/view3d/widgets/omViewBoxWidget.h \
            src/view3d/widgets/omVolumeAxisWidget.h \
+           src/volume/build/omVolumeAllocater.hpp \
            src/volume/build/omDownsamplerTypes.hpp \
            src/volume/build/omDownsamplerVoxelTask.hpp \
            src/volume/build/omVolumeImporter.hpp \

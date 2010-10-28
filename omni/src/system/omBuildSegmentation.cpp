@@ -107,10 +107,12 @@ void OmBuildSegmentation::loadDendrogram()
 
 void OmBuildSegmentation::buildBlankVolume()
 {
+	printf("assuming channel 1\n");
 	assert(OmProject::IsChannelValid(1));
-	OmChannel & chann = OmProject::GetChannel(1);
+	OmChannel& chann = OmProject::GetChannel(1);
 
-	mSeg->BuildBlankVolume( chann.MipLevelDataDimensions(0) );
+	mSeg->BuildBlankVolume(chann.MipLevelDataDimensions(0));
+	mSeg->loadVolData();
 	mSeg->GetSegmentCache()->refreshTree();
 
 	printf("allocated blank volume\n");
