@@ -49,6 +49,8 @@ public:
 	{
 		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
 		seg->SetListType(toType);
+//		printf("next segment id in list (by size) is %d\n",
+//			   getContainer(seg->GetListType()).GetNextSegmentIDinList(seg->value()));
 	}
 
 	void TouchRecentList(const OmSegID segID){

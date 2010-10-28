@@ -32,12 +32,13 @@ public:
 	void dump();
 	void clear();
 
+	OmSegID GetNextSegmentIDinList(const OmSegID id);
+
 protected:
 
 	void do_incrementSegSize(const OmSegID segID_, const uint64_t addedSize);
 	void do_removeSegment(const OmSegID segID_);
 	void do_insertSegment(const OmSegID segID_, const uint64_t size_);
-
 
 	struct OmSegSize {
 		OmSegID segID;

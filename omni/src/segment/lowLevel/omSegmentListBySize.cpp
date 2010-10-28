@@ -88,9 +88,6 @@ OmSegmentListBySize::getPageOfSegmentIDs(const unsigned int offset,
 										 const int numToGet,
 										 const OmSegID startSeg)
 {
-	boost::shared_ptr<OmSegIDsList> ret =
-		boost::make_shared<OmSegIDsList>();
-
 	List_by_size& sizeIndex = mList.get<segSize>();
 	List_by_size::iterator iterSize = sizeIndex.begin();
 
@@ -109,6 +106,8 @@ OmSegmentListBySize::getPageOfSegmentIDs(const unsigned int offset,
 	 	advanceIter(sizeIndex, iterSize, -(counter % numToGet));
 	 	page = counter / numToGet;
 	}
+
+	boost::shared_ptr<OmSegIDsList> ret = boost::make_shared<OmSegIDsList>();
 
 	for(int i=0; i < numToGet && iterSize != sizeIndex.end(); ++i, ++iterSize){
 		ret->push_back(iterSize->segID);
@@ -146,4 +145,22 @@ size_t OmSegmentListBySize::size()
 void OmSegmentListBySize::clear()
 {
 	mList.clear();
+}
+
+OmSegID OmSegmentListBySize::GetNextSegmentIDinList(const OmSegID id)
+{
+	List_by_ID& idIndex = mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(id);
+
+	if(iter == idIndex.end()){
+		return 0;
+	}
+
+	++iter;
+
+	if(iter == idIndex.end()){
+		return 0;
+	}
+
+	return iter->segID;
 }

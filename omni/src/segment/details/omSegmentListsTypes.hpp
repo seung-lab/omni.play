@@ -4,7 +4,7 @@
 #include "common/omCommon.h"
 
 class OmSegIDsListWithPage {
- public:
+public:
 	OmSegIDsListWithPage(boost::shared_ptr<OmSegIDsList> list,
 						 const int pageOffset )
 		: list_(list)
