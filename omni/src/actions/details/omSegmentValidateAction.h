@@ -1,8 +1,9 @@
 #ifndef OM_SEGMENT_VALIDATE_ACTION_H
 #define OM_SEGMENT_VALIDATE_ACTION_H
 
-#include "actions/details/omAction.h"
+#include "common/om.hpp"
 #include "common/omCommon.h"
+#include "actions/details/omAction.h"
 
 class OmSegment;
 class SegmentDataWrapper;
@@ -13,10 +14,10 @@ class OmSegmentValidateAction : public OmAction {
 
 public:
 	static void Validate(const SegmentDataWrapper& sdw,
-						 const bool valid);
+						 const om::SetValid valid);
 
 	static void Validate(const SegmentationDataWrapper& sdw,
-						 const bool valid);
+						 const om::SetValid valid);
 
 private:
 	OmSegmentValidateAction(const OmID segmentationId,

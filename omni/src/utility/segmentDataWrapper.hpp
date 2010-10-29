@@ -150,6 +150,10 @@ public:
 	inline OmSegment* FindRoot() const {
 		return getSegmentCache()->findRoot(mID);
 	}
+
+	inline void RandomizeColor() const {
+		getSegment()->reRandomizeColor();
+	}
 };
 
 #endif

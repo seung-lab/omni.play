@@ -5,43 +5,56 @@
 #include "segment/omSegment.h"
 #include "segment/omSegmentEdge.h"
 #include "segment/details/omSegmentListsTypes.hpp"
+#include "segment/details/sortedRootSegments.hpp"
 
 class OmSegmentListBySize2 {
 public:
+	OmSegmentListBySize2()
+	{}
+
 	OmSegmentListBySize2(const int size)
 	{
-		sizes_.resize(size);
+		allSegmentSizes_.resize(size);
 	}
 
-	void InsertSegment(OmSegment* seg)
-	{
+	void InsertSegment(OmSegment* seg){
 		InsertSegment(seg->value(), seg->size());
 	}
 
+
 	void InsertSegment(const OmSegID segID, const uint64_t size)
 	{
-		if(segID >= sizes_.size()){
-			sizes_.resize(2 * segID);
+		if(segID >= allSegmentSizes_.size()){
+			allSegmentSizes_.resize(2 * segID);
 		}
-		sizes_[segID] = size;
-	}
+		allSegmentSizes_[segID] = size;
 
-	void RemoveSegment(OmSegment* seg)
-	{
-		sizes_[seg->value()] = 0;
+		sortedRoots_.Add(segID, size);
 	}
 
 	void UpdateFromJoin(OmSegment* root, OmSegment* child)
 	{
-		sizes_[root->value()] += child->size();
-		sizes_[child->value()] = 0;
+		const OmSegID rootID = root->value();
+		const OmSegID childID = child->value();
+		const uint64_t childSize = allSegmentSizes_[childID];
+		const uint64_t oldRootSize = allSegmentSizes_[rootID];
+
+		allSegmentSizes_[rootID] += childSize;
+		allSegmentSizes_[childID] = 0;
+
+		sortedRoots_.Remove(rootID, oldRootSize);
+		sortedRoots_.Remove(childID, childSize);
+
+		sortedRoots_.Add(rootID, allSegmentSizes_[rootID]);
 	}
 
 	void UpdateFromSplit(OmSegment* root, OmSegment* child,
 						 const uint64_t newChildSize)
 	{
-		sizes_[root->value()] -= newChildSize;
-		sizes_[child->value()] += newChildSize; // or just = ??
+		allSegmentSizes_[root->value()] -= newChildSize;
+		allSegmentSizes_[child->value()] += newChildSize; // or just = ??
+
+		sortedRoots_.Add(child->value(), newChildSize);
 	}
 
 	static void SwapSegment(OmSegment* seg, OmSegmentListBySize2 & one,
@@ -51,7 +64,7 @@ public:
 		const uint64_t size = one.GetSegmentSize(seg);
 
 		two.InsertSegment(segID, size);
-		one.RemoveSegment(seg);
+		one.removeSegment(seg);
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -66,24 +79,23 @@ public:
 
 	uint64_t GetSegmentSize(OmSegment* seg)
 	{
-		return sizes_[seg->value()];
+		return allSegmentSizes_[seg->value()];
 	}
 
 	size_t Size()
 	{
-		return sizes_.size();
+		return sortedRoots_.Size();
 	}
 
 	void Dump()
 	{
-		for( size_t i = 0; i < sizes_.size(); ++i){
-			std::cout << "seg " << i << ", size " << sizes_[i] << "\n";
-		}
+		sortedRoots_.Dump();
 	}
 
 	void Clear()
 	{
-		sizes_.clear();
+		allSegmentSizes_.clear();
+		sortedRoots_.Clear();
 	}
 
 	OmSegID GetNextSegmentIDinList(const OmSegID id)
@@ -93,7 +105,19 @@ public:
 
 protected:
 
-	std::vector<uint64_t> sizes_;
+	std::vector<uint64_t> allSegmentSizes_;
+	SortedRootSegments sortedRoots_;
+
+private:
+	void removeSegment(OmSegment* seg)
+	{
+		const OmSegID segID = seg->value();
+		const uint64_t oldSize = allSegmentSizes_[segID];
+
+		allSegmentSizes_[segID] = 0;
+		sortedRoots_.Remove(segID, oldSize);
+	}
 };
+
 
 #endif

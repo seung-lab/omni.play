@@ -43,12 +43,12 @@ void OmActions::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
-								const bool valid){
+								const om::SetValid valid){
 	OmSegmentValidateAction::Validate(sdw, valid);
 }
 
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
-								const bool valid){
+								const om::SetValid valid){
 	OmSegmentValidateAction::Validate(sdw, valid);
 }
 

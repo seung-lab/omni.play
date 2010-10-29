@@ -201,6 +201,7 @@ HEADERS += lib/strnatcmp.h \
            src/actions/details/omVoxelSetValueAction.h \
            src/actions/details/omSegmentationThresholdChangeAction.h \
            src/segment/details/omSegmentListContainer.hpp \
+           src/segment/details/sortedRootSegments.hpp \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \

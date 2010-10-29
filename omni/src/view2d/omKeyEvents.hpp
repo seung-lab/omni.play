@@ -1,11 +1,12 @@
 #ifndef OM_KEY_EVENTS_HPP
 #define OM_KEY_EVENTS_HPP
 
+#include "segment/omSegmentSelected.hpp"
+#include "view2d/omScreenShotSaver.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
-#include "view2d/omScreenShotSaver.hpp"
-#include "viewGroup/omBrushSize.hpp"
 #include "view2d/omView2dZoom.hpp"
+#include "viewGroup/omBrushSize.hpp"
 
 #include <QKeyEvent>
 
@@ -38,6 +39,13 @@ public:
 			v2d_->myUpdate();
 		}
 		break;
+
+		case Qt::Key_R:
+			OmSegmentSelected::RandomizeColor();
+			break;
+		case Qt::Key_V:
+			OmSegmentSelected::ToggleValid();
+			break;
 		case Qt::Key_L:
 			state_->ToggleLevelLock();
 			v2d_->myUpdate();

@@ -1,6 +1,7 @@
 #ifndef OM_ACTIONS_HPP
 #define OM_ACTIONS_HPP
 
+#include "common/om.hpp"
 #include "common/omCommon.h"
 
 class SegmentDataWrapper;
@@ -28,10 +29,10 @@ public:
 
 // segment-related
 	static void ValidateSegment(const SegmentDataWrapper& sdw,
-								const bool valid);
+								const om::SetValid valid);
 
 	static void ValidateSegment(const SegmentationDataWrapper& sdw,
-								const bool valid);
+								const om::SetValid valid);
 
 	static void UncertainSegment(const SegmentDataWrapper& sdw,
 								 const bool uncertain);

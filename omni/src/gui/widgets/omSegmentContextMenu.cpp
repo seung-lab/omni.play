@@ -160,7 +160,7 @@ void OmSegmentContextMenu::setValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if(sdw_.isValidWrapper()){
-		OmActions::ValidateSegment(sdw_, true);
+		OmActions::ValidateSegment(sdw_, om::SET_VALID);
 		OmEvents::SegmentModified();
 	}
 }
@@ -169,7 +169,7 @@ void OmSegmentContextMenu::setNotValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if(sdw_.isValidWrapper()){
-		OmActions::ValidateSegment(sdw_, false);
+		OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
 		OmEvents::SegmentModified();
 	}
 }

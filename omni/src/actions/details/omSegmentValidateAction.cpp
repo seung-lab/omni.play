@@ -3,8 +3,13 @@
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 
 void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
-									   const bool valid)
+									   const om::SetValid validEnum)
 {
+	bool valid = false;
+	if(om::SET_VALID == validEnum){
+		valid = true;
+	}
+
 	OmSegIDsSet set;
 	set.insert(sdw.getSegmentCache()->findRootID(sdw.getID()));
 
@@ -16,8 +21,13 @@ void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 }
 
 void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
-									   const bool valid)
+									   const om::SetValid validEnum)
 {
+	bool valid = false;
+	if(om::SET_VALID == validEnum){
+		valid = true;
+	}
+
 	OmSegmentation & seg = sdw.getSegmentation();
 
 	boost::shared_ptr<std::set<OmSegment*> > children =

@@ -13,7 +13,8 @@ public:
 
 	void RunAll()
 	{
-		runBasicListTests<OmSegmentListBySize>();
+		//runBasicListTests<OmSegmentListBySize>();
+		runBasicListTests<OmSegmentListBySize2>();
 	}
 
 private:
