@@ -57,8 +57,8 @@ private:
 			out << edges[i].threshold << ",";
 			out << edges[i].userJoin << ",";
 			out << edges[i].userSplit << ",";
-			out << node1->getSize() << ",";
-			out << node2->getSize();
+			out << node1->size() << ",";
+			out << node2->size();
 			out << "\n";
 		}
 

@@ -2,7 +2,7 @@
 
 void OmSegmentListBySize::InsertSegment(OmSegment* seg)
 {
-	do_insertSegment(seg->value(), seg->getSize());
+	do_insertSegment(seg->value(), seg->size());
 }
 
 void OmSegmentListBySize::SwapSegment(OmSegment* seg, OmSegmentListBySize& one,
@@ -124,7 +124,7 @@ uint64_t OmSegmentListBySize::GetSegmentSize(OmSegment* seg)
 		return iter->segSize;
 	}
 
-	return seg->getSize();
+	return seg->size();
 }
 
 void OmSegmentListBySize::Dump()

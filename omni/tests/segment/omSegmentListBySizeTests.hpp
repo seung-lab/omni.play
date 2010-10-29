@@ -3,6 +3,7 @@
 
 #include "segment/lowLevel/omSegmentListBySize.h"
 #include "segment/mockSegments.hpp"
+#include "segment/details/omSegmentListBySize2.hpp"
 
 class OmSegmentListBySizeTests {
 public:
@@ -12,15 +13,16 @@ public:
 
 	void RunAll()
 	{
-		run1();
+		runBasicListTests<OmSegmentListBySize>();
 	}
 
 private:
 	boost::shared_ptr<MockSegments> segs_;
 
-	void run1()
+	template <typename T>
+	void runBasicListTests()
 	{
-		OmSegmentListBySize list;
+		T list;
 		MockSegments& segs = *segs_;
 
 		for( int i = 1; i <= 10; i++){
@@ -58,6 +60,20 @@ private:
  		verify(  7 == pageList2[2] );
 
 		list.Dump();
+
+		list.Clear();
+		assert( 0 == list.Size());
+	}
+
+	void runLargeNumSegmentsTest()
+	{
+/*
+		for( int i = 1; i < 10000; i++){
+			segs_->GetOrAddSegment(i);
+			segs[i]->addToSize(i);
+			list.InsertSegment(segs[i]);
+		}
+*/
 	}
 };
 

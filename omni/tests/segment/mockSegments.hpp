@@ -38,6 +38,10 @@ public:
 		setupAndTestSegments();
 	}
 
+	OmSegment* GetOrAddSegment(const uint32_t id){
+		return cache_->GetOrAddSegment(id);
+	}
+
 	OmSegment* operator[] (const uint32_t id){
 		return segs_[id];
 	}

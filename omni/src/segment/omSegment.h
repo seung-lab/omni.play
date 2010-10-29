@@ -65,7 +65,7 @@ public:
 	bool IsEnabled();
 	void SetEnabled( const bool);
 
-	uint64_t getSize() const { return data_->size; }
+	uint64_t size() const { return data_->size; }
 	void addToSize(const uint64_t inc){
 		zi::spinlock::pool<segment_size_mutex_pool_tag>::guard g(data_->value);
 		data_->size += inc;
@@ -87,7 +87,8 @@ public:
 	double getThreshold() const { return threshold_; }
 	void setThreshold(const double thres){ threshold_ = thres; }
 
-	const DataBbox& getBounds() const {	return data_->bounds;	}
+	const DataBbox& getBounds() const {	return data_->bounds; }
+	void clearBounds() { data_->bounds = DataBbox(); }
 	void addToBounds(const DataBbox& box){
 		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
 		data_->bounds.merge(box);

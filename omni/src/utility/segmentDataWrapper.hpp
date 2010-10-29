@@ -124,7 +124,7 @@ public:
 	}
 
 	inline uint64_t getSize() const {
-		return getSegment()->getSize();
+		return getSegment()->size();
 	}
 
 	inline uint64_t getSizeWithChildren() const {

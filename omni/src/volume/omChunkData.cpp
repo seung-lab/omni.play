@@ -203,6 +203,84 @@ void OmChunkData::RefreshDirectDataValues(const bool computeSizes,
 }
 
 
+class ProcessChunkVoxelBoundingData {
+public:
+	ProcessChunkVoxelBoundingData(OmMipChunk* chunk,
+								  OmSegmentCache* segCache)
+		: chunk_(chunk)
+		, minVertexOfChunk_(chunk_->GetExtent().getMin())
+		, segCache_(segCache)
+	{}
+
+	~ProcessChunkVoxelBoundingData()
+	{
+		FOR_EACH(iter, localSegCache_){
+			const OmSegID val = iter->first;
+			OmSegment* seg = iter->second;
+			seg->addToBounds(bounds_[val]);
+		}
+	}
+
+	inline void processVoxel(const OmSegID val, const Vector3i& voxelPos)
+	{
+		getOrAddSegment(val);
+		bounds_[val].merge(DataBbox(minVertexOfChunk_ + voxelPos,
+									minVertexOfChunk_ + voxelPos));
+	}
+
+private:
+	OmMipChunk *const chunk_;
+	const Vector3i minVertexOfChunk_;
+	OmSegmentCache *const segCache_;
+
+	boost::unordered_map<OmSegID, OmSegment*> localSegCache_;
+	boost::unordered_map<OmSegID, DataBbox> bounds_;
+
+	OmSegment* getOrAddSegment(const OmSegID val)
+	{
+		if(!localSegCache_.count(val)){
+			return localSegCache_[val] = segCache_->GetOrAddSegment(val);
+		}
+		return localSegCache_[val];
+	}
+};
+class RefreshBoundingDataVisitor : public boost::static_visitor<>{
+public:
+	RefreshBoundingDataVisitor(OmMipChunk* chunk,
+							   OmSegmentCache* segCache)
+		: chunk_(chunk)
+		, segCache_(segCache) {}
+
+	template <typename T>
+	void operator()(T* d ) const{
+		doRefreshBoundingData(d);
+	}
+private:
+	OmMipChunk *const chunk_;
+	OmSegmentCache* segCache_;
+
+	template <typename C>
+	void doRefreshBoundingData(C* data) const
+	{
+		ProcessChunkVoxelBoundingData p(chunk_, segCache_);
+
+		OmChunkVoxelWalker iter(128);
+		for(iter.begin(); iter < iter.end(); ++iter){
+			const OmSegID val = static_cast<OmSegID>(*data++);
+			if(0 == val){
+				continue;
+			}
+			p.processVoxel(val, *iter);
+		}
+	}
+};
+void OmChunkData::RefreshBoundingData(OmSegmentCache* segCache)
+{
+	boost::apply_visitor(RefreshBoundingDataVisitor(chunk_, segCache),
+						 getRawData());
+}
+
+
 class CopyInDataVisitor : public boost::static_visitor<>{
 public:
 	CopyInDataVisitor(const int sliceOffset, uchar* bits)

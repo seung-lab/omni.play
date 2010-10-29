@@ -83,7 +83,7 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 						.arg(color.red).arg(color.green).arg(color.blue));
 		mGroupsTable->setCellWidget(count, 1, colorButton);
 		mGroupsTable->setItem(count, 2, new QTableWidgetItem(QString::number(segment->getSizeWithChildren()), 0));
-		mGroupsTable->setItem(count, 3, new QTableWidgetItem(QString::number(segment->getSize()), 0));
+		mGroupsTable->setItem(count, 3, new QTableWidgetItem(QString::number(segment->size()), 0));
 		count++;
 	}
 }

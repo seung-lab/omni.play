@@ -208,6 +208,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/lowLevel/omSegmentIteratorLowLevel.h \
            src/segment/lowLevel/omSegmentListByMRU.h \
            src/segment/lowLevel/omSegmentListBySize.h \
+           src/segment/details/omSegmentListBySize2.hpp \
            src/segment/io/omSegmentPage.hpp \
            src/segment/omSegmentSelected.hpp \
            src/segment/omSegment.h \

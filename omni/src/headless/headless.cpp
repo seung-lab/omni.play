@@ -66,6 +66,13 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 		HeadlessImpl::ClearMST(segmentationID_);
 
+	} else if("rebuildCenter" == line) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::RebuildCenterOfSegmentData(segmentationID_);
+
 	} else if("loadDend" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");

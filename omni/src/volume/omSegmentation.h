@@ -73,6 +73,7 @@ public:
 	}
 
 	DataCoord FindCenterOfSelectedSegments() const;
+	void UpdateVoxelBoundingData();
 
 	bool ImportSourceData(const OmDataPath& path);
 

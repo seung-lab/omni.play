@@ -205,7 +205,7 @@ void OmSegmentContextMenu::printChildren()
 				.arg(seg->value())
 				.arg(seg->getParentSegID())
 				.arg(seg->getThreshold())
-				.arg(seg->getSize());
+				.arg(seg->size());
 			printf("%s\n", qPrintable(str));
 			seg = iter.getNextSegment();
 		}

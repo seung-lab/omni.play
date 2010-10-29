@@ -311,6 +311,56 @@ void OmSegmentation::doBuildThreadedVolume()
 	mWasBounded = true;
 }
 
+class OmSegmentationChunkUpdateTask : public zi::runnable {
+private:
+	const OmMipChunkCoord coord_;
+	OmSegmentation* vol_;
+	OmSegmentCache* segmentCache_;
+
+public:
+	OmSegmentationChunkUpdateTask(const OmMipChunkCoord& coord,
+								  OmSegmentCache* segmentCache,
+								  OmSegmentation* vol)
+		: coord_(coord)
+		, vol_(vol)
+		, segmentCache_(segmentCache)
+	{}
+
+	void run()
+	{
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord_);
+
+		chunk->RefreshBoundingData(segmentCache_);
+	}
+};
+
+void OmSegmentation::UpdateVoxelBoundingData()
+{
+	OmThreadPool threadPool;
+	threadPool.start();
+
+	const int level = 0;
+
+	const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+	for (int z = 0; z < dims.z; ++z){
+		for (int y = 0; y < dims.y; ++y){
+			for (int x = 0; x < dims.x; ++x){
+
+				OmMipChunkCoord coord(level, x, y, z);
+
+				boost::shared_ptr<OmSegmentationChunkUpdateTask> task =
+					boost::make_shared<OmSegmentationChunkUpdateTask>(coord,
+																	  mSegmentCache,
+																	  this);
+				threadPool.addTaskBack(task);
+			}
+		}
+	}
+
+	threadPool.join();
+}
+
 void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
 							 const OmMipChunkCoord& coord,
 							 const OmSegID segID )

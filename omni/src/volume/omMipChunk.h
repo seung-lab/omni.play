@@ -56,8 +56,8 @@ public:
 
 	//mipchunk data accessors
 	const OmSegIDsSet & GetDirectDataValues();
-	void RefreshDirectDataValues(const bool,
-								 OmSegmentCache*);
+	void RefreshDirectDataValues(const bool, OmSegmentCache*);
+	void RefreshBoundingData(OmSegmentCache*);
 
 	//chunk extent
 	const NormBbox& GetNormExtent();

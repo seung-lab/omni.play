@@ -84,6 +84,24 @@ public:
 
 		OmActions::Save();
 	}
+
+	static void RebuildCenterOfSegmentData(const OmID segmentationID)
+	{
+		SegmentationDataWrapper sdw(segmentationID);
+
+		OmSegmentCache* segCache = sdw.getSegmentCache();
+		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
+			OmSegment* seg = segCache->GetSegment(i);
+			if(!seg){
+				continue;
+			}
+			seg->clearBounds();
+		}
+
+		sdw.getSegmentation().UpdateVoxelBoundingData();
+
+		OmActions::Save();
+	}
 };
 
 #endif

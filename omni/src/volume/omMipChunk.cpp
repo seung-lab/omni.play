@@ -203,6 +203,11 @@ void OmMipChunk::RefreshDirectDataValues(const bool computeSizes,
 	WriteMetaData();
 }
 
+void OmMipChunk::RefreshBoundingData(OmSegmentCache* segCache)
+{
+	mChunkData->RefreshBoundingData(segCache);
+}
+
 /**
  *      Returns new OmImage containing the entire extent of data needed
  *      to form continuous meshes with adjacent MipChunks.  This means an extra
