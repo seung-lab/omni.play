@@ -51,10 +51,16 @@ public:
 	void UpdateFromSplit(OmSegment* root, OmSegment* child,
 						 const uint64_t newChildSize)
 	{
-		allSegmentSizes_[root->value()] -= newChildSize;
-		allSegmentSizes_[child->value()] += newChildSize; // or just = ??
+		const OmSegID rootID = root->value();
+		const uint64_t oldRootSize = allSegmentSizes_[rootID];
+		sortedRoots_.Remove(rootID, oldRootSize);
 
-		sortedRoots_.Add(child->value(), newChildSize);
+		const OmSegID childID = child->value();
+		allSegmentSizes_[root->value()] -= newChildSize;
+		allSegmentSizes_[childID] += newChildSize; // or just = ??
+
+		sortedRoots_.Add(rootID, allSegmentSizes_[rootID]);
+		sortedRoots_.Add(childID, newChildSize);
 	}
 
 	static void SwapSegment(OmSegment* seg, OmSegmentListBySize2 & one,

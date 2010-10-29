@@ -19,6 +19,7 @@ private:
 		}
 	};
 
+	// sort size descending; if size match, make segment ids increasing
 	static bool cmpNode(const Node& a, const Node& b)
 	{
 		if(a.size == b.size){
@@ -64,7 +65,7 @@ public:
 	void Dump()
 	{
 		for( size_t i = 0; i < sorted_.size(); ++i){
-			std::cout << "seg " << i << ", size " << sorted_[i] << "\n";
+			std::cout << sorted_[i] << "\n";
 		}
 	}
 
