@@ -468,6 +468,8 @@ QDataStream &operator>>(QDataStream& in, OmSegmentCacheImpl& sc)
 		sc.mManualUserMergeEdgeList.push_back(e);
 	}
 
+	printf("loaded %d user edges\n", sc.mManualUserMergeEdgeList.size());
+
 	return in;
 }
 
