@@ -24,10 +24,10 @@ public:
 		, shouldDisplayInfo_(OmPreferences::GetBoolean(om::PREF_VIEW2D_SHOW_INFO_BOOL))
 	{}
 
-	void FullRedraw() {
+	void FullRedraw2d() {
 		elapsed_.restart();
 
-		const QImage screenImage = v2d_->FullRedraw();
+		const QImage screenImage = v2d_->FullRedraw2d();
 		paintScreen(screenImage);
 
 		screenShotSaver_->saveTiles(screenImage);
@@ -35,7 +35,7 @@ public:
 		state_->SetViewSliceOnPan();
 
 		if(!v2d_->IsDrawComplete()){
-			OmEvents::Redraw();
+			OmEvents::Redraw2d();
 		}
 	}
 
@@ -122,7 +122,7 @@ private:
 
 		di.paint(state_->getZoomScale(), "zoomFactor", 2);
 
-		di.paint(state_->GetDepthToDataSlice(), "Slice Depth");
+		di.paint(state_->getSliceDepth(), "Slice Depth");
 
 		printTileCount(di);
 		printTimingInfo(di);

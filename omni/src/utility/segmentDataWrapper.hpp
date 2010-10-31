@@ -124,7 +124,7 @@ public:
 	}
 
 	inline uint64_t getSize() const {
-		return getSegment()->getSize();
+		return getSegment()->size();
 	}
 
 	inline uint64_t getSizeWithChildren() const {
@@ -149,6 +149,10 @@ public:
 
 	inline OmSegment* FindRoot() const {
 		return getSegmentCache()->findRoot(mID);
+	}
+
+	inline void RandomizeColor() const {
+		getSegment()->reRandomizeColor();
 	}
 };
 

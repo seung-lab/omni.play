@@ -7,7 +7,7 @@
 #include "mainwindow.h"
 #include "myInspectorWidget.h"
 #include "project/omProject.h"
-#include "actions/omProjectSaveAction.h"
+#include "actions/omActions.hpp"
 #include "recentFileList.h"
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
@@ -162,7 +162,7 @@ bool MainWindow::closeProjectIfOpen()
 	const int ret = checkForSave();
 	switch (ret) {
 	case QMessageBox::Save:
-		(new OmProjectSaveAction())->Run();
+		OmActions::Save();
 		break;
 	case QMessageBox::Discard:
 		// Don't Save was clicked
@@ -263,7 +263,7 @@ void MainWindow::saveProject()
 	// Saves the current project
 	// Does not prompt the user
 	// Serializes Volume to the current working directory
-	(new OmProjectSaveAction())->Run();
+	OmActions::Save();
 }
 
 void MainWindow::openInspector()

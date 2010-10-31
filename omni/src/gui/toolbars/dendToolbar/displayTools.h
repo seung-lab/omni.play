@@ -9,28 +9,31 @@ class OmViewGroupState;
 class SegmentationDataWrapper;
 
 class DisplayTools : public OmWidget {
- Q_OBJECT
- public:
+	Q_OBJECT
+public:
 	DisplayTools(DendToolBar *);
 
 	OmViewGroupState * getViewGroupState();
 	SegmentationDataWrapper getSegmentationDataWrapper();
 	void updateGui();
 
-	QString getName(){ return "Display Tools"; }
+	QString getName(){
+		return "Display Tools";
+	}
 
- private slots:
-        void changeMapColors();
+private slots:
+	void changeMapColorsSlot();
 
- private:
+private:
 	DendToolBar *const mParent;
 
 	QButtonGroup * validGroup;
-        QRadioButton * showValid;
-        QRadioButton * dontShowValid;
+	QRadioButton * showValid;
+	QRadioButton * dontShowValid;
 
 	QWidget* filterShowNonSelectedSegmentsBox();
 	QWidget* thresholdBox();
+	QWidget* view2dSliceDepthBox();
 };
 
 #endif

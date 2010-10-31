@@ -13,7 +13,7 @@ public:
 		     const ViewType vt);
 	~OmTileDrawer();
 
-	void FullRedraw();
+	void FullRedraw2d();
 
 	int GetTileCount(){
 		return mTileCount;

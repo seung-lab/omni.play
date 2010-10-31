@@ -261,7 +261,7 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 	OmSegmentIteratorLowLevel iter(mCache);
 	iter.iterOverSegmentID( segID );
 	for(OmSegment * seg = iter.getNextSegment(); NULL != seg; seg = iter.getNextSegment()){
-		size += seg->getSize();
+		size += seg->size();
 	}
 	return size;
 }

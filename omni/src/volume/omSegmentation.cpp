@@ -1,5 +1,3 @@
-#include "actions/omSegmentGroupAction.h"
-#include "actions/omSegmentValidateAction.h"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataLayer.h"
@@ -31,6 +29,7 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 #include "zi/omThreads.h"
+#include "segment/io/omUserEdges.hpp"
 
 #include <QFile>
 #include <QTextStream>
@@ -43,6 +42,7 @@ OmSegmentation::OmSegmentation()
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
+	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {}
 
@@ -55,6 +55,7 @@ OmSegmentation::OmSegmentation(OmID id)
 	, mSegmentLists(new OmSegmentLists())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
+	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
 {
 	//uses meta data
@@ -310,6 +311,56 @@ void OmSegmentation::doBuildThreadedVolume()
 	mWasBounded = true;
 }
 
+class OmSegmentationChunkUpdateTask : public zi::runnable {
+private:
+	const OmMipChunkCoord coord_;
+	OmSegmentation* vol_;
+	OmSegmentCache* segmentCache_;
+
+public:
+	OmSegmentationChunkUpdateTask(const OmMipChunkCoord& coord,
+								  OmSegmentCache* segmentCache,
+								  OmSegmentation* vol)
+		: coord_(coord)
+		, vol_(vol)
+		, segmentCache_(segmentCache)
+	{}
+
+	void run()
+	{
+		OmMipChunkPtr chunk;
+		vol_->GetChunk(chunk, coord_);
+
+		chunk->RefreshBoundingData(segmentCache_);
+	}
+};
+
+void OmSegmentation::UpdateVoxelBoundingData()
+{
+	OmThreadPool threadPool;
+	threadPool.start();
+
+	const int level = 0;
+
+	const Vector3i dims = MipLevelDimensionsInMipChunks(level);
+	for (int z = 0; z < dims.z; ++z){
+		for (int y = 0; y < dims.y; ++y){
+			for (int x = 0; x < dims.x; ++x){
+
+				OmMipChunkCoord coord(level, x, y, z);
+
+				boost::shared_ptr<OmSegmentationChunkUpdateTask> task =
+					boost::make_shared<OmSegmentationChunkUpdateTask>(coord,
+																	  mSegmentCache,
+																	  this);
+				threadPool.addTaskBack(task);
+			}
+		}
+	}
+
+	threadPool.join();
+}
+
 void OmSegmentation::GetMesh(OmMipMeshPtr& ptr,
 							 const OmMipChunkCoord& coord,
 							 const OmSegID segID )
@@ -337,4 +388,21 @@ void OmSegmentation::Flush()
 {
 	mSegmentCache->Flush();
 	mst_->Flush();
+	mstUserEdges_->Save();
 }
+
+//FIXME: move into OmChannel/OmSegmentation so we don't assume default type
+void OmSegmentation::BuildBlankVolume(const Vector3i & dims)
+{
+	SetBuildState(MIPVOL_BUILDING);
+
+	OmVolume::SetDataDimensions(dims);
+	UpdateRootLevel();
+
+	DeleteVolumeData();
+
+	OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
+
+	SetBuildState(MIPVOL_BUILT);
+}
+

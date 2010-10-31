@@ -1,18 +1,17 @@
+#include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
+#include "mesh/omDrawOptions.h"
 #include "project/omProject.h"
-#include "segment/omSegmentSelected.hpp"
-#include "actions/omSegmentSelectAction.h"
-#include "actions/omSegmentSplitAction.h"
 #include "segment/omSegmentCache.h"
+#include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "system/omEvents.h"
 #include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
 #include "view3d/omCamera.h"
 #include "view3d/omView3d.h"
 #include "view3d/omView3dUi.h"
-#include "mesh/omDrawOptions.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 
@@ -105,7 +104,7 @@ void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 	}
 	mpView3d->updateGL();
 
-	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, mViewGroupState);
+	OmActions::FindAndSplitSegments(sdw, mViewGroupState);
 }
 
 /////////////////////////////////

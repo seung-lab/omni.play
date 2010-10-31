@@ -23,7 +23,7 @@ public:
 		return viewType_;
 	}
 
-	QImage FullRedraw();
+	QImage FullRedraw2d();
 	bool IsDrawComplete();
 	int GetTileCount();
 	int GetTileCountIncomplete();

@@ -46,7 +46,7 @@ void FilObjectInspector::setFilAlpha(int alpha)
 		if( channel.IsFilterValid( mFilterID ) ){
 			////debug(filter, "setting alpha\n");
 			channel.GetFilter( mFilterID).SetAlpha((double)alpha / 100.00);
-			OmEvents::Redraw();
+			OmEvents::Redraw2d();
  		}
 	}
 }

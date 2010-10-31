@@ -1,10 +1,8 @@
+#include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "project/omProject.h"
-#include "actions/omSegmentJoinAction.h"
-#include "actions/omSegmentSelectAction.h"
-#include "actions/omSegmentValidateAction.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
@@ -128,7 +126,7 @@ void OmSegmentContextMenu::unselectOthers()
 void OmSegmentContextMenu::mergeSegments()
 {
 	OmSegIDsSet ids = sdw_.getSegmentCache()->GetSelectedSegmentIds();
-	(new OmSegmentJoinAction(sdw_.getSegmentationID(), ids))->Run();
+	OmActions::JoinSegments(sdw_.getSegmentationID(), ids);
 }
 
 void OmSegmentContextMenu::splitSegments()
@@ -155,14 +153,14 @@ void OmSegmentContextMenu::randomizeColor()
 	segment->reRandomizeColor();
 
 	OmCacheManager::TouchFresheness();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if(sdw_.isValidWrapper()){
-		OmSegmentValidateAction::Validate(sdw_, true);
+		OmActions::ValidateSegment(sdw_, om::SET_VALID);
 		OmEvents::SegmentModified();
 	}
 }
@@ -171,7 +169,7 @@ void OmSegmentContextMenu::setNotValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if(sdw_.isValidWrapper()){
-		OmSegmentValidateAction::Validate(sdw_, false);
+		OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
 		OmEvents::SegmentModified();
 	}
 }
@@ -207,7 +205,7 @@ void OmSegmentContextMenu::printChildren()
 				.arg(seg->value())
 				.arg(seg->getParentSegID())
 				.arg(seg->getThreshold())
-				.arg(seg->getSize());
+				.arg(seg->size());
 			printf("%s\n", qPrintable(str));
 			seg = iter.getNextSegment();
 		}

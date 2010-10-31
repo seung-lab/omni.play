@@ -2,7 +2,7 @@
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omIDataReader.h"
 #include "project/omProject.h"
-#include "actions/omProjectSaveAction.h"
+#include "actions/omActions.hpp"
 #include "system/omBuildVolumes.h"
 #include "utility/omImageDataIo.h"
 #include "utility/stringHelpers.h"
@@ -97,7 +97,7 @@ void OmBuildVolumes::startTiming(const QString & type, OmTimer & timer)
 
 void OmBuildVolumes::stopTimingAndSave(const QString & type, OmTimer & timer)
 {
-        (new OmProjectSaveAction())->Run();
+	OmActions::Save();
 	const double time = timer.s_elapsed();
 	printf("done: %s build performed in (%.6f secs)\n",
 	       qPrintable(type), time);

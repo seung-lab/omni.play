@@ -166,7 +166,7 @@ void OmMeshDrawer::doDrawChunk(const OmMipChunkCoord& chunkCoord,
 	FOR_EACH(iter, segmentsToDraw ){
 		OmSegment* seg = *iter;
 
-		if(seg->getSize() < mViewGroupState->getDustThreshold()){
+		if(seg->size() < mViewGroupState->getDustThreshold()){
 			continue;
 		}
 

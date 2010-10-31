@@ -5,7 +5,7 @@
 #include "system/omBuildSegmentation.h"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
-#include "actions/omSegmentationThresholdChangeAction.h"
+#include "actions/omActions.hpp"
 
 OmBuildSegmentation::OmBuildSegmentation(OmSegmentation * seg)
 {
@@ -72,7 +72,7 @@ void OmBuildSegmentation::do_build_seg_image()
 	stopTimingAndSave(type, build_timer);
 
 	loadDendrogram();
-	(new OmSegmentationThresholdChangeAction(mSeg->GetID(), 0.5))->Run();
+	OmActions::ChangeMSTthreshold(mSeg->GetID(), 0.5);
 }
 
 void OmBuildSegmentation::do_build_seg_mesh()
@@ -107,10 +107,12 @@ void OmBuildSegmentation::loadDendrogram()
 
 void OmBuildSegmentation::buildBlankVolume()
 {
+	printf("assuming channel 1\n");
 	assert(OmProject::IsChannelValid(1));
-	OmChannel & chann = OmProject::GetChannel(1);
+	OmChannel& chann = OmProject::GetChannel(1);
 
-	mSeg->BuildBlankVolume( chann.MipLevelDataDimensions(0) );
+	mSeg->BuildBlankVolume(chann.MipLevelDataDimensions(0));
+	mSeg->loadVolData();
 	mSeg->GetSegmentCache()->refreshTree();
 
 	printf("allocated blank volume\n");

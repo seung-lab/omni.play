@@ -51,7 +51,7 @@ SegmentListBase::getSegmentsToDisplay( const unsigned int in_offset,
 	boost::shared_ptr<OmSegIDsListWithPage> ids =
 		getPageSegments(offset, getNumSegmentsPerPage(), startSeg);
 
-	currentPageNum = ids->mPageOffset;
+	currentPageNum = ids->Offset();
 
 	return ids;
 }

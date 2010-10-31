@@ -1,9 +1,8 @@
 #ifndef OM_SEGMENT_LISTS_HPP
 #define OM_SEGMENT_LISTS_HPP
 
-#include "segment/lowLevel/omSegmentListBySize.h"
-#include "segment/lowLevel/omSegmentListByMRU.h"
 #include "segment/details/omSegmentListContainer.hpp"
+#include "segment/lowLevel/omSegmentListByMRU.h"
 
 class OmSegmentLists {
 private:
@@ -49,6 +48,8 @@ public:
 	{
 		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
 		seg->SetListType(toType);
+//		printf("next segment id in list (by size) is %d\n",
+//			   getContainer(seg->GetListType()).GetNextSegmentIDinList(seg->value()));
 	}
 
 	void TouchRecentList(const OmSegID segID){

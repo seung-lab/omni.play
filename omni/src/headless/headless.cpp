@@ -1,23 +1,23 @@
-#include "headless/headlessImpl.hpp"
-#include "mesh/omMipMesh.h"
+#include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataLayer.h"
 #include "datalayer/omDataPaths.h"
-#include "headless/headless.h"
 #include "gui/recentFileList.h"
+#include "headless/headless.h"
+#include "headless/headlessImpl.hpp"
+#include "mesh/omMipMesh.h"
 #include "project/omProject.h"
-#include "actions/omProjectSaveAction.h"
 #include "segment/omSegmentCache.h"
 #include "system/omBuildChannel.h"
 #include "system/omBuildSegmentation.h"
 #include "system/omLocalPreferences.h"
 #include "system/omProjectData.h"
 #include "system/omStateManager.h"
-#include "viewGroup/omViewGroupState.h"
 #include "tiles/omTileDumper.hpp"
 #include "utility/dataWrappers.h"
 #include "utility/stringHelpers.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omFilter2d.h"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
@@ -49,7 +49,7 @@ void Headless::processLine(const QString& line, const QString&)
 		OmProject::Close();
 		exit(0);
 	} else if("save" == line) {
-		(new OmProjectSaveAction())->Run();
+		OmActions::Save();
 	} else if("mesh" == line) {
 		if(0 == segmentationID_ ){
 			printf("Please choose segmentation first!\n");
@@ -65,6 +65,13 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 		HeadlessImpl::ClearMST(segmentationID_);
+
+	} else if("rebuildCenter" == line) {
+		if(0 == segmentationID_ ){
+			printf("Please choose segmentation first!\n");
+			return;
+		}
+		HeadlessImpl::RebuildCenterOfSegmentData(segmentationID_);
 
 	} else if("loadDend" == line) {
 		if(0 == segmentationID_ ){
@@ -246,7 +253,7 @@ void Headless::processLine(const QString& line, const QString&)
 			return;
 		}
 		OmProject::GetSegmentation(segmentationID_).GetSegmentCache()->AddSegment();
-		(new OmProjectSaveAction())->Run();
+		OmActions::Save();
 	} else if(line.startsWith("create:")) {
 		QStringList args = line.split(':',QString::SkipEmptyParts);
 

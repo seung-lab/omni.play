@@ -45,7 +45,7 @@ public:
 	}
 
 	// coord convertors
-	Vector2f ScreenToPanShift(const Vector2i& screenshift) const
+	inline Vector2f ScreenToPanShift(const Vector2i& screenshift) const
 	{
 		const Vector2f stretch= vol_->GetStretchValues(viewType_);
 		const float zoomScale = getZoomScale();
@@ -54,7 +54,7 @@ public:
 		return Vector2f(panx, pany);
 	}
 
-	SpaceCoord ScreenToSpaceCoord(const ScreenCoord& screenc) const
+	inline SpaceCoord ScreenToSpaceCoord(const ScreenCoord& screenc) const
 	{
 		const Vector2f mPanDistance = ComputePanDistance();
 		const Vector2f stretch = vol_->GetStretchValues(viewType_);
@@ -74,11 +74,11 @@ public:
 		return result;
 	}
 
-	DataCoord ScreenToDataCoord(const ScreenCoord & screenc) const {
+	inline DataCoord ScreenToDataCoord(const ScreenCoord & screenc) const {
 		return vol_->SpaceToDataCoord(ScreenToSpaceCoord(screenc));
 	}
 
-	ScreenCoord SpaceToScreenCoord(const SpaceCoord& spacec) const
+	inline ScreenCoord SpaceToScreenCoord(const SpaceCoord& spacec) const
 	{
 		const NormCoord normCoord = vol_->SpaceToNormCoord(spacec);
 		const Vector3f scale = vol_->GetDataDimensions();
@@ -104,14 +104,14 @@ public:
 		throw OmArgException("invalid viewType");
 	}
 
-	int GetDepthToDataSlice() const
+	inline int GetDepthToDataSlice() const
 	{
 		const SpaceCoord depthCoord = vgs_->GetViewDepthCoord();
 		const DataCoord dataCoord = vol_->SpaceToDataCoord(depthCoord);
 		return getViewTypeDepth(dataCoord);
 	}
 
-	void SetDataSliceToDepth(const int slice) const
+	inline void SetDataSliceToDepth(const int slice) const
 	{
 		DataCoord dataCoord(0, 0, 0);
 		setViewTypeDepth(dataCoord, slice);
@@ -120,7 +120,7 @@ public:
 		setSliceDepth(getViewTypeDepth(depthCoord));
 	}
 
-	Vector2f ComputePanDistance() const
+	inline Vector2f ComputePanDistance() const
 	{
 		const Vector2f stretch = vol_->GetStretchValues(viewType_);
 		const float factor = om::pow2int(getMipLevel());
@@ -146,7 +146,7 @@ public:
 		throw OmArgException("invalid parameter");
 	}
 
-	void SetViewSliceOnPan()
+	inline void SetViewSliceOnPan()
 	{
 		const Vector2f translateVector = ComputePanDistance();
 
@@ -167,7 +167,7 @@ public:
 		OmEvents::Redraw3d();
 	}
 
-	void ChangeViewCenter()
+	inline void ChangeViewCenter()
 	{
 		const SpaceCoord depth = getViewSliceDepthSpace();
 
@@ -183,7 +183,7 @@ public:
 		SetViewSliceOnPan();
 	}
 
-	void ResetWindowState()
+	inline void ResetWindowState()
 	{
 		static const NormCoord midPoint(0.5, 0.5, 0.5);
 		const SpaceCoord depth = vol_->NormToSpaceCoord(midPoint);
@@ -197,23 +197,23 @@ public:
 		ZoomLevel()->Reset(getMaxMipLevel());
 
 		OmProjectData::getTileCache()->Clear();
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 
-	void SetPanDistance(const int x, const int y)
+	inline void SetPanDistance(const int x, const int y)
 	{
 		vgs_->SetPanDistance(viewType_, Vector2f(x, y));
 		SetViewSliceOnPan();
 	}
 
-	void MoveUpStackCloserToViewer()
+	inline void MoveUpStackCloserToViewer()
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
 		SetDataSliceToDepth(depth+numberOfSlicestoAdvance);
 	}
 
-	void MoveDownStackFartherFromViewer()
+	inline void MoveDownStackFartherFromViewer()
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
@@ -221,7 +221,7 @@ public:
 	}
 
     // mouse movement
-	void DoMousePan(const Vector2i& cursorLocation)
+	inline void DoMousePan(const Vector2i& cursorLocation)
 	{
 		const Vector2f current_pan = ComputePanDistance();
 		const Vector2i drag = GetClickPoint() - cursorLocation;
@@ -238,7 +238,7 @@ public:
 		SetClickPoint(cursorLocation.x, cursorLocation.y);
 	}
 
-	void DoMouseZoom(const int numSteps)
+	inline void DoMouseZoom(const int numSteps)
 	{
 		ZoomLevel()->MouseWheelZoom(numSteps, isLevelLocked_,
 									getMaxMipLevel());
@@ -364,37 +364,37 @@ public:
 	}
 
 	//refresh
-	static void touchFreshnessAndRedraw()
+	static void touchFreshnessAndRedraw2d()
 	{
 		OmCacheManager::TouchFresheness();
-		OmEvents::Redraw();
+		OmEvents::Redraw2d();
 	}
 
 	// depth-related computation helpers
 	template <typename T>
-	Vector3<T> makeViewTypeVector3(const Vector3<T>& vec) const {
+	inline Vector3<T> makeViewTypeVector3(const Vector3<T>& vec) const {
 		return makeViewTypeVector3(vec.x, vec.y, vec.z);
 	}
 
 	template <typename T>
-	Vector3<T> makeViewTypeVector3(const T& x, const T& y,
-								   const T& z) const {
+	inline Vector3<T> makeViewTypeVector3(const T& x, const T& y,
+										  const T& z) const {
 		return OmView2dConverters::MakeViewTypeVector3(x,y,z,viewType_);
 	}
 
 	template <typename T>
-	T getViewTypeDepth(const Vector3<T>& vec) const {
+	inline T getViewTypeDepth(const Vector3<T>& vec) const {
 		return OmView2dConverters::GetViewTypeDepth(vec, viewType_);
 	}
 
 	template <typename T>
-	void setViewTypeDepth(Vector3<T>& vec, const T& val) const {
+	inline void setViewTypeDepth(Vector3<T>& vec, const T& val) const {
 		OmView2dConverters::SetViewTypeDepth(vec, val, viewType_);
 	}
 
 	template <typename T>
-	Vector3<T> scaleViewType(const T& x, const T& y,
-							 const Vector3<T>& scale) const {
+	inline Vector3<T> scaleViewType(const T& x, const T& y,
+									const Vector3<T>& scale) const {
 		return OmView2dConverters::ScaleViewType(x, y, scale, viewType_);
 	}
 

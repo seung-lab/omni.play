@@ -14,6 +14,7 @@
 class OmMipMeshManager;
 class OmGroups;
 class OmMST;
+class OmUserEdges;
 class OmSegmentLists;
 class OmSegment;
 class OmSegmentCache;
@@ -67,8 +68,12 @@ public:
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
+	boost::shared_ptr<OmUserEdges> getMSTUserEdges(){
+		return mstUserEdges_;
+	}
 
 	DataCoord FindCenterOfSelectedSegments() const;
+	void UpdateVoxelBoundingData();
 
 	bool ImportSourceData(const OmDataPath& path);
 
@@ -77,6 +82,7 @@ public:
 	boost::shared_ptr<std::set<OmSegment*> >
 	GetAllChildrenSegments(const OmSegIDsSet& set);
 
+	void BuildBlankVolume(const Vector3i & dims);
 
 protected:
 	virtual void doBuildThreadedVolume();
@@ -91,6 +97,7 @@ private:
 	boost::shared_ptr<OmSegmentLists> mSegmentLists;
 	boost::shared_ptr<OmGroups> mGroups;
 	boost::shared_ptr<OmMST> mst_;
+	boost::shared_ptr<OmUserEdges> mstUserEdges_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
@@ -104,7 +111,7 @@ private:
 	friend class OmSegmentIterator;
 	friend class MstViewerImpl;
 	friend class OmSegmentationChunkBuildTask;
-	friend class SegmentTests;
+	friend class SegmentTests1;
 
 	friend QDataStream &operator<<(QDataStream& out, const OmSegmentation&);
 	friend QDataStream &operator>>(QDataStream& in, OmSegmentation &);

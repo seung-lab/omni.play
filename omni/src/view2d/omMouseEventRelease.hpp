@@ -128,7 +128,7 @@ private:
 										  data_value,
 										  rootSegID );
 
-		v2d_->doRedraw();
+		v2d_->doRedraw2d();
 	}
 };
 

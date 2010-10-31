@@ -1,3 +1,4 @@
+#include "volume/build/omVolumeAllocater.hpp"
 #include "system/cache/omMipVolumeCache.h"
 #include "datalayer/hdf5/omHdf5LowLevel.h"
 #include "project/omProject.h"
@@ -539,21 +540,6 @@ Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
 	}
 
 	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
-}
-
-//FIXME: move into OmChannel/OmSegmentation so we don't assume default type
-void OmMipVolume::BuildBlankVolume(const Vector3i & dims)
-{
-	SetBuildState(MIPVOL_BUILDING);
-
-	OmVolume::SetDataDimensions(dims);
-	UpdateRootLevel();
-
-	DeleteVolumeData();
-	assert(0);
-	//AllocInternalData(OM_UINT32); // FIXME: don't assume default type
-
-	SetBuildState(MIPVOL_BUILT);
 }
 
 bool OmMipVolume::areImportFilesImages()

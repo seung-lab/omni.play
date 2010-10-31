@@ -1,6 +1,5 @@
 #include "common/omDebug.h"
 #include "gui/mainwindow.h"
-#include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
 #include "gui/toolbars/dendToolbar/graphTools.h"
 #include "gui/toolbars/dendToolbar/displayTools.h"
@@ -95,7 +94,7 @@ SegmentationDataWrapper DendToolBar::getSegmentationDataWrapper()
 
 void DendToolBar::updateGui()
 {
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 void DendToolBar::SetSplittingOff()

@@ -39,8 +39,8 @@ void MstViewerImpl::populate()
 		setCell(i, colNum, node1ID);
 		setCell(i, colNum, node2ID);
 		setCell(i, colNum, threshold);
-		setCell(i, colNum, static_cast<quint64>(node1->getSize()));
-		setCell(i, colNum, static_cast<quint64>(node2->getSize()));
+		setCell(i, colNum, static_cast<quint64>(node1->size()));
+		setCell(i, colNum, static_cast<quint64>(node2->size()));
 	}
 
 	setSortingEnabled(true); // don't enable sorting until done inserting

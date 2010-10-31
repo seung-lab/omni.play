@@ -57,7 +57,7 @@ void OmView2d::resizeEvent(QResizeEvent * event)
 
 void OmView2d::resizeGL(const QSize& size)
 {
-	state()->touchFreshnessAndRedraw();
+	state()->touchFreshnessAndRedraw2d();
 
 	resetPbuffer(size);
 
@@ -67,7 +67,7 @@ void OmView2d::resizeGL(const QSize& size)
 }
 
 void OmView2d::paintEvent(QPaintEvent *){
-	screenPainter_->FullRedraw();
+	screenPainter_->FullRedraw2d();
 }
 
 void OmView2d::myUpdate()
@@ -85,15 +85,15 @@ void OmView2d::mousePressEvent(QMouseEvent * event)
 	mouseEvents_->Press(event);
 }
 
-void OmView2d::doRedraw()
+void OmView2d::doRedraw2d()
 {
-	state()->touchFreshnessAndRedraw();
+	state()->touchFreshnessAndRedraw2d();
 	myUpdate();
 }
 
 void OmView2d::SetDepth(QMouseEvent * event)
 {
-	const ScreenCoord screenc = ScreenCoord(event->x(),event->y());
+	const ScreenCoord screenc = ScreenCoord(event->x(), event->y());
 	const SpaceCoord newDepth = state()->ScreenToSpaceCoord(screenc);
 	state()->setSliceDepth(newDepth);
 
@@ -123,5 +123,5 @@ void OmView2d::resetWindow()
 {
 	state()->ResetWindowState();
 	OmEvents::ViewCenterChanged();
-	doRedraw();
+	doRedraw2d();
 }

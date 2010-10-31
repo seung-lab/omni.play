@@ -9,6 +9,7 @@
 
 class OmMipChunkCoord;
 class OmSegmentEdge;
+class OmUserEdges;
 
 class OmSegmentCacheImpl : public OmSegmentCacheImplLowLevel {
 public:
@@ -34,7 +35,7 @@ public:
 private:
 	OmSegmentEdge splitChildFromParent(OmSegment* child);
 
-	QList<OmSegmentEdge> mManualUserMergeEdgeList;
+	boost::shared_ptr<OmUserEdges> userEdges();
 
 	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(OmSegmentEdge e);
 	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);

@@ -1,11 +1,12 @@
 #ifndef SEGMENT_LIST_BASE_H
 #define SEGMENT_LIST_BASE_H
 
+#include "common/omCommon.h"
+
 #include <QtGui>
 #include <QWidget>
 
-#include "segment/omSegmentPointers.h"
-
+class OmSegIDsListWithPage;
 class SegmentationDataWrapper;
 class OmViewGroupState;
 class OmSegmentEvent;
@@ -26,10 +27,11 @@ public:
 								const OmSegID segmentJustSelectedID,
 								const bool doScroll );
 
-	int dealWithSegmentObjectModificationEvent(OmSegmentEvent * event);
+	int dealWithSegmentObjectModificationEvent(OmSegmentEvent* event);
 
 	void userJustClickedInThisSegmentList();
-	void rebuildSegmentList(const OmID segmentationID, const OmSegID segmentJustAddedID);
+	void rebuildSegmentList(const OmID segmentationID,
+							const OmSegID segmentJustAddedID);
 
 	virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
@@ -50,14 +52,14 @@ protected:
 					const int numToGet,
 					const OmSegID startSeg) = 0;
 
-	QVBoxLayout * layout;
-	QPushButton * prevButton;
-	QPushButton * nextButton;
-	QPushButton * startButton;
-	QPushButton * endButton;
-	QLineEdit * searchEdit;
+	QVBoxLayout* layout;
+	QPushButton* prevButton;
+	QPushButton* nextButton;
+	QPushButton* startButton;
+	QPushButton* endButton;
+	QLineEdit* searchEdit;
 
-	OmSegmentListWidget * segmentListWidget;
+	OmSegmentListWidget* segmentListWidget;
 
 	boost::shared_ptr<SegmentationDataWrapper> currentSDW;
 	bool haveValidSDW;
@@ -65,8 +67,8 @@ protected:
 	boost::shared_ptr<OmSegIDsListWithPage>
 	getSegmentsToDisplay( const OmID firstSegmentID, const bool  );
 
-	QMenu * contextMenu;
-	QAction * propAct;
+	QMenu* contextMenu;
+	QAction* propAct;
 	int getNumSegmentsPerPage();
 	void setupPageButtons();
 

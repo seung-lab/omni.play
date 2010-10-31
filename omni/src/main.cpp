@@ -107,7 +107,8 @@ private:
 
 	int runGUI()
 	{
-		boost::shared_ptr<QApplication> app(new QApplication(argc_, argv_));
+		// leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
+		QApplication* app = new QApplication(argc_, argv_);
 		Q_INIT_RESOURCE(resources);
 		MainWindow mainWin;
 		mainWin.show();

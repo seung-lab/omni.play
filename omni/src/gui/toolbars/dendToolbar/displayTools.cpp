@@ -1,9 +1,12 @@
-#include "gui/toolbars/dendToolbar/displayTools.h"
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxX.hpp"
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxY.hpp"
+#include "gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp"
 #include "gui/toolbars/dendToolbar/dendToolbar.h"
-#include "system/omEvents.h"
-#include "viewGroup/omViewGroupState.h"
-#include "utility/dataWrappers.h"
+#include "gui/toolbars/dendToolbar/displayTools.h"
 #include "gui/toolbars/dendToolbar/dust3DthresholdGroup.h"
+#include "system/omEvents.h"
+#include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 
 DisplayTools::DisplayTools(DendToolBar * d)
 	: OmWidget(d)
@@ -12,11 +15,27 @@ DisplayTools::DisplayTools(DendToolBar * d)
 	QVBoxLayout* box = new QVBoxLayout(this);
 	box->addWidget(thresholdBox());
 	box->addWidget(filterShowNonSelectedSegmentsBox());
+	box->addWidget(view2dSliceDepthBox());
 }
 
-void DisplayTools::changeMapColors()
+QWidget* DisplayTools::view2dSliceDepthBox()
 {
-	// Using !(not) because check happens after this fuction.
+	QGroupBox* widget = new QGroupBox("Slice Depths (x,y,z)", this);
+
+	SliceDepthSpinBoxX* xDepth = new SliceDepthSpinBoxX(this);
+	SliceDepthSpinBoxY* yDepth = new SliceDepthSpinBoxY(this);
+	SliceDepthSpinBoxZ* zDepth = new SliceDepthSpinBoxZ(this);
+
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(xDepth);
+	layout->addWidget(yDepth);
+	layout->addWidget(zDepth);
+
+	return widget;
+}
+
+void DisplayTools::changeMapColorsSlot()
+{
 	const bool val = showValid->isChecked();
 
 	getViewGroupState()->
@@ -30,18 +49,18 @@ QWidget* DisplayTools::filterShowNonSelectedSegmentsBox()
 	validGroup = new QButtonGroup();
 	showValid = new QRadioButton("In Color");
 	validGroup->addButton(showValid);
-        connect(showValid, SIGNAL(toggled(bool)),
-                this, SLOT(changeMapColors()));
+	connect(showValid, SIGNAL(toggled(bool)),
+			this, SLOT(changeMapColorsSlot()));
 
 	dontShowValid = new QRadioButton("As Black");
 	dontShowValid->setChecked(true);
 	validGroup->addButton(dontShowValid);
-        connect(dontShowValid, SIGNAL(toggled(bool)),
-                this, SLOT(changeMapColors()));
+	connect(dontShowValid, SIGNAL(toggled(bool)),
+			this, SLOT(changeMapColorsSlot()));
 
 	QGridLayout * box = new QGridLayout(widget);
-        box->addWidget(showValid,3,0,1,1);
-        box->addWidget(dontShowValid,3,1,1,1);
+	box->addWidget(showValid,3,0,1,1);
+	box->addWidget(dontShowValid,3,1,1,1);
 
 	return widget;
 }
@@ -64,7 +83,7 @@ OmViewGroupState * DisplayTools::getViewGroupState()
 
 void DisplayTools::updateGui()
 {
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 SegmentationDataWrapper DisplayTools::getSegmentationDataWrapper()

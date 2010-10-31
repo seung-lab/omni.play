@@ -10,7 +10,7 @@
 #include "view2d/omLineDraw.hpp"
 #include "view2d/omView2dState.hpp"
 #include "volume/omSegmentation.h"
-#include "actions/omVoxelSetValueAction.h"
+#include "actions/omActions.hpp"
 
 OmLineDraw::OmLineDraw(boost::shared_ptr<OmView2dState> v2ds,
 					   const ViewType vt)
@@ -308,12 +308,12 @@ void OmLineDraw::myUpdate()
 	}
 
 	if(mEditedSegmentation){
-		(new OmVoxelSetValueAction(mEditedSegmentation,
-								   mUpdatedDataCoords,
-								   mCurrentSegmentId))->Run();
+		OmActions::SetVoxels(mEditedSegmentation,
+							 mUpdatedDataCoords,
+							 mCurrentSegmentId);
 		RemoveModifiedTiles();
 	} else {
-		state_->touchFreshnessAndRedraw();
+		state_->touchFreshnessAndRedraw2d();
 	}
 	mUpdatedDataCoords.clear();
 	mEditedSegmentation = 0;

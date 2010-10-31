@@ -161,8 +161,6 @@ protected:
 	virtual OmDataWrapperPtr doExportChunk(const OmMipChunkCoord&,
 										   const bool rerootSegments) = 0;
 
-	void BuildBlankVolume(const Vector3i & dims);
-
 	//state
 	void SetBuildState(MipVolumeBuildState);
 

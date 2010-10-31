@@ -353,7 +353,7 @@ void OmViewGroupState::SetSplitMode(bool onoroff, bool postEvent)
 
 	OmCacheManager::TouchFresheness();
 	OmEvents::Redraw3d();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 void OmViewGroupState::SetSplitMode(const SegmentDataWrapper& sdw)
@@ -374,7 +374,7 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor)
 	mShowValid = mode;
 	mShowValidInColor = inColor;
 	OmEvents::Redraw3d();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 bool OmViewGroupState::ShowNonSelectedSegmentsInColorInFilter()
@@ -386,14 +386,14 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(const bool in
 {
 	mShowFilterInColor = inColor;
 	OmCacheManager::TouchFresheness();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 }
 
 void OmViewGroupState::SetShowSplitMode(bool mode)
 {
 	OmCacheManager::TouchFresheness();
 	OmEvents::Redraw3d();
-	OmEvents::Redraw();
+	OmEvents::Redraw2d();
 	mShowSplit = mode;
 }
 

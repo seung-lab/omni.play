@@ -8,7 +8,7 @@
 class OmDisplayInfo{
 public:
 	OmDisplayInfo(QPainter& painter, const int initialHeight,
-		      const int xoffset)
+				  const int xoffset)
 		: painter_(painter)
 		, yTopOfText_(initialHeight)
 		, xoffset_(xoffset)
@@ -24,17 +24,17 @@ public:
 	}
 
 	void paint(const double val, const QString& desc,
-		   const int numDecPlaces){
+			   const int numDecPlaces){
 		doPaint(QString::number(val, 'f', numDecPlaces), desc);
 	}
 
 	void paint(const float val, const QString& desc,
-		   const int numDecPlaces){
+			   const int numDecPlaces){
 		doPaint(QString::number(val, 'f', numDecPlaces), desc);
 	}
 
 	void paint(const int val1, const QString& desc1,
-		   const int val2, const QString& desc2){
+			   const int val2, const QString& desc2){
 		const QString str =
 			QString("%1 %2 %3 %4")
 			.arg(val1)

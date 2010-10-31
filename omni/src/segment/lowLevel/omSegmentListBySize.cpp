@@ -1,63 +1,69 @@
 #include "segment/lowLevel/omSegmentListBySize.h"
 
-void OmSegmentListBySize::insertSegment( OmSegment * seg )
+void OmSegmentListBySize::InsertSegment(OmSegment* seg)
 {
-	do_insertSegment( seg->value(), seg->getSize() );
+	do_insertSegment(seg->value(), seg->size());
 }
 
-void OmSegmentListBySize::swapSegment( OmSegment * seg, OmSegmentListBySize & one, OmSegmentListBySize & two )
+void OmSegmentListBySize::SwapSegment(OmSegment* seg, OmSegmentListBySize& one,
+									  OmSegmentListBySize& two)
 {
-        List_by_ID & idIndex = one.mList.get<segID>();
-        List_by_ID::iterator iter = idIndex.find(seg->value());
-        if(iter != idIndex.end() ){
+	List_by_ID& idIndex = one.mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(seg->value());
+	if(iter != idIndex.end()){
 		two.do_insertSegment(seg->value(), iter->segSize);
-                idIndex.erase(iter);
-        }
-}
-
-void OmSegmentListBySize::removeSegment( OmSegment * seg )
-{
-        do_removeSegment( seg->value() );
-}
-
-void OmSegmentListBySize::updateFromJoin( OmSegment * root, OmSegment * child )
-{
-	do_incrementSegSize( root->value(), getSegmentSize(child) );
-	do_removeSegment( child->value() );
-}
-
-void OmSegmentListBySize::updateFromSplit( OmSegment * root, OmSegment * child, const quint64 newChildSize )
-{
-        do_incrementSegSize( root->value(), -newChildSize );
-        do_insertSegment( child->value(), newChildSize );
-}
-
-void OmSegmentListBySize::do_incrementSegSize( const OmSegID segID_, const quint64 addedSize )
-{
-	List_by_ID & idIndex = mList.get<segID>();
-	List_by_ID::iterator iter = idIndex.find(segID_);
-	if(iter != idIndex.end() ){
-		const quint64 newSize = iter->segSize + addedSize;
-		idIndex.erase(iter);
-		do_insertSegment( segID_, newSize);
-	}
-}
-
-void OmSegmentListBySize::do_removeSegment( const OmSegID segID_ )
-{
-	List_by_ID & idIndex = mList.get<segID>();
-	List_by_ID::iterator iter = idIndex.find(segID_);
-	if(iter != idIndex.end() ){
 		idIndex.erase(iter);
 	}
 }
 
-void OmSegmentListBySize::do_insertSegment( const OmSegID segID_, const quint64 size_ )
+void OmSegmentListBySize::RemoveSegment(OmSegment* seg)
 {
-	mList.insert( OmSegSize(segID_, size_ ) );
+	do_removeSegment(seg->value());
 }
 
-void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::iterator & iterSize, const int offset)
+void OmSegmentListBySize::UpdateFromJoin(OmSegment* root, OmSegment* child)
+{
+	do_incrementSegSize(root->value(), GetSegmentSize(child));
+	do_removeSegment(child->value());
+}
+
+void OmSegmentListBySize::UpdateFromSplit(OmSegment* root, OmSegment* child,
+										  const uint64_t newChildSize)
+{
+	do_incrementSegSize(root->value(), -newChildSize);
+	do_insertSegment(child->value(), newChildSize);
+}
+
+void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
+											  const uint64_t addedSize)
+{
+	List_by_ID& idIndex = mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(segID_);
+	if(iter != idIndex.end()){
+		const uint64_t newSize = iter->segSize + addedSize;
+		idIndex.erase(iter);
+		do_insertSegment(segID_, newSize);
+	}
+}
+
+void OmSegmentListBySize::do_removeSegment(const OmSegID segID_)
+{
+	List_by_ID& idIndex = mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(segID_);
+	if(iter != idIndex.end()){
+		idIndex.erase(iter);
+	}
+}
+
+void OmSegmentListBySize::do_insertSegment(const OmSegID segID_,
+										   const uint64_t size_)
+{
+	mList.insert(OmSegSize(segID_, size_));
+}
+
+void OmSegmentListBySize::advanceIter(List_by_size& sizeIndex,
+									  List_by_size::iterator& iterSize,
+									  const int offset)
 {
 	int direction = 1;
 	if(offset < 0) {
@@ -65,12 +71,12 @@ void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::it
 	}
 
 	if(1 == direction) {
-		for(int i = 0; i < offset*direction && iterSize != sizeIndex.end(); i++)
+		for(int i=0; i < offset*direction && iterSize != sizeIndex.end(); ++i)
 		{
 		 	++iterSize;
 		}
 	} else {
-		for(int i = 0; i < offset*direction && iterSize != sizeIndex.begin(); i++)
+		for(int i=0; i < offset*direction && iterSize != sizeIndex.begin(); ++i)
 		{
 		 	--iterSize;
 		}
@@ -78,11 +84,11 @@ void OmSegmentListBySize::advanceIter(List_by_size & sizeIndex, List_by_size::it
 }
 
 boost::shared_ptr<OmSegIDsListWithPage>
-OmSegmentListBySize::getPageOfSegmentIDs( const unsigned int offset, const int numToGet, const OmSegID startSeg)
+OmSegmentListBySize::GetPageOfSegmentIDs(const unsigned int offset,
+										 const int numToGet,
+										 const OmSegID startSeg)
 {
-	OmSegIDsList ret = OmSegIDsList();
-
-	List_by_size & sizeIndex = mList.get<segSize>();
+	List_by_size& sizeIndex = mList.get<segSize>();
 	List_by_size::iterator iterSize = sizeIndex.begin();
 
 	int counter = 0;
@@ -91,50 +97,70 @@ OmSegmentListBySize::getPageOfSegmentIDs( const unsigned int offset, const int n
 		advanceIter(sizeIndex, iterSize, offset);
 	 	page = offset / numToGet;
 	} else {
-        	for(; iterSize != sizeIndex.end(); ++iterSize) {
-                	if(iterSize->segID == startSeg) {
-                        	break;
-                	}
+		for(; iterSize != sizeIndex.end(); ++iterSize) {
+			if(iterSize->segID == startSeg) {
+				break;
+			}
 			++counter;
 		}
 	 	advanceIter(sizeIndex, iterSize, -(counter % numToGet));
 	 	page = counter / numToGet;
-        }
+	}
 
-	for( int i = 0; i < numToGet && iterSize != sizeIndex.end(); ++i, ++iterSize ){
-		ret.push_back( iterSize->segID );
+	boost::shared_ptr<OmSegIDsList> ret = boost::make_shared<OmSegIDsList>();
+
+	for(int i=0; i < numToGet && iterSize != sizeIndex.end(); ++i, ++iterSize){
+		ret->push_back(iterSize->segID);
 	}
 
 	return boost::make_shared<OmSegIDsListWithPage>(ret, page);
 }
 
-quint64 OmSegmentListBySize::getSegmentSize( OmSegment * seg )
+uint64_t OmSegmentListBySize::GetSegmentSize(OmSegment* seg)
 {
-	List_by_ID & idIndex = mList.get<segID>();
+	List_by_ID& idIndex = mList.get<segID>();
 	List_by_ID::iterator iter = idIndex.find(seg->value());
-	if(iter != idIndex.end() ){
+	if(iter != idIndex.end()){
 		return iter->segSize;
 	}
 
-	return seg->getSize();
+	return seg->size();
 }
 
-void OmSegmentListBySize::dump()
+void OmSegmentListBySize::Dump()
 {
-	List_by_size & sizeIndex = mList.get<segSize>();
+	List_by_size& sizeIndex = mList.get<segSize>();
 	List_by_size::iterator iterSize = sizeIndex.begin();
 
-	for( ; iterSize != sizeIndex.end(); ++iterSize ){
-		printf("seg %d, size %lld\n", iterSize->segID, iterSize->segSize );
+	for(; iterSize != sizeIndex.end(); ++iterSize){
+		printf("seg %d, size %ld\n", iterSize->segID, iterSize->segSize);
 	}
 }
 
-size_t OmSegmentListBySize::size()
+size_t OmSegmentListBySize::Size()
 {
 	return mList.size();
 }
 
-void OmSegmentListBySize::clear()
+void OmSegmentListBySize::Clear()
 {
 	mList.clear();
+}
+
+OmSegID OmSegmentListBySize::GetNextSegmentIDinList(const OmSegID id)
+{
+	List_by_ID& idIndex = mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(id);
+
+	if(iter == idIndex.end()){
+		return 0;
+	}
+
+	++iter;
+
+	if(iter == idIndex.end()){
+		return 0;
+	}
+
+	return iter->segID;
 }
