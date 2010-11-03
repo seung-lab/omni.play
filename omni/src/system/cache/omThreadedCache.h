@@ -26,7 +26,10 @@ public:
 
 	//value accessors
 	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
-	void Remove(const KEY &key);
+
+	void Prefetch(const KEY& key);
+
+	void Remove(const KEY& key);
 	int Clean();
 	void Clear(); //TODO: remove me
 	void InvalidateCache();

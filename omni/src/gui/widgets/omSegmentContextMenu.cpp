@@ -138,7 +138,8 @@ void OmSegmentContextMenu::splitSegments()
 
 void OmSegmentContextMenu::addColorActions()
 {
-	addAction("Randomize Segment Color", this, SLOT(randomizeColor()));
+	addAction("Randomize Root Segment Color", this, SLOT(randomizeColor()));
+	addAction("Randomize Segment Color", this, SLOT(randomizeSegmentColor()));
 }
 
 void OmSegmentContextMenu::addGroupActions()
@@ -154,6 +155,15 @@ void OmSegmentContextMenu::randomizeColor()
 
 	OmCacheManager::TouchFresheness();
 	OmEvents::Redraw2d();
+}
+
+void OmSegmentContextMenu::randomizeSegmentColor()
+{
+        OmSegment* segment = sdw_.getSegment();
+        segment->reRandomizeColor();
+
+        OmCacheManager::TouchFresheness();
+        OmEvents::Redraw2d();
 }
 
 void OmSegmentContextMenu::setValid()

@@ -58,10 +58,10 @@ OmSegment* OmSegmentCacheImplLowLevel::GetSegmentFromValue(const OmSegID value)
 	OmSegment* seg = mSegments->GetSegment(value);
 
 	if(seg && seg->value() > mMaxValue){
-		throw OmIoException("bad segment value: "+
-							boost::lexical_cast<std::string>(seg->value())
-				    + "; maxValue is: "
-				    + boost::lexical_cast<std::string>(mMaxValue));
+		throw OmIoException("bad segment value: "
+							+ om::NumToStr(seg->value())
+							+ "; maxValue is: "
+							+ om::NumToStr(mMaxValue));
 	}
 
 	return seg;

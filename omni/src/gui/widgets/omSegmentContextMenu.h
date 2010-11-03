@@ -31,6 +31,9 @@ private slots:
 	void mergeSegments();
 	void splitSegments();
 	void randomizeColor();
+	void randomizeSegmentColor();
+
+
 	void setValid();
 	void setNotValid();
 	void showProperties();

@@ -47,6 +47,10 @@ public:
 		return list_.GetNextSegmentIDinList(id);
 	}
 
+	bool IsSegmentContained(const OmSegID id){
+		return list_.IsSegmentContained(id);
+	}
+
 private:
 	T list_;
 };

@@ -36,12 +36,6 @@ public:
 		return Instance()->noTilePrefetch_;
 	}
 
-	//project
-	static const std::string& GetProjectFileName();
-	static void SetProjectFileName(const std::string &);
-	static const std::string& GetProjectDirectoryPath();
-	static void SetProjectDirectoryPath(const std::string &);
-
 	//tool mode
 	static OmToolMode GetToolMode();
 	static void SetToolModeAndSendEvent(const OmToolMode mode);
@@ -60,10 +54,6 @@ public:
 	//view2d context
 	static QGLContext* GetSharedView2dContext(const QGLContext *pContext);
 
-	//central transparency value (to avoid gross pref lookups)
-	static float GetTransparencyAlpha();
-	static void SetTransparencyAlpha(float);
-
 	static void setOmniExecutableAbsolutePath( QString abs_path );
 	static QString getOmniExecutableAbsolutePath();
 
@@ -75,10 +65,6 @@ public:
 	static void setDendToolBar( DendToolBar * dtb);
 
 	static QSize getViewBoxSizeHint();
-
-	static void SetViewDrawable(ViewType viewType,
-								std::vector<OmTilePtr>& drawable);
-	static std::vector<OmTilePtr> GetViewDrawable(ViewType viewType);
 
 private:
 	OmStateManager();
@@ -103,20 +89,11 @@ private:
 	//view3d context
 	QGLWidget *mpPrimaryView3dWidget;
 
-	//transparency
-	float TRANSPARANCY_ALPHA;
-
-	unsigned int myBackoff;
-
 	QString omniExecPathAbsolute;
 
 	MyInspectorWidget * inspectorWidget;
 	MainWindow * mainWindow;
 	DendToolBar * dendToolBar;
-
-	std::vector<OmTilePtr> mDrawableXY;
-	std::vector<OmTilePtr> mDrawableXZ;
-	std::vector<OmTilePtr> mDrawableYZ;
 };
 
 #endif

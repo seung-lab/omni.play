@@ -66,13 +66,13 @@ public:
 
 	std::string Description() const
 	{
-		QString lineItem = QString("Selected: ");
-		foreach(const OmSegID segId, mNewSelectedIdSet){
-			lineItem += QString("seg %1 + ").arg(segId);
+		QStringList segs;
+		foreach(const OmSegID& segID, mNewSelectedIdSet){
+			segs << QString::number(segID);
 		}
 
+		const QString lineItem = "Selected segments: " + segs.join(", ");
 		return lineItem.toStdString();
-
 	}
 
 	QString classNameForLogFile() const {

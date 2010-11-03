@@ -15,6 +15,15 @@ OmTileCache::OmTileCache()
 	numDrawersActive_.set(0);
 }
 
+void OmTileCache::Prefetch(const OmTileCoord& key)
+{
+	if(isChannel(key)){
+		cacheChannel_->Prefetch(key);
+	} else {
+		cacheNonChannel_->Prefetch(key);
+	}
+}
+
 void OmTileCache::Get(OmTileDrawer* drawer,
 					  OmTilePtr& tile,
 					  const OmTileCoord& key,

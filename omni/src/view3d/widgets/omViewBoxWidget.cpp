@@ -43,23 +43,21 @@ void OmViewBoxWidget::Draw()
 	glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
 	if (Om3dPreferences::get2DViewFrameIn3D()){
-		drawChannelData(XY_VIEW,
-						OmStateManager::GetViewDrawable(XY_VIEW));
-		drawSlice(XY_VIEW,
+
+//		drawChannelData(XY_VIEW, OmStateManager::GetViewDrawable(XY_VIEW));
+		draw2dBox(XY_VIEW,
 				  mViewGroupState->GetViewSliceMin(XY_VIEW),
 				  mViewGroupState->GetViewSliceMax(XY_VIEW),
 				  mViewGroupState->GetViewSliceDepth(XY_VIEW));
 
-		drawChannelData(XZ_VIEW,
-						OmStateManager::GetViewDrawable(XZ_VIEW));
-		drawSlice(XZ_VIEW,
+//		drawChannelData(XZ_VIEW, OmStateManager::GetViewDrawable(XZ_VIEW));
+		draw2dBox(XZ_VIEW,
 				  mViewGroupState->GetViewSliceMin(XZ_VIEW),
 				  mViewGroupState->GetViewSliceMax(XZ_VIEW),
 				  mViewGroupState->GetViewSliceDepth(XZ_VIEW));
 
-		drawChannelData(YZ_VIEW,
-						OmStateManager::GetViewDrawable(YZ_VIEW));
-		drawSlice(YZ_VIEW,
+//		drawChannelData(YZ_VIEW, OmStateManager::GetViewDrawable(YZ_VIEW));
+		draw2dBox(YZ_VIEW,
 				  mViewGroupState->GetViewSliceMin(YZ_VIEW),
 				  mViewGroupState->GetViewSliceMax(YZ_VIEW),
 				  mViewGroupState->GetViewSliceDepth(YZ_VIEW));
@@ -120,7 +118,10 @@ void OmViewBoxWidget::drawLines(SpaceCoord depth)
 /**
  *	Draw a given orthogonal slice of a bbox given the plane and offset of plane
  */
-void OmViewBoxWidget::drawSlice(ViewType plane, Vector2 < float >min, Vector2 < float >max, float depth)
+void OmViewBoxWidget::draw2dBox(const ViewType plane,
+								const Vector2f& min,
+								const Vector2f& max,
+								const float depth)
 {
 
 	SpaceCoord v0, v1, v2, v3;

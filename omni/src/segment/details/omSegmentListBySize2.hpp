@@ -74,8 +74,9 @@ public:
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
-	GetPageOfSegmentIDs(const unsigned int offset, const int numToGet,
-						const OmSegID startSeg)
+	GetPageOfSegmentIDs(const unsigned int /*offset*/,
+						const int /*numToGet*/,
+						const OmSegID /*startSeg*/ )
 	{
 		boost::shared_ptr<OmSegIDsList> ret =
 			boost::make_shared<OmSegIDsList>();
@@ -104,7 +105,7 @@ public:
 		sortedRoots_.Clear();
 	}
 
-	OmSegID GetNextSegmentIDinList(const OmSegID id)
+	OmSegID GetNextSegmentIDinList(const OmSegID /*id*/)
 	{
 		return 0;
 	}

@@ -19,16 +19,14 @@ public:
 
 private:
 	OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
-			      const OmSegmentEdge & edge );
-
-	void Run();
+						  const OmSegmentEdge & edge );
 
 	void Action();
 	void UndoAction();
 	std::string Description();
 	void save(const std::string& comment);
 
-	static void RunIfSplittable( OmSegment * seg1, OmSegment * seg2 );
+	static void runIfSplittable( OmSegment * seg1, OmSegment * seg2 );
 
 	boost::shared_ptr<OmSegmentSplitActionImpl> impl_;
 };

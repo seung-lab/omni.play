@@ -42,7 +42,7 @@ THRIFT_AT	=	$(AT)$(THRIFT)
 MEX_INCLUDE_DIR =       /usr/local/matlab_2009a/extern/include
 
 INCLUDES	=	-I$(HERE) -I. -I$(GENDIR) -I$(MEX_INCLUDE_DIR) -I$(ZINCDIR) \
-			-I$(HERE)/src/zi -I$(HERE)/include/zi_lib -I$(HERE)/src -I$(HERE)/../external/headers/boost_1_43_0/
+			-I$(HERE)/src/zi -I$(HERE)/../external/zi_lib -I$(HERE)/src -I$(HERE)/../external/zi_lib/external/include
 CXX_INCLUDES	=	$(INCLUDES)
 MEX_INCLUDES    =       $(INCLUDES)
 

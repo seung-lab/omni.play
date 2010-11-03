@@ -179,23 +179,16 @@ OmSegID OmSegmentCache::findRootID(OmSegment* segment)
 	return mImpl->findRootID(segment);
 }
 
-OmSegmentEdge OmSegmentCache::findClosestCommonEdge(OmSegment * seg1,
-													OmSegment * seg2)
+OmSegIDsSet OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	return mImpl->findClosestCommonEdge(seg1, seg2);
+	return mImpl->JoinTheseSegments(segmentList);
 }
 
-void OmSegmentCache::JoinTheseSegments( const OmSegIDsSet & segmentList)
+OmSegIDsSet OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
 {
 	zi::guard g(mutex_);
-	mImpl->JoinTheseSegments(segmentList);
-}
-
-void OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList)
-{
-	zi::guard g(mutex_);
-	mImpl->UnJoinTheseSegments(segmentList);
+	return mImpl->UnJoinTheseSegments(segmentList);
 }
 
 quint32 OmSegmentCache::getMaxValue()

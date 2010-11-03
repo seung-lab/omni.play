@@ -42,9 +42,8 @@ void OmTilePreFetcherTask::preLoadDepth(const int depthOffset)
 
 		//debugs(tilesVerbose) << "prefetching: " << tileCL->tileCoord << "\n";
 
-		OmTilePtr tile;
-		state_->getCache()->doGet(tile, tileCL->tileCoord,
-								  om::BLOCKING);
+		state_->getCache()->Prefetch(tileCL->tileCoord);
+		//prefetcher_->AddTileFetchTask(state, queue);
 	}
 
 	debug(tiles, "OmTilePreFetcherTask: fetched %d tiles\n", count);

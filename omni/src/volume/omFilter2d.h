@@ -18,7 +18,7 @@ public:
 	OmFilter2d(OmID);
 
 	std::string GetName(){
-		return "filter" + boost::lexical_cast<std::string>(GetID());
+		return "filter" + om::NumToStr(GetID());
 	}
 
 	void SetAlpha(const double);

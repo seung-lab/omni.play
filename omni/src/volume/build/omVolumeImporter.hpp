@@ -33,7 +33,7 @@ public:
 		fflush(stdout);
 
 		const bool ret = doImport();
-		printf("done in %.2f secs\n", timer.s_elapsed());
+		timer.PrintDone();
 
 		return ret;
 	}

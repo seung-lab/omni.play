@@ -56,12 +56,10 @@ public:
 	OmSegID findRootID( const OmSegID segID );
 	OmSegID findRootID(OmSegment* segment);
 
-	OmSegmentEdge findClosestCommonEdge(OmSegment *, OmSegment *);
-
 	std::pair<bool, OmSegmentEdge> JoinEdge( const OmSegmentEdge & e );
 	OmSegmentEdge SplitEdge( const OmSegmentEdge & e );
-	void JoinTheseSegments( const OmSegIDsSet & segmentList);
-	void UnJoinTheseSegments( const OmSegIDsSet & segmentList);
+	OmSegIDsSet JoinTheseSegments( const OmSegIDsSet & segmentList);
+	OmSegIDsSet UnJoinTheseSegments( const OmSegIDsSet & segmentList);
 
 	quint32 getPageSize();
 

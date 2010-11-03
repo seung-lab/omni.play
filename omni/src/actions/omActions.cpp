@@ -8,6 +8,10 @@
 #include "actions/details/omSegmentationThresholdChangeAction.h"
 #include "actions/details/omVoxelSetValueAction.h"
 #include "actions/omActions.hpp"
+#include "utility/segmentDataWrapper.hpp"
+#include "utility/segmentationDataWrapper.hpp"
+#include "segment/omSegmentLists.hpp"
+#include "segment/omSegmentIterator.h"
 
 // project-related
 void OmActions::Save(){
@@ -44,12 +48,34 @@ void OmActions::SetVoxels(const OmID segmentationID,
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 								const om::SetValid valid){
+	OmSegID seg = sdw.getSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
 	OmSegmentValidateAction::Validate(sdw, valid);
+	if(seg) {
+		sdw.getSegmentation().GetSegmentCache()->SetAllSelected(false);
+		sdw.getSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
+	}
 }
 
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 								const om::SetValid valid){
+	OmSegmentIterator iter(sdw.getSegmentation().GetSegmentCache());
+	iter.iterOverSelectedIDs();
+	OmSegment * segment = iter.getNextSegment();
+	OmSegID seg;
+	while(NULL != segment) {
+		seg = sdw.getSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
+		if(seg) {
+			break;
+		}
+                segment = iter.getNextSegment();
+        }
+
 	OmSegmentValidateAction::Validate(sdw, valid);
+
+	if(seg) {
+		sdw.getSegmentation().GetSegmentCache()->SetAllSelected(false);
+		sdw.getSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
+	}
 }
 
 void OmActions::UncertainSegment(const SegmentDataWrapper& sdw,
@@ -63,7 +89,14 @@ void OmActions::UncertainSegment(const SegmentationDataWrapper& sdw,
 }
 
 void OmActions::JoinSegments(const OmID segmentationID,
-							 const OmSegIDsSet& ids){
+							 const OmSegIDsSet& ids)
+{
+	SegmentationDataWrapper sdw(segmentationID);
+	if(sdw.GetSegmentLists()->AreAnySegmentsInValidList(ids)){
+		printf("valid segment present in list; not joining...\n");
+		return;		// don't alow the join if valid segment is given
+	}
+
 	(new OmSegmentJoinAction(segmentationID, ids))->Run();
 }
 

@@ -20,6 +20,7 @@ public:
 	void Get(OmTilePtr&, const OmTileCoord&, const om::BlockingRead);
 	void RemoveSpaceCoord(const SpaceCoord& coord);
 	void Clear();
+	void Prefetch(const OmTileCoord& key);
 
 private:
 	LockedMultiMap<SpaceCoord, OmTileCoord> keysBySpaceCoord_;

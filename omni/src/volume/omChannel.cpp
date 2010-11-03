@@ -46,7 +46,7 @@ boost::shared_ptr<OmVolumeData> OmChannel::getVolData() {
 }
 
 std::string OmChannel::GetName(){
-	return "channel" +  boost::lexical_cast<std::string>(GetID());
+	return "channel" + om::NumToStr(GetID());
 }
 
 std::string OmChannel::GetDirectoryPath() {

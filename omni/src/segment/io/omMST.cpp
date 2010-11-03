@@ -90,6 +90,10 @@ void OmMST::doReadInFromOldMST(const OmMSTold& old)
 		printf("no MST found\n");
 		return;
 	}
+	if(!old.mDend || !old.mDendValues || !old.mEdgeDisabledByUser || !old.mEdgeForceJoin) {
+		printf("old MST not populated\n");
+		return;
+	}
 
 	create();
 

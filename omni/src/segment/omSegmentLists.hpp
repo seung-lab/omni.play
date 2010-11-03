@@ -3,6 +3,7 @@
 
 #include "segment/details/omSegmentListContainer.hpp"
 #include "segment/lowLevel/omSegmentListByMRU.h"
+#include "zi/omUtility.h"
 
 class OmSegmentLists {
 private:
@@ -48,8 +49,6 @@ public:
 	{
 		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
 		seg->SetListType(toType);
-//		printf("next segment id in list (by size) is %d\n",
-//			   getContainer(seg->GetListType()).GetNextSegmentIDinList(seg->value()));
 	}
 
 	void TouchRecentList(const OmSegID segID){
@@ -87,6 +86,16 @@ public:
 
 	uint64_t getSegmentSize(OmSegment* seg){
 		return getContainer(seg->GetListType()).getSegmentSize(seg);
+	}
+
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids)
+	{
+		FOR_EACH(iter, ids){
+			if(validList_.IsSegmentContained(*iter)){
+				return true;
+			}
+		}
+		return false;
 	}
 };
 

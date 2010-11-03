@@ -1,3 +1,4 @@
+#include "system/omGarbage.h"
 #include "common/om.hpp"
 #include "project/omProject.h"
 #include "viewGroup/omViewGroupState.h"
@@ -50,6 +51,9 @@ void OmTileDrawer::FullRedraw2d()
 
 	if(IsDrawComplete()){
 		state_->getCache()->SetDrawerDone(this);
+		if(!state_->getCache()->AreDrawersActive()){
+			OmGarbage::safeCleanTextureIds();
+		}
 	}
 }
 

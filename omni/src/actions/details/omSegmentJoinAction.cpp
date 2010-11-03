@@ -13,11 +13,13 @@ OmSegmentJoinAction::OmSegmentJoinAction(const OmID segmentationId,
 void OmSegmentJoinAction::Action()
 {
 	impl_->Execute();
+	SetDescription();
 }
 
 void OmSegmentJoinAction::UndoAction()
 {
 	impl_->Undo();
+	SetDescription();
 }
 
 std::string OmSegmentJoinAction::Description()

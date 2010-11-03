@@ -8,13 +8,14 @@
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
 #include "mesh/ziMesher.h"
-#include "segment/omSegmentSelected.hpp"
 #include "segment/io/omMST.h"
+#include "segment/io/omUserEdges.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentColorizer.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentLists.hpp"
+#include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omMipVolumeCache.h"
 #include "system/omGenericManager.h"
@@ -29,7 +30,6 @@
 #include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 #include "zi/omThreads.h"
-#include "segment/io/omUserEdges.hpp"
 
 #include <QFile>
 #include <QTextStream>
@@ -75,10 +75,10 @@ boost::shared_ptr<OmVolumeData> OmSegmentation::getVolData() {
 }
 
 std::string OmSegmentation::GetName(){
-	return "segmentation" +  boost::lexical_cast<std::string>(GetID());
+	return "segmentation" + om::NumToStr(GetID());
 }
 
-std::string OmSegmentation::GetDirectoryPath() {
+std::string OmSegmentation::GetDirectoryPath(){
 	return OmDataPaths::getDirectoryPath(this);
 }
 
@@ -115,7 +115,8 @@ void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 	mesher.mesh();
 }
 
-void OmSegmentation::RebuildChunk(const OmMipChunkCoord & mipCoord, const OmSegIDsSet & rModifiedValues)
+void OmSegmentation::RebuildChunk(const OmMipChunkCoord& mipCoord,
+								  const OmSegIDsSet& rModifiedValues)
 {
 	assert(0);
 
@@ -405,4 +406,3 @@ void OmSegmentation::BuildBlankVolume(const Vector3i & dims)
 
 	SetBuildState(MIPVOL_BUILT);
 }
-

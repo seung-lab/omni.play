@@ -2,6 +2,7 @@
 #include "actions/io/omActionLoggerFS.h"
 #include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "segment/omFindCommonEdge.hpp"
 
 OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 											const OmSegmentEdge & edge )
@@ -10,17 +11,20 @@ OmSegmentSplitAction::OmSegmentSplitAction( const SegmentationDataWrapper & sdw,
 	SetUndoable(true);
 }
 
-void OmSegmentSplitAction::RunIfSplittable( OmSegment * seg1, OmSegment * seg2 )
+void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 {
 	SegmentationDataWrapper sdw(seg1);
-	OmSegmentEdge edge = sdw.getSegmentCache()->findClosestCommonEdge(seg1, seg2);
+	OmSegmentEdge edge =
+		OmFindCommonEdge::FindClosestCommonEdge(sdw.getSegmentCache(),
+												seg1,
+												seg2);
 
 	if(!edge.isValid()){
 		printf("edge was not splittable\n");
 		return;
 	}
 
-	(new OmSegmentSplitAction(sdw, edge))->OmAction::Run();
+	(new OmSegmentSplitAction(sdw, edge))->Run();
 }
 
 void OmSegmentSplitAction::Action()
@@ -62,7 +66,7 @@ void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 			return;
 		}
 
-		RunIfSplittable(seg1, seg2);
+		runIfSplittable(seg1, seg2);
 
 		vgs->SetSplitMode(false);
 

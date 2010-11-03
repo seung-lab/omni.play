@@ -87,6 +87,21 @@ void OmThreadedCache<KEY,PTR>::Get(PTR& p_value,
 }
 
 template <typename KEY, typename PTR>
+void OmThreadedCache<KEY,PTR>::Prefetch(const KEY &key)
+{
+	if(mCache.contains(key)){
+		return;
+	}
+
+	PTR val = HandleCacheMiss(key);
+	{
+		zi::guard g(mutex_);
+		mCache.set(key, val);
+		mKeyAccessList.touch(key);
+	}
+}
+
+template <typename KEY, typename PTR>
 void OmThreadedCache<KEY,PTR>::Remove(const KEY &key)
 {
 	mCache.erase(key);

@@ -1,6 +1,9 @@
 #include "tiles/omTile.h"
 #include "view2d/omView2dState.hpp"
 #include "volume/omMipVolume.h"
+#include "volume/omChannel.h"
+#include "project/omProject.h"
+#include "volume/omFilter2d.h"
 #include "view2d/omOnScreenTileCoords.h"
 #include "system/cache/omCacheManager.h"
 #include "viewGroup/omViewGroupState.h"
@@ -49,7 +52,9 @@ OmOnScreenTileCoords::ComputeCoordsAndLocations(const int depthOffset)
 		doComputeCoordsAndLocations(depthOffset);
 	}
 
-	return tileCoordsAndLocations_;
+	OmTileCoordsAndLocationsPtr ret = tileCoordsAndLocations_;
+	tileCoordsAndLocations_ = boost::make_shared<OmTileCoordsAndLocations>();
+	return ret;
 }
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset)
@@ -104,10 +109,30 @@ void OmOnScreenTileCoords::computeTile(const float x, const float y,
 
 	const SpaceCoord spaceCoord = vol_->DataToSpaceCoord(dataCoord);
 
-	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord),
+        if(CHANNEL == vol_->getVolumeType()) {
+                OmChannel& chan = OmProject::GetChannel(vol_->getID());
+                foreach( OmID id, chan.GetValidFilterIds() ) {
+                        OmFilter2d &filter = chan.GetFilter(id);
+                        makeTileCoordFromFilter(filter, spaceCoord, x, y);
+                }
+        }
+
+	//printf("vol=%p\n", vol_);
+	OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, vol_, freshness_),
 								   computeVertices(x, y) };
 
 	tileCoordsAndLocations_->push_back(pair);
+}
+
+void OmOnScreenTileCoords::makeTileCoordFromFilter(OmFilter2d& filter, const SpaceCoord & spaceCoord, const float x, const float y)
+{
+        if(!filter.setupVol()){
+                return;
+        }
+
+        OmTileCoordAndVertices pair = {makeTileCoord(spaceCoord, filter.getVolume(), OmCacheManager::GetFreshness()), computeVertices(x, y) };
+        tileCoordsAndLocations_->push_back(pair);
+
 }
 
 DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
@@ -118,12 +143,13 @@ DataCoord OmOnScreenTileCoords::toDataCoord(const int depthOffset)
 											dataDepth_ + depthOffset);
 }
 
-OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord)
+OmTileCoord OmOnScreenTileCoords::makeTileCoord(const SpaceCoord& coord, OmMipVolume * vol, int freshness)
 {
+
 	return OmTileCoord(mipLevel_,
 					   coord,
-					   vol_,
-					   freshness_,
+					   vol,
+					   freshness,
 					   vgs_,
 					   viewType_,
 					   state_->getObjectType());

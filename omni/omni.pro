@@ -224,6 +224,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/details/omSegmentListsTypes.hpp \
            src/segment/omSegmentValidation.hpp \
            src/segment/omSegmentUncertain.hpp \
+           src/segment/omFindCommonEdge.hpp \
            src/system/omGenericManager.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
@@ -464,7 +465,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/segment/omSegmentCache.cpp \
            src/segment/omSegmentCacheImpl.cpp \
            src/segment/omSegmentColorizer.cpp \
-           src/segment/omSegmentEdge.cpp \
            src/segment/omSegmentIterator.cpp \
            src/segment/omSegmentSelector.cpp \
            src/system/events/omPreferenceEvent.cpp \
@@ -473,7 +473,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/system/events/omToolModeEvent.cpp \
            src/system/events/omView3dEvent.cpp \
            src/system/events/omViewEvent.cpp \
-           src/actions/details/omAction.cpp \
            src/system/omBuildChannel.cpp \
            src/system/omBuildSegmentation.cpp \
            src/system/omBuildVolumes.cpp \

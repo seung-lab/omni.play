@@ -34,6 +34,17 @@ void OmSegmentListBySize::UpdateFromSplit(OmSegment* root, OmSegment* child,
 	do_insertSegment(child->value(), newChildSize);
 }
 
+bool OmSegmentListBySize::IsSegmentContained(const OmSegID id)
+{
+	List_by_ID& idIndex = mList.get<segID>();
+	List_by_ID::iterator iter = idIndex.find(id);
+	if(iter != idIndex.end()){
+		return true;
+	}
+	return false;
+}
+
+
 void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
 											  const uint64_t addedSize)
 {
@@ -149,18 +160,19 @@ void OmSegmentListBySize::Clear()
 
 OmSegID OmSegmentListBySize::GetNextSegmentIDinList(const OmSegID id)
 {
-	List_by_ID& idIndex = mList.get<segID>();
-	List_by_ID::iterator iter = idIndex.find(id);
+	List_by_size& idIndex = mList.get<segSize>();
+	List_by_size::iterator iter = idIndex.begin();
 
-	if(iter == idIndex.end()){
-		return 0;
+	while(iter != idIndex.end()) {
+		if(iter->segID == id) {
+			if(iter == idIndex.end()){
+                		return 0;
+        		}
+			iter++;
+			return iter->segID;
+		}
+		iter++;
 	}
 
-	++iter;
-
-	if(iter == idIndex.end()){
-		return 0;
-	}
-
-	return iter->segID;
+	return 0;
 }

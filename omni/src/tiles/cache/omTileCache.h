@@ -30,6 +30,8 @@ public:
 		 const OmTileCoord& key,
 		 const om::BlockingRead blocking);
 
+	void Prefetch(const OmTileCoord& key);
+
 	void RemoveSpaceCoord(const SpaceCoord & coord);
 
 	bool AreDrawersActive();
@@ -52,11 +54,10 @@ private:
 	void stopIdleThreadTask();
 
 	void doGet(OmTilePtr& tile,
-		   const OmTileCoord& key,
-		   const om::BlockingRead blocking);
+			   const OmTileCoord& key,
+			   const om::BlockingRead blocking);
 
 	friend class OmProjectData; // location where OmTileCache is constructed
-	friend class OmTilePreFetcherTask; // access doGet(...)
 	friend class OmTileDumper; // access doGet(...)
 };
 

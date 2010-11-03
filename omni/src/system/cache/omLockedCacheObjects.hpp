@@ -50,6 +50,10 @@ public:
 		zi::rwmutex::write_guard g(mutex_);
 		map_.swap(newMap);
 	}
+	bool contains(const KEY& key){
+		zi::rwmutex::read_guard g(mutex_);
+		return map_.count(key);
+	}
 private:
 	std::map<KEY, VAL> map_;
 	zi::rwmutex mutex_;

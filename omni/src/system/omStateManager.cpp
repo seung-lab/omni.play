@@ -72,30 +72,6 @@ void OmStateManager::Delete()
 	}
 }
 
-/////////////////////////////////
-///////          Project
-
-//project
-const std::string & OmStateManager::GetProjectFileName()
-{
-	return Instance()->mProjectFileName;
-}
-
-void OmStateManager::SetProjectFileName(const std::string & name)
-{
-	Instance()->mProjectFileName = name;
-}
-
-const std::string& OmStateManager::GetProjectDirectoryPath()
-{
-	return Instance()->mProjectDirectoryPath;
-}
-
-void OmStateManager::SetProjectDirectoryPath(const std::string & dpath)
-{
-	Instance()->mProjectDirectoryPath = dpath;
-}
-
 void OmStateManager::setOmniExecutableAbsolutePath( QString abs_path )
 {
 	Instance()->omniExecPathAbsolute = abs_path;
@@ -105,26 +81,27 @@ QString OmStateManager::getOmniExecutableAbsolutePath()
 {
 	return Instance()->omniExecPathAbsolute;
 }
-#if WIN32
-#define getpid() 0
-#define pid_t int
-#endif
+
 QString OmStateManager::getPID()
 {
-        static char pidstr[6] = {0};
-        pid_t pid;
-        int i;
+#if WIN32
+	return QString::number(0);
+#else
+	static char pidstr[6] = {0};
+	pid_t pid;
+	int i;
 
-        if (pidstr[0] == 0) {
-                pid = getpid();
-                for(i = 0; i < 5; i++) {
-                        pidstr[4 - i] = (pid % 10) + '0';
-                        pid /= 10;
-                }
-                pidstr[5] = 0;
-        }
+	if (pidstr[0] == 0) {
+		pid = getpid();
+		for(i = 0; i < 5; i++) {
+			pidstr[4 - i] = (pid % 10) + '0';
+			pid /= 10;
+		}
+		pidstr[5] = 0;
+	}
 
-	return QString (pidstr);
+	return QString(pidstr);
+#endif
 }
 
 QString OmStateManager::getHostname()
@@ -213,19 +190,6 @@ const QGLWidget *OmStateManager::GetPrimaryView3dWidget()
 	return Instance()->mpPrimaryView3dWidget;
 }
 
-/////////////////////////////////
-///////          Transparency State
-
-float OmStateManager::GetTransparencyAlpha()
-{
-	return Instance()->TRANSPARANCY_ALPHA;
-}
-
-void OmStateManager::SetTransparencyAlpha(float alpha)
-{
-	Instance()->TRANSPARANCY_ALPHA = alpha;
-}
-
 void OmStateManager::setInspector( MyInspectorWidget * miw )
 {
 	Instance()->inspectorWidget = miw;
@@ -268,36 +232,4 @@ void OmStateManager::setDendToolBar( DendToolBar * dtb)
 void OmStateManager::UpdateStatusBar( const QString & msg )
 {
 	Instance()->mainWindow->updateStatusBar( msg );
-}
-
-void OmStateManager::SetViewDrawable(ViewType viewType,
-				     std::vector<OmTilePtr>& drawable)
-{
-	switch(viewType){
-	case XY_VIEW:
-		Instance()->mDrawableXY = drawable;
-		break;
-	case XZ_VIEW:
-		Instance()->mDrawableXZ = drawable;
-		break;
-	case YZ_VIEW:
-		Instance()->mDrawableYZ = drawable;
-		break;
-	default:
-		assert(false);
-	}
-}
-
-std::vector<OmTilePtr> OmStateManager::GetViewDrawable(ViewType viewType)
-{
-	switch(viewType){
-	case XY_VIEW:
-		return Instance()->mDrawableXY;
-	case XZ_VIEW:
-		return Instance()->mDrawableXZ;
-	case YZ_VIEW:
-		return Instance()->mDrawableYZ;
-	default:
-		assert(false);
-	}
 }
