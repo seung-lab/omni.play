@@ -1,3 +1,5 @@
+#include "gui/meshPreviewer/errorLineEdit.hpp"
+#include "gui/meshPreviewer/scaleFactorLineEdit.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "gui/meshPreviewer/previewButton.hpp"
 #include "segment/omSegmentCache.h"
@@ -36,7 +38,7 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 
 void MeshPreviewerImpl::mesh()
 {
-	OmSegmentation& segmentation = sdw_->getSegmentation();
+	OmSegmentation& segmentation = sdw_->GetSegmentation();
 	const DataCoord center =
 		segmentation.NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
 	const OmMipChunkCoord coord = segmentation.DataToMipCoord(center, 0);
@@ -45,7 +47,6 @@ void MeshPreviewerImpl::mesh()
 
 	OmMipChunkPtr chunk;
 	segmentation.GetChunk(chunk, coord);
-	chunk->RefreshDirectDataValues(false, segmentation.GetSegmentCache());
 
 	// select all segments
 	OmSegmentSelector sel(segmentation.GetID(), this, "meshPreviewer");

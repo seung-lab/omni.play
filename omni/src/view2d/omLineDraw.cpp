@@ -38,7 +38,7 @@ void OmLineDraw::bresenhamLineDraw(const DataCoord & first,
 	if (!sdw.isValidWrapper())
 		return;
 
-	const OmID segmentation_id = sdw.getSegmentationID();
+	const OmID segmentation_id = sdw.GetSegmentationID();
 
 	//switch on tool mode
 	OmSegID data_value = 0;

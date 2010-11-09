@@ -21,8 +21,8 @@ private:
 	void doAction()
 	{
 		boost::shared_ptr<SegmentationDataWrapper> sdw =
-			mParent->getSegmentationDataWrapper();
-		OmSegmentation & current_seg = sdw->getSegmentation();
+			mParent->GetSegmentationDataWrapper();
+		OmSegmentation & current_seg = sdw->GetSegmentation();
 
 		OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
 		bs->setFileNamesAndPaths( mParent->getFileInfoList() );

@@ -12,6 +12,7 @@
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
+#include "actions/details/omProjectCloseActionImpl.hpp"
 
 QDir& OmActionLoggerFS::doGetLogFolder()
 {
@@ -26,11 +27,8 @@ QDir& OmActionLoggerFS::doGetLogFolder()
 
 void OmActionLoggerFS::setupLogDir()
 {
-	QString omniFolderName = ".omni";
-	QString homeFolder = QDir::homePath();
-	QString omniFolderPath = homeFolder + "/"
-		+ omniFolderName + "/"
-		+ "logFiles" + "/";
+	const QDir filesDir = OmProjectData::GetFilesFolderPath();
+	QString omniFolderPath = filesDir.absolutePath() + QDir::separator() + "logFiles" + QDir::separator();
 
 	QDir dir = QDir( omniFolderPath);
 	if( dir.exists()){
@@ -77,7 +75,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
 	in >> a.mSegmentationId;
 
 	SegmentationDataWrapper sdw(a.mSegmentationId);
-	OmSegmentCache* cache = sdw.getSegmentCache();
+	OmSegmentCache* cache = sdw.GetSegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
 		OmSegment* seg = cache->GetSegment(*iter);
@@ -118,7 +116,7 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 	in >> a.mSegmentationId;
 
 	SegmentationDataWrapper sdw(a.mSegmentationId);
-	OmSegmentCache* cache = sdw.getSegmentCache();
+	OmSegmentCache* cache = sdw.GetSegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
 		OmSegment* seg = cache->GetSegment(*iter);
@@ -235,6 +233,23 @@ QDataStream& operator>>(QDataStream& in,   OmProjectSaveActionImpl& )
 
 	return in;
 }
+
+QDataStream& operator<<(QDataStream& out, const OmProjectCloseActionImpl&)
+{
+        int version = 1;
+        out << version;
+
+        return out;
+}
+
+QDataStream& operator>>(QDataStream& in,   OmProjectCloseActionImpl& )
+{
+        int version;
+        in >> version;
+
+        return in;
+}
+
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentationThresholdChangeActionImpl& a)
 {

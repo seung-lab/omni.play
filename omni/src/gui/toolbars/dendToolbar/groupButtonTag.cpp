@@ -17,12 +17,12 @@ GroupButtonTag::GroupButtonTag(ValidationGroup * d)
 void GroupButtonTag::doAction()
 {
 	//debug(dendbar, "ValidationGroup::specialGroupAdd\n");
-	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-	if(!sdw.isValid()){
+	SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+	if(!sdw.IsValidWrapper()){
 		return;
 	}
 
-	OmSegmentation & seg = sdw.getSegmentation();
+	OmSegmentation & seg = sdw.GetSegmentation();
 
 	OmActions::CreateOrDeleteSegmentGroup(seg.GetID(),
 										  seg.GetSegmentCache()->GetSelectedSegmentIds(),

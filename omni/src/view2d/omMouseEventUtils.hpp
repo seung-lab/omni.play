@@ -13,7 +13,7 @@ public:
 	{
 		const OmSegID segID = sdw.GetVoxelValue(dataClickPoint);
 		if (segID) {
-			OmSegmentSelector sel(sdw.getSegmentationID(),
+			OmSegmentSelector sel(sdw.GetSegmentationID(),
 					      v2d,
 					      "view2dpick" );
 			sel.augmentSelectedSet( segID, true );

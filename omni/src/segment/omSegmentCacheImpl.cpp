@@ -66,9 +66,8 @@ OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 {
-	assert( child->getParentSegID() );
-
-	OmSegment * parent = GetSegmentFromValue( child->getParentSegID() );
+	OmSegment* parent = child->getParent();
+	assert(parent);
 
 	if( child->IsValid() == parent->IsValid() &&
 	    1 == child->IsValid() ){
@@ -82,7 +81,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	parent->removeChild(child);
 	mSegmentGraph.graph_cut(child->value());
-	child->setParentSegID(0);
+	child->setParent(NULL); // TODO: also set threshold???
 
 	child->setThreshold(0);
 
@@ -333,7 +332,7 @@ void OmSegmentCacheImpl::resetGlobalThreshold()
 }
 
 boost::shared_ptr<OmSegmentLists> OmSegmentCacheImpl::getSegmentLists() {
-	return getSegmentation()->GetSegmentLists();
+	return GetSegmentation()->GetSegmentLists();
 }
 
 void OmSegmentCacheImpl::Flush()

@@ -1,3 +1,4 @@
+#include "mesh/omMeshParams.hpp"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshCoord.h"
 #include "mesh/omMipMeshManager.h"
@@ -97,8 +98,8 @@ void ziMeshingChunk::run()
 
 		FOR_EACH (sit, simplifiers) {
 			sit->second->runQueue((idx == 0) ?
-								  (meshes[sit->first].faces_.size() / 2) :
-								  (meshes[sit->first].faces_.size() / 2),
+								  (meshes[sit->first].faces_.size() / OmMeshParams::GetDownScallingFactor() ) :
+								  (meshes[sit->first].faces_.size() / OmMeshParams::GetDownScallingFactor() ),
 								  it->second, 0);
 			meshes[sit->first].toStrips(&stripified[sit->first].first,
 										stripified[sit->first].second);

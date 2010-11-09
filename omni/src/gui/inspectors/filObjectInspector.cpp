@@ -123,7 +123,7 @@ int FilObjectInspector::getChannelIDtoFilter()
 	return chanEdit->text().toInt();
 }
 
-int FilObjectInspector::getSegmentationIDtoFilter()
+int FilObjectInspector::GetSegmentationIDtoFilter()
 {
 	return segEdit->text().toInt();
 }
@@ -136,6 +136,6 @@ void FilObjectInspector::sourceEditChangedChan()
 
 void FilObjectInspector::sourceEditChangedSeg()
 {
-	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(getSegmentationIDtoFilter());
+	OmProject::GetChannel( mChannelID ).GetFilter( mFilterID ).SetSegmentation(GetSegmentationIDtoFilter());
 	//	OmProject::Save();
 }

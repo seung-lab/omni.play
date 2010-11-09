@@ -15,7 +15,7 @@ OmMeshSegmentListThread::OmMeshSegmentListThread(OmMipChunkPtr p_chunk,
 void OmMeshSegmentListThread::run()
 {
 	const OmSegIDsSet & chunkValues =  mChunk->GetDirectDataValues();
-	OmSegmentIterator segIter(mRootSeg->getSegmentCache());
+	OmSegmentIterator segIter(mRootSeg->GetSegmentCache());
 	segIter.iterOverSegmentID(mRootSeg->value());
 	OmSegment* seg = segIter.getNextSegment();
 

@@ -49,7 +49,7 @@ public:
 	QString getSegmentNote( OmSegID segID );
 	void setSegmentNote( OmSegID segID, QString note );
 
-	OmSegID getSegmentationID();
+	OmSegID GetSegmentationID();
 
 	OmSegment * findRoot( OmSegment * segment );
 	OmSegment * findRoot( const OmSegID segID );

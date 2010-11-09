@@ -23,7 +23,7 @@ OmSegmentCacheImplLowLevel::~OmSegmentCacheImplLowLevel()
 
 OmSegment * OmSegmentCacheImplLowLevel::findRoot( OmSegment * segment )
 {
-	if(0 == segment->getParentSegID()) {
+	if(!segment->getParent()) {
 		return segment;
 	}
 
@@ -249,7 +249,7 @@ void OmSegmentCacheImplLowLevel::setSegmentNote( OmSegID segID, QString note )
 	segmentNotes[ segID ] = note;
 }
 
-OmSegID OmSegmentCacheImplLowLevel::getSegmentationID()
+OmSegID OmSegmentCacheImplLowLevel::GetSegmentationID()
 {
 	return segmentation_->GetID();
 }
@@ -280,7 +280,7 @@ void OmSegmentCacheImplLowLevel::growGraphIfNeeded(OmSegment * newSeg)
 	mSegmentGraph.growGraphIfNeeded(newSeg);
 }
 
-OmSegmentCache* OmSegmentCacheImplLowLevel::getSegmentCache()
+OmSegmentCache* OmSegmentCacheImplLowLevel::GetSegmentCache()
 {
 	return segmentation_->GetSegmentCache();
 }

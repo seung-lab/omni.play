@@ -90,7 +90,7 @@ void MyInspectorWidget::populateDataSrcListWidget()
 
 	foreach(OmID segmenID, OmProject::GetValidSegmentationIds()) {
 		DataWrapperContainer dwc = DataWrapperContainer(SEGMENTATION, segmenID);
-		SegmentationDataWrapper sdw = dwc.getSegmentationDataWrapper();
+		SegmentationDataWrapper sdw = dwc.GetSegmentationDataWrapper();
 		QTreeWidgetItem *row = new QTreeWidgetItem(dataSrcListWidget);
 		row->setText(NAME_COL, sdw.getName());
 		row->setText(ID_COL, QString("%1").arg(sdw.getID()));
@@ -405,7 +405,7 @@ void MyInspectorWidget::addToSplitterDataSource(QTreeWidgetItem * current)
 		populateFilterListWidget(dwc.getChannelDataWrapper());
 		break;
 	case SEGMENTATION:
-		updateSegmentListBox( dwc.getSegmentationDataWrapper() );
+		updateSegmentListBox( dwc.GetSegmentationDataWrapper() );
 		break;
 	}
 }
@@ -423,7 +423,7 @@ SegmentationDataWrapper MyInspectorWidget::getCurrentlySelectedSegmentation()
 	QTreeWidgetItem *dataSrcItem = dataSrcListWidget->currentItem();
 	QVariant result = dataSrcItem->data(USER_DATA_COL, Qt::UserRole);
 	DataWrapperContainer dwc = result.value < DataWrapperContainer > ();
-	return dwc.getSegmentationDataWrapper();
+	return dwc.GetSegmentationDataWrapper();
 }
 
 void MyInspectorWidget::selectSegmentationView(QAction * act)

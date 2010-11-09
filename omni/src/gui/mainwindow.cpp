@@ -187,6 +187,7 @@ bool MainWindow::closeProjectIfOpen()
 		preferences = NULL;
 	}
 
+	//OmActions::Close();
 	OmProject::Close();
 	windowTitleClear();
 

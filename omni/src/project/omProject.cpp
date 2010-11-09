@@ -128,6 +128,7 @@ void OmProject::Load(const QString& fileNameAndPath)
 	try {
 		OmDataArchiveProject::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(),
 										  Instance());
+		//Attempt replay of action not flushed by the user at their request
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;
@@ -136,6 +137,7 @@ void OmProject::Load(const QString& fileNameAndPath)
 
 void OmProject::Close()
 {
+	OmActions::Close();
 	// OmProject must be deleted first: it depends on the remaining classes...
 	OmCacheManager::SignalCachesToCloseDown();
 	OmMeshSegmentList::Delete();

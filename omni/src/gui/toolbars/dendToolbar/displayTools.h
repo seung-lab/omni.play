@@ -14,7 +14,7 @@ public:
 	DisplayTools(DendToolBar *);
 
 	OmViewGroupState * getViewGroupState();
-	SegmentationDataWrapper getSegmentationDataWrapper();
+	SegmentationDataWrapper GetSegmentationDataWrapper();
 	void updateGui();
 
 	QString getName(){

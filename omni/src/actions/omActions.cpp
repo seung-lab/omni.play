@@ -1,4 +1,5 @@
 #include "actions/details/omProjectSaveAction.h"
+#include "actions/details/omProjectCloseAction.h"
 #include "actions/details/omSegmentGroupAction.h"
 #include "actions/details/omSegmentJoinAction.h"
 #include "actions/details/omSegmentSelectAction.h"
@@ -16,6 +17,10 @@
 // project-related
 void OmActions::Save(){
 	(new OmProjectSaveAction())->Run();
+}
+
+void OmActions::Close(){
+	(new OmProjectCloseAction())->Run();
 }
 
 // MST-related
@@ -48,23 +53,24 @@ void OmActions::SetVoxels(const OmID segmentationID,
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 								const om::SetValid valid){
-	OmSegID seg = sdw.getSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
+	OmSegID seg =
+		sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
 	OmSegmentValidateAction::Validate(sdw, valid);
-	if(seg) {
-		sdw.getSegmentation().GetSegmentCache()->SetAllSelected(false);
-		sdw.getSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
+	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
+		sdw.GetSegmentation().GetSegmentCache()->SetAllSelected(false);
+		sdw.GetSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
 }
 
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 								const om::SetValid valid)
 {
-	OmSegmentIterator iter(sdw.getSegmentation().GetSegmentCache());
+	OmSegmentIterator iter(sdw.GetSegmentation().GetSegmentCache());
 	iter.iterOverSelectedIDs();
 	OmSegment * segment = iter.getNextSegment();
 	OmSegID seg;
 	while(NULL != segment) {
-		seg = sdw.getSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
+		seg = sdw.GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
 		if(seg) {
 			break;
 		}
@@ -73,9 +79,9 @@ void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 
 	OmSegmentValidateAction::Validate(sdw, valid);
 
-	if(seg && sdw.getSegmentation().GetSegmentCache()->IsSegmentValid(seg)) {
-		sdw.getSegmentation().GetSegmentCache()->SetAllSelected(false);
-		sdw.getSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
+	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
+		sdw.GetSegmentCache()->SetAllSelected(false);
+		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
 }
 

@@ -11,8 +11,6 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentListBySizeTests.hpp"
 
-#include <boost/make_shared.hpp>
-
 class SegmentTests {
 public:
 	SegmentTests()

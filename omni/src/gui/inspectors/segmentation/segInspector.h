@@ -19,8 +19,8 @@ public:
 	SegInspector( const SegmentationDataWrapper sdw,
 				  MyInspectorWidget* parent);
 
-	OmID getSegmentationID();
-	boost::shared_ptr<SegmentationDataWrapper> getSegmentationDataWrapper();
+	OmID GetSegmentationID();
+	boost::shared_ptr<SegmentationDataWrapper> GetSegmentationDataWrapper();
 
 	QLineEdit * nameEdit;
 	QLabel *directoryLabel;

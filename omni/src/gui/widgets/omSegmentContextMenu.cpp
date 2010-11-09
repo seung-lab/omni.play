@@ -65,11 +65,11 @@ void OmSegmentContextMenu::addSelectionNames()
 	if(isValid()){
 		validStr = QString("%1 %2")
 			.arg("Valid in ")
-			.arg(sdw_.getSegmentationName());
+			.arg(sdw_.GetSegmentationName());
 	} else {
 		validStr = QString("%1 %2")
 			.arg("Not valid in ")
-			.arg(sdw_.getSegmentationName());
+			.arg(sdw_.GetSegmentationName());
 	}
 	addAction(validStr);
 }
@@ -103,21 +103,21 @@ void OmSegmentContextMenu::addDendActions()
 
 void OmSegmentContextMenu::select()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), true);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselect()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), false);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselectOthers()
 {
-	OmSegmentSelector sel(sdw_.getSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
 	sel.selectNoSegments();
 	sel.selectJustThisSegment(sdw_.getID(), true);
 	sel.sendEvent();
@@ -125,8 +125,8 @@ void OmSegmentContextMenu::unselectOthers()
 
 void OmSegmentContextMenu::mergeSegments()
 {
-	OmSegIDsSet ids = sdw_.getSegmentCache()->GetSelectedSegmentIds();
-	OmActions::JoinSegments(sdw_.getSegmentationID(), ids);
+	OmSegIDsSet ids = sdw_.GetSegmentCache()->GetSelectedSegmentIds();
+	OmActions::JoinSegments(sdw_.GetSegmentationID(), ids);
 }
 
 void OmSegmentContextMenu::splitSegments()
@@ -191,7 +191,7 @@ void OmSegmentContextMenu::showProperties()
 	mViewGroupState->GetInspectorProperties()->
 		setOrReplaceWidget( new SegObjectInspector(sdw_, this),
 							QString("Segmentation %1: Segment %2")
-							.arg(sdw_.getSegmentationID())
+							.arg(sdw_.GetSegmentationID())
 							.arg(segid));
 }
 
@@ -205,7 +205,7 @@ void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
 	if (sdw_.isValidWrapper()){
-		OmSegmentCache* segCache = sdw_.getSegmentCache();
+		OmSegmentCache* segCache = sdw_.GetSegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(sdw_.FindRootID());
 
@@ -213,7 +213,7 @@ void OmSegmentContextMenu::printChildren()
 		while(NULL != seg) {
 			const QString str = QString("%1 : %2, %3, %4")
 				.arg(seg->value())
-				.arg(seg->getParentSegID())
+				.arg(seg->getParent()->value())
 				.arg(seg->getThreshold())
 				.arg(seg->size());
 			printf("%s\n", qPrintable(str));

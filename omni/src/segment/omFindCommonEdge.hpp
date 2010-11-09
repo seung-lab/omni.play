@@ -12,7 +12,7 @@ private:
 
 	static OmSegmentEdge makeEdge(OmSegment* childSeg)
 	{
-		return OmSegmentEdge(childSeg->getParentSegID(),
+		return OmSegmentEdge(childSeg->getParent()->value(),
 							 childSeg->value(),
 							 childSeg->getThreshold());
 	}
@@ -40,41 +40,39 @@ public:
 		}
 
 		OmSegment * s1 = seg1;
-		while (0 != s1->getParentSegID()) {
-			if(s1->getParentSegID() == seg2->value()) {
+		while (0 != s1->getParent()) {
+			if(s1->getParent() == seg2) {
 				//debug(split, "splitting child from a direct parent\n");
 				return makeEdge(s1);
 			}
-			s1 = segCache->GetSegment(s1->getParentSegID());
+			s1 = s1->getParent();
 		}
 
 		OmSegment * s2 = seg2;
-		while (0 != s2->getParentSegID()) {
-			if(s2->getParentSegID() == seg1->value()) {
+		while (0 != s2->getParent()) {
+			if(s2->getParent() == seg1) {
 				//debug(split, "splitting child from a direct parent\n");
 				return makeEdge(s2);
 			}
-			s2 = segCache->GetSegment(s2->getParentSegID());
+			s2 = s2->getParent();
 		}
 
 		OmSegment * nearestCommonPred = 0;
 
-		OmSegment * one;
-		OmSegment * two;
+		OmSegment* one;
 
-		for (OmSegID oneID = seg1->value(), twoID;
-			 oneID != 0;
-			 oneID = one->getParentSegID())
+		for (one = seg1;
+			 one != NULL;
+			 one = one->getParent())
 		{
-			one = segCache->GetSegment(oneID);
-			for (twoID = seg2->value();
-				 twoID != 0 && oneID != twoID;
-				 twoID = two->getParentSegID())
+			OmSegment* two;
+			for (two = seg2;
+				 two != NULL && one != two;
+				 two = two->getParent())
 			{
-				two = segCache->GetSegment(twoID);
 			}
 
-			if (oneID == twoID) {
+			if (one == two) {
 				nearestCommonPred = one;
 				break;
 			}
@@ -86,7 +84,7 @@ public:
 		OmSegment * minChild = 0;
 		for (one = seg1;
 			 one != nearestCommonPred;
-			 one = segCache->GetSegment(one->getParentSegID()))
+			 one = one->getParent())
 		{
 			if (one->getThreshold() < minThresh) {
 				minThresh = one->getThreshold();
@@ -96,7 +94,7 @@ public:
 
 		for (one = seg2;
 			 one != nearestCommonPred;
-			 one = segCache->GetSegment(one->getParentSegID()))
+			 one = one->getParent())
 		{
 			if (one->getThreshold() < minThresh) {
 				minThresh = one->getThreshold();

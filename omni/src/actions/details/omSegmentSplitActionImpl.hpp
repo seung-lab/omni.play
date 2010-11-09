@@ -17,14 +17,14 @@ public:
 	OmSegmentSplitActionImpl(const SegmentationDataWrapper & sdw,
 							 const OmSegmentEdge & edge)
 		: mEdge(edge)
-		, mSegmentationID(sdw.getSegmentationID())
+		, mSegmentationID(sdw.GetSegmentationID())
 		, desc("Splitting: ")
 	{}
 
 	void Execute()
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
-		mEdge = sdw.getSegmentCache()->SplitEdge(mEdge);
+		mEdge = sdw.GetSegmentCache()->SplitEdge(mEdge);
 
 		desc = QString("Split seg %1 from %2")
 			.arg(mEdge.childID)
@@ -38,7 +38,7 @@ public:
 	void Undo()
 	{
 		SegmentationDataWrapper sdw(mSegmentationID);
-		std::pair<bool, OmSegmentEdge> edge = sdw.getSegmentCache()->JoinEdge(mEdge);
+		std::pair<bool, OmSegmentEdge> edge = sdw.GetSegmentCache()->JoinEdge(mEdge);
 
 		assert(edge.first && "edge could not be rejoined...");
 		mEdge = edge.second;

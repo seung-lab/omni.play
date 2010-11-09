@@ -47,7 +47,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
 	assert( 100 >= segIDs->List()->size() && "too many segments returned" );
 
-	OmSegmentCache* segCache = segmentationDW.getSegmentCache();
+	OmSegmentCache* segCache = segmentationDW.GetSegmentCache();
 
 	FOR_EACH(iter, *segIDs->List()){
 		OmSegment* seg = segCache->GetSegment(*iter);
@@ -99,7 +99,7 @@ void OmSegmentListWidget::segmentLeftClick()
 	QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 	SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
-	OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
+	OmSegmentSelector sel(sdw.GetSegmentationID(), this, eventSenderName() );
 	sel.setAddToRecentList(segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
 	const int column = currentColumn();
@@ -206,7 +206,7 @@ void OmSegmentListWidget::keyPressEvent(QKeyEvent* event)
 		QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
 		SegmentDataWrapper sdw = result.value < SegmentDataWrapper > ();
 
-		OmSegmentSelector sel(sdw.getSegmentationID(), this, eventSenderName() );
+		OmSegmentSelector sel(sdw.GetSegmentationID(), this, eventSenderName() );
 		sel.selectJustThisSegment( sdw.getID(), true );
 		break;
 	}

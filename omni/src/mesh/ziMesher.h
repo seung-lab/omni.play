@@ -11,9 +11,10 @@ class OmMipMeshManager;
 
 class ziMesher {
 public:
-  ziMesher(const OmID &segId, OmMipMeshManager *mmManager,
+  ziMesher(const OmID& segId, OmMipMeshManager* mmManager,
            int rootLevel);
-  virtual ~ziMesher() {}
+
+  virtual ~ziMesher(){}
 
   void mesh();
   void addChunkCoord(const OmMipChunkCoord &c);

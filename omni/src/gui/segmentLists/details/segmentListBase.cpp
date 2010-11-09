@@ -213,7 +213,7 @@ void SegmentListBase::searchChanged()
 {
 	OmSegID segmenID = searchEdit->text().toInt();
 
-	if(!currentSDW->getSegmentCache()->IsSegmentValid(segmenID)) {
+	if(!currentSDW->GetSegmentCache()->IsSegmentValid(segmenID)) {
 		return;
 	}
 

@@ -114,7 +114,7 @@ private:
 				} else {
 					data_value = sdw.getID();
 				}
-				v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+				v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
 														dataClickPoint,
 														data_value);
 			} else {
@@ -148,7 +148,7 @@ private:
 
 	void doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
 	{
-		OmSegmentation & segmentation = sdw.getSegmentation();
+		OmSegmentation & segmentation = sdw.GetSegmentation();
 
 		if( !sdw.isValidWrapper() ){
 			printf("not valid\n");

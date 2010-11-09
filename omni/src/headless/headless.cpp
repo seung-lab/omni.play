@@ -432,6 +432,64 @@ void Headless::processLine(const QString& line, const QString&)
 		}
 	} else if(line.startsWith("watershed:")){
 		watershed(line);
+	} else if(line.startsWith("setChanResolution:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is setChannResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+		if (res.size() != 4){
+			printf("format is setChannResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const OmID channID = StringHelpers::getUInt(res[0]);
+		const float xRes = StringHelpers::getFloat(res[1]);
+		const float yRes = StringHelpers::getFloat(res[2]);
+		const float zRes = StringHelpers::getFloat(res[3]);
+
+		ChannelDataWrapper cdw(channID);
+
+		if (!cdw.IsValidWrapper()){
+			printf("Channel %i is not a valid channel.\n", channID);
+			return;
+		}
+
+		HeadlessImpl::ChangeVolResolution(cdw.GetChannel(), xRes, yRes, zRes);
+
+	} else if(line.startsWith("setSegResolution:")){
+		const QStringList args = line.split(':',QString::SkipEmptyParts);
+
+		if (args.size() != 2){
+			printf("format is setSegResolution:channID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const QStringList res = args[1].split(',', QString::SkipEmptyParts);
+
+		if (res.size() != 4){
+			printf("format is setSegResolution:segID,xRes,yRes,zRes\n");
+			return;
+		}
+
+		const OmID segID = StringHelpers::getUInt(res[0]);
+		const float xRes = StringHelpers::getFloat(res[1]);
+		const float yRes = StringHelpers::getFloat(res[2]);
+		const float zRes = StringHelpers::getFloat(res[3]);
+
+		SegmentationDataWrapper sdw(segID);
+
+		if (!sdw.IsValidWrapper()){
+			printf("Segmentation %i is not a valid segmentation\n", segID);
+			return;
+		}
+
+		HeadlessImpl::ChangeVolResolution(sdw.GetSegmentation(), xRes, yRes, zRes);
+
 	} else {
 		printf("Could not parse \"%s\".\n", qPrintable(line));
 	}

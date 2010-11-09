@@ -21,7 +21,7 @@ class ValidationGroup : public OmWidget {
 	QString getGroupNameFromGUI();
 	bool isShowValidChecked();
 
-	SegmentationDataWrapper getSegmentationDataWrapper();
+	SegmentationDataWrapper GetSegmentationDataWrapper();
 	OmViewGroupState * getViewGroupState();
 
 	QString getName(){ return "Validation"; }

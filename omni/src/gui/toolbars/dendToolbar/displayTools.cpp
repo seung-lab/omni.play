@@ -86,7 +86,7 @@ void DisplayTools::updateGui()
 	OmEvents::Redraw2d();
 }
 
-SegmentationDataWrapper DisplayTools::getSegmentationDataWrapper()
+SegmentationDataWrapper DisplayTools::GetSegmentationDataWrapper()
 {
-	return mParent->getSegmentationDataWrapper();
+	return mParent->GetSegmentationDataWrapper();
 }

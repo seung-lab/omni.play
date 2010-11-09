@@ -15,7 +15,7 @@ void OmSegmentSplitAction::runIfSplittable( OmSegment * seg1, OmSegment * seg2 )
 {
 	SegmentationDataWrapper sdw(seg1);
 	OmSegmentEdge edge =
-		OmFindCommonEdge::FindClosestCommonEdge(sdw.getSegmentCache(),
+		OmFindCommonEdge::FindClosestCommonEdge(sdw.GetSegmentCache(),
 												seg1,
 												seg2);
 

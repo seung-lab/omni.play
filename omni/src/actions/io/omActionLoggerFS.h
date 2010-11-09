@@ -16,6 +16,7 @@ class OmSegmentSelectActionImpl;
 class OmSegmentValidateActionImpl;
 class OmSegmentUncertainActionImpl;
 class OmProjectSaveActionImpl;
+class OmProjectCloseActionImpl;
 
 class OmActionLoggerFS : private om::singletonBase<OmActionLoggerFS> {
 public:
@@ -78,5 +79,8 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl&);
 
 QDataStream& operator<<(QDataStream& out, const OmProjectSaveActionImpl&);
 QDataStream& operator>>(QDataStream& in,  OmProjectSaveActionImpl&);
+
+QDataStream& operator<<(QDataStream& out, const OmProjectCloseActionImpl&);
+QDataStream& operator>>(QDataStream& in,  OmProjectCloseActionImpl&);
 
 #endif

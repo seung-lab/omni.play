@@ -101,7 +101,7 @@ private:
 			segmentValueToPaint = sdw.getID();
 		}
 
-		v2d_->LineDrawer()->BrushToolApplyPaint(sdw.getSegmentationID(),
+		v2d_->LineDrawer()->BrushToolApplyPaint(sdw.GetSegmentationID(),
 												dataClickPoint,
 												segmentValueToPaint);
 

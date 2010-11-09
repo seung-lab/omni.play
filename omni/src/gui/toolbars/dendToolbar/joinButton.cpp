@@ -16,12 +16,12 @@ JoinButton::JoinButton(GraphTools * d)
 
 void JoinButton::doAction()
 {
-	SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-	if(!sdw.isValid()){
+	SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+	if(!sdw.IsValidWrapper()){
 		return;
 	}
 
-	OmSegmentation & seg = sdw.getSegmentation();
+	OmSegmentation & seg = sdw.GetSegmentation();
 	OmSegIDsSet ids = seg.GetSegmentCache()->GetSelectedSegmentIds();
 	OmActions::JoinSegments(sdw.getID(), ids);
 

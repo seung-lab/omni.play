@@ -107,17 +107,12 @@ public:
 	inline int GetDepthToDataSlice() const
 	{
 		const SpaceCoord depthCoord = vgs_->GetViewDepthCoord();
-		const DataCoord dataCoord = vol_->SpaceToDataCoord(depthCoord);
-		return getViewTypeDepth(dataCoord);
+		return getViewTypeDepth(depthCoord);
 	}
 
 	inline void SetDataSliceToDepth(const int slice) const
 	{
-		DataCoord dataCoord(0, 0, 0);
-		setViewTypeDepth(dataCoord, slice);
-		const SpaceCoord depthCoord = vol_->DataToSpaceCoord(dataCoord);
-
-		setSliceDepth(getViewTypeDepth(depthCoord));
+		setSliceDepth(slice);
 	}
 
 	inline Vector2f ComputePanDistance() const
@@ -321,7 +316,9 @@ public:
 		return vol_->SpaceToDataCoord(getViewSliceDepthSpace());
 	}
 	float getSliceDepth() const {
-		return vgs_->GetViewSliceDepth(viewType_);
+		float depth = vgs_->GetViewSliceDepth(viewType_);
+		//printf("getSliceDepth d=%f\n", depth);
+		return depth;
 	}
 	float getXsliceDepth() const {
 		return vgs_->GetViewSliceDepth(YZ_VIEW);

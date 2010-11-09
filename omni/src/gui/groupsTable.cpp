@@ -41,25 +41,25 @@ void GroupsTable::doDeleteAction()
 	printf("here %p %p\n", QObject::sender(), mMenu);
 }
 
-OmID GroupsTable::getSegmentationID()
+OmID GroupsTable::GetSegmentationID()
 {
         return mSeg;
 }
 
 void GroupsTable::populateGroupsList()
 {
-	if(!OmProject::IsSegmentationValid(getSegmentationID())) {
+	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
 		return;
 	}
-	mGroupsList->populate(OmProject::GetSegmentation(getSegmentationID()));
+	mGroupsList->populate(OmProject::GetSegmentation(GetSegmentationID()));
 }
 
 void GroupsTable::populateGroupTable(OmGroupID id)
 {
-	if(!OmProject::IsSegmentationValid(getSegmentationID())) {
+	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
 		return;
 	}
-        OmSegmentation & seg = OmProject::GetSegmentation(getSegmentationID());
+        OmSegmentation & seg = OmProject::GetSegmentation(GetSegmentationID());
         OmGroup & group = seg.GetGroups()->GetGroup(id);
 	OmSegmentCache* cache = seg.GetSegmentCache();
 

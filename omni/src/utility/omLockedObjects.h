@@ -23,24 +23,24 @@ class LockedList{
 public:
 	virtual ~LockedList(){}
 	bool empty(){
-		zi::rwmutex::read_guard g(mutex_);
+		zi::guard g(mutex_);
 		return list_.empty();
 	}
 	void push_back(const KEY& key){
-		zi::rwmutex::write_guard g(mutex_);
+		zi::guard g(mutex_);
 		list_.push_back(key);
 	}
 	void clear(){
-		zi::rwmutex::write_guard g(mutex_);
+		zi::guard g(mutex_);
 		list_.clear();
 	}
 	void swap(std::list<KEY>& newList){
-		zi::rwmutex::write_guard g(mutex_);
+		zi::guard g(mutex_);
 		list_.swap(newList);
 	}
 private:
 	std::list<KEY> list_;
-	zi::rwmutex mutex_;
+	zi::mutex mutex_;
 };
 
 template <typename KEY, typename VAL>

@@ -41,7 +41,7 @@ SegInspector::SegInspector( const SegmentationDataWrapper incoming_sdw,
 
 QGroupBox* SegInspector::makeVolBox()
 {
-	return new OmVolInspector(&sdw->getSegmentation(), this);
+	return new OmVolInspector(&sdw->GetSegmentation(), this);
 }
 
 QGroupBox* SegInspector::makeStatsBox()
@@ -187,7 +187,7 @@ QGroupBox* SegInspector::makeSourcesBox()
 
 void SegInspector::on_nameEdit_editingFinished()
 {
-	sdw->getSegmentation().SetCustomName(nameEdit->text());
+	sdw->GetSegmentation().SetCustomName(nameEdit->text());
 }
 
 void SegInspector::on_browseButton_clicked()
@@ -247,7 +247,7 @@ void SegInspector::on_notesEdit_textChanged()
 	OmProject::GetSegmentation(sdw->getID()).SetNote(notesEdit->toPlainText());
 }
 
-OmID SegInspector::getSegmentationID()
+OmID SegInspector::GetSegmentationID()
 {
 	return sdw->getID();
 }
@@ -279,7 +279,7 @@ void SegInspector::rebuildSegmentLists(const OmID segmentationID, const OmSegID 
 }
 
 boost::shared_ptr<SegmentationDataWrapper>
-SegInspector::getSegmentationDataWrapper(){
+SegInspector::GetSegmentationDataWrapper(){
 	return sdw;
 }
 

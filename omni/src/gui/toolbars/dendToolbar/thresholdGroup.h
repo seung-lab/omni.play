@@ -30,9 +30,9 @@ private:
 	{
 		double threshold = 0.95;
 
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-		if(sdw.isValid()){
-			threshold = sdw.getSegmentation().GetDendThreshold();
+		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+		if(sdw.IsValidWrapper()){
+			threshold = sdw.GetSegmentation().GetDendThreshold();
 		}
 
 		setGUIvalue(threshold);
@@ -40,12 +40,12 @@ private:
 
 	void actUponThresholdChange( const float threshold )
 	{
-		SegmentationDataWrapper sdw = mParent->getSegmentationDataWrapper();
-		if(!sdw.isValid()){
+		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
+		if(!sdw.IsValidWrapper()){
 			return;
 		}
 
-		OmActions::ChangeMSTthreshold(sdw.getSegmentationID(), threshold);
+		OmActions::ChangeMSTthreshold(sdw.GetSegmentationID(), threshold);
 	}
 };
 

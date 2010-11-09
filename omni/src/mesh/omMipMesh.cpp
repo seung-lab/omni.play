@@ -383,7 +383,7 @@ void OmMipMesh::setSegmentationID(OmID sid)
 	mSegmentationID = sid;
 }
 
-OmID OmMipMesh::getSegmentationID()
+OmID OmMipMesh::GetSegmentationID()
 {
 	return mSegmentationID;
 }

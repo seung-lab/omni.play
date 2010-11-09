@@ -1,33 +1,21 @@
 #include "common/omCommon.h"
 #include "common/omDebug.h"
-#include "datalayer/omDataLayer.h"
-#include "datalayer/omDataPath.h"
-#include "datalayer/omDataPaths.h"
-#include "datalayer/omDataWrapper.h"
-#include "datalayer/omIDataReader.h"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
 #include "mesh/ziMesher.h"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/omSegment.h"
 #include "segment/omSegmentCache.h"
-#include "segment/omSegmentColorizer.h"
-#include "segment/omSegmentIterator.h"
 #include "segment/omSegmentLists.hpp"
-#include "segment/omSegmentSelected.hpp"
 #include "system/cache/omCacheManager.h"
 #include "system/cache/omMipVolumeCache.h"
-#include "system/omGenericManager.h"
+#include "system/omEvents.h"
 #include "system/omGroups.h"
-#include "system/omProjectData.h"
-#include "system/omStateManager.h"
+#include "utility/dataWrappers.h"
 #include "utility/omThreadPool.hpp"
-#include "utility/omTimer.h"
 #include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
-#include "volume/omVolume.h"
 #include "volume/omVolumeData.hpp"
 #include "zi/omThreads.h"
 
@@ -37,9 +25,9 @@
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
 	: mDataCache(new OmMipVolumeCache(this))
-	, mVolData(new OmVolumeData())
+	, mVolData(boost::make_shared<OmVolumeData>())
 	, mSegmentCache(new OmSegmentCache(this))
-	, mSegmentLists(new OmSegmentLists())
+	, mSegmentLists(boost::make_shared<OmSegmentLists>())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
@@ -50,9 +38,9 @@ OmSegmentation::OmSegmentation()
 OmSegmentation::OmSegmentation(OmID id)
 	: OmManageableObject(id)
 	, mDataCache(new OmMipVolumeCache(this))
-	, mVolData(new OmVolumeData())
+	, mVolData(boost::make_shared<OmVolumeData>())
 	, mSegmentCache(new OmSegmentCache(this))
-	, mSegmentLists(new OmSegmentLists())
+	, mSegmentLists(boost::make_shared<OmSegmentLists>())
 	, mGroups(boost::make_shared<OmGroups>(this))
 	, mst_(boost::make_shared<OmMST>(this))
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
@@ -94,7 +82,7 @@ void OmSegmentation::BuildVolumeData()
 void OmSegmentation::Mesh()
 {
 	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
-	Vector3<int> mc = MipLevelDimensionsInMipChunks(0);
+	const Vector3i mc = MipLevelDimensionsInMipChunks(0);
 
 	for (int z = 0; z < mc.z; ++z) {
 		for (int y = 0; y < mc.y; ++y) {
@@ -144,23 +132,6 @@ void OmSegmentation::RebuildChunk(const OmMipChunkCoord& mipCoord,
 	OmEvents::Redraw3d();
 }
 
-boost::shared_ptr<std::set<OmSegment*> >
-OmSegmentation::GetAllChildrenSegments(const OmSegIDsSet& set)
-{
-	OmSegmentIterator iter(mSegmentCache);
-	iter.iterOverSegmentIDs(set);
-
-	OmSegment * seg = iter.getNextSegment();
-	std::set<OmSegment*>* children = new std::set<OmSegment*>();
-
-	while(NULL != seg) {
-		children->insert(seg);
-		seg = iter.getNextSegment();
-	}
-
-	return boost::shared_ptr<std::set<OmSegment*> >(children);
-}
-
 void OmSegmentation::SetDendThreshold(const double t)
 {
 	if( t == mst_->UserThreshold() ){
@@ -173,39 +144,6 @@ void OmSegmentation::SetDendThreshold(const double t)
 void OmSegmentation::CloseDownThreads()
 {
 	mMipMeshManager->CloseDownThreads();
-}
-
-DataCoord OmSegmentation::FindCenterOfSelectedSegments() const
-{
-	DataBbox box;
-
-	OmSegmentIterator iter(mSegmentCache);
-	iter.iterOverSelectedIDs();
-
-	uint32_t counter = 0;
-
-	OmSegment* seg = iter.getNextSegment();
-	while(NULL != seg) {
-		const DataBbox& segBox = seg->getBounds();
-		if(segBox.isEmpty()){
-			continue;
-		}
-
-		box.merge(segBox);
-
-		++counter;
-		if(counter > 5000) {
-			break;
-		}
-
-		seg = iter.getNextSegment();
-	}
-
-	if(!counter){
-		return Vector3i(0,0,0);
-	}
-
-	return (box.getMin() + box.getMax()) / 2;
 }
 
 bool OmSegmentation::ImportSourceData(const OmDataPath& path)

@@ -14,6 +14,7 @@
 #include "volume/omSegmentation.h"
 #include "tests/testUtils.hpp"
 #include "segment/segmentTests.hpp"
+#include "cache/lockedObjectsTests.hpp"
 
 #include <QTextStream>
 
@@ -36,6 +37,12 @@ public:
 	void Run()
 	{
 //		imageResize();
+
+		{
+			LockedObjectsTests lot;
+			lot.RunAll();
+			printf("locked objects tests OK!\n\n");
+		}
 
 		if(justRunSegments_){
 			SegmentTests segTests;

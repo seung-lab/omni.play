@@ -70,10 +70,10 @@ public:
 
 		mst->Flush();
 
-		sdw.getSegmentation().getMSTUserEdges()->Clear();
-		sdw.getSegmentation().getMSTUserEdges()->Save();
+		sdw.GetSegmentation().getMSTUserEdges()->Clear();
+		sdw.GetSegmentation().getMSTUserEdges()->Save();
 
-		OmSegmentCache* segCache = sdw.getSegmentCache();
+		OmSegmentCache* segCache = sdw.GetSegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){
@@ -89,7 +89,7 @@ public:
 	{
 		SegmentationDataWrapper sdw(segmentationID);
 
-		OmSegmentCache* segCache = sdw.getSegmentCache();
+		OmSegmentCache* segCache = sdw.GetSegmentCache();
 		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
 			OmSegment* seg = segCache->GetSegment(i);
 			if(!seg){
@@ -98,9 +98,25 @@ public:
 			seg->clearBounds();
 		}
 
-		sdw.getSegmentation().UpdateVoxelBoundingData();
+		sdw.GetSegmentation().UpdateVoxelBoundingData();
 
 		OmActions::Save();
+	}
+
+
+	template <typename T>
+	static void ChangeVolResolution(T& vol,
+									const float xRes,
+									const float yRes,
+									const float zRes)
+	{
+		const Vector3f dims(xRes, yRes, zRes);
+
+		vol.SetDataResolution(dims);
+
+		std::cout << "\tvolume data resolution set to "
+				  << vol.GetDataResolution()
+				  << "\n";
 	}
 };
 

@@ -77,7 +77,7 @@ OmMeshSegmentList::doGetFromCacheIfReady(OmMipChunkPtr chunk, OmSegment* rootSeg
 OmMeshSegListKey OmMeshSegmentList::makeKey(OmMipChunkPtr chunk, OmSegment* rootSeg)
 {
 	const OmMipChunkCoord& c = chunk->GetCoordinate();
-	return OmMeshSegListKey(rootSeg->getSegmentationID(),
+	return OmMeshSegListKey(rootSeg->GetSegmentationID(),
 							rootSeg->value(),
 							c.Level,
 							c.Coordinate.x,

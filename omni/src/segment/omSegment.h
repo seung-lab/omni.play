@@ -34,7 +34,7 @@ public:
 	OmSegment()
 		: data_(NULL)
 		, cache_(NULL)
-		, parentSegID_(0)
+		, parent_(NULL)
 		, threshold_(0)
 		, edgeNumber_(-1)
 		, freshnessForMeshes_(0)
@@ -47,7 +47,9 @@ public:
 	// color
 	void RandomizeColor();
 	void reRandomizeColor();
-	OmColor GetColorInt(){ return data_->color; }
+	OmColor GetColorInt() const {
+		return data_->color;
+	}
 	Vector3f GetColorFloat() const
 	{
 		return Vector3f( data_->color.red   / 255.,
@@ -73,23 +75,39 @@ public:
 
 	uint64_t getSizeWithChildren();
 
-	bool IsValid() const { return om::VALID == data_->listType; }
-	om::OmSegListType GetListType() const { return data_->listType; }
-	void SetListType(const om::OmSegListType type) { data_->listType = type; }
+	bool IsValid() const {
+		return om::VALID == data_->listType;
+	}
+	om::OmSegListType GetListType() const {
+		return data_->listType;
+	}
+	void SetListType(const om::OmSegListType type) {
+		data_->listType = type;
+	}
 
-	OmSegID getParentSegID() const { return parentSegID_; }
-	void setParentSegID(const OmSegID val){ parentSegID_ = val; }
+	OmSegment* getParent() const {
+		return parent_;
+	}
+	void setParent(OmSegment* seg){
+		parent_ = seg;
+	}
+	void setParent(OmSegment* segment, const double);
+
 	OmSegID getRootSegID();
-	void setParent(OmSegment * segment, const double);
 
-	OmID getSegmentationID();
+	OmID GetSegmentationID();
 
 	double getThreshold() const { return threshold_; }
 	void setThreshold(const double thres){ threshold_ = thres; }
 
-	const DataBbox& getBounds() const {	return data_->bounds; }
-	void clearBounds() { data_->bounds = DataBbox(); }
-	void addToBounds(const DataBbox& box){
+	const DataBbox& getBounds() const {
+		return data_->bounds;
+	}
+	void clearBounds() {
+		data_->bounds = DataBbox();
+	}
+	void addToBounds(const DataBbox& box)
+	{
 		zi::spinlock::pool<segment_bounds_mutex_pool_tag>::guard g(data_->value);
 		data_->bounds.merge(box);
 	}
@@ -107,19 +125,29 @@ public:
 		segmentsJoinedIntoMe_.erase(child);
 	}
 
-	int getEdgeNumber() const { return edgeNumber_; }
-	void setEdgeNumber(const int num){ edgeNumber_ = num; }
+	int getEdgeNumber() const {
+		return edgeNumber_;
+	}
+	void setEdgeNumber(const int num){
+		edgeNumber_ = num;
+	}
 
-	const OmSegmentEdge& getCustomMergeEdge() const {return customMergeEdge_;}
-	void setCustomMergeEdge(const OmSegmentEdge& e){customMergeEdge_=e;}
+	const OmSegmentEdge& getCustomMergeEdge() const {
+		return customMergeEdge_;
+	}
+	void setCustomMergeEdge(const OmSegmentEdge& e){
+		customMergeEdge_ = e;
+	}
 
-	OmSegmentCache* getSegmentCache(){ return cache_; }
+	OmSegmentCache* GetSegmentCache(){
+		return cache_;
+	}
 
 private:
 	OmSegmentDataV3* data_;
 
 	OmSegmentCache* cache_;
-	OmSegID parentSegID_;
+	OmSegment* parent_;
 	std::set<OmSegment*> segmentsJoinedIntoMe_;
 	double threshold_;
 

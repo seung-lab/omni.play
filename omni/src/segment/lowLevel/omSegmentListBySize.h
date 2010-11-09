@@ -31,7 +31,7 @@ public:
 	size_t Size();
 	void Dump();
 	void Clear();
-	
+
 	bool IsSegmentContained(const OmSegID segID);
 
 	OmSegID GetNextSegmentIDinList(const OmSegID id);

@@ -7,7 +7,8 @@ class OmView2dConverters {
 public:
 	template <typename T>
 	inline static Vector3<T> MakeViewTypeVector3(const T& x, const T& y,
-												 const T& z, const ViewType viewType)
+												 const T& z,
+												 const ViewType viewType)
 	{
 		switch(viewType){
 		case XY_VIEW:

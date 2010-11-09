@@ -40,7 +40,7 @@ public:
 	void Execute()
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.getSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+		sdw.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
 													  mAddToRecentList);
 
 		OmEvents::SegmentModified(mSegmentationId,
@@ -53,7 +53,7 @@ public:
 	void Undo()
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.getSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+		sdw.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
 													  mAddToRecentList);
 
 		OmEvents::SegmentModified(mSegmentationId,

@@ -90,6 +90,8 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omIDataWriter.h \
            src/datalayer/omDummyWriter.h \
            src/gui/meshPreviewer/meshPreviewer.hpp \
+           src/gui/meshPreviewer/errorLineEdit.hpp \
+           src/gui/meshPreviewer/scaleFactorLineEdit.hpp \
            src/gui/mstViewer.hpp \
            src/gui/cacheMonitorDialog.h \
            src/gui/groupsTable.h \
@@ -171,6 +173,8 @@ HEADERS += lib/strnatcmp.h \
            src/gui/widgets/omGroupListWidget.h \
            src/gui/widgets/omIntSpinBox.hpp \
            src/gui/widgets/omDoubleSpinBox.hpp \
+           src/gui/widgets/omLineEdit.hpp \
+           src/mesh/omMeshParams.hpp \
            src/mesh/omMeshDrawer.h \
            src/mesh/omMeshTypes.h \
            src/mesh/omMipMesh.h \
@@ -184,6 +188,8 @@ HEADERS += lib/strnatcmp.h \
            src/project/omProject.h \
            src/actions/details/omProjectSaveAction.h \
            src/actions/details/omProjectSaveActionImpl.hpp \
+           src/actions/details/omProjectCloseAction.h \
+           src/actions/details/omProjectCloseActionImpl.hpp \
            src/actions/details/omSegmentGroupAction.h \
            src/actions/details/omSegmentGroupActionImpl.hpp \
            src/actions/details/omSegmentJoinAction.h \
@@ -202,6 +208,8 @@ HEADERS += lib/strnatcmp.h \
            src/actions/details/omSegmentationThresholdChangeAction.h \
            src/segment/details/omSegmentListContainer.hpp \
            src/segment/details/sortedRootSegments.hpp \
+           src/segment/details/sortedRootSegmentsVector.hpp \
+           src/segment/details/sortedRootSegmentsTypes.h \
            src/segment/lowLevel/DynamicForestPool.hpp \
            src/segment/lowLevel/omPagingPtrStore.h \
            src/segment/lowLevel/omSegmentCacheImplLowLevel.h \
@@ -225,6 +233,7 @@ HEADERS += lib/strnatcmp.h \
            src/segment/omSegmentValidation.hpp \
            src/segment/omSegmentUncertain.hpp \
            src/segment/omFindCommonEdge.hpp \
+           src/segment/omSegmentUtils.hpp \
            src/system/omGenericManager.h \
            src/system/events/omPreferenceEvent.h \
            src/system/events/omProgressEvent.h \
@@ -252,7 +261,7 @@ HEADERS += lib/strnatcmp.h \
            src/system/omProjectData.h \
            src/system/omStateManager.h \
            src/system/cache/omThreadedCache.h \
-           src/system/cache/omHandleCacheMissThreaded.h \
+           src/system/cache/omHandleCacheMissTask.hpp \
            src/viewGroup/omViewGroupState.h \
            src/viewGroup/omBrushSize.hpp \
            src/viewGroup/omZoomLevel.hpp \
@@ -365,7 +374,8 @@ HEADERS += lib/strnatcmp.h \
            tests/fakeMemMapFile.hpp \
            tests/testUtils.hpp \
            tests/segment/omSegmentListBySizeTests.hpp \
-           tests/segment/mockSegments.hpp
+           tests/segment/mockSegments.hpp \
+           tests/cache/lockedObjectsTests.hpp
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \
@@ -449,6 +459,7 @@ SOURCES += lib/strnatcmp.cpp \
            src/mesh/ziMeshingChunk.cpp \
            src/project/omProject.cpp \
            src/actions/details/omProjectSaveAction.cpp \
+           src/actions/details/omProjectCloseAction.cpp \
            src/actions/details/omSegmentJoinAction.cpp \
            src/actions/details/omSegmentUncertainAction.cpp \
            src/actions/details/omSegmentValidateAction.cpp \
@@ -533,7 +544,8 @@ SOURCES += lib/strnatcmp.cpp \
            src/zi/mesh/MarchingCubes.cpp \
            src/zi/mesh/QuadraticErrorSimplification.cpp \
            src/zi/mesh/ext/TriStrip/TriStripper.cpp \
-           src/zi/watershed/RawQuickieWS.cpp
+           src/zi/watershed/RawQuickieWS.cpp \
+           tests/segment/mockSegments.cpp
 
 RESOURCES += src/gui/resources.qrc
 
@@ -566,5 +578,16 @@ DESTDIR = bin
 #QMAKE_CXXFLAGS += -pg
 #QMAKE_LFLAGS   += -pg
 
+# from http://stackoverflow.com/questions/801279/finding-compiler-vendor-version-using-qmake
+linux-g++ {
+    system( g++ --version | grep -e "4.[2-9]" ) {
+        message( g++ version 4.[2-9] found )
+        CONFIG += g++4new
+    }
+    else {
+        CONFIG += g++old
+    }
+}
+
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943
-#QMAKE_CXXFLAGS += -Werror=return-type
+g++4new: QMAKE_CXXFLAGS += -Werror=return-type

@@ -8,123 +8,83 @@
 #include "segment/details/sortedRootSegments.hpp"
 
 class OmSegmentListBySize2 {
+private:
+	SortedRootSegments sortedRoots_;
+
 public:
 	OmSegmentListBySize2()
 	{}
-
-	OmSegmentListBySize2(const int size)
-	{
-		allSegmentSizes_.resize(size);
-	}
 
 	void InsertSegment(OmSegment* seg){
 		InsertSegment(seg->value(), seg->size());
 	}
 
-
-	void InsertSegment(const OmSegID segID, const uint64_t size)
-	{
-		if(segID >= allSegmentSizes_.size()){
-			allSegmentSizes_.resize(2 * segID);
-		}
-		allSegmentSizes_[segID] = size;
-
+	void InsertSegment(const OmSegID segID, const uint64_t size){
 		sortedRoots_.Add(segID, size);
 	}
 
 	void UpdateFromJoin(OmSegment* root, OmSegment* child)
 	{
-		const OmSegID rootID = root->value();
 		const OmSegID childID = child->value();
-		const uint64_t childSize = allSegmentSizes_[childID];
-		const uint64_t oldRootSize = allSegmentSizes_[rootID];
+		const uint64_t childSize = sortedRoots_.Remove(childID);
 
-		allSegmentSizes_[rootID] += childSize;
-		allSegmentSizes_[childID] = 0;
-
-		sortedRoots_.Remove(rootID, oldRootSize);
-		sortedRoots_.Remove(childID, childSize);
-
-		sortedRoots_.Add(rootID, allSegmentSizes_[rootID]);
+		const OmSegID rootID = root->value();
+		const uint64_t oldRootSize = sortedRoots_.Remove(rootID);
+		sortedRoots_.Add(rootID, oldRootSize + childSize);
 	}
 
 	void UpdateFromSplit(OmSegment* root, OmSegment* child,
 						 const uint64_t newChildSize)
 	{
-		const OmSegID rootID = root->value();
-		const uint64_t oldRootSize = allSegmentSizes_[rootID];
-		sortedRoots_.Remove(rootID, oldRootSize);
-
 		const OmSegID childID = child->value();
-		allSegmentSizes_[root->value()] -= newChildSize;
-		allSegmentSizes_[childID] += newChildSize; // or just = ??
-
-		sortedRoots_.Add(rootID, allSegmentSizes_[rootID]);
 		sortedRoots_.Add(childID, newChildSize);
+
+		const OmSegID rootID = root->value();
+		const uint64_t oldRootSize = sortedRoots_.Remove(rootID);
+		sortedRoots_.Add(rootID, oldRootSize - newChildSize);
 	}
 
-	static void SwapSegment(OmSegment* seg, OmSegmentListBySize2 & one,
-							OmSegmentListBySize2 & two)
+	static void SwapSegment(OmSegment* seg, OmSegmentListBySize2& one,
+							OmSegmentListBySize2& two)
 	{
 		const OmSegID segID = seg->value();
-		const uint64_t size = one.GetSegmentSize(seg);
-
-		two.InsertSegment(segID, size);
-		one.removeSegment(seg);
+		const uint64_t segSize = one.sortedRoots_.Remove(segID);
+		two.InsertSegment(segID, segSize);
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
-	GetPageOfSegmentIDs(const unsigned int /*offset*/,
-						const int /*numToGet*/,
-						const OmSegID /*startSeg*/ )
+	GetPageOfSegmentIDs(const uint32_t offset,
+						const int numToGet,
+						const OmSegID startSeg )
 	{
-		boost::shared_ptr<OmSegIDsList> ret =
-			boost::make_shared<OmSegIDsList>();
+		if(0 == startSeg) {
+			return sortedRoots_.GetSimplePageOfSegmentIDs(offset, numToGet);
+		}
 
-		return boost::make_shared<OmSegIDsListWithPage>(ret, 0);
+		return sortedRoots_.GetPageContainingSegment(startSeg, numToGet);
 	}
 
-	uint64_t GetSegmentSize(OmSegment* seg)
-	{
-		return allSegmentSizes_[seg->value()];
+	uint64_t GetSegmentSize(OmSegment* seg){
+		return sortedRoots_.GetSegmentSize(seg->value());
 	}
 
-	size_t Size()
-	{
+	size_t Size(){
 		return sortedRoots_.Size();
 	}
 
-	void Dump()
-	{
+	void Dump(){
 		sortedRoots_.Dump();
 	}
 
-	void Clear()
-	{
-		allSegmentSizes_.clear();
+	void Clear(){
 		sortedRoots_.Clear();
 	}
 
 	OmSegID GetNextSegmentIDinList(const OmSegID /*id*/)
 	{
+		assert(0 && "fill me in");
 		return 0;
 	}
-
-protected:
-
-	std::vector<uint64_t> allSegmentSizes_;
-	SortedRootSegments sortedRoots_;
-
-private:
-	void removeSegment(OmSegment* seg)
-	{
-		const OmSegID segID = seg->value();
-		const uint64_t oldSize = allSegmentSizes_[segID];
-
-		allSegmentSizes_[segID] = 0;
-		sortedRoots_.Remove(segID, oldSize);
-	}
 };
-
 
 #endif

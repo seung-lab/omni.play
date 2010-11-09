@@ -1,6 +1,7 @@
 #include "actions/io/omActionLoggerFS.h"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
+#include "segment/omSegmentUtils.hpp"
 
 void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 									   const om::SetValid validEnum)
@@ -11,13 +12,12 @@ void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 	}
 
 	OmSegIDsSet set;
-	set.insert(sdw.getSegmentCache()->findRootID(sdw.getID()));
+	set.insert(sdw.FindRootID());
 
-	OmSegmentation & seg = sdw.getSegmentation();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(set);
+		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
 
-	(new OmSegmentValidateAction(seg.GetID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw.getID(), children, valid))->Run();
 }
 
 void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
@@ -28,12 +28,12 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
 		valid = true;
 	}
 
-	OmSegmentation & seg = sdw.getSegmentation();
-
+	OmSegmentCache* segCache = sdw.GetSegmentCache();
 	boost::shared_ptr<std::set<OmSegment*> > children =
-		seg.GetAllChildrenSegments(seg.GetSegmentCache()->GetSelectedSegmentIds());
+		OmSegmentUtils::GetAllChildrenSegments(segCache,
+											   segCache->GetSelectedSegmentIds());
 
-	(new OmSegmentValidateAction(seg.GetID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw.getID(), children, valid))->Run();
 }
 
 OmSegmentValidateAction::OmSegmentValidateAction(const OmID segmentationId,

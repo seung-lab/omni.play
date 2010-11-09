@@ -14,6 +14,8 @@ public:
 // project-related
 	static void Save();
 
+	static void Close();
+
 // MST-related
 	static void ChangeMSTthreshold(const OmID segmentationID,
 								   const float threshold);

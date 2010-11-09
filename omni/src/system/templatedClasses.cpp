@@ -19,6 +19,5 @@ template class OmThreadedCache<OmMipChunkCoord,
 					  boost::shared_ptr<OmRawChunk<uint32_t> > >;
 template class OmThreadedCache<OmMipChunkCoord,
 					  boost::shared_ptr<OmRawChunk<float> > >;
-
 template class OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr>;
 template class OmThreadedCache<OmTileCoord, OmTilePtr>;

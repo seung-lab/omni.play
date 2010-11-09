@@ -22,9 +22,9 @@ class ExportSegmentList : public OmButton<SegInspector> {
 	void doAction()
 	{
 		boost::shared_ptr<SegmentationDataWrapper> sdw
-			= mParent->getSegmentationDataWrapper();
+			= mParent->GetSegmentationDataWrapper();
 
-		OmSegmentCache* segmentCache = sdw->getSegmentCache();
+		OmSegmentCache* segmentCache = sdw->GetSegmentCache();
 
 		const QString outFile =
 			OmProjectData::getAbsoluteFileNameAndPath() + ".segments.txt";

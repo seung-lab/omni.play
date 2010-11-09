@@ -72,15 +72,11 @@ public:
 		return mstUserEdges_;
 	}
 
-	DataCoord FindCenterOfSelectedSegments() const;
 	void UpdateVoxelBoundingData();
 
 	bool ImportSourceData(const OmDataPath& path);
 
 	void SetVolDataType(const OmVolDataType);
-
-	boost::shared_ptr<std::set<OmSegment*> >
-	GetAllChildrenSegments(const OmSegIDsSet& set);
 
 	void BuildBlankVolume(const Vector3i & dims);
 

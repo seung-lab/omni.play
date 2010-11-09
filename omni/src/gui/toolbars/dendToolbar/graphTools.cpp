@@ -50,7 +50,7 @@ void GraphTools::updateGui()
 	OmEvents::Redraw2d();
 }
 
-SegmentationDataWrapper GraphTools::getSegmentationDataWrapper()
+SegmentationDataWrapper GraphTools::GetSegmentationDataWrapper()
 {
-	return mParent->getSegmentationDataWrapper();
+	return mParent->GetSegmentationDataWrapper();
 }

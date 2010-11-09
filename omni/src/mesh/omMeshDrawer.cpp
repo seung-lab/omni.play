@@ -270,7 +270,7 @@ void OmMeshDrawer::colorMesh(const OmBitfield & drawOps, OmSegment * segment)
 void OmMeshDrawer::applyColor(OmSegment * seg, const OmBitfield & drawOps,
 							  const OmSegmentColorCacheType sccType)
 {
-	if( seg->getParentSegID() && sccType != SCC_SEGMENTATION_BREAK){
+	if(seg->getParent() && sccType != SCC_SEGMENTATION_BREAK){
 		applyColor(mSegmentCache->findRoot(seg), drawOps, sccType);
 		return;
 	}

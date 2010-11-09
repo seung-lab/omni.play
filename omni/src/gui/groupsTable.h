@@ -29,7 +29,7 @@ private slots:
 	void doDeleteAction();
 
 private:
-        OmID getSegmentationID();
+        OmID GetSegmentationID();
 
         void populateGroupsList();
 

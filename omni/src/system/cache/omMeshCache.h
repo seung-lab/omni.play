@@ -3,8 +3,8 @@
 
 #include "system/cache/omThreadedCache.h"
 #include "mesh/omMeshTypes.h"
+#include "mesh/omMipMeshCoord.h"
 
-class OmMipMeshCoord;
 class OmMipMeshManager;
 
 class OmMeshCache : public OmThreadedCache<OmMipMeshCoord, OmMipMeshPtr> {

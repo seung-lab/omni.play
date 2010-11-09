@@ -41,11 +41,11 @@ private:
 
 		if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
 			SegmentationDataWrapper sdw(segmentationID1);
-			setTitle(getSegmentationGroupBoxTitle(sdw));
+			setTitle(GetSegmentationGroupBoxTitle(sdw));
 		}
 	}
 
-	QString getSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
+	QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
 		return QString("Segmentation %1: Segments").arg(sdw.getID());
 	}
 
@@ -102,16 +102,16 @@ public:
 
 	void RebuildLists(const SegmentDataWrapper& sdw)
 	{
-		workingList_->rebuildSegmentList(sdw.getSegmentationID(), sdw.getID());
-		validList_->rebuildSegmentList(sdw.getSegmentationID(), sdw.getID());
-		recentList_->rebuildSegmentList(sdw.getSegmentationID(), sdw.getID());
-		uncertainList_->rebuildSegmentList(sdw.getSegmentationID(), sdw.getID());
+		workingList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
+		validList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
+		recentList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
+		uncertainList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
 	}
 
 	void UpdateSegmentListBox(const SegmentationDataWrapper& sdw)
 	{
 		reset();
-		setTitle(getSegmentationGroupBoxTitle(sdw));
+		setTitle(GetSegmentationGroupBoxTitle(sdw));
 		makeSegmentationActive(sdw);
 	}
 

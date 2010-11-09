@@ -43,7 +43,7 @@ public:
 
 	void Draw();
 	void setSegmentationID(OmID sid);
-	OmID getSegmentationID();
+	OmID GetSegmentationID();
 
 	bool hasData(){ return mHasData; }
 

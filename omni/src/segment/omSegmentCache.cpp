@@ -11,7 +11,7 @@ OmSegmentCache::OmSegmentCache(OmSegmentation* segmentation)
 	, mImpl(boost::make_shared<OmSegmentCacheImpl>(segmentation))
 {}
 
-OmSegID OmSegmentCache::getSegmentationID()
+OmSegID OmSegmentCache::GetSegmentationID()
 {
 	return mSegmentation->GetID();
 }

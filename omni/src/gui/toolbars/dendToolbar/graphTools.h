@@ -17,7 +17,7 @@ class GraphTools : public OmWidget {
 	void SetSplittingOff();
 
 	OmViewGroupState * getViewGroupState();
-	SegmentationDataWrapper getSegmentationDataWrapper();
+	SegmentationDataWrapper GetSegmentationDataWrapper();
 	void updateGui();
 
 	QString getName(){ return "Graph Tools"; }

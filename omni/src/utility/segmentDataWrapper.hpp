@@ -24,7 +24,7 @@ public:
 
 	explicit SegmentDataWrapper(OmSegment* seg)
 		: mID(seg->value())
-		, mSegmentationID(seg->getSegmentationID())
+		, mSegmentationID(seg->GetSegmentationID())
 	{}
 
 	inline void set(const SegmentDataWrapper& sdw)
@@ -55,32 +55,32 @@ public:
 		}
 
 		return OmProject::IsSegmentationValid(mSegmentationID) &&
-			getSegmentCache()->IsSegmentValid(mID);
+			GetSegmentCache()->IsSegmentValid(mID);
 	}
 
 	inline QString getName() const {
 		return getSegment()->GetName();
 	}
 
-	inline QString getSegmentationName() const {
-		return QString::fromStdString(getSegmentation().GetName());
+	inline QString GetSegmentationName() const {
+		return QString::fromStdString(GetSegmentation().GetName());
 	}
 
 	inline bool isSelected() const {
-		return getSegmentCache()->IsSegmentSelected(mID);
+		return GetSegmentCache()->IsSegmentSelected(mID);
 	}
 
 	inline void setSelected(const bool isSelected,
 			 const bool addToRecentList) const {
-		getSegmentCache()->setSegmentSelected(mID, isSelected, addToRecentList);
+		GetSegmentCache()->setSegmentSelected(mID, isSelected, addToRecentList);
 	}
 
 	inline bool isEnabled() const {
-		return getSegmentCache()->isSegmentEnabled(mID);
+		return GetSegmentCache()->isSegmentEnabled(mID);
 	}
 
 	inline void setEnabled(const bool enabled) const {
-		getSegmentCache()->setSegmentEnabled(mID, enabled );
+		GetSegmentCache()->setSegmentEnabled(mID, enabled );
 	}
 
 	inline QString getNote() const {
@@ -111,16 +111,16 @@ public:
 		getSegment()->SetName( str );
 	}
 
-	inline OmSegmentation& getSegmentation() const {
+	inline OmSegmentation& GetSegmentation() const {
 		return OmProject::GetSegmentation(mSegmentationID);
 	}
 
 	inline OmSegment* getSegment() const {
-		return getSegmentation().GetSegmentCache()->GetSegment( mID );
+		return GetSegmentation().GetSegmentCache()->GetSegment( mID );
 	}
 
-	inline OmSegmentCache* getSegmentCache() const {
-		return getSegmentation().GetSegmentCache();
+	inline OmSegmentCache* GetSegmentCache() const {
+		return GetSegmentation().GetSegmentCache();
 	}
 
 	inline uint64_t getSize() const {
@@ -131,7 +131,7 @@ public:
 		return getSegment()->getSizeWithChildren();
 	}
 
-	inline OmID getSegmentationID() const {
+	inline OmID GetSegmentationID() const {
 		return mSegmentationID;
 	}
 
@@ -140,15 +140,15 @@ public:
 	}
 
 	inline OmSegID GetVoxelValue(const DataCoord& dataClickPoint) const {
-		return getSegmentation().GetVoxelValue(dataClickPoint);
+		return GetSegmentation().GetVoxelValue(dataClickPoint);
 	}
 
 	inline OmSegID FindRootID() const {
-		return getSegmentCache()->findRootID(mID);
+		return GetSegmentCache()->findRootID(mID);
 	}
 
 	inline OmSegment* FindRoot() const {
-		return getSegmentCache()->findRoot(mID);
+		return GetSegmentCache()->findRoot(mID);
 	}
 
 	inline void RandomizeColor() const {

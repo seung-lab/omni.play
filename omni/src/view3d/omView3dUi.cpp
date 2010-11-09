@@ -6,6 +6,7 @@
 #include "segment/omSegmentCache.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentUtils.hpp"
 #include "system/omEvents.h"
 #include "system/omStateManager.h"
 #include "view3d/omCamera.h"
@@ -63,9 +64,10 @@ void OmView3dUi::KeyPress(QKeyEvent * event)
 {
 	if (event->key() == Qt::Key_C) {
 		SegmentationDataWrapper sdw(1);
-		OmSegmentation & current_seg = sdw.getSegmentation();
+		OmSegmentation & current_seg = sdw.GetSegmentation();
 
-		const DataCoord voxel = current_seg.FindCenterOfSelectedSegments();
+		const DataCoord voxel =
+			OmSegmentUtils::FindCenterOfSelectedSegments(sdw);
 		SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 
 		mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
@@ -268,7 +270,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	}
 
 	//get segment state
-	OmSegmentSelector sel(sdw.getSegmentationID(), this, "view3dUi" );
+	OmSegmentSelector sel(sdw.GetSegmentationID(), this, "view3dUi" );
 	if( augment_selection ){
 		sel.augmentSelectedSet_toggle( sdw.getID() );
 	} else {
@@ -304,7 +306,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 		return;
 	}
 
-	OmSegmentation & current_seg = sdw.getSegmentation();
+	OmSegmentation & current_seg = sdw.GetSegmentation();
 	SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 	mpView3d->mCamera.SetFocus(picked_voxel);
 	mpView3d->updateGL();
@@ -322,7 +324,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 		return;
 	}
 
-	OmSegmentation & current_seg = sdw.getSegmentation();
+	OmSegmentation & current_seg = sdw.GetSegmentation();
 	const SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
 
 	mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
@@ -360,7 +362,7 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 	Vector3f scaled_norm_vec = cam_to_point * z_depth_scale;
 
 	//get voxel at point3d
-	OmSegmentation & current_seg = sdw.getSegmentation();
+	OmSegmentation & current_seg = sdw.GetSegmentation();
 	NormCoord norm_coord = current_seg.SpaceToNormCoord(point3d + scaled_norm_vec);
 	DataCoord voxel = current_seg.NormToDataCoord(norm_coord);
 

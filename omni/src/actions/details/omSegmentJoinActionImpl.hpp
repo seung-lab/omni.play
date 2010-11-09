@@ -20,14 +20,14 @@ public:
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
 		mSelectedSegmentIds =
-			sdw.getSegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
+			sdw.GetSegmentCache()->JoinTheseSegments(mSelectedSegmentIds);
 	}
 
 	void Undo()
 	{
 		SegmentationDataWrapper sdw(mSegmentationId);
 		mSelectedSegmentIds =
-			sdw.getSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
+			sdw.GetSegmentCache()->UnJoinTheseSegments(mSelectedSegmentIds);
 	}
 
 	std::string Description()
