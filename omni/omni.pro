@@ -567,4 +567,4 @@ DESTDIR = bin
 #QMAKE_LFLAGS   += -pg
 
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43943
-QMAKE_CXXFLAGS += -Werror=return-type
+#QMAKE_CXXFLAGS += -Werror=return-type
