@@ -57,7 +57,8 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 }
 
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
-								const om::SetValid valid){
+								const om::SetValid valid)
+{
 	OmSegmentIterator iter(sdw.getSegmentation().GetSegmentCache());
 	iter.iterOverSelectedIDs();
 	OmSegment * segment = iter.getNextSegment();
@@ -67,12 +68,12 @@ void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 		if(seg) {
 			break;
 		}
-                segment = iter.getNextSegment();
-        }
+		segment = iter.getNextSegment();
+	}
 
 	OmSegmentValidateAction::Validate(sdw, valid);
 
-	if(seg) {
+	if(seg && sdw.getSegmentation().GetSegmentCache()->IsSegmentValid(seg)) {
 		sdw.getSegmentation().GetSegmentCache()->SetAllSelected(false);
 		sdw.getSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
