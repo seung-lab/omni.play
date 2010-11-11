@@ -17,7 +17,8 @@ void OmSegmentValidateAction::Validate(const SegmentDataWrapper& sdw,
 	boost::shared_ptr<std::set<OmSegment*> > children =
 		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
 
-	(new OmSegmentValidateAction(sdw.getID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw.MakeSegmentationDataWrapper(),
+								 children, valid))->Run();
 }
 
 void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
@@ -33,13 +34,13 @@ void OmSegmentValidateAction::Validate(const SegmentationDataWrapper& sdw,
 		OmSegmentUtils::GetAllChildrenSegments(segCache,
 											   segCache->GetSelectedSegmentIds());
 
-	(new OmSegmentValidateAction(sdw.getID(), children, valid))->Run();
+	(new OmSegmentValidateAction(sdw, children, valid))->Run();
 }
 
-OmSegmentValidateAction::OmSegmentValidateAction(const OmID segmentationId,
+OmSegmentValidateAction::OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
 												 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 												 const bool valid)
-	: impl_(boost::make_shared<OmSegmentValidateActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentValidateActionImpl>(sdw,
 															selectedSegments,
 															valid))
 {

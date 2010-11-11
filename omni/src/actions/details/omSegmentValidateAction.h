@@ -20,7 +20,7 @@ public:
 						 const om::SetValid valid);
 
 private:
-	OmSegmentValidateAction(const OmID segmentationId,
+	OmSegmentValidateAction(const SegmentationDataWrapper& sdw,
 							boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 							const bool valid);
 	void Action();

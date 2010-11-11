@@ -7,22 +7,22 @@
 
 class OmSegmentValidateActionImpl {
 private:
-	OmID mSegmentationId;
+	SegmentationDataWrapper sdw_;
 	bool valid_;
 	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
-	OmSegmentValidateActionImpl(const OmID segmentationId,
+	OmSegmentValidateActionImpl(const SegmentationDataWrapper& sdw,
 								boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								const bool valid)
-		: mSegmentationId( segmentationId )
+		: sdw_(sdw)
 		, valid_(valid)
 		, selectedSegments_(selectedSegments)
 	{}
 
 	void Execute()
 	{
-		OmSegmentValidation::SetAsValidated(SegmentationDataWrapper(mSegmentationId),
+		OmSegmentValidation::SetAsValidated(sdw_,
 											selectedSegments_,
 											valid_);
 		OmCacheManager::TouchFresheness();
@@ -30,7 +30,7 @@ public:
 
 	void Undo()
 	{
-		OmSegmentValidation::SetAsValidated(SegmentationDataWrapper(mSegmentationId),
+		OmSegmentValidation::SetAsValidated(sdw_,
 											selectedSegments_,
 											!valid_);
 		OmCacheManager::TouchFresheness();

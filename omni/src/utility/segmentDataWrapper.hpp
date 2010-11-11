@@ -4,6 +4,7 @@
 #include "project/omProject.h"
 #include "segment/omSegmentCache.h"
 #include "volume/omSegmentation.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 class SegmentDataWrapper {
 private:
@@ -47,6 +48,10 @@ public:
 
 	bool operator !=(const SegmentDataWrapper& sdw) const {
 		return !(*this == sdw);
+	}
+
+	SegmentationDataWrapper MakeSegmentationDataWrapper() const {
+		return SegmentationDataWrapper(mSegmentationID);
 	}
 
 	inline bool isValidWrapper() const {

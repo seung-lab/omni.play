@@ -28,7 +28,11 @@ QDir& OmActionLoggerFS::doGetLogFolder()
 void OmActionLoggerFS::setupLogDir()
 {
 	const QDir filesDir = OmProjectData::GetFilesFolderPath();
-	QString omniFolderPath = filesDir.absolutePath() + QDir::separator() + "logFiles" + QDir::separator();
+	QString omniFolderPath =
+		filesDir.absolutePath() +
+		QDir::separator() +
+		"logFiles" +
+		QDir::separator();
 
 	QDir dir = QDir( omniFolderPath);
 	if( dir.exists()){
@@ -59,7 +63,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentValidateActionImpl& a)
 	}
 	out << ids;
 	out << a.valid_;
-	out << a.mSegmentationId;
+	out << a.sdw_.GetSegmentationID();
 
 	return out;
 }
@@ -72,9 +76,12 @@ QDataStream& operator>>(QDataStream& in, OmSegmentValidateActionImpl& a)
 	OmSegIDsSet ids;
 	in >> ids;
 	in >> a.valid_;
-	in >> a.mSegmentationId;
 
-	SegmentationDataWrapper sdw(a.mSegmentationId);
+	OmID segmentationID;
+	in >> segmentationID;
+	a.sdw_ = SegmentationDataWrapper(segmentationID);
+
+	SegmentationDataWrapper& sdw = a.sdw_;
 	OmSegmentCache* cache = sdw.GetSegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
