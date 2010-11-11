@@ -12,7 +12,8 @@ void OmSegmentUncertainAction::SetUncertain(const SegmentDataWrapper& sdw,
 	boost::shared_ptr<std::set<OmSegment*> > children =
 		OmSegmentUtils::GetAllChildrenSegments(sdw.GetSegmentCache(), set);
 
-	(new OmSegmentUncertainAction(sdw.getID(), children, uncertain))->Run();
+	(new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(),
+								  children, uncertain))->Run();
 }
 
 void OmSegmentUncertainAction::SetUncertain(const SegmentationDataWrapper& sdw,
@@ -23,13 +24,13 @@ void OmSegmentUncertainAction::SetUncertain(const SegmentationDataWrapper& sdw,
 		OmSegmentUtils::GetAllChildrenSegments(segCache,
 											   segCache->GetSelectedSegmentIds());
 
-	(new OmSegmentUncertainAction(sdw.getID(), children, uncertain))->Run();
+	(new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
 }
 
-OmSegmentUncertainAction::OmSegmentUncertainAction(const OmID segmentationId,
+OmSegmentUncertainAction::OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
 												   boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 												   const bool uncertain)
-	: impl_(boost::make_shared<OmSegmentUncertainActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentUncertainActionImpl>(sdw,
 															 selectedSegments,
 															 uncertain))
 {

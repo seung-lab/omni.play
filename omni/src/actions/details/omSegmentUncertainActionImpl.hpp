@@ -8,22 +8,22 @@
 
 class OmSegmentUncertainActionImpl{
 private:
-	OmID mSegmentationId;
+	SegmentationDataWrapper sdw_;
 	bool uncertain_;
 	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
-	OmSegmentUncertainActionImpl(const OmID segmentationId,
+	OmSegmentUncertainActionImpl(const SegmentationDataWrapper& sdw,
 								 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								 const bool uncertain)
-		: mSegmentationId( segmentationId )
+		: sdw_(sdw)
 		, uncertain_(uncertain)
 		, selectedSegments_(selectedSegments)
 	{}
 
 	void Execute()
 	{
-		OmSegmentUncertain::SetAsUncertain(SegmentationDataWrapper(mSegmentationId),
+		OmSegmentUncertain::SetAsUncertain(sdw_,
 										   selectedSegments_,
 										   uncertain_);
 		OmCacheManager::TouchFresheness();
@@ -31,7 +31,7 @@ public:
 
 	void Undo()
 	{
-		OmSegmentUncertain::SetAsUncertain(SegmentationDataWrapper(mSegmentationId),
+		OmSegmentUncertain::SetAsUncertain(sdw_,
 										   selectedSegments_,
 										   !uncertain_);
 		OmCacheManager::TouchFresheness();

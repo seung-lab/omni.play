@@ -24,7 +24,7 @@ public:
 							 const bool uncertain);
 
 private:
-	OmSegmentUncertainAction(const OmID segmentationId,
+	OmSegmentUncertainAction(const SegmentationDataWrapper& sdw,
 							 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 							 const bool valid);
 	void Action();

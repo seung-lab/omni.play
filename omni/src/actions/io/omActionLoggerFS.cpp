@@ -107,7 +107,7 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentUncertainActionImpl& a)
 	}
 	out << ids;
 	out << a.uncertain_;
-	out << a.mSegmentationId;
+	out << a.sdw_.GetSegmentationID();
 
 	return out;
 }
@@ -120,9 +120,12 @@ QDataStream& operator>>(QDataStream& in, OmSegmentUncertainActionImpl& a)
 	OmSegIDsSet ids;
 	in >> ids;
 	in >> a.uncertain_;
-	in >> a.mSegmentationId;
 
-	SegmentationDataWrapper sdw(a.mSegmentationId);
+	OmID segmentationID;
+	in >> segmentationID;
+	a.sdw_ = SegmentationDataWrapper(segmentationID);
+
+	SegmentationDataWrapper& sdw = a.sdw_;
 	OmSegmentCache* cache = sdw.GetSegmentCache();
 	std::set<OmSegment*>* segs = new std::set<OmSegment*>();
 	FOR_EACH(iter, ids){
