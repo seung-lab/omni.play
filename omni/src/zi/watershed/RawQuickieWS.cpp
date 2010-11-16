@@ -139,7 +139,7 @@ rawQuickieWS(const float* connections,
               }
               ++totalNice;
             } else {
-              result[j] |= 0x10000000;
+              result[j] |= 0x40000000;
               ++singleOnes;
             }
           } else {

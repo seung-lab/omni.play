@@ -21,6 +21,7 @@ class GroupsTable : public QWidget
 {
         Q_OBJECT
 public:
+	static void Repopulate();
         GroupsTable(OmViewGroupState * vgs);
 
 	void populateGroupTable(OmGroupID id);

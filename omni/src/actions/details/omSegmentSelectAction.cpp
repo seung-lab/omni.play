@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentSelectAction.h"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 
@@ -37,5 +37,5 @@ std::string OmSegmentSelectAction::Description()
 
 void OmSegmentSelectAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

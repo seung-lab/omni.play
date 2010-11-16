@@ -13,6 +13,7 @@ private:
 	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
+	OmSegmentUncertainActionImpl() {}
 	OmSegmentUncertainActionImpl(const SegmentationDataWrapper& sdw,
 								 boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								 const bool uncertain)
@@ -61,7 +62,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend QDataStream &operator<<(QDataStream&,
 								   const OmSegmentUncertainActionImpl&);
 	friend QDataStream &operator>>(QDataStream&,

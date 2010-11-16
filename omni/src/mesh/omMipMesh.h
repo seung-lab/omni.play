@@ -19,6 +19,8 @@ class OmSegmentManager;
 class OmMipMeshManager;
 class OmMeshCache;
 class ziMeshingChunk;
+class ziMesher;
+class MipChunkMeshCollector;
 
 class OmMipMesh {
 
@@ -91,7 +93,9 @@ private:
 	void doLoad();
 
 	friend class OmMesher;
-	friend class ziMeshingChunk;
+        friend class ziMeshingChunk;
+        friend class ziMesher;
+    friend class MipChunkMeshCollector;
 };
 
 #endif

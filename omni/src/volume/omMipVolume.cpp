@@ -13,14 +13,11 @@
 #include "datalayer/omIDataWriter.h"
 #include "datalayer/omDataLayer.h"
 #include "system/omProjectData.h"
-#include "utility/omImageDataIo.h"
 #include "utility/omTimer.h"
 #include "utility/sortHelpers.h"
 #include "volume/omMipChunk.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeData.hpp"
-
-#include <QImage>
 
 OmMipVolume::OmMipVolume()
 	: mVolDataType(OmVolDataType::UNKNOWN)
@@ -29,8 +26,6 @@ OmMipVolume::OmMipVolume()
 	, mWasBounded(false)
 
 {
-	sourceFilesWereSet = false;
-
 	//init
 	SetBuildState(MIPVOL_UNBUILT);
 	SetChunksStoreMetaData(false);
@@ -54,34 +49,6 @@ std::string OmMipVolume::MipChunkMetaDataPath(const OmMipChunkCoord & rMipCoord)
 	}
 
 	return OmDataPaths::MipChunkMetaDataPath(GetDirectoryPath(), rMipCoord);
-}
-
-/////////////////////////////////
-///////          Source Data Properties
-void OmMipVolume::SetSourceFilenamesAndPaths(const QFileInfoList& srcFiles)
-{
-	mSourceFilenamesAndPaths = SortHelpers::SortNaturally(srcFiles);
-	sourceFilesWereSet = true;
-}
-
-QFileInfoList OmMipVolume::GetSourceFilenamesAndPaths()
-{
-	return mSourceFilenamesAndPaths;
-}
-
-bool OmMipVolume::IsSourceValid()
-{
-	if( mSourceFilenamesAndPaths.empty() ){
-		return false;
-	}
-
-	foreach( const QFileInfo & fi, mSourceFilenamesAndPaths ){
-		if( !fi.exists() ){
-			return false;
-		}
-	}
-
-	return true;
 }
 
 /////////////////////////////////
@@ -115,34 +82,6 @@ bool OmMipVolume::IsBuilding()
 void OmMipVolume::SetBuildState(MipVolumeBuildState state)
 {
 	mBuildState = state;
-}
-
-/*
- *	Refresh dependent variables.
- */
-void OmMipVolume::UpdateMipProperties(OmDataPath & dataset)
-{
-	if (IsSourceValid()) {
-		//get source dimensions
-		Vector3i source_dims = get_dims(dataset);
-
-		//debug(hdf5image, "%i:%i:%i, from %s and %s\n", DEBUGV3(source_dims));
-
-		//if dim differs from OmVolume alert user
-		if (OmVolume::GetDataDimensions() != source_dims) {
-			//printf("OmMipVolume::UpdateMipProperties: CHANGING VOLUME DIMENSIONS\n");
-
-			//update volume dimensions
-			OmVolume::SetDataDimensions(source_dims);
-		}
-	}
-
-	//check for valid mip chunk dim
-	if (GetChunkDimension() % 2)
-		throw OmFormatException("Chunk dimensions must be even.");
-
-	//set properties based on given leaf dim and source data
-	UpdateRootLevel();
 }
 
 /////////////////////////////////
@@ -364,77 +303,6 @@ Vector3i OmMipVolume::getDimsRoundedToNearestChunk(const int level) const
 					ROUNDUP(data_dims.z, GetChunkDimension()));
 }
 
-void OmMipVolume::DeleteVolumeData()
-{
-	OmDataPath path(GetDirectoryPath());
-
-	OmProjectData::DeleteInternalData(path);
-}
-
-/////////////////////////////////
-///////          Building
-
-/*
- *	Build all MipLevel resolutions of the MipVolume.
- */
-void OmMipVolume::Build(OmDataPath & dataset)
-{
-	//unbuild
-	SetBuildState(MIPVOL_BUILDING);
-
-	//update properties
-	UpdateMipProperties(dataset);
-
-	//delete old
-	DeleteVolumeData();
-
-	//if source data valid
-	if (!IsSourceValid()) {
-		// printf("OmMipVolume::Build: blank build complete\n");
-		SetBuildState(MIPVOL_BUILT);
-		return;
-	}
-
-	//copy source data
-	if (!ImportSourceData(dataset)) {
-		DeleteVolumeData();
-		SetBuildState(MIPVOL_UNBUILT);
-		return;
-	}
-
-	getVolData()->downsample(this);
-
-	//build volume
-	if (!BuildThreadedVolume()) {
-		DeleteVolumeData();
-		SetBuildState(MIPVOL_UNBUILT);
-		return;
-	}
-
-	//build complete
-	SetBuildState(MIPVOL_BUILT);
-}
-
-/**
- *	Build all chunks in MipLevel of this MipVolume with multithreading
- */
-bool OmMipVolume::BuildThreadedVolume()
-{
-	OmTimer vol_timer;
-	vol_timer.start();
-
-	try{
-		doBuildThreadedVolume();
-	} catch(...){
-		return false;
-	}
-
-	printf("OmMipVolume:BuildThreadedVolume() done : %.6f secs\n",
-		   vol_timer.s_elapsed());
-
-	return true;
-}
-
 /*
  *	Rebuild all chunks in the edited chunk set.
  */
@@ -528,28 +396,6 @@ bool OmMipVolume::CompareChunks(const OmMipChunkCoord& coord,
 bool OmMipVolume::ContainsVoxel(const DataCoord & vox)
 {
 	return GetDataExtent().contains(vox);
-}
-
-Vector3i OmMipVolume::get_dims(const OmDataPath dataset )
-{
-	if(areImportFilesImages()){
-		QImage img(mSourceFilenamesAndPaths[0].absoluteFilePath());
-		Vector3i dims(img.width(), img.height(), mSourceFilenamesAndPaths.size());
-		printf("dims are %dx%dx%d\n", DEBUGV3(dims));
-		return dims;
-	}
-
-	return OmImageDataIo::om_imagedata_get_dims_hdf5(mSourceFilenamesAndPaths, dataset);
-}
-
-bool OmMipVolume::areImportFilesImages()
-{
-	if( mSourceFilenamesAndPaths[0].fileName().endsWith(".h5", Qt::CaseInsensitive) ||
-	    mSourceFilenamesAndPaths[0].fileName().endsWith(".hdf5", Qt::CaseInsensitive)){
-		return false;
-	}
-
-	return true;
 }
 
 void OmMipVolume::copyAllMipDataIntoMemMap()

@@ -17,6 +17,8 @@ class OmSegmentUncertainActionImpl;
 class OmSegmentUncertainAction : public OmAction {
 
 public:
+        OmSegmentUncertainAction(boost::shared_ptr<OmSegmentUncertainActionImpl> impl) : impl_(impl) {}
+
 	static void SetUncertain(const SegmentDataWrapper& sdw,
 							 const bool uncertain);
 

@@ -1,6 +1,7 @@
 #include "common/omDebug.h"
 #include "common/omGl.h"
 #include "mesh/omMeshDrawer.h"
+#include "mesh/omVolumeCuller.h"
 #include "project/omProject.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omLocalPreferences.h"
@@ -8,7 +9,7 @@
 #include "system/omPreferences.h"
 #include "system/omStateManager.h"
 #include "view3d/omView3d.h"
-#include "mesh/omVolumeCuller.h"
+#include "viewGroup/omViewGroupState.h"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
@@ -279,6 +280,13 @@ void OmView3d::View3dRedrawEventFromCache()
 
 void OmView3d::View3dUpdatePreferencesEvent()
 {
+}
+
+void OmView3d::View3dRecenter()
+{
+	const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
+	mCamera.SetFocus(picked_voxel);
+	updateGL();
 }
 
 /////////////////////////////////

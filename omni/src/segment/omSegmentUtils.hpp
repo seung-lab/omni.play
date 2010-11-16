@@ -5,6 +5,7 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentCache.h"
+#include "viewGroup/omViewGroupState.h"
 
 class OmSegmentUtils {
 public:
@@ -54,6 +55,21 @@ public:
 		}
 
 		return (box.getMin() + box.getMax()) / 2;
+	}
+
+	static void CenterSegment(OmViewGroupState * vgs,
+							  const SegmentationDataWrapper& sdw)
+	{
+		const DataCoord voxel = FindCenterOfSelectedSegments(sdw);
+
+		SpaceCoord picked_voxel = sdw.GetSegmentation().DataToSpaceCoord(voxel);
+
+		vgs->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
+		vgs->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
+		vgs->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+
+		OmEvents::ViewCenterChanged();
+		OmEvents::ViewRecenter();
 	}
 };
 

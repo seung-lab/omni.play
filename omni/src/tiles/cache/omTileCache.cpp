@@ -27,7 +27,7 @@ void OmTileCache::Prefetch(const OmTileCoord& key)
 void OmTileCache::Get(OmTileDrawer* drawer,
 					  OmTilePtr& tile,
 					  const OmTileCoord& key,
-					  const om::BlockingRead blocking)
+					  const om::Blocking blocking)
 {
 	setDrawerActive(drawer);
 	doGet(tile, key, blocking);
@@ -35,7 +35,7 @@ void OmTileCache::Get(OmTileDrawer* drawer,
 
 void OmTileCache::doGet(OmTilePtr& tile,
 						const OmTileCoord& key,
-						const om::BlockingRead blocking)
+						const om::Blocking blocking)
 {
 	if(isChannel(key)){
 		cacheChannel_->Get(tile, key, blocking);

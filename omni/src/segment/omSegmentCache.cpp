@@ -42,13 +42,13 @@ OmSegment* OmSegmentCache::GetOrAddSegment(const OmSegID val)
 bool OmSegmentCache::IsSegmentValid(OmSegID seg)
 {
 	zi::guard g(mutex_);
-	return (NULL != mImpl->GetSegmentFromValue(seg));
+	return (NULL != mImpl->GetSegment(seg));
 }
 
 OmSegment* OmSegmentCache::GetSegment(const OmSegID value)
 {
 	zi::guard g(mutex_);
-	return mImpl->GetSegmentFromValue( value );
+	return mImpl->GetSegment( value );
 }
 
 OmSegID OmSegmentCache::GetNumSegments()
@@ -238,4 +238,10 @@ void OmSegmentCache::Flush()
 {
 	zi::guard g(mutex_);
 	return mImpl->Flush();
+}
+
+bool OmSegmentCache::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
+{
+	zi::guard g(mutex_);
+	return mImpl->AreAnySegmentsInValidList(ids);
 }

@@ -28,6 +28,9 @@ public:
 
 	static const QEvent::Type REDRAW_CACHE =
 		static_cast<QEvent::Type>(CLASS + 2);
+
+	static const QEvent::Type RECENTER =
+		static_cast<QEvent::Type>(CLASS + 3);
 };
 
 class OmView3dEventListener : public OmEventListener {
@@ -39,6 +42,7 @@ public:
 	virtual void View3dRedrawEvent() = 0;
 	virtual void View3dRedrawEventFromCache() = 0;
 	virtual void View3dUpdatePreferencesEvent() = 0;
+	virtual void View3dRecenter() = 0;
 };
 
 

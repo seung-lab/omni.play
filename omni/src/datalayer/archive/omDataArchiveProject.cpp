@@ -491,7 +491,9 @@ QDataStream &operator>>(QDataStream& in, OmPagingPtrStore& ps)
 		ps.storeMetadata();
 	}
 
-	ps.loadAllSegmentPages();
+	if(ps.segmentation_->IsVolumeReadyForDisplay()){
+		ps.loadAllSegmentPages();
+	}
 
 	return in;
 }

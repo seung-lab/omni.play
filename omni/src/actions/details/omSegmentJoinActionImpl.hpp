@@ -2,7 +2,7 @@
 #define OM_SEGMENT_JOIN_ACTION_IMPL_HPP
 
 #include "common/omCommon.h"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "segment/omSegmentCache.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
@@ -10,6 +10,7 @@
 
 class OmSegmentJoinActionImpl {
 public:
+	OmSegmentJoinActionImpl() {}
 	OmSegmentJoinActionImpl(const OmID segmentationId,
 							const OmSegIDsSet& selectedSegmentIds)
 		: mSegmentationId(segmentationId)
@@ -53,7 +54,7 @@ private:
 	OmID mSegmentationId;
 	OmSegIDsSet mSelectedSegmentIds;
 
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend class QDataStream &operator<<(QDataStream&, const OmSegmentJoinActionImpl&);
 	friend class QDataStream &operator>>(QDataStream&, OmSegmentJoinActionImpl&);
 

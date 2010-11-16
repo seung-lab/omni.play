@@ -43,6 +43,10 @@ void OmEvents::ViewCenterChanged(){
 	POST(new OmViewEvent(OmViewEvent::VIEW_CENTER_CHANGE));
 }
 
+void OmEvents::ViewRecenter(){
+	POST(new OmView3dEvent(OmView3dEvent::RECENTER));
+}
+
 void OmEvents::ViewBoxChanged(){
 	POST(new OmViewEvent(OmViewEvent::VIEW_BOX_CHANGE));
 }

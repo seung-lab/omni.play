@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentJoinAction.h"
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 
@@ -29,5 +29,5 @@ std::string OmSegmentJoinAction::Description()
 
 void OmSegmentJoinAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

@@ -1,8 +1,9 @@
 #include "common/omCommon.h"
 #include "common/omDebug.h"
+#include "datalayer/omDataPaths.h"
 #include "mesh/omMipMesh.h"
 #include "mesh/omMipMeshManager.h"
-#include "mesh/ziMesher.h"
+#include "mesh/ziMesher.hpp"
 #include "segment/io/omMST.h"
 #include "segment/io/omUserEdges.hpp"
 #include "segment/omSegmentCache.h"
@@ -13,10 +14,10 @@
 #include "system/omGroups.h"
 #include "utility/dataWrappers.h"
 #include "utility/omThreadPool.hpp"
-#include "volume/build/omVolumeImporter.hpp"
 #include "volume/omMipChunk.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeData.hpp"
+#include "volume/build/omVolumeAllocater.hpp"
 #include "zi/omThreads.h"
 
 #include <QFile>
@@ -73,12 +74,6 @@ std::string OmSegmentation::GetDirectoryPath(){
 /////////////////////////////////
 ///////          Build Methods
 
-void OmSegmentation::BuildVolumeData()
-{
-	OmDataPath dataset = OmDataPath("main");
-	OmMipVolume::Build(dataset);
-}
-
 void OmSegmentation::Mesh()
 {
 	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
@@ -94,6 +89,7 @@ void OmSegmentation::Mesh()
 	}
 
 	mesher.mesh();
+	OmProjectData::GetIDataWriter()->flush();
 }
 
 void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
@@ -101,6 +97,7 @@ void OmSegmentation::MeshChunk(const OmMipChunkCoord& coord)
 	ziMesher mesher(GetID(), mMipMeshManager.get(), GetRootMipLevel());
 	mesher.addChunkCoord(coord);
 	mesher.mesh();
+	OmProjectData::GetIDataWriter()->flush();
 }
 
 void OmSegmentation::RebuildChunk(const OmMipChunkCoord& mipCoord,
@@ -144,12 +141,6 @@ void OmSegmentation::SetDendThreshold(const double t)
 void OmSegmentation::CloseDownThreads()
 {
 	mMipMeshManager->CloseDownThreads();
-}
-
-bool OmSegmentation::ImportSourceData(const OmDataPath& path)
-{
-	OmVolumeImporter<OmSegmentation> importer(this, path);
-	return importer.Import();
 }
 
 void OmSegmentation::loadVolData()
@@ -337,8 +328,6 @@ void OmSegmentation::BuildBlankVolume(const Vector3i & dims)
 
 	OmVolume::SetDataDimensions(dims);
 	UpdateRootLevel();
-
-	DeleteVolumeData();
 
 	OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
 

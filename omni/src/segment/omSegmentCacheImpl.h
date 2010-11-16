@@ -30,6 +30,8 @@ public:
 	void refreshTree();
 	quint64 getSizeRootAndAllChildren(OmSegment* segUnknownDepth);
 
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+
 private:
 	OmSegmentEdge splitChildFromParent(OmSegment* child);
 

@@ -12,6 +12,8 @@ void OmSegmentListBySize::SwapSegment(OmSegment* seg, OmSegmentListBySize& one,
 	List_by_ID::iterator iter = idIndex.find(seg->value());
 	if(iter != idIndex.end()){
 		two.do_insertSegment(seg->value(), iter->segSize);
+
+		one.mVoxels -= iter->segSize;
 		idIndex.erase(iter);
 	}
 }
@@ -34,17 +36,6 @@ void OmSegmentListBySize::UpdateFromSplit(OmSegment* root, OmSegment* child,
 	do_insertSegment(child->value(), newChildSize);
 }
 
-bool OmSegmentListBySize::IsSegmentContained(const OmSegID id)
-{
-	List_by_ID& idIndex = mList.get<segID>();
-	List_by_ID::iterator iter = idIndex.find(id);
-	if(iter != idIndex.end()){
-		return true;
-	}
-	return false;
-}
-
-
 void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
 											  const uint64_t addedSize)
 {
@@ -52,6 +43,7 @@ void OmSegmentListBySize::do_incrementSegSize(const OmSegID segID_,
 	List_by_ID::iterator iter = idIndex.find(segID_);
 	if(iter != idIndex.end()){
 		const uint64_t newSize = iter->segSize + addedSize;
+		mVoxels -= iter->segSize;
 		idIndex.erase(iter);
 		do_insertSegment(segID_, newSize);
 	}
@@ -62,6 +54,7 @@ void OmSegmentListBySize::do_removeSegment(const OmSegID segID_)
 	List_by_ID& idIndex = mList.get<segID>();
 	List_by_ID::iterator iter = idIndex.find(segID_);
 	if(iter != idIndex.end()){
+		mVoxels -= iter->segSize;
 		idIndex.erase(iter);
 	}
 }
@@ -70,6 +63,7 @@ void OmSegmentListBySize::do_insertSegment(const OmSegID segID_,
 										   const uint64_t size_)
 {
 	mList.insert(OmSegSize(segID_, size_));
+	mVoxels += size_;
 }
 
 void OmSegmentListBySize::advanceIter(List_by_size& sizeIndex,

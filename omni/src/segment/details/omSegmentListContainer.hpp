@@ -47,8 +47,8 @@ public:
 		return list_.GetNextSegmentIDinList(id);
 	}
 
-	bool IsSegmentContained(const OmSegID id){
-		return list_.IsSegmentContained(id);
+	quint64 VoxelCount(){
+		return list_.VoxelCount();
 	}
 
 private:

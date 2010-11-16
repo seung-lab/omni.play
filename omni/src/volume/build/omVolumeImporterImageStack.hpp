@@ -7,12 +7,13 @@ template <typename VOL>
 class OmVolumeImporterImageStack{
 private:
 	VOL *const vol_;
-	const QFileInfoList& files_;
+	const std::vector<QFileInfo>& files_;
 
 public:
-	OmVolumeImporterImageStack(VOL* vol)
+	OmVolumeImporterImageStack(VOL* vol,
+							   const std::vector<QFileInfo>& files)
 		: vol_(vol)
-		, files_(vol_->mSourceFilenamesAndPaths)
+		, files_(files)
 	{
 		if(0 == files_.size()){
 			throw OmIoException("no files!");
@@ -21,9 +22,9 @@ public:
 
 	bool Import(boost::shared_ptr<QFile> mip0volFile)
 	{
-		OmLoadImage<VOL> imageLoader(vol_, mip0volFile);
+		OmLoadImage<VOL> imageLoader(vol_, mip0volFile, files_);
 
-		for( int i = 0; i < files_.size(); ++i){
+		for(size_t i = 0; i < files_.size(); ++i){
 			const QString fnp = files_[i].absoluteFilePath();
 			imageLoader.processSlice(fnp, i);
 		}

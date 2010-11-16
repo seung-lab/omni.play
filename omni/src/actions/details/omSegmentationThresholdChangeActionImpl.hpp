@@ -3,7 +3,7 @@
 
 #include "common/omCommon.h"
 #include "project/omProject.h"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "segment/omSegmentCache.h"
 #include "system/events/omSegmentEvent.h"
 #include "utility/dataWrappers.h"
@@ -16,6 +16,7 @@ private:
 	float mOldThreshold;
 
 public:
+	OmSegmentationThresholdChangeActionImpl() {}
 	OmSegmentationThresholdChangeActionImpl(const OmID segmentationId,
 											const float threshold)
 		: mSegmentationId( segmentationId )
@@ -46,7 +47,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 
 	friend class QDataStream
 	&operator<<(QDataStream&, const OmSegmentationThresholdChangeActionImpl&);

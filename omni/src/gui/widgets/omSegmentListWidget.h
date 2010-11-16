@@ -48,6 +48,8 @@ public:
 	static const int USER_DATA_COL = 4;
 
 	OmSegmentContextMenu mSegmentContextMenu;
+
+	void centerSegment(const SegmentationDataWrapper&);
 };
 
 #endif

@@ -75,7 +75,7 @@ public:
 
 	uint64_t getSizeWithChildren();
 
-	bool IsValid() const {
+	bool IsValidListType() const {
 		return om::VALID == data_->listType;
 	}
 	om::OmSegListType GetListType() const {

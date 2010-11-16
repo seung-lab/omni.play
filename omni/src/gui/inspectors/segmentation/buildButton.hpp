@@ -5,7 +5,7 @@
 #include "gui/inspectors/segmentation/segInspector.h"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentCache.h"
-#include "system/omBuildSegmentation.h"
+#include "volume/build/omBuildSegmentation.hpp"
 
 class BuildButton : public OmButton<SegInspector> {
 public:
@@ -20,28 +20,25 @@ public:
 private:
 	void doAction()
 	{
-		boost::shared_ptr<SegmentationDataWrapper> sdw =
-			mParent->GetSegmentationDataWrapper();
-		OmSegmentation & current_seg = sdw->GetSegmentation();
+		const SegmentationDataWrapper sdw = *mParent->GetSegmentationDataWrapper();
 
-		OmBuildSegmentation * bs = new OmBuildSegmentation(&current_seg);
+		boost::shared_ptr<OmBuildSegmentation> bs
+			= boost::make_shared<OmBuildSegmentation>(sdw);
+
 		bs->setFileNamesAndPaths( mParent->getFileInfoList() );
 
 		const QString whatOrHowToBuild = mParent->buildComboBox->currentText();
 		if ("Data" == whatOrHowToBuild ){
-			bs->build_seg_image();
-			mParent->rebuildSegmentLists(sdw->getID(), 0);
+			bs->BuildImage(om::BLOCKING);
 
 		} else if ( "Mesh" == whatOrHowToBuild ){
-			bs->build_seg_mesh();
+			bs->BuildMesh(om::BLOCKING);
 
 		} else if ("Data & Mesh" == whatOrHowToBuild){
-			bs->buildAndMeshSegmentation();
-			mParent->rebuildSegmentLists(sdw->getID(), 0);
+			bs->BuildAndMeshSegmentation(om::BLOCKING);
 
 		} else if ("Load Dendrogram" == whatOrHowToBuild){
 			bs->loadDendrogram();
-			mParent->rebuildSegmentLists(sdw->getID(), 0);
 
 		} else if( "Blank Volume" == whatOrHowToBuild ){
 			bs->buildBlankVolume();

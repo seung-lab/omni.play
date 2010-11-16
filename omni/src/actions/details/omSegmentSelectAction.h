@@ -7,6 +7,8 @@ class OmSegmentSelectActionImpl;
 
 class OmSegmentSelectAction : public OmAction {
 public:
+        OmSegmentSelectAction(boost::shared_ptr<OmSegmentSelectActionImpl> impl) : impl_(impl) {}
+
 	OmSegmentSelectAction(const OmID segmentationId,
 						  const OmSegIDsSet & mNewSelectedIdSet,
 						  const OmSegIDsSet & mOldSelectedIdSet,

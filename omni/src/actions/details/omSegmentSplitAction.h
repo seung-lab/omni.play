@@ -14,6 +14,8 @@ class OmSegmentSplitActionImpl;
 class OmSegmentSplitAction : public OmAction {
 
 public:
+        OmSegmentSplitAction(boost::shared_ptr<OmSegmentSplitActionImpl> impl) : impl_(impl) {}
+
 	static void DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 					  OmViewGroupState* vgs);
 

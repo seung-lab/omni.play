@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "segment/omSegmentUtils.hpp"
@@ -64,5 +64,6 @@ std::string OmSegmentValidateAction::Description()
 
 void OmSegmentValidateAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }
+

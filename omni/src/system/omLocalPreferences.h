@@ -75,6 +75,16 @@ public:
 		LocalPrefFiles::writeSettingQString("sratchPath", scratchPath);
 	}
 
+	static bool GetShouldJumpToNextSegmentAfterValidate()
+	{
+		const bool defaultVal = true;
+		return LocalPrefFiles::readSettingBool("shouldJumpToNextSegmentAfterValidate", defaultVal);
+	}
+	static void SetShouldJumpToNextSegmentAfterValidate(const bool val)
+	{
+		LocalPrefFiles::writeSettingBool("shouldJumpToNextSegmentAfterValidate", val);
+	}
+
 private:
 	OmLocalPreferences(){}
 	~OmLocalPreferences(){}

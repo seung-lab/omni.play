@@ -1,25 +1,38 @@
 #ifndef OM_ACTION_LOGGER_THREAD_H
 #define OM_ACTION_LOGGER_THREAD_H
 
+#include "actions/io/omActionOperators.h"
 #include "project/omProject.h"
 #include "utility/omLockedPODs.hpp"
-
 #include "zi/omThreads.h"
+#include "zi/omUtility.h"
 
 #include <QDataStream>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
 
-static const int Omni_Log_Version = 1;
+static const int Omni_Log_Version = 2;
 static const QString Omni_Postfix("OMNI_LOG");
 
-template <typename T>
-class OmActionLoggerFSThread : public zi::runnable {
+class OmActionLoggerTaskCounter
+	: private om::singletonBase<OmActionLoggerTaskCounter> {
 public:
-	OmActionLoggerFSThread(boost::shared_ptr<T> action,
-						   const std::string& doOrUndo,
-						   QDir& logFolder)
+	static uint32_t Get(){
+		return instance().counter_.inc();
+	}
+
+private:
+	LockedUint32 counter_;
+	friend class zi::singleton<OmActionLoggerTaskCounter>;
+};
+
+template <typename T>
+class OmActionLoggerTask : public zi::runnable {
+public:
+	OmActionLoggerTask(boost::shared_ptr<T> action,
+					   const std::string& doOrUndo,
+					   QDir& logFolder)
 		: action_(action)
 		, doOrUndo_(doOrUndo)
 		, logFolder_(logFolder)
@@ -27,13 +40,20 @@ public:
 
 	void run()
 	{
-		QFile file(getFileNameAndPath(action_->classNameForLogFile()));
-		file.open(QIODevice::WriteOnly);
+		const QString actionName = action_->classNameForLogFile();
+		const QString fnp = getFileNameAndPath(actionName);
+
+		QFile file(fnp);
+		if(!file.open(QIODevice::WriteOnly)){
+			throw OmIoException("could not write", fnp);
+		}
+
 		QDataStream out(&file);
 		out.setByteOrder( QDataStream::LittleEndian );
 		out.setVersion(QDataStream::Qt_4_6);
 
 		out << Omni_Log_Version;
+		out << actionName;
 		out << (*action_);
 		out << Omni_Postfix;
 
@@ -47,21 +67,19 @@ private:
 
 	QString getFileNameAndPath(const QString& actionName)
 	{
-		static LockedUint32 counter;
-		++counter;
+		const uint32_t count = OmActionLoggerTaskCounter::Get();
 
 		const QDateTime curDT = QDateTime::currentDateTime();
 		const QString date = curDT.toString("yyyy.MM") + curDT.toString("MMM.dd");
 		const QString time = curDT.toString("hh.mm.ss.zzz");
-		const QString omniFN = OmProject::GetFileName().replace(".omni", "");
-		const QString sessionCounter = QString::number(counter.get());
+		const QString sessionCounter =
+			QString("%1").arg(QString::number(count), 9, QChar('0'));
 		const QString actionDoOrUndo = QString::fromStdString(doOrUndo_);
 
 		const QString fn =
 			date+"--"+
-			time+"--"+
-			omniFN+"--"+
 			sessionCounter+"--"+
+			time+"--"+
 			actionName+"--"+
 			actionDoOrUndo+
 			".log";

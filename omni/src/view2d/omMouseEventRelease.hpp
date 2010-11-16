@@ -121,7 +121,7 @@ private:
 			return;
 		}
 
-		const OmSegID rootSegID = sdw.GetSegmentation().GetSegmentCache()->findRootID(segid);
+		const OmSegID rootSegID = sdw.GetSegmentCache()->findRootID(segid);
 
 		v2d_->LineDrawer()->FillToolFill( sdw.GetSegmentationID(),
 										  dataClickPoint,

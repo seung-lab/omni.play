@@ -8,6 +8,7 @@
 #include <QMenu>
 
 static OmID mSeg = 1; //FIXME!
+static GroupsTable * gTable = NULL;
 
 GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vgs)
 {
@@ -34,6 +35,7 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	mMenu->addAction(delAction);
 
 	populateGroupsList();
+	gTable = this;
 }
 
 void GroupsTable::doDeleteAction()
@@ -52,6 +54,14 @@ void GroupsTable::populateGroupsList()
 		return;
 	}
 	mGroupsList->populate(OmProject::GetSegmentation(GetSegmentationID()));
+}
+
+void GroupsTable::Repopulate()
+{
+	if(!gTable) {
+		return;
+	}
+	gTable->populateGroupsList();
 }
 
 void GroupsTable::populateGroupTable(OmGroupID id)

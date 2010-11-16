@@ -96,7 +96,7 @@ void OmViewGroupState::SetViewSliceMin(const ViewType plane, const float x,
 		mYZSlice[1] = y;
 		break;
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 
@@ -110,7 +110,7 @@ Vector2f OmViewGroupState::GetViewSliceMin(ViewType plane)
 	case YZ_VIEW:
 		return Vector2f(&mYZSlice[0]);
 	default:
-		assert(false);
+		throw OmArgException("unknown plane");
 	}
 }
 

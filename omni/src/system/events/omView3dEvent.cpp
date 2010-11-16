@@ -25,6 +25,9 @@ void OmView3dEvent::Dispatch(OmEventListener * pListener)
 	case OmView3dEvent::UPDATE_PREFERENCES:
 		//p_cast_listener->View3dUpdatePreferencesEvent( this );
 		return;
+	case OmView3dEvent::RECENTER:
+		p_cast_listener->View3dRecenter();
+		return;
 	default:
 		assert(false);
 	}

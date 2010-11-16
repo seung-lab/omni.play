@@ -51,7 +51,7 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 		return NULL;
 	}
 
-	OmSegment* seg = GetSegmentFromValue(val);
+	OmSegment* seg = GetSegment(val);
 	if(NULL == seg){
 		seg = AddSegment(val);
 	}
@@ -61,7 +61,10 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 
 OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
 {
-	return splitChildFromParent( GetSegmentFromValue( e.childID ));
+	if(!e.isValid()){
+		return OmSegmentEdge();
+	}
+	return splitChildFromParent( GetSegment( e.childID ));
 }
 
 OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
@@ -69,8 +72,8 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	OmSegment* parent = child->getParent();
 	assert(parent);
 
-	if( child->IsValid() == parent->IsValid() &&
-	    1 == child->IsValid() ){
+	if( child->IsValidListType() == parent->IsValidListType() &&
+	    1 == child->IsValidListType() ){
 		printf("could not split %d from %d\n", child->value(), parent->value());
 		return OmSegmentEdge();
 	}
@@ -130,8 +133,8 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegment
 std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
 {
 	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
-	OmSegment* childRoot = GetSegmentFromValue(childRootID);
-	OmSegment* parent = GetSegmentFromValue( e.parentID );
+	OmSegment* childRoot = GetSegment(childRootID);
+	OmSegment* parent = GetSegment( e.parentID );
 	OmSegment* parentRoot = findRoot(parent);
 
 	if( childRoot == parentRoot ){
@@ -140,14 +143,14 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEd
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
-	if( childRoot->IsValid() != parent->IsValid() ){
+	if( childRoot->IsValidListType() != parent->IsValidListType() ){
 		printf("not joining child %d to parent %d: child immutability is %d, but parent's is %d\n",
-		       childRoot->value(), parent->value(), childRoot->IsValid(), parent->IsValid() );
+		       childRoot->value(), parent->value(), childRoot->IsValidListType(), parent->IsValidListType() );
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
 	}
 
 /*
-	if( childRoot->IsValid() &&
+	if( childRoot->IsValidListType() &&
 		childRoot != parentRoot ){
 		printf("can't join two validated segments\n");
 		return std::pair<bool, OmSegmentEdge>(false, OmSegmentEdge());
@@ -243,7 +246,7 @@ OmSegIDsSet OmSegmentCacheImpl::UnJoinTheseSegments( const OmSegIDsSet & segment
 	while (iter != set.end()) {
 		const OmSegID segID = *iter;
 		OmSegmentEdge edge =
-			splitChildFromParent(GetSegmentFromValue(segID));
+			splitChildFromParent(GetSegment(segID));
 
 		if(edge.isValid()){
 			printf("WARNING: could not split edge; was a segment validated?\n");
@@ -282,7 +285,7 @@ void OmSegmentCacheImpl::rerootSegmentList( OmSegIDsSet & set )
 
 	OmSegID rootSegID;
 	foreach( const OmSegID & id, old ){
-		rootSegID = findRoot( GetSegmentFromValue( id) )->value();
+		rootSegID = findRoot( GetSegment( id) )->value();
 		set.insert( rootSegID );
 	}
 }
@@ -342,4 +345,18 @@ void OmSegmentCacheImpl::Flush()
 
 boost::shared_ptr<OmUserEdges> OmSegmentCacheImpl::userEdges(){
 	return segmentation_->getMSTUserEdges();
+}
+
+bool OmSegmentCacheImpl::AreAnySegmentsInValidList(const OmSegIDsSet& ids)
+{
+	FOR_EACH(iter, ids){
+		OmSegment* seg = GetSegment(*iter);
+		if(!seg){
+			continue;
+		}
+		if(seg->IsValidListType()){
+			return true;
+		}
+	}
+	return false;
 }

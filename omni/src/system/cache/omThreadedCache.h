@@ -25,7 +25,7 @@ public:
 	virtual ~OmThreadedCache();
 
 	//value accessors
-	virtual void Get(PTR&, const KEY&, const om::BlockingRead);
+	virtual void Get(PTR&, const KEY&, const om::Blocking);
 
 	void Prefetch(const KEY& key);
 

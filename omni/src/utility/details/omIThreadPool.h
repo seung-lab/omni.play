@@ -5,6 +5,8 @@
 
 class OmIThreadPool {
 public:
+	virtual ~OmIThreadPool(){}
+
 	virtual void DoStart(const int) = 0;
 	virtual void DoJoin() = 0;
 	virtual void DoClear() = 0;

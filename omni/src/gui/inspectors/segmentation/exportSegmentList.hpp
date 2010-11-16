@@ -45,7 +45,7 @@ class ExportSegmentList : public OmButton<SegInspector> {
 				continue;
 			}
 
-			out << i << "," << seg->IsValid() << "\n";
+			out << i << "," << seg->IsValidListType() << "\n";
 		}
 
 		printf("\tdone!\n");

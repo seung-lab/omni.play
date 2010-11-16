@@ -17,10 +17,9 @@ int OmVolumeTypeHelpers::getHDF5FileType(const OmVolDataType type)
 	case OmVolDataType::FLOAT:
 		return H5T_IEEE_F32LE;
 	case OmVolDataType::UNKNOWN:
+	default:
 		throw OmIoException("unknown data type");
 	}
-
-	assert(0 && "type not found");
 }
 
 // hid_t is typedef'd to int in H5Ipublic.h
@@ -38,10 +37,9 @@ int OmVolumeTypeHelpers::getHDF5MemoryType(const OmVolDataType type)
 	case OmVolDataType::FLOAT:
 		return H5T_NATIVE_FLOAT;
 	case OmVolDataType::UNKNOWN:
+	default:
 		throw OmIoException("unknown data type");
 	}
-
-	assert(0 && "type not found");
 }
 
 std::string OmVolumeTypeHelpers::GetTypeAsString(const OmVolDataType type)

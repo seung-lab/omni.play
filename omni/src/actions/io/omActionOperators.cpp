@@ -1,4 +1,4 @@
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionOperators.h"
 #include "datalayer/archive/omDataArchiveBoost.h"
 #include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
@@ -13,42 +13,6 @@
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 #include "actions/details/omProjectCloseActionImpl.hpp"
-
-QDir& OmActionLoggerFS::doGetLogFolder()
-{
-	zi::guard g(mutex_);
-	if(!initialized){
-		setupLogDir();
-		initialized = true;
-	}
-
-	return mLogFolder;
-}
-
-void OmActionLoggerFS::setupLogDir()
-{
-	const QDir filesDir = OmProjectData::GetFilesFolderPath();
-	QString omniFolderPath =
-		filesDir.absolutePath() +
-		QDir::separator() +
-		"logFiles" +
-		QDir::separator();
-
-	QDir dir = QDir( omniFolderPath);
-	if( dir.exists()){
-		mLogFolder = dir;
-		return;
-	}
-
-	if( QDir::home().mkdir( omniFolderPath)){
-		printf("made folder %s\n", qPrintable(omniFolderPath));
-		mLogFolder = dir;
-	} else {
-		const std::string errMsg =
-			"could not make folder "+omniFolderPath.toStdString() + "\n";
-		throw OmIoException(errMsg);
-	}
-}
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentValidateActionImpl& a)
 {
@@ -246,27 +210,28 @@ QDataStream& operator>>(QDataStream& in,   OmProjectSaveActionImpl& )
 
 QDataStream& operator<<(QDataStream& out, const OmProjectCloseActionImpl&)
 {
-        int version = 1;
-        out << version;
+	int version = 1;
+	out << version;
 
-        return out;
+	return out;
 }
 
 QDataStream& operator>>(QDataStream& in,   OmProjectCloseActionImpl& )
 {
-        int version;
-        in >> version;
+	int version;
+	in >> version;
 
-        return in;
+	return in;
 }
 
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentationThresholdChangeActionImpl& a)
 {
-	int version = 1;
+	int version = 2;
 	out << version;
 	out << a.mThreshold;
 	out << a.mOldThreshold;
+	out << a.mSegmentationId;
 
 	return out;
 }
@@ -277,6 +242,13 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentationThresholdChangeActionImp
 	in >> version;
 	in >> a.mThreshold;
 	in >> a.mOldThreshold;
+
+	if(version > 1){
+		in >> a.mSegmentationId;
+	} else {
+		printf("WARNGING: guessing segmentation ID...\n");
+		a.mSegmentationId = 1;
+	}
 
 	return in;
 }

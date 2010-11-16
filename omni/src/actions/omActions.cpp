@@ -11,6 +11,7 @@
 #include "actions/omActions.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "system/omLocalPreferences.h"
 #include "segment/omSegmentLists.hpp"
 #include "segment/omSegmentIterator.h"
 
@@ -52,33 +53,39 @@ void OmActions::SetVoxels(const OmID segmentationID,
 
 // segment-related
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
-								const om::SetValid valid){
-	OmSegID seg =
-		sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
+								const om::SetValid valid)
+{
 	OmSegmentValidateAction::Validate(sdw, valid);
+	if(!OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate()){
+		return;
+	}
+
+	OmSegID seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
 	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
-		sdw.GetSegmentation().GetSegmentCache()->SetAllSelected(false);
-		sdw.GetSegmentation().GetSegmentCache()->setSegmentSelected(seg, true, true);
+		sdw.GetSegmentCache()->SetAllSelected(false);
+		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
 }
 
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 								const om::SetValid valid)
 {
-	OmSegmentIterator iter(sdw.GetSegmentation().GetSegmentCache());
+	OmSegmentValidateAction::Validate(sdw, valid);
+	if(!OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate()){
+		return;
+	}
+
+	OmSegmentIterator iter(sdw.GetSegmentCache());
 	iter.iterOverSelectedIDs();
 	OmSegment * segment = iter.getNextSegment();
-	OmSegID seg;
+	OmSegID seg = 0;
 	while(NULL != segment) {
-		seg = sdw.GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
+		seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
 		if(seg) {
 			break;
 		}
 		segment = iter.getNextSegment();
 	}
-
-	OmSegmentValidateAction::Validate(sdw, valid);
-
 	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
 		sdw.GetSegmentCache()->SetAllSelected(false);
 		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
@@ -99,7 +106,7 @@ void OmActions::JoinSegments(const OmID segmentationID,
 							 const OmSegIDsSet& ids)
 {
 	SegmentationDataWrapper sdw(segmentationID);
-	if(sdw.GetSegmentLists()->AreAnySegmentsInValidList(ids)){
+	if(sdw.GetSegmentCache()->AreAnySegmentsInValidList(ids)){
 		printf("valid segment present in list; not joining...\n");
 		return;		// don't alow the join if valid segment is given
 	}

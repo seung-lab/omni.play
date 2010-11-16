@@ -102,18 +102,36 @@ sub makeDirPaths {
 }
 
 sub genOmniScript {
-    open (SCRIPT, ">", $omniScriptFile) or die $!;
+    my $script = "";
+    $script .= "cd $basePath/omni;";
 
-    my $script = <<END;
-cd $basePath/omni
-../external/libs/Qt/bin/qmake omni.pro
-make $globalMakeOptions
-END
+    if(@_ == 1) {
+	my $debugMode = $_[0];
+	if($debugMode){
+	    print "building omni in debug mode\n";
+	    $script .= "rm -f release;";
+	} else {
+	    print "building omni in release mode\n";
+	    $script .= "touch release;";
+	}
+    } else {
+	print "building omni with current make options\n";
+    }
+
+    $script .= "../external/libs/Qt/bin/qmake omni.pro;";
+
+    if(@_ == 1) {
+	print "will make clean\n";
+	$script .= "make clean;";
+    }
+
+    $script .= "make $globalMakeOptions;";
 
     if(isMac()) {
 	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
+    open (SCRIPT, ">", $omniScriptFile) or die $!;
     print SCRIPT $script;
     close SCRIPT;
     `chmod +x $omniScriptFile`;
@@ -326,7 +344,7 @@ sub qt47 {
 
 sub omni {
     printTitle("omni");
-    genOmniScript();
+    genOmniScript(@_);
 
     if(isMac()){
 	unlink($omniExecPathMac);
@@ -359,8 +377,10 @@ sub menu {
     print "8 -- Generate scripts\n";
     print "10 -- Experimental builds...\n";
     print "11 -- Ubuntu library apt-gets...\n";
-    print "12 -- build omni (make clean first)...\n\n";
-    my $max_answer = 12;
+    print "12 -- build omni (make clean first)...\n";
+    print "13 -- build omni in debug mode...\n";
+    print "14 -- build omni in release mode...\n\n";
+    my $max_answer = 14;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -408,6 +428,10 @@ sub runMenuEntry {
         doUbuntuAptGets();
     }elsif( 12 == $entry ){
         omniClean();
+    }elsif( 13 == $entry ){
+        omni(1);
+    }elsif( 14 == $entry ){
+        omni(0);
     }
 }
 

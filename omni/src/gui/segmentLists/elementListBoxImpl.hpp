@@ -20,6 +20,8 @@ Q_OBJECT
 private:
 	QTabWidget * mDataElementsTabs;
 	QVBoxLayout * mOverallContainer;
+	QProgressBar * mValidProgress;
+	
 	int mCurrentlyActiveTab;
 
 	SegmentListRecent * recentList_;
@@ -39,10 +41,21 @@ private:
 		uncertainList_->dealWithSegmentObjectModificationEvent(event);
 		recentList_->dealWithSegmentObjectModificationEvent(event);
 
+		SegmentationDataWrapper sdw(segmentationID1);
 		if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
-			SegmentationDataWrapper sdw(segmentationID1);
 			setTitle(GetSegmentationGroupBoxTitle(sdw));
 		}
+
+		quint64 valid = sdw.GetSegmentLists()->Valid().VoxelCount();
+		quint64 working = sdw.GetSegmentLists()->Working().VoxelCount();
+		quint64 uncertain = sdw.GetSegmentLists()->Uncertain().VoxelCount();
+
+		mValidProgress->setMaximum((int)valid+working+uncertain);
+		mValidProgress->setMinimum(0);
+		mValidProgress->setValue((int)valid);
+		printf("valid %li = %f\n", valid, float(valid) / (valid+working+uncertain));
+		printf("working %li\n", working);
+		printf("un %li\n", uncertain);
 	}
 
 	QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
@@ -63,6 +76,9 @@ public:
 		mDataElementsTabs = new QTabWidget( this );
 		mOverallContainer = new QVBoxLayout( this );
 		mOverallContainer->addWidget( mDataElementsTabs );
+
+		mValidProgress = new QProgressBar(this);
+		mOverallContainer->addWidget( mValidProgress );
 	}
 
 	void reset()

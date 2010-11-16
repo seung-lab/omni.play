@@ -47,7 +47,7 @@ public:
 
 		OmSegment* seg = instance().sdw_.getSegment();
 
-		if(seg->IsValid()){
+		if(seg->IsValidListType()){
 			OmActions::ValidateSegment(instance().sdw_, om::SET_NOT_VALID);
 		} else {
 			OmActions::ValidateSegment(instance().sdw_, om::SET_VALID);

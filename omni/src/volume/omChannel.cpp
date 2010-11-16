@@ -53,12 +53,6 @@ std::string OmChannel::GetDirectoryPath() {
 	return OmDataPaths::getDirectoryPath(this);
 }
 
-void OmChannel::BuildVolumeData()
-{
-	OmDataPath path = OmDataPath(OmDataPaths::getDefaultHDF5channelDatasetName());
-	OmMipVolume::Build(path);
-}
-
 OmFilter2d& OmChannel::AddFilter() {
 	OmFilter2d& filter = mFilter2dManager.AddFilter();
 	OmActions::Save();
@@ -82,12 +76,6 @@ bool OmChannel::IsFilterEnabled(OmID id){
 }
 
 void OmChannel::CloseDownThreads(){
-}
-
-bool OmChannel::ImportSourceData(const OmDataPath& path)
-{
-	OmVolumeImporter<OmChannel> importer(this, path);
-	return importer.Import();
 }
 
 void OmChannel::loadVolData()

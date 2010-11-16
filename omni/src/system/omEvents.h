@@ -15,6 +15,7 @@ class OmEvents {
 								std::string comment,
 								const bool doScroll);
 	static void ViewCenterChanged();
+	static void ViewRecenter();
 	static void ViewBoxChanged();
 	static void ViewPosChanged();
 	static void SegmentEditSelectionChanged();

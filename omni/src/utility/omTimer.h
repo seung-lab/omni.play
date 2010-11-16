@@ -6,6 +6,8 @@
  *  performance testing by wrapping OS-specific timer functions.
  */
 
+#include "common/omCommon.h"
+
 #include <zi/time/time.hpp>
 
 class OmTimer {

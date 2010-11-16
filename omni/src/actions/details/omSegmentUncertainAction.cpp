@@ -1,5 +1,5 @@
 #include "segment/omSegmentUtils.hpp"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 
@@ -56,5 +56,5 @@ std::string OmSegmentUncertainAction::Description()
 
 void OmSegmentUncertainAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }

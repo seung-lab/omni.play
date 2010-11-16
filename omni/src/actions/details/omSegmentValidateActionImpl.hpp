@@ -12,6 +12,8 @@ private:
 	boost::shared_ptr<std::set<OmSegment*> > selectedSegments_;
 
 public:
+	OmSegmentValidateActionImpl() {}
+
 	OmSegmentValidateActionImpl(const SegmentationDataWrapper& sdw,
 								boost::shared_ptr<std::set<OmSegment*> > selectedSegments,
 								const bool valid)
@@ -60,7 +62,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 
 	friend QDataStream &operator<<(QDataStream&, const OmSegmentValidateActionImpl&);
 	friend QDataStream &operator>>(QDataStream&, OmSegmentValidateActionImpl&);

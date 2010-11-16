@@ -35,15 +35,11 @@ public:
 
 	void CloseDownThreads();
 
-	void BuildVolumeData();
-
 	OmFilter2d& AddFilter();
 	OmFilter2d& GetFilter(OmID id);
 	const OmIDsSet & GetValidFilterIds();
 	bool IsFilterEnabled(OmID id);
 	bool IsFilterValid(const OmID id);
-
-	bool ImportSourceData(const OmDataPath& dataset);
 
 	void SetVolDataType(const OmVolDataType);
 
@@ -65,6 +61,7 @@ private:
 	OmFilter2dManager mFilter2dManager;
 
 	friend class OmBuildChannel;
+	template <class T> friend class OmVolumeBuilder;
 	friend class OmChannelChunkBuildTask;
 	template <class T> friend class OmVolumeImporter;
 

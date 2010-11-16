@@ -23,7 +23,6 @@ class OmGroupListWidget : public QTreeWidget {
 	void mousePressEvent(QMouseEvent * event);
 	void keyPressEvent(QKeyEvent * event);
 	void populateTable();
-
 };
 
 #endif

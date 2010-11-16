@@ -121,7 +121,7 @@ public:
 	}
 
 	inline OmSegment* getSegment() const {
-		return GetSegmentation().GetSegmentCache()->GetSegment( mID );
+		return GetSegmentCache()->GetSegment( mID );
 	}
 
 	inline OmSegmentCache* GetSegmentCache() const {

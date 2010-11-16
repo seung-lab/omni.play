@@ -22,6 +22,8 @@ protected:
 	void addColorActions();
 	void addGroupActions();
 	void addPropertiesActions();
+	void addGroups();
+	void addDisableAction();
 
 private slots:
 	void select();
@@ -38,6 +40,8 @@ private slots:
 	void setNotValid();
 	void showProperties();
 	void printChildren();
+
+	void disableSegment();
 
 private:
 	SegmentDataWrapper sdw_;

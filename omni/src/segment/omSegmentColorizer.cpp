@@ -112,13 +112,13 @@ OmColor OmSegmentColorizer::getVoxelColorForView2d(const OmSegID val)
 	switch(mSccType){
 	case SCC_SEGMENTATION_VALID:
 	case SCC_FILTER_VALID:
-		if(seg->IsValid()) {
+		if(seg->IsValidListType()) {
 			return segRootColor;
 		}
 		return blackColor;
 	case SCC_SEGMENTATION_VALID_BLACK:
 	case SCC_FILTER_VALID_BLACK:
-		if(seg->IsValid()) {
+		if(seg->IsValidListType()) {
 			return blackColor;
 		}
 		return segRootColor;

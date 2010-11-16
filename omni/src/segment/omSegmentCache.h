@@ -69,6 +69,8 @@ public:
 
 	quint64 getSizeRootAndAllChildren( OmSegment * segUnknownDepth );
 
+	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids);
+
 private:
 	zi::mutex mutex_;
 	OmSegmentation *const mSegmentation;

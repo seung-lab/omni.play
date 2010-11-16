@@ -1,5 +1,5 @@
 #include "common/omDebug.h"
-#include "actions/io/omActionLoggerFS.h"
+#include "actions/io/omActionLogger.hpp"
 #include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
 #include "segment/omFindCommonEdge.hpp"
@@ -44,7 +44,7 @@ std::string OmSegmentSplitAction::Description()
 
 void OmSegmentSplitAction::save(const std::string& comment)
 {
-	OmActionLoggerFS::save(impl_, comment);
+	OmActionLogger::save(impl_, comment);
 }
 
 //TODO: put this somewhere else...

@@ -18,7 +18,7 @@ public:
 
 	void growGraphIfNeeded(OmSegment * newSeg);
 
-	OmSegment* GetSegmentFromValue(const OmSegID value );
+	OmSegment* GetSegment(const OmSegID value );
 
 	OmSegID GetNumSegments();
 	OmSegID GetNumTopSegments();

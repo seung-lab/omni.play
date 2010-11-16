@@ -14,11 +14,12 @@ private:
 	OmSegIDsSet mOldSelectedIdSet;
 	OmID mSegmentJustSelectedID;
 	void * mSender;
-	const std::string mComment;
-	const bool mDoScroll;
-	const bool mAddToRecentList;
+	std::string mComment;
+	bool mDoScroll;
+	bool mAddToRecentList;
 
 public:
+	OmSegmentSelectActionImpl() {}
 	OmSegmentSelectActionImpl(const OmID segmentationId,
 							  const OmSegIDsSet & newSelectedIdSet,
 							  const OmSegIDsSet & oldSelectedIdSet,
@@ -80,7 +81,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend QDataStream &operator<<(QDataStream&, const OmSegmentSelectActionImpl&);
 	friend QDataStream &operator>>(QDataStream&, OmSegmentSelectActionImpl&);
 };

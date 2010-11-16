@@ -6,6 +6,7 @@
 #include "gui/widgets/omSegmentListWidget.h"
 #include "segment/details/omSegmentListsTypes.hpp"
 #include "segment/omSegmentSelector.h"
+#include "segment/omSegmentUtils.hpp"
 #include "system/omEvents.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -77,7 +78,9 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 		scrollToItem(rowToJumpTo);
 	}
 
-	setUpdatesEnabled( true);
+	setUpdatesEnabled(true);
+
+	OmSegmentUtils::CenterSegment(vgs_, segmentationDW);
 
 	return makeTabActive;
 }

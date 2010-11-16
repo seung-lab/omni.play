@@ -177,14 +177,14 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 								   const int edgeNumber )
 {
 	const OmSegID childRootID = graph_getRootID(childUnknownDepthID);
-	OmSegment * childRoot = mCache->GetSegmentFromValue(childRootID);
-	OmSegment * parent = mCache->GetSegmentFromValue( parentID );
+	OmSegment * childRoot = mCache->GetSegment(childRootID);
+	OmSegment * parent = mCache->GetSegment( parentID );
 
 	if( childRoot == mCache->findRoot( parent ) ){
 		return false;
 	}
 
-	if( childRoot->IsValid() != parent->IsValid() ){
+	if(childRoot->IsValidListType() != parent->IsValidListType()){
 		return false;
 	}
 
@@ -203,7 +203,7 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 
 bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 {
-	OmSegment * child = mCache->GetSegmentFromValue( childID );
+	OmSegment * child = mCache->GetSegment( childID );
 
 	if( child->getThreshold() > 1 ){
 		return false;
@@ -214,8 +214,8 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 		return false;
 	}
 
-	if( child->IsValid() == parent->IsValid() &&
-	    1 == child->IsValid() ){
+	if( child->IsValidListType() == parent->IsValidListType() &&
+	    1 == child->IsValidListType() ){
 		return false;
 	}
 

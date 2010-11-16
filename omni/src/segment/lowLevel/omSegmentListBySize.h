@@ -12,7 +12,7 @@
 
 class OmSegmentListBySize {
 public:
-	OmSegmentListBySize(){}
+	OmSegmentListBySize():mVoxels(0){}
 
 	void InsertSegment(OmSegment* seg);
 	void RemoveSegment(OmSegment* seg);
@@ -29,10 +29,9 @@ public:
 	uint64_t GetSegmentSize(OmSegment* seg);
 
 	size_t Size();
+	quint64 VoxelCount(){return mVoxels;}
 	void Dump();
 	void Clear();
-
-	bool IsSegmentContained(const OmSegID segID);
 
 	OmSegID GetNextSegmentIDinList(const OmSegID id);
 
@@ -68,6 +67,8 @@ protected:
 	typedef OmSegSizes::index<segID>::type List_by_ID;
 
 	OmSegSizes mList;
+
+	quint64 mVoxels;
 
 private:
 	void advanceIter(List_by_size& sizeIndex,

@@ -13,6 +13,7 @@ class OmSegmentGroupActionImpl;
 
 class OmSegmentGroupAction : public OmAction {
 public:
+	OmSegmentGroupAction(boost::shared_ptr<OmSegmentGroupActionImpl> impl) : impl_(impl) {}
 	OmSegmentGroupAction(const OmID segmentationId,
 						 const OmSegIDsSet & selectedSegmentIdsSet,
 						 const OmGroupName name,

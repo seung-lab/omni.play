@@ -1,10 +1,11 @@
 #ifndef HEADLESS_IMPL_HPP
 #define HEADLESS_IMPL_HPP
 
+#include "mesh/omMeshParams.hpp"
 #include "actions/omActions.hpp"
 #include "project/omProject.h"
 #include "segment/io/omMST.h"
-#include "system/omBuildSegmentation.h"
+#include "volume/build/omBuildSegmentation.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "segment/io/omUserEdges.hpp"
@@ -17,13 +18,9 @@ public:
 
 		OmProject::New(projectFileName);
 
-		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-		QString hdf5fnp = file;
-
-		OmBuildSegmentation bs(&added_segmentation);
-		bs.addFileNameAndPath(hdf5fnp);
-		bs.buildAndMeshSegmentation();
-		bs.wait();
+		OmBuildSegmentation bs;
+		bs.addFileNameAndPath(file);
+		bs.BuildAndMeshSegmentation(om::BLOCKING);
 	}
 
 	static void importHDF5seg(const std::string& file) {
@@ -36,23 +33,18 @@ public:
 
 		OmProject::New(projectFileName);
 
-		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-
-		OmBuildSegmentation bs(&added_segmentation);
+		OmBuildSegmentation bs;
 		bs.addFileNameAndPath(file);
-		bs.build_seg_image();
-		bs.wait();
+		bs.BuildImage(om::BLOCKING);
 	}
 
 	static void loadHDF5seg(const QString file, OmID& segmentationID_)
 	{
-		OmSegmentation& added_segmentation = OmProject::AddSegmentation();
-		segmentationID_ = added_segmentation.GetID();
-
-		OmBuildSegmentation bs(&added_segmentation);
+		OmBuildSegmentation bs;
 		bs.addFileNameAndPath(file);
-		bs.build_seg_image();
-		bs.wait();
+		bs.BuildImage(om::BLOCKING);
+
+		segmentationID_ = bs.GetDataWrapper().getID();
 	}
 
 	static void ClearMST(const OmID segmentationID)
@@ -103,7 +95,6 @@ public:
 		OmActions::Save();
 	}
 
-
 	template <typename T>
 	static void ChangeVolResolution(T& vol,
 									const float xRes,
@@ -116,6 +107,14 @@ public:
 
 		std::cout << "\tvolume data resolution set to "
 				  << vol.GetDataResolution()
+				  << "\n";
+	}
+
+	static void SetMeshDownScallingFactor(const double factor)
+	{
+		OmMeshParams::SetDownScallingFactor(factor);
+		std::cout << "mesh downscalling factor set to "
+				  << OmMeshParams::GetDownScallingFactor()
 				  << "\n";
 	}
 };

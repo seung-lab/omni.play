@@ -3,16 +3,19 @@
 
 #include "segment/details/omSegmentListContainer.hpp"
 #include "segment/lowLevel/omSegmentListByMRU.h"
+#include "segment/details/omSegmentListBySize2.hpp"
 #include "zi/omUtility.h"
 
 class OmSegmentLists {
 private:
-	OmSegmentListContainer<OmSegmentListBySize> validList_;
-	OmSegmentListContainer<OmSegmentListBySize> workingList_;
-	OmSegmentListContainer<OmSegmentListBySize> uncertainList_;
+	typedef OmSegmentListBySize SizeListType;
+
+	OmSegmentListContainer<SizeListType> validList_;
+	OmSegmentListContainer<SizeListType> workingList_;
+	OmSegmentListContainer<SizeListType> uncertainList_;
 	OmSegmentListByMRU recentList_;
 
-	OmSegmentListContainer<OmSegmentListBySize>&
+	OmSegmentListContainer<SizeListType>&
 	getContainer(const om::OmSegListType type)
 	{
 		switch(type){
@@ -28,19 +31,19 @@ private:
 	}
 
 public:
-	OmSegmentListByMRU& Recent() {
+	OmSegmentListByMRU& Recent(){
 		return recentList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Working() {
+	OmSegmentListContainer<SizeListType>& Working(){
 		return workingList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Valid() {
+	OmSegmentListContainer<SizeListType>& Valid(){
 		return validList_;
 	}
 
-	OmSegmentListContainer<OmSegmentListBySize>& Uncertain() {
+	OmSegmentListContainer<SizeListType>& Uncertain(){
 		return uncertainList_;
 	}
 
@@ -67,7 +70,7 @@ public:
 		uncertainList_.insertSegment(seg);
 	}
 
-	uint64_t GetNumTopLevelSegs() {
+	uint64_t GetNumTopLevelSegs(){
 		return workingList_.size() + validList_.size() + uncertainList_.size();
 	}
 
@@ -88,15 +91,6 @@ public:
 		return getContainer(seg->GetListType()).getSegmentSize(seg);
 	}
 
-	bool AreAnySegmentsInValidList(const OmSegIDsSet& ids)
-	{
-		FOR_EACH(iter, ids){
-			if(validList_.IsSegmentContained(*iter)){
-				return true;
-			}
-		}
-		return false;
-	}
 };
 
 #endif

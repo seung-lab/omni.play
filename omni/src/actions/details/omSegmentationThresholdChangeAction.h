@@ -8,6 +8,10 @@ class OmSegmentationThresholdChangeActionImpl;
 
 class OmSegmentationThresholdChangeAction : public OmAction {
 public:
+	OmSegmentationThresholdChangeAction(boost::shared_ptr<OmSegmentationThresholdChangeActionImpl> impl)
+		: impl_(impl)
+	{}
+
 	OmSegmentationThresholdChangeAction(const OmID segmentationId,
 										const float threshold);
 

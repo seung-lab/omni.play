@@ -5,27 +5,60 @@ class OmSegmentLists;
 
 class SegmentationDataWrapper {
 private:
-	OmID mID;
+	OmID id_;
+	mutable boost::optional<OmSegmentation&> segmentation_;
 
 public:
 	SegmentationDataWrapper()
-		: mID(0)
+		: id_(0)
 	{}
 
 	explicit SegmentationDataWrapper(const OmID ID)
-		: mID(ID)
+		: id_(ID)
 	{}
 
-	explicit SegmentationDataWrapper( OmSegment * seg )
-		: mID(seg->GetSegmentationID())
+	SegmentationDataWrapper(const SegmentationDataWrapper& sdw)
+		: id_(sdw.id_)
 	{}
+
+	explicit SegmentationDataWrapper(OmSegment* seg)
+		: id_(seg->GetSegmentationID())
+	{}
+
+	inline void set(const SegmentationDataWrapper& sdw)
+	{
+		id_ = sdw.id_;
+	}
+
+	SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw){
+		if (this != &sdw){
+			id_ = sdw.id_;
+		}
+		return *this;
+	}
+
+	bool operator ==(const SegmentationDataWrapper& sdw) const {
+		return id_ == sdw.id_;
+	}
+
+	bool operator !=(const SegmentationDataWrapper& sdw) const {
+		return !(*this == sdw);
+	}
 
 	inline OmID GetSegmentationID() const {
-		return mID;
+		return id_;
 	}
 
 	inline OmID getID() const {
-		return mID;
+		return id_;
+	}
+
+	OmSegmentation& Create() {
+		OmSegmentation& s = OmProject::AddSegmentation();
+		id_ = s.GetID();
+		printf("create segmentation %d\n", id_);
+		segmentation_ =	boost::optional<OmSegmentation&>(s);
+		return s;
 	}
 
 	inline ObjectType getType() const {
@@ -34,15 +67,21 @@ public:
 
 	inline bool IsValidWrapper() const
 	{
-		if(!mID){
+		if(!id_){
 			return false;
 		}
 
-		return OmProject::IsSegmentationValid(mID);
+		return OmProject::IsSegmentationValid(id_);
 	}
 
-	inline OmSegmentation& GetSegmentation() const {
-		return OmProject::GetSegmentation(mID);
+	inline OmSegmentation& GetSegmentation() const
+	{
+		if(!segmentation_){
+			//printf("cached segmentation...\n");
+			segmentation_ =
+				boost::optional<OmSegmentation&>(OmProject::GetSegmentation(id_));
+		}
+		return *segmentation_;
 	}
 
 	inline QString getName() const {
@@ -50,7 +89,7 @@ public:
 	}
 
 	inline bool isEnabled() const {
-		return OmProject::IsSegmentationEnabled(mID);
+		return OmProject::IsSegmentationEnabled(id_);
 	}
 
 	inline QString getNote() const {
@@ -58,11 +97,11 @@ public:
 	}
 
 	inline uint32_t getNumberOfSegments() const {
-		return GetSegmentation().GetSegmentCache()->GetNumSegments();
+		return GetSegmentCache()->GetNumSegments();
 	}
 
 	inline uint32_t getNumberOfTopSegments() const {
-		return GetSegmentation().GetSegmentCache()->GetNumTopSegments();
+		return GetSegmentCache()->GetNumTopSegments();
 	}
 
 	inline OmSegmentCache* GetSegmentCache() const {
@@ -74,7 +113,7 @@ public:
 	}
 
 	inline uint32_t getMaxSegmentValue() const {
-		return GetSegmentation().GetSegmentCache()->getMaxValue();
+		return GetSegmentCache()->getMaxValue();
 	}
 
 	inline boost::shared_ptr<OmSegmentLists> GetSegmentLists() const {

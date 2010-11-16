@@ -14,8 +14,6 @@
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
 
-#include <QFileInfo>
-
 class OmDataPath;
 class OmHdf5;
 class OmHdf5;
@@ -41,7 +39,7 @@ public:
 	virtual OmID getID() = 0;
 	virtual OmMipVolumeCache* getDataCache() = 0;
 
-	inline bool IsVolumeReadyForDisplay(){
+	inline bool IsVolumeReadyForDisplay() const {
 		return MIPVOL_UNBUILT != mBuildState;
 	}
 
@@ -51,11 +49,6 @@ public:
 	std::string MipLevelInternalDataPath(const int level);
 	std::string MipChunkMetaDataPath(const OmMipChunkCoord &rMipCoord);
 
-	//source data properties
-	void SetSourceFilenamesAndPaths(const QFileInfoList&);
-	QFileInfoList GetSourceFilenamesAndPaths();
-	bool IsSourceValid();
-
 	// data properties
 	Vector3i GetChunkDimensions() const;
 
@@ -64,8 +57,6 @@ public:
 
 	bool IsVolumeDataBuilt();
 	bool IsBuilding();
-
-	void UpdateMipProperties(OmDataPath&);
 
 	//TODO: move to volume
 	//mip level method
@@ -120,7 +111,6 @@ public:
 	void SetVoxelValue(const DataCoord &vox, quint32 value);
 
 	//build methods
-	void Build(OmDataPath & dataset);
 	bool BuildThreadedVolume();
 	virtual void doBuildThreadedVolume() = 0;
 	void BuildEditedLeafChunks();
@@ -131,17 +121,10 @@ public:
 							  OmMipVolume*, OmMipVolume*);
 
 	void copyAllMipDataIntoMemMap();
-	bool areImportFilesImages();
-
-	Vector3i get_dims(const OmDataPath dataset );
 
 	void ImportSourceDataSlice();
 
-	void DeleteVolumeData();
-
 	bool ContainsVoxel(const DataCoord &vox);
-
-	QFileInfoList mSourceFilenamesAndPaths;
 
 	Vector3i getDimsRoundedToNearestChunk(const int level) const;
 	OmVolDataType getVolDataType(){ return mVolDataType; }
@@ -164,8 +147,6 @@ protected:
 	//state
 	void SetBuildState(MipVolumeBuildState);
 
-	virtual bool ImportSourceData(const OmDataPath&) = 0;
-
 	//mipvolume disk data
 	void UpdateRootMipLevel();
 
@@ -183,8 +164,6 @@ protected:
 	bool mWasBounded;
 
 private:
-	bool sourceFilesWereSet;
-
 	void copyChunkFromMemMapToHDF5(const OmMipChunkCoord& coord);
 	uint32_t computeTotalNumChunks();
 

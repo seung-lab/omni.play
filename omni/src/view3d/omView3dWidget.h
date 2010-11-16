@@ -12,22 +12,22 @@ class OmCamera;
 class OmView3d;
 
 class OmView3dWidget {
-
 public:
-	OmView3dWidget(OmView3d *view3d) 
+	OmView3dWidget(OmView3d *view3d)
 		: mView3d(view3d)
 	{
 		enabled = false;
 	}
 
+	virtual ~OmView3dWidget()
+	{}
+
 	virtual void Draw() = 0;
 
 	bool enabled;
-	
+
 protected:
 	OmView3d * const mView3d;
 };
-
-
 
 #endif

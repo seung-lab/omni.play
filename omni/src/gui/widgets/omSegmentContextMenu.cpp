@@ -10,6 +10,8 @@
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "system/omGroup.h"
+#include "system/omGroups.h"
 
 /////////////////////////////////
 ///////          Context Menu Methods
@@ -41,12 +43,16 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 	addGroupActions();
 	addSeparator();
 
+	addDisableAction();
 	addPropertiesActions();
+
+	addSeparator();
+	addGroups();
 }
 
 bool OmSegmentContextMenu::isValid() const {
 	assert(sdw_.isValidWrapper());
-	return sdw_.FindRoot()->IsValid();
+	return sdw_.FindRoot()->IsValidListType();
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
@@ -211,13 +217,54 @@ void OmSegmentContextMenu::printChildren()
 
 		OmSegment * seg = iter.getNextSegment();
 		while(NULL != seg) {
+			OmSegment* parent = seg->getParent();
+			OmSegID parentID = 0;
+			if(parent){
+				parentID = parent->value();
+			}
 			const QString str = QString("%1 : %2, %3, %4")
 				.arg(seg->value())
-				.arg(seg->getParent()->value())
+				.arg(parentID)
 				.arg(seg->getThreshold())
 				.arg(seg->size());
 			printf("%s\n", qPrintable(str));
 			seg = iter.getNextSegment();
 		}
 	}
+}
+
+void OmSegmentContextMenu::addGroups()
+{
+        boost::shared_ptr<OmGroups> groups = sdw_.GetSegmentation().GetGroups();
+        OmGroupIDsSet set = groups->GetGroups(sdw_.getSegment()->getRootSegID());
+        OmGroupID firstID = 0;
+	QString groupsStr = "Groups: ";
+        foreach(OmGroupID id, set) {
+                if(!firstID) {
+                        firstID = id;
+                }
+                OmGroup & group = groups->GetGroup(id);
+                groupsStr += group.GetName() + " + ";
+
+                printf("here\n");
+        }
+	addAction(groupsStr);
+}
+
+void OmSegmentContextMenu::addDisableAction()
+{
+	const OmSegID segid = sdw_.FindRootID();
+	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+
+	if(segCache->isSegmentEnabled(segid)) {
+		addAction("Disable Segment", this, SLOT(disableSegment()));
+	}
+}
+
+void OmSegmentContextMenu::disableSegment()
+{
+	const OmSegID segid = sdw_.FindRootID();
+	OmSegmentCache* segCache = sdw_.GetSegmentCache();
+
+	segCache->setSegmentEnabled(segid, false);
 }

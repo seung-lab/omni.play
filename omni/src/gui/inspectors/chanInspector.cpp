@@ -7,7 +7,7 @@
 #include "volume/omVolume.h"
 #include "common/omDebug.h"
 #include "utility/sortHelpers.h"
-#include "system/omBuildChannel.h"
+#include "volume/build/omBuildChannel.hpp"
 #include "system/omProjectData.h"
 
 #include <boost/make_shared.hpp>
@@ -101,7 +101,7 @@ void ChanInspector::on_buildButton_clicked()
 
 	OmBuildChannel * bc = new OmBuildChannel( &current_channel );
 	bc->setFileNamesAndPaths( getFileInfoList() );
-	bc->build_channel();
+	bc->BuildNonBlocking();
 }
 
 void ChanInspector::on_notesEdit_textChanged()

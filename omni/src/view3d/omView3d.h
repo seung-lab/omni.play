@@ -60,6 +60,7 @@ class OmView3d : public QGLWidget,
 	void View3dRedrawEventFromCache();
 	void View3dUpdatePreferencesEvent();
 	void ViewCenterChangeEvent() {}
+	void View3dRecenter();
 	void ViewPosChangeEvent() {}
 	void ViewRedrawEvent() {}
 

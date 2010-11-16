@@ -1,4 +1,3 @@
-#include "gui/meshPreviewer/errorLineEdit.hpp"
 #include "gui/meshPreviewer/scaleFactorLineEdit.hpp"
 #include "gui/meshPreviewer/meshPreviewer.hpp"
 #include "gui/meshPreviewer/previewButton.hpp"

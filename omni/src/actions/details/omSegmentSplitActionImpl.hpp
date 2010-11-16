@@ -14,6 +14,7 @@ private:
 	QString desc;
 
 public:
+	OmSegmentSplitActionImpl() {}
 	OmSegmentSplitActionImpl(const SegmentationDataWrapper & sdw,
 							 const OmSegmentEdge & edge)
 		: mEdge(edge)
@@ -59,7 +60,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend class QDataStream &operator<<(QDataStream&, const OmSegmentSplitActionImpl&);
 	friend class QDataStream &operator>>(QDataStream&, OmSegmentSplitActionImpl&);
 };

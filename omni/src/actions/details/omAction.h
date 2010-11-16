@@ -31,6 +31,12 @@ public:
 		}
 	}
 
+	void Replay() {
+		SetActivate(false);
+		OmStateManager::PushUndoCommand(this);
+		Action();
+	}
+
 protected:
 	bool mUndoable;
 
@@ -95,6 +101,7 @@ private:
 		setText(QString::fromStdString(Description()));
 		save("undo");
 	}
+
 
 };
 

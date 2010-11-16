@@ -13,6 +13,7 @@ class OmSegmentValidateActionImpl;
 class OmSegmentValidateAction : public OmAction {
 
 public:
+	OmSegmentValidateAction(boost::shared_ptr<OmSegmentValidateActionImpl> impl) : impl_(impl) {}
 	static void Validate(const SegmentDataWrapper& sdw,
 						 const om::SetValid valid);
 
@@ -29,7 +30,6 @@ private:
 	void save(const std::string&);
 
 	boost::shared_ptr<OmSegmentValidateActionImpl> impl_;
-
 };
 
 #endif

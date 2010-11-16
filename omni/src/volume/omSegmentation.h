@@ -44,7 +44,6 @@ public:
 	void CloseDownThreads();
 
 	void Flush();
-	void BuildVolumeData();
 	void Mesh();
 	void MeshChunk(const OmMipChunkCoord& coord);
 
@@ -74,8 +73,6 @@ public:
 
 	void UpdateVoxelBoundingData();
 
-	bool ImportSourceData(const OmDataPath& path);
-
 	void SetVolDataType(const OmVolDataType);
 
 	void BuildBlankVolume(const Vector3i & dims);
@@ -100,6 +97,7 @@ private:
 								   const bool rerootSegments);
 
 	friend class OmBuildSegmentation;
+	template <class T> friend class OmVolumeBuilder;
 	template <class T> friend class OmVolumeImporter;
 
 	friend class OmSegmentCacheImpl;

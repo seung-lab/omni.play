@@ -5,28 +5,19 @@
 
 class OmMeshParams : private om::singletonBase<OmMeshParams> {
 public:
-	static void SetInitialError(const double error){
-		instance().error_ = error;
-	}
-	static double GetInitialError() {
-		return instance().error_;
-	}
-
-	static void SetDownScallingFactor(const int factor){
+	static void SetDownScallingFactor(const double factor){
 		instance().factor_ = factor;
 	}
-	static int GetDownScallingFactor() {
+	static double GetDownScallingFactor(){
 		return instance().factor_;
 	}
 
 private:
 	OmMeshParams()
-		: error_(1e-5)
-		, factor_(2)
+		: factor_(2.5)
 	{}
 
-	double error_;
-	int factor_;
+	double factor_;
 
 	friend class zi::singleton<OmMeshParams>;
 };

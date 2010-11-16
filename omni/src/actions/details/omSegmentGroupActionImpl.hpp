@@ -17,6 +17,7 @@ private:
 	OmSegIDsSet mSelectedSegmentIds;
 
 public:
+	OmSegmentGroupActionImpl() {}
 	OmSegmentGroupActionImpl( const OmID segmentationId,
 							  const OmSegIDsSet& selectedSegmentIds,
 							  const OmGroupName name,
@@ -63,7 +64,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class OmActionLoggerFSThread;
+	template <typename T> friend class OmActionLoggerThread;
 	friend class QDataStream &operator<<(QDataStream&, const OmSegmentGroupActionImpl&);
 	friend class QDataStream &operator>>(QDataStream&,  OmSegmentGroupActionImpl&);
 };

@@ -186,6 +186,11 @@ public:
         (void) zi::atomic::add_swap( &val_, zi::atomic::atomic_word( -val ) );
     }
 
+	T inc()
+	{
+		return static_cast< T >( zi::atomic::increment_swap( &val_ ) );
+	}
+
     LockedIntegralNumber& operator+= ( const T &val )
     {
         (void) zi::atomic::add_swap( &val_, zi::atomic::atomic_word( val ) );

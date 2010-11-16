@@ -189,7 +189,7 @@ void OmMipMesh::Save()
 	size = 6 * mVertexCount * sizeof(GLfloat);
 	hdf5File->writeDataset(fpath, size, mpVertexDataWrap);
 
-	hdf5File->flush();
+//	hdf5File->flush();
 }
 
 std::string OmMipMesh::GetFileName()
@@ -272,7 +272,7 @@ void OmMipMesh::Draw()
 		return;
 	}
 
-	if (!hasDisplayList) {
+        if (!hasDisplayList) {
 		displayList = glGenLists(1);
 		hasDisplayList = true;
 		glNewList(displayList, GL_COMPILE);

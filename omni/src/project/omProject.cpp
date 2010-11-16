@@ -21,6 +21,8 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolume.h"
 #include "mesh/omMeshSegmentList.h"
+#include "actions/io/omActionLogger.hpp"
+#include "actions/io/omActionReplayer.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -128,11 +130,12 @@ void OmProject::Load(const QString& fileNameAndPath)
 	try {
 		OmDataArchiveProject::ArchiveRead(OmDataPaths::getProjectArchiveNameQT(),
 										  Instance());
-		//Attempt replay of action not flushed by the user at their request
 	} catch( ... ) {
 		OmProjectData::Close();
 		throw;
 	}
+
+	OmActionReplayer::Replay();
 }
 
 void OmProject::Close()

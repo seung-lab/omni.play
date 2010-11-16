@@ -3,6 +3,7 @@
 
 #include "common/omCommon.h"
 #include "segment/details/sortedRootSegmentsTypes.h"
+#include "zi/omUtility.h"
 
 class SortedRootSegmentsVector{
 private:

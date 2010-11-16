@@ -12,6 +12,8 @@ class OmVoxelSetValueActionImpl;
 
 class OmVoxelSetValueAction : public OmAction {
 public:
+        OmVoxelSetValueAction(boost::shared_ptr<OmVoxelSetValueActionImpl> impl) : impl_(impl) {}
+	
 	OmVoxelSetValueAction(const OmID segmentationId,
 						  const DataCoord& rVoxel,
 						  const OmSegID value);

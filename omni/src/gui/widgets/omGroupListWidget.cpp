@@ -6,7 +6,6 @@
 #include "gui/groupsTable.h"
 #include "viewGroup/omViewGroupState.h"
 
-
 OmGroupListWidget::OmGroupListWidget(GroupsTable * gt)
 	: QTreeWidget()
 	, mGroupsTable(gt)
@@ -65,6 +64,8 @@ void OmGroupListWidget::keyPressEvent(QKeyEvent* event)
 void OmGroupListWidget::populate(OmSegmentation & seg)
 {
 	boost::shared_ptr<OmGroups> groups = seg.GetGroups();
+
+	clear();
 
 	OmGroupIDsSet set = groups->GetGroups();
 
