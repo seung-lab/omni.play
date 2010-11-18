@@ -27,8 +27,9 @@ public:
 		return boost::shared_ptr<std::set<OmSegment*> >(children);
 	}
 
-	DataCoord
-	static FindCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
+private:
+	boost::optional<DataCoord>
+	static findCenterOfSelectedSegments(const SegmentationDataWrapper& sdw)
 	{
 		DataBbox box;
 
@@ -51,25 +52,51 @@ public:
 		}
 
 		if(box.isEmpty()){
-			return DataCoord(0,0,0);
+			return boost::optional<DataCoord>();
 		}
 
-		return (box.getMin() + box.getMax()) / 2;
+		const DataCoord ret = (box.getMin() + box.getMax()) / 2;
+		return boost::optional<DataCoord>(ret);
 	}
 
+public:
 	static void CenterSegment(OmViewGroupState * vgs,
 							  const SegmentationDataWrapper& sdw)
 	{
-		const DataCoord voxel = FindCenterOfSelectedSegments(sdw);
 
-		SpaceCoord picked_voxel = sdw.GetSegmentation().DataToSpaceCoord(voxel);
+		const boost::optional<DataCoord> voxelDC
+			= findCenterOfSelectedSegments(sdw);
 
-		vgs->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-		vgs->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
-		vgs->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
+		if(!voxelDC){
+			return;
+		}
+
+		const SpaceCoord voxelSC
+			= sdw.GetSegmentation().DataToSpaceCoord(*voxelDC);
+
+		vgs->SetViewSliceDepth(YZ_VIEW, voxelSC.x );
+		vgs->SetViewSliceDepth(XZ_VIEW, voxelSC.y );
+		vgs->SetViewSliceDepth(XY_VIEW, voxelSC.z );
 
 		OmEvents::ViewCenterChanged();
-		OmEvents::ViewRecenter();
+		OmEvents::View3dRecenter();
+	}
+
+	// TODO: make more efficient
+	static uint32_t NumberOfDescendants(const SegmentDataWrapper& sdw)
+	{
+		OmSegmentIterator iter(sdw.GetSegmentCache());
+		iter.iterOverSegmentID(sdw.GetSegmentID());
+
+		uint32_t counter = 0;
+
+		OmSegment* seg = iter.getNextSegment();
+		while(seg){
+			++counter;
+			seg = iter.getNextSegment();
+		}
+
+		return counter;
 	}
 };
 

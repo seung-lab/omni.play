@@ -62,32 +62,23 @@ void OmView3dUi::MouseWheel(QWheelEvent * event)
 
 void OmView3dUi::KeyPress(QKeyEvent * event)
 {
-	if (event->key() == Qt::Key_C) {
+	switch(event->key()){
+	case Qt::Key_C:
+	{
 		SegmentationDataWrapper sdw(1);
-		OmSegmentation & current_seg = sdw.GetSegmentation();
-
-		const DataCoord voxel =
-			OmSegmentUtils::FindCenterOfSelectedSegments(sdw);
-		SpaceCoord picked_voxel = current_seg.DataToSpaceCoord(voxel);
-
-		mViewGroupState->SetViewSliceDepth(YZ_VIEW, picked_voxel.x );
-		mViewGroupState->SetViewSliceDepth(XY_VIEW, picked_voxel.z );
-		mViewGroupState->SetViewSliceDepth(XZ_VIEW, picked_voxel.y );
-
-		mpView3d->mCamera.SetFocus(picked_voxel);
-		mpView3d->updateGL();
-
-		OmEvents::ViewCenterChanged();
-
-	} else if (event->key() == Qt::Key_Escape) {
-		resetWindow();
-	} else if (event->key() == Qt::Key_Minus) {
-		doZoom(-1);
-	} else if (event->key() == Qt::Key_Equal) {
-		doZoom(1);
+		OmSegmentUtils::CenterSegment(mViewGroupState, sdw);
+		break;
 	}
-
-	NavigationModeKeyPress(event);
+	case Qt::Key_Escape:
+		resetWindow();
+		break;
+	case Qt::Key_Minus:
+		doZoom(-1);
+		break;
+	case Qt::Key_Equal:
+		doZoom(1);
+		break;
+	}
 }
 
 void OmView3dUi::doZoom(int direction)
@@ -100,7 +91,7 @@ void OmView3dUi::doZoom(int direction)
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
 	const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
-	if (!sdw.isValidWrapper()) {
+	if (!sdw.IsValidSegment()) {
 		mpView3d->updateGL();
 		return;
 	}
@@ -148,10 +139,6 @@ void OmView3dUi::NavigationModeMouseDoubleClick(QMouseEvent * event)
 void OmView3dUi::NavigationModeMouseWheel(QWheelEvent* event)
 {
 	CameraMovementMouseWheel(event);
-}
-
-void OmView3dUi::NavigationModeKeyPress(QKeyEvent *)
-{
 }
 
 /////////////////////////////////
@@ -230,7 +217,7 @@ SegmentDataWrapper OmView3dUi::PickSegmentMouse(QMouseEvent * event,
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
 	int pickName;
 	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
-	if(!sdw.isValidWrapper()){
+	if(!sdw.IsValidSegment()){
 		return SegmentDataWrapper();
 	}
 
@@ -260,7 +247,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	//get ids
 	int pick_object_type;
 	SegmentDataWrapper sdw = PickSegmentMouse(event, drag, &pick_object_type);
-	if (!sdw.isValidWrapper()){
+	if (!sdw.IsValidSegment()){
 		return;
 	}
 
@@ -270,7 +257,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	}
 
 	//get segment state
-	OmSegmentSelector sel(sdw.GetSegmentationID(), this, "view3dUi" );
+	OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view3dUi" );
 	if( augment_selection ){
 		sel.augmentSelectedSet_toggle( sdw.getID() );
 	} else {
@@ -285,7 +272,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
 	SegmentDataWrapper sdw = PickSegmentMouse(event, false);
-	if (!sdw.isValidWrapper()){
+	if (!sdw.IsValidSegment()){
 		mpView3d->updateGL();
 		return;
 	}
@@ -302,7 +289,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 	SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	if(!sdw.isValidWrapper()){
+	if(!sdw.IsValidSegment()){
 		return;
 	}
 
@@ -320,7 +307,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	const SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	if(!sdw.isValidWrapper()) {
+	if(!sdw.IsValidSegment()) {
 		return;
 	}
 
@@ -343,7 +330,7 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 	int pickName;
 	mpView3d->updateGL();
 	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
-	if(!sdw.isValidWrapper()){
+	if(!sdw.IsValidSegment()){
 		return SegmentDataWrapper();
 	}
 
@@ -354,7 +341,7 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 	}
 
 	//define depth scale factor
-	float z_depth_scale = 0.0f;
+	const float z_depth_scale = 0.0f;
 
 	//normalized vector from camera to unprojected point
 	Vector3f cam_to_point = (point3d - mpView3d->mCamera.GetPosition());

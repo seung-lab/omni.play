@@ -14,11 +14,6 @@ public:
 		instance().sdw_ = SegmentDataWrapper();
 	}
 
-	static void Set(const OmID segmentationID, const OmSegID segmentID)
-	{
-		Set(SegmentDataWrapper(segmentationID, segmentID));
-	}
-
 	static void Set(const SegmentDataWrapper& sdw)
 	{
 		instance().sdw_ = sdw;
@@ -31,7 +26,7 @@ public:
 
 	static void RandomizeColor()
 	{
-		if(!instance().sdw_.isValidWrapper()){
+		if(!instance().sdw_.IsValidSegment()){
 			return;
 		}
 		instance().sdw_.RandomizeColor();
@@ -41,7 +36,7 @@ public:
 
 	static void ToggleValid()
 	{
-		if(!instance().sdw_.isValidWrapper()){
+		if(!instance().sdw_.IsValidSegment()){
 			return;
 		}
 

@@ -2,21 +2,20 @@
 #define OM_VIEW_GROUP_STATE_H
 
 #include "system/omManageableObject.h"
-#include "gui/inspectors/inspectorProperties.h"
-
 #include "zi/omMutex.h"
 
-class SegmentDataWrapper;
-class OmBrushSize;
-class OmTileCoord;
 class FilterWidget;
+class InspectorProperties;
 class MainWindow;
+class OmBrushSize;
+class OmMipVolume;
 class OmSegment;
 class OmSegmentColorizer;
+class OmTileCoord;
+class OmZoomLevel;
+class SegmentDataWrapper;
 class ToolBarManager;
 class ViewGroup;
-class OmMipVolume;
-class OmZoomLevel;
 
 class OmViewGroupState : public OmManageableObject {
 public:

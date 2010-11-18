@@ -13,6 +13,7 @@
 #include "volume/omMipVolume.h"
 
 #include <QSize>
+#include <QMouseEvent>
 
 /**
  * Encapsulate most of state needed by view2d
@@ -102,6 +103,12 @@ public:
 		};
 
 		throw OmArgException("invalid viewType");
+	}
+
+	inline float GetResOfDataSlice() const
+	{
+		const Vector3f& res = vol_->GetDataResolution();
+		return getViewTypeDepth(res);
 	}
 
 	inline int GetDepthToDataSlice() const
@@ -205,14 +212,16 @@ public:
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
-		SetDataSliceToDepth(depth+numberOfSlicestoAdvance);
+		float res = GetResOfDataSlice();
+		SetDataSliceToDepth(depth+numberOfSlicestoAdvance*res);
 	}
 
 	inline void MoveDownStackFartherFromViewer()
 	{
 		const int depth = GetDepthToDataSlice();
 		const int numberOfSlicestoAdvance = om::pow2int(getMipLevel());
-		SetDataSliceToDepth(depth-numberOfSlicestoAdvance);
+		float res = GetResOfDataSlice();
+		SetDataSliceToDepth(depth-numberOfSlicestoAdvance*res);
 	}
 
     // mouse movement

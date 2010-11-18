@@ -128,7 +128,7 @@ sub genOmniScript {
     $script .= "make $globalMakeOptions;";
 
     if(isMac()) {
-	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.0/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.1/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
     open (SCRIPT, ">", $omniScriptFile) or die $!;
@@ -320,7 +320,7 @@ sub qt47 {
     # suggests --no-excpetion to reduce gcc-induced memory footprint increases
     # disable postgres/sqlite
     # debug not enabled?
-    my $baseFileName = "qt-everywhere-opensource-src-4.7.0";
+    my $baseFileName = "qt-everywhere-opensource-src-4.7.1";
     my @argsList = qw( -release -opensource -no-glib -v
  -no-exceptions
  -no-fast -make libs -make tools

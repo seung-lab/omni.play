@@ -233,7 +233,7 @@ void OmProject::RemoveSegmentation(const OmID id)
 		OmChannel & channel = OmProject::GetChannel(channelID);
 		foreach( OmID filterID, channel.GetValidFilterIds()) {
 			OmFilter2d &filter = channel.GetFilter(filterID);
-			if (filter.GetSegmentation() == id){
+			if (filter.GetSegmentationWrapper().GetSegmentationID() == id){
 				filter.SetSegmentation(0);
 			}
 		}

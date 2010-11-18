@@ -21,7 +21,7 @@ public:
 	static int getSizeofType(const int);
 	static OmDataWrapperPtr getDataWrapper(void*,
 					       const int,
-					       const OmDataAllocType);
+					       const om::OmDataAllocType);
 
 };
 

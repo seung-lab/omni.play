@@ -3,19 +3,20 @@
 
 #include "common/omCommon.h"
 
+class SegmentDataWrapper;
+
 class OmEvents {
  public:
 	static void ToolChange();
 	static void Redraw2d();
 	static void Redraw3d();
 	static void SegmentModified();
-	static void SegmentModified(OmID segmentationId,
-								const OmID segmentJustSelectedID,
+	static void SegmentModified(const SegmentDataWrapper& sdw,
 								void* sender,
 								std::string comment,
 								const bool doScroll);
 	static void ViewCenterChanged();
-	static void ViewRecenter();
+	static void View3dRecenter();
 	static void ViewBoxChanged();
 	static void ViewPosChanged();
 	static void SegmentEditSelectionChanged();

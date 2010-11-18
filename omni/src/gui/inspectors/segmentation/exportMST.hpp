@@ -35,10 +35,9 @@ private:
 
 		QTextStream out(&data);
 
-		boost::shared_ptr<SegmentationDataWrapper> sdw =
-			mParent->GetSegmentationDataWrapper();
-		OmSegmentCache* segmentCache = sdw->GetSegmentCache();
-		boost::shared_ptr<OmMST> mst = sdw->GetSegmentation().getMST();
+		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		OmSegmentCache* segmentCache = sdw.GetSegmentCache();
+		boost::shared_ptr<OmMST> mst = sdw.GetSegmentation().getMST();
 		OmMSTEdge* edges = mst->Edges();
 
 		QStringList headerLabels;

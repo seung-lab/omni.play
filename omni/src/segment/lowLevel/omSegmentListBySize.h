@@ -29,7 +29,9 @@ public:
 	uint64_t GetSegmentSize(OmSegment* seg);
 
 	size_t Size();
-	quint64 VoxelCount(){return mVoxels;}
+	uint64_t VoxelCount(){
+		return mVoxels;
+	}
 	void Dump();
 	void Clear();
 
@@ -68,7 +70,7 @@ protected:
 
 	OmSegSizes mList;
 
-	quint64 mVoxels;
+	uint64_t mVoxels;
 
 private:
 	void advanceIter(List_by_size& sizeIndex,

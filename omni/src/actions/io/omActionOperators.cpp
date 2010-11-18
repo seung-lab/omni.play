@@ -172,10 +172,10 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a)
 {
 	int version = 1;
 	out << version;
-	out << a.mSegmentationId;
+	out << a.sdw_.GetSegmentationID();
 	out << a.mNewSelectedIdSet;
 	out << a.mOldSelectedIdSet;
-	out << a.mSegmentJustSelectedID;
+	out << a.sdw_.GetSegmentID();
 
 	return out;
 }
@@ -184,10 +184,17 @@ QDataStream& operator>>(QDataStream& in,  OmSegmentSelectActionImpl& a)
 {
 	int version;
 	in >> version;
-	in >> a.mSegmentationId;
+
+	OmID segmentationID;
+	in >> segmentationID;
+
 	in >> a.mNewSelectedIdSet;
 	in >> a.mOldSelectedIdSet;
-	in >> a.mSegmentJustSelectedID;
+
+	OmSegID segmentID;
+	in >> segmentID;
+
+	a.sdw_ = SegmentDataWrapper(segmentationID, segmentID);
 
 	return in;
 }

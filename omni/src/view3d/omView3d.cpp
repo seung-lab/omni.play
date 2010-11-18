@@ -14,6 +14,10 @@
 #include "widgets/omInfoWidget.h"
 #include "widgets/omSelectionWidget.h"
 #include "widgets/omViewBoxWidget.h"
+#include "segment/omSegmentIterator.h"
+
+
+DECLARE_ZiARG_bool(noView3dThrottle);
 
 enum View3dWidgetIds {
 	VIEW3D_WIDGET_ID_SELECTION = 0,
@@ -150,7 +154,11 @@ void OmView3d::paintGL()
  */
 void OmView3d::myUpdate()
 {
-	doTimedDraw();
+	if(ZiARG_noView3dThrottle){
+		updateGL();
+	} else {
+		doTimedDraw();
+	}
 }
 
 void OmView3d::doTimedDraw()
@@ -286,6 +294,21 @@ void OmView3d::View3dRecenter()
 {
 	const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
 	mCamera.SetFocus(picked_voxel);
+
+        quint64 segSize = 0;
+        FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
+                OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
+
+        	OmSegmentIterator iter(seg->GetSegmentCache());
+        	iter.iterOverSelectedIDs();
+        	OmSegment * segment = iter.getNextSegment();
+        	while(NULL != segment) {
+                	segSize += segment->getSizeWithChildren();
+                	segment = iter.getNextSegment();
+        	}
+        }
+
+	mCamera.SetDistance(sqrt(sqrt(segSize))*6);
 	updateGL();
 }
 
@@ -352,7 +375,7 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2d, int& pickName)
 	const OmSegID segmentID = result[1];
 	SegmentDataWrapper sdw(segmentationID, segmentID);
 
-	if (!sdw.isValidWrapper()){
+	if (!sdw.IsValidSegment()){
 		return SegmentDataWrapper();
 	}
 

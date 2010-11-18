@@ -57,7 +57,7 @@ void FilObjectInspector::set_initial_values()
 
 	alphaSlider->setValue(filter.GetAlpha() * 100);
 	chanEdit->setText(QString::number(filter.GetChannel()));
-	segEdit->setText(QString::number(filter.GetSegmentation()));
+	segEdit->setText(QString::number(filter.GetSegmentationWrapper().GetSegmentationID()));
 }
 
 QGroupBox* FilObjectInspector::makeFilterOptionsBox()

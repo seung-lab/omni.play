@@ -47,10 +47,10 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord& id,
 	: cache_(cache)
 	, mpMipMeshManager(pMipMeshManager)
 	, mMeshCoordinate(id)
+	, mHasData(false)
+	, displayList_(0)
+	, hasDisplayList_(false)
 {
-	mHasData = false;
-	displayList = 0;
-	hasDisplayList = false;
 	//init mesh data
 	mTrianCount = 0;
 
@@ -68,22 +68,13 @@ OmMipMesh::OmMipMesh(const OmMipMeshCoord& id,
 	mVertexDataVboId = NULL_VBO_ID;
 	mVertexIndexDataVboId = NULL_VBO_ID;
 
-	mHdf5File = NULL;
-
-	mSegmentationID = 0;
-
 	mPath = GetDirectoryPath();
 }
 
 OmMipMesh::~OmMipMesh()
 {
-	if (hasDisplayList) {
-		hasDisplayList = false;
-		OmGarbage::assignOmGenlistId(displayList);
-	}
-
-	if (mHdf5File) {
-		delete mHdf5File;
+	if (hasDisplayList_) {
+		OmGarbage::assignOmGenlistId(displayList_);
 	}
 
 	// OmDataWrapperPtr will take care of image data destruction...
@@ -192,11 +183,6 @@ void OmMipMesh::Save()
 //	hdf5File->flush();
 }
 
-std::string OmMipMesh::GetFileName()
-{
-	return OmDataPaths::getMeshFileName( mMeshCoordinate );
-}
-
 std::string OmMipMesh::GetDirectoryPath()
 {
 	return OmDataPaths::getMeshDirectoryPath(mMeshCoordinate,
@@ -263,8 +249,73 @@ void OmMipMesh::DeleteVbo()
 	mVertexIndexDataVboId = NULL_VBO_ID;
 }
 
-/////////////////////////////////
-///////          Draw Methods
+void OmMipMesh::makeDisplayList()
+{
+	displayList_ = glGenLists(1);
+	hasDisplayList_ = true;
+	glNewList(displayList_, GL_COMPILE);
+
+	CreateVbo();
+
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	////bind VBOs so gl*Pointer() operations are offset instead of real pointers
+	//bind vertex data VBO
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, mVertexDataVboId);
+	//specify vector size for interleaved vector data
+	uint32_t vector_size = 3 * sizeof(GL_FLOAT);
+	//specify normal (type, stride, pointer)
+	glNormalPointer(GL_FLOAT, 2 * vector_size, (void *)vector_size);
+	//specify vertex (coordinates, type, stride, pointer)
+	glVertexPointer(3, GL_FLOAT, 2 * vector_size, 0);
+
+	////bind vertex index data VBO
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mVertexIndexDataVboId);
+	//specify index pointer (type, stride, pointer)
+	glIndexPointer(GL_UNSIGNED_INT, 0, 0);
+
+	//activate client state vertex and normal array
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	int size = 0;
+	//// draw mesh elements
+	//debug(elements, "going to draw elements\n");
+	if(mStripCount) {
+		unsigned int * stripOffsetSizeData = mpStripOffsetSizeDataWrap->getPtr<unsigned int>();
+		for (uint32_t idx = 0; idx < mStripCount; ++idx) {
+			size += stripOffsetSizeData[2 * idx + 1];
+			glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
+						   stripOffsetSizeData[2 * idx + 1],	//elements in strip
+						   GL_UNSIGNED_INT,	//type
+						   (GLuint *) 0 + stripOffsetSizeData[2 * idx]);	//strip offset
+		}
+	}
+	if(mTrianCount) {
+		unsigned int * trianOffsetSizeData = mpTrianOffsetSizeDataWrap->getPtr<unsigned int>();
+		for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
+			glDrawElements(GL_TRIANGLES,      //triangle trian
+						   trianOffsetSizeData[2 * idx + 1],        //elements in trian
+						   GL_UNSIGNED_INT,   //type
+						   (GLuint *) 0 + trianOffsetSizeData[2 * idx]);    //trian offset
+		}
+	}
+	//debug(tri,"strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
+	//debug(elements, "done drawing %i elements\n", mStripCount);
+
+	//disable client state
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+
+	// release VBOs: gl*Pointer() return to normal
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
+
+	DeleteVbo();
+
+	glPopAttrib();
+	glEndList();
+}
 
 void OmMipMesh::Draw()
 {
@@ -272,78 +323,12 @@ void OmMipMesh::Draw()
 		return;
 	}
 
-        if (!hasDisplayList) {
-		displayList = glGenLists(1);
-		hasDisplayList = true;
-		glNewList(displayList, GL_COMPILE);
-
-		CreateVbo();
-
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-		////bind VBOs so gl*Pointer() operations are offset instead of real pointers
-		//bind vertex data VBO
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, mVertexDataVboId);
-		//specify vector size for interleaved vector data
-		uint32_t vector_size = 3 * sizeof(GL_FLOAT);
-		//specify normal (type, stride, pointer)
-		glNormalPointer(GL_FLOAT, 2 * vector_size, (void *)vector_size);
-		//specify vertex (coordinates, type, stride, pointer)
-		glVertexPointer(3, GL_FLOAT, 2 * vector_size, 0);
-
-		////bind vertex index data VBO
-		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, mVertexIndexDataVboId);
-		//specify index pointer (type, stride, pointer)
-		glIndexPointer(GL_UNSIGNED_INT, 0, 0);
-
-		//activate client state vertex and normal array
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_VERTEX_ARRAY);
-
-		int size = 0;
-		//// draw mesh elements
-		//debug(elements, "going to draw elements\n");
-		if(mStripCount) {
-			unsigned int * stripOffsetSizeData = mpStripOffsetSizeDataWrap->getPtr<unsigned int>();
-			for (uint32_t idx = 0; idx < mStripCount; ++idx) {
-				size += stripOffsetSizeData[2 * idx + 1];
-				glDrawElements(GL_TRIANGLE_STRIP,	//triangle strip
-							   stripOffsetSizeData[2 * idx + 1],	//elements in strip
-							   GL_UNSIGNED_INT,	//type
-							   (GLuint *) 0 + stripOffsetSizeData[2 * idx]);	//strip offset
-			}
-		}
-		if(mTrianCount) {
-			unsigned int * trianOffsetSizeData = mpTrianOffsetSizeDataWrap->getPtr<unsigned int>();
-			for (uint32_t idx = 0; idx < mTrianCount; ++idx) {
-				glDrawElements(GL_TRIANGLES,      //triangle trian
-							   trianOffsetSizeData[2 * idx + 1],        //elements in trian
-							   GL_UNSIGNED_INT,   //type
-							   (GLuint *) 0 + trianOffsetSizeData[2 * idx]);    //trian offset
-			}
-		}
-		//debug(tri,"strip count: %i, avg: %f\n", mStripCount, (float)size / mStripCount);
-		//debug(elements, "done drawing %i elements\n", mStripCount);
-
-		//disable client state
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-
-		// release VBOs: gl*Pointer() return to normal
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, NULL_VBO_ID);
-		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, NULL_VBO_ID);
-
-		DeleteVbo();
-
-		glPopAttrib();
-		glEndList();
+	if (!hasDisplayList_) {
+		makeDisplayList();
 	}
 
-	glCallList(displayList);
+	glCallList(displayList_);
 }
-
-/////////////////////////////////
-///////          Utility Functions
 
 /*
  * Creates a VBO with given properties and checks it was loaded properly.
@@ -376,14 +361,4 @@ GLuint OmMipMesh::createVbo(const void *data, int dataSize, GLenum target, GLenu
 	glBindBufferARB(target, NULL_VBO_ID);
 
 	return id;		// return VBO id
-}
-
-void OmMipMesh::setSegmentationID(OmID sid)
-{
-	mSegmentationID = sid;
-}
-
-OmID OmMipMesh::GetSegmentationID()
-{
-	return mSegmentationID;
 }

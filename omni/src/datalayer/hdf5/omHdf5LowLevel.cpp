@@ -85,7 +85,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readDataset(int *size)
 	}
 
 	OmDataWrapperPtr data =
-		OmHdf5Utils::getDataWrapper(dataset_data, dstype, MALLOC);
+		OmHdf5Utils::getDataWrapper(dataset_data, dstype, om::MALLOC);
 	H5Tclose( dstype );
 
 	//Releases and terminates access to a dataspace.
@@ -458,7 +458,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(const DataBbox& extent)
 	}
 
 	OmDataWrapperPtr data =
-		OmHdf5Utils::getDataWrapper( imageData, dstype, MALLOC );
+		OmHdf5Utils::getDataWrapper( imageData, dstype, om::MALLOC );
 
 	H5Tclose( dstype );
 

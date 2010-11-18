@@ -30,12 +30,12 @@ public:
 
 	void Load();
 	void Save();
-	uint64_t NumBytes() const { return numBytes_; }
+	uint64_t NumBytes() const {
+		return numBytes_;
+	}
 	void Flush(){}
 
-	std::string GetFileName();
 	std::string GetDirectoryPath();
-	std::string GetLocalPathForHd5fChunk();
 
 	bool IsVbo();
 	void CreateVbo();
@@ -44,15 +44,13 @@ public:
 	bool IsEmptyMesh();
 
 	void Draw();
-	void setSegmentationID(OmID sid);
-	OmID GetSegmentationID();
 
-	bool hasData(){ return mHasData; }
+	bool hasData(){
+		return mHasData;
+	}
 
 private:
 	OmMeshCache *const cache_;
-	OmID mSegmentationID;
-	OmHdf5* mHdf5File;
 	OmMipMeshManager *const mpMipMeshManager;
 	OmMipMeshCoord mMeshCoordinate;
 
@@ -86,15 +84,16 @@ private:
 	uint32_t m2VertexCount;
 	GLfloat *m2VertexData;
 
+ 	GLuint displayList_;
+	bool hasDisplayList_;
 	GLuint createVbo(const void *data, int dataSize, GLenum target, GLenum usage);
- 	GLuint displayList;
-	bool hasDisplayList;
+	void makeDisplayList();
 
 	void doLoad();
 
 	friend class OmMesher;
-        friend class ziMeshingChunk;
-        friend class ziMesher;
+	friend class ziMeshingChunk;
+	friend class ziMesher;
     friend class MipChunkMeshCollector;
 };
 

@@ -18,16 +18,14 @@ public:
 private:
 	void doAction()
 	{
-		boost::shared_ptr<SegmentationDataWrapper> sdw =
-			mParent->GetSegmentationDataWrapper();
-
 		const QString fileName =
 			QFileDialog::getSaveFileName(this, tr("Export As"));
 
 		if (fileName == NULL)
 			return;
 
-		sdw->GetSegmentation().ExportInternalData(fileName, true);
+		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
+		sdw.GetSegmentation().ExportInternalData(fileName, true);
 	}
 };
 

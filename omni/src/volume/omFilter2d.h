@@ -10,9 +10,9 @@
 #include "system/omManageableObject.h"
 
 class OmMipVolume;
+class SegmentationDataWrapper;
 
 class OmFilter2d : public OmManageableObject {
-
 public:
 	OmFilter2d();
 	OmFilter2d(OmID);
@@ -24,7 +24,7 @@ public:
 	void SetAlpha(const double);
 	double GetAlpha();
 
-	OmID GetSegmentation();
+	SegmentationDataWrapper GetSegmentationWrapper() const;
 	void SetSegmentation(const OmID id);
 
 	OmID GetChannel();

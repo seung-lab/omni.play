@@ -471,7 +471,7 @@ void MyInspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw)
 			OmChannel & channel = OmProject::GetChannel(channelID);
 			foreach(OmID filterID, channel.GetValidFilterIds()) {
 				OmFilter2d &filter = channel.GetFilter(filterID);
-				if (filter.GetSegmentation() == sdw.getID()){
+				if (filter.GetSegmentationWrapper() == sdw){
 					mParentWindow->cleanViewsOnVolumeChange(CHANNEL,channelID);
 				}
 			}

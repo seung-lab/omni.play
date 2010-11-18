@@ -59,7 +59,7 @@ OmSegment* OmSegmentCacheImpl::GetOrAddSegment(const OmSegID val)
 	return seg;
 }
 
-OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction( OmSegmentEdge e )
+OmSegmentEdge OmSegmentCacheImpl::SplitEdgeUserAction(const OmSegmentEdge& e)
 {
 	if(!e.isValid()){
 		return OmSegmentEdge();
@@ -121,8 +121,13 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 	return edgeThatGotBroken;
 }
 
-std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegmentEdge e )
+std::pair<bool, OmSegmentEdge>
+OmSegmentCacheImpl::JoinFromUserAction(const OmSegmentEdge& e)
 {
+	if(!e.isValid()){
+		return std::make_pair(false, OmSegmentEdge());
+	}
+
 	std::pair<bool, OmSegmentEdge> edge = JoinEdgeFromUser( e );
 	if(edge.first){
 		userEdges()->AddEdge(edge.second);
@@ -130,7 +135,8 @@ std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinFromUserAction( OmSegment
 	return edge;
 }
 
-std::pair<bool, OmSegmentEdge> OmSegmentCacheImpl::JoinEdgeFromUser( OmSegmentEdge e )
+std::pair<bool, OmSegmentEdge>
+OmSegmentCacheImpl::JoinEdgeFromUser(const OmSegmentEdge& e)
 {
 	const OmSegID childRootID = mSegmentGraph.graph_getRootID(e.childID);
 	OmSegment* childRoot = GetSegment(childRootID);

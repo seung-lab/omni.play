@@ -21,7 +21,7 @@ private:
 	}
 
 	uint64_t Size() {
-		return currentSDW->GetSegmentLists()->Uncertain().size();
+		return sdw_.GetSegmentLists()->Uncertain().size();
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -29,7 +29,7 @@ private:
 					const int numToGet,
 					const OmSegID startSeg)
 	{
-		return currentSDW->GetSegmentLists()
+		return sdw_.GetSegmentLists()
 			->Uncertain().getPageOfSegmentIDs(offset, numToGet, startSeg);
 	}
 

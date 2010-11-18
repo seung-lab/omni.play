@@ -132,7 +132,7 @@ void ChanInspector::populateChannelInspector()
 
 
 	OmChannel & current_channel = OmProject::GetChannel(cdw->getID());
-        gridLayout_3->addWidget(new OmVolInspector(&current_channel, this), 4, 0, 1, 1);
+	gridLayout_3->addWidget(new OmVolInspector(current_channel, this), 4, 0, 1, 1);
 
 	notesEdit->setPlainText( cdw->getNote() );
 

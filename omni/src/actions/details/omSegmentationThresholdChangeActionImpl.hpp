@@ -1,6 +1,7 @@
 #ifndef OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 #define OM_SEGMENTATION_THRESHOLD_CHANGE_IMPL_HPP
 
+#include "system/omEvents.h"
 #include "common/omCommon.h"
 #include "project/omProject.h"
 #include "actions/io/omActionLogger.hpp"
@@ -28,12 +29,14 @@ public:
 		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 		mOldThreshold = seg.GetDendThreshold();
 		seg.SetDendThreshold(mThreshold);
+		OmEvents::SegmentModified();
 	}
 
 	void Undo()
 	{
 		OmSegmentation & seg = OmProject::GetSegmentation(mSegmentationId);
 		seg.SetDendThreshold(mOldThreshold);
+		OmEvents::SegmentModified();
 	}
 
 	std::string Description() const

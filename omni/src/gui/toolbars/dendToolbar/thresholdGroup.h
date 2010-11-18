@@ -31,7 +31,7 @@ private:
 		double threshold = 0.95;
 
 		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
-		if(sdw.IsValidWrapper()){
+		if(sdw.IsSegmentationValid()){
 			threshold = sdw.GetSegmentation().GetDendThreshold();
 		}
 
@@ -41,7 +41,7 @@ private:
 	void actUponThresholdChange( const float threshold )
 	{
 		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
-		if(!sdw.IsValidWrapper()){
+		if(!sdw.IsSegmentationValid()){
 			return;
 		}
 

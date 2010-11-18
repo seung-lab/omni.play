@@ -67,7 +67,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.isValidWrapper()){
+		if (!sdw.IsValidSegment()){
 			return;
 		}
 
@@ -106,7 +106,7 @@ private:
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
 
 		//return if not valid
-		if (!sdw.isValidWrapper() ){
+		if (!sdw.IsValidSegment() ){
 			return;
 		}
 

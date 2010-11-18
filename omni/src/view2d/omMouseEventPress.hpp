@@ -53,9 +53,9 @@ public:
 private:
 	void doFindAndSplitSegment(QMouseEvent* event)
 	{
-		SegmentDataWrapper* sdw = getSelectedSegment(event);
+		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
 
-		if(NULL == sdw) {
+		if(!sdw) {
 			return;
 		}
 
@@ -106,7 +106,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if ( sdw.isValidWrapper() ) {
+		if ( sdw.IsValidSegment() ) {
 			//run action
 			if (!doselection) {
 				if (dosubtract) {
@@ -138,19 +138,17 @@ private:
 	{
 		bool augment_selection = event->modifiers() & Qt::ShiftModifier;
 
-		SegmentDataWrapper * sdw = getSelectedSegment( event );
-		if( NULL == sdw ){
+		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+		if(!sdw){
 			return;
 		}
 
-		return doSelectSegment( (*sdw), augment_selection );
+		return doSelectSegment(*sdw, augment_selection );
 	}
 
-	void doSelectSegment( SegmentDataWrapper sdw, bool augment_selection )
+	void doSelectSegment(const SegmentDataWrapper& sdw, bool augment_selection )
 	{
-		OmSegmentation & segmentation = sdw.GetSegmentation();
-
-		if( !sdw.isValidWrapper() ){
+		if( !sdw.IsValidSegment() ){
 			printf("not valid\n");
 			return;
 		}
@@ -159,7 +157,7 @@ private:
 
 		OmSegmentSelected::Set(sdw);
 
-		OmSegmentSelector sel( segmentation.GetID(), this, "view2dEvent" );
+		OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view2dEvent" );
 		if( augment_selection ){
 			sel.augmentSelectedSet_toggle( segmentID);
 		} else {
@@ -173,35 +171,35 @@ private:
 
 	void mouseShowSegmentContextMenu(QMouseEvent * event)
 	{
-		SegmentDataWrapper * sdw = getSelectedSegment(event);
-		if(sdw) {
+		boost::optional<SegmentDataWrapper> sdw = getSelectedSegment(event);
+		if(sdw){
 			mSegmentContextMenu.Refresh(*sdw, state_->getViewGroupState());
 			mSegmentContextMenu.exec(event->globalPos());
 		}
 	}
 
-	SegmentDataWrapper* getSelectedSegment( QMouseEvent * event )
+	boost::optional<SegmentDataWrapper> getSelectedSegment( QMouseEvent * event )
 	{
 		const DataCoord dataClickPoint =
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		if(SEGMENTATION == state_->getVol()->getVolumeType()){
-			return getSelectedSegmentSegmentation(dataClickPoint,
-												  state_->getVol()->getID());
+			SegmentationDataWrapper sdw(state_->getVol()->getID());
+			return getSelectedSegmentSegmentation(dataClickPoint, sdw);
 		}
 
-		SegmentDataWrapper* ret = NULL;
+		boost::optional<SegmentDataWrapper> ret;
 		OmChannel& channel = OmProject::GetChannel(state_->getVol()->getID());
 		foreach( OmID id, channel.GetValidFilterIds() ) {
 
 			OmFilter2d &filter = channel.GetFilter(id);
-			OmID segmentationID = filter.GetSegmentation();
-			if (!OmProject::IsSegmentationValid(segmentationID)){
+			SegmentationDataWrapper sdw = filter.GetSegmentationWrapper();
+			if (!sdw.IsSegmentationValid()){
 				continue;
 			}
 
-			ret = getSelectedSegmentSegmentation(dataClickPoint,
-												 segmentationID);
+			ret = getSelectedSegmentSegmentation(dataClickPoint, sdw);
+
 			if(ret){
 				break;
 			}
@@ -210,17 +208,21 @@ private:
 		return ret;
 	}
 
-	SegmentDataWrapper*
+	boost::optional<SegmentDataWrapper>
 	getSelectedSegmentSegmentation(const DataCoord& dataClickPoint,
-								   const OmID segmentationID)
+								   const SegmentationDataWrapper& sdw)
 	{
-		OmSegmentation & segmentation =
-			OmProject::GetSegmentation(segmentationID);
-		const OmSegID segmentID = segmentation.GetVoxelValue(dataClickPoint);
+		const OmSegID segmentID =
+			sdw.GetSegmentation().GetVoxelValue(dataClickPoint);
+
+		printf("id = %u\n", segmentID);
+
 		if(0 == segmentID){
-			return NULL;
+			return boost::optional<SegmentDataWrapper>();
 		}
-		return new SegmentDataWrapper(segmentationID, segmentID);
+
+		SegmentDataWrapper ret(sdw, segmentID);
+		return boost::optional<SegmentDataWrapper>(ret);
 	}
 };
 

@@ -2,19 +2,16 @@
 #define OM_SEGMENT_SELECTOR_H
 
 #include "common/omCommon.h"
+#include "utility/dataWrappers.h"
 
 class OmSegmentation;
 class OmSegmentCache;
 
-class OmSegmentSelector
-{
+class OmSegmentSelector {
  public:
-	OmSegmentSelector(OmSegmentation* segmentation,
+	OmSegmentSelector(const SegmentationDataWrapper& sdw,
 					  void* sender,
-					  const std::string& cmt);
-	OmSegmentSelector( const OmID segmentationID,
-					   void* sender,
-					   const std::string & cmt );
+					  const std::string & cmt );
 
 	void selectJustThisSegment( const OmSegID segID, const bool isSelected );
 	void augmentSelectedSet( const OmSegID segID, const bool isSelected );
@@ -28,10 +25,9 @@ class OmSegmentSelector
 	void setAddToRecentList(const bool shouldAdd);
 
 private:
-	OmSegmentation *const mSegmentation;
-	OmSegmentCache *const segmentCache_;
+	SegmentDataWrapper sdw_;
+	OmSegmentCache* segmentCache_;
 
-	OmID mSegmentJustSelectedID;
 	void * mSender;
 	std::string mComment;
 

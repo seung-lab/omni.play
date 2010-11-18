@@ -1,3 +1,4 @@
+#include "gui/inspectors/inspectorProperties.h"
 #include "actions/omActions.hpp"
 #include "common/omDebug.h"
 #include "gui/inspectors/segObjectInspector.h"
@@ -51,12 +52,12 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 }
 
 bool OmSegmentContextMenu::isValid() const {
-	assert(sdw_.isValidWrapper());
+	assert(sdw_.IsValidSegment());
 	return sdw_.FindRoot()->IsValidListType();
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-	assert(sdw_.isValidWrapper());
+	assert(sdw_.IsValidSegment());
 	return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
@@ -109,21 +110,21 @@ void OmSegmentContextMenu::addDendActions()
 
 void OmSegmentContextMenu::select()
 {
-	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), true);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselect()
 {
-	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.augmentSelectedSet(sdw_.getID(), false);
 	sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselectOthers()
 {
-	OmSegmentSelector sel(sdw_.GetSegmentationID(), this, "view3d" );
+	OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d" );
 	sel.selectNoSegments();
 	sel.selectJustThisSegment(sdw_.getID(), true);
 	sel.sendEvent();
@@ -175,7 +176,7 @@ void OmSegmentContextMenu::randomizeSegmentColor()
 void OmSegmentContextMenu::setValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.isValidWrapper()){
+	if(sdw_.IsValidSegment()){
 		OmActions::ValidateSegment(sdw_, om::SET_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -184,7 +185,7 @@ void OmSegmentContextMenu::setValid()
 void OmSegmentContextMenu::setNotValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.isValidWrapper()){
+	if(sdw_.IsValidSegment()){
 		OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -210,7 +211,7 @@ void OmSegmentContextMenu::addPropertiesActions()
 void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if (sdw_.isValidWrapper()){
+	if (sdw_.IsValidSegment()){
 		OmSegmentCache* segCache = sdw_.GetSegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(sdw_.FindRootID());

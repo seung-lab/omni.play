@@ -2,16 +2,17 @@
 #define SEGMENT_LIST_BASE_H
 
 #include "common/omCommon.h"
+#include "utility/dataWrappers.h"
 
 #include <QtGui>
 #include <QWidget>
 
 class OmSegIDsListWithPage;
-class SegmentationDataWrapper;
 class OmViewGroupState;
 class OmSegmentEvent;
 class OmSegmentListWidget;
 class SegObjectInspector;
+class OmViewGroupState;
 
 class SegmentListBase : public QWidget {
 	Q_OBJECT
@@ -23,15 +24,13 @@ public:
 				  const OmSegID segmentJustSelectedID = 0,
 				  const bool useOffset = false);
 
-	void makeSegmentationActive(SegmentationDataWrapper sdw,
-								const OmSegID segmentJustSelectedID,
+	void makeSegmentationActive(const SegmentDataWrapper& sdw,
 								const bool doScroll );
 
-	int dealWithSegmentObjectModificationEvent(OmSegmentEvent* event);
+	SegmentationDataWrapper dealWithSegmentObjectModificationEvent(OmSegmentEvent* event);
 
 	void userJustClickedInThisSegmentList();
-	void rebuildSegmentList(const OmID segmentationID,
-							const OmSegID segmentJustAddedID);
+	void rebuildSegmentList(const SegmentDataWrapper& sdw);
 
 	virtual bool shouldSelectedSegmentsBeAddedToRecentList() = 0;
 
@@ -61,7 +60,7 @@ protected:
 
 	OmSegmentListWidget* segmentListWidget;
 
-	boost::shared_ptr<SegmentationDataWrapper> currentSDW;
+	SegmentationDataWrapper sdw_;
 	bool haveValidSDW;
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -74,6 +73,8 @@ protected:
 
 	int currentPageNum;
 	quint32 getTotalNumberOfSegments();
+
+	OmViewGroupState * vgs_;
 };
 
 #endif

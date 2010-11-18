@@ -2,18 +2,16 @@
 #include "actions/details/omSegmentSelectAction.h"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 
-OmSegmentSelectAction::OmSegmentSelectAction(const OmID segmentationId,
+OmSegmentSelectAction::OmSegmentSelectAction(const SegmentDataWrapper& sdw,
 											 const OmSegIDsSet & newSelectedIdSet,
 											 const OmSegIDsSet & oldSelectedIdSet,
-											 const OmID segmentJustSelected,
 											 void * sender,
 											 const std::string& comment,
 											 const bool doScroll,
 											 const bool addToRecentList)
-	: impl_(boost::make_shared<OmSegmentSelectActionImpl>(segmentationId,
+	: impl_(boost::make_shared<OmSegmentSelectActionImpl>(sdw,
 														 newSelectedIdSet,
 														 oldSelectedIdSet,
-														 segmentJustSelected,
 														 sender,
 														 comment,
 														 doScroll,

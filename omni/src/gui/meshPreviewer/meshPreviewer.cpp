@@ -12,7 +12,7 @@
 #include <boost/make_shared.hpp>
 
 MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
-									 boost::shared_ptr<SegmentationDataWrapper> sdw,
+									 const SegmentationDataWrapper& sdw,
 									 OmViewGroupState* vgs)
 	: QWidget(parent)
 	, sdw_(sdw)
@@ -37,7 +37,7 @@ MeshPreviewerImpl::MeshPreviewerImpl(QWidget* parent,
 
 void MeshPreviewerImpl::mesh()
 {
-	OmSegmentation& segmentation = sdw_->GetSegmentation();
+	OmSegmentation& segmentation = sdw_.GetSegmentation();
 	const DataCoord center =
 		segmentation.NormToDataCoord(NormCoord(0.5, 0.5, 0.5));
 	const OmMipChunkCoord coord = segmentation.DataToMipCoord(center, 0);
@@ -48,7 +48,7 @@ void MeshPreviewerImpl::mesh()
 	segmentation.GetChunk(chunk, coord);
 
 	// select all segments
-	OmSegmentSelector sel(segmentation.GetID(), this, "meshPreviewer");
+	OmSegmentSelector sel(sdw_, this, "meshPreviewer");
 	sel.selectNoSegments();
 	FOR_EACH(iter, chunk->GetDirectDataValues()){
 		sel.augmentSelectedSet(*iter, true);

@@ -14,28 +14,26 @@ public:
 								  "Build",
 								  "Build",
 								  false)
-	{
-	}
+	{}
 
 private:
 	void doAction()
 	{
-		const SegmentationDataWrapper sdw = *mParent->GetSegmentationDataWrapper();
+		const SegmentationDataWrapper& sdw = mParent->GetSegmentationDataWrapper();
 
-		boost::shared_ptr<OmBuildSegmentation> bs
-			= boost::make_shared<OmBuildSegmentation>(sdw);
+		OmBuildSegmentation* bs = new OmBuildSegmentation(sdw);
 
 		bs->setFileNamesAndPaths( mParent->getFileInfoList() );
 
 		const QString whatOrHowToBuild = mParent->buildComboBox->currentText();
 		if ("Data" == whatOrHowToBuild ){
-			bs->BuildImage(om::BLOCKING);
+			bs->BuildImage(om::NON_BLOCKING);
 
 		} else if ( "Mesh" == whatOrHowToBuild ){
-			bs->BuildMesh(om::BLOCKING);
+			bs->BuildMesh(om::NON_BLOCKING);
 
 		} else if ("Data & Mesh" == whatOrHowToBuild){
-			bs->BuildAndMeshSegmentation(om::BLOCKING);
+			bs->BuildAndMeshSegmentation(om::NON_BLOCKING);
 
 		} else if ("Load Dendrogram" == whatOrHowToBuild){
 			bs->loadDendrogram();

@@ -22,7 +22,7 @@ private:
 	}
 
 	uint64_t Size() {
-		return currentSDW->GetSegmentLists()->Working().size();
+		return sdw_.GetSegmentLists()->Working().size();
 	}
 
 	boost::shared_ptr<OmSegIDsListWithPage>
@@ -30,8 +30,7 @@ private:
 					const int numToGet,
 					const OmSegID startSeg)
 	{
-		return currentSDW->GetSegmentLists()
-			->Working().getPageOfSegmentIDs(offset, numToGet, startSeg);
+		return sdw_.GetSegmentLists()->Working().getPageOfSegmentIDs(offset, numToGet, startSeg);
 	}
 
 	int getPreferredTabIndex(){

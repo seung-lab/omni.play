@@ -484,7 +484,7 @@ void Headless::processLine(const QString& line, const QString&)
 
 		SegmentationDataWrapper sdw(segID);
 
-		if (!sdw.IsValidWrapper()){
+		if (!sdw.IsSegmentationValid()){
 			printf("Segmentation %i is not a valid segmentation\n", segID);
 			return;
 		}

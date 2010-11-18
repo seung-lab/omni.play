@@ -1,6 +1,7 @@
 #ifndef ELEMENT_LIST_BOX_IMPL_H
 #define ELEMENT_LIST_BOX_IMPL_H
 
+#include "common/omDebug.h"
 #include "gui/segmentLists/details/segmentListRecent.h"
 #include "gui/segmentLists/details/segmentListUncertain.h"
 #include "gui/segmentLists/details/segmentListValid.h"
@@ -21,7 +22,7 @@ private:
 	QTabWidget * mDataElementsTabs;
 	QVBoxLayout * mOverallContainer;
 	QProgressBar * mValidProgress;
-	
+
 	int mCurrentlyActiveTab;
 
 	SegmentListRecent * recentList_;
@@ -36,26 +37,30 @@ private:
 		reset();
 		setTitle("");
 
-		const OmID segmentationID1 = workingList_->dealWithSegmentObjectModificationEvent(event);
-		const OmID segmentationID2 = validList_->dealWithSegmentObjectModificationEvent(event);
+		const SegmentationDataWrapper sdw
+			= workingList_->dealWithSegmentObjectModificationEvent(event);
+		validList_->dealWithSegmentObjectModificationEvent(event);
 		uncertainList_->dealWithSegmentObjectModificationEvent(event);
 		recentList_->dealWithSegmentObjectModificationEvent(event);
 
-		SegmentationDataWrapper sdw(segmentationID1);
-		if( segmentationID1 > 0 && segmentationID1 == segmentationID2 ){
+		if(sdw.IsSegmentationValid()){
 			setTitle(GetSegmentationGroupBoxTitle(sdw));
+			updateValidBar(sdw);
 		}
+	}
 
-		quint64 valid = sdw.GetSegmentLists()->Valid().VoxelCount();
-		quint64 working = sdw.GetSegmentLists()->Working().VoxelCount();
-		quint64 uncertain = sdw.GetSegmentLists()->Uncertain().VoxelCount();
+	void updateValidBar(const SegmentationDataWrapper& sdw)
+	{
+		const uint64_t valid = sdw.GetSegmentLists()->Valid().VoxelCount();
+		const uint64_t working = sdw.GetSegmentLists()->Working().VoxelCount();
+		const uint64_t uncertain = sdw.GetSegmentLists()->Uncertain().VoxelCount();
 
 		mValidProgress->setMaximum((int)valid+working+uncertain);
 		mValidProgress->setMinimum(0);
 		mValidProgress->setValue((int)valid);
-		printf("valid %li = %f\n", valid, float(valid) / (valid+working+uncertain));
-		printf("working %li\n", working);
-		printf("un %li\n", uncertain);
+		debug(validBar, "valid %li = %f\n", valid, float(valid) / (valid+working+uncertain));
+		debug(validBar, "working %li\n", working);
+		debug(validBar, "un %li\n", uncertain);
 	}
 
 	QString GetSegmentationGroupBoxTitle(SegmentationDataWrapper sdw) {
@@ -118,10 +123,12 @@ public:
 
 	void RebuildLists(const SegmentDataWrapper& sdw)
 	{
-		workingList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
-		validList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
-		recentList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
-		uncertainList_->rebuildSegmentList(sdw.GetSegmentationID(), sdw.getID());
+		workingList_->rebuildSegmentList(sdw);
+		validList_->rebuildSegmentList(sdw);
+		recentList_->rebuildSegmentList(sdw);
+		uncertainList_->rebuildSegmentList(sdw);
+
+		updateValidBar(sdw.MakeSegmentationDataWrapper());
 	}
 
 	void UpdateSegmentListBox(const SegmentationDataWrapper& sdw)
@@ -129,16 +136,22 @@ public:
 		reset();
 		setTitle(GetSegmentationGroupBoxTitle(sdw));
 		makeSegmentationActive(sdw);
+
+		updateValidBar(sdw);
 	}
 
 private:
 
 	void makeSegmentationActive(const SegmentationDataWrapper& sdw)
 	{
-		workingList_->makeSegmentationActive(sdw, 0, true );
-		validList_->makeSegmentationActive(sdw, 0, true );
-		recentList_->makeSegmentationActive(sdw, 0, true );
-		uncertainList_->makeSegmentationActive(sdw, 0, true);
+		SegmentDataWrapper s(sdw, 0);
+
+		workingList_->makeSegmentationActive(s, true );
+		validList_->makeSegmentationActive(s, true );
+		recentList_->makeSegmentationActive(s, true );
+		uncertainList_->makeSegmentationActive(s, true);
+
+		updateValidBar(sdw);
 	}
 };
 

@@ -7,6 +7,7 @@ ZiARG_int64(psn, 0, "mac OSX proces ID");
 ZiARG_bool(perf, false, "enable performance tests");
 ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_string(importHDF5seg, "", "create new Omni project file from data");
+ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 
 #include <zi/logging.hpp>
 USE_ZiLOGGING(STDOUT);

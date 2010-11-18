@@ -47,7 +47,7 @@ public:
 		return list_.GetNextSegmentIDinList(id);
 	}
 
-	quint64 VoxelCount(){
+	uint64_t VoxelCount(){
 		return list_.VoxelCount();
 	}
 

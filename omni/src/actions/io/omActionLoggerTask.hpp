@@ -78,8 +78,8 @@ private:
 
 		const QString fn =
 			date+"--"+
-			sessionCounter+"--"+
 			time+"--"+
+			sessionCounter+"--"+
 			actionName+"--"+
 			actionDoOrUndo+
 			".log";

@@ -84,6 +84,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/omDataWrapper.h \
            src/datalayer/omIDataWriter.h \
            src/datalayer/omDummyWriter.h \
+           src/gui/updateSegmentProperties.hpp \
            src/gui/meshPreviewer/meshPreviewer.hpp \
            src/gui/meshPreviewer/scaleFactorLineEdit.hpp \
            src/gui/mstViewer.hpp \
@@ -395,7 +396,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/inspectors/inspectorProperties.cpp \
            src/gui/inspectors/segmentation/segInspector.cpp \
            src/gui/inspectors/segObjectInspector.cpp \
-           src/gui/inspectors/volInspector.cpp \
            src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/menubar.cpp \
@@ -423,7 +423,6 @@ SOURCES += lib/strnatcmp.cpp \
            src/gui/toolbars/dendToolbar/graphTools.cpp \
            src/gui/toolbars/dendToolbar/displayTools.cpp \
            src/gui/toolbars/dendToolbar/autoBreakCheckbox.cpp \
-           src/gui/toolbars/mainToolbar/filterWidget.cpp \
            src/gui/toolbars/mainToolbar/mainToolbar.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.cpp \
            src/gui/toolbars/mainToolbar/navAndEditButtons.cpp \

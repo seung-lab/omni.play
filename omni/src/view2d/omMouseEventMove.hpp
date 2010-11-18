@@ -67,7 +67,7 @@ private:
 	void selectSegments(QMouseEvent* event)
 	{
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.isValidWrapper()){
+		if (!sdw.IsValidSegment()){
 			return;
 		}
 
@@ -89,7 +89,7 @@ private:
 	void paint(QMouseEvent* event)
 	{
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if (!sdw.isValidWrapper()){
+		if (!sdw.IsValidSegment()){
 			return;
 		}
 

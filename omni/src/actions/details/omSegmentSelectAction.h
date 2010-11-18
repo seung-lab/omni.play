@@ -4,15 +4,17 @@
 #include "actions/details/omAction.h"
 
 class OmSegmentSelectActionImpl;
+class SegmentDataWrapper;
 
 class OmSegmentSelectAction : public OmAction {
 public:
-        OmSegmentSelectAction(boost::shared_ptr<OmSegmentSelectActionImpl> impl) : impl_(impl) {}
+	OmSegmentSelectAction(boost::shared_ptr<OmSegmentSelectActionImpl> impl)
+		: impl_(impl)
+	{}
 
-	OmSegmentSelectAction(const OmID segmentationId,
+	OmSegmentSelectAction(const SegmentDataWrapper& sdw,
 						  const OmSegIDsSet & mNewSelectedIdSet,
 						  const OmSegIDsSet & mOldSelectedIdSet,
-						  const OmID segmentJustSelected,
 						  void* sender,
 						  const std::string & comment,
 						  const bool doScroll,

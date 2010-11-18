@@ -22,8 +22,8 @@ public:
 	OmSegment* AddSegment(OmSegID value);
 	OmSegment* GetOrAddSegment(const OmSegID val);
 
-	std::pair<bool, OmSegmentEdge> JoinFromUserAction(OmSegmentEdge e);
-	OmSegmentEdge SplitEdgeUserAction(OmSegmentEdge e);
+	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmSegmentEdge& e);
+	OmSegmentEdge SplitEdgeUserAction(const OmSegmentEdge& e);
 	OmSegIDsSet JoinTheseSegments(const OmSegIDsSet& segmentList);
 	OmSegIDsSet UnJoinTheseSegments(const OmSegIDsSet& segmentList);
 
@@ -37,7 +37,7 @@ private:
 
 	boost::shared_ptr<OmUserEdges> userEdges();
 
-	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(OmSegmentEdge e);
+	std::pair<bool, OmSegmentEdge> JoinEdgeFromUser(const OmSegmentEdge& e);
 	std::pair<bool, OmSegmentEdge> JoinFromUserAction(const OmID, const OmID);
 
 	void rerootSegmentLists();

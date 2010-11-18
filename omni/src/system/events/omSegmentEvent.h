@@ -6,7 +6,7 @@
  *	Brett Warne - bwarne@mit.edu - 3/14/09
  */
 
-
+#include "utility/dataWrappers.h"
 #include "system/events/omEvent.h"
 #include "common/omCommon.h"
 
@@ -16,8 +16,9 @@ class OmSegmentEvent : public OmEvent {
 
  public:
 	OmSegmentEvent(QEvent::Type type);
-	OmSegmentEvent(QEvent::Type type, OmID);
-	OmSegmentEvent(QEvent::Type type, OmID, OmID, void*, std::string, const bool );
+	OmSegmentEvent(QEvent::Type type, const SegmentDataWrapper& sdw,
+				   void*, std::string, const bool );
+
 	void Dispatch(OmEventListener *);
 
 	//class
@@ -28,15 +29,24 @@ class OmSegmentEvent : public OmEvent {
 	static const QEvent::Type SEGMENT_DATA_MODIFICATION = (QEvent::Type) (CLASS + 2);
 	static const QEvent::Type SEGMENT_EDIT_SELECTION_CHANGE = (QEvent::Type) (CLASS + 3);
 
-	OmID GetModifiedSegmentationId();
-	OmID GetSegmentJustSelectedID();
-	void* getSender();
-	std::string getComment();
-	bool getDoScroll();
+	const SegmentDataWrapper& GetSegmentDataWrapper() const{
+		return sdw_;
+	}
+
+	void* getSender() const {
+		return mSender;
+	}
+
+	const std::string& getComment() const {
+		return mComment;
+	}
+
+	bool getDoScroll() const {
+		return mDoScroll;
+	}
 
  private:
-	OmID  mSegmentationId;
-	OmID  mSegmentJustSelectedID;
+	SegmentDataWrapper sdw_;
 	void* mSender;
 	std::string mComment;
 	bool mDoScroll;

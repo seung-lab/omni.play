@@ -33,6 +33,7 @@ public:
 	SegmentationDataWrapper& operator =(const SegmentationDataWrapper& sdw){
 		if (this != &sdw){
 			id_ = sdw.id_;
+			segmentation_ = sdw.segmentation_;
 		}
 		return *this;
 	}
@@ -65,7 +66,7 @@ public:
 		return SEGMENTATION;
 	}
 
-	inline bool IsValidWrapper() const
+	inline bool IsSegmentationValid() const
 	{
 		if(!id_){
 			return false;

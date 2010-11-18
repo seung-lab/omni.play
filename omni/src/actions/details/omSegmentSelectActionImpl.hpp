@@ -9,10 +9,9 @@
 
 class OmSegmentSelectActionImpl {
 private:
-	OmID mSegmentationId;
+	SegmentDataWrapper sdw_;
 	OmSegIDsSet mNewSelectedIdSet;
 	OmSegIDsSet mOldSelectedIdSet;
-	OmID mSegmentJustSelectedID;
 	void * mSender;
 	std::string mComment;
 	bool mDoScroll;
@@ -20,18 +19,16 @@ private:
 
 public:
 	OmSegmentSelectActionImpl() {}
-	OmSegmentSelectActionImpl(const OmID segmentationId,
+	OmSegmentSelectActionImpl(const SegmentDataWrapper& sdw,
 							  const OmSegIDsSet & newSelectedIdSet,
 							  const OmSegIDsSet & oldSelectedIdSet,
-							  const OmID segmentJustSelected,
 							  void* sender,
 							  const std::string & comment,
 							  const bool doScroll,
 							  const bool addToRecentList)
-		: mSegmentationId(segmentationId)
+		: sdw_(sdw)
 		, mNewSelectedIdSet(newSelectedIdSet)
 		, mOldSelectedIdSet(oldSelectedIdSet)
-		, mSegmentJustSelectedID(segmentJustSelected)
 		, mSender(sender)
 		, mComment(comment)
 		, mDoScroll(doScroll)
@@ -40,12 +37,10 @@ public:
 
 	void Execute()
 	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
-													  mAddToRecentList);
+		sdw_.GetSegmentCache()->UpdateSegmentSelection(mNewSelectedIdSet,
+													   mAddToRecentList);
 
-		OmEvents::SegmentModified(mSegmentationId,
-								  mSegmentJustSelectedID,
+		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
 								  mDoScroll);
@@ -53,12 +48,10 @@ public:
 
 	void Undo()
 	{
-		SegmentationDataWrapper sdw(mSegmentationId);
-		sdw.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
-													  mAddToRecentList);
+		sdw_.GetSegmentCache()->UpdateSegmentSelection(mOldSelectedIdSet,
+													   mAddToRecentList);
 
-		OmEvents::SegmentModified(mSegmentationId,
-								  mSegmentJustSelectedID,
+		OmEvents::SegmentModified(sdw_,
 								  mSender,
 								  mComment,
 								  mDoScroll);

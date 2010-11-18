@@ -28,24 +28,21 @@ private:
     {
         OmMipMeshCoord mmCoor( mipCoordinate_, id );
         OmMipMeshPtr   oMesh = mipMeshManager_->AllocMesh( mmCoor );
-        oMesh->setSegmentationID( segmentationId_ );
 
         oMesh->mVertexIndexCount = strips->indicesSize();
         oMesh->mpVertexIndexDataWrap =
             OmDataWrapper< GLuint >::produce
-            ( new GLuint[oMesh->mVertexIndexCount], NEW_ARRAY );
-
+            ( new GLuint[oMesh->mVertexIndexCount], om::NEW_ARRAY );
 
         oMesh->mVertexCount = strips->dataSize() / 6;
         oMesh->mpVertexDataWrap =
             OmDataWrapper<float>::produce
-            ( new GLfloat[ strips->dataSize() ], NEW_ARRAY );
-
+            ( new GLfloat[ strips->dataSize() ], om::NEW_ARRAY );
 
         oMesh->mStripCount = strips->stripsSize() / 2;
         oMesh->mpStripOffsetSizeDataWrap =
             OmDataWrapper<uint32_t>::produce
-            ( new uint32_t[ strips->stripsSize() ], NEW_ARRAY );
+            ( new uint32_t[ strips->stripsSize() ], om::NEW_ARRAY );
 
         strips->copyTo( oMesh->mpVertexDataWrap->getPtr<float>(),
                         oMesh->mpVertexIndexDataWrap->getPtr<GLuint>(),

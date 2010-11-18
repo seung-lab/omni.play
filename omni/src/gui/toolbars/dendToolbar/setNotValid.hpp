@@ -21,7 +21,7 @@ private:
 	{
 		//debug(dendbar, "ValidationGroup::deleteGroup\n");
 		SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
-		if(!sdw.IsValidWrapper()){
+		if(!sdw.IsSegmentationValid()){
 			return;
 		}
 

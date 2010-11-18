@@ -17,7 +17,7 @@ JoinButton::JoinButton(GraphTools * d)
 void JoinButton::doAction()
 {
 	SegmentationDataWrapper sdw = mParent->GetSegmentationDataWrapper();
-	if(!sdw.IsValidWrapper()){
+	if(!sdw.IsSegmentationValid()){
 		return;
 	}
 

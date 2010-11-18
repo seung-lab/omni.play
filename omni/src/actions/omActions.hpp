@@ -48,10 +48,9 @@ public:
 	static void FindAndSplitSegments(const SegmentDataWrapper& sdw,
 									 OmViewGroupState* vgs);
 
-	static void SelectSegments(const OmID segmentationId,
+	static void SelectSegments(const SegmentDataWrapper& sdw,
 							   const OmSegIDsSet & mNewSelectedIdSet,
 							   const OmSegIDsSet & mOldSelectedIdSet,
-							   const OmID segmentJustSelected,
 							   void* sender,
 							   const std::string & comment,
 							   const bool doScroll,

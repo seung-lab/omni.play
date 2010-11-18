@@ -40,8 +40,7 @@ public:
 	virtual ~OmBuildSegmentation()
 	{
 		threadPool_.join();
-		threadPool_.stop();
-		printf("OmBuildSegmentation done!\n");
+ 		printf("OmBuildSegmentation done!\n");
 	}
 
 	SegmentationDataWrapper& GetDataWrapper(){
@@ -62,8 +61,7 @@ public:
 		if(om::BLOCKING == block){
 			do_build_seg_image();
 		} else {
-			zi::thread th(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
-			th.start();
+			threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_image, this)));
 		}
 	}
 
@@ -72,8 +70,7 @@ public:
 		if(om::BLOCKING == block){
 			do_build_seg_mesh();
 		} else {
-			zi::thread th(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this)));
-			th.start();
+			threadPool_.addTaskBack(zi::run_fn(zi::bind(&OmBuildSegmentation::do_build_seg_mesh, this)));
 		}
 	}
 

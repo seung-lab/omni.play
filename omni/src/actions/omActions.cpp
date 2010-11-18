@@ -55,13 +55,10 @@ void OmActions::SetVoxels(const OmID segmentationID,
 void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 								const om::SetValid valid)
 {
-	OmSegmentValidateAction::Validate(sdw, valid);
-	if(!OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate()){
-		return;
-	}
-
+	bool jump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 	OmSegID seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(sdw.getSegment()->getRootSegID());
-	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
+	OmSegmentValidateAction::Validate(sdw, valid);
+	if(jump && seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
 		sdw.GetSegmentCache()->SetAllSelected(false);
 		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
@@ -70,26 +67,28 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 void OmActions::ValidateSegment(const SegmentationDataWrapper& sdw,
 								const om::SetValid valid)
 {
-	OmSegmentValidateAction::Validate(sdw, valid);
-	if(!OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate()){
-		return;
-	}
+	bool jump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
 	OmSegmentIterator iter(sdw.GetSegmentCache());
 	iter.iterOverSelectedIDs();
 	OmSegment * segment = iter.getNextSegment();
+	OmSegID orig = segment->getRootSegID();
 	OmSegID seg = 0;
-	while(NULL != segment) {
+	while(jump && NULL != segment) {
 		seg = sdw.GetSegmentation().GetSegmentLists()->Working().GetNextSegmentIDinList(segment->getRootSegID());
 		if(seg) {
 			break;
 		}
 		segment = iter.getNextSegment();
 	}
-	if(seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
+
+	OmSegmentValidateAction::Validate(sdw, valid);
+
+	if(jump && seg && sdw.GetSegmentCache()->IsSegmentValid(seg)) {
 		sdw.GetSegmentCache()->SetAllSelected(false);
 		sdw.GetSegmentCache()->setSegmentSelected(seg, true, true);
 	}
+
 }
 
 void OmActions::UncertainSegment(const SegmentDataWrapper& sdw,
@@ -119,19 +118,17 @@ void OmActions::FindAndSplitSegments(const SegmentDataWrapper& sdw,
 	OmSegmentSplitAction::DoFindAndSplitSegment(sdw, vgs);
 }
 
-void OmActions::SelectSegments(const OmID segmentationId,
+void OmActions::SelectSegments(const SegmentDataWrapper& sdw,
 							   const OmSegIDsSet & mNewSelectedIdSet,
 							   const OmSegIDsSet & mOldSelectedIdSet,
-							   const OmID segmentJustSelected,
 							   void* sender,
 							   const std::string & comment,
 							   const bool doScroll,
 							   const bool addToRecentList)
 {
-	(new OmSegmentSelectAction(segmentationId,
+	(new OmSegmentSelectAction(sdw,
 							   mNewSelectedIdSet,
 							   mOldSelectedIdSet,
-							   segmentJustSelected,
 							   sender,
 							   comment,
 							   doScroll,
