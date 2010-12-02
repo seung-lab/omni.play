@@ -79,7 +79,7 @@ public:
 		return OmProject::IsSegmentationValid(segmentationID_);
 	}
 
-	inline bool IsValidSegment() const
+	inline bool IsSegmentValid() const
 	{
 		if(!segmentID_ && !segmentationID_){
 			return false;

@@ -4,11 +4,33 @@
 #include "segment/omSegmentCache.h"
 #include "common/omCommon.h"
 #include "system/omGroup.h"
+#include "gui/widgets/omButton.h"
 #include <QTreeWidgetItem>
 #include <QMenu>
 
 static OmID mSeg = 1; //FIXME!
 static GroupsTable * gTable = NULL;
+
+class GroupButton : public OmButton<GroupsTable>
+{
+public:
+	GroupButton(GroupsTable * parent, OmSegID seg) :
+		OmButton<GroupsTable>(parent, QString("%1").arg(seg), "", false),
+		seg_(seg)
+	{
+	}
+protected:
+	virtual bool event(QEvent * event) { mParent->SetSegmentID(seg_); return QWidget::event(event); }
+private:
+	void doAction() { }
+	
+	OmSegID seg_;
+};
+
+void GroupsTable::SetSegmentID(OmSegID seg)
+{
+	seg_ = seg;
+}
 
 GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vgs)
 {
@@ -27,10 +49,8 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 	mMenu = new QMenu ();
 	mMenu->addSeparator();
 	QAction * delAction = new QAction(QString("Remove"), this);
-/*
         connect(delAction, SIGNAL(triggered(bool)),
                 this, SLOT(doDeleteAction()));
-*/
 
 	mMenu->addAction(delAction);
 
@@ -40,7 +60,17 @@ GroupsTable::GroupsTable(OmViewGroupState * vgs) : QWidget(), mViewGroupState(vg
 
 void GroupsTable::doDeleteAction()
 {
-	printf("here %p %p\n", QObject::sender(), mMenu);
+	printf("here %p %p %u %u\n", QObject::sender(), mMenu, seg_, groupid_);
+
+        if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
+                return;
+        }
+        OmSegmentation & seg = OmProject::GetSegmentation(GetSegmentationID());
+        OmGroup & group = seg.GetGroups()->GetGroup(groupid_);
+	
+	OmSegIDsSet set;
+	set.insert(seg_);
+	seg.GetGroups()->UnsetGroup(set, group.GetName());
 }
 
 OmID GroupsTable::GetSegmentationID()
@@ -53,19 +83,25 @@ void GroupsTable::populateGroupsList()
 	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
 		return;
 	}
+	printf("repopulating..\n");
 	mGroupsList->populate(OmProject::GetSegmentation(GetSegmentationID()));
 }
 
-void GroupsTable::Repopulate()
+void GroupsTable::Repopulate(OmSegID id)
 {
 	if(!gTable) {
 		return;
 	}
 	gTable->populateGroupsList();
+
+	if(id) {
+		gTable->populateGroupTable(id);
+	}
 }
 
 void GroupsTable::populateGroupTable(OmGroupID id)
 {
+	groupid_ = id;
 	if(!OmProject::IsSegmentationValid(GetSegmentationID())) {
 		return;
 	}
@@ -80,11 +116,9 @@ void GroupsTable::populateGroupTable(OmGroupID id)
 		OmSegment * segment = cache->GetSegment(id);
 		OmColor color = segment->GetColorInt();
 		//printf("HI! %i\n", id);
-		QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
+		//QPushButton * segmentButton = new QPushButton(QString("%1").arg(id));
+		GroupButton * segmentButton = new GroupButton(this, id);
 		segmentButton->setMenu(mMenu);
-	        connect(segmentButton, SIGNAL(clicked(bool)),
-                	this, SLOT(doDeleteAction()));
-
 
 		mGroupsTable->setCellWidget(count, 0, segmentButton);
 

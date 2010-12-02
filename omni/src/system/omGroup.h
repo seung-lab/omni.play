@@ -29,6 +29,12 @@ public:
 			mIDs.insert(segid);
 		}
 	}
+	void RemoveIds(const OmSegIDsSet& ids)
+	{
+		foreach(OmSegID segid, ids) {
+			mIDs.erase(segid);
+		}
+	}
 
 	OmGroupName GetName() {
 		return mName;

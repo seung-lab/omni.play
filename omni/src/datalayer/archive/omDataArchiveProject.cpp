@@ -1,3 +1,4 @@
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/io/omUserEdges.hpp"
 #include "mesh/omMipMeshManager.h"
 #include "common/omException.h"
@@ -24,7 +25,7 @@
 
 //TODO: Someday, delete subsamplemode and numtoplevel variables
 
-static const int Omni_Version = 19;
+static const int Omni_Version = 20;
 static const QString Omni_Postfix("OMNI");
 static int fileVersion_;
 
@@ -63,20 +64,26 @@ void OmDataArchiveProject::ArchiveRead(const OmDataPath& path,
 		throw OmIoException("corruption detected in Omni file");
 	}
 
+	if(fileVersion_ < Omni_Version){
+		Upgrade(path, project);
+	}
+}
+
+void OmDataArchiveProject::Upgrade(const OmDataPath& path,
+								   OmProject* project)
+{
 	if(fileVersion_ < 14){
 		OmUpgraders::to14();
-		ArchiveWrite(path, project);
-	} else if(fileVersion_ < 15){
-		ArchiveWrite(path, project);
-	} else if(fileVersion_ < 16){
-		ArchiveWrite(path, project);
-	} else if(fileVersion_ < 17){
-		ArchiveWrite(path, project);
-	} else if(fileVersion_ < 18){
-		ArchiveWrite(path, project);
+		OmUpgraders::to20();
+		OmUpgraders::RebuildCenterOfSegmentData();
 	} else if(fileVersion_ < 19){
-		ArchiveWrite(path, project);
+		OmUpgraders::to20();
+		OmUpgraders::RebuildCenterOfSegmentData();
+	} else if(fileVersion_ < 20){
+		OmUpgraders::to20();
 	}
+
+	ArchiveWrite(path, project);
 }
 
 void OmDataArchiveProject::ArchiveWrite(const OmDataPath& path,
@@ -372,6 +379,7 @@ QDataStream &operator>>(QDataStream& in, OmSegmentation& seg)
 	}
 
 	seg.mst_->Read();
+	seg.validGroupNum_->Load();
 	seg.mSegmentCache->refreshTree();
 
 	return in;

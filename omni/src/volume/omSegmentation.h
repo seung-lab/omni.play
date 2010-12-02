@@ -13,6 +13,7 @@
 
 class OmMipMeshManager;
 class OmGroups;
+class OmValidGroupNum;
 class OmMST;
 class OmUserEdges;
 class OmSegmentLists;
@@ -64,11 +65,15 @@ public:
 
 	void SetDendThreshold( double t );
 	double GetDendThreshold();
+
 	boost::shared_ptr<OmMST> getMST(){
 		return mst_;
 	}
 	boost::shared_ptr<OmUserEdges> getMSTUserEdges(){
 		return mstUserEdges_;
+	}
+	boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum(){
+		return validGroupNum_;
 	}
 
 	void UpdateVoxelBoundingData();
@@ -92,6 +97,7 @@ private:
 	boost::shared_ptr<OmMST> mst_;
 	boost::shared_ptr<OmUserEdges> mstUserEdges_;
 	boost::shared_ptr<OmMipMeshManager> mMipMeshManager;
+	boost::shared_ptr<OmValidGroupNum> validGroupNum_;
 
 	OmDataWrapperPtr doExportChunk(const OmMipChunkCoord &,
 								   const bool rerootSegments);

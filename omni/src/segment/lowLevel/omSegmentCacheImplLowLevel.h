@@ -56,7 +56,7 @@ public:
 	void turnBatchModeOn(const bool batchMode);
 
 	quint32 getPageSize();
-	quint32 getMaxValue();
+	uint32_t getMaxValue();
 
 	OmSegmentCache* GetSegmentCache();
 

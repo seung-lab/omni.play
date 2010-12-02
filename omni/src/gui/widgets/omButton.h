@@ -38,8 +38,7 @@ private:
 	void mousePressEvent(QMouseEvent* event)
 	{
 		QPushButton::mousePressEvent(event);
-
-        if (event->button() == Qt::LeftButton) {
+        	if (event->button() == Qt::LeftButton) {
 			doAction();
 		}
 	}

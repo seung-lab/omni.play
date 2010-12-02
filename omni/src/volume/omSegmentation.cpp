@@ -1,3 +1,4 @@
+#include "segment/io/omValidGroupNum.hpp"
 #include "common/omCommon.h"
 #include "common/omDebug.h"
 #include "datalayer/omDataPaths.h"
@@ -33,6 +34,7 @@ OmSegmentation::OmSegmentation()
 	, mst_(boost::make_shared<OmMST>(this))
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
+	, validGroupNum_(boost::make_shared<OmValidGroupNum>(this))
 {}
 
 // used by OmGenericManager
@@ -46,6 +48,7 @@ OmSegmentation::OmSegmentation(OmID id)
 	, mst_(boost::make_shared<OmMST>(this))
 	, mstUserEdges_(boost::make_shared<OmUserEdges>(this))
 	, mMipMeshManager(boost::make_shared<OmMipMeshManager>(this))
+	, validGroupNum_(boost::make_shared<OmValidGroupNum>(this))
 {
 	//uses meta data
 	mStoreChunkMetaData = true;
@@ -318,6 +321,7 @@ void OmSegmentation::Flush()
 {
 	mSegmentCache->Flush();
 	mst_->Flush();
+	validGroupNum_->Save();
 	mstUserEdges_->Save();
 }
 

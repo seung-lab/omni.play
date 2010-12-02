@@ -74,7 +74,7 @@ OmSegmentEdge OmSegmentCacheImpl::splitChildFromParent( OmSegment * child )
 
 	if( child->IsValidListType() == parent->IsValidListType() &&
 	    1 == child->IsValidListType() ){
-		printf("could not split %d from %d\n", child->value(), parent->value());
+		printf("could not split %d from %d (one or more was valid!)\n", child->value(), parent->value());
 		return OmSegmentEdge();
 	}
 

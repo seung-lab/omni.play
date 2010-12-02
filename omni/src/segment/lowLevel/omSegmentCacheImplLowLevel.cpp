@@ -259,7 +259,7 @@ quint32 OmSegmentCacheImplLowLevel::getPageSize()
 	return mSegments->getPageSize();
 }
 
-quint32 OmSegmentCacheImplLowLevel::getMaxValue()
+uint32_t OmSegmentCacheImplLowLevel::getMaxValue()
 {
 	return mMaxValue;
 }

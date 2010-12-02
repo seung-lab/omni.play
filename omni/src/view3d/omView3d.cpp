@@ -293,22 +293,46 @@ void OmView3d::View3dUpdatePreferencesEvent()
 void OmView3d::View3dRecenter()
 {
 	const SpaceCoord picked_voxel = mViewGroupState->GetViewDepthCoord();
-	mCamera.SetFocus(picked_voxel);
 
-        quint64 segSize = 0;
+	Vector3f res = Vector3f(0.0,0.0,0.0);
+       	DataBbox box;
+
         FOR_EACH(iter, OmProject::GetValidSegmentationIds()){
                 OmSegmentation* seg = &OmProject::GetSegmentation(*iter);
+                res = seg->GetDataResolution();
 
+	
         	OmSegmentIterator iter(seg->GetSegmentCache());
         	iter.iterOverSelectedIDs();
-        	OmSegment * segment = iter.getNextSegment();
-        	while(NULL != segment) {
-                	segSize += segment->getSizeWithChildren();
+
+        	const int max = 5000;
+         	OmSegment* segment = iter.getNextSegment();
+        	for(int i = 0; segment && i < max && NULL != seg; ++i){
+
+                	const DataBbox& segBox = segment->getBounds();
+                	if(segBox.isEmpty()){
+                        	continue;
+                	}
+
+                	box.merge(segBox);
+
                 	segment = iter.getNextSegment();
         	}
+	}
+
+        if(box.isEmpty()){
+		updateGL();
+		return;
         }
 
-	mCamera.SetDistance(sqrt(sqrt(segSize))*6);
+        const DataCoord ret = (box.getMin() + box.getMax()) / 2;
+	float x = box.getMax().x - box.getMin().x; x *= res.x;
+	float y = box.getMax().y - box.getMin().y; y *= res.y;
+	float z = box.getMax().z - box.getMin().z; z *= res.z;
+
+	mCamera.SetDistance(sqrt(x*x+y*y+z*z));
+	mCamera.SetFocus(picked_voxel);
+
 	updateGL();
 }
 
@@ -375,7 +399,7 @@ SegmentDataWrapper OmView3d::PickPoint(const Vector2i& point2d, int& pickName)
 	const OmSegID segmentID = result[1];
 	SegmentDataWrapper sdw(segmentationID, segmentID);
 
-	if (!sdw.IsValidSegment()){
+	if (!sdw.IsSegmentValid()){
 		return SegmentDataWrapper();
 	}
 

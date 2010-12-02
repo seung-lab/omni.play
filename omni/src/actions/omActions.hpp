@@ -7,6 +7,7 @@
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
 class OmViewGroupState;
+class OmSegmentCache;
 
 class OmActions {
 public:
@@ -61,6 +62,10 @@ public:
 										   const OmSegIDsSet& selectedSegmentIDs,
 										   const OmGroupName name,
 										   const bool create);
+private:
+	static OmSegIDsSet MutateSegmentsInValidList(OmSegmentCache * cache, const OmSegIDsSet& ids);
+	static void UnMutateSegmentsInValidList(OmSegmentCache * cache, const OmSegIDsSet& ids);
+
 };
 
 #endif

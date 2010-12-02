@@ -26,7 +26,7 @@ public:
 
 	static void RandomizeColor()
 	{
-		if(!instance().sdw_.IsValidSegment()){
+		if(!instance().sdw_.IsSegmentValid()){
 			return;
 		}
 		instance().sdw_.RandomizeColor();
@@ -36,7 +36,7 @@ public:
 
 	static void ToggleValid()
 	{
-		if(!instance().sdw_.IsValidSegment()){
+		if(!instance().sdw_.IsSegmentValid()){
 			return;
 		}
 

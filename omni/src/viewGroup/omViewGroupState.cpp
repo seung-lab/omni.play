@@ -293,7 +293,7 @@ void OmViewGroupState::setupColorizer(const Vector2i& dims,
 		OmSegmentColorizer* sc =
 			new OmSegmentColorizer(sdw.GetSegmentCache(),
 								   sccType,
-								   dims);
+								   dims, this);
 		mColorCaches[ sccType ] =
 			boost::shared_ptr<OmSegmentColorizer>(sc);
 	}

@@ -5,6 +5,7 @@
 #include "gui/toolbars/dendToolbar/joinButton.h"
 #include "gui/toolbars/dendToolbar/splitButton.h"
 #include "gui/toolbars/dendToolbar/thresholdGroup.h"
+#include "gui/toolbars/dendToolbar/breakThresholdGroup.h"
 #include "system/omEvents.h"
 #include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
@@ -22,17 +23,30 @@ GraphTools::GraphTools(DendToolBar * d)
 	//	box->addWidget(autoBreakCheckbox);
 	autoBreakCheckbox->hide();
 	box->addWidget(new BreakButton(this));
+
+	box->addWidget(breakThresholdBox());
+}
+
+QWidget* GraphTools::breakThresholdBox()
+{
+	QGroupBox* widget = new QGroupBox("Break Threshold", this);
+	BreakThresholdGroup* breakThresholdBox = new BreakThresholdGroup(this);
+
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->addWidget(breakThresholdBox);
+
+	return widget;
 }
 
 QWidget* GraphTools::thresholdBox()
 {
-	QGroupBox* widget = new QGroupBox("Overall Threshold", this);
-	ThresholdGroup* thresholdBox = new ThresholdGroup(this);
+        QGroupBox* widget = new QGroupBox("Overall Threshold", this);
+        ThresholdGroup* thresholdBox = new ThresholdGroup(this);
 
-	QHBoxLayout* layout = new QHBoxLayout(widget);
-	layout->addWidget(thresholdBox);
+        QHBoxLayout* layout = new QHBoxLayout(widget);
+        layout->addWidget(thresholdBox);
 
-	return widget;
+        return widget;
 }
 
 void GraphTools::SetSplittingOff()

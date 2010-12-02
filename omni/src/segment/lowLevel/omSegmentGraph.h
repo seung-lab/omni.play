@@ -8,6 +8,7 @@ class OmSegment;
 class OmSegmentCacheImplLowLevel;
 class OmSegmentLists;
 class OmMST;
+class OmValidGroupNum;
 
 class OmSegmentGraph {
 public:
@@ -45,6 +46,7 @@ private:
 	bool splitChildFromParentInternal( const OmSegID childID );
 
 	quint64 computeSegmentSizeWithChildren(const OmSegID segID );
+	boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum() const;
 };
 
 #endif

@@ -52,12 +52,12 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 }
 
 bool OmSegmentContextMenu::isValid() const {
-	assert(sdw_.IsValidSegment());
+	assert(sdw_.IsSegmentValid());
 	return sdw_.FindRoot()->IsValidListType();
 }
 
 bool OmSegmentContextMenu::isUncertain() const {
-	assert(sdw_.IsValidSegment());
+	assert(sdw_.IsSegmentValid());
 	return om::UNCERTAIN == sdw_.FindRoot()->GetListType();
 }
 
@@ -176,7 +176,7 @@ void OmSegmentContextMenu::randomizeSegmentColor()
 void OmSegmentContextMenu::setValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.IsValidSegment()){
+	if(sdw_.IsSegmentValid()){
 		OmActions::ValidateSegment(sdw_, om::SET_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -185,7 +185,7 @@ void OmSegmentContextMenu::setValid()
 void OmSegmentContextMenu::setNotValid()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if(sdw_.IsValidSegment()){
+	if(sdw_.IsSegmentValid()){
 		OmActions::ValidateSegment(sdw_, om::SET_NOT_VALID);
 		OmEvents::SegmentModified();
 	}
@@ -211,7 +211,7 @@ void OmSegmentContextMenu::addPropertiesActions()
 void OmSegmentContextMenu::printChildren()
 {
 	//debug(validate, "OmSegmentContextMenu::addGroup\n");
-	if (sdw_.IsValidSegment()){
+	if (sdw_.IsSegmentValid()){
 		OmSegmentCache* segCache = sdw_.GetSegmentCache();
 		OmSegmentIterator iter(segCache);
 		iter.iterOverSegmentID(sdw_.FindRootID());

@@ -14,5 +14,7 @@ class LocalPreferences2d : public QWidget
 
  private:
  	QGroupBox* makeGeneralPropBox();
+
+	QCheckBox* showCrosshairsCheckbox_;
 };
 #endif

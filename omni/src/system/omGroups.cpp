@@ -27,11 +27,15 @@ OmGroup & OmGroups::AddGroup(OmGroupName name)
 	return group;
 }
 
-void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool)
+void OmGroups::setGroupIDs(const OmSegIDsSet & set, OmGroup * group, bool add)
 {
 	printf("adding ids\n");
-	group->AddIds(set);
-	GroupsTable::Repopulate();
+	if(add) { 
+		group->AddIds(set);
+	} else {
+		group->RemoveIds(set);
+	}
+	GroupsTable::Repopulate(group->GetID());
 }
 
 void OmGroups::SetGroup(const OmSegIDsSet & set, OmGroupName name)
@@ -51,6 +55,7 @@ void OmGroups::UnsetGroup(const OmSegIDsSet & set, OmGroupName name)
 	} else {
 		setGroupIDs(set, &GetGroup(name), false);
 	}
+	printf("!!!!!!!!!!!!!!!!!\n");
 	GroupsTable::Repopulate();
 }
 

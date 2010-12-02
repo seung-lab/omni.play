@@ -12,7 +12,7 @@ class OmSegmentColorizer {
 public:
 	OmSegmentColorizer( OmSegmentCache*,
 						const OmSegmentColorCacheType,
-						const Vector2i& dims);
+						const Vector2i& dims, OmViewGroupState * vgs);
 
 	boost::shared_ptr<OmColorRGBA> ColorTile(uint32_t const*const imageData);
 
@@ -31,6 +31,7 @@ private:
 	bool mAreThereAnySegmentsSelected;
  	const uint32_t mNumElements;
 	int mCurSegCacheFreshness;
+	OmViewGroupState * mViewGroupState;
 
 	std::vector<OmColorWithFreshness> mColorCache;
 

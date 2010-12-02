@@ -1,3 +1,4 @@
+#include "segment/omSegmentSearched.hpp"
 #include "utility/dataWrappers.h"
 #include "segment/omSegmentLists.hpp"
 #include "common/omCommon.h"
@@ -11,7 +12,6 @@
 #include "volume/omSegmentation.h"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
-
 
 SegmentListBase::SegmentListBase( QWidget * parent,
 								  OmViewGroupState* vgs)
@@ -205,9 +205,11 @@ SegmentationDataWrapper SegmentListBase::dealWithSegmentObjectModificationEvent(
 			newsdw = SegmentationDataWrapper();
 		}
 	}
-
-	if(!doScroll && newsdw.IsSegmentationValid()){
-		OmSegmentUtils::CenterSegment(vgs_, newsdw);
+ 	if(newsdw.IsSegmentationValid()){
+		OmSegIDsSet & sel = newsdw.GetSegmentCache()->GetSelectedSegmentIds();
+		if(1 == sel.size()){
+			OmSegmentUtils::CenterSegment(vgs_, newsdw);
+		}
 	}
 
 	return newsdw;
@@ -218,15 +220,19 @@ void SegmentListBase::searchChanged()
 	const OmSegID segID = searchEdit->text().toInt();
 	SegmentDataWrapper sdw(sdw_, segID);
 
-	if(!sdw.IsValidSegment()){
+	if(!sdw.IsSegmentValid()){
 		return;
 	}
+
+	OmSegmentSearched::Set(sdw);
 
 	OmSegmentSelector sel(sdw_, NULL, "segmentlistbase");
 	sel.selectJustThisSegment(segID, true);
 	sel.sendEvent();
 
 	makeSegmentationActive(sdw, true);
+
+	OmSegmentUtils::CenterSegment(vgs_, sdw);
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList()

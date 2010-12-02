@@ -66,6 +66,7 @@ HEADERS += lib/strnatcmp.h \
            src/datalayer/archive/omDataArchiveSegment.h \
            src/datalayer/upgraders/omUpgraders.hpp \
            src/datalayer/upgraders/omUpgradeTo14.hpp \
+           src/datalayer/upgraders/omUpgradeTo20.hpp \
            src/actions/io/omActionLogger.hpp \
            src/actions/io/omActionOperators.h \
            src/actions/io/omActionLoggerTask.hpp \
@@ -148,6 +149,7 @@ HEADERS += lib/strnatcmp.h \
            src/gui/toolbars/dendToolbar/sliceDepthSpinBoxZ.hpp \
            src/gui/toolbars/dendToolbar/dust3DthresholdGroup.h \
            src/gui/toolbars/dendToolbar/thresholdGroup.h \
+           src/gui/toolbars/dendToolbar/breakThresholdGroup.h \
            src/gui/toolbars/mainToolbar/filterWidget.h \
            src/gui/toolbars/mainToolbar/mainToolbar.h \
            src/gui/toolbars/mainToolbar/navAndEditButtonGroup.h \
@@ -362,7 +364,10 @@ HEADERS += lib/strnatcmp.h \
            tests/testUtils.hpp \
            tests/segment/omSegmentListBySizeTests.hpp \
            tests/segment/mockSegments.hpp \
-           tests/cache/lockedObjectsTests.hpp
+           tests/cache/lockedObjectsTests.hpp \
+           src/segment/omSegmentSearched.hpp \
+           src/segment/io/omValidGroupNum.hpp \
+           src/datalayer/archive/omDataArchiveStd.hpp
 
 SOURCES += lib/strnatcmp.cpp \
            src/common/omCommon.cpp \

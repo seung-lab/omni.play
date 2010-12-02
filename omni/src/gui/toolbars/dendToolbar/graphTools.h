@@ -28,6 +28,7 @@ class GraphTools : public OmWidget {
 	SplitButton * splitButton;
 
 	QWidget* thresholdBox();
+	QWidget* breakThresholdBox();
 
 };
 

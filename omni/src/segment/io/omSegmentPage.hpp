@@ -108,12 +108,14 @@ public:
 		}
 	}
 
-	inline OmSegment& operator[](const uint32_t index){
+	inline OmSegment& operator[](const uint32_t index)
+	{
 		assert(pageSize_ && index < pageSize_);
 		return segments_[index];
 	}
 
-	inline const OmSegment& operator[](const uint32_t index) const {
+	inline const OmSegment& operator[](const uint32_t index) const
+	{
 		assert(pageSize_ && index < pageSize_);
 		return segments_[index];
 	}

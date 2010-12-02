@@ -12,12 +12,14 @@
 
 class OmSegmentListBySize {
 public:
-	OmSegmentListBySize():mVoxels(0){}
+	OmSegmentListBySize()
+		: mVoxels(0)
+	{}
 
 	void InsertSegment(OmSegment* seg);
 	void RemoveSegment(OmSegment* seg);
 	void UpdateFromJoin(OmSegment* root, OmSegment* child);
-	void UpdateFromSplit(OmSegment* root, OmSegment* child, const uint64_t);
+	void UpdateFromSplit(OmSegment* root, OmSegment* child, const int64_t);
 
 	static void SwapSegment(OmSegment* seg, OmSegmentListBySize & one,
 							OmSegmentListBySize & two);
@@ -26,27 +28,29 @@ public:
 	GetPageOfSegmentIDs(const unsigned int,
 							  const int, const OmSegID);
 
-	uint64_t GetSegmentSize(OmSegment* seg);
+	int64_t GetSegmentSize(OmSegment* seg);
 
 	size_t Size();
-	uint64_t VoxelCount(){
+	int64_t VoxelCount(){
 		return mVoxels;
 	}
 	void Dump();
 	void Clear();
 
 	OmSegID GetNextSegmentIDinList(const OmSegID id);
+	OmSegIDsSet AllSegIDs();
 
 protected:
 
-	void do_incrementSegSize(const OmSegID segID_, const uint64_t addedSize);
+	void do_incrementSegSize(const OmSegID segID_, const int64_t addedSize);
+	void do_decrementSegSize(const OmSegID segID_, const int64_t subbedSize);
 	void do_removeSegment(const OmSegID segID_);
-	void do_insertSegment(const OmSegID segID_, const uint64_t size_);
+	void do_insertSegment(const OmSegID segID_, const int64_t size_);
 
 	struct OmSegSize {
 		OmSegID segID;
-		uint64_t segSize;
-		OmSegSize(const OmSegID segID_, const uint64_t segSize_)
+		int64_t segSize;
+		OmSegSize(const OmSegID segID_, const int64_t segSize_)
 			: segID(segID_), segSize(segSize_){}
 	};
 
@@ -58,8 +62,8 @@ protected:
 	< OmSegSize,
 	  boost::multi_index::indexed_by <
 		  boost::multi_index::ordered_non_unique<boost::multi_index::tag<segSize>,
-												 BOOST_MULTI_INDEX_MEMBER(OmSegSize,uint64_t,segSize),
-												 std::greater<uint64_t> >,
+												 BOOST_MULTI_INDEX_MEMBER(OmSegSize,int64_t,segSize),
+												 std::greater<int64_t> >,
 		  boost::multi_index::ordered_unique<boost::multi_index::tag<segID>,
 											 BOOST_MULTI_INDEX_MEMBER(OmSegSize,OmSegID,segID) >
 		  >
@@ -70,7 +74,7 @@ protected:
 
 	OmSegSizes mList;
 
-	uint64_t mVoxels;
+	int64_t mVoxels;
 
 private:
 	void advanceIter(List_by_size& sizeIndex,

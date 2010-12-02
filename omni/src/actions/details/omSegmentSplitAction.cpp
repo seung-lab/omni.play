@@ -71,7 +71,7 @@ void OmSegmentSplitAction::DoFindAndSplitSegment(const SegmentDataWrapper& sdw,
 		vgs->SetSplitMode(false);
 
 	} else { // set segment to be split later...
-		if(sdw.IsValidSegment()){
+		if(sdw.IsSegmentValid()){
 			vgs->SetSplitMode(sdw);
 		}
 	}

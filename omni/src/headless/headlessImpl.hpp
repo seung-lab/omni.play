@@ -1,6 +1,7 @@
 #ifndef HEADLESS_IMPL_HPP
 #define HEADLESS_IMPL_HPP
 
+#include "segment/omSegmentUtils.hpp"
 #include "mesh/omMeshParams.hpp"
 #include "actions/omActions.hpp"
 #include "project/omProject.h"
@@ -80,18 +81,7 @@ public:
 	static void RebuildCenterOfSegmentData(const OmID segmentationID)
 	{
 		SegmentationDataWrapper sdw(segmentationID);
-
-		OmSegmentCache* segCache = sdw.GetSegmentCache();
-		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
-			OmSegment* seg = segCache->GetSegment(i);
-			if(!seg){
-				continue;
-			}
-			seg->clearBounds();
-		}
-
-		sdw.GetSegmentation().UpdateVoxelBoundingData();
-
+		OmSegmentUtils::RebuildCenterOfSegmentData(sdw);
 		OmActions::Save();
 	}
 

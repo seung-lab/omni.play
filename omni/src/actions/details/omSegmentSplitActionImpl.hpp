@@ -41,6 +41,11 @@ public:
 		SegmentationDataWrapper sdw(mSegmentationID);
 		std::pair<bool, OmSegmentEdge> edge = sdw.GetSegmentCache()->JoinEdge(mEdge);
 
+		if(!mEdge.childID || !mEdge.parentID) {
+			printf("Can't undo a join that probably failed.\n");
+			return;
+		}
+
 		assert(edge.first && "edge could not be rejoined...");
 		mEdge = edge.second;
 

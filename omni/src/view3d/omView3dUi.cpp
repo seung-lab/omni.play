@@ -91,7 +91,7 @@ void OmView3dUi::doZoom(int direction)
 void OmView3dUi::DendModeMouseReleased(QMouseEvent * event)
 {
 	const SegmentDataWrapper sdw = PickSegmentMouse(event, false);
-	if (!sdw.IsValidSegment()) {
+	if (!sdw.IsSegmentValid()) {
 		mpView3d->updateGL();
 		return;
 	}
@@ -217,7 +217,7 @@ SegmentDataWrapper OmView3dUi::PickSegmentMouse(QMouseEvent * event,
 	//pick point causes localized redraw (but all depth info stored in selection buffer)
 	int pickName;
 	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
-	if(!sdw.IsValidSegment()){
+	if(!sdw.IsSegmentValid()){
 		return SegmentDataWrapper();
 	}
 
@@ -247,7 +247,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 	//get ids
 	int pick_object_type;
 	SegmentDataWrapper sdw = PickSegmentMouse(event, drag, &pick_object_type);
-	if (!sdw.IsValidSegment()){
+	if (!sdw.IsSegmentValid()){
 		return;
 	}
 
@@ -272,7 +272,7 @@ void OmView3dUi::SegmentSelectToggleMouse(QMouseEvent * event, bool drag)
 void OmView3dUi::ShowSegmentContextMenu(QMouseEvent * event)
 {
 	SegmentDataWrapper sdw = PickSegmentMouse(event, false);
-	if (!sdw.IsValidSegment()){
+	if (!sdw.IsSegmentValid()){
 		mpView3d->updateGL();
 		return;
 	}
@@ -289,7 +289,7 @@ void OmView3dUi::CenterAxisOfRotation(QMouseEvent * event)
 	SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	if(!sdw.IsValidSegment()){
+	if(!sdw.IsSegmentValid()){
 		return;
 	}
 
@@ -307,7 +307,7 @@ void OmView3dUi::crosshair(QMouseEvent * event)
 	const SegmentDataWrapper sdw = PickVoxelMouseCrosshair(event, voxel);
 	mpView3d->updateGL();
 
-	if(!sdw.IsValidSegment()) {
+	if(!sdw.IsSegmentValid()) {
 		return;
 	}
 
@@ -330,7 +330,7 @@ SegmentDataWrapper OmView3dUi::PickVoxelMouseCrosshair(QMouseEvent* event,
 	int pickName;
 	mpView3d->updateGL();
 	const SegmentDataWrapper sdw = mpView3d->PickPoint(point2d, pickName);
-	if(!sdw.IsValidSegment()){
+	if(!sdw.IsSegmentValid()){
 		return SegmentDataWrapper();
 	}
 

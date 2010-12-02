@@ -275,7 +275,18 @@ void OmMeshDrawer::applyColor(OmSegment * seg, const OmBitfield & drawOps,
 		return;
 	}
 
-	const Vector3f hyperColor = seg->GetColorFloat() * 2.;
+	Vector3f hyperColor;
+	if(SCC_SEGMENTATION_BREAK != sccType) {
+		hyperColor = seg->GetColorFloat() * 2.;
+	} else {
+		if(seg->getParent() &&
+		   seg->getThreshold() > mViewGroupState->getBreakThreshold() &&
+		   seg->getThreshold() < 2 ) { // 2 is the manual merge threshold
+			applyColor(seg->getParent(), drawOps, sccType);
+			return;
+		}
+		hyperColor = seg->GetColorFloat();
+	}
 
 	//check coloring options
 	if (drawOps & DRAWOP_SEGMENT_COLOR_HIGHLIGHT) {

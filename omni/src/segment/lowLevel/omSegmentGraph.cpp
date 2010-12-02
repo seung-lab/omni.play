@@ -1,3 +1,4 @@
+#include "segment/io/omValidGroupNum.hpp"
 #include "segment/io/omMST.h"
 #include "utility/stringHelpers.h"
 #include "volume/omSegmentation.h"
@@ -10,8 +11,7 @@
 OmSegmentGraph::OmSegmentGraph()
 	: mGraph(NULL)
 	, mCache(NULL)
-{
-}
+{}
 
 OmSegmentGraph::~OmSegmentGraph()
 {
@@ -188,6 +188,15 @@ bool OmSegmentGraph::JoinInternal( const OmSegID parentID,
 		return false;
 	}
 
+	boost::shared_ptr<OmValidGroupNum>& validGroupNum = GetValidGroupNum();
+	if(childRoot->IsValidListType()){
+		if(validGroupNum->Get(childRootID) !=
+		   validGroupNum->Get(parentID))
+		{
+			return false;
+		}
+	}
+
 	graph_join(childRootID, parentID);
 
 	parent->addChild(childRoot);
@@ -214,8 +223,7 @@ bool OmSegmentGraph::splitChildFromParentInternal( const OmSegID childID )
 		return false;
 	}
 
-	if( child->IsValidListType() == parent->IsValidListType() &&
-	    1 == child->IsValidListType() ){
+	if( child->IsValidListType() || parent->IsValidListType()){
 		return false;
 	}
 
@@ -260,4 +268,8 @@ quint64 OmSegmentGraph::computeSegmentSizeWithChildren( const OmSegID segID )
 
 boost::shared_ptr<OmSegmentLists> OmSegmentGraph::getSegmentLists() {
 	return mCache->GetSegmentation()->GetSegmentLists();
+}
+
+boost::shared_ptr<OmValidGroupNum>& OmSegmentGraph::GetValidGroupNum() const {
+	return mCache->GetSegmentation()->GetValidGroupNum();
 }

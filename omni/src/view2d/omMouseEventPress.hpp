@@ -106,7 +106,7 @@ private:
 			state_->ComputeMouseClickPointDataCoord(event);
 
 		SegmentDataWrapper sdw = OmSegmentSelected::Get();
-		if ( sdw.IsValidSegment() ) {
+		if ( sdw.IsSegmentValid() ) {
 			//run action
 			if (!doselection) {
 				if (dosubtract) {
@@ -148,7 +148,7 @@ private:
 
 	void doSelectSegment(const SegmentDataWrapper& sdw, bool augment_selection )
 	{
-		if( !sdw.IsValidSegment() ){
+		if( !sdw.IsSegmentValid() ){
 			printf("not valid\n");
 			return;
 		}

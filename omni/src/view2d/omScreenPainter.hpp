@@ -159,13 +159,17 @@ private:
 		const int halfHeight = fullHeight/2;
 		const int fullWidth = vp.width;
 		const int halfWidth = fullWidth/2;
+		const int a = 20;
 
 		std::pair<QColor, QColor> colors = getCursorColors();
 
 		painter.setPen(colors.first);
-		painter.drawLine(halfWidth, 0, halfWidth, fullHeight);
+		painter.drawLine(halfWidth, 0, halfWidth, halfHeight - a);
+		painter.drawLine(halfWidth, halfHeight + a, halfWidth, fullHeight);
+
 		painter.setPen(colors.second);
-		painter.drawLine(0, halfHeight, fullWidth, halfHeight);
+		painter.drawLine(0, halfHeight, halfWidth - a, halfHeight);
+		painter.drawLine(fullWidth, halfHeight, halfWidth + a, halfHeight);
 	}
 
 	std::pair<QColor, QColor> getCursorColors() const

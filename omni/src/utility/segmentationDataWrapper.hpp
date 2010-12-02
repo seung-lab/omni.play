@@ -125,5 +125,8 @@ public:
 		return GetSegmentation().getMST();
 	}
 
+	inline boost::shared_ptr<OmValidGroupNum>& GetValidGroupNum() const {
+		return GetSegmentation().GetValidGroupNum();
+	}
 };
 #endif

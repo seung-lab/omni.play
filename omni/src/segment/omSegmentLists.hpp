@@ -50,6 +50,10 @@ public:
 	void MoveSegment(const om::OmSegListType toType,
 					 OmSegment* seg)
 	{
+		if(seg->GetListType() == toType) {
+			printf("can't move segment into list, already in this list.\n");
+			return;
+		}
 		getContainer(seg->GetListType()).swapSegment(seg, getContainer(toType));
 		seg->SetListType(toType);
 	}

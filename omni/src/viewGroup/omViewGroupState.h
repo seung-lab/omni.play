@@ -58,8 +58,8 @@ public:
 											 const Vector2i&,
 											 const OmTileCoord&);
 
-	void setBreakThreshold(int t){ mBreakThreshold = t; }
-	int getBreakThreshold(){ return mBreakThreshold; }
+	void setBreakThreshold(float t){ mBreakThreshold = t; }
+	float getBreakThreshold(){ return mBreakThreshold; }
 
 	void setDustThreshold(unsigned int t){ mDustThreshold = t; }
 	unsigned int getDustThreshold(){ return mDustThreshold; }
@@ -97,7 +97,7 @@ private:
 
 	boost::shared_ptr<OmBrushSize> brushSize_;
 
-	int mBreakThreshold;
+	float mBreakThreshold;
 	unsigned int mDustThreshold;
 
 	//view event

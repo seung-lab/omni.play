@@ -1,6 +1,7 @@
 #ifndef OM_SEGMENT_UTILS_HPP
 #define OM_SEGMENT_UTILS_HPP
 
+#include "segment/omSegmentSearched.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelected.hpp"
@@ -59,9 +60,48 @@ private:
 		return boost::optional<DataCoord>(ret);
 	}
 
+	boost::optional<DataCoord>
+	static findCenterOfSelectedSegments(const SegmentDataWrapper& sdw)
+	{
+		if(!sdw.IsSegmentValid()){
+			return boost::optional<DataCoord>();
+		}
+
+		OmSegment* seg = sdw.getSegment();
+		const DataBbox& box = seg->getBounds();
+		if(box.isEmpty()){
+			return boost::optional<DataCoord>();
+		}
+
+		const DataCoord ret = (box.getMin() + box.getMax()) / 2;
+		return boost::optional<DataCoord>(ret);
+	}
+
 public:
 	static void CenterSegment(OmViewGroupState * vgs,
 							  const SegmentationDataWrapper& sdw)
+	{
+
+		const boost::optional<DataCoord> voxelDC
+			= findCenterOfSelectedSegments(sdw);
+
+		if(!voxelDC){
+			return;
+		}
+
+		const SpaceCoord voxelSC
+			= sdw.GetSegmentation().DataToSpaceCoord(*voxelDC);
+
+		vgs->SetViewSliceDepth(YZ_VIEW, voxelSC.x );
+		vgs->SetViewSliceDepth(XZ_VIEW, voxelSC.y );
+		vgs->SetViewSliceDepth(XY_VIEW, voxelSC.z );
+
+		OmEvents::ViewCenterChanged();
+		OmEvents::View3dRecenter();
+	}
+
+	static void CenterSegment(OmViewGroupState * vgs,
+							  const SegmentDataWrapper& sdw)
 	{
 
 		const boost::optional<DataCoord> voxelDC
@@ -98,6 +138,23 @@ public:
 
 		return counter;
 	}
+
+	static void RebuildCenterOfSegmentData(const SegmentationDataWrapper& sdw)
+	{
+		printf("rebuilding segment bounding box data...\n");
+
+		OmSegmentCache* segCache = sdw.GetSegmentCache();
+		for(OmSegID i = 1; i <= segCache->getMaxValue(); ++i){
+			OmSegment* seg = segCache->GetSegment(i);
+			if(!seg){
+				continue;
+			}
+			seg->clearBounds();
+		}
+
+		sdw.GetSegmentation().UpdateVoxelBoundingData();
+	}
+
 };
 
 #endif

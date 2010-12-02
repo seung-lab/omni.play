@@ -51,6 +51,10 @@ public:
 		return list_.VoxelCount();
 	}
 
+	T& List(){
+		return list_;
+	}
+
 private:
 	T list_;
 };

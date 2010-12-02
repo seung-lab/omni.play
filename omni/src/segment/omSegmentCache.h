@@ -63,7 +63,7 @@ public:
 
 	quint32 getPageSize();
 
-	quint32 getMaxValue();
+	uint32_t getMaxValue();
 
 	void refreshTree();
 

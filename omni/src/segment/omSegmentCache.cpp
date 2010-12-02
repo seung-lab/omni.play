@@ -191,7 +191,7 @@ OmSegIDsSet OmSegmentCache::UnJoinTheseSegments( const OmSegIDsSet & segmentList
 	return mImpl->UnJoinTheseSegments(segmentList);
 }
 
-quint32 OmSegmentCache::getMaxValue()
+uint32_t OmSegmentCache::getMaxValue()
 {
 	zi::guard g(mutex_);
 	return mImpl->getMaxValue();
