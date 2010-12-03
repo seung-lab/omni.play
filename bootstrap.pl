@@ -125,10 +125,10 @@ sub genOmniScript {
 	$script .= "make clean;";
     }
 
-    $script .= "make $globalMakeOptions;";
+    $script .= "make $globalMakeOptions";
 
     if(isMac()) {
-	$script .= "cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.1/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
+	$script .= "; cp -r ../external/srcs/qt-everywhere-opensource-src-4.7.1/src/gui/mac/qt_menu.nib $basePath/omni/bin/omni.app/Contents/Resources/\n";
     }
 
     open (SCRIPT, ">", $omniScriptFile) or die $!;
@@ -356,6 +356,11 @@ sub omni {
     print "done\n";
 }
 
+sub stxxl {
+    my $args = "";
+    prepareAndBuild( "stxxl-1.3.0", "stxxl", $args );
+}
+
 sub printTitle {
     my $title = $_[0];
     printLine();
@@ -477,8 +482,9 @@ sub experimentalMenu {
     print "0 -- exit\n";
     print "1 -- Build Omni no debug\n";
     print "2 -- Build qt 4.7\n";
+    print "3 -- Build stxxl\n";
     print "\n";
-    my $max_answer = 2;
+    my $max_answer = 3;
 
     while( 1 ){
 	print "Please make selection: ";
@@ -506,6 +512,8 @@ sub runExperimentalMenuEntry {
 	omni();
     } elsif( 2 == $entry ){
 	qt47();
+    } elsif( 3 == $entry ){
+	stxxl();
     }
 }
 
@@ -524,7 +532,7 @@ sub checkCmdLineArgs {
 
 sub doUbuntuAptGets{
     my @packages = qw( libxrender-dev libxext-dev freeglut3-dev g++
-	libfreetype6-dev libxml2 libxml2-dev cmake mesa-common-dev
+	libfreetype6-dev libxml2 libxml2-dev mesa-common-dev
 	libxt-dev libgl1-mesa-dev libglu1-mesa-dev libgl1-mesa-dri-dbg
 	libgl1-mesa-glx-dbg libboost-dev flex bison);
 
